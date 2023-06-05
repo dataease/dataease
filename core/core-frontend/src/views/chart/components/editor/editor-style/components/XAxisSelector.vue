@@ -67,13 +67,13 @@ initFontSize()
               size="small"
               @change="changeAxisStyle('position')"
             >
-              <div v-if="props.chart.type !== 'bidirectional-bar'">
+              <div v-if="!props.chart.type.includes('horizontal')">
                 <el-radio-button label="top">{{ t('chart.text_pos_top') }}</el-radio-button>
                 <el-radio-button label="bottom">{{ t('chart.text_pos_bottom') }}</el-radio-button>
               </div>
-              <div v-else-if="props.chart.type === 'bidirectional-bar'">
-                <el-radio-button label="top">{{ t('chart.text_pos_left') }}</el-radio-button>
-                <el-radio-button label="bottom">{{ t('chart.text_pos_center') }}</el-radio-button>
+              <div v-else>
+                <el-radio-button label="left">{{ t('chart.text_pos_left') }}</el-radio-button>
+                <el-radio-button label="right">{{ t('chart.text_pos_center') }}</el-radio-button>
               </div>
             </el-radio-group>
           </el-form-item>
