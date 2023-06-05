@@ -1,5 +1,6 @@
 package io.dataease.api.permissions.auth.vo;
 
+import io.dataease.model.TreeResultModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -8,7 +9,7 @@ import java.io.Serializable;
 import java.util.List;
 
 @Data
-public class BusiPerVO implements Serializable {
+public class BusiPerVO implements TreeResultModel<BusiPerVO>, Serializable {
 
 
     @Serial
