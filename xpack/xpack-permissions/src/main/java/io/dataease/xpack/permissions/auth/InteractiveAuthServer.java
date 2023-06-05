@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/interactive/")
+@RequestMapping("/interactive")
 @Primary
 public class InteractiveAuthServer implements InteractiveAuthApi {
 
@@ -36,7 +36,7 @@ public class InteractiveAuthServer implements InteractiveAuthApi {
 
     @Override
     public List<BusiPerVO> resource(String flag) {
-        return null;
+        return interactiveAuthManage.resource(flag);
     }
 
     @Override
