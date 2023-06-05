@@ -1,4 +1,4 @@
-import { hexColorToRGBA, parseJson } from '../../util'
+import { hexColorToRGBA } from '../../util'
 import { equalsAny } from '@/views/chart/components/editor/util/StringUtils'
 import {
   DEFAULT_XAXIS_STYLE,
