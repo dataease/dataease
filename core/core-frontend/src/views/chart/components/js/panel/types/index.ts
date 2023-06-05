@@ -62,7 +62,7 @@ export abstract class G2PlotChartView<
   public abstract drawChart(drawOptions: G2PlotDrawOptions<P>): P
 
   protected configTheme(chart: Chart, options: O): O {
-    const theme= getTheme(chart)
+    const theme = getTheme(chart)
     return { ...options, theme }
   }
 
