@@ -93,17 +93,17 @@ const delNode = (id, arr) => {
 }
 
 const saveSqlNode = (val: SqlNode) => {
-  const { tableName, id, sql, datasourceId } = val
+  const { tableName, id, sql, datasourceId, sqlVariableDetails = null } = val
   if (state.visualNode) {
-    state.visualNode.info = JSON.stringify({ table: tableName, sql })
     Object.assign(state.visualNode, {
+      info: JSON.stringify({ table: tableName, sql }),
+      sqlVariableDetails,
       unionType: 'left',
       type: 'sql',
       id,
       datasourceId,
       unionFields: [],
-      currentDsFields: [],
-      sqlVariableDetails: null
+      currentDsFields: []
     })
     state.visualNode.confirm = true
     if (!state.nodeList.length) {
@@ -113,7 +113,7 @@ const saveSqlNode = (val: SqlNode) => {
     }
     return
   }
-  const obj = { info: JSON.stringify({ table: tableName, sql }), id, tableName }
+  const obj = { info: JSON.stringify({ table: tableName, sql }), id, tableName, sqlVariableDetails }
   dfsNodeBack([obj], [id], state.nodeList)
 }
 

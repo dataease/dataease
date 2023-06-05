@@ -17,6 +17,7 @@ export interface SqlNode {
   tableName: string
   datasourceId: string
   id: string
+  sqlVariableDetails?: string
 }
 
 const props = defineProps({
@@ -151,9 +152,11 @@ const saveClose = () => {
 }
 
 const save = () => {
+  parseVariable()
   emits('save', {
     ...sqlNode.value,
-    sql: Base64.encodeURI(codeCom.value.state.doc.toString())
+    sql: Base64.encodeURI(codeCom.value.state.doc.toString()),
+    sqlVariableDetails: JSON.stringify(state.variables)
   })
 }
 
@@ -161,9 +164,11 @@ const close = () => {
   emits('close')
 }
 const getSQLPreview = () => {
+  parseVariable()
   getPreviewSql({
     sql: Base64.encodeURI(codeCom.value.state.doc.toString()),
-    datasourceId: sqlNode.value.datasourceId
+    datasourceId: sqlNode.value.datasourceId,
+    sqlVariableDetail: JSON.stringify(state.variables)
   }).then(res => {
     state.plxTableData = res.data.data
     state.fields = res.data.fields
