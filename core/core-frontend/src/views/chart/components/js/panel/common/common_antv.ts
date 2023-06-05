@@ -1,4 +1,4 @@
-import { hexColorToRGBA } from '../../util.js'
+import { hexColorToRGBA, parseJson } from '../../util'
 import { equalsAny } from '@/views/chart/components/editor/util/StringUtils'
 import {
   DEFAULT_XAXIS_STYLE,
@@ -14,7 +14,7 @@ export function getPadding(chart) {
   }
 }
 // color,label,tooltip,axis,legend,background
-export function getTheme(chart) {
+export function getTheme(chart: Chart) {
   const colors = []
   let bgColor,
     labelFontsize,
@@ -24,7 +24,7 @@ export function getTheme(chart) {
     tooltipBackgroundColor,
     legendColor,
     legendFontsize
-  let customAttr = {}
+  let customAttr
   if (chart.customAttr) {
     customAttr = chart.customAttr
     // color
@@ -114,6 +114,7 @@ export function getTheme(chart) {
       }
     }
   }
+  // TODO 搬到堆叠的图里面自行配置
   // 堆叠柱状图需要取消 offset，因为在顶部类别占比较低的时候有可能会把标签挤出去
   // 并且视觉上也比较不舒服
   // if (equalsAny(chart.type, 'percentage-bar-stack', 'bar-group-stack')) {
@@ -122,9 +123,9 @@ export function getTheme(chart) {
   return theme
 }
 // 通用label
-export function getLabel(chart) {
-  let label = {}
-  let customAttr = {}
+export function getLabel(chart: Chart) {
+  let label
+  let customAttr
   if (chart.customAttr) {
     customAttr = chart.customAttr
     // label
@@ -160,6 +161,7 @@ export function getLabel(chart) {
           fill: l.color,
           fontSize: parseInt(l.fontSize)
         }
+        // TODO 格式化函数搬到各个视图自行实现
         // label value formatter
         // if (chart.type && chart.type !== 'waterfall') {
         //   label.formatter = function (param) {

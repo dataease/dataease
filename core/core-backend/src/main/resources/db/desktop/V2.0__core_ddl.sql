@@ -72,7 +72,7 @@ CREATE TABLE `core_menu`
 
 INSERT INTO `core_menu`
 VALUES (1, 0, 2, 'workbranch', 'workbranch', 1, NULL, '/workbranch', 0, 1, 1),
-       (2, 0, 1, 'panel', 'visualized/view/panel', 2, NULL, '/panel', 0, 1, 1),
+       (2, 0, 2, 'panel', 'visualized/view/panel', 2, NULL, '/panel', 0, 1, 1),
        (3, 0, 2, 'screen', 'visualized/view/screen', 3, NULL, '/screen', 0, 1, 1),
        (4, 0, 1, 'data', NULL, 4, NULL, '/data', 0, 1, 1),
        (5, 4, 2, 'dataset', 'visualized/data/dataset', 1, NULL, '/dataset', 0, 1, 1),

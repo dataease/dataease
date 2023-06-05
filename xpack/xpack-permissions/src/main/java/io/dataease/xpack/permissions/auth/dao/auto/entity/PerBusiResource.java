@@ -9,7 +9,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-04-23
+ * @since 2023-06-02
  */
 @TableName("per_busi_resource")
 public class PerBusiResource implements Serializable {
@@ -45,6 +45,11 @@ public class PerBusiResource implements Serializable {
      * 寻根路径
      */
     private String rootWay;
+
+    /**
+     * 叶子结点
+     */
+    private Boolean leaf;
 
     public Long getId() {
         return id;
@@ -94,6 +99,14 @@ public class PerBusiResource implements Serializable {
         this.rootWay = rootWay;
     }
 
+    public Boolean getLeaf() {
+        return leaf;
+    }
+
+    public void setLeaf(Boolean leaf) {
+        this.leaf = leaf;
+    }
+
     @Override
     public String toString() {
         return "PerBusiResource{" +
@@ -103,6 +116,7 @@ public class PerBusiResource implements Serializable {
         ", orgId = " + orgId +
         ", pid = " + pid +
         ", rootWay = " + rootWay +
+        ", leaf = " + leaf +
         "}";
     }
 }
