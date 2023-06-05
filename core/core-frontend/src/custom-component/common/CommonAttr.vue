@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
-import { styleData, selectKey, optionMap } from '@/utils/attr'
+import { styleData, selectKey, optionMap, positionData } from '@/utils/attr'
 import DeInputNum from '@/custom-component/common/DeInputNum.vue'
 import { ElRow } from 'element-plus-secondary'
 
@@ -19,6 +19,15 @@ const styleKeys = computed(() => {
   }
 })
 
+const positionKeys = computed(() => {
+  if (curComponent.value) {
+    const curComponentStyleKeys = Object.keys(curComponent.value.style)
+    return positionData.filter(item => curComponentStyleKeys.includes(item.key))
+  } else {
+    return null
+  }
+})
+
 const onChange = () => {
   curComponent.value.collapseName = activeName
 }
@@ -30,8 +39,26 @@ const isIncludesColor = str => {
 
 <template>
   <div class="v-common-attr">
-    <el-collapse v-model="activeName" accordion @change="onChange()">
-      <el-collapse-item title="通用样式" name="style">
+    <el-collapse v-model="activeName" @change="onChange()">
+      <el-collapse-item title="位置" name="position">
+        <div style="width: 100%">
+          <div
+            v-for="({ key, label }, index) in positionKeys"
+            :key="index"
+            :title="label"
+            style="display: flex; float: left; margin-top: 10px"
+          >
+            <div style="width: 25px; overflow: hidden; text-align: right">
+              <span>{{ label }}</span>
+            </div>
+            <div style="width: 85px">
+              <de-input-num v-model="curComponent.style[key]"></de-input-num>
+            </div>
+          </div>
+        </div>
+      </el-collapse-item>
+
+      <el-collapse-item title="样式" name="style">
         <div style="width: 100%">
           <div
             v-for="({ key, label }, index) in styleKeys"
@@ -66,6 +93,7 @@ const isIncludesColor = str => {
           </div>
         </div>
       </el-collapse-item>
+      <slot></slot>
     </el-collapse>
   </div>
 </template>
@@ -78,24 +106,27 @@ const isIncludesColor = str => {
 }
 
 :deep(.ed-collapse-item__header) {
-  background-color: rgba(29, 36, 42, 1) !important;
+  background-color: @side-area-background !important;
   color: #ffffff;
+  padding-left: 5px;
   border-bottom: 1px solid rgba(85, 85, 85, 1);
+  height: 38px !important;
 }
 :deep(.ed-collapse-item__content) {
-  background-color: rgba(37, 45, 54, 1);
+  background-color: @side-content-background;
   color: #ffffff;
   padding-left: 5px;
 }
 
 :deep(.ed-collapse-item__wrap) {
+  background-color: @side-content-background;
   border-bottom: 1px solid rgba(85, 85, 85, 1);
-  background-color: rgba(37, 45, 54, 1) !important;
-  padding: 10px 0px 10px 0px;
+  padding-bottom: 10px;
 }
 :deep(.ed-collapse) {
   width: 100%;
 }
+
 :deep(.ed-input__wrapper) {
   background-color: rgba(37, 45, 54, 1);
 }

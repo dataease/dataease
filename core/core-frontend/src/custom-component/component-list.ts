@@ -10,7 +10,7 @@ export const commonAttr = {
   groupStyle: {}, // 当一个组件成为 Group 的子组件时使用
   isLock: false, // 是否锁定组件
   isShow: true, // 是否显示组件
-  collapseName: 'style', // 编辑组件时记录当前使用的是哪个折叠面板，再次回来时恢复上次打开的折叠面板，优化用户体验
+  collapseName: 'position', // 编辑组件时记录当前使用的是哪个折叠面板，再次回来时恢复上次打开的折叠面板，优化用户体验
   linkage: {
     duration: 0, // 过渡持续时间
     data: [
@@ -119,7 +119,7 @@ const list = [
     sizeX: 20,
     sizeY: 20,
     propValue: {
-      url: null,
+      url: '',
       flip: {
         horizontal: false,
         vertical: false
@@ -131,6 +131,40 @@ const list = [
       borderRadius: ''
     },
     matrixStyle: {}
+  },
+  {
+    component: 'CanvasIcon',
+    name: '图标',
+    label: '图标',
+    propValue: '',
+    icon: 'other_material_icon',
+    innerType: '',
+    x: 1,
+    y: 1,
+    sizeX: 5,
+    sizeY: 5,
+    style: {
+      width: 40,
+      height: 40,
+      color: ''
+    }
+  },
+  {
+    component: 'CanvasBoard',
+    name: '边框',
+    label: '边框',
+    propValue: '',
+    icon: 'other_material_board',
+    innerType: '',
+    x: 1,
+    y: 1,
+    sizeX: 15,
+    sizeY: 15,
+    style: {
+      width: 150,
+      height: 100,
+      color: ''
+    }
   }
 ]
 

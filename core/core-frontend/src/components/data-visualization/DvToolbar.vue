@@ -21,6 +21,7 @@ import ComponentGroup from '@/components/visualization/ComponentGroup.vue'
 import UserViewGroup from '@/custom-component/component-group/UserViewGroup.vue'
 import MediaGroup from '@/custom-component/component-group/MediaGroup.vue'
 import TextGroup from '@/custom-component/component-group/TextGroup.vue'
+import CommonGroup from '@/custom-component/component-group/CommonGroup.vue'
 
 const isShowPreview = ref(false)
 const isScreenshot = ref(false)
@@ -186,8 +187,8 @@ eventBus.on('clearCanvas', clearCanvas)
         <component-group icon-name="dv-media" title="媒体">
           <media-group></media-group>
         </component-group>
-        <component-group icon-name="dv-material" title="素材">
-          <div>this is material test</div>
+        <component-group :base-width="410" icon-name="dv-material" title="素材">
+          <common-group></common-group>
         </component-group>
         <component-group icon-name="dv-params" title="参数">
           <div>setting</div>

@@ -312,17 +312,17 @@ const sizeMessage = () => {
   display: none;
 }
 
-.avatar-uploader :deep(.el-upload) {
+.avatar-uploader :deep(.ed-upload) {
   width: 120px;
   height: 80px;
   line-height: 90px;
 }
 
-.avatar-uploader :deep(.el-upload-list li) {
+.avatar-uploader :deep(.ed-upload-list li) {
   width: 120px !important;
   height: 80px !important;
 }
-.avatar-uploader :deep(.el-upload--picture-card) {
+.avatar-uploader :deep(.ed-upload--picture-card) {
   background: rgba(0, 0, 0, 0);
 }
 .img-area {
@@ -342,27 +342,27 @@ const sizeMessage = () => {
   width: 60px;
 }
 
-.color-type :deep(.el-radio__input) {
+.color-type :deep(.ed-radio__input) {
   display: none;
 }
 
-.el-radio {
+.ed-radio {
   color: #757575;
 }
 
 .custom-color-style {
 }
 
-.custom-color-style :deep(.el-radio) {
+.custom-color-style :deep(.ed-radio) {
   margin: 0 2px 0 0 !important;
   border: 1px solid transparent;
 }
 
-.custom-color-style :deep(.el-radio__label) {
+.custom-color-style :deep(.ed-radio__label) {
   padding-left: 0;
 }
 
-.custom-color-style :deep(.el-radio.is-checked) {
+.custom-color-style :deep(.ed-radio.is-checked) {
   border: 1px solid #0a7be0;
 }
 

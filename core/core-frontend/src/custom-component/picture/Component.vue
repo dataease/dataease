@@ -1,12 +1,13 @@
 <template>
   <div class="pic-main">
-    <img v-if="propValue['url']" :style="imageAdapter" :src="propValue['url']" />
-    <div v-else class="pic-upload">请上传图片...</div>
+    <img v-if="propValue['url']" :style="imageAdapter" :src="imgUrlTrans(propValue['url'])" />
+    <div v-else class="pic-upload"><span>请上传图片...</span></div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted, ref, toRefs, watch } from 'vue'
+import { imgUrlTrans } from '@/utils/imgUtils'
 const props = defineProps({
   propValue: {
     type: String,
@@ -42,7 +43,11 @@ const imageAdapter = computed(() => {
   height: 100%;
 }
 .pic-upload {
-  background-color: #8492a6;
+  display: flex;
+  width: 100%;
+  height: 100%;
   color: #ffffff;
+  align-items: center;
+  justify-content: center;
 }
 </style>
