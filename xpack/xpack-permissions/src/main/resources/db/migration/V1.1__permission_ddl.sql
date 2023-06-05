@@ -61,6 +61,7 @@ CREATE TABLE `per_busi_resource`
     `org_id`   bigint       DEFAULT NULL COMMENT '所属组织ID',
     `pid`      bigint      NOT NULL COMMENT '上级资源ID',
     `root_way` varchar(255) DEFAULT NULL COMMENT '寻根路径',
+    `leaf`     tinyint(1) NOT NULL DEFAULT '0' COMMENT '叶子结点',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 

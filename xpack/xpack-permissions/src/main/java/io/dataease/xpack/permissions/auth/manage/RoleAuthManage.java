@@ -72,7 +72,7 @@ public class RoleAuthManage extends ServiceImpl<PerAuthBusiRoleMapper, PerAuthBu
         initWeightMap();
         List<Long> menuIds = queryMenuIds();
         boolean readonly = perRole.getReadonly();
-        List<ResourcePO> pos = busiAuthExtMapper.resourceIds();
+        List<ResourcePO> pos = busiAuthExtMapper.resourcePOs();
         Map<Integer, List<ResourcePO>> listMap = pos.stream().collect(Collectors.groupingBy(ResourcePO::getType));
         List<PerAuthMenu> menus = syncItem(0, menuIds, perRole.getId(), readonly);
         menuAuthManage.saveBatch(menus);
