@@ -177,7 +177,13 @@ eventBus.on('handleNew', handleNew)
     <DvToolbar />
     <el-container class="dv-layout-container">
       <!-- 左侧组件列表 -->
-      <dv-sidebar title="图层" :width="180" aside-position="left" class="left-sidebar">
+      <dv-sidebar
+        :title="'图层'"
+        :width="180"
+        :aside-position="'left'"
+        :side-name="'realTimeComponent'"
+        class="left-sidebar"
+      >
         <RealTimeComponentList />
       </dv-sidebar>
       <!-- 中间画布 -->
@@ -198,18 +204,20 @@ eventBus.on('handleNew', handleNew)
       <!-- 右侧侧组件列表 -->
       <dv-sidebar
         v-if="curComponent && curComponent.component !== 'UserView'"
-        title="属性"
+        :title="'属性'"
         :width="240"
-        aside-position="right"
+        :side-name="'componentProp'"
+        :aside-position="'right'"
         class="left-sidebar"
       >
         <component :is="findComponent(curComponent['component'] + 'Attr')" />
       </dv-sidebar>
       <dv-sidebar
         v-if="!curComponent"
-        title="大屏配置"
+        :title="'大屏配置'"
         :width="240"
-        aside-position="right"
+        :side-name="'canvas'"
+        :aside-position="'right'"
         class="left-sidebar"
       >
         <CanvasAttr></CanvasAttr>

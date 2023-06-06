@@ -2,7 +2,7 @@
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { storeToRefs } from 'pinia'
-import { reactive, ref } from 'vue'
+import { onMounted, reactive, ref, watch } from 'vue'
 import DeInputNum from '@/custom-component/common/DeInputNum.vue'
 import { uploadFileResult } from '@/api/staticResource'
 import { ElIcon, ElMessage } from 'element-plus-secondary'
@@ -19,6 +19,7 @@ const { canvasStyleData } = storeToRefs(dvMainStore)
 const { t } = useI18n()
 const files = ref(null)
 const maxImageSize = 15000000
+let initReady = false
 
 const options = ref({
   color: '颜色',
@@ -47,6 +48,7 @@ const handleRemove = (file, fileList) => {
 async function upload(file) {
   uploadFileResult(file.file, fileUrl => {
     canvasStyleData.value.background = fileUrl
+    fileList.value = [{ url: imgUrlTrans(canvasStyleData.value.background) }]
   })
 }
 
@@ -99,6 +101,18 @@ const reUpload = e => {
 const sizeMessage = () => {
   ElMessage.success('图片大小不符合')
 }
+
+const init = () => {
+  initReady = true
+  if (canvasStyleData.value.background) {
+    fileList.value = [{ url: imgUrlTrans(canvasStyleData.value.background) }]
+  }
+}
+watch([() => canvasStyleData.value.background], () => {
+  if (!fileList.value.length && !initReady) {
+    init()
+  }
+})
 </script>
 
 <template>

@@ -1,4 +1,5 @@
 import { sin, cos, toPercent } from '@/utils/translate'
+import { imgUrlTrans } from '@/utils/imgUtils'
 
 export function getShapeStyle(style) {
   const result = {}
@@ -114,7 +115,7 @@ export function getCanvasStyle(canvasStyleData) {
       if (key === 'background' || key === 'backgroundColor') {
         result[backgroundType] = canvasStyleData[backgroundType]
         if (backgroundType === 'background') {
-          result[backgroundType] = `url(/api${canvasStyleData[backgroundType]}) no-repeat`
+          result[backgroundType] = `url(${imgUrlTrans(canvasStyleData[backgroundType])}) no-repeat`
         } else {
           result[backgroundType] = canvasStyleData[backgroundType]
         }
