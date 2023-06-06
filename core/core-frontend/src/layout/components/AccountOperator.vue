@@ -3,12 +3,15 @@ import { ref, onMounted } from 'vue'
 import { Icon } from '@/components/icon-custom'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import router from '@/router'
+import { usePermissionStoreWithOut } from '@/store/modules/permission'
+const permissionStore = usePermissionStoreWithOut()
 const userStore = useUserStoreWithOut()
 const name = ref('')
 
 const logout = () => {
   userStore.clear()
   userStore.$reset()
+  permissionStore.$reset()
   let queryRedirectPath = '/workbranch/index'
   // 如果redirect参数中有值
   if (router.currentRoute.value.fullPath) {
