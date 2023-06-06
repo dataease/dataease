@@ -165,17 +165,17 @@ getItemTagType()
               :name="`field_${fieldType(item.deType)}`"
             ></Icon>
           </el-icon>
-          <svg-icon v-if="item.sort === 'asc'" icon-class="sort-asc" class-name="field-icon-sort" />
-          <svg-icon
-            v-if="item.sort === 'desc'"
-            icon-class="sort-desc"
-            class-name="field-icon-sort"
-          />
-          <svg-icon
-            v-if="item.sort === 'custom_sort'"
-            icon-class="custom_sort"
-            class-name="field-icon-sort"
-          />
+          <!--          <svg-icon v-if="item.sort === 'asc'" icon-class="sort-asc" class-name="field-icon-sort" />-->
+          <!--          <svg-icon-->
+          <!--            v-if="item.sort === 'desc'"-->
+          <!--            icon-class="sort-desc"-->
+          <!--            class-name="field-icon-sort"-->
+          <!--          />-->
+          <!--          <svg-icon-->
+          <!--            v-if="item.sort === 'custom_sort'"-->
+          <!--            icon-class="custom_sort"-->
+          <!--            class-name="field-icon-sort"-->
+          <!--          />-->
         </span>
         <span class="item-span-style" :title="item.name">{{
           item.chartShowName ? item.chartShowName : item.name
@@ -219,7 +219,7 @@ getItemTagType()
                     t('chart.desc')
                   }}</el-dropdown-item>
                   <!--                  <el-dropdown-item-->
-                  <!--                    v-show="!item.chartId && (item.deType === 0 || item.deType === 5)"-->
+                  <!--                    v-if="!item.chartId && (item.deType === 0 || item.deType === 5)"-->
                   <!--                    :command="beforeSort('custom_sort')"-->
                   <!--                    >{{ t('chart.custom_sort') }}...</el-dropdown-item-->
                   <!--                  >-->

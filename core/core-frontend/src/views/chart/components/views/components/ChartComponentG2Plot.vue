@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted, reactive, ref, toRefs } from 'vue'
+import { onMounted, reactive, toRefs } from 'vue'
 import { getData } from '@/api/chart'
 import { G2PlotChartView } from '@/views/chart/components/js/panel/types'
 import chartViewManager from '@/views/chart/components/js/panel'

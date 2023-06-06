@@ -1,5 +1,6 @@
 <script lang="tsx" setup>
 import { useI18n } from '@/hooks/web/useI18n'
+import { toRefs } from 'vue'
 import ColorSelector from '@/views/chart/components/editor/editor-style/components/ColorSelector.vue'
 import SizeSelector from '@/views/chart/components/editor/editor-style/components/SizeSelector.vue'
 import LabelSelector from '@/views/chart/components/editor/editor-style/components/LabelSelector.vue'
@@ -22,6 +23,8 @@ const props = defineProps({
     required: true
   }
 })
+
+const { chart } = toRefs(props)
 
 const emit = defineEmits([
   'onColorChange',
@@ -73,40 +76,26 @@ const onLegendChange = val => {
       <el-row class="de-collapse-style">
         <el-collapse v-model="state.attrActiveNames" class="style-collapse">
           <el-collapse-item name="color" :title="t('chart.color')">
-            <color-selector
-              class="attr-selector"
-              :chart="props.chart"
-              @onColorChange="onColorChange"
-            />
+            <color-selector class="attr-selector" :chart="chart" @onColorChange="onColorChange" />
           </el-collapse-item>
 
           <el-collapse-item
             name="size"
             :title="
-              props.chart.type && props.chart.type.includes('table')
-                ? t('chart.table_config')
-                : t('chart.size')
+              chart.type && chart.type.includes('table') ? t('chart.table_config') : t('chart.size')
             "
           >
-            <size-selector
-              class="attr-selector"
-              :chart="props.chart"
-              @onSizeChange="onSizeChange"
-            />
+            <size-selector class="attr-selector" :chart="chart" @onSizeChange="onSizeChange" />
           </el-collapse-item>
 
           <el-collapse-item name="label" :title="$t('chart.label')">
-            <label-selector
-              class="attr-selector"
-              :chart="props.chart"
-              @onLabelChange="onLabelChange"
-            />
+            <label-selector class="attr-selector" :chart="chart" @onLabelChange="onLabelChange" />
           </el-collapse-item>
 
           <el-collapse-item name="tooltip" :title="$t('chart.tooltip')">
             <tooltip-selector
               class="attr-selector"
-              :chart="props.chart"
+              :chart="chart"
               @onTooltipChange="onTooltipChange"
             />
           </el-collapse-item>
@@ -118,7 +107,7 @@ const onLegendChange = val => {
           <el-collapse-item name="xAxis" :title="t('chart.xAxis')">
             <x-axis-selector
               class="attr-selector"
-              :chart="props.chart"
+              :chart="chart"
               @onChangeXAxisForm="onChangeXAxisForm"
             />
           </el-collapse-item>
@@ -126,23 +115,19 @@ const onLegendChange = val => {
           <el-collapse-item name="yAxis" :title="$t('chart.yAxis')">
             <y-axis-selector
               class="attr-selector"
-              :chart="props.chart"
+              :chart="chart"
               @onChangeYAxisForm="onChangeYAxisForm"
             />
           </el-collapse-item>
 
           <el-collapse-item name="title" :title="$t('chart.title')">
-            <title-selector
-              class="attr-selector"
-              :chart="props.chart"
-              @onTextChange="onTextChange"
-            />
+            <title-selector class="attr-selector" :chart="chart" @onTextChange="onTextChange" />
           </el-collapse-item>
 
           <el-collapse-item name="legend" :title="$t('chart.legend')">
             <legend-selector
               class="attr-selector"
-              :chart="props.chart"
+              :chart="chart"
               @onLegendChange="onLegendChange"
             />
           </el-collapse-item>
