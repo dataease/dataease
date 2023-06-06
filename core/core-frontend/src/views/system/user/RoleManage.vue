@@ -139,7 +139,7 @@ const delHandler = row => {
     })
   })
 }
-const emits = defineEmits(['refresh'])
+const emits = defineEmits(['refresh', 'refresh-grid'])
 const roleSaved = () => {
   roleSearch()
   emits('refresh')
@@ -153,6 +153,7 @@ const bindUser = () => {
     })
     moveOption2Selected(param.uids)
     state.checkList = []
+    emits('refresh-grid')
   })
 }
 const unBindUser = (uid: string) => {
@@ -184,6 +185,7 @@ const unMountUserHandler = (param: any, callback?) => {
       message: t('role.unbind_success'),
       type: 'success'
     })
+    emits('refresh-grid')
     callback && callback()
   })
 }

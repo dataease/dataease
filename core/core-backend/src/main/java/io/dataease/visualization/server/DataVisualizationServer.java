@@ -79,9 +79,6 @@ public class DataVisualizationServer implements DataVisualizationApi {
         if (id == null) {
             DEException.throwException("no id");
         }
-        QueryWrapper<DataVisualizationInfo> wrapper = new QueryWrapper<>();
-        wrapper.eq("id", id);
-        Boolean dvCheck = visualizationInfoMapper.exists(wrapper);
         DataVisualizationInfo sourceData = null;
         if (ObjectUtils.isNotEmpty(sourceData = visualizationInfoMapper.selectById(id))) {
             request.setUpdateBy("");
@@ -93,7 +90,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
                 BusiResourceEditor editor = new BusiResourceEditor();
                 editor.setId(id);
                 editor.setName(visualizationInfo.getName());
-                editor.setFlag(StringUtils.equals("dv", visualizationInfo.getType()) ? "screen" : "panel");
+                editor.setFlag(StringUtils.equals("dataV", visualizationInfo.getType()) ? "screen" : "panel");
                 interactiveAuthApi.editResource(editor);
             }
         } else {
@@ -108,9 +105,9 @@ public class DataVisualizationServer implements DataVisualizationApi {
                 BusiResourceCreator creator = new BusiResourceCreator();
                 creator.setId(id);
                 creator.setName(visualizationInfo.getName());
-                creator.setLeaf(!StringUtils.equals("panel", visualizationInfo.getNodeType()));
+                creator.setLeaf(!StringUtils.equals("folder", visualizationInfo.getNodeType()));
                 creator.setPid(visualizationInfo.getPid());
-                creator.setFlag(StringUtils.equals("dv", visualizationInfo.getType()) ? "screen" : "panel");
+                creator.setFlag(StringUtils.equals("dataV", visualizationInfo.getType()) ? "screen" : "panel");
                 interactiveAuthApi.saveResource(creator);
             }
         }
@@ -156,6 +153,9 @@ public class DataVisualizationServer implements DataVisualizationApi {
         visualizationInfo.setDeleteFlag(DataVisualizationConstants.DELETE_FLAG.DELETED);
         visualizationInfo.setId(dvId);
         visualizationInfoMapper.updateById(visualizationInfo);
+        if (ObjectUtils.isNotEmpty(interactiveAuthApi)) {
+            interactiveAuthApi.delResource(visualizationInfo.getId());
+        }
     }
 
     @Override
@@ -178,9 +178,27 @@ public class DataVisualizationServer implements DataVisualizationApi {
             visualizationInfo.setCreateBy("");
             visualizationInfo.setCreateTime(System.currentTimeMillis());
             visualizationInfoMapper.insert(visualizationInfo);
+            if (ObjectUtils.isNotEmpty(interactiveAuthApi)) {
+                BusiResourceCreator creator = new BusiResourceCreator();
+                creator.setName(visualizationInfo.getName());
+                creator.setId(visualizationInfo.getId());
+                creator.setLeaf(!StringUtils.equals("folder", visualizationInfo.getNodeType()));
+                creator.setPid(visualizationInfo.getPid());
+                creator.setFlag(StringUtils.equals("dataV", visualizationInfo.getType()) ? "screen" : "panel");
+                interactiveAuthApi.saveResource(creator);
+            }
         } else {
+            Long id = visualizationInfo.getId();
+            DataVisualizationInfo sourceData = visualizationInfoMapper.selectById(id);
             visualizationInfo.setUpdateTime(System.currentTimeMillis());
             visualizationInfoMapper.updateById(visualizationInfo);
+            if (ObjectUtils.isNotEmpty(interactiveAuthApi) && ObjectUtils.isNotEmpty(sourceData) && !StringUtils.equals(sourceData.getName(), visualizationInfo.getName())) {
+                BusiResourceEditor editor = new BusiResourceEditor();
+                editor.setId(id);
+                editor.setName(visualizationInfo.getName());
+                editor.setFlag(StringUtils.equals("dataV", visualizationInfo.getType()) ? "screen" : "panel");
+                interactiveAuthApi.editResource(editor);
+            }
         }
     }
 }

@@ -1,12 +1,13 @@
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue'
-import { ElMessage, ElMessageBox, ElIcon } from 'element-plus-secondary'
+import { ElMessage, ElMessageBox, ElIcon, Action } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Icon } from '@/components/icon-custom'
 import DeptEditer from './DeptEditer.vue'
 import OrgResources from './OrgResources.vue'
 import { searchApi, resourceExistApi, deleteApi } from '@/api/org'
 import { useUserStoreWithOut } from '@/store/modules/user'
+import { useEmitt } from '@/hooks/web/useEmitt'
 const { t } = useI18n()
 const userStore = useUserStoreWithOut()
 const activeName = ref('manage')
@@ -124,6 +125,7 @@ const _handleDeleteZero = organization => {
         type: 'success'
       })
       search()
+      useEmitt().emitter.emit('refresh-org-options')
     })
   })
 }
@@ -133,6 +135,7 @@ onMounted(() => {
 })
 const saveCallBack = () => {
   search()
+  useEmitt().emitter.emit('refresh-org-options')
 }
 </script>
 

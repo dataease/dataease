@@ -44,19 +44,25 @@ const activeNameChange = tabName => {
   }
 }
 
-const authActiveChange = tabName => {
+const authActiveChange = async tabName => {
   if (tabName === 'menu') {
     const id = 'menu'
     if (state.treeMap[id]) {
       getColumn(id)
       state.tableData = state.treeMap[id]
     } else {
-      menuTreeApi().then(res => {
+      const res = await menuTreeApi()
+      getColumn('menu')
+      state.tableData = res.data
+      state.treeMap['menu'] = res.data
+
+      /* menuTreeApi().then(res => {
         getColumn('menu')
         state.tableData = res.data
         state.treeMap['menu'] = res.data
-      })
+      }) */
     }
+    selectedTarget.value && loadPermission(1)
   }
 
   if (tabName === 'resource') {
@@ -793,7 +799,8 @@ defineExpose({
   }
 }
 .is-active {
-  color: var(--el-menu-active-color);
+  background-color: var(--ed-color-primary-light-9);
+  // color: var(--ed-color-primary);
 }
 .is-disabled {
   opacity: 0.25;

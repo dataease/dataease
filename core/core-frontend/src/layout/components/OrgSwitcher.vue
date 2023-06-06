@@ -13,6 +13,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { mountedOrg, switchOrg } from '@/api/user'
 import { useUserStoreWithOut } from '@/store/modules/user'
+import { useEmitt } from '@/hooks/web/useEmitt'
 const userStore = useUserStoreWithOut()
 const value = ref()
 const props = {
@@ -36,11 +37,21 @@ const switchHandler = (id: number | string) => {
   })
 }
 
-onMounted(() => {
+const initOptions = () => {
   mountedOrg(null).then(res => {
     state.orgOption = res.data
+    value.value = userStore.getOid
   })
-  value.value = userStore.getOid
+}
+
+onMounted(() => {
+  useEmitt({
+    name: 'refresh-org-options',
+    callback: function () {
+      initOptions()
+    }
+  })
+  initOptions()
 })
 </script>
 

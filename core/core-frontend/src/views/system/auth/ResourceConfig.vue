@@ -777,7 +777,8 @@ defineExpose({
   }
 }
 .is-active {
-  color: var(--el-menu-active-color);
+  background-color: var(--ed-color-primary-light-9);
+  // color: var(--ed-color-primary);
 }
 .role-auth-tips {
   span {

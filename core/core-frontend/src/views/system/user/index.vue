@@ -99,6 +99,10 @@ const delHandler = row => {
 const refreshRole = () => {
   userFormDialog.value.refreshRole()
 }
+
+const refreshGrid = () => {
+  search()
+}
 onMounted(() => {
   search()
 })
@@ -217,7 +221,7 @@ const saveHandler = () => {
     </div>
   </div>
   <div v-else-if="activeName === 'role'" class="role-content">
-    <role-manage @refresh="refreshRole"></role-manage>
+    <role-manage @refresh="refreshRole" @refresh-grid="refreshGrid"></role-manage>
   </div>
   <!-- <div v-else class="user-table">
     <EmptyBackground></EmptyBackground>
