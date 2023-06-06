@@ -74,6 +74,14 @@ const state = reactive({
 })
 
 watch(
+  [() => props.view],
+  () => {
+    getFields(props.view.tableId)
+  },
+  { deep: true }
+)
+
+watch(
   [() => state.searchField],
   newVal => {
     fieldFilter(newVal[0])
@@ -82,12 +90,26 @@ watch(
 )
 
 const getFields = id => {
-  getFieldByDQ(id).then(res => {
-    state.dimension = (res.dimensionList as unknown as Field[]) || []
-    state.quota = (res.quotaList as unknown as Field[]) || []
-    state.dimensionData = JSON.parse(JSON.stringify(state.dimension))
-    state.quotaData = JSON.parse(JSON.stringify(state.quota))
-  })
+  if (id) {
+    getFieldByDQ(id)
+      .then(res => {
+        state.dimension = (res.dimensionList as unknown as Field[]) || []
+        state.quota = (res.quotaList as unknown as Field[]) || []
+        state.dimensionData = JSON.parse(JSON.stringify(state.dimension))
+        state.quotaData = JSON.parse(JSON.stringify(state.quota))
+      })
+      .catch(e => {
+        state.dimension = []
+        state.quota = []
+        state.dimensionData = []
+        state.quotaData = []
+      })
+  } else {
+    state.dimension = []
+    state.quota = []
+    state.dimensionData = []
+    state.quotaData = []
+  }
 }
 
 const fieldFilter = val => {
@@ -746,6 +768,7 @@ const collapseChange = type => {
               v-model="view.tableId"
               :data="datasetTree"
               :props="dsSelectProps"
+              :render-after-expand="false"
               filterable
               @node-click="dsClick"
               class="dataset-selector"
