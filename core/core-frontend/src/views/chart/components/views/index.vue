@@ -87,6 +87,8 @@ onMounted(() => {
     }
   })
 })
+
+initTitle()
 </script>
 
 <template>
