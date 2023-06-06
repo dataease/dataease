@@ -1,7 +1,8 @@
 import { G2PlotChartView, G2PlotDrawOptions } from '@/views/chart/components/js/panel/types'
-import { Pie as G2Pie, PieOptions } from '@antv/g2plot'
+import { Datum, Pie as G2Pie, PieOptions } from '@antv/g2plot'
 import { antVCustomColor, flow, parseJson } from '@/views/chart/components/js/util'
 import { getPadding } from '@/views/chart/components/js/panel/common/common_antv'
+import { formatterItem, valueFormatter } from '@/views/chart/components/js/formatter'
 
 const DEFAULT_DATA = []
 export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
@@ -96,6 +97,68 @@ export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
     drawOptions.chartObj.on('interval:click', drawOptions.action)
 
     return drawOptions.chartObj
+  }
+
+  protected configLabel(chart: Chart, options: PieOptions): PieOptions {
+    let label
+    let customAttr: DeepPartial<ChartAttr>
+    if (chart.customAttr) {
+      customAttr = parseJson(chart.customAttr)
+      if (customAttr.label) {
+        const labelAttr = customAttr.label
+        if (labelAttr.show) {
+          label = {
+            type: labelAttr.position,
+            autoRotate: false,
+            style: {
+              fill: labelAttr.color,
+              fontSize: parseInt(labelAttr.fontSize)
+            }
+          }
+          if (labelAttr.position === 'outer') {
+            label.type = 'spider'
+          }
+          // 格式化
+          const yAxis = chart.yAxis
+          label.formatter = function (param: Datum) {
+            let res = param.value
+            for (let i = 0; i < yAxis.length; i++) {
+              const f = yAxis[i]
+              if (f.name === param.category) {
+                let formatterCfg = formatterItem
+                if (f.formatterCfg) {
+                  formatterCfg = f.formatterCfg
+                }
+                const labelContent = labelAttr.labelContent ?? ['quota']
+                const contentItems = []
+                if (labelContent.includes('dimension')) {
+                  contentItems.push(param.field)
+                }
+                if (labelContent.includes('quota')) {
+                  contentItems.push(valueFormatter(param.value, formatterCfg))
+                }
+                if (labelContent.includes('proportion')) {
+                  const percentage = `${(Math.round(param.percent * 10000) / 100).toFixed(
+                    labelAttr.reserveDecimalCount
+                  )}%`
+                  if (labelContent.length === 3) {
+                    contentItems.push(`(${percentage})`)
+                  } else {
+                    contentItems.push(percentage)
+                  }
+                }
+                res = contentItems.join(' ')
+                break
+              }
+            }
+            return res
+          }
+        } else {
+          label = false
+        }
+      }
+    }
+    return { ...options, label }
   }
 
   protected setupOptions(chart: Chart, options: PieOptions): PieOptions {

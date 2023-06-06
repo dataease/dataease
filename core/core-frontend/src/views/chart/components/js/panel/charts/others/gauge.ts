@@ -9,7 +9,6 @@ import {
 } from '@/views/chart/components/editor/util/chart'
 import { valueFormatter } from '@/views/chart/components/editor/util/formatter'
 import { getPadding, setGradientColor } from '@/views/chart/components/js/panel/common/common_antv'
-import { getAdjustAppendPadding } from '@antv/g2plot/lib/utils'
 const DEFAULT_DATA = []
 export class Gauge extends G2PlotChartView<GaugeOptions, G2Gauge> {
   drawChart(drawOptions: G2PlotDrawOptions<G2Gauge>): G2Gauge {

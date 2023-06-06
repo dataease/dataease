@@ -1,12 +1,14 @@
-import { hexColorToRGBA } from '../../util'
+import { hexColorToRGBA, parseJson } from '../../util'
 import { equalsAny } from '@/views/chart/components/editor/util/StringUtils'
 import {
   DEFAULT_XAXIS_STYLE,
   DEFAULT_YAXIS_STYLE
 } from '@/views/chart/components/editor/util/chart'
 import { valueFormatter } from '@/views/chart/components/editor/util/formatter'
+import { Datum } from '@antv/g2plot'
+import { formatterItem } from '@/views/chart/components/js/formatter'
 
-export function getPadding(chart) {
+export function getPadding(chart: Chart): number[] {
   if (chart.drill) {
     return [0, 10, 26, 10]
   } else {
@@ -125,41 +127,35 @@ export function getTheme(chart: Chart) {
 // 通用label
 export function getLabel(chart: Chart) {
   let label
-  let customAttr
+  let customAttr: DeepPartial<ChartAttr>
   if (chart.customAttr) {
-    customAttr = chart.customAttr
+    customAttr = parseJson(chart.customAttr)
     // label
     if (customAttr.label) {
-      const l = JSON.parse(JSON.stringify(customAttr.label))
+      const l = customAttr.label
       if (l.show) {
-        if (equalsAny(chart.type, 'pie', 'pie-donut')) {
-          label = {
-            type: l.position,
-            autoRotate: false
+        label = {
+          position: l.position,
+          style: {
+            fill: l.color,
+            fontSize: parseInt(l.fontSize)
+          },
+          formatter: function (param: Datum) {
+            const yAxis = chart.yAxis
+            let res = param.value
+            for (let i = 0; i < yAxis.length; i++) {
+              const f = yAxis[i]
+              if (f.name === param.category) {
+                let formatterCfg = formatterItem
+                if (f.formatterCfg) {
+                  formatterCfg = f.formatterCfg
+                }
+                res = valueFormatter(param.value, formatterCfg)
+                break
+              }
+            }
+            return res
           }
-          if (l.position === 'outer') {
-            label.type = 'spider'
-          }
-        } else if (chart.type.includes('line') || chart.type.includes('area')) {
-          label = {
-            position: l.position,
-            offsetY: -8
-          }
-        } else if (equalsAny(chart.type, 'pie-rose', 'pie-donut-rose')) {
-          label = {
-            autoRotate: true
-          }
-          if (l.position === 'inner') {
-            label.offset = -10
-          }
-        } else {
-          label = {
-            position: l.position
-          }
-        }
-        label.style = {
-          fill: l.color,
-          fontSize: parseInt(l.fontSize)
         }
         // TODO 格式化函数搬到各个视图自行实现
         // label value formatter
