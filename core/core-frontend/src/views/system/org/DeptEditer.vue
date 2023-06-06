@@ -130,7 +130,6 @@ defineExpose({
               :data="props.treeData"
               check-strictly
               :render-after-expand="false"
-              show-checkbox
               :placeholder="t('common.please_select') + t('org.parent')"
             />
           </el-form-item>
