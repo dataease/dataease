@@ -423,10 +423,6 @@ export default {
     if (this.canvasId === 'canvas-main' && !this.showPosition.includes('multiplexing')) {
       listenGlobalKeyDownPreview()
     }
-    // 取消视图请求
-    this.$cancelRequest('/chart/view/getData/**')
-    this.$cancelRequest('/api/link/viewDetail/**')
-    this.$cancelRequest('/static-resource/**')
   },
   mounted() {
     this.initWatermark()
