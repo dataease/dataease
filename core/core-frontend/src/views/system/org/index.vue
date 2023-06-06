@@ -43,7 +43,7 @@ const handleClick = () => {
 }
 
 const addOrg = row => {
-  const pid = row?.id || userStore.getOid
+  const pid = row?.id || (userStore.getUid === '1' ? null : userStore.getOid)
   deptEditor?.value?.createOrg && deptEditor.value.createOrg(pid)
 }
 

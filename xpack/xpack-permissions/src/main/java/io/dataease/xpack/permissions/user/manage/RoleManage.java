@@ -149,6 +149,10 @@ public class RoleManage {
     }
 
     public void deleteRole(Long rid) {
+        PerRole role = perRoleMapper.selectById(rid);
+        if (ObjectUtils.isEmpty(role) || role.getPid().equals(0L)) {
+            return;
+        }
         QueryWrapper<PerUserRole> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("rid", rid);
         List<PerUserRole> perUserRoles = perUserRoleMapper.selectList(queryWrapper);

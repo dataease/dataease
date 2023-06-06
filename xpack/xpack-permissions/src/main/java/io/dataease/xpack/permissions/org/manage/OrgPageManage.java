@@ -146,8 +146,9 @@ public class OrgPageManage {
     @Transactional
     public void save(String name, Long pid) {
         TokenUserBO user = AuthUtils.getUser();
-        if (ObjectUtils.isEmpty(pid))
-            pid = user.getDefaultOid();
+        if (ObjectUtils.isEmpty(pid)) {
+            pid = AuthUtils.isSysAdmin(user.getUserId()) ? 0L : user.getDefaultOid();
+        }
         PerOrg perOrg = new PerOrg();
         perOrg.setId(IDUtils.snowID());
         perOrg.setName(name);
@@ -156,6 +157,9 @@ public class OrgPageManage {
         String newRootWay = pid.toString();
         if (ObjectUtils.isNotEmpty(parent = queryOne(pid)) && StringUtils.isNotBlank(parent.getRootWay())) {
             newRootWay = parent.getRootWay() + "," + pid;
+        }
+        if (ObjectUtils.isEmpty(parent)) {
+            newRootWay = null;
         }
         perOrg.setRootWay(newRootWay);
         perOrg.setCreateTime(System.currentTimeMillis());
