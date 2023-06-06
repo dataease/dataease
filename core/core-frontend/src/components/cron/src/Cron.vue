@@ -71,9 +71,10 @@ watch(
 )
 
 watch(
-  () => resultValue,
+  () => resultValue.value,
   () => {
-    emits('input', resultValue.value)
+    console.log('resultValue.value', resultValue.value)
+    emits('update:modelValue', resultValue.value)
   }
 )
 
@@ -91,11 +92,11 @@ const updateVal = () => {
   state.yearVal = arrays[6]
 }
 
-const emits = defineEmits(['input'])
+const emits = defineEmits(['update:modelValue'])
 </script>
 
 <template>
-  <div class="cron">
+  <div>
     <el-tabs v-model="state.activeName">
       <el-tab-pane :label="t('cron.second')" name="s">
         <second-and-minute v-model="state.sVal" :label="t('cron.second')" />
@@ -120,7 +121,13 @@ const emits = defineEmits(['input'])
       </el-tab-pane>
     </el-tabs>
     <!-- table -->
-    <el-table :data="tableData" size="mini" border style="width: 100%">
+    <el-table
+      header-cell-class-name="header-cell"
+      :data="tableData"
+      size="mini"
+      border
+      style="width: 100%"
+    >
       <el-table-column prop="sVal" :label="t('cron.second')" width="70" />
       <el-table-column prop="mVal" :label="t('cron.minute')" width="70" />
       <el-table-column prop="hVal" :label="t('cron.hour')" width="70" />
@@ -131,13 +138,3 @@ const emits = defineEmits(['input'])
     </el-table>
   </div>
 </template>
-
-<style lang="less" scoped>
-.cron {
-  text-align: left;
-  padding: 10px;
-  background: #fff;
-  border: 1px solid #dcdfe6;
-  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.12), 0 0 6px 0 rgba(0, 0, 0, 0.04);
-}
-</style>

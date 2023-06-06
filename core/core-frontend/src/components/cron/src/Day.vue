@@ -72,9 +72,9 @@ watch(
 )
 
 watch(
-  () => resultValue,
+  () => resultValue.value,
   () => {
-    emits('input', resultValue.value)
+    emits('update:modelValue', resultValue.value)
   }
 )
 
@@ -123,7 +123,7 @@ const updateVal = () => {
   }
 }
 
-const emits = defineEmits(['input'])
+const emits = defineEmits(['update:modelValue'])
 </script>
 
 <template>

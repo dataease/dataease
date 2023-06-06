@@ -1,5 +1,5 @@
 <script lang="tsx" setup>
-import { reactive, toRefs } from 'vue'
+import { reactive } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { DEFAULT_SIZE } from '@/views/chart/components/editor/util/chart'
 
@@ -28,12 +28,29 @@ const lineSymbolOptions = [
 const changeBarSizeCase = () => {
   emit('onSizeChange', state.sizeForm)
 }
+
+const init = () => {
+  const chart = JSON.parse(JSON.stringify(props.chart))
+  if (chart.customAttr) {
+    let customAttr = null
+    if (Object.prototype.toString.call(chart.customAttr) === '[object Object]') {
+      customAttr = JSON.parse(JSON.stringify(chart.customAttr))
+    } else {
+      customAttr = JSON.parse(chart.customAttr)
+    }
+    if (customAttr.size) {
+      state.sizeForm = customAttr.size
+    }
+  }
+}
+
+init()
 </script>
 
 <template>
   <div style="width: 100%">
     <el-col>
-      <el-form ref="sizeFormBar" :model="state.sizeForm" label-width="80px" size="mini">
+      <el-form ref="sizeFormBar" :model="state.sizeForm" label-width="80px" size="small">
         <!--bar-begin-->
         <div v-show="props.chart.type.includes('bar')">
           <el-form-item :label="t('chart.adapt')" class="form-item">
@@ -49,7 +66,7 @@ const changeBarSizeCase = () => {
               :disabled="state.sizeForm.barDefault"
               show-input
               :show-input-controls="false"
-              input-size="mini"
+              input-size="small"
               :min="0"
               :max="5"
               :step="0.1"
@@ -66,7 +83,7 @@ const changeBarSizeCase = () => {
               v-model="state.sizeForm.lineWidth"
               show-input
               :show-input-controls="false"
-              input-size="mini"
+              input-size="small"
               :min="0"
               :max="10"
               @change="changeBarSizeCase('lineWidth')"
@@ -91,7 +108,7 @@ const changeBarSizeCase = () => {
               v-model="state.sizeForm.lineSymbolSize"
               show-input
               :show-input-controls="false"
-              input-size="mini"
+              input-size="small"
               :min="0"
               :max="20"
               @change="changeBarSizeCase('lineSymbolSize')"
@@ -117,7 +134,7 @@ const changeBarSizeCase = () => {
               v-model="state.sizeForm.pieInnerRadius"
               show-input
               :show-input-controls="false"
-              input-size="mini"
+              input-size="small"
               :min="0"
               :max="100"
               @change="changeBarSizeCase('pieInnerRadius')"
@@ -131,7 +148,7 @@ const changeBarSizeCase = () => {
               v-model="state.sizeForm.pieOuterRadius"
               show-input
               :show-input-controls="false"
-              input-size="mini"
+              input-size="small"
               :min="0"
               :max="100"
               @change="changeBarSizeCase('pieOuterRadius')"

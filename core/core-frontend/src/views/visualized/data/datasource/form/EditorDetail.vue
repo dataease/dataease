@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, reactive, computed, toRefs, Ref } from 'vue'
+import { ref, reactive, computed, toRefs } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import type { FormInstance, FormRules } from 'element-plus-secondary'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
@@ -10,7 +10,7 @@ import { validateById, save, validate } from '@/api/datasource'
 import { Base64 } from 'js-base64'
 import { ElForm, ElMessage } from 'element-plus-secondary'
 import Cron from '@/components/cron/src/Cron.vue'
-
+import { ComponentPublicInstance } from 'vue'
 const { t } = useI18n()
 
 const prop = defineProps({
@@ -204,7 +204,7 @@ const setRules = () => {
   Object.assign(rule, configRules)
 }
 
-const setItemRef = (ele: Ref) => {
+const setItemRef = (ele: ComponentPublicInstance | null | Element) => {
   state.itemRef.push(ele)
 }
 
@@ -212,28 +212,27 @@ const copyItem = (item?: ApiConfiguration) => {
   if (dsFormDisabled.value) {
     return
   }
-  //   var newItem = JSON.parse(JSON.stringify(item))
-  //   newItem.serialNumber =
-  //     this.form.apiConfiguration[this.form.apiConfiguration.length - 1]
-  //       .serialNumber + 1
-  //   var reg = new RegExp(item.name + '_copy_' + '([0-9]*)', 'gim')
-  //   var number = 0
-  //   for (var i = 1; i < this.form.apiConfiguration.length; i++) {
-  //     var match = this.form.apiConfiguration[i].name.match(reg)
-  //     if (match !== null) {
-  //       var num = match[0].substring(
-  //         this.form.apiConfiguration[i].name.length + 5,
-  //         match[0].length - 1
-  //       )
-  //       if (!isNaN(parseInt(num)) && parseInt(num) > number) {
-  //         number = parseInt(num)
-  //       }
-  //     }
-  //   }
-  //   number = number + 1
-  //   newItem.name = item.name + '_copy_' + number
-  //   this.form.apiConfiguration.push(newItem)
-  //   this.openMessageSuccess('datasource.success_copy')
+  var newItem = JSON.parse(JSON.stringify(item))
+  newItem.serialNumber =
+    form.value.apiConfiguration[form.value.apiConfiguration.length - 1].serialNumber + 1
+  var reg = new RegExp(item.name + '_copy_' + '([0-9]*)', 'gim')
+  var number = 0
+  for (var i = 1; i < form.value.apiConfiguration.length; i++) {
+    var match = form.value.apiConfiguration[i].name.match(reg)
+    if (match !== null) {
+      var num = match[0].substring(
+        form.value.apiConfiguration[i].name.length + 5,
+        match[0].length - 1
+      )
+      if (!isNaN(parseInt(num)) && parseInt(num) > number) {
+        number = parseInt(num)
+      }
+    }
+  }
+  number = number + 1
+  newItem.name = item.name + '_copy_' + number
+  form.value.apiConfiguration.push(newItem)
+  ElMessage.success(t('datasource.success_copy'))
 }
 const addApiItem = item => {
   api_table_title.value = t('datasource.data_table')
@@ -249,25 +248,6 @@ const addApiItem = item => {
   editApiItem.value.initApiItem(state.apiItem)
 }
 
-// const addApiItem = (item?: ApiConfiguration) => {
-//   console.log(form.value.apiConfiguration)
-//   if (dsFormDisabled.value) {
-//     return
-//   }
-//   api_table_title.value = t('datasource.data_table')
-//   if (item) {
-//     state.apiItem = cloneDeep(item)
-//     console.log(item)
-//     console.log(state.apiItem)
-//   } else {
-//     state.apiItem = cloneDeep(defaultApiItem)
-//     state.apiItem.serialNumber =
-//       form.value.apiConfiguration.length > 0
-//         ? form.value.apiConfiguration[form.value.apiConfiguration.length - 1].serialNumber + 1
-//         : 0
-//   }
-//   editApiItem.value.initApiItem(state.apiItem)
-// }
 const deleteItem = item => {
   form.value.apiConfiguration.splice(form.value.apiConfiguration.indexOf(item), 1)
 }
@@ -444,7 +424,7 @@ defineExpose({
         <template v-if="form.type === 'API'">
           <div class="title-form_primary flex-space" v-show="activeStep !== 2">
             <span>{{ t('datasource.data_table') }}</span>
-            <el-button type="primary" style="margin-left: auto" @click="() => addApiItem()">
+            <el-button type="primary" style="margin-left: auto" @click="() => addApiItem(null)">
               <template #icon>
                 <Icon name="icon_search-outline_outlined"></Icon>
               </template>
@@ -666,11 +646,11 @@ defineExpose({
             prop="cron"
             :label="$t('common.cron_exp')"
           >
-            <el-popover :width="814" v-model="cronEdit" trigger="click">
+            <el-popover :width="834" v-model="cronEdit" trigger="click">
               <template #default>
-                <div style="width: 814px; height: 400px">
+                <div style="width: 814px">
                   <cron
-                    v-model="form.cron"
+                    v-model="form.syncSetting.cron"
                     :is-rate="form.syncRate === 'CRON'"
                     @close="cronEdit = false"
                   />

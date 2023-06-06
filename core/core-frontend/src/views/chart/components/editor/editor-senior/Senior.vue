@@ -5,7 +5,8 @@ import AssistLine from '@/views/chart/components/editor/editor-senior/components
 import Threshold from '@/views/chart/components/editor/editor-senior/components/Threshold.vue'
 
 const state = {
-  attrActiveNames: []
+  attrActiveNames: [],
+  styleActiveNames: []
 }
 
 const emit = defineEmits(['onFunctionCfgChange', 'onAssistLineChange'])
@@ -46,7 +47,7 @@ const onAssistLineChange = val => {
       </el-row>
 
       <el-row class="de-collapse-style">
-        <el-collapse v-model="styleActiveNames" class="style-collapse">
+        <el-collapse v-model="state.styleActiveNames" class="style-collapse">
           <el-collapse-item name="analyse" :title="$t('chart.assist_line')">
             <assist-line
               :chart="props.chart"

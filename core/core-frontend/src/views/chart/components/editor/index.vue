@@ -75,7 +75,7 @@ const state = reactive({
 
 watch(
   [() => state.searchField],
-  (newVal, oldVal) => {
+  newVal => {
     fieldFilter(newVal[0])
   },
   { deep: true }
@@ -518,6 +518,7 @@ const collapseChange = type => {
                         <draggable
                           :list="view.xaxis"
                           :move="onMove"
+                          item-key="id"
                           group="drag"
                           animation="300"
                           class="drag-block-style"
@@ -548,6 +549,7 @@ const collapseChange = type => {
                         <draggable
                           :list="view.yaxis"
                           :move="onMove"
+                          item-key="id"
                           group="drag"
                           animation="300"
                           class="drag-block-style"
@@ -591,6 +593,7 @@ const collapseChange = type => {
                         </span>
                         <draggable
                           :list="view.drillFields"
+                          item-key="id"
                           group="drag"
                           animation="300"
                           :move="onMove"
@@ -619,6 +622,7 @@ const collapseChange = type => {
                         <draggable
                           :list="view.customFilter"
                           :move="onMove"
+                          item-key="id"
                           group="drag"
                           animation="300"
                           class="drag-block-style"
@@ -792,6 +796,7 @@ const collapseChange = type => {
                 :list="state.dimensionData"
                 :group="dsFieldDragOptions.group"
                 :move="onMove"
+                item-key="id"
                 animation="300"
                 class="drag-list"
                 @add="moveToDimension"
@@ -815,6 +820,7 @@ const collapseChange = type => {
                 :list="state.quotaData"
                 :group="dsFieldDragOptions.group"
                 :move="onMove"
+                item-key="id"
                 animation="300"
                 class="drag-list"
                 @add="moveToQuota"
@@ -839,7 +845,6 @@ const collapseChange = type => {
 
     <!--显示名修改-->
     <el-dialog
-      v-dialogDrag
       :title="t('chart.show_name_set')"
       :visible="state.renameItem"
       v-model="state.renameItem"
@@ -875,7 +880,6 @@ const collapseChange = type => {
     <el-dialog
       v-model="state.quotaFilterEdit"
       v-if="state.quotaFilterEdit"
-      v-dialogDrag
       :title="t('chart.add_filter')"
       :visible="state.quotaFilterEdit"
       :show-close="false"
@@ -895,7 +899,6 @@ const collapseChange = type => {
     <el-dialog
       v-model="state.resultFilterEdit"
       v-if="state.resultFilterEdit"
-      v-dialogDrag
       :title="t('chart.add_filter')"
       :visible="state.resultFilterEdit"
       :show-close="false"

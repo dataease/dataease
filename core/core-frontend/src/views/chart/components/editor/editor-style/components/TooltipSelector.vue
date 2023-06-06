@@ -1,5 +1,5 @@
 <script lang="tsx" setup>
-import { reactive, toRefs } from 'vue'
+import { reactive } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL, DEFAULT_TOOLTIP } from '@/views/chart/components/editor/util/chart'
 
@@ -36,7 +36,23 @@ const changeTooltipAttr = () => {
   emit('onTooltipChange', state.tooltipForm)
 }
 
+const init = () => {
+  const chart = JSON.parse(JSON.stringify(props.chart))
+  if (chart.customAttr) {
+    let customAttr = null
+    if (Object.prototype.toString.call(chart.customAttr) === '[object Object]') {
+      customAttr = JSON.parse(JSON.stringify(chart.customAttr))
+    } else {
+      customAttr = JSON.parse(chart.customAttr)
+    }
+    if (customAttr.tooltip) {
+      state.tooltipForm = customAttr.tooltip
+    }
+  }
+}
+
 initFontSize()
+init()
 </script>
 
 <template>

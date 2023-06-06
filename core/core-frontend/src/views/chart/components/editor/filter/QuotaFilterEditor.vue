@@ -1,6 +1,6 @@
 <script lang="tsx" setup>
 import { useI18n } from '@/hooks/web/useI18n'
-import { reactive, ref, toRefs } from 'vue'
+import { reactive, toRefs } from 'vue'
 
 const { t } = useI18n()
 
