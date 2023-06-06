@@ -477,7 +477,7 @@ export default {
     },
     filterNode(value, data) {
       if (!value) return true
-      return data.name.indexOf(value) !== -1
+      return data?.name?.toLowerCase().includes(value.toLowerCase())
     },
     showSearchWidget() {
       this.showSearchInput = true

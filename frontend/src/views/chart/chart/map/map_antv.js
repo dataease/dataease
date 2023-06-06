@@ -14,7 +14,12 @@ export function baseFlowMapOption(chartDom, chartId, chart, action) {
   const mapStyle = `amap://styles/${color.mapStyle ? color.mapStyle : 'normal'}`
   const lang = getLanguage().includes('zh') ? 'zh' : 'en'
   let init = false
-  if (!chartDom) {
+  if (!chartDom?.map) {
+    try {
+      chartDom.destroy()
+    } catch (e) {
+    //   ignore
+    }
     chartDom = new Scene({
       id: chartId,
       map: new GaodeMap({
