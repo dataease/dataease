@@ -1,0 +1,203 @@
+<script lang="ts" setup>
+import { ref, reactive, computed, watch, onBeforeMount } from 'vue'
+import { propTypes } from '@/utils/propTypes'
+import { useI18n } from '@/hooks/web/useI18n'
+import type { Corn } from './Hour.vue'
+const props = defineProps({
+  value: propTypes.string.def('?')
+})
+
+const { t } = useI18n()
+
+const type = ref('1')
+const work = ref<string | number>(0)
+const last = ref<string | number>(0)
+const state = reactive<Corn>({
+  cycle: {
+    // 周期
+    start: 0,
+    end: 0
+  },
+  loop: {
+    // 循环
+    start: 0,
+    end: 0
+  },
+  week: {
+    // 指定周
+    start: 0,
+    end: 0
+  },
+  appoint: []
+})
+
+const resultValue = computed(() => {
+  const result = []
+  switch (type.value) {
+    case '1': // 每秒
+      result.push('*')
+      break
+    case '2': // 年期
+      result.push(`${state.cycle.start}-${state.cycle.end}`)
+      break
+    case '3': // 循环
+      result.push(`${state.loop.start}/${state.loop.end}`)
+      break
+    case '4': // 指定
+      result.push(state.appoint.join(','))
+      break
+    case '6': // 最后
+      result.push(`${last.value === 0 ? '' : last.value}L`)
+      break
+    case '7': // 指定周
+      result.push(`${state.week.start}#${state.week.end}`)
+      break
+    default: // 不指定
+      result.push('?')
+      break
+  }
+  return result.join('')
+})
+
+onBeforeMount(() => {
+  updateVal()
+})
+
+watch(
+  () => props.value,
+  () => {
+    updateVal()
+  }
+)
+
+watch(
+  () => resultValue,
+  () => {
+    emits('input', resultValue.value)
+  }
+)
+
+const updateVal = () => {
+  if (!props.value) {
+    return
+  }
+  if (props.value === '?') {
+    type.value = '5'
+  } else if (props.value.indexOf('-') !== -1) {
+    // 2周期
+    if (props.value.split('-').length === 2) {
+      type.value = '2'
+      state.cycle.start = props.value.split('-')[0] as unknown as number
+      state.cycle.end = props.value.split('-')[1] as unknown as number
+    }
+  } else if (props.value.indexOf('/') !== -1) {
+    // 3循环
+    if (props.value.split('/').length === 2) {
+      type.value = '3'
+      state.loop.start = props.value.split('/')[0] as unknown as number
+      state.loop.end = props.value.split('/')[1] as unknown as number
+    }
+  } else if (props.value.indexOf('*') !== -1) {
+    // 1每
+    type.value = '1'
+  } else if (props.value.indexOf('L') !== -1) {
+    // 6最后
+    type.value = '6'
+    last.value = props.value.replace('L', '')
+  } else if (props.value.indexOf('#') !== -1) {
+    // 7指定周
+    if (props.value.split('#').length === 2) {
+      type.value = '7'
+      state.week.start = props.value.split('#')[0]
+      state.week.end = props.value.split('#')[1]
+    }
+  } else if (props.value.indexOf('W') !== -1) {
+    // 8工作日
+    type.value = '8'
+    work.value = props.value.replace('W', '')
+  } else {
+    // *
+    type.value = '4'
+    state.appoint = props.value.split(',')
+  }
+}
+
+const emits = defineEmits(['input'])
+</script>
+
+<template>
+  <div>
+    <div>
+      <el-radio v-model="type" label="1" size="small" border>{{ t('cron.every_week') }}</el-radio>
+    </div>
+    <div>
+      <el-radio v-model="type" label="5" size="small" border>{{ t('cron.not_set') }}</el-radio>
+    </div>
+    <div>
+      <el-radio v-model="type" label="2" size="small" border>{{ t('cron.cycle') }}</el-radio>
+      <span style="margin-left: 10px; margin-right: 5px">{{ t('cron.week_start') }}</span>
+      <el-input-number
+        v-model="state.cycle.start"
+        :min="1"
+        :max="7"
+        size="small"
+        style="width: 100px"
+        @change="type = '2'"
+      />
+      <span style="margin-left: 5px; margin-right: 5px">{{ t('cron.week_end') }}</span>
+      <el-input-number
+        v-model="state.cycle.end"
+        :min="2"
+        :max="7"
+        size="small"
+        style="width: 100px"
+        @change="type = '2'"
+      />
+    </div>
+    <div>
+      <el-radio v-model="type" label="3" size="small" border>{{ t('cron.repeat') }}</el-radio>
+      <span style="margin-left: 10px; margin-right: 5px">{{ t('cron.week_start') }}</span>
+      <el-input-number
+        v-model="state.loop.start"
+        :min="1"
+        :max="7"
+        size="small"
+        style="width: 100px"
+        @change="type = '3'"
+      />
+      <span style="margin-left: 5px; margin-right: 5px">{{ t('cron.every_begin') }}</span>
+      <el-input-number
+        v-model="state.loop.end"
+        :min="1"
+        :max="7"
+        size="small"
+        style="width: 100px"
+        @change="type = '3'"
+      />
+      {{ t('cron.day_exec') }}
+    </div>
+    <!--    <div>-->
+    <!--      <el-radio v-model="type" label="7" size="small" border>指定周</el-radio>-->
+    <!--      <span style="margin-left: 10px; margin-right: 5px;">本月第</span>-->
+    <!--      <el-input-number v-model="week.start" :min="1" :max="4" size="small" style="width: 100px;" @change="type = '7'" />-->
+    <!--      <span style="margin-left: 5px; margin-right: 5px;">周，星期</span>-->
+    <!--      <el-input-number v-model="week.end" :min="1" :max="7" size="small" style="width: 100px;" @change="type = '7'" />-->
+    <!--    </div>-->
+    <!--    <div>-->
+    <!--      <el-radio v-model="type" label="6" size="small" border>本月最后一个</el-radio>-->
+    <!--      <span style="margin-left: 10px; margin-right: 5px;">星期</span>-->
+    <!--      <el-input-number v-model="last" :min="1" :max="7" size="small" style="width: 100px;" @change="type = '6'" />-->
+    <!--    </div>-->
+    <div>
+      <el-radio v-model="type" label="4" size="small" border>{{ t('cron.set') }}</el-radio>
+      <el-checkbox-group v-model="state.appoint" style="margin-left: 50px; line-height: 25px">
+        <el-checkbox v-for="i in 7" :key="i" :label="i + ''" @change="type = '4'" />
+      </el-checkbox-group>
+    </div>
+    <div>
+      <span style="font-size: 12px">{{ t('cron.week_tips') }}</span>
+    </div>
+  </div>
+</template>
+
+<style lang="less" scoped></style>

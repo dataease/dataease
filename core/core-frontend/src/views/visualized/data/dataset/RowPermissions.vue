@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { reactive, ref, nextTick, shallowRef, computed, provide } from 'vue'
 import { GridTable } from '@/components/grid-table'
-import { clone } from 'lodash-es'
+import { cloneDeep } from 'lodash-es'
 import { useI18n } from '@/hooks/web/useI18n'
 import RowAuth from './auth-tree/RowAuth.vue'
 import { ElMessage } from 'element-plus-secondary'
@@ -41,7 +41,7 @@ const paginationConfig = reactive<Pagination>({
 })
 
 const rowPermissionForm = reactive<RowForm>(
-  clone({
+  cloneDeep({
     enable: false,
     authTargetType: 'user',
     whiteListUser: [],
@@ -121,7 +121,10 @@ const save = ({ logic, items, errorMessage }) => {
   }
   loadingRowPermission.value = true
   let params: Omit<RowForm, 'whiteListUser'> & { expressionTree?: string; whiteListUser?: string } =
-    { ...clone(rowPermissionForm), whiteListUser: JSON.stringify(rowPermissionForm.whiteListUser) }
+    {
+      ...cloneDeep(rowPermissionForm),
+      whiteListUser: JSON.stringify(rowPermissionForm.whiteListUser)
+    }
   params.expressionTree = JSON.stringify({ items, logic })
   clearData()
   search()
@@ -130,7 +133,7 @@ const save = ({ logic, items, errorMessage }) => {
 }
 
 const clearData = () => {
-  Object.assign(rowPermissionForm, clone(defaultForm))
+  Object.assign(rowPermissionForm, cloneDeep(defaultForm))
   rowAuth.value.relationList = []
   rowAuth.value.logic = 'or'
   update_row_permission.value = false
@@ -230,7 +233,7 @@ search()
 const create = rowPermissionObj => {
   if (!rowPermissionObj) {
     targetObjs.value = []
-    Object.assign(rowPermissionForm, clone(defaultForm))
+    Object.assign(rowPermissionForm, cloneDeep(defaultForm))
     update_row_permission_dialog_title.value = t('dataset.row_permission.add')
   } else {
     Object.assign(rowPermissionForm, rowPermissionObj)

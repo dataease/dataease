@@ -86,6 +86,14 @@ watch(
     immediate: true
   }
 )
+
+watch(
+  () => props.node.id,
+  () => {
+    fieldSearchList.value = props.fieldList
+    handleSelectionChange(fieldSearchList.value.filter(ele => ele.checked))
+  }
+)
 </script>
 
 <template>

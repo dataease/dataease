@@ -1,5 +1,5 @@
 import request from '@/config/axios'
-
+import type { Node } from '@/views/visualized/data/datasource/index.vue'
 export interface DatesetOrFolder {
   name: string
   id?: number | string
@@ -12,6 +12,11 @@ export interface DatesetOrFolder {
 interface Fields {
   fields: Array<{}>
   data: Array<{}>
+}
+
+type IrNode = Omit<Node, 'configuration' | 'apiConfigurationStr'> & {
+  configuration: string
+  apiConfigurationStr: string
 }
 
 export interface FieldData {
@@ -35,7 +40,7 @@ export interface Table {
   unableCheck?: boolean
 }
 
-export const listDatasources = async (): Promise<IResponse> => {
+export const listDatasources = async (): Promise<Array<IrNode>> => {
   return request.get({ url: '/datasource/list' }).then(res => {
     return res?.data
   })

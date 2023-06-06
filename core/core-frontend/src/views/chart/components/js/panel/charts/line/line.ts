@@ -1,46 +1,31 @@
 import { G2PlotChartView, G2PlotDrawOptions } from '@/views/chart/components/js/panel/types'
 import { Line as G2Line, LineOptions } from '@antv/g2plot'
-import { getAnalyse, getPadding, getSlider } from '../../common/common_antv'
+import { getPadding } from '../../common/common_antv'
 import {
-  getLabel,
-  getLegend,
-  getTheme,
-  getTooltip,
-  getXAxis,
-  getYAxis
-} from '@/views/chart/components/js/panel/common/common_antv'
-import { antVCustomColor, handleEmptyDataStrategy } from '@/views/chart/components/js/util'
+  antVCustomColor,
+  flow,
+  handleEmptyDataStrategy,
+  parseJson
+} from '@/views/chart/components/js/util'
 import _ from 'lodash'
 
+const DEFAULT_DATA = []
 /**
  * 折线图
  */
 export class Line extends G2PlotChartView<LineOptions, G2Line> {
   drawChart(drawOptions: G2PlotDrawOptions<G2Line>) {
     const chart = drawOptions.chart
-    const theme = getTheme(chart)
-    // attr
-    const label = getLabel(chart)
-    const tooltip = getTooltip(chart)
-    // style
-    const legend = getLegend(chart)
-    const xAxis = getXAxis(chart)
-    const yAxis = getYAxis(chart)
     // data
     const data = _.cloneDeep(chart.data.data)
-    // config
-    const slider = getSlider(chart)
-    const analyse = getAnalyse(chart)
     // size
     let customAttr: DeepPartial<ChartAttr> = {}
-    let lineSmooth = undefined
-    let point = undefined
-    let lineStyle = undefined
+    let smooth, point, lineStyle
     if (chart.customAttr) {
-      customAttr = JSON.parse(JSON.stringify(chart.customAttr))
+      customAttr = parseJson(chart.customAttr)
       if (customAttr.size) {
         const s = JSON.parse(JSON.stringify(customAttr.size)) as ChartSizeAttr
-        lineSmooth = s.lineSmooth
+        smooth = s.lineSmooth
         point = {
           size: s.lineSymbolSize,
           shape: s.lineSymbol
@@ -53,24 +38,16 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
     // custom color
     const color = antVCustomColor(chart)
     // options
-    const options = {
-      theme: theme,
+    const initOptions: LineOptions = {
       data: data,
       xField: 'field',
       yField: 'value',
       seriesField: 'category',
       appendPadding: getPadding(chart),
-      label: label,
-      tooltip: tooltip,
-      legend: legend,
-      xAxis: xAxis,
-      yAxis: yAxis,
-      slider: slider,
-      color: color,
-      annotations: analyse,
-      point: point,
-      lineStyle: lineStyle,
-      lineSmooth: lineSmooth,
+      color,
+      point,
+      lineStyle,
+      smooth,
       interactions: [
         {
           type: 'legend-active',
@@ -111,10 +88,10 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
         }
       ]
     }
+    const options = this.setupOptions(chart, initOptions)
     // 处理空值
     if (chart.senior) {
-      let emptyDataStrategy = JSON.parse(JSON.stringify(chart.senior))?.functionCfg
-        ?.emptyDataStrategy
+      let emptyDataStrategy = parseJson(chart.senior)?.functionCfg?.emptyDataStrategy
       if (!emptyDataStrategy) {
         emptyDataStrategy = 'breakLine'
       }
@@ -130,5 +107,22 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
     drawOptions.chartObj.on('point:click', drawOptions.action)
 
     return drawOptions.chartObj
+  }
+
+  protected setupOptions(chart: Chart, options: LineOptions): LineOptions {
+    return flow(
+      this.configTheme,
+      this.configLabel,
+      this.configTooltip,
+      this.configLegend,
+      this.configXAxis,
+      this.configYAxis,
+      this.configSlider,
+      this.configAnalyse
+    )(chart, options)
+  }
+
+  constructor() {
+    super('line', DEFAULT_DATA)
   }
 }

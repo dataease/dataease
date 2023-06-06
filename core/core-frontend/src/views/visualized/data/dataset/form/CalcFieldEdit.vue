@@ -110,7 +110,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
-  codeCom.value.destroy?.()
+  mirror.value.destroy?.()
 })
 
 const insertParamToCodeMirror = (value: string) => {

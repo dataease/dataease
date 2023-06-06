@@ -18,4 +18,6 @@ public class BusiResourceCreator implements Serializable {
     private String flag;
     @ApiModelProperty("上级ID")
     private Long pid = 0L;
+    @ApiModelProperty("叶子结点")
+    private Boolean leaf;
 }

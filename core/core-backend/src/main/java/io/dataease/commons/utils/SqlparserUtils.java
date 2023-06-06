@@ -106,7 +106,6 @@ public class SqlparserUtils {
             TypeReference<List<SqlVariableDetails>> listTypeReference = new TypeReference<List<SqlVariableDetails>>() {
             };
             List<SqlVariableDetails> defaultsSqlVariableDetails = JsonUtil.parseList(sqlVariableDetails, listTypeReference);
-
             Pattern pattern = Pattern.compile(regex);
             Matcher matcher = pattern.matcher(sql);
             while (matcher.find()) {

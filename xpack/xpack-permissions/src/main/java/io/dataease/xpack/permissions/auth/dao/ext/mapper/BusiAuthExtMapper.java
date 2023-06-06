@@ -23,7 +23,7 @@ public interface BusiAuthExtMapper {
     @Select("select resource_id, weight from per_auth_busi_role where rid = #{rid}")
     List<PermissionItem> voidQuery(@Param("rid") Long rid);
 
-    @Select("select id, name, pid from per_busi_resource ${ew.customSqlSegment} ")
+    @Select("select id, name, pid, leaf from per_busi_resource ${ew.customSqlSegment} ")
     List<BusiResourcePO> query(@Param("ew") QueryWrapper queryWrapper);
 
     @Select("select root_way from per_busi_resource where id = #{id}")
@@ -156,7 +156,10 @@ public interface BusiAuthExtMapper {
     List<BusiResourcePO> resourceByRid(@Param("ew") QueryWrapper queryWrapper);
 
     @Select("select rt_id type, id from per_busi_resource")
-    List<ResourcePO> resourceIds();
+    List<ResourcePO> resourcePOs();
+
+    @Select("select id from per_busi_resource where rt_id = #{rtid} and org_id = #{oid}")
+    List<Long> resourceIdsByRt(@Param("rtid") Integer rtid, @Param("oid") Long oid);
 
 
     @Delete("delete from per_auth_busi_user where resource_id = #{resourceId} ")

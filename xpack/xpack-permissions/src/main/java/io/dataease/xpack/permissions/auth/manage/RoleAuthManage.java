@@ -72,13 +72,16 @@ public class RoleAuthManage extends ServiceImpl<PerAuthBusiRoleMapper, PerAuthBu
         initWeightMap();
         List<Long> menuIds = queryMenuIds();
         boolean readonly = perRole.getReadonly();
-        List<ResourcePO> pos = busiAuthExtMapper.resourceIds();
-        Map<Integer, List<ResourcePO>> listMap = pos.stream().collect(Collectors.groupingBy(ResourcePO::getType));
+        List<ResourcePO> pos = busiAuthExtMapper.resourcePOs();
+
         List<PerAuthMenu> menus = syncItem(0, menuIds, perRole.getId(), readonly);
         menuAuthManage.saveBatch(menus);
-        List<Integer> busiTypes = List.of(1, 2, 3, 4);
-        List<PerAuthBusiRole> perAuthBusiRoles = busiTypes.stream().flatMap(type -> syncBusiItem(type, listMap.get(type).stream().map(item -> item.getId()).toList(), perRole.getId(), readonly)).toList();
-        saveBatch(perAuthBusiRoles, 1000);
+        Map<Integer, List<ResourcePO>> listMap = pos.stream().collect(Collectors.groupingBy(ResourcePO::getType));
+        if (CollectionUtil.isNotEmpty(listMap)) {
+            List<Integer> busiTypes = List.of(1, 2, 3, 4);
+            List<PerAuthBusiRole> perAuthBusiRoles = busiTypes.stream().flatMap(type -> syncBusiItem(type, listMap.get(type).stream().map(item -> item.getId()).toList(), perRole.getId(), readonly)).toList();
+            saveBatch(perAuthBusiRoles, 1000);
+        }
     }
 
     public List<PerAuthMenu> syncItem(int type, List<Long> ids, Long rid, boolean readonly) {

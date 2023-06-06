@@ -30,9 +30,9 @@ logging:
   file:
     path: /opt/dataease2.0/log/${spring.application.name}
 # sql日志生产环境注释掉
-mybatis-plus:
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+#mybatis-plus:
+#  configuration:
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 quartz:
   enabled: true

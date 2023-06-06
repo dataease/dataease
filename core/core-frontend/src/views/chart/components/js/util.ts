@@ -2574,7 +2574,7 @@ export function resetRgbOpacity(sourceColor, times) {
     if (numbers?.length === 4) {
       const opacity = parseFloat(numbers[3])
       if (_.isNumber(opacity)) {
-        let resultOpacity = (opacity * times).toFixed(2)
+        let resultOpacity = parseFloat((opacity * times).toFixed(2))
         if (resultOpacity > 1) {
           resultOpacity = 1
         }
@@ -2584,4 +2584,21 @@ export function resetRgbOpacity(sourceColor, times) {
     }
   }
   return sourceColor
+}
+
+export function parseJson<T>(str: T | JSONString<T>): T {
+  if (typeof str !== 'string') {
+    return str as T
+  }
+  return JSON.parse(str) as T
+}
+
+type FlowFunction<P, R> = (param: P, result: R) => R
+
+export function flow<P, R>(...flows: FlowFunction<P, R>[]): FlowFunction<P, R> {
+  return (param: P, result: R) => {
+    return flows.reduce((result: R, flow: FlowFunction<P, R>) => {
+      return flow(param, result)
+    }, result)
+  }
 }

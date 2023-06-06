@@ -12,7 +12,7 @@ import type { Node } from './UnionEdit.vue'
 import { getTableField } from '@/api/dataset'
 import type { Field } from './UnionFieldList.vue'
 import type { SqlNode } from './AddSql.vue'
-import { clone } from 'lodash'
+import _ from 'lodash'
 
 const state = reactive({
   nodeList: [],
@@ -62,6 +62,12 @@ const nodeNameList = computed(() => {
   return arr
 })
 
+const dfsNodeList = computed(() => {
+  let nodeListLocation = []
+  dfsNode(state.nodeList, nodeListLocation)
+  return nodeListLocation
+})
+
 const dfsNodeNameList = (list, arr) => {
   return list.forEach(ele => {
     arr.push(ele.tableName)
@@ -93,9 +99,51 @@ const delNode = (id, arr) => {
 }
 
 const saveSqlNode = (val: SqlNode) => {
-  const { tableName, id, sql } = val
-  const obj = { info: JSON.stringify({ table: tableName, sql }), id, tableName }
+  const { tableName, id, sql, datasourceId, sqlVariableDetails = null } = val
+  if (state.visualNode) {
+    Object.assign(state.visualNode, {
+      info: JSON.stringify({ table: tableName, sql }),
+      sqlVariableDetails,
+      unionType: 'left',
+      type: 'sql',
+      id,
+      datasourceId,
+      unionFields: [],
+      currentDsFields: []
+    })
+    state.visualNode.confirm = true
+    if (!state.nodeList.length) {
+      state.visualNode.tableName = tableName
+      state.nodeList.push(state.visualNode)
+      confirm()
+    }
+    return
+  }
+  const obj = { info: JSON.stringify({ table: tableName, sql }), id, tableName, sqlVariableDetails }
   dfsNodeBack([obj], [id], state.nodeList)
+}
+
+const closeSqlNode = () => {
+  if (state.visualNode?.confirm) {
+    nextTick(() => {
+      emits('joinEditor', [
+        {
+          ...state.visualNode,
+          tableName: (JSON.parse(state.visualNode.info) as { table: string }).table
+        },
+        state.visualNodeParent
+      ])
+    })
+    editSqlField.value = false
+    return
+  }
+  editSqlField.value = false
+  if (!state.visualNodeParent) {
+    state.visualNode = null
+    return
+  }
+  state.visualNodeParent.children = state.visualNodeParent.children.filter(ele => !ele.isShadow)
+  confirm()
 }
 
 const changeNodeFields = val => {
@@ -140,12 +188,16 @@ const confirmEditUnion = () => {
 }
 
 const handleCommand = (ele, command) => {
-  if (command === 'editer') {
-    currentNode.value = clone(ele)
+  if (command === 'editerField') {
+    currentNode.value = _.cloneDeep(ele)
+    getNodeField(ele)
+  }
+
+  if (command === 'editerSql') {
     const { tableName, datasourceId, info, id } = ele
     if (ele.type === 'sql') {
       sqlNode.value = {
-        sql: (JSON.parse(info) || {}).sql,
+        sql: ((JSON.parse(info) as { sql: string }) || {}).sql,
         tableName,
         id,
         datasourceId
@@ -153,7 +205,6 @@ const handleCommand = (ele, command) => {
       editSqlField.value = true
       return
     }
-    getNodeField(ele)
   }
 
   if (command === 'del') {
@@ -200,13 +251,21 @@ const dfsNodeBack = (arr, idArr, list) => {
 const menuList = [
   {
     svgName: 'icon_edit_outlined',
-    label: '编辑',
-    command: 'editer'
+    label: '字段编辑',
+    command: 'editerField'
   },
   {
     svgName: 'icon_delete-trash_outlined',
     label: '删除',
     command: 'del'
+  }
+]
+
+const sqlMenu = [
+  {
+    svgName: 'icon_edit_outlined',
+    label: 'SQL编辑',
+    command: 'editerSql'
   }
 ]
 
@@ -231,9 +290,7 @@ function elementInteractArea(pos1, pos2) {
 
 const possibleNodeAreaList = computed(() => {
   let flatArr = []
-  let nodeListLocation = []
-  dfsNode(state.nodeList, nodeListLocation)
-  leafNode(nodeListLocation, flatArr)
+  leafNode(dfsNodeList.value, flatArr)
   return flatArr.filter(ele => !ele.isShadow)
 })
 
@@ -266,9 +323,7 @@ const leafNode = (arr, leafList) => {
 
 const flatNodeList = computed(() => {
   let flatArr = []
-  let nodeListLocation = []
-  dfsNode(state.nodeList, nodeListLocation)
-  flatNode(nodeListLocation, flatArr)
+  flatNode(dfsNodeList.value, flatArr)
   return flatArr
 })
 
@@ -283,9 +338,7 @@ const flatNode = (arr, flatNodeList) => {
 
 const flatPathList = computed(() => {
   let flatArr = []
-  let nodeListLocation = []
-  dfsNode(state.nodeList, nodeListLocation)
-  const [root = {}] = nodeListLocation
+  const [root = {}] = dfsNodeList.value
   flatLine(root, flatArr)
   return flatArr
 })
@@ -329,7 +382,7 @@ const dfsNode = (arr, nodeListLocation, x = 0, y = 0) => {
       nodeListLocation.push({
         ...ele,
         x,
-        y: idx ? Math.min(idx, maxY) : idx,
+        y: children[0].y,
         maxY,
         isShadow: !!ele.isShadow,
         children
@@ -413,11 +466,6 @@ const dragover_handler = ev => {
 
   let resultList = possibleNodeAreaList.value.map(ele => {
     const { fromX, fromY, toX, toY, isLeaf = false, tableName } = ele
-    // const [k] = (state.visualNode?.flag || '').split('_')
-    // if (k === tableName) {
-    //   console.log('obj.isShadow', JSON.stringify(ele), JSON.stringify(state.visualNode))
-    // }
-
     return [
       elementInteractArea(
         {
@@ -487,7 +535,7 @@ const dragenter_handler = ev => {
 const drop_handler = ev => {
   ev.preventDefault()
   let data = ev.dataTransfer.getData('text')
-  const { tableName, type = 'db', datasourceId } = JSON.parse(data)
+  const { tableName, type, datasourceId } = JSON.parse(data)
   const extraData = {
     info: JSON.stringify({
       table: tableName,
@@ -498,7 +546,25 @@ const drop_handler = ev => {
     currentDsFields: [],
     sqlVariableDetails: null
   }
+
   if (!state.nodeList.length) {
+    if (type === 'sql') {
+      state.visualNode = {
+        tableName,
+        type,
+        datasourceId,
+        id: guid(),
+        ...extraData
+      }
+      sqlNode.value = {
+        sql: '',
+        tableName,
+        id: state.visualNode.id,
+        datasourceId
+      }
+      editSqlField.value = true
+      return
+    }
     state.nodeList.push({
       tableName,
       type,
@@ -517,6 +583,16 @@ const drop_handler = ev => {
   })
 
   if (!state.visualNode) return
+  if (type === 'sql') {
+    sqlNode.value = {
+      sql: '',
+      tableName,
+      id: guid(),
+      datasourceId
+    }
+    editSqlField.value = true
+    return
+  }
   nextTick(() => {
     Object.assign(state.visualNode, {
       tableName,
@@ -539,12 +615,11 @@ const drop_handler = ev => {
 }
 
 const setStateBack = (node, parent) => {
+  delete node.children
+  delete parent.children
+  dfsNodeBack([parent, node], [parent.id, node.id], state.nodeList)
   if (state.visualNode) {
-    Object.assign(state.visualNode, node)
-    Object.assign(state.visualNodeParent, parent)
     confirm()
-  } else {
-    dfsNodeBack([parent, node], [parent.id, node.id], state.nodeList)
   }
 }
 
@@ -623,7 +698,7 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields'])
           <handle-more
             style="margin-left: auto"
             v-if="activeNode === ele.tableName"
-            :menuList="menuList"
+            :menuList="ele.type === 'sql' ? [...sqlMenu, ...menuList] : menuList"
             @handle-command="command => handleCommand(ele, command)"
           ></handle-more>
         </div>
@@ -665,18 +740,6 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields'])
         <span class="name">{{ currentNode.tableName }}</span>
         <span class="ds">{{ getDsName(currentNode.datasourceId) }}</span>
       </div>
-      <div class="operate">
-        <el-button text>
-          <template #icon>
-            <Icon name="icon_edit_outlined"></Icon>
-          </template>
-          编辑SQL</el-button
-        >
-        <el-button text
-          ><template #icon> <Icon name="icon_delete-trash_outlined"></Icon> </template
-          >删除</el-button
-        >
-      </div>
     </template>
     <union-field-list
       :field-list="nodeField"
@@ -691,12 +754,13 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields'])
   </el-drawer>
   <el-drawer
     direction="btt"
+    :close-on-click-modal="false"
     size="calc(100% - 100px)"
     :with-header="false"
     modal-class="sql-drawer-fullscreen"
     v-model="editSqlField"
   >
-    <add-sql @save="saveSqlNode" @close="editSqlField = false" :sqlNode="sqlNode"></add-sql>
+    <add-sql @save="saveSqlNode" @close="closeSqlNode" :sqlNode="sqlNode"></add-sql>
   </el-drawer>
 </template>
 
@@ -732,15 +796,6 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields'])
         font-weight: 400;
         font-size: 14px;
         color: #646a73;
-      }
-    }
-
-    .operate {
-      margin-left: auto;
-      margin-right: 30px;
-
-      .is-text {
-        color: #1f2329;
       }
     }
   }

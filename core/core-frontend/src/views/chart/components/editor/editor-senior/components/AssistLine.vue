@@ -139,8 +139,8 @@ const changeLine = () => {
       />
       <template #footer>
         <div class="dialog-footer">
-          <el-button size="mini" @click="closeEditLine">{{ t('chart.cancel') }}</el-button>
-          <el-button type="primary" size="mini" @click="changeLine">{{
+          <el-button size="small" @click="closeEditLine">{{ t('chart.cancel') }}</el-button>
+          <el-button type="primary" size="small" @click="changeLine">{{
             t('chart.confirm')
           }}</el-button>
         </div>

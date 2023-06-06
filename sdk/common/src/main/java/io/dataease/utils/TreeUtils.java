@@ -1,8 +1,10 @@
 package io.dataease.utils;
 
 import io.dataease.model.ITreeBase;
+import io.dataease.model.TreeBaseModel;
+import io.dataease.model.TreeModel;
+import io.dataease.model.TreeResultModel;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
@@ -16,6 +18,48 @@ public class TreeUtils {
 
     public final static String DEFAULT_ROOT = "root";
     public final static String SEPARATOR = "-de-";
+
+    private final static String I18N_PREFIX = "i18n_auth_menu.";
+
+    public static <T extends TreeResultModel, R extends TreeBaseModel> List<T> mergeTree(List<R> list, Long rootId, Class<T> tClass, boolean appendI18nPrefix) {
+        List<TreeModel> modelList = list.stream().map(item -> new TreeModel(item)).toList();
+        List<TreeModel> modelResult = new ArrayList<>();
+        Map<Long, List<TreeModel>> childMap = modelList.stream().collect(Collectors.groupingBy(TreeModel::getPid));
+        modelList.forEach(po -> {
+            po.setChildren(childMap.get(po.getId()));
+            if (po.getPid() == rootId) {
+                modelResult.add(po);
+            }
+        });
+
+        return convertTree(modelResult, tClass, appendI18nPrefix);
+    }
+
+    public static <T extends TreeResultModel> List<T> convertTree(List<TreeModel> roots, Class<T> tClass, boolean appendI18nPrefix) {
+        List<T> result = new ArrayList<>();
+        for (int i = 0; i < roots.size(); i++) {
+            TreeModel node = roots.get(i);
+            if (appendI18nPrefix) {
+                node.getData().setName(I18N_PREFIX + node.getName());
+            }
+            T instance = null;
+            try {
+                instance = tClass.newInstance();
+            } catch (InstantiationException e) {
+                throw new RuntimeException(e);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+            T vo = BeanUtils.copyBean(instance, node, "children");
+
+            result.add(vo);
+            List<TreeModel> children = null;
+            if (!CollectionUtils.isEmpty(children = node.getChildren())) {
+                vo.setChildren(convertTree(children, tClass, appendI18nPrefix));
+            }
+        }
+        return result;
+    }
 
     /**
      * Description: rootPid 是根节点PID

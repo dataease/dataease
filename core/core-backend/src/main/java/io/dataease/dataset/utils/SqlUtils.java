@@ -1,6 +1,5 @@
 package io.dataease.dataset.utils;
 
-import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import org.apache.calcite.config.Lex;
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlJoin;
@@ -14,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.apache.calcite.sql.SqlKind.*;
-import static org.apache.calcite.sql.SqlKind.SELECT;
 
 /**
  * @Author Junjun
@@ -45,7 +43,12 @@ public class SqlUtils {
         dependencies = getDependencies(sqlNode, false, dependencies);
         if (ObjectUtils.isNotEmpty(dependencies)) {
             for (String s : dependencies) {
-                sql = sql.replaceAll(s, schema + "." + s);
+                if (sql.contains("`" + s + "`")) {
+                    s = "`" + s + "`";
+                    sql = sql.replaceAll(s, schema + "." + s);
+                } else {
+                    sql = sql.replaceAll(s, schema + "." + s);
+                }
             }
         }
 
