@@ -305,12 +305,14 @@ export default {
       const ds = JSON.parse(JSON.stringify(this.unionItem))
       ds.currentDs = this.tempDs
       this.dataset.push(ds)
+      this.$emit('setTableNum', this.dataset.length)
       this.closeSelectDs()
       this.calc('union')
     },
     deleteNode(index) {
       this.dataset.splice(index, 1)
       this.calc('delete')
+      this.$emit('setTableNum', this.dataset.length)
     },
     calc(param) {
       if (param.type === 'union') {
@@ -385,6 +387,7 @@ export default {
           (response) => {
             const table = JSON.parse(JSON.stringify(response.data))
             this.dataset = JSON.parse(table.info).union
+            this.$emit('setTableNum', this.dataset.length)
             this.previewData()
           }
         )
