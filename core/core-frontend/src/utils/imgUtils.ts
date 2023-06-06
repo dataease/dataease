@@ -1,5 +1,8 @@
-import { PATH_URL } from '@/config/axios/service'
+const basePath = import.meta.env.VITE_API_BASEPATH
 
 export function imgUrlTrans(url) {
-  return url ? PATH_URL + url : null
+  console.log('basePath:' + basePath)
+  return url
+    ? (basePath.endsWith('/') ? basePath.substring(0, basePath.length - 1) : basePath) + url
+    : null
 }
