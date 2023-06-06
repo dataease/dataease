@@ -235,9 +235,13 @@ const queryRole = () => {
     state.roleList[1].children = map.get(true)
   })
 }
+const refreshRole = () => {
+  queryRole()
+}
 defineExpose({
   init,
-  edit
+  edit,
+  refreshRole
 })
 onMounted(() => {
   queryRole()
