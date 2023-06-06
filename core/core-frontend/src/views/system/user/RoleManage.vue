@@ -139,9 +139,10 @@ const delHandler = row => {
     })
   })
 }
-
+const emits = defineEmits(['refresh'])
 const roleSaved = () => {
   roleSearch()
+  emits('refresh')
 }
 const bindUser = () => {
   const param = { rid: selectedRoleId.value, uids: state.checkList }

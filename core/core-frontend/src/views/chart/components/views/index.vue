@@ -75,7 +75,6 @@ onMounted(() => {
   useEmitt({
     name: 'calcData-' + view.value.id,
     callback: function (val) {
-      view.value = val
       g2?.value?.calcData(val)
       initTitle()
     }
@@ -83,12 +82,13 @@ onMounted(() => {
   useEmitt({
     name: 'renderChart-' + view.value.id,
     callback: function (val) {
-      view.value = val
       g2?.value?.renderChart(val)
       initTitle()
     }
   })
 })
+
+initTitle()
 </script>
 
 <template>
