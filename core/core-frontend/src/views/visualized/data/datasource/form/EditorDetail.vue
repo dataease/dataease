@@ -134,7 +134,6 @@ const initForm = type => {
 
 const initEditForm = () => {
   dsFormDisabled.value = true
-  console.log(dsFormDisabled.value)
 }
 
 const notapiexcelconfig = computed(() => form.value.type !== 'API')
@@ -255,10 +254,8 @@ const cancelItem = (index: number) => {
   state.itemRef[index].hide()
 }
 const submitForm = () => {
-  dsForm.value.validate((valid, fields) => {
+  dsForm.value.validate(valid => {
     if (valid) {
-    } else {
-      console.log('error submit!', fields)
     }
   })
   return form

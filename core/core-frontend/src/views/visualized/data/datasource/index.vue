@@ -228,7 +228,7 @@ const defaultProps = {
               <Icon name="scene"></Icon>
             </el-icon>
             <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
-            <div>
+            <div class="icon-more">
               <el-icon class="hover-icon">
                 <Icon name="icon_add_outlined"></Icon>
               </el-icon>
@@ -431,20 +431,24 @@ const defaultProps = {
 }
 </style>
 
-<style lang="less">
+<style scoped lang="less">
 .custom-tree-node {
   flex: 1;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding-right: 8px;
+  padding-right: 4px;
   box-sizing: content-box;
 
   .label-tooltip {
-    width: 60%;
+    width: calc(100% - 66px);
+    margin-left: 8.75px;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+  }
+
+  .icon-more {
+    margin-left: auto;
   }
 }
 </style>
