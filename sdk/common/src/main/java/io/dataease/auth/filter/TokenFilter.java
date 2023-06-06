@@ -32,7 +32,8 @@ public class TokenFilter implements Filter {
 
         if (WHITE_PATH.contains(requestURI)
                 || StringUtils.endsWithAny(requestURI, ".ico", "js", ".css", "svg", "png")
-                || StringUtils.startsWithAny(requestURI, "data:image")) {
+                || StringUtils.startsWithAny(requestURI, "data:image")
+                || StringUtils.startsWithAny(requestURI, "/static-resource/")) {
             filterChain.doFilter(servletRequest, servletResponse);
             return;
         }

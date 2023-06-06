@@ -1,3 +1,5 @@
+import { PATH_URL } from '@/config/axios/service'
+
 export function imgUrlTrans(url) {
-  return url ? import.meta.env.VITE_API_BASEPATH + url : null
+  return url ? PATH_URL + url : null
 }
