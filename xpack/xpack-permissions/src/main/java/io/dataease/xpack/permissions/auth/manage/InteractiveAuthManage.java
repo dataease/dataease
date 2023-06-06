@@ -176,12 +176,6 @@ public class InteractiveAuthManage {
         return mids.stream().filter(id -> !XPACKMENUIDS.contains(id)).toList();
     }
 
-
-    private void convert() {
-
-    }
-
-
     private boolean isRootAdmin(List<UserRole> roles) {
         return roles.stream().anyMatch(UserRole::isRootAdmin);
     }

@@ -79,7 +79,7 @@ public class RoleAuthManage extends ServiceImpl<PerAuthBusiRoleMapper, PerAuthBu
         Map<Integer, List<ResourcePO>> listMap = pos.stream().collect(Collectors.groupingBy(ResourcePO::getType));
         if (CollectionUtil.isNotEmpty(listMap)) {
             List<Integer> busiTypes = List.of(1, 2, 3, 4);
-            List<PerAuthBusiRole> perAuthBusiRoles = busiTypes.stream().flatMap(type -> syncBusiItem(type, listMap.get(type).stream().map(item -> item.getId()).toList(), perRole.getId(), readonly)).toList();
+            List<PerAuthBusiRole> perAuthBusiRoles = busiTypes.stream().filter(t -> CollectionUtil.isNotEmpty(listMap.get(t))).flatMap(type -> syncBusiItem(type, listMap.get(type).stream().map(item -> item.getId()).toList(), perRole.getId(), readonly)).toList();
             saveBatch(perAuthBusiRoles, 1000);
         }
     }
