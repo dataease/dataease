@@ -240,7 +240,7 @@ onMounted(() => {
           <template #default="{ node, data }">
             <span class="custom-tree-node">
               <span :title="node.label">{{ node.label }}</span>
-              <div v-if="!data.disabled" class="operate-icon-container">
+              <div v-if="!data.disabled && !data.root" class="operate-icon-container">
                 <div><Icon name="edit" @click.stop="roleEdit(data)"></Icon></div>
                 <div><Icon name="delete" @click.stop="delHandler(data)"></Icon></div>
               </div>
