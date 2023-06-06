@@ -27,7 +27,8 @@ const props = defineProps({
 })
 const treeProps = {
   value: 'id',
-  label: 'name'
+  label: 'name',
+  disabled: 'readOnly'
 }
 const { t } = useI18n()
 
