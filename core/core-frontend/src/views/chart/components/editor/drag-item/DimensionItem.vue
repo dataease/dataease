@@ -22,7 +22,7 @@ const state = reactive({
 const props = defineProps({
   param: {
     type: Object,
-    required: true
+    required: false
   },
   item: {
     type: Object,

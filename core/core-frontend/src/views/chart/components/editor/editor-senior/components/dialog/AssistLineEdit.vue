@@ -1,5 +1,5 @@
 <script lang="tsx" setup>
-import { reactive, toRefs } from 'vue'
+import { reactive } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL } from '@/views/chart/components/editor/util/chart'
 

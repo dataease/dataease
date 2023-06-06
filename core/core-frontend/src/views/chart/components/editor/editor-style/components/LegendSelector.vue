@@ -1,5 +1,5 @@
 <script lang="tsx" setup>
-import { reactive, toRefs } from 'vue'
+import { reactive } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL, DEFAULT_LEGEND_STYLE } from '@/views/chart/components/editor/util/chart'
 
@@ -42,7 +42,23 @@ const changeLegendStyle = () => {
   emit('onLegendChange', state.legendForm)
 }
 
+const init = () => {
+  const chart = JSON.parse(JSON.stringify(props.chart))
+  if (chart.customStyle) {
+    let customStyle = null
+    if (Object.prototype.toString.call(chart.customStyle) === '[object Object]') {
+      customStyle = JSON.parse(JSON.stringify(chart.customStyle))
+    } else {
+      customStyle = JSON.parse(chart.customStyle)
+    }
+    if (customStyle.legend) {
+      state.legendForm = customStyle.legend
+    }
+  }
+}
+
 initFontSize()
+init()
 </script>
 
 <template>
