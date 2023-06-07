@@ -31,6 +31,8 @@ import io.dataease.utils.JsonUtil;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -53,6 +55,8 @@ public class DatasetDataManage {
     private DatasetTableManage datasetTableManage;
     @Resource
     private EngineServer engineServer;
+
+    private static Logger logger = LoggerFactory.getLogger(DatasetDataManage.class);
 
     public List<DatasetTableFieldDTO> getTableFields(DatasetTableDTO datasetTableDTO) throws Exception {
         List<DatasetTableFieldDTO> list = null;
@@ -182,6 +186,7 @@ public class DatasetDataManage {
             map.put("allFields", fieldList);
         }
         map.put("sql", Base64.getEncoder().encodeToString(querySQL.getBytes()));
+        logger.info("calcite data preview sql: " + querySQL);
         return map;
     }
 

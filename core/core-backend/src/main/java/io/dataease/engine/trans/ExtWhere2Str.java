@@ -58,7 +58,7 @@ public class ExtWhere2Str {
                         if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5 || field.getDeExtractType() == 1) {
                             if (StringUtils.equalsIgnoreCase(request.getDateStyle(), "y_Q")) {
                                 whereName = String.format(format,
-                                        String.format(SQLConstants.DATE_FORMAT, originName, "%Y"),
+                                        String.format(SQLConstants.DATE_FORMAT, originName, "yyyy"),
                                         String.format(SQLConstants.QUARTER, String.format(SQLConstants.DATE_FORMAT, originName, SQLConstants.DEFAULT_DATE_FORMAT)));
                             } else {
                                 whereName = String.format(SQLConstants.DATE_FORMAT, originName, format);
