@@ -518,7 +518,7 @@ export default {
           if (name2Auto) {
             name2Auto.push(nameIdMap[ele])
           }
-          name2Id = name2Id.replace(ele, nameIdMap[ele])
+          name2Id = name2Id.replace(`[${ele}]`, `[${nameIdMap[ele]}]`)
         })
       }
       return name2Id
