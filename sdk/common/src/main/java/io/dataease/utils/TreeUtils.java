@@ -58,8 +58,7 @@ public class TreeUtils {
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
-            T vo = BeanUtils.copyBean(instance, node, "children");
-
+            T vo = BeanUtils.copyBean(instance, node.getData(), "children");
             result.add(vo);
             List<TreeModel> children = null;
             if (!CollectionUtils.isEmpty(children = node.getChildren())) {
