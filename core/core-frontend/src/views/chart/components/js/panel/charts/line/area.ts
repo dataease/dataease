@@ -1,5 +1,5 @@
 import { G2PlotChartView, G2PlotDrawOptions } from '@/views/chart/components/js/panel/types'
-import { Area as G2Area, AreaOptions } from '@antv/g2plot'
+import { Area as G2Area, AreaOptions, Datum } from '@antv/g2plot'
 import { getPadding, setGradientColor } from '@/views/chart/components/js/panel/common/common_antv'
 import _ from 'lodash'
 import {
@@ -8,6 +8,7 @@ import {
   handleEmptyDataStrategy,
   parseJson
 } from '@/views/chart/components/js/util'
+import { formatterItem, valueFormatter } from '@/views/chart/components/js/formatter'
 const DEFAULT_DATA = []
 export class Area extends G2PlotChartView<AreaOptions, G2Area> {
   drawChart(drawOptions: G2PlotDrawOptions<G2Area>): G2Area {
@@ -124,11 +125,56 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
     return drawOptions.chartObj
   }
 
+  protected configCustomLabel(_: Chart, options: AreaOptions): AreaOptions {
+    if (options.label) {
+      const label = {
+        offsetY: -8,
+        autoRotate: undefined
+      }
+      return { ...options, label }
+    }
+    return options
+  }
+
+  protected configTooltip(chart: Chart, options: AreaOptions): AreaOptions {
+    let tooltip
+    const customAttr: DeepPartial<ChartAttr> = parseJson(chart.customAttr)
+    if (customAttr.tooltip) {
+      const tooltipAttr = customAttr.tooltip
+      if (tooltipAttr.show) {
+        tooltip = {
+          formatter: function (param: Datum) {
+            let res
+            const obj = { name: param.category, value: param.value }
+            const yAxis = chart.yAxis
+            for (let i = 0; i < yAxis.length; i++) {
+              const f = yAxis[i]
+              if (f.name === param.category) {
+                if (f.formatterCfg) {
+                  res = valueFormatter(param.value, f.formatterCfg)
+                } else {
+                  res = valueFormatter(param.value, formatterItem)
+                }
+                break
+              }
+            }
+            obj.value = res ?? ''
+            return obj
+          }
+        }
+      } else {
+        tooltip = false
+      }
+    }
+    return { ...options, tooltip }
+  }
+
   protected setupOptions(chart: Chart, options: AreaOptions): AreaOptions {
     return flow(
       this.configTheme,
       this.configLabel,
       this.configTooltip,
+      this.configCustomLabel,
       this.configLegend,
       this.configXAxis,
       this.configYAxis,

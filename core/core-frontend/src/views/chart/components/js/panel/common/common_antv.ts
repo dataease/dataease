@@ -1,5 +1,4 @@
 import { hexColorToRGBA, parseJson } from '../../util'
-import { equalsAny } from '@/views/chart/components/editor/util/StringUtils'
 import {
   DEFAULT_XAXIS_STYLE,
   DEFAULT_YAXIS_STYLE
@@ -293,16 +292,20 @@ export function getLabel(chart: Chart) {
   return label
 }
 // 通用tooltip
-export function getTooltip(chart) {
-  let tooltip = {}
-  let customAttr = {}
+export function getTooltip(chart: Chart) {
+  let tooltip
+  let customAttr: DeepPartial<ChartAttr>
   if (chart.customAttr) {
-    customAttr = chart.customAttr
+    customAttr = parseJson(chart.customAttr)
     // tooltip
     if (customAttr.tooltip) {
       const t = JSON.parse(JSON.stringify(customAttr.tooltip))
       if (t.show) {
-        tooltip = {}
+        tooltip = {
+          formatter: function (param: Datum) {
+            return { value: param.value ?? '' }
+          }
+        }
         // tooltip value formatter
         // if (chart.type && chart.type !== 'waterfall') {
         //   tooltip.formatter = function (param) {
