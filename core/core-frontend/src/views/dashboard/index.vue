@@ -1,15 +1,10 @@
 <script setup lang="ts">
 import componentList from '@/custom-component/component-list' // 左侧列表数据
 import { deepCopy } from '@/utils/utils'
-import generateID from '@/utils/generateID'
 import { listenGlobalKeyDown } from '@/utils/shortcutKey'
 import CanvasAttr from '@/components/data-visualization/CanvasAttr.vue'
-import {
-  changeComponentSizeWithScale,
-  changeRefComponentsSizeWithScale
-} from '@/utils/changeComponentsSizeWithScale'
-import { setDefaultComponentData } from '@/store/modules/data-visualization/snapshot'
-import { computed, nextTick, onMounted, ref, toRefs } from 'vue'
+import { changeComponentSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
+import { computed, nextTick, onMounted, reactive, ref, toRefs } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
@@ -18,24 +13,36 @@ import { storeToRefs } from 'pinia'
 import eventBus from '../../utils/eventBus'
 import findComponent from '../../utils/components'
 import DvSidebar from '../../components/visualization/DvSidebar.vue'
-import { getData } from '@/api/chart'
 import { findById } from '@/api/dataVisualization'
 import router from '@/router'
 import DashboardCanvas from '@/components/dashboard/canvas/index.vue'
 import $ from 'jquery'
 import DbToolbar from '@/components/dashboard/DbToolbar.vue'
-import DbComponentToolBar from '@/components/dashboard/DbComponentToolBar.vue'
+import ViewEditor from '@/views/chart/components/editor/index.vue'
+import { getDatasetTree } from '@/api/dataset'
+import { Tree } from '@/views/visualized/data/dataset/form/CreatDsGroup.vue'
+import { guid } from '@/views/visualized/data/dataset/form/util.js'
 
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
 const composeStore = composeStoreWithOut()
 const activeName = ref('attr')
-const reSelectAnimateIndex = ref(undefined)
-const { componentData, curComponent, isClickComponent, canvasStyleData } = storeToRefs(dvMainStore)
+const { componentData, curComponent, isClickComponent, canvasStyleData, canvasViewInfo } =
+  storeToRefs(dvMainStore)
 const { editor } = storeToRefs(composeStore)
 const canvasOut = ref(null)
 const canvasInitStatus = ref(false)
+
+const state = reactive({
+  datasetTree: []
+})
+
+const initDataset = () => {
+  getDatasetTree({}).then(res => {
+    state.datasetTree = (res as unknown as Tree[]) || []
+  })
+}
 
 const contentStyle = computed(() => {
   const { width, height, scale } = canvasStyleData.value
@@ -46,9 +53,10 @@ const contentStyle = computed(() => {
   }
 })
 
-const restore = (canvasData, canvasStyle) => {
+const restore = (canvasData, canvasStyle, canvasViewInfo) => {
   dvMainStore.setComponentData(JSON.parse(canvasData))
   dvMainStore.setCanvasStyle(JSON.parse(canvasStyle))
+  dvMainStore.setCanvasViewInfo(canvasViewInfo)
 }
 
 const findNewComponent = (componentName, innerType) => {
@@ -69,7 +77,7 @@ const handleNew = newComponentInfo => {
     const component = findNewComponent(componentName, innerType)
     component.style.top = 0
     component.style.left = 0
-    component.id = generateID()
+    component.id = guid()
     changeComponentSizeWithScale(component)
     dvMainStore.addComponent({ component: component, index: undefined })
     nextTick(() => {
@@ -91,14 +99,12 @@ const handleDrop = e => {
   e.stopPropagation()
 
   const componentInfo = e.dataTransfer.getData('id')
-
-  console.log('componentInfo=' + componentInfo)
   const rectInfo = editor.value.getBoundingClientRect()
   if (componentInfo) {
     const component = findDragComponent(componentInfo)
     component.style.top = e.clientY - rectInfo.y
     component.style.left = e.clientX - rectInfo.x
-    component.id = generateID()
+    component.id = guid()
 
     changeComponentSizeWithScale(component)
     dvMainStore.addComponent({ component: component, index: undefined })
@@ -166,10 +172,11 @@ const canvasInit = () => {
 // 全局监听按键事件
 listenGlobalKeyDown()
 onMounted(() => {
-  const { dvId, pid } = router.currentRoute.value.query
-  if (dvId) {
+  initDataset()
+  const { resourceId, pid } = router.currentRoute.value.query
+  if (resourceId) {
     // 从数据库中获取
-    findById(dvId).then(res => {
+    findById(resourceId).then(res => {
       const canvasInfo = res.data
       const bashInfo = {
         id: canvasInfo.id,
@@ -180,7 +187,7 @@ onMounted(() => {
       }
       dvMainStore.updateCurDvInfo(bashInfo)
       //恢复画布数据
-      restore(canvasInfo.componentData, canvasInfo.canvasStyleData)
+      restore(canvasInfo.componentData, canvasInfo.canvasStyleData, canvasInfo.canvasViewInfo)
     })
   } else {
     dvMainStore.updateCurDvInfo({
@@ -190,30 +197,6 @@ onMounted(() => {
       status: null,
       selfWatermarkStatus: null
     })
-    dvMainStore.setComponentData([
-      {
-        component: 'UserView',
-        name: '视图',
-        label: '视图',
-        propValue: '',
-        icon: 'bar',
-        innerType: 'bar',
-        x: 1,
-        y: 1,
-        sizeX: 20,
-        sizeY: 20,
-        style: {
-          width: 200,
-          height: 200,
-          borderColor: '#fff',
-          borderWidth: 1,
-          backgroundColor: '',
-          borderStyle: 'solid',
-          borderRadius: ''
-        },
-        matrixStyle: {}
-      }
-    ])
   }
   canvasInit()
   window.addEventListener('resize', canvasInit)
@@ -228,7 +211,6 @@ eventBus.on('handleNew', handleNew)
     <el-container class="dv-layout-container">
       <!-- 中间画布 -->
       <main class="center">
-        <DbComponentToolBar></DbComponentToolBar>
         <div ref="canvasOut" class="content">
           <div
             class="db-canvas"
@@ -252,10 +234,11 @@ eventBus.on('handleNew', handleNew)
       </main>
       <!-- 右侧侧组件列表 -->
       <dv-sidebar
-        v-if="curComponent"
-        title="属性"
-        :width="300"
-        aside-position="right"
+        v-if="curComponent && curComponent.component !== 'UserView'"
+        :title="'属性'"
+        :width="240"
+        :side-name="'componentProp'"
+        :aside-position="'right'"
         class="left-sidebar"
       >
         <component :is="findComponent(curComponent['component'] + 'Attr')" />
@@ -269,15 +252,11 @@ eventBus.on('handleNew', handleNew)
       >
         <CanvasAttr></CanvasAttr>
       </dv-sidebar>
-      <dv-sidebar
+      <view-editor
         v-if="curComponent && curComponent.component === 'UserView'"
-        title="数据集"
-        :width="150"
-        aside-position="right"
-        class="left-sidebar"
-      >
-        <div>数据集</div>
-      </dv-sidebar>
+        :view="canvasViewInfo[curComponent.id]"
+        :dataset-tree="state.datasetTree"
+      ></view-editor>
     </el-container>
   </div>
 </template>

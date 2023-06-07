@@ -1,8 +1,22 @@
 <template>
   <div class="shape" :class="{ active }">
+    <!--如果是视图 则动态获取预存的chart-view数据-->
     <component
       :is="findComponent(item.component)"
-      v-if="item.component != 'VText'"
+      v-if="item.component === 'UserView'"
+      :id="'component' + item.id"
+      class="component"
+      :style="getComponentStyle(item.style)"
+      :prop-value="item.propValue"
+      :view="canvasViewInfo[item.id]"
+      :element="item"
+      :request="item.request"
+      @input="handleInput"
+    />
+
+    <component
+      :is="findComponent(item.component)"
+      v-else-if="item.component != 'VText'"
       :id="'component' + item.id"
       class="component"
       :style="getComponentStyle(item.style)"
@@ -72,6 +86,7 @@ const selectCurComponent = e => {
 }
 
 const props = defineProps({
+  canvasViewInfo: Object,
   active: {
     type: Boolean,
     default: false
@@ -99,7 +114,7 @@ const props = defineProps({
   }
 })
 
-const { active, item, index } = toRefs(props)
+const { active, item, index, canvasViewInfo } = toRefs(props)
 </script>
 
 <style lang="less" scoped>

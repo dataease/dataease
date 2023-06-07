@@ -1,7 +1,17 @@
 <script lang="ts" setup>
-import { ref, reactive, computed, watch } from 'vue'
+import { ref, reactive, computed, watch, toRefs } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { findTree, ResourceOrFolder, savaOrUpdateBase } from '@/api/dataVisualization'
+
+const props = defineProps({
+  curCanvasType: {
+    type: String,
+    required: true
+  }
+})
+
+const { curCanvasType } = toRefs(props)
+
 export interface ResourceTree {
   id: string | number
   pid: string | number
@@ -145,7 +155,7 @@ const editeInit = (param: ResourceTree) => {
   id.value = param.id
 }
 
-const props = {
+const propsTree = {
   label: 'name',
   children: 'children',
   isLeaf: node => !node.children?.length
@@ -159,9 +169,9 @@ const saveResource = () => {
   resource.value.validate(result => {
     if (result) {
       const params: ResourceOrFolder = {
-        nodeType: nodeType.value as 'folder' | 'leat',
+        nodeType: nodeType.value as 'folder' | 'leaf',
         name: resourceForm.name,
-        type: 'dataV'
+        type: curCanvasType.value
       }
 
       switch (cmd.value) {
@@ -220,7 +230,7 @@ const emits = defineEmits(['finish'])
         <el-tree-select
           v-model="resourceForm.pid"
           :data="state.tData"
-          :props="props"
+          :props="propsTree"
           @node-click="nodeClick"
           :filter-method="filterMethod"
           filterable
@@ -249,7 +259,7 @@ const emits = defineEmits(['finish'])
             v-model="resourceForm.pid"
             menu
             :data="state.tData"
-            :props="props"
+            :props="propsTree"
             @node-click="nodeClick"
           >
             <template #default="{ data }">

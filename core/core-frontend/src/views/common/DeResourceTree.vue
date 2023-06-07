@@ -252,6 +252,7 @@ onMounted(() => {
       </template>
     </el-tree>
     <de-resource-group-opt
+      :cur-canvas-type="curCanvasType"
       @finish="resourceOptFinish"
       ref="resourceGroupOpt"
     ></de-resource-group-opt>

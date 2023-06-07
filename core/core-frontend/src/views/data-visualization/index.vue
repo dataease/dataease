@@ -2,8 +2,6 @@
 import DvCanvas from '@/components/data-visualization/canvas/index.vue'
 import componentList from '@/custom-component/component-list' // 左侧列表数据
 import { deepCopy } from '@/utils/utils'
-import generateID from '@/utils/generateID'
-import { listenGlobalKeyDown } from '@/utils/shortcutKey'
 import RealTimeComponentList from '@/components/data-visualization/RealTimeComponentList.vue'
 import CanvasAttr from '@/components/data-visualization/CanvasAttr.vue'
 import { changeComponentSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
@@ -18,7 +16,6 @@ import ComponentToolBar from '../../components/data-visualization/ComponentToolB
 import eventBus from '../../utils/eventBus'
 import findComponent from '../../utils/components'
 import DvSidebar from '../../components/visualization/DvSidebar.vue'
-import { getData } from '@/api/chart'
 import { findById } from '@/api/dataVisualization'
 import router from '@/router'
 import Editor from '@/views/chart/components/editor/index.vue'
