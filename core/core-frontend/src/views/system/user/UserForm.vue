@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref, reactive, onMounted } from 'vue'
 import useClipboard from 'vue-clipboard3'
-import { ElMessage } from 'element-plus-secondary'
+import { ElMessage, ElLoading } from 'element-plus-secondary'
 import { Icon } from '@/components/icon-custom'
 import { useI18n } from '@/hooks/web/useI18n'
 import type { FormInstance, FormRules } from 'element-plus-secondary'
@@ -27,12 +27,10 @@ interface Tree {
 
 const { toClipboard } = useClipboard()
 const { t } = useI18n()
-
 const dialogVisible = ref(false)
-const loading = ref(false)
 const formType = ref('add')
 const defaultPWD = ref('DataEase123456')
-
+const loadingInstance = ref(null)
 const createUserForm = ref<FormInstance>()
 
 const state = reactive({
@@ -51,13 +49,13 @@ const state = reactive({
 state.roleList = [
   {
     value: 'admin',
-    label: '组织管理员',
+    label: t('role.org_admin'),
     children: null,
     disabled: true
   },
   {
     value: 'readonly',
-    label: '普通用户',
+    label: t('role.average_role'),
     children: null,
     disabled: true
   }
@@ -78,9 +76,9 @@ const groupBy = (list: Tree[]) => {
 const copyInfo = async () => {
   try {
     await toClipboard(defaultPWD.value)
-    ElMessage.success('复制成功')
+    ElMessage.success(t('common.copy_success'))
   } catch (e) {
-    ElMessage.warning('您的浏览器不支持复制：', e)
+    ElMessage.warning(t('common.copy_unsupport'), e)
   }
 }
 
@@ -190,8 +188,10 @@ const edit = uid => {
   queryForm(uid)
 }
 const queryForm = uid => {
+  showLoading()
   queryFormApi(uid).then(res => {
     state.form = reactive<UserForm>(res.data)
+    closeLoading()
   })
 }
 const emits = defineEmits(['saved'])
@@ -201,12 +201,14 @@ const submitForm = async (formEl: FormInstance | undefined) => {
     if (valid) {
       const param = { ...state.form }
       const method = formType.value === 'modify' ? userEditApi : userCreateApi
+      showLoading()
       method(param).then(res => {
         if (!res.msg) {
           ElMessage.success(t('common.save_success'))
           emits('saved')
           reset()
         }
+        closeLoading()
       })
     } else {
       console.log('error submit!', fields)
@@ -238,6 +240,13 @@ const queryRole = () => {
 const refreshRole = () => {
   queryRole()
 }
+
+const showLoading = () => {
+  loadingInstance.value = ElLoading.service({ target: '.user-form-dialog' })
+}
+const closeLoading = () => {
+  loadingInstance.value?.close()
+}
 defineExpose({
   init,
   edit,
@@ -250,7 +259,7 @@ onMounted(() => {
 
 <template>
   <el-dialog
-    v-loading="loading"
+    custom-class="user-form-dialog"
     :before-close="reset"
     v-model="dialogVisible"
     :title="formType === 'add' ? t('user.add_title') : t('user.edit_title')"

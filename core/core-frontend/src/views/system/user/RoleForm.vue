@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ref, reactive } from 'vue'
-import { ElMessage } from 'element-plus-secondary'
+import { ElMessage, ElLoading } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import type { FormInstance, FormRules } from 'element-plus-secondary'
 import { roleCreateApi, roleEditApi, roleDetailApi } from '@/api/user'
@@ -12,7 +12,7 @@ interface RoleForm {
 }
 
 const { t } = useI18n()
-
+const loadingInstance = ref(null)
 const dialogVisible = ref(false)
 const loading = ref(false)
 const formType = ref('add')
@@ -53,8 +53,10 @@ const edit = rid => {
   queryForm(rid)
 }
 const queryForm = rid => {
+  showLoading()
   roleDetailApi(rid).then(res => {
     Object.assign(form, res.data)
+    closeLoading()
   })
 }
 const emits = defineEmits(['saved'])
@@ -64,12 +66,14 @@ const submitForm = async (formEl: FormInstance | undefined) => {
     if (valid) {
       const param = { ...form }
       const method = formType.value === 'add' ? roleCreateApi : roleEditApi
+      showLoading()
       method(param).then(res => {
         if (!res.msg) {
           ElMessage.success(t('common.save_success'))
           emits('saved')
           reset()
         }
+        closeLoading()
       })
     } else {
       console.log('error submit!', fields)
@@ -86,6 +90,12 @@ const resetForm = (formEl: FormInstance | undefined) => {
 const reset = () => {
   resetForm(roleForm.value)
 }
+const showLoading = () => {
+  loadingInstance.value = ElLoading.service({ target: '.role-form-dialog' })
+}
+const closeLoading = () => {
+  loadingInstance.value?.close()
+}
 
 defineExpose({
   init,
@@ -95,6 +105,7 @@ defineExpose({
 
 <template>
   <el-dialog
+    custom-class="role-form-dialog"
     v-loading="loading"
     :before-close="reset"
     v-model="dialogVisible"
