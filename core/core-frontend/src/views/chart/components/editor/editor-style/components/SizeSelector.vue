@@ -15,7 +15,8 @@ const props = defineProps({
 const emit = defineEmits(['onSizeChange'])
 
 const state = reactive({
-  sizeForm: JSON.parse(JSON.stringify(DEFAULT_SIZE))
+  sizeForm: JSON.parse(JSON.stringify(DEFAULT_SIZE)),
+  fontSize: []
 })
 
 const lineSymbolOptions = [
@@ -25,8 +26,32 @@ const lineSymbolOptions = [
   { name: t('chart.line_symbol_diamond'), value: 'diamond' }
 ]
 
+const pageSizeOptions = [
+  { name: '10' + t('chart.table_page_size_unit'), value: '10' },
+  { name: '20' + t('chart.table_page_size_unit'), value: '20' },
+  { name: '50' + t('chart.table_page_size_unit'), value: '50' },
+  { name: '100' + t('chart.table_page_size_unit'), value: '100' }
+]
+
+const alignOptions = [
+  { name: t('chart.table_align_left'), value: 'left' },
+  { name: t('chart.table_align_center'), value: 'center' },
+  { name: t('chart.table_align_right'), value: 'right' }
+]
+
 const changeBarSizeCase = () => {
   emit('onSizeChange', state.sizeForm)
+}
+
+const initFontSize = () => {
+  const arr = []
+  for (let i = 10; i <= 60; i = i + 2) {
+    arr.push({
+      name: i + '',
+      value: i + ''
+    })
+  }
+  state.fontSize = arr
 }
 
 const init = () => {
@@ -44,6 +69,7 @@ const init = () => {
   }
 }
 
+initFontSize()
 init()
 </script>
 
@@ -156,6 +182,193 @@ init()
           </el-form-item>
         </div>
         <!--pie-end-->
+
+        <!--table-info-start-->
+        <div v-show="props.chart.type.includes('table')">
+          <el-form-item label-width="100px" :label="t('chart.table_page_mode')" class="form-item">
+            <el-select
+              v-model="state.sizeForm.tablePageMode"
+              :placeholder="t('chart.table_page_mode')"
+              @change="changeBarSizeCase('tablePageMode')"
+            >
+              <el-option :label="t('chart.page_mode_page')" value="page" />
+              <el-option :label="t('chart.page_mode_pull')" value="pull" />
+            </el-select>
+          </el-form-item>
+          <el-form-item
+            v-show="state.sizeForm.tablePageMode === 'page'"
+            label-width="100px"
+            :label="t('chart.table_page_size')"
+            class="form-item"
+          >
+            <el-select
+              v-model="state.sizeForm.tablePageSize"
+              :placeholder="t('chart.table_page_size')"
+              @change="changeBarSizeCase('tablePageSize')"
+            >
+              <el-option
+                v-for="item in pageSizeOptions"
+                :key="item.value"
+                :label="item.name"
+                :value="item.value"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item
+            label-width="100px"
+            :label="t('chart.table_title_fontsize')"
+            class="form-item"
+          >
+            <el-select
+              v-model="state.sizeForm.tableTitleFontSize"
+              :placeholder="t('chart.table_title_fontsize')"
+              @change="changeBarSizeCase('tableTitleFontSize')"
+            >
+              <el-option
+                v-for="option in state.fontSize"
+                :key="option.value"
+                :label="option.name"
+                :value="option.value"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item
+            label-width="100px"
+            :label="t('chart.table_item_fontsize')"
+            class="form-item"
+          >
+            <el-select
+              v-model="state.sizeForm.tableItemFontSize"
+              :placeholder="t('chart.table_item_fontsize')"
+              @change="changeBarSizeCase('tableItemFontSize')"
+            >
+              <el-option
+                v-for="option in state.fontSize"
+                :key="option.value"
+                :label="option.name"
+                :value="option.value"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item
+            label-width="100px"
+            :label="t('chart.table_header_align')"
+            class="form-item"
+          >
+            <el-select
+              v-model="state.sizeForm.tableHeaderAlign"
+              :placeholder="t('chart.table_header_align')"
+              @change="changeBarSizeCase('tableHeaderAlign')"
+            >
+              <el-option
+                v-for="option in alignOptions"
+                :key="option.value"
+                :label="option.name"
+                :value="option.value"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item label-width="100px" :label="t('chart.table_item_align')" class="form-item">
+            <el-select
+              v-model="state.sizeForm.tableItemAlign"
+              :placeholder="t('chart.table_item_align')"
+              @change="changeBarSizeCase('tableItemAlign')"
+            >
+              <el-option
+                v-for="option in alignOptions"
+                :key="option.value"
+                :label="option.name"
+                :value="option.value"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item
+            label-width="100px"
+            :label="t('chart.table_title_height')"
+            class="form-item form-item-slider"
+          >
+            <el-slider
+              v-model="state.sizeForm.tableTitleHeight"
+              :min="20"
+              :max="100"
+              show-input
+              :show-input-controls="false"
+              input-size="small"
+              @change="changeBarSizeCase('tableTitleHeight')"
+            />
+          </el-form-item>
+          <el-form-item
+            label-width="100px"
+            :label="t('chart.table_item_height')"
+            class="form-item form-item-slider"
+          >
+            <el-slider
+              v-model="state.sizeForm.tableItemHeight"
+              :min="20"
+              :max="100"
+              show-input
+              :show-input-controls="false"
+              input-size="small"
+              @change="changeBarSizeCase('tableItemHeight')"
+            />
+          </el-form-item>
+          <el-form-item
+            label-width="100px"
+            :label="t('chart.table_column_width_config')"
+            class="form-item"
+          >
+            <el-radio-group
+              v-model="state.sizeForm.tableColumnMode"
+              @change="changeBarSizeCase('tableColumnMode')"
+            >
+              <el-radio label="adapt"
+                ><span>{{ t('chart.table_column_adapt') }}</span></el-radio
+              >
+              <el-radio label="custom">
+                <span>{{ t('chart.table_column_custom') }}</span>
+              </el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item
+            v-show="state.sizeForm.tableColumnMode === 'custom'"
+            label=""
+            label-width="100px"
+            class="form-item form-item-slider"
+          >
+            <el-slider
+              v-model="state.sizeForm.tableColumnWidth"
+              :min="10"
+              :max="500"
+              show-input
+              :show-input-controls="false"
+              input-size="small"
+              @change="changeBarSizeCase('tableColumnWidth')"
+            />
+          </el-form-item>
+          <el-form-item label-width="100px" :label="t('chart.table_show_index')" class="form-item">
+            <el-radio-group
+              v-model="state.sizeForm.showIndex"
+              input-size="small"
+              @change="changeBarSizeCase('showIndex')"
+            >
+              <el-radio :label="true">{{ t('panel.yes') }}</el-radio>
+              <el-radio :label="false">{{ t('panel.no') }}</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item
+            v-show="state.sizeForm.showIndex"
+            label-width="100px"
+            :label="t('chart.table_index_desc')"
+            class="form-item"
+          >
+            <el-input
+              v-model="state.sizeForm.indexLabel"
+              type="text"
+              @blur="changeBarSizeCase('indexLabel')"
+            />
+          </el-form-item>
+        </div>
+        <!--table-info-end-->
       </el-form>
     </el-col>
   </div>

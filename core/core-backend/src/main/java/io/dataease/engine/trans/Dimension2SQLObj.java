@@ -67,7 +67,7 @@ public class Dimension2SQLObj {
                 String format = Utils.transDateFormat(x.getDateStyle(), x.getDatePattern());
                 if (StringUtils.equalsIgnoreCase(x.getDateStyle(), "y_Q")) {
                     fieldName = String.format(format,
-                            String.format(SQLConstants.DATE_FORMAT, originField, "%Y"),
+                            String.format(SQLConstants.DATE_FORMAT, originField, "yyyy"),
                             String.format(SQLConstants.QUARTER, originField));
                 } else {
                     fieldName = String.format(SQLConstants.DATE_FORMAT, originField, format);
@@ -81,7 +81,7 @@ public class Dimension2SQLObj {
                 if (Objects.equals(x.getDeExtractType(), DeTypeConstants.DE_STRING)) {
                     if (StringUtils.equalsIgnoreCase(x.getDateStyle(), "y_Q")) {
                         fieldName = String.format(format,
-                                String.format(SQLConstants.DATE_FORMAT, String.format(SQLConstants.STR_TO_DATE, originField, SQLConstants.DEFAULT_DATE_FORMAT), "%Y"),
+                                String.format(SQLConstants.DATE_FORMAT, String.format(SQLConstants.STR_TO_DATE, originField, SQLConstants.DEFAULT_DATE_FORMAT), "yyyy"),
                                 String.format(SQLConstants.QUARTER, String.format(SQLConstants.STR_TO_DATE, originField, SQLConstants.DEFAULT_DATE_FORMAT)));
                     } else {
                         fieldName = String.format(SQLConstants.DATE_FORMAT, originField, format);
@@ -91,7 +91,7 @@ public class Dimension2SQLObj {
                     String from_unixtime = String.format(SQLConstants.FROM_UNIXTIME, cast, SQLConstants.DEFAULT_DATE_FORMAT);
                     if (StringUtils.equalsIgnoreCase(x.getDateStyle(), "y_Q")) {
                         fieldName = String.format(format,
-                                String.format(SQLConstants.DATE_FORMAT, from_unixtime, "%Y"),
+                                String.format(SQLConstants.DATE_FORMAT, from_unixtime, "yyyy"),
                                 String.format(SQLConstants.QUARTER, from_unixtime));
                     } else {
                         fieldName = String.format(SQLConstants.DATE_FORMAT, from_unixtime, format);

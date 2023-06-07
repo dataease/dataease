@@ -535,7 +535,12 @@ const collapseChange = type => {
                   <div class="drag_main_area attr-style theme-border-class">
                     <el-row style="height: 100%">
                       <!--xAxis-->
-                      <el-row class="padding-lr drag-data">
+                      <el-row
+                        class="padding-lr drag-data"
+                        v-if="
+                          view.type !== 'text' && view.type !== 'gauge' && view.type !== 'liquid'
+                        "
+                      >
                         <span class="data-area-label">
                           <dimension-label :view="view" />
                         </span>
@@ -566,7 +571,14 @@ const collapseChange = type => {
                       </el-row>
 
                       <!--yAxis-->
-                      <el-row class="padding-lr drag-data">
+                      <el-row
+                        class="padding-lr drag-data"
+                        v-if="
+                          view.type !== 'table-info' &&
+                          view.type !== 'label' &&
+                          view.type !== 'flow-map'
+                        "
+                      >
                         <span class="data-area-label">
                           <quota-label :view="view" />
                         </span>
@@ -598,7 +610,16 @@ const collapseChange = type => {
                       </el-row>
 
                       <!--drill-->
-                      <el-row class="padding-lr drag-data">
+                      <el-row
+                        class="padding-lr drag-data"
+                        v-if="
+                          view.type !== 'table-info' &&
+                          view.type !== 'text' &&
+                          view.type !== 'text-label' &&
+                          view.type !== 'liquid' &&
+                          view.type !== 'gauge'
+                        "
+                      >
                         <span class="data-area-label">
                           <span>{{ t('chart.drill') }}</span>
                           /

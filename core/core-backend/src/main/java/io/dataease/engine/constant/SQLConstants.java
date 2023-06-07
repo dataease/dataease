@@ -57,7 +57,7 @@ public class SQLConstants {
 
     public static final String CAST = "CAST(%s AS %s)";
 
-    public static final String DEFAULT_DATE_FORMAT = "%Y-%m-%d %H:%i:%S";
+    public static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     public static final String DEFAULT_INT_FORMAT = "DECIMAL(20,0)";
 
@@ -83,7 +83,7 @@ public class SQLConstants {
 
     public static final String NAME = "engine_mysql";
 
-    public static final String GROUP_CONCAT = "group_concat(%s)";
+    public static final String GROUP_CONCAT = "GROUP_CONCAT(%s)";
 
-    public static final String QUARTER = "quarter(%s)";
+    public static final String QUARTER = "QUARTER(%s)";
 }

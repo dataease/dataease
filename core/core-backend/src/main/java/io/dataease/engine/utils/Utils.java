@@ -63,28 +63,28 @@ public class Utils {
         }
 
         if (StringUtils.isEmpty(dateStyle)) {
-            return "%Y-%m-%d %H:%i:%S";
+            return "yyyy-MM-dd HH:mm:ss";
         }
 
         switch (dateStyle) {
             case "y":
-                return "%Y";
+                return "yyyy";
             case "y_Q":
                 return "CONCAT(%s,'" + split + "',%s)";
             case "y_M":
-                return "%Y" + split + "%m";
+                return "yyyy" + split + "MM";
             case "y_W":
                 return "%Y" + split + "%u";
             case "y_M_d":
-                return "%Y" + split + "%m" + split + "%d";
+                return "yyyy" + split + "MM" + split + "dd";
             case "H_m_s":
-                return "%H:%i:%S";
+                return "HH:mm:ss";
             case "y_M_d_H_m":
-                return "%Y" + split + "%m" + split + "%d" + " %H:%i";
+                return "yyyy" + split + "MM" + split + "dd" + " HH:mm";
             case "y_M_d_H_m_s":
-                return "%Y" + split + "%m" + split + "%d" + " %H:%i:%S";
+                return "yyyy" + split + "MM" + split + "dd" + " HH:mm:ss";
             default:
-                return "%Y-%m-%d %H:%i:%S";
+                return "yyyy-MM-dd HH:mm:ss";
         }
     }
 

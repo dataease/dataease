@@ -30,6 +30,8 @@ import io.dataease.utils.BeanUtils;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -60,6 +62,8 @@ public class ChartDataManage {
     private CalciteProvider calciteProvider;
     @Resource
     private ChartViewManege chartViewManege;
+
+    private static Logger logger = LoggerFactory.getLogger(ChartDataManage.class);
 
     public ChartViewDTO calcData(ChartViewDTO view) throws Exception {
         ChartExtRequest chartExtRequest = view.getChartExtRequest();
@@ -571,6 +575,7 @@ public class ChartDataManage {
             }
 
             datasourceRequest.setQuery(querySql);
+            logger.info("calcite chart sql: " + querySql);
 
 //            List<ChartViewFieldDTO> xAxisForRequest = new ArrayList<>();
 //            xAxisForRequest.addAll(xAxis);

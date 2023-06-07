@@ -22,7 +22,7 @@ public interface InteractiveBusiAuthExtMapper {
 
 
     @Select("""
-            select distinct pbr.id, pbr.name, bpr.leaf, pbr.pid, pabr.weight, pabr,rid as target_id
+            select distinct pbr.id, pbr.name, pbr.leaf, pbr.pid, pabr.weight, pabr.rid as target_id
             from 
             per_busi_resource pbr 
             left join per_auth_busi_role pabr on pbr.id = pabr.resource_id
