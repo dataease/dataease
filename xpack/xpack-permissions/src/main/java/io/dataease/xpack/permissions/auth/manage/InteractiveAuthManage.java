@@ -10,6 +10,7 @@ import io.dataease.constant.BusiResourceEnum;
 import io.dataease.exception.DEException;
 import io.dataease.license.utils.LicenseUtil;
 import io.dataease.utils.AuthUtils;
+import io.dataease.utils.BeanUtils;
 import io.dataease.utils.CacheUtils;
 import io.dataease.utils.TreeUtils;
 import io.dataease.xpack.permissions.auth.dao.ext.entity.BusiPerPO;
@@ -23,10 +24,7 @@ import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -86,7 +84,7 @@ public class InteractiveAuthManage {
         if (isRootAdmin(userRoles)) {
             return busiAuthManage.resourceIdsByRt(enumFlag, oid);
         }
-        Set<Long> set = null;
+        Set<Long> set = new HashSet<>();
         List<PermissionItem> permissionItems = userAuthManage.permissionItems(uid, oid, enumFlag);
         if (CollectionUtil.isNotEmpty(permissionItems)) {
             set = permissionItems.stream().map(PermissionItem::getId).collect(Collectors.toSet());
@@ -124,7 +122,10 @@ public class InteractiveAuthManage {
             }).toList();
         if (rootAdmin.get()) {
             List<BusiResourcePO> pos = busiAuthManage.resourceWithOid(busiResourceEnum);
-            // 加上weight = 9 转换成树
+            if (CollectionUtil.isNotEmpty(pos)) {
+                List<BusiPerPO> perPOS = pos.stream().map(this::convert).toList();
+                return TreeUtils.mergeTree(perPOS, BusiPerVO.class, false);
+            }
             return null;
         }
         int enumFlag = busiResourceEnum.getFlag();
@@ -154,21 +155,27 @@ public class InteractiveAuthManage {
         }
         if (CollectionUtil.isNotEmpty(rids)) {
             queryWrapper.eq("pbr.rt_id", enumFlag);
-            queryWrapper.in("pabr.rt_id", rids);
+            queryWrapper.in("pabr.rid", rids);
             List<BusiPerPO> rolePerPOS = null;
-            if (CollectionUtil.isNotEmpty(rolePerPOS = interactiveBusiAuthExtMapper.queryWithUid(queryWrapper))) {
-                pos.addAll(cacheRolePerPOS);
+            if (CollectionUtil.isNotEmpty(rolePerPOS = interactiveBusiAuthExtMapper.queryWithRid(queryWrapper))) {
+                pos.addAll(rolePerPOS);
+                Map<Long, List<BusiPerPO>> listMap = rolePerPOS.stream().collect(Collectors.groupingBy(BusiPerPO::getTargetId));
+                listMap.entrySet().stream().forEach(entry -> {
+                    Long rid = entry.getKey();
+                    List<BusiPerPO> rpos = entry.getValue();
+                    CacheUtils.put(cacheName, rid.toString() + enumFlag, rpos);
+                });
             }
-            Map<Long, List<BusiPerPO>> listMap = rolePerPOS.stream().collect(Collectors.groupingBy(BusiPerPO::getTargetId));
-            listMap.entrySet().stream().forEach(entry -> {
-                Long rid = entry.getKey();
-                List<BusiPerPO> rpos = entry.getValue();
-                CacheUtils.put(cacheName, rid.toString() + enumFlag, rpos);
-            });
         }
         pos = pos.stream().distinct().toList();
-        List<BusiPerVO> vos = TreeUtils.mergeTree(pos, 0L, BusiPerVO.class, false);
+        List<BusiPerVO> vos = TreeUtils.mergeTree(pos, BusiPerVO.class, false);
         return vos;
+    }
+
+    private BusiPerPO convert(BusiResourcePO resourcePO) {
+        BusiPerPO busiPerPO = BeanUtils.copyBean(new BusiPerPO(), resourcePO);
+        busiPerPO.setWeight(9);
+        return busiPerPO;
     }
 
     private List<Long> xpackFilter(List<Long> mids) {
