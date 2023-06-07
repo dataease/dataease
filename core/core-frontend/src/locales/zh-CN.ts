@@ -45,7 +45,7 @@ export default {
     every_exec: '执行一次',
     cron_exp: 'cron表达式',
     copy_success: '复制成功',
-    copy_unsupport: '您的浏览器不支持复制',
+    copy_unsupported: '您的浏览器不支持复制',
     filter: '筛选'
   },
   login: {

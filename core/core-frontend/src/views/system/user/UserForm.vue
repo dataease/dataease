@@ -78,7 +78,7 @@ const copyInfo = async () => {
     await toClipboard(defaultPWD.value)
     ElMessage.success(t('common.copy_success'))
   } catch (e) {
-    ElMessage.warning(t('common.copy_unsupport'), e)
+    ElMessage.warning(t('common.copy_unsupported'), e)
   }
 }
 
