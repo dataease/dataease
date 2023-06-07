@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ref, reactive, PropType } from 'vue'
-import { ElMessage } from 'element-plus-secondary'
+import { ElMessage, ElLoading } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import type { FormInstance, FormRules } from 'element-plus-secondary'
 import { saveApi, updateApi } from '@/api/org'
@@ -33,7 +33,7 @@ const treeProps = {
 const { t } = useI18n()
 
 const orgForm = ref<FormInstance>()
-
+const loadingInstance = ref(null)
 const formType = ref('add')
 const searchNodeLoading = ref(false)
 const dialogTableVisible = ref(false)
@@ -80,15 +80,23 @@ const save = () => {
     if (valid) {
       const param = { ...form }
       const method = formType.value === 'modify' ? updateApi : saveApi
+      showLoading()
       method(param).then(() => {
         ElMessage.success(t('common.save_success'))
         emits('saved')
         reset()
+        closeLoading()
       })
     } else {
       return false
     }
   })
+}
+const showLoading = () => {
+  loadingInstance.value = ElLoading.service({ target: '.org-form-dialog' })
+}
+const closeLoading = () => {
+  loadingInstance.value?.close()
 }
 
 defineExpose({
@@ -98,6 +106,7 @@ defineExpose({
 </script>
 <template>
   <el-dialog
+    custom-class="org-form-dialog"
     :title="formType == 'add' ? t('org.add') : t('org.edit')"
     v-model="dialogTableVisible"
     append-to-body

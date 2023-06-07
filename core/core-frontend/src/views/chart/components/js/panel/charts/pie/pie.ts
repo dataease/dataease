@@ -161,6 +161,36 @@ export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
     return { ...options, label }
   }
 
+  protected configTooltip(chart: Chart, options: PieOptions): PieOptions {
+    let tooltip
+    const customAttr: DeepPartial<ChartAttr> = parseJson(chart.customAttr)
+    if (customAttr.tooltip) {
+      const tooltipAttr = customAttr.tooltip
+      if (tooltipAttr.show) {
+        tooltip = {
+          formatter: function (param: Datum) {
+            let res
+            const obj = { name: param.field, value: param.value }
+            const yAxis = chart.yAxis
+            for (let i = 0; i < yAxis.length; i++) {
+              const f = yAxis[i]
+              if (f.formatterCfg) {
+                res = valueFormatter(param.value, f.formatterCfg)
+              } else {
+                res = valueFormatter(param.value, formatterItem)
+              }
+            }
+            obj.value = res ?? ''
+            return obj
+          }
+        }
+      } else {
+        tooltip = false
+      }
+    }
+    return { ...options, tooltip }
+  }
+
   protected setupOptions(chart: Chart, options: PieOptions): PieOptions {
     return flow(
       this.configTheme,

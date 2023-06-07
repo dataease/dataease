@@ -43,7 +43,10 @@ export default {
     hour: '秒',
     day: '天',
     every_exec: '执行一次',
-    cron_exp: 'cron表达式'
+    cron_exp: 'cron表达式',
+    copy_success: '复制成功',
+    copy_unsupported: '您的浏览器不支持复制',
+    filter: '筛选'
   },
   login: {
     welcome: '欢迎使用',
@@ -74,6 +77,7 @@ export default {
   role: {
     add_title: '添加角色',
     edit_title: '编辑角色',
+    role_title: '角色列表',
     name: '角色名称',
     type: '角色类型',
     desc: '角色描述',
@@ -89,7 +93,9 @@ export default {
       '友情提示，从当前角色移除后，该用户已没有当前组织的任何角色，将从当前组织中移除。',
     add_user: '为角色添加用户({0})',
     unbind_success: '移除成功',
-    bind_success: '绑定成功'
+    bind_success: '绑定成功',
+    bound_user: '已添加用户',
+    option_user: '可添加用户'
   },
   org: {
     org_title: '组织管理',
@@ -146,7 +152,17 @@ export default {
     close: '关 闭',
     add: '添 加',
     sure: '确 定',
-    uncommitted_tips: '有未提交的权限变更，是否提交？'
+    uncommitted_tips: '有未提交的权限变更，是否提交？',
+    use: '使用',
+    check: '查看',
+    export: '导出',
+    manage: '管理',
+    auth: '授权',
+    resource_name: '资源名称',
+    from_role: '继承自以下角色：',
+    auth_alone: '单独授权',
+    org_role_empty: '组织管理员已拥有所有资源的权限，无需再授权',
+    user_role_empty: '该用户是组织管理员，已拥有所有资源的权限，无需再授权'
   },
   datasource: {
     datasource: '数据源',
