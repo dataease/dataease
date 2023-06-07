@@ -11,6 +11,7 @@ import io.dataease.api.dataset.vo.DatasetTreeNodeVO;
 import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
 import io.dataease.api.permissions.auth.dto.BusiResourceCreator;
 import io.dataease.api.permissions.auth.dto.BusiResourceEditor;
+import io.dataease.api.permissions.auth.vo.BusiPerVO;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetGroup;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupMapper;
 import io.dataease.dataset.utils.TableUtils;
@@ -134,7 +135,11 @@ public class DatasetGroupManage {
         }
     }
 
-    public List<DatasetTreeNodeVO> tree(DatasetNodeDTO datasetNodeDTO) {
+    public List tree(DatasetNodeDTO datasetNodeDTO) {
+        if (ObjectUtils.isNotEmpty(interactiveAuthApi)) {
+            List<BusiPerVO> resource = interactiveAuthApi.resource(leafType);
+            return resource;
+        }
         QueryWrapper<CoreDatasetGroup> wrapper = new QueryWrapper<>();
         if (StringUtils.isNotEmpty(datasetNodeDTO.getNodeType())) {
             wrapper.eq("node_type", datasetNodeDTO.getNodeType());
