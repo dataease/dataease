@@ -23,6 +23,7 @@ const emptyDescription = ref('')
 const authTable = ref(null)
 const roleChecked = ref(true)
 const selectedRoleRootReadonly = ref(false)
+const loading = ref(false)
 interface Tree {
   id: string
   name: string
@@ -101,23 +102,23 @@ const state = reactive({
 state.roleList = [
   {
     id: 'admin',
-    name: '组织管理员',
+    name: t('role.org_admin'),
     children: null,
     disabled: true
   },
   {
     id: 'readonly',
-    name: '普通用户',
+    name: t('role.average_role'),
     children: null,
     disabled: true
   }
 ]
 state.globalColumn = [
-  { type: 'datasource, dataset, menu', label: '使用', weightLevel: 1 },
-  { type: 'panel, screen', label: '查看', weightLevel: 1 },
-  { type: 'panel, screen', label: '导出', weightLevel: 4 },
-  { type: 'datasource, dataset, panel, screen', label: '管理', weightLevel: 7 },
-  { label: '授权', weightLevel: 9 }
+  { type: 'datasource, dataset, menu', label: t('auth.use'), weightLevel: 1 },
+  { type: 'panel, screen', label: t('auth.check'), weightLevel: 1 },
+  { type: 'panel, screen', label: t('auth.export'), weightLevel: 4 },
+  { type: 'datasource, dataset, panel, screen', label: t('auth.manage'), weightLevel: 7 },
+  { label: t('auth.auth'), weightLevel: 9 }
 ]
 // 选中角色事件
 const roleNodeClick = (data: Tree) => {
@@ -187,27 +188,32 @@ const getColumn = (type: string) => {
 }
 
 const loadResourceTree = () => {
+  loading.value = true
   const id = selectedResourceType.value
   resourceTreeApi(id).then(res => {
     getColumn(id)
     state.tableData = res.data
     state.treeMap[id] = res.data
+    loading.value = false
   })
 }
 
 const loadUser = () => {
   const param = { keyword: nickName.value }
+  loading.value = true
   queryUserApi(param).then(res => {
     if (res?.data?.length) {
       state.userList = res.data
     } else {
       state.userList = []
     }
+    loading.value = false
   })
 }
 
 const loadRole = () => {
   const param = { keyword: nickName.value }
+  loading.value = true
   queryRoleApi(param).then(res => {
     if (res?.data?.length) {
       const roles = res.data
@@ -215,6 +221,7 @@ const loadRole = () => {
       state.roleList[0].children = map.get(false)
       state.roleList[1].children = map.get(true)
     }
+    loading.value = false
   })
 }
 const groupBy = (list: Tree[]) => {
@@ -232,6 +239,7 @@ const groupBy = (list: Tree[]) => {
   return map
 }
 const loadPermission = (type: number) => {
+  loading.value = true
   emptyDescription.value = ''
   resetTableData(state.tableData)
   state.expandedKeys = []
@@ -244,6 +252,7 @@ const loadPermission = (type: number) => {
       const permissionMap = groupPermission(vo)
 
       fillTableData(state.tableData, permissionMap)
+      loading.value = false
     })
     return
   }
@@ -259,14 +268,13 @@ const loadPermission = (type: number) => {
     }
     const permissionMap = groupPermission(vo)
     fillTableData(state.tableData, permissionMap)
+    loading.value = false
   })
 }
 
 const isOrgAdminPer = (vo, type) => {
   if (vo?.root && !vo.readonly) {
-    emptyDescription.value = type
-      ? '组织管理员已拥有所有资源的权限，无需再授权'
-      : '该用户是组织管理员，已拥有所有资源的权限，无需再授权'
+    emptyDescription.value = type ? t('auth.org_role_empty') : t('auth.user_role_empty')
     return true
   }
   fillOrgReadonly(vo)
@@ -278,17 +286,18 @@ const fillOrgReadonly = vo => {
   if (result) {
     const id = activeAuth.value === 'menu' ? 'menu' : selectedResourceType.value
     const data = state.treeMap[id]
-    const origin = { name: '普通员工', permissions: [] }
-    const stack = [...data]
-    while (stack.length > 0) {
-      const node = stack.pop()
-      origin.permissions.push({ id: node.id, weight: 1 })
-      if (node.children?.length) {
-        node.children.forEach(item => stack.push(item))
+    if (data) {
+      const origin = { name: t('role.average_role'), permissions: [] }
+      const stack = [...data]
+      while (stack.length > 0) {
+        const node = stack.pop()
+        origin.permissions.push({ id: node.id, weight: 1 })
+        if (node.children?.length) {
+          node.children.forEach(item => stack.push(item))
+        }
       }
+      vo.permissionOrigins.push(origin)
     }
-
-    vo.permissionOrigins.push(origin)
   }
   return result
 }
@@ -470,6 +479,7 @@ const removeFromUncommitted = id => {
   }
 }
 const save = callback => {
+  loading.value = true
   const param = {
     permissions: state.uncommitted,
     id: selectedTarget.value
@@ -484,6 +494,7 @@ const save = callback => {
     ElMessage.success(t('common.save_success'))
     loadPermission(param['type'] || 0)
     callback && callback instanceof Function && callback()
+    loading.value = false
   })
 }
 
@@ -557,7 +568,7 @@ defineExpose({
 </script>
 
 <template>
-  <div class="user-role">
+  <div class="user-role" v-loading="loading">
     <div class="filter-user-role">
       <el-tabs
         class="tabs-mr"
@@ -613,8 +624,8 @@ defineExpose({
         @tab-change="authActiveChange"
         :before-leave="beforeActiveAuthChange"
       >
-        <el-tab-pane label="资源权限" name="resource"></el-tab-pane>
-        <el-tab-pane v-if="activeName === 'role'" label="菜单和操作权限" name="menu"></el-tab-pane>
+        <el-tab-pane :label="t('auth.resource')" name="resource"></el-tab-pane>
+        <el-tab-pane v-if="activeName === 'role'" :label="t('auth.menu')" name="menu"></el-tab-pane>
       </el-tabs>
       <el-input class="search-table-input" v-model="nickName" clearable>
         <template #prefix>
@@ -657,7 +668,7 @@ defineExpose({
           :expand-row-keys="state.expandedKeys"
           :tree-props="{ children: 'children' }"
         >
-          <el-table-column prop="name" show-overflow-tooltip label="资源名称" />
+          <el-table-column prop="name" show-overflow-tooltip :label="t('auth.resource_name')" />
           <el-table-column
             v-for="item in state.tableColumn"
             :key="item.label"
@@ -686,14 +697,15 @@ defineExpose({
                   ></el-checkbox>
                 </template>
                 <div class="role-auth-tips">
-                  <span>继承自以下角色：</span>
+                  <span>{{ t('auth.from_role') }}</span>
                   <span
                     :key="rname"
                     v-for="(rname, index) in scope.row['level' + item.weightLevel]['roles']"
                     >{{ index + 1 + '、' + rname }}</span
                   >
                   <span
-                    >单独授权<el-switch
+                    >{{ t('auth.auth_alone')
+                    }}<el-switch
                       class="independent-auth"
                       size="small"
                       v-model="scope.row['independent' + item.weightLevel]"
