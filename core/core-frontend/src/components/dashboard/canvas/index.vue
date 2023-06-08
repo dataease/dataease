@@ -21,7 +21,7 @@
         :key="'item' + index"
         :style="nowItemStyle(item, index)"
       >
-        <db-drag-area></db-drag-area>
+        <db-drag-area :index="index" :item="item"></db-drag-area>
         <db-shape :index="index" :item="item" :canvas-view-info="canvasViewInfo"></db-shape>
         <span
           class="resizeHandle"
@@ -670,6 +670,7 @@ const containerMouseDown = e => {
 }
 
 const endItemMove = (e, item, index) => {
+  console.log('endItemMove')
   dvMainStore.setCurComponent({ component: item, index: index })
   dvMainStore.setClickComponentStatus(true)
   dvMainStore.setInEditorStatus(true)
@@ -857,6 +858,7 @@ const startMove = (e, item, index) => {
 }
 
 const endMove = e => {
+  console.log('endMove....')
   return {}
 }
 
@@ -866,6 +868,12 @@ const endMoveI = e => {
 
 const moving = e => {
   return {}
+}
+
+const canvasSizeInit = () => {
+  cellWidth.value = baseWidth.value + baseMarginLeft.value
+  cellHeight.value = baseHeight.value + baseMarginTop.value
+  reCalcCellWidth()
 }
 
 const canvasInit = () => {
@@ -952,6 +960,7 @@ const addItemBox = item => {
 }
 
 defineExpose({
+  canvasSizeInit,
   canvasInit,
   afterInitOk,
   addItemBox

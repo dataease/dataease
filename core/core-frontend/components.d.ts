@@ -30,6 +30,7 @@ declare module '@vue/runtime-core' {
     DrawerMain: typeof import('./src/components/drawer-main/src/DrawerMain.vue')['default']
     DvSidebar: typeof import('./src/components/visualization/DvSidebar.vue')['default']
     DvToolbar: typeof import('./src/components/data-visualization/DvToolbar.vue')['default']
+    EditBar: typeof import('./src/components/dashboard/EditBar.vue')['default']
     ElAutocomplete: typeof import('element-plus-secondary/es')['ElAutocomplete']
     ElAutoResizer: typeof import('element-plus-secondary/es')['ElAutoResizer']
     ElButton: typeof import('element-plus-secondary/es')['ElButton']
