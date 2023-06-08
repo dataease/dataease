@@ -84,7 +84,6 @@ export const dvMainStore = defineStore('dataVisualization', {
     },
 
     setCurComponent({ component, index }) {
-      console.log('setCurComponent-----' + JSON.stringify(component))
       this.curComponent = component
       this.curComponentIndex = index
     },

@@ -208,6 +208,7 @@ onMounted(() => {
       dvMainStore.updateCurDvInfo(bashInfo)
       //恢复画布数据
       restore(canvasInfo.componentData, canvasInfo.canvasStyleData, canvasInfo.canvasViewInfo)
+      canvasInit()
     })
   } else {
     dvMainStore.updateCurDvInfo({
@@ -217,8 +218,8 @@ onMounted(() => {
       status: null,
       selfWatermarkStatus: null
     })
+    canvasInit()
   }
-  canvasInit()
   window.addEventListener('resize', canvasSizeInit)
   const erd = elementResizeDetectorMaker()
   erd.listenTo(document.getElementById('dashboardMainCanvas'), element => {
