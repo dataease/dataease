@@ -3,13 +3,13 @@ import EmptyBackground from '@/components/empty-background/src/EmptyBackground.v
 import { Icon } from '@/components/icon-custom'
 import { ElIcon, ElDropdown, ElDropdownItem, ElDropdownMenu } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
-import { ref, nextTick, shallowRef, reactive, computed, PropType } from 'vue'
+import { ref, nextTick, shallowRef, reactive, computed, PropType, toRefs } from 'vue'
 import { ElTree, ElMessage, ElMessageBox } from 'element-plus-secondary'
-import { tableUpdate } from '@/api/dataset'
+import { save } from '@/api/datasource'
 import type { Action } from 'element-plus-secondary'
+import { Base64 } from 'js-base64'
 export interface Param {
   editType: number
-  tableId: number
   id: number
   table: {
     name: string
@@ -18,10 +18,10 @@ export interface Param {
 
 export interface Field {
   accuracy: number
-  fieldName: string
+  originName: string
   fieldSize: number
   fieldType: string
-  remarks: string
+  name: string
 }
 const props = defineProps({
   param: {
@@ -29,6 +29,9 @@ const props = defineProps({
     default: () => ({})
   }
 })
+
+const { param } = toRefs(props)
+
 const { t } = useI18n()
 const token = 'token'
 const RefreshTokenKey = 'RefreshTokenKey'
@@ -591,7 +594,7 @@ const mockData = {
           '水电生产电力量(亿千瓦小时)': '8721.1'
         }
       ],
-      datasetName: '测试Excel导入2',
+      tableName: '测试Excel导入2',
       sheetExcelId: 'd648c91d-3f4f-478b-804f-fef773d10e2d',
       id: 'd9e64c0b-9a2a-4d55-b5c6-4f7760cbc05e',
       path: '/opt/dataease/data/kettle/admin/d648c91d-3f4f-478b-804f-fef773d10e2d.xlsx',
@@ -621,7 +624,7 @@ const fieldOptions = [
   }
 ]
 const sheetObj = reactive({
-  datasetName: ' ',
+  tableName: ' ',
   sheetExcelId: '',
   fields: [],
   jsonArray: [],
@@ -663,14 +666,14 @@ const handleCheckChange = (data, checked) => {
 }
 const nameExistValidator = (ele, checkList) => {
   ele.nameExist =
-    nameListCopy.value.concat(checkList).filter(name => name === ele.datasetName).length > 1
+    nameListCopy.value.concat(checkList).filter(name => name === ele.tableName).length > 1
 }
 const validateName = () => {
-  const checkList = tree.value.getCheckedNodes().map(ele => ele.datasetName)
+  const checkList = tree.value.getCheckedNodes().map(ele => ele.tableName)
   state.excelData
     .reduce((pre, next) => pre.concat(next.sheets), [])
     .forEach(ele => {
-      if (checkList.includes(ele.datasetName)) {
+      if (checkList.includes(ele.tableName)) {
         nameExistValidator(ele, checkList)
         nameLengthValidator(ele)
       } else {
@@ -691,10 +694,10 @@ const fieldType = {
 
 const generateColumns = (arr: Field[]) =>
   arr.map(ele => ({
-    key: ele.fieldName,
+    key: ele.originName,
     fieldType: ele.fieldType,
-    dataKey: ele.fieldName,
-    title: ele.remarks,
+    dataKey: ele.originName,
+    title: ele.name,
     width: 150,
     headerCellRenderer: ({ column }) => (
       <div style={{ width: '100%', display: 'flex', alignItems: 'center' }}>
@@ -736,15 +739,17 @@ const generateColumns = (arr: Field[]) =>
   }))
 const nameLengthValidator = ele => {
   Object.assign(ele, {
-    empty: !ele.datasetName.length,
-    overLength: ele.datasetName.length > 50
+    empty: !ele.tableName.length,
+    overLength: ele.tableName.length > 50
   })
 }
 const handleNodeClick = data => {
+  console.log(data)
   if (data.sheet) {
     Object.assign(sheetObj, data)
     columns.value = generateColumns(data.fields)
   }
+  console.log(columns.value)
 }
 const handleCommand = (type, field) => {
   sheetObj.fields.some(ele => {
@@ -776,6 +781,7 @@ const changeDatasetName = () => {
 }
 
 const beforeUpload = () => {
+  console.log(param)
   uploading.value = true
 }
 
@@ -789,31 +795,32 @@ const excelSave = () => {
 }
 
 const uploadSuccess = (response, _, fileList) => {
+  editeTableField.value = true
   uploading.value = false
   state.excelData.push(response.data)
-  state.defaultExpandedKeys.push(response.data.id)
-  state.defaultCheckedKeys.push(response.data.sheets[0].id)
+  console.log(state.excelData)
+  // state.defaultExpandedKeys.push(response.data.id)
+  // state.defaultCheckedKeys.push(response.data.sheets[0].id)
   nextTick(() => {
-    tree.value.setCheckedKeys(state.defaultCheckedKeys)
+    // tree.value.setCheckedKeys(state.defaultCheckedKeys)
   })
   state.fileList = fileList
-
-  if (response.headers[RefreshTokenKey]) {
-    // const refreshToken = response.headers[RefreshTokenKey]
-    // setToken(refreshToken)
-    // store.dispatch('user/refreshToken', refreshToken)
-  }
+  // if (response.headers[RefreshTokenKey]) {
+  // const refreshToken = response.headers[RefreshTokenKey]
+  // setToken(refreshToken)
+  // store.dispatch('user/refreshToken', refreshToken)
+  // }
 }
-uploadSuccess({ data: mockData, headers: {} }, '', [])
+// uploadSuccess({ data: mockData, headers: {} }, '', [])
 
-const save = () => {
+const saveExcelDs = () => {
   let validate = true
   let selectedSheet = []
   let sheetFileMd5 = []
   let effectExtField = false
   let changeFiled = false
   let selectNode = tree.value.getCheckedNodes()
-  if (!props.param.tableId && selectNode.some(ele => ele.nameExist)) {
+  if (!props.param.id && selectNode.some(ele => ele.nameExist)) {
     ElMessage({
       message: t('deDataset.cannot_be_duplicate'),
       type: 'error'
@@ -822,7 +829,7 @@ const save = () => {
   }
   for (let i = 0; i < selectNode.length; i++) {
     if (selectNode[i].sheet) {
-      if (!selectNode[i].datasetName || selectNode[i].datasetName === '') {
+      if (!selectNode[i].tableName || selectNode[i].tableName === '') {
         validate = false
         ElMessage({
           message: t('dataset.pls_input_name'),
@@ -830,7 +837,7 @@ const save = () => {
         })
         return
       }
-      if (selectNode[i].datasetName.length > 50 && !props.param.tableId) {
+      if (selectNode[i].tableName.length > 50 && !props.param.id) {
         validate = false
         ElMessage({
           message: t('dataset.char_can_not_more_50'),
@@ -860,30 +867,25 @@ const save = () => {
   }
 
   let table = {}
-  if (!props.param.tableId) {
+  if (!props.param.id) {
     table = {
-      id: props.param.tableId,
-      sceneId: props.param.id,
-      dataSourceId: null,
-      type: 'excel',
+      id: props.param.id,
+      name: dsName.value,
+      type: 'Excel',
       sheets: selectedSheet,
-      mode: 1,
       editType: 0
     }
   } else {
     table = {
-      id: props.param.tableId,
-      name: props.param.table.name,
-      sceneId: props.param.id,
-      dataSourceId: null,
-      type: 'excel',
+      id: props.param.id,
+      name: dsName.value,
+      type: 'Excel',
       sheets: selectedSheet,
-      mode: 1,
       editType: props.param.editType ? props.param.editType : 0
     }
   }
 
-  if (props.param.editType === 0 && props.param.tableId && (effectExtField || changeFiled)) {
+  if (props.param.editType === 0 && props.param.id && (effectExtField || changeFiled)) {
     ElMessageBox.confirm(t('deDataset.replace_the_data'), {
       confirmButtonText: t('common.confirm'),
       tip: '替换可能会影响自定义数据集、关联数据集、仪表板等，是否替换？',
@@ -904,7 +906,8 @@ const save = () => {
 }
 
 const saveExcelData = (sheetFileMd5, table) => {
-  if (new Set(sheetFileMd5).size !== sheetFileMd5.length && !props.param.tableId) {
+  table.configuration = Base64.encode(JSON.stringify(table.sheets))
+  if (new Set(sheetFileMd5).size !== sheetFileMd5.length && !props.param.id) {
     ElMessageBox.confirm(t('dataset.merge_title'), {
       confirmButtonText: t('dataset.merge'),
       tip: t('dataset.task.excel_replace_msg'),
@@ -917,7 +920,7 @@ const saveExcelData = (sheetFileMd5, table) => {
         loading.value = true
         table.mergeSheet = action === 'confirm'
         if (action === 'confirm') {
-          tableUpdate(table)
+          save(table)
             .then(() => {
               ElMessage({
                 message: t('dataset.set_saved_successfully'),
@@ -930,7 +933,7 @@ const saveExcelData = (sheetFileMd5, table) => {
         }
 
         if (action === 'cancel') {
-          tableUpdate(table)
+          save(table)
             .then(() => {
               ElMessage({
                 message: t('dataset.set_saved_successfully'),
@@ -946,7 +949,7 @@ const saveExcelData = (sheetFileMd5, table) => {
   } else {
     if (loading.value) return
     loading.value = true
-    tableUpdate(table)
+    save(table)
       .then(() => {
         ElMessage({
           message: t('dataset.set_saved_successfully'),
@@ -962,16 +965,19 @@ const saveExcelData = (sheetFileMd5, table) => {
 const dsName = ref('')
 
 defineExpose({
-  save
+  saveExcelDs
 })
 </script>
 
 <template>
   <div class="excel-detail">
     <el-form label-position="top">
+      <el-form-item :label="t('common.name')">
+        <el-input v-model="dsName" :placeholder="t('datasource.input_name')" />
+      </el-form-item>
       <el-form-item class="upload-excel">
         <el-upload
-          :action="baseUrl + 'dataset/table/excel/upload'"
+          :action="baseUrl + 'api/datasource/uploadFile'"
           :multiple="false"
           :show-file-list="false"
           :file-list="state.fileList"
@@ -995,10 +1001,6 @@ defineExpose({
         </el-upload>
         <p style="width: 100%">温馨提示: 请上传csv,xlsx,xls格式的文件</p>
       </el-form-item>
-
-      <el-form-item :label="t('datasource.username')">
-        <el-input v-model="dsName" :placeholder="t('datasource.username')" />
-      </el-form-item>
     </el-form>
     <el-dialog fullscreen class="excel-dialog-fullscreen" append-to-body v-model="editeTableField">
       <div class="table-checkbox-list">
@@ -1018,10 +1020,7 @@ defineExpose({
           <template #default="{ data }">
             <span :title="data.excelLabel" class="custom-tree-node">
               <span class="label">{{ data.excelLabel }}</span>
-              <span
-                v-if="(data.nameExist && !param.tableId) || data.empty || data.overLength"
-                class="error-name-exist"
-              >
+              <span class="error-name-exist">
                 <el-icon>
                   <Icon name="ds-icon-scene"></Icon>
                 </el-icon>
@@ -1041,13 +1040,15 @@ defineExpose({
           <div class="dataset">
             <span class="name">{{ t('dataset.name') }}</span>
             <el-input
-              v-model="sheetObj.datasetName"
+              v-model="sheetObj.tableName"
               :placeholder="t('common.name')"
               size="small"
               @change="changeDatasetName"
             />
             <div
-              v-if="(sheetObj.nameExist && !param.tableId) || sheetObj.empty || sheetObj.overLength"
+              v-if="
+                (sheetObj.nameExist && !param.datasourceId) || sheetObj.empty || sheetObj.overLength
+              "
               style="top: 52px; left: 107px"
               class="el-form-item__error"
             >

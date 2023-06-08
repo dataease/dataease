@@ -11,7 +11,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-05-25
+ * @since 2023-06-08
  */
 @TableName("core_datasource_task_log")
 public class CoreDatasourceTaskLog implements Serializable {
@@ -25,9 +25,9 @@ public class CoreDatasourceTaskLog implements Serializable {
     private Long id;
 
     /**
-     * 表ID
+     * 数据源ID
      */
-    private String tableId;
+    private Long dsId;
 
     /**
      * 任务ID
@@ -69,12 +69,12 @@ public class CoreDatasourceTaskLog implements Serializable {
         this.id = id;
     }
 
-    public String getTableId() {
-        return tableId;
+    public Long getDsId() {
+        return dsId;
     }
 
-    public void setTableId(String tableId) {
-        this.tableId = tableId;
+    public void setDsId(Long dsId) {
+        this.dsId = dsId;
     }
 
     public Long getTaskId() {
@@ -137,7 +137,7 @@ public class CoreDatasourceTaskLog implements Serializable {
     public String toString() {
         return "CoreDatasourceTaskLog{" +
         "id = " + id +
-        ", tableId = " + tableId +
+        ", dsId = " + dsId +
         ", taskId = " + taskId +
         ", startTime = " + startTime +
         ", endTime = " + endTime +

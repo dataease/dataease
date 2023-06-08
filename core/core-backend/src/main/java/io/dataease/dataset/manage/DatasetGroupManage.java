@@ -136,10 +136,13 @@ public class DatasetGroupManage {
     }
 
     public List tree(DatasetNodeDTO datasetNodeDTO) {
-//        if (ObjectUtils.isNotEmpty(interactiveAuthApi)) {
-//            List<BusiPerVO> resource = interactiveAuthApi.resource(leafType);
-//            return resource;
-//        }
+        if (ObjectUtils.isNotEmpty(interactiveAuthApi)) {
+            List<BusiPerVO> resource = interactiveAuthApi.resource(leafType);
+            if (StringUtils.equalsIgnoreCase("folder", datasetNodeDTO.getNodeType())) {
+                filterNode(resource);
+            }
+            return resource;
+        }
         QueryWrapper<CoreDatasetGroup> wrapper = new QueryWrapper<>();
         if (StringUtils.isNotEmpty(datasetNodeDTO.getNodeType())) {
             wrapper.eq("node_type", datasetNodeDTO.getNodeType());
@@ -151,6 +154,17 @@ public class DatasetGroupManage {
             return vo;
         }).collect(Collectors.toList());
         return TreeUtils.mergeTree(collect);
+    }
+
+    public void filterNode(List<BusiPerVO> list) {
+        if (ObjectUtils.isNotEmpty(list)) {
+            list.removeIf(BusiPerVO::getLeaf);
+            for (BusiPerVO dto : list) {
+                if (ObjectUtils.isNotEmpty(dto.getChildren())) {
+                    filterNode(dto.getChildren());
+                }
+            }
+        }
     }
 
     public void checkName(DatasetGroupInfoDTO dto) {

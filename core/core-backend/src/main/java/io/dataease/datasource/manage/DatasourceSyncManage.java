@@ -12,6 +12,7 @@ import io.dataease.datasource.dao.auto.entity.CoreDeEngine;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
 import io.dataease.datasource.provider.ApiUtils;
 import io.dataease.datasource.provider.EngineProvider;
+import io.dataease.datasource.provider.ExcelUtils;
 import io.dataease.datasource.provider.ProviderUtil;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.datasource.request.EngineRequest;
@@ -44,7 +45,7 @@ public class DatasourceSyncManage {
     @Resource
     private ScheduleManager scheduleManager;
 
-    public void extractExcelData(String datasourceId, String type) {
+    public void extractExcelData(Long datasourceId, String type) {
         CoreDatasource coreDatasource = datasourceMapper.selectById(datasourceId);
         if (coreDatasource == null) {
             LogUtil.error("Can not find CoreDatasource: " + datasourceId);
@@ -60,19 +61,19 @@ public class DatasourceSyncManage {
         try {
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(coreDatasource);
-            List<DatasetTableDTO> tables = ApiUtils.getTables(datasourceRequest);
+            List<DatasetTableDTO> tables = ExcelUtils.getTables(datasourceRequest);
             int sucsess = 0;
             for (DatasetTableDTO api : tables) {
                 datasourceRequest.setTable(api.getTableName());
                 try {
                     datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Begin to sync datatable: " + datasourceRequest.getTable());
                     datasourceTaskServer.saveLog(datasetTableTaskLog);
-                    List<TableField> tableFields = ApiUtils.getTableFields(datasourceRequest);
+                    List<TableField> tableFields = ExcelUtils.getTableFields(datasourceRequest);
                     createEngineTable(datasourceRequest.getTable(), tableFields);
                     if (updateType.equals(DatasourceServer.UpdateType.all_scope)) {
                         createEngineTable(TableUtils.tmpName(datasourceRequest.getTable()), tableFields);
                     }
-                    extractApiData(datasourceRequest, updateType);
+                    extractExcelData(datasourceRequest, updateType);
                     if (updateType.equals(DatasourceServer.UpdateType.all_scope)) {
                         replaceTable(datasourceRequest.getTable());
                     }
@@ -110,10 +111,10 @@ public class DatasourceSyncManage {
     }
 
 
-    public void extractData(String datasourceId, Long taskId, String type, JobExecutionContext context) {
+    public void extractData(Long datasourceId, Long taskId, String type, JobExecutionContext context) {
         CoreDatasource coreDatasource = datasourceMapper.selectById(datasourceId);
         if (coreDatasource == null) {
-            LogUtil.error("Can not find DatasetTable: " + datasourceId);
+            LogUtil.error("Can not find datasource: " + datasourceId);
             return;
         }
         CoreDatasourceTask coreDatasourceTask = datasourceTaskServer.selectById(taskId);
@@ -233,6 +234,35 @@ public class DatasourceSyncManage {
             totalPage = dataList.size() / pageNumber;
         }
 
+        for (int page = 1; page <= totalPage; page++) {
+            engineRequest.setQuery(engineProvider.insertSql(engineTableName, dataList, page, pageNumber));
+            engineProvider.exec(engineRequest);
+        }
+    }
+
+    private void extractExcelData(DatasourceRequest datasourceRequest, DatasourceServer.UpdateType extractType) throws Exception {
+        List<String[]> dataList = ExcelUtils.fetchDataList(datasourceRequest);
+        String engineTableName;
+        switch (extractType) {
+            case all_scope:
+                engineTableName = TableUtils.tmpName(TableUtils.tableName(datasourceRequest.getTable()));
+                break;
+            default:
+                engineTableName = TableUtils.tableName(datasourceRequest.getTable());
+                break;
+        }
+        CoreDeEngine engine = engineServer.info();
+
+        EngineRequest engineRequest = new EngineRequest();
+        engineRequest.setEngine(engine);
+        EngineProvider engineProvider = ProviderUtil.getEngineProvider(engine.getType());
+        int pageNumber = 1000; //一次插入 1000条
+        int totalPage;
+        if (dataList.size() % pageNumber > 0) {
+            totalPage = dataList.size() / pageNumber + 1;
+        } else {
+            totalPage = dataList.size() / pageNumber;
+        }
         for (int page = 1; page <= totalPage; page++) {
             engineRequest.setQuery(engineProvider.insertSql(engineTableName, dataList, page, pageNumber));
             engineProvider.exec(engineRequest);

@@ -218,7 +218,7 @@ DROP TABLE IF EXISTS `core_datasource_task_log`;
 CREATE TABLE `core_datasource_task_log`
 (
     `id`           bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
-    `table_id`     varchar(50) NOT NULL COMMENT '表ID',
+    `ds_id`         bigint(13) NOT NULL COMMENT '数据源ID',
     `task_id`      bigint(13) DEFAULT NULL COMMENT '任务ID',
     `start_time`   bigint(13) DEFAULT NULL COMMENT '开始时间',
     `end_time`     bigint(13) DEFAULT NULL COMMENT '结束时间',
@@ -227,7 +227,7 @@ CREATE TABLE `core_datasource_task_log`
     `create_time`  bigint(13) DEFAULT NULL COMMENT '创建时间',
     `trigger_type` varchar(45) DEFAULT NULL,
     PRIMARY KEY (`id`),
-    KEY            `idx_dataset_table_task_log_table_id` (`table_id`),
+    KEY            `idx_dataset_table_task_log_ds_id` (`ds_id`),
     KEY            `idx_dataset_table_task_log_task_id` (`task_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 

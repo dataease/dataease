@@ -1,10 +1,26 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { Icon } from '@/components/icon-custom'
+import { useUserStoreWithOut } from '@/store/modules/user'
+import { usePermissionStoreWithOut } from '@/store/modules/permission'
+import { switchLangApi } from '@/api/user'
+const permissionStore = usePermissionStoreWithOut()
+const userStore = useUserStoreWithOut()
 const language = ref(null)
 const handleSetLanguage = lang => {
-  language.value = lang
+  const param = { lang }
+  switchLangApi(param).then(res => {
+    if (!res.msg) {
+      language.value = lang
+      userStore.setLanguage(lang)
+      permissionStore.$reset()
+      window.location.reload()
+    }
+  })
 }
+onMounted(() => {
+  language.value = userStore.getLanguage
+})
 </script>
 <template>
   <el-dropdown
@@ -18,15 +34,11 @@ const handleSetLanguage = lang => {
     </el-icon>
     <template #dropdown>
       <el-dropdown-menu>
-        <el-dropdown-item :disabled="language === 'zh_CN'" command="zh_CN">
-          简体中文
-        </el-dropdown-item>
-        <el-dropdown-item :disabled="language === 'zh_TW'" command="zh_TW">
-          繁体中文
-        </el-dropdown-item>
-        <el-dropdown-item :disabled="language === 'en_US'" command="en_US">
-          English
-        </el-dropdown-item>
+        <el-dropdown-item :disabled="language === 'zh-CN'" command="zh-CN"
+          >简体中文</el-dropdown-item
+        >
+        <el-dropdown-item :disabled="language === 'tw'" command="tw"> 繁體中文 </el-dropdown-item>
+        <el-dropdown-item :disabled="language === 'en'" command="en"> English </el-dropdown-item>
       </el-dropdown-menu>
     </template>
   </el-dropdown>

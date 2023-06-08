@@ -90,7 +90,7 @@ public class DatasourceTaskServer {
         return extDatasourceTaskMapper.taskWithTriggers(gridExample);
     }
 
-    public synchronized boolean existUnderExecutionTask(String datasourceId, Long taskId, Long startTime) {
+    public synchronized boolean existUnderExecutionTask(Long datasourceId, Long taskId, Long startTime) {
         UpdateWrapper<CoreDatasource> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("id", datasourceId);
         updateWrapper.ne("task_status", TaskStatus.UnderExecution.name());
@@ -109,9 +109,9 @@ public class DatasourceTaskServer {
         return existSyncTask;
     }
 
-    public CoreDatasourceTaskLog initTaskLog(String datasourceId, Long taskId, Long startTime, String datasourceName) {
+    public CoreDatasourceTaskLog initTaskLog(Long datasourceId, Long taskId, Long startTime, String datasourceName) {
         CoreDatasourceTaskLog coreDatasourceTaskLog = new CoreDatasourceTaskLog();
-        coreDatasourceTaskLog.setTableId(datasourceId);
+        coreDatasourceTaskLog.setDsId(datasourceId);
         coreDatasourceTaskLog.setTaskId(taskId);
         coreDatasourceTaskLog.setStatus(TaskStatus.UnderExecution.name());
         coreDatasourceTaskLog.setTriggerType(TriggerType.Cron.name());
