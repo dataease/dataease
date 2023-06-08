@@ -1,6 +1,7 @@
 package io.dataease.api.permissions.role.api;
 
 import io.dataease.api.permissions.role.dto.*;
+import io.dataease.api.permissions.role.vo.ExternalUserVO;
 import io.dataease.api.permissions.role.vo.RoleDetailVO;
 import io.dataease.api.permissions.role.vo.RoleVO;
 import io.dataease.model.KeywordRequest;
@@ -25,8 +26,11 @@ public interface RoleApi {
     @PostMapping("/mountUser")
     void mountUser(@RequestBody MountUserRequest request);
 
-    @PostMapping("/mountExternalUser/{uId}")
-    void mountExternalUser(@PathVariable("uId") Long uId);
+    @PostMapping("/mountExternalUser")
+    void mountExternalUser(@RequestBody MountExternalUserRequest request);
+
+    @GetMapping("/searchExternalUser/{keyword}")
+    ExternalUserVO searchExternalUser(@PathVariable("keyword") String keyword);
 
     @PostMapping("/unMountUser")
     void unMountUser(@RequestBody UnmountUserRequest request);

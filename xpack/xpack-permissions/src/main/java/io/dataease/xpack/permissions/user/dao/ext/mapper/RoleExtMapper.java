@@ -2,6 +2,7 @@ package io.dataease.xpack.permissions.user.dao.ext.mapper;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import io.dataease.api.permissions.role.vo.ExternalUserVO;
 import io.dataease.xpack.permissions.user.dao.auto.entity.PerRole;
 import io.dataease.xpack.permissions.user.dao.ext.entity.RolePO;
 import io.dataease.xpack.permissions.user.entity.RoleInfo;
@@ -56,4 +57,14 @@ public interface RoleExtMapper extends BaseMapper<RolePO> {
 
     @Select("select id from per_role where org_id = #{oid} and pid = 0 and readonly = 1")
     Long readonlyRoleId(@Param("oid") Long oid);
+
+    @Select("""
+            select pu.id as uid, account, name, email, phone_prefix, phone
+            from 
+            (select id, account, name, email, phone_prefix, phone from per_user where id = #{keyword} or account = #{keyword}) as pu
+            where not exists (
+                select 1 from per_user_role pur where pur.uid = pu.id and pur.oid = #{oid}
+            )
+            """)
+    ExternalUserVO queryExternalUser(@Param("oid") Long oid, @Param("keyword") String keyword);
 }

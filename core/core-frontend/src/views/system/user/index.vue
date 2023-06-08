@@ -261,16 +261,16 @@ const saveHandler = () => {
     svg {
       width: 16px;
       height: 16px;
-      color: var(--el-text-color-regular);
-      background-color: var(--el-color-white);
+      color: var(--ed-text-color-regular);
+      background-color: var(--ed-color-white);
     }
   }
 
   div:hover {
     cursor: pointer;
     svg {
-      color: var(--el-color-primary) !important;
-      background: var(--el-color-primary-light-7) !important;
+      color: var(--ed-color-primary) !important;
+      background: var(--ed-color-primary-light-7) !important;
     }
   }
 }
