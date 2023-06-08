@@ -45,3 +45,5 @@ export const searchExternalUserApi = keyword =>
   request.get({ url: '/role/searchExternalUser/' + keyword })
 
 export const mountExternalUserApi = data => request.post({ url: '/role/mountExternalUser', data })
+
+export const switchLangApi = data => request.post({ url: '/user/switchLanguage', data })

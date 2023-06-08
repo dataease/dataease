@@ -236,4 +236,8 @@ public class UserPageManage {
         QueryWrapper<PerUser> queryWrapper = new QueryWrapper<>();
         return perUserMapper.selectCount(queryWrapper).intValue();
     }
+
+    public void switchLang(Long id, String lang) {
+        userExtMapper.updateLanguage(id, lang);
+    }
 }
