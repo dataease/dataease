@@ -42,6 +42,13 @@ export const routes: AppRouteRecordRaw[] = [
     component: () => import('@/views/dashboard/index.vue')
   },
   {
+    path: '/dashboardPreview',
+    name: 'dashboardPreview',
+    hidden: true,
+    meta: {},
+    component: () => import('@/views/dashboard/DashboardPreviewShow.vue')
+  },
+  {
     path: '/chart',
     name: 'chart',
     hidden: true,

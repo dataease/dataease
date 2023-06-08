@@ -1,9 +1,8 @@
 <script lang="ts" setup>
-import FilterConfig from './filter-config/index.vue'
+import DashboardPreviewShow from '@/views/dashboard/DashboardPreviewShow.vue'
 </script>
-
 <template>
-  <FilterConfig></FilterConfig>
+  <dashboard-preview-show></dashboard-preview-show>
 </template>
 
 <style lang="less" scoped></style>

@@ -78,12 +78,14 @@ public interface MenuAuthExtMapper {
     List<PermissionItem> voidQuery(@Param("rid") Long rid);
 
     @Select("""
+            <script>
             select distinct resource_id
             from per_auth_menu
             where rid in 
-            <foreach item='rid' index='index' collection='rids' open='(' separator=',' close=')'>
+            <foreach collection='rids' item='rid' index='index' open='(' separator=',' close=')'>
             #{rid}
             </foreach>
+            </script>
             """)
-    List<Long> interactiveMenuIds(List<Long> rids);
+    List<Long> interactiveMenuIds(@Param("rids") List<Long> rids);
 }

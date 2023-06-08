@@ -52,7 +52,7 @@ const htmlToImage = () => {
 <template>
   <div class="dv-preview">
     <el-aside class="resource-area">
-      <de-resource-tree @node-click="loadCanvasData"></de-resource-tree>
+      <de-resource-tree :cur-canvas-type="'dataV'" @node-click="loadCanvasData"></de-resource-tree>
     </el-aside>
     <el-container class="preview-area">
       <template v-if="dvInfo.name">

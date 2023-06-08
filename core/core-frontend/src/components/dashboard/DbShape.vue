@@ -1,38 +1,13 @@
-<template>
-  <div class="shape" :class="{ active }">
-    <component
-      :is="findComponent(item.component)"
-      v-if="item.component != 'VText'"
-      :id="'component' + item.id"
-      class="component"
-      :style="getComponentStyle(item.style)"
-      :prop-value="item.propValue"
-      :element="item"
-      :request="item.request"
-    />
-
-    <component
-      :is="findComponent(item.component)"
-      v-else
-      :id="'component' + item.id"
-      class="component"
-      :style="getComponentStyle(item.style)"
-      :prop-value="item.propValue"
-      :element="item"
-      :request="item.request"
-      @input="handleInput"
-    />
-  </div>
-</template>
-
 <script setup lang="ts">
-import { toRefs } from 'vue'
+import { nextTick, toRefs } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import { storeToRefs } from 'pinia'
 import findComponent from '@/utils/components'
 import { getStyle } from '@/utils/style'
+import eventBus from '@/utils/eventBus'
+import { isPreventDrop } from '@/utils/utils'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const composeStore = composeStoreWithOut()
@@ -40,6 +15,37 @@ const svgFilterAttrs = ['width', 'height', 'top', 'left', 'rotate']
 
 const { curComponent } = storeToRefs(dvMainStore)
 const { editor } = storeToRefs(composeStore)
+
+const props = defineProps({
+  canvasViewInfo: Object,
+  active: {
+    type: Boolean,
+    default: false
+  },
+  item: {
+    required: true,
+    type: Object,
+    default() {
+      return {
+        component: null,
+        propValue: null,
+        request: null,
+        linkage: null,
+        type: null,
+        events: null,
+        style: null,
+        id: null
+      }
+    }
+  },
+  index: {
+    required: true,
+    type: [Number, String],
+    default: 0
+  }
+})
+
+const { active, item, index, canvasViewInfo } = toRefs(props)
 
 const getTextareaHeight = (element, text) => {
   let { lineHeight, fontSize, height } = element.style
@@ -71,42 +77,71 @@ const selectCurComponent = e => {
   e.preventDefault()
 }
 
-const props = defineProps({
-  active: {
-    type: Boolean,
-    default: false
-  },
-  item: {
-    required: true,
-    type: Object,
-    default() {
-      return {
-        component: null,
-        propValue: null,
-        request: null,
-        linkage: null,
-        type: null,
-        events: null,
-        style: null,
-        id: null
-      }
-    }
-  },
-  index: {
-    required: true,
-    type: [Number, String],
-    default: 0
+const handleMouseDownOnShape = e => {
+  // 将当前点击组件的事件传播出去
+  nextTick(() => eventBus.emit('componentClick'))
+  dvMainStore.setInEditorStatus(true)
+  dvMainStore.setClickComponentStatus(true)
+  if (isPreventDrop(item.value.component)) {
+    e.preventDefault()
   }
-})
-
-const { active, item, index } = toRefs(props)
+  e.stopPropagation()
+  dvMainStore.setCurComponent({ component: item.value, index: index.value })
+}
 </script>
+
+<template>
+  <div
+    class="shape"
+    :class="{ active }"
+    @click="selectCurComponent"
+    @mousedown="handleMouseDownOnShape"
+  >
+    <!--如果是视图 则动态获取预存的chart-view数据-->
+    <component
+      :is="findComponent(item.component)"
+      v-if="item.component === 'UserView'"
+      :id="'component' + item.id"
+      class="component"
+      :style="getComponentStyle(item.style)"
+      :prop-value="item.propValue"
+      :view="canvasViewInfo[item.id]"
+      :element="item"
+      :request="item.request"
+      @input="handleInput"
+    />
+
+    <component
+      :is="findComponent(item.component)"
+      v-else-if="item.component != 'VText'"
+      :id="'component' + item.id"
+      class="component"
+      :style="getComponentStyle(item.style)"
+      :prop-value="item.propValue"
+      :element="item"
+      :request="item.request"
+    />
+
+    <component
+      :is="findComponent(item.component)"
+      v-else
+      :id="'component' + item.id"
+      class="component"
+      :style="getComponentStyle(item.style)"
+      :prop-value="item.propValue"
+      :element="item"
+      :request="item.request"
+      @input="handleInput"
+    />
+  </div>
+</template>
 
 <style lang="less" scoped>
 .shape {
   width: 100%;
   height: 100%;
   position: relative;
+  cursor: pointer;
   &:hover {
     outline: 1px dashed #70c0ff;
   }

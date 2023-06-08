@@ -1,10 +1,10 @@
 import request from '@/config/axios'
 
-export interface DvOrFolder {
+export interface ResourceOrFolder {
   name: string
   id?: number | string
   pid?: number | string
-  nodeType: 'folder' | 'dv'
+  nodeType: 'folder' | 'leaf'
   type: string
 }
 

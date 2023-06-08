@@ -7,13 +7,22 @@ import DsTypeList from './DsTypeList.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import EditorDetail from './EditorDetail.vue'
 import ExcelDetail from './ExcelDetail.vue'
-import { validate, save } from '../../../../../api/datasource.ts'
+import { validate, save } from '@/api/datasource'
 import { Base64 } from 'js-base64'
 
 interface Node {
   name: string
   id: string
   type: DsType
+}
+
+interface Form {
+  name: string
+  description: string
+  type: string
+  configuration?: Configuration
+  apiConfiguration?: ApiConfiguration[]
+  syncSetting?: SyncSetting
 }
 
 const { t } = useI18n()
@@ -97,7 +106,7 @@ const handleNodeClick = (data: Node) => {
 
 const next = () => {
   if (currentDsType.value === '') {
-    ElMessage.warning(t('datasource.select_type'))
+    ElMessage.error(t('datasource.select_type'))
     return
   }
   activeStep.value = activeStep.value + 1
@@ -107,7 +116,13 @@ const prev = () => {
 }
 
 const validateDS = () => {
-  const request = JSON.parse(JSON.stringify(form))
+  const request = JSON.parse(JSON.stringify(form)) as unknown as Omit<
+    Form,
+    'configuration' | 'apiConfiguration'
+  > & {
+    configuration: string
+    apiConfiguration: string
+  }
   if (form.type === 'API') {
     if (form.apiConfiguration.length == 0) {
       return
@@ -118,14 +133,19 @@ const validateDS = () => {
   } else {
     request.configuration = Base64.encode(JSON.stringify(request.configuration))
   }
-  validate(request).then(res => {
+  validate(request).then(() => {
     ElMessage.success(t('datasource.validate_success'))
   })
 }
 
 const saveDS = () => {
-  const request = JSON.parse(JSON.stringify(form))
-  console.log(form)
+  const request = JSON.parse(JSON.stringify(form)) as unknown as Omit<
+    Form,
+    'configuration' | 'apiConfiguration'
+  > & {
+    configuration: string
+    apiConfiguration: string
+  }
   if (form.type === 'Excel') {
     excel.value.saveExcelDs()
     return
@@ -140,24 +160,11 @@ const saveDS = () => {
     request.configuration = Base64.encode(JSON.stringify(request.configuration))
   }
 
-  save(request).then(res => {
+  save(request).then(() => {
     ElMessage.success(t('common.save_success'))
   })
 }
-
-// const save = (data: Node) => {
-//   currentType.value = data.type
-// }
-const form = reactive<{
-  id: number
-  name: string
-  description: string
-  type: string
-  configuration?: Configuration
-  apiConfiguration?: ApiConfiguration[]
-  syncSetting?: SyncSetting
-}>({
-  id: 0,
+const form = reactive<Form>({
   name: '',
   description: '',
   type: 'API',
@@ -196,7 +203,7 @@ const form2 = reactive<{
     </div>
     <div class="ds-editor">
       <div class="editor-step flex-center">
-        <el-steps :active="activeStep" align-center>
+        <el-steps space="150px" :active="activeStep" align-center>
           <el-step :title="t('datasource.select_ds_type')" />
           <el-step :title="t('datasource.ds_info')" />
           <el-step v-if="currentDsType === 'API'" :title="t('datasource.sync_info')" />
@@ -300,6 +307,10 @@ const form2 = reactive<{
       height: 100px;
       border-bottom: 1px solid #cccc;
       padding: 24px;
+      position: relative;
+      .ed-steps {
+        width: 400px;
+      }
     }
 
     .editor-content {

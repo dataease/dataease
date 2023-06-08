@@ -1691,3 +1691,8 @@ export const BASE_VIEW_CONFIG = {
     scrollCfg: DEFAULT_SCROLL
   }
 }
+
+export function getScaleValue(propValue, scale) {
+  const propValueTemp = Math.round(propValue * scale)
+  return propValueTemp > 1 ? propValueTemp : 1
+}

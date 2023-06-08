@@ -7,6 +7,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.ds.DatasourceApi;
 import io.dataease.api.ds.vo.*;
+import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
+import io.dataease.api.permissions.auth.dto.BusiResourceCreator;
+import io.dataease.api.permissions.auth.dto.BusiResourceEditor;
 import io.dataease.commons.constants.TaskStatus;
 import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import io.dataease.dataset.utils.TableUtils;
@@ -14,17 +17,22 @@ import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.entity.CoreDatasourceTask;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
 import io.dataease.datasource.manage.DatasourceSyncManage;
-import io.dataease.datasource.provider.*;
+import io.dataease.datasource.provider.ApiUtils;
+import io.dataease.datasource.provider.CalciteProvider;
+import io.dataease.datasource.provider.ExcelUtils;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.exception.DEException;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.CommonBeanFactory;
+import io.dataease.utils.IDUtils;
 import io.dataease.utils.JsonUtil;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import jakarta.annotation.Resource;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -52,6 +60,11 @@ public class DatasourceServer implements DatasourceApi {
     @Resource
     private DatasourceSyncManage datasourceSyncManage;
 
+    @Autowired(required = false)
+    private InteractiveAuthApi interactiveAuthApi;
+
+    private static final String RESOURCE_FLAG = "datasource";
+
     private static ObjectMapper objectMapper = new ObjectMapper();
 
 
@@ -78,6 +91,7 @@ public class DatasourceServer implements DatasourceApi {
         coreDatasource.setUpdateTime(System.currentTimeMillis());
         checkDatasourceStatus(coreDatasource);
         coreDatasource.setTaskStatus(TaskStatus.WaitingForExecution.name());
+        coreDatasource.setId(IDUtils.snowID());
         datasourceMapper.insert(coreDatasource);
         if (dataSourceDTO.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name())) {
             DatasourceRequest datasourceRequest = new DatasourceRequest();
@@ -107,14 +121,25 @@ public class DatasourceServer implements DatasourceApi {
                 datasourceSyncManage.createEngineTable(datasourceRequest.getTable(), tableFields);
             }
         }
+        if (ObjectUtils.isNotEmpty(interactiveAuthApi)) {
+            BusiResourceCreator creator = new BusiResourceCreator();
+            creator.setId(coreDatasource.getId());
+            creator.setPid(0L);
+            creator.setFlag(RESOURCE_FLAG);
+            creator.setName(dataSourceDTO.getName());
+            creator.setLeaf(true);
+            interactiveAuthApi.saveResource(creator);
+        }
         return dataSourceDTO;
     }
 
     @Override
     public DatasourceDTO update(DatasourceDTO dataSourceDTO) throws Exception {
-        if (dataSourceDTO.getId() == null) {
+        Long pk = null;
+        if (ObjectUtils.isEmpty(pk = dataSourceDTO.getId())) {
             return save(dataSourceDTO);
         }
+        CoreDatasource sourceData = datasourceMapper.selectById(pk);
         dataSourceDTO.setConfiguration(new String(Base64.getDecoder().decode(dataSourceDTO.getConfiguration())));
         preCheckDs(dataSourceDTO);
         CoreDatasource coreDatasource = new CoreDatasource();
@@ -128,6 +153,13 @@ public class DatasourceServer implements DatasourceApi {
             coreDatasourceTask.setName(coreDatasource.getName() + "-task");
             coreDatasourceTask.setDsId(coreDatasource.getId());
             datasourceTaskServer.update(coreDatasourceTask);
+        }
+        if (ObjectUtils.isNotEmpty(interactiveAuthApi) && ObjectUtils.isNotEmpty(sourceData) && !StringUtils.equals(dataSourceDTO.getName(), sourceData.getName())) {
+            BusiResourceEditor editor = new BusiResourceEditor();
+            editor.setId(pk);
+            editor.setFlag(RESOURCE_FLAG);
+            editor.setName(dataSourceDTO.getName());
+            interactiveAuthApi.editResource(editor);
         }
         return dataSourceDTO;
     }
@@ -161,7 +193,12 @@ public class DatasourceServer implements DatasourceApi {
     public List<DatasourceDTO> list() {
         List<DatasourceDTO> datasourceDTOS = new ArrayList<>();
         Collection<DatasourceConfiguration> datasourceConfigurations = datasourceTypes();
-        datasourceMapper.selectList(null).forEach(coreDatasource -> {
+        QueryWrapper<CoreDatasource> queryWrapper = new QueryWrapper();
+        if (ObjectUtils.isNotEmpty(interactiveAuthApi)) {
+            List<Long> ids = interactiveAuthApi.resourceIds(RESOURCE_FLAG);
+            queryWrapper.in("id", ids);
+        }
+        datasourceMapper.selectList(queryWrapper).forEach(coreDatasource -> {
             DatasourceDTO datasourceDTO = new DatasourceDTO();
             BeanUtils.copyBean(datasourceDTO, coreDatasource);
             datasourceConfigurations.forEach(datasourceConfiguration -> {
@@ -316,8 +353,6 @@ public class DatasourceServer implements DatasourceApi {
     }
 
 
-
-
     public void updateDemoDs() {
 //        CoreDatasource datasource = datasourceMapper.selectById(1);
 //        if (datasource == null) {
@@ -342,12 +377,6 @@ public class DatasourceServer implements DatasourceApi {
 //        datasource.setConfiguration(JsonUtil.toJSONString(objectNode).toString());
 //        datasourceMapper.updateById(datasource);
     }
-
-
-
-
-
-
 
 
 }

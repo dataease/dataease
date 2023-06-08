@@ -36,6 +36,7 @@ const selectedResourceId = ref('')
 const selectedMenuId = ref('')
 const resourceTreeRef = ref(null)
 const menuTreeRef = ref(null)
+const loading = ref(false)
 const resourceList = [
   {
     id: 'panel',
@@ -62,24 +63,24 @@ const state = reactive({
   resourceBaseMap: {}
 })
 state.globalColumn = [
-  { type: 'datasource, dataset, menu', label: '使用', weightLevel: 1 },
-  { type: 'panel, screen', label: '查看', weightLevel: 1 },
-  { type: 'panel, screen', label: '导出', weightLevel: 4 },
-  { type: 'datasource, dataset, panel, screen', label: '管理', weightLevel: 7 },
-  { label: '授权', weightLevel: 9 }
+  { type: 'datasource, dataset, menu', label: t('auth.use'), weightLevel: 1 },
+  { type: 'panel, screen', label: t('auth.check'), weightLevel: 1 },
+  { type: 'panel, screen', label: t('auth.export'), weightLevel: 4 },
+  { type: 'datasource, dataset, panel, screen', label: t('auth.manage'), weightLevel: 7 },
+  { label: t('auth.auth'), weightLevel: 9 }
 ]
 
 const baseRoles = [
   {
     id: 'admin',
-    name: '组织管理员',
+    name: t('role.org_admin'),
     children: null,
     readonly: false,
     disabled: true
   },
   {
     id: 'readonly',
-    name: '普通用户',
+    name: t('role.average_role'),
     children: null,
     readonly: true,
     disabled: true
@@ -180,6 +181,7 @@ const resourceTypeClick = async (id: string) => {
 
 const loadPermission = (type: number) => {
   resetTableData(state.tableData)
+  loading.value = true
   if (activeAuth.value === 'menu') {
     menuTargetPerApi({ id: selectedMenuId.value }).then(res => {
       const vo = res.data
@@ -187,6 +189,7 @@ const loadPermission = (type: number) => {
       const permissionMap = groupPermission(vo)
 
       fillTableData(state.tableData, permissionMap, null)
+      loading.value = false
     })
     return
   }
@@ -200,6 +203,7 @@ const loadPermission = (type: number) => {
 
     const permissionMap = groupPermission(vo)
     fillTableData(state.tableData, permissionMap, null)
+    loading.value = false
   })
 }
 const groupPermission = vo => {
@@ -324,10 +328,12 @@ const save = callback => {
     return
   }
   param['ids'] = Array.from(ids)
+  loading.value = true
   method(param).then(() => {
     ElMessage.success(t('common.save_success'))
     loadPermission(param['type'] || 0)
     callback && callback instanceof Function && callback()
+    loading.value = false
   })
 }
 
@@ -460,19 +466,23 @@ const getColumn = (type: string) => {
   state.tableColumn = array
 }
 const loadResourceTree = () => {
+  loading.value = true
   const id = selectedResourceType.value
   resourceTreeApi(id).then(res => {
     getColumn(id)
     state.resourceTreeData = res.data
     state.resourceBaseMap[id] = res.data
+    loading.value = false
   })
 }
 const loadUser = () => {
+  loading.value = true
   const param = { keyword: nickName.value }
   queryUserApi(param).then(res => {
     if (res?.data?.length) {
       state.tableData = res.data
       state.treeMap['user'] = res.data
+      loading.value = false
     }
   })
 }
@@ -502,7 +512,7 @@ defineExpose({
 </script>
 
 <template>
-  <div class="user-role">
+  <div class="user-role" v-loading="loading">
     <div class="filter-user-role">
       <el-tabs class="tabs-mr" v-model="activeAuth" @tab-change="activeAuthChange">
         <el-tab-pane :label="t('auth.resource')" name="resource"></el-tab-pane>
@@ -576,8 +586,12 @@ defineExpose({
   <div class="resource-panel" :class="[{ 'menu-current': activeAuth === 'menu' }]">
     <div class="tab-search">
       <el-tabs class="tabs-mr" v-model="activeName" @tab-change="activeNameChange">
-        <el-tab-pane v-if="activeAuth === 'resource'" label="用户" name="user"></el-tab-pane>
-        <el-tab-pane label="角色" name="role"></el-tab-pane>
+        <el-tab-pane
+          v-if="activeAuth === 'resource'"
+          :label="t('auth.user')"
+          name="user"
+        ></el-tab-pane>
+        <el-tab-pane :label="t('auth.role')" name="role"></el-tab-pane>
       </el-tabs>
       <el-input class="search-table-input" v-model="nickName" clearable>
         <template #prefix>
@@ -606,7 +620,7 @@ defineExpose({
           default-expand-all
           :tree-props="{ children: 'children' }"
         >
-          <el-table-column prop="name" label="名称" />
+          <el-table-column prop="name" :label="t('common.name')" />
           <el-table-column
             v-for="item in state.tableColumn"
             :key="item.label"
@@ -637,14 +651,15 @@ defineExpose({
                     ></el-checkbox>
                   </template>
                   <div class="role-auth-tips">
-                    <span>继承自以下角色：</span>
+                    <span>{{ t('auth.from_role') }}</span>
                     <span
                       :key="rname"
                       v-for="(rname, index) in scope.row['level' + item.weightLevel]['roles']"
                       >{{ index + 1 + '、' + rname }}</span
                     >
                     <span
-                      >单独授权<el-switch
+                      >{{ t('auth.auth_alone')
+                      }}<el-switch
                         class="independent-auth"
                         size="small"
                         v-model="scope.row['independent' + item.weightLevel]"
@@ -777,7 +792,8 @@ defineExpose({
   }
 }
 .is-active {
-  color: var(--el-menu-active-color);
+  background-color: var(--ed-color-primary-light-9);
+  // color: var(--ed-color-primary);
 }
 .role-auth-tips {
   span {

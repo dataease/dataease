@@ -45,7 +45,23 @@ const changeTitleStyle = () => {
   emit('onTextChange', state.titleForm)
 }
 
+const init = () => {
+  const chart = JSON.parse(JSON.stringify(props.chart))
+  if (chart.customStyle) {
+    let customStyle = null
+    if (Object.prototype.toString.call(chart.customStyle) === '[object Object]') {
+      customStyle = JSON.parse(JSON.stringify(chart.customStyle))
+    } else {
+      customStyle = JSON.parse(chart.customStyle)
+    }
+    if (customStyle.text) {
+      state.titleForm = customStyle.text
+    }
+  }
+}
+
 initFontSize()
+init()
 </script>
 
 <template>

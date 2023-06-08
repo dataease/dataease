@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Search } from '@element-plus/icons-vue'
-import { onMounted, reactive, ref, watch } from 'vue'
+import { onMounted, reactive, ref, toRefs, watch } from 'vue'
 import { deleteLogic, findById, findTree } from '@/api/dataVisualization'
 import { ElIcon, ElMessage } from 'element-plus-secondary'
 import { Icon } from '@/components/icon-custom'
@@ -9,6 +9,18 @@ import DeResourceGroupOpt, { ResourceTree } from '@/views/common/DeResourceGroup
 import { guid } from '@/views/visualized/data/dataset/form/util.js'
 import { DEFAULT_CANVAS_STYLE_DATA } from '@/store/modules/data-visualization/dvMain'
 import { save } from '@/api/dataVisualization'
+
+const props = defineProps({
+  curCanvasType: {
+    type: String,
+    required: true
+  }
+})
+
+const { curCanvasType } = toRefs(props)
+const resourceLabel = curCanvasType.value === 'dataV' ? '数据大屏' : '仪表板'
+const newResourceLabel = '新建' + resourceLabel
+
 const searchMap = {
   all: '全部',
   folder: '文件夹'
@@ -18,13 +30,13 @@ let searchPids = [] // 查询命中的pid
 const filterText = ref(null)
 const searchType = ref('all')
 const expandedArray = ref([])
-const dvListTree = ref()
+const resourceListTree = ref()
 const resourceGroupOpt = ref()
 
 const state = reactive({
-  dvTree: [] as ResourceTree[],
+  resourceTree: [] as ResourceTree[],
   menuList: [],
-  dvTypeList: []
+  resourceTypeList: []
 })
 
 state.menuList = [
@@ -42,11 +54,11 @@ state.menuList = [
   }
 ]
 
-state.dvTypeList = [
+state.resourceTypeList = [
   {
-    label: '新建数据大屏',
+    label: newResourceLabel,
     svgName: 'dashboard',
-    command: 'dv'
+    command: 'resource'
   },
   {
     label: '新建文件夹',
@@ -81,10 +93,12 @@ const nodeClick = (data: ResourceTree, node) => {
 }
 
 const getTree = () => {
-  const param = {}
+  const param = {
+    type: curCanvasType.value
+  }
   // 从数据库中获取
   findTree(param).then(res => {
-    state.dvTree = res.data as unknown as ResourceTree[]
+    state.resourceTree = res.data as unknown as ResourceTree[]
   })
 }
 
@@ -114,27 +128,27 @@ const operation = (cmd: string, data: ResourceTree, nodeType: string) => {
 }
 
 const addOperation = (cmd: string, data?: ResourceTree) => {
-  if (cmd === 'dv') {
-    dvCreate(data.id)
+  if (cmd === 'resource') {
+    resourceCreate(data.id)
   }
   if (cmd === 'folder') {
     resourceGroupOpt.value.optInit(cmd, data || {})
   }
 }
 
-const dvEdit = dvId => {
-  const url = '#/dvCanvas/?dvId=' + dvId
-  window.open(url, '_blank')
+const resourceEdit = resourceId => {
+  const baseUrl = curCanvasType.value === 'dataV' ? '#/dvCanvas/?dvId=' : '#/dashboard/?resourceId='
+  window.open(baseUrl + resourceId, '_blank')
 }
 
-const dvCreate = pid => {
+const resourceCreate = pid => {
   // 新建基础信息
-  const newDvId = guid()
-  const bashDvInfo = {
-    id: newDvId,
-    name: '新建仪表板',
+  const newResourceId = guid()
+  const bashResourceInfo = {
+    id: newResourceId,
+    name: newResourceLabel,
     pid: pid,
-    type: 'dataV',
+    type: curCanvasType.value,
     status: 1,
     selfWatermarkStatus: 0
   }
@@ -142,17 +156,18 @@ const dvCreate = pid => {
     canvasStyleData: JSON.stringify(DEFAULT_CANVAS_STYLE_DATA),
     componentData: JSON.stringify([]),
     canvasViewInfo: {},
-    ...bashDvInfo
+    ...bashResourceInfo
   }
   save(canvasInfo).then(res => {
-    const url = '#/dvCanvas/?dvId=' + newDvId
-    window.open(url, '_blank')
+    const baseUrl =
+      curCanvasType.value === 'dataV' ? '#/dvCanvas/?dvId=' : '#/dashboard/?resourceId='
+    window.open(baseUrl + newResourceId, '_blank')
     getTree()
   })
 }
 
-const handleDvTree = (cmd, data) => {
-  //do handleDvTree
+const handleResourceTree = (cmd, data) => {
+  //do handleResourceTree
 }
 
 const resourceOptFinish = () => {
@@ -161,7 +176,7 @@ const resourceOptFinish = () => {
 
 watch(filterText, val => {
   searchPids = []
-  dvListTree.value.filter(val)
+  resourceListTree.value.filter(val)
 })
 
 onMounted(() => {
@@ -172,7 +187,7 @@ onMounted(() => {
 <template>
   <div class="resource-tree">
     <div class="icon-methods">
-      <span class="title"> 数据大屏 </span>
+      <span class="title"> {{ resourceLabel }} </span>
       <el-tooltip class="box-item" effect="dark" content="新建文件夹" placement="top">
         <el-button type="primary" @click="addOperation('folder')"> 新建文件夹 </el-button>
       </el-tooltip>
@@ -192,9 +207,9 @@ onMounted(() => {
     </el-input>
     <el-tree
       menu
-      ref="dvListTree"
+      ref="resourceListTree"
       :default-expanded-keys="expandedArray"
-      :data="state.dvTree"
+      :data="state.resourceTree"
       node-key="id"
       :expand-on-click-node="true"
       :filter-node-method="filterNode"
@@ -216,14 +231,14 @@ onMounted(() => {
               <el-icon
                 v-if="data.nodeType !== 'folder'"
                 class="hover-icon"
-                @click="dvEdit(data.id)"
+                @click="resourceEdit(data.id)"
               >
                 <Icon name="edit-in"></Icon>
               </el-icon>
             </span>
             <handle-more
               @handle-command="cmd => addOperation(cmd, data)"
-              :menu-list="state.dvTypeList"
+              :menu-list="state.resourceTypeList"
               icon-name="icon_add_outlined"
               placement="bottom-start"
               v-if="data.nodeType === 'folder'"
@@ -237,6 +252,7 @@ onMounted(() => {
       </template>
     </el-tree>
     <de-resource-group-opt
+      :cur-canvas-type="curCanvasType"
       @finish="resourceOptFinish"
       ref="resourceGroupOpt"
     ></de-resource-group-opt>

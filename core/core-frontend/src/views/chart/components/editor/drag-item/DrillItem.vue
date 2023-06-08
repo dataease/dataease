@@ -1,6 +1,6 @@
 <script lang="tsx" setup>
 import { useI18n } from '@/hooks/web/useI18n'
-import { reactive, ref, toRefs, watch } from 'vue'
+import { ref, toRefs } from 'vue'
 import { getItemType } from '@/views/chart/components/editor/drag-item/utils'
 import { Delete, Edit, Filter } from '@element-plus/icons-vue'
 
@@ -15,7 +15,7 @@ const tagType = ref('success')
 const props = defineProps({
   param: {
     type: Object,
-    required: true
+    required: false
   },
   item: {
     type: Object,

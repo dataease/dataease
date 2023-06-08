@@ -2,6 +2,9 @@ package io.dataease.visualization.server;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.api.chart.dto.ChartViewDTO;
+import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
+import io.dataease.api.permissions.auth.dto.BusiResourceCreator;
+import io.dataease.api.permissions.auth.dto.BusiResourceEditor;
 import io.dataease.api.visualization.DataVisualizationApi;
 import io.dataease.api.visualization.request.DataVisualizationBaseRequest;
 import io.dataease.api.visualization.vo.DataVisualizationBaseVO;
@@ -17,6 +20,9 @@ import io.dataease.visualization.dao.auto.entity.DataVisualizationInfo;
 import io.dataease.visualization.dao.auto.mapper.DataVisualizationInfoMapper;
 import io.dataease.visualization.ext.ExtDataVisualizationMapper;
 import jakarta.annotation.Resource;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,6 +47,9 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @Resource
     private ExtDataVisualizationMapper dvMapper;
 
+    @Autowired
+    private InteractiveAuthApi interactiveAuthApi;
+
     @Override
     public DataVisualizationVO findById(Long dvId) {
         QueryWrapper<DataVisualizationInfo> wrapper = new QueryWrapper<>();
@@ -52,8 +61,8 @@ public class DataVisualizationServer implements DataVisualizationApi {
             BeanUtils.copyBean(result, visualizationInfo);
             //获取视图信息
             List<ChartViewDTO> chartViewDTOS = chartViewManege.listBySceneId(dvId);
-            if(!CollectionUtils.isEmpty(chartViewDTOS)){
-               Map<Long,ChartViewDTO> viewInfo =  chartViewDTOS.stream().collect(Collectors.toMap(ChartViewDTO::getId, chartView -> chartView));
+            if (!CollectionUtils.isEmpty(chartViewDTOS)) {
+                Map<Long, ChartViewDTO> viewInfo = chartViewDTOS.stream().collect(Collectors.toMap(ChartViewDTO::getId, chartView -> chartView));
                 result.setCanvasViewInfo(viewInfo);
             }
             return result;
@@ -70,16 +79,21 @@ public class DataVisualizationServer implements DataVisualizationApi {
         if (id == null) {
             DEException.throwException("no id");
         }
-        QueryWrapper<DataVisualizationInfo> wrapper = new QueryWrapper<>();
-        wrapper.eq("id",id);
-        Boolean dvCheck = visualizationInfoMapper.exists(wrapper);
-        if(visualizationInfoMapper.exists(wrapper)){
+        DataVisualizationInfo sourceData = null;
+        if (ObjectUtils.isNotEmpty(sourceData = visualizationInfoMapper.selectById(id))) {
             request.setUpdateBy("");
             request.setUpdateTime(System.currentTimeMillis());
             DataVisualizationInfo visualizationInfo = new DataVisualizationInfo();
             BeanUtils.copyBean(visualizationInfo, request);
             visualizationInfoMapper.updateById(visualizationInfo);
-        }else{
+            if (ObjectUtils.isNotEmpty(interactiveAuthApi) && !StringUtils.equals(sourceData.getName(), visualizationInfo.getName())) {
+                BusiResourceEditor editor = new BusiResourceEditor();
+                editor.setId(id);
+                editor.setName(visualizationInfo.getName());
+                editor.setFlag(StringUtils.equals("dataV", visualizationInfo.getType()) ? "screen" : "panel");
+                interactiveAuthApi.editResource(editor);
+            }
+        } else {
             DataVisualizationInfo visualizationInfo = new DataVisualizationInfo();
             BeanUtils.copyBean(visualizationInfo, request);
             visualizationInfo.setDeleteFlag(DataVisualizationConstants.DELETE_FLAG.AVAILABLE);
@@ -87,13 +101,22 @@ public class DataVisualizationServer implements DataVisualizationApi {
             visualizationInfo.setCreateBy("");
             visualizationInfo.setCreateTime(System.currentTimeMillis());
             visualizationInfoMapper.insert(visualizationInfo);
+            if (ObjectUtils.isNotEmpty(interactiveAuthApi)) {
+                BusiResourceCreator creator = new BusiResourceCreator();
+                creator.setId(id);
+                creator.setName(visualizationInfo.getName());
+                creator.setLeaf(!StringUtils.equals("folder", visualizationInfo.getNodeType()));
+                creator.setPid(visualizationInfo.getPid());
+                creator.setFlag(StringUtils.equals("dataV", visualizationInfo.getType()) ? "screen" : "panel");
+                interactiveAuthApi.saveResource(creator);
+            }
         }
 
         List<Long> viewIds = new ArrayList<>();
         //保存视图信
-        Map<Long,ChartViewDTO> chartViewsInfo = request.getCanvasViewInfo();
-        if(!CollectionUtils.isEmpty(chartViewsInfo)){
-            chartViewsInfo.forEach((key,chartViewDTO) -> {
+        Map<Long, ChartViewDTO> chartViewsInfo = request.getCanvasViewInfo();
+        if (!CollectionUtils.isEmpty(chartViewsInfo)) {
+            chartViewsInfo.forEach((key, chartViewDTO) -> {
                 try {
                     chartViewDTO.setSceneId(request.getId());
                     chartViewManege.save(chartViewDTO);
@@ -104,8 +127,8 @@ public class DataVisualizationServer implements DataVisualizationApi {
             });
         }
         // TODO 清理无用的视图
-        if(!CollectionUtils.isEmpty(viewIds)){
-            chartViewManege.deleteBySceneId(request.getId(),viewIds);
+        if (!CollectionUtils.isEmpty(viewIds)) {
+            chartViewManege.deleteBySceneId(request.getId(), viewIds);
         }
     }
 
@@ -130,15 +153,18 @@ public class DataVisualizationServer implements DataVisualizationApi {
         visualizationInfo.setDeleteFlag(DataVisualizationConstants.DELETE_FLAG.DELETED);
         visualizationInfo.setId(dvId);
         visualizationInfoMapper.updateById(visualizationInfo);
+        if (ObjectUtils.isNotEmpty(interactiveAuthApi)) {
+            interactiveAuthApi.delResource(visualizationInfo.getId());
+        }
     }
 
     @Override
     public List<DataVisualizationBaseVO> findTree(DataVisualizationBaseRequest request) {
-        List<DataVisualizationBaseVO> result = dvMapper.findBashInfo(request.getNodeType(),request.getType());
-        if(CollectionUtils.isEmpty(result)){
+        List<DataVisualizationBaseVO> result = dvMapper.findBashInfo(request.getNodeType(), request.getType());
+        if (CollectionUtils.isEmpty(result)) {
             return new ArrayList<>();
-        }else{
-            return TreeUtils.mergeTree(result,0l);
+        } else {
+            return TreeUtils.mergeTree(result, 0l);
         }
     }
 
@@ -146,15 +172,33 @@ public class DataVisualizationServer implements DataVisualizationApi {
     public void savaOrUpdateBase(DataVisualizationBaseRequest request) {
         DataVisualizationInfo visualizationInfo = new DataVisualizationInfo();
         BeanUtils.copyBean(visualizationInfo, request);
-        if(request.getId() == null){
+        if (request.getId() == null) {
             visualizationInfo.setDeleteFlag(DataVisualizationConstants.DELETE_FLAG.AVAILABLE);
             visualizationInfo.setId(IDUtils.snowID());
             visualizationInfo.setCreateBy("");
             visualizationInfo.setCreateTime(System.currentTimeMillis());
             visualizationInfoMapper.insert(visualizationInfo);
-        }else{
+            if (ObjectUtils.isNotEmpty(interactiveAuthApi)) {
+                BusiResourceCreator creator = new BusiResourceCreator();
+                creator.setName(visualizationInfo.getName());
+                creator.setId(visualizationInfo.getId());
+                creator.setLeaf(!StringUtils.equals("folder", visualizationInfo.getNodeType()));
+                creator.setPid(visualizationInfo.getPid());
+                creator.setFlag(StringUtils.equals("dataV", visualizationInfo.getType()) ? "screen" : "panel");
+                interactiveAuthApi.saveResource(creator);
+            }
+        } else {
+            Long id = visualizationInfo.getId();
+            DataVisualizationInfo sourceData = visualizationInfoMapper.selectById(id);
             visualizationInfo.setUpdateTime(System.currentTimeMillis());
             visualizationInfoMapper.updateById(visualizationInfo);
+            if (ObjectUtils.isNotEmpty(interactiveAuthApi) && ObjectUtils.isNotEmpty(sourceData) && !StringUtils.equals(sourceData.getName(), visualizationInfo.getName())) {
+                BusiResourceEditor editor = new BusiResourceEditor();
+                editor.setId(id);
+                editor.setName(visualizationInfo.getName());
+                editor.setFlag(StringUtils.equals("dataV", visualizationInfo.getType()) ? "screen" : "panel");
+                interactiveAuthApi.editResource(editor);
+            }
         }
     }
 }

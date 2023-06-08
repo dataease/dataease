@@ -2,7 +2,7 @@
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { storeToRefs } from 'pinia'
-import { reactive, ref } from 'vue'
+import { onMounted, reactive, ref, watch } from 'vue'
 import DeInputNum from '@/custom-component/common/DeInputNum.vue'
 import { uploadFileResult } from '@/api/staticResource'
 import { ElIcon, ElMessage } from 'element-plus-secondary'
@@ -19,6 +19,7 @@ const { canvasStyleData } = storeToRefs(dvMainStore)
 const { t } = useI18n()
 const files = ref(null)
 const maxImageSize = 15000000
+let initReady = false
 
 const options = ref({
   color: '颜色',
@@ -47,6 +48,7 @@ const handleRemove = (file, fileList) => {
 async function upload(file) {
   uploadFileResult(file.file, fileUrl => {
     canvasStyleData.value.background = fileUrl
+    fileList.value = [{ url: imgUrlTrans(canvasStyleData.value.background) }]
   })
 }
 
@@ -99,6 +101,18 @@ const reUpload = e => {
 const sizeMessage = () => {
   ElMessage.success('图片大小不符合')
 }
+
+const init = () => {
+  initReady = true
+  if (canvasStyleData.value.background) {
+    fileList.value = [{ url: imgUrlTrans(canvasStyleData.value.background) }]
+  }
+}
+watch([() => canvasStyleData.value.background], () => {
+  if (!fileList.value.length && !initReady) {
+    init()
+  }
+})
 </script>
 
 <template>
@@ -312,17 +326,17 @@ const sizeMessage = () => {
   display: none;
 }
 
-.avatar-uploader :deep(.el-upload) {
+.avatar-uploader :deep(.ed-upload) {
   width: 120px;
   height: 80px;
   line-height: 90px;
 }
 
-.avatar-uploader :deep(.el-upload-list li) {
+.avatar-uploader :deep(.ed-upload-list li) {
   width: 120px !important;
   height: 80px !important;
 }
-.avatar-uploader :deep(.el-upload--picture-card) {
+.avatar-uploader :deep(.ed-upload--picture-card) {
   background: rgba(0, 0, 0, 0);
 }
 .img-area {
@@ -342,27 +356,27 @@ const sizeMessage = () => {
   width: 60px;
 }
 
-.color-type :deep(.el-radio__input) {
+.color-type :deep(.ed-radio__input) {
   display: none;
 }
 
-.el-radio {
+.ed-radio {
   color: #757575;
 }
 
 .custom-color-style {
 }
 
-.custom-color-style :deep(.el-radio) {
+.custom-color-style :deep(.ed-radio) {
   margin: 0 2px 0 0 !important;
   border: 1px solid transparent;
 }
 
-.custom-color-style :deep(.el-radio__label) {
+.custom-color-style :deep(.ed-radio__label) {
   padding-left: 0;
 }
 
-.custom-color-style :deep(.el-radio.is-checked) {
+.custom-color-style :deep(.ed-radio.is-checked) {
   border: 1px solid #0a7be0;
 }
 

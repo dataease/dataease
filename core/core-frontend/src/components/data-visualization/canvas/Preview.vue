@@ -9,6 +9,7 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { ref } from 'vue'
 import { ElButton } from 'element-plus-secondary'
+import Shape from '@/components/data-visualization/canvas/Shape.vue'
 
 const props = defineProps({
   isScreenshot: {
@@ -56,7 +57,12 @@ const htmlToImage = () => {
           height: changeStyleWithScale(canvasStyleData.height) + 'px'
         }"
       >
-        <ComponentWrapper v-for="(item, index) in copyData" :key="index" :config="item" />
+        <ComponentWrapper
+          v-show="item.isShow"
+          v-for="(item, index) in copyData"
+          :key="index"
+          :config="item"
+        />
       </div>
     </div>
   </div>

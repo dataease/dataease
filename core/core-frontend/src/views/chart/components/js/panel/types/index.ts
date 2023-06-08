@@ -45,6 +45,10 @@ export interface G2PlotDrawOptions<O> {
    * @param args 事件参数
    */
   action?: (...args: any[]) => any
+  /**
+   * 其他参数，可以考虑用另外的对象接收？
+   */
+  scale?: number
 }
 
 /**

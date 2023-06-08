@@ -8,6 +8,10 @@ import io.dataease.api.dataset.dto.DatasetTableFieldDTO;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.union.UnionDTO;
 import io.dataease.api.dataset.vo.DatasetTreeNodeVO;
+import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
+import io.dataease.api.permissions.auth.dto.BusiResourceCreator;
+import io.dataease.api.permissions.auth.dto.BusiResourceEditor;
+import io.dataease.api.permissions.auth.vo.BusiPerVO;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetGroup;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupMapper;
 import io.dataease.dataset.utils.TableUtils;
@@ -20,6 +24,7 @@ import io.dataease.utils.TreeUtils;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,9 +48,14 @@ public class DatasetGroupManage {
     @Resource
     private DatasetTableFieldManage datasetTableFieldManage;
 
+    @Autowired(required = false)
+    private InteractiveAuthApi interactiveAuthApi;
+
+    private static final String leafType = "dataset";
+
     public DatasetGroupInfoDTO save(DatasetGroupInfoDTO datasetGroupInfoDTO) throws Exception {
         checkName(datasetGroupInfoDTO);
-        if (StringUtils.equalsIgnoreCase(datasetGroupInfoDTO.getNodeType(), "dataset")) {
+        if (StringUtils.equalsIgnoreCase(datasetGroupInfoDTO.getNodeType(), leafType)) {
             // get union sql
             Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO);
             if (ObjectUtils.isEmpty(sqlMap)) {
@@ -64,12 +74,29 @@ public class DatasetGroupManage {
             datasetGroupInfoDTO.setPid(datasetGroupInfoDTO.getPid() == null ? 0L : datasetGroupInfoDTO.getPid());
             BeanUtils.copyBean(coreDatasetGroup, datasetGroupInfoDTO);
             coreDatasetGroupMapper.insert(coreDatasetGroup);
+            if (ObjectUtils.isNotEmpty(interactiveAuthApi)) {
+                BusiResourceCreator creator = new BusiResourceCreator();
+                creator.setId(datasetGroupInfoDTO.getId());
+                creator.setPid(datasetGroupInfoDTO.getPid());
+                creator.setFlag(leafType);
+                creator.setName(datasetGroupInfoDTO.getName());
+                creator.setLeaf(StringUtils.equals(leafType, datasetGroupInfoDTO.getNodeType()));
+                interactiveAuthApi.saveResource(creator);
+            }
         } else {
             if (Objects.equals(datasetGroupInfoDTO.getId(), datasetGroupInfoDTO.getPid())) {
                 DEException.throwException("pid can not equal to id.");
             }
+            CoreDatasetGroup sourceData = coreDatasetGroupMapper.selectById(datasetGroupInfoDTO.getId());
             BeanUtils.copyBean(coreDatasetGroup, datasetGroupInfoDTO);
             coreDatasetGroupMapper.updateById(coreDatasetGroup);
+            if (ObjectUtils.isNotEmpty(interactiveAuthApi) && ObjectUtils.isNotEmpty(sourceData) && !StringUtils.equals(sourceData.getName(), coreDatasetGroup.getName())) {
+                BusiResourceEditor editor = new BusiResourceEditor();
+                editor.setId(coreDatasetGroup.getId());
+                editor.setName(coreDatasetGroup.getName());
+                editor.setFlag(leafType);
+                interactiveAuthApi.editResource(editor);
+            }
         }
 
         // node_type=dataset需要创建dataset_table和field
@@ -103,9 +130,19 @@ public class DatasetGroupManage {
                 delete(record.getId());
             }
         }
+        if (ObjectUtils.isNotEmpty(interactiveAuthApi)) {
+            interactiveAuthApi.delResource(id);
+        }
     }
 
-    public List<DatasetTreeNodeVO> tree(DatasetNodeDTO datasetNodeDTO) {
+    public List tree(DatasetNodeDTO datasetNodeDTO) {
+        if (ObjectUtils.isNotEmpty(interactiveAuthApi)) {
+            List<BusiPerVO> resource = interactiveAuthApi.resource(leafType);
+            if (StringUtils.equalsIgnoreCase("folder", datasetNodeDTO.getNodeType())) {
+                filterNode(resource);
+            }
+            return resource;
+        }
         QueryWrapper<CoreDatasetGroup> wrapper = new QueryWrapper<>();
         if (StringUtils.isNotEmpty(datasetNodeDTO.getNodeType())) {
             wrapper.eq("node_type", datasetNodeDTO.getNodeType());
@@ -117,6 +154,17 @@ public class DatasetGroupManage {
             return vo;
         }).collect(Collectors.toList());
         return TreeUtils.mergeTree(collect);
+    }
+
+    public void filterNode(List<BusiPerVO> list) {
+        if (ObjectUtils.isNotEmpty(list)) {
+            list.removeIf(BusiPerVO::getLeaf);
+            for (BusiPerVO dto : list) {
+                if (ObjectUtils.isNotEmpty(dto.getChildren())) {
+                    filterNode(dto.getChildren());
+                }
+            }
+        }
     }
 
     public void checkName(DatasetGroupInfoDTO dto) {

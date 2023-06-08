@@ -32,7 +32,7 @@ import java.util.Map;
 @RequestMapping("/staticResource")
 public class StaticResourceServer implements StaticResourceApi {
 
-    private final Path staticDir = Paths.get("/opt/dataease/data/static-resource/");
+    private final Path staticDir = Paths.get("/opt/dataease2.0/data/static-resource/");
 
     public void upload(String fileId, MultipartFile file) {
         // check if the path is valid (not outside staticDir)

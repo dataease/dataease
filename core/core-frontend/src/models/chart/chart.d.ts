@@ -152,11 +152,11 @@ declare interface ChartTooltipAttr {
   backgroundColor: string
 }
 
-interface CalcTotals {
+declare interface CalcTotals {
   aggregation: string
 }
 
-interface TotalConfig {
+declare interface TotalConfig {
   showGrandTotals: boolean
   showSubTotals: boolean
   reverseLayout: boolean
@@ -170,12 +170,12 @@ interface TotalConfig {
   totalSortField: string
 }
 
-interface ChartTotalAttr {
+declare interface ChartTotalAttr {
   row: TotalConfig
   col: TotalConfig
 }
 
-interface ChartTextStyle {
+declare interface ChartTextStyle {
   show: boolean
   fontSize: string
   color: string
@@ -191,12 +191,12 @@ interface ChartTextStyle {
   fontShadow: boolean
 }
 
-interface LegendTextStyle {
+declare interface LegendTextStyle {
   color: string
   fontSize: string
 }
 
-interface ChartLegendStyle {
+declare interface ChartLegendStyle {
   show: boolean
   hPosition: string
   vPosition: string
@@ -205,12 +205,12 @@ interface ChartLegendStyle {
   textStyle: LegendTextStyle
 }
 
-interface NameTextStyle {
+declare interface NameTextStyle {
   color: string
   fontSize: number
 }
 
-interface AxisLabel {
+declare interface AxisLabel {
   show: boolean
   color: string
   fontSize: string
@@ -218,18 +218,18 @@ interface AxisLabel {
   formatter: string
 }
 
-interface LineStyle {
+declare interface LineStyle {
   color: string
   width: number
   style: string
 }
 
-interface AxisLine {
+declare interface AxisLine {
   show: boolean
   lineStyle: LineStyle
 }
 
-interface AxisValue {
+declare interface AxisValue {
   auto: boolean
   min: null
   max: null
@@ -237,7 +237,7 @@ interface AxisValue {
   splitCount: null
 }
 
-interface AxisLabelFormatter {
+declare interface AxisLabelFormatter {
   type: string // auto,value,percent
   unit: number // 换算单位
   suffix: string // 单位后缀
@@ -245,7 +245,7 @@ interface AxisLabelFormatter {
   thousandSeparator: boolean // 千分符
 }
 
-interface ChartAxisStyle {
+declare interface ChartAxisStyle {
   show: boolean
   position: string
   name: string
@@ -257,30 +257,30 @@ interface ChartAxisStyle {
   axisLabelFormatter: AxisLabelFormatter
 }
 
-interface SplitName {
+declare interface SplitName {
   show: boolean
   color: string
   fontSize: string
 }
 
-interface SplitLineStyle {
+declare interface SplitLineStyle {
   color: string
   width: number
   type: string
 }
 
-interface SplitAxisLine {
+declare interface SplitAxisLine {
   show: boolean
   lineStyle: SplitLineStyle
 }
 
-interface SplitAxisTick {
+declare interface SplitAxisTick {
   show: boolean
   length: number
   lineStyle: SplitLineStyle
 }
 
-interface SplitAxisLabel {
+declare interface SplitAxisLabel {
   show: boolean
   rotate: number
   margin: number
@@ -289,11 +289,11 @@ interface SplitAxisLabel {
   formatter: string
 }
 
-interface SplitSplitArea {
+declare interface SplitSplitArea {
   show: boolean
 }
 
-interface ChartSplitStyle {
+declare interface ChartSplitStyle {
   name: SplitName
   splitNumber: number
   axisLine: SplitAxisLine
@@ -347,7 +347,10 @@ declare interface ChartSenior {
   assistLine: []
   threshold: ChartThreshold
 }
-
+declare interface Axis {
+  name: string
+  formatterCfg: AxisLabelFormatter
+}
 declare type CustomAttr = DeepPartial<ChartAttr> | JSONString<DeepPartial<ChartAttr>>
 declare type CustomStyle = DeepPartial<ChartStyle> | JSONString<DeepPartial<ChartStyle>>
 declare type CustomSenior = DeepPartial<ChartSenior> | JSONString<DeepPartial<ChartSenior>>
@@ -356,6 +359,7 @@ declare interface Chart {
   name: string
   type: string
   title: string
+  drill?: boolean
   refreshViewEnable: boolean
   refreshTime: number
   refreshUnit: string
@@ -363,6 +367,12 @@ declare interface Chart {
     data: any[]
     series?: any[]
   }
+  xAxis?: Axis[]
+  xAxisExt?: Axis[]
+  yAxis?: Axis[]
+  yAxisExt?: Axis[]
+  extStack?: Axis[]
+  extBubble?: Axis[]
   senior: CustomSenior
   customAttr: CustomAttr
   customStyle: CustomStyle

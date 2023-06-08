@@ -1,8 +1,11 @@
-export const styleData = [
+export const positionData = [
   { key: 'left', label: 'X' },
   { key: 'top', label: 'Y' },
   { key: 'width', label: 'W' },
-  { key: 'height', label: 'H' },
+  { key: 'height', label: 'H' }
+]
+
+export const styleData = [
   { key: 'lineHeight', label: '行高' },
   { key: 'opacity', label: '透明度' },
   { key: 'borderWidth', label: '边框宽度' },

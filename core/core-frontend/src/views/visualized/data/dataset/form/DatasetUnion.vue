@@ -62,6 +62,12 @@ const nodeNameList = computed(() => {
   return arr
 })
 
+const dfsNodeList = computed(() => {
+  let nodeListLocation = []
+  dfsNode(state.nodeList, nodeListLocation)
+  return nodeListLocation
+})
+
 const dfsNodeNameList = (list, arr) => {
   return list.forEach(ele => {
     arr.push(ele.tableName)
@@ -121,7 +127,10 @@ const closeSqlNode = () => {
   if (state.visualNode?.confirm) {
     nextTick(() => {
       emits('joinEditor', [
-        { ...state.visualNode, tableName: JSON.parse(state.visualNode.info).table },
+        {
+          ...state.visualNode,
+          tableName: (JSON.parse(state.visualNode.info) as { table: string }).table
+        },
         state.visualNodeParent
       ])
     })
@@ -188,7 +197,7 @@ const handleCommand = (ele, command) => {
     const { tableName, datasourceId, info, id } = ele
     if (ele.type === 'sql') {
       sqlNode.value = {
-        sql: (JSON.parse(info) || {}).sql,
+        sql: ((JSON.parse(info) as { sql: string }) || {}).sql,
         tableName,
         id,
         datasourceId
@@ -281,9 +290,7 @@ function elementInteractArea(pos1, pos2) {
 
 const possibleNodeAreaList = computed(() => {
   let flatArr = []
-  let nodeListLocation = []
-  dfsNode(state.nodeList, nodeListLocation)
-  leafNode(nodeListLocation, flatArr)
+  leafNode(dfsNodeList.value, flatArr)
   return flatArr.filter(ele => !ele.isShadow)
 })
 
@@ -316,9 +323,7 @@ const leafNode = (arr, leafList) => {
 
 const flatNodeList = computed(() => {
   let flatArr = []
-  let nodeListLocation = []
-  dfsNode(state.nodeList, nodeListLocation)
-  flatNode(nodeListLocation, flatArr)
+  flatNode(dfsNodeList.value, flatArr)
   return flatArr
 })
 
@@ -333,9 +338,7 @@ const flatNode = (arr, flatNodeList) => {
 
 const flatPathList = computed(() => {
   let flatArr = []
-  let nodeListLocation = []
-  dfsNode(state.nodeList, nodeListLocation)
-  const [root = {}] = nodeListLocation
+  const [root = {}] = dfsNodeList.value
   flatLine(root, flatArr)
   return flatArr
 })
@@ -361,7 +364,6 @@ const dfsNode = (arr, nodeListLocation, x = 0, y = 0) => {
         maxY,
         isShadow: !!ele.isShadow
       })
-      console.log('ele, ele', ele.tableName, idxChild)
     } else {
       const children = []
       const pre = nodeListLocation[index - 1]
@@ -385,7 +387,6 @@ const dfsNode = (arr, nodeListLocation, x = 0, y = 0) => {
         isShadow: !!ele.isShadow,
         children
       })
-      console.log('ele, ele', ele.tableName, idx ? Math.min(idx, maxY) : idx)
     }
   })
 }
@@ -465,11 +466,6 @@ const dragover_handler = ev => {
 
   let resultList = possibleNodeAreaList.value.map(ele => {
     const { fromX, fromY, toX, toY, isLeaf = false, tableName } = ele
-    // const [k] = (state.visualNode?.flag || '').split('_')
-    // if (k === tableName) {
-    //   console.log('obj.isShadow', JSON.stringify(ele), JSON.stringify(state.visualNode))
-    // }
-
     return [
       elementInteractArea(
         {
@@ -539,7 +535,7 @@ const dragenter_handler = ev => {
 const drop_handler = ev => {
   ev.preventDefault()
   let data = ev.dataTransfer.getData('text')
-  const { tableName, type = 'db', datasourceId } = JSON.parse(data)
+  const { tableName, type, datasourceId } = JSON.parse(data)
   const extraData = {
     info: JSON.stringify({
       table: tableName,
@@ -619,12 +615,11 @@ const drop_handler = ev => {
 }
 
 const setStateBack = (node, parent) => {
+  delete node.children
+  delete parent.children
+  dfsNodeBack([parent, node], [parent.id, node.id], state.nodeList)
   if (state.visualNode) {
-    Object.assign(state.visualNode, node)
-    Object.assign(state.visualNodeParent, parent)
     confirm()
-  } else {
-    dfsNodeBack([parent, node], [parent.id, node.id], state.nodeList)
   }
 }
 

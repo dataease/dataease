@@ -23,12 +23,14 @@ import org.apache.calcite.adapter.jdbc.JdbcSchema;
 import org.apache.calcite.jdbc.CalciteConnection;
 import org.apache.calcite.schema.Schema;
 import org.apache.calcite.schema.SchemaPlus;
+import org.apache.calcite.schema.impl.ScalarFunctionImpl;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.sql.*;
 import java.util.*;
@@ -130,13 +132,13 @@ public class CalciteProvider {
     public Map<String, Object> fetchResultField(DatasourceRequest datasourceRequest) throws DEException {
         List<TableField> datasetTableFields = new ArrayList<>();
         List<String[]> list = new LinkedList<>();
-        Statement statement = null;
+        PreparedStatement statement = null;
         ResultSet resultSet = null;
-        Connection connection = null;
+        CalciteConnection connection = null;
         try {
             connection = getConnection(datasourceRequest);
-            statement = connection.createStatement();
-            resultSet = statement.executeQuery(datasourceRequest.getQuery());
+            statement = connection.prepareStatement(datasourceRequest.getQuery());
+            resultSet = statement.executeQuery();
             ResultSetMetaData metaData = resultSet.getMetaData();
             int columnCount = metaData.getColumnCount();
             for (int i = 1; i <= columnCount; i++) {
@@ -164,10 +166,17 @@ public class CalciteProvider {
         return map;
     }
 
-    private Connection getConnection(DatasourceRequest datasourceRequest) throws Exception {
+    private CalciteConnection getConnection(DatasourceRequest datasourceRequest) throws Exception {
         Connection connection = getCalciteConnection(datasourceRequest);
-        buildSchema(datasourceRequest, connection.unwrap(CalciteConnection.class));
-        return connection;
+        CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
+        SchemaPlus rootSchema = buildSchema(datasourceRequest, calciteConnection);
+        Class<?> clazz = FunctionUtils.class;
+        Method[] methods = clazz.getMethods();
+        for (Method method : methods) {
+            rootSchema.add(method.getName().toUpperCase(), ScalarFunctionImpl.create(
+                    FunctionUtils.class, method.getName()));
+        }
+        return calciteConnection;
     }
 
     private void registerDriver(DatasourceRequest datasourceRequest) throws Exception {

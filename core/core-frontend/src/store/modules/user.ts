@@ -1,8 +1,11 @@
 import { defineStore } from 'pinia'
 import { store } from '../index'
 import { useCache } from '@/hooks/web/useCache'
-const { wsCache } = useCache()
+import { useLocaleStoreWithOut } from './locale'
+
 import { userInfo } from '@/api/user'
+const { wsCache } = useCache()
+const locale = useLocaleStoreWithOut()
 interface UserState {
   token: string
   uid: string
@@ -54,6 +57,7 @@ export const userStore = defineStore('user', {
         this[key] = data[dkey]
         wsCache.set('user.' + key, this[key])
       })
+      this.setLanguage(this.language)
     },
     setToken(token: string) {
       wsCache.set('user.token', token)
@@ -74,6 +78,7 @@ export const userStore = defineStore('user', {
     setLanguage(language: string) {
       wsCache.set('user.language', language)
       this.language = language
+      locale.setLang(language)
     },
     clear() {
       const keys: string[] = ['token', 'uid', 'name', 'oid', 'language']

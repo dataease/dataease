@@ -11,6 +11,7 @@ import {
   mountUserApi
 } from '@/api/user'
 import RoleForm from './RoleForm.vue'
+import OutUserForm from './OutUserForm.vue'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 const selectedRoleId = ref('')
@@ -18,7 +19,9 @@ const roleKeyword = ref('')
 const optionKeyword = ref('')
 const selectedKeyword = ref('')
 const roleFormRef = ref(null)
+const outUserFormRef = ref(null)
 const { t } = useI18n()
+const loading = ref(false)
 interface Tree {
   id: string
   name: string
@@ -46,13 +49,13 @@ const state = reactive({
 state.roleData = [
   {
     id: 'admin',
-    name: '组织管理员',
+    name: t('role.org_admin'),
     children: null,
     disabled: true
   },
   {
     id: 'readonly',
-    name: '普通用户',
+    name: t('role.average_role'),
     children: null,
     disabled: true
   }
@@ -60,34 +63,42 @@ state.roleData = [
 
 const optionSearch = (rid?: string) => {
   const param = { rid, keyword: optionKeyword.value }
-  rid &&
+  if (rid) {
+    loading.value = true
     userOptionForRoleApi(param).then(res => {
       if (res?.data?.length) {
         state.optionUserList = res.data
       } else {
         state.optionUserList = []
       }
+      loading.value = false
     })
+  }
 }
 
 const selectedSearch = (rid?: string) => {
   const param = { rid, keyword: selectedKeyword.value }
-  rid &&
+  if (rid) {
+    loading.value = true
     userSelectedForRoleApi(param).then(res => {
       if (res?.data?.length) {
         state.addedUserList = res.data
       } else {
         state.addedUserList = []
       }
+      loading.value = false
     })
+  }
 }
 
 const roleSearch = () => {
+  loading.value = true
   searchRoleApi(roleKeyword.value).then(res => {
     const roles = res.data
     const map = groupBy(roles)
     state.roleData[0].children = map.get(false)
     state.roleData[1].children = map.get(true)
+    loading.value = false
   })
 }
 
@@ -133,18 +144,25 @@ const delHandler = row => {
       t('role.delete_tips'),
     showClose: false
   }).then(() => {
+    loading.value = true
     roleDelApi(row.id).then(() => {
       ElMessage.success(t('common.delete_success'))
       roleSearch()
     })
   })
 }
-
+const emits = defineEmits(['refresh', 'refresh-grid'])
 const roleSaved = () => {
   roleSearch()
+  emits('refresh')
+}
+const outUserSaved = () => {
+  selectedSearch(selectedRoleId.value)
+  emits('refresh-grid')
 }
 const bindUser = () => {
   const param = { rid: selectedRoleId.value, uids: state.checkList }
+  loading.value = true
   mountUserApi(param).then(() => {
     ElMessage({
       message: t('role.bind_success'),
@@ -152,10 +170,13 @@ const bindUser = () => {
     })
     moveOption2Selected(param.uids)
     state.checkList = []
+    emits('refresh-grid')
+    loading.value = false
   })
 }
 const unBindUser = (uid: string) => {
   const param = { uid, rid: selectedRoleId.value }
+  loading.value = true
   beforeUnmountInfoApi(param).then(res => {
     if (res.data) {
       const msg = res.data === 2 ? t('role.clear_in_system') : t('role.clear_in_org')
@@ -166,7 +187,9 @@ const unBindUser = (uid: string) => {
         tip: msg,
         showClose: false
       }).then(() => {
-        unMountUserHandler(param)
+        unMountUserHandler(param, () => {
+          moveSelected([uid])
+        })
       })
     } else {
       // 删除用户角色映射
@@ -178,12 +201,15 @@ const unBindUser = (uid: string) => {
 }
 
 const unMountUserHandler = (param: any, callback?) => {
+  loading.value = true
   unMountUserApi(param).then(() => {
     ElMessage({
       message: t('role.unbind_success'),
       type: 'success'
     })
+    emits('refresh-grid')
     callback && callback()
+    loading.value = false
   })
 }
 
@@ -197,29 +223,54 @@ const moveOption2Selected = (uids: string[]) => {
     }
   }
 }
-const moveSelected2Option = (uids: string[]) => {
+const moveSelected = (uids: string[]): any[] => {
+  const result = []
   let len = state.addedUserList.length
+  while (len--) {
+    const item = state.addedUserList[len]
+    if (uids.includes(item.id)) {
+      state.addedUserList.splice(len, 1)
+      result.push({ ...item })
+    }
+  }
+  return result
+}
+const moveSelected2Option = (uids: string[]) => {
+  const result = moveSelected(uids)
+  if (result?.length) {
+    result.forEach(item => {
+      state.optionUserList.push({ ...item })
+    })
+  }
+  /* let len = state.addedUserList.length
   while (len--) {
     const item = state.addedUserList[len]
     if (uids.includes(item.id)) {
       state.addedUserList.splice(len, 1)
       state.optionUserList.push({ ...item })
     }
-  }
+  } */
 }
-
+const openOutUser = () => {
+  if (!selectedRoleId.value) {
+    ElMessage.error('请先选择角色')
+    return
+  }
+  outUserFormRef.value.init(selectedRoleId.value)
+}
 onMounted(() => {
   roleSearch()
 })
 </script>
 
 <template>
-  <div class="role-manage">
+  <div class="role-manage" v-loading="loading">
     <div class="role-list role-height">
       <div class="title">
-        角色列表
+        {{ t('role.role_title') }}
         <el-button type="primary" @click="roleAdd">
-          <template #icon> <Icon name="icon_add_outlined"></Icon> </template>添加角色
+          <template #icon> <Icon name="icon_add_outlined"></Icon> </template
+          >{{ t('role.add_title') }}
         </el-button>
         <el-input class="m24 w100" v-model="roleKeyword" clearable>
           <template #prefix>
@@ -240,7 +291,7 @@ onMounted(() => {
           <template #default="{ node, data }">
             <span class="custom-tree-node">
               <span :title="node.label">{{ node.label }}</span>
-              <div v-if="!data.disabled" class="operate-icon-container">
+              <div v-if="!data.disabled && !data.root" class="operate-icon-container">
                 <div><Icon name="edit" @click.stop="roleEdit(data)"></Icon></div>
                 <div><Icon name="delete" @click.stop="delHandler(data)"></Icon></div>
               </div>
@@ -251,7 +302,7 @@ onMounted(() => {
     </div>
     <div class="added-user-list role-height">
       <div class="title">
-        已添加用户
+        {{ t('role.bound_user') }}
         <el-input v-model="selectedKeyword" clearable>
           <template #prefix>
             <el-icon>
@@ -277,8 +328,8 @@ onMounted(() => {
     </div>
     <div class="add-user-list role-height-option">
       <div class="title">
-        可添加用户
-        <el-icon>
+        {{ t('role.option_user') }}
+        <el-icon class="add-out-icon" @click.stop="openOutUser">
           <Icon name="icon_add_outlined"></Icon>
         </el-icon>
         <el-input class="m24 w100" v-model="optionKeyword" clearable>
@@ -311,6 +362,7 @@ onMounted(() => {
     </div>
   </div>
   <role-form ref="roleFormRef" @saved="roleSaved" />
+  <out-user-form ref="outUserFormRef" @saved="outUserSaved" />
 </template>
 
 <style lang="less" scoped>
@@ -415,12 +467,12 @@ onMounted(() => {
         right: 0;
         width: 12px;
         height: 12px;
-        color: var(--el-color-primary);
-        background: var(--el-color-primary-light-7);
+        color: var(--ed-color-primary);
+        background: var(--ed-color-primary-light-7);
       }
       &:hover {
         cursor: pointer;
-        border-color: var(--el-color-primary-light-7);
+        border-color: var(--ed-color-primary-light-7);
         .role-remove-icon {
           display: block;
         }
@@ -468,17 +520,26 @@ onMounted(() => {
         svg {
           width: 16px;
           height: 16px;
-          color: var(--el-text-color-regular);
-          background-color: var(--el-color-white);
+          color: var(--ed-text-color-regular);
+          background-color: var(--ed-color-white);
         }
       }
       div:hover {
         svg {
-          color: var(--el-color-primary) !important;
-          background: var(--el-color-primary-light-7) !important;
+          color: var(--ed-color-primary) !important;
+          background: var(--ed-color-primary-light-7) !important;
         }
       }
     }
+  }
+}
+.add-out-icon {
+  cursor: pointer;
+  color: var(--ed-text-color-regular);
+  background-color: var(--ed-color-white);
+  :hover {
+    color: var(--ed-color-primary) !important;
+    background: var(--ed-color-primary-light-7) !important;
   }
 }
 </style>

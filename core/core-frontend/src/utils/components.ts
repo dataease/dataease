@@ -8,6 +8,10 @@ import UserView from '@/custom-component/user-view/Component.vue'
 import UserViewAttr from '@/custom-component/user-view/Attr.vue'
 import Picture from '@/custom-component/picture/Component.vue'
 import PictureAttr from '@/custom-component/picture/Attr.vue'
+import CanvasBoard from '@/custom-component/canvas-board/Component.vue'
+import CanvasBoardAttr from '@/custom-component/canvas-board/Attr.vue'
+import CanvasIcon from '@/custom-component/canvas-icon/Component.vue'
+import CanvasIconAttr from '@/custom-component/canvas-icon/Attr.vue'
 
 export const componentsMap = {
   RectShape: RectShape,
@@ -19,7 +23,11 @@ export const componentsMap = {
   UserView: UserView,
   UserViewAttr: UserViewAttr,
   Picture: Picture,
-  PictureAttr: PictureAttr
+  PictureAttr: PictureAttr,
+  CanvasBoard: CanvasBoard,
+  CanvasBoardAttr: CanvasBoardAttr,
+  CanvasIcon: CanvasIcon,
+  CanvasIconAttr: CanvasIconAttr
 }
 
 export default function findComponent(key) {

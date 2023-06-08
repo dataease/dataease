@@ -22,7 +22,7 @@
         :style="nowItemStyle(item, index)"
       >
         <db-drag-area></db-drag-area>
-        <db-shape :index="index" :item="item"></db-shape>
+        <db-shape :index="index" :item="item" :canvas-view-info="canvasViewInfo"></db-shape>
         <span
           class="resizeHandle"
           v-show="resizable"
@@ -39,7 +39,6 @@ import $ from 'jquery'
 import { toRefs, ref, onMounted, nextTick, getCurrentInstance } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
-import findComponent from '@/utils/components'
 import { getStyle } from '@/utils/style'
 import DbShape from '@/components/dashboard/DbShape.vue'
 import DbDragArea from '@/components/dashboard/DbDragArea.vue'
@@ -162,7 +161,7 @@ const {
 
 const svgFilterAttrs = ['width', 'height', 'top', 'left', 'rotate']
 
-const { curComponent, isClickComponent } = storeToRefs(dvMainStore)
+const { curComponent, isClickComponent, canvasViewInfo } = storeToRefs(dvMainStore)
 
 const getTextareaHeight = (element, text) => {
   let { lineHeight, fontSize, height } = element.style

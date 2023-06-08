@@ -19,6 +19,10 @@ import QuotaFilterEditor from '@/views/chart/components/editor/filter/QuotaFilte
 import ResultFilterEditor from '@/views/chart/components/editor/filter/ResultFilterEditor.vue'
 import { ElIcon, ElRow } from 'element-plus-secondary'
 import DrillItem from '@/views/chart/components/editor/drag-item/DrillItem.vue'
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { storeToRefs } from 'pinia'
+const dvMainStore = dvMainStoreWithOut()
+const { canvasCollapse } = storeToRefs(dvMainStore)
 
 const { t } = useI18n()
 const loading = ref(false)
@@ -53,8 +57,6 @@ const itemFormRules = reactive<FormRules>({
 })
 
 const state = reactive({
-  chartAreaCollapse: false,
-  datasetAreaCollapse: false,
   moveId: -1,
   dimension: [],
   quota: [],
@@ -74,20 +76,42 @@ const state = reactive({
 })
 
 watch(
+  [() => props.view],
+  () => {
+    getFields(props.view.tableId)
+  },
+  { deep: true }
+)
+
+watch(
   [() => state.searchField],
-  (newVal, oldVal) => {
+  newVal => {
     fieldFilter(newVal[0])
   },
   { deep: true }
 )
 
 const getFields = id => {
-  getFieldByDQ(id).then(res => {
-    state.dimension = (res.dimensionList as unknown as Field[]) || []
-    state.quota = (res.quotaList as unknown as Field[]) || []
-    state.dimensionData = JSON.parse(JSON.stringify(state.dimension))
-    state.quotaData = JSON.parse(JSON.stringify(state.quota))
-  })
+  if (id) {
+    getFieldByDQ(id)
+      .then(res => {
+        state.dimension = (res.dimensionList as unknown as Field[]) || []
+        state.quota = (res.quotaList as unknown as Field[]) || []
+        state.dimensionData = JSON.parse(JSON.stringify(state.dimension))
+        state.quotaData = JSON.parse(JSON.stringify(state.quota))
+      })
+      .catch(e => {
+        state.dimension = []
+        state.quota = []
+        state.dimensionData = []
+        state.quotaData = []
+      })
+  } else {
+    state.dimension = []
+    state.quota = []
+    state.dimensionData = []
+    state.quotaData = []
+  }
 }
 
 const fieldFilter = val => {
@@ -455,7 +479,7 @@ const saveResultFilter = () => {
 }
 
 const collapseChange = type => {
-  state[type] = !state[type]
+  canvasCollapse.value[type] = !canvasCollapse.value[type]
 }
 </script>
 
@@ -469,13 +493,13 @@ const collapseChange = type => {
           size="20px"
           @click="collapseChange('chartAreaCollapse')"
         >
-          <Fold v-if="state.chartAreaCollapse" />
+          <Fold v-if="canvasCollapse.chartAreaCollapse" />
           <Expand v-else />
         </el-icon>
-        <div class="collapse-title" v-show="state.chartAreaCollapse">
+        <div class="collapse-title" v-show="canvasCollapse.chartAreaCollapse">
           <span style="font-size: 14px">{{ view.title }}</span>
         </div>
-        <div v-show="!state.chartAreaCollapse" style="width: 240px" class="view-panel-row">
+        <div v-show="!canvasCollapse.chartAreaCollapse" style="width: 240px" class="view-panel-row">
           <el-row class="editor-title">
             <span style="font-size: 14px">{{ view.title }}</span>
           </el-row>
@@ -511,13 +535,19 @@ const collapseChange = type => {
                   <div class="drag_main_area attr-style theme-border-class">
                     <el-row style="height: 100%">
                       <!--xAxis-->
-                      <el-row class="padding-lr drag-data">
+                      <el-row
+                        class="padding-lr drag-data"
+                        v-if="
+                          view.type !== 'text' && view.type !== 'gauge' && view.type !== 'liquid'
+                        "
+                      >
                         <span class="data-area-label">
                           <dimension-label :view="view" />
                         </span>
                         <draggable
                           :list="view.xaxis"
                           :move="onMove"
+                          item-key="id"
                           group="drag"
                           animation="300"
                           class="drag-block-style"
@@ -541,13 +571,21 @@ const collapseChange = type => {
                       </el-row>
 
                       <!--yAxis-->
-                      <el-row class="padding-lr drag-data">
+                      <el-row
+                        class="padding-lr drag-data"
+                        v-if="
+                          view.type !== 'table-info' &&
+                          view.type !== 'label' &&
+                          view.type !== 'flow-map'
+                        "
+                      >
                         <span class="data-area-label">
                           <quota-label :view="view" />
                         </span>
                         <draggable
                           :list="view.yaxis"
                           :move="onMove"
+                          item-key="id"
                           group="drag"
                           animation="300"
                           class="drag-block-style"
@@ -572,7 +610,16 @@ const collapseChange = type => {
                       </el-row>
 
                       <!--drill-->
-                      <el-row class="padding-lr drag-data">
+                      <el-row
+                        class="padding-lr drag-data"
+                        v-if="
+                          view.type !== 'table-info' &&
+                          view.type !== 'text' &&
+                          view.type !== 'text-label' &&
+                          view.type !== 'liquid' &&
+                          view.type !== 'gauge'
+                        "
+                      >
                         <span class="data-area-label">
                           <span>{{ t('chart.drill') }}</span>
                           /
@@ -591,6 +638,7 @@ const collapseChange = type => {
                         </span>
                         <draggable
                           :list="view.drillFields"
+                          item-key="id"
                           group="drag"
                           animation="300"
                           :move="onMove"
@@ -619,6 +667,7 @@ const collapseChange = type => {
                         <draggable
                           :list="view.customFilter"
                           :move="onMove"
+                          item-key="id"
                           group="drag"
                           animation="300"
                           class="drag-block-style"
@@ -719,13 +768,13 @@ const collapseChange = type => {
           size="20px"
           @click="collapseChange('datasetAreaCollapse')"
         >
-          <Fold v-if="state.datasetAreaCollapse" />
+          <Fold v-if="canvasCollapse.datasetAreaCollapse" />
           <Expand v-else />
         </el-icon>
-        <div class="collapse-title" v-show="state.datasetAreaCollapse">
+        <div class="collapse-title" v-show="canvasCollapse.datasetAreaCollapse">
           <span style="font-size: 14px">数据集</span>
         </div>
-        <div v-show="!state.datasetAreaCollapse" class="dataset-area view-panel-row">
+        <div v-show="!canvasCollapse.datasetAreaCollapse" class="dataset-area view-panel-row">
           <el-row class="editor-title">
             <span style="font-size: 14px">数据集</span>
           </el-row>
@@ -742,6 +791,7 @@ const collapseChange = type => {
               v-model="view.tableId"
               :data="datasetTree"
               :props="dsSelectProps"
+              :render-after-expand="false"
               filterable
               @node-click="dsClick"
               class="dataset-selector"
@@ -792,6 +842,7 @@ const collapseChange = type => {
                 :list="state.dimensionData"
                 :group="dsFieldDragOptions.group"
                 :move="onMove"
+                item-key="id"
                 animation="300"
                 class="drag-list"
                 @add="moveToDimension"
@@ -815,6 +866,7 @@ const collapseChange = type => {
                 :list="state.quotaData"
                 :group="dsFieldDragOptions.group"
                 :move="onMove"
+                item-key="id"
                 animation="300"
                 class="drag-list"
                 @add="moveToQuota"
@@ -839,7 +891,6 @@ const collapseChange = type => {
 
     <!--显示名修改-->
     <el-dialog
-      v-dialogDrag
       :title="t('chart.show_name_set')"
       :visible="state.renameItem"
       v-model="state.renameItem"
@@ -875,7 +926,6 @@ const collapseChange = type => {
     <el-dialog
       v-model="state.quotaFilterEdit"
       v-if="state.quotaFilterEdit"
-      v-dialogDrag
       :title="t('chart.add_filter')"
       :visible="state.quotaFilterEdit"
       :show-close="false"
@@ -895,7 +945,6 @@ const collapseChange = type => {
     <el-dialog
       v-model="state.resultFilterEdit"
       v-if="state.resultFilterEdit"
-      v-dialogDrag
       :title="t('chart.add_filter')"
       :visible="state.resultFilterEdit"
       :show-close="false"

@@ -1,5 +1,5 @@
 <script lang="tsx" setup>
-import { reactive, toRefs } from 'vue'
+import { reactive } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL, DEFAULT_FUNCTION_CFG } from '@/views/chart/components/editor/util/chart'
 
@@ -16,7 +16,8 @@ const emit = defineEmits(['onFunctionCfgChange'])
 
 const state = reactive({
   functionForm: JSON.parse(JSON.stringify(DEFAULT_FUNCTION_CFG)),
-  predefineColors: COLOR_PANEL
+  predefineColors: COLOR_PANEL,
+  showEmptyStrategy: false
 })
 
 const changeFunctionCfg = () => {
@@ -87,7 +88,7 @@ const changeFunctionCfg = () => {
           </el-form-item>
         </div>
         <el-form-item
-          v-show="showEmptyStrategy"
+          v-show="state.showEmptyStrategy"
           :label="t('chart.empty_data_strategy')"
           class="form-item"
         >

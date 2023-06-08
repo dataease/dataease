@@ -2,8 +2,6 @@
 import DvCanvas from '@/components/data-visualization/canvas/index.vue'
 import componentList from '@/custom-component/component-list' // 左侧列表数据
 import { deepCopy } from '@/utils/utils'
-import generateID from '@/utils/generateID'
-import { listenGlobalKeyDown } from '@/utils/shortcutKey'
 import RealTimeComponentList from '@/components/data-visualization/RealTimeComponentList.vue'
 import CanvasAttr from '@/components/data-visualization/CanvasAttr.vue'
 import { changeComponentSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
@@ -18,7 +16,6 @@ import ComponentToolBar from '../../components/data-visualization/ComponentToolB
 import eventBus from '../../utils/eventBus'
 import findComponent from '../../utils/components'
 import DvSidebar from '../../components/visualization/DvSidebar.vue'
-import { getData } from '@/api/chart'
 import { findById } from '@/api/dataVisualization'
 import router from '@/router'
 import Editor from '@/views/chart/components/editor/index.vue'
@@ -177,7 +174,13 @@ eventBus.on('handleNew', handleNew)
     <DvToolbar />
     <el-container class="dv-layout-container">
       <!-- 左侧组件列表 -->
-      <dv-sidebar title="图层" :width="180" aside-position="left" class="left-sidebar">
+      <dv-sidebar
+        :title="'图层'"
+        :width="180"
+        :aside-position="'left'"
+        :side-name="'realTimeComponent'"
+        class="left-sidebar"
+      >
         <RealTimeComponentList />
       </dv-sidebar>
       <!-- 中间画布 -->
@@ -198,18 +201,20 @@ eventBus.on('handleNew', handleNew)
       <!-- 右侧侧组件列表 -->
       <dv-sidebar
         v-if="curComponent && curComponent.component !== 'UserView'"
-        title="属性"
+        :title="'属性'"
         :width="240"
-        aside-position="right"
+        :side-name="'componentProp'"
+        :aside-position="'right'"
         class="left-sidebar"
       >
         <component :is="findComponent(curComponent['component'] + 'Attr')" />
       </dv-sidebar>
       <dv-sidebar
         v-if="!curComponent"
-        title="大屏配置"
+        :title="'大屏配置'"
         :width="240"
-        aside-position="right"
+        :side-name="'canvas'"
+        :aside-position="'right'"
         class="left-sidebar"
       >
         <CanvasAttr></CanvasAttr>

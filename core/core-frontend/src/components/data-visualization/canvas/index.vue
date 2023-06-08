@@ -275,7 +275,7 @@ onMounted(() => {
 
     <!--页面组件列表展示-->
     <Shape
-      v-for="(item, index) in componentData"
+      v-for="(item, index) in componentData.filter(component => component.isShow)"
       :key="item.id"
       :default-style="item.style"
       :style="getShapeStyle(item.style)"

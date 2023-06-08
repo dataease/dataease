@@ -1,5 +1,5 @@
 <script lang="tsx" setup>
-import { reactive, toRefs, watch } from 'vue'
+import { reactive, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ElMessage } from 'element-plus-secondary'
 import AssistLineEdit from '@/views/chart/components/editor/editor-senior/components/dialog/AssistLineEdit.vue'
@@ -125,7 +125,6 @@ const changeLine = () => {
     <el-dialog
       v-if="state.editLineDialog"
       v-model="state.editLineDialog"
-      v-dialogDrag
       :title="t('chart.assist_line')"
       :visible="state.editLineDialog"
       :show-close="false"

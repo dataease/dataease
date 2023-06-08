@@ -31,6 +31,8 @@ import io.dataease.utils.JsonUtil;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -54,6 +56,8 @@ public class DatasetDataManage {
     @Resource
     private EngineServer engineServer;
 
+    private static Logger logger = LoggerFactory.getLogger(DatasetDataManage.class);
+
     public List<DatasetTableFieldDTO> getTableFields(DatasetTableDTO datasetTableDTO) throws Exception {
         List<DatasetTableFieldDTO> list = null;
         List<TableField> tableFields = null;
@@ -72,7 +76,10 @@ public class DatasetDataManage {
                 datasourceRequest.setQuery(TableUtils.tableName2Sql(datasourceSchemaDTO, tableInfoDTO.getTable()));
             } else {
                 // add sql table schema
-                datasourceRequest.setQuery(SqlUtils.addSchema(new String(Base64.getDecoder().decode(tableInfoDTO.getSql())), datasourceSchemaDTO.getSchemaAlias()));
+                String sql = SqlUtils.addSchema(new String(Base64.getDecoder().decode(tableInfoDTO.getSql())), datasourceSchemaDTO.getSchemaAlias());
+                // parser sql params and repalce default value
+                sql = SqlparserUtils.handleVariableDefaultValue(sql, datasetTableDTO.getSqlVariableDetails(), true);
+                datasourceRequest.setQuery(sql);
             }
             // 获取数据源表的原始字段
             tableFields = (List<TableField>) calciteProvider.fetchResultField(datasourceRequest).get("fields");
@@ -179,6 +186,7 @@ public class DatasetDataManage {
             map.put("allFields", fieldList);
         }
         map.put("sql", Base64.getEncoder().encodeToString(querySQL.getBytes()));
+        logger.info("calcite data preview sql: " + querySQL);
         return map;
     }
 

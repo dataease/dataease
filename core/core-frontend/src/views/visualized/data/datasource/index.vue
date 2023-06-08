@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, reactive, ref, shallowRef } from 'vue'
+import { computed, reactive, ref, shallowRef, nextTick } from 'vue'
 import type { TabPaneName } from 'element-plus-secondary'
 import { ElIcon } from 'element-plus-secondary'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
@@ -7,9 +7,9 @@ import { Icon } from '@/components/icon-custom'
 import { useRouter } from 'vue-router'
 import { useI18n } from '@/hooks/web/useI18n'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
-import { listDatasources, getTableField, listDatasourceTables } from '../../../../api/datasource.ts'
+import { listDatasources, getTableField, listDatasourceTables } from '@/api/datasource'
 import { Base64 } from 'js-base64'
-import { Configuration, ApiConfiguration, SyncSetting } from './form/index.vue'
+import type { Configuration, ApiConfiguration, SyncSetting } from './form/index.vue'
 import EditorDetail from './form/EditorDetail.vue'
 interface DsType {
   type: string
@@ -20,7 +20,7 @@ interface DsType {
   children?: Array<{}>
 }
 
-interface Node {
+export interface Node {
   name: string
   createBy: string
   id: number
@@ -37,9 +37,7 @@ const { t } = useI18n()
 const detail = ref()
 
 const state = reactive({
-  addeddatasourceList: [],
   datasourceTree: [] as DsType[],
-  datasourceTypeList: [],
   dsTableData: [],
   paginationConfig: {
     currentPage: 1,
@@ -50,9 +48,9 @@ const state = reactive({
 })
 
 const dsTableDetail = reactive({
-  tableName: ''
+  tableName: '',
+  remark: ''
 })
-const True = ref(true)
 const nickName = ref('')
 const dsName = ref('')
 const router = useRouter()
@@ -104,35 +102,10 @@ const nodeInfo = reactive<Node>({
   id: 0,
   nodeType: '',
   type: '',
-  configuration: {},
-  syncSetting: {},
+  configuration: null,
+  syncSetting: null,
   apiConfiguration: []
 })
-
-let allFields = []
-let columnsPreview = []
-let dataPreview = []
-
-const allFieldsColumns = [
-  {
-    key: 'name',
-    dataKey: 'name',
-    title: '字段名称',
-    width: 150
-  },
-  {
-    key: 'deType',
-    dataKey: 'deType',
-    title: '字段类型',
-    width: 150
-  },
-  {
-    key: 'description',
-    dataKey: 'description',
-    title: '备注',
-    width: 150
-  }
-]
 
 listDatasources().then(array => {
   for (let index = 0; index < array.length; index++) {
@@ -176,7 +149,6 @@ const buildTree = array => {
   state.datasourceTree = dsType
 }
 
-const columns = shallowRef([])
 const tableData = shallowRef([])
 const handleNodeClick = data => {
   if (data.databaseClassification) return
@@ -190,10 +162,8 @@ const handleNodeClick = data => {
     syncSetting,
     apiConfiguration
   })
-  initSearch()
-  if (activeName.value === 'config') {
-    detail.value.initEditForm()
-  }
+  activeName.value = 'config'
+  handleCurrentChange(1)
   handleClick(activeName.value)
 }
 const createDatasource = (data?: DsType) => {
@@ -205,28 +175,20 @@ const createDatasource = (data?: DsType) => {
 const handleClick = (tabName: TabPaneName) => {
   switch (tabName) {
     case 'config':
+      nextTick(() => {
+        detail.value.initEditForm()
+      })
       break
     case 'table':
       listDatasourceTables(nodeInfo.id).then(res => {
         tableData.value = res.data
       })
-      columns.value = allFieldsColumns
       break
     default:
       break
   }
-  if (activeName.value === 'config') {
-    detail.value.initEditForm()
-  }
 }
 const activeName = ref('table')
-state.addeddatasourceList = Array(40)
-  .fill(1)
-  .map((_, index) => ({
-    datasourcename: 'test' + index,
-    nickName: index + 'nickName'
-  }))
-
 const defaultProps = {
   children: 'children',
   label: 'name'
@@ -266,7 +228,7 @@ const defaultProps = {
               <Icon name="scene"></Icon>
             </el-icon>
             <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
-            <div>
+            <div class="icon-more">
               <el-icon class="hover-icon">
                 <Icon name="icon_add_outlined"></Icon>
               </el-icon>
@@ -384,6 +346,8 @@ const defaultProps = {
 </template>
 
 <style lang="less" scoped>
+@import '@/style/mixin.less';
+
 .datasource-manage {
   display: flex;
   width: 100%;
@@ -393,6 +357,8 @@ const defaultProps = {
   .datasource-height,
   .datasource-content {
     height: calc(100vh - 50px);
+    .border-bottom-tab(24px);
+    margin-left: 0;
     overflow: auto;
     position: relative;
   }
@@ -465,20 +431,24 @@ const defaultProps = {
 }
 </style>
 
-<style lang="less">
+<style scoped lang="less">
 .custom-tree-node {
   flex: 1;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding-right: 8px;
+  padding-right: 4px;
   box-sizing: content-box;
 
   .label-tooltip {
-    width: 60%;
+    width: calc(100% - 66px);
+    margin-left: 8.75px;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+  }
+
+  .icon-more {
+    margin-left: auto;
   }
 }
 </style>

@@ -25,7 +25,11 @@ const service: AxiosInstance = axios.create({
   baseURL: PATH_URL, // api 的 base_url
   timeout: config.request_timeout // 请求超时时间
 })
-
+const mapping = {
+  'zh-CN': 'zh-CN',
+  en: 'en_US',
+  tw: 'zh_TW'
+}
 // request拦截器
 service.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
@@ -38,6 +42,11 @@ service.interceptors.request.use(
     }
     if (wsCache.get('user.token')) {
       ;(config.headers as AxiosRequestHeaders)['Authorization'] = wsCache.get('user.token')
+    }
+    if (wsCache.get('user.language')) {
+      const key = wsCache.get('user.language')
+      const val = mapping[key] || key
+      ;(config.headers as AxiosRequestHeaders)['Accept-Language'] = val
     }
     // ;(config.headers as AxiosRequestHeaders)['Token'] = 'test test'
     // get参数编码

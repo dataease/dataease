@@ -123,7 +123,7 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
   }
 
   constructor() {
-    super('horizontal-bar', DEFAULT_DATA)
+    super('bar-horizontal', DEFAULT_DATA)
   }
 
   protected setupOptions(chart: Chart, options: BarOptions): BarOptions {
