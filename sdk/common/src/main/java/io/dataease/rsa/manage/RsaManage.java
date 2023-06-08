@@ -25,7 +25,7 @@ public class RsaManage {
         }
     }
 
-    @CacheEvict(value = "rsa")
+    @CacheEvict(value = "rsa", key = "'-de-'")
     public void save() {
         RSAModel model = RsaUtils.generate();
         CoreRsa coreRsa = new CoreRsa();
@@ -37,7 +37,7 @@ public class RsaManage {
         coreRsaMapper.insert(coreRsa);
     }
 
-    // @Cacheable(value = "rsa", key = "#root.methodName")
+    @Cacheable(value = "rsa", key = "'-de-'", unless = "#result == null")
     public CoreRsa query() {
         CoreRsa coreRsa = coreRsaMapper.selectById(1);
         return coreRsa;

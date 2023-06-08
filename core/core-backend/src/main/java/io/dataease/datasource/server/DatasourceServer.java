@@ -64,6 +64,8 @@ public class DatasourceServer implements DatasourceApi {
     @Autowired(required = false)
     private InteractiveAuthApi interactiveAuthApi;
 
+    private static final String RESOURCE_FLAG = "datasource";
+
     private static ObjectMapper objectMapper = new ObjectMapper();
 
 
@@ -121,7 +123,7 @@ public class DatasourceServer implements DatasourceApi {
             BusiResourceCreator creator = new BusiResourceCreator();
             creator.setId(coreDatasource.getId());
             creator.setPid(0L);
-            creator.setFlag("datasource");
+            creator.setFlag(RESOURCE_FLAG);
             creator.setName(dataSourceDTO.getName());
             creator.setLeaf(true);
             interactiveAuthApi.saveResource(creator);
@@ -153,7 +155,7 @@ public class DatasourceServer implements DatasourceApi {
         if (ObjectUtils.isNotEmpty(interactiveAuthApi) && ObjectUtils.isNotEmpty(sourceData) && !StringUtils.equals(dataSourceDTO.getName(), sourceData.getName())) {
             BusiResourceEditor editor = new BusiResourceEditor();
             editor.setId(pk);
-            editor.setFlag("datasource");
+            editor.setFlag(RESOURCE_FLAG);
             editor.setName(dataSourceDTO.getName());
             interactiveAuthApi.editResource(editor);
         }
@@ -189,7 +191,12 @@ public class DatasourceServer implements DatasourceApi {
     public List<DatasourceDTO> list() {
         List<DatasourceDTO> datasourceDTOS = new ArrayList<>();
         Collection<DatasourceConfiguration> datasourceConfigurations = datasourceTypes();
-        datasourceMapper.selectList(null).forEach(coreDatasource -> {
+        QueryWrapper<CoreDatasource> queryWrapper = new QueryWrapper();
+        if (ObjectUtils.isNotEmpty(interactiveAuthApi)) {
+            List<Long> ids = interactiveAuthApi.resourceIds(RESOURCE_FLAG);
+            queryWrapper.in("id", ids);
+        }
+        datasourceMapper.selectList(queryWrapper).forEach(coreDatasource -> {
             DatasourceDTO datasourceDTO = new DatasourceDTO();
             BeanUtils.copyBean(datasourceDTO, coreDatasource);
             datasourceConfigurations.forEach(datasourceConfiguration -> {

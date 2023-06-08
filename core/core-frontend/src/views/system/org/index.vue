@@ -1,12 +1,13 @@
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue'
-import { ElMessage, ElMessageBox, ElIcon } from 'element-plus-secondary'
+import { ElMessage, ElMessageBox, ElIcon, Action } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Icon } from '@/components/icon-custom'
 import DeptEditer from './DeptEditer.vue'
 import OrgResources from './OrgResources.vue'
 import { searchApi, resourceExistApi, deleteApi } from '@/api/org'
 import { useUserStoreWithOut } from '@/store/modules/user'
+import { useEmitt } from '@/hooks/web/useEmitt'
 const { t } = useI18n()
 const userStore = useUserStoreWithOut()
 const activeName = ref('manage')
@@ -25,7 +26,7 @@ const table = ref(null)
 const tableData = ref<Org[]>([])
 
 const allTableData = ref<Org[]>([])
-
+const loading = ref(false)
 interface Org {
   id: string
   name: number
@@ -53,6 +54,7 @@ const edit = row => {
 }
 // 加载表格数据
 const search = () => {
+  loading.value = true
   tableData.value = []
   const param = keyword.value
   searchApi(param).then(res => {
@@ -60,6 +62,7 @@ const search = () => {
     if (!keyword.value) {
       allTableData.value = res.data
     }
+    loading.value = false
   })
 }
 
@@ -118,12 +121,14 @@ const _handleDeleteZero = organization => {
     autofocus: false,
     showClose: false
   }).then(() => {
+    loading.value = true
     deleteApi(organization.id).then(() => {
       ElMessage({
         message: t('common.delete_success'),
         type: 'success'
       })
       search()
+      useEmitt().emitter.emit('refresh-org-options')
     })
   })
 }
@@ -133,6 +138,7 @@ onMounted(() => {
 })
 const saveCallBack = () => {
   search()
+  useEmitt().emitter.emit('refresh-org-options')
 }
 </script>
 
@@ -200,26 +206,6 @@ const saveCallBack = () => {
                 <Icon name="delete" @click="deptIsEmpty(scope.row)"></Icon>
               </div>
             </div>
-            <!-- <div v-else>
-              <el-button @click="edit(scope.row)" text>{{ t('common.edit') }}</el-button>
-
-              <template v-if="scope.row.id === '1'">
-                <el-tooltip
-                  class="item"
-                  effect="dark"
-                  :content="t('org.default_cannot_move')"
-                  placement="left"
-                >
-                  <div class="btn-outer">
-                    <el-button disabled text>{{ t('common.delete') }}</el-button>
-                  </div>
-                </el-tooltip>
-              </template>
-              <el-button v-else @click="deptIsEmpty(scope.row)" text>{{
-                t('common.delete')
-              }}</el-button>
-              <el-button @click="addOrg(scope.row)" text>{{ t('org.add_sub') }}</el-button>
-            </div> -->
           </template>
         </el-table-column>
       </el-table>

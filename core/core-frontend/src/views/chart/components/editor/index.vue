@@ -19,6 +19,10 @@ import QuotaFilterEditor from '@/views/chart/components/editor/filter/QuotaFilte
 import ResultFilterEditor from '@/views/chart/components/editor/filter/ResultFilterEditor.vue'
 import { ElIcon, ElRow } from 'element-plus-secondary'
 import DrillItem from '@/views/chart/components/editor/drag-item/DrillItem.vue'
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { storeToRefs } from 'pinia'
+const dvMainStore = dvMainStoreWithOut()
+const { canvasCollapse } = storeToRefs(dvMainStore)
 
 const { t } = useI18n()
 const loading = ref(false)
@@ -53,8 +57,6 @@ const itemFormRules = reactive<FormRules>({
 })
 
 const state = reactive({
-  chartAreaCollapse: false,
-  datasetAreaCollapse: false,
   moveId: -1,
   dimension: [],
   quota: [],
@@ -477,7 +479,7 @@ const saveResultFilter = () => {
 }
 
 const collapseChange = type => {
-  state[type] = !state[type]
+  canvasCollapse.value[type] = !canvasCollapse.value[type]
 }
 </script>
 
@@ -491,13 +493,13 @@ const collapseChange = type => {
           size="20px"
           @click="collapseChange('chartAreaCollapse')"
         >
-          <Fold v-if="state.chartAreaCollapse" />
+          <Fold v-if="canvasCollapse.chartAreaCollapse" />
           <Expand v-else />
         </el-icon>
-        <div class="collapse-title" v-show="state.chartAreaCollapse">
+        <div class="collapse-title" v-show="canvasCollapse.chartAreaCollapse">
           <span style="font-size: 14px">{{ view.title }}</span>
         </div>
-        <div v-show="!state.chartAreaCollapse" style="width: 240px" class="view-panel-row">
+        <div v-show="!canvasCollapse.chartAreaCollapse" style="width: 240px" class="view-panel-row">
           <el-row class="editor-title">
             <span style="font-size: 14px">{{ view.title }}</span>
           </el-row>
@@ -533,7 +535,12 @@ const collapseChange = type => {
                   <div class="drag_main_area attr-style theme-border-class">
                     <el-row style="height: 100%">
                       <!--xAxis-->
-                      <el-row class="padding-lr drag-data">
+                      <el-row
+                        class="padding-lr drag-data"
+                        v-if="
+                          view.type !== 'text' && view.type !== 'gauge' && view.type !== 'liquid'
+                        "
+                      >
                         <span class="data-area-label">
                           <dimension-label :view="view" />
                         </span>
@@ -564,7 +571,14 @@ const collapseChange = type => {
                       </el-row>
 
                       <!--yAxis-->
-                      <el-row class="padding-lr drag-data">
+                      <el-row
+                        class="padding-lr drag-data"
+                        v-if="
+                          view.type !== 'table-info' &&
+                          view.type !== 'label' &&
+                          view.type !== 'flow-map'
+                        "
+                      >
                         <span class="data-area-label">
                           <quota-label :view="view" />
                         </span>
@@ -596,7 +610,16 @@ const collapseChange = type => {
                       </el-row>
 
                       <!--drill-->
-                      <el-row class="padding-lr drag-data">
+                      <el-row
+                        class="padding-lr drag-data"
+                        v-if="
+                          view.type !== 'table-info' &&
+                          view.type !== 'text' &&
+                          view.type !== 'text-label' &&
+                          view.type !== 'liquid' &&
+                          view.type !== 'gauge'
+                        "
+                      >
                         <span class="data-area-label">
                           <span>{{ t('chart.drill') }}</span>
                           /
@@ -745,13 +768,13 @@ const collapseChange = type => {
           size="20px"
           @click="collapseChange('datasetAreaCollapse')"
         >
-          <Fold v-if="state.datasetAreaCollapse" />
+          <Fold v-if="canvasCollapse.datasetAreaCollapse" />
           <Expand v-else />
         </el-icon>
-        <div class="collapse-title" v-show="state.datasetAreaCollapse">
+        <div class="collapse-title" v-show="canvasCollapse.datasetAreaCollapse">
           <span style="font-size: 14px">数据集</span>
         </div>
-        <div v-show="!state.datasetAreaCollapse" class="dataset-area view-panel-row">
+        <div v-show="!canvasCollapse.datasetAreaCollapse" class="dataset-area view-panel-row">
           <el-row class="editor-title">
             <span style="font-size: 14px">数据集</span>
           </el-row>

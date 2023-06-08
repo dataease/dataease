@@ -1,5 +1,6 @@
 package io.dataease.utils;
 
+import cn.hutool.core.collection.CollectionUtil;
 import io.dataease.model.ITreeBase;
 import io.dataease.model.TreeBaseModel;
 import io.dataease.model.TreeModel;
@@ -21,17 +22,26 @@ public class TreeUtils {
 
     private final static String I18N_PREFIX = "i18n_auth_menu.";
 
-    public static <T extends TreeResultModel, R extends TreeBaseModel> List<T> mergeTree(List<R> list, Long rootId, Class<T> tClass, boolean appendI18nPrefix) {
+    public static <T extends TreeResultModel, R extends TreeBaseModel> List<T> mergeTree(List<R> list, Class<T> tClass, boolean appendI18nPrefix) {
         List<TreeModel> modelList = list.stream().map(item -> new TreeModel(item)).toList();
         List<TreeModel> modelResult = new ArrayList<>();
         Map<Long, List<TreeModel>> childMap = modelList.stream().collect(Collectors.groupingBy(TreeModel::getPid));
+        List<Long> existedList = new ArrayList<>();
         modelList.forEach(po -> {
-            po.setChildren(childMap.get(po.getId()));
-            if (po.getPid() == rootId) {
-                modelResult.add(po);
+            List<TreeModel> children = null;
+            if (CollectionUtil.isNotEmpty(children = childMap.get(po.getId()))) {
+                po.setChildren(children);
+                existedList.addAll(children.stream().map(TreeModel::getId).toList());
             }
         });
-
+        if (CollectionUtil.isEmpty(modelList)) {
+            return null;
+        }
+        if (CollectionUtil.isNotEmpty(existedList)) {
+            modelResult = modelList.stream().filter(node -> !existedList.contains(node.getId())).toList();
+        } else {
+            modelResult = modelList;
+        }
         return convertTree(modelResult, tClass, appendI18nPrefix);
     }
 
@@ -50,8 +60,7 @@ public class TreeUtils {
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
-            T vo = BeanUtils.copyBean(instance, node, "children");
-
+            T vo = BeanUtils.copyBean(instance, node.getData(), "children");
             result.add(vo);
             List<TreeModel> children = null;
             if (!CollectionUtils.isEmpty(children = node.getChildren())) {

@@ -1,5 +1,5 @@
 import { G2PlotChartView, G2PlotDrawOptions } from '@/views/chart/components/js/panel/types'
-import { Line as G2Line, LineOptions } from '@antv/g2plot'
+import { Datum, Line as G2Line, LineOptions } from '@antv/g2plot'
 import { getPadding } from '../../common/common_antv'
 import {
   antVCustomColor,
@@ -8,6 +8,7 @@ import {
   parseJson
 } from '@/views/chart/components/js/util'
 import _ from 'lodash'
+import { formatterItem, valueFormatter } from '@/views/chart/components/js/formatter'
 
 const DEFAULT_DATA = []
 /**
@@ -107,6 +108,88 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
     drawOptions.chartObj.on('point:click', drawOptions.action)
 
     return drawOptions.chartObj
+  }
+
+  protected configLabel(chart: Chart, options: LineOptions): LineOptions {
+    let customAttr: DeepPartial<ChartAttr>
+    let label
+    if (chart.customAttr) {
+      customAttr = parseJson(chart.customAttr)
+      if (customAttr.label) {
+        const labelAttr = customAttr.label
+        if (labelAttr.show) {
+          label = {
+            position: labelAttr.position,
+            offsetY: -8,
+            style: {
+              fill: labelAttr.color,
+              fontSize: parseInt(labelAttr.fontSize)
+            },
+            formatter: function (param: Datum) {
+              let res = param.value
+              const xAxisExt = chart.xAxisExt
+              const yAxis = chart.yAxis
+              let f
+              if (xAxisExt?.length > 0) {
+                f = yAxis[0]
+              } else {
+                for (let i = 0; i < yAxis.length; i++) {
+                  if (yAxis[i].name === param.category) {
+                    f = yAxis[i]
+                    break
+                  }
+                }
+              }
+              if (!f) {
+                return res
+              }
+              if (!f.formatterCfg) {
+                f.formatterCfg = formatterItem
+              }
+              res = valueFormatter(param.value, f.formatterCfg)
+              return res
+            }
+          }
+        } else {
+          label = false
+        }
+      }
+    }
+    return { ...options, label }
+  }
+
+  protected configTooltip(chart: Chart, options: LineOptions): LineOptions {
+    let tooltip
+    const customAttr: DeepPartial<ChartAttr> = parseJson(chart.customAttr)
+    if (customAttr.tooltip) {
+      const tooltipAttr = customAttr.tooltip
+      if (tooltipAttr.show) {
+        tooltip = {
+          formatter: function (param: Datum) {
+            let res
+            const obj = { name: param.category, value: param.value }
+            const xAxisExt = chart.xAxisExt
+            const yAxis = chart.yAxis
+            for (let i = 0; i < yAxis.length; i++) {
+              const f = yAxis[i]
+              if (f.name === param.category || (yAxis.length && xAxisExt.length)) {
+                if (f.formatterCfg) {
+                  res = valueFormatter(param.value, f.formatterCfg)
+                } else {
+                  res = valueFormatter(param.value, formatterItem)
+                }
+                break
+              }
+            }
+            obj.value = res ?? ''
+            return obj
+          }
+        }
+      } else {
+        tooltip = false
+      }
+    }
+    return { ...options, tooltip }
   }
 
   protected setupOptions(chart: Chart, options: LineOptions): LineOptions {

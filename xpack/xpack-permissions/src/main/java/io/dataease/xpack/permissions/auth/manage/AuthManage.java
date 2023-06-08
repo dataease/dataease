@@ -119,7 +119,7 @@ public class AuthManage {
                 return null;
             }
         }
-        return TreeUtils.mergeTree(pos, 0L, ResourceVO.class, false);
+        return TreeUtils.mergeTree(pos, ResourceVO.class, false);
     }
 
     public List<ResourceVO> menuTree() {
@@ -156,7 +156,7 @@ public class AuthManage {
         } else {
             return null;
         }
-        return TreeUtils.mergeTree(pos, 0L, ResourceVO.class, true);
+        return TreeUtils.mergeTree(pos, ResourceVO.class, true);
     }
 
     public PermissionVO menuPermission(MenuPermissionRequest request) {

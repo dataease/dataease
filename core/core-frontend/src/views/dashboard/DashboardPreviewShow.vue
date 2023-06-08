@@ -10,6 +10,7 @@ import EmptyBackground from '@/components/empty-background/src/EmptyBackground.v
 import { storeToRefs } from 'pinia'
 import { toPng } from 'html-to-image'
 
+const curCanvasType = 'dashboard'
 const dvMainStore = dvMainStoreWithOut()
 const canvasDataPreview = ref([])
 const canvasStylePreview = ref({})
@@ -52,7 +53,10 @@ const htmlToImage = () => {
 <template>
   <div class="dv-preview">
     <el-aside class="resource-area">
-      <de-resource-tree :cur-canvas-type="'dataV'" @node-click="loadCanvasData"></de-resource-tree>
+      <de-resource-tree
+        :cur-canvas-type="'dashboard'"
+        @node-click="loadCanvasData"
+      ></de-resource-tree>
     </el-aside>
     <el-container class="preview-area">
       <template v-if="dvInfo.name">

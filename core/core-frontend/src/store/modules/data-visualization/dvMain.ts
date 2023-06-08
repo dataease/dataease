@@ -20,6 +20,14 @@ export const dvMainStore = defineStore('dataVisualization', {
   state: () => {
     return {
       staticResourcePath: '/static-resource/',
+      canvasCollapse: {
+        defaultSide: false,
+        realTimeComponent: false,
+        canvas: false,
+        componentProp: false,
+        chartAreaCollapse: false,
+        datasetAreaCollapse: false
+      },
       editMode: 'edit', // 编辑器模式 edit preview
       canvasStyleData: deepCopy(DEFAULT_CANVAS_STYLE_DATA),
       isInEditor: false, // 是否在编辑器中，用于判断复制、粘贴组件时是否生效，如果在编辑器外，则无视这些操作

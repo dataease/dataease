@@ -19,7 +19,7 @@ const systemMenu = computed(
       <Sidebar v-if="systemMenu" class="layout-sidebar">
         <Menu style="height: 100%"></Menu>
       </Sidebar>
-      <Main class="layout-main"></Main>
+      <Main class="layout-main" :class="{ 'with-sider': systemMenu }"></Main>
     </el-container>
   </div>
 </template>
@@ -42,6 +42,10 @@ const systemMenu = computed(
       flex: 1;
       background-color: var(--MainBG, #f5f6f7);
       padding: 0;
+    }
+
+    .with-sider {
+      padding: 24px 24px;
     }
   }
 }

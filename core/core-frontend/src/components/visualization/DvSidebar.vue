@@ -1,6 +1,10 @@
 <script lang="ts" setup>
 import { ref, onMounted, computed, toRefs } from 'vue'
 import { ElAside, ElIcon, ElRow } from 'element-plus-secondary'
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { storeToRefs } from 'pinia'
+const dvMainStore = dvMainStoreWithOut()
+const { canvasCollapse } = storeToRefs(dvMainStore)
 
 const props = defineProps({
   width: {
@@ -13,35 +17,41 @@ const props = defineProps({
     type: String,
     default: 'left'
   },
+  sideName: {
+    required: false,
+    type: String,
+    default: 'defaultSide'
+  },
   title: String
 })
 
-const { width, asidePosition } = toRefs(props)
+const { width, asidePosition, sideName } = toRefs(props)
 const isCollapse = ref(false)
 const collapseWidth = ref(30)
 const collapseChange = () => {
-  isCollapse.value = !isCollapse.value
+  canvasCollapse.value[sideName.value] = !canvasCollapse.value[sideName.value]
 }
-const widthShow = computed(() => `${isCollapse.value ? 36 : width.value}px`)
+const widthShow = computed(() => `${canvasCollapse.value[sideName.value] ? 36 : width.value}px`)
 </script>
 
 <template>
   <el-aside class="dv-aside" :class="'aside-' + asidePosition" :width="widthShow">
     <el-row align="middle" class="title" justify="space-between">
-      <span v-show="!isCollapse">{{ title }}</span>
+      <span v-show="!canvasCollapse[sideName]">{{ title }}</span>
       <el-icon :title="title" class="custom-icon" size="20px" @click="collapseChange">
         <Expand
           v-if="
-            (isCollapse && asidePosition === 'left') || (!isCollapse && asidePosition === 'right')
+            (canvasCollapse[sideName] && asidePosition === 'left') ||
+            (!canvasCollapse[sideName] && asidePosition === 'right')
           "
         />
         <Fold v-else />
       </el-icon>
     </el-row>
-    <div class="main-content" v-show="!isCollapse">
+    <div class="main-content" v-show="!canvasCollapse[sideName]">
       <slot />
     </div>
-    <div class="collapse-title" v-show="isCollapse">
+    <div class="collapse-title" v-show="canvasCollapse[sideName]">
       <span>{{ title }}</span>
     </div>
   </el-aside>

@@ -1,7 +1,17 @@
 <script lang="ts" setup>
-import { ref, reactive, computed, watch } from 'vue'
+import { ref, reactive, computed, watch, toRefs } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
-import { DvOrFolder, findTree, savaOrUpdateBase } from '@/api/dataVisualization'
+import { findTree, ResourceOrFolder, savaOrUpdateBase } from '@/api/dataVisualization'
+
+const props = defineProps({
+  curCanvasType: {
+    type: String,
+    required: true
+  }
+})
+
+const { curCanvasType } = toRefs(props)
+
 export interface ResourceTree {
   id: string | number
   pid: string | number
@@ -33,7 +43,7 @@ const id = ref()
 const cmd = ref('')
 const treeRef = ref()
 const filterText = ref('')
-const dvForm = reactive({
+const resourceForm = reactive({
   pid: '',
   name: ''
 })
@@ -92,9 +102,9 @@ const rules = {
   ]
 }
 let nameList = []
-const dvFormRules = ref()
+const resourceFormRules = ref()
 
-const dv = ref()
+const resource = ref()
 const loading = ref(false)
 const resourceDialogShow = ref(false)
 const dialogTitle = ref('新建文件夹')
@@ -102,7 +112,7 @@ const filterMethod = value => {
   state.tData = [...state.tData].filter(item => item.name.includes(value))
 }
 const resetForm = () => {
-  dv.value.clearValidate()
+  resource.value.clearValidate()
   resourceDialogShow.value = false
 }
 
@@ -127,17 +137,17 @@ const optInit = (type, data: ResourceTree, exec) => {
       if (exec) {
         pid.value = data.pid
         id.value = data.id
-        dvForm.pid = data.pid as string
-        dvForm.name = data.name
+        resourceForm.pid = data.pid as string
+        resourceForm.name = data.name
       } else {
-        dvForm.pid = data.id as string
+        resourceForm.pid = data.id as string
         pid.value = data.id
       }
     })
     cmd.value = exec
   }
   resourceDialogShow.value = true
-  dvFormRules.value = rules
+  resourceFormRules.value = rules
 }
 
 const editeInit = (param: ResourceTree) => {
@@ -145,28 +155,28 @@ const editeInit = (param: ResourceTree) => {
   id.value = param.id
 }
 
-const props = {
+const propsTree = {
   label: 'name',
   children: 'children',
   isLeaf: node => !node.children?.length
 }
 
 const nodeClick = (data: ResourceTree) => {
-  dvForm.pid = data.id as string
+  resourceForm.pid = data.id as string
 }
 
-const saveDv = () => {
-  dv.value.validate(result => {
+const saveResource = () => {
+  resource.value.validate(result => {
     if (result) {
-      const params: DvOrFolder = {
-        nodeType: nodeType.value as 'folder' | 'dv',
-        name: dvForm.name,
-        type: 'dataV'
+      const params: ResourceOrFolder = {
+        nodeType: nodeType.value as 'folder' | 'leaf',
+        name: resourceForm.name,
+        type: curCanvasType.value
       }
 
       switch (cmd.value) {
         case 'move':
-          params.pid = dvForm.pid as string
+          params.pid = resourceForm.pid as string
           params.id = id.value
           break
         case 'rename':
@@ -174,7 +184,7 @@ const saveDv = () => {
           params.id = id.value
           break
         default:
-          params.pid = dvForm.pid || pid.value || '0'
+          params.pid = resourceForm.pid || pid.value || '0'
           break
       }
       loading.value = true
@@ -209,18 +219,18 @@ const emits = defineEmits(['finish'])
     <el-form
       label-position="top"
       require-asterisk-position="right"
-      ref="dv"
-      :model="dvForm"
-      :rules="dvFormRules"
+      ref="resource"
+      :model="resourceForm"
+      :rules="resourceFormRules"
     >
       <el-form-item v-if="showName" :label="'名称'" prop="name">
-        <el-input v-model="dvForm.name" />
+        <el-input v-model="resourceForm.name" />
       </el-form-item>
       <el-form-item v-if="showPid" :label="'目录'" prop="pid">
         <el-tree-select
-          v-model="dvForm.pid"
+          v-model="resourceForm.pid"
           :data="state.tData"
-          :props="props"
+          :props="propsTree"
           @node-click="nodeClick"
           :filter-method="filterMethod"
           filterable
@@ -246,10 +256,10 @@ const emits = defineEmits(['finish'])
             ref="treeRef"
             :filter-node-method="filterNode"
             filterable
-            v-model="dvForm.pid"
+            v-model="resourceForm.pid"
             menu
             :data="state.tData"
-            :props="props"
+            :props="propsTree"
             @node-click="nodeClick"
           >
             <template #default="{ data }">
@@ -266,7 +276,7 @@ const emits = defineEmits(['finish'])
     </el-form>
     <template #footer>
       <el-button secondary @click="resetForm()">取消 </el-button>
-      <el-button type="primary" @click="saveDv()">确认 </el-button>
+      <el-button type="primary" @click="saveResource()">确认 </el-button>
     </template>
   </el-dialog>
 </template>

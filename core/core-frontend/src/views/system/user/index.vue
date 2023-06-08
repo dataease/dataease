@@ -20,7 +20,7 @@ const isPluginLoaded = ref(false)
 const drawerMainRef = ref(null)
 const nickName = ref('')
 const userFormDialog = ref(null)
-
+const loading = ref(false)
 const handleClick = () => {
   console.log('handleClick')
 }
@@ -59,9 +59,11 @@ const clearFilter = (index?: number) => {
 }
 
 const search = () => {
+  loading.value = true
   userPageApi(state.paginationConfig.currentPage, state.paginationConfig.pageSize, {}).then(res => {
     state.userList = res.data.records
     state.paginationConfig.total = res.data.total
+    loading.value = false
   })
 }
 const filterRoles = cellValue => {
@@ -90,6 +92,7 @@ const delHandler = row => {
     autofocus: false,
     showClose: false
   }).then(() => {
+    loading.value = true
     userDelApi(row.id).then(() => {
       ElMessage.success(t('common.delete_success'))
       search()
@@ -98,6 +101,10 @@ const delHandler = row => {
 }
 const refreshRole = () => {
   userFormDialog.value.refreshRole()
+}
+
+const refreshGrid = () => {
+  search()
 }
 onMounted(() => {
   search()
@@ -111,7 +118,7 @@ const saveHandler = () => {
     <el-tab-pane :label="t('system.user')" name="user"></el-tab-pane>
     <el-tab-pane :label="t('system.role')" name="role"></el-tab-pane>
   </el-tabs>
-  <div v-if="activeName === 'user'" class="user-table de-search-table">
+  <div v-if="activeName === 'user'" v-loading="loading" class="user-table de-search-table">
     <el-row class="user-table__filter top-operate">
       <el-col :span="12">
         <el-button @click="addUser" type="primary">
@@ -133,7 +140,7 @@ const saveHandler = () => {
           <template #icon>
             <Icon name="icon-filter"></Icon>
           </template>
-          筛选
+          {{ t('common.filter') }}
         </el-button>
         <column-list
           @column-change="columnChange"
@@ -217,12 +224,8 @@ const saveHandler = () => {
     </div>
   </div>
   <div v-else-if="activeName === 'role'" class="role-content">
-    <role-manage @refresh="refreshRole"></role-manage>
+    <role-manage @refresh="refreshRole" @refresh-grid="refreshGrid"></role-manage>
   </div>
-  <!-- <div v-else class="user-table">
-    <EmptyBackground></EmptyBackground>
-    <dataset-union></dataset-union>
-  </div> -->
   <drawer-main ref="drawerMainRef"></drawer-main>
   <user-form @saved="saveHandler" ref="userFormDialog"></user-form>
 </template>
