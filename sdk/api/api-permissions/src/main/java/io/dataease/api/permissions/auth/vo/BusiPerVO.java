@@ -1,5 +1,7 @@
 package io.dataease.api.permissions.auth.vo;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.dataease.model.TreeResultModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -16,6 +18,7 @@ public class BusiPerVO implements TreeResultModel<BusiPerVO>, Serializable {
     private static final long serialVersionUID = 8191619596741217494L;
 
     @ApiModelProperty("资源ID")
+    @JsonSerialize(using= ToStringSerializer.class)
     private Long id;
     @ApiModelProperty("资源名称")
     private String name;
