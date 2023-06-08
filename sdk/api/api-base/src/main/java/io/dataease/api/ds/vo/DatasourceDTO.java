@@ -66,4 +66,6 @@ public class DatasourceDTO implements Serializable {
     private String status;
 
     private TaskDTO syncSetting;
+
+    private Integer editType;
 }

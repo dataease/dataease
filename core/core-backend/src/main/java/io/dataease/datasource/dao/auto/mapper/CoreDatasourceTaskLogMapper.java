@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-05-25
+ * @since 2023-06-08
  */
 public interface CoreDatasourceTaskLogMapper extends BaseMapper<CoreDatasourceTaskLog> {
 

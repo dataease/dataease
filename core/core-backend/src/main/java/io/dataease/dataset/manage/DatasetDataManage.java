@@ -186,7 +186,11 @@ public class DatasetDataManage {
         String alias = "SQL_ALIAS";
         CoreDatasource coreDatasource = coreDatasourceMapper.selectById(dto.getDatasourceId());
         DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
-        BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
+        if(coreDatasource.getType().equalsIgnoreCase("API") || coreDatasource.getType().equalsIgnoreCase("Excel")){
+            BeanUtils.copyBean(datasourceSchemaDTO, engineServer.getDeEngine());
+        }else {
+            BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
+        }
         datasourceSchemaDTO.setSchemaAlias(alias);
         String sql = SqlUtils.addSchema(datasetSQLManage.subPrefixSuffixChar(new String(Base64.getDecoder().decode(dto.getSql()))), alias);
         // parser sql params and repalce default value
