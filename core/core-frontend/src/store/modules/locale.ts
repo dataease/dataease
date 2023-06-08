@@ -4,12 +4,14 @@ import { useCache } from '@/hooks/web/useCache'
 import { LocaleDropdownType } from 'types/localeDropdown'
 import zhCn from 'element-plus-secondary/es/locale/lang/zh-cn'
 import en from 'element-plus-secondary/es/locale/lang/en'
+import tw from 'element-plus-secondary/es/locale/lang/zh-tw'
 
 const { wsCache } = useCache()
 
 const elLocaleMap = {
   'zh-CN': zhCn,
-  en: en
+  en: en,
+  tw: tw
 }
 interface LocaleState {
   currentLocale: LocaleDropdownType
@@ -20,8 +22,8 @@ export const useLocaleStore = defineStore('locales', {
   state: (): LocaleState => {
     return {
       currentLocale: {
-        lang: wsCache.get('lang') || 'zh-CN',
-        elLocale: elLocaleMap[wsCache.get('lang') || 'zh-CN']
+        lang: wsCache.get('user.language') || 'zh-CN',
+        elLocale: elLocaleMap[wsCache.get('user.language') || 'zh-CN']
       },
       // 多语言
       localeMap: [
@@ -32,6 +34,10 @@ export const useLocaleStore = defineStore('locales', {
         {
           lang: 'en',
           name: 'English'
+        },
+        {
+          lang: 'tw',
+          name: '繁體中文'
         }
       ]
     }
@@ -49,7 +55,11 @@ export const useLocaleStore = defineStore('locales', {
       // this.locale = Object.assign(this.locale, localeMap)
       this.currentLocale.lang = localeMap?.lang
       this.currentLocale.elLocale = elLocaleMap[localeMap?.lang]
-      wsCache.set('lang', localeMap?.lang)
+      // wsCache.set('lang', localeMap?.lang)
+    },
+    setLang(language: string) {
+      this.currentLocale.lang = language
+      this.currentLocale.elLocale = elLocaleMap[language]
     }
   }
 })

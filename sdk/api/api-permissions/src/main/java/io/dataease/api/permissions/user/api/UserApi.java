@@ -2,6 +2,7 @@ package io.dataease.api.permissions.user.api;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import io.dataease.api.permissions.role.dto.UserRequest;
+import io.dataease.api.permissions.user.dto.LangSwitchRequest;
 import io.dataease.api.permissions.user.dto.UserCreator;
 import io.dataease.api.permissions.user.dto.UserEditor;
 import io.dataease.api.permissions.user.vo.CurUserVO;
@@ -64,4 +65,6 @@ public interface UserApi {
 
     @GetMapping("/userCount")
     int userCount();
+    @PostMapping("/switchLanguage")
+    void switchLanguage(@RequestBody LangSwitchRequest request);
 }
