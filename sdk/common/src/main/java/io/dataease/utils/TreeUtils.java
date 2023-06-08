@@ -39,6 +39,8 @@ public class TreeUtils {
         }
         if (CollectionUtil.isNotEmpty(existedList)) {
             modelResult = modelList.stream().filter(node -> !existedList.contains(node.getId())).toList();
+        } else {
+            modelResult = modelList;
         }
         return convertTree(modelResult, tClass, appendI18nPrefix);
     }
