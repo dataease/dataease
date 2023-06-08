@@ -6,6 +6,7 @@ import io.dataease.api.permissions.role.dto.RoleCopyRequest;
 import io.dataease.api.permissions.role.dto.RoleCreator;
 import io.dataease.api.permissions.role.dto.RoleEditor;
 import io.dataease.api.permissions.role.dto.UnmountUserRequest;
+import io.dataease.api.permissions.role.vo.ExternalUserVO;
 import io.dataease.api.permissions.role.vo.RoleDetailVO;
 import io.dataease.api.permissions.role.vo.RoleVO;
 import io.dataease.auth.bo.TokenUserBO;
@@ -61,6 +62,10 @@ public class RoleManage {
 
     @Resource
     private RoleAuthManage roleAuthManage;
+
+    public ExternalUserVO queryExternalUser(String keyword) {
+        return roleExtMapper.queryExternalUser(AuthUtils.getUser().getDefaultOid(), keyword);
+    }
 
     @Transactional
     public void create(RoleCreator creator) {
@@ -175,6 +180,14 @@ public class RoleManage {
         });
     }
 
+    public void mountExternalUser(Long rid, Long uid) {
+        Long oid = AuthUtils.getUser().getDefaultOid();
+        CacheUtils.remove("user_roles", uid.toString() + oid, t -> {
+            PerUserRole userRole = buildUserRole(rid, uid);
+            perUserRoleMapper.insert(userRole);
+        });
+    }
+
     private PerUserRole buildUserRole(Long rid, Long uid) {
         Long defaultOid = AuthUtils.getUser().getDefaultOid();
         PerUserRole userRole = new PerUserRole();
@@ -264,16 +277,17 @@ public class RoleManage {
 
     public Integer beforeUnmountInfo(UnmountUserRequest request) {
         QueryWrapper<PerUserRole> queryWrapper = new QueryWrapper<>();
-        // queryWrapper.eq("rid", request.getRid());
+        Long rid = request.getRid();
         queryWrapper.eq("uid", request.getUid());
         List<PerUserRole> perUserRoles = perUserRoleMapper.selectList(queryWrapper);
-        if (CollectionUtil.isEmpty(perUserRoles) || perUserRoles.size() == 1) {
+        perUserRoles = perUserRoles.stream().filter(item -> !item.getRid().equals(rid)).toList();
+        if (CollectionUtil.isEmpty(perUserRoles)) {
             // clear in system
             return 2;
         }
         Long oid = AuthUtils.getUser().getDefaultOid();
-        Map<Boolean, List<PerUserRole>> listMap = perUserRoles.stream().collect(Collectors.groupingBy(item -> innerOrg(item, oid)));
-        if (CollectionUtil.isEmpty(listMap.get(true))) {
+        boolean matchInOrg = perUserRoles.stream().anyMatch(item -> item.getOid().equals(oid));
+        if (!matchInOrg) {
             // clear in org
             return 1;
         }
