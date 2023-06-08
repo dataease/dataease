@@ -21,6 +21,7 @@ import { ElIcon, ElRow } from 'element-plus-secondary'
 import DrillItem from '@/views/chart/components/editor/drag-item/DrillItem.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
+import { BASE_VIEW_CONFIG } from '@/views/chart/components/editor/util/chart'
 const dvMainStore = dvMainStoreWithOut()
 const { canvasCollapse } = storeToRefs(dvMainStore)
 
@@ -33,7 +34,10 @@ const renameForm = ref<FormInstance>()
 const props = defineProps({
   view: {
     type: Object,
-    required: true
+    required: false,
+    default() {
+      return { ...BASE_VIEW_CONFIG }
+    }
   },
   datasetTree: {
     type: Array as PropType<Tree[]>,

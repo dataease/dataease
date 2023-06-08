@@ -220,8 +220,8 @@ eventBus.on('handleNew', handleNew)
         <CanvasAttr></CanvasAttr>
       </dv-sidebar>
       <editor
-        v-if="curComponent && curComponent.component === 'UserView'"
-        :view="canvasViewInfo[curComponent.id]"
+        v-show="curComponent && curComponent.component === 'UserView'"
+        :view="canvasViewInfo[curComponent ? curComponent.id : 'default']"
         :dataset-tree="state.datasetTree"
       ></editor>
     </el-container>
