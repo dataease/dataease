@@ -67,7 +67,7 @@ const getItemTagType = () => {
 
 <template>
   <span class="item-style">
-    <el-dropdown trigger="click" size="mini" @command="clickItem">
+    <el-dropdown effect="dark" trigger="click" size="mini" @command="clickItem">
       <el-tag class="item-axis">
         <span style="display: flex">
           <el-icon>
@@ -90,7 +90,7 @@ const getItemTagType = () => {
         </el-icon>
       </el-tag>
       <template #dropdown>
-        <el-dropdown-menu class="drop-style">
+        <el-dropdown-menu effect="dark" class="drop-style">
           <el-dropdown-item :icon="Delete" :command="beforeClickItem('remove')">
             <span>{{ t('chart.delete') }}</span>
           </el-dropdown-item>
@@ -143,7 +143,7 @@ span {
 
 .summary-span {
   margin-left: 4px;
-  color: #878d9f;
+  color: #a6a6a6;
 }
 
 .inner-dropdown-menu {
@@ -151,6 +151,10 @@ span {
   justify-content: space-between;
   align-items: center;
   width: 100%;
+}
+
+.item-span-drop {
+  color: #a6a6a6;
 }
 
 .item-span-style {

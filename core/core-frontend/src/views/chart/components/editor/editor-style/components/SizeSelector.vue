@@ -109,15 +109,15 @@ init()
             >
           </el-form-item>
           <el-form-item :label="t('chart.bar_gap')" class="form-item form-item-slider">
-            <el-slider
+            <el-input-number
+              effect="dark"
               v-model="state.sizeForm.barGap"
               :disabled="state.sizeForm.barDefault"
-              show-input
-              :show-input-controls="false"
-              input-size="small"
               :min="0"
               :max="5"
               :step="0.1"
+              size="small"
+              controls-position="right"
               @change="changeBarSizeCase('barGap')"
             />
           </el-form-item>
@@ -127,13 +127,13 @@ init()
         <!--line-begin-->
         <div v-show="props.chart.type.includes('line')">
           <el-form-item :label="t('chart.line_width')" class="form-item form-item-slider">
-            <el-slider
+            <el-input-number
+              effect="dark"
               v-model="state.sizeForm.lineWidth"
-              show-input
-              :show-input-controls="false"
-              input-size="small"
               :min="0"
               :max="10"
+              size="small"
+              controls-position="right"
               @change="changeBarSizeCase('lineWidth')"
             />
           </el-form-item>
@@ -152,13 +152,13 @@ init()
             </el-select>
           </el-form-item>
           <el-form-item :label="t('chart.line_symbol_size')" class="form-item form-item-slider">
-            <el-slider
+            <el-input-number
+              effect="dark"
               v-model="state.sizeForm.lineSymbolSize"
-              show-input
-              :show-input-controls="false"
-              input-size="small"
               :min="0"
               :max="20"
+              size="small"
+              controls-position="right"
               @change="changeBarSizeCase('lineSymbolSize')"
             />
           </el-form-item>
@@ -178,13 +178,13 @@ init()
             :label="t('chart.pie_inner_radius_percent')"
             class="form-item form-item-slider"
           >
-            <el-slider
+            <el-input-number
+              effect="dark"
               v-model="state.sizeForm.pieInnerRadius"
-              show-input
-              :show-input-controls="false"
-              input-size="small"
               :min="0"
               :max="100"
+              size="small"
+              controls-position="right"
               @change="changeBarSizeCase('pieInnerRadius')"
             />
           </el-form-item>
@@ -192,13 +192,13 @@ init()
             :label="t('chart.pie_outer_radius_size')"
             class="form-item form-item-slider"
           >
-            <el-slider
+            <el-input-number
+              effect="dark"
               v-model="state.sizeForm.pieOuterRadius"
-              show-input
-              :show-input-controls="false"
-              input-size="small"
               :min="0"
               :max="100"
+              size="small"
+              controls-position="right"
               @change="changeBarSizeCase('pieOuterRadius')"
             />
           </el-form-item>
@@ -209,6 +209,7 @@ init()
         <div v-show="props.chart.type.includes('table')">
           <el-form-item label-width="100px" :label="t('chart.table_page_mode')" class="form-item">
             <el-select
+              effect="dark"
               v-model="state.sizeForm.tablePageMode"
               :placeholder="t('chart.table_page_mode')"
               @change="changeBarSizeCase('tablePageMode')"
@@ -224,6 +225,7 @@ init()
             class="form-item"
           >
             <el-select
+              effect="dark"
               v-model="state.sizeForm.tablePageSize"
               :placeholder="t('chart.table_page_size')"
               @change="changeBarSizeCase('tablePageSize')"
@@ -242,6 +244,7 @@ init()
             class="form-item"
           >
             <el-select
+              effect="dark"
               v-model="state.sizeForm.tableTitleFontSize"
               :placeholder="t('chart.table_title_fontsize')"
               @change="changeBarSizeCase('tableTitleFontSize')"
@@ -260,6 +263,7 @@ init()
             class="form-item"
           >
             <el-select
+              effect="dark"
               v-model="state.sizeForm.tableItemFontSize"
               :placeholder="t('chart.table_item_fontsize')"
               @change="changeBarSizeCase('tableItemFontSize')"
@@ -278,6 +282,7 @@ init()
             class="form-item"
           >
             <el-select
+              effect="dark"
               v-model="state.sizeForm.tableHeaderAlign"
               :placeholder="t('chart.table_header_align')"
               @change="changeBarSizeCase('tableHeaderAlign')"
@@ -292,6 +297,7 @@ init()
           </el-form-item>
           <el-form-item label-width="100px" :label="t('chart.table_item_align')" class="form-item">
             <el-select
+              effect="dark"
               v-model="state.sizeForm.tableItemAlign"
               :placeholder="t('chart.table_item_align')"
               @change="changeBarSizeCase('tableItemAlign')"
@@ -309,13 +315,13 @@ init()
             :label="t('chart.table_title_height')"
             class="form-item form-item-slider"
           >
-            <el-slider
+            <el-input-number
+              effect="dark"
               v-model="state.sizeForm.tableTitleHeight"
               :min="20"
               :max="100"
-              show-input
-              :show-input-controls="false"
-              input-size="small"
+              size="small"
+              controls-position="right"
               @change="changeBarSizeCase('tableTitleHeight')"
             />
           </el-form-item>
@@ -324,13 +330,13 @@ init()
             :label="t('chart.table_item_height')"
             class="form-item form-item-slider"
           >
-            <el-slider
+            <el-input-number
+              effect="dark"
               v-model="state.sizeForm.tableItemHeight"
               :min="20"
               :max="100"
-              show-input
-              :show-input-controls="false"
-              input-size="small"
+              size="small"
+              controls-position="right"
               @change="changeBarSizeCase('tableItemHeight')"
             />
           </el-form-item>
@@ -343,10 +349,10 @@ init()
               v-model="state.sizeForm.tableColumnMode"
               @change="changeBarSizeCase('tableColumnMode')"
             >
-              <el-radio label="adapt"
+              <el-radio effect="dark" label="adapt"
                 ><span>{{ t('chart.table_column_adapt') }}</span></el-radio
               >
-              <el-radio label="custom">
+              <el-radio effect="dark" label="custom">
                 <span>{{ t('chart.table_column_custom') }}</span>
               </el-radio>
             </el-radio-group>
@@ -357,13 +363,13 @@ init()
             label-width="100px"
             class="form-item form-item-slider"
           >
-            <el-slider
+            <el-input-number
+              effect="dark"
               v-model="state.sizeForm.tableColumnWidth"
               :min="10"
               :max="500"
-              show-input
-              :show-input-controls="false"
-              input-size="small"
+              size="small"
+              controls-position="right"
               @change="changeBarSizeCase('tableColumnWidth')"
             />
           </el-form-item>
@@ -373,8 +379,8 @@ init()
               input-size="small"
               @change="changeBarSizeCase('showIndex')"
             >
-              <el-radio :label="true">{{ t('panel.yes') }}</el-radio>
-              <el-radio :label="false">{{ t('panel.no') }}</el-radio>
+              <el-radio effect="dark" :label="true">{{ t('panel.yes') }}</el-radio>
+              <el-radio effect="dark" :label="false">{{ t('panel.no') }}</el-radio>
             </el-radio-group>
           </el-form-item>
           <el-form-item
@@ -384,6 +390,7 @@ init()
             class="form-item"
           >
             <el-input
+              effect="dark"
               v-model="state.sizeForm.indexLabel"
               type="text"
               @blur="changeBarSizeCase('indexLabel')"
@@ -400,7 +407,7 @@ init()
               size="small"
               @change="changeQuotaField('min')"
             >
-              <el-radio-button label="fix">{{ t('chart.fix') }}</el-radio-button>
+              <el-radio-button effect="dark" label="fix">{{ t('chart.fix') }}</el-radio-button>
               <!--              <el-radio-button label="dynamic">{{ t('chart.dynamic') }}</el-radio-button>-->
             </el-radio-group>
           </el-form-item>
@@ -409,6 +416,7 @@ init()
             class="form-item form-item-slider"
           >
             <el-input-number
+              effect="dark"
               v-model="state.sizeForm.gaugeMin"
               size="small"
               @change="changeBarSizeCase('gaugeMin')"
@@ -491,7 +499,7 @@ init()
               size="small"
               @change="changeQuotaField('max')"
             >
-              <el-radio-button label="fix">{{ t('chart.fix') }}</el-radio-button>
+              <el-radio-button effect="dark" label="fix">{{ t('chart.fix') }}</el-radio-button>
               <!--              <el-radio-button label="dynamic">{{ t('chart.dynamic') }}</el-radio-button>-->
             </el-radio-group>
           </el-form-item>
@@ -500,6 +508,7 @@ init()
             class="form-item form-item-slider"
           >
             <el-input-number
+              effect="dark"
               v-model="state.sizeForm.gaugeMax"
               size="small"
               @change="changeBarSizeCase('gaugeMax')"
@@ -577,24 +586,24 @@ init()
           <!--          </el-form-item>-->
 
           <el-form-item :label="t('chart.start_angle')" class="form-item form-item-slider">
-            <el-slider
+            <el-input-number
+              effect="dark"
               v-model="state.sizeForm.gaugeStartAngle"
-              show-input
-              :show-input-controls="false"
-              input-size="small"
               :min="-360"
               :max="360"
+              size="small"
+              controls-position="right"
               @change="changeBarSizeCase('gaugeStartAngle')"
             />
           </el-form-item>
           <el-form-item :label="t('chart.end_angle')" class="form-item form-item-slider">
-            <el-slider
+            <el-input-number
+              effect="dark"
               v-model="state.sizeForm.gaugeEndAngle"
-              show-input
-              :show-input-controls="false"
-              input-size="small"
               :min="-360"
               :max="360"
+              size="small"
+              controls-position="right"
               @change="changeBarSizeCase('gaugeEndAngle')"
             />
           </el-form-item>
@@ -605,6 +614,7 @@ init()
         <div v-show="props.chart.type.includes('liquid')">
           <el-form-item :label="t('chart.liquid_shape')" class="form-item">
             <el-select
+              effect="dark"
               v-model="state.sizeForm.liquidShape"
               :placeholder="t('chart.liquid_shape')"
               @change="changeBarSizeCase('liquidShape')"
@@ -623,7 +633,7 @@ init()
               size="small"
               @change="changeQuotaField('max')"
             >
-              <el-radio-button label="fix">{{ t('chart.fix') }}</el-radio-button>
+              <el-radio-button effect="dark" label="fix">{{ t('chart.fix') }}</el-radio-button>
               <!--              <el-radio-button label="dynamic">{{ t('chart.dynamic') }}</el-radio-button>-->
             </el-radio-group>
           </el-form-item>
@@ -632,6 +642,7 @@ init()
             class="form-item form-item-slider"
           >
             <el-input-number
+              effect="dark"
               v-model="state.sizeForm.liquidMax"
               :min="1"
               size="small"
@@ -710,13 +721,13 @@ init()
           <!--          </el-form-item>-->
 
           <el-form-item :label="t('chart.radar_size')" class="form-item form-item-slider">
-            <el-slider
+            <el-input-number
+              effect="dark"
               v-model="state.sizeForm.liquidSize"
-              show-input
-              :show-input-controls="false"
-              input-size="small"
               :min="1"
               :max="100"
+              size="small"
+              controls-position="right"
               @change="changeBarSizeCase('liquidSize')"
             />
           </el-form-item>
@@ -727,6 +738,7 @@ init()
         <div v-show="props.chart.type.includes('text') || props.chart.type.includes('label')">
           <el-form-item :label="t('chart.quota_font_size')" class="form-item">
             <el-select
+              effect="dark"
               v-model="state.sizeForm.quotaFontSize"
               :placeholder="t('chart.quota_font_size')"
               @change="changeBarSizeCase('quotaFontSize')"
@@ -741,6 +753,7 @@ init()
           </el-form-item>
           <el-form-item :label="t('chart.quota_font_family')" class="form-item">
             <el-select
+              effect="dark"
               v-model="state.sizeForm.quotaFontFamily"
               :placeholder="t('chart.quota_font_family')"
               @change="changeBarSizeCase('quotaFontFamily')"
@@ -755,11 +768,13 @@ init()
           </el-form-item>
           <el-form-item :label="t('chart.quota_text_style')" class="form-item">
             <el-checkbox
+              effect="dark"
               v-model="state.sizeForm.quotaFontIsItalic"
               @change="changeBarSizeCase('quotaFontIsItalic')"
               >{{ t('chart.italic') }}</el-checkbox
             >
             <el-checkbox
+              effect="dark"
               v-model="state.sizeForm.quotaFontIsBolder"
               @change="changeBarSizeCase('quotaFontIsBolder')"
               >{{ t('chart.bolder') }}</el-checkbox
@@ -767,6 +782,7 @@ init()
           </el-form-item>
           <el-form-item :label="t('chart.quota_letter_space')" class="form-item">
             <el-select
+              effect="dark"
               v-model="state.sizeForm.quotaLetterSpace"
               :placeholder="t('chart.quota_letter_space')"
               @change="changeBarSizeCase('quotaLetterSpace')"
@@ -781,6 +797,7 @@ init()
           </el-form-item>
           <el-form-item :label="t('chart.font_shadow')" class="form-item">
             <el-checkbox
+              effect="dark"
               v-model="state.sizeForm.quotaFontShadow"
               @change="changeBarSizeCase('quotaFontShadow')"
               >{{ t('chart.font_shadow') }}</el-checkbox
@@ -789,6 +806,7 @@ init()
           <el-divider />
           <el-form-item :label="t('chart.dimension_show')" class="form-item">
             <el-checkbox
+              effect="dark"
               v-model="state.sizeForm.dimensionShow"
               @change="changeBarSizeCase('dimensionShow')"
               >{{ t('chart.show') }}</el-checkbox
@@ -797,6 +815,7 @@ init()
           <div v-show="state.sizeForm.dimensionShow">
             <el-form-item :label="t('chart.dimension_font_size')" class="form-item">
               <el-select
+                effect="dark"
                 v-model="state.sizeForm.dimensionFontSize"
                 :placeholder="t('chart.dimension_font_size')"
                 @change="changeBarSizeCase('dimensionFontSize')"
@@ -811,6 +830,7 @@ init()
             </el-form-item>
             <el-form-item :label="t('chart.dimension_font_family')" class="form-item">
               <el-select
+                effect="dark"
                 v-model="state.sizeForm.dimensionFontFamily"
                 :placeholder="t('chart.dimension_font_family')"
                 @change="changeBarSizeCase('dimensionFontFamily')"
@@ -825,11 +845,13 @@ init()
             </el-form-item>
             <el-form-item :label="t('chart.dimension_text_style')" class="form-item">
               <el-checkbox
+                effect="dark"
                 v-model="state.sizeForm.dimensionFontIsItalic"
                 @change="changeBarSizeCase('dimensionFontIsItalic')"
                 >{{ t('chart.italic') }}</el-checkbox
               >
               <el-checkbox
+                effect="dark"
                 v-model="state.sizeForm.dimensionFontIsBolder"
                 @change="changeBarSizeCase('dimensionFontIsBolder')"
                 >{{ t('chart.bolder') }}</el-checkbox
@@ -837,6 +859,7 @@ init()
             </el-form-item>
             <el-form-item :label="t('chart.dimension_letter_space')" class="form-item">
               <el-select
+                effect="dark"
                 v-model="state.sizeForm.dimensionLetterSpace"
                 :placeholder="t('chart.dimension_letter_space')"
                 @change="changeBarSizeCase('dimensionLetterSpace')"
@@ -851,6 +874,7 @@ init()
             </el-form-item>
             <el-form-item :label="t('chart.font_shadow')" class="form-item">
               <el-checkbox
+                effect="dark"
                 v-model="state.sizeForm.dimensionFontShadow"
                 @change="changeBarSizeCase('dimensionFontShadow')"
                 >{{ t('chart.font_shadow') }}</el-checkbox
@@ -859,6 +883,7 @@ init()
             <el-divider />
             <el-form-item :label="t('chart.space_split')" class="form-item">
               <el-input-number
+                effect="dark"
                 v-model="state.sizeForm.spaceSplit"
                 :min="0"
                 size="small"
@@ -867,6 +892,7 @@ init()
             </el-form-item>
             <el-form-item :label="t('chart.h_position')" class="form-item">
               <el-select
+                effect="dark"
                 v-model="state.sizeForm.hPosition"
                 :placeholder="t('chart.h_position')"
                 @change="changeBarSizeCase('hPosition')"
@@ -884,6 +910,7 @@ init()
             </el-form-item>
             <el-form-item :label="t('chart.v_position')" class="form-item">
               <el-select
+                effect="dark"
                 v-model="state.sizeForm.vPosition"
                 :placeholder="t('chart.v_position')"
                 @change="changeBarSizeCase('vPosition')"

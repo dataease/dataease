@@ -72,9 +72,12 @@ init()
     <el-col>
       <el-form ref="axisForm" :model="state.axisForm" label-width="80px" size="small">
         <el-form-item :label="t('chart.show')" class="form-item">
-          <el-checkbox v-model="state.axisForm.show" @change="changeAxisStyle('show')">{{
-            t('chart.show')
-          }}</el-checkbox>
+          <el-checkbox
+            effect="dark"
+            v-model="state.axisForm.show"
+            @change="changeAxisStyle('show')"
+            >{{ t('chart.show') }}</el-checkbox
+          >
         </el-form-item>
         <div v-show="state.axisForm.show">
           <el-form-item :label="t('chart.position')" class="form-item">
@@ -84,17 +87,22 @@ init()
               @change="changeAxisStyle('position')"
             >
               <div v-if="props.chart.type.includes('horizontal')">
-                <el-radio-button label="top">{{ t('chart.text_pos_top') }}</el-radio-button>
-                <el-radio-button label="bottom">{{ t('chart.text_pos_bottom') }}</el-radio-button>
+                <el-radio effect="dark" label="top">{{ t('chart.text_pos_top') }}</el-radio>
+                <el-radio effect="dark" label="bottom">{{ t('chart.text_pos_bottom') }}</el-radio>
               </div>
               <div v-else>
-                <el-radio-button label="left">{{ t('chart.text_pos_left') }}</el-radio-button>
-                <el-radio-button label="right">{{ t('chart.text_pos_center') }}</el-radio-button>
+                <el-radio effect="dark" label="left">{{ t('chart.text_pos_left') }}</el-radio>
+                <el-radio effect="dark" label="right">{{ t('chart.text_pos_center') }}</el-radio>
               </div>
             </el-radio-group>
           </el-form-item>
           <el-form-item :label="t('chart.name')" class="form-item">
-            <el-input v-model="state.axisForm.name" size="small" @blur="changeAxisStyle('name')" />
+            <el-input
+              effect="dark"
+              v-model="state.axisForm.name"
+              size="small"
+              @blur="changeAxisStyle('name')"
+            />
           </el-form-item>
           <el-form-item :label="t('chart.axis_name_color')" class="form-item">
             <el-color-picker
@@ -106,6 +114,7 @@ init()
           </el-form-item>
           <el-form-item :label="t('chart.axis_name_fontsize')" class="form-item">
             <el-select
+              effect="dark"
               v-model="state.axisForm.nameTextStyle.fontSize"
               :placeholder="t('chart.axis_name_fontsize')"
               @change="changeAxisStyle('nameTextStyle')"
@@ -131,6 +140,7 @@ init()
               <!--                </span>-->
               <!--              </span>-->
               <el-checkbox
+                effect="dark"
                 v-model="state.axisForm.axisValue.auto"
                 @change="changeAxisStyle('axisValue')"
                 >{{ t('chart.axis_auto') }}</el-checkbox
@@ -139,12 +149,14 @@ init()
             <span v-show="!state.axisForm.axisValue.auto">
               <el-form-item :label="t('chart.axis_value_min')" class="form-item">
                 <el-input
+                  effect="dark"
                   v-model="state.axisForm.axisValue.min"
                   @blur="changeAxisStyle('axisValue')"
                 />
               </el-form-item>
               <el-form-item :label="t('chart.axis_value_max')" class="form-item">
                 <el-input
+                  effect="dark"
                   v-model="state.axisForm.axisValue.max"
                   @blur="changeAxisStyle('axisValue')"
                 />
@@ -160,6 +172,7 @@ init()
                   </span>
                 </span>
                 <el-input
+                  effect="dark"
                   v-model="state.axisForm.axisValue.splitCount"
                   @blur="changeAxisStyle('axisValue')"
                 />
@@ -169,6 +182,7 @@ init()
           <el-divider />
           <el-form-item :label="t('chart.axis_show')" class="form-item">
             <el-checkbox
+              effect="dark"
               v-model="state.axisForm.axisLine.show"
               @change="changeAxisStyle('axisLine')"
               >{{ t('chart.axis_show') }}</el-checkbox
@@ -176,6 +190,7 @@ init()
           </el-form-item>
           <el-form-item :label="t('chart.grid_show')" class="form-item">
             <el-checkbox
+              effect="dark"
               v-model="state.axisForm.splitLine.show"
               @change="changeAxisStyle('splitLine')"
               >{{ t('chart.grid_show') }}</el-checkbox
@@ -191,13 +206,13 @@ init()
               />
             </el-form-item>
             <el-form-item :label="t('chart.grid_width')" class="form-item form-item-slider">
-              <el-slider
+              <el-input-number
+                effect="dark"
                 v-model="state.axisForm.splitLine.lineStyle.width"
                 :min="1"
                 :max="10"
-                show-input
-                :show-input-controls="false"
-                input-size="small"
+                size="small"
+                controls-position="right"
                 @change="changeAxisStyle('splitLine')"
               />
             </el-form-item>
@@ -205,6 +220,7 @@ init()
           <el-divider />
           <el-form-item :label="t('chart.axis_label_show')" class="form-item">
             <el-checkbox
+              effect="dark"
               v-model="state.axisForm.axisLabel.show"
               @change="changeAxisStyle('axisLabel')"
               >{{ t('chart.axis_label_show') }}</el-checkbox
@@ -220,18 +236,19 @@ init()
               />
             </el-form-item>
             <el-form-item :label="t('chart.axis_label_rotate')" class="form-item form-item-slider">
-              <el-slider
+              <el-input-number
+                effect="dark"
                 v-model="state.axisForm.axisLabel.rotate"
-                show-input
-                :show-input-controls="false"
                 :min="-90"
                 :max="90"
-                input-size="small"
+                size="small"
+                controls-position="right"
                 @change="changeAxisStyle('axisLabel')"
               />
             </el-form-item>
             <el-form-item :label="t('chart.axis_label_fontsize')" class="form-item">
               <el-select
+                effect="dark"
                 v-model="state.axisForm.axisLabel.fontSize"
                 :placeholder="t('chart.axis_label_fontsize')"
                 @change="changeAxisStyle('axisLabel')"
@@ -248,6 +265,7 @@ init()
             <span v-show="props.chart.type && props.chart.type.includes('horizontal')">
               <el-form-item :label="t('chart.value_formatter_type')" class="form-item">
                 <el-select
+                  effect="dark"
                   v-model="state.axisForm.axisLabelFormatter.type"
                   @change="changeAxisStyle('axisLabelFormatter')"
                 >
@@ -266,6 +284,7 @@ init()
                 class="form-item"
               >
                 <el-input-number
+                  effect="dark"
                   v-model="state.axisForm.axisLabelFormatter.decimalCount"
                   :precision="0"
                   :min="0"
@@ -281,6 +300,7 @@ init()
                 class="form-item"
               >
                 <el-select
+                  effect="dark"
                   v-model="state.axisForm.axisLabelFormatter.unit"
                   :placeholder="t('chart.pls_select_field')"
                   size="small"
@@ -297,6 +317,7 @@ init()
 
               <el-form-item :label="t('chart.value_formatter_suffix')" class="form-item">
                 <el-input
+                  effect="dark"
                   v-model="state.axisForm.axisLabelFormatter.suffix"
                   size="small"
                   clearable
@@ -310,6 +331,7 @@ init()
                 class="form-item"
               >
                 <el-checkbox
+                  effect="dark"
                   v-model="state.axisForm.axisLabelFormatter.thousandSeparator"
                   @change="changeAxisStyle('axisLabelFormatter')"
                 />
