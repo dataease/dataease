@@ -114,6 +114,7 @@ const list = [
     name: '图片',
     label: '图片',
     icon: 'other_media',
+    innerType: 'Picture',
     x: 1,
     y: 1,
     sizeX: 20,

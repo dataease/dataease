@@ -1,12 +1,30 @@
 <script lang="ts" setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed } from 'vue'
 import { ElDrawer, ElButton } from 'element-plus-secondary'
-
+import { propTypes } from '@/utils/propTypes'
 import DrawerFilter from '@/components/drawer-filter/src/DrawerFilter.vue'
+import DrawerEnumFilter from '@/components/drawer-filter/src/DrawerEnumFilter.vue'
+import DrawerTimeFilter from '@/components/drawer-filter/src/DrawerTimeFilter.vue'
+import { useI18n } from '@/hooks/web/useI18n'
+const { t } = useI18n()
+const props = defineProps({
+  filterOptions: propTypes.arrayOf(
+    propTypes.shape({
+      type: propTypes.string,
+      field: propTypes.string,
+      option: propTypes.array,
+      title: propTypes.string
+    })
+  ),
+  title: propTypes.string
+})
+
+const componentList = computed(() => {
+  return props.filterOptions
+})
 
 const state = reactive({
-  activeStatus: [],
-  statusList: []
+  conditions: []
 })
 const userDrawer = ref(false)
 
@@ -14,30 +32,30 @@ const init = () => {
   userDrawer.value = true
   clearFilter(1)
 }
-// const reset = () => {
-//   init()
-// }
-// const formatCondition = () => {}
-// const formatText = () => {}
-// const search = () => {}
-// const initRoles = () => {}
-// const normalizer = () => {}
-// const loadNode = () => {}
-// const search = () => {}
+
 const clearFilter = (id: string | number) => {
-  state.activeStatus = state.activeStatus.filter(ele => ele.id !== id)
+  console.log(id)
 }
-const statusChange = (id: string | number) => {
-  state.activeStatus = state.activeStatus.filter(ele => ele.id !== id)
+const filterChange = (val, field, ope) => {
+  let exits = false
+  state.conditions.forEach(condition => {
+    if (condition.field === field) {
+      exits = true
+      condition['val'] = val
+    }
+  })
+  if (!exits) {
+    state.conditions.push({ field, val, ope })
+  }
 }
-
-state.statusList = Array(20)
-  .fill(1)
-  .map((_, index) => ({
-    id: 'test' + index + 20,
-    name: index + 'nickName'
-  }))
-
+const cancel = () => {
+  userDrawer.value = false
+}
+const emits = defineEmits(['trigger-filter'])
+const trigger = () => {
+  console.log('')
+  emits('trigger-filter', state.conditions)
+}
 defineExpose({
   init,
   clearFilter
@@ -45,13 +63,35 @@ defineExpose({
 </script>
 
 <template>
-  <el-drawer title="筛选条件" v-model="userDrawer" size="680px" direction="rtl">
-    <drawer-filter :status-list="state.statusList" title="状态" @status-change="statusChange">
-    </drawer-filter>
+  <el-drawer
+    :title="t('common.filter_condition')"
+    v-model="userDrawer"
+    size="680px"
+    direction="rtl"
+  >
+    <div v-for="(component, index) in componentList" :key="index">
+      <drawer-filter
+        v-if="component.type === 'select'"
+        :option-list="component.option"
+        :title="component.title"
+        @filter-change="filterChange"
+      />
+      <drawer-enum-filter
+        v-if="component.type === 'enum'"
+        :option-list="component.option"
+        :title="component.title"
+        @filter-change="v => filterChange(v, component.field, 'in')"
+      />
+      <drawer-time-filter
+        v-if="component.type === 'time'"
+        :title="component.title"
+        @filter-change="filterChange"
+      />
+    </div>
 
     <template #footer>
-      <el-button>cancel</el-button>
-      <el-button type="primary">confirm</el-button>
+      <el-button @click="cancel">{{ t('common.cancel') }}</el-button>
+      <el-button @click="trigger" type="primary">{{ t('common.sure') }}</el-button>
     </template>
   </el-drawer>
 </template>

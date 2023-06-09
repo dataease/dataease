@@ -69,13 +69,17 @@ init()
     <el-col>
       <el-form ref="titleForm" :model="state.titleForm" label-width="80px" size="small">
         <el-form-item :label="t('chart.show')" class="form-item">
-          <el-checkbox v-model="state.titleForm.show" @change="changeTitleStyle('show')"
+          <el-checkbox
+            effect="dark"
+            v-model="state.titleForm.show"
+            @change="changeTitleStyle('show')"
             >{{ t('chart.show') }}
           </el-checkbox>
         </el-form-item>
         <div v-show="state.titleForm.show">
           <el-form-item :label="t('chart.title')" class="form-item">
             <el-input
+              effect="dark"
               v-model="chart.title"
               size="small"
               :placeholder="t('chart.title')"
@@ -85,6 +89,7 @@ init()
           </el-form-item>
           <el-form-item :label="t('chart.font_family')" class="form-item">
             <el-select
+              effect="dark"
               v-model="state.titleForm.fontFamily"
               :placeholder="t('chart.font_family')"
               @change="changeTitleStyle('fontFamily')"
@@ -99,6 +104,7 @@ init()
           </el-form-item>
           <el-form-item :label="t('chart.text_fontsize')" class="form-item">
             <el-select
+              effect="dark"
               v-model="state.titleForm.fontSize"
               :placeholder="t('chart.text_fontsize')"
               size="small"
@@ -126,21 +132,28 @@ init()
               size="small"
               @change="changeTitleStyle('hPosition')"
             >
-              <el-radio-button label="left">{{ t('chart.text_pos_left') }}</el-radio-button>
-              <el-radio-button label="center">{{ t('chart.text_pos_center') }}</el-radio-button>
-              <el-radio-button label="right">{{ t('chart.text_pos_right') }}</el-radio-button>
+              <el-radio effect="dark" label="left">{{ t('chart.text_pos_left') }}</el-radio>
+              <el-radio effect="dark" label="center">{{ t('chart.text_pos_center') }}</el-radio>
+              <el-radio effect="dark" label="right">{{ t('chart.text_pos_right') }}</el-radio>
             </el-radio-group>
           </el-form-item>
           <el-form-item :label="t('chart.text_style')" class="form-item">
-            <el-checkbox v-model="state.titleForm.isItalic" @change="changeTitleStyle('isItalic')"
+            <el-checkbox
+              effect="dark"
+              v-model="state.titleForm.isItalic"
+              @change="changeTitleStyle('isItalic')"
               >{{ t('chart.italic') }}
             </el-checkbox>
-            <el-checkbox v-model="state.titleForm.isBolder" @change="changeTitleStyle('isBolder')"
+            <el-checkbox
+              effect="dark"
+              v-model="state.titleForm.isBolder"
+              @change="changeTitleStyle('isBolder')"
               >{{ t('chart.bolder') }}
             </el-checkbox>
           </el-form-item>
           <el-form-item :label="t('chart.letter_space')" class="form-item">
             <el-select
+              effect="dark"
               v-model="state.titleForm.letterSpace"
               :placeholder="t('chart.quota_letter_space')"
               @change="changeTitleStyle('letterSpace')"
@@ -155,6 +168,7 @@ init()
           </el-form-item>
           <el-form-item :label="t('chart.font_shadow')" class="form-item">
             <el-checkbox
+              effect="dark"
               v-model="state.titleForm.fontShadow"
               @change="changeTitleStyle('fontShadow')"
               >{{ t('chart.font_shadow') }}

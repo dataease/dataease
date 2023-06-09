@@ -74,7 +74,7 @@ public class ChartDataManage {
 
         ChartViewDTO chartViewDTO = new ChartViewDTO();
         if (ObjectUtils.isEmpty(view)) {
-            throw new RuntimeException(Translator.get("i18n_chart_delete"));
+            DEException.throwException(Translator.get("i18n_chart_delete"));
         }
         TypeReference<List<ChartViewFieldDTO>> tokenType = new TypeReference<>() {
         };
@@ -509,7 +509,7 @@ public class ChartDataManage {
         //如果不是插件视图 走原生逻辑
         if (table.getMode() == 0) {// 直连
             if (ObjectUtils.isEmpty(dsMap)) {
-                throw new RuntimeException(Translator.get("i18n_datasource_delete"));
+                DEException.throwException(Translator.get("i18n_datasource_delete"));
             }
             for (Map.Entry<Long, DatasourceSchemaDTO> next : dsMap.entrySet()) {
                 DatasourceSchemaDTO ds = next.getValue();
