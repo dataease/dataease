@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { Icon } from '@/components/icon-custom'
-import { ref } from 'vue'
+import { ref, nextTick } from 'vue'
+import { timeTypes } from './util.js'
 
 export interface Menu {
   svgName: string
@@ -13,19 +14,26 @@ defineProps({
   extField: {
     type: Number,
     default: 0
+  },
+  showTime: {
+    type: Boolean,
+    default: false
   }
 })
 const handleCommand = (command: string | number | object) => {
   if (typeof command === 'object') return
-  emit('handleCommand', command)
-  if (['text', 'location', 'number', 'float'].includes(command as string)) {
+  if (['text', 'time', 'location', 'number', 'float'].includes(command as string)) {
     replaceType.value.handleClose()
+    setTimeout(() => {
+      emit('handleCommand', command)
+    }, 100)
     return
   }
 
   if (['copy', 'editor'].includes(command as string)) {
     translate.value.handleClose()
   }
+  emit('handleCommand', command)
 }
 
 const replaceType = ref()
@@ -77,11 +85,12 @@ const emit = defineEmits(['handleCommand'])
                 文本
               </el-dropdown-item>
               <el-dropdown-menu class="time-col">
-                <el-dropdown-item>
+                <el-dropdown-item command="time">
                   <el-dropdown
                     popper-class="menu-more_popper_three"
                     placement="bottom-start"
                     trigger="hover"
+                    v-if="showTime"
                     @command="handleCommand"
                   >
                     <div class="field-type">
@@ -92,27 +101,33 @@ const emit = defineEmits(['handleCommand'])
                     </div>
                     <template #dropdown>
                       <el-dropdown-menu class="time-col">
-                        <el-dropdown-item command="yy-mm">
-                          <el-icon>
-                            <Icon name="icon_more_outlined"></Icon>
-                          </el-icon>
-                          YY-MM
+                        <template v-for="ele in timeTypes" :key="ele">
+                          <el-dropdown-item :command="ele">
+                            {{ ele === 'custom' ? '自定义' : ele }}
+                          </el-dropdown-item>
+                        </template>
+                        <!-- <el-dropdown-item command="yy-mm"> yyyy-MM-dd </el-dropdown-item>
+                        <el-dropdown-item command="yyyy/MM/dd"> yyyy/MM/dd </el-dropdown-item>
+                        <el-dropdown-item command="yyyyMMdd"> yyyyMMdd </el-dropdown-item>
+                        <el-dropdown-item command="yyyy-MM-dd HH:mm:ss">
+                          yyyy-MM-dd HH:mm:ss
                         </el-dropdown-item>
-                        <el-dropdown-item command="cmdk">
-                          <el-icon>
-                            <Icon name="icon_more_outlined"></Icon>
-                          </el-icon>
-                          YY-MM-HH
+                        <el-dropdown-item command="yyyy/MM/dd HH:mm:ss">
+                          yyyy/MM/dd HH:mm:ss
                         </el-dropdown-item>
-                        <el-dropdown-item command="cmdk">
-                          <el-icon>
-                            <Icon name="icon_more_outlined"></Icon>
-                          </el-icon>
-                          YY-MM-HH mm
+                        <el-dropdown-item command="yyyyMMdd HH:mm:ss">
+                          yyyyMMdd HH:mm:ss
                         </el-dropdown-item>
+                        <el-dropdown-item command="custom"> 自定义 </el-dropdown-item> -->
                       </el-dropdown-menu>
                     </template>
                   </el-dropdown>
+                  <template v-else>
+                    <el-icon>
+                      <Icon name="icon_more_outlined"></Icon>
+                    </el-icon>
+                    时间
+                  </template>
                 </el-dropdown-item>
               </el-dropdown-menu>
               <el-dropdown-item command="location">
