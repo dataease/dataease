@@ -133,6 +133,7 @@ const sizeMessage = () => {
 }
 .img-area {
   height: 80px;
+  width: 120px;
   margin-top: 10px;
   margin-bottom: 10px;
   overflow: hidden;

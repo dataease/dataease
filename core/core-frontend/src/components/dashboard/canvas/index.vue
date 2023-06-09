@@ -2,6 +2,7 @@
   <div
     class="dragAndResize"
     ref="container"
+    :style="editStyle"
     @mousedown="containerMouseDown($event)"
     @mouseup="endMove($event)"
     @mousemove="moving($event)"
@@ -39,9 +40,11 @@ import $ from 'jquery'
 import { toRefs, ref, onMounted, nextTick, getCurrentInstance } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
-import { getStyle } from '@/utils/style'
+import { getCanvasStyle, getStyle } from '@/utils/style'
 import DbShape from '@/components/dashboard/DbShape.vue'
 import DbDragArea from '@/components/dashboard/DbDragArea.vue'
+import { computed } from 'vue'
+import { changeStyleWithScale } from '@/utils/translate'
 const dvMainStore = dvMainStoreWithOut()
 
 let positionBox = []
@@ -975,9 +978,7 @@ defineExpose({
 
 .dragAndResize {
   position: relative;
-
   user-select: none;
-
   * {
     margin: 0;
     padding: 0;

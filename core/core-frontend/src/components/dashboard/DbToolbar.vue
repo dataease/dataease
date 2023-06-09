@@ -129,6 +129,7 @@ const preview = isScreenshotFlag => {
 }
 
 const saveCanvas = () => {
+  dvMainStore.matrixSizeAdaptor()
   const canvasInfo = {
     canvasStyleData: JSON.stringify(canvasStyleData.value),
     componentData: JSON.stringify(componentData.value),

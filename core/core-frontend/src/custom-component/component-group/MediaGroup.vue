@@ -21,7 +21,7 @@ const props = defineProps({
 const { propValue, element } = toRefs(props)
 const currentPane = ref('common')
 const newComponent = innerType => {
-  eventBus.emit('handleNew', { componentName: 'UserView', innerType: 'bar' })
+  eventBus.emit('handleNew', { componentName: 'Picture', innerType: 'Picture' })
 }
 
 const handleDragStart = e => {
@@ -30,7 +30,7 @@ const handleDragStart = e => {
 </script>
 
 <template>
-  <div class="group" @dragstart="handleDragStart">
+  <div class="group" @dragstart="handleDragStart" v-on:click="newComponent('Picture')">
     <drag-component icon="other_media" label="图片" drag-info="Picture&Picture"></drag-component>
   </div>
 </template>

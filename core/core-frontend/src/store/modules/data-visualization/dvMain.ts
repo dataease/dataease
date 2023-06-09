@@ -46,7 +46,14 @@ export const dvMainStore = defineStore('dataVisualization', {
         selfWatermarkStatus: null
       },
       // 视图信息
-      canvasViewInfo: {}
+      canvasViewInfo: {},
+      // 仪表板基础矩阵信息
+      bashMatrixInfo: {
+        baseWidth: 0,
+        baseHeight: 0,
+        baseMarginLeft: 0,
+        baseMarginTop: 0
+      }
     }
   },
   actions: {
@@ -86,6 +93,9 @@ export const dvMainStore = defineStore('dataVisualization', {
     setCurComponent({ component, index }) {
       this.curComponent = component
       this.curComponentIndex = index
+    },
+    setBashMatrixInfo(bashMatrixInfo) {
+      this.bashMatrixInfo = bashMatrixInfo
     },
 
     setShapeStyle({ top, left, width, height, rotate }) {
@@ -139,6 +149,15 @@ export const dvMainStore = defineStore('dataVisualization', {
     },
     updateCurDvInfo(dvInfo) {
       this.dvInfo = dvInfo
+    },
+    matrixSizeAdaptor() {
+      const { baseWidth, baseHeight, baseMarginLeft, baseMarginTop } = this.bashMatrixInfo
+      this.componentData.forEach(function (component) {
+        component.style.width = baseWidth * component.sizeX - baseMarginLeft
+        component.style.height = baseHeight * component.sizeY - baseMarginTop
+        component.style.left = baseWidth * (component.x - 1) + baseMarginLeft
+        component.style.top = baseHeight * (component.y - 1) + baseMarginTop
+      })
     }
   }
 })

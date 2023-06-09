@@ -23,6 +23,7 @@ import { getDatasetTree } from '@/api/dataset'
 import { Tree } from '@/views/visualized/data/dataset/form/CreatDsGroup.vue'
 import { guid } from '@/views/visualized/data/dataset/form/util.js'
 import elementResizeDetectorMaker from 'element-resize-detector'
+import { getCanvasStyle } from '@/utils/style'
 
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
@@ -37,6 +38,12 @@ const canvasInitStatus = ref(false)
 
 const state = reactive({
   datasetTree: []
+})
+
+const editStyle = computed(() => {
+  return {
+    ...getCanvasStyle(canvasStyleData.value)
+  }
 })
 
 const initDataset = () => {
@@ -181,6 +188,12 @@ const canvasSizeInit = () => {
       baseMarginLeft.value = 5 * (screenWidth / 1920)
       baseMarginTop.value = 5 * (screenHeight / 1080)
       canvasInitStatus.value = true
+      dvMainStore.setBashMatrixInfo({
+        baseWidth: baseWidth.value,
+        baseHeight: baseHeight.value,
+        baseMarginLeft: baseMarginLeft.value,
+        baseMarginTop: baseMarginTop.value
+      })
       nextTick(() => {
         $('.dragAndResize').css('width', 'calc(100% - ' + baseMarginLeft.value + 'px)')
         cyGridster.value.canvasSizeInit() //在适当的时候初始化布局组件
@@ -240,6 +253,7 @@ eventBus.on('handleNew', handleNew)
           <div
             id="dashboardMainCanvas"
             class="db-canvas"
+            :style="editStyle"
             @drop="handleDrop"
             @dragover="handleDragOver"
             @mousedown="handleMouseDown"
@@ -309,6 +323,7 @@ eventBus.on('handleNew', handleNew)
         width: 100%;
         overflow-y: auto;
         .db-canvas {
+          background-size: 100% 100% !important;
           width: 100%;
         }
       }
