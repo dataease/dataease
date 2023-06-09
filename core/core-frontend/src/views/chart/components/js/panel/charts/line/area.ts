@@ -8,7 +8,7 @@ import {
   handleEmptyDataStrategy,
   parseJson
 } from '@/views/chart/components/js/util'
-import { formatterItem, valueFormatter } from '@/views/chart/components/js/formatter'
+import { singleDimensionTooltipFormatter } from '@/views/chart/components/js/formatter'
 const DEFAULT_DATA = []
 export class Area extends G2PlotChartView<AreaOptions, G2Area> {
   drawChart(drawOptions: G2PlotDrawOptions<G2Area>): G2Area {
@@ -144,22 +144,7 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
       if (tooltipAttr.show) {
         tooltip = {
           formatter: function (param: Datum) {
-            let res
-            const obj = { name: param.category, value: param.value }
-            const yAxis = chart.yAxis
-            for (let i = 0; i < yAxis.length; i++) {
-              const f = yAxis[i]
-              if (f.name === param.category) {
-                if (f.formatterCfg) {
-                  res = valueFormatter(param.value, f.formatterCfg)
-                } else {
-                  res = valueFormatter(param.value, formatterItem)
-                }
-                break
-              }
-            }
-            obj.value = res ?? ''
-            return obj
+            return singleDimensionTooltipFormatter(param, chart)
           }
         }
       } else {

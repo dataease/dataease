@@ -1,6 +1,10 @@
 import { G2PlotChartView, G2PlotDrawOptions } from '@/views/chart/components/js/panel/types'
-import { Bar, BarOptions } from '@antv/g2plot'
-import { getPadding, setGradientColor } from '@/views/chart/components/js/panel/common/common_antv'
+import { Bar, BarOptions, Datum } from '@antv/g2plot'
+import {
+  getPadding,
+  setGradientColor,
+  transAxisPosition
+} from '@/views/chart/components/js/panel/common/common_antv'
 import _ from 'lodash'
 import {
   antVCustomColor,
@@ -8,6 +12,7 @@ import {
   handleEmptyDataStrategy,
   parseJson
 } from '@/views/chart/components/js/util'
+import { singleDimensionTooltipFormatter } from '@/views/chart/components/js/formatter'
 
 const DEFAULT_DATA = []
 
@@ -122,6 +127,40 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
     return drawOptions.chartObj
   }
 
+  protected configTooltip(chart: Chart, options: BarOptions): BarOptions {
+    let tooltip
+    const customAttr: DeepPartial<ChartAttr> = parseJson(chart.customAttr)
+    if (customAttr.tooltip) {
+      const tooltipAttr = customAttr.tooltip
+      if (tooltipAttr.show) {
+        tooltip = {
+          formatter: function (param: Datum) {
+            return singleDimensionTooltipFormatter(param, chart)
+          }
+        }
+      } else {
+        tooltip = false
+      }
+    }
+    return { ...options, tooltip }
+  }
+  protected configCustomXAxis(chart: Chart, options: BarOptions): BarOptions {
+    if (options.xAxis) {
+      const axisValue = parseJson(chart.customStyle).xAxis.axisValue
+      if (!axisValue?.auto) {
+        const axis = {
+          position: transAxisPosition(options.xAxis.position),
+          xAxis: {
+            min: axisValue.min,
+            max: axisValue.max,
+            tickCount: axisValue.splitCount
+          }
+        }
+        return { ...options, ...axis }
+      }
+    }
+    return options
+  }
   constructor() {
     super('bar-horizontal', DEFAULT_DATA)
   }
@@ -133,6 +172,7 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
       this.configTooltip,
       this.configLegend,
       this.configXAxis,
+      this.configCustomXAxis,
       this.configYAxis,
       this.configSlider,
       this.configAnalyse

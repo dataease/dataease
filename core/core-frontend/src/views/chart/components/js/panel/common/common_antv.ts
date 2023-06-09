@@ -466,11 +466,11 @@ export function getTooltip(chart: Chart) {
   return tooltip
 }
 // 通用legend
-export function getLegend(chart) {
+export function getLegend(chart: Chart) {
   let legend = {}
-  let customStyle
+  let customStyle: CustomStyle
   if (chart.customStyle) {
-    customStyle = chart.customStyle
+    customStyle = parseJson(chart.customStyle)
     // legend
     if (customStyle.legend) {
       const l = JSON.parse(JSON.stringify(customStyle.legend))
@@ -539,7 +539,7 @@ export function getLegend(chart) {
           marker: {
             symbol: legendSymbol
           },
-          radio: false // 柱状图图例的聚焦功能，默认先关掉
+          radio: false
         }
       } else {
         legend = false
@@ -549,11 +549,11 @@ export function getLegend(chart) {
   return legend
 }
 // xAxis
-export function getXAxis(chart) {
-  let axis = {}
-  let customStyle
+export function getXAxis(chart: Chart) {
+  let axis: Record<string, any> | boolean = {}
+  let customStyle: CustomStyle
   if (chart.customStyle) {
-    customStyle = chart.customStyle
+    customStyle = parseJson(chart.customStyle)
     // legend
     if (customStyle.xAxis) {
       const a = JSON.parse(JSON.stringify(customStyle.xAxis))
@@ -564,7 +564,7 @@ export function getXAxis(chart) {
                 text: a.name,
                 style: {
                   fill: a.nameTextStyle.color,
-                  fontSize: parseInt(a.nameTextStyle.fontSize)
+                  fontSize: a.nameTextStyle.fontSize
                 },
                 spacing: 8
               }
@@ -574,17 +574,17 @@ export function getXAxis(chart) {
               line: {
                 style: {
                   stroke: a.splitLine.lineStyle.color,
-                  lineWidth: parseInt(a.splitLine.lineStyle.width)
+                  lineWidth: a.splitLine.lineStyle.width
                 }
               }
             }
           : null
         const axisCfg = a.axisLine ? a.axisLine : DEFAULT_XAXIS_STYLE.axisLine
-        const axisLine = axisCfg.show
+        const line = axisCfg.show
           ? {
               style: {
                 stroke: axisCfg.lineStyle.color,
-                lineWidth: parseInt(axisCfg.lineStyle.width)
+                lineWidth: axisCfg.lineStyle.width
               }
             }
           : null
@@ -597,7 +597,7 @@ export function getXAxis(chart) {
           : null
         const label = a.axisLabel.show
           ? {
-              rotate: (parseInt(a.axisLabel.rotate) * Math.PI) / 180,
+              rotate: (a.axisLabel.rotate * Math.PI) / 180,
               style: {
                 fill: a.axisLabel.color,
                 fontSize: parseInt(a.axisLabel.fontSize)
@@ -617,26 +617,26 @@ export function getXAxis(chart) {
           : null
 
         axis = {
-          position: transAxisPosition(chart, a),
-          title: title,
-          grid: grid,
-          label: label,
-          line: axisLine,
-          tickLine: tickLine
+          position: a.position,
+          title,
+          grid,
+          label,
+          line,
+          tickLine
         }
 
-        // 轴值设置
-        delete axis.minLimit
-        delete axis.maxLimit
-        delete axis.tickCount
-        const axisValue = a.axisValue
-        if (chart.type.includes('horizontal')) {
-          if (axisValue && !axisValue.auto) {
-            axisValue.min && (axis.minLimit = parseFloat(axisValue.min))
-            axisValue.max && (axis.maxLimit = parseFloat(axisValue.max))
-            axisValue.splitCount && (axis.tickCount = parseFloat(axisValue.splitCount))
-          }
-        }
+        // // 轴值设置
+        // delete axis.minLimit
+        // delete axis.maxLimit
+        // delete axis.tickCount
+        // const axisValue = a.axisValue
+        // if (chart.type.includes('horizontal')) {
+        //   if (axisValue && !axisValue.auto) {
+        //     axisValue.min && (axis.minLimit = parseFloat(axisValue.min))
+        //     axisValue.max && (axis.maxLimit = parseFloat(axisValue.max))
+        //     axisValue.splitCount && (axis.tickCount = parseFloat(axisValue.splitCount))
+        //   }
+        // }
       } else {
         axis = false
       }
@@ -645,11 +645,11 @@ export function getXAxis(chart) {
   return axis
 }
 // yAxis
-export function getYAxis(chart) {
+export function getYAxis(chart: Chart) {
   let axis = {}
-  let customStyle
+  let customStyle: CustomStyle
   if (chart.customStyle) {
-    customStyle = chart.customStyle
+    customStyle = parseJson(chart.customStyle)
     // legend
     if (customStyle.yAxis) {
       const a = JSON.parse(JSON.stringify(customStyle.yAxis))
@@ -660,7 +660,7 @@ export function getYAxis(chart) {
                 text: a.name,
                 style: {
                   fill: a.nameTextStyle.color,
-                  fontSize: parseInt(a.nameTextStyle.fontSize)
+                  fontSize: a.nameTextStyle.fontSize
                 },
                 spacing: 8
               }
@@ -670,17 +670,17 @@ export function getYAxis(chart) {
               line: {
                 style: {
                   stroke: a.splitLine.lineStyle.color,
-                  lineWidth: parseInt(a.splitLine.lineStyle.width)
+                  lineWidth: a.splitLine.lineStyle.width
                 }
               }
             }
           : null
         const axisCfg = a.axisLine ? a.axisLine : DEFAULT_YAXIS_STYLE.axisLine
-        const axisLine = axisCfg.show
+        const line = axisCfg.show
           ? {
               style: {
                 stroke: axisCfg.lineStyle.color,
-                lineWidth: parseInt(axisCfg.lineStyle.width)
+                lineWidth: axisCfg.lineStyle.width
               }
             }
           : null
@@ -693,7 +693,7 @@ export function getYAxis(chart) {
           : null
         const label = a.axisLabel.show
           ? {
-              rotate: (parseInt(a.axisLabel.rotate) * Math.PI) / 180,
+              rotate: (a.axisLabel.rotate * Math.PI) / 180,
               style: {
                 fill: a.axisLabel.color,
                 fontSize: parseInt(a.axisLabel.fontSize)
@@ -717,26 +717,26 @@ export function getYAxis(chart) {
           : null
 
         axis = {
-          position: transAxisPosition(chart, a),
-          title: title,
-          grid: grid,
-          label: label,
-          line: axisLine,
-          tickLine: tickLine
+          position: a.position,
+          title,
+          grid,
+          label,
+          line,
+          tickLine
         }
 
         // 轴值设置
-        delete axis.minLimit
-        delete axis.maxLimit
-        delete axis.tickCount
-        const axisValue = a.axisValue
-        if (!chart.type.includes('horizontal')) {
-          if (axisValue && !axisValue.auto) {
-            axisValue.min && (axis.minLimit = parseFloat(axisValue.min))
-            axisValue.max && (axis.maxLimit = parseFloat(axisValue.max))
-            axisValue.splitCount && (axis.tickCount = parseFloat(axisValue.splitCount))
-          }
-        }
+        // delete axis.minLimit
+        // delete axis.maxLimit
+        // delete axis.tickCount
+        // const axisValue = a.axisValue
+        // if (!chart.type.includes('horizontal')) {
+        //   if (axisValue && !axisValue.auto) {
+        //     axisValue.min && (axis.minLimit = parseFloat(axisValue.min))
+        //     axisValue.max && (axis.maxLimit = parseFloat(axisValue.max))
+        //     axisValue.splitCount && (axis.tickCount = parseFloat(axisValue.splitCount))
+        //   }
+        // }
       } else {
         axis = false
       }
@@ -845,25 +845,6 @@ export function getYAxis(chart) {
 //   return axis
 // }
 //
-function transAxisPosition(chart, axis) {
-  if (chart.type.includes('horizontal')) {
-    switch (axis.position) {
-      case 'top':
-        return 'left'
-      case 'bottom':
-        return 'right'
-      case 'left':
-        return 'bottom'
-      case 'right':
-        return 'top'
-      default:
-        return axis.position
-    }
-  } else {
-    return axis.position
-  }
-}
-
 export function getSlider(chart) {
   let senior = {}
   let cfg = false
@@ -1014,4 +995,19 @@ export function setGradientColor(rawColor, show = false, angle = 0) {
   const item = rawColor.split(',')
   item.splice(3, 1, '0.3)')
   return show ? `l(${angle}) 0:${item.join(',')} 1:${rawColor}` : rawColor
+}
+
+export function transAxisPosition(position: string): string {
+  switch (position) {
+    case 'top':
+      return 'left'
+    case 'bottom':
+      return 'right'
+    case 'left':
+      return 'bottom'
+    case 'right':
+      return 'top'
+    default:
+      return position
+  }
 }
