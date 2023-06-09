@@ -1,5 +1,6 @@
 package io.dataease.dataset.utils;
 
+import io.dataease.exception.DEException;
 import org.apache.calcite.config.Lex;
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlJoin;
@@ -33,11 +34,11 @@ public class SqlUtils {
         SqlParser sqlParser = SqlParser
                 .create(sql, config);
         // 生成 AST 语法树
-        SqlNode sqlNode;
+        SqlNode sqlNode = null;
         try {
             sqlNode = sqlParser.parseStmt();
         } catch (SqlParseException e) {
-            throw new RuntimeException("使用 Calcite 进行语法分析发生了异常", e);
+            DEException.throwException("使用 Calcite 进行语法分析发生了异常:" + e);
         }
         List<String> dependencies = new ArrayList<>();
         dependencies = getDependencies(sqlNode, false, dependencies);
