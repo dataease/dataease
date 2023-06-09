@@ -5,7 +5,7 @@ import org.quartz.*;
 
 public abstract class DeScheduleJob implements Job {
 
-    protected String datasetTableId;
+    protected Long datasetTableId;
     protected String expression;
     protected Long taskId;
     protected String updateType;
@@ -14,7 +14,7 @@ public abstract class DeScheduleJob implements Job {
     public void execute(JobExecutionContext context) throws JobExecutionException {
         JobKey jobKey = context.getTrigger().getJobKey();
         JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();
-        this.datasetTableId = jobDataMap.getString("datasetTableId");
+        this.datasetTableId = jobDataMap.getLong("datasetTableId");
         this.expression = jobDataMap.getString("expression");
         this.taskId = jobDataMap.getLong("taskId");
         this.updateType = jobDataMap.getString("updateType");

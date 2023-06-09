@@ -22,6 +22,8 @@ import ViewEditor from '@/views/chart/components/editor/index.vue'
 import { getDatasetTree } from '@/api/dataset'
 import { Tree } from '@/views/visualized/data/dataset/form/CreatDsGroup.vue'
 import { guid } from '@/views/visualized/data/dataset/form/util.js'
+import elementResizeDetectorMaker from 'element-resize-detector'
+import { getCanvasStyle } from '@/utils/style'
 
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
@@ -36,6 +38,12 @@ const canvasInitStatus = ref(false)
 
 const state = reactive({
   datasetTree: []
+})
+
+const editStyle = computed(() => {
+  return {
+    ...getCanvasStyle(canvasStyleData.value)
+  }
 })
 
 const initDataset = () => {
@@ -169,6 +177,31 @@ const canvasInit = () => {
   })
 }
 
+const canvasSizeInit = () => {
+  nextTick(() => {
+    if (canvasOut.value) {
+      //div容器获取tableBox.value.clientWidth
+      screenWidth = canvasOut.value.clientWidth
+      screenHeight = canvasOut.value.clientHeight
+      baseWidth.value = 24 * (screenWidth / 1920)
+      baseHeight.value = 24 * (screenHeight / 1080)
+      baseMarginLeft.value = 5 * (screenWidth / 1920)
+      baseMarginTop.value = 5 * (screenHeight / 1080)
+      canvasInitStatus.value = true
+      dvMainStore.setBashMatrixInfo({
+        baseWidth: baseWidth.value,
+        baseHeight: baseHeight.value,
+        baseMarginLeft: baseMarginLeft.value,
+        baseMarginTop: baseMarginTop.value
+      })
+      nextTick(() => {
+        $('.dragAndResize').css('width', 'calc(100% - ' + baseMarginLeft.value + 'px)')
+        cyGridster.value.canvasSizeInit() //在适当的时候初始化布局组件
+      })
+    }
+  })
+}
+
 // 全局监听按键事件
 listenGlobalKeyDown()
 onMounted(() => {
@@ -188,6 +221,7 @@ onMounted(() => {
       dvMainStore.updateCurDvInfo(bashInfo)
       //恢复画布数据
       restore(canvasInfo.componentData, canvasInfo.canvasStyleData, canvasInfo.canvasViewInfo)
+      canvasInit()
     })
   } else {
     dvMainStore.updateCurDvInfo({
@@ -197,9 +231,13 @@ onMounted(() => {
       status: null,
       selfWatermarkStatus: null
     })
+    canvasInit()
   }
-  canvasInit()
-  window.addEventListener('resize', canvasInit)
+  window.addEventListener('resize', canvasSizeInit)
+  const erd = elementResizeDetectorMaker()
+  erd.listenTo(document.getElementById('dashboardMainCanvas'), element => {
+    canvasSizeInit()
+  })
 })
 
 eventBus.on('handleNew', handleNew)
@@ -213,7 +251,9 @@ eventBus.on('handleNew', handleNew)
       <main class="center">
         <div ref="canvasOut" class="content">
           <div
+            id="dashboardMainCanvas"
             class="db-canvas"
+            :style="editStyle"
             @drop="handleDrop"
             @dragover="handleDragOver"
             @mousedown="handleMouseDown"
@@ -236,7 +276,7 @@ eventBus.on('handleNew', handleNew)
       <dv-sidebar
         v-if="curComponent && curComponent.component !== 'UserView'"
         :title="'属性'"
-        :width="240"
+        :width="420"
         :side-name="'componentProp'"
         :aside-position="'right'"
         class="left-sidebar"
@@ -246,15 +286,15 @@ eventBus.on('handleNew', handleNew)
       <dv-sidebar
         v-if="!curComponent"
         title="大屏配置"
-        :width="300"
+        :width="420"
         aside-position="right"
         class="left-sidebar"
       >
         <CanvasAttr></CanvasAttr>
       </dv-sidebar>
       <view-editor
-        v-if="curComponent && curComponent.component === 'UserView'"
-        :view="canvasViewInfo[curComponent.id]"
+        v-show="curComponent && curComponent.component === 'UserView'"
+        :view="canvasViewInfo[curComponent ? curComponent.id : 'default']"
         :dataset-tree="state.datasetTree"
       ></view-editor>
     </el-container>
@@ -283,6 +323,7 @@ eventBus.on('handleNew', handleNew)
         width: 100%;
         overflow-y: auto;
         .db-canvas {
+          background-size: 100% 100% !important;
           width: 100%;
         }
       }

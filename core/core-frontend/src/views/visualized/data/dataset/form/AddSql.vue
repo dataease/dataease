@@ -155,7 +155,7 @@ const save = () => {
   parseVariable()
   emits('save', {
     ...sqlNode.value,
-    sql: Base64.encodeURI(codeCom.value.state.doc.toString()),
+    sql: Base64.encode(codeCom.value.state.doc.toString()),
     sqlVariableDetails: JSON.stringify(state.variables)
   })
 }
@@ -166,7 +166,7 @@ const close = () => {
 const getSQLPreview = () => {
   parseVariable()
   getPreviewSql({
-    sql: Base64.encodeURI(codeCom.value.state.doc.toString()),
+    sql: Base64.encode(codeCom.value.state.doc.toString()),
     datasourceId: sqlNode.value.datasourceId,
     sqlVariableDetails: JSON.stringify(state.variables)
   }).then(res => {

@@ -70,9 +70,12 @@ init()
     <el-col>
       <el-form ref="labelForm" :model="state.labelForm" label-width="80px" size="small">
         <el-form-item :label="t('chart.show')" class="form-item">
-          <el-checkbox v-model="state.labelForm.show" @change="changeLabelAttr('show')">{{
-            t('chart.show')
-          }}</el-checkbox>
+          <el-checkbox
+            effect="dark"
+            v-model="state.labelForm.show"
+            @change="changeLabelAttr('show')"
+            >{{ t('chart.show') }}</el-checkbox
+          >
         </el-form-item>
 
         <div v-show="state.labelForm.show">
@@ -94,6 +97,7 @@ init()
           <!--          </el-form-item>-->
           <el-form-item :label="t('chart.text_fontsize')" class="form-item">
             <el-select
+              effect="dark"
               v-model="state.labelForm.fontSize"
               :placeholder="t('chart.text_fontsize')"
               @change="changeLabelAttr('fontSize')"
@@ -116,6 +120,7 @@ init()
           </el-form-item>
           <el-form-item :label="t('chart.label_position')" class="form-item">
             <el-select
+              effect="dark"
               v-model="state.labelForm.position"
               :placeholder="t('chart.label_position')"
               @change="changeLabelAttr('position')"

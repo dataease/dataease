@@ -40,3 +40,10 @@ export const beforeUnmountInfoApi = data => request.post({ url: '/role/beforeUnm
 export const unMountUserApi = data => request.post({ url: '/role/unMountUser', data })
 
 export const mountUserApi = data => request.post({ url: '/role/mountUser', data })
+
+export const searchExternalUserApi = keyword =>
+  request.get({ url: '/role/searchExternalUser/' + keyword })
+
+export const mountExternalUserApi = data => request.post({ url: '/role/mountExternalUser', data })
+
+export const switchLangApi = data => request.post({ url: '/user/switchLanguage', data })

@@ -27,12 +27,12 @@ interface Form {
 
 const { t } = useI18n()
 
-const dsType = ['OLTP', 'OLAP', 'dataWarehouseLake', 'OTHER']
+const dsType = ['OLTP', 'OLAP', 'DL', 'LOCAL', 'OTHER']
 
 const nameMap = {
   OLTP: 'OLTP',
   OLAP: 'OLAP',
-  dataWarehouseLake: t('datasource.dl'),
+  DL: t('datasource.dl'),
   OTHER: t('datasource.other'),
   LOCAL: t('datasource.local_file'),
   API: 'API:'
@@ -91,6 +91,7 @@ export interface SyncSetting {
 
 const activeStep = ref(0)
 const detail = ref()
+const excel = ref()
 const currentType = ref<DsType>('OLTP')
 const nickName = ref('')
 const currentDsType = ref('')
@@ -145,7 +146,10 @@ const saveDS = () => {
     configuration: string
     apiConfiguration: string
   }
-  if (form.type === 'API') {
+  if (form.type === 'Excel') {
+    excel.value.saveExcelDs()
+    return
+  } else if (form.type === 'API') {
     if (form.apiConfiguration.length == 0) {
       return
     }
@@ -160,12 +164,18 @@ const saveDS = () => {
     ElMessage.success(t('common.save_success'))
   })
 }
-
 const form = reactive<Form>({
   name: '',
   description: '',
   type: 'API',
   apiConfiguration: []
+})
+const form2 = reactive<{
+  id: number
+  type: string
+}>({
+  id: 0,
+  type: 'API'
 })
 </script>
 
@@ -209,10 +219,10 @@ const form = reactive<Form>({
           ref="detail"
           :form="form"
           :active-step="activeStep"
-          v-show="currentDsType && currentDsType !== 'Db2'"
+          v-show="currentDsType && currentDsType !== 'Excel'"
         ></editor-detail>
-        <template v-if="currentDsType == 'Db2'">
-          <excel-detail></excel-detail>
+        <template v-if="currentDsType == 'Excel'">
+          <excel-detail ref="excel" :param="form2"></excel-detail>
         </template>
       </div>
       <div class="editor-footer">

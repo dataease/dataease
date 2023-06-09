@@ -110,4 +110,13 @@ const getFieldName = (fields, name) => {
   return n
 }
 
-export { timestampFormatDate, defaultValueScopeList, fieldOptions, guid, getFieldName }
+const timeTypes = [
+  'yy-mm',
+  'yyyy/MM/dd',
+  'yyyy-MM-dd HH:mm:ss',
+  'yyyy/MM/dd HH:mm:ss',
+  'yyyyMMdd HH:mm:ss',
+  'custom'
+]
+
+export { timestampFormatDate, defaultValueScopeList, fieldOptions, guid, getFieldName, timeTypes }

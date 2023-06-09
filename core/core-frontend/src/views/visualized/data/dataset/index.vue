@@ -134,7 +134,7 @@ const columns = shallowRef([])
 const tableData = shallowRef([])
 
 const handleNodeClick = (data: Tree) => {
-  if (data.nodeType !== 'dataset') return
+  if (!data.leaf) return
   const { name, createBy, id, nodeType, createTime } = data
   Object.assign(nodeInfo, { name, createBy, id, nodeType, createTime })
   columnsPreview = []
@@ -297,7 +297,7 @@ const defaultProps = {
       >
         <template #default="{ node, data }">
           <span class="custom-tree-node">
-            <el-icon v-if="data.nodeType === 'folder'">
+            <el-icon v-if="!data.leaf">
               <Icon name="scene"></Icon>
             </el-icon>
             <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
@@ -307,10 +307,10 @@ const defaultProps = {
                 :menu-list="state.datasetTypeList"
                 icon-name="icon_add_outlined"
                 placement="bottom-start"
-                v-if="data.nodeType === 'folder'"
+                v-if="!data.leaf"
               ></handle-more>
               <handle-more
-                @handle-command="cmd => operation(cmd, data, data.nodeType)"
+                @handle-command="cmd => operation(cmd, data, data.leaf ? 'dataset' : 'folder')"
                 :menu-list="state.menuList"
               ></handle-more>
             </div>

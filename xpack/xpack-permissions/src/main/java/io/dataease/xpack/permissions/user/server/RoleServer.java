@@ -2,13 +2,9 @@ package io.dataease.xpack.permissions.user.server;
 
 import cn.hutool.core.collection.CollectionUtil;
 import io.dataease.api.permissions.role.api.RoleApi;
-import io.dataease.api.permissions.role.dto.MountUserRequest;
-import io.dataease.api.permissions.role.dto.RoleCopyRequest;
-import io.dataease.api.permissions.role.dto.RoleRequest;
-import io.dataease.api.permissions.role.dto.UnmountUserRequest;
-import io.dataease.api.permissions.role.dto.RoleCreator;
+import io.dataease.api.permissions.role.dto.*;
+import io.dataease.api.permissions.role.vo.ExternalUserVO;
 import io.dataease.api.permissions.role.vo.RoleDetailVO;
-import io.dataease.api.permissions.role.dto.RoleEditor;
 import io.dataease.api.permissions.role.vo.RoleVO;
 import io.dataease.model.KeywordRequest;
 import io.dataease.utils.AuthUtils;
@@ -47,8 +43,14 @@ public class RoleServer implements RoleApi {
         roleManage.mountUser(request.getRid(), request.getUids());
     }
 
-    public void mountExternalUser(Long uId) {
+    @Override
+    public void mountExternalUser(MountExternalUserRequest request) {
+        roleManage.mountExternalUser(request.getRid(), request.getUid());
+    }
 
+    @Override
+    public ExternalUserVO searchExternalUser(String keyword) {
+        return roleManage.queryExternalUser(keyword);
     }
 
     @Override

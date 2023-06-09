@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { shallowRef, PropType, computed } from 'vue'
 
-export type DsType = 'OLTP' | 'OLAP' | 'dataWarehouseLake' | 'OTHER'
+export type DsType = 'OLTP' | 'OLAP' | 'DL' | 'OTHER' | 'LOCAL'
 const props = defineProps({
   currentType: {
     type: String as PropType<DsType>,
@@ -9,8 +9,8 @@ const props = defineProps({
   }
 })
 let dsTypes = []
-const nameMap = ['OLTP', 'OLAP', 'dataWarehouseLake', 'OTHER']
-const typeList = ['OLTP', 'OLAP', 'DL', 'OTHER']
+const nameMap = ['OLTP', 'OLAP', 'DL', 'OTHER', 'LOCAL']
+const typeList = ['OLTP', 'OLAP', 'DL', 'OTHER', 'LOCAL']
 const databaseList = shallowRef([])
 const currentTypeList = computed(() => {
   const index = nameMap.findIndex(ele => props.currentType === ele)
@@ -129,7 +129,13 @@ const getDatasourceTypes = () => {
       type: 'API',
       name: 'API',
       catalog: 'OTHER',
-      extraParams: 'rebuildschema=true&authSource=admin'
+      extraParams: ''
+    },
+    {
+      type: 'Excel',
+      name: 'Excel',
+      catalog: 'LOCAL',
+      extraParams: ''
     },
     {
       type: 'influxdb',
@@ -181,7 +187,7 @@ const getDatasourceTypes = () => {
       extraParams: ''
     }
   ]
-  const arr = [[], [], [], []]
+  const arr = [[], [], [], [], []]
   dsTypes.forEach(item => {
     const index = typeList.findIndex(ele => ele === item.catalog)
     if (index !== -1) {

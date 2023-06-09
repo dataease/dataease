@@ -1,6 +1,5 @@
 package io.dataease.datasource.provider;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.ds.vo.DatasourceConfiguration;
@@ -14,6 +13,7 @@ import io.dataease.datasource.dao.auto.mapper.CoreDriverMapper;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.datasource.type.Mysql;
 import io.dataease.datasource.type.Sqlserver;
+import io.dataease.engine.utils.FunctionUtils;
 import io.dataease.exception.DEException;
 import io.dataease.utils.CommonBeanFactory;
 import io.dataease.utils.JsonUtil;
@@ -106,6 +106,16 @@ public class CalciteProvider {
         return tableDesc;
     }
 
+    private String getDriver(DatasourceSchemaDTO ds) {
+        DatasourceType datasourceType = DatasourceType.valueOf(ds.getType());
+        switch (datasourceType) {
+            case mysql:
+                return ((DatasourceConfiguration) CommonBeanFactory.getBean("mysql")).getDriver();
+            default:
+                return ((DatasourceConfiguration) CommonBeanFactory.getBean("mysql")).getDriver();
+        }
+    }
+
     public String checkStatus(DatasourceRequest datasourceRequest) throws Exception {
         String querySql = getTablesSql(datasourceRequest).get(0);
         try (Connection con = getConnection(datasourceRequest.getDatasource()); Statement statement = getStatement(con, 30); ResultSet resultSet = statement.executeQuery(querySql)) {
@@ -172,17 +182,13 @@ public class CalciteProvider {
     private void registerDriver(DatasourceRequest datasourceRequest) throws Exception {
         for (Map.Entry<Long, DatasourceSchemaDTO> next : datasourceRequest.getDsList().entrySet()) {
             DatasourceSchemaDTO ds = next.getValue();
-            JsonNode rootNode = objectMapper.readTree(ds.getConfiguration());
-            Driver driver = (Driver) extendedJdbcClassLoader.loadClass(rootNode.get("driver").asText()).newInstance();
+            Driver driver = (Driver) extendedJdbcClassLoader.loadClass(getDriver(ds)).newInstance();
             DriverManager.registerDriver(new DriverShim(driver));
         }
     }
 
     private Connection getCalciteConnection(DatasourceRequest datasourceRequest) throws Exception {
-        try {
-            registerDriver(datasourceRequest);// todo 此处会报错，前后端接口调试用mysql，暂时不需要register driver
-        } catch (Exception e) {
-        }
+        registerDriver(datasourceRequest);
         Properties info = new Properties();
         info.setProperty("lex", "JAVA");
         info.setProperty("caseSensitive", "false");

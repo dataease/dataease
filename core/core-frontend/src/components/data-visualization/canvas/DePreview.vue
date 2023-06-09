@@ -58,6 +58,10 @@ onMounted(() => {
   restore()
   window.addEventListener('resize', restore)
 })
+
+defineExpose({
+  restore
+})
 </script>
 
 <template>
@@ -73,6 +77,7 @@ onMounted(() => {
 
 <style lang="less" scoped>
 .canvas-container {
+  background-size: 100% 100% !important;
   width: 100%;
   overflow-x: hidden;
   overflow-y: auto;

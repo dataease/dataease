@@ -5,7 +5,7 @@ import { computed, reactive, nextTick, ref } from 'vue'
 import { Icon } from '@/components/icon-custom'
 
 const props = defineProps({
-  optionList: propTypes.arrayOf(
+  statusList: propTypes.arrayOf(
     propTypes.shape({
       id: propTypes.string,
       name: propTypes.string
@@ -35,8 +35,8 @@ const selectStatus = ids => {
   })
 }
 
-const optionListNotSelect = computed(() => {
-  return props.optionList.filter(ele => !state.activeStatus.map(t => t.id).includes(ele.id))
+const statusListNotSelect = computed(() => {
+  return props.statusList.filter(ele => !state.activeStatus.map(t => t.id).includes(ele.id))
 })
 
 defineExpose({
@@ -55,7 +55,7 @@ defineExpose({
         @click="statusChange(ele.id)"
         >{{ $t(ele.name) }}</span
       >
-      <slot v-if="!!optionListNotSelect.length">
+      <slot v-if="!!statusListNotSelect.length">
         <el-popover
           :show-arrow="false"
           ref="elPopoverU"
@@ -74,7 +74,7 @@ defineExpose({
             @change="selectStatus"
           >
             <el-option
-              v-for="item in optionListNotSelect"
+              v-for="item in statusListNotSelect"
               :key="item.name"
               :label="item.name"
               :value="item"

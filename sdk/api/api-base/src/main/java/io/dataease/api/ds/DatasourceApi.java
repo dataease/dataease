@@ -1,20 +1,15 @@
 package io.dataease.api.ds;
 
 import io.dataease.api.dataset.dto.DatasetTableDTO;
-import io.dataease.api.ds.vo.ApiDefinition;
-import io.dataease.api.ds.vo.DatasourceConfiguration;
+import io.dataease.api.ds.vo.*;
 
-import io.dataease.api.ds.vo.TableField;
 import io.dataease.auth.DeApiPath;
 import io.dataease.exception.DEException;
 
-import io.dataease.api.ds.vo.DatasourceDTO;
 import io.dataease.auth.DeApiPath;
 import io.dataease.auth.DePermit;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collection;
 import java.util.List;
@@ -61,8 +56,12 @@ public interface DatasourceApi {
 
     @DePermit({"m:read", "#p0+':manage'"})
     @GetMapping("getTables/{datasourceId}")
-    List<DatasetTableDTO> getTables(@PathVariable("datasourceId") String datasourceId) throws DEException;
+    List<DatasetTableDTO> getTables(@PathVariable("datasourceId") String datasourceId) throws Exception;
 
     @PostMapping("/checkApiDatasource")
     ApiDefinition checkApiDatasource(@RequestBody Map<String, String> data) throws DEException;
+
+    @PostMapping("/uploadFile")
+    ExcelFileData excelUpload(@RequestParam("file") MultipartFile file, @RequestParam("id") long datasourceId) throws DEException;
+
 }

@@ -18,6 +18,7 @@ const canvasViewInfoPreview = ref({})
 
 const { dvInfo } = storeToRefs(dvMainStore)
 const previewCanvasContainer = ref(null)
+const dashboardPreview = ref(null)
 
 const loadCanvasData = dvId => {
   findById(dvId).then(res => {
@@ -33,6 +34,7 @@ const loadCanvasData = dvId => {
     canvasStylePreview.value = JSON.parse(canvasInfo.canvasStyleData)
     canvasViewInfoPreview.value = canvasInfo.canvasViewInfo
     dvMainStore.updateCurDvInfo(bashInfo)
+    dashboardPreview.value.restore()
   })
 }
 
@@ -63,6 +65,7 @@ const htmlToImage = () => {
         <preview-head @reload="loadCanvasData" @download="htmlToImage"></preview-head>
         <div ref="previewCanvasContainer" class="content">
           <de-preview
+            ref="dashboardPreview"
             v-if="canvasStylePreview"
             :component-data="canvasDataPreview"
             :canvas-style-data="canvasStylePreview"

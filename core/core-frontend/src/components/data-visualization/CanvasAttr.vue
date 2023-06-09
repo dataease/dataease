@@ -340,6 +340,7 @@ watch([() => canvasStyleData.value.background], () => {
   background: rgba(0, 0, 0, 0);
 }
 .img-area {
+  width: 120px;
   height: 80px;
   margin-top: 0px;
   margin-bottom: 20px;

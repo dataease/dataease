@@ -71,7 +71,40 @@ const nameValidator = (_, value, callback) => {
 }
 
 const showPid = computed(() => {
+  if (nodeType.value === 'folder' && !!pid.value) {
+    return false
+  }
   return !['rename', 'move'].includes(cmd.value) && !!pid.value
+})
+
+const labelName = computed(() => {
+  return nodeType.value === 'folder' ? t('deDataset.folder_name') : t('dataset.name')
+})
+
+const dialogTitle = computed(() => {
+  let title = ''
+
+  switch (nodeType.value) {
+    case 'folder':
+      title = t('deDataset.new_folder')
+      break
+    case 'dataset':
+      title = t('deDataset.create') + t('auth.dataset')
+      break
+    default:
+      break
+  }
+  switch (cmd.value) {
+    case 'move':
+      title = t('chart.move_to')
+      break
+    case 'rename':
+      title = t('chart.rename')
+      break
+    default:
+      break
+  }
+  return title
 })
 
 const showName = computed(() => {
@@ -106,7 +139,6 @@ const datasetFormRules = ref()
 const dataset = ref()
 const loading = ref(false)
 const createDataset = ref(false)
-const dialogTitle = ref('新建文件夹')
 const filterMethod = value => {
   state.tData = [...state.tData].filter(item => item.name.includes(value))
 }
@@ -225,13 +257,15 @@ const emits = defineEmits(['finish'])
       :model="datasetForm"
       :rules="datasetFormRules"
     >
-      <el-form-item v-if="showName" :label="t('dataset.name')" prop="name">
+      <el-form-item v-if="showName" :label="labelName" prop="name">
         <el-input v-model="datasetForm.name" />
       </el-form-item>
       <el-form-item v-if="showPid" :label="t('deDataset.folder')" prop="pid">
         <el-tree-select
           v-model="datasetForm.pid"
           :data="state.tData"
+          popper-class="dataset-tree-select"
+          style="width: 100%"
           :props="props"
           @node-click="nodeClick"
           :filter-method="filterMethod"
@@ -330,6 +364,17 @@ const emits = defineEmits(['finish'])
       font-weight: 400;
       line-height: 22px;
       color: #646a73;
+    }
+  }
+}
+</style>
+<style lang="less">
+.dataset-tree-select {
+  .ed-select-dropdown__item {
+    display: flex;
+    align-items: center;
+    .ed-icon {
+      margin-right: 5px;
     }
   }
 }

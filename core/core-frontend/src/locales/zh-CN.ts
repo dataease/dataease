@@ -4,7 +4,7 @@ export default {
     add: '添加',
     account: '账号',
     email: '邮箱',
-    phone: '手机号',
+    phone: '手机',
     pwd: '密码',
     require: '必填',
     personal_info: '个人信息',
@@ -46,7 +46,8 @@ export default {
     cron_exp: 'cron表达式',
     copy_success: '复制成功',
     copy_unsupported: '您的浏览器不支持复制',
-    filter: '筛选'
+    filter: '筛选',
+    filter_condition: '筛选条件'
   },
   login: {
     welcome: '欢迎使用',
@@ -66,13 +67,16 @@ export default {
   },
   user: {
     change_password: '修改密码',
+    account: '帐号',
     name: '名称',
     role: '角色',
     state: '状态',
     default_pwd: '默认密码',
     confirm_delete: '确认删除该用户吗？',
     add_title: '添加用户',
-    edit_title: '编辑用户'
+    edit_title: '编辑用户',
+    user_id: '用户',
+    user_id_empty: '请输入精准用户ID/帐号'
   },
   role: {
     add_title: '添加角色',
@@ -95,7 +99,11 @@ export default {
     unbind_success: '移除成功',
     bind_success: '绑定成功',
     bound_user: '已添加用户',
-    option_user: '可添加用户'
+    option_user: '可添加用户',
+    out_user_title: '绑定组织外用户',
+    search_user: '查询用户',
+    search_one: '查找到一个用户',
+    search_no: '用户不存在'
   },
   org: {
     org_title: '组织管理',

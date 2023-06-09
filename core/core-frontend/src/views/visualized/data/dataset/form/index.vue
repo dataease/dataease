@@ -9,7 +9,7 @@ import CalcFieldEdit from './CalcFieldEdit.vue'
 import { useRoute } from 'vue-router'
 import UnionEdit from './UnionEdit.vue'
 import CreatDsGroup from './CreatDsGroup.vue'
-import { guid, getFieldName } from './util.js'
+import { guid, getFieldName, timeTypes } from './util.js'
 import {
   getDatasourceList,
   getTables,
@@ -108,9 +108,15 @@ const editeSave = () => {
 }
 
 const handleFieldMore = (ele, type) => {
-  const arr = ['text', 'time', 'number', 'float', '', 'location']
+  const arr = ['text', 'time', 'number', 'float', 'location']
   if (arr.includes(type as string)) {
     ele.deType = arr.indexOf(type)
+    ele.dateFormat = ''
+    return
+  }
+  if (timeTypes.includes(type as string)) {
+    ele.deType = 1
+    ele.dateFormat = type
     return
   }
   switch (type) {
@@ -704,6 +710,7 @@ const handleClick = () => {
                       <div class="operate">
                         <field-more
                           :extField="data.extField"
+                          :show-time="data.deType === 1 && data.deExtractType === 0"
                           @handle-command="type => handleFieldMore(data, type)"
                         ></field-more>
                       </div>

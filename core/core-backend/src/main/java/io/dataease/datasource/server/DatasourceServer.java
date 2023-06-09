@@ -16,7 +16,6 @@ import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.entity.CoreDatasourceTask;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
-import io.dataease.datasource.dto.ExcelSheetData;
 import io.dataease.datasource.manage.DatasourceSyncManage;
 import io.dataease.datasource.provider.ApiUtils;
 import io.dataease.datasource.provider.CalciteProvider;
@@ -77,14 +76,9 @@ public class DatasourceServer implements DatasourceApi {
     public enum UpdateType {
         all_scope, add_scope
     }
-
-    public enum SpecialDatasourceType {
-        API, EXCEL
-    }
-
     @Override
     public DatasourceDTO save(DatasourceDTO dataSourceDTO) throws Exception {
-        if (dataSourceDTO.getId() != null) {
+        if (dataSourceDTO.getId() != null && dataSourceDTO.getId() > 0) {
             return update(dataSourceDTO);
         }
         if (StringUtils.isNotEmpty(dataSourceDTO.getConfiguration())) {
@@ -99,11 +93,19 @@ public class DatasourceServer implements DatasourceApi {
         coreDatasource.setTaskStatus(TaskStatus.WaitingForExecution.name());
         coreDatasource.setId(IDUtils.snowID());
         datasourceMapper.insert(coreDatasource);
-        if (dataSourceDTO.getType().equals(SpecialDatasourceType.EXCEL.name())) {
-            //TODO sync excel at once
-
+        if (dataSourceDTO.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name())) {
+            DatasourceRequest datasourceRequest = new DatasourceRequest();
+            datasourceRequest.setDatasource(coreDatasource);
+            List<DatasetTableDTO> tables = ExcelUtils.getTables(datasourceRequest);
+            for (DatasetTableDTO table : tables) {
+                datasourceRequest.setTable(table.getTableName());
+                List<TableField> tableFields = ExcelUtils.getTableFields(datasourceRequest);
+                datasourceSyncManage.createEngineTable(datasourceRequest.getTable(), tableFields);
+            }
+            //TODO sync data
+            datasourceSyncManage.extractExcelData(coreDatasource.getId(), "all_scope");
         }
-        if (dataSourceDTO.getType().equals(SpecialDatasourceType.API.name())) {
+        if (dataSourceDTO.getType().equals(DatasourceConfiguration.DatasourceType.API.name())) {
             CoreDatasourceTask coreDatasourceTask = new CoreDatasourceTask();
             BeanUtils.copyBean(coreDatasourceTask, dataSourceDTO.getSyncSetting());
             coreDatasourceTask.setName(coreDatasource.getName() + "-task");
@@ -145,7 +147,7 @@ public class DatasourceServer implements DatasourceApi {
         coreDatasource.setUpdateTime(System.currentTimeMillis());
         checkDatasourceStatus(coreDatasource);
         datasourceMapper.updateById(coreDatasource);
-        if (dataSourceDTO.getType().equals(SpecialDatasourceType.API.name())) {
+        if (dataSourceDTO.getType().equals(DatasourceConfiguration.DatasourceType.API.name())) {
             CoreDatasourceTask coreDatasourceTask = new CoreDatasourceTask();
             BeanUtils.copyBean(coreDatasourceTask, dataSourceDTO.getSyncSetting());
             coreDatasourceTask.setName(coreDatasource.getName() + "-task");
@@ -206,10 +208,10 @@ public class DatasourceServer implements DatasourceApi {
                     datasourceDTO.setCatalogDesc(datasourceConfiguration.getCatalogDesc());
                 }
             });
-            TypeReference<List<ApiDefinition>> listTypeReference = new TypeReference<List<ApiDefinition>>() {
-            };
+            TypeReference<List<ApiDefinition>> listTypeReference = new TypeReference<List<ApiDefinition>>() {};
             if (datasourceDTO.getType().equalsIgnoreCase(DatasourceConfiguration.DatasourceType.API.toString())) {
                 List<ApiDefinition> apiDefinitionList = JsonUtil.parseList(datasourceDTO.getConfiguration(), listTypeReference);
+
                 List<ApiDefinition> apiDefinitionListWithStatus = new ArrayList<>();
                 int success = 0;
                 for (int i = 0; i < apiDefinitionList.size(); i++) {
@@ -253,14 +255,14 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     @Override
-    public List<DatasetTableDTO> getTables(String datasourceId) throws DEException {
+    public List<DatasetTableDTO> getTables(String datasourceId) throws Exception {
         CoreDatasource coreDatasource = datasourceMapper.selectById(datasourceId);
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(coreDatasource);
         if (coreDatasource.getType().equals("API")) {
             return ApiUtils.getTables(datasourceRequest);
         }
-        if (coreDatasource.getType().equals("EXCEL")) {
+        if (coreDatasource.getType().equals("Excel")) {
             return ExcelUtils.getTables(datasourceRequest);
         }
         return calciteProvider.getTables(datasourceRequest);
@@ -271,7 +273,7 @@ public class DatasourceServer implements DatasourceApi {
         CoreDatasource coreDatasource = datasourceMapper.selectById(datasourceId);
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(coreDatasource);
-        if (coreDatasource.getType().equals("API")) {
+        if (coreDatasource.getType().equals("API") || coreDatasource.getType().equals("Excel")) {
             datasourceRequest.setDatasource(engineServer.getDeEngine());
             DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
             BeanUtils.copyBean(datasourceSchemaDTO, engineServer.getDeEngine());
@@ -282,9 +284,6 @@ public class DatasourceServer implements DatasourceApi {
             return tableFields.stream().filter(tableField -> {
                 return !tableField.getOriginName().equalsIgnoreCase("dataease_uuid");
             }).collect(Collectors.toList());
-        }
-        if (coreDatasource.getType().equals("EXCEL")) {
-
         }
 
         DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
@@ -302,7 +301,7 @@ public class DatasourceServer implements DatasourceApi {
             @ApiImplicitParam(name = "tableId", value = "数据表ID", required = true, dataType = "String"),
             @ApiImplicitParam(name = "editType", value = "编辑类型", required = true, dataType = "Integer")
     })
-    public List<ExcelSheetData> excelUpload(@RequestParam("file") MultipartFile file, @RequestParam("datasourceId") String datasourceId) throws DEException {
+    public ExcelFileData excelUpload(@RequestParam("file") MultipartFile file, @RequestParam("id") long datasourceId) throws DEException {
         return ExcelUtils.excelSaveAndParse(file, datasourceId);
     }
 
@@ -334,7 +333,7 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     public void checkDatasourceStatus(CoreDatasource coreDatasource) throws DEException {
-        if (coreDatasource.getType().equals("EXCEL")) {
+        if (coreDatasource.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name())) {
             return;
         }
         try {

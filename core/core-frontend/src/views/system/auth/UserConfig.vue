@@ -246,13 +246,13 @@ const loadPermission = (type: number) => {
   if (activeAuth.value === 'menu') {
     menuPerApi({ id: selectedTarget.value }).then(res => {
       const vo = res.data
+      loading.value = false
       if (isOrgAdminPer(vo, type)) {
         return
       }
       const permissionMap = groupPermission(vo)
 
       fillTableData(state.tableData, permissionMap)
-      loading.value = false
     })
     return
   }
@@ -263,12 +263,12 @@ const loadPermission = (type: number) => {
   }
   resourcePerApi(param).then(res => {
     const vo = res.data
+    loading.value = false
     if (isOrgAdminPer(vo, type)) {
       return
     }
     const permissionMap = groupPermission(vo)
     fillTableData(state.tableData, permissionMap)
-    loading.value = false
   })
 }
 

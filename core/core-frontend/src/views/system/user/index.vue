@@ -33,6 +33,23 @@ const drawerMainOpen = () => {
   drawerMainRef.value.init()
 }
 
+const filterOption = [
+  {
+    type: 'enum',
+    option: [
+      {
+        id: 1,
+        name: t('commons.enable')
+      },
+      {
+        id: 0,
+        name: t('commons.disable')
+      }
+    ],
+    field: 'status',
+    title: '状态'
+  }
+]
 const state = reactive({
   userList: [],
   columnList: [],
@@ -111,6 +128,9 @@ onMounted(() => {
 })
 const saveHandler = () => {
   search()
+}
+const searchCondition = conditions => {
+  console.log(conditions)
 }
 </script>
 <template>
@@ -226,7 +246,11 @@ const saveHandler = () => {
   <div v-else-if="activeName === 'role'" class="role-content">
     <role-manage @refresh="refreshRole" @refresh-grid="refreshGrid"></role-manage>
   </div>
-  <drawer-main ref="drawerMainRef"></drawer-main>
+  <drawer-main
+    :filter-options="filterOption"
+    @trigger-filter="searchCondition"
+    ref="drawerMainRef"
+  ></drawer-main>
   <user-form @saved="saveHandler" ref="userFormDialog"></user-form>
 </template>
 
@@ -261,16 +285,16 @@ const saveHandler = () => {
     svg {
       width: 16px;
       height: 16px;
-      color: var(--el-text-color-regular);
-      background-color: var(--el-color-white);
+      color: var(--ed-text-color-regular);
+      background-color: var(--ed-color-white);
     }
   }
 
   div:hover {
     cursor: pointer;
     svg {
-      color: var(--el-color-primary) !important;
-      background: var(--el-color-primary-light-7) !important;
+      color: var(--ed-color-primary) !important;
+      background: var(--ed-color-primary-light-7) !important;
     }
   }
 }
