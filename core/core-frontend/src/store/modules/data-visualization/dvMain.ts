@@ -5,6 +5,7 @@ import { BASE_VIEW_CONFIG } from '@/views/chart/components/editor/util/chart'
 
 export const DEFAULT_CANVAS_STYLE_DATA = {
   // 页面全局数据
+  themeId: 0,
   width: 1920,
   height: 1080,
   backgroundType: 'backgroundColor',

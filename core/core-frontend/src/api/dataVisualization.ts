@@ -20,3 +20,12 @@ export const savaOrUpdateBase = data =>
 export const update = data => request.post({ url: '/dataVisualization/update', data })
 
 export const deleteLogic = dvId => request.delete({ url: '/dataVisualization/deleteLogic/' + dvId })
+
+export const querySubjectWithGroupApi = data =>
+  request.post({ url: '/visualizationSubject/querySubjectWithGroup', data })
+
+export const saveOrUpdateSubject = data =>
+  request.post({ url: '/visualizationSubject/saveOrUpdateSubject', data })
+
+export const deleteSubject = id => request.delete({ url: '/visualizationSubject/delete/' + id })
+
