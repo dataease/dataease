@@ -31,9 +31,12 @@ const changeFunctionCfg = () => {
       <el-form ref="functionForm" :model="state.functionForm" label-width="80px" size="small">
         <div>
           <el-form-item :label="t('chart.slider')" class="form-item">
-            <el-checkbox v-model="state.functionForm.sliderShow" @change="changeFunctionCfg">{{
-              t('chart.show')
-            }}</el-checkbox>
+            <el-checkbox
+              effect="dark"
+              v-model="state.functionForm.sliderShow"
+              @change="changeFunctionCfg"
+              >{{ t('chart.show') }}</el-checkbox
+            >
           </el-form-item>
           <el-form-item
             v-show="state.functionForm.sliderShow"
@@ -96,9 +99,9 @@ const changeFunctionCfg = () => {
             v-model="state.functionForm.emptyDataStrategy"
             @change="changeFunctionCfg"
           >
-            <el-radio :label="'breakLine'">{{ t('chart.break_line') }}</el-radio>
-            <el-radio :label="'setZero'">{{ t('chart.set_zero') }}</el-radio>
-            <el-radio :label="'ignoreData'">{{ t('chart.ignore_data') }}</el-radio>
+            <el-radio effect="dark" :label="'breakLine'">{{ t('chart.break_line') }}</el-radio>
+            <el-radio effect="dark" :label="'setZero'">{{ t('chart.set_zero') }}</el-radio>
+            <el-radio effect="dark" :label="'ignoreData'">{{ t('chart.ignore_data') }}</el-radio>
           </el-radio-group>
         </el-form-item>
       </el-form>

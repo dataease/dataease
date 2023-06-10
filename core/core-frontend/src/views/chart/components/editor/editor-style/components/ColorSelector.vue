@@ -217,11 +217,13 @@ init()
           </el-form-item>
           <!--alpha-->
           <el-form-item :label="t('chart.not_alpha')" class="form-item form-item-slider">
-            <el-slider
+            <el-input-number
+              effect="dark"
               v-model="state.colorForm.alpha"
-              show-input
-              :show-input-controls="false"
-              input-size="small"
+              :min="0"
+              :max="100"
+              size="small"
+              controls-position="right"
               @change="changeColorCase('alpha')"
             />
           </el-form-item>

@@ -1,7 +1,9 @@
 import { Column, ColumnOptions } from '@antv/g2plot/lib/plots/column'
 import _ from 'lodash'
-import { G2PlotDrawOptions, G2PlotChartView } from '@/views/chart/components/js/panel/types'
-import { flow } from '@/views/chart/components/js/util'
+import { G2PlotChartView, G2PlotDrawOptions } from '@/views/chart/components/js/panel/types'
+import { flow, parseJson } from '@/views/chart/components/js/util'
+import { Datum } from '@antv/g2plot'
+import { singleDimensionTooltipFormatter } from '@/views/chart/components/js/formatter'
 
 const DEFAULT_DATA: any[] = []
 
@@ -68,6 +70,39 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
     }
   }
 
+  protected configTooltip(chart: Chart, options: ColumnOptions): ColumnOptions {
+    let tooltip
+    const customAttr: DeepPartial<ChartAttr> = parseJson(chart.customAttr)
+    if (customAttr.tooltip) {
+      const tooltipAttr = customAttr.tooltip
+      if (tooltipAttr.show) {
+        tooltip = {
+          formatter: function (param: Datum) {
+            return singleDimensionTooltipFormatter(param, chart)
+          }
+        }
+      } else {
+        tooltip = false
+      }
+    }
+    return { ...options, tooltip }
+  }
+
+  protected configCustomYAxis(chart: Chart, options: ColumnOptions): ColumnOptions {
+    if (options.yAxis) {
+      const axisValue = parseJson(chart.customStyle).yAxis.axisValue
+      if (!axisValue?.auto) {
+        const yAxis = {
+          min: axisValue.min,
+          max: axisValue.max,
+          tickCount: axisValue.splitCount
+        }
+        return { ...options, yAxis }
+      }
+    }
+    return options
+  }
+
   protected setupOptions(chart: Chart, options: ColumnOptions): ColumnOptions {
     return flow(
       this.configTheme,
@@ -76,10 +111,12 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
       this.configLegend,
       this.configXAxis,
       this.configYAxis,
+      this.configCustomYAxis,
       this.configSlider,
       this.configAnalyse
     )(chart, options)
   }
+
   constructor() {
     super('bar', DEFAULT_DATA)
   }

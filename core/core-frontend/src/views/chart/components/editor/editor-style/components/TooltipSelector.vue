@@ -60,13 +60,17 @@ init()
     <el-col>
       <el-form ref="tooltipForm" :model="state.tooltipForm" label-width="80px" size="small">
         <el-form-item :label="t('chart.show')" class="form-item">
-          <el-checkbox v-model="state.tooltipForm.show" @change="changeTooltipAttr('show')">{{
-            t('chart.show')
-          }}</el-checkbox>
+          <el-checkbox
+            effect="dark"
+            v-model="state.tooltipForm.show"
+            @change="changeTooltipAttr('show')"
+            >{{ t('chart.show') }}</el-checkbox
+          >
         </el-form-item>
         <div v-show="state.tooltipForm.show">
           <el-form-item :label="t('chart.text_fontsize')" class="form-item">
             <el-select
+              effect="dark"
               v-model="state.tooltipForm.textStyle.fontSize"
               :placeholder="t('chart.text_fontsize')"
               size="small"

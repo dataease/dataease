@@ -90,7 +90,7 @@ export class Gauge extends G2PlotChartView<GaugeOptions, G2Gauge> {
     let index = 0
     let flag = false
     let hasThreshold = false
-    const theme = options.theme as object
+    const theme = options.theme as any
 
     if (chart.senior) {
       const senior = parseJson(chart.senior)

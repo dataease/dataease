@@ -1,6 +1,5 @@
 package io.dataease.datasource.provider;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.ds.vo.DatasourceConfiguration;
@@ -14,6 +13,7 @@ import io.dataease.datasource.dao.auto.mapper.CoreDriverMapper;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.datasource.type.Mysql;
 import io.dataease.datasource.type.Sqlserver;
+import io.dataease.engine.utils.FunctionUtils;
 import io.dataease.exception.DEException;
 import io.dataease.utils.CommonBeanFactory;
 import io.dataease.utils.JsonUtil;
@@ -106,9 +106,9 @@ public class CalciteProvider {
         return tableDesc;
     }
 
-    private String getDriver(DatasourceSchemaDTO ds){
+    private String getDriver(DatasourceSchemaDTO ds) {
         DatasourceType datasourceType = DatasourceType.valueOf(ds.getType());
-        switch (datasourceType){
+        switch (datasourceType) {
             case mysql:
                 return ((DatasourceConfiguration) CommonBeanFactory.getBean("mysql")).getDriver();
             default:

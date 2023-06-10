@@ -1,3 +1,5 @@
+import { Datum } from '@antv/g2plot'
+
 export const formatterItem = {
   type: 'auto', // auto,value,percent
   unit: 1, // 换算单位
@@ -74,4 +76,23 @@ function transSeparatorAndSuffix(value, formatter) {
     }
   }
   return str + formatter.suffix.replace(/(^\s*)|(\s*$)/g, '')
+}
+
+export function singleDimensionTooltipFormatter(param: Datum, chart: Chart) {
+  let res
+  const yAxis = chart.yAxis
+  const obj = { name: param.category, value: param.value }
+  for (let i = 0; i < yAxis.length; i++) {
+    const f = yAxis[i]
+    if (f.name === param.category) {
+      if (f.formatterCfg) {
+        res = valueFormatter(param.value, f.formatterCfg)
+      } else {
+        res = valueFormatter(param.value, formatterItem)
+      }
+      break
+    }
+  }
+  obj.value = res ?? ''
+  return obj
 }

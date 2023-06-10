@@ -186,7 +186,7 @@ public class DatasetGroupManage {
         }
         List<CoreDatasetGroup> list = coreDatasetGroupMapper.selectList(wrapper);
         if (list.size() > 0) {
-            throw new RuntimeException("I18N_DATASET_TABLE_EXIST");
+            DEException.throwException("I18N_DATASET_TABLE_EXIST");
         }
     }
 

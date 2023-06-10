@@ -66,13 +66,17 @@ init()
     <el-col>
       <el-form ref="legendForm" :model="state.legendForm" label-width="80px" size="small">
         <el-form-item :label="t('chart.show')" class="form-item">
-          <el-checkbox v-model="state.legendForm.show" @change="changeLegendStyle('show')">{{
-            t('chart.show')
-          }}</el-checkbox>
+          <el-checkbox
+            effect="dark"
+            v-model="state.legendForm.show"
+            @change="changeLegendStyle('show')"
+            >{{ t('chart.show') }}</el-checkbox
+          >
         </el-form-item>
         <div v-show="state.legendForm.show">
           <el-form-item :label="t('chart.icon')" class="form-item">
             <el-select
+              effect="dark"
               v-model="state.legendForm.icon"
               :placeholder="t('chart.icon')"
               @change="changeLegendStyle('icon')"
@@ -91,12 +95,13 @@ init()
               size="small"
               @change="changeLegendStyle('orient')"
             >
-              <el-radio-button label="horizontal">{{ t('chart.horizontal') }}</el-radio-button>
-              <el-radio-button label="vertical">{{ t('chart.vertical') }}</el-radio-button>
+              <el-radio effect="dark" label="horizontal">{{ t('chart.horizontal') }}</el-radio>
+              <el-radio effect="dark" label="vertical">{{ t('chart.vertical') }}</el-radio>
             </el-radio-group>
           </el-form-item>
           <el-form-item :label="t('chart.text_fontsize')" class="form-item">
             <el-select
+              effect="dark"
               v-model="state.legendForm.textStyle.fontSize"
               :placeholder="t('chart.text_fontsize')"
               size="small"
@@ -124,11 +129,14 @@ init()
               size="small"
               @change="changeLegendStyle('hPosition')"
             >
-              <el-radio-button label="left">{{ t('chart.text_pos_left') }}</el-radio-button>
-              <el-radio-button :disabled="state.legendForm.vPosition === 'center'" label="center">{{
-                t('chart.text_pos_center')
-              }}</el-radio-button>
-              <el-radio-button label="right">{{ t('chart.text_pos_right') }}</el-radio-button>
+              <el-radio effect="dark" label="left">{{ t('chart.text_pos_left') }}</el-radio>
+              <el-radio
+                effect="dark"
+                :disabled="state.legendForm.vPosition === 'center'"
+                label="center"
+                >{{ t('chart.text_pos_center') }}</el-radio
+              >
+              <el-radio effect="dark" label="right">{{ t('chart.text_pos_right') }}</el-radio>
             </el-radio-group>
           </el-form-item>
           <el-form-item :label="t('chart.text_v_position')" class="form-item">
@@ -137,11 +145,14 @@ init()
               size="small"
               @change="changeLegendStyle('vPosition')"
             >
-              <el-radio-button label="top">{{ t('chart.text_pos_top') }}</el-radio-button>
-              <el-radio-button :disabled="state.legendForm.hPosition === 'center'" label="center">{{
-                t('chart.text_pos_center')
-              }}</el-radio-button>
-              <el-radio-button label="bottom">{{ t('chart.text_pos_bottom') }}</el-radio-button>
+              <el-radio effect="dark" label="top">{{ t('chart.text_pos_top') }}</el-radio>
+              <el-radio
+                effect="dark"
+                :disabled="state.legendForm.hPosition === 'center'"
+                label="center"
+                >{{ t('chart.text_pos_center') }}</el-radio
+              >
+              <el-radio effect="dark" label="bottom">{{ t('chart.text_pos_bottom') }}</el-radio>
             </el-radio-group>
           </el-form-item>
         </div>

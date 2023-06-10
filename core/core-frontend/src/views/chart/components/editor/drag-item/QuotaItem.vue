@@ -173,7 +173,7 @@ getItemTagType()
 
 <template>
   <span class="item-style">
-    <el-dropdown trigger="click" @command="clickItem">
+    <el-dropdown effect="dark" trigger="click" @command="clickItem">
       <el-tag class="item-axis">
         <span style="display: flex">
           <el-icon>
@@ -209,14 +209,19 @@ getItemTagType()
         </el-icon>
       </el-tag>
       <template #dropdown>
-        <el-dropdown-menu class="drop-style">
+        <el-dropdown-menu effect="dark" class="drop-style">
           <el-dropdown-item
             v-if="!item.chartId && chart.type !== 'table-info'"
             :divided="chart.type === 'chart-mix'"
           >
-            <el-dropdown placement="right-start" style="width: 100%" @command="summary">
+            <el-dropdown
+              effect="dark"
+              placement="right-start"
+              style="width: 100%"
+              @command="summary"
+            >
               <span class="el-dropdown-link inner-dropdown-menu">
-                <span>
+                <span class="item-span-drop">
                   <el-icon>
                     <Icon name="icon_add_outlined" class="el-icon-arrow-down el-icon-delete"></Icon>
                   </el-icon>
@@ -228,7 +233,7 @@ getItemTagType()
                 </el-icon>
               </span>
               <template #dropdown>
-                <el-dropdown-menu class="drop-style">
+                <el-dropdown-menu effect="dark" class="drop-style">
                   <el-dropdown-item
                     v-if="
                       item.id !== '-1' &&
@@ -303,9 +308,9 @@ getItemTagType()
           </el-dropdown-item>
 
           <el-dropdown-item :divided="!item.chartId && chart.type !== 'table-info'">
-            <el-dropdown placement="right-start" style="width: 100%" @command="sort">
+            <el-dropdown effect="dark" placement="right-start" style="width: 100%" @command="sort">
               <span class="el-dropdown-link inner-dropdown-menu">
-                <span>
+                <span class="item-span-drop">
                   <el-icon>
                     <Icon name="icon_add_outlined" class="el-icon-arrow-down el-icon-delete"></Icon>
                   </el-icon>
@@ -317,7 +322,7 @@ getItemTagType()
                 </el-icon>
               </span>
               <template #dropdown>
-                <el-dropdown-menu class="drop-style">
+                <el-dropdown-menu effect="dark" class="drop-style">
                   <el-dropdown-item :command="beforeSort('none')">{{
                     t('chart.none')
                   }}</el-dropdown-item>
@@ -337,9 +342,14 @@ getItemTagType()
             </el-dropdown>
           </el-dropdown-item>
           <el-dropdown-item v-if="item.deType === 1" divided>
-            <el-dropdown placement="right-start" style="width: 100%" @command="dateStyle">
+            <el-dropdown
+              effect="dark"
+              placement="right-start"
+              style="width: 100%"
+              @command="dateStyle"
+            >
               <span class="el-dropdown-link inner-dropdown-menu">
-                <span>
+                <span class="item-span-drop">
                   <el-icon>
                     <Icon name="icon_add_outlined" class="el-icon-arrow-down el-icon-delete"></Icon>
                   </el-icon>
@@ -351,7 +361,7 @@ getItemTagType()
                 </el-icon>
               </span>
               <template #dropdown>
-                <el-dropdown-menu class="drop-style">
+                <el-dropdown-menu effect="dark" class="drop-style">
                   <el-dropdown-item :command="beforeDateStyle('y')">{{
                     t('chart.y')
                   }}</el-dropdown-item>
@@ -381,9 +391,14 @@ getItemTagType()
             </el-dropdown>
           </el-dropdown-item>
           <el-dropdown-item v-if="item.deType === 1">
-            <el-dropdown placement="right-start" style="width: 100%" @command="datePattern">
+            <el-dropdown
+              effect="dark"
+              placement="right-start"
+              style="width: 100%"
+              @command="datePattern"
+            >
               <span class="el-dropdown-link inner-dropdown-menu">
-                <span>
+                <span class="item-span-drop">
                   <el-icon>
                     <Icon name="icon_add_outlined" class="el-icon-arrow-down el-icon-delete"></Icon>
                   </el-icon>
@@ -395,7 +410,7 @@ getItemTagType()
                 </el-icon>
               </span>
               <template #dropdown>
-                <el-dropdown-menu class="drop-style">
+                <el-dropdown-menu effect="dark" class="drop-style">
                   <el-dropdown-item :command="beforeDatePattern('date_sub')"
                     >{{ t('chart.date_sub') }}(1990-01-01)</el-dropdown-item
                   >
@@ -485,6 +500,10 @@ span {
   width: 100%;
 }
 
+.item-span-drop {
+  color: #a6a6a6;
+}
+
 .item-span-style {
   display: inline-block;
   width: 100px;
@@ -497,7 +516,7 @@ span {
 
 .summary-span-item {
   margin-left: 4px;
-  color: #878d9f;
+  color: #a6a6a6;
 }
 
 .drop-style {

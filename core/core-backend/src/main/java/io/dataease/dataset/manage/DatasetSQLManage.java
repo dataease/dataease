@@ -157,7 +157,7 @@ public class DatasetSQLManage {
         } else {
             String f = StringUtils.join(checkedInfo.get(tableName.getTableAlias()), ",");
             if (StringUtils.isEmpty(f)) {
-                throw new RuntimeException(Translator.get("i18n_union_ds_no_checked"));
+                DEException.throwException(Translator.get("i18n_union_ds_no_checked"));
             }
             sql = MessageFormat.format("SELECT {0} FROM {1}", f, TableUtils.getTableAndAlias(tableName));
         }
@@ -316,7 +316,7 @@ public class DatasetSQLManage {
         } else {
             String f = StringUtils.join(checkedInfo.get(tableName), ",");
             if (StringUtils.isEmpty(f)) {
-                throw new RuntimeException(Translator.get("i18n_union_ds_no_checked"));
+                DEException.throwException(Translator.get("i18n_union_ds_no_checked"));
             }
             sql = MessageFormat.format("SELECT {0} FROM {1}", f, tableName);
         }
