@@ -9,7 +9,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-06-09
+ * @since 2023-06-11
  */
 @TableName("visualization_subject")
 public class VisualizationSubject implements Serializable {

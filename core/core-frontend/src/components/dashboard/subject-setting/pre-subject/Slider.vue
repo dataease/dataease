@@ -1,10 +1,10 @@
 <template>
-  <el-row>
-    <el-row v-loading="slidersLoading">
+  <el-row style="flex-direction: column">
+    <el-row v-loading="state.slidersLoading">
       <div class="direction-left">
         <span>&nbsp;</span>
-        <ul v-show="currentIndex > 1" class="direction">
-          <li class="left" @click="move(sliderWidth, 1, speed)">
+        <ul v-show="state.currentIndex > 1" class="direction">
+          <li class="left" @click="move(state.sliderWidth, 1, state.speed)">
             <svg
               class="icon"
               width="15px"
@@ -24,19 +24,19 @@
       <el-col :span="24">
         <el-row id="slider">
           <div class="slider-window">
-            <ul v-if="!slidersLoading" class="container" :style="containerStyle">
+            <ul v-if="!state.slidersLoading" class="container" :style="containerStyle">
               <li>
-                <div style="width: 290px; height: 250px; overflow: hidden">
+                <div class="item-area" style="overflow: hidden">
                   <subject-template-item
-                    v-for="item in sliders[sliders.length - 1]"
+                    v-for="item in state.sliders[state.sliders.length - 1]"
                     :key="item.id"
                     :subject-item="item"
                     @subjectDelete="subjectDelete"
                   />
                 </div>
               </li>
-              <li v-for="(itemSlider, index) in sliders" :key="index">
-                <div style="width: 290px; height: 250px">
+              <li v-for="(itemSlider, index) in state.sliders" :key="index">
+                <div class="item-area">
                   <subject-template-item
                     v-for="item in itemSlider"
                     :key="item.id"
@@ -46,9 +46,9 @@
                 </div>
               </li>
               <li>
-                <div style="width: 290px; height: 250px">
+                <div class="item-area">
                   <subject-template-item
-                    v-for="item in sliders[0]"
+                    v-for="item in state.sliders[0]"
                     :key="item.id"
                     :subject-item="item"
                     @subjectDelete="subjectDelete"
@@ -61,8 +61,8 @@
       </el-col>
       <div class="direction-right">
         <span>&nbsp;</span>
-        <ul v-show="currentIndex < sliders.length" class="direction">
-          <li class="right" @click="move(sliderWidth, -1, speed)">
+        <ul v-show="state.currentIndex < state.sliders.length" class="direction">
+          <li class="right" @click="move(state.sliderWidth, -1, state.speed)">
             <svg
               class="icon"
               width="15px"
@@ -86,14 +86,14 @@
         <span hidden>B</span>
         <ul class="dots">
           <li
-            v-for="(dot, i) in sliders"
+            v-for="(dot, i) in state.sliders"
             :key="i"
-            :class="{ dotted: i === currentIndex - 1 }"
+            :class="{ dotted: i === state.currentIndex - 1 }"
             @click="jump(i + 1)"
           />
         </ul>
       </el-col>
-      <el-col :span="7" style="margin: auto; height: 30px; font-size: 12px; color: #3685f2">
+      <el-col :span="7" class="save-area">
         <span
           ><a @click="saveSelfSubject">{{ $t('commons.save') }}</a></span
         >
@@ -103,19 +103,15 @@
 </template>
 
 <script setup lang="ts">
-import SubjectTemplateItem from './SubjectTemplateItem.vue.'
+import SubjectTemplateItem from './SubjectTemplateItem.vue'
 import {
   querySubjectWithGroupApi,
   saveOrUpdateSubject,
   deleteSubject
 } from '@/api/dataVisualization'
-import { reactive, toRefs } from 'vue'
-import { computed, getCurrentInstance, onMounted } from 'vue/dist/vue'
-import { getCanvasStyle } from '@/utils/style'
-import { changeStyleWithScale } from '@/utils/translate'
+import { reactive, toRefs, computed, onMounted } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
-import runAnimation from '@/utils/runAnimation'
 import { ElMessage } from 'element-plus-secondary'
 import { deepCopy } from '@/utils/utils'
 const dvMainStore = dvMainStoreWithOut()
@@ -244,11 +240,23 @@ onMounted(() => {
   querySubjectWithGroup()
 })
 </script>
-<style>
+<style scoped>
+.item-area {
+  width: 290px;
+  height: 250px;
+}
+
+.save-area {
+  height: 30px;
+  margin: auto;
+  font-size: 12px;
+  color: #3685f2;
+}
+
 * {
-  box-sizing: border-box;
-  margin: 0;
   padding: 0;
+  margin: 0;
+  box-sizing: border-box;
 }
 
 ol,
@@ -269,30 +277,30 @@ ul {
 }
 
 .container {
-  display: flex;
   position: absolute;
+  display: flex;
 }
 
 .left,
 .right {
   position: absolute;
   top: 50%;
-  transform: translateY(-50%);
   width: 20px;
   height: 20px;
-  background-color: rgba(0, 0, 0, 0.3);
-  border-radius: 50%;
   cursor: pointer;
+  background-color: rgba(0 0 0 / 3%);
+  border-radius: 50%;
+  transform: translateY(-50%);
 }
 
 .left {
-  padding-left: 5px;
   padding-top: 2px;
+  padding-left: 5px;
 }
 
 .right {
-  padding-right: 5px;
   padding-top: 2px;
+  padding-right: 5px;
 }
 
 img {
@@ -311,10 +319,10 @@ img {
   width: 7px;
   height: 7px;
   margin: 0 3px;
+  cursor: pointer;
+  background-color: #333;
   border: 1px solid white;
   border-radius: 50%;
-  background-color: #333;
-  cursor: pointer;
 }
 
 .dots .dotted {
@@ -326,20 +334,20 @@ img {
 }
 
 .direction-left {
-  z-index: 2;
-  width: 22px;
-  height: 22px;
   position: absolute;
   top: 110px;
   left: 2px;
-}
-
-.direction-right {
   z-index: 2;
   width: 22px;
   height: 22px;
+}
+
+.direction-right {
   position: absolute;
   top: 110px;
   right: 2px;
+  z-index: 2;
+  width: 22px;
+  height: 22px;
 }
 </style>

@@ -25,7 +25,6 @@ export const querySubjectWithGroupApi = data =>
   request.post({ url: '/visualizationSubject/querySubjectWithGroup', data })
 
 export const saveOrUpdateSubject = data =>
-  request.post({ url: '/visualizationSubject/saveOrUpdateSubject', data })
+  request.post({ url: '/visualizationSubject/update', data })
 
 export const deleteSubject = id => request.delete({ url: '/visualizationSubject/delete/' + id })
-

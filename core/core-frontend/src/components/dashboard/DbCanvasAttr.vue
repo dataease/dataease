@@ -13,6 +13,7 @@ import {
 } from '@/views/chart/components/editor/util/chart'
 import { useI18n } from '@/hooks/web/useI18n'
 import { imgUrlTrans } from '@/utils/imgUtils'
+import Slider from '@/components/dashboard/subject-setting/pre-subject/Slider.vue'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const { canvasStyleData } = storeToRefs(dvMainStore)
@@ -117,6 +118,9 @@ watch([() => canvasStyleData.value.background], () => {
 
 <template>
   <div class="attr-container">
+    <el-row>
+      <!--      <slider></slider>-->
+    </el-row>
     <el-row>
       <el-collapse v-model="canvasAttrActiveNames">
         <el-collapse-item title="尺寸" name="size">

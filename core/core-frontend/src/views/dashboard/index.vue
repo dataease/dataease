@@ -24,7 +24,7 @@ import { Tree } from '@/views/visualized/data/dataset/form/CreatDsGroup.vue'
 import { guid } from '@/views/visualized/data/dataset/form/util.js'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import { getCanvasStyle } from '@/utils/style'
-import DbCanvasAttr from "@/components/dashboard/DbCanvasAttr.vue";
+import DbCanvasAttr from '@/components/dashboard/DbCanvasAttr.vue'
 
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()

@@ -9,201 +9,50 @@
   >
     <div class="vertical-layout" @click.stop="subjectChange">
       <!-- 背景-->
-      <div class="allBack common-background" :style="customBackground" />
-      <!-- 视图组件 背景-->
-      <div
-        style="inset: 17px 10px 10px; position: absolute"
-        :style="chartBackground"
-        class="chart_area"
-      />
-      <!-- 视图组件 主题-->
-      <div style="inset: 20px 13px 15px; position: absolute">
-        <div style="position: absolute; inset: 0px 4px; width: auto; height: auto">
-          <!--柱形-->
-          <div
-            style="left: 0px; top: 11px; bottom: 0px; width: 3px; position: absolute"
-            :style="columnBackgroundLeft"
-          />
-          <div
-            style="left: 5px; top: 6px; bottom: 0px; width: 3px; position: absolute"
-            :style="columnBackgroundMiddle"
-          />
-          <div
-            style="left: 10px; top: 2px; bottom: 0px; width: 3px; position: absolute"
-            :style="columnBackgroundRight"
-          />
-
-          <!--柱形-->
-          <div
-            style="left: 20px; top: 11px; bottom: 0px; width: 3px; position: absolute"
-            :style="columnBackgroundLeft"
-          />
-          <div
-            style="left: 25px; top: 2px; bottom: 0px; width: 3px; position: absolute"
-            :style="columnBackgroundMiddle"
-          />
-          <div
-            style="left: 30px; top: 6px; bottom: 0px; width: 3px; position: absolute"
-            :style="columnBackgroundRight"
-          />
-
-          <!--柱形-->
-          <div
-            style="left: 40px; top: 2px; bottom: 0px; width: 3px; position: absolute"
-            :style="columnBackgroundLeft"
-          />
-          <div
-            style="left: 45px; top: 6px; bottom: 0px; width: 3px; position: absolute"
-            :style="columnBackgroundMiddle"
-          />
-          <div
-            style="left: 50px; top: 11px; bottom: 0px; width: 3px; position: absolute"
-            :style="columnBackgroundRight"
-          />
-
-          <!--柱形-->
-          <div
-            style="left: 60px; top: 6px; bottom: 0px; width: 3px; position: absolute"
-            :style="columnBackgroundLeft"
-          />
-          <div
-            style="left: 65px; top: 11px; bottom: 0px; width: 3px; position: absolute"
-            :style="columnBackgroundMiddle"
-          />
-          <div
-            style="left: 70px; top: 2px; bottom: 0px; width: 3px; position: absolute"
-            :style="columnBackgroundRight"
-          />
-
-          <!--柱形-->
-          <div
-            style="left: 80px; top: 6px; bottom: 0px; width: 3px; position: absolute"
-            :style="columnBackgroundLeft"
-          />
-          <div
-            style="left: 85px; top: 11px; bottom: 0px; width: 3px; position: absolute"
-            :style="columnBackgroundMiddle"
-          />
-          <div
-            style="left: 90px; top: 2px; bottom: 0px; width: 3px; position: absolute"
-            :style="columnBackgroundRight"
-          />
-        </div>
-      </div>
-
-      <!-- 表格表头颜色 -->
-      <div
-        style="left: 10px; right: 10px; top: 10px; height: 6px; position: absolute"
-        :style="tableHeadBackground"
-      />
-
-      <!-- 字体颜色 -->
-      <div style="left: 14px; top: 10px; height: 6px; position: absolute; vertical-align: middle">
-        <div
-          style="
-            width: 1px;
-            height: 2px;
-            position: relative;
-            flex-shrink: 0;
-            margin-top: 2px;
-            margin-right: 1px;
-            float: left;
-          "
-          :style="tableFontColor"
-        />
-        <div
-          style="
-            width: 1px;
-            height: 2px;
-            position: relative;
-            flex-shrink: 0;
-            margin-top: 2px;
-            margin-right: 1px;
-            float: left;
-          "
-          :style="tableFontColor"
-        />
-        <div
-          style="
-            width: 1px;
-            height: 2px;
-            position: relative;
-            flex-shrink: 0;
-            margin-top: 2px;
-            margin-right: 1px;
-            float: left;
-          "
-          :style="tableFontColor"
-        />
-        <div
-          style="
-            width: 1px;
-            height: 2px;
-            position: relative;
-            flex-shrink: 0;
-            margin-top: 2px;
-            margin-right: 1px;
-            float: left;
-          "
-          :style="tableFontColor"
-        />
-        <div
-          style="
-            width: 1px;
-            height: 2px;
-            position: relative;
-            flex-shrink: 0;
-            margin-top: 2px;
-            margin-right: 1px;
-            float: left;
-          "
-          :style="tableFontColor"
-        />
-        <div
-          style="
-            width: 1px;
-            height: 2px;
-            position: relative;
-            flex-shrink: 0;
-            margin-top: 2px;
-            margin-right: 1px;
-            float: left;
-          "
-          :style="tableFontColor"
-        />
-      </div>
+      <div class="all-back common-background" :style="customBackground" />
     </div>
     <div class="title-main" @dblclick="setEdit">
       <div class="title-area">
         <el-input
-          v-if="canEdit"
+          v-if="state.canEdit"
           ref="nameInput"
           v-model="subjectItem.name"
           size="mini"
           @blur="loseFocus()"
         />
-        <span v-if="!canEdit" style="margin-top: 8px; margin-left: 8px" :title="subjectItem.name">{{
-          subjectItem.name
-        }}</span>
+        <span
+          v-if="!state.canEdit"
+          style="margin-top: 8px; margin-left: 8px"
+          :title="subjectItem.name"
+          >{{ subjectItem.name }}</span
+        >
       </div>
     </div>
-    <i
-      v-if="subjectItem.type === 'self' && !canEdit"
-      class="el-icon-delete delete-icon"
-      @click.stop="subjectDelete"
-    />
+    <!--    <el-icon-->
+    <!--      v-if="subjectItem.type === 'self' && !state.canEdit"-->
+    <!--      @click.stop="subjectDelete"-->
+    <!--      class="delete-icon"-->
+    <!--      ><Delete-->
+    <!--    /></el-icon>-->
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, toRefs, watch } from 'vue'
+import { computed, reactive, ref, toRefs, watch } from 'vue'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import { hexColorToRGBA } from '@/views/chart/components/js/util'
 import { chartTransStr2Object } from '@/utils/canvasUtils'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
+
 import { storeToRefs } from 'pinia'
+import { ElMessage } from 'element-plus-secondary'
+import { saveOrUpdateSubject } from '@/api/dataVisualization'
 const dvMainStore = dvMainStoreWithOut()
+const snapshotStore = snapshotStoreWithOut()
+
 const { canvasStyleData } = storeToRefs(dvMainStore)
+const nameInput = ref(null)
 
 const state = reactive({
   defaultSubject: {},
@@ -349,56 +198,114 @@ watch(
   },
   { deep: true }
 )
+
+const emit = defineEmits(['subjectDelete', 'onSubjectChange', 'templateEdit'])
+
+const subjectDelete = () => {
+  emit('subjectDelete', subjectItem.value.id)
+}
+
+const subjectChange = () => {
+  if (!themeSelected.value) {
+    dvMainStore.setCanvasStyle(JSON.parse(subjectItem.value.details))
+    snapshotStore.recordSnapshot()
+    emit('onSubjectChange')
+  }
+}
+const templateEdit = () => {
+  emit('templateEdit')
+}
+
+const handleDelete = () => {
+  return null
+}
+// 双击事件
+const setEdit = () => {
+  if (subjectItem.value.type === 'self') {
+    state.canEdit = true
+  } else {
+    ElMessage.success('默认主题无法编辑')
+  }
+  // 将单元格变为输入框
+  // // 聚焦到单元格
+  setTimeout(() => {
+    nameInput.value.focus()
+  }, 20)
+}
+// 当输入框失去焦点时不显示输入框
+const loseFocus = () => {
+  if (
+    subjectItem.value.name &&
+    subjectItem.value.name.length > 0 &&
+    subjectItem.value.name.length < 20
+  ) {
+    const request = {
+      id: subjectItem.value.id,
+      name: subjectItem.value.name
+    }
+    saveOrUpdateSubject(request).then(response => {
+      ElMessage.success('保存成功')
+      state.canEdit = false
+    })
+  } else {
+    ElMessage.warning('主题名称不能为空')
+  }
+}
+const selectChange = (callback, editCell) => {
+  if (!callback) {
+    editCell.edit = false
+  }
+}
 </script>
 
 <style scoped>
-.allBack {
+.all-back {
   background-size: 100% 100% !important;
 }
 
 .subject-template {
+  position: relative;
+  z-index: 2;
+  display: inline-block;
+  float: left;
   width: 135px;
   height: 110px;
-  position: relative;
-  float: left;
   margin: 5px;
-  display: inline-block;
   border: 1px solid #dee0e3;
   border-radius: 5px;
-  z-index: 2;
 }
 
 .subject-template:hover {
-  border: solid 1px #4b8fdf;
   color: deepskyblue;
   cursor: pointer;
+  border: solid 1px #4b8fdf;
 }
 
 .demonstration {
   display: block;
-  text-align: center;
-  margin: 10px auto;
   width: 150px;
-  white-space: nowrap;
+  margin: 10px auto;
   overflow: hidden;
+  text-align: center;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .vertical-layout {
-  overflow: hidden;
   position: absolute;
-  inset: 0px 0px 30px;
   width: 131px;
   height: 78px;
   margin: 0 auto;
+  overflow: hidden;
+  inset: 0 0 30px;
   box-sizing: border-box;
 }
 
 .vertical-layout > i {
-  float: right;
-  color: gray;
-  margin: 2px;
   position: relative;
+  float: right;
+  margin: 2px;
+  color: gray;
 }
 
 .vertical-layout > i:hover {
@@ -406,31 +313,31 @@ watch(
 }
 
 .theme-selected-icon {
+  position: absolute;
+  right: 0;
+  bottom: 0;
   z-index: 2;
   font-size: 16px;
-  position: absolute;
-  bottom: 0px;
-  right: 0px;
   color: #4b8fdf;
 }
 
 .title-area {
-  background-color: #ffffff;
-  color: #1f2329;
-  font-size: 12px;
   height: 30px;
-  line-height: 30px;
-  text-align: left;
-  white-space: pre;
-  text-overflow: ellipsis;
-  margin-left: 1px;
   margin-right: 1px;
+  margin-left: 1px;
   overflow: hidden;
+  font-size: 12px;
+  line-height: 30px;
+  color: #1f2329;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: pre;
+  background-color: #fff;
 }
 
 .common-background {
-  border-radius: 5px 5px 0 0;
   position: absolute;
+  border-radius: 5px 5px 0 0;
 }
 
 .background-selected {
@@ -439,8 +346,8 @@ watch(
 
 .delete-icon {
   position: absolute;
-  bottom: 8px;
   right: 8px;
+  bottom: 8px;
 }
 
 .delete-icon:hover {
@@ -449,11 +356,11 @@ watch(
 
 .title-main {
   position: absolute;
-  left: 0px;
-  right: 0px;
-  bottom: 0px;
-  height: 30px;
+  right: 0;
+  bottom: 0;
+  left: 0;
   float: left;
+  height: 30px;
 }
 
 .subject-template:hover > .title-main {
@@ -469,7 +376,7 @@ watch(
   display: none;
 }
 
-.chart_area {
+.chart-area {
   background-size: 100% 100% !important;
 }
 </style>
