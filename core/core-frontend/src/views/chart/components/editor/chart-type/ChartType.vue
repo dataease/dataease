@@ -46,7 +46,7 @@ const newComponent = innerType => {
 
 const groupActiveChange = category => {
   state.curCategory = category
-  anchorPosition('#' + category)
+  anchorPosition('#' + category + '-edit')
 }
 </script>
 
@@ -59,7 +59,7 @@ const groupActiveChange = category => {
           :class="{ 'li-custom-active': state.curCategory === chartGroupInfo.category }"
           v-for="chartGroupInfo in state.chartGroupList"
           :key="chartGroupInfo.category"
-          @click="groupActiveChange(chartGroupInfo.category + '-edit')"
+          @click="groupActiveChange(chartGroupInfo.category)"
         >
           {{ chartGroupInfo.title }}
         </li>
