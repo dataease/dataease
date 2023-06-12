@@ -30,25 +30,33 @@ const userDrawer = ref(false)
 
 const init = () => {
   userDrawer.value = true
-  clearFilter(1)
 }
 
-const clearFilter = (id: string | number) => {
-  console.log(id)
+const clearFilter = (id: number) => {
+  if (isNaN(id)) {
+    const len = state.conditions.length
+    state.conditions.splice(0, len)
+  } else {
+    state.conditions.splice(id, 1)
+  }
+  trigger()
 }
-const filterChange = (val, field, ope) => {
+const filterChange = (value, field, operator) => {
   let exits = false
   state.conditions.forEach(condition => {
     if (condition.field === field) {
       exits = true
-      condition['val'] = val
+      condition['value'] = value
     }
   })
   if (!exits) {
-    state.conditions.push({ field, val, ope })
+    state.conditions.push({ field, value, operator })
   }
 }
 const cancel = () => {
+  userDrawer.value = false
+}
+const close = () => {
   userDrawer.value = false
 }
 const emits = defineEmits(['trigger-filter'])
@@ -58,7 +66,8 @@ const trigger = () => {
 }
 defineExpose({
   init,
-  clearFilter
+  clearFilter,
+  close
 })
 </script>
 
