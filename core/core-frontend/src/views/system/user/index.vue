@@ -3,7 +3,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { ElTabs, ElTabPane } from 'element-plus-secondary'
 import { columnNames } from './options'
 import { Icon } from '@/components/icon-custom'
-import { FilterText } from '@/components/filter-text'
+import { FilterText, convertFilterText } from '@/components/filter-text'
 import DrawerMain from '@/components/drawer-main/src/DrawerMain.vue'
 import UserForm from './UserForm.vue'
 // import DatasetUnion from './DatasetUnion.vue'
@@ -18,7 +18,6 @@ const { t } = useI18n()
 const activeName = ref('user')
 const isPluginLoaded = ref(false)
 const drawerMainRef = ref(null)
-const nickName = ref('')
 const userFormDialog = ref(null)
 const loading = ref(false)
 const handleClick = () => {
@@ -32,22 +31,26 @@ const addUser = () => {
 const drawerMainOpen = () => {
   drawerMainRef.value.init()
 }
+const drawerMainClose = () => {
+  drawerMainRef.value.close()
+}
 
 const filterOption = [
   {
     type: 'enum',
     option: [
       {
-        id: 1,
+        id: true,
         name: t('commons.enable')
       },
       {
-        id: 0,
+        id: false,
         name: t('commons.disable')
       }
     ],
     field: 'status',
-    title: '状态'
+    title: '状态',
+    operate: 'in'
   }
 ]
 const state = reactive({
@@ -58,9 +61,11 @@ const state = reactive({
     currentPage: 1,
     pageSize: 10,
     total: 0
-  }
+  },
+  conditions: [],
+  orders: []
 })
-
+const keyword = ref(null)
 state.filterTexts = []
 
 const columnChange = (columns: string[]) => {
@@ -73,11 +78,16 @@ const clearFilter = (index?: number) => {
   } else {
     state.filterTexts.splice(index, 1)
   }
+  drawerMainRef.value.clearFilter(index)
 }
 
 const search = () => {
   loading.value = true
-  userPageApi(state.paginationConfig.currentPage, state.paginationConfig.pageSize, {}).then(res => {
+  userPageApi(state.paginationConfig.currentPage, state.paginationConfig.pageSize, {
+    orders: state.orders,
+    conditions: state.conditions,
+    keyword: keyword.value
+  }).then(res => {
     state.userList = res.data.records
     state.paginationConfig.total = res.data.total
     loading.value = false
@@ -130,7 +140,14 @@ const saveHandler = () => {
   search()
 }
 const searchCondition = conditions => {
-  console.log(conditions)
+  state.conditions = conditions
+  search()
+  fillFilterText()
+  drawerMainClose()
+}
+const fillFilterText = () => {
+  const textArray = convertFilterText(state.conditions, filterOption)
+  Object.assign(state.filterTexts, textArray)
 }
 </script>
 <template>
@@ -149,7 +166,7 @@ const searchCondition = conditions => {
         </el-button>
       </el-col>
       <el-col :span="12" class="right-filter">
-        <el-input v-model="nickName" clearable>
+        <el-input v-model="keyword" clearable @change="search">
           <template #prefix>
             <el-icon>
               <Icon name="icon_search-outline_outlined"></Icon>
@@ -192,7 +209,6 @@ const searchCondition = conditions => {
           key="name"
           show-overflow-tooltip
           prop="name"
-          sortable="custom"
           :label="t('user.name')"
           width="150"
         />
@@ -226,7 +242,12 @@ const searchCondition = conditions => {
             />
           </template>
         </el-table-column>
-        <el-table-column prop="createTime" :label="t('common.create_time')" width="170">
+        <el-table-column
+          prop="createTime"
+          :label="t('common.create_time')"
+          sortable="custom"
+          width="170"
+        >
           <template v-slot:default="scope">
             <span>{{ timestampFormatDate(scope.row.createTime) }}</span>
           </template>
