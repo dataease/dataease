@@ -29,7 +29,7 @@ interface Tree {
   children?: Tree[]
   disabled: boolean
 }
-
+const treeRef = ref(null)
 const handleNodeClick = (data: Tree) => {
   if (data.disabled) {
     return
@@ -62,7 +62,7 @@ state.roleData = [
 ]
 
 const optionSearch = (rid?: string) => {
-  const param = { rid, keyword: optionKeyword.value }
+  const param = { rid }
   if (rid) {
     loading.value = true
     userOptionForRoleApi(param).then(res => {
@@ -77,7 +77,7 @@ const optionSearch = (rid?: string) => {
 }
 
 const selectedSearch = (rid?: string) => {
-  const param = { rid, keyword: selectedKeyword.value }
+  const param = { rid }
   if (rid) {
     loading.value = true
     userSelectedForRoleApi(param).then(res => {
@@ -93,7 +93,7 @@ const selectedSearch = (rid?: string) => {
 
 const roleSearch = () => {
   loading.value = true
-  searchRoleApi(roleKeyword.value).then(res => {
+  searchRoleApi(null).then(res => {
     const roles = res.data
     const map = groupBy(roles)
     state.roleData[0].children = map.get(false)
@@ -258,6 +258,13 @@ const openOutUser = () => {
   }
   outUserFormRef.value.init(selectedRoleId.value)
 }
+const filterRoleNode = (value: string, data: Tree) => {
+  if (!value) return true
+  return data.name.includes(value)
+}
+const triggerFilterRole = val => {
+  treeRef.value?.filter(val)
+}
 onMounted(() => {
   roleSearch()
 })
@@ -272,7 +279,7 @@ onMounted(() => {
           <template #icon> <Icon name="icon_add_outlined"></Icon> </template
           >{{ t('role.add_title') }}
         </el-button>
-        <el-input class="m24 w100" v-model="roleKeyword" clearable>
+        <el-input class="m24 w100" v-model="roleKeyword" clearable @change="triggerFilterRole">
           <template #prefix>
             <el-icon>
               <Icon name="icon_search-outline_outlined"></Icon>
@@ -284,9 +291,11 @@ onMounted(() => {
         <el-tree
           menu
           :data="state.roleData"
+          ref="treeRef"
           :highlight-current="true"
           :props="defaultProps"
           @node-click="handleNodeClick"
+          :filter-node-method="filterRoleNode"
         >
           <template #default="{ node, data }">
             <span class="custom-tree-node">
@@ -315,7 +324,14 @@ onMounted(() => {
         v-if="!state.addedUserList || !state.addedUserList.length"
         description="description"
       />
-      <div v-else :key="ele.id" v-for="ele in state.addedUserList" class="user-list-item">
+      <div
+        v-else
+        :key="ele.id"
+        v-for="ele in state.addedUserList.filter(
+          item => !selectedKeyword || item.name.includes(selectedKeyword)
+        )"
+        class="user-list-item"
+      >
         <span>{{ ele.name }}</span>
         <div>
           <Icon
@@ -346,7 +362,13 @@ onMounted(() => {
       />
       <div v-else class="content">
         <el-checkbox-group v-model="state.checkList">
-          <div :key="ele.id" v-for="ele in state.optionUserList" class="user-list-item">
+          <div
+            :key="ele.id"
+            v-for="ele in state.optionUserList.filter(
+              item => !optionKeyword || item.name.includes(optionKeyword)
+            )"
+            class="user-list-item"
+          >
             <el-checkbox :label="ele.id">{{ ele.name }}</el-checkbox>
           </div>
         </el-checkbox-group>
