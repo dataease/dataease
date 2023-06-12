@@ -31,13 +31,17 @@ const defaultOptions = {
 class DataEaseBi {
   baseUrl: string
   token: string
-  type: 'Dashboard' | 'View'
+  type: 'DashboardEditor' | 'View'
+  dvId: string
+  pid: string
   deOptions: Options
 
   create(type, options) {
     this.type = type
     this.token = options.token
     this.baseUrl = options.baseUrl
+    this.dvId = options.dvId
+    this.pid = options.pid
   }
 
   initialize(options: Options) {
@@ -45,6 +49,10 @@ class DataEaseBi {
     setupAll(this.deOptions.container, this.type)
     const appStore = useUserStoreWithOut()
     appStore.setToken(this.token)
+  }
+
+  destory() {
+    window.DataEaseBi = null
   }
 }
 
