@@ -1,31 +1,24 @@
 export const columnNames = [
   {
     label: 'ID',
-    props: 'username'
+    props: 'account'
   },
   {
-    label: 'common.nick_name',
-    props: 'nickName'
+    label: 'user.name',
+    props: 'name'
   },
   {
-    label: 'user.source',
-    props: 'from'
+    label: 'user.role',
+    props: 'roleItems'
   },
   {
     label: 'common.email',
     props: 'email'
   },
+
   {
-    label: 'common.organization',
-    props: 'dept'
-  },
-  {
-    label: 'common.role',
-    props: 'roles'
-  },
-  {
-    label: 'common.status',
-    props: 'status'
+    label: 'user.state',
+    props: 'enable'
   },
   {
     label: 'common.create_time',

@@ -55,20 +55,14 @@ public class UserPageManage {
 
     private static final String DEFAULT_PWD = "DataEase123456";
 
-    private List<Long> roleIdsFromCondition(BaseGridRequest request) {
-        if (CollectionUtil.isEmpty(request.getConditions())) return null;
-        List<ConditionEntity> roleConditions = request.getConditions().stream().filter(item -> StringUtils.equals("rid", item.getField()) && StringUtils.equals("in", item.getOperator()) && ObjectUtils.isNotEmpty(item.getValue())).toList();
-        ConditionEntity conditionEntity = roleConditions.stream().findFirst().orElseGet(null);
-        if (ObjectUtils.isEmpty(conditionEntity)) return null;
-        return ((List) conditionEntity.getValue()).stream().map(item -> Long.parseLong(item.toString())).toList();
-    }
 
     private Boolean stateFromCondition(BaseGridRequest request) {
         if (CollectionUtil.isEmpty(request.getConditions())) return null;
-        List<ConditionEntity> roleConditions = request.getConditions().stream().filter(item -> StringUtils.equals("state", item.getField()) && StringUtils.equals("eq", item.getOperator()) && ObjectUtils.isNotEmpty(item.getValue())).toList();
+        List<ConditionEntity> roleConditions = request.getConditions().stream().filter(item -> StringUtils.equals("status", item.getField()) && ObjectUtils.isNotEmpty(item.getValue())).toList();
+        if (CollectionUtil.isEmpty(roleConditions) || ((List) roleConditions.get(0).getValue()).size() != 1) return null;
         ConditionEntity conditionEntity = roleConditions.stream().findFirst().orElse(null);
         if (ObjectUtils.isEmpty(conditionEntity)) return null;
-        return (Boolean) conditionEntity.getValue();
+        return (Boolean) ((List) conditionEntity.getValue()).get(0);
     }
 
     private UserSortEntity userSortFromCondition(BaseGridRequest request) {
@@ -100,7 +94,6 @@ public class UserPageManage {
         List<Long> rids = null;
         Boolean state = null;
         wrapper.eq(ObjectUtils.isNotEmpty(state = stateFromCondition(request)), "u.enable", state);
-        wrapper.in(CollectionUtil.isNotEmpty(rids = roleIdsFromCondition(request)), "pur.rid", rids);
 
         wrapper.like(StringUtils.isNotBlank(keyword), "u.name", keyword);
         UserSortEntity userSortEntity = userSortFromCondition(request);
