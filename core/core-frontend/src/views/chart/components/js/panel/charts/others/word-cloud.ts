@@ -8,6 +8,9 @@ const DEFAULT_DATA = []
 export class WordCloud extends G2PlotChartView<WordCloudOptions, G2WordCloud> {
   drawChart(drawOptions: G2PlotDrawOptions<G2WordCloud>): G2WordCloud {
     const chart = drawOptions.chart
+    if (!chart.data?.data?.length) {
+      return
+    }
     // data
     const data = chart.data.data
     // options

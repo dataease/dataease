@@ -2334,10 +2334,10 @@ export function getColors(chart, colors, reset) {
     includesAny(chart.type, 'bar', 'scatter', 'radar', 'area') &&
     !chart.type.includes('group')
   ) {
-    if (Object.prototype.toString.call(chart.yaxis) === '[object Array]') {
-      series = JSON.parse(JSON.stringify(chart.yaxis))
+    if (Object.prototype.toString.call(chart.yAxis) === '[object Array]') {
+      series = JSON.parse(JSON.stringify(chart.yAxis))
     } else {
-      series = JSON.parse(chart.yaxis)
+      series = JSON.parse(chart.yAxis)
     }
     if (series) {
       for (let i = 0; i < series.length; i++) {
@@ -2456,8 +2456,8 @@ export function handleEmptyDataStrategy(strategy, chart, data, options) {
     handleIgnoreData(chart, data)
     return
   }
-  const yaxis = JSON.parse(JSON.stringify(chart.yaxis))
-  const extAxis = JSON.parse(JSON.stringify(chart.xaxisExt))
+  const yaxis = JSON.parse(JSON.stringify(chart.yAxis))
+  const extAxis = JSON.parse(JSON.stringify(chart.xAxisExt))
   const multiDimension = yaxis?.length >= 2 || extAxis?.length > 0
   switch (strategy) {
     case 'breakLine': {

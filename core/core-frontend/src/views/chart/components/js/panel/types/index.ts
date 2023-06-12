@@ -1,6 +1,7 @@
 import { Plot } from '@antv/g2plot'
 import {
   getAnalyse,
+  getAnalyseHorizontal,
   getLabel,
   getLegend,
   getSlider,
@@ -100,8 +101,13 @@ export abstract class G2PlotChartView<
   }
 
   protected configAnalyse(chart: Chart, options: O): O {
-    const analyse = getAnalyse(chart)
-    return { ...options, annotations: analyse }
+    const annotations = getAnalyse(chart)
+    return { ...options, annotations }
+  }
+
+  protected configAnalyseHorizontal(chart: Chart, options: O): O {
+    const annotations = getAnalyseHorizontal(chart)
+    return { ...options, annotations }
   }
   /**
    * 流式配置公共参数，处理常用的配置，后续如果有其他通用配置也可以放进来，需要单独配置的属性在各个视图自行实现。

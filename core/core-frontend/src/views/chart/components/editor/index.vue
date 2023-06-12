@@ -169,7 +169,7 @@ const dimensionItemChange = item => {
 }
 const dimensionItemRemove = item => {
   if (item.removeType === 'dimension') {
-    view.value.xaxis.splice(item.index, 1)
+    view.value.xAxis.splice(item.index, 1)
   } else if (item.removeType === 'dimensionExt') {
     view.value.xaxisExt.splice(item.index, 1)
   }
@@ -184,9 +184,9 @@ const quotaItemChange = item => {
 }
 const quotaItemRemove = item => {
   if (item.removeType === 'quota') {
-    view.value.yaxis.splice(item.index, 1)
+    view.value.yAxis.splice(item.index, 1)
   } else if (item.removeType === 'quotaExt') {
-    view.value.yaxisExt.splice(item.index, 1)
+    view.value.yAxisExt.splice(item.index, 1)
   }
   calcData(view.value)
 }
@@ -238,30 +238,30 @@ const dragRemoveChartField = (list, e) => {
 
 const addXaxis = e => {
   if (view.value.type !== 'table-info') {
-    dragCheckType(view.value.xaxis, 'd')
+    dragCheckType(view.value.xAxis, 'd')
   }
-  dragMoveDuplicate(view.value.xaxis, e, 'chart')
+  dragMoveDuplicate(view.value.xAxis, e, 'chart')
   if (
     (view.value.type === 'map' ||
       view.value.type === 'word-cloud' ||
       view.value.type === 'label') &&
-    view.value.xaxis.length > 1
+    view.value.xAxis.length > 1
   ) {
-    view.value.xaxis = [view.value.xaxis[0]]
+    view.value.xAxis = [view.value.xAxis[0]]
   }
   calcData(view.value)
 }
 
 const addYaxis = e => {
-  dragCheckType(view.value.yaxis, 'q')
-  dragMoveDuplicate(view.value.yaxis, e, '')
+  dragCheckType(view.value.yAxis, 'q')
+  dragMoveDuplicate(view.value.yAxis, e, '')
   if (
     (view.value.type === 'waterfall' ||
       view.value.type === 'word-cloud' ||
       view.value.type.includes('group')) &&
-    view.value.yaxis.length > 1
+    view.value.yAxis.length > 1
   ) {
-    view.value.yaxis = [view.value.yaxis[0]]
+    view.value.yAxis = [view.value.yAxis[0]]
   }
   calcData(view.value)
 }
@@ -391,13 +391,13 @@ const saveRename = ref => {
   ref.validate(valid => {
     if (valid) {
       if (state.itemForm.renameType === 'quota') {
-        view.value.yaxis[state.itemForm.index].chartShowName = state.itemForm.chartShowName
+        view.value.yAxis[state.itemForm.index].chartShowName = state.itemForm.chartShowName
       } else if (state.itemForm.renameType === 'dimension') {
-        view.value.xaxis[state.itemForm.index].chartShowName = state.itemForm.chartShowName
+        view.value.xAxis[state.itemForm.index].chartShowName = state.itemForm.chartShowName
       } else if (state.itemForm.renameType === 'quotaExt') {
-        view.value.yaxisExt[state.itemForm.index].chartShowName = state.itemForm.chartShowName
+        view.value.yAxisExt[state.itemForm.index].chartShowName = state.itemForm.chartShowName
       } else if (state.itemForm.renameType === 'dimensionExt') {
-        view.value.xaxisExt[state.itemForm.index].chartShowName = state.itemForm.chartShowName
+        view.value.xAxisExt[state.itemForm.index].chartShowName = state.itemForm.chartShowName
       }
       // this.calcData(true)
       closeRename()
@@ -434,11 +434,11 @@ const saveQuotaFilter = () => {
     }
   }
   if (state.quotaItem.filterType === 'quota') {
-    view.value.yaxis[state.quotaItem.index].filter = state.quotaItem.filter
-    view.value.yaxis[state.quotaItem.index].logic = state.quotaItem.logic
+    view.value.yAxis[state.quotaItem.index].filter = state.quotaItem.filter
+    view.value.yAxis[state.quotaItem.index].logic = state.quotaItem.logic
   } else if (state.quotaItem.filterType === 'quotaExt') {
-    view.value.yaxisExt[state.quotaItem.index].filter = state.quotaItem.filter
-    view.value.yaxisExt[state.quotaItem.index].logic = state.quotaItem.logic
+    view.value.yAxisExt[state.quotaItem.index].filter = state.quotaItem.filter
+    view.value.yAxisExt[state.quotaItem.index].logic = state.quotaItem.logic
   }
   calcData(view.value)
   closeQuotaFilter()
@@ -569,7 +569,7 @@ const editDs = () => {
                           <dimension-label :view="view" />
                         </span>
                         <draggable
-                          :list="view.xaxis"
+                          :list="view.xAxis"
                           :move="onMove"
                           item-key="id"
                           group="drag"
@@ -591,7 +591,7 @@ const editDs = () => {
                             />
                           </template>
                         </draggable>
-                        <drag-placeholder :drag-list="view.xaxis" />
+                        <drag-placeholder :drag-list="view.xAxis" />
                       </el-row>
 
                       <!--yAxis-->
@@ -607,7 +607,7 @@ const editDs = () => {
                           <quota-label :view="view" />
                         </span>
                         <draggable
-                          :list="view.yaxis"
+                          :list="view.yAxis"
                           :move="onMove"
                           item-key="id"
                           group="drag"
@@ -630,7 +630,7 @@ const editDs = () => {
                             />
                           </template>
                         </draggable>
-                        <drag-placeholder :drag-list="view.yaxis" />
+                        <drag-placeholder :drag-list="view.yAxis" />
                       </el-row>
 
                       <!--drill-->
@@ -776,7 +776,7 @@ const editDs = () => {
               >
                 <senior
                   :chart="view"
-                  :quota-data="view.yaxis"
+                  :quota-data="view.yAxis"
                   @onFunctionCfgChange="onFunctionCfgChange"
                   @onAssistLineChange="onAssistLineChange"
                 />
