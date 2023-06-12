@@ -41,7 +41,7 @@
         >{{ $t('deDataset.selected') }} {{ tableNum }}
           {{ ['excel'].includes(datasetType) ? $t('deDataset.table') : $t('deDataset.item') }}</span>
         <deBtn
-          :disabled="['db', 'excel', 'api'].includes(datasetType) && !tableNum"
+          :disabled="['db', 'excel', 'api', 'union'].includes(datasetType) && !tableNum"
           type="primary"
           @click="datasetSave"
         >{{

@@ -44,7 +44,7 @@
                 style="color: green;font-size: 12px"
               >&nbsp;({{ $t('panel.source_panel_name') }}:{{ panelInfo.sourcePanelName }})</span>
             </div>
-            <div style="width: 200px">
+            <div class="panel-create-cont">
               <span
                 v-if="!hasStar && panelInfo && showType !== 1&&panelInfo.status==='publish'"
                 style="margin-left: 9px"
@@ -72,7 +72,7 @@
                   style="margin: 0 16px;"
                   direction="vertical"
                 />
-                <span class="panel-create">
+                <span :title="panelInfo.creatorName" class="panel-create">
                 {{ $t('panel.create_by') + ':' + panelInfo.creatorName }}
               </span>
               </template>
@@ -863,12 +863,21 @@ export default {
 
   }
 
+  .panel-create-cont {
+    display: flex;
+    align-items: center;
+  }
+
   .panel-create {
     font-family: PingFang SC;
     font-size: 14px;
     font-weight: 400;
     line-height: 22px;
     color: var(--deTextSecondary, #646A73);
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: 200px;
   }
 }
 
