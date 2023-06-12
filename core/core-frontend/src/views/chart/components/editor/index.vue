@@ -23,9 +23,11 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { BASE_VIEW_CONFIG } from '@/views/chart/components/editor/util/chart'
 import ChartType from '@/views/chart/components/editor/chart-type/ChartType.vue'
+import { useRouter } from 'vue-router'
 
 const dvMainStore = dvMainStoreWithOut()
 const { canvasCollapse } = storeToRefs(dvMainStore)
+const router = useRouter()
 
 const { t } = useI18n()
 const loading = ref(false)
@@ -492,6 +494,16 @@ const saveResultFilter = () => {
 const collapseChange = type => {
   canvasCollapse.value[type] = !canvasCollapse.value[type]
 }
+
+const editDs = () => {
+  let routeData = router.resolve({
+    path: '/dataset-form',
+    query: {
+      id: view.value.tableId
+    }
+  })
+  window.open(routeData.href, '_blank')
+}
 </script>
 
 <template>
@@ -818,7 +830,10 @@ const collapseChange = type => {
                 <span :title="name">{{ name }}</span>
               </template>
             </el-tree-select>
-            <el-icon :style="{ color: '#a6a6a6', cursor: 'pointer', marginRight: '8px' }">
+            <el-icon
+              :style="{ color: '#a6a6a6', cursor: 'pointer', marginRight: '8px' }"
+              @click="editDs"
+            >
               <Icon name="icon_edit_outlined" class="el-icon-arrow-down el-icon-delete"></Icon>
             </el-icon>
           </el-row>
@@ -826,7 +841,10 @@ const collapseChange = type => {
             <div class="dataset-search-label">
               <span>{{ t('chart.field') }}</span>
               <span>
-                <el-icon :style="{ color: '#a6a6a6', cursor: 'pointer', marginRight: '6px' }">
+                <el-icon
+                  :style="{ color: '#a6a6a6', cursor: 'pointer', marginRight: '6px' }"
+                  @click="getFields(view.tableId)"
+                >
                   <Icon
                     name="icon_refresh_outlined"
                     class="el-icon-arrow-down el-icon-delete"
