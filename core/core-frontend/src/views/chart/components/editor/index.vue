@@ -538,11 +538,11 @@ const editDs = () => {
                           <span>{{ t('chart.switch_chart') }}</span>
                           <span style="float: right; width: 140px">
                             <el-popover
-                              effect="dark"
                               placement="bottom-end"
                               width="434"
                               trigger="click"
                               :append-to-body="true"
+                              popper-class="chart-type-style"
                             >
                               <template #reference>
                                 <el-button size="small" style="width: 100%; padding: 0">
@@ -550,11 +550,9 @@ const editDs = () => {
                                   <i class="el-icon-caret-bottom" />
                                 </el-button>
                               </template>
-                              <div class="padding-lr">
-                                <el-row>
-                                  <chart-type :type="view.type" @onTypeChange="onTypeChange" />
-                                </el-row>
-                              </div>
+                              <template #default>
+                                <chart-type :type="view.type" @onTypeChange="onTypeChange" />
+                              </template>
                             </el-popover>
                           </span>
                         </span>

@@ -33,25 +33,15 @@ const state = reactive({
   chartGroupList: CHART_TYPE_CONFIGS
 })
 
-const scrollTo = offsetTop => {
-  const parent = document.querySelector('#userViewGroup')
-  parent.scrollTo({
-    top: offsetTop,
+const anchorPosition = anchor => {
+  const element = document.querySelector(anchor)
+  element.scrollIntoView({
     behavior: 'smooth'
   })
 }
 
-const anchorPosition = anchor => {
-  const element = document.querySelector(anchor)
-  scrollTo(element.offsetTop)
-}
-
 const newComponent = innerType => {
   emit('onTypeChange', innerType)
-}
-
-const handleDragStart = e => {
-  e.dataTransfer.setData('id', e.target.dataset.id)
 }
 
 const groupActiveChange = category => {
@@ -61,7 +51,7 @@ const groupActiveChange = category => {
 </script>
 
 <template>
-  <el-row class="group" @dragstart="handleDragStart">
+  <el-row class="group">
     <div class="group-left">
       <ul class="ul-custom">
         <li
@@ -69,7 +59,7 @@ const groupActiveChange = category => {
           :class="{ 'li-custom-active': state.curCategory === chartGroupInfo.category }"
           v-for="chartGroupInfo in state.chartGroupList"
           :key="chartGroupInfo.category"
-          @click="groupActiveChange(chartGroupInfo.category)"
+          @click="groupActiveChange(chartGroupInfo.category + '-edit')"
         >
           {{ chartGroupInfo.title }}
         </li>
@@ -77,7 +67,7 @@ const groupActiveChange = category => {
     </div>
     <div id="userViewGroup" class="group-right">
       <el-row
-        :id="chartGroupInfo.category"
+        :id="chartGroupInfo.category + '-edit'"
         v-for="chartGroupInfo in state.chartGroupList"
         :key="chartGroupInfo.title"
       >
