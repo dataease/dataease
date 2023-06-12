@@ -67,6 +67,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -2964,7 +2965,7 @@ public class DataSetTableService {
                 details.add(row);
             }
             // 操作Excel
-            Workbook wb = new XSSFWorkbook();
+            Workbook wb = new SXSSFWorkbook();
             // Sheet
             Sheet detailsSheet = wb.createSheet("数据");
             //给单元格设置样式

@@ -15,6 +15,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 
@@ -24,7 +25,7 @@ public class ExcelUtils {
 
     public static File exportExcel(List<ExcelSheetModel> sheets, String fileName, String folderId) throws Exception {
         AtomicReference<String> realFileName = new AtomicReference<>(fileName);
-        Workbook wb = new XSSFWorkbook();
+        Workbook wb = new SXSSFWorkbook();
 
         sheets.forEach(sheet -> {
 
