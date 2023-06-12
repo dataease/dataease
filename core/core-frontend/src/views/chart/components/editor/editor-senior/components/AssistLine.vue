@@ -26,13 +26,13 @@ const state = reactive({
   quotaFields: []
 })
 
-watch(
-  [props.chart],
-  () => {
-    // todo
-  },
-  { deep: true }
-)
+// watch(
+//   [props.chart],
+//   () => {
+//     // todo
+//   },
+//   { deep: true }
+// )
 
 const changeAssistLine = () => {
   emit('onAssistLineChange', state.assistLine)

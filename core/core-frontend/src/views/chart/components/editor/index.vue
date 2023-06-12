@@ -22,6 +22,8 @@ import DrillItem from '@/views/chart/components/editor/drag-item/DrillItem.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { BASE_VIEW_CONFIG } from '@/views/chart/components/editor/util/chart'
+import ChartType from '@/views/chart/components/editor/chart-type/ChartType.vue'
+
 const dvMainStore = dvMainStoreWithOut()
 const { canvasCollapse } = storeToRefs(dvMainStore)
 
@@ -305,6 +307,11 @@ const renderChart = view => {
   useEmitt().emitter.emit('renderChart-' + view.id, view)
 }
 
+const onTypeChange = val => {
+  view.value.type = val
+  calcData(view.value)
+}
+
 const onColorChange = val => {
   view.value.customAttr.color = val
   renderChart(view.value)
@@ -507,37 +514,40 @@ const collapseChange = type => {
           <el-row class="editor-title">
             <span style="font-size: 14px">{{ view.title }}</span>
           </el-row>
-          <el-row class="chart_type_area padding-lr">
-            <span class="switch-chart">
-              <span>{{ t('chart.switch_chart') }}</span>
-              <span style="float: right; width: 140px">
-                <el-popover
-                  placement="bottom-end"
-                  width="400"
-                  trigger="click"
-                  :append-to-body="true"
-                >
-                  <template #reference>
-                    <el-button size="small" style="width: 100%; padding: 0">
-                      {{ t('chart.change_chart_type') }}
-                      <i class="el-icon-caret-bottom" />
-                    </el-button>
-                  </template>
-                  <div class="padding-lr">
-                    <el-row>
-                      <div>todo chart type(大屏不能切换图表类型)</div>
-                    </el-row>
-                  </div>
-                </el-popover>
-              </span>
-            </span>
-          </el-row>
-          <el-row style="height: calc(100vh - 140px)">
+
+          <el-row style="height: calc(100vh - 110px)">
             <el-tabs v-model="tabActive" :stretch="true" class="tab-header">
               <el-tab-pane name="data" :label="t('chart.chart_data')" class="padding-tab">
                 <el-col>
                   <div class="drag_main_area attr-style theme-border-class">
                     <el-row style="height: 100%">
+                      <el-row class="chart_type_area padding-lr">
+                        <span class="switch-chart">
+                          <span>{{ t('chart.switch_chart') }}</span>
+                          <span style="float: right; width: 140px">
+                            <el-popover
+                              effect="dark"
+                              placement="bottom-end"
+                              width="434"
+                              trigger="click"
+                              :append-to-body="true"
+                            >
+                              <template #reference>
+                                <el-button size="small" style="width: 100%; padding: 0">
+                                  {{ t('chart.change_chart_type') }}
+                                  <i class="el-icon-caret-bottom" />
+                                </el-button>
+                              </template>
+                              <div class="padding-lr">
+                                <el-row>
+                                  <chart-type :type="view.type" @onTypeChange="onTypeChange" />
+                                </el-row>
+                              </div>
+                            </el-popover>
+                          </span>
+                        </span>
+                      </el-row>
+
                       <!--xAxis-->
                       <el-row
                         class="padding-lr drag-data"
@@ -787,7 +797,8 @@ const collapseChange = type => {
               padding: '2px',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'space-between'
+              justifyContent: 'space-between',
+              borderTop: '1px solid #363636'
             }"
             class="dark"
           >
@@ -839,7 +850,7 @@ const collapseChange = type => {
               </template>
             </el-input>
           </el-row>
-          <div style="height: calc(100% - 121px)">
+          <div style="height: calc(100% - 122px)">
             <div class="padding-lr field-height">
               <span>{{ t('chart.dimension') }}</span>
               <draggable
@@ -1180,7 +1191,6 @@ span {
     align-items: center;
     height: 100%;
     justify-content: space-between;
-    padding: 0 4px;
   }
 
   .dataset-selector :deep(.ed-input__inner) {
@@ -1259,8 +1269,9 @@ span {
 }
 
 .chart_type_area {
-  height: 30px;
+  height: 54px;
   overflow: auto;
+  padding: 8px;
 }
 
 .drag_main_area {
