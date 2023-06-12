@@ -162,8 +162,7 @@ const saveCallBack = () => {
           :placeholder="t('org.search_placeholder')"
           v-model="keyword"
           clearable
-          @blur="search"
-          @clear="search"
+          @change="search"
         >
           <template #prefix>
             <el-icon>

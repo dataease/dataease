@@ -17,6 +17,7 @@ const { t } = useI18n()
 const activeName = ref('user')
 const activeAuth = ref('resource')
 const nickName = ref('')
+const resourceKeyword = ref('')
 const selectedTarget = ref('')
 const selectedResourceType = ref('panel')
 const emptyDescription = ref('')
@@ -56,12 +57,6 @@ const authActiveChange = async tabName => {
       getColumn('menu')
       state.tableData = res.data
       state.treeMap['menu'] = res.data
-
-      /* menuTreeApi().then(res => {
-        getColumn('menu')
-        state.tableData = res.data
-        state.treeMap['menu'] = res.data
-      }) */
     }
     selectedTarget.value && loadPermission(1)
   }
@@ -92,6 +87,7 @@ const state = reactive({
   userList: [],
   roleList: [],
   tableData: [],
+  filterTableData: [],
   tableColumn: [],
   globalColumn: [],
   treeMap: {},
@@ -199,7 +195,7 @@ const loadResourceTree = () => {
 }
 
 const loadUser = () => {
-  const param = { keyword: nickName.value }
+  const param = {}
   loading.value = true
   queryUserApi(param).then(res => {
     if (res?.data?.length) {
@@ -212,7 +208,7 @@ const loadUser = () => {
 }
 
 const loadRole = () => {
-  const param = { keyword: nickName.value }
+  const param = {}
   loading.value = true
   queryRoleApi(param).then(res => {
     if (res?.data?.length) {
@@ -556,6 +552,67 @@ const resetTableData = rows => {
       }
     })
 }
+const roleTree = ref(null)
+const filterTarget = val => {
+  if (activeName.value === 'role') {
+    roleTree.value?.filter(val)
+  }
+}
+const filterRoleNode = (value: string, data) => {
+  if (!value) return true
+  return data.name.includes(value)
+}
+const resourceFilter = val => {
+  console.log(val)
+  /* const resourceTree = authTable.value
+  if (isNaN(val)) {
+    resourceTree.data = state.tableData
+  } else {
+    const matchList = []
+    const stack = [...resourceTree.data]
+    while (stack.length) {
+      const node = JSON.parse(JSON.stringify(stack.pop()))
+      if (node.children?.length) {
+        node.children.forEach(i => {
+          i['pid'] = node.id
+          stack.push(i)
+        })
+      }
+      if (node.name.includes(val)) {
+        delete node.children
+        matchList.push(node)
+      }
+    }
+    if (matchList.length) {
+      const map = new Map()
+      matchList.forEach(item => {
+        const pid = item.pid || 0
+        if (map.get(pid)) {
+          map.get(pid).push(item)
+        } else {
+          map.set(pid, [item])
+        }
+      })
+      const existedList = []
+      matchList.forEach(item => {
+        const id = item.id
+        const children = map.get(id)
+        if (children?.length) {
+          item['children'] = children
+          children.forEach(kid => existedList.push(kid.id))
+        }
+      })
+      if (existedList.length) {
+        Object.assign(
+          resourceTree.data,
+          matchList.filter(item => !existedList.includes(item.id))
+        )
+        return
+      }
+      Object.assign(resourceTree.data, matchList)
+    }
+  } */
+}
 onMounted(() => {
   loadUser()
   loadRole()
@@ -579,7 +636,7 @@ defineExpose({
         <el-tab-pane :label="t('auth.user')" name="user"></el-tab-pane>
         <el-tab-pane :label="t('auth.role')" name="role"></el-tab-pane>
       </el-tabs>
-      <el-input class="filter-input" v-model="nickName" clearable>
+      <el-input class="filter-input" v-model="nickName" clearable @change="filterTarget">
         <template #prefix>
           <el-icon>
             <Icon name="icon_search-outline_outlined"></Icon>
@@ -590,7 +647,7 @@ defineExpose({
     <el-scrollbar class="role-tree-container" v-if="activeName === 'user'">
       <div
         :key="ele.id"
-        v-for="ele in state.userList"
+        v-for="ele in state.userList.filter(item => !nickName || item.name.includes(nickName))"
         class="list-item_primary user-role-container"
         :class="{ 'is-active': selectedTarget === ele.id }"
         @click="targetClick(ele.id)"
@@ -602,14 +659,19 @@ defineExpose({
       <el-tree
         class="user-role-container"
         menu
+        ref="roleTree"
         :data="state.roleList"
         :props="defaultProps"
         :highlight-current="true"
         :expand-on-click-node="false"
         @node-click="roleNodeClick"
+        :filter-node-method="filterRoleNode"
       >
         <template #default="{ node, data }">
-          <span class="custom-tree-node" :class="{ 'is-disabled': node.disabled || data.root }">
+          <span
+            class="custom-tree-node"
+            :class="{ 'span-is-disabled': node.disabled || data.root }"
+          >
             <span :title="data.name">{{ node.label }}</span>
           </span>
         </template>
@@ -627,7 +689,12 @@ defineExpose({
         <el-tab-pane :label="t('auth.resource')" name="resource"></el-tab-pane>
         <el-tab-pane v-if="activeName === 'role'" :label="t('auth.menu')" name="menu"></el-tab-pane>
       </el-tabs>
-      <el-input class="search-table-input" v-model="nickName" clearable>
+      <el-input
+        class="search-table-input"
+        v-model="resourceKeyword"
+        clearable
+        @change="resourceFilter"
+      >
         <template #prefix>
           <el-icon>
             <Icon name="icon_search-outline_outlined"></Icon>
@@ -660,7 +727,7 @@ defineExpose({
         <el-table
           v-else
           ref="authTable"
-          :data="state.tableData"
+          :data="state.filterTableData.length ? state.filterTableData : state.tableData"
           style="width: 100%"
           row-key="id"
           height="100%"
@@ -814,7 +881,7 @@ defineExpose({
   background-color: var(--ed-color-primary-light-9);
   // color: var(--ed-color-primary);
 }
-.is-disabled {
+.span-is-disabled {
   opacity: 0.25;
   cursor: not-allowed;
   background: none !important;
