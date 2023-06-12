@@ -342,9 +342,17 @@ declare interface ChartAttr {
   totalCfg: ChartTotalAttr
 }
 
+declare interface AssistLine {
+  name: string
+  value: string
+  field: string
+  color: string
+  lineType: string
+  fontSize: number
+}
 declare interface ChartSenior {
   functionCfg: ChartFunctionCfg
-  assistLine: []
+  assistLine: AssistLine[]
   threshold: ChartThreshold
 }
 declare interface Axis {
@@ -366,6 +374,7 @@ declare interface Chart {
   data: {
     data: any[]
     series?: any[]
+    dynamicAssistLines?: AssistLine[]
   }
   xAxis?: Axis[]
   xAxisExt?: Axis[]

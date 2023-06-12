@@ -18,6 +18,9 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
   drawChart(drawOptions: G2PlotDrawOptions<G2Line>) {
     const chart = drawOptions.chart
     // data
+    if (!chart.data?.data?.length) {
+      return
+    }
     const data = _.cloneDeep(chart.data.data)
     // size
     let customAttr: DeepPartial<ChartAttr> = {}
