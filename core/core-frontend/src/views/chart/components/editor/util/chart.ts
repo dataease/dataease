@@ -1493,20 +1493,20 @@ export const CHART_TYPE_CONFIGS = [
     category: 'quota',
     title: t('chart.chart_type_quota'),
     details: [
-      {
-        render: 'antv',
-        category: 'quota',
-        value: 'label',
-        title: t('chart.chart_label'),
-        icon: 'label'
-      },
-      {
-        render: 'antv',
-        category: 'quota',
-        value: 'text',
-        title: t('chart.chart_card'),
-        icon: 'text'
-      },
+      // {
+      //   render: 'antv',
+      //   category: 'quota',
+      //   value: 'label',
+      //   title: t('chart.chart_label'),
+      //   icon: 'label'
+      // },
+      // {
+      //   render: 'antv',
+      //   category: 'quota',
+      //   value: 'text',
+      //   title: t('chart.chart_card'),
+      //   icon: 'text'
+      // },
       {
         render: 'antv',
         category: 'quota',
@@ -1520,14 +1520,14 @@ export const CHART_TYPE_CONFIGS = [
         value: 'liquid',
         title: t('chart.chart_liquid'),
         icon: 'liquid'
-      },
-      {
-        render: 'antv',
-        category: 'quota',
-        value: 'richTextView',
-        title: t('chart.rich_text_view'),
-        icon: 'richTextView'
       }
+      // {
+      //   render: 'antv',
+      //   category: 'quota',
+      //   value: 'richTextView',
+      //   title: t('chart.rich_text_view'),
+      //   icon: 'richTextView'
+      // }
     ]
   },
   {
@@ -1547,14 +1547,14 @@ export const CHART_TYPE_CONFIGS = [
         value: 'table-info',
         title: t('chart.chart_table_info'),
         icon: 'table-info'
-      },
-      {
-        render: 'antv',
-        category: 'table',
-        value: 'table-pivot',
-        title: t('chart.chart_table_pivot'),
-        icon: 'table-pivot'
       }
+      // {
+      //   render: 'antv',
+      //   category: 'table',
+      //   value: 'table-pivot',
+      //   title: t('chart.chart_table_pivot'),
+      //   icon: 'table-pivot'
+      // }
     ]
   },
   {
@@ -1574,14 +1574,14 @@ export const CHART_TYPE_CONFIGS = [
         value: 'area',
         title: t('chart.chart_area'),
         icon: 'area'
-      },
-      {
-        render: 'antv',
-        category: 'trend',
-        value: 'line-stack',
-        title: t('chart.chart_line_stack'),
-        icon: 'line-stack'
       }
+      // {
+      //   render: 'antv',
+      //   category: 'trend',
+      //   value: 'line-stack',
+      //   title: t('chart.chart_line_stack'),
+      //   icon: 'line-stack'
+      // }
     ]
   },
   {
@@ -1595,54 +1595,81 @@ export const CHART_TYPE_CONFIGS = [
         title: t('chart.chart_bar'),
         icon: 'bar'
       },
-      {
-        render: 'antv',
-        category: 'compare',
-        value: 'bar-group',
-        title: t('chart.chart_bar_group'),
-        icon: 'bar-group'
-      },
-      {
-        render: 'antv',
-        category: 'compare',
-        value: 'bar-stack',
-        title: t('chart.chart_bar_stack'),
-        icon: 'bar-stack'
-      },
-      {
-        render: 'antv',
-        category: 'compare',
-        value: 'bar-group-stack',
-        title: t('chart.chart_bar_group_stack'),
-        icon: 'bar-group-stack'
-      },
-      {
-        render: 'antv',
-        category: 'compare',
-        value: 'waterfall',
-        title: t('chart.chart_waterfall'),
-        icon: 'waterfall'
-      },
+      // {
+      //   render: 'antv',
+      //   category: 'compare',
+      //   value: 'bar-group',
+      //   title: t('chart.chart_bar_group'),
+      //   icon: 'bar-group'
+      // },
+      // {
+      //   render: 'antv',
+      //   category: 'compare',
+      //   value: 'bar-stack',
+      //   title: t('chart.chart_bar_stack'),
+      //   icon: 'bar-stack'
+      // },
+      // {
+      //   render: 'antv',
+      //   category: 'compare',
+      //   value: 'bar-group-stack',
+      //   title: t('chart.chart_bar_group_stack'),
+      //   icon: 'bar-group-stack'
+      // },
+      // {
+      //   render: 'antv',
+      //   category: 'compare',
+      //   value: 'waterfall',
+      //   title: t('chart.chart_waterfall'),
+      //   icon: 'waterfall'
+      // },
       {
         render: 'antv',
         category: 'compare',
         value: 'bar-horizontal',
         title: t('chart.chart_bar_horizontal'),
         icon: 'bar-horizontal'
+      }
+      // {
+      //   render: 'antv',
+      //   category: 'compare',
+      //   value: 'bar-stack-horizontal',
+      //   title: t('chart.chart_bar_stack_horizontal'),
+      //   icon: 'bar-stack-horizontal'
+      // },
+      // {
+      //   render: 'antv',
+      //   category: 'compare',
+      //   value: 'percentage-bar-stack-horizontal',
+      //   title: t('chart.chart_percentage_bar_stack_horizontal'),
+      //   icon: 'percentage-bar-stack-horizontal'
+      // }
+    ]
+  },
+  {
+    category: 'distribute',
+    title: t('chart.chart_type_distribute'),
+    details: [
+      {
+        render: 'antv',
+        category: 'distribute',
+        value: 'pie',
+        title: t('chart.chart_pie'),
+        icon: 'pie'
       },
       {
         render: 'antv',
-        category: 'compare',
-        value: 'bar-stack-horizontal',
-        title: t('chart.chart_bar_stack_horizontal'),
-        icon: 'bar-stack-horizontal'
+        category: 'distribute',
+        value: 'pie-rose',
+        title: t('chart.chart_pie_rose'),
+        icon: 'pie-rose'
       },
       {
         render: 'antv',
-        category: 'compare',
-        value: 'percentage-bar-stack-horizontal',
-        title: t('chart.chart_percentage_bar_stack_horizontal'),
-        icon: 'percentage-bar-stack-horizontal'
+        category: 'distribute',
+        value: 'word-cloud',
+        title: t('chart.chart_word_cloud'),
+        icon: 'word-cloud'
       }
     ]
   }
