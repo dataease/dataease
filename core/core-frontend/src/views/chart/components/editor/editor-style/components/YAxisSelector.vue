@@ -150,14 +150,14 @@ init()
               <el-form-item :label="t('chart.axis_value_min')" class="form-item">
                 <el-input
                   effect="dark"
-                  v-model="state.axisForm.axisValue.min"
+                  v-model.number="state.axisForm.axisValue.min"
                   @blur="changeAxisStyle('axisValue')"
                 />
               </el-form-item>
               <el-form-item :label="t('chart.axis_value_max')" class="form-item">
                 <el-input
                   effect="dark"
-                  v-model="state.axisForm.axisValue.max"
+                  v-model.number="state.axisForm.axisValue.max"
                   @blur="changeAxisStyle('axisValue')"
                 />
               </el-form-item>
@@ -173,7 +173,7 @@ init()
                 </span>
                 <el-input
                   effect="dark"
-                  v-model="state.axisForm.axisValue.splitCount"
+                  v-model.number="state.axisForm.axisValue.splitCount"
                   @blur="changeAxisStyle('axisValue')"
                 />
               </el-form-item>

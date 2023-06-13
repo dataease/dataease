@@ -231,10 +231,10 @@ declare interface AxisLine {
 
 declare interface AxisValue {
   auto: boolean
-  min: null
-  max: null
-  split: null
-  splitCount: null
+  min: number
+  max: number
+  split: number
+  splitCount: number
 }
 
 declare interface AxisLabelFormatter {
