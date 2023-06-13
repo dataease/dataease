@@ -562,56 +562,28 @@ const filterRoleNode = (value: string, data) => {
   if (!value) return true
   return data.name.includes(value)
 }
+const dynamicResourceClass = param => {
+  const row = param.row
+  return row.hidden ? 'dynamic-resource-hidden' : ''
+}
+const matchFilter = (row, val): boolean => {
+  let match = !val || row.name.toLocaleLowerCase().includes(val.toLocaleLowerCase())
+  if (row.children?.length) {
+    for (let index = 0; index < row.children.length; index++) {
+      const kid = row.children[index]
+      const kidMatch = matchFilter(kid, val)
+      if (kidMatch && !match) {
+        match = kidMatch
+      }
+    }
+  }
+  row.hidden = !match
+  return match
+}
 const resourceFilter = val => {
-  console.log(val)
-  /* const resourceTree = authTable.value
-  if (isNaN(val)) {
-    resourceTree.data = state.tableData
-  } else {
-    const matchList = []
-    const stack = [...resourceTree.data]
-    while (stack.length) {
-      const node = JSON.parse(JSON.stringify(stack.pop()))
-      if (node.children?.length) {
-        node.children.forEach(i => {
-          i['pid'] = node.id
-          stack.push(i)
-        })
-      }
-      if (node.name.includes(val)) {
-        delete node.children
-        matchList.push(node)
-      }
-    }
-    if (matchList.length) {
-      const map = new Map()
-      matchList.forEach(item => {
-        const pid = item.pid || 0
-        if (map.get(pid)) {
-          map.get(pid).push(item)
-        } else {
-          map.set(pid, [item])
-        }
-      })
-      const existedList = []
-      matchList.forEach(item => {
-        const id = item.id
-        const children = map.get(id)
-        if (children?.length) {
-          item['children'] = children
-          children.forEach(kid => existedList.push(kid.id))
-        }
-      })
-      if (existedList.length) {
-        Object.assign(
-          resourceTree.data,
-          matchList.filter(item => !existedList.includes(item.id))
-        )
-        return
-      }
-      Object.assign(resourceTree.data, matchList)
-    }
-  } */
+  state.tableData.forEach(item => {
+    matchFilter(item, val)
+  })
 }
 onMounted(() => {
   loadUser()
@@ -727,10 +699,11 @@ defineExpose({
         <el-table
           v-else
           ref="authTable"
-          :data="state.filterTableData.length ? state.filterTableData : state.tableData"
+          :data="state.tableData"
           style="width: 100%"
           row-key="id"
           height="100%"
+          :row-class-name="dynamicResourceClass"
           header-cell-class-name="header-cell"
           :expand-row-keys="state.expandedKeys"
           :tree-props="{ children: 'children' }"
@@ -909,5 +882,8 @@ defineExpose({
     text-overflow: ellipsis;
     overflow: hidden;
   }
+}
+::v-deep(.dynamic-resource-hidden) {
+  display: none !important;
 }
 </style>
