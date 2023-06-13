@@ -19,5 +19,5 @@ export default defineConfig(({mode}) => {
     return mergeConfig(common , lib)
   }
 
-  return mergeConfig(common, {...base, ...pages})
+  return mergeConfig(common, mergeConfig(base, pages))
 })

@@ -1,5 +1,6 @@
 import pkg from '../package.json'
 import viteCompression from 'vite-plugin-compression'
+
 export default {
   plugins: [
     viteCompression({
@@ -15,9 +16,9 @@ export default {
     rollupOptions: {
       output: {
         // 用于命名代码拆分时创建的共享块的输出命名
-        chunkFileNames: `assets/chunk/[name]-[hash]-${pkg.version}.js`,
-        assetFileNames: `assets/[ext]/[name]-[hash]-${pkg.version}.[ext]`,
-        entryFileNames: `js/[name]-[hash]-${pkg.version}.js`,
+        chunkFileNames: `assets/chunk/[name]-[hash]-${pkg.version}-${pkg.name}.js`,
+        assetFileNames: `assets/[ext]/[name]-[hash]-${pkg.version}-${pkg.name}.[ext]`,
+        entryFileNames: `js/[name]-[hash]-${pkg.version}-${pkg.name}.js`,
         manualChunks(id: string) {
           if (id.includes('node_modules')) {
             return id.toString().split('node_modules/')[1].split('/')[0].toString()

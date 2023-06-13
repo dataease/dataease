@@ -1,3 +1,43 @@
+const suffix = `${import.meta.env.VITE_VERSION}-dataease`
+
+const dom = document.querySelector('head')
+const cb = dom.appendChild.bind(dom)
+
+const formatterUrl = (node: HTMLLinkElement | HTMLScriptElement, prefix: string) => {
+  if (['SCRIPT', 'LINK'].includes(node.nodeName)) {
+    const url = (node as HTMLLinkElement).href || (node as HTMLScriptElement).src
+    if (url.includes(suffix)) {
+      const currentUrlprefix = new URL(url).origin
+      const newUrl = url.replace(currentUrlprefix, prefix)
+      if ((node as HTMLLinkElement).href) {
+        ;(node as HTMLLinkElement).href = newUrl
+      } else {
+        ;(node as HTMLScriptElement).src = newUrl
+      }
+    }
+  }
+  return node
+}
+
+const getPrefix = (): string => {
+  let prefix = ''
+  Array.from(document.querySelector('head').children).some(ele => {
+    if (['SCRIPT', 'LINK'].includes(ele.nodeName)) {
+      const url = (ele as HTMLLinkElement).href || (ele as HTMLScriptElement).src
+      if (url.startsWith('http') && url.includes(suffix)) {
+        prefix = new URL(url).origin
+        return true
+      }
+    }
+  })
+  return prefix
+}
+
+document.querySelector('head').appendChild = <T extends Node>(node: T) => {
+  const newNode = formatterUrl(node as unknown as HTMLLinkElement | HTMLScriptElement, getPrefix())
+  cb(newNode)
+  return node
+}
 import { createApp } from 'vue'
 import '@/style/index.less'
 import '@/plugins/svg-icon'
