@@ -51,7 +51,7 @@ class DataEaseBi {
     appStore.setToken(this.token)
   }
 
-  destory() {
+  destroy() {
     window.DataEaseBi = null
   }
 }
