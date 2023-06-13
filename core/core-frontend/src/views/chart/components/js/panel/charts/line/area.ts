@@ -130,6 +130,7 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
   protected configCustomLabel(_: Chart, options: AreaOptions): AreaOptions {
     if (options.label) {
       const label = {
+        ...options.label,
         offsetY: -8,
         autoRotate: undefined
       }
