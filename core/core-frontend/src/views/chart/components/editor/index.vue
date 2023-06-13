@@ -83,13 +83,13 @@ const state = reactive({
   searchField: ''
 })
 
-watch(
-  [() => props.view],
-  () => {
-    getFields(props.view.tableId)
-  },
-  { deep: true }
-)
+// watch(
+//   [() => props.view],
+//   () => {
+//     getFields(props.view.tableId)
+//   },
+//   { deep: true }
+// )
 
 watch(
   [() => state.searchField],
@@ -152,7 +152,7 @@ const dsSelectProps = {
 }
 
 const dsClick = (data: Tree) => {
-  if (data.nodeType === 'dataset') {
+  if (data.leaf) {
     getFields(data.id)
   }
 }
@@ -821,11 +821,11 @@ const editDs = () => {
               @node-click="dsClick"
               class="dataset-selector"
             >
-              <template #default="{ data: { name } }">
-                <el-icon>
+              <template #default="{ node, data }">
+                <el-icon v-if="!data.leaf">
                   <Icon name="scene"></Icon>
                 </el-icon>
-                <span :title="name">{{ name }}</span>
+                <span :title="node.label">{{ node.label }}</span>
               </template>
             </el-tree-select>
             <el-icon
