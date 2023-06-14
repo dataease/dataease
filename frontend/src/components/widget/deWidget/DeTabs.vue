@@ -800,7 +800,7 @@ export default {
   width: 100% !important;
 }
 
-::v-deep .el-tabs__nav-wrap {
+::v-deep .el-tabs__nav-wrap.is-scrollable {
 padding: 0 45px!important;
 }
 
