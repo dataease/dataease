@@ -7,6 +7,7 @@ import io.dataease.plugins.common.base.domain.PanelAppTemplateWithBLOBs;
 import io.dataease.service.panel.PanelAppTemplateService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -36,6 +37,7 @@ public class PanelAppTemplateController {
     @ApiOperation("保存")
     @PostMapping("/save")
     @I18n
+    @RequiresPermissions("appLog:edit")
     public void save(@RequestBody PanelAppTemplateRequest request) {
         panelAppTemplateService.save(request);
     }
@@ -43,6 +45,7 @@ public class PanelAppTemplateController {
     @ApiOperation("更新")
     @PostMapping("/update")
     @I18n
+    @RequiresPermissions("appLog:edit")
     public void update(@RequestBody PanelAppTemplateRequest request) {
         panelAppTemplateService.update(request);
     }
@@ -50,6 +53,7 @@ public class PanelAppTemplateController {
     @ApiOperation("删除")
     @DeleteMapping("/delete/{appTemplateId}")
     @I18n
+    @RequiresPermissions("appLog:del")
     public void delete(@PathVariable String appTemplateId) {
         panelAppTemplateService.delete(appTemplateId);
     }
@@ -64,6 +68,7 @@ public class PanelAppTemplateController {
     @ApiOperation("移动")
     @PostMapping("/move")
     @I18n
+    @RequiresPermissions("appLog:edit")
     public void move(@RequestBody PanelAppTemplateRequest request) {
         panelAppTemplateService.move(request);
     }
