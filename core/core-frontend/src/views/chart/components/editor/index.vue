@@ -779,6 +779,8 @@ const editDs = () => {
                   :quota-data="view.yAxis"
                   @onFunctionCfgChange="onFunctionCfgChange"
                   @onAssistLineChange="onAssistLineChange"
+                  @onScrollCfgChange="onScrollCfgChange"
+                  @onThresholdChange="onThresholdChange"
                 />
               </el-tab-pane>
             </el-tabs>
