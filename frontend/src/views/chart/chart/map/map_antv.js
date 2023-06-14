@@ -37,6 +37,7 @@ export function baseFlowMapOption(chartDom, chartId, chart, action) {
     }
   }
   if (xAxis?.length < 2 || xAxisExt?.length < 2) {
+    chartDom.removeAllLayer()
     return chartDom
   }
   chartDom.removeAllLayer()
