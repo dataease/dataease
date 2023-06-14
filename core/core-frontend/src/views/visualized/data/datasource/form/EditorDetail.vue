@@ -1,9 +1,10 @@
 <script lang="ts" setup>
-import { ref, reactive, computed, toRefs } from 'vue'
+import { ref, reactive, computed, toRefs, nextTick } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import type { FormInstance, FormRules } from 'element-plus-secondary'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import { cloneDeep } from 'lodash-es'
+import { useRouter } from 'vue-router'
 import ApiHttpRequestDraw from './ApiHttpRequestDraw.vue'
 import { Configuration, ApiConfiguration, SyncSetting } from './index.vue'
 import { validateById, save, validate } from '@/api/datasource'
@@ -12,6 +13,7 @@ import { ElForm, ElMessage } from 'element-plus-secondary'
 import Cron from '@/components/cron/src/Cron.vue'
 import { ComponentPublicInstance } from 'vue'
 const { t } = useI18n()
+const { push } = useRouter()
 
 const prop = defineProps({
   form: {
@@ -52,14 +54,12 @@ const { form, editDs, activeStep } = toRefs(prop)
 const dsFormDisabled = ref(false)
 
 const state = reactive({
-  apiItem: {
-    serialNumber: 0
-  },
   itemRef: []
 })
 const dsForm = ref<FormInstance>()
 
 const cronEdit = ref(true)
+const apiRequestDraw = ref(false)
 
 const rule = reactive<FormRules>({
   name: [
@@ -234,17 +234,22 @@ const copyItem = (item?: ApiConfiguration) => {
   ElMessage.success(t('datasource.success_copy'))
 }
 const addApiItem = item => {
+  if (dsFormDisabled.value) return
+  apiRequestDraw.value = true
+  let apiItem = null
   api_table_title.value = t('datasource.data_table')
   if (item) {
-    state.apiItem = cloneDeep(item)
+    apiItem = cloneDeep(item)
   } else {
-    state.apiItem = cloneDeep(defaultApiItem)
-    state.apiItem.serialNumber =
+    apiItem = cloneDeep(defaultApiItem)
+    apiItem.serialNumber =
       form.value.apiConfiguration.length > 0
         ? form.value.apiConfiguration[form.value.apiConfiguration.length - 1].serialNumber + 1
         : 0
   }
-  editApiItem.value.initApiItem(state.apiItem)
+  nextTick(() => {
+    editApiItem.value.initApiItem(apiItem)
+  })
 }
 
 const deleteItem = item => {
@@ -276,6 +281,7 @@ const returnItem = apiItem => {
   if (!find) {
     form.value.apiConfiguration.push(apiItem)
   }
+  apiRequestDraw.value = false
 }
 
 const onRateChange = () => {
@@ -340,6 +346,7 @@ const saveDs = () => {
     request.configuration = Base64.encode(JSON.stringify(request.configuration))
   }
   save(request).then(() => {
+    push('/data/datasource')
     ElMessage.success(t('common.save_success'))
     dsFormDisabled.value = true
   })
@@ -695,7 +702,11 @@ defineExpose({
           </el-form-item>
         </div>
       </el-form>
-      <api-http-request-draw @return-item="returnItem" ref="editApiItem"></api-http-request-draw>
+      <api-http-request-draw
+        v-if="apiRequestDraw"
+        @return-item="returnItem"
+        ref="editApiItem"
+      ></api-http-request-draw>
     </div>
   </div>
 </template>

@@ -1,12 +1,12 @@
 <script lang="ts" setup>
-import { reactive, ref, computed, watch, nextTick, onBeforeMount, useAttrs, toRaw } from 'vue'
+import { reactive, ref, computed, watch, nextTick, onBeforeMount, useAttrs } from 'vue'
 import { ElTable, ElPagination } from 'element-plus-secondary'
 import TableBody from './TableBody.vue'
 import { propTypes } from '@/utils/propTypes'
 const props = defineProps({
   columns: propTypes.arrayOf(propTypes.string),
   showPagination: propTypes.bool.def(true),
-  multipleSelection: propTypes.array,
+  multipleSelection: propTypes.array.def(() => []),
   pagination: propTypes.object,
   isRememberSelected: propTypes.bool.def(false),
   selectedFlags: propTypes.string.def('id'),
@@ -17,8 +17,8 @@ const attrs = useAttrs()
 
 const handleListeners = () => {
   Object.keys(attrs).forEach(key => {
-    if (['size-change', 'current-change', 'prev-click', 'next-click'].includes(key)) {
-      state.paginationEvent[key] = attrs[key]
+    if (['onSizeChange', 'onCurrentChange', 'onPrevClick', 'noNextClick'].includes(key)) {
+      state.paginationEvent[key.slice(2)] = attrs[key]
     } else {
       state.tableEvent[key] = attrs[key]
     }
@@ -71,7 +71,7 @@ watch(
   props.pagination,
   () => {
     state.paginationDefault = {
-      ...toRaw(state.paginationDefault),
+      ...state.paginationDefault,
       ...props.pagination
     }
   },

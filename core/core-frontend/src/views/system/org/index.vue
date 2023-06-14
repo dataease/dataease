@@ -8,18 +8,20 @@ import OrgResources from './OrgResources.vue'
 import { searchApi, resourceExistApi, deleteApi } from '@/api/org'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import { useEmitt } from '@/hooks/web/useEmitt'
+import { setColorName } from '@/utils/utils'
 const { t } = useI18n()
 const userStore = useUserStoreWithOut()
 const activeName = ref('manage')
 const keyword = ref(null)
 const deptEditor = ref(null)
-
+const defaultExpandAll = ref(false)
 const timestampFormatDate = value => {
   if (!value) {
     return '-'
   }
   return new Date(value)['format']()
 }
+const expandRowKeys = ref<string[]>([])
 
 const table = ref(null)
 
@@ -56,8 +58,7 @@ const edit = row => {
 const search = () => {
   loading.value = true
   tableData.value = []
-  const param = keyword.value
-  searchApi(param).then(res => {
+  searchApi(null).then(res => {
     tableData.value = res.data
     if (!keyword.value) {
       allTableData.value = res.data
@@ -132,7 +133,41 @@ const _handleDeleteZero = organization => {
     })
   })
 }
+const dynamicResourceClass = param => {
+  const row = param.row
+  return row.hidden ? 'dynamic-resource-hidden' : ''
+}
+const matchFilter = (row, val): boolean => {
+  let match = !val || row.name.toLocaleLowerCase().includes(val.toLocaleLowerCase())
+  setColorName(row, val)
+  if (row.children?.length) {
+    for (let index = 0; index < row.children.length; index++) {
+      const kid = row.children[index]
+      const kidMatch = matchFilter(kid, val)
+      if (kidMatch && !match) {
+        match = kidMatch
+      }
+    }
+  }
+  row.hidden = !match
 
+  if (match) {
+    expandRowKeys.value.push(row.id)
+  }
+  return match
+}
+const filterGrid = val => {
+  clearExpandKeys()
+  tableData.value.forEach(item => {
+    matchFilter(item, val)
+  })
+}
+const clearExpandKeys = () => {
+  let len = expandRowKeys.value.length
+  while (len--) {
+    expandRowKeys.value.splice(len, 1)
+  }
+}
 onMounted(() => {
   search()
 })
@@ -162,8 +197,7 @@ const saveCallBack = () => {
           :placeholder="t('org.search_placeholder')"
           v-model="keyword"
           clearable
-          @blur="search"
-          @clear="search"
+          @change="filterGrid"
         >
           <template #prefix>
             <el-icon>
@@ -181,8 +215,16 @@ const saveCallBack = () => {
         :indent="30"
         style="width: 100%"
         row-key="id"
+        :default-expand-all="defaultExpandAll"
+        :expand-row-keys="expandRowKeys"
+        :row-class-name="dynamicResourceClass"
       >
-        <el-table-column :label="t('org.name')" prop="name"> </el-table-column>
+        <el-table-column :label="t('org.name')" prop="name">
+          <template v-slot:default="scope">
+            <span v-if="scope.row.colorName" v-html="scope.row.colorName" />
+            <span v-else>{{ scope.row.name }}</span>
+          </template>
+        </el-table-column>
         <el-table-column :label="t('org.sub_count')" prop="subCount">
           <template v-slot:default="scope">
             <span>{{
@@ -228,10 +270,12 @@ const saveCallBack = () => {
 }
 .table-container-org {
   height: calc(100vh - 260px);
-
   :deep(.ed-icon-arrow-right::before) {
     content: '\E791' !important;
   }
+}
+.dynamic-resource-hidden {
+  display: none !important;
 }
 .btn-outer {
   width: 36px;
@@ -249,24 +293,24 @@ const saveCallBack = () => {
     svg {
       width: 16px;
       height: 16px;
-      color: var(--el-text-color-regular);
-      background-color: var(--el-color-white);
+      color: var(--ed-text-color-regular);
+      background-color: var(--ed-color-white);
     }
   }
 
   div:hover:not(.icon-disabled) {
     cursor: pointer;
     svg {
-      color: var(--el-color-primary) !important;
-      background: var(--el-color-primary-light-7) !important;
+      color: var(--ed-color-primary) !important;
+      background: var(--ed-color-primary-light-7) !important;
     }
   }
   .icon-disabled {
-    color: var(--el-button-disabled-text-color);
+    color: var(--ed-button-disabled-text-color);
     cursor: not-allowed;
     background-image: none;
-    background-color: var(--el-button-disabled-bg-color);
-    border-color: var(--el-button-disabled-border-color);
+    background-color: var(--ed-button-disabled-bg-color);
+    border-color: var(--ed-button-disabled-border-color);
   }
 }
 </style>

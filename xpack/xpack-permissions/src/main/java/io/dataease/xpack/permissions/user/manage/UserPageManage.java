@@ -22,6 +22,7 @@ import io.dataease.xpack.permissions.org.bo.PerOrgItem;
 import io.dataease.xpack.permissions.org.manage.OrgPageManage;
 import io.dataease.xpack.permissions.user.dao.auto.entity.PerUser;
 import io.dataease.xpack.permissions.user.dao.auto.mapper.PerUserMapper;
+import io.dataease.xpack.permissions.user.dao.ext.entity.UserRolePO;
 import io.dataease.xpack.permissions.user.dao.ext.mapper.UserExtMapper;
 import io.dataease.xpack.permissions.user.entity.UserSortEntity;
 import jakarta.annotation.Resource;
@@ -34,6 +35,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 @Lazy
@@ -55,20 +58,15 @@ public class UserPageManage {
 
     private static final String DEFAULT_PWD = "DataEase123456";
 
-    private List<Long> roleIdsFromCondition(BaseGridRequest request) {
-        if (CollectionUtil.isEmpty(request.getConditions())) return null;
-        List<ConditionEntity> roleConditions = request.getConditions().stream().filter(item -> StringUtils.equals("rid", item.getField()) && StringUtils.equals("in", item.getOperator()) && ObjectUtils.isNotEmpty(item.getValue())).toList();
-        ConditionEntity conditionEntity = roleConditions.stream().findFirst().orElseGet(null);
-        if (ObjectUtils.isEmpty(conditionEntity)) return null;
-        return ((List) conditionEntity.getValue()).stream().map(item -> Long.parseLong(item.toString())).toList();
-    }
 
     private Boolean stateFromCondition(BaseGridRequest request) {
         if (CollectionUtil.isEmpty(request.getConditions())) return null;
-        List<ConditionEntity> roleConditions = request.getConditions().stream().filter(item -> StringUtils.equals("state", item.getField()) && StringUtils.equals("eq", item.getOperator()) && ObjectUtils.isNotEmpty(item.getValue())).toList();
+        List<ConditionEntity> roleConditions = request.getConditions().stream().filter(item -> StringUtils.equals("status", item.getField()) && ObjectUtils.isNotEmpty(item.getValue())).toList();
+        if (CollectionUtil.isEmpty(roleConditions) || ((List) roleConditions.get(0).getValue()).size() != 1)
+            return null;
         ConditionEntity conditionEntity = roleConditions.stream().findFirst().orElse(null);
         if (ObjectUtils.isEmpty(conditionEntity)) return null;
-        return (Boolean) conditionEntity.getValue();
+        return (Boolean) ((List) conditionEntity.getValue()).get(0);
     }
 
     private UserSortEntity userSortFromCondition(BaseGridRequest request) {
@@ -79,7 +77,7 @@ public class UserPageManage {
         String[] arr = orderStr.split(" ");
         if (ArrayUtil.isEmpty(arr)) return null;
         String columnName = arr[0].trim();
-        if (StringUtils.isBlank(columnName) || !StringUtils.equals("u.create_time", columnName)) {
+        if (StringUtils.isBlank(columnName)) {
             return null;
         }
         boolean isAsc = true;
@@ -97,10 +95,8 @@ public class UserPageManage {
         QueryWrapper<UserGridVO> wrapper = new QueryWrapper<>();
         String keyword = request.getKeyword();
         wrapper.eq("pur.oid", oid);
-        List<Long> rids = null;
         Boolean state = null;
         wrapper.eq(ObjectUtils.isNotEmpty(state = stateFromCondition(request)), "u.enable", state);
-        wrapper.in(CollectionUtil.isNotEmpty(rids = roleIdsFromCondition(request)), "pur.rid", rids);
 
         wrapper.like(StringUtils.isNotBlank(keyword), "u.name", keyword);
         UserSortEntity userSortEntity = userSortFromCondition(request);
@@ -111,8 +107,22 @@ public class UserPageManage {
         }
         wrapper.orderBy(true, userSortEntity.isAsc(), userSortEntity.getColumnName());
         IPage<UserGridVO> pager = userExtMapper.pager(page, wrapper);
+        List<UserGridVO> records = null;
+        if (CollectionUtil.isNotEmpty(records = pager.getRecords())) {
+            List<UserRolePO> rolePOS = userExtMapper.userRole(records.stream().map(UserGridVO::getId).toList());
+            if (CollectionUtil.isNotEmpty(rolePOS)) {
+                Map<Long, List<UserRolePO>> listMap = rolePOS.stream().collect(Collectors.groupingBy(UserRolePO::getUid));
+                records.forEach(record -> {
+                    List<UserRolePO> userRolePOS = listMap.get(record.getId());
+                    if (CollectionUtil.isNotEmpty(userRolePOS)) {
+                        record.setRoleItems(userRolePOS.stream().map(item -> item.convert()).toList());
+                    }
+                });
+            }
+        }
         return pager;
     }
+
 
     @CacheEvict(cacheNames = "user_count", key = "'de'")
     public void save(UserCreator creator) {

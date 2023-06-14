@@ -27,6 +27,7 @@ import io.dataease.engine.utils.SQLUtils;
 import io.dataease.exception.DEException;
 import io.dataease.i18n.Translator;
 import io.dataease.utils.BeanUtils;
+import io.dataease.utils.JsonUtil;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -863,7 +864,9 @@ public class ChartDataManage {
             return list;
         }
 
-        List<ChartSeniorAssistDTO> assistLines = (List<ChartSeniorAssistDTO>) senior.get("assistLine");
+        String assistLine = (String) JsonUtil.toJSONString(senior.get("assistLine"));
+        List<ChartSeniorAssistDTO> assistLines = JsonUtil.parseList(assistLine, new TypeReference<>() {
+        });
 
         if (ObjectUtils.isEmpty(assistLines)) {
             return list;

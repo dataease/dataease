@@ -1,5 +1,5 @@
 <script lang="tsx" setup>
-import { reactive } from 'vue'
+import { reactive, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL, DEFAULT_LABEL } from '@/views/chart/components/editor/util/chart'
 
@@ -11,6 +11,13 @@ const props = defineProps({
     required: true
   }
 })
+
+watch(
+  () => props.chart,
+  () => {
+    init()
+  }
+)
 
 const predefineColors = COLOR_PANEL
 

@@ -1,5 +1,5 @@
 <script lang="tsx" setup>
-import { reactive, toRefs } from 'vue'
+import { reactive, toRefs, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import {
   COLOR_PANEL,
@@ -27,6 +27,13 @@ const state = reactive({
   titleForm: JSON.parse(JSON.stringify(DEFAULT_TITLE_STYLE)),
   fontSize: []
 })
+
+watch(
+  () => props.chart,
+  () => {
+    init()
+  }
+)
 
 const { chart } = toRefs(props)
 

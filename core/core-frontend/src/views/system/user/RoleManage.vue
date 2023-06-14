@@ -14,10 +14,13 @@ import RoleForm from './RoleForm.vue'
 import OutUserForm from './OutUserForm.vue'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
+import { setColorName } from '@/utils/utils'
 const selectedRoleId = ref('')
 const roleKeyword = ref('')
 const optionKeyword = ref('')
+const filterOptionkey = ref('')
 const selectedKeyword = ref('')
+const selectedFilterkey = ref('')
 const roleFormRef = ref(null)
 const outUserFormRef = ref(null)
 const { t } = useI18n()
@@ -29,7 +32,7 @@ interface Tree {
   children?: Tree[]
   disabled: boolean
 }
-
+const treeRef = ref(null)
 const handleNodeClick = (data: Tree) => {
   if (data.disabled) {
     return
@@ -62,7 +65,7 @@ state.roleData = [
 ]
 
 const optionSearch = (rid?: string) => {
-  const param = { rid, keyword: optionKeyword.value }
+  const param = { rid }
   if (rid) {
     loading.value = true
     userOptionForRoleApi(param).then(res => {
@@ -77,7 +80,7 @@ const optionSearch = (rid?: string) => {
 }
 
 const selectedSearch = (rid?: string) => {
-  const param = { rid, keyword: selectedKeyword.value }
+  const param = { rid }
   if (rid) {
     loading.value = true
     userSelectedForRoleApi(param).then(res => {
@@ -93,7 +96,7 @@ const selectedSearch = (rid?: string) => {
 
 const roleSearch = () => {
   loading.value = true
-  searchRoleApi(roleKeyword.value).then(res => {
+  searchRoleApi(null).then(res => {
     const roles = res.data
     const map = groupBy(roles)
     state.roleData[0].children = map.get(false)
@@ -258,6 +261,20 @@ const openOutUser = () => {
   }
   outUserFormRef.value.init(selectedRoleId.value)
 }
+const filterRoleNode = (value: string, data: Tree) => {
+  setColorName(data, value)
+  if (!value) return true
+  return data.name.includes(value)
+}
+const triggerFilterRole = val => {
+  treeRef.value?.filter(val)
+}
+const filterSelected = val => {
+  selectedFilterkey.value = val ? val.toLocaleLowerCase() : val
+}
+const optionFilter = val => {
+  filterOptionkey.value = val ? val.toLocaleLowerCase() : val
+}
 onMounted(() => {
   roleSearch()
 })
@@ -272,7 +289,7 @@ onMounted(() => {
           <template #icon> <Icon name="icon_add_outlined"></Icon> </template
           >{{ t('role.add_title') }}
         </el-button>
-        <el-input class="m24 w100" v-model="roleKeyword" clearable>
+        <el-input class="m24 w100" v-model="roleKeyword" clearable @change="triggerFilterRole">
           <template #prefix>
             <el-icon>
               <Icon name="icon_search-outline_outlined"></Icon>
@@ -284,13 +301,16 @@ onMounted(() => {
         <el-tree
           menu
           :data="state.roleData"
+          ref="treeRef"
           :highlight-current="true"
           :props="defaultProps"
           @node-click="handleNodeClick"
+          :default-expand-all="true"
+          :filter-node-method="filterRoleNode"
         >
           <template #default="{ node, data }">
             <span class="custom-tree-node">
-              <span :title="node.label">{{ node.label }}</span>
+              <span :title="node.label" v-html="data.colorName ? data.colorName : node.label" />
               <div v-if="!data.disabled && !data.root" class="operate-icon-container">
                 <div><Icon name="edit" @click.stop="roleEdit(data)"></Icon></div>
                 <div><Icon name="delete" @click.stop="delHandler(data)"></Icon></div>
@@ -303,7 +323,7 @@ onMounted(() => {
     <div class="added-user-list role-height">
       <div class="title">
         {{ t('role.bound_user') }}
-        <el-input v-model="selectedKeyword" clearable>
+        <el-input v-model="selectedKeyword" clearable @change="filterSelected">
           <template #prefix>
             <el-icon>
               <Icon name="icon_search-outline_outlined"></Icon>
@@ -315,7 +335,14 @@ onMounted(() => {
         v-if="!state.addedUserList || !state.addedUserList.length"
         description="description"
       />
-      <div v-else :key="ele.id" v-for="ele in state.addedUserList" class="user-list-item">
+      <div
+        v-else
+        :key="ele.id"
+        v-for="ele in state.addedUserList.filter(
+          item => !selectedFilterkey || item.name.toLocaleLowerCase().includes(selectedFilterkey)
+        )"
+        class="user-list-item"
+      >
         <span>{{ ele.name }}</span>
         <div>
           <Icon
@@ -332,7 +359,7 @@ onMounted(() => {
         <el-icon class="add-out-icon" @click.stop="openOutUser">
           <Icon name="icon_add_outlined"></Icon>
         </el-icon>
-        <el-input class="m24 w100" v-model="optionKeyword" clearable>
+        <el-input class="m24 w100" v-model="optionKeyword" clearable @change="optionFilter">
           <template #prefix>
             <el-icon>
               <Icon name="icon_search-outline_outlined"></Icon>
@@ -346,7 +373,13 @@ onMounted(() => {
       />
       <div v-else class="content">
         <el-checkbox-group v-model="state.checkList">
-          <div :key="ele.id" v-for="ele in state.optionUserList" class="user-list-item">
+          <div
+            :key="ele.id"
+            v-for="ele in state.optionUserList.filter(
+              item => !filterOptionkey || item.name.toLocaleLowerCase().includes(filterOptionkey)
+            )"
+            class="user-list-item"
+          >
             <el-checkbox :label="ele.id">{{ ele.name }}</el-checkbox>
           </div>
         </el-checkbox-group>

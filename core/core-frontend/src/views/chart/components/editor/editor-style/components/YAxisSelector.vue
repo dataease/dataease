@@ -1,5 +1,5 @@
 <script lang="tsx" setup>
-import { reactive } from 'vue'
+import { reactive, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL, DEFAULT_YAXIS_STYLE } from '@/views/chart/components/editor/util/chart'
 import { formatterType, unitType } from '@/views/chart/components/editor/util/formatter'
@@ -24,6 +24,13 @@ const state = reactive({
 })
 
 const emit = defineEmits(['onChangeYAxisForm'])
+
+watch(
+  () => props.chart,
+  () => {
+    init()
+  }
+)
 
 const initFontSize = () => {
   const arr = []
@@ -150,14 +157,14 @@ init()
               <el-form-item :label="t('chart.axis_value_min')" class="form-item">
                 <el-input
                   effect="dark"
-                  v-model="state.axisForm.axisValue.min"
+                  v-model.number="state.axisForm.axisValue.min"
                   @blur="changeAxisStyle('axisValue')"
                 />
               </el-form-item>
               <el-form-item :label="t('chart.axis_value_max')" class="form-item">
                 <el-input
                   effect="dark"
-                  v-model="state.axisForm.axisValue.max"
+                  v-model.number="state.axisForm.axisValue.max"
                   @blur="changeAxisStyle('axisValue')"
                 />
               </el-form-item>
@@ -173,7 +180,7 @@ init()
                 </span>
                 <el-input
                   effect="dark"
-                  v-model="state.axisForm.axisValue.splitCount"
+                  v-model.number="state.axisForm.axisValue.splitCount"
                   @blur="changeAxisStyle('axisValue')"
                 />
               </el-form-item>

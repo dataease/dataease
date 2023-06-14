@@ -22,8 +22,12 @@ import DrillItem from '@/views/chart/components/editor/drag-item/DrillItem.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { BASE_VIEW_CONFIG } from '@/views/chart/components/editor/util/chart'
+import ChartType from '@/views/chart/components/editor/chart-type/ChartType.vue'
+import { useRouter } from 'vue-router'
+
 const dvMainStore = dvMainStoreWithOut()
 const { canvasCollapse } = storeToRefs(dvMainStore)
+const router = useRouter()
 
 const { t } = useI18n()
 const loading = ref(false)
@@ -79,13 +83,13 @@ const state = reactive({
   searchField: ''
 })
 
-watch(
-  [() => props.view],
-  () => {
-    getFields(props.view.tableId)
-  },
-  { deep: true }
-)
+// watch(
+//   [() => props.view],
+//   () => {
+//     getFields(props.view.tableId)
+//   },
+//   { deep: true }
+// )
 
 watch(
   [() => state.searchField],
@@ -148,7 +152,7 @@ const dsSelectProps = {
 }
 
 const dsClick = (data: Tree) => {
-  if (data.nodeType === 'dataset') {
+  if (data.leaf) {
     getFields(data.id)
   }
 }
@@ -165,7 +169,7 @@ const dimensionItemChange = item => {
 }
 const dimensionItemRemove = item => {
   if (item.removeType === 'dimension') {
-    view.value.xaxis.splice(item.index, 1)
+    view.value.xAxis.splice(item.index, 1)
   } else if (item.removeType === 'dimensionExt') {
     view.value.xaxisExt.splice(item.index, 1)
   }
@@ -180,9 +184,9 @@ const quotaItemChange = item => {
 }
 const quotaItemRemove = item => {
   if (item.removeType === 'quota') {
-    view.value.yaxis.splice(item.index, 1)
+    view.value.yAxis.splice(item.index, 1)
   } else if (item.removeType === 'quotaExt') {
-    view.value.yaxisExt.splice(item.index, 1)
+    view.value.yAxisExt.splice(item.index, 1)
   }
   calcData(view.value)
 }
@@ -234,30 +238,30 @@ const dragRemoveChartField = (list, e) => {
 
 const addXaxis = e => {
   if (view.value.type !== 'table-info') {
-    dragCheckType(view.value.xaxis, 'd')
+    dragCheckType(view.value.xAxis, 'd')
   }
-  dragMoveDuplicate(view.value.xaxis, e, 'chart')
+  dragMoveDuplicate(view.value.xAxis, e, 'chart')
   if (
     (view.value.type === 'map' ||
       view.value.type === 'word-cloud' ||
       view.value.type === 'label') &&
-    view.value.xaxis.length > 1
+    view.value.xAxis.length > 1
   ) {
-    view.value.xaxis = [view.value.xaxis[0]]
+    view.value.xAxis = [view.value.xAxis[0]]
   }
   calcData(view.value)
 }
 
 const addYaxis = e => {
-  dragCheckType(view.value.yaxis, 'q')
-  dragMoveDuplicate(view.value.yaxis, e, '')
+  dragCheckType(view.value.yAxis, 'q')
+  dragMoveDuplicate(view.value.yAxis, e, '')
   if (
     (view.value.type === 'waterfall' ||
       view.value.type === 'word-cloud' ||
       view.value.type.includes('group')) &&
-    view.value.yaxis.length > 1
+    view.value.yAxis.length > 1
   ) {
-    view.value.yaxis = [view.value.yaxis[0]]
+    view.value.yAxis = [view.value.yAxis[0]]
   }
   calcData(view.value)
 }
@@ -303,6 +307,11 @@ const calcData = view => {
 
 const renderChart = view => {
   useEmitt().emitter.emit('renderChart-' + view.id, view)
+}
+
+const onTypeChange = val => {
+  view.value.type = val
+  calcData(view.value)
 }
 
 const onColorChange = val => {
@@ -382,13 +391,13 @@ const saveRename = ref => {
   ref.validate(valid => {
     if (valid) {
       if (state.itemForm.renameType === 'quota') {
-        view.value.yaxis[state.itemForm.index].chartShowName = state.itemForm.chartShowName
+        view.value.yAxis[state.itemForm.index].chartShowName = state.itemForm.chartShowName
       } else if (state.itemForm.renameType === 'dimension') {
-        view.value.xaxis[state.itemForm.index].chartShowName = state.itemForm.chartShowName
+        view.value.xAxis[state.itemForm.index].chartShowName = state.itemForm.chartShowName
       } else if (state.itemForm.renameType === 'quotaExt') {
-        view.value.yaxisExt[state.itemForm.index].chartShowName = state.itemForm.chartShowName
+        view.value.yAxisExt[state.itemForm.index].chartShowName = state.itemForm.chartShowName
       } else if (state.itemForm.renameType === 'dimensionExt') {
-        view.value.xaxisExt[state.itemForm.index].chartShowName = state.itemForm.chartShowName
+        view.value.xAxisExt[state.itemForm.index].chartShowName = state.itemForm.chartShowName
       }
       // this.calcData(true)
       closeRename()
@@ -425,11 +434,11 @@ const saveQuotaFilter = () => {
     }
   }
   if (state.quotaItem.filterType === 'quota') {
-    view.value.yaxis[state.quotaItem.index].filter = state.quotaItem.filter
-    view.value.yaxis[state.quotaItem.index].logic = state.quotaItem.logic
+    view.value.yAxis[state.quotaItem.index].filter = state.quotaItem.filter
+    view.value.yAxis[state.quotaItem.index].logic = state.quotaItem.logic
   } else if (state.quotaItem.filterType === 'quotaExt') {
-    view.value.yaxisExt[state.quotaItem.index].filter = state.quotaItem.filter
-    view.value.yaxisExt[state.quotaItem.index].logic = state.quotaItem.logic
+    view.value.yAxisExt[state.quotaItem.index].filter = state.quotaItem.filter
+    view.value.yAxisExt[state.quotaItem.index].logic = state.quotaItem.logic
   }
   calcData(view.value)
   closeQuotaFilter()
@@ -485,6 +494,16 @@ const saveResultFilter = () => {
 const collapseChange = type => {
   canvasCollapse.value[type] = !canvasCollapse.value[type]
 }
+
+const editDs = () => {
+  let routeData = router.resolve({
+    path: '/dataset-form',
+    query: {
+      id: view.value.tableId
+    }
+  })
+  window.open(routeData.href, '_blank')
+}
 </script>
 
 <template>
@@ -507,37 +526,38 @@ const collapseChange = type => {
           <el-row class="editor-title">
             <span style="font-size: 14px">{{ view.title }}</span>
           </el-row>
-          <el-row class="chart_type_area padding-lr">
-            <span class="switch-chart">
-              <span>{{ t('chart.switch_chart') }}</span>
-              <span style="float: right; width: 140px">
-                <el-popover
-                  placement="bottom-end"
-                  width="400"
-                  trigger="click"
-                  :append-to-body="true"
-                >
-                  <template #reference>
-                    <el-button size="small" style="width: 100%; padding: 0">
-                      {{ t('chart.change_chart_type') }}
-                      <i class="el-icon-caret-bottom" />
-                    </el-button>
-                  </template>
-                  <div class="padding-lr">
-                    <el-row>
-                      <div>todo chart type(大屏不能切换图表类型)</div>
-                    </el-row>
-                  </div>
-                </el-popover>
-              </span>
-            </span>
-          </el-row>
-          <el-row style="height: calc(100vh - 140px)">
+
+          <el-row style="height: calc(100vh - 110px)">
             <el-tabs v-model="tabActive" :stretch="true" class="tab-header">
               <el-tab-pane name="data" :label="t('chart.chart_data')" class="padding-tab">
                 <el-col>
                   <div class="drag_main_area attr-style theme-border-class">
                     <el-row style="height: 100%">
+                      <el-row class="chart_type_area padding-lr">
+                        <span class="switch-chart">
+                          <span>{{ t('chart.switch_chart') }}</span>
+                          <span style="float: right; width: 140px">
+                            <el-popover
+                              placement="bottom-end"
+                              width="434"
+                              trigger="click"
+                              :append-to-body="true"
+                              popper-class="chart-type-style"
+                            >
+                              <template #reference>
+                                <el-button size="small" style="width: 100%; padding: 0">
+                                  {{ t('chart.change_chart_type') }}
+                                  <i class="el-icon-caret-bottom" />
+                                </el-button>
+                              </template>
+                              <template #default>
+                                <chart-type :type="view.type" @onTypeChange="onTypeChange" />
+                              </template>
+                            </el-popover>
+                          </span>
+                        </span>
+                      </el-row>
+
                       <!--xAxis-->
                       <el-row
                         class="padding-lr drag-data"
@@ -549,7 +569,7 @@ const collapseChange = type => {
                           <dimension-label :view="view" />
                         </span>
                         <draggable
-                          :list="view.xaxis"
+                          :list="view.xAxis"
                           :move="onMove"
                           item-key="id"
                           group="drag"
@@ -571,7 +591,7 @@ const collapseChange = type => {
                             />
                           </template>
                         </draggable>
-                        <drag-placeholder :drag-list="view.xaxis" />
+                        <drag-placeholder :drag-list="view.xAxis" />
                       </el-row>
 
                       <!--yAxis-->
@@ -587,7 +607,7 @@ const collapseChange = type => {
                           <quota-label :view="view" />
                         </span>
                         <draggable
-                          :list="view.yaxis"
+                          :list="view.yAxis"
                           :move="onMove"
                           item-key="id"
                           group="drag"
@@ -610,7 +630,7 @@ const collapseChange = type => {
                             />
                           </template>
                         </draggable>
-                        <drag-placeholder :drag-list="view.yaxis" />
+                        <drag-placeholder :drag-list="view.yAxis" />
                       </el-row>
 
                       <!--drill-->
@@ -756,9 +776,11 @@ const collapseChange = type => {
               >
                 <senior
                   :chart="view"
-                  :quota-data="view.yaxis"
+                  :quota-data="view.yAxis"
                   @onFunctionCfgChange="onFunctionCfgChange"
                   @onAssistLineChange="onAssistLineChange"
+                  @onScrollCfgChange="onScrollCfgChange"
+                  @onThresholdChange="onThresholdChange"
                 />
               </el-tab-pane>
             </el-tabs>
@@ -787,7 +809,8 @@ const collapseChange = type => {
               padding: '2px',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'space-between'
+              justifyContent: 'space-between',
+              borderTop: '1px solid #363636'
             }"
             class="dark"
           >
@@ -800,14 +823,17 @@ const collapseChange = type => {
               @node-click="dsClick"
               class="dataset-selector"
             >
-              <template #default="{ data: { name } }">
-                <el-icon>
+              <template #default="{ node, data }">
+                <el-icon v-if="!data.leaf">
                   <Icon name="scene"></Icon>
                 </el-icon>
-                <span :title="name">{{ name }}</span>
+                <span :title="node.label">{{ node.label }}</span>
               </template>
             </el-tree-select>
-            <el-icon :style="{ color: '#a6a6a6', cursor: 'pointer', marginRight: '8px' }">
+            <el-icon
+              :style="{ color: '#a6a6a6', cursor: 'pointer', marginRight: '8px' }"
+              @click="editDs"
+            >
               <Icon name="icon_edit_outlined" class="el-icon-arrow-down el-icon-delete"></Icon>
             </el-icon>
           </el-row>
@@ -815,7 +841,10 @@ const collapseChange = type => {
             <div class="dataset-search-label">
               <span>{{ t('chart.field') }}</span>
               <span>
-                <el-icon :style="{ color: '#a6a6a6', cursor: 'pointer', marginRight: '6px' }">
+                <el-icon
+                  :style="{ color: '#a6a6a6', cursor: 'pointer', marginRight: '6px' }"
+                  @click="getFields(view.tableId)"
+                >
                   <Icon
                     name="icon_refresh_outlined"
                     class="el-icon-arrow-down el-icon-delete"
@@ -839,7 +868,7 @@ const collapseChange = type => {
               </template>
             </el-input>
           </el-row>
-          <div style="height: calc(100% - 121px)">
+          <div style="height: calc(100% - 122px)">
             <div class="padding-lr field-height">
               <span>{{ t('chart.dimension') }}</span>
               <draggable
@@ -916,10 +945,8 @@ const collapseChange = type => {
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button size="mini" @click="closeRename(renameForm)"
-            >{{ t('chart.cancel') }}
-          </el-button>
-          <el-button type="primary" size="mini" @click="saveRename(renameForm)"
+          <el-button @click="closeRename(renameForm)">{{ t('chart.cancel') }} </el-button>
+          <el-button type="primary" @click="saveRename(renameForm)"
             >{{ t('chart.confirm') }}
           </el-button>
         </div>
@@ -939,10 +966,8 @@ const collapseChange = type => {
       <quota-filter-editor :item="state.quotaItem" />
       <template #footer>
         <div class="dialog-footer">
-          <el-button size="mini" @click="closeQuotaFilter">{{ t('chart.cancel') }} </el-button>
-          <el-button type="primary" size="mini" @click="saveQuotaFilter"
-            >{{ t('chart.confirm') }}
-          </el-button>
+          <el-button @click="closeQuotaFilter">{{ t('chart.cancel') }} </el-button>
+          <el-button type="primary" @click="saveQuotaFilter">{{ t('chart.confirm') }} </el-button>
         </div>
       </template>
     </el-dialog>
@@ -958,10 +983,8 @@ const collapseChange = type => {
       <result-filter-editor :chart="state.chartForFilter" :item="state.filterItem" />
       <template #footer>
         <div class="dialog-footer">
-          <el-button size="mini" @click="closeResultFilter">{{ t('chart.cancel') }} </el-button>
-          <el-button type="primary" size="mini" @click="saveResultFilter"
-            >{{ t('chart.confirm') }}
-          </el-button>
+          <el-button @click="closeResultFilter">{{ t('chart.cancel') }} </el-button>
+          <el-button type="primary" @click="saveResultFilter">{{ t('chart.confirm') }} </el-button>
         </div>
       </template>
     </el-dialog>
@@ -1180,7 +1203,6 @@ span {
     align-items: center;
     height: 100%;
     justify-content: space-between;
-    padding: 0 4px;
   }
 
   .dataset-selector :deep(.ed-input__inner) {
@@ -1259,8 +1281,9 @@ span {
 }
 
 .chart_type_area {
-  height: 30px;
+  height: 54px;
   overflow: auto;
+  padding: 8px;
 }
 
 .drag_main_area {

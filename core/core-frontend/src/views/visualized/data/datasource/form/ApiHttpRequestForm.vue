@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, watch, onBeforeMount, onMounted, reactive } from 'vue'
+import { ref, watch, onBeforeMount, PropType, toRefs } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import ApiKeyValue from './ApiKeyValue.vue'
 import ApiBody from './ApiBody.vue'
@@ -21,6 +21,20 @@ const props = defineProps({
   showScript: {
     type: Boolean,
     default: true
+  },
+  request: {
+    type: Object as PropType<ApiRequest>,
+    default: () => ({
+      changeId: '',
+      authManager: { verification: '', username: '', password: '' },
+      headers: [],
+      rest: [],
+      arguments: [],
+      body: {
+        typeChange: '',
+        kvs: []
+      }
+    })
   },
   referenced: {
     type: Boolean,
@@ -73,17 +87,8 @@ const headerSuggestions = [
   { value: 'Warning' }
 ]
 const bodyRef = ref()
-const apiRequest = reactive<ApiRequest>({
-  changeId: '',
-  authManager: { verification: '', username: '', password: '' },
-  headers: [],
-  rest: [],
-  arguments: [],
-  body: {
-    typeChange: '',
-    kvs: []
-  }
-})
+
+const { request: apiRequest } = toRefs(props)
 onBeforeMount(() => {
   if (!props.referenced && props.showScript) {
     spanCount.value = 21
@@ -93,98 +98,43 @@ onBeforeMount(() => {
   init()
 })
 
-onMounted(() => {
-  bodyRef.value.initApiBody(apiRequest.body, apiRequest.headers)
-})
-
-watch([apiRequest.changeId], () => {
-  if (apiRequest.headers?.length > 1) {
-    activeName.value = 'headers'
+watch(
+  () => apiRequest.value.changeId,
+  () => {
+    if (apiRequest.value.headers?.length > 1) {
+      activeName.value = 'headers'
+    }
+    if (apiRequest.value.rest?.length > 1) {
+      activeName.value = 'rest'
+    }
+    if (apiRequest.value.arguments?.length > 1) {
+      activeName.value = 'parameters'
+    }
+    if (apiRequest.value.body) {
+      apiRequest.value.body.typeChange = apiRequest.value.changeId
+      emits('changeId', apiRequest.value.changeId)
+    }
   }
-  if (apiRequest.rest?.length > 1) {
-    activeName.value = 'rest'
-  }
-  if (apiRequest.arguments?.length > 1) {
-    activeName.value = 'parameters'
-  }
-  if (apiRequest.body) {
-    apiRequest.body.typeChange = apiRequest.changeId
-    emits('changeId', apiRequest.changeId)
-  }
-})
+)
 
 const init = () => {
   //   if (Object.prototype.toString.call(apiRequest).match(/\[object (\w+)\]/)[1].toLowerCase() !== 'object') {
   //      Object.assign(apiRequest, JSON.parse(request))
   //   }
-  if (!apiRequest.body) {
-    apiRequest.body = new Body()
+  if (!apiRequest.value.body) {
+    apiRequest.value.body = new Body()
   }
-  if (!apiRequest.body.kvs) {
-    apiRequest.body.kvs = []
+  if (!apiRequest.value.body.kvs) {
+    apiRequest.value.body.kvs = []
   }
-  if (!apiRequest.rest) {
-    apiRequest.rest = []
+  if (!apiRequest.value.rest) {
+    apiRequest.value.rest = []
   }
-  if (!apiRequest.arguments) {
-    apiRequest.arguments = []
+  if (!apiRequest.value.arguments) {
+    apiRequest.value.arguments = []
   }
 }
-const changeHeaders = val => {
-  if (!isNaN(val)) {
-    apiRequest.headers.splice(val, 1)
-  } else {
-    apiRequest.headers.push(val)
-  }
-
-  headersChange(apiRequest.headers)
-}
-
-const moveHeaders = val => {
-  const pre = apiRequest.headers[val]
-  const next = apiRequest.headers[val + 1]
-  apiRequest.headers.splice(val, 2, ...[next, pre])
-  headersChange(apiRequest.headers)
-}
-
-const authConfigChange = val => {
-  emits('authConfigChange', val)
-}
-const bodyChange = val => {
-  apiRequest.body = Object.assign(apiRequest.body, val)
-  emits('bodyChange', val)
-}
-const headersChange = val => {
-  apiRequest.headers = val
-  emits('headersChange', val)
-}
-const moveParameters = val => {
-  const pre = apiRequest.arguments[val]
-  const next = apiRequest.arguments[val + 1]
-  apiRequest.arguments.splice(val, 2, ...[next, pre])
-  emits('changeParameters', val)
-}
-const changeParameters = val => {
-  if (!isNaN(val)) {
-    apiRequest.arguments.splice(val, 1)
-  } else {
-    apiRequest.arguments.push(val)
-  }
-  emits('changeParameters', val)
-}
-
-const kvsChange = val => {
-  apiRequest.body.kvs = val
-  emits('kvsChange', val)
-}
-const emits = defineEmits([
-  'changeId',
-  'authConfigChange',
-  'bodyChange',
-  'headersChange',
-  'changeParameters',
-  'kvsChange'
-])
+const emits = defineEmits(['changeId'])
 </script>
 
 <template>
@@ -194,8 +144,6 @@ const emits = defineEmits([
       <el-tab-pane :label="t('datasource.headers')" name="headers" key="headers">
         <api-key-value
           :show-desc="true"
-          @changeHeaders="changeHeaders"
-          @moveHeaders="moveHeaders"
           :suggestions="headerSuggestions"
           :items="apiRequest.headers"
         />
@@ -207,8 +155,6 @@ const emits = defineEmits([
           :is-read-only="isReadOnly"
           :isShowEnable="isShowEnable"
           :parameters="apiRequest.arguments"
-          @change-parameters="changeParameters"
-          @move-parameters="moveParameters"
         />
       </el-tab-pane>
 
@@ -221,10 +167,9 @@ const emits = defineEmits([
       >
         <api-body
           ref="bodyRef"
+          :headers="apiRequest.headers"
+          :body="apiRequest.body"
           :is-show-enable="isShowEnable"
-          @headers-change="headersChange"
-          @body-change="bodyChange"
-          @kvsChange="kvsChange"
         />
       </el-tab-pane>
 
@@ -240,7 +185,7 @@ const emits = defineEmits([
             <span>{{ t('datasource.auth_config') }}</span>
           </template>
         </el-tooltip>
-        <api-auth-config @authConfigChange="authConfigChange" :request="apiRequest" />
+        <api-auth-config :request="apiRequest" />
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -267,7 +212,7 @@ const emits = defineEmits([
   }
 
   .request-tabs {
-    margin: 20px;
+    margin: 0 24px;
     min-height: 200px;
   }
 

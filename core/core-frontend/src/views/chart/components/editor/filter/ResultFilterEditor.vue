@@ -252,8 +252,8 @@ initEnumOptions()
         item.deType === 3
       "
     >
-      <div style="display: inline-block">
-        <el-button circle size="small" style="margin-bottom: 10px" @click="addFilter">
+      <div style="display: flex; padding: 10px 0">
+        <el-button circle size="small" :style="{ minWidth: 'auto !important' }" @click="addFilter">
           <template #icon>
             <Icon name="icon_add_outlined"></Icon>
           </template>

@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { shallowRef } from 'vue'
+import { shallowRef, defineAsyncComponent } from 'vue'
 import { propTypes } from '@/utils/propTypes'
-import Dashboard from '@/views/dashboard/index.vue'
+const DashboardEditor = defineAsyncComponent(() => import('@/views/data-visualization/index.vue'))
 const props = defineProps({
-  componentName: propTypes.string.def('Dashboard')
+  componentName: propTypes.string.def('DashboardEditor')
 })
 const currentComponent = shallowRef()
 
-if (props.componentName === 'Dashboard') {
-  currentComponent.value = Dashboard
+if (props.componentName === 'DashboardEditor') {
+  currentComponent.value = DashboardEditor
 }
 </script>
 <template>

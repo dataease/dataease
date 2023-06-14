@@ -13,7 +13,9 @@ const DEFAULT_DATA = []
 export class Area extends G2PlotChartView<AreaOptions, G2Area> {
   drawChart(drawOptions: G2PlotDrawOptions<G2Area>): G2Area {
     const chart = drawOptions.chart
-
+    if (!chart.data?.data?.length) {
+      return
+    }
     // data
     const data = _.cloneDeep(chart.data.data)
     // size
@@ -128,6 +130,7 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
   protected configCustomLabel(_: Chart, options: AreaOptions): AreaOptions {
     if (options.label) {
       const label = {
+        ...options.label,
         offsetY: -8,
         autoRotate: undefined
       }

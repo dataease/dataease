@@ -39,3 +39,25 @@ export function checkAddHttp(url) {
     return 'http://' + url
   }
 }
+
+export const setColorName = (obj, keyword: string, key?: string, colorKey?: string) => {
+  key = key || 'name'
+  colorKey = colorKey || 'colorName'
+  if (!keyword) {
+    obj[colorKey] = null
+    return
+  }
+  const name = obj[key]
+  const index = name.indexOf(keyword)
+  if (index > -1) {
+    const textCode =
+      name.substring(0, index) +
+      '<span class="search-key-span">' +
+      keyword +
+      '</span>' +
+      name.substring(index + keyword.length, name.length)
+    obj[colorKey] = textCode
+    return
+  }
+  obj[colorKey] = null
+}

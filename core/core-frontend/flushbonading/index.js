@@ -9,10 +9,10 @@ function produceTag(obj, name) {
     if (['href', 'src'].includes(key)) {
       innerProperty += ` ${key}="https://de2.fit2cloud.com${value}" `
     } else {
-      innerProperty += value ? ` ${key}="${value}" ` : key
+      innerProperty += value ? ` ${key}="${value}" ` : ''
     }
   })
-  htmlStr += `\n<${name} ${innerProperty}></${name}>`
+  htmlStr += `\n<${name} crossorigin ${innerProperty}></${name}>`
 }
 const parserStream = new WritableStream({
   onopentag(name, attributes) {
@@ -71,7 +71,7 @@ htmlStream.pipe(parserStream).on('finish', () => {
 </body>
 <script type="module">
     // https://de2.fit2cloud.com
-    DataEaseBi.create('Dashboard', { baseUrl: 'https://de2.fit2cloud.com/', token: 'oBTKean4bOhSyFFk9g' })
+    DataEaseBi.create('DashboardEditor', { baseUrl: 'https://de2.fit2cloud.com/', token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1aWQiOjEsIm9pZCI6MSwiZXhwIjoxNjg2NTgzMDg5fQ.JYvk4Oe6as9Xbf-EPf3w5w9OexUo0pZUsFXXMZFM57U' })
     DataEaseBi.initialize({ container: '#dataease-container' })
 </script>
 

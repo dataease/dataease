@@ -1,5 +1,5 @@
 <script lang="tsx" setup>
-import { reactive } from 'vue'
+import { reactive, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL, DEFAULT_FUNCTION_CFG } from '@/views/chart/components/editor/util/chart'
 
@@ -14,6 +14,13 @@ const props = defineProps({
 
 const emit = defineEmits(['onFunctionCfgChange'])
 
+watch(
+  () => props.chart,
+  () => {
+    init()
+  }
+)
+
 const state = reactive({
   functionForm: JSON.parse(JSON.stringify(DEFAULT_FUNCTION_CFG)),
   predefineColors: COLOR_PANEL,
@@ -23,6 +30,23 @@ const state = reactive({
 const changeFunctionCfg = () => {
   emit('onFunctionCfgChange', state.functionForm)
 }
+
+const init = () => {
+  const chart = JSON.parse(JSON.stringify(props.chart))
+  if (chart.senior) {
+    let senior = null
+    if (Object.prototype.toString.call(chart.senior) === '[object Object]') {
+      senior = JSON.parse(JSON.stringify(chart.senior))
+    } else {
+      senior = JSON.parse(chart.senior)
+    }
+    if (senior.functionCfg) {
+      state.functionForm = senior.functionCfg
+    }
+  }
+}
+
+init()
 </script>
 
 <template>

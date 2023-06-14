@@ -231,10 +231,10 @@ declare interface AxisLine {
 
 declare interface AxisValue {
   auto: boolean
-  min: null
-  max: null
-  split: null
-  splitCount: null
+  min: number
+  max: number
+  split: number
+  splitCount: number
 }
 
 declare interface AxisLabelFormatter {
@@ -342,9 +342,17 @@ declare interface ChartAttr {
   totalCfg: ChartTotalAttr
 }
 
+declare interface AssistLine {
+  name: string
+  value: string
+  field: string
+  color: string
+  lineType: string
+  fontSize: number
+}
 declare interface ChartSenior {
   functionCfg: ChartFunctionCfg
-  assistLine: []
+  assistLine: AssistLine[]
   threshold: ChartThreshold
 }
 declare interface Axis {
@@ -366,6 +374,7 @@ declare interface Chart {
   data: {
     data: any[]
     series?: any[]
+    dynamicAssistLines?: AssistLine[]
   }
   xAxis?: Axis[]
   xAxisExt?: Axis[]

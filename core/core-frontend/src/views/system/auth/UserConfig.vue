@@ -3,6 +3,7 @@ import { ref, reactive, onMounted, nextTick } from 'vue'
 import { Icon } from '@/components/icon-custom'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
+import { setColorName } from '@/utils/utils'
 import {
   queryUserApi,
   queryRoleApi,
@@ -17,6 +18,8 @@ const { t } = useI18n()
 const activeName = ref('user')
 const activeAuth = ref('resource')
 const nickName = ref('')
+const userKeyword = ref('')
+const resourceKeyword = ref('')
 const selectedTarget = ref('')
 const selectedResourceType = ref('panel')
 const emptyDescription = ref('')
@@ -56,12 +59,6 @@ const authActiveChange = async tabName => {
       getColumn('menu')
       state.tableData = res.data
       state.treeMap['menu'] = res.data
-
-      /* menuTreeApi().then(res => {
-        getColumn('menu')
-        state.tableData = res.data
-        state.treeMap['menu'] = res.data
-      }) */
     }
     selectedTarget.value && loadPermission(1)
   }
@@ -92,6 +89,7 @@ const state = reactive({
   userList: [],
   roleList: [],
   tableData: [],
+  filterTableData: [],
   tableColumn: [],
   globalColumn: [],
   treeMap: {},
@@ -199,7 +197,7 @@ const loadResourceTree = () => {
 }
 
 const loadUser = () => {
-  const param = { keyword: nickName.value }
+  const param = {}
   loading.value = true
   queryUserApi(param).then(res => {
     if (res?.data?.length) {
@@ -212,7 +210,7 @@ const loadUser = () => {
 }
 
 const loadRole = () => {
-  const param = { keyword: nickName.value }
+  const param = {}
   loading.value = true
   queryRoleApi(param).then(res => {
     if (res?.data?.length) {
@@ -556,6 +554,44 @@ const resetTableData = rows => {
       }
     })
 }
+const roleTree = ref(null)
+const filterTarget = val => {
+  if (activeName.value === 'role') {
+    roleTree.value?.filter(val)
+  } else {
+    state.userList.forEach(item => setColorName(item, val))
+    userKeyword.value = val ? val.toLocaleLowerCase() : val
+  }
+}
+const filterRoleNode = (value: string, data) => {
+  setColorName(data, value)
+  if (!value) return true
+  return data.name.includes(value)
+}
+const dynamicResourceClass = param => {
+  const row = param.row
+  return row.hidden ? 'dynamic-resource-hidden' : ''
+}
+const matchFilter = (row, val): boolean => {
+  let match = !val || row.name.toLocaleLowerCase().includes(val.toLocaleLowerCase())
+  setColorName(row, val)
+  if (row.children?.length) {
+    for (let index = 0; index < row.children.length; index++) {
+      const kid = row.children[index]
+      const kidMatch = matchFilter(kid, val)
+      if (kidMatch && !match) {
+        match = kidMatch
+      }
+    }
+  }
+  row.hidden = !match
+  return match
+}
+const resourceFilter = val => {
+  state.tableData.forEach(item => {
+    matchFilter(item, val)
+  })
+}
 onMounted(() => {
   loadUser()
   loadRole()
@@ -579,7 +615,7 @@ defineExpose({
         <el-tab-pane :label="t('auth.user')" name="user"></el-tab-pane>
         <el-tab-pane :label="t('auth.role')" name="role"></el-tab-pane>
       </el-tabs>
-      <el-input class="filter-input" v-model="nickName" clearable>
+      <el-input class="filter-input" v-model="nickName" clearable @change="filterTarget">
         <template #prefix>
           <el-icon>
             <Icon name="icon_search-outline_outlined"></Icon>
@@ -590,27 +626,35 @@ defineExpose({
     <el-scrollbar class="role-tree-container" v-if="activeName === 'user'">
       <div
         :key="ele.id"
-        v-for="ele in state.userList"
+        v-for="ele in state.userList.filter(
+          item => !userKeyword || item.name.toLocaleLowerCase().includes(userKeyword)
+        )"
         class="list-item_primary user-role-container"
         :class="{ 'is-active': selectedTarget === ele.id }"
         @click="targetClick(ele.id)"
       >
-        {{ ele.name }}
+        <span :title="ele.name" v-html="ele.colorName ? ele.colorName : ele.name" />
       </div>
     </el-scrollbar>
     <el-scrollbar class="role-tree-container" v-else>
       <el-tree
         class="user-role-container"
         menu
+        ref="roleTree"
         :data="state.roleList"
         :props="defaultProps"
         :highlight-current="true"
         :expand-on-click-node="false"
         @node-click="roleNodeClick"
+        :default-expand-all="true"
+        :filter-node-method="filterRoleNode"
       >
         <template #default="{ node, data }">
-          <span class="custom-tree-node" :class="{ 'is-disabled': node.disabled || data.root }">
-            <span :title="data.name">{{ node.label }}</span>
+          <span
+            class="custom-tree-node"
+            :class="{ 'span-is-disabled': node.disabled || data.root }"
+          >
+            <span :title="data.name" v-html="data.colorName ? data.colorName : node.label" />
           </span>
         </template>
       </el-tree>
@@ -627,7 +671,12 @@ defineExpose({
         <el-tab-pane :label="t('auth.resource')" name="resource"></el-tab-pane>
         <el-tab-pane v-if="activeName === 'role'" :label="t('auth.menu')" name="menu"></el-tab-pane>
       </el-tabs>
-      <el-input class="search-table-input" v-model="nickName" clearable>
+      <el-input
+        class="search-table-input"
+        v-model="resourceKeyword"
+        clearable
+        @change="resourceFilter"
+      >
         <template #prefix>
           <el-icon>
             <Icon name="icon_search-outline_outlined"></Icon>
@@ -664,11 +713,16 @@ defineExpose({
           style="width: 100%"
           row-key="id"
           height="100%"
+          :row-class-name="dynamicResourceClass"
           header-cell-class-name="header-cell"
           :expand-row-keys="state.expandedKeys"
           :tree-props="{ children: 'children' }"
         >
-          <el-table-column prop="name" show-overflow-tooltip :label="t('auth.resource_name')" />
+          <el-table-column prop="name" show-overflow-tooltip :label="t('auth.resource_name')">
+            <template v-slot:default="scope">
+              <span v-html="scope.row.colorName ? scope.row.colorName : scope.row.name" />
+            </template>
+          </el-table-column>
           <el-table-column
             v-for="item in state.tableColumn"
             :key="item.label"
@@ -814,7 +868,7 @@ defineExpose({
   background-color: var(--ed-color-primary-light-9);
   // color: var(--ed-color-primary);
 }
-.is-disabled {
+.span-is-disabled {
   opacity: 0.25;
   cursor: not-allowed;
   background: none !important;
@@ -842,5 +896,8 @@ defineExpose({
     text-overflow: ellipsis;
     overflow: hidden;
   }
+}
+::v-deep(.dynamic-resource-hidden) {
+  display: none !important;
 }
 </style>

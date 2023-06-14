@@ -107,7 +107,12 @@ init()
 
 <template>
   <el-col>
-    <el-button circle size="small" style="margin-bottom: 10px" @click="addLine">
+    <el-button
+      circle
+      size="small"
+      :style="{ marginBottom: '10px', minWidth: 'auto !important' }"
+      @click="addLine"
+    >
       <template #icon>
         <Icon name="icon_add_outlined"></Icon>
       </template>
@@ -231,7 +236,12 @@ init()
           />
         </el-col>
         <el-col :span="1">
-          <el-button type="text" circle style="float: right" @click="removeLine(index)">
+          <el-button
+            type="text"
+            circle
+            :style="{ float: 'right', minWidth: 'auto !important' }"
+            @click="removeLine(index)"
+          >
             <template #icon>
               <Icon name="icon_delete-trash_outlined"></Icon>
             </template>

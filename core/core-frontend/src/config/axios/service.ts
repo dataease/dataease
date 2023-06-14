@@ -17,7 +17,7 @@ import { useCache } from '@/hooks/web/useCache'
 const { wsCache } = useCache()
 
 export const PATH_URL = window.DataEaseBi
-  ? window.DataEaseBi?.base_url
+  ? window.DataEaseBi?.baseUrl
   : import.meta.env.VITE_API_BASEPATH
 
 // 创建axios实例

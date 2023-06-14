@@ -1,6 +1,5 @@
-<script setup lang="tsx">
+<script lang="tsx" setup>
 import { reactive, ref, toRefs } from 'vue'
-import eventBus from '@/utils/eventBus'
 import { CHART_TYPE_CONFIGS } from '@/views/chart/components/editor/util/chart'
 import { ElCol, ElRow } from 'element-plus-secondary'
 import Icon from '@/components/icon-custom/src/Icon.vue'
@@ -17,8 +16,14 @@ const props = defineProps({
         propValue: null
       }
     }
+  },
+  type: {
+    type: String,
+    required: true
   }
 })
+
+const emit = defineEmits(['onTypeChange'])
 
 const { propValue, element } = toRefs(props)
 const currentPane = ref('common')
@@ -28,35 +33,25 @@ const state = reactive({
   chartGroupList: CHART_TYPE_CONFIGS
 })
 
-const scrollTo = offsetTop => {
-  const parent = document.querySelector('#userViewGroup')
-  parent.scrollTo({
-    top: offsetTop,
+const anchorPosition = anchor => {
+  const element = document.querySelector(anchor)
+  element.scrollIntoView({
     behavior: 'smooth'
   })
 }
 
-const anchorPosition = anchor => {
-  const element = document.querySelector(anchor)
-  scrollTo(element.offsetTop)
-}
-
 const newComponent = innerType => {
-  eventBus.emit('handleNew', { componentName: 'UserView', innerType: innerType })
-}
-
-const handleDragStart = e => {
-  e.dataTransfer.setData('id', e.target.dataset.id)
+  emit('onTypeChange', innerType)
 }
 
 const groupActiveChange = category => {
   state.curCategory = category
-  anchorPosition('#' + category)
+  anchorPosition('#' + category + '-edit')
 }
 </script>
 
 <template>
-  <el-row class="group" @dragstart="handleDragStart">
+  <el-row class="group">
     <div class="group-left">
       <ul class="ul-custom">
         <li
@@ -72,7 +67,7 @@ const groupActiveChange = category => {
     </div>
     <div id="userViewGroup" class="group-right">
       <el-row
-        :id="chartGroupInfo.category"
+        :id="chartGroupInfo.category + '-edit'"
         v-for="chartGroupInfo in state.chartGroupList"
         :key="chartGroupInfo.title"
       >
@@ -85,7 +80,7 @@ const groupActiveChange = category => {
           <div
             v-on:click="newComponent(chartInfo.value)"
             class="item-top"
-            draggable="true"
+            :class="props.type === chartInfo.value ? 'item-active' : ''"
             :data-id="'UserView&' + chartInfo.value"
           >
             <Icon class-name="item-top-icon" :name="chartInfo.icon" />
@@ -101,9 +96,10 @@ const groupActiveChange = category => {
 
 <style lang="less" scoped>
 .group {
-  display: flex;
+  display: flex !important;
   max-height: 400px;
   height: 100%;
+  width: 410px;
   .group-left {
     width: 100px;
     height: 100%;
@@ -164,7 +160,7 @@ const groupActiveChange = category => {
   .item-top {
     width: 88px;
     height: 64px;
-    background: #1a1a1a;
+    background: transparent;
     border-radius: 4px;
     cursor: pointer;
     &:hover {
@@ -175,6 +171,9 @@ const groupActiveChange = category => {
       height: 62px;
       color: @canvas-main-font-color;
     }
+  }
+  .item-active {
+    border: 1px solid #3370ff;
   }
   .item-bottom {
     height: 20px;

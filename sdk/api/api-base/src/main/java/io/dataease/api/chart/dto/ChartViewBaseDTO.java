@@ -1,5 +1,6 @@
 package io.dataease.api.chart.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
@@ -65,21 +66,25 @@ public class ChartViewBaseDTO implements Serializable {
     /**
      * 横轴field
      */
+    @JsonProperty("xAxis")
     private List<ChartViewFieldDTO> xAxis;
 
     /**
      * 横轴field ext
      */
+    @JsonProperty("xAxisExt")
     private List<ChartViewFieldDTO> xAxisExt;
 
     /**
      * 纵轴field
      */
+    @JsonProperty("yAxis")
     private List<ChartViewFieldDTO> yAxis;
 
     /**
      * 副轴
      */
+    @JsonProperty("yAxisExt")
     private List<ChartViewFieldDTO> yAxisExt;
 
     /**

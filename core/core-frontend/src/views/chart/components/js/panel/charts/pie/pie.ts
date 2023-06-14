@@ -8,6 +8,9 @@ const DEFAULT_DATA = []
 export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
   drawChart(drawOptions: G2PlotDrawOptions<G2Pie>): G2Pie {
     const chart = drawOptions.chart
+    if (!chart.data?.data?.length) {
+      return
+    }
     // data
     const data = chart.data.data
     // size

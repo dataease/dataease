@@ -1,12 +1,11 @@
 <script lang="ts" setup>
 import { propTypes } from '@/utils/propTypes'
-import { onBeforeMount, watch, reactive } from 'vue'
+import { onBeforeMount, watch, toRefs, PropType } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import ApiVariable from './ApiVariable.vue'
 import CodeEdit from './CodeEdit.vue'
 import Convert from './convert.js'
 import { KeyValue, BODY_TYPE } from './ApiTestModel.js'
-
 export interface ApiBodyItem {
   raw?: string
   typeChange: string
@@ -22,51 +21,56 @@ export interface Item {
   description: string
   type: string
 }
-defineProps({
+const props = defineProps({
   isReadOnly: propTypes.bool.def(false),
-  isShowEnable: propTypes.bool.def(false)
+  isShowEnable: propTypes.bool.def(false),
+  body: {
+    type: Object as PropType<ApiBodyItem>,
+    default: () => ({
+      raw: '',
+      typeChange: '',
+      format: '',
+      jsonSchema: '',
+      type: '',
+      kvs: []
+    })
+  },
+  headers: {
+    type: Array as PropType<Item[]>,
+    default: () => []
+  }
 })
 const { t } = useI18n()
-let headers = []
 const modes = ['text', 'json', 'xml', 'html']
 const hasOwnProperty = Object.prototype.hasOwnProperty
 const propIsEnumerable = Object.prototype.propertyIsEnumerable
-const apiBody = reactive<ApiBodyItem>({
-  raw: '',
-  typeChange: '',
-  format: '',
-  jsonSchema: '',
-  type: '',
-  kvs: []
-})
+const { body: apiBody, headers } = toRefs(props)
 
-const initApiBody = (body, header) => {
-  Object.assign(apiBody, body)
-  headers = header
-}
-
-watch([apiBody.raw], () => {
-  if (apiBody.format !== 'JSON-SCHEMA' && apiBody.raw) {
-    try {
-      const MsConvert = new Convert()
-      const data = MsConvert.format(JSON.parse(apiBody.raw))
-      if (apiBody.jsonSchema) {
-        apiBody.jsonSchema = deepAssign(data)
-      } else {
-        apiBody.jsonSchema = data
+watch(
+  () => apiBody.value.raw,
+  () => {
+    if (apiBody.value.format !== 'JSON-SCHEMA' && apiBody.value.raw) {
+      try {
+        const MsConvert = new Convert()
+        const data = MsConvert.format(JSON.parse(apiBody.value.raw))
+        if (apiBody.value.jsonSchema) {
+          apiBody.value.jsonSchema = deepAssign(data)
+        } else {
+          apiBody.value.jsonSchema = data
+        }
+      } catch (ex) {
+        apiBody.value.jsonSchema = ''
       }
-    } catch (ex) {
-      apiBody.jsonSchema = ''
     }
   }
-})
+)
 
 onBeforeMount(() => {
-  if (!apiBody.type) {
-    apiBody.type = BODY_TYPE.FORM_DATA
+  if (!apiBody.value.type) {
+    apiBody.value.type = BODY_TYPE.FORM_DATA
   }
-  if (apiBody.kvs) {
-    apiBody.kvs.forEach(param => {
+  if (apiBody.value.kvs) {
+    apiBody.value.kvs.forEach(param => {
       if (!param.type) {
         param.type = 'text'
       }
@@ -131,7 +135,7 @@ const deepAssign = function (target) {
   return target
 }
 const modeChange = () => {
-  switch (apiBody.type) {
+  switch (apiBody.value.type) {
     case 'JSON':
       setContentType('application/json')
       break
@@ -149,55 +153,37 @@ const modeChange = () => {
       break
   }
 }
-watch(
-  apiBody,
-  val => {
-    emits('bodyChange', val)
-  },
-  { deep: true }
-)
+
 const setContentType = value => {
   let isType = false
-  headers.forEach(item => {
+  headers.value.forEach(item => {
     if (item.name === 'Content-Type') {
       item.value = value
       isType = true
     }
   })
   if (!isType) {
-    headers.unshift(new KeyValue({ name: 'Content-Type', value: value }))
-    emits('headersChange', headers)
+    headers.value.unshift(new KeyValue({ name: 'Content-Type', value: value }))
   }
 }
 const removeContentType = () => {
-  let oldVal = headers.length
-  headers = headers.filter(ele => {
-    return ele.name !== 'Content-Type'
-  })
-  let newVal = headers.length
-  if (oldVal !== newVal) {
-    emits('headersChange', headers)
+  for (const index in headers.value) {
+    if (headers.value[index].name === 'Content-Type') {
+      headers.value.splice(parseInt(index), 1)
+      emits('headersChange')
+      return
+    }
   }
-}
-const moveParameters = val => {
-  const pre = apiBody.kvs[val]
-  const next = apiBody.kvs[val + 1]
-  apiBody.kvs.splice(val, 2, ...[next, pre])
-  emits('kvsChange', val)
 }
 const changeParameters = val => {
   if (!isNaN(val)) {
-    apiBody.kvs.splice(val, 1)
+    apiBody.value.kvs.splice(val, 1)
   } else {
-    apiBody.kvs.push(val)
+    apiBody.value.kvs.push(val)
   }
-  emits('kvsChange', val)
 }
-defineExpose({
-  initApiBody
-})
 
-const emits = defineEmits(['headersChange', 'bodyChange', 'kvsChange'])
+const emits = defineEmits(['headersChange'])
 </script>
 
 <template>
@@ -230,10 +216,9 @@ const emits = defineEmits(['headersChange', 'bodyChange', 'kvsChange'])
         :is-show-enable="isShowEnable"
         type="body"
         @change-parameters="changeParameters"
-        @move-parameters="moveParameters"
       />
     </div>
-    <div v-if="apiBody.type == 'JSON'">
+    <div v-if="apiBody.type == 'JSON'" class="ms-body">
       <code-edit
         ref="codeEdit"
         :read-only="isReadOnly"
@@ -273,6 +258,5 @@ const emits = defineEmits(['headersChange', 'bodyChange', 'kvsChange'])
 <style lang="less" scoped>
 .ms-body {
   padding: 15px 0;
-  height: 400px;
 }
 </style>

@@ -50,7 +50,7 @@ const originFieldItem = reactive({
   fields: []
 })
 
-const apiItem = reactive<ApiItem>({
+let apiItem = reactive<ApiItem>({
   status: '',
   name: '',
   url: '',
@@ -138,25 +138,7 @@ const showApiData = () => {
     }
   })
 }
-// const generateColumns = (arr: Field[]) =>
-//   arr.map(ele => ({
-//     key: ele.fieldShortName,
-//     deType: ele.deType,
-//     dataKey: ele.fieldShortName,
-//     title: ele.name,
-//     width: 150,
-//     headerCellRenderer: ({ column }) => (
-//       <div style={{ width: '100%', display: 'flex', alignItems: 'center' }}>
-//         <ElIcon>
-//           <Icon
-//             name={`field_${fieldType(column.deType)}`}
-//             className={`field-icon-${fieldType(column.deType)}`}
-//           ></Icon>
-//         </ElIcon>
-//         {column.title}
-//       </div>
-//     )
-//   }))
+
 const reqOptions = [
   { id: 'GET', label: 'GET' },
   { id: 'POST', label: 'POST' }
@@ -243,7 +225,6 @@ const previewData = () => {
   tableData.value = data
   columns.value = columnTmp
   showEmpty.value = apiItem.fields.length === 0
-  console.log(apiItem.fields)
 }
 
 const handleCheckChange = (apiItem, node) => {
@@ -300,25 +281,6 @@ const changeId = (val: string) => {
   apiItem.request.body.typeChange = val
 }
 
-const bodyChange = val => {
-  apiItem.request.body = val
-}
-
-const headersChange = val => {
-  apiItem.request.headers = val
-}
-
-const changeParameters = val => {
-  apiItem.request.arguments = val
-}
-const authConfigChange = val => {
-  apiItem.request.authManager = val
-}
-
-const kvsChange = val => {
-  apiItem.request.body.kvs = val
-}
-
 const returnAPIItem = defineEmits(['returnItem'])
 
 defineExpose({
@@ -369,7 +331,7 @@ defineExpose({
             class="input-with-select"
           >
             <template #prepend>
-              <el-select v-model="apiItem.method" style="width: 100px">
+              <el-select v-model="apiItem.method">
                 <el-option
                   v-for="item in reqOptions"
                   :key="item.id"
@@ -391,11 +353,6 @@ defineExpose({
               v-if="edit_api_item"
               :request="apiItem.request"
               @changeId="changeId"
-              @authConfigChange="authConfigChange"
-              @bodyChange="bodyChange"
-              @headersChange="headersChange"
-              @kvsChange="kvsChange"
-              @changeParameters="changeParameters"
             />
           </el-form-item>
         </div>
@@ -429,12 +386,7 @@ defineExpose({
           <span>{{ t('datasource.column_info') }}</span>
         </div>
         <div class="table-container de-svg-in-table" v-show="apiItem.useJsonPath">
-          <el-table
-            ref="apiItemTable"
-            :data="originFieldItem.jsonFields"
-            style="width: 100%"
-            row-key="jsonPath"
-          >
+          <el-table :data="originFieldItem.jsonFields" style="width: 100%" row-key="jsonPath">
             <el-table-column
               class-name="checkbox-table"
               prop="originName"
@@ -462,12 +414,7 @@ defineExpose({
           <span>{{ t('datasource.column_info') }}</span>
         </div>
         <div class="table-container de-svg-in-table">
-          <el-table
-            ref="apiItemTable"
-            :data="apiItem.jsonFields"
-            style="width: 100%"
-            row-key="jsonPath"
-          >
+          <el-table :data="apiItem.jsonFields" style="width: 100%" row-key="jsonPath">
             <el-table-column
               class-name="checkbox-table"
               prop="originName"
@@ -501,7 +448,7 @@ defineExpose({
               <template #default="scope">
                 <el-select
                   v-model="scope.row.deExtractType"
-                  :disabled="scope.row.children"
+                  :disabled="disabledByChildren(scope.row)"
                   class="select-type"
                   style="display: inline-block; width: 120px"
                 >
@@ -540,14 +487,13 @@ defineExpose({
         <div class="title-form_primary">
           <span>{{ t('datasource.data_preview') }}</span>
         </div>
-        <empty-background
-          v-if="showEmpty"
-          description="暂无数据，请在数据结构勾选字段"
-          img-type="select"
-        />
-
-        <div class="info-table" v-else>
-          <el-auto-resizer>
+        <div class="info-table">
+          <empty-background
+            v-if="showEmpty"
+            description="暂无数据，请在数据结构勾选字段"
+            img-type="select"
+          />
+          <el-auto-resizer v-else>
             <template #default="{ height, width }">
               <el-table-v2
                 :columns="columns"
@@ -585,13 +531,17 @@ defineExpose({
     }
   }
 
+  .ed-form {
+    width: 100%;
+  }
+
   .title-form_primary {
     margin: 16px 0;
   }
   .input-with-select {
     .ed-input-group__prepend {
       background-color: #fff;
-      border-color: #bbbfc4;
+      padding: 0 20px;
       .ed-select {
         width: 84px !important;
       }
@@ -600,6 +550,14 @@ defineExpose({
   .table-container {
     padding: 20px;
     border: 1px solid #dee0e3;
+  }
+
+  .info-table {
+    max-height: 300px;
+    height: 200px;
+    .ed-table-v2__header-cell {
+      background-color: #f5f6f7;
+    }
   }
 }
 </style>

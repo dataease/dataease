@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { propTypes } from '@/utils/propTypes'
-import { computed, onBeforeMount, PropType } from 'vue'
+import { computed, onBeforeMount, PropType, toRefs } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { KeyValue } from './ApiTestModel.js'
 
@@ -35,41 +35,50 @@ const valueText = computed(() => {
   return props.valuePlaceholder || t('datasource.value')
 })
 
+const { suggestions, items } = toRefs(props)
+
 onBeforeMount(() => {
-  if (!props.items.length || props.items[props.items.length - 1].name) {
-    emits('changeHeaders', new KeyValue({ enable: true, name: '', value: '' }))
+  if (!items.value.length || items.value[items.value.length - 1].name) {
+    items.value.push(new KeyValue({ enable: true, name: '', value: '' }))
   }
 })
 
 const moveBottom = (index: number) => {
-  if (props.items.length < 2 || index === props.items.length - 2) {
+  if (items.value.length < 2 || index === items.value.length - 2) {
     return
   }
-  emits('moveHeaders', index)
+  const thisRow = items.value[index]
+  const nextRow = items.value[index + 1]
+  items.value[index] = nextRow
+  items.value[index + 1] = thisRow
 }
 const moveTop = (index: number) => {
   if (index === 0) {
     return
   }
-  emits('moveHeaders', index - 1)
+  const thisRow = items.value[index]
+  const lastRow = items.value[index - 1]
+  items.value[index] = lastRow
+  items.value[index - 1] = thisRow
 }
 const remove = (index: number) => {
   if (isDisable(index)) return
   // 移除整行输入控件及内容
-  emits('changeHeaders', index)
+  items.value.splice(index, 1)
 }
 const change = () => {
-  const isNeedCreate = !props.items.some(item => !item.name && !item.value)
+  const isNeedCreate = !items.value.some(item => !item.name && !item.value)
   if (isNeedCreate) {
-    emits('changeHeaders', new KeyValue({ enable: true }))
+    items.value.push(new KeyValue({ enable: true }))
   }
 }
 const isDisable = (index: number) => {
-  return props.items.length - 1 === index
+  return items.value.length - 1 === index
 }
 const querySearch = (queryString, cb) => {
-  const suggestions = props.suggestions
-  const results = queryString ? suggestions.filter(createFilter(queryString)) : suggestions
+  const results = queryString
+    ? suggestions.value.filter(createFilter(queryString))
+    : suggestions.value
   cb(results)
 }
 const createFilter = (queryString: string) => {
@@ -77,7 +86,6 @@ const createFilter = (queryString: string) => {
     return restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
   }
 }
-const emits = defineEmits(['changeHeaders', 'moveHeaders'])
 </script>
 
 <template>
@@ -112,7 +120,7 @@ const emits = defineEmits(['changeHeaders', 'moveHeaders'])
 
         <el-col :span="6" v-if="unShowSelect">
           <el-input
-            v-if="suggestions"
+            v-if="!!suggestions.length"
             v-model="item.name"
             :disabled="isReadOnly"
             maxlength="200"

@@ -24,6 +24,7 @@ export interface Node {
   name: string
   createBy: string
   id: number
+  description: string
   type: string
   nodeType: string
   syncSetting?: SyncSetting
@@ -56,11 +57,10 @@ const dsName = ref('')
 const router = useRouter()
 const userDrawer = ref(false)
 const rawDatasourceList = ref([])
+
 const selectDataset = row => {
   Object.assign(dsTableDetail, row)
   userDrawer.value = true
-  let table = { dataSourceId: nodeInfo.id, info: '' }
-  table.info = JSON.stringify({ table: row.name })
   getTableField(nodeInfo.id, row.tableName).then(res => {
     state.dsTableData = res.data
   })
@@ -99,6 +99,7 @@ const pagingTable = computed(() => {
 const nodeInfo = reactive<Node>({
   name: '',
   createBy: '',
+  description: '',
   id: 0,
   nodeType: '',
   type: '',
@@ -152,9 +153,11 @@ const buildTree = array => {
 const tableData = shallowRef([])
 const handleNodeClick = data => {
   if (data.databaseClassification) return
-  const { name, createBy, id, type, configuration, syncSetting, apiConfiguration } = data
+  const { name, createBy, id, type, configuration, syncSetting, apiConfiguration, description } =
+    data
   Object.assign(nodeInfo, {
     name,
+    description,
     createBy,
     id,
     type,
@@ -166,7 +169,7 @@ const handleNodeClick = data => {
   handleCurrentChange(1)
   handleClick(activeName.value)
 }
-const createDatasource = (data?: DsType) => {
+const createDatasource = () => {
   router.push({
     path: '/ds-form',
     query: {}
@@ -182,6 +185,7 @@ const handleClick = (tabName: TabPaneName) => {
     case 'table':
       listDatasourceTables(nodeInfo.id).then(res => {
         tableData.value = res.data
+        initSearch()
       })
       break
     default:
@@ -281,7 +285,7 @@ const defaultProps = {
               width="108"
             >
               <template #default="scope">
-                <el-button text @click="selectDataset(scope.row)"
+                <el-button text @click.stop="selectDataset(scope.row)"
                   >{{ t('common.detail') }}
                 </el-button>
               </template>

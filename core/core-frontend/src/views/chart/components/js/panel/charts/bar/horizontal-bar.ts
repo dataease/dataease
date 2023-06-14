@@ -19,6 +19,9 @@ const DEFAULT_DATA = []
 export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
   drawChart(drawOptions: G2PlotDrawOptions<Bar>): Bar {
     const chart = drawOptions.chart
+    if (!chart.data?.data?.length) {
+      return
+    }
     // size
     let customAttr: DeepPartial<ChartAttr>
     let barGap = undefined
@@ -175,7 +178,7 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
       this.configCustomXAxis,
       this.configYAxis,
       this.configSlider,
-      this.configAnalyse
+      this.configAnalyseHorizontal
     )(chart, options)
   }
 }

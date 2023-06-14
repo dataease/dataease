@@ -77,7 +77,7 @@ public class DatasetDataManage {
             } else {
                 // add sql table schema
                 String sql = SqlUtils.addSchema(new String(Base64.getDecoder().decode(tableInfoDTO.getSql())), datasourceSchemaDTO.getSchemaAlias());
-                // parser sql params and repalce default value
+                // parser sql params and replace default value
                 sql = SqlparserUtils.handleVariableDefaultValue(sql, datasetTableDTO.getSqlVariableDetails(), true);
                 datasourceRequest.setQuery(sql);
             }
@@ -201,7 +201,7 @@ public class DatasetDataManage {
         }
         datasourceSchemaDTO.setSchemaAlias(alias);
         String sql = SqlUtils.addSchema(datasetSQLManage.subPrefixSuffixChar(new String(Base64.getDecoder().decode(dto.getSql()))), alias);
-        // parser sql params and repalce default value
+        // parser sql params and replace default value
         sql = SqlparserUtils.handleVariableDefaultValue(sql, dto.getSqlVariableDetails(), true);
         Map<Long, DatasourceSchemaDTO> dsMap = new LinkedHashMap<>();
         dsMap.put(datasourceSchemaDTO.getId(), datasourceSchemaDTO);

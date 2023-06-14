@@ -133,7 +133,7 @@ const initDataset = () => {
 
 onMounted(() => {
   initDataset()
-  const { dvId, pid } = router.currentRoute.value.query
+  const { dvId, pid } = window.DataEaseBi || router.currentRoute.value.query
   if (dvId) {
     // 从数据库中获取
     findById(dvId).then(res => {

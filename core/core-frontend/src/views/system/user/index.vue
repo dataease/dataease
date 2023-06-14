@@ -3,22 +3,20 @@ import { ref, reactive, onMounted } from 'vue'
 import { ElTabs, ElTabPane } from 'element-plus-secondary'
 import { columnNames } from './options'
 import { Icon } from '@/components/icon-custom'
-import { FilterText } from '@/components/filter-text'
+import { FilterText, convertFilterText } from '@/components/filter-text'
 import DrawerMain from '@/components/drawer-main/src/DrawerMain.vue'
 import UserForm from './UserForm.vue'
-// import DatasetUnion from './DatasetUnion.vue'
 import RoleManage from './RoleManage.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import ColumnList from '@/components/column-list/src/ColumnList.vue'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
 import { userPageApi, userDelApi } from '@/api/user'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
-// import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
+import { setColorName } from '@/utils/utils'
 const { t } = useI18n()
 const activeName = ref('user')
 const isPluginLoaded = ref(false)
 const drawerMainRef = ref(null)
-const nickName = ref('')
 const userFormDialog = ref(null)
 const loading = ref(false)
 const handleClick = () => {
@@ -32,22 +30,26 @@ const addUser = () => {
 const drawerMainOpen = () => {
   drawerMainRef.value.init()
 }
+const drawerMainClose = () => {
+  drawerMainRef.value.close()
+}
 
 const filterOption = [
   {
     type: 'enum',
     option: [
       {
-        id: 1,
+        id: true,
         name: t('commons.enable')
       },
       {
-        id: 0,
+        id: false,
         name: t('commons.disable')
       }
     ],
     field: 'status',
-    title: '状态'
+    title: '状态',
+    operate: 'in'
   }
 ]
 const state = reactive({
@@ -58,9 +60,11 @@ const state = reactive({
     currentPage: 1,
     pageSize: 10,
     total: 0
-  }
+  },
+  conditions: [],
+  orders: []
 })
-
+const keyword = ref(null)
 state.filterTexts = []
 
 const columnChange = (columns: string[]) => {
@@ -73,12 +77,21 @@ const clearFilter = (index?: number) => {
   } else {
     state.filterTexts.splice(index, 1)
   }
+  drawerMainRef.value.clearFilter(index)
 }
 
 const search = () => {
   loading.value = true
-  userPageApi(state.paginationConfig.currentPage, state.paginationConfig.pageSize, {}).then(res => {
-    state.userList = res.data.records
+  userPageApi(state.paginationConfig.currentPage, state.paginationConfig.pageSize, {
+    orders: state.orders,
+    conditions: state.conditions,
+    keyword: keyword.value
+  }).then(res => {
+    const records = res.data.records
+    records.forEach(item => {
+      setColorName(item, keyword.value)
+    })
+    state.userList = records
     state.paginationConfig.total = res.data.total
     loading.value = false
   })
@@ -130,7 +143,30 @@ const saveHandler = () => {
   search()
 }
 const searchCondition = conditions => {
-  console.log(conditions)
+  state.conditions = conditions
+  search()
+  fillFilterText()
+  drawerMainClose()
+}
+const fillFilterText = () => {
+  const textArray = convertFilterText(state.conditions, filterOption)
+  Object.assign(state.filterTexts, textArray)
+}
+const currentChange = index => {
+  state.paginationConfig.currentPage = index
+  search()
+}
+const sizeChange = size => {
+  state.paginationConfig.pageSize = size
+  search()
+}
+const sortChange = param => {
+  state.orders = []
+  if (param.order && param.prop === 'createTime') {
+    const type = param.order.substring(0, param.order.indexOf('ending'))
+    state.orders.push('create_time ' + type)
+    search()
+  }
 }
 </script>
 <template>
@@ -149,7 +185,7 @@ const searchCondition = conditions => {
         </el-button>
       </el-col>
       <el-col :span="12" class="right-filter">
-        <el-input v-model="nickName" clearable>
+        <el-input v-model="keyword" clearable @change="search">
           <template #prefix>
             <el-icon>
               <Icon name="icon_search-outline_outlined"></Icon>
@@ -179,6 +215,9 @@ const searchCondition = conditions => {
         :columns="state.columnList"
         :pagination="state.paginationConfig"
         :table-data="state.userList"
+        :current-change="currentChange"
+        :size-change="sizeChange"
+        @sort-change="sortChange"
       >
         <el-table-column type="selection" width="30" />
         <el-table-column
@@ -192,10 +231,14 @@ const searchCondition = conditions => {
           key="name"
           show-overflow-tooltip
           prop="name"
-          sortable="custom"
           :label="t('user.name')"
           width="150"
-        />
+        >
+          <template v-slot:default="scope">
+            <span v-if="scope.row.colorName" v-html="scope.row.colorName" />
+            <span v-else>{{ scope.row.name }}</span>
+          </template>
+        </el-table-column>
 
         <el-table-column
           prop="roleItems"
@@ -226,7 +269,12 @@ const searchCondition = conditions => {
             />
           </template>
         </el-table-column>
-        <el-table-column prop="createTime" :label="t('common.create_time')" width="170">
+        <el-table-column
+          prop="createTime"
+          :label="t('common.create_time')"
+          sortable="custom"
+          width="170"
+        >
           <template v-slot:default="scope">
             <span>{{ timestampFormatDate(scope.row.createTime) }}</span>
           </template>

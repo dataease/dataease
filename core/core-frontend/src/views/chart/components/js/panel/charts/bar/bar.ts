@@ -93,8 +93,11 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
       const axisValue = parseJson(chart.customStyle).yAxis.axisValue
       if (!axisValue?.auto) {
         const yAxis = {
+          ...options.yAxis,
           min: axisValue.min,
           max: axisValue.max,
+          minLimit: axisValue.min,
+          maxLimit: axisValue.max,
           tickCount: axisValue.splitCount
         }
         return { ...options, yAxis }
