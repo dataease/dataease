@@ -13,6 +13,7 @@ public class ApiDefinitionRequest {
     private List<Map<String, String>> headers = new ArrayList<>();
     private Map<String, Object> body = new HashMap<>();
     private List<Map<String, String>> arguments = new ArrayList<>();
+    private List<Map<String, String>> rest = new ArrayList<>();
     private AuthManager authManager = new AuthManager();
 
 
