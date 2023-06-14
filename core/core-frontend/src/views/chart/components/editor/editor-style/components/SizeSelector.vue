@@ -1,5 +1,5 @@
 <script lang="tsx" setup>
-import { reactive } from 'vue'
+import { reactive, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import {
   CHART_FONT_FAMILY,
@@ -17,6 +17,13 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['onSizeChange'])
+
+watch(
+  () => props.chart,
+  () => {
+    init()
+  }
+)
 
 const state = reactive({
   sizeForm: JSON.parse(JSON.stringify(DEFAULT_SIZE)),

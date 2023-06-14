@@ -26,13 +26,12 @@ const state = reactive({
   quotaFields: []
 })
 
-// watch(
-//   [props.chart],
-//   () => {
-//     // todo
-//   },
-//   { deep: true }
-// )
+watch(
+  () => props.chart,
+  () => {
+    init()
+  }
+)
 
 const changeAssistLine = () => {
   emit('onAssistLineChange', state.assistLine)
@@ -80,6 +79,31 @@ const changeLine = () => {
   changeAssistLine()
   closeEditLine()
 }
+
+const init = () => {
+  const chart = JSON.parse(JSON.stringify(props.chart))
+  if (chart.senior) {
+    let senior = null
+    if (Object.prototype.toString.call(chart.senior) === '[object Object]') {
+      senior = JSON.parse(JSON.stringify(chart.senior))
+    } else {
+      senior = JSON.parse(chart.senior)
+    }
+    if (senior.assistLine) {
+      for (let i = 0; i < senior.assistLine.length; i++) {
+        if (!senior.assistLine[i].fontSize) {
+          senior.assistLine[i].fontSize = '10'
+        }
+      }
+      state.assistLine = senior.assistLine
+    } else {
+      state.assistLine = []
+    }
+    state.lineArr = JSON.parse(JSON.stringify(state.assistLine))
+  }
+}
+
+init()
 </script>
 
 <template>
