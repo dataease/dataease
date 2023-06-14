@@ -13,6 +13,7 @@ import ColumnList from '@/components/column-list/src/ColumnList.vue'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
 import { userPageApi, userDelApi } from '@/api/user'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
+import { setColorName } from '@/utils/utils'
 // import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 const { t } = useI18n()
 const activeName = ref('user')
@@ -88,7 +89,11 @@ const search = () => {
     conditions: state.conditions,
     keyword: keyword.value
   }).then(res => {
-    state.userList = res.data.records
+    const records = res.data.records
+    records.forEach(item => {
+      setColorName(item, keyword.value)
+    })
+    state.userList = records
     state.paginationConfig.total = res.data.total
     loading.value = false
   })
@@ -211,7 +216,12 @@ const fillFilterText = () => {
           prop="name"
           :label="t('user.name')"
           width="150"
-        />
+        >
+          <template v-slot:default="scope">
+            <span v-if="scope.row.colorName" v-html="scope.row.colorName" />
+            <span v-else>{{ scope.row.name }}</span>
+          </template>
+        </el-table-column>
 
         <el-table-column
           prop="roleItems"

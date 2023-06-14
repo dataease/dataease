@@ -3,6 +3,7 @@ import { ref, reactive, onMounted, nextTick } from 'vue'
 import { Icon } from '@/components/icon-custom'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
+import { setColorName } from '@/utils/utils'
 import {
   queryUserApi,
   queryRoleApi,
@@ -17,6 +18,7 @@ const { t } = useI18n()
 const activeName = ref('user')
 const activeAuth = ref('resource')
 const nickName = ref('')
+const userKeyword = ref('')
 const resourceKeyword = ref('')
 const selectedTarget = ref('')
 const selectedResourceType = ref('panel')
@@ -556,9 +558,13 @@ const roleTree = ref(null)
 const filterTarget = val => {
   if (activeName.value === 'role') {
     roleTree.value?.filter(val)
+  } else {
+    state.userList.forEach(item => setColorName(item, val))
+    userKeyword.value = val ? val.toLocaleLowerCase() : val
   }
 }
 const filterRoleNode = (value: string, data) => {
+  setColorName(data, value)
   if (!value) return true
   return data.name.includes(value)
 }
@@ -568,6 +574,7 @@ const dynamicResourceClass = param => {
 }
 const matchFilter = (row, val): boolean => {
   let match = !val || row.name.toLocaleLowerCase().includes(val.toLocaleLowerCase())
+  setColorName(row, val)
   if (row.children?.length) {
     for (let index = 0; index < row.children.length; index++) {
       const kid = row.children[index]
@@ -619,12 +626,14 @@ defineExpose({
     <el-scrollbar class="role-tree-container" v-if="activeName === 'user'">
       <div
         :key="ele.id"
-        v-for="ele in state.userList.filter(item => !nickName || item.name.includes(nickName))"
+        v-for="ele in state.userList.filter(
+          item => !userKeyword || item.name.toLocaleLowerCase().includes(userKeyword)
+        )"
         class="list-item_primary user-role-container"
         :class="{ 'is-active': selectedTarget === ele.id }"
         @click="targetClick(ele.id)"
       >
-        {{ ele.name }}
+        <span :title="ele.name" v-html="ele.colorName ? ele.colorName : ele.name" />
       </div>
     </el-scrollbar>
     <el-scrollbar class="role-tree-container" v-else>
@@ -637,6 +646,7 @@ defineExpose({
         :highlight-current="true"
         :expand-on-click-node="false"
         @node-click="roleNodeClick"
+        :default-expand-all="true"
         :filter-node-method="filterRoleNode"
       >
         <template #default="{ node, data }">
@@ -644,7 +654,7 @@ defineExpose({
             class="custom-tree-node"
             :class="{ 'span-is-disabled': node.disabled || data.root }"
           >
-            <span :title="data.name">{{ node.label }}</span>
+            <span :title="data.name" v-html="data.colorName ? data.colorName : node.label" />
           </span>
         </template>
       </el-tree>
@@ -708,7 +718,11 @@ defineExpose({
           :expand-row-keys="state.expandedKeys"
           :tree-props="{ children: 'children' }"
         >
-          <el-table-column prop="name" show-overflow-tooltip :label="t('auth.resource_name')" />
+          <el-table-column prop="name" show-overflow-tooltip :label="t('auth.resource_name')">
+            <template v-slot:default="scope">
+              <span v-html="scope.row.colorName ? scope.row.colorName : scope.row.name" />
+            </template>
+          </el-table-column>
           <el-table-column
             v-for="item in state.tableColumn"
             :key="item.label"
