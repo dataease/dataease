@@ -9,7 +9,8 @@ import EditorDetail from './EditorDetail.vue'
 import ExcelDetail from './ExcelDetail.vue'
 import { validate, save } from '@/api/datasource'
 import { Base64 } from 'js-base64'
-
+import { useRouter } from 'vue-router'
+import type { Param } from './ExcelDetail.vue'
 interface Node {
   name: string
   id: string
@@ -26,6 +27,7 @@ interface Form {
 }
 
 const { t } = useI18n()
+const { push } = useRouter()
 
 const dsType = ['OLTP', 'OLAP', 'DL', 'LOCAL', 'OTHER']
 
@@ -161,6 +163,7 @@ const saveDS = () => {
   }
 
   save(request).then(() => {
+    push('/data/datasource')
     ElMessage.success(t('common.save_success'))
   })
 }
@@ -170,12 +173,12 @@ const form = reactive<Form>({
   type: 'API',
   apiConfiguration: []
 })
-const form2 = reactive<{
-  id: number
-  type: string
-}>({
+const form2 = reactive<Param>({
   id: 0,
-  type: 'API'
+  editType: 0,
+  table: {
+    name: ''
+  }
 })
 </script>
 

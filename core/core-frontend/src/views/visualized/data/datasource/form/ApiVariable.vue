@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { propTypes } from '@/utils/propTypes'
-import { computed, onBeforeMount, PropType } from 'vue'
+import { computed, onBeforeMount, PropType, toRefs } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { KeyValue } from './ApiTestModel.js'
 import { guid } from '@/views/visualized/data/dataset/form/util.js'
@@ -35,10 +35,11 @@ const valueText = computed(() => {
   return props.valuePlaceholder || t('datasource.value')
 })
 
+const { parameters, suggestions } = toRefs(props)
+
 onBeforeMount(() => {
-  if (props.parameters.length === 0 || props.parameters[props.parameters.length - 1].name) {
-    emits(
-      'changeParameters',
+  if (parameters.value.length === 0 || parameters.value[parameters.value.length - 1].name) {
+    parameters.value.push(
       new KeyValue({
         type: 'text',
         enable: true,
@@ -61,27 +62,32 @@ const typeChange = item => {
 }
 
 const moveBottom = (index: number) => {
-  if (props.parameters.length < 2 || index === props.parameters.length - 2) {
+  if (parameters.value.length < 2 || index === parameters.value.length - 2) {
     return
   }
-  emits('moveParameters', index)
+  const thisRow = parameters.value[index]
+  const nextRow = parameters.value[index + 1]
+  parameters.value[index] = nextRow
+  parameters.value[index + 1] = thisRow
 }
 const moveTop = (index: number) => {
   if (index === 0) {
     return
   }
-  emits('moveParameters', index - 1)
+  const thisRow = parameters.value[index]
+  const lastRow = parameters.value[index + 1]
+  parameters.value[index] = lastRow
+  parameters.value[index + 1] = thisRow
 }
 const remove = (index: number) => {
   if (isDisable(index)) return
   // 移除整行输入控件及内容
-  emits('changeParameters', index)
+  parameters.value.splice(index, 1)
 }
 const change = () => {
-  const isNeedCreate = !props.parameters.some(item => !item.name && !item.value)
+  const isNeedCreate = !parameters.value.some(item => !item.name && !item.value)
   if (isNeedCreate) {
-    emits(
-      'changeParameters',
+    parameters.value.push(
       new KeyValue({
         type: 'text',
         enable: true,
@@ -92,11 +98,12 @@ const change = () => {
   }
 }
 const isDisable = (index: number) => {
-  return props.parameters.length - 1 === index
+  return parameters.value.length - 1 === index
 }
 const querySearch = (queryString, cb) => {
-  const suggestions = props.suggestions
-  const results = queryString ? suggestions.filter(createFilter(queryString)) : suggestions
+  const results = queryString
+    ? suggestions.value.filter(createFilter(queryString))
+    : suggestions.value
   cb(results)
 }
 const createFilter = (queryString: string) => {
@@ -104,7 +111,6 @@ const createFilter = (queryString: string) => {
     return restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
   }
 }
-const emits = defineEmits(['changeParameters', 'moveParameters'])
 </script>
 
 <template>

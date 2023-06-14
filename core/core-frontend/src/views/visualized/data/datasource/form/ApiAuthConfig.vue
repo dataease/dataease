@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onBeforeMount, reactive, watch, PropType } from 'vue'
+import { onBeforeMount, reactive, watch, PropType, toRefs } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 
 export interface AuthConfig {
@@ -19,9 +19,14 @@ onBeforeMount(() => {
   initData()
 })
 
-watch(props.request, () => {
-  initData()
-})
+const { request } = toRefs(props)
+
+watch(
+  () => request.value,
+  () => {
+    initData()
+  }
+)
 const authConfig = reactive<AuthConfig>({
   verification: '',
   username: '',
@@ -30,31 +35,29 @@ const authConfig = reactive<AuthConfig>({
 
 const options = [{ name: 'No Auth' }, { name: 'Basic Auth' }]
 const change = () => {
-  if (authConfig.verification === 'Basic Auth') {
-    authConfig.verification = 'Basic Auth'
-    emits('authConfigChange', authConfig)
-  } else {
-    authConfig.verification = 'No Auth'
-    emits('authConfigChange', authConfig)
+  if (!request.value.authManager) {
+    request.value.authManager = authConfig
+    return
   }
+  const { username, password, verification } = authConfig
+  const isBasic = verification === 'Basic Auth'
+  request.value.authManager.username = isBasic ? username : ''
+  request.value.authManager.password = isBasic ? password : ''
 }
 const initData = () => {
-  if (props.request.authManager) {
-    Object.assign(authConfig, props.request.authManager)
+  if (request.value.authManager) {
+    Object.assign(authConfig, request.value.authManager)
   }
 }
-
-const emits = defineEmits(['authConfigChange'])
 </script>
 
 <template>
-  <el-form ref="authConfig" :model="authConfig" label-position="top">
-    <el-form-item :label="t('datasource.verification_method')" prop="verification">
+  <el-form label-position="top">
+    <el-form-item :label="t('datasource.verification_method')">
       <el-select
         v-model="authConfig.verification"
-        :placeholder="t('datasource.verification_method')"
-        filterable
         @change="change"
+        :placeholder="t('datasource.verification_method')"
       >
         <el-option v-for="item in options" :key="item.name" :label="item.name" :value="item.name" />
       </el-select>
@@ -62,9 +65,8 @@ const emits = defineEmits(['authConfigChange'])
     <el-row :gutter="24">
       <el-col :span="12">
         <el-form-item
-          v-if="authConfig.verification != undefined && authConfig.verification != 'No Auth'"
+          v-if="authConfig.verification === 'Basic Auth'"
           :label="t('datasource.username')"
-          prop="username"
         >
           <el-input
             v-model="authConfig.username"
@@ -75,9 +77,8 @@ const emits = defineEmits(['authConfigChange'])
       </el-col>
       <el-col :span="12">
         <el-form-item
-          v-if="authConfig.verification != undefined && authConfig.verification != 'No Auth'"
+          v-if="authConfig.verification === 'Basic Auth'"
           :label="t('datasource.password')"
-          prop="password"
         >
           <el-input
             v-model="authConfig.password"
