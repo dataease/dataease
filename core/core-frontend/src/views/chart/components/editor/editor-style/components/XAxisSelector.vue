@@ -208,7 +208,7 @@ init()
             <el-form-item :label="t('chart.grid_width')" class="form-item form-item-slider">
               <el-input-number
                 effect="dark"
-                v-model="state.axisForm.splitLine.lineStyle.width"
+                v-model.number="state.axisForm.splitLine.lineStyle.width"
                 :min="1"
                 :max="10"
                 size="small"
@@ -238,7 +238,7 @@ init()
             <el-form-item :label="t('chart.axis_label_rotate')" class="form-item form-item-slider">
               <el-input-number
                 effect="dark"
-                v-model="state.axisForm.axisLabel.rotate"
+                v-model.number="state.axisForm.axisLabel.rotate"
                 :min="-90"
                 :max="90"
                 size="small"
@@ -285,7 +285,7 @@ init()
               >
                 <el-input-number
                   effect="dark"
-                  v-model="state.axisForm.axisLabelFormatter.decimalCount"
+                  v-model.number="state.axisForm.axisLabelFormatter.decimalCount"
                   :precision="0"
                   :min="0"
                   :max="10"

@@ -80,6 +80,7 @@ const onLegendChange = val => {
           </el-collapse-item>
 
           <el-collapse-item
+            v-if="chart.type !== 'word-cloud'"
             name="size"
             :title="
               chart.type && chart.type.includes('table') ? t('chart.table_config') : t('chart.size')
@@ -88,11 +89,21 @@ const onLegendChange = val => {
             <size-selector class="attr-selector" :chart="chart" @onSizeChange="onSizeChange" />
           </el-collapse-item>
 
-          <el-collapse-item name="label" :title="$t('chart.label')">
+          <el-collapse-item
+            v-if="chart.type !== 'word-cloud' && !chart.type.includes('table')"
+            name="label"
+            :title="$t('chart.label')"
+          >
             <label-selector class="attr-selector" :chart="chart" @onLabelChange="onLabelChange" />
           </el-collapse-item>
 
-          <el-collapse-item name="tooltip" :title="$t('chart.tooltip')">
+          <el-collapse-item
+            v-if="
+              chart.type !== 'gauge' && chart.type !== 'liquid' && !chart.type.includes('table')
+            "
+            name="tooltip"
+            :title="$t('chart.tooltip')"
+          >
             <tooltip-selector
               class="attr-selector"
               :chart="chart"
@@ -104,7 +115,11 @@ const onLegendChange = val => {
 
       <el-row class="de-collapse-style">
         <el-collapse v-model="state.styleActiveNames" class="style-collapse">
-          <el-collapse-item name="xAxis" :title="t('chart.xAxis')">
+          <el-collapse-item
+            v-if="chart.type.includes('bar') || chart.type.includes('line')"
+            name="xAxis"
+            :title="t('chart.xAxis')"
+          >
             <x-axis-selector
               class="attr-selector"
               :chart="chart"
@@ -112,7 +127,11 @@ const onLegendChange = val => {
             />
           </el-collapse-item>
 
-          <el-collapse-item name="yAxis" :title="$t('chart.yAxis')">
+          <el-collapse-item
+            v-if="chart.type.includes('bar') || chart.type.includes('line')"
+            name="yAxis"
+            :title="$t('chart.yAxis')"
+          >
             <y-axis-selector
               class="attr-selector"
               :chart="chart"
@@ -124,7 +143,17 @@ const onLegendChange = val => {
             <title-selector class="attr-selector" :chart="chart" @onTextChange="onTextChange" />
           </el-collapse-item>
 
-          <el-collapse-item name="legend" :title="$t('chart.legend')">
+          <el-collapse-item
+            v-if="
+              chart.type !== 'word-cloud' &&
+              chart.type !== 'gauge' &&
+              chart.type !== 'liquid' &&
+              chart.type !== 'map' &&
+              !chart.type.includes('table')
+            "
+            name="legend"
+            :title="$t('chart.legend')"
+          >
             <legend-selector
               class="attr-selector"
               :chart="chart"

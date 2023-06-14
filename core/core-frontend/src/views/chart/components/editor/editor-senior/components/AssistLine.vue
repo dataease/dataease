@@ -83,13 +83,13 @@ const changeLine = () => {
 </script>
 
 <template>
-  <div style="width: 100%; padding: 0 18px">
+  <div style="width: 100%">
     <el-col>
       <el-button
         :title="t('chart.edit')"
         type="text"
         size="small"
-        style="width: 24px; margin-left: 4px"
+        :style="{ width: '24px', marginLeft: '4px', minWidth: 'auto !important' }"
         @click="editLine"
       >
         <template #icon>
@@ -138,10 +138,8 @@ const changeLine = () => {
       />
       <template #footer>
         <div class="dialog-footer">
-          <el-button size="small" @click="closeEditLine">{{ t('chart.cancel') }}</el-button>
-          <el-button type="primary" size="small" @click="changeLine">{{
-            t('chart.confirm')
-          }}</el-button>
+          <el-button @click="closeEditLine">{{ t('chart.cancel') }}</el-button>
+          <el-button type="primary" @click="changeLine">{{ t('chart.confirm') }}</el-button>
         </div>
       </template>
     </el-dialog>

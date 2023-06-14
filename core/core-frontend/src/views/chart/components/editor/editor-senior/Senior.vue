@@ -35,20 +35,40 @@ const onAssistLineChange = val => {
   <el-row class="view-panel">
     <div class="attr-style">
       <el-row class="de-collapse-style">
-        <el-collapse v-model="state.attrActiveNames" class="style-collapse">
-          <el-collapse-item name="function" :title="$t('chart.function_cfg')">
+        <el-collapse
+          v-if="
+            props.chart.type?.includes('bar') ||
+            props.chart.type?.includes('line') ||
+            props.chart.type?.includes('area')
+          "
+          v-model="state.attrActiveNames"
+          class="style-collapse"
+        >
+          <el-collapse-item
+            v-if="
+              props.chart.type?.includes('bar') ||
+              props.chart.type?.includes('line') ||
+              props.chart.type?.includes('area')
+            "
+            name="function"
+            :title="$t('chart.function_cfg')"
+          >
             <function-cfg :chart="props.chart" @onFunctionCfgChange="onFunctionCfgChange" />
           </el-collapse-item>
 
           <!--          <el-collapse-item name="scroll" :title="$t('chart.scroll_cfg')">-->
           <!--            <scroll-cfg />-->
           <!--          </el-collapse-item>-->
-        </el-collapse>
-      </el-row>
 
-      <el-row class="de-collapse-style">
-        <el-collapse v-model="state.styleActiveNames" class="style-collapse">
-          <el-collapse-item name="analyse" :title="$t('chart.assist_line')">
+          <el-collapse-item
+            v-if="
+              props.chart.type?.includes('bar') ||
+              props.chart.type?.includes('line') ||
+              props.chart.type?.includes('area')
+            "
+            name="analyse"
+            :title="$t('chart.assist_line')"
+          >
             <assist-line
               :chart="props.chart"
               :quota-data="props.quotaData"
@@ -60,6 +80,9 @@ const onAssistLineChange = val => {
           <!--            <threshold />-->
           <!--          </el-collapse-item>-->
         </el-collapse>
+        <div v-else class="no-senior">
+          {{ $t('chart.chart_no_senior') }}
+        </div>
       </el-row>
     </div>
   </el-row>
@@ -109,5 +132,14 @@ span {
 }
 .prop-top {
   border-top: 1px solid @side-outline-border-color;
+}
+.no-senior {
+  width: 100%;
+  text-align: center;
+  font-size: 12px;
+  padding-top: 40px;
+  overflow: auto;
+  border-right: 1px solid #e6e6e6;
+  height: 100%;
 }
 </style>
