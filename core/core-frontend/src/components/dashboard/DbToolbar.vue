@@ -216,7 +216,7 @@ eventBus.on('clearCanvas', clearCanvas)
           icon-name="dv-filter"
           title="过滤组件"
         >
-          <text-group></text-group>
+          <div>过滤组件</div>
         </component-group>
         <component-group :base-width="148" icon-name="dv-text" title="文本">
           <text-group></text-group>

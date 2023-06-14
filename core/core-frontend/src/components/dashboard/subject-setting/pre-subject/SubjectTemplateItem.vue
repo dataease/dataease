@@ -8,8 +8,7 @@
     ]"
   >
     <div class="vertical-layout" @click.stop="subjectChange">
-      <!-- 背景-->
-      <div class="all-back common-background" :style="customBackground" />
+      <img src="@/assets/img/subject_dark.png" alt="" width="172" height="79" />
     </div>
     <div class="title-main" @dblclick="setEdit">
       <div class="title-area">
@@ -27,13 +26,10 @@
           >{{ subjectItem.name }}</span
         >
       </div>
+      <div v-if="subjectItem.type === 'self' && !state.canEdit">
+        <el-icon @click="subjectDelete()"><DeleteFilled /></el-icon>
+      </div>
     </div>
-    <!--    <el-icon-->
-    <!--      v-if="subjectItem.type === 'self' && !state.canEdit"-->
-    <!--      @click.stop="subjectDelete"-->
-    <!--      class="delete-icon"-->
-    <!--      ><Delete-->
-    <!--    /></el-icon>-->
   </div>
 </template>
 
@@ -293,12 +289,14 @@ const selectChange = (callback, editCell) => {
 
 .vertical-layout {
   position: absolute;
-  width: 131px;
-  height: 78px;
+  padding: 4px 4px 0 4px;
+  width: 180px;
+  height: 84px;
   margin: 0 auto;
   overflow: hidden;
-  inset: 0 0 30px;
+  //inset: 0 0 30px;
   box-sizing: border-box;
+  background-size: contain;
 }
 
 .vertical-layout > i {
@@ -332,7 +330,7 @@ const selectChange = (callback, editCell) => {
   text-align: left;
   text-overflow: ellipsis;
   white-space: pre;
-  background-color: #fff;
+  flex: 1;
 }
 
 .common-background {
@@ -360,11 +358,13 @@ const selectChange = (callback, editCell) => {
   bottom: 0;
   left: 0;
   float: left;
-  height: 30px;
+  height: 31px;
+  display: flex;
+  border-top: 1px solid #dee0e3;
 }
 
 .subject-template:hover > .title-main {
-  width: 115px;
+  width: 150px;
 }
 
 .subject-template:hover > .el-icon-delete {

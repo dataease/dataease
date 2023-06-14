@@ -1,5 +1,6 @@
 <template>
-  <div class="bar-main" :class="showEditPosition" @mousedown="showLabelInfo">
+  <!--  <div class="bar-main" :class="showEditPosition" @mousedown="showLabelInfo">-->
+  <div class="bar-main bar-main-right" @mousedown="showLabelInfo">
     <input
       id="input"
       ref="files"
@@ -31,15 +32,15 @@
       <el-checkbox size="medium" @change="batchOptChange" />
     </div>
     <div v-if="normalAreaShow">
-      <span>ICONS</span>
       <span :title="t('visualization.edit')">
-        <i
-          v-if="
-            activeModel === 'edit' && curComponent && state.editFilter.includes(curComponent.type)
-          "
-          class="icon iconfont icon-edit"
-          @click.stop="edit"
-        />
+        <el-icon style="height: 22px" @click="edit"><Link /></el-icon>
+        <!--        <i-->
+        <!--          v-if="-->
+        <!--            activeModel === 'edit' && curComponent && state.editFilter.includes(curComponent.type)-->
+        <!--          "-->
+        <!--          class="icon iconfont icon-edit"-->
+        <!--          @click.stop="edit"-->
+        <!--        />-->
       </span>
       <span :title="t('visualization.enlarge')">
         <i
@@ -49,11 +50,7 @@
         />
       </span>
       <span :title="t('visualization.details')">
-        <i
-          v-if="detailsShow"
-          class="icon iconfont icon-chakan"
-          @click.stop="showViewDetails('details')"
-        />
+        <el-icon style="height: 22px" @click="showViewDetails"><Tickets /></el-icon>
       </span>
       <setting-menu
         v-if="activeModel === 'edit'"
@@ -64,7 +61,7 @@
       >
         <template #icon>
           <span :title="t('visualization.setting')">
-            ICON<i class="icon iconfont icon-shezhi" style="width: 16px; margin-top: 2px" />
+            <el-icon><More /></el-icon>
           </span>
         </template>
       </setting-menu>
