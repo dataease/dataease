@@ -200,7 +200,7 @@ export function mappingFieldValues(data) {
   return request({
     url: '/dataset/field/mappingFieldValues',
     method: 'post',
-    loading: true,
+    loading: false,
     data
   })
 }
