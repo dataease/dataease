@@ -66,8 +66,8 @@ public class XDeptServer {
     @PostMapping("/search")
     public List<DeptNodeResponse> search(@RequestBody XpackGridRequest request){
         DeptXpackService deptService = SpringContextUtil.getBean(DeptXpackService.class);
-        List<XpackSysDept> ndoes = deptService.nodesTreeByCondition(request);
-        List<DeptNodeResponse> nodeResponses = ndoes.stream().map(node -> {
+        List<XpackSysDept> nodes = deptService.nodesTreeByCondition(request);
+        List<DeptNodeResponse> nodeResponses = nodes.stream().map(node -> {
             DeptNodeResponse deptNodeResponse = BeanUtils.copyBean(new DeptNodeResponse(), node);
             deptNodeResponse.setHasChildren(node.getSubCount() > 0);
             deptNodeResponse.setLeaf(node.getSubCount() == 0);

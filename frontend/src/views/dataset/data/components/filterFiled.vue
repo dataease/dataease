@@ -15,7 +15,7 @@
         <el-input
           v-model="item.name"
           class="w100"
-          :placeholder="$t('auth.selct_filter_fields')"
+          :placeholder="$t('auth.select_filter_fields')"
           size="mini"
           @input="cancel"
         />

@@ -398,8 +398,8 @@ public class ShareService {
             return;
         }
         panelShareOutDTOS.forEach(shareOut -> {
-            SysLogConstants.SOURCE_TYPE buiType = buiType(shareOut.getType());
-            DeLogUtils.save(SysLogConstants.OPERATE_TYPE.UNSHARE, SysLogConstants.SOURCE_TYPE.PANEL, panelId, panelGroup.getPid(), shareOut.getTargetId(), buiType);
+            SysLogConstants.SOURCE_TYPE busiType = busiType(shareOut.getType());
+            DeLogUtils.save(SysLogConstants.OPERATE_TYPE.UNSHARE, SysLogConstants.SOURCE_TYPE.PANEL, panelId, panelGroup.getPid(), shareOut.getTargetId(), busiType);
         });
 
         Map<Integer, List<PanelShareOutDTO>> listMap = panelShareOutDTOS.stream().collect(Collectors.groupingBy(dto -> dto.getType()));
@@ -426,7 +426,7 @@ public class ShareService {
         }
     }
 
-    private SysLogConstants.SOURCE_TYPE buiType(Integer type) {
+    private SysLogConstants.SOURCE_TYPE busiType(Integer type) {
         SysLogConstants.SOURCE_TYPE targetType = SysLogConstants.SOURCE_TYPE.USER;
         if (type == 1) {
             targetType = SysLogConstants.SOURCE_TYPE.ROLE;
@@ -443,7 +443,7 @@ public class ShareService {
 
         extPanelShareMapper.removeShares(removeRequest);
 
-        SysLogConstants.SOURCE_TYPE targetType = buiType(removeRequest.getType());
+        SysLogConstants.SOURCE_TYPE targetType = busiType(removeRequest.getType());
 
         DeLogUtils.save(SysLogConstants.OPERATE_TYPE.UNSHARE, SysLogConstants.SOURCE_TYPE.PANEL, panelId, panelGroup.getPid(), removeRequest.getTargetId(), targetType);
 
