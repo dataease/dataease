@@ -47,7 +47,7 @@ import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapsho
 
 import { storeToRefs } from 'pinia'
 import { ElMessage } from 'element-plus-secondary'
-import { saveOrUpdateSubject } from '@/api/dataVisualization'
+import { saveOrUpdateSubject } from '@/api/visualization/dataVisualization'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 
@@ -258,7 +258,7 @@ const selectChange = (callback, editCell) => {
 }
 </script>
 
-<style scoped>
+<style scoped lang="less">
 .all-back {
   background-size: 100% 100% !important;
 }
@@ -268,9 +268,9 @@ const selectChange = (callback, editCell) => {
   z-index: 2;
   display: inline-block;
   float: left;
-  width: 135px;
-  height: 110px;
-  margin: 5px;
+  width: 182px;
+  height: 116px;
+  margin: 4px;
   border: 1px solid #dee0e3;
   border-radius: 5px;
 }

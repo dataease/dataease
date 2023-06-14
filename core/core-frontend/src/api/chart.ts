@@ -46,6 +46,9 @@ export const saveChart = async (data): Promise<IResponse> => {
   })
 }
 
+export const checkSameDataSet = (viewIdSource, viewIdTarget) =>
+  request.get({ url: '/chart/view/checkSameDataSet/' + viewIdSource + '/' + viewIdTarget })
+
 // const getRequestChart = data => {
 //   data.xaxis = JSON.stringify(data.xaxis)
 //   data.xaxisExt = JSON.stringify(data.xaxisExt)

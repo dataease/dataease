@@ -1,22 +1,6 @@
 import { useI18n } from '@/hooks/web/useI18n'
 const { t } = useI18n()
 
-export const DEFAULT_TAB_COLOR_CASE_DARK = {
-  headFontColor: '#FFFFFF',
-  headFontActiveColor: '#FFFFFF',
-  headBorderColor: '#131E42',
-  headBorderActiveColor: '#131E42',
-  headPosition: 'left'
-}
-
-export const DEFAULT_TAB_COLOR_CASE_LIGHT = {
-  headFontColor: '#OOOOOO',
-  headFontActiveColor: '#OOOOOO',
-  headBorderColor: '#OOOOOO',
-  headBorderActiveColor: '#OOOOOO',
-  headPosition: 'left'
-}
-
 export const DEFAULT_COLOR_CASE = {
   value: 'default',
   colors: [
@@ -82,6 +66,82 @@ export const DEFAULT_COLOR_CASE_DARK = {
   mapLineSourceColor: '#2F58CD',
   mapLineTargetColor: '#3795BD'
 }
+
+export const TAB_COMMON_STYLE = {
+  headFontColor: '#000000',
+  headFontActiveColor: '#000000',
+  headBorderColor: '#ffffff',
+  headBorderActiveColor: '#ffffff',
+  headPosition: 'left'
+}
+
+export const FILTER_COMMON_STYLE = {
+  horizontal: 'left',
+  vertical: 'top',
+  color: '#000000',
+  brColor: '',
+  wordColor: '',
+  innerBgColor: ''
+}
+
+export const FILTER_COMMON_STYLE_DARK = {
+  horizontal: 'left',
+  vertical: 'top',
+  color: '#FFFFFF',
+  brColor: '#4E4B4B',
+  wordColor: '#FFFFFF',
+  innerBgColor: '#131E42'
+}
+
+// 组件仪表板样式
+export const COMMON_BACKGROUND_BASE = {
+  backgroundColorSelect: true,
+  color: '#FFFFFF',
+  alpha: 100,
+  borderRadius: 5,
+  innerPadding: 0
+}
+
+// 组件仪表板样式
+export const COMMON_BACKGROUND = {
+  ...COMMON_BACKGROUND_BASE,
+  enable: false,
+  backgroundType: 'innerImage',
+  innerImage: 'board/blue_1.svg',
+  innerImageColor: '#1094E5',
+  outerImage: null
+}
+
+// 空组件仪表板样式
+export const COMMON_BACKGROUND_NONE = {
+  enable: false,
+  backgroundColorSelect: false,
+  backgroundType: 'innerImage',
+  color: '#FFFFFF',
+  innerImage: 'board/blue_1.svg',
+  innerImageColor: '#1094E5',
+  outerImage: null,
+  alpha: 100,
+  borderRadius: 0,
+  innerPadding: 0
+}
+
+export const DEFAULT_TAB_COLOR_CASE_DARK = {
+  headFontColor: '#FFFFFF',
+  headFontActiveColor: '#FFFFFF',
+  headBorderColor: '#131E42',
+  headBorderActiveColor: '#131E42',
+  headPosition: 'left'
+}
+
+export const DEFAULT_TAB_COLOR_CASE_LIGHT = {
+  headFontColor: '#OOOOOO',
+  headFontActiveColor: '#OOOOOO',
+  headBorderColor: '#OOOOOO',
+  headBorderActiveColor: '#OOOOOO',
+  headPosition: 'left'
+}
+
 export const DEFAULT_SIZE = {
   barDefault: true,
   barWidth: 40,

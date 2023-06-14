@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { Search } from '@element-plus/icons-vue'
 import { onMounted, reactive, ref, toRefs, watch } from 'vue'
-import { deleteLogic, findById, findTree } from '@/api/dataVisualization'
+import { deleteLogic, findById, findTree } from '@/api/visualization/dataVisualization'
 import { ElIcon, ElMessage } from 'element-plus-secondary'
 import { Icon } from '@/components/icon-custom'
 import { HandleMore } from '@/components/handle-more'
 import DeResourceGroupOpt, { ResourceTree } from '@/views/common/DeResourceGroupOpt.vue'
 import { guid } from '@/views/visualized/data/dataset/form/util.js'
 import { DEFAULT_CANVAS_STYLE_DATA } from '@/store/modules/data-visualization/dvMain'
-import { save } from '@/api/dataVisualization'
+import { save } from '@/api/visualization/dataVisualization'
 
 const props = defineProps({
   curCanvasType: {

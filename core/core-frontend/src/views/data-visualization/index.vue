@@ -16,7 +16,7 @@ import ComponentToolBar from '../../components/data-visualization/ComponentToolB
 import eventBus from '../../utils/eventBus'
 import findComponent from '../../utils/components'
 import DvSidebar from '../../components/visualization/DvSidebar.vue'
-import { findById } from '@/api/dataVisualization'
+import { findById } from '@/api/visualization/dataVisualization'
 import router from '@/router'
 import Editor from '@/views/chart/components/editor/index.vue'
 import { guid } from '@/views/visualized/data/dataset/form/util.js'

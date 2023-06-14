@@ -16,7 +16,7 @@ import { lockStoreWithOut } from '@/store/modules/data-visualization/lock'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { storeToRefs } from 'pinia'
 import Icon from '../icon-custom/src/Icon.vue'
-import { update, save } from '@/api/dataVisualization'
+import { update, save } from '@/api/visualization/dataVisualization'
 import ComponentGroup from '@/components/visualization/ComponentGroup.vue'
 import UserViewGroup from '@/custom-component/component-group/UserViewGroup.vue'
 import MediaGroup from '@/custom-component/component-group/MediaGroup.vue'
@@ -242,11 +242,11 @@ eventBus.on('clearCanvas', clearCanvas)
       text-align: left;
       color: #a6a6a6;
       .opt-icon-undo {
-        font-size: 18px;
+        font-size: 22px;
       }
       .opt-icon-redo {
         margin-left: 12px;
-        font-size: 18px;
+        font-size: 22px;
       }
     }
   }

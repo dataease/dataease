@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { findById } from '@/api/dataVisualization'
+import { findById } from '@/api/visualization/dataVisualization'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { onMounted, ref } from 'vue'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'

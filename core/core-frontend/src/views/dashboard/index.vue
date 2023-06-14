@@ -13,7 +13,7 @@ import { storeToRefs } from 'pinia'
 import eventBus from '../../utils/eventBus'
 import findComponent from '../../utils/components'
 import DvSidebar from '../../components/visualization/DvSidebar.vue'
-import { findById } from '@/api/dataVisualization'
+import { findById } from '@/api/visualization/dataVisualization'
 import router from '@/router'
 import DashboardCanvas from '@/components/dashboard/canvas/index.vue'
 import $ from 'jquery'
@@ -42,8 +42,12 @@ const state = reactive({
 })
 
 const editStyle = computed(() => {
-  return {
-    ...getCanvasStyle(canvasStyleData.value)
+  if (canvasStyleData.value) {
+    return {
+      ...getCanvasStyle(canvasStyleData.value)
+    }
+  } else {
+    return {}
   }
 })
 
@@ -326,6 +330,7 @@ eventBus.on('handleNew', handleNew)
         .db-canvas {
           background-size: 100% 100% !important;
           width: 100%;
+          height: 100%;
         }
       }
     }

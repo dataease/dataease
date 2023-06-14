@@ -9,19 +9,20 @@ import { $ } from '@/utils/utils'
 import changeComponentsSizeWithScale, {
   changeComponentSizeWithScale
 } from '@/utils/changeComponentsSizeWithScale'
-import { ref } from 'vue'
+import { nextTick, ref } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import { lockStoreWithOut } from '@/store/modules/data-visualization/lock'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { storeToRefs } from 'pinia'
 import Icon from '../icon-custom/src/Icon.vue'
-import { update, save } from '@/api/dataVisualization'
+import { update, save } from '@/api/visualization/dataVisualization'
 import ComponentGroup from '@/components/visualization/ComponentGroup.vue'
 import UserViewGroup from '@/custom-component/component-group/UserViewGroup.vue'
 import MediaGroup from '@/custom-component/component-group/MediaGroup.vue'
 import TextGroup from '@/custom-component/component-group/TextGroup.vue'
 import CommonGroup from '@/custom-component/component-group/CommonGroup.vue'
+import ComponentButton from '@/components/visualization/ComponentButton.vue'
 
 const isShowPreview = ref(false)
 const isScreenshot = ref(false)
@@ -34,6 +35,28 @@ const { curComponent, canvasStyleData, curComponentIndex, componentData, dvInfo,
   storeToRefs(dvMainStore)
 const { areaData } = storeToRefs(composeStore)
 let scale = ref(canvasStyleData.value.scale)
+let nameEdit = ref(false)
+let inputName = ref('')
+let nameInput = ref(null)
+
+const editCanvasName = () => {
+  nameEdit.value = true
+  inputName.value = dvInfo.value.name
+  nextTick(() => {
+    nameInput.value.focus()
+  })
+}
+const closeEditCanvasName = () => {
+  nameEdit.value = false
+  if (!inputName.value || !inputName.value.trim()) {
+    return
+  }
+  if (inputName.value.trim() === dvInfo.value.name) {
+    return
+  }
+  dvInfo.value.name = inputName.value
+  inputName.value = ''
+}
 
 const handleScaleChange = () => {
   clearTimeout(timer)
@@ -165,35 +188,46 @@ eventBus.on('clearCanvas', clearCanvas)
   <div>
     <div class="toolbar">
       <el-icon class="custom-el-icon back-icon" @click="backToMain()">
-        <Icon class="toolbar-icon" name="icon_left_outlined" />
+        <Icon class="toolbar-icon hover-icon" name="icon_left_outlined" />
       </el-icon>
       <div class="left-area">
-        <span class="name-area">{{ dvInfo.name }}</span>
+        <span id="canvas-name" class="name-area" @dblclick="editCanvasName">{{ dvInfo.name }}</span>
         <div class="opt-area">
           <el-icon class="opt-icon-undo" @click="undo()">
-            <Icon class="toolbar-icon" name="icon_undo_outlined"></Icon>
+            <Icon class="toolbar-hover-icon" name="icon_undo_outlined"></Icon>
           </el-icon>
           <el-icon class="opt-icon-redo" @click="redo()">
-            <Icon class="toolbar-icon" name="icon_redo_outlined"></Icon>
+            <Icon class="toolbar-hover-icon" name="icon_redo_outlined"></Icon>
           </el-icon>
         </div>
       </div>
       <div class="middle-area">
-        <component-group :base-width="410" icon-name="dv-view" title="图表">
+        <component-group
+          :base-width="410"
+          :show-split-line="true"
+          :icon-name="'dv-view'"
+          title="图表"
+        >
           <user-view-group></user-view-group>
+        </component-group>
+        <component-group
+          :base-width="148"
+          :show-split-line="true"
+          icon-name="dv-filter"
+          title="过滤组件"
+        >
+          <text-group></text-group>
         </component-group>
         <component-group :base-width="148" icon-name="dv-text" title="文本">
           <text-group></text-group>
         </component-group>
-        <component-group icon-name="dv-media" title="媒体">
+        <component-group icon-name="dv-media" title="图片">
           <media-group></media-group>
         </component-group>
-        <component-group :base-width="410" icon-name="dv-material" title="素材">
-          <common-group></common-group>
-        </component-group>
-        <component-group icon-name="dv-params" title="参数">
-          <div>setting</div>
-        </component-group>
+        <component-button icon-name="dv-tab" title="Tab"></component-button>
+        <component-button icon-name="dv-copy" title="复用"></component-button>
+        <component-button icon-name="dv-batch" title="批量操作"></component-button>
+        <component-button icon-name="dv-dashboard" title="仪表板配置"></component-button>
       </div>
       <div class="right-area">
         <el-button
@@ -207,6 +241,10 @@ eventBus.on('clearCanvas', clearCanvas)
         >
       </div>
     </div>
+    <Teleport v-if="nameEdit" :to="'#canvas-name'">
+      <input ref="nameInput" v-model="inputName" @blur="closeEditCanvasName" />
+    </Teleport>
+
     <!-- 预览 -->
     <Preview v-if="isShowPreview" :is-screenshot="isScreenshot" @close="handlePreviewChange" />
   </div>
@@ -232,11 +270,25 @@ eventBus.on('clearCanvas', clearCanvas)
     display: flex;
     flex-direction: column;
     .name-area {
+      position: relative;
       line-height: 24px;
       height: 24px;
       font-size: 16px;
       width: 300px;
       overflow: hidden;
+      cursor: pointer;
+      input {
+        position: absolute;
+        left: 0;
+        width: 100%;
+        color: #fff;
+        background-color: #050e21;
+        outline: none;
+        border: 1px solid #295acc;
+        border-radius: 4px;
+        padding: 0 4px;
+        height: 100%;
+      }
     }
     .opt-area {
       width: 300px;
