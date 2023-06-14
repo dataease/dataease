@@ -1,5 +1,5 @@
 <script lang="tsx" setup>
-import { reactive } from 'vue'
+import { reactive, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL, DEFAULT_TOOLTIP } from '@/views/chart/components/editor/util/chart'
 
@@ -15,6 +15,13 @@ const props = defineProps({
 const predefineColors = COLOR_PANEL
 
 const emit = defineEmits(['onTooltipChange'])
+
+watch(
+  () => props.chart,
+  () => {
+    init()
+  }
+)
 
 const state = reactive({
   tooltipForm: JSON.parse(JSON.stringify(DEFAULT_TOOLTIP)),
