@@ -779,6 +779,8 @@ const editDs = () => {
                   :quota-data="view.yAxis"
                   @onFunctionCfgChange="onFunctionCfgChange"
                   @onAssistLineChange="onAssistLineChange"
+                  @onScrollCfgChange="onScrollCfgChange"
+                  @onThresholdChange="onThresholdChange"
                 />
               </el-tab-pane>
             </el-tabs>
@@ -943,10 +945,8 @@ const editDs = () => {
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button size="mini" @click="closeRename(renameForm)"
-            >{{ t('chart.cancel') }}
-          </el-button>
-          <el-button type="primary" size="mini" @click="saveRename(renameForm)"
+          <el-button @click="closeRename(renameForm)">{{ t('chart.cancel') }} </el-button>
+          <el-button type="primary" @click="saveRename(renameForm)"
             >{{ t('chart.confirm') }}
           </el-button>
         </div>
@@ -966,10 +966,8 @@ const editDs = () => {
       <quota-filter-editor :item="state.quotaItem" />
       <template #footer>
         <div class="dialog-footer">
-          <el-button size="mini" @click="closeQuotaFilter">{{ t('chart.cancel') }} </el-button>
-          <el-button type="primary" size="mini" @click="saveQuotaFilter"
-            >{{ t('chart.confirm') }}
-          </el-button>
+          <el-button @click="closeQuotaFilter">{{ t('chart.cancel') }} </el-button>
+          <el-button type="primary" @click="saveQuotaFilter">{{ t('chart.confirm') }} </el-button>
         </div>
       </template>
     </el-dialog>
@@ -985,10 +983,8 @@ const editDs = () => {
       <result-filter-editor :chart="state.chartForFilter" :item="state.filterItem" />
       <template #footer>
         <div class="dialog-footer">
-          <el-button size="mini" @click="closeResultFilter">{{ t('chart.cancel') }} </el-button>
-          <el-button type="primary" size="mini" @click="saveResultFilter"
-            >{{ t('chart.confirm') }}
-          </el-button>
+          <el-button @click="closeResultFilter">{{ t('chart.cancel') }} </el-button>
+          <el-button type="primary" @click="saveResultFilter">{{ t('chart.confirm') }} </el-button>
         </div>
       </template>
     </el-dialog>

@@ -3,6 +3,7 @@ import { ref, reactive, onMounted, nextTick } from 'vue'
 import { Icon } from '@/components/icon-custom'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
+import { setColorName } from '@/utils/utils'
 import {
   queryUserApi,
   queryRoleApi,
@@ -30,6 +31,10 @@ const { t } = useI18n()
 const activeName = ref('user')
 const activeAuth = ref('resource')
 const nickName = ref('')
+const menukey = ref('')
+const resourcekey = ref('')
+const targetkey = ref('')
+
 const roleChecked = ref(true)
 const selectedResourceType = ref('panel')
 const selectedResourceId = ref('')
@@ -37,6 +42,7 @@ const selectedMenuId = ref('')
 const resourceTreeRef = ref(null)
 const menuTreeRef = ref(null)
 const loading = ref(false)
+const resourceExpandKeys = ref<string[]>([])
 const resourceList = [
   {
     id: 'panel',
@@ -500,7 +506,47 @@ const groupBy = (list: Tree[]) => {
   })
   return map
 }
+const filterMenu = val => {
+  menuTreeRef.value?.filter(val)
+}
+const filterMenuNode = (value: string, data) => {
+  setColorName(data, value)
+  if (!value) return true
+  return data.name.toLocaleLowerCase().includes(value.toLocaleLowerCase())
+}
+const filterResource = val => {
+  resourceTreeRef.value?.filter(val)
+}
+const filterResourceNode = (value: string, data) => {
+  setColorName(data, value)
+  if (!value) return true
+  return data.name.toLocaleLowerCase().includes(value.toLocaleLowerCase())
+}
 
+const dynamicResourceClass = param => {
+  const row = param.row
+  return row.hidden ? 'dynamic-resource-hidden' : ''
+}
+const matchFilter = (row, val): boolean => {
+  let match = !val || row.name.toLocaleLowerCase().includes(val.toLocaleLowerCase())
+  setColorName(row, val)
+  if (row.children?.length) {
+    for (let index = 0; index < row.children.length; index++) {
+      const kid = row.children[index]
+      const kidMatch = matchFilter(kid, val)
+      if (kidMatch && !match) {
+        match = kidMatch
+      }
+    }
+  }
+  row.hidden = !match
+  return match
+}
+const filterTarget = val => {
+  state.tableData.forEach(item => {
+    matchFilter(item, val)
+  })
+}
 onMounted(() => {
   loadResourceTree()
   loadUser()
@@ -518,7 +564,13 @@ defineExpose({
         <el-tab-pane :label="t('auth.resource')" name="resource"></el-tab-pane>
         <el-tab-pane :label="t('auth.menu')" name="menu"></el-tab-pane>
       </el-tabs>
-      <el-input v-if="activeAuth === 'menu'" class="filter-input" v-model="nickName" clearable>
+      <el-input
+        v-if="activeAuth === 'menu'"
+        class="filter-input"
+        v-model="menukey"
+        clearable
+        @change="filterMenu"
+      >
         <template #prefix>
           <el-icon>
             <Icon name="icon_search-outline_outlined"></Icon>
@@ -535,10 +587,12 @@ defineExpose({
         @node-click="menuIdChange"
         :highlight-current="true"
         :expand-on-click-node="false"
+        :default-expand-all="true"
+        :filter-node-method="filterMenuNode"
       >
         <template #default="{ node, data }">
           <span class="custom-tree-node" :class="{ 'is-disabled': node.disabled || data.root }">
-            <span :title="data.name">{{ node.label }}</span>
+            <span :title="data.name" v-html="data.colorName ? data.colorName : node.label" />
           </span>
         </template>
       </el-tree>
@@ -559,7 +613,7 @@ defineExpose({
     </template>
   </div>
   <div v-if="activeAuth === 'resource'" class="resource-list">
-    <el-input class="filter-input" v-model="nickName" clearable>
+    <el-input class="filter-input" v-model="resourcekey" clearable @change="filterResource">
       <template #prefix>
         <el-icon>
           <Icon name="icon_search-outline_outlined"></Icon>
@@ -575,10 +629,12 @@ defineExpose({
       :expand-on-click-node="false"
       :highlight-current="true"
       @node-click="resourceIdChange"
+      :expand-row-keys="resourceExpandKeys"
+      :filter-node-method="filterResourceNode"
     >
       <template #default="{ node, data }">
         <span class="custom-tree-node" :class="{ 'is-disabled': node.disabled || data.root }">
-          <span :title="data.name">{{ node.label }}</span>
+          <span :title="data.name" v-html="data.colorName ? data.colorName : node.label" />
         </span>
       </template>
     </el-tree>
@@ -593,7 +649,7 @@ defineExpose({
         ></el-tab-pane>
         <el-tab-pane :label="t('auth.role')" name="role"></el-tab-pane>
       </el-tabs>
-      <el-input class="search-table-input" v-model="nickName" clearable>
+      <el-input class="search-table-input" v-model="targetkey" clearable @change="filterTarget">
         <template #prefix>
           <el-icon>
             <Icon name="icon_search-outline_outlined"></Icon>
@@ -617,10 +673,15 @@ defineExpose({
           height="100%"
           row-key="id"
           header-cell-class-name="header-cell"
+          :row-class-name="dynamicResourceClass"
           default-expand-all
           :tree-props="{ children: 'children' }"
         >
-          <el-table-column prop="name" :label="t('common.name')" />
+          <el-table-column prop="name" :label="t('common.name')">
+            <template v-slot:default="scope">
+              <span v-html="scope.row.colorName ? scope.row.colorName : scope.row.name" />
+            </template>
+          </el-table-column>
           <el-table-column
             v-for="item in state.tableColumn"
             :key="item.label"
@@ -805,5 +866,8 @@ defineExpose({
 }
 .user-role-per-checked {
   margin-right: 0;
+}
+::v-deep(.dynamic-resource-hidden) {
+  display: none !important;
 }
 </style>

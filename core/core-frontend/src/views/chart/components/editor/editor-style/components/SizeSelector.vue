@@ -1,5 +1,5 @@
 <script lang="tsx" setup>
-import { reactive } from 'vue'
+import { reactive, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import {
   CHART_FONT_FAMILY,
@@ -17,6 +17,13 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['onSizeChange'])
+
+watch(
+  () => props.chart,
+  () => {
+    init()
+  }
+)
 
 const state = reactive({
   sizeForm: JSON.parse(JSON.stringify(DEFAULT_SIZE)),
@@ -125,7 +132,7 @@ init()
         <!--bar-end-->
 
         <!--line-begin-->
-        <div v-show="props.chart.type.includes('line')">
+        <div v-show="props.chart.type.includes('line') || props.chart.type.includes('area')">
           <el-form-item :label="t('chart.line_width')" class="form-item form-item-slider">
             <el-input-number
               effect="dark"
@@ -139,6 +146,7 @@ init()
           </el-form-item>
           <el-form-item :label="t('chart.line_symbol')" class="form-item">
             <el-select
+              effect="dark"
               v-model="state.sizeForm.lineSymbol"
               :placeholder="t('chart.line_symbol')"
               @change="changeBarSizeCase('lineSymbol')"
@@ -401,17 +409,18 @@ init()
 
         <!--gauge-begin-->
         <div v-show="props.chart.type.includes('gauge')">
-          <el-form-item :label="t('chart.min')" class="form-item">
-            <el-radio-group
-              v-model="state.sizeForm.gaugeMinType"
-              size="small"
-              @change="changeQuotaField('min')"
-            >
-              <el-radio-button effect="dark" label="fix">{{ t('chart.fix') }}</el-radio-button>
-              <!--              <el-radio-button label="dynamic">{{ t('chart.dynamic') }}</el-radio-button>-->
-            </el-radio-group>
-          </el-form-item>
+          <!--          <el-form-item :label="t('chart.min')" class="form-item">-->
+          <!--            <el-radio-group-->
+          <!--              v-model="state.sizeForm.gaugeMinType"-->
+          <!--              size="small"-->
+          <!--              @change="changeQuotaField('min')"-->
+          <!--            >-->
+          <!--              <el-radio-button effect="dark" label="fix">{{ t('chart.fix') }}</el-radio-button>-->
+          <!--              &lt;!&ndash;              <el-radio-button label="dynamic">{{ t('chart.dynamic') }}</el-radio-button>&ndash;&gt;-->
+          <!--            </el-radio-group>-->
+          <!--          </el-form-item>-->
           <el-form-item
+            :label="t('chart.min')"
             v-if="state.sizeForm.gaugeMinType === 'fix'"
             class="form-item form-item-slider"
           >
@@ -493,19 +502,20 @@ init()
           <!--            </el-select>-->
           <!--          </el-form-item>-->
 
-          <el-form-item :label="t('chart.max')" class="form-item">
-            <el-radio-group
-              v-model="state.sizeForm.gaugeMaxType"
-              size="small"
-              @change="changeQuotaField('max')"
-            >
-              <el-radio-button effect="dark" label="fix">{{ t('chart.fix') }}</el-radio-button>
-              <!--              <el-radio-button label="dynamic">{{ t('chart.dynamic') }}</el-radio-button>-->
-            </el-radio-group>
-          </el-form-item>
+          <!--          <el-form-item :label="t('chart.max')" class="form-item">-->
+          <!--            <el-radio-group-->
+          <!--              v-model="state.sizeForm.gaugeMaxType"-->
+          <!--              size="small"-->
+          <!--              @change="changeQuotaField('max')"-->
+          <!--            >-->
+          <!--              <el-radio-button effect="dark" label="fix">{{ t('chart.fix') }}</el-radio-button>-->
+          <!--              &lt;!&ndash;              <el-radio-button label="dynamic">{{ t('chart.dynamic') }}</el-radio-button>&ndash;&gt;-->
+          <!--            </el-radio-group>-->
+          <!--          </el-form-item>-->
           <el-form-item
             v-if="state.sizeForm.gaugeMaxType === 'fix'"
             class="form-item form-item-slider"
+            :label="t('chart.max')"
           >
             <el-input-number
               effect="dark"
@@ -627,19 +637,20 @@ init()
               />
             </el-select>
           </el-form-item>
-          <el-form-item :label="t('chart.liquid_max')" class="form-item">
-            <el-radio-group
-              v-model="state.sizeForm.liquidMaxType"
-              size="small"
-              @change="changeQuotaField('max')"
-            >
-              <el-radio-button effect="dark" label="fix">{{ t('chart.fix') }}</el-radio-button>
-              <!--              <el-radio-button label="dynamic">{{ t('chart.dynamic') }}</el-radio-button>-->
-            </el-radio-group>
-          </el-form-item>
+          <!--          <el-form-item :label="t('chart.liquid_max')" class="form-item">-->
+          <!--            <el-radio-group-->
+          <!--              v-model="state.sizeForm.liquidMaxType"-->
+          <!--              size="small"-->
+          <!--              @change="changeQuotaField('max')"-->
+          <!--            >-->
+          <!--              <el-radio-button effect="dark" label="fix">{{ t('chart.fix') }}</el-radio-button>-->
+          <!--              &lt;!&ndash;              <el-radio-button label="dynamic">{{ t('chart.dynamic') }}</el-radio-button>&ndash;&gt;-->
+          <!--            </el-radio-group>-->
+          <!--          </el-form-item>-->
           <el-form-item
             v-if="state.sizeForm.liquidMaxType === 'fix'"
             class="form-item form-item-slider"
+            :label="t('chart.liquid_max')"
           >
             <el-input-number
               effect="dark"

@@ -13,7 +13,7 @@ const DEFAULT_DATA = []
 export class Gauge extends G2PlotChartView<GaugeOptions, G2Gauge> {
   drawChart(drawOptions: G2PlotDrawOptions<G2Gauge>): G2Gauge {
     const chart = drawOptions.chart
-    if (!chart.data?.data?.length) {
+    if (!chart.data?.series?.length) {
       return
     }
     // options

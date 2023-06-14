@@ -8,6 +8,9 @@ const DEFAULT_LIQUID_DATA = []
 export class Liquid extends G2PlotChartView<LiquidOptions, G2Liquid> {
   drawChart(drawOptions: G2PlotDrawOptions<G2Liquid>): G2Liquid {
     const chart = drawOptions.chart
+    if (!chart.data?.series?.length) {
+      return
+    }
     const initOptions: LiquidOptions = {
       percent: 0
     }

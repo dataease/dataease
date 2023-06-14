@@ -10,7 +10,7 @@ import java.lang.reflect.Method;
 @Component("2-userLimitValidator")
 public class UserLimitValidator implements LicenseValidator {
 
-    private static final int USER_LIMIT = 10;
+    private static final int USER_LIMIT = 100;
 
     private static final String USER_API_CLASS = "io.dataease.api.permissions.user.api.UserApi";
     @Override

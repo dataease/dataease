@@ -1,5 +1,5 @@
 <script lang="tsx" setup>
-import { reactive } from 'vue'
+import { reactive, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import {
   COLOR_PANEL,
@@ -27,6 +27,13 @@ const state = reactive({
 })
 
 const emit = defineEmits(['onColorChange'])
+
+watch(
+  () => props.chart,
+  () => {
+    init()
+  }
+)
 
 const changeColorOption = () => {
   const items = colorCases.filter(ele => {

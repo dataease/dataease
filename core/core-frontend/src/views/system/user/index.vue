@@ -6,14 +6,13 @@ import { Icon } from '@/components/icon-custom'
 import { FilterText, convertFilterText } from '@/components/filter-text'
 import DrawerMain from '@/components/drawer-main/src/DrawerMain.vue'
 import UserForm from './UserForm.vue'
-// import DatasetUnion from './DatasetUnion.vue'
 import RoleManage from './RoleManage.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import ColumnList from '@/components/column-list/src/ColumnList.vue'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
 import { userPageApi, userDelApi } from '@/api/user'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
-// import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
+import { setColorName } from '@/utils/utils'
 const { t } = useI18n()
 const activeName = ref('user')
 const isPluginLoaded = ref(false)
@@ -88,7 +87,11 @@ const search = () => {
     conditions: state.conditions,
     keyword: keyword.value
   }).then(res => {
-    state.userList = res.data.records
+    const records = res.data.records
+    records.forEach(item => {
+      setColorName(item, keyword.value)
+    })
+    state.userList = records
     state.paginationConfig.total = res.data.total
     loading.value = false
   })
@@ -149,6 +152,22 @@ const fillFilterText = () => {
   const textArray = convertFilterText(state.conditions, filterOption)
   Object.assign(state.filterTexts, textArray)
 }
+const currentChange = index => {
+  state.paginationConfig.currentPage = index
+  search()
+}
+const sizeChange = size => {
+  state.paginationConfig.pageSize = size
+  search()
+}
+const sortChange = param => {
+  state.orders = []
+  if (param.order && param.prop === 'createTime') {
+    const type = param.order.substring(0, param.order.indexOf('ending'))
+    state.orders.push('create_time ' + type)
+    search()
+  }
+}
 </script>
 <template>
   <el-tabs v-model="activeName" @tab-click="handleClick">
@@ -196,6 +215,9 @@ const fillFilterText = () => {
         :columns="state.columnList"
         :pagination="state.paginationConfig"
         :table-data="state.userList"
+        :current-change="currentChange"
+        :size-change="sizeChange"
+        @sort-change="sortChange"
       >
         <el-table-column type="selection" width="30" />
         <el-table-column
@@ -211,7 +233,12 @@ const fillFilterText = () => {
           prop="name"
           :label="t('user.name')"
           width="150"
-        />
+        >
+          <template v-slot:default="scope">
+            <span v-if="scope.row.colorName" v-html="scope.row.colorName" />
+            <span v-else>{{ scope.row.name }}</span>
+          </template>
+        </el-table-column>
 
         <el-table-column
           prop="roleItems"
