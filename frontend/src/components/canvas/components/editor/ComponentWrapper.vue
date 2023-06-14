@@ -365,6 +365,7 @@ export default {
 .main_view {
   position: relative;
   background-size: 100% 100% !important;
+  z-index: 1;
 }
 
 .component {
