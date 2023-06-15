@@ -80,7 +80,7 @@ init()
 <template>
   <el-col>
     <div style="display: flex; padding: 10px 0">
-      <el-button circle size="small" :style="{ minWidth: 'auto !important' }" @click="addFilter">
+      <el-button circle size="small" class="circle-button" @click="addFilter">
         <template #icon>
           <Icon name="icon_add_outlined"></Icon>
         </template>
@@ -88,7 +88,6 @@ init()
       <el-radio-group
         v-show="item.filter && item.filter.length > 1"
         v-model="state.logic"
-        size="mini"
         style="margin-left: 10px"
         @change="logicChange"
       >
@@ -108,7 +107,7 @@ init()
           </span>
         </el-col>
         <el-col :span="8">
-          <el-select v-model="f.term" size="mini">
+          <el-select v-model="f.term">
             <el-option-group v-for="(group, idx) in state.options" :key="idx" :label="group.label">
               <el-option
                 v-for="opt in group.options"
@@ -125,7 +124,6 @@ init()
             v-model="f.value"
             class="value-item"
             :placeholder="t('chart.condition')"
-            size="mini"
             clearable
           />
         </el-col>

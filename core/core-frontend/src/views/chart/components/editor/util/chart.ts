@@ -549,7 +549,7 @@ export const DEFAULT_FUNCTION_CFG = {
   sliderRange: [0, 10],
   sliderBg: '#FFFFFF',
   sliderFillBg: '#BCD6F1',
-  sliderTextClolor: '#999999',
+  sliderTextColor: '#999999',
   emptyDataStrategy: 'breakLine'
 }
 export const DEFAULT_THRESHOLD = {

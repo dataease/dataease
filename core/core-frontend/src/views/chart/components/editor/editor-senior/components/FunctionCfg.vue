@@ -107,7 +107,7 @@ init()
             class="form-item"
           >
             <el-color-picker
-              v-model="state.functionForm.sliderTextClolor"
+              v-model="state.functionForm.sliderTextColor"
               class="color-picker-style"
               :predefine="state.predefineColors"
               @change="changeFunctionCfg"
