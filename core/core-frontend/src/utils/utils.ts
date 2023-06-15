@@ -30,6 +30,16 @@ export function isPreventDrop(component) {
   return !components.includes(component) && !component.startsWith('SVG')
 }
 
+export function checkAddHttp(url) {
+  if (!url) {
+    return url
+  } else if (/^(http(s)?:\/\/)/.test(url.toLowerCase())) {
+    return url
+  } else {
+    return 'http://' + url
+  }
+}
+
 export const setColorName = (obj, keyword: string, key?: string, colorKey?: string) => {
   key = key || 'name'
   colorKey = colorKey || 'colorName'

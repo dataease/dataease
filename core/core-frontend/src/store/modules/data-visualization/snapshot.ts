@@ -16,11 +16,17 @@ let defaultCanvasInfo = {
 export const snapshotStore = defineStore('snapshot', {
   state: () => {
     return {
+      styleChangeTimes: 0, // 组件样式修改次数
+      cacheStyleChangeTimes: 0, // 仪表板未缓存的组件样式修改次数
       snapshotData: [], // 编辑器快照数据
       snapshotIndex: -1 // 快照索引
     }
   },
   actions: {
+    canvasChange() {
+      this.styleChangeTimes++
+      this.cacheStyleChangeTimes++
+    },
     undo() {
       if (this.snapshotIndex >= 0) {
         this.snapshotIndex--

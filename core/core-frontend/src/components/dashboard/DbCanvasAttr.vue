@@ -2,8 +2,7 @@
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { storeToRefs } from 'pinia'
-import { onMounted, reactive, ref, watch } from 'vue'
-import DeInputNum from '@/custom-component/common/DeInputNum.vue'
+import { nextTick, onMounted, reactive, ref, watch } from 'vue'
 import { uploadFileResult } from '@/api/staticResource'
 import { ElIcon, ElMessage } from 'element-plus-secondary'
 import {
@@ -14,6 +13,13 @@ import {
 import { useI18n } from '@/hooks/web/useI18n'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import Slider from '@/components/dashboard/subject-setting/pre-subject/Slider.vue'
+import OverallSetting from '@/components/dashboard/subject-setting/dashboard-style/OverallSetting.vue'
+import BackgroundOverall from '@/components/visualization/component-background/BackgroundOverall.vue'
+import ComponentColorSelector from '@/components/dashboard/subject-setting/dashboard-style/ComponentColorSelector.vue'
+import { adaptCurThemeCommonStyleAll } from '@/utils/canvasStyle'
+import eventBus from '@/utils/eventBus'
+import ViewTitle from '@/components/dashboard/subject-setting/dashboard-style/ViewTitle.vue'
+import FilterStyleSelector from '@/components/dashboard/subject-setting/dashboard-style/FilterStyleSelector.vue'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const { canvasStyleData } = storeToRefs(dvMainStore)
@@ -33,7 +39,7 @@ const dialogImageUrl = ref('')
 const dialogVisible = ref(false)
 const uploadDisabled = ref(false)
 
-const canvasAttrActiveNames = ref(['size', 'background', 'color'])
+const canvasAttrActiveNames = ref(['style'])
 
 const handlePictureCardPreview = file => {
   dialogImageUrl.value = file.url
@@ -54,13 +60,13 @@ async function upload(file) {
 }
 
 const colorCases = COLOR_CASES
-
 const predefineColors = COLOR_PANEL
-
 const state = reactive({
   colorForm: JSON.parse(JSON.stringify(DEFAULT_COLOR_CASE)),
   customColor: null,
-  colorIndex: 0
+  colorIndex: 0,
+  sliderShow: true,
+  collapseShow: true
 })
 
 const changeColorOption = () => {
@@ -109,72 +115,140 @@ const init = () => {
     fileList.value = [{ url: imgUrlTrans(canvasStyleData.value.background) }]
   }
 }
+
+const onSubjectChange = () => {
+  state.collapseShow = false
+  nextTick(() => {
+    init()
+    dataMerge()
+    state.collapseShow = true
+  })
+}
+const sliderReload = () => {
+  state.sliderShow = false
+  nextTick(() => {
+    state.sliderShow = true
+  })
+}
+
+const dataMerge = () => {
+  adaptCurThemeCommonStyleAll()
+  snapshotStore.recordSnapshot()
+}
+
+const handleChange = val => {
+  return null
+}
+
+const onChangePanelStyle = parma => {
+  return null
+}
+
+const onColorChange = val => {
+  themeAttrChange('customAttr', 'color', val)
+}
+const onTextChange = val => {
+  themeAttrChange('customStyle', 'text', val)
+}
+const styleChange = () => {
+  snapshotStore.canvasChange()
+}
+const themeAttrChange = (custom, property, value) => {
+  eventBus.emit('onThemeAttrChange', {
+    custom: custom,
+    property: property,
+    value: value
+  })
+  snapshotStore.recordSnapshot()
+}
+
 watch([() => canvasStyleData.value.background], () => {
   if (!fileList.value.length && !initReady) {
     init()
   }
 })
+
+onMounted(() => {
+  eventBus.on('onSubjectChange', onSubjectChange)
+})
 </script>
 
 <template>
   <div class="attr-container">
-    <el-row>
-      <!--      <slider></slider>-->
-    </el-row>
-    <el-row>
+    <el-row v-if="state.collapseShow">
       <el-collapse v-model="canvasAttrActiveNames">
-        <el-collapse-item title="尺寸" name="size">
+        <el-collapse-item title="仪表板风格" name="style">
           <el-row class="item-show">
-            <span style="margin-left: 10px; color: #757575" title="宽">W</span>
-            <de-input-num v-model="canvasStyleData.width" :min="600" :max="4096"></de-input-num>
-            <span style="margin-left: 10px; color: #757575" title="高">H</span>
-            <de-input-num v-model="canvasStyleData.height" :min="600" :max="4096"></de-input-num>
+            <slider></slider>
           </el-row>
         </el-collapse-item>
+        <el-collapse-item title="整体配置" name="overallSetting">
+          <el-row class="item-show">
+            <overall-setting></overall-setting>
+          </el-row>
+        </el-collapse-item>
+        <el-collapse-item :title="'视图配色'" name="graphical">
+          <component-color-selector @onColorChange="onColorChange"></component-color-selector>
+        </el-collapse-item>
         <el-collapse-item title="背景" name="background">
-          <el-row>
-            <el-radio-group v-model="canvasStyleData.backgroundType">
-              <el-radio label="backgroundColor">颜色</el-radio>
-              <el-radio label="background">图片</el-radio>
-            </el-radio-group>
-          </el-row>
-          <el-row v-show="canvasStyleData.backgroundType === 'backgroundColor'">
-            <el-color-picker v-model="canvasStyleData.backgroundColor" show-alpha></el-color-picker>
-          </el-row>
-          <el-row v-show="canvasStyleData.backgroundType === 'background'" class="img-area">
-            <el-col style="width: 130px !important">
-              <el-upload
-                action=""
-                accept=".jpeg,.jpg,.png,.gif,.svg"
-                class="avatar-uploader"
-                list-type="picture-card"
-                :class="{ disabled: uploadDisabled }"
-                :on-preview="handlePictureCardPreview"
-                :on-remove="handleRemove"
-                :http-request="upload"
-                :file-list="fileList"
+          <el-row class="custom-row" style="padding: 0 8px">
+            <el-row>
+              <el-radio-group v-model="canvasStyleData.backgroundType">
+                <el-radio label="backgroundColor">颜色</el-radio>
+                <el-radio label="background">图片</el-radio>
+              </el-radio-group>
+            </el-row>
+            <el-row v-show="canvasStyleData.backgroundType === 'backgroundColor'">
+              <el-color-picker
+                v-model="canvasStyleData.backgroundColor"
+                show-alpha
+              ></el-color-picker>
+            </el-row>
+            <el-row v-show="canvasStyleData.backgroundType === 'background'" class="img-area">
+              <el-col style="width: 130px !important">
+                <el-upload
+                  action=""
+                  accept=".jpeg,.jpg,.png,.gif,.svg"
+                  class="avatar-uploader"
+                  list-type="picture-card"
+                  :class="{ disabled: uploadDisabled }"
+                  :on-preview="handlePictureCardPreview"
+                  :on-remove="handleRemove"
+                  :http-request="upload"
+                  :file-list="fileList"
+                >
+                  <el-icon><Plus /></el-icon>
+                </el-upload>
+                <el-dialog
+                  top="25vh"
+                  width="600px"
+                  :append-to-body="true"
+                  :destroy-on-close="true"
+                  v-model:visible="dialogVisible"
+                >
+                  <img width="100%" :src="dialogImageUrl" />
+                </el-dialog>
+              </el-col>
+            </el-row>
+            <el-row v-show="canvasStyleData.backgroundType === 'background'">
+              <span v-show="!canvasStyleData.background" class="image-hint"
+                >当前支持.jpeg,.jpg,.png,.gif文件,大小不要超过15M</span
               >
-                <el-icon><Plus /></el-icon>
-              </el-upload>
-              <el-dialog
-                top="25vh"
-                width="600px"
-                :append-to-body="true"
-                :destroy-on-close="true"
-                v-model:visible="dialogVisible"
+              <span v-show="canvasStyleData.background" class="re-update-span" @click="goFile"
+                >重新上传</span
               >
-                <img width="100%" :src="dialogImageUrl" />
-              </el-dialog>
-            </el-col>
+            </el-row>
           </el-row>
-          <el-row v-show="canvasStyleData.backgroundType === 'background'">
-            <span v-show="!canvasStyleData.background" class="image-hint"
-              >当前支持.jpeg,.jpg,.png,.gif文件,大小不要超过15M</span
-            >
-            <span v-show="canvasStyleData.background" class="re-update-span" @click="goFile"
-              >重新上传</span
-            >
-          </el-row>
+        </el-collapse-item>
+
+        <el-collapse-item :title="t('visualization.view_style')" name="componentStyle">
+          <background-overall></background-overall>
+        </el-collapse-item>
+        <el-collapse-item :title="t('visualization.chart_title')" name="viewTitle">
+          <view-title @onTextChange="onTextChange" />
+        </el-collapse-item>
+        <el-collapse-item :title="t('visualization.filter_component')" name="filterComponent">
+          <filter-style-selector />
         </el-collapse-item>
         <el-collapse-item title="配色" name="color">
           <span style="margin-top: 10px; color: #757575">配色方案</span>
@@ -306,22 +380,6 @@ watch([() => canvasStyleData.value.background], () => {
   width: 100%;
 }
 
-:deep(.ed-collapse-item__header) {
-  background-color: @side-area-background !important;
-  color: #ffffff;
-  padding-left: 5px;
-  border-bottom: 1px solid rgba(85, 85, 85, 1);
-  height: 38px !important;
-}
-:deep(.ed-collapse-item__content) {
-  background-color: @side-content-background;
-  color: #ffffff;
-  padding-left: 5px;
-}
-
-:deep(.ed-collapse-item__wrap) {
-  border-bottom: 1px solid rgba(85, 85, 85, 1);
-}
 :deep(.ed-collapse) {
   width: 100%;
 }
@@ -398,5 +456,11 @@ watch([() => canvasStyleData.value.background], () => {
   size: 14px;
   line-height: 22px;
   font-weight: 400;
+}
+
+:deep(.ed-collapse-item__header) {
+  background-color: #f5f6f7 !important;
+  padding-left: 5px;
+  height: 38px !important;
 }
 </style>

@@ -1,22 +1,73 @@
 <template>
-  <el-row style="flex-direction: column">
+  <el-row style="flex-direction: column; width: 100%">
     <el-row v-loading="state.slidersLoading">
       <div class="direction-left">
         <span>&nbsp;</span>
         <ul v-show="state.currentIndex > 1" class="direction">
           <li class="left" @click="move(state.sliderWidth, 1, state.speed)">
             <svg
-              class="icon"
-              width="15px"
-              height="15.00px"
-              viewBox="0 0 1024 1024"
-              version="1.1"
+              width="36"
+              height="40"
+              viewBox="0 0 36 40"
+              fill="none"
               xmlns="http://www.w3.org/2000/svg"
             >
+              <g filter="url(#filter0_d_1423_44506)">
+                <rect
+                  width="24"
+                  height="24"
+                  rx="12"
+                  transform="matrix(-1 0 0 1 28 4)"
+                  fill="white"
+                />
+                <rect
+                  x="-0.5"
+                  y="0.5"
+                  width="23"
+                  height="23"
+                  rx="11.5"
+                  transform="matrix(-1 0 0 1 27 4)"
+                  stroke="#DEE0E3"
+                />
+              </g>
               <path
-                fill="#ffffff"
-                d="M481.233 904c8.189 0 16.379-3.124 22.628-9.372 12.496-12.497 12.496-32.759 0-45.256L166.488 512l337.373-337.373c12.496-12.497 12.496-32.758 0-45.255-12.498-12.497-32.758-12.497-45.256 0l-360 360c-12.496 12.497-12.496 32.758 0 45.255l360 360c6.249 6.249 14.439 9.373 22.628 9.373z"
+                d="M13.8609 16.0005L17.9268 11.9346C18.0244 11.837 18.0244 11.6787 17.9268 11.5811L17.5732 11.2275C17.4756 11.1299 17.3173 11.1299 17.2197 11.2275L12.8003 15.6469C12.605 15.8422 12.605 16.1588 12.8003 16.354L17.2197 20.7735C17.3173 20.8711 17.4756 20.8711 17.5732 20.7735L17.9268 20.4199C18.0244 20.3223 18.0244 20.164 17.9268 20.0664L13.8609 16.0005Z"
+                fill="#1F2329"
               />
+              <defs>
+                <filter
+                  id="filter0_d_1423_44506"
+                  x="-4"
+                  y="0"
+                  width="40"
+                  height="40"
+                  filterUnits="userSpaceOnUse"
+                  color-interpolation-filters="sRGB"
+                >
+                  <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                  <feColorMatrix
+                    in="SourceAlpha"
+                    type="matrix"
+                    values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+                    result="hardAlpha"
+                  />
+                  <feOffset dy="4" />
+                  <feGaussianBlur stdDeviation="4" />
+                  <feComposite in2="hardAlpha" operator="out" />
+                  <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.1 0" />
+                  <feBlend
+                    mode="normal"
+                    in2="BackgroundImageFix"
+                    result="effect1_dropShadow_1423_44506"
+                  />
+                  <feBlend
+                    mode="normal"
+                    in="SourceGraphic"
+                    in2="effect1_dropShadow_1423_44506"
+                    result="shape"
+                  />
+                </filter>
+              </defs>
             </svg>
           </li>
         </ul>
@@ -64,17 +115,54 @@
         <ul v-show="state.currentIndex < state.sliders.length" class="direction">
           <li class="right" @click="move(state.sliderWidth, -1, state.speed)">
             <svg
-              class="icon"
-              width="15px"
-              height="15.00px"
-              viewBox="0 0 1024 1024"
-              version="1.1"
+              width="36"
+              height="40"
+              viewBox="0 0 36 40"
+              fill="none"
               xmlns="http://www.w3.org/2000/svg"
             >
+              <g filter="url(#filter0_d_1423_44502)">
+                <rect x="8" y="4" width="24" height="24" rx="12" fill="white" />
+                <rect x="8.5" y="4.5" width="23" height="23" rx="11.5" stroke="#DEE0E3" />
+              </g>
               <path
-                fill="#ffffff"
-                d="M557.179 904c-8.189 0-16.379-3.124-22.628-9.372-12.496-12.497-12.496-32.759 0-45.256L871.924 512 534.551 174.627c-12.496-12.497-12.496-32.758 0-45.255 12.498-12.497 32.758-12.497 45.256 0l360 360c12.496 12.497 12.496 32.758 0 45.255l-360 360c-6.249 6.249-14.439 9.373-22.628 9.373z"
+                d="M22.1391 15.9985L18.0732 11.9327C17.9756 11.835 17.9756 11.6768 18.0732 11.5791L18.4268 11.2256C18.5244 11.1279 18.6827 11.1279 18.7803 11.2256L23.1997 15.645C23.395 15.8402 23.395 16.1568 23.1997 16.3521L18.7803 20.7715C18.6827 20.8691 18.5244 20.8691 18.4268 20.7715L18.0732 20.418C17.9756 20.3203 17.9756 20.162 18.0732 20.0644L22.1391 15.9985Z"
+                fill="#1F2329"
               />
+              <defs>
+                <filter
+                  id="filter0_d_1423_44502"
+                  x="0"
+                  y="0"
+                  width="40"
+                  height="40"
+                  filterUnits="userSpaceOnUse"
+                  color-interpolation-filters="sRGB"
+                >
+                  <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                  <feColorMatrix
+                    in="SourceAlpha"
+                    type="matrix"
+                    values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+                    result="hardAlpha"
+                  />
+                  <feOffset dy="4" />
+                  <feGaussianBlur stdDeviation="4" />
+                  <feComposite in2="hardAlpha" operator="out" />
+                  <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.1 0" />
+                  <feBlend
+                    mode="normal"
+                    in2="BackgroundImageFix"
+                    result="effect1_dropShadow_1423_44502"
+                  />
+                  <feBlend
+                    mode="normal"
+                    in="SourceGraphic"
+                    in2="effect1_dropShadow_1423_44502"
+                    result="shape"
+                  />
+                </filter>
+              </defs>
             </svg>
           </li>
         </ul>
@@ -108,7 +196,7 @@ import {
   querySubjectWithGroupApi,
   saveOrUpdateSubject,
   deleteSubject
-} from '@/api/dataVisualization'
+} from '@/api/visualization/dataVisualization'
 import { reactive, toRefs, computed, onMounted } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
@@ -136,10 +224,10 @@ const state = reactive({
   temp: null,
   sliders: [],
   slidersLoading: false,
-  sliderWidth: 290,
-  imgWidth: 290,
+  sliderWidth: 420,
+  imgWidth: 420,
   currentIndex: 1,
-  distance: -290,
+  distance: -420,
   transitionEnd: true,
   speed: initialSpeed.value,
   saveSubjectVisible: false
@@ -240,10 +328,11 @@ onMounted(() => {
   querySubjectWithGroup()
 })
 </script>
-<style scoped>
+<style scoped lang="less">
 .item-area {
-  width: 290px;
-  height: 250px;
+  width: 420px;
+  height: 290px;
+  padding: 0 20px;
 }
 
 .save-area {
@@ -270,9 +359,8 @@ ul {
 
 .slider-window {
   position: relative;
-  width: 290px;
-  height: 250px;
-  margin: 0 auto;
+  width: 400px;
+  height: 280px;
   overflow: hidden;
 }
 
@@ -284,21 +372,22 @@ ul {
 .left,
 .right {
   position: absolute;
-  top: 50%;
+  top: calc(50% - 5px);
   width: 20px;
   height: 20px;
   cursor: pointer;
-  background-color: rgba(0 0 0 / 3%);
   border-radius: 50%;
   transform: translateY(-50%);
 }
 
 .left {
+  left: -5px;
   padding-top: 2px;
   padding-left: 5px;
 }
 
 .right {
+  right: 15px;
   padding-top: 2px;
   padding-right: 5px;
 }

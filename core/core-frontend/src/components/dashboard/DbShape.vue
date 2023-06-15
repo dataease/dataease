@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { nextTick, toRefs } from 'vue'
+import { computed, nextTick, reactive, toRefs } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
@@ -8,6 +8,7 @@ import findComponent from '@/utils/components'
 import { getStyle } from '@/utils/style'
 import eventBus from '@/utils/eventBus'
 import { isPreventDrop } from '@/utils/utils'
+import ComponentBar from '@/components/visualization/ComponentBar.vue'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const composeStore = composeStoreWithOut()
@@ -46,6 +47,16 @@ const props = defineProps({
 })
 
 const { active, item, index, canvasViewInfo } = toRefs(props)
+
+const state = reactive({
+  seriesIdMap: {
+    id: ''
+  }
+})
+
+const componentActiveFlag = computed(() => {
+  return active.value
+})
 
 const getTextareaHeight = (element, text) => {
   let { lineHeight, fontSize, height } = element.style
@@ -88,6 +99,9 @@ const handleMouseDownOnShape = e => {
   e.stopPropagation()
   dvMainStore.setCurComponent({ component: item.value, index: index.value })
 }
+const showViewDetails = params => {
+  // to open details
+}
 </script>
 
 <template>
@@ -97,6 +111,16 @@ const handleMouseDownOnShape = e => {
     @click="selectCurComponent"
     @mousedown="handleMouseDownOnShape"
   >
+    <component-bar
+      v-if="componentActiveFlag"
+      :source-element="item"
+      :terminal="'pc'"
+      :element="item"
+      :canvas-id="'canvas-main'"
+      :show-position="'edit'"
+      :series-id-map="state.seriesIdMap"
+      @showViewDetails="showViewDetails"
+    />
     <!--如果是视图 则动态获取预存的chart-view数据-->
     <component
       :is="findComponent(item.component)"

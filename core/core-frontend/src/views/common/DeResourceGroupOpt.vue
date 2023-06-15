@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref, reactive, computed, watch, toRefs } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
-import { findTree, ResourceOrFolder, savaOrUpdateBase } from '@/api/dataVisualization'
+import { findTree, ResourceOrFolder, savaOrUpdateBase } from '@/api/visualization/dataVisualization'
 
 const props = defineProps({
   curCanvasType: {

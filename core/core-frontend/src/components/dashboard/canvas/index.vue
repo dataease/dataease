@@ -2,7 +2,6 @@
   <div
     class="dragAndResize"
     ref="container"
-    :style="editStyle"
     @mousedown="containerMouseDown($event)"
     @mouseup="endMove($event)"
     @mousemove="moving($event)"
@@ -23,7 +22,12 @@
         :style="nowItemStyle(item, index)"
       >
         <db-drag-area :index="index" :item="item"></db-drag-area>
-        <db-shape :index="index" :item="item" :canvas-view-info="canvasViewInfo"></db-shape>
+        <db-shape
+          :active="isActive(item)"
+          :index="index"
+          :item="item"
+          :canvas-view-info="canvasViewInfo"
+        ></db-shape>
         <span
           class="resizeHandle"
           v-show="resizable"
@@ -43,8 +47,6 @@ import { storeToRefs } from 'pinia'
 import { getCanvasStyle, getStyle } from '@/utils/style'
 import DbShape from '@/components/dashboard/DbShape.vue'
 import DbDragArea from '@/components/dashboard/DbDragArea.vue'
-import { computed } from 'vue'
-import { changeStyleWithScale } from '@/utils/translate'
 const dvMainStore = dvMainStoreWithOut()
 
 let positionBox = []
