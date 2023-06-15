@@ -9,6 +9,7 @@ import { Icon } from '@/components/icon-custom'
 import { Base64 } from 'js-base64'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import { checkApiItem } from '@/api/datasource'
+import { cloneDeep } from 'lodash-es'
 
 export interface Field {
   name: string
@@ -171,7 +172,7 @@ const saveItem = () => {
       }
     }
   }
-  returnAPIItem('returnItem', apiItem)
+  returnAPIItem('returnItem', cloneDeep(apiItem))
   edit_api_item.value = false
 }
 const before = () => {

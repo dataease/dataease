@@ -59,7 +59,6 @@ const state = reactive({
 const dsForm = ref<FormInstance>()
 
 const cronEdit = ref(true)
-const apiRequestDraw = ref(false)
 
 const rule = reactive<FormRules>({
   name: [
@@ -235,7 +234,6 @@ const copyItem = (item?: ApiConfiguration) => {
 }
 const addApiItem = item => {
   if (dsFormDisabled.value) return
-  apiRequestDraw.value = true
   let apiItem = null
   api_table_title.value = t('datasource.data_table')
   if (item) {
@@ -275,13 +273,12 @@ const returnItem = apiItem => {
   for (let i = 0; i < form.value.apiConfiguration.length; i++) {
     if (form.value.apiConfiguration[i].serialNumber === apiItem.serialNumber) {
       find = true
-      form.value.apiConfiguration[i] = JSON.parse(JSON.stringify(apiItem))
+      form.value.apiConfiguration[i] = apiItem
     }
   }
   if (!find) {
     form.value.apiConfiguration.push(apiItem)
   }
-  apiRequestDraw.value = false
 }
 
 const onRateChange = () => {
@@ -702,11 +699,7 @@ defineExpose({
           </el-form-item>
         </div>
       </el-form>
-      <api-http-request-draw
-        v-if="apiRequestDraw"
-        @return-item="returnItem"
-        ref="editApiItem"
-      ></api-http-request-draw>
+      <api-http-request-draw @return-item="returnItem" ref="editApiItem"></api-http-request-draw>
     </div>
   </div>
 </template>
