@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { reactive, ref } from 'vue'
+import { reactive, ref, onMounted } from 'vue'
 import { ElIcon, ElMessage } from 'element-plus-secondary'
 import { Icon } from '@/components/icon-custom'
 import type { DsType } from './DsTypeList.vue'
@@ -9,7 +9,7 @@ import EditorDetail from './EditorDetail.vue'
 import ExcelDetail from './ExcelDetail.vue'
 import { validate, save } from '@/api/datasource'
 import { Base64 } from 'js-base64'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import type { Param } from './ExcelDetail.vue'
 interface Node {
   name: string
@@ -28,7 +28,13 @@ interface Form {
 
 const { t } = useI18n()
 const { push } = useRouter()
+const { query } = useRoute()
 
+onMounted(() => {
+  if (query.type) {
+    selectDsType(query.type as string)
+  }
+})
 const dsType = ['OLTP', 'OLAP', 'DL', 'LOCAL', 'OTHER']
 
 const nameMap = {
@@ -113,6 +119,7 @@ const next = () => {
   }
   activeStep.value = activeStep.value + 1
 }
+
 const prev = () => {
   activeStep.value = activeStep.value - 1
 }

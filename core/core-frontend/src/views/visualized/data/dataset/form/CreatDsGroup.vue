@@ -11,6 +11,7 @@ export interface Tree {
   nodeType: string
   createBy?: string
   level: number
+  leaf?: boolean
   pid: string | number
   union?: Array<{}>
   createTime: number

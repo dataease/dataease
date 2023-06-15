@@ -3,16 +3,21 @@ const suffix = `${import.meta.env.VITE_VERSION}-dataease`
 const dom = document.querySelector('head')
 const cb = dom.appendChild.bind(dom)
 
-const formatterUrl = (node: HTMLLinkElement | HTMLScriptElement, prefix: string) => {
+const formatterUrl = <T extends Node>(node: T, prefix: string) => {
   if (['SCRIPT', 'LINK'].includes(node.nodeName)) {
-    const url = (node as HTMLLinkElement).href || (node as HTMLScriptElement).src
+    let url = ''
+    if (node instanceof HTMLLinkElement) {
+      url = node.href
+    } else if (node instanceof HTMLScriptElement) {
+      url = node.src
+    }
     if (url.includes(suffix)) {
       const currentUrlprefix = new URL(url).origin
       const newUrl = url.replace(currentUrlprefix, prefix)
-      if ((node as HTMLLinkElement).href) {
-        ;(node as HTMLLinkElement).href = newUrl
-      } else {
-        ;(node as HTMLScriptElement).src = newUrl
+      if (node instanceof HTMLLinkElement) {
+        node.href = newUrl
+      } else if (node instanceof HTMLScriptElement) {
+        node.src = newUrl
       }
     }
   }
@@ -23,8 +28,13 @@ const getPrefix = (): string => {
   let prefix = ''
   Array.from(document.querySelector('head').children).some(ele => {
     if (['SCRIPT', 'LINK'].includes(ele.nodeName)) {
-      const url = (ele as HTMLLinkElement).href || (ele as HTMLScriptElement).src
-      if (url.startsWith('http') && url.includes(suffix)) {
+      let url = ''
+      if (ele instanceof HTMLLinkElement) {
+        url = ele.href
+      } else if (ele instanceof HTMLScriptElement) {
+        url = ele.src
+      }
+      if (url.includes(suffix)) {
         prefix = new URL(url).origin
         return true
       }
@@ -34,9 +44,9 @@ const getPrefix = (): string => {
 }
 
 document.querySelector('head').appendChild = <T extends Node>(node: T) => {
-  const newNode = formatterUrl(node as unknown as HTMLLinkElement | HTMLScriptElement, getPrefix())
+  const newNode = formatterUrl(node, getPrefix())
   cb(newNode)
-  return node
+  return newNode
 }
 import { createApp } from 'vue'
 import '@/style/index.less'

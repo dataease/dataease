@@ -87,7 +87,6 @@ const emit = defineEmits(['changeUnionFields', 'changeUnionType'])
       <div class="union-body-header">
         <span class="column" :title="tableName">{{ tableName }}</span>
         <span class="column" :title="node.tableName">{{ node.tableName }}</span>
-        <span class="column-last">{{ t('dataset.operator') }}</span>
       </div>
       <div class="union-body-container">
         <div v-for="(field, index) in node.unionFields" :key="index" class="union-body-item">
@@ -153,7 +152,7 @@ const emit = defineEmits(['changeUnionFields', 'changeUnionType'])
 
           <span class="column-last">
             <el-button
-              :disabled="node.unionFields && node.unionFields.length === 1"
+              v-if="node.unionFields && node.unionFields.length > 1"
               text
               @click="removeUnionItem(index)"
             >
@@ -208,22 +207,25 @@ const emit = defineEmits(['changeUnionFields', 'changeUnionType'])
   width: 100%;
 }
 .union-body-header {
-  height: 46px;
-  align-items: center;
-  justify-content: space-between;
+  height: 22px;
   display: flex;
+  align-items: center;
   font-size: 14px;
-  font-weight: 500;
-  color: var(--deTextSecondary, #646a73);
+  font-family: 'PingFang SC';
+  font-style: normal;
+  font-weight: 400;
+  margin: 20px 0 8px 0;
+  color: var(--deTextSecondary, #1f2329);
 }
 .union-body-header .column {
-  width: 336px;
+  width: 364px;
   display: inline-block;
-  margin-right: 9px;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
-  margin-left: 10px;
+  &:nth-child(2) {
+    margin-left: 37px;
+  }
 }
 .union-body-header .column-last {
   width: 40px;
@@ -234,28 +236,30 @@ const emit = defineEmits(['changeUnionFields', 'changeUnionType'])
   overflow-y: auto;
 }
 .select-field {
-  width: 352px;
+  width: 364px;
   display: inline-block;
 }
 .union-body-item {
   height: 32px;
   align-items: center;
-  justify-content: space-between;
   display: flex;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
+  font-size: 18px;
+  & > .ed-icon {
+    margin: 0 9px;
+  }
 }
 .union-body-item .column {
-  width: 352px;
+  width: 364px;
   display: inline-block;
-  margin-right: 5px;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
 }
 .union-body-item .column-last {
-  width: 40px;
-  text-align: center;
-  :deep(i) {
+  margin-left: auto;
+
+  :deep(.ed-icon) {
     font-size: 16px;
     color: var(--deTextSecondary, #646a73);
   }

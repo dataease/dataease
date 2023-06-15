@@ -35,7 +35,6 @@ const router = useRouter()
 const { t } = useI18n()
 const state = reactive({
   datasetTree: [] as Tree[],
-  menuList: [],
   datasetTypeList: []
 })
 
@@ -216,7 +215,7 @@ const handleDatasetTree = (cmd: string, data?: Tree) => {
 
 const activeName = ref('dataPreview')
 
-state.menuList = [
+const menuList = [
   {
     label: '移动到',
     command: 'move'
@@ -311,7 +310,7 @@ const defaultProps = {
               ></handle-more>
               <handle-more
                 @handle-command="cmd => operation(cmd, data, data.leaf ? 'dataset' : 'folder')"
-                :menu-list="state.menuList"
+                :menu-list="menuList"
               ></handle-more>
             </div>
           </span>

@@ -5,7 +5,7 @@ import type { Placement } from 'element-plus-secondary'
 import { PropType } from 'vue'
 
 export interface Menu {
-  svgName: string
+  svgName?: string
   label?: string
   command: string
   divided?: boolean

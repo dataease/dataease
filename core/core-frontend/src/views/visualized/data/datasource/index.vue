@@ -1,8 +1,9 @@
 <script lang="ts" setup>
 import { computed, reactive, ref, shallowRef, nextTick } from 'vue'
-import type { TabPaneName } from 'element-plus-secondary'
-import { ElIcon } from 'element-plus-secondary'
+import type { TabPaneName, Action } from 'element-plus-secondary'
+import { ElIcon, ElMessageBox } from 'element-plus-secondary'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
+import { HandleMore } from '@/components/handle-more'
 import { Icon } from '@/components/icon-custom'
 import { useRouter } from 'vue-router'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -57,7 +58,16 @@ const dsName = ref('')
 const router = useRouter()
 const userDrawer = ref(false)
 const rawDatasourceList = ref([])
-
+const menuList = [
+  {
+    label: '编辑',
+    command: 'editor'
+  },
+  {
+    label: '删除',
+    command: 'delete'
+  }
+]
 const selectDataset = row => {
   Object.assign(dsTableDetail, row)
   userDrawer.value = true
@@ -169,11 +179,39 @@ const handleNodeClick = data => {
   handleCurrentChange(1)
   handleClick(activeName.value)
 }
-const createDatasource = () => {
+const createDatasource = (type?: string) => {
   router.push({
     path: '/ds-form',
-    query: {}
+    query: {
+      type
+    }
   })
+}
+
+const operation = (cmd: string, data) => {
+  if (cmd === 'delete') {
+    ElMessageBox.confirm('数据源', {
+      confirmButtonText: t('common.sure'),
+      tip: '是否删除数据源',
+      cancelButtonText: t('common.cancel'),
+      confirmButtonType: 'danger',
+      type: 'warning',
+      autofocus: false,
+      showClose: false,
+      callback: (action: Action) => {
+        if (action === 'confirm') {
+          createDatasource()
+        }
+      }
+    })
+  }
+
+  if (cmd === 'editor') {
+    handleNodeClick(data)
+    nextTick(() => {
+      detail.value.editForm()
+    })
+  }
 }
 const handleClick = (tabName: TabPaneName) => {
   switch (tabName) {
@@ -233,9 +271,18 @@ const defaultProps = {
             </el-icon>
             <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
             <div class="icon-more">
-              <el-icon class="hover-icon">
+              <el-icon
+                v-if="data.databaseClassification"
+                @click="createDatasource(data.databaseClassification)"
+                class="hover-icon"
+              >
                 <Icon name="icon_add_outlined"></Icon>
               </el-icon>
+              <handle-more
+                v-else
+                @handle-command="cmd => operation(cmd, data)"
+                :menu-list="menuList"
+              ></handle-more>
             </div>
           </span>
         </template>

@@ -375,7 +375,8 @@ defineExpose({
   submitForm,
   resetForm,
   initForm,
-  initEditForm
+  initEditForm,
+  editForm
 })
 </script>
 
