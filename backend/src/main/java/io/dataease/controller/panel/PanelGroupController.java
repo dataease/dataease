@@ -89,14 +89,23 @@ public class PanelGroupController {
 
     @ApiOperation("更新")
     @PostMapping("/update")
-    @DePermissions(value = {
-            @DePermission(type = DePermissionType.PANEL, value = "id"),
-            @DePermission(type = DePermissionType.PANEL, value = "pid", level = ResourceAuthLevel.PANEL_LEVEL_MANAGE)
-    }, logical = Logical.AND)
+    @DePermission(type = DePermissionType.PANEL, value = "id", level = ResourceAuthLevel.PANEL_LEVEL_MANAGE)
     @I18n
     public PanelGroupDTO update(@RequestBody PanelGroupRequest request) {
         return panelGroupService.update(request);
     }
+
+    @ApiOperation("移动")
+    @PostMapping("/move")
+    @DePermissions(value = {
+            @DePermission(type = DePermissionType.PANEL, value = "id", level = ResourceAuthLevel.PANEL_LEVEL_MANAGE),
+            @DePermission(type = DePermissionType.PANEL, value = "pid", level = ResourceAuthLevel.PANEL_LEVEL_MANAGE)
+    }, logical = Logical.AND)
+    @I18n
+    public PanelGroupDTO move(@RequestBody PanelGroupRequest request) {
+        return panelGroupService.update(request);
+    }
+
 
     @ApiOperation("删除")
     @DePermission(type = DePermissionType.PANEL, level = ResourceAuthLevel.PANEL_LEVEL_MANAGE)
