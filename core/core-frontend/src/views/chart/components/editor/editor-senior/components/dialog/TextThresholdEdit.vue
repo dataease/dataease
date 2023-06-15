@@ -230,8 +230,4 @@ span {
   width: 28px;
   height: 28px;
 }
-
-.circle-button {
-  min-width: auto !important;
-}
 </style>

@@ -110,10 +110,11 @@ init()
   <div style="width: 100%">
     <el-col>
       <el-button
+        class="circle-button"
         :title="t('chart.edit')"
         type="text"
         size="small"
-        :style="{ width: '24px', marginLeft: '4px', minWidth: 'auto !important' }"
+        :style="{ width: '24px', marginLeft: '4px' }"
         @click="editLine"
       >
         <template #icon>

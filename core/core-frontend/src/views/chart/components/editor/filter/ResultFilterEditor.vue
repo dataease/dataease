@@ -253,7 +253,7 @@ initEnumOptions()
       "
     >
       <div style="display: flex; padding: 10px 0">
-        <el-button circle size="small" :style="{ minWidth: 'auto !important' }" @click="addFilter">
+        <el-button circle size="small" class="circle-button" @click="addFilter">
           <template #icon>
             <Icon name="icon_add_outlined"></Icon>
           </template>

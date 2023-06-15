@@ -472,7 +472,4 @@ span {
   color: #f56c6c;
   font-size: 12px;
 }
-.circle-button {
-  min-width: auto !important;
-}
 </style>

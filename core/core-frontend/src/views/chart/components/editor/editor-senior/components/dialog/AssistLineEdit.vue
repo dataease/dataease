@@ -108,9 +108,10 @@ init()
 <template>
   <el-col>
     <el-button
+      class="circle-button"
       circle
       size="small"
-      :style="{ marginBottom: '10px', minWidth: 'auto !important' }"
+      :style="{ marginBottom: '10px' }"
       @click="addLine"
     >
       <template #icon>
@@ -237,9 +238,10 @@ init()
         </el-col>
         <el-col :span="1">
           <el-button
+            class="circle-button"
             type="text"
             circle
-            :style="{ float: 'right', minWidth: 'auto !important' }"
+            :style="{ float: 'right' }"
             @click="removeLine(index)"
           >
             <template #icon>

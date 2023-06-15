@@ -244,7 +244,7 @@ init()
       <el-col>
         <el-button
           :title="t('chart.edit')"
-          class="dialog-button"
+          class="circle-button"
           type="text"
           size="small"
           style="width: 24px; margin-left: 4px"
@@ -304,7 +304,7 @@ init()
       <el-col>
         <el-button
           :title="t('chart.edit')"
-          class="dialog-button"
+          class="circle-button"
           type="text"
           size="small"
           style="width: 24px; margin-left: 4px"
@@ -369,7 +369,7 @@ init()
       <el-col>
         <el-button
           :title="t('chart.edit')"
-          class="dialog-button"
+          class="circle-button"
           type="text"
           size="small"
           style="width: 24px; margin-left: 4px"
@@ -638,8 +638,5 @@ span {
   text-overflow: ellipsis;
   color: #8492a6;
   font-size: 12px;
-}
-.dialog-button {
-  min-width: auto !important;
 }
 </style>
