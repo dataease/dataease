@@ -24,4 +24,6 @@ public class BusiResourceCreator implements Serializable {
     private Long pid = 0L;
     @ApiModelProperty("叶子结点")
     private Boolean leaf;
+    @ApiModelProperty("额外标识")
+    private int extraFlag;
 }

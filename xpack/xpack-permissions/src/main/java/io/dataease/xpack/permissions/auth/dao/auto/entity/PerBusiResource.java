@@ -9,7 +9,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-06-02
+ * @since 2023-06-15
  */
 @TableName("per_busi_resource")
 public class PerBusiResource implements Serializable {
@@ -50,6 +50,11 @@ public class PerBusiResource implements Serializable {
      * 叶子结点
      */
     private Boolean leaf;
+
+    /**
+     * 拓展标识
+     */
+    private Integer extraFlag;
 
     public Long getId() {
         return id;
@@ -107,6 +112,14 @@ public class PerBusiResource implements Serializable {
         this.leaf = leaf;
     }
 
+    public Integer getExtraFlag() {
+        return extraFlag;
+    }
+
+    public void setExtraFlag(Integer extraFlag) {
+        this.extraFlag = extraFlag;
+    }
+
     @Override
     public String toString() {
         return "PerBusiResource{" +
@@ -117,6 +130,7 @@ public class PerBusiResource implements Serializable {
         ", pid = " + pid +
         ", rootWay = " + rootWay +
         ", leaf = " + leaf +
+        ", extraFlag = " + extraFlag +
         "}";
     }
 }

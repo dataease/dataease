@@ -294,7 +294,7 @@ const fillOrgReadonly = vo => {
           node.children.forEach(item => stack.push(item))
         }
       }
-      vo.permissionOrigins.push(origin)
+      vo?.permissionOrigins?.push(origin)
     }
   }
   return result

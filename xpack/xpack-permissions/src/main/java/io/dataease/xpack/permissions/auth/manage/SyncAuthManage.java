@@ -51,6 +51,7 @@ public class SyncAuthManage {
         perBusiResource.setName(creator.getName());
         perBusiResource.setOrgId(oid);
         perBusiResource.setPid(creator.getPid());
+        perBusiResource.setExtraFlag(creator.getExtraFlag());
         if (ObjectUtils.isNotEmpty(creator.getLeaf()) && creator.getLeaf()) {
             perBusiResource.setLeaf(creator.getLeaf());
         }
@@ -93,6 +94,7 @@ public class SyncAuthManage {
         PerBusiResource perBusiResource = perBusiResourceMapper.selectOne(queryWrapper);*/
         Optional.ofNullable(perBusiResourceMapper.selectById(editor.getId())).ifPresent(resource -> {
             resource.setName(editor.getName());
+            resource.setExtraFlag(editor.getExtraFlag());
             perBusiResourceMapper.updateById(resource);
         });
     }

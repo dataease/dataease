@@ -17,4 +17,6 @@ public class BusiResourceEditor implements Serializable {
     private String name;
     @ApiModelProperty("类型")
     private String flag;
+    @ApiModelProperty("额外标识")
+    private int extraFlag;
 }

@@ -6,7 +6,6 @@ import io.dataease.api.ds.vo.*;
 import io.dataease.auth.DeApiPath;
 import io.dataease.exception.DEException;
 
-import io.dataease.auth.DeApiPath;
 import io.dataease.auth.DePermit;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -53,6 +52,7 @@ public interface DatasourceApi {
     @DePermit("m:read")
     @GetMapping("list")
     List<DatasourceDTO> list() throws DEException;
+    // List<TreeNodeVO> list() throws DEException;
 
     @DePermit({"m:read", "#p0+':manage'"})
     @GetMapping("getTables/{datasourceId}")
