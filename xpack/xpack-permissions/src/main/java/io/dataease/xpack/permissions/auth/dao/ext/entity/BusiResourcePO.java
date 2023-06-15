@@ -16,6 +16,8 @@ public class BusiResourcePO implements TreeBaseModel<BusiResourcePO>, Serializab
     private Boolean leaf;
     private Long pid;
 
+    private Integer extraFlag;
+
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null || obj.getClass() != this.getClass()) {

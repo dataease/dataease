@@ -10,12 +10,14 @@ import io.dataease.api.ds.vo.*;
 import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
 import io.dataease.api.permissions.auth.dto.BusiResourceCreator;
 import io.dataease.api.permissions.auth.dto.BusiResourceEditor;
+import io.dataease.commons.constants.DataSourceType;
 import io.dataease.commons.constants.TaskStatus;
 import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.entity.CoreDatasourceTask;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
+import io.dataease.datasource.manage.DataSourceManage;
 import io.dataease.datasource.manage.DatasourceSyncManage;
 import io.dataease.datasource.provider.ApiUtils;
 import io.dataease.datasource.provider.CalciteProvider;
@@ -67,6 +69,9 @@ public class DatasourceServer implements DatasourceApi {
 
     private static ObjectMapper objectMapper = new ObjectMapper();
 
+    @Resource
+    private DataSourceManage dataSourceManage;
+
 
     @Override
     public List<DatasourceDTO> query(String keyWord) {
@@ -76,6 +81,7 @@ public class DatasourceServer implements DatasourceApi {
     public enum UpdateType {
         all_scope, add_scope
     }
+
     @Override
     public DatasourceDTO save(DatasourceDTO dataSourceDTO) throws Exception {
         if (dataSourceDTO.getId() != null && dataSourceDTO.getId() > 0) {
@@ -128,6 +134,7 @@ public class DatasourceServer implements DatasourceApi {
             creator.setFlag(RESOURCE_FLAG);
             creator.setName(dataSourceDTO.getName());
             creator.setLeaf(true);
+            creator.setExtraFlag(DataSourceType.valueOf(dataSourceDTO.getType()).getFlag());
             interactiveAuthApi.saveResource(creator);
         }
         return dataSourceDTO;
@@ -189,15 +196,24 @@ public class DatasourceServer implements DatasourceApi {
         return datasourceDTO;
     }
 
+
     @Override
+    // public List<TreeNodeVO> list() {
     public List<DatasourceDTO> list() {
         List<DatasourceDTO> datasourceDTOS = new ArrayList<>();
         Collection<DatasourceConfiguration> datasourceConfigurations = datasourceTypes();
         QueryWrapper<CoreDatasource> queryWrapper = new QueryWrapper();
+        /*
+        下面是从权限系统查数据
         if (ObjectUtils.isNotEmpty(interactiveAuthApi)) {
-            List<Long> ids = interactiveAuthApi.resourceIds(RESOURCE_FLAG);
-            queryWrapper.in("id", ids);
+            List<BusiPerVO> perVOS = null;
+            if (CollectionUtil.isNotEmpty(perVOS = interactiveAuthApi.resource(RESOURCE_FLAG))) {
+                return perVOS.stream().map(dataSourceManage::convertTreeVO).toList();
+            }
+            return null;
         }
+        return dataSourceManage.treeNodeQuery();
+        */
         datasourceMapper.selectList(queryWrapper).forEach(coreDatasource -> {
             DatasourceDTO datasourceDTO = new DatasourceDTO();
             BeanUtils.copyBean(datasourceDTO, coreDatasource);
@@ -208,7 +224,8 @@ public class DatasourceServer implements DatasourceApi {
                     datasourceDTO.setCatalogDesc(datasourceConfiguration.getCatalogDesc());
                 }
             });
-            TypeReference<List<ApiDefinition>> listTypeReference = new TypeReference<List<ApiDefinition>>() {};
+            TypeReference<List<ApiDefinition>> listTypeReference = new TypeReference<List<ApiDefinition>>() {
+            };
             if (datasourceDTO.getType().equalsIgnoreCase(DatasourceConfiguration.DatasourceType.API.toString())) {
                 List<ApiDefinition> apiDefinitionList = JsonUtil.parseList(datasourceDTO.getConfiguration(), listTypeReference);
 

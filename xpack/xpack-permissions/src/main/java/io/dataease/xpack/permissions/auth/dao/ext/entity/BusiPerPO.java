@@ -14,7 +14,7 @@ public class BusiPerPO implements TreeBaseModel {
     private Integer weight;
 
     private Long pid;
-
+    private Integer extraFlag;
     private Long targetId;
 
     @Override
