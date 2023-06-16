@@ -8,6 +8,8 @@ import { ElTree, ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { save } from '@/api/datasource'
 import type { Action } from 'element-plus-secondary'
 import { Base64 } from 'js-base64'
+import { useUserStoreWithOut } from '@/store/modules/user'
+
 export interface Param {
   editType: number
   id: number
@@ -55,7 +57,7 @@ const { param, editDs } = toRefs(props)
 const dsFormDisabled = ref(false)
 
 const { t } = useI18n()
-const token = 'token'
+const token = useUserStoreWithOut().getToken
 const RefreshTokenKey = 'RefreshTokenKey'
 
 const baseUrl = ''
