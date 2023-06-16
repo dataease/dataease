@@ -12,6 +12,7 @@ import { listDatasources, getTableField, listDatasourceTables } from '@/api/data
 import { Base64 } from 'js-base64'
 import type { Configuration, ApiConfiguration, SyncSetting } from './form/index.vue'
 import EditorDetail from './form/EditorDetail.vue'
+import ExcelDetail from './form/ExcelDetail.vue'
 interface DsType {
   type: string
   name: string
@@ -37,6 +38,7 @@ export interface Node {
 const { t } = useI18n()
 
 const detail = ref()
+const excel = ref()
 
 const state = reactive({
   datasourceTree: [] as DsType[],
@@ -217,7 +219,11 @@ const handleClick = (tabName: TabPaneName) => {
   switch (tabName) {
     case 'config':
       nextTick(() => {
-        detail.value.initEditForm()
+        if (nodeInfo.type !== 'Excel') {
+          detail.value.initEditForm()
+        } else {
+          excel.value.initEditForm()
+        }
       })
       break
     case 'table':
@@ -340,7 +346,18 @@ const defaultProps = {
           </grid-table>
         </div>
         <div v-else class="form-editor">
-          <editor-detail ref="detail" :form="nodeInfo" :edit-ds="true"></editor-detail>
+          <editor-detail
+            v-if="nodeInfo.type !== 'Excel'"
+            ref="detail"
+            :form="nodeInfo"
+            :edit-ds="true"
+          ></editor-detail>
+          <excel-detail
+            v-if="nodeInfo.type == 'Excel'"
+            ref="excel"
+            :param="nodeInfo"
+            :edit-ds="true"
+          ></excel-detail>
         </div>
       </template>
       <template v-else>

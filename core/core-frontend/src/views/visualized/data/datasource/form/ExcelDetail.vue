@@ -25,12 +25,34 @@ export interface Field {
 }
 const props = defineProps({
   param: {
-    type: Object as PropType<Param>,
-    default: () => ({})
+    required: false,
+    default() {
+      return reactive<{
+        id: number
+        name: string
+        desc: string
+        type: string
+        editType: number
+      }>({
+        id: 0,
+        name: '',
+        desc: '',
+        type: 'Excel',
+        editType: 0
+      })
+    },
+    type: Object
+  },
+  editDs: {
+    required: false,
+    default: false,
+    type: Boolean
   }
 })
 
-const { param } = toRefs(props)
+const { param, editDs } = toRefs(props)
+
+const dsFormDisabled = ref(false)
 
 const { t } = useI18n()
 const token = 'token'
@@ -813,6 +835,10 @@ const uploadSuccess = (response, _, fileList) => {
 }
 // uploadSuccess({ data: mockData, headers: {} }, '', [])
 
+const initEditForm = () => {
+  dsFormDisabled.value = true
+}
+
 const saveExcelDs = () => {
   let validate = true
   let selectedSheet = []
@@ -870,7 +896,7 @@ const saveExcelDs = () => {
   if (!props.param.id) {
     table = {
       id: props.param.id,
-      name: dsName.value,
+      name: props.param.name,
       type: 'Excel',
       sheets: selectedSheet,
       editType: 0
@@ -878,7 +904,7 @@ const saveExcelDs = () => {
   } else {
     table = {
       id: props.param.id,
-      name: dsName.value,
+      name: props.param.name,
       type: 'Excel',
       sheets: selectedSheet,
       editType: props.param.editType ? props.param.editType : 0
@@ -962,134 +988,161 @@ const saveExcelData = (sheetFileMd5, table) => {
   }
 }
 
-const dsName = ref('')
+const editForm = () => {
+  dsFormDisabled.value = false
+}
+
+const cancel = () => {
+  dsFormDisabled.value = true
+}
 
 defineExpose({
+  initEditForm,
   saveExcelDs
 })
 </script>
 
 <template>
   <div class="excel-detail">
-    <el-form label-position="top">
-      <el-form-item :label="t('common.name')">
-        <el-input v-model="dsName" :placeholder="t('datasource.input_name')" />
-      </el-form-item>
-      <el-form-item class="upload-excel">
-        <el-upload
-          :action="baseUrl + 'api/datasource/uploadFile'"
-          :multiple="false"
-          :show-file-list="false"
-          :file-list="state.fileList"
-          :data="param"
-          accept=".xls,.xlsx,.csv"
-          :before-upload="beforeUpload"
-          :on-success="uploadSuccess"
-          :on-error="uploadFail"
-          name="file"
-          :headers="headers"
-        >
-          <template #trigger>
-            <el-input style="width: 100%" readonly placeholder="点击选择文件">
-              <template #prefix>
-                <el-icon>
-                  <Icon name="icon_search-outline_outlined"></Icon>
-                </el-icon>
-              </template>
-            </el-input>
-          </template>
-        </el-upload>
-        <p style="width: 100%">温馨提示: 请上传csv,xlsx,xls格式的文件</p>
-      </el-form-item>
-    </el-form>
-    <el-dialog fullscreen class="excel-dialog-fullscreen" append-to-body v-model="editeTableField">
-      <div class="table-checkbox-list">
-        <el-tree
-          ref="tree"
-          class="de-tree"
-          :data="state.excelData"
-          :default-expanded-keys="state.defaultExpandedKeys"
-          :default-checked-keys="state.defaultCheckedKeys"
-          node-key="id"
-          :props="defaultProps"
-          show-checkbox
-          highlight-current
-          @node-click="handleNodeClick"
-          @check-change="handleCheckChange"
-        >
-          <template #default="{ data }">
-            <span :title="data.excelLabel" class="custom-tree-node">
-              <span class="label">{{ data.excelLabel }}</span>
-              <span class="error-name-exist">
-                <el-icon>
-                  <Icon name="ds-icon-scene"></Icon>
-                </el-icon>
-              </span>
-            </span>
-          </template>
-        </el-tree>
+    <div class="detail-inner">
+      <div class="detail-operate" v-show="editDs">
+        <el-button v-show="!dsFormDisabled" @click="() => cancel()">{{
+          t('common.cancel')
+        }}</el-button>
+        <el-button v-show="dsFormDisabled" type="primary" @click="() => editForm()">{{
+          t('common.edit')
+        }}</el-button>
+        <el-button v-show="!dsFormDisabled" type="primary" @click="() => saveExcelDs()">{{
+          t('common.sure')
+        }}</el-button>
       </div>
-      <div class="table-detail">
-        <empty-background
-          v-if="!state.excelData.length"
-          :description="t('deDataset.excel_data_first')"
-          img-type="table"
-        />
-
-        <template v-else>
-          <div class="dataset">
-            <span class="name">{{ t('dataset.name') }}</span>
-            <el-input
-              v-model="sheetObj.tableName"
-              :placeholder="t('common.name')"
-              size="small"
-              @change="changeDatasetName"
-            />
-            <div
-              v-if="
-                (sheetObj.nameExist && !param.datasourceId) || sheetObj.empty || sheetObj.overLength
-              "
-              style="top: 52px; left: 107px"
-              class="el-form-item__error"
-            >
-              {{
-                t(
-                  sheetObj.nameExist
-                    ? 'deDataset.already_exists'
-                    : sheetObj.overLength
-                    ? 'dataset.char_can_not_more_50'
-                    : 'dataset.pls_input_name'
-                )
-              }}
-            </div>
-          </div>
-          <div class="data">
-            <div class="result-num">
-              {{ `${t('dataset.preview_show')} 1000 ${t('dataset.preview_item')}` }}
-            </div>
-            <div class="info-table">
-              <el-auto-resizer>
-                <template #default="{ height, width }">
-                  <el-table-v2
-                    :columns="columns"
-                    header-class="header-cell"
-                    :data="sheetObj.jsonArray"
-                    :width="width"
-                    :height="height"
-                    fixed
-                  />
+      <el-form :disabled="dsFormDisabled" label-position="top">
+        <el-form-item :label="t('common.name')">
+          <el-input v-model="param.name" :placeholder="t('datasource.input_name')" />
+        </el-form-item>
+        <el-form-item class="upload-excel">
+          <el-upload
+            :action="baseUrl + 'api/datasource/uploadFile'"
+            :multiple="false"
+            :show-file-list="false"
+            :file-list="state.fileList"
+            :data="param"
+            accept=".xls,.xlsx,.csv"
+            :before-upload="beforeUpload"
+            :on-success="uploadSuccess"
+            :on-error="uploadFail"
+            name="file"
+            :headers="headers"
+          >
+            <template #trigger>
+              <el-input style="width: 100%" readonly placeholder="点击选择文件">
+                <template #prefix>
+                  <el-icon>
+                    <Icon name="icon_search-outline_outlined"></Icon>
+                  </el-icon>
                 </template>
-              </el-auto-resizer>
+              </el-input>
+            </template>
+          </el-upload>
+          <p style="width: 100%">温馨提示: 请上传csv,xlsx,xls格式的文件</p>
+        </el-form-item>
+      </el-form>
+      <el-dialog
+        fullscreen
+        class="excel-dialog-fullscreen"
+        append-to-body
+        v-model="editeTableField"
+      >
+        <div class="table-checkbox-list">
+          <el-tree
+            ref="tree"
+            class="de-tree"
+            :data="state.excelData"
+            :default-expanded-keys="state.defaultExpandedKeys"
+            :default-checked-keys="state.defaultCheckedKeys"
+            node-key="id"
+            :props="defaultProps"
+            show-checkbox
+            highlight-current
+            @node-click="handleNodeClick"
+            @check-change="handleCheckChange"
+          >
+            <template #default="{ data }">
+              <span :title="data.excelLabel" class="custom-tree-node">
+                <span class="label">{{ data.excelLabel }}</span>
+                <span class="error-name-exist">
+                  <el-icon>
+                    <Icon name="ds-icon-scene"></Icon>
+                  </el-icon>
+                </span>
+              </span>
+            </template>
+          </el-tree>
+        </div>
+        <div class="table-detail">
+          <empty-background
+            v-if="!state.excelData.length"
+            :description="t('deDataset.excel_data_first')"
+            img-type="table"
+          />
+
+          <template v-else>
+            <div class="dataset">
+              <span class="name">{{ t('dataset.name') }}</span>
+              <el-input
+                v-model="sheetObj.tableName"
+                :placeholder="t('common.name')"
+                size="small"
+                @change="changeDatasetName"
+              />
+              <div
+                v-if="
+                  (sheetObj.nameExist && !param.datasourceId) ||
+                  sheetObj.empty ||
+                  sheetObj.overLength
+                "
+                style="top: 52px; left: 107px"
+                class="el-form-item__error"
+              >
+                {{
+                  t(
+                    sheetObj.nameExist
+                      ? 'deDataset.already_exists'
+                      : sheetObj.overLength
+                      ? 'dataset.char_can_not_more_50'
+                      : 'dataset.pls_input_name'
+                  )
+                }}
+              </div>
             </div>
-          </div>
-        </template>
-      </div>
-      <div class="footer">
-        <span> 已选: {{ num }} 张表 </span>
-        &nbsp;
-        <el-button type="primary" @click="excelSave"> 确定 </el-button>
-      </div>
-    </el-dialog>
+            <div class="data">
+              <div class="result-num">
+                {{ `${t('dataset.preview_show')} 1000 ${t('dataset.preview_item')}` }}
+              </div>
+              <div class="info-table">
+                <el-auto-resizer>
+                  <template #default="{ height, width }">
+                    <el-table-v2
+                      :columns="columns"
+                      header-class="header-cell"
+                      :data="sheetObj.jsonArray"
+                      :width="width"
+                      :height="height"
+                      fixed
+                    />
+                  </template>
+                </el-auto-resizer>
+              </div>
+            </div>
+          </template>
+        </div>
+        <div class="footer">
+          <span> 已选: {{ num }} 张表 </span>
+          &nbsp;
+          <el-button type="primary" @click="excelSave"> 确定 </el-button>
+        </div>
+      </el-dialog>
+    </div>
   </div>
 </template>
 
@@ -1104,6 +1157,23 @@ defineExpose({
       .ed-upload {
         width: 100% !important;
       }
+    }
+  }
+  .detail-inner {
+    width: 600px;
+
+    .title-form_primary {
+      margin: 16px 0;
+    }
+
+    .detail-operate {
+      text-align: right;
+      padding: 8px 0;
+    }
+
+    .flex-space {
+      display: flex;
+      align-items: center;
     }
   }
 }

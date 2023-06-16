@@ -196,7 +196,9 @@ public class DatasourceServer implements DatasourceApi {
         QueryWrapper<CoreDatasource> queryWrapper = new QueryWrapper();
         if (ObjectUtils.isNotEmpty(interactiveAuthApi)) {
             List<Long> ids = interactiveAuthApi.resourceIds(RESOURCE_FLAG);
-            queryWrapper.in("id", ids);
+            if(!CollectionUtils.isEmpty(ids)){
+                queryWrapper.in("id", ids);
+            }
         }
         datasourceMapper.selectList(queryWrapper).forEach(coreDatasource -> {
             DatasourceDTO datasourceDTO = new DatasourceDTO();
@@ -302,7 +304,8 @@ public class DatasourceServer implements DatasourceApi {
             @ApiImplicitParam(name = "editType", value = "编辑类型", required = true, dataType = "Integer")
     })
     public ExcelFileData excelUpload(@RequestParam("file") MultipartFile file, @RequestParam("id") long datasourceId) throws DEException {
-        return ExcelUtils.excelSaveAndParse(file, datasourceId);
+        ExcelUtils excelUtils = new ExcelUtils();
+        return excelUtils.excelSaveAndParse(file, datasourceId);
     }
 
 
