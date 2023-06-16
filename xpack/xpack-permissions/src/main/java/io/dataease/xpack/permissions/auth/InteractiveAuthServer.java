@@ -29,10 +29,6 @@ public class InteractiveAuthServer implements InteractiveAuthApi {
         return interactiveAuthManage.menuIds();
     }
 
-    @Override
-    public List<Long> resourceIds(String flag) {
-        return interactiveAuthManage.resourceIds(flag);
-    }
 
     @Override
     public List<BusiPerVO> resource(String flag) {

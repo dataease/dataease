@@ -26,6 +26,8 @@ public class BusiPerVO implements TreeResultModel<BusiPerVO>, Serializable {
     private Boolean leaf;
     @ApiModelProperty("权重")
     private Integer weight;
+    @ApiModelProperty("额外标识")
+    private int extraFlag;
     @ApiModelProperty("子节点")
     private List<BusiPerVO> children;
 }

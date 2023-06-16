@@ -215,8 +215,8 @@ const sortChange = param => {
         :columns="state.columnList"
         :pagination="state.paginationConfig"
         :table-data="state.userList"
-        :current-change="currentChange"
-        :size-change="sizeChange"
+        @current-change="currentChange"
+        @size-change="sizeChange"
         @sort-change="sortChange"
       >
         <el-table-column type="selection" width="30" />

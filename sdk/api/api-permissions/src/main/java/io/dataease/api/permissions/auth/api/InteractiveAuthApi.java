@@ -18,8 +18,6 @@ public interface InteractiveAuthApi {
     @GetMapping("/menuIds")
     List<Long> menuIds();
 
-    @GetMapping("/resourceIds/{flag}")
-    List<Long> resourceIds(@PathVariable("flag") String flag);
 
     @GetMapping("/resource/{flag}")
     List<BusiPerVO> resource(@PathVariable("flag") String flag);

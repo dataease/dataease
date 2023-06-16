@@ -43,4 +43,9 @@ public class OrgResourceManage {
     public List<Long> rids(Long oid) {
         return orgResourceMapper.rids(oid);
     }
+
+    @Cacheable(value = "org_global_resource", key = "'7'")
+    public List<Long> menuIds() {
+        return null;
+    }
 }
