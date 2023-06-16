@@ -46,6 +46,6 @@ public class OrgResourceManage {
 
     @Cacheable(value = "org_global_resource", key = "'7'")
     public List<Long> menuIds() {
-        return null;
+        return orgResourceMapper.menuIds();
     }
 }
