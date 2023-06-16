@@ -8,7 +8,7 @@ import io.dataease.commons.utils.LogUtil;
 
 public class PriorityThreadPoolExecutor extends ThreadPoolExecutor {
 
-    public static AtomicInteger globaInteger = new AtomicInteger(1);
+    public static AtomicInteger globalInteger = new AtomicInteger(1);
 
     private ThreadLocal<Integer> local = new ThreadLocal<Integer>() {
         @Override
@@ -42,7 +42,7 @@ public class PriorityThreadPoolExecutor extends ThreadPoolExecutor {
 
     @Override
     public void execute(Runnable command) {
-        int andIncrement = globaInteger.getAndIncrement();
+        int andIncrement = globalInteger.getAndIncrement();
         Integer theadInteger = local.get();
         try {
             if (theadInteger == 0) {
