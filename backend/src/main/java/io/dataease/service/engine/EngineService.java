@@ -225,8 +225,11 @@ public class EngineService {
         ;
         mysqlConfiguration.setHost(matcher.group(1));
         mysqlConfiguration.setPort(Integer.valueOf(matcher.group(2)));
-        mysqlConfiguration.setDataBase(matcher.group(3).split("\\?")[0]);
-        mysqlConfiguration.setExtraParams(matcher.group(3).split("\\?")[1]);
+        String[] databasePrams = matcher.group(3).split("\\?");
+        mysqlConfiguration.setDataBase(databasePrams[0]);
+        if(databasePrams.length == 2){
+            mysqlConfiguration.setExtraParams(databasePrams[1]);
+        }
         if(StringUtils.isNotEmpty(mysqlConfiguration.getExtraParams()) && !mysqlConfiguration.getExtraParams().contains("connectionCollation")){
             mysqlConfiguration.setExtraParams(mysqlConfiguration.getExtraParams() + "&connectionCollation=utf8mb4_general_ci");
         }
