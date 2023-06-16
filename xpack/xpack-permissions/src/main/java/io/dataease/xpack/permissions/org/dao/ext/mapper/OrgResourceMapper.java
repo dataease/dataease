@@ -26,4 +26,7 @@ public interface OrgResourceMapper {
 
     @Select("select id from per_busi_resource where org_id = #{oid} and rt_id = 4")
     List<Long> datasourceIds(@Param("oid") Long oid);
+
+    @Select("select id from per_menu_resource")
+    List<Long> menuIds();
 }

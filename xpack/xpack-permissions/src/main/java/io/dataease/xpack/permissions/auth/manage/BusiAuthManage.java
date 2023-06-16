@@ -16,10 +16,6 @@ public class BusiAuthManage {
     @Resource
     private BusiAuthExtMapper busiAuthExtMapper;
 
-    public List<Long> resourceIdsByRt(Integer flag, Long oid) {
-        return busiAuthExtMapper.resourceIdsByRt(flag, oid);
-    }
-
     public List<BusiResourcePO> resourceWithOid(BusiResourceEnum busiResourceEnum) {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("org_id", AuthUtils.getUser().getDefaultOid());
