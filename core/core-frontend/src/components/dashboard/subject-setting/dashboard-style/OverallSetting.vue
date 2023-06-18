@@ -1,138 +1,136 @@
 <template>
-  <div style="width: 100%; padding: 0 8px">
-    <el-col>
-      <el-row class="custom-row margin-top12">
-        <el-row class="custom-item-text-row"
-          ><span class="custom-item-text bl">{{ t('visualization.theme_color') }}</span>
-        </el-row>
-        <el-row class="custom-theme-color-button function-area">
-          <color-button
-            class="margin-left2"
-            :color-type="'light'"
-            :label="state.overallSettingForm.dashboard.themeColor"
-            @onClick="colorButtonClick"
-            >{{ t('visualization.theme_color_light') }}
-          </color-button>
-          <color-button
-            class="margin-left32"
-            :color-type="'dark'"
-            :label="state.overallSettingForm.dashboard.themeColor"
-            @onClick="colorButtonClick"
-            >{{ t('visualization.theme_color_dark') }}
-          </color-button>
-        </el-row>
+  <el-col>
+    <el-row class="custom-row">
+      <el-row class="custom-item-text-row"
+        ><span class="custom-item-text bl">{{ t('visualization.theme_color') }}</span>
       </el-row>
-      <el-row class="custom-row margin-top20">
-        <el-row class="custom-item-text-row"
-          ><span class="custom-item-text bl">{{ t('visualization.component_gap') }}</span>
-        </el-row>
-        <el-row class="function-area">
-          <el-radio-group
-            v-model="state.overallSettingForm.dashboard.gap"
-            size="mini"
-            @change="themeChange()"
+      <el-row class="custom-theme-color-button function-area">
+        <color-button
+          class="margin-left2"
+          :color-type="'light'"
+          :label="state.overallSettingForm.dashboard.themeColor"
+          @onClick="colorButtonClick"
+          >{{ t('visualization.theme_color_light') }}
+        </color-button>
+        <color-button
+          class="margin-left32"
+          :color-type="'dark'"
+          :label="state.overallSettingForm.dashboard.themeColor"
+          @onClick="colorButtonClick"
+          >{{ t('visualization.theme_color_dark') }}
+        </color-button>
+      </el-row>
+    </el-row>
+    <el-row class="custom-row margin-top16">
+      <el-row class="custom-item-text-row"
+        ><span class="custom-item-text bl">{{ t('visualization.component_gap') }}</span>
+      </el-row>
+      <el-row class="function-area">
+        <el-radio-group
+          v-model="state.overallSettingForm.dashboard.gap"
+          size="mini"
+          @change="themeChange"
+        >
+          <el-radio label="yes">{{ t('visualization.gap') }}</el-radio>
+          <el-radio label="no">{{ t('visualization.no_gap') }}</el-radio>
+        </el-radio-group>
+      </el-row>
+    </el-row>
+    <el-row class="custom-row margin-top16">
+      <el-row class="custom-item-text-row">
+        <span class="custom-item-text bl">
+          <el-checkbox v-model="state.overallSettingForm.refreshViewEnable" @change="themeChange">{{
+            t('visualization.refresh_frequency')
+          }}</el-checkbox>
+        </span>
+      </el-row>
+      <el-row class="function-area">
+        <el-input
+          v-model="state.overallSettingForm.refreshTime"
+          class="el-input-refresh-time"
+          type="number"
+          controls-position="right"
+          :min="1"
+          :max="3600"
+          :disabled="!state.overallSettingForm.refreshViewEnable"
+          @change="themeChange"
+        ></el-input>
+        <el-select
+          v-model="state.overallSettingForm.refreshUnit"
+          class="el-input-refresh-unit margin-left8"
+          size="mini"
+          :disabled="!state.overallSettingForm.refreshViewEnable"
+          @change="themeChange"
+        >
+          <el-option :label="t('visualization.minute')" :value="'minute'" />
+          <el-option :label="t('visualization.second')" :value="'second'" />
+        </el-select>
+      </el-row>
+    </el-row>
+    <el-row class="custom-row margin-top16">
+      <el-row class="custom-item-text-row">
+        <span class="custom-item-text">
+          <el-checkbox
+            v-model="state.overallSettingForm.refreshViewLoading"
+            @change="themeChange"
+            >{{ t('visualization.enable_view_loading') }}</el-checkbox
           >
-            <el-radio label="yes">{{ t('visualization.gap') }}</el-radio>
-            <el-radio label="no">{{ t('visualization.no_gap') }}</el-radio>
+        </span>
+      </el-row>
+    </el-row>
+    <el-row class="custom-row margin-top16 margin-bottom20">
+      <el-row class="custom-item-text-row">
+        <span class="custom-item-text bl">
+          {{ t('visualization.panel_view_result_show') }}
+          <span>
+            <el-tooltip class="item" effect="dark" placement="bottom">
+              <template #content>
+                <div>
+                  {{ t('visualization.panel_view_result_tips') }}
+                </div>
+              </template>
+              <i class="el-icon-info" style="cursor: pointer" />
+            </el-tooltip>
+          </span>
+        </span>
+      </el-row>
+    </el-row>
+    <el-row class="custom-row margin-top16 margin-bottom20">
+      <el-row class="function-area">
+        <el-row>
+          <el-radio-group
+            v-model="state.overallSettingForm.dashboard.resultMode"
+            class="radio-span"
+            size="mini"
+            @change="themeChange"
+          >
+            <el-radio label="all"
+              ><span>{{ t('visualization.view') }}</span></el-radio
+            >
+            <el-radio label="custom">
+              <span>{{ t('visualization.panel') }} </span>
+            </el-radio>
           </el-radio-group>
         </el-row>
-      </el-row>
-      <el-row class="custom-row margin-top20">
-        <el-row class="custom-item-text-row">
-          <span class="custom-item-text bl"> {{ t('visualization.refresh_frequency') }}</span>
-          <span class="custom-item-text bl">
-            <el-checkbox
-              v-model="state.overallSettingForm.refreshViewEnable"
-              class="el-input-refresh-loading"
+        <el-row>
+          <el-col :span="24" class="slider-area">
+            <el-slider
+              v-model="state.overallSettingForm.dashboard.resultCount"
+              :disabled="state.overallSettingForm.dashboard.resultMode === 'all'"
+              style="margin-left: 5px"
+              show-input
+              :show-input-controls="false"
+              :show-tooltip="false"
+              input-size="mini"
+              :min="1"
+              :max="10000"
               @change="themeChange"
-              >{{ t('visualization.enable_refresh_view') }}</el-checkbox
-            >
-          </span>
-          <span class="custom-item-text br">
-            <el-checkbox
-              v-model="state.overallSettingForm.refreshViewLoading"
-              class="el-input-refresh-loading"
-              @change="themeChange"
-              >{{ t('visualization.enable_view_loading') }}</el-checkbox
-            >
-          </span>
-        </el-row>
-        <el-row class="function-area">
-          <el-input
-            v-model="state.overallSettingForm.refreshTime"
-            class="el-input-refresh-time"
-            type="number"
-            size="mini"
-            controls-position="right"
-            :min="1"
-            :max="3600"
-            :disabled="!state.overallSettingForm.refreshViewEnable"
-            @change="themeChange"
-          />
-          <el-select
-            v-model="state.overallSettingForm.refreshUnit"
-            class="el-input-refresh-unit margin-left8"
-            size="mini"
-            :disabled="!state.overallSettingForm.refreshViewEnable"
-            @change="themeChange"
-          >
-            <el-option :label="t('visualization.minute')" :value="'minute'" />
-            <el-option :label="t('visualization.second')" :value="'second'" />
-          </el-select>
+            />
+          </el-col>
         </el-row>
       </el-row>
-      <el-row class="custom-row margin-top20 margin-bottom20">
-        <el-row class="custom-item-text-row">
-          <span class="custom-item-text bl">
-            {{ t('visualization.panel_view_result_show') }}
-            <span>
-              <el-tooltip class="item" effect="dark" placement="bottom">
-                <template #content>
-                  <div>
-                    {{ t('visualization.panel_view_result_tips') }}
-                  </div>
-                </template>
-                <i class="el-icon-info" style="cursor: pointer" />
-              </el-tooltip>
-            </span>
-          </span>
-        </el-row>
-        <el-row class="function-area">
-          <el-row>
-            <el-col :span="16">
-              <el-radio-group
-                v-model="state.overallSettingForm.dashboard.resultMode"
-                class="radio-span"
-                size="mini"
-                @change="themeChange"
-              >
-                <el-radio label="all"
-                  ><span>{{ t('visualization.view') }}</span></el-radio
-                >
-                <el-radio label="custom">
-                  <span>{{ t('visualization.panel') }} </span>
-                </el-radio>
-              </el-radio-group>
-            </el-col>
-            <el-col :span="8" class="slider-area">
-              <el-slider
-                v-model="state.overallSettingForm.dashboard.resultCount"
-                :disabled="state.overallSettingForm.dashboard.resultMode === 'all'"
-                style="margin-left: 5px"
-                show-input
-                :show-input-controls="false"
-                :show-tooltip="false"
-                input-size="mini"
-                :min="1"
-                :max="10000"
-                @change="themeChange"
-              />
-            </el-col>
-          </el-row>
-        </el-row>
-      </el-row>
-    </el-col>
-  </div>
+    </el-row>
+  </el-col>
 </template>
 
 <script setup lang="ts">
@@ -216,16 +214,11 @@ const colorButtonClick = val => {
 
 <style scoped lang="less">
 .el-input-refresh-time {
-  width: calc(50% - 4px) !important;
+  width: calc(100% - 90px) !important;
 }
 
 .el-input-refresh-unit {
-  width: calc(50% - 4px) !important;
-}
-
-.el-input-refresh-loading {
-  margin-left: 4px;
-  font-size: 12px;
+  width: 80px !important;
 }
 
 .margin-left4 {
@@ -271,10 +264,10 @@ const colorButtonClick = val => {
 }
 
 .custom-item-text {
-  font-size: 14px !important;
+  font-size: 12px !important;
   font-weight: 400 !important;
-  line-height: 22px;
-  color: #1f2329 !important;
+  line-height: 20px;
+  color: #646a73 !important;
 }
 
 .custom-theme-color-button {
@@ -308,11 +301,17 @@ const colorButtonClick = val => {
   margin-top: 12px !important;
 }
 
-.margin-top20 {
-  margin-top: 20px !important;
+.margin-top16 {
+  margin-top: 16px !important;
 }
 
 .margin-bottom20 {
   margin-bottom: 20px !important;
+}
+:deep(.ed-radio__label) {
+  font-size: 12px !important;
+}
+:deep(.ed-checkbox__label) {
+  font-size: 12px !important;
 }
 </style>

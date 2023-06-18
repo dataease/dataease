@@ -682,6 +682,7 @@ const endItemMove = (e, item, index) => {
 }
 
 const startMove = (e, item, index) => {
+  console.log('startMove...')
   // e.preventDefault();
   if (!infoBox.value) {
     infoBox.value = {}
@@ -1018,6 +1019,11 @@ defineExpose({
     transition: none;
     opacity: 0.5;
     background: #fff;
+    .shape {
+      .bar-main {
+        display: none;
+      }
+    }
   }
 
   .movingItem {

@@ -1,6 +1,6 @@
 <template>
-  <!--  <div class="bar-main" :class="showEditPosition" @mousedown="showLabelInfo">-->
-  <div class="bar-main bar-main-right" @mousedown="showLabelInfo">
+  <div class="bar-main" :class="showEditPosition" @mousedown="showLabelInfo">
+    <!--  <div class="bar-main bar-main-right" @mousedown="showLabelInfo">-->
     <input
       id="input"
       ref="files"
@@ -187,6 +187,7 @@ const {
   seriesIdMap
 } = toRefs(props)
 const {
+  pcMatrixCount,
   curComponent,
   componentData,
   canvasStyleData,
@@ -272,20 +273,15 @@ const showMultiplexingCheck = computed(() => {
   )
 })
 const showEditPosition = computed(() => {
-  if (activeModel.value === 'edit' && !linkageAreaShow.value && !batchOptAreaShow.value) {
-    const toRight =
-      (canvasStyleData.value.width - element.value.style.left - element.value.style.width) *
-      curCanvasScaleSelf.value.scalePointWidth
-    const toLeft = element.value.style.left * curCanvasScaleSelf.value.scalePointWidth
-    if (state.barWidth < toRight) {
-      return 'bar-main-right'
-    } else if (state.barWidth > toRight && state.barWidth > toLeft) {
-      return 'bar-main-left-inner'
-    } else {
-      return 'bar-main-left-outer'
-    }
+  const baseLeft = element.value.x - 1
+  const baseRight = pcMatrixCount.value.x - (element.value.x + element.value.sizeX - 1)
+  console.log('baseLeft=' + baseLeft + ';baseRight=' + baseRight)
+  if (baseLeft === 0 && baseRight === 0) {
+    return 'bar-main-left-inner'
+  } else if (baseLeft === 0) {
+    return 'bar-main-right'
   } else {
-    return 'bar-main-preview'
+    return 'bar-main-left-outer'
   }
 })
 

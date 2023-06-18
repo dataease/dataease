@@ -140,6 +140,10 @@ export const dvMainStore = defineStore('dataVisualization', {
         x: 36,
         y: 36
       },
+      basePcScreenSize: {
+        width: 1920,
+        height: 1080
+      },
       pcMatrixCount: {
         x: 36,
         y: 18

@@ -31,8 +31,15 @@ const snapshotStore = snapshotStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
 const composeStore = composeStoreWithOut()
 const activeName = ref('attr')
-const { componentData, curComponent, isClickComponent, canvasStyleData, canvasViewInfo } =
-  storeToRefs(dvMainStore)
+const {
+  componentData,
+  curComponent,
+  isClickComponent,
+  canvasStyleData,
+  canvasViewInfo,
+  pcMatrixCount,
+  basePcScreenSize
+} = storeToRefs(dvMainStore)
 const { editor } = storeToRefs(composeStore)
 const canvasOut = ref(null)
 const canvasInitStatus = ref(false)
@@ -166,10 +173,10 @@ const canvasInit = () => {
       //div容器获取tableBox.value.clientWidth
       screenWidth = canvasOut.value.clientWidth
       screenHeight = canvasOut.value.clientHeight
-      baseWidth.value = 24 * (screenWidth / 1920)
-      baseHeight.value = 24 * (screenHeight / 1080)
-      baseMarginLeft.value = 5 * (screenWidth / 1920)
-      baseMarginTop.value = 5 * (screenHeight / 1080)
+      baseWidth.value = screenWidth / pcMatrixCount.value.x
+      baseHeight.value = screenHeight / pcMatrixCount.value.x
+      baseMarginLeft.value = 0
+      baseMarginTop.value = 0
       canvasInitStatus.value = true
       nextTick(() => {
         $('.dragAndResize').css('width', 'calc(100% - ' + baseMarginLeft.value + 'px)')
@@ -188,10 +195,10 @@ const canvasSizeInit = () => {
       //div容器获取tableBox.value.clientWidth
       screenWidth = canvasOut.value.clientWidth
       screenHeight = canvasOut.value.clientHeight
-      baseWidth.value = 24 * (screenWidth / 1920)
-      baseHeight.value = 24 * (screenHeight / 1080)
-      baseMarginLeft.value = 5 * (screenWidth / 1920)
-      baseMarginTop.value = 5 * (screenHeight / 1080)
+      baseWidth.value = screenWidth / pcMatrixCount.value.x
+      baseHeight.value = screenHeight / pcMatrixCount.value.x
+      baseMarginLeft.value = 0
+      baseMarginTop.value = 0
       canvasInitStatus.value = true
       dvMainStore.setBashMatrixInfo({
         baseWidth: baseWidth.value,
@@ -280,6 +287,7 @@ eventBus.on('handleNew', handleNew)
       <!-- 右侧侧组件列表 -->
       <dv-sidebar
         v-if="curComponent && curComponent.component !== 'UserView'"
+        :theme-info="'light'"
         :title="'属性'"
         :width="420"
         :side-name="'componentProp'"
@@ -290,6 +298,7 @@ eventBus.on('handleNew', handleNew)
       </dv-sidebar>
       <dv-sidebar
         v-show="!curComponent"
+        :theme-info="'light'"
         title="大屏配置"
         :width="420"
         aside-position="right"
@@ -299,6 +308,7 @@ eventBus.on('handleNew', handleNew)
       </dv-sidebar>
       <view-editor
         v-show="curComponent && curComponent.component === 'UserView'"
+        :theme-info="'light'"
         :view="canvasViewInfo[curComponent ? curComponent.id : 'default']"
         :dataset-tree="state.datasetTree"
       ></view-editor>

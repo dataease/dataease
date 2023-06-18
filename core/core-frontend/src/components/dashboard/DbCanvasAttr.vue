@@ -369,11 +369,10 @@ onMounted(() => {
 .item-show {
   display: flex;
   text-align: center;
-  padding-top: 18px;
+  padding: 16px 8px;
 }
 
 .attr-container {
-  background-color: rgba(37, 45, 54, 1);
   color: #fff;
   z-index: 20;
   height: 100%;

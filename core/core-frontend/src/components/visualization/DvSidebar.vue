@@ -12,6 +12,11 @@ const props = defineProps({
     type: Number,
     default: 200
   },
+  themeInfo: {
+    required: false,
+    type: String,
+    default: 'dark'
+  },
   asidePosition: {
     required: false,
     type: String,
@@ -25,7 +30,7 @@ const props = defineProps({
   title: String
 })
 
-const { width, asidePosition, sideName } = toRefs(props)
+const { width, asidePosition, sideName, themeInfo } = toRefs(props)
 const isCollapse = ref(false)
 const collapseWidth = ref(30)
 const collapseChange = () => {
@@ -35,7 +40,11 @@ const widthShow = computed(() => `${canvasCollapse.value[sideName.value] ? 36 : 
 </script>
 
 <template>
-  <el-aside class="dv-aside" :class="'aside-' + asidePosition" :width="widthShow">
+  <el-aside
+    class="dv-aside"
+    :class="['aside-' + asidePosition + '-' + themeInfo, 'aside-area-' + themeInfo]"
+    :width="widthShow"
+  >
     <el-row align="middle" class="title" justify="space-between">
       <span v-show="!canvasCollapse[sideName]">{{ title }}</span>
       <el-icon :title="title" class="custom-icon" size="20px" @click="collapseChange">
@@ -58,13 +67,20 @@ const widthShow = computed(() => `${canvasCollapse.value[sideName.value] ? 36 : 
 </template>
 
 <style lang="less">
+.aside-area-dark {
+  color: #fff;
+  background-color: @side-area-background;
+}
+
+.aside-area-light {
+  color: @side-area-background-light;
+  background-color: #fff;
+}
 .dv-aside {
   position: relative;
   transition: 0.5s;
-  color: white;
-  background-color: @side-area-background;
   .title {
-    border-bottom: #525552 1px solid;
+    border-bottom: rgba(31, 35, 41, 0.15) 1px solid;
     height: 45px;
     overflow: hidden;
     white-space: nowrap;
@@ -87,10 +103,23 @@ const widthShow = computed(() => `${canvasCollapse.value[sideName.value] ? 36 : 
     cursor: pointer;
   }
 }
-.aside-left {
+.aside-left-dark {
   border-right: @side-outline-border-color 1px solid;
 }
-.aside-right {
+.aside-right-dark {
   border-left: @side-outline-border-color 1px solid;
+}
+
+.aside-left-light {
+  border-right: @side-outline-border-color-light 1px solid;
+}
+.aside-right-light {
+  border-left: @side-outline-border-color-light 1px solid;
+}
+.ed-collapse {
+  border-top: 0;
+}
+.is-active {
+  border-bottom-color: rgba(31, 35, 41, 0.15) !important;
 }
 </style>

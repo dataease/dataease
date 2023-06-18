@@ -42,33 +42,33 @@ const colorButtonClick = () => {
 }
 
 .color-button-outer {
-  width: 24px;
-  height: 24px;
-  border-radius: 2px;
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
   border-width: 1px;
   border-color: #dee0e3;
   cursor: pointer;
   border-style: solid;
-  padding-left: 3px;
-  padding-top: 3px;
+  padding-left: 5px;
+  padding-top: 5px;
   &:hover {
-    padding-left: 2px;
-    padding-top: 2px;
+    padding-left: 4px;
+    padding-top: 4px;
     border-width: 2px;
     border-color: #dee0e3;
   }
 }
 .color-button-active {
-  padding-left: 2px;
-  padding-top: 2px;
+  padding-left: 4px;
+  padding-top: 4px;
   border-width: 2px;
   border-color: #3370ff !important;
 }
 
 .color-button-inner {
-  width: 16px;
-  height: 16px;
-  border-radius: 2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
   border: 1px solid #dee0e3;
 }
 .color-button-inner-light {
@@ -80,8 +80,9 @@ const colorButtonClick = () => {
 }
 .text-area {
   font-weight: 400;
-  size: 14px;
-  line-height: 22px;
+  size: 12px;
+  color: #1f2329;
+  line-height: 20px;
   margin-top: 4px;
 }
 </style>
