@@ -71,6 +71,11 @@
         <value-type>java.util.List</value-type>
     </cache>
 
+    <cache alias="lic_cache_result" uses-template="common-cache">
+        <key-type>java.lang.String</key-type>
+        <value-type>io.dataease.license.bo.F2CLicResult</value-type>
+    </cache>
+
 <!--    <cache alias="person">-->
 <!--        <key-type>java.lang.Long</key-type>-->
 <!--        <value-type>com.ramostear.cache.entity.Person</value-type>-->

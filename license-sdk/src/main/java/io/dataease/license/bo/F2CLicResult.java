@@ -1,6 +1,12 @@
 package io.dataease.license.bo;
 
-public class F2CLicResult {
+import java.io.Serial;
+import java.io.Serializable;
+
+public class F2CLicResult implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = -2285934203104231711L;
 
     private Status status;
     private F2CLicense license;
@@ -42,6 +48,14 @@ public class F2CLicResult {
         f2CLicResult.setStatus(Status.invalid);
         f2CLicResult.setLicense(null);
         f2CLicResult.setMessage(a);
+        return f2CLicResult;
+    }
+
+    public static F2CLicResult expired() {
+        F2CLicResult f2CLicResult = new F2CLicResult();
+        f2CLicResult.setStatus(Status.expired);
+        f2CLicResult.setLicense(null);
+        f2CLicResult.setMessage("lic expired");
         return f2CLicResult;
     }
 

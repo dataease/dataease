@@ -5,12 +5,10 @@ import io.dataease.result.ResultMessage;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 
 public class ServletUtils {
 
@@ -36,7 +34,6 @@ public class ServletUtils {
     }
 
     public static boolean apisixCheck() {
-        System.out.println("apisixCheck");
         return true;
 //        String head = getHead(AuthConstant.APISIX_FLAG_KEY);
 //        if (StringUtils.isBlank(head)) return false;
@@ -50,7 +47,7 @@ public class ServletUtils {
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json; charset=utf-8");
         ServletOutputStream outputStream = null;
-        try  {
+        try {
             outputStream = response.getOutputStream();
             outputStream.print(JsonUtil.toJSONString(resultMessage).toString());
         } catch (IOException ex) {
