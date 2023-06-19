@@ -157,7 +157,7 @@ init()
   align-items: center;
 }
 
-.form-item ::v-deep .el-form-item__label {
+.form-item :deep(.el-form-item__label) {
   font-size: 12px;
 }
 
@@ -196,7 +196,7 @@ span {
   margin-top: 6px;
 }
 
-.color-picker-style ::v-deep .el-color-picker__trigger {
+.color-picker-style :deep(.el-color-picker__trigger) {
   width: 28px;
   height: 28px;
 }

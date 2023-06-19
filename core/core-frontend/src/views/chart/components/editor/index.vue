@@ -83,13 +83,13 @@ const state = reactive({
   searchField: ''
 })
 
-// watch(
-//   [() => props.view],
-//   () => {
-//     getFields(props.view.tableId)
-//   },
-//   { deep: true }
-// )
+watch(
+  [() => props.view.tableId],
+  () => {
+    getFields(props.view.tableId)
+  },
+  { deep: true }
+)
 
 watch(
   [() => state.searchField],

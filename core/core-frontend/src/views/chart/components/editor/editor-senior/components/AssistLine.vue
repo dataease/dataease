@@ -184,7 +184,7 @@ init()
   font-size: 12px;
   line-height: 38px;
 }
-.form-item ::v-deep .ed-form-item__label {
+.form-item :deep(.ed-form-item__label) {
   font-size: 12px;
 }
 .ed-select-dropdown__item {
