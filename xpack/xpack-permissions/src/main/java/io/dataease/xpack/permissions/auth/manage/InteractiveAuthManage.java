@@ -79,6 +79,7 @@ public class InteractiveAuthManage {
         Long uid = user.getUserId();
         Long oid = user.getDefaultOid();
         AtomicBoolean rootAdmin = new AtomicBoolean(AuthUtils.isSysAdmin(uid));
+        int resourceEnumFlag = busiResourceEnum.getFlag();
         if (!rootAdmin.get() && CollectionUtil.isNotEmpty(userRoles = roleManage.userRole(uid, oid)))
             userRoles = userRoles.stream().filter(role -> {
                 if (role.isRootAdmin()) {
@@ -88,44 +89,52 @@ public class InteractiveAuthManage {
                 return true;
             }).toList();
         if (rootAdmin.get()) {
-            List<BusiResourcePO> pos = busiAuthManage.resourceWithOid(busiResourceEnum);
+            List<BusiResourcePO> pos = busiAuthManage.resourceWithOid(resourceEnumFlag, oid);
             if (CollectionUtil.isNotEmpty(pos)) {
                 List<BusiPerPO> perPOS = pos.stream().map(this::convert).toList();
                 return TreeUtils.mergeTree(perPOS, BusiPerVO.class, false);
             }
             return null;
         }
-        int enumFlag = busiResourceEnum.getFlag();
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("pabu.uid", uid);
-        queryWrapper.eq("pbr.org_id", oid);
-        queryWrapper.eq("pbr.rt_id", enumFlag);
+        int enumFlag = resourceEnumFlag;
+
         List<BusiPerPO> pos = new ArrayList<>();
-        List<BusiPerPO> userPerPOS = null;
-        if (CollectionUtil.isNotEmpty(userPerPOS = interactiveBusiAuthExtMapper.queryWithUid(queryWrapper))) {
+        List<BusiPerPO> userPerPOS = userPos(enumFlag);
+        if (CollectionUtil.isNotEmpty(userPerPOS)) {
             pos.addAll(userPerPOS);
         }
-        List<BusiPerPO> cacheRolePerPOS = new ArrayList<>();
-        queryWrapper.clear();
+        if (CollectionUtil.isNotEmpty(userRoles)) {
+            List<Long> rids = userRoles.stream().map(UserRole::getId).toList();
+            List<BusiPerPO> rolePos = rolePos(rids, enumFlag);
+            if (CollectionUtil.isNotEmpty(rolePos)) {
+                pos.addAll(rolePos);
+            }
+        }
+        pos = pos.stream().distinct().toList();
+        List<BusiPerVO> vos = TreeUtils.mergeTree(pos, BusiPerVO.class, false);
+        return vos;
+    }
+
+    public List<BusiPerPO> rolePos(List<Long> sourceRids, Integer enumFlag) {
         String cacheName = "role_busi_pers_interactive";
-        List<Long> rids = userRoles.stream().filter(role -> {
-            String rid = role.getId().toString();
+        List<BusiPerPO> resultPos = new ArrayList<>();
+        List<Long> rids = sourceRids.stream().filter(roleId -> {
+            String rid = roleId.toString();
             if (CacheUtils.keyExist(cacheName, rid + enumFlag)) {
                 Object o = CacheUtils.get(cacheName, rid + enumFlag);
-                cacheRolePerPOS.addAll((List<BusiPerPO>) o);
+                resultPos.addAll((List<BusiPerPO>) o);
                 return false;
             }
             return true;
-        }).map(UserRole::getId).toList();
-        if (CollectionUtil.isNotEmpty(cacheRolePerPOS)) {
-            pos.addAll(cacheRolePerPOS);
-        }
+        }).toList();
+
         if (CollectionUtil.isNotEmpty(rids)) {
+            QueryWrapper queryWrapper = new QueryWrapper();
             queryWrapper.eq("pbr.rt_id", enumFlag);
             queryWrapper.in("pabr.rid", rids);
             List<BusiPerPO> rolePerPOS = null;
             if (CollectionUtil.isNotEmpty(rolePerPOS = interactiveBusiAuthExtMapper.queryWithRid(queryWrapper))) {
-                pos.addAll(rolePerPOS);
+                resultPos.addAll(rolePerPOS);
                 Map<Long, List<BusiPerPO>> listMap = rolePerPOS.stream().collect(Collectors.groupingBy(BusiPerPO::getTargetId));
                 listMap.entrySet().stream().forEach(entry -> {
                     Long rid = entry.getKey();
@@ -134,9 +143,28 @@ public class InteractiveAuthManage {
                 });
             }
         }
-        pos = pos.stream().distinct().toList();
-        List<BusiPerVO> vos = TreeUtils.mergeTree(pos, BusiPerVO.class, false);
-        return vos;
+        return resultPos;
+    }
+    public List<BusiPerPO> userPos(Integer enumFlag) {
+        String cacheName = "user_busi_pers_interactive";
+        TokenUserBO user = AuthUtils.getUser();
+        Long uid = user.getUserId();
+        Long oid = user.getDefaultOid();
+        String key = oid.toString() + uid.toString() + enumFlag.toString();
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("pabu.uid", uid);
+        queryWrapper.eq("pbr.org_id", oid);
+        queryWrapper.eq("pbr.rt_id", enumFlag);
+        if (CacheUtils.keyExist(cacheName, key)) {
+            Object o = CacheUtils.get(cacheName, key);
+            if (ObjectUtils.isNotEmpty(o)) {
+                return (List<BusiPerPO>) o;
+            }
+            return null;
+        }
+        List<BusiPerPO> userPerPOS = interactiveBusiAuthExtMapper.queryWithUid(queryWrapper);
+        CacheUtils.put(cacheName, key, userPerPOS);
+        return userPerPOS;
     }
 
     private BusiPerPO convert(BusiResourcePO resourcePO) {

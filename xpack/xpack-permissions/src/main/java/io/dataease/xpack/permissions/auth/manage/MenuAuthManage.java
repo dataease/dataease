@@ -9,7 +9,6 @@ import io.dataease.xpack.permissions.auth.dao.auto.entity.PerAuthMenu;
 import io.dataease.xpack.permissions.auth.dao.auto.mapper.PerAuthMenuMapper;
 import io.dataease.xpack.permissions.auth.dao.ext.mapper.MenuAuthExtMapper;
 import jakarta.annotation.Resource;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
