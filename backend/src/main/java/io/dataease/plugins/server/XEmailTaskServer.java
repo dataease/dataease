@@ -174,7 +174,7 @@ public class XEmailTaskServer {
             String currentToken = ServletUtils.getToken();
             Future<?> future = priorityExecutor.submit(() -> {
                 try {
-                    return emailXpackService.printPdf(url, currentToken, buildPixel(request.getPixel()), request.isShowPageNo());
+                    return emailXpackService.printPdf(url, currentToken, buildPixel(request.getPixel()), request.isShowPageNo(), false);
                 } catch (Exception e) {
                     LogUtil.error(e.getMessage(), e);
                     DEException.throwException("预览失败，请联系管理员");
