@@ -24,7 +24,6 @@ public class BaseValidator implements LicenseValidator {
 
     @Override
     public boolean validate() {
-        LogUtil.info("license validator executing");
         F2CLicResult f2CLicResult = f2CLicManage.validate();
         LicenseUtil.set(f2CLicResult);
         /*if (f2CLicResult.getStatus() !=  F2CLicResult.Status.valid) {
