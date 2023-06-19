@@ -241,7 +241,8 @@ public class DatasourceSyncManage {
     }
 
     private void extractExcelData(DatasourceRequest datasourceRequest, DatasourceServer.UpdateType extractType) throws Exception {
-        List<String[]> dataList = ExcelUtils.fetchDataList(datasourceRequest);
+        ExcelUtils excelUtils = new ExcelUtils();
+        List<String[]> dataList = excelUtils.fetchDataList(datasourceRequest);
         String engineTableName;
         switch (extractType) {
             case all_scope:
@@ -289,6 +290,15 @@ public class DatasourceSyncManage {
         engineRequest.setEngine(engine);
         EngineProvider engineProvider = ProviderUtil.getEngineProvider(engine.getType());
         engineRequest.setQuery(engineProvider.createTableSql(tableName, tableFields, engine));
+        engineProvider.exec(engineRequest);
+    }
+
+    public void dropEngineTable(String tableName) throws Exception {
+        CoreDeEngine engine = engineServer.info();
+        EngineRequest engineRequest = new EngineRequest();
+        engineRequest.setEngine(engine);
+        EngineProvider engineProvider = ProviderUtil.getEngineProvider(engine.getType());
+        engineRequest.setQuery(engineProvider.dropTable(tableName));
         engineProvider.exec(engineRequest);
     }
 

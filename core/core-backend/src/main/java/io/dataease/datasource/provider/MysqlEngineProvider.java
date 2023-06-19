@@ -80,12 +80,12 @@ public class MysqlEngineProvider extends EngineProvider {
 
     @Override
     public String dropTable(String name) {
-        return "DROP TABLE IF EXISTS " + name;
+        return "DROP TABLE IF EXISTS `" + name + "`";
     }
 
     @Override
     public String dropView(String name) {
-        return "DROP VIEW IF EXISTS " + name;
+        return "DROP VIEW IF EXISTS `" + name + "`";
     }
 
     @Override

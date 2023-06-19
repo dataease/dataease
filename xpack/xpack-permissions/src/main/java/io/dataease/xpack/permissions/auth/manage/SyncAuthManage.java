@@ -4,8 +4,11 @@ import cn.hutool.core.collection.CollectionUtil;
 import io.dataease.api.permissions.auth.dto.BusiResourceCreator;
 import io.dataease.api.permissions.auth.dto.BusiResourceEditor;
 import io.dataease.constant.BusiResourceEnum;
+import io.dataease.exception.DEException;
 import io.dataease.utils.AuthUtils;
+import io.dataease.utils.CacheUtils;
 import io.dataease.utils.CommonBeanFactory;
+import io.dataease.utils.LogUtil;
 import io.dataease.xpack.permissions.auth.dao.auto.entity.PerAuthBusiRole;
 import io.dataease.xpack.permissions.auth.dao.auto.entity.PerAuthBusiUser;
 import io.dataease.xpack.permissions.auth.dao.auto.entity.PerBusiResource;
@@ -20,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class SyncAuthManage {
@@ -78,8 +82,44 @@ public class SyncAuthManage {
         userAuthManage.syncCascade(perAuthBusiUsers, id);
 
         List<PerAuthBusiRole> perAuthBusiRoles = roleAuthManage.ridForRootWay(rootWay);
-        if (CollectionUtil.isNotEmpty(perAuthBusiRoles))
+        List<Long> rids = null;
+        if (CollectionUtil.isNotEmpty(perAuthBusiRoles)) {
             roleAuthManage.syncCascade(perAuthBusiRoles, id);
+            rids = perAuthBusiRoles.stream().map(PerAuthBusiRole::getRid).toList();
+        }
+        clear(rt, perAuthBusiUsers.stream().map(PerAuthBusiUser::getUid).toList(), rids);
+    }
+
+    private void clearCache(Integer rtId, List<Long> uids, List<Long> rids) {
+        Long oid = AuthUtils.getUser().getDefaultOid();
+        String globalKey = oid.toString() + rtId;
+        CacheUtils.keyRemove("org_global_resource", globalKey);
+        CacheUtils.keyRemove("all_oid_flag_resource", globalKey);
+        if (CollectionUtil.isNotEmpty(uids)) {
+            List<String> userKeys = uids.stream().map(uid -> oid.toString() + uid.toString() + rtId.toString()).toList();
+            userKeys.forEach(userkey -> {
+                CacheUtils.keyRemove("user_busi_pers_interactive", userkey);
+                CacheUtils.keyRemove("user_busi_pers", userkey);
+            });
+        }
+
+        if (CollectionUtil.isNotEmpty(rids)) {
+            List<String> roleKeys = rids.stream().map(rid -> rid.toString() + rtId.toString()).toList();
+            roleKeys.forEach(rolekey -> {
+                CacheUtils.keyRemove("role_busi_pers_interactive", rolekey);
+                CacheUtils.keyRemove("role_busi_pers", rolekey);
+            });
+        }
+    }
+
+    private void clear(Integer rtId, List<Long> uids, List<Long> rids) {
+        clearCache(rtId, uids, rids);
+        try {
+            TimeUnit.MILLISECONDS.sleep(1000L);
+            clearCache(rtId, uids, rids);
+        } catch (Exception e) {
+            DEException.throwException(e);
+        }
     }
 
     private SyncAuthManage proxy() {

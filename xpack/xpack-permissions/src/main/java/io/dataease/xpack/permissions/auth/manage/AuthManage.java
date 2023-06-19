@@ -89,24 +89,26 @@ public class AuthManage {
                 return true;
             }).toList();
         List<BusiResourcePO> pos = null;
+        int enumFlag = busiResourceEnum.getFlag();
+        Long defaultOid = user.getDefaultOid();
         if (rootAdmin.get()) {
-            pos = busiAuthManage.resourceWithOid(busiResourceEnum);
+            pos = busiAuthManage.resourceWithOid(enumFlag, defaultOid);
         } else {
             QueryWrapper queryWrapper = new QueryWrapper();
-            queryWrapper.eq("pbr.org_id", user.getDefaultOid());
-            queryWrapper.eq("pbr.rt_id", busiResourceEnum.getFlag());
+            queryWrapper.eq("pbr.org_id", defaultOid);
+            queryWrapper.eq("pbr.rt_id", enumFlag);
             queryWrapper.eq("pabu.uid", user.getUserId());
             queryWrapper.eq("pabu.weight", 9);
-            queryWrapper.eq("pabu.resource_type", busiResourceEnum.getFlag());
+            queryWrapper.eq("pabu.resource_type", enumFlag);
             pos = busiAuthExtMapper.resourceByUid(queryWrapper);
 
             if (CollectionUtil.isNotEmpty(userRoles)) {
                 queryWrapper.clear();
                 List<Long> rids = userRoles.stream().map(UserRole::getId).toList();
-                queryWrapper.eq("pbr.org_id", user.getDefaultOid());
-                queryWrapper.eq("pbr.rt_id", busiResourceEnum.getFlag());
+                queryWrapper.eq("pbr.org_id", defaultOid);
+                queryWrapper.eq("pbr.rt_id", enumFlag);
                 queryWrapper.eq("pabr.weight", 9);
-                queryWrapper.eq("pabr.resource_type", busiResourceEnum.getFlag());
+                queryWrapper.eq("pabr.resource_type", enumFlag);
                 queryWrapper.in("pabr.rid", rids);
                 List<BusiResourcePO> rolePos = null;
                 if (CollectionUtil.isNotEmpty((rolePos = busiAuthExtMapper.resourceByRid(queryWrapper)))) {
@@ -278,7 +280,8 @@ public class AuthManage {
         List<PermissionItem> permissions = authWeightService.filterValid(paramPermissions);
         Long oid = AuthUtils.getUser().getDefaultOid();
         if (type == 0) {
-            CacheUtils.remove("user_busi_pers", id.toString() + oid + flag, t -> {
+            String[] cacheNames = {"user_busi_pers", "user_busi_pers_interactive"};
+            CacheUtils.remove(cacheNames, oid.toString() + id + flag, t -> {
                 if (CollectionUtil.isNotEmpty(permissions)) {
                     List<PerAuthBusiUser> busiUsers = permissions.stream().map(per -> {
                         PerAuthBusiUser userPermission = new PerAuthBusiUser();
@@ -293,7 +296,8 @@ public class AuthManage {
                 }
             });
         } else {
-            CacheUtils.remove("role_busi_pers", id.toString() + flag, t -> {
+            String[] cacheNames = {"role_busi_pers", "role_busi_pers_interactive"};
+            CacheUtils.remove(cacheNames, id.toString() + flag, t -> {
                 if (CollectionUtil.isNotEmpty(permissions)) {
                     List<PerAuthBusiRole> busiRoles = permissions.stream().map(per -> {
                         PerAuthBusiRole rolePermission = new PerAuthBusiRole();
@@ -415,7 +419,8 @@ public class AuthManage {
                 });
             }).toList();
             Long oid = AuthUtils.getUser().getDefaultOid();
-            CacheUtils.remove("user_busi_pers", uids.stream().map(uid -> uid.toString() + oid + flag).toList(), t -> {
+            String[] cacheNames = {"user_busi_pers", "user_busi_pers_interactive"};
+            CacheUtils.remove(cacheNames, uids.stream().map(uid -> oid.toString() + uid + flag).toList(), t -> {
                 deleteBusiTargetPer(flag, ids, permissions, type);
                 userAuthManage.saveBatch(busiUsers);
             });
@@ -440,7 +445,8 @@ public class AuthManage {
                     return busiRole;
                 });
             }).toList();
-            CacheUtils.remove("role_busi_pers", rids.stream().map(rid -> rid.toString() + flag).toList(), t -> {
+            String[] cacheNames = {"role_busi_pers", "role_busi_pers_interactive"};
+            CacheUtils.remove(cacheNames, rids.stream().map(rid -> rid.toString() + flag).toList(), t -> {
                 deleteBusiTargetPer(flag, ids, permissions, type);
                 roleAuthManage.saveBatch(busiRoles);
             });

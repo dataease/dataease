@@ -16,8 +16,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class F2CLicManage {
@@ -66,8 +70,42 @@ public class F2CLicManage {
         return validate(product, po.getLicense());
     }
 
+    private boolean dateMatch(F2CLicResult f2CLicResult) {
+        if (f2CLicResult.getStatus() == F2CLicResult.Status.valid) {
+            String expired = f2CLicResult.getLicense().getExpired();
+            Date date = formatDate(expired);
+            if (ObjectUtils.isEmpty(date)) return false;
+            return date.getTime() > System.currentTimeMillis();
+        }
+        return false;
+    }
+
+    private Date formatDate(String expired) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = null;
+        try {
+            date = sdf.parse(expired);
+        } catch (ParseException e) {
+            LogUtil.error(e.getMessage(), e);
+        }
+        return date;
+    }
+
+
     public F2CLicResult validate(String product, String licenseKey) {
         if (StringUtils.isBlank(licenseKey)) {
+            return F2CLicResult.noRecord();
+        }
+        if (CacheUtils.keyExist(CacheConstant.LIC_RESULT_CACHE, licenseKey)) {
+            Object cacheResult = CacheUtils.get(CacheConstant.LIC_RESULT_CACHE, licenseKey);
+            if (ObjectUtils.isNotEmpty(cacheResult)) {
+                F2CLicResult result = (F2CLicResult) cacheResult;
+                if (dateMatch(result)) {
+                    return result;
+                } else {
+                    return F2CLicResult.expired();
+                }
+            }
             return F2CLicResult.noRecord();
         }
         List<String> command = new ArrayList<String>();
@@ -76,21 +114,22 @@ public class F2CLicManage {
         command.add(licenseKey);
         try {
             execCommand(result, command);
-            LogUtil.info("read lic content is : " + result.toString());
+            LogUtil.info("read lic content is : " + result);
             F2CLicResult f2CLicResult = JsonUtil.parseObject(result.toString(), F2CLicResult.class);
-            /*f2CLicResult.setStatus( F2CLicResult.Status.valid);
-            f2CLicResult.getLicense().setExpired("2023-12-31");
-            f2CLicResult.getLicense().setSerialNo("----");
-            f2CLicResult.getLicense().setRemark("备注");*/
-            if (f2CLicResult.getStatus() != F2CLicResult.Status.valid) {
-                return f2CLicResult;
-            }
+
             if (!StringUtils.equals(f2CLicResult.getLicense().getProduct(), product)) {
                 f2CLicResult.setStatus(F2CLicResult.Status.invalid);
                 f2CLicResult.setLicense(null);
                 f2CLicResult.setMessage("The license is unavailable for this product.");
+            }
+            if (f2CLicResult.getStatus() == F2CLicResult.Status.valid) {
+                String expired = f2CLicResult.getLicense().getExpired();
+                Date date = formatDate(expired);
+                long expiredTime = date.getTime() - System.currentTimeMillis();
+                CacheUtils.put(CacheConstant.LIC_RESULT_CACHE, licenseKey, f2CLicResult, expiredTime, TimeUnit.MILLISECONDS);
                 return f2CLicResult;
             }
+            CacheUtils.put(CacheConstant.LIC_RESULT_CACHE, licenseKey, f2CLicResult);
             return f2CLicResult;
         } catch (Exception e) {
             LogUtil.error(e.getMessage());

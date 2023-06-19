@@ -18,14 +18,7 @@
         </resources>
 
     </cache-template>
-    <cache alias="all_menu_resource_id" uses-template="common-cache">
-        <key-type>java.lang.String</key-type>
-        <value-type>java.util.List</value-type>
-    </cache>
-    <cache alias="menu" uses-template="common-cache">
-        <key-type>java.lang.String</key-type>
-        <value-type>java.util.List</value-type>
-    </cache>
+
     <cache alias="rsa" uses-template="common-cache">
         <key-type>java.lang.String</key-type>
         <value-type>io.dataease.rsa.dao.entity.CoreRsa</value-type>
@@ -38,10 +31,6 @@
         <value-type>java.util.List</value-type>
     </cache>
 
-    <cache alias="user_busi_pers_resource" uses-template="common-cache">
-        <key-type>java.lang.String</key-type>
-        <value-type>java.util.List</value-type>
-    </cache>
     <!--用户资源权限缓存-->
     <cache alias="user_busi_pers" uses-template="common-cache">
         <key-type>java.lang.String</key-type>
@@ -70,6 +59,21 @@
     <cache alias="user_count" uses-template="common-cache">
         <key-type>java.lang.String</key-type>
         <value-type>java.lang.Integer</value-type>
+    </cache>
+
+    <cache alias="role_busi_pers_interactive" uses-template="common-cache">
+        <key-type>java.lang.String</key-type>
+        <value-type>java.util.List</value-type>
+    </cache>
+
+    <cache alias="user_busi_pers_interactive" uses-template="common-cache">
+        <key-type>java.lang.String</key-type>
+        <value-type>java.util.List</value-type>
+    </cache>
+
+    <cache alias="lic_cache_result" uses-template="common-cache">
+        <key-type>java.lang.String</key-type>
+        <value-type>io.dataease.license.bo.F2CLicResult</value-type>
     </cache>
 
 <!--    <cache alias="person">-->

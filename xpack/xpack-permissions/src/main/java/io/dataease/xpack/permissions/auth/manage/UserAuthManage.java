@@ -68,7 +68,7 @@ public class UserAuthManage extends ServiceImpl<PerAuthBusiUserMapper, PerAuthBu
         saveBatch(busiUsers);
     }
 
-    @Cacheable(value = "user_busi_pers", key = "#uid.toString() + #oid.toString() + #flag.toString()")
+    @Cacheable(value = "user_busi_pers", key = "#oid.toString() + #uid.toString() + #flag.toString()")
     public List<PermissionItem> permissionItems(Long uid, Long oid, Integer flag) {
         List<PermissionItem> permissionItems = busiAuthExtMapper.userPermission(uid, flag, oid);
         permissionItems = authWeightService.filterValid(permissionItems);
