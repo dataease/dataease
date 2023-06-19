@@ -188,6 +188,31 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     @Override
+    public void delete(Long datasourceId) throws Exception {
+        CoreDatasource coreDatasource = datasourceMapper.selectById(datasourceId);
+        if (coreDatasource.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name())) {
+            DatasourceRequest datasourceRequest = new DatasourceRequest();
+            datasourceRequest.setDatasource(coreDatasource);
+            List<DatasetTableDTO> tables = ExcelUtils.getTables(datasourceRequest);
+            for (DatasetTableDTO table : tables) {
+                datasourceRequest.setTable(table.getTableName());
+                datasourceSyncManage.dropEngineTable(datasourceRequest.getTable());
+            }
+        }
+        if (coreDatasource.getType().equals(DatasourceConfiguration.DatasourceType.API.name())) {
+            DatasourceRequest datasourceRequest = new DatasourceRequest();
+            datasourceRequest.setDatasource(coreDatasource);
+            List<DatasetTableDTO> tables = ApiUtils.getTables(datasourceRequest);
+            for (DatasetTableDTO api : tables) {
+                datasourceRequest.setTable(api.getTableName());
+                datasourceSyncManage.dropEngineTable(datasourceRequest.getTable());
+            }
+            datasourceTaskServer.deleteByDSId(datasourceId);
+        }
+        datasourceMapper.deleteById(datasourceId);
+    }
+
+    @Override
     public DatasourceDTO validate(Long datasourceId) throws DEException {
         CoreDatasource coreDatasource = datasourceMapper.selectById(datasourceId);
         checkDatasourceStatus(coreDatasource);

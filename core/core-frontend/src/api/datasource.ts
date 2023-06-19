@@ -84,11 +84,7 @@ export const getDatasetTree = async (data = {}): Promise<IResponse> => {
   })
 }
 
-export const delDatasetTree = async (id): Promise<IResponse> => {
-  return request.post({ url: `/datasetTree/delete/${id}`, data: {} }).then(res => {
-    return res?.data
-  })
-}
+export const deleteById = (id: number) => request.get({ url: '/datasource/delete/' + id })
 
 export const getDatasourceList = async (): Promise<IResponse> => {
   return request.post({ url: '/datasource/list', data: {} }).then(res => {

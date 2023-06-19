@@ -8,7 +8,7 @@ import { Icon } from '@/components/icon-custom'
 import { useRouter } from 'vue-router'
 import { useI18n } from '@/hooks/web/useI18n'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
-import { listDatasources, getTableField, listDatasourceTables } from '@/api/datasource'
+import { listDatasources, getTableField, listDatasourceTables, deleteById } from '@/api/datasource'
 import { Base64 } from 'js-base64'
 import type { Configuration, ApiConfiguration, SyncSetting } from './form/index.vue'
 import EditorDetail from './form/EditorDetail.vue'
@@ -120,19 +120,24 @@ const nodeInfo = reactive<Node>({
   apiConfiguration: []
 })
 
-listDatasources().then(array => {
-  for (let index = 0; index < array.length; index++) {
-    const element = array[index]
-    if (element.configuration) {
-      element.configuration = JSON.parse(Base64.decode(element.configuration))
+const listDs = () => {
+  rawDatasourceList.value = []
+  listDatasources().then(array => {
+    for (let index = 0; index < array.length; index++) {
+      const element = array[index]
+      if (element.configuration) {
+        element.configuration = JSON.parse(Base64.decode(element.configuration))
+      }
+      if (element.apiConfigurationStr) {
+        element.apiConfiguration = JSON.parse(Base64.decode(element.apiConfigurationStr))
+      }
+      rawDatasourceList.value.push(element)
     }
-    if (element.apiConfigurationStr) {
-      element.apiConfiguration = JSON.parse(Base64.decode(element.apiConfigurationStr))
-    }
-    rawDatasourceList.value.push(element)
-  }
-  buildTree(rawDatasourceList.value)
-})
+    buildTree(rawDatasourceList.value)
+  })
+}
+
+listDs()
 
 const buildTree = array => {
   const types = {}
@@ -190,6 +195,12 @@ const createDatasource = (type?: string) => {
   })
 }
 
+const deleteDatasource = id => {
+  deleteById(id).then(res => {
+    listDs()
+  })
+}
+
 const operation = (cmd: string, data) => {
   if (cmd === 'delete') {
     ElMessageBox.confirm('数据源', {
@@ -202,7 +213,7 @@ const operation = (cmd: string, data) => {
       showClose: false,
       callback: (action: Action) => {
         if (action === 'confirm') {
-          createDatasource()
+          deleteDatasource(data.id)
         }
       }
     })

@@ -50,6 +50,12 @@ public class DatasourceTaskServer {
         return CollectionUtils.isEmpty(coreDatasourceTasks) ? new CoreDatasourceTask() : coreDatasourceTasks.get(0);
     }
 
+    public void deleteByDSId(Long dsId) {
+        QueryWrapper<CoreDatasourceTask> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("ds_id", dsId);
+        datasourceTaskMapper.delete(queryWrapper);
+    }
+
     public void insert(CoreDatasourceTask coreDatasourceTask) {
         datasourceTaskMapper.insert(coreDatasourceTask);
     }

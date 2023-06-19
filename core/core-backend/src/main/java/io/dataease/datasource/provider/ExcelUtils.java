@@ -49,21 +49,45 @@ public class ExcelUtils {
         return tableDescs;
     }
 
-    public static List<String[]> fetchDataList(DatasourceRequest datasourceRequest) throws Exception {
+    public List<String[]> fetchDataList(DatasourceRequest datasourceRequest) throws Exception {
         List<String[]> dataList = new ArrayList<>();
         JsonNode rootNode = objectMapper.readTree(datasourceRequest.getDatasource().getConfiguration());
         for (int i = 0; i < rootNode.size(); i++) {
             if (rootNode.get(i).get("tableName").asText().equalsIgnoreCase(datasourceRequest.getTable())) {
                 String suffix = rootNode.get(i).get("path").asText().substring(rootNode.get(i).get("path").asText().lastIndexOf(".") + 1);
+                InputStream inputStream = new FileInputStream(rootNode.get(i).get("path").asText());
                 if (StringUtils.equalsIgnoreCase(suffix, "csv")) {
-                    InputStream inputStream = new FileInputStream(rootNode.get(i).get("path").asText());
                     BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
                     dataList = csvData(reader, false);
+                }else {
+                    dataList = fetchExcelDataList(datasourceRequest.getTable(), inputStream);
                 }
             }
         }
         return dataList;
     }
+
+   public List<String[]> fetchExcelDataList(String sheetName, InputStream inputStream){
+       NoModleDataListener noModleDataListener = new NoModleDataListener();
+       ExcelReader excelReader = EasyExcel.read(inputStream, noModleDataListener).build();
+       List<ReadSheet> sheets = excelReader.excelExecutor().sheetList();
+       for (ReadSheet readSheet : sheets) {
+           if(!sheetName.equalsIgnoreCase(readSheet.getSheetName())){
+               continue;
+           }
+           noModleDataListener.clear();
+           List<TableField> fields = new ArrayList<>();
+           excelReader.read(readSheet);
+           for (String s : noModleDataListener.getHeader()) {
+               TableField tableFiled = new TableField();
+               tableFiled.setFieldType("TEXT");
+               tableFiled.setName(s);
+               tableFiled.setOriginName(s);
+               fields.add(tableFiled);
+           }
+       }
+       return noModleDataListener.getDatas();
+   }
 
     public static List<TableField> getTableFields(DatasourceRequest datasourceRequest) throws Exception {
         List<TableField> tableFields = new ArrayList<>();
@@ -87,10 +111,6 @@ public class ExcelUtils {
             DEException.throwException(e);
         }
         List<ExcelSheetData> returnSheetDataList = new ArrayList<>();
-//        if (datasourceId < 1) {
-//        } else {
-//            returnSheetDataList = excelSheetDataList;
-//        }
         returnSheetDataList = excelSheetDataList;
         returnSheetDataList = returnSheetDataList.stream()
                 .filter(excelSheetData -> !CollectionUtils.isEmpty(excelSheetData.getFields()))
@@ -100,18 +120,11 @@ public class ExcelUtils {
         String filePath = saveFile(file, excelId);
 
         filename = filename.substring(0, filename.lastIndexOf('.'));
-        if (returnSheetDataList.size() == 1) {
-            returnSheetDataList.get(0).setTableName(filename);
-            returnSheetDataList.get(0).setPath(filePath);
-            returnSheetDataList.get(0).setSheetId(UUID.randomUUID().toString());
-            returnSheetDataList.get(0).setSheetExcelId(excelId);
-        } else {
-            for (ExcelSheetData excelSheetData : returnSheetDataList) {
-                excelSheetData.setTableName(filename + "-" + excelSheetData.getExcelLabel());
-                excelSheetData.setPath(filePath);
-                excelSheetData.setSheetId(UUID.randomUUID().toString());
-                excelSheetData.setSheetExcelId(excelId);
-            }
+        for (ExcelSheetData excelSheetData : returnSheetDataList) {
+            excelSheetData.setTableName(excelSheetData.getExcelLabel());
+            excelSheetData.setPath(filePath);
+            excelSheetData.setSheetId(UUID.randomUUID().toString());
+            excelSheetData.setSheetExcelId(excelId);
         }
         ExcelFileData excelFileData = new ExcelFileData();
         excelFileData.setExcelLabel(filename);
@@ -250,6 +263,8 @@ public class ExcelUtils {
             header.clear();
         }
     }
+
+
 
     public List<ExcelSheetData> parseExcel(String filename, InputStream inputStream, boolean isPreview) throws Exception {
         List<ExcelSheetData> excelSheetDataList = new ArrayList<>();
