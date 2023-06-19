@@ -287,7 +287,7 @@ export default {
         }
       }
 
-      if (this.myChart && !equalsAny(chart.type ,'liquid','flow-map') && this.searchCount > 0) {
+      if (this.myChart && !equalsAny(chart.type, 'liquid', 'flow-map') && this.searchCount > 0) {
         this.myChart.options.animation = false
       }
       if (this.myChart?.options?.legend) {
@@ -319,10 +319,18 @@ export default {
     },
 
     antVAction(param) {
-      if (this.chart.type === 'treemap') {
-        this.pointParam = param.data.data
-      } else {
-        this.pointParam = param.data
+      switch (this.chart.type) {
+        case 'treemap':
+          this.pointParam = param.data.data
+          break
+        case 'word-cloud':
+          this.pointParam = {
+            data: param.data.data.datum
+          }
+          break
+        default:
+          this.pointParam = param.data
+          break
       }
       this.linkageActiveParam = {
         category: this.pointParam.data.category ? this.pointParam.data.category : 'NO_DATA',
