@@ -2445,7 +2445,7 @@ export default {
     add_condition: '添加條件',
     add_relationship: '添加關系',
     filter_fields: '篩選字段',
-    selct_filter_fields: '請選擇篩選字段',
+    select_filter_fields: '請選擇篩選字段',
     enter_keywords: '請輸關鍵字',
     screen_method: '篩選方式',
     select: '請選擇',

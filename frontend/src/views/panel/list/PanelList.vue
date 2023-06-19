@@ -449,7 +449,7 @@ import {
   defaultTree,
   delGroup,
   groupTree,
-  initPanelData,
+  initPanelData, panelMove,
   panelToTop,
   panelUpdate,
   viewPanelLog
@@ -1116,7 +1116,7 @@ export default {
     saveMoveGroup() {
       this.moveInfo.pid = this.tGroup.id
       this.moveInfo['optType'] = 'move'
-      panelUpdate(this.moveInfo).then((response) => {
+      panelMove(this.moveInfo).then((response) => {
         updateCacheTree('move', 'panel-main-tree', response.data, this.tData)
         this.closeMoveGroup()
       })

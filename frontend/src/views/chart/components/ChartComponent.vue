@@ -396,6 +396,9 @@ export default {
           chart_option.legend['pageIconInactiveColor'] = '#8c8c8c'
         }
       }
+      if (chart_option.tooltip) {
+        chart_option.tooltip.appendToBody = true
+      }
       this.myEcharts(chart_option)
       this.$nextTick(() => (this.linkageActive()))
     },

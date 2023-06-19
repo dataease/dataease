@@ -85,6 +85,15 @@ export function panelUpdate(data) {
   })
 }
 
+export function panelMove(data) {
+  return request({
+    url: 'panel/group/move',
+    method: 'post',
+    loading: true,
+    data
+  })
+}
+
 export function findOne(id) {
   return request({
     url: 'panel/group/findOne/' + id,

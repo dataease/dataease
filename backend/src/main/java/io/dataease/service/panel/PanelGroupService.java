@@ -45,6 +45,7 @@ import org.apache.poi.hssf.usermodel.HSSFClientAnchor;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.pentaho.di.core.util.UUIDUtil;
 import org.slf4j.Logger;
@@ -660,7 +661,7 @@ public class PanelGroupService {
             Integer[] excelTypes = request.getExcelTypes();
             details.add(0, request.getHeader());
 
-            Workbook wb = new XSSFWorkbook();
+            Workbook wb = new SXSSFWorkbook();
             //明细sheet
             Sheet detailsSheet = wb.createSheet("数据");
 

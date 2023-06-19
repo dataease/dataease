@@ -41,8 +41,8 @@
 </template>
 
 <script>
-const MIN_NUMBER = -2147483648
-const MAX_NUMBER = 2147483647
+const MIN_NUMBER = Number.MIN_SAFE_INTEGER
+const MAX_NUMBER = Number.MAX_SAFE_INTEGER
 import bus from '@/utils/bus'
 export default {
 

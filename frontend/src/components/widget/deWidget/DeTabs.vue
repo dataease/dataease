@@ -800,4 +800,16 @@ export default {
   width: 100% !important;
 }
 
+::v-deep .el-tabs__nav-wrap.is-scrollable {
+padding: 0 45px!important;
+}
+
+::v-deep .el-tabs__nav-prev {
+left: 25px!important
+}
+
+::v-deep .el-tabs__nav-next {
+right: 25px!important;
+}
+
 </style>

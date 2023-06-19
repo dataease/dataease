@@ -27,9 +27,8 @@ import io.dataease.service.system.SystemParameterService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.*;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -384,13 +383,13 @@ public class LogService {
             details.add(0, headArr);
 
 
-            XSSFWorkbook wb = new XSSFWorkbook();
+            Workbook wb = new SXSSFWorkbook();
             //明细sheet
-            XSSFSheet detailsSheet = wb.createSheet("数据");
+            Sheet detailsSheet = wb.createSheet("数据");
 
             //给单元格设置样式
-            XSSFCellStyle cellStyle = wb.createCellStyle();
-            XSSFFont font = wb.createFont();
+            CellStyle cellStyle = wb.createCellStyle();
+            Font font = wb.createFont();
             //设置字体大小
             font.setFontHeightInPoints((short) 12);
             //设置字体加粗
@@ -404,11 +403,11 @@ public class LogService {
 
             if (CollectionUtils.isNotEmpty(details)) {
                 for (int i = 0; i < details.size(); i++) {
-                    XSSFRow row = detailsSheet.createRow(i);
+                    Row row = detailsSheet.createRow(i);
                     String[] rowData = details.get(i);
                     if (rowData != null) {
                         for (int j = 0; j < rowData.length; j++) {
-                            XSSFCell cell = row.createCell(j);
+                            Cell cell = row.createCell(j);
                             cell.setCellValue(rowData[j]);
                             if (i == 0) {// 头部
                                 cell.setCellStyle(cellStyle);

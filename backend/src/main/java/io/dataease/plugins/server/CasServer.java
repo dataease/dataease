@@ -6,19 +6,19 @@ import io.dataease.auth.entity.TokenInfo;
 import io.dataease.auth.service.AuthUserService;
 import io.dataease.auth.util.JWTUtils;
 import io.dataease.commons.constants.SysLogConstants;
-import io.dataease.commons.utils.CodingUtil;
 import io.dataease.commons.utils.DeLogUtils;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.commons.utils.ServletUtils;
-
 import io.dataease.controller.ResultHolder;
 import io.dataease.i18n.Translator;
 import io.dataease.service.sys.SysUserService;
 import io.dataease.service.system.SystemParameterService;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jasig.cas.client.authentication.AttributePrincipal;
 import org.jasig.cas.client.util.AssertionHolder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,11 +33,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.List;
 
 @ApiIgnore
 @RequestMapping("/cas")
 @Controller
 public class CasServer {
+
+    @Value("#{'${dataease.cas-admin-users:admin}'.split(',')}")
+    private List<String> adminUserList;
 
     @Autowired
     private AuthUserService authUserService;
@@ -55,9 +59,14 @@ public class CasServer {
 
         AttributePrincipal principal = AssertionHolder.getAssertion().getPrincipal();
         String name = principal.getName();
+        SysUserEntity sysUserEntity = null;
         try {
-            SysUserEntity sysUserEntity = authUserService.getCasUserByName(name);
-            if(null == sysUserEntity){
+            if (CollectionUtils.isNotEmpty(adminUserList) && adminUserList.contains(name)) {
+                sysUserEntity = authUserService.getUserById(1L);
+            } else {
+                sysUserEntity = authUserService.getCasUserByName(name);
+            }
+            if (null == sysUserEntity) {
                 String s = RandomUtil.randomString(6);
                 String email = s + "@xxx.com";
                 sysUserService.validateCasUser(name);
@@ -68,11 +77,12 @@ public class CasServer {
             TokenInfo tokenInfo = TokenInfo.builder().userId(sysUserEntity.getUserId()).username(sysUserEntity.getUsername()).build();
             String token = JWTUtils.sign(tokenInfo, realPwd);
             ServletUtils.setToken(token);
-            Cookie cookie_token = new Cookie("Authorization", token);cookie_token.setPath("/");
+            Cookie cookie_token = new Cookie("Authorization", token);
+            cookie_token.setPath("/");
             response.addCookie(cookie_token);
             DeLogUtils.save(SysLogConstants.OPERATE_TYPE.LOGIN, SysLogConstants.SOURCE_TYPE.USER, sysUserEntity.getUserId(), null, null, null);
 
-        }catch(Exception e) {
+        } catch (Exception e) {
 
             String msg = e.getMessage();
             if (null != e.getCause()) {
@@ -109,7 +119,7 @@ public class CasServer {
             ResultHolder success = ResultHolder.success(null);
             success.setMessage(Translator.get("i18n_default_login_reset"));
             return success;
-        }catch (Exception e) {
+        } catch (Exception e) {
             LogUtil.error(e.getMessage(), e);
             ResultHolder error = ResultHolder.error(e.getMessage());
             return error;
