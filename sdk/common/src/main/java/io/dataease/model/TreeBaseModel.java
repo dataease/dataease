@@ -1,6 +1,8 @@
 package io.dataease.model;
 
-public interface TreeBaseModel<T>{
+import java.io.Serializable;
+
+public interface TreeBaseModel<T> extends Serializable {
 
     Long getId();
 

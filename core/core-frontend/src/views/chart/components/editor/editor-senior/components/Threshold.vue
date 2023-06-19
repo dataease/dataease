@@ -578,11 +578,11 @@ init()
   justify-content: space-between;
   align-items: center;
 }
-.form-item-slider ::v-deep .el-form-item__label {
+.form-item-slider :deep(.el-form-item__label) {
   font-size: 12px;
   line-height: 38px;
 }
-.form-item ::v-deep .el-form-item__label {
+.form-item :deep(.el-form-item__label) {
   font-size: 12px;
 }
 .el-select-dropdown__item {
@@ -605,7 +605,7 @@ span {
   z-index: 1003;
 }
 
-.line-style ::v-deep span {
+.line-style :deep(span) {
   display: inline-block;
   width: 100%;
   white-space: nowrap;
@@ -614,15 +614,15 @@ span {
   margin: 0 10px;
 }
 
-.dialog-css ::v-deep .el-dialog__title {
+.dialog-css :deep(.el-dialog__title) {
   font-size: 14px;
 }
 
-.dialog-css ::v-deep .el-dialog__header {
+.dialog-css :deep(.el-dialog__header) {
   padding: 20px 20px 0;
 }
 
-.dialog-css ::v-deep .el-dialog__body {
+.dialog-css :deep(.el-dialog__body) {
   padding: 10px 20px 20px;
 }
 

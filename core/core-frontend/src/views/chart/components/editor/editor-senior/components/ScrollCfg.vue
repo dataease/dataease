@@ -129,11 +129,11 @@ init()
   justify-content: space-between;
   align-items: center;
 }
-.form-item-slider ::v-deep .el-form-item__label {
+.form-item-slider :deep(.el-form-item__label) {
   font-size: 12px;
   line-height: 38px;
 }
-.form-item ::v-deep .el-form-item__label {
+.form-item :deep(.el-form-item__label) {
   font-size: 12px;
 }
 .el-select-dropdown__item {
@@ -156,7 +156,7 @@ span {
   z-index: 1003;
 }
 
-.scroll-style ::v-deep .el-input-number--mini {
+.scroll-style :deep(.el-input-number--mini) {
   width: 120px !important;
 }
 </style>
