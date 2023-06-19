@@ -187,14 +187,12 @@ onMounted(() => {
             <overall-setting></overall-setting>
           </el-row>
         </el-collapse-item>
-        <el-collapse-item :title="'视图配色'" name="graphical">
-          <component-color-selector @onColorChange="onColorChange"></component-color-selector>
-        </el-collapse-item>
-        <el-collapse-item title="背景" name="background">
-          <el-row class="custom-row" style="padding: 0 8px">
+
+        <el-collapse-item title="仪表板背景" name="background">
+          <el-row class="item-show custom-row">
             <el-row>
               <el-radio-group v-model="canvasStyleData.backgroundType">
-                <el-radio label="backgroundColor">颜色</el-radio>
+                <el-radio label="backgroundColor">填充</el-radio>
                 <el-radio label="background">图片</el-radio>
               </el-radio-group>
             </el-row>
@@ -240,112 +238,20 @@ onMounted(() => {
             </el-row>
           </el-row>
         </el-collapse-item>
-
         <el-collapse-item :title="t('visualization.view_style')" name="componentStyle">
-          <background-overall></background-overall>
+          <background-overall class="item-show"></background-overall>
+        </el-collapse-item>
+        <el-collapse-item :title="'视图配色'" name="graphical">
+          <component-color-selector
+            class="item-show"
+            @onColorChange="onColorChange"
+          ></component-color-selector>
         </el-collapse-item>
         <el-collapse-item :title="t('visualization.chart_title')" name="viewTitle">
           <view-title @onTextChange="onTextChange" />
         </el-collapse-item>
         <el-collapse-item :title="t('visualization.filter_component')" name="filterComponent">
           <filter-style-selector />
-        </el-collapse-item>
-        <el-collapse-item title="配色" name="color">
-          <span style="margin-top: 10px; color: #757575">配色方案</span>
-          <el-popover placement="bottom" width="400" trigger="click">
-            <template #reference>
-              <div :style="{ cursor: 'pointer', marginTop: '2px', width: '180px' }">
-                <span
-                  v-for="(c, index) in state.colorForm.colors"
-                  :key="index"
-                  :style="{
-                    width: '20px',
-                    height: '20px',
-                    display: 'inline-block',
-                    backgroundColor: c
-                  }"
-                />
-              </div>
-            </template>
-
-            <div style="padding: 6px 10px">
-              <div>
-                <span class="color-label">{{ t('chart.system_case') }}</span>
-                <el-select
-                  v-model="state.colorForm.value"
-                  :placeholder="t('chart.pls_slc_color_case')"
-                  size="small"
-                  @change="changeColorOption()"
-                >
-                  <el-option
-                    v-for="option in colorCases"
-                    :key="option.value"
-                    :label="option.name"
-                    :value="option.value"
-                    style="display: flex; align-items: center"
-                  >
-                    <div style="float: left">
-                      <span
-                        v-for="(c, index) in option.colors"
-                        :key="index"
-                        :style="{
-                          width: '20px',
-                          height: '20px',
-                          float: 'left',
-                          backgroundColor: c
-                        }"
-                      />
-                    </div>
-                    <span style="margin-left: 4px">{{ option.name }}</span>
-                  </el-option>
-                </el-select>
-                <el-button
-                  size="small"
-                  type="text"
-                  style="margin-left: 2px"
-                  @click="resetCustomColor"
-                  >{{ t('chart.reset') }}
-                </el-button>
-              </div>
-              <!--自定义配色方案-->
-              <div class="custom-color-style">
-                <div style="display: flex; align-items: center; margin-top: 10px">
-                  <span class="color-label">{{ t('chart.custom_case') }}</span>
-                  <span>
-                    <el-radio-group v-model="state.customColor" class="color-type">
-                      <el-radio
-                        v-for="(c, index) in state.colorForm.colors"
-                        :key="index"
-                        :label="c"
-                        style="padding: 2px"
-                        @change="switchColor(index)"
-                      >
-                        <span
-                          :style="{
-                            width: '20px',
-                            height: '20px',
-                            display: 'inline-block',
-                            backgroundColor: c
-                          }"
-                        />
-                      </el-radio>
-                    </el-radio-group>
-                  </span>
-                </div>
-                <div style="display: flex; align-items: center; margin-top: 10px">
-                  <span class="color-label" />
-                  <span>
-                    <el-color-picker
-                      v-model="state.customColor"
-                      class="color-picker-style"
-                      :predefine="predefineColors"
-                      @change="switchColorCase"
-                    />
-                  </span>
-                </div>
-              </div>
-            </div>
-          </el-popover>
         </el-collapse-item>
       </el-collapse>
       <input
@@ -367,9 +273,10 @@ onMounted(() => {
 
 <style lang="less" scoped>
 .item-show {
+  width: 100%;
   display: flex;
   text-align: center;
-  padding: 16px 8px;
+  padding: 16px 8px 0 8px;
 }
 
 .attr-container {
@@ -461,5 +368,12 @@ onMounted(() => {
   background-color: #f5f6f7 !important;
   padding-left: 5px;
   height: 38px !important;
+}
+
+:deep(.ed-radio__label) {
+  font-size: 12px !important;
+}
+:deep(.ed-checkbox__label) {
+  font-size: 12px !important;
 }
 </style>

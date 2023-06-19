@@ -1,45 +1,42 @@
 <template>
-  <el-row class="custom-row" style="width: 100%; padding: 8px">
-    <el-row style="height: 50px; overflow: hidden">
-      <el-col :span="8">
-        <span class="params-title">{{ t('visualization.inner_padding') }}</span>
+  <el-row>
+    <el-row style="width: 100%">
+      <el-col :span="12" style="padding-right: 4px">
+        <el-row class="custom-item-text-row"
+          ><span class="custom-item-text bl">{{ t('visualization.inner_padding') }}</span>
+        </el-row>
+        <el-row class="function-area">
+          <el-input
+            type="number"
+            v-model="state.commonBackground.innerPadding"
+            @change="themeChange('innerPadding')"
+          ></el-input>
+        </el-row>
       </el-col>
-      <el-col :span="16">
-        <el-slider
-          v-model="state.commonBackground.innerPadding"
-          show-input
-          :show-input-controls="false"
-          input-size="mini"
-          :max="50"
-          @change="themeChange('innerPadding')"
-        />
-      </el-col>
-    </el-row>
-    <el-row style="height: 50px; overflow: hidden">
-      <el-col :span="8">
-        <span class="params-title">{{ t('visualization.board_radio') }}</span>
-      </el-col>
-      <el-col :span="16">
-        <el-slider
-          v-model="state.commonBackground.borderRadius"
-          show-input
-          :show-input-controls="false"
-          input-size="mini"
-          @change="themeChange('borderRadius')"
-        />
+      <el-col :span="12" style="padding-left: 4px">
+        <el-row class="custom-item-text-row"
+          ><span class="custom-item-text bl">{{ t('visualization.board_radio') }}</span>
+        </el-row>
+        <el-row class="function-area">
+          <el-input
+            type="number"
+            v-model="state.commonBackground.borderRadius"
+            @change="themeChange('borderRadius')"
+          ></el-input>
+        </el-row>
       </el-col>
     </el-row>
 
-    <el-row style="height: 40px; overflow: hidden">
-      <el-col :span="6" style="padding-top: 5px">
+    <el-row style="width: 100%" class="custom-row margin-top16">
+      <el-row class="custom-item-text-row">
         <el-checkbox
           v-model="state.commonBackground.backgroundColorSelect"
           @change="themeChange('backgroundColorSelect')"
         >
           {{ $t('chart.color') }}
         </el-checkbox>
-      </el-col>
-      <el-col :span="3" style="padding-top: 5px">
+      </el-row>
+      <el-row class="function-area">
         <el-color-picker
           v-model="state.commonBackground.color"
           :disabled="!state.commonBackground.backgroundColorSelect"
@@ -48,11 +45,11 @@
           :predefine="state.predefineColors"
           @change="themeChange('color')"
         />
-      </el-col>
-      <el-col :span="5">
-        <span class="params-title-small">{{ $t('chart.not_alpha') }}</span>
-      </el-col>
-      <el-col :span="10">
+      </el-row>
+      <el-row class="custom-item-text-row margin-top8">
+        <span class="custom-item-text bl">{{ $t('chart.not_alpha') }}</span>
+      </el-row>
+      <el-row class="function-area">
         <el-slider
           v-model="state.commonBackground.alpha"
           :disabled="!state.commonBackground.backgroundColorSelect"
@@ -61,85 +58,84 @@
           input-size="mini"
           @change="themeChange('alpha')"
         />
-      </el-col>
+      </el-row>
     </el-row>
 
-    <el-row style="height: 50px">
-      <el-col :span="4" style="padding-top: 5px">
+    <el-row style="width: 100%" class="custom-row margin-top16">
+      <el-row class="custom-item-text-row">
         <el-checkbox v-model="state.commonBackground.enable" @change="themeChange('enable')"
           >{{ t('visualization.background') }}
         </el-checkbox>
-      </el-col>
-      <el-col :span="20">
-        <span class="tips-area"> Tips:{{ t('visualization.choose_background_tips') }} </span>
-      </el-col>
-    </el-row>
-    <el-row v-if="state.commonBackground.enable" style="padding-left: 10px">
-      <el-row style="height: 80px; margin-top: 0; margin-bottom: 20px; overflow: hidden">
-        <el-col :span="5">
-          <el-radio
-            v-model="state.commonBackground.backgroundType"
-            label="outerImage"
-            @change="themeChange('backgroundType')"
-            >{{ t('visualization.photo') }}
-          </el-radio>
-        </el-col>
-        <el-col style="width: 130px !important">
-          <el-upload
-            action=""
-            accept=".jpeg,.jpg,.png,.gif,.svg"
-            class="avatar-uploader"
-            list-type="picture-card"
-            :class="{ disabled: state.uploadDisabled }"
-            :on-preview="handlePictureCardPreview"
-            :on-remove="handleRemove"
-            :http-request="upload"
-            :file-list="state.fileList"
-          >
-            <i class="el-icon-plus" />
-          </el-upload>
-          <el-dialog
-            top="25vh"
-            width="600px"
-            :append-to-body="true"
-            :destroy-on-close="true"
-            v-model:visible="state.dialogVisible"
-          >
-            <img width="100%" :src="state.dialogImageUrl" />
-          </el-dialog>
-        </el-col>
       </el-row>
-      <el-row>
-        <el-col style="position: relative">
-          <el-radio
-            v-model="state.commonBackground.backgroundType"
-            label="innerImage"
-            @change="themeChange('backgroundType')"
-            >{{ t('visualization.board') }}
-          </el-radio>
-          <el-color-picker
-            v-model="state.commonBackground.innerImageColor"
-            :title="t('visualization.border_color_setting')"
-            style="position: absolute; top: -3px; left: 60px"
-            size="mini"
-            class="color-picker-style"
-            :predefine="state.predefineColors"
-            @change="themeChange('innerImageColor')"
-          />
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :style="customStyle" class="main-col">
-          <el-row v-for="(value, key) in state.BackgroundShowMap" :key="key" class="border-area">
-            <el-col v-for="item in value" :key="item.id" :span="12">
-              <background-item-overall
-                :common-background="state.commonBackground"
-                :template="item"
-                @borderChange="themeChange('innerImage')"
-              />
-            </el-col>
+      <el-row class="function-area custom-row">
+        <el-row>
+          <el-radio-group v-model="state.commonBackground.backgroundType">
+            <el-radio label="outerImage">{{ t('visualization.photo') }}</el-radio>
+            <el-radio label="innerImage">{{ t('visualization.board') }}</el-radio>
+          </el-radio-group>
+        </el-row>
+        <el-row>
+          <el-row
+            v-show="state.commonBackground.backgroundType === 'innerImage'"
+            style="width: 100%"
+          >
+            <el-color-picker
+              v-model="state.commonBackground.innerImageColor"
+              :title="t('visualization.border_color_setting')"
+              style="position: absolute; top: -3px; left: 60px"
+              size="mini"
+              class="color-picker-style"
+              :predefine="state.predefineColors"
+              @change="themeChange('innerImageColor')"
+            />
+            <el-select
+              v-model="state.commonBackground.innerImage"
+              placeholder="选择边框..."
+              style="margin-left: 8px"
+            >
+              <el-option
+                v-for="(item, index) in state.BackgroundShowMap['default']"
+                :key="index"
+                :label="item.name"
+                :value="item.url"
+              >
+                <Icon
+                  style="width: 120px; height: 70px"
+                  :style="{ color: state.commonBackground.innerImageColor }"
+                  class-name="svg-background"
+                  :name="mainIconClass(item)"
+                />
+              </el-option>
+            </el-select>
           </el-row>
-        </el-col>
+          <el-col
+            v-show="state.commonBackground.backgroundType === 'outerImage'"
+            style="width: 130px !important; text-align: left"
+          >
+            <el-upload
+              action=""
+              accept=".jpeg,.jpg,.png,.gif,.svg"
+              class="avatar-uploader"
+              list-type="picture-card"
+              :class="{ disabled: state.uploadDisabled }"
+              :on-preview="handlePictureCardPreview"
+              :on-remove="handleRemove"
+              :http-request="upload"
+              :file-list="state.fileList"
+            >
+              <el-icon><Plus /></el-icon>
+            </el-upload>
+            <el-dialog
+              top="25vh"
+              width="600px"
+              :append-to-body="true"
+              :destroy-on-close="true"
+              v-model:visible="state.dialogVisible"
+            >
+              <img width="100%" :src="state.dialogImageUrl" />
+            </el-dialog>
+          </el-col>
+        </el-row>
       </el-row>
     </el-row>
   </el-row>
@@ -197,6 +193,10 @@ const customStyle = computed(() => {
   }
   return style
 })
+
+const mainIconClass = itemUrl => {
+  return itemUrl.url.replace('board/', '').replace('.svg', '')
+}
 
 const queryBackground = () => {
   queryVisualizationBackground().then(response => {
@@ -313,10 +313,6 @@ onMounted(() => {
   font-size: 12px;
 }
 
-.ed-select-dropdown__item {
-  padding: 0 20px;
-}
-
 span {
   font-size: 12px;
 }
@@ -341,24 +337,39 @@ span {
   line-height: 40px;
 }
 
-:deep(.ed-slider__input) {
-  width: 40px;
-  padding-left: 0px;
-  padding-right: 0px;
-}
-
-:deep(.ed-input__inner) {
-  padding: 0px !important;
-}
-
-:deep(.ed-slider__runway) {
-  margin-right: 60px !important;
-}
-.ed-row {
-  flex-direction: column;
-}
-
 .border-area {
   flex-direction: row;
+}
+
+.bl {
+  justify-content: flex-start;
+  display: flex;
+}
+
+.br {
+  flex: 1;
+  justify-content: flex-end;
+  display: flex;
+}
+
+.function-area {
+  margin-top: 8px;
+}
+
+.margin-top16 {
+  margin-top: 16px !important;
+}
+
+.margin-top8 {
+  margin-top: 8px !important;
+}
+.custom-item-text-row {
+  display: flex;
+}
+
+.ed-select-dropdown__item {
+  height: 80px !important;
+  text-align: center;
+  padding: 5px 0 0 0;
 }
 </style>

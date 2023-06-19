@@ -78,7 +78,7 @@
         </span>
       </el-row>
     </el-row>
-    <el-row class="custom-row margin-top16 margin-bottom20">
+    <el-row class="custom-row margin-top16">
       <el-row class="custom-item-text-row">
         <span class="custom-item-text bl">
           {{ t('visualization.panel_view_result_show') }}
@@ -94,8 +94,6 @@
           </span>
         </span>
       </el-row>
-    </el-row>
-    <el-row class="custom-row margin-top16 margin-bottom20">
       <el-row class="function-area">
         <el-row>
           <el-radio-group
@@ -297,21 +295,7 @@ const colorButtonClick = val => {
   margin-top: 8px;
 }
 
-.margin-top12 {
-  margin-top: 12px !important;
-}
-
 .margin-top16 {
   margin-top: 16px !important;
-}
-
-.margin-bottom20 {
-  margin-bottom: 20px !important;
-}
-:deep(.ed-radio__label) {
-  font-size: 12px !important;
-}
-:deep(.ed-checkbox__label) {
-  font-size: 12px !important;
 }
 </style>
