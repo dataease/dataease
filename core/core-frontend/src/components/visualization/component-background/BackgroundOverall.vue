@@ -6,11 +6,13 @@
           ><span class="custom-item-text bl">{{ t('visualization.inner_padding') }}</span>
         </el-row>
         <el-row class="function-area">
-          <el-input
-            type="number"
+          <el-input-number
+            controls-position="right"
+            :min="0"
+            :max="100"
             v-model="state.commonBackground.innerPadding"
             @change="themeChange('innerPadding')"
-          ></el-input>
+          ></el-input-number>
         </el-row>
       </el-col>
       <el-col :span="12" style="padding-left: 4px">
@@ -18,11 +20,13 @@
           ><span class="custom-item-text bl">{{ t('visualization.board_radio') }}</span>
         </el-row>
         <el-row class="function-area">
-          <el-input
-            type="number"
+          <el-input-number
+            controls-position="right"
+            :min="0"
+            :max="100"
             v-model="state.commonBackground.borderRadius"
             @change="themeChange('borderRadius')"
-          ></el-input>
+          ></el-input-number>
         </el-row>
       </el-col>
     </el-row>
@@ -36,28 +40,30 @@
           {{ $t('chart.color') }}
         </el-checkbox>
       </el-row>
-      <el-row class="function-area">
-        <el-color-picker
-          v-model="state.commonBackground.color"
-          :disabled="!state.commonBackground.backgroundColorSelect"
-          size="mini"
-          class="color-picker-style"
-          :predefine="state.predefineColors"
-          @change="themeChange('color')"
-        />
-      </el-row>
-      <el-row class="custom-item-text-row margin-top8">
-        <span class="custom-item-text bl">{{ $t('chart.not_alpha') }}</span>
-      </el-row>
-      <el-row class="function-area">
-        <el-slider
-          v-model="state.commonBackground.alpha"
-          :disabled="!state.commonBackground.backgroundColorSelect"
-          show-input
-          :show-input-controls="false"
-          input-size="mini"
-          @change="themeChange('alpha')"
-        />
+      <el-row style="margin-left: 20px" class="custom-row">
+        <el-row class="function-area">
+          <el-color-picker
+            v-model="state.commonBackground.color"
+            :disabled="!state.commonBackground.backgroundColorSelect"
+            size="mini"
+            class="color-picker-style"
+            :predefine="state.predefineColors"
+            @change="themeChange('color')"
+          />
+        </el-row>
+        <el-row class="custom-item-text-row margin-top8">
+          <span class="custom-item-text bl">{{ $t('chart.not_alpha') }}</span>
+        </el-row>
+        <el-row class="function-area">
+          <el-input-number
+            controls-position="right"
+            :disabled="!state.commonBackground.backgroundColorSelect"
+            v-model="state.commonBackground.alpha"
+            :min="0"
+            :max="100"
+            @change="themeChange('alpha')"
+          ></el-input-number>
+        </el-row>
       </el-row>
     </el-row>
 
@@ -67,7 +73,7 @@
           >{{ t('visualization.background') }}
         </el-checkbox>
       </el-row>
-      <el-row class="function-area custom-row">
+      <el-row class="function-area custom-row" style="margin-left: 20px">
         <el-row>
           <el-radio-group v-model="state.commonBackground.backgroundType">
             <el-radio label="outerImage">{{ t('visualization.photo') }}</el-radio>
@@ -78,6 +84,7 @@
           <el-row
             v-show="state.commonBackground.backgroundType === 'innerImage'"
             style="width: 100%"
+            class="margin-top8"
           >
             <el-color-picker
               v-model="state.commonBackground.innerImageColor"
@@ -111,6 +118,7 @@
           <el-col
             v-show="state.commonBackground.backgroundType === 'outerImage'"
             style="width: 130px !important; text-align: left"
+            class="margin-top8"
           >
             <el-upload
               action=""
@@ -371,5 +379,33 @@ span {
   height: 80px !important;
   text-align: center;
   padding: 5px 0 0 0;
+}
+
+.ed-radio {
+  font-weight: 400;
+  height: 20px;
+}
+.ed-checkbox {
+  font-weight: 400;
+  height: 20px;
+}
+
+.custom-item-text-row {
+  display: flex;
+}
+
+.custom-item-text {
+  font-size: 12px !important;
+  font-weight: 400 !important;
+  line-height: 20px;
+  color: #646a73 !important;
+}
+
+:deep(.ed-input-number) {
+  width: 100%;
+}
+
+:deep(.ed-input__inner) {
+  text-align: left;
 }
 </style>
