@@ -112,9 +112,9 @@ public class ExtractDataService {
     private Long extractPageSize;
 
 
-    private static final String shellScript = "result=`curl --location-trusted -u %s:%s -H \"label:%s\" -H \"column_separator:%s\" -H \"columns:%s\" -H \"merge_type: %s\" -T %s -XPUT http://%s:%s/api/%s/%s/_stream_load`\n" +
+    private static final String shellScript = "result=`curl --location-trusted -u %s:%s -H \"label:%s\" -H \"Expect:100-continue\" -H \"column_separator:%s\" -H \"columns:%s\" -H \"merge_type: %s\" -T %s -XPUT http://%s:%s/api/%s/%s/_stream_load`\n" +
             "if [ $? -eq 0 ] ; then\n" +
-            "  failstatus=$(echo $result | grep '\"Status\": \"Fail\"')\n" +
+            "  failstatus=$(echo $result | grep '\"status\":\"FAILED\"')\n" +
             "  if [ \"x${failstatus}\" != \"x\" ];then" +
             "     echo $result\n" +
             "     exit 1\n" +
@@ -124,10 +124,10 @@ public class ExtractDataService {
             "  exit 1\n" +
             "fi\n";
 
-    private static final String shellScriptForDeleteFile = "result=`curl --location-trusted -u %s:%s -H \"label:%s\" -H \"column_separator:%s\" -H \"columns:%s\" -H \"merge_type: %s\" -T %s -XPUT http://%s:%s/api/%s/%s/_stream_load`\n" +
+    private static final String shellScriptForDeleteFile = "result=`curl --location-trusted -u %s:%s -H \"label:%s\" -H \"Expect:100-continue\" -H \"column_separator:%s\" -H \"columns:%s\" -H \"merge_type: %s\" -T %s -XPUT http://%s:%s/api/%s/%s/_stream_load`\n" +
             "rm -rf  %s \n" +
             "if [ $? -eq 0 ] ; then\n" +
-            "  failstatus=$(echo $result | grep '\"Status\": \"Fail\"')\n" +
+            "  failstatus=$(echo $result | grep '\"status\":\"FAILED\"')\n" +
             "  if [ \"x${failstatus}\" != \"x\" ];then" +
             "     echo $result\n" +
             "     exit 1\n" +
