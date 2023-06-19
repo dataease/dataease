@@ -2705,6 +2705,7 @@ export default {
     preview: '預覽',
     emial_preview: '報告預覽',
     chart_data_range: '視圖數據範圍',
+    panel_format: '儀表板格式',
     simple_repeat: '簡單重複',
     once_a_day: '每天',
     once_a_week: '每周',

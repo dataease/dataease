@@ -2720,6 +2720,7 @@ export default {
     preview: '预览',
     emial_preview: '报告预览',
     chart_data_range: '视图数据范围',
+    panel_format: '仪表板格式',
     simple_repeat: '简单重复',
     once_a_day: '每天',
     once_a_week: '每周',
