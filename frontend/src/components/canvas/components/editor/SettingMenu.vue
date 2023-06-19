@@ -192,7 +192,6 @@ export default {
         'gauge',
         'text',
         'label',
-        'word-cloud',
         'flow-map',
         'bidirectional-bar'
       ],
@@ -202,7 +201,6 @@ export default {
         'gauge',
         'text',
         'label',
-        'word-cloud',
         'flow-map',
         'bidirectional-bar'
       ],
