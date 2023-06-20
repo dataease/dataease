@@ -3,7 +3,7 @@ package io.dataease.api.permissions.auth.vo;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.dataease.model.TreeResultModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serial;
@@ -11,15 +11,16 @@ import java.io.Serializable;
 import java.util.List;
 
 @Data
+@Schema(description = "资源结点")
 public class ResourceVO implements TreeResultModel<ResourceVO>, Serializable {
 
     @Serial
     private static final long serialVersionUID = -8523999682424087399L;
     @JsonSerialize(using = ToStringSerializer.class)
-    @ApiModelProperty("资源ID")
+    @Schema(description = "ID")
     private Long id;
-    @ApiModelProperty("资源名称")
+    @Schema(description = "名称")
     private String name;
-    @ApiModelProperty("子节点")
+    @Schema(description = "子节点")
     private List<ResourceVO> children;
 }
