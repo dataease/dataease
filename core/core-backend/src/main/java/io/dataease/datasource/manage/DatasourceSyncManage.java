@@ -62,7 +62,7 @@ public class DatasourceSyncManage {
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(coreDatasource);
             List<DatasetTableDTO> tables = ExcelUtils.getTables(datasourceRequest);
-            int sucsess = 0;
+            int success = 0;
             for (DatasetTableDTO api : tables) {
                 datasourceRequest.setTable(api.getTableName());
                 try {
@@ -79,22 +79,22 @@ public class DatasourceSyncManage {
                     }
                     datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n End to sync datatable: " + datasourceRequest.getTable());
                     datasourceTaskServer.saveLog(datasetTableTaskLog);
-                    sucsess++;
+                    success++;
                 } catch (Exception e) {
                     datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Failed to sync datatable: " + datasourceRequest.getTable() + ", " + e.getMessage());
                     datasourceTaskServer.saveLog(datasetTableTaskLog);
                 }
             }
             datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Complete to sync datasourc.");
-            if (sucsess == 0) {
+            if (success == 0) {
                 datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Failed to sync datasourc.");
                 datasetTableTaskLog.setStatus(TaskStatus.Error.name());
             }
-            if (sucsess == tables.size()) {
+            if (success == tables.size()) {
                 datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Complete to sync datasourc.");
                 datasetTableTaskLog.setStatus(TaskStatus.Completed.name());
             }
-            if (0 < sucsess && sucsess < tables.size()) {
+            if (0 < success && success < tables.size()) {
                 datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Complete to sync datasourc.");
                 datasetTableTaskLog.setStatus(TaskStatus.Warning.name());
             }
@@ -149,7 +149,7 @@ public class DatasourceSyncManage {
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(coreDatasource);
             List<DatasetTableDTO> tables = ApiUtils.getTables(datasourceRequest);
-            int sucsess = 0;
+            int success = 0;
 
             for (DatasetTableDTO api : tables) {
                 datasourceRequest.setTable(api.getTableName());
@@ -167,24 +167,24 @@ public class DatasourceSyncManage {
                     }
                     datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n End to sync datatable: " + datasourceRequest.getTable());
                     datasourceTaskServer.saveLog(datasetTableTaskLog);
-                    sucsess++;
+                    success++;
                 } catch (Exception e) {
                     datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Failed to sync datatable: " + datasourceRequest.getTable() + ", " + e.getMessage());
                     datasourceTaskServer.saveLog(datasetTableTaskLog);
                 }
             }
             datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Complete to sync datasourc.");
-            if (sucsess == 0) {
+            if (success == 0) {
                 datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Failed to sync datasourc.");
                 datasetTableTaskLog.setStatus(TaskStatus.Error.name());
                 lastExecStatus = TaskStatus.Error;
             }
-            if (sucsess == tables.size()) {
+            if (success == tables.size()) {
                 datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Complete to sync datasourc.");
                 datasetTableTaskLog.setStatus(TaskStatus.Completed.name());
                 lastExecStatus = TaskStatus.Completed;
             }
-            if (0 < sucsess && sucsess < tables.size()) {
+            if (0 < success && success < tables.size()) {
                 datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Complete to sync datasourc.");
                 datasetTableTaskLog.setStatus(TaskStatus.Warning.name());
                 lastExecStatus = TaskStatus.Warning;

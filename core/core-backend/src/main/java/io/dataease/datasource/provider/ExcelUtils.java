@@ -68,17 +68,17 @@ public class ExcelUtils {
     }
 
    public List<String[]> fetchExcelDataList(String sheetName, InputStream inputStream){
-       NoModleDataListener noModleDataListener = new NoModleDataListener();
-       ExcelReader excelReader = EasyExcel.read(inputStream, noModleDataListener).build();
+       NoModelDataListener noModelDataListener = new NoModelDataListener();
+       ExcelReader excelReader = EasyExcel.read(inputStream, noModelDataListener).build();
        List<ReadSheet> sheets = excelReader.excelExecutor().sheetList();
        for (ReadSheet readSheet : sheets) {
            if(!sheetName.equalsIgnoreCase(readSheet.getSheetName())){
                continue;
            }
-           noModleDataListener.clear();
+           noModelDataListener.clear();
            List<TableField> fields = new ArrayList<>();
            excelReader.read(readSheet);
-           for (String s : noModleDataListener.getHeader()) {
+           for (String s : noModelDataListener.getHeader()) {
                TableField tableFiled = new TableField();
                tableFiled.setFieldType("TEXT");
                tableFiled.setName(s);
@@ -86,7 +86,7 @@ public class ExcelUtils {
                fields.add(tableFiled);
            }
        }
-       return noModleDataListener.getDatas();
+       return noModelDataListener.getData();
    }
 
     public static List<TableField> getTableFields(DatasourceRequest datasourceRequest) throws Exception {
@@ -223,8 +223,8 @@ public class ExcelUtils {
     }
 
     @Data
-    public class NoModleDataListener extends AnalysisEventListener<Map<Integer, String>> {
-        private List<String[]> datas = new ArrayList<>();
+    public class NoModelDataListener extends AnalysisEventListener<Map<Integer, String>> {
+        private List<String[]> data = new ArrayList<>();
         private List<String> header = new ArrayList<>();
 
 
@@ -251,7 +251,7 @@ public class ExcelUtils {
                 }
                 line.add(value);
             }
-            datas.add(line.toArray(new String[line.size()]));
+            data.add(line.toArray(new String[line.size()]));
         }
 
         @Override
@@ -259,7 +259,7 @@ public class ExcelUtils {
         }
 
         public void clear(){
-            datas.clear();
+            data.clear();
             header.clear();
         }
     }
@@ -271,21 +271,21 @@ public class ExcelUtils {
         try {
             String suffix = filename.substring(filename.lastIndexOf(".") + 1);
             if (StringUtils.equalsIgnoreCase(suffix, "xlsx")) {
-                NoModleDataListener noModleDataListener = new NoModleDataListener();
-                ExcelReader excelReader = EasyExcel.read(inputStream, noModleDataListener).build();
+                NoModelDataListener noModelDataListener = new NoModelDataListener();
+                ExcelReader excelReader = EasyExcel.read(inputStream, noModelDataListener).build();
                 List<ReadSheet> sheets = excelReader.excelExecutor().sheetList();
                 for (ReadSheet readSheet : sheets) {
-                    noModleDataListener.clear();
+                    noModelDataListener.clear();
                     List<TableField> fields = new ArrayList<>();
                     excelReader.read(readSheet);
-                    for (String s : noModleDataListener.getHeader()) {
+                    for (String s : noModelDataListener.getHeader()) {
                         TableField tableFiled = new TableField();
                         tableFiled.setFieldType("TEXT");
                         tableFiled.setName(s);
                         tableFiled.setOriginName(s);
                         fields.add(tableFiled);
                     }
-                    List<String[]> data =  (isPreview && noModleDataListener.getDatas().size() > 100 ? new ArrayList<>(noModleDataListener.getDatas().subList(0, 100)) : noModleDataListener.getDatas());
+                    List<String[]> data =  (isPreview && noModelDataListener.getData().size() > 100 ? new ArrayList<>(noModelDataListener.getData().subList(0, 100)) : noModelDataListener.getData());
                     if(isPreview){
                         for (String[] datum : data) {
                             for (int i = 0; i < datum.length; i++) {

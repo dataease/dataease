@@ -58,7 +58,7 @@ export default {
     add_condition: 'Add condition',
     add_relationship: 'Add relationship',
     filter_fields: 'Filter fields',
-    selct_filter_fields: 'Please select a filter field',
+    select_filter_fields: 'Please select a filter field',
     enter_keywords: 'Please enter keywords',
     screen_method: 'Screening method',
     select: 'Please select',

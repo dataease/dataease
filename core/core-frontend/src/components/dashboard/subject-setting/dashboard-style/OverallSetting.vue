@@ -26,11 +26,7 @@
         ><span class="custom-item-text bl">{{ t('visualization.component_gap') }}</span>
       </el-row>
       <el-row class="function-area">
-        <el-radio-group
-          v-model="state.overallSettingForm.dashboard.gap"
-          size="mini"
-          @change="themeChange"
-        >
+        <el-radio-group v-model="state.overallSettingForm.dashboard.gap" @change="themeChange">
           <el-radio label="yes">{{ t('visualization.gap') }}</el-radio>
           <el-radio label="no">{{ t('visualization.no_gap') }}</el-radio>
         </el-radio-group>
@@ -45,7 +41,7 @@
         </span>
       </el-row>
       <el-row class="function-area">
-        <el-input
+        <el-input-number
           v-model="state.overallSettingForm.refreshTime"
           class="el-input-refresh-time"
           type="number"
@@ -54,7 +50,8 @@
           :max="3600"
           :disabled="!state.overallSettingForm.refreshViewEnable"
           @change="themeChange"
-        ></el-input>
+        >
+        </el-input-number>
         <el-select
           v-model="state.overallSettingForm.refreshUnit"
           class="el-input-refresh-unit margin-left8"
@@ -94,7 +91,7 @@
           </span>
         </span>
       </el-row>
-      <el-row class="function-area">
+      <el-row class="function-area custom-row">
         <el-row>
           <el-radio-group
             v-model="state.overallSettingForm.dashboard.resultMode"
@@ -110,21 +107,15 @@
             </el-radio>
           </el-radio-group>
         </el-row>
-        <el-row>
-          <el-col :span="24" class="slider-area">
-            <el-slider
-              v-model="state.overallSettingForm.dashboard.resultCount"
-              :disabled="state.overallSettingForm.dashboard.resultMode === 'all'"
-              style="margin-left: 5px"
-              show-input
-              :show-input-controls="false"
-              :show-tooltip="false"
-              input-size="mini"
-              :min="1"
-              :max="10000"
-              @change="themeChange"
-            />
-          </el-col>
+        <el-row class="margin-top8">
+          <el-input-number
+            v-model="state.overallSettingForm.dashboard.resultCount"
+            controls-position="right"
+            :min="1"
+            :max="10000"
+            @change="themeChange"
+            :disabled="state.overallSettingForm.dashboard.resultMode === 'all'"
+          ></el-input-number>
         </el-row>
       </el-row>
     </el-row>
@@ -227,15 +218,6 @@ const colorButtonClick = val => {
   margin-left: 8px;
 }
 
-:deep(.ed-input__inner) {
-  padding: 0 5px !important;
-}
-
-:deep(.ed-slider__input) {
-  width: 100px;
-  margin-top: 0;
-}
-
 .form-item-slider :deep(.ed-form-item__label) {
   font-size: 12px;
   line-height: 38px;
@@ -251,10 +233,6 @@ const colorButtonClick = val => {
 
 .result-count {
   width: 80px;
-}
-
-.form-item-result :deep(.ed-radio) {
-  margin-right: 5px;
 }
 
 .custom-item-text-row {
@@ -297,5 +275,25 @@ const colorButtonClick = val => {
 
 .margin-top16 {
   margin-top: 16px !important;
+}
+
+.margin-top8 {
+  margin-top: 8px !important;
+}
+.ed-radio {
+  font-weight: 400;
+  height: 20px;
+}
+.ed-checkbox {
+  font-weight: 400;
+  height: 20px;
+}
+
+:deep(.ed-input-number) {
+  width: 100%;
+}
+
+:deep(.ed-input__inner) {
+  text-align: left;
 }
 </style>

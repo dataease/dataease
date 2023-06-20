@@ -20,6 +20,8 @@ import { adaptCurThemeCommonStyleAll } from '@/utils/canvasStyle'
 import eventBus from '@/utils/eventBus'
 import ViewTitle from '@/components/dashboard/subject-setting/dashboard-style/ViewTitle.vue'
 import FilterStyleSelector from '@/components/dashboard/subject-setting/dashboard-style/FilterStyleSelector.vue'
+import ViewSimpleTitle from '@/components/dashboard/subject-setting/dashboard-style/ViewSimpleTitle.vue'
+import FilterStyleSimpleSelector from '@/components/dashboard/subject-setting/dashboard-style/FilterStyleSimpleSelector.vue'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const { canvasStyleData } = storeToRefs(dvMainStore)
@@ -196,7 +198,10 @@ onMounted(() => {
                 <el-radio label="background">图片</el-radio>
               </el-radio-group>
             </el-row>
-            <el-row v-show="canvasStyleData.backgroundType === 'backgroundColor'">
+            <el-row
+              v-show="canvasStyleData.backgroundType === 'backgroundColor'"
+              class="margin-top8"
+            >
               <el-color-picker
                 v-model="canvasStyleData.backgroundColor"
                 show-alpha
@@ -247,11 +252,20 @@ onMounted(() => {
             @onColorChange="onColorChange"
           ></component-color-selector>
         </el-collapse-item>
-        <el-collapse-item :title="t('visualization.chart_title')" name="viewTitle">
-          <view-title @onTextChange="onTextChange" />
+        <el-collapse-item name="viewTitle">
+          <template #title>
+            {{ t('visualization.chart_title') }}
+            <el-switch
+              style="margin-right: 10px; margin-left: auto"
+              v-model="canvasStyleData.component.chartTitle.show"
+              @click.stop.prevent="onTextChange(canvasStyleData.component.chartTitle)"
+            />
+          </template>
+          <view-simple-title class="item-show" @onTextChange="onTextChange"></view-simple-title>
+          <!--          <view-title @onTextChange="onTextChange" />-->
         </el-collapse-item>
         <el-collapse-item :title="t('visualization.filter_component')" name="filterComponent">
-          <filter-style-selector />
+          <filter-style-simple-selector class="item-show"></filter-style-simple-selector>
         </el-collapse-item>
       </el-collapse>
       <input
@@ -310,8 +324,7 @@ onMounted(() => {
 .img-area {
   width: 120px;
   height: 80px;
-  margin-top: 0px;
-  margin-bottom: 20px;
+  margin-top: 8px;
   overflow: hidden;
 }
 
@@ -375,5 +388,17 @@ onMounted(() => {
 }
 :deep(.ed-checkbox__label) {
   font-size: 12px !important;
+}
+
+.ed-radio {
+  font-weight: 400;
+  height: 20px;
+}
+.ed-checkbox {
+  font-weight: 400;
+  height: 20px;
+}
+.margin-top8 {
+  margin-top: 8px !important;
 }
 </style>

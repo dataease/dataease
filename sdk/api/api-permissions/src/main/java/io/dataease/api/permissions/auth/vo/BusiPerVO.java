@@ -3,13 +3,14 @@ package io.dataease.api.permissions.auth.vo;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.dataease.model.TreeResultModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
+@Schema(description = "业务资源结点")
 @Data
 public class BusiPerVO implements TreeResultModel<BusiPerVO>, Serializable {
 
@@ -17,17 +18,17 @@ public class BusiPerVO implements TreeResultModel<BusiPerVO>, Serializable {
     @Serial
     private static final long serialVersionUID = 8191619596741217494L;
 
-    @ApiModelProperty("资源ID")
     @JsonSerialize(using= ToStringSerializer.class)
+    @Schema(description = "ID")
     private Long id;
-    @ApiModelProperty("资源名称")
+    @Schema(description = "名称")
     private String name;
-    @ApiModelProperty("是否叶子结点")
+    @Schema(description = "是否叶子")
     private Boolean leaf;
-    @ApiModelProperty("权重")
+    @Schema(description = "权重")
     private Integer weight;
-    @ApiModelProperty("额外标识")
+    @Schema(description = "额外标识")
     private int extraFlag;
-    @ApiModelProperty("子节点")
+    @Schema(description = "子节点")
     private List<BusiPerVO> children;
 }

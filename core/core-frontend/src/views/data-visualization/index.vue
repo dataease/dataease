@@ -200,7 +200,7 @@ eventBus.on('handleNew', handleNew)
       </main>
       <!-- 右侧侧组件列表 -->
       <dv-sidebar
-        v-if="curComponent && curComponent.component !== 'UserView'"
+        v-if="curComponent && !['UserView', 'VQuery'].includes(curComponent.component)"
         :title="'属性'"
         :width="240"
         :side-name="'componentProp'"
@@ -220,7 +220,7 @@ eventBus.on('handleNew', handleNew)
         <CanvasAttr></CanvasAttr>
       </dv-sidebar>
       <editor
-        v-show="curComponent && curComponent.component === 'UserView'"
+        v-show="curComponent && ['UserView', 'VQuery'].includes(curComponent.component)"
         :view="canvasViewInfo[curComponent ? curComponent.id : 'default']"
         :dataset-tree="state.datasetTree"
       ></editor>

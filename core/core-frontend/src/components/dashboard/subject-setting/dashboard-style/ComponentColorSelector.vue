@@ -113,7 +113,10 @@
             @change="changeColorCase('alpha')"
           />
         </el-form-item>
-        <el-divider>{{ t('visualization.card_color_matching') }}</el-divider>
+        <el-divider></el-divider>
+        <el-row class="color-type-text">
+          {{ t('visualization.card_color_matching') }}
+        </el-row>
         <el-form-item :label="t('chart.quota_color')" class="form-item">
           <el-color-picker
             v-model="state.colorForm.quotaColor"
@@ -131,7 +134,10 @@
           />
         </el-form-item>
       </div>
-      <el-divider>{{ t('visualization.table_color_matching') }}</el-divider>
+      <el-divider></el-divider>
+      <el-row class="color-type-text">
+        {{ t('visualization.table_color_matching') }}
+      </el-row>
       <div>
         <el-form-item :label="t('chart.table_header_bg')" class="form-item">
           <el-color-picker
@@ -566,9 +572,6 @@ onMounted(() => {
 span {
   font-size: 12px;
 }
-.el-form-item {
-  margin-bottom: 6px;
-}
 
 .color-type ::v-deep .el-radio__input {
   display: none;
@@ -610,5 +613,18 @@ span {
 .ed-form-item {
   flex-direction: column;
   margin-bottom: 8px;
+}
+
+:deep(.ed-form-item__label) {
+  color: #646a73;
+}
+
+.color-type-text {
+  font-weight: 500;
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+.ed-divider--horizontal {
+  margin: 16px 0;
 }
 </style>

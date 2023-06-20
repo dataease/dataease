@@ -1,6 +1,6 @@
 import request from '@/config/axios'
 import type { Node } from '@/views/visualized/data/datasource/index.vue'
-export interface DatesetOrFolder {
+export interface DatasetOrFolder {
   name: string
   id?: number | string
   pid?: number | string

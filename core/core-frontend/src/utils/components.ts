@@ -1,6 +1,7 @@
 import RectShape from '@/custom-component/rect-shape/Component.vue'
 import RectShapeAttr from '@/custom-component/rect-shape/Attr.vue'
 import VText from '@/custom-component/v-text/Component.vue'
+import VQuery from '@/custom-component/v-query/Component.vue'
 import VTextAttr from '@/custom-component/v-text/Attr.vue'
 import Group from '@/custom-component/group/Component.vue'
 import GroupAttr from '@/custom-component/group/Attr.vue'
@@ -17,6 +18,7 @@ export const componentsMap = {
   RectShape: RectShape,
   RectShapeAttr: RectShapeAttr,
   VText: VText,
+  VQuery,
   VTextAttr: VTextAttr,
   Group: Group,
   GroupAttr: GroupAttr,
