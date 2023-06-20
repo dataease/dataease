@@ -1,6 +1,6 @@
 package io.dataease.auth.filter;
 
-import com.google.common.collect.Lists;
+import cn.hutool.core.collection.ListUtil;
 import io.dataease.auth.bo.TokenUserBO;
 import io.dataease.exception.DEException;
 import io.dataease.utils.*;
@@ -14,7 +14,17 @@ import java.util.List;
 
 
 public class TokenFilter implements Filter {
-    public static List<String> WHITE_PATH = Lists.newArrayList("/login/localLogin", "/apisix/check", "/dekey", "/index.html", "/model", "/demo.html", "/panel.html", "/");
+    public static List<String> WHITE_PATH = ListUtil.of(
+            "/login/localLogin",
+            "/apisix/check",
+            "/dekey",
+            "/index.html",
+            "/model",
+            "/demo.html",
+            "/swagger-resources",
+            "/doc.html",
+            "/panel.html",
+            "/");
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -33,6 +43,7 @@ public class TokenFilter implements Filter {
         if (WHITE_PATH.contains(requestURI)
                 || StringUtils.endsWithAny(requestURI, ".ico", "js", ".css", "svg", "png")
                 || StringUtils.startsWithAny(requestURI, "data:image")
+                || StringUtils.startsWithAny(requestURI, "/v3/")
                 || StringUtils.startsWithAny(requestURI, "/static-resource/")) {
             filterChain.doFilter(servletRequest, servletResponse);
             return;

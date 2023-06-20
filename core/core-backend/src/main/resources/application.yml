@@ -19,6 +19,13 @@ spring:
       port: 6379
       password: 123456
       database: 0
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+
 management:
   health:
     redis:
@@ -41,3 +48,8 @@ quartz:
 dataease:
   version: '@project.version@'
   origin-list: localhost:8081, 127.0.0.1:8081, https://de2.fit2cloud.com
+
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn

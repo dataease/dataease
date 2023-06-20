@@ -2,7 +2,6 @@ package io.dataease.api.permissions.user.vo;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serial;
@@ -14,8 +13,6 @@ public class UserItem implements Serializable {
     private static final long serialVersionUID = -3423336650739339624L;
 
     @JsonSerialize(using= ToStringSerializer.class)
-    @ApiModelProperty("ID")
     private Long id;
-    @ApiModelProperty("名称")
     private String name;
 }

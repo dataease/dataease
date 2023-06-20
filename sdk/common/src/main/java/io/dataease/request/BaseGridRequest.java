@@ -1,8 +1,6 @@
 package io.dataease.request;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
@@ -10,15 +8,12 @@ import org.springframework.util.ObjectUtils;
 import java.io.Serializable;
 import java.util.List;
 
-@ApiModel("查询条件")
 public class BaseGridRequest implements Serializable {
 
     private String keyword;
 
-    @ApiModelProperty("条件集合")
     private List<ConditionEntity> conditions;
 
-    @ApiModelProperty("排序描述")
     private List<String> orders;
 
     public String getKeyword() {
@@ -68,14 +63,14 @@ public class BaseGridRequest implements Serializable {
         return queryWrapper;
     }
 
-    public GridExample convertExample(){
+    public GridExample convertExample() {
         GridExample gridExample = new GridExample();
         if (!CollectionUtils.isEmpty(conditions)) {
             GridExample.Criteria criteria = gridExample.createCriteria();
             conditions.forEach(criteria::addCondition);
         }
 
-        if (!CollectionUtils.isEmpty(orders)){
+        if (!CollectionUtils.isEmpty(orders)) {
             String orderByClause = String.join(", ", orders);
             gridExample.setOrderByClause(orderByClause);
         }

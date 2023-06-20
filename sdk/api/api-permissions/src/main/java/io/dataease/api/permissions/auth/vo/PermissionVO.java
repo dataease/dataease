@@ -1,23 +1,24 @@
 package io.dataease.api.permissions.auth.vo;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
+@Schema(description = "权限结点")
 @Data
 public class PermissionVO implements Serializable {
     @Serial
     private static final long serialVersionUID = 7951267541124410580L;
 
-    @ApiModelProperty("默认角色")
+    @Schema(description = "是否根结点")
     private boolean root;
-    @ApiModelProperty("只读角色")
+    @Schema(description = "是否只读")
     private boolean readonly;
-    @ApiModelProperty("权限集合")
+    @Schema(description = "直接权限项")
     private List<PermissionItem> permissions;
-    @ApiModelProperty("角色权限")
+    @Schema(description = "关联权限项")
     private List<PermissionOrigin> permissionOrigins;
 }

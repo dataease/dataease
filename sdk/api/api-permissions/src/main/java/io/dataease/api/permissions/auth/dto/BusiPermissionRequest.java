@@ -1,20 +1,21 @@
 package io.dataease.api.permissions.auth.dto;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
 
+@Schema(description = "权限查询条件")
 @Data
 public class BusiPermissionRequest implements Serializable {
     @Serial
     private static final long serialVersionUID = -2424587989223319563L;
 
-    @ApiModelProperty("对象ID/资源ID")
+    @Schema(description = "对象ID")
     private Long id;
-    @ApiModelProperty("类型(0用户1角色)")
+    @Schema(description = "对象类型")
     private Integer type;
-    @ApiModelProperty("资源类型")
+    @Schema(description = "资源类型")
     private String flag;
 }

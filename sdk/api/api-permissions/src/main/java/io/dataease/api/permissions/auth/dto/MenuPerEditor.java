@@ -1,7 +1,6 @@
 package io.dataease.api.permissions.auth.dto;
 
 import io.dataease.api.permissions.auth.vo.PermissionItem;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serial;
@@ -13,6 +12,5 @@ public class MenuPerEditor extends MenuPermissionRequest implements Serializable
     @Serial
     private static final long serialVersionUID = 3410520935167596750L;
 
-    @ApiModelProperty("权限集合")
     private List<PermissionItem> permissions;
 }
