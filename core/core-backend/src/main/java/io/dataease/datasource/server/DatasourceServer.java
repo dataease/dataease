@@ -188,6 +188,17 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     @Override
+    public List<String> getSchema(DatasourceDTO dataSourceDTO) throws Exception {
+        dataSourceDTO.setConfiguration(new String(Base64.getDecoder().decode(dataSourceDTO.getConfiguration())));
+        CoreDatasource coreDatasource = new CoreDatasource();
+        BeanUtils.copyBean(coreDatasource, dataSourceDTO);
+        DatasourceRequest datasourceRequest = new DatasourceRequest();
+        datasourceRequest.setDatasource(coreDatasource);
+        return calciteProvider.getSchema(datasourceRequest);
+    }
+
+
+    @Override
     public void delete(Long datasourceId) throws Exception {
         CoreDatasource coreDatasource = datasourceMapper.selectById(datasourceId);
         if (coreDatasource.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name())) {

@@ -67,6 +67,8 @@ state.datasourceTree = dsType.map(ele => {
 
 export interface Configuration {
   dataBase: string
+  connectionType: string
+  schema: string
   extraParams: string
   username: string
   password: string

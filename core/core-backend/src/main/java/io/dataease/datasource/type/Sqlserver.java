@@ -9,10 +9,10 @@ import java.util.Arrays;
 import java.util.List;
 
 @Data
-@Component("sqlserver")
+@Component("sqlServer")
 public class Sqlserver extends DatasourceConfiguration {
-    private String type = DatasourceType.sqlserver.getType();
-    private String name = DatasourceType.sqlserver.getName();
+    private String type = DatasourceType.sqlServer.getType();
+    private String name = DatasourceType.sqlServer.getName();
     private String catalog = DatasourceCatalog.OLAP.getType();
     private String catalogDesc = DatasourceCatalog.OLAP.getDesc();
     private String driver = "com.microsoft.sqlserver.jdbc.SQLServerDriver";

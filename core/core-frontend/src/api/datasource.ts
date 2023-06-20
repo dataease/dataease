@@ -53,11 +53,14 @@ export const listDatasourceType = async (data = {}): Promise<IResponse> => {
 }
 export const getTableField = (id: number, table: string) =>
   request.get({ url: '/datasource/getTableField/' + id + '/' + table })
-
 export const listDatasourceTables = async (id): Promise<IResponse> => {
   return request.get({ url: '/datasource/getTables/' + id }).then(res => {
     return res
   })
+}
+
+export const getSchema = (data = {}) => {
+  return request.post({ url: '/datasource/getSchema', data })
 }
 
 export const validate = (data = {}) => {
