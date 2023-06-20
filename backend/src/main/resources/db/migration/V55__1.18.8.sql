@@ -36,3 +36,8 @@ RETURN concat(chartName,'-',chartNameCount);
 END
 ;;
 delimiter ;
+
+ALTER TABLE `panel_view_linkage`
+    ADD COLUMN `linkage_active` tinyint(1) NULL DEFAULT 0 COMMENT '是否启用关联' AFTER `update_people`;
+
+update panel_view_linkage set linkage_active=1;
