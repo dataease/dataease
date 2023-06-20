@@ -2,7 +2,7 @@
 import { ref, reactive, computed, watch, nextTick } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { saveDatasetTree, getDatasetTree } from '@/api/dataset'
-import type { DatesetOrFolder } from '@/api/dataset'
+import type { DatasetOrFolder } from '@/api/dataset'
 import nothingTree from '@/assets/img/nothing-tree.png'
 export interface Tree {
   name: string
@@ -204,7 +204,7 @@ const nodeClick = (data: Tree) => {
 const saveDataset = () => {
   dataset.value.validate(result => {
     if (result) {
-      const params: DatesetOrFolder = {
+      const params: DatasetOrFolder = {
         nodeType: nodeType.value as 'folder' | 'dataset',
         name: datasetForm.name
       }

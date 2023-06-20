@@ -257,7 +257,7 @@ const emits = defineEmits(['update:item', 'del'])
 
       <el-dropdown trigger="click" :hide-on-click="false">
         <el-input
-          :placeholder="t('auth.selct_filter_fields')"
+          :placeholder="t('auth.select_filter_fields')"
           v-model="item.name"
           size="small"
           @input="cancel"

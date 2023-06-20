@@ -147,7 +147,7 @@ export default {
     add_condition: '添加条件',
     add_relationship: '添加关系',
     filter_fields: '筛选字段',
-    selct_filter_fields: '请选择筛选字段',
+    select_filter_fields: '请选择筛选字段',
     enter_keywords: '请输关键字',
     screen_method: '筛选方式',
     select: '请选择',
