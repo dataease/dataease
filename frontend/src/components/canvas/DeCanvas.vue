@@ -223,6 +223,7 @@ export default {
       'curComponent',
       'componentGap',
       'isClickComponent',
+      'linkageSettingStatus',
       'pcMatrixCount',
       'pcTabMatrixCount',
       'dragComponentInfo',
@@ -282,7 +283,7 @@ export default {
     },
 
     deselectCurComponent(e) {
-      if (!this.isClickComponent) {
+      if (!this.isClickComponent && !this.linkageSettingStatus) {
         this.$store.commit('setCurComponent', { component: null, index: null })
       }
 
