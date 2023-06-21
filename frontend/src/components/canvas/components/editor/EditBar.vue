@@ -374,7 +374,6 @@ export default {
   watch: {
     linkageAreaShow: {
       handler(val) {
-        console.log("linkageAreaShow、、、、")
         // 1.当前正在进行联动设置（val） 2.当前视图联动未启用!this.linkageInfo.linkageActive
         // 3.当前视图没有设置过当前目标联动!this.linkageInfo.sourceViewId
         // 4.数据集相同 this.linkageInfo.tableId === this.targetLinkageInfo[this.curLinkageView.propValue.viewId].tableId)
