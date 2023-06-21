@@ -57,18 +57,17 @@ public class DefaultLicenseService {
         }
     }
 
-    private static int runtimeExecCommand(StringBuilder result, List<String> command) throws Exception {
+    private static void runtimeExecCommand(StringBuilder result, List<String> command) throws Exception {
         Process proc = Runtime.getRuntime().exec(command.stream().collect(Collectors.joining(" ")));
         BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream(), "utf-8"));
         String line = null;
         while ((line = reader.readLine()) != null) {
             result.append(line).append("\n");
         }
-        return proc.waitFor();
     }
 
 
-    private static int execCommand(StringBuilder result, List<String> command) throws Exception {
+    private static void execCommand(StringBuilder result, List<String> command) throws Exception {
         ProcessBuilder builder = new ProcessBuilder();
         builder.command(command);
         Process process = builder.start();
@@ -77,9 +76,7 @@ public class DefaultLicenseService {
         while ((line = bufferedReader.readLine()) != null) {
             result.append(line).append("\n");
         }
-        int exitCode = process.waitFor();
         command.clear();
-        return exitCode;
     }
 
     public F2CLicenseResponse validateLicense() {

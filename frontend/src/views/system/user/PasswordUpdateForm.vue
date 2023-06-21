@@ -27,6 +27,7 @@
 <script>
 import { updatePersonPwd } from '@/api/system/user'
 import dePwd from '@/components/deCustomCm/DePwd.vue'
+import { Base64 } from 'js-base64'
 export default {
   name: 'PasswordUpdateForm',
   components: { dePwd },
@@ -89,8 +90,8 @@ export default {
       this.$refs.createUserForm.validate((valid) => {
         if (valid) {
           const param = {
-            password: this.form.oldPwd,
-            newPassword: this.form.newPwd
+            password: Base64.encode(this.form.oldPwd),
+            newPassword: Base64.encode(this.form.newPwd)
           }
           updatePersonPwd(param).then((res) => {
             this.$success(this.$t('commons.save_success'))
