@@ -4,6 +4,17 @@ export const commonStyle = {
   opacity: 1
 }
 
+export const commonBackground = {
+  backgroundColorSelect: false,
+  backgroundColor: '#fff',
+  alpha: 100,
+  backgroundImageEnable: false,
+  backgroundType: 'innerImage',
+  innerImage: 'board/blue_1.svg',
+  innerImageColor: '#1094E5',
+  outerImage: null
+}
+
 export const commonAttr = {
   animations: [],
   events: {},
@@ -50,7 +61,7 @@ const list = [
       borderWidth: 1,
       backgroundColor: '',
       borderStyle: 'solid',
-      borderRadius: '',
+      borderRadius: 0,
       verticalAlign: 'middle'
     },
     matrixStyle: {}
@@ -102,10 +113,10 @@ const list = [
       width: 200,
       height: 200,
       borderColor: '#fff',
-      borderWidth: 1,
-      backgroundColor: '',
+      borderWidth: 0,
+      backgroundColor: '#fff',
       borderStyle: 'solid',
-      borderRadius: ''
+      borderRadius: 5
     },
     matrixStyle: {}
   },
@@ -172,6 +183,7 @@ const list = [
 for (let i = 0, len = list.length; i < len; i++) {
   const item = list[i]
   item.style = { ...commonStyle, ...item.style }
+  item['commonBackground'] = { ...commonBackground }
   list[i] = { ...commonAttr, ...item }
 }
 

@@ -41,6 +41,7 @@
         <el-color-picker
           v-model="state.filterForm.color"
           class="color-picker-style"
+          size="small"
           :predefine="state.predefineColors"
           @change="themeChange('color')"
         />
@@ -56,6 +57,7 @@
         <el-color-picker
           v-model="state.filterForm.brColor"
           class="color-picker-style"
+          size="small"
           :predefine="state.predefineColors"
           @change="themeChange('brColor')"
         />
@@ -69,6 +71,7 @@
         <el-color-picker
           v-model="state.filterForm.wordColor"
           class="color-picker-style"
+          size="small"
           :predefine="state.predefineColors"
           @change="themeChange('wordColor')"
         />
@@ -82,6 +85,7 @@
         <el-color-picker
           v-model="state.filterForm.innerBgColor"
           class="color-picker-style"
+          size="small"
           :predefine="state.predefineColors"
           @change="themeChange('innerBgColor')"
         />

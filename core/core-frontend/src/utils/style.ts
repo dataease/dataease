@@ -1,5 +1,6 @@
 import { sin, cos, toPercent } from '@/utils/translate'
 import { imgUrlTrans } from '@/utils/imgUtils'
+import { hexColorToRGBA } from '@/views/chart/components/js/util'
 
 export function getShapeStyle(style) {
   const result = {}
@@ -60,6 +61,51 @@ export function getSVGStyle(style, filter = []) {
   return result
 }
 
+export function getItemAllStyle(item, filter = []) {
+  const style = item.style
+  const commonBackground = item.commonBackground
+  const result = {}
+  Object.keys(style).forEach(key => {
+    if (!filter.includes(key)) {
+      if (key != 'rotate') {
+        if (style[key] !== '') {
+          result[key] = style[key]
+
+          if (needUnit.includes(key)) {
+            result[key] += 'px'
+          }
+        }
+      } else {
+        result['transform'] = key + '(' + style[key] + 'deg)'
+      }
+    }
+
+    if (commonBackground) {
+      //附加背景样式
+      let colorRGBA = ''
+      if (commonBackground.backgroundColorSelect) {
+        colorRGBA = hexColorToRGBA(commonBackground.backgroundColor, commonBackground.alpha)
+      }
+      if (commonBackground.backgroundImageEnable) {
+        if (
+          commonBackground.backgroundType === 'outerImage' &&
+          typeof commonBackground.outerImage === 'string'
+        ) {
+          result['background'] = `url(${imgUrlTrans(
+            commonBackground.outerImage
+          )}) no-repeat ${colorRGBA}`
+        } else {
+          result['background-color'] = colorRGBA
+        }
+      } else {
+        result['background-color'] = colorRGBA
+      }
+    }
+  })
+
+  return result
+}
+
 export function getStyle(style, filter = []) {
   const result = {}
   Object.keys(style).forEach(key => {
@@ -75,6 +121,29 @@ export function getStyle(style, filter = []) {
       } else {
         result['transform'] = key + '(' + style[key] + 'deg)'
       }
+    }
+    //附加背景样式
+    let colorRGBA = ''
+    if (style.backgroundColorSelect) {
+      colorRGBA = hexColorToRGBA(
+        this.element.commonBackground.color,
+        this.element.commonBackground.alpha
+      )
+    }
+    style['padding'] = (this.element.commonBackground.innerPadding || 0) + 'px'
+    if (this.element.commonBackground.enable) {
+      if (
+        this.element.commonBackground.backgroundType === 'outerImage' &&
+        typeof this.element.commonBackground.outerImage === 'string'
+      ) {
+        style['background'] = `url(${imgUrlTrans(
+          this.element.commonBackground.outerImage
+        )}) no-repeat ${colorRGBA}`
+      } else {
+        style['background-color'] = colorRGBA
+      }
+    } else {
+      style['background-color'] = colorRGBA
     }
   })
 

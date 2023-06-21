@@ -94,6 +94,7 @@
                   <span>
                     <el-color-picker
                       v-model="state.customColor"
+                      size="small"
                       class="color-picker-style"
                       :predefine="predefineColors"
                       @change="switchColorCase"
@@ -121,6 +122,7 @@
           <el-color-picker
             v-model="state.colorForm.quotaColor"
             class="color-picker-style"
+            size="small"
             :predefine="predefineColors"
             @change="changeColorCase('quotaColor')"
           />
@@ -129,6 +131,7 @@
           <el-color-picker
             v-model="state.colorForm.dimensionColor"
             class="color-picker-style"
+            size="small"
             :predefine="state.predefineColors"
             @change="changeColorCase('dimensionColor')"
           />
@@ -143,6 +146,7 @@
           <el-color-picker
             v-model="state.colorForm.tableHeaderBgColor"
             class="color-picker-style"
+            size="small"
             :predefine="state.predefineColors"
             @change="changeColorCase('tableHeaderBgColor')"
           />
@@ -151,6 +155,7 @@
           <el-color-picker
             v-model="state.colorForm.tableItemBgColor"
             class="color-picker-style"
+            size="small"
             :predefine="state.predefineColors"
             @change="changeColorCase('tableItemBgColor')"
           />
@@ -159,6 +164,7 @@
           <el-color-picker
             v-model="state.colorForm.tableHeaderFontColor"
             class="color-picker-style"
+            size="small"
             :predefine="state.predefineColors"
             @change="changeColorCase('tableHeaderFontColor')"
           />
@@ -167,6 +173,7 @@
           <el-color-picker
             v-model="state.colorForm.tableFontColor"
             class="color-picker-style"
+            size="small"
             :predefine="state.predefineColors"
             @change="changeColorCase('tableFontColor')"
           />
@@ -175,6 +182,7 @@
           <el-color-picker
             v-model="state.colorForm.tableBorderColor"
             class="color-picker-style"
+            size="small"
             :predefine="state.predefineColors"
             @change="changeColorCase('tableBorderColor')"
           />
@@ -183,6 +191,7 @@
           <el-color-picker
             v-model="state.colorForm.tableScrollBarColor"
             class="color-picker-style"
+            size="small"
             :predefine="state.predefineColors"
             color-format="rgb"
             show-alpha
