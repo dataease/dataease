@@ -72,18 +72,17 @@ public class PanelViewLinkageService {
             String targetViewId = entry.getKey();
             PanelViewLinkageDTO linkageDTO = entry.getValue();
             List<PanelViewLinkageField> linkageFields = linkageDTO.getLinkageFields();
-
-            if (CollectionUtils.isNotEmpty(linkageFields) && linkageDTO.isLinkageActive()) {
-                String linkageId = UUID.randomUUID().toString();
-                PanelViewLinkage linkage = new PanelViewLinkage();
-                linkage.setId(linkageId);
-                linkage.setPanelId(panelId);
-                linkage.setSourceViewId(sourceViewId);
-                linkage.setTargetViewId(targetViewId);
-                linkage.setUpdatePeople(AuthUtils.getUser().getUsername());
-                linkage.setUpdateTime(updateTime);
-                panelViewLinkageMapper.insert(linkage);
-
+            String linkageId = UUID.randomUUID().toString();
+            PanelViewLinkage linkage = new PanelViewLinkage();
+            linkage.setId(linkageId);
+            linkage.setPanelId(panelId);
+            linkage.setSourceViewId(sourceViewId);
+            linkage.setTargetViewId(targetViewId);
+            linkage.setUpdatePeople(AuthUtils.getUser().getUsername());
+            linkage.setUpdateTime(updateTime);
+            linkage.setLinkageActive(linkageDTO.getLinkageActive());
+            panelViewLinkageMapper.insert(linkage);
+            if (CollectionUtils.isNotEmpty(linkageFields) && linkageDTO.getLinkageActive()) {
                 linkageFields.forEach(linkageField -> {
                     linkageField.setId(UUID.randomUUID().toString());
                     linkageField.setLinkageId(linkageId);

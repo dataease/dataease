@@ -2711,6 +2711,7 @@ export default {
     preview: 'Preview',
     emial_preview: 'Report preview',
     chart_data_range: 'View data range',
+    panel_format: 'Panel format',
     simple_repeat: 'Simple repeat',
     once_a_day: 'Once a day',
     once_a_week: 'Once a week',

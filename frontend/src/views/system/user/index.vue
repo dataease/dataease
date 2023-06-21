@@ -334,6 +334,7 @@ import DeLayoutContent from '@/components/business/DeLayoutContent'
 import { addOrder, formatOrders } from '@/utils/index'
 import { pluginLoaded, defaultPwd } from '@/api/user'
 import bus from '@/utils/bus'
+import { Base64 } from 'js-base64'
 /* import { ldapStatus, pluginLoaded } from '@/api/user' */
 import {
   userLists,
@@ -510,7 +511,7 @@ export default {
         checkedCount > 0 && checkedCount < this.columnNames.length
     },
     resetPwd(userId) {
-      editPassword({ userId, newPassword: this.defaultPWD })
+      editPassword({ userId, newPassword: Base64.encode(this.defaultPWD) })
         .then((res) => {
           this.$success(this.$t('commons.modify_success'))
           this.initSearch()

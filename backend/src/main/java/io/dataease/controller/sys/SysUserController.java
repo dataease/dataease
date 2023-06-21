@@ -154,7 +154,6 @@ public class SysUserController {
     @ApiOperation("更新当前用户密码")
     @PostMapping("/updatePwd")
     public void updatePwd(@RequestBody SysUserPwdRequest request) {
-
         sysUserService.updatePwd(request);
     }
 

@@ -192,12 +192,14 @@ export function initPanelData(panelId, useCache = false, callback) {
         watermarkOpen: response.data.watermarkOpen,
         watermarkInfo: watermarkInfo
       })
+      const targetPanelId = response.data.panelType==='system'?response.data.source:panelId
+      if(response.data.type==='default')
       // 刷新联动信息
-      getPanelAllLinkageInfo(panelId).then(rsp => {
+      getPanelAllLinkageInfo(targetPanelId).then(rsp => {
         store.commit('setNowPanelTrackInfo', rsp.data)
       })
       // 刷新跳转信息
-      queryPanelJumpInfo(panelId).then(rsp => {
+      queryPanelJumpInfo(targetPanelId).then(rsp => {
         store.commit('setNowPanelJumpInfo', rsp.data)
       })
     } else {

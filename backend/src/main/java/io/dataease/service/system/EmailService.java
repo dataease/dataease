@@ -83,8 +83,35 @@ public class EmailService {
     }
 
 
+    public void sendPdfWithFiles(String to, String title, String content, byte[] bytes, List<File> files) {
+        if (ArrayUtil.isEmpty(bytes)) {
+            send(to, title, content);
+            return;
+        }
+        if (StringUtils.isBlank(to))
+            return;
+        MailInfo mailInfo = proxy().mailInfo();
+        checkMailInfo(mailInfo);
+        JavaMailSenderImpl driver = driver(mailInfo);
 
-
+        MimeMultipart multipart = new MimeMultipart();
+        MimeMessage mimeMessage = driver.createMimeMessage();
+        try {
+            multipart = addContent(multipart, content);
+            multipart = addPdf(multipart, bytes);
+            if (CollectionUtils.isNotEmpty(files)) {
+                multipart = addFiles(multipart, files);
+            }
+            mimeMessage.setSubject(title);
+            mimeMessage.setFrom(driver.getUsername());
+            mimeMessage.setRecipients(Message.RecipientType.TO, to);
+            mimeMessage.setContent(multipart);
+            driver.send(mimeMessage);
+        } catch (Exception e) {
+            LogUtil.error(e.getMessage(), e);
+            DEException.throwException(e);
+        }
+    }
 
     public void sendWithImageAndFiles(String to, String title, String content, byte[] bytes, List<File> files) {
         if (StringUtils.isBlank(to))
@@ -116,7 +143,14 @@ public class EmailService {
         }
     }
 
-    private MimeMultipart addImage(MimeMultipart multipart, byte[] bytes, String content) throws Exception{
+    private MimeMultipart addContent(MimeMultipart multipart, String content) throws Exception {
+        MimeBodyPart text = new MimeBodyPart();
+        text.setContent(content, "text/html; charset=gb2312");
+        multipart.addBodyPart(text);
+        return multipart;
+    }
+
+    private MimeMultipart addImage(MimeMultipart multipart, byte[] bytes, String content) throws Exception {
         MimeBodyPart image = new MimeBodyPart();
         DataHandler png = new DataHandler(new ByteArrayDataSource(bytes, "image/png"));
         String uuid = UUID.randomUUID().toString();
@@ -131,7 +165,17 @@ public class EmailService {
         return multipart;
     }
 
-    private MimeMultipart addFiles(MimeMultipart multipart, List<File> files) throws Exception{
+    private MimeMultipart addPdf(MimeMultipart multipart, byte[] bytes) throws Exception {
+        MimeBodyPart attach = new MimeBodyPart();
+        ByteArrayDataSource fileDataSource = new ByteArrayDataSource(bytes, "application/pdf");
+        attach.setDataHandler(new DataHandler(fileDataSource));
+        attach.setFileName(MimeUtility.encodeText("panel.pdf", "gb2312", null));
+        multipart.addBodyPart(attach);
+        multipart.setSubType("related");
+        return multipart;
+    }
+
+    private MimeMultipart addFiles(MimeMultipart multipart, List<File> files) throws Exception {
 
         for (int i = 0; i < files.size(); i++) {
             File file = files.get(i);

@@ -383,6 +383,8 @@ public class SysUserService {
      */
     @CacheEvict(value = AuthConstants.USER_CACHE_NAME, key = "'user' + #request.userId")
     public int updatePwd(SysUserPwdRequest request) {
+        request.setPassword(new String(java.util.Base64.getDecoder().decode(request.getPassword())));
+        request.setNewPassword(new String(java.util.Base64.getDecoder().decode(request.getNewPassword())));
         CurrentUserDto user = AuthUtils.getUser();
 
         if (ObjectUtils.isEmpty(user)) {
@@ -407,7 +409,7 @@ public class SysUserService {
     public int adminUpdatePwd(SysUserPwdRequest request) {
         SysUser sysUser = new SysUser();
         sysUser.setUserId(request.getUserId());
-        sysUser.setPassword(CodingUtil.md5(request.getNewPassword()));
+        sysUser.setPassword(CodingUtil.md5(new String(java.util.Base64.getDecoder().decode(request.getNewPassword()))));
         return sysUserMapper.updateByPrimaryKeySelective(sysUser);
     }
 
