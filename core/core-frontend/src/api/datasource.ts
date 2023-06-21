@@ -1,6 +1,6 @@
 import request from '@/config/axios'
 import type { Node } from '@/views/visualized/data/datasource/index.vue'
-export interface DatesetOrFolder {
+export interface DatasetOrFolder {
   name: string
   id?: number | string
   pid?: number | string
@@ -53,11 +53,14 @@ export const listDatasourceType = async (data = {}): Promise<IResponse> => {
 }
 export const getTableField = (id: number, table: string) =>
   request.get({ url: '/datasource/getTableField/' + id + '/' + table })
-
 export const listDatasourceTables = async (id): Promise<IResponse> => {
   return request.get({ url: '/datasource/getTables/' + id }).then(res => {
     return res
   })
+}
+
+export const getSchema = (data = {}) => {
+  return request.post({ url: '/datasource/getSchema', data })
 }
 
 export const validate = (data = {}) => {

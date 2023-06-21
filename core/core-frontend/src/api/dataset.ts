@@ -1,5 +1,5 @@
 import request from '@/config/axios'
-export interface DatesetOrFolder {
+export interface DatasetOrFolder {
   name: string
   id?: number | string
   pid?: number | string
@@ -34,7 +34,7 @@ export interface Table {
   unableCheck?: boolean
 }
 // 获取权限路
-export const saveDatasetTree = async (data: DatesetOrFolder): Promise<IResponse> => {
+export const saveDatasetTree = async (data: DatasetOrFolder): Promise<IResponse> => {
   return request.post({ url: '/datasetTree/save', data }).then(res => {
     return res?.data
   })

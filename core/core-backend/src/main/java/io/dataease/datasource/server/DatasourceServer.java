@@ -29,8 +29,6 @@ import io.dataease.utils.BeanUtils;
 import io.dataease.utils.CommonBeanFactory;
 import io.dataease.utils.IDUtils;
 import io.dataease.utils.JsonUtil;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -188,6 +186,17 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     @Override
+    public List<String> getSchema(DatasourceDTO dataSourceDTO) throws Exception {
+        dataSourceDTO.setConfiguration(new String(Base64.getDecoder().decode(dataSourceDTO.getConfiguration())));
+        CoreDatasource coreDatasource = new CoreDatasource();
+        BeanUtils.copyBean(coreDatasource, dataSourceDTO);
+        DatasourceRequest datasourceRequest = new DatasourceRequest();
+        datasourceRequest.setDatasource(coreDatasource);
+        return calciteProvider.getSchema(datasourceRequest);
+    }
+
+
+    @Override
     public void delete(Long datasourceId) throws Exception {
         CoreDatasource coreDatasource = datasourceMapper.selectById(datasourceId);
         if (coreDatasource.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name())) {
@@ -338,11 +347,7 @@ public class DatasourceServer implements DatasourceApi {
 
     ;
 
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "file", value = "文件", required = true, dataType = "MultipartFile"),
-            @ApiImplicitParam(name = "tableId", value = "数据表ID", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "editType", value = "编辑类型", required = true, dataType = "Integer")
-    })
+
     public ExcelFileData excelUpload(@RequestParam("file") MultipartFile file, @RequestParam("id") long datasourceId) throws DEException {
         ExcelUtils excelUtils = new ExcelUtils();
         return excelUtils.excelSaveAndParse(file, datasourceId);

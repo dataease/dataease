@@ -18,7 +18,7 @@ public class DatasourceConfiguration extends Configuration{
         Excel("Excel", "Excel"),
         mysql("mysql", "Mysql"),
         oracle("oracle", "ORACLE"),
-        sqlserver("sqlserver", "Sqlserver");
+        sqlServer("sqlServer", "Sqlserver");
 
         private String type;
         private String name;

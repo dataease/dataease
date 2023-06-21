@@ -24,6 +24,7 @@ public class Configuration {
     private String schema;
     private String customDriver = "default";
     private String authMethod = "passwd";
+    private String connectionType;
     private String charset;
     private String targetCharset;
     private String driver;

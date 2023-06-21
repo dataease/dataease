@@ -122,6 +122,10 @@ const getFields = id => {
   }
 }
 
+const startToMove = (e, item) => {
+  e.dataTransfer.setData('dimension', JSON.stringify(item))
+}
+
 const fieldFilter = val => {
   if (val && val !== '') {
     state.dimensionData = JSON.parse(
@@ -509,7 +513,7 @@ const editDs = () => {
 <template>
   <div class="chart-edit">
     <el-row v-loading="loading" class="de-chart-editor">
-      <div style="position: relative">
+      <div v-if="false" style="position: relative">
         <el-icon
           :title="view.title"
           class="custom-icon"
@@ -881,7 +885,12 @@ const editDs = () => {
                 @add="moveToDimension"
               >
                 <template #item="{ element }">
-                  <span class="item-dimension father" :title="element.name">
+                  <span
+                    @dragstart="$event => startToMove($event, element)"
+                    :draggable="true"
+                    class="item-dimension father"
+                    :title="element.name"
+                  >
                     <el-icon>
                       <Icon
                         :className="`field-icon-${fieldType(element.deType)}`"

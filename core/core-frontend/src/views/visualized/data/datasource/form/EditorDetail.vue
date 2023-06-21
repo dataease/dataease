@@ -7,7 +7,7 @@ import { cloneDeep } from 'lodash-es'
 import { useRouter } from 'vue-router'
 import ApiHttpRequestDraw from './ApiHttpRequestDraw.vue'
 import { Configuration, ApiConfiguration, SyncSetting } from './index.vue'
-import { validateById, save, validate } from '@/api/datasource'
+import { validateById, save, validate, getSchema } from '@/api/datasource'
 import { Base64 } from 'js-base64'
 import { ElForm, ElMessage } from 'element-plus-secondary'
 import Cron from '@/components/cron/src/Cron.vue'
@@ -56,6 +56,11 @@ const dsFormDisabled = ref(false)
 const state = reactive({
   itemRef: []
 })
+
+const schemas = ref([])
+
+const configurationSchema = ref(false)
+
 const dsForm = ref<FormInstance>()
 
 const cronEdit = ref(true)
@@ -348,6 +353,18 @@ const saveDs = () => {
     dsFormDisabled.value = true
   })
 }
+const getDsSchema = () => {
+  const request = JSON.parse(JSON.stringify(form.value))
+  request.configuration = Base64.encode(JSON.stringify(request.configuration))
+  getSchema(request).then(res => {
+    schemas.value = res.data
+    ElMessage.success(t('commons.success'))
+  })
+}
+
+const validatorSchema = () => {
+  configurationSchema.value = !form.value.configuration.schema
+}
 
 const validateDS = () => {
   const request = JSON.parse(JSON.stringify(form.value))
@@ -362,7 +379,7 @@ const validateDS = () => {
 
   if (editDs.value && dsFormDisabled.value) {
     validateById(form.value.id).then(() => {
-      ElMessage.success(t('datasource.validate_succCorness'))
+      ElMessage.success(t('datasource.validate_success'))
     })
   } else {
     validate(request).then(() => {
@@ -587,6 +604,42 @@ defineExpose({
           </el-form-item>
           <el-form-item :label="t('datasource.port')" prop="configuration.port">
             <el-input v-model="form.configuration.port" autocomplete="off" type="number" min="0" />
+          </el-form-item>
+          <el-form-item
+            v-if="form.type == 'oracle'"
+            :label="$t('datasource.connection_mode')"
+            prop="configuration.connectionType"
+          >
+            <el-radio v-model="form.configuration.connectionType" label="sid"
+              >{{ $t('datasource.oracle_sid') }}
+            </el-radio>
+            <el-radio v-model="form.configuration.connectionType" label="serviceName">
+              {{ $t('datasource.oracle_service_name') }}
+            </el-radio>
+          </el-form-item>
+          <el-form-item
+            v-if="['oracle', 'sqlServer', 'pg', 'redshift', 'db2'].includes(form.type)"
+            class="schema-label"
+          >
+            <template v-slot:label>
+              <span class="name">{{ $t('datasource.schema') }}<i class="required" /></span>
+              <el-button type="text" icon="el-icon-plus" size="small" @click="getDsSchema()"
+                >{{ $t('datasource.get_schema') }}
+              </el-button>
+            </template>
+            <el-select
+              v-model="form.configuration.schema"
+              filterable
+              :placeholder="$t('fu.search_bar.please_select')"
+              class="de-select"
+              @change="validatorSchema"
+              @blur="validatorSchema"
+            >
+              <el-option v-for="item in schemas" :key="item" :label="item" :value="item" />
+            </el-select>
+            <div v-if="configurationSchema" class="el-form-item__error">
+              {{ $t('datasource.please_choose_schema') }}
+            </div>
           </el-form-item>
         </template>
         <!--        API update setting -->
@@ -845,6 +898,23 @@ defineExpose({
     text-align: right;
     width: 100%;
     margin-top: 16px;
+  }
+}
+
+.schema-label {
+  ::v-deep.el-form-item__label {
+    display: flex;
+    justify-content: space-between;
+    &::after {
+      display: none;
+    }
+    .name {
+      .required::after {
+        content: '*';
+        color: #f54a45;
+        margin-left: 2px;
+      }
+    }
   }
 }
 </style>

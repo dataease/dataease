@@ -42,6 +42,9 @@ public interface DatasourceApi {
     @PostMapping("/validate")
     DatasourceDTO validate(@RequestBody DatasourceDTO dataSourceDTO) throws DEException;
 
+    @PostMapping("/getSchema")
+    List<String> getSchema(@RequestBody DatasourceDTO dataSourceDTO) throws Exception;
+
     @DePermit({"m:read", "#p0+':manage'"})
     @GetMapping("/validate/{datasourceId}")
     DatasourceDTO validate(@PathVariable("datasourceId") Long datasourceId) throws DEException;

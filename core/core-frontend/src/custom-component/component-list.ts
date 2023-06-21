@@ -99,6 +99,60 @@ const list = [
     matrixStyle: {}
   },
   {
+    component: 'VQuery',
+    name: '查询',
+    label: '查询',
+    propValue: '拖动维度指标',
+    icon: 'other_text',
+    innerType: 'VQuery',
+    x: 1,
+    y: 1,
+    sizeX: 20,
+    sizeY: 20,
+    request: {
+      method: 'GET',
+      data: [],
+      url: '',
+      series: false, // 是否定时发送请求
+      time: 1000, // 定时更新时间
+      paramType: '', // string object array
+      requestCount: 0 // 请求次数限制，0 为无限
+    },
+    style: {
+      width: 200,
+      height: 100,
+      fontSize: 14,
+      fontWeight: 400,
+      lineHeight: 1,
+      letterSpacing: 0,
+      textAlign: 'center',
+      color: ''
+    },
+    matrixStyle: {}
+  },
+  {
+    component: 'UserView',
+    name: '视图',
+    label: '视图',
+    propValue: '',
+    icon: 'bar',
+    innerType: 'bar',
+    x: 1,
+    y: 1,
+    sizeX: 20,
+    sizeY: 20,
+    style: {
+      width: 200,
+      height: 200,
+      borderColor: '#fff',
+      borderWidth: 1,
+      backgroundColor: '',
+      borderStyle: 'solid',
+      borderRadius: ''
+    },
+    matrixStyle: {}
+  },
+  {
     component: 'UserView',
     name: '视图',
     label: '视图',
