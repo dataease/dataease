@@ -1,10 +1,11 @@
 package io.dataease.commons.license;
 
 import com.google.gson.Gson;
-import io.dataease.plugins.common.base.domain.License;
 import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.LogUtil;
+import io.dataease.plugins.common.base.domain.License;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -12,6 +13,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class DefaultLicenseService {
@@ -22,13 +24,21 @@ public class DefaultLicenseService {
     private static final String validatorUtil = "/usr/bin/validator";
     private static final String product = "DataEase";
 
+    @Value("${dataease.use_process_lic:false}")
+    private boolean useProcessLic;
+
     public F2CLicenseResponse validateLicense(String product, String licenseKey) {
         List<String> command = new ArrayList<String>();
         StringBuilder result = new StringBuilder();
         command.add(validatorUtil);
         command.add(licenseKey);
         try {
-            execCommand(result, command);
+            if (useProcessLic) {
+                execCommand(result, command);
+            } else {
+                runtimeExecCommand(result, command);
+            }
+
             LogUtil.info("read lic content is : " + result.toString());
             F2CLicenseResponse f2CLicenseResponse = new Gson().fromJson(result.toString(), F2CLicenseResponse.class);
             if (f2CLicenseResponse.getStatus() != F2CLicenseResponse.Status.valid) {
@@ -45,6 +55,16 @@ public class DefaultLicenseService {
             LogUtil.error(e.getMessage());
             return F2CLicenseResponse.noRecord();
         }
+    }
+
+    private static int runtimeExecCommand(StringBuilder result, List<String> command) throws Exception {
+        Process proc = Runtime.getRuntime().exec(command.stream().collect(Collectors.joining(" ")));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream(), "utf-8"));
+        String line = null;
+        while ((line = reader.readLine()) != null) {
+            result.append(line).append("\n");
+        }
+        return proc.waitFor();
     }
 
 
