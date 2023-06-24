@@ -513,7 +513,7 @@ const editDs = () => {
 <template>
   <div class="chart-edit">
     <el-row v-loading="loading" class="de-chart-editor">
-      <div v-if="false" style="position: relative">
+      <div style="position: relative">
         <el-icon
           :title="view.title"
           class="custom-icon"

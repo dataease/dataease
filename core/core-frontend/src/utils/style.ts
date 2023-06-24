@@ -122,31 +122,7 @@ export function getStyle(style, filter = []) {
         result['transform'] = key + '(' + style[key] + 'deg)'
       }
     }
-    //附加背景样式
-    let colorRGBA = ''
-    if (style.backgroundColorSelect) {
-      colorRGBA = hexColorToRGBA(
-        this.element.commonBackground.color,
-        this.element.commonBackground.alpha
-      )
-    }
-    style['padding'] = (this.element.commonBackground.innerPadding || 0) + 'px'
-    if (this.element.commonBackground.enable) {
-      if (
-        this.element.commonBackground.backgroundType === 'outerImage' &&
-        typeof this.element.commonBackground.outerImage === 'string'
-      ) {
-        style['background'] = `url(${imgUrlTrans(
-          this.element.commonBackground.outerImage
-        )}) no-repeat ${colorRGBA}`
-      } else {
-        style['background-color'] = colorRGBA
-      }
-    } else {
-      style['background-color'] = colorRGBA
-    }
   })
-
   return result
 }
 

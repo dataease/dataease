@@ -140,7 +140,7 @@ const list = [
     x: 1,
     y: 1,
     sizeX: 20,
-    sizeY: 20,
+    sizeY: 10,
     style: {
       width: 200,
       height: 200,
