@@ -37,7 +37,7 @@ public interface DatasourceApi {
     DatasourceDTO update(@RequestBody DatasourceDTO dataSourceDTO) throws Exception;
 
     @GetMapping("/types")
-    Collection<DatasourceConfiguration> datasourceTypes() throws DEException;
+    List<DatasourceConfiguration.DatasourceType> datasourceTypes() throws DEException;
 
     @PostMapping("/validate")
     DatasourceDTO validate(@RequestBody DatasourceDTO dataSourceDTO) throws DEException;

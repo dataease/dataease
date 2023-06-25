@@ -4,6 +4,9 @@ ARG IMAGE_TAG
 
 RUN mkdir -p /opt/apps/config
 
+RUN mkdir -p /opt/dataease/drivers/
+ADD drivers/* /opt/dataease/drivers/
+
 WORKDIR /opt/apps
 
 ADD core/core-backend/target/core-backend-$IMAGE_TAG.jar /opt/apps/app.jar

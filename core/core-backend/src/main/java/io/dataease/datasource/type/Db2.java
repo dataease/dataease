@@ -5,26 +5,24 @@ import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.List;
-
 @Data
-@Component("oracle")
-public class Oracle extends DatasourceConfiguration {
-    private String driver = "oracle.jdbc.driver.OracleDriver";
+@Component("db2")
+public class Db2 extends DatasourceConfiguration {
+    private String driver = "com.ibm.db2.jcc.DB2Driver";
     private String extraParams = "";
 
     public String getJdbc() {
-        if(getConnectionType().equalsIgnoreCase("serviceName")){
-            return "jdbc:oracle:thin:@HOSTNAME:PORT/DATABASE"
+        if(StringUtils.isEmpty(extraParams.trim())){
+            return "jdbc:db2://HOSTNAME:PORT/DATABASE"
                     .replace("HOSTNAME", getHost().trim())
                     .replace("PORT", getPort().toString().trim())
                     .replace("DATABASE", getDataBase().trim());
         }else {
-            return "jdbc:oracle:thin:@HOSTNAME:PORT:DATABASE"
+            return "jdbc:hive2://HOSTNAME:PORT/DATABASE?EXTRA_PARAMS"
                     .replace("HOSTNAME", getHost().trim())
                     .replace("PORT", getPort().toString().trim())
-                    .replace("DATABASE", getDataBase().trim());
+                    .replace("DATABASE", getDataBase().trim())
+                    .replace("EXTRA_PARAMS", getExtraParams().trim());
         }
     }
 }

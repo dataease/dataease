@@ -14,18 +14,28 @@ public class DatasourceConfiguration extends Configuration{
     }
 
     static public enum DatasourceType {
-        API("API", "API"),
-        Excel("Excel", "Excel"),
-        mysql("mysql", "Mysql"),
-        oracle("oracle", "ORACLE"),
-        sqlServer("sqlServer", "Sqlserver");
+        API("API", "API", "API"),
+        Excel("Excel", "Excel", "LOCALFILE"),
+        mysql("mysql", "Mysql", "OLTP"),
+        mariadb("mariadb", "Mariadb", "OLTP"),
+        StarRocks("StarRocks", "StarRocks", "OLAP"),
+        TiDB("TiDB", "TiDB", "OLTP"),
+        oracle("oracle", "ORACLE", "OLTP"),
+        pg("pg", "PostgreSQL", "OLTP"),
+        redshift("redshift", "AWS Redshift", "OLTP"),
+        db2("db2", "Db2", "OLTP"),
+        ck("ck", "Clickhouse", "OLAP"),
+        sqlServer("sqlServer", "Sqlserver", "DL");
 
         private String type;
         private String name;
 
-        DatasourceType(String type, String name) {
+        private String catalog;
+
+        DatasourceType(String type, String name, String catalog) {
             this.type = type;
             this.name = name;
+            this.catalog = catalog;
         }
 
         public String getType() {
@@ -35,29 +45,9 @@ public class DatasourceConfiguration extends Configuration{
         public String getName() {
             return name;
         }
-    }
 
-    static public enum DatasourceCatalog {
-        OLAP("OLAP", "OLAP"),
-        OLTP("OLTP", "OLTP"),
-        DATALAKE("DL", "DL"),
-        LOCALFILE("LOCALFILE", "LOCALFILE"),
-        API("API", "API");
-
-        private String type;
-        private String desc;
-
-        DatasourceCatalog(String type, String desc) {
-            this.type = type;
-            this.desc = desc;
-        }
-
-        public String getType() {
-            return type;
-        }
-
-        public String getDesc() {
-            return desc;
+        public String getCatalog() {
+            return catalog;
         }
     }
 }

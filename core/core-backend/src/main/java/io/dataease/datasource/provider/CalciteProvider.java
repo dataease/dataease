@@ -1,6 +1,5 @@
 package io.dataease.datasource.provider;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.ds.vo.DatasourceConfiguration;
 import io.dataease.api.ds.vo.DatasourceConfiguration.DatasourceType;
@@ -11,9 +10,7 @@ import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.entity.CoreDriver;
 import io.dataease.datasource.dao.auto.mapper.CoreDriverMapper;
 import io.dataease.datasource.request.DatasourceRequest;
-import io.dataease.datasource.type.Mysql;
-import io.dataease.datasource.type.Oracle;
-import io.dataease.datasource.type.Sqlserver;
+import io.dataease.datasource.type.*;
 import io.dataease.engine.utils.FunctionUtils;
 import io.dataease.exception.DEException;
 import io.dataease.i18n.Translator;
@@ -47,8 +44,8 @@ public class CalciteProvider {
 
     protected ExtendedJdbcClassLoader extendedJdbcClassLoader;
     private Map<Long, ExtendedJdbcClassLoader> customJdbcClassLoaders = new HashMap<>();
-    private final String FILE_PATH = "/opt/dataease2.0/drivers";
-    private final String CUSTOM_PATH = "/opt/dataease2.0/custom-drivers/";
+    private final String FILE_PATH = "/opt/dataease/drivers";
+    private final String CUSTOM_PATH = "/opt/dataease/custom-drivers/";
     private static Map<String, Connection> connectionMap = new HashMap<>();
     private static String split = "DE";
 
@@ -57,25 +54,25 @@ public class CalciteProvider {
         String jarPath = FILE_PATH;
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         extendedJdbcClassLoader = new ExtendedJdbcClassLoader(new URL[]{new File(jarPath).toURI().toURL()}, classLoader);
-//        File file = new File(jarPath);
-//        File[] array = file.listFiles();
-//        Optional.ofNullable(array).ifPresent(files -> {
-//            for (File tmp : array) {
-//                if (tmp.getName().endsWith(".jar")) {
-//                    try {
-//                        extendedJdbcClassLoader.addFile(tmp);
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//            }
-//        });
+        File file = new File(jarPath);
+        File[] array = file.listFiles();
+        Optional.ofNullable(array).ifPresent(files -> {
+            for (File tmp : array) {
+                if (tmp.getName().endsWith(".jar")) {
+                    try {
+                        extendedJdbcClassLoader.addFile(tmp);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
     }
 
 
     public List<String> getSchema(DatasourceRequest datasourceRequest) throws Exception {
         List<String> schemas = new ArrayList<>();
-        String queryStr = getSchemaSql(datasourceRequest.getDatasource().getType());
+        String queryStr = getSchemaSql(datasourceRequest.getDatasource());
         try (Connection con = getConnection(datasourceRequest.getDatasource()); Statement statement = getStatement(con, 30); ResultSet resultSet = statement.executeQuery(queryStr)) {
             while (resultSet.next()) {
                 schemas.add(resultSet.getString(1));
@@ -114,11 +111,22 @@ public class CalciteProvider {
         DatasourceType datasourceType = DatasourceType.valueOf(ds.getType());
         switch (datasourceType) {
             case mysql:
+            case TiDB:
+            case StarRocks:
+            case mariadb:
                 return ((DatasourceConfiguration) CommonBeanFactory.getBean("mysql")).getDriver();
             case sqlServer:
                 return ((DatasourceConfiguration) CommonBeanFactory.getBean("sqlServer")).getDriver();
             case oracle:
                 return ((DatasourceConfiguration) CommonBeanFactory.getBean("oracle")).getDriver();
+            case db2:
+                return ((DatasourceConfiguration) CommonBeanFactory.getBean("db2")).getDriver();
+            case ck:
+                return ((DatasourceConfiguration) CommonBeanFactory.getBean("ck")).getDriver();
+            case pg:
+                return ((DatasourceConfiguration) CommonBeanFactory.getBean("pg")).getDriver();
+            case redshift:
+                return ((DatasourceConfiguration) CommonBeanFactory.getBean("redshift")).getDriver();
             default:
                 return ((DatasourceConfiguration) CommonBeanFactory.getBean("mysql")).getDriver();
         }
@@ -211,7 +219,6 @@ public class CalciteProvider {
     private SchemaPlus buildSchema(DatasourceRequest datasourceRequest, CalciteConnection calciteConnection) throws Exception {
         SchemaPlus rootSchema = calciteConnection.getRootSchema();
         Map<Long, DatasourceSchemaDTO> dsList = datasourceRequest.getDsList();
-
         for (Map.Entry<Long, DatasourceSchemaDTO> next : dsList.entrySet()) {
             DatasourceSchemaDTO ds = next.getValue();
             // build schema
@@ -221,6 +228,9 @@ public class CalciteProvider {
             DatasourceType datasourceType = DatasourceType.valueOf(ds.getType());
             switch (datasourceType) {
                 case mysql:
+                case mariadb:
+                case TiDB:
+                case StarRocks:
                     configuration = JsonUtil.parseObject(ds.getConfiguration(), Mysql.class);
                     dataSource.setUrl(configuration.getJdbc());
                     dataSource.setUsername(configuration.getUsername());
@@ -240,6 +250,42 @@ public class CalciteProvider {
                     break;
                 case oracle:
                     configuration = JsonUtil.parseObject(ds.getConfiguration(), Oracle.class);
+                    dataSource.setUrl(configuration.getJdbc());
+                    dataSource.setUsername(configuration.getUsername());
+                    dataSource.setPassword(configuration.getPassword());
+                    dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
+                    schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getSchema());
+                    rootSchema.add(ds.getSchemaAlias(), schema);
+                    break;
+                case db2:
+                    configuration = JsonUtil.parseObject(ds.getConfiguration(), Db2.class);
+                    dataSource.setUrl(configuration.getJdbc());
+                    dataSource.setUsername(configuration.getUsername());
+                    dataSource.setPassword(configuration.getPassword());
+                    dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
+                    schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getSchema());
+                    rootSchema.add(ds.getSchemaAlias(), schema);
+                    break;
+                case ck:
+                    configuration = JsonUtil.parseObject(ds.getConfiguration(), CK.class);
+                    dataSource.setUrl(configuration.getJdbc());
+                    dataSource.setUsername(configuration.getUsername());
+                    dataSource.setPassword(configuration.getPassword());
+                    dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
+                    schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getDataBase());
+                    rootSchema.add(ds.getSchemaAlias(), schema);
+                    break;
+                case pg:
+                    configuration = JsonUtil.parseObject(ds.getConfiguration(), Pg.class);
+                    dataSource.setUrl(configuration.getJdbc());
+                    dataSource.setUsername(configuration.getUsername());
+                    dataSource.setPassword(configuration.getPassword());
+                    dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
+                    schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getSchema());
+                    rootSchema.add(ds.getSchemaAlias(), schema);
+                    break;
+                case redshift:
+                    configuration = JsonUtil.parseObject(ds.getConfiguration(), Redshift.class);
                     dataSource.setUrl(configuration.getJdbc());
                     dataSource.setUsername(configuration.getUsername());
                     dataSource.setPassword(configuration.getPassword());
@@ -297,6 +343,9 @@ public class CalciteProvider {
         DatasourceConfiguration configuration = null;
         switch (datasourceType) {
             case mysql:
+            case mariadb:
+            case TiDB:
+            case StarRocks:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Mysql.class);
                 tableSqls.add(String.format("SELECT TABLE_NAME,TABLE_COMMENT FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '%s' ;", configuration.getDataBase()));
                 break;
@@ -307,6 +356,13 @@ public class CalciteProvider {
                 }
                 tableSqls.add("select table_name, owner, comments from all_tab_comments where owner='" + configuration.getSchema() + "' AND table_type = 'TABLE'");
                 break;
+            case db2:
+                configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Db2.class);
+                if (StringUtils.isEmpty(configuration.getSchema())) {
+                    DEException.throwException(Translator.get("i18n_schema_is_empty"));
+                }
+                tableSqls.add("select TABNAME from syscat.tables  WHERE TABSCHEMA ='DE_SCHEMA' AND \"TYPE\" = 'T'".replace("DE_SCHEMA", configuration.getSchema()));
+                break;
             case sqlServer:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Sqlserver.class);
                 tableSqls.add("SELECT TABLE_NAME FROM \"DATABASE\".INFORMATION_SCHEMA.VIEWS WHERE  TABLE_SCHEMA = 'DS_SCHEMA' ;"
@@ -316,20 +372,39 @@ public class CalciteProvider {
                         .replace("DATABASE", configuration.getDataBase())
                         .replace("DS_SCHEMA", configuration.getSchema()));
                 break;
+            case pg:
+                configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Pg.class);
+                tableSqls.add("SELECT tablename FROM  pg_tables WHERE  schemaname='SCHEMA' ;".replace("SCHEMA", configuration.getSchema()));
+                break;
+            case redshift:
+                configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), CK.class);
+                tableSqls.add("SELECT tablename FROM  pg_tables WHERE  schemaname='SCHEMA' ;".replace("SCHEMA", configuration.getSchema()));
+                break;
+            case ck:
+                configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), CK.class);
+                tableSqls.add("SELECT name FROM system.tables where database='DATABASE';".replace("DATABASE", configuration.getDataBase()));
+                break;
             default:
                 break;
         }
-        return  tableSqls;
+        return tableSqls;
 
     }
 
-    private String getSchemaSql(String dsType) throws DEException {
-        DatasourceConfiguration.DatasourceType datasourceType = DatasourceConfiguration.DatasourceType.valueOf(dsType);
+    private String getSchemaSql(CoreDatasource datasource) throws DEException {
+        DatasourceConfiguration.DatasourceType datasourceType = DatasourceConfiguration.DatasourceType.valueOf(datasource.getType());
         switch (datasourceType) {
             case oracle:
                 return "select * from all_users";
             case sqlServer:
                 return "select name from sys.schemas;";
+            case db2:
+                DatasourceConfiguration configuration = JsonUtil.parseObject(datasource.getConfiguration(), Db2.class);
+                return "select SCHEMANAME from syscat.SCHEMATA   WHERE \"DEFINER\" ='USER'".replace("USER", configuration.getUsername().toUpperCase());
+            case pg:
+                return "SELECT nspname FROM pg_namespace;";
+            case redshift:
+                return "SELECT nspname FROM pg_namespace;";
             default:
                 return "show tables;";
         }
@@ -337,11 +412,13 @@ public class CalciteProvider {
 
 
     public Connection getConnection(CoreDatasource coreDatasource) throws Exception {
-
         DatasourceConfiguration configuration = null;
         DatasourceConfiguration.DatasourceType datasourceType = DatasourceConfiguration.DatasourceType.valueOf(coreDatasource.getType());
         switch (datasourceType) {
             case mysql:
+            case StarRocks:
+            case TiDB:
+            case mariadb:
                 configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Mysql.class);
                 break;
             case sqlServer:
@@ -349,6 +426,18 @@ public class CalciteProvider {
                 break;
             case oracle:
                 configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Oracle.class);
+                break;
+            case db2:
+                configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Db2.class);
+                break;
+            case pg:
+                configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Pg.class);
+                break;
+            case redshift:
+                configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Redshift.class);
+                break;
+            case ck:
+                configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), CK.class);
                 break;
             default:
                 configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Mysql.class);

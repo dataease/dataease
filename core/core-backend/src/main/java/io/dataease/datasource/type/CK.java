@@ -5,26 +5,24 @@ import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.List;
-
 @Data
-@Component("oracle")
-public class Oracle extends DatasourceConfiguration {
-    private String driver = "oracle.jdbc.driver.OracleDriver";
+@Component("ck")
+public class CK extends DatasourceConfiguration {
+    private String driver = "ru.yandex.clickhouse.ClickHouseDriver";
     private String extraParams = "";
 
     public String getJdbc() {
-        if(getConnectionType().equalsIgnoreCase("serviceName")){
-            return "jdbc:oracle:thin:@HOSTNAME:PORT/DATABASE"
+        if(StringUtils.isEmpty(extraParams.trim())){
+            return "jdbc:clickhouse://HOSTNAME:PORT/DATABASE"
                     .replace("HOSTNAME", getHost().trim())
                     .replace("PORT", getPort().toString().trim())
                     .replace("DATABASE", getDataBase().trim());
         }else {
-            return "jdbc:oracle:thin:@HOSTNAME:PORT:DATABASE"
+            return "jdbc:clickhouse://HOSTNAME:PORT/DATABASE?EXTRA_PARAMS"
                     .replace("HOSTNAME", getHost().trim())
                     .replace("PORT", getPort().toString().trim())
-                    .replace("DATABASE", getDataBase().trim());
+                    .replace("DATABASE", getDataBase().trim())
+                    .replace("EXTRA_PARAMS", getExtraParams().trim());
         }
     }
 }

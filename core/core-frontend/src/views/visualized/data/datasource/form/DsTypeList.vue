@@ -59,13 +59,6 @@ const getDatasourceTypes = () => {
         'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'
     },
     {
-      type: 'ds_doris',
-      name: 'Doris',
-      catalog: 'OLAP',
-      extraParams:
-        'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'
-    },
-    {
       type: 'pg',
       name: 'PostgreSQL',
       catalog: 'OLTP',
@@ -135,55 +128,6 @@ const getDatasourceTypes = () => {
       type: 'Excel',
       name: 'Excel',
       catalog: 'LOCAL',
-      extraParams: ''
-    },
-    {
-      type: 'influxdb',
-      name: 'InfluxDB',
-      catalog: 'OTHER',
-      extraParams: ''
-    },
-    {
-      type: 'sls',
-      name: 'SLS',
-      catalog: 'OTHER',
-      extraParams: ''
-    },
-    {
-      type: 'kingbase',
-      name: 'KingBase',
-      catalog: 'OLTP',
-      extraParams: ''
-    },
-    {
-      type: 'mongobi',
-      name: 'Mongodb-BI',
-      catalog: 'OLTP',
-      extraParams:
-        'characterEncoding=UTF-8&connectTimeout=5000&useSSL=true&allowPublicKeyRetrieval=true&verifyServerCertificate=false'
-    },
-    {
-      type: 'maxcompute',
-      name: 'Maxcompute',
-      catalog: 'DL',
-      extraParams: ''
-    },
-    {
-      type: 'presto',
-      name: 'Presto',
-      catalog: 'OLAP',
-      extraParams: ''
-    },
-    {
-      type: 'dm',
-      name: 'DM',
-      catalog: 'OLTP',
-      extraParams: ''
-    },
-    {
-      type: 'kylin',
-      name: 'Kylin',
-      catalog: 'DL',
       extraParams: ''
     }
   ]

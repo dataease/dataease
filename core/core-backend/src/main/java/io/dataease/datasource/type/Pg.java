@@ -5,26 +5,25 @@ import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.List;
-
 @Data
-@Component("oracle")
-public class Oracle extends DatasourceConfiguration {
-    private String driver = "oracle.jdbc.driver.OracleDriver";
+@Component("pg")
+public class Pg extends DatasourceConfiguration {
+    private String driver = "org.postgresql.Driver";
     private String extraParams = "";
 
     public String getJdbc() {
-        if(getConnectionType().equalsIgnoreCase("serviceName")){
-            return "jdbc:oracle:thin:@HOSTNAME:PORT/DATABASE"
+        if(StringUtils.isEmpty(extraParams.trim())){
+            return "jdbc:postgresql://HOSTNAME:PORT/DATABASE"
                     .replace("HOSTNAME", getHost().trim())
                     .replace("PORT", getPort().toString().trim())
                     .replace("DATABASE", getDataBase().trim());
         }else {
-            return "jdbc:oracle:thin:@HOSTNAME:PORT:DATABASE"
+            return "jdbc:postgresql://HOSTNAME:PORT/DATABASE?EXTRA_PARAMS"
                     .replace("HOSTNAME", getHost().trim())
                     .replace("PORT", getPort().toString().trim())
-                    .replace("DATABASE", getDataBase().trim());
+                    .replace("DATABASE", getDataBase().trim())
+                    .replace("EXTRA_PARAMS", getExtraParams().trim());
+
         }
     }
 }
