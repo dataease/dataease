@@ -199,6 +199,7 @@ const queryBackground = () => {
 
 const init = () => {
   if (
+    curComponent.value &&
     curComponent.value.commonBackground['outerImage'] &&
     typeof curComponent.value.commonBackground['outerImage'] === 'string'
   ) {
