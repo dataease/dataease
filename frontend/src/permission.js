@@ -93,6 +93,17 @@ router.beforeEach(async (to, from, next) => routeBefore(() => {
       if (hasGetUserInfo || to.path.indexOf('/previewScreenShot/') > -1 || to.path.indexOf('/preview/') > -1 || to.path.indexOf('/delink') > -1 || to.path.indexOf('/nolic') > -1) {
         next()
         store.dispatch('permission/setCurrentPath', to.path)
+        let route = store.getters.permission_routes.find(
+          item => item.path === '/' + to.path.split('/')[1]
+        )
+        // 如果找不到这个路由，说明是首页
+        if (!route) {
+          route = store.getters.permission_routes.find(item => item.path === '/')
+        }
+        store.commit('permission/SET_CURRENT_ROUTES', route)
+        if (['system'].includes(route.name)) {
+          store.dispatch('app/toggleSideBarHide', false)
+        }
       } else {
         if (store.getters.roles.length === 0) { // 判断当前用户是否已拉取完user_info信息
           // get user info
