@@ -12,6 +12,8 @@ import { AIDED_DESIGN, MOBILE_SETTING, PAGE_LINE_DESIGN, PANEL_CHART_INFO, TAB_C
 import html2canvas from 'html2canvasde'
 import xssCheck from 'xss'
 import Vue from 'vue'
+import { exportDetails, innerExportDetails } from '@/api/panel/panel'
+import { getLinkToken, getToken } from '@/utils/auth'
 
 export function deepCopy(target) {
   if (typeof target === 'object' && target !== null) {
@@ -424,4 +426,76 @@ export function formatDatasetTreeFolder(tree) {
 
 export function getCacheTree(treeName) {
   return JSON.parse(localStorage.getItem(treeName))
+}
+
+export function exportExcelDownload(chart, snapshot, width, height, loadingWrapper, callBack) {
+  const fields = JSON.parse(JSON.stringify(chart.data.fields))
+  const tableRow = JSON.parse(JSON.stringify(chart.data.tableRow))
+  const excelHeader = fields.map(item => item.name)
+  const excelTypes = fields.map(item => item.deType)
+  const excelHeaderKeys = fields.map(item => item.dataeaseName)
+  let excelData = tableRow.map(item => excelHeaderKeys.map(i => item[i]))
+  const excelName = chart.name
+  let detailFields = []
+  if (chart.data.detailFields?.length) {
+    detailFields = chart.data.detailFields.map(item => {
+      return {
+        name: item.name,
+        deType: item.deType,
+        dataeaseName: item.dataeaseName
+      }
+    })
+    excelData = tableRow.map(item => {
+      return excelHeaderKeys.map(i => {
+        if (i === 'detail' && !item[i] && Array.isArray(item['details'])) {
+          const arr = item['details']
+          if (arr?.length) {
+            return arr.map(ele => detailFields.map(field => ele[field.dataeaseName]))
+          }
+          return null
+        }
+        return item[i]
+      })
+    })
+  }
+  const request = {
+    proxy: null,
+    viewId: chart.id,
+    viewName: excelName,
+    header: excelHeader,
+    details: excelData,
+    excelTypes: excelTypes,
+    snapshot: snapshot,
+    snapshotWidth: width,
+    snapshotHeight: height,
+    componentFilterInfo: store.state.lastViewRequestInfo[chart.id],
+    excelHeaderKeys: excelHeaderKeys,
+    detailFields
+  }
+  let method = innerExportDetails
+  const token = store.getters.token || getToken()
+  const linkToken = store.getters.linkToken || getLinkToken()
+  if (!token && linkToken) {
+    method = exportDetails
+    loadingWrapper && (loadingWrapper.val = true)
+  }
+  const panelInfo = store.state.panel.panelInfo
+  if (panelInfo.proxy) {
+    request.proxy = { userId: panelInfo.proxy }
+  }
+  method(request).then((res) => {
+    const blob = new Blob([res], { type: 'application/vnd.ms-excel' })
+    const link = document.createElement('a')
+    link.style.display = 'none'
+    link.href = URL.createObjectURL(blob)
+    link.download = excelName + '.xlsx' // 下载的文件名
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    loadingWrapper && (loadingWrapper.val = false)
+    callBack && callBack()
+  }).catch(() => {
+    loadingWrapper && (loadingWrapper.val = false)
+    callBack && callBack()
+  })
 }
