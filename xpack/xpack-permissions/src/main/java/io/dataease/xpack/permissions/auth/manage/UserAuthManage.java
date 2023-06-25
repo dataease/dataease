@@ -55,6 +55,7 @@ public class UserAuthManage extends ServiceImpl<PerAuthBusiUserMapper, PerAuthBu
         busiUser.setResourceType(rt);
         busiUser.setResourceId(resourceId);
         busiUser.setWeight(AuthEnum.AUTH.getWeight());
+        busiUser.setOid(AuthUtils.getUser().getDefaultOid());
         return busiUser;
     }
 

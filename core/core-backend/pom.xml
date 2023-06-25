@@ -90,17 +90,6 @@
             <artifactId>easyexcel</artifactId>
             <version>2.1.7</version>
         </dependency>
-
-        <dependency>
-            <groupId>com.oracle.database.jdbc</groupId>
-            <artifactId>ojdbc10</artifactId>
-            <version>19.19.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.microsoft.sqlserver</groupId>
-            <artifactId>mssql-jdbc</artifactId>
-            <version>12.2.0.jre11</version>
-        </dependency>
     </dependencies>
 
     <profiles>

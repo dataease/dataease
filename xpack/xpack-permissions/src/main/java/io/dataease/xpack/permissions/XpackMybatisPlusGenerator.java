@@ -23,7 +23,7 @@ public class XpackMybatisPlusGenerator {
     /**
      * 这是要生成代码的表名称
      */
-    private static final String TABLE_NAME = "per_busi_resource";
+    private static final String TABLE_NAME = "per_auth_busi_user";
 
     /**
      * 下面两个配置基本上不用动

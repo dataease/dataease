@@ -11,10 +11,6 @@ import java.util.List;
 @Data
 @Component("mysql")
 public class Mysql extends DatasourceConfiguration {
-    private String type = DatasourceType.mysql.getType();
-    private String name = DatasourceType.mysql.getName();
-    private String catalog = DatasourceCatalog.OLAP.getType();
-    private String catalogDesc = DatasourceCatalog.OLAP.getDesc();
     private String driver = "com.mysql.cj.jdbc.Driver";
     private String extraParams = "characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true&zeroDateTimeBehavior=convertToNull";
     private List<String> illegalParameters = Arrays.asList("autoDeserialize", "queryInterceptors", "statementInterceptors", "detectCustomCollations");

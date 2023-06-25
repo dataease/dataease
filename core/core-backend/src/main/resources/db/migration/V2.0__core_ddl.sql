@@ -8,7 +8,7 @@ CREATE TABLE `core_datasource`
     `name`          varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '名称',
     `description`   varchar(50) DEFAULT NULL COMMENT '描述',
     `type`          varchar(50)                                           NOT NULL COMMENT '类型',
-    `edit_type`     varchar(50)  NOT NULL COMMENT '更新方式：0：替换；1：追加',
+    `edit_type`     varchar(50)  COMMENT '更新方式：0：替换；1：追加',
     `configuration` longtext                                              NOT NULL COMMENT '详细信息',
     `create_time`   bigint                                                NOT NULL COMMENT '创建时间',
     `update_time`   bigint                                                NOT NULL COMMENT '更新时间',

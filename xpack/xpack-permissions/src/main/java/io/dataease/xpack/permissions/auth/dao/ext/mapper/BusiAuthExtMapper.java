@@ -23,7 +23,7 @@ public interface BusiAuthExtMapper {
     @Select("select resource_id, weight from per_auth_busi_role where rid = #{rid}")
     List<PermissionItem> voidQuery(@Param("rid") Long rid);
 
-    @Select("select id, name, pid, leaf, extra_flag from per_busi_resource ${ew.customSqlSegment} ")
+    @Select("select distinct id, name, pid, leaf, extra_flag from per_busi_resource ${ew.customSqlSegment} ")
     List<BusiResourcePO> query(@Param("ew") QueryWrapper queryWrapper);
 
     @Select("select root_way from per_busi_resource where id = #{id}")
@@ -32,7 +32,7 @@ public interface BusiAuthExtMapper {
     @Select("select resource_id as id, weight from per_auth_busi_role where rid = #{rid} and resource_type = #{rt}")
     List<PermissionItem> rolePermission(@Param("rid") Long rid, @Param("rt") Integer rt);
 
-    @Select("select pabu.resource_id as id, pabu.weight from per_auth_busi_user pabu left join per_busi_resource pbr on pbr.id = pabu.resource_id where uid = #{uid} and resource_type = #{rt} and pbr.org_id = #{oid}")
+    @Select("select pabu.resource_id as id, pabu.weight from per_auth_busi_user pabu where uid = #{uid} and resource_type = #{rt} and oid = #{oid}")
     List<PermissionItem> userPermission(@Param("uid") Long uid, @Param("rt") Integer rt, @Param("oid") Long oid);
 
     @Select("""
@@ -58,8 +58,8 @@ public interface BusiAuthExtMapper {
     @Select("select rid as id, weight from per_auth_busi_role where resource_id = #{resourceId} and resource_type = #{resourceType}")
     List<PermissionItem> busiRolePermission(@Param("resourceId") Long resourceId, @Param("resourceType") Integer resourceType);
 
-    @Select("select uid as id, weight from per_auth_busi_user where resource_id = #{resourceId} and resource_type = #{resourceType}")
-    List<PermissionItem> busiUserPermission(@Param("resourceId") Long resourceId, @Param("resourceType") Integer resourceType);
+    @Select("select uid as id, weight from per_auth_busi_user where resource_id = #{resourceId} and resource_type = #{resourceType} and oid = #{oid}")
+    List<PermissionItem> busiUserPermission(@Param("resourceId") Long resourceId, @Param("resourceType") Integer resourceType, @Param("oid") Long oid);
 
 
     @Select("""
@@ -149,8 +149,8 @@ public interface BusiAuthExtMapper {
     @Select("""
             select distinct pbr.id, pbr.name, pbr.pid 
             from 
-            per_busi_resource pbr 
-            left join per_auth_busi_role pabr on  pbr.id = pabr.resource_id
+            per_auth_busi_role pabr          
+            left join per_busi_resource pbr on  pbr.id = pabr.resource_id
             ${ew.customSqlSegment} 
             """)
     List<BusiResourcePO> resourceByRid(@Param("ew") QueryWrapper queryWrapper);

@@ -170,9 +170,8 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     @Override
-    public Collection<DatasourceConfiguration> datasourceTypes() {
-        Collection<DatasourceConfiguration> datasourceConfigurations = CommonBeanFactory.getApplicationContext().getBeansOfType(DatasourceConfiguration.class).values();
-        return datasourceConfigurations;
+    public List<DatasourceConfiguration.DatasourceType> datasourceTypes() {
+        return Arrays.asList(DatasourceConfiguration.DatasourceType.values());
     }
 
     @Override
@@ -235,19 +234,8 @@ public class DatasourceServer implements DatasourceApi {
     // public List<TreeNodeVO> list() {
     public List<DatasourceDTO> list() {
         List<DatasourceDTO> datasourceDTOS = new ArrayList<>();
-        Collection<DatasourceConfiguration> datasourceConfigurations = datasourceTypes();
+        List<DatasourceConfiguration.DatasourceType> datasourceConfigurations = datasourceTypes();
         QueryWrapper<CoreDatasource> queryWrapper = new QueryWrapper();
-        /*
-        下面是从权限系统查数据
-        if (ObjectUtils.isNotEmpty(interactiveAuthApi)) {
-            List<BusiPerVO> perVOS = null;
-            if (CollectionUtil.isNotEmpty(perVOS = interactiveAuthApi.resource(RESOURCE_FLAG))) {
-                return perVOS.stream().map(dataSourceManage::convertTreeVO).toList();
-            }
-            return null;
-        }
-        return dataSourceManage.treeNodeQuery();
-        */
         datasourceMapper.selectList(queryWrapper).forEach(coreDatasource -> {
             DatasourceDTO datasourceDTO = new DatasourceDTO();
             BeanUtils.copyBean(datasourceDTO, coreDatasource);
@@ -255,7 +243,6 @@ public class DatasourceServer implements DatasourceApi {
                 if (StringUtils.equals(datasourceDTO.getType(), datasourceConfiguration.getType())) {
                     datasourceDTO.setTypeAlias(datasourceConfiguration.getName());
                     datasourceDTO.setCatalog(datasourceConfiguration.getCatalog());
-                    datasourceDTO.setCatalogDesc(datasourceConfiguration.getCatalogDesc());
                 }
             });
             TypeReference<List<ApiDefinition>> listTypeReference = new TypeReference<List<ApiDefinition>>() {
@@ -361,7 +348,7 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     private void preCheckDs(DatasourceDTO datasource) throws DEException {
-        if (!datasourceTypes().stream().map(DatasourceConfiguration::getType).collect(Collectors.toList()).contains(datasource.getType())) {
+        if (!datasourceTypes().stream().map(DatasourceConfiguration.DatasourceType::getType).collect(Collectors.toList()).contains(datasource.getType())) {
             DEException.throwException("Datasource type not supported.");
         }
         //TODO check Configuration

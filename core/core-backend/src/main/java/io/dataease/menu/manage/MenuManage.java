@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +32,7 @@ public class MenuManage {
     @Resource
     private CoreMenuMapper coreMenuMapper;
 
-    @Autowired
+    @Autowired(required = false)
     private InteractiveAuthApi interactiveAuthApi;
 
     // @Cacheable(value = "menu", key = "#root.methodName")
@@ -45,6 +46,7 @@ public class MenuManage {
         return menuVOS;
     }
     private List<CoreMenu> filterAuth(List<CoreMenu> list) {
+        if (ObjectUtils.isEmpty(interactiveAuthApi)) return list;
         List<Long> menuIds = interactiveAuthApi.menuIds();
         if (CollectionUtil.isEmpty(menuIds)) return list;
         return list.stream().filter(menu -> !menu.getAuth() || menuIds.contains(menu.getId())).toList();

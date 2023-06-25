@@ -11,10 +11,6 @@ import java.util.List;
 @Data
 @Component("oracle")
 public class Oracle extends DatasourceConfiguration {
-    private String type = DatasourceType.oracle.getType();
-    private String name = DatasourceType.oracle.getName();
-    private String catalog = DatasourceCatalog.OLAP.getType();
-    private String catalogDesc = DatasourceCatalog.OLAP.getDesc();
     private String driver = "oracle.jdbc.driver.OracleDriver";
     private String extraParams = "";
 
