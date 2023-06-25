@@ -30,7 +30,7 @@ public class DataSourceInitStartListener implements ApplicationListener<Applicat
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
-        /*engineServer.initSimpleEngine();
+        engineServer.initSimpleEngine();
         datasourceServer.updateDemoDs();
 
         List<CoreDatasourceTask> list = datasourceTaskServer.listAll();
@@ -52,7 +52,7 @@ public class DataSourceInitStartListener implements ApplicationListener<Applicat
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }*/
+        }
     }
 
 
