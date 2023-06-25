@@ -446,7 +446,7 @@ const rowWeightChanged = (row, level) => {
     removeFromUncommitted(row.id)
   }
 
-  if (row.children?.length) {
+  if (row.children?.length && row.id !== '0') {
     row.children.forEach(item => {
       item['value' + level] = check
       rowWeightChanged(item, level)
@@ -732,52 +732,57 @@ defineExpose({
             :label="item.label"
           >
             <template #default="scope">
-              <el-popover
-                v-if="
-                  scope.row['level' + item.weightLevel] &&
-                  scope.row['level' + item.weightLevel]['show'] &&
-                  !scope.row['value' + item.weightLevel]
-                "
-                placement="top-start"
-                title=""
-                :width="200"
-                trigger="hover"
-              >
-                <template #reference>
-                  <el-checkbox
-                    class="user-role-per-checked"
-                    disabled
-                    v-model="roleChecked"
-                  ></el-checkbox>
-                </template>
-                <div class="role-auth-tips">
-                  <span>{{ t('auth.from_role') }}</span>
-                  <span
-                    :key="rname"
-                    v-for="(rname, index) in scope.row['level' + item.weightLevel]['roles']"
-                    >{{ index + 1 + '、' + rname }}</span
-                  >
-                  <span
-                    >{{ t('auth.auth_alone')
-                    }}<el-switch
-                      class="independent-auth"
-                      size="small"
-                      v-model="scope.row['independent' + item.weightLevel]"
-                      @change="independentAuth(scope.row, item.weightLevel)"
-                  /></span>
-                </div>
-              </el-popover>
-              <el-checkbox
-                v-show="
-                  !(
+              <div
+                v-if="activeAuth === 'resource' && item.weightLevel < 7 && scope.row.id === '0'"
+              />
+              <div v-else>
+                <el-popover
+                  v-if="
                     scope.row['level' + item.weightLevel] &&
                     scope.row['level' + item.weightLevel]['show'] &&
                     !scope.row['value' + item.weightLevel]
-                  )
-                "
-                v-model="scope.row['value' + item.weightLevel]"
-                @change="rowWeightChanged(scope.row, item.weightLevel)"
-              ></el-checkbox>
+                  "
+                  placement="top-start"
+                  title=""
+                  :width="200"
+                  trigger="hover"
+                >
+                  <template #reference>
+                    <el-checkbox
+                      class="user-role-per-checked"
+                      disabled
+                      v-model="roleChecked"
+                    ></el-checkbox>
+                  </template>
+                  <div class="role-auth-tips">
+                    <span>{{ t('auth.from_role') }}</span>
+                    <span
+                      :key="rname"
+                      v-for="(rname, index) in scope.row['level' + item.weightLevel]['roles']"
+                      >{{ index + 1 + '、' + rname }}</span
+                    >
+                    <span
+                      >{{ t('auth.auth_alone')
+                      }}<el-switch
+                        class="independent-auth"
+                        size="small"
+                        v-model="scope.row['independent' + item.weightLevel]"
+                        @change="independentAuth(scope.row, item.weightLevel)"
+                    /></span>
+                  </div>
+                </el-popover>
+                <el-checkbox
+                  v-show="
+                    !(
+                      scope.row['level' + item.weightLevel] &&
+                      scope.row['level' + item.weightLevel]['show'] &&
+                      !scope.row['value' + item.weightLevel]
+                    )
+                  "
+                  v-model="scope.row['value' + item.weightLevel]"
+                  @change="rowWeightChanged(scope.row, item.weightLevel)"
+                ></el-checkbox>
+              </div>
             </template>
           </el-table-column>
         </el-table>

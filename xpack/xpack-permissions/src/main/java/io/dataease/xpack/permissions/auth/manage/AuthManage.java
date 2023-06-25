@@ -28,6 +28,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,6 +72,33 @@ public class AuthManage {
     @Resource
     private BusiAuthManage busiAuthManage;
 
+    private BusiResourcePO defaultRootNode(int enumFlag) {
+        String name = "仪表板";
+        switch (enumFlag) {
+            case 1:
+                name = "仪表板";
+                break;
+            case 2:
+                name = "数据大屏";
+                break;
+            case 3:
+                name = "数据集";
+                break;
+            case 4:
+                name = "数据源";
+                break;
+            default:
+                break;
+        }
+        BusiResourcePO resourcePO = new BusiResourcePO();
+        resourcePO.setId(0L);
+        resourcePO.setLeaf(false);
+        resourcePO.setPid(-1L);
+        resourcePO.setName(name);
+        resourcePO.setExtraFlag(0);
+        return resourcePO;
+    }
+
     public List<ResourceVO> resourceTree(String flag) {
         BusiResourceEnum busiResourceEnum = BusiResourceEnum.valueOf(flag.toUpperCase());
         if (ObjectUtils.isEmpty(busiResourceEnum)) {
@@ -88,11 +116,13 @@ public class AuthManage {
                 }
                 return true;
             }).toList();
-        List<BusiResourcePO> pos = null;
+        List<BusiResourcePO> pos = new ArrayList<>();
         int enumFlag = busiResourceEnum.getFlag();
         Long defaultOid = user.getDefaultOid();
         if (rootAdmin.get()) {
-            pos = busiAuthManage.resourceWithOid(enumFlag, defaultOid);
+            List<BusiResourcePO> orgResources = busiAuthManage.resourceWithOid(enumFlag, defaultOid);
+            pos.addAll(orgResources);
+            pos.add(defaultRootNode(enumFlag));
         } else {
             QueryWrapper queryWrapper = new QueryWrapper();
             queryWrapper.eq("pbr.org_id", defaultOid);
@@ -117,11 +147,13 @@ public class AuthManage {
             }
             if (CollectionUtil.isNotEmpty(pos)) {
                 pos = CollectionUtil.distinct(pos);
+                pos.add(defaultRootNode(enumFlag));
             } else {
                 return null;
             }
         }
-        return TreeUtils.mergeTree(pos, ResourceVO.class, false);
+        List<ResourceVO> vos = TreeUtils.mergeTree(pos, ResourceVO.class, false);
+        return vos;
     }
 
     public List<ResourceVO> menuTree() {
@@ -227,7 +259,7 @@ public class AuthManage {
         }
         if (type == 0) {
             // 资源授权给了哪些用户？
-            List<PermissionItem> userPermissionItems = busiAuthExtMapper.busiUserPermission(resourceId, busiResourceEnum.getFlag());
+            List<PermissionItem> userPermissionItems = busiAuthExtMapper.busiUserPermission(resourceId, busiResourceEnum.getFlag(), AuthUtils.getUser().getDefaultOid());
             List<PermissionOrigin> permissionOrigins = busiAuthExtMapper.batchUserRolePermission(resourceId, busiResourceEnum.getFlag());
             PermissionOrigin adminOrigin = null;
             PermissionOrigin readonlyOrigin = null;
@@ -290,6 +322,7 @@ public class AuthManage {
                         userPermission.setWeight(per.getWeight());
                         userPermission.setUid(id);
                         userPermission.setResourceType(flag);
+                        userPermission.setOid(oid);
                         return userPermission;
                     }).toList();
                     userAuthManage.saveBatch(busiUsers);
@@ -321,6 +354,7 @@ public class AuthManage {
             QueryWrapper<PerAuthBusiUser> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("uid", id);
             queryWrapper.eq("resource_type", flag);
+            queryWrapper.eq("oid", AuthUtils.getUser().getDefaultOid());
             queryWrapper.in("resource_id", ids);
             perAuthBusiUserMapper.delete(queryWrapper);
         } else {
@@ -338,6 +372,7 @@ public class AuthManage {
         if (type == 0) {
             QueryWrapper<PerAuthBusiUser> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("resource_type", flag);
+            queryWrapper.eq("oid", AuthUtils.getUser().getDefaultOid());
             queryWrapper.in("resource_id", resourceIds);
             queryWrapper.in("uid", ids);
             perAuthBusiUserMapper.delete(queryWrapper);
@@ -402,6 +437,7 @@ public class AuthManage {
             Long dirId = ids.get(0);
 
             Map<Long, Integer> dirMap = mappingMap.getOrDefault(dirId, new HashMap<>());
+            Long oid = AuthUtils.getUser().getDefaultOid();
             List<PerAuthBusiUser> busiUsers = permissions.stream().flatMap(per -> {
                 Long uid = per.getId();
                 int weight = per.getWeight();
@@ -410,6 +446,7 @@ public class AuthManage {
 
                 return ids.stream().map(resourceId -> {
                     PerAuthBusiUser busiUser = new PerAuthBusiUser();
+                    busiUser.setOid(oid);
                     busiUser.setResourceType(flag);
                     busiUser.setUid(uid);
                     busiUser.setWeight(asc ? Math.max(weight, mappingMap.getOrDefault(resourceId, new HashMap<>()).getOrDefault(uid, 0)) : weight);
@@ -418,7 +455,7 @@ public class AuthManage {
                     return busiUser;
                 });
             }).toList();
-            Long oid = AuthUtils.getUser().getDefaultOid();
+
             String[] cacheNames = {"user_busi_pers", "user_busi_pers_interactive"};
             CacheUtils.remove(cacheNames, uids.stream().map(uid -> oid.toString() + uid + flag).toList(), t -> {
                 deleteBusiTargetPer(flag, ids, permissions, type);

@@ -26,6 +26,7 @@ CREATE TABLE `per_auth_busi_user`
     `resource_id`   bigint NOT NULL COMMENT '资源ID',
     `resource_type` int    NOT NULL COMMENT '资源类型',
     `weight`        int    NOT NULL DEFAULT '0' COMMENT '权重',
+    `oid`           bigint NOT NULL DEFAULT '0' COMMENT '组织ID',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -55,14 +56,14 @@ DROP TABLE IF EXISTS `per_busi_resource`;
 
 CREATE TABLE `per_busi_resource`
 (
-    `id`       bigint      NOT NULL COMMENT '资源ID',
-    `name`     varchar(30) NOT NULL COMMENT '名称',
-    `rt_id`    int         NOT NULL COMMENT '类型ID',
-    `org_id`   bigint               DEFAULT NULL COMMENT '所属组织ID',
-    `pid`      bigint      NOT NULL COMMENT '上级资源ID',
-    `root_way` varchar(255)         DEFAULT NULL COMMENT '寻根路径',
-    `leaf`     tinyint(1) NOT NULL DEFAULT '0' COMMENT '叶子结点',
-    `extra_flag`     int         NOT NULL DEFAULT '0' COMMENT '拓展标识',
+    `id`         bigint      NOT NULL COMMENT '资源ID',
+    `name`       varchar(30) NOT NULL COMMENT '名称',
+    `rt_id`      int         NOT NULL COMMENT '类型ID',
+    `org_id`     bigint               DEFAULT NULL COMMENT '所属组织ID',
+    `pid`        bigint      NOT NULL COMMENT '上级资源ID',
+    `root_way`   varchar(255)         DEFAULT NULL COMMENT '寻根路径',
+    `leaf`       tinyint(1) NOT NULL DEFAULT '0' COMMENT '叶子结点',
+    `extra_flag` int         NOT NULL DEFAULT '0' COMMENT '拓展标识',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
