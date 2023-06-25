@@ -6,6 +6,16 @@
       @click="selectCurComponent"
       @mousedown="handleMouseDownOnShape"
     >
+      <component-bar
+        v-if="componentActiveFlag"
+        :source-element="element"
+        :terminal="'pc'"
+        :element="element"
+        :canvas-id="'canvas-main'"
+        :show-position="'edit'"
+        :series-id-map="state.seriesIdMap"
+        @showViewDetails="showViewDetails"
+      />
       <span v-show="element['isLock']" class="iconfont icon-suo"></span>
       <div
         v-for="item in isActive() ? getPointList() : []"
@@ -24,12 +34,13 @@ import eventBus from '@/utils/eventBus'
 import calculateComponentPositionAndSize from '@/utils/calculateComponentPositionAndSize'
 import { mod360 } from '@/utils/translate'
 import { isPreventDrop } from '@/utils/utils'
-import { computed, nextTick, onMounted, ref, toRefs } from 'vue'
+import { computed, nextTick, onMounted, ref, toRefs, reactive } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import { storeToRefs } from 'pinia'
+import ComponentBar from '@/components/visualization/ComponentBar.vue'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
@@ -38,6 +49,12 @@ const composeStore = composeStoreWithOut()
 const { curComponent, dvInfo } = storeToRefs(dvMainStore)
 const { editor } = storeToRefs(composeStore)
 const emit = defineEmits(['onStartResize', 'onStartMove', 'onDragging', 'onResizing', 'onMouseUp'])
+
+const state = reactive({
+  seriesIdMap: {
+    id: ''
+  }
+})
 
 const props = defineProps({
   active: {
@@ -356,6 +373,14 @@ const isNeedLockProportion = () => {
   }
 
   return false
+}
+
+const componentActiveFlag = computed(() => {
+  return active.value && dashboardActive.value
+})
+
+const showViewDetails = () => {
+  return null
 }
 
 onMounted(() => {
