@@ -40,7 +40,8 @@ public class DatasourceTaskServer {
     }
 
     public List<CoreDatasourceTask> listAll() {
-        return datasourceTaskMapper.selectList(null);
+        //return datasourceTaskMapper.selectList(null);
+        return null;
     }
 
     public CoreDatasourceTask selectByDSId(Long dsId) {

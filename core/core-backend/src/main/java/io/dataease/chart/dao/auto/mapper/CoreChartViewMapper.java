@@ -2,6 +2,7 @@ package io.dataease.chart.dao.auto.mapper;
 
 import io.dataease.chart.dao.auto.entity.CoreChartView;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Mapper;
 
 /**
  * <p>
@@ -11,6 +12,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @author fit2cloud
  * @since 2023-05-10
  */
+@Mapper
 public interface CoreChartViewMapper extends BaseMapper<CoreChartView> {
 
 }

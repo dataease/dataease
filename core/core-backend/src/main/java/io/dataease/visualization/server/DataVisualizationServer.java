@@ -47,7 +47,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @Resource
     private ExtDataVisualizationMapper dvMapper;
 
-    @Autowired
+    @Autowired(required = false)
     private InteractiveAuthApi interactiveAuthApi;
 
     @Override
