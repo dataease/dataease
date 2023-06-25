@@ -1,9 +1,10 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import JumpLinkage from './JumpLinkage.vue'
 </script>
 
 <template>
   <div>workbranch</div>
+  <JumpLinkage></JumpLinkage>
 </template>
 
 <style lang="less" scoped></style>
