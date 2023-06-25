@@ -198,7 +198,12 @@ const queryBackground = () => {
 }
 
 const init = () => {
-  state.fileList.push({ url: imgUrlTrans(curComponent.value.style['outerImage']) })
+  if (
+    curComponent.value.commonBackground['outerImage'] &&
+    typeof curComponent.value.commonBackground['outerImage'] === 'string'
+  ) {
+    state.fileList.push({ url: imgUrlTrans(curComponent.value.commonBackground['outerImage']) })
+  }
 }
 
 queryBackground()
@@ -221,7 +226,7 @@ const handlePictureCardPreview = file => {
 }
 const upload = file => {
   uploadFileResult(file.file, fileUrl => {
-    curComponent.value.style['outerImage'] = fileUrl
+    curComponent.value.commonBackground['outerImage'] = fileUrl
   })
 }
 

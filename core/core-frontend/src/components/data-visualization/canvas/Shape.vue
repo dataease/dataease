@@ -3,6 +3,7 @@
     <div
       class="shape-inner"
       :class="{ active }"
+      :style="componentBackgroundStyle"
       @click="selectCurComponent"
       @mousedown="handleMouseDownOnShape"
     >
@@ -24,6 +25,13 @@
         :style="getPointStyle(item)"
         @mousedown="handleMouseDownOnPoint(item, $event)"
       ></div>
+      <!--边框背景-->
+      <Icon
+        v-if="svgInnerEnable"
+        :style="{ color: element.commonBackground.innerImageColor }"
+        class-name="svg-background"
+        :name="commonBackgroundSvgInner"
+      ></Icon>
       <slot></slot>
     </div>
   </div>
@@ -41,6 +49,9 @@ import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/cont
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import { storeToRefs } from 'pinia'
 import ComponentBar from '@/components/visualization/ComponentBar.vue'
+import { hexColorToRGBA } from '@/views/chart/components/js/util'
+import { imgUrlTrans } from '@/utils/imgUtils'
+import Icon from '@/components/icon-custom/src/Icon.vue'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
@@ -375,6 +386,48 @@ const isNeedLockProportion = () => {
   return false
 }
 
+const svgInnerEnable = computed(() => {
+  const { backgroundImageEnable, backgroundType, innerImage } = element.value.commonBackground
+  return backgroundImageEnable && backgroundType === 'innerImage' && typeof innerImage === 'string'
+})
+
+const commonBackgroundSvgInner = computed(() => {
+  if (svgInnerEnable.value) {
+    return element.value.commonBackground.innerImage.replace('board/', '').replace('.svg', '')
+  } else {
+    return null
+  }
+})
+
+const componentBackgroundStyle = computed(() => {
+  console.log('commonBackground=' + JSON.stringify(element.value.commonBackground))
+  const style = {}
+  if (element.value.commonBackground) {
+    const {
+      backgroundColorSelect,
+      backgroundColor,
+      alpha,
+      backgroundImageEnable,
+      backgroundType,
+      outerImage
+    } = element.value.commonBackground
+    let colorRGBA = ''
+    if (backgroundColorSelect && backgroundColor && backgroundColor.indexOf('rgb') === -1) {
+      colorRGBA = hexColorToRGBA(backgroundColor, alpha)
+    }
+    if (backgroundImageEnable) {
+      if (backgroundType === 'outerImage' && typeof outerImage === 'string') {
+        style['background'] = `url(${imgUrlTrans(outerImage)}) no-repeat ${colorRGBA}`
+      } else {
+        style['background-color'] = colorRGBA
+      }
+    } else {
+      style['background-color'] = colorRGBA
+    }
+  }
+  return style
+})
+
 const componentActiveFlag = computed(() => {
   return active.value && dashboardActive.value
 })
@@ -408,6 +461,7 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   position: relative;
+  background-size: 100% 100% !important;
   &:hover {
     cursor: move;
   }
@@ -447,5 +501,13 @@ onMounted(() => {
   position: absolute;
   top: 0;
   right: 0;
+}
+
+.svg-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100% !important;
+  height: 100% !important;
 }
 </style>

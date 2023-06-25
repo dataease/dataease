@@ -5,12 +5,12 @@ export const commonStyle = {
 }
 
 export const commonBackground = {
-  backgroundColorSelect: false,
-  backgroundColor: '#fff',
+  backgroundColorSelect: true,
+  backgroundColor: '#ffffff',
   alpha: 100,
   backgroundImageEnable: false,
   backgroundType: 'innerImage',
-  innerImage: 'board/blue_1.svg',
+  innerImage: 'board/board_1.svg',
   innerImageColor: '#1094E5',
   outerImage: null
 }
@@ -59,7 +59,6 @@ const list = [
       color: '',
       borderColor: '#fff',
       borderWidth: 1,
-      backgroundColor: '',
       borderStyle: 'solid',
       borderRadius: 0,
       verticalAlign: 'middle'
@@ -146,7 +145,6 @@ const list = [
       height: 200,
       borderColor: '#fff',
       borderWidth: 1,
-      backgroundColor: '',
       borderStyle: 'solid',
       borderRadius: ''
     },
@@ -168,7 +166,6 @@ const list = [
       height: 200,
       borderColor: '#fff',
       borderWidth: 0,
-      backgroundColor: '#fff',
       borderStyle: 'solid',
       borderRadius: 5
     },
