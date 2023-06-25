@@ -21,18 +21,20 @@
         :key="'item' + index"
         :style="nowItemStyle(item, index)"
       >
-        <db-drag-area :index="index" :item="item"></db-drag-area>
-        <db-shape
-          :active="isActive(item)"
-          :index="index"
-          :item="item"
-          :canvas-view-info="canvasViewInfo"
-        ></db-shape>
-        <span
-          class="resizeHandle"
-          v-show="resizable"
-          @mousedown="startResize($event, item, index)"
-        ></span>
+        <div class="item-inner">
+          <db-drag-area :index="index" :item="item"></db-drag-area>
+          <db-shape
+            :active="isActive(item)"
+            :index="index"
+            :item="item"
+            :canvas-view-info="canvasViewInfo"
+          ></db-shape>
+          <span
+            class="resizeHandle"
+            v-show="resizable"
+            @mousedown="startResize($event, item, index)"
+          ></span>
+        </div>
       </div>
     </div>
   </div>
@@ -41,12 +43,14 @@
 <script lang="ts" setup>
 import _ from 'lodash'
 import $ from 'jquery'
-import { toRefs, ref, onMounted, nextTick, getCurrentInstance } from 'vue'
+import { toRefs, ref, onMounted, nextTick, getCurrentInstance, computed } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { getCanvasStyle, getStyle } from '@/utils/style'
 import DbShape from '@/components/dashboard/DbShape.vue'
 import DbDragArea from '@/components/dashboard/DbDragArea.vue'
+import { hexColorToRGBA } from '@/views/chart/components/js/util'
+import { imgUrlTrans } from '@/utils/imgUtils'
 const dvMainStore = dvMainStoreWithOut()
 
 let positionBox = []
@@ -166,7 +170,33 @@ const {
 
 const svgFilterAttrs = ['width', 'height', 'top', 'left', 'rotate']
 
-const { curComponent, isClickComponent, canvasViewInfo } = storeToRefs(dvMainStore)
+const { curComponent, isClickComponent, canvasViewInfo, canvasStyleData } = storeToRefs(dvMainStore)
+
+const curCap = computed(() => {
+  return canvasStyleData.value.dashboard.gap === 'yes' ? canvasStyleData.value.dashboard.gapSize : 0
+})
+
+const mainSlotStyleInner = item => {
+  const style = {}
+  if (item.style) {
+    let colorRGBA = ''
+    if (item.style.backgroundColorSelect) {
+      colorRGBA = hexColorToRGBA(item.style.color, item.style.alpha)
+    }
+    style['padding'] = (item.style.innerPadding || 0) + 'px'
+    style['border-radius'] = (item.style.borderRadius || 0) + 'px'
+    if (item.style.enable) {
+      if (item.style.backgroundType === 'outerImage') {
+        style['background'] = `url(${imgUrlTrans(item.style.outerImage)}) no-repeat ${colorRGBA}`
+      } else {
+        style['background-color'] = colorRGBA
+      }
+    } else {
+      style['background-color'] = colorRGBA
+    }
+  }
+  return style
+}
 
 const getTextareaHeight = (element, text) => {
   let { lineHeight, fontSize, height } = element.style
@@ -917,6 +947,7 @@ const canvasInit = () => {
  */
 const nowItemStyle = (item, index) => {
   return {
+    padding: curCap.value + 'px!important',
     width: cellWidth.value * item.sizeX - baseMarginLeft.value + 'px',
     height: cellHeight.value * item.sizeY - baseMarginTop.value + 'px',
     left: cellWidth.value * (item.x - 1) + baseMarginLeft.value + 'px',
@@ -975,8 +1006,7 @@ defineExpose({
 
 <style lang="less">
 .active {
-  outline: 1px solid #70c0ff;
-  user-select: none;
+  z-index: 15 !important;
 }
 
 .dragAndResize {
@@ -986,7 +1016,6 @@ defineExpose({
     margin: 0;
     padding: 0;
   }
-
   .item {
     position: absolute;
     width: 100px;
@@ -999,10 +1028,10 @@ defineExpose({
       width: 0;
       height: 0;
       cursor: nw-resize;
-
       opacity: 0.5;
       border-bottom: 10px solid black;
       border-left: 10px solid transparent;
+      z-index: 20;
     }
   }
 
@@ -1059,5 +1088,11 @@ defineExpose({
     width: 200px;
     height: 200px;
   }
+}
+
+.item-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
 }
 </style>

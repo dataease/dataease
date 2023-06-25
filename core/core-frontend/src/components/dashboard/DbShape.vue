@@ -161,6 +161,11 @@ const showViewDetails = params => {
 </template>
 
 <style lang="less" scoped>
+.active {
+  outline: 1px solid #70c0ff;
+  user-select: none;
+}
+
 .shape {
   width: 100%;
   height: 100%;
@@ -169,10 +174,5 @@ const showViewDetails = params => {
   &:hover {
     outline: 1px dashed #70c0ff;
   }
-}
-
-.active {
-  outline: 1px solid #70c0ff;
-  user-select: none;
 }
 </style>

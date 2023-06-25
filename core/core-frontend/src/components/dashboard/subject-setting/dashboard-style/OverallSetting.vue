@@ -48,6 +48,7 @@
           controls-position="right"
           :min="1"
           :max="3600"
+          size="small"
           :disabled="!state.overallSettingForm.refreshViewEnable"
           @change="themeChange"
         >
@@ -55,7 +56,7 @@
         <el-select
           v-model="state.overallSettingForm.refreshUnit"
           class="el-input-refresh-unit margin-left8"
-          size="mini"
+          size="small"
           :disabled="!state.overallSettingForm.refreshViewEnable"
           @change="themeChange"
         >
@@ -96,7 +97,6 @@
           <el-radio-group
             v-model="state.overallSettingForm.dashboard.resultMode"
             class="radio-span"
-            size="mini"
             @change="themeChange"
           >
             <el-radio label="all"
@@ -111,6 +111,7 @@
           <el-input-number
             v-model="state.overallSettingForm.dashboard.resultCount"
             controls-position="right"
+            size="small"
             :min="1"
             :max="10000"
             @change="themeChange"

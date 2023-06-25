@@ -2,7 +2,6 @@
 import componentList from '@/custom-component/component-list' // 左侧列表数据
 import { deepCopy } from '@/utils/utils'
 import { listenGlobalKeyDown } from '@/utils/shortcutKey'
-import CanvasAttr from '@/components/data-visualization/CanvasAttr.vue'
 import { changeComponentSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
 import { computed, nextTick, onMounted, reactive, ref, toRefs } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
@@ -171,10 +170,10 @@ const canvasInit = () => {
   nextTick(() => {
     if (canvasOut.value) {
       //div容器获取tableBox.value.clientWidth
-      screenWidth = canvasOut.value.clientWidth
+      screenWidth = canvasOut.value.clientWidth - 4
       screenHeight = canvasOut.value.clientHeight
       baseWidth.value = screenWidth / pcMatrixCount.value.x
-      baseHeight.value = screenHeight / pcMatrixCount.value.x
+      baseHeight.value = screenHeight / pcMatrixCount.value.y
       baseMarginLeft.value = 0
       baseMarginTop.value = 0
       canvasInitStatus.value = true
@@ -193,10 +192,10 @@ const canvasSizeInit = () => {
   nextTick(() => {
     if (canvasOut.value) {
       //div容器获取tableBox.value.clientWidth
-      screenWidth = canvasOut.value.clientWidth
+      screenWidth = canvasOut.value.clientWidth - 4
       screenHeight = canvasOut.value.clientHeight
       baseWidth.value = screenWidth / pcMatrixCount.value.x
-      baseHeight.value = screenHeight / pcMatrixCount.value.x
+      baseHeight.value = screenHeight / pcMatrixCount.value.y
       baseMarginLeft.value = 0
       baseMarginTop.value = 0
       canvasInitStatus.value = true
@@ -338,6 +337,7 @@ eventBus.on('handleNew', handleNew)
         width: 100%;
         overflow-y: auto;
         .db-canvas {
+          padding: 2px;
           background-size: 100% 100% !important;
           width: 100%;
           height: 100%;

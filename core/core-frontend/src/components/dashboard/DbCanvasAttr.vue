@@ -244,7 +244,11 @@ onMounted(() => {
           </el-row>
         </el-collapse-item>
         <el-collapse-item :title="t('visualization.view_style')" name="componentStyle">
-          <background-overall class="item-show"></background-overall>
+          <background-overall
+            class="item-show"
+            themes="light"
+            position="dashboard"
+          ></background-overall>
         </el-collapse-item>
         <el-collapse-item :title="'视图配色'" name="graphical">
           <component-color-selector

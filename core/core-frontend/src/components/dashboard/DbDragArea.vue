@@ -50,7 +50,7 @@ const dragUp = e => {
 <style lang="less" scoped>
 .dragHandle {
   position: absolute;
-  z-index: 10;
+  z-index: 20;
   cursor: move;
 }
 .shadow-t {

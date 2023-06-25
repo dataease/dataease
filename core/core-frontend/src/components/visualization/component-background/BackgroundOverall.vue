@@ -1,15 +1,17 @@
 <template>
   <el-row>
-    <el-row style="width: 100%">
+    <el-row style="width: 100%" :class="themes">
       <el-col :span="12" style="padding-right: 4px">
         <el-row class="custom-item-text-row"
           ><span class="custom-item-text bl">{{ t('visualization.inner_padding') }}</span>
         </el-row>
         <el-row class="function-area">
           <el-input-number
+            :effect="themes"
             controls-position="right"
             :min="0"
             :max="100"
+            size="small"
             v-model="state.commonBackground.innerPadding"
             @change="themeChange('innerPadding')"
           ></el-input-number>
@@ -21,9 +23,11 @@
         </el-row>
         <el-row class="function-area">
           <el-input-number
+            :effect="themes"
             controls-position="right"
             :min="0"
             :max="100"
+            size="small"
             v-model="state.commonBackground.borderRadius"
             @change="themeChange('borderRadius')"
           ></el-input-number>
@@ -31,40 +35,45 @@
       </el-col>
     </el-row>
 
-    <el-row style="width: 100%" class="custom-row margin-top16">
-      <el-row class="custom-item-text-row">
-        <el-checkbox
-          v-model="state.commonBackground.backgroundColorSelect"
-          @change="themeChange('backgroundColorSelect')"
-        >
-          {{ $t('chart.color') }}
-        </el-checkbox>
-      </el-row>
-      <el-row style="margin-left: 20px" class="custom-row">
-        <el-row class="function-area">
+    <el-row style="width: 100%" class="margin-top16">
+      <el-col :span="12" style="padding-right: 4px">
+        <el-row class="custom-item-text-row">
+          <el-checkbox
+            v-model="state.commonBackground.backgroundColorSelect"
+            @change="themeChange('backgroundColorSelect')"
+          >
+            {{ $t('chart.color') }}
+          </el-checkbox>
+        </el-row>
+        <el-row class="function-area" style="margin-left: 20px">
           <el-color-picker
             v-model="state.commonBackground.color"
+            :effect="themes"
             :disabled="!state.commonBackground.backgroundColorSelect"
-            size="mini"
+            size="small"
             class="color-picker-style"
             :predefine="state.predefineColors"
             @change="themeChange('color')"
           />
         </el-row>
-        <el-row class="custom-item-text-row margin-top8">
-          <span class="custom-item-text bl">{{ $t('chart.not_alpha') }}</span>
+      </el-col>
+      <el-col :span="12" style="padding-left: 4px">
+        <el-row class="custom-item-text-row"
+          ><span class="custom-item-text bl">{{ $t('chart.not_alpha') }}</span>
         </el-row>
         <el-row class="function-area">
           <el-input-number
             controls-position="right"
+            :effect="themes"
             :disabled="!state.commonBackground.backgroundColorSelect"
             v-model="state.commonBackground.alpha"
             :min="0"
             :max="100"
+            size="small"
             @change="themeChange('alpha')"
           ></el-input-number>
         </el-row>
-      </el-row>
+      </el-col>
     </el-row>
 
     <el-row style="width: 100%" class="custom-row margin-top16">
@@ -75,7 +84,7 @@
       </el-row>
       <el-row class="function-area custom-row" style="margin-left: 20px">
         <el-row>
-          <el-radio-group v-model="state.commonBackground.backgroundType">
+          <el-radio-group :effect="themes" v-model="state.commonBackground.backgroundType">
             <el-radio label="outerImage">{{ t('visualization.photo') }}</el-radio>
             <el-radio label="innerImage">{{ t('visualization.board') }}</el-radio>
           </el-radio-group>
@@ -88,17 +97,20 @@
           >
             <el-color-picker
               v-model="state.commonBackground.innerImageColor"
+              :effect="themes"
               :title="t('visualization.border_color_setting')"
               style="position: absolute; top: -3px; left: 60px"
-              size="mini"
+              size="small"
               class="color-picker-style"
               :predefine="state.predefineColors"
               @change="themeChange('innerImageColor')"
             />
             <el-select
               v-model="state.commonBackground.innerImage"
+              :effect="themes"
               placeholder="选择边框..."
-              style="margin-left: 8px"
+              style="width: 155px; margin-left: 8px"
+              size="small"
             >
               <el-option
                 v-for="(item, index) in state.BackgroundShowMap['default']"
@@ -117,11 +129,12 @@
           </el-row>
           <el-col
             v-show="state.commonBackground.backgroundType === 'outerImage'"
-            style="width: 130px !important; text-align: left"
+            style="width: 130px !important; height: 70px; text-align: left"
             class="margin-top8"
           >
             <el-upload
               action=""
+              :effect="themes"
               accept=".jpeg,.jpg,.png,.gif,.svg"
               class="avatar-uploader"
               list-type="picture-card"
@@ -152,7 +165,7 @@
 <script setup lang="ts">
 import { queryVisualizationBackground } from '@/api/visualization/visualizationBackground'
 import { COLOR_PANEL } from '@/views/chart/components/editor/util/chart'
-import { computed, onMounted, reactive } from 'vue'
+import { computed, onMounted, reactive, toRefs } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { imgUrlTrans } from '@/utils/imgUtils'
@@ -161,9 +174,22 @@ import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapsho
 import { uploadFileResult } from '@/api/staticResource'
 import { useI18n } from '@/hooks/web/useI18n'
 const dvMainStore = dvMainStoreWithOut()
-const { canvasStyleData, componentData } = storeToRefs(dvMainStore)
+const { canvasStyleData, componentData, curComponent } = storeToRefs(dvMainStore)
 const snapshotStore = snapshotStoreWithOut()
 const { t } = useI18n()
+
+const props = defineProps({
+  position: {
+    type: String,
+    default: 'dashboard'
+  },
+  themes: {
+    type: String,
+    default: 'dark'
+  }
+})
+
+const { position, themes } = toRefs(props)
 
 const state = reactive({
   commonBackground: {},
@@ -213,7 +239,10 @@ const queryBackground = () => {
 }
 
 const init = () => {
-  state.commonBackground = canvasStyleData.value.component.chartCommonStyle
+  state.commonBackground =
+    position.value === 'component' && curComponent.value
+      ? curComponent.value.style
+      : canvasStyleData.value.component.chartCommonStyle
   if (
     state.commonBackground &&
     state.commonBackground['outerImage'] &&
@@ -248,11 +277,15 @@ const upload = file => {
 }
 
 const themeChange = modifyName => {
-  componentData.value.forEach((item, index) => {
-    if (item.type === 'view') {
-      item.commonBackground[modifyName] = state.commonBackground[modifyName]
-    }
-  })
+  if (position.value === 'component' && curComponent.value) {
+    curComponent.value.style[modifyName] = state.commonBackground[modifyName]
+  } else {
+    componentData.value.forEach((item, index) => {
+      if (item.type === 'view') {
+        item.commonBackground[modifyName] = state.commonBackground[modifyName]
+      }
+    })
+  }
   snapshotStore.recordSnapshot()
 }
 
@@ -297,6 +330,12 @@ onMounted(() => {
 .avatar-uploader :deep(.ed-upload-list) li {
   width: 120px !important;
   height: 80px !important;
+}
+:deep(.ed-upload--picture-card) {
+  background: none;
+}
+:deep(.ed-upload-list__item) {
+  background: none;
 }
 
 .disabled :deep(.ed-upload--picture-card) {
@@ -373,6 +412,7 @@ span {
 }
 .custom-item-text-row {
   display: flex;
+  font-size: 12px;
 }
 
 .ed-select-dropdown__item {
