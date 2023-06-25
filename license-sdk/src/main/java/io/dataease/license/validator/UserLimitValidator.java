@@ -3,6 +3,7 @@ package io.dataease.license.validator;
 import io.dataease.license.config.LicenseValidator;
 import io.dataease.utils.CommonBeanFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Method;
@@ -17,6 +18,9 @@ public class UserLimitValidator implements LicenseValidator {
     public boolean validate() {
         try {
             Object userApiObject = CommonBeanFactory.getBean(Class.forName(USER_API_CLASS));
+            if (ObjectUtils.isEmpty(userApiObject)) {
+                return true;
+            }
             Object userCount = executeReflext(userApiObject, "userCount", null);
             int count = (int) userCount;
             return USER_LIMIT >= count;
