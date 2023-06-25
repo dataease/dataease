@@ -9,8 +9,11 @@ import XAxisSelector from '@/views/chart/components/editor/editor-style/componen
 import YAxisSelector from '@/views/chart/components/editor/editor-style/components/YAxisSelector.vue'
 import TitleSelector from '@/views/chart/components/editor/editor-style/components/TitleSelector.vue'
 import LegendSelector from '@/views/chart/components/editor/editor-style/components/LegendSelector.vue'
-import BackgroundOverall from '@/components/visualization/component-background/BackgroundOverall.vue'
-
+import BackgroundOverallComponent from '@/components/visualization/component-background/BackgroundOverallComponent.vue'
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { storeToRefs } from 'pinia'
+const dvMainStore = dvMainStoreWithOut()
+const { curComponent } = storeToRefs(dvMainStore)
 const { t } = useI18n()
 
 const state = {
@@ -76,8 +79,12 @@ const onLegendChange = val => {
     <div class="attr-style">
       <el-row class="de-collapse-style">
         <el-collapse v-model="state.attrActiveNames" class="style-collapse">
-          <el-collapse-item name="color" :title="'通用样式'">
-            <background-overall themes="dark" position="component"></background-overall>
+          <el-collapse-item name="background" :title="'背景'">
+            <background-overall-component
+              v-if="curComponent"
+              themes="dark"
+              position="component"
+            ></background-overall-component>
           </el-collapse-item>
           <el-collapse-item name="color" :title="t('chart.color')">
             <color-selector class="attr-selector" :chart="chart" @onColorChange="onColorChange" />

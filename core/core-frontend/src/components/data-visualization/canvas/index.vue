@@ -148,7 +148,7 @@ const showComponentData = computed(() => {
   return componentData.value.filter(component => component.isShow)
 })
 const curCap = computed(() => {
-  return dvInfo.value.type === 'dashboard' && canvasStyleData.value.dashboard.gap === 'yes'
+  return dashboardActive.value && canvasStyleData.value.dashboard.gap === 'yes'
     ? canvasStyleData.value.dashboard.gapSize
     : 0
 })
@@ -159,6 +159,10 @@ const baseCellInfo = computed(() => {
     baseHeight: baseHeight.value,
     curGap: curCap.value
   }
+})
+
+const dashboardActive = computed(() => {
+  return dvInfo.value.type === 'dashboard'
 })
 
 // 融合矩阵设计
@@ -182,6 +186,10 @@ let itemMaxX = 0
 let currentInstance
 
 const handleMouseDown = e => {
+  // 仪表板不显示菜单和组创建
+  if (dashboardActive.value) {
+    return
+  }
   // 右键返回
   if (e.buttons === 2) {
     return
@@ -330,6 +338,10 @@ const getSelectArea = () => {
 }
 
 const handleContextMenu = e => {
+  // 仪表板不显示菜单和组创建
+  if (dashboardActive.value) {
+    return
+  }
   e.stopPropagation()
   e.preventDefault()
 
@@ -390,7 +402,7 @@ const getTextareaHeight = (element, text) => {
 }
 
 const editStyle = computed(() => {
-  if (dvModel.value === 'dashboard') {
+  if (dashboardActive.value) {
     return {
       width: '100%',
       height: '100%'
