@@ -18,9 +18,6 @@ public class PanelViewLinkageDTO extends PanelViewLinkage {
     @ApiModelProperty("目标视图名称")
     //目标视图名称
     private String targetViewName;
-    @ApiModelProperty("启用联动")
-    //关联状态
-    private boolean linkageActive = false;
     @ApiModelProperty("联动字段")
     private List<PanelViewLinkageField> linkageFields = new ArrayList<>();
 
@@ -60,17 +57,8 @@ public class PanelViewLinkageDTO extends PanelViewLinkage {
     }
 
     public PanelViewLinkageDTO(boolean linkageActive) {
-        this.linkageActive = linkageActive;
+        super.setLinkageActive(linkageActive);
     }
-
-    public boolean isLinkageActive() {
-        return linkageActive;
-    }
-
-    public void setLinkageActive(boolean linkageActive) {
-        this.linkageActive = linkageActive;
-    }
-
     public List<PanelViewLinkageField> getLinkageFields() {
         return linkageFields;
     }

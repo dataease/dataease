@@ -371,6 +371,20 @@ export default {
       'panelViewDetailsInfo'
     ])
   },
+  watch: {
+    linkageAreaShow: {
+      handler(val) {
+        // 1.当前正在进行联动设置（val） 2.当前视图联动未启用!this.linkageInfo.linkageActive
+        // 3.当前视图没有设置过当前目标联动!this.linkageInfo.sourceViewId
+        // 4.数据集相同 this.linkageInfo.tableId === this.targetLinkageInfo[this.curLinkageView.propValue.viewId].tableId)
+        // 满足以上条件自动勾选
+        if (val && !this.linkageInfo.linkageActive && !this.linkageInfo.sourceViewId && this.linkageInfo.tableId === this.targetLinkageInfo[this.curLinkageView.propValue.viewId].tableId) {
+          this.linkageInfo.linkageActive = true
+        }
+      },
+      immediate: true
+    }
+  },
   mounted() {
     if (navigator.platform.indexOf('Mac') === -1) {
       this.systemOS = 'Other'

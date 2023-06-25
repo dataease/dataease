@@ -38,6 +38,7 @@ export function baseWordCloudOptionAntV(plot, container, chart, action) {
     plot.destroy()
   }
   plot = new WordCloud(container, options)
-
+  plot.off('point:click')
+  plot.on('point:click', action)
   return plot
 }

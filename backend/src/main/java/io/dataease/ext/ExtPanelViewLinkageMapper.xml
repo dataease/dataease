@@ -14,6 +14,7 @@
         <result column="target_view_id" jdbcType="VARCHAR" property="targetViewId"/>
         <result column="table_id" jdbcType="VARCHAR" property="tableId"/>
         <result column="targetViewName" jdbcType="VARCHAR" property="targetViewName"/>
+        <result column="sourceViewId" jdbcType="VARCHAR" property="sourceViewId"/>
         <result column="linkageActive" property="linkageActive"/>
         <collection property="targetViewFields" ofType="io.dataease.plugins.common.base.domain.DatasetTableField" column="table_id"
                     select="queryTableField">
@@ -37,7 +38,8 @@
         chart_view.`name` as 'targetViewName',
         chart_view.id as 'target_view_id',
         chart_view.table_id,
-        (case when panel_view_linkage.target_view_id is null then 0 else 1 end) as 'linkageActive',
+        panel_view_linkage.source_view_id as 'sourceViewId',
+        (case when panel_view_linkage.target_view_id is null then 0 else panel_view_linkage.linkage_active end) as 'linkageActive',
         panel_view_linkage_field.source_field,
         panel_view_linkage_field.target_field
         FROM
@@ -109,6 +111,8 @@
             LEFT JOIN panel_view_linkage_field ON panel_view_linkage.id = panel_view_linkage_field.linkage_id
         WHERE
             panel_view_linkage.panel_id = #{panelId}
+      and panel_view_linkage.linkage_active=1
+      and panel_view_linkage_field.id is not null
     </select>
 
     <insert id="copyViewLinkage">
@@ -119,6 +123,7 @@
                 target_view_id,
                 update_time,
                 update_people,
+                linkage_active,
                 ext1,
                 ext2,
                 copy_from,
@@ -130,6 +135,7 @@
             pv_target_copy.t_chart_view_id target_view_id,
             update_time,
             update_people,
+            linkage_active,
             ext1,
             ext2,
             id as copy_from,
