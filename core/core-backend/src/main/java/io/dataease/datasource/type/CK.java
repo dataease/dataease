@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Data
 @Component("ck")
 public class CK extends DatasourceConfiguration {
-    private String driver = "ru.yandex.clickhouse.ClickHouseDriver";
+    private String driver = "com.clickhouse.jdbc.ClickHouseDriver";
     private String extraParams = "";
 
     public String getJdbc() {
