@@ -139,7 +139,7 @@ const list = [
     innerType: 'bar',
     x: 1,
     y: 1,
-    sizeX: 20,
+    sizeX: 10,
     sizeY: 10,
     style: {
       width: 200,
@@ -161,8 +161,8 @@ const list = [
     innerType: 'bar',
     x: 1,
     y: 1,
-    sizeX: 20,
-    sizeY: 20,
+    sizeX: 10,
+    sizeY: 10,
     style: {
       width: 200,
       height: 200,

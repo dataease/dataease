@@ -28,7 +28,8 @@ const loadCanvasData = dvId => {
       name: canvasInfo.name,
       pid: canvasInfo.pid,
       status: canvasInfo.status,
-      selfWatermarkStatus: canvasInfo.selfWatermarkStatus
+      selfWatermarkStatus: canvasInfo.selfWatermarkStatus,
+      type: canvasInfo.type
     }
     canvasDataPreview.value = JSON.parse(canvasInfo.componentData)
     canvasStylePreview.value = JSON.parse(canvasInfo.canvasStyleData)

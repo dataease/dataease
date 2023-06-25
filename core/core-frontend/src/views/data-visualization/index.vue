@@ -143,7 +143,8 @@ onMounted(() => {
         name: canvasInfo.name,
         pid: canvasInfo.pid,
         status: canvasInfo.status,
-        selfWatermarkStatus: canvasInfo.selfWatermarkStatus
+        selfWatermarkStatus: canvasInfo.selfWatermarkStatus,
+        type: canvasInfo.type
       }
       dvMainStore.updateCurDvInfo(bashInfo)
       //恢复画布数据
@@ -155,7 +156,8 @@ onMounted(() => {
       name: '新建仪表板',
       pid: pid,
       status: null,
-      selfWatermarkStatus: null
+      selfWatermarkStatus: null,
+      type: null
     })
   }
   const { width, height, scale } = canvasStyleData.value

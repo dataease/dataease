@@ -69,7 +69,6 @@ const findNewComponent = componentName => {
 
 // 通过实时监听的方式直接添加组件
 const handleNew = newComponentInfo => {
-  console.log('handleNew')
   const { componentName, innerType } = newComponentInfo
   if (componentName) {
     const component = findNewComponent(componentName)

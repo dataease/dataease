@@ -1,45 +1,73 @@
-<script setup lang="ts">
-import Shape from './Shape.vue'
-import {
-  getStyle,
-  getComponentRotatedStyle,
-  getShapeItemStyle,
-  getSVGStyle,
-  getCanvasStyle,
-  syncShapeItemStyle
-} from '@/utils/style'
-import $ from 'jquery'
-import { _$, isPreventDrop } from '@/utils/utils'
-import ContextMenu from './ContextMenu.vue'
-import MarkLine from './MarkLine.vue'
-import Area from './Area.vue'
-import eventBus from '@/utils/eventBus'
-import Grid from './Grid.vue'
-import { changeStyleWithScale } from '@/utils/translate'
-import { ref, onMounted, toRef, computed, toRefs, nextTick } from 'vue'
-import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
-import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
-import { storeToRefs } from 'pinia'
-import findComponent from '@/utils/components'
+<template>
+  <div
+    class="dragAndResize"
+    ref="container"
+    @mousedown="containerMouseDown($event)"
+    @mouseup="endMove($event)"
+    @mousemove="moving($event)"
+  >
+    <div v-if="renderOk">
+      <div
+        :class="{
+          active: isActive(item),
+          item: true,
+          moveAnimation: moveAnimate,
+          movingItem: item['isPlayer'],
+          canNotDrag: !draggable
+        }"
+        :ref="'item' + index"
+        v-for="(item, index) in yourList"
+        @mousedown="startMove($event, item, index)"
+        :key="'item' + index"
+        :style="nowItemStyle(item, index)"
+      >
+        <div class="item-inner">
+          <db-drag-area :index="index" :item="item"></db-drag-area>
+          <db-shape
+            :active="isActive(item)"
+            :index="index"
+            :item="item"
+            :canvas-view-info="canvasViewInfo"
+          ></db-shape>
+          <span
+            class="resizeHandle"
+            v-show="resizable"
+            @mousedown="startResize($event, item, index)"
+          ></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script lang="ts" setup>
 import _ from 'lodash'
-import DragShadow from '@/components/data-visualization/canvas/DragShadow.vue'
-
+import $ from 'jquery'
+import { toRefs, ref, onMounted, nextTick, getCurrentInstance, computed } from 'vue'
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { storeToRefs } from 'pinia'
+import { getCanvasStyle, getStyle } from '@/utils/style'
+import DbShape from '@/components/dashboard/DbShape.vue'
+import DbDragArea from '@/components/dashboard/DbDragArea.vue'
+import { hexColorToRGBA } from '@/views/chart/components/js/util'
+import { imgUrlTrans } from '@/utils/imgUtils'
 const dvMainStore = dvMainStoreWithOut()
-const composeStore = composeStoreWithOut()
-const contextmenuStore = contextmenuStoreWithOut()
 
-const { componentData, curComponent, canvasStyleData, canvasViewInfo, dvInfo } =
-  storeToRefs(dvMainStore)
-const { editor } = storeToRefs(composeStore)
+let positionBox = []
+let coordinates = [] //坐标点集合
+
+let lastTask = undefined
+let isOverlay = false //是否正在交换位置
+let moveTime = 80 //移动动画时间
+
+let itemMaxY = 0
+let itemMaxX = 0
+let currentInstance
+
 const props = defineProps({
-  isEdit: {
-    type: Boolean,
-    default: true
-  },
-  dvModel: {
-    type: String,
-    default: 'dv'
+  yourList: {
+    required: true,
+    type: Array //String,Number,Boolean,Function,Object,Array
   },
   baseWidth: {
     required: false,
@@ -115,7 +143,17 @@ const props = defineProps({
   }
 })
 
+const renderOk = ref(false)
+const moveAnimate = ref(false)
+const list = ref([])
+const cellWidth = ref(0)
+const cellHeight = ref(0)
+const maxCell = ref(0)
+const infoBox = ref(null)
+const container = ref(null)
+
 const {
+  yourList,
   baseWidth,
   baseHeight,
   baseMarginLeft,
@@ -127,244 +165,47 @@ const {
   resizable,
   resizeStart,
   resizing,
-  resizeEnd,
-  isEdit,
-  dvModel
+  resizeEnd
 } = toRefs(props)
 
-const editorX = ref(0)
-const editorY = ref(0)
-const start = ref({
-  // 选中区域的起点
-  x: 0,
-  y: 0
-})
-const width = ref(0)
-const height = ref(0)
-const isShowArea = ref(false)
 const svgFilterAttrs = ['width', 'height', 'top', 'left', 'rotate']
 
-const showComponentData = computed(() => {
-  return componentData.value.filter(component => component.isShow)
-})
+const { curComponent, isClickComponent, canvasViewInfo, canvasStyleData } = storeToRefs(dvMainStore)
+
 const curCap = computed(() => {
-  return dvInfo.value.type === 'dashboard' && canvasStyleData.value.dashboard.gap === 'yes'
-    ? canvasStyleData.value.dashboard.gapSize
-    : 0
+  return canvasStyleData.value.dashboard.gap === 'yes' ? canvasStyleData.value.dashboard.gapSize : 0
 })
 
-const baseCellInfo = computed(() => {
-  return {
-    baseWidth: baseWidth.value,
-    baseHeight: baseHeight.value,
-    curGap: curCap.value
-  }
-})
-
-// 融合矩阵设计
-const renderOk = ref(false)
-const moveAnimate = ref(false)
-const list = ref([])
-const cellWidth = ref(0)
-const cellHeight = ref(0)
-const maxCell = ref(0)
-const infoBox = ref(null)
-const container = ref(null)
-let positionBox = []
-let coordinates = [] //坐标点集合
-
-let lastTask = undefined
-let isOverlay = false //是否正在交换位置
-let moveTime = 80 //移动动画时间
-
-let itemMaxY = 0
-let itemMaxX = 0
-let currentInstance
-
-const handleMouseDown = e => {
-  // 右键返回
-  if (e.buttons === 2) {
-    return
-  }
-  // 如果没有选中组件 在画布上点击时需要调用 e.preventDefault() 防止触发 drop 事件
-  if (!curComponent.value || isPreventDrop(curComponent.value.component)) {
-    e.preventDefault()
-  }
-  hideArea()
-  // 获取编辑器的位移信息，每次点击时都需要获取一次。主要是为了方便开发时调试用。
-  const rectInfo = editor.value.getBoundingClientRect()
-  editorX.value = rectInfo.x
-  editorY.value = rectInfo.y
-
-  const startX = e.clientX
-  const startY = e.clientY
-  start.value.x = startX - editorX.value
-  start.value.y = startY - editorY.value
-  // 展示选中区域
-  isShowArea.value = true
-
-  const move = moveEvent => {
-    width.value = Math.abs(moveEvent.clientX - startX)
-    height.value = Math.abs(moveEvent.clientY - startY)
-    if (moveEvent.clientX < startX) {
-      start.value.x = moveEvent.clientX - editorX.value
+const mainSlotStyleInner = item => {
+  const style = {}
+  if (item.style) {
+    let colorRGBA = ''
+    if (item.style.backgroundColorSelect) {
+      colorRGBA = hexColorToRGBA(item.style.color, item.style.alpha)
     }
-
-    if (moveEvent.clientY < startY) {
-      start.value.y = moveEvent.clientY - editorY.value
-    }
-  }
-
-  const up = e => {
-    document.removeEventListener('mousemove', move)
-    document.removeEventListener('mouseup', up)
-
-    if (e.clientX == startX && e.clientY == startY) {
-      hideArea()
-      return
-    }
-
-    createGroup()
-  }
-
-  document.addEventListener('mousemove', move)
-  document.addEventListener('mouseup', up)
-}
-
-const hideArea = () => {
-  isShowArea.value = false
-  width.value = 0
-  height.value = 0
-  composeStore.setAreaData({
-    style: {
-      left: 0,
-      top: 0,
-      width: 0,
-      height: 0
-    },
-    components: []
-  })
-}
-
-const createGroup = () => {
-  // 获取选中区域的组件数据
-  const areaData = getSelectArea()
-  if (areaData.length <= 1) {
-    hideArea()
-    return
-  }
-
-  // 根据选中区域和区域中每个组件的位移信息来创建 Group 组件
-  // 要遍历选择区域的每个组件，获取它们的 left top right bottom 信息来进行比较
-  let top = Infinity,
-    left = Infinity
-  let right = -Infinity,
-    bottom = -Infinity
-  areaData.forEach(component => {
-    let style = { left: 0, top: 0, right: 0, bottom: 0 }
-    if (component.component == 'Group') {
-      component.propValue.forEach(item => {
-        const rectInfo = _$(`#component${item.id}`).getBoundingClientRect()
-        style.left = rectInfo.left - editorX.value
-        style.top = rectInfo.top - editorY.value
-        style.right = rectInfo.right - editorX.value
-        style.bottom = rectInfo.bottom - editorY.value
-
-        if (style.left < left) left = style.left
-        if (style.top < top) top = style.top
-        if (style.right > right) right = style.right
-        if (style.bottom > bottom) bottom = style.bottom
-      })
+    style['padding'] = (item.style.innerPadding || 0) + 'px'
+    style['border-radius'] = (item.style.borderRadius || 0) + 'px'
+    if (item.style.enable) {
+      if (item.style.backgroundType === 'outerImage') {
+        style['background'] = `url(${imgUrlTrans(item.style.outerImage)}) no-repeat ${colorRGBA}`
+      } else {
+        style['background-color'] = colorRGBA
+      }
     } else {
-      style = getComponentRotatedStyle(component.style)
+      style['background-color'] = colorRGBA
     }
-
-    if (style.left < left) left = style.left
-    if (style.top < top) top = style.top
-    if (style.right > right) right = style.right
-    if (style.bottom > bottom) bottom = style.bottom
-  })
-
-  start.value.x = left
-  start.value.y = top
-  width.value = right - left
-  height.value = bottom - top
-
-  // 设置选中区域位移大小信息和区域内的组件数据
-  composeStore.setAreaData({
-    style: {
-      left,
-      top,
-      width: width.value,
-      height: height.value
-    },
-    components: areaData
-  })
-  // 如果有组件被group选中 取消当前画布选中的组件
-  if (areaData.length > 0) {
-    dvMainStore.setCurComponent({ component: null, index: null })
   }
+  return style
 }
 
-const getSelectArea = () => {
-  const result = []
-  // 区域起点坐标
-  const { x, y } = start.value
-  // 计算所有的组件数据，判断是否在选中区域内
-  componentData.value.forEach(component => {
-    if (component.isLock) return
-
-    const styleInfo = getComponentRotatedStyle(component.style)
-    if (
-      x <= styleInfo.left &&
-      y <= styleInfo.top &&
-      styleInfo.left + styleInfo.width <= x + width.value &&
-      styleInfo.top + styleInfo.height <= y + height.value
-    ) {
-      result.push(component)
-    }
-  })
-
-  // 返回在选中区域内的所有组件
-  return result
-}
-
-const handleContextMenu = e => {
-  e.stopPropagation()
-  e.preventDefault()
-
-  // 计算菜单相对于编辑器的位移
-  let target = e.target
-  let top = e.offsetY
-  let left = e.offsetX
-  while (target instanceof SVGElement) {
-    target = target.parentNode
+const getTextareaHeight = (element, text) => {
+  let { lineHeight, fontSize, height } = element.style
+  if (lineHeight === '') {
+    lineHeight = 1.5
   }
 
-  while (!target.className.includes('editor')) {
-    left += target.offsetLeft
-    top += target.offsetTop
-    target = target.parentNode
-  }
-
-  contextmenuStore.showContextMenu({ top, left })
-}
-
-const getComponentStyle = style => {
-  return getStyle(style, svgFilterAttrs)
-}
-
-const getSVGStyleInner = style => {
-  return getSVGStyle(style, svgFilterAttrs)
-}
-
-const getShapeItemShowStyle = item => {
-  return getShapeItemStyle(item, {
-    dvModel: dvInfo.value.type,
-    cellWidth: cellWidth.value,
-    cellHeight: cellHeight.value,
-    curGap: curCap.value
-  })
+  const newHeight = (text.split('<br>').length - 1) * lineHeight * fontSize
+  return height > newHeight ? height : newHeight
 }
 
 const handleInput = (element, value) => {
@@ -377,34 +218,24 @@ const handleInput = (element, value) => {
     rotate: null
   })
 }
-
-const getTextareaHeight = (element, text) => {
-  let { lineHeight, fontSize, height } = element.style
-  if (lineHeight === '') {
-    lineHeight = 1.5
-  }
-
-  const newHeight =
-    (text.split('<br>').length - 1) * lineHeight * (fontSize || canvasStyleData.value.fontSize)
-  return height > newHeight ? height : newHeight
+const getComponentStyle = style => {
+  return getStyle(style, svgFilterAttrs)
 }
 
-const editStyle = computed(() => {
-  if (dvModel.value === 'dashboard') {
-    return {
-      width: '100%',
-      height: '100%'
-    }
-  } else {
-    return {
-      ...getCanvasStyle(canvasStyleData.value),
-      width: changeStyleWithScale(canvasStyleData.value['width']) + 'px',
-      height: changeStyleWithScale(canvasStyleData.value['height']) + 'px'
-    }
-  }
+const selectCurComponent = e => {
+  // 阻止向父组件冒泡
+  e.stopPropagation()
+  e.preventDefault()
+}
+
+const isActive = item => {
+  return curComponent.value === item
+}
+
+onMounted(() => {
+  currentInstance = getCurrentInstance()
 })
 
-//融合矩阵设计
 function debounce(func, time) {
   if (!isOverlay) {
     ;(function (t) {
@@ -609,7 +440,7 @@ function movePlayer(item, position) {
 }
 
 function removeItem(index) {
-  let item = componentData.value[index]
+  let item = yourList.value[index]
   removeItemFromPositionBox(item)
   let belowItems = findBelowItems(item)
   _.forEach(belowItems, function (upItem) {
@@ -618,12 +449,12 @@ function removeItem(index) {
       moveItemUp(upItem, canGoUpRows)
     }
   })
-  componentData.value.splice(index, 1, {})
+  yourList.value.splice(index, 1, {})
 }
 
 function addItem(item, index) {
   if (index < 0) {
-    index = componentData.value.length
+    index = yourList.value.length
   }
   item._dragId = index
   checkItemPosition(item, {
@@ -852,9 +683,13 @@ function findBelowItems(item) {
 const startResize = (e, item, index) => {
   if (!resizable.value) return
   resizeStart.value(e, item, index)
+  // e.preventDefault();
+  let target = $(e.target)
+
   if (!infoBox.value) {
     infoBox.value = {}
   }
+  let itemNode = target.parents('.item')
   infoBox.value.resizeItem = item
   infoBox.value.resizeItemIndex = index
 }
@@ -870,14 +705,14 @@ const containerMouseDown = e => {
 }
 
 const endItemMove = (e, item, index) => {
-  // console.log('endItemMove')
+  console.log('endItemMove')
   dvMainStore.setCurComponent({ component: item, index: index })
   dvMainStore.setClickComponentStatus(true)
   dvMainStore.setInEditorStatus(true)
 }
 
 const startMove = (e, item, index) => {
-  // console.log('startMove...')
+  console.log('startMove...')
   // e.preventDefault();
   if (!infoBox.value) {
     infoBox.value = {}
@@ -1059,7 +894,7 @@ const startMove = (e, item, index) => {
 }
 
 const endMove = e => {
-  // console.log('endMove....')
+  console.log('endMove....')
   return {}
 }
 
@@ -1093,13 +928,13 @@ const canvasInit = () => {
 
   let i = 0
   let timeId = setInterval(function () {
-    if (i >= componentData.value.length) {
+    if (i >= yourList.value.length) {
       clearInterval(timeId)
       nextTick(() => {
         moveAnimate.value = true
       })
     } else {
-      let item = componentData.value[i]
+      let item = yourList.value[i]
       addItem(item, i)
       i++
     }
@@ -1121,7 +956,7 @@ const nowItemStyle = (item, index) => {
 }
 
 const getList = () => {
-  let returnList = _.sortBy(_.cloneDeep(componentData.value), 'y')
+  let returnList = _.sortBy(_.cloneDeep(yourList.value), 'y')
   let finalList = []
   _.forEach(returnList, function (item, index) {
     if (_.isEmpty(item)) return
@@ -1155,180 +990,11 @@ const afterInitOk = func => {
   }, 100)
 }
 const addItemBox = item => {
-  // componentData.value.push(item)
+  // yourList.value.push(item)
   nextTick(function () {
-    addItem(item, componentData.value.length - 1)
+    addItem(item, yourList.value.length - 1)
   })
 }
-
-const onStartResize = (e, item, index) => {
-  // 移动时 换算矩阵和悬浮位置大小
-  syncShapeItemStyle(item, cellWidth.value, cellHeight.value)
-  if (!resizable.value) return
-  resizeStart.value(e, item, index)
-  if (!infoBox.value) {
-    infoBox.value = {}
-  }
-  infoBox.value.resizeItem = item
-  infoBox.value.resizeItemIndex = index
-
-  infoBox.value.moveItem = item
-  infoBox.value.moveItemIndex = index
-
-  infoBox.value.originX = 0 // 克隆对象原始X位置
-  infoBox.value.originY = 0
-  infoBox.value.startX = 0
-  infoBox.value.startY = 0
-
-  infoBox.value.oldX = item.x // 实际对象原始X位置
-  infoBox.value.oldY = item.y
-  infoBox.value.oldSizeX = item.sizex
-  infoBox.value.oldSizeY = item.sizey
-}
-
-const onStartMove = (e, item, index) => {
-  // 移动时 换算矩阵和悬浮位置大小
-  syncShapeItemStyle(item, cellWidth.value, cellHeight.value)
-  // console.log('onStartMove')
-  if (!infoBox.value) {
-    infoBox.value = {}
-  }
-  dragStart.value.call(null, e, item, index)
-  infoBox.value.moveItem = item
-  infoBox.value.moveItemIndex = index
-
-  infoBox.value.originX = 0 // 克隆对象原始X位置
-  infoBox.value.originY = 0
-  infoBox.value.startX = 0
-  infoBox.value.startY = 0
-
-  infoBox.value.oldX = item.x // 实际对象原始X位置
-  infoBox.value.oldY = item.y
-  infoBox.value.oldSizeX = item.sizex
-  infoBox.value.oldSizeY = item.sizey
-}
-
-const onDragging = (e, item, index) => {
-  // item 中的 style 为当前实时的位置
-  const infoBoxTemp = infoBox.value
-  let moveItem = _.get(infoBoxTemp, 'moveItem')
-  scrollScreen(e)
-  if (!draggable.value) return
-  dragging.value(e, moveItem, moveItem._dragId)
-  //problem
-  moveItem['isPlayer'] = true
-  let oldX = infoBoxTemp.oldX
-  let oldY = infoBoxTemp.oldY
-
-  let newX = Math.floor(item.style.left / cellWidth.value + 1)
-  let newY = Math.floor(item.style.top / cellHeight.value + 1)
-  newX = newX > 0 ? newX : 1
-  newY = newY > 0 ? newY : 1
-  // console.log('onDragging=newX=' + newX + ';newY=' + newY)
-
-  debounce(
-    (function (newX, oldX, newY, oldY) {
-      return function () {
-        if (newX != oldX || oldY != newY) {
-          movePlayer(moveItem, {
-            x: newX,
-            y: newY
-          })
-
-          infoBoxTemp.oldX = newX
-          infoBoxTemp.oldY = newY
-        }
-      }
-    })(newX, oldX, newY, oldY),
-    10
-  )
-}
-
-const onResizing = (e, item, index) => {
-  const { top, left, width, height } = item.style
-  // item 中的 style 为当前实时的位置
-  const infoBoxTemp = infoBox.value
-  let resizeItem = _.get(infoBoxTemp, 'resizeItem')
-  let moveItem = _.get(infoBoxTemp, 'moveItem')
-  //调整大小时
-  resizing.value(e, resizeItem, resizeItem._dragId)
-  resizeItem['isPlayer'] = true
-  let nowSizeX =
-    width % cellWidth.value > (cellWidth.value / 4) * 3
-      ? Math.floor(width / cellWidth.value + 1)
-      : Math.floor(width / cellWidth.value)
-  let nowSizeY =
-    height % cellHeight.value > (cellHeight.value / 4) * 3
-      ? Math.floor(height / cellHeight.value + 1)
-      : Math.floor(height / cellHeight.value)
-
-  console.log(
-    'nowSizeX=' + nowSizeX + ';p1=' + (width % cellWidth.value) + ';p2=' + (cellWidth.value / 4) * 3
-  )
-  const addSizeX = 1
-  const addSizeY = 1
-
-  // 移动时
-  let oldX = infoBoxTemp.oldX
-  let oldY = infoBoxTemp.oldY
-
-  let newX = Math.floor(item.style.left / cellWidth.value + 1)
-  let newY = Math.floor(item.style.top / cellHeight.value + 1)
-  newX = newX > 0 ? newX : 1
-  newY = newY > 0 ? newY : 1
-  console.log(
-    'onResizing=nowSizeX=' + nowSizeX + ';nowSizeY=' + nowSizeY + 'newX=' + newX + ';newY=' + newY
-  )
-
-  // 调整大小
-  debounce(
-    (function (newX, oldX, newY, oldY) {
-      return function () {
-        // 调整位置
-        movePlayer(resizeItem, {
-          x: newX,
-          y: newY
-        })
-
-        // 调整大小
-        resizePlayer(resizeItem, {
-          sizeX: nowSizeX,
-          sizeY: nowSizeY
-        })
-        infoBoxTemp.oldX = newX
-        infoBoxTemp.oldY = newY
-      }
-    })(newX, oldX, newY, oldY),
-    10
-  )
-}
-
-const onMouseUp = (e, item, index) => {
-  // startMove 中组织冒泡会导致移动事件无法传播，在这里设置（鼠标抬起）效果一致
-  if (_.isEmpty(infoBox.value)) return
-  if (infoBox.value.cloneItem) {
-    infoBox.value.cloneItem.remove()
-  }
-  if (infoBox.value.resizeItem) {
-    delete infoBox.value.resizeItem['isPlayer']
-    resizeEnd.value(e, infoBox.value.resizeItem, infoBox.value.resizeItem._dragId)
-  }
-  if (infoBox.value.moveItem) {
-    dragEnd?.value(null, e, infoBox.value.moveItem, infoBox.value.moveItem._dragId)
-    //problem
-    infoBox.value.moveItem['show'] = true
-    delete infoBox.value.moveItem['isPlayer']
-  }
-  infoBox.value = {}
-}
-
-onMounted(() => {
-  // 获取编辑器元素
-  composeStore.getEditor()
-  eventBus.on('hideArea', () => {
-    hideArea()
-  })
-})
 
 defineExpose({
   canvasSizeInit,
@@ -1338,107 +1004,95 @@ defineExpose({
 })
 </script>
 
-<template>
-  <div
-    id="editor"
-    ref="container"
-    class="editor"
-    :class="{ edit: isEdit }"
-    :style="editStyle"
-    @contextmenu="handleContextMenu"
-    @mousedown="handleMouseDown"
-  >
-    <!-- 网格线 -->
-    <!--    <Grid />-->
-    <drag-shadow
-      v-if="infoBox && infoBox.moveItem"
-      :base-height="baseHeight"
-      :base-width="baseWidth"
-      :cur-gap="curCap"
-      :element="infoBox.moveItem"
-    ></drag-shadow>
+<style lang="less">
+.active {
+  z-index: 15 !important;
+}
 
-    <!--页面组件列表展示-->
-    <Shape
-      v-for="(item, index) in showComponentData"
-      :key="item.id"
-      :default-style="item.style"
-      :style="getShapeItemShowStyle(item)"
-      :active="item.id === (curComponent || {})['id']"
-      :element="item"
-      :index="index"
-      :class="{ lock: item.isLock }"
-      :base-cell-info="baseCellInfo"
-      @onStartResize="onStartResize($event, item, index)"
-      @onStartMove="onStartMove($event, item, index)"
-      @onMouseUp="onMouseUp($event, item, index)"
-      @onDragging="onDragging($event, item, index)"
-      @onResizing="onResizing($event, item, index)"
-    >
-      <!--如果是视图 则动态获取预存的chart-view数据-->
-      <component
-        :is="findComponent(item.component)"
-        v-if="item.component === 'UserView'"
-        :id="'component' + item.id"
-        class="component"
-        :style="getComponentStyle(item.style)"
-        :prop-value="item.propValue"
-        :view="canvasViewInfo[item.id]"
-        :element="item"
-        :request="item.request"
-        @input="handleInput"
-      />
-
-      <component
-        :is="findComponent(item.component)"
-        v-else-if="item.component != 'VText'"
-        :id="'component' + item.id"
-        class="component"
-        :style="getComponentStyle(item.style)"
-        :prop-value="item.propValue"
-        :element="item"
-        :request="item.request"
-      />
-
-      <component
-        :is="findComponent(item.component)"
-        v-else
-        :id="'component' + item.id"
-        class="component"
-        :style="getComponentStyle(item.style)"
-        :prop-value="item.propValue"
-        :element="item"
-        :request="item.request"
-        @input="handleInput"
-      />
-    </Shape>
-    <!-- 右击菜单 -->
-    <ContextMenu />
-    <!-- 标线 -->
-    <MarkLine />
-    <!-- 选中区域 -->
-    <Area v-show="isShowArea" :start="start" :width="width" :height="height" />
-  </div>
-</template>
-
-<style lang="less" scoped>
-.editor {
+.dragAndResize {
   position: relative;
-  margin: auto;
-  background-size: 100% 100% !important;
-  .lock {
-    opacity: 0.5;
-    &:hover {
-      cursor: not-allowed;
+  user-select: none;
+  * {
+    margin: 0;
+    padding: 0;
+  }
+  .item {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    z-index: 11;
+    .resizeHandle {
+      position: absolute;
+      right: 2px;
+      bottom: 2px;
+      width: 0;
+      height: 0;
+      cursor: nw-resize;
+      opacity: 0.5;
+      border-bottom: 10px solid black;
+      border-left: 10px solid transparent;
+      z-index: 20;
     }
+  }
+
+  .moveAnimation {
+    transition: top 80ms ease;
+  }
+
+  .canNotDrag {
+    cursor: default !important;
+  }
+
+  .cloneNode {
+    z-index: 3;
+    transition: none;
+    opacity: 0.5;
+    background: #fff;
+    .shape {
+      .bar-main {
+        display: none;
+      }
+    }
+  }
+
+  .movingItem {
+    position: absolute;
+    border: none;
+    &:before {
+      position: absolute;
+      z-index: 2;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      content: '';
+      opacity: 0.5;
+      background-color: #bbb;
+    }
+  }
+
+  .positionBox {
+    position: fixed;
+    top: 0;
+    right: 100px;
+    overflow: auto;
+    width: 500px;
+    height: 500px;
+  }
+
+  .coords {
+    position: fixed;
+    right: 100px;
+    bottom: 200px;
+    overflow: auto;
+    width: 200px;
+    height: 200px;
   }
 }
 
-.edit {
-  .component {
-    outline: none;
-    width: 100%;
-    height: 100%;
-  }
+.item-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
 }
 </style>

@@ -101,7 +101,8 @@ export const dvMainStore = defineStore('dataVisualization', {
         name: null,
         pid: null,
         status: null,
-        selfWatermarkStatus: null
+        selfWatermarkStatus: null,
+        type: null
       },
       // 视图信息
       canvasViewInfo: {},
@@ -240,11 +241,20 @@ export const dvMainStore = defineStore('dataVisualization', {
     },
 
     setShapeStyle({ top, left, width, height, rotate }) {
-      if (top) this.curComponent.style.top = Math.round(top)
-      if (left) this.curComponent.style.left = Math.round(left)
-      if (width) this.curComponent.style.width = Math.round(width)
-      if (height) this.curComponent.style.height = Math.round(height)
-      if (rotate) this.curComponent.style.rotate = Math.round(rotate)
+      // console.log('top=' + top + ';left=' + left)
+      if (this.canvasStyleData.dvModel === 'dashboard') {
+        if (top) this.curComponent.style.top = top < 0 ? 0 : Math.round(top)
+        if (left) this.curComponent.style.left = left < 0 ? 0 : Math.round(left)
+        if (width) this.curComponent.style.width = Math.round(width)
+        if (height) this.curComponent.style.height = Math.round(height)
+        if (rotate) this.curComponent.style.rotate = Math.round(rotate)
+      } else {
+        if (top) this.curComponent.style.top = Math.round(top)
+        if (left) this.curComponent.style.left = Math.round(left)
+        if (width) this.curComponent.style.width = Math.round(width)
+        if (height) this.curComponent.style.height = Math.round(height)
+        if (rotate) this.curComponent.style.rotate = Math.round(rotate)
+      }
     },
 
     setShapeSingleStyle({ key, value }) {

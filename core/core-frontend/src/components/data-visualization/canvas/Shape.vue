@@ -1,24 +1,21 @@
 <template>
-  <div
-    class="shape"
-    :class="{ active }"
-    @click="selectCurComponent"
-    @mousedown="handleMouseDownOnShape"
-  >
-    <span
-      v-show="isActive()"
-      class="iconfont icon-xiangyouxuanzhuan"
-      @mousedown="handleRotate"
-    ></span>
-    <span v-show="element['isLock']" class="iconfont icon-suo"></span>
+  <div class="shape">
     <div
-      v-for="item in isActive() ? getPointList() : []"
-      :key="item"
-      class="shape-point"
-      :style="getPointStyle(item)"
-      @mousedown="handleMouseDownOnPoint(item, $event)"
-    ></div>
-    <slot></slot>
+      class="shape-inner"
+      :class="{ active }"
+      @click="selectCurComponent"
+      @mousedown="handleMouseDownOnShape"
+    >
+      <span v-show="element['isLock']" class="iconfont icon-suo"></span>
+      <div
+        v-for="item in isActive() ? getPointList() : []"
+        :key="item"
+        class="shape-point"
+        :style="getPointStyle(item)"
+        @mousedown="handleMouseDownOnPoint(item, $event)"
+      ></div>
+      <slot></slot>
+    </div>
   </div>
 </template>
 
@@ -27,7 +24,7 @@ import eventBus from '@/utils/eventBus'
 import calculateComponentPositionAndSize from '@/utils/calculateComponentPositionAndSize'
 import { mod360 } from '@/utils/translate'
 import { isPreventDrop } from '@/utils/utils'
-import { nextTick, onMounted, ref, toRefs } from 'vue'
+import { computed, nextTick, onMounted, ref, toRefs } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
@@ -38,8 +35,9 @@ const snapshotStore = snapshotStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
 const composeStore = composeStoreWithOut()
 
-const { curComponent } = storeToRefs(dvMainStore)
+const { curComponent, dvInfo } = storeToRefs(dvMainStore)
 const { editor } = storeToRefs(composeStore)
+const emit = defineEmits(['onStartResize', 'onStartMove', 'onDragging', 'onResizing', 'onMouseUp'])
 
 const props = defineProps({
   active: {
@@ -69,6 +67,17 @@ const props = defineProps({
       return {}
     }
   },
+  baseCellInfo: {
+    required: true,
+    type: Object,
+    default() {
+      return {
+        baseWidth: 0,
+        baseHeight: 0,
+        curGap: 0
+      }
+    }
+  },
   index: {
     required: true,
     type: [Number, String],
@@ -76,7 +85,7 @@ const props = defineProps({
   }
 })
 
-const { active, element, defaultStyle, index } = toRefs(props)
+const { active, element, defaultStyle, baseCellInfo, index } = toRefs(props)
 
 const pointList = ['lt', 't', 'rt', 'r', 'rb', 'b', 'lb', 'l']
 const pointList2 = ['r', 'l']
@@ -105,6 +114,10 @@ const angleToCursor = [
   { start: 293, end: 338, cursor: 'w' }
 ]
 
+const dashboardActive = computed(() => {
+  return dvInfo.value.type === 'dashboard'
+})
+
 const getPointList = () => {
   return element.value.component === 'line-shape' ? pointList2 : pointList
 }
@@ -119,7 +132,15 @@ const handleRotate = () => {
 }
 
 const getPointStyle = point => {
-  const { width, height } = defaultStyle.value
+  let { width, height } = defaultStyle.value
+  const { sizeX, sizeY } = element.value
+  if (dashboardActive.value && !element.value['isPlayer']) {
+    width = sizeX * baseCellInfo.value.baseWidth - 2 * baseCellInfo.value.curGap
+    height = sizeY * baseCellInfo.value.baseHeight - 2 * baseCellInfo.value.curGap
+  } else {
+    width = width - 2 * baseCellInfo.value.curGap
+    height = height - 2 * baseCellInfo.value.curGap
+  }
   const hasT = /t/.test(point)
   const hasB = /b/.test(point)
   const hasL = /l/.test(point)
@@ -186,6 +207,7 @@ const getCursor = () => {
 }
 
 const handleMouseDownOnShape = e => {
+  dashboardActive.value && emit('onStartMove', e)
   // 将当前点击组件的事件传播出去
   nextTick(() => eventBus.emit('componentClick'))
   dvMainStore.setInEditorStatus(true)
@@ -210,6 +232,7 @@ const handleMouseDownOnShape = e => {
   // 如果元素没有移动，则不保存快照
   let hasMove = false
   const move = moveEvent => {
+    dashboardActive.value && emit('onDragging', e)
     hasMove = true
     const curX = moveEvent.clientX
     const curY = moveEvent.clientY
@@ -230,6 +253,7 @@ const handleMouseDownOnShape = e => {
   }
 
   const up = () => {
+    dashboardActive.value && emit('onMouseUp')
     hasMove && snapshotStore.recordSnapshot()
     // 触发元素停止移动事件，用于隐藏标线
     eventBus.emit('unMove')
@@ -249,6 +273,7 @@ const selectCurComponent = e => {
 }
 
 const handleMouseDownOnPoint = (point, e) => {
+  dashboardActive.value && emit('onStartResize', e)
   dvMainStore.setInEditorStatus(true)
   dvMainStore.setClickComponentStatus(true)
   e.stopPropagation()
@@ -288,6 +313,7 @@ const handleMouseDownOnPoint = (point, e) => {
 
   const needLockProportion = isNeedLockProportion()
   const move = moveEvent => {
+    dashboardActive.value && emit('onResizing', moveEvent)
     // 第一次点击时也会触发 move，所以会有“刚点击组件但未移动，组件的大小却改变了”的情况发生
     // 因此第一次点击时不触发 move 事件
     if (isFirst) {
@@ -310,6 +336,7 @@ const handleMouseDownOnPoint = (point, e) => {
   }
 
   const up = () => {
+    dashboardActive.value && emit('onMouseUp')
     document.removeEventListener('mousemove', move)
     document.removeEventListener('mouseup', up)
     needSave && snapshotStore.recordSnapshot()
@@ -350,7 +377,12 @@ onMounted(() => {
 <style lang="less" scoped>
 .shape {
   position: absolute;
+}
 
+.shape-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
   &:hover {
     cursor: move;
   }

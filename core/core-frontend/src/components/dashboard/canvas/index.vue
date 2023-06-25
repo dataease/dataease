@@ -683,13 +683,9 @@ function findBelowItems(item) {
 const startResize = (e, item, index) => {
   if (!resizable.value) return
   resizeStart.value(e, item, index)
-  // e.preventDefault();
-  let target = $(e.target)
-
   if (!infoBox.value) {
     infoBox.value = {}
   }
-  let itemNode = target.parents('.item')
   infoBox.value.resizeItem = item
   infoBox.value.resizeItemIndex = index
 }
@@ -705,14 +701,14 @@ const containerMouseDown = e => {
 }
 
 const endItemMove = (e, item, index) => {
-  console.log('endItemMove')
+  // console.log('endItemMove')
   dvMainStore.setCurComponent({ component: item, index: index })
   dvMainStore.setClickComponentStatus(true)
   dvMainStore.setInEditorStatus(true)
 }
 
 const startMove = (e, item, index) => {
-  console.log('startMove...')
+  // console.log('startMove...')
   // e.preventDefault();
   if (!infoBox.value) {
     infoBox.value = {}
@@ -894,7 +890,7 @@ const startMove = (e, item, index) => {
 }
 
 const endMove = e => {
-  console.log('endMove....')
+  // console.log('endMove....')
   return {}
 }
 

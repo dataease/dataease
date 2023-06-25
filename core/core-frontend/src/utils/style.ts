@@ -15,6 +15,47 @@ export function getShapeStyle(style) {
   return result
 }
 
+export function getShapeItemStyle(item, { dvModel, cellWidth, cellHeight, curGap }) {
+  let result = {}
+  if (dvModel === 'dashboard' && !item['isPlayer']) {
+    result = {
+      padding: curGap + 'px!important',
+      width: cellWidth * item.sizeX + 'px',
+      height: cellHeight * item.sizeY + 'px',
+      left: cellWidth * (item.x - 1) + 'px',
+      top: cellHeight * (item.y - 1) + 'px'
+    }
+  } else {
+    result = {
+      padding: curGap + 'px!important',
+      width: item.style.width + 'px',
+      height: item.style.height + 'px',
+      left: item.style.left + 'px',
+      top: item.style.top + 'px'
+    }
+  }
+
+  return result
+}
+
+export function syncShapeItemStyle(item, cellWidth, cellHeight) {
+  item.style.left = cellWidth * (item.x - 1)
+  item.style.top = cellHeight * (item.y - 1)
+  item.style.width = cellWidth * item.sizeX
+  item.style.height = cellHeight * item.sizeY
+  console.log(
+    'syncShapeItemStyle=' +
+      'x=' +
+      (item.x - 1) +
+      ';y=' +
+      (item.y - 1) +
+      ';sizeX=' +
+      item.sizeX +
+      ';sizeY=' +
+      item.sizeY
+  )
+}
+
 const needUnit = [
   'fontSize',
   'width',

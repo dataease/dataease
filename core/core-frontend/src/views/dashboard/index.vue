@@ -14,7 +14,7 @@ import findComponent from '../../utils/components'
 import DvSidebar from '../../components/visualization/DvSidebar.vue'
 import { findById } from '@/api/visualization/dataVisualization'
 import router from '@/router'
-import DashboardCanvas from '@/components/dashboard/canvas/index.vue'
+import CommonCanvas from '@/components/data-visualization/canvas/index.vue'
 import $ from 'jquery'
 import DbToolbar from '@/components/dashboard/DbToolbar.vue'
 import ViewEditor from '@/views/chart/components/editor/index.vue'
@@ -22,7 +22,7 @@ import { getDatasetTree } from '@/api/dataset'
 import { Tree } from '@/views/visualized/data/dataset/form/CreatDsGroup.vue'
 import { guid } from '@/views/visualized/data/dataset/form/util.js'
 import elementResizeDetectorMaker from 'element-resize-detector'
-import { getCanvasStyle } from '@/utils/style'
+import { getCanvasStyle, syncShapeItemStyle } from '@/utils/style'
 import DbCanvasAttr from '@/components/dashboard/DbCanvasAttr.vue'
 
 const dvMainStore = dvMainStoreWithOut()
@@ -94,10 +94,9 @@ const handleNew = newComponentInfo => {
   const { componentName, innerType } = newComponentInfo
   if (componentName) {
     const component = findNewComponent(componentName, innerType)
-    component.style.top = 0
-    component.style.left = 0
+    syncShapeItemStyle(component, baseWidth.value, baseHeight.value)
     component.id = guid()
-    changeComponentSizeWithScale(component)
+    // changeComponentSizeWithScale(component)
     dvMainStore.addComponent({ component: component, index: undefined })
     nextTick(() => {
       cyGridster.value.addItemBox(component) //在适当的时候初始化布局组件
@@ -138,15 +137,12 @@ const handleDragOver = e => {
 
 const handleMouseDown = e => {
   e.stopPropagation()
-  console.log('handleMouseDown')
   dvMainStore.setClickComponentStatus(false)
   dvMainStore.setInEditorStatus(true)
 }
 
 const deselectCurComponent = e => {
-  console.log('deselectCurComponent=isClickComponent=' + isClickComponent.value)
   if (!isClickComponent.value) {
-    console.log('deselectCurComponent')
     dvMainStore.setCurComponent({ component: null, index: null })
   }
   // 0 左击 1 滚轮 2 右击
@@ -227,7 +223,8 @@ onMounted(() => {
         name: canvasInfo.name,
         pid: canvasInfo.pid,
         status: canvasInfo.status,
-        selfWatermarkStatus: canvasInfo.selfWatermarkStatus
+        selfWatermarkStatus: canvasInfo.selfWatermarkStatus,
+        type: canvasInfo.type
       }
       dvMainStore.updateCurDvInfo(bashInfo)
       //恢复画布数据
@@ -240,7 +237,8 @@ onMounted(() => {
       name: '新建仪表板',
       pid: pid,
       status: null,
-      selfWatermarkStatus: null
+      selfWatermarkStatus: null,
+      type: null
     })
     canvasInit()
   }
@@ -270,7 +268,7 @@ eventBus.on('handleNew', handleNew)
             @mousedown="handleMouseDown"
             @mouseup="deselectCurComponent"
           >
-            <DashboardCanvas
+            <common-canvas
               ref="cyGridster"
               v-if="canvasInitStatus"
               :your-list="componentData"
@@ -278,8 +276,9 @@ eventBus.on('handleNew', handleNew)
               :base-margin-top="baseMarginTop"
               :base-width="baseWidth"
               :base-height="baseHeight"
+              :dv-model="'dashboard'"
             >
-            </DashboardCanvas>
+            </common-canvas>
           </div>
         </div>
       </main>
@@ -335,10 +334,10 @@ eventBus.on('handleNew', handleNew)
       .content {
         flex: 1;
         width: 100%;
-        overflow-y: auto;
         .db-canvas {
           padding: 2px;
           background-size: 100% 100% !important;
+          overflow-y: auto;
           width: 100%;
           height: 100%;
         }

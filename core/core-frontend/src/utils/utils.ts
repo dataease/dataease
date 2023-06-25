@@ -21,6 +21,10 @@ export function swap(arr, i, j) {
   arr.value[j] = temp
 }
 
+export function _$(selector) {
+  return document.querySelector(selector)
+}
+
 export function $(selector) {
   return document.querySelector(selector)
 }

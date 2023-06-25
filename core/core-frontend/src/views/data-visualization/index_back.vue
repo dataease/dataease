@@ -142,7 +142,8 @@ onMounted(() => {
       name: '新建仪表板',
       pid: null,
       status: null,
-      selfWatermarkStatus: null
+      selfWatermarkStatus: null,
+      type: canvasInfo.type
     })
   }
   // 设置画布初始滚动条位置
