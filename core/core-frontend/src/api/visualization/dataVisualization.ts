@@ -28,3 +28,5 @@ export const saveOrUpdateSubject = data =>
   request.post({ url: '/visualizationSubject/update', data })
 
 export const deleteSubject = id => request.delete({ url: '/visualizationSubject/delete/' + id })
+
+export const dvNameCheck = data => request.post({ url: '/dataVisualization/nameCheck', data })

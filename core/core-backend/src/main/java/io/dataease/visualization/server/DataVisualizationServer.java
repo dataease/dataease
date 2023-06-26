@@ -97,7 +97,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
             DataVisualizationInfo visualizationInfo = new DataVisualizationInfo();
             BeanUtils.copyBean(visualizationInfo, request);
             visualizationInfo.setDeleteFlag(DataVisualizationConstants.DELETE_FLAG.AVAILABLE);
-            visualizationInfo.setNodeType(DataVisualizationConstants.NODE_TYPE.DV);
+            visualizationInfo.setNodeType(DataVisualizationConstants.NODE_TYPE.LEAF);
             visualizationInfo.setCreateBy("");
             visualizationInfo.setCreateTime(System.currentTimeMillis());
             visualizationInfoMapper.insert(visualizationInfo);
@@ -164,7 +164,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         if (CollectionUtils.isEmpty(result)) {
             return new ArrayList<>();
         } else {
-            return TreeUtils.mergeTree(result, 0l);
+            return TreeUtils.mergeTree(result, 0L);
         }
     }
 
@@ -199,6 +199,22 @@ public class DataVisualizationServer implements DataVisualizationApi {
                 editor.setFlag(StringUtils.equals("dataV", visualizationInfo.getType()) ? "screen" : "panel");
                 interactiveAuthApi.editResource(editor);
             }
+        }
+    }
+
+    @Override
+    public void nameCheck(DataVisualizationBaseRequest request) {
+        QueryWrapper<DataVisualizationInfo> wrapper = new QueryWrapper<>();
+        wrapper.eq("delete_flag", 0);
+        wrapper.eq("pid", request.getPid());
+        wrapper.eq("name",request.getName());
+        wrapper.eq("node_type",request.getNodeType());
+        wrapper.eq("type",request.getType());
+        if("update".equalsIgnoreCase(request.getOpt())){
+            wrapper.ne("id",request.getId());
+        }
+        if(visualizationInfoMapper.exists(wrapper)){
+            DataEaseException.throwException("当前名称已经存在");
         }
     }
 }

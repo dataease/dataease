@@ -58,13 +58,13 @@ state.resourceTypeList = [
   {
     label: newResourceLabel,
     svgName: 'dashboard',
-    command: 'resource'
+    command: 'newLeaf'
   },
   {
     label: '新建文件夹',
     divided: true,
     svgName: 'scene',
-    command: 'folder'
+    command: 'newFolder'
   }
 ]
 
@@ -127,13 +127,8 @@ const operation = (cmd: string, data: ResourceTree, nodeType: string) => {
   }
 }
 
-const addOperation = (cmd: string, data?: ResourceTree) => {
-  if (cmd === 'resource') {
-    resourceCreate(data.id)
-  }
-  if (cmd === 'folder') {
-    resourceGroupOpt.value.optInit(cmd, data || {})
-  }
+const addOperation = (cmd: string, data?: ResourceTree, nodeType?: string) => {
+  resourceGroupOpt.value.optInit(nodeType, data || {}, cmd)
 }
 
 const resourceEdit = resourceId => {
@@ -141,12 +136,12 @@ const resourceEdit = resourceId => {
   window.open(baseUrl + resourceId, '_blank')
 }
 
-const resourceCreate = pid => {
+const resourceCreate = (pid, name) => {
   // 新建基础信息
   const newResourceId = guid()
   const bashResourceInfo = {
     id: newResourceId,
-    name: newResourceLabel,
+    name: name,
     pid: pid,
     type: curCanvasType.value,
     status: 1,
@@ -170,8 +165,12 @@ const handleResourceTree = (cmd, data) => {
   //do handleResourceTree
 }
 
-const resourceOptFinish = () => {
-  getTree()
+const resourceOptFinish = param => {
+  if (param && param.opt === 'newLeaf') {
+    resourceCreate(param.pid, param.name)
+  } else {
+    getTree()
+  }
 }
 
 watch(filterText, val => {
@@ -188,9 +187,21 @@ onMounted(() => {
   <div class="resource-tree">
     <div class="icon-methods">
       <span class="title"> {{ resourceLabel }} </span>
-      <el-tooltip class="box-item" effect="dark" content="新建文件夹" placement="top">
-        <el-button type="primary" @click="addOperation('folder')"> 新建文件夹 </el-button>
-      </el-tooltip>
+      <el-icon
+        title="新建文件夹"
+        class="custom-icon"
+        style="margin-right: 20px"
+        @click="addOperation('newFolder', null, 'folder')"
+      >
+        <Icon name="dv-new-folder"></Icon>
+      </el-icon>
+      <el-icon
+        :title="newResourceLabel"
+        class="custom-icon"
+        @click="addOperation('newLeaf', null, 'leaf')"
+      >
+        <Icon name="dv-new"></Icon>
+      </el-icon>
     </div>
 
     <el-input
@@ -220,10 +231,10 @@ onMounted(() => {
       <template #default="{ node, data }">
         <span class="custom-tree-node">
           <el-icon v-if="data.nodeType === 'folder'">
-            <Icon name="scene"></Icon>
+            <Icon name="dv-folder"></Icon>
           </el-icon>
           <el-icon v-else>
-            <Icon name="dashboard"></Icon>
+            <Icon name="dv-spine"></Icon>
           </el-icon>
           <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
           <div class="icon-more">
@@ -237,7 +248,9 @@ onMounted(() => {
               </el-icon>
             </span>
             <handle-more
-              @handle-command="cmd => addOperation(cmd, data)"
+              @handle-command="
+                cmd => addOperation(cmd, data, cmd === 'newFolder' ? 'folder' : 'leaf')
+              "
               :menu-list="state.resourceTypeList"
               icon-name="icon_add_outlined"
               placement="bottom-start"
@@ -274,6 +287,7 @@ onMounted(() => {
     color: var(--TextPrimary, #1f2329);
     padding-bottom: 10px;
     .title {
+      font-size: 16px;
       margin-right: auto;
     }
   }
@@ -330,6 +344,12 @@ onMounted(() => {
   }
   .icon-more {
     margin-left: auto;
+  }
+}
+
+.custom-icon {
+  &:hover {
+    cursor: pointer;
   }
 }
 </style>

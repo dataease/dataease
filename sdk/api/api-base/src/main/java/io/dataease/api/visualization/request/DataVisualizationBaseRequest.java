@@ -6,4 +6,6 @@ import lombok.Data;
 @Data
 public class DataVisualizationBaseRequest extends DataVisualizationVO {
 
+    private String opt;
+
 }

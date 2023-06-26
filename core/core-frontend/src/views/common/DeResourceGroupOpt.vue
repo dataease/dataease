@@ -1,7 +1,12 @@
 <script lang="ts" setup>
 import { ref, reactive, computed, watch, toRefs } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
-import { findTree, ResourceOrFolder, savaOrUpdateBase } from '@/api/visualization/dataVisualization'
+import {
+  dvNameCheck,
+  findTree,
+  ResourceOrFolder,
+  savaOrUpdateBase
+} from '@/api/visualization/dataVisualization'
 
 const props = defineProps({
   curCanvasType: {
@@ -48,6 +53,13 @@ const resourceForm = reactive({
   name: ''
 })
 
+const nameMap = {
+  newFolder: '新建文件夹',
+  newLeaf: '新建',
+  move: '移动',
+  rename: '编辑'
+}
+
 const filterNode = (value: string, data: ResourceTree) => {
   if (!value) return true
   return data.name.includes(value)
@@ -72,7 +84,7 @@ const nameValidator = (_, value, callback) => {
 }
 
 const showPid = computed(() => {
-  return !['rename', 'move'].includes(cmd.value) && !!pid.value
+  return ['newLeaf'].includes(cmd.value) && !pid.value
 })
 
 const showName = computed(() => {
@@ -127,25 +139,26 @@ const dfs = (arr: ResourceTree[]) => {
 
 const optInit = (type, data: ResourceTree, exec) => {
   nodeType.value = type
-  if (data.id) {
-    findTree({
-      nodeType: 'folder'
-    }).then(res => {
-      const resultTree = res.data
-      dfs(resultTree as unknown as ResourceTree[])
-      state.tData = (resultTree as unknown as ResourceTree[]) || []
-      if (exec) {
-        pid.value = data.pid
-        id.value = data.id
-        resourceForm.pid = data.pid as string
-        resourceForm.name = data.name
-      } else {
-        resourceForm.pid = data.id as string
-        pid.value = data.id
-      }
-    })
-    cmd.value = exec
-  }
+  dialogTitle.value = nameMap[exec]
+  findTree({
+    nodeType: 'folder',
+    type: curCanvasType.value
+  }).then(res => {
+    const resultTree = res.data
+    dfs(resultTree as unknown as ResourceTree[])
+    state.tData = (resultTree as unknown as ResourceTree[]) || []
+    if (['newLeaf', 'newFolder'].includes(exec)) {
+      resourceForm.pid = data.id as string
+      pid.value = data.id
+      resourceForm.name = nameMap[exec]
+    } else {
+      pid.value = data.pid
+      id.value = data.id
+      resourceForm.pid = data.pid as string
+      resourceForm.name = data.name
+    }
+  })
+  cmd.value = exec
   resourceDialogShow.value = true
   resourceFormRules.value = rules
 }
@@ -187,15 +200,22 @@ const saveResource = () => {
           params.pid = resourceForm.pid || pid.value || '0'
           break
       }
-      loading.value = true
-      savaOrUpdateBase(params)
-        .then(() => {
+      if (cmd.value === 'newLeaf') {
+        dvNameCheck({ opt: 'newLeaf', ...params }).then(() => {
           resourceDialogShow.value = false
-          emits('finish')
+          emits('finish', { opt: 'newLeaf', ...params })
         })
-        .finally(() => {
-          loading.value = false
-        })
+      } else {
+        loading.value = true
+        savaOrUpdateBase(params)
+          .then(() => {
+            resourceDialogShow.value = false
+            emits('finish')
+          })
+          .finally(() => {
+            loading.value = false
+          })
+      }
     }
   })
 }
@@ -228,6 +248,7 @@ const emits = defineEmits(['finish'])
       </el-form-item>
       <el-form-item v-if="showPid" :label="'目录'" prop="pid">
         <el-tree-select
+          style="width: 100%"
           v-model="resourceForm.pid"
           :data="state.tData"
           :props="propsTree"

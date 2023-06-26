@@ -14,10 +14,8 @@ public class DataVisualizationConstants {
     public static final class NODE_TYPE {
         //目录
         public static final String FOLDER = "folder";
-        //数据大屏
-        public static final String DV = "dv";
-        //仪表板
-        public static final String DASHBOARD = "dashboard";
+        //资源节点
+        public static final String LEAF = "leaf";
     }
 
 
