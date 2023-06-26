@@ -147,7 +147,7 @@ const svgFilterAttrs = ['width', 'height', 'top', 'left', 'rotate']
 const showComponentData = computed(() => {
   return componentData.value.filter(component => component.isShow)
 })
-const curCap = computed(() => {
+const curGap = computed(() => {
   return dashboardActive.value && canvasStyleData.value.dashboard.gap === 'yes'
     ? canvasStyleData.value.dashboard.gapSize
     : 0
@@ -157,7 +157,7 @@ const baseCellInfo = computed(() => {
   return {
     baseWidth: baseWidth.value,
     baseHeight: baseHeight.value,
-    curGap: curCap.value
+    curGap: curGap.value
   }
 })
 
@@ -369,13 +369,12 @@ const getComponentStyle = style => {
 const getSVGStyleInner = style => {
   return getSVGStyle(style, svgFilterAttrs)
 }
-
 const getShapeItemShowStyle = item => {
   return getShapeItemStyle(item, {
     dvModel: dvInfo.value.type,
     cellWidth: cellWidth.value,
     cellHeight: cellHeight.value,
-    curGap: curCap.value
+    curGap: curGap.value
   })
 }
 
@@ -1124,7 +1123,7 @@ const canvasInit = () => {
  */
 const nowItemStyle = (item, index) => {
   return {
-    padding: curCap.value + 'px!important',
+    padding: curGap.value + 'px!important',
     width: cellWidth.value * item.sizeX - baseMarginLeft.value + 'px',
     height: cellHeight.value * item.sizeY - baseMarginTop.value + 'px',
     left: cellWidth.value * (item.x - 1) + baseMarginLeft.value + 'px',
@@ -1366,7 +1365,7 @@ defineExpose({
       v-if="infoBox && infoBox.moveItem"
       :base-height="baseHeight"
       :base-width="baseWidth"
-      :cur-gap="curCap"
+      :cur-gap="curGap"
       :element="infoBox.moveItem"
     ></drag-shadow>
 

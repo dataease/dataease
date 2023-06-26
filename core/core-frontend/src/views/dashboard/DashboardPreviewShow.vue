@@ -3,7 +3,7 @@ import { ElAside, ElContainer } from 'element-plus-secondary'
 import DeResourceTree from '@/views/common/DeResourceTree.vue'
 import { findById } from '@/api/visualization/dataVisualization'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { ref } from 'vue'
+import { computed, nextTick, ref } from 'vue'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
 import PreviewHead from '@/views/data-visualization/PreviewHead.vue'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
@@ -13,7 +13,7 @@ import { toPng } from 'html-to-image'
 const curCanvasType = 'dashboard'
 const dvMainStore = dvMainStoreWithOut()
 const canvasDataPreview = ref([])
-const canvasStylePreview = ref({})
+const canvasStylePreview = ref(null)
 const canvasViewInfoPreview = ref({})
 
 const { dvInfo } = storeToRefs(dvMainStore)
@@ -35,7 +35,9 @@ const loadCanvasData = dvId => {
     canvasStylePreview.value = JSON.parse(canvasInfo.canvasStyleData)
     canvasViewInfoPreview.value = canvasInfo.canvasViewInfo
     dvMainStore.updateCurDvInfo(bashInfo)
-    dashboardPreview.value.restore()
+    nextTick(() => {
+      dashboardPreview.value.restore()
+    })
   })
 }
 
@@ -51,6 +53,12 @@ const htmlToImage = () => {
       console.error('oops, something went wrong!', error)
     })
 }
+
+const curGap = computed(() => {
+  return canvasStylePreview.value && canvasStylePreview.value['dashboard']['gap'] === 'yes'
+    ? canvasStylePreview.value['dashboard']['gapSize']
+    : 0
+})
 </script>
 
 <template>
@@ -68,6 +76,8 @@ const htmlToImage = () => {
           <de-preview
             ref="dashboardPreview"
             v-if="canvasStylePreview"
+            :dv-info="dvInfo"
+            :cur-gap="curGap"
             :component-data="canvasDataPreview"
             :canvas-style-data="canvasStylePreview"
             :canvas-view-info="canvasViewInfoPreview"

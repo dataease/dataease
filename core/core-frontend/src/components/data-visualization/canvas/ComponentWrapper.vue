@@ -2,8 +2,10 @@
 import { getStyle, getSVGStyle } from '@/utils/style'
 import runAnimation from '@/utils/runAnimation'
 import eventBus from '@/utils/eventBus'
-import { ref, onMounted, toRefs, getCurrentInstance } from 'vue'
+import { ref, onMounted, toRefs, getCurrentInstance, computed } from 'vue'
 import findComponent from '@/utils/components'
+import { hexColorToRGBA } from '@/views/chart/components/js/util'
+import { imgUrlTrans } from '@/utils/imgUtils'
 
 const props = defineProps({
   config: {
@@ -45,42 +47,101 @@ const onClick = () => {
   eventBus.emit('v-click', config.value.id)
 }
 
+const getComponentStyleDefault = style => {
+  return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
+}
+
 const onMouseEnter = () => {
   eventBus.emit('v-hover', config.value.id)
 }
+
+const componentBackgroundStyle = computed(() => {
+  const style = {}
+  if (config.value.commonBackground) {
+    const {
+      backgroundColorSelect,
+      backgroundColor,
+      alpha,
+      backgroundImageEnable,
+      backgroundType,
+      outerImage
+    } = config.value.commonBackground
+    let colorRGBA = ''
+    if (backgroundColorSelect && backgroundColor && backgroundColor.indexOf('rgb') === -1) {
+      colorRGBA = hexColorToRGBA(backgroundColor, alpha)
+    }
+    if (backgroundImageEnable) {
+      if (backgroundType === 'outerImage' && typeof outerImage === 'string') {
+        style['background'] = `url(${imgUrlTrans(outerImage)}) no-repeat ${colorRGBA}`
+      } else {
+        style['background-color'] = colorRGBA
+      }
+    } else {
+      style['background-color'] = colorRGBA
+    }
+  }
+  return style
+})
+
+const svgInnerEnable = computed(() => {
+  const { backgroundImageEnable, backgroundType, innerImage } = config.value.commonBackground
+  return backgroundImageEnable && backgroundType === 'innerImage' && typeof innerImage === 'string'
+})
+
+const commonBackgroundSvgInner = computed(() => {
+  if (svgInnerEnable.value) {
+    return config.value.commonBackground.innerImage.replace('board/', '').replace('.svg', '')
+  } else {
+    return null
+  }
+})
 </script>
 
 <template>
-  <div @click="onClick" @mouseenter="onMouseEnter">
-    <component
-      :is="findComponent(config['component'])"
-      v-if="config?.component === 'UserView'"
-      ref="component"
-      class="component"
-      :style="getSVGStyle(config?.style)"
-      :view="viewInfo"
-      :prop-value="config?.propValue"
-      :element="config"
-      :request="config?.request"
-      :linkage="config?.linkage"
-    />
+  <div class="wrapper-outer" @click="onClick" @mouseenter="onMouseEnter">
+    <div class="wrapper-inner" :style="componentBackgroundStyle">
+      <!--边框背景-->
+      <Icon
+        v-if="svgInnerEnable"
+        :style="{ color: config.commonBackground.innerImageColor }"
+        class-name="svg-background"
+        :name="commonBackgroundSvgInner"
+      ></Icon>
 
-    <component
-      :is="findComponent(config['component'])"
-      v-else
-      ref="component"
-      class="component"
-      :style="getStyle(config?.style)"
-      :prop-value="config?.propValue"
-      :element="config"
-      :request="config?.request"
-      :linkage="config?.linkage"
-    />
+      <component
+        :is="findComponent(config['component'])"
+        :view="viewInfo"
+        ref="component"
+        class="component"
+        :style="getComponentStyleDefault(config?.style)"
+        :prop-value="config?.propValue"
+        :element="config"
+        :request="config?.request"
+        :linkage="config?.linkage"
+      />
+    </div>
   </div>
 </template>
 
 <style lang="less" scoped>
-.component {
+.wrapper-outer {
   position: absolute;
+}
+.wrapper-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  background-size: 100% 100% !important;
+}
+
+.component {
+}
+
+.svg-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100% !important;
+  height: 100% !important;
 }
 </style>

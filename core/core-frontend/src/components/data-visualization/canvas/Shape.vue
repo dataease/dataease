@@ -400,7 +400,6 @@ const commonBackgroundSvgInner = computed(() => {
 })
 
 const componentBackgroundStyle = computed(() => {
-  console.log('commonBackground=' + JSON.stringify(element.value.commonBackground))
   const style = {}
   if (element.value.commonBackground) {
     const {

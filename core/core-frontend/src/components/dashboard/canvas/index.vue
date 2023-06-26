@@ -172,7 +172,7 @@ const svgFilterAttrs = ['width', 'height', 'top', 'left', 'rotate']
 
 const { curComponent, isClickComponent, canvasViewInfo, canvasStyleData } = storeToRefs(dvMainStore)
 
-const curCap = computed(() => {
+const curGap = computed(() => {
   return canvasStyleData.value.dashboard.gap === 'yes' ? canvasStyleData.value.dashboard.gapSize : 0
 })
 
@@ -943,7 +943,7 @@ const canvasInit = () => {
  */
 const nowItemStyle = (item, index) => {
   return {
-    padding: curCap.value + 'px!important',
+    padding: curGap.value + 'px!important',
     width: cellWidth.value * item.sizeX - baseMarginLeft.value + 'px',
     height: cellHeight.value * item.sizeY - baseMarginTop.value + 'px',
     left: cellWidth.value * (item.x - 1) + baseMarginLeft.value + 'px',
