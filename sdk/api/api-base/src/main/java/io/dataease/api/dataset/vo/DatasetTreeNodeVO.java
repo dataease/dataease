@@ -12,4 +12,6 @@ public class DatasetTreeNodeVO extends DatasetNodeDTO implements Serializable, I
 
     private List<DatasetTreeNodeVO> children;
 
+    private Boolean leaf;
+
 }

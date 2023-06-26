@@ -151,6 +151,7 @@ public class DatasetGroupManage {
         List<DatasetTreeNodeVO> collect = coreDatasetTables.stream().map(ele -> {
             DatasetTreeNodeVO vo = new DatasetTreeNodeVO();
             BeanUtils.copyBean(vo, ele);
+            vo.setLeaf(!StringUtils.equalsIgnoreCase(ele.getNodeType(), "folder"));
             return vo;
         }).collect(Collectors.toList());
         return TreeUtils.mergeTree(collect);
