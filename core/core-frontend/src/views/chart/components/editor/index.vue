@@ -373,7 +373,7 @@ const onThresholdChange = val => {
   renderChart(view.value)
 }
 
-const onScrollChange = val => {
+const onScrollCfgChange = val => {
   view.value.senior.scrollCfg = val
   renderChart(view.value)
 }

@@ -1,10 +1,10 @@
 <script lang="ts" setup>
-import JumpLinkage from './JumpLinkage.vue'
+import QueryConditionConfiguration from './QueryConditionConfiguration.vue'
 </script>
 
 <template>
   <div>workbranch</div>
-  <JumpLinkage></JumpLinkage>
+  <QueryConditionConfiguration></QueryConditionConfiguration>
 </template>
 
 <style lang="less" scoped></style>

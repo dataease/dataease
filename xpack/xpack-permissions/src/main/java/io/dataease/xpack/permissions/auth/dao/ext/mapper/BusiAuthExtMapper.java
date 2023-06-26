@@ -167,4 +167,17 @@ public interface BusiAuthExtMapper {
 
     @Delete("delete from per_auth_busi_role where resource_id = #{resourceId} ")
     int delRolePerByResource(@Param("resourceId") Long resourceId);
+
+    @Select("select weight from per_auth_busi_user where uid = #{uid} and resource_id = 0 and resource_type = #{rtid} and oid = #{oid}")
+    Integer userRootWeight(@Param("uid") Long uid, @Param("rtid") Integer rtid, @Param("oid") Long oid);
+
+    @Select("""
+            <script>
+            select rid as id, weight from per_auth_busi_role where resource_id = 0 and resource_type = #{rtid} and rid in 
+            <foreach item='rid' index='index' collection='rids' open='(' separator=',' close=')'>
+            #{rid}
+            </foreach>
+            </script>
+            """)
+    List<PermissionItem> roleRootWeight(@Param("rids") List<Long> rids, @Param("rtid") Integer rtid);
 }
