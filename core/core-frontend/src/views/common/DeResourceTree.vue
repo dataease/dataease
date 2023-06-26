@@ -344,6 +344,12 @@ onMounted(() => {
   }
   .icon-more {
     margin-left: auto;
+    visibility: hidden;
+  }
+
+  &:hover .icon-more {
+    margin-left: auto;
+    visibility: visible;
   }
 }
 

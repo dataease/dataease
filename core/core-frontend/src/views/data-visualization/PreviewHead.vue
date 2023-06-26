@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
+import { useI18n } from '@/hooks/web/useI18n'
 
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo } = storeToRefs(dvMainStore)
 const emit = defineEmits(['reload', 'download'])
+const { t } = useI18n()
 
 const preview = () => {
   const url = '#/preview/?dvId=' + dvInfo.value.id
@@ -20,8 +22,8 @@ const download = () => {
 }
 
 const dvEdit = () => {
-  const url = '#/dvCanvas/?dvId=' + dvInfo.value.id
-  window.open(url, '_blank')
+  const baseUrl = dvInfo.value.type === 'dataV' ? '#/dvCanvas/?dvId=' : '#/dashboard/?resourceId='
+  window.open(baseUrl + dvInfo.value.id, '_blank')
 }
 </script>
 
@@ -30,13 +32,46 @@ const dvEdit = () => {
     <div class="canvas-name">{{ dvInfo.name }}</div>
     <div class="canvas-opt-icon">
       <el-icon class="custom-icon"><Star /></el-icon>
-      <el-icon class="custom-icon"><Share /></el-icon>
-      <el-icon class="custom-icon" @click="reload()"><Refresh /></el-icon>
+      <!--      <el-icon class="custom-icon"><Share /></el-icon>-->
+      <!--      <el-icon class="custom-icon" @click="reload()"><Refresh /></el-icon>-->
     </div>
+    <el-divider style="margin-top: 15px" direction="vertical" />
+    <div class="create-area">创建人：admin</div>
     <div class="canvas-opt-button">
-      <el-button type="primary" @click="download()">导出</el-button>
-      <el-button type="primary" @click="preview()">预览</el-button>
-      <el-button @click="dvEdit()">编辑</el-button>
+      <!--      <el-button type="primary" @click="download()">导出</el-button>-->
+      <el-button icon="DataAnalysis" @click="preview()">预览</el-button>
+      <el-button icon="Share">分享</el-button>
+      <el-button type="primary" icon="EditPen" @click="dvEdit()">编辑</el-button>
+      <el-dropdown trigger="click">
+        <el-icon style="margin-left: 8px" class="hover-icon">
+          <Icon name="dv-head-more"></Icon>
+        </el-icon>
+        <template #dropdown>
+          <el-dropdown-menu style="width: 100px">
+            <el-dropdown-item icon="Refresh" @click="reload()">刷新数据</el-dropdown-item>
+            <el-dropdown style="width: 100%" trigger="hover" placement="right-start">
+              <div style="margin-left: 15px">
+                <el-icon><Download /></el-icon>
+                导出为
+                <el-icon><ArrowRight /></el-icon>
+              </div>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item disabled icon="CopyDocument">{{
+                    t('visualization.export_to_panel')
+                  }}</el-dropdown-item>
+                  <el-dropdown-item disabled icon="Notebook">{{
+                    t('visualization.export_to_pdf')
+                  }}</el-dropdown-item>
+                  <el-dropdown-item icon="Picture" @click="download()">{{
+                    t('visualization.export_to_img')
+                  }}</el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
     </div>
   </div>
 </template>
@@ -46,19 +81,24 @@ const dvEdit = () => {
   width: 100%;
   min-width: 300px;
   height: 45px;
+  line-height: 45px;
   display: flex;
-  padding: 0 10px 0 10px;
+  padding: 0 24px 0 24px;
   border-bottom: 1px solid #d7d7d7;
   .canvas-name {
-    display: flex;
-    align-items: center;
-    width: 100px;
+    min-width: 100px;
+    max-width: 200px;
+    font-size: 16px;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   .canvas-opt-icon {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    width: 60px;
+    margin-left: 8px;
     .custom-icon {
       color: #3a8ee6;
       &:hover {
@@ -66,6 +106,11 @@ const dvEdit = () => {
         cursor: pointer;
       }
     }
+  }
+  .create-area {
+    color: #646a73;
+    font-weight: 400;
+    font-size: 14px;
   }
   .canvas-opt-button {
     display: flex;
