@@ -1,11 +1,15 @@
 package io.dataease.xpack.permissions.auth.dao.ext.entity;
 
 import io.dataease.model.TreeBaseModel;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class BusiPerPO implements TreeBaseModel {
 
     private Long id;
@@ -24,5 +28,6 @@ public class BusiPerPO implements TreeBaseModel {
         BusiPerPO busiPerPO = (BusiPerPO) o;
         return Objects.equals(getId(), busiPerPO.getId());
     }
+
 
 }
