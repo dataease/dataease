@@ -64,7 +64,7 @@ const loadThemeStyle = () => {
 </script>
 
 <template>
-  <div v-if="props.drillFilters && props.drillFilters.length > 0">
+  <div v-if="props.drillFilters && props.drillFilters.length > 0" class="drill">
     <el-breadcrumb :separator-icon="ArrowRight" class="drill-style">
       <el-breadcrumb-item class="drill-item" @click="drillJump(0)">
         <span :style="{ color: state.textColor }">{{ t('commons.all') }}</span>
@@ -90,5 +90,9 @@ const loadThemeStyle = () => {
 }
 .drill-item {
   cursor: pointer;
+}
+.drill {
+  height: 20px;
+  padding: 0 16px;
 }
 </style>

@@ -7,6 +7,7 @@ import { hexColorToRGBA } from '@/views/chart/components/js/util.js'
 import { DEFAULT_TITLE_STYLE } from '@/views/chart/components/editor/util/chart'
 import DrillPath from '@/views/chart/components/views/components/DrillPath.vue'
 import { ElMessage } from 'element-plus-secondary'
+import { nextTick } from 'vue'
 
 const g2 = ref<any>()
 
@@ -113,6 +114,9 @@ const filter = () => {
 
 const onDrillFilters = param => {
   state.drillFilters = param ? param : []
+  nextTick(() => {
+    g2?.value?.renderChart(view.value)
+  })
 }
 
 onMounted(() => {
@@ -120,14 +124,18 @@ onMounted(() => {
     name: 'calcData-' + view.value.id,
     callback: function (val) {
       initTitle()
-      g2?.value?.calcData(val)
+      nextTick(() => {
+        g2?.value?.calcData(val)
+      })
     }
   })
   useEmitt({
     name: 'renderChart-' + view.value.id,
     callback: function (val) {
       initTitle()
-      g2?.value?.renderChart(val)
+      nextTick(() => {
+        g2?.value?.renderChart(val)
+      })
     }
   })
 })
