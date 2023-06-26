@@ -1,11 +1,17 @@
 <script lang="tsx" setup>
+import { useI18n } from '@/hooks/web/useI18n'
 import ChartComponentG2Plot from './components/ChartComponentG2Plot.vue'
 import { onMounted, reactive, ref, toRefs, watch } from 'vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { hexColorToRGBA } from '@/views/chart/components/js/util.js'
 import { DEFAULT_TITLE_STYLE } from '@/views/chart/components/editor/util/chart'
+import DrillPath from '@/views/chart/components/views/components/DrillPath.vue'
+import { ElMessage } from 'element-plus-secondary'
+import { nextTick } from 'vue'
 
 const g2 = ref<any>()
+
+const { t } = useI18n()
 
 const props = defineProps({
   view: {
@@ -31,7 +37,9 @@ const state = reactive({
     fontStyle: 'normal',
     fontWeight: 'normal',
     background: ''
-  }
+  },
+  drillFilters: [],
+  drillClickDimensionList: []
 })
 
 watch(
@@ -71,19 +79,63 @@ const initTitle = () => {
   }
 }
 
+const drillJump = index => {
+  // const length = state.drillClickDimensionList.length
+  state.drillClickDimensionList = state.drillClickDimensionList.slice(0, index)
+  // if (props.view.type === 'map' || props.view.type === 'buddle-map') {
+  //   this.backToParent(index, length)
+  // }
+  view.value.chartExtRequest = filter()
+  g2?.value?.calcData(view.value)
+}
+
+const chartClick = param => {
+  if (state.drillClickDimensionList.length < props.view.drillFields.length - 1) {
+    state.drillClickDimensionList.push({ dimensionList: param.data.dimensionList })
+    view.value.chartExtRequest = filter()
+    g2?.value?.calcData(view.value)
+    // this.getData(this.element.propValue.viewId)
+  } else if (props.view.drillFields.length > 0) {
+    ElMessage.error(t('chart.last_layer'))
+  }
+}
+
+const filter = () => {
+  return {
+    // filter: this.initLoad ? this.filters : this.cfilters,
+    // linkageFilters: this.element.linkageFilters,
+    // outerParamsFilters: this.element.outerParamsFilters,
+    drill: state.drillClickDimensionList
+    // resultCount: this.resultCount,
+    // resultMode: this.resultMode,
+    // queryFrom: 'panel'
+  }
+}
+
+const onDrillFilters = param => {
+  state.drillFilters = param ? param : []
+  nextTick(() => {
+    g2?.value?.renderChart(view.value)
+  })
+}
+
 onMounted(() => {
   useEmitt({
     name: 'calcData-' + view.value.id,
     callback: function (val) {
-      g2?.value?.calcData(val)
       initTitle()
+      nextTick(() => {
+        g2?.value?.calcData(val)
+      })
     }
   })
   useEmitt({
     name: 'renderChart-' + view.value.id,
     callback: function (val) {
-      g2?.value?.renderChart(val)
       initTitle()
+      nextTick(() => {
+        g2?.value?.renderChart(val)
+      })
     }
   })
 })
@@ -95,7 +147,15 @@ initTitle()
   <div class="chart-area">
     <p v-if="state.title_show" :style="state.title_class">{{ view.title }}</p>
     <!--这里去渲染不同图库的视图-->
-    <chart-component-g2-plot :view="view" v-if="view?.render === 'antv'" ref="g2" />
+    <chart-component-g2-plot
+      style="flex: 1"
+      :view="view"
+      v-if="view?.render === 'antv'"
+      ref="g2"
+      @onChartClick="chartClick"
+      @onDrillFilters="onDrillFilters"
+    />
+    <drill-path :drill-filters="state.drillFilters" @onDrillJump="drillJump" />
   </div>
 </template>
 
@@ -103,5 +163,7 @@ initTitle()
 .chart-area {
   width: 100%;
   height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 </style>

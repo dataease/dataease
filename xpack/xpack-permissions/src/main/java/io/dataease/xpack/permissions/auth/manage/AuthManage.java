@@ -72,6 +72,9 @@ public class AuthManage {
     @Resource
     private BusiAuthManage busiAuthManage;
 
+    @Resource
+    private BusiRootAuthManage busiRootAuthManage;
+
     private BusiResourcePO defaultRootNode(int enumFlag) {
         String name = "仪表板";
         switch (enumFlag) {
@@ -131,7 +134,7 @@ public class AuthManage {
             queryWrapper.eq("pabu.weight", 9);
             queryWrapper.eq("pabu.resource_type", enumFlag);
             pos = busiAuthExtMapper.resourceByUid(queryWrapper);
-
+            boolean rootMatch = busiRootAuthManage.userRootPer(enumFlag, defaultOid, user.getUserId()) == 9;
             if (CollectionUtil.isNotEmpty(userRoles)) {
                 queryWrapper.clear();
                 List<Long> rids = userRoles.stream().map(UserRole::getId).toList();
@@ -144,10 +147,15 @@ public class AuthManage {
                 if (CollectionUtil.isNotEmpty((rolePos = busiAuthExtMapper.resourceByRid(queryWrapper)))) {
                     pos.addAll(rolePos);
                 }
+                if (!rootMatch) {
+                    rootMatch = busiRootAuthManage.roleRootPer(enumFlag, rids) == 9;
+                }
             }
             if (CollectionUtil.isNotEmpty(pos)) {
                 pos = CollectionUtil.distinct(pos);
-                pos.add(defaultRootNode(enumFlag));
+                if (rootMatch) {
+                    pos.add(defaultRootNode(enumFlag));
+                }
             } else {
                 return null;
             }

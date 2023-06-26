@@ -4,7 +4,6 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.api.permissions.auth.vo.BusiPerVO;
 import io.dataease.api.permissions.auth.vo.PermissionItem;
-import io.dataease.api.permissions.auth.vo.PermissionOrigin;
 import io.dataease.auth.bo.TokenUserBO;
 import io.dataease.constant.BusiResourceEnum;
 import io.dataease.exception.DEException;
@@ -16,7 +15,6 @@ import io.dataease.utils.TreeUtils;
 import io.dataease.xpack.permissions.auth.dao.ext.entity.BusiPerPO;
 import io.dataease.xpack.permissions.auth.dao.ext.entity.BusiResourcePO;
 import io.dataease.xpack.permissions.auth.dao.ext.mapper.InteractiveBusiAuthExtMapper;
-import io.dataease.xpack.permissions.auth.dao.ext.mapper.MenuAuthExtMapper;
 import io.dataease.xpack.permissions.user.entity.UserRole;
 import io.dataease.xpack.permissions.user.manage.RoleManage;
 import jakarta.annotation.PostConstruct;
@@ -24,7 +22,9 @@ import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -49,6 +49,9 @@ public class InteractiveAuthManage {
     @Resource
     private InteractiveBusiAuthExtMapper interactiveBusiAuthExtMapper;
 
+    @Resource
+    private BusiRootAuthManage busiRootAuthManage;
+
     public List<Long> menuIds() {
         TokenUserBO user = AuthUtils.getUser();
         Long uid = user.getUserId();
@@ -67,7 +70,9 @@ public class InteractiveAuthManage {
         return null;
     }
 
-
+    private BusiPerPO rootNode(int weight) {
+        return new BusiPerPO(0L, "root", false, weight, -1L, 0, 0L);
+    }
 
     public List<BusiPerVO> resource(String flag) {
         BusiResourceEnum busiResourceEnum = BusiResourceEnum.valueOf(flag.toUpperCase());
@@ -92,6 +97,7 @@ public class InteractiveAuthManage {
             List<BusiResourcePO> pos = busiAuthManage.resourceWithOid(resourceEnumFlag, oid);
             if (CollectionUtil.isNotEmpty(pos)) {
                 List<BusiPerPO> perPOS = pos.stream().map(this::convert).toList();
+                perPOS.add(rootNode(9));
                 return TreeUtils.mergeTree(perPOS, BusiPerVO.class, false);
             }
             return null;
@@ -103,13 +109,17 @@ public class InteractiveAuthManage {
         if (CollectionUtil.isNotEmpty(userPerPOS)) {
             pos.addAll(userPerPOS);
         }
+        int userRootWeight = busiRootAuthManage.userRootPer(enumFlag, oid, uid);
+        int roleRootWeight = 0;
         if (CollectionUtil.isNotEmpty(userRoles)) {
             List<Long> rids = userRoles.stream().map(UserRole::getId).toList();
+            roleRootWeight = busiRootAuthManage.roleRootPer(enumFlag, rids);
             List<BusiPerPO> rolePos = rolePos(rids, enumFlag);
             if (CollectionUtil.isNotEmpty(rolePos)) {
                 pos.addAll(rolePos);
             }
         }
+        pos.add(rootNode(Math.max(userRootWeight, roleRootWeight)));
         pos = pos.stream().distinct().toList();
         List<BusiPerVO> vos = TreeUtils.mergeTree(pos, BusiPerVO.class, false);
         return vos;
@@ -143,8 +153,10 @@ public class InteractiveAuthManage {
                 });
             }
         }
+
         return resultPos;
     }
+
     public List<BusiPerPO> userPos(Integer enumFlag) {
         String cacheName = "user_busi_pers_interactive";
         TokenUserBO user = AuthUtils.getUser();
@@ -164,6 +176,7 @@ public class InteractiveAuthManage {
         }
         List<BusiPerPO> userPerPOS = interactiveBusiAuthExtMapper.queryWithUid(queryWrapper);
         CacheUtils.put(cacheName, key, userPerPOS);
+
         return userPerPOS;
     }
 
