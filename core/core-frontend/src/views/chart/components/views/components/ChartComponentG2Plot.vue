@@ -15,6 +15,8 @@ const props = defineProps({
   }
 })
 
+const emit = defineEmits(['onChartClick', 'onDrillFilters'])
+
 const { view } = toRefs(props)
 
 const state = reactive({
@@ -33,15 +35,14 @@ const calcData = view => {
     .then(res => {
       // console.log(res)
       state.data = res?.data
+      emit('onDrillFilters', res.drillFilters)
       renderChart(res)
     })
     .finally(() => {
       state.loading = false
     })
 }
-const action = param => {
-  console.log(param)
-}
+
 const renderChart = view => {
   // view 为引用对象 需要存库 view.data 直接赋值会导致保存不必要的数据
   const chart = { ...view, data: state.data }
@@ -54,6 +55,13 @@ const renderChart = view => {
     action
   })
   state.myChart?.render()
+}
+
+const action = param => {
+  console.log(param)
+  // 当前只有下钻
+  const pointParam = param.data
+  emit('onChartClick', pointParam)
 }
 
 defineExpose({

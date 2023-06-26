@@ -45,6 +45,8 @@ declare module '@vue/runtime-core' {
     DvToolbar: typeof import('./src/components/data-visualization/DvToolbar.vue')['default']
     ElAutocomplete: typeof import('element-plus-secondary/es')['ElAutocomplete']
     ElAutoResizer: typeof import('element-plus-secondary/es')['ElAutoResizer']
+    ElBreadcrumb: typeof import('element-plus-secondary/es')['ElBreadcrumb']
+    ElBreadcrumbItem: typeof import('element-plus-secondary/es')['ElBreadcrumbItem']
     ElButton: typeof import('element-plus-secondary/es')['ElButton']
     ElCard: typeof import('element-plus-secondary/es')['ElCard']
     ElCascader: typeof import('element-plus-secondary/es')['ElCascader']
