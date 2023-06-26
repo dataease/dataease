@@ -190,7 +190,6 @@
 </template>
 
 <script>
-
 import { viewData } from '@/api/panel/panel'
 import { viewInfo } from '@/api/link'
 import ChartComponent from '@/views/chart/components/ChartComponent.vue'
@@ -353,7 +352,8 @@ export default {
         pageSize: 20,
         show: 0
       },
-      view: {}
+      view: {},
+      cancelTime: null
     }
   },
 
@@ -749,10 +749,20 @@ export default {
     },
     getData(id, cache = true, dataBroadcast = false) {
       if (id) {
-        if (this.getDataLoading) return
+        if (this.getDataLoading || Vue.prototype.$currentHttpRequestList.get(`/chart/view/getData/${id}/${this.panelInfo.id}`)) {
+          const url = `/chart/view/getData/${id}/${this.panelInfo.id}`
+          Vue.prototype.$cancelRequest(url)
+          Vue.prototype.$currentHttpRequestList.delete(url)
+          this.getDataLoading = false
+          this.getData(id, cache, dataBroadcast)
+          clearTimeout(this.cancelTime)
+          this.cancelTime = setTimeout(() => {
+            this.requestStatus = 'waiting'
+          }, 0)
+          return
+        }
         this.requestStatus = 'waiting'
         this.message = null
-
         // 增加判断 仪表板公共连接中使用viewInfo 正常使用viewData
         let method = viewData
         const token = this.$store.getters.token || getToken()
