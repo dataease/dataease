@@ -1,5 +1,6 @@
 server:
   port: 8100
+  max-http-request-header-size: 500KB
 spring:
   profiles:
     active: '@profiles.active@'
