@@ -100,6 +100,7 @@ const chartClick = param => {
   }
 }
 
+// 仪表板和大屏所有额外过滤参数都在此处
 const filter = () => {
   return {
     // filter: this.initLoad ? this.filters : this.cfilters,

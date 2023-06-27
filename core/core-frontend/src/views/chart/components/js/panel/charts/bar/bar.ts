@@ -66,6 +66,10 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
         drawOptions.chartObj.destroy()
       }
       drawOptions.chartObj = new Column(drawOptions.container, options)
+
+      drawOptions.chartObj.off('interval:click')
+      drawOptions.chartObj.on('interval:click', drawOptions.action)
+
       return drawOptions.chartObj
     }
   }

@@ -21,7 +21,7 @@ const props = defineProps({
 const emit = defineEmits(['onDrillJump'])
 
 const state = reactive({
-  textColor: null
+  textColor: '#bbbfc4'
 })
 
 watch(
