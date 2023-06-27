@@ -121,13 +121,13 @@ const initForm = type => {
   if (type === 'API') {
     form.value.syncSetting = {
       updateType: 'all_scope',
-      syncRate: 'CRON',
-      simpleCronValue: '',
-      simpleCronType: '',
+      syncRate: 'SIMPLE_CRON',
+      simpleCronValue: '1',
+      simpleCronType: 'hour',
       startTime: '',
       endTime: '',
       endLimit: '',
-      cron: ''
+      cron: '0 0 0/1 *  * ? *'
     }
   }
   form.value.type = type
@@ -378,12 +378,16 @@ const validateDS = () => {
   }
 
   if (editDs.value && dsFormDisabled.value) {
-    validateById(form.value.id).then(() => {
-      ElMessage.success(t('datasource.validate_success'))
+    validateById(form.value.id).then(response => {
+      if (response !== undefined) {
+        ElMessage.success(t('datasource.validate_success'))
+      }
     })
   } else {
-    validate(request).then(() => {
-      ElMessage.success(t('datasource.validate_success'))
+    validate(request).then(response => {
+      if (response !== undefined) {
+        ElMessage.success(t('datasource.validate_success'))
+      }
     })
   }
 }

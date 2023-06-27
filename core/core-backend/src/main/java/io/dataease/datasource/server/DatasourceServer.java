@@ -93,7 +93,9 @@ public class DatasourceServer implements DatasourceApi {
         BeanUtils.copyBean(coreDatasource, dataSourceDTO);
         coreDatasource.setCreateTime(System.currentTimeMillis());
         coreDatasource.setUpdateTime(System.currentTimeMillis());
-        checkDatasourceStatus(coreDatasource);
+        try {
+            checkDatasourceStatus(coreDatasource);
+        }catch (Exception ignore){}
         coreDatasource.setTaskStatus(TaskStatus.WaitingForExecution.name());
         coreDatasource.setId(IDUtils.snowID());
         datasourceMapper.insert(coreDatasource);
@@ -150,7 +152,9 @@ public class DatasourceServer implements DatasourceApi {
         CoreDatasource coreDatasource = new CoreDatasource();
         BeanUtils.copyBean(coreDatasource, dataSourceDTO);
         coreDatasource.setUpdateTime(System.currentTimeMillis());
-        checkDatasourceStatus(coreDatasource);
+        try {
+            checkDatasourceStatus(coreDatasource);
+        }catch (Exception ignore){}
         datasourceMapper.updateById(coreDatasource);
         if (dataSourceDTO.getType().equals(DatasourceConfiguration.DatasourceType.API.name())) {
             CoreDatasourceTask coreDatasourceTask = new CoreDatasourceTask();

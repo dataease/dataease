@@ -36,9 +36,9 @@ import java.util.*;
 
 
 @Component("calciteProvider")
-
 public class CalciteProvider {
 
+    //TODO mongo impala es hive
     @Resource
     protected CoreDriverMapper coreDriverMapper;
 
@@ -127,6 +127,8 @@ public class CalciteProvider {
                 return ((DatasourceConfiguration) CommonBeanFactory.getBean("pg")).getDriver();
             case redshift:
                 return ((DatasourceConfiguration) CommonBeanFactory.getBean("redshift")).getDriver();
+            case h2:
+                return ((DatasourceConfiguration) CommonBeanFactory.getBean("h2")).getDriver();
             default:
                 return ((DatasourceConfiguration) CommonBeanFactory.getBean("mysql")).getDriver();
         }
@@ -293,6 +295,15 @@ public class CalciteProvider {
                     schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getSchema());
                     rootSchema.add(ds.getSchemaAlias(), schema);
                     break;
+                case h2:
+                    configuration = JsonUtil.parseObject(ds.getConfiguration(), H2.class);
+                    dataSource.setUrl(configuration.getJdbc());
+                    dataSource.setUsername(configuration.getUsername());
+                    dataSource.setPassword(configuration.getPassword());
+                    dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
+                    schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getDataBase());
+                    rootSchema.add(ds.getSchemaAlias(), schema);
+                    break;
                 default:
                     configuration = JsonUtil.parseObject(ds.getConfiguration(), Mysql.class);
                     dataSource.setUrl(configuration.getJdbc());
@@ -385,7 +396,7 @@ public class CalciteProvider {
                 tableSqls.add("SELECT name FROM system.tables where database='DATABASE';".replace("DATABASE", configuration.getDataBase()));
                 break;
             default:
-                break;
+                tableSqls.add("show tables");
         }
         return tableSqls;
 
@@ -438,6 +449,9 @@ public class CalciteProvider {
                 break;
             case ck:
                 configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), CK.class);
+                break;
+            case h2:
+                configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), H2.class);
                 break;
             default:
                 configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Mysql.class);

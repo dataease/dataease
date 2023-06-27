@@ -3,7 +3,7 @@ spring:
 
   datasource:
     driver-class-name: org.h2.Driver
-    url: jdbc:h2:/opt/dataease2.0/desktop;AUTO_RECONNECT=TRUE;MODE=MySQL
+    url: jdbc:h2:/opt/dataease2.0/desktop;AUTO_SERVER=TRUE;AUTO_RECONNECT=TRUE;MODE=MySQL
     username: sa
     password: 123456
 

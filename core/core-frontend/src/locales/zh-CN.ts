@@ -40,7 +40,7 @@ export default {
     every: '每',
     minute: '分钟',
     second: '秒',
-    hour: '秒',
+    hour: '时',
     day: '天',
     every_exec: '执行一次',
     cron_exp: 'cron表达式',
