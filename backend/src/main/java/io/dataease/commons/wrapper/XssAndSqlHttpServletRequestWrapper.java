@@ -1,18 +1,6 @@
 package io.dataease.commons.wrapper;
 
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import javax.servlet.ReadListener;
-import javax.servlet.ServletInputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-
 import com.google.gson.Gson;
 import io.dataease.commons.holder.ThreadLocalContextHolder;
 import io.dataease.commons.utils.CommonBeanFactory;
@@ -21,16 +9,30 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.env.Environment;
 import org.springframework.util.StreamUtils;
 
+import javax.servlet.ReadListener;
+import javax.servlet.ServletInputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 
 public class XssAndSqlHttpServletRequestWrapper extends HttpServletRequestWrapper {
 
     private static Gson gson = new Gson();
 
+    private static final String defaultWhiteList = "/dataset/table/sqlPreview,/dataset/table/update,/dataset/field/multFieldValues,/dataset/field/linkMultFieldValues";
+
     HttpServletRequest orgRequest = null;
     private Map<String, String[]> parameterMap;
     private final byte[] body; //用于保存读取body中数据
 
-    public XssAndSqlHttpServletRequestWrapper(HttpServletRequest request) throws IOException{
+    public XssAndSqlHttpServletRequestWrapper(HttpServletRequest request) throws IOException {
         super(request);
         orgRequest = request;
         parameterMap = request.getParameterMap();
@@ -38,6 +40,7 @@ public class XssAndSqlHttpServletRequestWrapper extends HttpServletRequestWrappe
     }
 
     // 重写几个HttpServletRequestWrapper中的方法
+
     /**
      * 获取所有参数名
      *
@@ -159,7 +162,6 @@ public class XssAndSqlHttpServletRequestWrapper extends HttpServletRequestWrappe
     }
 
     /**
-     *
      * 防止xss跨脚本攻击（替换，根据实际情况调整）
      */
 
@@ -208,9 +210,9 @@ public class XssAndSqlHttpServletRequestWrapper extends HttpServletRequestWrappe
         return value;
     }
 
-    public static boolean checkSqlInjection(Object obj){
+    public static boolean checkSqlInjection(Object obj) {
         HttpServletRequest request = ServletUtils.request();
-        String url = request.getRequestURI().toString();
+        String url = request.getRequestURI();
 
         if (null == obj) return false;
         if (StringUtils.isEmpty(obj.toString())) return false;
@@ -219,14 +221,14 @@ public class XssAndSqlHttpServletRequestWrapper extends HttpServletRequestWrappe
 
         if (StringUtils.isEmpty(orders)) return false;
 
-        String whiteLists = CommonBeanFactory.getBean(Environment.class).getProperty("dataease.sqlinjection.whitelists", String.class, null);
+        String whiteLists = CommonBeanFactory.getBean(Environment.class).getProperty("dataease.sqlinjection.whitelists", String.class, defaultWhiteList);
         if (StringUtils.isNotEmpty(whiteLists)) {
             // 命中白名单 无需检测sql注入
             if (Arrays.stream(whiteLists.split(",")).anyMatch(item -> url.indexOf(item) != -1)) return false;
         }
-        Pattern pattern= Pattern.compile("(.*\\=.*\\-\\-.*)|(.*(\\+).*)|(.*\\w+(%|\\$|#|&)\\w+.*)|(.*\\|\\|.*)|(.*\\s+(and|or)\\s+.*)" +
+        Pattern pattern = Pattern.compile("(.*\\=.*\\-\\-.*)|(.*(\\+).*)|(.*\\w+(%|\\$|#|&)\\w+.*)|(.*\\|\\|.*)|(.*\\s+(and|or)\\s+.*)" +
                 "|(.*\\b(select|update|union|and|or|delete|insert|trancate|char|into|substr|ascii|declare|exec|count|master|into|drop|execute|sleep|extractvalue|updatexml|substring|database|concat|rand|gtid_subset)\\b.*)");
-        Matcher matcher=pattern.matcher(orders.toLowerCase());
+        Matcher matcher = pattern.matcher(orders.toLowerCase());
         return matcher.find();
     }
 
@@ -236,7 +238,7 @@ public class XssAndSqlHttpServletRequestWrapper extends HttpServletRequestWrappe
 
         if (value != null) {
             boolean b = checkSqlInjection(value);
-            if(b) {
+            if (b) {
                 ThreadLocalContextHolder.setData("包含SQL注入的参数，请检查参数！");
                 return true;
             }
@@ -320,7 +322,7 @@ public class XssAndSqlHttpServletRequestWrapper extends HttpServletRequestWrappe
                     return true;
                 }
             } else if ((submitValues instanceof String[])) {
-                for (String submitValue : (String[])submitValues){
+                for (String submitValue : (String[]) submitValues) {
                     if (checkXSSAndSql(submitValue)) {
                         return true;
                     }
@@ -332,7 +334,7 @@ public class XssAndSqlHttpServletRequestWrapper extends HttpServletRequestWrappe
 
     private static String orders(String json) {
         if (StringUtils.isEmpty(json)) return null;
-        try{
+        try {
             Map<String, Object> map = new Gson().fromJson(json, Map.class);
             Object orders = map.get("orders");
 
@@ -345,7 +347,7 @@ public class XssAndSqlHttpServletRequestWrapper extends HttpServletRequestWrappe
                 return sort.toString();
             }
             return null;
-        }catch (Exception e) {
+        } catch (Exception e) {
             return null;
         }
 
