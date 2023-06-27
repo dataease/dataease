@@ -26,10 +26,11 @@ const state = reactive({
 const emit = defineEmits(['onChangeXAxisForm'])
 
 watch(
-  () => props.chart,
+  () => props.chart.customStyle.xAxis,
   () => {
     init()
-  }
+  },
+  { deep: true }
 )
 
 const initFontSize = () => {

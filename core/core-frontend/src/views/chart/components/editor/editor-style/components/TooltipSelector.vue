@@ -17,10 +17,11 @@ const predefineColors = COLOR_PANEL
 const emit = defineEmits(['onTooltipChange'])
 
 watch(
-  () => props.chart,
+  () => props.chart.customAttr.tooltip,
   () => {
     init()
-  }
+  },
+  { deep: true }
 )
 
 const state = reactive({
