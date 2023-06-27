@@ -12,6 +12,7 @@ import LegendSelector from '@/views/chart/components/editor/editor-style/compone
 import BackgroundOverallComponent from '@/components/visualization/component-background/BackgroundOverallComponent.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
+import CollapseSwitchItem from '@/components/collapse-switch-item/src/CollapseSwitchItem.vue'
 const dvMainStore = dvMainStoreWithOut()
 const { curComponent } = storeToRefs(dvMainStore)
 const { t } = useI18n()
@@ -29,7 +30,6 @@ const props = defineProps({
 })
 
 const { chart } = toRefs(props)
-
 const emit = defineEmits([
   'onColorChange',
   'onSizeChange',
@@ -99,19 +99,23 @@ const onLegendChange = val => {
           >
             <size-selector class="attr-selector" :chart="chart" @onSizeChange="onSizeChange" />
           </el-collapse-item>
-
-          <el-collapse-item
+          <collapse-switch-item
             v-if="chart.type !== 'word-cloud' && !chart.type.includes('table')"
-            name="label"
+            v-model="chart.customAttr.label.show"
+            :change-model="chart.customAttr.label"
+            @modelChange="onLabelChange"
             :title="$t('chart.label')"
+            name="label"
           >
             <label-selector class="attr-selector" :chart="chart" @onLabelChange="onLabelChange" />
-          </el-collapse-item>
-
-          <el-collapse-item
+          </collapse-switch-item>
+          <collapse-switch-item
             v-if="
               chart.type !== 'gauge' && chart.type !== 'liquid' && !chart.type.includes('table')
             "
+            v-model="chart.customAttr.tooltip.show"
+            :change-model="chart.customAttr.tooltip"
+            @modelChange="onTooltipChange"
             name="tooltip"
             :title="$t('chart.tooltip')"
           >
@@ -120,14 +124,17 @@ const onLegendChange = val => {
               :chart="chart"
               @onTooltipChange="onTooltipChange"
             />
-          </el-collapse-item>
+          </collapse-switch-item>
         </el-collapse>
       </el-row>
 
       <el-row class="de-collapse-style">
         <el-collapse v-model="state.styleActiveNames" class="style-collapse">
-          <el-collapse-item
+          <collapse-switch-item
             v-if="chart.type.includes('bar') || chart.type.includes('line')"
+            v-model="chart.customStyle.xAxis.show"
+            :change-model="chart.customStyle.xAxis"
+            @modelChange="onChangeXAxisForm"
             name="xAxis"
             :title="t('chart.xAxis')"
           >
@@ -136,10 +143,13 @@ const onLegendChange = val => {
               :chart="chart"
               @onChangeXAxisForm="onChangeXAxisForm"
             />
-          </el-collapse-item>
+          </collapse-switch-item>
 
-          <el-collapse-item
+          <collapse-switch-item
             v-if="chart.type.includes('bar') || chart.type.includes('line')"
+            v-model="chart.customStyle.yAxis.show"
+            :change-model="chart.customStyle.yAxis"
+            @modelChange="onChangeYAxisForm"
             name="yAxis"
             :title="$t('chart.yAxis')"
           >
@@ -148,13 +158,19 @@ const onLegendChange = val => {
               :chart="chart"
               @onChangeYAxisForm="onChangeYAxisForm"
             />
-          </el-collapse-item>
+          </collapse-switch-item>
 
-          <el-collapse-item name="title" :title="$t('chart.title')">
+          <collapse-switch-item
+            v-model="chart.customStyle.text.show"
+            :change-model="chart.customStyle.text"
+            @modelChange="onTextChange"
+            name="title"
+            :title="$t('chart.title')"
+          >
             <title-selector class="attr-selector" :chart="chart" @onTextChange="onTextChange" />
-          </el-collapse-item>
+          </collapse-switch-item>
 
-          <el-collapse-item
+          <collapse-switch-item
             v-if="
               chart.type !== 'word-cloud' &&
               chart.type !== 'gauge' &&
@@ -162,6 +178,9 @@ const onLegendChange = val => {
               chart.type !== 'map' &&
               !chart.type.includes('table')
             "
+            v-model="chart.customStyle.legend.show"
+            :change-model="chart.customStyle.legend"
+            @modelChange="onLegendChange"
             name="legend"
             :title="$t('chart.legend')"
           >
@@ -170,7 +189,7 @@ const onLegendChange = val => {
               :chart="chart"
               @onLegendChange="onLegendChange"
             />
-          </el-collapse-item>
+          </collapse-switch-item>
         </el-collapse>
       </el-row>
     </div>

@@ -15,10 +15,11 @@ const props = defineProps({
 const emit = defineEmits(['onLegendChange'])
 
 watch(
-  () => props.chart,
+  () => props.chart.customStyle,
   () => {
     init()
-  }
+  },
+  { deep: true }
 )
 
 const predefineColors = COLOR_PANEL
