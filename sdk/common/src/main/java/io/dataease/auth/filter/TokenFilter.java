@@ -52,8 +52,15 @@ public class TokenFilter implements Filter {
         if (!ServletUtils.apisixCheck()) {
             DEException.throwException("Prohibit direct access application, request must be from apisix");
         }
-
-        String token = ServletUtils.getToken();
+        String token = null;
+        String xUserStr = null;
+        if(StringUtils.isBlank(token = ServletUtils.getToken()) && StringUtils.isNotBlank(xUserStr = ServletUtils.getXUserinfo())) {
+            LogUtil.info("--------------------");
+            LogUtil.info(xUserStr);
+            LogUtil.info("--------------------");
+            filterChain.doFilter(servletRequest, servletResponse);
+            return;
+        }
         TokenUserBO userBO = TokenUtils.validate(token);
         UserUtils.setUserInfo(userBO);
         filterChain.doFilter(servletRequest, servletResponse);
