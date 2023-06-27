@@ -35,4 +35,9 @@ public class IndexController {
     public boolean model() {
         return ModelUtils.isDesktop();
     }
+
+    @GetMapping("/oidc/callback")
+    public String oidcCallback() {
+        return INDEX_PAGE;
+    }
 }
