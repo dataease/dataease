@@ -96,7 +96,7 @@ public class InteractiveAuthManage {
         if (rootAdmin.get()) {
             List<BusiResourcePO> pos = busiAuthManage.resourceWithOid(resourceEnumFlag, oid);
             if (CollectionUtil.isNotEmpty(pos)) {
-                List<BusiPerPO> perPOS = pos.stream().map(this::convert).toList();
+                List<BusiPerPO> perPOS = pos.stream().map(this::convert).collect(Collectors.toList());
                 perPOS.add(rootNode(9));
                 return TreeUtils.mergeTree(perPOS, BusiPerVO.class, false);
             }
