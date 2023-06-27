@@ -32,7 +32,6 @@ const searchType = ref('all')
 const expandedArray = ref([])
 const resourceListTree = ref()
 const resourceGroupOpt = ref()
-
 const state = reactive({
   resourceTree: [] as ResourceTree[],
   menuList: [],
@@ -57,13 +56,13 @@ state.menuList = [
 state.resourceTypeList = [
   {
     label: newResourceLabel,
-    svgName: 'dashboard',
+    svgName: curCanvasType.value === 'dashboard' ? 'dv-dashboard-spine' : 'dv-screen-spine',
     command: 'newLeaf'
   },
   {
     label: '新建文件夹',
     divided: true,
-    svgName: 'scene',
+    svgName: 'dv-folder',
     command: 'newFolder'
   }
 ]
@@ -200,7 +199,8 @@ onMounted(() => {
         class="custom-icon"
         @click="addOperation('newLeaf', null, 'leaf')"
       >
-        <Icon name="dv-new"></Icon>
+        <Icon v-if="curCanvasType === 'dashboard'" name="dv-new"></Icon>
+        <Icon v-else name="dv-screen-new"></Icon>
       </el-icon>
     </div>
 
@@ -233,8 +233,11 @@ onMounted(() => {
           <el-icon v-if="data.nodeType === 'folder'">
             <Icon name="dv-folder"></Icon>
           </el-icon>
+          <el-icon v-else-if="curCanvasType === 'dashboard'">
+            <Icon name="dv-dashboard-spine"></Icon>
+          </el-icon>
           <el-icon v-else>
-            <Icon name="dv-spine"></Icon>
+            <Icon name="dv-screen-spine"></Icon>
           </el-icon>
           <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
           <div class="icon-more">

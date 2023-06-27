@@ -18,6 +18,7 @@ const canvasViewInfoPreview = ref({})
 const { dvInfo } = storeToRefs(dvMainStore)
 const previewCanvasContainer = ref(null)
 const dvPreview = ref(null)
+const slideShow = ref(true)
 
 const loadCanvasData = dvId => {
   findById(dvId).then(res => {
@@ -62,14 +63,25 @@ const curGap = computed(() => {
     ? canvasStylePreview.value['dashboard']['gapSize']
     : 0
 })
+const slideOpenChange = () => {
+  slideShow.value = !slideShow.value
+}
 </script>
 
 <template>
   <div class="dv-preview">
-    <el-aside class="resource-area">
-      <de-resource-tree :cur-canvas-type="'dataV'" @node-click="loadCanvasData"></de-resource-tree>
+    <el-aside class="resource-area" :class="{ 'close-side': !slideShow }">
+      <de-resource-tree
+        v-show="slideShow"
+        :cur-canvas-type="'dataV'"
+        @node-click="loadCanvasData"
+      ></de-resource-tree>
     </el-aside>
     <el-container class="preview-area">
+      <div @click="slideOpenChange" class="flexible-button-area">
+        <el-icon v-if="slideShow"><ArrowLeft /></el-icon>
+        <el-icon v-else><ArrowRight /></el-icon>
+      </div>
       <template v-if="dvInfo.name">
         <preview-head @reload="loadCanvasData" @download="htmlToImage"></preview-head>
         <div ref="previewCanvasContainer" class="content">
@@ -118,5 +130,27 @@ const curGap = computed(() => {
       align-items: center;
     }
   }
+}
+
+.close-side {
+  width: 0px !important;
+  padding: 0px !important;
+}
+
+.flexible-button-area {
+  position: absolute;
+  height: 60px;
+  width: 16px;
+  left: 0;
+  top: calc(50% - 30px);
+  background-color: #ffffff;
+  border-radius: 0 4px 4px 0;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  border-top: 1px solid #d7d7d7;
+  border-right: 1px solid #d7d7d7;
+  border-bottom: 1px solid #d7d7d7;
 }
 </style>

@@ -6,6 +6,7 @@ import { computed, nextTick, onMounted, ref, toRefs } from 'vue'
 import { changeRefComponentsSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
+import elementResizeDetectorMaker from 'element-resize-detector'
 const dvMainStore = dvMainStoreWithOut()
 const { pcMatrixCount } = storeToRefs(dvMainStore)
 
@@ -95,6 +96,10 @@ const getShapeItemShowStyle = item => {
 onMounted(() => {
   restore()
   window.addEventListener('resize', restore)
+  const erd = elementResizeDetectorMaker()
+  erd.listenTo(document.getElementById('previewCanvas'), element => {
+    restore()
+  })
 })
 
 defineExpose({
@@ -103,7 +108,7 @@ defineExpose({
 </script>
 
 <template>
-  <div class="canvas-container" :style="canvasStyle" ref="previewCanvas">
+  <div id="previewCanvas" class="canvas-container" :style="canvasStyle" ref="previewCanvas">
     <ComponentWrapper
       v-for="(item, index) in componentData"
       :view-info="canvasViewInfo[item.id]"

@@ -46,7 +46,7 @@ const emit = defineEmits(['handleCommand'])
           v-for="ele in menuList"
           :key="ele.label"
         >
-          <el-icon v-if="ele.svgName">
+          <el-icon class="handle-icon" v-if="ele.svgName">
             <Icon :name="ele.svgName"></Icon>
           </el-icon>
           {{ ele.label }}
@@ -62,5 +62,9 @@ const emit = defineEmits(['handleCommand'])
   .ed-popper__arrow {
     display: none;
   }
+}
+
+.handle-icon {
+  font-size: 20px;
 }
 </style>
