@@ -36,7 +36,7 @@ const collapseOpen = ref(false)
         <span>
           {{ title }}
         </span>
-        <el-switch size="small" v-model="switchValue" @click="e => onSwitchChange(e)" />
+        <el-switch size="small" v-model="switchValue" @click.stop="e => onSwitchChange(e)" />
       </div>
     </template>
     <slot />
