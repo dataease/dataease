@@ -3,6 +3,7 @@ import { toRefs } from 'vue'
 import findComponent from '@/utils/components'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
+import ComponentWrapper from '@/components/data-visualization/canvas/ComponentWrapper.vue'
 const dvMainStore = dvMainStoreWithOut()
 const { canvasViewInfo } = storeToRefs(dvMainStore)
 
@@ -27,18 +28,27 @@ const { propValue, element } = toRefs(props)
 <template>
   <div class="group">
     <div>
-      <component
-        :is="findComponent(item.component)"
-        v-for="item in propValue"
-        :id="'component' + item.id"
-        :key="item.id"
-        class="component"
+      <component-wrapper
+        v-for="(item, index) in propValue"
+        :id="'group-component' + item.id"
+        :view-info="canvasViewInfo[item.id]"
+        :key="index"
+        :config="item"
         :style="item.groupStyle"
-        :prop-value="item.propValue"
-        :element="item"
-        :request="item.request"
-        :view="canvasViewInfo[item.id]"
       />
+      <!--      -->
+      <!--      <component-->
+      <!--        :is="findComponent(item.component)"-->
+      <!--        v-for="item in propValue"-->
+      <!--        :id="'component' + item.id"-->
+      <!--        :key="item.id"-->
+      <!--        class="component"-->
+      <!--        :style="item.groupStyle"-->
+      <!--        :prop-value="item.propValue"-->
+      <!--        :element="item"-->
+      <!--        :request="item.request"-->
+      <!--        :view="canvasViewInfo[item.id]"-->
+      <!--      />-->
     </div>
   </div>
 </template>

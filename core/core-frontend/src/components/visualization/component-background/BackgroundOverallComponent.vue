@@ -3,7 +3,10 @@
     <el-row v-if="curComponent" style="width: 100%" class="margin-top16">
       <el-col :span="12" style="padding-right: 4px">
         <el-row class="custom-item-text-row">
-          <el-checkbox v-model="curComponent.commonBackground.backgroundColorSelect">
+          <el-checkbox
+            :effect="themes"
+            v-model="curComponent.commonBackground.backgroundColorSelect"
+          >
             {{ $t('chart.color') }}
           </el-checkbox>
         </el-row>
@@ -38,15 +41,15 @@
 
     <el-row style="width: 100%" class="custom-row margin-top16">
       <el-row class="custom-item-text-row">
-        <el-checkbox v-model="curComponent.commonBackground.backgroundImageEnable"
+        <el-checkbox :effect="themes" v-model="curComponent.commonBackground.backgroundImageEnable"
           >{{ t('visualization.background') }}
         </el-checkbox>
       </el-row>
       <el-row class="function-area custom-row" style="margin-left: 20px">
         <el-row>
           <el-radio-group :effect="themes" v-model="curComponent.commonBackground.backgroundType">
-            <el-radio label="outerImage">{{ t('visualization.photo') }}</el-radio>
-            <el-radio label="innerImage">{{ t('visualization.board') }}</el-radio>
+            <el-radio :effect="themes" label="outerImage">{{ t('visualization.photo') }}</el-radio>
+            <el-radio :effect="themes" label="innerImage">{{ t('visualization.board') }}</el-radio>
           </el-radio-group>
         </el-row>
         <el-row>
@@ -88,7 +91,7 @@
           </el-row>
           <el-col
             v-show="curComponent.commonBackground.backgroundType === 'outerImage'"
-            style="width: 130px !important; height: 70px; text-align: left"
+            style="width: 130px !important; height: 80px; overflow: hidden; text-align: left"
             class="margin-top8"
           >
             <el-upload
@@ -217,7 +220,7 @@ const onChangeType = () => {
 }
 const handleRemove = (file, fileList) => {
   state.uploadDisabled = false
-  curComponent.value.style['outerImage'] = null
+  curComponent.value.commonBackground['outerImage'] = null
   state.fileList = []
   commitStyle()
 }
@@ -396,5 +399,19 @@ span {
 
 :deep(.ed-input__inner) {
   text-align: left;
+}
+
+:deep(.ed-checkbox--dark) {
+  color: #646a73 !important;
+  font-weight: 400 !important;
+}
+:deep(.ed-radio--dark .ed-radio__label) {
+  color: #646a73 !important;
+  font-size: 12px !important;
+  font-weight: 400 !important;
+}
+
+:deep(.ed-checkbox__label) {
+  font-size: 12px !important;
 }
 </style>

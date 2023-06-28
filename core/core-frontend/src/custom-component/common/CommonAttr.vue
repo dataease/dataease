@@ -4,7 +4,6 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { styleData, selectKey, optionMap, positionData } from '@/utils/attr'
 import DeInputNum from '@/custom-component/common/DeInputNum.vue'
-import { ElRow } from 'element-plus-secondary'
 
 const dvMainStore = dvMainStoreWithOut()
 const { curComponent } = storeToRefs(dvMainStore)
@@ -58,6 +57,14 @@ const isIncludesColor = str => {
         </div>
       </el-collapse-item>
 
+      <el-collapse-item title="背景" name="background">
+        <background-overall-component
+          v-if="curComponent"
+          themes="dark"
+          position="component"
+        ></background-overall-component>
+      </el-collapse-item>
+
       <el-collapse-item title="样式" name="style">
         <div style="width: 100%">
           <div
@@ -66,8 +73,10 @@ const isIncludesColor = str => {
             :title="label"
             style="display: flex; float: left; margin-top: 10px"
           >
-            <div style="width: 60px; overflow: hidden; text-align: right">
-              <span>{{ label }}</span>
+            <div style="width: 30px; overflow: hidden; text-align: right">
+              <el-icon :title="label" class="attr-custom-icon">
+                <Icon :name="'dv-style-' + key"></Icon>
+              </el-icon>
             </div>
             <div style="width: 85px">
               <el-color-picker
@@ -135,5 +144,11 @@ const isIncludesColor = str => {
 }
 :deep(.ed-form-item__label) {
   color: #ffffff;
+}
+
+.attr-custom-icon {
+  font-size: 16px;
+  color: #646a73;
+  margin-right: 5px;
 }
 </style>

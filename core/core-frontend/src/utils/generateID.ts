@@ -1,7 +1,7 @@
-import { nanoid } from 'nanoid'
+import { guid } from '@/views/visualized/data/dataset/form/util.js'
 
-// 主要用于 Vue 的 diff 算法，为每个元素创建一个独一无二的 ID
+// snowflake
 export const generateID = () => {
-  return nanoid()
+  return guid()
 }
 export default generateID

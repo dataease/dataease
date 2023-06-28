@@ -4,7 +4,7 @@ import { dvMainStoreWithOut } from './dvMain'
 import { $ } from '@/utils/utils'
 import decomposeComponent from '@/utils/decomposeComponent'
 import { generateID } from '@/utils/generateID'
-import { commonStyle, commonAttr } from '@/custom-component/component-list'
+import { commonStyle, commonAttr, commonBackground } from '@/custom-component/component-list'
 import { createGroupStyle } from '@/utils/style'
 import eventBus from '@/utils/eventBus'
 
@@ -62,6 +62,7 @@ export const composeStore = defineStore('compose', {
         name: '组合',
         label: '组合',
         icon: 'group',
+        commonBackground: { ...commonBackground },
         ...commonAttr,
         style: {
           ...commonStyle,
