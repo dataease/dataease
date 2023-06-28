@@ -185,6 +185,7 @@ span {
 
 .item-span-drop {
   color: #a6a6a6;
+  display: flex;
 }
 
 .item-span-style {
