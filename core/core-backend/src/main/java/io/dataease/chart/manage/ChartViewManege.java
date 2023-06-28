@@ -3,10 +3,7 @@ package io.dataease.chart.manage;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.dataease.api.chart.dto.ChartFieldCompareDTO;
-import io.dataease.api.chart.dto.ChartFieldCustomFilterDTO;
-import io.dataease.api.chart.dto.ChartViewDTO;
-import io.dataease.api.chart.dto.ChartViewFieldDTO;
+import io.dataease.api.chart.dto.*;
 import io.dataease.chart.dao.auto.entity.CoreChartView;
 import io.dataease.chart.dao.auto.mapper.CoreChartViewMapper;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetTableField;
@@ -79,7 +76,7 @@ public class ChartViewManege {
 
     /**
      * sceneId 为仪表板或者数据大屏id
-     * */
+     */
     public List<ChartViewDTO> listBySceneId(Long sceneId) {
         QueryWrapper<CoreChartView> wrapper = new QueryWrapper<>();
         wrapper.eq("scene_id", sceneId);
@@ -158,6 +155,8 @@ public class ChartViewManege {
                 ChartFieldCompareDTO chartFieldCompareDTO = new ChartFieldCompareDTO();
                 chartFieldCompareDTO.setType("none");
                 dto.setCompareCalc(chartFieldCompareDTO);
+
+                dto.setFormatterCfg(new FormatterCfgDTO());
             }
 
             dto.setSort("none");
