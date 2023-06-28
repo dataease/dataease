@@ -29,10 +29,11 @@ const state = reactive({
 })
 
 watch(
-  () => props.chart,
+  () => props.chart.customStyle,
   () => {
     init()
-  }
+  },
+  { deep: true }
 )
 
 const { chart } = toRefs(props)

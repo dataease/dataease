@@ -6,8 +6,10 @@ import cn.hutool.crypto.asymmetric.KeyType;
 import cn.hutool.crypto.asymmetric.RSA;
 import cn.hutool.crypto.symmetric.AES;
 import io.dataease.dataset.dto.DatasourceSchemaDTO;
+import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.datasource.request.DatasourceRequest;
+import io.dataease.datasource.type.CK;
 import io.dataease.datasource.type.Mysql;
 import io.dataease.utils.JsonUtil;
 import io.dataease.utils.LogUtil;
@@ -27,7 +29,7 @@ import java.util.*;
 
 import static org.apache.calcite.sql.SqlKind.*;
 
-@SpringBootTest
+//@SpringBootTest
 public class RsaTest {
 
     private static final String PK_SEPARATOR = "-pk_separator-";
@@ -163,22 +165,18 @@ public class RsaTest {
         CalciteProvider provider = new CalciteProvider();
         provider.init();
         DatasourceRequest datasourceRequest = new DatasourceRequest();
-        Map<String, DatasourceSchemaDTO> ds = new HashMap<>();
-        DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
-        datasourceSchemaDTO.setType("mysql");
-        Mysql mysql = new Mysql();
-        mysql.setUsername("root");
-        mysql.setPassword("jinlong");
-        mysql.setHost("localhost");
-        mysql.setPort(3306);
+        CoreDatasource coreDatasource = new CoreDatasource();
+        coreDatasource.setType("ck");
+
+        CK mysql = new CK();
+        mysql.setUsername("dataease");
+        mysql.setPassword("Calong@2015");
+        mysql.setHost("123.56.8.132");
+        mysql.setPort(8123);
         mysql.setDataBase("dataease");
-
-//        datasourceSchemaDTO.setConfiguration(JsonUtil.toJSONString(mysql).toString());
-//        ds.put("dataease", datasourceSchemaDTO);
-//        datasourceRequest.setDsList(ds);
-//        datasourceRequest.setQuery("select * from dataease.sys_user");
-
-        System.out.println(JsonUtil.toJSONString(mysql).toString());
+        coreDatasource.setConfiguration(JsonUtil.toJSONString(mysql).toString());
+        datasourceRequest.setDatasource(coreDatasource);
+        provider.checkStatus(datasourceRequest);
     }
 
 }

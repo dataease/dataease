@@ -9,9 +9,6 @@ public class DatasourceConfiguration extends Configuration{
     private List<String> illegalParameters;
     private List<String> showTableSqls;
 
-    public String getJdbc(){
-        return "";
-    }
 
     static public enum DatasourceType {
         API("API", "API", "API"),
@@ -25,6 +22,7 @@ public class DatasourceConfiguration extends Configuration{
         redshift("redshift", "AWS Redshift", "OLTP"),
         db2("db2", "Db2", "OLTP"),
         ck("ck", "Clickhouse", "OLAP"),
+        h2("h2", "H2", "OLAP"),
         sqlServer("sqlServer", "Sqlserver", "DL");
 
         private String type;

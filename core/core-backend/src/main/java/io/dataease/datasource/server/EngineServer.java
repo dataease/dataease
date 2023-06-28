@@ -7,10 +7,12 @@ import io.dataease.datasource.dao.auto.mapper.CoreDeEngineMapper;
 import io.dataease.datasource.provider.EngineProvider;
 import io.dataease.datasource.provider.ProviderUtil;
 import io.dataease.datasource.request.DatasourceRequest;
+import io.dataease.datasource.type.H2;
 import io.dataease.datasource.type.Mysql;
 import io.dataease.result.ResultMessage;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.JsonUtil;
+import io.dataease.utils.ModelUtils;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.env.Environment;
@@ -79,32 +81,50 @@ public class EngineServer {
 
     public void initSimpleEngine() {
         QueryWrapper<CoreDeEngine> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("type", engineType.mysql.name());
+        if(ModelUtils.isDesktop()){
+            queryWrapper.eq("type", engineType.h2.name());
+        }else {
+            queryWrapper.eq("type", engineType.mysql.name());
+        }
         List<CoreDeEngine> deEngines = deEngineMapper.selectList(queryWrapper);
         if (!CollectionUtils.isEmpty(deEngines)) {
             return;
         }
+
+
         CoreDeEngine engine = new CoreDeEngine();
-        engine.setType(engineType.mysql.name());
-        Mysql mysqlConfiguration = new Mysql();
-        Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mysql://(.*):(\\d+)/(.*)");
-        Matcher matcher = WITH_SQL_FRAGMENT.matcher(env.getProperty("spring.datasource.url"));
-        if (!matcher.find()) {
-            return;
+        if(ModelUtils.isDesktop()){
+            engine.setType(engineType.h2.name());
+            H2 h2 = new H2();
+            h2.setJdbc(env.getProperty("spring.datasource.url"));
+            h2.setDataBase("PUBLIC");
+            h2.setUsername(env.getProperty("spring.datasource.username"));
+            h2.setPassword(env.getProperty("spring.datasource.password"));
+            engine.setConfiguration(JsonUtil.toJSONString(h2).toString());
+        }else {
+            engine.setType(engineType.mysql.name());
+            Mysql mysqlConfiguration = new Mysql();
+            Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mysql://(.*):(\\d+)/(.*)");
+            Matcher matcher = WITH_SQL_FRAGMENT.matcher(env.getProperty("spring.datasource.url"));
+            if (!matcher.find()) {
+                return;
+            }
+            mysqlConfiguration.setHost(matcher.group(1));
+            mysqlConfiguration.setPort(Integer.valueOf(matcher.group(2)));
+            mysqlConfiguration.setDataBase(matcher.group(3).split("\\?")[0]);
+            mysqlConfiguration.setExtraParams(matcher.group(3).split("\\?")[1]);
+            mysqlConfiguration.setUsername(env.getProperty("spring.datasource.username"));
+            mysqlConfiguration.setPassword(env.getProperty("spring.datasource.password"));
+            engine.setConfiguration(JsonUtil.toJSONString(mysqlConfiguration).toString());
         }
-        mysqlConfiguration.setHost(matcher.group(1));
-        mysqlConfiguration.setPort(Integer.valueOf(matcher.group(2)));
-        mysqlConfiguration.setDataBase(matcher.group(3).split("\\?")[0]);
-        mysqlConfiguration.setExtraParams(matcher.group(3).split("\\?")[1]);
-        mysqlConfiguration.setUsername(env.getProperty("spring.datasource.username"));
-        mysqlConfiguration.setPassword(env.getProperty("spring.datasource.password"));
-        engine.setConfiguration(JsonUtil.toJSONString(mysqlConfiguration).toString());
+        System.out.println(JsonUtil.toJSONString(engine));
         deEngineMapper.insert(engine);
     }
 
 
     public enum engineType {
-        mysql("Mysql");
+        mysql("Mysql"),
+        h2("h2");
         private String alias;
 
         private engineType(String alias) {

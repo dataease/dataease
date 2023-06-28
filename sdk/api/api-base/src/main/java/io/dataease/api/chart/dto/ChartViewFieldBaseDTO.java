@@ -33,4 +33,6 @@ public class ChartViewFieldBaseDTO extends DatasetTableFieldDTO implements Seria
 
     private Integer index;
 
+    private FormatterCfgDTO formatterCfg;
+
 }

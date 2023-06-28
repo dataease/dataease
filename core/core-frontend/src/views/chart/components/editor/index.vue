@@ -24,6 +24,7 @@ import { storeToRefs } from 'pinia'
 import { BASE_VIEW_CONFIG } from '@/views/chart/components/editor/util/chart'
 import ChartType from '@/views/chart/components/editor/chart-type/ChartType.vue'
 import { useRouter } from 'vue-router'
+import CompareEdit from '@/views/chart/components/editor/drag-item/components/CompareEdit.vue'
 
 const dvMainStore = dvMainStoreWithOut()
 const { canvasCollapse } = storeToRefs(dvMainStore)
@@ -80,7 +81,9 @@ const state = reactive({
   resultFilterEdit: false,
   filterItem: {},
   chartForFilter: {},
-  searchField: ''
+  searchField: '',
+  quotaItemCompare: {},
+  showEditQuotaCompare: false
 })
 
 watch(
@@ -508,6 +511,27 @@ const editDs = () => {
   })
   window.open(routeData.href, '_blank')
 }
+
+const showQuotaEditCompare = item => {
+  state.quotaItemCompare = JSON.parse(JSON.stringify(item))
+  state.showEditQuotaCompare = true
+}
+
+const closeQuotaEditCompare = () => {
+  state.showEditQuotaCompare = false
+}
+
+const saveQuotaEditCompare = () => {
+  // 更新指标
+  if (state.quotaItemCompare.calcType === 'quota') {
+    view.value.yAxis[state.quotaItemCompare.index].compareCalc = state.quotaItemCompare.compareCalc
+  } else if (state.quotaItemCompare.calcType === 'quotaExt') {
+    view.value.yAxisExt[state.quotaItemCompare.index].compareCalc =
+      state.quotaItemCompare.compareCalc
+  }
+  calcData(view.value)
+  closeQuotaEditCompare()
+}
 </script>
 
 <template>
@@ -631,6 +655,7 @@ const editDs = () => {
                               @onQuotaItemRemove="quotaItemRemove"
                               @onNameEdit="showRename"
                               @editItemFilter="showQuotaEditFilter"
+                              @editItemCompare="showQuotaEditCompare"
                             />
                           </template>
                         </draggable>
@@ -994,6 +1019,27 @@ const editDs = () => {
         <div class="dialog-footer">
           <el-button @click="closeResultFilter">{{ t('chart.cancel') }} </el-button>
           <el-button type="primary" @click="saveResultFilter">{{ t('chart.confirm') }} </el-button>
+        </div>
+      </template>
+    </el-dialog>
+
+    <!--同环比设置-->
+    <el-dialog
+      v-model="state.showEditQuotaCompare"
+      v-if="state.showEditQuotaCompare"
+      :title="t('chart.yoy_setting')"
+      :visible="state.showEditQuotaCompare"
+      :show-close="false"
+      width="600px"
+      class="dialog-css"
+    >
+      <compare-edit :compare-item="state.quotaItemCompare" :chart="view" />
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="closeQuotaEditCompare">{{ t('chart.cancel') }} </el-button>
+          <el-button type="primary" @click="saveQuotaEditCompare"
+            >{{ t('chart.confirm') }}
+          </el-button>
         </div>
       </template>
     </el-dialog>

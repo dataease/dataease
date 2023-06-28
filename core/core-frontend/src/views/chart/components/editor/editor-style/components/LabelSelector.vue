@@ -13,10 +13,11 @@ const props = defineProps({
 })
 
 watch(
-  () => props.chart,
+  () => props.chart.customAttr.label,
   () => {
     init()
-  }
+  },
+  { deep: true }
 )
 
 const predefineColors = COLOR_PANEL

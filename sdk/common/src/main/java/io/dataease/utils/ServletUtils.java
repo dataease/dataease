@@ -33,6 +33,10 @@ public class ServletUtils {
         return getHead(AuthConstant.TOKEN_KEY);
     }
 
+    public static String getXUserinfo() {
+        return getHead(AuthConstant.APISIX_X_USER);
+    }
+
     public static boolean apisixCheck() {
         return true;
 //        String head = getHead(AuthConstant.APISIX_FLAG_KEY);

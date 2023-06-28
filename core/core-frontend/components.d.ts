@@ -16,6 +16,7 @@ declare module '@vue/runtime-core' {
     BackgroundOverallComponent: typeof import('./src/components/visualization/component-background/BackgroundOverallComponent.vue')['default']
     Canvas: typeof import('./src/components/dashboard/canvas/index.vue')['default']
     CanvasAttr: typeof import('./src/components/data-visualization/CanvasAttr.vue')['default']
+    CollapseSwitchItem: typeof import('./src/components/collapse-switch-item/src/CollapseSwitchItem.vue')['default']
     ColorButton: typeof import('./src/components/assist-button/ColorButton.vue')['default']
     ColumnList: typeof import('./src/components/column-list/src/ColumnList.vue')['default']
     ComponentBar: typeof import('./src/components/visualization/ComponentBar.vue')['default']

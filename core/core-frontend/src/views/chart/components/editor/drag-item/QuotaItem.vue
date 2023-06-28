@@ -2,8 +2,10 @@
 import { useI18n } from '@/hooks/web/useI18n'
 import { reactive, ref, toRefs, watch } from 'vue'
 import { formatterItem } from '../util/formatter'
-import { getItemType } from '@/views/chart/components/editor/drag-item/utils'
+import { getItemType, resetValueFormatter } from '@/views/chart/components/editor/drag-item/utils'
 import { Delete, Edit, Filter } from '@element-plus/icons-vue'
+import { quotaViews } from '@/views/chart/components/js/util'
+import { SUPPORT_Y_M } from '@/views/chart/components/editor/util/chart'
 
 const fieldType = (deType: number) => {
   return ['text', 'time', 'value', 'value', 'location'][deType]
@@ -15,7 +17,9 @@ const tagType = ref('success')
 const showDateExt = ref(false)
 
 const state = reactive({
-  formatterItem: formatterItem
+  formatterItem: formatterItem,
+  disableEditCompare: false,
+  quotaViews: quotaViews
 })
 
 const props = defineProps({
@@ -50,10 +54,11 @@ const emit = defineEmits([
   'onCustomSort',
   'onQuotaItemChange',
   'onNameEdit',
-  'editItemFilter'
+  'editItemFilter',
+  'editItemCompare'
 ])
 
-const { item } = toRefs(props)
+const { item, chart } = toRefs(props)
 
 watch(
   [props.quotaData, props.item],
@@ -62,6 +67,53 @@ watch(
   },
   { deep: true }
 )
+
+watch(
+  () => props.chart,
+  () => {
+    isEnableCompare()
+  },
+  { deep: true }
+)
+
+const isEnableCompare = () => {
+  let xAxis = null
+  if (Object.prototype.toString.call(chart.value.xAxis) === '[object Array]') {
+    xAxis = JSON.parse(JSON.stringify(chart.value.xAxis))
+  } else {
+    xAxis = JSON.parse(chart.value.xAxis)
+  }
+  const t1 = xAxis.filter(ele => {
+    return ele.deType === 1 && SUPPORT_Y_M.includes(ele.dateStyle)
+  })
+
+  if (chart.value.type === 'table-pivot') {
+    let xAxisExt = null
+    if (Object.prototype.toString.call(chart.value.xAxisExt) === '[object Array]') {
+      xAxisExt = JSON.parse(JSON.stringify(chart.value.xAxisExt))
+    } else {
+      xAxisExt = JSON.parse(chart.value.xaxisExt)
+    }
+    const t2 = xAxisExt.filter(ele => {
+      return ele.deType === 1 && SUPPORT_Y_M.includes(ele.dateStyle)
+    })
+
+    t1.push(...t2)
+  }
+
+  // 暂时只支持类别轴/维度的时间类型字段
+  if (
+    t1.length > 0 &&
+    chart.value.type !== 'text' &&
+    chart.value.type !== 'label' &&
+    chart.value.type !== 'gauge' &&
+    chart.value.type !== 'liquid'
+  ) {
+    state.disableEditCompare = false
+  } else {
+    state.disableEditCompare = true
+  }
+}
 
 const clickItem = param => {
   if (!param) {
@@ -168,6 +220,45 @@ const editFilter = () => {
   emit('editItemFilter', item.value)
 }
 
+const quickCalc = param => {
+  switch (param.type) {
+    case 'none':
+      // 选择占比外，设置自动
+      resetValueFormatter(item.value)
+      item.value.compareCalc.type = 'none'
+      emit('onQuotaItemChange', item.value)
+      break
+    case 'setting':
+      // 选择占比外，设置自动
+      resetValueFormatter(item.value)
+      editCompare()
+      break
+    case 'percent':
+      // 选择占比，自动将数值格式设置为百分比并保留2位小数
+      item.value.formatterCfg.type = 'percent'
+      item.value.formatterCfg.decimalCount = 2
+
+      item.value.compareCalc.type = 'percent'
+      emit('onQuotaItemChange', item.value)
+      break
+    default:
+      break
+  }
+}
+
+const beforeQuickCalc = type => {
+  return {
+    type: type
+  }
+}
+
+const editCompare = () => {
+  item.value.index = props.index
+  item.value.calcType = 'quota'
+  emit('editItemCompare', item.value)
+}
+
+isEnableCompare()
 getItemTagType()
 </script>
 
@@ -223,7 +314,10 @@ getItemTagType()
               <span class="el-dropdown-link inner-dropdown-menu">
                 <span class="item-span-drop">
                   <el-icon>
-                    <Icon name="icon_add_outlined" class="el-icon-arrow-down el-icon-delete"></Icon>
+                    <Icon
+                      name="icon_gridlines_outlined"
+                      class="el-icon-arrow-down el-icon-delete"
+                    ></Icon>
                   </el-icon>
                   <span>{{ t('chart.summary') }}</span>
                   <span class="summary-span-item">({{ t('chart.' + item.summary) }})</span>
@@ -242,8 +336,9 @@ getItemTagType()
                       item.deType !== 5
                     "
                     :command="beforeSummary('sum')"
-                    >{{ t('chart.sum') }}</el-dropdown-item
                   >
+                    {{ t('chart.sum') }}
+                  </el-dropdown-item>
                   <el-dropdown-item
                     v-if="
                       item.id !== '-1' &&
@@ -252,8 +347,9 @@ getItemTagType()
                       item.deType !== 5
                     "
                     :command="beforeSummary('avg')"
-                    >{{ t('chart.avg') }}</el-dropdown-item
                   >
+                    {{ t('chart.avg') }}
+                  </el-dropdown-item>
                   <el-dropdown-item
                     v-if="
                       item.id !== '-1' &&
@@ -262,8 +358,9 @@ getItemTagType()
                       item.deType !== 5
                     "
                     :command="beforeSummary('max')"
-                    >{{ t('chart.max') }}</el-dropdown-item
                   >
+                    {{ t('chart.max') }}
+                  </el-dropdown-item>
                   <el-dropdown-item
                     v-if="
                       item.id !== '-1' &&
@@ -272,8 +369,9 @@ getItemTagType()
                       item.deType !== 5
                     "
                     :command="beforeSummary('min')"
-                    >{{ t('chart.min') }}</el-dropdown-item
                   >
+                    {{ t('chart.min') }}
+                  </el-dropdown-item>
                   <el-dropdown-item
                     v-if="
                       item.id !== '-1' &&
@@ -282,8 +380,9 @@ getItemTagType()
                       item.deType !== 5
                     "
                     :command="beforeSummary('stddev_pop')"
-                    >{{ t('chart.stddev_pop') }}</el-dropdown-item
                   >
+                    {{ t('chart.stddev_pop') }}
+                  </el-dropdown-item>
                   <el-dropdown-item
                     v-if="
                       item.id !== '-1' &&
@@ -292,16 +391,67 @@ getItemTagType()
                       item.deType !== 5
                     "
                     :command="beforeSummary('var_pop')"
-                    >{{ t('chart.var_pop') }}</el-dropdown-item
                   >
-                  <el-dropdown-item :command="beforeSummary('count')">{{
-                    t('chart.count')
-                  }}</el-dropdown-item>
+                    {{ t('chart.var_pop') }}
+                  </el-dropdown-item>
+                  <el-dropdown-item :command="beforeSummary('count')">
+                    {{ t('chart.count') }}
+                  </el-dropdown-item>
                   <el-dropdown-item
                     v-if="item.id !== '-1'"
                     :command="beforeSummary('count_distinct')"
-                    >{{ t('chart.count_distinct') }}</el-dropdown-item
                   >
+                    {{ t('chart.count_distinct') }}
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
+          </el-dropdown-item>
+
+          <!--同比/环比等快速计算-->
+          <el-dropdown-item v-if="!item.chartId && chart.type !== 'table-info'">
+            <el-dropdown
+              placement="right-start"
+              effect="dark"
+              style="width: 100%"
+              @command="quickCalc"
+            >
+              <span class="el-dropdown-link inner-dropdown-menu">
+                <span class="item-span-drop">
+                  <el-icon>
+                    <Icon
+                      name="icon_describe_outlined"
+                      class="el-icon-arrow-down el-icon-delete"
+                    ></Icon>
+                  </el-icon>
+                  <span>{{ t('chart.quick_calc') }}</span>
+                  <span class="summary-span-item">
+                    ({{
+                      !item.compareCalc ? t('chart.none') : t('chart.' + item.compareCalc.type)
+                    }})
+                  </span>
+                </span>
+                <el-icon>
+                  <Icon name="icon_right_outlined" class="el-icon-arrow-down el-icon-delete"></Icon>
+                </el-icon>
+              </span>
+              <template #dropdown>
+                <el-dropdown-menu effect="dark" class="drop-style">
+                  <el-dropdown-item :command="beforeQuickCalc('none')">
+                    {{ t('chart.none') }}
+                  </el-dropdown-item>
+                  <el-dropdown-item
+                    :disabled="state.disableEditCompare"
+                    :command="beforeQuickCalc('setting')"
+                  >
+                    {{ t('chart.yoy_label') }}...
+                  </el-dropdown-item>
+                  <el-dropdown-item
+                    :disabled="state.quotaViews.indexOf(chart.type) > -1"
+                    :command="beforeQuickCalc('percent')"
+                  >
+                    {{ t('chart.percent') }}
+                  </el-dropdown-item>
                 </el-dropdown-menu>
               </template>
             </el-dropdown>
@@ -323,20 +473,21 @@ getItemTagType()
               </span>
               <template #dropdown>
                 <el-dropdown-menu effect="dark" class="drop-style">
-                  <el-dropdown-item :command="beforeSort('none')">{{
-                    t('chart.none')
-                  }}</el-dropdown-item>
-                  <el-dropdown-item :command="beforeSort('asc')">{{
-                    t('chart.asc')
-                  }}</el-dropdown-item>
-                  <el-dropdown-item :command="beforeSort('desc')">{{
-                    t('chart.desc')
-                  }}</el-dropdown-item>
+                  <el-dropdown-item :command="beforeSort('none')">
+                    {{ t('chart.none') }}
+                  </el-dropdown-item>
+                  <el-dropdown-item :command="beforeSort('asc')">
+                    {{ t('chart.asc') }}
+                  </el-dropdown-item>
+                  <el-dropdown-item :command="beforeSort('desc')">
+                    {{ t('chart.desc') }}
+                  </el-dropdown-item>
                   <el-dropdown-item
                     v-if="!item.chartId && (item.deType === 0 || item.deType === 5)"
                     :command="beforeSort('custom_sort')"
-                    >{{ t('chart.custom_sort') }}...</el-dropdown-item
                   >
+                    {{ t('chart.custom_sort') }}...
+                  </el-dropdown-item>
                 </el-dropdown-menu>
               </template>
             </el-dropdown>
@@ -451,9 +602,11 @@ getItemTagType()
   position: relative;
   width: 100%;
   display: block;
+
   .ed-dropdown {
     display: flex;
   }
+
   :deep(.ed-tag__content) {
     display: flex;
     align-items: center;
@@ -502,6 +655,7 @@ span {
 
 .item-span-drop {
   color: #a6a6a6;
+  display: flex;
 }
 
 .item-span-style {

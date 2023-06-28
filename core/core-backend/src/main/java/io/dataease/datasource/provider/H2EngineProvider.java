@@ -8,7 +8,7 @@ import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.entity.CoreDeEngine;
 import io.dataease.datasource.request.EngineRequest;
-import io.dataease.datasource.type.Mysql;
+import io.dataease.datasource.type.H2;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -19,17 +19,14 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
-/**
- * @Author gin
- * @Date 2021/5/17 4:27 下午
- */
-@Service("mysqlEngine")
-public class MysqlEngineProvider extends EngineProvider {
+@Service("h2Engine")
+public class H2EngineProvider extends EngineProvider {
 
 
     public void exec(EngineRequest engineRequest) throws Exception {
-        DatasourceConfiguration configuration = JsonUtil.parseObject(engineRequest.getEngine().getConfiguration(), Mysql.class);
+        DatasourceConfiguration configuration = JsonUtil.parseObject(engineRequest.getEngine().getConfiguration(), H2.class);
         int queryTimeout = configuration.getQueryTimeout();
         CoreDatasource datasource = new CoreDatasource();
         BeanUtils.copyBean(datasource, engineRequest.getEngine());
@@ -86,10 +83,7 @@ public class MysqlEngineProvider extends EngineProvider {
 
     @Override
     public String replaceTable(String name) {
-        String replaceTableSql = "rename table FROM_TABLE to FROM_TABLE_tmp, TO_TABLE to FROM_TABLE, FROM_TABLE_tmp to TO_TABLE"
-                .replace("FROM_TABLE", name).replace("TO_TABLE", TableUtils.tmpName(name));
-        String dropTableSql = "DROP TABLE IF EXISTS " + TableUtils.tmpName(name);
-        return replaceTableSql + ";" + dropTableSql;
+        return  "ALTER TABLE `FROM_TABLE` rename to `FROM_TABLE_tmp`; ALTER TABLE `TO_TABLE` rename to `FROM_TABLE`; DROP TABLE IF EXISTS `FROM_TABLE_tmp`;".replace("FROM_TABLE", name).replace("TO_TABLE", TableUtils.tmpName(name));
     }
 
 

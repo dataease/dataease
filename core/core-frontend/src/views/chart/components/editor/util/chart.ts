@@ -1732,6 +1732,19 @@ export const CHART_TYPE_CONFIGS = [
         icon: 'word-cloud'
       }
     ]
+  },
+  {
+    category: 'map',
+    title: t('chart.chart_type_space'),
+    details: [
+      {
+        render: 'antv',
+        category: 'map',
+        value: 'map',
+        title: t('chart.chart_map'),
+        icon: 'map_mini'
+      }
+    ]
   }
 ]
 
