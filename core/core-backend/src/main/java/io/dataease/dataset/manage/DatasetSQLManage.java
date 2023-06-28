@@ -131,7 +131,7 @@ public class DatasetSQLManage {
                 // build join
                 join.append(" ").append(joinType).append(" ")
                         .append(ts)
-                        .append(currentSQLObj.getTableName())
+                        .append("`" + currentSQLObj.getTableName() + "`")
                         .append(" ").append(currentSQLObj.getTableAlias()).append(" ")
                         .append(" ON ");
                 for (int i = 0; i < unionParamDTO.getUnionFields().size(); i++) {

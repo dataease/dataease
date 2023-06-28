@@ -10,7 +10,7 @@ public class TableUtils {
 
     public static String format = Quoting.BACK_TICK.string + "%s" + Quoting.BACK_TICK.string;
     public static String tableName(String name) {
-        return  name;
+        return name;
     }
 
     public static String tmpName(String name) {
@@ -42,7 +42,7 @@ public class TableUtils {
         if (StringUtils.isNotEmpty(sqlObj.getTableSchema())) {
             schema = sqlObj.getTableSchema() + ".";
         }
-        return schema + sqlObj.getTableName() + " " + sqlObj.getTableAlias();
+        return schema + "`" + sqlObj.getTableName() + "` " + sqlObj.getTableAlias();
     }
 
     public static String tableName2Sql(DatasourceSchemaDTO ds, String tableName) {

@@ -43,9 +43,9 @@ public class SQLConstants {
 
     public static final String WHERE_ALIAS_PREFIX = "w_a_%s";
 
-    public static final String TABLE_NAME = "%s.%s";
+    public static final String TABLE_NAME = "%s.`%s`";
 
-    public static final String FIELD_NAME = "%s.%s";
+    public static final String FIELD_NAME = "%s.`%s`";
 
     public static final String UNIX_TIMESTAMP = "UNIX_TIMESTAMP(%s)";
 
