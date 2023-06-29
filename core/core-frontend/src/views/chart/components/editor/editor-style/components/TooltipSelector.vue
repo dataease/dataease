@@ -66,49 +66,45 @@ init()
 <template>
   <div style="width: 100%">
     <el-col>
-      <el-form ref="tooltipForm" :model="state.tooltipForm" label-width="80px" size="small">
-        <el-form-item :label="t('chart.show')" class="form-item">
-          <el-checkbox
+      <el-form
+        ref="tooltipForm"
+        :disabled="!state.tooltipForm.show"
+        :model="state.tooltipForm"
+        label-width="80px"
+        size="small"
+      >
+        <el-form-item :label="t('chart.text_fontsize')" class="form-item">
+          <el-select
             effect="dark"
-            v-model="state.tooltipForm.show"
-            @change="changeTooltipAttr('show')"
-            >{{ t('chart.show') }}</el-checkbox
+            v-model="state.tooltipForm.textStyle.fontSize"
+            :placeholder="t('chart.text_fontsize')"
+            size="small"
+            @change="changeTooltipAttr('textStyle')"
           >
+            <el-option
+              v-for="option in state.fontSize"
+              :key="option.value"
+              :label="option.name"
+              :value="option.value"
+            />
+          </el-select>
         </el-form-item>
-        <div v-show="state.tooltipForm.show">
-          <el-form-item :label="t('chart.text_fontsize')" class="form-item">
-            <el-select
-              effect="dark"
-              v-model="state.tooltipForm.textStyle.fontSize"
-              :placeholder="t('chart.text_fontsize')"
-              size="small"
-              @change="changeTooltipAttr('textStyle')"
-            >
-              <el-option
-                v-for="option in state.fontSize"
-                :key="option.value"
-                :label="option.name"
-                :value="option.value"
-              />
-            </el-select>
-          </el-form-item>
-          <el-form-item :label="t('chart.text_color')" class="form-item">
-            <el-color-picker
-              v-model="state.tooltipForm.textStyle.color"
-              class="color-picker-style"
-              :predefine="predefineColors"
-              @change="changeTooltipAttr('textStyle')"
-            />
-          </el-form-item>
-          <el-form-item :label="t('chart.background')" class="form-item">
-            <el-color-picker
-              v-model="state.tooltipForm.backgroundColor"
-              class="color-picker-style"
-              :predefine="predefineColors"
-              @change="changeTooltipAttr('backgroundColor')"
-            />
-          </el-form-item>
-        </div>
+        <el-form-item :label="t('chart.text_color')" class="form-item">
+          <el-color-picker
+            v-model="state.tooltipForm.textStyle.color"
+            class="color-picker-style"
+            :predefine="predefineColors"
+            @change="changeTooltipAttr('textStyle')"
+          />
+        </el-form-item>
+        <el-form-item :label="t('chart.background')" class="form-item">
+          <el-color-picker
+            v-model="state.tooltipForm.backgroundColor"
+            class="color-picker-style"
+            :predefine="predefineColors"
+            @change="changeTooltipAttr('backgroundColor')"
+          />
+        </el-form-item>
       </el-form>
     </el-col>
   </div>
