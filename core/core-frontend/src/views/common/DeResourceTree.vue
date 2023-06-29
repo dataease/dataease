@@ -9,6 +9,10 @@ import DeResourceGroupOpt, { ResourceTree } from '@/views/common/DeResourceGroup
 import { guid } from '@/views/visualized/data/dataset/form/util.js'
 import { DEFAULT_CANVAS_STYLE_DATA } from '@/store/modules/data-visualization/dvMain'
 import { save } from '@/api/visualization/dataVisualization'
+import {
+  DEFAULT_CANVAS_STYLE_DATA_DARK,
+  DEFAULT_CANVAS_STYLE_DATA_LIGHT
+} from '@/views/chart/components/editor/util/dataVisualiztion'
 
 const props = defineProps({
   curCanvasType: {
@@ -146,8 +150,12 @@ const resourceCreate = (pid, name) => {
     status: 1,
     selfWatermarkStatus: 0
   }
+  const canvasStyleDataNew =
+    curCanvasType.value === 'dashboard'
+      ? DEFAULT_CANVAS_STYLE_DATA_DARK
+      : DEFAULT_CANVAS_STYLE_DATA_LIGHT
   const canvasInfo = {
-    canvasStyleData: JSON.stringify(DEFAULT_CANVAS_STYLE_DATA),
+    canvasStyleData: JSON.stringify(canvasStyleDataNew),
     componentData: JSON.stringify([]),
     canvasViewInfo: {},
     ...bashResourceInfo

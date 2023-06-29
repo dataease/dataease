@@ -4,15 +4,30 @@ export const commonStyle = {
   opacity: 1
 }
 
-export const commonBackground = {
+export const COMMON_COMPONENT_BACKGROUND_BASE = {
   backgroundColorSelect: true,
-  backgroundColor: '#ffffff',
   alpha: 100,
   backgroundImageEnable: false,
   backgroundType: 'innerImage',
   innerImage: 'board/board_1.svg',
-  innerImageColor: '#1094E5',
   outerImage: null
+}
+
+export const COMMON_COMPONENT_BACKGROUND_LIGHT = {
+  ...COMMON_COMPONENT_BACKGROUND_BASE,
+  backgroundColor: '#ffffff',
+  innerImageColor: '#1094E5'
+}
+
+export const COMMON_COMPONENT_BACKGROUND_DARK = {
+  ...COMMON_COMPONENT_BACKGROUND_BASE,
+  backgroundColor: '#000000',
+  innerImageColor: '#1094E5'
+}
+
+export const COMMON_COMPONENT_BACKGROUND_MAP = {
+  light: COMMON_COMPONENT_BACKGROUND_LIGHT,
+  dark: COMMON_COMPONENT_BACKGROUND_DARK
 }
 
 export const commonAttr = {
@@ -234,7 +249,7 @@ const list = [
 for (let i = 0, len = list.length; i < len; i++) {
   const item = list[i]
   item.style = { ...commonStyle, ...item.style }
-  item['commonBackground'] = { ...commonBackground }
+  item['commonBackground'] = { ...COMMON_COMPONENT_BACKGROUND_BASE }
   list[i] = { ...commonAttr, ...item }
 }
 

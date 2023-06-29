@@ -1,63 +1,9 @@
 import { defineStore } from 'pinia'
 import { store } from '../../index'
 import { deepCopy } from '@/utils/utils'
-import {
-  BASE_VIEW_CONFIG,
-  COMMON_BACKGROUND,
-  DEFAULT_COLOR_CASE,
-  DEFAULT_TITLE_STYLE,
-  FILTER_COMMON_STYLE,
-  TAB_COMMON_STYLE
-} from '@/views/chart/components/editor/util/chart'
-import { DEFAULT_COMMON_CANVAS_STYLE_STRING } from '@/utils/canvasUtils'
+import { BASE_VIEW_CONFIG } from '@/views/chart/components/editor/util/chart'
 import eventBus from '@/utils/eventBus'
-
-export const PANEL_CHART_INFO = {
-  chartTitle: DEFAULT_TITLE_STYLE,
-  chartColor: DEFAULT_COLOR_CASE,
-  chartCommonStyle: COMMON_BACKGROUND,
-  filterStyle: FILTER_COMMON_STYLE,
-  tabStyle: TAB_COMMON_STYLE
-}
-
-export const MOBILE_SETTING = {
-  customSetting: false,
-  color: '#ffffff',
-  imageUrl: null,
-  backgroundType: 'image'
-}
-
-export const DEFAULT_DASHBOARD_STYLE = {
-  mobileSetting: MOBILE_SETTING,
-  themeColor: 'light',
-  gap: 'yes',
-  gapSize: 10,
-  resultMode: 'all', // 视图结果显示模式 all 视图 custom 仪表板自定义
-  resultCount: 1000 // 视图结果显示条数
-}
-
-export const DEFAULT_CANVAS_STYLE_DATA = {
-  // 页面全局数据
-  themeId: 'system_0',
-  width: 1920,
-  height: 1080,
-  refreshViewEnable: false, // 开启视图刷新（默认关闭）
-  refreshViewLoading: true, // 仪表板视图loading提示
-  refreshUnit: 'minute', // 仪表板刷新时间带外 默认 分钟
-  refreshTime: 5, // 仪表板刷新时间 默认5分钟
-  scale: 60,
-  scaleWidth: 100,
-  scaleHeight: 100,
-  backgroundType: 'backgroundColor',
-  background: '',
-  openCommonStyle: true,
-  color: '#fff',
-  opacity: 1,
-  backgroundColor: '#000',
-  fontSize: 14,
-  dashboard: DEFAULT_DASHBOARD_STYLE,
-  component: PANEL_CHART_INFO
-}
+import { DEFAULT_CANVAS_STYLE_DATA_DARK } from '@/views/chart/components/editor/util/dataVisualiztion'
 
 export const dvMainStore = defineStore('dataVisualization', {
   state: () => {
@@ -72,7 +18,7 @@ export const dvMainStore = defineStore('dataVisualization', {
         datasetAreaCollapse: false
       },
       editMode: 'edit', // 编辑器模式 edit preview
-      canvasStyleData: deepCopy(DEFAULT_CANVAS_STYLE_DATA),
+      canvasStyleData: deepCopy(DEFAULT_CANVAS_STYLE_DATA_DARK),
       // 当前展示画布缓存数据
       componentDataCache: null,
       // 当前展示画布视图信息
@@ -94,7 +40,6 @@ export const dvMainStore = defineStore('dataVisualization', {
       // 点击画布时是否点中组件，主要用于取消选中组件用。
       // 如果没点中组件，并且在画布空白处弹起鼠标，则取消当前组件的选中状态
       isClickComponent: false,
-      canvasCommonStyleData: DEFAULT_COMMON_CANVAS_STYLE_STRING,
       // 大屏基础信息
       dvInfo: {
         id: null,
@@ -195,7 +140,9 @@ export const dvMainStore = defineStore('dataVisualization', {
       previewVisible: false,
       previewComponentData: [],
       currentCanvasNewId: [],
-      lastViewRequestInfo: {}
+      lastViewRequestInfo: {},
+      // 初始状态下当前默认的系统色 dvInfo.type ==== 'dashboard'?'light':'dark'
+      curOriginThemes: 'light'
     }
   },
   actions: {
@@ -315,6 +262,7 @@ export const dvMainStore = defineStore('dataVisualization', {
     },
     updateCurDvInfo(dvInfo) {
       this.dvInfo = dvInfo
+      this.curOriginThemes = dvInfo.type === 'dashboard' ? 'light' : 'dark'
     },
     matrixSizeAdaptor() {
       const { baseWidth, baseHeight, baseMarginLeft, baseMarginTop } = this.bashMatrixInfo

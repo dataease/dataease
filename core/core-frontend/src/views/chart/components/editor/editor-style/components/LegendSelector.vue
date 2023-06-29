@@ -72,98 +72,94 @@ init()
 <template>
   <div style="width: 100%">
     <el-col>
-      <el-form ref="legendForm" :model="state.legendForm" label-width="80px" size="small">
-        <el-form-item :label="t('chart.show')" class="form-item">
-          <el-checkbox
+      <el-form
+        ref="legendForm"
+        :disabled="!state.legendForm.show"
+        :model="state.legendForm"
+        label-width="80px"
+        size="small"
+      >
+        <el-form-item :label="t('chart.icon')" class="form-item">
+          <el-select
             effect="dark"
-            v-model="state.legendForm.show"
-            @change="changeLegendStyle('show')"
-            >{{ t('chart.show') }}</el-checkbox
+            v-model="state.legendForm.icon"
+            :placeholder="t('chart.icon')"
+            @change="changeLegendStyle('icon')"
           >
-        </el-form-item>
-        <div v-show="state.legendForm.show">
-          <el-form-item :label="t('chart.icon')" class="form-item">
-            <el-select
-              effect="dark"
-              v-model="state.legendForm.icon"
-              :placeholder="t('chart.icon')"
-              @change="changeLegendStyle('icon')"
-            >
-              <el-option
-                v-for="item in iconSymbolOptions"
-                :key="item.value"
-                :label="item.name"
-                :value="item.value"
-              />
-            </el-select>
-          </el-form-item>
-          <el-form-item :label="t('chart.orient')" class="form-item">
-            <el-radio-group
-              v-model="state.legendForm.orient"
-              size="small"
-              @change="changeLegendStyle('orient')"
-            >
-              <el-radio effect="dark" label="horizontal">{{ t('chart.horizontal') }}</el-radio>
-              <el-radio effect="dark" label="vertical">{{ t('chart.vertical') }}</el-radio>
-            </el-radio-group>
-          </el-form-item>
-          <el-form-item :label="t('chart.text_fontsize')" class="form-item">
-            <el-select
-              effect="dark"
-              v-model="state.legendForm.textStyle.fontSize"
-              :placeholder="t('chart.text_fontsize')"
-              size="small"
-              @change="changeLegendStyle('textStyle')"
-            >
-              <el-option
-                v-for="option in state.fontSize"
-                :key="option.value"
-                :label="option.name"
-                :value="option.value"
-              />
-            </el-select>
-          </el-form-item>
-          <el-form-item :label="t('chart.text_color')" class="form-item">
-            <el-color-picker
-              v-model="state.legendForm.textStyle.color"
-              class="color-picker-style"
-              :predefine="predefineColors"
-              @change="changeLegendStyle('textStyle')"
+            <el-option
+              v-for="item in iconSymbolOptions"
+              :key="item.value"
+              :label="item.name"
+              :value="item.value"
             />
-          </el-form-item>
-          <el-form-item :label="t('chart.text_h_position')" class="form-item">
-            <el-radio-group
-              v-model="state.legendForm.hPosition"
-              size="small"
-              @change="changeLegendStyle('hPosition')"
+          </el-select>
+        </el-form-item>
+        <el-form-item :label="t('chart.orient')" class="form-item">
+          <el-radio-group
+            v-model="state.legendForm.orient"
+            size="small"
+            @change="changeLegendStyle('orient')"
+          >
+            <el-radio effect="dark" label="horizontal">{{ t('chart.horizontal') }}</el-radio>
+            <el-radio effect="dark" label="vertical">{{ t('chart.vertical') }}</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item :label="t('chart.text_fontsize')" class="form-item">
+          <el-select
+            effect="dark"
+            v-model="state.legendForm.textStyle.fontSize"
+            :placeholder="t('chart.text_fontsize')"
+            size="small"
+            @change="changeLegendStyle('textStyle')"
+          >
+            <el-option
+              v-for="option in state.fontSize"
+              :key="option.value"
+              :label="option.name"
+              :value="option.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item :label="t('chart.text_color')" class="form-item">
+          <el-color-picker
+            v-model="state.legendForm.textStyle.color"
+            class="color-picker-style"
+            :predefine="predefineColors"
+            @change="changeLegendStyle('textStyle')"
+          />
+        </el-form-item>
+        <el-form-item :label="t('chart.text_h_position')" class="form-item">
+          <el-radio-group
+            v-model="state.legendForm.hPosition"
+            size="small"
+            @change="changeLegendStyle('hPosition')"
+          >
+            <el-radio effect="dark" label="left">{{ t('chart.text_pos_left') }}</el-radio>
+            <el-radio
+              effect="dark"
+              :disabled="state.legendForm.vPosition === 'center'"
+              label="center"
+              >{{ t('chart.text_pos_center') }}</el-radio
             >
-              <el-radio effect="dark" label="left">{{ t('chart.text_pos_left') }}</el-radio>
-              <el-radio
-                effect="dark"
-                :disabled="state.legendForm.vPosition === 'center'"
-                label="center"
-                >{{ t('chart.text_pos_center') }}</el-radio
-              >
-              <el-radio effect="dark" label="right">{{ t('chart.text_pos_right') }}</el-radio>
-            </el-radio-group>
-          </el-form-item>
-          <el-form-item :label="t('chart.text_v_position')" class="form-item">
-            <el-radio-group
-              v-model="state.legendForm.vPosition"
-              size="small"
-              @change="changeLegendStyle('vPosition')"
+            <el-radio effect="dark" label="right">{{ t('chart.text_pos_right') }}</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item :label="t('chart.text_v_position')" class="form-item">
+          <el-radio-group
+            v-model="state.legendForm.vPosition"
+            size="small"
+            @change="changeLegendStyle('vPosition')"
+          >
+            <el-radio effect="dark" label="top">{{ t('chart.text_pos_top') }}</el-radio>
+            <el-radio
+              effect="dark"
+              :disabled="state.legendForm.hPosition === 'center'"
+              label="center"
+              >{{ t('chart.text_pos_center') }}</el-radio
             >
-              <el-radio effect="dark" label="top">{{ t('chart.text_pos_top') }}</el-radio>
-              <el-radio
-                effect="dark"
-                :disabled="state.legendForm.hPosition === 'center'"
-                label="center"
-                >{{ t('chart.text_pos_center') }}</el-radio
-              >
-              <el-radio effect="dark" label="bottom">{{ t('chart.text_pos_bottom') }}</el-radio>
-            </el-radio-group>
-          </el-form-item>
-        </div>
+            <el-radio effect="dark" label="bottom">{{ t('chart.text_pos_bottom') }}</el-radio>
+          </el-radio-group>
+        </el-form-item>
       </el-form>
     </el-col>
   </div>

@@ -15,10 +15,11 @@ const props = defineProps({
 const emit = defineEmits(['onFunctionCfgChange'])
 
 watch(
-  () => props.chart,
+  () => props.chart.senior.functionCfg,
   () => {
     init()
-  }
+  },
+  { deep: true }
 )
 
 const state = reactive({
@@ -52,21 +53,15 @@ init()
 <template>
   <div style="width: 100%">
     <el-col>
-      <el-form ref="functionForm" :model="state.functionForm" label-width="80px" size="small">
+      <el-form
+        ref="functionForm"
+        :disabled="!state.functionForm.sliderShow"
+        :model="state.functionForm"
+        label-width="80px"
+        size="small"
+      >
         <div>
-          <el-form-item :label="t('chart.slider')" class="form-item">
-            <el-checkbox
-              effect="dark"
-              v-model="state.functionForm.sliderShow"
-              @change="changeFunctionCfg"
-              >{{ t('chart.show') }}</el-checkbox
-            >
-          </el-form-item>
-          <el-form-item
-            v-show="state.functionForm.sliderShow"
-            :label="t('chart.slider_range') + '(%)'"
-            class="form-item form-item-slider"
-          >
+          <el-form-item :label="t('chart.slider_range') + '(%)'" class="form-item form-item-slider">
             <el-slider
               v-model="state.functionForm.sliderRange"
               style="width: 90%"
@@ -77,11 +72,7 @@ init()
               @change="changeFunctionCfg"
             />
           </el-form-item>
-          <el-form-item
-            v-show="state.functionForm.sliderShow"
-            :label="t('chart.slider_bg')"
-            class="form-item"
-          >
+          <el-form-item :label="t('chart.slider_bg')" class="form-item">
             <el-color-picker
               v-model="state.functionForm.sliderBg"
               class="color-picker-style"
@@ -89,11 +80,7 @@ init()
               @change="changeFunctionCfg"
             />
           </el-form-item>
-          <el-form-item
-            v-show="state.functionForm.sliderShow"
-            :label="t('chart.slider_fill_bg')"
-            class="form-item"
-          >
+          <el-form-item :label="t('chart.slider_fill_bg')" class="form-item">
             <el-color-picker
               v-model="state.functionForm.sliderFillBg"
               class="color-picker-style"
@@ -101,11 +88,7 @@ init()
               @change="changeFunctionCfg"
             />
           </el-form-item>
-          <el-form-item
-            v-show="state.functionForm.sliderShow"
-            :label="t('chart.slider_text_color')"
-            class="form-item"
-          >
+          <el-form-item :label="t('chart.slider_text_color')" class="form-item">
             <el-color-picker
               v-model="state.functionForm.sliderTextColor"
               class="color-picker-style"

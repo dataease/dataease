@@ -182,7 +182,7 @@ public class ScheduleManager {
 
             scheduler.rescheduleJob(triggerKey, trigger);// 修改一个任务的触发时间
         } catch (Exception e) {
-//            DataEaseException.throwException(e);
+            DataEaseException.throwException(e);
         }
     }
 

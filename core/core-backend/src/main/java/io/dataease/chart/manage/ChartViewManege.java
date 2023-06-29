@@ -43,6 +43,9 @@ public class ChartViewManege {
         if (id == null) {
             DEException.throwException("no chart id");
         }
+        if (ObjectUtils.isEmpty(chartViewDTO.getTableId())) {
+            DEException.throwException("dataset can't empty");
+        }
         CoreChartView coreChartView = coreChartViewMapper.selectById(id);
         CoreChartView record = transDTO2Record(chartViewDTO);
         if (ObjectUtils.isEmpty(coreChartView)) {

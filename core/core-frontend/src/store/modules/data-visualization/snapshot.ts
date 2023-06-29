@@ -1,14 +1,16 @@
 import { defineStore, storeToRefs } from 'pinia'
 import { store } from '../../index'
-import { DEFAULT_CANVAS_STYLE_DATA, dvMainStoreWithOut } from './dvMain'
+import { dvMainStoreWithOut } from './dvMain'
 import { deepCopy } from '@/utils/utils'
+import { BASE_THEMES } from '@/views/chart/components/editor/util/dataVisualiztion'
 
 const dvMainStore = dvMainStoreWithOut()
-const { curComponent, componentData, canvasStyleData, canvasViewInfo } = storeToRefs(dvMainStore)
+const { curComponent, componentData, canvasStyleData, canvasViewInfo, curOriginThemes } =
+  storeToRefs(dvMainStore)
 
 let defaultCanvasInfo = {
   componentData: [],
-  canvasStyleData: deepCopy(DEFAULT_CANVAS_STYLE_DATA),
+  canvasStyleData: deepCopy(BASE_THEMES[curOriginThemes.value]),
   canvasViewInfo: {}
 }
 

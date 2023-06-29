@@ -35,6 +35,40 @@ export const DEFAULT_COLOR_CASE = {
   mapLineTargetColor: '#576CBC'
 }
 
+export const DEFAULT_COLOR_CASE_LIGHT = {
+  value: 'default',
+  colors: [
+    '#5470c6',
+    '#91cc75',
+    '#fac858',
+    '#ee6666',
+    '#73c0de',
+    '#3ba272',
+    '#fc8452',
+    '#9a60b4',
+    '#ea7ccc'
+  ],
+  alpha: 100,
+  tableHeaderBgColor: '#6D9A49',
+  tableItemBgColor: '#FFFFFF',
+  tableHeaderFontColor: '#000000',
+  tableFontColor: '#000000',
+  tableStripe: true,
+  dimensionColor: '#000000',
+  quotaColor: '#5470c6',
+  tableBorderColor: '#E6E7E4',
+  seriesColors: [], // 格式：{"name":"s1","color":"","isCustom":false}
+  areaBorderColor: '#303133',
+  gradient: false,
+  areaBaseColor: '#FFFFFF',
+  tableScrollBarColor: 'rgba(0, 0, 0, 0.15)',
+  tableScrollBarHoverColor: 'rgba(0, 0, 0, 0.4)',
+  mapStyle: 'normal',
+  mapLineGradient: false,
+  mapLineSourceColor: '#146C94',
+  mapLineTargetColor: '#576CBC'
+}
+
 export const DEFAULT_COLOR_CASE_DARK = {
   value: 'default',
   colors: [
@@ -67,17 +101,31 @@ export const DEFAULT_COLOR_CASE_DARK = {
   mapLineTargetColor: '#3795BD'
 }
 
-export const TAB_COMMON_STYLE = {
+export const TAB_COMMON_STYLE_BASE = {
+  headPosition: 'left'
+}
+export const TAB_COMMON_STYLE_LIGHT = {
+  ...TAB_COMMON_STYLE_BASE,
   headFontColor: '#000000',
   headFontActiveColor: '#000000',
   headBorderColor: '#ffffff',
-  headBorderActiveColor: '#ffffff',
-  headPosition: 'left'
+  headBorderActiveColor: '#ffffff'
+}
+export const TAB_COMMON_STYLE_DARK = {
+  ...TAB_COMMON_STYLE_BASE,
+  headFontColor: '#ffffff',
+  headFontActiveColor: '#ffffff',
+  headBorderColor: '#000000',
+  headBorderActiveColor: '#000000'
 }
 
-export const FILTER_COMMON_STYLE = {
+export const FILTER_COMMON_STYLE_BASE = {
   horizontal: 'left',
-  vertical: 'top',
+  vertical: 'top'
+}
+
+export const FILTER_COMMON_STYLE_LIGHT = {
+  ...FILTER_COMMON_STYLE_BASE,
   color: '#000000',
   brColor: '',
   wordColor: '',
@@ -85,60 +133,24 @@ export const FILTER_COMMON_STYLE = {
 }
 
 export const FILTER_COMMON_STYLE_DARK = {
-  horizontal: 'left',
-  vertical: 'top',
+  ...FILTER_COMMON_STYLE_BASE,
   color: '#FFFFFF',
   brColor: '#4E4B4B',
   wordColor: '#FFFFFF',
   innerBgColor: '#131E42'
 }
 
-// 组件仪表板样式
-export const COMMON_BACKGROUND_BASE = {
-  backgroundColorSelect: true,
-  color: '#FFFFFF',
-  alpha: 100,
-  borderRadius: 5,
-  innerPadding: 0
-}
-
-// 组件仪表板样式
-export const COMMON_BACKGROUND = {
-  ...COMMON_BACKGROUND_BASE,
-  enable: false,
-  backgroundType: 'innerImage',
-  innerImage: 'board/blue_1.svg',
-  innerImageColor: '#1094E5',
-  outerImage: null
-}
-
-// 空组件仪表板样式
-export const COMMON_BACKGROUND_NONE = {
-  enable: false,
-  backgroundColorSelect: false,
-  backgroundType: 'innerImage',
-  color: '#FFFFFF',
-  innerImage: 'board/blue_1.svg',
-  innerImageColor: '#1094E5',
-  outerImage: null,
-  alpha: 100,
-  borderRadius: 0,
-  innerPadding: 0
+export const DEFAULT_TAB_COLOR_CASE_BASE = {
+  headPosition: 'left'
 }
 
 export const DEFAULT_TAB_COLOR_CASE_DARK = {
-  headFontColor: '#FFFFFF',
-  headFontActiveColor: '#FFFFFF',
-  headBorderColor: '#131E42',
-  headBorderActiveColor: '#131E42',
+  ...DEFAULT_TAB_COLOR_CASE_BASE,
   headPosition: 'left'
 }
 
 export const DEFAULT_TAB_COLOR_CASE_LIGHT = {
-  headFontColor: '#OOOOOO',
-  headFontActiveColor: '#OOOOOO',
-  headBorderColor: '#OOOOOO',
-  headBorderActiveColor: '#OOOOOO',
+  ...DEFAULT_TAB_COLOR_CASE_BASE,
   headPosition: 'left'
 }
 
@@ -315,26 +327,36 @@ export const DEFAULT_TITLE_STYLE = {
   isBolder: true,
   remarkShow: false,
   remark: '',
-  remarkBackgroundColor: '#ffffffff',
+  remarkBackgroundColor: '#ffffff',
   fontFamily: 'Microsoft YaHei',
   letterSpace: '0',
   fontShadow: false
 }
 
-export const DEFAULT_TITLE_STYLE_DARK = {
+export const DEFAULT_TITLE_STYLE_BASE = {
   show: true,
   fontSize: '18',
-  color: '#FFFFFF',
   hPosition: 'left',
   vPosition: 'top',
   isItalic: false,
   isBolder: true,
   remarkShow: false,
   remark: '',
-  remarkBackgroundColor: '#5A5C62',
   fontFamily: 'Microsoft YaHei',
   letterSpace: '0',
   fontShadow: false
+}
+
+export const DEFAULT_TITLE_STYLE_LIGHT = {
+  ...DEFAULT_TITLE_STYLE_BASE,
+  color: '#000000',
+  remarkBackgroundColor: '#ffffff'
+}
+
+export const DEFAULT_TITLE_STYLE_DARK = {
+  ...DEFAULT_TITLE_STYLE_BASE,
+  color: '#FFFFFF',
+  remarkBackgroundColor: '#5A5C62'
 }
 
 export const DEFAULT_LEGEND_STYLE = {
@@ -345,6 +367,34 @@ export const DEFAULT_LEGEND_STYLE = {
   icon: 'circle',
   textStyle: {
     color: '#333333',
+    fontSize: '12'
+  }
+}
+
+export const DEFAULT_LEGEND_STYLE_BASE = {
+  show: true,
+  hPosition: 'center',
+  vPosition: 'bottom',
+  orient: 'horizontal',
+  icon: 'circle',
+  textStyle: {
+    color: '#333333',
+    fontSize: '12'
+  }
+}
+
+export const DEFAULT_LEGEND_STYLE_LIGHT = {
+  ...DEFAULT_LEGEND_STYLE_BASE,
+  textStyle: {
+    color: '#333333',
+    fontSize: '12'
+  }
+}
+
+export const DEFAULT_LEGEND_STYLE_DARK = {
+  ...DEFAULT_LEGEND_STYLE_BASE,
+  textStyle: {
+    color: '#ffffff',
     fontSize: '12'
   }
 }
