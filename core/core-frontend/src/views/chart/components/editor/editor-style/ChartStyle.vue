@@ -13,6 +13,8 @@ import BackgroundOverallComponent from '@/components/visualization/component-bac
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import CollapseSwitchItem from '@/components/collapse-switch-item/src/CollapseSwitchItem.vue'
+import { ElCollapseItem } from 'element-plus-secondary'
+import BasicStyleSelector from '@/views/chart/components/editor/editor-style/components/BasicStyleSelector.vue'
 const dvMainStore = dvMainStoreWithOut()
 const { curComponent } = storeToRefs(dvMainStore)
 const { t } = useI18n()
@@ -38,7 +40,8 @@ const emit = defineEmits([
   'onChangeXAxisForm',
   'onChangeYAxisForm',
   'onTextChange',
-  'onLegendChange'
+  'onLegendChange',
+  'onBasicStyleChange'
 ])
 
 const onColorChange = val => {
@@ -72,6 +75,9 @@ const onTextChange = val => {
 const onLegendChange = val => {
   emit('onLegendChange', val)
 }
+const onBasicStyleChange = val => {
+  emit('onBasicStyleChange', val)
+}
 </script>
 
 <template>
@@ -85,6 +91,9 @@ const onLegendChange = val => {
               themes="dark"
               position="component"
             ></background-overall-component>
+          </el-collapse-item>
+          <el-collapse-item name="basicStyle" title="基础样式">
+            <basic-style-selector :chart="chart" @onBasicStyleChange="onBasicStyleChange" />
           </el-collapse-item>
           <el-collapse-item name="color" :title="t('chart.color')">
             <color-selector class="attr-selector" :chart="chart" @onColorChange="onColorChange" />
