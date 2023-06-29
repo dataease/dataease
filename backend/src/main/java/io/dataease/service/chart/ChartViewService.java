@@ -33,6 +33,7 @@ import io.dataease.plugins.common.base.mapper.ChartViewMapper;
 import io.dataease.plugins.common.base.mapper.DatasetTableFieldMapper;
 import io.dataease.plugins.common.base.mapper.PanelViewMapper;
 import io.dataease.plugins.common.constants.DatasetType;
+import io.dataease.plugins.common.constants.DatasourceTypes;
 import io.dataease.plugins.common.constants.datasource.SQLConstants;
 import io.dataease.plugins.common.dto.chart.ChartCustomFilterItemDTO;
 import io.dataease.plugins.common.dto.chart.ChartFieldCompareDTO;
@@ -611,7 +612,7 @@ public class ChartViewService {
             xAxis.addAll(xAxisExt);
         }
         List<ChartViewFieldDTO> yAxis = gson.fromJson(view.getYAxis(), tokenType);
-        if (StringUtils.equalsAnyIgnoreCase(view.getType(), "chart-mix","bidirectional-bar")) {
+        if (StringUtils.equalsAnyIgnoreCase(view.getType(), "chart-mix", "bidirectional-bar")) {
             List<ChartViewFieldDTO> yAxisExt = gson.fromJson(view.getYAxisExt(), tokenType);
             yAxis.addAll(yAxisExt);
         }
@@ -1126,7 +1127,7 @@ public class ChartViewService {
             datasourceRequest.setTotalPageFlag(false);
             data = datasourceProvider.getData(datasourceRequest);
             if (CollectionUtils.isNotEmpty(assistFields)) {
-                datasourceAssistRequest.setQuery(assistSQL(datasourceRequest.getQuery(), assistFields));
+                datasourceAssistRequest.setQuery(assistSQL(datasourceRequest.getQuery(), assistFields, ds));
                 logger.info(datasourceAssistRequest.getQuery());
                 assistData = datasourceProvider.getData(datasourceAssistRequest);
             }
@@ -1158,7 +1159,7 @@ public class ChartViewService {
                 }
             }
             if (CollectionUtils.isNotEmpty(assistFields)) {
-                datasourceAssistRequest.setQuery(assistSQL(datasourceRequest.getQuery(), assistFields));
+                datasourceAssistRequest.setQuery(assistSQL(datasourceRequest.getQuery(), assistFields, ds));
                 logger.info(datasourceAssistRequest.getQuery());
                 assistData = datasourceProvider.getData(datasourceAssistRequest);
             }
@@ -1405,14 +1406,15 @@ public class ChartViewService {
         return res;
     }
 
-    public String assistSQL(String sql, List<ChartViewFieldDTO> assistFields) {
+    public String assistSQL(String sql, List<ChartViewFieldDTO> assistFields, Datasource ds) {
+        DatasourceTypes datasourceType = DatasourceTypes.valueOf(ds.getType());
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < assistFields.size(); i++) {
             ChartViewFieldDTO dto = assistFields.get(i);
             if (i == (assistFields.size() - 1)) {
-                stringBuilder.append(dto.getSummary() + "(" + dto.getOriginName() + ")");
+                stringBuilder.append(dto.getSummary() + "(" + datasourceType.getKeywordPrefix() + dto.getOriginName() + datasourceType.getKeywordSuffix() + ")");
             } else {
-                stringBuilder.append(dto.getSummary() + "(" + dto.getOriginName() + "),");
+                stringBuilder.append(dto.getSummary() + "(" + datasourceType.getKeywordPrefix() + dto.getOriginName() + datasourceType.getKeywordSuffix() + "),");
             }
         }
         return "SELECT " + stringBuilder + " FROM (" + sql + ") tmp";
