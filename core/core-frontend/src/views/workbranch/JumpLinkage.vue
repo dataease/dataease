@@ -240,7 +240,7 @@ const handleCheckedFieldsChange = (value: string[]) => {
           </div>
           <el-button class="add-field" text @click="addField">
             <template #icon>
-              <Icon name="icon_delete-trash_outlined"></Icon>
+              <Icon name="icon_add_outlined"></Icon>
             </template>
             添加联动视图字段
           </el-button>

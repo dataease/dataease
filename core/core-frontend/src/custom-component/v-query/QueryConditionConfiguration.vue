@@ -1,9 +1,10 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, reactive, nextTick } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 const { t } = useI18n()
 const dialogVisible = ref(false)
 const bindingParameters = ref(false)
+const renameInput = ref()
 const options = [
   {
     label: '所用数据集',
@@ -41,11 +42,16 @@ const options = [
   }
 ]
 const setDefaultValues = ref(false)
-const conditions = ref(['部门'])
+const conditions = ref([{ id: '123', name: '部门', visible: true }])
 const displayType = ref('')
 const optionValueSource = ref('1')
 const optionType = ref('1')
 const checkAll = ref(false)
+const activeConditionForRename = reactive({
+  id: '',
+  name: '',
+  visible: false
+})
 const activeCondition = ref('')
 const isIndeterminate = ref(true)
 const fields = ref([
@@ -60,6 +66,17 @@ const fields = ref([
     field: '213'
   }
 ])
+
+const typeList = [
+  {
+    label: '重命名',
+    command: 'rename'
+  },
+  {
+    label: '删除',
+    command: 'del'
+  }
+]
 const checkedFields = ref(['e'])
 const handleCheckAllChange = (val: boolean) => {
   checkedFields.value = val ? fields.value.map(ele => ele.id) : []
@@ -70,6 +87,38 @@ const handleCheckedFieldsChange = (value: string[]) => {
   checkAll.value = checkedCount === fields.value.length
   isIndeterminate.value = checkedCount > 0 && checkedCount < fields.value.length
 }
+
+const init = () => {
+  dialogVisible.value = true
+}
+
+const handleCondition = ele => {
+  activeCondition.value = ele.name
+}
+
+const addOperation = (cmd, condition, index) => {
+  switch (cmd) {
+    case 'del':
+      conditions.value.splice(index, 1)
+      break
+    case 'rename':
+      Object.assign(activeConditionForRename, condition)
+      nextTick(() => {
+        renameInput.value[index].focus()
+      })
+      break
+    default:
+      break
+  }
+}
+
+const renameInputBlur = () => {
+  activeConditionForRename.id = ''
+}
+
+defineExpose({
+  init
+})
 </script>
 
 <template>
@@ -78,6 +127,9 @@ const handleCheckedFieldsChange = (value: string[]) => {
     v-model="dialogVisible"
     width="1200px"
     title="查询条件设置"
+    @click.stop
+    @mousedown.stop
+    @mousedup.stop
   >
     <div class="container">
       <div class="query-condition-list">
@@ -88,24 +140,38 @@ const handleCheckedFieldsChange = (value: string[]) => {
           </el-icon>
         </div>
         <div
-          v-for="condition in conditions"
-          :key="condition"
+          v-for="(condition, index) in conditions"
+          :key="condition.id"
+          @click="handleCondition(condition)"
           class="list-item_primary"
-          :class="[condition === activeCondition ? 'active' : '']"
+          :class="[condition.name === activeCondition ? 'active' : '']"
         >
-          <div class="label">
-            <el-icon>
-              <Icon name="icon_add_outlined"></Icon>
-            </el-icon>
-            {{ condition }}
+          <el-icon>
+            <Icon name="more_v"></Icon>
+          </el-icon>
+          <div class="label flex-align-center">
+            {{ condition.name }}
           </div>
-          <div class="condition-icon">
-            <el-icon>
-              <Icon name="icon_add_outlined"></Icon>
+          <div class="condition-icon flex-align-center">
+            <handle-more
+              @handle-command="cmd => addOperation(cmd, condition, index)"
+              :menu-list="typeList"
+              icon-name="more_v"
+              placement="bottom-end"
+            ></handle-more>
+            <el-icon @click.stop="condition.visible = !condition.visible" v-if="condition.visible">
+              <Icon name="icon_visible_outlined"></Icon>
             </el-icon>
-            <el-icon>
-              <Icon name="icon_add_outlined"></Icon>
+            <el-icon @click.stop="condition.visible = !condition.visible" v-else>
+              <Icon name="de_pwd_invisible"></Icon>
             </el-icon>
+            <div @click.stop v-if="activeConditionForRename.id === condition.id" class="rename">
+              <el-input
+                @blur="renameInputBlur"
+                ref="renameInput"
+                v-model="activeConditionForRename.name"
+              ></el-input>
+            </div>
           </div>
         </div>
       </div>
@@ -295,6 +361,24 @@ const handleCheckedFieldsChange = (value: string[]) => {
         display: flex;
         align-items: center;
         justify-content: space-between;
+      }
+      .list-item_primary {
+        border-radius: 0;
+        position: relative;
+        .label {
+          width: 75%;
+        }
+
+        .rename {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: #fff;
+          padding: 4px 10px;
+          z-index: 5;
+        }
       }
     }
 
