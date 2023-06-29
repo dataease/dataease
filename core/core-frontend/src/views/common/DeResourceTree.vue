@@ -7,7 +7,6 @@ import { Icon } from '@/components/icon-custom'
 import { HandleMore } from '@/components/handle-more'
 import DeResourceGroupOpt, { ResourceTree } from '@/views/common/DeResourceGroupOpt.vue'
 import { guid } from '@/views/visualized/data/dataset/form/util.js'
-import { DEFAULT_CANVAS_STYLE_DATA } from '@/store/modules/data-visualization/dvMain'
 import { save } from '@/api/visualization/dataVisualization'
 import {
   DEFAULT_CANVAS_STYLE_DATA_DARK,
@@ -152,8 +151,8 @@ const resourceCreate = (pid, name) => {
   }
   const canvasStyleDataNew =
     curCanvasType.value === 'dashboard'
-      ? DEFAULT_CANVAS_STYLE_DATA_DARK
-      : DEFAULT_CANVAS_STYLE_DATA_LIGHT
+      ? DEFAULT_CANVAS_STYLE_DATA_LIGHT
+      : DEFAULT_CANVAS_STYLE_DATA_DARK
   const canvasInfo = {
     canvasStyleData: JSON.stringify(canvasStyleDataNew),
     componentData: JSON.stringify([]),
