@@ -1,15 +1,19 @@
 import { defineStore, storeToRefs } from 'pinia'
 import { store } from '../../index'
 import { dvMainStoreWithOut } from './dvMain'
-import { $ } from '@/utils/utils'
+import { $, deepCopy } from '@/utils/utils'
 import decomposeComponent from '@/utils/decomposeComponent'
 import { generateID } from '@/utils/generateID'
-import { commonStyle, commonAttr, commonBackground } from '@/custom-component/component-list'
+import {
+  commonStyle,
+  commonAttr,
+  COMMON_COMPONENT_BACKGROUND_MAP
+} from '@/custom-component/component-list'
 import { createGroupStyle } from '@/utils/style'
 import eventBus from '@/utils/eventBus'
 
 const dvMainStore = dvMainStoreWithOut()
-const { curComponent, componentData } = storeToRefs(dvMainStore)
+const { curComponent, componentData, curOriginThemes } = storeToRefs(dvMainStore)
 
 export const composeStore = defineStore('compose', {
   state: () => {
@@ -62,7 +66,7 @@ export const composeStore = defineStore('compose', {
         name: '组合',
         label: '组合',
         icon: 'group',
-        commonBackground: { ...commonBackground },
+        commonBackground: deepCopy(COMMON_COMPONENT_BACKGROUND_MAP[curOriginThemes.value]),
         ...commonAttr,
         style: {
           ...commonStyle,

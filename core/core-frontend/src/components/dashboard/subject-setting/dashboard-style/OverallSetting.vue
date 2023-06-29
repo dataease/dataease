@@ -126,10 +126,7 @@
 <script setup lang="ts">
 import { useI18n } from '@/hooks/web/useI18n'
 const { t } = useI18n()
-import {
-  DEFAULT_CANVAS_STYLE_DATA,
-  dvMainStoreWithOut
-} from '@/store/modules/data-visualization/dvMain'
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 const dvMainStore = dvMainStoreWithOut()
 import {
   adaptCurThemeCommonStyleAll,
@@ -146,18 +143,19 @@ import {
   DEFAULT_TITLE_STYLE,
   DEFAULT_TITLE_STYLE_DARK,
   FILTER_COMMON_STYLE_DARK,
-  FILTER_COMMON_STYLE
+  FILTER_COMMON_STYLE_LIGHT
 } from '@/views/chart/components/editor/util/chart'
 import ColorButton from '@/components/assist-button/ColorButton.vue'
 import { reactive } from 'vue'
 import { deepCopy } from '@/utils/utils'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
+import { DEFAULT_CANVAS_STYLE_DATA_DARK } from '@/views/chart/components/editor/util/dataVisualiztion'
 const emits = defineEmits(['onThemeColorChange'])
 const snapshotStore = snapshotStoreWithOut()
 
 const state = reactive({
   colorIndex: 0,
-  overallSettingForm: deepCopy(DEFAULT_CANVAS_STYLE_DATA)
+  overallSettingForm: deepCopy(DEFAULT_CANVAS_STYLE_DATA_DARK)
 })
 
 const initForm = () => {
@@ -175,7 +173,7 @@ const themeChange = modifyName => {
       )
       dvMainStore.canvasStyleData.component.chartTitle = deepCopy(DEFAULT_TITLE_STYLE)
       dvMainStore.canvasStyleData.component.chartColor = deepCopy(DEFAULT_COLOR_CASE)
-      dvMainStore.canvasStyleData.component.filterStyle = deepCopy(FILTER_COMMON_STYLE)
+      dvMainStore.canvasStyleData.component.filterStyle = deepCopy(FILTER_COMMON_STYLE_LIGHT)
       dvMainStore.canvasStyleData.component.tabStyle = deepCopy(DEFAULT_TAB_COLOR_CASE_LIGHT)
     } else {
       dvMainStore.canvasStyleData.dashboard.color = deepCopy(DARK_THEME_PANEL_BACKGROUND)
