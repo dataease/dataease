@@ -25,6 +25,7 @@ import { BASE_VIEW_CONFIG } from '@/views/chart/components/editor/util/chart'
 import ChartType from '@/views/chart/components/editor/chart-type/ChartType.vue'
 import { useRouter } from 'vue-router'
 import CompareEdit from '@/views/chart/components/editor/drag-item/components/CompareEdit.vue'
+import ValueFormatterEdit from '@/views/chart/components/editor/drag-item/components/ValueFormatterEdit.vue'
 
 const dvMainStore = dvMainStoreWithOut()
 const { canvasCollapse } = storeToRefs(dvMainStore)
@@ -83,7 +84,9 @@ const state = reactive({
   chartForFilter: {},
   searchField: '',
   quotaItemCompare: {},
-  showEditQuotaCompare: false
+  showEditQuotaCompare: false,
+  showValueFormatter: false,
+  valueFormatterItem: {}
 })
 
 watch(
@@ -532,6 +535,40 @@ const saveQuotaEditCompare = () => {
   calcData(view.value)
   closeQuotaEditCompare()
 }
+
+const valueFormatter = item => {
+  state.valueFormatterItem = JSON.parse(JSON.stringify(item))
+  state.showValueFormatter = true
+}
+const closeValueFormatter = () => {
+  state.showValueFormatter = false
+}
+const saveValueFormatter = () => {
+  const ele = state.valueFormatterItem.formatterCfg.decimalCount
+  if (
+    ele === undefined ||
+    ele.toString().indexOf('.') > -1 ||
+    parseInt(ele).toString() === 'NaN' ||
+    parseInt(ele) < 0 ||
+    parseInt(ele) > 10
+  ) {
+    ElMessage.error(t('chart.formatter_decimal_count_error'))
+    return
+  }
+  // 更新指标
+  if (state.valueFormatterItem.formatterType === 'quota') {
+    view.value.yAxis[state.valueFormatterItem.index].formatterCfg =
+      state.valueFormatterItem.formatterCfg
+  } else if (state.valueFormatterItem.formatterType === 'quotaExt') {
+    view.value.yAxisExt[state.valueFormatterItem.index].formatterCfg =
+      state.valueFormatterItem.formatterCfg
+  } else if (state.valueFormatterItem.formatterType === 'dimension') {
+    view.value.xAxis[state.valueFormatterItem.index].formatterCfg =
+      state.valueFormatterItem.formatterCfg
+  }
+  calcData(view.value)
+  closeValueFormatter()
+}
 </script>
 
 <template>
@@ -656,6 +693,7 @@ const saveQuotaEditCompare = () => {
                               @onNameEdit="showRename"
                               @editItemFilter="showQuotaEditFilter"
                               @editItemCompare="showQuotaEditCompare"
+                              @valueFormatter="valueFormatter"
                             />
                           </template>
                         </draggable>
@@ -1038,6 +1076,27 @@ const saveQuotaEditCompare = () => {
         <div class="dialog-footer">
           <el-button @click="closeQuotaEditCompare">{{ t('chart.cancel') }} </el-button>
           <el-button type="primary" @click="saveQuotaEditCompare"
+            >{{ t('chart.confirm') }}
+          </el-button>
+        </div>
+      </template>
+    </el-dialog>
+
+    <!--数值格式化-->
+    <el-dialog
+      v-model="state.showValueFormatter"
+      v-if="state.showValueFormatter"
+      :title="t('chart.value_formatter') + ' - ' + state.valueFormatterItem.name"
+      :visible="state.showValueFormatter"
+      :show-close="false"
+      width="600px"
+      class="dialog-css"
+    >
+      <value-formatter-edit :formatter-item="state.valueFormatterItem" :chart="view" />
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="closeValueFormatter">{{ t('chart.cancel') }} </el-button>
+          <el-button type="primary" @click="saveValueFormatter"
             >{{ t('chart.confirm') }}
           </el-button>
         </div>

@@ -3,7 +3,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { reactive, ref, toRefs, watch } from 'vue'
 import { formatterItem } from '../util/formatter'
 import { getItemType, resetValueFormatter } from '@/views/chart/components/editor/drag-item/utils'
-import { Delete, Edit, Filter } from '@element-plus/icons-vue'
+import { Delete, Edit, Filter, Memo } from '@element-plus/icons-vue'
 import { quotaViews } from '@/views/chart/components/js/util'
 import { SUPPORT_Y_M } from '@/views/chart/components/editor/util/chart'
 
@@ -55,7 +55,8 @@ const emit = defineEmits([
   'onQuotaItemChange',
   'onNameEdit',
   'editItemFilter',
-  'editItemCompare'
+  'editItemCompare',
+  'valueFormatter'
 ])
 
 const { item, chart } = toRefs(props)
@@ -130,7 +131,7 @@ const clickItem = param => {
       editFilter()
       break
     case 'formatter':
-      // valueFormatter()
+      valueFormatter()
       break
     default:
       break
@@ -256,6 +257,12 @@ const editCompare = () => {
   item.value.index = props.index
   item.value.calcType = 'quota'
   emit('editItemCompare', item.value)
+}
+
+const valueFormatter = () => {
+  item.value.index = props.index
+  item.value.formatterType = 'quota'
+  emit('valueFormatter', item.value)
 }
 
 isEnableCompare()
@@ -573,14 +580,14 @@ getItemTagType()
             </el-dropdown>
           </el-dropdown-item>
 
-          <!--          <el-dropdown-item-->
-          <!--            v-if="chart.render === 'antv' && chart.type.includes('table') && item.groupType === 'q'"-->
-          <!--            icon="el-icon-notebook-2"-->
-          <!--            divided-->
-          <!--            :command="beforeClickItem('formatter')"-->
-          <!--          >-->
-          <!--            <span>{{ t('chart.value_formatter') }}...</span>-->
-          <!--          </el-dropdown-item>-->
+          <el-dropdown-item
+            v-if="item.groupType === 'q'"
+            :icon="Memo"
+            divided
+            :command="beforeClickItem('formatter')"
+          >
+            <span>{{ t('chart.value_formatter') }}...</span>
+          </el-dropdown-item>
           <el-dropdown-item :icon="Filter" :command="beforeClickItem('filter')">
             <span>{{ t('chart.filter') }}...</span>
           </el-dropdown-item>
