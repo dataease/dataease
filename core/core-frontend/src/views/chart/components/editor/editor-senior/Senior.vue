@@ -4,6 +4,8 @@ import FunctionCfg from '@/views/chart/components/editor/editor-senior/component
 import ScrollCfg from '@/views/chart/components/editor/editor-senior/components/ScrollCfg.vue'
 import AssistLine from '@/views/chart/components/editor/editor-senior/components/AssistLine.vue'
 import Threshold from '@/views/chart/components/editor/editor-senior/components/Threshold.vue'
+import CollapseSwitchItem from '@/components/collapse-switch-item/src/CollapseSwitchItem.vue'
+import { toRefs } from 'vue'
 
 const { t } = useI18n()
 
@@ -29,6 +31,8 @@ const props = defineProps({
     required: true
   }
 })
+
+const { chart } = toRefs(props)
 
 const onFunctionCfgChange = val => {
   emit('onFunctionCfgChange', val)
@@ -64,7 +68,7 @@ const onThresholdChange = val => {
           v-model="state.attrActiveNames"
           class="style-collapse"
         >
-          <el-collapse-item
+          <collapse-switch-item
             v-if="
               props.chart.type?.includes('bar') ||
               props.chart.type?.includes('line') ||
@@ -72,9 +76,12 @@ const onThresholdChange = val => {
             "
             name="function"
             :title="t('chart.function_cfg')"
+            v-model="chart.senior.functionCfg.sliderShow"
+            :change-model="chart.senior.functionCfg"
+            @modelChange="onFunctionCfgChange"
           >
             <function-cfg :chart="props.chart" @onFunctionCfgChange="onFunctionCfgChange" />
-          </el-collapse-item>
+          </collapse-switch-item>
 
           <el-collapse-item
             v-if="
