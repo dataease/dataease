@@ -21,7 +21,6 @@ import ComponentGroup from '@/components/visualization/ComponentGroup.vue'
 import UserViewGroup from '@/custom-component/component-group/UserViewGroup.vue'
 import MediaGroup from '@/custom-component/component-group/MediaGroup.vue'
 import TextGroup from '@/custom-component/component-group/TextGroup.vue'
-import CommonGroup from '@/custom-component/component-group/CommonGroup.vue'
 import ComponentButton from '@/components/visualization/ComponentButton.vue'
 
 const isShowPreview = ref(false)
@@ -34,6 +33,7 @@ const snapshotStore = snapshotStoreWithOut()
 const { curComponent, canvasStyleData, curComponentIndex, componentData, dvInfo, canvasViewInfo } =
   storeToRefs(dvMainStore)
 const { areaData } = storeToRefs(composeStore)
+const dvModel = 'dashboard'
 let scale = ref(canvasStyleData.value.scale)
 let nameEdit = ref(false)
 let inputName = ref('')
@@ -208,7 +208,7 @@ eventBus.on('clearCanvas', clearCanvas)
           :icon-name="'dv-view'"
           title="图表"
         >
-          <user-view-group></user-view-group>
+          <user-view-group :dv-model="dvModel"></user-view-group>
         </component-group>
         <component-group
           :base-width="148"
@@ -219,10 +219,10 @@ eventBus.on('clearCanvas', clearCanvas)
           <div>过滤组件</div>
         </component-group>
         <component-group :base-width="148" icon-name="dv-text" title="文本">
-          <text-group></text-group>
+          <text-group :dv-model="dvModel"></text-group>
         </component-group>
         <component-group icon-name="dv-media" title="图片">
-          <media-group></media-group>
+          <media-group :dv-model="dvModel"></media-group>
         </component-group>
         <component-button icon-name="dv-tab" title="Tab"></component-button>
         <component-button icon-name="dv-copy" title="复用"></component-button>

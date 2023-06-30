@@ -22,6 +22,7 @@ import Editor from '@/views/chart/components/editor/index.vue'
 import { guid } from '@/views/visualized/data/dataset/form/util.js'
 import { getDatasetTree } from '@/api/dataset'
 import { Tree } from '@/views/visualized/data/dataset/form/CreatDsGroup.vue'
+import { findDragComponent, findNewComponent } from '@/utils/canvasUtils'
 
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
@@ -52,17 +53,6 @@ const restore = (canvasData, canvasStyle, canvasViewInfo) => {
   dvMainStore.setCanvasViewInfo(canvasViewInfo)
 }
 
-const findNewComponent = (componentName, innerType) => {
-  let newComponent
-  componentList.forEach(comp => {
-    if (comp.component === componentName) {
-      newComponent = deepCopy(comp)
-      newComponent.innerType = innerType
-    }
-  })
-  return newComponent
-}
-
 // 通过实时监听的方式直接添加组件
 const handleNew = newComponentInfo => {
   const { componentName, innerType } = newComponentInfo
@@ -75,13 +65,6 @@ const handleNew = newComponentInfo => {
     dvMainStore.addComponent({ component: component, index: undefined })
     snapshotStore.recordSnapshot()
   }
-}
-
-const findDragComponent = componentInfo => {
-  const componentInfoArray = componentInfo.split('&')
-  const componentName = componentInfoArray[0]
-  const innerType = componentInfoArray[1]
-  return findNewComponent(componentName, innerType)
 }
 
 const handleDrop = e => {

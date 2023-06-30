@@ -2,11 +2,16 @@
 import { ref, toRefs } from 'vue'
 import eventBus from '@/utils/eventBus'
 import DragComponent from '@/custom-component/component-group/DragComponent.vue'
+import { commonHandleDragEnd, commonHandleDragStart } from '@/utils/canvasUtils'
 
 const props = defineProps({
   propValue: {
     type: Array,
     default: () => []
+  },
+  dvModel: {
+    type: String,
+    default: 'dv'
   },
   element: {
     type: Object,
@@ -18,19 +23,28 @@ const props = defineProps({
   }
 })
 
-const { propValue, element } = toRefs(props)
+const { propValue, element, dvModel } = toRefs(props)
 const currentPane = ref('common')
 const newComponent = innerType => {
   eventBus.emit('handleNew', { componentName: 'Picture', innerType: 'Picture' })
 }
 
 const handleDragStart = e => {
-  e.dataTransfer.setData('id', e.target.dataset.id)
+  commonHandleDragStart(e, dvModel.value)
+}
+
+const handleDragEnd = e => {
+  commonHandleDragEnd(e, dvModel.value)
 }
 </script>
 
 <template>
-  <div class="group" @dragstart="handleDragStart" v-on:click="newComponent('Picture')">
+  <div
+    class="group"
+    @dragstart="handleDragStart"
+    @dragend="handleDragEnd"
+    v-on:click="newComponent('Picture')"
+  >
     <drag-component icon="other_media" label="图片" drag-info="Picture&Picture"></drag-component>
   </div>
 </template>

@@ -4,11 +4,16 @@ import eventBus from '@/utils/eventBus'
 import { CHART_TYPE_CONFIGS } from '@/views/chart/components/editor/util/chart'
 import { ElCol, ElRow } from 'element-plus-secondary'
 import Icon from '@/components/icon-custom/src/Icon.vue'
+import { commonHandleDragEnd, commonHandleDragStart } from '@/utils/canvasUtils'
 
 const props = defineProps({
   propValue: {
     type: Array,
     default: () => []
+  },
+  dvModel: {
+    type: String,
+    default: 'dv'
   },
   element: {
     type: Object,
@@ -20,7 +25,7 @@ const props = defineProps({
   }
 })
 
-const { propValue, element } = toRefs(props)
+const { propValue, element, dvModel } = toRefs(props)
 const currentPane = ref('common')
 
 const state = reactive({
@@ -46,7 +51,11 @@ const newComponent = innerType => {
 }
 
 const handleDragStart = e => {
-  e.dataTransfer.setData('id', e.target.dataset.id)
+  commonHandleDragStart(e, dvModel.value)
+}
+
+const handleDragEnd = e => {
+  commonHandleDragEnd(e, dvModel.value)
 }
 
 const groupActiveChange = category => {
@@ -56,7 +65,7 @@ const groupActiveChange = category => {
 </script>
 
 <template>
-  <el-row class="group" @dragstart="handleDragStart">
+  <el-row class="group" @dragstart="handleDragStart" @dragend="handleDragEnd">
     <div class="group-left">
       <ul class="ul-custom">
         <li
