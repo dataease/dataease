@@ -1798,6 +1798,47 @@ export const CHART_TYPE_CONFIGS = [
   }
 ]
 
+export const DEFAULT_BASIC_STYLE: ChartBasicStyle = {
+  alpha: 100,
+  tableBorderColor: '#CCCCCC',
+  tableScrollBarColor: 'rgba(255, 255, 255, 0.5)',
+  tableColumnMode: 'adopt',
+  tableColumnWidth: 100,
+  tablePageMode: 'page',
+  tablePageSize: 20,
+  gaugeStyle: 'default',
+  colorScheme: 'default',
+  colors: [
+    '#5470c6',
+    '#91cc75',
+    '#fac858',
+    '#ee6666',
+    '#73c0de',
+    '#3ba272',
+    '#fc8452',
+    '#9a60b4',
+    '#ea7ccc'
+  ],
+  gradient: false,
+  lineWidth: 2,
+  lineSymbol: 'circle',
+  lineSymbolSize: 4,
+  lineSmooth: true,
+  barDefault: true,
+  barWidth: 40,
+  barGap: 0.4,
+  lineType: 'solid',
+  scatterSymbol: 'circle',
+  scatterSymbolSize: 20,
+  radarShape: 'polygon',
+  mapStyle: 'normal',
+  areaBorderColor: '#EBEEF5',
+  suspension: true,
+  areaBaseColor: '#ffffff',
+  symbolOpacity: 0.7,
+  symbolStrokeWidth: 2
+}
+
 export const BASE_VIEW_CONFIG = {
   id: '', // 视图id
   title: '图表',
@@ -1820,6 +1861,7 @@ export const BASE_VIEW_CONFIG = {
   extBubble: [],
   customFilter: [],
   customAttr: {
+    basicStyle: DEFAULT_BASIC_STYLE,
     color: DEFAULT_COLOR_CASE,
     size: DEFAULT_SIZE,
     label: DEFAULT_LABEL,

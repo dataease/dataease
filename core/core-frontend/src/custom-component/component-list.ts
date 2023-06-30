@@ -135,8 +135,8 @@ const list = [
       requestCount: 0 // 请求次数限制，0 为无限
     },
     style: {
-      width: 200,
-      height: 100,
+      width: 800,
+      height: 150,
       fontSize: 14,
       fontWeight: 400,
       lineHeight: 1,

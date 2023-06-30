@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import eventBus from '@/utils/eventBus'
+import QueryConditionConfiguration from './QueryConditionConfiguration.vue'
 import { onBeforeUnmount, reactive, provide, ref, toRefs } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
@@ -9,6 +10,7 @@ const { t } = useI18n()
 const canEdit = ref(false)
 const initials = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j']
 
+const queryConfig = ref()
 const selectValue = ref()
 const options = Array.from({ length: 10 }).map((_, idx) => ({
   value: `Option ${idx + 1}`,
@@ -90,16 +92,35 @@ const drop = e => {
   if (!componentInfo.id) return
   list.value.push(componentInfo)
 }
+
+const editeQueryConfig = () => {
+  queryConfig.value.init()
+}
+
+const delQueryConfig = index => {
+  list.value.splice(index, 1)
+}
 </script>
 
 <template>
   <div class="v-query" @dragover.prevent.stop="dragover" @drop.prevent.stop="drop">
-    <div class="query-item" :key="ele.id" v-for="ele in list">
+    <div class="query-item" :key="ele.id" v-for="(ele, index) in list">
       <div class="query-field">
         <div class="label">
           <div class="label-wrapper">
             <div class="label-wrapper-text">{{ ele.name }} ({{ ele.type }})</div>
-            <div class="label-wrapper-tooltip">ddd</div>
+          </div>
+          <div class="label-wrapper-tooltip">
+            <el-tooltip effect="dark" content="设置过滤条件" placement="top">
+              <el-icon @click="editeQueryConfig">
+                <Icon name="edit-in"></Icon>
+              </el-icon>
+            </el-tooltip>
+            <el-tooltip effect="dark" content="删除条件" placement="top">
+              <el-icon @click="delQueryConfig(index)">
+                <Icon name="icon_delete-trash_outlined"></Icon>
+              </el-icon>
+            </el-tooltip>
           </div>
         </div>
         <div class="query-select">
@@ -130,6 +151,7 @@ const drop = e => {
       </el-button>
     </div>
   </div>
+  <QueryConditionConfiguration ref="queryConfig"></QueryConditionConfiguration>
 </template>
 
 <style lang="less" scoped>
@@ -138,6 +160,7 @@ const drop = e => {
   display: flex;
   flex-wrap: wrap;
   width: 100%;
+  height: 100%;
   .query-item {
     font-size: 12px;
     position: relative;
@@ -162,9 +185,18 @@ const drop = e => {
         position: absolute;
         right: 0;
         top: 0;
-        color: red;
+        color: #1f2329;
 
         .label-wrapper {
+          visibility: visible;
+          pointer-events: auto;
+          cursor: auto;
+          font-size: 12px;
+          line-height: 16px;
+          color: var(--dashboard-query-label-color);
+          box-sizing: border-box;
+          margin: 0;
+          padding: 0;
           display: flex;
           flex: 1 1 0;
           overflow: hidden;
@@ -181,9 +213,9 @@ const drop = e => {
           align-items: center;
           background: #fff;
           border-radius: 2px;
-          display: none;
           flex: 0 0 auto;
           height: 16px;
+          display: inline-flex;
           line-height: 16px;
           color: var(--dashboard-query-label-color);
         }
