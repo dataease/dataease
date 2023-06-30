@@ -115,24 +115,18 @@ const findDragComponent = componentInfo => {
 const handleDrop = e => {
   e.preventDefault()
   e.stopPropagation()
-
-  const componentInfo = e.dataTransfer.getData('id')
-  const rectInfo = editor.value.getBoundingClientRect()
-  if (componentInfo) {
-    const component = findDragComponent(componentInfo)
-    component.style.top = e.clientY - rectInfo.y
-    component.style.left = e.clientX - rectInfo.x
-    component.id = guid()
-
-    changeComponentSizeWithScale(component)
-    dvMainStore.addComponent({ component: component, index: undefined })
-    snapshotStore.recordSnapshot()
-  }
+  const addComponent = cyGridster.value.getMoveItem()
+  // 当前isShow =  true 则确定已经移入画布中
+  addComponent.isShow = true
+  syncShapeItemStyle(addComponent, baseWidth.value, baseHeight.value)
+  cyGridster.value.handleMouseUp(e, addComponent, componentData.value.length - 1)
+  snapshotStore.recordSnapshot()
 }
 
 const handleDragOver = e => {
   e.preventDefault()
   e.dataTransfer.dropEffect = 'copy'
+  cyGridster.value.handleDragOver(e)
 }
 
 const handleMouseDown = e => {

@@ -24,6 +24,8 @@ import { storeToRefs } from 'pinia'
 import findComponent from '@/utils/components'
 import _ from 'lodash'
 import DragShadow from '@/components/data-visualization/canvas/DragShadow.vue'
+import { findDragComponent } from '@/utils/canvasUtils'
+import { guid } from '@/views/visualized/data/dataset/form/util'
 
 const dvMainStore = dvMainStoreWithOut()
 const composeStore = composeStoreWithOut()
@@ -1044,29 +1046,37 @@ const startMove = (e, item, index) => {
   }
 
   const up = () => {
-    // startMove 中组织冒泡会导致移动事件无法传播，在这里设置（鼠标抬起）效果一致
-    endItemMove(e, item, index)
-    if (_.isEmpty(infoBox.value)) return
-    if (infoBox.value.cloneItem) {
-      infoBox.value.cloneItem.remove()
-    }
-    if (infoBox.value.resizeItem) {
-      delete infoBox.value.resizeItem['isPlayer']
-      resizeEnd.value(e, infoBox.value.resizeItem, infoBox.value.resizeItem._dragId)
-    }
-    if (infoBox.value.moveItem) {
-      dragEnd?.value(null, e, infoBox.value.moveItem, infoBox.value.moveItem._dragId)
-      //problem
-      infoBox.value.moveItem['show'] = true
-      delete infoBox.value.moveItem['isPlayer']
-    }
-    infoBox.value = {}
+    handleMouseUp(e, item, index)
     document.removeEventListener('mousemove', itemMouseMove)
     document.removeEventListener('mouseup', up)
   }
 
   document.addEventListener('mousemove', itemMouseMove)
   document.addEventListener('mouseup', up)
+}
+
+const handleMouseUp = (e, item, index) => {
+  // startMove 中组织冒泡会导致移动事件无法传播，在这里设置（鼠标抬起）效果一致
+  endItemMove(e, item, index)
+  clearInfoBox(e)
+}
+
+const clearInfoBox = e => {
+  if (_.isEmpty(infoBox.value)) return
+  if (infoBox.value.cloneItem) {
+    infoBox.value.cloneItem.remove()
+  }
+  if (infoBox.value.resizeItem) {
+    delete infoBox.value.resizeItem['isPlayer']
+    resizeEnd.value(e, infoBox.value.resizeItem, infoBox.value.resizeItem._dragId)
+  }
+  if (infoBox.value.moveItem) {
+    dragEnd?.value(null, e, infoBox.value.moveItem, infoBox.value.moveItem._dragId)
+    //problem
+    infoBox.value.moveItem['show'] = true
+    delete infoBox.value.moveItem['isPlayer']
+  }
+  infoBox.value = {}
 }
 
 const endMove = e => {
@@ -1333,19 +1343,59 @@ const onMouseUp = (e, item, index) => {
   infoBox.value = {}
 }
 
+const handleDragStartMoveIn = componentInfo => {
+  const moveInItemInfo = findDragComponent(componentInfo)
+  // 仪表板初始移动的组件暂时不显示 在松开鼠标时再确实该组件的去留
+  moveInItemInfo.isShow = false
+  moveInItemInfo.id = guid()
+  dvMainStore.addComponent({ component: moveInItemInfo, index: undefined })
+  addItemBox(moveInItemInfo)
+  if (!infoBox.value) {
+    infoBox.value = {}
+  }
+  infoBox.value.moveItem = moveInItemInfo
+  infoBox.value.moveItemIndex = componentData.value.length - 1
+  infoBox.value.oldX = 1 // 实际对象原始X位置
+  infoBox.value.oldY = 1
+}
+
+const handleDragEnd = e => {
+  // 当isShow 是false时，说明未移入画布 则需要进行清理占位
+  if (infoBox.value && !infoBox.value.moveItem.isShow) {
+    removeItem(componentData.value.length - 1)
+    clearInfoBox(e)
+  }
+}
+
+const handleDragOver = e => {
+  if (!infoBox.value || !infoBox.value.moveItem) {
+    return
+  }
+  infoBox.value.moveItem.style.left = e.pageX
+  infoBox.value.moveItem.style.top = e.pageY
+  onDragging(e, infoBox.value.moveItem, 0)
+}
+
+const getMoveItem = () => {
+  return infoBox.value.moveItem
+}
+
 onMounted(() => {
   // 获取编辑器元素
   composeStore.getEditor()
-  eventBus.on('hideArea', () => {
-    hideArea()
-  })
+  eventBus.on('hideArea', hideArea)
+  eventBus.on('handleDragStartMoveIn', handleDragStartMoveIn)
+  eventBus.on('handleDragEnd', handleDragEnd)
 })
 
 defineExpose({
   canvasSizeInit,
   canvasInit,
   afterInitOk,
-  addItemBox
+  addItemBox,
+  handleDragOver,
+  getMoveItem,
+  handleMouseUp
 })
 </script>
 

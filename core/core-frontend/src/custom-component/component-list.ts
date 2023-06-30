@@ -1,4 +1,6 @@
 // 公共样式
+import { deepCopy } from '@/utils/utils'
+
 export const commonStyle = {
   rotate: 0,
   opacity: 1
@@ -89,8 +91,8 @@ const list = [
     innerType: 'VText',
     x: 1,
     y: 1,
-    sizeX: 20,
-    sizeY: 20,
+    sizeX: 10,
+    sizeY: 5,
     request: {
       method: 'GET',
       data: [],
@@ -121,8 +123,8 @@ const list = [
     innerType: 'VQuery',
     x: 1,
     y: 1,
-    sizeX: 20,
-    sizeY: 20,
+    sizeX: 10,
+    sizeY: 5,
     request: {
       method: 'GET',
       data: [],
@@ -194,8 +196,8 @@ const list = [
     innerType: 'Picture',
     x: 1,
     y: 1,
-    sizeX: 20,
-    sizeY: 20,
+    sizeX: 10,
+    sizeY: 5,
     propValue: {
       url: '',
       flip: {
@@ -249,7 +251,7 @@ const list = [
 for (let i = 0, len = list.length; i < len; i++) {
   const item = list[i]
   item.style = { ...commonStyle, ...item.style }
-  item['commonBackground'] = { ...COMMON_COMPONENT_BACKGROUND_BASE }
+  item['commonBackground'] = deepCopy(COMMON_COMPONENT_BACKGROUND_BASE)
   list[i] = { ...commonAttr, ...item }
 }
 

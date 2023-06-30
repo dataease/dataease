@@ -43,17 +43,6 @@ export function syncShapeItemStyle(item, cellWidth, cellHeight) {
   item.style.top = cellHeight * (item.y - 1)
   item.style.width = cellWidth * item.sizeX
   item.style.height = cellHeight * item.sizeY
-  console.log(
-    'syncShapeItemStyle=' +
-      'x=' +
-      (item.x - 1) +
-      ';y=' +
-      (item.y - 1) +
-      ';sizeX=' +
-      item.sizeX +
-      ';sizeY=' +
-      item.sizeY
-  )
 }
 
 const needUnit = [

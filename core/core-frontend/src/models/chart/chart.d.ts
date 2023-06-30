@@ -332,8 +332,122 @@ declare interface ChartStyle {
     alpha: string
   }
 }
-
+declare interface ChartBasicStyle {
+  /**
+   * 透明度
+   */
+  alpha: number
+  /**
+   * 表格边框颜色
+   */
+  tableBorderColor: string
+  /**
+   * 表格滚动条颜色
+   */
+  tableScrollBarColor: string
+  /**
+   * 表格列宽模式
+   */
+  tableColumnMode: 'adopt' | 'custom'
+  /**
+   * 表格列宽
+   */
+  tableColumnWidth: number
+  /**
+   * 表格分页模式
+   */
+  tablePageMode: 'page' | 'pull'
+  /**
+   * 表格分页大小
+   */
+  tablePageSize: number
+  /**
+   * 仪表盘样式
+   */
+  gaugeStyle: string
+  /**
+   * 配色方案
+   */
+  colorScheme: string
+  /**
+   * 配色
+   */
+  colors: string[]
+  /**
+   * 渐变
+   */
+  gradient: boolean
+  /**
+   * 线宽
+   */
+  lineWidth: number
+  /**
+   * 折点形状
+   */
+  lineSymbol: string
+  /**
+   * 折点大小
+   */
+  lineSymbolSize: number
+  /**
+   * 平滑折线
+   */
+  lineSmooth: boolean
+  /**
+   * 自适应
+   */
+  barDefault: boolean
+  /**
+   * 柱宽
+   */
+  barWidth: number
+  /**
+   * 柱间距
+   */
+  barGap: number
+  /**
+   * 线形状
+   */
+  lineType: 'solid' | 'dashed'
+  /**
+   * 散点形状
+   */
+  scatterSymbol: string
+  /**
+   * 散点气泡大小
+   */
+  scatterSymbolSize: number
+  /**
+   * 雷达图外形形状
+   */
+  radarShape: 'circle' | 'polygon'
+  /**
+   * 地图主题风格
+   */
+  mapStyle: string
+  /**
+   * 地图边线颜色
+   */
+  areaBorderColor: string
+  /**
+   * 悬浮工具栏
+   */
+  suspension: boolean
+  /**
+   * 地图底色
+   */
+  areaBaseColor: string
+  /**
+   * 符号透明度
+   */
+  symbolOpacity: number
+  /**
+   * 符号边框宽度
+   */
+  symbolStrokeWidth: number
+}
 declare interface ChartAttr {
+  basicStyle: ChartBasicStyle
   color: ChartColorAttr
   tableColor: ChartColorAttr
   size: ChartSizeAttr
