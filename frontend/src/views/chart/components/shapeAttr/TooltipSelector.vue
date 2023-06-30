@@ -19,6 +19,16 @@
         </el-form-item>
         <div v-show="tooltipForm.show">
           <el-form-item
+            v-show="showProperty('emptyHide')"
+            :label="$t('chart.empty_hide')"
+            class="form-item"
+          >
+            <el-checkbox
+              v-model="tooltipForm.emptyHide"
+              @change="changeTooltipAttr('emptyHide')"
+            >{{ $t('chart.hide') }}</el-checkbox>
+          </el-form-item>
+          <el-form-item
             v-show="showProperty('trigger')"
             :label="$t('chart.trigger_position')"
             class="form-item"

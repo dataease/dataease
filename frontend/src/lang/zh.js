@@ -933,6 +933,8 @@ export default {
     password_input_error: '原始密码输入错误'
   },
   chart: {
+    empty_hide: '隐藏空值',
+    hide: '隐藏',
     chart_refresh_tips: '视图刷新设置优先于仪表板刷新设置',
     '1-trend': '趋势',
     '2-state': '状态',

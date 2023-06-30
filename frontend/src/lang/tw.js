@@ -934,6 +934,8 @@ export default {
     password_input_error: '原始密碼輸入錯誤'
   },
   chart: {
+    empty_hide: '隱藏空值',
+    hide: '隱藏',
     chart_refresh_tips: '視圖刷新設置優先於儀表板刷新設置',
     '1-trend': '趨勢',
     '2-state': '狀態',
