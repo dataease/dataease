@@ -37,6 +37,17 @@ const fields = [
   { label: t('dataset.location'), value: 5 }
 ]
 
+const defaultForm = {
+  originName: '', // 物理字段名
+  name: '', // 字段显示名
+  groupType: 'd', // d=维度，q=指标
+  type: 'VARCHAR',
+  deType: 0, // 字段类型
+  extField: 2,
+  id: '',
+  checked: true
+}
+
 const state = reactive({
   functionData: [],
   dimensionData: [],
@@ -45,15 +56,7 @@ const state = reactive({
   quotaData: []
 })
 
-const fieldForm = reactive<CalcFieldType>({
-  originName: '', // 物理字段名
-  name: '', // 字段显示名
-  groupType: 'd', // d=维度，q=指标
-  type: 'VARCHAR',
-  deType: 0, // 字段类型
-  extField: 2,
-  checked: true
-})
+const fieldForm = reactive<CalcFieldType>({ ...(defaultForm as CalcFieldType) })
 
 const setFieldForm = () => {
   const str = mirror.value.state.doc.toString()
@@ -81,10 +84,19 @@ const setNameIdTrans = (from, to, originName, name2Auto?: string[]) => {
 }
 
 const initEdit = (obj, dimensionData, quotaData) => {
-  Object.assign(fieldForm, obj || {})
+  Object.assign(fieldForm, { ...defaultForm, ...obj })
   state.dimensionData = dimensionData.filter(ele => ele.extField === 0)
   state.quotaData = quotaData.filter(ele => ele.extField === 0)
-  if (!obj.originName) return
+  if (!obj.originName) {
+    mirror.value.dispatch({
+      changes: {
+        from: 0,
+        to: mirror.value.viewState.state.doc.length,
+        insert: ''
+      }
+    })
+    return
+  }
   mirror.value.dispatch({
     changes: {
       from: 0,

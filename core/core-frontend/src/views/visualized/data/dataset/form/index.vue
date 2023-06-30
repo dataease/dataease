@@ -199,7 +199,7 @@ const closeEditCalc = () => {
 
 const confirmEditCalc = () => {
   calcEdit.value.setFieldForm()
-  const obj = calcEdit.value.fieldForm
+  const obj = cloneDeep(calcEdit.value.fieldForm)
   const result = allfields.value.findIndex(ele => obj.id === ele.id)
   if (result !== -1) {
     allfields.value.splice(result, 1, obj)
