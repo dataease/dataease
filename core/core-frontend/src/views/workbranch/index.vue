@@ -1,10 +1,7 @@
-<script lang="ts" setup>
-import QueryConditionConfiguration from './QueryConditionConfiguration.vue'
-</script>
+<script lang="ts" setup></script>
 
 <template>
   <div>workbranch</div>
-  <QueryConditionConfiguration></QueryConditionConfiguration>
 </template>
 
 <style lang="less" scoped></style>
