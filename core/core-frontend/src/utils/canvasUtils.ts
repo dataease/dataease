@@ -1,6 +1,11 @@
 import { deepCopy } from '@/utils/utils'
-import componentList from '@/custom-component/component-list'
+import componentList, {
+  COMMON_COMPONENT_BACKGROUND_DARK,
+  COMMON_COMPONENT_BACKGROUND_LIGHT
+} from '@/custom-component/component-list'
 import eventBus from '@/utils/eventBus'
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+const dvMainStore = dvMainStoreWithOut()
 
 export function chartTransStr2Object(targetIn, copy) {
   const target = copy === 'Y' ? deepCopy(targetIn) : targetIn
@@ -25,6 +30,11 @@ export function findNewComponent(componentName, innerType) {
     if (comp.component === componentName) {
       newComponent = deepCopy(comp)
       newComponent.innerType = innerType
+      if (dvMainStore.curOriginThemes === 'light') {
+        newComponent['commonBackground'] = deepCopy(COMMON_COMPONENT_BACKGROUND_LIGHT)
+      } else {
+        newComponent['commonBackground'] = deepCopy(COMMON_COMPONENT_BACKGROUND_DARK)
+      }
     }
   })
   return newComponent

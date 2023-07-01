@@ -18,7 +18,7 @@ export const dvMainStore = defineStore('dataVisualization', {
         datasetAreaCollapse: false
       },
       editMode: 'edit', // 编辑器模式 edit preview
-      canvasStyleData: deepCopy(DEFAULT_CANVAS_STYLE_DATA_DARK),
+      canvasStyleData: { ...deepCopy(DEFAULT_CANVAS_STYLE_DATA_DARK), backgroundColor: null },
       // 当前展示画布缓存数据
       componentDataCache: null,
       // 当前展示画布视图信息

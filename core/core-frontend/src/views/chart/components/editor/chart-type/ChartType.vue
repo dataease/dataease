@@ -20,6 +20,10 @@ const props = defineProps({
   type: {
     type: String,
     required: true
+  },
+  themes: {
+    type: String,
+    default: 'dark'
   }
 })
 
@@ -95,6 +99,8 @@ const groupActiveChange = category => {
 </template>
 
 <style lang="less" scoped>
+.light {
+}
 .group {
   display: flex !important;
   max-height: 400px;

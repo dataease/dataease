@@ -300,7 +300,7 @@ eventBus.on('handleNew', handleNew)
       </dv-sidebar>
       <view-editor
         v-show="curComponent && curComponent.component === 'UserView'"
-        :theme-info="'light'"
+        themes="light"
         :view="canvasViewInfo[curComponent ? curComponent.id : 'default']"
         :dataset-tree="state.datasetTree"
       ></view-editor>
@@ -323,7 +323,6 @@ eventBus.on('handleNew', handleNew)
       height: 100%;
       flex: 1;
       position: relative;
-      background-color: rgba(51, 51, 51, 1);
       overflow: auto;
       .content {
         flex: 1;

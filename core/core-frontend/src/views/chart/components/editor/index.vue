@@ -6,7 +6,6 @@ import { Field, getFieldByDQ, saveChart } from '@/api/chart'
 import { Tree } from '../../../visualized/data/dataset/form/CreatDsGroup.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { ElMessage } from 'element-plus-secondary'
-import draggable from 'vuedraggable'
 import DimensionLabel from './drag-label/DimensionLabel.vue'
 import DimensionItem from './drag-item/DimensionItem.vue'
 import QuotaLabel from './drag-label/QuotaLabel.vue'
@@ -48,6 +47,10 @@ const props = defineProps({
   datasetTree: {
     type: Array as PropType<Tree[]>,
     default: () => []
+  },
+  themes: {
+    type: String,
+    default: 'dark'
   }
 })
 
@@ -572,9 +575,15 @@ const saveValueFormatter = () => {
 </script>
 
 <template>
-  <div class="chart-edit">
+  <div class="chart-edit" :class="themes">
     <el-row v-loading="loading" class="de-chart-editor">
-      <div style="position: relative">
+      <div
+        class="content-area"
+        :class="{
+          'content-area-close': canvasCollapse.chartAreaCollapse,
+          'content-area-left-open': !canvasCollapse.chartAreaCollapse
+        }"
+      >
         <el-icon
           :title="view.title"
           class="custom-icon"
@@ -599,7 +608,7 @@ const saveValueFormatter = () => {
                   <div class="drag_main_area attr-style theme-border-class">
                     <el-row style="height: 100%">
                       <el-row class="chart_type_area padding-lr">
-                        <span class="switch-chart">
+                        <span class="switch-chart" :class="'switch-chart-' + themes">
                           <span>{{ t('chart.switch_chart') }}</span>
                           <span style="float: right; width: 140px">
                             <el-popover
@@ -610,7 +619,11 @@ const saveValueFormatter = () => {
                               popper-class="chart-type-style"
                             >
                               <template #reference>
-                                <el-button size="small" style="width: 100%; padding: 0">
+                                <el-button
+                                  :effect="themes"
+                                  size="small"
+                                  style="width: 100%; padding: 0"
+                                >
                                   {{ t('chart.change_chart_type') }}
                                   <i class="el-icon-caret-bottom" />
                                 </el-button>
@@ -715,7 +728,7 @@ const saveValueFormatter = () => {
                           <span>{{ t('chart.drill') }}</span>
                           /
                           <span>{{ t('chart.dimension') }}</span>
-                          <el-tooltip class="item" effect="dark" placement="bottom">
+                          <el-tooltip class="item" :effect="themes" placement="bottom">
                             <template #content>
                               <div>
                                 {{ t('chart.drill_dimension_tip') }}
@@ -779,7 +792,7 @@ const saveValueFormatter = () => {
                         <drag-placeholder :drag-list="view.customFilter" />
                       </el-row>
 
-                      <el-row class="result-style">
+                      <el-row class="result-style" :class="'result-style-' + themes">
                         <div class="result-style-input">
                           <span v-show="view.type !== 'richTextView'">
                             {{ t('chart.result_count') }}
@@ -787,7 +800,7 @@ const saveValueFormatter = () => {
                           <span v-show="view.type !== 'richTextView'">
                             <el-radio-group
                               v-model="view.resultMode"
-                              class="radio-span dark"
+                              class="radio-span"
                               size="small"
                               @change="calcData(view)"
                             >
@@ -805,7 +818,11 @@ const saveValueFormatter = () => {
                             </el-radio-group>
                           </span>
                         </div>
-                        <el-button class="result-style-button" @click="calcData(view)">
+                        <el-button
+                          type="primary"
+                          class="result-style-button"
+                          @click="calcData(view)"
+                        >
                           <span style="font-size: 12px">
                             {{ t('chart.update_chart_data') }}
                           </span>
@@ -854,7 +871,13 @@ const saveValueFormatter = () => {
           </el-row>
         </div>
       </div>
-      <div class="dataset-main">
+      <div
+        class="dataset-main content-area"
+        :class="{
+          'content-area-close': canvasCollapse.datasetAreaCollapse,
+          'content-area-right-open': !canvasCollapse.datasetAreaCollapse
+        }"
+      >
         <el-icon
           :title="'数据集'"
           class="custom-icon"
@@ -871,16 +894,7 @@ const saveValueFormatter = () => {
           <el-row class="editor-title">
             <span style="font-size: 14px">数据集</span>
           </el-row>
-          <el-row
-            :style="{
-              padding: '2px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              borderTop: '1px solid #363636'
-            }"
-            class="dark"
-          >
+          <el-row class="dataset-select">
             <el-tree-select
               v-model="view.tableId"
               :data="datasetTree"
@@ -935,7 +949,7 @@ const saveValueFormatter = () => {
               </template>
             </el-input>
           </el-row>
-          <div style="height: calc(100% - 122px)">
+          <div style="height: calc(100% - 123px)">
             <div class="padding-lr field-height">
               <span>{{ t('chart.dimension') }}</span>
               <draggable
@@ -1106,12 +1120,81 @@ const saveValueFormatter = () => {
 </template>
 
 <style lang="less" scoped>
+.light {
+  border-left: solid 1px @side-outline-border-color-light !important;
+  color: @canvas-main-font-color-light!important;
+  background-color: @side-area-background-light!important;
+  :deep(.ed-tabs__header) {
+    border-top: solid 1px @side-outline-border-color-light !important;
+  }
+  :deep(.drag_main_area) {
+    border-top: solid 1px @side-outline-border-color-light !important;
+  }
+  :deep(.drag-data) {
+    border-top: solid 1px @side-outline-border-color-light !important;
+  }
+  :deep(.result-style) {
+    border-top: 1px solid @side-outline-border-color-light !important;
+  }
+  :deep(.dataset-select) {
+    border-top: 1px solid @side-outline-border-color-light !important;
+  }
+  :deep(.dataset-main) {
+    border-left: 1px solid @side-outline-border-color-light !important;
+  }
+  :deep(.dataset-search-input) {
+    background-color: @side-area-background-light!important;
+  }
+  :deep(.ed-input__inner) {
+    height: 20px;
+    background-color: @side-area-background-light!important;
+    color: @canvas-main-font-color-light!important;
+    border: 1px solid @side-outline-border-color-light !important;
+  }
+  :deep(.ed-input__wrapper) {
+    box-shadow: none !important;
+    border-bottom: 1px solid hsla(0, 0%, 100%, 0.15);
+    background-color: @side-area-background-light!important;
+    border-radius: 0;
+    padding: 1px 4px;
+  }
+  :deep(.field-height) {
+    border-top: 1px solid @side-outline-border-color-light !important;
+  }
+}
+
+// editor form 全局样式
+.dark {
+  :deep(.ed-radio__label) {
+    color: var(--ed-color-white);
+  }
+  :deep(.ed-input__inner),
+  :deep(.ed-input__wrapper),
+  :deep(.ed-input.is-disabled .ed-input__wrapper) {
+    color: var(--ed-color-white);
+    background-color: @side-content-background;
+    border: none;
+  }
+  :deep(.ed-input__inner) {
+    border: none;
+  }
+  :deep(.ed-input__wrapper) {
+    box-shadow: 0 0 0 1px hsla(0, 0%, 100%, 0.15) inset !important;
+  }
+  :deep(.ed-input__wrapper:hover) {
+    box-shadow: 0 0 0 1px var(--ed-color-primary) inset !important;
+  }
+  :deep(input) {
+    font-size: 12px !important;
+  }
+}
+
 .chart-edit {
   position: relative;
   transition: 0.5s;
+  height: 100%;
   color: white;
   background-color: @side-area-background;
-  height: 100%;
 }
 .ed-row {
   display: block;
@@ -1179,7 +1262,7 @@ span {
   }
 
   .tab-header :deep(.ed-tabs__content) {
-    height: calc(100% - 46px);
+    height: calc(100% - 47px);
     overflow-y: auto;
     overflow-x: hidden;
   }
@@ -1329,6 +1412,8 @@ span {
     bottom: 0;
     width: 100%;
     border-top: 1px solid @side-outline-border-color;
+  }
+  .result-style-dark {
     :deep(.ed-button) {
       color: #ffffff;
       background-color: var(--ed-color-primary);
@@ -1352,9 +1437,10 @@ span {
   .result-style-button {
     height: 40px;
     width: 100%;
+    border-radius: 0;
   }
 
-  .switch-chart {
+  .switch-chart-dark {
     :deep(.ed-button) {
       color: #ffffff;
       background-color: #1a1a1a;
@@ -1364,6 +1450,8 @@ span {
     :deep(.ed-button:hover) {
       border: 1px solid #3370ff;
     }
+  }
+  .switch-chart-light {
   }
 
   .dataset-search {
@@ -1456,29 +1544,29 @@ span {
   border-left: 1px solid @side-outline-border-color;
 }
 
-// editor form 全局样式
-.dark {
-  :deep(.ed-radio__label) {
-    color: var(--ed-color-white);
-  }
-  :deep(.ed-input__inner),
-  :deep(.ed-input__wrapper),
-  :deep(.ed-input.is-disabled .ed-input__wrapper) {
-    color: var(--ed-color-white);
-    background-color: @side-content-background;
-    border: none;
-  }
-  :deep(.ed-input__inner) {
-    border: none;
-  }
-  :deep(.ed-input__wrapper) {
-    box-shadow: 0 0 0 1px hsla(0, 0%, 100%, 0.15) inset !important;
-  }
-  :deep(.ed-input__wrapper:hover) {
-    box-shadow: 0 0 0 1px var(--ed-color-primary) inset !important;
-  }
-  :deep(input) {
-    font-size: 12px !important;
-  }
+.content-area {
+  position: relative;
+  transition: 0.5s;
+  overflow-x: hidden;
+}
+
+.content-area-close {
+  width: 35px;
+}
+
+.content-area-left-open {
+  width: 240px;
+}
+
+.content-area-right-open {
+  width: 180px;
+}
+
+.dataset-select {
+  padding: 2px;
+  display: flex;
+  alignitems: center;
+  justifycontent: space-between;
+  bordertop: 1px solid #363636;
 }
 </style>

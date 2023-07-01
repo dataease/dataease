@@ -85,8 +85,8 @@ export const DEFAULT_CANVAS_STYLE_DATA_LIGHT = {
   ...DEFAULT_CANVAS_STYLE_DATA_BASE,
   // 页面全局数据
   themeId: 'system_light',
-  color: '#000',
-  backgroundColor: '#fff',
+  color: '#000000',
+  backgroundColor: '#f5f6f7',
   dashboard: DEFAULT_DASHBOARD_STYLE_LIGHT,
   component: PANEL_CHART_INFO_LIGHT
 }

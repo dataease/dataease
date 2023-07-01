@@ -1345,6 +1345,8 @@ const onMouseUp = (e, item, index) => {
 
 const handleDragStartMoveIn = componentInfo => {
   const moveInItemInfo = findDragComponent(componentInfo)
+  // 初始的移动组件 距离左侧的位置 300 是DbToolbar 最左侧区域宽度
+  moveInItemInfo.x = 300 / cellWidth.value
   // 仪表板初始移动的组件暂时不显示 在松开鼠标时再确实该组件的去留
   moveInItemInfo.isShow = false
   moveInItemInfo.id = guid()
