@@ -16,6 +16,10 @@ const props = defineProps({
   quotaData: {
     type: Array,
     required: true
+  },
+  themes: {
+    type: String,
+    default: 'dark'
   }
 })
 

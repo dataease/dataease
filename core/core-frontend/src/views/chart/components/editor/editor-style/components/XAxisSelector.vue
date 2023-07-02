@@ -11,6 +11,10 @@ const props = defineProps({
   chart: {
     type: Object,
     required: true
+  },
+  themes: {
+    type: String,
+    default: 'dark'
   }
 })
 
@@ -92,18 +96,24 @@ init()
             @change="changeAxisStyle('position')"
           >
             <div v-if="!props.chart.type.includes('horizontal')">
-              <el-radio effect="dark" label="top">{{ t('chart.text_pos_top') }}</el-radio>
-              <el-radio effect="dark" label="bottom">{{ t('chart.text_pos_bottom') }}</el-radio>
+              <el-radio :effect="props.themes" label="top">{{ t('chart.text_pos_top') }}</el-radio>
+              <el-radio :effect="props.themes" label="bottom">{{
+                t('chart.text_pos_bottom')
+              }}</el-radio>
             </div>
             <div v-else>
-              <el-radio effect="dark" label="left">{{ t('chart.text_pos_left') }}</el-radio>
-              <el-radio effect="dark" label="right">{{ t('chart.text_pos_center') }}</el-radio>
+              <el-radio :effect="props.themes" label="left">{{
+                t('chart.text_pos_left')
+              }}</el-radio>
+              <el-radio :effect="props.themes" label="right">{{
+                t('chart.text_pos_center')
+              }}</el-radio>
             </div>
           </el-radio-group>
         </el-form-item>
         <el-form-item :label="t('chart.name')" class="form-item">
           <el-input
-            effect="dark"
+            :effect="props.themes"
             v-model="state.axisForm.name"
             size="small"
             @blur="changeAxisStyle('name')"
@@ -119,7 +129,7 @@ init()
         </el-form-item>
         <el-form-item :label="t('chart.axis_name_fontsize')" class="form-item">
           <el-select
-            effect="dark"
+            :effect="props.themes"
             v-model="state.axisForm.nameTextStyle.fontSize"
             :placeholder="t('chart.axis_name_fontsize')"
             @change="changeAxisStyle('nameTextStyle')"
@@ -138,14 +148,14 @@ init()
             <!--              <span>-->
             <!--                <span class="span-box">-->
             <!--                  <span>{{ t('chart.axis_value') }}</span>-->
-            <!--                  <el-tooltip class="item" effect="dark" placement="bottom">-->
+            <!--                  <el-tooltip class="item" :effect="props.themes" placement="bottom">-->
             <!--                    <template #content>{{ t('chart.axis_tip') }}</template>-->
             <!--                    <i class="el-icon-info" style="cursor: pointer" />-->
             <!--                  </el-tooltip>-->
             <!--                </span>-->
             <!--              </span>-->
             <el-checkbox
-              effect="dark"
+              :effect="props.themes"
               v-model="state.axisForm.axisValue.auto"
               @change="changeAxisStyle('axisValue')"
               >{{ t('chart.axis_auto') }}</el-checkbox
@@ -154,14 +164,14 @@ init()
           <span v-show="!state.axisForm.axisValue.auto">
             <el-form-item :label="t('chart.axis_value_min')" class="form-item">
               <el-input
-                effect="dark"
+                :effect="props.themes"
                 v-model="state.axisForm.axisValue.min"
                 @blur="changeAxisStyle('axisValue')"
               />
             </el-form-item>
             <el-form-item :label="t('chart.axis_value_max')" class="form-item">
               <el-input
-                effect="dark"
+                :effect="props.themes"
                 v-model="state.axisForm.axisValue.max"
                 @blur="changeAxisStyle('axisValue')"
               />
@@ -170,14 +180,14 @@ init()
               <span>
                 <span class="span-box">
                   <span>{{ t('chart.axis_value_split_count') }}</span>
-                  <el-tooltip class="item" effect="dark" placement="bottom">
+                  <el-tooltip class="item" :effect="props.themes" placement="bottom">
                     <template #content>期望的坐标轴刻度数量，非最终结果。</template>
                     <i class="el-icon-info" style="cursor: pointer" />
                   </el-tooltip>
                 </span>
               </span>
               <el-input
-                effect="dark"
+                :effect="props.themes"
                 v-model="state.axisForm.axisValue.splitCount"
                 @blur="changeAxisStyle('axisValue')"
               />
@@ -187,7 +197,7 @@ init()
         <el-divider />
         <el-form-item :label="t('chart.axis_show')" class="form-item">
           <el-checkbox
-            effect="dark"
+            :effect="props.themes"
             v-model="state.axisForm.axisLine.show"
             @change="changeAxisStyle('axisLine')"
             >{{ t('chart.axis_show') }}</el-checkbox
@@ -195,7 +205,7 @@ init()
         </el-form-item>
         <el-form-item :label="t('chart.grid_show')" class="form-item">
           <el-checkbox
-            effect="dark"
+            :effect="props.themes"
             v-model="state.axisForm.splitLine.show"
             @change="changeAxisStyle('splitLine')"
             >{{ t('chart.grid_show') }}</el-checkbox
@@ -212,7 +222,7 @@ init()
           </el-form-item>
           <el-form-item :label="t('chart.grid_width')" class="form-item form-item-slider">
             <el-input-number
-              effect="dark"
+              :effect="props.themes"
               v-model.number="state.axisForm.splitLine.lineStyle.width"
               :min="1"
               :max="10"
@@ -225,7 +235,7 @@ init()
         <el-divider />
         <el-form-item :label="t('chart.axis_label_show')" class="form-item">
           <el-checkbox
-            effect="dark"
+            :effect="props.themes"
             v-model="state.axisForm.axisLabel.show"
             @change="changeAxisStyle('axisLabel')"
             >{{ t('chart.axis_label_show') }}</el-checkbox
@@ -242,7 +252,7 @@ init()
           </el-form-item>
           <el-form-item :label="t('chart.axis_label_rotate')" class="form-item form-item-slider">
             <el-input-number
-              effect="dark"
+              :effect="props.themes"
               v-model.number="state.axisForm.axisLabel.rotate"
               :min="-90"
               :max="90"
@@ -253,7 +263,7 @@ init()
           </el-form-item>
           <el-form-item :label="t('chart.axis_label_fontsize')" class="form-item">
             <el-select
-              effect="dark"
+              :effect="props.themes"
               v-model="state.axisForm.axisLabel.fontSize"
               :placeholder="t('chart.axis_label_fontsize')"
               @change="changeAxisStyle('axisLabel')"
@@ -270,7 +280,7 @@ init()
           <span v-show="props.chart.type && props.chart.type.includes('horizontal')">
             <el-form-item :label="t('chart.value_formatter_type')" class="form-item">
               <el-select
-                effect="dark"
+                :effect="props.themes"
                 v-model="state.axisForm.axisLabelFormatter.type"
                 @change="changeAxisStyle('axisLabelFormatter')"
               >
@@ -289,7 +299,7 @@ init()
               class="form-item"
             >
               <el-input-number
-                effect="dark"
+                :effect="props.themes"
                 v-model.number="state.axisForm.axisLabelFormatter.decimalCount"
                 :precision="0"
                 :min="0"
@@ -305,7 +315,7 @@ init()
               class="form-item"
             >
               <el-select
-                effect="dark"
+                :effect="props.themes"
                 v-model="state.axisForm.axisLabelFormatter.unit"
                 :placeholder="t('chart.pls_select_field')"
                 size="small"
@@ -322,7 +332,7 @@ init()
 
             <el-form-item :label="t('chart.value_formatter_suffix')" class="form-item">
               <el-input
-                effect="dark"
+                :effect="props.themes"
                 v-model="state.axisForm.axisLabelFormatter.suffix"
                 size="small"
                 clearable
@@ -333,7 +343,7 @@ init()
 
             <el-form-item :label="t('chart.value_formatter_thousand_separator')" class="form-item">
               <el-checkbox
-                effect="dark"
+                :effect="props.themes"
                 v-model="state.axisForm.axisLabelFormatter.thousandSeparator"
                 @change="changeAxisStyle('axisLabelFormatter')"
               />

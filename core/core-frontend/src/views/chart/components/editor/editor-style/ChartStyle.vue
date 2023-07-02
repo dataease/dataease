@@ -28,10 +28,14 @@ const props = defineProps({
   chart: {
     type: Object,
     required: true
+  },
+  themes: {
+    type: String,
+    default: 'dark'
   }
 })
 
-const { chart } = toRefs(props)
+const { chart, themes } = toRefs(props)
 const emit = defineEmits([
   'onColorChange',
   'onSizeChange',
@@ -81,22 +85,31 @@ const onBasicStyleChange = val => {
 </script>
 
 <template>
-  <el-row class="view-panel">
+  <el-row class="view-panel" :class="'style-' + themes">
     <div class="attr-style">
       <el-row class="de-collapse-style">
         <el-collapse v-model="state.attrActiveNames" class="style-collapse">
           <el-collapse-item name="background" :title="'背景'">
             <background-overall-component
               v-if="curComponent"
-              themes="dark"
+              :themes="themes"
               position="component"
             ></background-overall-component>
           </el-collapse-item>
           <el-collapse-item name="basicStyle" title="基础样式">
-            <basic-style-selector :chart="chart" @onBasicStyleChange="onBasicStyleChange" />
+            <basic-style-selector
+              :themes="themes"
+              :chart="chart"
+              @onBasicStyleChange="onBasicStyleChange"
+            />
           </el-collapse-item>
           <el-collapse-item name="color" :title="t('chart.color')">
-            <color-selector class="attr-selector" :chart="chart" @onColorChange="onColorChange" />
+            <color-selector
+              :themes="themes"
+              class="attr-selector"
+              :chart="chart"
+              @onColorChange="onColorChange"
+            />
           </el-collapse-item>
 
           <el-collapse-item
@@ -106,7 +119,12 @@ const onBasicStyleChange = val => {
               chart.type && chart.type.includes('table') ? t('chart.table_config') : t('chart.size')
             "
           >
-            <size-selector class="attr-selector" :chart="chart" @onSizeChange="onSizeChange" />
+            <size-selector
+              :themes="themes"
+              class="attr-selector"
+              :chart="chart"
+              @onSizeChange="onSizeChange"
+            />
           </el-collapse-item>
           <collapse-switch-item
             v-if="chart.type !== 'word-cloud' && !chart.type.includes('table')"
@@ -116,7 +134,12 @@ const onBasicStyleChange = val => {
             :title="$t('chart.label')"
             name="label"
           >
-            <label-selector class="attr-selector" :chart="chart" @onLabelChange="onLabelChange" />
+            <label-selector
+              :themes="themes"
+              class="attr-selector"
+              :chart="chart"
+              @onLabelChange="onLabelChange"
+            />
           </collapse-switch-item>
           <collapse-switch-item
             v-if="
@@ -130,6 +153,7 @@ const onBasicStyleChange = val => {
           >
             <tooltip-selector
               class="attr-selector"
+              :themes="themes"
               :chart="chart"
               @onTooltipChange="onTooltipChange"
             />
@@ -149,6 +173,7 @@ const onBasicStyleChange = val => {
           >
             <x-axis-selector
               class="attr-selector"
+              :themes="themes"
               :chart="chart"
               @onChangeXAxisForm="onChangeXAxisForm"
             />
@@ -164,6 +189,7 @@ const onBasicStyleChange = val => {
           >
             <y-axis-selector
               class="attr-selector"
+              :themes="themes"
               :chart="chart"
               @onChangeYAxisForm="onChangeYAxisForm"
             />
@@ -176,7 +202,12 @@ const onBasicStyleChange = val => {
             name="title"
             :title="$t('chart.title')"
           >
-            <title-selector class="attr-selector" :chart="chart" @onTextChange="onTextChange" />
+            <title-selector
+              :themes="themes"
+              class="attr-selector"
+              :chart="chart"
+              @onTextChange="onTextChange"
+            />
           </collapse-switch-item>
 
           <collapse-switch-item
@@ -195,6 +226,7 @@ const onBasicStyleChange = val => {
           >
             <legend-selector
               class="attr-selector"
+              :themes="themes"
               :chart="chart"
               @onLegendChange="onLegendChange"
             />
@@ -206,6 +238,14 @@ const onBasicStyleChange = val => {
 </template>
 
 <style lang="less" scoped>
+.style-light {
+  border-top: 1px solid @side-outline-border-color-light;
+}
+
+.style-dark {
+  border-top: 1px solid @side-outline-border-color;
+}
+
 .ed-row {
   display: block;
 }
@@ -225,7 +265,6 @@ span {
   display: flex;
   height: 100%;
   width: 100%;
-  border-top: 1px solid @side-outline-border-color;
 }
 
 .attr-style {

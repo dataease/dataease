@@ -575,7 +575,7 @@ const saveValueFormatter = () => {
 </script>
 
 <template>
-  <div class="chart-edit" :class="themes">
+  <div class="chart-edit" :class="'editor-' + themes">
     <el-row v-loading="loading" class="de-chart-editor">
       <div
         class="content-area"
@@ -616,7 +616,7 @@ const saveValueFormatter = () => {
                               width="434"
                               trigger="click"
                               :append-to-body="true"
-                              popper-class="chart-type-style"
+                              :popper-class="'chart-type-style-' + themes"
                             >
                               <template #reference>
                                 <el-button
@@ -629,7 +629,11 @@ const saveValueFormatter = () => {
                                 </el-button>
                               </template>
                               <template #default>
-                                <chart-type :type="view.type" @onTypeChange="onTypeChange" />
+                                <chart-type
+                                  :themes="themes"
+                                  :type="view.type"
+                                  @onTypeChange="onTypeChange"
+                                />
                               </template>
                             </el-popover>
                           </span>
@@ -841,6 +845,7 @@ const saveValueFormatter = () => {
               >
                 <chart-style
                   :chart="view"
+                  :themes="themes"
                   @onColorChange="onColorChange"
                   @onSizeChange="onSizeChange"
                   @onLabelChange="onLabelChange"
@@ -861,6 +866,7 @@ const saveValueFormatter = () => {
                 <senior
                   :chart="view"
                   :quota-data="view.yAxis"
+                  :themes="themes"
                   @onFunctionCfgChange="onFunctionCfgChange"
                   @onAssistLineChange="onAssistLineChange"
                   @onScrollCfgChange="onScrollCfgChange"
@@ -938,7 +944,7 @@ const saveValueFormatter = () => {
             </div>
             <el-input
               v-model="state.searchField"
-              class="dataset-search-input"
+              :class="'dataset-search-input-' + themes"
               :placeholder="t('chart.search') + t('chart.field')"
               clearable
             >
@@ -1120,7 +1126,7 @@ const saveValueFormatter = () => {
 </template>
 
 <style lang="less" scoped>
-.light {
+.editor-light {
   border-left: solid 1px @side-outline-border-color-light !important;
   color: @canvas-main-font-color-light!important;
   background-color: @side-area-background-light!important;
@@ -1142,21 +1148,8 @@ const saveValueFormatter = () => {
   :deep(.dataset-main) {
     border-left: 1px solid @side-outline-border-color-light !important;
   }
-  :deep(.dataset-search-input) {
-    background-color: @side-area-background-light!important;
-  }
-  :deep(.ed-input__inner) {
-    height: 20px;
-    background-color: @side-area-background-light!important;
-    color: @canvas-main-font-color-light!important;
-    border: 1px solid @side-outline-border-color-light !important;
-  }
-  :deep(.ed-input__wrapper) {
-    box-shadow: none !important;
-    border-bottom: 1px solid hsla(0, 0%, 100%, 0.15);
-    background-color: @side-area-background-light!important;
-    border-radius: 0;
-    padding: 1px 4px;
+  :deep(input) {
+    font-size: 12px !important;
   }
   :deep(.field-height) {
     border-top: 1px solid @side-outline-border-color-light !important;
@@ -1164,7 +1157,7 @@ const saveValueFormatter = () => {
 }
 
 // editor form 全局样式
-.dark {
+.editor-dark {
   :deep(.ed-radio__label) {
     color: var(--ed-color-white);
   }
@@ -1186,6 +1179,23 @@ const saveValueFormatter = () => {
   }
   :deep(input) {
     font-size: 12px !important;
+  }
+
+  :deep(.ed-collapse-item__header) {
+    background-color: @side-area-background !important;
+    color: #ffffff;
+    padding-left: 5px;
+    border-bottom: 1px solid rgba(85, 85, 85, 1);
+    height: 38px !important;
+  }
+  :deep(.ed-collapse-item__content) {
+    background-color: @side-content-background;
+    color: #ffffff;
+    padding-left: 5px;
+  }
+
+  :deep(.ed-collapse-item__wrap) {
+    border-bottom: 1px solid rgba(85, 85, 85, 1);
   }
 }
 
@@ -1455,7 +1465,7 @@ span {
   }
 
   .dataset-search {
-    height: 46px;
+    height: 47px;
     width: 100%;
   }
   .dataset-search-label {
@@ -1464,7 +1474,8 @@ span {
     align-items: center;
     justify-content: space-between;
   }
-  .dataset-search-input {
+
+  .dataset-search-input-dark {
     height: 22px;
     background-color: @side-area-background;
     :deep(.ed-input__inner) {
@@ -1476,6 +1487,23 @@ span {
       box-shadow: none !important;
       border-bottom: 1px solid hsla(0, 0%, 100%, 0.15);
       background-color: @side-area-background;
+      border-radius: 0;
+      padding: 1px 4px;
+    }
+  }
+
+  .dataset-search-input-light {
+    height: 22px;
+    background-color: @side-area-background-light;
+    :deep(.ed-input__inner) {
+      height: 20px;
+      background-color: @side-area-background-light;
+      color: @canvas-main-font-color-light;
+    }
+    :deep(.ed-input__wrapper) {
+      box-shadow: none !important;
+      border-bottom: @side-outline-border-color-light;
+      background-color: @side-area-background-light;
       border-radius: 0;
       padding: 1px 4px;
     }
@@ -1507,23 +1535,6 @@ span {
   top: 10px;
   cursor: pointer;
   z-index: 2;
-}
-
-:deep(.ed-collapse-item__header) {
-  background-color: @side-area-background !important;
-  color: #ffffff;
-  padding-left: 5px;
-  border-bottom: 1px solid rgba(85, 85, 85, 1);
-  height: 38px !important;
-}
-:deep(.ed-collapse-item__content) {
-  background-color: @side-content-background;
-  color: #ffffff;
-  padding-left: 5px;
-}
-
-:deep(.ed-collapse-item__wrap) {
-  border-bottom: 1px solid rgba(85, 85, 85, 1);
 }
 :deep(.ed-collapse) {
   width: 100%;

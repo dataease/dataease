@@ -22,6 +22,10 @@ const props = defineProps({
         propValue: null
       }
     }
+  },
+  themes: {
+    type: String,
+    default: 'dark'
   }
 })
 
@@ -65,7 +69,7 @@ const groupActiveChange = category => {
 </script>
 
 <template>
-  <el-row class="group" @dragstart="handleDragStart" @dragend="handleDragEnd">
+  <el-row class="group" :class="themes" @dragstart="handleDragStart" @dragend="handleDragEnd">
     <div class="group-left">
       <ul class="ul-custom">
         <li
@@ -109,6 +113,24 @@ const groupActiveChange = category => {
 </template>
 
 <style lang="less" scoped>
+.light {
+  color: #646a73 !important;
+  :deep(.group-right) {
+    border-left: 1px solid @side-outline-border-color-light!important;
+  }
+  :deep(.item-top) {
+    background-color: #dee0e3 !important;
+  }
+  :deep(.ul-custom) {
+    color: @chart-change-font-color-light!important;
+  }
+  :deep(.item-bottom) {
+    color: @chart-change-font-color-light!important;
+  }
+  :deep(.item-top-icon) {
+    color: @chart-change-font-color-light!important;
+  }
+}
 .group {
   display: flex;
   max-height: 400px;
@@ -117,6 +139,7 @@ const groupActiveChange = category => {
     width: 100px;
     height: 100%;
     .ul-custom {
+      padding-top: 8px;
       padding-inline-start: 0px;
       color: @canvas-main-font-color;
       .li-custom {
@@ -138,7 +161,7 @@ const groupActiveChange = category => {
       }
 
       .li-custom a:hover {
-        background: none;
+        //background: none;
       }
 
       .li-a {

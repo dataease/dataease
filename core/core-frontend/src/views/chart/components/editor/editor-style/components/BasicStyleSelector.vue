@@ -21,6 +21,10 @@ const props = defineProps({
   chart: {
     type: Object as PropType<Omit<Chart, 'customAttr'> & { customAttr: DeepPartial<ChartAttr> }>,
     required: true
+  },
+  themes: {
+    type: String,
+    default: 'dark'
   }
 })
 const colorCases = COLOR_CASES
@@ -231,7 +235,7 @@ init()
     </el-form-item>
     <el-form-item :label="t('chart.not_alpha')" class="form-item form-item-slider">
       <el-input-number
-        effect="dark"
+        :effect="props.themes"
         v-model="state.basicStyleForm.alpha"
         :min="0"
         :max="100"
@@ -243,10 +247,10 @@ init()
     <!--table start-->
     <el-form-item :label="t('chart.table_column_width_config')" class="form-item">
       <el-radio-group v-model="state.basicStyleForm.tableColumnMode" @change="changeBasicStyle()">
-        <el-radio label="adopt" effect="dark">
+        <el-radio label="adopt" :effect="props.themes">
           {{ t('chart.table_column_adapt') }}
         </el-radio>
-        <el-radio label="custom" effect="dark">
+        <el-radio label="custom" :effect="props.themes">
           {{ t('chart.table_column_custom') }}
         </el-radio>
       </el-radio-group>
@@ -259,7 +263,7 @@ init()
       class="form-item form-item-slider"
     >
       <el-input-number
-        effect="dark"
+        :effect="props.themes"
         v-model.number="state.basicStyleForm.tableColumnWidth"
         :min="10"
         :max="500"
@@ -286,7 +290,7 @@ init()
     </el-form-item>
     <el-form-item :label="t('chart.table_page_mode')" class="form-item">
       <el-select
-        effect="dark"
+        :effect="props.themes"
         v-model="state.basicStyleForm.tablePageMode"
         :placeholder="t('chart.table_page_mode')"
         @change="changeBasicStyle()"
@@ -301,7 +305,7 @@ init()
       class="form-item"
     >
       <el-select
-        effect="dark"
+        :effect="props.themes"
         v-model="state.basicStyleForm.tablePageSize"
         :placeholder="t('chart.table_page_size')"
         @change="changeBasicStyle()"
@@ -318,7 +322,7 @@ init()
     <!--gauge start-->
     <el-form-item :label="t('chart.chart_style')" class="form-item">
       <el-select
-        effect="dark"
+        :effect="props.themes"
         v-model="state.basicStyleForm.gaugeStyle"
         @change="changeBasicStyle()"
       >
@@ -341,7 +345,7 @@ init()
       class="form-item form-item-slider"
     >
       <el-input-number
-        effect="dark"
+        :effect="props.themes"
         v-model="state.basicStyleForm.barGap"
         controls-position="right"
         :show-input-controls="false"
@@ -355,7 +359,7 @@ init()
     <!--line area start-->
     <el-form-item :label="t('chart.line_width')" class="form-item form-item-slider">
       <el-input-number
-        effect="dark"
+        :effect="props.themes"
         v-model="state.basicStyleForm.lineWidth"
         :min="0"
         :max="10"
@@ -366,7 +370,7 @@ init()
     </el-form-item>
     <el-form-item :label="t('chart.line_symbol')" class="form-item">
       <el-select
-        effect="dark"
+        :effect="props.themes"
         v-model="state.basicStyleForm.lineSymbol"
         :placeholder="t('chart.line_symbol')"
         @change="changeBasicStyle()"
@@ -381,7 +385,7 @@ init()
     </el-form-item>
     <el-form-item :label="t('chart.line_symbol_size')" class="form-item form-item-slider">
       <el-input-number
-        effect="dark"
+        :effect="props.themes"
         v-model="state.basicStyleForm.lineSymbolSize"
         :min="0"
         :max="20"
@@ -400,15 +404,15 @@ init()
         v-model="state.basicStyleForm.radarShape"
         @change="changeBasicStyle('radarShape')"
       >
-        <el-radio effect="dark" label="polygon">{{ t('chart.polygon') }}</el-radio>
-        <el-radio effect="dark" label="circle">{{ t('chart.circle') }}</el-radio>
+        <el-radio :effect="props.themes" label="polygon">{{ t('chart.polygon') }}</el-radio>
+        <el-radio :effect="props.themes" label="circle">{{ t('chart.circle') }}</el-radio>
       </el-radio-group>
     </el-form-item>
     <!--radar end-->
     <!--flow map begin-->
     <el-form-item :label="t('chart.map_style')" class="form-item">
       <el-select
-        effect="dark"
+        :effect="props.themes"
         v-model="state.basicStyleForm.mapStyle"
         @change="changeBasicStyle('mapStyle')"
       >
@@ -424,7 +428,7 @@ init()
     <!--scatter start-->
     <el-form-item :label="t('chart.bubble_symbol')" class="form-item">
       <el-select
-        effect="dark"
+        :effect="props.themes"
         v-model="state.basicStyleForm.scatterSymbol"
         :placeholder="t('chart.line_symbol')"
         @change="changeBasicStyle('scatterSymbol')"
@@ -439,7 +443,7 @@ init()
     </el-form-item>
     <el-form-item :label="t('chart.bubble_size')" class="form-item form-item-slider">
       <el-input-number
-        effect="dark"
+        :effect="props.themes"
         v-model="state.basicStyleForm.scatterSymbolSize"
         controls-position="right"
         :min="1"
@@ -476,7 +480,7 @@ init()
     <!--symbol map start-->
     <el-form-item :label="t('chart.bubble_symbol')" class="form-item">
       <el-select
-        effect="dark"
+        :effect="props.themes"
         v-model="state.basicStyleForm.scatterSymbol"
         :placeholder="t('chart.line_symbol')"
         @change="changeBasicStyle"
@@ -491,7 +495,7 @@ init()
     </el-form-item>
     <el-form-item :label="t('chart.bubble_size')" class="form-item form-item-slider">
       <el-input-number
-        effect="dark"
+        :effect="props.themes"
         controls-position="right"
         v-model="state.basicStyleForm.scatterSymbolSize"
         :min="1"
@@ -501,7 +505,7 @@ init()
     </el-form-item>
     <el-form-item :label="t('chart.not_alpha')" class="form-item form-item-slider">
       <el-input-number
-        effect="dark"
+        :effect="props.themes"
         controls-position="right"
         v-model="state.basicStyleForm.symbolOpacity"
         :min="1"
@@ -515,7 +519,7 @@ init()
       class="form-item form-item-slider"
     >
       <el-input-number
-        effect="dark"
+        :effect="props.themes"
         controls-position="right"
         v-model="state.basicStyleForm.symbolStrokeWidth"
         :min="0"

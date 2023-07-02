@@ -13,6 +13,10 @@ const props = defineProps({
   chart: {
     type: Object,
     required: true
+  },
+  themes: {
+    type: String,
+    default: 'dark'
   }
 })
 
@@ -225,7 +229,7 @@ init()
           <!--alpha-->
           <el-form-item :label="t('chart.not_alpha')" class="form-item form-item-slider">
             <el-input-number
-              effect="dark"
+              :effect="props.themes"
               v-model="state.colorForm.alpha"
               :min="0"
               :max="100"

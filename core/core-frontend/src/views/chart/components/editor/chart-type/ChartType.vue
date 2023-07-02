@@ -29,7 +29,7 @@ const props = defineProps({
 
 const emit = defineEmits(['onTypeChange'])
 
-const { propValue, element } = toRefs(props)
+const { propValue, element, themes } = toRefs(props)
 const currentPane = ref('common')
 
 const state = reactive({
@@ -55,7 +55,7 @@ const groupActiveChange = category => {
 </script>
 
 <template>
-  <el-row class="group">
+  <el-row class="group" :class="'chart-' + themes">
     <div class="group-left">
       <ul class="ul-custom">
         <li
@@ -99,7 +99,23 @@ const groupActiveChange = category => {
 </template>
 
 <style lang="less" scoped>
-.light {
+.chart-light {
+  color: #646a73 !important;
+  :deep(.group-right) {
+    border-left: 1px solid @side-outline-border-color-light!important;
+  }
+  :deep(.item-top) {
+    background-color: #dee0e3 !important;
+  }
+  :deep(.ul-custom) {
+    color: @chart-change-font-color-light!important;
+  }
+  :deep(.item-bottom) {
+    color: @chart-change-font-color-light!important;
+  }
+  :deep(.item-top-icon) {
+    color: @chart-change-font-color-light!important;
+  }
 }
 .group {
   display: flex !important;

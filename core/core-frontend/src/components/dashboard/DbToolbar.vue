@@ -206,23 +206,25 @@ eventBus.on('clearCanvas', clearCanvas)
           :base-width="410"
           :show-split-line="true"
           :icon-name="'dv-view'"
+          themes="light"
           title="图表"
         >
-          <user-view-group :dv-model="dvModel"></user-view-group>
+          <user-view-group themes="light" :dv-model="dvModel"></user-view-group>
         </component-group>
         <component-group
           :base-width="148"
           :show-split-line="true"
+          themes="light"
           icon-name="dv-filter"
           title="过滤组件"
         >
           <div>过滤组件</div>
         </component-group>
-        <component-group :base-width="148" icon-name="dv-text" title="文本">
-          <text-group :dv-model="dvModel"></text-group>
+        <component-group themes="light" :base-width="148" icon-name="dv-text" title="文本">
+          <text-group themes="light" :dv-model="dvModel"></text-group>
         </component-group>
-        <component-group icon-name="dv-media" title="图片">
-          <media-group :dv-model="dvModel"></media-group>
+        <component-group themes="light" icon-name="dv-media" title="图片">
+          <media-group themes="light" :dv-model="dvModel"></media-group>
         </component-group>
         <component-button icon-name="dv-tab" title="Tab"></component-button>
         <component-button icon-name="dv-copy" title="复用"></component-button>

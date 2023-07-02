@@ -9,6 +9,10 @@ const props = defineProps({
   chart: {
     type: Object,
     required: true
+  },
+  themes: {
+    type: String,
+    default: 'dark'
   }
 })
 
@@ -81,7 +85,7 @@ init()
       >
         <el-form-item :label="t('chart.icon')" class="form-item">
           <el-select
-            effect="dark"
+            :effect="props.themes"
             v-model="state.legendForm.icon"
             :placeholder="t('chart.icon')"
             @change="changeLegendStyle('icon')"
@@ -100,13 +104,15 @@ init()
             size="small"
             @change="changeLegendStyle('orient')"
           >
-            <el-radio effect="dark" label="horizontal">{{ t('chart.horizontal') }}</el-radio>
-            <el-radio effect="dark" label="vertical">{{ t('chart.vertical') }}</el-radio>
+            <el-radio :effect="props.themes" label="horizontal">{{
+              t('chart.horizontal')
+            }}</el-radio>
+            <el-radio :effect="props.themes" label="vertical">{{ t('chart.vertical') }}</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item :label="t('chart.text_fontsize')" class="form-item">
           <el-select
-            effect="dark"
+            :effect="props.themes"
             v-model="state.legendForm.textStyle.fontSize"
             :placeholder="t('chart.text_fontsize')"
             size="small"
@@ -134,14 +140,16 @@ init()
             size="small"
             @change="changeLegendStyle('hPosition')"
           >
-            <el-radio effect="dark" label="left">{{ t('chart.text_pos_left') }}</el-radio>
+            <el-radio :effect="props.themes" label="left">{{ t('chart.text_pos_left') }}</el-radio>
             <el-radio
-              effect="dark"
+              :effect="props.themes"
               :disabled="state.legendForm.vPosition === 'center'"
               label="center"
               >{{ t('chart.text_pos_center') }}</el-radio
             >
-            <el-radio effect="dark" label="right">{{ t('chart.text_pos_right') }}</el-radio>
+            <el-radio :effect="props.themes" label="right">{{
+              t('chart.text_pos_right')
+            }}</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item :label="t('chart.text_v_position')" class="form-item">
@@ -150,14 +158,16 @@ init()
             size="small"
             @change="changeLegendStyle('vPosition')"
           >
-            <el-radio effect="dark" label="top">{{ t('chart.text_pos_top') }}</el-radio>
+            <el-radio :effect="props.themes" label="top">{{ t('chart.text_pos_top') }}</el-radio>
             <el-radio
-              effect="dark"
+              :effect="props.themes"
               :disabled="state.legendForm.hPosition === 'center'"
               label="center"
               >{{ t('chart.text_pos_center') }}</el-radio
             >
-            <el-radio effect="dark" label="bottom">{{ t('chart.text_pos_bottom') }}</el-radio>
+            <el-radio :effect="props.themes" label="bottom">{{
+              t('chart.text_pos_bottom')
+            }}</el-radio>
           </el-radio-group>
         </el-form-item>
       </el-form>
