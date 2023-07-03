@@ -1,6 +1,7 @@
 package io.dataease.api.dataset;
 
 import io.dataease.api.dataset.dto.DatasetNodeDTO;
+import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,4 +25,7 @@ public interface DatasetTreeApi {
 
     @PostMapping("details/{id}")
     DatasetGroupInfoDTO details(@PathVariable Long id) throws Exception;
+
+    @PostMapping("dsDetails")
+    List<DatasetTableDTO> panelGetDsDetails(@RequestBody List<Long> ids) throws Exception;
 }

@@ -209,20 +209,21 @@ getItemTagType()
               </span>
               <template #dropdown>
                 <el-dropdown-menu effect="dark" class="drop-style">
-                  <el-dropdown-item :command="beforeSort('none')">{{
-                    t('chart.none')
-                  }}</el-dropdown-item>
-                  <el-dropdown-item :command="beforeSort('asc')">{{
-                    t('chart.asc')
-                  }}</el-dropdown-item>
-                  <el-dropdown-item :command="beforeSort('desc')">{{
-                    t('chart.desc')
-                  }}</el-dropdown-item>
-                  <!--                  <el-dropdown-item-->
-                  <!--                    v-if="!item.chartId && (item.deType === 0 || item.deType === 5)"-->
-                  <!--                    :command="beforeSort('custom_sort')"-->
-                  <!--                    >{{ t('chart.custom_sort') }}...</el-dropdown-item-->
-                  <!--                  >-->
+                  <el-dropdown-item :command="beforeSort('none')">
+                    {{ t('chart.none') }}
+                  </el-dropdown-item>
+                  <el-dropdown-item :command="beforeSort('asc')">
+                    {{ t('chart.asc') }}
+                  </el-dropdown-item>
+                  <el-dropdown-item :command="beforeSort('desc')">
+                    {{ t('chart.desc') }}
+                  </el-dropdown-item>
+                  <el-dropdown-item
+                    v-if="!item.chartId && (item.deType === 0 || item.deType === 5)"
+                    :command="beforeSort('custom_sort')"
+                  >
+                    {{ t('chart.custom_sort') }}...
+                  </el-dropdown-item>
                 </el-dropdown-menu>
               </template>
             </el-dropdown>
@@ -307,15 +308,6 @@ getItemTagType()
               </template>
             </el-dropdown>
           </el-dropdown-item>
-
-          <!--          <el-dropdown-item-->
-          <!--            v-if="chart.render === 'antv' && chart.type.includes('table') && item.groupType === 'q'"-->
-          <!--            icon="el-icon-notebook-2"-->
-          <!--            divided-->
-          <!--            :command="beforeClickItem('formatter')"-->
-          <!--          >-->
-          <!--            <span>{{ t('chart.value_formatter') }}...</span>-->
-          <!--          </el-dropdown-item>-->
           <el-dropdown-item :icon="Edit" divided :command="beforeClickItem('rename')">
             <span>{{ t('chart.show_name_set') }}</span>
           </el-dropdown-item>

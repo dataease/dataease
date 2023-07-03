@@ -6,6 +6,7 @@ import { Field, getFieldByDQ, saveChart } from '@/api/chart'
 import { Tree } from '../../../visualized/data/dataset/form/CreatDsGroup.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { ElMessage } from 'element-plus-secondary'
+import draggable from 'vuedraggable'
 import DimensionLabel from './drag-label/DimensionLabel.vue'
 import DimensionItem from './drag-item/DimensionItem.vue'
 import QuotaLabel from './drag-label/QuotaLabel.vue'
@@ -25,6 +26,7 @@ import ChartType from '@/views/chart/components/editor/chart-type/ChartType.vue'
 import { useRouter } from 'vue-router'
 import CompareEdit from '@/views/chart/components/editor/drag-item/components/CompareEdit.vue'
 import ValueFormatterEdit from '@/views/chart/components/editor/drag-item/components/ValueFormatterEdit.vue'
+import CustomSortEdit from '@/views/chart/components/editor/drag-item/components/CustomSortEdit.vue'
 
 const dvMainStore = dvMainStoreWithOut()
 const { canvasCollapse } = storeToRefs(dvMainStore)
@@ -89,7 +91,10 @@ const state = reactive({
   quotaItemCompare: {},
   showEditQuotaCompare: false,
   showValueFormatter: false,
-  valueFormatterItem: {}
+  valueFormatterItem: {},
+  showCustomSort: false,
+  customSortList: [],
+  customSortField: {}
 })
 
 watch(
@@ -210,6 +215,32 @@ const drillItemChange = item => {
 const drillItemRemove = item => {
   view.value.drillFields.splice(item.index, 1)
   calcData(view.value)
+}
+
+const customSort = () => {
+  state.showCustomSort = true
+}
+const customSortChange = val => {
+  state.customSortList = val
+}
+const closeCustomSort = () => {
+  state.showCustomSort = false
+  state.customSortField = {}
+  state.customSortList = []
+}
+const saveCustomSort = () => {
+  view.value.xAxis.forEach(ele => {
+    if (ele.id === state.customSortField.id) {
+      ele.sort = 'custom_sort'
+      ele.customSort = state.customSortList
+    }
+  })
+  closeCustomSort()
+  calcData(view.value)
+}
+const onCustomSort = item => {
+  state.customSortField = view.value.xAxis[item.index]
+  customSort()
 }
 
 const onMove = (e, originalEvent) => {
@@ -670,6 +701,7 @@ const saveValueFormatter = () => {
                               @onDimensionItemChange="dimensionItemChange"
                               @onDimensionItemRemove="dimensionItemRemove"
                               @onNameEdit="showRename"
+                              @onCustomSort="onCustomSort"
                             />
                           </template>
                         </draggable>
@@ -918,7 +950,7 @@ const saveValueFormatter = () => {
               </template>
             </el-tree-select>
             <el-icon
-              :style="{ color: '#a6a6a6', cursor: 'pointer', marginRight: '8px' }"
+              :style="{ color: '#a6a6a6', cursor: 'pointer', marginLeft: '6px' }"
               @click="editDs"
             >
               <Icon name="icon_edit_outlined" class="el-icon-arrow-down el-icon-delete"></Icon>
@@ -1119,6 +1151,30 @@ const saveValueFormatter = () => {
           <el-button type="primary" @click="saveValueFormatter"
             >{{ t('chart.confirm') }}
           </el-button>
+        </div>
+      </template>
+    </el-dialog>
+
+    <!--xAxis自定义排序-->
+    <el-dialog
+      v-model="state.showCustomSort"
+      v-if="state.showCustomSort"
+      :title="t('chart.custom_sort')"
+      :visible="state.showCustomSort"
+      :show-close="false"
+      width="500px"
+      class="dialog-css"
+    >
+      <custom-sort-edit
+        :chart="view"
+        field-type="xAxis"
+        :field="state.customSortField"
+        @onSortChange="customSortChange"
+      />
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="closeCustomSort">{{ t('chart.cancel') }} </el-button>
+          <el-button type="primary" @click="saveCustomSort">{{ t('chart.confirm') }} </el-button>
         </div>
       </template>
     </el-dialog>
@@ -1576,8 +1632,8 @@ span {
 .dataset-select {
   padding: 2px;
   display: flex;
-  alignitems: center;
-  justifycontent: space-between;
-  bordertop: 1px solid #363636;
+  align-items: center;
+  justify-content: flex-start;
+  border-top: 1px solid #363636;
 }
 </style>
