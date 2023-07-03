@@ -3323,6 +3323,7 @@ export const TYPE_CONFIGS = [
       ],
       'tooltip-selector': [
         'show',
+        'emptyHide',
         'textStyle',
         'formatter'
       ],
