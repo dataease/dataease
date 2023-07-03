@@ -341,7 +341,6 @@ const handleMouseDownOnPoint = (point, e) => {
 
   const needLockProportion = isNeedLockProportion()
   const move = moveEvent => {
-    dashboardActive.value && emit('onResizing', moveEvent)
     // 第一次点击时也会触发 move，所以会有“刚点击组件但未移动，组件的大小却改变了”的情况发生
     // 因此第一次点击时不触发 move 事件
     if (isFirst) {
@@ -361,6 +360,7 @@ const handleMouseDownOnPoint = (point, e) => {
       symmetricPoint
     })
     dvMainStore.setShapeStyle(style)
+    dashboardActive.value && emit('onResizing', moveEvent)
   }
 
   const up = () => {
