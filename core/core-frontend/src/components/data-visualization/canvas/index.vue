@@ -150,9 +150,7 @@ const showComponentData = computed(() => {
   return componentData.value.filter(component => component.isShow)
 })
 const curGap = computed(() => {
-  return dashboardActive.value && canvasStyleData.value.dashboard.gap === 'yes'
-    ? canvasStyleData.value.dashboard.gapSize
-    : 0
+  return 0
 })
 
 const baseCellInfo = computed(() => {
@@ -1092,15 +1090,21 @@ const moving = e => {
   return {}
 }
 
+const cellInit = () => {
+  // 此处向下取整 保留1位小数,why: 矩阵模式计算 x,y时 会使用 style.left/cellWidth style.top/cellWidth
+  // 当初始状态细微的差距(主要是减少)都会导致 x，y 减少一个矩阵大小造成偏移,
+  cellWidth.value = Math.floor((baseWidth.value + baseMarginLeft.value) * 10) / 10
+  cellHeight.value = Math.floor((baseHeight.value + baseMarginTop.value) * 10) / 10
+  console.log('cellWidth=' + JSON.stringify(cellWidth))
+}
+
 const canvasSizeInit = () => {
-  cellWidth.value = baseWidth.value + baseMarginLeft.value
-  cellHeight.value = baseHeight.value + baseMarginTop.value
+  cellInit()
   reCalcCellWidth()
 }
 
 const canvasInit = () => {
-  cellWidth.value = baseWidth.value + baseMarginLeft.value
-  cellHeight.value = baseHeight.value + baseMarginTop.value
+  cellInit()
   positionBox = []
   coordinates = [] //坐标点集合
   lastTask = undefined
@@ -1293,8 +1297,9 @@ const onResizing = (e, item, index) => {
   let oldX = infoBoxTemp.oldX
   let oldY = infoBoxTemp.oldY
 
-  let newX = Math.floor(item.style.left / cellWidth.value + 1)
-  let newY = Math.floor(item.style.top / cellHeight.value + 1)
+  // 增加5px偏移量 防止resize时向下取整 组件向右偏移
+  let newX = Math.floor((item.style.left + 5) / cellWidth.value + 1)
+  let newY = Math.floor((item.style.top + 5) / cellHeight.value + 1)
   newX = newX > 0 ? newX : 1
   newY = newY > 0 ? newY : 1
   console.log(
@@ -1305,16 +1310,18 @@ const onResizing = (e, item, index) => {
   debounce(
     (function (newX, oldX, newY, oldY) {
       return function () {
-        // 调整位置
-        movePlayer(resizeItem, {
-          x: newX,
-          y: newY
-        })
-
         // 调整大小
         resizePlayer(resizeItem, {
           sizeX: nowSizeX,
           sizeY: nowSizeY
+        })
+
+        infoBoxTemp.oldSizeX = nowSizeX
+        infoBoxTemp.oldSizeY = nowSizeY
+        // 调整位置
+        movePlayer(resizeItem, {
+          x: newX,
+          y: newY
         })
         infoBoxTemp.oldX = newX
         infoBoxTemp.oldY = newY
