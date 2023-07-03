@@ -325,14 +325,24 @@ const handleMouseDownOnPoint = (point, e) => {
   const pointRect = e.target.getBoundingClientRect()
   // 当前点击圆点相对于画布的中心坐标
   const curPoint = {
-    x: Math.round(pointRect.left - editorRectInfo.left + e.target.offsetWidth / 2),
-    y: Math.round(pointRect.top - editorRectInfo.top + e.target.offsetHeight / 2)
+    x: Math.round(
+      pointRect.left -
+        editorRectInfo.left +
+        e.target.offsetWidth / 2 +
+        offsetGapAdaptor('x', point) / 2
+    ),
+    y: Math.round(
+      pointRect.top -
+        editorRectInfo.top +
+        e.target.offsetHeight / 2 +
+        offsetGapAdaptor('y', point) / 2
+    )
   }
 
-  // 获取对称点的坐标
+  // 获取对称点的坐标 problem point
   const symmetricPoint = {
-    x: center.x - (curPoint.x - center.x),
-    y: center.y - (curPoint.y - center.y)
+    x: center.x - (curPoint.x - center.x) - offsetGapAdaptor('x', point) / 4,
+    y: center.y - (curPoint.y - center.y) - offsetGapAdaptor('y', point) / 4
   }
 
   // 是否需要保存快照
@@ -350,10 +360,9 @@ const handleMouseDownOnPoint = (point, e) => {
 
     needSave = true
     const curPosition = {
-      x: moveEvent.clientX - Math.round(editorRectInfo.left),
-      y: moveEvent.clientY - Math.round(editorRectInfo.top)
+      x: moveEvent.clientX - Math.round(editorRectInfo.left) + offsetGapAdaptor('x', point),
+      y: moveEvent.clientY - Math.round(editorRectInfo.top) + offsetGapAdaptor('y', point)
     }
-
     calculateComponentPositionAndSize(point, style, curPosition, proportion, needLockProportion, {
       center,
       curPoint,
@@ -372,6 +381,16 @@ const handleMouseDownOnPoint = (point, e) => {
 
   document.addEventListener('mousemove', move)
   document.addEventListener('mouseup', up)
+}
+
+// resize算法适配，根据9个拖转点的位置 调整curGap 引起的中心点centerPoint 圆点curPoint 对称点 symmetricPoint引起的偏移
+const offsetGapAdaptor = (dimension, point) => {
+  const curGap = baseCellInfo.value.curGap
+  if (dimension === 'x') {
+    return point.indexOf('r') > -1 ? curGap : -1 * curGap
+  } else {
+    return point.indexOf('b') > -1 ? curGap : -1 * curGap
+  }
 }
 
 const isNeedLockProportion = () => {

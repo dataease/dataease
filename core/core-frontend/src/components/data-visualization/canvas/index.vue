@@ -149,8 +149,11 @@ const svgFilterAttrs = ['width', 'height', 'top', 'left', 'rotate']
 const showComponentData = computed(() => {
   return componentData.value.filter(component => component.isShow)
 })
+
 const curGap = computed(() => {
-  return 0
+  return dashboardActive.value && canvasStyleData.value.dashboard.gap === 'yes'
+    ? canvasStyleData.value.dashboard.gapSize
+    : 0
 })
 
 const baseCellInfo = computed(() => {
@@ -1095,7 +1098,6 @@ const cellInit = () => {
   // 当初始状态细微的差距(主要是减少)都会导致 x，y 减少一个矩阵大小造成偏移,
   cellWidth.value = Math.floor((baseWidth.value + baseMarginLeft.value) * 10) / 10
   cellHeight.value = Math.floor((baseHeight.value + baseMarginTop.value) * 10) / 10
-  console.log('cellWidth=' + JSON.stringify(cellWidth))
 }
 
 const canvasSizeInit = () => {
@@ -1287,9 +1289,9 @@ const onResizing = (e, item, index) => {
       ? Math.floor(height / cellHeight.value + 1)
       : Math.floor(height / cellHeight.value)
 
-  console.log(
-    'nowSizeX=' + nowSizeX + ';p1=' + (width % cellWidth.value) + ';p2=' + (cellWidth.value / 4) * 3
-  )
+  // console.log(
+  //   'nowSizeX=' + nowSizeX + ';p1=' + (width % cellWidth.value) + ';p2=' + (cellWidth.value / 4) * 3
+  // )
   const addSizeX = 1
   const addSizeY = 1
 
@@ -1302,9 +1304,9 @@ const onResizing = (e, item, index) => {
   let newY = Math.floor((item.style.top + 5) / cellHeight.value + 1)
   newX = newX > 0 ? newX : 1
   newY = newY > 0 ? newY : 1
-  console.log(
-    'onResizing=nowSizeX=' + nowSizeX + ';nowSizeY=' + nowSizeY + 'newX=' + newX + ';newY=' + newY
-  )
+  // console.log(
+  //   'onResizing=nowSizeX=' + nowSizeX + ';nowSizeY=' + nowSizeY + 'newX=' + newX + ';newY=' + newY
+  // )
 
   // 调整大小
   debounce(
