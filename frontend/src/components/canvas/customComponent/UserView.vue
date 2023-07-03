@@ -560,6 +560,12 @@ export default {
   },
 
   beforeDestroy() {
+    for (const key in this.chart) {
+      this.$delete(this.chart, key)
+    }
+    for (const key in this.view) {
+      this.$delete(this.view, key)
+    }
     this.innerRefreshTimer && clearInterval(this.innerRefreshTimer)
     bus.$off('plugin-chart-click', this.pluginChartClick)
     bus.$off('plugin-jump-click', this.pluginJumpClick)
@@ -570,6 +576,7 @@ export default {
     bus.$off('onThemeColorChange', this.optFromBatchThemeChange)
     bus.$off('onThemeAttrChange', this.optFromBatchSingleProp)
     bus.$off('clear_panel_linkage', this.clearPanelLinkage)
+    bus.$off('tab-canvas-change', this.tabSwitch)
   },
   created() {
     this.refId = uuid.v1
@@ -865,8 +872,8 @@ export default {
     },
     initCurFields(chartDetails) {
       this.curFields = []
-      this.dataRowSelect = []
-      this.dataRowNameSelect = []
+      this.dataRowSelect = {}
+      this.dataRowNameSelect = {}
       if (chartDetails.data && chartDetails.data.sourceFields) {
         const checkAllAxisStr = chartDetails.xaxis + chartDetails.xaxisExt + chartDetails.yaxis + chartDetails.yaxisExt
         chartDetails.data.sourceFields.forEach(field => {

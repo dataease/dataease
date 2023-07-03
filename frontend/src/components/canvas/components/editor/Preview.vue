@@ -238,6 +238,8 @@ export default {
     return {
       imageDownloading: false,
       chartDetailsVisible: false,
+      canvasMain: null,
+      tempCanvas: null,
       showChartInfo: {},
       showChartTableInfo: {},
       showChartInfoType: 'details',
@@ -439,8 +441,14 @@ export default {
     this.initPdfTemplate()
   },
   beforeDestroy() {
-    erd.uninstall(this.$refs[this.previewTempRefId])
-    erd.uninstall(this.$refs[this.previewRefId])
+    if (this.$refs[this.previewTempRefId]) {
+      erd.uninstall(this.$refs[this.previewTempRefId])
+    }
+    if (this.$refs[this.previewRefId]) {
+      erd.uninstall(this.$refs[this.previewRefId])
+    }
+    erd.uninstall(this.canvasMain)
+    erd.uninstall(this.tempCanvas)
     clearInterval(this.timer)
     this.canvasId === 'canvas-main' && bus.$off('pcChartDetailsDialog', this.openChartDetailsDialog)
     bus.$off('trigger-search-button', this.triggerSearchButton)
@@ -719,26 +727,27 @@ export default {
       bus.$emit('onScroll')
     },
     initListen() {
-      const _this = this
-      const canvasMain = document.getElementById(this.previewDomId)
+      this.canvasMain = document.getElementById(this.previewDomId)
       // 监听主div变动事件
-      if (canvasMain) {
-        erd.listenTo(canvasMain, element => {
-          _this.$nextTick(() => {
-            _this.restore()
+      if (this.canvasMain) {
+        erd.uninstall(this.canvasMain)
+        erd.listenTo(this.canvasMain, () => {
+          this.$nextTick(() => {
+            this.restore()
           })
         })
       }
       setTimeout(() => {
         // 监听画布div变动事件
-        const tempCanvas = document.getElementById(this.previewTempDomId)
-        if (tempCanvas) {
-          erd.listenTo(document.getElementById(this.previewTempDomId), element => {
-            _this.$nextTick(() => {
+        this.tempCanvas = document.getElementById(this.previewTempDomId)
+        if (this.tempCanvas) {
+          erd.uninstall(this.tempCanvas)
+          erd.listenTo(document.getElementById(this.previewTempDomId), () => {
+            this.$nextTick(() => {
               // 将mainHeight 修改为px 临时解决html2canvas 截图不全的问题
-              _this.mainHeight = tempCanvas.scrollHeight + 'px!important'
-              _this.mainHeightCount = tempCanvas.scrollHeight
-              this.$emit('mainHeightChange', _this.mainHeight)
+              this.mainHeight = this.tempCanvas.scrollHeight + 'px!important'
+              this.mainHeightCount = this.tempCanvas.scrollHeight
+              this.$emit('mainHeightChange', this.mainHeight)
             })
           })
         }
