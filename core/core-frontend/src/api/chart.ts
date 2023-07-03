@@ -46,6 +46,16 @@ export const saveChart = async (data): Promise<IResponse> => {
   })
 }
 
+// 获取单个字段枚举值
+export const getFieldData = async (fieldId, fieldType, data): Promise<IResponse> => {
+  delete data.data
+  return request
+    .post({ url: `/chartData/getFieldData/${fieldId}/${fieldType}`, data })
+    .then(res => {
+      return res
+    })
+}
+
 export const checkSameDataSet = (viewIdSource, viewIdTarget) =>
   request.get({ url: '/chart/view/checkSameDataSet/' + viewIdSource + '/' + viewIdTarget })
 
