@@ -4,6 +4,7 @@ import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.dataset.dto.DatasetTableFieldDTO;
 import io.dataease.api.dataset.dto.PreviewSqlDTO;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -22,4 +23,7 @@ public interface DatasetDataApi {
 
     @PostMapping("previewSql")
     Map<String, Object> previewSql(@RequestBody PreviewSqlDTO dto) throws Exception;
+
+    @PostMapping("enumValue/{id}")
+    Map<String, Object> getFieldEnum(@PathVariable Long id) throws Exception;
 }

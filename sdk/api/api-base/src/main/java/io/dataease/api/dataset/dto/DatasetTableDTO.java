@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 
 @Data
 public class DatasetTableDTO implements Serializable {
@@ -12,7 +14,7 @@ public class DatasetTableDTO implements Serializable {
     /**
      * ID
      */
-    @JsonSerialize(using= ToStringSerializer.class)
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     /**
@@ -28,13 +30,13 @@ public class DatasetTableDTO implements Serializable {
     /**
      * 数据源ID
      */
-    @JsonSerialize(using= ToStringSerializer.class)
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long datasourceId;
 
     /**
      * 数据集ID
      */
-    @JsonSerialize(using= ToStringSerializer.class)
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long datasetGroupId;
 
     /**
@@ -51,5 +53,10 @@ public class DatasetTableDTO implements Serializable {
      * SQL参数
      */
     private String sqlVariableDetails;
+
+    /**
+     * 数据集字段列表
+     */
+    private Map<String, List<DatasetTableFieldDTO>> fields;
 
 }
