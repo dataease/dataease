@@ -950,7 +950,7 @@ const saveValueFormatter = () => {
               </template>
             </el-tree-select>
             <el-icon
-              :style="{ color: '#a6a6a6', cursor: 'pointer', marginRight: '8px' }"
+              :style="{ color: '#a6a6a6', cursor: 'pointer', marginLeft: '6px' }"
               @click="editDs"
             >
               <Icon name="icon_edit_outlined" class="el-icon-arrow-down el-icon-delete"></Icon>
@@ -1632,8 +1632,8 @@ span {
 .dataset-select {
   padding: 2px;
   display: flex;
-  alignitems: center;
-  justifycontent: space-between;
-  bordertop: 1px solid #363636;
+  align-items: center;
+  justify-content: flex-start;
+  border-top: 1px solid #363636;
 }
 </style>
