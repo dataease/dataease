@@ -306,6 +306,9 @@ export default {
         })
       }
     },
+    setChartData() {
+
+    },
     elementMouseDown(e) {
       // // private 设置当前组件数据及状态
       this.$store.commit('setClickComponentStatus', true)
