@@ -275,13 +275,12 @@ const showMultiplexingCheck = computed(() => {
 const showEditPosition = computed(() => {
   const baseLeft = element.value.x - 1
   const baseRight = pcMatrixCount.value.x - (element.value.x + element.value.sizeX - 1)
-  console.log('baseLeft=' + baseLeft + ';baseRight=' + baseRight)
   if (baseLeft === 0 && baseRight === 0) {
-    return 'bar-main-left-inner'
-  } else if (baseLeft === 0) {
-    return 'bar-main-right'
-  } else {
+    return 'bar-main-right-inner'
+  } else if (baseRight === 0) {
     return 'bar-main-left-outer'
+  } else {
+    return 'bar-main-right'
   }
 })
 
@@ -496,9 +495,9 @@ onMounted(() => {
   right: -25px;
 }
 
-.bar-main-left-inner {
+.bar-main-right-inner {
   width: 22px;
-  left: 0px;
+  right: 0px;
 }
 
 .bar-main-left-outer {

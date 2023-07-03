@@ -1210,6 +1210,9 @@ const saveValueFormatter = () => {
   :deep(.field-height) {
     border-top: 1px solid @side-outline-border-color-light !important;
   }
+  :deep(.item-span-style) {
+    color: @canvas-main-font-color-light!important;
+  }
 }
 
 // editor form 全局样式

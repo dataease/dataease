@@ -30,8 +30,15 @@ const dvMainStore = dvMainStoreWithOut()
 const composeStore = composeStoreWithOut()
 const lockStore = lockStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
-const { curComponent, canvasStyleData, curComponentIndex, componentData, dvInfo, canvasViewInfo } =
-  storeToRefs(dvMainStore)
+const {
+  curComponent,
+  canvasStyleData,
+  curComponentIndex,
+  componentData,
+  dvInfo,
+  canvasViewInfo,
+  editMode
+} = storeToRefs(dvMainStore)
 const { areaData } = storeToRefs(composeStore)
 const dvModel = 'dashboard'
 let scale = ref(canvasStyleData.value.scale)
@@ -145,10 +152,12 @@ const handleFileChange = e => {
   reader.readAsDataURL(file)
 }
 
-const preview = isScreenshotFlag => {
-  isScreenshot.value = isScreenshotFlag
-  isShowPreview.value = true
-  dvMainStore.setEditMode('preview')
+const preview = () => {
+  // dvMainStore.setEditMode('preview')
+}
+
+const edit = () => {
+  dvMainStore.setEditMode('edit')
 }
 
 const saveCanvas = () => {
@@ -176,7 +185,8 @@ const handlePreviewChange = () => {
 }
 
 const backToMain = () => {
-  alert('backToMain')
+  // window.opener.focus()
+  window.opener.focus()
 }
 
 eventBus.on('preview', preview)
@@ -192,7 +202,7 @@ eventBus.on('clearCanvas', clearCanvas)
       </el-icon>
       <div class="left-area">
         <span id="canvas-name" class="name-area" @dblclick="editCanvasName">{{ dvInfo.name }}</span>
-        <div class="opt-area">
+        <div class="opt-area" v-show="editMode === 'edit'">
           <el-icon class="opt-icon-undo" @click="undo()">
             <Icon class="toolbar-hover-icon" name="icon_undo_outlined"></Icon>
           </el-icon>
@@ -201,7 +211,8 @@ eventBus.on('clearCanvas', clearCanvas)
           </el-icon>
         </div>
       </div>
-      <div class="middle-area">
+      <div class="middle-area" v-show="editMode === 'preview'"></div>
+      <div class="middle-area" v-show="editMode === 'edit'">
         <component-group
           :base-width="410"
           :show-split-line="true"
@@ -234,11 +245,23 @@ eventBus.on('clearCanvas', clearCanvas)
       <div class="right-area">
         <el-button
           class="custom-normal-button"
+          v-show="editMode === 'edit'"
           @click="preview()"
           style="float: right; margin-right: 12px"
           >预览</el-button
         >
-        <el-button @click="saveCanvas()" style="float: right; margin-right: 12px" type="primary"
+        <el-button
+          v-show="editMode === 'preview'"
+          @click="edit()"
+          style="float: right; margin-right: 12px"
+          type="primary"
+          >编辑</el-button
+        >
+        <el-button
+          v-show="editMode === 'edit'"
+          @click="saveCanvas()"
+          style="float: right; margin-right: 12px"
+          type="primary"
           >保存</el-button
         >
       </div>

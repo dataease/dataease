@@ -85,15 +85,17 @@ const slideOpenChange = () => {
       <template v-if="dvInfo.name">
         <preview-head @reload="loadCanvasData" @download="htmlToImage"></preview-head>
         <div ref="previewCanvasContainer" class="content">
-          <de-preview
-            ref="dvPreview"
-            v-if="canvasStylePreview"
-            :component-data="canvasDataPreview"
-            :canvas-style-data="canvasStylePreview"
-            :canvas-view-info="canvasViewInfoPreview"
-            :dv-info="dvInfo"
-            :cur-gap="curGap"
-          ></de-preview>
+          <div class="content-inner">
+            <de-preview
+              ref="dvPreview"
+              v-if="canvasStylePreview"
+              :component-data="canvasDataPreview"
+              :canvas-style-data="canvasStylePreview"
+              :canvas-view-info="canvasViewInfoPreview"
+              :dv-info="dvInfo"
+              :cur-gap="curGap"
+            ></de-preview>
+          </div>
         </div>
       </template>
       <template v-else>
@@ -122,12 +124,18 @@ const slideOpenChange = () => {
     overflow-x: hidden;
     overflow-y: auto;
     .content {
-      display: flex;
+      flex: 1;
       width: 100%;
-      height: 100%;
       overflow-x: hidden;
       overflow-y: auto;
       align-items: center;
+      .content-inner {
+        width: 100%;
+        height: calc(100vh - 95px);
+        display: flex;
+        overflow-y: auto;
+        align-items: center;
+      }
     }
   }
 }
@@ -135,6 +143,7 @@ const slideOpenChange = () => {
 .close-side {
   width: 0px !important;
   padding: 0px !important;
+  border-right: 0px !important;
 }
 
 .flexible-button-area {
