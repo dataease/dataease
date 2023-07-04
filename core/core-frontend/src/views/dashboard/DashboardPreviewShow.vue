@@ -1,45 +1,50 @@
 <script setup lang="ts">
 import { ElAside, ElContainer } from 'element-plus-secondary'
 import DeResourceTree from '@/views/common/DeResourceTree.vue'
-import { findById } from '@/api/visualization/dataVisualization'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { computed, nextTick, ref } from 'vue'
+import { reactive, nextTick, ref } from 'vue'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
 import PreviewHead from '@/views/data-visualization/PreviewHead.vue'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import { storeToRefs } from 'pinia'
 import { toPng } from 'html-to-image'
+import { initCanvasDataPrepare } from '@/utils/canvasUtils'
 
-const curCanvasType = 'dashboard'
 const dvMainStore = dvMainStoreWithOut()
-const canvasDataPreview = ref([])
-const canvasStylePreview = ref(null)
-const canvasViewInfoPreview = ref({})
-
 const { dvInfo } = storeToRefs(dvMainStore)
 const previewCanvasContainer = ref(null)
 const dashboardPreview = ref(null)
 const slideShow = ref(true)
+const state = reactive({
+  canvasDataPreview: null,
+  canvasStylePreview: null,
+  canvasViewInfoPreview: null,
+  dvInfo: null,
+  curPreviewGap: 0
+})
 
 const loadCanvasData = dvId => {
-  findById(dvId).then(res => {
-    const canvasInfo = res.data
-    const bashInfo = {
-      id: canvasInfo.id,
-      name: canvasInfo.name,
-      pid: canvasInfo.pid,
-      status: canvasInfo.status,
-      selfWatermarkStatus: canvasInfo.selfWatermarkStatus,
-      type: canvasInfo.type
+  initCanvasDataPrepare(
+    dvId,
+    function ({
+      canvasDataResult,
+      canvasStyleResult,
+      dvInfo,
+      canvasViewInfoPreview,
+      curPreviewGap
+    }) {
+      state.canvasDataPreview = canvasDataResult
+      state.canvasStylePreview = canvasStyleResult
+      state.canvasViewInfoPreview = canvasViewInfoPreview
+      state.dvInfo = dvInfo
+      state.curPreviewGap = curPreviewGap
+
+      dvMainStore.updateCurDvInfo(dvInfo)
+      nextTick(() => {
+        dashboardPreview.value.restore()
+      })
     }
-    canvasDataPreview.value = JSON.parse(canvasInfo.componentData)
-    canvasStylePreview.value = JSON.parse(canvasInfo.canvasStyleData)
-    canvasViewInfoPreview.value = canvasInfo.canvasViewInfo
-    dvMainStore.updateCurDvInfo(bashInfo)
-    nextTick(() => {
-      dashboardPreview.value.restore()
-    })
-  })
+  )
 }
 
 const htmlToImage = () => {
@@ -54,12 +59,6 @@ const htmlToImage = () => {
       console.error('oops, something went wrong!', error)
     })
 }
-
-const curGap = computed(() => {
-  return canvasStylePreview.value && canvasStylePreview.value['dashboard']['gap'] === 'yes'
-    ? canvasStylePreview.value['dashboard']['gapSize']
-    : 0
-})
 
 const slideOpenChange = () => {
   slideShow.value = !slideShow.value
@@ -85,12 +84,12 @@ const slideOpenChange = () => {
         <div ref="previewCanvasContainer" class="content">
           <de-preview
             ref="dashboardPreview"
-            v-if="canvasStylePreview"
-            :dv-info="dvInfo"
-            :cur-gap="curGap"
-            :component-data="canvasDataPreview"
-            :canvas-style-data="canvasStylePreview"
-            :canvas-view-info="canvasViewInfoPreview"
+            v-if="state.canvasStylePreview"
+            :dv-info="state.dvInfo"
+            :cur-gap="state.curPreviewGap"
+            :component-data="state.canvasDataPreview"
+            :canvas-style-data="state.canvasStylePreview"
+            :canvas-view-info="state.canvasViewInfoPreview"
           ></de-preview>
         </div>
       </template>

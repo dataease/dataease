@@ -14,13 +14,13 @@ import ComponentToolBar from '../../components/data-visualization/ComponentToolB
 import eventBus from '../../utils/eventBus'
 import findComponent from '../../utils/components'
 import DvSidebar from '../../components/visualization/DvSidebar.vue'
-import { findById } from '@/api/visualization/dataVisualization'
 import router from '@/router'
 import Editor from '@/views/chart/components/editor/index.vue'
 import { guid } from '@/views/visualized/data/dataset/form/util.js'
 import { getDatasetTree } from '@/api/dataset'
 import { Tree } from '@/views/visualized/data/dataset/form/CreatDsGroup.vue'
-import { findDragComponent, findNewComponent } from '@/utils/canvasUtils'
+import { findDragComponent, findNewComponent, initCanvasData } from '@/utils/canvasUtils'
+import { ElMessage } from 'element-plus-secondary'
 
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
@@ -53,12 +53,6 @@ const contentStyle = computed(() => {
     }
   }
 })
-
-const restore = (canvasData, canvasStyle, canvasViewInfo) => {
-  dvMainStore.setComponentData(JSON.parse(canvasData))
-  dvMainStore.setCanvasStyle(JSON.parse(canvasStyle))
-  dvMainStore.setCanvasViewInfo(canvasViewInfo)
-}
 
 // 通过实时监听的方式直接添加组件
 const handleNew = newComponentInfo => {
@@ -157,30 +151,11 @@ onMounted(() => {
   initDataset()
   const { dvId, pid } = window.DataEaseBi || router.currentRoute.value.query
   if (dvId) {
-    // 从数据库中获取
-    findById(dvId).then(res => {
-      const canvasInfo = res.data
-      const bashInfo = {
-        id: canvasInfo.id,
-        name: canvasInfo.name,
-        pid: canvasInfo.pid,
-        status: canvasInfo.status,
-        selfWatermarkStatus: canvasInfo.selfWatermarkStatus,
-        type: canvasInfo.type
-      }
-      dvMainStore.updateCurDvInfo(bashInfo)
-      //恢复画布数据
-      restore(canvasInfo.componentData, canvasInfo.canvasStyleData, canvasInfo.canvasViewInfo)
+    initCanvasData(dvId, function () {
+      // afterInit
     })
   } else {
-    dvMainStore.updateCurDvInfo({
-      id: null,
-      name: '新建仪表板',
-      pid: pid,
-      status: null,
-      selfWatermarkStatus: null,
-      type: null
-    })
+    ElMessage.error('未获取资源ID')
   }
   initScroll()
 })

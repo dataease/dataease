@@ -1,29 +1,36 @@
 <script setup lang="ts">
-import { findById } from '@/api/visualization/dataVisualization'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { onMounted, ref } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
 import router from '@/router'
+import { initCanvasDataPrepare } from '@/utils/canvasUtils'
 
 const dvMainStore = dvMainStoreWithOut()
-const canvasDataPreview = ref(null)
-const canvasStylePreview = ref(null)
+const state = reactive({
+  canvasDataPreview: null,
+  canvasStylePreview: null,
+  canvasViewInfoPreview: null,
+  dvInfo: null,
+  curPreviewGap: 0
+})
 
 const loadCanvasData = dvId => {
-  findById(dvId).then(res => {
-    const canvasInfo = res.data
-    const bashInfo = {
-      id: canvasInfo.id,
-      name: canvasInfo.name,
-      pid: canvasInfo.pid,
-      status: canvasInfo.status,
-      selfWatermarkStatus: canvasInfo.selfWatermarkStatus,
-      type: canvasInfo.type
+  initCanvasDataPrepare(
+    dvId,
+    function ({
+      canvasDataResult,
+      canvasStyleResult,
+      dvInfo,
+      canvasViewInfoPreview,
+      curPreviewGap
+    }) {
+      state.canvasDataPreview = canvasDataResult
+      state.canvasStylePreview = canvasStyleResult
+      state.canvasViewInfoPreview = canvasViewInfoPreview
+      state.dvInfo = dvInfo
+      state.curPreviewGap = curPreviewGap
     }
-    canvasDataPreview.value = JSON.parse(canvasInfo.componentData)
-    canvasStylePreview.value = JSON.parse(canvasInfo.canvasStyleData)
-    dvMainStore.updateCurDvInfo(bashInfo)
-  })
+  )
 }
 
 onMounted(() => {
@@ -37,9 +44,13 @@ onMounted(() => {
 <template>
   <div class="content">
     <de-preview
-      v-if="canvasStylePreview"
-      :component-data="canvasDataPreview"
-      :canvas-style-data="canvasStylePreview"
+      ref="dvPreview"
+      v-if="state.canvasStylePreview"
+      :component-data="state.canvasDataPreview"
+      :canvas-style-data="state.canvasStylePreview"
+      :canvas-view-info="state.canvasViewInfoPreview"
+      :dv-info="state.dvInfo"
+      :cur-gap="state.curPreviewGap"
     ></de-preview>
   </div>
 </template>
