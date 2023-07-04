@@ -7,16 +7,11 @@
       @click="selectCurComponent"
       @mousedown="handleMouseDownOnShape"
     >
-      <component-bar
+      <component-edit-bar
         v-if="componentActiveFlag"
-        :source-element="element"
-        :terminal="'pc'"
+        :index="index"
         :element="element"
-        :canvas-id="'canvas-main'"
-        :show-position="'edit'"
-        :series-id-map="state.seriesIdMap"
-        @showViewDetails="showViewDetails"
-      />
+      ></component-edit-bar>
       <span v-show="element['isLock']" class="iconfont icon-suo"></span>
       <div
         v-for="item in isActive() ? getPointList() : []"
@@ -48,10 +43,10 @@ import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapsho
 import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import { storeToRefs } from 'pinia'
-import ComponentBar from '@/components/visualization/ComponentBar.vue'
 import { hexColorToRGBA } from '@/views/chart/components/js/util'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import Icon from '@/components/icon-custom/src/Icon.vue'
+import ComponentEditBar from '@/components/visualization/ComponentEditBar.vue'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
@@ -488,11 +483,12 @@ onMounted(() => {
 .shape-edit {
   &:hover {
     cursor: move;
+    outline: 1px dashed #70c0ff;
   }
 }
 
 .active {
-  outline: 1px solid #70c0ff;
+  outline: 1px solid #70c0ff !important;
   user-select: none;
 }
 

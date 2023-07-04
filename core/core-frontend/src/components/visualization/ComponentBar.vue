@@ -1,6 +1,5 @@
 <template>
   <div class="bar-main" :class="showEditPosition" @mousedown="showLabelInfo">
-    <!--  <div class="bar-main bar-main-right" @mousedown="showLabelInfo">-->
     <input
       id="input"
       ref="files"

@@ -26,7 +26,8 @@ import _ from 'lodash'
 import DragShadow from '@/components/data-visualization/canvas/DragShadow.vue'
 import { findDragComponent } from '@/utils/canvasUtils'
 import { guid } from '@/views/visualized/data/dataset/form/util'
-
+import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
+const snapshotStore = snapshotStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
 const composeStore = composeStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
@@ -632,7 +633,8 @@ function removeItem(index) {
       moveItemUp(upItem, canGoUpRows)
     }
   })
-  componentData.value.splice(index, 1, {})
+  componentData.value.splice(index, 1)
+  snapshotStore.recordSnapshot()
 }
 
 function addItem(item, index) {
@@ -1372,7 +1374,7 @@ const handleDragStartMoveIn = componentInfo => {
 
 const handleDragEnd = e => {
   // 当isShow 是false时，说明未移入画布 则需要进行清理占位
-  if (infoBox.value && !infoBox.value.moveItem.isShow) {
+  if (infoBox.value && infoBox.value.moveItem && !infoBox.value.moveItem.isShow) {
     removeItem(componentData.value.length - 1)
     clearInfoBox(e)
   }
@@ -1397,6 +1399,7 @@ onMounted(() => {
   eventBus.on('hideArea', hideArea)
   eventBus.on('handleDragStartMoveIn', handleDragStartMoveIn)
   eventBus.on('handleDragEnd', handleDragEnd)
+  eventBus.on('removeMatrixItem', removeItem)
 })
 
 defineExpose({
