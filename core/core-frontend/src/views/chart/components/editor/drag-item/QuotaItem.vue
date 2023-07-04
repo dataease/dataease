@@ -46,6 +46,14 @@ const props = defineProps({
   quotaData: {
     type: Array,
     required: true
+  },
+  type: {
+    type: String,
+    required: true
+  },
+  themes: {
+    type: String,
+    default: 'dark'
   }
 })
 
@@ -200,14 +208,14 @@ const beforeDatePattern = type => {
 
 const showRename = () => {
   item.value.index = props.index
-  item.value.renameType = 'quota'
+  item.value.renameType = props.type
   // item.value.dsFieldName = getOriginFieldName(props.dimensionData, props.quotaData, item.value)
   emit('onNameEdit', item.value)
 }
 
 const removeItem = () => {
   item.value.index = props.index
-  item.value.removeType = 'quota'
+  item.value.removeType = props.type
   emit('onQuotaItemRemove', item.value)
 }
 
@@ -217,7 +225,7 @@ const getItemTagType = () => {
 
 const editFilter = () => {
   item.value.index = props.index
-  item.value.filterType = 'quota'
+  item.value.filterType = props.type
   emit('editItemFilter', item.value)
 }
 
@@ -255,13 +263,13 @@ const beforeQuickCalc = type => {
 
 const editCompare = () => {
   item.value.index = props.index
-  item.value.calcType = 'quota'
+  item.value.calcType = props.type
   emit('editItemCompare', item.value)
 }
 
 const valueFormatter = () => {
   item.value.index = props.index
-  item.value.formatterType = 'quota'
+  item.value.formatterType = props.type
   emit('valueFormatter', item.value)
 }
 
@@ -272,7 +280,7 @@ getItemTagType()
 <template>
   <span class="item-style">
     <el-dropdown effect="dark" trigger="click" @command="clickItem">
-      <el-tag class="item-axis">
+      <el-tag class="item-axis" :class="'editor-' + props.themes">
         <span style="display: flex">
           <el-icon>
             <Icon
@@ -292,9 +300,25 @@ getItemTagType()
           <!--            class-name="field-icon-sort"-->
           <!--          />-->
         </span>
-        <span class="item-span-style" :title="item.name">{{
-          item.chartShowName ? item.chartShowName : item.name
-        }}</span>
+        <span class="item-span-style" :title="item.name">
+          {{ item.chartShowName ? item.chartShowName : item.name }}
+        </span>
+        <span
+          v-if="false && chart.type !== 'table-info' && item.summary && !item.chartId"
+          class="summary-span"
+        >
+          {{ t('chart.' + item.summary) }}
+          <span
+            v-if="
+              item.compareCalc &&
+              item.compareCalc.type &&
+              item.compareCalc.type !== '' &&
+              item.compareCalc.type !== 'none'
+            "
+          >
+            -{{ t('chart.' + item.compareCalc.type) }}
+          </span>
+        </span>
         <el-icon style="position: absolute; top: 7px; right: 24px; color: #a6a6a6; cursor: pointer">
           <Icon
             name="icon_delete-trash_outlined"
@@ -464,7 +488,10 @@ getItemTagType()
             </el-dropdown>
           </el-dropdown-item>
 
-          <el-dropdown-item :divided="!item.chartId && chart.type !== 'table-info'">
+          <el-dropdown-item
+            v-if="props.type !== 'extLabel' && props.type !== 'extTooltip'"
+            :divided="!item.chartId && chart.type !== 'table-info'"
+          >
             <el-dropdown effect="dark" placement="right-start" style="width: 100%" @command="sort">
               <span class="el-dropdown-link inner-dropdown-menu">
                 <span class="item-span-drop">
@@ -499,86 +526,6 @@ getItemTagType()
               </template>
             </el-dropdown>
           </el-dropdown-item>
-          <el-dropdown-item v-if="item.deType === 1" divided>
-            <el-dropdown
-              effect="dark"
-              placement="right-start"
-              style="width: 100%"
-              @command="dateStyle"
-            >
-              <span class="el-dropdown-link inner-dropdown-menu">
-                <span class="item-span-drop">
-                  <el-icon>
-                    <Icon name="icon_add_outlined" class="el-icon-arrow-down el-icon-delete"></Icon>
-                  </el-icon>
-                  <span>{{ t('chart.dateStyle') }}</span>
-                  <span class="summary-span-item">({{ t('chart.' + item.dateStyle) }})</span>
-                </span>
-                <el-icon>
-                  <Icon name="icon_right_outlined" class="el-icon-arrow-down el-icon-delete"></Icon>
-                </el-icon>
-              </span>
-              <template #dropdown>
-                <el-dropdown-menu effect="dark" class="drop-style">
-                  <el-dropdown-item :command="beforeDateStyle('y')">{{
-                    t('chart.y')
-                  }}</el-dropdown-item>
-                  <el-dropdown-item v-if="showDateExt" :command="beforeDateStyle('y_Q')">{{
-                    t('chart.y_Q')
-                  }}</el-dropdown-item>
-                  <el-dropdown-item :command="beforeDateStyle('y_M')">{{
-                    t('chart.y_M')
-                  }}</el-dropdown-item>
-                  <el-dropdown-item v-if="showDateExt" :command="beforeDateStyle('y_W')">{{
-                    t('chart.y_W')
-                  }}</el-dropdown-item>
-                  <el-dropdown-item :command="beforeDateStyle('y_M_d')">{{
-                    t('chart.y_M_d')
-                  }}</el-dropdown-item>
-                  <el-dropdown-item :command="beforeDateStyle('H_m_s')" divided>{{
-                    t('chart.H_m_s')
-                  }}</el-dropdown-item>
-                  <el-dropdown-item :command="beforeDateStyle('y_M_d_H_m')">{{
-                    t('chart.y_M_d_H_m')
-                  }}</el-dropdown-item>
-                  <el-dropdown-item :command="beforeDateStyle('y_M_d_H_m_s')">{{
-                    t('chart.y_M_d_H_m_s')
-                  }}</el-dropdown-item>
-                </el-dropdown-menu>
-              </template>
-            </el-dropdown>
-          </el-dropdown-item>
-          <el-dropdown-item v-if="item.deType === 1">
-            <el-dropdown
-              effect="dark"
-              placement="right-start"
-              style="width: 100%"
-              @command="datePattern"
-            >
-              <span class="el-dropdown-link inner-dropdown-menu">
-                <span class="item-span-drop">
-                  <el-icon>
-                    <Icon name="icon_add_outlined" class="el-icon-arrow-down el-icon-delete"></Icon>
-                  </el-icon>
-                  <span>{{ t('chart.datePattern') }}</span>
-                  <span class="summary-span-item">({{ t('chart.' + item.datePattern) }})</span>
-                </span>
-                <el-icon>
-                  <Icon name="icon_right_outlined" class="el-icon-arrow-down el-icon-delete"></Icon>
-                </el-icon>
-              </span>
-              <template #dropdown>
-                <el-dropdown-menu effect="dark" class="drop-style">
-                  <el-dropdown-item :command="beforeDatePattern('date_sub')"
-                    >{{ t('chart.date_sub') }}(1990-01-01)</el-dropdown-item
-                  >
-                  <el-dropdown-item :command="beforeDatePattern('date_split')"
-                    >{{ t('chart.date_split') }}(1990/01/01)</el-dropdown-item
-                  >
-                </el-dropdown-menu>
-              </template>
-            </el-dropdown>
-          </el-dropdown-item>
 
           <el-dropdown-item
             v-if="item.groupType === 'q'"
@@ -588,7 +535,11 @@ getItemTagType()
           >
             <span>{{ t('chart.value_formatter') }}...</span>
           </el-dropdown-item>
-          <el-dropdown-item :icon="Filter" :command="beforeClickItem('filter')">
+          <el-dropdown-item
+            v-if="props.type !== 'extLabel' && props.type !== 'extTooltip'"
+            :icon="Filter"
+            :command="beforeClickItem('filter')"
+          >
             <span>{{ t('chart.filter') }}...</span>
           </el-dropdown-item>
 
@@ -671,8 +622,14 @@ span {
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
-  color: #ffffff;
+  color: #1f2329;
   margin-left: 4px;
+}
+
+.editor-dark {
+  .item-span-style {
+    color: #ffffff !important;
+  }
 }
 
 .summary-span-item {
