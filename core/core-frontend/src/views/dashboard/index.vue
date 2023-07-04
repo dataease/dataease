@@ -2,7 +2,6 @@
 import componentList from '@/custom-component/component-list' // 左侧列表数据
 import { deepCopy } from '@/utils/utils'
 import { listenGlobalKeyDown } from '@/utils/shortcutKey'
-import { changeComponentSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
 import { computed, nextTick, onMounted, reactive, ref, toRefs } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
@@ -37,7 +36,8 @@ const {
   canvasStyleData,
   canvasViewInfo,
   pcMatrixCount,
-  basePcScreenSize
+  basePcScreenSize,
+  editMode
 } = storeToRefs(dvMainStore)
 const { editor } = storeToRefs(composeStore)
 const canvasOut = ref(null)
@@ -285,6 +285,7 @@ eventBus.on('handleNew', handleNew)
         :side-name="'componentProp'"
         :aside-position="'right'"
         class="left-sidebar"
+        :class="{ 'preview-aside': editMode === 'preview' }"
       >
         <component :is="findComponent(curComponent['component'] + 'Attr')" />
       </dv-sidebar>
@@ -295,6 +296,7 @@ eventBus.on('handleNew', handleNew)
         :width="420"
         aside-position="right"
         class="left-sidebar"
+        :class="{ 'preview-aside': editMode === 'preview' }"
       >
         <DbCanvasAttr></DbCanvasAttr>
       </dv-sidebar>
@@ -303,6 +305,7 @@ eventBus.on('handleNew', handleNew)
         themes="light"
         :view="canvasViewInfo[curComponent ? curComponent.id : 'default']"
         :dataset-tree="state.datasetTree"
+        :class="{ 'preview-aside': editMode === 'preview' }"
       ></view-editor>
     </el-container>
   </div>
@@ -340,5 +343,11 @@ eventBus.on('handleNew', handleNew)
       height: 100%;
     }
   }
+}
+
+.preview-aside {
+  width: 0px !important;
+  overflow: hidden;
+  padding: 0px;
 }
 </style>

@@ -56,12 +56,12 @@ export function changeRefComponentsSizeWithScale(componentDataRef, canvasStyleDa
 }
 
 const needToChangeAttrs2 = ['width', 'height', 'fontSize']
-export function changeComponentSizeWithScale(component) {
+export function changeComponentSizeWithScale(component, scale = canvasStyleData.value.scale) {
   Object.keys(component.style).forEach(key => {
     if (needToChangeAttrs2.includes(key)) {
       if (key === 'fontSize' && component.style[key] === '') return
 
-      component.style[key] = format(component.style[key], canvasStyleData.value.scale)
+      component.style[key] = format(component.style[key], scale)
     }
   })
 }

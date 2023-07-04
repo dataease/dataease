@@ -2,13 +2,10 @@
 import { ElMessage } from 'element-plus-secondary'
 import { generateID } from '@/utils/generateID'
 import toast from '@/utils/toast'
-import Preview from '@/components/data-visualization/canvas/Preview.vue'
 import { commonStyle, commonAttr } from '@/custom-component/component-list'
 import eventBus from '@/utils/eventBus'
 import { $ } from '@/utils/utils'
-import changeComponentsSizeWithScale, {
-  changeComponentSizeWithScale
-} from '@/utils/changeComponentsSizeWithScale'
+import { changeComponentSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
 import { nextTick, ref } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
@@ -63,16 +60,6 @@ const closeEditCanvasName = () => {
   }
   dvInfo.value.name = inputName.value
   inputName.value = ''
-}
-
-const handleScaleChange = () => {
-  clearTimeout(timer)
-  timer = setTimeout(() => {
-    // 画布比例设一个最小值，不能为 0
-    // eslint-disable-next-line no-bitwise
-    scale.value = ~~scale.value || 1
-    changeComponentsSizeWithScale(scale.value)
-  }, 1000)
 }
 
 const lock = () => {
@@ -153,7 +140,7 @@ const handleFileChange = e => {
 }
 
 const preview = () => {
-  // dvMainStore.setEditMode('preview')
+  dvMainStore.setEditMode('preview')
 }
 
 const edit = () => {
@@ -195,14 +182,14 @@ eventBus.on('clearCanvas', clearCanvas)
 </script>
 
 <template>
-  <div>
-    <div class="toolbar">
+  <div class="toolbar-main">
+    <div class="toolbar" :class="{ 'preview-state-head': editMode === 'preview' }">
       <el-icon class="custom-el-icon back-icon" @click="backToMain()">
         <Icon class="toolbar-icon hover-icon" name="icon_left_outlined" />
       </el-icon>
-      <div class="left-area">
+      <div class="left-area" v-show="editMode === 'edit'">
         <span id="canvas-name" class="name-area" @dblclick="editCanvasName">{{ dvInfo.name }}</span>
-        <div class="opt-area" v-show="editMode === 'edit'">
+        <div class="opt-area">
           <el-icon class="opt-icon-undo" @click="undo()">
             <Icon class="toolbar-hover-icon" name="icon_undo_outlined"></Icon>
           </el-icon>
@@ -211,8 +198,7 @@ eventBus.on('clearCanvas', clearCanvas)
           </el-icon>
         </div>
       </div>
-      <div class="middle-area" v-show="editMode === 'preview'"></div>
-      <div class="middle-area" v-show="editMode === 'edit'">
+      <div class="middle-area">
         <component-group
           :base-width="410"
           :show-split-line="true"
@@ -251,13 +237,6 @@ eventBus.on('clearCanvas', clearCanvas)
           >预览</el-button
         >
         <el-button
-          v-show="editMode === 'preview'"
-          @click="edit()"
-          style="float: right; margin-right: 12px"
-          type="primary"
-          >编辑</el-button
-        >
-        <el-button
           v-show="editMode === 'edit'"
           @click="saveCanvas()"
           style="float: right; margin-right: 12px"
@@ -270,12 +249,33 @@ eventBus.on('clearCanvas', clearCanvas)
       <input ref="nameInput" v-model="inputName" @blur="closeEditCanvasName" />
     </Teleport>
 
-    <!-- 预览 -->
-    <Preview v-if="isShowPreview" :is-screenshot="isScreenshot" @close="handlePreviewChange" />
+    <el-button
+      v-show="editMode === 'preview'"
+      icon="EditPen"
+      @click="edit()"
+      class="edit-button"
+      type="primary"
+      >编辑</el-button
+    >
   </div>
 </template>
 
 <style lang="less" scoped>
+.edit-button {
+  right: 10px;
+  top: 10px;
+  position: absolute;
+  z-index: 2;
+}
+.toolbar-main {
+  position: relative;
+}
+.preview-state-head {
+  height: 0px !important;
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
+}
 .toolbar {
   height: @top-bar-height;
   white-space: nowrap;
@@ -283,6 +283,7 @@ eventBus.on('clearCanvas', clearCanvas)
   background: #050e21;
   color: #ffffff;
   display: flex;
+  transition: 0.5s;
   .back-icon {
     margin-left: 20px;
     margin-top: 22px;

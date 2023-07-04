@@ -123,6 +123,8 @@ const slideOpenChange = () => {
     flex-direction: column;
     overflow-x: hidden;
     overflow-y: auto;
+    position: relative;
+    transition: 0.5s;
     .content {
       flex: 1;
       width: 100%;

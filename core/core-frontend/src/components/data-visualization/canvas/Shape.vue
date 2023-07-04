@@ -2,7 +2,7 @@
   <div class="shape">
     <div
       class="shape-inner"
-      :class="{ active }"
+      :class="{ active, 'shape-edit': isEditMode }"
       :style="componentBackgroundStyle"
       @click="selectCurComponent"
       @mousedown="handleMouseDownOnShape"
@@ -57,10 +57,11 @@ const snapshotStore = snapshotStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
 const composeStore = composeStoreWithOut()
 
-const { curComponent, dvInfo } = storeToRefs(dvMainStore)
+const { curComponent, dvInfo, editMode } = storeToRefs(dvMainStore)
 const { editor } = storeToRefs(composeStore)
 const emit = defineEmits(['onStartResize', 'onStartMove', 'onDragging', 'onResizing', 'onMouseUp'])
 
+const isEditMode = computed(() => editMode.value === 'edit')
 const state = reactive({
   seriesIdMap: {
     id: ''
@@ -151,7 +152,7 @@ const getPointList = () => {
 }
 
 const isActive = () => {
-  return active.value && !element.value['isLock']
+  return active.value && !element.value['isLock'] && isEditMode.value
 }
 
 // 处理旋转
@@ -246,7 +247,7 @@ const handleMouseDownOnShape = e => {
 
   e.stopPropagation()
   dvMainStore.setCurComponent({ component: element.value, index: index.value })
-  if (element.value['isLock']) return
+  if (element.value['isLock'] || !isEditMode.value) return
 
   cursors.value = getCursor() // 根据旋转角度获取光标位置
 
@@ -449,7 +450,7 @@ const componentBackgroundStyle = computed(() => {
 })
 
 const componentActiveFlag = computed(() => {
-  return active.value && dashboardActive.value
+  return active.value && dashboardActive.value && isEditMode.value
 })
 
 const showViewDetails = () => {
@@ -482,6 +483,9 @@ onMounted(() => {
   height: 100%;
   position: relative;
   background-size: 100% 100% !important;
+}
+
+.shape-edit {
   &:hover {
     cursor: move;
   }

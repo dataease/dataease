@@ -31,7 +31,7 @@ const dvMainStore = dvMainStoreWithOut()
 const composeStore = composeStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
 
-const { componentData, curComponent, canvasStyleData, canvasViewInfo, dvInfo } =
+const { componentData, curComponent, canvasStyleData, canvasViewInfo, dvInfo, editMode } =
   storeToRefs(dvMainStore)
 const { editor } = storeToRefs(composeStore)
 const props = defineProps({
@@ -189,8 +189,8 @@ let itemMaxX = 0
 let currentInstance
 
 const handleMouseDown = e => {
-  // 仪表板不显示菜单和组创建
-  if (dashboardActive.value) {
+  // 仪表板和预览状态不显示菜单和组创建
+  if (dashboardActive.value || editMode.value === 'preview') {
     return
   }
   // 右键返回
@@ -341,8 +341,8 @@ const getSelectArea = () => {
 }
 
 const handleContextMenu = e => {
-  // 仪表板不显示菜单和组创建
-  if (dashboardActive.value) {
+  // 仪表板和预览状态不显示菜单和组创建
+  if (dashboardActive.value || editMode.value === 'preview') {
     return
   }
   e.stopPropagation()

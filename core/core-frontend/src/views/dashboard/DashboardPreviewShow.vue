@@ -123,6 +123,7 @@ const slideOpenChange = () => {
     overflow-y: auto;
     position: relative;
     transition: 0.5s;
+    position: relative;
     .content {
       display: flex;
       width: 100%;
