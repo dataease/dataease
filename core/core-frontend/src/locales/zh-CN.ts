@@ -984,7 +984,8 @@ export default {
     minute: '分',
     switch_chart: '切换图表',
     update_chart_data: '更新图表数据',
-    second: '秒'
+    second: '秒',
+    more_settings: '更多设置'
   },
   dataset: {
     scope_edit: '仅编辑时生效',

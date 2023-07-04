@@ -9,7 +9,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-05-10
+ * @since 2023-07-03
  */
 @TableName("core_chart_view")
 public class CoreChartView implements Serializable {
@@ -85,6 +85,16 @@ public class CoreChartView implements Serializable {
      * 气泡大小
      */
     private String extBubble;
+
+    /**
+     * 动态标签
+     */
+    private String extLabel;
+
+    /**
+     * 动态提示
+     */
+    private String extTooltip;
 
     /**
      * 图形属性
@@ -283,6 +293,22 @@ public class CoreChartView implements Serializable {
         this.extBubble = extBubble;
     }
 
+    public String getExtLabel() {
+        return extLabel;
+    }
+
+    public void setExtLabel(String extLabel) {
+        this.extLabel = extLabel;
+    }
+
+    public String getExtTooltip() {
+        return extTooltip;
+    }
+
+    public void setExtTooltip(String extTooltip) {
+        this.extTooltip = extTooltip;
+    }
+
     public String getCustomAttr() {
         return customAttr;
     }
@@ -436,6 +462,8 @@ public class CoreChartView implements Serializable {
         ", yAxisExt = " + yAxisExt +
         ", extStack = " + extStack +
         ", extBubble = " + extBubble +
+        ", extLabel = " + extLabel +
+        ", extTooltip = " + extTooltip +
         ", customAttr = " + customAttr +
         ", customStyle = " + customStyle +
         ", customFilter = " + customFilter +

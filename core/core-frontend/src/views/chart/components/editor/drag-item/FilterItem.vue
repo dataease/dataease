@@ -38,6 +38,10 @@ const props = defineProps({
   quotaData: {
     type: Array,
     required: true
+  },
+  themes: {
+    type: String,
+    default: 'dark'
   }
 })
 
@@ -97,6 +101,7 @@ getItemTagColor()
     <el-dropdown effect="dark" trigger="click" @command="clickItem">
       <el-tag
         class="item-axis"
+        :class="'editor-' + props.themes"
         :style="{ backgroundColor: state.tagColor + '0a', border: '1px solid ' + state.tagColor }"
       >
         <span style="display: flex">
@@ -194,8 +199,14 @@ span {
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
-  color: #ffffff;
+  color: #1f2329;
   margin-left: 4px;
+}
+
+.editor-dark {
+  .item-span-style {
+    color: #ffffff !important;
+  }
 }
 
 .drop-style {

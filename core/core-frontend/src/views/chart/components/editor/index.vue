@@ -72,6 +72,7 @@ const itemFormRules = reactive<FormRules>({
 })
 
 const state = reactive({
+  extData: 'extLabel',
   moveId: -1,
   dimension: [],
   quota: [],
@@ -205,6 +206,10 @@ const quotaItemRemove = item => {
     view.value.yAxis.splice(item.index, 1)
   } else if (item.removeType === 'quotaExt') {
     view.value.yAxisExt.splice(item.index, 1)
+  } else if (item.removeType === 'extLabel') {
+    view.value.extLabel.splice(item.index, 1)
+  } else if (item.removeType === 'extTooltip') {
+    view.value.extTooltip.splice(item.index, 1)
   }
   calcData(view.value)
 }
@@ -314,6 +319,18 @@ const addDrill = e => {
   dragCheckType(view.value.drillFields, 'd')
   dragMoveDuplicate(view.value.drillFields, e, '')
   dragRemoveChartField(view.value.drillFields, e)
+  calcData(view.value)
+}
+
+const addExtLabel = e => {
+  dragCheckType(view.value.extLabel, 'q')
+  dragMoveDuplicate(view.value.extLabel, e, '')
+  calcData(view.value)
+}
+
+const addExtTooltip = e => {
+  dragCheckType(view.value.extTooltip, 'q')
+  dragMoveDuplicate(view.value.extTooltip, e, '')
   calcData(view.value)
 }
 
@@ -442,6 +459,10 @@ const saveRename = ref => {
         view.value.yAxisExt[state.itemForm.index].chartShowName = state.itemForm.chartShowName
       } else if (state.itemForm.renameType === 'dimensionExt') {
         view.value.xAxisExt[state.itemForm.index].chartShowName = state.itemForm.chartShowName
+      } else if (state.itemForm.renameType === 'extLabel') {
+        view.value.extLabel[state.itemForm.index].chartShowName = state.itemForm.chartShowName
+      } else if (state.itemForm.renameType === 'extTooltip') {
+        view.value.extTooltip[state.itemForm.index].chartShowName = state.itemForm.chartShowName
       }
       // this.calcData(true)
       closeRename()
@@ -565,6 +586,12 @@ const saveQuotaEditCompare = () => {
   } else if (state.quotaItemCompare.calcType === 'quotaExt') {
     view.value.yAxisExt[state.quotaItemCompare.index].compareCalc =
       state.quotaItemCompare.compareCalc
+  } else if (state.quotaItemCompare.calcType === 'extLabel') {
+    view.value.extLabel[state.quotaItemCompare.index].compareCalc =
+      state.quotaItemCompare.compareCalc
+  } else if (state.quotaItemCompare.calcType === 'extTooltip') {
+    view.value.extTooltip[state.quotaItemCompare.index].compareCalc =
+      state.quotaItemCompare.compareCalc
   }
   calcData(view.value)
   closeQuotaEditCompare()
@@ -638,7 +665,7 @@ const saveValueFormatter = () => {
                 <el-col>
                   <div class="drag_main_area attr-style theme-border-class">
                     <el-row style="height: 100%">
-                      <el-row class="chart_type_area padding-lr">
+                      <el-row v-if="props.themes !== 'dark'" class="chart_type_area padding-lr">
                         <span class="switch-chart" :class="'switch-chart-' + themes">
                           <span>{{ t('chart.switch_chart') }}</span>
                           <span style="float: right; width: 140px">
@@ -698,6 +725,7 @@ const saveValueFormatter = () => {
                               :chart="view"
                               :item="element"
                               :index="index"
+                              :themes="props.themes"
                               @onDimensionItemChange="dimensionItemChange"
                               @onDimensionItemRemove="dimensionItemRemove"
                               @onNameEdit="showRename"
@@ -737,6 +765,8 @@ const saveValueFormatter = () => {
                               :chart="view"
                               :item="element"
                               :index="index"
+                              type="quota"
+                              :themes="props.themes"
                               @onQuotaItemChange="quotaItemChange"
                               @onQuotaItemRemove="quotaItemRemove"
                               @onNameEdit="showRename"
@@ -793,6 +823,7 @@ const saveValueFormatter = () => {
                               :item="element"
                               :dimension-data="state.dimension"
                               :quota-data="state.quota"
+                              :themes="props.themes"
                               @onDimensionItemChange="drillItemChange"
                               @onDimensionItemRemove="drillItemRemove"
                             />
@@ -820,6 +851,7 @@ const saveValueFormatter = () => {
                               :quota-data="state.quotaData"
                               :item="element"
                               :index="index"
+                              :themes="props.themes"
                               @onFilterItemRemove="filterItemRemove"
                               @editItemFilter="showEditFilter"
                             />
@@ -827,6 +859,95 @@ const saveValueFormatter = () => {
                         </draggable>
                         <drag-placeholder :drag-list="view.customFilter" />
                       </el-row>
+
+                      <!--extLabel等-->
+                      <el-collapse
+                        v-if="
+                          view.type.includes('bar') ||
+                          view.type.includes('line') ||
+                          view.type.includes('pie') ||
+                          view.type.includes('radar') ||
+                          view.type.includes('map') ||
+                          view.type.includes('scatter') ||
+                          view.type.includes('funnel')
+                        "
+                        v-model="state.extData"
+                        class="style-collapse"
+                      >
+                        <el-collapse-item name="extLabel" :title="t('chart.more_settings')">
+                          <!--extLabel-->
+                          <el-row class="padding-lr drag-data">
+                            <span class="data-area-label">
+                              <span>{{ t('chart.label') }}</span>
+                            </span>
+                            <draggable
+                              :list="view.extLabel"
+                              :move="onMove"
+                              item-key="id"
+                              group="drag"
+                              animation="300"
+                              class="drag-block-style"
+                              @add="addExtLabel"
+                              @update="calcData(view)"
+                            >
+                              <template #item="{ element, index }">
+                                <quota-item
+                                  :dimension-data="state.dimension"
+                                  :quota-data="state.quota"
+                                  :chart="view"
+                                  :item="element"
+                                  :index="index"
+                                  type="extLabel"
+                                  :themes="props.themes"
+                                  @onQuotaItemChange="quotaItemChange"
+                                  @onQuotaItemRemove="quotaItemRemove"
+                                  @onNameEdit="showRename"
+                                  @editItemFilter="showQuotaEditFilter"
+                                  @editItemCompare="showQuotaEditCompare"
+                                  @valueFormatter="valueFormatter"
+                                />
+                              </template>
+                            </draggable>
+                            <drag-placeholder :drag-list="view.extLabel" />
+                          </el-row>
+
+                          <!--extTooltip-->
+                          <el-row class="padding-lr drag-data">
+                            <span class="data-area-label">
+                              <span>{{ t('chart.tooltip') }}</span>
+                            </span>
+                            <draggable
+                              :list="view.extTooltip"
+                              :move="onMove"
+                              item-key="id"
+                              group="drag"
+                              animation="300"
+                              class="drag-block-style"
+                              @add="addExtTooltip"
+                              @update="calcData(view)"
+                            >
+                              <template #item="{ element, index }">
+                                <quota-item
+                                  :dimension-data="state.dimension"
+                                  :quota-data="state.quota"
+                                  :chart="view"
+                                  :item="element"
+                                  :index="index"
+                                  type="extTooltip"
+                                  :themes="props.themes"
+                                  @onQuotaItemChange="quotaItemChange"
+                                  @onQuotaItemRemove="quotaItemRemove"
+                                  @onNameEdit="showRename"
+                                  @editItemFilter="showQuotaEditFilter"
+                                  @editItemCompare="showQuotaEditCompare"
+                                  @valueFormatter="valueFormatter"
+                                />
+                              </template>
+                            </draggable>
+                            <drag-placeholder :drag-list="view.extTooltip" />
+                          </el-row>
+                        </el-collapse-item>
+                      </el-collapse>
 
                       <el-row class="result-style" :class="'result-style-' + themes">
                         <div class="result-style-input">
@@ -1301,7 +1422,7 @@ span {
   .view-panel-row :deep(.ed-collapse-item__header) {
     height: 35px !important;
     line-height: 35px !important;
-    padding: 0 0 0 6px !important;
+    padding: 0 !important;
     font-size: 12px !important;
     font-weight: 400 !important;
   }
@@ -1638,5 +1759,15 @@ span {
   align-items: center;
   justify-content: flex-start;
   border-top: 1px solid #363636;
+}
+.style-collapse {
+  :deep(.ed-collapse-item__header),
+  :deep(.ed-collapse-item__wrap) {
+    border-bottom: none !important;
+  }
+  :deep(.ed-collapse-item__content) {
+    padding-left: 0 !important;
+    padding-bottom: 10px !important;
+  }
 }
 </style>

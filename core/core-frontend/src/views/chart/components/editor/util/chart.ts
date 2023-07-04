@@ -1859,6 +1859,8 @@ export const BASE_VIEW_CONFIG = {
   drillFields: [],
   viewFields: [],
   extBubble: [],
+  extLabel: [],
+  extTooltip: [],
   customFilter: [],
   customAttr: {
     basicStyle: DEFAULT_BASIC_STYLE,

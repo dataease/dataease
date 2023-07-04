@@ -69,7 +69,11 @@ public class ChartDataBuild {
                     dataList.add(axisChartDataDTO);
                 }
             } else {
-                for (int i = xAxis.size(); i < xAxis.size() + yAxis.size(); i++) {
+                // yAxis最后的数据对应extLabel和extTooltip，将他们从yAxis中去掉，同时转换成动态值
+                int size = xAxis.size() + yAxis.size();
+                int extSize = view.getExtLabel().size() + view.getExtTooltip().size();
+
+                for (int i = xAxis.size(); i < size - extSize; i++) {
                     AxisChartDataAntVDTO axisChartDataDTO = new AxisChartDataAntVDTO();
                     axisChartDataDTO.setField(a.toString());
                     axisChartDataDTO.setName(a.toString());
@@ -96,6 +100,7 @@ public class ChartDataBuild {
                         axisChartDataDTO.setValue(new BigDecimal(0));
                     }
                     axisChartDataDTO.setCategory(yAxis.get(j).getName());
+                    buildDynamicValue(view, axisChartDataDTO, row, size, extSize);
                     dataList.add(axisChartDataDTO);
                 }
             }
@@ -133,7 +138,11 @@ public class ChartDataBuild {
                 }
             }
 
-            for (int i = xAxis.size(); i < xAxis.size() + yAxis.size(); i++) {
+            // yAxis最后的数据对应extLabel和extTooltip，将他们从yAxis中去掉，同时转换成动态值
+            int size = xAxis.size() + yAxis.size();
+            int extSize = view.getExtLabel().size() + view.getExtTooltip().size();
+
+            for (int i = xAxis.size(); i < size - extSize; i++) {
                 AxisChartDataAntVDTO axisChartDataDTO = new AxisChartDataAntVDTO();
                 axisChartDataDTO.setField(a.toString());
                 axisChartDataDTO.setName(a.toString());
@@ -160,6 +169,7 @@ public class ChartDataBuild {
                     axisChartDataDTO.setValue(new BigDecimal(0));
                 }
                 axisChartDataDTO.setCategory(b.toString());
+                buildDynamicValue(view, axisChartDataDTO, row, size, extSize);
                 dataList.add(axisChartDataDTO);
 
                 if ("line".equals(view.getType())) {
@@ -218,6 +228,10 @@ public class ChartDataBuild {
                 dimensionList.add(chartDimensionDTO);
                 axisChartDataDTO.setDimensionList(dimensionList);
 
+                // yAxis最后的数据对应extLabel和extTooltip，将他们从yAxis中去掉，同时转换成动态值
+                int size = yAxis.size();
+                int extSize = view.getExtLabel().size() + view.getExtTooltip().size();
+
                 if (ObjectUtils.isNotEmpty(yAxis)) {
                     int valueIndex = xAxis.size() + extStack.size();
                     ChartQuotaDTO chartQuotaDTO = new ChartQuotaDTO();
@@ -229,6 +243,7 @@ public class ChartDataBuild {
                     } catch (Exception e) {
                         axisChartDataDTO.setValue(new BigDecimal(0));
                     }
+                    buildDynamicValue(view, axisChartDataDTO, row, size, extSize);
                 } else {
                     axisChartDataDTO.setQuotaList(quotaList);
                     axisChartDataDTO.setValue(new BigDecimal(0));
@@ -252,7 +267,11 @@ public class ChartDataBuild {
                     }
                 }
 
-                for (int i = xAxis.size(); i < xAxis.size() + yAxis.size(); i++) {
+                // yAxis最后的数据对应extLabel和extTooltip，将他们从yAxis中去掉，同时转换成动态值
+                int size = xAxis.size() + yAxis.size();
+                int extSize = view.getExtLabel().size() + view.getExtTooltip().size();
+
+                for (int i = xAxis.size(); i < size - extSize; i++) {
                     AxisChartDataAntVDTO axisChartDataDTO = new AxisChartDataAntVDTO();
                     axisChartDataDTO.setField(a.toString());
                     axisChartDataDTO.setName(a.toString());
@@ -279,6 +298,7 @@ public class ChartDataBuild {
                         axisChartDataDTO.setValue(new BigDecimal(0));
                     }
                     axisChartDataDTO.setCategory(yAxis.get(j).getName());
+                    buildDynamicValue(view, axisChartDataDTO, row, size, extSize);
                     dataList.add(axisChartDataDTO);
                 }
             }
@@ -308,7 +328,11 @@ public class ChartDataBuild {
                 }
             }
 
-            for (int i = xAxis.size(); i < xAxis.size() + yAxis.size(); i++) {
+            // yAxis最后的数据对应extLabel和extTooltip，将他们从yAxis中去掉，同时转换成动态值
+            int size = xAxis.size() + yAxis.size();
+            int extSize = view.getExtLabel().size() + view.getExtTooltip().size();
+
+            for (int i = xAxis.size(); i < size - extSize; i++) {
                 AxisChartDataAntVDTO axisChartDataDTO = new AxisChartDataAntVDTO();
                 axisChartDataDTO.setField(a.toString());
                 axisChartDataDTO.setName(a.toString());
@@ -335,10 +359,11 @@ public class ChartDataBuild {
                     axisChartDataDTO.setValue(new BigDecimal(0));
                 }
                 axisChartDataDTO.setCategory(yAxis.get(j).getName());
+                buildDynamicValue(view, axisChartDataDTO, row, size, extSize);
                 // pop
                 if (ObjectUtils.isNotEmpty(extBubble)) {
                     try {
-                        axisChartDataDTO.setPopSize(StringUtils.isEmpty(row[xAxis.size() + yAxis.size()]) ? null : new BigDecimal(row[xAxis.size() + yAxis.size()]));
+                        axisChartDataDTO.setPopSize(StringUtils.isEmpty(row[size - extSize]) ? null : new BigDecimal(row[size - extSize]));
                     } catch (Exception e) {
                         axisChartDataDTO.setPopSize(new BigDecimal(0));
                     }
@@ -371,7 +396,11 @@ public class ChartDataBuild {
                 }
             }
 
-            for (int i = xAxis.size(); i < xAxis.size() + yAxis.size(); i++) {
+            // yAxis最后的数据对应extLabel和extTooltip，将他们从yAxis中去掉，同时转换成动态值
+            int size = xAxis.size() + yAxis.size();
+            int extSize = view.getExtLabel().size() + view.getExtTooltip().size();
+
+            for (int i = xAxis.size(); i < size - extSize; i++) {
                 AxisChartDataAntVDTO axisChartDataDTO = new AxisChartDataAntVDTO();
                 axisChartDataDTO.setField(a.toString());
                 axisChartDataDTO.setName(a.toString());
@@ -398,6 +427,7 @@ public class ChartDataBuild {
                     axisChartDataDTO.setValue(new BigDecimal(0));
                 }
                 axisChartDataDTO.setCategory(yAxis.get(j).getName());
+                buildDynamicValue(view, axisChartDataDTO, row, size, extSize);
                 dataList.add(axisChartDataDTO);
             }
         }
@@ -420,7 +450,11 @@ public class ChartDataBuild {
         for (int i1 = 0; i1 < data.size(); i1++) {
             String[] d = data.get(i1);
 
-            for (int i = xAxis.size(); i < xAxis.size() + yAxis.size(); i++) {
+            // yAxis最后的数据对应extLabel和extTooltip，将他们从yAxis中去掉，同时转换成动态值
+            int size = xAxis.size() + yAxis.size();
+            int extSize = view.getExtLabel().size() + view.getExtTooltip().size();
+
+            for (int i = xAxis.size(); i < size - extSize; i++) {
                 AxisChartDataAntVDTO axisChartDataDTO = new AxisChartDataAntVDTO();
 
                 StringBuilder a = new StringBuilder();
@@ -460,6 +494,7 @@ public class ChartDataBuild {
                     axisChartDataDTO.setValue(new BigDecimal(0));
                 }
                 axisChartDataDTO.setCategory(yAxis.get(j).getName());
+                buildDynamicValue(view, axisChartDataDTO, d, size, extSize);
                 series.get(j).getData().add(axisChartDataDTO);
             }
         }
@@ -1195,5 +1230,35 @@ public class ChartDataBuild {
             map.put("data", dataList);
             return map;
         }
+    }
+
+    // 计算动态标签和提示
+    private static void buildDynamicValue(ChartViewDTO view, AxisChartDataAntVDTO axisChartDataDTO, String[] row, int size, int extSize) {
+        List<DynamicValueDTO> dynamicLabelValue = new ArrayList<>();
+        List<DynamicValueDTO> dynamicTooltipValue = new ArrayList<>();
+        // 计算动态标签和提示
+        if (ObjectUtils.isNotEmpty(view.getExtLabel())) {
+            for (int ii = 0; ii < view.getExtLabel().size(); ii++) {
+                DynamicValueDTO valueDTO = new DynamicValueDTO();
+                ChartViewFieldDTO chartViewFieldDTO = view.getExtLabel().get(ii);
+                BigDecimal value = StringUtils.isEmpty(row[ii + (size - extSize)]) ? null : new BigDecimal(row[ii + (size - extSize)]);
+                valueDTO.setFieldId(chartViewFieldDTO.getId());
+                valueDTO.setValue(value);
+                dynamicLabelValue.add(valueDTO);
+            }
+        }
+        if (ObjectUtils.isNotEmpty(view.getExtTooltip())) {
+            for (int ii = 0; ii < view.getExtTooltip().size(); ii++) {
+                DynamicValueDTO valueDTO = new DynamicValueDTO();
+                ChartViewFieldDTO chartViewFieldDTO = view.getExtTooltip().get(ii);
+                BigDecimal value = StringUtils.isEmpty(row[ii + (size - extSize) + view.getExtLabel().size()]) ? null : new BigDecimal(row[ii + (size - extSize) + view.getExtLabel().size()]);
+                valueDTO.setFieldId(chartViewFieldDTO.getId());
+                valueDTO.setValue(value);
+                dynamicTooltipValue.add(valueDTO);
+            }
+        }
+
+        axisChartDataDTO.setDynamicLabelValue(dynamicLabelValue);
+        axisChartDataDTO.setDynamicTooltipValue(dynamicTooltipValue);
     }
 }
