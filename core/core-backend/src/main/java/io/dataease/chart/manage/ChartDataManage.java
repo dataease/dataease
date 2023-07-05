@@ -802,7 +802,7 @@ public class ChartDataManage {
         String maxType = (String) sizeObj.get(type);
         if (StringUtils.equalsIgnoreCase("dynamic", maxType)) {
             Map<String, Object> maxField = (Map<String, Object>) sizeObj.get(field);
-            Long id = (Long) maxField.get("id");
+            Long id = Long.valueOf((String) maxField.get("id"));
             String summary = (String) maxField.get("summary");
             DatasetTableFieldDTO datasetTableField = datasetTableFieldManage.selectById(id);
             if (ObjectUtils.isNotEmpty(datasetTableField)) {

@@ -381,8 +381,12 @@ const onColorChange = val => {
 }
 
 const onSizeChange = val => {
-  view.value.customAttr.size = val
-  renderChart(view.value)
+  view.value.customAttr.size = val.data
+  if (val.requestData) {
+    calcData(view.value)
+  } else {
+    renderChart(view.value)
+  }
 }
 
 const onLabelChange = val => {
@@ -1001,6 +1005,8 @@ const saveValueFormatter = () => {
                 <chart-style
                   :chart="view"
                   :themes="themes"
+                  :dimension-data="state.dimensionData"
+                  :quota-data="state.quotaData"
                   @onColorChange="onColorChange"
                   @onSizeChange="onSizeChange"
                   @onLabelChange="onLabelChange"
