@@ -28,10 +28,15 @@ const props = defineProps({
   viewInfo: {
     type: Object,
     required: false
+  },
+  showPosition: {
+    type: String,
+    required: false,
+    default: 'canvas'
   }
 })
 const component = ref(null)
-const { config } = toRefs(props)
+const { config, showPosition } = toRefs(props)
 let currentInstance
 
 onMounted(() => {
@@ -121,6 +126,7 @@ const commonBackgroundSvgInner = computed(() => {
         :element="config"
         :request="config?.request"
         :linkage="config?.linkage"
+        :show-position="showPosition"
       />
     </div>
   </div>

@@ -1,7 +1,7 @@
 <template>
   <div class="bar-main" :class="showEditPosition">
     <span :title="t('visualization.setting')">
-      <el-icon class="base-icon"><Edit /></el-icon>
+      <el-icon class="base-icon" @click="userViewEnlargeOpen"><Edit /></el-icon>
     </span>
 
     <el-dropdown trigger="click">
@@ -24,7 +24,12 @@ import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapsho
 import eventBus from '@/utils/eventBus'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
-const emits = defineEmits(['closePreview', 'showViewDetails', 'amRemoveItem'])
+const emits = defineEmits([
+  'userViewEnlargeOpen',
+  'closePreview',
+  'showViewDetails',
+  'amRemoveItem'
+])
 const { t } = useI18n()
 
 const props = defineProps({
@@ -77,6 +82,12 @@ const showEditPosition = computed(() => {
 
 const deleteComponent = () => {
   eventBus.emit('removeMatrixItem', index.value)
+}
+
+const userViewEnlargeOpen = e => {
+  e.preventDefault()
+  e.stopPropagation()
+  emits('userViewEnlargeOpen')
 }
 </script>
 

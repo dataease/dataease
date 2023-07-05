@@ -132,6 +132,7 @@ declare module '@vue/runtime-core' {
     TemplateAllList: typeof import('./src/components/visualization/link-jump-set/TemplateAllList.vue')['default']
     Toolbar: typeof import('./src/components/data-visualization/Toolbar.vue')['default']
     TreeSelect: typeof import('./src/components/tree-select/src/TreeSelect.vue')['default']
+    UserViewEnlarge: typeof import('./src/components/visualization/UserViewEnlarge.vue')['default']
     ViewSimpleTitle: typeof import('./src/components/dashboard/subject-setting/dashboard-style/ViewSimpleTitle.vue')['default']
     ViewTitle: typeof import('./src/components/dashboard/subject-setting/dashboard-style/ViewTitle.vue')['default']
     ViewTrackBar: typeof import('./src/components/visualization/ViewTrackBar.vue')['default']

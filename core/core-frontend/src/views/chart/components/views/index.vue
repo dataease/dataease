@@ -21,10 +21,15 @@ const props = defineProps({
         propValue: null
       }
     }
+  },
+  showPosition: {
+    type: String,
+    required: false,
+    default: 'canvas'
   }
 })
 
-const { view } = toRefs(props)
+const { view, showPosition } = toRefs(props)
 
 const state = reactive({
   title_show: true,
@@ -151,6 +156,7 @@ initTitle()
     <chart-component-g2-plot
       style="flex: 1"
       :view="view"
+      :show-position="showPosition"
       v-if="view?.render === 'antv'"
       ref="g2"
       @onChartClick="chartClick"
