@@ -47,19 +47,24 @@ export default {
           // window.SyncComponentCache[this.url] = Axios.get(this.url)
           res = await window.SyncComponentCache[this.url]
         } else {
-          res = await window.SyncComponentCache[this.url]
+          this.mode = await window.SyncComponentCache[this.url]
+          return
         }
         if (res) {
           const Fn = Function
           const dynamicCode = res.data || res
           const component = new Fn(`return ${dynamicCode}`)()
           this.mode = component.default || component
+          window.SyncComponentCache[this.url] = this.mode
         }
       }
     }
   },
   created() {
     this.refId = uuid.v1
+  },
+  beforeDestroy() {
+    this.mode = null
   },
   methods: {
     /* chartResize() {
