@@ -42,8 +42,8 @@ public class ExcelUtils {
         JsonNode rootNode = objectMapper.readTree(datasourceRequest.getDatasource().getConfiguration());
         for (int i = 0; i < rootNode.size(); i++) {
             DatasetTableDTO datasetTableDTO = new DatasetTableDTO();
-            datasetTableDTO.setTableName(rootNode.get(i).get("tableName").asText());
-            datasetTableDTO.setName(rootNode.get(i).get("tableName").asText());
+            datasetTableDTO.setTableName(rootNode.get(i).get("deTableName").asText());
+            datasetTableDTO.setName(rootNode.get(i).get("deTableName").asText());
             tableDescs.add(datasetTableDTO);
         }
         return tableDescs;
@@ -53,14 +53,14 @@ public class ExcelUtils {
         List<String[]> dataList = new ArrayList<>();
         JsonNode rootNode = objectMapper.readTree(datasourceRequest.getDatasource().getConfiguration());
         for (int i = 0; i < rootNode.size(); i++) {
-            if (rootNode.get(i).get("tableName").asText().equalsIgnoreCase(datasourceRequest.getTable())) {
+            if (rootNode.get(i).get("deTableName").asText().equalsIgnoreCase(datasourceRequest.getTable())) {
                 String suffix = rootNode.get(i).get("path").asText().substring(rootNode.get(i).get("path").asText().lastIndexOf(".") + 1);
                 InputStream inputStream = new FileInputStream(rootNode.get(i).get("path").asText());
                 if (StringUtils.equalsIgnoreCase(suffix, "csv")) {
                     BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
                     dataList = csvData(reader, false);
                 }else {
-                    dataList = fetchExcelDataList(datasourceRequest.getTable(), inputStream);
+                    dataList = fetchExcelDataList(rootNode.get(i).get("tableName").asText(), inputStream);
                 }
             }
         }
@@ -68,6 +68,7 @@ public class ExcelUtils {
     }
 
    public List<String[]> fetchExcelDataList(String sheetName, InputStream inputStream){
+
        NoModelDataListener noModelDataListener = new NoModelDataListener();
        ExcelReader excelReader = EasyExcel.read(inputStream, noModelDataListener).build();
        List<ReadSheet> sheets = excelReader.excelExecutor().sheetList();
@@ -95,14 +96,14 @@ public class ExcelUtils {
         };
         JsonNode rootNode = objectMapper.readTree(datasourceRequest.getDatasource().getConfiguration());
         for (int i = 0; i < rootNode.size(); i++) {
-            if (rootNode.get(i).get("tableName").asText().equalsIgnoreCase(datasourceRequest.getTable())) {
+            if (rootNode.get(i).get("deTableName").asText().equalsIgnoreCase(datasourceRequest.getTable())) {
                 tableFields = JsonUtil.parseList(rootNode.get(i).get("fields").toString(), listTypeReference);
             }
         }
         return tableFields;
     }
 
-    public ExcelFileData excelSaveAndParse(MultipartFile file, long datasourceId) throws DEException {
+    public ExcelFileData excelSaveAndParse(MultipartFile file) throws DEException {
         String filename = file.getOriginalFilename();
         List<ExcelSheetData> excelSheetDataList = null;
         try {
@@ -122,6 +123,7 @@ public class ExcelUtils {
         filename = filename.substring(0, filename.lastIndexOf('.'));
         for (ExcelSheetData excelSheetData : returnSheetDataList) {
             excelSheetData.setTableName(excelSheetData.getExcelLabel());
+            excelSheetData.setDeTableName("excel_" + excelSheetData.getExcelLabel() + "_" + UUID.randomUUID().toString());
             excelSheetData.setPath(filePath);
             excelSheetData.setSheetId(UUID.randomUUID().toString());
             excelSheetData.setSheetExcelId(excelId);

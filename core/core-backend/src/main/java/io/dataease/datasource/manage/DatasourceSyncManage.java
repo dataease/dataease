@@ -63,12 +63,13 @@ public class DatasourceSyncManage {
             datasourceRequest.setDatasource(coreDatasource);
             List<DatasetTableDTO> tables = ExcelUtils.getTables(datasourceRequest);
             int success = 0;
-            for (DatasetTableDTO api : tables) {
-                datasourceRequest.setTable(api.getTableName());
+            for (DatasetTableDTO tableDTO : tables) {
+                datasourceRequest.setTable(tableDTO.getTableName());
+                List<TableField> tableFields = ExcelUtils.getTableFields(datasourceRequest);
                 try {
                     datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Begin to sync datatable: " + datasourceRequest.getTable());
                     datasourceTaskServer.saveLog(datasetTableTaskLog);
-                    List<TableField> tableFields = ExcelUtils.getTableFields(datasourceRequest);
+
                     createEngineTable(datasourceRequest.getTable(), tableFields);
                     if (updateType.equals(DatasourceServer.UpdateType.all_scope)) {
                         createEngineTable(TableUtils.tmpName(datasourceRequest.getTable()), tableFields);
@@ -81,6 +82,11 @@ public class DatasourceSyncManage {
                     datasourceTaskServer.saveLog(datasetTableTaskLog);
                     success++;
                 } catch (Exception e) {
+                    try {
+                        if (updateType.equals(DatasourceServer.UpdateType.all_scope)) {
+                            createEngineTable(TableUtils.tmpName(datasourceRequest.getTable()), tableFields);
+                        }
+                    }catch (Exception ignore){}
                     datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Failed to sync datatable: " + datasourceRequest.getTable() + ", " + e.getMessage());
                     datasourceTaskServer.saveLog(datasetTableTaskLog);
                 }
@@ -153,10 +159,11 @@ public class DatasourceSyncManage {
 
             for (DatasetTableDTO api : tables) {
                 datasourceRequest.setTable(api.getTableName());
+                List<TableField> tableFields = ApiUtils.getTableFields(datasourceRequest);
                 try {
                     datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Begin to sync datatable: " + datasourceRequest.getTable());
                     datasourceTaskServer.saveLog(datasetTableTaskLog);
-                    List<TableField> tableFields = ApiUtils.getTableFields(datasourceRequest);
+
                     createEngineTable(datasourceRequest.getTable(), tableFields);
                     if (updateType.equals(DatasourceServer.UpdateType.all_scope)) {
                         createEngineTable(TableUtils.tmpName(datasourceRequest.getTable()), tableFields);
@@ -169,6 +176,11 @@ public class DatasourceSyncManage {
                     datasourceTaskServer.saveLog(datasetTableTaskLog);
                     success++;
                 } catch (Exception e) {
+                    try {
+                        if (updateType.equals(DatasourceServer.UpdateType.all_scope)) {
+                            createEngineTable(TableUtils.tmpName(datasourceRequest.getTable()), tableFields);
+                        }
+                    }catch (Exception ignore){}
                     datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Failed to sync datatable: " + datasourceRequest.getTable() + ", " + e.getMessage());
                     datasourceTaskServer.saveLog(datasetTableTaskLog);
                 }

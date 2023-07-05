@@ -40,8 +40,8 @@ public class ApiUtils {
         List<ApiDefinition> apiDefinitionList = JsonUtil.parseList(datasourceRequest.getDatasource().getConfiguration(), listTypeReference);
         for (ApiDefinition apiDefinition : apiDefinitionList) {
             DatasetTableDTO datasetTableDTO = new DatasetTableDTO();
-            datasetTableDTO.setTableName(apiDefinition.getName());
-            datasetTableDTO.setName(apiDefinition.getDesc());
+            datasetTableDTO.setTableName(apiDefinition.getDeTableName());
+            datasetTableDTO.setName(apiDefinition.getDeTableName());
             tableDescs.add(datasetTableDTO);
         }
         return tableDescs;
@@ -75,7 +75,7 @@ public class ApiUtils {
         List<ApiDefinition> lists = objectMapper.readValue(datasourceRequest.getDatasource().getConfiguration(), listTypeReference);
         List<TableField> tableFields = new ArrayList<>();
         for (ApiDefinition apiDefinition : lists) {
-            if (datasourceRequest.getTable().equalsIgnoreCase(apiDefinition.getName())) {
+            if (datasourceRequest.getTable().equalsIgnoreCase(apiDefinition.getDeTableName())) {
                 tableFields = getTableFields(apiDefinition);
             }
         }
@@ -495,7 +495,7 @@ public class ApiUtils {
         }
         if (!CollectionUtils.isEmpty(apiDefinitionListTemp)) {
             for (ApiDefinition apiDefinition : apiDefinitionListTemp) {
-                if (apiDefinition.getName().equalsIgnoreCase(datasourceRequest.getTable())) {
+                if (apiDefinition.getDeTableName().equalsIgnoreCase(datasourceRequest.getTable()) || apiDefinition.getName().equalsIgnoreCase(datasourceRequest.getTable())) {
                     apiDefinitionList.add(apiDefinition);
                 }
 
@@ -509,7 +509,7 @@ public class ApiUtils {
         }
         ApiDefinition find = null;
         for (ApiDefinition apiDefinition : apiDefinitionList) {
-            if (apiDefinition.getName().equalsIgnoreCase(datasourceRequest.getTable())) {
+            if (apiDefinition.getName().equalsIgnoreCase(datasourceRequest.getTable()) || apiDefinition.getDeTableName().equalsIgnoreCase(datasourceRequest.getTable())) {
                 find = apiDefinition;
             }
         }

@@ -11,6 +11,7 @@ public class ExcelSheetData {
     private List<String[]> data;
     private List<TableField> fields;
     private String tableName;
+    private String deTableName;
     private String path;
     private boolean isSheet = true;
     private String sheetId;

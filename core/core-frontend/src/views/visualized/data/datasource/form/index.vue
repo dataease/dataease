@@ -11,6 +11,7 @@ import { validate, save } from '@/api/datasource'
 import { Base64 } from 'js-base64'
 import { useRouter, useRoute } from 'vue-router'
 import type { Param } from './ExcelDetail.vue'
+import { uuid } from 'vue-uuid'
 interface Node {
   name: string
   id: string
@@ -80,6 +81,7 @@ export interface Configuration {
 export interface ApiConfiguration {
   id: string
   name: string
+  deTableName: string
   method: string
   url: string
   status: string
@@ -163,6 +165,16 @@ const saveDS = () => {
   } else if (form.type === 'API') {
     if (form.apiConfiguration.length == 0) {
       return
+    }
+    for (var i = 0; i < request.apiConfiguration.length; i++) {
+      if (
+        request.apiConfiguration[i].deTableName === '' ||
+        request.apiConfiguration[i].deTableName === undefined ||
+        request.apiConfiguration[i].deTableName === null
+      ) {
+        request.apiConfiguration[i].deTableName =
+          'api_' + request.apiConfiguration[i].name + '_' + uuid.v1()
+      }
     }
     request.configuration = Base64.encode(JSON.stringify(request.apiConfiguration))
     request.syncSetting.startTime = new Date(request.syncSetting.startTime).getTime()
