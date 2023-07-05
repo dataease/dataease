@@ -79,7 +79,7 @@ public class EngineServer {
         return ResultMessage.success(engine);
     }
 
-    public void initSimpleEngine() {
+    public void initSimpleEngine() throws Exception{
         QueryWrapper<CoreDeEngine> queryWrapper = new QueryWrapper<>();
         if(ModelUtils.isDesktop()){
             queryWrapper.eq("type", engineType.h2.name());
@@ -96,7 +96,7 @@ public class EngineServer {
         if(ModelUtils.isDesktop()){
             engine.setType(engineType.h2.name());
             H2 h2 = new H2();
-            h2.setJdbc(env.getProperty("spring.datasource.url"));
+            h2.setJdbc("jdbc:h2:/opt/dataease2.0/desktop_data;AUTO_SERVER=TRUE;AUTO_RECONNECT=TRUE;MODE=MySQL");
             h2.setDataBase("PUBLIC");
             h2.setUsername(env.getProperty("spring.datasource.username"));
             h2.setPassword(env.getProperty("spring.datasource.password"));
@@ -117,7 +117,6 @@ public class EngineServer {
             mysqlConfiguration.setPassword(env.getProperty("spring.datasource.password"));
             engine.setConfiguration(JsonUtil.toJSONString(mysqlConfiguration).toString());
         }
-        System.out.println(JsonUtil.toJSONString(engine));
         deEngineMapper.insert(engine);
     }
 
