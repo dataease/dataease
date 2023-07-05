@@ -1067,7 +1067,10 @@ const saveValueFormatter = () => {
             >
               <template #default="{ node, data }">
                 <el-icon v-if="!data.leaf">
-                  <Icon name="scene"></Icon>
+                  <Icon name="dv-folder"></Icon>
+                </el-icon>
+                <el-icon v-if="data.leaf">
+                  <Icon name="icon_dataset"></Icon>
                 </el-icon>
                 <span :title="node.label">{{ node.label }}</span>
               </template>
