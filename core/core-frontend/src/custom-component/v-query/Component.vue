@@ -1,22 +1,18 @@
 <script lang="ts" setup>
 import eventBus from '@/utils/eventBus'
 import QueryConditionConfiguration from './QueryConditionConfiguration.vue'
-import { onBeforeUnmount, reactive, provide, ref, toRefs } from 'vue'
+import { type Field } from '@/api/chart'
+import { onBeforeUnmount, reactive, provide, ref, toRefs, watch } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { useI18n } from '@/hooks/web/useI18n'
+import { guid } from '@/views/visualized/data/dataset/form/util.js'
+import { cloneDeep } from 'lodash-es'
+
 const { t } = useI18n()
 
 const canEdit = ref(false)
-const initials = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j']
-
 const queryConfig = ref()
-const selectValue = ref()
-const options = Array.from({ length: 10 }).map((_, idx) => ({
-  value: `Option ${idx + 1}`,
-  label: `${initials[idx % 10]}${idx}`
-}))
-const multiple = ref(false)
 const customStyle = reactive({
   border: '',
   background: '',
@@ -32,21 +28,20 @@ const visibleChange = (val: boolean) => {
   }, 50)
 }
 
-const attrs = reactive({
-  multiple: false,
-  showTime: false,
-  defaultValue: false,
-  showTitle: false,
-  parameters: [],
-  title: '',
-  enableRange: false,
-  enableParameters: false,
-  viewIds: []
-})
+// const attrs = reactive({
+//   multiple: false,
+//   showTime: false,
+//   defaultValue: false,
+//   showTitle: false,
+//   parameters: [],
+//   title: '',
+//   enableRange: false,
+//   enableParameters: false,
+//   viewIds: []
+// })
 
-const multipleChange = (val: boolean) => {
-  multiple.value = val
-  selectValue.value = val ? [] : undefined
+const multipleChange = ele => {
+  ele.selectValue = ele.multiple ? [] : undefined
 }
 
 const props = defineProps({
@@ -65,11 +60,20 @@ const props = defineProps({
     }
   }
 })
-
+const list = ref([])
 const { element } = toRefs(props)
 const dvMainStore = dvMainStoreWithOut()
 const { curComponent } = storeToRefs(dvMainStore)
 
+watch(
+  () => props.element.propValue,
+  () => {
+    props.element.propValue.forEach(ele => {
+      multipleChange(ele)
+    })
+    list.value = cloneDeep(props.element.propValue)
+  }
+)
 const onComponentClick = () => {
   if (curComponent.value.id !== element.value.id) {
     canEdit.value = false
@@ -85,16 +89,52 @@ const dragover = () => {
   // console.log('dragover', e, componentInfo)
 }
 
-const list = ref([])
+const infoFormat = (obj: Field) => {
+  const { id, name, deType, type } = obj
+  const base = {
+    id: guid(),
+    name,
+    field: {
+      id,
+      type,
+      name,
+      deType
+    },
+    defaultValue: '',
+    optionValueSource: 0,
+    valueSource: [],
+    dataset: {
+      id: '',
+      name: '',
+      field: {
+        id: '',
+        name: '',
+        deType: ''
+      }
+    },
+    visible: true,
+    defaultValueCheck: false,
+    parameters: [],
+    options: [],
+    checkedFieldsMap: {},
+    parametersCheck: false
+  }
 
-const drop = e => {
-  const componentInfo = JSON.parse(e.dataTransfer.getData('dimension') || '{}')
-  if (!componentInfo.id) return
-  list.value.push(componentInfo)
+  if (deType === 1) {
+    return { ...base, enableRange: true }
+  }
+  return { ...base, multiple: false, selectValue: '' }
 }
 
-const editeQueryConfig = () => {
-  queryConfig.value.init()
+const drop = e => {
+  const componentInfo: Field = JSON.parse(e.dataTransfer.getData('dimension') || '{}')
+  if (!componentInfo.id) return
+  list.value.push(infoFormat(componentInfo))
+  element.value.propValue = cloneDeep(list.value)
+}
+
+const editeQueryConfig = (queryId: string) => {
+  queryConfig.value.init(element.value.id, queryId)
 }
 
 const delQueryConfig = index => {
@@ -104,15 +144,15 @@ const delQueryConfig = index => {
 
 <template>
   <div class="v-query" @dragover.prevent.stop="dragover" @drop.prevent.stop="drop">
-    <div class="query-item" :key="ele.id" v-for="(ele, index) in list">
+    <div class="query-item vertical" :key="ele.id" v-for="(ele, index) in list">
       <div class="query-field">
         <div class="label">
           <div class="label-wrapper">
-            <div class="label-wrapper-text">{{ ele.name }} ({{ ele.type }})</div>
+            <div class="label-wrapper-text">{{ ele.name }} ({{ ele.field.type }})</div>
           </div>
           <div class="label-wrapper-tooltip">
             <el-tooltip effect="dark" content="设置过滤条件" placement="top">
-              <el-icon @click="editeQueryConfig">
+              <el-icon @click="editeQueryConfig(ele.id)">
                 <Icon name="edit-in"></Icon>
               </el-icon>
             </el-tooltip>
@@ -125,19 +165,19 @@ const delQueryConfig = index => {
         </div>
         <div class="query-select">
           <el-select-v2
-            v-model="selectValue"
+            v-model="ele.selectValue"
             filterable
             @visible-change="visibleChange"
             :popper-class="loading ? 'load-select' : ''"
-            :show-checked="multiple"
-            :multiple="multiple"
-            :collapse-tags="multiple"
-            :options="options"
-            :collapse-tags-tooltip="multiple"
+            :show-checked="ele.multiple"
+            :multiple="ele.multiple"
+            :collapse-tags="ele.multiple"
+            :options="ele.options"
+            :collapse-tags-tooltip="ele.multiple"
             style="width: 240px"
           >
-            <template v-if="!multiple" #default="{ item }">
-              <el-radio-group v-model="selectValue">
+            <template v-if="!ele.multiple" #default="{ item }">
+              <el-radio-group v-model="ele.selectValue">
                 <el-radio :label="item.value">{{ item.label }}</el-radio>
               </el-radio-group>
             </template>
@@ -151,7 +191,9 @@ const delQueryConfig = index => {
       </el-button>
     </div>
   </div>
-  <QueryConditionConfiguration ref="queryConfig"></QueryConditionConfiguration>
+  <Teleport to=".dv-common-layout">
+    <QueryConditionConfiguration ref="queryConfig"></QueryConditionConfiguration>
+  </Teleport>
 </template>
 
 <style lang="less" scoped>
@@ -171,20 +213,11 @@ const delQueryConfig = index => {
 
     .query-field {
       position: relative;
-      padding-top: 18px;
       .label {
-        align-items: center;
         display: flex;
         font-size: 12px;
         overflow: hidden;
         padding-right: 6px;
-        height: 16px;
-        left: 0;
-        line-height: 16px;
-        max-width: 100%;
-        position: absolute;
-        right: 0;
-        top: 0;
         color: #1f2329;
 
         .label-wrapper {
@@ -193,7 +226,7 @@ const delQueryConfig = index => {
           cursor: auto;
           font-size: 12px;
           line-height: 16px;
-          color: var(--dashboard-query-label-color);
+          color: #575757;
           box-sizing: border-box;
           margin: 0;
           padding: 0;
@@ -215,9 +248,8 @@ const delQueryConfig = index => {
           border-radius: 2px;
           flex: 0 0 auto;
           height: 16px;
-          display: inline-flex;
           line-height: 16px;
-          color: var(--dashboard-query-label-color);
+          color: #575757;
         }
       }
 
@@ -226,6 +258,48 @@ const delQueryConfig = index => {
         flex-wrap: wrap;
         margin-top: -5px;
         line-height: 28px;
+      }
+    }
+  }
+
+  .horizontal {
+    .query-field {
+      padding-top: 18px;
+      .label {
+        align-items: center;
+        height: 16px;
+        left: 0;
+        line-height: 16px;
+        max-width: 100%;
+        position: absolute;
+        right: 0;
+        top: 0;
+        .label-wrapper-tooltip {
+          display: inline-flex;
+        }
+      }
+    }
+  }
+
+  .vertical {
+    .query-field {
+      align-items: flex-start;
+      display: flex;
+      .label {
+        visibility: visible;
+        pointer-events: auto;
+        cursor: auto;
+        line-height: 28px;
+        box-sizing: border-box;
+        flex: 0 0 auto;
+        .label-wrapper-tooltip {
+          line-height: 16px;
+          box-shadow: 0 0 4px #777;
+          position: absolute;
+          right: 0;
+          top: -5px;
+          z-index: 11;
+        }
       }
     }
   }

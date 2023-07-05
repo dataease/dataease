@@ -54,7 +54,7 @@ public class MysqlEngineProvider extends EngineProvider {
 
     @Override
     public String insertSql(String name, List<String[]> dataList, int page, int pageNumber) {
-        String insertSql = "INSERT INTO TABLE_NAME VALUES ".replace("TABLE_NAME", name);
+        String insertSql = "INSERT INTO `TABLE_NAME` VALUES ".replace("TABLE_NAME", name);
         StringBuffer values = new StringBuffer();
 
         Integer realSize = page * pageNumber < dataList.size() ? page * pageNumber : dataList.size();
@@ -86,7 +86,7 @@ public class MysqlEngineProvider extends EngineProvider {
 
     @Override
     public String replaceTable(String name) {
-        String replaceTableSql = "rename table FROM_TABLE to FROM_TABLE_tmp, TO_TABLE to FROM_TABLE, FROM_TABLE_tmp to TO_TABLE"
+        String replaceTableSql = "rename table `FROM_TABLE` to `FROM_TABLE_tmp`, `TO_TABLE` to `FROM_TABLE`, `FROM_TABLE_tmp` to `TO_TABLE`"
                 .replace("FROM_TABLE", name).replace("TO_TABLE", TableUtils.tmpName(name));
         String dropTableSql = "DROP TABLE IF EXISTS " + TableUtils.tmpName(name);
         return replaceTableSql + ";" + dropTableSql;

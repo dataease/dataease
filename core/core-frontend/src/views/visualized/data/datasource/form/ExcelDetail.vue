@@ -243,7 +243,6 @@ const changeDatasetName = () => {
 }
 
 const beforeUpload = () => {
-  console.log(param)
   uploading.value = true
 }
 
@@ -257,10 +256,13 @@ const excelSave = () => {
 }
 
 const uploadSuccess = (response, _, fileList) => {
+  if (response.code !== 0) {
+    ElMessage.warning(response.msg)
+    return
+  }
   editeTableField.value = true
   uploading.value = false
   state.excelData.push(response.data)
-  console.log(state.excelData)
   // state.defaultExpandedKeys.push(response.data.id)
   // state.defaultCheckedKeys.push(response.data.sheets[0].id)
   nextTick(() => {

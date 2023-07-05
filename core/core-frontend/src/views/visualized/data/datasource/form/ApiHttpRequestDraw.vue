@@ -21,6 +21,7 @@ export interface Field {
 export interface ApiItem {
   status: string
   name: string
+  deTableName: string
   url: string
   method: string
   request: ApiRequest

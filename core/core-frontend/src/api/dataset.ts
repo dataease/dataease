@@ -1,4 +1,6 @@
 import request from '@/config/axios'
+import { type Field } from '@/api/chart'
+
 export interface DatasetOrFolder {
   name: string
   id?: number | string
@@ -11,6 +13,17 @@ export interface DatasetOrFolder {
 interface Fields {
   fields: Array<{}>
   data: Array<{}>
+}
+
+export interface DatasetDetail {
+  id: string
+  name: string
+  fields: {
+    dimensionList: Array<Field>
+    quotaList: Array<Field>
+  }
+  checkList: string[]
+  list: Array<Field>
 }
 
 export interface FieldData {
@@ -96,6 +109,12 @@ export const tableUpdate = async (data): Promise<IResponse> => {
 
 export const getPreviewSql = async (data): Promise<IResponse> => {
   return request.post({ url: '/datasetData/previewSql', data }).then(res => {
+    return res?.data
+  })
+}
+
+export const getDsDetails = async (data): Promise<DatasetDetail[]> => {
+  return request.post({ url: '/datasetTree/dsDetails', data }).then(res => {
     return res?.data
   })
 }

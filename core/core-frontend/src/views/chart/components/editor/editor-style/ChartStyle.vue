@@ -32,6 +32,14 @@ const props = defineProps({
   themes: {
     type: String,
     default: 'dark'
+  },
+  dimensionData: {
+    type: Array,
+    required: true
+  },
+  quotaData: {
+    type: Array,
+    required: true
   }
 })
 
@@ -123,6 +131,7 @@ const onBasicStyleChange = val => {
               :themes="themes"
               class="attr-selector"
               :chart="chart"
+              :quota-fields="props.quotaData"
               @onSizeChange="onSizeChange"
             />
           </el-collapse-item>

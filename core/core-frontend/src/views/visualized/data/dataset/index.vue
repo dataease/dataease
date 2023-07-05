@@ -297,7 +297,10 @@ const defaultProps = {
         <template #default="{ node, data }">
           <span class="custom-tree-node">
             <el-icon v-if="!data.leaf">
-              <Icon name="scene"></Icon>
+              <Icon name="dv-folder"></Icon>
+            </el-icon>
+            <el-icon v-if="data.leaf">
+              <Icon name="icon_dataset"></Icon>
             </el-icon>
             <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
             <div class="icon-more">

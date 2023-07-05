@@ -381,8 +381,12 @@ const onColorChange = val => {
 }
 
 const onSizeChange = val => {
-  view.value.customAttr.size = val
-  renderChart(view.value)
+  view.value.customAttr.size = val.data
+  if (val.requestData) {
+    calcData(view.value)
+  } else {
+    renderChart(view.value)
+  }
 }
 
 const onLabelChange = val => {
@@ -783,6 +787,7 @@ const saveValueFormatter = () => {
                       <el-row
                         class="padding-lr drag-data"
                         v-if="
+                          props.themes !== 'dark' &&
                           view.type !== 'table-info' &&
                           view.type !== 'text' &&
                           view.type !== 'text-label' &&
@@ -865,6 +870,7 @@ const saveValueFormatter = () => {
                         v-if="
                           view.type.includes('bar') ||
                           view.type.includes('line') ||
+                          view.type.includes('area') ||
                           view.type.includes('pie') ||
                           view.type.includes('radar') ||
                           view.type.includes('map') ||
@@ -999,6 +1005,8 @@ const saveValueFormatter = () => {
                 <chart-style
                   :chart="view"
                   :themes="themes"
+                  :dimension-data="state.dimensionData"
+                  :quota-data="state.quotaData"
                   @onColorChange="onColorChange"
                   @onSizeChange="onSizeChange"
                   @onLabelChange="onLabelChange"
@@ -1065,7 +1073,10 @@ const saveValueFormatter = () => {
             >
               <template #default="{ node, data }">
                 <el-icon v-if="!data.leaf">
-                  <Icon name="scene"></Icon>
+                  <Icon name="dv-folder"></Icon>
+                </el-icon>
+                <el-icon v-if="data.leaf">
+                  <Icon name="icon_dataset"></Icon>
                 </el-icon>
                 <span :title="node.label">{{ node.label }}</span>
               </template>
@@ -1420,8 +1431,6 @@ span {
   }
 
   .view-panel-row :deep(.ed-collapse-item__header) {
-    height: 35px !important;
-    line-height: 35px !important;
     padding: 0 !important;
     font-size: 12px !important;
     font-weight: 400 !important;
