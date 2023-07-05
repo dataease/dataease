@@ -31,8 +31,15 @@ const dvMainStore = dvMainStoreWithOut()
 const composeStore = composeStoreWithOut()
 const lockStore = lockStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
-const { curComponent, canvasStyleData, curComponentIndex, componentData, dvInfo, canvasViewInfo } =
-  storeToRefs(dvMainStore)
+const {
+  curComponent,
+  canvasStyleData,
+  curComponentIndex,
+  componentData,
+  dvInfo,
+  canvasViewInfo,
+  editMode
+} = storeToRefs(dvMainStore)
 const { areaData } = storeToRefs(composeStore)
 let scale = ref(canvasStyleData.value.scale)
 
@@ -123,10 +130,12 @@ const handleFileChange = e => {
   reader.readAsDataURL(file)
 }
 
-const preview = isScreenshotFlag => {
-  isScreenshot.value = isScreenshotFlag
-  isShowPreview.value = true
+const preview = () => {
   dvMainStore.setEditMode('preview')
+}
+
+const edit = () => {
+  dvMainStore.setEditMode('edit')
 }
 
 const saveCanvas = () => {
@@ -162,8 +171,8 @@ eventBus.on('clearCanvas', clearCanvas)
 </script>
 
 <template>
-  <div>
-    <div class="toolbar">
+  <div class="toolbar-main">
+    <div class="toolbar" :class="{ 'preview-state-head': editMode === 'preview' }">
       <el-icon class="custom-el-icon back-icon" @click="backToMain()">
         <Icon class="toolbar-icon" name="icon_left_outlined" />
       </el-icon>
@@ -212,10 +221,33 @@ eventBus.on('clearCanvas', clearCanvas)
     </div>
     <!-- 预览 -->
     <Preview v-if="isShowPreview" :is-screenshot="isScreenshot" @close="handlePreviewChange" />
+    <el-button
+      v-show="editMode === 'preview'"
+      icon="EditPen"
+      @click="edit()"
+      class="edit-button"
+      type="primary"
+      >编辑</el-button
+    >
   </div>
 </template>
 
 <style lang="less" scoped>
+.toolbar-main {
+  position: relative;
+}
+.preview-state-head {
+  height: 0px !important;
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
+}
+.edit-button {
+  right: 10px;
+  top: 10px;
+  position: absolute;
+  z-index: 2;
+}
 .toolbar {
   height: @top-bar-height;
   white-space: nowrap;
@@ -223,6 +255,7 @@ eventBus.on('clearCanvas', clearCanvas)
   background: #050e21;
   color: #ffffff;
   display: flex;
+  transition: 0.5s;
   .back-icon {
     margin-left: 20px;
     margin-top: 22px;

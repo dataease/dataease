@@ -74,6 +74,6 @@ const shadowStyle = computed(() => {
 .shadow-background {
   width: 100%;
   height: 100%;
-  background-color: #0a7be0;
+  background-color: #b8d3f9;
 }
 </style>

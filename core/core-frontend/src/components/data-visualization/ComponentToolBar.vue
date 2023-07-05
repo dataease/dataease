@@ -42,5 +42,6 @@ const handleScaleChange = () => {
   background-color: @side-area-background;
   border-top: 1px solid @side-outline-border-color;
   color: #fff;
+  transition: 0.5s;
 }
 </style>

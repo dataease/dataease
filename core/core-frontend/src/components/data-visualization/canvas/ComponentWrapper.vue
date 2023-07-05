@@ -67,8 +67,11 @@ const componentBackgroundStyle = computed(() => {
       outerImage
     } = config.value.commonBackground
     let colorRGBA = ''
-    if (backgroundColorSelect && backgroundColor && backgroundColor.indexOf('rgb') === -1) {
-      colorRGBA = hexColorToRGBA(backgroundColor, alpha)
+    if (backgroundColorSelect && backgroundColor) {
+      colorRGBA =
+        backgroundColor.indexOf('rgb') === -1
+          ? hexColorToRGBA(backgroundColor, alpha)
+          : backgroundColor
     }
     if (backgroundImageEnable) {
       if (backgroundType === 'outerImage' && typeof outerImage === 'string') {

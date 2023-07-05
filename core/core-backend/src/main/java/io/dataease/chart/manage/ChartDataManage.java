@@ -76,10 +76,6 @@ public class ChartDataManage {
         if (ObjectUtils.isEmpty(view)) {
             DEException.throwException(Translator.get("i18n_chart_delete"));
         }
-        TypeReference<List<ChartViewFieldDTO>> tokenType = new TypeReference<>() {
-        };
-        TypeReference<List<ChartFieldCustomFilterDTO>> filterTokenType = new TypeReference<>() {
-        };
 
         List<ChartViewFieldDTO> viewFields = new ArrayList<>(view.getViewFields());
         final Map<String, List<ChartViewFieldDTO>> extFieldsMap = new LinkedHashMap<>();
@@ -112,6 +108,14 @@ public class ChartDataManage {
         }
         List<ChartViewFieldDTO> extStack = new ArrayList<>(view.getExtStack());
         List<ChartViewFieldDTO> extBubble = new ArrayList<>(view.getExtBubble());
+        if (ObjectUtils.isNotEmpty(view.getExtLabel()) && enableExtData(view.getType())) {
+            List<ChartViewFieldDTO> extLabel = new ArrayList<>(view.getExtLabel());
+            yAxis.addAll(extLabel);
+        }
+        if (ObjectUtils.isNotEmpty(view.getExtTooltip()) && enableExtData(view.getType())) {
+            List<ChartViewFieldDTO> extTooltip = new ArrayList<>(view.getExtTooltip());
+            yAxis.addAll(extTooltip);
+        }
         List<ChartFieldCustomFilterDTO> fieldCustomFilter = new ArrayList<>(view.getCustomFilter());
         List<ChartViewFieldDTO> drill = new ArrayList<>(view.getDrillFields());
 
@@ -798,7 +802,7 @@ public class ChartDataManage {
         String maxType = (String) sizeObj.get(type);
         if (StringUtils.equalsIgnoreCase("dynamic", maxType)) {
             Map<String, Object> maxField = (Map<String, Object>) sizeObj.get(field);
-            Long id = (Long) maxField.get("id");
+            Long id = Long.valueOf((String) maxField.get("id"));
             String summary = (String) maxField.get("summary");
             DatasetTableFieldDTO datasetTableField = datasetTableFieldManage.selectById(id);
             if (ObjectUtils.isNotEmpty(datasetTableField)) {
@@ -1389,5 +1393,9 @@ public class ChartDataManage {
             data = (List<String[]>) calciteProvider.fetchResultField(datasourceRequest).get("data");
         }
         return data;
+    }
+
+    private boolean enableExtData(String type) {
+        return StringUtils.containsAnyIgnoreCase(type, "bar", "line", "area", "pie", "radar", "map", "scatter", "funnel");
     }
 }

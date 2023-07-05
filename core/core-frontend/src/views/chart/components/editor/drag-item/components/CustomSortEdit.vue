@@ -53,7 +53,6 @@ const onUpdate = () => {
   const strArr = state.sortList.map(ele => {
     return transObj2Str(ele)
   })
-  console.log(strArr)
   emit('onSortChange', strArr)
 }
 
@@ -82,7 +81,7 @@ init()
     >
       <template #item="{ element }">
         <span :key="element.value" class="item-dimension" :title="element.value">
-          <!--          <svg-icon icon-class="drag" class="item-icon" />-->
+          <Icon name="icon_drag_outlined" class="item-icon" @click="removeItem"></Icon>
           <span class="item-span">
             {{ element.value }}
           </span>
@@ -113,6 +112,8 @@ init()
 .item-icon {
   cursor: move;
   margin: 0 2px;
+  width: 20px;
+  height: 20px;
 }
 
 .item-span {

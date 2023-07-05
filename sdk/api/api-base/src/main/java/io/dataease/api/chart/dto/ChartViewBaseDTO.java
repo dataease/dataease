@@ -98,6 +98,16 @@ public class ChartViewBaseDTO implements Serializable {
     private List<ChartViewFieldDTO> extBubble;
 
     /**
+     * 动态标签
+     */
+    private List<ChartViewFieldDTO> extLabel;
+
+    /**
+     * 动态提示
+     */
+    private List<ChartViewFieldDTO> extTooltip;
+
+    /**
      * 图形属性
      */
     private Map<String, Object> customAttr;

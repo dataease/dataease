@@ -280,4 +280,24 @@ public class DatasetGroupManage {
         }
         return dto;
     }
+
+    public List<DatasetTableDTO> getDetail(List<Long> ids) {
+        if (ObjectUtils.isEmpty(ids)) {
+            DEException.throwException("id list can't be empty");
+        }
+        List<DatasetTableDTO> list = new ArrayList<>();
+        for (Long id : ids) {
+            CoreDatasetGroup coreDatasetGroup = coreDatasetGroupMapper.selectById(id);
+            if (coreDatasetGroup == null) {
+                list.add(null);
+            } else {
+                DatasetTableDTO dto = new DatasetTableDTO();
+                BeanUtils.copyBean(dto, coreDatasetGroup);
+                Map<String, List<DatasetTableFieldDTO>> listByDQ = datasetTableFieldManage.listByDQ(id);
+                dto.setFields(listByDQ);
+                list.add(dto);
+            }
+        }
+        return list;
+    }
 }
