@@ -783,6 +783,7 @@ const saveValueFormatter = () => {
                       <el-row
                         class="padding-lr drag-data"
                         v-if="
+                          props.themes !== 'dark' &&
                           view.type !== 'table-info' &&
                           view.type !== 'text' &&
                           view.type !== 'text-label' &&
@@ -865,6 +866,7 @@ const saveValueFormatter = () => {
                         v-if="
                           view.type.includes('bar') ||
                           view.type.includes('line') ||
+                          view.type.includes('area') ||
                           view.type.includes('pie') ||
                           view.type.includes('radar') ||
                           view.type.includes('map') ||
@@ -1420,8 +1422,6 @@ span {
   }
 
   .view-panel-row :deep(.ed-collapse-item__header) {
-    height: 35px !important;
-    line-height: 35px !important;
     padding: 0 !important;
     font-size: 12px !important;
     font-weight: 400 !important;
