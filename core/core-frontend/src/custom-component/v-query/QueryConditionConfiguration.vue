@@ -1,10 +1,18 @@
 <script lang="ts" setup>
 import { ref, reactive, nextTick } from 'vue'
+import { storeToRefs } from 'pinia'
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { useI18n } from '@/hooks/web/useI18n'
+import type { DatasetDetail } from '@/api/dataset'
+import { getDsDetails } from '@/api/dataset'
+import { cloneDeep } from 'lodash-es'
 const { t } = useI18n()
+const dvMainStore = dvMainStoreWithOut()
+const { componentData } = storeToRefs(dvMainStore)
+
 const dialogVisible = ref(false)
-const bindingParameters = ref(false)
 const renameInput = ref()
+const valueSource = ref([])
 const options = [
   {
     label: '所用数据集',
@@ -41,32 +49,20 @@ const options = [
     ]
   }
 ]
-const setDefaultValues = ref(false)
-const conditions = ref([{ id: '123', name: '部门', visible: true }])
+const conditions = ref([])
 const displayType = ref('')
-const optionValueSource = ref('1')
-const optionType = ref('1')
 const checkAll = ref(false)
 const activeConditionForRename = reactive({
   id: '',
   name: '',
   visible: false
 })
+const curComponent = ref()
+const manual = ref()
 const activeCondition = ref('')
 const isIndeterminate = ref(true)
-const fields = ref([
-  {
-    dataset: '123',
-    field: '213',
-    id: 'e'
-  },
-  {
-    dataset: 'qweqweqweqwewq',
-    id: 'c',
-    field: '213'
-  }
-])
-
+const fields = ref<DatasetDetail[]>()
+let componentId = ''
 const typeList = [
   {
     label: '重命名',
@@ -77,7 +73,7 @@ const typeList = [
     command: 'del'
   }
 ]
-const checkedFields = ref(['e'])
+const checkedFields = ref([])
 const handleCheckAllChange = (val: boolean) => {
   checkedFields.value = val ? fields.value.map(ele => ele.id) : []
   isIndeterminate.value = false
@@ -88,12 +84,50 @@ const handleCheckedFieldsChange = (value: string[]) => {
   isIndeterminate.value = checkedCount > 0 && checkedCount < fields.value.length
 }
 
-const init = () => {
+const cancelClick = () => {
+  dialogVisible.value = false
+}
+
+const confirmClick = () => {
+  let obj = componentData.value.find(ele => ele.id === componentId)
+  obj.propValue = cloneDeep(conditions.value)
+  dialogVisible.value = false
+}
+
+const cancelValueSource = () => {
+  manual.value.hide()
+}
+
+const confirmValueSource = () => {
+  curComponent.value.valueSource = cloneDeep(valueSource.value.filter(ele => ele.trim()))
+}
+
+const init = (id: string, queryId: string) => {
+  componentId = id
+  conditions.value = cloneDeep(componentData.value.find(ele => ele.id === id).propValue) || []
+  curComponent.value = conditions.value.find(ele => ele.id === queryId)
+  activeCondition.value = queryId
+  valueSource.value = cloneDeep(curComponent.value.valueSource)
+  if (!valueSource.value.length) {
+    valueSource.value.push('')
+  }
+  checkedFields.value = Object.keys(curComponent.value.checkedFieldsMap) || []
   dialogVisible.value = true
+  getDsDetails(['1668815327340331008', '1666719324084699136'])
+    .then(res => {
+      res.forEach(ele => {
+        const { dimensionList, quotaList } = ele.fields
+        ele.list = [...dimensionList, ...quotaList]
+      })
+      fields.value = res
+    })
+    .finally(() => {
+      handleCheckedFieldsChange(checkedFields.value)
+    })
 }
 
 const handleCondition = ele => {
-  activeCondition.value = ele.name
+  activeCondition.value = ele.id
 }
 
 const addOperation = (cmd, condition, index) => {
@@ -113,6 +147,13 @@ const addOperation = (cmd, condition, index) => {
 }
 
 const renameInputBlur = () => {
+  conditions.value.some(ele => {
+    if (activeConditionForRename.id === ele.id) {
+      ele.name = activeConditionForRename.name
+      return true
+    }
+    return false
+  })
   activeConditionForRename.id = ''
 }
 
@@ -144,12 +185,12 @@ defineExpose({
           :key="condition.id"
           @click="handleCondition(condition)"
           class="list-item_primary"
-          :class="[condition.name === activeCondition ? 'active' : '']"
+          :class="condition.id === activeCondition && 'active'"
         >
           <el-icon>
             <Icon name="more_v"></Icon>
           </el-icon>
-          <div class="label flex-align-center">
+          <div class="label">
             {{ condition.name }}
           </div>
           <div class="condition-icon flex-align-center">
@@ -190,12 +231,16 @@ defineExpose({
             <div v-for="field in fields" :key="field.id" class="list-item">
               <el-checkbox :label="field.id"
                 ><el-icon> <Icon name="icon_add_outlined"></Icon> </el-icon
-                ><span class="checkbox-name ellipsis">{{ field.dataset }}</span></el-checkbox
+                ><span class="checkbox-name ellipsis">{{ field.name }}</span></el-checkbox
               >
-              <span class="dataset ellipsis">{{ field.dataset }}</span>
-              <el-select v-model="field.field" clearable>
-                <el-option label="Zone one" value="shanghai" />
-                <el-option label="Zone two" value="beijing" />
+              <span class="dataset ellipsis">{{ field.name }}</span>
+              <el-select v-model="curComponent.checkedFieldsMap[field.id]" clearable>
+                <el-option
+                  v-for="ele in field.list"
+                  :key="ele.id"
+                  :label="ele.name"
+                  :value="ele.id"
+                />
               </el-select>
             </div>
           </el-checkbox-group>
@@ -217,15 +262,15 @@ defineExpose({
             <div class="label">选项值来源</div>
             <div class="value">
               <div class="value">
-                <el-radio-group v-model="optionValueSource">
-                  <el-radio label="3">自动</el-radio>
-                  <el-radio label="1">选择数据集</el-radio>
-                  <el-radio label="2">手动输入</el-radio>
+                <el-radio-group v-model="curComponent.optionValueSource">
+                  <el-radio :label="0">自动</el-radio>
+                  <el-radio :label="1">选择数据集</el-radio>
+                  <el-radio :label="2">手动输入</el-radio>
                 </el-radio-group>
               </div>
-              <template v-if="optionValueSource === '1'">
+              <template v-if="curComponent.optionValueSource === 1">
                 <div class="value">
-                  <el-select v-model="displayType" clearable>
+                  <el-select v-model="curComponent.dataset.id" clearable>
                     <el-option-group
                       v-for="group in options"
                       :key="group.label"
@@ -248,16 +293,17 @@ defineExpose({
                   </el-select>
                 </div>
                 <div class="value">
-                  <el-select v-model="displayType" clearable>
+                  <el-select v-model="curComponent.dataset.field.id" clearable>
                     <el-option label="Zone one" value="shanghai" />
                     <el-option label="Zone two" value="beijing" />
                   </el-select>
                 </div>
               </template>
-              <div v-if="optionValueSource === '2'" class="value">
+              <div v-if="curComponent.optionValueSource === 2" class="value">
                 <el-popover
                   placement="bottom-start"
                   popper-class="manual-input"
+                  ref="manual"
                   :width="358"
                   trigger="click"
                 >
@@ -273,15 +319,15 @@ defineExpose({
                     <div class="title">手工输入</div>
                     <div class="select-value">
                       <span> 选项值 </span>
-                      <div class="select-item">
-                        <el-input></el-input>
-                        <el-button class="value" text>
+                      <div :key="index" v-for="(_, index) in valueSource" class="select-item">
+                        <el-input v-model="valueSource[index]"></el-input>
+                        <el-button @click="valueSource.splice(index, 1)" class="value" text>
                           <template #icon>
                             <Icon name="icon_delete-trash_outlined"></Icon>
                           </template>
                         </el-button>
                       </div>
-                      <el-button text>
+                      <el-button @click="valueSource.push('')" text>
                         <template #icon>
                           <Icon name="icon_add_outlined"></Icon>
                         </template>
@@ -289,8 +335,10 @@ defineExpose({
                       </el-button>
                     </div>
                     <div class="manual-footer flex-align-center">
-                      <el-button>{{ t('chart.cancel') }} </el-button>
-                      <el-button type="primary">{{ t('chart.confirm') }} </el-button>
+                      <el-button @click="cancelValueSource">{{ t('chart.cancel') }} </el-button>
+                      <el-button @click="confirmValueSource" type="primary"
+                        >{{ t('chart.confirm') }}
+                      </el-button>
                     </div>
                   </div>
                 </el-popover>
@@ -300,18 +348,18 @@ defineExpose({
           <div class="list-item">
             <div class="label">选项类型</div>
             <div class="value">
-              <el-radio-group v-model="optionType">
-                <el-radio label="1">单选</el-radio>
-                <el-radio label="2">多选</el-radio>
+              <el-radio-group v-model="curComponent.multiple">
+                <el-radio :label="false">单选</el-radio>
+                <el-radio :label="true">多选</el-radio>
               </el-radio-group>
             </div>
           </div>
           <div class="list-item">
             <div class="label">
-              <el-checkbox v-model="bindingParameters" label="绑定参数" />
+              <el-checkbox v-model="curComponent.parametersCheck" label="绑定参数" />
             </div>
             <div class="parameters">
-              <el-select v-model="displayType" clearable>
+              <el-select v-model="curComponent.parameters" clearable>
                 <el-option label="Zone one" value="shanghai" />
                 <el-option label="Zone two" value="beijing" />
               </el-select>
@@ -319,10 +367,10 @@ defineExpose({
           </div>
           <div class="list-item">
             <div class="label">
-              <el-checkbox v-model="setDefaultValues" label="设置默认值" />
+              <el-checkbox v-model="curComponent.defaultValueCheck" label="设置默认值" />
             </div>
             <div class="parameters">
-              <el-select v-model="displayType" clearable>
+              <el-select v-model="curComponent.defaultValue" clearable>
                 <el-option label="Zone one" value="shanghai" />
                 <el-option label="Zone two" value="beijing" />
               </el-select>
@@ -333,8 +381,8 @@ defineExpose({
     </div>
     <template #footer>
       <div class="dialog-footer">
-        <el-button>{{ t('chart.cancel') }} </el-button>
-        <el-button type="primary">{{ t('chart.confirm') }} </el-button>
+        <el-button @click="cancelClick">{{ t('chart.cancel') }} </el-button>
+        <el-button @click="confirmClick" type="primary">{{ t('chart.confirm') }} </el-button>
       </div>
     </template>
   </el-dialog>

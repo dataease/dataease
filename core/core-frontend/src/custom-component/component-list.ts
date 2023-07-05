@@ -118,7 +118,7 @@ const list = [
     component: 'VQuery',
     name: '查询',
     label: '查询',
-    propValue: '拖动维度指标',
+    propValue: '',
     icon: 'other_text',
     innerType: 'VQuery',
     x: 1,
