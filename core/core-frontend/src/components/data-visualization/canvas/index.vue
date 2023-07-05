@@ -26,12 +26,13 @@ import _ from 'lodash'
 import DragShadow from '@/components/data-visualization/canvas/DragShadow.vue'
 import { findDragComponent } from '@/utils/canvasUtils'
 import { guid } from '@/views/visualized/data/dataset/form/util'
-
+import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
+const snapshotStore = snapshotStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
 const composeStore = composeStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
 
-const { componentData, curComponent, canvasStyleData, canvasViewInfo, dvInfo } =
+const { componentData, curComponent, canvasStyleData, canvasViewInfo, dvInfo, editMode } =
   storeToRefs(dvMainStore)
 const { editor } = storeToRefs(composeStore)
 const props = defineProps({
@@ -149,6 +150,7 @@ const svgFilterAttrs = ['width', 'height', 'top', 'left', 'rotate']
 const showComponentData = computed(() => {
   return componentData.value.filter(component => component.isShow)
 })
+
 const curGap = computed(() => {
   return dashboardActive.value && canvasStyleData.value.dashboard.gap === 'yes'
     ? canvasStyleData.value.dashboard.gapSize
@@ -188,8 +190,8 @@ let itemMaxX = 0
 let currentInstance
 
 const handleMouseDown = e => {
-  // 仪表板不显示菜单和组创建
-  if (dashboardActive.value) {
+  // 仪表板和预览状态不显示菜单和组创建
+  if (dashboardActive.value || editMode.value === 'preview') {
     return
   }
   // 右键返回
@@ -340,8 +342,8 @@ const getSelectArea = () => {
 }
 
 const handleContextMenu = e => {
-  // 仪表板不显示菜单和组创建
-  if (dashboardActive.value) {
+  // 仪表板和预览状态不显示菜单和组创建
+  if (dashboardActive.value || editMode.value === 'preview') {
     return
   }
   e.stopPropagation()
@@ -631,7 +633,8 @@ function removeItem(index) {
       moveItemUp(upItem, canGoUpRows)
     }
   })
-  componentData.value.splice(index, 1, {})
+  componentData.value.splice(index, 1)
+  snapshotStore.recordSnapshot()
 }
 
 function addItem(item, index) {
@@ -1092,15 +1095,20 @@ const moving = e => {
   return {}
 }
 
+const cellInit = () => {
+  // 此处向下取整 保留1位小数,why: 矩阵模式计算 x,y时 会使用 style.left/cellWidth style.top/cellWidth
+  // 当初始状态细微的差距(主要是减少)都会导致 x，y 减少一个矩阵大小造成偏移,
+  cellWidth.value = Math.floor((baseWidth.value + baseMarginLeft.value) * 10) / 10
+  cellHeight.value = Math.floor((baseHeight.value + baseMarginTop.value) * 10) / 10
+}
+
 const canvasSizeInit = () => {
-  cellWidth.value = baseWidth.value + baseMarginLeft.value
-  cellHeight.value = baseHeight.value + baseMarginTop.value
+  cellInit()
   reCalcCellWidth()
 }
 
 const canvasInit = () => {
-  cellWidth.value = baseWidth.value + baseMarginLeft.value
-  cellHeight.value = baseHeight.value + baseMarginTop.value
+  cellInit()
   positionBox = []
   coordinates = [] //坐标点集合
   lastTask = undefined
@@ -1283,9 +1291,9 @@ const onResizing = (e, item, index) => {
       ? Math.floor(height / cellHeight.value + 1)
       : Math.floor(height / cellHeight.value)
 
-  console.log(
-    'nowSizeX=' + nowSizeX + ';p1=' + (width % cellWidth.value) + ';p2=' + (cellWidth.value / 4) * 3
-  )
+  // console.log(
+  //   'nowSizeX=' + nowSizeX + ';p1=' + (width % cellWidth.value) + ';p2=' + (cellWidth.value / 4) * 3
+  // )
   const addSizeX = 1
   const addSizeY = 1
 
@@ -1293,28 +1301,31 @@ const onResizing = (e, item, index) => {
   let oldX = infoBoxTemp.oldX
   let oldY = infoBoxTemp.oldY
 
-  let newX = Math.floor(item.style.left / cellWidth.value + 1)
-  let newY = Math.floor(item.style.top / cellHeight.value + 1)
+  // 增加5px偏移量 防止resize时向下取整 组件向右偏移
+  let newX = Math.floor((item.style.left + 5) / cellWidth.value + 1)
+  let newY = Math.floor((item.style.top + 5) / cellHeight.value + 1)
   newX = newX > 0 ? newX : 1
   newY = newY > 0 ? newY : 1
-  console.log(
-    'onResizing=nowSizeX=' + nowSizeX + ';nowSizeY=' + nowSizeY + 'newX=' + newX + ';newY=' + newY
-  )
+  // console.log(
+  //   'onResizing=nowSizeX=' + nowSizeX + ';nowSizeY=' + nowSizeY + 'newX=' + newX + ';newY=' + newY
+  // )
 
   // 调整大小
   debounce(
     (function (newX, oldX, newY, oldY) {
       return function () {
-        // 调整位置
-        movePlayer(resizeItem, {
-          x: newX,
-          y: newY
-        })
-
         // 调整大小
         resizePlayer(resizeItem, {
           sizeX: nowSizeX,
           sizeY: nowSizeY
+        })
+
+        infoBoxTemp.oldSizeX = nowSizeX
+        infoBoxTemp.oldSizeY = nowSizeY
+        // 调整位置
+        movePlayer(resizeItem, {
+          x: newX,
+          y: newY
         })
         infoBoxTemp.oldX = newX
         infoBoxTemp.oldY = newY
@@ -1345,6 +1356,8 @@ const onMouseUp = (e, item, index) => {
 
 const handleDragStartMoveIn = componentInfo => {
   const moveInItemInfo = findDragComponent(componentInfo)
+  // 初始的移动组件 距离左侧的位置 300 是DbToolbar 最左侧区域宽度
+  moveInItemInfo.x = 300 / cellWidth.value
   // 仪表板初始移动的组件暂时不显示 在松开鼠标时再确实该组件的去留
   moveInItemInfo.isShow = false
   moveInItemInfo.id = guid()
@@ -1361,7 +1374,7 @@ const handleDragStartMoveIn = componentInfo => {
 
 const handleDragEnd = e => {
   // 当isShow 是false时，说明未移入画布 则需要进行清理占位
-  if (infoBox.value && !infoBox.value.moveItem.isShow) {
+  if (infoBox.value && infoBox.value.moveItem && !infoBox.value.moveItem.isShow) {
     removeItem(componentData.value.length - 1)
     clearInfoBox(e)
   }
@@ -1386,6 +1399,7 @@ onMounted(() => {
   eventBus.on('hideArea', hideArea)
   eventBus.on('handleDragStartMoveIn', handleDragStartMoveIn)
   eventBus.on('handleDragEnd', handleDragEnd)
+  eventBus.on('removeMatrixItem', removeItem)
 })
 
 defineExpose({

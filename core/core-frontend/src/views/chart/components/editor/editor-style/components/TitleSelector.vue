@@ -14,6 +14,10 @@ const props = defineProps({
   chart: {
     type: Object,
     required: true
+  },
+  themes: {
+    type: String,
+    default: 'dark'
   }
 })
 
@@ -84,7 +88,7 @@ init()
       >
         <el-form-item :label="t('chart.title')" class="form-item">
           <el-input
-            effect="dark"
+            :effect="props.themes"
             v-model="chart.title"
             size="small"
             :placeholder="t('chart.title')"
@@ -94,7 +98,7 @@ init()
         </el-form-item>
         <el-form-item :label="t('chart.font_family')" class="form-item">
           <el-select
-            effect="dark"
+            :effect="props.themes"
             v-model="state.titleForm.fontFamily"
             :placeholder="t('chart.font_family')"
             @change="changeTitleStyle('fontFamily')"
@@ -109,7 +113,7 @@ init()
         </el-form-item>
         <el-form-item :label="t('chart.text_fontsize')" class="form-item">
           <el-select
-            effect="dark"
+            :effect="props.themes"
             v-model="state.titleForm.fontSize"
             :placeholder="t('chart.text_fontsize')"
             size="small"
@@ -137,20 +141,24 @@ init()
             size="small"
             @change="changeTitleStyle('hPosition')"
           >
-            <el-radio effect="dark" label="left">{{ t('chart.text_pos_left') }}</el-radio>
-            <el-radio effect="dark" label="center">{{ t('chart.text_pos_center') }}</el-radio>
-            <el-radio effect="dark" label="right">{{ t('chart.text_pos_right') }}</el-radio>
+            <el-radio :effect="props.themes" label="left">{{ t('chart.text_pos_left') }}</el-radio>
+            <el-radio :effect="props.themes" label="center">{{
+              t('chart.text_pos_center')
+            }}</el-radio>
+            <el-radio :effect="props.themes" label="right">{{
+              t('chart.text_pos_right')
+            }}</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item :label="t('chart.text_style')" class="form-item">
           <el-checkbox
-            effect="dark"
+            :effect="props.themes"
             v-model="state.titleForm.isItalic"
             @change="changeTitleStyle('isItalic')"
             >{{ t('chart.italic') }}
           </el-checkbox>
           <el-checkbox
-            effect="dark"
+            :effect="props.themes"
             v-model="state.titleForm.isBolder"
             @change="changeTitleStyle('isBolder')"
             >{{ t('chart.bolder') }}
@@ -158,7 +166,7 @@ init()
         </el-form-item>
         <el-form-item :label="t('chart.letter_space')" class="form-item">
           <el-select
-            effect="dark"
+            :effect="props.themes"
             v-model="state.titleForm.letterSpace"
             :placeholder="t('chart.quota_letter_space')"
             @change="changeTitleStyle('letterSpace')"
@@ -173,7 +181,7 @@ init()
         </el-form-item>
         <el-form-item :label="t('chart.font_shadow')" class="form-item">
           <el-checkbox
-            effect="dark"
+            :effect="props.themes"
             v-model="state.titleForm.fontShadow"
             @change="changeTitleStyle('fontShadow')"
             >{{ t('chart.font_shadow') }}

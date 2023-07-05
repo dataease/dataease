@@ -17,6 +17,10 @@ const props = defineProps({
   chart: {
     type: Object,
     required: true
+  },
+  themes: {
+    type: String,
+    default: 'dark'
   }
 })
 
@@ -218,7 +222,7 @@ init()
         <el-form-item :label="t('chart.threshold_range') + '(%)'" class="form-item">
           <span>0,</span>
           <el-input
-            effect="dark"
+            :effect="props.themes"
             v-model="state.thresholdForm.gaugeThreshold"
             style="width: 100px; margin: 0 10px"
             :placeholder="t('chart.threshold_range')"
@@ -227,7 +231,7 @@ init()
             @change="gaugeThresholdChange"
           />
           <span>,100</span>
-          <!--          <el-tooltip class="item" effect="dark" placement="bottom">-->
+          <!--          <el-tooltip class="item" :effect="props.themes" placement="bottom">-->
           <!--            <div slot="content">-->
           <!--              阈值设置，决定仪表盘区间颜色，为空则不开启阈值，范围(0-100)，逐级递增-->
           <!--              <br />-->

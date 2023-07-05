@@ -20,10 +20,14 @@ const props = defineProps({
         propValue: null
       }
     }
+  },
+  themes: {
+    type: String,
+    default: 'dark'
   }
 })
 
-const { propValue, element, dvModel } = toRefs(props)
+const { propValue, element, dvModel, themes } = toRefs(props)
 const currentPane = ref('common')
 
 const handleDragStart = e => {
@@ -46,12 +50,18 @@ const newComponent = componentName => {
     @dragend="handleDragEnd"
     v-on:click="newComponent('VText')"
   >
-    <drag-component name="Text" label="文本" drag-info="VText&VText"></drag-component>
+    <drag-component
+      :themes="themes"
+      name="Text"
+      label="文本"
+      drag-info="VText&VText"
+    ></drag-component>
   </div>
 </template>
 
 <style lang="less" scoped>
 .group {
+  padding-top: 5px;
 }
 .custom_img {
   width: 100px;

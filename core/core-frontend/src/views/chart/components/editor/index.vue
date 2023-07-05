@@ -26,6 +26,7 @@ import ChartType from '@/views/chart/components/editor/chart-type/ChartType.vue'
 import { useRouter } from 'vue-router'
 import CompareEdit from '@/views/chart/components/editor/drag-item/components/CompareEdit.vue'
 import ValueFormatterEdit from '@/views/chart/components/editor/drag-item/components/ValueFormatterEdit.vue'
+import CustomSortEdit from '@/views/chart/components/editor/drag-item/components/CustomSortEdit.vue'
 
 const dvMainStore = dvMainStoreWithOut()
 const { canvasCollapse } = storeToRefs(dvMainStore)
@@ -48,6 +49,10 @@ const props = defineProps({
   datasetTree: {
     type: Array as PropType<Tree[]>,
     default: () => []
+  },
+  themes: {
+    type: String,
+    default: 'dark'
   }
 })
 
@@ -67,6 +72,7 @@ const itemFormRules = reactive<FormRules>({
 })
 
 const state = reactive({
+  extData: 'extLabel',
   moveId: -1,
   dimension: [],
   quota: [],
@@ -86,7 +92,10 @@ const state = reactive({
   quotaItemCompare: {},
   showEditQuotaCompare: false,
   showValueFormatter: false,
-  valueFormatterItem: {}
+  valueFormatterItem: {},
+  showCustomSort: false,
+  customSortList: [],
+  customSortField: {}
 })
 
 watch(
@@ -197,6 +206,10 @@ const quotaItemRemove = item => {
     view.value.yAxis.splice(item.index, 1)
   } else if (item.removeType === 'quotaExt') {
     view.value.yAxisExt.splice(item.index, 1)
+  } else if (item.removeType === 'extLabel') {
+    view.value.extLabel.splice(item.index, 1)
+  } else if (item.removeType === 'extTooltip') {
+    view.value.extTooltip.splice(item.index, 1)
   }
   calcData(view.value)
 }
@@ -207,6 +220,32 @@ const drillItemChange = item => {
 const drillItemRemove = item => {
   view.value.drillFields.splice(item.index, 1)
   calcData(view.value)
+}
+
+const customSort = () => {
+  state.showCustomSort = true
+}
+const customSortChange = val => {
+  state.customSortList = val
+}
+const closeCustomSort = () => {
+  state.showCustomSort = false
+  state.customSortField = {}
+  state.customSortList = []
+}
+const saveCustomSort = () => {
+  view.value.xAxis.forEach(ele => {
+    if (ele.id === state.customSortField.id) {
+      ele.sort = 'custom_sort'
+      ele.customSort = state.customSortList
+    }
+  })
+  closeCustomSort()
+  calcData(view.value)
+}
+const onCustomSort = item => {
+  state.customSortField = view.value.xAxis[item.index]
+  customSort()
 }
 
 const onMove = (e, originalEvent) => {
@@ -283,6 +322,18 @@ const addDrill = e => {
   calcData(view.value)
 }
 
+const addExtLabel = e => {
+  dragCheckType(view.value.extLabel, 'q')
+  dragMoveDuplicate(view.value.extLabel, e, '')
+  calcData(view.value)
+}
+
+const addExtTooltip = e => {
+  dragCheckType(view.value.extTooltip, 'q')
+  dragMoveDuplicate(view.value.extTooltip, e, '')
+  calcData(view.value)
+}
+
 const addCustomFilter = e => {
   // 记录数等自动生成字段不做为过滤条件
   if (view.value.customFilter && view.value.customFilter.length > 0) {
@@ -330,8 +381,12 @@ const onColorChange = val => {
 }
 
 const onSizeChange = val => {
-  view.value.customAttr.size = val
-  renderChart(view.value)
+  view.value.customAttr.size = val.data
+  if (val.requestData) {
+    calcData(view.value)
+  } else {
+    renderChart(view.value)
+  }
 }
 
 const onLabelChange = val => {
@@ -408,6 +463,10 @@ const saveRename = ref => {
         view.value.yAxisExt[state.itemForm.index].chartShowName = state.itemForm.chartShowName
       } else if (state.itemForm.renameType === 'dimensionExt') {
         view.value.xAxisExt[state.itemForm.index].chartShowName = state.itemForm.chartShowName
+      } else if (state.itemForm.renameType === 'extLabel') {
+        view.value.extLabel[state.itemForm.index].chartShowName = state.itemForm.chartShowName
+      } else if (state.itemForm.renameType === 'extTooltip') {
+        view.value.extTooltip[state.itemForm.index].chartShowName = state.itemForm.chartShowName
       }
       // this.calcData(true)
       closeRename()
@@ -531,6 +590,12 @@ const saveQuotaEditCompare = () => {
   } else if (state.quotaItemCompare.calcType === 'quotaExt') {
     view.value.yAxisExt[state.quotaItemCompare.index].compareCalc =
       state.quotaItemCompare.compareCalc
+  } else if (state.quotaItemCompare.calcType === 'extLabel') {
+    view.value.extLabel[state.quotaItemCompare.index].compareCalc =
+      state.quotaItemCompare.compareCalc
+  } else if (state.quotaItemCompare.calcType === 'extTooltip') {
+    view.value.extTooltip[state.quotaItemCompare.index].compareCalc =
+      state.quotaItemCompare.compareCalc
   }
   calcData(view.value)
   closeQuotaEditCompare()
@@ -572,9 +637,15 @@ const saveValueFormatter = () => {
 </script>
 
 <template>
-  <div class="chart-edit">
+  <div class="chart-edit" :class="'editor-' + themes">
     <el-row v-loading="loading" class="de-chart-editor">
-      <div style="position: relative">
+      <div
+        class="content-area"
+        :class="{
+          'content-area-close': canvasCollapse.chartAreaCollapse,
+          'content-area-left-open': !canvasCollapse.chartAreaCollapse
+        }"
+      >
         <el-icon
           :title="view.title"
           class="custom-icon"
@@ -598,8 +669,8 @@ const saveValueFormatter = () => {
                 <el-col>
                   <div class="drag_main_area attr-style theme-border-class">
                     <el-row style="height: 100%">
-                      <el-row class="chart_type_area padding-lr">
-                        <span class="switch-chart">
+                      <el-row v-if="props.themes !== 'dark'" class="chart_type_area padding-lr">
+                        <span class="switch-chart" :class="'switch-chart-' + themes">
                           <span>{{ t('chart.switch_chart') }}</span>
                           <span style="float: right; width: 140px">
                             <el-popover
@@ -607,16 +678,24 @@ const saveValueFormatter = () => {
                               width="434"
                               trigger="click"
                               :append-to-body="true"
-                              popper-class="chart-type-style"
+                              :popper-class="'chart-type-style-' + themes"
                             >
                               <template #reference>
-                                <el-button size="small" style="width: 100%; padding: 0">
+                                <el-button
+                                  :effect="themes"
+                                  size="small"
+                                  style="width: 100%; padding: 0"
+                                >
                                   {{ t('chart.change_chart_type') }}
                                   <i class="el-icon-caret-bottom" />
                                 </el-button>
                               </template>
                               <template #default>
-                                <chart-type :type="view.type" @onTypeChange="onTypeChange" />
+                                <chart-type
+                                  :themes="themes"
+                                  :type="view.type"
+                                  @onTypeChange="onTypeChange"
+                                />
                               </template>
                             </el-popover>
                           </span>
@@ -650,9 +729,11 @@ const saveValueFormatter = () => {
                               :chart="view"
                               :item="element"
                               :index="index"
+                              :themes="props.themes"
                               @onDimensionItemChange="dimensionItemChange"
                               @onDimensionItemRemove="dimensionItemRemove"
                               @onNameEdit="showRename"
+                              @onCustomSort="onCustomSort"
                             />
                           </template>
                         </draggable>
@@ -688,6 +769,8 @@ const saveValueFormatter = () => {
                               :chart="view"
                               :item="element"
                               :index="index"
+                              type="quota"
+                              :themes="props.themes"
                               @onQuotaItemChange="quotaItemChange"
                               @onQuotaItemRemove="quotaItemRemove"
                               @onNameEdit="showRename"
@@ -704,6 +787,7 @@ const saveValueFormatter = () => {
                       <el-row
                         class="padding-lr drag-data"
                         v-if="
+                          props.themes !== 'dark' &&
                           view.type !== 'table-info' &&
                           view.type !== 'text' &&
                           view.type !== 'text-label' &&
@@ -715,7 +799,7 @@ const saveValueFormatter = () => {
                           <span>{{ t('chart.drill') }}</span>
                           /
                           <span>{{ t('chart.dimension') }}</span>
-                          <el-tooltip class="item" effect="dark" placement="bottom">
+                          <el-tooltip class="item" :effect="themes" placement="bottom">
                             <template #content>
                               <div>
                                 {{ t('chart.drill_dimension_tip') }}
@@ -744,6 +828,7 @@ const saveValueFormatter = () => {
                               :item="element"
                               :dimension-data="state.dimension"
                               :quota-data="state.quota"
+                              :themes="props.themes"
                               @onDimensionItemChange="drillItemChange"
                               @onDimensionItemRemove="drillItemRemove"
                             />
@@ -771,6 +856,7 @@ const saveValueFormatter = () => {
                               :quota-data="state.quotaData"
                               :item="element"
                               :index="index"
+                              :themes="props.themes"
                               @onFilterItemRemove="filterItemRemove"
                               @editItemFilter="showEditFilter"
                             />
@@ -779,7 +865,97 @@ const saveValueFormatter = () => {
                         <drag-placeholder :drag-list="view.customFilter" />
                       </el-row>
 
-                      <el-row class="result-style">
+                      <!--extLabel等-->
+                      <el-collapse
+                        v-if="
+                          view.type.includes('bar') ||
+                          view.type.includes('line') ||
+                          view.type.includes('area') ||
+                          view.type.includes('pie') ||
+                          view.type.includes('radar') ||
+                          view.type.includes('map') ||
+                          view.type.includes('scatter') ||
+                          view.type.includes('funnel')
+                        "
+                        v-model="state.extData"
+                        class="style-collapse"
+                      >
+                        <el-collapse-item name="extLabel" :title="t('chart.more_settings')">
+                          <!--extLabel-->
+                          <el-row class="padding-lr drag-data">
+                            <span class="data-area-label">
+                              <span>{{ t('chart.label') }}</span>
+                            </span>
+                            <draggable
+                              :list="view.extLabel"
+                              :move="onMove"
+                              item-key="id"
+                              group="drag"
+                              animation="300"
+                              class="drag-block-style"
+                              @add="addExtLabel"
+                              @update="calcData(view)"
+                            >
+                              <template #item="{ element, index }">
+                                <quota-item
+                                  :dimension-data="state.dimension"
+                                  :quota-data="state.quota"
+                                  :chart="view"
+                                  :item="element"
+                                  :index="index"
+                                  type="extLabel"
+                                  :themes="props.themes"
+                                  @onQuotaItemChange="quotaItemChange"
+                                  @onQuotaItemRemove="quotaItemRemove"
+                                  @onNameEdit="showRename"
+                                  @editItemFilter="showQuotaEditFilter"
+                                  @editItemCompare="showQuotaEditCompare"
+                                  @valueFormatter="valueFormatter"
+                                />
+                              </template>
+                            </draggable>
+                            <drag-placeholder :drag-list="view.extLabel" />
+                          </el-row>
+
+                          <!--extTooltip-->
+                          <el-row class="padding-lr drag-data">
+                            <span class="data-area-label">
+                              <span>{{ t('chart.tooltip') }}</span>
+                            </span>
+                            <draggable
+                              :list="view.extTooltip"
+                              :move="onMove"
+                              item-key="id"
+                              group="drag"
+                              animation="300"
+                              class="drag-block-style"
+                              @add="addExtTooltip"
+                              @update="calcData(view)"
+                            >
+                              <template #item="{ element, index }">
+                                <quota-item
+                                  :dimension-data="state.dimension"
+                                  :quota-data="state.quota"
+                                  :chart="view"
+                                  :item="element"
+                                  :index="index"
+                                  type="extTooltip"
+                                  :themes="props.themes"
+                                  @onQuotaItemChange="quotaItemChange"
+                                  @onQuotaItemRemove="quotaItemRemove"
+                                  @onNameEdit="showRename"
+                                  @editItemFilter="showQuotaEditFilter"
+                                  @editItemCompare="showQuotaEditCompare"
+                                  @valueFormatter="valueFormatter"
+                                />
+                              </template>
+                            </draggable>
+                            <drag-placeholder :drag-list="view.extTooltip" />
+                          </el-row>
+                        </el-collapse-item>
+                      </el-collapse>
+
+                      <el-row class="result-style" :class="'result-style-' + themes">
                         <div class="result-style-input">
                           <span v-show="view.type !== 'richTextView'">
                             {{ t('chart.result_count') }}
@@ -787,7 +963,7 @@ const saveValueFormatter = () => {
                           <span v-show="view.type !== 'richTextView'">
                             <el-radio-group
                               v-model="view.resultMode"
-                              class="radio-span dark"
+                              class="radio-span"
                               size="small"
                               @change="calcData(view)"
                             >
@@ -805,7 +981,11 @@ const saveValueFormatter = () => {
                             </el-radio-group>
                           </span>
                         </div>
-                        <el-button class="result-style-button" @click="calcData(view)">
+                        <el-button
+                          type="primary"
+                          class="result-style-button"
+                          @click="calcData(view)"
+                        >
                           <span style="font-size: 12px">
                             {{ t('chart.update_chart_data') }}
                           </span>
@@ -824,6 +1004,9 @@ const saveValueFormatter = () => {
               >
                 <chart-style
                   :chart="view"
+                  :themes="themes"
+                  :dimension-data="state.dimensionData"
+                  :quota-data="state.quotaData"
                   @onColorChange="onColorChange"
                   @onSizeChange="onSizeChange"
                   @onLabelChange="onLabelChange"
@@ -844,6 +1027,7 @@ const saveValueFormatter = () => {
                 <senior
                   :chart="view"
                   :quota-data="view.yAxis"
+                  :themes="themes"
                   @onFunctionCfgChange="onFunctionCfgChange"
                   @onAssistLineChange="onAssistLineChange"
                   @onScrollCfgChange="onScrollCfgChange"
@@ -854,7 +1038,13 @@ const saveValueFormatter = () => {
           </el-row>
         </div>
       </div>
-      <div class="dataset-main">
+      <div
+        class="dataset-main content-area"
+        :class="{
+          'content-area-close': canvasCollapse.datasetAreaCollapse,
+          'content-area-right-open': !canvasCollapse.datasetAreaCollapse
+        }"
+      >
         <el-icon
           :title="'数据集'"
           class="custom-icon"
@@ -871,16 +1061,7 @@ const saveValueFormatter = () => {
           <el-row class="editor-title">
             <span style="font-size: 14px">数据集</span>
           </el-row>
-          <el-row
-            :style="{
-              padding: '2px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              borderTop: '1px solid #363636'
-            }"
-            class="dark"
-          >
+          <el-row class="dataset-select">
             <el-tree-select
               v-model="view.tableId"
               :data="datasetTree"
@@ -892,13 +1073,16 @@ const saveValueFormatter = () => {
             >
               <template #default="{ node, data }">
                 <el-icon v-if="!data.leaf">
-                  <Icon name="scene"></Icon>
+                  <Icon name="dv-folder"></Icon>
+                </el-icon>
+                <el-icon v-if="data.leaf">
+                  <Icon name="icon_dataset"></Icon>
                 </el-icon>
                 <span :title="node.label">{{ node.label }}</span>
               </template>
             </el-tree-select>
             <el-icon
-              :style="{ color: '#a6a6a6', cursor: 'pointer', marginRight: '8px' }"
+              :style="{ color: '#a6a6a6', cursor: 'pointer', marginLeft: '6px' }"
               @click="editDs"
             >
               <Icon name="icon_edit_outlined" class="el-icon-arrow-down el-icon-delete"></Icon>
@@ -924,7 +1108,7 @@ const saveValueFormatter = () => {
             </div>
             <el-input
               v-model="state.searchField"
-              class="dataset-search-input"
+              :class="'dataset-search-input-' + themes"
               :placeholder="t('chart.search') + t('chart.field')"
               clearable
             >
@@ -935,7 +1119,7 @@ const saveValueFormatter = () => {
               </template>
             </el-input>
           </el-row>
-          <div style="height: calc(100% - 122px)">
+          <div style="height: calc(100% - 123px)">
             <div class="padding-lr field-height">
               <span>{{ t('chart.dimension') }}</span>
               <draggable
@@ -1102,16 +1286,116 @@ const saveValueFormatter = () => {
         </div>
       </template>
     </el-dialog>
+
+    <!--xAxis自定义排序-->
+    <el-dialog
+      v-model="state.showCustomSort"
+      v-if="state.showCustomSort"
+      :title="t('chart.custom_sort')"
+      :visible="state.showCustomSort"
+      :show-close="false"
+      width="500px"
+      class="dialog-css"
+    >
+      <custom-sort-edit
+        :chart="view"
+        field-type="xAxis"
+        :field="state.customSortField"
+        @onSortChange="customSortChange"
+      />
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="closeCustomSort">{{ t('chart.cancel') }} </el-button>
+          <el-button type="primary" @click="saveCustomSort">{{ t('chart.confirm') }} </el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <style lang="less" scoped>
+.editor-light {
+  border-left: solid 1px @side-outline-border-color-light !important;
+  color: @canvas-main-font-color-light!important;
+  background-color: @side-area-background-light!important;
+  :deep(.ed-tabs__header) {
+    border-top: solid 1px @side-outline-border-color-light !important;
+  }
+  :deep(.drag_main_area) {
+    border-top: solid 1px @side-outline-border-color-light !important;
+  }
+  :deep(.drag-data) {
+    border-top: solid 1px @side-outline-border-color-light !important;
+  }
+  :deep(.result-style) {
+    border-top: 1px solid @side-outline-border-color-light !important;
+  }
+  :deep(.dataset-select) {
+    border-top: 1px solid @side-outline-border-color-light !important;
+  }
+  :deep(.dataset-main) {
+    border-left: 1px solid @side-outline-border-color-light !important;
+  }
+  :deep(input) {
+    font-size: 12px !important;
+  }
+  :deep(.field-height) {
+    border-top: 1px solid @side-outline-border-color-light !important;
+  }
+  :deep(.item-span-style) {
+    color: @canvas-main-font-color-light!important;
+  }
+}
+
+// editor form 全局样式
+.editor-dark {
+  :deep(.ed-radio__label) {
+    color: var(--ed-color-white);
+  }
+  :deep(.ed-input__inner),
+  :deep(.ed-input__wrapper),
+  :deep(.ed-input.is-disabled .ed-input__wrapper) {
+    color: var(--ed-color-white);
+    background-color: @side-content-background;
+    border: none;
+  }
+  :deep(.ed-input__inner) {
+    border: none;
+  }
+  :deep(.ed-input__wrapper) {
+    box-shadow: 0 0 0 1px hsla(0, 0%, 100%, 0.15) inset !important;
+  }
+  :deep(.ed-input__wrapper:hover) {
+    box-shadow: 0 0 0 1px var(--ed-color-primary) inset !important;
+  }
+  :deep(input) {
+    font-size: 12px !important;
+  }
+
+  :deep(.ed-collapse-item__header) {
+    background-color: @side-area-background !important;
+    color: #ffffff;
+    padding-left: 5px;
+    border-bottom: 1px solid rgba(85, 85, 85, 1);
+    height: 38px !important;
+  }
+  :deep(.ed-collapse-item__content) {
+    background-color: @side-content-background;
+    color: #ffffff;
+    padding-left: 5px;
+  }
+
+  :deep(.ed-collapse-item__wrap) {
+    border-bottom: 1px solid rgba(85, 85, 85, 1);
+  }
+}
+
 .chart-edit {
   position: relative;
   transition: 0.5s;
+  height: 100%;
   color: white;
   background-color: @side-area-background;
-  height: 100%;
 }
 .ed-row {
   display: block;
@@ -1147,9 +1431,7 @@ span {
   }
 
   .view-panel-row :deep(.ed-collapse-item__header) {
-    height: 35px !important;
-    line-height: 35px !important;
-    padding: 0 0 0 6px !important;
+    padding: 0 !important;
     font-size: 12px !important;
     font-weight: 400 !important;
   }
@@ -1179,7 +1461,7 @@ span {
   }
 
   .tab-header :deep(.ed-tabs__content) {
-    height: calc(100% - 46px);
+    height: calc(100% - 47px);
     overflow-y: auto;
     overflow-x: hidden;
   }
@@ -1329,6 +1611,8 @@ span {
     bottom: 0;
     width: 100%;
     border-top: 1px solid @side-outline-border-color;
+  }
+  .result-style-dark {
     :deep(.ed-button) {
       color: #ffffff;
       background-color: var(--ed-color-primary);
@@ -1352,9 +1636,10 @@ span {
   .result-style-button {
     height: 40px;
     width: 100%;
+    border-radius: 0;
   }
 
-  .switch-chart {
+  .switch-chart-dark {
     :deep(.ed-button) {
       color: #ffffff;
       background-color: #1a1a1a;
@@ -1365,9 +1650,11 @@ span {
       border: 1px solid #3370ff;
     }
   }
+  .switch-chart-light {
+  }
 
   .dataset-search {
-    height: 46px;
+    height: 47px;
     width: 100%;
   }
   .dataset-search-label {
@@ -1376,7 +1663,8 @@ span {
     align-items: center;
     justify-content: space-between;
   }
-  .dataset-search-input {
+
+  .dataset-search-input-dark {
     height: 22px;
     background-color: @side-area-background;
     :deep(.ed-input__inner) {
@@ -1388,6 +1676,23 @@ span {
       box-shadow: none !important;
       border-bottom: 1px solid hsla(0, 0%, 100%, 0.15);
       background-color: @side-area-background;
+      border-radius: 0;
+      padding: 1px 4px;
+    }
+  }
+
+  .dataset-search-input-light {
+    height: 22px;
+    background-color: @side-area-background-light;
+    :deep(.ed-input__inner) {
+      height: 20px;
+      background-color: @side-area-background-light;
+      color: @canvas-main-font-color-light;
+    }
+    :deep(.ed-input__wrapper) {
+      box-shadow: none !important;
+      border-bottom: @side-outline-border-color-light;
+      background-color: @side-area-background-light;
       border-radius: 0;
       padding: 1px 4px;
     }
@@ -1420,23 +1725,6 @@ span {
   cursor: pointer;
   z-index: 2;
 }
-
-:deep(.ed-collapse-item__header) {
-  background-color: @side-area-background !important;
-  color: #ffffff;
-  padding-left: 5px;
-  border-bottom: 1px solid rgba(85, 85, 85, 1);
-  height: 38px !important;
-}
-:deep(.ed-collapse-item__content) {
-  background-color: @side-content-background;
-  color: #ffffff;
-  padding-left: 5px;
-}
-
-:deep(.ed-collapse-item__wrap) {
-  border-bottom: 1px solid rgba(85, 85, 85, 1);
-}
 :deep(.ed-collapse) {
   width: 100%;
 }
@@ -1456,29 +1744,39 @@ span {
   border-left: 1px solid @side-outline-border-color;
 }
 
-// editor form 全局样式
-.dark {
-  :deep(.ed-radio__label) {
-    color: var(--ed-color-white);
+.content-area {
+  position: relative;
+  transition: 0.5s;
+  overflow-x: hidden;
+}
+
+.content-area-close {
+  width: 35px;
+}
+
+.content-area-left-open {
+  width: 240px;
+}
+
+.content-area-right-open {
+  width: 180px;
+}
+
+.dataset-select {
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  border-top: 1px solid #363636;
+}
+.style-collapse {
+  :deep(.ed-collapse-item__header),
+  :deep(.ed-collapse-item__wrap) {
+    border-bottom: none !important;
   }
-  :deep(.ed-input__inner),
-  :deep(.ed-input__wrapper),
-  :deep(.ed-input.is-disabled .ed-input__wrapper) {
-    color: var(--ed-color-white);
-    background-color: @side-content-background;
-    border: none;
-  }
-  :deep(.ed-input__inner) {
-    border: none;
-  }
-  :deep(.ed-input__wrapper) {
-    box-shadow: 0 0 0 1px hsla(0, 0%, 100%, 0.15) inset !important;
-  }
-  :deep(.ed-input__wrapper:hover) {
-    box-shadow: 0 0 0 1px var(--ed-color-primary) inset !important;
-  }
-  :deep(input) {
-    font-size: 12px !important;
+  :deep(.ed-collapse-item__content) {
+    padding-left: 0 !important;
+    padding-bottom: 10px !important;
   }
 }
 </style>

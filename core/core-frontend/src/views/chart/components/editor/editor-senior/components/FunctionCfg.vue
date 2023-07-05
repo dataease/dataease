@@ -9,6 +9,10 @@ const props = defineProps({
   chart: {
     type: Object,
     required: true
+  },
+  themes: {
+    type: String,
+    default: 'dark'
   }
 })
 
@@ -106,9 +110,13 @@ init()
             v-model="state.functionForm.emptyDataStrategy"
             @change="changeFunctionCfg"
           >
-            <el-radio effect="dark" :label="'breakLine'">{{ t('chart.break_line') }}</el-radio>
-            <el-radio effect="dark" :label="'setZero'">{{ t('chart.set_zero') }}</el-radio>
-            <el-radio effect="dark" :label="'ignoreData'">{{ t('chart.ignore_data') }}</el-radio>
+            <el-radio :effect="props.themes" :label="'breakLine'">{{
+              t('chart.break_line')
+            }}</el-radio>
+            <el-radio :effect="props.themes" :label="'setZero'">{{ t('chart.set_zero') }}</el-radio>
+            <el-radio :effect="props.themes" :label="'ignoreData'">{{
+              t('chart.ignore_data')
+            }}</el-radio>
           </el-radio-group>
         </el-form-item>
       </el-form>

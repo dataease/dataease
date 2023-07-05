@@ -9,6 +9,10 @@ const props = defineProps({
   chart: {
     type: Object,
     required: true
+  },
+  themes: {
+    type: String,
+    default: 'dark'
   }
 })
 
@@ -75,7 +79,7 @@ init()
       >
         <el-form-item :label="t('chart.text_fontsize')" class="form-item">
           <el-select
-            effect="dark"
+            :effect="props.themes"
             v-model="state.tooltipForm.textStyle.fontSize"
             :placeholder="t('chart.text_fontsize')"
             size="small"

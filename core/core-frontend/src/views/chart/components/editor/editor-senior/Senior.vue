@@ -29,10 +29,14 @@ const props = defineProps({
   quotaData: {
     type: Array,
     required: true
+  },
+  themes: {
+    type: String,
+    default: 'dark'
   }
 })
 
-const { chart } = toRefs(props)
+const { chart, themes } = toRefs(props)
 
 const onFunctionCfgChange = val => {
   emit('onFunctionCfgChange', val)
@@ -52,7 +56,7 @@ const onThresholdChange = val => {
 </script>
 
 <template>
-  <el-row class="view-panel">
+  <el-row class="view-panel" :class="'senior-' + themes">
     <div class="attr-style">
       <el-row class="de-collapse-style">
         <el-collapse
@@ -80,7 +84,11 @@ const onThresholdChange = val => {
             :change-model="chart.senior.functionCfg"
             @modelChange="onFunctionCfgChange"
           >
-            <function-cfg :chart="props.chart" @onFunctionCfgChange="onFunctionCfgChange" />
+            <function-cfg
+              :themes="themes"
+              :chart="props.chart"
+              @onFunctionCfgChange="onFunctionCfgChange"
+            />
           </collapse-switch-item>
 
           <el-collapse-item
@@ -94,6 +102,7 @@ const onThresholdChange = val => {
           >
             <assist-line
               :chart="props.chart"
+              :themes="themes"
               :quota-data="props.quotaData"
               @onAssistLineChange="onAssistLineChange"
             />
@@ -104,7 +113,11 @@ const onThresholdChange = val => {
             name="scroll"
             :title="t('chart.scroll_cfg')"
           >
-            <scroll-cfg :chart="props.chart" @onScrollCfgChange="onScrollCfgChange" />
+            <scroll-cfg
+              :themes="themes"
+              :chart="props.chart"
+              @onScrollCfgChange="onScrollCfgChange"
+            />
           </el-collapse-item>
 
           <el-collapse-item
@@ -117,7 +130,11 @@ const onThresholdChange = val => {
             name="threshold"
             :title="t('chart.threshold')"
           >
-            <threshold :chart="props.chart" @onThresholdChange="onThresholdChange" />
+            <threshold
+              :themes="themes"
+              :chart="props.chart"
+              @onThresholdChange="onThresholdChange"
+            />
           </el-collapse-item>
         </el-collapse>
         <div v-else class="no-senior">
@@ -129,6 +146,13 @@ const onThresholdChange = val => {
 </template>
 
 <style lang="less" scoped>
+.senior-light {
+  border-top: 1px solid @side-outline-border-color-light;
+}
+
+.senior-dark {
+  border-top: 1px solid @side-outline-border-color;
+}
 .ed-row {
   display: block;
 }
@@ -141,7 +165,6 @@ span {
   display: flex;
   height: 100%;
   width: 100%;
-  border-top: 1px solid @side-outline-border-color;
 }
 
 .de-collapse-style {

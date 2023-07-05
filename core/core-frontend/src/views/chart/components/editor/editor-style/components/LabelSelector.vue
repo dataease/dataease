@@ -9,6 +9,10 @@ const props = defineProps({
   chart: {
     type: Object,
     required: true
+  },
+  themes: {
+    type: String,
+    default: 'dark'
   }
 })
 
@@ -101,7 +105,7 @@ init()
         <!--          </el-form-item>-->
         <el-form-item :label="t('chart.text_fontsize')" class="form-item">
           <el-select
-            effect="dark"
+            :effect="props.themes"
             v-model="state.labelForm.fontSize"
             :placeholder="t('chart.text_fontsize')"
             @change="changeLabelAttr('fontSize')"
@@ -124,7 +128,7 @@ init()
         </el-form-item>
         <el-form-item :label="t('chart.label_position')" class="form-item">
           <el-select
-            effect="dark"
+            :effect="props.themes"
             v-model="state.labelForm.position"
             :placeholder="t('chart.label_position')"
             @change="changeLabelAttr('position')"

@@ -36,4 +36,9 @@ public class DatasetDataServer implements DatasetDataApi {
     public Map<String, Object> previewSql(PreviewSqlDTO dto) throws Exception {
         return datasetDataManage.previewSql(dto);
     }
+
+    @Override
+    public Map<String, Object> getFieldEnum(Long id) throws Exception {
+        return datasetDataManage.getFieldEnum(id);
+    }
 }

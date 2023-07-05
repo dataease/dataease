@@ -9,6 +9,10 @@ const props = defineProps({
   chart: {
     type: Object,
     required: true
+  },
+  themes: {
+    type: String,
+    default: 'dark'
   }
 })
 
@@ -73,7 +77,7 @@ init()
           <el-checkbox v-model="state.scrollForm.open" @change="changeScrollCfg">{{
             t('chart.open')
           }}</el-checkbox>
-          <!--          <el-tooltip class="item" effect="dark" placement="bottom">-->
+          <!--          <el-tooltip class="item" :effect="props.themes" placement="bottom">-->
           <!--            <div slot="content">-->
           <!--              {{ t('chart.table_scroll_tip') }}-->
           <!--            </div>-->
@@ -83,7 +87,7 @@ init()
         <span v-show="state.scrollForm.open">
           <el-form-item v-show="!state.isAutoBreakLine" :label="t('chart.row')" class="form-item">
             <el-input-number
-              effect="dark"
+              :effect="props.themes"
               size="small"
               v-model.number="state.scrollForm.row"
               :min="1"
@@ -94,7 +98,7 @@ init()
           </el-form-item>
           <el-form-item v-show="state.isAutoBreakLine" :label="t('chart.step')" class="form-item">
             <el-input-number
-              effect="dark"
+              :effect="props.themes"
               size="small"
               v-model="state.scrollForm.step"
               :min="1"
@@ -105,7 +109,7 @@ init()
           </el-form-item>
           <el-form-item :label="t('chart.interval') + '(ms)'" class="form-item">
             <el-input-number
-              effect="dark"
+              :effect="props.themes"
               size="small"
               v-model="state.scrollForm.interval"
               :min="500"

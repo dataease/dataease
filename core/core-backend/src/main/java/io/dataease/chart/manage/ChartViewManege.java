@@ -178,6 +178,8 @@ public class ChartViewManege {
         record.setyAxisExt(objectMapper.writeValueAsString(dto.getYAxisExt()));
         record.setExtStack(objectMapper.writeValueAsString(dto.getExtStack()));
         record.setExtBubble(objectMapper.writeValueAsString(dto.getExtBubble()));
+        record.setExtLabel(objectMapper.writeValueAsString(dto.getExtLabel()));
+        record.setExtTooltip(objectMapper.writeValueAsString(dto.getExtTooltip()));
         record.setCustomAttr(objectMapper.writeValueAsString(dto.getCustomAttr()));
         record.setCustomStyle(objectMapper.writeValueAsString(dto.getCustomStyle()));
         record.setSenior(objectMapper.writeValueAsString(dto.getSenior()));
@@ -203,6 +205,8 @@ public class ChartViewManege {
         dto.setYAxisExt(JsonUtil.parseList(record.getyAxisExt(), tokenType));
         dto.setExtStack(JsonUtil.parseList(record.getExtStack(), tokenType));
         dto.setExtBubble(JsonUtil.parseList(record.getExtBubble(), tokenType));
+        dto.setExtLabel(JsonUtil.parseList(record.getExtLabel(), tokenType));
+        dto.setExtTooltip(JsonUtil.parseList(record.getExtTooltip(), tokenType));
         dto.setCustomAttr(JsonUtil.parse(record.getCustomAttr(), Map.class));
         dto.setCustomStyle(JsonUtil.parse(record.getCustomStyle(), Map.class));
         dto.setSenior(JsonUtil.parse(record.getSenior(), Map.class));

@@ -56,7 +56,9 @@ const canvasStyle = computed(() => {
   if (canvasStyleData.value && canvasStyleData.value.width) {
     return {
       ...getCanvasStyle(canvasStyleData.value),
-      height: changeStyleWithScale(canvasStyleData.value?.height, scaleWidth.value) + 'px'
+      height: dashboardActive.value
+        ? '100%'
+        : changeStyleWithScale(canvasStyleData.value?.height, scaleWidth.value) + 'px'
     }
   } else {
     return {}

@@ -2,7 +2,6 @@
 import componentList from '@/custom-component/component-list' // 左侧列表数据
 import { deepCopy } from '@/utils/utils'
 import { listenGlobalKeyDown } from '@/utils/shortcutKey'
-import { changeComponentSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
 import { computed, nextTick, onMounted, reactive, ref, toRefs } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
@@ -12,7 +11,6 @@ import { storeToRefs } from 'pinia'
 import eventBus from '../../utils/eventBus'
 import findComponent from '../../utils/components'
 import DvSidebar from '../../components/visualization/DvSidebar.vue'
-import { findById } from '@/api/visualization/dataVisualization'
 import router from '@/router'
 import CommonCanvas from '@/components/data-visualization/canvas/index.vue'
 import $ from 'jquery'
@@ -24,6 +22,8 @@ import { guid } from '@/views/visualized/data/dataset/form/util.js'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import { getCanvasStyle, syncShapeItemStyle } from '@/utils/style'
 import DbCanvasAttr from '@/components/dashboard/DbCanvasAttr.vue'
+import { initCanvasData } from '@/utils/canvasUtils'
+import { ElMessage } from 'element-plus-secondary'
 
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
@@ -37,7 +37,8 @@ const {
   canvasStyleData,
   canvasViewInfo,
   pcMatrixCount,
-  basePcScreenSize
+  basePcScreenSize,
+  editMode
 } = storeToRefs(dvMainStore)
 const { editor } = storeToRefs(composeStore)
 const canvasOut = ref(null)
@@ -204,37 +205,16 @@ const canvasSizeInit = () => {
 }
 
 // 全局监听按键事件
-listenGlobalKeyDown()
+// listenGlobalKeyDown()
 onMounted(() => {
   initDataset()
   const { resourceId, pid } = router.currentRoute.value.query
   if (resourceId) {
-    // 从数据库中获取
-    findById(resourceId).then(res => {
-      const canvasInfo = res.data
-      const bashInfo = {
-        id: canvasInfo.id,
-        name: canvasInfo.name,
-        pid: canvasInfo.pid,
-        status: canvasInfo.status,
-        selfWatermarkStatus: canvasInfo.selfWatermarkStatus,
-        type: canvasInfo.type
-      }
-      dvMainStore.updateCurDvInfo(bashInfo)
-      //恢复画布数据
-      restore(canvasInfo.componentData, canvasInfo.canvasStyleData, canvasInfo.canvasViewInfo)
+    initCanvasData(resourceId, function () {
       canvasInit()
     })
   } else {
-    dvMainStore.updateCurDvInfo({
-      id: null,
-      name: '新建仪表板',
-      pid: pid,
-      status: null,
-      selfWatermarkStatus: null,
-      type: null
-    })
-    canvasInit()
+    ElMessage.error('未获取资源ID')
   }
   window.addEventListener('resize', canvasSizeInit)
   const erd = elementResizeDetectorMaker()
@@ -285,6 +265,7 @@ eventBus.on('handleNew', handleNew)
         :side-name="'componentProp'"
         :aside-position="'right'"
         class="left-sidebar"
+        :class="{ 'preview-aside': editMode === 'preview' }"
       >
         <component :is="findComponent(curComponent['component'] + 'Attr')" />
       </dv-sidebar>
@@ -295,14 +276,16 @@ eventBus.on('handleNew', handleNew)
         :width="420"
         aside-position="right"
         class="left-sidebar"
+        :class="{ 'preview-aside': editMode === 'preview' }"
       >
         <DbCanvasAttr></DbCanvasAttr>
       </dv-sidebar>
       <view-editor
         v-show="curComponent && curComponent.component === 'UserView'"
-        :theme-info="'light'"
+        themes="light"
         :view="canvasViewInfo[curComponent ? curComponent.id : 'default']"
         :dataset-tree="state.datasetTree"
+        :class="{ 'preview-aside': editMode === 'preview' }"
       ></view-editor>
     </el-container>
   </div>
@@ -323,7 +306,6 @@ eventBus.on('handleNew', handleNew)
       height: 100%;
       flex: 1;
       position: relative;
-      background-color: rgba(51, 51, 51, 1);
       overflow: auto;
       .content {
         flex: 1;
@@ -341,5 +323,11 @@ eventBus.on('handleNew', handleNew)
       height: 100%;
     }
   }
+}
+
+.preview-aside {
+  width: 0px !important;
+  overflow: hidden;
+  padding: 0px;
 }
 </style>

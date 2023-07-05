@@ -20,6 +20,10 @@ const props = defineProps({
         propValue: null
       }
     }
+  },
+  themes: {
+    type: String,
+    default: 'dark'
   }
 })
 
@@ -45,11 +49,17 @@ const handleDragEnd = e => {
     @dragend="handleDragEnd"
     v-on:click="newComponent('Picture')"
   >
-    <drag-component icon="other_media" label="图片" drag-info="Picture&Picture"></drag-component>
+    <drag-component
+      :themes="themes"
+      icon="other_media"
+      label="图片"
+      drag-info="Picture&Picture"
+    ></drag-component>
   </div>
 </template>
 
 <style lang="less" scoped>
 .group {
+  padding-top: 5px;
 }
 </style>

@@ -17,7 +17,7 @@ export const COMMON_COMPONENT_BACKGROUND_BASE = {
 
 export const COMMON_COMPONENT_BACKGROUND_LIGHT = {
   ...COMMON_COMPONENT_BACKGROUND_BASE,
-  backgroundColor: '#ffffff',
+  backgroundColor: '#F5F6F7',
   innerImageColor: '#1094E5'
 }
 
@@ -156,7 +156,7 @@ const list = [
     x: 1,
     y: 1,
     sizeX: 10,
-    sizeY: 10,
+    sizeY: 5,
     style: {
       width: 200,
       height: 200,
@@ -164,27 +164,6 @@ const list = [
       borderWidth: 1,
       borderStyle: 'solid',
       borderRadius: ''
-    },
-    matrixStyle: {}
-  },
-  {
-    component: 'UserView',
-    name: '视图',
-    label: '视图',
-    propValue: '',
-    icon: 'bar',
-    innerType: 'bar',
-    x: 1,
-    y: 1,
-    sizeX: 10,
-    sizeY: 10,
-    style: {
-      width: 200,
-      height: 200,
-      borderColor: '#fff',
-      borderWidth: 0,
-      borderStyle: 'solid',
-      borderRadius: 5
     },
     matrixStyle: {}
   },

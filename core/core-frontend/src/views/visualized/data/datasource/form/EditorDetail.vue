@@ -12,9 +12,9 @@ import { Base64 } from 'js-base64'
 import { ElForm, ElMessage } from 'element-plus-secondary'
 import Cron from '@/components/cron/src/Cron.vue'
 import { ComponentPublicInstance } from 'vue'
+import { uuid } from 'vue-uuid'
 const { t } = useI18n()
 const { push } = useRouter()
-
 const prop = defineProps({
   form: {
     required: false,
@@ -90,6 +90,7 @@ const api_table_title = ref('')
 const editApiItem = ref()
 const defaultApiItem = {
   name: '',
+  deTableName: '',
   url: '',
   serialNumber: 0,
   method: 'GET',
@@ -340,6 +341,16 @@ const saveDs = () => {
   if (form.value.type === 'API') {
     if (form.value.apiConfiguration.length == 0) {
       return
+    }
+    for (var i = 0; i < request.apiConfiguration.length; i++) {
+      if (
+        request.apiConfiguration[i].deTableName === '' ||
+        request.apiConfiguration[i].deTableName === undefined ||
+        request.apiConfiguration[i].deTableName === null
+      ) {
+        request.apiConfiguration[i].deTableName =
+          'api_' + request.apiConfiguration[i].name + '_' + uuid.v1()
+      }
     }
     request.syncSetting.startTime = new Date(request.syncSetting.startTime).getTime()
     request.syncSetting.endTime = new Date(request.syncSetting.endTime).getTime()

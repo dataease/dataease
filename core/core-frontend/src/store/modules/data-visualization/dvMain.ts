@@ -18,7 +18,7 @@ export const dvMainStore = defineStore('dataVisualization', {
         datasetAreaCollapse: false
       },
       editMode: 'edit', // 编辑器模式 edit preview
-      canvasStyleData: deepCopy(DEFAULT_CANVAS_STYLE_DATA_DARK),
+      canvasStyleData: { ...deepCopy(DEFAULT_CANVAS_STYLE_DATA_DARK), backgroundColor: null },
       // 当前展示画布缓存数据
       componentDataCache: null,
       // 当前展示画布视图信息
@@ -142,10 +142,15 @@ export const dvMainStore = defineStore('dataVisualization', {
       currentCanvasNewId: [],
       lastViewRequestInfo: {},
       // 初始状态下当前默认的系统色 dvInfo.type ==== 'dashboard'?'light':'dark'
-      curOriginThemes: 'light'
+      curOriginThemes: 'light',
+      // 基础网格信息
+      baseCellInfo: {}
     }
   },
   actions: {
+    setBaseCellInfo(value) {
+      this.baseCellInfo = value
+    },
     aceSetCanvasData(value) {
       this.canvasStyleData = value
     },
@@ -188,7 +193,6 @@ export const dvMainStore = defineStore('dataVisualization', {
     },
 
     setShapeStyle({ top, left, width, height, rotate }) {
-      // console.log('top=' + top + ';left=' + left)
       if (this.canvasStyleData.dvModel === 'dashboard') {
         if (top) this.curComponent.style.top = top < 0 ? 0 : Math.round(top)
         if (left) this.curComponent.style.left = left < 0 ? 0 : Math.round(left)

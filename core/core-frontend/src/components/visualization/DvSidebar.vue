@@ -73,7 +73,7 @@ const widthShow = computed(() => `${canvasCollapse.value[sideName.value] ? 36 : 
 }
 
 .aside-area-light {
-  color: @side-area-background-light;
+  color: @canvas-main-font-color-light;
   background-color: #fff;
 }
 .dv-aside {

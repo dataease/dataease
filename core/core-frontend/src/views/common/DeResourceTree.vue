@@ -226,6 +226,7 @@ onMounted(() => {
     <el-tree
       menu
       ref="resourceListTree"
+      class="custom-tree"
       :default-expanded-keys="expandedArray"
       :data="state.resourceTree"
       node-key="id"
@@ -336,6 +337,11 @@ onMounted(() => {
 
 :deep(.ed-input__wrapper) {
   width: 80px;
+}
+
+.custom-tree {
+  height: calc(100vh - 160px);
+  overflow-y: auto;
 }
 
 .custom-tree-node {

@@ -2,17 +2,15 @@ package io.dataease.api.ds;
 
 import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.ds.vo.*;
-
 import io.dataease.auth.DeApiPath;
-import io.dataease.exception.DEException;
-
 import io.dataease.auth.DePermit;
+import io.dataease.exception.DEException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+
 import static io.dataease.constant.AuthResourceEnum.DATASOURCE;
 
 
@@ -69,6 +67,6 @@ public interface DatasourceApi {
     ApiDefinition checkApiDatasource(@RequestBody Map<String, String> data) throws DEException;
 
     @PostMapping("/uploadFile")
-    ExcelFileData excelUpload(@RequestParam("file") MultipartFile file, @RequestParam("id") long datasourceId) throws DEException;
+    ExcelFileData excelUpload(@RequestParam("file") MultipartFile file, @RequestParam("id") long datasourceId, @RequestParam("editType") Integer editType) throws Exception;
 
 }

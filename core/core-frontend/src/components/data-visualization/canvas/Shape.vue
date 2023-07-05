@@ -2,21 +2,16 @@
   <div class="shape">
     <div
       class="shape-inner"
-      :class="{ active }"
+      :class="{ active, 'shape-edit': isEditMode }"
       :style="componentBackgroundStyle"
       @click="selectCurComponent"
       @mousedown="handleMouseDownOnShape"
     >
-      <component-bar
+      <component-edit-bar
         v-if="componentActiveFlag"
-        :source-element="element"
-        :terminal="'pc'"
+        :index="index"
         :element="element"
-        :canvas-id="'canvas-main'"
-        :show-position="'edit'"
-        :series-id-map="state.seriesIdMap"
-        @showViewDetails="showViewDetails"
-      />
+      ></component-edit-bar>
       <span v-show="element['isLock']" class="iconfont icon-suo"></span>
       <div
         v-for="item in isActive() ? getPointList() : []"
@@ -48,19 +43,20 @@ import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapsho
 import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import { storeToRefs } from 'pinia'
-import ComponentBar from '@/components/visualization/ComponentBar.vue'
 import { hexColorToRGBA } from '@/views/chart/components/js/util'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import Icon from '@/components/icon-custom/src/Icon.vue'
+import ComponentEditBar from '@/components/visualization/ComponentEditBar.vue'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
 const composeStore = composeStoreWithOut()
 
-const { curComponent, dvInfo } = storeToRefs(dvMainStore)
+const { curComponent, dvInfo, editMode } = storeToRefs(dvMainStore)
 const { editor } = storeToRefs(composeStore)
 const emit = defineEmits(['onStartResize', 'onStartMove', 'onDragging', 'onResizing', 'onMouseUp'])
 
+const isEditMode = computed(() => editMode.value === 'edit')
 const state = reactive({
   seriesIdMap: {
     id: ''
@@ -151,7 +147,7 @@ const getPointList = () => {
 }
 
 const isActive = () => {
-  return active.value && !element.value['isLock']
+  return active.value && !element.value['isLock'] && isEditMode.value
 }
 
 // 处理旋转
@@ -246,7 +242,7 @@ const handleMouseDownOnShape = e => {
 
   e.stopPropagation()
   dvMainStore.setCurComponent({ component: element.value, index: index.value })
-  if (element.value['isLock']) return
+  if (element.value['isLock'] || !isEditMode.value) return
 
   cursors.value = getCursor() // 根据旋转角度获取光标位置
 
@@ -325,14 +321,24 @@ const handleMouseDownOnPoint = (point, e) => {
   const pointRect = e.target.getBoundingClientRect()
   // 当前点击圆点相对于画布的中心坐标
   const curPoint = {
-    x: Math.round(pointRect.left - editorRectInfo.left + e.target.offsetWidth / 2),
-    y: Math.round(pointRect.top - editorRectInfo.top + e.target.offsetHeight / 2)
+    x: Math.round(
+      pointRect.left -
+        editorRectInfo.left +
+        e.target.offsetWidth / 2 +
+        offsetGapAdaptor('x', point) / 2
+    ),
+    y: Math.round(
+      pointRect.top -
+        editorRectInfo.top +
+        e.target.offsetHeight / 2 +
+        offsetGapAdaptor('y', point) / 2
+    )
   }
 
-  // 获取对称点的坐标
+  // 获取对称点的坐标 problem point
   const symmetricPoint = {
-    x: center.x - (curPoint.x - center.x),
-    y: center.y - (curPoint.y - center.y)
+    x: center.x - (curPoint.x - center.x) - offsetGapAdaptor('x', point) / 4,
+    y: center.y - (curPoint.y - center.y) - offsetGapAdaptor('y', point) / 4
   }
 
   // 是否需要保存快照
@@ -341,7 +347,6 @@ const handleMouseDownOnPoint = (point, e) => {
 
   const needLockProportion = isNeedLockProportion()
   const move = moveEvent => {
-    dashboardActive.value && emit('onResizing', moveEvent)
     // 第一次点击时也会触发 move，所以会有“刚点击组件但未移动，组件的大小却改变了”的情况发生
     // 因此第一次点击时不触发 move 事件
     if (isFirst) {
@@ -351,16 +356,16 @@ const handleMouseDownOnPoint = (point, e) => {
 
     needSave = true
     const curPosition = {
-      x: moveEvent.clientX - Math.round(editorRectInfo.left),
-      y: moveEvent.clientY - Math.round(editorRectInfo.top)
+      x: moveEvent.clientX - Math.round(editorRectInfo.left) + offsetGapAdaptor('x', point),
+      y: moveEvent.clientY - Math.round(editorRectInfo.top) + offsetGapAdaptor('y', point)
     }
-
     calculateComponentPositionAndSize(point, style, curPosition, proportion, needLockProportion, {
       center,
       curPoint,
       symmetricPoint
     })
     dvMainStore.setShapeStyle(style)
+    dashboardActive.value && emit('onResizing', moveEvent)
   }
 
   const up = () => {
@@ -372,6 +377,16 @@ const handleMouseDownOnPoint = (point, e) => {
 
   document.addEventListener('mousemove', move)
   document.addEventListener('mouseup', up)
+}
+
+// resize算法适配，根据9个拖转点的位置 调整curGap 引起的中心点centerPoint 圆点curPoint 对称点 symmetricPoint引起的偏移
+const offsetGapAdaptor = (dimension, point) => {
+  const curGap = baseCellInfo.value.curGap
+  if (dimension === 'x') {
+    return point.indexOf('r') > -1 ? curGap : -1 * curGap
+  } else {
+    return point.indexOf('b') > -1 ? curGap : -1 * curGap
+  }
 }
 
 const isNeedLockProportion = () => {
@@ -430,7 +445,7 @@ const componentBackgroundStyle = computed(() => {
 })
 
 const componentActiveFlag = computed(() => {
-  return active.value && dashboardActive.value
+  return active.value && dashboardActive.value && isEditMode.value
 })
 
 const showViewDetails = () => {
@@ -463,13 +478,17 @@ onMounted(() => {
   height: 100%;
   position: relative;
   background-size: 100% 100% !important;
+}
+
+.shape-edit {
   &:hover {
     cursor: move;
+    outline: 1px dashed #70c0ff;
   }
 }
 
 .active {
-  outline: 1px solid #70c0ff;
+  outline: 1px solid #70c0ff !important;
   user-select: none;
 }
 

@@ -13,10 +13,14 @@ const props = defineProps({
     required: false,
     type: Number,
     default: 200
+  },
+  themes: {
+    type: String,
+    default: 'dark'
   }
 })
 
-const { title, iconName, baseWidth } = toRefs(props)
+const { title, iconName, baseWidth, themes } = toRefs(props)
 </script>
 
 <template>
@@ -25,7 +29,7 @@ const { title, iconName, baseWidth } = toRefs(props)
     :width="baseWidth"
     trigger="click"
     :show-arrow="false"
-    popper-class="custom-popover"
+    :popper-class="'custom-popover-' + themes"
   >
     <template #reference>
       <component-button

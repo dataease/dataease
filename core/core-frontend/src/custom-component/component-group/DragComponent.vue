@@ -20,14 +20,18 @@ const props = defineProps({
     type: String,
     required: true,
     default: ''
+  },
+  themes: {
+    type: String,
+    default: 'dark'
   }
 })
 
-const { icon, name, label, dragInfo } = toRefs(props)
+const { icon, name, label, dragInfo, themes } = toRefs(props)
 </script>
 
 <template>
-  <div class="drag-component">
+  <div class="drag-component" :class="'drag-' + themes">
     <div draggable="true" :data-id="dragInfo" class="icon-content">
       <span v-if="name">{{ name }}</span>
       <Icon v-if="icon" class="drag-icon" :name="icon" />
@@ -39,6 +43,11 @@ const { icon, name, label, dragInfo } = toRefs(props)
 </template>
 
 <style lang="less" scoped>
+.drag-light {
+  :deep(.icon-content) {
+    background-color: #dee0e3 !important;
+  }
+}
 .drag-component {
   width: 120px;
   height: 80px;
