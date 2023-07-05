@@ -6,7 +6,7 @@ import { styleData, selectKey, optionMap, positionData } from '@/utils/attr'
 import DeInputNum from '@/custom-component/common/DeInputNum.vue'
 
 const dvMainStore = dvMainStoreWithOut()
-const { curComponent } = storeToRefs(dvMainStore)
+const { curComponent, dvInfo } = storeToRefs(dvMainStore)
 const activeName = ref(curComponent.value.collapseName)
 
 const styleKeys = computed(() => {
@@ -34,12 +34,15 @@ const onChange = () => {
 const isIncludesColor = str => {
   return str.toLowerCase().includes('color')
 }
+const dashboardActive = computed(() => {
+  return dvInfo.value.type === 'dashboard'
+})
 </script>
 
 <template>
   <div class="v-common-attr">
     <el-collapse v-model="activeName" @change="onChange()">
-      <el-collapse-item title="位置" name="position">
+      <el-collapse-item title="位置" name="position" v-if="!dashboardActive">
         <div style="width: 100%">
           <div
             v-for="({ key, label }, index) in positionKeys"

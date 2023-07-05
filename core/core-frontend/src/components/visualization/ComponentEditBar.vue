@@ -34,14 +34,26 @@ const emits = defineEmits([
 ])
 const { t } = useI18n()
 
+// bar所在位置可以显示的功能按钮
 const positionBarShow = {
   canvas: ['enlarge', 'setting'],
   preview: ['enlarge']
 }
 
+// bar所属组件类型可以显示的功能按钮
+const componentTypeBarShow = {
+  UserView: ['enlarge', 'setting'],
+  default: ['setting']
+}
+
 const barShowCheck = barName => {
   return (
-    positionBarShow[showPosition.value] && positionBarShow[showPosition.value].includes(barName)
+    positionBarShow[showPosition.value] &&
+    positionBarShow[showPosition.value].includes(barName) &&
+    (componentTypeBarShow[element.value.component]
+      ? componentTypeBarShow[element.value.component]
+      : componentTypeBarShow['default']
+    ).includes(barName)
   )
 }
 
