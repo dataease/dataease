@@ -11,6 +11,7 @@
         v-if="componentActiveFlag"
         :index="index"
         :element="element"
+        :show-position="showPosition"
         @userViewEnlargeOpen="userViewEnlargeOpen"
       ></component-edit-bar>
       <span v-show="element['isLock']" class="iconfont icon-suo"></span>
@@ -70,6 +71,8 @@ const state = reactive({
     id: ''
   }
 })
+
+const showPosition = computed(() => (isEditMode.value ? 'canvas' : 'preview'))
 
 const props = defineProps({
   active: {
@@ -457,7 +460,7 @@ const componentBackgroundStyle = computed(() => {
 })
 
 const componentActiveFlag = computed(() => {
-  return active.value && dashboardActive.value && isEditMode.value
+  return active.value && dashboardActive.value
 })
 
 const showViewDetails = () => {

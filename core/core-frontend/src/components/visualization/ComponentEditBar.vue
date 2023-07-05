@@ -1,10 +1,12 @@
 <template>
   <div class="bar-main" :class="showEditPosition">
-    <span :title="t('visualization.setting')">
-      <el-icon class="base-icon" @click="userViewEnlargeOpen"><Edit /></el-icon>
+    <span :title="t('visualization.enlarge')" v-if="barShowCheck('enlarge')">
+      <el-icon class="base-icon" @click="userViewEnlargeOpen">
+        <Icon name="dv-bar-enlarge"></Icon
+      ></el-icon>
     </span>
 
-    <el-dropdown trigger="click">
+    <el-dropdown trigger="click" v-if="barShowCheck('setting')">
       <el-icon :title="t('visualization.setting')" class="base-icon"><Setting /></el-icon>
       <template #dropdown>
         <el-dropdown-menu style="width: 100px">
@@ -32,6 +34,17 @@ const emits = defineEmits([
 ])
 const { t } = useI18n()
 
+const positionBarShow = {
+  canvas: ['enlarge', 'setting'],
+  preview: ['enlarge']
+}
+
+const barShowCheck = barName => {
+  return (
+    positionBarShow[showPosition.value] && positionBarShow[showPosition.value].includes(barName)
+  )
+}
+
 const props = defineProps({
   element: {
     type: Object,
@@ -46,10 +59,15 @@ const props = defineProps({
     required: true,
     type: [Number, String],
     default: 0
+  },
+  showPosition: {
+    required: false,
+    type: String,
+    default: 'canvas'
   }
 })
 
-const { element, active, index } = toRefs(props)
+const { element, active, index, showPosition } = toRefs(props)
 const { pcMatrixCount, curComponent, componentData, canvasStyleData } = storeToRefs(dvMainStore)
 
 const state = reactive({
@@ -69,14 +87,18 @@ const state = reactive({
 })
 
 const showEditPosition = computed(() => {
-  const baseLeft = element.value.x - 1
-  const baseRight = pcMatrixCount.value.x - (element.value.x + element.value.sizeX - 1)
-  if (baseLeft === 0 && baseRight === 0) {
-    return 'bar-main-right-inner'
-  } else if (baseRight === 0) {
-    return 'bar-main-left-outer'
+  if (showPosition.value === 'preview') {
+    return 'bar-main-preview-right-inner'
   } else {
-    return 'bar-main-right'
+    const baseLeft = element.value.x - 1
+    const baseRight = pcMatrixCount.value.x - (element.value.x + element.value.sizeX - 1)
+    if (baseLeft === 0 && baseRight === 0) {
+      return 'bar-main-right-inner'
+    } else if (baseRight === 0) {
+      return 'bar-main-left-outer'
+    } else {
+      return 'bar-main-right'
+    }
   }
 })
 
@@ -104,6 +126,11 @@ const userViewEnlargeOpen = e => {
 .bar-main-right {
   width: 22px;
   right: -25px;
+}
+
+.bar-main-preview-right-inner {
+  height: 22px;
+  right: 0px;
 }
 
 .bar-main-right-inner {

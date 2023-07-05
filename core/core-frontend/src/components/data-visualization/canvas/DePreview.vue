@@ -7,6 +7,7 @@ import { changeRefComponentsSizeWithScale } from '@/utils/changeComponentsSizeWi
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import elementResizeDetectorMaker from 'element-resize-detector'
+import UserViewEnlarge from '@/components/visualization/UserViewEnlarge.vue'
 const dvMainStore = dvMainStoreWithOut()
 const { pcMatrixCount } = storeToRefs(dvMainStore)
 
@@ -39,7 +40,7 @@ const props = defineProps({
   }
 })
 
-const { canvasStyleData, componentData, dvInfo, curGap, canvasId } = toRefs(props)
+const { canvasStyleData, componentData, dvInfo, curGap, canvasId, canvasViewInfo } = toRefs(props)
 const domId = 'preview-' + canvasId.value
 const scaleWidth = ref(100)
 const previewCanvas = ref(null)
@@ -47,6 +48,7 @@ const domWidth = ref()
 const domHeight = ref()
 const cellWidth = ref(10)
 const cellHeight = ref(10)
+const userViewEnlargeRef = ref(null)
 
 const dashboardActive = computed(() => {
   return dvInfo.value.type === 'dashboard'
@@ -104,6 +106,10 @@ onMounted(() => {
   })
 })
 
+const userViewEnlargeOpen = item => {
+  userViewEnlargeRef.value.dialogInit(canvasStyleData.value, canvasViewInfo.value[item.id], item)
+}
+
 defineExpose({
   restore
 })
@@ -117,7 +123,9 @@ defineExpose({
       :key="index"
       :config="item"
       :style="getShapeItemShowStyle(item)"
+      @userViewEnlargeOpen="userViewEnlargeOpen(item)"
     />
+    <user-view-enlarge ref="userViewEnlargeRef"></user-view-enlarge>
   </div>
 </template>
 
