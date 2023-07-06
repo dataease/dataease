@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, reactive, nextTick } from 'vue'
+import { ref, reactive, nextTick, computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -8,8 +8,14 @@ import { getDsDetails } from '@/api/dataset'
 import { cloneDeep } from 'lodash-es'
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
-const { componentData } = storeToRefs(dvMainStore)
+const { componentData, canvasViewInfo } = storeToRefs(dvMainStore)
 
+interface DatasetField {
+  type: string
+  title: string
+  id: string
+  tableId: string
+}
 const dialogVisible = ref(false)
 const renameInput = ref()
 const valueSource = ref([])
@@ -56,6 +62,19 @@ const activeConditionForRename = reactive({
   id: '',
   name: '',
   visible: false
+})
+
+const datasetFieldList = computed(() => {
+  return Object.values(canvasViewInfo.value)
+    .filter(ele => (ele as DatasetField).type !== 'VQuery')
+    .map(ele => {
+      const { id, title, tableId } = ele as DatasetField
+      return {
+        id,
+        title,
+        tableId
+      }
+    })
 })
 const curComponent = ref()
 const manual = ref()
@@ -105,19 +124,19 @@ const confirmValueSource = () => {
 const init = (id: string, queryId: string) => {
   componentId = id
   conditions.value = cloneDeep(componentData.value.find(ele => ele.id === id).propValue) || []
-  curComponent.value = conditions.value.find(ele => ele.id === queryId)
-  activeCondition.value = queryId
+  handleCondition({ id: queryId })
   valueSource.value = cloneDeep(curComponent.value.valueSource)
   if (!valueSource.value.length) {
     valueSource.value.push('')
   }
   checkedFields.value = Object.keys(curComponent.value.checkedFieldsMap) || []
   dialogVisible.value = true
-  getDsDetails(['1668815327340331008', '1666719324084699136'])
+  getDsDetails(datasetFieldList.value.map(ele => ele.tableId))
     .then(res => {
       res.forEach(ele => {
         const { dimensionList, quotaList } = ele.fields
         ele.list = [...dimensionList, ...quotaList]
+        ele.componentId = (datasetFieldList.value.find(item => item.tableId === ele.id) || {}).id
       })
       fields.value = res
     })
@@ -126,8 +145,21 @@ const init = (id: string, queryId: string) => {
     })
 }
 
-const handleCondition = ele => {
-  activeCondition.value = ele.id
+const handleCondition = item => {
+  activeCondition.value = item.id
+  curComponent.value = conditions.value.find(ele => ele.id === item.id)
+  if (!curComponent.value.dataset.fields.length) {
+    getOptions(curComponent.value.dataset.id, curComponent.value)
+  }
+}
+
+const getOptions = (id, component) => {
+  getDsDetails([id]).then(res => {
+    res.forEach(ele => {
+      const { dimensionList, quotaList } = ele.fields
+      component.dataset.fields = [...dimensionList, ...quotaList]
+    })
+  })
 }
 
 const addOperation = (cmd, condition, index) => {
@@ -231,7 +263,9 @@ defineExpose({
             <div v-for="field in fields" :key="field.id" class="list-item">
               <el-checkbox :label="field.id"
                 ><el-icon> <Icon name="icon_add_outlined"></Icon> </el-icon
-                ><span class="checkbox-name ellipsis">{{ field.name }}</span></el-checkbox
+                ><span class="checkbox-name ellipsis">{{
+                  canvasViewInfo[field.componentId].title
+                }}</span></el-checkbox
               >
               <span class="dataset ellipsis">{{ field.name }}</span>
               <el-select v-model="curComponent.checkedFieldsMap[field.id]" clearable>
@@ -293,9 +327,13 @@ defineExpose({
                   </el-select>
                 </div>
                 <div class="value">
-                  <el-select v-model="curComponent.dataset.field.id" clearable>
-                    <el-option label="Zone one" value="shanghai" />
-                    <el-option label="Zone two" value="beijing" />
+                  <el-select v-model="curComponent.field.id" clearable>
+                    <el-option
+                      v-for="ele in curComponent.dataset.fields"
+                      :key="ele.id"
+                      :label="ele.name"
+                      :value="ele.id"
+                    />
                   </el-select>
                 </div>
               </template>

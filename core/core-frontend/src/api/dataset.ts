@@ -18,6 +18,7 @@ interface Fields {
 export interface DatasetDetail {
   id: string
   name: string
+  componentId: string
   fields: {
     dimensionList: Array<Field>
     quotaList: Array<Field>

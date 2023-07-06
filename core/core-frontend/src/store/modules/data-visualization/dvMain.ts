@@ -233,6 +233,27 @@ export const dvMainStore = defineStore('dataVisualization', {
         }
         this.canvasViewInfo[component.id] = newView
       }
+      if (component.component === 'VQuery') {
+        const newView = {
+          ...deepCopy(BASE_VIEW_CONFIG),
+          id: component.id,
+          type: component.innerType,
+          customStyle: {
+            component: {
+              show: false,
+              titleShow: false,
+              borderShow: false,
+              borderColor: '',
+              title: '',
+              borderWidth: 1,
+              bgColorShow: false,
+              bgColor: '',
+              btnList: []
+            }
+          }
+        }
+        this.canvasViewInfo[component.id] = newView
+      }
     },
     setLinkageInfo(targetLinkageInfo) {
       this.linkageSettingStatus = true
