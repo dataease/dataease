@@ -35,8 +35,8 @@ const state = reactive({
     fontSize: '10'
   },
   fieldOptions: [
-    { label: t('chart.field_fixed'), value: '0' }
-    // { label: t('chart.field_dynamic'), value: '1' }
+    { label: t('chart.field_fixed'), value: '0' },
+    { label: t('chart.field_dynamic'), value: '1' }
   ],
   lineOptions: [
     { label: t('chart.line_type_solid'), value: 'solid' },
@@ -51,7 +51,7 @@ const state = reactive({
 const emit = defineEmits(['onAssistLineChange'])
 
 const initField = () => {
-  state.quotaData = props.quotaFields.filter(ele => !ele.chartId && ele.id !== 'count')
+  state.quotaData = props.quotaFields.filter(ele => !ele.chartId && ele.id !== '-1')
 }
 const init = () => {
   state.lineArr = JSON.parse(JSON.stringify(props.line))
