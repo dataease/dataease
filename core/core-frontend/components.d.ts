@@ -25,6 +25,7 @@ declare module '@vue/runtime-core' {
     ComponentEditBar: typeof import('./src/components/visualization/ComponentEditBar.vue')['default']
     ComponentGroup: typeof import('./src/components/visualization/ComponentGroup.vue')['default']
     ComponentList: typeof import('./src/components/data-visualization/ComponentList.vue')['default']
+    ComponentPosition: typeof import('./src/components/visualization/common/ComponentPosition.vue')['default']
     ComponentToolBar: typeof import('./src/components/data-visualization/ComponentToolBar.vue')['default']
     ComponentWrapper: typeof import('./src/components/data-visualization/canvas/ComponentWrapper.vue')['default']
     ConfigGlobal: typeof import('./src/components/config-global/src/ConfigGlobal.vue')['default']
