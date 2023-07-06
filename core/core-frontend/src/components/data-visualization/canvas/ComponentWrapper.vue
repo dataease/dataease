@@ -114,7 +114,7 @@ const commonBackgroundSvgInner = computed(() => {
 
 <template>
   <div class="wrapper-outer" @click="onClick" @mouseenter="onMouseEnter">
-    <div class="wrapper-inner" :style="componentBackgroundStyle">
+    <div class="wrapper-inner" :class="showPosition" :style="componentBackgroundStyle">
       <component-edit-bar
         class="wrapper-edit-bar"
         :index="index"
@@ -155,11 +155,20 @@ const commonBackgroundSvgInner = computed(() => {
   height: 100%;
   position: relative;
   background-size: 100% 100% !important;
+}
+
+.preview {
   .wrapper-edit-bar {
     display: none;
   }
   &:hover .wrapper-edit-bar {
     display: inherit !important;
+  }
+}
+
+.multiplexing {
+  .wrapper-edit-bar {
+    display: inherit;
   }
 }
 

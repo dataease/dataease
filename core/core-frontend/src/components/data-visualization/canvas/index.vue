@@ -1404,6 +1404,7 @@ onMounted(() => {
   eventBus.on('handleDragStartMoveIn', handleDragStartMoveIn)
   eventBus.on('handleDragEnd', handleDragEnd)
   eventBus.on('removeMatrixItem', removeItem)
+  eventBus.on('addDashboardItem', addItemBox)
 })
 
 defineExpose({

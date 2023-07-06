@@ -37,10 +37,16 @@ const props = defineProps({
     type: String,
     required: false,
     default: 'canvas-main'
+  },
+  showPosition: {
+    required: false,
+    type: String,
+    default: 'preview'
   }
 })
 
-const { canvasStyleData, componentData, dvInfo, curGap, canvasId, canvasViewInfo } = toRefs(props)
+const { canvasStyleData, componentData, dvInfo, curGap, canvasId, canvasViewInfo, showPosition } =
+  toRefs(props)
 const domId = 'preview-' + canvasId.value
 const scaleWidth = ref(100)
 const previewCanvas = ref(null)
@@ -123,6 +129,7 @@ defineExpose({
       :key="index"
       :config="item"
       :style="getShapeItemShowStyle(item)"
+      :show-position="showPosition"
       @userViewEnlargeOpen="userViewEnlargeOpen(item)"
     />
     <user-view-enlarge ref="userViewEnlargeRef"></user-view-enlarge>

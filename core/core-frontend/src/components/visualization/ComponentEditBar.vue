@@ -5,6 +5,13 @@
         <Icon name="dv-bar-enlarge"></Icon
       ></el-icon>
     </span>
+    <div v-if="barShowCheck('multiplexing')" class="bar-checkbox-area">
+      <el-checkbox
+        size="medium"
+        v-model="state.multiplexingCheckModel"
+        @change="multiplexingCheck"
+      />
+    </div>
 
     <el-dropdown trigger="click" v-if="barShowCheck('setting')">
       <el-icon :title="t('visualization.setting')" class="base-icon"><Setting /></el-icon>
@@ -37,13 +44,14 @@ const { t } = useI18n()
 // bar所在位置可以显示的功能按钮
 const positionBarShow = {
   canvas: ['enlarge', 'setting'],
-  preview: ['enlarge']
+  preview: ['enlarge'],
+  multiplexing: ['multiplexing']
 }
 
 // bar所属组件类型可以显示的功能按钮
 const componentTypeBarShow = {
-  UserView: ['enlarge', 'setting'],
-  default: ['setting']
+  UserView: ['enlarge', 'setting', 'multiplexing'],
+  default: ['setting', 'multiplexing']
 }
 
 const barShowCheck = barName => {
@@ -90,6 +98,8 @@ const state = reactive({
   linkJumpSetViewId: null,
   curFields: [],
   multiplexingCheckModel: false,
+  // Currently selected Multiplexing components
+  curMultiplexingComponents: {},
   barWidth: 24,
   componentType: null,
   linkageActiveStatus: false,
@@ -99,9 +109,7 @@ const state = reactive({
 })
 
 const showEditPosition = computed(() => {
-  if (showPosition.value === 'preview') {
-    return 'bar-main-preview-right-inner'
-  } else {
+  if (showPosition.value === 'canvas') {
     const baseLeft = element.value.x - 1
     const baseRight = pcMatrixCount.value.x - (element.value.x + element.value.sizeX - 1)
     if (baseLeft === 0 && baseRight === 0) {
@@ -111,6 +119,8 @@ const showEditPosition = computed(() => {
     } else {
       return 'bar-main-right'
     }
+  } else {
+    return 'bar-main-preview-right-inner'
   }
 })
 
@@ -123,6 +133,21 @@ const userViewEnlargeOpen = e => {
   e.stopPropagation()
   emits('userViewEnlargeOpen')
 }
+
+// 复用-Begin
+const multiplexingCheck = val => {
+  if (val) {
+    // push
+    dvMainStore.addCurMultiplexingComponent({
+      component: element.value,
+      componentId: element.value.id
+    })
+  } else {
+    // remove
+    dvMainStore.removeCurMultiplexingComponentWithId(element.value.id)
+  }
+}
+// 复用-End
 </script>
 
 <style lang="less" scoped>
@@ -164,6 +189,12 @@ const userViewEnlargeOpen = e => {
   }
   &:active {
     color: rgba(255, 255, 255, 0.7);
+  }
+}
+.bar-checkbox-area {
+  padding: 0 3px;
+  :deep(.ed-checkbox) {
+    height: 22px;
   }
 }
 </style>

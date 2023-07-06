@@ -19,6 +19,7 @@ import UserViewGroup from '@/custom-component/component-group/UserViewGroup.vue'
 import MediaGroup from '@/custom-component/component-group/MediaGroup.vue'
 import TextGroup from '@/custom-component/component-group/TextGroup.vue'
 import ComponentButton from '@/components/visualization/ComponentButton.vue'
+import MultiplexingCanvas from '@/views/common/MultiplexingCanvas.vue'
 
 const isShowPreview = ref(false)
 const isScreenshot = ref(false)
@@ -38,6 +39,7 @@ const {
 } = storeToRefs(dvMainStore)
 const { areaData } = storeToRefs(composeStore)
 const dvModel = 'dashboard'
+const multiplexingRef = ref(null)
 let scale = ref(canvasStyleData.value.scale)
 let nameEdit = ref(false)
 let inputName = ref('')
@@ -176,6 +178,10 @@ const backToMain = () => {
   window.opener.focus()
 }
 
+const multiplexingCanvasOpen = () => {
+  multiplexingRef.value.dialogInit()
+}
+
 eventBus.on('preview', preview)
 eventBus.on('save', saveCanvas)
 eventBus.on('clearCanvas', clearCanvas)
@@ -224,7 +230,11 @@ eventBus.on('clearCanvas', clearCanvas)
           <media-group themes="light" :dv-model="dvModel"></media-group>
         </component-group>
         <component-button icon-name="dv-tab" title="Tab"></component-button>
-        <component-button icon-name="dv-copy" title="复用"></component-button>
+        <component-button
+          icon-name="dv-copy"
+          title="复用"
+          @customClick="multiplexingCanvasOpen"
+        ></component-button>
         <component-button icon-name="dv-batch" title="批量操作"></component-button>
         <component-button icon-name="dv-dashboard" title="仪表板配置"></component-button>
       </div>
@@ -257,6 +267,7 @@ eventBus.on('clearCanvas', clearCanvas)
       type="primary"
       >编辑</el-button
     >
+    <multiplexing-canvas ref="multiplexingRef"></multiplexing-canvas>
   </div>
 </template>
 
