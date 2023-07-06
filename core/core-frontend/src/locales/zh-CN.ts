@@ -53,7 +53,8 @@ export default {
     welcome: '欢迎使用',
     btn: '登录',
     username_format: '3-10位字母数字下划线且以字母开头',
-    pwd_format: '密码长度在5-15'
+    pwd_format: '密码长度在5-15',
+    default_login: '默认'
   },
   component: {
     columnList: '列表项',

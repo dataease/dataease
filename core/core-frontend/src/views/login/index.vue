@@ -27,7 +27,7 @@ const footContent = ref(null)
 const codeIndex = ref(0)
 
 const state = reactive({
-  loginTypes: [],
+  loginTypes: [2, 3],
   qrTypes: [],
   loginForm: {
     username: '',
@@ -35,7 +35,7 @@ const state = reactive({
     password: ''
   },
   uiInfo: {},
-  radioTypes: [],
+  radioTypes: [0, 2, 3],
   footContent: ''
 })
 
@@ -66,9 +66,29 @@ const showQr = () => {
 }
 
 const changeLoginType = val => {
-  if (val !== 2 && val !== 7) return
+  // if (val !== 2 && val !== 7) return
+  let curOrigin = window.location.origin
+  if (val === 0) {
+    wsCache.set('out_auth_platform', 'default')
+  } else if (val === 1) {
+    wsCache.set('out_auth_platform', 'ldap')
+    window.open(curOrigin + '/ldapbi/#' + getCurLocation())
+  } else if (val === 2) {
+    wsCache.set('out_auth_platform', 'oidc')
+    window.open(curOrigin + '/oidcbi/#' + getCurLocation())
+  } else if (val === 3) {
+    wsCache.set('out_auth_platform', 'cas')
+    window.open(curOrigin + '/casbi/#' + getCurLocation())
+  }
+  return
 }
-
+const getCurLocation = () => {
+  let queryRedirectPath = '/workbranch/index'
+  if (router.currentRoute.value.query.redirect) {
+    queryRedirectPath = router.currentRoute.value.query.redirect as string
+  }
+  return queryRedirectPath
+}
 const handleLogin = () => {
   const name = state.loginForm.username
   const pwd = state.loginForm.password
@@ -76,10 +96,11 @@ const handleLogin = () => {
   loginApi(param).then(res => {
     const token = res.data
     userStore.setToken(token)
-    let queryRedirectPath = '/workbranch/index'
+    /* let queryRedirectPath = '/workbranch/index'
     if (router.currentRoute.value.query.redirect) {
       queryRedirectPath = router.currentRoute.value.query.redirect as string
-    }
+    } */
+    const queryRedirectPath = getCurLocation()
     router.push({ path: queryRedirectPath })
   })
 }
@@ -93,6 +114,20 @@ onMounted(() => {
     queryDekey().then(res => {
       wsCache.set(appStore.getDekey, res.data)
     })
+  }
+  const platform = wsCache.get('out_auth_platform')
+  state.loginForm.loginType = 0
+  if (platform === 'default') {
+    state.loginForm.loginType = 0
+  }
+  if (platform === 'ldap') {
+    state.loginForm.loginType = 1
+  }
+  if (platform === 'oidc') {
+    state.loginForm.loginType = 2
+  }
+  if (platform === 'cas') {
+    state.loginForm.loginType = 3
   }
 })
 </script>
@@ -156,6 +191,9 @@ onMounted(() => {
                   >
                   <el-radio v-if="state.loginTypes.includes(2)" :label="2" size="small"
                     >OIDC</el-radio
+                  >
+                  <el-radio v-if="state.loginTypes.includes(3)" :label="3" size="small"
+                    >CAS</el-radio
                   >
                   <el-radio v-if="state.loginTypes.includes(7)" :label="7" size="small"
                     >Lark</el-radio

@@ -26,6 +26,7 @@ public class TokenFilter implements Filter {
             "/panel.html",
             "/");
 
+    private static final String contextPath = "/de2api";
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
     }
@@ -34,6 +35,9 @@ public class TokenFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         String requestURI = request.getRequestURI();
+        if (StringUtils.startsWith(requestURI, contextPath)) {
+            requestURI = requestURI.replaceFirst(contextPath, "");
+        }
         if (ModelUtils.isDesktop()) {
             UserUtils.setDesktopUser();
             filterChain.doFilter(servletRequest, servletResponse);
