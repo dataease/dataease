@@ -31,7 +31,6 @@ declare module '@vue/runtime-core' {
     ConfigGlobal: typeof import('./src/components/config-global/src/ConfigGlobal.vue')['default']
     ContextMenu: typeof import('./src/components/data-visualization/canvas/ContextMenu.vue')['default']
     Cron: typeof import('./src/components/cron/src/Cron.vue')['default']
-    Dashboard_index: typeof import('./src/components/dashboard/canvas/dashboard_index.vue')['default']
     Day: typeof import('./src/components/cron/src/Day.vue')['default']
     DbCanvasAttr: typeof import('./src/components/dashboard/DbCanvasAttr.vue')['default']
     DbComponentToolBar: typeof import('./src/components/dashboard/DbComponentToolBar.vue')['default']
