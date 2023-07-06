@@ -167,7 +167,9 @@ export default {
   },
   beforeDestroy() {
     if (this.myChart.container) {
-      clear(this.myChart.container)
+      if (typeof this.myChart.container.getAttribute === 'function') {
+        clear(this.myChart.container)
+      }
     }
     this.myChart?.clear?.()
     this.myChart?.unbindSizeSensor?.()
