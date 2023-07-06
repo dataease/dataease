@@ -899,7 +899,16 @@ export function getAnalyse(chart: Chart) {
     }
 
     const fixedLines = senior.assistLine.filter(ele => ele.field === '0')
-    const dynamicLines = chart.data.dynamicAssistLines
+    const dynamicLineArr = senior.assistLine.filter(ele => ele.field === '1')
+    const l = chart.data.dynamicAssistLines
+    const dynamicLines = []
+    for (let i = 0; i < l.length; i++) {
+      for (let j = 0; j < dynamicLineArr.length; j++) {
+        if (l[i].fieldId === dynamicLineArr[j].fieldId) {
+          dynamicLines.push(l[i])
+        }
+      }
+    }
     const lines = fixedLines.concat(dynamicLines)
 
     lines.forEach(ele => {

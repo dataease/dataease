@@ -2,48 +2,14 @@
 import eventBus from '@/utils/eventBus'
 import QueryConditionConfiguration from './QueryConditionConfiguration.vue'
 import { type Field } from '@/api/chart'
-import { onBeforeUnmount, reactive, provide, ref, toRefs, watch } from 'vue'
+import { onBeforeUnmount, reactive, ref, toRefs, watch, computed } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { useI18n } from '@/hooks/web/useI18n'
 import { guid } from '@/views/visualized/data/dataset/form/util.js'
 import { cloneDeep } from 'lodash-es'
-
-const { t } = useI18n()
-
-const canEdit = ref(false)
-const queryConfig = ref()
-const customStyle = reactive({
-  border: '',
-  background: '',
-  text: ''
-})
-provide('$custom-style-filter', customStyle)
-
-const loading = ref(true)
-
-const visibleChange = (val: boolean) => {
-  setTimeout(() => {
-    loading.value = !val
-  }, 50)
-}
-
-// const attrs = reactive({
-//   multiple: false,
-//   showTime: false,
-//   defaultValue: false,
-//   showTitle: false,
-//   parameters: [],
-//   title: '',
-//   enableRange: false,
-//   enableParameters: false,
-//   viewIds: []
-// })
-
-const multipleChange = ele => {
-  ele.selectValue = ele.multiple ? [] : undefined
-}
-
+import Select from './Select.vue'
+import Time from './Time.vue'
 const props = defineProps({
   propValue: {
     type: String,
@@ -60,18 +26,65 @@ const props = defineProps({
     }
   }
 })
-const list = ref([])
 const { element } = toRefs(props)
+const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
-const { curComponent } = storeToRefs(dvMainStore)
+const { curComponent, canvasViewInfo } = storeToRefs(dvMainStore)
+const canEdit = ref(false)
+const queryConfig = ref()
+const defaultStyle = {
+  border: '',
+  background: '',
+  text: '',
+  borderWidth: 1,
+  btnList: []
+}
+const customStyle = reactive({ ...defaultStyle })
+
+const curComponentView = computed(() => {
+  return (canvasViewInfo.value[element.value.id] || {}).customStyle
+})
+
+const filterTypeCom = (deType: number) => {
+  return deType === 1 ? Time : Select
+}
+
+watch(
+  () => curComponentView.value,
+  val => {
+    const { show, borderShow, borderColor, borderWidth, bgColorShow, btnList, bgColor } =
+      val.component
+    if (!show) {
+      Object.assign(customStyle, { ...defaultStyle })
+      return
+    }
+    customStyle.background = bgColorShow ? bgColor || '' : ''
+    customStyle.border = borderShow ? borderColor || '' : ''
+    customStyle.btnList = [...btnList]
+    customStyle.borderWidth = borderWidth
+  },
+  {
+    deep: true,
+    immediate: true
+  }
+)
+
+const multipleChange = ele => {
+  ele.selectValue = ele.multiple ? [] : undefined
+}
+
+const list = ref([])
 
 watch(
   () => props.element.propValue,
   () => {
-    props.element.propValue.forEach(ele => {
+    ;(props.element.propValue || []).forEach(ele => {
       multipleChange(ele)
     })
-    list.value = cloneDeep(props.element.propValue)
+    list.value = cloneDeep(props.element.propValue || [])
+  },
+  {
+    immediate: true
   }
 )
 const onComponentClick = () => {
@@ -89,8 +102,8 @@ const dragover = () => {
   // console.log('dragover', e, componentInfo)
 }
 
-const infoFormat = (obj: Field) => {
-  const { id, name, deType, type } = obj
+const infoFormat = (obj: Field & { datasetId: string }) => {
+  const { id, name, deType, type, datasetId } = obj
   const base = {
     id: guid(),
     name,
@@ -101,33 +114,28 @@ const infoFormat = (obj: Field) => {
       deType
     },
     defaultValue: '',
-    optionValueSource: 0,
+    optionValueSource: 1,
     valueSource: [],
     dataset: {
-      id: '',
+      id: datasetId,
       name: '',
-      field: {
-        id: '',
-        name: '',
-        deType: ''
-      }
+      fields: []
     },
     visible: true,
     defaultValueCheck: false,
-    parameters: [],
-    options: [],
-    checkedFieldsMap: {},
-    parametersCheck: false
+    multiple: false,
+    checkedFieldsMap: {}
   }
-
   if (deType === 1) {
-    return { ...base, enableRange: true }
+    return base
   }
-  return { ...base, multiple: false, selectValue: '' }
+  return { ...base, options: [], parameters: [], parametersCheck: false }
 }
 
 const drop = e => {
-  const componentInfo: Field = JSON.parse(e.dataTransfer.getData('dimension') || '{}')
+  const componentInfo: Field & { datasetId: string } = JSON.parse(
+    e.dataTransfer.getData('dimension') || '{}'
+  )
   if (!componentInfo.id) return
   list.value.push(infoFormat(componentInfo))
   element.value.propValue = cloneDeep(list.value)
@@ -139,6 +147,7 @@ const editeQueryConfig = (queryId: string) => {
 
 const delQueryConfig = index => {
   list.value.splice(index, 1)
+  element.value.propValue = cloneDeep(list.value)
 }
 </script>
 
@@ -164,29 +173,26 @@ const delQueryConfig = index => {
           </div>
         </div>
         <div class="query-select">
-          <el-select-v2
-            v-model="ele.selectValue"
-            filterable
-            @visible-change="visibleChange"
-            :popper-class="loading ? 'load-select' : ''"
-            :show-checked="ele.multiple"
-            :multiple="ele.multiple"
-            :collapse-tags="ele.multiple"
-            :options="ele.options"
-            :collapse-tags-tooltip="ele.multiple"
-            style="width: 240px"
-          >
-            <template v-if="!ele.multiple" #default="{ item }">
-              <el-radio-group v-model="ele.selectValue">
-                <el-radio :label="item.value">{{ item.label }}</el-radio>
-              </el-radio-group>
-            </template>
-          </el-select-v2>
+          <component
+            :config="{
+              selectValue: ele.selectValue,
+              multiple: ele.multiple,
+              options: ele.options
+            }"
+            :customStyle="customStyle"
+            :is="filterTypeCom(ele.field.deType)"
+          ></component>
         </div>
       </div>
     </div>
     <div class="query-button" v-if="!!list.length">
-      <el-button type="primary">
+      <el-button v-if="customStyle.btnList.includes('reset')" secondary>
+        {{ t('chart.reset') }}
+      </el-button>
+      <el-button v-if="customStyle.btnList.includes('clear')" secondary>
+        {{ t('commons.clear') }}
+      </el-button>
+      <el-button v-if="customStyle.btnList.includes('sure')" type="primary">
         {{ t('common.sure') }}
       </el-button>
     </div>

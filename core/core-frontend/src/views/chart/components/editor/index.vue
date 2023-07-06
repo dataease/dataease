@@ -14,6 +14,7 @@ import QuotaItem from '@/views/chart/components/editor/drag-item/QuotaItem.vue'
 import DragPlaceholder from '@/views/chart/components/editor/drag-item/DragPlaceholder.vue'
 import FilterItem from '@/views/chart/components/editor/drag-item/FilterItem.vue'
 import ChartStyle from '@/views/chart/components/editor/editor-style/ChartStyle.vue'
+import VQueryChartStyle from '@/views/chart/components/editor/editor-style/VQueryChartStyle.vue'
 import Senior from '@/views/chart/components/editor/editor-senior/Senior.vue'
 import QuotaFilterEditor from '@/views/chart/components/editor/filter/QuotaFilterEditor.vue'
 import ResultFilterEditor from '@/views/chart/components/editor/filter/ResultFilterEditor.vue'
@@ -35,6 +36,7 @@ const router = useRouter()
 const { t } = useI18n()
 const loading = ref(false)
 const tabActive = ref('data')
+const tabActiveVQuery = ref('style')
 
 const renameForm = ref<FormInstance>()
 
@@ -72,7 +74,7 @@ const itemFormRules = reactive<FormRules>({
 })
 
 const state = reactive({
-  extData: 'extLabel',
+  extData: '',
   moveId: -1,
   dimension: [],
   quota: [],
@@ -138,7 +140,7 @@ const getFields = id => {
 }
 
 const startToMove = (e, item) => {
-  e.dataTransfer.setData('dimension', JSON.stringify(item))
+  e.dataTransfer.setData('dimension', JSON.stringify({ ...item, datasetId: view.value.tableId }))
 }
 
 const fieldFilter = val => {
@@ -425,8 +427,12 @@ const onFunctionCfgChange = val => {
 }
 
 const onAssistLineChange = val => {
-  view.value.senior.assistLine = val
-  renderChart(view.value)
+  view.value.senior.assistLine = val.data
+  if (val.requestData) {
+    calcData(view.value)
+  } else {
+    renderChart(view.value)
+  }
 }
 
 const onThresholdChange = val => {
@@ -664,7 +670,17 @@ const saveValueFormatter = () => {
           </el-row>
 
           <el-row style="height: calc(100vh - 110px)">
-            <el-tabs v-model="tabActive" :stretch="true" class="tab-header">
+            <el-tabs v-if="view.type === 'VQuery'" v-model="tabActiveVQuery" class="tab-header">
+              <el-tab-pane
+                name="style"
+                :label="t('chart.chart_style')"
+                class="padding-tab"
+                style="width: 100%"
+              >
+                <VQueryChartStyle :chart="view" :themes="themes"></VQueryChartStyle>
+              </el-tab-pane>
+            </el-tabs>
+            <el-tabs v-else v-model="tabActive" :stretch="true" class="tab-header">
               <el-tab-pane name="data" :label="t('chart.chart_data')" class="padding-tab">
                 <el-col>
                   <div class="drag_main_area attr-style theme-border-class">
