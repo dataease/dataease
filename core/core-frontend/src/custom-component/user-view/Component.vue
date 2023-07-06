@@ -23,6 +23,11 @@ const props = defineProps({
         propValue: null
       }
     }
+  },
+  showPosition: {
+    type: String,
+    required: false,
+    default: 'canvas'
   }
 })
 
@@ -31,7 +36,7 @@ const { propValue, element, view } = toRefs(props)
 
 <template>
   <div class="bash-shape">
-    <chart :view="view"></chart>
+    <chart :view="view" :show-position="showPosition"></chart>
   </div>
 </template>
 

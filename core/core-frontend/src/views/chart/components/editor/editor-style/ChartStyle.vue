@@ -15,8 +15,9 @@ import { storeToRefs } from 'pinia'
 import CollapseSwitchItem from '@/components/collapse-switch-item/src/CollapseSwitchItem.vue'
 import { ElCollapseItem } from 'element-plus-secondary'
 import BasicStyleSelector from '@/views/chart/components/editor/editor-style/components/BasicStyleSelector.vue'
+import ComponentPosition from '@/components/visualization/common/ComponentPosition.vue'
 const dvMainStore = dvMainStoreWithOut()
-const { curComponent } = storeToRefs(dvMainStore)
+const { curComponent, dvInfo } = storeToRefs(dvMainStore)
 const { t } = useI18n()
 
 const state = {
@@ -97,6 +98,9 @@ const onBasicStyleChange = val => {
     <div class="attr-style">
       <el-row class="de-collapse-style">
         <el-collapse v-model="state.attrActiveNames" class="style-collapse">
+          <el-collapse-item name="position" :title="'位置'" v-if="dvInfo.type !== 'dashboard'">
+            <component-position></component-position>
+          </el-collapse-item>
           <el-collapse-item name="background" :title="'背景'">
             <background-overall-component
               v-if="curComponent"

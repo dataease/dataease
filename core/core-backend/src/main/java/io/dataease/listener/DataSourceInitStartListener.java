@@ -30,9 +30,12 @@ public class DataSourceInitStartListener implements ApplicationListener<Applicat
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
-        engineServer.initSimpleEngine();
-        datasourceServer.updateDemoDs();
-
+        try {
+            engineServer.initSimpleEngine();
+            datasourceServer.updateDemoDs();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         List<CoreDatasourceTask> list = datasourceTaskServer.listAll();
         for (CoreDatasourceTask task : list) {
             try {

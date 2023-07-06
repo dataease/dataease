@@ -6,6 +6,7 @@ import { ref, onMounted, toRefs, getCurrentInstance, computed } from 'vue'
 import findComponent from '@/utils/components'
 import { hexColorToRGBA } from '@/views/chart/components/js/util'
 import { imgUrlTrans } from '@/utils/imgUtils'
+import ComponentEditBar from '@/components/visualization/ComponentEditBar.vue'
 
 const props = defineProps({
   config: {
@@ -28,11 +29,22 @@ const props = defineProps({
   viewInfo: {
     type: Object,
     required: false
+  },
+  index: {
+    required: true,
+    type: [Number, String],
+    default: 0
+  },
+  showPosition: {
+    required: false,
+    type: String,
+    default: 'preview'
   }
 })
-const component = ref(null)
-const { config } = toRefs(props)
+const { config, showPosition, index } = toRefs(props)
 let currentInstance
+const component = ref(null)
+const emits = defineEmits(['userViewEnlargeOpen'])
 
 onMounted(() => {
   runAnimation(component.value.$el, config.value.animations.type)
@@ -103,6 +115,13 @@ const commonBackgroundSvgInner = computed(() => {
 <template>
   <div class="wrapper-outer" @click="onClick" @mouseenter="onMouseEnter">
     <div class="wrapper-inner" :style="componentBackgroundStyle">
+      <component-edit-bar
+        class="wrapper-edit-bar"
+        :index="index"
+        :element="config"
+        :show-position="showPosition"
+        @userViewEnlargeOpen="() => emits('userViewEnlargeOpen')"
+      ></component-edit-bar>
       <!--边框背景-->
       <Icon
         v-if="svgInnerEnable"
@@ -121,6 +140,7 @@ const commonBackgroundSvgInner = computed(() => {
         :element="config"
         :request="config?.request"
         :linkage="config?.linkage"
+        :show-position="showPosition"
       />
     </div>
   </div>
@@ -135,6 +155,12 @@ const commonBackgroundSvgInner = computed(() => {
   height: 100%;
   position: relative;
   background-size: 100% 100% !important;
+  .wrapper-edit-bar {
+    display: none;
+  }
+  &:hover .wrapper-edit-bar {
+    display: inherit !important;
+  }
 }
 
 .component {

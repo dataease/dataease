@@ -885,16 +885,11 @@ public class ChartDataManage {
                 continue;
             }
 
-//            DatasetTableFieldExample datasetTableFieldExample = new DatasetTableFieldExample();
-//            datasetTableFieldExample.createCriteria().andTableIdEqualTo(view.getTableId()).andIdEqualTo(fieldId);
-//            List<DatasetTableField> fieldList = datasetTableFieldMapper.selectByExample(datasetTableFieldExample);
-
             DatasetTableFieldDTO datasetTableFieldDTO = datasetTableFieldManage.selectById(fieldId);
 
             if (ObjectUtils.isEmpty(datasetTableFieldDTO)) {
                 continue;
             }
-            dto.setCurField(datasetTableFieldDTO);
             list.add(dto);
         }
         return list;

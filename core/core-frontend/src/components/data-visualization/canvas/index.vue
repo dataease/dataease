@@ -27,6 +27,7 @@ import DragShadow from '@/components/data-visualization/canvas/DragShadow.vue'
 import { findDragComponent } from '@/utils/canvasUtils'
 import { guid } from '@/views/visualized/data/dataset/form/util'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
+import UserViewEnlarge from '@/components/visualization/UserViewEnlarge.vue'
 const snapshotStore = snapshotStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
 const composeStore = composeStoreWithOut()
@@ -146,7 +147,7 @@ const width = ref(0)
 const height = ref(0)
 const isShowArea = ref(false)
 const svgFilterAttrs = ['width', 'height', 'top', 'left', 'rotate']
-
+const userViewEnlargeRef = ref(null)
 const showComponentData = computed(() => {
   return componentData.value.filter(component => component.isShow)
 })
@@ -1393,6 +1394,9 @@ const getMoveItem = () => {
   return infoBox.value.moveItem
 }
 
+const userViewEnlargeOpen = item => {
+  userViewEnlargeRef.value.dialogInit(canvasStyleData.value, canvasViewInfo.value[item.id], item)
+}
 onMounted(() => {
   // 获取编辑器元素
   composeStore.getEditor()
@@ -1449,6 +1453,7 @@ defineExpose({
       @onMouseUp="onMouseUp($event, item, index)"
       @onDragging="onDragging($event, item, index)"
       @onResizing="onResizing($event, item, index)"
+      @userViewEnlargeOpen="userViewEnlargeOpen(item)"
     >
       <!--如果是视图 则动态获取预存的chart-view数据-->
       <component
@@ -1493,6 +1498,7 @@ defineExpose({
     <MarkLine />
     <!-- 选中区域 -->
     <Area v-show="isShowArea" :start="start" :width="width" :height="height" />
+    <user-view-enlarge ref="userViewEnlargeRef"></user-view-enlarge>
   </div>
 </template>
 

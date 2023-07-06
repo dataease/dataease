@@ -440,10 +440,10 @@ export const DEFAULT_XAXIS_STYLE = {
   },
   axisValue: {
     auto: true,
-    min: null,
-    max: null,
-    split: null,
-    splitCount: null
+    min: '',
+    max: '',
+    split: '',
+    splitCount: ''
   },
   axisLabelFormatter: {
     type: 'auto', // auto,value,percent
@@ -486,10 +486,10 @@ export const DEFAULT_YAXIS_STYLE = {
   },
   axisValue: {
     auto: true,
-    min: null,
-    max: null,
-    split: null,
-    splitCount: null
+    min: '',
+    max: '',
+    split: '',
+    splitCount: ''
   },
   axisLabelFormatter: {
     type: 'auto', // auto,value,percent

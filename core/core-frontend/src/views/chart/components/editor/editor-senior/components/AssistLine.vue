@@ -38,8 +38,16 @@ watch(
 )
 
 const changeAssistLine = () => {
-  emit('onAssistLineChange', state.assistLine)
+  let flag = false
+  const arr = state.assistLine.filter(ele => {
+    return ele.field === '1'
+  })
+  if (arr && arr.length > 0) {
+    flag = true
+  }
+  emit('onAssistLineChange', { data: state.assistLine, requestData: flag })
 }
+
 const lineChange = val => {
   state.lineArr = val
 }

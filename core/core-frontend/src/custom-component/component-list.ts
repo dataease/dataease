@@ -160,9 +160,6 @@ const list = [
     style: {
       width: 200,
       height: 200,
-      borderColor: '#fff',
-      borderWidth: 1,
-      borderStyle: 'solid',
       borderRadius: ''
     },
     matrixStyle: {}

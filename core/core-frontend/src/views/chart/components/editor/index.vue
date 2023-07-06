@@ -74,7 +74,7 @@ const itemFormRules = reactive<FormRules>({
 })
 
 const state = reactive({
-  extData: 'extLabel',
+  extData: '',
   moveId: -1,
   dimension: [],
   quota: [],
@@ -427,8 +427,12 @@ const onFunctionCfgChange = val => {
 }
 
 const onAssistLineChange = val => {
-  view.value.senior.assistLine = val
-  renderChart(view.value)
+  view.value.senior.assistLine = val.data
+  if (val.requestData) {
+    calcData(view.value)
+  } else {
+    renderChart(view.value)
+  }
 }
 
 const onThresholdChange = val => {

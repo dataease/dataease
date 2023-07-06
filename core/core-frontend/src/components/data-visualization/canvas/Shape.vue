@@ -11,6 +11,8 @@
         v-if="componentActiveFlag"
         :index="index"
         :element="element"
+        :show-position="showPosition"
+        @userViewEnlargeOpen="userViewEnlargeOpen"
       ></component-edit-bar>
       <span v-show="element['isLock']" class="iconfont icon-suo"></span>
       <div
@@ -54,7 +56,14 @@ const composeStore = composeStoreWithOut()
 
 const { curComponent, dvInfo, editMode } = storeToRefs(dvMainStore)
 const { editor } = storeToRefs(composeStore)
-const emit = defineEmits(['onStartResize', 'onStartMove', 'onDragging', 'onResizing', 'onMouseUp'])
+const emit = defineEmits([
+  'userViewEnlargeOpen',
+  'onStartResize',
+  'onStartMove',
+  'onDragging',
+  'onResizing',
+  'onMouseUp'
+])
 
 const isEditMode = computed(() => editMode.value === 'edit')
 const state = reactive({
@@ -62,6 +71,8 @@ const state = reactive({
     id: ''
   }
 })
+
+const showPosition = computed(() => (isEditMode.value ? 'canvas' : 'preview'))
 
 const props = defineProps({
   active: {
@@ -153,6 +164,10 @@ const isActive = () => {
 // 处理旋转
 const handleRotate = () => {
   //doNothing
+}
+
+const userViewEnlargeOpen = () => {
+  emit('userViewEnlargeOpen')
 }
 
 const getPointStyle = point => {
@@ -445,7 +460,7 @@ const componentBackgroundStyle = computed(() => {
 })
 
 const componentActiveFlag = computed(() => {
-  return active.value && dashboardActive.value && isEditMode.value
+  return active.value && dashboardActive.value
 })
 
 const showViewDetails = () => {

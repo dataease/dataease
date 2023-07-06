@@ -4,9 +4,11 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { styleData, selectKey, optionMap, positionData } from '@/utils/attr'
 import DeInputNum from '@/custom-component/common/DeInputNum.vue'
+import BackgroundOverallComponent from '@/components/visualization/component-background/BackgroundOverallComponent.vue'
+import ComponentPosition from '@/components/visualization/common/ComponentPosition.vue'
 
 const dvMainStore = dvMainStoreWithOut()
-const { curComponent } = storeToRefs(dvMainStore)
+const { curComponent, dvInfo } = storeToRefs(dvMainStore)
 const activeName = ref(curComponent.value.collapseName)
 
 const styleKeys = computed(() => {
@@ -34,27 +36,16 @@ const onChange = () => {
 const isIncludesColor = str => {
   return str.toLowerCase().includes('color')
 }
+const dashboardActive = computed(() => {
+  return dvInfo.value.type === 'dashboard'
+})
 </script>
 
 <template>
   <div class="v-common-attr">
     <el-collapse v-model="activeName" @change="onChange()">
-      <el-collapse-item title="位置" name="position">
-        <div style="width: 100%">
-          <div
-            v-for="({ key, label }, index) in positionKeys"
-            :key="index"
-            :title="label"
-            style="display: flex; float: left; margin-top: 10px"
-          >
-            <div style="width: 25px; overflow: hidden; text-align: right">
-              <span>{{ label }}</span>
-            </div>
-            <div style="width: 85px">
-              <de-input-num v-model="curComponent.style[key]"></de-input-num>
-            </div>
-          </div>
-        </div>
+      <el-collapse-item title="位置" name="position" v-if="!dashboardActive">
+        <component-position style="padding-top: 10px"></component-position>
       </el-collapse-item>
 
       <el-collapse-item title="背景" name="background">

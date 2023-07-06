@@ -12,12 +12,17 @@ const props = defineProps({
         propValue: null
       }
     }
+  },
+  showPosition: {
+    type: String,
+    required: false,
+    default: 'canvas'
   }
 })
 
 const emit = defineEmits(['onChartClick', 'onDrillFilters'])
 
-const { view } = toRefs(props)
+const { view, showPosition } = toRefs(props)
 
 const state = reactive({
   myChart: null,
@@ -25,7 +30,7 @@ const state = reactive({
   data: [] // 图表数据
 })
 
-const containerId = 'container-' + view.value.id
+const containerId = 'container-' + showPosition.value + '-' + view.value.id
 
 const calcData = view => {
   state.loading = true
