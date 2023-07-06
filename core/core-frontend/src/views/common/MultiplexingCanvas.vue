@@ -8,8 +8,10 @@
     title="复用"
   >
     <el-button class="close-button" @click="dialogShow = false">关闭</el-button>
-    <el-button type="primary" class="confirm-button" @click="dialogShow = false">确定</el-button>
+    <el-button type="primary" class="confirm-button" @click="saveMultiplexing">确定</el-button>
     <dashboard-preview-show
+      v-if="dialogShow"
+      ref="multiplexingPreviewShowRef"
       class="multiplexing-area"
       show-position="multiplexing"
     ></dashboard-preview-show>
@@ -20,16 +22,21 @@
 import { ref } from 'vue'
 import DashboardPreviewShow from '@/views/dashboard/DashboardPreviewShow.vue'
 import { copyStoreWithOut } from '@/store/modules/data-visualization/copy'
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+const dvMainStore = dvMainStoreWithOut()
 const dialogShow = ref(false)
 const copyStore = copyStoreWithOut()
+const multiplexingPreviewShowRef = ref(null)
 
 const dialogInit = () => {
   dialogShow.value = true
+  dvMainStore.initCurMultiplexingComponents()
 }
 
 const saveMultiplexing = () => {
   dialogShow.value = false
-  copyStore.copyMultiplexingComponents()
+  const previewStateInfo = multiplexingPreviewShowRef.value.getPreviewStateInfo()
+  copyStore.copyMultiplexingComponents(previewStateInfo.canvasViewInfoPreview)
 }
 
 defineExpose({

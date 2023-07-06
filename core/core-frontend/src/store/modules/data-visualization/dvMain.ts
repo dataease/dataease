@@ -216,6 +216,25 @@ export const dvMainStore = defineStore('dataVisualization', {
       this.componentData = componentData
     },
 
+    addCopyComponent(component, idMap, canvasViewInfoPre = this.canvasViewInfo) {
+      this.componentData.push(component)
+      // eslint-disable-next-line @typescript-eslint/no-this-alias
+      const _this = this
+      //组件组内部可能还有多个视图
+      if (idMap) {
+        Object.keys(idMap).forEach(function (oldComponentId) {
+          if (canvasViewInfoPre[oldComponentId]) {
+            const newComponentId = idMap[oldComponentId]
+            _this.canvasViewInfo[newComponentId] = {
+              ...canvasViewInfoPre[oldComponentId],
+              id: newComponentId
+            }
+          }
+        })
+      }
+      console.log('end')
+    },
+
     addComponent({ component, index }) {
       if (index !== undefined) {
         this.componentData.splice(index, 0, component)
@@ -452,17 +471,19 @@ export const dvMainStore = defineStore('dataVisualization', {
     removeCurMultiplexingComponentWithId(id) {
       delete this.curMultiplexingComponents[id]
     },
-    addCurMultiplexingComponent({ component, componentId }) {
-      if (componentId) {
-        if (component.type === 'custom-button' && component.serviceName === 'buttonSureWidget') {
-          const copyComponent = deepCopy(component)
-          copyComponent.options.attrs.customRange = false
-          copyComponent.options.attrs.filterIds = []
-          this.curMultiplexingComponents[componentId] = copyComponent
-          return
-        }
-        this.curMultiplexingComponents[componentId] = component
+    addCurMultiplexingComponent(componentInfo) {
+      if (componentInfo.componentId) {
+        this.curMultiplexingComponents[componentInfo.componentId] = componentInfo.component
       }
+    },
+    initCurMultiplexingComponents() {
+      this.curMultiplexingComponents = {}
+    },
+    addCanvasViewInfo(viewId, viewInfo) {
+      this.canvasViewInfo[viewId] = viewInfo
+    },
+    removeCanvasViewInfo(viewId) {
+      delete this.canvasViewInfo[viewId]
     }
   }
 })

@@ -73,6 +73,14 @@ const htmlToImage = () => {
 const slideOpenChange = () => {
   slideShow.value = !slideShow.value
 }
+
+const getPreviewStateInfo = () => {
+  return state
+}
+
+defineExpose({
+  getPreviewStateInfo
+})
 </script>
 
 <template>
