@@ -13,7 +13,7 @@ export default {
         // target: 'https://de2.fit2cloud.com',
         target: 'http://localhost:8100',
         changeOrigin: true,
-        rewrite: path => path.replace(/^\/api/, '')
+        rewrite: path => path.replace(/^\/api/, 'de2api')
       }
     }
   }
