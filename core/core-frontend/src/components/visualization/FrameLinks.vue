@@ -72,7 +72,7 @@ const onSubmit = () => {
   } else {
     curActiveTabInner.value.frameLinks = state.linkInfoTemp
   }
-  snapshotStore.canvasChange()
+  snapshotStore.recordSnapshotCache()
   eventBus.emit('frameLinksChange-' + curComponent.value.id)
   popoverClose()
 }

@@ -20,14 +20,20 @@ export const snapshotStore = defineStore('snapshot', {
     return {
       styleChangeTimes: 0, // 组件样式修改次数
       cacheStyleChangeTimes: 0, // 仪表板未缓存的组件样式修改次数
+      snapshotCacheTimes: 0, // 当前未计入镜像中的修改变动次数, 此为定时缓存，缓存间隔时间5秒一次 针对类型样式这种变动不大的修改
       snapshotData: [], // 编辑器快照数据
       snapshotIndex: -1 // 快照索引
     }
   },
   actions: {
-    canvasChange() {
-      this.styleChangeTimes++
-      this.cacheStyleChangeTimes++
+    //定时检查变动次数 存在变动次数则进行镜像处理
+    snapshotCatchToStore() {
+      if (this.snapshotCacheTimes) {
+        this.recordSnapshot()
+      }
+    },
+    recordSnapshotCache() {
+      this.snapshotCacheTimes++
     },
     undo() {
       if (this.snapshotIndex >= 0) {
@@ -75,6 +81,8 @@ export const snapshotStore = defineStore('snapshot', {
       if (this.snapshotIndex < this.snapshotData.length - 1) {
         this.snapshotData = this.snapshotData.slice(0, this.snapshotIndex + 1)
       }
+      // 清理缓存计数器
+      this.cacheChangeTimes = 0
     }
   }
 })

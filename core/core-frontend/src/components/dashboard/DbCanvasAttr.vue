@@ -153,7 +153,7 @@ const onTextChange = val => {
   themeAttrChange('customStyle', 'text', val)
 }
 const styleChange = () => {
-  snapshotStore.canvasChange()
+  snapshotStore.recordSnapshotCache()
 }
 const themeAttrChange = (custom, property, value) => {
   eventBus.emit('onThemeAttrChange', {

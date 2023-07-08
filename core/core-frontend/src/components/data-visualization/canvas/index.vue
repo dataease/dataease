@@ -16,7 +16,7 @@ import Area from './Area.vue'
 import eventBus from '@/utils/eventBus'
 import Grid from './Grid.vue'
 import { changeStyleWithScale } from '@/utils/translate'
-import { ref, onMounted, toRef, computed, toRefs, nextTick } from 'vue'
+import { ref, onMounted, toRef, computed, toRefs, nextTick, onBeforeUnmount } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
@@ -189,6 +189,7 @@ let moveTime = 80 //移动动画时间
 let itemMaxY = 0
 let itemMaxX = 0
 let currentInstance
+let snapshotTimer = ref(null)
 
 const handleMouseDown = e => {
   // 仪表板和预览状态不显示菜单和组创建
@@ -1397,7 +1398,15 @@ const getMoveItem = () => {
 const userViewEnlargeOpen = item => {
   userViewEnlargeRef.value.dialogInit(canvasStyleData.value, canvasViewInfo.value[item.id], item)
 }
+
+const initSnapshotTimer = () => {
+  snapshotTimer.value = setTimeout(() => {
+    snapshotStore.snapshotCatchToStore()
+  }, 5000)
+}
+
 onMounted(() => {
+  initSnapshotTimer()
   // 获取编辑器元素
   composeStore.getEditor()
   eventBus.on('hideArea', hideArea)
@@ -1405,6 +1414,18 @@ onMounted(() => {
   eventBus.on('handleDragEnd', handleDragEnd)
   eventBus.on('removeMatrixItem', removeItem)
   eventBus.on('addDashboardItem', addItemBox)
+})
+
+onBeforeUnmount(() => {
+  if (snapshotTimer.value) {
+    clearInterval(snapshotTimer.value)
+    snapshotTimer.value = null
+  }
+  eventBus.off('hideArea', hideArea)
+  eventBus.off('handleDragStartMoveIn', handleDragStartMoveIn)
+  eventBus.off('handleDragEnd', handleDragEnd)
+  eventBus.off('removeMatrixItem', removeItem)
+  eventBus.off('addDashboardItem', addItemBox)
 })
 
 defineExpose({
