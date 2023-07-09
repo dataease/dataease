@@ -3,16 +3,15 @@ package io.dataease.xpack.permissions.login;
 
 import io.dataease.api.permissions.login.api.LoginApi;
 import io.dataease.api.permissions.login.dto.PwdLoginDTO;
-import io.dataease.xpack.permissions.login.manage.LoginManage;
-import io.dataease.utils.Md5Utils;
 import io.dataease.auth.bo.TokenUserBO;
-import io.dataease.utils.TokenUtils;
+import io.dataease.utils.*;
+import io.dataease.xpack.permissions.login.manage.LoginManage;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/login")
+@RequestMapping
 public class LoginServer implements LoginApi {
 
     @Resource
@@ -26,8 +25,24 @@ public class LoginServer implements LoginApi {
     }
 
     @Override
-    public String oidcLogin(String code, String state) {
-        // 从请求头获取userInfo 然后判断是否要新建用户 最后调用generate生成token
-        return null;
+    public String platformLogin(Integer origin) {
+        if (origin == 2) {
+            String xUserinfo = ServletUtils.getXUserinfo();
+            LogUtil.info("oidc user [" + xUserinfo + "] login");
+        } else if (origin == 3) {
+            String casUser = ServletUtils.getCasUser();
+            LogUtil.info("cas user [" + casUser + "] login");
+        }
+        TokenUserBO tokenUserBO = new TokenUserBO();
+        tokenUserBO.setUserId(1L);
+        tokenUserBO.setDefaultOid(1L);
+        String md5Pwd = "83d923c9f1d8fcaa46cae0ed2aaa81b5";
+        return TokenUtils.generate(tokenUserBO, md5Pwd);
+    }
+
+    @Override
+    public void logout() {
+        AuthUtils.setUser(null);
+        //remember destroy the token
     }
 }
