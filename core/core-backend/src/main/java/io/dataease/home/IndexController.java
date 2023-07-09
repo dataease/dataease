@@ -1,11 +1,8 @@
 package io.dataease.home;
 
-import io.dataease.utils.ModelUtils;
-import io.dataease.utils.RsaUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequestMapping
@@ -25,9 +22,4 @@ public class IndexController {
     }
 
 
-
-    @GetMapping("/oidc/callback")
-    public String oidcCallback() {
-        return INDEX_PAGE;
-    }
 }

@@ -5,6 +5,7 @@ import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.api.permissions.auth.dto.BusiResourceCreator;
 import io.dataease.api.permissions.auth.dto.BusiResourceEditor;
+import io.dataease.api.permissions.auth.dto.OutAuthPlatformLoginRequest;
 import io.dataease.api.permissions.auth.vo.BusiPerVO;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
@@ -54,5 +55,8 @@ public interface InteractiveAuthApi {
     @ApiOperationSupport(order = 5)
     @GetMapping("/resource/del/{id}")
     void delResource(@PathVariable("id") Long id);
+
+    @Operation(hidden = true)
+    String outAuthPlatformLogin(@RequestBody OutAuthPlatformLoginRequest request);
 
 }

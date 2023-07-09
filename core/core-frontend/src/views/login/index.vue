@@ -9,6 +9,8 @@ import { useAppStoreWithOut } from '@/store/modules/app'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import { rsaEncryp } from '@/utils/encryption'
 import router from '@/router'
+import { toPlatformPage, setLoginForm, callback } from './Platform'
+
 const { wsCache } = useCache()
 const appStore = useAppStoreWithOut()
 const userStore = useUserStoreWithOut()
@@ -66,21 +68,7 @@ const showQr = () => {
 }
 
 const changeLoginType = val => {
-  // if (val !== 2 && val !== 7) return
-  let curOrigin = window.location.origin
-  if (val === 0) {
-    wsCache.set('out_auth_platform', 'default')
-  } else if (val === 1) {
-    wsCache.set('out_auth_platform', 'ldap')
-    window.open(curOrigin + '/ldapbi/#' + getCurLocation())
-  } else if (val === 2) {
-    wsCache.set('out_auth_platform', 'oidc')
-    window.open(curOrigin + '/oidcbi/#' + getCurLocation())
-  } else if (val === 3) {
-    wsCache.set('out_auth_platform', 'cas')
-    window.open(curOrigin + '/casbi/#' + getCurLocation())
-  }
-  return
+  toPlatformPage(val)
 }
 const getCurLocation = () => {
   let queryRedirectPath = '/workbranch/index'
@@ -96,10 +84,6 @@ const handleLogin = () => {
   loginApi(param).then(res => {
     const token = res.data
     userStore.setToken(token)
-    /* let queryRedirectPath = '/workbranch/index'
-    if (router.currentRoute.value.query.redirect) {
-      queryRedirectPath = router.currentRoute.value.query.redirect as string
-    } */
     const queryRedirectPath = getCurLocation()
     router.push({ path: queryRedirectPath })
   })
@@ -110,25 +94,14 @@ const switchCodeIndex = codeIndex => {
 }
 
 onMounted(() => {
+  console.log('----------')
   if (!wsCache.get(appStore.getDekey)) {
     queryDekey().then(res => {
       wsCache.set(appStore.getDekey, res.data)
     })
   }
-  const platform = wsCache.get('out_auth_platform')
-  state.loginForm.loginType = 0
-  if (platform === 'default') {
-    state.loginForm.loginType = 0
-  }
-  if (platform === 'ldap') {
-    state.loginForm.loginType = 1
-  }
-  if (platform === 'oidc') {
-    state.loginForm.loginType = 2
-  }
-  if (platform === 'cas') {
-    state.loginForm.loginType = 3
-  }
+  setLoginForm(state)
+  callback()
 })
 </script>
 

@@ -4,9 +4,9 @@ package io.dataease.api.permissions.login.api;
 import io.dataease.api.permissions.login.dto.PwdLoginDTO;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * 登录其实就是获得token的过程，最后把token返回到前端
@@ -19,15 +19,13 @@ public interface LoginApi {
      *
      * @param dto
      */
-    @PostMapping("/localLogin")
+    @PostMapping("/login/localLogin")
     String localLogin(@Valid @RequestBody PwdLoginDTO dto);
 
-    /**
-     * oidc登录
-     *
-     * @param code
-     * @param state
-     */
-    @GetMapping("/oidcLogin")
-    String oidcLogin(@RequestParam("code") String code, @RequestParam("state") String state);
+    @PostMapping("/login/platformLogin/{origin}")
+    String platformLogin(@PathVariable("origin") Integer origin);
+
+    @GetMapping("/logout")
+    void logout();
+
 }
