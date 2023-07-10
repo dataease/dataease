@@ -29,7 +29,7 @@ const handleRemove = (file, fileList) => {
   uploadDisabled.value = false
   curComponent.value.propValue.url = null
   fileList.value = []
-  snapshotStore.recordSnapshot()
+  snapshotStore.recordSnapshot('handleRemove')
 }
 async function upload(file) {
   uploadFileResult(file.file, fileUrl => {

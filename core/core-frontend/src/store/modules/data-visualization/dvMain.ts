@@ -232,7 +232,6 @@ export const dvMainStore = defineStore('dataVisualization', {
           }
         })
       }
-      console.log('end')
     },
 
     addComponent({ component, index }) {
@@ -246,7 +245,7 @@ export const dvMainStore = defineStore('dataVisualization', {
       //如果当前的组件是UserView 视图，则想canvasView中增加一项 UserView ID 和componentID保持一致
       if (component.component === 'UserView') {
         const newView = {
-          ...deepCopy(BASE_VIEW_CONFIG),
+          ...JSON.parse(JSON.stringify(BASE_VIEW_CONFIG)),
           id: component.id,
           type: component.innerType
         }
@@ -254,7 +253,7 @@ export const dvMainStore = defineStore('dataVisualization', {
       }
       if (component.component === 'VQuery') {
         const newView = {
-          ...deepCopy(BASE_VIEW_CONFIG),
+          ...JSON.parse(JSON.stringify(BASE_VIEW_CONFIG)),
           id: component.id,
           type: component.innerType,
           customStyle: {

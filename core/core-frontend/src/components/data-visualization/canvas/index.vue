@@ -636,7 +636,7 @@ function removeItem(index) {
     }
   })
   componentData.value.splice(index, 1)
-  snapshotStore.recordSnapshot()
+  snapshotStore.recordSnapshot('removeItem')
 }
 
 function addItem(item, index) {
@@ -888,7 +888,6 @@ const containerMouseDown = e => {
 }
 
 const endItemMove = (e, item, index) => {
-  // console.log('endItemMove')
   dvMainStore.setCurComponent({ component: item, index: index })
   dvMainStore.setClickComponentStatus(true)
   dvMainStore.setInEditorStatus(true)
@@ -1061,7 +1060,6 @@ const startMove = (e, item, index) => {
 }
 
 const handleMouseUp = (e, item, index) => {
-  // startMove 中组织冒泡会导致移动事件无法传播，在这里设置（鼠标抬起）效果一致
   endItemMove(e, item, index)
   clearInfoBox(e)
 }
@@ -1400,9 +1398,9 @@ const userViewEnlargeOpen = item => {
 }
 
 const initSnapshotTimer = () => {
-  snapshotTimer.value = setTimeout(() => {
+  snapshotTimer.value = setInterval(() => {
     snapshotStore.snapshotCatchToStore()
-  }, 5000)
+  }, 3000)
 }
 
 onMounted(() => {
@@ -1414,6 +1412,7 @@ onMounted(() => {
   eventBus.on('handleDragEnd', handleDragEnd)
   eventBus.on('removeMatrixItem', removeItem)
   eventBus.on('addDashboardItem', addItemBox)
+  eventBus.on('snapshotChange', canvasInit)
 })
 
 onBeforeUnmount(() => {
@@ -1426,6 +1425,7 @@ onBeforeUnmount(() => {
   eventBus.off('handleDragEnd', handleDragEnd)
   eventBus.off('removeMatrixItem', removeItem)
   eventBus.off('addDashboardItem', addItemBox)
+  eventBus.off('snapshotChange', canvasInit)
 })
 
 defineExpose({

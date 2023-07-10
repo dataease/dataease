@@ -63,12 +63,12 @@ const unlock = () => {
 
 const compose = () => {
   composeStore.compose()
-  snapshotStore.recordSnapshot()
+  snapshotStore.recordSnapshot('dv-compose')
 }
 
 const decompose = () => {
   composeStore.decompose()
-  snapshotStore.recordSnapshot()
+  snapshotStore.recordSnapshot('dv-decompose')
 }
 
 const undo = () => {
@@ -116,7 +116,7 @@ const handleFileChange = e => {
       // 根据画面比例修改组件样式比例
       changeComponentSizeWithScale(component)
       dvMainStore.addComponent({ component: component, index: undefined })
-      snapshotStore.recordSnapshot()
+      snapshotStore.recordSnapshot('dv-handleFileChange')
 
       $('#input').setAttribute('type', 'text')
       $('#input').setAttribute('type', 'file')
@@ -153,7 +153,7 @@ const saveCanvas = () => {
 const clearCanvas = () => {
   dvMainStore.setCurComponent({ component: null, index: null })
   dvMainStore.setComponentData([])
-  snapshotStore.recordSnapshot()
+  snapshotStore.recordSnapshot('dv-clearCanvas')
 }
 
 const handlePreviewChange = () => {

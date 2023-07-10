@@ -1,17 +1,19 @@
 export function deepCopy(target) {
-  if (typeof target == 'object') {
+  if (target === null || target === undefined) {
+    return target
+  } else if (typeof target == 'object') {
     const result = Array.isArray(target) ? [] : {}
     for (const key in target) {
-      if (typeof target[key] == 'object') {
+      if (target[key] === null || target[key] === undefined) {
+        result[key] = target[key]
+      } else if (typeof target[key] == 'object') {
         result[key] = deepCopy(target[key])
       } else {
         result[key] = target[key]
       }
     }
-
     return result
   }
-
   return target
 }
 

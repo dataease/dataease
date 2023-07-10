@@ -52,42 +52,42 @@ const rename = () => {
 }
 const paste = () => {
   copyStore.paste(true)
-  snapshotStore.recordSnapshot()
+  snapshotStore.recordSnapshot('paste')
 }
 
 const deleteComponent = () => {
   dvMainStore.deleteComponent()
-  snapshotStore.recordSnapshot()
+  snapshotStore.recordSnapshot('deleteComponent')
 }
 
 const upComponent = () => {
   layerStore.upComponent()
-  snapshotStore.recordSnapshot()
+  snapshotStore.recordSnapshot('upComponent')
 }
 
 const downComponent = () => {
   layerStore.downComponent()
-  snapshotStore.recordSnapshot()
+  snapshotStore.recordSnapshot('downComponent')
 }
 
 const topComponent = () => {
   layerStore.topComponent()
-  snapshotStore.recordSnapshot()
+  snapshotStore.recordSnapshot('topComponent')
 }
 
 const bottomComponent = () => {
   layerStore.bottomComponent()
-  snapshotStore.recordSnapshot()
+  snapshotStore.recordSnapshot('bottomComponent')
 }
 
 const componentCompose = () => {
   composeStore.compose()
-  snapshotStore.recordSnapshot()
+  snapshotStore.recordSnapshot('componentCompose')
 }
 
 const decompose = () => {
   composeStore.decompose()
-  snapshotStore.recordSnapshot()
+  snapshotStore.recordSnapshot('decompose')
 }
 
 // 阻止事件向父级组件传播调用父级的handleMouseDown 导致areaData 被隐藏

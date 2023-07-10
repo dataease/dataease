@@ -40,6 +40,7 @@ const fileList = ref([])
 const dialogImageUrl = ref('')
 const dialogVisible = ref(false)
 const uploadDisabled = ref(false)
+let canvasAttrInit = false
 
 const canvasAttrActiveNames = ref(['style'])
 
@@ -52,7 +53,7 @@ const handleRemove = (file, fileList) => {
   uploadDisabled.value = false
   canvasStyleData.value.background = null
   fileList.value = []
-  snapshotStore.recordSnapshot()
+  snapshotStore.recordSnapshot('DbCanvasAttr-handleRemove')
 }
 async function upload(file) {
   uploadFileResult(file.file, fileUrl => {
@@ -135,7 +136,7 @@ const sliderReload = () => {
 
 const dataMerge = () => {
   adaptCurThemeCommonStyleAll()
-  snapshotStore.recordSnapshot()
+  snapshotStore.recordSnapshot('DbCanvasAttr-dataMerge')
 }
 
 const handleChange = val => {
@@ -156,12 +157,14 @@ const styleChange = () => {
   snapshotStore.recordSnapshotCache()
 }
 const themeAttrChange = (custom, property, value) => {
-  eventBus.emit('onThemeAttrChange', {
-    custom: custom,
-    property: property,
-    value: value
-  })
-  snapshotStore.recordSnapshot()
+  if (canvasAttrInit) {
+    eventBus.emit('onThemeAttrChange', {
+      custom: custom,
+      property: property,
+      value: value
+    })
+    snapshotStore.recordSnapshot('DbCanvasAttr-themeAttrChange')
+  }
 }
 
 watch([() => canvasStyleData.value.background], () => {
@@ -172,6 +175,9 @@ watch([() => canvasStyleData.value.background], () => {
 
 onMounted(() => {
   eventBus.on('onSubjectChange', onSubjectChange)
+  nextTick(() => {
+    canvasAttrInit = true
+  })
 })
 </script>
 
