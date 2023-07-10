@@ -153,6 +153,10 @@ onMounted(() => {
   if (dvId) {
     initCanvasData(dvId, function () {
       // afterInit
+      nextTick(() => {
+        dvMainStore.setDataPrepareState(true)
+        snapshotStore.recordSnapshot('dv-init')
+      })
     })
   } else {
     ElMessage.error('未获取资源ID')

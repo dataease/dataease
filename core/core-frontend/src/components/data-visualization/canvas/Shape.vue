@@ -379,6 +379,16 @@ const handleMouseDownOnPoint = (point, e) => {
       curPoint,
       symmetricPoint
     })
+    console.log(
+      'move-x=' +
+        moveEvent.clientX +
+        ';y=' +
+        moveEvent.clientY +
+        ';isFirst=' +
+        isFirst +
+        ';width=' +
+        style.width
+    )
     dvMainStore.setShapeStyle(style)
     dashboardActive.value && emit('onResizing', moveEvent)
   }

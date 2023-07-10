@@ -35,7 +35,6 @@ const containerId = 'container-' + showPosition.value + '-' + view.value.id
 const calcData = view => {
   state.loading = true
   const v = JSON.parse(JSON.stringify(view))
-  // console.log(v)
   getData(v)
     .then(res => {
       // console.log(res)

@@ -128,19 +128,12 @@ const onDrillFilters = param => {
 onMounted(() => {
   useEmitt({
     name: 'snapshotChangeToView',
-    callback: function (cacheViewIdInfo) {
+    callback: function (cacheViewInfo) {
       initTitle()
       nextTick(() => {
-        console.log(
-          JSON.stringify(cacheViewIdInfo.snapshotCacheViewCalc) +
-            '----' +
-            view.value.id +
-            '---' +
-            cacheViewIdInfo.snapshotCacheViewCalc.includes(view.value.id)
-        )
-        if (cacheViewIdInfo.snapshotCacheViewCalc.includes(view.value.id)) {
+        if (cacheViewInfo.snapshotCacheViewCalc.includes(view.value.id)) {
           g2?.value?.calcData(view.value)
-        } else if (cacheViewIdInfo.snapshotCacheViewRender.includes(view.value.id)) {
+        } else if (cacheViewInfo.snapshotCacheViewRender.includes(view.value.id)) {
           g2?.value?.renderChart(view.value)
         }
       })

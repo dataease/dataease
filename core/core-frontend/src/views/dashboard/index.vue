@@ -176,6 +176,10 @@ const canvasInit = () => {
         })
       })
     }
+
+    // afterInit
+    dvMainStore.setDataPrepareState(true)
+    snapshotStore.recordSnapshot('db-init')
   })
 }
 

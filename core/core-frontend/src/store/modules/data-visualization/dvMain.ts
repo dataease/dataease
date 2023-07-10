@@ -144,10 +144,14 @@ export const dvMainStore = defineStore('dataVisualization', {
       // 初始状态下当前默认的系统色 dvInfo.type ==== 'dashboard'?'light':'dark'
       curOriginThemes: 'light',
       // 基础网格信息
-      baseCellInfo: {}
+      baseCellInfo: {},
+      dataPrepareState: false //数据准备状态
     }
   },
   actions: {
+    setDataPrepareState(value) {
+      this.dataPrepareState = value
+    },
     setBaseCellInfo(value) {
       this.baseCellInfo = value
     },
@@ -193,7 +197,7 @@ export const dvMainStore = defineStore('dataVisualization', {
     },
 
     setShapeStyle({ top, left, width, height, rotate }) {
-      if (this.canvasStyleData.dvModel === 'dashboard') {
+      if (this.dvInfo.type === 'dashboard') {
         if (top) this.curComponent.style.top = top < 0 ? 0 : Math.round(top)
         if (left) this.curComponent.style.left = left < 0 ? 0 : Math.round(left)
         if (width) this.curComponent.style.width = Math.round(width)

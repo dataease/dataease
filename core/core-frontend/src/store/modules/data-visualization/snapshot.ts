@@ -7,8 +7,14 @@ import eventBus from '@/utils/eventBus'
 import { useEmitt } from '@/hooks/web/useEmitt'
 
 const dvMainStore = dvMainStoreWithOut()
-const { curComponent, componentData, canvasStyleData, canvasViewInfo, curOriginThemes } =
-  storeToRefs(dvMainStore)
+const {
+  curComponent,
+  componentData,
+  canvasStyleData,
+  canvasViewInfo,
+  curOriginThemes,
+  dataPrepareState
+} = storeToRefs(dvMainStore)
 
 let defaultCanvasInfo = {
   componentData: [],
@@ -44,32 +50,20 @@ export const snapshotStore = defineStore('snapshot', {
       }
     },
     recordSnapshotCache(type, viewId) {
-      if (type === 'calcData') {
-        this.cacheViewIdInfo.snapshotCacheViewCalc.push(viewId)
-      } else if (type === 'renderChart') {
-        this.cacheViewIdInfo.snapshotCacheViewRender.push(viewId)
+      if (dataPrepareState.value) {
+        if (type === 'calcData') {
+          this.cacheViewIdInfo.snapshotCacheViewCalc.push(viewId)
+        } else if (type === 'renderChart') {
+          this.cacheViewIdInfo.snapshotCacheViewRender.push(viewId)
+        }
+        if (type) this.snapshotCacheTimes++
       }
-      if (type) this.snapshotCacheTimes++
     },
     undo() {
-      // console.log('undo')
-      if (this.snapshotIndex >= 0) {
+      if (this.snapshotIndex > 0) {
         this.snapshotIndex--
         const componentSnapshot =
           deepCopy(this.snapshotData[this.snapshotIndex]) || getDefaultCanvasInfo()
-        if (curComponent.value) {
-          // 如果当前组件不在 componentData 中，则置空
-          const needClean = !componentSnapshot.componentData.find(
-            component => curComponent.value.id === component.id
-          )
-
-          if (needClean) {
-            dvMainStore.setCurComponent({
-              component: null,
-              index: null
-            })
-          }
-        }
         // undo 是当前没有记录
         this.snapshotPublish(componentSnapshot)
       }
@@ -84,36 +78,72 @@ export const snapshotStore = defineStore('snapshot', {
       }
     },
     snapshotPublish(snapshotInfo) {
+      // console.log('snapshotPublish-' + JSON.stringify(snapshotInfo.canvasViewInfo))
       dvMainStore.setComponentData(snapshotInfo.componentData)
       dvMainStore.setCanvasStyle(snapshotInfo.canvasStyleData)
       dvMainStore.setCanvasViewInfo(snapshotInfo.canvasViewInfo)
+      const curCacheViewIdInfo = deepCopy(this.cacheViewIdInfo)
+      this.cacheViewIdInfo = snapshotInfo.cacheViewIdInfo
+
+      if (curComponent.value) {
+        let curComponentMatch = false
+        // 如果当前组件不在 componentData 中，则置空
+        snapshotInfo.componentData.forEach((component, index) => {
+          if (curComponent.value.id === component.id) {
+            curComponentMatch = true
+            dvMainStore.setCurComponent({
+              component: component,
+              index: index
+            })
+          }
+        })
+        if (!curComponentMatch) {
+          dvMainStore.setCurComponent({
+            component: null,
+            index: null
+          })
+        }
+      }
+
+      const paramCacheViewInfo = {
+        snapshotCacheViewCalc: [
+          ...curCacheViewIdInfo.snapshotCacheViewCalc,
+          ...this.cacheViewIdInfo.snapshotCacheViewCalc
+        ],
+        snapshotCacheViewRender: [
+          ...curCacheViewIdInfo.snapshotCacheViewRender,
+          ...this.cacheViewIdInfo.snapshotCacheViewRender
+        ],
+        canvasViewInfo: snapshotInfo.canvasViewInfo
+      }
       eventBus.emit('snapshotChange')
       if (
-        snapshotInfo.cacheViewIdInfo.snapshotCacheViewCalc.length > 0 ||
-        snapshotInfo.cacheViewIdInfo.snapshotCacheViewRender.length > 0
+        paramCacheViewInfo.snapshotCacheViewCalc.length > 0 ||
+        paramCacheViewInfo.snapshotCacheViewRender.length > 0
       ) {
-        useEmitt().emitter.emit('snapshotChangeToView', snapshotInfo.cacheViewIdInfo)
+        useEmitt().emitter.emit('snapshotChangeToView', paramCacheViewInfo)
       }
     },
 
-    recordSnapshot() {
-      // console.log('recordSnapshot-' + type)
-      // 添加新的快照
-      const newSnapshot = {
-        componentData: deepCopy(componentData.value),
-        canvasStyleData: deepCopy(canvasStyleData.value),
-        canvasViewInfo: deepCopy(canvasViewInfo.value),
-        cacheViewIdInfo: deepCopy(this.cacheViewIdInfo)
+    recordSnapshot(type) {
+      if (dataPrepareState.value) {
+        // console.log('recordSnapshot-' + type)
+        // 添加新的快照
+        const newSnapshot = {
+          componentData: deepCopy(componentData.value),
+          canvasStyleData: deepCopy(canvasStyleData.value),
+          canvasViewInfo: deepCopy(canvasViewInfo.value),
+          cacheViewIdInfo: deepCopy(this.cacheViewIdInfo)
+        }
+        this.snapshotData[++this.snapshotIndex] = newSnapshot
+        // 在 undo 过程中，添加新的快照时，要将它后面的快照清理掉
+        if (this.snapshotIndex < this.snapshotData.length - 1) {
+          this.snapshotData = this.snapshotData.slice(0, this.snapshotIndex + 1)
+        }
+        // console.log('recordSnapshot-' + JSON.stringify(this.snapshotData))
+        // 清理缓存计数器
+        this.snapshotCacheTimes = 0
       }
-      this.snapshotData[++this.snapshotIndex] = newSnapshot
-      // 在 undo 过程中，添加新的快照时，要将它后面的快照清理掉
-      if (this.snapshotIndex < this.snapshotData.length - 1) {
-        this.snapshotData = this.snapshotData.slice(0, this.snapshotIndex + 1)
-      }
-      // 清理缓存计数器 清理viewId记录
-      this.snapshotCacheTimes = 0
-      this.cacheViewIdInfo.snapshotCacheViewCalc = []
-      this.cacheViewIdInfo.snapshotCacheViewRender = []
     }
   }
 })
