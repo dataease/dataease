@@ -2,12 +2,15 @@ package io.dataease.engine.utils;
 
 import io.dataease.api.dataset.dto.DatasetTableFieldDTO;
 import io.dataease.api.dataset.union.model.SQLObj;
+import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.constant.SQLConstants;
+import io.dataease.exception.DEException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -17,7 +20,18 @@ public class Utils {
         return (StringUtils.equalsIgnoreCase(sort, "asc") || StringUtils.equalsIgnoreCase(sort, "desc"));
     }
 
+    // 解析计算字段
     public static String calcFieldRegex(String originField, SQLObj tableObj, List<DatasetTableFieldDTO> originFields) {
+//        checkCircularReference(originField, originFields);
+        try {
+            return buildCalcField(originField, tableObj, originFields);
+        } catch (Exception e) {
+            DEException.throwException("Field has Circular Reference");
+        }
+        return null;
+    }
+
+    public static String buildCalcField(String originField, SQLObj tableObj, List<DatasetTableFieldDTO> originFields) throws Exception {
         originField = originField.replaceAll("[\\t\\n\\r]]", "");
         // 正则提取[xxx]
         String regex = "\\[(.*?)]";
@@ -33,8 +47,14 @@ public class Utils {
         }
         for (DatasetTableFieldDTO ele : originFields) {
             if (StringUtils.containsIgnoreCase(originField, ele.getId() + "")) {
-                originField = originField.replaceAll("\\[" + ele.getId() + "]",
-                        String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), ele.getDataeaseName()));
+                // 计算字段允许二次引用，这里递归查询完整引用链
+                if (Objects.equals(ele.getExtField(), ExtFieldConstant.EXT_NORMAL)) {
+                    originField = originField.replaceAll("\\[" + ele.getId() + "]",
+                            String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), ele.getDataeaseName()));
+                } else {
+                    originField = originField.replaceAll("\\[" + ele.getId() + "]", ele.getOriginName());
+                    originField = buildCalcField(originField, tableObj, originFields);
+                }
             }
         }
         return originField;
@@ -122,6 +142,53 @@ public class Utils {
                 return " BETWEEN ";
             default:
                 return "";
+        }
+    }
+
+    public static void checkCircularReference(String originField, List<DatasetTableFieldDTO> fields) {
+        originField = originField.replaceAll("[\\t\\n\\r]]", "");
+        // 正则提取[xxx]
+        String regex = "\\[(.*?)]";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(originField);
+        while (matcher.find()) {
+            Set<String> ids = new HashSet<>();
+            String id = matcher.group(1);
+            for (DatasetTableFieldDTO ele : fields) {
+                if (StringUtils.containsIgnoreCase(id, ele.getId() + "")) {
+                    if (ids.contains(id)) {
+                        DEException.throwException("Field has Circular Reference");
+                    }
+                    ids.add(id);
+                    if (Objects.equals(ele.getExtField(), ExtFieldConstant.EXT_CALC)) {
+                        originField = originField.replaceAll("\\[" + ele.getId() + "]", ele.getOriginName());
+                        checkField(ids, originField, fields);
+                    }
+                }
+            }
+        }
+    }
+
+    public static void checkField(Set<String> ids, String originField, List<DatasetTableFieldDTO> fields) {
+        originField = originField.replaceAll("[\\t\\n\\r]]", "");
+        // 正则提取[xxx]
+        String regex = "\\[(.*?)]";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(originField);
+        while (matcher.find()) {
+            String id = matcher.group(1);
+            for (DatasetTableFieldDTO ele : fields) {
+                if (StringUtils.containsIgnoreCase(id, ele.getId() + "")) {
+                    if (ids.contains(id)) {
+                        DEException.throwException("Field has Circular Reference");
+                    }
+                    ids.add(id);
+                    if (Objects.equals(ele.getExtField(), ExtFieldConstant.EXT_CALC)) {
+                        originField = originField.replaceAll("\\[" + ele.getId() + "]", ele.getOriginName());
+                        checkField(ids, originField, fields);
+                    }
+                }
+            }
         }
     }
 }

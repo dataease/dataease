@@ -3,8 +3,6 @@ package io.dataease.engine.trans;
 import io.dataease.api.dataset.dto.DatasetTableFieldDTO;
 import io.dataease.api.dataset.union.model.SQLMeta;
 import io.dataease.api.dataset.union.model.SQLObj;
-import io.dataease.dataset.utils.TableUtils;
-import io.dataease.engine.constant.DeTypeConstants;
 import io.dataease.engine.constant.DeTypeConstants;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.constant.SQLConstants;
@@ -21,7 +19,7 @@ import java.util.Objects;
  */
 public class Field2SQLObj {
 
-    public static void field2sqlObj(SQLMeta meta, List<DatasetTableFieldDTO> fields, List<DatasetTableFieldDTO> originFields) {
+    public static void field2sqlObj(SQLMeta meta, List<DatasetTableFieldDTO> fields) {
         SQLObj tableObj = meta.getTable();
         if (ObjectUtils.isEmpty(tableObj)) {
             return;
@@ -33,7 +31,7 @@ public class Field2SQLObj {
                 String originField;
                 if (ObjectUtils.isNotEmpty(x.getExtField()) && Objects.equals(x.getExtField(), ExtFieldConstant.EXT_CALC)) {
                     // 解析origin name中有关联的字段生成sql表达式
-                    originField = Utils.calcFieldRegex(x.getOriginName(), tableObj, originFields);
+                    originField = Utils.calcFieldRegex(x.getOriginName(), tableObj, fields);
                 } else if (ObjectUtils.isNotEmpty(x.getExtField()) && Objects.equals(x.getExtField(), ExtFieldConstant.EXT_COPY)) {
                     originField = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), x.getDataeaseName());
                 } else {

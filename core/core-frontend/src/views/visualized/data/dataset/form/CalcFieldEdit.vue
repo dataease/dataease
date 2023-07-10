@@ -85,8 +85,8 @@ const setNameIdTrans = (from, to, originName, name2Auto?: string[]) => {
 
 const initEdit = (obj, dimensionData, quotaData) => {
   Object.assign(fieldForm, { ...defaultForm, ...obj })
-  state.dimensionData = dimensionData.filter(ele => ele.extField === 0)
-  state.quotaData = quotaData.filter(ele => ele.extField === 0)
+  state.dimensionData = dimensionData
+  state.quotaData = quotaData
   if (!obj.originName) {
     mirror.value.dispatch({
       changes: {

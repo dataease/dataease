@@ -156,13 +156,12 @@ public class DatasetDataManage {
             DEException.throwException("no fields");
         }
         buildFieldName(sqlMap, fields);
-        List<DatasetTableFieldDTO> originFields = fields.stream().filter(ele -> Objects.equals(ele.getExtField(), ExtFieldConstant.EXT_NORMAL)).collect(Collectors.toList());
 
         // build query sql
         SQLMeta sqlMeta = new SQLMeta();
         Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")");
-        Field2SQLObj.field2sqlObj(sqlMeta, fields, originFields);
-        Order2SQLObj.getOrders(sqlMeta, fields, originFields, datasetGroupInfoDTO.getSortFields());
+        Field2SQLObj.field2sqlObj(sqlMeta, fields);
+        Order2SQLObj.getOrders(sqlMeta, fields, datasetGroupInfoDTO.getSortFields());
         String querySQL;
         if (start == null || count == null) {
             querySQL = SQLProvider.createQuerySQL(sqlMeta, false);
@@ -291,13 +290,12 @@ public class DatasetDataManage {
             DEException.throwException("no fields");
         }
         buildFieldName(sqlMap, fields);
-        List<DatasetTableFieldDTO> originFields = fields.stream().filter(ele -> Objects.equals(ele.getExtField(), ExtFieldConstant.EXT_NORMAL)).collect(Collectors.toList());
 
         // build query sql
         SQLMeta sqlMeta = new SQLMeta();
         Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")");
-        Field2SQLObj.field2sqlObj(sqlMeta, fields, originFields);
-        Order2SQLObj.getOrders(sqlMeta, fields, originFields, datasetGroupInfoDTO.getSortFields());
+        Field2SQLObj.field2sqlObj(sqlMeta, fields);
+        Order2SQLObj.getOrders(sqlMeta, fields, datasetGroupInfoDTO.getSortFields());
         String querySQL = SQLProvider.createQuerySQL(sqlMeta, false);
 
         // 通过数据源请求数据
