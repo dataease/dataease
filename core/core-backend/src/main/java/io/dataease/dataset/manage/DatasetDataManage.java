@@ -273,50 +273,55 @@ public class DatasetDataManage {
         }
     }
 
-    public Map<String, Object> getFieldEnum(Long id) throws Exception {
-        // todo 自动模式要将数据集和字段先进行去重合并，拼接尽量少的sql后，进行group by获取值，然后每个字段合并去重
-        DatasetTableFieldDTO field = datasetTableFieldManage.selectById(id);
-        if (field == null) {
-            DEException.throwException("field is not exist");
+    public Set<String> getFieldEnum(List<String> ids) throws Exception {
+        // 根据前端传的过滤组件field ids，获取所有字段枚举值并去重合并
+        List<List<String>> list = new ArrayList<>();
+        for (String id : ids) {
+            DatasetTableFieldDTO field = datasetTableFieldManage.selectById(Long.valueOf(id));
+            if (field == null) {
+                DEException.throwException("field is not exist");
+            }
+            DatasetGroupInfoDTO datasetGroupInfoDTO = datasetGroupManage.get(field.getDatasetGroupId(), null);
+
+            Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO);
+            String sql = (String) sqlMap.get("sql");
+
+            // 获取allFields
+            List<DatasetTableFieldDTO> fields = Collections.singletonList(field);
+            if (ObjectUtils.isEmpty(fields)) {
+                DEException.throwException("no fields");
+            }
+            buildFieldName(sqlMap, fields);
+
+            // build query sql
+            SQLMeta sqlMeta = new SQLMeta();
+            Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")");
+            Field2SQLObj.field2sqlObj(sqlMeta, fields);
+            Order2SQLObj.getOrders(sqlMeta, fields, datasetGroupInfoDTO.getSortFields());
+            String querySQL = SQLProvider.createQuerySQL(sqlMeta, false);
+
+            // 通过数据源请求数据
+            Map<Long, DatasourceSchemaDTO> dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
+            // 调用数据源的calcite获得data
+            DatasourceRequest datasourceRequest = new DatasourceRequest();
+            datasourceRequest.setQuery(querySQL);
+            datasourceRequest.setDsList(dsMap);
+            Map<String, Object> data = calciteProvider.fetchResultField(datasourceRequest);
+            List<String[]> dataList = (List<String[]>) data.get("data");
+            List<String> previewData = new ArrayList<>();
+            if (ObjectUtils.isNotEmpty(dataList)) {
+                previewData = dataList.stream().map(ele -> (ObjectUtils.isNotEmpty(ele) && ele.length > 0) ? ele[0] : null).collect(Collectors.toList());
+                list.add(previewData);
+            }
+
+            logger.info("calcite data preview sql: " + querySQL);
         }
-        DatasetGroupInfoDTO datasetGroupInfoDTO = datasetGroupManage.get(field.getDatasetGroupId(), null);
 
-        Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO);
-        String sql = (String) sqlMap.get("sql");
-
-        // 获取allFields
-        List<DatasetTableFieldDTO> fields = Collections.singletonList(field);
-        if (ObjectUtils.isEmpty(fields)) {
-            DEException.throwException("no fields");
-        }
-        buildFieldName(sqlMap, fields);
-
-        // build query sql
-        SQLMeta sqlMeta = new SQLMeta();
-        Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")");
-        Field2SQLObj.field2sqlObj(sqlMeta, fields);
-        Order2SQLObj.getOrders(sqlMeta, fields, datasetGroupInfoDTO.getSortFields());
-        String querySQL = SQLProvider.createQuerySQL(sqlMeta, false);
-
-        // 通过数据源请求数据
-        Map<Long, DatasourceSchemaDTO> dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
-        // 调用数据源的calcite获得data
-        DatasourceRequest datasourceRequest = new DatasourceRequest();
-        datasourceRequest.setQuery(querySQL);
-        datasourceRequest.setDsList(dsMap);
-        Map<String, Object> data = calciteProvider.fetchResultField(datasourceRequest);
-        List<String[]> dataList = (List<String[]>) data.get("data");
-        List<String> previewData = new ArrayList<>();
-        if (ObjectUtils.isNotEmpty(dataList)) {
-            previewData = dataList.stream().map(ele -> (ObjectUtils.isNotEmpty(ele) && ele.length > 0) ? ele[0] : null).collect(Collectors.toList());
-        }
-
-        Map<String, Object> map = new LinkedHashMap<>();
         // 重新构造data
-        map.put("data", previewData);
-        map.put("field", field);
-        map.put("sql", Base64.getEncoder().encodeToString(querySQL.getBytes()));
-        logger.info("calcite data preview sql: " + querySQL);
-        return map;
+        Set<String> result = new LinkedHashSet<>();
+        for (List<String> l : list) {
+            result.addAll(l);
+        }
+        return result;
     }
 }
