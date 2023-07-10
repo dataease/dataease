@@ -119,3 +119,9 @@ export const getDsDetails = async (data): Promise<DatasetDetail[]> => {
     return res?.data
   })
 }
+
+export const getEnumValue = async (data): Promise<DatasetDetail[]> => {
+  return request.post({ url: '/datasetData/enumValue', data }).then(res => {
+    return res?.data
+  })
+}

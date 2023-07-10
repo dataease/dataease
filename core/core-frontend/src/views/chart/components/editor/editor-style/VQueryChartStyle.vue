@@ -79,16 +79,18 @@ const { chart } = toRefs(props)
               {{ t('chart.label_position') }}
             </span>
             <div class="query-collapse-item query-component">
-              <el-button text>
-                <template #icon>
-                  <icon name="icon_collect_filled"></icon>
-                </template>
-              </el-button>
-              <el-button text>
-                <template #icon>
-                  <icon name="icon_collect_filled"></icon>
-                </template>
-              </el-button>
+              <el-radio-group v-model="chart.customStyle.component.layout" size="small">
+                <el-radio-button label="horizontal">
+                  <el-icon>
+                    <icon name="icon_collect_filled"></icon>
+                  </el-icon>
+                </el-radio-button>
+                <el-radio-button label="vertical">
+                  <el-icon>
+                    <icon name="icon_collect_filled"></icon>
+                  </el-icon>
+                </el-radio-button>
+              </el-radio-group>
             </div>
           </collapse-switch-item>
         </el-collapse>
