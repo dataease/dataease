@@ -2,7 +2,7 @@
 import { ElAside, ElContainer } from 'element-plus-secondary'
 import DeResourceTree from '@/views/common/DeResourceTree.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { reactive, nextTick, ref } from 'vue'
+import { reactive, nextTick, ref, toRefs } from 'vue'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
 import PreviewHead from '@/views/data-visualization/PreviewHead.vue'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
@@ -22,6 +22,16 @@ const state = reactive({
   dvInfo: null,
   curPreviewGap: 0
 })
+
+const props = defineProps({
+  showPosition: {
+    required: false,
+    type: String,
+    default: 'preview'
+  }
+})
+
+const { showPosition } = toRefs(props)
 
 const loadCanvasData = dvId => {
   initCanvasDataPrepare(
@@ -63,6 +73,14 @@ const htmlToImage = () => {
 const slideOpenChange = () => {
   slideShow.value = !slideShow.value
 }
+
+const getPreviewStateInfo = () => {
+  return state
+}
+
+defineExpose({
+  getPreviewStateInfo
+})
 </script>
 
 <template>
@@ -71,16 +89,21 @@ const slideOpenChange = () => {
       <de-resource-tree
         v-show="slideShow"
         :cur-canvas-type="'dashboard'"
+        :show-position="showPosition"
         @node-click="loadCanvasData"
       ></de-resource-tree>
     </el-aside>
     <el-container class="preview-area">
-      <div @click="slideOpenChange" class="flexible-button-area">
+      <div @click="slideOpenChange" v-if="showPosition === 'preview'" class="flexible-button-area">
         <el-icon v-if="slideShow"><ArrowLeft /></el-icon>
         <el-icon v-else><ArrowRight /></el-icon>
       </div>
       <template v-if="dvInfo.name">
-        <preview-head @reload="loadCanvasData" @download="htmlToImage"></preview-head>
+        <preview-head
+          v-if="showPosition === 'preview'"
+          @reload="loadCanvasData"
+          @download="htmlToImage"
+        ></preview-head>
         <div ref="previewCanvasContainer" class="content">
           <de-preview
             ref="dashboardPreview"
@@ -90,6 +113,7 @@ const slideOpenChange = () => {
             :component-data="state.canvasDataPreview"
             :canvas-style-data="state.canvasStylePreview"
             :canvas-view-info="state.canvasViewInfoPreview"
+            :show-position="showPosition"
           ></de-preview>
         </div>
       </template>

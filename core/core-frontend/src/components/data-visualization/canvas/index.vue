@@ -16,7 +16,7 @@ import Area from './Area.vue'
 import eventBus from '@/utils/eventBus'
 import Grid from './Grid.vue'
 import { changeStyleWithScale } from '@/utils/translate'
-import { ref, onMounted, toRef, computed, toRefs, nextTick } from 'vue'
+import { ref, onMounted, toRef, computed, toRefs, nextTick, onBeforeUnmount } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
@@ -189,6 +189,7 @@ let moveTime = 80 //移动动画时间
 let itemMaxY = 0
 let itemMaxX = 0
 let currentInstance
+let snapshotTimer = ref(null)
 
 const handleMouseDown = e => {
   // 仪表板和预览状态不显示菜单和组创建
@@ -635,7 +636,7 @@ function removeItem(index) {
     }
   })
   componentData.value.splice(index, 1)
-  snapshotStore.recordSnapshot()
+  snapshotStore.recordSnapshot('removeItem')
 }
 
 function addItem(item, index) {
@@ -887,7 +888,6 @@ const containerMouseDown = e => {
 }
 
 const endItemMove = (e, item, index) => {
-  // console.log('endItemMove')
   dvMainStore.setCurComponent({ component: item, index: index })
   dvMainStore.setClickComponentStatus(true)
   dvMainStore.setInEditorStatus(true)
@@ -1060,7 +1060,6 @@ const startMove = (e, item, index) => {
 }
 
 const handleMouseUp = (e, item, index) => {
-  // startMove 中组织冒泡会导致移动事件无法传播，在这里设置（鼠标抬起）效果一致
   endItemMove(e, item, index)
   clearInfoBox(e)
 }
@@ -1397,13 +1396,36 @@ const getMoveItem = () => {
 const userViewEnlargeOpen = item => {
   userViewEnlargeRef.value.dialogInit(canvasStyleData.value, canvasViewInfo.value[item.id], item)
 }
+
+const initSnapshotTimer = () => {
+  snapshotTimer.value = setInterval(() => {
+    snapshotStore.snapshotCatchToStore()
+  }, 3000)
+}
+
 onMounted(() => {
+  initSnapshotTimer()
   // 获取编辑器元素
   composeStore.getEditor()
   eventBus.on('hideArea', hideArea)
   eventBus.on('handleDragStartMoveIn', handleDragStartMoveIn)
   eventBus.on('handleDragEnd', handleDragEnd)
   eventBus.on('removeMatrixItem', removeItem)
+  eventBus.on('addDashboardItem', addItemBox)
+  eventBus.on('snapshotChange', canvasInit)
+})
+
+onBeforeUnmount(() => {
+  if (snapshotTimer.value) {
+    clearInterval(snapshotTimer.value)
+    snapshotTimer.value = null
+  }
+  eventBus.off('hideArea', hideArea)
+  eventBus.off('handleDragStartMoveIn', handleDragStartMoveIn)
+  eventBus.off('handleDragEnd', handleDragEnd)
+  eventBus.off('removeMatrixItem', removeItem)
+  eventBus.off('addDashboardItem', addItemBox)
+  eventBus.off('snapshotChange', canvasInit)
 })
 
 defineExpose({

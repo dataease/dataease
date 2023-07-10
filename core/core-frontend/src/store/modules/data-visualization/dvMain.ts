@@ -216,6 +216,24 @@ export const dvMainStore = defineStore('dataVisualization', {
       this.componentData = componentData
     },
 
+    addCopyComponent(component, idMap, canvasViewInfoPre = this.canvasViewInfo) {
+      this.componentData.push(component)
+      // eslint-disable-next-line @typescript-eslint/no-this-alias
+      const _this = this
+      //组件组内部可能还有多个视图
+      if (idMap) {
+        Object.keys(idMap).forEach(function (oldComponentId) {
+          if (canvasViewInfoPre[oldComponentId]) {
+            const newComponentId = idMap[oldComponentId]
+            _this.canvasViewInfo[newComponentId] = {
+              ...canvasViewInfoPre[oldComponentId],
+              id: newComponentId
+            }
+          }
+        })
+      }
+    },
+
     addComponent({ component, index }) {
       if (index !== undefined) {
         this.componentData.splice(index, 0, component)
@@ -227,7 +245,7 @@ export const dvMainStore = defineStore('dataVisualization', {
       //如果当前的组件是UserView 视图，则想canvasView中增加一项 UserView ID 和componentID保持一致
       if (component.component === 'UserView') {
         const newView = {
-          ...deepCopy(BASE_VIEW_CONFIG),
+          ...JSON.parse(JSON.stringify(BASE_VIEW_CONFIG)),
           id: component.id,
           type: component.innerType
         }
@@ -235,7 +253,7 @@ export const dvMainStore = defineStore('dataVisualization', {
       }
       if (component.component === 'VQuery') {
         const newView = {
-          ...deepCopy(BASE_VIEW_CONFIG),
+          ...JSON.parse(JSON.stringify(BASE_VIEW_CONFIG)),
           id: component.id,
           type: component.innerType,
           customStyle: {
@@ -453,17 +471,19 @@ export const dvMainStore = defineStore('dataVisualization', {
     removeCurMultiplexingComponentWithId(id) {
       delete this.curMultiplexingComponents[id]
     },
-    addCurMultiplexingComponent({ component, componentId }) {
-      if (componentId) {
-        if (component.type === 'custom-button' && component.serviceName === 'buttonSureWidget') {
-          const copyComponent = deepCopy(component)
-          copyComponent.options.attrs.customRange = false
-          copyComponent.options.attrs.filterIds = []
-          this.curMultiplexingComponents[componentId] = copyComponent
-          return
-        }
-        this.curMultiplexingComponents[componentId] = component
+    addCurMultiplexingComponent(componentInfo) {
+      if (componentInfo.componentId) {
+        this.curMultiplexingComponents[componentInfo.componentId] = componentInfo.component
       }
+    },
+    initCurMultiplexingComponents() {
+      this.curMultiplexingComponents = {}
+    },
+    addCanvasViewInfo(viewId, viewInfo) {
+      this.canvasViewInfo[viewId] = viewInfo
+    },
+    removeCanvasViewInfo(viewId) {
+      delete this.canvasViewInfo[viewId]
     }
   }
 })

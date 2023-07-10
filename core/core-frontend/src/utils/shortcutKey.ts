@@ -72,7 +72,7 @@ export function listenGlobalKeyDown() {
       isCtrlOrCommandDown = true
     } else if (keyCode == deleteKey && curComponent.value) {
       dvMainStore.deleteComponent()
-      snapshotStore.recordSnapshot()
+      snapshotStore.recordSnapshot('listenGlobalKeyDown')
     } else if (isCtrlOrCommandDown) {
       if (unlockMap[keyCode] && (!curComponent.value || !curComponent.value.isLock)) {
         e.preventDefault()
@@ -101,7 +101,7 @@ function copy() {
 
 function paste() {
   copyStore.paste(false)
-  snapshotStore.recordSnapshot()
+  snapshotStore.recordSnapshot('key-paste')
 }
 
 function cut() {
@@ -119,7 +119,7 @@ function undo() {
 function compose() {
   if (areaData.value.components.length) {
     composeStore.compose()
-    snapshotStore.recordSnapshot()
+    snapshotStore.recordSnapshot('key-compose')
   }
 }
 
@@ -127,7 +127,7 @@ function decompose() {
   const curComponentLink = curComponent.value
   if (curComponentLink && !curComponentLink.isLock && curComponentLink.component == 'Group') {
     composeStore.decompose()
-    snapshotStore.recordSnapshot()
+    snapshotStore.recordSnapshot('key-decompose')
   }
 }
 
@@ -142,7 +142,7 @@ function preview() {
 function deleteComponent() {
   if (curComponent.value) {
     dvMainStore.deleteComponent()
-    snapshotStore.recordSnapshot()
+    snapshotStore.recordSnapshot('key-deleteComponent')
   }
 }
 

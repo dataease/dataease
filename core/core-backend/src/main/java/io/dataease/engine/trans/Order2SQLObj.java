@@ -20,7 +20,7 @@ import java.util.Objects;
  */
 public class Order2SQLObj {
 
-    public static void getOrders(SQLMeta meta, List<DatasetTableFieldDTO> fields, List<DatasetTableFieldDTO> originFields, List<DeSortField> sortFields) {
+    public static void getOrders(SQLMeta meta, List<DatasetTableFieldDTO> fields, List<DeSortField> sortFields) {
         SQLObj tableObj = meta.getTable();
         List<SQLObj> xOrders = meta.getXOrders();
         if (ObjectUtils.isEmpty(tableObj) || CollectionUtils.isEmpty(xOrders)) {
@@ -30,7 +30,7 @@ public class Order2SQLObj {
             int step = fields.size();
             for (int i = step; i < (step + sortFields.size()); i++) {
                 DeSortField deSortField = sortFields.get(i - step);
-                SQLObj order = buildSortField(deSortField, tableObj, i, originFields);
+                SQLObj order = buildSortField(deSortField, tableObj, i, fields);
                 xOrders.add(order);
             }
         }

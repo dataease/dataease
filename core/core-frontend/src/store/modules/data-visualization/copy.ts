@@ -5,10 +5,18 @@ import { contextmenuStoreWithOut } from './contextmenu'
 import { generateID } from '@/utils/generateID'
 import { deepCopy } from '@/utils/utils'
 import { store } from '../../index'
+import eventBus from '@/utils/eventBus'
 
 const dvMainStore = dvMainStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
-const { curComponent, curComponentIndex } = storeToRefs(dvMainStore)
+const {
+  curComponent,
+  curComponentIndex,
+  curMultiplexingComponents,
+  dvInfo,
+  pcMatrixCount,
+  canvasStyleData
+} = storeToRefs(dvMainStore)
 const { menuTop, menuLeft } = storeToRefs(contextmenuStore)
 
 export const copyStore = defineStore('copy', {
@@ -19,6 +27,32 @@ export const copyStore = defineStore('copy', {
     }
   },
   actions: {
+    copyMultiplexingComponents(canvasViewInfoPreview) {
+      // eslint-disable-next-line @typescript-eslint/no-this-alias
+      const _this = this
+      Object.keys(curMultiplexingComponents.value).forEach(function (componentId, index) {
+        const newComponent = deepCopy(curMultiplexingComponents.value[componentId])
+        // dashboard 平铺4个
+        const xPositionOffset = index % 4
+        const yPositionOffset = index % 3
+        newComponent.sizeX = pcMatrixCount.value.x / 4
+        newComponent.sizey = pcMatrixCount.value.y / 3
+        newComponent.x = newComponent.sizeX * xPositionOffset + 1
+        newComponent.y = 200
+        // dataV 数据大屏
+        newComponent.style.width = canvasStyleData.value.width / 4
+        newComponent.style.height = canvasStyleData.value.height / 3
+        newComponent.style.left = newComponent.style.width * xPositionOffset
+        newComponent.style.height = newComponent.style.height * yPositionOffset
+
+        _this.copyData = {
+          data: deepCopy(curMultiplexingComponents.value[componentId]),
+          copyCanvasViewInfo: canvasViewInfoPreview,
+          index: index
+        }
+        _this.paste()
+      })
+    },
     copy() {
       if (!curComponent.value) {
         toast('请选择组件')
@@ -36,17 +70,23 @@ export const copyStore = defineStore('copy', {
         toast('请选择组件')
         return
       }
-
       const data = this.copyData.data
-
-      if (isMouse) {
-        data.style.top = menuTop
-        data.style.left = menuLeft
-      } else {
-        data.style.top += 10
-        data.style.left += 10
+      if (dvInfo.value.type === 'dataV') {
+        if (isMouse) {
+          data.style.top = menuTop
+          data.style.left = menuLeft
+        } else {
+          data.style.top += 10
+          data.style.left += 10
+        }
       }
-      dvMainStore.addComponent({ component: deepCopyHelper(data), index: undefined })
+      // 旧-新ID映射关系
+      const idMap = {}
+      const newComponent = deepCopyHelper(data, idMap)
+      dvMainStore.addCopyComponent(newComponent, idMap, this.copyData.copyCanvasViewInfo)
+      if (dvInfo.value.type === 'dashboard') {
+        eventBus.emit('addDashboardItem', newComponent)
+      }
       if (this.isCut) {
         this.copyData = null
       }
@@ -88,12 +128,14 @@ export const copyStore = defineStore('copy', {
   }
 })
 
-function deepCopyHelper(data) {
+function deepCopyHelper(data, idMap) {
   const result = deepCopy(data)
-  result.id = generateID()
+  const newComponentId = generateID()
+  idMap[data.id] = newComponentId
+  result.id = newComponentId
   if (result.component === 'Group') {
     result.propValue.forEach((component, i) => {
-      result.propValue[i] = deepCopyHelper(component)
+      result.propValue[i] = deepCopyHelper(component, idMap)
     })
   }
 

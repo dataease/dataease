@@ -16,6 +16,14 @@ const previewCanvasContainer = ref(null)
 const dvPreview = ref(null)
 const slideShow = ref(true)
 
+const props = defineProps({
+  showPosition: {
+    required: false,
+    type: String,
+    default: 'preview'
+  }
+})
+
 const loadCanvasData = dvId => {
   initCanvasDataPrepare(
     dvId,
@@ -70,6 +78,7 @@ const state = reactive({
       <de-resource-tree
         v-show="slideShow"
         :cur-canvas-type="'dataV'"
+        :show-position="showPosition"
         @node-click="loadCanvasData"
       ></de-resource-tree>
     </el-aside>
@@ -79,7 +88,11 @@ const state = reactive({
         <el-icon v-else><ArrowRight /></el-icon>
       </div>
       <template v-if="dvInfo.name">
-        <preview-head @reload="loadCanvasData" @download="htmlToImage"></preview-head>
+        <preview-head
+          v-show="showPosition === 'preview'"
+          @reload="loadCanvasData"
+          @download="htmlToImage"
+        ></preview-head>
         <div ref="previewCanvasContainer" class="content">
           <div class="content-inner">
             <de-preview
@@ -90,6 +103,7 @@ const state = reactive({
               :canvas-view-info="state.canvasViewInfoPreview"
               :dv-info="state.dvInfo"
               :cur-gap="state.curPreviewGap"
+              :show-position="showPosition"
             ></de-preview>
           </div>
         </div>

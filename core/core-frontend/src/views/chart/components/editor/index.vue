@@ -28,6 +28,8 @@ import { useRouter } from 'vue-router'
 import CompareEdit from '@/views/chart/components/editor/drag-item/components/CompareEdit.vue'
 import ValueFormatterEdit from '@/views/chart/components/editor/drag-item/components/ValueFormatterEdit.vue'
 import CustomSortEdit from '@/views/chart/components/editor/drag-item/components/CustomSortEdit.vue'
+import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
+const snapshotStore = snapshotStoreWithOut()
 
 const dvMainStore = dvMainStoreWithOut()
 const { canvasCollapse } = storeToRefs(dvMainStore)
@@ -366,10 +368,12 @@ const moveToQuota = e => {
 
 const calcData = view => {
   useEmitt().emitter.emit('calcData-' + view.id, view)
+  snapshotStore.recordSnapshotCache('calcData', view.id)
 }
 
 const renderChart = view => {
   useEmitt().emitter.emit('renderChart-' + view.id, view)
+  snapshotStore.recordSnapshotCache('renderChart', view.id)
 }
 
 const onTypeChange = val => {

@@ -107,7 +107,7 @@ const initForm = () => {
 }
 const themeChange = styleKey => {
   adaptCurThemeFilterStyleAll(styleKey)
-  snapshotStore.recordSnapshot()
+  snapshotStore.recordSnapshot('filterStyleSelector-themeChange')
 }
 
 onMounted(() => {

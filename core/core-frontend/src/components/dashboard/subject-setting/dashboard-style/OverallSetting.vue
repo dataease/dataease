@@ -188,7 +188,7 @@ const themeChange = modifyName => {
     adaptCurThemeCommonStyleAll()
     emits('onThemeColorChange')
   }
-  snapshotStore.recordSnapshot()
+  snapshotStore.recordSnapshot('overallSetting-themeChange')
 }
 const colorButtonClick = val => {
   if (val !== state.overallSettingForm.dashboard.themeColor) {

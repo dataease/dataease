@@ -48,6 +48,10 @@ service.interceptors.request.use(
       const val = mapping[key] || key
       ;(config.headers as AxiosRequestHeaders)['Accept-Language'] = val
     }
+    ;(config.headers as AxiosRequestHeaders)['out_auth_platform'] = wsCache.get('out_auth_platform')
+      ? wsCache.get('out_auth_platform')
+      : 'default'
+
     // ;(config.headers as AxiosRequestHeaders)['Token'] = 'test test'
     // get参数编码
     if (config.method === 'get' && config.params) {

@@ -1,11 +1,8 @@
 package io.dataease.home;
 
-import io.dataease.utils.ModelUtils;
-import io.dataease.utils.RsaUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequestMapping
@@ -24,20 +21,5 @@ public class IndexController {
         return PANEL_PAGE;
     }
 
-    @GetMapping("/dekey")
-    @ResponseBody
-    public String dekey() {
-        return RsaUtils.publicKey();
-    }
 
-    @GetMapping("/model")
-    @ResponseBody
-    public boolean model() {
-        return ModelUtils.isDesktop();
-    }
-
-    @GetMapping("/oidc/callback")
-    public String oidcCallback() {
-        return INDEX_PAGE;
-    }
 }

@@ -165,7 +165,7 @@
 <script setup lang="ts">
 import { queryVisualizationBackground } from '@/api/visualization/visualizationBackground'
 import { COLOR_PANEL } from '@/views/chart/components/editor/util/chart'
-import { computed, onMounted, reactive, toRefs } from 'vue'
+import { computed, nextTick, onMounted, reactive, toRefs } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { imgUrlTrans } from '@/utils/imgUtils'
@@ -203,6 +203,8 @@ const state = reactive({
   panel: null,
   predefineColors: COLOR_PANEL
 })
+
+let themeInit = false
 
 const customStyle = computed(() => {
   let style = {}
@@ -251,9 +253,13 @@ const init = () => {
     state.fileList.push({ url: imgUrlTrans(state.commonBackground['outerImage']) })
   }
   queryBackground()
+
+  nextTick(() => {
+    themeInit = true
+  })
 }
 const commitStyle = () => {
-  snapshotStore.recordSnapshot()
+  snapshotStore.recordSnapshot('BackgroundOverall-commitStyle')
 }
 const onChangeType = () => {
   commitStyle()
@@ -277,16 +283,18 @@ const upload = file => {
 }
 
 const themeChange = modifyName => {
-  if (position.value === 'component' && curComponent.value) {
-    curComponent.value.style[modifyName] = state.commonBackground[modifyName]
-  } else {
-    componentData.value.forEach((item, index) => {
-      if (item.type === 'view') {
-        item.commonBackground[modifyName] = state.commonBackground[modifyName]
-      }
-    })
+  if (themeInit) {
+    if (position.value === 'component' && curComponent.value) {
+      curComponent.value.style[modifyName] = state.commonBackground[modifyName]
+    } else {
+      componentData.value.forEach((item, index) => {
+        if (item.type === 'view') {
+          item.commonBackground[modifyName] = state.commonBackground[modifyName]
+        }
+      })
+    }
+    snapshotStore.recordSnapshot('BackgroundOverall-themeChange')
   }
-  snapshotStore.recordSnapshot()
 }
 
 onMounted(() => {

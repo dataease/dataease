@@ -102,7 +102,7 @@ const handleNew = newComponentInfo => {
     nextTick(() => {
       cyGridster.value.addItemBox(component) //在适当的时候初始化布局组件
     })
-    snapshotStore.recordSnapshot()
+    snapshotStore.recordSnapshot('dashboard-handleNew')
   }
 }
 
@@ -121,7 +121,7 @@ const handleDrop = e => {
   addComponent.isShow = true
   syncShapeItemStyle(addComponent, baseWidth.value, baseHeight.value)
   cyGridster.value.handleMouseUp(e, addComponent, componentData.value.length - 1)
-  snapshotStore.recordSnapshot()
+  snapshotStore.recordSnapshot('dashboard-handleDrop')
 }
 
 const handleDragOver = e => {
@@ -282,7 +282,7 @@ eventBus.on('handleNew', handleNew)
       </dv-sidebar>
       <view-editor
         v-show="curComponent && curComponent.component === 'UserView'"
-        themes="light"
+        :themes="'light'"
         :view="canvasViewInfo[curComponent ? curComponent.id : 'default']"
         :dataset-tree="state.datasetTree"
         :class="{ 'preview-aside': editMode === 'preview' }"

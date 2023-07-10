@@ -185,11 +185,7 @@ const addCalcField = groupType => {
 const editField = item => {
   editCalcField.value = true
   nextTick(() => {
-    calcEdit.value.initEdit(
-      item,
-      dimensions.value.filter(ele => ele.extField !== 2),
-      quota.value.filter(ele => ele.extField !== 2)
-    )
+    calcEdit.value.initEdit(item, dimensions.value, quota.value)
   })
 }
 

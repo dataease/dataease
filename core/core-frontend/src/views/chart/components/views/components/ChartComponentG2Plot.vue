@@ -53,7 +53,7 @@ const renderChart = view => {
   const chart = { ...view, data: state.data }
   state.myChart = (
     chartViewManager.getChartView(view.render, view.type) as G2PlotChartView<any, any>
-  ).drawChart({
+  )?.drawChart({
     chartObj: state.myChart,
     container: containerId,
     chart: chart,

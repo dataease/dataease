@@ -43,7 +43,7 @@ const handleRemove = (file, fileList) => {
   uploadDisabled.value = false
   canvasStyleData.value.background = null
   fileList.value = []
-  snapshotStore.recordSnapshot()
+  snapshotStore.recordSnapshot('handleRemove')
 }
 async function upload(file) {
   uploadFileResult(file.file, fileUrl => {

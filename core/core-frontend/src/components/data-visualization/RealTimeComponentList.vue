@@ -28,19 +28,19 @@ const onClick = index => {
 const deleteComponent = (number: number) => {
   setTimeout(() => {
     dvMainStore.deleteComponent()
-    snapshotStore.recordSnapshot()
+    snapshotStore.recordSnapshot('realTime-deleteComponent')
   })
 }
 const upComponent = (number: number) => {
   setTimeout(() => {
     layerStore.upComponent()
-    snapshotStore.recordSnapshot()
+    snapshotStore.recordSnapshot('realTime-upComponent')
   })
 }
 const downComponent = (number: number) => {
   setTimeout(() => {
     layerStore.downComponent()
-    snapshotStore.recordSnapshot()
+    snapshotStore.recordSnapshot('realTime-downComponent')
   })
 }
 const setCurComponent = index => {
@@ -82,28 +82,28 @@ const toggleComponentVisible = () => {
 const lock = () => {
   setTimeout(() => {
     lockStore.lock()
-    snapshotStore.recordSnapshot()
+    snapshotStore.recordSnapshot('realTime-lock')
   })
 }
 
 const unlock = () => {
   setTimeout(() => {
     lockStore.unlock()
-    snapshotStore.recordSnapshot()
+    snapshotStore.recordSnapshot('realTime-unlock')
   })
 }
 
 const hideComponent = () => {
   setTimeout(() => {
     layerStore.hideComponent()
-    snapshotStore.recordSnapshot()
+    snapshotStore.recordSnapshot('realTime-hideComponent')
   })
 }
 
 const showComponent = () => {
   setTimeout(() => {
     layerStore.showComponent()
-    snapshotStore.recordSnapshot()
+    snapshotStore.recordSnapshot('realTime-showComponent')
   })
 }
 
