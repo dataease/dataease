@@ -1,10 +1,10 @@
 <script lang="ts" setup>
 import { ref, toRefs, provide, PropType } from 'vue'
-
 const loading = ref(false)
 
 interface SelectConfig {
   selectValue: any
+  defaultValue: any
   multiple: boolean
   options?: Array<{
     label: string
@@ -18,10 +18,15 @@ const props = defineProps({
     default: () => {
       return {
         selectValue: '',
+        defaultValue: '',
         multiple: false,
         options: []
       }
     }
+  },
+  isConfig: {
+    type: Boolean,
+    default: false
   },
   customStyle: {
     type: Object as PropType<{
@@ -36,11 +41,16 @@ const props = defineProps({
     })
   }
 })
-
 const { config, customStyle } = toRefs(props)
 
 provide('$custom-style-filter', customStyle)
 
+const handleValueChange = () => {
+  if (!props.isConfig) return
+  config.value.defaultValue = Array.isArray(config.value.selectValue)
+    ? [...config.value.selectValue]
+    : config.value.selectValue
+}
 const visibleChange = (val: boolean) => {
   setTimeout(() => {
     loading.value = !val
@@ -54,24 +64,24 @@ const visibleChange = (val: boolean) => {
     key="multiple"
     v-model="config.selectValue"
     filterable
+    @change="handleValueChange"
     @visible-change="visibleChange"
     :popper-class="loading ? 'load-select' : ''"
     multiple
     collapse-tags
     :options="config.options"
     collapse-tags-tooltip
-    style="width: 240px"
   >
   </el-select-v2>
   <el-select-v2
     v-else
     v-model="config.selectValue"
     key="single"
+    @change="handleValueChange"
     filterable
     @visible-change="visibleChange"
     :popper-class="loading ? 'load-select' : ''"
     :options="config.options"
-    style="width: 240px"
   >
     <template #default="{ item }">
       <el-radio-group v-model="config.selectValue">

@@ -248,6 +248,7 @@ export const dvMainStore = defineStore('dataVisualization', {
               borderWidth: 1,
               bgColorShow: false,
               bgColor: '',
+              layout: 'horizontal',
               btnList: []
             }
           }
