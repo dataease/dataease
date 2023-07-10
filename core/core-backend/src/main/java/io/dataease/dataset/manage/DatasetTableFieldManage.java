@@ -4,9 +4,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.api.dataset.dto.DatasetTableFieldDTO;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetTableField;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableFieldMapper;
-import io.dataease.dataset.utils.FieldUtils;
-import io.dataease.dataset.utils.TableUtils;
-import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
 import jakarta.annotation.Resource;
@@ -18,7 +15,6 @@ import org.springframework.util.CollectionUtils;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**

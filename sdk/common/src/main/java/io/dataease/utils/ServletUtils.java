@@ -34,7 +34,10 @@ public class ServletUtils {
     }
 
     public static String getXUserinfo() {
-        return getHead(AuthConstant.APISIX_X_USER);
+        return getHead(AuthConstant.OIDC_X_USER);
+    }
+    public static String getCasUser() {
+        return getHead(AuthConstant.CAS_X_USER);
     }
 
     public static boolean apisixCheck() {
