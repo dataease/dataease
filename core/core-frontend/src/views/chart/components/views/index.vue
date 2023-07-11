@@ -8,6 +8,7 @@ import { DEFAULT_TITLE_STYLE } from '@/views/chart/components/editor/util/chart'
 import DrillPath from '@/views/chart/components/views/components/DrillPath.vue'
 import { ElMessage } from 'element-plus-secondary'
 import { nextTick } from 'vue'
+import { useFilter } from '@/hooks/web/useFilter'
 
 const g2 = ref<any>()
 
@@ -107,8 +108,9 @@ const chartClick = param => {
 
 // 仪表板和大屏所有额外过滤参数都在此处
 const filter = () => {
+  const { filter } = useFilter(view.value.id)
   return {
-    // filter: this.initLoad ? this.filters : this.cfilters,
+    filter,
     // linkageFilters: this.element.linkageFilters,
     // outerParamsFilters: this.element.outerParamsFilters,
     drill: state.drillClickDimensionList

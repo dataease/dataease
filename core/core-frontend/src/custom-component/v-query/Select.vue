@@ -5,6 +5,7 @@ const loading = ref(false)
 interface SelectConfig {
   selectValue: any
   defaultValue: any
+  temporaryValue: any
   multiple: boolean
   options?: Array<{
     label: string
@@ -19,6 +20,7 @@ const props = defineProps({
       return {
         selectValue: '',
         defaultValue: '',
+        temporaryValue: '',
         multiple: false,
         options: []
       }
@@ -46,10 +48,14 @@ const { config, customStyle } = toRefs(props)
 provide('$custom-style-filter', customStyle)
 
 const handleValueChange = () => {
-  if (!props.isConfig) return
-  config.value.defaultValue = Array.isArray(config.value.selectValue)
+  const value = Array.isArray(config.value.selectValue)
     ? [...config.value.selectValue]
     : config.value.selectValue
+  if (!props.isConfig) {
+    config.value.temporaryValue = value
+    return
+  }
+  config.value.defaultValue = value
 }
 const visibleChange = (val: boolean) => {
   setTimeout(() => {
@@ -68,6 +74,7 @@ const visibleChange = (val: boolean) => {
     @visible-change="visibleChange"
     :popper-class="loading ? 'load-select' : ''"
     multiple
+    show-checked
     collapse-tags
     :options="config.options"
     collapse-tags-tooltip

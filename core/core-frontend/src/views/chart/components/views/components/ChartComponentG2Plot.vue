@@ -1,9 +1,11 @@
 <script lang="ts" setup>
-import { onMounted, reactive, toRefs } from 'vue'
+import { onBeforeMount, onMounted, reactive, toRefs } from 'vue'
 import { getData } from '@/api/chart'
 import { G2PlotChartView } from '@/views/chart/components/js/panel/types'
 import chartViewManager from '@/views/chart/components/js/panel'
-
+import { useEmitt } from '@/hooks/web/useEmitt'
+import { useFilter } from '@/hooks/web/useFilter'
+import { cloneDeep } from 'lodash-es'
 const props = defineProps({
   view: {
     type: Object,
@@ -23,6 +25,27 @@ const props = defineProps({
 const emit = defineEmits(['onChartClick', 'onDrillFilters'])
 
 const { view, showPosition } = toRefs(props)
+
+const queryData = () => {
+  const { filter } = useFilter(view.value.id)
+  let params = cloneDeep(view.value)
+  if (filter.length) {
+    if (!params.chartExtRequest) {
+      params.chartExtRequest = {
+        filter
+      }
+    } else {
+      params.chartExtRequest.filter = filter
+    }
+  }
+  calcData(params)
+}
+onBeforeMount(() => {
+  useEmitt({
+    name: `query-data-${view.value.id}`,
+    callback: queryData
+  })
+})
 
 const state = reactive({
   myChart: null,
@@ -74,7 +97,7 @@ defineExpose({
 })
 
 onMounted(() => {
-  calcData(view.value)
+  queryData()
   // renderChart({ render: ChartRenderType.ANT_V, type: 'bar' })
 })
 </script>

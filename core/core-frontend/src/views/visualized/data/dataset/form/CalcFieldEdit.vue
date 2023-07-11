@@ -217,7 +217,12 @@ defineExpose({
               </el-icon>
             </el-tooltip>
           </span>
-          <code-mirror ref="myCm" dom-id="calcField"></code-mirror>
+          <code-mirror
+            :quotaMap="state.quotaData.map(ele => ele.name)"
+            :dimensionMap="state.dimensionData.map(ele => ele.name)"
+            ref="myCm"
+            dom-id="calcField"
+          ></code-mirror>
         </div>
       </div>
       <div class="padding-lr">

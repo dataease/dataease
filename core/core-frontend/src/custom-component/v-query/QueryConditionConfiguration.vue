@@ -11,6 +11,7 @@ import Time from './Time.vue'
 
 import { getDatasetTree, getEnumValue } from '@/api/dataset'
 import { Tree } from '@/views/visualized/data/dataset/form/CreatDsGroup.vue'
+import { i } from 'mathjs'
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
 const { componentData, canvasViewInfo } = storeToRefs(dvMainStore)
@@ -65,19 +66,29 @@ const typeList = [
   }
 ]
 
+const setCheckedFieldsMap = () => {
+  Object.keys(curComponent.value.checkedFieldsMap).forEach(ele => {
+    if (!curComponent.value.checkedFields.includes(ele)) {
+      curComponent.value.checkedFieldsMap[ele] = ''
+    }
+  })
+}
+
 const handleCheckAllChange = (val: boolean) => {
   curComponent.value.checkedFields = val ? fields.value.map(ele => ele.componentId) : []
   isIndeterminate.value = false
+  setCheckedFieldsMap()
   if (curComponent.value.optionValueSource === 0) {
-    handleValueSourceChange(0)
+    handleValueSourceChange(0, curComponent.value.defaultValue)
   }
 }
 const handleCheckedFieldsChange = (value: string[]) => {
   const checkedCount = value.length
   checkAll.value = checkedCount === fields.value.length
   isIndeterminate.value = checkedCount > 0 && checkedCount < fields.value.length
+  setCheckedFieldsMap()
   if (curComponent.value.optionValueSource === 0) {
-    handleValueSourceChange(0)
+    handleValueSourceChange(0, curComponent.value.defaultValue)
   }
 }
 
@@ -109,7 +120,7 @@ const handleFieldIdChange = (val: string[]) => {
 
 const handleValueCheckChange = (value: boolean) => {
   if (!value) return
-  handleValueSourceChange(curComponent.value.optionValueSource)
+  handleValueSourceChange(curComponent.value.optionValueSource, curComponent.value.defaultValue)
 }
 
 const handleFieldsChange = () => {
@@ -117,9 +128,9 @@ const handleFieldsChange = () => {
   handleValueSourceChange(0)
 }
 
-const handleValueSourceChange = (val: number) => {
+const handleValueSourceChange = (val: number, defaultValue = '') => {
   if (!curComponent.value.defaultValueCheck) return
-  curComponent.value.defaultValue = ''
+  curComponent.value.defaultValue = defaultValue
   multipleChange(false)
   switch (val) {
     case 0:
@@ -158,20 +169,32 @@ const handleValueSourceChange = (val: number) => {
   }
 }
 
-const multipleChange = (val: boolean) => {
-  const { defaultValue } = curComponent.value
-  if (Array.isArray(defaultValue)) {
-    curComponent.value.selectValue = val ? defaultValue : ''
+const multipleChange = (val: boolean, isTemporary = false) => {
+  const { defaultValue, temporaryValue } = curComponent.value
+  const value = isTemporary ? temporaryValue : defaultValue
+  if (Array.isArray(value)) {
+    curComponent.value.selectValue = val ? value : ''
   } else {
-    curComponent.value.selectValue = val ? (defaultValue ? [defaultValue] : []) : defaultValue
+    curComponent.value.selectValue = val ? (value ? [value] : []) : value
   }
   nextTick(() => {
+    if (curComponent.value.field.deType === 1) {
+      curComponent.value.operator = 'between'
+    } else {
+      curComponent.value.operator = val ? 'in' : 'eq'
+    }
     curComponent.value.multiple = val
   })
 }
 
 const confirmClick = () => {
   let obj = componentData.value.find(ele => ele.id === componentId)
+  conditions.value.forEach(ele => {
+    curComponent.value = ele
+    if (curComponent.value.temporaryValue?.length) {
+      multipleChange(curComponent.value.multiple, true)
+    }
+  })
   obj.propValue = cloneDeep(conditions.value)
   dialogVisible.value = false
 }
@@ -212,6 +235,12 @@ const init = (id: string, queryId: string) => {
   const datasetMapKeyList = Object.keys(datasetMap)
 
   if (datasetFieldIdList.every(ele => datasetMapKeyList.includes(ele))) {
+    fields.value = datasetFieldList.value
+      .map(ele => {
+        if (!datasetMap[ele.tableId]) return null
+        return { ...datasetMap[ele.tableId], componentId: ele.id }
+      })
+      .filter(ele => !!ele)
     return
   }
   getDsDetails([
@@ -256,6 +285,7 @@ const handleCondition = item => {
   if (!!fields.value?.length) {
     handleCheckedFieldsChange(curComponent.value.checkedFields)
   }
+  multipleChange(curComponent.value.multiple, false)
 }
 
 const getOptions = (id, component) => {
@@ -377,7 +407,7 @@ defineExpose({
             v-model="curComponent.checkedFields"
             @change="handleCheckedFieldsChange"
           >
-            <div v-for="field in fields" :key="field.id" class="list-item">
+            <div v-for="field in fields" :key="field.componentId" class="list-item">
               <el-checkbox :label="field.componentId"
                 ><el-icon> <Icon name="icon_add_outlined"></Icon> </el-icon
                 ><span class="checkbox-name ellipsis">{{
@@ -526,7 +556,7 @@ defineExpose({
               <el-checkbox v-model="curComponent.parametersCheck" label="绑定参数" />
             </div>
             <div class="parameters">
-              <el-select v-model="curComponent.parameters" clearable>
+              <el-select multiple v-model="curComponent.parameters" clearable>
                 <el-option label="Zone one" value="shanghai" />
                 <el-option label="Zone two" value="beijing" />
               </el-select>
