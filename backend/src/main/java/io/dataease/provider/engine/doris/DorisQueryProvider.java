@@ -841,7 +841,7 @@ public class DorisQueryProvider extends QueryProvider {
 
         if (field.getDeType() == 1) {
             if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5 || field.getDeExtractType() == 1) {
-                whereName = String.format(DorisConstants.STR_TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : DorisConstants.DEFAULT_DATE_FORMAT);
+                whereName = String.format(DorisConstants.DATE_FORMAT, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : DorisConstants.DEFAULT_DATE_FORMAT);
             }
             if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                 String cast = String.format(DorisConstants.CAST, originName, DorisConstants.DEFAULT_INT_FORMAT) + "/1000";
@@ -971,7 +971,7 @@ public class DorisQueryProvider extends QueryProvider {
 
             if (field.getDeType() == 1) {
                 if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5 || field.getDeExtractType() == 1) {
-                    whereName = String.format(DorisConstants.STR_TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : DorisConstants.DEFAULT_DATE_FORMAT);
+                    whereName = String.format(DorisConstants.DATE_FORMAT, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : DorisConstants.DEFAULT_DATE_FORMAT);
                 }
                 if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                     String cast = String.format(DorisConstants.CAST, originName, DorisConstants.DEFAULT_INT_FORMAT) + "/1000";
