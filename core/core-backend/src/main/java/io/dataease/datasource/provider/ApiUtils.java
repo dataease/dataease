@@ -10,6 +10,7 @@ import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.ds.vo.ApiDefinition;
 import io.dataease.api.ds.vo.ApiDefinitionRequest;
 import io.dataease.api.ds.vo.TableField;
+import io.dataease.constant.AuthConstant;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.exception.DEException;
 import io.dataease.utils.HttpClientConfig;
@@ -53,7 +54,7 @@ public class ApiUtils {
         List<String[]> dataList = new ArrayList<>();
         List<TableField> fieldList = new ArrayList<>();
         ApiDefinition apiDefinition = checkApiDefinition(datasourceRequest);
-        if(apiDefinition == null){
+        if (apiDefinition == null) {
             DEException.throwException("未找到");
         }
         String response = execHttpRequest(apiDefinition, 10);
@@ -101,7 +102,7 @@ public class ApiUtils {
 
     private static List<String[]> getData(DatasourceRequest datasourceRequest) throws Exception {
         ApiDefinition apiDefinition = checkApiDefinition(datasourceRequest);
-        if(apiDefinition == null){
+        if (apiDefinition == null) {
             DEException.throwException("未找到");
         }
         String response = execHttpRequest(apiDefinition, 10);
@@ -125,7 +126,7 @@ public class ApiUtils {
                 && apiDefinitionRequest.getAuthManager().getVerification().equals("Basic Auth")) {
             String authValue = "Basic " + Base64.getUrlEncoder().encodeToString((apiDefinitionRequest.getAuthManager().getUsername()
                     + ":" + apiDefinitionRequest.getAuthManager().getPassword()).getBytes());
-            httpClientConfig.addHeader("Authorization", authValue);
+            httpClientConfig.addHeader(AuthConstant.TOKEN_KEY, authValue);
         }
 
         switch (apiDefinition.getMethod()) {

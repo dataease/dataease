@@ -21,4 +21,8 @@ public class LoginUserPO implements Serializable {
     private String pwd;
 
     private Long defaultOid;
+
+    private Boolean enable;
+
+    private Integer origin;
 }

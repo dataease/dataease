@@ -3,9 +3,12 @@ package io.dataease.auth.filter;
 import cn.hutool.core.collection.ListUtil;
 import io.dataease.auth.bo.TokenUserBO;
 import io.dataease.exception.DEException;
-import io.dataease.utils.*;
-import jakarta.servlet.*;
+import io.dataease.utils.ModelUtils;
+import io.dataease.utils.ServletUtils;
+import io.dataease.utils.TokenUtils;
+import io.dataease.utils.UserUtils;
 import jakarta.servlet.FilterConfig;
+import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 
@@ -27,6 +30,7 @@ public class TokenFilter implements Filter {
             "/");
 
     private static final String contextPath = "/de2api";
+
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
     }
@@ -57,15 +61,7 @@ public class TokenFilter implements Filter {
         if (!ServletUtils.apisixCheck()) {
             DEException.throwException("Prohibit direct access application, request must be from apisix");
         }
-        String token = null;
-        String xUserStr = null;
-        if(StringUtils.isBlank(token = ServletUtils.getToken()) && StringUtils.isNotBlank(xUserStr = ServletUtils.getXUserinfo())) {
-            LogUtil.info("--------------------");
-            LogUtil.info(xUserStr);
-            LogUtil.info("--------------------");
-            filterChain.doFilter(servletRequest, servletResponse);
-            return;
-        }
+        String token = ServletUtils.getToken();
         TokenUserBO userBO = TokenUtils.validate(token);
         UserUtils.setUserInfo(userBO);
         filterChain.doFilter(servletRequest, servletResponse);

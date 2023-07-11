@@ -36,7 +36,6 @@ public class ApisixManage {
     private static final String PARAM_VARIABLE_PREFIX = "p";
     private static final String SPRING_EL_FLAG = "#";
 
-    private static final String TOKEN_KEY = "Authorization";
 
     private final ExpressionParser parser = new SpelExpressionParser();
     @Resource
@@ -56,7 +55,7 @@ public class ApisixManage {
      * @return
      */
     public void checkAuthenticationInfo(HttpServletRequest request) {
-        String token = request.getHeader(TOKEN_KEY);
+        String token = request.getHeader(AuthConstant.TOKEN_KEY);
         TokenUserBO userBO = TokenUtils.validate(token);
         UserUtils.setUserInfo(userBO);
     }
