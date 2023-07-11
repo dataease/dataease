@@ -81,7 +81,7 @@ export default {
   props: {},
   data() {
     return {
-      maxHeight: 2000,
+      maxHeight: 10000,
       maxTop: 20000
     }
   },
