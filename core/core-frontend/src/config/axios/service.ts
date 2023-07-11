@@ -41,7 +41,7 @@ service.interceptors.request.use(
       config.data = qs.stringify(config.data)
     }
     if (wsCache.get('user.token')) {
-      ;(config.headers as AxiosRequestHeaders)['Authorization'] = wsCache.get('user.token')
+      ;(config.headers as AxiosRequestHeaders)['X-DE-TOKEN'] = wsCache.get('user.token')
     }
     if (wsCache.get('user.language')) {
       const key = wsCache.get('user.language')
