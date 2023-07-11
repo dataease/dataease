@@ -61,7 +61,7 @@
        dataset_table_field.origin_name,
        dataset_table_field.`name`,
        dataset_table_field.de_type
-    from dataset_table_field where table_id = #{table_id}
+    from dataset_table_field where dataset_table_field.group_type = 'd' and table_id = #{table_id}
     </select>
 
     <select id="queryTableFieldWithViewId" resultMap="TableFieldMap">
