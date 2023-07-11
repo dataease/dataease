@@ -6,7 +6,9 @@ import componentList, {
 import eventBus from '@/utils/eventBus'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { findById } from '@/api/visualization/dataVisualization'
+import { storeToRefs } from 'pinia'
 const dvMainStore = dvMainStoreWithOut()
+const { curBatchOptComponents } = storeToRefs(dvMainStore)
 
 export function chartTransStr2Object(targetIn, copy) {
   const target = copy === 'Y' ? deepCopy(targetIn) : targetIn
@@ -91,4 +93,8 @@ export function initCanvasData(dvId, callBack) {
       callBack()
     }
   )
+}
+
+export function checkIsBatchOptView(viewId) {
+  return curBatchOptComponents.value.includes(viewId)
 }

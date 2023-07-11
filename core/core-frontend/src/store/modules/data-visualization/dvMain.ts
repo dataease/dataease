@@ -4,6 +4,7 @@ import { deepCopy } from '@/utils/utils'
 import { BASE_VIEW_CONFIG, getViewConfig } from '@/views/chart/components/editor/util/chart'
 import eventBus from '@/utils/eventBus'
 import { DEFAULT_CANVAS_STYLE_DATA_DARK } from '@/views/chart/components/editor/util/dataVisualiztion'
+import { useEmitt } from '@/hooks/web/useEmitt'
 
 export const dvMainStore = defineStore('dataVisualization', {
   state: () => {
@@ -410,6 +411,12 @@ export const dvMainStore = defineStore('dataVisualization', {
     },
     setChangeProperties(propertyInfo) {
       this.changeProperties[propertyInfo.custom][propertyInfo.property] = propertyInfo.value
+      // 修改对应视图的参数
+      this.curBatchOptComponents.forEach(viewId => {
+        const viewInfo = this.canvasViewInfo[viewId]
+        viewInfo[propertyInfo.custom][propertyInfo.property] = propertyInfo.value
+        useEmitt().emitter.emit('renderChart-' + viewId, viewInfo)
+      })
     },
     setBatchOptStatus(status) {
       this.batchOptStatus = status

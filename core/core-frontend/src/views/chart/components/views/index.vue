@@ -8,6 +8,7 @@ import { DEFAULT_TITLE_STYLE } from '@/views/chart/components/editor/util/chart'
 import DrillPath from '@/views/chart/components/views/components/DrillPath.vue'
 import { ElMessage } from 'element-plus-secondary'
 import { nextTick } from 'vue'
+import { checkIsBatchOptView } from '@/utils/canvasUtils'
 
 const g2 = ref<any>()
 

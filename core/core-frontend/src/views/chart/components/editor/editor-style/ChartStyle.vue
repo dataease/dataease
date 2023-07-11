@@ -17,7 +17,7 @@ import { ElCollapseItem } from 'element-plus-secondary'
 import BasicStyleSelector from '@/views/chart/components/editor/editor-style/components/BasicStyleSelector.vue'
 import ComponentPosition from '@/components/visualization/common/ComponentPosition.vue'
 const dvMainStore = dvMainStoreWithOut()
-const { curComponent, dvInfo } = storeToRefs(dvMainStore)
+const { curComponent, dvInfo, batchOptStatus } = storeToRefs(dvMainStore)
 const { t } = useI18n()
 
 const state = {
@@ -127,7 +127,7 @@ const onBasicStyleChange = val => {
           <el-collapse-item name="position" :title="'位置'" v-if="dvInfo.type !== 'dashboard'">
             <component-position></component-position>
           </el-collapse-item>
-          <el-collapse-item name="background" :title="'背景'">
+          <el-collapse-item name="background" :title="'背景'" v-if="!batchOptStatus">
             <background-overall-component
               v-if="curComponent"
               :themes="themes"

@@ -50,7 +50,7 @@ const onColorChange = val => {
   batchOptChange('customAttr', 'color', val)
 }
 const onSizeChange = val => {
-  batchOptChange('customAttr', 'size', val)
+  batchOptChange('customAttr', 'size', val.data)
 }
 
 const onLabelChange = val => {
@@ -96,12 +96,6 @@ const batchOptChange = (custom, property, value) => {
     property: property,
     value: value
   })
-
-  eventBus.emit('batch-opt-change', {
-    custom: custom,
-    property: property,
-    value: value
-  })
 }
 </script>
 
@@ -130,7 +124,8 @@ const batchOptChange = (custom, property, value) => {
 }
 
 .chart-style-main {
-  height: calc(100% - 40px) !important;
+  height: 100% !important;
+  border-top: 0;
 }
 
 .view-title-name {
