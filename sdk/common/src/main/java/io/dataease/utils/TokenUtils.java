@@ -42,8 +42,7 @@ public class TokenUtils {
 
     public static boolean verify(String token, TokenUserBO bo, String secret) {
         Algorithm algorithm = Algorithm.HMAC256(secret);
-        Verification verification = JWT.require(algorithm)
-                .withClaim("userId", bo.getUserId());
+        Verification verification = JWT.require(algorithm).withClaim("uid", bo.getUserId()).withClaim("oid", bo.getDefaultOid());
         JWTVerifier verifier = verification.build();
         DecodedJWT decode = JWT.decode(token);
         algorithm.verify(decode);
