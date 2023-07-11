@@ -293,7 +293,7 @@ public class ChartDataManage {
                             }
 //                            if (!desensitizationList.keySet().contains(datasetTableField.getDataeaseName()) && dataeaseNames.contains(datasetTableField.getDataeaseName())) {
                             filterRequest.setDatasetTableField(datasetTableField);
-                            if (Objects.equals(datasetTableField.getDatasetTableId(), view.getTableId())) {
+                            if (Objects.equals(datasetTableField.getDatasetGroupId(), view.getTableId())) {
                                 if (ObjectUtils.isNotEmpty(filterRequest.getViewIds())) {
                                     if (filterRequest.getViewIds().contains(view.getId())) {
                                         extFilterList.add(filterRequest);

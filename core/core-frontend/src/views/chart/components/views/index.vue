@@ -132,6 +132,7 @@ onMounted(() => {
       initTitle()
       nextTick(() => {
         if (cacheViewInfo.snapshotCacheViewCalc.includes(view.value.id)) {
+          view.value.chartExtRequest = filter()
           g2?.value?.calcData(view.value)
         } else if (cacheViewInfo.snapshotCacheViewRender.includes(view.value.id)) {
           g2?.value?.renderChart(view.value)
@@ -144,6 +145,7 @@ onMounted(() => {
     callback: function (val) {
       initTitle()
       nextTick(() => {
+        view.value.chartExtRequest = filter()
         g2?.value?.calcData(val)
       })
     }
