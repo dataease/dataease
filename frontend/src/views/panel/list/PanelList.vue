@@ -670,7 +670,10 @@ export default {
         if (this.editPanel.optType === 'toDefaultPanel') {
           this.defaultTree(false)
         }
-        updateCacheTree(this.editPanel.optType, 'panel-main-tree', panelInfo, this.tData)
+
+        updateCacheTree(this.editPanel.optType,
+          panelInfo.panelType === 'system' ? 'panel-default-tree' : 'panel-main-tree', panelInfo,
+          panelInfo.panelType === 'system' ? this.defaultData : this.tData)
         if (this.editPanel.optType === 'rename' && panelInfo.id === this.$store.state.panel.panelInfo.id) {
           this.$store.state.panel.panelInfo.name = panelInfo.name
         }
@@ -850,7 +853,7 @@ export default {
 
     delete(data) {
       const params = {
-        title: data.nodeType === 'folder'?'commons.delete_this_folder':'commons.delete_this_dashboard',
+        title: data.nodeType === 'folder' ? 'commons.delete_this_folder' : 'commons.delete_this_dashboard',
         type: 'danger',
         cb: () => {
           delGroup(data.id).then((response) => {
