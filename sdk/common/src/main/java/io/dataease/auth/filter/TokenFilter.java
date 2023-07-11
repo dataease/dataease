@@ -2,6 +2,7 @@ package io.dataease.auth.filter;
 
 import cn.hutool.core.collection.ListUtil;
 import io.dataease.auth.bo.TokenUserBO;
+import io.dataease.constant.AuthConstant;
 import io.dataease.exception.DEException;
 import io.dataease.utils.ModelUtils;
 import io.dataease.utils.ServletUtils;
@@ -29,7 +30,6 @@ public class TokenFilter implements Filter {
             "/panel.html",
             "/");
 
-    private static final String contextPath = "/de2api";
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -39,8 +39,8 @@ public class TokenFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         String requestURI = request.getRequestURI();
-        if (StringUtils.startsWith(requestURI, contextPath)) {
-            requestURI = requestURI.replaceFirst(contextPath, "");
+        if (StringUtils.startsWith(requestURI, AuthConstant.DE_API_PREFIX)) {
+            requestURI = requestURI.replaceFirst(AuthConstant.DE_API_PREFIX, "");
         }
         if (ModelUtils.isDesktop()) {
             UserUtils.setDesktopUser();

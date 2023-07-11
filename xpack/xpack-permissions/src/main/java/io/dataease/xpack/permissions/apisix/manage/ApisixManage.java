@@ -87,7 +87,17 @@ public class ApisixManage {
             HandlerMethod handlerMethod = authHandlerMethodMapping.getHandlerMethod(proxy);
             if (ObjectUtils.isEmpty(handlerMethod) || !handlerMethod.hasMethodAnnotation(DePermit.class)) return null;
             DePermit dePermit = handlerMethod.getMethodAnnotation(DePermit.class);
+
             DeApiPath deApiPath = handlerMethod.getBeanType().getAnnotation(DeApiPath.class);
+            if (deApiPath == null) {
+                Class<?>[] interfaces = handlerMethod.getBeanType().getInterfaces();
+                for (int i = 0; i < interfaces.length; i++) {
+                    deApiPath = interfaces[i].getAnnotation(DeApiPath.class);
+                    if (deApiPath != null) {
+                        break;
+                    }
+                }
+            }
             AuthResourceEnum rt = deApiPath.rt();
             String[] valueArray = dePermit.value();
 

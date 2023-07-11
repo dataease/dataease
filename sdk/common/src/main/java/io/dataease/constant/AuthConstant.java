@@ -8,4 +8,6 @@ public class AuthConstant {
     public final static String OIDC_X_USER = "X-Userinfo";
 
     public final static String CAS_X_USER = "X-CAS-USER";
+
+    public final static String DE_API_PREFIX = "/de2api";
 }
