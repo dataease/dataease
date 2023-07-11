@@ -151,13 +151,19 @@ export default {
   data() {
     return {
       previewVisible: false,
-      chart: null,
       seriesIdMap: {
         id: ''
       }
     }
   },
   computed: {
+    chart() {
+      if (this.config.propValue?.viewId) {
+        const viewInfo = this.panelViewDetailsInfo[this.config.propValue.viewId];
+        return viewInfo?JSON.parse(viewInfo):null
+      }
+      return null
+    },
     componentCanvasId() {
       if (this.config.type === 'view') {
         return 'user-view-' + this.config.propValue.viewId
@@ -216,7 +222,8 @@ export default {
       'mobileLayoutStatus',
       'curComponent',
       'previewCanvasScale',
-      'componentGap'
+      'componentGap',
+      'panelViewDetailsInfo'
     ])
   },
   mounted() {
@@ -286,8 +293,7 @@ export default {
         }
       } else {
         return {
-          ...
-            getStyle(style, ['top', 'left', 'width', 'height', 'rotate']),
+          ...getStyle(style, ['top', 'left', 'width', 'height', 'rotate']),
           position: 'relative'
         }
       }
@@ -300,6 +306,9 @@ export default {
           this[event](events[event])
         })
       }
+    },
+    setChartData() {
+
     },
     elementMouseDown(e) {
       // // private 设置当前组件数据及状态

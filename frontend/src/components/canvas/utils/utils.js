@@ -429,6 +429,12 @@ export function getCacheTree(treeName) {
 }
 
 export function exportExcelDownload(chart, snapshot, width, height, loadingWrapper, callBack) {
+  if (chart.render === 'antv' && !chart.data?.data?.length) {
+    return
+  }
+  if (chart.type === 'echarts' && !(chart.data?.series?.length && chart.data?.series[0].data?.length)) {
+    return
+  }
   const fields = JSON.parse(JSON.stringify(chart.data.fields))
   const tableRow = JSON.parse(JSON.stringify(chart.data.tableRow))
   const excelHeader = fields.map(item => item.name)

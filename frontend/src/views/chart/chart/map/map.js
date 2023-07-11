@@ -72,9 +72,13 @@ export function baseMapOption(chart_option, geoJson, chart, themeStyle, curAreaC
       const reg = new RegExp('\n', 'g')
       const text = tooltip.formatter.replace(reg, '<br/>')
       tooltip.formatter = params => {
+        const val = params.value
+        if (tooltip.emptyHide && (val === null || typeof val === 'undefined' || isNaN(val))) {
+          return ''
+        }
         const a = params.seriesName
         const b = params.name
-        const c = params.value ?? ''
+        const c = (val === null || typeof val === 'undefined' || isNaN(val)) ? '' : val
         return text.replace(new RegExp('{a}', 'g'), a).replace(new RegExp('{b}', 'g'), b).replace(new RegExp('{c}', 'g'), c)
       }
       chart_option.tooltip = tooltip
