@@ -1,5 +1,5 @@
 <script lang="tsx" setup>
-import { PropType, reactive, ref, watch, toRefs } from 'vue'
+import { PropType, reactive, ref, watch, toRefs, computed } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Field, getFieldByDQ, saveChart } from '@/api/chart'
@@ -22,7 +22,7 @@ import { ElIcon, ElRow } from 'element-plus-secondary'
 import DrillItem from '@/views/chart/components/editor/drag-item/DrillItem.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
-import { BASE_VIEW_CONFIG } from '@/views/chart/components/editor/util/chart'
+import { BASE_VIEW_CONFIG, getViewConfig } from '@/views/chart/components/editor/util/chart'
 import ChartType from '@/views/chart/components/editor/chart-type/ChartType.vue'
 import { useRouter } from 'vue-router'
 import CompareEdit from '@/views/chart/components/editor/drag-item/components/CompareEdit.vue'
@@ -644,6 +644,15 @@ const saveValueFormatter = () => {
   calcData(view.value)
   closeValueFormatter()
 }
+
+const viewProperties = computed(() => {
+  const config = getViewConfig(view.value.type)
+  return config ? config.properties : null
+})
+
+const viewPropertyInnerAll = computed(() => {
+  return viewProperties.value ? viewProperties.value.propertyInner : null
+})
 </script>
 
 <template>
@@ -1023,6 +1032,8 @@ const saveValueFormatter = () => {
                 style="width: 100%"
               >
                 <chart-style
+                  :properties="viewProperties"
+                  :property-inner-all="viewPropertyInnerAll"
                   :chart="view"
                   :themes="themes"
                   :dimension-data="state.dimensionData"
