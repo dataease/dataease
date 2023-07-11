@@ -62,7 +62,7 @@ const token = useUserStoreWithOut().getToken
 
 const baseUrl = ''
 const headers = {
-  Authorization: token,
+  'X-DE-TOKEN': token,
   'Accept-Language': 'zh'
 }
 const defaultProps = {
