@@ -20,7 +20,8 @@ public class LoginServer implements LoginApi {
     @Override
     public String localLogin(PwdLoginDTO dto) {
         TokenUserBO tokenUserBO = loginManage.localBuild(dto);
-        String md5Pwd = Md5Utils.md5(dto.getPwd());
+        String pwd = dto.getPwd();
+        String md5Pwd = Md5Utils.md5(RsaUtils.decryptStr(pwd));
         return TokenUtils.generate(tokenUserBO, md5Pwd);
     }
 

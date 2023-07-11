@@ -48,15 +48,18 @@ public class ApisixManage {
     @Resource
     private ApiAuthManage apiAuthManage;
 
+    @Resource
+    private ApisixTokenManage apisixTokenManage;
+
     /**
      * 认证校验
      * 从请求头获取token进行解析验证并存放在threadLocal中
      *
      * @return
      */
-    public void checkAuthenticationInfo(HttpServletRequest request) {
+    public void checkAuthenticationInfo(HttpServletRequest request) throws Exception{
         String token = request.getHeader(AuthConstant.TOKEN_KEY);
-        TokenUserBO userBO = TokenUtils.validate(token);
+        TokenUserBO userBO = apisixTokenManage.validate(token);
         UserUtils.setUserInfo(userBO);
     }
 
@@ -70,46 +73,41 @@ public class ApisixManage {
      *
      * @return
      */
-    public void checkAuthorizationInfo(HttpServletRequest request) {
+    public void checkAuthorizationInfo(HttpServletRequest request) throws Exception{
         String[] requirePermissions = getRequirePermissions(request);
         TokenUserBO user = AuthUtils.getUser();
         checkPermission(user, requirePermissions);
         ServletUtils.response().addHeader(AuthConstant.APISIX_FLAG_KEY, String.valueOf(System.currentTimeMillis()));
     }
 
-    public String[] getRequirePermissions(HttpServletRequest request) {
-        try {
-            Object attribute = request.getAttribute(PATH);
-            ProxyRequest proxyRequest = new ProxyRequest(request);
-            HttpServletRequest proxy = (HttpServletRequest) Proxy.newProxyInstance(request.getClass().getClassLoader(), request.getClass().getInterfaces(), proxyRequest);
-            RequestPath requestPath = ServletRequestPathUtils.parseAndCache(proxy);
-            proxy.setAttribute(PATH, requestPath);
-            HandlerMethod handlerMethod = authHandlerMethodMapping.getHandlerMethod(proxy);
-            if (ObjectUtils.isEmpty(handlerMethod) || !handlerMethod.hasMethodAnnotation(DePermit.class)) return null;
-            DePermit dePermit = handlerMethod.getMethodAnnotation(DePermit.class);
+    public String[] getRequirePermissions(HttpServletRequest request) throws Exception{
+        Object attribute = request.getAttribute(PATH);
+        ProxyRequest proxyRequest = new ProxyRequest(request);
+        HttpServletRequest proxy = (HttpServletRequest) Proxy.newProxyInstance(request.getClass().getClassLoader(), request.getClass().getInterfaces(), proxyRequest);
+        RequestPath requestPath = ServletRequestPathUtils.parseAndCache(proxy);
+        proxy.setAttribute(PATH, requestPath);
+        HandlerMethod handlerMethod = authHandlerMethodMapping.getHandlerMethod(proxy);
+        if (ObjectUtils.isEmpty(handlerMethod) || !handlerMethod.hasMethodAnnotation(DePermit.class)) return null;
+        DePermit dePermit = handlerMethod.getMethodAnnotation(DePermit.class);
 
-            DeApiPath deApiPath = handlerMethod.getBeanType().getAnnotation(DeApiPath.class);
-            if (deApiPath == null) {
-                Class<?>[] interfaces = handlerMethod.getBeanType().getInterfaces();
-                for (int i = 0; i < interfaces.length; i++) {
-                    deApiPath = interfaces[i].getAnnotation(DeApiPath.class);
-                    if (deApiPath != null) {
-                        break;
-                    }
+        DeApiPath deApiPath = handlerMethod.getBeanType().getAnnotation(DeApiPath.class);
+        if (deApiPath == null) {
+            Class<?>[] interfaces = handlerMethod.getBeanType().getInterfaces();
+            for (int i = 0; i < interfaces.length; i++) {
+                deApiPath = interfaces[i].getAnnotation(DeApiPath.class);
+                if (deApiPath != null) {
+                    break;
                 }
             }
-            AuthResourceEnum rt = deApiPath.rt();
-            String[] valueArray = dePermit.value();
-
-            request.setAttribute(PATH, attribute);
-            Object[] params = authMappingHandlerAdapter.getParams(proxy, ServletUtils.response(), handlerMethod);
-
-            String[] requirePermissions = methodAuth(params, valueArray, rt);
-            return requirePermissions;
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-        return null;
+        AuthResourceEnum rt = deApiPath.rt();
+        String[] valueArray = dePermit.value();
+
+        request.setAttribute(PATH, attribute);
+        Object[] params = authMappingHandlerAdapter.getParams(proxy, ServletUtils.response(), handlerMethod);
+
+        String[] requirePermissions = methodAuth(params, valueArray, rt);
+        return requirePermissions;
     }
 
 
