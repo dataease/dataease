@@ -1,7 +1,6 @@
 package io.dataease.chart.manage;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dataease.api.chart.dto.*;
 import io.dataease.api.chart.request.ChartDrillRequest;
 import io.dataease.api.chart.request.ChartExtRequest;
@@ -9,14 +8,11 @@ import io.dataease.api.dataset.dto.DatasetTableFieldDTO;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.union.model.SQLMeta;
 import io.dataease.chart.constant.ChartConstants;
-import io.dataease.chart.dao.auto.mapper.CoreChartViewMapper;
 import io.dataease.chart.utils.ChartDataBuild;
-import io.dataease.dataset.dao.auto.entity.CoreDatasetTable;
 import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import io.dataease.dataset.manage.DatasetGroupManage;
 import io.dataease.dataset.manage.DatasetSQLManage;
 import io.dataease.dataset.manage.DatasetTableFieldManage;
-import io.dataease.dataset.manage.DatasetTableManage;
 import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.engine.constant.ExtFieldConstant;
@@ -48,13 +44,7 @@ import java.util.stream.Stream;
 @Component
 public class ChartDataManage {
     @Resource
-    private CoreChartViewMapper coreChartViewMapper;
-    @Resource
-    private ObjectMapper objectMapper;
-    @Resource
     private DatasetTableFieldManage datasetTableFieldManage;
-    @Resource
-    private DatasetTableManage datasetTableManage;
     @Resource
     private DatasetGroupManage datasetGroupManage;
     @Resource
@@ -89,13 +79,7 @@ public class ChartDataManage {
         }
 
         // get all fields
-        Map<String, List<ChartViewFieldDTO>> stringListMap = chartViewManege.listByDQ(view.getTableId(), view.getId());
-        List<ChartViewFieldDTO> dimensionList = stringListMap.get("dimensionList");
-        List<ChartViewFieldDTO> quotaList = stringListMap.get("quotaList");
-        List<ChartViewFieldDTO> allFields = new ArrayList<>();
-        allFields.addAll(dimensionList);
-        allFields.addAll(quotaList);
-        allFields = allFields.stream().filter(ele -> ele.getId() != -1L).collect(Collectors.toList());
+        List<ChartViewFieldDTO> allFields = getAllChartFields(view);
 
         List<ChartViewFieldDTO> xAxisBase = new ArrayList<>(view.getXAxis());
         List<ChartViewFieldDTO> xAxis = new ArrayList<>(view.getXAxis());
@@ -1133,8 +1117,9 @@ public class ChartDataManage {
         map.putAll(chartData);
         map.putAll(tableData);
 
-        List<CoreDatasetTable> sourceFields = datasetTableManage.selectByDatasetGroupId(view.getTableId());
-        map.put("sourceFields", sourceFields);
+        // get all fields
+        List<ChartViewFieldDTO> allFields = getAllChartFields(view);
+        map.put("sourceFields", allFields);
         // merge assist result
         mergeAssistField(dynamicAssistFields, assistData);
         map.put("dynamicAssistLines", dynamicAssistFields);
@@ -1216,13 +1201,7 @@ public class ChartDataManage {
         }
 
         // get all fields
-        Map<String, List<ChartViewFieldDTO>> stringListMap = chartViewManege.listByDQ(view.getTableId(), view.getId());
-        List<ChartViewFieldDTO> dimensionList = stringListMap.get("dimensionList");
-        List<ChartViewFieldDTO> quotaList = stringListMap.get("quotaList");
-        List<ChartViewFieldDTO> allFields = new ArrayList<>();
-        allFields.addAll(dimensionList);
-        allFields.addAll(quotaList);
-        allFields = allFields.stream().filter(ele -> ele.getId() != -1L).collect(Collectors.toList());
+        List<ChartViewFieldDTO> allFields = getAllChartFields(view);
 
         List<ChartViewFieldDTO> xAxisBase = new ArrayList<>(view.getXAxis());
         List<ChartViewFieldDTO> xAxis = new ArrayList<>(view.getXAxis());
@@ -1409,5 +1388,16 @@ public class ChartDataManage {
 
     private boolean enableExtData(String type) {
         return StringUtils.containsAnyIgnoreCase(type, "bar", "line", "area", "pie", "radar", "map", "scatter", "funnel");
+    }
+
+    private List<ChartViewFieldDTO> getAllChartFields(ChartViewDTO view) {
+        // get all fields
+        Map<String, List<ChartViewFieldDTO>> stringListMap = chartViewManege.listByDQ(view.getTableId(), view.getId());
+        List<ChartViewFieldDTO> dimensionList = stringListMap.get("dimensionList");
+        List<ChartViewFieldDTO> quotaList = stringListMap.get("quotaList");
+        List<ChartViewFieldDTO> allFields = new ArrayList<>();
+        allFields.addAll(dimensionList);
+        allFields.addAll(quotaList);
+        return allFields.stream().filter(ele -> ele.getId() != -1L).collect(Collectors.toList());
     }
 }
