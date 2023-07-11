@@ -530,7 +530,7 @@ getItemTagType()
           <el-dropdown-item
             v-if="item.groupType === 'q'"
             :icon="Memo"
-            divided
+            :divided="!item.chartId && chart.type !== 'table-info'"
             :command="beforeClickItem('formatter')"
           >
             <span>{{ t('chart.value_formatter') }}...</span>

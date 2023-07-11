@@ -919,7 +919,7 @@ public class ChartDataManage {
             DatasetTableFieldDTO dto = new DatasetTableFieldDTO();
             BeanUtils.copyBean(dto, ele);
             return dto;
-        }).filter(ele -> Objects.equals(ele.getExtField(), ExtFieldConstant.EXT_NORMAL)).collect(Collectors.toList());
+        }).collect(Collectors.toList());
     }
 
     public Boolean containDetailField(ChartViewDTO view) {

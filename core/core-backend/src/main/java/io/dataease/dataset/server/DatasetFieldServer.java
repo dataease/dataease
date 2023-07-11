@@ -21,8 +21,7 @@ public class DatasetFieldServer implements DatasetTableApi {
 
     @Override
     public DatasetTableFieldDTO save(DatasetTableFieldDTO datasetTableFieldDTO) throws Exception {
-        datasetTableFieldDTO.setDatasetGroupId(null);
-        return datasetTableFieldManage.save(datasetTableFieldDTO);
+        return datasetTableFieldManage.chartFieldSave(datasetTableFieldDTO);
     }
 
     @Override
