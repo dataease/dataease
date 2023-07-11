@@ -88,6 +88,15 @@ public class ChartDataManage {
             });
         }
 
+        // get all fields
+        Map<String, List<ChartViewFieldDTO>> stringListMap = chartViewManege.listByDQ(view.getTableId(), view.getId());
+        List<ChartViewFieldDTO> dimensionList = stringListMap.get("dimensionList");
+        List<ChartViewFieldDTO> quotaList = stringListMap.get("quotaList");
+        List<ChartViewFieldDTO> allFields = new ArrayList<>();
+        allFields.addAll(dimensionList);
+        allFields.addAll(quotaList);
+        allFields = allFields.stream().filter(ele -> ele.getId() != -1L).collect(Collectors.toList());
+
         List<ChartViewFieldDTO> xAxisBase = new ArrayList<>(view.getXAxis());
         List<ChartViewFieldDTO> xAxis = new ArrayList<>(view.getXAxis());
         List<ChartViewFieldDTO> xAxisExt = new ArrayList<>(view.getXAxisExt());
@@ -529,41 +538,40 @@ public class ChartDataManage {
 
             SQLMeta sqlMeta = new SQLMeta();
             Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")");
-            CustomWhere2Str.customWhere2sqlObj(sqlMeta, fieldCustomFilter, transFields(fieldCustomFilter));
-            ExtWhere2Str.extWhere2sqlOjb(sqlMeta, extFilterList, extFilterList.stream().
-                    map(ChartExtFilterDTO::getDatasetTableField)
+            CustomWhere2Str.customWhere2sqlObj(sqlMeta, fieldCustomFilter, transFields(allFields));
+            ExtWhere2Str.extWhere2sqlOjb(sqlMeta, extFilterList, allFields.stream()
                     .filter(datasetTableField -> Objects.equals(datasetTableField.getExtField(), ExtFieldConstant.EXT_NORMAL))
                     .collect(Collectors.toList()));
 //            WhereTree2Str // todo permission tree
 
             if (StringUtils.equalsAnyIgnoreCase(view.getType(), "text", "gauge", "liquid")) {
-                Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(yAxis));
+                Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields));
                 querySql = SQLProvider.createQuerySQL(sqlMeta, true, view);
             } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
                 xAxis.addAll(extStack);
-                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(xAxis));
-                Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(yAxis));
+                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields));
+                Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields));
                 querySql = SQLProvider.createQuerySQL(sqlMeta, true, view);
             } else if (StringUtils.containsIgnoreCase(view.getType(), "scatter")) {
                 yAxis.addAll(extBubble);
-                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(xAxis));
-                Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(yAxis));
+                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields));
+                Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields));
                 querySql = SQLProvider.createQuerySQL(sqlMeta, true, view);
             } else if (StringUtils.equalsIgnoreCase("table-info", view.getType())) {
-                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(xAxis));
+                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields));
                 String originSql = SQLProvider.createQuerySQL(sqlMeta, false, view);
                 String limit = ((pageInfo.getGoPage() != null && pageInfo.getPageSize() != null) ? " LIMIT " + pageInfo.getPageSize() + " OFFSET " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize() : "");
                 querySql = originSql + limit;
                 totalPageSql = "SELECT COUNT(*) FROM (" + originSql + ") COUNT_TEMP";
             } else {
-                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(xAxis));
-                Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(yAxis));
+                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields));
+                Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields));
                 querySql = SQLProvider.createQuerySQL(sqlMeta, true, view);
                 if (containDetailField(view) && ObjectUtils.isNotEmpty(viewFields)) {
                     detailFieldList.addAll(xAxis);
                     detailFieldList.addAll(viewFields);
 
-                    Dimension2SQLObj.dimension2sqlObj(sqlMeta, detailFieldList, transFields(detailFieldList));
+                    Dimension2SQLObj.dimension2sqlObj(sqlMeta, detailFieldList, transFields(allFields));
                     String originSql = SQLProvider.createQuerySQL(sqlMeta, false, view);
                     String limit = ((pageInfo.getGoPage() != null && pageInfo.getPageSize() != null) ? " LIMIT " + pageInfo.getPageSize() + " OFFSET " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize() : "");
                     detailFieldSql = originSql + limit;
@@ -1207,6 +1215,15 @@ public class ChartDataManage {
             DEException.throwException(Translator.get("i18n_chart_delete"));
         }
 
+        // get all fields
+        Map<String, List<ChartViewFieldDTO>> stringListMap = chartViewManege.listByDQ(view.getTableId(), view.getId());
+        List<ChartViewFieldDTO> dimensionList = stringListMap.get("dimensionList");
+        List<ChartViewFieldDTO> quotaList = stringListMap.get("quotaList");
+        List<ChartViewFieldDTO> allFields = new ArrayList<>();
+        allFields.addAll(dimensionList);
+        allFields.addAll(quotaList);
+        allFields = allFields.stream().filter(ele -> ele.getId() != -1L).collect(Collectors.toList());
+
         List<ChartViewFieldDTO> xAxisBase = new ArrayList<>(view.getXAxis());
         List<ChartViewFieldDTO> xAxis = new ArrayList<>(view.getXAxis());
         List<ChartViewFieldDTO> xAxisExt = new ArrayList<>(view.getXAxisExt());
@@ -1361,24 +1378,24 @@ public class ChartDataManage {
             Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")");
 
             if (StringUtils.equalsAnyIgnoreCase(view.getType(), "text", "gauge", "liquid")) {
-                Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(yAxis));
+                Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields));
                 querySql = SQLProvider.createQuerySQL(sqlMeta, true, view);
             } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
                 xAxis.addAll(extStack);
-                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(xAxis));
-                Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(yAxis));
+                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields));
+                Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields));
                 querySql = SQLProvider.createQuerySQL(sqlMeta, true, view);
             } else if (StringUtils.containsIgnoreCase(view.getType(), "scatter")) {
                 yAxis.addAll(extBubble);
-                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(xAxis));
-                Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(yAxis));
+                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields));
+                Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields));
                 querySql = SQLProvider.createQuerySQL(sqlMeta, true, view);
             } else if (StringUtils.equalsIgnoreCase("table-info", view.getType())) {
-                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(xAxis));
+                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields));
                 querySql = SQLProvider.createQuerySQL(sqlMeta, false, view);
             } else {
-                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(xAxis));
-                Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(yAxis));
+                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields));
+                Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields));
                 querySql = SQLProvider.createQuerySQL(sqlMeta, true, view);
             }
 

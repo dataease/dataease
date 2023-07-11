@@ -19,10 +19,11 @@ public class DatasetFieldServer implements DatasetTableApi {
     @Resource
     private DatasetTableFieldManage datasetTableFieldManage;
 
-//    @Override
-//    public DatasetTableFieldDTO save(DatasetTableFieldDTO datasetTableFieldDTO) throws Exception {
-////        return datasetTableFieldManage.save(datasetTableFieldDTO);
-//    }
+    @Override
+    public DatasetTableFieldDTO save(DatasetTableFieldDTO datasetTableFieldDTO) throws Exception {
+        datasetTableFieldDTO.setDatasetGroupId(null);
+        return datasetTableFieldManage.save(datasetTableFieldDTO);
+    }
 
     @Override
     public DatasetTableFieldDTO get(Long id) {

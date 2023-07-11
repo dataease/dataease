@@ -130,6 +130,7 @@ CREATE TABLE `core_dataset_table_field`
     `datasource_id`    bigint       DEFAULT NULL COMMENT '数据源ID',
     `dataset_table_id` bigint       DEFAULT NULL COMMENT '数据表ID',
     `dataset_group_id` bigint       DEFAULT NULL COMMENT '数据集ID',
+    `chart_id`         bigint       DEFAULT NULL COMMENT '视图ID',
     `origin_name`      longtext     NOT NULL COMMENT '原始字段名',
     `name`             longtext     DEFAULT NULL COMMENT '字段名用于展示',
     `description`      longtext     DEFAULT NULL COMMENT '描述',

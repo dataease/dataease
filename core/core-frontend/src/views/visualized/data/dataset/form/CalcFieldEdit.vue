@@ -217,7 +217,7 @@ defineExpose({
               </el-icon>
             </el-tooltip>
           </span>
-          <code-mirror ref="myCm"></code-mirror>
+          <code-mirror ref="myCm" dom-id="calcField"></code-mirror>
         </div>
       </div>
       <div class="padding-lr">

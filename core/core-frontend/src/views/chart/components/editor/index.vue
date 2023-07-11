@@ -1,5 +1,5 @@
 <script lang="tsx" setup>
-import { PropType, reactive, ref, watch, toRefs } from 'vue'
+import { PropType, reactive, ref, watch, toRefs, nextTick } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Field, getFieldByDQ, saveChart } from '@/api/chart'
@@ -30,6 +30,10 @@ import ValueFormatterEdit from '@/views/chart/components/editor/drag-item/compon
 import CustomSortEdit from '@/views/chart/components/editor/drag-item/components/CustomSortEdit.vue'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 const snapshotStore = snapshotStoreWithOut()
+import CalcFieldEdit from '@/views/visualized/data/dataset/form/CalcFieldEdit.vue'
+import { getFieldName, guid } from '@/views/visualized/data/dataset/form/util'
+import { cloneDeep } from 'lodash-es'
+import { deleteField, saveField } from '@/api/dataset'
 
 const dvMainStore = dvMainStoreWithOut()
 const { canvasCollapse } = storeToRefs(dvMainStore)
@@ -59,6 +63,9 @@ const props = defineProps({
     default: 'dark'
   }
 })
+
+const editCalcField = ref(false)
+const calcEdit = ref()
 
 const { view, datasetTree } = toRefs(props)
 
@@ -99,13 +106,14 @@ const state = reactive({
   valueFormatterItem: {},
   showCustomSort: false,
   customSortList: [],
-  customSortField: {}
+  customSortField: {},
+  currEditField: {}
 })
 
 watch(
   [() => props.view.tableId],
   () => {
-    getFields(props.view.tableId)
+    getFields(props.view.tableId, props.view.id)
   },
   { deep: true }
 )
@@ -118,9 +126,9 @@ watch(
   { deep: true }
 )
 
-const getFields = id => {
+const getFields = (id, chartId) => {
   if (id) {
-    getFieldByDQ(id)
+    getFieldByDQ(id, chartId)
       .then(res => {
         state.dimension = (res.dimensionList as unknown as Field[]) || []
         state.quota = (res.quotaList as unknown as Field[]) || []
@@ -176,7 +184,7 @@ const dsSelectProps = {
 
 const dsClick = (data: Tree) => {
   if (data.leaf) {
-    getFields(data.id)
+    getFields(data.id, view.value.id)
   }
 }
 
@@ -644,6 +652,78 @@ const saveValueFormatter = () => {
   calcData(view.value)
   closeValueFormatter()
 }
+
+const addCalcField = groupType => {
+  editCalcField.value = true
+  nextTick(() => {
+    calcEdit.value.initEdit(
+      { groupType, id: guid() },
+      state.dimension,
+      state.quota.filter(ele => ele.id !== '-1')
+    )
+  })
+}
+const editField = item => {
+  editCalcField.value = true
+  nextTick(() => {
+    calcEdit.value.initEdit(
+      item,
+      state.dimension,
+      state.quota.filter(ele => ele.id !== '-1')
+    )
+  })
+}
+const closeEditCalc = () => {
+  editCalcField.value = false
+}
+const confirmEditCalc = () => {
+  calcEdit.value.setFieldForm()
+  const obj = cloneDeep(calcEdit.value.fieldForm)
+  setFieldDefaultValue(obj)
+  saveField(obj).then(res => {
+    getFields(view.value.tableId, view.value.id)
+    closeEditCalc()
+  })
+}
+
+const chartFieldEdit = param => {
+  state.currEditField = JSON.parse(JSON.stringify(param.item))
+  switch (param.type) {
+    case 'copy':
+      setFieldDefaultValue(state.currEditField)
+      state.currEditField.id = null
+      state.currEditField.originName =
+        param.item.extField === 2 ? param.item.originName : '[' + param.item.id + ']'
+      state.currEditField.name = getFieldName(state.dimension.concat(state.quota), param.item.name)
+
+      saveField(state.currEditField).then(res => {
+        getFields(view.value.tableId, view.value.id)
+      })
+      break
+    case 'edit':
+      editField(param.item)
+      break
+    case 'delete':
+      deleteField(param.item?.id).then(res => {
+        getFields(view.value.tableId, view.value.id)
+      })
+      break
+  }
+}
+const handleChartFieldEdit = (item, type) => {
+  return {
+    type: type,
+    item: item
+  }
+}
+const setFieldDefaultValue = field => {
+  field.extField = 2
+  field.chartId = view.value.id
+  field.dataeaseName = null
+  field.lastSyncTime = null
+  field.columnIndex = state.dimension.length + state.quota.length
+  field.deExtractType = field.deType
+}
 </script>
 
 <template>
@@ -872,8 +952,8 @@ const saveValueFormatter = () => {
                         >
                           <template #item="{ element, index }">
                             <filter-item
-                              :dimension-data="state.dimensionData"
-                              :quota-data="state.quotaData"
+                              :dimension-data="state.dimension"
+                              :quota-data="state.quota"
                               :item="element"
                               :index="index"
                               :themes="props.themes"
@@ -1025,8 +1105,8 @@ const saveValueFormatter = () => {
                 <chart-style
                   :chart="view"
                   :themes="themes"
-                  :dimension-data="state.dimensionData"
-                  :quota-data="state.quotaData"
+                  :dimension-data="state.dimension"
+                  :quota-data="state.quota"
                   @onColorChange="onColorChange"
                   @onSizeChange="onSizeChange"
                   @onLabelChange="onLabelChange"
@@ -1114,16 +1194,19 @@ const saveValueFormatter = () => {
               <span>
                 <el-icon
                   :style="{ color: '#a6a6a6', cursor: 'pointer', marginRight: '6px' }"
-                  @click="getFields(view.tableId)"
+                  @click="getFields(view.tableId, view.id)"
                 >
                   <Icon
                     name="icon_refresh_outlined"
                     class="el-icon-arrow-down el-icon-delete"
                   ></Icon>
                 </el-icon>
-                <!--                <el-icon :style="{ color: '#a6a6a6', cursor: 'pointer', marginRight: '6px' }">-->
-                <!--                  <Icon name="icon_add_outlined" class="el-icon-arrow-down el-icon-delete"></Icon>-->
-                <!--                </el-icon>-->
+                <el-icon
+                  :style="{ color: '#a6a6a6', cursor: 'pointer', marginRight: '6px' }"
+                  @click="addCalcField('d')"
+                >
+                  <Icon name="icon_add_outlined" class="el-icon-arrow-down el-icon-delete"></Icon>
+                </el-icon>
               </span>
             </div>
             <el-input
@@ -1165,6 +1248,34 @@ const saveValueFormatter = () => {
                       ></Icon>
                     </el-icon>
                     <span class="field-name">{{ element.name }}</span>
+                    <el-dropdown
+                      v-if="element.id !== '-1'"
+                      :effect="props.themes"
+                      placement="right-start"
+                      trigger="click"
+                      size="small"
+                      class="field-setting child"
+                      @command="chartFieldEdit"
+                    >
+                      <span class="el-dropdown-link">
+                        <el-icon class="icon-setting"><Setting /></el-icon>
+                      </span>
+                      <template #dropdown>
+                        <el-dropdown-menu :effect="props.themes">
+                          <el-dropdown-item :command="handleChartFieldEdit(element, 'copy')">
+                            {{ t('commons.copy') }}
+                          </el-dropdown-item>
+                          <span v-if="element.extField === 2">
+                            <el-dropdown-item :command="handleChartFieldEdit(element, 'edit')">
+                              {{ t('commons.edit') }}
+                            </el-dropdown-item>
+                            <el-dropdown-item :command="handleChartFieldEdit(element, 'delete')">
+                              {{ t('commons.delete') }}
+                            </el-dropdown-item>
+                          </span>
+                        </el-dropdown-menu>
+                      </template>
+                    </el-dropdown>
                   </span>
                 </template>
               </draggable>
@@ -1189,6 +1300,34 @@ const saveValueFormatter = () => {
                       ></Icon>
                     </el-icon>
                     <span class="field-name">{{ element.name }}</span>
+                    <el-dropdown
+                      v-if="element.id !== '-1'"
+                      :effect="props.themes"
+                      placement="right-start"
+                      trigger="click"
+                      size="small"
+                      class="field-setting child"
+                      @command="chartFieldEdit"
+                    >
+                      <span class="el-dropdown-link">
+                        <el-icon class="icon-setting"><Setting /></el-icon>
+                      </span>
+                      <template #dropdown>
+                        <el-dropdown-menu :effect="props.themes">
+                          <el-dropdown-item :command="handleChartFieldEdit(element, 'copy')">
+                            {{ t('commons.copy') }}
+                          </el-dropdown-item>
+                          <span v-if="element.extField === 2">
+                            <el-dropdown-item :command="handleChartFieldEdit(element, 'edit')">
+                              {{ t('commons.edit') }}
+                            </el-dropdown-item>
+                            <el-dropdown-item :command="handleChartFieldEdit(element, 'delete')">
+                              {{ t('commons.delete') }}
+                            </el-dropdown-item>
+                          </span>
+                        </el-dropdown-menu>
+                      </template>
+                    </el-dropdown>
                   </span>
                 </template>
               </draggable>
@@ -1279,8 +1418,8 @@ const saveValueFormatter = () => {
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="closeQuotaEditCompare">{{ t('chart.cancel') }} </el-button>
-          <el-button type="primary" @click="saveQuotaEditCompare"
-            >{{ t('chart.confirm') }}
+          <el-button type="primary" @click="saveQuotaEditCompare">
+            {{ t('chart.confirm') }}
           </el-button>
         </div>
       </template>
@@ -1328,6 +1467,15 @@ const saveValueFormatter = () => {
           <el-button @click="closeCustomSort">{{ t('chart.cancel') }} </el-button>
           <el-button type="primary" @click="saveCustomSort">{{ t('chart.confirm') }} </el-button>
         </div>
+      </template>
+    </el-dialog>
+
+    <!--视图计算字段-->
+    <el-dialog v-model="editCalcField" width="1000px" title="新建计算字段">
+      <calc-field-edit ref="calcEdit" />
+      <template #footer>
+        <el-button secondary @click="closeEditCalc()">{{ t('dataset.cancel') }} </el-button>
+        <el-button type="primary" @click="confirmEditCalc()">{{ t('dataset.confirm') }} </el-button>
       </template>
     </el-dialog>
   </div>
@@ -1798,5 +1946,20 @@ span {
     padding-left: 0 !important;
     padding-bottom: 10px !important;
   }
+}
+.field-setting {
+  position: absolute;
+  right: 8px;
+}
+.father .child {
+  visibility: hidden;
+}
+
+.father:hover .child {
+  visibility: visible;
+}
+
+.icon-setting {
+  color: #a6a6a6;
 }
 </style>

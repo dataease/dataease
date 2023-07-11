@@ -9,7 +9,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-04-20
+ * @since 2023-07-10
  */
 @TableName("core_dataset_table_field")
 public class CoreDatasetTableField implements Serializable {
@@ -35,6 +35,11 @@ public class CoreDatasetTableField implements Serializable {
      * 数据集ID
      */
     private Long datasetGroupId;
+
+    /**
+     * 视图ID
+     */
+    private Long chartId;
 
     /**
      * 原始字段名
@@ -145,6 +150,14 @@ public class CoreDatasetTableField implements Serializable {
 
     public void setDatasetGroupId(Long datasetGroupId) {
         this.datasetGroupId = datasetGroupId;
+    }
+
+    public Long getChartId() {
+        return chartId;
+    }
+
+    public void setChartId(Long chartId) {
+        this.chartId = chartId;
     }
 
     public String getOriginName() {
@@ -290,6 +303,7 @@ public class CoreDatasetTableField implements Serializable {
         ", datasourceId = " + datasourceId +
         ", datasetTableId = " + datasetTableId +
         ", datasetGroupId = " + datasetGroupId +
+        ", chartId = " + chartId +
         ", originName = " + originName +
         ", name = " + name +
         ", description = " + description +

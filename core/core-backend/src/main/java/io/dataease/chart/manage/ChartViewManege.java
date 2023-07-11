@@ -104,13 +104,19 @@ public class ChartViewManege {
         return chartDataManage.calcData(details);
     }
 
-    public Map<String, List<ChartViewFieldDTO>> listByDQ(Long id) {
+    public Map<String, List<ChartViewFieldDTO>> listByDQ(Long id, Long chartId) {
         QueryWrapper<CoreDatasetTableField> wrapper = new QueryWrapper<>();
         wrapper.eq("dataset_group_id", id);
 
         List<CoreDatasetTableField> fields = coreDatasetTableFieldMapper.selectList(wrapper);
         fields.add(createCountField(id));
         List<ChartViewFieldDTO> list = transFieldDTO(fields);
+
+        // 获取视图计算字段
+        wrapper.clear();
+        wrapper.eq("chart_id", chartId);
+        List<CoreDatasetTableField> chartFields = coreDatasetTableFieldMapper.selectList(wrapper);
+        list.addAll(transFieldDTO(chartFields));
 
         List<ChartViewFieldDTO> dimensionList = list.stream().filter(ele -> StringUtils.equalsIgnoreCase(ele.getGroupType(), "d")).collect(Collectors.toList());
         List<ChartViewFieldDTO> quotaList = list.stream().filter(ele -> StringUtils.equalsIgnoreCase(ele.getGroupType(), "q")).collect(Collectors.toList());
