@@ -202,7 +202,7 @@
     <div
       v-if="showFoot"
       class="dynamic-login-foot"
-      v-html="footContent"
+      v-html="$xss(footContent)"
     />
   </div>
 </template>

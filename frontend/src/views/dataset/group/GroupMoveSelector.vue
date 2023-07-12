@@ -34,7 +34,7 @@
                 text-overflow: ellipsis;
               "
               :title="data.name"
-              v-html="highlights(data.name)"
+              v-html="$xss(highlights(data.name))"
             />
           </span>
         </span>
