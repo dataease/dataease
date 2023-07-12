@@ -449,7 +449,7 @@ export default {
 
     valueFormatter() {
       this.item.index = this.index
-      this.item.formatterType = 'quota'
+      this.item.formatterType = 'quotaExt'
       this.$emit('valueFormatter', this.item)
     }
   }

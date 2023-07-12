@@ -819,6 +819,7 @@
                             @editItemFilter="showQuotaEditFilter"
                             @onNameEdit="showRename"
                             @editItemCompare="showQuotaEditCompare"
+                            @valueFormatter="valueFormatter"
                           />
                         </transition-group>
                       </draggable>
