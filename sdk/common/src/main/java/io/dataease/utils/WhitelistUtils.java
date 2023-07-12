@@ -29,7 +29,6 @@ public class WhitelistUtils {
                 || StringUtils.startsWithAny(requestURI, "data:image")
                 || StringUtils.startsWithAny(requestURI, "/v3/")
                 || StringUtils.startsWithAny(requestURI, "/login/platformLogin/")
-                || StringUtils.startsWithAny(requestURI, "/test/")
                 || StringUtils.startsWithAny(requestURI, "/static-resource/");
     }
 }
