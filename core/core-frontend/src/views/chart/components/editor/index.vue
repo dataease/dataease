@@ -1,5 +1,5 @@
 <script lang="tsx" setup>
-import { PropType, reactive, ref, watch, toRefs, nextTick } from 'vue'
+import { PropType, reactive, ref, watch, toRefs, computed, nextTick } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Field, getFieldByDQ, saveChart } from '@/api/chart'
@@ -22,7 +22,7 @@ import { ElIcon, ElRow } from 'element-plus-secondary'
 import DrillItem from '@/views/chart/components/editor/drag-item/DrillItem.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
-import { BASE_VIEW_CONFIG } from '@/views/chart/components/editor/util/chart'
+import { BASE_VIEW_CONFIG, getViewConfig } from '@/views/chart/components/editor/util/chart'
 import ChartType from '@/views/chart/components/editor/chart-type/ChartType.vue'
 import { useRouter } from 'vue-router'
 import CompareEdit from '@/views/chart/components/editor/drag-item/components/CompareEdit.vue'
@@ -724,6 +724,15 @@ const setFieldDefaultValue = field => {
   field.columnIndex = state.dimension.length + state.quota.length
   field.deExtractType = field.deType
 }
+
+const viewProperties = computed(() => {
+  const config = getViewConfig(view.value.type)
+  return config ? config.properties : null
+})
+
+const viewPropertyInnerAll = computed(() => {
+  return viewProperties.value ? viewProperties.value.propertyInner : null
+})
 </script>
 
 <template>
@@ -1103,6 +1112,8 @@ const setFieldDefaultValue = field => {
                 style="width: 100%"
               >
                 <chart-style
+                  :properties="viewProperties"
+                  :property-inner-all="viewPropertyInnerAll"
                   :chart="view"
                   :themes="themes"
                   :dimension-data="state.dimension"
@@ -1265,7 +1276,7 @@ const setFieldDefaultValue = field => {
                           <el-dropdown-item :command="handleChartFieldEdit(element, 'copy')">
                             {{ t('commons.copy') }}
                           </el-dropdown-item>
-                          <span v-if="element.extField === 2">
+                          <span v-if="element.chartId">
                             <el-dropdown-item :command="handleChartFieldEdit(element, 'edit')">
                               {{ t('commons.edit') }}
                             </el-dropdown-item>
@@ -1317,7 +1328,7 @@ const setFieldDefaultValue = field => {
                           <el-dropdown-item :command="handleChartFieldEdit(element, 'copy')">
                             {{ t('commons.copy') }}
                           </el-dropdown-item>
-                          <span v-if="element.extField === 2">
+                          <span v-if="element.chartId">
                             <el-dropdown-item :command="handleChartFieldEdit(element, 'edit')">
                               {{ t('commons.edit') }}
                             </el-dropdown-item>

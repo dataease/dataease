@@ -191,4 +191,14 @@ public class Utils {
             }
         }
     }
+
+    public static boolean matchFunction(String func, String originField) {
+        String pattern = func + "\\s*\\((.*?)\\)";
+        Pattern r = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
+        Matcher m = r.matcher(originField);
+        while (m.find()) {
+            return true;
+        }
+        return false;
+    }
 }

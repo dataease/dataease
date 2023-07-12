@@ -36,7 +36,8 @@ const {
   componentData,
   dvInfo,
   canvasViewInfo,
-  editMode
+  editMode,
+  batchOptStatus
 } = storeToRefs(dvMainStore)
 const { areaData } = storeToRefs(composeStore)
 const dvModel = 'dashboard'
@@ -186,6 +187,18 @@ const multiplexingCanvasOpen = () => {
 eventBus.on('preview', preview)
 eventBus.on('save', saveCanvas)
 eventBus.on('clearCanvas', clearCanvas)
+
+const openDataBoardSetting = () => {
+  dvMainStore.setCurComponent({ component: null, index: null })
+}
+
+const batchOptStatusChange = value => {
+  dvMainStore.setBatchOptStatus(value)
+}
+
+const saveBatchChange = () => {
+  batchOptStatusChange(false)
+}
 </script>
 
 <template>
@@ -205,7 +218,7 @@ eventBus.on('clearCanvas', clearCanvas)
           </el-icon>
         </div>
       </div>
-      <div class="middle-area">
+      <div class="middle-area" v-show="!batchOptStatus">
         <component-group
           :base-width="410"
           :show-split-line="true"
@@ -236,10 +249,18 @@ eventBus.on('clearCanvas', clearCanvas)
           title="复用"
           @customClick="multiplexingCanvasOpen"
         ></component-button>
-        <component-button icon-name="dv-batch" title="批量操作"></component-button>
-        <component-button icon-name="dv-dashboard" title="仪表板配置"></component-button>
+        <component-button
+          @custom-click="batchOptStatusChange(true)"
+          icon-name="dv-batch"
+          title="批量操作"
+        ></component-button>
+        <component-button
+          @custom-click="openDataBoardSetting"
+          icon-name="dv-dashboard"
+          title="仪表板配置"
+        ></component-button>
       </div>
-      <div class="right-area">
+      <div class="right-area" v-show="!batchOptStatus">
         <el-button
           class="custom-normal-button"
           v-show="editMode === 'edit'"
@@ -253,6 +274,20 @@ eventBus.on('clearCanvas', clearCanvas)
           style="float: right; margin-right: 12px"
           type="primary"
           >保存</el-button
+        >
+      </div>
+
+      <div class="right-area batch-area" v-show="batchOptStatus">
+        <el-button
+          class="custom-normal-button"
+          @click="batchOptStatusChange(false)"
+          style="float: right; margin-right: 12px"
+        >
+          <!--          <Icon style="width: 20px; height: 20px" name="dv-batch"></Icon>-->
+          退出批量操作</el-button
+        >
+        <el-button @click="saveBatchChange" style="float: right; margin-right: 12px" type="primary"
+          >确定</el-button
         >
       </div>
     </div>
@@ -273,6 +308,9 @@ eventBus.on('clearCanvas', clearCanvas)
 </template>
 
 <style lang="less" scoped>
+.batch-area {
+  flex: 1;
+}
 .edit-button {
   right: 10px;
   top: 10px;

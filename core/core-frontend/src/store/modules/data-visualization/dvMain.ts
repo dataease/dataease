@@ -1,9 +1,10 @@
 import { defineStore } from 'pinia'
 import { store } from '../../index'
 import { deepCopy } from '@/utils/utils'
-import { BASE_VIEW_CONFIG } from '@/views/chart/components/editor/util/chart'
+import { BASE_VIEW_CONFIG, getViewConfig } from '@/views/chart/components/editor/util/chart'
 import eventBus from '@/utils/eventBus'
 import { DEFAULT_CANVAS_STYLE_DATA_DARK } from '@/views/chart/components/editor/util/dataVisualiztion'
+import { useEmitt } from '@/hooks/web/useEmitt'
 
 export const dvMainStore = defineStore('dataVisualization', {
   state: () => {
@@ -21,8 +22,6 @@ export const dvMainStore = defineStore('dataVisualization', {
       canvasStyleData: { ...deepCopy(DEFAULT_CANVAS_STYLE_DATA_DARK), backgroundColor: null },
       // 当前展示画布缓存数据
       componentDataCache: null,
-      // 当前展示画布视图信息
-      componentViewsData: {},
       // PC布局画布组件数据
       pcComponentData: [],
       // 移动端布局画布组件数据
@@ -341,26 +340,22 @@ export const dvMainStore = defineStore('dataVisualization', {
       if (id) {
         this.curBatchOptComponents.push(id)
         // get view base info
-        const viewBaseInfo = this.componentViewsData[id]
+        const viewBaseInfo = this.canvasViewInfo[id]
         // get properties
-        const viewConfig = this.allViewRender.filter(
-          item => item.render === viewBaseInfo.render && item.value === viewBaseInfo.type
-        )
-        if (viewConfig && viewConfig.length > 0) {
+        const viewConfig = getViewConfig(viewBaseInfo.type)
+        if (viewConfig) {
           if (this.curBatchOptComponents.length === 1) {
-            this.changeProperties.customAttr = JSON.parse(viewBaseInfo.customAttr)
-            this.changeProperties.customStyle = JSON.parse(viewBaseInfo.customStyle)
+            this.changeProperties.customAttr = viewBaseInfo.customAttr
+            this.changeProperties.customStyle = viewBaseInfo.customStyle
           }
-          this.batchOptViews[id] = viewConfig[0]
+          this.batchOptViews[id] = viewConfig
           this.setBatchOptChartInfo()
         }
       }
     },
     setBatchOptChartInfo() {
-      let render = null
+      const render = null
       let type = null
-      let allTypes = ''
-      let isPlugin = null
       this.mixProperties = []
       this.mixPropertiesInner = {}
       let mixPropertiesTemp = []
@@ -393,25 +388,7 @@ export const dvMainStore = defineStore('dataVisualization', {
             mixPropertiesTemp = deepCopy(this.batchOptViews[key].properties)
             mixPropertyInnerTemp = deepCopy(this.batchOptViews[key].propertyInner)
           }
-
-          if (render && render !== this.batchOptViews[key].render) {
-            render = 'mix'
-          } else {
-            render = this.batchOptViews[key].render
-          }
-
-          allTypes = allTypes + '-' + this.batchOptViews[key].value
-          if (type && type !== this.batchOptViews[key].value) {
-            type = 'mix'
-          } else {
-            type = this.batchOptViews[key].value
-          }
-
-          if (isPlugin && isPlugin !== this.batchOptViews[key].isPlugin) {
-            isPlugin = 'mix'
-          } else {
-            isPlugin = this.batchOptViews[key].isPlugin
-          }
+          type = this.batchOptViews[key].value
         }
         mixPropertiesTemp.forEach(property => {
           if (mixPropertyInnerTemp[property] && mixPropertyInnerTemp[property].length) {
@@ -420,21 +397,26 @@ export const dvMainStore = defineStore('dataVisualization', {
           }
         })
 
-        if (type && type === 'mix') {
-          type = type + '-' + allTypes
-        }
         // Assembly history settings 'customAttr' & 'customStyle'
         this.batchOptChartInfo = {
           mode: 'batchOpt',
           render: render,
           type: type,
-          isPlugin: isPlugin,
           customAttr: this.changeProperties.customAttr,
           customStyle: this.changeProperties.customStyle
         }
       } else {
         this.batchOptChartInfo = null
       }
+    },
+    setChangeProperties(propertyInfo) {
+      this.changeProperties[propertyInfo.custom][propertyInfo.property] = propertyInfo.value
+      // 修改对应视图的参数
+      this.curBatchOptComponents.forEach(viewId => {
+        const viewInfo = this.canvasViewInfo[viewId]
+        viewInfo[propertyInfo.custom][propertyInfo.property] = propertyInfo.value
+        useEmitt().emitter.emit('renderChart-' + viewId, viewInfo)
+      })
     },
     setBatchOptStatus(status) {
       this.batchOptStatus = status

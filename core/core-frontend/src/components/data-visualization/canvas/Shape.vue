@@ -54,7 +54,7 @@ const snapshotStore = snapshotStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
 const composeStore = composeStoreWithOut()
 
-const { curComponent, dvInfo, editMode } = storeToRefs(dvMainStore)
+const { curComponent, dvInfo, editMode, batchOptStatus } = storeToRefs(dvMainStore)
 const { editor } = storeToRefs(composeStore)
 const emit = defineEmits([
   'userViewEnlargeOpen',
@@ -72,7 +72,17 @@ const state = reactive({
   }
 })
 
-const showPosition = computed(() => (isEditMode.value ? 'canvas' : 'preview'))
+const showPosition = computed(() => {
+  let position
+  if (batchOptStatus.value) {
+    position = 'batchOpt'
+  } else if (isEditMode.value) {
+    position = 'canvas'
+  } else {
+    position = 'preview'
+  }
+  return position
+})
 
 const props = defineProps({
   active: {
@@ -379,16 +389,6 @@ const handleMouseDownOnPoint = (point, e) => {
       curPoint,
       symmetricPoint
     })
-    console.log(
-      'move-x=' +
-        moveEvent.clientX +
-        ';y=' +
-        moveEvent.clientY +
-        ';isFirst=' +
-        isFirst +
-        ';width=' +
-        style.width
-    )
     dvMainStore.setShapeStyle(style)
     dashboardActive.value && emit('onResizing', moveEvent)
   }
@@ -470,7 +470,7 @@ const componentBackgroundStyle = computed(() => {
 })
 
 const componentActiveFlag = computed(() => {
-  return active.value && dashboardActive.value
+  return (active.value || batchOptStatus.value) && dashboardActive.value
 })
 
 const showViewDetails = () => {

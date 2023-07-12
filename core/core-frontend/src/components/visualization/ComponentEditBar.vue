@@ -1,5 +1,5 @@
 <template>
-  <div class="bar-main" :class="showEditPosition">
+  <div class="bar-main" :class="showEditPosition" @click.stop>
     <span :title="t('visualization.enlarge')" v-if="barShowCheck('enlarge')">
       <el-icon class="base-icon" @click="userViewEnlargeOpen">
         <Icon name="dv-bar-enlarge"></Icon
@@ -11,6 +11,10 @@
         v-model="state.multiplexingCheckModel"
         @change="multiplexingCheck"
       />
+    </div>
+
+    <div v-if="barShowCheck('batchOpt')" class="bar-checkbox-area">
+      <el-checkbox size="medium" @change="batchOptChange" />
     </div>
 
     <el-dropdown trigger="click" v-if="barShowCheck('setting')">
@@ -45,12 +49,13 @@ const { t } = useI18n()
 const positionBarShow = {
   canvas: ['enlarge', 'setting'],
   preview: ['enlarge'],
-  multiplexing: ['multiplexing']
+  multiplexing: ['multiplexing'],
+  batchOpt: ['batchOpt']
 }
 
 // bar所属组件类型可以显示的功能按钮
 const componentTypeBarShow = {
-  UserView: ['enlarge', 'setting', 'multiplexing'],
+  UserView: ['enlarge', 'setting', 'multiplexing', 'batchOpt'],
   default: ['setting', 'multiplexing']
 }
 
@@ -105,7 +110,8 @@ const state = reactive({
   linkageActiveStatus: false,
   editFilter: ['view', 'custom', 'custom-button'],
   timer: null,
-  viewXArray: []
+  viewXArray: [],
+  batchOptCheckModel: false
 })
 
 const showEditPosition = computed(() => {
@@ -148,6 +154,18 @@ const multiplexingCheck = val => {
   }
 }
 // 复用-End
+
+// 批量操作-Begin
+const batchOptChange = val => {
+  if (val) {
+    // push
+    dvMainStore.addCurBatchComponent(element.value.id)
+  } else {
+    // remove
+    dvMainStore.removeCurBatchComponentWithId(element.value.id)
+  }
+}
+// 批量操作-End
 </script>
 
 <style lang="less" scoped>
