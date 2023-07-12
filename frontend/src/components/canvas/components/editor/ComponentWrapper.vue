@@ -159,7 +159,8 @@ export default {
   computed: {
     chart() {
       if (this.config.propValue?.viewId) {
-        return JSON.parse(this.panelViewDetailsInfo[this.config.propValue.viewId])
+        const viewInfo = this.panelViewDetailsInfo[this.config.propValue.viewId];
+        return viewInfo?JSON.parse(viewInfo):null
       }
       return null
     },
