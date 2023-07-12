@@ -51,15 +51,4 @@ public class LoginManage {
         return new TokenUserBO(loginUserPO.getUserId(), loginUserPO.getDefaultOid());
     }
 
-
-    public String getPwd(Long uid) {
-        QueryWrapper<LoginUserPO> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("id", uid);
-        LoginUserPO loginUserPO = loginMapper.selectOne(queryWrapper);
-        if (ObjectUtils.isNotEmpty(loginUserPO)) {
-            CacheUtils.put("login_user_pwd", loginUserPO.getUserId().toString(), loginUserPO.getPwd());
-            return loginUserPO.getPwd();
-        }
-        return null;
-    }
 }

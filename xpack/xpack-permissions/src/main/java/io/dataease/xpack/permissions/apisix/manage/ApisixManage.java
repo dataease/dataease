@@ -13,6 +13,7 @@ import io.dataease.utils.TokenUtils;
 import io.dataease.utils.UserUtils;
 import io.dataease.xpack.permissions.apisix.proxy.ProxyRequest;
 import io.dataease.xpack.permissions.auth.manage.ApiAuthManage;
+import io.dataease.xpack.permissions.bo.TokenBO;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Data;
@@ -59,8 +60,8 @@ public class ApisixManage {
      */
     public void checkAuthenticationInfo(HttpServletRequest request) throws Exception{
         String token = request.getHeader(AuthConstant.TOKEN_KEY);
-        TokenUserBO userBO = apisixTokenManage.validate(token);
-        UserUtils.setUserInfo(userBO);
+        TokenBO tokenBO = apisixTokenManage.validate(token);
+        UserUtils.setUserInfo(tokenBO);
     }
 
     /**

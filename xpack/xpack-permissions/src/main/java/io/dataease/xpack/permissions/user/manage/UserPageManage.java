@@ -25,6 +25,7 @@ import io.dataease.xpack.permissions.user.dao.auto.mapper.PerUserMapper;
 import io.dataease.xpack.permissions.user.dao.ext.entity.UserRolePO;
 import io.dataease.xpack.permissions.user.dao.ext.mapper.UserExtMapper;
 import io.dataease.xpack.permissions.user.entity.UserSortEntity;
+import io.dataease.xpack.permissions.utils.PerTokenUtils;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -222,7 +223,7 @@ public class UserPageManage {
         TokenUserBO tokenUserBO = new TokenUserBO();
         tokenUserBO.setUserId(userId);
         tokenUserBO.setDefaultOid(perUser.getDefaultOid());
-        return TokenUtils.generate(tokenUserBO, perUser.getPwd());
+        return PerTokenUtils.generate(tokenUserBO, perUser.getPwd());
     }
 
     public List<UserItem> queryForOrg(String keyword, Long oid) {

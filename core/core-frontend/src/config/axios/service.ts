@@ -81,6 +81,9 @@ service.interceptors.response.use(
       // 如果是文件流，直接过
       return response
     } else if (response.data.code === result_code) {
+      if (response.headers['x-de-refresh-token']) {
+        wsCache.set('user.token', response.headers['x-de-refresh-token'])
+      }
       return response.data
     } else {
       ElMessage.error(response.data.msg)

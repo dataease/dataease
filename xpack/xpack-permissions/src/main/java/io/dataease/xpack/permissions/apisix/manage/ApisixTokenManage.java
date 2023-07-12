@@ -1,12 +1,12 @@
 package io.dataease.xpack.permissions.apisix.manage;
 
-import io.dataease.auth.bo.TokenUserBO;
 import io.dataease.exception.DEException;
 import io.dataease.utils.CacheUtils;
 import io.dataease.utils.ServletUtils;
-import io.dataease.utils.TokenUtils;
 import io.dataease.utils.WhitelistUtils;
 import io.dataease.xpack.permissions.apisix.dao.mapper.DeTokenMapper;
+import io.dataease.xpack.permissions.bo.TokenBO;
+import io.dataease.xpack.permissions.utils.PerTokenUtils;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.ObjectUtils;
@@ -27,15 +27,22 @@ public class ApisixTokenManage {
         return !WhitelistUtils.match(path);
     }
 
-    public TokenUserBO validate(String token) {
+    public TokenBO validate(String token) {
         if (StringUtils.isBlank(token)) {
             String uri = ServletUtils.request().getRequestURI();
             DEException.throwException("token is empty for uri {" + uri + "}");
         }
-        TokenUserBO tokenUserBO = TokenUtils.userBOByToken(token);
-        String secret = secret(tokenUserBO.getUserId());
-        TokenUtils.verify(token, tokenUserBO, secret);
-        return tokenUserBO;
+        TokenBO tokenBO = PerTokenUtils.boByToken(token);
+        if (PerTokenUtils.timeExp(tokenBO)) {
+            DEException.throwException("token is Expired");
+        }
+        String secret = secret(tokenBO.getUserId());
+        String newToken = PerTokenUtils.refreshTemp(tokenBO, secret);
+        if (StringUtils.isNotBlank(newToken)) {
+            token = newToken;
+        }
+        PerTokenUtils.verify(token, tokenBO, secret);
+        return tokenBO;
     }
 
     private String secret(Long uid) {

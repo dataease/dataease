@@ -10,4 +10,6 @@ public class AuthConstant {
     public final static String CAS_X_USER = "X-CAS-USER";
 
     public final static String DE_API_PREFIX = "/de2api";
+
+    public final static String REFRESH_TOKEN_KEY = "X-DE-REFRESH-TOKEN";
 }

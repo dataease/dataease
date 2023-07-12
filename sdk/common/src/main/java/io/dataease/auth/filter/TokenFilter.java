@@ -1,10 +1,13 @@
 package io.dataease.auth.filter;
 
 import io.dataease.auth.bo.TokenUserBO;
+import io.dataease.constant.AuthConstant;
 import io.dataease.utils.*;
 import jakarta.servlet.FilterConfig;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 
@@ -29,7 +32,10 @@ public class TokenFilter implements Filter {
             filterChain.doFilter(servletRequest, servletResponse);
             return;
         }
-
+        String refreshToken = null;
+        if (StringUtils.isNotBlank(refreshToken = ServletUtils.request().getHeader(AuthConstant.REFRESH_TOKEN_KEY))) {
+            ServletUtils.response().addHeader(AuthConstant.REFRESH_TOKEN_KEY, refreshToken);
+        }
         String token = ServletUtils.getToken();
         TokenUserBO userBO = TokenUtils.validate(token);
         UserUtils.setUserInfo(userBO);
