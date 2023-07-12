@@ -1276,7 +1276,7 @@ const viewPropertyInnerAll = computed(() => {
                           <el-dropdown-item :command="handleChartFieldEdit(element, 'copy')">
                             {{ t('commons.copy') }}
                           </el-dropdown-item>
-                          <span v-if="element.extField === 2">
+                          <span v-if="element.chartId">
                             <el-dropdown-item :command="handleChartFieldEdit(element, 'edit')">
                               {{ t('commons.edit') }}
                             </el-dropdown-item>
@@ -1328,7 +1328,7 @@ const viewPropertyInnerAll = computed(() => {
                           <el-dropdown-item :command="handleChartFieldEdit(element, 'copy')">
                             {{ t('commons.copy') }}
                           </el-dropdown-item>
-                          <span v-if="element.extField === 2">
+                          <span v-if="element.chartId">
                             <el-dropdown-item :command="handleChartFieldEdit(element, 'edit')">
                               {{ t('commons.edit') }}
                             </el-dropdown-item>
