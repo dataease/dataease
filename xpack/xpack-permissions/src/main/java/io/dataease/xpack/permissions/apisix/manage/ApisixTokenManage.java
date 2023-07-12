@@ -7,6 +7,7 @@ import io.dataease.utils.WhitelistUtils;
 import io.dataease.xpack.permissions.apisix.dao.mapper.DeTokenMapper;
 import io.dataease.xpack.permissions.bo.TokenBO;
 import io.dataease.xpack.permissions.utils.PerTokenUtils;
+import io.dataease.xpack.permissions.utils.TokenCacheUtils;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.ObjectUtils;
@@ -33,12 +34,17 @@ public class ApisixTokenManage {
             DEException.throwException("token is empty for uri {" + uri + "}");
         }
         TokenBO tokenBO = PerTokenUtils.boByToken(token);
+        Long userId = tokenBO.getUserId();
         if (PerTokenUtils.timeExp(tokenBO)) {
             DEException.throwException("token is Expired");
         }
-        String secret = secret(tokenBO.getUserId());
+        if (!TokenCacheUtils.tokenValid(userId, token)) {
+            DEException.throwException("token is destroyed");
+        }
+        String secret = secret(userId);
         String newToken = PerTokenUtils.refreshTemp(tokenBO, secret);
         if (StringUtils.isNotBlank(newToken)) {
+            TokenCacheUtils.delayDel(userId, token);
             token = newToken;
         }
         PerTokenUtils.verify(token, tokenBO, secret);

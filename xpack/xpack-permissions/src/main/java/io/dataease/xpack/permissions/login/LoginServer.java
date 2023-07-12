@@ -7,6 +7,7 @@ import io.dataease.auth.bo.TokenUserBO;
 import io.dataease.utils.*;
 import io.dataease.xpack.permissions.login.manage.LoginManage;
 import io.dataease.xpack.permissions.utils.PerTokenUtils;
+import io.dataease.xpack.permissions.utils.TokenCacheUtils;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -44,7 +45,8 @@ public class LoginServer implements LoginApi {
 
     @Override
     public void logout() {
-        AuthUtils.setUser(null);
-        //remember destroy the token
+        Long userId = AuthUtils.getUser().getUserId();
+        String token = ServletUtils.getToken();
+        TokenCacheUtils.del(userId, token);
     }
 }
