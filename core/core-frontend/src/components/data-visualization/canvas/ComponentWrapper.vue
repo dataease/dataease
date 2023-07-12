@@ -68,7 +68,6 @@ const onMouseEnter = () => {
 }
 
 const componentBackgroundStyle = computed(() => {
-  const style = {}
   if (config.value.commonBackground) {
     const {
       backgroundColorSelect,
@@ -76,8 +75,11 @@ const componentBackgroundStyle = computed(() => {
       alpha,
       backgroundImageEnable,
       backgroundType,
-      outerImage
+      outerImage,
+      innerPadding,
+      borderRadius
     } = config.value.commonBackground
+    const style = { padding: innerPadding + 'px', borderRadius: borderRadius + 'px' }
     let colorRGBA = ''
     if (backgroundColorSelect && backgroundColor) {
       colorRGBA =
@@ -94,8 +96,9 @@ const componentBackgroundStyle = computed(() => {
     } else {
       style['background-color'] = colorRGBA
     }
+    return style
   }
-  return style
+  return {}
 })
 
 const svgInnerEnable = computed(() => {

@@ -291,7 +291,7 @@ eventBus.on('handleNew', handleNew)
         <DbCanvasAttr></DbCanvasAttr>
       </dv-sidebar>
       <view-editor
-        v-if="
+        v-show="
           curComponent && ['UserView', 'VQuery'].includes(curComponent.component) && !batchOptStatus
         "
         :themes="'light'"

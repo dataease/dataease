@@ -75,8 +75,6 @@ export const dvMainStore = defineStore('dataVisualization', {
       nowPanelOuterParamsInfo: {},
       // 拖拽的组件信息
       dragComponentInfo: null,
-      // 仪表板组件间隙大小 px
-      componentGap: 5,
       // 移动端布局状态
       mobileLayoutStatus: false,
       // 公共链接状态(当前是否是公共链接打开)
@@ -416,6 +414,13 @@ export const dvMainStore = defineStore('dataVisualization', {
         const viewInfo = this.canvasViewInfo[viewId]
         viewInfo[propertyInfo.custom][propertyInfo.property] = propertyInfo.value
         useEmitt().emitter.emit('renderChart-' + viewId, viewInfo)
+      })
+    },
+    setBatchChangeBackground(newBackground) {
+      this.componentData.forEach(component => {
+        if (this.curBatchOptComponents.includes(component.id)) {
+          component.commonBackground = deepCopy(newBackground)
+        }
       })
     },
     setBatchOptStatus(status) {

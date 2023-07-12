@@ -9,13 +9,13 @@ import XAxisSelector from '@/views/chart/components/editor/editor-style/componen
 import YAxisSelector from '@/views/chart/components/editor/editor-style/components/YAxisSelector.vue'
 import TitleSelector from '@/views/chart/components/editor/editor-style/components/TitleSelector.vue'
 import LegendSelector from '@/views/chart/components/editor/editor-style/components/LegendSelector.vue'
-import BackgroundOverallComponent from '@/components/visualization/component-background/BackgroundOverallComponent.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import CollapseSwitchItem from '@/components/collapse-switch-item/src/CollapseSwitchItem.vue'
 import { ElCollapseItem } from 'element-plus-secondary'
 import BasicStyleSelector from '@/views/chart/components/editor/editor-style/components/BasicStyleSelector.vue'
 import ComponentPosition from '@/components/visualization/common/ComponentPosition.vue'
+import BackgroundOverallCommon from '@/components/visualization/component-background/BackgroundOverallCommon.vue'
 const dvMainStore = dvMainStoreWithOut()
 const { curComponent, dvInfo, batchOptStatus } = storeToRefs(dvMainStore)
 const { t } = useI18n()
@@ -68,7 +68,8 @@ const emit = defineEmits([
   'onChangeYAxisForm',
   'onTextChange',
   'onLegendChange',
-  'onBasicStyleChange'
+  'onBasicStyleChange',
+  'onBackgroundChange'
 ])
 
 const showProperties = property => {
@@ -117,6 +118,10 @@ const onLegendChange = val => {
 const onBasicStyleChange = val => {
   emit('onBasicStyleChange', val)
 }
+
+const onBackgroundChange = val => {
+  emit('onBackgroundChange', val)
+}
 </script>
 
 <template>
@@ -127,12 +132,14 @@ const onBasicStyleChange = val => {
           <el-collapse-item name="position" :title="'位置'" v-if="dvInfo.type !== 'dashboard'">
             <component-position></component-position>
           </el-collapse-item>
-          <el-collapse-item name="background" :title="'背景'" v-if="!batchOptStatus">
-            <background-overall-component
+          <el-collapse-item name="background" :title="'背景'">
+            <background-overall-common
               v-if="curComponent"
+              :common-background-pop="curComponent.commonBackground"
               :themes="themes"
-              position="component"
-            ></background-overall-component>
+              @onBackgroundChange="onBackgroundChange"
+              component-position="component"
+            ></background-overall-common>
           </el-collapse-item>
           <el-collapse-item
             name="basicStyle"

@@ -14,17 +14,16 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import Slider from '@/components/dashboard/subject-setting/pre-subject/Slider.vue'
 import OverallSetting from '@/components/dashboard/subject-setting/dashboard-style/OverallSetting.vue'
-import BackgroundOverall from '@/components/visualization/component-background/BackgroundOverall.vue'
 import ComponentColorSelector from '@/components/dashboard/subject-setting/dashboard-style/ComponentColorSelector.vue'
 import { adaptCurThemeCommonStyleAll } from '@/utils/canvasStyle'
 import eventBus from '@/utils/eventBus'
-import ViewTitle from '@/components/dashboard/subject-setting/dashboard-style/ViewTitle.vue'
-import FilterStyleSelector from '@/components/dashboard/subject-setting/dashboard-style/FilterStyleSelector.vue'
 import ViewSimpleTitle from '@/components/dashboard/subject-setting/dashboard-style/ViewSimpleTitle.vue'
 import FilterStyleSimpleSelector from '@/components/dashboard/subject-setting/dashboard-style/FilterStyleSimpleSelector.vue'
+import BackgroundOverallCommon from '@/components/visualization/component-background/BackgroundOverallCommon.vue'
+import { deepCopy } from '@/utils/utils'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
-const { canvasStyleData, canvasViewInfo } = storeToRefs(dvMainStore)
+const { canvasStyleData, componentData, canvasViewInfo } = storeToRefs(dvMainStore)
 const { t } = useI18n()
 const files = ref(null)
 const maxImageSize = 15000000
@@ -153,9 +152,6 @@ const onColorChange = val => {
 const onTextChange = val => {
   themeAttrChange('customStyle', 'text', val)
 }
-const styleChange = () => {
-  snapshotStore.recordSnapshotCache()
-}
 const themeAttrChange = (custom, property, value) => {
   if (canvasAttrInit) {
     Object.keys(canvasViewInfo.value).forEach(function (viewId) {
@@ -172,6 +168,13 @@ const themeAttrChange = (custom, property, value) => {
 
 const themeColorChange = () => {
   //do themeColorChange
+}
+
+const componentBackgroundChange = val => {
+  canvasStyleData.value.component.chartCommonStyle = val
+  componentData.value.forEach(component => {
+    component.commonBackground = deepCopy(val)
+  })
 }
 
 watch([() => canvasStyleData.value.background], () => {
@@ -257,11 +260,13 @@ onMounted(() => {
           </el-row>
         </el-collapse-item>
         <el-collapse-item :title="t('visualization.view_style')" name="componentStyle">
-          <background-overall
+          <background-overall-common
+            :common-background-pop="canvasStyleData.component.chartCommonStyle"
+            component-position="'dashboard'"
             class="item-show"
             themes="light"
-            position="dashboard"
-          ></background-overall>
+            @onBackgroundChange="componentBackgroundChange"
+          ></background-overall-common>
         </el-collapse-item>
         <el-collapse-item :title="'视图配色'" name="graphical">
           <component-color-selector

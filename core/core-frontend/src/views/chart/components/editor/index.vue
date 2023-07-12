@@ -36,7 +36,7 @@ import { cloneDeep } from 'lodash-es'
 import { deleteField, saveField } from '@/api/dataset'
 
 const dvMainStore = dvMainStoreWithOut()
-const { canvasCollapse } = storeToRefs(dvMainStore)
+const { canvasCollapse, curComponent } = storeToRefs(dvMainStore)
 const router = useRouter()
 
 const { t } = useI18n()
@@ -436,6 +436,10 @@ const onLegendChange = val => {
 const onFunctionCfgChange = val => {
   view.value.senior.functionCfg = val
   renderChart(view.value)
+}
+
+const onBackgroundChange = val => {
+  curComponent.value.commonBackground = val
 }
 
 const onAssistLineChange = val => {
@@ -1126,6 +1130,7 @@ const viewPropertyInnerAll = computed(() => {
                   @onChangeYAxisForm="onChangeYAxisForm"
                   @onTextChange="onTextChange"
                   @onLegendChange="onLegendChange"
+                  @onBackgroundChange="onBackgroundChange"
                 />
               </el-tab-pane>
 

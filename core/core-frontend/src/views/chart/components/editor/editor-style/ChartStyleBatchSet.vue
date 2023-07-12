@@ -19,6 +19,7 @@
       @onChangeYAxisForm="onChangeYAxisForm"
       @onTextChange="onTextChange"
       @onLegendChange="onLegendChange"
+      @onBackgroundChange="onBackgroundChange"
     />
     <el-row v-else class="view-selected-message-class">
       <span class="select-view">{{ $t('visualization.select_view') }}</span>
@@ -32,7 +33,9 @@ import { storeToRefs } from 'pinia'
 import eventBus from '@/utils/eventBus'
 import ChartStyle from '@/views/chart/components/editor/editor-style/ChartStyle.vue'
 import { reactive } from 'vue'
+import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 const dvMainStore = dvMainStoreWithOut()
+const snapshotStore = snapshotStoreWithOut()
 
 const emits = defineEmits(['calcStyle'])
 const { batchOptChartInfo, mixProperties, mixPropertiesInner } = storeToRefs(dvMainStore)
@@ -89,6 +92,11 @@ const onMarginChange = val => {
 }
 const onSuspensionChange = val => {
   batchOptChange('customAttr', 'suspension', val)
+}
+
+const onBackgroundChange = val => {
+  dvMainStore.setBatchChangeBackground(val)
+  snapshotStore.recordSnapshot('onBackgroundChange')
 }
 const batchOptChange = (custom, property, value) => {
   dvMainStore.setChangeProperties({

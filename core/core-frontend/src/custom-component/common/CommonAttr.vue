@@ -4,8 +4,8 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { styleData, selectKey, optionMap, positionData } from '@/utils/attr'
 import DeInputNum from '@/custom-component/common/DeInputNum.vue'
-import BackgroundOverallComponent from '@/components/visualization/component-background/BackgroundOverallComponent.vue'
 import ComponentPosition from '@/components/visualization/common/ComponentPosition.vue'
+import BackgroundOverallCommon from '@/components/visualization/component-background/BackgroundOverallCommon.vue'
 
 const dvMainStore = dvMainStoreWithOut()
 const { curComponent, dvInfo } = storeToRefs(dvMainStore)
@@ -39,6 +39,10 @@ const isIncludesColor = str => {
 const dashboardActive = computed(() => {
   return dvInfo.value.type === 'dashboard'
 })
+
+const onBackgroundChange = val => {
+  curComponent.value.commonBackground = val
+}
 </script>
 
 <template>
@@ -49,11 +53,13 @@ const dashboardActive = computed(() => {
       </el-collapse-item>
 
       <el-collapse-item title="背景" name="background">
-        <background-overall-component
+        <background-overall-common
           v-if="curComponent"
           themes="dark"
-          position="component"
-        ></background-overall-component>
+          :common-background-pop="curComponent.commonBackground"
+          component-position="component"
+          @onBackgroundChange="onBackgroundChange"
+        ></background-overall-common>
       </el-collapse-item>
 
       <el-collapse-item title="样式" name="style">

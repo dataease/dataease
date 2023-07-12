@@ -12,7 +12,9 @@ export const COMMON_COMPONENT_BACKGROUND_BASE = {
   backgroundImageEnable: false,
   backgroundType: 'innerImage',
   innerImage: 'board/board_1.svg',
-  outerImage: null
+  outerImage: null,
+  innerPadding: 0,
+  borderRadius: 0
 }
 
 export const COMMON_COMPONENT_BACKGROUND_LIGHT = {
@@ -55,33 +57,6 @@ export const commonAttr = {
 
 // 编辑器左侧组件列表
 const list = [
-  {
-    component: 'RectShape',
-    label: '矩形',
-    propValue: '&nbsp;',
-    icon: 'juxing',
-    innerType: 'RectShape',
-    x: 1,
-    y: 1,
-    sizeX: 20,
-    sizeY: 20,
-    style: {
-      width: 200,
-      height: 200,
-      fontSize: '',
-      fontWeight: 400,
-      lineHeight: '',
-      letterSpacing: 0,
-      textAlign: 'center',
-      color: '',
-      borderColor: '#fff',
-      borderWidth: 1,
-      borderStyle: 'solid',
-      borderRadius: 0,
-      verticalAlign: 'middle'
-    },
-    matrixStyle: {}
-  },
   {
     component: 'VText',
     name: '文本',
@@ -159,8 +134,7 @@ const list = [
     sizeY: 5,
     style: {
       width: 200,
-      height: 200,
-      borderRadius: ''
+      height: 200
     },
     matrixStyle: {}
   },
@@ -183,8 +157,7 @@ const list = [
     },
     style: {
       width: 300,
-      height: 200,
-      borderRadius: ''
+      height: 200
     },
     matrixStyle: {}
   },

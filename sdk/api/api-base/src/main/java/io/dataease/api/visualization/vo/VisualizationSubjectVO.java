@@ -33,6 +33,11 @@ public class VisualizationSubjectVO implements Serializable {
     private String details;
 
     /**
+     * 封面
+     */
+    private String coverUrl;
+
+    /**
      * 删除标记
      */
     private Boolean deleteFlag;
