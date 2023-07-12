@@ -54,19 +54,20 @@ public class ExtWhere2Str {
                     }
 
                     if (field.getDeType() == 1) {
-                        String format = Utils.transDateFormat(request.getDateStyle(), request.getDatePattern());
-                        if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5 || field.getDeExtractType() == 1) {
-                            if (StringUtils.equalsIgnoreCase(request.getDateStyle(), "y_Q")) {
-                                whereName = String.format(format,
-                                        String.format(SQLConstants.DATE_FORMAT, originName, "yyyy"),
-                                        String.format(SQLConstants.QUARTER, String.format(SQLConstants.DATE_FORMAT, originName, SQLConstants.DEFAULT_DATE_FORMAT)));
-                            } else {
-                                whereName = String.format(SQLConstants.DATE_FORMAT, originName, format);
-                            }
-                        }
-                        if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
-                            whereName = originName;
-                        }
+//                        String format = Utils.transDateFormat(request.getDateStyle(), request.getDatePattern());
+//                        if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5 || field.getDeExtractType() == 1) {
+//                            if (StringUtils.equalsIgnoreCase(request.getDateStyle(), "y_Q")) {
+//                                whereName = String.format(format,
+//                                        String.format(SQLConstants.DATE_FORMAT, originName, "yyyy"),
+//                                        String.format(SQLConstants.QUARTER, String.format(SQLConstants.DATE_FORMAT, originName, SQLConstants.DEFAULT_DATE_FORMAT)));
+//                            } else {
+//                                whereName = String.format(SQLConstants.DATE_FORMAT, originName, format);
+//                            }
+//                        }
+//                        if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
+//                            whereName = originName;
+//                        }
+                        whereName = originName;
                     } else if (field.getDeType() == 2 || field.getDeType() == 3) {
                         if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
                             whereName = String.format(SQLConstants.CAST, originName, SQLConstants.DEFAULT_FLOAT_FORMAT);
