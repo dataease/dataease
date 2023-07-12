@@ -16,6 +16,7 @@ import Icon from '../icon-custom/src/Icon.vue'
 import { update, save } from '@/api/visualization/dataVisualization'
 import ComponentGroup from '@/components/visualization/ComponentGroup.vue'
 import UserViewGroup from '@/custom-component/component-group/UserViewGroup.vue'
+import QueryGroup from '@/custom-component/component-group/QueryGroup.vue'
 import MediaGroup from '@/custom-component/component-group/MediaGroup.vue'
 import TextGroup from '@/custom-component/component-group/TextGroup.vue'
 import ComponentButton from '@/components/visualization/ComponentButton.vue'
@@ -232,9 +233,9 @@ const saveBatchChange = () => {
           :show-split-line="true"
           themes="light"
           icon-name="dv-filter"
-          title="过滤组件"
+          title="查询组件"
         >
-          <div>过滤组件</div>
+          <query-group></query-group>
         </component-group>
         <component-group themes="light" :base-width="148" icon-name="dv-text" title="文本">
           <text-group themes="light" :dv-model="dvModel"></text-group>

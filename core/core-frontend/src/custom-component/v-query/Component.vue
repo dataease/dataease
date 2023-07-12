@@ -7,7 +7,8 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { useI18n } from '@/hooks/web/useI18n'
 import { guid } from '@/views/visualized/data/dataset/form/util.js'
-import { cloneDeep } from 'lodash-es'
+// import { cloneDeep } from 'lodash-es'
+import { useEmitt } from '@/hooks/web/useEmitt'
 import Select from './Select.vue'
 import Time from './Time.vue'
 const props = defineProps({
@@ -71,23 +72,23 @@ watch(
   }
 )
 
-const multipleChange = ele => {
-  if (Array.isArray(ele.defaultValue)) {
-    ele.selectValue = ele.multiple ? ele.defaultValue : ''
-  } else {
-    ele.selectValue = ele.multiple ? (ele.defaultValue ? [ele.defaultValue] : []) : ele.defaultValue
-  }
-}
+// const multipleChange = ele => {
+//   if (Array.isArray(ele.defaultValue)) {
+//     ele.selectValue = ele.multiple ? ele.defaultValue : ''
+//   } else {
+//     ele.selectValue = ele.multiple ? (ele.defaultValue ? [ele.defaultValue] : []) : ele.defaultValue
+//   }
+// }
 
 const list = ref([])
 
 watch(
   () => props.element.propValue,
   () => {
-    ;(props.element.propValue || []).forEach(ele => {
-      multipleChange(ele)
-    })
-    list.value = cloneDeep(props.element.propValue || [])
+    // ;(props.element.propValue || []).forEach(ele => {
+    //   multipleChange(ele)
+    // })
+    list.value = [...props.element.propValue]
   },
   {
     immediate: true
@@ -98,6 +99,8 @@ const onComponentClick = () => {
     canEdit.value = false
   }
 }
+
+const { emitter } = useEmitt()
 
 onBeforeUnmount(() => {
   eventBus.off('componentClick', onComponentClick)
@@ -119,7 +122,9 @@ const infoFormat = (obj: Field & { datasetId: string }) => {
       name,
       deType
     },
+    operator: deType === 1 ? 'between' : 'eq',
     defaultValue: '',
+    temporaryValue: '',
     selectValue: '',
     optionValueSource: 1,
     valueSource: [],
@@ -146,7 +151,7 @@ const drop = e => {
   )
   if (!componentInfo.id) return
   list.value.push(infoFormat(componentInfo))
-  element.value.propValue = cloneDeep(list.value)
+  element.value.propValue = [...list.value]
 }
 
 const editeQueryConfig = (queryId: string) => {
@@ -155,7 +160,25 @@ const editeQueryConfig = (queryId: string) => {
 
 const delQueryConfig = index => {
   list.value.splice(index, 1)
-  element.value.propValue = cloneDeep(list.value)
+  element.value.propValue = [...list.value]
+}
+
+const queryData = () => {
+  const emitterList = (element.value.propValue || []).reduce((pre, next) => {
+    if (!next.selectValue) {
+      return pre
+    }
+    const keyList = Object.entries(next.checkedFieldsMap)
+      .filter(ele => !!ele[1])
+      .map(ele => ele[0])
+    pre = [...new Set([...keyList, ...pre])]
+    return pre
+  }, [])
+  if (!emitterList.length) return
+
+  emitterList.forEach(ele => {
+    emitter.emit(`query-data-${ele}`)
+  })
 }
 </script>
 
@@ -201,7 +224,11 @@ const delQueryConfig = index => {
         <el-button v-if="customStyle.btnList.includes('clear')" secondary>
           {{ t('commons.clear') }}
         </el-button>
-        <el-button v-if="customStyle.btnList.includes('sure')" type="primary">
+        <el-button
+          @click.stop="queryData"
+          v-if="customStyle.btnList.includes('sure')"
+          type="primary"
+        >
           {{ t('common.sure') }}
         </el-button>
       </div>
@@ -213,7 +240,7 @@ const delQueryConfig = index => {
       <el-button v-if="customStyle.btnList.includes('clear')" secondary>
         {{ t('commons.clear') }}
       </el-button>
-      <el-button v-if="customStyle.btnList.includes('sure')" type="primary">
+      <el-button @click.stop="queryData" v-if="customStyle.btnList.includes('sure')" type="primary">
         {{ t('common.sure') }}
       </el-button>
     </div>

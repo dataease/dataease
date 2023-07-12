@@ -26,8 +26,8 @@ public class ChartViewServer implements ChartViewApi {
     }
 
     @Override
-    public Map<String, List<ChartViewFieldDTO>> listByDQ(Long id) {
-        return chartViewManege.listByDQ(id);
+    public Map<String, List<ChartViewFieldDTO>> listByDQ(Long id, Long chartId) {
+        return chartViewManege.listByDQ(id, chartId);
     }
 
     @Override

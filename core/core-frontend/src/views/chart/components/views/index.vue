@@ -9,6 +9,7 @@ import DrillPath from '@/views/chart/components/views/components/DrillPath.vue'
 import { ElMessage } from 'element-plus-secondary'
 import { nextTick } from 'vue'
 import { checkIsBatchOptView } from '@/utils/canvasUtils'
+import { useFilter } from '@/hooks/web/useFilter'
 
 const g2 = ref<any>()
 
@@ -108,8 +109,9 @@ const chartClick = param => {
 
 // 仪表板和大屏所有额外过滤参数都在此处
 const filter = () => {
+  const { filter } = useFilter(view.value.id)
   return {
-    // filter: this.initLoad ? this.filters : this.cfilters,
+    filter,
     // linkageFilters: this.element.linkageFilters,
     // outerParamsFilters: this.element.outerParamsFilters,
     drill: state.drillClickDimensionList
@@ -133,6 +135,7 @@ onMounted(() => {
       initTitle()
       nextTick(() => {
         if (cacheViewInfo.snapshotCacheViewCalc.includes(view.value.id)) {
+          view.value.chartExtRequest = filter()
           g2?.value?.calcData(view.value)
         } else if (cacheViewInfo.snapshotCacheViewRender.includes(view.value.id)) {
           g2?.value?.renderChart(view.value)
@@ -145,6 +148,7 @@ onMounted(() => {
     callback: function (val) {
       initTitle()
       nextTick(() => {
+        view.value.chartExtRequest = filter()
         g2?.value?.calcData(val)
       })
     }

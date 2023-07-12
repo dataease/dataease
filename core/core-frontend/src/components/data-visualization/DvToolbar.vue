@@ -21,7 +21,6 @@ import ComponentGroup from '@/components/visualization/ComponentGroup.vue'
 import UserViewGroup from '@/custom-component/component-group/UserViewGroup.vue'
 import MediaGroup from '@/custom-component/component-group/MediaGroup.vue'
 import TextGroup from '@/custom-component/component-group/TextGroup.vue'
-import QueryGroup from '@/custom-component/component-group/QueryGroup.vue'
 import CommonGroup from '@/custom-component/component-group/CommonGroup.vue'
 
 const isShowPreview = ref(false)
@@ -190,9 +189,6 @@ eventBus.on('clearCanvas', clearCanvas)
       <div class="middle-area">
         <component-group :base-width="410" icon-name="dv-view" title="图表">
           <user-view-group></user-view-group>
-        </component-group>
-        <component-group :base-width="148" icon-name="dv-text" title="查询组件">
-          <query-group></query-group>
         </component-group>
         <component-group :base-width="148" icon-name="dv-text" title="文本">
           <text-group></text-group>
