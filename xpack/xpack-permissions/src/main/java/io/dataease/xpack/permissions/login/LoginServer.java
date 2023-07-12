@@ -6,6 +6,7 @@ import io.dataease.api.permissions.login.dto.PwdLoginDTO;
 import io.dataease.auth.bo.TokenUserBO;
 import io.dataease.utils.*;
 import io.dataease.xpack.permissions.login.manage.LoginManage;
+import io.dataease.xpack.permissions.utils.PerTokenUtils;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,7 +23,7 @@ public class LoginServer implements LoginApi {
         TokenUserBO tokenUserBO = loginManage.localBuild(dto);
         String pwd = dto.getPwd();
         String md5Pwd = Md5Utils.md5(RsaUtils.decryptStr(pwd));
-        return TokenUtils.generate(tokenUserBO, md5Pwd);
+        return PerTokenUtils.generate(tokenUserBO, md5Pwd);
     }
 
     @Override
@@ -38,7 +39,7 @@ public class LoginServer implements LoginApi {
         tokenUserBO.setUserId(1L);
         tokenUserBO.setDefaultOid(1L);
         String md5Pwd = "83d923c9f1d8fcaa46cae0ed2aaa81b5";
-        return TokenUtils.generate(tokenUserBO, md5Pwd);
+        return PerTokenUtils.generate(tokenUserBO, md5Pwd);
     }
 
     @Override

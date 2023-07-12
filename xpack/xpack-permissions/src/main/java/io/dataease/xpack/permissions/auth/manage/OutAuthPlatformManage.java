@@ -2,8 +2,8 @@ package io.dataease.xpack.permissions.auth.manage;
 
 import io.dataease.api.permissions.auth.dto.OutAuthPlatformLoginRequest;
 import io.dataease.auth.bo.TokenUserBO;
-import io.dataease.utils.TokenUtils;
 import io.dataease.xpack.permissions.login.manage.LoginManage;
+import io.dataease.xpack.permissions.utils.PerTokenUtils;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -25,6 +25,6 @@ public class OutAuthPlatformManage {
         TokenUserBO tokenUserBO = new TokenUserBO();
         tokenUserBO.setUserId(1L);
         tokenUserBO.setDefaultOid(1L);
-        return TokenUtils.generate(tokenUserBO, "83d923c9f1d8fcaa46cae0ed2aaa81b5");
+        return PerTokenUtils.generate(tokenUserBO, "83d923c9f1d8fcaa46cae0ed2aaa81b5");
     }
 }
