@@ -35,6 +35,7 @@ public class PerTokenUtils {
         JWTCreator.Builder builder = JWT.create();
         builder.withClaim("uid", userId).withClaim("oid", defaultOid);
         String token = builder.withExpiresAt(expDate).sign(algorithm);
+        TokenCacheUtils.add(userId, token);
         return token;
     }
 
