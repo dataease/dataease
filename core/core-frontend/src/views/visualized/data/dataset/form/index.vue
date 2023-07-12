@@ -720,7 +720,7 @@ const handleClick = () => {
                     <Icon name="icon_expand-right_filled"></Icon>
                   </ElIcon>
                   &nbsp;指标
-                  <ElIcon class="add hover-icon" @click="addCalcField('d')">
+                  <ElIcon class="add hover-icon" @click="addCalcField('q')">
                     <Icon name="icon_add_outlined"></Icon>
                   </ElIcon>
                 </div>
@@ -895,7 +895,7 @@ const handleClick = () => {
         }
 
         i {
-          cursor: none;
+          cursor: auto;
           font-size: 13.3px;
           color: var(--deTextPlaceholder, #8f959e);
         }

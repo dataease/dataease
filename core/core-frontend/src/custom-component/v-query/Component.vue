@@ -2,7 +2,7 @@
 import eventBus from '@/utils/eventBus'
 import QueryConditionConfiguration from './QueryConditionConfiguration.vue'
 import { type Field } from '@/api/chart'
-import { onBeforeUnmount, reactive, ref, toRefs, watch, computed } from 'vue'
+import { onBeforeUnmount, reactive, ref, toRefs, watch, computed, nextTick } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -33,6 +33,7 @@ const dvMainStore = dvMainStoreWithOut()
 const { curComponent, canvasViewInfo } = storeToRefs(dvMainStore)
 const canEdit = ref(false)
 const queryConfig = ref()
+const isConfig = ref(false)
 const defaultStyle = {
   border: '',
   background: '',
@@ -71,23 +72,11 @@ watch(
     immediate: true
   }
 )
-
-// const multipleChange = ele => {
-//   if (Array.isArray(ele.defaultValue)) {
-//     ele.selectValue = ele.multiple ? ele.defaultValue : ''
-//   } else {
-//     ele.selectValue = ele.multiple ? (ele.defaultValue ? [ele.defaultValue] : []) : ele.defaultValue
-//   }
-// }
-
 const list = ref([])
 
 watch(
   () => props.element.propValue,
   () => {
-    // ;(props.element.propValue || []).forEach(ele => {
-    //   multipleChange(ele)
-    // })
     list.value = [...props.element.propValue]
   },
   {
@@ -142,7 +131,7 @@ const infoFormat = (obj: Field & { datasetId: string }) => {
   if (deType === 1) {
     return base
   }
-  return { ...base, options: [], parameters: [], parametersCheck: false }
+  return { ...base, parameters: [], parametersCheck: false }
 }
 
 const drop = e => {
@@ -163,12 +152,58 @@ const delQueryConfig = index => {
   element.value.propValue = [...list.value]
 }
 
+const resetData = () => {
+  isConfig.value = true
+  nextTick(() => {
+    const emitterList = (list.value || []).reduce((pre, next) => {
+      next.selectValue = Array.isArray(next.defaultValue)
+        ? [...next.defaultValue]
+        : next.defaultValue
+
+      const keyList = Object.entries(next.checkedFieldsMap)
+        .filter(ele => next.checkedFields.includes(ele[0]))
+        .filter(ele => !!ele[1])
+        .map(ele => ele[0])
+      pre = [...new Set([...keyList, ...pre])]
+      return pre
+    }, [])
+    isConfig.value = false
+    if (!emitterList.length) return
+
+    emitterList.forEach(ele => {
+      emitter.emit(`query-data-${ele}`)
+    })
+  })
+}
+
+const clearData = () => {
+  isConfig.value = true
+  nextTick(() => {
+    const emitterList = (list.value || []).reduce((pre, next) => {
+      next.selectValue = next.multiple ? [] : ''
+      const keyList = Object.entries(next.checkedFieldsMap)
+        .filter(ele => next.checkedFields.includes(ele[0]))
+        .filter(ele => !!ele[1])
+        .map(ele => ele[0])
+      pre = [...new Set([...keyList, ...pre])]
+      return pre
+    }, [])
+    isConfig.value = false
+    if (!emitterList.length) return
+
+    emitterList.forEach(ele => {
+      emitter.emit(`query-data-${ele}`)
+    })
+  })
+}
+
 const queryData = () => {
   const emitterList = (element.value.propValue || []).reduce((pre, next) => {
     if (!next.selectValue) {
       return pre
     }
     const keyList = Object.entries(next.checkedFieldsMap)
+      .filter(ele => next.checkedFields.includes(ele[0]))
       .filter(ele => !!ele[1])
       .map(ele => ele[0])
     pre = [...new Set([...keyList, ...pre])]
@@ -211,6 +246,7 @@ const queryData = () => {
           <div class="query-select">
             <component
               :config="ele"
+              :isConfig="isConfig"
               :customStyle="customStyle"
               :is="filterTypeCom(ele.field.deType)"
             ></component>
@@ -218,10 +254,10 @@ const queryData = () => {
         </div>
       </div>
       <div class="query-button" v-if="!!list.length && customStyle.layout === 'horizontal'">
-        <el-button v-if="customStyle.btnList.includes('reset')" secondary>
+        <el-button @click.stop="resetData" v-if="customStyle.btnList.includes('reset')" secondary>
           {{ t('chart.reset') }}
         </el-button>
-        <el-button v-if="customStyle.btnList.includes('clear')" secondary>
+        <el-button @click.stop="clearData" v-if="customStyle.btnList.includes('clear')" secondary>
           {{ t('commons.clear') }}
         </el-button>
         <el-button
@@ -234,10 +270,10 @@ const queryData = () => {
       </div>
     </div>
     <div class="query-button" v-if="!!list.length && customStyle.layout === 'vertical'">
-      <el-button v-if="customStyle.btnList.includes('reset')" secondary>
+      <el-button @click.stop="resetData" v-if="customStyle.btnList.includes('reset')" secondary>
         {{ t('chart.reset') }}
       </el-button>
-      <el-button v-if="customStyle.btnList.includes('clear')" secondary>
+      <el-button @click.stop="clearData" v-if="customStyle.btnList.includes('clear')" secondary>
         {{ t('commons.clear') }}
       </el-button>
       <el-button @click.stop="queryData" v-if="customStyle.btnList.includes('sure')" type="primary">
@@ -318,6 +354,13 @@ const queryData = () => {
         flex-wrap: wrap;
         margin-top: -5px;
         line-height: 28px;
+        :deep(.ed-date-editor--datetime .ed-input__wrapper) {
+          width: 100%;
+        }
+
+        :deep(.ed-select-v2) {
+          min-width: 170px;
+        }
       }
     }
   }

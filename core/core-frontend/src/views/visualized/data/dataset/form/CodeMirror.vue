@@ -91,12 +91,12 @@ const codeComInit = (doc: string) => {
       if (!dimensionMap?.length && !quotaMap?.length) {
         return elt
       }
-      const isDimension = dimensionMap.includes(this.name)
+      const isQuota = quotaMap.includes(this.name)
       elt.style.borderRadius = '2px'
       elt.style.margin = '0 4px'
       elt.style.padding = '0 6px'
-      elt.style.background = isDimension ? 'rgba(52, 199, 36, 0.20)' : 'rgba(51, 112, 255, 0.20)'
-      elt.style.color = isDimension ? '#2CA91F' : '#2B5FD9'
+      elt.style.background = isQuota ? 'rgba(52, 199, 36, 0.20)' : 'rgba(51, 112, 255, 0.20)'
+      elt.style.color = isQuota ? '#2CA91F' : '#2B5FD9'
       return elt
     }
     ignoreEvent() {

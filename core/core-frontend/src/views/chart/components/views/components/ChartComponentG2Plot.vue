@@ -26,8 +26,8 @@ const emit = defineEmits(['onChartClick', 'onDrillFilters'])
 
 const { view, showPosition } = toRefs(props)
 
-const queryData = () => {
-  const { filter } = useFilter(view.value.id)
+const queryData = (firstLoad: boolean) => {
+  const { filter } = useFilter(view.value.id, firstLoad)
   let params = cloneDeep(view.value)
   if (filter.length) {
     if (!params.chartExtRequest) {
@@ -97,7 +97,7 @@ defineExpose({
 })
 
 onMounted(() => {
-  queryData()
+  queryData(true)
   // renderChart({ render: ChartRenderType.ANT_V, type: 'bar' })
 })
 </script>
