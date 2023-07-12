@@ -264,7 +264,11 @@ eventBus.on('handleNew', handleNew)
       </main>
       <!-- 右侧侧组件列表 -->
       <dv-sidebar
-        v-if="curComponent && !['UserView', 'VQuery'].includes(curComponent.component) && !batchOptStatus"
+        v-if="
+          curComponent &&
+          !['UserView', 'VQuery'].includes(curComponent.component) &&
+          !batchOptStatus
+        "
         :theme-info="'light'"
         :title="'属性'"
         :width="420"
@@ -287,7 +291,9 @@ eventBus.on('handleNew', handleNew)
         <DbCanvasAttr></DbCanvasAttr>
       </dv-sidebar>
       <view-editor
-        v-if="curComponent && ['UserView', 'VQuery'].includes(curComponent.component) && !batchOptStatus"
+        v-if="
+          curComponent && ['UserView', 'VQuery'].includes(curComponent.component) && !batchOptStatus
+        "
         :themes="'light'"
         :view="canvasViewInfo[curComponent ? curComponent.id : 'default']"
         :dataset-tree="state.datasetTree"
