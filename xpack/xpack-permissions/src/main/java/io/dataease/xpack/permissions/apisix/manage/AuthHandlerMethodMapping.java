@@ -122,11 +122,16 @@ public class AuthHandlerMethodMapping<T> extends RequestMappingHandlerMapping {
 
         if (handlerType != null) {
             Class<?> userType = ClassUtils.getUserClass(handlerType);
+            Optional<Class<?>> first = Arrays.stream(userType.getInterfaces()).filter(interfac -> interfac.isAnnotationPresent(DeApiPath.class)).findFirst();
+            if (first.isEmpty()) {
+                return;
+            }
+            Class<?> aClass = first.get();
             if (userType.isAnnotationPresent(DeFeign.class)) return;
             Map<Method, RequestMappingInfo> methods = MethodIntrospector.selectMethods(userType,
                     (MethodIntrospector.MetadataLookup<RequestMappingInfo>) method -> {
                         try {
-                            return getMappingForMethod(method, userType);
+                            return getMappingForMethod(method, aClass);
                         } catch (Throwable ex) {
                             throw new IllegalStateException("Invalid mapping on handler class [" +
                                     userType.getName() + "]: " + method, ex);
@@ -134,7 +139,7 @@ public class AuthHandlerMethodMapping<T> extends RequestMappingHandlerMapping {
                     });
 
             methods.forEach((method, mapping) -> {
-                Method invocableMethod = AopUtils.selectInvocableMethod(method, userType);
+                Method invocableMethod = AopUtils.selectInvocableMethod(method, aClass);
                 registerHandlerMethod(handler, invocableMethod, mapping);
             });
         }
