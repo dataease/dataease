@@ -6,30 +6,28 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import io.dataease.auth.annotation.DeCleaner;
-import io.dataease.commons.constants.RedisConstants;
-import io.dataease.commons.utils.BeanUtils;
-import io.dataease.controller.sys.response.BasicInfo;
-import io.dataease.dto.TaskInstance;
-import io.dataease.ext.ExtDataSourceMapper;
-import io.dataease.ext.ExtTaskInstanceMapper;
-import io.dataease.ext.UtilMapper;
-import io.dataease.ext.query.GridExample;
 import io.dataease.commons.constants.DePermissionType;
+import io.dataease.commons.constants.RedisConstants;
 import io.dataease.commons.constants.SysAuthConstants;
 import io.dataease.commons.exception.DEException;
 import io.dataease.commons.model.AuthURD;
 import io.dataease.commons.utils.AuthUtils;
+import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.CommonThreadPool;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.controller.ResultHolder;
 import io.dataease.controller.datasource.request.UpdataDsRequest;
 import io.dataease.controller.request.DatasourceUnionRequest;
 import io.dataease.controller.request.datasource.ApiDefinition;
-import io.dataease.controller.sys.base.BaseGridRequest;
-import io.dataease.controller.sys.base.ConditionEntity;
+import io.dataease.controller.sys.response.BasicInfo;
 import io.dataease.dto.DatasourceDTO;
+import io.dataease.dto.TaskInstance;
 import io.dataease.dto.dataset.DataTableInfoDTO;
-import io.dataease.dto.datasource.*;
+import io.dataease.dto.datasource.DBTableDTO;
+import io.dataease.dto.datasource.MysqlConfiguration;
+import io.dataease.ext.ExtDataSourceMapper;
+import io.dataease.ext.ExtTaskInstanceMapper;
+import io.dataease.ext.UtilMapper;
 import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.*;
 import io.dataease.plugins.common.base.mapper.DatasetTableMapper;
@@ -163,7 +161,7 @@ public class DatasourceService {
         List<DatasourceDTO> datasourceDTOS = extDataSourceMapper.queryUnion(request);
         datasourceDTOS.forEach(this::datasourceTrans);
         if (StringUtils.isBlank(request.getSort())) {
-            datasourceDTOS.sort((o1,o2) -> {
+            datasourceDTOS.sort((o1, o2) -> {
                 int tmp = StringUtils.compareIgnoreCase(o1.getTypeDesc(), o2.getTypeDesc());
                 if (tmp == 0) {
                     tmp = StringUtils.compareIgnoreCase(o1.getName(), o2.getName());
@@ -247,19 +245,6 @@ public class DatasourceService {
         return result;
     }
 
-    public List<DatasourceDTO> gridQuery(BaseGridRequest request) {
-        //如果没有查询条件增加一个默认的条件
-        if (CollectionUtils.isEmpty(request.getConditions())) {
-            ConditionEntity conditionEntity = new ConditionEntity();
-            conditionEntity.setField("1");
-            conditionEntity.setOperator("eq");
-            conditionEntity.setValue("1");
-            request.setConditions(Collections.singletonList(conditionEntity));
-        }
-        GridExample gridExample = request.convertExample();
-        gridExample.setExtendCondition(String.valueOf(AuthUtils.getUser().getUserId()));
-        return extDataSourceMapper.query(gridExample);
-    }
 
     @DeCleaner(DePermissionType.DATASOURCE)
     public ResultHolder deleteDatasource(String datasourceId) throws Exception {
@@ -301,11 +286,12 @@ public class DatasourceService {
             DatasetTableExample datasetTableExample = new DatasetTableExample();
             datasetTableExample.createCriteria().andDataSourceIdEqualTo(id);
             List<DatasetTable> datasetTables = datasetTableMapper.selectByExample(datasetTableExample);
-            List<ApiDefinition> apiDefinitionList = new Gson().fromJson(datasource.getConfiguration(), new TypeToken<List<ApiDefinition>>() {}.getType());
+            List<ApiDefinition> apiDefinitionList = new Gson().fromJson(datasource.getConfiguration(), new TypeToken<List<ApiDefinition>>() {
+            }.getType());
             apiDefinitionList.forEach(apiDefinition -> {
-                if(apiDefinition.isReName()){
+                if (apiDefinition.isReName()) {
                     datasetTables.forEach(datasetTable -> {
-                        if(new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getTable().equals(apiDefinition.getOrgName())){
+                        if (new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getTable().equals(apiDefinition.getOrgName())) {
                             DatasetTable record = new DatasetTable();
                             DataTableInfoDTO dataTableInfoDTO = new DataTableInfoDTO();
                             dataTableInfoDTO.setTable(apiDefinition.getName());
@@ -650,7 +636,7 @@ public class DatasourceService {
 
     public void updateDemoDs() {
         Datasource datasource = datasourceMapper.selectByPrimaryKey("76026997-94f9-4a35-96ca-151084638969");
-        if(datasource == null){
+        if (datasource == null) {
             return;
         }
         MysqlConfiguration mysqlConfiguration = new Gson().fromJson(datasource.getConfiguration(), MysqlConfiguration.class);

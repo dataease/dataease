@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface ExtDataSourceMapper {
 
-    List<DatasourceDTO> query(GridExample example);
+    // List<DatasourceDTO> query(GridExample example);
 
     List<DatasourceDTO> queryUnion(DatasourceUnionRequest request);
 
