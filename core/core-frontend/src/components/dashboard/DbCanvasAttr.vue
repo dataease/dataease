@@ -24,7 +24,7 @@ import ViewSimpleTitle from '@/components/dashboard/subject-setting/dashboard-st
 import FilterStyleSimpleSelector from '@/components/dashboard/subject-setting/dashboard-style/FilterStyleSimpleSelector.vue'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
-const { canvasStyleData } = storeToRefs(dvMainStore)
+const { canvasStyleData, canvasViewInfo } = storeToRefs(dvMainStore)
 const { t } = useI18n()
 const files = ref(null)
 const maxImageSize = 15000000
@@ -158,13 +158,20 @@ const styleChange = () => {
 }
 const themeAttrChange = (custom, property, value) => {
   if (canvasAttrInit) {
-    eventBus.emit('onThemeAttrChange', {
-      custom: custom,
-      property: property,
-      value: value
+    Object.keys(canvasViewInfo.value).forEach(function (viewId) {
+      const viewInfo = canvasViewInfo.value[viewId]
+      Object.keys(value).forEach(function (key) {
+        if (viewInfo[custom][property][key]) {
+          viewInfo[custom][property][key] = value[key]
+        }
+      })
     })
     snapshotStore.recordSnapshot('DbCanvasAttr-themeAttrChange')
   }
+}
+
+const themeColorChange = () => {
+  //do themeColorChange
 }
 
 watch([() => canvasStyleData.value.background], () => {
@@ -192,7 +199,7 @@ onMounted(() => {
         </el-collapse-item>
         <el-collapse-item title="整体配置" name="overallSetting">
           <el-row class="item-show">
-            <overall-setting></overall-setting>
+            <overall-setting @onThemeColorChange="themeColorChange"></overall-setting>
           </el-row>
         </el-collapse-item>
 

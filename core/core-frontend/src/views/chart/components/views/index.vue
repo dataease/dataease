@@ -134,10 +134,16 @@ onMounted(() => {
     callback: function (cacheViewInfo) {
       initTitle()
       nextTick(() => {
-        if (cacheViewInfo.snapshotCacheViewCalc.includes(view.value.id)) {
+        if (
+          cacheViewInfo.snapshotCacheViewCalc.includes(view.value.id) ||
+          cacheViewInfo.snapshotCacheViewCalc.includes('all')
+        ) {
           view.value.chartExtRequest = filter()
           g2?.value?.calcData(view.value)
-        } else if (cacheViewInfo.snapshotCacheViewRender.includes(view.value.id)) {
+        } else if (
+          cacheViewInfo.snapshotCacheViewRender.includes(view.value.id) ||
+          cacheViewInfo.snapshotCacheViewRender.includes('all')
+        ) {
           g2?.value?.renderChart(view.value)
         }
       })

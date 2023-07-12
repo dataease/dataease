@@ -184,7 +184,7 @@ let coordinates = [] //坐标点集合
 
 let lastTask = undefined
 let isOverlay = false //是否正在交换位置
-let moveTime = 80 //移动动画时间
+let moveTime = 200 //移动动画时间
 
 let itemMaxY = 0
 let itemMaxX = 0
@@ -1113,7 +1113,7 @@ const canvasInit = () => {
   coordinates = [] //坐标点集合
   lastTask = undefined
   isOverlay = false //是否正在交换位置
-  moveTime = 80 //移动动画时间
+  moveTime = 200 //移动动画时间
   itemMaxY = 0
   itemMaxX = 0
 
