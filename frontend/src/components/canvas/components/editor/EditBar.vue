@@ -82,10 +82,10 @@
         />
       </span>
       <span :title="$t('route.exportExcel')">
-        <svg-icon
+        <i
           v-if="exportExcelShow"
-          style="color: white"
-          icon-class="file-excel"
+          style="line-height: 24px"
+          class="el-icon-document-delete"
           @click.stop="exportExcelDownload()"
         />
       </span>
@@ -469,7 +469,7 @@ export default {
       this.$emit('showViewDetails', { openType: openType })
     },
     exportExcelDownload() {
-      exportExcelDownload(this.chart, null, null, null, null, null)
+      exportExcelDownload(this.chart)
     },
     auxiliaryMatrixChange() {
       if (this.curComponent.auxiliaryMatrix) {
