@@ -8,10 +8,9 @@ import { getDsDetails } from '@/api/dataset'
 import { cloneDeep } from 'lodash-es'
 import Select from './Select.vue'
 import Time from './Time.vue'
-
-import { getDatasetTree, getEnumValue } from '@/api/dataset'
+import { getDatasetTree } from '@/api/dataset'
 import { Tree } from '@/views/visualized/data/dataset/form/CreatDsGroup.vue'
-import { i } from 'mathjs'
+
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
 const { componentData, canvasViewInfo } = storeToRefs(dvMainStore)
@@ -66,30 +65,14 @@ const typeList = [
   }
 ]
 
-const setCheckedFieldsMap = () => {
-  Object.keys(curComponent.value.checkedFieldsMap).forEach(ele => {
-    if (!curComponent.value.checkedFields.includes(ele)) {
-      curComponent.value.checkedFieldsMap[ele] = ''
-    }
-  })
-}
-
 const handleCheckAllChange = (val: boolean) => {
   curComponent.value.checkedFields = val ? fields.value.map(ele => ele.componentId) : []
   isIndeterminate.value = false
-  setCheckedFieldsMap()
-  if (curComponent.value.optionValueSource === 0) {
-    handleValueSourceChange(0, curComponent.value.defaultValue)
-  }
 }
 const handleCheckedFieldsChange = (value: string[]) => {
   const checkedCount = value.length
   checkAll.value = checkedCount === fields.value.length
   isIndeterminate.value = checkedCount > 0 && checkedCount < fields.value.length
-  setCheckedFieldsMap()
-  if (curComponent.value.optionValueSource === 0) {
-    handleValueSourceChange(0, curComponent.value.defaultValue)
-  }
 }
 
 const cancelClick = () => {
@@ -107,66 +90,9 @@ const handleDatasetChange = () => {
   getOptions(curComponent.value.dataset.id, curComponent.value)
 }
 
-const handleFieldIdChange = (val: string[]) => {
-  getEnumValue(val).then(res => {
-    curComponent.value.options = (res || []).map(ele => {
-      return {
-        label: ele,
-        value: ele
-      }
-    })
-  })
-}
-
-const handleValueCheckChange = (value: boolean) => {
-  if (!value) return
-  handleValueSourceChange(curComponent.value.optionValueSource, curComponent.value.defaultValue)
-}
-
-const handleFieldsChange = () => {
-  if (!!curComponent.value.optionValueSource) return
-  handleValueSourceChange(0)
-}
-
-const handleValueSourceChange = (val: number, defaultValue = '') => {
-  if (!curComponent.value.defaultValueCheck) return
-  curComponent.value.defaultValue = defaultValue
-  multipleChange(false)
-  switch (val) {
-    case 0:
-      const arr = Object.values(curComponent.value.checkedFieldsMap).filter(
-        ele => !!ele
-      ) as string[]
-      if (!!curComponent.value.checkedFields.length && !!arr.length) {
-        handleFieldIdChange(
-          curComponent.value.checkedFields
-            .map(ele => curComponent.value.checkedFieldsMap[ele])
-            .filter(ele => !!ele)
-        )
-      } else {
-        curComponent.value.options = []
-      }
-      break
-    case 1:
-      if (curComponent.value.field.id) {
-        handleFieldIdChange([curComponent.value.field.id])
-      } else {
-        curComponent.value.options = []
-      }
-      break
-    case 2:
-      curComponent.value.options = cloneDeep(
-        (curComponent.value.valueSource || []).map(ele => {
-          return {
-            label: ele,
-            value: ele
-          }
-        })
-      )
-      break
-    default:
-      break
-  }
+const handleValueSourceChange = () => {
+  curComponent.value.defaultValue = ''
+  multipleChange(curComponent.value.multiple)
 }
 
 const multipleChange = (val: boolean, isTemporary = false) => {
@@ -177,17 +103,16 @@ const multipleChange = (val: boolean, isTemporary = false) => {
   } else {
     curComponent.value.selectValue = val ? (value ? [value] : []) : value
   }
-  nextTick(() => {
-    if (curComponent.value.field.deType === 1) {
-      curComponent.value.operator = 'between'
-    } else {
-      curComponent.value.operator = val ? 'in' : 'eq'
-    }
+  if (curComponent.value.field.deType === 1) {
     curComponent.value.multiple = val
-  })
+    return
+  }
+  curComponent.value.multiple = val
+  curComponent.value.operator = val ? 'in' : 'eq'
 }
 
 const confirmClick = () => {
+  dialogVisible.value = false
   let obj = componentData.value.find(ele => ele.id === componentId)
   conditions.value.forEach(ele => {
     curComponent.value = ele
@@ -196,7 +121,6 @@ const confirmClick = () => {
     }
   })
   obj.propValue = cloneDeep(conditions.value)
-  dialogVisible.value = false
 }
 
 const cancelValueSource = () => {
@@ -205,7 +129,7 @@ const cancelValueSource = () => {
 
 const confirmValueSource = () => {
   curComponent.value.valueSource = cloneDeep(valueSource.value.filter(ele => ele.trim()))
-  handleValueSourceChange(curComponent.value.optionValueSource)
+  handleValueSourceChange()
   cancelValueSource()
 }
 
@@ -417,7 +341,6 @@ defineExpose({
               <span class="dataset ellipsis">{{ field.name }}</span>
               <el-select
                 v-if="curComponent.checkedFields.includes(field.componentId)"
-                @change="handleFieldsChange"
                 v-model="curComponent.checkedFieldsMap[field.componentId]"
                 clearable
               >
@@ -482,11 +405,7 @@ defineExpose({
                   </el-tree-select>
                 </div>
                 <div class="value">
-                  <el-select
-                    @change="handleFieldIdChange([curComponent.field.id])"
-                    v-model="curComponent.field.id"
-                    clearable
-                  >
+                  <el-select v-model="curComponent.field.id" clearable>
                     <el-option
                       v-for="ele in curComponent.dataset.fields"
                       :key="ele.id"
@@ -564,11 +483,7 @@ defineExpose({
           </div>
           <div class="list-item">
             <div class="label">
-              <el-checkbox
-                @change="handleValueCheckChange"
-                v-model="curComponent.defaultValueCheck"
-                label="设置默认值"
-              />
+              <el-checkbox v-model="curComponent.defaultValueCheck" label="设置默认值" />
             </div>
             <div class="parameters">
               <component
@@ -711,6 +626,8 @@ defineExpose({
           .parameters {
             margin-left: auto;
             .ed-select,
+            .ed-date-editor,
+            .ed-date-editor--datetime .ed-input__wrapper,
             .ed-select-v2 {
               width: 415px;
             }

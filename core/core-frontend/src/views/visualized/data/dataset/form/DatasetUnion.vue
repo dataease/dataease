@@ -44,7 +44,7 @@ const currentNode = ref<Node>()
 const sqlNode = ref<SqlNode>()
 
 const getNodeField = ({ datasourceId, id, info, tableName, type, currentDsFields }) => {
-  getTableField({ datasourceId, id, info, tableName, type })
+  return getTableField({ datasourceId, id, info, tableName, type })
     .then(res => {
       nodeField.value = res as unknown as Field[]
       nodeField.value.forEach(ele => {
@@ -189,8 +189,8 @@ const confirmEditUnion = () => {
 
 const handleCommand = (ele, command) => {
   if (command === 'editerField') {
-    currentNode.value = _.cloneDeep(ele)
     getNodeField(ele)
+    currentNode.value = _.cloneDeep(ele)
   }
 
   if (command === 'editerSql') {
@@ -571,6 +571,22 @@ const drop_handler = ev => {
       datasourceId,
       id: guid(),
       ...extraData
+    })
+
+    currentNode.value = state.nodeList[0]
+
+    getTableField({
+      datasourceId,
+      id: currentNode.value.id,
+      info: currentNode.value.info,
+      tableName,
+      type
+    }).then(res => {
+      ;(res as unknown as Field[]).forEach(ele => {
+        ele.checked = true
+      })
+      state.nodeList[0].currentDsFields = _.cloneDeep(res)
+      confirmEditUnion()
     })
     nextTick(() => {
       emits('addComplete')

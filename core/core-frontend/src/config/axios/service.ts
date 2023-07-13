@@ -42,6 +42,8 @@ service.interceptors.request.use(
     }
     if (wsCache.get('user.token')) {
       ;(config.headers as AxiosRequestHeaders)['X-DE-TOKEN'] = wsCache.get('user.token')
+    } else if (window.DataEaseBi?.token) {
+      ;(config.headers as AxiosRequestHeaders)['X-EMBEDDED-TOKEN'] = window.DataEaseBi.token
     }
     if (wsCache.get('user.language')) {
       const key = wsCache.get('user.language')
@@ -81,6 +83,9 @@ service.interceptors.response.use(
       // 如果是文件流，直接过
       return response
     } else if (response.data.code === result_code) {
+      if (response.headers['x-de-refresh-token']) {
+        wsCache.set('user.token', response.headers['x-de-refresh-token'])
+      }
       return response.data
     } else {
       ElMessage.error(response.data.msg)

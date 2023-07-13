@@ -22,4 +22,5 @@ public class RestIndexController {
     public boolean model() {
         return ModelUtils.isDesktop();
     }
+
 }

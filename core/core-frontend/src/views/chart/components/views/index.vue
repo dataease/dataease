@@ -168,6 +168,12 @@ onMounted(() => {
       })
     }
   })
+  useEmitt({
+    name: 'resetDrill-' + view.value.id,
+    callback: function (val) {
+      drillJump(val)
+    }
+  })
 })
 
 initTitle()

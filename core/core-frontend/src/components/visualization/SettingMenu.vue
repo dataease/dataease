@@ -123,7 +123,6 @@
 
     <el-dialog
       v-if="state.showCustomSort"
-      v-dialogDrag
       :title="t('chart.custom_sort')"
       :visible="state.showCustomSort"
       :show-close="false"

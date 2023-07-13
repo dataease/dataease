@@ -496,7 +496,6 @@ init()
     <el-dialog
       v-if="state.editTextLabelThresholdDialog"
       v-model="state.editTextLabelThresholdDialog"
-      v-dialogDrag
       :title="t('chart.threshold')"
       :visible="state.editTextLabelThresholdDialog"
       :show-close="false"
@@ -522,7 +521,6 @@ init()
     <el-dialog
       v-if="state.editLabelThresholdDialog"
       v-model="state.editLabelThresholdDialog"
-      v-dialogDrag
       :title="t('chart.threshold')"
       :visible="state.editLabelThresholdDialog"
       :show-close="false"
@@ -548,7 +546,6 @@ init()
     <el-dialog
       v-if="state.editTableThresholdDialog"
       v-model="state.editTableThresholdDialog"
-      v-dialogDrag
       :title="t('chart.threshold')"
       :visible="state.editTableThresholdDialog"
       :show-close="false"
