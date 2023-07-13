@@ -1,6 +1,7 @@
 package io.dataease.api.permissions.dataset.dto;
 
 
+import io.dataease.model.ITreeBase;
 import lombok.Data;
 
 import java.util.List;
