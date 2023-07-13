@@ -34,6 +34,7 @@ import CalcFieldEdit from '@/views/visualized/data/dataset/form/CalcFieldEdit.vu
 import { getFieldName, guid } from '@/views/visualized/data/dataset/form/util'
 import { cloneDeep } from 'lodash-es'
 import { deleteField, saveField } from '@/api/dataset'
+import LabelSelector from '@/views/chart/components/editor/editor-style/components/LabelSelector.vue'
 
 const dvMainStore = dvMainStoreWithOut()
 const { canvasCollapse, curComponent } = storeToRefs(dvMainStore)
@@ -741,6 +742,10 @@ const viewProperties = computed(() => {
 const viewPropertyInnerAll = computed(() => {
   return viewProperties.value ? viewProperties.value.propertyInner : null
 })
+
+const dynamicLabelShow = () => {
+  onLabelChange(view.value.customAttr.label)
+}
 </script>
 
 <template>
@@ -1002,6 +1007,25 @@ const viewPropertyInnerAll = computed(() => {
                           <el-row class="padding-lr drag-data">
                             <span class="data-area-label">
                               <span>{{ t('chart.label') }}</span>
+                              <el-popover placement="left-start" :width="400" trigger="click">
+                                <template #reference>
+                                  <el-icon class="icon-setting label-icon"><Setting /></el-icon>
+                                </template>
+                                <div>
+                                  <el-checkbox
+                                    v-model="view.customAttr.label.show"
+                                    :label="t('commons.show')"
+                                    size="small"
+                                    @change="dynamicLabelShow"
+                                  />
+                                  <label-selector
+                                    :themes="props.themes"
+                                    class="attr-selector"
+                                    :chart="view"
+                                    @onLabelChange="onLabelChange"
+                                  />
+                                </div>
+                              </el-popover>
                             </span>
                             <draggable
                               :list="view.extLabel"
@@ -1981,5 +2005,12 @@ span {
 
 .icon-setting {
   color: #a6a6a6;
+}
+
+.label-icon {
+  top: 2px;
+  margin-left: 6px;
+  font-size: 14px;
+  cursor: pointer;
 }
 </style>
