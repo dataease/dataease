@@ -69,7 +69,7 @@ onMounted(() => {
 .header-flex {
   display: flex;
   align-items: center;
-  height: 50px;
+  height: 56px;
   background-color: #050e21;
   padding: 0 24px;
   .operate-setting {
@@ -83,6 +83,7 @@ onMounted(() => {
 
   .ed-menu {
     background-color: #050e21;
+    height: 56px;
   }
 
   .ed-menu--horizontal {

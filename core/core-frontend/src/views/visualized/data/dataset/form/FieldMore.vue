@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { Icon } from '@/components/icon-custom'
-import { ref, nextTick } from 'vue'
+import { ref } from 'vue'
 import { timeTypes } from './util.js'
 
 export interface Menu {
@@ -22,6 +22,10 @@ defineProps({
 })
 const handleCommand = (command: string | number | object) => {
   if (typeof command === 'object') return
+  if ('custom' === command) {
+    replaceType.value.handleClose()
+    translate.value.handleClose()
+  }
   if (['text', 'time', 'location', 'number', 'float'].includes(command as string)) {
     replaceType.value.handleClose()
     setTimeout(() => {
@@ -52,13 +56,13 @@ const emit = defineEmits(['handleCommand'])
     @command="handleCommand"
   >
     <el-icon class="menu-more">
-      <Icon name="icon_more_outlined"></Icon>
+      <Icon name="more_v"></Icon>
     </el-icon>
     <template #dropdown>
       <el-dropdown-menu>
         <el-dropdown-item command="translate">
           <el-icon>
-            <Icon name="icon_more_outlined"></Icon>
+            <Icon name="icon_switch_outlined"></Icon>
           </el-icon>
           转换为指标
         </el-dropdown-item>
@@ -73,14 +77,14 @@ const emit = defineEmits(['handleCommand'])
           >
             <div class="field-type">
               <el-icon>
-                <Icon name="icon_more_outlined"></Icon>
+                <Icon name="custom_sort"></Icon>
               </el-icon>
               更换字段类型
             </div>
             <template #dropdown>
               <el-dropdown-item command="text">
                 <el-icon>
-                  <Icon name="icon_more_outlined"></Icon>
+                  <Icon class-name="primary-color" name="icon_text_outlined"></Icon>
                 </el-icon>
                 文本
               </el-dropdown-item>
@@ -95,7 +99,7 @@ const emit = defineEmits(['handleCommand'])
                   >
                     <div class="field-type">
                       <el-icon>
-                        <Icon name="icon_more_outlined"></Icon>
+                        <Icon class-name="primary-color" name="icon_calendar_outlined"></Icon>
                       </el-icon>
                       时间
                     </div>
@@ -106,25 +110,12 @@ const emit = defineEmits(['handleCommand'])
                             {{ ele === 'custom' ? '自定义' : ele }}
                           </el-dropdown-item>
                         </template>
-                        <!-- <el-dropdown-item command="yy-mm"> yyyy-MM-dd </el-dropdown-item>
-                        <el-dropdown-item command="yyyy/MM/dd"> yyyy/MM/dd </el-dropdown-item>
-                        <el-dropdown-item command="yyyyMMdd"> yyyyMMdd </el-dropdown-item>
-                        <el-dropdown-item command="yyyy-MM-dd HH:mm:ss">
-                          yyyy-MM-dd HH:mm:ss
-                        </el-dropdown-item>
-                        <el-dropdown-item command="yyyy/MM/dd HH:mm:ss">
-                          yyyy/MM/dd HH:mm:ss
-                        </el-dropdown-item>
-                        <el-dropdown-item command="yyyyMMdd HH:mm:ss">
-                          yyyyMMdd HH:mm:ss
-                        </el-dropdown-item>
-                        <el-dropdown-item command="custom"> 自定义 </el-dropdown-item> -->
                       </el-dropdown-menu>
                     </template>
                   </el-dropdown>
                   <template v-else>
                     <el-icon>
-                      <Icon name="icon_more_outlined"></Icon>
+                      <Icon class-name="primary-color" name="icon_calendar_outlined"></Icon>
                     </el-icon>
                     时间
                   </template>
@@ -132,19 +123,19 @@ const emit = defineEmits(['handleCommand'])
               </el-dropdown-menu>
               <el-dropdown-item command="location">
                 <el-icon>
-                  <Icon name="icon_more_outlined"></Icon>
+                  <Icon class-name="primary-color" name="icon_local_outlined"></Icon>
                 </el-icon>
                 地理位置
               </el-dropdown-item>
               <el-dropdown-item command="number">
                 <el-icon>
-                  <Icon name="icon_more_outlined"></Icon>
+                  <Icon class-name="primary-color" name="icon_number_outlined"></Icon>
                 </el-icon>
                 数值
               </el-dropdown-item>
               <el-dropdown-item command="float">
                 <el-icon>
-                  <Icon name="icon_more_outlined"></Icon>
+                  <Icon class-name="primary-color" name="icon_number_outlined"></Icon>
                 </el-icon>
                 数值 (小数)
               </el-dropdown-item>
@@ -153,19 +144,19 @@ const emit = defineEmits(['handleCommand'])
         </el-dropdown-item>
         <el-dropdown-item v-if="extField === 2" command="editor">
           <el-icon>
-            <Icon name="icon_more_outlined"></Icon>
+            <Icon name="icon_edit_outlined"></Icon>
           </el-icon>
           编辑
         </el-dropdown-item>
         <el-dropdown-item command="copy">
           <el-icon>
-            <Icon name="icon_more_outlined"></Icon>
+            <Icon name="icon_copy_outlined"></Icon>
           </el-icon>
           复制
         </el-dropdown-item>
         <el-dropdown-item command="delete">
           <el-icon>
-            <Icon name="icon_more_outlined"></Icon>
+            <Icon name="icon_delete-trash_outlined"></Icon>
           </el-icon>
           删除
         </el-dropdown-item>

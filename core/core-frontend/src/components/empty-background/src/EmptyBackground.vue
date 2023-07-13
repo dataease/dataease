@@ -3,9 +3,11 @@ import { PropType } from 'vue'
 import nothingInput from '@/assets/img/nothing-input.png'
 import nothingSelect from '@/assets/img/nothing-select.png'
 import nothingTable from '@/assets/img/nothing-table.png'
+import none from '@/assets/img/none.png'
+import nothingNone from '@/assets/img/nothing-none.png'
 defineProps({
   imgType: {
-    type: String as PropType<'input' | 'select' | 'table'>,
+    type: String as PropType<'input' | 'select' | 'table' | 'none' | 'noneWhite'>,
     default: 'table'
   },
   imageSize: {
@@ -20,7 +22,9 @@ defineProps({
 const getAssetsFile = {
   input: nothingInput,
   select: nothingSelect,
-  table: nothingTable
+  table: nothingTable,
+  noneWhite: nothingNone,
+  none
 }
 </script>
 
