@@ -1,6 +1,7 @@
 package io.dataease.cache.impl;
 
 import io.dataease.cache.DECacheService;
+import io.dataease.utils.LogUtil;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
@@ -31,7 +32,13 @@ public class DefaultCacheImpl implements DECacheService {
     public void put(String cacheName, String key, Object value, Long expTime, TimeUnit unit) {
         Cache<String, Object> cache = null;
         if (ObjectUtils.isEmpty(cache = cacheManager.getCache(cacheName))) {
-            cache = cacheManager.createCache(cacheName, configuration(expTime, unit));
+            try {
+                cache = cacheManager.createCache(cacheName, configuration(expTime, unit));
+            } catch (Exception e) {
+                LogUtil.error(e.getMessage(), e);
+                cache = cacheManager.getCache(cacheName);
+            }
+
         }
         cache.put(key, value);
     }

@@ -17,7 +17,7 @@ import { useCache } from '@/hooks/web/useCache'
 const { wsCache } = useCache()
 
 export const PATH_URL = window.DataEaseBi
-  ? window.DataEaseBi?.baseUrl
+  ? window.DataEaseBi?.baseUrl + 'de2api/'
   : import.meta.env.VITE_API_BASEPATH
 
 // 创建axios实例
@@ -40,10 +40,16 @@ service.interceptors.request.use(
     ) {
       config.data = qs.stringify(config.data)
     }
-    if (wsCache.get('user.token')) {
-      ;(config.headers as AxiosRequestHeaders)['X-DE-TOKEN'] = wsCache.get('user.token')
-    } else if (window.DataEaseBi?.token) {
+    console.log('---------------------')
+    if (window.DataEaseBi?.baseUrl) {
+      config.baseURL = window.DataEaseBi.baseUrl + 'de2api/'
+    }
+    if (window.DataEaseBi?.token) {
+      wsCache.set('user.token', null)
       ;(config.headers as AxiosRequestHeaders)['X-EMBEDDED-TOKEN'] = window.DataEaseBi.token
+      window.DataEaseBi.token = null
+    } else if (wsCache.get('user.token')) {
+      ;(config.headers as AxiosRequestHeaders)['X-DE-TOKEN'] = wsCache.get('user.token')
     }
     if (wsCache.get('user.language')) {
       const key = wsCache.get('user.language')
