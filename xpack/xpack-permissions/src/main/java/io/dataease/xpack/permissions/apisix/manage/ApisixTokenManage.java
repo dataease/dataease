@@ -36,7 +36,7 @@ public class ApisixTokenManage {
     public boolean needAuth() {
         HttpServletRequest request = ServletUtils.request();
         String path = request.getHeader("X-Forwarded-Uri");
-        return !WhitelistUtils.match(path);
+        return !WhitelistUtils.match(path) && !StringUtils.equalsIgnoreCase("OPTIONS", request.getHeader("x-forwarded-method"));
     }
 
     public TokenBO validate(String token) {
@@ -74,6 +74,7 @@ public class ApisixTokenManage {
         TokenUserBO tokenUserBO = queryUserBO(embeddedToken.getAccount());
         String token = PerTokenUtils.generate(tokenUserBO, secret(tokenUserBO.getUserId()));
         HttpServletResponse response = ServletUtils.response();
+        response.addHeader(AuthConstant.TOKEN_KEY, token);
         response.addHeader(AuthConstant.REFRESH_TOKEN_KEY, token);
         return token;
     }

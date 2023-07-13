@@ -32,6 +32,10 @@ public class TokenFilter implements Filter {
             filterChain.doFilter(servletRequest, servletResponse);
             return;
         }
+        if (StringUtils.equalsIgnoreCase("OPTIONS", ServletUtils.request().getMethod())) {
+            filterChain.doFilter(servletRequest, servletResponse);
+            return;
+        }
         String refreshToken = null;
         if (StringUtils.isNotBlank(refreshToken = ServletUtils.request().getHeader(AuthConstant.REFRESH_TOKEN_KEY))) {
             ServletUtils.response().addHeader(AuthConstant.REFRESH_TOKEN_KEY, refreshToken);
