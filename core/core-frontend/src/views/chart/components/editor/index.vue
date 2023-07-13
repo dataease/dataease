@@ -310,7 +310,7 @@ const addXaxis = e => {
   ) {
     view.value.xAxis = [view.value.xAxis[0]]
   }
-  calcData(view.value)
+  calcData(view.value, true)
 }
 
 const addYaxis = e => {
@@ -331,7 +331,7 @@ const addDrill = e => {
   dragCheckType(view.value.drillFields, 'd')
   dragMoveDuplicate(view.value.drillFields, e, '')
   dragRemoveChartField(view.value.drillFields, e)
-  calcData(view.value)
+  calcData(view.value, true)
 }
 
 const addExtLabel = e => {
@@ -374,8 +374,12 @@ const moveToQuota = e => {
   calcData(view.value)
 }
 
-const calcData = view => {
-  useEmitt().emitter.emit('calcData-' + view.id, view)
+const calcData = (view, resetDrill = false) => {
+  if (resetDrill) {
+    useEmitt().emitter.emit('resetDrill-' + view.id, 0)
+  } else {
+    useEmitt().emitter.emit('calcData-' + view.id, view)
+  }
   snapshotStore.recordSnapshotCache('calcData', view.id)
 }
 
