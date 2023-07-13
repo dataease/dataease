@@ -5,15 +5,14 @@ import io.dataease.api.dataset.union.model.SQLObj;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.exception.DEException;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class Utils {
     public static boolean joinSort(String sort) {
@@ -200,5 +199,12 @@ public class Utils {
             return true;
         }
         return false;
+    }
+
+    public static boolean isNeedOrder(List<String> dsList) {
+        String[] list = {"sqlServer", "db2"};
+        List<String> strings = Arrays.asList(list);
+        List<String> collect = strings.stream().filter(dsList::contains).collect(Collectors.toList());
+        return ObjectUtils.isNotEmpty(collect);
     }
 }

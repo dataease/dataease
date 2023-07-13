@@ -2,13 +2,17 @@ package io.dataease.dataset.server;
 
 import io.dataease.api.dataset.DatasetTableApi;
 import io.dataease.api.dataset.dto.DatasetTableFieldDTO;
+import io.dataease.api.dataset.engine.SQLFunctionDTO;
+import io.dataease.api.dataset.engine.SQLFunctionsEnum;
 import io.dataease.dataset.manage.DatasetTableFieldManage;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @Author Junjun
@@ -44,4 +48,17 @@ public class DatasetFieldServer implements DatasetTableApi {
         return datasetTableFieldManage.listByDQ(id);
     }
 
+    @Override
+    public List<SQLFunctionDTO> getFunction() {
+        SQLFunctionsEnum[] values = SQLFunctionsEnum.values();
+        return Arrays.stream(values).map(ele -> {
+            SQLFunctionDTO dto = new SQLFunctionDTO();
+            dto.setName(ele.getName());
+            dto.setFunc(ele.getFunc());
+            dto.setType(ele.getType());
+            dto.setDesc(ele.getDesc());
+            dto.setCustom(ele.isCustom());
+            return dto;
+        }).collect(Collectors.toList());
+    }
 }

@@ -137,3 +137,9 @@ export const getEnumValue = async (data): Promise<DatasetDetail[]> => {
     return res?.data
   })
 }
+
+export const getFunction = async (): Promise<DatasetDetail[]> => {
+  return request.post({ url: '/datasetField/getFunction', data: {} }).then(res => {
+    return res?.data
+  })
+}
