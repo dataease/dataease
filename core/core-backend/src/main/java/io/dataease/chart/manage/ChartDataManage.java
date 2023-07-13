@@ -20,6 +20,7 @@ import io.dataease.engine.constant.SQLConstants;
 import io.dataease.engine.sql.SQLProvider;
 import io.dataease.engine.trans.*;
 import io.dataease.engine.utils.SQLUtils;
+import io.dataease.engine.utils.Utils;
 import io.dataease.exception.DEException;
 import io.dataease.i18n.Translator;
 import io.dataease.utils.BeanUtils;
@@ -422,6 +423,11 @@ public class ChartDataManage {
         Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(table);
         String sql = (String) sqlMap.get("sql");
         Map<Long, DatasourceSchemaDTO> dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
+        List<String> dsList = new ArrayList<>();
+        for (Map.Entry<Long, DatasourceSchemaDTO> next : dsMap.entrySet()) {
+            dsList.add(next.getValue().getType());
+        }
+        boolean needOrder = Utils.isNeedOrder(dsList);
 
         // 调用数据源的calcite获得data
         DatasourceRequest datasourceRequest = new DatasourceRequest();
@@ -530,33 +536,33 @@ public class ChartDataManage {
 
             if (StringUtils.equalsAnyIgnoreCase(view.getType(), "text", "gauge", "liquid")) {
                 Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields));
-                querySql = SQLProvider.createQuerySQL(sqlMeta, true, view);
+                querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
             } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
                 xAxis.addAll(extStack);
                 Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields));
                 Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields));
-                querySql = SQLProvider.createQuerySQL(sqlMeta, true, view);
+                querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
             } else if (StringUtils.containsIgnoreCase(view.getType(), "scatter")) {
                 yAxis.addAll(extBubble);
                 Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields));
                 Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields));
-                querySql = SQLProvider.createQuerySQL(sqlMeta, true, view);
+                querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
             } else if (StringUtils.equalsIgnoreCase("table-info", view.getType())) {
                 Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields));
-                String originSql = SQLProvider.createQuerySQL(sqlMeta, false, view);
+                String originSql = SQLProvider.createQuerySQL(sqlMeta, false, needOrder, view);
                 String limit = ((pageInfo.getGoPage() != null && pageInfo.getPageSize() != null) ? " LIMIT " + pageInfo.getPageSize() + " OFFSET " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize() : "");
                 querySql = originSql + limit;
                 totalPageSql = "SELECT COUNT(*) FROM (" + originSql + ") COUNT_TEMP";
             } else {
                 Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields));
                 Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields));
-                querySql = SQLProvider.createQuerySQL(sqlMeta, true, view);
+                querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
                 if (containDetailField(view) && ObjectUtils.isNotEmpty(viewFields)) {
                     detailFieldList.addAll(xAxis);
                     detailFieldList.addAll(viewFields);
 
                     Dimension2SQLObj.dimension2sqlObj(sqlMeta, detailFieldList, transFields(allFields));
-                    String originSql = SQLProvider.createQuerySQL(sqlMeta, false, view);
+                    String originSql = SQLProvider.createQuerySQL(sqlMeta, false, needOrder, view);
                     String limit = ((pageInfo.getGoPage() != null && pageInfo.getPageSize() != null) ? " LIMIT " + pageInfo.getPageSize() + " OFFSET " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize() : "");
                     detailFieldSql = originSql + limit;
                 }
@@ -1310,6 +1316,11 @@ public class ChartDataManage {
         Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(table);
         String sql = (String) sqlMap.get("sql");
         Map<Long, DatasourceSchemaDTO> dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
+        List<String> dsList = new ArrayList<>();
+        for (Map.Entry<Long, DatasourceSchemaDTO> next : dsMap.entrySet()) {
+            dsList.add(next.getValue().getType());
+        }
+        boolean needOrder = Utils.isNeedOrder(dsList);
 
         // 调用数据源的calcite获得data
         DatasourceRequest datasourceRequest = new DatasourceRequest();
@@ -1358,24 +1369,24 @@ public class ChartDataManage {
 
             if (StringUtils.equalsAnyIgnoreCase(view.getType(), "text", "gauge", "liquid")) {
                 Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields));
-                querySql = SQLProvider.createQuerySQL(sqlMeta, true, view);
+                querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
             } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
                 xAxis.addAll(extStack);
                 Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields));
                 Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields));
-                querySql = SQLProvider.createQuerySQL(sqlMeta, true, view);
+                querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
             } else if (StringUtils.containsIgnoreCase(view.getType(), "scatter")) {
                 yAxis.addAll(extBubble);
                 Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields));
                 Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields));
-                querySql = SQLProvider.createQuerySQL(sqlMeta, true, view);
+                querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
             } else if (StringUtils.equalsIgnoreCase("table-info", view.getType())) {
                 Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields));
-                querySql = SQLProvider.createQuerySQL(sqlMeta, false, view);
+                querySql = SQLProvider.createQuerySQL(sqlMeta, false, needOrder, view);
             } else {
                 Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields));
                 Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields));
-                querySql = SQLProvider.createQuerySQL(sqlMeta, true, view);
+                querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
             }
 
             datasourceRequest.setQuery(querySql);
