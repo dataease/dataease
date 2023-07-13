@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dataease.api.chart.dto.*;
 import io.dataease.api.chart.request.ChartDrillRequest;
 import io.dataease.api.chart.request.ChartExtRequest;
-import io.dataease.api.dataset.dto.DatasetTableFieldDTO;
+import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.union.model.SQLMeta;
 import io.dataease.chart.constant.ChartConstants;

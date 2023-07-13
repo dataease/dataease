@@ -1,7 +1,7 @@
 package io.dataease.dataset.manage;
 
 import io.dataease.api.dataset.dto.DatasetTableDTO;
-import io.dataease.api.dataset.dto.DatasetTableFieldDTO;
+import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.api.dataset.union.*;
 import io.dataease.api.dataset.union.model.SQLObj;
 import io.dataease.commons.utils.SqlparserUtils;

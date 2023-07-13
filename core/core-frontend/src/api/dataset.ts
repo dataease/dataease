@@ -118,3 +118,24 @@ export const getDsDetails = async (data): Promise<DatasetDetail[]> => {
     return res?.data
   })
 }
+
+export const rowPermissionList = (page: number, limit: number, datasetId: number) =>
+  request.get({ url: '/dataset/rowPermissions/pager/' + datasetId + '/' + page + '/' + limit })
+
+export const rowPermissionTargetObjList = (datasetId: number, type: string) =>
+  request.get({ url: '/dataset/rowPermissions/authObjs/' + datasetId + '/' + type })
+
+export const listFieldByDatasetGroup = (datasetId: number) =>
+  request.post({ url: '/datasetField/listByDatasetGroup/' + datasetId })
+
+export const multFieldValuesForPermissions = (data = {}) => {
+  return request.post({ url: '/datasetField/multFieldValuesForPermissions', data })
+}
+
+export const saveRowPermission = (data = {}) => {
+  return request.post({ url: '/dataset/rowPermissions/save', data })
+}
+
+export const whiteListUsersForPermissions = (data = {}) => {
+  return request.post({ url: '/dataset/rowPermissions/whiteListUsers', data })
+}

@@ -1,6 +1,6 @@
 package io.dataease.engine.utils;
 
-import io.dataease.api.dataset.dto.DatasetTableFieldDTO;
+import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.api.dataset.union.model.SQLObj;
 import io.dataease.engine.constant.SQLConstants;
 import org.apache.commons.lang3.StringUtils;

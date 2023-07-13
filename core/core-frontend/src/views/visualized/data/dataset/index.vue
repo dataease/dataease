@@ -377,14 +377,11 @@ const defaultProps = {
           </div>
         </template>
         <template v-if="['row', 'column'].includes(activeName)">
-          <el-button class="add-row-column" secondary>
-            <template #icon>
-              <Icon name="icon_add_outlined"></Icon>
-            </template>
-            {{ t(`dataset.${activeName}`) }}
-          </el-button>
           <div class="table-row-column">
-            <row-permissions v-if="activeName === 'row'"></row-permissions>
+            <row-permissions
+              :dataset-id="nodeInfo.id"
+              v-if="activeName === 'row'"
+            ></row-permissions>
             <column-permissions v-else></column-permissions>
           </div>
         </template>

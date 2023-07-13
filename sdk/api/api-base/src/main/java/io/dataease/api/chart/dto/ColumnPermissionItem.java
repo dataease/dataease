@@ -6,7 +6,7 @@ import java.util.List;
 
 @Data
 public class ColumnPermissionItem {
-    private String id;
+    private Long id;
     private String name;
     private Boolean selected = false;
     private String opt;

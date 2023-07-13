@@ -225,3 +225,31 @@ VALUES (1, 1, 1, 1, 1681268906000);
 UNLOCK
 TABLES;
 
+
+DROP TABLE IF EXISTS `per_dataset_column_permissions`;
+CREATE TABLE `per_dataset_column_permissions` (
+          `id` bigint(20) NOT NULL COMMENT 'File ID',
+          `enable` bit(1) DEFAULT NULL COMMENT '是否启用',
+          `auth_target_type` varchar(255) DEFAULT NULL COMMENT '权限类型：组织/角色/用户',
+          `auth_target_id` bigint(20) DEFAULT NULL COMMENT '权限对象ID',
+          `dataset_id` bigint(20) DEFAULT NULL COMMENT '数据集ID',
+          `permissions` longtext COMMENT '权限',
+          `white_list_user` longtext COMMENT '白名单',
+          `update_time` bigint(13) DEFAULT NULL,
+          PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
+
+DROP TABLE IF EXISTS `per_dataset_row_permissions_tree`;
+CREATE TABLE `per_dataset_row_permissions_tree` (
+            `id` bigint(20) NOT NULL COMMENT 'ID',
+            `enable` bit(1) DEFAULT NULL COMMENT '是否启用',
+            `auth_target_type` varchar(255) DEFAULT NULL COMMENT '权限类型：dept/role/user',
+            `auth_target_id` bigint(20) DEFAULT NULL COMMENT '权限对象ID',
+            `dataset_id` bigint(20) DEFAULT NULL COMMENT '数据集ID',
+            `expression_tree` longtext COMMENT '关系表达式',
+            `white_list_user` longtext COMMENT '用户白名单',
+            `white_list_role` longtext COMMENT '角色白名单',
+            `white_list_dept` longtext COMMENT '组织白名单',
+            `update_time` bigint(13) DEFAULT NULL,
+            PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
