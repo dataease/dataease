@@ -21,8 +21,8 @@
           <el-col class="info-item">
             <p class="info-title">{{ $t('chart.chart_type') }}</p>
             <svg-icon
-              v-if="detail.chart.type"
-              :icon-class="detail.chart.type"
+              :icon-class="detail.chart.isPlugin && detail.chart.type && detail.chart.type !== 'buddle-map' ? ('/api/pluginCommon/staticInfo/' + detail.chart.type + '/svg') : detail.chart.type"
+              class="chart-icon"
             />
           </el-col>
           <el-col class="info-item">

@@ -3,6 +3,8 @@
     :is="mode"
     :ref="refId"
     :obj="obj"
+    :bus="bus"
+    :axios-request="request"
     v-bind="$attrs"
     v-on="$listeners"
   />
@@ -11,6 +13,9 @@
 <script>
 import { uuid } from 'vue-uuid'
 import { get } from '@/api/system/dynamic'
+import bus from '@/utils/bus'
+import request from '@/utils/request'
+
 export default {
   name: 'AsyncComponent',
   inheritAttrs: true,
@@ -29,7 +34,9 @@ export default {
     return {
       resData: '',
       mode: '',
-      refId: null
+      refId: null,
+      bus: bus,
+      request: request
     }
   },
   watch: {

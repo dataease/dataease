@@ -473,7 +473,8 @@
                   <plugin-com
                     v-if="view.isPlugin"
                     :component-name="view.type + '-data'"
-                    :obj="{view, param, chart, dimensionData, quotaData}"
+                    :obj="{view, param, chart, dimension, dimensionData, quota, quotaData}"
+                    :bus="bus"
                   />
                   <div v-else>
 
@@ -1796,7 +1797,7 @@ export default {
     DrillPath,
     PluginCom,
     MapMapping,
-    MarkMapDataEditor,
+    MarkMapDataEditor
   },
   props: {
     param: {
@@ -1816,6 +1817,7 @@ export default {
   },
   data() {
     return {
+      bus: bus,
       positionActiveNames: 'positionAdjust',
       loading: false,
       table: {},
@@ -2955,7 +2957,7 @@ export default {
 
     // 更换数据集
     changeChart() {
-      const optType = this.view.tableId === this.changeTable.id && this.view.dataFrom!=='template' ? 'same' : 'change'
+      const optType = this.view.tableId === this.changeTable.id && this.view.dataFrom !== 'template' ? 'same' : 'change'
       // 更换数据集后清空视图字段，并重新请求数据；否则没有操作
       if (optType === 'change') {
         this.view.dataFrom = 'dataset'
