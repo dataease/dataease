@@ -88,7 +88,7 @@ watch(
 )
 
 watch(
-  () => props.node.id,
+  () => props.fieldList,
   () => {
     fieldSearchList.value = props.fieldList
     handleSelectionChange(fieldSearchList.value.filter(ele => ele.checked))

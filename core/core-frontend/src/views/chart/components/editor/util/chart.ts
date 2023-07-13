@@ -1,4 +1,5 @@
 import { useI18n } from '@/hooks/web/useI18n'
+import { deepCopy } from '@/utils/utils'
 const { t } = useI18n()
 
 export const DEFAULT_COLOR_CASE = {
@@ -1622,14 +1623,62 @@ export const CHART_TYPE_CONFIGS = [
         category: 'quota',
         value: 'gauge',
         title: t('chart.chart_gauge'),
-        icon: 'gauge'
+        icon: 'gauge',
+        properties: [
+          'background-overall-component',
+          'basic-style-selector',
+          'color-selector',
+          'size-selector',
+          'label-selector',
+          'tooltip-selector',
+          'x-axis-selector',
+          'y-axis-selector',
+          'title-selector',
+          'legend-selector'
+        ],
+        propertyInner: {
+          'background-overall-component': ['all'],
+          'basic-style-selector': ['all'],
+          'color-selector': ['all'],
+          'size-selector': ['all'],
+          'label-selector': ['all'],
+          'tooltip-selector': ['all'],
+          'x-axis-selector': ['all'],
+          'y-axis-selector': ['all'],
+          'title-selector': ['all'],
+          'legend-selector': ['all']
+        }
       },
       {
         render: 'antv',
         category: 'quota',
         value: 'liquid',
         title: t('chart.chart_liquid'),
-        icon: 'liquid'
+        icon: 'liquid',
+        properties: [
+          'background-overall-component',
+          'basic-style-selector',
+          'color-selector',
+          'size-selector',
+          'label-selector',
+          'tooltip-selector',
+          'x-axis-selector',
+          'y-axis-selector',
+          'title-selector',
+          'legend-selector'
+        ],
+        propertyInner: {
+          'background-overall-component': ['all'],
+          'basic-style-selector': ['all'],
+          'color-selector': ['all'],
+          'size-selector': ['all'],
+          'label-selector': ['all'],
+          'tooltip-selector': ['all'],
+          'x-axis-selector': ['all'],
+          'y-axis-selector': ['all'],
+          'title-selector': ['all'],
+          'legend-selector': ['all']
+        }
       }
       // {
       //   render: 'antv',
@@ -1649,14 +1698,62 @@ export const CHART_TYPE_CONFIGS = [
         category: 'table',
         value: 'table-normal',
         title: t('chart.chart_table_normal'),
-        icon: 'table-normal'
+        icon: 'table-normal',
+        properties: [
+          'background-overall-component',
+          'basic-style-selector',
+          'color-selector',
+          'size-selector',
+          'label-selector',
+          'tooltip-selector',
+          'x-axis-selector',
+          'y-axis-selector',
+          'title-selector',
+          'legend-selector'
+        ],
+        propertyInner: {
+          'background-overall-component': ['all'],
+          'basic-style-selector': ['all'],
+          'color-selector': ['all'],
+          'size-selector': ['all'],
+          'label-selector': ['all'],
+          'tooltip-selector': ['all'],
+          'x-axis-selector': ['all'],
+          'y-axis-selector': ['all'],
+          'title-selector': ['all'],
+          'legend-selector': ['all']
+        }
       },
       {
         render: 'antv',
         category: 'table',
         value: 'table-info',
         title: t('chart.chart_table_info'),
-        icon: 'table-info'
+        icon: 'table-info',
+        properties: [
+          'background-overall-component',
+          'basic-style-selector',
+          'color-selector',
+          'size-selector',
+          'label-selector',
+          'tooltip-selector',
+          'x-axis-selector',
+          'y-axis-selector',
+          'title-selector',
+          'legend-selector'
+        ],
+        propertyInner: {
+          'background-overall-component': ['all'],
+          'basic-style-selector': ['all'],
+          'color-selector': ['all'],
+          'size-selector': ['all'],
+          'label-selector': ['all'],
+          'tooltip-selector': ['all'],
+          'x-axis-selector': ['all'],
+          'y-axis-selector': ['all'],
+          'title-selector': ['all'],
+          'legend-selector': ['all']
+        }
       }
       // {
       //   render: 'antv',
@@ -1676,14 +1773,62 @@ export const CHART_TYPE_CONFIGS = [
         category: 'trend',
         value: 'line',
         title: t('chart.chart_line'),
-        icon: 'line'
+        icon: 'line',
+        properties: [
+          'background-overall-component',
+          'basic-style-selector',
+          'color-selector',
+          'size-selector',
+          'label-selector',
+          'tooltip-selector',
+          'x-axis-selector',
+          'y-axis-selector',
+          'title-selector',
+          'legend-selector'
+        ],
+        propertyInner: {
+          'background-overall-component': ['all'],
+          'basic-style-selector': ['all'],
+          'color-selector': ['all'],
+          'size-selector': ['all'],
+          'label-selector': ['all'],
+          'tooltip-selector': ['all'],
+          'x-axis-selector': ['all'],
+          'y-axis-selector': ['all'],
+          'title-selector': ['all'],
+          'legend-selector': ['all']
+        }
       },
       {
         render: 'antv',
         category: 'trend',
         value: 'area',
         title: t('chart.chart_area'),
-        icon: 'area'
+        icon: 'area',
+        properties: [
+          'background-overall-component',
+          'basic-style-selector',
+          'color-selector',
+          'size-selector',
+          'label-selector',
+          'tooltip-selector',
+          'x-axis-selector',
+          'y-axis-selector',
+          'title-selector',
+          'legend-selector'
+        ],
+        propertyInner: {
+          'background-overall-component': ['all'],
+          'basic-style-selector': ['all'],
+          'color-selector': ['all'],
+          'size-selector': ['all'],
+          'label-selector': ['all'],
+          'tooltip-selector': ['all'],
+          'x-axis-selector': ['all'],
+          'y-axis-selector': ['all'],
+          'title-selector': ['all'],
+          'legend-selector': ['all']
+        }
       }
       // {
       //   render: 'antv',
@@ -1703,7 +1848,31 @@ export const CHART_TYPE_CONFIGS = [
         category: 'compare',
         value: 'bar',
         title: t('chart.chart_bar'),
-        icon: 'bar'
+        icon: 'bar',
+        properties: [
+          'background-overall-component',
+          'basic-style-selector',
+          'color-selector',
+          'size-selector',
+          'label-selector',
+          'tooltip-selector',
+          'x-axis-selector',
+          'y-axis-selector',
+          'title-selector',
+          'legend-selector'
+        ],
+        propertyInner: {
+          'background-overall-component': ['all'],
+          'basic-style-selector': ['all'],
+          'color-selector': ['all'],
+          'size-selector': ['all'],
+          'label-selector': ['all'],
+          'tooltip-selector': ['all'],
+          'x-axis-selector': ['all'],
+          'y-axis-selector': ['all'],
+          'title-selector': ['all'],
+          'legend-selector': ['all']
+        }
       },
       // {
       //   render: 'antv',
@@ -1738,7 +1907,31 @@ export const CHART_TYPE_CONFIGS = [
         category: 'compare',
         value: 'bar-horizontal',
         title: t('chart.chart_bar_horizontal'),
-        icon: 'bar-horizontal'
+        icon: 'bar-horizontal',
+        properties: [
+          'background-overall-component',
+          'basic-style-selector',
+          'color-selector',
+          'size-selector',
+          'label-selector',
+          'tooltip-selector',
+          'x-axis-selector',
+          'y-axis-selector',
+          'title-selector',
+          'legend-selector'
+        ],
+        propertyInner: {
+          'background-overall-component': ['all'],
+          'basic-style-selector': ['all'],
+          'color-selector': ['all'],
+          'size-selector': ['all'],
+          'label-selector': ['all'],
+          'tooltip-selector': ['all'],
+          'x-axis-selector': ['all'],
+          'y-axis-selector': ['all'],
+          'title-selector': ['all'],
+          'legend-selector': ['all']
+        }
       }
       // {
       //   render: 'antv',
@@ -1765,21 +1958,93 @@ export const CHART_TYPE_CONFIGS = [
         category: 'distribute',
         value: 'pie',
         title: t('chart.chart_pie'),
-        icon: 'pie'
+        icon: 'pie',
+        properties: [
+          'background-overall-component',
+          'basic-style-selector',
+          'color-selector',
+          'size-selector',
+          'label-selector',
+          'tooltip-selector',
+          'x-axis-selector',
+          'y-axis-selector',
+          'title-selector',
+          'legend-selector'
+        ],
+        propertyInner: {
+          'background-overall-component': ['all'],
+          'basic-style-selector': ['all'],
+          'color-selector': ['all'],
+          'size-selector': ['all'],
+          'label-selector': ['all'],
+          'tooltip-selector': ['all'],
+          'x-axis-selector': ['all'],
+          'y-axis-selector': ['all'],
+          'title-selector': ['all'],
+          'legend-selector': ['all']
+        }
       },
       {
         render: 'antv',
         category: 'distribute',
         value: 'pie-rose',
         title: t('chart.chart_pie_rose'),
-        icon: 'pie-rose'
+        icon: 'pie-rose',
+        properties: [
+          'background-overall-component',
+          'basic-style-selector',
+          'color-selector',
+          'size-selector',
+          'label-selector',
+          'tooltip-selector',
+          'x-axis-selector',
+          'y-axis-selector',
+          'title-selector',
+          'legend-selector'
+        ],
+        propertyInner: {
+          'background-overall-component': ['all'],
+          'basic-style-selector': ['all'],
+          'color-selector': ['all'],
+          'size-selector': ['all'],
+          'label-selector': ['all'],
+          'tooltip-selector': ['all'],
+          'x-axis-selector': ['all'],
+          'y-axis-selector': ['all'],
+          'title-selector': ['all'],
+          'legend-selector': ['all']
+        }
       },
       {
         render: 'antv',
         category: 'distribute',
         value: 'word-cloud',
         title: t('chart.chart_word_cloud'),
-        icon: 'word-cloud'
+        icon: 'word-cloud',
+        properties: [
+          'background-overall-component',
+          'basic-style-selector',
+          'color-selector',
+          'size-selector',
+          'label-selector',
+          'tooltip-selector',
+          'x-axis-selector',
+          'y-axis-selector',
+          'title-selector',
+          'legend-selector'
+        ],
+        propertyInner: {
+          'background-overall-component': ['all'],
+          'basic-style-selector': ['all'],
+          'color-selector': ['all'],
+          'size-selector': ['all'],
+          'label-selector': ['all'],
+          'tooltip-selector': ['all'],
+          'x-axis-selector': ['all'],
+          'y-axis-selector': ['all'],
+          'title-selector': ['all'],
+          'legend-selector': ['all']
+        }
       }
     ]
   },
@@ -1792,7 +2057,31 @@ export const CHART_TYPE_CONFIGS = [
         category: 'map',
         value: 'map',
         title: t('chart.chart_map'),
-        icon: 'map_mini'
+        icon: 'map_mini',
+        properties: [
+          'background-overall-component',
+          'basic-style-selector',
+          'color-selector',
+          'size-selector',
+          'label-selector',
+          'tooltip-selector',
+          'x-axis-selector',
+          'y-axis-selector',
+          'title-selector',
+          'legend-selector'
+        ],
+        propertyInner: {
+          'background-overall-component': ['all'],
+          'basic-style-selector': ['all'],
+          'color-selector': ['all'],
+          'size-selector': ['all'],
+          'label-selector': ['all'],
+          'tooltip-selector': ['all'],
+          'x-axis-selector': ['all'],
+          'y-axis-selector': ['all'],
+          'title-selector': ['all'],
+          'legend-selector': ['all']
+        }
       }
     ]
   }
@@ -1889,4 +2178,16 @@ export const BASE_VIEW_CONFIG = {
 export function getScaleValue(propValue, scale) {
   const propValueTemp = Math.round(propValue * scale)
   return propValueTemp > 1 ? propValueTemp : 1
+}
+
+export function getViewConfig(name) {
+  let viewConfigResult = null
+  CHART_TYPE_CONFIGS.forEach(category => {
+    category.details.forEach(viewConfig => {
+      if (viewConfig.value === name) {
+        viewConfigResult = deepCopy(viewConfig)
+      }
+    })
+  })
+  return viewConfigResult
 }

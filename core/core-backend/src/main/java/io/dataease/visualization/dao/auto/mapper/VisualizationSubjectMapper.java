@@ -10,7 +10,7 @@ import org.apache.ibatis.annotations.Mapper;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-06-11
+ * @since 2023-07-12
  */
 @Mapper
 public interface VisualizationSubjectMapper extends BaseMapper<VisualizationSubject> {

@@ -64,7 +64,7 @@ const handleNew = newComponentInfo => {
     component.id = guid()
     changeComponentSizeWithScale(component)
     dvMainStore.addComponent({ component: component, index: undefined })
-    snapshotStore.recordSnapshot()
+    snapshotStore.recordSnapshot('dv-handleNew')
   }
 }
 
@@ -80,7 +80,7 @@ const handleDrop = e => {
     component.id = guid()
     changeComponentSizeWithScale(component)
     dvMainStore.addComponent({ component: component, index: 0 })
-    snapshotStore.recordSnapshot()
+    snapshotStore.recordSnapshot('dv-handleDrop')
   }
 }
 
@@ -153,6 +153,10 @@ onMounted(() => {
   if (dvId) {
     initCanvasData(dvId, function () {
       // afterInit
+      nextTick(() => {
+        dvMainStore.setDataPrepareState(true)
+        snapshotStore.recordSnapshot('dv-init')
+      })
     })
   } else {
     ElMessage.error('未获取资源ID')
@@ -200,7 +204,7 @@ eventBus.on('handleNew', handleNew)
       </main>
       <!-- 右侧侧组件列表 -->
       <dv-sidebar
-        v-if="curComponent && !['UserView', 'VQuery'].includes(curComponent.component)"
+        v-if="curComponent && !['UserView'].includes(curComponent.component)"
         :title="'属性'"
         :width="240"
         :side-name="'componentProp'"
@@ -222,7 +226,7 @@ eventBus.on('handleNew', handleNew)
         <CanvasAttr></CanvasAttr>
       </dv-sidebar>
       <editor
-        v-show="curComponent && ['UserView', 'VQuery'].includes(curComponent.component)"
+        v-show="curComponent && ['UserView'].includes(curComponent.component)"
         :view="canvasViewInfo[curComponent ? curComponent.id : 'default']"
         :dataset-tree="state.datasetTree"
         :class="{ 'preview-aside': editMode === 'preview' }"

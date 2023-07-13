@@ -56,7 +56,7 @@ const resourceForm = reactive({
 const nameMap = {
   newFolder: '新建文件夹',
   newLeaf: '新建',
-  move: '移动',
+  move: '移动到',
   rename: '编辑'
 }
 
@@ -258,7 +258,7 @@ const emits = defineEmits(['finish'])
         >
           <template #default="{ data: { name } }">
             <el-icon>
-              <Icon name="scene"></Icon>
+              <Icon name="dv-folder"></Icon>
             </el-icon>
             <span :title="name">{{ name }}</span>
           </template>
@@ -286,7 +286,7 @@ const emits = defineEmits(['finish'])
             <template #default="{ data }">
               <span class="custom-tree-node">
                 <el-icon>
-                  <Icon name="scene"></Icon>
+                  <Icon name="dv-folder"></Icon>
                 </el-icon>
                 <span :title="data.name">{{ data.name }}</span>
               </span>

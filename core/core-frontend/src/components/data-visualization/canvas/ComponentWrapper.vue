@@ -68,7 +68,6 @@ const onMouseEnter = () => {
 }
 
 const componentBackgroundStyle = computed(() => {
-  const style = {}
   if (config.value.commonBackground) {
     const {
       backgroundColorSelect,
@@ -76,8 +75,11 @@ const componentBackgroundStyle = computed(() => {
       alpha,
       backgroundImageEnable,
       backgroundType,
-      outerImage
+      outerImage,
+      innerPadding,
+      borderRadius
     } = config.value.commonBackground
+    const style = { padding: innerPadding + 'px', borderRadius: borderRadius + 'px' }
     let colorRGBA = ''
     if (backgroundColorSelect && backgroundColor) {
       colorRGBA =
@@ -94,8 +96,9 @@ const componentBackgroundStyle = computed(() => {
     } else {
       style['background-color'] = colorRGBA
     }
+    return style
   }
-  return style
+  return {}
 })
 
 const svgInnerEnable = computed(() => {
@@ -114,7 +117,7 @@ const commonBackgroundSvgInner = computed(() => {
 
 <template>
   <div class="wrapper-outer" @click="onClick" @mouseenter="onMouseEnter">
-    <div class="wrapper-inner" :style="componentBackgroundStyle">
+    <div class="wrapper-inner" :class="showPosition" :style="componentBackgroundStyle">
       <component-edit-bar
         class="wrapper-edit-bar"
         :index="index"
@@ -155,11 +158,20 @@ const commonBackgroundSvgInner = computed(() => {
   height: 100%;
   position: relative;
   background-size: 100% 100% !important;
+}
+
+.preview {
   .wrapper-edit-bar {
     display: none;
   }
   &:hover .wrapper-edit-bar {
     display: inherit !important;
+  }
+}
+
+.multiplexing {
+  .wrapper-edit-bar {
+    display: inherit;
   }
 }
 

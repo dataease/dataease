@@ -1,12 +1,6 @@
 <template>
   <div class="shape">
-    <div
-      class="shape-inner"
-      :class="{ active, 'shape-edit': isEditMode }"
-      :style="componentBackgroundStyle"
-      @click="selectCurComponent"
-      @mousedown="handleMouseDownOnShape"
-    >
+    <div class="shape-outer" :class="{ active, 'shape-edit': isEditMode }">
       <component-edit-bar
         v-if="componentActiveFlag"
         :index="index"
@@ -14,7 +8,22 @@
         :show-position="showPosition"
         @userViewEnlargeOpen="userViewEnlargeOpen"
       ></component-edit-bar>
-      <span v-show="element['isLock']" class="iconfont icon-suo"></span>
+      <div
+        class="shape-inner"
+        :style="componentBackgroundStyle"
+        @click="selectCurComponent"
+        @mousedown="handleMouseDownOnShape"
+      >
+        <span v-show="element['isLock']" class="iconfont icon-suo"></span>
+        <!--边框背景-->
+        <Icon
+          v-if="svgInnerEnable"
+          :style="{ color: element.commonBackground.innerImageColor }"
+          class-name="svg-background"
+          :name="commonBackgroundSvgInner"
+        ></Icon>
+        <slot></slot>
+      </div>
       <div
         v-for="item in isActive() ? getPointList() : []"
         :key="item"
@@ -22,14 +31,6 @@
         :style="getPointStyle(item)"
         @mousedown="handleMouseDownOnPoint(item, $event)"
       ></div>
-      <!--边框背景-->
-      <Icon
-        v-if="svgInnerEnable"
-        :style="{ color: element.commonBackground.innerImageColor }"
-        class-name="svg-background"
-        :name="commonBackgroundSvgInner"
-      ></Icon>
-      <slot></slot>
     </div>
   </div>
 </template>
@@ -54,7 +55,7 @@ const snapshotStore = snapshotStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
 const composeStore = composeStoreWithOut()
 
-const { curComponent, dvInfo, editMode } = storeToRefs(dvMainStore)
+const { curComponent, dvInfo, editMode, batchOptStatus } = storeToRefs(dvMainStore)
 const { editor } = storeToRefs(composeStore)
 const emit = defineEmits([
   'userViewEnlargeOpen',
@@ -72,7 +73,17 @@ const state = reactive({
   }
 })
 
-const showPosition = computed(() => (isEditMode.value ? 'canvas' : 'preview'))
+const showPosition = computed(() => {
+  let position
+  if (batchOptStatus.value) {
+    position = 'batchOpt'
+  } else if (isEditMode.value) {
+    position = 'canvas'
+  } else {
+    position = 'preview'
+  }
+  return position
+})
 
 const props = defineProps({
   active: {
@@ -293,7 +304,7 @@ const handleMouseDownOnShape = e => {
 
   const up = () => {
     dashboardActive.value && emit('onMouseUp')
-    hasMove && snapshotStore.recordSnapshot()
+    hasMove && snapshotStore.recordSnapshot('shape-handleMouseDownOnShape-up')
     // 触发元素停止移动事件，用于隐藏标线
     eventBus.emit('unMove')
     document.removeEventListener('mousemove', move)
@@ -387,7 +398,7 @@ const handleMouseDownOnPoint = (point, e) => {
     dashboardActive.value && emit('onMouseUp')
     document.removeEventListener('mousemove', move)
     document.removeEventListener('mouseup', up)
-    needSave && snapshotStore.recordSnapshot()
+    needSave && snapshotStore.recordSnapshot('shape-handleMouseDownOnPoint-up')
   }
 
   document.addEventListener('mousemove', move)
@@ -430,7 +441,6 @@ const commonBackgroundSvgInner = computed(() => {
 })
 
 const componentBackgroundStyle = computed(() => {
-  const style = {}
   if (element.value.commonBackground) {
     const {
       backgroundColorSelect,
@@ -438,8 +448,11 @@ const componentBackgroundStyle = computed(() => {
       alpha,
       backgroundImageEnable,
       backgroundType,
-      outerImage
+      outerImage,
+      innerPadding,
+      borderRadius
     } = element.value.commonBackground
+    const style = { padding: innerPadding + 'px', borderRadius: borderRadius + 'px' }
     let colorRGBA = ''
     if (backgroundColorSelect && backgroundColor && backgroundColor.indexOf('rgb') === -1) {
       colorRGBA = hexColorToRGBA(backgroundColor, alpha)
@@ -455,12 +468,13 @@ const componentBackgroundStyle = computed(() => {
     } else {
       style['background-color'] = colorRGBA
     }
+    return style
   }
-  return style
+  return {}
 })
 
 const componentActiveFlag = computed(() => {
-  return active.value && dashboardActive.value
+  return (active.value || batchOptStatus.value) && dashboardActive.value
 })
 
 const showViewDetails = () => {
@@ -493,6 +507,7 @@ onMounted(() => {
   height: 100%;
   position: relative;
   background-size: 100% 100% !important;
+  overflow: hidden;
 }
 
 .shape-edit {
@@ -544,5 +559,11 @@ onMounted(() => {
   left: 0;
   width: 100% !important;
   height: 100% !important;
+}
+
+.shape-outer {
+  width: 100%;
+  height: 100%;
+  position: relative;
 }
 </style>

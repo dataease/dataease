@@ -5,7 +5,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import io.dataease.api.chart.dto.ChartFieldCustomFilterDTO;
 import io.dataease.api.chart.dto.ColumnPermissionItem;
 import io.dataease.api.chart.dto.DeSortField;
-import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.api.dataset.dto.DeSortDTO;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.union.UnionDTO;
@@ -15,12 +14,17 @@ import io.dataease.dataset.dao.auto.entity.CoreDatasetTableField;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupMapper;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableFieldMapper;
 import io.dataease.datasource.provider.CalciteProvider;
+import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.exception.DEException;
 import io.dataease.utils.*;
+import io.dataease.dataset.utils.TableUtils;
+import io.dataease.utils.BeanUtils;
+import io.dataease.utils.IDUtils;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
@@ -30,6 +34,7 @@ import java.util.stream.Collectors;
  * @Author Junjun
  */
 @Component
+@Transactional
 public class DatasetTableFieldManage {
     @Resource
     private CoreDatasetTableFieldMapper coreDatasetTableFieldMapper;
@@ -49,6 +54,22 @@ public class DatasetTableFieldManage {
         }
     }
 
+    public DatasetTableFieldDTO chartFieldSave(DatasetTableFieldDTO datasetTableFieldDTO) {
+        CoreDatasetTableField coreDatasetTableField = coreDatasetTableFieldMapper.selectById(datasetTableFieldDTO.getId());
+        QueryWrapper<CoreDatasetTableField> wrapper = new QueryWrapper<>();
+        wrapper.eq("name", datasetTableFieldDTO.getName());
+        wrapper.eq("chart_id", datasetTableFieldDTO.getChartId());
+        if (ObjectUtils.isNotEmpty(coreDatasetTableField)) {
+            wrapper.ne("id", datasetTableFieldDTO.getId());
+        }
+        List<CoreDatasetTableField> fields = coreDatasetTableFieldMapper.selectList(wrapper);
+        if (ObjectUtils.isNotEmpty(fields)) {
+            DEException.throwException("name duplicated.");
+        }
+        datasetTableFieldDTO.setDatasetGroupId(null);
+        return save(datasetTableFieldDTO);
+    }
+
     /**
      * 数据集保存时使用
      *
@@ -59,6 +80,11 @@ public class DatasetTableFieldManage {
         CoreDatasetTableField coreDatasetTableField = coreDatasetTableFieldMapper.selectById(datasetTableFieldDTO.getId());
         CoreDatasetTableField record = new CoreDatasetTableField();
         BeanUtils.copyBean(record, datasetTableFieldDTO);
+        if (ObjectUtils.isEmpty(record.getDataeaseName())) {
+            String n = TableUtils.fieldNameShort(record.getId() + "");
+            record.setFieldShortName(n);
+            record.setDataeaseName(n);
+        }
         if (ObjectUtils.isEmpty(coreDatasetTableField)) {
             coreDatasetTableFieldMapper.insert(record);
         } else {

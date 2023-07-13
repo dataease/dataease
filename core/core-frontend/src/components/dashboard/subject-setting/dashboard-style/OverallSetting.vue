@@ -131,17 +131,16 @@ const dvMainStore = dvMainStoreWithOut()
 import {
   adaptCurThemeCommonStyleAll,
   DARK_THEME_COMPONENT_BACKGROUND,
-  DARK_THEME_PANEL_BACKGROUND,
+  DARK_THEME_DASHBOARD_BACKGROUND,
   LIGHT_THEME_COMPONENT_BACKGROUND,
-  LIGHT_THEME_PANEL_BACKGROUND
+  LIGHT_THEME_DASHBOARD_BACKGROUND
 } from '@/utils/canvasStyle'
 import {
-  DEFAULT_COLOR_CASE,
   DEFAULT_COLOR_CASE_DARK,
   DEFAULT_TAB_COLOR_CASE_DARK,
   DEFAULT_TAB_COLOR_CASE_LIGHT,
-  DEFAULT_TITLE_STYLE,
   DEFAULT_TITLE_STYLE_DARK,
+  DEFAULT_TITLE_STYLE_LIGHT,
   FILTER_COMMON_STYLE_DARK,
   FILTER_COMMON_STYLE_LIGHT
 } from '@/views/chart/components/editor/util/chart'
@@ -165,30 +164,26 @@ const themeChange = modifyName => {
   if (modifyName === 'themeColor') {
     // 主题变更
     dvMainStore.canvasStyleData.component.chartCommonStyle.backgroundColorSelect = true
-    dvMainStore.canvasStyleData.dashboard.backgroundType = 'color'
+    dvMainStore.canvasStyleData.backgroundType = 'backgroundColor'
     if (state.overallSettingForm.dashboard.themeColor === 'light') {
-      dvMainStore.canvasStyleData.dashboard.color = deepCopy(LIGHT_THEME_PANEL_BACKGROUND)
-      dvMainStore.canvasStyleData.component.chartCommonStyle.color = deepCopy(
+      dvMainStore.canvasStyleData.backgroundColor = LIGHT_THEME_DASHBOARD_BACKGROUND
+      dvMainStore.canvasStyleData.component.chartCommonStyle.color =
         LIGHT_THEME_COMPONENT_BACKGROUND
-      )
-      dvMainStore.canvasStyleData.component.chartTitle = deepCopy(DEFAULT_TITLE_STYLE)
-      dvMainStore.canvasStyleData.component.chartColor = deepCopy(DEFAULT_COLOR_CASE)
+      dvMainStore.canvasStyleData.component.chartTitle = deepCopy(DEFAULT_TITLE_STYLE_LIGHT)
+      dvMainStore.canvasStyleData.component.chartColor = deepCopy(DEFAULT_TAB_COLOR_CASE_LIGHT)
       dvMainStore.canvasStyleData.component.filterStyle = deepCopy(FILTER_COMMON_STYLE_LIGHT)
       dvMainStore.canvasStyleData.component.tabStyle = deepCopy(DEFAULT_TAB_COLOR_CASE_LIGHT)
     } else {
-      dvMainStore.canvasStyleData.dashboard.color = deepCopy(DARK_THEME_PANEL_BACKGROUND)
-      dvMainStore.canvasStyleData.component.chartCommonStyle.color = deepCopy(
-        DARK_THEME_COMPONENT_BACKGROUND
-      )
+      dvMainStore.canvasStyleData.backgroundColor = DARK_THEME_DASHBOARD_BACKGROUND
+      dvMainStore.canvasStyleData.component.chartCommonStyle.color = DARK_THEME_COMPONENT_BACKGROUND
       dvMainStore.canvasStyleData.component.chartTitle = deepCopy(DEFAULT_TITLE_STYLE_DARK)
       dvMainStore.canvasStyleData.component.chartColor = deepCopy(DEFAULT_COLOR_CASE_DARK)
       dvMainStore.canvasStyleData.component.filterStyle = deepCopy(FILTER_COMMON_STYLE_DARK)
       dvMainStore.canvasStyleData.component.tabStyle = deepCopy(DEFAULT_TAB_COLOR_CASE_DARK)
     }
     adaptCurThemeCommonStyleAll()
-    emits('onThemeColorChange')
   }
-  snapshotStore.recordSnapshot()
+  snapshotStore.recordSnapshot('overallSetting-themeChange')
 }
 const colorButtonClick = val => {
   if (val !== state.overallSettingForm.dashboard.themeColor) {

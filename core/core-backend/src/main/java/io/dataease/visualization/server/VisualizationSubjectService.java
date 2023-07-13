@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.api.visualization.VisualizationSubjectApi;
 import io.dataease.api.visualization.request.VisualizationSubjectRequest;
 import io.dataease.api.visualization.vo.VisualizationSubjectVO;
+import io.dataease.commons.UUIDUtils;
 import io.dataease.commons.exception.DataEaseException;
 import io.dataease.utils.BeanUtils;
+import io.dataease.utils.IDUtils;
 import io.dataease.visualization.dao.auto.entity.DataVisualizationInfo;
 import io.dataease.visualization.dao.auto.entity.VisualizationSubject;
 import io.dataease.visualization.dao.auto.mapper.VisualizationSubjectMapper;
@@ -75,13 +77,13 @@ public class VisualizationSubjectService implements VisualizationSubjectApi {
                     }
                 }
             }
-            request.setId(UUID.randomUUID().toString());
+            request.setId(IDUtils.snowID().toString());
             request.setCreateTime(System.currentTimeMillis());
             request.setType("self");
             request.setName("个人主题" + count);
             request.setCreateNum(count);
             VisualizationSubject saveInfo = new VisualizationSubject();
-            BeanUtils.copyBean(request,saveInfo);
+            BeanUtils.copyBean(saveInfo,request);
             subjectMapper.insert(saveInfo);
         } else {
             QueryWrapper<VisualizationSubject> wrapper = new QueryWrapper<>();

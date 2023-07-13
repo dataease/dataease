@@ -89,6 +89,7 @@ public class Quota2SQLObj {
                 }
             }
         }
+
         return SQLObj.builder()
                 .fieldName(fieldName)
                 .fieldAlias(fieldAlias)

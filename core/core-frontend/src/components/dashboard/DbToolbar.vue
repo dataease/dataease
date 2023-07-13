@@ -16,9 +16,11 @@ import Icon from '../icon-custom/src/Icon.vue'
 import { update, save } from '@/api/visualization/dataVisualization'
 import ComponentGroup from '@/components/visualization/ComponentGroup.vue'
 import UserViewGroup from '@/custom-component/component-group/UserViewGroup.vue'
+import QueryGroup from '@/custom-component/component-group/QueryGroup.vue'
 import MediaGroup from '@/custom-component/component-group/MediaGroup.vue'
 import TextGroup from '@/custom-component/component-group/TextGroup.vue'
 import ComponentButton from '@/components/visualization/ComponentButton.vue'
+import MultiplexingCanvas from '@/views/common/MultiplexingCanvas.vue'
 
 const isShowPreview = ref(false)
 const isScreenshot = ref(false)
@@ -34,10 +36,12 @@ const {
   componentData,
   dvInfo,
   canvasViewInfo,
-  editMode
+  editMode,
+  batchOptStatus
 } = storeToRefs(dvMainStore)
 const { areaData } = storeToRefs(composeStore)
 const dvModel = 'dashboard'
+const multiplexingRef = ref(null)
 let scale = ref(canvasStyleData.value.scale)
 let nameEdit = ref(false)
 let inputName = ref('')
@@ -72,12 +76,12 @@ const unlock = () => {
 
 const compose = () => {
   composeStore.compose()
-  snapshotStore.recordSnapshot()
+  snapshotStore.recordSnapshot('db-compose')
 }
 
 const decompose = () => {
   composeStore.decompose()
-  snapshotStore.recordSnapshot()
+  snapshotStore.recordSnapshot('db-decompose')
 }
 
 const undo = () => {
@@ -125,7 +129,7 @@ const handleFileChange = e => {
       // 根据画面比例修改组件样式比例
       changeComponentSizeWithScale(component)
       dvMainStore.addComponent({ component: component, index: undefined })
-      snapshotStore.recordSnapshot()
+      snapshotStore.recordSnapshot('db-handleFileChange')
 
       $('#input').setAttribute('type', 'text')
       $('#input').setAttribute('type', 'file')
@@ -163,7 +167,7 @@ const saveCanvas = () => {
 const clearCanvas = () => {
   dvMainStore.setCurComponent({ component: null, index: null })
   dvMainStore.setComponentData([])
-  snapshotStore.recordSnapshot()
+  snapshotStore.recordSnapshot('db-clearCanvas')
 }
 
 const handlePreviewChange = () => {
@@ -176,9 +180,25 @@ const backToMain = () => {
   window.opener.focus()
 }
 
+const multiplexingCanvasOpen = () => {
+  multiplexingRef.value.dialogInit()
+}
+
 eventBus.on('preview', preview)
 eventBus.on('save', saveCanvas)
 eventBus.on('clearCanvas', clearCanvas)
+
+const openDataBoardSetting = () => {
+  dvMainStore.setCurComponent({ component: null, index: null })
+}
+
+const batchOptStatusChange = value => {
+  dvMainStore.setBatchOptStatus(value)
+}
+
+const saveBatchChange = () => {
+  batchOptStatusChange(false)
+}
 </script>
 
 <template>
@@ -198,7 +218,7 @@ eventBus.on('clearCanvas', clearCanvas)
           </el-icon>
         </div>
       </div>
-      <div class="middle-area">
+      <div class="middle-area" v-show="!batchOptStatus">
         <component-group
           :base-width="410"
           :show-split-line="true"
@@ -213,9 +233,9 @@ eventBus.on('clearCanvas', clearCanvas)
           :show-split-line="true"
           themes="light"
           icon-name="dv-filter"
-          title="过滤组件"
+          title="查询组件"
         >
-          <div>过滤组件</div>
+          <query-group></query-group>
         </component-group>
         <component-group themes="light" :base-width="148" icon-name="dv-text" title="文本">
           <text-group themes="light" :dv-model="dvModel"></text-group>
@@ -224,11 +244,23 @@ eventBus.on('clearCanvas', clearCanvas)
           <media-group themes="light" :dv-model="dvModel"></media-group>
         </component-group>
         <component-button icon-name="dv-tab" title="Tab"></component-button>
-        <component-button icon-name="dv-copy" title="复用"></component-button>
-        <component-button icon-name="dv-batch" title="批量操作"></component-button>
-        <component-button icon-name="dv-dashboard" title="仪表板配置"></component-button>
+        <component-button
+          icon-name="dv-copy"
+          title="复用"
+          @customClick="multiplexingCanvasOpen"
+        ></component-button>
+        <component-button
+          @custom-click="batchOptStatusChange(true)"
+          icon-name="dv-batch"
+          title="批量操作"
+        ></component-button>
+        <component-button
+          @custom-click="openDataBoardSetting"
+          icon-name="dv-dashboard"
+          title="仪表板配置"
+        ></component-button>
       </div>
-      <div class="right-area">
+      <div class="right-area" v-show="!batchOptStatus">
         <el-button
           class="custom-normal-button"
           v-show="editMode === 'edit'"
@@ -244,6 +276,20 @@ eventBus.on('clearCanvas', clearCanvas)
           >保存</el-button
         >
       </div>
+
+      <div class="right-area batch-area" v-show="batchOptStatus">
+        <el-button
+          class="custom-normal-button"
+          @click="batchOptStatusChange(false)"
+          style="float: right; margin-right: 12px"
+        >
+          <!--          <Icon style="width: 20px; height: 20px" name="dv-batch"></Icon>-->
+          退出批量操作</el-button
+        >
+        <el-button @click="saveBatchChange" style="float: right; margin-right: 12px" type="primary"
+          >确定</el-button
+        >
+      </div>
     </div>
     <Teleport v-if="nameEdit" :to="'#canvas-name'">
       <input ref="nameInput" v-model="inputName" @blur="closeEditCanvasName" />
@@ -257,10 +303,14 @@ eventBus.on('clearCanvas', clearCanvas)
       type="primary"
       >编辑</el-button
     >
+    <multiplexing-canvas ref="multiplexingRef"></multiplexing-canvas>
   </div>
 </template>
 
 <style lang="less" scoped>
+.batch-area {
+  flex: 1;
+}
 .edit-button {
   right: 10px;
   top: 10px;

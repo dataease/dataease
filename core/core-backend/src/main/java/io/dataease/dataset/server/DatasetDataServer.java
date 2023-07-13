@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @Author Junjun
@@ -38,7 +39,7 @@ public class DatasetDataServer implements DatasetDataApi {
     }
 
     @Override
-    public Map<String, Object> getFieldEnum(Long id) throws Exception {
-        return datasetDataManage.getFieldEnum(id);
+    public Set<String> getFieldEnum(List<String> ids) throws Exception {
+        return datasetDataManage.getFieldEnum(ids);
     }
 }

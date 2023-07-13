@@ -4,12 +4,15 @@ import cn.hutool.core.collection.CollectionUtil;
 import io.dataease.api.dataset.DatasetTableApi;
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.api.dataset.dto.MultFieldValuesRequest;
+import io.dataease.api.dataset.engine.SQLFunctionDTO;
+import io.dataease.api.dataset.engine.SQLFunctionsEnum;
 import io.dataease.dataset.manage.DatasetTableFieldManage;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -25,7 +28,7 @@ public class DatasetFieldServer implements DatasetTableApi {
 
     @Override
     public DatasetTableFieldDTO save(DatasetTableFieldDTO datasetTableFieldDTO) throws Exception {
-        return datasetTableFieldManage.save(datasetTableFieldDTO);
+        return datasetTableFieldManage.chartFieldSave(datasetTableFieldDTO);
     }
 
     @Override
@@ -47,7 +50,6 @@ public class DatasetFieldServer implements DatasetTableApi {
     public Map<String, List<DatasetTableFieldDTO>> listByDQ(Long id) {
         return datasetTableFieldManage.listByDQ(id);
     }
-
 
     @Override
     public List<Object> multFieldValuesForPermissions(@RequestBody MultFieldValuesRequest multFieldValuesRequest) throws Exception {
@@ -71,4 +73,17 @@ public class DatasetFieldServer implements DatasetTableApi {
         return list;
     }
 
+    @Override
+    public List<SQLFunctionDTO> getFunction() {
+        SQLFunctionsEnum[] values = SQLFunctionsEnum.values();
+        return Arrays.stream(values).map(ele -> {
+            SQLFunctionDTO dto = new SQLFunctionDTO();
+            dto.setName(ele.getName());
+            dto.setFunc(ele.getFunc());
+            dto.setType(ele.getType());
+            dto.setDesc(ele.getDesc());
+            dto.setCustom(ele.isCustom());
+            return dto;
+        }).collect(Collectors.toList());
+    }
 }

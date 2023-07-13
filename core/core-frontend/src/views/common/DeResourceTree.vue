@@ -17,10 +17,15 @@ const props = defineProps({
   curCanvasType: {
     type: String,
     required: true
+  },
+  showPosition: {
+    required: false,
+    type: String,
+    default: 'preview'
   }
 })
 
-const { curCanvasType } = toRefs(props)
+const { curCanvasType, showPosition } = toRefs(props)
 const resourceLabel = curCanvasType.value === 'dataV' ? '数据大屏' : '仪表板'
 const newResourceLabel = '新建' + resourceLabel
 
@@ -191,7 +196,7 @@ onMounted(() => {
 
 <template>
   <div class="resource-tree">
-    <div class="icon-methods">
+    <div class="icon-methods" v-show="showPosition === 'preview'">
       <span class="title"> {{ resourceLabel }} </span>
       <el-icon
         title="新建文件夹"
@@ -248,7 +253,7 @@ onMounted(() => {
             <Icon name="dv-screen-spine"></Icon>
           </el-icon>
           <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
-          <div class="icon-more">
+          <div class="icon-more" v-if="showPosition === 'preview'">
             <span v-on:click.stop>
               <el-icon
                 v-if="data.nodeType !== 'folder'"

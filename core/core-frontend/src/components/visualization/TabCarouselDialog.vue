@@ -56,7 +56,7 @@ const switchTimeChange = () => {
 const onSubmit = () => {
   curComponent.value.style.carouselEnable = state.carouselEnable
   curComponent.value.style.switchTime = state.switchTime
-  snapshotStore.canvasChange()
+  snapshotStore.recordSnapshotCache()
   onClose()
 }
 

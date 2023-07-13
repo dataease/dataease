@@ -8,6 +8,8 @@ import { DEFAULT_TITLE_STYLE } from '@/views/chart/components/editor/util/chart'
 import DrillPath from '@/views/chart/components/views/components/DrillPath.vue'
 import { ElMessage } from 'element-plus-secondary'
 import { nextTick } from 'vue'
+import { checkIsBatchOptView } from '@/utils/canvasUtils'
+import { useFilter } from '@/hooks/web/useFilter'
 
 const g2 = ref<any>()
 
@@ -107,8 +109,9 @@ const chartClick = param => {
 
 // 仪表板和大屏所有额外过滤参数都在此处
 const filter = () => {
+  const { filter } = useFilter(view.value.id)
   return {
-    // filter: this.initLoad ? this.filters : this.cfilters,
+    filter,
     // linkageFilters: this.element.linkageFilters,
     // outerParamsFilters: this.element.outerParamsFilters,
     drill: state.drillClickDimensionList
@@ -127,10 +130,31 @@ const onDrillFilters = param => {
 
 onMounted(() => {
   useEmitt({
+    name: 'snapshotChangeToView',
+    callback: function (cacheViewInfo) {
+      initTitle()
+      nextTick(() => {
+        if (
+          cacheViewInfo.snapshotCacheViewCalc.includes(view.value.id) ||
+          cacheViewInfo.snapshotCacheViewCalc.includes('all')
+        ) {
+          view.value.chartExtRequest = filter()
+          g2?.value?.calcData(view.value)
+        } else if (
+          cacheViewInfo.snapshotCacheViewRender.includes(view.value.id) ||
+          cacheViewInfo.snapshotCacheViewRender.includes('all')
+        ) {
+          g2?.value?.renderChart(view.value)
+        }
+      })
+    }
+  })
+  useEmitt({
     name: 'calcData-' + view.value.id,
     callback: function (val) {
       initTitle()
       nextTick(() => {
+        view.value.chartExtRequest = filter()
         g2?.value?.calcData(val)
       })
     }
@@ -142,6 +166,12 @@ onMounted(() => {
       nextTick(() => {
         g2?.value?.renderChart(val)
       })
+    }
+  })
+  useEmitt({
+    name: 'resetDrill-' + view.value.id,
+    callback: function (val) {
+      drillJump(val)
     }
   })
 })

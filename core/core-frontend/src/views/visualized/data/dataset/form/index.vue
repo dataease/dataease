@@ -4,10 +4,12 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { ElIcon, ElMessageBox, ElMessage } from 'element-plus-secondary'
 import type { Action } from 'element-plus-secondary'
 import FieldMore from './FieldMore.vue'
+import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import { Icon } from '@/components/icon-custom'
 import CalcFieldEdit from './CalcFieldEdit.vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import UnionEdit from './UnionEdit.vue'
+import type { FormInstance } from 'element-plus-secondary'
 import CreatDsGroup from './CreatDsGroup.vue'
 import { guid, getFieldName, timeTypes } from './util.js'
 import {
@@ -39,12 +41,13 @@ interface Field {
 
 const { t } = useI18n()
 const route = useRoute()
+const { push } = useRouter()
 const creatDsFolder = ref()
 const editCalcField = ref(false)
 const calcEdit = ref()
 const editUnion = ref(false)
 const datasetDrag = ref()
-const datasetName = ref('新建数据源')
+const datasetName = ref('新建数据集')
 const tabActive = ref('preview')
 const originName = ref('')
 const activeName = ref('')
@@ -59,8 +62,20 @@ const showLeft = ref(true)
 const maskShow = ref(false)
 const loading = ref(false)
 const nameExist = ref(false)
-const datasetType = ref('sql')
+const updateCustomTime = ref(false)
 const editerName = ref()
+const currentField = ref({
+  dateFormat: '',
+  id: '',
+  dateFormatType: '',
+  name: ''
+})
+
+const ruleFormRef = ref<FormInstance>()
+
+const rules = {
+  name: [{ required: true, message: '自定义时间格式不能为空', trigger: 'blur' }]
+}
 
 const sqlNode = reactive<Table>({
   datasourceId: '',
@@ -91,6 +106,37 @@ const getDsName = (id: string) => {
   return (state.dataSourceList.find(ele => ele.id === id) || {}).name
 }
 
+const backToMain = () => {
+  push('/data/dataset')
+}
+
+const closeCustomTime = () => {
+  dimensions.value.concat(quota.value).some(ele => {
+    if (ele.id === currentField.value.id) {
+      delete currentField.value.name
+      Object.assign(ele, currentField.value)
+      return true
+    }
+    return false
+  })
+  updateCustomTime.value = false
+}
+
+const confirmCustomTime = () => {
+  ruleFormRef.value.validate(valid => {
+    if (valid) {
+      dimensions.value.concat(quota.value).some(ele => {
+        if (ele.id === currentField.value.id) {
+          ele.dateFormat = currentField.value.name
+          return true
+        }
+        return false
+      })
+      updateCustomTime.value = false
+    }
+  })
+}
+
 watch(searchTable, val => {
   state.tableData = tableList.filter(ele => ele.name.includes(val))
 })
@@ -98,7 +144,13 @@ const editeSave = () => {
   const union = []
   loading.value = true
   dfsNodeList(union, datasetDrag.value.nodeList)
-  saveDatasetTree({ ...nodeInfo, union, allFields: allfields.value, nodeType: 'dataset' })
+  saveDatasetTree({
+    ...nodeInfo,
+    name: datasetName.value,
+    union,
+    allFields: allfields.value,
+    nodeType: 'dataset'
+  })
     .then(() => {
       ElMessage.success('保存成功')
     })
@@ -115,9 +167,12 @@ const handleFieldMore = (ele, type) => {
     return
   }
   if (timeTypes.includes(type as string)) {
+    currentField.value.dateFormat = ele.dateFormat
+    currentField.value.dateFormatType = ele.dateFormatType
+
     ele.deType = 1
+    ele.dateFormatType = type
     ele.dateFormat = type
-    return
   }
   switch (type) {
     case 'copy':
@@ -127,18 +182,23 @@ const handleFieldMore = (ele, type) => {
       deleteField(ele)
       break
     case 'translate':
-      dqTrans(ele, ele.groupType)
+      dqTrans(ele.id)
       break
     case 'editor':
       editField(ele)
+      break
+    case 'custom':
+      currentField.value.id = ele.id
+      updateCustomTime.value = true
       break
     default:
       break
   }
 }
 
-const dqTrans = (item, val) => {
-  item.groupType = val === 'd' ? 'q' : 'd'
+const dqTrans = id => {
+  const obj = allfields.value.find(ele => ele.id === id)
+  obj.groupType = obj.groupType === 'd' ? 'q' : 'd'
 }
 
 const copyField = item => {
@@ -185,11 +245,7 @@ const addCalcField = groupType => {
 const editField = item => {
   editCalcField.value = true
   nextTick(() => {
-    calcEdit.value.initEdit(
-      item,
-      dimensions.value.filter(ele => ele.extField !== 2),
-      quota.value.filter(ele => ele.extField !== 2)
-    )
+    calcEdit.value.initEdit(item, dimensions.value, quota.value)
   })
 }
 
@@ -242,6 +298,8 @@ const initEdite = () => {
         pid,
         name
       }
+      datasetName.value = name
+      originName.value = name
       allfields.value = res.allFields || []
       dfsUnion(arr, res.union || [])
       datasetDrag.value.initState(arr)
@@ -283,11 +341,7 @@ const state = reactive({
   editArr: [],
   nodeList: [],
   dataSourceList: [],
-  tableData: [],
-  table: {
-    name: '',
-    id: ''
-  }
+  tableData: []
 })
 
 const allfields = ref([])
@@ -411,7 +465,7 @@ const nameExistValidator = () => {
     return
   }
   nameExist.value = state.nameList.some(
-    name => name === state.table.name && name !== originName.value
+    name => name === datasetName.value && name !== originName.value
   )
 }
 
@@ -436,6 +490,7 @@ const dsChange = (val: string) => {
   })
 }
 const datasetSave = () => {
+  if (nameExist.value) return
   if (nodeInfo.id) {
     editeSave()
     return
@@ -443,10 +498,17 @@ const datasetSave = () => {
   const union = []
   dfsNodeList(union, datasetDrag.value.nodeList)
   const { pid } = route.query
-  if (!pid || !union.length) {
+  if (!union.length) {
+    ElMessage.error('数据集不能为空')
     return
   }
-  creatDsFolder.value.createInit('dataset', { id: pid, union, allfields: allfields.value })
+
+  creatDsFolder.value.createInit(
+    'dataset',
+    { id: pid || '0', union, allfields: allfields.value },
+    '',
+    datasetName.value
+  )
 }
 
 const datasetPreview = () => {
@@ -534,20 +596,19 @@ const handleClick = () => {
   <div class="de-dataset-form" v-loading="loading">
     <div class="top">
       <span class="name">
-        <el-icon>
-          <Icon :name="`de-${datasetType}-new`"></Icon>
+        <el-icon @click="backToMain">
+          <Icon name="icon_left_outlined"></Icon>
         </el-icon>
         <template v-if="showInput">
-          <el-input ref="editerName" v-model="state.table.name" @blur="nameBlur" />
+          <el-input ref="editerName" v-model="datasetName" @blur="nameBlur" />
           <div v-if="nameExist" style="left: 55px" class="el-form-item__error">
             {{ t('deDataset.already_exists') }}
           </div>
         </template>
         <template v-else>
-          <span style="margin: 0 5px">{{ datasetName }}</span>
-          <el-icon style="margin-left: 5px" @click="handleClick">
-            <Icon name="icon_edit_outlined"></Icon>
-          </el-icon>
+          <span @click="handleClick" class="dataset-name" style="margin: 0 5px">{{
+            datasetName
+          }}</span>
         </template>
       </span>
       <span class="oprate">
@@ -693,7 +754,7 @@ const handleClick = () => {
                     <Icon name="icon_expand-right_filled"></Icon>
                   </ElIcon>
                   &nbsp;维度
-                  <ElIcon class="add hover-icon" @click="addCalcField('d')">
+                  <ElIcon class="add hover-icon" @click.stop="addCalcField('d')">
                     <Icon name="icon_add_outlined"></Icon>
                   </ElIcon>
                 </div>
@@ -724,7 +785,7 @@ const handleClick = () => {
                     <Icon name="icon_expand-right_filled"></Icon>
                   </ElIcon>
                   &nbsp;指标
-                  <ElIcon class="add hover-icon" @click="addCalcField('d')">
+                  <ElIcon class="add hover-icon" @click.stop="addCalcField('q')">
                     <Icon name="icon_add_outlined"></Icon>
                   </ElIcon>
                 </div>
@@ -759,7 +820,10 @@ const handleClick = () => {
                     :width="width"
                     :height="height"
                     fixed
-                  />
+                    ><template #empty>
+                      <empty-background description="暂无数据" img-type="noneWhite" />
+                    </template>
+                  </el-table-v2>
                 </template>
               </el-auto-resizer>
             </div>
@@ -793,6 +857,17 @@ const handleClick = () => {
       <el-button type="primary" @click="confirmEditCalc()">{{ t('dataset.confirm') }} </el-button>
     </template>
   </el-dialog>
+  <el-dialog v-model="updateCustomTime" width="1000px">
+    <el-form ref="ruleFormRef" :rules="rules" :model="currentField" label-width="120px">
+      <el-form-item prop="name" label="自定义时间格式">
+        <el-input v-model="currentField.name" />
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <el-button secondary @click="closeCustomTime()">{{ t('dataset.cancel') }} </el-button>
+      <el-button type="primary" @click="confirmCustomTime()">{{ t('dataset.confirm') }} </el-button>
+    </template>
+  </el-dialog>
 </template>
 
 <style lang="less" scoped>
@@ -805,16 +880,21 @@ const handleClick = () => {
     align-items: center;
     justify-content: space-between;
     padding: 0 24px;
-    box-shadow: 0 2px 2px 0 rgb(0 0 0 / 10%);
+    background: #050e21;
+    box-shadow: 0px 2px 4px 0px rgba(31, 35, 41, 0.12);
 
     .name {
+      color: #fff;
       font-family: PingFang SC;
       font-size: 16px;
-      font-weight: 500;
+      font-weight: 400;
       display: flex;
       align-items: center;
       width: 50%;
       position: relative;
+      .dataset-name {
+        cursor: pointer;
+      }
 
       .ed-input {
         min-width: 96px;
@@ -899,7 +979,7 @@ const handleClick = () => {
         }
 
         i {
-          cursor: none;
+          cursor: auto;
           font-size: 13.3px;
           color: var(--deTextPlaceholder, #8f959e);
         }
@@ -989,6 +1069,17 @@ const handleClick = () => {
             height: 100%;
             border-right: 1px solid rgba(31, 35, 41, 0.15);
 
+            :deep(.ed-tree-node__content) {
+              border-radius: 4px;
+              &:hover {
+                background: rgba(31, 35, 41, 0.1);
+              }
+            }
+
+            :deep(.ed-tree-node.is-current > .ed-tree-node__content:not(.is-menu):after) {
+              display: none;
+            }
+
             .custom-tree-node {
               flex: 1;
               display: flex;
@@ -1008,7 +1099,6 @@ const handleClick = () => {
                 margin-left: auto;
                 position: relative;
                 z-index: 5;
-                background: #fff;
               }
             }
 
@@ -1029,7 +1119,8 @@ const handleClick = () => {
               .title {
                 cursor: pointer;
                 position: sticky;
-                top: 0;
+                margin: 1px;
+                top: 1px;
                 height: 49px;
                 font-family: 'PingFang SC';
                 font-style: normal;
@@ -1039,6 +1130,8 @@ const handleClick = () => {
                 color: #1f2329;
                 display: flex;
                 align-items: center;
+                z-index: 10;
+                background: #fff;
 
                 .add {
                   margin-left: auto;

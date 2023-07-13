@@ -12,10 +12,15 @@ const props = defineProps({
 })
 
 const { title, iconName, showSplitLine } = toRefs(props)
+const emits = defineEmits(['customClick'])
 </script>
 
 <template>
-  <el-row class="group_icon" :class="{ 'group-right-border': showSplitLine }">
+  <el-row
+    class="group_icon"
+    :class="{ 'group-right-border': showSplitLine }"
+    v-on:click="emits('customClick')"
+  >
     <el-col :span="24" class="group_inner" :class="{ 'inner-active': active }">
       <Icon class="toolbar-icon" :name="iconName" />
       <span>{{ title }}</span>

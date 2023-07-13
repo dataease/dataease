@@ -2,6 +2,7 @@
 import { ref, reactive, onMounted, onBeforeUnmount } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import CodeMirror from './CodeMirror.vue'
+import { getFunction } from '@/api/dataset'
 export interface CalcFieldType {
   id?: string
   datasourceId?: string // 数据源id
@@ -85,8 +86,8 @@ const setNameIdTrans = (from, to, originName, name2Auto?: string[]) => {
 
 const initEdit = (obj, dimensionData, quotaData) => {
   Object.assign(fieldForm, { ...defaultForm, ...obj })
-  state.dimensionData = dimensionData.filter(ele => ele.extField === 0)
-  state.quotaData = quotaData.filter(ele => ele.extField === 0)
+  state.dimensionData = dimensionData
+  state.quotaData = quotaData
   if (!obj.originName) {
     mirror.value.dispatch({
       changes: {
@@ -135,11 +136,19 @@ const insertParamToCodeMirror = (value: string) => {
   })
 }
 
+const initFunction = () => {
+  getFunction().then(res => {
+    state.functionData = res
+  })
+}
+
 defineExpose({
   initEdit,
   setFieldForm,
   fieldForm
 })
+
+initFunction()
 </script>
 
 <template>
@@ -217,7 +226,12 @@ defineExpose({
               </el-icon>
             </el-tooltip>
           </span>
-          <code-mirror ref="myCm"></code-mirror>
+          <code-mirror
+            :quotaMap="state.quotaData.map(ele => ele.name)"
+            :dimensionMap="state.dimensionData.map(ele => ele.name)"
+            ref="myCm"
+            dom-id="calcField"
+          ></code-mirror>
         </div>
       </div>
       <div class="padding-lr">
@@ -321,7 +335,7 @@ defineExpose({
           </template>
         </el-input>
         <el-row class="function-height">
-          <div v-if="state.functionData.length">
+          <div v-if="state.functionData.length" style="width: 100%">
             <el-popover
               v-for="(item, index) in state.functionData"
               :key="index"

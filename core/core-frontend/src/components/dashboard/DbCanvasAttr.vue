@@ -14,17 +14,16 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import Slider from '@/components/dashboard/subject-setting/pre-subject/Slider.vue'
 import OverallSetting from '@/components/dashboard/subject-setting/dashboard-style/OverallSetting.vue'
-import BackgroundOverall from '@/components/visualization/component-background/BackgroundOverall.vue'
 import ComponentColorSelector from '@/components/dashboard/subject-setting/dashboard-style/ComponentColorSelector.vue'
 import { adaptCurThemeCommonStyleAll } from '@/utils/canvasStyle'
 import eventBus from '@/utils/eventBus'
-import ViewTitle from '@/components/dashboard/subject-setting/dashboard-style/ViewTitle.vue'
-import FilterStyleSelector from '@/components/dashboard/subject-setting/dashboard-style/FilterStyleSelector.vue'
 import ViewSimpleTitle from '@/components/dashboard/subject-setting/dashboard-style/ViewSimpleTitle.vue'
 import FilterStyleSimpleSelector from '@/components/dashboard/subject-setting/dashboard-style/FilterStyleSimpleSelector.vue'
+import BackgroundOverallCommon from '@/components/visualization/component-background/BackgroundOverallCommon.vue'
+import { deepCopy } from '@/utils/utils'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
-const { canvasStyleData } = storeToRefs(dvMainStore)
+const { canvasStyleData, componentData, canvasViewInfo } = storeToRefs(dvMainStore)
 const { t } = useI18n()
 const files = ref(null)
 const maxImageSize = 15000000
@@ -40,6 +39,7 @@ const fileList = ref([])
 const dialogImageUrl = ref('')
 const dialogVisible = ref(false)
 const uploadDisabled = ref(false)
+let canvasAttrInit = false
 
 const canvasAttrActiveNames = ref(['style'])
 
@@ -52,7 +52,7 @@ const handleRemove = (file, fileList) => {
   uploadDisabled.value = false
   canvasStyleData.value.background = null
   fileList.value = []
-  snapshotStore.recordSnapshot()
+  snapshotStore.recordSnapshot('DbCanvasAttr-handleRemove')
 }
 async function upload(file) {
   uploadFileResult(file.file, fileUrl => {
@@ -135,7 +135,7 @@ const sliderReload = () => {
 
 const dataMerge = () => {
   adaptCurThemeCommonStyleAll()
-  snapshotStore.recordSnapshot()
+  snapshotStore.recordSnapshot('DbCanvasAttr-dataMerge')
 }
 
 const handleChange = val => {
@@ -152,16 +152,29 @@ const onColorChange = val => {
 const onTextChange = val => {
   themeAttrChange('customStyle', 'text', val)
 }
-const styleChange = () => {
-  snapshotStore.canvasChange()
-}
 const themeAttrChange = (custom, property, value) => {
-  eventBus.emit('onThemeAttrChange', {
-    custom: custom,
-    property: property,
-    value: value
+  if (canvasAttrInit) {
+    Object.keys(canvasViewInfo.value).forEach(function (viewId) {
+      const viewInfo = canvasViewInfo.value[viewId]
+      Object.keys(value).forEach(function (key) {
+        if (viewInfo[custom][property][key]) {
+          viewInfo[custom][property][key] = value[key]
+        }
+      })
+    })
+    snapshotStore.recordSnapshot('DbCanvasAttr-themeAttrChange')
+  }
+}
+
+const themeColorChange = () => {
+  //do themeColorChange
+}
+
+const componentBackgroundChange = val => {
+  canvasStyleData.value.component.chartCommonStyle = val
+  componentData.value.forEach(component => {
+    component.commonBackground = deepCopy(val)
   })
-  snapshotStore.recordSnapshot()
 }
 
 watch([() => canvasStyleData.value.background], () => {
@@ -172,6 +185,9 @@ watch([() => canvasStyleData.value.background], () => {
 
 onMounted(() => {
   eventBus.on('onSubjectChange', onSubjectChange)
+  nextTick(() => {
+    canvasAttrInit = true
+  })
 })
 </script>
 
@@ -186,7 +202,7 @@ onMounted(() => {
         </el-collapse-item>
         <el-collapse-item title="整体配置" name="overallSetting">
           <el-row class="item-show">
-            <overall-setting></overall-setting>
+            <overall-setting @onThemeColorChange="themeColorChange"></overall-setting>
           </el-row>
         </el-collapse-item>
 
@@ -244,11 +260,13 @@ onMounted(() => {
           </el-row>
         </el-collapse-item>
         <el-collapse-item :title="t('visualization.view_style')" name="componentStyle">
-          <background-overall
+          <background-overall-common
+            :common-background-pop="canvasStyleData.component.chartCommonStyle"
+            component-position="'dashboard'"
             class="item-show"
             themes="light"
-            position="dashboard"
-          ></background-overall>
+            @onBackgroundChange="componentBackgroundChange"
+          ></background-overall-common>
         </el-collapse-item>
         <el-collapse-item :title="'视图配色'" name="graphical">
           <component-color-selector

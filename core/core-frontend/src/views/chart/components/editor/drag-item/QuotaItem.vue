@@ -333,7 +333,7 @@ getItemTagType()
       <template #dropdown>
         <el-dropdown-menu effect="dark" class="drop-style">
           <el-dropdown-item
-            v-if="!item.chartId && chart.type !== 'table-info'"
+            v-if="!item.chartId && chart.type !== 'table-info' && item.summary !== ''"
             :divided="chart.type === 'chart-mix'"
           >
             <el-dropdown
@@ -440,7 +440,7 @@ getItemTagType()
           </el-dropdown-item>
 
           <!--同比/环比等快速计算-->
-          <el-dropdown-item v-if="!item.chartId && chart.type !== 'table-info'">
+          <el-dropdown-item v-if="chart.type !== 'table-info'">
             <el-dropdown
               placement="right-start"
               effect="dark"
@@ -490,7 +490,7 @@ getItemTagType()
 
           <el-dropdown-item
             v-if="props.type !== 'extLabel' && props.type !== 'extTooltip'"
-            :divided="!item.chartId && chart.type !== 'table-info'"
+            :divided="chart.type !== 'table-info'"
           >
             <el-dropdown effect="dark" placement="right-start" style="width: 100%" @command="sort">
               <span class="el-dropdown-link inner-dropdown-menu">
@@ -530,7 +530,7 @@ getItemTagType()
           <el-dropdown-item
             v-if="item.groupType === 'q'"
             :icon="Memo"
-            divided
+            :divided="chart.type !== 'table-info'"
             :command="beforeClickItem('formatter')"
           >
             <span>{{ t('chart.value_formatter') }}...</span>

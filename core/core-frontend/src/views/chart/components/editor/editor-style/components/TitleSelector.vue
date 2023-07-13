@@ -220,7 +220,6 @@ init()
     <!--富文本编辑框-->
     <!--    <el-dialog-->
     <!--      v-if="showEditRemark"-->
-    <!--      v-dialogDrag-->
     <!--      :title="t('chart.remark')"-->
     <!--      :visible="showEditRemark"-->
     <!--      :show-close="false"-->

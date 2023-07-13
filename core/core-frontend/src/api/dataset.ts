@@ -18,6 +18,7 @@ interface Fields {
 export interface DatasetDetail {
   id: string
   name: string
+  componentId: string
   fields: {
     dimensionList: Array<Field>
     quotaList: Array<Field>
@@ -138,4 +139,27 @@ export const saveRowPermission = (data = {}) => {
 
 export const whiteListUsersForPermissions = (data = {}) => {
   return request.post({ url: '/dataset/rowPermissions/whiteListUsers', data })
+
+export const saveField = async (data): Promise<DatasetDetail[]> => {
+  return request.post({ url: '/datasetField/save', data }).then(res => {
+    return res?.data
+  })
+}
+
+export const deleteField = async (id): Promise<DatasetDetail[]> => {
+  return request.post({ url: `/datasetField/delete/${id}`, data: {} }).then(res => {
+    return res?.data
+  })
+}
+
+export const getEnumValue = async (data): Promise<DatasetDetail[]> => {
+  return request.post({ url: '/datasetData/enumValue', data }).then(res => {
+    return res?.data
+  })
+}
+
+export const getFunction = async (): Promise<DatasetDetail[]> => {
+  return request.post({ url: '/datasetField/getFunction', data: {} }).then(res => {
+    return res?.data
+  })
 }

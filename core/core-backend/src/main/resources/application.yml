@@ -48,7 +48,7 @@ quartz:
 
 dataease:
   version: '@project.version@'
-  origin-list: localhost:8081, 127.0.0.1:8081, https://de2.fit2cloud.com
+  origin-list: localhost:8081,127.0.0.1:8081,https://de2.fit2cloud.com,http://localhost:8080
 
 knife4j:
   enable: true

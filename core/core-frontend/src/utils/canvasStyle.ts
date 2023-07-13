@@ -5,16 +5,17 @@ import {
 } from '@/views/chart/components/editor/util/chart'
 
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { useEmitt } from '@/hooks/web/useEmitt'
 const dvMainStore = dvMainStoreWithOut()
 
 export const LIGHT_THEME_COLOR_MAIN = '#000000'
 export const LIGHT_THEME_COLOR_SLAVE1 = '#CCCCCC'
-export const LIGHT_THEME_PANEL_BACKGROUND = '#F1F3F5'
+export const LIGHT_THEME_DASHBOARD_BACKGROUND = '#F1F3F5'
 export const LIGHT_THEME_COMPONENT_BACKGROUND = '#FFFFFF'
 
 export const DARK_THEME_COLOR_MAIN = '#FFFFFF'
 export const DARK_THEME_COLOR_SLAVE1 = '#858383'
-export const DARK_THEME_PANEL_BACKGROUND = '#030B2E'
+export const DARK_THEME_DASHBOARD_BACKGROUND = '#030B2E'
 export const DARK_THEME_COMPONENT_BACKGROUND = '#131E42'
 export const DARK_THEME_COMPONENT_BACKGROUND_BACK = '#5a5c62'
 
@@ -388,38 +389,40 @@ export function adaptCurTheme(customStyle, customAttr, chartType) {
   }
 }
 
-export function adaptCurThemeCommonStyle(component, adaptFrom = 'them') {
+export function adaptCurThemeCommonStyle(component) {
+  // 背景融合-Begin
   const commonStyle = dvMainStore.canvasStyleData.component.chartCommonStyle
   for (const key in commonStyle) {
     component.commonBackground[key] = commonStyle[key]
   }
-  if (isFilterComponent(component.component)) {
-    const filterStyle = dvMainStore.canvasStyleData.component.filterStyle
-    for (const styleKey in filterStyle) {
-      if (adaptFrom === 'copy') {
-        component.style[styleKey] = filterStyle[styleKey]
-      } else if (adaptFrom === 'them' && styleKey !== 'horizontal' && styleKey !== 'vertical') {
-        // 主题变化位置属性不修改
-        component.style[styleKey] = filterStyle[styleKey]
-      }
+  // 背景融合-End
+  // 通用样式-Begin
+  if (component.style.color) {
+    if (dvMainStore.canvasStyleData.component.themeColor === 'light') {
+      component.style.color = LIGHT_THEME_COLOR_MAIN
+    } else {
+      component.style.color = DARK_THEME_COLOR_MAIN
     }
-  } else if (isTabComponent(component.component)) {
-    const tabStyle = dvMainStore.canvasStyleData.component.tabStyle
-    for (const styleKey in tabStyle) {
-      if (typeof tabStyle[styleKey] === 'string') {
-        component.style[styleKey] = tabStyle[styleKey]
-      } else {
-        component.style[styleKey] = null
-      }
+  }
+  // 通用样式-End
+  if (component.type === 'UserView') {
+    // 视图-Begin
+    const curViewInfo = dvMainStore.canvasViewInfo[component.id]
+    //标题-Begin
+    const titleStyle = dvMainStore.canvasStyleData.component.chartTitle
+    for (const key in titleStyle) {
+      curViewInfo.customStyle.text[key] = titleStyle[key]
     }
-  } else {
-    if (component.style.color) {
-      if (dvMainStore.canvasStyleData.component.themeColor === 'light') {
-        component.style.color = LIGHT_THEME_COLOR_MAIN
-      } else {
-        component.style.color = DARK_THEME_COLOR_MAIN
-      }
+    //标题-End
+
+    //配色-Begin
+    const componentColorStyle = dvMainStore.canvasStyleData.component.chartColor
+    for (const key in componentColorStyle) {
+      curViewInfo.customAttr.color[key] = componentColorStyle[key]
     }
+    //配色-End
+    useEmitt().emitter.emit('renderChart-' + component.id, curViewInfo)
+    // 视图-Begin
   }
   return component
 }
@@ -428,9 +431,6 @@ export function adaptCurThemeCommonStyleAll() {
   const componentData = dvMainStore.componentData
   componentData.forEach(item => {
     adaptCurThemeCommonStyle(item)
-    if (item.style.backgroundColor) {
-      delete item.style.backgroundColor
-    }
   })
 }
 

@@ -213,7 +213,7 @@ const init = () => {
 queryBackground()
 
 const commitStyle = () => {
-  snapshotStore.recordSnapshot()
+  snapshotStore.recordSnapshot('BackgroundOverallComponent-themeChange')
 }
 const onChangeType = () => {
   commitStyle()

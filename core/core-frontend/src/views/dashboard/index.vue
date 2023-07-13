@@ -24,6 +24,7 @@ import { getCanvasStyle, syncShapeItemStyle } from '@/utils/style'
 import DbCanvasAttr from '@/components/dashboard/DbCanvasAttr.vue'
 import { initCanvasData } from '@/utils/canvasUtils'
 import { ElMessage } from 'element-plus-secondary'
+import ChartStyleBatchSet from '@/views/chart/components/editor/editor-style/ChartStyleBatchSet.vue'
 
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
@@ -38,7 +39,8 @@ const {
   canvasViewInfo,
   pcMatrixCount,
   basePcScreenSize,
-  editMode
+  editMode,
+  batchOptStatus
 } = storeToRefs(dvMainStore)
 const { editor } = storeToRefs(composeStore)
 const canvasOut = ref(null)
@@ -102,7 +104,7 @@ const handleNew = newComponentInfo => {
     nextTick(() => {
       cyGridster.value.addItemBox(component) //在适当的时候初始化布局组件
     })
-    snapshotStore.recordSnapshot()
+    snapshotStore.recordSnapshot('dashboard-handleNew')
   }
 }
 
@@ -121,7 +123,7 @@ const handleDrop = e => {
   addComponent.isShow = true
   syncShapeItemStyle(addComponent, baseWidth.value, baseHeight.value)
   cyGridster.value.handleMouseUp(e, addComponent, componentData.value.length - 1)
-  snapshotStore.recordSnapshot()
+  snapshotStore.recordSnapshot('dashboard-handleDrop')
 }
 
 const handleDragOver = e => {
@@ -176,6 +178,10 @@ const canvasInit = () => {
         })
       })
     }
+
+    // afterInit
+    dvMainStore.setDataPrepareState(true)
+    snapshotStore.recordSnapshot('db-init')
   })
 }
 
@@ -258,7 +264,11 @@ eventBus.on('handleNew', handleNew)
       </main>
       <!-- 右侧侧组件列表 -->
       <dv-sidebar
-        v-if="curComponent && curComponent.component !== 'UserView'"
+        v-if="
+          curComponent &&
+          !['UserView', 'VQuery'].includes(curComponent.component) &&
+          !batchOptStatus
+        "
         :theme-info="'light'"
         :title="'属性'"
         :width="420"
@@ -270,7 +280,7 @@ eventBus.on('handleNew', handleNew)
         <component :is="findComponent(curComponent['component'] + 'Attr')" />
       </dv-sidebar>
       <dv-sidebar
-        v-show="!curComponent"
+        v-show="!curComponent && !batchOptStatus"
         :theme-info="'light'"
         title="大屏配置"
         :width="420"
@@ -281,12 +291,26 @@ eventBus.on('handleNew', handleNew)
         <DbCanvasAttr></DbCanvasAttr>
       </dv-sidebar>
       <view-editor
-        v-show="curComponent && curComponent.component === 'UserView'"
-        themes="light"
+        v-show="
+          curComponent && ['UserView', 'VQuery'].includes(curComponent.component) && !batchOptStatus
+        "
+        :themes="'light'"
         :view="canvasViewInfo[curComponent ? curComponent.id : 'default']"
         :dataset-tree="state.datasetTree"
         :class="{ 'preview-aside': editMode === 'preview' }"
       ></view-editor>
+      <dv-sidebar
+        v-if="batchOptStatus"
+        :theme-info="'light'"
+        title="批量操作"
+        :width="280"
+        aside-position="right"
+        class="left-sidebar"
+        :side-name="'batchOpt'"
+        :class="{ 'preview-aside': editMode === 'preview' }"
+      >
+        <chart-style-batch-set></chart-style-batch-set>
+      </dv-sidebar>
     </el-container>
   </div>
 </template>

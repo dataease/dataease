@@ -123,7 +123,6 @@
 
     <el-dialog
       v-if="state.showCustomSort"
-      v-dialogDrag
       :title="t('chart.custom_sort')"
       :visible="state.showCustomSort"
       :show-close="false"
@@ -272,7 +271,7 @@ const copy = () => {
 
 const paste = () => {
   copyStore.paste(false)
-  snapshotStore.recordSnapshot()
+  snapshotStore.recordSnapshot('SettingMenu-paste')
 }
 
 const deleteComponent = () => {
@@ -292,7 +291,7 @@ const deleteComponent = () => {
   emits('amRemoveItem')
   deleteCurCondition()
   dvMainStore.deleteComponent()
-  snapshotStore.recordSnapshot()
+  snapshotStore.recordSnapshot('SettingMenu-deleteComponent')
   dvMainStore.setCurComponent({ component: null, index: null })
 }
 
@@ -305,22 +304,22 @@ const deleteCurCondition = () => {
 
 const upComponent = () => {
   layerStore.upComponent()
-  snapshotStore.recordSnapshot()
+  snapshotStore.recordSnapshot('SettingMenu-upComponent')
 }
 
 const downComponent = () => {
   layerStore.downComponent()
-  snapshotStore.recordSnapshot()
+  snapshotStore.recordSnapshot('SettingMenu-downComponent')
 }
 
 const topComponent = () => {
   layerStore.topComponent()
-  snapshotStore.recordSnapshot()
+  snapshotStore.recordSnapshot('SettingMenu-topComponent')
 }
 
 const bottomComponent = () => {
   layerStore.bottomComponent()
-  snapshotStore.recordSnapshot()
+  snapshotStore.recordSnapshot('SettingMenu-bottomComponent')
 }
 const linkageSetting = () => {
   // sourceViewId 也加入查询

@@ -6,7 +6,6 @@ import CollapseSwitchItem from '@/components/collapse-switch-item/src/CollapseSw
 const { t } = useI18n()
 
 const state = {
-  attrActiveNames: [],
   styleActiveNames: []
 }
 
@@ -19,25 +18,6 @@ const props = defineProps({
 const predefineColors = COLOR_PANEL
 
 const { chart } = toRefs(props)
-// const chart = reactive({
-//   customStyle: {
-//     component: {
-//       show: false,
-//       titleShow: false,
-//       borderShow: false,
-//       borderColor: '',
-//       title: '',
-//       borderWidth: 1,
-//       bgColorShow: false,
-//       bgColor: '',
-//       btnList: []
-//     }
-//   }
-// })
-const emit = defineEmits(['onChangeComponentForm'])
-const onChangeComponentForm = val => {
-  emit('onChangeComponentForm', val)
-}
 </script>
 
 <template>
@@ -47,8 +27,6 @@ const onChangeComponentForm = val => {
         <el-collapse v-model="state.styleActiveNames" class="style-collapse">
           <collapse-switch-item
             v-model="chart.customStyle.component.show"
-            :change-model="chart.customStyle.component"
-            @modelChange="onChangeComponentForm"
             name="component"
             :title="t('visualization.module')"
           >
@@ -58,7 +36,7 @@ const onChangeComponentForm = val => {
             <div class="query-collapse-item">
               <el-input
                 :disabled="!chart.customStyle.component.titleShow"
-                v-model="chart.customStyle.component.title"
+                v-model.lazy="chart.customStyle.component.title"
               />
             </div>
             <el-checkbox v-model="chart.customStyle.component.borderShow">{{
@@ -72,7 +50,7 @@ const onChangeComponentForm = val => {
               />
               <el-input-number
                 v-model="chart.customStyle.component.borderWidth"
-                :min="0"
+                :min="1"
                 :max="100"
                 :disabled="!chart.customStyle.component.borderShow"
                 controls-position="right"
@@ -92,7 +70,7 @@ const onChangeComponentForm = val => {
             <span> 展示按钮 </span>
             <div class="query-collapse-item query-component">
               <el-checkbox-group v-model="chart.customStyle.component.btnList">
-                <el-checkbox label="query"> {{ t('commons.adv_search.search') }}</el-checkbox>
+                <el-checkbox label="sure"> {{ t('commons.adv_search.search') }}</el-checkbox>
                 <el-checkbox label="clear"> {{ t('commons.clear') }}</el-checkbox>
                 <el-checkbox label="reset">{{ t('commons.adv_search.reset') }}</el-checkbox>
               </el-checkbox-group>
@@ -101,16 +79,18 @@ const onChangeComponentForm = val => {
               {{ t('chart.label_position') }}
             </span>
             <div class="query-collapse-item query-component">
-              <el-button text>
-                <template #icon>
-                  <icon name="icon_collect_filled"></icon>
-                </template>
-              </el-button>
-              <el-button text>
-                <template #icon>
-                  <icon name="icon_collect_filled"></icon>
-                </template>
-              </el-button>
+              <el-radio-group v-model="chart.customStyle.component.layout" size="small">
+                <el-radio-button label="horizontal">
+                  <el-icon>
+                    <icon name="icon_title-left-align_outlined"></icon>
+                  </el-icon>
+                </el-radio-button>
+                <el-radio-button label="vertical">
+                  <el-icon>
+                    <icon name="icon_title-top-align_outlined"></icon>
+                  </el-icon>
+                </el-radio-button>
+              </el-radio-group>
             </div>
           </collapse-switch-item>
         </el-collapse>

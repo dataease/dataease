@@ -4,11 +4,15 @@ import { Icon } from '@/components/icon-custom'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import router from '@/router'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
+import { logoutApi } from '@/api/login'
+
 const permissionStore = usePermissionStoreWithOut()
 const userStore = useUserStoreWithOut()
 const name = ref('')
 
-const logout = () => {
+const logout = async () => {
+  const res = await logoutApi()
+  console.log(res)
   userStore.clear()
   userStore.$reset()
   permissionStore.$reset()

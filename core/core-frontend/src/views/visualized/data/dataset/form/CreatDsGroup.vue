@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { ref, reactive, computed, watch, nextTick } from 'vue'
+import { ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { saveDatasetTree, getDatasetTree } from '@/api/dataset'
 import type { DatasetOrFolder } from '@/api/dataset'
@@ -48,6 +49,7 @@ const filterNode = (value: string, data: Tree) => {
 }
 
 watch(filterText, val => {
+  showAll.value = !val
   treeRef.value.filter(val)
   nextTick(() => {
     document.querySelectorAll('.node-text').forEach(ele => {
@@ -136,7 +138,8 @@ const rules = {
 }
 let nameList = []
 const datasetFormRules = ref()
-
+const activeAll = ref(false)
+const showAll = ref(true)
 const dataset = ref()
 const loading = ref(false)
 const createDataset = ref(false)
@@ -157,7 +160,7 @@ const dfs = (arr: Tree[]) => {
   })
 }
 
-const createInit = (type, data: Tree, exec) => {
+const createInit = (type, data: Tree, exec, name: string) => {
   nodeType.value = type
   if (type === 'dataset') {
     union = data.union
@@ -182,6 +185,7 @@ const createInit = (type, data: Tree, exec) => {
 
     cmd.value = exec
   }
+  name && (datasetForm.name = name)
   createDataset.value = true
   datasetFormRules.value = rules
 }
@@ -198,6 +202,7 @@ const props = {
 }
 
 const nodeClick = (data: Tree) => {
+  activeAll.value = false
   datasetForm.pid = data.id as string
 }
 
@@ -211,7 +216,7 @@ const saveDataset = () => {
 
       switch (cmd.value) {
         case 'move':
-          params.pid = datasetForm.pid as string
+          params.pid = activeAll.value ? '0' : (datasetForm.pid as string)
           params.id = id.value
           break
         case 'rename':
@@ -232,6 +237,17 @@ const saveDataset = () => {
           dataset.value.resetFields()
           createDataset.value = false
           emits('finish')
+          switch (cmd.value) {
+            case 'move':
+              ElMessage.success('移动成功')
+              break
+            case 'rename':
+              ElMessage.success('重命名成功')
+              break
+            default:
+              ElMessage.success('新建数据集成功')
+              break
+          }
         })
         .finally(() => {
           loading.value = false
@@ -274,7 +290,7 @@ const emits = defineEmits(['finish'])
         >
           <template #default="{ data: { name } }">
             <el-icon>
-              <Icon name="scene"></Icon>
+              <Icon name="dv-folder"></Icon>
             </el-icon>
             <span :title="name">{{ name }}</span>
           </template>
@@ -289,6 +305,17 @@ const emits = defineEmits(['finish'])
           </template>
         </el-input>
         <div class="tree-content">
+          <div
+            :class="activeAll && 'active'"
+            @click="activeAll = !activeAll"
+            v-if="showAll"
+            class="list-item_primary"
+          >
+            <el-icon>
+              <Icon name="dv-folder"></Icon>
+            </el-icon>
+            <span class="label"> 全部文件夹 </span>
+          </div>
           <el-tree
             ref="treeRef"
             :filter-node-method="filterNode"
@@ -303,7 +330,7 @@ const emits = defineEmits(['finish'])
             <template #default="{ data }">
               <span class="custom-tree-node">
                 <el-icon>
-                  <Icon name="scene"></Icon>
+                  <Icon name="dv-folder"></Icon>
                 </el-icon>
                 <span class="node-text" :title="data.name">{{ data.name }}</span>
               </span>

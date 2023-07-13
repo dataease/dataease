@@ -1,9 +1,11 @@
 <script lang="ts" setup>
-import { onMounted, reactive, toRefs } from 'vue'
+import { onBeforeMount, onMounted, reactive, toRefs } from 'vue'
 import { getData } from '@/api/chart'
 import { G2PlotChartView } from '@/views/chart/components/js/panel/types'
 import chartViewManager from '@/views/chart/components/js/panel'
-
+import { useEmitt } from '@/hooks/web/useEmitt'
+import { useFilter } from '@/hooks/web/useFilter'
+import { cloneDeep } from 'lodash-es'
 const props = defineProps({
   view: {
     type: Object,
@@ -24,6 +26,27 @@ const emit = defineEmits(['onChartClick', 'onDrillFilters'])
 
 const { view, showPosition } = toRefs(props)
 
+const queryData = (firstLoad: boolean) => {
+  const { filter } = useFilter(view.value.id, firstLoad)
+  let params = cloneDeep(view.value)
+  if (filter.length) {
+    if (!params.chartExtRequest) {
+      params.chartExtRequest = {
+        filter
+      }
+    } else {
+      params.chartExtRequest.filter = filter
+    }
+  }
+  calcData(params)
+}
+onBeforeMount(() => {
+  useEmitt({
+    name: `query-data-${view.value.id}`,
+    callback: queryData
+  })
+})
+
 const state = reactive({
   myChart: null,
   loading: false,
@@ -35,7 +58,6 @@ const containerId = 'container-' + showPosition.value + '-' + view.value.id
 const calcData = view => {
   state.loading = true
   const v = JSON.parse(JSON.stringify(view))
-  // console.log(v)
   getData(v)
     .then(res => {
       // console.log(res)
@@ -53,7 +75,7 @@ const renderChart = view => {
   const chart = { ...view, data: state.data }
   state.myChart = (
     chartViewManager.getChartView(view.render, view.type) as G2PlotChartView<any, any>
-  ).drawChart({
+  )?.drawChart({
     chartObj: state.myChart,
     container: containerId,
     chart: chart,
@@ -75,7 +97,7 @@ defineExpose({
 })
 
 onMounted(() => {
-  calcData(view.value)
+  queryData(true)
   // renderChart({ render: ChartRenderType.ANT_V, type: 'bar' })
 })
 </script>

@@ -9,7 +9,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-06-11
+ * @since 2023-07-12
  */
 @TableName("visualization_subject")
 public class VisualizationSubject implements Serializable {
@@ -37,6 +37,11 @@ public class VisualizationSubject implements Serializable {
      * 删除标记
      */
     private Boolean deleteFlag;
+
+    /**
+     * 封面信息
+     */
+    private String coverUrl;
 
     private Integer createNum;
 
@@ -110,6 +115,14 @@ public class VisualizationSubject implements Serializable {
         this.deleteFlag = deleteFlag;
     }
 
+    public String getCoverUrl() {
+        return coverUrl;
+    }
+
+    public void setCoverUrl(String coverUrl) {
+        this.coverUrl = coverUrl;
+    }
+
     public Integer getCreateNum() {
         return createNum;
     }
@@ -174,6 +187,7 @@ public class VisualizationSubject implements Serializable {
         ", type = " + type +
         ", details = " + details +
         ", deleteFlag = " + deleteFlag +
+        ", coverUrl = " + coverUrl +
         ", createNum = " + createNum +
         ", createTime = " + createTime +
         ", createBy = " + createBy +

@@ -433,7 +433,7 @@ const handleFileChange = e => {
   }
   uploadFileResult(file, fileUrl => {
     curComponent.value.propValue = fileUrl
-    snapshotStore.recordSnapshot()
+    snapshotStore.recordSnapshot('uploadFileResult')
   })
 }
 

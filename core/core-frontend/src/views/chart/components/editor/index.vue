@@ -1,5 +1,5 @@
 <script lang="tsx" setup>
-import { PropType, reactive, ref, watch, toRefs } from 'vue'
+import { PropType, reactive, ref, watch, toRefs, computed, nextTick } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Field, getFieldByDQ, saveChart } from '@/api/chart'
@@ -14,6 +14,7 @@ import QuotaItem from '@/views/chart/components/editor/drag-item/QuotaItem.vue'
 import DragPlaceholder from '@/views/chart/components/editor/drag-item/DragPlaceholder.vue'
 import FilterItem from '@/views/chart/components/editor/drag-item/FilterItem.vue'
 import ChartStyle from '@/views/chart/components/editor/editor-style/ChartStyle.vue'
+import VQueryChartStyle from '@/views/chart/components/editor/editor-style/VQueryChartStyle.vue'
 import Senior from '@/views/chart/components/editor/editor-senior/Senior.vue'
 import QuotaFilterEditor from '@/views/chart/components/editor/filter/QuotaFilterEditor.vue'
 import ResultFilterEditor from '@/views/chart/components/editor/filter/ResultFilterEditor.vue'
@@ -21,20 +22,28 @@ import { ElIcon, ElRow } from 'element-plus-secondary'
 import DrillItem from '@/views/chart/components/editor/drag-item/DrillItem.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
-import { BASE_VIEW_CONFIG } from '@/views/chart/components/editor/util/chart'
+import { BASE_VIEW_CONFIG, getViewConfig } from '@/views/chart/components/editor/util/chart'
 import ChartType from '@/views/chart/components/editor/chart-type/ChartType.vue'
 import { useRouter } from 'vue-router'
 import CompareEdit from '@/views/chart/components/editor/drag-item/components/CompareEdit.vue'
 import ValueFormatterEdit from '@/views/chart/components/editor/drag-item/components/ValueFormatterEdit.vue'
 import CustomSortEdit from '@/views/chart/components/editor/drag-item/components/CustomSortEdit.vue'
+import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
+const snapshotStore = snapshotStoreWithOut()
+import CalcFieldEdit from '@/views/visualized/data/dataset/form/CalcFieldEdit.vue'
+import { getFieldName, guid } from '@/views/visualized/data/dataset/form/util'
+import { cloneDeep } from 'lodash-es'
+import { deleteField, saveField } from '@/api/dataset'
+import LabelSelector from '@/views/chart/components/editor/editor-style/components/LabelSelector.vue'
 
 const dvMainStore = dvMainStoreWithOut()
-const { canvasCollapse } = storeToRefs(dvMainStore)
+const { canvasCollapse, curComponent } = storeToRefs(dvMainStore)
 const router = useRouter()
 
 const { t } = useI18n()
 const loading = ref(false)
 const tabActive = ref('data')
+const tabActiveVQuery = ref('style')
 
 const renameForm = ref<FormInstance>()
 
@@ -55,6 +64,9 @@ const props = defineProps({
     default: 'dark'
   }
 })
+
+const editCalcField = ref(false)
+const calcEdit = ref()
 
 const { view, datasetTree } = toRefs(props)
 
@@ -95,13 +107,14 @@ const state = reactive({
   valueFormatterItem: {},
   showCustomSort: false,
   customSortList: [],
-  customSortField: {}
+  customSortField: {},
+  currEditField: {}
 })
 
 watch(
   [() => props.view.tableId],
   () => {
-    getFields(props.view.tableId)
+    getFields(props.view.tableId, props.view.id)
   },
   { deep: true }
 )
@@ -114,9 +127,9 @@ watch(
   { deep: true }
 )
 
-const getFields = id => {
+const getFields = (id, chartId) => {
   if (id) {
-    getFieldByDQ(id)
+    getFieldByDQ(id, chartId)
       .then(res => {
         state.dimension = (res.dimensionList as unknown as Field[]) || []
         state.quota = (res.quotaList as unknown as Field[]) || []
@@ -138,7 +151,7 @@ const getFields = id => {
 }
 
 const startToMove = (e, item) => {
-  e.dataTransfer.setData('dimension', JSON.stringify(item))
+  e.dataTransfer.setData('dimension', JSON.stringify({ ...item, datasetId: view.value.tableId }))
 }
 
 const fieldFilter = val => {
@@ -172,7 +185,7 @@ const dsSelectProps = {
 
 const dsClick = (data: Tree) => {
   if (data.leaf) {
-    getFields(data.id)
+    getFields(data.id, view.value.id)
   }
 }
 
@@ -298,7 +311,7 @@ const addXaxis = e => {
   ) {
     view.value.xAxis = [view.value.xAxis[0]]
   }
-  calcData(view.value)
+  calcData(view.value, true)
 }
 
 const addYaxis = e => {
@@ -319,7 +332,7 @@ const addDrill = e => {
   dragCheckType(view.value.drillFields, 'd')
   dragMoveDuplicate(view.value.drillFields, e, '')
   dragRemoveChartField(view.value.drillFields, e)
-  calcData(view.value)
+  calcData(view.value, true)
 }
 
 const addExtLabel = e => {
@@ -362,12 +375,18 @@ const moveToQuota = e => {
   calcData(view.value)
 }
 
-const calcData = view => {
-  useEmitt().emitter.emit('calcData-' + view.id, view)
+const calcData = (view, resetDrill = false) => {
+  if (resetDrill) {
+    useEmitt().emitter.emit('resetDrill-' + view.id, 0)
+  } else {
+    useEmitt().emitter.emit('calcData-' + view.id, view)
+  }
+  snapshotStore.recordSnapshotCache('calcData', view.id)
 }
 
 const renderChart = view => {
   useEmitt().emitter.emit('renderChart-' + view.id, view)
+  snapshotStore.recordSnapshotCache('renderChart', view.id)
 }
 
 const onTypeChange = val => {
@@ -422,6 +441,10 @@ const onLegendChange = val => {
 const onFunctionCfgChange = val => {
   view.value.senior.functionCfg = val
   renderChart(view.value)
+}
+
+const onBackgroundChange = val => {
+  curComponent.value.commonBackground = val
 }
 
 const onAssistLineChange = val => {
@@ -638,6 +661,91 @@ const saveValueFormatter = () => {
   calcData(view.value)
   closeValueFormatter()
 }
+
+const addCalcField = groupType => {
+  editCalcField.value = true
+  nextTick(() => {
+    calcEdit.value.initEdit(
+      { groupType, id: guid() },
+      state.dimension,
+      state.quota.filter(ele => ele.id !== '-1')
+    )
+  })
+}
+const editField = item => {
+  editCalcField.value = true
+  nextTick(() => {
+    calcEdit.value.initEdit(
+      item,
+      state.dimension,
+      state.quota.filter(ele => ele.id !== '-1')
+    )
+  })
+}
+const closeEditCalc = () => {
+  editCalcField.value = false
+}
+const confirmEditCalc = () => {
+  calcEdit.value.setFieldForm()
+  const obj = cloneDeep(calcEdit.value.fieldForm)
+  setFieldDefaultValue(obj)
+  saveField(obj).then(res => {
+    getFields(view.value.tableId, view.value.id)
+    closeEditCalc()
+  })
+}
+
+const chartFieldEdit = param => {
+  state.currEditField = JSON.parse(JSON.stringify(param.item))
+  switch (param.type) {
+    case 'copy':
+      setFieldDefaultValue(state.currEditField)
+      state.currEditField.id = null
+      state.currEditField.originName =
+        param.item.extField === 2 ? param.item.originName : '[' + param.item.id + ']'
+      state.currEditField.name = getFieldName(state.dimension.concat(state.quota), param.item.name)
+
+      saveField(state.currEditField).then(res => {
+        getFields(view.value.tableId, view.value.id)
+      })
+      break
+    case 'edit':
+      editField(param.item)
+      break
+    case 'delete':
+      deleteField(param.item?.id).then(res => {
+        getFields(view.value.tableId, view.value.id)
+      })
+      break
+  }
+}
+const handleChartFieldEdit = (item, type) => {
+  return {
+    type: type,
+    item: item
+  }
+}
+const setFieldDefaultValue = field => {
+  field.extField = 2
+  field.chartId = view.value.id
+  field.dataeaseName = null
+  field.lastSyncTime = null
+  field.columnIndex = state.dimension.length + state.quota.length
+  field.deExtractType = field.deType
+}
+
+const viewProperties = computed(() => {
+  const config = getViewConfig(view.value.type)
+  return config ? config.properties : null
+})
+
+const viewPropertyInnerAll = computed(() => {
+  return viewProperties.value ? viewProperties.value.propertyInner : null
+})
+
+const dynamicLabelShow = () => {
+  onLabelChange(view.value.customAttr.label)
+}
 </script>
 
 <template>
@@ -668,7 +776,17 @@ const saveValueFormatter = () => {
           </el-row>
 
           <el-row style="height: calc(100vh - 110px)">
-            <el-tabs v-model="tabActive" :stretch="true" class="tab-header">
+            <el-tabs v-if="view.type === 'VQuery'" v-model="tabActiveVQuery" class="tab-header">
+              <el-tab-pane
+                name="style"
+                :label="t('chart.chart_style')"
+                class="padding-tab"
+                style="width: 100%"
+              >
+                <VQueryChartStyle :chart="view" :themes="themes"></VQueryChartStyle>
+              </el-tab-pane>
+            </el-tabs>
+            <el-tabs v-else v-model="tabActive" :stretch="true" class="tab-header">
               <el-tab-pane name="data" :label="t('chart.chart_data')" class="padding-tab">
                 <el-col>
                   <div class="drag_main_area attr-style theme-border-class">
@@ -856,8 +974,8 @@ const saveValueFormatter = () => {
                         >
                           <template #item="{ element, index }">
                             <filter-item
-                              :dimension-data="state.dimensionData"
-                              :quota-data="state.quotaData"
+                              :dimension-data="state.dimension"
+                              :quota-data="state.quota"
                               :item="element"
                               :index="index"
                               :themes="props.themes"
@@ -889,6 +1007,25 @@ const saveValueFormatter = () => {
                           <el-row class="padding-lr drag-data">
                             <span class="data-area-label">
                               <span>{{ t('chart.label') }}</span>
+                              <el-popover placement="left-start" :width="400" trigger="click">
+                                <template #reference>
+                                  <el-icon class="icon-setting label-icon"><Setting /></el-icon>
+                                </template>
+                                <div>
+                                  <el-checkbox
+                                    v-model="view.customAttr.label.show"
+                                    :label="t('commons.show')"
+                                    size="small"
+                                    @change="dynamicLabelShow"
+                                  />
+                                  <label-selector
+                                    :themes="props.themes"
+                                    class="attr-selector"
+                                    :chart="view"
+                                    @onLabelChange="onLabelChange"
+                                  />
+                                </div>
+                              </el-popover>
                             </span>
                             <draggable
                               :list="view.extLabel"
@@ -1007,10 +1144,12 @@ const saveValueFormatter = () => {
                 style="width: 100%"
               >
                 <chart-style
+                  :properties="viewProperties"
+                  :property-inner-all="viewPropertyInnerAll"
                   :chart="view"
                   :themes="themes"
-                  :dimension-data="state.dimensionData"
-                  :quota-data="state.quotaData"
+                  :dimension-data="state.dimension"
+                  :quota-data="state.quota"
                   @onColorChange="onColorChange"
                   @onSizeChange="onSizeChange"
                   @onLabelChange="onLabelChange"
@@ -1019,6 +1158,7 @@ const saveValueFormatter = () => {
                   @onChangeYAxisForm="onChangeYAxisForm"
                   @onTextChange="onTextChange"
                   @onLegendChange="onLegendChange"
+                  @onBackgroundChange="onBackgroundChange"
                 />
               </el-tab-pane>
 
@@ -1098,16 +1238,19 @@ const saveValueFormatter = () => {
               <span>
                 <el-icon
                   :style="{ color: '#a6a6a6', cursor: 'pointer', marginRight: '6px' }"
-                  @click="getFields(view.tableId)"
+                  @click="getFields(view.tableId, view.id)"
                 >
                   <Icon
                     name="icon_refresh_outlined"
                     class="el-icon-arrow-down el-icon-delete"
                   ></Icon>
                 </el-icon>
-                <!--                <el-icon :style="{ color: '#a6a6a6', cursor: 'pointer', marginRight: '6px' }">-->
-                <!--                  <Icon name="icon_add_outlined" class="el-icon-arrow-down el-icon-delete"></Icon>-->
-                <!--                </el-icon>-->
+                <el-icon
+                  :style="{ color: '#a6a6a6', cursor: 'pointer', marginRight: '6px' }"
+                  @click="addCalcField('d')"
+                >
+                  <Icon name="icon_add_outlined" class="el-icon-arrow-down el-icon-delete"></Icon>
+                </el-icon>
               </span>
             </div>
             <el-input
@@ -1149,6 +1292,34 @@ const saveValueFormatter = () => {
                       ></Icon>
                     </el-icon>
                     <span class="field-name">{{ element.name }}</span>
+                    <el-dropdown
+                      v-if="element.id !== '-1'"
+                      :effect="props.themes"
+                      placement="right-start"
+                      trigger="click"
+                      size="small"
+                      class="field-setting child"
+                      @command="chartFieldEdit"
+                    >
+                      <span class="el-dropdown-link">
+                        <el-icon class="icon-setting"><Setting /></el-icon>
+                      </span>
+                      <template #dropdown>
+                        <el-dropdown-menu :effect="props.themes">
+                          <el-dropdown-item :command="handleChartFieldEdit(element, 'copy')">
+                            {{ t('commons.copy') }}
+                          </el-dropdown-item>
+                          <span v-if="element.chartId">
+                            <el-dropdown-item :command="handleChartFieldEdit(element, 'edit')">
+                              {{ t('commons.edit') }}
+                            </el-dropdown-item>
+                            <el-dropdown-item :command="handleChartFieldEdit(element, 'delete')">
+                              {{ t('commons.delete') }}
+                            </el-dropdown-item>
+                          </span>
+                        </el-dropdown-menu>
+                      </template>
+                    </el-dropdown>
                   </span>
                 </template>
               </draggable>
@@ -1173,6 +1344,34 @@ const saveValueFormatter = () => {
                       ></Icon>
                     </el-icon>
                     <span class="field-name">{{ element.name }}</span>
+                    <el-dropdown
+                      v-if="element.id !== '-1'"
+                      :effect="props.themes"
+                      placement="right-start"
+                      trigger="click"
+                      size="small"
+                      class="field-setting child"
+                      @command="chartFieldEdit"
+                    >
+                      <span class="el-dropdown-link">
+                        <el-icon class="icon-setting"><Setting /></el-icon>
+                      </span>
+                      <template #dropdown>
+                        <el-dropdown-menu :effect="props.themes">
+                          <el-dropdown-item :command="handleChartFieldEdit(element, 'copy')">
+                            {{ t('commons.copy') }}
+                          </el-dropdown-item>
+                          <span v-if="element.chartId">
+                            <el-dropdown-item :command="handleChartFieldEdit(element, 'edit')">
+                              {{ t('commons.edit') }}
+                            </el-dropdown-item>
+                            <el-dropdown-item :command="handleChartFieldEdit(element, 'delete')">
+                              {{ t('commons.delete') }}
+                            </el-dropdown-item>
+                          </span>
+                        </el-dropdown-menu>
+                      </template>
+                    </el-dropdown>
                   </span>
                 </template>
               </draggable>
@@ -1263,8 +1462,8 @@ const saveValueFormatter = () => {
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="closeQuotaEditCompare">{{ t('chart.cancel') }} </el-button>
-          <el-button type="primary" @click="saveQuotaEditCompare"
-            >{{ t('chart.confirm') }}
+          <el-button type="primary" @click="saveQuotaEditCompare">
+            {{ t('chart.confirm') }}
           </el-button>
         </div>
       </template>
@@ -1312,6 +1511,15 @@ const saveValueFormatter = () => {
           <el-button @click="closeCustomSort">{{ t('chart.cancel') }} </el-button>
           <el-button type="primary" @click="saveCustomSort">{{ t('chart.confirm') }} </el-button>
         </div>
+      </template>
+    </el-dialog>
+
+    <!--视图计算字段-->
+    <el-dialog v-model="editCalcField" width="1000px" title="新建计算字段">
+      <calc-field-edit ref="calcEdit" />
+      <template #footer>
+        <el-button secondary @click="closeEditCalc()">{{ t('dataset.cancel') }} </el-button>
+        <el-button type="primary" @click="confirmEditCalc()">{{ t('dataset.confirm') }} </el-button>
       </template>
     </el-dialog>
   </div>
@@ -1782,5 +1990,27 @@ span {
     padding-left: 0 !important;
     padding-bottom: 10px !important;
   }
+}
+.field-setting {
+  position: absolute;
+  right: 8px;
+}
+.father .child {
+  visibility: hidden;
+}
+
+.father:hover .child {
+  visibility: visible;
+}
+
+.icon-setting {
+  color: #a6a6a6;
+}
+
+.label-icon {
+  top: 2px;
+  margin-left: 6px;
+  font-size: 14px;
+  cursor: pointer;
 }
 </style>

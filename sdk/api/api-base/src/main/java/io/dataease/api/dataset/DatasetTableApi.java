@@ -2,6 +2,7 @@ package io.dataease.api.dataset;
 
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.api.dataset.dto.MultFieldValuesRequest;
+import io.dataease.api.dataset.engine.SQLFunctionDTO;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,6 +15,13 @@ import java.util.Map;
  */
 public interface DatasetTableApi {
 
+    /**
+     * 该接口用于视图计算字段单独保存
+     *
+     * @param datasetTableFieldDTO
+     * @return
+     * @throws Exception
+     */
     @PostMapping("save")
     DatasetTableFieldDTO save(@RequestBody DatasetTableFieldDTO datasetTableFieldDTO) throws Exception;
 
@@ -30,6 +38,9 @@ public interface DatasetTableApi {
     Map<String, List<DatasetTableFieldDTO>> listByDQ(@PathVariable Long id);
 
 
+
     @PostMapping("multFieldValuesForPermissions")
     List<Object> multFieldValuesForPermissions(@RequestBody MultFieldValuesRequest multFieldValuesRequest) throws Exception;
+    @PostMapping("getFunction")
+    List<SQLFunctionDTO> getFunction();
 }

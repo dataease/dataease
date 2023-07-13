@@ -6,7 +6,9 @@ import { propTypes } from '@/utils/propTypes'
 
 const props = defineProps({
   domId: propTypes.string.def('editor'),
-  height: propTypes.string.def('250px')
+  height: propTypes.string.def('250px'),
+  quotaMap: propTypes.arrayOf(String).def(() => []),
+  dimensionMap: propTypes.arrayOf(String).def(() => [])
 })
 
 const codeComInit = (doc: string) => {
@@ -85,6 +87,16 @@ const codeComInit = (doc: string) => {
     toDOM() {
       let elt = document.createElement('span')
       elt.textContent = `[${this.name}]`
+      const { dimensionMap, quotaMap } = props
+      if (!dimensionMap?.length && !quotaMap?.length) {
+        return elt
+      }
+      const isQuota = quotaMap.includes(this.name)
+      elt.style.borderRadius = '2px'
+      elt.style.margin = '0 4px'
+      elt.style.padding = '0 6px'
+      elt.style.background = isQuota ? 'rgba(52, 199, 36, 0.20)' : 'rgba(51, 112, 255, 0.20)'
+      elt.style.color = isQuota ? '#2CA91F' : '#2B5FD9'
       return elt
     }
     ignoreEvent() {

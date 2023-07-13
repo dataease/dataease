@@ -204,7 +204,7 @@ const subjectDelete = () => {
 const subjectChange = () => {
   if (!themeSelected.value) {
     dvMainStore.setCanvasStyle(JSON.parse(subjectItem.value.details))
-    snapshotStore.recordSnapshot()
+    snapshotStore.recordSnapshot('subjectChange')
     emit('onSubjectChange')
   }
 }

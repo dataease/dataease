@@ -17,7 +17,7 @@ import { useCache } from '@/hooks/web/useCache'
 const { wsCache } = useCache()
 
 export const PATH_URL = window.DataEaseBi
-  ? window.DataEaseBi?.baseUrl
+  ? window.DataEaseBi?.baseUrl + 'de2api/'
   : import.meta.env.VITE_API_BASEPATH
 
 // 创建axios实例
@@ -40,14 +40,26 @@ service.interceptors.request.use(
     ) {
       config.data = qs.stringify(config.data)
     }
-    if (wsCache.get('user.token')) {
-      ;(config.headers as AxiosRequestHeaders)['Authorization'] = wsCache.get('user.token')
+    console.log('---------------------')
+    if (window.DataEaseBi?.baseUrl) {
+      config.baseURL = window.DataEaseBi.baseUrl + 'de2api/'
+    }
+    if (window.DataEaseBi?.token) {
+      wsCache.set('user.token', null)
+      ;(config.headers as AxiosRequestHeaders)['X-EMBEDDED-TOKEN'] = window.DataEaseBi.token
+      window.DataEaseBi.token = null
+    } else if (wsCache.get('user.token')) {
+      ;(config.headers as AxiosRequestHeaders)['X-DE-TOKEN'] = wsCache.get('user.token')
     }
     if (wsCache.get('user.language')) {
       const key = wsCache.get('user.language')
       const val = mapping[key] || key
       ;(config.headers as AxiosRequestHeaders)['Accept-Language'] = val
     }
+    ;(config.headers as AxiosRequestHeaders)['out_auth_platform'] = wsCache.get('out_auth_platform')
+      ? wsCache.get('out_auth_platform')
+      : 'default'
+
     // ;(config.headers as AxiosRequestHeaders)['Token'] = 'test test'
     // get参数编码
     if (config.method === 'get' && config.params) {
@@ -77,6 +89,9 @@ service.interceptors.response.use(
       // 如果是文件流，直接过
       return response
     } else if (response.data.code === result_code) {
+      if (response.headers['x-de-refresh-token']) {
+        wsCache.set('user.token', response.headers['x-de-refresh-token'])
+      }
       return response.data
     } else {
       ElMessage.error(response.data.msg)

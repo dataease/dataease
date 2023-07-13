@@ -1,12 +1,19 @@
 .border-bottom-tab(@width) {
     margin-left: @width;
-    :deep(.ed-tabs__header::before) {
+    :deep(.ed-tabs__header::before),
+    :deep(.ed-tabs__header::after)  {
       content: '';
       position: absolute;
-      left: -@width;
       bottom: 0;
       width: @width;
       height: 1px;
       background-color: rgba(31, 35, 41, 0.15);
+    }
+    :deep(.ed-tabs__header::before) {
+      left: -@width;
+    }
+
+    :deep(.ed-tabs__header::after) {
+      right: -@width;
     }
   }

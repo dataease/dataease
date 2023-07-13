@@ -51,7 +51,7 @@ const dvMainStore = dvMainStoreWithOut()
 const onSubmit = () => {
   state.linkInfo.content = checkAddHttp(state.linkInfo.content)
   dvMainStore.curComponent.hyperlinks = deepCopy(state.linkInfo)
-  snapshotStore.canvasChange()
+  snapshotStore.recordSnapshotCache()
   onClose()
 }
 

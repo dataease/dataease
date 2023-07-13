@@ -253,3 +253,16 @@ CREATE TABLE `per_dataset_row_permissions_tree` (
             `update_time` bigint(13) DEFAULT NULL,
             PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
+
+DROP TABLE IF EXISTS `per_auth_menu`;
+
+CREATE TABLE `per_embedded_instance`
+(
+    `id`         bigint       NOT NULL COMMENT 'ID',
+    `name`       varchar(30)  NOT NULL COMMENT '名称',
+    `app_id`     varchar(32)  NOT NULL COMMENT '应用ID',
+    `app_secret` varchar(128) NOT NULL COMMENT '应用密钥',
+    `domain`     varchar(256) NOT NULL COMMENT '应用域名',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+

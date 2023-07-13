@@ -1,66 +1,57 @@
 <script lang="ts" setup>
-import { ref, reactive, nextTick } from 'vue'
+import { ref, reactive, nextTick, computed, shallowRef } from 'vue'
 import { storeToRefs } from 'pinia'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { useI18n } from '@/hooks/web/useI18n'
 import type { DatasetDetail } from '@/api/dataset'
 import { getDsDetails } from '@/api/dataset'
 import { cloneDeep } from 'lodash-es'
+import Select from './Select.vue'
+import Time from './Time.vue'
+import { getDatasetTree } from '@/api/dataset'
+import { Tree } from '@/views/visualized/data/dataset/form/CreatDsGroup.vue'
+
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
-const { componentData } = storeToRefs(dvMainStore)
+const { componentData, canvasViewInfo } = storeToRefs(dvMainStore)
 
+interface DatasetField {
+  type: string
+  title: string
+  id: string
+  tableId: string
+}
 const dialogVisible = ref(false)
 const renameInput = ref()
 const valueSource = ref([])
-const options = [
-  {
-    label: '所用数据集',
-    options: [
-      {
-        value: 'Shanghai',
-        label: 'Shanghai'
-      },
-      {
-        value: 'Beijing',
-        label: 'Beijing'
-      }
-    ]
-  },
-  {
-    label: '其他数据集',
-    options: [
-      {
-        value: 'Chengdu',
-        label: 'Chengdu'
-      },
-      {
-        value: 'Shenzhen',
-        label: 'Shenzhen'
-      },
-      {
-        value: 'Guangzhou',
-        label: 'Guangzhou'
-      },
-      {
-        value: 'Dalian',
-        label: 'Dalian'
-      }
-    ]
-  }
-]
 const conditions = ref([])
 const displayType = ref('')
 const checkAll = ref(false)
+const multiple = ref(false)
 const activeConditionForRename = reactive({
   id: '',
   name: '',
   visible: false
 })
+const datasetMap = {}
+
+const datasetFieldList = computed(() => {
+  return Object.values(canvasViewInfo.value)
+    .filter(ele => (ele as DatasetField).type !== 'VQuery')
+    .map(ele => {
+      const { id, title, tableId } = ele as DatasetField
+      return {
+        id,
+        title,
+        tableId
+      }
+    })
+})
 const curComponent = ref()
 const manual = ref()
 const activeCondition = ref('')
-const isIndeterminate = ref(true)
+const isIndeterminate = ref(false)
+const datasetTree = shallowRef([])
 const fields = ref<DatasetDetail[]>()
 let componentId = ''
 const typeList = [
@@ -73,9 +64,9 @@ const typeList = [
     command: 'del'
   }
 ]
-const checkedFields = ref([])
+
 const handleCheckAllChange = (val: boolean) => {
-  checkedFields.value = val ? fields.value.map(ele => ele.id) : []
+  curComponent.value.checkedFields = val ? fields.value.map(ele => ele.componentId) : []
   isIndeterminate.value = false
 }
 const handleCheckedFieldsChange = (value: string[]) => {
@@ -88,10 +79,48 @@ const cancelClick = () => {
   dialogVisible.value = false
 }
 
+const initDataset = () => {
+  getDatasetTree({}).then(res => {
+    datasetTree.value = (res as unknown as Tree[]) || []
+  })
+}
+
+const handleDatasetChange = () => {
+  curComponent.value.field.id = ''
+  getOptions(curComponent.value.dataset.id, curComponent.value)
+}
+
+const handleValueSourceChange = () => {
+  curComponent.value.defaultValue = ''
+  multipleChange(curComponent.value.multiple)
+}
+
+const multipleChange = (val: boolean, isTemporary = false) => {
+  const { defaultValue, temporaryValue } = curComponent.value
+  const value = isTemporary ? temporaryValue : defaultValue
+  if (Array.isArray(value)) {
+    curComponent.value.selectValue = val ? value : ''
+  } else {
+    curComponent.value.selectValue = val ? (value ? [value] : []) : value
+  }
+  if (curComponent.value.field.deType === 1) {
+    curComponent.value.multiple = val
+    return
+  }
+  curComponent.value.multiple = val
+  curComponent.value.operator = val ? 'in' : 'eq'
+}
+
 const confirmClick = () => {
-  let obj = componentData.value.find(ele => ele.id === componentId)
-  obj.propValue = cloneDeep(conditions.value)
   dialogVisible.value = false
+  let obj = componentData.value.find(ele => ele.id === componentId)
+  conditions.value.forEach(ele => {
+    curComponent.value = ele
+    if (curComponent.value.temporaryValue?.length) {
+      multipleChange(curComponent.value.multiple, true)
+    }
+  })
+  obj.propValue = cloneDeep(conditions.value)
 }
 
 const cancelValueSource = () => {
@@ -100,34 +129,97 @@ const cancelValueSource = () => {
 
 const confirmValueSource = () => {
   curComponent.value.valueSource = cloneDeep(valueSource.value.filter(ele => ele.trim()))
+  handleValueSourceChange()
+  cancelValueSource()
+}
+
+const filterTypeCom = (deType: number) => {
+  return deType === 1 ? Time : Select
 }
 
 const init = (id: string, queryId: string) => {
   componentId = id
+  if (!datasetTree.value.length) {
+    initDataset()
+  }
   conditions.value = cloneDeep(componentData.value.find(ele => ele.id === id).propValue) || []
-  curComponent.value = conditions.value.find(ele => ele.id === queryId)
-  activeCondition.value = queryId
+  handleCondition({ id: queryId })
   valueSource.value = cloneDeep(curComponent.value.valueSource)
   if (!valueSource.value.length) {
     valueSource.value.push('')
   }
-  checkedFields.value = Object.keys(curComponent.value.checkedFieldsMap) || []
   dialogVisible.value = true
-  getDsDetails(['1668815327340331008', '1666719324084699136'])
-    .then(res => {
-      res.forEach(ele => {
-        const { dimensionList, quotaList } = ele.fields
-        ele.list = [...dimensionList, ...quotaList]
+  const datasetFieldIdList = datasetFieldList.value.map(ele => ele.tableId)
+  for (const i in datasetMap) {
+    if (!datasetFieldIdList.includes(i)) {
+      delete datasetMap[i]
+    }
+  }
+
+  const datasetMapKeyList = Object.keys(datasetMap)
+
+  if (datasetFieldIdList.every(ele => datasetMapKeyList.includes(ele))) {
+    fields.value = datasetFieldList.value
+      .map(ele => {
+        if (!datasetMap[ele.tableId]) return null
+        return { ...datasetMap[ele.tableId], componentId: ele.id }
       })
-      fields.value = res
+      .filter(ele => !!ele)
+    return
+  }
+  getDsDetails([
+    ...new Set(
+      datasetFieldList.value.map(ele => ele.tableId).filter(ele => !datasetMapKeyList.includes(ele))
+    )
+  ])
+    .then(res => {
+      res
+        .filter(ele => !!ele)
+        .forEach(ele => {
+          const { dimensionList, quotaList } = ele.fields
+          ele.list = [...dimensionList, ...quotaList]
+          if (!datasetMap[ele.id]) {
+            datasetMap[ele.id] = ele
+          }
+        })
+      fields.value = datasetFieldList.value
+        .map(ele => {
+          if (!datasetMap[ele.tableId]) return null
+          return { ...datasetMap[ele.tableId], componentId: ele.id }
+        })
+        .filter(ele => !!ele)
     })
     .finally(() => {
-      handleCheckedFieldsChange(checkedFields.value)
+      handleCheckedFieldsChange(curComponent.value.checkedFields)
     })
 }
 
-const handleCondition = ele => {
-  activeCondition.value = ele.id
+const handleCondition = item => {
+  activeCondition.value = item.id
+  curComponent.value = conditions.value.find(ele => ele.id === item.id)
+  multiple.value = curComponent.value.multiple
+  if (!curComponent.value.dataset.fields.length) {
+    getOptions(curComponent.value.dataset.id, curComponent.value)
+  }
+  datasetFieldList.value.forEach(ele => {
+    if (!curComponent.value.checkedFieldsMap[ele.id]) {
+      curComponent.value.checkedFieldsMap[ele.id] = ''
+    }
+  })
+  if (!!fields.value?.length) {
+    handleCheckedFieldsChange(curComponent.value.checkedFields)
+  }
+  multipleChange(curComponent.value.multiple, false)
+}
+
+const getOptions = (id, component) => {
+  getDsDetails([id]).then(res => {
+    res.forEach(ele => {
+      if (!ele) return
+      const { dimensionList, quotaList } = ele.fields
+      component.dataset.fields = [...dimensionList, ...quotaList]
+    })
+  })
 }
 
 const addOperation = (cmd, condition, index) => {
@@ -136,14 +228,22 @@ const addOperation = (cmd, condition, index) => {
       conditions.value.splice(index, 1)
       break
     case 'rename':
-      Object.assign(activeConditionForRename, condition)
-      nextTick(() => {
-        renameInput.value[index].focus()
-      })
+      setTimeout(() => {
+        Object.assign(activeConditionForRename, condition)
+        nextTick(() => {
+          renameInput.value[index].focus()
+        })
+      }, 200)
       break
     default:
       break
   }
+}
+const dsSelectProps = {
+  label: 'name',
+  children: 'children',
+  value: 'id',
+  isLeaf: node => !node.children?.length
 }
 
 const renameInputBlur = () => {
@@ -206,13 +306,13 @@ defineExpose({
             <el-icon @click.stop="condition.visible = !condition.visible" v-else>
               <Icon name="de_pwd_invisible"></Icon>
             </el-icon>
-            <div @click.stop v-if="activeConditionForRename.id === condition.id" class="rename">
-              <el-input
-                @blur="renameInputBlur"
-                ref="renameInput"
-                v-model="activeConditionForRename.name"
-              ></el-input>
-            </div>
+          </div>
+          <div @click.stop v-if="activeConditionForRename.id === condition.id" class="rename">
+            <el-input
+              @blur="renameInputBlur"
+              ref="renameInput"
+              v-model="activeConditionForRename.name"
+            ></el-input>
           </div>
         </div>
       </div>
@@ -227,14 +327,23 @@ defineExpose({
           >
         </div>
         <div class="field-list">
-          <el-checkbox-group v-model="checkedFields" @change="handleCheckedFieldsChange">
-            <div v-for="field in fields" :key="field.id" class="list-item">
-              <el-checkbox :label="field.id"
+          <el-checkbox-group
+            v-model="curComponent.checkedFields"
+            @change="handleCheckedFieldsChange"
+          >
+            <div v-for="field in fields" :key="field.componentId" class="list-item">
+              <el-checkbox :label="field.componentId"
                 ><el-icon> <Icon name="icon_add_outlined"></Icon> </el-icon
-                ><span class="checkbox-name ellipsis">{{ field.name }}</span></el-checkbox
+                ><span class="checkbox-name ellipsis">{{
+                  canvasViewInfo[field.componentId].title
+                }}</span></el-checkbox
               >
               <span class="dataset ellipsis">{{ field.name }}</span>
-              <el-select v-model="curComponent.checkedFieldsMap[field.id]" clearable>
+              <el-select
+                v-if="curComponent.checkedFields.includes(field.componentId)"
+                v-model="curComponent.checkedFieldsMap[field.componentId]"
+                clearable
+              >
                 <el-option
                   v-for="ele in field.list"
                   :key="ele.id"
@@ -262,7 +371,10 @@ defineExpose({
             <div class="label">选项值来源</div>
             <div class="value">
               <div class="value">
-                <el-radio-group v-model="curComponent.optionValueSource">
+                <el-radio-group
+                  @change="handleValueSourceChange"
+                  v-model="curComponent.optionValueSource"
+                >
                   <el-radio :label="0">自动</el-radio>
                   <el-radio :label="1">选择数据集</el-radio>
                   <el-radio :label="2">手动输入</el-radio>
@@ -270,32 +382,36 @@ defineExpose({
               </div>
               <template v-if="curComponent.optionValueSource === 1">
                 <div class="value">
-                  <el-select v-model="curComponent.dataset.id" clearable>
-                    <el-option-group
-                      v-for="group in options"
-                      :key="group.label"
-                      :label="group.label"
-                    >
-                      <el-option
-                        v-for="item in group.options"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value"
-                      >
-                        <div class="flex-align-center">
-                          <el-icon>
-                            <Icon name="icon_add_outlined"></Icon>
-                          </el-icon>
-                          <span class="ellipsis" style="width: 250px">{{ item.label }}</span>
-                        </div>
-                      </el-option>
-                    </el-option-group>
-                  </el-select>
+                  <el-tree-select
+                    v-model="curComponent.dataset.id"
+                    :data="datasetTree"
+                    @change="handleDatasetChange"
+                    :props="dsSelectProps"
+                    :render-after-expand="false"
+                    filterable
+                    popper-class="dataset-tree"
+                  >
+                    <template #default="{ node, data }">
+                      <div class="content">
+                        <el-icon v-if="!data.leaf">
+                          <Icon name="dv-folder"></Icon>
+                        </el-icon>
+                        <el-icon v-if="data.leaf">
+                          <Icon name="icon_dataset"></Icon>
+                        </el-icon>
+                        <span class="label" :title="node.label">{{ node.label }}</span>
+                      </div>
+                    </template>
+                  </el-tree-select>
                 </div>
                 <div class="value">
-                  <el-select v-model="curComponent.dataset.field.id" clearable>
-                    <el-option label="Zone one" value="shanghai" />
-                    <el-option label="Zone two" value="beijing" />
+                  <el-select v-model="curComponent.field.id" clearable>
+                    <el-option
+                      v-for="ele in curComponent.dataset.fields"
+                      :key="ele.id"
+                      :label="ele.name"
+                      :value="ele.id"
+                    />
                   </el-select>
                 </div>
               </template>
@@ -348,7 +464,7 @@ defineExpose({
           <div class="list-item">
             <div class="label">选项类型</div>
             <div class="value">
-              <el-radio-group v-model="curComponent.multiple">
+              <el-radio-group @change="multipleChange" v-model="multiple">
                 <el-radio :label="false">单选</el-radio>
                 <el-radio :label="true">多选</el-radio>
               </el-radio-group>
@@ -359,7 +475,7 @@ defineExpose({
               <el-checkbox v-model="curComponent.parametersCheck" label="绑定参数" />
             </div>
             <div class="parameters">
-              <el-select v-model="curComponent.parameters" clearable>
+              <el-select multiple v-model="curComponent.parameters" clearable>
                 <el-option label="Zone one" value="shanghai" />
                 <el-option label="Zone two" value="beijing" />
               </el-select>
@@ -370,10 +486,11 @@ defineExpose({
               <el-checkbox v-model="curComponent.defaultValueCheck" label="设置默认值" />
             </div>
             <div class="parameters">
-              <el-select v-model="curComponent.defaultValue" clearable>
-                <el-option label="Zone one" value="shanghai" />
-                <el-option label="Zone two" value="beijing" />
-              </el-select>
+              <component
+                :config="curComponent"
+                isConfig
+                :is="filterTypeCom(curComponent.field.deType)"
+              ></component>
             </div>
           </div>
         </div>
@@ -445,7 +562,6 @@ defineExpose({
           height: 32px;
           display: flex;
           align-items: center;
-          justify-content: space-between;
           margin-bottom: 8px;
           .ed-checkbox__label {
             display: inline-flex;
@@ -509,7 +625,10 @@ defineExpose({
 
           .parameters {
             margin-left: auto;
-            .ed-select {
+            .ed-select,
+            .ed-date-editor,
+            .ed-date-editor--datetime .ed-input__wrapper,
+            .ed-select-v2 {
               width: 415px;
             }
           }
@@ -548,6 +667,15 @@ defineExpose({
       height: 63px;
       border-top: 1px solid rgba(31, 35, 41, 0.15);
       justify-content: flex-end;
+    }
+  }
+}
+.dataset-tree {
+  .content {
+    display: flex;
+    align-items: center;
+    .label {
+      margin-left: 5px;
     }
   }
 }

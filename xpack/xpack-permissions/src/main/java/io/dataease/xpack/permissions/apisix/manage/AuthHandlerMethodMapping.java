@@ -2,6 +2,7 @@ package io.dataease.xpack.permissions.apisix.manage;
 
 import io.dataease.auth.DeApiPath;
 import io.dataease.auth.DePermit;
+import io.dataease.constant.AuthConstant;
 import io.dataease.feign.DeFeign;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.aop.support.AopUtils;
@@ -22,10 +23,7 @@ import org.springframework.web.util.pattern.PathPatternParser;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Predicate;
 
 @Component
@@ -49,9 +47,39 @@ public class AuthHandlerMethodMapping<T> extends RequestMappingHandlerMapping {
         return match;
     }
 
+    private Boolean isSameMethod(Method method, Method parentMethod) {
+        String methodName = method.getName();
+        int parameterCount = method.getParameterCount();
+        boolean result = parentMethod.getName().equals(methodName) && parameterCount == parentMethod.getParameterCount();
+        if (!result) return false;
+        Class<?>[] parameterTypes = method.getParameterTypes();
+        Class<?>[] parentParameterTypes = parentMethod.getParameterTypes();
+        for (int i = 0; i < parameterCount; i++) {
+            if (parameterTypes[i] != parentParameterTypes[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private Boolean methodNeedPermit(Method method, Class handlerType) {
+        if (method.isAnnotationPresent(DePermit.class)) return true;
+        Set<Class<?>> interfacesForClassAsSet = ClassUtils.getAllInterfacesForClassAsSet(handlerType);
+        Class<?> aClass = interfacesForClassAsSet.stream().filter(interfac -> interfac.isAnnotationPresent(DeApiPath.class)).findFirst().get();
+        Method declaredMethod = null;
+        Method[] methods = aClass.getMethods();
+        for (Method curMethod : methods) {
+            if (isSameMethod(method, curMethod)) {
+                declaredMethod = curMethod;
+            }
+        }
+        if (declaredMethod == null) return false;
+        return declaredMethod.isAnnotationPresent(DePermit.class);
+    }
+
     @Override
     public RequestMappingInfo getMappingForMethod(Method method, Class handlerType) {
-        if (!method.isAnnotationPresent(DePermit.class)) return null;
+        if (!methodNeedPermit(method, handlerType)) return null;
         RequestMappingInfo info = createRequestMappingInfo(method);
         if (info != null) {
             RequestMappingInfo typeInfo = createRequestMappingInfo(handlerType);
@@ -94,11 +122,16 @@ public class AuthHandlerMethodMapping<T> extends RequestMappingHandlerMapping {
 
         if (handlerType != null) {
             Class<?> userType = ClassUtils.getUserClass(handlerType);
+            Optional<Class<?>> first = Arrays.stream(userType.getInterfaces()).filter(interfac -> interfac.isAnnotationPresent(DeApiPath.class)).findFirst();
+            if (first.isEmpty()) {
+                return;
+            }
+            Class<?> aClass = first.get();
             if (userType.isAnnotationPresent(DeFeign.class)) return;
             Map<Method, RequestMappingInfo> methods = MethodIntrospector.selectMethods(userType,
                     (MethodIntrospector.MetadataLookup<RequestMappingInfo>) method -> {
                         try {
-                            return getMappingForMethod(method, userType);
+                            return getMappingForMethod(method, aClass);
                         } catch (Throwable ex) {
                             throw new IllegalStateException("Invalid mapping on handler class [" +
                                     userType.getName() + "]: " + method, ex);
@@ -106,7 +139,7 @@ public class AuthHandlerMethodMapping<T> extends RequestMappingHandlerMapping {
                     });
 
             methods.forEach((method, mapping) -> {
-                Method invocableMethod = AopUtils.selectInvocableMethod(method, userType);
+                Method invocableMethod = AopUtils.selectInvocableMethod(method, aClass);
                 registerHandlerMethod(handler, invocableMethod, mapping);
             });
         }
@@ -193,7 +226,7 @@ public class AuthHandlerMethodMapping<T> extends RequestMappingHandlerMapping {
                 return prefix;
             }
         }
-        return null;
+        return AuthConstant.DE_API_PREFIX;
     }
 
     public void afterPropertiesSet() {

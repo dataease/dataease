@@ -2,10 +2,11 @@ package io.dataease.xpack.permissions.login.manage;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.api.permissions.login.dto.PwdLoginDTO;
+import io.dataease.auth.bo.TokenUserBO;
 import io.dataease.exception.DEException;
+import io.dataease.utils.CacheUtils;
 import io.dataease.utils.Md5Utils;
 import io.dataease.utils.RsaUtils;
-import io.dataease.auth.bo.TokenUserBO;
 import io.dataease.xpack.permissions.login.dao.LoginMapper;
 import io.dataease.xpack.permissions.login.dao.po.LoginUserPO;
 import jakarta.annotation.Resource;
@@ -40,6 +41,14 @@ public class LoginManage {
         if (ObjectUtils.isEmpty(loginUserPO)) {
             DEException.throwException("name or pwd invalid");
         }
+        if (!loginUserPO.getEnable()) {
+            DEException.throwException("the user is disabled");
+        }
+        if (loginUserPO.getOrigin() != 0) {
+            DEException.throwException("error login type");
+        }
+        CacheUtils.put("login_user_pwd", loginUserPO.getUserId().toString(), md5Pwd);
         return new TokenUserBO(loginUserPO.getUserId(), loginUserPO.getDefaultOid());
     }
+
 }

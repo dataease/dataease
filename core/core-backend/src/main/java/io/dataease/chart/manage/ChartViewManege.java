@@ -4,10 +4,15 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dataease.api.chart.dto.*;
+import io.dataease.api.dataset.union.model.SQLObj;
 import io.dataease.chart.dao.auto.entity.CoreChartView;
 import io.dataease.chart.dao.auto.mapper.CoreChartViewMapper;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetTableField;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableFieldMapper;
+import io.dataease.dto.dataset.DatasetTableFieldDTO;
+import io.dataease.engine.constant.ExtFieldConstant;
+import io.dataease.engine.func.FunctionConstant;
+import io.dataease.engine.utils.Utils;
 import io.dataease.exception.DEException;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.JsonUtil;
@@ -17,10 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -104,13 +106,38 @@ public class ChartViewManege {
         return chartDataManage.calcData(details);
     }
 
-    public Map<String, List<ChartViewFieldDTO>> listByDQ(Long id) {
+    public Map<String, List<ChartViewFieldDTO>> listByDQ(Long id, Long chartId) {
         QueryWrapper<CoreDatasetTableField> wrapper = new QueryWrapper<>();
         wrapper.eq("dataset_group_id", id);
 
         List<CoreDatasetTableField> fields = coreDatasetTableFieldMapper.selectList(wrapper);
         fields.add(createCountField(id));
         List<ChartViewFieldDTO> list = transFieldDTO(fields);
+
+        // 获取视图计算字段
+        wrapper.clear();
+        wrapper.eq("chart_id", chartId);
+        List<CoreDatasetTableField> chartFields = coreDatasetTableFieldMapper.selectList(wrapper);
+        list.addAll(transFieldDTO(chartFields));
+
+        // 获取list中的聚合函数，将字段的summary设置成空
+        SQLObj tableObj = new SQLObj();
+        tableObj.setTableAlias("");
+
+        for (ChartViewFieldDTO ele : list) {
+            if (Objects.equals(ele.getExtField(), ExtFieldConstant.EXT_CALC)) {
+                String originField = Utils.calcFieldRegex(ele.getOriginName(), tableObj, list.stream().peek(e -> {
+                    DatasetTableFieldDTO dto = new DatasetTableFieldDTO();
+                    BeanUtils.copyBean(dto, e);
+                }).collect(Collectors.toList()));
+                for (String func : FunctionConstant.AGG_FUNC) {
+                    if (Utils.matchFunction(func, originField)) {
+                        ele.setSummary("");
+                        break;
+                    }
+                }
+            }
+        }
 
         List<ChartViewFieldDTO> dimensionList = list.stream().filter(ele -> StringUtils.equalsIgnoreCase(ele.getGroupType(), "d")).collect(Collectors.toList());
         List<ChartViewFieldDTO> quotaList = list.stream().filter(ele -> StringUtils.equalsIgnoreCase(ele.getGroupType(), "q")).collect(Collectors.toList());

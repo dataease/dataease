@@ -9,15 +9,15 @@ import XAxisSelector from '@/views/chart/components/editor/editor-style/componen
 import YAxisSelector from '@/views/chart/components/editor/editor-style/components/YAxisSelector.vue'
 import TitleSelector from '@/views/chart/components/editor/editor-style/components/TitleSelector.vue'
 import LegendSelector from '@/views/chart/components/editor/editor-style/components/LegendSelector.vue'
-import BackgroundOverallComponent from '@/components/visualization/component-background/BackgroundOverallComponent.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import CollapseSwitchItem from '@/components/collapse-switch-item/src/CollapseSwitchItem.vue'
 import { ElCollapseItem } from 'element-plus-secondary'
 import BasicStyleSelector from '@/views/chart/components/editor/editor-style/components/BasicStyleSelector.vue'
 import ComponentPosition from '@/components/visualization/common/ComponentPosition.vue'
+import BackgroundOverallCommon from '@/components/visualization/component-background/BackgroundOverallCommon.vue'
 const dvMainStore = dvMainStoreWithOut()
-const { curComponent, dvInfo } = storeToRefs(dvMainStore)
+const { curComponent, dvInfo, batchOptStatus } = storeToRefs(dvMainStore)
 const { t } = useI18n()
 
 const state = {
@@ -41,10 +41,24 @@ const props = defineProps({
   quotaData: {
     type: Array,
     required: true
+  },
+  properties: {
+    type: Array,
+    required: false,
+    default: () => {
+      return []
+    }
+  },
+  propertyInnerAll: {
+    type: Object,
+    required: false,
+    default: () => {
+      return []
+    }
   }
 })
 
-const { chart, themes } = toRefs(props)
+const { chart, themes, properties, propertyInnerAll } = toRefs(props)
 const emit = defineEmits([
   'onColorChange',
   'onSizeChange',
@@ -54,8 +68,21 @@ const emit = defineEmits([
   'onChangeYAxisForm',
   'onTextChange',
   'onLegendChange',
-  'onBasicStyleChange'
+  'onBasicStyleChange',
+  'onBackgroundChange'
 ])
+
+const showProperties = property => {
+  return properties.value && properties.value && properties.value.includes(property)
+}
+
+const showPropertiesCollapse = propertiesInfo => {
+  let includeCount = 0
+  propertiesInfo.forEach(property => {
+    properties.value.includes(property) && includeCount++
+  })
+  return includeCount > 0
+}
 
 const onColorChange = val => {
   emit('onColorChange', val)
@@ -91,6 +118,10 @@ const onLegendChange = val => {
 const onBasicStyleChange = val => {
   emit('onBasicStyleChange', val)
 }
+
+const onBackgroundChange = val => {
+  emit('onBackgroundChange', val)
+}
 </script>
 
 <template>
@@ -102,21 +133,33 @@ const onBasicStyleChange = val => {
             <component-position></component-position>
           </el-collapse-item>
           <el-collapse-item name="background" :title="'背景'">
-            <background-overall-component
+            <background-overall-common
               v-if="curComponent"
+              :common-background-pop="curComponent.commonBackground"
               :themes="themes"
-              position="component"
-            ></background-overall-component>
+              @onBackgroundChange="onBackgroundChange"
+              component-position="component"
+            ></background-overall-common>
           </el-collapse-item>
-          <el-collapse-item name="basicStyle" title="基础样式">
+          <el-collapse-item
+            name="basicStyle"
+            title="基础样式"
+            v-if="showPropertiesCollapse(['basic-style-selector'])"
+          >
             <basic-style-selector
+              :property-inner="propertyInnerAll['basic-style-selector']"
               :themes="themes"
               :chart="chart"
               @onBasicStyleChange="onBasicStyleChange"
             />
           </el-collapse-item>
-          <el-collapse-item name="color" :title="t('chart.color')">
+          <el-collapse-item
+            name="color"
+            :title="t('chart.color')"
+            v-if="showPropertiesCollapse(['color-selector'])"
+          >
             <color-selector
+              :property-inner="propertyInnerAll['color-selector']"
               :themes="themes"
               class="attr-selector"
               :chart="chart"
@@ -125,13 +168,14 @@ const onBasicStyleChange = val => {
           </el-collapse-item>
 
           <el-collapse-item
-            v-if="chart.type !== 'word-cloud'"
+            v-if="showPropertiesCollapse(['size-selector']) && chart.type !== 'word-cloud'"
             name="size"
             :title="
               chart.type && chart.type.includes('table') ? t('chart.table_config') : t('chart.size')
             "
           >
             <size-selector
+              :property-inner="propertyInnerAll['size-selector']"
               :themes="themes"
               class="attr-selector"
               :chart="chart"
@@ -140,7 +184,11 @@ const onBasicStyleChange = val => {
             />
           </el-collapse-item>
           <collapse-switch-item
-            v-if="chart.type !== 'word-cloud' && !chart.type.includes('table')"
+            v-if="
+              showPropertiesCollapse(['label-selector']) &&
+              chart.type !== 'word-cloud' &&
+              !chart.type.includes('table')
+            "
             v-model="chart.customAttr.label.show"
             :change-model="chart.customAttr.label"
             @modelChange="onLabelChange"
@@ -148,6 +196,7 @@ const onBasicStyleChange = val => {
             name="label"
           >
             <label-selector
+              :property-inner="propertyInnerAll['label-selector']"
               :themes="themes"
               class="attr-selector"
               :chart="chart"
@@ -156,7 +205,10 @@ const onBasicStyleChange = val => {
           </collapse-switch-item>
           <collapse-switch-item
             v-if="
-              chart.type !== 'gauge' && chart.type !== 'liquid' && !chart.type.includes('table')
+              showPropertiesCollapse(['tooltip-selector']) &&
+              chart.type !== 'gauge' &&
+              chart.type !== 'liquid' &&
+              !chart.type.includes('table')
             "
             v-model="chart.customAttr.tooltip.show"
             :change-model="chart.customAttr.tooltip"
@@ -166,6 +218,7 @@ const onBasicStyleChange = val => {
           >
             <tooltip-selector
               class="attr-selector"
+              :property-inner="propertyInnerAll['tooltip-selector']"
               :themes="themes"
               :chart="chart"
               @onTooltipChange="onTooltipChange"
@@ -177,7 +230,10 @@ const onBasicStyleChange = val => {
       <el-row class="de-collapse-style">
         <el-collapse v-model="state.styleActiveNames" class="style-collapse">
           <collapse-switch-item
-            v-if="chart.type.includes('bar') || chart.type.includes('line')"
+            v-if="
+              showPropertiesCollapse(['x-axis-selector']) &&
+              (chart.type.includes('bar') || chart.type.includes('line'))
+            "
             v-model="chart.customStyle.xAxis.show"
             :change-model="chart.customStyle.xAxis"
             @modelChange="onChangeXAxisForm"
@@ -186,6 +242,7 @@ const onBasicStyleChange = val => {
           >
             <x-axis-selector
               class="attr-selector"
+              :property-inner="propertyInnerAll['x-axis-selector']"
               :themes="themes"
               :chart="chart"
               @onChangeXAxisForm="onChangeXAxisForm"
@@ -193,7 +250,10 @@ const onBasicStyleChange = val => {
           </collapse-switch-item>
 
           <collapse-switch-item
-            v-if="chart.type.includes('bar') || chart.type.includes('line')"
+            v-if="
+              showPropertiesCollapse(['y-axis-selector']) &&
+              (chart.type.includes('bar') || chart.type.includes('line'))
+            "
             v-model="chart.customStyle.yAxis.show"
             :change-model="chart.customStyle.yAxis"
             @modelChange="onChangeYAxisForm"
@@ -202,6 +262,7 @@ const onBasicStyleChange = val => {
           >
             <y-axis-selector
               class="attr-selector"
+              :property-inner="propertyInnerAll['y-axis-selector']"
               :themes="themes"
               :chart="chart"
               @onChangeYAxisForm="onChangeYAxisForm"
@@ -210,12 +271,14 @@ const onBasicStyleChange = val => {
 
           <collapse-switch-item
             v-model="chart.customStyle.text.show"
+            v-if="showPropertiesCollapse(['title-selector'])"
             :change-model="chart.customStyle.text"
             @modelChange="onTextChange"
             name="title"
             :title="$t('chart.title')"
           >
             <title-selector
+              :property-inner="propertyInnerAll['title-selector']"
               :themes="themes"
               class="attr-selector"
               :chart="chart"
@@ -225,6 +288,7 @@ const onBasicStyleChange = val => {
 
           <collapse-switch-item
             v-if="
+              showPropertiesCollapse(['legend-selector']) &&
               chart.type !== 'word-cloud' &&
               chart.type !== 'gauge' &&
               chart.type !== 'liquid' &&
@@ -239,6 +303,7 @@ const onBasicStyleChange = val => {
           >
             <legend-selector
               class="attr-selector"
+              :property-inner="propertyInnerAll['legend-selecto']"
               :themes="themes"
               :chart="chart"
               @onLegendChange="onLegendChange"

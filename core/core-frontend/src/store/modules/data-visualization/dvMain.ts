@@ -1,9 +1,10 @@
 import { defineStore } from 'pinia'
 import { store } from '../../index'
 import { deepCopy } from '@/utils/utils'
-import { BASE_VIEW_CONFIG } from '@/views/chart/components/editor/util/chart'
+import { BASE_VIEW_CONFIG, getViewConfig } from '@/views/chart/components/editor/util/chart'
 import eventBus from '@/utils/eventBus'
 import { DEFAULT_CANVAS_STYLE_DATA_DARK } from '@/views/chart/components/editor/util/dataVisualiztion'
+import { useEmitt } from '@/hooks/web/useEmitt'
 
 export const dvMainStore = defineStore('dataVisualization', {
   state: () => {
@@ -21,8 +22,6 @@ export const dvMainStore = defineStore('dataVisualization', {
       canvasStyleData: { ...deepCopy(DEFAULT_CANVAS_STYLE_DATA_DARK), backgroundColor: null },
       // 当前展示画布缓存数据
       componentDataCache: null,
-      // 当前展示画布视图信息
-      componentViewsData: {},
       // PC布局画布组件数据
       pcComponentData: [],
       // 移动端布局画布组件数据
@@ -76,8 +75,6 @@ export const dvMainStore = defineStore('dataVisualization', {
       nowPanelOuterParamsInfo: {},
       // 拖拽的组件信息
       dragComponentInfo: null,
-      // 仪表板组件间隙大小 px
-      componentGap: 5,
       // 移动端布局状态
       mobileLayoutStatus: false,
       // 公共链接状态(当前是否是公共链接打开)
@@ -144,10 +141,14 @@ export const dvMainStore = defineStore('dataVisualization', {
       // 初始状态下当前默认的系统色 dvInfo.type ==== 'dashboard'?'light':'dark'
       curOriginThemes: 'light',
       // 基础网格信息
-      baseCellInfo: {}
+      baseCellInfo: {},
+      dataPrepareState: false //数据准备状态
     }
   },
   actions: {
+    setDataPrepareState(value) {
+      this.dataPrepareState = value
+    },
     setBaseCellInfo(value) {
       this.baseCellInfo = value
     },
@@ -193,7 +194,7 @@ export const dvMainStore = defineStore('dataVisualization', {
     },
 
     setShapeStyle({ top, left, width, height, rotate }) {
-      if (this.canvasStyleData.dvModel === 'dashboard') {
+      if (this.dvInfo.type === 'dashboard') {
         if (top) this.curComponent.style.top = top < 0 ? 0 : Math.round(top)
         if (left) this.curComponent.style.left = left < 0 ? 0 : Math.round(left)
         if (width) this.curComponent.style.width = Math.round(width)
@@ -216,6 +217,24 @@ export const dvMainStore = defineStore('dataVisualization', {
       this.componentData = componentData
     },
 
+    addCopyComponent(component, idMap, canvasViewInfoPre = this.canvasViewInfo) {
+      this.componentData.push(component)
+      // eslint-disable-next-line @typescript-eslint/no-this-alias
+      const _this = this
+      //组件组内部可能还有多个视图
+      if (idMap) {
+        Object.keys(idMap).forEach(function (oldComponentId) {
+          if (canvasViewInfoPre[oldComponentId]) {
+            const newComponentId = idMap[oldComponentId]
+            _this.canvasViewInfo[newComponentId] = {
+              ...canvasViewInfoPre[oldComponentId],
+              id: newComponentId
+            }
+          }
+        })
+      }
+    },
+
     addComponent({ component, index }) {
       if (index !== undefined) {
         this.componentData.splice(index, 0, component)
@@ -227,9 +246,31 @@ export const dvMainStore = defineStore('dataVisualization', {
       //如果当前的组件是UserView 视图，则想canvasView中增加一项 UserView ID 和componentID保持一致
       if (component.component === 'UserView') {
         const newView = {
-          ...deepCopy(BASE_VIEW_CONFIG),
+          ...JSON.parse(JSON.stringify(BASE_VIEW_CONFIG)),
           id: component.id,
           type: component.innerType
+        }
+        this.canvasViewInfo[component.id] = newView
+      }
+      if (component.component === 'VQuery') {
+        const newView = {
+          ...JSON.parse(JSON.stringify(BASE_VIEW_CONFIG)),
+          id: component.id,
+          type: component.innerType,
+          customStyle: {
+            component: {
+              show: false,
+              titleShow: false,
+              borderShow: false,
+              borderColor: '',
+              title: '',
+              borderWidth: 1,
+              bgColorShow: false,
+              bgColor: '',
+              layout: 'horizontal',
+              btnList: []
+            }
+          }
         }
         this.canvasViewInfo[component.id] = newView
       }
@@ -297,26 +338,22 @@ export const dvMainStore = defineStore('dataVisualization', {
       if (id) {
         this.curBatchOptComponents.push(id)
         // get view base info
-        const viewBaseInfo = this.componentViewsData[id]
+        const viewBaseInfo = this.canvasViewInfo[id]
         // get properties
-        const viewConfig = this.allViewRender.filter(
-          item => item.render === viewBaseInfo.render && item.value === viewBaseInfo.type
-        )
-        if (viewConfig && viewConfig.length > 0) {
+        const viewConfig = getViewConfig(viewBaseInfo.type)
+        if (viewConfig) {
           if (this.curBatchOptComponents.length === 1) {
-            this.changeProperties.customAttr = JSON.parse(viewBaseInfo.customAttr)
-            this.changeProperties.customStyle = JSON.parse(viewBaseInfo.customStyle)
+            this.changeProperties.customAttr = viewBaseInfo.customAttr
+            this.changeProperties.customStyle = viewBaseInfo.customStyle
           }
-          this.batchOptViews[id] = viewConfig[0]
+          this.batchOptViews[id] = viewConfig
           this.setBatchOptChartInfo()
         }
       }
     },
     setBatchOptChartInfo() {
-      let render = null
+      const render = null
       let type = null
-      let allTypes = ''
-      let isPlugin = null
       this.mixProperties = []
       this.mixPropertiesInner = {}
       let mixPropertiesTemp = []
@@ -349,25 +386,7 @@ export const dvMainStore = defineStore('dataVisualization', {
             mixPropertiesTemp = deepCopy(this.batchOptViews[key].properties)
             mixPropertyInnerTemp = deepCopy(this.batchOptViews[key].propertyInner)
           }
-
-          if (render && render !== this.batchOptViews[key].render) {
-            render = 'mix'
-          } else {
-            render = this.batchOptViews[key].render
-          }
-
-          allTypes = allTypes + '-' + this.batchOptViews[key].value
-          if (type && type !== this.batchOptViews[key].value) {
-            type = 'mix'
-          } else {
-            type = this.batchOptViews[key].value
-          }
-
-          if (isPlugin && isPlugin !== this.batchOptViews[key].isPlugin) {
-            isPlugin = 'mix'
-          } else {
-            isPlugin = this.batchOptViews[key].isPlugin
-          }
+          type = this.batchOptViews[key].value
         }
         mixPropertiesTemp.forEach(property => {
           if (mixPropertyInnerTemp[property] && mixPropertyInnerTemp[property].length) {
@@ -376,21 +395,33 @@ export const dvMainStore = defineStore('dataVisualization', {
           }
         })
 
-        if (type && type === 'mix') {
-          type = type + '-' + allTypes
-        }
         // Assembly history settings 'customAttr' & 'customStyle'
         this.batchOptChartInfo = {
           mode: 'batchOpt',
           render: render,
           type: type,
-          isPlugin: isPlugin,
           customAttr: this.changeProperties.customAttr,
           customStyle: this.changeProperties.customStyle
         }
       } else {
         this.batchOptChartInfo = null
       }
+    },
+    setChangeProperties(propertyInfo) {
+      this.changeProperties[propertyInfo.custom][propertyInfo.property] = propertyInfo.value
+      // 修改对应视图的参数
+      this.curBatchOptComponents.forEach(viewId => {
+        const viewInfo = this.canvasViewInfo[viewId]
+        viewInfo[propertyInfo.custom][propertyInfo.property] = propertyInfo.value
+        useEmitt().emitter.emit('renderChart-' + viewId, viewInfo)
+      })
+    },
+    setBatchChangeBackground(newBackground) {
+      this.componentData.forEach(component => {
+        if (this.curBatchOptComponents.includes(component.id)) {
+          component.commonBackground = deepCopy(newBackground)
+        }
+      })
     },
     setBatchOptStatus(status) {
       this.batchOptStatus = status
@@ -431,17 +462,19 @@ export const dvMainStore = defineStore('dataVisualization', {
     removeCurMultiplexingComponentWithId(id) {
       delete this.curMultiplexingComponents[id]
     },
-    addCurMultiplexingComponent({ component, componentId }) {
-      if (componentId) {
-        if (component.type === 'custom-button' && component.serviceName === 'buttonSureWidget') {
-          const copyComponent = deepCopy(component)
-          copyComponent.options.attrs.customRange = false
-          copyComponent.options.attrs.filterIds = []
-          this.curMultiplexingComponents[componentId] = copyComponent
-          return
-        }
-        this.curMultiplexingComponents[componentId] = component
+    addCurMultiplexingComponent(componentInfo) {
+      if (componentInfo.componentId) {
+        this.curMultiplexingComponents[componentInfo.componentId] = componentInfo.component
       }
+    },
+    initCurMultiplexingComponents() {
+      this.curMultiplexingComponents = {}
+    },
+    addCanvasViewInfo(viewId, viewInfo) {
+      this.canvasViewInfo[viewId] = viewInfo
+    },
+    removeCanvasViewInfo(viewId) {
+      delete this.canvasViewInfo[viewId]
     }
   }
 })
