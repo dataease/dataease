@@ -12,7 +12,10 @@
         @change="multiplexingCheck"
       />
     </div>
-
+    <div v-if="barShowCheck('linkage')" class="bar-checkbox-area">
+      <el-checkbox size="medium" v-model="linkageInfo.linkageActive" />
+      <linkage-field v-if="linkageInfo.linkageActive" :element="element"></linkage-field>
+    </div>
     <div v-if="barShowCheck('batchOpt')" class="bar-checkbox-area">
       <el-checkbox size="medium" @change="batchOptChange" />
     </div>
@@ -22,6 +25,7 @@
       <template #dropdown>
         <el-dropdown-menu style="width: 100px">
           <el-dropdown-item icon="Delete" @click="deleteComponent">删除</el-dropdown-item>
+          <el-dropdown-item icon="Link" @click="linkageSetting">联动设置</el-dropdown-item>
         </el-dropdown-menu>
       </template>
     </el-dropdown>
@@ -35,6 +39,8 @@ import { storeToRefs } from 'pinia'
 import { useI18n } from '@/hooks/web/useI18n'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import eventBus from '@/utils/eventBus'
+import LinkageField from '@/components/visualization/LinkageField.vue'
+import { getViewLinkageGather } from '@/api/visualization/linkage'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const emits = defineEmits([
@@ -50,12 +56,13 @@ const positionBarShow = {
   canvas: ['enlarge', 'setting'],
   preview: ['enlarge'],
   multiplexing: ['multiplexing'],
-  batchOpt: ['batchOpt']
+  batchOpt: ['batchOpt'],
+  linkage: ['linkage']
 }
 
 // bar所属组件类型可以显示的功能按钮
 const componentTypeBarShow = {
-  UserView: ['enlarge', 'setting', 'multiplexing', 'batchOpt'],
+  UserView: ['enlarge', 'setting', 'multiplexing', 'batchOpt', 'linkage'],
   default: ['setting', 'multiplexing']
 }
 
@@ -93,7 +100,16 @@ const props = defineProps({
 })
 
 const { element, active, index, showPosition } = toRefs(props)
-const { pcMatrixCount, curComponent, componentData, canvasStyleData } = storeToRefs(dvMainStore)
+const {
+  pcMatrixCount,
+  curComponent,
+  componentData,
+  canvasStyleData,
+  linkageSettingStatus,
+  targetLinkageInfo,
+  curLinkageView,
+  dvInfo
+} = storeToRefs(dvMainStore)
 
 const state = reactive({
   systemOS: 'Mac',
@@ -166,6 +182,31 @@ const batchOptChange = val => {
   }
 }
 // 批量操作-End
+
+// 联动-Begin
+const linkageSetting = () => {
+  // sourceViewId 也加入查询
+  const targetViewIds = componentData.value
+    .filter(item => item.component === 'UserView')
+    .map(item => item.id)
+
+  // 获取当前仪表板当前视图联动信息
+  const requestInfo = {
+    dvId: dvInfo.value.id,
+    sourceViewId: curComponent.value.id,
+    targetViewIds: targetViewIds,
+    linkageInfo: null
+  }
+  getViewLinkageGather(requestInfo).then(rsp => {
+    dvMainStore.setLinkageInfo(rsp.data)
+  })
+}
+
+const linkageInfo = computed(() => {
+  return targetLinkageInfo.value[element.value.id]
+})
+
+// 联动-End
 </script>
 
 <style lang="less" scoped>

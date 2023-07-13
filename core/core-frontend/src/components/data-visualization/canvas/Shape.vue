@@ -1,19 +1,19 @@
 <template>
   <div class="shape">
     <div class="shape-outer" :class="{ active, 'shape-edit': isEditMode }">
-      <component-edit-bar
-        v-if="componentActiveFlag"
-        :index="index"
-        :element="element"
-        :show-position="showPosition"
-        @userViewEnlargeOpen="userViewEnlargeOpen"
-      ></component-edit-bar>
       <div
         class="shape-inner"
         :style="componentBackgroundStyle"
         @click="selectCurComponent"
         @mousedown="handleMouseDownOnShape"
       >
+        <component-edit-bar
+          v-if="componentActiveFlag"
+          :index="index"
+          :element="element"
+          :show-position="showPosition"
+          @userViewEnlargeOpen="userViewEnlargeOpen"
+        ></component-edit-bar>
         <span v-show="element['isLock']" class="iconfont icon-suo"></span>
         <!--边框背景-->
         <Icon
@@ -55,7 +55,8 @@ const snapshotStore = snapshotStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
 const composeStore = composeStoreWithOut()
 
-const { curComponent, dvInfo, editMode, batchOptStatus } = storeToRefs(dvMainStore)
+const { curComponent, dvInfo, editMode, batchOptStatus, linkageSettingStatus } =
+  storeToRefs(dvMainStore)
 const { editor } = storeToRefs(composeStore)
 const emit = defineEmits([
   'userViewEnlargeOpen',
@@ -75,7 +76,9 @@ const state = reactive({
 
 const showPosition = computed(() => {
   let position
-  if (batchOptStatus.value) {
+  if (linkageSettingStatus.value) {
+    position = 'linkage'
+  } else if (batchOptStatus.value) {
     position = 'batchOpt'
   } else if (isEditMode.value) {
     position = 'canvas'
@@ -507,7 +510,7 @@ onMounted(() => {
   height: 100%;
   position: relative;
   background-size: 100% 100% !important;
-  overflow: hidden;
+  //overflow: hidden;
 }
 
 .shape-edit {
