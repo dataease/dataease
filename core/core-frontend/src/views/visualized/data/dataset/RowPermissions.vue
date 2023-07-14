@@ -10,7 +10,8 @@ import {
   rowPermissionTargetObjList,
   listFieldByDatasetGroup,
   saveRowPermission,
-  whiteListUsersForPermissions
+  whiteListUsersForPermissions,
+  deleteRowPermission
 } from '@/api/dataset'
 
 interface Pagination {
@@ -204,8 +205,10 @@ const create = rowPermissionObj => {
   update_row_permission.value = true
 }
 
-const deleteRowPermission = () => {
-  console.log('deleteRowPermission')
+const deleteRow = row => {
+  deleteRowPermission(row).then(res => {
+    ElMessage.success(t('common.save_success'))
+  })
 }
 
 const listRowPermissions = row => {
@@ -248,7 +251,7 @@ const handleCurrentChange = (currentPage: number) => {
     <template #icon>
       <Icon name="icon_add_outlined"></Icon>
     </template>
-    {{ t(`dataset.${activeName}`) }}
+    {{ t('common.add') }}
   </el-button>
   <GridTable
     @size-change="handleSizeChange"
@@ -276,7 +279,7 @@ const handleCurrentChange = (currentPage: number) => {
           <template #icon> <Icon name="icon_edit_outlined"></Icon> </template
         ></el-button>
 
-        <el-button @click="deleteRowPermission(scope.row)" text>
+        <el-button @click="deleteRow(scope.row)" text>
           <template #icon>
             <Icon name="icon_delete-trash_outlined"></Icon>
           </template>

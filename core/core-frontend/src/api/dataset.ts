@@ -137,6 +137,10 @@ export const saveRowPermission = (data = {}) => {
   return request.post({ url: '/dataset/rowPermissions/save', data })
 }
 
+export const deleteRowPermission = (data = {}) => {
+  return request.post({ url: '/dataset/rowPermissions/delete', data })
+}
+
 export const whiteListUsersForPermissions = (data = {}) => {
   return request.post({ url: '/dataset/rowPermissions/whiteListUsers', data })
 }

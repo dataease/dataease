@@ -237,7 +237,7 @@ CREATE TABLE `per_dataset_column_permissions` (
           `white_list_user` longtext COMMENT '白名单',
           `update_time` bigint(13) DEFAULT NULL,
           PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci;
 
 DROP TABLE IF EXISTS `per_dataset_row_permissions_tree`;
 CREATE TABLE `per_dataset_row_permissions_tree` (
@@ -252,7 +252,7 @@ CREATE TABLE `per_dataset_row_permissions_tree` (
             `white_list_dept` longtext COMMENT '组织白名单',
             `update_time` bigint(13) DEFAULT NULL,
             PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci;
 
 DROP TABLE IF EXISTS `per_auth_menu`;
 

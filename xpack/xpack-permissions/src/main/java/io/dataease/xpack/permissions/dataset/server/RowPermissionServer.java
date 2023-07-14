@@ -98,7 +98,7 @@ public class RowPermissionServer implements RowPermissionsApi {
 
     @Override
     public void delete(@RequestBody DataSetRowPermissionsTreeDTO datasetRowPermissions) {
-        rowPermissionsExtMapper.deleteById(datasetRowPermissions.getId());
+        rowPermissionsTreeMapper.deleteById(datasetRowPermissions.getId());
     }
 
     @Override

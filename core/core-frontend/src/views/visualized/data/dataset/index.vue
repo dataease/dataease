@@ -417,7 +417,10 @@ const filterNode = (value: string, data: Tree) => {
           </template>
           <template v-if="['row', 'column'].includes(activeName)">
             <div class="table-row-column">
-              <row-permissions v-if="activeName === 'row'"></row-permissions>
+              <row-permissions
+                :dataset-id="nodeInfo.id"
+                v-if="activeName === 'row'"
+              ></row-permissions>
               <column-permissions v-else></column-permissions>
             </div>
           </template>
