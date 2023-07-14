@@ -408,8 +408,8 @@ const filterNode = (value: string, data: Tree) => {
                     :width="width"
                     :height="height"
                     fixed
-                  ><template #empty>
-                    <empty-background description="暂无数据" img-type="noneWhite" /> </template
+                    ><template #empty>
+                      <empty-background description="暂无数据" img-type="noneWhite" /> </template
                   ></el-table-v2>
                 </template>
               </el-auto-resizer>
