@@ -4,10 +4,13 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.auth.annotation.DeLog;
+import io.dataease.auth.annotation.DePermission;
 import io.dataease.auth.annotation.SqlInjectValidator;
 import io.dataease.auth.api.dto.CurrentUserDto;
 import io.dataease.auth.entity.AccountLockStatus;
 import io.dataease.auth.service.AuthUserService;
+import io.dataease.commons.constants.DePermissionType;
+import io.dataease.commons.constants.ResourceAuthLevel;
 import io.dataease.commons.constants.SysLogConstants;
 import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.AuthUtils;
@@ -101,6 +104,18 @@ public class SysUserController {
         });
         return users;
     }
+
+    @DePermission(type = DePermissionType.DATASET, level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
+    @PostMapping("/userGrid/{datasetId}")
+    @ApiImplicitParams({
+            @ApiImplicitParam(paramType = "path", name = "goPage", value = "页码", required = true, dataType = "Integer"),
+            @ApiImplicitParam(paramType = "path", name = "pageSize", value = "页容量", required = true, dataType = "Integer"),
+            @ApiImplicitParam(name = "request", value = "查询条件", required = true)
+    })
+    public Pager<List<SysUserGridResponse>> userGrids(@PathVariable String datasetId, @RequestBody KeyGridRequest request) {
+        return userGrid(0, 0, request);
+    }
+
 
     @ApiOperation("创建用户")
     @RequiresPermissions("user:add")
