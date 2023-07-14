@@ -2,6 +2,7 @@
 import { ref, reactive, onMounted, onBeforeUnmount } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import CodeMirror from './CodeMirror.vue'
+import { getFunction } from '@/api/dataset'
 export interface CalcFieldType {
   id?: string
   datasourceId?: string // 数据源id
@@ -135,11 +136,19 @@ const insertParamToCodeMirror = (value: string) => {
   })
 }
 
+const initFunction = () => {
+  getFunction().then(res => {
+    state.functionData = res
+  })
+}
+
 defineExpose({
   initEdit,
   setFieldForm,
   fieldForm
 })
+
+initFunction()
 </script>
 
 <template>
@@ -326,7 +335,7 @@ defineExpose({
           </template>
         </el-input>
         <el-row class="function-height">
-          <div v-if="state.functionData.length">
+          <div v-if="state.functionData.length" style="width: 100%">
             <el-popover
               v-for="(item, index) in state.functionData"
               :key="index"

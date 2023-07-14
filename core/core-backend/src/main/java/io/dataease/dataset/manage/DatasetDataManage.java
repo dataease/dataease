@@ -1,7 +1,7 @@
 package io.dataease.dataset.manage;
 
 import io.dataease.api.dataset.dto.DatasetTableDTO;
-import io.dataease.api.dataset.dto.DatasetTableFieldDTO;
+import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.api.dataset.dto.PreviewSqlDTO;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.union.DatasetTableInfoDTO;
@@ -25,6 +25,7 @@ import io.dataease.engine.sql.SQLProvider;
 import io.dataease.engine.trans.Field2SQLObj;
 import io.dataease.engine.trans.Order2SQLObj;
 import io.dataease.engine.trans.Table2SQLObj;
+import io.dataease.engine.utils.Utils;
 import io.dataease.exception.DEException;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.JsonUtil;
@@ -157,6 +158,13 @@ public class DatasetDataManage {
         }
         buildFieldName(sqlMap, fields);
 
+        Map<Long, DatasourceSchemaDTO> dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
+        List<String> dsList = new ArrayList<>();
+        for (Map.Entry<Long, DatasourceSchemaDTO> next : dsMap.entrySet()) {
+            dsList.add(next.getValue().getType());
+        }
+        boolean needOrder = Utils.isNeedOrder(dsList);
+
         // build query sql
         SQLMeta sqlMeta = new SQLMeta();
         Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")");
@@ -164,13 +172,12 @@ public class DatasetDataManage {
         Order2SQLObj.getOrders(sqlMeta, fields, datasetGroupInfoDTO.getSortFields());
         String querySQL;
         if (start == null || count == null) {
-            querySQL = SQLProvider.createQuerySQL(sqlMeta, false);
+            querySQL = SQLProvider.createQuerySQL(sqlMeta, false, needOrder);
         } else {
-            querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, start, count);
+            querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, start, count);
         }
 
         // 通过数据源请求数据
-        Map<Long, DatasourceSchemaDTO> dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
         // 调用数据源的calcite获得data
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setQuery(querySQL);
@@ -293,15 +300,21 @@ public class DatasetDataManage {
             }
             buildFieldName(sqlMap, fields);
 
+            Map<Long, DatasourceSchemaDTO> dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
+            List<String> dsList = new ArrayList<>();
+            for (Map.Entry<Long, DatasourceSchemaDTO> next : dsMap.entrySet()) {
+                dsList.add(next.getValue().getType());
+            }
+            boolean needOrder = Utils.isNeedOrder(dsList);
+
             // build query sql
             SQLMeta sqlMeta = new SQLMeta();
             Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")");
             Field2SQLObj.field2sqlObj(sqlMeta, fields);
             Order2SQLObj.getOrders(sqlMeta, fields, datasetGroupInfoDTO.getSortFields());
-            String querySQL = SQLProvider.createQuerySQL(sqlMeta, false);
+            String querySQL = SQLProvider.createQuerySQL(sqlMeta, false, needOrder);
 
             // 通过数据源请求数据
-            Map<Long, DatasourceSchemaDTO> dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
             // 调用数据源的calcite获得data
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setQuery(querySQL);

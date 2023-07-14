@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { ref, inject, computed, watch, onBeforeMount, toRefs } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
+import { multFieldValuesForPermissions } from '@/api/dataset'
 import {
   textOptions,
   dateOptions,
@@ -147,7 +148,9 @@ const initEnumOptions = () => {
   const { deType, filterType, fieldId } = props.item
   // 查找枚举值
   if (filterType === 'enum' && [0, 5].includes(deType)) {
-    enumList.value = optionData([])
+    multFieldValuesForPermissions({ fieldIds: [fieldId] }).then(res => {
+      enumList.value = optionData(res.data)
+    })
   }
 }
 const sysParamsIlnJudge = term => {

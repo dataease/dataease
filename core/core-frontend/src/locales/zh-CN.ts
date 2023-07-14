@@ -171,7 +171,9 @@ export default {
     from_role: '继承自以下角色：',
     auth_alone: '单独授权',
     org_role_empty: '组织管理员已拥有所有资源的权限，无需再授权',
-    user_role_empty: '该用户是组织管理员，已拥有所有资源的权限，无需再授权'
+    user_role_empty: '该用户是组织管理员，已拥有所有资源的权限，无需再授权',
+    sysParams: '系统参数',
+    set_rules: '设置规则'
   },
   datasource: {
     datasource: '数据源',

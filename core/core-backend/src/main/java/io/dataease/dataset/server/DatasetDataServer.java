@@ -2,7 +2,7 @@ package io.dataease.dataset.server;
 
 import io.dataease.api.dataset.DatasetDataApi;
 import io.dataease.api.dataset.dto.DatasetTableDTO;
-import io.dataease.api.dataset.dto.DatasetTableFieldDTO;
+import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.api.dataset.dto.PreviewSqlDTO;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.dataset.manage.DatasetDataManage;

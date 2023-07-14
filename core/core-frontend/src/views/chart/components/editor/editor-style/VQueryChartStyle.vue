@@ -82,12 +82,12 @@ const { chart } = toRefs(props)
               <el-radio-group v-model="chart.customStyle.component.layout" size="small">
                 <el-radio-button label="horizontal">
                   <el-icon>
-                    <icon name="icon_collect_filled"></icon>
+                    <icon name="icon_title-left-align_outlined"></icon>
                   </el-icon>
                 </el-radio-button>
                 <el-radio-button label="vertical">
                   <el-icon>
-                    <icon name="icon_collect_filled"></icon>
+                    <icon name="icon_title-top-align_outlined"></icon>
                   </el-icon>
                 </el-radio-button>
               </el-radio-group>

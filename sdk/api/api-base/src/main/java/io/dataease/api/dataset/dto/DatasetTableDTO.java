@@ -2,6 +2,7 @@ package io.dataease.api.dataset.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import lombok.Data;
 
 import java.io.Serializable;

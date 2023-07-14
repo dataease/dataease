@@ -1,8 +1,8 @@
 <script lang="tsx" setup>
 // import type { HeaderCellSlotProps } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
-import { ref, reactive, shallowRef, computed } from 'vue'
-import { ElIcon } from 'element-plus-secondary'
+import { ref, reactive, shallowRef, computed, watch } from 'vue'
+import { ElIcon, ElMessageBox, ElMessage } from 'element-plus-secondary'
 import { HandleMore } from '@/components/handle-more'
 import { Icon } from '@/components/icon-custom'
 import { useRouter } from 'vue-router'
@@ -34,8 +34,7 @@ const nickName = ref('')
 const router = useRouter()
 const { t } = useI18n()
 const state = reactive({
-  datasetTree: [] as Tree[],
-  datasetTypeList: []
+  datasetTree: [] as Tree[]
 })
 
 const fieldMap = ['text', 'time', 'value', 'value', 'location']
@@ -171,9 +170,9 @@ const handleClick = (tabName: TabPaneName) => {
       dataPreviewLoading.value = true
       getDatasetPreview(nodeInfo.id)
         .then(res => {
-          allFields = (res.allFields as unknown as Field[]) || []
-          columnsPreview = generateColumns((res.data.fields as Field[]) || [])
-          dataPreview = (res.data.data as Array<{}>) || []
+          allFields = (res?.allFields as unknown as Field[]) || []
+          columnsPreview = generateColumns((res?.data?.fields as Field[]) || [])
+          dataPreview = (res?.data?.data as Array<{}>) || []
           columns.value = columnsPreview
           tableData.value = dataPreview
         })
@@ -196,8 +195,19 @@ const handleClick = (tabName: TabPaneName) => {
 
 const operation = (cmd: string, data: Tree, nodeType: string) => {
   if (cmd === 'delete') {
-    delDatasetTree(data.id).then(() => {
-      getData()
+    ElMessageBox.confirm(
+      nodeType === 'folder' ? '确定删除该文件夹吗' : t('datasource.delete_this_dataset'),
+      {
+        confirmButtonType: 'danger',
+        type: 'warning',
+        autofocus: false,
+        showClose: false
+      }
+    ).then(() => {
+      delDatasetTree(data.id).then(() => {
+        getData()
+        ElMessage.success(t('dataset.delete_success'))
+      })
     })
   } else {
     creatDsFolder.value.createInit(nodeType, data, cmd)
@@ -218,28 +228,32 @@ const activeName = ref('dataPreview')
 const menuList = [
   {
     label: '移动到',
+    svgName: 'icon_into-item_outlined',
     command: 'move'
   },
   {
     label: '重命名',
+    svgName: 'icon_rename_outlined',
     command: 'rename'
   },
   {
     label: '删除',
+    divided: true,
+    svgName: 'icon_delete-trash_outlined',
     command: 'delete'
   }
 ]
 
-state.datasetTypeList = [
+const datasetTypeList = [
   {
     label: '数据集',
-    svgName: 'ds-api',
+    svgName: 'icon_dataset',
     command: 'dataset'
   },
   {
     label: '新建文件夹',
     divided: true,
-    svgName: 'scene',
+    svgName: 'dv-folder',
     command: 'folder'
   }
 ]
@@ -247,6 +261,17 @@ state.datasetTypeList = [
 const defaultProps = {
   children: 'children',
   label: 'name'
+}
+
+const datasetListTree = ref()
+
+watch(nickName, (val: string) => {
+  datasetListTree.value.filter(val)
+})
+
+const filterNode = (value: string, data: Tree) => {
+  if (!value) return true
+  return data.name.includes(value)
 }
 </script>
 
@@ -259,14 +284,14 @@ const defaultProps = {
           <el-tooltip class="box-item" effect="dark" content="新建文件夹" placement="top">
             <el-button @click="() => handleDatasetTree('folder')" text>
               <template #icon>
-                <Icon name="icon_search-outline_outlined"></Icon>
+                <Icon name="dv-new-folder"></Icon>
               </template>
             </el-button>
           </el-tooltip>
           <el-tooltip class="box-item" effect="dark" content="新建数据集" placement="top">
             <el-button @click="() => createDataset()" text>
               <template #icon>
-                <Icon name="icon_search-outline_outlined"></Icon>
+                <Icon name="icon_dataset_outlined"></Icon>
               </template>
             </el-button>
           </el-tooltip>
@@ -281,7 +306,7 @@ const defaultProps = {
           </el-input>
           <span class="filter-button">
             <el-icon>
-              <Icon name="icon_search-outline_outlined"></Icon>
+              <Icon name="icon-filter"></Icon>
             </el-icon>
           </span>
         </div>
@@ -290,7 +315,9 @@ const defaultProps = {
       <el-tree
         :expand-on-click-node="false"
         menu
+        ref="datasetListTree"
         :data="state.datasetTree"
+        :filter-node-method="filterNode"
         :props="defaultProps"
         @node-click="handleNodeClick"
       >
@@ -306,7 +333,7 @@ const defaultProps = {
             <div class="icon-more">
               <handle-more
                 @handle-command="cmd => handleDatasetTree(cmd, data)"
-                :menu-list="state.datasetTypeList"
+                :menu-list="datasetTypeList"
                 icon-name="icon_add_outlined"
                 placement="bottom-start"
                 v-if="!data.leaf"
@@ -321,73 +348,97 @@ const defaultProps = {
       </el-tree>
     </div>
     <div class="dataset-content">
-      <template v-if="!!nodeInfo.id">
-        <div class="info-method">
-          {{ nodeInfo.name }}
-          <el-divider direction="vertical" />
-          <span class="create-user"> 创建人：{{ nodeInfo.createBy }} </span>
-
-          <el-popover placement="bottom" width="420" trigger="hover">
-            <template #reference>
-              <el-icon class="create-user">
-                <Icon name="icon_info_outlined"></Icon>
-              </el-icon>
-            </template>
-            <dataset-detail :info-list="infoList" title-type="数据集"></dataset-detail>
-          </el-popover>
-          <div class="right-btn">
-            <el-button secondary> 新建数据大屏 </el-button>
-            <el-button type="primary" @click="editorDataset">
-              <template #icon>
-                <Icon name="icon_edit_outlined"></Icon>
-              </template>
-              编辑
-            </el-button>
-          </div>
-        </div>
-        <div class="tab-border">
-          <el-tabs v-model="activeName" @tab-change="handleClick">
-            <el-tab-pane label="数据预览" name="dataPreview"></el-tab-pane>
-            <el-tab-pane label="结构预览" name="structPreview"></el-tab-pane>
-            <el-tab-pane label="行权限" name="row"></el-tab-pane>
-            <el-tab-pane label="列权限" name="column"></el-tab-pane>
-          </el-tabs>
-        </div>
-        <div v-if="activeName === 'dataPreview'" class="preview-num">
-          显示 100 条数据，共 1000 条 &nbsp;
-          <el-icon>
-            <Icon name="icon_edit_outlined"></Icon>
-          </el-icon>
-        </div>
-        <template v-if="['dataPreview', 'structPreview'].includes(activeName)">
-          <div class="info-table" :class="[{ 'struct-preview': activeName === 'structPreview' }]">
-            <el-auto-resizer>
-              <template #default="{ height, width }">
-                <el-table-v2
-                  :columns="columns"
-                  v-loading="dataPreviewLoading"
-                  header-class="header-cell"
-                  :data="tableData"
-                  :width="width"
-                  :height="height"
-                  fixed
-                />
-              </template>
-            </el-auto-resizer>
-          </div>
-        </template>
-        <template v-if="['row', 'column'].includes(activeName)">
-          <el-button class="add-row-column" secondary>
+      <template v-if="!state.datasetTree.length">
+        <empty-background description="暂无数据集" img-type="none">
+          <el-button @click="() => createDataset()" type="primary">
             <template #icon>
               <Icon name="icon_add_outlined"></Icon>
             </template>
-            {{ t(`dataset.${activeName}`) }}
-          </el-button>
-          <div class="table-row-column">
-            <row-permissions v-if="activeName === 'row'"></row-permissions>
-            <column-permissions v-else></column-permissions>
+            {{ t('deDataset.create') + t('auth.dataset') }}</el-button
+          >
+        </empty-background>
+      </template>
+      <template v-else-if="!!nodeInfo.id">
+        <div class="dataset-info">
+          <div class="info-method">
+            {{ nodeInfo.name }}
+            <el-divider direction="vertical" />
+            <span class="create-user"> 创建人：{{ nodeInfo.createBy }} </span>
+
+            <el-popover placement="bottom" width="420" trigger="hover">
+              <template #reference>
+                <el-icon class="create-user">
+                  <Icon name="icon_info_outlined"></Icon>
+                </el-icon>
+              </template>
+              <dataset-detail :info-list="infoList" title-type="数据集"></dataset-detail>
+            </el-popover>
+            <div class="right-btn">
+              <el-button secondary> 新建数据大屏 </el-button>
+              <el-button type="primary" @click="editorDataset">
+                <template #icon>
+                  <Icon name="icon_edit_outlined"></Icon>
+                </template>
+                编辑
+              </el-button>
+            </div>
           </div>
+          <div class="tab-border">
+            <el-tabs v-model="activeName" @tab-change="handleClick">
+              <el-tab-pane label="数据预览" name="dataPreview"></el-tab-pane>
+              <el-tab-pane label="结构预览" name="structPreview"></el-tab-pane>
+              <el-tab-pane label="行权限" name="row"></el-tab-pane>
+              <el-tab-pane label="列权限" name="column"></el-tab-pane>
+            </el-tabs>
+          </div>
+<<<<<<< HEAD
         </template>
+        <template v-if="['row', 'column'].includes(activeName)">
+          <div class="table-row-column">
+            <row-permissions
+              :dataset-id="nodeInfo.id"
+              v-if="activeName === 'row'"
+            ></row-permissions>
+            <column-permissions v-else></column-permissions>
+=======
+        </div>
+        <div class="dataset-table-info">
+          <div v-if="activeName === 'dataPreview'" class="preview-num">
+            显示 100 条数据，共 1000 条
+>>>>>>> 63bad41cfb74e569705e1bdec25ffc10476accb1
+          </div>
+          <template v-if="['dataPreview', 'structPreview'].includes(activeName)">
+            <div class="info-table" :class="[{ 'struct-preview': activeName === 'structPreview' }]">
+              <el-auto-resizer>
+                <template #default="{ height, width }">
+                  <el-table-v2
+                    :columns="columns"
+                    v-loading="dataPreviewLoading"
+                    header-class="header-cell"
+                    :data="tableData"
+                    :width="width"
+                    :height="height"
+                    fixed
+                    ><template #empty>
+                      <empty-background description="暂无数据" img-type="noneWhite" /> </template
+                  ></el-table-v2>
+                </template>
+              </el-auto-resizer>
+            </div>
+          </template>
+          <template v-if="['row', 'column'].includes(activeName)">
+            <el-button class="add-row-column" secondary>
+              <template #icon>
+                <Icon name="icon_add_outlined"></Icon>
+              </template>
+              {{ t(`dataset.${activeName}`) }}
+            </el-button>
+            <div class="table-row-column">
+              <row-permissions v-if="activeName === 'row'"></row-permissions>
+              <column-permissions v-else></column-permissions>
+            </div>
+          </template>
+        </div>
       </template>
       <template v-else>
         <empty-background description="请在左侧选择数据集" img-type="select" />
@@ -407,9 +458,13 @@ const defaultProps = {
 
   .dataset-height,
   .dataset-content {
-    height: calc(100vh - 50px);
+    height: calc(100vh - 56px);
     overflow: auto;
     position: relative;
+  }
+
+  .dataset-content {
+    background: #f5f6f7;
   }
 
   .dataset-list {
@@ -448,6 +503,7 @@ const defaultProps = {
       }
       .ed-button.is-text {
         line-height: 28px;
+        font-size: 20px;
         height: 28px;
         width: 28px;
       }
@@ -476,38 +532,53 @@ const defaultProps = {
 
   .dataset-content {
     flex: 1;
-    padding: 12px 24px 0 24px;
     border-left: 1px solid rgba(31, 35, 41, 0.15);
     position: relative;
 
-    .info-method {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      font-family: PingFang SC;
-      font-size: 16px;
-      font-weight: 500;
+    .dataset-info {
+      background: #fff;
+      padding: 0 24px;
+      padding-top: 12px;
+      height: 90px;
+      .info-method {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        font-family: PingFang SC;
+        font-size: 16px;
+        font-weight: 500;
 
-      .create-user {
-        font-size: 14px;
-        font-weight: 400;
-        line-height: 22px;
-        color: #646a73;
-        margin-right: 4px;
+        .create-user {
+          font-size: 14px;
+          font-weight: 400;
+          line-height: 22px;
+          color: #646a73;
+          margin-right: 4px;
+        }
+
+        .mr8 {
+          margin-left: 8px;
+        }
+
+        .right-btn {
+          margin-left: auto;
+        }
       }
-
-      .mr8 {
-        margin-left: 8px;
-      }
-
-      .right-btn {
-        margin-left: auto;
+      .tab-border {
+        .border-bottom-tab(24px);
+        :deep(.ed-tabs__nav-wrap::after) {
+          border-color: rgba(31, 35, 41, 0.15);
+        }
+        margin-left: 0;
       }
     }
 
-    .tab-border {
-      .border-bottom-tab(24px);
-      margin-left: 0;
+    .dataset-table-info {
+      padding: 24px;
+      margin: 24px;
+      background: #fff;
+      border-radius: 4px;
+      height: calc(100% - 138px);
     }
 
     .preview-num {
@@ -516,27 +587,23 @@ const defaultProps = {
       font-size: 14px;
       font-weight: 400;
       line-height: 22px;
-      margin: 4px 0;
-      margin: 16px 0;
-      display: flex;
-      align-items: center;
+      margin-bottom: 16px;
     }
 
     .info-table {
-      height: calc(100% - 130px);
+      height: calc(100% - 37px);
     }
 
     .struct-preview {
-      height: calc(100% - 92px);
-      margin-top: 16px;
+      height: 100%;
     }
 
     .table-row-column {
-      height: calc(100% - 155px);
+      height: calc(100% - 50px);
     }
 
     .add-row-column {
-      margin: 16px 0;
+      margin-bottom: 16px;
     }
   }
 }

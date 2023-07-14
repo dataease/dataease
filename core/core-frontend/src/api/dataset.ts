@@ -120,6 +120,26 @@ export const getDsDetails = async (data): Promise<DatasetDetail[]> => {
   })
 }
 
+export const rowPermissionList = (page: number, limit: number, datasetId: number) =>
+  request.get({ url: '/dataset/rowPermissions/pager/' + datasetId + '/' + page + '/' + limit })
+
+export const rowPermissionTargetObjList = (datasetId: number, type: string) =>
+  request.get({ url: '/dataset/rowPermissions/authObjs/' + datasetId + '/' + type })
+
+export const listFieldByDatasetGroup = (datasetId: number) =>
+  request.post({ url: '/datasetField/listByDatasetGroup/' + datasetId })
+
+export const multFieldValuesForPermissions = (data = {}) => {
+  return request.post({ url: '/datasetField/multFieldValuesForPermissions', data })
+}
+
+export const saveRowPermission = (data = {}) => {
+  return request.post({ url: '/dataset/rowPermissions/save', data })
+}
+
+export const whiteListUsersForPermissions = (data = {}) => {
+  return request.post({ url: '/dataset/rowPermissions/whiteListUsers', data })
+
 export const saveField = async (data): Promise<DatasetDetail[]> => {
   return request.post({ url: '/datasetField/save', data }).then(res => {
     return res?.data
@@ -134,6 +154,12 @@ export const deleteField = async (id): Promise<DatasetDetail[]> => {
 
 export const getEnumValue = async (data): Promise<DatasetDetail[]> => {
   return request.post({ url: '/datasetData/enumValue', data }).then(res => {
+    return res?.data
+  })
+}
+
+export const getFunction = async (): Promise<DatasetDetail[]> => {
+  return request.post({ url: '/datasetField/getFunction', data: {} }).then(res => {
     return res?.data
   })
 }

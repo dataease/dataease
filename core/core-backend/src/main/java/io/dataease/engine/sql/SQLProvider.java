@@ -8,7 +8,6 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
-import org.stringtemplate.v4.STGroupFile;
 import org.stringtemplate.v4.STGroupString;
 
 import java.util.ArrayList;
@@ -26,15 +25,15 @@ public class SQLProvider {
      * @param isGroup 是否聚合
      * @return
      */
-    public static String createQuerySQLAsTmp(SQLMeta sqlMeta, boolean isGroup) {
-        return createQuerySQL(sqlMeta, isGroup);
+    public static String createQuerySQLAsTmp(SQLMeta sqlMeta, boolean isGroup, boolean needOrder) {
+        return createQuerySQL(sqlMeta, isGroup, needOrder);
     }
 
-    public static String createQuerySQLWithLimit(SQLMeta sqlMeta, boolean isGroup, int start, int count) {
-        return createQuerySQL(sqlMeta, isGroup) + " LIMIT " + count + " OFFSET " + start;
+    public static String createQuerySQLWithLimit(SQLMeta sqlMeta, boolean isGroup, boolean needOrder, int start, int count) {
+        return createQuerySQL(sqlMeta, isGroup, needOrder) + " LIMIT " + count + " OFFSET " + start;
     }
 
-    public static String createQuerySQL(SQLMeta sqlMeta, boolean isGroup) {
+    public static String createQuerySQL(SQLMeta sqlMeta, boolean isGroup, boolean needOrder) {
         List<SQLObj> xFields = sqlMeta.getXFields();
         SQLObj tableObj = sqlMeta.getTable();
         List<SQLObj> xOrders = sqlMeta.getXOrders();
@@ -51,6 +50,15 @@ public class SQLProvider {
         if (whereTrees != null) wheres.add(whereTrees);
         if (ObjectUtils.isNotEmpty(wheres)) st_sql.add("filters", wheres);
 
+        // check datasource 是否需要排序
+        if (needOrder && ObjectUtils.isEmpty(xOrders)) {
+            if (ObjectUtils.isNotEmpty(xFields)) {
+                xOrders = new ArrayList<>();
+                SQLObj sqlObj = xFields.get(0);
+                SQLObj result = SQLObj.builder().orderField(sqlObj.getFieldAlias()).orderAlias(sqlObj.getFieldAlias()).orderDirection("ASC").build();
+                xOrders.add(result);
+            }
+        }
         if (ObjectUtils.isNotEmpty(xOrders)) {
             st_sql.add("orders", xOrders);
         }
@@ -58,7 +66,7 @@ public class SQLProvider {
         return st_sql.render();
     }
 
-    public static String createQuerySQL(SQLMeta sqlMeta, boolean isGroup, ChartViewDTO view) {
+    public static String createQuerySQL(SQLMeta sqlMeta, boolean isGroup, boolean needOrder, ChartViewDTO view) {
         STGroup stg = new STGroupString(SqlTemplate.PREVIEW_SQL);
         ST st_sql = stg.getInstanceOf("previewSql");
 
@@ -102,6 +110,14 @@ public class SQLProvider {
         List<SQLObj> orders = new ArrayList<>();
         if (ObjectUtils.isNotEmpty(xOrders)) orders.addAll(xOrders);
         if (ObjectUtils.isNotEmpty(yOrders)) orders.addAll(yOrders);
+        // check datasource 是否需要排序
+        if (needOrder && ObjectUtils.isEmpty(orders)) {
+            if (ObjectUtils.isNotEmpty(xFields) || ObjectUtils.isNotEmpty(yFields)) {
+                SQLObj sqlObj = ObjectUtils.isNotEmpty(xFields) ? xFields.get(0) : yFields.get(0);
+                SQLObj result = SQLObj.builder().orderField(sqlObj.getFieldAlias()).orderAlias(sqlObj.getFieldAlias()).orderDirection("ASC").build();
+                orders.add(result);
+            }
+        }
         if (ObjectUtils.isNotEmpty(orders)) st.add("orders", orders);
 
         return sqlLimit(st.render(), view);

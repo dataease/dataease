@@ -1,10 +1,18 @@
 <script lang="ts" setup>
-import { reactive, ref, nextTick, shallowRef, computed, provide } from 'vue'
+import { reactive, ref, nextTick, shallowRef, computed, provide, toRefs } from 'vue'
 import { GridTable } from '@/components/grid-table'
 import { cloneDeep } from 'lodash-es'
 import { useI18n } from '@/hooks/web/useI18n'
 import RowAuth from './auth-tree/RowAuth.vue'
 import { ElMessage } from 'element-plus-secondary'
+import {
+  rowPermissionList,
+  rowPermissionTargetObjList,
+  listFieldByDatasetGroup,
+  saveRowPermission,
+  whiteListUsersForPermissions
+} from '@/api/dataset'
+
 interface Pagination {
   currentPage: number
   pageSize: number
@@ -21,7 +29,7 @@ interface RowForm {
   authTargetType: 'role' | 'user' | 'sysParams'
   authTargetId: string
   enable: boolean
-  datasetId: string
+  datasetId: number
   id?: string
   whiteListUser: User[]
 }
@@ -29,8 +37,8 @@ interface RowForm {
 const { t } = useI18n()
 const defaultForm = {
   authTargetId: '',
-  authTargetType: 'user',
-  datasetId: '',
+  authTargetType: 'role',
+  datasetId: 0,
   whiteListUser: [],
   enable: true
 }
@@ -43,16 +51,26 @@ const paginationConfig = reactive<Pagination>({
 const rowPermissionForm = reactive<RowForm>(
   cloneDeep({
     enable: false,
-    authTargetType: 'user',
+    authTargetType: 'role',
     whiteListUser: [],
     authTargetId: '',
-    datasetId: ''
+    datasetId: 0
   })
 )
 
 const state = reactive({
   rowList: []
 })
+
+const props = defineProps({
+  datasetId: {
+    required: false,
+    default: 0,
+    type: Number
+  }
+})
+
+const { datasetId } = toRefs(props)
 
 const loadingRowPermission = ref(false)
 const update_row_permission = ref(false)
@@ -63,8 +81,15 @@ const targetObjs = shallowRef<{ name: string; id: string }[]>([])
 const emptyTips = computed(() => {
   return t('auth.select') + t(`auth.${rowPermissionForm.authTargetType}`)
 })
+const datasetTableFiled = ref([])
 
-provide('filedList', () => [])
+const initDatasetTableField = () => {
+  listFieldByDatasetGroup(datasetId.value).then(res => {
+    datasetTableFiled.value = res.data
+  })
+}
+
+provide('filedList', () => datasetTableFiled.value)
 provide('getAuthTargetType', () => rowPermissionForm.authTargetType)
 
 const typeList = ['role', 'user', 'sysParams']
@@ -95,18 +120,16 @@ const confirm = () => {
 const loadUserList = () => {
   whiteListUsers.value = []
   const { authTargetType, authTargetId } = rowPermissionForm
-  if (authTargetType === 'user') return
-  let url = `/api/user/userGrid/` + rowPermissionForm.datasetId
   let param = {}
-  if (['role', 'dept'].includes(authTargetType)) {
-    url = `/plugin/${authTargetType}/userGrid/` + rowPermissionForm.datasetId
-    param = {
-      [`${authTargetType}Id`]: authTargetId,
-      section: 1
-    }
+  param = {
+    authTargetId: authTargetId,
+    section: 1,
+    authTargetType: authTargetType,
+    datasetId: datasetId.value
   }
-  console.log('param', param)
-  whiteListUsers.value = []
+  whiteListUsersForPermissions(param).then(res => {
+    whiteListUsers.value = [] = res.data
+  })
 }
 
 const save = ({ logic, items, errorMessage }) => {
@@ -126,10 +149,12 @@ const save = ({ logic, items, errorMessage }) => {
       whiteListUser: JSON.stringify(rowPermissionForm.whiteListUser)
     }
   params.expressionTree = JSON.stringify({ items, logic })
+  saveRowPermission(params).then(res => {
+    ElMessage.success(t('common.save_success'))
+  })
   clearData()
   search()
   loadingRowPermission.value = false
-  console.log('params', params)
 }
 
 const clearData = () => {
@@ -145,102 +170,36 @@ const fetchTypeObjsList = () => {
     authTargetType,
     datasetId
   }
-  targetObjs.value = []
+  rowPermissionTargetObjList(datasetId, rowPermissionForm.authTargetType).then(res => {
+    targetObjs.value = res.data
+  })
 }
 
 const search = () => {
-  state.rowList = [
-    {
-      id: '5bc10619-d3cb-49dc-9a02-a69672c46393',
-      enable: true,
-      authTargetType: 'dept',
-      authTargetId: 5,
-      datasetId: '91b6555d-0c06-4ff5-881b-4a6c0cf710fe',
-      updateTime: 1682494599723,
-      expressionTree:
-        '{"items":[{"enumValue":[],"fieldId":"bcd8c5c5-2b66-49ba-93f2-9921f47c2c2d","filterType":"logic","term":"eq","value":"0","type":"item","subTree":null}],"logic":"or"}',
-      whiteListUser: '[15]',
-      whiteListRole: null,
-      whiteListDept: null,
-      datasetName: '0wjh4_chart_group',
-      authTargetName: 'jinlong',
-      tree: {
-        logic: 'or',
-        items: [
-          {
-            type: 'item',
-            fieldId: 'bcd8c5c5-2b66-49ba-93f2-9921f47c2c2d',
-            field: {
-              id: 'bcd8c5c5-2b66-49ba-93f2-9921f47c2c2d',
-              tableId: '91b6555d-0c06-4ff5-881b-4a6c0cf710fe',
-              originName: 'id',
-              name: 'ID',
-              dataeaseName: 'C_b80bb7740288fda1f201890375a60c8f',
-              groupType: 'd',
-              type: 'VARCHAR',
-              size: 50,
-              deType: 0,
-              deTypeFormat: null,
-              deExtractType: 0,
-              extField: 0,
-              checked: true,
-              columnIndex: 0,
-              lastSyncTime: 1680165907179,
-              accuracy: 0,
-              dateFormat: null,
-              dateFormatType: null
-            },
-            filterType: 'logic',
-            term: 'eq',
-            value: '0',
-            enumValue: [],
-            subTree: null
-          }
-        ]
-      },
-      whiteListUsers: [
-        {
-          userId: 15,
-          deptId: 5,
-          username: 'jinlong',
-          nickName: 'jinlongaaaa',
-          gender: '男',
-          phone: null,
-          email: 'jinlong@fit2cloud.com',
-          password: 'ae8000252199d4f2aa00e3b99e6f9934',
-          isAdmin: false,
-          enabled: 1,
-          createBy: null,
-          updateBy: null,
-          pwdResetTime: null,
-          createTime: 1667372203575,
-          updateTime: 1669645075432,
-          language: 'zh_CN',
-          from: 0,
-          sub: null,
-          phonePrefix: '+86'
-        }
-      ],
-      whiteListRoles: null,
-      whiteListDepts: null,
-      authTargetIds: null
+  rowPermissionList(paginationConfig.currentPage, paginationConfig.pageSize, datasetId.value).then(
+    res => {
+      state.rowList = res.data.records
+      paginationConfig.total = res.data.total
     }
-  ]
+  )
 }
 
 search()
+
+initDatasetTableField()
 
 const create = rowPermissionObj => {
   if (!rowPermissionObj) {
     targetObjs.value = []
     Object.assign(rowPermissionForm, cloneDeep(defaultForm))
+    rowPermissionForm.datasetId = datasetId.value
     update_row_permission_dialog_title.value = t('dataset.row_permission.add')
   } else {
     Object.assign(rowPermissionForm, rowPermissionObj)
     update_row_permission_dialog_title.value = t('dataset.row_permission.edit')
     listRowPermissions(rowPermissionObj)
-    loadUserList()
   }
+  loadUserList()
   fetchTypeObjsList()
   update_row_permission.value = true
 }
@@ -285,6 +244,12 @@ const handleCurrentChange = (currentPage: number) => {
 </script>
 
 <template>
+  <el-button class="add-row-column" secondary @click="create(null)">
+    <template #icon>
+      <Icon name="icon_add_outlined"></Icon>
+    </template>
+    {{ t(`dataset.${activeName}`) }}
+  </el-button>
   <GridTable
     @size-change="handleSizeChange"
     @current-change="handleCurrentChange"
@@ -339,7 +304,7 @@ const handleCurrentChange = (currentPage: number) => {
       </el-switch>
     </div>
     <div class="auth-type">
-      <p class="type">{{ t('table.type') }}</p>
+      <p class="type">{{ t('dataset.type') }}</p>
       <el-radio
         v-model="rowPermissionForm.authTargetType"
         @change="onAuthTypeChange"
