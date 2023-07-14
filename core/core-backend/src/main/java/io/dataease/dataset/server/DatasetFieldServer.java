@@ -86,4 +86,9 @@ public class DatasetFieldServer implements DatasetTableApi {
             return dto;
         }).collect(Collectors.toList());
     }
+
+    @Override
+    public void deleteByChartId(Long id) {
+        datasetTableFieldManage.deleteByChartId(id);
+    }
 }

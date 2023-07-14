@@ -139,6 +139,7 @@ export const saveRowPermission = (data = {}) => {
 
 export const whiteListUsersForPermissions = (data = {}) => {
   return request.post({ url: '/dataset/rowPermissions/whiteListUsers', data })
+}
 
 export const saveField = async (data): Promise<DatasetDetail[]> => {
   return request.post({ url: '/datasetField/save', data }).then(res => {
@@ -148,6 +149,12 @@ export const saveField = async (data): Promise<DatasetDetail[]> => {
 
 export const deleteField = async (id): Promise<DatasetDetail[]> => {
   return request.post({ url: `/datasetField/delete/${id}`, data: {} }).then(res => {
+    return res?.data
+  })
+}
+
+export const deleteFieldByChartId = async (id): Promise<DatasetDetail[]> => {
+  return request.post({ url: `/datasetField/deleteByChartId/${id}`, data: {} }).then(res => {
     return res?.data
   })
 }

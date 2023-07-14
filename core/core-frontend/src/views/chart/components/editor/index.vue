@@ -29,13 +29,13 @@ import CompareEdit from '@/views/chart/components/editor/drag-item/components/Co
 import ValueFormatterEdit from '@/views/chart/components/editor/drag-item/components/ValueFormatterEdit.vue'
 import CustomSortEdit from '@/views/chart/components/editor/drag-item/components/CustomSortEdit.vue'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
-const snapshotStore = snapshotStoreWithOut()
 import CalcFieldEdit from '@/views/visualized/data/dataset/form/CalcFieldEdit.vue'
 import { getFieldName, guid } from '@/views/visualized/data/dataset/form/util'
 import { cloneDeep } from 'lodash-es'
-import { deleteField, saveField } from '@/api/dataset'
+import { deleteField, deleteFieldByChartId, saveField } from '@/api/dataset'
 import LabelSelector from '@/views/chart/components/editor/editor-style/components/LabelSelector.vue'
 
+const snapshotStore = snapshotStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
 const { canvasCollapse, curComponent } = storeToRefs(dvMainStore)
 const router = useRouter()
@@ -185,7 +185,9 @@ const dsSelectProps = {
 
 const dsClick = (data: Tree) => {
   if (data.leaf) {
+    // deleteFieldByChartId(view.value.id).then(() => {
     getFields(data.id, view.value.id)
+    // })
   }
 }
 
@@ -2012,5 +2014,12 @@ span {
   margin-left: 6px;
   font-size: 14px;
   cursor: pointer;
+}
+</style>
+
+<style lang="less">
+.ed-select-dropdown__item {
+  display: flex;
+  align-items: center;
 }
 </style>
