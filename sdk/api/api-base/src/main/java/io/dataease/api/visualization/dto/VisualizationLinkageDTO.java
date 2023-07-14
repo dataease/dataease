@@ -1,8 +1,8 @@
 package io.dataease.api.visualization.dto;
 
-import io.dataease.api.dataset.dto.DatasetTableFieldDTO;
 import io.dataease.api.visualization.vo.VisualizationLinkageFieldVO;
 import io.dataease.api.visualization.vo.VisualizationLinkageVO;
+import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import lombok.Data;
 
 import java.util.ArrayList;
