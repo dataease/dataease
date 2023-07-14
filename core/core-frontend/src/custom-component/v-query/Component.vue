@@ -12,6 +12,14 @@ import { useEmitt } from '@/hooks/web/useEmitt'
 import Select from './Select.vue'
 import Time from './Time.vue'
 const props = defineProps({
+  view: {
+    type: Object,
+    default() {
+      return {
+        customStyle: ''
+      }
+    }
+  },
   propValue: {
     type: String,
     required: true,
@@ -27,7 +35,7 @@ const props = defineProps({
     }
   }
 })
-const { element } = toRefs(props)
+const { element, view } = toRefs(props)
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
 const { curComponent, canvasViewInfo } = storeToRefs(dvMainStore)
@@ -53,10 +61,33 @@ const filterTypeCom = (deType: number) => {
 }
 
 watch(
+  () => view.value,
+  val => {
+    if (!val?.customStyle?.component) return
+    const { show, borderShow, borderColor, borderWidth, bgColorShow, btnList, bgColor, layout } =
+      val?.customStyle?.component
+    if (!show) {
+      Object.assign(customStyle, { ...defaultStyle })
+      return
+    }
+    customStyle.background = bgColorShow ? bgColor || '' : ''
+    customStyle.border = borderShow ? borderColor || '' : ''
+    customStyle.btnList = [...btnList]
+    customStyle.borderWidth = borderWidth
+    customStyle.layout = layout
+  },
+  {
+    deep: true,
+    immediate: true
+  }
+)
+
+watch(
   () => curComponentView.value,
   val => {
+    if (!val) return
     const { show, borderShow, borderColor, borderWidth, bgColorShow, btnList, bgColor, layout } =
-      val.component
+      val?.component
     if (!show) {
       Object.assign(customStyle, { ...defaultStyle })
       return
@@ -215,6 +246,18 @@ const queryData = () => {
     emitter.emit(`query-data-${ele}`)
   })
 }
+
+// const calcData = () => {
+//   console.log('calcData')
+// }
+// const renderChart = () => {
+//   console.log('renderChart')
+// }
+
+// defineExpose({
+//   calcData,
+//   renderChart
+// })
 </script>
 
 <template>
@@ -281,7 +324,7 @@ const queryData = () => {
       </el-button>
     </div>
   </div>
-  <Teleport to=".dv-common-layout">
+  <Teleport to=".dv-teleport-query">
     <QueryConditionConfiguration ref="queryConfig"></QueryConditionConfiguration>
   </Teleport>
 </template>

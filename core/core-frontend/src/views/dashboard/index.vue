@@ -233,7 +233,7 @@ eventBus.on('handleNew', handleNew)
 </script>
 
 <template>
-  <div class="dv-common-layout">
+  <div class="dv-common-layout dv-teleport-query">
     <DbToolbar />
     <el-container class="dv-layout-container">
       <!-- 中间画布 -->
