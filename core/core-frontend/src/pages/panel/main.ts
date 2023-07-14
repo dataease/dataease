@@ -97,8 +97,6 @@ class DataEaseBi {
   initialize(options: Options) {
     this.deOptions = { ...defaultOptions, ...options }
     setupAll(this.deOptions.container, this.type)
-    const appStore = useUserStoreWithOut()
-    appStore.setToken(this.token)
   }
 
   destroy() {
