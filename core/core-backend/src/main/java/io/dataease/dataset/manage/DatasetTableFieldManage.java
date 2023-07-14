@@ -134,6 +134,12 @@ public class DatasetTableFieldManage {
         coreDatasetTableFieldMapper.delete(wrapper);
     }
 
+    public void deleteByChartId(Long chartId) {
+        QueryWrapper<CoreDatasetTableField> wrapper = new QueryWrapper<>();
+        wrapper.eq("chart_id", chartId);
+        coreDatasetTableFieldMapper.delete(wrapper);
+    }
+
     public List<DatasetTableFieldDTO> selectByDatasetTableId(Long id) {
         QueryWrapper<CoreDatasetTableField> wrapper = new QueryWrapper<>();
         wrapper.eq("dataset_table_id", id);

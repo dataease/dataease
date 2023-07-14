@@ -43,4 +43,7 @@ public interface DatasetTableApi {
     List<Object> multFieldValuesForPermissions(@RequestBody MultFieldValuesRequest multFieldValuesRequest) throws Exception;
     @PostMapping("getFunction")
     List<SQLFunctionDTO> getFunction();
+
+    @PostMapping("deleteByChartId/{id}")
+    void deleteByChartId(@PathVariable Long id);
 }

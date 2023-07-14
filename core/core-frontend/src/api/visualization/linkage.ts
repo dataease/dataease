@@ -1,9 +1,9 @@
 import request from '@/config/axios'
 
-export const getViewLinkageGather = requestInfo =>
-  request.post({ url: '/linkage/getViewLinkageGather', requestInfo })
+export const getViewLinkageGather = data =>
+  request.post({ url: '/linkage/getViewLinkageGather', data })
 
-export const saveLinkage = requestInfo => request.post({ url: '/linkage/saveLinkage', requestInfo })
+export const saveLinkage = data => request.post({ url: '/linkage/saveLinkage', data })
 
 export const getPanelAllLinkageInfo = dvId =>
-  request.get({ url: '/linkage/getPanelAllLinkageInfo/' + dvId })
+  request.get({ url: '/linkage/getVisualizationAllLinkageInfo/' + dvId })

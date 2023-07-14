@@ -157,7 +157,7 @@ const themeAttrChange = (custom, property, value) => {
     Object.keys(canvasViewInfo.value).forEach(function (viewId) {
       const viewInfo = canvasViewInfo.value[viewId]
       Object.keys(value).forEach(function (key) {
-        if (viewInfo[custom][property][key]) {
+        if (viewInfo[custom][property][key] !== undefined) {
           viewInfo[custom][property][key] = value[key]
         }
       })
