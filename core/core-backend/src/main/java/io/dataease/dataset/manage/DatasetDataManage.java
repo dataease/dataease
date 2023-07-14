@@ -1,7 +1,6 @@
 package io.dataease.dataset.manage;
 
 import io.dataease.api.dataset.dto.DatasetTableDTO;
-import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.api.dataset.dto.PreviewSqlDTO;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.union.DatasetTableInfoDTO;
@@ -19,6 +18,7 @@ import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
 import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.datasource.server.EngineServer;
+import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.engine.sql.SQLProvider;
@@ -280,11 +280,11 @@ public class DatasetDataManage {
         }
     }
 
-    public Set<String> getFieldEnum(List<String> ids) throws Exception {
+    public List<String> getFieldEnum(List<Long> ids) throws Exception {
         // 根据前端传的过滤组件field ids，获取所有字段枚举值并去重合并
         List<List<String>> list = new ArrayList<>();
-        for (String id : ids) {
-            DatasetTableFieldDTO field = datasetTableFieldManage.selectById(Long.valueOf(id));
+        for (Long id : ids) {
+            DatasetTableFieldDTO field = datasetTableFieldManage.selectById(id);
             if (field == null) {
                 DEException.throwException("field is not exist");
             }
@@ -335,6 +335,6 @@ public class DatasetDataManage {
         for (List<String> l : list) {
             result.addAll(l);
         }
-        return result;
+        return result.stream().toList();
     }
 }

@@ -13,13 +13,13 @@ import io.dataease.dataset.dao.auto.entity.CoreDatasetGroup;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetTableField;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupMapper;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableFieldMapper;
+import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.exception.DEException;
-import io.dataease.utils.*;
-import io.dataease.dataset.utils.TableUtils;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
+import io.dataease.utils.JsonUtil;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -222,7 +222,7 @@ public class DatasetTableFieldManage {
         List<DataSetRowPermissionsTreeDTO> rowPermissionsTree = new ArrayList<>();
         if (userPermissions) {
             //列权限
-            Map<String , ColumnPermissionItem> desensitizationList = new HashMap<>();
+            Map<String, ColumnPermissionItem> desensitizationList = new HashMap<>();
             fields = permissionManage.filterColumnPermissions(fields, desensitizationList, field.getDatasetGroupId(), userId);
             Map<Long, DatasetTableFieldDTO> fieldMap = fields.stream().collect(Collectors.toMap(DatasetTableFieldDTO::getId, node -> node));
             permissionFields = fieldIds.stream().map(fieldMap::get).collect(Collectors.toList());
@@ -248,7 +248,8 @@ public class DatasetTableFieldManage {
         DatasetGroupInfoDTO dto = new DatasetGroupInfoDTO();
         BeanUtils.copyBean(dto, coreDatasetGroup);
         dto.setUnionSql(null);
-        List<UnionDTO> unionDTOList = JsonUtil.parseList(coreDatasetGroup.getInfo(), new TypeReference<>() {});
+        List<UnionDTO> unionDTOList = JsonUtil.parseList(coreDatasetGroup.getInfo(), new TypeReference<>() {
+        });
         dto.setUnion(unionDTOList);
 
         // 获取field
