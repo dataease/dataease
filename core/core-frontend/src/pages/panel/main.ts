@@ -48,21 +48,25 @@ document.querySelector('head').appendChild = <T extends Node>(node: T) => {
   cb(newNode)
   return newNode
 }
-import { createApp } from 'vue'
+import { App, createApp } from 'vue'
 import '@/style/index.less'
 import '@/plugins/svg-icon'
 import 'normalize.css/normalize.css'
-import App from './App.vue'
+import AppElement from './App.vue'
 import { setupI18n } from '@/plugins/vue-i18n'
 import { setupStore } from '@/store'
+import { useUserStoreWithOut } from '@/store/modules/user'
 import { setupElementPlus } from '@/plugins/element-plus'
 
-const setupAll = async (dom: string, componentName: string) => {
-  const app = createApp(App, { componentName })
+const setupAll = async (dom: string, componentName: string): Promise<App<Element>> => {
+  const app = createApp(AppElement, { componentName })
   await setupI18n(app)
   setupStore(app)
   setupElementPlus(app)
+  const userStore = useUserStoreWithOut()
+  await userStore.setUser()
   app.mount(dom)
+  return app
 }
 
 interface Options {
@@ -82,8 +86,10 @@ class DataEaseBi {
   token: string
   type: 'DashboardEditor' | 'View'
   dvId: string
+  resourceId: string
   pid: string
   deOptions: Options
+  vm: App<Element>
 
   create(type, options) {
     this.type = type
@@ -91,15 +97,19 @@ class DataEaseBi {
     this.baseUrl = options.baseUrl
     this.dvId = options.dvId
     this.pid = options.pid
+    this.resourceId = options.resourceId
   }
 
-  initialize(options: Options) {
+  async initialize(options: Options) {
     this.deOptions = { ...defaultOptions, ...options }
-    setupAll(this.deOptions.container, this.type)
+    this.vm = await setupAll(this.deOptions.container, this.type)
   }
 
   destroy() {
-    window.DataEaseBi = null
+    const userStore = useUserStoreWithOut()
+    userStore.clear()
+    this.vm.unmount()
+    this.vm = null
   }
 }
 
