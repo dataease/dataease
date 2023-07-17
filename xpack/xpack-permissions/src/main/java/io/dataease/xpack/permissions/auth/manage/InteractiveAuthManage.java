@@ -95,12 +95,9 @@ public class InteractiveAuthManage {
             }).toList();
         if (rootAdmin.get()) {
             List<BusiResourcePO> pos = busiAuthManage.resourceWithOid(resourceEnumFlag, oid);
-            if (CollectionUtil.isNotEmpty(pos)) {
-                List<BusiPerPO> perPOS = pos.stream().map(this::convert).collect(Collectors.toList());
-                perPOS.add(rootNode(9));
-                return TreeUtils.mergeTree(perPOS, BusiPerVO.class, false);
-            }
-            return null;
+            List<BusiPerPO> perPOS = CollectionUtil.isNotEmpty(pos) ? pos.stream().map(this::convert).collect(Collectors.toList()) : new ArrayList<>();
+            perPOS.add(rootNode(9));
+            return TreeUtils.mergeTree(perPOS, BusiPerVO.class, false);
         }
         int enumFlag = resourceEnumFlag;
 
