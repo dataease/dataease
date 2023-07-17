@@ -125,13 +125,15 @@ public class DatasetSQLManage {
                 SQLObj currentSQLObj = unionParamDTO.getCurrentSQLObj();
 
                 String ts = "";
+                String tablePrefix = "";
                 if (ObjectUtils.isNotEmpty(currentSQLObj.getTableSchema())) {
                     ts = currentSQLObj.getTableSchema() + ".";
+                    tablePrefix = "`";
                 }
                 // build join
                 join.append(" ").append(joinType).append(" ")
                         .append(ts)
-                        .append("`" + currentSQLObj.getTableName() + "`")
+                        .append(tablePrefix + currentSQLObj.getTableName() + tablePrefix)
                         .append(" ").append(currentSQLObj.getTableAlias()).append(" ")
                         .append(" ON ");
                 for (int i = 0; i < unionParamDTO.getUnionFields().size(); i++) {
