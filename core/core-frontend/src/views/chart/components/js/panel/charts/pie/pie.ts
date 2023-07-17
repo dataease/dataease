@@ -114,7 +114,7 @@ export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
             autoRotate: false,
             style: {
               fill: labelAttr.color,
-              fontSize: parseInt(labelAttr.fontSize)
+              fontSize: labelAttr.fontSize
             }
           }
           if (labelAttr.position === 'outer') {
