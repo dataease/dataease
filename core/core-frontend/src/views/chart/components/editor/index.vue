@@ -1026,6 +1026,13 @@ const dynamicLabelShow = () => {
                                     :chart="view"
                                     @onLabelChange="onLabelChange"
                                   />
+                                  <el-input
+                                    v-model="view.customAttr.label.formatter"
+                                    :autosize="{ minRows: 2, maxRows: 4 }"
+                                    type="textarea"
+                                    placeholder="Please input"
+                                    style="padding: 0 16px"
+                                  />
                                 </div>
                               </el-popover>
                             </span>
