@@ -2354,11 +2354,13 @@ export function getColors(chart, colors, reset) {
     if (chart.data) {
       const data = chart.data.data
       const s = []
-      data.forEach(cur => {
-        if (s.indexOf(cur.category) < 0) {
-          s.push(cur.category)
-        }
-      })
+      if (data) {
+        data.forEach(cur => {
+          if (s.indexOf(cur.category) < 0) {
+            s.push(cur.category)
+          }
+        })
+      }
       for (let i = 0; i < s.length; i++) {
         seriesColors.push({
           name: s[i],

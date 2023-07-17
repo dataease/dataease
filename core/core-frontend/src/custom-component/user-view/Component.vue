@@ -36,7 +36,7 @@ const { propValue, element, view } = toRefs(props)
 
 <template>
   <div class="bash-shape">
-    <chart :view="view" :show-position="showPosition"></chart>
+    <chart :view="view" :element="element" :show-position="showPosition"></chart>
   </div>
 </template>
 

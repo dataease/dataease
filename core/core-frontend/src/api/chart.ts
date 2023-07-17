@@ -57,7 +57,7 @@ export const getFieldData = async (fieldId, fieldType, data): Promise<IResponse>
 }
 
 export const checkSameDataSet = (viewIdSource, viewIdTarget) =>
-  request.get({ url: '/chart/view/checkSameDataSet/' + viewIdSource + '/' + viewIdTarget })
+  request.get({ url: '/chart/checkSameDataSet/' + viewIdSource + '/' + viewIdTarget })
 
 // const getRequestChart = data => {
 //   data.xaxis = JSON.stringify(data.xaxis)

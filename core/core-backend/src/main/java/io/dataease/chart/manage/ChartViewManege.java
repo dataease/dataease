@@ -245,4 +245,17 @@ public class ChartViewManege {
 
     }
 
+    public String checkSameDataSet(String viewIdSource, String viewIdTarget) {
+        QueryWrapper<CoreChartView> wrapper = new QueryWrapper<>();
+        wrapper.select("distinct table_id");
+        wrapper.in("id", Arrays.asList(viewIdSource, viewIdTarget));
+        coreChartViewMapper.selectCount(wrapper);
+        if (coreChartViewMapper.selectCount(wrapper) == 1) {
+            return "YES";
+        } else {
+            return "NO";
+        }
+
+    }
+
 }

@@ -13,48 +13,47 @@ const DEFAULT_DATA = []
 export class Gauge extends G2PlotChartView<GaugeOptions, G2Gauge> {
   drawChart(drawOptions: G2PlotDrawOptions<G2Gauge>): G2Gauge {
     const chart = drawOptions.chart
-    if (!chart.data?.series?.length) {
-      return
-    }
-    // options
-    const initOptions: GaugeOptions = {
-      percent: 0,
-      appendPadding: getPadding(chart),
-      axis: {
-        tickInterval: 0.2,
-        label: {
-          style: {
-            fontSize: getScaleValue(14, drawOptions.scale) // 刻度值字体大小
+    if (chart?.data) {
+      // options
+      const initOptions: GaugeOptions = {
+        percent: 0,
+        appendPadding: getPadding(chart),
+        axis: {
+          tickInterval: 0.2,
+          label: {
+            style: {
+              fontSize: getScaleValue(14, drawOptions.scale) // 刻度值字体大小
+            },
+            formatter: function (v) {
+              return v === '0' ? v : parseFloat(v) * 100 + '%'
+            }
           },
-          formatter: function (v) {
-            return v === '0' ? v : parseFloat(v) * 100 + '%'
-          }
-        },
-        tickLine: {
-          length: getScaleValue(12, drawOptions.scale) * -1, // 刻度线长度
-          style: {
-            lineWidth: getScaleValue(1, drawOptions.scale) // 刻度线宽度
-          }
-        },
-        subTickLine: {
-          count: 4, // 子刻度数
-          length: getScaleValue(6, drawOptions.scale) * -1, // 子刻度线长度
-          style: {
-            lineWidth: getScaleValue(1, drawOptions.scale) // 子刻度线宽度
+          tickLine: {
+            length: getScaleValue(12, drawOptions.scale) * -1, // 刻度线长度
+            style: {
+              lineWidth: getScaleValue(1, drawOptions.scale) // 刻度线宽度
+            }
+          },
+          subTickLine: {
+            count: 4, // 子刻度数
+            length: getScaleValue(6, drawOptions.scale) * -1, // 子刻度线长度
+            style: {
+              lineWidth: getScaleValue(1, drawOptions.scale) // 子刻度线宽度
+            }
           }
         }
       }
-    }
-    let options = this.setupOptions(chart, initOptions)
-    options = this.configRange(chart, options, drawOptions.scale)
+      let options = this.setupOptions(chart, initOptions)
+      options = this.configRange(chart, options, drawOptions.scale)
 
-    // 开始渲染
-    if (drawOptions.chartObj) {
-      drawOptions.chartObj.destroy()
-    }
-    drawOptions.chartObj = new G2Gauge(drawOptions.container, options)
+      // 开始渲染
+      if (drawOptions.chartObj) {
+        drawOptions.chartObj.destroy()
+      }
+      drawOptions.chartObj = new G2Gauge(drawOptions.container, options)
 
-    return drawOptions.chartObj
+      return drawOptions.chartObj
+    }
   }
 
   protected configSize(chart: Chart, options: GaugeOptions): GaugeOptions {

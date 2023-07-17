@@ -1,7 +1,7 @@
 <script lang="tsx" setup>
 import { useI18n } from '@/hooks/web/useI18n'
 import ChartComponentG2Plot from './components/ChartComponentG2Plot.vue'
-import { onMounted, reactive, ref, toRefs, watch } from 'vue'
+import { computed, onMounted, reactive, ref, toRefs, watch } from 'vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { hexColorToRGBA } from '@/views/chart/components/js/util.js'
 import { DEFAULT_TITLE_STYLE } from '@/views/chart/components/editor/util/chart'
@@ -10,12 +10,25 @@ import { ElMessage } from 'element-plus-secondary'
 import { nextTick } from 'vue'
 import { checkIsBatchOptView } from '@/utils/canvasUtils'
 import { useFilter } from '@/hooks/web/useFilter'
+import { useCache } from '@/hooks/web/useCache'
+
+const { wsCache } = useCache()
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 
 const g2 = ref<any>()
 
 const { t } = useI18n()
+const dvMainStore = dvMainStoreWithOut()
 
 const props = defineProps({
+  element: {
+    type: Object,
+    default() {
+      return {
+        propValue: null
+      }
+    }
+  },
   view: {
     type: Object,
     default() {
@@ -111,8 +124,9 @@ const chartClick = param => {
 const filter = () => {
   const { filter } = useFilter(view.value.id)
   return {
+    user: wsCache.get('user.uid'),
     filter,
-    // linkageFilters: this.element.linkageFilters,
+    linkageFilters: element.value.linkageFilters,
     // outerParamsFilters: this.element.outerParamsFilters,
     drill: state.drillClickDimensionList
     // resultCount: this.resultCount,

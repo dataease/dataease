@@ -136,13 +136,13 @@ public class DatasetGroupManage {
     }
 
     public List tree(DatasetNodeDTO datasetNodeDTO) {
-        if (ObjectUtils.isNotEmpty(interactiveAuthApi)) {
-            List<BusiPerVO> resource = interactiveAuthApi.resource(leafType);
-            if (StringUtils.equalsIgnoreCase("folder", datasetNodeDTO.getNodeType())) {
-                filterNode(resource);
-            }
-            return resource;
-        }
+//        if (ObjectUtils.isNotEmpty(interactiveAuthApi)) {
+//            List<BusiPerVO> resource = interactiveAuthApi.resource(leafType);
+//            if (StringUtils.equalsIgnoreCase("folder", datasetNodeDTO.getNodeType())) {
+//                filterNode(resource);
+//            }
+//            return resource;
+//        }
         QueryWrapper<CoreDatasetGroup> wrapper = new QueryWrapper<>();
         if (StringUtils.isNotEmpty(datasetNodeDTO.getNodeType())) {
             wrapper.eq("node_type", datasetNodeDTO.getNodeType());

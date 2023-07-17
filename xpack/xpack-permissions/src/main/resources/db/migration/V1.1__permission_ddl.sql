@@ -254,8 +254,7 @@ CREATE TABLE `per_dataset_row_permissions_tree` (
             PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci;
 
-DROP TABLE IF EXISTS `per_auth_menu`;
-
+DROP TABLE IF EXISTS `per_embedded_instance`;
 CREATE TABLE `per_embedded_instance`
 (
     `id`         bigint       NOT NULL COMMENT 'ID',

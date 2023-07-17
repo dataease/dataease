@@ -40,7 +40,6 @@ service.interceptors.request.use(
     ) {
       config.data = qs.stringify(config.data)
     }
-    console.log('---------------------')
     if (window.DataEaseBi?.baseUrl) {
       config.baseURL = window.DataEaseBi.baseUrl + 'de2api/'
     }

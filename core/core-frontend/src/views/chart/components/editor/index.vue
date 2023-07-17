@@ -289,12 +289,12 @@ const dragMoveDuplicate = (list, e, mode) => {
     }
   }
 }
-const dragRemoveChartField = (list, e) => {
+const dragRemoveAggField = (list, e) => {
   const dup = list.filter(function (m) {
     return m.id === state.moveId
   })
   if (dup && dup.length > 0) {
-    if (dup[0].chartId) {
+    if (dup[0].summary === '') {
       list.splice(e.newDraggableIndex, 1)
     }
   }
@@ -333,7 +333,7 @@ const addYaxis = e => {
 const addDrill = e => {
   dragCheckType(view.value.drillFields, 'd')
   dragMoveDuplicate(view.value.drillFields, e, '')
-  dragRemoveChartField(view.value.drillFields, e)
+  dragRemoveAggField(view.value.drillFields, e)
   calcData(view.value, true)
 }
 
@@ -360,7 +360,7 @@ const addCustomFilter = e => {
   }
   view.value.customFilter[e.newDraggableIndex].filter = []
   dragMoveDuplicate(view.value.customFilter, e, '')
-  dragRemoveChartField(view.value.customFilter, e)
+  dragRemoveAggField(view.value.customFilter, e)
   calcData(view.value)
 }
 const filterItemRemove = item => {
@@ -1025,6 +1025,13 @@ const dynamicLabelShow = () => {
                                     class="attr-selector"
                                     :chart="view"
                                     @onLabelChange="onLabelChange"
+                                  />
+                                  <el-input
+                                    v-model="view.customAttr.label.formatter"
+                                    :autosize="{ minRows: 2, maxRows: 4 }"
+                                    type="textarea"
+                                    placeholder="Please input"
+                                    style="padding: 0 16px"
                                   />
                                 </div>
                               </el-popover>

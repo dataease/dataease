@@ -7,6 +7,7 @@ import eventBus from '@/utils/eventBus'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { findById } from '@/api/visualization/dataVisualization'
 import { storeToRefs } from 'pinia'
+import { getPanelAllLinkageInfo } from '@/api/visualization/linkage'
 const dvMainStore = dvMainStoreWithOut()
 const { curBatchOptComponents } = storeToRefs(dvMainStore)
 
@@ -78,6 +79,12 @@ export function initCanvasDataPrepare(dvId, callBack) {
       dvInfo.type === 'dashboard' && canvasStyleResult['dashboard'].gap === 'yes'
         ? canvasStyleResult['dashboard'].gapSize
         : 0
+    // 刷新联动信息
+    getPanelAllLinkageInfo(dvInfo.id).then(rsp => {
+      dvMainStore.setNowPanelTrackInfo(rsp.data)
+    })
+    //TODO 刷新跳转信息
+
     callBack({ canvasDataResult, canvasStyleResult, dvInfo, canvasViewInfoPreview, curPreviewGap })
   })
 }

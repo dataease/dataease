@@ -1,7 +1,7 @@
 <template>
   <div class="bar-main" :class="showEditPosition" @click.stop>
     <span :title="t('visualization.enlarge')" v-if="barShowCheck('enlarge')">
-      <el-icon class="base-icon" @click="userViewEnlargeOpen">
+      <el-icon class="bar-base-icon" @click="userViewEnlargeOpen">
         <Icon name="dv-bar-enlarge"></Icon
       ></el-icon>
     </span>
@@ -12,16 +12,19 @@
         @change="multiplexingCheck"
       />
     </div>
-    <div v-if="barShowCheck('linkage')" class="bar-checkbox-area">
+    <div v-if="barShowCheck('linkage') && linkageCheckShowAttach" class="bar-checkbox-area">
       <el-checkbox size="medium" v-model="linkageInfo.linkageActive" />
-      <linkage-field v-if="linkageInfo.linkageActive" :element="element"></linkage-field>
     </div>
+    <linkage-field
+      v-if="linkageInfo && linkageInfo.linkageActive"
+      :element="element"
+    ></linkage-field>
     <div v-if="barShowCheck('batchOpt')" class="bar-checkbox-area">
       <el-checkbox size="medium" @change="batchOptChange" />
     </div>
 
     <el-dropdown trigger="click" v-if="barShowCheck('setting')">
-      <el-icon :title="t('visualization.setting')" class="base-icon"><Setting /></el-icon>
+      <el-icon :title="t('visualization.setting')" class="bar-base-icon"><Setting /></el-icon>
       <template #dropdown>
         <el-dropdown-menu style="width: 100px">
           <el-dropdown-item icon="Delete" @click="deleteComponent">删除</el-dropdown-item>
@@ -76,6 +79,10 @@ const barShowCheck = barName => {
     ).includes(barName)
   )
 }
+
+const linkageCheckShowAttach = computed(() => {
+  return curLinkageView.value !== element.value
+})
 
 const props = defineProps({
   element: {
@@ -225,7 +232,6 @@ const linkageInfo = computed(() => {
 }
 
 .bar-main-preview-right-inner {
-  height: 22px;
   right: 0px;
 }
 
@@ -239,7 +245,7 @@ const linkageInfo = computed(() => {
   left: -25px;
 }
 
-.base-icon {
+.bar-base-icon {
   height: 22px;
   width: 22px;
   color: #ffffff;
@@ -250,8 +256,10 @@ const linkageInfo = computed(() => {
     color: rgba(255, 255, 255, 0.7);
   }
 }
+
 .bar-checkbox-area {
   padding: 0 3px;
+  height: 22px;
   :deep(.ed-checkbox) {
     height: 22px;
   }

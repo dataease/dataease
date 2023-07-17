@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="io.dataease.visualization.ext.ExtVisualizationLinkageMapper">
 
-    <resultMap id="TableFieldMap" type="io.dataease.api.dataset.dto.DatasetTableFieldDTO">
+    <resultMap id="TableFieldMap" type="io.dataease.dto.dataset.DatasetTableFieldDTO">
         <result column="id" jdbcType="VARCHAR" property="id"/>
         <result column="table_id" jdbcType="VARCHAR" property="datasetTableId"/>
         <result column="origin_name" jdbcType="VARCHAR" property="originName"/>
@@ -16,7 +16,7 @@
         <result column="targetViewName" jdbcType="VARCHAR" property="targetViewName"/>
         <result column="sourceViewId" jdbcType="VARCHAR" property="sourceViewId"/>
         <result column="linkageActive" property="linkageActive"/>
-        <collection property="targetViewFields" ofType="io.dataease.api.dataset.dto.DatasetTableFieldDTO" column="table_id"
+        <collection property="targetViewFields" ofType="io.dataease.dto.dataset.DatasetTableFieldDTO" column="table_id"
                     select="queryTableField">
         </collection>
         <collection property="linkageFields" ofType="io.dataease.visualization.dao.auto.entity.VisualizationLinkageField">
@@ -35,20 +35,20 @@
 
     <select id="getViewLinkageGather" resultMap="LinkageGatherMap">
         SELECT
-        chart_view.`name` as 'targetViewName',
-        chart_view.id as 'target_view_id',
-        chart_view.table_id,
+        core_chart_view.`title` as 'targetViewName',
+        core_chart_view.id as 'target_view_id',
+        core_chart_view.table_id,
         visualization_linkage.source_view_id as 'sourceViewId',
         (case when visualization_linkage.target_view_id is null then 0 else visualization_linkage.linkage_active end) as 'linkageActive',
         visualization_linkage_field.source_field,
         visualization_linkage_field.target_field
         FROM
-        chart_view
-        LEFT JOIN visualization_linkage ON chart_view.id = visualization_linkage.target_view_id
+        core_chart_view
+        LEFT JOIN visualization_linkage ON core_chart_view.id = visualization_linkage.target_view_id
         AND visualization_linkage.dv_id = #{dvId}
         AND visualization_linkage.source_view_id = #{sourceViewId}
         LEFT JOIN visualization_linkage_field ON visualization_linkage.id = visualization_linkage_field.linkage_id
-        where chart_view.id in
+        where core_chart_view.id in
         <foreach collection="targetViewIds" item="targetViewId" index="index" open="(" close=")" separator=",">
             #{targetViewId}
         </foreach>
@@ -56,24 +56,24 @@
 
     <select id="queryTableField" resultMap="TableFieldMap">
        select
-       dataset_table_field.id,
-       dataset_table_field.table_id,
-       dataset_table_field.origin_name,
-       dataset_table_field.`name`,
-       dataset_table_field.de_type
-    from dataset_table_field where table_id = #{table_id}
+       core_dataset_table_field.id,
+       core_dataset_table_field.dataset_table_id,
+       core_dataset_table_field.origin_name,
+       core_dataset_table_field.`name`,
+       core_dataset_table_field.de_type
+    from core_dataset_table_field where dataset_group_id = #{table_id}
     </select>
 
     <select id="queryTableFieldWithViewId" resultMap="TableFieldMap">
         select
-       dataset_table_field.id,
-       dataset_table_field.table_id,
-       dataset_table_field.origin_name,
-       dataset_table_field.`name`,
-       dataset_table_field.de_type
-        from dataset_table_field
-		left join chart_view on dataset_table_field.table_id= chart_view.table_id
-		where chart_view.id = #{viewId}
+       core_dataset_table_field.id,
+       core_dataset_table_field.dataset_table_id,
+       core_dataset_table_field.origin_name,
+       core_dataset_table_field.`name`,
+       core_dataset_table_field.de_type
+        from core_dataset_table_field
+		left join core_chart_view on core_dataset_table_field.dataset_table_id= core_chart_view.table_id
+		where core_chart_view.id = #{viewId}
     </select>
 
 
@@ -93,13 +93,6 @@
             AND pvl.source_view_id = #{dvId}
             AND pvl.dv_id = #{dvId}
     </delete>
-
-    <insert id="savePluginMenu">
-        INSERT INTO `visualization_linkage` ( menu_id, title, pid, sub_count, permission, hidden,i_frame ) VALUES
-        <foreach collection="menuList" item="menu" index="index" separator=",">
-            (#{menu.menuId},#{menu.title},#{menu.pid},#{menu.subCount},#{menu.permission},#{menu.hidden},ifnull(#{menu.hidden},0))
-        </foreach>
-    </insert>
 
     <select id="getPanelAllLinkageInfo" resultMap="AllLinkageMap">
       SELECT
@@ -131,8 +124,8 @@
             ) SELECT
             UUID() AS id,
             pv_source_copy.t_dv_id AS dv_id,
-            pv_source_copy.t_chart_view_id AS source_view_id,
-            pv_target_copy.t_chart_view_id target_view_id,
+            pv_source_copy.t_core_chart_view_id AS source_view_id,
+            pv_target_copy.t_core_chart_view_id target_view_id,
             update_time,
             update_people,
             linkage_active,
@@ -145,29 +138,29 @@
                 INNER JOIN (
                 SELECT
                     pvs.dv_id AS s_dv_id,
-                    pvs.chart_view_id AS s_chart_view_id,
+                    pvs.core_chart_view_id AS s_core_chart_view_id,
                     pvt.dv_id AS t_dv_id,
-                    pvt.chart_view_id AS t_chart_view_id
+                    pvt.core_chart_view_id AS t_core_chart_view_id
                 FROM
                     panel_view pvt
                     inner JOIN panel_view pvs ON pvt.copy_from = pvs.id
                 WHERE
                     pvt.copy_id = #{copyId}
                 ) pv_source_copy ON visualization_linkage.dv_id = pv_source_copy.s_dv_id
-                AND visualization_linkage.source_view_id = pv_source_copy.s_chart_view_id
+                AND visualization_linkage.source_view_id = pv_source_copy.s_core_chart_view_id
                 INNER JOIN (
                 SELECT
                     pvs.dv_id AS s_dv_id,
-                    pvs.chart_view_id AS s_chart_view_id,
+                    pvs.core_chart_view_id AS s_core_chart_view_id,
                     pvt.dv_id AS t_dv_id,
-                    pvt.chart_view_id AS t_chart_view_id
+                    pvt.core_chart_view_id AS t_core_chart_view_id
                 FROM
                     panel_view pvt
                     inner JOIN panel_view pvs ON pvt.copy_from = pvs.id
                 WHERE
                     pvt.copy_id = #{copyId}
                 ) pv_target_copy ON visualization_linkage.dv_id = pv_target_copy.s_dv_id
-                AND visualization_linkage.target_view_id = pv_target_copy.s_chart_view_id
+                AND visualization_linkage.target_view_id = pv_target_copy.s_core_chart_view_id
 
     </insert>
 
