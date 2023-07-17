@@ -17,7 +17,6 @@ import io.dataease.exception.DEException;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.JsonUtil;
 import jakarta.annotation.Resource;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -251,7 +250,7 @@ public class ChartViewManege {
         wrapper.select("distinct table_id");
         wrapper.in("id", Arrays.asList(viewIdSource, viewIdTarget));
         coreChartViewMapper.selectCount(wrapper);
-        if (coreChartViewMapper.selectCount(wrapper)== 1) {
+        if (coreChartViewMapper.selectCount(wrapper) == 1) {
             return "YES";
         } else {
             return "NO";

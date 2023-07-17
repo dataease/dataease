@@ -25,4 +25,7 @@ public interface ChartViewApi {
 
     @GetMapping("/checkSameDataSet/{viewIdSource}/{viewIdTarget}")
     String checkSameDataSet(@PathVariable String viewIdSource, @PathVariable String viewIdTarget);
+
+    @PostMapping("getDetail/{id}")
+    ChartViewDTO getDetail(@PathVariable Long id);
 }
