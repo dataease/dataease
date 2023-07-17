@@ -84,7 +84,7 @@ defineExpose({
 </script>
 
 <template>
-  <div class="dv-preview">
+  <div class="dv-preview dv-teleport-query">
     <el-aside class="resource-area" :class="{ 'close-side': !slideShow }">
       <de-resource-tree
         v-show="slideShow"

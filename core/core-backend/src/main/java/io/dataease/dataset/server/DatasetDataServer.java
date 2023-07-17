@@ -2,17 +2,16 @@ package io.dataease.dataset.server;
 
 import io.dataease.api.dataset.DatasetDataApi;
 import io.dataease.api.dataset.dto.DatasetTableDTO;
-import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.api.dataset.dto.PreviewSqlDTO;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.dataset.manage.DatasetDataManage;
+import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * @Author Junjun
@@ -39,7 +38,7 @@ public class DatasetDataServer implements DatasetDataApi {
     }
 
     @Override
-    public Set<String> getFieldEnum(List<String> ids) throws Exception {
+    public List<String> getFieldEnum(List<Long> ids) throws Exception {
         return datasetDataManage.getFieldEnum(ids);
     }
 }

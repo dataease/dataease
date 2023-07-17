@@ -391,21 +391,10 @@ const filterNode = (value: string, data: Tree) => {
               <el-tab-pane label="列权限" name="column"></el-tab-pane>
             </el-tabs>
           </div>
-<<<<<<< HEAD
-        </template>
-        <template v-if="['row', 'column'].includes(activeName)">
-          <div class="table-row-column">
-            <row-permissions
-              :dataset-id="nodeInfo.id"
-              v-if="activeName === 'row'"
-            ></row-permissions>
-            <column-permissions v-else></column-permissions>
-=======
         </div>
         <div class="dataset-table-info">
           <div v-if="activeName === 'dataPreview'" class="preview-num">
             显示 100 条数据，共 1000 条
->>>>>>> 63bad41cfb74e569705e1bdec25ffc10476accb1
           </div>
           <template v-if="['dataPreview', 'structPreview'].includes(activeName)">
             <div class="info-table" :class="[{ 'struct-preview': activeName === 'structPreview' }]">
@@ -427,14 +416,11 @@ const filterNode = (value: string, data: Tree) => {
             </div>
           </template>
           <template v-if="['row', 'column'].includes(activeName)">
-            <el-button class="add-row-column" secondary>
-              <template #icon>
-                <Icon name="icon_add_outlined"></Icon>
-              </template>
-              {{ t(`dataset.${activeName}`) }}
-            </el-button>
             <div class="table-row-column">
-              <row-permissions v-if="activeName === 'row'"></row-permissions>
+              <row-permissions
+                :dataset-id="nodeInfo.id"
+                v-if="activeName === 'row'"
+              ></row-permissions>
               <column-permissions v-else></column-permissions>
             </div>
           </template>
@@ -600,10 +586,9 @@ const filterNode = (value: string, data: Tree) => {
 
     .table-row-column {
       height: calc(100% - 50px);
-    }
-
-    .add-row-column {
-      margin-bottom: 16px;
+      :deep(.add-row-column) {
+        margin-bottom: 16px;
+      }
     }
   }
 }

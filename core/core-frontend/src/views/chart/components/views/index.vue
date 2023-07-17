@@ -10,6 +10,9 @@ import { ElMessage } from 'element-plus-secondary'
 import { nextTick } from 'vue'
 import { checkIsBatchOptView } from '@/utils/canvasUtils'
 import { useFilter } from '@/hooks/web/useFilter'
+import { useCache } from '@/hooks/web/useCache'
+
+const { wsCache } = useCache()
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 
 const g2 = ref<any>()
@@ -121,6 +124,7 @@ const chartClick = param => {
 const filter = () => {
   const { filter } = useFilter(view.value.id)
   return {
+    user: wsCache.get('user.uid'),
     filter,
     linkageFilters: element.value.linkageFilters,
     // outerParamsFilters: this.element.outerParamsFilters,

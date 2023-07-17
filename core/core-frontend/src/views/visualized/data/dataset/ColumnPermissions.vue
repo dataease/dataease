@@ -610,6 +610,12 @@ const handleCurrentChange = (currentPage: number) => {
 </script>
 
 <template>
+  <el-button class="add-row-column" secondary @click="create(null)">
+    <template #icon>
+      <Icon name="icon_add_outlined"></Icon>
+    </template>
+    {{ t('dataset.column') }}
+  </el-button>
   <GridTable
     @size-change="handleSizeChange"
     @current-change="handleCurrentChange"

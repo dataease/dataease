@@ -1,8 +1,8 @@
 package io.dataease.api.dataset;
 
-import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.api.dataset.dto.MultFieldValuesRequest;
 import io.dataease.api.dataset.engine.SQLFunctionDTO;
+import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,9 +38,12 @@ public interface DatasetTableApi {
     Map<String, List<DatasetTableFieldDTO>> listByDQ(@PathVariable Long id);
 
 
-
     @PostMapping("multFieldValuesForPermissions")
-    List<Object> multFieldValuesForPermissions(@RequestBody MultFieldValuesRequest multFieldValuesRequest) throws Exception;
+    List<String> multFieldValuesForPermissions(@RequestBody MultFieldValuesRequest multFieldValuesRequest) throws Exception;
+
     @PostMapping("getFunction")
     List<SQLFunctionDTO> getFunction();
+
+    @PostMapping("deleteByChartId/{id}")
+    void deleteByChartId(@PathVariable Long id);
 }
