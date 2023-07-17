@@ -21,7 +21,10 @@ import MediaGroup from '@/custom-component/component-group/MediaGroup.vue'
 import TextGroup from '@/custom-component/component-group/TextGroup.vue'
 import ComponentButton from '@/components/visualization/ComponentButton.vue'
 import MultiplexingCanvas from '@/views/common/MultiplexingCanvas.vue'
-
+import { useI18n } from '@/hooks/web/useI18n'
+import { getPanelAllLinkageInfo, saveLinkage } from '@/api/visualization/linkage'
+import { queryPanelJumpInfo } from '@/api/visualization/linkJump'
+const { t } = useI18n()
 const isShowPreview = ref(false)
 const isScreenshot = ref(false)
 let timer = null
@@ -30,6 +33,8 @@ const composeStore = composeStoreWithOut()
 const lockStore = lockStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const {
+  linkageSettingStatus,
+  curLinkageView,
   curComponent,
   canvasStyleData,
   curComponentIndex,
@@ -37,7 +42,8 @@ const {
   dvInfo,
   canvasViewInfo,
   editMode,
-  batchOptStatus
+  batchOptStatus,
+  targetLinkageInfo
 } = storeToRefs(dvMainStore)
 const { areaData } = storeToRefs(composeStore)
 const dvModel = 'dashboard'
@@ -199,6 +205,54 @@ const batchOptStatusChange = value => {
 const saveBatchChange = () => {
   batchOptStatusChange(false)
 }
+
+const cancelLinkageSetting = () => {
+  dvMainStore.clearLinkageSettingInfo()
+}
+
+const saveLinkageSetting = () => {
+  // 字段检查
+  for (const key in targetLinkageInfo.value) {
+    let subCheckCount = 0
+    const linkageInfo = targetLinkageInfo.value[key]
+    const linkageFields = linkageInfo['linkageFields']
+    if (linkageFields) {
+      linkageFields.forEach(function (linkage) {
+        if (!(linkage.sourceField && linkage.targetField)) {
+          subCheckCount++
+        }
+      })
+    }
+
+    if (subCheckCount > 0) {
+      ElMessage.error(
+        t('visualization.datalist') +
+          '【' +
+          linkageInfo.targetViewName +
+          '】' +
+          t('visualization.exit_un_march_linkage_field')
+      )
+      return
+    }
+  }
+  const request = {
+    dvId: dvInfo.value.id,
+    sourceViewId: curLinkageView.value.id,
+    linkageInfo: targetLinkageInfo.value
+  }
+  saveLinkage(request).then(rsp => {
+    ElMessage.success('保存成功')
+    // 刷新联动信息
+    getPanelAllLinkageInfo(dvInfo.value.id).then(rsp => {
+      dvMainStore.setNowPanelTrackInfo(rsp.data)
+    })
+    cancelLinkageSetting()
+    // // 刷新跳转信息
+    // queryPanelJumpInfo(dvInfo.value.id).then(rsp => {
+    //   dvMainStore.setNowPanelJumpInfo(rsp.data)
+    // })
+  })
+}
 </script>
 
 <template>
@@ -218,7 +272,7 @@ const saveBatchChange = () => {
           </el-icon>
         </div>
       </div>
-      <div class="middle-area" v-show="!batchOptStatus">
+      <div class="middle-area" v-show="!batchOptStatus && !linkageSettingStatus">
         <component-group
           :base-width="410"
           :show-split-line="true"
@@ -260,7 +314,7 @@ const saveBatchChange = () => {
           title="仪表板配置"
         ></component-button>
       </div>
-      <div class="right-area" v-show="!batchOptStatus">
+      <div class="right-area" v-show="!batchOptStatus && !linkageSettingStatus">
         <el-button
           class="custom-normal-button"
           v-show="editMode === 'edit'"
@@ -277,7 +331,7 @@ const saveBatchChange = () => {
         >
       </div>
 
-      <div class="right-area batch-area" v-show="batchOptStatus">
+      <div class="right-area full-area" v-show="batchOptStatus">
         <el-button
           class="custom-normal-button"
           @click="batchOptStatusChange(false)"
@@ -287,6 +341,22 @@ const saveBatchChange = () => {
           退出批量操作</el-button
         >
         <el-button @click="saveBatchChange" style="float: right; margin-right: 12px" type="primary"
+          >确定</el-button
+        >
+      </div>
+
+      <div class="right-area full-area" v-show="linkageSettingStatus">
+        <el-button
+          class="custom-normal-button"
+          @click="cancelLinkageSetting()"
+          style="float: right; margin-right: 12px"
+        >
+          取消</el-button
+        >
+        <el-button
+          @click="saveLinkageSetting"
+          style="float: right; margin-right: 12px"
+          type="primary"
           >确定</el-button
         >
       </div>
@@ -308,7 +378,7 @@ const saveBatchChange = () => {
 </template>
 
 <style lang="less" scoped>
-.batch-area {
+.full-area {
   flex: 1;
 }
 .edit-button {

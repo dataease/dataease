@@ -13,7 +13,12 @@
       <el-row v-for="(itemLinkage, index) in linkageInfo.linkageFields" :key="index">
         <el-col :span="11">
           <div class="select-filed">
-            <el-select v-model="itemLinkage.sourceField" size="mini" placeholder="请选择">
+            <el-select
+              :popper-append-to-body="false"
+              v-model="itemLinkage.sourceField"
+              size="small"
+              placeholder="请选择"
+            >
               <el-option
                 v-for="item in sourceLinkageInfo.targetViewFields"
                 :key="item.id"
@@ -49,7 +54,7 @@
         </el-col>
         <el-col :span="11">
           <div class="select-filed">
-            <el-select v-model="itemLinkage.targetField" size="mini" placeholder="请选择">
+            <el-select v-model="itemLinkage.targetField" size="small" placeholder="请选择">
               <el-option
                 v-for="item in linkageInfo.targetViewFields"
                 :key="item.id"
@@ -86,10 +91,10 @@
         <el-col :span="2">
           <div>
             <el-button
-              icon="el-icon-delete"
-              type="text"
+              :icon="Delete"
+              text
               size="small"
-              style="float: left"
+              class="delete-area"
               @click="deleteLinkageField(index)"
             />
           </div>
@@ -98,18 +103,13 @@
     </el-row>
 
     <el-row class="bottom">
-      <el-button
-        size="mini"
-        type="success"
-        icon="el-icon-plus"
-        round
-        @click="addLinkageField(null, null)"
+      <el-button size="small" type="success" :icon="Plus" round @click="addLinkageField(null, null)"
         >追加联动依赖字段</el-button
       >
     </el-row>
 
     <template #reference>
-      <i class="icon iconfont icon-edit slot-class" />
+      <el-icon class="bar-base-icon"><Edit /></el-icon>
     </template>
   </el-popover>
 </template>
@@ -119,6 +119,7 @@ import { checkSameDataSet } from '@/api/chart'
 import { storeToRefs } from 'pinia'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { computed, defineEmits, onMounted, reactive, toRefs } from 'vue'
+import { Plus, Delete } from '@element-plus/icons-vue'
 const dvMainStore = dvMainStoreWithOut()
 const { linkageSettingStatus, targetLinkageInfo, curLinkageView } = storeToRefs(dvMainStore)
 
@@ -150,11 +151,11 @@ const state = reactive({
 })
 
 const linkageInfo = computed(() => {
-  return targetLinkageInfo.value[element.value.propValue.viewId]
+  return targetLinkageInfo.value[element.value.id]
 })
 
 const sourceLinkageInfo = computed(() => {
-  return targetLinkageInfo.value[curLinkageView.value.propValue.viewId]
+  return targetLinkageInfo.value[curLinkageView.value.id]
 })
 
 const showViewDetails = () => {
@@ -182,19 +183,20 @@ const addLinkageField = (sourceFieldId, targetFieldId) => {
 
 onMounted(() => {
   // 初始化映射关系 如果当前是相同的数据集且没有关联关系，则自动补充映射关系
-  checkSameDataSet(curLinkageView.value.propValue.viewId, element.value.propValue.viewId).then(
-    res => {
-      if (res.data === 'YES' && linkageInfo.value.linkageFields.length === 0) {
-        sourceLinkageInfo.value.targetViewFields.forEach(item => {
-          addLinkageField(item.id, item.id)
-        })
-      }
+  checkSameDataSet(curLinkageView.value.id, element.value.id).then(res => {
+    if (res.data === 'YES' && linkageInfo.value.linkageFields.length === 0) {
+      sourceLinkageInfo.value.targetViewFields.forEach(item => {
+        addLinkageField(item.id, item.id)
+      })
     }
-  )
+  })
 })
 </script>
 
 <style lang="less" scoped>
+.custom-icon {
+  color: white;
+}
 .name-area {
   float: left;
   color: #8492a6;
@@ -239,5 +241,27 @@ onMounted(() => {
 .ed-popover {
   height: 200px;
   overflow: auto;
+}
+
+.bar-base-icon {
+  height: 22px;
+  width: 22px;
+  color: #ffffff;
+  &:hover {
+    color: rgba(255, 255, 255, 0.5);
+  }
+  &:active {
+    color: rgba(255, 255, 255, 0.7);
+  }
+}
+
+.bottom {
+  margin-top: 20px;
+  justify-content: center;
+}
+
+.delete-area {
+  float: left;
+  margin-top: 5px;
 }
 </style>

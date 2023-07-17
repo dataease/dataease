@@ -58,7 +58,7 @@ public class VisualizationLinkageService implements VisualizationLinkageApi {
     @Transactional
     public BaseRspModel saveLinkage(VisualizationLinkageRequest request) {
         Long updateTime = System.currentTimeMillis();
-        Map<String, VisualizationLinkageDTO> linkageInfo = null;
+        Map<String, VisualizationLinkageDTO> linkageInfo =  request.getLinkageInfo();;
         String sourceViewId = request.getSourceViewId();
         String dvId = request.getDvId();
 
@@ -102,7 +102,6 @@ public class VisualizationLinkageService implements VisualizationLinkageApi {
 
     @Override
     public Map<String, List<String>> getVisualizationAllLinkageInfo(String dvId) {
-        DataVisualizationInfo dvInfo = dataVisualizationInfoMapper.selectById(dvId);
         List<LinkageInfoDTO> info = extVisualizationLinkageMapper.getPanelAllLinkageInfo(dvId);
         return Optional.ofNullable(info).orElse(new ArrayList<>()).stream().collect(Collectors.toMap(LinkageInfoDTO::getSourceInfo, LinkageInfoDTO::getTargetInfoList));
     }

@@ -14,7 +14,7 @@ import java.util.Map;
  * @author : WangJiaHao
  * @date : 2023/7/13
  */
-public interface VisualizationLinkageApi {
+public interface VisualizationJumpApi {
 
 
     @PostMapping("/getViewLinkageGather")

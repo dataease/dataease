@@ -35,5 +35,10 @@ public class ChartViewServer implements ChartViewApi {
         return chartViewManege.save(dto);
     }
 
+    @Override
+    public String checkSameDataSet(String viewIdSource, String viewIdTarget) {
+        return chartViewManege.checkSameDataSet(viewIdSource, viewIdTarget);
+    }
+
 
 }

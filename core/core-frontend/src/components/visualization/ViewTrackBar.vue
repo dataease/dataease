@@ -1,12 +1,17 @@
 <template>
   <div>
-    <el-dropdown trigger="click">
+    <el-dropdown :teleported="false" trigger="click">
       <input id="input" ref="trackButton" type="button" hidden />
-      <el-dropdown-menu class="track-menu" :append-to-body="false">
-        <el-dropdown-item v-for="(item, key) in trackMenu" :key="key" @click="trackMenuClick(item)"
-          ><span class="menu-item">{{ i18n_map[item] }}</span></el-dropdown-item
-        >
-      </el-dropdown-menu>
+      <template #dropdown>
+        <el-dropdown-menu class="track-menu" :append-to-body="false">
+          <el-dropdown-item
+            v-for="(item, key) in trackMenu"
+            :key="key"
+            @click="trackMenuClick(item)"
+            ><span class="menu-item">{{ state.i18n_map[item] }}</span></el-dropdown-item
+          >
+        </el-dropdown-menu>
+      </template>
     </el-dropdown>
   </div>
 </template>
@@ -42,6 +47,10 @@ const trackButtonClick = () => {
 const trackMenuClick = menu => {
   emits('trackClick', menu)
 }
+
+defineExpose({
+  trackButtonClick
+})
 </script>
 
 <style lang="less" scoped>
@@ -53,6 +62,10 @@ const trackMenuClick = menu => {
   width: 80px;
 }
 
+:deep(.ed-dropdown__popper) {
+  position: static !important;
+}
+
 .ed-popper[x-placement^='bottom'] .popper__arrow {
   display: none;
 }
@@ -62,6 +75,6 @@ const trackMenuClick = menu => {
 }
 
 .track-menu {
-  border: #3a8ee6 1px solid;
+  //border: #3a8ee6 1px solid;
 }
 </style>

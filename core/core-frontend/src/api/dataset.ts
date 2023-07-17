@@ -139,6 +139,7 @@ export const saveRowPermission = (data = {}) => {
 
 export const whiteListUsersForPermissions = (data = {}) => {
   return request.post({ url: '/dataset/rowPermissions/whiteListUsers', data })
+}
 
 export const saveField = async (data): Promise<DatasetDetail[]> => {
   return request.post({ url: '/datasetField/save', data }).then(res => {

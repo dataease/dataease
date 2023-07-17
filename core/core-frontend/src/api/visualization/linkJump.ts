@@ -26,9 +26,9 @@ export function queryTargetPanelJumpInfo(requestInfo) {
   })
 }
 
-export function queryPanelJumpInfo(panelId) {
+export function queryPanelJumpInfo(dvId) {
   return request.get({
-    url: '/linkJump/queryPanelJumpInfo/' + panelId,
+    url: '/linkJump/queryPanelJumpInfo/' + dvId,
     loading: false
   })
 }
