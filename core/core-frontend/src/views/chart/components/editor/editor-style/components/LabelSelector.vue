@@ -37,7 +37,7 @@ const initFontSize = () => {
   for (let i = 10; i <= 40; i = i + 2) {
     arr.push({
       name: i + '',
-      value: i + ''
+      value: i
     })
   }
   state.fontSize = arr
@@ -106,7 +106,7 @@ init()
         <el-form-item :label="t('chart.text_fontsize')" class="form-item">
           <el-select
             :effect="props.themes"
-            v-model="state.labelForm.fontSize"
+            v-model.number="state.labelForm.fontSize"
             :placeholder="t('chart.text_fontsize')"
             @change="changeLabelAttr('fontSize')"
           >

@@ -7,7 +7,7 @@
     <service>
         <jsr107:defaults enable-statistics="true"/>
     </service>
-    
+
     <cache-template name="common-cache">
         <expiry>
             <none/>
@@ -74,6 +74,10 @@
     <cache alias="lic_cache_result" uses-template="common-cache">
         <key-type>java.lang.String</key-type>
         <value-type>io.dataease.license.bo.F2CLicResult</value-type>
+    </cache>
+    <cache alias="world_map" uses-template="common-cache">
+        <key-type>java.lang.String</key-type>
+        <value-type>io.dataease.api.map.vo.AreaNode</value-type>
     </cache>
 
 <!--    <cache alias="person">-->

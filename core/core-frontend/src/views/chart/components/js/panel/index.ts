@@ -1,4 +1,5 @@
 import { AbstractChartView } from '@/views/chart/components/js/panel/types'
+import { isParent } from '@/views/chart/components/js/util'
 
 class ChartViewManager {
   private static CHART_VIEW_MAP = new Map<string, Map<string, AbstractChartView>>()
@@ -14,16 +15,6 @@ class ChartViewManager {
   public getChartView(render: string, name: string): AbstractChartView {
     return ChartViewManager.CHART_VIEW_MAP.get(render).get(name)
   }
-}
-const isParent = (type: any, parentType: any) => {
-  let _type = type
-  while (_type) {
-    if (_type === parentType) {
-      return true
-    }
-    _type = _type.__proto__
-  }
-  return false
 }
 
 const chartViewManager = new ChartViewManager()

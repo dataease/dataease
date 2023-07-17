@@ -162,7 +162,7 @@ init()
                           :key="index"
                           :label="c"
                           style="padding: 2px"
-                          @change="switchColor(index)"
+                          @click="switchColor(index)"
                         >
                           <span
                             :style="{

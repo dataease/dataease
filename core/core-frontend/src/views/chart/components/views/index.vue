@@ -1,4 +1,4 @@
-<script lang="tsx" setup>
+<script lang="ts" setup>
 import { useI18n } from '@/hooks/web/useI18n'
 import ChartComponentG2Plot from './components/ChartComponentG2Plot.vue'
 import { computed, onMounted, reactive, ref, toRefs, watch } from 'vue'
@@ -8,7 +8,6 @@ import { DEFAULT_TITLE_STYLE } from '@/views/chart/components/editor/util/chart'
 import DrillPath from '@/views/chart/components/views/components/DrillPath.vue'
 import { ElMessage } from 'element-plus-secondary'
 import { nextTick } from 'vue'
-import { checkIsBatchOptView } from '@/utils/canvasUtils'
 import { useFilter } from '@/hooks/web/useFilter'
 import { useCache } from '@/hooks/web/useCache'
 
@@ -43,8 +42,9 @@ const props = defineProps({
     default: 'canvas'
   }
 })
+const dynamicAreaId = ref('')
 
-const { view, showPosition } = toRefs(props)
+const { view, showPosition, element } = toRefs(props)
 
 const state = reactive({
   title_show: true,
@@ -199,6 +199,7 @@ initTitle()
     <!--这里去渲染不同图库的视图-->
     <chart-component-g2-plot
       style="flex: 1"
+      :dynamic-area-id="dynamicAreaId"
       :view="view"
       :show-position="showPosition"
       v-if="view?.render === 'antv'"
