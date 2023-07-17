@@ -32,27 +32,6 @@ const emit = defineEmits(['onChartClick', 'onDrillFilters', 'onJumpClick'])
 
 const { view, showPosition } = toRefs(props)
 
-const queryData = (firstLoad: boolean) => {
-  const { filter } = useFilter(view.value.id, firstLoad)
-  let params = cloneDeep(view.value)
-  if (filter.length) {
-    if (!params.chartExtRequest) {
-      params.chartExtRequest = {
-        filter
-      }
-    } else {
-      params.chartExtRequest.filter = filter
-    }
-  }
-  calcData(params)
-}
-onBeforeMount(() => {
-  useEmitt({
-    name: `query-data-${view.value.id}`,
-    callback: queryData
-  })
-})
-
 const state = reactive({
   trackBarStyle: {
     position: 'absolute',
@@ -184,7 +163,7 @@ defineExpose({
 })
 
 onMounted(() => {
-  queryData(true)
+  // queryData(true)
   // renderChart({ render: ChartRenderType.ANT_V, type: 'bar' })
 })
 </script>

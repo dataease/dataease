@@ -28,6 +28,7 @@ import { findDragComponent } from '@/utils/canvasUtils'
 import { guid } from '@/views/visualized/data/dataset/form/util'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import UserViewEnlarge from '@/components/visualization/UserViewEnlarge.vue'
+import CanvasOptBar from '@/components/visualization/CanvasOptBar.vue'
 const snapshotStore = snapshotStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
 const composeStore = composeStoreWithOut()
@@ -1449,6 +1450,10 @@ defineExpose({
     @contextmenu="handleContextMenu"
     @mousedown="handleMouseDown"
   >
+    <canvas-opt-bar
+      :canvas-style-data="canvasStyleData"
+      :component-data="componentData"
+    ></canvas-opt-bar>
     <!-- 网格线 -->
     <!--    <Grid />-->
     <drag-shadow

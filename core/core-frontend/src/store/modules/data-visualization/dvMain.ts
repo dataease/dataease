@@ -2,7 +2,6 @@ import { defineStore } from 'pinia'
 import { store } from '../../index'
 import { deepCopy } from '@/utils/utils'
 import { BASE_VIEW_CONFIG, getViewConfig } from '@/views/chart/components/editor/util/chart'
-import eventBus from '@/utils/eventBus'
 import { DEFAULT_CANVAS_STYLE_DATA_DARK } from '@/views/chart/components/editor/util/dataVisualiztion'
 import { useEmitt } from '@/hooks/web/useEmitt'
 
@@ -322,6 +321,7 @@ export const dvMainStore = defineStore('dataVisualization', {
     clearViewLinkage(viewId) {
       this.componentData.forEach(item => {
         if (item.linkageFilters && item.linkageFilters.length > 0) {
+          const historyLinkageFiltersLength = item.linkageFilters.length
           const newList = item.linkageFilters.filter(linkage => linkage.sourceViewId !== viewId)
           item.linkageFilters.splice(0, item.linkageFilters.length)
           // 重新push 可保证数组指针不变 可以watch到
@@ -330,9 +330,12 @@ export const dvMainStore = defineStore('dataVisualization', {
               item.linkageFilters.push(newLinkage)
             })
           }
+          // 如果linkageFilters内容长度有变化 则需要重新查询
+          if (historyLinkageFiltersLength !== newList.length) {
+            useEmitt().emitter.emit('query-data-' + item.id)
+          }
         }
       })
-      eventBus.emit('clear_panel_linkage', { viewId: viewId })
     },
     addCurBatchComponent(id) {
       if (id) {
@@ -496,9 +499,10 @@ export const dvMainStore = defineStore('dataVisualization', {
       } else {
         trackInfo = this.nowPanelJumpInfoTargetPanel
       }
+      const preActiveComponentIds = []
       for (let index = 0; index < this.componentData.length; index++) {
         const element = this.componentData[index]
-        if (!element.type || element.type !== 'view') continue
+        if (!element.component || element.component !== 'UserView') continue
         const currentFilters = element.linkageFilters || [] // 当前联动filter
         // 联动的视图情况历史条件
         // const currentFilters = []
@@ -510,11 +514,11 @@ export const dvMainStore = defineStore('dataVisualization', {
           targetInfoList.forEach(targetInfo => {
             const targetInfoArray = targetInfo.split('#')
             const targetViewId = targetInfoArray[0] // 目标视图
-            if (element.propValue.viewId === targetViewId) {
+            if (element.id === targetViewId) {
               // 如果目标视图 和 当前循环组件id相等 则进行条件增减
               const targetFieldId = targetInfoArray[1] // 目标视图列ID
               const condition = {
-                targetFieldId: targetFieldId,
+                fieldId: targetFieldId,
                 operator: 'eq',
                 value: [dimension.value],
                 viewIds: [targetViewId],
@@ -531,13 +535,24 @@ export const dvMainStore = defineStore('dataVisualization', {
               // 不存在该条件 且 条件有效 直接保存该条件
               // !filterExist && vValid && currentFilters.push(condition)
               currentFilters.push(condition)
+              preActiveComponentIds.includes(element.id) || preActiveComponentIds.push(element.id)
             }
           })
         })
-
         element.linkageFilters = currentFilters
         this.componentData[index] = element
       }
+      preActiveComponentIds.forEach(viewId => {
+        useEmitt().emitter.emit('query-data-' + viewId)
+      })
+    },
+    clearPanelLinkageInfo() {
+      this.componentData.forEach(item => {
+        if (item.linkageFilters && item.linkageFilters.length > 0) {
+          item.linkageFilters.splice(0, item.linkageFilters.length)
+          useEmitt().emitter.emit('query-data-' + item.id)
+        }
+      })
     }
   }
 })
