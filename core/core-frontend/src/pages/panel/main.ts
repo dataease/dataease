@@ -56,7 +56,6 @@ import App from './App.vue'
 import { setupI18n } from '@/plugins/vue-i18n'
 import { setupStore } from '@/store'
 import { setupElementPlus } from '@/plugins/element-plus'
-import { useUserStoreWithOut } from '@/store/modules/user'
 
 const setupAll = async (dom: string, componentName: string) => {
   const app = createApp(App, { componentName })

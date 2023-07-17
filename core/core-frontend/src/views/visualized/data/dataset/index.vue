@@ -586,10 +586,9 @@ const filterNode = (value: string, data: Tree) => {
 
     .table-row-column {
       height: calc(100% - 50px);
-    }
-
-    .add-row-column {
-      margin-bottom: 16px;
+      :deep(.add-row-column) {
+        margin-bottom: 16px;
+      }
     }
   }
 }

@@ -111,13 +111,7 @@ const list = [
     },
     style: {
       width: 800,
-      height: 150,
-      fontSize: 14,
-      fontWeight: 400,
-      lineHeight: 1,
-      letterSpacing: 0,
-      textAlign: 'center',
-      color: ''
+      height: 150
     },
     matrixStyle: {}
   },

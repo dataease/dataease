@@ -1,12 +1,13 @@
 package io.dataease.dataset.manage;
 
 import io.dataease.api.dataset.dto.DatasetTableDTO;
-import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.api.dataset.dto.PreviewSqlDTO;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.union.DatasetTableInfoDTO;
 import io.dataease.api.dataset.union.model.SQLMeta;
 import io.dataease.api.ds.vo.TableField;
+import io.dataease.api.permissions.dataset.dto.DataSetRowPermissionsTreeDTO;
+import io.dataease.auth.bo.TokenUserBO;
 import io.dataease.commons.utils.SqlparserUtils;
 import io.dataease.dataset.constant.DatasetTableType;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetTable;
@@ -19,14 +20,17 @@ import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
 import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.datasource.server.EngineServer;
+import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.engine.sql.SQLProvider;
 import io.dataease.engine.trans.Field2SQLObj;
 import io.dataease.engine.trans.Order2SQLObj;
 import io.dataease.engine.trans.Table2SQLObj;
+import io.dataease.engine.trans.WhereTree2Str;
 import io.dataease.engine.utils.Utils;
 import io.dataease.exception.DEException;
+import io.dataease.utils.AuthUtils;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.JsonUtil;
 import jakarta.annotation.Resource;
@@ -58,6 +62,8 @@ public class DatasetDataManage {
     private EngineServer engineServer;
     @Resource
     private DatasetGroupManage datasetGroupManage;
+    @Resource
+    private PermissionManage permissionManage;
 
     private static Logger logger = LoggerFactory.getLogger(DatasetDataManage.class);
 
@@ -165,10 +171,17 @@ public class DatasetDataManage {
         }
         boolean needOrder = Utils.isNeedOrder(dsList);
 
+        List<DataSetRowPermissionsTreeDTO> rowPermissionsTree = new ArrayList<>();
+        TokenUserBO user = AuthUtils.getUser();
+        if (user != null) {
+            rowPermissionsTree = permissionManage.getRowPermissionsTree(datasetGroupInfoDTO.getId(), user.getUserId());
+        }
+
         // build query sql
         SQLMeta sqlMeta = new SQLMeta();
         Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")");
         Field2SQLObj.field2sqlObj(sqlMeta, fields);
+        WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, fields);
         Order2SQLObj.getOrders(sqlMeta, fields, datasetGroupInfoDTO.getSortFields());
         String querySQL;
         if (start == null || count == null) {
@@ -280,11 +293,11 @@ public class DatasetDataManage {
         }
     }
 
-    public Set<String> getFieldEnum(List<String> ids) throws Exception {
+    public List<String> getFieldEnum(List<Long> ids) throws Exception {
         // 根据前端传的过滤组件field ids，获取所有字段枚举值并去重合并
         List<List<String>> list = new ArrayList<>();
-        for (String id : ids) {
-            DatasetTableFieldDTO field = datasetTableFieldManage.selectById(Long.valueOf(id));
+        for (Long id : ids) {
+            DatasetTableFieldDTO field = datasetTableFieldManage.selectById(id);
             if (field == null) {
                 DEException.throwException("field is not exist");
             }
@@ -307,10 +320,17 @@ public class DatasetDataManage {
             }
             boolean needOrder = Utils.isNeedOrder(dsList);
 
+            List<DataSetRowPermissionsTreeDTO> rowPermissionsTree = new ArrayList<>();
+            TokenUserBO user = AuthUtils.getUser();
+            if (user != null) {
+                rowPermissionsTree = permissionManage.getRowPermissionsTree(datasetGroupInfoDTO.getId(), user.getUserId());
+            }
+
             // build query sql
             SQLMeta sqlMeta = new SQLMeta();
             Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")");
             Field2SQLObj.field2sqlObj(sqlMeta, fields);
+            WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, fields);
             Order2SQLObj.getOrders(sqlMeta, fields, datasetGroupInfoDTO.getSortFields());
             String querySQL = SQLProvider.createQuerySQL(sqlMeta, false, needOrder);
 
@@ -335,6 +355,6 @@ public class DatasetDataManage {
         for (List<String> l : list) {
             result.addAll(l);
         }
-        return result;
+        return result.stream().toList();
     }
 }

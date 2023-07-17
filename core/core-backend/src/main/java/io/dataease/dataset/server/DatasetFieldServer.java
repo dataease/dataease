@@ -1,20 +1,20 @@
 package io.dataease.dataset.server;
 
-import cn.hutool.core.collection.CollectionUtil;
 import io.dataease.api.dataset.DatasetTableApi;
-import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.api.dataset.dto.MultFieldValuesRequest;
 import io.dataease.api.dataset.engine.SQLFunctionDTO;
 import io.dataease.api.dataset.engine.SQLFunctionsEnum;
+import io.dataease.dataset.manage.DatasetDataManage;
 import io.dataease.dataset.manage.DatasetTableFieldManage;
+import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import jakarta.annotation.Resource;
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -25,6 +25,8 @@ import java.util.stream.Collectors;
 public class DatasetFieldServer implements DatasetTableApi {
     @Resource
     private DatasetTableFieldManage datasetTableFieldManage;
+    @Resource
+    private DatasetDataManage datasetDataManage;
 
     @Override
     public DatasetTableFieldDTO save(DatasetTableFieldDTO datasetTableFieldDTO) throws Exception {
@@ -52,25 +54,8 @@ public class DatasetFieldServer implements DatasetTableApi {
     }
 
     @Override
-    public List<Object> multFieldValuesForPermissions(@RequestBody MultFieldValuesRequest multFieldValuesRequest) throws Exception {
-        List<Object> results = new ArrayList<>();
-        for (Long fieldId : multFieldValuesRequest.getFieldIds()) {
-            List<Object> fieldValues = datasetTableFieldManage.fieldValues(fieldId, multFieldValuesRequest.getUserId(), false, true);
-            if (CollectionUtil.isNotEmpty(fieldValues)) {
-                results.addAll(fieldValues);
-            }
-
-        }
-        ArrayList<Object> list = results.stream().collect(
-                Collectors.collectingAndThen(
-                        Collectors.toCollection(
-                                () -> new TreeSet<>(Comparator.comparing(t -> {
-                                    if (ObjectUtils.isEmpty(t))
-                                        return "";
-                                    return t.toString();
-                                }))),
-                        ArrayList::new));
-        return list;
+    public List<String> multFieldValuesForPermissions(@RequestBody MultFieldValuesRequest multFieldValuesRequest) throws Exception {
+        return datasetDataManage.getFieldEnum(multFieldValuesRequest.getFieldIds());
     }
 
     @Override

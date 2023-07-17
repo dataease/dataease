@@ -4,18 +4,19 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import io.dataease.api.chart.dto.*;
 import io.dataease.api.chart.request.ChartDrillRequest;
 import io.dataease.api.chart.request.ChartExtRequest;
-import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.union.model.SQLMeta;
+import io.dataease.api.permissions.dataset.dto.DataSetRowPermissionsTreeDTO;
 import io.dataease.chart.constant.ChartConstants;
 import io.dataease.chart.utils.ChartDataBuild;
 import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import io.dataease.dataset.manage.DatasetGroupManage;
 import io.dataease.dataset.manage.DatasetSQLManage;
 import io.dataease.dataset.manage.DatasetTableFieldManage;
+import io.dataease.dataset.manage.PermissionManage;
 import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.datasource.request.DatasourceRequest;
-import io.dataease.engine.constant.ExtFieldConstant;
+import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.engine.sql.SQLProvider;
 import io.dataease.engine.trans.*;
@@ -54,6 +55,8 @@ public class ChartDataManage {
     private CalciteProvider calciteProvider;
     @Resource
     private ChartViewManege chartViewManege;
+    @Resource
+    private PermissionManage permissionManage;
 
     private static Logger logger = LoggerFactory.getLogger(ChartDataManage.class);
 
@@ -126,6 +129,9 @@ public class ChartDataManage {
         // 获取数据集,需校验权限
 //        DataSetTableDTO table = dataSetTableService.getWithPermission(view.getTableId(), chartExtRequest.getUser());
         DatasetGroupInfoDTO table = datasetGroupManage.get(view.getTableId(), null);// todo
+        if (table == null) {
+            DEException.throwException("Dataset is deleted");
+        }
 //        checkPermission("use", table, chartExtRequest.getUser());
 //
 //        Map<String, ColumnPermissionItem> desensitizationList = new HashMap<>();
@@ -142,7 +148,7 @@ public class ChartDataManage {
 //
 //        //行权限
 //        List<DataSetRowPermissionsTreeDTO> rowPermissionsTree = permissionsTreeService.getRowPermissionsTree(fields, table, chartExtRequest.getUser());
-        List<Object> rowPermissionsTree = null;// todo
+        List<DataSetRowPermissionsTreeDTO> rowPermissionsTree = permissionManage.getRowPermissionsTree(table.getId(), chartExtRequest.getUser());
 
         for (ChartFieldCustomFilterDTO ele : fieldCustomFilter) {
             ele.setField(datasetTableFieldManage.selectById(ele.getId()));
@@ -529,10 +535,8 @@ public class ChartDataManage {
             SQLMeta sqlMeta = new SQLMeta();
             Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")");
             CustomWhere2Str.customWhere2sqlObj(sqlMeta, fieldCustomFilter, transFields(allFields));
-            ExtWhere2Str.extWhere2sqlOjb(sqlMeta, extFilterList, allFields.stream()
-                    .filter(datasetTableField -> Objects.equals(datasetTableField.getExtField(), ExtFieldConstant.EXT_NORMAL))
-                    .collect(Collectors.toList()));
-//            WhereTree2Str // todo permission tree
+            ExtWhere2Str.extWhere2sqlOjb(sqlMeta, extFilterList, transFields(allFields));
+            WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, transFields(allFields));
 
             if (StringUtils.equalsAnyIgnoreCase(view.getType(), "text", "gauge", "liquid")) {
                 Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields));
@@ -1260,8 +1264,7 @@ public class ChartDataManage {
 //        drill = drill.stream().filter(item -> chartViewFieldNameList.contains(item.getDataeaseName()) || (!desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName()))).collect(Collectors.toList());
 //
 //        //行权限
-//        List<DataSetRowPermissionsTreeDTO> rowPermissionsTree = permissionsTreeService.getRowPermissionsTree(fields, table, chartExtRequest.getUser());
-        List<Object> rowPermissionsTree = null;// todo
+        List<DataSetRowPermissionsTreeDTO> rowPermissionsTree = permissionManage.getRowPermissionsTree(table.getId(), view.getChartExtRequest().getUser());
 
         for (ChartFieldCustomFilterDTO ele : fieldCustomFilter) {
             ele.setField(datasetTableFieldManage.selectById(ele.getId()));
@@ -1366,6 +1369,7 @@ public class ChartDataManage {
 
             SQLMeta sqlMeta = new SQLMeta();
             Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")");
+            WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, transFields(allFields));
 
             if (StringUtils.equalsAnyIgnoreCase(view.getType(), "text", "gauge", "liquid")) {
                 Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields));
