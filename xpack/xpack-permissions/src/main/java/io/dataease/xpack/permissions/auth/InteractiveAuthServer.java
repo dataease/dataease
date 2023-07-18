@@ -4,7 +4,7 @@ import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
 import io.dataease.api.permissions.auth.dto.BusiResourceCreator;
 import io.dataease.api.permissions.auth.dto.BusiResourceEditor;
 import io.dataease.api.permissions.auth.dto.OutAuthPlatformLoginRequest;
-import io.dataease.api.permissions.auth.vo.BusiPerVO;
+import io.dataease.model.BusiNodeVO;
 import io.dataease.xpack.permissions.auth.manage.InteractiveAuthManage;
 import io.dataease.xpack.permissions.auth.manage.OutAuthPlatformManage;
 import io.dataease.xpack.permissions.auth.manage.SyncAuthManage;
@@ -36,7 +36,7 @@ public class InteractiveAuthServer implements InteractiveAuthApi {
 
 
     @Override
-    public List<BusiPerVO> resource(String flag) {
+    public List<BusiNodeVO> resource(String flag) {
         return interactiveAuthManage.resource(flag);
     }
 
