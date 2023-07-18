@@ -56,6 +56,11 @@ public interface InteractiveAuthApi {
     @GetMapping("/resource/del/{id}")
     void delResource(@PathVariable("id") Long id);
 
+    @Operation(summary = "删除检测")
+    @ApiOperationSupport(order = 6)
+    @GetMapping("/resource/checkDel/{id}")
+    boolean checkDel(@PathVariable("id") Long id);
+
     @Operation(hidden = true)
     String outAuthPlatformLogin(@RequestBody OutAuthPlatformLoginRequest request);
 
