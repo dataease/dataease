@@ -84,7 +84,7 @@ const defaultOptions = {
 class DataEaseBi {
   baseUrl: string
   token: string
-  type: 'DashboardEditor' | 'View'
+  type: 'DashboardEditor' | 'VisualizationEditor' | 'ViewWrapper' | 'Dashboard'
   dvId: string
   resourceId: string
   pid: string

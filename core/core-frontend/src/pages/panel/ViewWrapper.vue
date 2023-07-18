@@ -13,7 +13,6 @@ onBeforeMount(() => {
     config.value = (
       (JSON.parse(res?.data?.componentData) as unknown as Array<{ id: string }>) || []
     ).find(ele => ele.id === window.DataEaseBi.chartId)
-    console.log(res, config.value, viewInfo.value, canvasStyleData.value)
   })
 })
 const userViewEnlargeOpen = () => {
