@@ -15,28 +15,19 @@ import java.util.List;
 import static io.dataease.constant.AuthResourceEnum.DATASET;
 
 
-@DeApiPath(value = "/dataset/rowPermissions", rt = DATASET)
+@DeApiPath(value = "/dataset/columnPermissions", rt = DATASET)
 public interface ColumnPermissionsApi {
 
     @GetMapping("/pager/{datasetId}/{goPage}/{pageSize}")
-    public IPage<DataSetRowPermissionsTreeDTO> rowPermissions(@PathVariable Long datasetId, @PathVariable int goPage, @PathVariable int pageSize);
-
+    public IPage<DataSetColumnPermissionsDTO> columnPermissions(@PathVariable Long datasetId, @PathVariable int goPage, @PathVariable int pageSize);
 
     @PostMapping("save")
-    public void save(@RequestBody DataSetRowPermissionsTreeDTO datasetRowPermissions);
-
-    @PostMapping("/list")
-    public List<DataSetRowPermissionsTreeDTO> rowPermissions(@RequestBody DataSetRowPermissionsTreeDTO request);
-
+    public void save(@RequestBody DataSetColumnPermissionsDTO dataSetColumnPermissionsDTO);
 
     @PostMapping("/delete")
-    public void delete(@RequestBody DataSetRowPermissionsTreeDTO datasetRowPermissions);
+    public void delete(@RequestBody DataSetColumnPermissionsDTO dataSetColumnPermissionsDTO);
 
 
-    @GetMapping("/authObjs/{datasetId}/{type}")
-    public List<Item> authObjs(@PathVariable Long datasetId, @PathVariable String type);
+    public List<DataSetColumnPermissionsDTO> list(@RequestBody DataSetColumnPermissionsDTO request);
 
-    @PostMapping("/dataSetRowPermissionInfo")
-    public DataSetRowPermissionsTreeDTO dataSetRowPermissionInfo(@RequestBody DataSetRowPermissionsTreeDTO request);
-    public  List<DataSetColumnPermissionsDTO> searchPermissions(DataSetColumnPermissionsDTO dataSetColumnPermissionsDTO);
 }
