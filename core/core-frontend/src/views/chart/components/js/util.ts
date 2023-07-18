@@ -1,6 +1,10 @@
 import _ from 'lodash'
 import { DEFAULT_TITLE_STYLE } from '../editor/util/chart'
 import { equalsAny, includesAny } from '../editor/util/StringUtils'
+import { FeatureCollection } from '@antv/l7plot/dist/esm/plots/choropleth/types'
+import { useMapStoreWithOut } from '@/store/modules/map'
+import { getGeoJson } from '@/api/map'
+import { toRaw } from 'vue'
 
 export function hexColorToRGBA(hex, alpha) {
   const rgb = [] // 定义rgb数组
@@ -2595,12 +2599,36 @@ export function parseJson<T>(str: T | JSONString<T>): T {
   return JSON.parse(str) as T
 }
 
-type FlowFunction<P, R> = (param: P, result: R) => R
+type FlowFunction<P, R> = (param: P, result: R, extra?: any[]) => R
 
 export function flow<P, R>(...flows: FlowFunction<P, R>[]): FlowFunction<P, R> {
-  return (param: P, result: R) => {
+  return (param: P, result: R, extra?: any[]) => {
     return flows.reduce((result: R, flow: FlowFunction<P, R>) => {
-      return flow(param, result)
+      return flow(param, result, extra)
     }, result)
   }
+}
+
+export const isParent = (type: any, parentType: any) => {
+  let _type = type
+  while (_type) {
+    if (_type === parentType) {
+      return true
+    }
+    _type = _type.__proto__
+  }
+  return false
+}
+
+export const getGeoJsonFile = async (areaId: string): Promise<FeatureCollection> => {
+  const mapStore = useMapStoreWithOut()
+  let geoJson = mapStore.mapCache[areaId]
+  if (!geoJson) {
+    const country = areaId.slice(0, 3)
+    geoJson = await getGeoJson(country, areaId).then(result => {
+      return result.data
+    })
+    mapStore.setMap({ id: areaId, geoJson })
+  }
+  return toRaw(geoJson)
 }

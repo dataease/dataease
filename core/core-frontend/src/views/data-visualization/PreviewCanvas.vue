@@ -3,7 +3,7 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { onMounted, reactive, ref } from 'vue'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
 import router from '@/router'
-import { initCanvasDataPrepare } from '@/utils/canvasUtils'
+import { initCanvasData } from '@/utils/canvasUtils'
 
 const dvMainStore = dvMainStoreWithOut()
 const state = reactive({
@@ -15,7 +15,7 @@ const state = reactive({
 })
 
 const loadCanvasData = dvId => {
-  initCanvasDataPrepare(
+  initCanvasData(
     dvId,
     function ({
       canvasDataResult,

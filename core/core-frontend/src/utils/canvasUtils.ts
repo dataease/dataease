@@ -85,6 +85,8 @@ export function initCanvasDataPrepare(dvId, callBack) {
     })
     //TODO 刷新跳转信息
 
+    dvMainStore.updateCurDvInfo(dvInfo)
+
     callBack({ canvasDataResult, canvasStyleResult, dvInfo, canvasViewInfoPreview, curPreviewGap })
   })
 }
@@ -97,7 +99,7 @@ export function initCanvasData(dvId, callBack) {
       dvMainStore.setCanvasStyle(canvasStyleResult)
       dvMainStore.updateCurDvInfo(dvInfo)
       dvMainStore.setCanvasViewInfo(canvasViewInfoPreview)
-      callBack()
+      callBack({ canvasDataResult, canvasStyleResult, dvInfo, canvasViewInfoPreview })
     }
   )
 }

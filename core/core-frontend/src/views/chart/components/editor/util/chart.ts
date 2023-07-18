@@ -255,7 +255,7 @@ export const DEFAULT_LABEL = {
   show: false,
   position: 'top',
   color: '#909399',
-  fontSize: '10',
+  fontSize: 10,
   formatter: '{c}',
   gaugeFormatter: '{value}',
   labelLine: {
@@ -2108,6 +2108,7 @@ export const DEFAULT_BASIC_STYLE: ChartBasicStyle = {
     '#9a60b4',
     '#ea7ccc'
   ],
+  mapVendor: 'amap',
   gradient: false,
   lineWidth: 2,
   lineSymbol: 'circle',
@@ -2157,7 +2158,11 @@ export const BASE_VIEW_CONFIG = {
     size: DEFAULT_SIZE,
     label: DEFAULT_LABEL,
     tooltip: DEFAULT_TOOLTIP,
-    totalCfg: DEFAULT_TOTAL
+    totalCfg: DEFAULT_TOTAL,
+    map: {
+      id: '000',
+      level: 'world'
+    }
   },
   customStyle: {
     text: DEFAULT_TITLE_STYLE,
