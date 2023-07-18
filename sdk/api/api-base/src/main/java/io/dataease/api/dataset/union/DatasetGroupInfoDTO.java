@@ -22,4 +22,6 @@ public class DatasetGroupInfoDTO extends DatasetNodeDTO {
     private List<DatasetTableFieldDTO> allFields;
 
     private String sql;
+
+    private Long total;
 }

@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.dataease.api.dataset.dto.DatasetNodeDTO;
 import io.dataease.api.dataset.dto.DatasetTableDTO;
-import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.union.UnionDTO;
 import io.dataease.api.dataset.vo.DatasetTreeNodeVO;
@@ -15,6 +14,7 @@ import io.dataease.api.permissions.auth.vo.BusiPerVO;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetGroup;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupMapper;
 import io.dataease.dataset.utils.TableUtils;
+import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.exception.DEException;
 import io.dataease.utils.BeanUtils;
@@ -276,12 +276,14 @@ public class DatasetGroupManage {
 
             if ("preview".equalsIgnoreCase(type)) {
                 // 请求数据
-                Map<String, Object> map = datasetDataManage.previewDataWithLimit(dto, 0, 1000);
+                Map<String, Object> map = datasetDataManage.previewDataWithLimit(dto, 0, 100);
                 // 获取data,sql
                 Map<String, List> data = (Map<String, List>) map.get("data");
                 String sql = (String) map.get("sql");
+                Long total = (Long) map.get("total");
                 dto.setData(data);
                 dto.setSql(Base64.getEncoder().encodeToString(sql.getBytes()));
+                dto.setTotal(total);
             }
         }
         return dto;

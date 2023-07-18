@@ -130,6 +130,7 @@ getData()
 
 const columns = shallowRef([])
 const tableData = shallowRef([])
+const total = ref(0)
 
 const handleNodeClick = (data: Tree) => {
   if (!data.leaf) return
@@ -175,6 +176,7 @@ const handleClick = (tabName: TabPaneName) => {
           dataPreview = (res?.data?.data as Array<{}>) || []
           columns.value = columnsPreview
           tableData.value = dataPreview
+          total.value = res.total
         })
         .finally(() => {
           dataPreviewLoading.value = false
@@ -394,7 +396,7 @@ const filterNode = (value: string, data: Tree) => {
         </div>
         <div class="dataset-table-info">
           <div v-if="activeName === 'dataPreview'" class="preview-num">
-            显示 100 条数据，共 1000 条
+            显示 100 条数据，共 {{ total }} 条
           </div>
           <template v-if="['dataPreview', 'structPreview'].includes(activeName)">
             <div class="info-table" :class="[{ 'struct-preview': activeName === 'structPreview' }]">
