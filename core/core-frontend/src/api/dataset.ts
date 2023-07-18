@@ -123,6 +123,9 @@ export const getDsDetails = async (data): Promise<DatasetDetail[]> => {
 export const rowPermissionList = (page: number, limit: number, datasetId: number) =>
   request.get({ url: '/dataset/rowPermissions/pager/' + datasetId + '/' + page + '/' + limit })
 
+export const columnPermissionList = (page: number, limit: number, datasetId: number) =>
+  request.get({ url: '/dataset/columnPermissions/pager/' + datasetId + '/' + page + '/' + limit })
+
 export const rowPermissionTargetObjList = (datasetId: number, type: string) =>
   request.get({ url: '/dataset/rowPermissions/authObjs/' + datasetId + '/' + type })
 
@@ -137,8 +140,16 @@ export const saveRowPermission = (data = {}) => {
   return request.post({ url: '/dataset/rowPermissions/save', data })
 }
 
+export const saveColumnPermission = (data = {}) => {
+  return request.post({ url: '/dataset/columnPermissions/save', data })
+}
+
 export const deleteRowPermission = (data = {}) => {
   return request.post({ url: '/dataset/rowPermissions/delete', data })
+}
+
+export const deleteColumnPermission = (data = {}) => {
+  return request.post({ url: '/dataset/columnPermissions/delete', data })
 }
 
 export const whiteListUsersForPermissions = (data = {}) => {

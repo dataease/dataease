@@ -1,11 +1,19 @@
 <script lang="ts" setup>
-import { reactive, ref, nextTick, shallowRef, computed, onBeforeMount, watch } from 'vue'
+import { reactive, ref, nextTick, shallowRef, computed, onBeforeMount, watch, toRefs } from 'vue'
 import { GridTable } from '@/components/grid-table'
 import { cloneDeep } from 'lodash-es'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { fieldEnums } from './options.js'
 import type { Action } from 'element-plus-secondary'
+import {
+  listFieldByDatasetGroup,
+  rowPermissionTargetObjList,
+  whiteListUsersForPermissions,
+  saveColumnPermission,
+  columnPermissionList,
+  deleteColumnPermission
+} from '@/api/dataset'
 interface Pagination {
   currentPage: number
   pageSize: number
@@ -63,17 +71,20 @@ interface ColumnForm {
     enable: boolean
     columns: (CurCol & { selected?: boolean })[]
   }
-  datasetId: string
+  datasetId: number
   id?: string
   whiteListUser: User[]
 }
 
 const props = defineProps({
-  id: {
-    type: String,
-    default: ''
+  datasetId: {
+    required: false,
+    default: 0,
+    type: Number
   }
 })
+
+const { datasetId } = toRefs(props)
 
 const { t } = useI18n()
 
@@ -86,7 +97,7 @@ const paginationConfig = reactive<Pagination>({
 const defaultForm: ColumnForm = {
   authTargetId: null,
   authTargetType: 'user',
-  datasetId: '',
+  datasetId: 0,
   permissions: {
     enable: true,
     columns: []
@@ -159,12 +170,12 @@ watch(colKeywords, val => {
 })
 
 onBeforeMount(() => {
-  defaultForm.datasetId = props.id
+  defaultForm.datasetId = props.datasetId
   initFieldLists()
   search()
 })
 
-const typeList = ['role', 'user', 'sysParams']
+const typeList = ['role', 'user']
 const optRules = [
   {
     label: '******',
@@ -198,152 +209,13 @@ const formatter = (_, __, cellValue) => {
   return cellValue ? t(`auth.${cellValue}`) : '-'
 }
 const formatterWhiteListUsers = (_, __, cellValue) => {
-  return cellValue ? cellValue.map(ele => ele.nickName).join('、') : '-'
+  return cellValue ? cellValue.map(ele => ele.name).join('、') : '-'
 }
 
 const initFieldLists = () => {
-  filedList.value = [
-    {
-      id: 'bcd8c5c5-2b66-49ba-93f2-9921f47c2c2d',
-      tableId: '91b6555d-0c06-4ff5-881b-4a6c0cf710fe',
-      originName: 'id',
-      name: 'ID',
-      dataeaseName: 'C_b80bb7740288fda1f201890375a60c8f',
-      groupType: 'd',
-      type: 'VARCHAR',
-      size: 50,
-      deType: 0,
-      deTypeFormat: null,
-      deExtractType: 0,
-      extField: 0,
-      checked: true,
-      columnIndex: 0,
-      lastSyncTime: 1680165907179,
-      accuracy: 0,
-      dateFormat: null,
-      dateFormatType: null
-    },
-    {
-      id: '5456ec09-292f-494d-a319-19fcc854f786',
-      tableId: '91b6555d-0c06-4ff5-881b-4a6c0cf710fe',
-      originName: 'name',
-      name: '名称',
-      dataeaseName: 'C_b068931cc450442b63f5b3d276ea4297',
-      groupType: 'd',
-      type: 'VARCHAR',
-      size: 64,
-      deType: 0,
-      deTypeFormat: null,
-      deExtractType: 0,
-      extField: 0,
-      checked: true,
-      columnIndex: 1,
-      lastSyncTime: 1680165907179,
-      accuracy: 0,
-      dateFormat: null,
-      dateFormatType: null
-    },
-    {
-      id: '4e7c4677-5c4b-493e-91c1-de4bf1c82128',
-      tableId: '91b6555d-0c06-4ff5-881b-4a6c0cf710fe',
-      originName: 'pid',
-      name: '父级ID',
-      dataeaseName: 'C_0db3209e1adc6d67be435a81baf9a66e',
-      groupType: 'd',
-      type: 'VARCHAR',
-      size: 50,
-      deType: 0,
-      deTypeFormat: null,
-      deExtractType: 0,
-      extField: 0,
-      checked: true,
-      columnIndex: 2,
-      lastSyncTime: 1680165907179,
-      accuracy: 0,
-      dateFormat: null,
-      dateFormatType: null
-    },
-    {
-      id: 'cf3deae9-f6bd-45f0-8900-2f3983d389b8',
-      tableId: '91b6555d-0c06-4ff5-881b-4a6c0cf710fe',
-      originName: 'level',
-      name: '当前分组处于第几级',
-      dataeaseName: 'C_c9e9a848920877e76685b2e4e76de38d',
-      groupType: 'q',
-      type: 'INT',
-      size: 10,
-      deType: 2,
-      deTypeFormat: null,
-      deExtractType: 2,
-      extField: 0,
-      checked: true,
-      columnIndex: 3,
-      lastSyncTime: 1680165907179,
-      accuracy: 0,
-      dateFormat: null,
-      dateFormatType: null
-    },
-    {
-      id: '290b6a7d-5e87-4946-b248-6f4bf566e055',
-      tableId: '91b6555d-0c06-4ff5-881b-4a6c0cf710fe',
-      originName: 'type',
-      name: 'group or scene',
-      dataeaseName: 'C_599dcce2998a6b40b1e38e8c6006cb0a',
-      groupType: 'd',
-      type: 'VARCHAR',
-      size: 50,
-      deType: 0,
-      deTypeFormat: null,
-      deExtractType: 0,
-      extField: 0,
-      checked: true,
-      columnIndex: 4,
-      lastSyncTime: 1680165907179,
-      accuracy: 0,
-      dateFormat: null,
-      dateFormatType: null
-    },
-    {
-      id: '7a0957dd-2eaf-4af2-b42a-134bdb6736ab',
-      tableId: '91b6555d-0c06-4ff5-881b-4a6c0cf710fe',
-      originName: 'create_by',
-      name: '创建人ID',
-      dataeaseName: 'C_2293ea954bc29b88e7d4b512250b0a44',
-      groupType: 'd',
-      type: 'VARCHAR',
-      size: 50,
-      deType: 0,
-      deTypeFormat: null,
-      deExtractType: 0,
-      extField: 0,
-      checked: true,
-      columnIndex: 5,
-      lastSyncTime: 1680165907179,
-      accuracy: 0,
-      dateFormat: null,
-      dateFormatType: null
-    },
-    {
-      id: '6092698f-1c2b-4d74-9056-d23ed97db076',
-      tableId: '91b6555d-0c06-4ff5-881b-4a6c0cf710fe',
-      originName: 'create_time',
-      name: '创建时间',
-      dataeaseName: 'C_b16a626598674ad426e4b885017906d7',
-      groupType: 'q',
-      type: 'BIGINT',
-      size: 19,
-      deType: 2,
-      deTypeFormat: null,
-      deExtractType: 2,
-      extField: 0,
-      checked: true,
-      columnIndex: 6,
-      lastSyncTime: 1680165907179,
-      accuracy: 0,
-      dateFormat: null,
-      dateFormatType: null
-    }
-  ]
+  listFieldByDatasetGroup(datasetId.value).then(res => {
+    filedList.value = res.data
+  })
 }
 
 const validateAuthTarge = () => {
@@ -352,32 +224,30 @@ const validateAuthTarge = () => {
 }
 const onTypeChange = () => {
   authTarge.value = false
-  fetchTypeList()
+  fetchTypeObjsList()
   whiteListUsers.value = []
   columnPermissionForm.whiteListUser = []
   columnPermissionForm.authTargetId = ''
 }
 
-const changeUserList = () => {
+const changeWhiteListUsers = () => {
   columnPermissionForm.whiteListUser = []
-  loadUserList()
+  loadWhiteUserList()
 }
 
-const loadUserList = () => {
+const loadWhiteUserList = () => {
   whiteListUsers.value = []
   const { authTargetType, authTargetId } = columnPermissionForm
-  if (authTargetType === 'user') return
-  let url = `/api/user/userGrid/` + columnPermissionForm.datasetId
   let param = {}
-  if (['role', 'dept'].includes(authTargetType)) {
-    url = `/plugin/${authTargetType}/userGrid/` + columnPermissionForm.datasetId
-    param = {
-      [`${authTargetType}Id`]: authTargetId,
-      section: 1
-    }
+  param = {
+    authTargetId: authTargetId,
+    section: 1,
+    authTargetType: authTargetType,
+    datasetId: datasetId.value
   }
-  console.log('param', param)
-  whiteListUsers.value = []
+  whiteListUsersForPermissions(param).then(res => {
+    whiteListUsers.value = [] = res.data
+  })
 }
 
 const permissionInfo = item => {
@@ -385,47 +255,28 @@ const permissionInfo = item => {
     authTargetId: item.authTargetId,
     authTargetType: item.authTargetType
   }
-  item.authTargetName = ''
 }
 
 const search = () => {
-  const columnList = [
-    {
-      id: '19db717b-ec53-47ba-84d7-be8e3437bbba',
-      authTargetType: 'role',
-      authTargetId: 2,
-      datasetId: '91b6555d-0c06-4ff5-881b-4a6c0cf710fe',
-      updateTime: 1682647270408,
-      permissions:
-        '{"enable":true,"columns":[{"id":"bcd8c5c5-2b66-49ba-93f2-9921f47c2c2d","name":"ID","deType":0,"opt":"Prohibit","desensitizationRule":{"builtInRule":"CompleteDesensitization","customBuiltInRule":"RetainMToN","m":1,"n":1},"selected":false},{"id":"5456ec09-292f-494d-a319-19fcc854f786","name":"名称","deType":0,"opt":"Prohibit","desensitizationRule":{"builtInRule":"CompleteDesensitization","customBuiltInRule":"RetainMToN","m":1,"n":1},"selected":true},{"id":"4e7c4677-5c4b-493e-91c1-de4bf1c82128","name":"父级ID","deType":0,"opt":"Prohibit","desensitizationRule":{"builtInRule":"CompleteDesensitization","customBuiltInRule":"RetainMToN","m":1,"n":1},"selected":false},{"id":"cf3deae9-f6bd-45f0-8900-2f3983d389b8","name":"当前分组处于第几级","deType":2,"opt":"Desensitization","desensitizationRule":{"builtInRule":"custom","customBuiltInRule":"RetainMToN","m":1,"n":1},"selected":false},{"id":"290b6a7d-5e87-4946-b248-6f4bf566e055","name":"group or scene","deType":0,"opt":"Prohibit","desensitizationRule":{"builtInRule":"CompleteDesensitization","customBuiltInRule":"RetainMToN","m":1,"n":1},"selected":false},{"id":"7a0957dd-2eaf-4af2-b42a-134bdb6736ab","name":"创建人ID","deType":0,"opt":"Prohibit","desensitizationRule":{"builtInRule":"CompleteDesensitization","customBuiltInRule":"RetainMToN","m":1,"n":1},"selected":true},{"id":"6092698f-1c2b-4d74-9056-d23ed97db076","name":"创建时间","deType":2,"opt":"Prohibit","desensitizationRule":{"builtInRule":"CompleteDesensitization","customBuiltInRule":"RetainMToN","m":1,"n":1},"selected":true}]}',
-      whiteListUser: '[18]',
-      datasetName: '0wjh4_chart_group',
-      authTargetName: null,
-      authTargetIds: null,
-      whiteListUsers: [
-        {
-          userId: 18,
-          deptId: 1,
-          username: 'zhourunfa',
-          nickName: '周润发',
-          email: 'zhourunfa@qq.ciom'
-        }
-      ]
-    }
-  ]
-  state.columnList = columnList.map(ele => {
-    const item: Column = {
-      ...ele,
-      permissions: JSON.parse(ele.permissions),
-      whiteListUser: JSON.parse(ele.whiteListUser)
-    }
-    permissionInfo(item)
-    return item
+  columnPermissionList(
+    paginationConfig.currentPage,
+    paginationConfig.pageSize,
+    datasetId.value
+  ).then(res => {
+    const columnList = res.data.records
+    paginationConfig.total = res.data.total
+    state.columnList = columnList.map(ele => {
+      const item: Column = {
+        ...ele,
+        permissions: JSON.parse(ele.permissions),
+        whiteListUser: JSON.parse(ele.whiteListUser)
+      }
+      permissionInfo(item)
+      return item
+    })
+    paginationConfig.total = 1
   })
-  paginationConfig.total = 1
 }
-
-search()
 
 const create = permissionObj => {
   selectedId.value = []
@@ -433,6 +284,7 @@ const create = permissionObj => {
   if (!permissionObj) {
     targetObjs.value = []
     Object.assign(columnPermissionForm, cloneDeep(defaultForm))
+    columnPermissionForm.datasetId = datasetId.value
     filedList.value.forEach(filed => {
       columnPermissionForm.permissions.columns.push({
         id: filed.id,
@@ -483,7 +335,7 @@ const create = permissionObj => {
       columnPermissionForm.permissions.columns.push(item)
     }
   }
-  fetchTypeList()
+  fetchTypeObjsList()
   state.tableData = [...columnPermissionForm.permissions.columns]
   update_column_permission.value = true
   initSelect()
@@ -498,15 +350,22 @@ const initSelect = () => {
   }
 }
 
-const fetchTypeList = () => {
+const fetchTypeObjsList = () => {
   targetObjs.value = []
   const params = {
     authTargetId: columnPermissionForm.authTargetId,
     authTargetType: columnPermissionForm.authTargetType,
     datasetId: columnPermissionForm.datasetId
   }
-  targetObjs.value = []
-  loadUserList()
+
+  rowPermissionTargetObjList(
+    columnPermissionForm.datasetId,
+    columnPermissionForm.authTargetType
+  ).then(res => {
+    targetObjs.value = res.data
+  })
+
+  changeWhiteListUsers()
 }
 const closeDialog = () => {
   update_column_permission.value = false
@@ -521,7 +380,6 @@ const resetTaskForm = () => {
 }
 
 const deletePermission = item => {
-  console.log(item)
   ElMessageBox.confirm(t('dataset.confirm_delete'), {
     confirmButtonText: t('commons.confirm'),
     tip: t('dataset.tips'),
@@ -532,12 +390,14 @@ const deletePermission = item => {
     showClose: false,
     callback: (action: Action) => {
       if (action === 'confirm') {
-        ElMessage({
-          message: t('dataset.delete_success'),
-          type: 'success',
-          showClose: true
+        deleteColumnPermission({ id: item.id }).then(res => {
+          ElMessage({
+            message: t('dataset.delete_success'),
+            type: 'success',
+            showClose: true
+          })
+          search()
         })
-        search()
       }
     }
   })
@@ -553,19 +413,18 @@ const save = () => {
     whiteListUser: JSON.stringify(columnPermissionForm.whiteListUser),
     permissions: JSON.stringify(columnPermissionForm.permissions)
   }
-  console.log(params)
-  ElMessage({
-    message: t('dataset.save_success'),
-    type: 'success',
-    showClose: true
+  saveColumnPermission(params).then(res => {
+    ElMessage({
+      message: t('dataset.save_success'),
+      type: 'success',
+      showClose: true
+    })
+    search()
   })
   update_column_permission.value = false
   resetTaskForm()
-  search()
 }
 const selectCur = ele => {
-  console.log('ele', ele)
-
   Object.assign(curCol, ele)
   const { m = 1, n = 1 } = curCol.desensitizationRule
   curCol.desensitizationRule.m = m || 1
@@ -614,11 +473,11 @@ const handleCurrentChange = (currentPage: number) => {
     <template #icon>
       <Icon name="icon_add_outlined"></Icon>
     </template>
-    {{ t('dataset.column') }}
+    {{ t('common.add') }}
   </el-button>
   <GridTable
     @size-change="handleSizeChange"
-    @current-change="handleCurrentChange"
+    @current-page="handleCurrentChange"
     :pagination="paginationConfig"
     :table-data="state.columnList"
   >
@@ -670,7 +529,7 @@ const handleCurrentChange = (currentPage: number) => {
       </el-switch>
     </div>
     <div class="auth-type">
-      <p class="type">{{ t('table.type') }}</p>
+      <p class="type">{{ t('dataset.type') }}</p>
       <el-radio
         v-model="columnPermissionForm.authTargetType"
         @change="onTypeChange"
