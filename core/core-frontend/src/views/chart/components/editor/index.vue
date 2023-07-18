@@ -5,7 +5,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { Field, getFieldByDQ, saveChart } from '@/api/chart'
 import { Tree } from '../../../visualized/data/dataset/form/CreatDsGroup.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
-import { ElMessage } from 'element-plus-secondary'
+import { ElMessage, ElTreeSelect } from 'element-plus-secondary'
 import draggable from 'vuedraggable'
 import DimensionLabel from './drag-label/DimensionLabel.vue'
 import DimensionItem from './drag-item/DimensionItem.vue'
@@ -34,6 +34,7 @@ import { getFieldName, guid } from '@/views/visualized/data/dataset/form/util'
 import { cloneDeep } from 'lodash-es'
 import { deleteField, deleteFieldByChartId, saveField } from '@/api/dataset'
 import LabelSelector from '@/views/chart/components/editor/editor-style/components/LabelSelector.vue'
+import { getWorldTree } from '@/api/map'
 
 const snapshotStore = snapshotStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
@@ -108,7 +109,13 @@ const state = reactive({
   showCustomSort: false,
   customSortList: [],
   customSortField: {},
-  currEditField: {}
+  currEditField: {},
+  worldTree: [],
+  areaNode: {
+    id: view.value.customAttr.map.id,
+    name: ''
+  },
+  areaId: view.value.customAttr.map.id
 })
 
 watch(
@@ -126,6 +133,28 @@ watch(
   },
   { deep: true }
 )
+
+watch(
+  () => view.value.type,
+  newVal => {
+    if (newVal === 'map' && !state.worldTree?.length) {
+      getWorldTree().then(res => {
+        state.worldTree = [res.data]
+      })
+    }
+  },
+  { immediate: true }
+)
+const treeProps = {
+  label: 'name',
+  children: 'children'
+}
+const filterNode = (value, data) => {
+  if (!value) {
+    return true
+  }
+  return data.name?.includes(value)
+}
 
 const getFields = (id, chartId) => {
   if (id) {
@@ -289,12 +318,12 @@ const dragMoveDuplicate = (list, e, mode) => {
     }
   }
 }
-const dragRemoveChartField = (list, e) => {
+const dragRemoveAggField = (list, e) => {
   const dup = list.filter(function (m) {
     return m.id === state.moveId
   })
   if (dup && dup.length > 0) {
-    if (dup[0].chartId) {
+    if (dup[0].summary === '') {
       list.splice(e.newDraggableIndex, 1)
     }
   }
@@ -333,7 +362,7 @@ const addYaxis = e => {
 const addDrill = e => {
   dragCheckType(view.value.drillFields, 'd')
   dragMoveDuplicate(view.value.drillFields, e, '')
-  dragRemoveChartField(view.value.drillFields, e)
+  dragRemoveAggField(view.value.drillFields, e)
   calcData(view.value, true)
 }
 
@@ -360,7 +389,7 @@ const addCustomFilter = e => {
   }
   view.value.customFilter[e.newDraggableIndex].filter = []
   dragMoveDuplicate(view.value.customFilter, e, '')
-  dragRemoveChartField(view.value.customFilter, e)
+  dragRemoveAggField(view.value.customFilter, e)
   calcData(view.value)
 }
 const filterItemRemove = item => {
@@ -391,9 +420,19 @@ const renderChart = view => {
   snapshotStore.recordSnapshotCache('renderChart', view.id)
 }
 
+const onAreaChange = val => {
+  view.value.customAttr.map = { id: val.id, level: val.level }
+  renderChart(view.value)
+}
+
 const onTypeChange = val => {
   view.value.type = val
   calcData(view.value)
+}
+
+const onBasicStyleChange = val => {
+  view.value.customAttr.basicStyle = val
+  renderChart(view.value)
 }
 
 const onColorChange = val => {
@@ -825,6 +864,24 @@ const dynamicLabelShow = () => {
                           </span>
                         </span>
                       </el-row>
+                      <el-row class="padding-lr drag-data">
+                        <span class="data-area-label">
+                          {{ t('chart.area') }}
+                        </span>
+                        <div style="margin-top: 8px">
+                          <el-tree-select
+                            v-model="state.areaId"
+                            :data="state.worldTree"
+                            :props="treeProps"
+                            :filterNodeMethod="filterNode"
+                            @node-click="onAreaChange"
+                            empty-text="请选择区域"
+                            node-key="id"
+                            check-strictly
+                            filterable
+                          />
+                        </div>
+                      </el-row>
 
                       <!--xAxis-->
                       <el-row
@@ -1168,6 +1225,7 @@ const dynamicLabelShow = () => {
                   @onTextChange="onTextChange"
                   @onLegendChange="onLegendChange"
                   @onBackgroundChange="onBackgroundChange"
+                  @onBasicStyleChange="onBasicStyleChange"
                 />
               </el-tab-pane>
 

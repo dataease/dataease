@@ -139,7 +139,7 @@ const init = () => {
 }
 
 const initField = () => {
-  state.quotaData = props.quotaFields.filter(ele => !ele.chartId && ele.id !== '-1')
+  state.quotaData = props.quotaFields.filter(ele => ele.summary !== '' && ele.id !== '-1')
   if (state.sizeForm.gaugeMinField.id) {
     state.minField = getQuotaField(state.sizeForm.gaugeMinField.id)
   }

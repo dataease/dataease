@@ -8,7 +8,6 @@ import io.dataease.exception.DEException;
 import io.dataease.utils.AuthUtils;
 import io.dataease.utils.CacheUtils;
 import io.dataease.utils.CommonBeanFactory;
-import io.dataease.utils.LogUtil;
 import io.dataease.xpack.permissions.auth.dao.auto.entity.PerAuthBusiRole;
 import io.dataease.xpack.permissions.auth.dao.auto.entity.PerAuthBusiUser;
 import io.dataease.xpack.permissions.auth.dao.auto.entity.PerBusiResource;
@@ -127,11 +126,6 @@ public class SyncAuthManage {
     }
 
     public void editResourceName(BusiResourceEditor editor) {
-        /*QueryWrapper<PerBusiResource> queryWrapper = new QueryWrapper<>();
-        BusiResourceEnum resourceEnum = BusiResourceEnum.valueOf(editor.getFlag().toUpperCase());
-        queryWrapper.eq("id", editor.getId());
-        queryWrapper.eq("rt_id", resourceEnum.getFlag());
-        PerBusiResource perBusiResource = perBusiResourceMapper.selectOne(queryWrapper);*/
         Optional.ofNullable(perBusiResourceMapper.selectById(editor.getId())).ifPresent(resource -> {
             resource.setName(editor.getName());
             resource.setExtraFlag(editor.getExtraFlag());
@@ -141,10 +135,20 @@ public class SyncAuthManage {
 
     @Transactional
     public void delResource(Long id) {
-        // 暂未做级联处理，待需求明确再做不迟
+        PerBusiResource perBusiResource = perBusiResourceMapper.selectById(id);
+        Integer rtId = perBusiResource.getRtId();
         busiAuthExtMapper.delUserPerByResource(id);
         busiAuthExtMapper.delRolePerByResource(id);
         perBusiResourceMapper.deleteById(id);
+        String rootWay = perBusiResource.getRootWay();
+        List<PerAuthBusiUser> perAuthBusiUsers = userAuthManage.uidForRootWay(rootWay);
+        PerAuthBusiUser authBusiUser = userAuthManage.curUserPer(id, rtId);
+        perAuthBusiUsers = ObjectUtils.isEmpty(perAuthBusiUsers) ? new ArrayList<>() : perAuthBusiUsers;
+        perAuthBusiUsers.add(authBusiUser);
+        List<Long> uids = perAuthBusiUsers.stream().map(PerAuthBusiUser::getUid).toList();
+        List<PerAuthBusiRole> perAuthBusiRoles = roleAuthManage.ridForRootWay(rootWay);
+        List<Long> rids = CollectionUtil.isNotEmpty(perAuthBusiRoles) ? perAuthBusiRoles.stream().map(PerAuthBusiRole::getRid).toList() : new ArrayList<>();
+        clear(rtId, uids, rids);
     }
 
 }

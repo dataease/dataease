@@ -59,6 +59,8 @@
   },
   "dependencies": {
     "@antv/g2plot": "^2.4.29",
+    "@antv/l7": "^2.17.2",
+    "@antv/l7plot": "^0.5.5",
     "@codemirror/lang-sql": "^6.4.0",
     "@vueuse/core": "^9.13.0",
     "ace-builds": "^1.15.3",
@@ -83,7 +85,7 @@
     "pinia": "^2.0.32",
     "qs": "^6.11.0",
     "snowflake-id": "^1.1.0",
-    "vue": "^3.2.45",
+    "vue": "^3.3.4",
     "vue-clipboard2": "^0.3.3",
     "vue-clipboard3": "^2.0.0",
     "vue-codemirror": "^6.1.1",

@@ -40,5 +40,10 @@ public class ChartViewServer implements ChartViewApi {
         return chartViewManege.checkSameDataSet(viewIdSource, viewIdTarget);
     }
 
+    @Override
+    public ChartViewDTO getDetail(Long id) {
+        return chartViewManege.getDetails(id);
+    }
+
 
 }

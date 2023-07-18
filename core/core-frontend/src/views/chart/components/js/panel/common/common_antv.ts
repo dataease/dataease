@@ -6,6 +6,9 @@ import {
 import { valueFormatter } from '@/views/chart/components/editor/util/formatter'
 import { Datum } from '@antv/g2plot'
 import { formatterItem } from '@/views/chart/components/js/formatter'
+import { AreaOptions, LabelOptions } from '@antv/l7plot'
+import { TooltipOptions } from '@antv/l7plot/dist/lib/types/tooltip'
+import { FeatureCollection } from '@antv/l7plot/dist/esm/plots/choropleth/types'
 
 export function getPadding(chart: Chart): number[] {
   if (chart.drill) {
@@ -137,7 +140,7 @@ export function getLabel(chart: Chart) {
           position: l.position,
           style: {
             fill: l.color,
-            fontSize: parseInt(l.fontSize)
+            fontSize: l.fontSize
           },
           formatter: function (param: Datum) {
             const yAxis = chart.yAxis
@@ -1020,4 +1023,56 @@ export function transAxisPosition(position: string): string {
     default:
       return position
   }
+}
+
+export function configL7Label(chart: Chart): false | LabelOptions {
+  const customAttr = parseJson(chart.customAttr)
+  const label = customAttr.label
+  return {
+    visible: label.show,
+    style: {
+      fill: label.color,
+      fontSize: label.fontSize
+    }
+  }
+}
+
+export function configL7Style(chart: Chart): AreaOptions['style'] {
+  const customAttr = parseJson(chart.customAttr)
+  return {
+    stroke: customAttr.basicStyle.areaBorderColor
+  }
+}
+
+export function configL7Tooltip(chart: Chart): TooltipOptions {
+  const customAttr = parseJson(chart.customAttr)
+  const tooltip = customAttr.tooltip
+  return {
+    showComponent: tooltip.show,
+    domStyles: {
+      'l7plot-tooltip': {
+        'background-color': tooltip.backgroundColor,
+        'font-size': `${tooltip.textStyle.fontSize}px`
+      },
+      'l7plot-tooltip__name': {
+        color: tooltip.textStyle.color
+      },
+      'l7plot-tooltip__value': {
+        color: tooltip.textStyle.color
+      }
+    }
+  }
+}
+
+export function handleGeoJson(geoJson: FeatureCollection, nameMapping?: Record<string, string>) {
+  geoJson.features.forEach(item => {
+    if (!item.properties['centroid'] && item.properties['center']) {
+      item.properties['centroid'] = item.properties['center']
+    }
+    let name = item.properties['name']
+    if (nameMapping?.[name]) {
+      name = nameMapping[name]
+      item.properties['name'] = name
+    }
+  })
 }
