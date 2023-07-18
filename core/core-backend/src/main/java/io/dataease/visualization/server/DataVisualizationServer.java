@@ -18,7 +18,7 @@ import io.dataease.utils.IDUtils;
 import io.dataease.utils.TreeUtils;
 import io.dataease.visualization.dao.auto.entity.DataVisualizationInfo;
 import io.dataease.visualization.dao.auto.mapper.DataVisualizationInfoMapper;
-import io.dataease.visualization.ext.ExtDataVisualizationMapper;
+import io.dataease.visualization.dao.ext.ExtDataVisualizationMapper;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
