@@ -1,7 +1,7 @@
 <template>
   <div class="bar-main" :class="showEditPosition" @click.stop>
     <span :title="t('visualization.enlarge')" v-if="barShowCheck('enlarge')">
-      <el-icon class="base-icon" @click="userViewEnlargeOpen">
+      <el-icon class="bar-base-icon" @click="userViewEnlargeOpen">
         <Icon name="dv-bar-enlarge"></Icon
       ></el-icon>
     </span>
@@ -12,16 +12,27 @@
         @change="multiplexingCheck"
       />
     </div>
-    <div v-if="barShowCheck('linkage')" class="bar-checkbox-area">
+    <div v-if="barShowCheck('linkage') && linkageCheckShowAttach" class="bar-checkbox-area">
       <el-checkbox size="medium" v-model="linkageInfo.linkageActive" />
-      <linkage-field v-if="linkageInfo.linkageActive" :element="element"></linkage-field>
     </div>
+    <linkage-field
+      v-if="linkageInfo && linkageInfo.linkageActive"
+      :element="element"
+    ></linkage-field>
+    <span
+      :title="t('visualization.cancel_linkage')"
+      v-if="barShowCheck('unLinkage') && existLinkage"
+    >
+      <el-icon class="bar-base-icon" @click="clearLinkage">
+        <Icon name="dv-bar-unLinkage"></Icon
+      ></el-icon>
+    </span>
     <div v-if="barShowCheck('batchOpt')" class="bar-checkbox-area">
       <el-checkbox size="medium" @change="batchOptChange" />
     </div>
 
     <el-dropdown trigger="click" v-if="barShowCheck('setting')">
-      <el-icon :title="t('visualization.setting')" class="base-icon"><Setting /></el-icon>
+      <el-icon :title="t('visualization.setting')" class="bar-base-icon"><Setting /></el-icon>
       <template #dropdown>
         <el-dropdown-menu style="width: 100px">
           <el-dropdown-item icon="Delete" @click="deleteComponent">删除</el-dropdown-item>
@@ -53,8 +64,8 @@ const { t } = useI18n()
 
 // bar所在位置可以显示的功能按钮
 const positionBarShow = {
-  canvas: ['enlarge', 'setting'],
-  preview: ['enlarge'],
+  canvas: ['enlarge', 'setting', 'unLinkage'],
+  preview: ['enlarge', 'unLinkage'],
   multiplexing: ['multiplexing'],
   batchOpt: ['batchOpt'],
   linkage: ['linkage']
@@ -62,7 +73,7 @@ const positionBarShow = {
 
 // bar所属组件类型可以显示的功能按钮
 const componentTypeBarShow = {
-  UserView: ['enlarge', 'setting', 'multiplexing', 'batchOpt', 'linkage'],
+  UserView: ['enlarge', 'setting', 'multiplexing', 'batchOpt', 'linkage', 'unLinkage'],
   default: ['setting', 'multiplexing']
 }
 
@@ -76,6 +87,10 @@ const barShowCheck = barName => {
     ).includes(barName)
   )
 }
+
+const linkageCheckShowAttach = computed(() => {
+  return curLinkageView.value !== element.value
+})
 
 const props = defineProps({
   element: {
@@ -202,9 +217,28 @@ const linkageSetting = () => {
   })
 }
 
+const existLinkage = computed(() => {
+  let linkageFiltersCount = 0
+  componentData.value.forEach(item => {
+    if (item.linkageFilters && item.linkageFilters.length > 0) {
+      item.linkageFilters.forEach(linkage => {
+        if (element.value.id === linkage.sourceViewId) {
+          linkageFiltersCount++
+        }
+      })
+    }
+  })
+  return linkageFiltersCount
+})
+
 const linkageInfo = computed(() => {
   return targetLinkageInfo.value[element.value.id]
 })
+
+// 清除相同sourceViewId 的 联动条件
+const clearLinkage = () => {
+  dvMainStore.clearViewLinkage(element.value.id)
+}
 
 // 联动-End
 </script>
@@ -225,7 +259,6 @@ const linkageInfo = computed(() => {
 }
 
 .bar-main-preview-right-inner {
-  height: 22px;
   right: 0px;
 }
 
@@ -239,7 +272,7 @@ const linkageInfo = computed(() => {
   left: -25px;
 }
 
-.base-icon {
+.bar-base-icon {
   height: 22px;
   width: 22px;
   color: #ffffff;
@@ -250,8 +283,10 @@ const linkageInfo = computed(() => {
     color: rgba(255, 255, 255, 0.7);
   }
 }
+
 .bar-checkbox-area {
   padding: 0 3px;
+  height: 22px;
   :deep(.ed-checkbox) {
     height: 22px;
   }

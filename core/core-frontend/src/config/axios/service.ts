@@ -40,7 +40,6 @@ service.interceptors.request.use(
     ) {
       config.data = qs.stringify(config.data)
     }
-    console.log('---------------------')
     if (window.DataEaseBi?.baseUrl) {
       config.baseURL = window.DataEaseBi.baseUrl + 'de2api/'
     }
@@ -91,6 +90,9 @@ service.interceptors.response.use(
         wsCache.set('user.token', response.headers['x-de-refresh-token'])
       }
       return response.data
+    } else if (response.config.url.match(/^\/map\/\d{3}\/\d+\.json$/)) {
+      //   TODO 处理静态文件
+      return response
     } else {
       ElMessage.error(response.data.msg)
     }

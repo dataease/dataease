@@ -51,7 +51,7 @@ const state = reactive({
 const emit = defineEmits(['onAssistLineChange'])
 
 const initField = () => {
-  state.quotaData = props.quotaFields.filter(ele => !ele.chartId && ele.id !== '-1')
+  state.quotaData = props.quotaFields.filter(ele => ele.summary !== '' && ele.id !== '-1')
 }
 const init = () => {
   state.lineArr = JSON.parse(JSON.stringify(props.line))

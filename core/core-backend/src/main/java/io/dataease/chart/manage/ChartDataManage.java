@@ -333,7 +333,9 @@ public class ChartDataManage {
                 DatasetTableFieldDTO datasetTableField = datasetTableFieldManage.selectById(Long.valueOf(request.getFieldId()));
 //                if (!desensitizationList.keySet().contains(datasetTableField.getDataeaseName()) && dataeaseNames.contains(datasetTableField.getDataeaseName())) {
                 request.setDatasetTableField(datasetTableField);
-                if (Objects.equals(datasetTableField.getDatasetTableId(), view.getTableId())) {
+//                if (Objects.equals(datasetTableField.getDatasetTableId(), view.getTableId())) {
+                // 相同数据集
+                if (Objects.equals(datasetTableField.getDatasetGroupId(), view.getTableId())) {
                     if (ObjectUtils.isNotEmpty(request.getViewIds())) {
                         if (request.getViewIds().contains(view.getId())) {
                             extFilterList.add(request);

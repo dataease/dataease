@@ -3,6 +3,7 @@ package io.dataease.xpack.permissions.auth.manage;
 import cn.hutool.core.collection.CollectionUtil;
 import io.dataease.api.permissions.auth.dto.BusiResourceCreator;
 import io.dataease.api.permissions.auth.dto.BusiResourceEditor;
+import io.dataease.auth.bo.TokenUserBO;
 import io.dataease.constant.BusiResourceEnum;
 import io.dataease.exception.DEException;
 import io.dataease.utils.AuthUtils;
@@ -21,9 +22,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Component
 public class SyncAuthManage {
@@ -39,6 +42,9 @@ public class SyncAuthManage {
 
     @Resource
     private RoleAuthManage roleAuthManage;
+
+    @Resource
+    private ApiAuthManage apiAuthManage;
 
     /**
      * 从业务系统同步资源到权限系统
@@ -127,11 +133,6 @@ public class SyncAuthManage {
     }
 
     public void editResourceName(BusiResourceEditor editor) {
-        /*QueryWrapper<PerBusiResource> queryWrapper = new QueryWrapper<>();
-        BusiResourceEnum resourceEnum = BusiResourceEnum.valueOf(editor.getFlag().toUpperCase());
-        queryWrapper.eq("id", editor.getId());
-        queryWrapper.eq("rt_id", resourceEnum.getFlag());
-        PerBusiResource perBusiResource = perBusiResourceMapper.selectOne(queryWrapper);*/
         Optional.ofNullable(perBusiResourceMapper.selectById(editor.getId())).ifPresent(resource -> {
             resource.setName(editor.getName());
             resource.setExtraFlag(editor.getExtraFlag());
@@ -141,10 +142,59 @@ public class SyncAuthManage {
 
     @Transactional
     public void delResource(Long id) {
-        // 暂未做级联处理，待需求明确再做不迟
-        busiAuthExtMapper.delUserPerByResource(id);
-        busiAuthExtMapper.delRolePerByResource(id);
-        perBusiResourceMapper.deleteById(id);
+        if (!checkDel(id)) {
+            DEException.throwException("当前目录下存在无权限操作资源，请联系管理员！");
+        }
+        PerBusiResource perBusiResource = perBusiResourceMapper.selectById(id);
+        Integer rtId = perBusiResource.getRtId();
+        List<Long> ids = new ArrayList<>();
+        ids.add(id);
+        List<Long> kidIds = null;
+        if (CollectionUtil.isNotEmpty(kidIds = busiAuthExtMapper.childrenResourceIds(id))) {
+            ids.addAll(kidIds);
+            ids = CollectionUtil.distinct(ids);
+        }
+        busiAuthExtMapper.delUserPerByResource(ids);
+        busiAuthExtMapper.delRolePerByResource(ids);
+        perBusiResourceMapper.deleteBatchIds(ids);
+        List<String> rootList = null;
+        if (StringUtils.isNotBlank(perBusiResource.getRootWay())) {
+            rootList = Arrays.stream(perBusiResource.getRootWay().split(",")).toList();
+            rootList.addAll(ids.stream().map(temp -> temp.toString()).collect(Collectors.toList()));
+        } else {
+            rootList = ids.stream().map(temp -> temp.toString()).collect(Collectors.toList());
+        }
+        String rootWay = rootList.stream().collect(Collectors.joining(","));
+        List<PerAuthBusiUser> perAuthBusiUsers = userAuthManage.uidForRootWay(rootWay);
+        PerAuthBusiUser authBusiUser = userAuthManage.curUserPer(id, rtId);
+        perAuthBusiUsers = ObjectUtils.isEmpty(perAuthBusiUsers) ? new ArrayList<>() : perAuthBusiUsers;
+        perAuthBusiUsers.add(authBusiUser);
+        List<Long> uids = perAuthBusiUsers.stream().map(PerAuthBusiUser::getUid).toList();
+        List<PerAuthBusiRole> perAuthBusiRoles = roleAuthManage.ridForRootWay(rootWay);
+        List<Long> rids = CollectionUtil.isNotEmpty(perAuthBusiRoles) ? perAuthBusiRoles.stream().map(PerAuthBusiRole::getRid).toList() : new ArrayList<>();
+        clear(rtId, uids, rids);
+    }
+
+    public boolean checkDel(Long id) {
+        PerBusiResource perBusiResource = perBusiResourceMapper.selectById(id);
+        Integer rtId = perBusiResource.getRtId();
+        List<Long> ids = new ArrayList<>();
+        ids.add(id);
+        List<Long> kidIds = null;
+        if (CollectionUtil.isNotEmpty(kidIds = busiAuthExtMapper.childrenResourceIds(id))) {
+            ids.addAll(kidIds);
+        }
+        ids = ids.stream().distinct().toList();
+        TokenUserBO user = AuthUtils.getUser();
+        try {
+            for (Long resourceId : ids) {
+                apiAuthManage.checkResource(resourceId, rtId, 3, user);
+            }
+        } catch (Exception e) {
+            LogUtil.error(e.getMessage(), e);
+            DEException.throwException(e);
+        }
+        return true;
     }
 
 }

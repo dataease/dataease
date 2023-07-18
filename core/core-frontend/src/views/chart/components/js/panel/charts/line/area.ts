@@ -13,118 +13,117 @@ const DEFAULT_DATA = []
 export class Area extends G2PlotChartView<AreaOptions, G2Area> {
   drawChart(drawOptions: G2PlotDrawOptions<G2Area>): G2Area {
     const chart = drawOptions.chart
-    if (!chart.data?.data?.length) {
-      return
-    }
-    // data
-    const data = _.cloneDeep(chart.data.data)
-    // size
-    let customAttr: DeepPartial<ChartAttr>
-    let smooth, point, line
-    if (chart.customAttr) {
-      customAttr = parseJson(chart.customAttr)
-      if (customAttr.size) {
-        const s: DeepPartial<ChartSizeAttr> = JSON.parse(JSON.stringify(customAttr.size))
-        smooth = s.lineSmooth
-        point = {
-          size: s.lineSymbolSize,
-          shape: s.lineSymbol
-        }
-        line = {
-          style: {
-            lineWidth: s.lineWidth
+    if (chart?.data) {
+      // data
+      const data = _.cloneDeep(chart.data.data)
+      // size
+      let customAttr: DeepPartial<ChartAttr>
+      let smooth, point, line
+      if (chart.customAttr) {
+        customAttr = parseJson(chart.customAttr)
+        if (customAttr.size) {
+          const s: DeepPartial<ChartSizeAttr> = JSON.parse(JSON.stringify(customAttr.size))
+          smooth = s.lineSmooth
+          point = {
+            size: s.lineSymbolSize,
+            shape: s.lineSymbol
+          }
+          line = {
+            style: {
+              lineWidth: s.lineWidth
+            }
           }
         }
       }
-    }
-    // custom color
-    const color = antVCustomColor(chart)
-    const areaColors = [...color, ...color]
-    let areaStyle
-    if (customAttr.color.gradient) {
-      areaStyle = () => {
-        const ele = areaColors.shift()
-        if (ele) {
-          return {
-            fill: setGradientColor(ele, customAttr.color.gradient, 270)
+      // custom color
+      const color = antVCustomColor(chart)
+      const areaColors = [...color, ...color]
+      let areaStyle
+      if (customAttr.color.gradient) {
+        areaStyle = () => {
+          const ele = areaColors.shift()
+          if (ele) {
+            return {
+              fill: setGradientColor(ele, customAttr.color.gradient, 270)
+            }
           }
         }
       }
-    }
-    const initOptions: AreaOptions = {
-      point,
-      smooth,
-      line,
-      areaStyle,
-      color,
-      data: data,
-      xField: 'field',
-      yField: 'value',
-      seriesField: 'category',
-      appendPadding: getPadding(chart),
-      // isStack: isStack,
-      interactions: [
-        {
-          type: 'legend-active',
-          cfg: {
-            start: [{ trigger: 'legend-item:mouseenter', action: ['element-active:reset'] }],
-            end: [{ trigger: 'legend-item:mouseleave', action: ['element-active:reset'] }]
+      const initOptions: AreaOptions = {
+        point,
+        smooth,
+        line,
+        areaStyle,
+        color,
+        data: data,
+        xField: 'field',
+        yField: 'value',
+        seriesField: 'category',
+        appendPadding: getPadding(chart),
+        // isStack: isStack,
+        interactions: [
+          {
+            type: 'legend-active',
+            cfg: {
+              start: [{ trigger: 'legend-item:mouseenter', action: ['element-active:reset'] }],
+              end: [{ trigger: 'legend-item:mouseleave', action: ['element-active:reset'] }]
+            }
+          },
+          {
+            type: 'legend-filter',
+            cfg: {
+              start: [
+                {
+                  trigger: 'legend-item:click',
+                  action: [
+                    'list-unchecked:toggle',
+                    'data-filter:filter',
+                    'element-active:reset',
+                    'element-highlight:reset'
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            type: 'tooltip',
+            cfg: {
+              start: [{ trigger: 'point:mousemove', action: 'tooltip:show' }],
+              end: [{ trigger: 'point:mouseleave', action: 'tooltip:hide' }]
+            }
+          },
+          {
+            type: 'active-region',
+            cfg: {
+              start: [{ trigger: 'element:mousemove', action: 'active-region:show' }],
+              end: [{ trigger: 'element:mouseleave', action: 'active-region:hide' }]
+            }
           }
-        },
-        {
-          type: 'legend-filter',
-          cfg: {
-            start: [
-              {
-                trigger: 'legend-item:click',
-                action: [
-                  'list-unchecked:toggle',
-                  'data-filter:filter',
-                  'element-active:reset',
-                  'element-highlight:reset'
-                ]
-              }
-            ]
-          }
-        },
-        {
-          type: 'tooltip',
-          cfg: {
-            start: [{ trigger: 'point:mousemove', action: 'tooltip:show' }],
-            end: [{ trigger: 'point:mouseleave', action: 'tooltip:hide' }]
-          }
-        },
-        {
-          type: 'active-region',
-          cfg: {
-            start: [{ trigger: 'element:mousemove', action: 'active-region:show' }],
-            end: [{ trigger: 'element:mouseleave', action: 'active-region:hide' }]
-          }
-        }
-      ]
-    }
-
-    // options
-    const options = this.setupOptions(chart, initOptions)
-    // 处理空值
-    if (chart.senior) {
-      let emptyDataStrategy = parseJson(chart.senior)?.functionCfg?.emptyDataStrategy
-      if (!emptyDataStrategy) {
-        emptyDataStrategy = 'breakLine'
+        ]
       }
-      handleEmptyDataStrategy(emptyDataStrategy, chart, data, options)
+
+      // options
+      const options = this.setupOptions(chart, initOptions)
+      // 处理空值
+      if (chart.senior) {
+        let emptyDataStrategy = parseJson(chart.senior)?.functionCfg?.emptyDataStrategy
+        if (!emptyDataStrategy) {
+          emptyDataStrategy = 'breakLine'
+        }
+        handleEmptyDataStrategy(emptyDataStrategy, chart, data, options)
+      }
+
+      // 开始渲染
+      if (drawOptions.chartObj) {
+        drawOptions.chartObj.destroy()
+      }
+      drawOptions.chartObj = new G2Area(drawOptions.container, options)
+
+      drawOptions.chartObj.off('point:click')
+      drawOptions.chartObj.on('point:click', drawOptions.action)
+
+      return drawOptions.chartObj
     }
-
-    // 开始渲染
-    if (drawOptions.chartObj) {
-      drawOptions.chartObj.destroy()
-    }
-    drawOptions.chartObj = new G2Area(drawOptions.container, options)
-
-    drawOptions.chartObj.off('point:click')
-    drawOptions.chartObj.on('point:click', drawOptions.action)
-
-    return drawOptions.chartObj
   }
 
   protected configCustomLabel(_: Chart, options: AreaOptions): AreaOptions {

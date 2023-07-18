@@ -16,6 +16,7 @@ export default {
         changeOrigin: true,
         rewrite: path => path.replace(/^\/api/, 'de2api')
       }
-    }
+    },
+    port: 8080
   }
 }

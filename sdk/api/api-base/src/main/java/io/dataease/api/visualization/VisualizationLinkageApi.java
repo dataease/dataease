@@ -23,7 +23,7 @@ public interface VisualizationLinkageApi {
     @PostMapping("/saveLinkage")
     BaseRspModel saveLinkage(@RequestBody VisualizationLinkageRequest request);
 
-    @GetMapping("/getVisualizationAllLinkageInfo/{panelId}")
-    Map<String, List<String>> getVisualizationAllLinkageInfo(@PathVariable String panelId);
+    @GetMapping("/getVisualizationAllLinkageInfo/{dvId}")
+    Map<String, List<String>> getVisualizationAllLinkageInfo(@PathVariable String dvId);
 
 }

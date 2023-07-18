@@ -1,6 +1,9 @@
 <template>
   <div class="shape">
-    <div class="shape-outer" :class="{ active, 'shape-edit': isEditMode }">
+    <div
+      class="shape-outer"
+      :class="{ active, 'shape-edit': isEditMode, 'linkage-setting': linkageActive }"
+    >
       <div
         class="shape-inner"
         :style="componentBackgroundStyle"
@@ -55,7 +58,7 @@ const snapshotStore = snapshotStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
 const composeStore = composeStoreWithOut()
 
-const { curComponent, dvInfo, editMode, batchOptStatus, linkageSettingStatus } =
+const { curComponent, dvInfo, editMode, batchOptStatus, linkageSettingStatus, curLinkageView } =
   storeToRefs(dvMainStore)
 const { editor } = storeToRefs(composeStore)
 const emit = defineEmits([
@@ -477,7 +480,13 @@ const componentBackgroundStyle = computed(() => {
 })
 
 const componentActiveFlag = computed(() => {
-  return (active.value || batchOptStatus.value) && dashboardActive.value
+  return (
+    ((active.value || batchOptStatus.value) && dashboardActive.value) || linkageSettingStatus.value
+  )
+})
+
+const linkageActive = computed(() => {
+  return linkageSettingStatus.value && element.value === curLinkageView.value
 })
 
 const showViewDetails = () => {
@@ -568,5 +577,9 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   position: relative;
+}
+
+.linkage-setting {
+  opacity: 0.5;
 }
 </style>

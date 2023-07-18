@@ -324,7 +324,7 @@ const queryData = () => {
       </el-button>
     </div>
   </div>
-  <Teleport to=".dv-teleport-query">
+  <Teleport to="body">
     <QueryConditionConfiguration ref="queryConfig"></QueryConditionConfiguration>
   </Teleport>
 </template>

@@ -214,7 +214,7 @@ const canvasSizeInit = () => {
 // listenGlobalKeyDown()
 onMounted(() => {
   initDataset()
-  const { resourceId, pid } = router.currentRoute.value.query
+  const { resourceId, pid } = window.DataEaseBi || router.currentRoute.value.query
   if (resourceId) {
     initCanvasData(resourceId, function () {
       canvasInit()

@@ -1,24 +1,34 @@
-<script lang="tsx" setup>
+<script lang="ts" setup>
 import { useI18n } from '@/hooks/web/useI18n'
 import ChartComponentG2Plot from './components/ChartComponentG2Plot.vue'
-import { onMounted, reactive, ref, toRefs, watch } from 'vue'
+import { computed, onBeforeMount, onMounted, reactive, ref, toRefs, watch } from 'vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { hexColorToRGBA } from '@/views/chart/components/js/util.js'
 import { DEFAULT_TITLE_STYLE } from '@/views/chart/components/editor/util/chart'
 import DrillPath from '@/views/chart/components/views/components/DrillPath.vue'
 import { ElMessage } from 'element-plus-secondary'
 import { nextTick } from 'vue'
-import { checkIsBatchOptView } from '@/utils/canvasUtils'
 import { useFilter } from '@/hooks/web/useFilter'
 import { useCache } from '@/hooks/web/useCache'
 
 const { wsCache } = useCache()
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { cloneDeep } from 'lodash-es'
 
 const g2 = ref<any>()
 
 const { t } = useI18n()
+const dvMainStore = dvMainStoreWithOut()
 
 const props = defineProps({
+  element: {
+    type: Object,
+    default() {
+      return {
+        propValue: null
+      }
+    }
+  },
   view: {
     type: Object,
     default() {
@@ -33,8 +43,9 @@ const props = defineProps({
     default: 'canvas'
   }
 })
+const dynamicAreaId = ref('')
 
-const { view, showPosition } = toRefs(props)
+const { view, showPosition, element } = toRefs(props)
 
 const state = reactive({
   title_show: true,
@@ -111,12 +122,12 @@ const chartClick = param => {
 }
 
 // 仪表板和大屏所有额外过滤参数都在此处
-const filter = () => {
-  const { filter } = useFilter(view.value.id)
+const filter = (firstLoad: boolean) => {
+  const { filter } = useFilter(view.value.id, firstLoad)
   return {
     user: wsCache.get('user.uid'),
     filter,
-    // linkageFilters: this.element.linkageFilters,
+    linkageFilters: element.value.linkageFilters,
     // outerParamsFilters: this.element.outerParamsFilters,
     drill: state.drillClickDimensionList
     // resultCount: this.resultCount,
@@ -132,7 +143,22 @@ const onDrillFilters = param => {
   })
 }
 
+const queryData = (firstLoad = false) => {
+  const queryFilter = filter(firstLoad)
+  let params = cloneDeep(view.value)
+  params['chartExtRequest'] = queryFilter
+  g2?.value?.calcData(params)
+}
+
+onBeforeMount(() => {
+  useEmitt({
+    name: `query-data-${view.value.id}`,
+    callback: queryData
+  })
+})
+
 onMounted(() => {
+  queryData(true)
   useEmitt({
     name: 'snapshotChangeToView',
     callback: function (cacheViewInfo) {
@@ -142,7 +168,7 @@ onMounted(() => {
           cacheViewInfo.snapshotCacheViewCalc.includes(view.value.id) ||
           cacheViewInfo.snapshotCacheViewCalc.includes('all')
         ) {
-          view.value.chartExtRequest = filter()
+          view.value.chartExtRequest = filter(false)
           g2?.value?.calcData(view.value)
         } else if (
           cacheViewInfo.snapshotCacheViewRender.includes(view.value.id) ||
@@ -158,7 +184,7 @@ onMounted(() => {
     callback: function (val) {
       initTitle()
       nextTick(() => {
-        view.value.chartExtRequest = filter()
+        view.value.chartExtRequest = filter(false)
         g2?.value?.calcData(val)
       })
     }
@@ -189,6 +215,7 @@ initTitle()
     <!--这里去渲染不同图库的视图-->
     <chart-component-g2-plot
       style="flex: 1"
+      :dynamic-area-id="dynamicAreaId"
       :view="view"
       :show-position="showPosition"
       v-if="view?.render === 'antv'"

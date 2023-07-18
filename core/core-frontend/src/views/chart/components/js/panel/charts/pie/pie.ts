@@ -8,98 +8,97 @@ const DEFAULT_DATA = []
 export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
   drawChart(drawOptions: G2PlotDrawOptions<G2Pie>): G2Pie {
     const chart = drawOptions.chart
-    if (!chart.data?.data?.length) {
-      return
-    }
-    // data
-    const data = chart.data.data
-    // size
-    let customAttr, radius, innerRadius
-    if (chart.customAttr) {
-      customAttr = parseJson(chart.customAttr)
-      if (customAttr.size) {
-        const s = customAttr.size
-        radius = s.pieOuterRadius / 100
-        innerRadius = s.pieInnerRadius / 100
+    if (chart?.data) {
+      // data
+      const data = chart.data.data
+      // size
+      let customAttr, radius, innerRadius
+      if (chart.customAttr) {
+        customAttr = parseJson(chart.customAttr)
+        if (customAttr.size) {
+          const s = customAttr.size
+          radius = s.pieOuterRadius / 100
+          innerRadius = s.pieInnerRadius / 100
+        }
       }
-    }
-    // custom color
-    const color = antVCustomColor(chart)
-    // options
-    const initOptions: PieOptions = {
-      data: data,
-      angleField: 'value',
-      colorField: 'field',
-      appendPadding: getPadding(chart),
-      color,
-      radius,
-      innerRadius,
-      pieStyle: {
-        lineWidth: 0
-      },
-      statistic: {
-        title: false,
-        content: {
-          style: {
-            whiteSpace: 'pre-wrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis'
+      // custom color
+      const color = antVCustomColor(chart)
+      // options
+      const initOptions: PieOptions = {
+        data: data,
+        angleField: 'value',
+        colorField: 'field',
+        appendPadding: getPadding(chart),
+        color,
+        radius,
+        innerRadius,
+        pieStyle: {
+          lineWidth: 0
+        },
+        statistic: {
+          title: false,
+          content: {
+            style: {
+              whiteSpace: 'pre-wrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis'
+            },
+            content: ''
+          }
+        },
+        interactions: [
+          {
+            type: 'legend-active',
+            cfg: {
+              start: [{ trigger: 'legend-item:mouseenter', action: ['element-active:reset'] }],
+              end: [{ trigger: 'legend-item:mouseleave', action: ['element-active:reset'] }]
+            }
           },
-          content: ''
-        }
-      },
-      interactions: [
-        {
-          type: 'legend-active',
-          cfg: {
-            start: [{ trigger: 'legend-item:mouseenter', action: ['element-active:reset'] }],
-            end: [{ trigger: 'legend-item:mouseleave', action: ['element-active:reset'] }]
+          {
+            type: 'legend-filter',
+            cfg: {
+              start: [
+                {
+                  trigger: 'legend-item:click',
+                  action: [
+                    'list-unchecked:toggle',
+                    'data-filter:filter',
+                    'element-active:reset',
+                    'element-highlight:reset'
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            type: 'tooltip',
+            cfg: {
+              start: [{ trigger: 'interval:mousemove', action: 'tooltip:show' }],
+              end: [{ trigger: 'interval:mouseleave', action: 'tooltip:hide' }]
+            }
+          },
+          {
+            type: 'active-region',
+            cfg: {
+              start: [{ trigger: 'interval:mousemove', action: 'active-region:show' }],
+              end: [{ trigger: 'interval:mouseleave', action: 'active-region:hide' }]
+            }
           }
-        },
-        {
-          type: 'legend-filter',
-          cfg: {
-            start: [
-              {
-                trigger: 'legend-item:click',
-                action: [
-                  'list-unchecked:toggle',
-                  'data-filter:filter',
-                  'element-active:reset',
-                  'element-highlight:reset'
-                ]
-              }
-            ]
-          }
-        },
-        {
-          type: 'tooltip',
-          cfg: {
-            start: [{ trigger: 'interval:mousemove', action: 'tooltip:show' }],
-            end: [{ trigger: 'interval:mouseleave', action: 'tooltip:hide' }]
-          }
-        },
-        {
-          type: 'active-region',
-          cfg: {
-            start: [{ trigger: 'interval:mousemove', action: 'active-region:show' }],
-            end: [{ trigger: 'interval:mouseleave', action: 'active-region:hide' }]
-          }
-        }
-      ]
+        ]
+      }
+      const options = this.setupOptions(chart, initOptions)
+
+      // 开始渲染
+      if (drawOptions.chartObj) {
+        drawOptions.chartObj.destroy()
+      }
+      drawOptions.chartObj = new G2Pie(drawOptions.container, options)
+
+      drawOptions.chartObj.off('interval:click')
+      drawOptions.chartObj.on('interval:click', drawOptions.action)
+
+      return drawOptions.chartObj
     }
-    const options = this.setupOptions(chart, initOptions)
-
-    // 开始渲染
-    if (drawOptions.chartObj) {
-      drawOptions.chartObj.destroy()
-    }
-    drawOptions.chartObj = new G2Pie(drawOptions.container, options)
-
-    drawOptions.chartObj.off('interval:click')
-    drawOptions.chartObj.on('interval:click', drawOptions.action)
-
-    return drawOptions.chartObj
   }
 
   protected configLabel(chart: Chart, options: PieOptions): PieOptions {
@@ -115,7 +114,7 @@ export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
             autoRotate: false,
             style: {
               fill: labelAttr.color,
-              fontSize: parseInt(labelAttr.fontSize)
+              fontSize: labelAttr.fontSize
             }
           }
           if (labelAttr.position === 'outer') {

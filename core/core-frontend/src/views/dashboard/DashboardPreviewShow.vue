@@ -8,7 +8,7 @@ import PreviewHead from '@/views/data-visualization/PreviewHead.vue'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import { storeToRefs } from 'pinia'
 import { toPng } from 'html-to-image'
-import { initCanvasDataPrepare } from '@/utils/canvasUtils'
+import { initCanvasData, initCanvasDataPrepare } from '@/utils/canvasUtils'
 
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo } = storeToRefs(dvMainStore)
@@ -34,7 +34,9 @@ const props = defineProps({
 const { showPosition } = toRefs(props)
 
 const loadCanvasData = dvId => {
-  initCanvasDataPrepare(
+  // 复用不设置 dvMain 中的componentData 等画布信息
+  const initMethod = showPosition.value === 'multiplexing' ? initCanvasDataPrepare : initCanvasData
+  initMethod(
     dvId,
     function ({
       canvasDataResult,
@@ -48,8 +50,6 @@ const loadCanvasData = dvId => {
       state.canvasViewInfoPreview = canvasViewInfoPreview
       state.dvInfo = dvInfo
       state.curPreviewGap = curPreviewGap
-
-      dvMainStore.updateCurDvInfo(dvInfo)
       nextTick(() => {
         dashboardPreview.value.restore()
       })

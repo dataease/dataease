@@ -8,6 +8,7 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import UserViewEnlarge from '@/components/visualization/UserViewEnlarge.vue'
+import CanvasOptBar from '@/components/visualization/CanvasOptBar.vue'
 const dvMainStore = dvMainStoreWithOut()
 const { pcMatrixCount } = storeToRefs(dvMainStore)
 
@@ -123,6 +124,10 @@ defineExpose({
 
 <template>
   <div id="previewCanvas" class="canvas-container" :style="canvasStyle" ref="previewCanvas">
+    <canvas-opt-bar
+      :canvas-style-data="canvasStyleData"
+      :component-data="componentData"
+    ></canvas-opt-bar>
     <ComponentWrapper
       v-for="(item, index) in componentData"
       :view-info="canvasViewInfo[item.id]"

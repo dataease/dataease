@@ -93,7 +93,7 @@ public class DatasetDataManage {
             // 获取数据源表的原始字段
             tableFields = (List<TableField>) calciteProvider.fetchResultField(datasourceRequest).get("fields");
         } else {
-            // todo excel,api
+            // excel,api
             CoreDatasource coreDatasource = engineServer.getDeEngine();
             DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
             BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
@@ -143,7 +143,7 @@ public class DatasetDataManage {
             dto.setOriginName(ele.getOriginName());
             dto.setChecked(defaultStatus);
             dto.setType(ele.getType());
-//            dto.setDescription(dto.getName());// todo 字段描述，不一定取的到
+//            dto.setDescription(dto.getName());// 字段描述，不一定取的到
             int deType = FieldUtils.transType2DeType(ele.getType());
             dto.setDeExtractType(deType);
             dto.setDeType(deType);
@@ -208,7 +208,34 @@ public class DatasetDataManage {
         }
         map.put("sql", Base64.getEncoder().encodeToString(querySQL.getBytes()));
         logger.info("calcite data preview sql: " + querySQL);
+        map.put("total", getDatasetTotal(datasetGroupInfoDTO));
         return map;
+    }
+
+    public Long getDatasetTotal(DatasetGroupInfoDTO datasetGroupInfoDTO) throws Exception {
+        Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO);
+        String sql = (String) sqlMap.get("sql");
+
+        Map<Long, DatasourceSchemaDTO> dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
+        List<String> dsList = new ArrayList<>();
+        for (Map.Entry<Long, DatasourceSchemaDTO> next : dsMap.entrySet()) {
+            dsList.add(next.getValue().getType());
+        }
+
+        String querySQL = "SELECT COUNT(*) FROM (" + sql + ") t_a_0";
+        logger.info("calcite data count sql: " + querySQL);
+
+        // 通过数据源请求数据
+        // 调用数据源的calcite获得data
+        DatasourceRequest datasourceRequest = new DatasourceRequest();
+        datasourceRequest.setQuery(querySQL);
+        datasourceRequest.setDsList(dsMap);
+        Map<String, Object> data = calciteProvider.fetchResultField(datasourceRequest);
+        List<String[]> dataList = (List<String[]>) data.get("data");
+        if (ObjectUtils.isNotEmpty(dataList) && ObjectUtils.isNotEmpty(dataList.get(0)) && ObjectUtils.isNotEmpty(dataList.get(0)[0])) {
+            return Long.valueOf(dataList.get(0)[0]);
+        }
+        return 0L;
     }
 
     public Map<String, Object> previewSql(PreviewSqlDTO dto) {

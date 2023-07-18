@@ -1,5 +1,8 @@
 import { Plot } from '@antv/g2plot'
 import {
+  configL7Label,
+  configL7Style,
+  configL7Tooltip,
   getAnalyse,
   getAnalyseHorizontal,
   getLabel,
@@ -11,24 +14,42 @@ import {
   getYAxis
 } from '@/views/chart/components/js/panel/common/common_antv'
 import { PickOptions } from '@antv/g2plot/lib/core/plot'
-
+import { PlotOptions } from '@antv/l7plot/dist/lib/types/plot'
+import { Plot as L7Plot } from '@antv/l7plot/dist/lib/core/plot/index'
+import { FeatureCollection } from '@antv/l7plot/dist/esm/plots/choropleth/types'
+import { deepAssign } from '@antv/g2plot/lib/utils'
+import { ViewLevel } from '@antv/l7plot/dist/lib/plots/choropleth/types'
 export enum ChartRenderType {
   ANT_V = 'antv',
   ECHARTS = 'echarts'
 }
 
+export enum ChartLibraryType {
+  G2_PLOT = 'g2plot',
+  L7_PLOT = 'l7plot',
+  ECHARTS = 'echarts'
+}
 export abstract class AbstractChartView {
-  render: string
+  render: ChartRenderType
+  library: ChartLibraryType
   name: string
+
   protected defaultData: any[]
 
-  protected constructor(render: string, name: string) {
+  protected constructor(
+    render: ChartRenderType,
+    library: ChartLibraryType,
+    name: string,
+    defaultData?: any[]
+  ) {
     this.render = render
+    this.library = library
     this.name = name
+    this.defaultData = defaultData
   }
 }
 
-export interface G2PlotDrawOptions<O> {
+export interface AntVDrawOptions<O> {
   /**
    * 生成的视图对象
    */
@@ -46,8 +67,17 @@ export interface G2PlotDrawOptions<O> {
    * @param args 事件参数
    */
   action?: (...args: any[]) => any
+}
+
+export abstract class AntVAbstractChartView extends AbstractChartView {
+  protected constructor(library: ChartLibraryType, name: string, defaultData?: any[]) {
+    super(ChartRenderType.ANT_V, library, name, defaultData)
+  }
+}
+
+export interface G2PlotDrawOptions<O> extends AntVDrawOptions<O> {
   /**
-   * 其他参数，可以考虑用另外的对象接收？
+   * 缩放比例
    */
   scale?: number
 }
@@ -58,7 +88,7 @@ export interface G2PlotDrawOptions<O> {
 export abstract class G2PlotChartView<
   O extends PickOptions,
   P extends Plot<O>
-> extends AbstractChartView {
+> extends AntVAbstractChartView {
   /**
    * 根据参数构建视图对象然后返回
    * @param drawOptions 视图配置参数
@@ -116,8 +146,7 @@ export abstract class G2PlotChartView<
    */
   protected abstract setupOptions(chart: Chart, options: O): O
   protected constructor(name: string, defaultData: any[]) {
-    super(ChartRenderType.ANT_V, name)
-    this.defaultData = defaultData
+    super(ChartLibraryType.G2_PLOT, name, defaultData)
   }
 }
 
@@ -126,8 +155,42 @@ export abstract class G2PlotChartView<
  */
 export abstract class EchartsChartView extends AbstractChartView {
   protected constructor(name: string, defaultData: any[]) {
-    super(ChartRenderType.ECHARTS, name)
-    this.defaultData = defaultData
+    super(ChartRenderType.ECHARTS, ChartLibraryType.ECHARTS, name, defaultData)
   }
 }
+export interface L7PlotDrawOptions<P> extends AntVDrawOptions<P> {
+  areaId?: string
+  level?: ViewLevel['level']
+  geoJson?: FeatureCollection
+}
 // S2 or others to be defined next
+export abstract class L7PlotChartView<
+  O extends PlotOptions,
+  P extends L7Plot<O>
+> extends AntVAbstractChartView {
+  public abstract drawChart(drawOption: L7PlotDrawOptions<P>): P
+
+  protected configLabel(chart: Chart, options: O): O {
+    const label = configL7Label(chart)
+    deepAssign(options.label, label)
+    return options
+  }
+
+  protected configStyle(chart: Chart, options: O): O {
+    const style = configL7Style(chart)
+    deepAssign(options['style'], style)
+    return options
+  }
+
+  protected configTooltip(chart: Chart, options: O): O {
+    const tooltip = configL7Tooltip(chart)
+    deepAssign(options.tooltip, tooltip)
+    return options
+  }
+
+  protected constructor(name: string, defaultData?: any[]) {
+    super(ChartLibraryType.L7_PLOT, name)
+    this.defaultData = defaultData
+  }
+  protected abstract setupOptions(chart: Chart, options: O): O
+}

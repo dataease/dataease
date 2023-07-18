@@ -129,7 +129,7 @@ declare interface ChartLabelAttr {
   show: boolean
   position: string
   color: string
-  fontSize: string
+  fontSize: number
   formatter: string
   gaugeFormatter: string
   labelLine: LabelLine
@@ -422,6 +422,10 @@ declare interface ChartBasicStyle {
    */
   radarShape: 'circle' | 'polygon'
   /**
+   * 地图底图类型
+   */
+  mapVendor: string
+  /**
    * 地图主题风格
    */
   mapStyle: string
@@ -446,6 +450,10 @@ declare interface ChartBasicStyle {
    */
   symbolStrokeWidth: number
 }
+declare interface MapCfg {
+  level: 'world' | 'country' | 'province' | 'city' | 'district'
+  id: string
+}
 declare interface ChartAttr {
   basicStyle: ChartBasicStyle
   color: ChartColorAttr
@@ -454,6 +462,7 @@ declare interface ChartAttr {
   label: ChartLabelAttr
   tooltip: ChartTooltipAttr
   totalCfg: ChartTotalAttr
+  map: MapCfg
 }
 
 declare interface AssistLine {
@@ -468,6 +477,7 @@ declare interface ChartSenior {
   functionCfg: ChartFunctionCfg
   assistLine: AssistLine[]
   threshold: ChartThreshold
+  mapMapping: Record<string, Record<string, string>>
 }
 declare interface Axis {
   name: string
