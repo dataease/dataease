@@ -14,4 +14,7 @@ spring:
     baseline-on-migrate: true
     out-of-order: true
 
+mybatis-plus:
+  mapper-locations: classpath:mybatis/*.xml
+
 

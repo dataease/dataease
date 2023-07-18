@@ -8,7 +8,7 @@ import PreviewHead from '@/views/data-visualization/PreviewHead.vue'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import { storeToRefs } from 'pinia'
 import { toPng } from 'html-to-image'
-import { initCanvasDataPrepare } from '@/utils/canvasUtils'
+import { initCanvasData } from '@/utils/canvasUtils'
 
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo } = storeToRefs(dvMainStore)
@@ -25,7 +25,7 @@ const props = defineProps({
 })
 
 const loadCanvasData = dvId => {
-  initCanvasDataPrepare(
+  initCanvasData(
     dvId,
     function ({
       canvasDataResult,

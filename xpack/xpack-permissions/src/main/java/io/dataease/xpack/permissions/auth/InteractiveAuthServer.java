@@ -56,6 +56,11 @@ public class InteractiveAuthServer implements InteractiveAuthApi {
     }
 
     @Override
+    public boolean checkDel(Long id) {
+        return syncAuthManage.checkDel(id);
+    }
+
+    @Override
     public String outAuthPlatformLogin(OutAuthPlatformLoginRequest request) {
         return outAuthPlatformManage.login(request);
     }

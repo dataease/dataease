@@ -19,6 +19,14 @@
       v-if="linkageInfo && linkageInfo.linkageActive"
       :element="element"
     ></linkage-field>
+    <span
+      :title="t('visualization.cancel_linkage')"
+      v-if="barShowCheck('unLinkage') && existLinkage"
+    >
+      <el-icon class="bar-base-icon" @click="clearLinkage">
+        <Icon name="dv-bar-unLinkage"></Icon
+      ></el-icon>
+    </span>
     <div v-if="barShowCheck('batchOpt')" class="bar-checkbox-area">
       <el-checkbox size="medium" @change="batchOptChange" />
     </div>
@@ -56,8 +64,8 @@ const { t } = useI18n()
 
 // bar所在位置可以显示的功能按钮
 const positionBarShow = {
-  canvas: ['enlarge', 'setting'],
-  preview: ['enlarge'],
+  canvas: ['enlarge', 'setting', 'unLinkage'],
+  preview: ['enlarge', 'unLinkage'],
   multiplexing: ['multiplexing'],
   batchOpt: ['batchOpt'],
   linkage: ['linkage']
@@ -65,7 +73,7 @@ const positionBarShow = {
 
 // bar所属组件类型可以显示的功能按钮
 const componentTypeBarShow = {
-  UserView: ['enlarge', 'setting', 'multiplexing', 'batchOpt', 'linkage'],
+  UserView: ['enlarge', 'setting', 'multiplexing', 'batchOpt', 'linkage', 'unLinkage'],
   default: ['setting', 'multiplexing']
 }
 
@@ -209,9 +217,28 @@ const linkageSetting = () => {
   })
 }
 
+const existLinkage = computed(() => {
+  let linkageFiltersCount = 0
+  componentData.value.forEach(item => {
+    if (item.linkageFilters && item.linkageFilters.length > 0) {
+      item.linkageFilters.forEach(linkage => {
+        if (element.value.id === linkage.sourceViewId) {
+          linkageFiltersCount++
+        }
+      })
+    }
+  })
+  return linkageFiltersCount
+})
+
 const linkageInfo = computed(() => {
   return targetLinkageInfo.value[element.value.id]
 })
+
+// 清除相同sourceViewId 的 联动条件
+const clearLinkage = () => {
+  dvMainStore.clearViewLinkage(element.value.id)
+}
 
 // 联动-End
 </script>

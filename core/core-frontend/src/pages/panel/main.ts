@@ -88,6 +88,7 @@ class DataEaseBi {
   dvId: string
   resourceId: string
   pid: string
+  chartId: string
   deOptions: Options
   vm: App<Element>
 
@@ -97,6 +98,7 @@ class DataEaseBi {
     this.baseUrl = options.baseUrl
     this.dvId = options.dvId
     this.pid = options.pid
+    this.chartId = options.chartId
     this.resourceId = options.resourceId
   }
 

@@ -459,5 +459,32 @@ CREATE TABLE QRTZ_LOCKS
     LOCK_NAME  VARCHAR(40)  NOT NULL,
     PRIMARY KEY (SCHED_NAME, LOCK_NAME)
 );
+
+DROP TABLE IF EXISTS `visualization_linkage`;
+CREATE TABLE `visualization_linkage` (
+                                         `id` varchar(50) NOT NULL,
+                                         `dv_id` varchar(50) DEFAULT NULL,
+                                         `source_view_id` varchar(50) DEFAULT NULL COMMENT '源视图id',
+                                         `target_view_id` varchar(50) DEFAULT NULL COMMENT '联动视图id',
+                                         `update_time` bigint DEFAULT NULL COMMENT '更新时间',
+                                         `update_people` varchar(255) DEFAULT NULL COMMENT '更新人',
+                                         `linkage_active` tinyint(1) DEFAULT '0' COMMENT '是否启用关联',
+                                         `ext1` varchar(2000) DEFAULT NULL,
+                                         `ext2` varchar(2000) DEFAULT NULL,
+                                         `copy_from` varchar(255) DEFAULT NULL,
+                                         `copy_id` varchar(255) DEFAULT NULL,
+                                         PRIMARY KEY (`id`)
+);
+DROP TABLE IF EXISTS `visualization_linkage_field`;
+CREATE TABLE `visualization_linkage_field` (
+                                               `id` varchar(50) NOT NULL,
+                                               `linkage_id` varchar(50) DEFAULT NULL COMMENT '联动ID',
+                                               `source_field` varchar(255) DEFAULT NULL COMMENT '源视图字段',
+                                               `target_field` varchar(255) DEFAULT NULL COMMENT '目标视图字段',
+                                               `update_time` bigint DEFAULT NULL COMMENT '更新时间',
+                                               `copy_from` varchar(255) DEFAULT NULL,
+                                               `copy_id` varchar(255) DEFAULT NULL,
+                                               PRIMARY KEY (`id`)
+);
 commit;
 

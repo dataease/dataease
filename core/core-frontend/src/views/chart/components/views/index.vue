@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { useI18n } from '@/hooks/web/useI18n'
 import ChartComponentG2Plot from './components/ChartComponentG2Plot.vue'
-import { computed, onMounted, reactive, ref, toRefs, watch } from 'vue'
+import { computed, onBeforeMount, onMounted, reactive, ref, toRefs, watch } from 'vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { hexColorToRGBA } from '@/views/chart/components/js/util.js'
 import { DEFAULT_TITLE_STYLE } from '@/views/chart/components/editor/util/chart'
@@ -13,6 +13,7 @@ import { useCache } from '@/hooks/web/useCache'
 
 const { wsCache } = useCache()
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { cloneDeep } from 'lodash-es'
 
 const g2 = ref<any>()
 
@@ -121,8 +122,8 @@ const chartClick = param => {
 }
 
 // 仪表板和大屏所有额外过滤参数都在此处
-const filter = () => {
-  const { filter } = useFilter(view.value.id)
+const filter = (firstLoad: boolean) => {
+  const { filter } = useFilter(view.value.id, firstLoad)
   return {
     user: wsCache.get('user.uid'),
     filter,
@@ -142,7 +143,22 @@ const onDrillFilters = param => {
   })
 }
 
+const queryData = (firstLoad = false) => {
+  const queryFilter = filter(firstLoad)
+  let params = cloneDeep(view.value)
+  params['chartExtRequest'] = queryFilter
+  g2?.value?.calcData(params)
+}
+
+onBeforeMount(() => {
+  useEmitt({
+    name: `query-data-${view.value.id}`,
+    callback: queryData
+  })
+})
+
 onMounted(() => {
+  queryData(true)
   useEmitt({
     name: 'snapshotChangeToView',
     callback: function (cacheViewInfo) {
@@ -152,7 +168,7 @@ onMounted(() => {
           cacheViewInfo.snapshotCacheViewCalc.includes(view.value.id) ||
           cacheViewInfo.snapshotCacheViewCalc.includes('all')
         ) {
-          view.value.chartExtRequest = filter()
+          view.value.chartExtRequest = filter(false)
           g2?.value?.calcData(view.value)
         } else if (
           cacheViewInfo.snapshotCacheViewRender.includes(view.value.id) ||
@@ -168,7 +184,7 @@ onMounted(() => {
     callback: function (val) {
       initTitle()
       nextTick(() => {
-        view.value.chartExtRequest = filter()
+        view.value.chartExtRequest = filter(false)
         g2?.value?.calcData(val)
       })
     }
