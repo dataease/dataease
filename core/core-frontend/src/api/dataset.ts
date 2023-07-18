@@ -60,6 +60,12 @@ export const getDatasetTree = async (data = {}): Promise<IResponse> => {
   })
 }
 
+export const barInfoApi = async (id): Promise<IResponse> => {
+  return request.get({ url: `/datasetTree/barInfo/${id}`, data: {} }).then(res => {
+    return res?.data
+  })
+}
+
 export const delDatasetTree = async (id): Promise<IResponse> => {
   return request.post({ url: `/datasetTree/delete/${id}`, data: {} }).then(res => {
     return res?.data

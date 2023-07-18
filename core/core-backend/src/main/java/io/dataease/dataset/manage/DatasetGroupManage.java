@@ -1,22 +1,25 @@
 package io.dataease.dataset.manage;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.core.type.TypeReference;
-import io.dataease.api.dataset.dto.DatasetNodeDTO;
 import io.dataease.api.dataset.dto.DatasetTableDTO;
-import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.union.UnionDTO;
-import io.dataease.api.dataset.vo.DatasetTreeNodeVO;
+import io.dataease.api.dataset.vo.DataSetBarVO;
 import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
 import io.dataease.api.permissions.auth.dto.BusiResourceCreator;
 import io.dataease.api.permissions.auth.dto.BusiResourceEditor;
-import io.dataease.api.permissions.auth.vo.BusiPerVO;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetGroup;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupMapper;
+import io.dataease.dataset.dao.ext.mapper.CoreDataSetExtMapper;
+import io.dataease.dataset.dao.ext.po.DataSetNodePO;
+import io.dataease.dataset.dto.DataSetNodeBO;
 import io.dataease.dataset.utils.TableUtils;
+import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.exception.DEException;
+import io.dataease.model.BusiNodeVO;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
 import io.dataease.utils.JsonUtil;
@@ -50,6 +53,9 @@ public class DatasetGroupManage {
 
     @Autowired(required = false)
     private InteractiveAuthApi interactiveAuthApi;
+
+    @Resource
+    private CoreDataSetExtMapper coreDataSetExtMapper;
 
     private static final String leafType = "dataset";
 
@@ -140,9 +146,34 @@ public class DatasetGroupManage {
         }
     }
 
-    public List tree(DatasetNodeDTO datasetNodeDTO) {
+    public List<BusiNodeVO> tree() {
         if (ObjectUtils.isNotEmpty(interactiveAuthApi)) {
-            List<BusiPerVO> resource = interactiveAuthApi.resource(leafType);
+            return interactiveAuthApi.resource(leafType);
+        }
+        List<DataSetNodePO> pos = coreDataSetExtMapper.query();
+        List<DataSetNodeBO> nodes = new ArrayList<>();
+        nodes.add(rootNode());
+        List<DataSetNodeBO> bos = pos.stream().map(this::convert).toList();
+        if (CollectionUtil.isNotEmpty(bos)) {
+            nodes.addAll(bos);
+        }
+        return TreeUtils.mergeTree(nodes, BusiNodeVO.class, false);
+    }
+
+    public DataSetBarVO queryBarInfo(Long id) {
+        return coreDataSetExtMapper.queryBarInfo(id);
+    }
+
+    private DataSetNodeBO rootNode() {
+        return new DataSetNodeBO(0L, "root", false, 3, -1L, 0);
+    }
+
+    private DataSetNodeBO convert(DataSetNodePO po) {
+        return new DataSetNodeBO(po.getId(), po.getName(), StringUtils.equals(po.getNodeType(), leafType), 3, po.getPid(), 0);
+    }
+    /*public List tree(DatasetNodeDTO datasetNodeDTO) {
+        if (ObjectUtils.isNotEmpty(interactiveAuthApi)) {
+            List<BusiNodeVO> resource = interactiveAuthApi.resource(leafType);
             if (StringUtils.equalsIgnoreCase("folder", datasetNodeDTO.getNodeType())) {
                 filterNode(resource);
             }
@@ -160,12 +191,12 @@ public class DatasetGroupManage {
             return vo;
         }).collect(Collectors.toList());
         return TreeUtils.mergeTree(collect);
-    }
+    }*/
 
-    public void filterNode(List<BusiPerVO> list) {
+    public void filterNode(List<BusiNodeVO> list) {
         if (ObjectUtils.isNotEmpty(list)) {
-            list.removeIf(BusiPerVO::getLeaf);
-            for (BusiPerVO dto : list) {
+            list.removeIf(BusiNodeVO::getLeaf);
+            for (BusiNodeVO dto : list) {
                 if (ObjectUtils.isNotEmpty(dto.getChildren())) {
                     filterNode(dto.getChildren());
                 }

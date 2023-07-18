@@ -6,8 +6,7 @@ import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.api.permissions.auth.dto.BusiResourceCreator;
 import io.dataease.api.permissions.auth.dto.BusiResourceEditor;
 import io.dataease.api.permissions.auth.dto.OutAuthPlatformLoginRequest;
-import io.dataease.api.permissions.auth.vo.BusiPerVO;
-import io.swagger.v3.oas.annotations.Hidden;
+import io.dataease.model.BusiNodeVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -33,7 +32,7 @@ public interface InteractiveAuthApi {
     @ApiOperationSupport(order = 2)
     @Parameter(name = "flag", description = "类型")
     @GetMapping("/resource/{flag}")
-    List<BusiPerVO> resource(@PathVariable("flag") String flag);
+    List<BusiNodeVO> resource(@PathVariable("flag") String flag);
 
     /**
      * 下面3个接口为内部调用接口不对外开放
