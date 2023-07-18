@@ -162,11 +162,25 @@ public interface BusiAuthExtMapper {
     List<Long> resourceIdsByRt(@Param("rtid") Integer rtid, @Param("oid") Long oid);
 
 
-    @Delete("delete from per_auth_busi_user where resource_id = #{resourceId} ")
-    int delUserPerByResource(@Param("resourceId") Long resourceId);
+    @Delete("""
+            <script>
+            delete from per_auth_busi_user where resource_id in
+            <foreach item='resourceId' index='index' collection='ids' open='(' separator=',' close=')'>
+            #{resourceId}
+            </foreach>
+            </script>
+            """)
+    int delUserPerByResource(@Param("ids") List<Long> ids);
 
-    @Delete("delete from per_auth_busi_role where resource_id = #{resourceId} ")
-    int delRolePerByResource(@Param("resourceId") Long resourceId);
+    @Delete("""
+            <script>
+            delete from per_auth_busi_role where resource_id in
+            <foreach item='resourceId' index='index' collection='ids' open='(' separator=',' close=')'>
+            #{resourceId}
+            </foreach>
+            </script>
+            """)
+    int delRolePerByResource(@Param("ids") List<Long> ids);
 
     @Select("select weight from per_auth_busi_user where uid = #{uid} and resource_id = 0 and resource_type = #{rtid} and oid = #{oid}")
     Integer userRootWeight(@Param("uid") Long uid, @Param("rtid") Integer rtid, @Param("oid") Long oid);
@@ -180,4 +194,7 @@ public interface BusiAuthExtMapper {
             </script>
             """)
     List<PermissionItem> roleRootWeight(@Param("rids") List<Long> rids, @Param("rtid") Integer rtid);
+
+    @Select("select id from per_busi_resource where root_way like concat('%', #{id}, '%')")
+    List<Long> childrenResourceIds(@Param("id") Long id);
 }
