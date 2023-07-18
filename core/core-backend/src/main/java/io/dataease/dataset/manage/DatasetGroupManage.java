@@ -114,6 +114,11 @@ public class DatasetGroupManage {
     }
 
     public void delete(Long id) {
+        boolean delAuthMatch = false;
+        if (ObjectUtils.isNotEmpty(interactiveAuthApi)) {
+            delAuthMatch = interactiveAuthApi.checkDel(id);
+        }
+        if (!delAuthMatch) return;
         CoreDatasetGroup coreDatasetGroup = coreDatasetGroupMapper.selectById(id);
         if (ObjectUtils.isEmpty(coreDatasetGroup)) {
             return;

@@ -192,7 +192,7 @@ public class SyncAuthManage {
             }
         } catch (Exception e) {
             LogUtil.error(e.getMessage(), e);
-            return false;
+            DEException.throwException(e);
         }
         return true;
     }
