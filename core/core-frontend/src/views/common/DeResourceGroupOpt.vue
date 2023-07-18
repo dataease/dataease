@@ -1,9 +1,10 @@
 <script lang="ts" setup>
 import { ref, reactive, computed, watch, toRefs } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
+import { BusiTreeNode } from '@/models/tree/TreeNode'
 import {
   dvNameCheck,
-  findTree,
+  queryTreeApi,
   ResourceOrFolder,
   savaOrUpdateBase
 } from '@/api/visualization/dataVisualization'
@@ -17,24 +18,6 @@ const props = defineProps({
 
 const { curCanvasType } = toRefs(props)
 
-export interface ResourceTree {
-  id: string | number
-  pid: string | number
-  name: string
-  label: string
-  value?: string | number
-  nodeType: string
-  type?: string
-  mobileLayout?: string
-  remark?: string
-  source?: string
-  level?: number
-  createTime?: number
-  createBy?: string
-  updateTime?: number
-  updateBy?: string
-  children?: ResourceTree[]
-}
 const { t } = useI18n()
 
 const state = reactive({
@@ -60,7 +43,7 @@ const nameMap = {
   rename: '编辑'
 }
 
-const filterNode = (value: string, data: ResourceTree) => {
+const filterNode = (value: string, data: BusiTreeNode) => {
   if (!value) return true
   return data.name.includes(value)
 }
@@ -128,33 +111,30 @@ const resetForm = () => {
   resourceDialogShow.value = false
 }
 
-const dfs = (arr: ResourceTree[]) => {
+const dfs = (arr: BusiTreeNode[]) => {
   arr.forEach(ele => {
-    ele.value = ele.id
+    ele['value'] = ele.id
     if (ele.children?.length) {
       dfs(ele.children)
     }
   })
 }
 
-const optInit = (type, data: ResourceTree, exec) => {
+const optInit = (type, data: BusiTreeNode, exec) => {
   nodeType.value = type
   dialogTitle.value = nameMap[exec]
-  findTree({
-    nodeType: 'folder',
-    type: curCanvasType.value
-  }).then(res => {
-    const resultTree = res.data
-    dfs(resultTree as unknown as ResourceTree[])
-    state.tData = (resultTree as unknown as ResourceTree[]) || []
+  queryTreeApi(curCanvasType.value).then(res => {
+    const resultTree = res
+    dfs(resultTree as unknown as BusiTreeNode[])
+    state.tData = (resultTree as unknown as BusiTreeNode[]) || []
     if (['newLeaf', 'newFolder'].includes(exec)) {
       resourceForm.pid = data.id as string
       pid.value = data.id
       resourceForm.name = nameMap[exec]
     } else {
-      pid.value = data.pid
+      pid.value = data['pid']
       id.value = data.id
-      resourceForm.pid = data.pid as string
+      resourceForm.pid = data['pid'] as string
       resourceForm.name = data.name
     }
   })
@@ -163,8 +143,8 @@ const optInit = (type, data: ResourceTree, exec) => {
   resourceFormRules.value = rules
 }
 
-const editeInit = (param: ResourceTree) => {
-  pid.value = param.pid
+const editeInit = (param: BusiTreeNode) => {
+  pid.value = param['pid']
   id.value = param.id
 }
 
@@ -174,7 +154,7 @@ const propsTree = {
   isLeaf: node => !node.children?.length
 }
 
-const nodeClick = (data: ResourceTree) => {
+const nodeClick = (data: BusiTreeNode) => {
   resourceForm.pid = data.id as string
 }
 

@@ -12,7 +12,7 @@ import io.dataease.visualization.dao.auto.entity.VisualizationLinkageField;
 import io.dataease.visualization.dao.auto.mapper.DataVisualizationInfoMapper;
 import io.dataease.visualization.dao.auto.mapper.VisualizationLinkageFieldMapper;
 import io.dataease.visualization.dao.auto.mapper.VisualizationLinkageMapper;
-import io.dataease.visualization.dao.ext.ExtVisualizationLinkageMapper;
+import io.dataease.visualization.dao.ext.mapper.ExtVisualizationLinkageMapper;
 import jakarta.annotation.Resource;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.transaction.annotation.Transactional;

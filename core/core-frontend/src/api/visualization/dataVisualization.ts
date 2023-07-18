@@ -10,7 +10,12 @@ export interface ResourceOrFolder {
 
 export const findById = dvId => request.get({ url: '/dataVisualization/findById/' + dvId })
 
-export const findTree = data => request.post({ url: '/dataVisualization/findTree', data })
+// export const queryTreeApi = data => request.post({ url: '/dataVisualization/tree', data })
+export const queryTreeApi = async (busiType): Promise<IResponse> => {
+  return request.get({ url: `/dataVisualization/tree/${busiType}`, data: {} }).then(res => {
+    return res?.data
+  })
+}
 
 export const save = data => request.post({ url: '/dataVisualization/save', data })
 

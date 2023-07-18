@@ -7,18 +7,18 @@ import io.dataease.api.permissions.auth.dto.BusiResourceCreator;
 import io.dataease.api.permissions.auth.dto.BusiResourceEditor;
 import io.dataease.api.visualization.DataVisualizationApi;
 import io.dataease.api.visualization.request.DataVisualizationBaseRequest;
-import io.dataease.api.visualization.vo.DataVisualizationBaseVO;
 import io.dataease.api.visualization.vo.DataVisualizationVO;
 import io.dataease.chart.manage.ChartViewManege;
 import io.dataease.commons.constants.DataVisualizationConstants;
 import io.dataease.commons.exception.DataEaseException;
 import io.dataease.exception.DEException;
+import io.dataease.model.BusiNodeVO;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
-import io.dataease.utils.TreeUtils;
 import io.dataease.visualization.dao.auto.entity.DataVisualizationInfo;
 import io.dataease.visualization.dao.auto.mapper.DataVisualizationInfoMapper;
-import io.dataease.visualization.dao.ext.ExtDataVisualizationMapper;
+import io.dataease.visualization.dao.ext.mapper.ExtDataVisualizationMapper;
+import io.dataease.visualization.manage.CoreVisualizationManage;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -49,6 +49,9 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
     @Autowired(required = false)
     private InteractiveAuthApi interactiveAuthApi;
+
+    @Resource
+    private CoreVisualizationManage coreVisualizationManage;
 
     @Override
     public DataVisualizationVO findById(Long dvId) {
@@ -147,6 +150,9 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
     @Override
     public void deleteLogic(Long dvId) {
+        if (ObjectUtils.isNotEmpty(interactiveAuthApi) && !interactiveAuthApi.checkDel(dvId)) {
+            return;
+        }
         DataVisualizationInfo visualizationInfo = new DataVisualizationInfo();
         visualizationInfo.setDeleteBy("");
         visualizationInfo.setDeleteTime(System.currentTimeMillis());
@@ -158,14 +164,10 @@ public class DataVisualizationServer implements DataVisualizationApi {
         }
     }
 
+
     @Override
-    public List<DataVisualizationBaseVO> findTree(DataVisualizationBaseRequest request) {
-        List<DataVisualizationBaseVO> result = dvMapper.findBashInfo(request.getNodeType(), request.getType());
-        if (CollectionUtils.isEmpty(result)) {
-            return new ArrayList<>();
-        } else {
-            return TreeUtils.mergeTree(result, 0L);
-        }
+    public List<BusiNodeVO> tree(String busiType) {
+        return coreVisualizationManage.tree(busiType);
     }
 
     @Override
@@ -207,13 +209,13 @@ public class DataVisualizationServer implements DataVisualizationApi {
         QueryWrapper<DataVisualizationInfo> wrapper = new QueryWrapper<>();
         wrapper.eq("delete_flag", 0);
         wrapper.eq("pid", request.getPid());
-        wrapper.eq("name",request.getName());
-        wrapper.eq("node_type",request.getNodeType());
-        wrapper.eq("type",request.getType());
-        if("update".equalsIgnoreCase(request.getOpt())){
-            wrapper.ne("id",request.getId());
+        wrapper.eq("name", request.getName());
+        wrapper.eq("node_type", request.getNodeType());
+        wrapper.eq("type", request.getType());
+        if ("update".equalsIgnoreCase(request.getOpt())) {
+            wrapper.ne("id", request.getId());
         }
-        if(visualizationInfoMapper.exists(wrapper)){
+        if (visualizationInfoMapper.exists(wrapper)) {
             DataEaseException.throwException("当前名称已经存在");
         }
     }
