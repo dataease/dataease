@@ -112,6 +112,7 @@ public class SysUserController {
             @ApiImplicitParam(paramType = "path", name = "pageSize", value = "页容量", required = true, dataType = "Integer"),
             @ApiImplicitParam(name = "request", value = "查询条件", required = true)
     })
+    @SqlInjectValidator(value = {"create_time", "u.enabled", "nick_name", "u.dept_id"})
     public Pager<List<SysUserGridResponse>> userGrids(@PathVariable String datasetId, @RequestBody KeyGridRequest request) {
         return userGrid(0, 0, request);
     }
