@@ -2,6 +2,7 @@ package io.dataease.api.visualization;
 
 import io.dataease.api.visualization.request.DataVisualizationBaseRequest;
 import io.dataease.api.visualization.vo.DataVisualizationVO;
+import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,8 +27,8 @@ public interface DataVisualizationApi {
     void deleteLogic(@PathVariable("dvId") Long dvId);
 
 
-    @GetMapping("/tree/{busiType}")
-    List<BusiNodeVO> tree(@PathVariable("busiType") String busiType);
+    @PostMapping("/tree")
+    List<BusiNodeVO> tree(@RequestBody BusiNodeRequest request);
 
     @PostMapping("/savaOrUpdateBase")
     void savaOrUpdateBase(@RequestBody DataVisualizationBaseRequest request);

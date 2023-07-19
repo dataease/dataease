@@ -4,6 +4,7 @@ import io.dataease.api.dataset.dto.DatasetNodeDTO;
 import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.vo.DataSetBarVO;
+import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,7 +23,7 @@ public interface DatasetTreeApi {
 
 
     @PostMapping("tree")
-    List<BusiNodeVO> tree();
+    List<BusiNodeVO> tree(@RequestBody BusiNodeRequest request);
 
     @GetMapping("/barInfo/{id}")
     DataSetBarVO barInfo(@PathVariable("id") Long id);

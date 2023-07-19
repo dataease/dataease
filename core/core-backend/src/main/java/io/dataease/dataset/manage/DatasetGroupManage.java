@@ -19,6 +19,7 @@ import io.dataease.dataset.utils.TableUtils;
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.exception.DEException;
+import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import io.dataease.utils.*;
 import jakarta.annotation.Resource;
@@ -148,13 +149,17 @@ public class DatasetGroupManage {
     }
 
 
-    public List<BusiNodeVO> tree() {
+    public List<BusiNodeVO> tree(BusiNodeRequest request) {
+        request.setBusyFlag(leafType);
         if (ObjectUtils.isNotEmpty(interactiveAuthApi)) {
-            return interactiveAuthApi.resource(leafType);
+            return interactiveAuthApi.resource(request);
         }
-        List<DataSetNodePO> pos = coreDataSetExtMapper.query();
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq(ObjectUtils.isNotEmpty(request.getLeaf()), "node_type", request.getLeaf() ? "dataset" : "folder");
+        queryWrapper.orderByDesc("create_time");
+        List<DataSetNodePO> pos = coreDataSetExtMapper.query(queryWrapper);
         List<DataSetNodeBO> nodes = new ArrayList<>();
-        nodes.add(rootNode());
+        if (ObjectUtils.isEmpty(request.getLeaf()) || !request.getLeaf()) nodes.add(rootNode());
         List<DataSetNodeBO> bos = pos.stream().map(this::convert).toList();
         if (CollectionUtil.isNotEmpty(bos)) {
             nodes.addAll(bos);

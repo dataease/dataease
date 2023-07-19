@@ -12,6 +12,7 @@ import io.dataease.chart.manage.ChartViewManege;
 import io.dataease.commons.constants.DataVisualizationConstants;
 import io.dataease.commons.exception.DataEaseException;
 import io.dataease.exception.DEException;
+import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
@@ -166,8 +167,8 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
 
     @Override
-    public List<BusiNodeVO> tree(String busiType) {
-        return coreVisualizationManage.tree(busiType);
+    public List<BusiNodeVO> tree(BusiNodeRequest request) {
+        return coreVisualizationManage.tree(request);
     }
 
     @Override
