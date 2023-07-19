@@ -407,13 +407,13 @@ public class DatasetSQLManage {
         if (StringUtils.equalsIgnoreCase(currentDs.getType(), DatasetTableTypeConstants.DATASET_TABLE_DB)) {
             tableObj = SQLObj.builder().tableSchema(tableSchema).tableName(infoDTO.getTable()).tableAlias(tableAlias).build();
         } else if (StringUtils.equalsIgnoreCase(currentDs.getType(), DatasetTableTypeConstants.DATASET_TABLE_SQL)) {
-            // add table schema
-            String sql = SqlUtils.addSchema(new String(Base64.getDecoder().decode(infoDTO.getSql())), tableSchema);
             // parser sql params and replace default value
-            sql = SqlparserUtils.handleVariableDefaultValue(sql, currentDs.getSqlVariableDetails(), true);
+            String sql = SqlparserUtils.handleVariableDefaultValue(new String(Base64.getDecoder().decode(infoDTO.getSql())), currentDs.getSqlVariableDetails(), true);
+            // add table schema
+            sql = SqlUtils.addSchema(sql, tableSchema);
             tableObj = SQLObj.builder().tableSchema("").tableName("(" + sql + ")").tableAlias(tableAlias).build();
         } else {
-            // todo excel,api
+            // excel,api
             tableObj = SQLObj.builder().tableSchema(tableSchema).tableName(infoDTO.getTable()).tableAlias(tableAlias).build();
         }
         return tableObj;

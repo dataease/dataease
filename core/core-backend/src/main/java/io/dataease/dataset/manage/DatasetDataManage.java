@@ -84,10 +84,10 @@ public class DatasetDataManage {
                 // add table schema
                 datasourceRequest.setQuery(TableUtils.tableName2Sql(datasourceSchemaDTO, tableInfoDTO.getTable()));
             } else {
-                // add sql table schema
-                String sql = SqlUtils.addSchema(new String(Base64.getDecoder().decode(tableInfoDTO.getSql())), datasourceSchemaDTO.getSchemaAlias());
                 // parser sql params and replace default value
-                sql = SqlparserUtils.handleVariableDefaultValue(sql, datasetTableDTO.getSqlVariableDetails(), true);
+                String sql = SqlparserUtils.handleVariableDefaultValue(new String(Base64.getDecoder().decode(tableInfoDTO.getSql())), datasetTableDTO.getSqlVariableDetails(), true);
+                // add sql table schema
+                sql = SqlUtils.addSchema(sql, datasourceSchemaDTO.getSchemaAlias());
                 datasourceRequest.setQuery(sql);
             }
             // 获取数据源表的原始字段
@@ -248,9 +248,9 @@ public class DatasetDataManage {
             BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
         }
         datasourceSchemaDTO.setSchemaAlias(alias);
-        String sql = SqlUtils.addSchema(datasetSQLManage.subPrefixSuffixChar(new String(Base64.getDecoder().decode(dto.getSql()))), alias);
         // parser sql params and replace default value
-        sql = SqlparserUtils.handleVariableDefaultValue(sql, dto.getSqlVariableDetails(), true);
+        String sql = SqlparserUtils.handleVariableDefaultValue(datasetSQLManage.subPrefixSuffixChar(new String(Base64.getDecoder().decode(dto.getSql()))), dto.getSqlVariableDetails(), true);
+        sql = SqlUtils.addSchema(sql, alias);
         Map<Long, DatasourceSchemaDTO> dsMap = new LinkedHashMap<>();
         dsMap.put(datasourceSchemaDTO.getId(), datasourceSchemaDTO);
         DatasourceRequest datasourceRequest = new DatasourceRequest();
