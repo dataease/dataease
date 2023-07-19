@@ -1,7 +1,9 @@
 package io.dataease.visualization.manage;
 
 import cn.hutool.core.collection.CollectionUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
+import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import io.dataease.utils.TreeUtils;
 import io.dataease.visualization.dao.ext.mapper.CoreVisualiationExtMapper;
@@ -26,15 +28,21 @@ public class CoreVisualizationManage {
     @Resource
     private CoreVisualiationExtMapper coreVisualiationExtMapper;
 
-    public List<BusiNodeVO> tree(String busiType) {
-
+    public List<BusiNodeVO> tree(BusiNodeRequest request) {
+        String busiType = request.getBusyFlag();
         if (ObjectUtils.isNotEmpty(interactiveAuthApi)) {
             String authFlag = StringUtils.equals("dataV", busiType) ? "screen" : "panel";
-            return interactiveAuthApi.resource(authFlag);
+            request.setBusyFlag(authFlag);
+            return interactiveAuthApi.resource(request);
         }
         List<VisualizationNodeBO> nodes = new ArrayList<>();
-        nodes.add(rootNode());
-        List<VisualizationNodePO> pos = coreVisualiationExtMapper.queryNodes(busiType);
+        if (ObjectUtils.isEmpty(request.getLeaf()) || !request.getLeaf()) nodes.add(rootNode());
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("delete_flag", false);
+        queryWrapper.eq(ObjectUtils.isNotEmpty(request.getLeaf()), "node_type", request.getLeaf() ? "leaf" : "folder");
+        queryWrapper.eq("type", busiType);
+        queryWrapper.orderByDesc("create_time");
+        List<VisualizationNodePO> pos = coreVisualiationExtMapper.queryNodes(queryWrapper);
         if (CollectionUtil.isNotEmpty(pos)) {
             nodes.addAll(pos.stream().map(item -> convert(item, busiType)).collect(Collectors.toList()));
         }

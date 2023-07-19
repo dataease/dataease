@@ -7,7 +7,7 @@ import { HandleMore } from '@/components/handle-more'
 import { Icon } from '@/components/icon-custom'
 import { useRouter } from 'vue-router'
 import CreatDsGroup from './form/CreatDsGroup.vue'
-import type { BusiTreeNode } from '@/models/tree/TreeNode'
+import type { BusiTreeNode, BusiTreeRequest } from '@/models/tree/TreeNode'
 import { getDatasetTree, delDatasetTree, getDatasetPreview, barInfoApi } from '@/api/dataset'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import DatasetDetail from './DatasetDetail.vue'
@@ -122,7 +122,8 @@ const generateColumns = (arr: Field[]) =>
   }))
 
 const getData = () => {
-  getDatasetTree().then(res => {
+  const request = { busiFlag: 'dataset' } as BusiTreeRequest
+  getDatasetTree(request).then(res => {
     const nodeData = (res as unknown as BusiTreeNode[]) || []
     if (nodeData.length === 1 && nodeData[0]['id'] === '0' && nodeData[0]['name'] === 'root') {
       rootManage.value = nodeData[0]['weight'] >= 3

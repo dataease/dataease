@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref, reactive, computed, watch, toRefs } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
-import { BusiTreeNode } from '@/models/tree/TreeNode'
+import { BusiTreeNode, BusiTreeRequest } from '@/models/tree/TreeNode'
 import {
   dvNameCheck,
   queryTreeApi,
@@ -123,7 +123,8 @@ const dfs = (arr: BusiTreeNode[]) => {
 const optInit = (type, data: BusiTreeNode, exec) => {
   nodeType.value = type
   dialogTitle.value = nameMap[exec]
-  queryTreeApi(curCanvasType.value).then(res => {
+  const request = { busiFlag: curCanvasType.value, leaf: false, weight: 3 }
+  queryTreeApi(request).then(res => {
     const resultTree = res
     dfs(resultTree as unknown as BusiTreeNode[])
     state.tData = (resultTree as unknown as BusiTreeNode[]) || []

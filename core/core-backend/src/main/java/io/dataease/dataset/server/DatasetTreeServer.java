@@ -5,6 +5,7 @@ import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.vo.DataSetBarVO;
 import io.dataease.dataset.manage.DatasetGroupManage;
+import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,8 +30,8 @@ public class DatasetTreeServer implements DatasetTreeApi {
     }
 
 
-    public List<BusiNodeVO> tree() {
-        return datasetGroupManage.tree();
+    public List<BusiNodeVO> tree(BusiNodeRequest request) {
+        return datasetGroupManage.tree(request);
     }
 
     @Override

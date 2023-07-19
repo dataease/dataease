@@ -6,14 +6,13 @@ import { ElIcon, ElMessage } from 'element-plus-secondary'
 import { Icon } from '@/components/icon-custom'
 import { HandleMore } from '@/components/handle-more'
 import DeResourceGroupOpt from '@/views/common/DeResourceGroupOpt.vue'
-import { BusiTreeNode } from '@/models/tree/TreeNode'
+import { BusiTreeNode, BusiTreeRequest } from '@/models/tree/TreeNode'
 import { guid } from '@/views/visualized/data/dataset/form/util.js'
 import { save } from '@/api/visualization/dataVisualization'
 import {
   DEFAULT_CANVAS_STYLE_DATA_DARK,
   DEFAULT_CANVAS_STYLE_DATA_LIGHT
 } from '@/views/chart/components/editor/util/dataVisualiztion'
-
 const props = defineProps({
   curCanvasType: {
     type: String,
@@ -97,7 +96,8 @@ const nodeClick = (data: BusiTreeNode) => {
 }
 
 const getTree = () => {
-  queryTreeApi(curCanvasType.value).then(res => {
+  const request = { busiFlag: curCanvasType.value } as BusiTreeRequest
+  queryTreeApi(request).then(res => {
     const nodeData = (res as unknown as BusiTreeNode[]) || []
     if (nodeData.length === 1 && nodeData[0]['id'] === '0' && nodeData[0]['name'] === 'root') {
       rootManage.value = nodeData[0]['weight'] >= 3

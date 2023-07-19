@@ -6,3 +6,9 @@ export interface BusiTreeNode {
   extraFlag: number
   children?: BusiTreeNode[]
 }
+
+export interface BusiTreeRequest {
+  busyFlag?: string
+  leaf?: boolean
+  weight?: number
+}
