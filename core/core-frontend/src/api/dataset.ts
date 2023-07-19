@@ -1,6 +1,6 @@
 import request from '@/config/axios'
 import { type Field } from '@/api/chart'
-
+import type { BusiTreeRequest } from '@/models/tree/TreeNode'
 export interface DatasetOrFolder {
   name: string
   id?: number | string
@@ -54,8 +54,14 @@ export const saveDatasetTree = async (data: DatasetOrFolder): Promise<IResponse>
   })
 }
 
-export const getDatasetTree = async (data = {}): Promise<IResponse> => {
+export const getDatasetTree = async (data: BusiTreeRequest): Promise<IResponse> => {
   return request.post({ url: '/datasetTree/tree', data }).then(res => {
+    return res?.data
+  })
+}
+
+export const barInfoApi = async (id): Promise<IResponse> => {
+  return request.get({ url: `/datasetTree/barInfo/${id}`, data: {} }).then(res => {
     return res?.data
   })
 }

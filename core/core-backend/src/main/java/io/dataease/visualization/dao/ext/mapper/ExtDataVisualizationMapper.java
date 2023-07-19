@@ -1,4 +1,4 @@
-package io.dataease.visualization.ext;
+package io.dataease.visualization.dao.ext.mapper;
 
 import io.dataease.api.visualization.vo.DataVisualizationBaseVO;
 import org.apache.ibatis.annotations.Mapper;
