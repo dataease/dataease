@@ -10,7 +10,7 @@
       <div
         class="remark-style"
         :style="{backgroundColor:remarkCfg.bgFill}"
-        v-html="remarkCfg.content"
+        v-html="$xss(remarkCfg.content)"
       />
       <i
         slot="reference"

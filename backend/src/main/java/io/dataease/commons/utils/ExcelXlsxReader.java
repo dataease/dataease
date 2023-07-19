@@ -286,7 +286,7 @@ public class ExcelXlsxReader extends DefaultHandler {
                 preRef = "A" + curRow;
                 if (!preRef.equalsIgnoreCase(ref)) {
                     cellList.add(curCol, "");
-                    curCol++;
+//                    curCol++;
                 }
             }
 
