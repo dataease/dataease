@@ -10,6 +10,6 @@ import java.util.List;
 @Mapper
 public interface CoreVisualiationExtMapper {
 
-    @Select("select id, name, pid, node_type from data_visualization_info where type = #{type}")
+    @Select("select id, name, pid, node_type from data_visualization_info where delete_flag = 0 type = #{type}")
     List<VisualizationNodePO> queryNodes(@Param("type") String type);
 }

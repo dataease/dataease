@@ -20,10 +20,7 @@ import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.exception.DEException;
 import io.dataease.model.BusiNodeVO;
-import io.dataease.utils.BeanUtils;
-import io.dataease.utils.IDUtils;
-import io.dataease.utils.JsonUtil;
-import io.dataease.utils.TreeUtils;
+import io.dataease.utils.*;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -120,15 +117,22 @@ public class DatasetGroupManage {
     }
 
     public void delete(Long id) {
+        CoreDatasetGroup coreDatasetGroup = coreDatasetGroupMapper.selectById(id);
+        if (ObjectUtils.isEmpty(coreDatasetGroup)) {
+            return;
+        }
         boolean delAuthMatch = false;
         if (ObjectUtils.isNotEmpty(interactiveAuthApi)) {
             delAuthMatch = interactiveAuthApi.checkDel(id);
         }
         if (!delAuthMatch) return;
-        CoreDatasetGroup coreDatasetGroup = coreDatasetGroupMapper.selectById(id);
-        if (ObjectUtils.isEmpty(coreDatasetGroup)) {
-            return;
+        CommonBeanFactory.getBean(this.getClass()).recursionDel(id);
+        if (ObjectUtils.isNotEmpty(interactiveAuthApi)) {
+            interactiveAuthApi.delResource(id);
         }
+    }
+
+    public void recursionDel(Long id) {
         coreDatasetGroupMapper.deleteById(id);
         datasetTableManage.deleteByDatasetGroupDelete(id);
         datasetTableFieldManage.deleteByDatasetGroupDelete(id);
@@ -138,13 +142,11 @@ public class DatasetGroupManage {
         List<CoreDatasetGroup> coreDatasetGroups = coreDatasetGroupMapper.selectList(wrapper);
         if (ObjectUtils.isNotEmpty(coreDatasetGroups)) {
             for (CoreDatasetGroup record : coreDatasetGroups) {
-                delete(record.getId());
+                recursionDel(record.getId());
             }
         }
-        if (ObjectUtils.isNotEmpty(interactiveAuthApi)) {
-            interactiveAuthApi.delResource(id);
-        }
     }
+
 
     public List<BusiNodeVO> tree() {
         if (ObjectUtils.isNotEmpty(interactiveAuthApi)) {
