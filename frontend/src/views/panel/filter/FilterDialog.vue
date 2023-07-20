@@ -266,6 +266,7 @@
       <div v-if="currentElement.options && currentElement.options.attrs">
         <filter-head
           :element="currentElement"
+          @dataset-name="dataSetName"
         />
 
         <filter-control
@@ -463,6 +464,23 @@ export default {
     bus.$off('valid-values-change', this.validateFilterValue)
   },
   methods: {
+    dataSetName(tableId, callback) {
+      let result = null
+      if (tableId) {
+        const stack = [...this.defaultData]
+        while (stack.length) {
+          const tableNode = stack.pop()
+          if (tableNode.id === tableId) {
+            result = tableNode.name
+            break
+          }
+          if (tableNode.children?.length) {
+            tableNode.children.forEach(kid => stack.push(kid))
+          }
+        }
+      }
+      callback && callback(result)
+    },
     async checkSuperior(list, anotherTableIds) {
       let fieldValid = false
       const fieldId = this.myAttrs?.fieldId
