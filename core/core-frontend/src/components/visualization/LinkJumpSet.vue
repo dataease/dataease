@@ -76,14 +76,11 @@
                     class="dv-selector"
                   >
                     <template #default="{ node, data }">
-                      <el-icon v-if="data.nodeType === 'folder'">
-                        <Icon name="dv-folder"></Icon>
-                      </el-icon>
-                      <el-icon v-else-if="dvInfo.value?.type === 'dashboard'">
+                      <el-icon v-if="data.leaf">
                         <Icon name="dv-dashboard-spine"></Icon>
                       </el-icon>
                       <el-icon v-else>
-                        <Icon name="dv-screen-spine"></Icon>
+                        <Icon name="dv-folder"></Icon>
                       </el-icon>
                       <span :title="node.label">{{ node.label }}</span>
                     </template>
@@ -110,14 +107,14 @@
                   <el-col :span="7">
                     <div class="ellip">原字段</div>
                   </el-col>
-                  <el-col :span="8">
+                  <el-col :span="7">
                     <div class="ellip">{{ t('visualization.link_view') }}</div>
                   </el-col>
                   <el-col :span="8">
                     <div class="ellip">{{ t('visualization.link_view_field') }}</div>
                   </el-col>
                 </el-row>
-                <el-row style="height: 180px; overflow-y: auto">
+                <el-row style="display: inline-block; height: 180px; overflow-y: auto">
                   <el-row
                     v-for="(targetViewInfo, index) in state.linkJumpInfo.targetViewInfoList"
                     :key="index"
@@ -128,7 +125,6 @@
                           v-model="targetViewInfo.sourceFieldActiveId"
                           style="width: 100%"
                           size="mini"
-                          :placeholder="t('fu.search_bar.please_select')"
                         >
                           <el-option
                             v-for="curViewField in state.linkJumpCurViewFieldArray"
@@ -149,7 +145,6 @@
                           v-model="targetViewInfo.targetViewId"
                           style="width: 100%"
                           size="mini"
-                          :placeholder="t('fu.search_bar.please_select')"
                           @change="viewInfoOnChange(targetViewInfo)"
                         >
                           <el-option
@@ -172,7 +167,6 @@
                           v-model="targetViewInfo.targetFieldId"
                           style="width: 100%"
                           size="mini"
-                          :placeholder="t('fu.search_bar.please_select')"
                         >
                           <el-option
                             v-for="viewField in state.viewIdFieldArrayMap[
@@ -210,15 +204,12 @@
                       </div>
                     </el-col>
                     <el-col :span="2">
-                      <div>
-                        <el-button
-                          icon="Delete"
-                          type="text"
-                          size="small"
-                          style="float: left"
-                          @click="deleteLinkJumpField(index)"
-                        />
-                      </div>
+                      <el-icon
+                        style="margin-top: 10px; cursor: pointer"
+                        @click="deleteLinkJumpField(index)"
+                      >
+                        <Delete />
+                      </el-icon>
                     </el-col>
                   </el-row>
                 </el-row>
@@ -309,10 +300,11 @@ import {
 import { reactive, ref, nextTick } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
-import { findTree } from '@/api/visualization/dataVisualization'
+import { queryTreeApi } from '@/api/visualization/dataVisualization'
 import { ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { listFieldByDatasetGroup } from '@/api/dataset'
+import { BusiTreeRequest } from '@/models/tree/TreeNode'
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo, canvasViewInfo } = storeToRefs(dvMainStore)
 const linkJumpInfoTree = ref(null)
@@ -342,7 +334,7 @@ const state = reactive({
     label: 'name',
     children: 'children',
     value: 'id',
-    isLeaf: node => !node.children?.length
+    isLeaf: 'leaf'
   },
   treeProp: {
     id: 'sourceFieldId',
@@ -419,18 +411,14 @@ const init = viewItem => {
   } else {
     checkJumpStr = checkAllAxisStr
   }
-  const param = {
-    type: dvInfo.value.type
-  }
+  const request = { busyFlag: dvInfo.value.type } as BusiTreeRequest
   // 获取可关联的仪表板
-  findTree(param).then(rsp => {
-    state.panelList = rsp.data
+  queryTreeApi(request).then(rsp => {
+    state.panelList = rsp
   })
 
   // 获取当前视图的字段信息
   listFieldByDatasetGroup(chartDetails.tableId).then(rsp => {
-    console.log('listFieldByDatasetGroup=b=' + JSON.stringify(rsp))
-
     state.linkJumpCurViewFieldArray = []
     const sourceCurViewFieldArray = rsp.data
     sourceCurViewFieldArray.forEach(fieldItem => {
@@ -438,7 +426,6 @@ const init = viewItem => {
         state.linkJumpCurViewFieldArray.push(fieldItem)
       }
     })
-    console.log('listFieldByDatasetGroup=e=' + JSON.stringify(state.linkJumpCurViewFieldArray))
   })
 
   // 获取当前视图的关联信息
