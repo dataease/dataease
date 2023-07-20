@@ -121,7 +121,7 @@ export default {
     },
     keyWord(val, old) {
       if (val === old) return
-      const results = val ? this.list.filter(item => item.text.includes(val)) : null
+      const results = val ? this.vagueFilter(val, this.list) : null
       this.resetList(results)
       this.reCacularHeight()
       this.$nextTick(() => {
@@ -136,6 +136,11 @@ export default {
     })
   },
   methods: {
+    vagueFilter(val, nodes) {
+      if (!val || !val.trim()) return nodes
+      const results = nodes.filter(item => item.text?.toLocaleUpperCase().includes(val.toLocaleUpperCase()))
+      return results
+    },
     resetSelectAll() {
       this.selectAll = false
     },
@@ -148,7 +153,7 @@ export default {
     selectAllChange(val) {
       let vals = val ? [...this.list.map(ele => ele.id)] : []
       if (this.keyWord.trim() && val) {
-        vals = this.list.filter(item => item.text.includes(this.keyWord.trim())).map(ele => ele.id)
+        vals = this.vagueFilter(this.keyWord.trim(), this.list).map(ele => ele.id)
       }
       this.visualChange(vals)
       this.selectValue = vals
@@ -233,14 +238,14 @@ export default {
     isAllSelect() {
       let vals = this.list.length
       if (this.keyWord.trim()) {
-        vals = this.list.filter(item => item.text.includes(this.keyWord.trim())).map(ele => ele.id).filter(ele => this.selectValue.includes(ele)).length
+        vals = this.vagueFilter(this.keyWord.trim(), this.list).map(ele => ele.id).filter(ele => this.selectValue.includes(ele)).length
       }
       return vals
     },
     halfSelect() {
       let vals = this.list.length
       if (this.keyWord.trim()) {
-        vals = this.list.filter(item => item.text.includes(this.keyWord.trim())).map(ele => ele.id).length
+        vals = this.vagueFilter(this.keyWord.trim(), this.list).map(ele => ele.id).length
       }
       return vals
     },

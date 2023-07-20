@@ -410,7 +410,7 @@ export default {
     },
     _filterFun(value, data, node) {
       if (!value) return true
-      return data[this.propsLabel].indexOf(value) !== -1
+      return data[this.propsLabel?.toLocaleUpperCase()].indexOf(value.toLocaleUpperCase()) !== -1
     },
     _treeNodeClickFun(data, node, vm) {
       const { multiple } = this.selectParams

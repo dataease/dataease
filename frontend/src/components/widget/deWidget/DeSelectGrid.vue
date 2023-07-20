@@ -31,7 +31,7 @@
           v-model="value"
           @change="handleCheckedChange"
         >
-          <template v-for="item in data.filter(node => !keyWord || (node.id && node.id.includes(keyWord)))">
+          <template v-for="item in data.filter(node => !keyWord || (node.id && node.id.toLocaleUpperCase().includes(keyWord.toLocaleUpperCase())))">
             <el-checkbox
               :key="item.id"
               :label="item.id"
@@ -51,7 +51,7 @@
           @change="changeRadioBox"
         >
           <el-radio
-            v-for="(item, index) in data.filter(node => !keyWord || (node.id && node.id.includes(keyWord)))"
+            v-for="(item, index) in data.filter(node => !keyWord || (node.id && node.id.toLocaleUpperCase().includes(keyWord.toLocaleUpperCase())))"
             :key="index"
             :label="item.id"
             @click.native.prevent="testChange(item)"
