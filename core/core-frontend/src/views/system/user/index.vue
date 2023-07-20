@@ -152,7 +152,7 @@ const fillFilterText = () => {
   const textArray = convertFilterText(state.conditions, filterOption)
   Object.assign(state.filterTexts, textArray)
 }
-const currentChange = index => {
+const pageChange = index => {
   state.paginationConfig.currentPage = index
   search()
 }
@@ -215,7 +215,7 @@ const sortChange = param => {
         :columns="state.columnList"
         :pagination="state.paginationConfig"
         :table-data="state.userList"
-        @current-change="currentChange"
+        @page-change="pageChange"
         @size-change="sizeChange"
         @sort-change="sortChange"
       >
