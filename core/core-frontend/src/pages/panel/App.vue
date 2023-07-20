@@ -12,7 +12,6 @@ const props = defineProps({
   componentName: propTypes.string.def('DashboardEditor')
 })
 const currentComponent = shallowRef()
-console.log('props.componentName', props.componentName)
 
 const componentMap = {
   DashboardEditor,

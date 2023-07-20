@@ -2,9 +2,11 @@
 import { ref, reactive, computed, watch, nextTick } from 'vue'
 import { ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
-import { saveDatasetTree, getDatasetTree } from '@/api/dataset'
+import { getDatasetTree } from '@/api/dataset'
+import { save } from '@/api/datasource'
 import type { DatasetOrFolder } from '@/api/dataset'
 import nothingTree from '@/assets/img/nothing-tree.png'
+
 export interface Tree {
   name: string
   value?: string | number
@@ -18,6 +20,7 @@ export interface Tree {
   createTime: number
   allfields?: Array<{}>
   children?: Tree[]
+  request: any
 }
 const { t } = useI18n()
 
@@ -26,14 +29,14 @@ const state = reactive({
   nameList: []
 })
 
+let request = null
+
 const nodeType = ref()
 const pid = ref()
 const id = ref()
 const cmd = ref('')
 const treeRef = ref()
 const filterText = ref('')
-let union = []
-let allfields = []
 const datasetForm = reactive({
   pid: '',
   name: ''
@@ -77,8 +80,8 @@ const dialogTitle = computed(() => {
     case 'folder':
       title = t('deDataset.new_folder')
       break
-    case 'dataset':
-      title = t('deDataset.create') + t('auth.dataset')
+    case 'datasource':
+      title = t('deDataset.create') + t('auth.datasource')
       break
     default:
       break
@@ -124,14 +127,14 @@ const rules = {
 const datasetFormRules = ref()
 const activeAll = ref(false)
 const showAll = ref(true)
-const dataset = ref()
+const datasource = ref()
 const loading = ref(false)
 const createDataset = ref(false)
 const filterMethod = value => {
   state.tData = [...state.tData].filter(item => item.name.includes(value))
 }
 const resetForm = () => {
-  dataset.value.clearValidate()
+  datasource.value.clearValidate()
   createDataset.value = false
 }
 
@@ -147,8 +150,7 @@ const dfs = (arr: Tree[]) => {
 const createInit = (type, data: Tree, exec, name: string) => {
   nodeType.value = type
   if (type === 'dataset') {
-    union = data.union
-    allfields = data.allfields
+    request = data.request
   }
   if (data.id) {
     getDatasetTree({
@@ -190,11 +192,28 @@ const nodeClick = (data: Tree) => {
   datasetForm.pid = data.id as string
 }
 
+const finishCb = () => {
+  datasource.value.resetFields()
+  createDataset.value = false
+  loading.value = false
+  switch (cmd.value) {
+    case 'move':
+      ElMessage.success('移动成功')
+      break
+    case 'rename':
+      ElMessage.success('重命名成功')
+      break
+    default:
+      ElMessage.success('新建数据源成功')
+      break
+  }
+}
+
 const saveDataset = () => {
-  dataset.value.validate(result => {
+  datasource.value.validate(result => {
     if (result) {
-      const params: DatasetOrFolder = {
-        nodeType: nodeType.value as 'folder' | 'dataset',
+      const params: Omit<DatasetOrFolder, 'nodeType'> & { nodeType: 'folder' | 'datasource' } = {
+        nodeType: nodeType.value as 'folder' | 'datasource',
         name: datasetForm.name
       }
 
@@ -211,16 +230,16 @@ const saveDataset = () => {
           params.pid = datasetForm.pid || pid.value || '0'
           break
       }
-      if (nodeType.value === 'dataset') {
-        params.union = union
-        params.allFields = allfields
-      }
       loading.value = true
-      saveDatasetTree(params)
+
+      if (!request) {
+        emits('finish', params, cmd.value)
+        return
+      }
+      save({ ...params, ...request })
         .then(() => {
-          dataset.value.resetFields()
+          datasource.value.resetFields()
           createDataset.value = false
-          emits('finish')
           switch (cmd.value) {
             case 'move':
               ElMessage.success('移动成功')
@@ -232,6 +251,7 @@ const saveDataset = () => {
               ElMessage.success('新建数据集成功')
               break
           }
+          ElMessage.success(t('common.save_success'))
         })
         .finally(() => {
           loading.value = false
@@ -242,7 +262,8 @@ const saveDataset = () => {
 
 defineExpose({
   createInit,
-  editeInit
+  editeInit,
+  finishCb
 })
 
 const emits = defineEmits(['finish'])
@@ -254,7 +275,7 @@ const emits = defineEmits(['finish'])
       v-loading="loading"
       label-position="top"
       require-asterisk-position="right"
-      ref="dataset"
+      ref="datasource"
       :model="datasetForm"
       :rules="datasetFormRules"
     >

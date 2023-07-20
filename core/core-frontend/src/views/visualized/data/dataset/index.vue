@@ -1,5 +1,4 @@
 <script lang="tsx" setup>
-// import type { HeaderCellSlotProps } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ref, reactive, shallowRef, computed, watch } from 'vue'
 import { ElIcon, ElMessageBox, ElMessage } from 'element-plus-secondary'
@@ -246,7 +245,7 @@ const menuList = [
 
 const datasetTypeList = [
   {
-    label: '数据集',
+    label: '新建数据集',
     svgName: 'icon_dataset',
     command: 'dataset'
   },

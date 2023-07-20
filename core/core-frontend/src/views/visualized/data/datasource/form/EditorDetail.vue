@@ -4,17 +4,15 @@ import { useI18n } from '@/hooks/web/useI18n'
 import type { FormInstance, FormRules } from 'element-plus-secondary'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import { cloneDeep } from 'lodash-es'
-import { useRouter } from 'vue-router'
 import ApiHttpRequestDraw from './ApiHttpRequestDraw.vue'
 import { Configuration, ApiConfiguration, SyncSetting } from './index.vue'
-import { validateById, save, validate, getSchema } from '@/api/datasource'
+import { getSchema } from '@/api/datasource'
+import { Calendar } from '@element-plus/icons-vue'
 import { Base64 } from 'js-base64'
 import { ElForm, ElMessage } from 'element-plus-secondary'
 import Cron from '@/components/cron/src/Cron.vue'
 import { ComponentPublicInstance } from 'vue'
-import { uuid } from 'vue-uuid'
 const { t } = useI18n()
-const { push } = useRouter()
 const prop = defineProps({
   form: {
     required: false,
@@ -37,11 +35,7 @@ const prop = defineProps({
     },
     type: Object
   },
-  editDs: {
-    required: false,
-    default: false,
-    type: Boolean
-  },
+
   activeStep: {
     required: false,
     default: 1,
@@ -49,9 +43,7 @@ const prop = defineProps({
   }
 })
 
-const { form, editDs, activeStep } = toRefs(prop)
-
-const dsFormDisabled = ref(false)
+const { form, activeStep } = toRefs(prop)
 
 const state = reactive({
   itemRef: []
@@ -137,10 +129,6 @@ const initForm = type => {
   }, 0)
 }
 
-const initEditForm = () => {
-  dsFormDisabled.value = true
-}
-
 const notapiexcelconfig = computed(() => form.value.type !== 'API')
 
 const authMethodList = [
@@ -213,9 +201,6 @@ const setItemRef = (ele: ComponentPublicInstance | null | Element) => {
 }
 
 const copyItem = (item?: ApiConfiguration) => {
-  if (dsFormDisabled.value) {
-    return
-  }
   var newItem = JSON.parse(JSON.stringify(item))
   newItem.serialNumber =
     form.value.apiConfiguration[form.value.apiConfiguration.length - 1].serialNumber + 1
@@ -235,11 +220,11 @@ const copyItem = (item?: ApiConfiguration) => {
   }
   number = number + 1
   newItem.name = item.name + '_copy_' + number
+  state.itemRef = []
   form.value.apiConfiguration.push(newItem)
   ElMessage.success(t('datasource.success_copy'))
 }
 const addApiItem = item => {
-  if (dsFormDisabled.value) return
   let apiItem = null
   api_table_title.value = t('datasource.data_table')
   if (item) {
@@ -255,9 +240,11 @@ const addApiItem = item => {
     editApiItem.value.initApiItem(apiItem)
   })
 }
+const showPriority = ref(false)
 
-const deleteItem = item => {
+const deleteItem = (item, idx) => {
   form.value.apiConfiguration.splice(form.value.apiConfiguration.indexOf(item), 1)
+  cancelItem(idx)
 }
 const cancelItem = (index: number) => {
   state.itemRef[index].hide()
@@ -283,6 +270,7 @@ const returnItem = apiItem => {
     }
   }
   if (!find) {
+    state.itemRef = []
     form.value.apiConfiguration.push(apiItem)
   }
 }
@@ -328,42 +316,6 @@ const onSimpleCronChange = () => {
   }
 }
 
-const editForm = () => {
-  dsFormDisabled.value = false
-}
-
-const cancel = () => {
-  dsFormDisabled.value = true
-}
-
-const saveDs = () => {
-  const request = JSON.parse(JSON.stringify(form.value))
-  if (form.value.type === 'API') {
-    if (form.value.apiConfiguration.length == 0) {
-      return
-    }
-    for (var i = 0; i < request.apiConfiguration.length; i++) {
-      if (
-        request.apiConfiguration[i].deTableName === '' ||
-        request.apiConfiguration[i].deTableName === undefined ||
-        request.apiConfiguration[i].deTableName === null
-      ) {
-        request.apiConfiguration[i].deTableName =
-          'api_' + request.apiConfiguration[i].name + '_' + uuid.v1()
-      }
-    }
-    request.syncSetting.startTime = new Date(request.syncSetting.startTime).getTime()
-    request.syncSetting.endTime = new Date(request.syncSetting.endTime).getTime()
-    request.configuration = Base64.encode(JSON.stringify(request.apiConfiguration))
-  } else {
-    request.configuration = Base64.encode(JSON.stringify(request.configuration))
-  }
-  save(request).then(() => {
-    push('/data/datasource')
-    ElMessage.success(t('common.save_success'))
-    dsFormDisabled.value = true
-  })
-}
 const getDsSchema = () => {
   const request = JSON.parse(JSON.stringify(form.value))
   request.configuration = Base64.encode(JSON.stringify(request.configuration))
@@ -377,56 +329,16 @@ const validatorSchema = () => {
   configurationSchema.value = !form.value.configuration.schema
 }
 
-const validateDS = () => {
-  const request = JSON.parse(JSON.stringify(form.value))
-  if (form.value.type === 'API') {
-    if (form.value.apiConfiguration.length == 0) {
-      return
-    }
-    request.configuration = Base64.encode(JSON.stringify(request.apiConfiguration))
-  } else {
-    request.configuration = Base64.encode(JSON.stringify(request.configuration))
-  }
-
-  if (editDs.value && dsFormDisabled.value) {
-    validateById(form.value.id).then(response => {
-      if (response !== undefined) {
-        ElMessage.success(t('datasource.validate_success'))
-      }
-    })
-  } else {
-    validate(request).then(response => {
-      if (response !== undefined) {
-        ElMessage.success(t('datasource.validate_success'))
-      }
-    })
-  }
-}
-
 defineExpose({
   submitForm,
   resetForm,
-  initForm,
-  initEditForm,
-  editForm
+  initForm
 })
 </script>
 
 <template>
   <div class="editor-detail">
     <div class="detail-inner">
-      <div class="detail-operate" v-show="editDs">
-        <el-button v-show="!dsFormDisabled" @click="() => cancel()">{{
-          t('common.cancel')
-        }}</el-button>
-        <el-button @click="() => validateDS()">{{ t('datasource.validate') }}</el-button>
-        <el-button v-show="dsFormDisabled" type="primary" @click="() => editForm()">{{
-          t('common.edit')
-        }}</el-button>
-        <el-button v-show="!dsFormDisabled" type="primary" @click="() => saveDs()">{{
-          t('common.sure')
-        }}</el-button>
-      </div>
       <div class="title-form_primary" v-show="activeStep !== 2">
         {{ t('datasource.basic_info') }}
       </div>
@@ -434,7 +346,6 @@ defineExpose({
         ref="dsForm"
         :model="form"
         :rules="rule"
-        :disabled="dsFormDisabled"
         label-width="180px"
         label-position="top"
         require-asterisk-position="right"
@@ -460,7 +371,7 @@ defineExpose({
             <span>{{ t('datasource.data_table') }}</span>
             <el-button type="primary" style="margin-left: auto" @click="() => addApiItem(null)">
               <template #icon>
-                <Icon name="icon_search-outline_outlined"></Icon>
+                <Icon name="icon_add_outlined"></Icon>
               </template>
               {{ t('common.add') }}
             </el-button>
@@ -469,83 +380,75 @@ defineExpose({
             v-show="activeStep !== 2"
             v-if="!form.apiConfiguration.length"
             :description="t('datasource.no_data_table')"
-            img-type="table"
+            img-type="noneWhite"
           />
-          <template v-if="form.type === 'API' && activeStep !== 2">
-            <div
-              v-for="(api, idx) in form.apiConfiguration"
-              :key="api.id"
-              :style="{ cursor: dsFormDisabled ? 'not-allowed' : 'pointer' }"
-              class="api-card"
-              @click="addApiItem(api)"
-            >
-              <el-row>
-                <el-col style="display: flex" :span="19">
-                  <span class="name">{{ api.name }}</span>
-                  <span v-if="api.status === 'Error'" class="de-tag invalid">{{
-                    t('datasource.invalid')
-                  }}</span>
-                  <span v-if="api.status === 'Success'" class="de-tag valid">{{
-                    t('datasource.valid')
-                  }}</span>
-                </el-col>
-                <el-col style="text-align: right" :span="5">
-                  <el-icon
-                    class="de-copy-icon"
-                    :disabled="dsFormDisabled"
-                    @click.stop="copyItem(api)"
-                  >
-                    <Icon name="de-copy"></Icon>
-                  </el-icon>
+          <template v-if="form.type === 'API' && activeStep === 1">
+            <div class="api-card-content">
+              <div
+                v-for="(api, idx) in form.apiConfiguration"
+                :key="api.id"
+                class="api-card"
+                @click="addApiItem(api)"
+              >
+                <el-row>
+                  <el-col style="display: flex" :span="19">
+                    <span class="name ellipsis">{{ api.name }}</span>
+                    <span v-if="api.status === 'Error'" class="de-tag invalid">{{
+                      t('datasource.invalid')
+                    }}</span>
+                    <span v-if="api.status === 'Success'" class="de-tag valid">{{
+                      t('datasource.valid')
+                    }}</span>
+                  </el-col>
+                  <el-col style="text-align: right" :span="5">
+                    <el-icon class="de-copy-icon hover-icon" @click.stop="copyItem(api)">
+                      <Icon name="de-copy"></Icon>
+                    </el-icon>
 
-                  <span @click.stop>
-                    <el-popover
-                      placement="top"
-                      width="200"
-                      :ref="setItemRef"
-                      :disabled="dsFormDisabled"
-                      popper-class="api-table-delete"
-                      trigger="click"
-                    >
-                      <template #reference>
-                        <el-icon
-                          class="de-delete-icon"
-                          :class="[dsFormDisabled ? 'not-allow' : '']"
-                          :disabled="dsFormDisabled"
-                        >
-                          <Icon name="de-delete"></Icon>
-                        </el-icon>
-                      </template>
-                      <template #default>
-                        <el-icon class="de-copy-icon icon-warning" :disabled="dsFormDisabled">
-                          <Icon name="icon_warning_filled"></Icon>
-                        </el-icon>
-                        <div class="tips">
-                          {{ t('datasource.delete_this_item') }}
-                        </div>
-                        <div class="foot">
-                          <el-button style="min-width: 48px" secondary @click="cancelItem(idx)">{{
-                            t('common.cancel')
-                          }}</el-button>
-                          <el-button
-                            style="min-width: 48px"
-                            type="primary"
-                            @click="deleteItem(api)"
-                            >{{ t('common.sure') }}</el-button
-                          >
-                        </div>
-                      </template>
-                    </el-popover>
-                  </span>
-                </el-col>
-              </el-row>
-              <div class="req-title">
-                <span>{{ t('datasource.method') }}</span>
-                <span>{{ t('datasource.url') }}</span>
-              </div>
-              <div class="req-value">
-                <span>{{ api.method }}</span>
-                <span :title="api.url">{{ api.url }}</span>
+                    <span @click.stop>
+                      <el-popover
+                        placement="top"
+                        width="200"
+                        :ref="setItemRef"
+                        popper-class="api-table-delete"
+                        trigger="click"
+                      >
+                        <template #reference>
+                          <el-icon class="de-delete-icon hover-icon">
+                            <Icon name="de-delete"></Icon>
+                          </el-icon>
+                        </template>
+                        <template #default>
+                          <el-icon class="de-copy-icon icon-warning hover-icon">
+                            <Icon name="icon_warning_filled"></Icon>
+                          </el-icon>
+                          <div class="tips">
+                            {{ t('datasource.delete_this_item') }}
+                          </div>
+                          <div class="foot">
+                            <el-button style="min-width: 48px" secondary @click="cancelItem(idx)">{{
+                              t('common.cancel')
+                            }}</el-button>
+                            <el-button
+                              style="min-width: 48px"
+                              type="primary"
+                              @click="deleteItem(api, idx)"
+                              >{{ t('common.sure') }}</el-button
+                            >
+                          </div>
+                        </template>
+                      </el-popover>
+                    </span>
+                  </el-col>
+                </el-row>
+                <div class="req-title">
+                  <span>{{ t('datasource.method') }}</span>
+                  <span>{{ t('datasource.url') }}</span>
+                </div>
+                <div class="req-value">
+                  <span>{{ api.method }}</span>
+                  <span :title="api.url">{{ api.url }}</span>
+                </div>
               </div>
             </div>
           </template>
@@ -622,14 +525,14 @@ defineExpose({
           </el-form-item>
           <el-form-item
             v-if="form.type == 'oracle'"
-            :label="$t('datasource.connection_mode')"
+            :label="t('datasource.connection_mode')"
             prop="configuration.connectionType"
           >
             <el-radio v-model="form.configuration.connectionType" label="sid"
-              >{{ $t('datasource.oracle_sid') }}
+              >{{ t('datasource.oracle_sid') }}
             </el-radio>
             <el-radio v-model="form.configuration.connectionType" label="serviceName">
-              {{ $t('datasource.oracle_service_name') }}
+              {{ t('datasource.oracle_service_name') }}
             </el-radio>
           </el-form-item>
           <el-form-item
@@ -637,15 +540,15 @@ defineExpose({
             class="schema-label"
           >
             <template v-slot:label>
-              <span class="name">{{ $t('datasource.schema') }}<i class="required" /></span>
+              <span class="name">{{ t('datasource.schema') }}<i class="required" /></span>
               <el-button type="text" icon="el-icon-plus" size="small" @click="getDsSchema()"
-                >{{ $t('datasource.get_schema') }}
+                >{{ t('datasource.get_schema') }}
               </el-button>
             </template>
             <el-select
               v-model="form.configuration.schema"
               filterable
-              :placeholder="$t('fu.search_bar.please_select')"
+              :placeholder="t('fu.search_bar.please_select')"
               class="de-select"
               @change="validatorSchema"
               @blur="validatorSchema"
@@ -653,46 +556,116 @@ defineExpose({
               <el-option v-for="item in schemas" :key="item" :label="item" :value="item" />
             </el-select>
             <div v-if="configurationSchema" class="el-form-item__error">
-              {{ $t('datasource.please_choose_schema') }}
+              {{ t('datasource.please_choose_schema') }}
             </div>
           </el-form-item>
+          <span
+            v-if="!['es', 'api', 'mongo'].includes(form.type)"
+            class="de-expand"
+            @click="showPriority = !showPriority"
+            >{{ t('datasource.priority') }}
+            <el-icon>
+              <Icon :name="showPriority ? 'icon_down_outlined' : 'icon_down_outlined-1'"></Icon>
+            </el-icon>
+          </span>
+          <template v-if="showPriority">
+            <el-row :gutter="24">
+              <el-col :span="12">
+                <el-form-item
+                  :label="t('datasource.initial_pool_size')"
+                  prop="configuration.initialPoolSize"
+                >
+                  <el-input-number
+                    v-model="form.configuration.initialPoolSize"
+                    controls-position="right"
+                    autocomplete="off"
+                    type="number"
+                    :min="0"
+                  />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item
+                  :label="t('datasource.min_pool_size')"
+                  prop="configuration.minPoolSize"
+                >
+                  <el-input-number
+                    v-model="form.configuration.minPoolSize"
+                    controls-position="right"
+                    autocomplete="off"
+                    type="number"
+                    :min="0"
+                  />
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="24">
+              <el-col :span="12">
+                <el-form-item
+                  :label="t('datasource.max_pool_size')"
+                  prop="configuration.maxPoolSize"
+                >
+                  <el-input-number
+                    v-model="form.configuration.maxPoolSize"
+                    controls-position="right"
+                    autocomplete="off"
+                    type="number"
+                    :min="0"
+                  />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item
+                  :label="t('datasource.query_timeout')"
+                  prop="configuration.queryTimeout"
+                >
+                  <el-input
+                    v-model="form.configuration.queryTimeout"
+                    autocomplete="off"
+                    class="input-with-append"
+                    type="number"
+                    :min="0"
+                  >
+                    <template v-slot:append>{{ t('cron.second') }}</template>
+                  </el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+          </template>
         </template>
         <!--        API update setting -->
         <el-form-item
-          :label="$t('datasource.update_type')"
+          :label="t('datasource.update_type')"
           prop="type"
-          v-if="activeStep === 2 || (editDs && form.type === 'API')"
+          v-if="activeStep === 2 && form.type === 'API'"
         >
           <el-radio-group v-model="form.syncSetting.updateType">
-            <el-radio label="all_scope">{{ $t('datasource.all_scope') }}</el-radio>
-            <el-radio label="add_scope"> {{ $t('datasource.add_scope') }}</el-radio>
+            <el-radio label="all_scope">{{ t('datasource.all_scope') }}</el-radio>
+            <el-radio label="add_scope"> {{ t('datasource.add_scope') }}</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item
-          :label="$t('datasource.execute_rate')"
+          :label="t('datasource.execute_rate')"
           prop="rate"
-          v-if="activeStep === 2 || (editDs && form.type === 'API')"
+          v-if="activeStep === 2 && form.type === 'API'"
         >
           <el-radio-group v-model="form.syncSetting.syncRate" @change="onRateChange">
-            <el-radio label="RIGHTNOW">{{ $t('datasource.execute_once') }}</el-radio>
-            <el-radio label="CRON">{{ $t('datasource.cron_config') }}</el-radio>
-            <el-radio label="SIMPLE_CRON">{{ $t('datasource.simple_cron') }}</el-radio>
+            <el-radio label="RIGHTNOW">{{ t('datasource.execute_once') }}</el-radio>
+            <el-radio label="CRON">{{ t('datasource.cron_config') }}</el-radio>
+            <el-radio label="SIMPLE_CRON">{{ t('datasource.simple_cron') }}</el-radio>
           </el-radio-group>
         </el-form-item>
         <div
-          v-if="
-            (activeStep === 2 || (editDs && form.type === 'API')) &&
-            form.syncSetting.syncRate !== 'RIGHTNOW'
-          "
+          v-if="activeStep === 2 && form.type === 'API' && form.syncSetting.syncRate !== 'RIGHTNOW'"
           class="execute-rate-cont"
         >
           <el-form-item
             v-if="form.syncSetting.syncRate === 'SIMPLE_CRON'"
-            :label="$t('datasource.execute_rate')"
+            :label="t('datasource.execute_rate')"
             prop="rate"
           >
             <div class="simple-cron">
-              {{ $t('common.every') }}
+              {{ t('common.every') }}
               <el-input-number
                 v-model="form.syncSetting.simpleCronValue"
                 controls-position="right"
@@ -704,17 +677,17 @@ defineExpose({
                 filterable
                 @change="onSimpleCronChange()"
               >
-                <el-option :label="$t('common.minute')" value="minute" />
-                <el-option :label="$t('common.hour')" value="hour" />
-                <el-option :label="$t('common.day')" value="day" />
+                <el-option :label="t('common.minute')" value="minute" />
+                <el-option :label="t('common.hour')" value="hour" />
+                <el-option :label="t('common.day')" value="day" />
               </el-select>
-              {{ $t('common.every_exec') }}
+              {{ t('common.every_exec') }}
             </div>
           </el-form-item>
           <el-form-item
             v-if="form.syncSetting.syncRate === 'CRON'"
             prop="cron"
-            :label="$t('common.cron_exp')"
+            :label="t('common.cron_exp')"
           >
             <el-popover :width="834" v-model="cronEdit" trigger="click">
               <template #default>
@@ -737,32 +710,34 @@ defineExpose({
           </el-form-item>
           <el-form-item
             v-if="form.syncSetting.syncRate !== 'RIGHTNOW'"
-            :label="$t('datasource.start_time')"
+            :label="t('datasource.start_time')"
             prop="startTime"
           >
             <el-date-picker
               v-model="form.syncSetting.startTime"
               class="de-date-picker"
+              :prefix-icon="Calendar"
               type="datetime"
-              :placeholder="$t('datasource.start_time')"
+              :placeholder="t('datasource.start_time')"
             />
           </el-form-item>
           <el-form-item
             v-if="form.syncSetting.syncRate !== 'RIGHTNOW'"
-            :label="$t('datasource.end_time')"
+            :label="t('datasource.end_time')"
             prop="end"
           >
             <el-radio-group v-model="form.syncSetting.endLimit">
-              <el-radio label="0">{{ $t('datasource.no_limit') }}</el-radio>
-              <el-radio label="1"> {{ $t('datasource.set_end_time') }}</el-radio>
+              <el-radio label="0">{{ t('datasource.no_limit') }}</el-radio>
+              <el-radio label="1"> {{ t('datasource.set_end_time') }}</el-radio>
             </el-radio-group>
             <div style="width: 100%">
               <el-date-picker
                 v-if="form.syncSetting.endLimit === '1'"
                 v-model="form.syncSetting.endTime"
                 class="de-date-picker"
+                :prefix-icon="Calendar"
                 type="datetime"
-                :placeholder="$t('datasource.end_time')"
+                :placeholder="t('datasource.end_time')"
               />
             </div>
           </el-form-item>
@@ -778,6 +753,38 @@ defineExpose({
   width: 100%;
   display: flex;
   justify-content: center;
+  .ed-form-item {
+    margin-bottom: 16px;
+  }
+
+  .ed-input-number {
+    width: 100%;
+  }
+
+  .input-with-append {
+    :deep(.ed-input-group__append) {
+      width: 55px;
+    }
+  }
+
+  :deep(.is-controls-right > span) {
+    background: #fff;
+  }
+
+  .de-expand {
+    font-family: PingFang SC;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 22px;
+    color: #3370ff;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+
+    .ed-icon {
+      margin-left: 4px;
+    }
+  }
 
   :deep(.ed-date-editor.ed-input) {
     .ed-input__wrapper {
@@ -793,7 +800,7 @@ defineExpose({
     }
   }
   .detail-inner {
-    width: 600px;
+    width: 800px;
 
     .title-form_primary {
       margin: 16px 0;
@@ -810,23 +817,27 @@ defineExpose({
     }
   }
 }
+
+.api-card-content {
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: -16px;
+}
 .api-card {
-  height: 128px;
-  width: 600px;
+  height: 120px;
+  width: 392px;
   border-radius: 4px;
   border: 1px solid var(--deCardStrokeColor, #dee0e3);
   border-radius: 4px;
-  margin-bottom: 12px;
-  padding: 20px 16px;
+  margin: 0 0 16px 16px;
+  padding: 16px;
   font-family: PingFang SC;
+  cursor: pointer;
   .name {
     font-size: 16px;
     font-weight: 500;
     margin-right: 8px;
     max-width: 80%;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
   }
   .req-title,
   .req-value {
@@ -834,11 +845,11 @@ defineExpose({
     font-size: 14px;
     font-weight: 400;
     :nth-child(1) {
-      width: 56px;
+      width: 100px;
     }
     :nth-child(2) {
-      margin-left: 84px;
-      max-width: 415px;
+      margin-left: 24px;
+      max-width: 230px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -852,15 +863,11 @@ defineExpose({
     color: var(--deTextSecondary, #646a73);
   }
   .de-copy-icon {
-    cursor: pointer;
-    margin-right: 20px;
+    margin-right: 16px;
     color: var(--deTextSecondary, #646a73);
   }
-  .de-delete-icon:not(.not-allow) {
+  .de-delete-icon {
     cursor: pointer;
-    &:hover {
-      color: var(--deDanger, #f54a45);
-    }
   }
   .de-tag {
     display: inline-flex;
