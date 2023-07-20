@@ -360,7 +360,7 @@ export default {
   computed: {
     // 首次加载且非编辑状态新复制的视图，使用外部filter
     initLoad() {
-      return !(this.isEdit && this.currentCanvasNewId.includes(this.element.id)) && this.isFirstLoad
+      return !(this.isEdit && this.currentCanvasNewId.includes(this.element.id)) && this.isFirstLoad && !this.inTab
     },
     scaleCoefficient() {
       if (this.terminal === 'pc' && !this.mobileLayoutStatus) {
