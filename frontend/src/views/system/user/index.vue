@@ -202,7 +202,7 @@
               <!-- // {{}}会将数据解释为普通文本，而非 HTML 代码。 -->
               <div
                 slot="content"
-                v-html="filterRoles(scope.row.roles)"
+                v-html="$xss(filterRoles(scope.row.roles))"
               />
               <div class="de-one-line">{{ filterRoles(scope.row.roles) }}</div>
             </el-tooltip>
