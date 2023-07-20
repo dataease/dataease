@@ -25,6 +25,7 @@
                     :key="item.id"
                     :item="item"
                     :index="index"
+                    :tool-tip="getTableName(item.tableId)"
 
                     @closeItem="closeItem"
                   />
@@ -70,7 +71,12 @@ export default {
 
   },
   methods: {
-
+    getTableName(tableId) {
+      let tableName = null
+      this.$emit('dataset-name', tableId, t => { tableName = t })
+      console.log(tableName)
+      return tableName
+    },
     onMove(e, originalEvent) {
       return true
     },
