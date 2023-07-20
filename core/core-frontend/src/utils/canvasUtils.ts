@@ -5,11 +5,13 @@ import componentList, {
 } from '@/custom-component/component-list'
 import eventBus from '@/utils/eventBus'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { findById } from '@/api/visualization/dataVisualization'
+import { findById, save } from '@/api/visualization/dataVisualization'
 import { storeToRefs } from 'pinia'
 import { getPanelAllLinkageInfo } from '@/api/visualization/linkage'
+import { queryVisualizationJumpInfo } from '@/api/visualization/linkJump'
 const dvMainStore = dvMainStoreWithOut()
-const { curBatchOptComponents } = storeToRefs(dvMainStore)
+const { curBatchOptComponents, dvInfo, canvasStyleData, componentData, canvasViewInfo } =
+  storeToRefs(dvMainStore)
 
 export function chartTransStr2Object(targetIn, copy) {
   const target = copy === 'Y' ? deepCopy(targetIn) : targetIn
@@ -83,7 +85,10 @@ export function initCanvasDataPrepare(dvId, callBack) {
     getPanelAllLinkageInfo(dvInfo.id).then(rsp => {
       dvMainStore.setNowPanelTrackInfo(rsp.data)
     })
-    //TODO 刷新跳转信息
+    // 刷新跳转信息
+    queryVisualizationJumpInfo(dvInfo.id).then(rsp => {
+      dvMainStore.setNowPanelJumpInfo(rsp.data)
+    })
 
     dvMainStore.updateCurDvInfo(dvInfo)
 
@@ -106,4 +111,45 @@ export function initCanvasData(dvId, callBack) {
 
 export function checkIsBatchOptView(viewId) {
   return curBatchOptComponents.value.includes(viewId)
+}
+
+export function canvasSave(callBack) {
+  const canvasInfo = {
+    canvasStyleData: JSON.stringify(canvasStyleData.value),
+    componentData: JSON.stringify(componentData.value),
+    canvasViewInfo: canvasViewInfo.value,
+    ...dvInfo.value
+  }
+  save(canvasInfo).then(res => {
+    callBack(res)
+  })
+}
+
+export function checkAddHttp(url) {
+  if (!url) {
+    return url
+  } else if (/^(http(s)?:\/\/)/.test(url.toLowerCase())) {
+    return url
+  } else {
+    return 'http://' + url
+  }
+}
+
+export function setIdValueTrans(from, to, content, colList) {
+  if (!content) {
+    return content
+  }
+  let name2Id = content
+  const nameIdMap = colList.reduce((pre, next) => {
+    pre[next[from]] = next[to]
+    return pre
+  }, {})
+  const on = content.match(/\[(.+?)\]/g)
+  if (on) {
+    on.forEach(itm => {
+      const ele = itm.slice(1, -1)
+      name2Id = name2Id.replace(itm, nameIdMap[ele])
+    })
+  }
+  return name2Id
 }

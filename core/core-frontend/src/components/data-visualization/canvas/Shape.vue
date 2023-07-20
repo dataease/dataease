@@ -16,6 +16,7 @@
           :element="element"
           :show-position="showPosition"
           @userViewEnlargeOpen="userViewEnlargeOpen"
+          @linkJumpSetOpen="linkJumpSetOpen"
         ></component-edit-bar>
         <span v-show="element['isLock']" class="iconfont icon-suo"></span>
         <!--边框背景-->
@@ -67,7 +68,8 @@ const emit = defineEmits([
   'onStartMove',
   'onDragging',
   'onResizing',
-  'onMouseUp'
+  'onMouseUp',
+  'linkJumpSetOpen'
 ])
 
 const isEditMode = computed(() => editMode.value === 'edit')
@@ -492,7 +494,9 @@ const linkageActive = computed(() => {
 const showViewDetails = () => {
   return null
 }
-
+const linkJumpSetOpen = () => {
+  emit('linkJumpSetOpen')
+}
 onMounted(() => {
   // 用于 Group 组件
   if (curComponent.value) {

@@ -5,9 +5,9 @@ export function getTableFieldWithViewId(viewId) {
     url: '/linkJump/getTableFieldWithViewId/' + viewId
   })
 }
-export function queryWithViewId(panelId, viewId) {
+export function queryWithViewId(dvId, viewId) {
   return request.get({
-    url: '/linkJump/queryWithViewId/' + panelId + '/' + viewId
+    url: '/linkJump/queryWithViewId/' + dvId + '/' + viewId
   })
 }
 
@@ -18,17 +18,24 @@ export function updateJumpSet(requestInfo) {
     loading: true
   })
 }
-export function queryTargetPanelJumpInfo(requestInfo) {
+export function queryTargetVisualizationJumpInfo(requestInfo) {
   return request.post({
-    url: '/linkJump/queryTargetPanelJumpInfo',
+    url: '/linkJump/queryTargetVisualizationJumpInfo',
     data: requestInfo,
     loading: true
   })
 }
 
-export function queryPanelJumpInfo(dvId) {
+export function queryVisualizationJumpInfo(dvId) {
   return request.get({
-    url: '/linkJump/queryPanelJumpInfo/' + dvId,
+    url: '/linkJump/queryVisualizationJumpInfo/' + dvId,
+    loading: false
+  })
+}
+
+export function viewTableDetailList(dvId) {
+  return request.get({
+    url: '/linkJump/viewTableDetailList/' + dvId,
     loading: false
   })
 }

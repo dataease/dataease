@@ -37,6 +37,7 @@
         <el-dropdown-menu style="width: 100px">
           <el-dropdown-item icon="Delete" @click="deleteComponent">删除</el-dropdown-item>
           <el-dropdown-item icon="Link" @click="linkageSetting">联动设置</el-dropdown-item>
+          <el-dropdown-item icon="Connection" @click="linkJumpSetOpen">跳转设置</el-dropdown-item>
         </el-dropdown-menu>
       </template>
     </el-dropdown>
@@ -58,7 +59,8 @@ const emits = defineEmits([
   'userViewEnlargeOpen',
   'closePreview',
   'showViewDetails',
-  'amRemoveItem'
+  'amRemoveItem',
+  'linkJumpSetOpen'
 ])
 const { t } = useI18n()
 
@@ -241,6 +243,13 @@ const clearLinkage = () => {
 }
 
 // 联动-End
+
+// 跳转-Begin
+const linkJumpSetOpen = () => {
+  emits('linkJumpSetOpen')
+}
+
+// 跳转-End
 </script>
 
 <style lang="less" scoped>

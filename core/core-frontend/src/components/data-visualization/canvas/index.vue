@@ -24,11 +24,12 @@ import { storeToRefs } from 'pinia'
 import findComponent from '@/utils/components'
 import _ from 'lodash'
 import DragShadow from '@/components/data-visualization/canvas/DragShadow.vue'
-import { findDragComponent } from '@/utils/canvasUtils'
+import { canvasSave, findDragComponent } from '@/utils/canvasUtils'
 import { guid } from '@/views/visualized/data/dataset/form/util'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import UserViewEnlarge from '@/components/visualization/UserViewEnlarge.vue'
 import CanvasOptBar from '@/components/visualization/CanvasOptBar.vue'
+import LinkJumpSet from '@/components/visualization/LinkJumpSet.vue'
 const snapshotStore = snapshotStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
 const composeStore = composeStoreWithOut()
@@ -149,6 +150,7 @@ const height = ref(0)
 const isShowArea = ref(false)
 const svgFilterAttrs = ['width', 'height', 'top', 'left', 'rotate']
 const userViewEnlargeRef = ref(null)
+const linkJumpRef = ref(null)
 const showComponentData = computed(() => {
   return componentData.value.filter(component => component.isShow)
 })
@@ -1404,6 +1406,13 @@ const initSnapshotTimer = () => {
   }, 3000)
 }
 
+const linkJumpSetOpen = item => {
+  //跳转设置需要先触发保存
+  canvasSave(() => {
+    linkJumpRef.value.dialogInit(item)
+  })
+}
+
 onMounted(() => {
   initSnapshotTimer()
   // 获取编辑器元素
@@ -1481,6 +1490,7 @@ defineExpose({
       @onDragging="onDragging($event, item, index)"
       @onResizing="onResizing($event, item, index)"
       @userViewEnlargeOpen="userViewEnlargeOpen(item)"
+      @linkJumpSetOpen="linkJumpSetOpen(item)"
     >
       <!--如果是视图 则动态获取预存的chart-view数据-->
       <component
@@ -1526,6 +1536,8 @@ defineExpose({
     <!-- 选中区域 -->
     <Area v-show="isShowArea" :start="start" :width="width" :height="height" />
     <user-view-enlarge ref="userViewEnlargeRef"></user-view-enlarge>
+    <!--    <link-jump ref="linkJumpRef"></link-jump>-->
+    <link-jump-set ref="linkJumpRef"></link-jump-set>
   </div>
 </template>
 

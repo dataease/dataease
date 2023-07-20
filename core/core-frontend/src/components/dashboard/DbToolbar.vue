@@ -23,7 +23,8 @@ import ComponentButton from '@/components/visualization/ComponentButton.vue'
 import MultiplexingCanvas from '@/views/common/MultiplexingCanvas.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { getPanelAllLinkageInfo, saveLinkage } from '@/api/visualization/linkage'
-import { queryPanelJumpInfo } from '@/api/visualization/linkJump'
+import { queryVisualizationJumpInfo } from '@/api/visualization/linkJump'
+import { canvasSave } from '@/utils/canvasUtils'
 const { t } = useI18n()
 const isShowPreview = ref(false)
 const isScreenshot = ref(false)
@@ -159,13 +160,7 @@ const edit = () => {
 
 const saveCanvas = () => {
   dvMainStore.matrixSizeAdaptor()
-  const canvasInfo = {
-    canvasStyleData: JSON.stringify(canvasStyleData.value),
-    componentData: JSON.stringify(componentData.value),
-    canvasViewInfo: canvasViewInfo.value,
-    ...dvInfo.value
-  }
-  save(canvasInfo).then(res => {
+  canvasSave(() => {
     ElMessage.success('保存成功')
   })
 }
@@ -247,10 +242,10 @@ const saveLinkageSetting = () => {
       dvMainStore.setNowPanelTrackInfo(rsp.data)
     })
     cancelLinkageSetting()
-    // // 刷新跳转信息
-    // queryPanelJumpInfo(dvInfo.value.id).then(rsp => {
-    //   dvMainStore.setNowPanelJumpInfo(rsp.data)
-    // })
+    // 刷新跳转信息
+    queryVisualizationJumpInfo(dvInfo.value.id).then(rsp => {
+      dvMainStore.setNowPanelJumpInfo(rsp.data)
+    })
   })
 }
 </script>
