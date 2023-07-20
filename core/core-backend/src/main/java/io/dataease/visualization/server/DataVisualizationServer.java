@@ -16,6 +16,7 @@ import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
+import io.dataease.utils.JsonUtil;
 import io.dataease.visualization.dao.auto.entity.DataVisualizationInfo;
 import io.dataease.visualization.dao.auto.mapper.DataVisualizationInfoMapper;
 import io.dataease.visualization.dao.ext.mapper.ExtDataVisualizationMapper;
@@ -117,16 +118,19 @@ public class DataVisualizationServer implements DataVisualizationApi {
         }
 
         List<Long> viewIds = new ArrayList<>();
+        String componentData = request.getComponentData();
         //保存视图信
         Map<Long, ChartViewDTO> chartViewsInfo = request.getCanvasViewInfo();
         if (!CollectionUtils.isEmpty(chartViewsInfo)) {
             chartViewsInfo.forEach((key, chartViewDTO) -> {
-                try {
-                    chartViewDTO.setSceneId(request.getId());
-                    chartViewManege.save(chartViewDTO);
-                    viewIds.add(chartViewDTO.getId());
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
+                if(componentData.indexOf(chartViewDTO.getId()+"")>-1){
+                    try {
+                        chartViewDTO.setSceneId(request.getId());
+                        chartViewManege.save(chartViewDTO);
+                        viewIds.add(chartViewDTO.getId());
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             });
         }

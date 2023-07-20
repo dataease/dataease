@@ -68,18 +68,20 @@ const containerId = 'container-' + showPosition.value + '-' + view.value.id
 const viewTrack = ref(null)
 
 const calcData = view => {
-  state.loading = true
-  const v = JSON.parse(JSON.stringify(view))
-  getData(v)
-    .then(res => {
-      // console.log(res)
-      state.data = res?.data
-      emit('onDrillFilters', res?.drillFilters)
-      renderChart(res)
-    })
-    .finally(() => {
-      state.loading = false
-    })
+  if (view.tableId) {
+    state.loading = true
+    const v = JSON.parse(JSON.stringify(view))
+    getData(v)
+      .then(res => {
+        // console.log(res)
+        state.data = res?.data
+        emit('onDrillFilters', res?.drillFilters)
+        renderChart(res)
+      })
+      .finally(() => {
+        state.loading = false
+      })
+  }
 }
 
 const renderChart = async view => {
