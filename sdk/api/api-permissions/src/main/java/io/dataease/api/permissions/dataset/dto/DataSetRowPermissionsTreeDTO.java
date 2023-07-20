@@ -1,5 +1,7 @@
 package io.dataease.api.permissions.dataset.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.dataease.api.permissions.role.vo.RoleVO;
 import io.dataease.api.permissions.user.vo.UserFormVO;
 import lombok.Getter;
@@ -11,6 +13,7 @@ import java.util.List;
 @Setter
 public class DataSetRowPermissionsTreeDTO  {
 
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     /**
@@ -26,11 +29,13 @@ public class DataSetRowPermissionsTreeDTO  {
     /**
      * 权限对象ID
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long authTargetId;
 
     /**
      * 数据集ID
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long datasetId;
 
     /**

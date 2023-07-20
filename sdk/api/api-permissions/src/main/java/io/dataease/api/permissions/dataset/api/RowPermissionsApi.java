@@ -24,9 +24,6 @@ public interface RowPermissionsApi {
     @PostMapping("save")
     public void save(@RequestBody DataSetRowPermissionsTreeDTO datasetRowPermissions);
 
-    @PostMapping("/list")
-    public List<DataSetRowPermissionsTreeDTO> rowPermissions(@RequestBody DataSetRowPermissionsTreeDTO request);
-
 
     @PostMapping("/delete")
     public void delete(@RequestBody DataSetRowPermissionsTreeDTO datasetRowPermissions);

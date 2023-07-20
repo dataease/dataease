@@ -183,9 +183,11 @@ const saveDS = () => {
     request.configuration = Base64.encode(JSON.stringify(request.configuration))
   }
 
-  save(request).then(() => {
-    push('/data/datasource')
-    ElMessage.success(t('common.save_success'))
+  save(request).then(response => {
+    if (response !== undefined) {
+      push('/data/datasource')
+      ElMessage.success(t('common.save_success'))
+    }
   })
 }
 const form = reactive<Form>({

@@ -74,7 +74,7 @@ const calcData = view => {
     .then(res => {
       // console.log(res)
       state.data = res?.data
-      emit('onDrillFilters', res.drillFilters)
+      emit('onDrillFilters', res?.drillFilters)
       renderChart(res)
     })
     .finally(() => {

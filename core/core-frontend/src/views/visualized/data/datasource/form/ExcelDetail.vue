@@ -464,7 +464,7 @@ defineExpose({
         </el-form-item>
         <el-form-item class="upload-excel">
           <el-upload
-            :action="baseUrl + 'api/datasource/uploadFile'"
+            :action="baseUrl + 'de2api/datasource/uploadFile'"
             :multiple="false"
             :disabled="!!param.id"
             :show-file-list="false"
@@ -494,7 +494,7 @@ defineExpose({
           </el-upload>
           <p style="width: 100%">温馨提示: 请上传csv,xlsx,xls格式的文件</p>
           <el-upload
-            :action="baseUrl + 'api/datasource/uploadFile'"
+            :action="baseUrl + 'de2api/datasource/uploadFile'"
             :multiple="false"
             :show-file-list="false"
             v-if="!!param.id"

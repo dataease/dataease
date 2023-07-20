@@ -1,6 +1,8 @@
 package io.dataease.api.permissions.dataset.dto;
 
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import lombok.Data;
 
@@ -12,6 +14,7 @@ public class DatasetRowPermissionsTreeItem implements Serializable {
     private String type;// 'item' or 'tree'
     // item
 
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long fieldId;
 
     private DatasetTableFieldDTO field;// field object

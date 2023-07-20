@@ -102,7 +102,7 @@ public class PermissionManage {
         dataSetColumnPermissionsDTO.setDatasetId(datasetId);
         dataSetColumnPermissionsDTO.setAuthTargetIds(Collections.singletonList(userId));
         dataSetColumnPermissionsDTO.setAuthTargetType("user");
-        List<DataSetColumnPermissionsDTO> dataSetColumnPermissionsDTOS = getColumnPermissionsApi().searchPermissions(dataSetColumnPermissionsDTO);
+        List<DataSetColumnPermissionsDTO> dataSetColumnPermissionsDTOS = getColumnPermissionsApi().list(dataSetColumnPermissionsDTO);
         if (dataSetColumnPermissionsDTOS != null && CollectionUtils.isNotEmpty(dataSetColumnPermissionsDTOS)) {
             datasetColumnPermissions.addAll(dataSetColumnPermissionsDTOS);
         }
@@ -117,10 +117,8 @@ public class PermissionManage {
                 dataSetColumnPermissionsDTO.setAuthTargetIds(roleIds);
                 dataSetColumnPermissionsDTO.setAuthTargetType("role");
                 List<DataSetColumnPermissionsDTO> roleColumnPermissionsDTOS = new ArrayList<>();
-                for (DataSetColumnPermissionsDTO columnPermissionsDTO : getColumnPermissionsApi().searchPermissions(dataSetColumnPermissionsDTO)) {
-                    columnPermissionsDTO.getWhiteListUser();
-                    TypeReference<List<Long>> listTypeReference = new TypeReference<List<Long>>() {
-                    };
+                for (DataSetColumnPermissionsDTO columnPermissionsDTO : getColumnPermissionsApi().list(dataSetColumnPermissionsDTO)) {
+                    TypeReference<List<Long>> listTypeReference = new TypeReference<List<Long>>() {};
                     List<Long> userIdList = JsonUtil.parseList(columnPermissionsDTO.getWhiteListUser(), listTypeReference);
                     if (CollectionUtils.isEmpty(userIdList) || !userIdList.contains(userId)) {
                         roleColumnPermissionsDTOS.add(columnPermissionsDTO);

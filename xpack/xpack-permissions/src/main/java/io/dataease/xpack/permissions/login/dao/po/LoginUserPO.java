@@ -1,6 +1,5 @@
 package io.dataease.xpack.permissions.login.dao.po;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -15,7 +14,7 @@ public class LoginUserPO implements Serializable {
     private static final long serialVersionUID = 8203102059840475528L;
 
 
-    @TableField("id")
+    @TableId("id")
     private Long userId;
 
     private String pwd;

@@ -2,12 +2,13 @@ package io.dataease.xpack.permissions.auth.manage;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import io.dataease.api.permissions.auth.vo.BusiPerVO;
 import io.dataease.api.permissions.auth.vo.PermissionItem;
 import io.dataease.auth.bo.TokenUserBO;
 import io.dataease.constant.BusiResourceEnum;
 import io.dataease.exception.DEException;
 import io.dataease.license.utils.LicenseUtil;
+import io.dataease.model.BusiNodeRequest;
+import io.dataease.model.BusiNodeVO;
 import io.dataease.utils.AuthUtils;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.CacheUtils;
@@ -74,8 +75,8 @@ public class InteractiveAuthManage {
         return new BusiPerPO(0L, "root", false, weight, -1L, 0, 0L);
     }
 
-    public List<BusiPerVO> resource(String flag) {
-        BusiResourceEnum busiResourceEnum = BusiResourceEnum.valueOf(flag.toUpperCase());
+    public List<BusiNodeVO> resource(BusiNodeRequest request) {
+        BusiResourceEnum busiResourceEnum = BusiResourceEnum.valueOf(request.getBusyFlag().toUpperCase());
         if (ObjectUtils.isEmpty(busiResourceEnum)) {
             DEException.throwException("invalid flag value");
         }
@@ -97,7 +98,7 @@ public class InteractiveAuthManage {
             List<BusiResourcePO> pos = busiAuthManage.resourceWithOid(resourceEnumFlag, oid);
             List<BusiPerPO> perPOS = CollectionUtil.isNotEmpty(pos) ? pos.stream().map(this::convert).collect(Collectors.toList()) : new ArrayList<>();
             perPOS.add(rootNode(9));
-            return TreeUtils.mergeTree(perPOS, BusiPerVO.class, false);
+            return TreeUtils.mergeTree(filter(perPOS, request.getLeaf(), request.getWeight()), BusiNodeVO.class, false);
         }
         int enumFlag = resourceEnumFlag;
 
@@ -118,8 +119,19 @@ public class InteractiveAuthManage {
         }
         pos.add(rootNode(Math.max(userRootWeight, roleRootWeight)));
         pos = pos.stream().distinct().toList();
-        List<BusiPerVO> vos = TreeUtils.mergeTree(pos, BusiPerVO.class, false);
+        List<BusiNodeVO> vos = TreeUtils.mergeTree(filter(pos, request.getLeaf(), request.getWeight()), BusiNodeVO.class, false);
         return vos;
+    }
+
+    private List<BusiPerPO> filter(List<BusiPerPO> pos, Boolean leaf, Integer weight) {
+        List<BusiPerPO> result = pos == null ? new ArrayList<>() : pos;
+        if (ObjectUtils.isNotEmpty(leaf)) {
+            result = result.stream().filter(po -> leaf.equals(po.getLeaf())).collect(Collectors.toList());
+        }
+        if (ObjectUtils.isNotEmpty(weight)) {
+            result = result.stream().filter(po -> po.getWeight() >= weight).collect(Collectors.toList());
+        }
+        return result;
     }
 
     public List<BusiPerPO> rolePos(List<Long> sourceRids, Integer enumFlag) {

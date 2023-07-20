@@ -3,7 +3,7 @@ package io.dataease.datasource.manage;
 import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.api.ds.vo.TreeNodeVO;
-import io.dataease.api.permissions.auth.vo.BusiPerVO;
+import io.dataease.model.BusiNodeVO;
 import io.dataease.commons.constants.DataSourceType;
 import io.dataease.datasource.dao.ext.mapper.DataSourceExtMapper;
 import io.dataease.datasource.dao.ext.po.DataSourceNodePO;
@@ -18,7 +18,7 @@ public class DataSourceManage {
 
     @Resource
     private DataSourceExtMapper dataSourceExtMapper;
-    public TreeNodeVO convertTreeVO(BusiPerVO perVO) {
+    public TreeNodeVO convertTreeVO(BusiNodeVO perVO) {
         int extraFlag = perVO.getExtraFlag();
         boolean valid = extraFlag >= 0;
         int abs = Math.abs(extraFlag);

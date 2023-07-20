@@ -1,4 +1,4 @@
-package io.dataease.visualization.ext;
+package io.dataease.visualization.dao.ext.mapper;
 
 import io.dataease.api.visualization.dto.LinkageInfoDTO;
 import io.dataease.api.visualization.dto.VisualizationLinkageDTO;

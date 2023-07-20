@@ -256,7 +256,7 @@ export const DEFAULT_LABEL = {
   position: 'top',
   color: '#909399',
   fontSize: 10,
-  formatter: '{c}',
+  formatter: '',
   gaugeFormatter: '{value}',
   labelLine: {
     show: true

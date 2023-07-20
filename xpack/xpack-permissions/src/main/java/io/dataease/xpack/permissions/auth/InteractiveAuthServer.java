@@ -4,7 +4,8 @@ import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
 import io.dataease.api.permissions.auth.dto.BusiResourceCreator;
 import io.dataease.api.permissions.auth.dto.BusiResourceEditor;
 import io.dataease.api.permissions.auth.dto.OutAuthPlatformLoginRequest;
-import io.dataease.api.permissions.auth.vo.BusiPerVO;
+import io.dataease.model.BusiNodeRequest;
+import io.dataease.model.BusiNodeVO;
 import io.dataease.xpack.permissions.auth.manage.InteractiveAuthManage;
 import io.dataease.xpack.permissions.auth.manage.OutAuthPlatformManage;
 import io.dataease.xpack.permissions.auth.manage.SyncAuthManage;
@@ -36,8 +37,8 @@ public class InteractiveAuthServer implements InteractiveAuthApi {
 
 
     @Override
-    public List<BusiPerVO> resource(String flag) {
-        return interactiveAuthManage.resource(flag);
+    public List<BusiNodeVO> resource(BusiNodeRequest request) {
+        return interactiveAuthManage.resource(request);
     }
 
     @Override
@@ -53,6 +54,11 @@ public class InteractiveAuthServer implements InteractiveAuthApi {
     @Override
     public void delResource(Long id) {
         syncAuthManage.delResource(id);
+    }
+
+    @Override
+    public boolean checkDel(Long id) {
+        return syncAuthManage.checkDel(id);
     }
 
     @Override

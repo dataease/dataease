@@ -21,9 +21,8 @@ interface Pagination {
 }
 
 interface User {
-  nickName: string
-  userId: string
-  email: string
+  name: string
+  id: string
 }
 
 interface RowForm {
@@ -99,7 +98,7 @@ const formatter = (_, __, cellValue) => {
   return cellValue ? t(`auth.${cellValue}`) : '-'
 }
 const formatterWhiteListUsers = (_, __, cellValue) => {
-  return cellValue ? cellValue.map(ele => ele.nickName).join('、') : '-'
+  return cellValue ? cellValue.map(ele => ele.name).join('、') : '-'
 }
 
 const onAuthTypeChange = () => {
@@ -107,18 +106,19 @@ const onAuthTypeChange = () => {
   rowPermissionForm.whiteListUser = []
   rowPermissionForm.authTargetId = ''
   fetchTypeObjsList()
+  changeUserList()
 }
 
 const changeUserList = () => {
   rowPermissionForm.whiteListUser = []
-  loadUserList()
+  whiteListUsersList()
 }
 
 const confirm = () => {
   rowAuth.value.submit()
 }
 
-const loadUserList = () => {
+const whiteListUsersList = () => {
   whiteListUsers.value = []
   const { authTargetType, authTargetId } = rowPermissionForm
   let param = {}
@@ -152,9 +152,9 @@ const save = ({ logic, items, errorMessage }) => {
   params.expressionTree = JSON.stringify({ items, logic })
   saveRowPermission(params).then(res => {
     ElMessage.success(t('common.save_success'))
+    search()
   })
   clearData()
-  search()
   loadingRowPermission.value = false
 }
 
@@ -200,7 +200,7 @@ const create = rowPermissionObj => {
     update_row_permission_dialog_title.value = t('dataset.row_permission.edit')
     listRowPermissions(rowPermissionObj)
   }
-  loadUserList()
+  changeUserList()
   fetchTypeObjsList()
   update_row_permission.value = true
 }
@@ -208,6 +208,7 @@ const create = rowPermissionObj => {
 const deleteRow = row => {
   deleteRowPermission(row).then(res => {
     ElMessage.success(t('common.save_success'))
+    search()
   })
 }
 
@@ -255,7 +256,7 @@ const handleCurrentChange = (currentPage: number) => {
   </el-button>
   <GridTable
     @size-change="handleSizeChange"
-    @current-change="handleCurrentChange"
+    @current-page="handleCurrentChange"
     :pagination="paginationConfig"
     :table-data="state.rowList"
   >
@@ -346,12 +347,11 @@ const handleCurrentChange = (currentPage: number) => {
         >
           <el-option
             v-for="item in whiteListUsers"
-            :key="item.userId + item.email"
-            :label="item.nickName"
-            :value="item.userId"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id"
           >
-            <p class="name">{{ item.nickName }}</p>
-            <p class="email">{{ item.email }}</p>
+            <p class="name">{{ item.name }}</p>
           </el-option>
         </el-select>
       </div>
