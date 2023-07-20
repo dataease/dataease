@@ -5,6 +5,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { saveDatasetTree, getDatasetTree } from '@/api/dataset'
 import type { DatasetOrFolder } from '@/api/dataset'
 import nothingTree from '@/assets/img/nothing-tree.png'
+import { BusiTreeRequest } from '@/models/tree/TreeNode'
 export interface Tree {
   name: string
   value?: string | number
@@ -151,9 +152,8 @@ const createInit = (type, data: Tree, exec, name: string) => {
     allfields = data.allfields
   }
   if (data.id) {
-    getDatasetTree({
-      nodeType: 'folder'
-    }).then(res => {
+    const request = { leaf: false, weight: 3 } as BusiTreeRequest
+    getDatasetTree(request).then(res => {
       dfs(res as unknown as Tree[])
       state.tData = (res as unknown as Tree[]) || []
       if (exec) {

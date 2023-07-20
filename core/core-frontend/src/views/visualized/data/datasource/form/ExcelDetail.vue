@@ -458,7 +458,7 @@ defineExpose({
           ]"
         >
           <el-upload
-            :action="baseUrl + 'api/datasource/uploadFile'"
+            :action="baseUrl + 'de2api/datasource/uploadFile'"
             :multiple="false"
             :disabled="!!param.id"
             :show-file-list="false"

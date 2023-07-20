@@ -10,6 +10,7 @@ import { useUserStoreWithOut } from '@/store/modules/user'
 import { rsaEncryp } from '@/utils/encryption'
 import router from '@/router'
 import { toPlatformPage, setLoginForm, callback } from './Platform'
+import { ElMessage } from 'element-plus-secondary'
 
 const { wsCache } = useCache()
 const appStore = useAppStoreWithOut()
@@ -27,7 +28,7 @@ const msg = ref(null)
 const loginImageUrl = ref(null)
 const footContent = ref(null)
 const codeIndex = ref(0)
-
+const loginErrorMsg = ref('')
 const state = reactive({
   loginTypes: [2, 3],
   qrTypes: [],
@@ -94,7 +95,11 @@ const switchCodeIndex = codeIndex => {
 }
 
 onMounted(() => {
-  console.log('----------')
+  if (localStorage.getItem('DE-GATEWAY-FLAG')) {
+    loginErrorMsg.value = localStorage.getItem('DE-GATEWAY-FLAG')
+    ElMessage.error(loginErrorMsg.value)
+    localStorage.removeItem('DE-GATEWAY-FLAG')
+  }
   if (!wsCache.get(appStore.getDekey)) {
     queryDekey().then(res => {
       wsCache.set(appStore.getDekey, res.data)

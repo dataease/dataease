@@ -6,8 +6,8 @@ import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.api.permissions.auth.dto.BusiResourceCreator;
 import io.dataease.api.permissions.auth.dto.BusiResourceEditor;
 import io.dataease.api.permissions.auth.dto.OutAuthPlatformLoginRequest;
-import io.dataease.api.permissions.auth.vo.BusiPerVO;
-import io.swagger.v3.oas.annotations.Hidden;
+import io.dataease.model.BusiNodeRequest;
+import io.dataease.model.BusiNodeVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -31,9 +31,8 @@ public interface InteractiveAuthApi {
 
     @Operation(summary = "查询资源树")
     @ApiOperationSupport(order = 2)
-    @Parameter(name = "flag", description = "类型")
-    @GetMapping("/resource/{flag}")
-    List<BusiPerVO> resource(@PathVariable("flag") String flag);
+    @PostMapping("/resource")
+    List<BusiNodeVO> resource(@RequestBody BusiNodeRequest request);
 
     /**
      * 下面3个接口为内部调用接口不对外开放
@@ -55,6 +54,11 @@ public interface InteractiveAuthApi {
     @ApiOperationSupport(order = 5)
     @GetMapping("/resource/del/{id}")
     void delResource(@PathVariable("id") Long id);
+
+    @Operation(summary = "删除检测")
+    @ApiOperationSupport(order = 6)
+    @GetMapping("/resource/checkDel/{id}")
+    boolean checkDel(@PathVariable("id") Long id);
 
     @Operation(hidden = true)
     String outAuthPlatformLogin(@RequestBody OutAuthPlatformLoginRequest request);

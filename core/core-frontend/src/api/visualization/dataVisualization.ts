@@ -1,5 +1,5 @@
 import request from '@/config/axios'
-
+import type { BusiTreeRequest } from '@/models/tree/TreeNode'
 export interface ResourceOrFolder {
   name: string
   id?: number | string
@@ -10,7 +10,11 @@ export interface ResourceOrFolder {
 
 export const findById = dvId => request.get({ url: '/dataVisualization/findById/' + dvId })
 
-export const findTree = data => request.post({ url: '/dataVisualization/findTree', data })
+export const queryTreeApi = async (data: BusiTreeRequest): Promise<IResponse> => {
+  return request.post({ url: '/dataVisualization/tree', data }).then(res => {
+    return res?.data
+  })
+}
 
 export const save = data => request.post({ url: '/dataVisualization/save', data })
 

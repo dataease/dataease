@@ -1,6 +1,5 @@
 package io.dataease.xpack.permissions.dataset.server;
 
-import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -9,13 +8,15 @@ import io.dataease.api.permissions.auth.dto.BusiPermissionRequest;
 import io.dataease.api.permissions.auth.vo.PermissionItem;
 import io.dataease.api.permissions.dataset.api.RowPermissionsApi;
 import io.dataease.api.permissions.dataset.dto.*;
-import io.dataease.api.permissions.role.vo.RoleVO;
+import io.dataease.api.permissions.role.dto.UserRequest;
 import io.dataease.api.permissions.user.vo.UserFormVO;
+import io.dataease.api.permissions.user.vo.UserGridVO;
+import io.dataease.api.permissions.user.vo.UserItem;
+import io.dataease.utils.AuthUtils;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
 import io.dataease.utils.JsonUtil;
 import io.dataease.xpack.permissions.auth.manage.AuthManage;
-import io.dataease.xpack.permissions.dataset.dto.auto.entity.PerDatasetColumnPermissions;
 import io.dataease.xpack.permissions.dataset.dto.auto.entity.PerDatasetRowPermissionsTree;
 import io.dataease.xpack.permissions.dataset.dto.auto.mapper.PerDatasetRowPermissionsTreeMapper;
 import io.dataease.xpack.permissions.dataset.dto.ext.mapper.DatasetTableFieldExtMapper;
@@ -24,7 +25,7 @@ import io.dataease.xpack.permissions.user.dao.auto.entity.PerRole;
 import io.dataease.xpack.permissions.user.dao.auto.entity.PerUser;
 import io.dataease.xpack.permissions.user.dao.auto.mapper.PerRoleMapper;
 import io.dataease.xpack.permissions.user.dao.auto.mapper.PerUserMapper;
-import io.dataease.xpack.permissions.user.dao.ext.entity.UserRolePO;
+import io.dataease.xpack.permissions.user.dao.ext.mapper.UserExtMapper;
 import io.dataease.xpack.permissions.user.manage.UserPageManage;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
@@ -55,6 +56,8 @@ public class RowPermissionServer implements RowPermissionsApi {
     private PerUserMapper perUserMapper;
     @Resource
     private PerRoleMapper perRoleMapper;
+    @Resource
+    private UserExtMapper userExtMapper;
     @Resource
     private DatasetTableFieldExtMapper datasetTableFieldExtMapper;
     @Override
@@ -87,13 +90,6 @@ public class RowPermissionServer implements RowPermissionsApi {
             BeanUtils.copyBean(perDatasetRowPermissionsTree, datasetRowPermissions);
             rowPermissionsTreeMapper.updateById(perDatasetRowPermissionsTree);
         }
-    }
-
-    @Override
-    public List<DataSetRowPermissionsTreeDTO> rowPermissions(@RequestBody DataSetRowPermissionsTreeDTO request) {
-        QueryWrapper<DataSetRowPermissionsTreeDTO> wrapper = new QueryWrapper<>();
-        wrapper.eq("dataset_id", request.getDatasetId());
-        return rowPermissionsExtMapper.selectList(wrapper);
     }
 
     @Override
@@ -150,20 +146,30 @@ public class RowPermissionServer implements RowPermissionsApi {
     @Override
     public List<UserFormVO> whiteListUsers(WhiteListUsersRequest whiteListUsersRequest) {
         List<UserFormVO> voList = new ArrayList<>();
-        BusiPermissionRequest request = new BusiPermissionRequest();
-        request.setFlag("DATASET");
-        request.setId(whiteListUsersRequest.getDatasetId());
-        request.setType(0);
-        List<Long> userIds = authManage.busiTargetPermission(request).getPermissions().stream().map(PermissionItem::getId).collect(Collectors.toList());
-        if(!CollectionUtils.isEmpty(userIds)){
-            QueryWrapper<PerUser> wrapper = new QueryWrapper<>();
-            wrapper.in("id", userIds);
-            perUserMapper.selectList(wrapper).forEach(perUser -> {
-                UserFormVO item = new UserFormVO();
-                BeanUtils.copyBean(item, perUser);
-                voList.add(item);
-            });
+        switch (whiteListUsersRequest.getAuthTargetType()){
+            case "role":
+                UserRequest request = new UserRequest();
+                request.setRid(whiteListUsersRequest.getAuthTargetId());
+                for (UserItem userItem : userPageManage.selectedForRole(request)) {
+                    UserFormVO vo = new UserFormVO();
+                    vo.setName(userItem.getName());
+                    vo.setId(userItem.getId());
+                    voList.add(vo);
+                }
+                break;
+            case "sysParams":
+                Long oid = AuthUtils.getUser().getDefaultOid();
+                QueryWrapper<UserGridVO> wrapper = new QueryWrapper<>();
+                wrapper.eq("pur.oid", oid);
+                for (UserGridVO userGridVO : userExtMapper.ListUserForOrg(wrapper)) {
+                    UserFormVO vo = new UserFormVO();
+                    vo.setName(userGridVO.getName());
+                    vo.setId(userGridVO.getId());
+                    voList.add(vo);
+                }
+                break;
         }
+
         return voList;
     }
 
@@ -210,13 +216,12 @@ public class RowPermissionServer implements RowPermissionsApi {
             PerRole sysRole = perRoleMapper.selectById(dto.getAuthTargetId());
             authTargetName = ObjectUtils.isEmpty(sysRole) ? null : sysRole.getName();
         }
-        System.out.println(dto.getExpressionTree());
 
         DatasetRowPermissionsTreeObj tree = JsonUtil.parseObject(dto.getExpressionTree(), DatasetRowPermissionsTreeObj.class);
 
         TypeReference<List<Long>> listTypeReference = new TypeReference<List<Long>>() {};
         List<Long> userIdList =  JsonUtil.parseList(dto.getWhiteListUser(), listTypeReference);
-        List<UserFormVO> sysUsers = null;
+        List<UserFormVO> sysUsers = new ArrayList<>();
         if (!CollectionUtils.isEmpty(userIdList)) {
             for (Long aLong : userIdList) {
                 UserFormVO vo = userPageManage.queryForm(aLong);

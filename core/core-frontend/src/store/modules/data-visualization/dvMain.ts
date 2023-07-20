@@ -490,6 +490,9 @@ export const dvMainStore = defineStore('dataVisualization', {
     setNowPanelJumpInfo(jumpInfo) {
       this.nowPanelJumpInfo = jumpInfo.baseJumpInfoMap
     },
+    setNowTargetPanelJumpInfo(jumpInfo) {
+      this.nowPanelJumpInfoTargetPanel = jumpInfo.baseJumpInfoVisualizationMap
+    },
     // 添加联动 下钻 等过滤组件
     addViewTrackFilter(data) {
       const viewId = data.viewId

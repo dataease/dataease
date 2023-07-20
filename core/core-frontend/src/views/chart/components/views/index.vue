@@ -14,11 +14,16 @@ import { useCache } from '@/hooks/web/useCache'
 const { wsCache } = useCache()
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { cloneDeep } from 'lodash-es'
+import { storeToRefs } from 'pinia'
+import { checkAddHttp, setIdValueTrans } from '@/utils/canvasUtils'
+import { Base64 } from 'js-base64'
 
 const g2 = ref<any>()
 
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
+
+const { nowPanelJumpInfo, publicLinkStatus, dvInfo } = storeToRefs(dvMainStore)
 
 const props = defineProps({
   element: {
@@ -143,6 +148,80 @@ const onDrillFilters = param => {
   })
 }
 
+const windowsJump = (url, jumpType) => {
+  try {
+    window.open(url, jumpType)
+  } catch (e) {
+    ElMessage.error(t('visualization.url_check_error') + ':' + url)
+  }
+}
+
+const jumpClick = param => {
+  let dimension, jumpInfo, sourceInfo
+  // 如果有名称name 获取和name匹配的dimension 否则倒序取最后一个能匹配的
+  if (param.name) {
+    param.dimensionList.forEach(dimensionItem => {
+      if (dimensionItem.id === param.name || dimensionItem.value === param.name) {
+        dimension = dimensionItem
+        sourceInfo = param.viewId + '#' + dimension.id
+        jumpInfo = nowPanelJumpInfo.value[sourceInfo]
+      }
+    })
+  } else {
+    for (let i = param.dimensionList.length - 1; i >= 0; i--) {
+      dimension = param.dimensionList[i]
+      sourceInfo = param.viewId + '#' + dimension.id
+      jumpInfo = nowPanelJumpInfo.value[sourceInfo]
+      if (jumpInfo) {
+        break
+      }
+    }
+  }
+  if (jumpInfo) {
+    param.sourceDvId = dvInfo.value.id
+    param.sourceViewId = param.viewId
+    param.sourceFieldId = dimension.id
+    // 内部仪表板跳转
+    if (jumpInfo.linkType === 'inner') {
+      if (jumpInfo.targetDvId) {
+        if (publicLinkStatus.value) {
+          // 判断是否有公共链接ID
+          if (jumpInfo.publicJumpId) {
+            const url = '/link/' + jumpInfo.publicJumpId
+            const currentUrl = window.location.href
+            localStorage.setItem('beforeJumpUrl', currentUrl)
+            windowsJump(url, jumpInfo.jumpType)
+          } else {
+            ElMessage.warning(t('visualization.public_link_tips'))
+          }
+        } else {
+          const url =
+            '#/preview/?dvId=' +
+            jumpInfo.targetDvId +
+            '&jumpInfoParam=' +
+            encodeURI(Base64.encode(JSON.stringify(param)))
+          windowsJump(url, jumpInfo.jumpType)
+        }
+      } else {
+        ElMessage.warning('未指定跳转仪表板')
+      }
+    } else {
+      const colList = [...param.dimensionList, ...param.quotaList]
+      let url = setIdValueTrans('id', 'value', jumpInfo.content, colList)
+      url = checkAddHttp(url)
+      windowsJump(url, jumpInfo.jumpType)
+    }
+  } else {
+    // if (this.chart.type.indexOf('table') === -1) {
+    //   this.$message({
+    //     type: 'warn',
+    //     message: '未获取跳转信息',
+    //     showClose: true
+    //   })
+    // }
+  }
+}
+
 const queryData = (firstLoad = false) => {
   const queryFilter = filter(firstLoad)
   let params = cloneDeep(view.value)
@@ -222,6 +301,7 @@ initTitle()
       ref="g2"
       @onChartClick="chartClick"
       @onDrillFilters="onDrillFilters"
+      @onJumpClick="jumpClick"
     />
     <drill-path :drill-filters="state.drillFilters" @onDrillJump="drillJump" />
   </div>

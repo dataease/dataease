@@ -9,16 +9,11 @@
       </el-col>
     </el-row>
 
-    <el-row style="height: 120px; overflow-y: auto">
+    <el-row class="match-area">
       <el-row v-for="(itemLinkage, index) in linkageInfo.linkageFields" :key="index">
         <el-col :span="11">
           <div class="select-filed">
-            <el-select
-              :popper-append-to-body="false"
-              v-model="itemLinkage.sourceField"
-              size="small"
-              placeholder="请选择"
-            >
+            <el-select v-model="itemLinkage.sourceField" size="small" placeholder="请选择">
               <el-option
                 v-for="item in sourceLinkageInfo.targetViewFields"
                 :key="item.id"
@@ -263,5 +258,11 @@ onMounted(() => {
 .delete-area {
   float: left;
   margin-top: 5px;
+}
+
+.match-area {
+  display: inline-block;
+  height: 120px;
+  overflow-y: auto;
 }
 </style>

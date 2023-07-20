@@ -6,8 +6,8 @@ import { HandleMore } from '@/components/handle-more'
 import { Icon } from '@/components/icon-custom'
 import { useRouter } from 'vue-router'
 import CreatDsGroup from './form/CreatDsGroup.vue'
-import type { Tree } from './form/CreatDsGroup.vue'
-import { getDatasetTree, delDatasetTree, getDatasetPreview } from '@/api/dataset'
+import type { BusiTreeNode, BusiTreeRequest } from '@/models/tree/TreeNode'
+import { getDatasetTree, delDatasetTree, getDatasetPreview, barInfoApi } from '@/api/dataset'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import DatasetDetail from './DatasetDetail.vue'
 import RowPermissions from './RowPermissions.vue'
@@ -29,11 +29,12 @@ interface Node {
   nodeType: string
   createTime: number
 }
+const rootManage = ref(false)
 const nickName = ref('')
 const router = useRouter()
 const { t } = useI18n()
 const state = reactive({
-  datasetTree: [] as Tree[]
+  datasetTree: [] as BusiTreeNode[]
 })
 
 const fieldMap = ['text', 'time', 'value', 'value', 'location']
@@ -120,8 +121,15 @@ const generateColumns = (arr: Field[]) =>
   }))
 
 const getData = () => {
-  getDatasetTree().then(res => {
-    state.datasetTree = (res as unknown as Tree[]) || []
+  const request = { busiFlag: 'dataset' } as BusiTreeRequest
+  getDatasetTree(request).then(res => {
+    const nodeData = (res as unknown as BusiTreeNode[]) || []
+    if (nodeData.length === 1 && nodeData[0]['id'] === '0' && nodeData[0]['name'] === 'root') {
+      rootManage.value = nodeData[0]['weight'] >= 3
+      state.datasetTree = nodeData[0]['children']
+      return
+    }
+    state.datasetTree = nodeData
   })
 }
 
@@ -129,15 +137,18 @@ getData()
 
 const columns = shallowRef([])
 const tableData = shallowRef([])
+const total = ref(0)
 
-const handleNodeClick = (data: Tree) => {
+const handleNodeClick = (data: BusiTreeNode) => {
   if (!data.leaf) return
-  const { name, createBy, id, nodeType, createTime } = data
-  Object.assign(nodeInfo, { name, createBy, id, nodeType, createTime })
-  columnsPreview = []
-  dataPreview = []
-  activeName.value = 'dataPreview'
-  handleClick(activeName.value)
+  barInfoApi(data.id).then(res => {
+    const data = res as unknown as Node[]
+    Object.assign(nodeInfo, data)
+    columnsPreview = []
+    dataPreview = []
+    activeName.value = 'dataPreview'
+    handleClick(activeName.value)
+  })
 }
 
 const editorDataset = () => {
@@ -149,7 +160,7 @@ const editorDataset = () => {
   })
 }
 
-const createDataset = (data?: Tree) => {
+const createDataset = (data?: BusiTreeNode) => {
   router.push({
     path: '/dataset-form',
     query: {
@@ -174,6 +185,7 @@ const handleClick = (tabName: TabPaneName) => {
           dataPreview = (res?.data?.data as Array<{}>) || []
           columns.value = columnsPreview
           tableData.value = dataPreview
+          total.value = res.total
         })
         .finally(() => {
           dataPreviewLoading.value = false
@@ -192,7 +204,7 @@ const handleClick = (tabName: TabPaneName) => {
   }
 }
 
-const operation = (cmd: string, data: Tree, nodeType: string) => {
+const operation = (cmd: string, data: BusiTreeNode, nodeType: string) => {
   if (cmd === 'delete') {
     ElMessageBox.confirm(
       nodeType === 'folder' ? '确定删除该文件夹吗' : t('datasource.delete_this_dataset'),
@@ -213,7 +225,7 @@ const operation = (cmd: string, data: Tree, nodeType: string) => {
   }
 }
 
-const handleDatasetTree = (cmd: string, data?: Tree) => {
+const handleDatasetTree = (cmd: string, data?: BusiTreeNode) => {
   if (cmd === 'dataset') {
     createDataset(data)
   }
@@ -268,9 +280,9 @@ watch(nickName, (val: string) => {
   datasetListTree.value.filter(val)
 })
 
-const filterNode = (value: string, data: Tree) => {
+const filterNode = (value: string, data: BusiTreeNode) => {
   if (!value) return true
-  return data.name.includes(value)
+  return data.name?.toLocaleLowerCase().includes(value.toLocaleLowerCase())
 }
 </script>
 
@@ -280,20 +292,22 @@ const filterNode = (value: string, data: Tree) => {
       <div class="filter-dataset">
         <div class="icon-methods">
           <span class="title"> 数据集 </span>
-          <el-tooltip class="box-item" effect="dark" content="新建文件夹" placement="top">
-            <el-button @click="() => handleDatasetTree('folder')" text>
-              <template #icon>
-                <Icon name="dv-new-folder"></Icon>
-              </template>
-            </el-button>
-          </el-tooltip>
-          <el-tooltip class="box-item" effect="dark" content="新建数据集" placement="top">
-            <el-button @click="() => createDataset()" text>
-              <template #icon>
-                <Icon name="icon_dataset_outlined"></Icon>
-              </template>
-            </el-button>
-          </el-tooltip>
+          <div v-if="rootManage">
+            <el-tooltip class="box-item" effect="dark" content="新建文件夹" placement="top">
+              <el-button @click="() => handleDatasetTree('folder')" text>
+                <template #icon>
+                  <Icon name="dv-new-folder"></Icon>
+                </template>
+              </el-button>
+            </el-tooltip>
+            <el-tooltip class="box-item" effect="dark" content="新建数据集" placement="top">
+              <el-button @click="() => createDataset()" text>
+                <template #icon>
+                  <Icon name="icon_dataset_outlined"></Icon>
+                </template>
+              </el-button>
+            </el-tooltip>
+          </div>
         </div>
         <div class="search-input">
           <el-input v-model="nickName" clearable>
@@ -329,7 +343,7 @@ const filterNode = (value: string, data: Tree) => {
               <Icon name="icon_dataset"></Icon>
             </el-icon>
             <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
-            <div class="icon-more">
+            <div class="icon-more" v-if="data.weight >= 3">
               <handle-more
                 @handle-command="cmd => handleDatasetTree(cmd, data)"
                 :menu-list="datasetTypeList"
@@ -393,7 +407,7 @@ const filterNode = (value: string, data: Tree) => {
         </div>
         <div class="dataset-table-info">
           <div v-if="activeName === 'dataPreview'" class="preview-num">
-            显示 100 条数据，共 1000 条
+            显示 100 条数据，共 {{ total }} 条
           </div>
           <template v-if="['dataPreview', 'structPreview'].includes(activeName)">
             <div class="info-table" :class="[{ 'struct-preview': activeName === 'structPreview' }]">
@@ -420,7 +434,7 @@ const filterNode = (value: string, data: Tree) => {
                 :dataset-id="nodeInfo.id"
                 v-if="activeName === 'row'"
               ></row-permissions>
-              <column-permissions v-else></column-permissions>
+              <column-permissions :dataset-id="nodeInfo.id" v-else></column-permissions>
             </div>
           </template>
         </div>

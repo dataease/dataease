@@ -4,6 +4,8 @@ import { onMounted, reactive, ref } from 'vue'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
 import router from '@/router'
 import { initCanvasData } from '@/utils/canvasUtils'
+import { queryTargetVisualizationJumpInfo } from '@/api/visualization/linkJump'
+import { Base64 } from 'js-base64'
 
 const dvMainStore = dvMainStoreWithOut()
 const state = reactive({
@@ -14,7 +16,7 @@ const state = reactive({
   curPreviewGap: 0
 })
 
-const loadCanvasData = dvId => {
+const loadCanvasData = (dvId, jumpInfoParam) => {
   initCanvasData(
     dvId,
     function ({
@@ -29,14 +31,36 @@ const loadCanvasData = dvId => {
       state.canvasViewInfoPreview = canvasViewInfoPreview
       state.dvInfo = dvInfo
       state.curPreviewGap = curPreviewGap
+      afterInit(jumpInfoParam)
     }
   )
 }
 
+const afterInit = tempParam => {
+  if (tempParam) {
+    const jumpParam = JSON.parse(Base64.decode(decodeURI(tempParam)))
+    const jumpRequestParam = {
+      sourceDvId: jumpParam.sourceDvId,
+      sourceViewId: jumpParam.sourceViewId,
+      sourceFieldId: null,
+      targetDvId: state.dvInfo.id
+    }
+    try {
+      // 刷新跳转目标仪表板联动信息
+      queryTargetVisualizationJumpInfo(jumpRequestParam).then(rsp => {
+        dvMainStore.setNowTargetPanelJumpInfo(rsp.data)
+        dvMainStore.addViewTrackFilter(jumpParam)
+      })
+    } catch (e) {
+      console.log(e)
+    }
+  }
+}
+
 onMounted(() => {
-  const { dvId } = router.currentRoute.value.query
+  const { dvId, jumpInfoParam } = router.currentRoute.value.query
   if (dvId) {
-    loadCanvasData(dvId)
+    loadCanvasData(dvId, jumpInfoParam)
   }
 })
 </script>

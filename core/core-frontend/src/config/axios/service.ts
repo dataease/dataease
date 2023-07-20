@@ -3,7 +3,8 @@ import axios, {
   AxiosRequestHeaders,
   InternalAxiosRequestConfig,
   AxiosResponse,
-  AxiosError
+  AxiosError,
+  AxiosHeaders
 } from 'axios'
 
 import qs from 'qs'
@@ -11,7 +12,7 @@ import qs from 'qs'
 import { config } from './config'
 
 import { ElMessage } from 'element-plus-secondary'
-
+import router from '@/router'
 const { result_code } = config
 import { useCache } from '@/hooks/web/useCache'
 const { wsCache } = useCache()
@@ -99,6 +100,17 @@ service.interceptors.response.use(
   },
   (error: AxiosError) => {
     ElMessage.error(error.message)
+    const header = error.response.headers as AxiosHeaders
+    if (header.has('DE-GATEWAY-FLAG')) {
+      localStorage.clear()
+      const flag = header.get('DE-GATEWAY-FLAG')
+      localStorage.setItem('DE-GATEWAY-FLAG', flag.toString())
+      let queryRedirectPath = '/workbranch/index'
+      if (router.currentRoute.value.fullPath) {
+        queryRedirectPath = router.currentRoute.value.fullPath as string
+      }
+      router.push(`/login?redirect=${queryRedirectPath}`)
+    }
     return Promise.reject(error)
   }
 )
