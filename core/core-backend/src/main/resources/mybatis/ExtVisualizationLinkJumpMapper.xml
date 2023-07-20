@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="io.dataease.visualization.ext.ExtVisualizationLinkJumpMapper">
+<mapper namespace="io.dataease.visualization.dao.ext.mapper.ExtVisualizationLinkJumpMapper">
     <resultMap id="LinkJumpBaseResultMap" type="io.dataease.api.visualization.vo.VisualizationLinkJumpVO">
         <id column="id" jdbcType="VARCHAR" property="id" />
         <result column="source_dv_id" jdbcType="VARCHAR" property="sourceDvId" />

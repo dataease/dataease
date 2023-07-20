@@ -14,8 +14,8 @@ import io.dataease.visualization.dao.auto.entity.VisualizationLinkJumpTargetView
 import io.dataease.visualization.dao.auto.mapper.VisualizationLinkJumpInfoMapper;
 import io.dataease.visualization.dao.auto.mapper.VisualizationLinkJumpMapper;
 import io.dataease.visualization.dao.auto.mapper.VisualizationLinkJumpTargetViewInfoMapper;
-import io.dataease.visualization.ext.ExtVisualizationLinkJumpMapper;
-import io.dataease.visualization.ext.ExtVisualizationLinkageMapper;
+import io.dataease.visualization.dao.ext.mapper.ExtVisualizationLinkJumpMapper;
+import io.dataease.visualization.dao.ext.mapper.ExtVisualizationLinkageMapper;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.transaction.annotation.Transactional;

@@ -1,11 +1,10 @@
-package io.dataease.visualization.ext;
+package io.dataease.visualization.dao.ext.mapper;
 
 import io.dataease.api.visualization.dto.VisualizationLinkJumpDTO;
 import io.dataease.api.visualization.request.VisualizationLinkJumpBaseRequest;
 import io.dataease.api.visualization.vo.VisualizationLinkJumpInfoVO;
 import io.dataease.api.visualization.vo.VisualizationLinkJumpVO;
 import io.dataease.api.visualization.vo.VisualizationViewTableVO;
-import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
