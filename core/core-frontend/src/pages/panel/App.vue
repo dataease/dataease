@@ -6,24 +6,21 @@ const VisualizationEditor = defineAsyncComponent(
 )
 const DashboardEditor = defineAsyncComponent(() => import('@/views/dashboard/index.vue'))
 
+const Dashboard = defineAsyncComponent(() => import('./DashboardPreview.vue'))
 const ViewWrapper = defineAsyncComponent(() => import('./ViewWrapper.vue'))
 const props = defineProps({
   componentName: propTypes.string.def('DashboardEditor')
 })
 const currentComponent = shallowRef()
-console.log('props.componentName', props.componentName)
 
-if (props.componentName === 'DashboardEditor') {
-  currentComponent.value = DashboardEditor
+const componentMap = {
+  DashboardEditor,
+  VisualizationEditor,
+  ViewWrapper,
+  Dashboard
 }
 
-if (props.componentName === 'VisualizationEditor') {
-  currentComponent.value = VisualizationEditor
-}
-
-if (props.componentName === 'ViewWrapper') {
-  currentComponent.value = ViewWrapper
-}
+currentComponent.value = componentMap[props.componentName]
 </script>
 <template>
   <component :is="currentComponent"></component>
