@@ -29,9 +29,9 @@ public class CoreVisualizationManage {
     private CoreVisualiationExtMapper coreVisualiationExtMapper;
 
     public List<BusiNodeVO> tree(BusiNodeRequest request) {
-        String busiType = request.getBusyFlag();
+        String busyType = request.getBusyFlag();
         if (ObjectUtils.isNotEmpty(interactiveAuthApi)) {
-            String authFlag = StringUtils.equals("dataV", busiType) ? "screen" : "panel";
+            String authFlag = StringUtils.equals("dataV", busyType) ? "screen" : "panel";
             request.setBusyFlag(authFlag);
             return interactiveAuthApi.resource(request);
         }
@@ -39,12 +39,12 @@ public class CoreVisualizationManage {
         if (ObjectUtils.isEmpty(request.getLeaf()) || !request.getLeaf()) nodes.add(rootNode());
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("delete_flag", false);
-        queryWrapper.eq(ObjectUtils.isNotEmpty(request.getLeaf()), "node_type", request.getLeaf() ? "leaf" : "folder");
-        queryWrapper.eq("type", busiType);
+        queryWrapper.eq(ObjectUtils.isNotEmpty(request.getLeaf()), "node_type", ObjectUtils.isNotEmpty(request.getLeaf()) && request.getLeaf() ? "leaf" : "folder");
+        queryWrapper.eq("type", busyType);
         queryWrapper.orderByDesc("create_time");
         List<VisualizationNodePO> pos = coreVisualiationExtMapper.queryNodes(queryWrapper);
         if (CollectionUtil.isNotEmpty(pos)) {
-            nodes.addAll(pos.stream().map(item -> convert(item, busiType)).collect(Collectors.toList()));
+            nodes.addAll(pos.stream().map(item -> convert(item, busyType)).collect(Collectors.toList()));
         }
         return TreeUtils.mergeTree(nodes, BusiNodeVO.class, false);
     }

@@ -96,7 +96,7 @@ const nodeClick = (data: BusiTreeNode) => {
 }
 
 const getTree = () => {
-  const request = { busiFlag: curCanvasType.value } as BusiTreeRequest
+  const request = { busyFlag: curCanvasType.value } as BusiTreeRequest
   queryTreeApi(request).then(res => {
     const nodeData = (res as unknown as BusiTreeNode[]) || []
     if (nodeData.length === 1 && nodeData[0]['id'] === '0' && nodeData[0]['name'] === 'root') {
