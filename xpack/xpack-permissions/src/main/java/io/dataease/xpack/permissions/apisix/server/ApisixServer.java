@@ -18,6 +18,8 @@ public class ApisixServer {
 
     private static final String headName = "DE-GATEWAY-FLAG";
 
+    private static final String FORBIDDEN_HEAD = "DE-FORBIDDEN-FLAG";
+
     @Resource
     private ApisixManage apisixManage;
 
@@ -41,7 +43,7 @@ public class ApisixServer {
             } catch (Exception e) {
                 LogUtil.error(e.getMessage(), e);
                 HttpHeaders headers = new HttpHeaders();
-                headers.add(headName, e.getMessage());
+                headers.add(FORBIDDEN_HEAD, e.getMessage());
                 return new ResponseEntity<>(e.getMessage(), headers, HttpStatus.FORBIDDEN);
             }
         }

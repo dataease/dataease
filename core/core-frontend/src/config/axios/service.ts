@@ -111,6 +111,9 @@ service.interceptors.response.use(
       }
       router.push(`/login?redirect=${queryRedirectPath}`)
     }
+    if (header.has('DE-FORBIDDEN-FLAG')) {
+      ElMessage.error(header.has('DE-FORBIDDEN-FLAG').toString())
+    }
     return Promise.reject(error)
   }
 )

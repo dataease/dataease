@@ -4,6 +4,7 @@ import io.dataease.api.permissions.auth.vo.PermissionItem;
 import io.dataease.api.permissions.auth.vo.PermissionOrigin;
 import io.dataease.auth.bo.TokenUserBO;
 import io.dataease.exception.DEException;
+import io.dataease.utils.AuthUtils;
 import io.dataease.utils.CommonBeanFactory;
 import io.dataease.xpack.permissions.user.entity.UserRole;
 import io.dataease.xpack.permissions.user.manage.RoleManage;
@@ -31,7 +32,7 @@ public class ApiAuthManage extends OrgResourceManage {
         Long uid = userBO.getUserId();
         Long oid = userBO.getDefaultOid();
         List<UserRole> userRoles = userRoles(uid, oid);
-        if (isRootAdmin(userRoles)) {
+        if (AuthUtils.isSysAdmin(uid) || isRootAdmin(userRoles)) {
             return;
         }
         if (isRootReadonly(userRoles) && weight == 1) {
@@ -53,7 +54,7 @@ public class ApiAuthManage extends OrgResourceManage {
             DEException.throwException(ERROR_MSG);
         }
         if (flag > 4) return;
-        if (isRootAdmin(userRoles)) {
+        if (AuthUtils.isSysAdmin(uid) || isRootAdmin(userRoles)) {
             return;
         }
         if (isRootReadonly(userRoles) && weight == 1) {
