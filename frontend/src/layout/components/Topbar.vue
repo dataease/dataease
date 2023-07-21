@@ -281,7 +281,7 @@ export default {
     unloadHandler(e) {
       this.gap_time = new Date().getTime() - this.beforeUnload_time
       if (this.gap_time <= 5) {
-        this.logout().then(res => {})
+        // this.logout().then(res => {})
       }
     },
 
