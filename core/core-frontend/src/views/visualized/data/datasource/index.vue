@@ -42,7 +42,7 @@ export interface Node {
   type: string
   nodeType: string
   syncSetting?: SyncSetting
-
+  editType?: number
   configuration?: Configuration
   apiConfiguration?: ApiConfiguration[]
 }
@@ -93,7 +93,7 @@ const datasetTypeList = [
   {
     label: '新建数据源',
     svgName: 'icon_dataset',
-    command: 'dataset'
+    command: 'datasource'
   },
   {
     label: '新建文件夹',
@@ -271,10 +271,13 @@ const handleNodeClick = data => {
   handleClick(activeName.value)
 }
 const createDatasource = (data?: Tree) => {
-  datasourceEditor.value.init(null, data && data.id)
+  datasourceEditor.value.init(null, data?.id)
 }
 
-const editDatasource = () => {
+const editDatasource = editType => {
+  if (nodeInfo.type === 'Excel') {
+    nodeInfo.editType = editType
+  }
   datasourceEditor.value.init(nodeInfo)
 }
 
@@ -285,7 +288,7 @@ const rateValueMap = {
 }
 
 const handleDatasourceTree = (cmd: string, data?: Tree) => {
-  if (cmd === 'dataspurce') {
+  if (cmd === 'datasource') {
     createDatasource(data)
   }
   if (cmd === 'folder') {
@@ -441,7 +444,22 @@ const defaultProps = {
                 </template>
                 新建数据集
               </el-button>
-              <el-button @click="editDatasource()" type="primary">
+
+              <template v-if="nodeInfo.type === 'Excel'">
+                <el-button @click="editDatasource(0)" type="primary">
+                  <template #icon>
+                    <Icon name="icon_edit_outlined"></Icon>
+                  </template>
+                  替换数据
+                </el-button>
+                <el-button @click="editDatasource(1)" type="primary">
+                  <template #icon>
+                    <Icon name="icon_edit_outlined"></Icon>
+                  </template>
+                  追加数据
+                </el-button>
+              </template>
+              <el-button v-else @click="editDatasource()" type="primary">
                 <template #icon>
                   <Icon name="icon_edit_outlined"></Icon>
                 </template>
