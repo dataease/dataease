@@ -161,7 +161,7 @@ public class CalciteProvider {
             int columnCount = metaData.getColumnCount();
             for (int i = 1; i <= columnCount; i++) {
                 TableField tableField = new TableField();
-                tableField.setOriginName(metaData.getColumnName(i));
+                tableField.setOriginName(metaData.getColumnLabel(i));// 用ColumnName取的是原字段取不到as的别名，所以使用ColumnLabel
                 tableField.setType(metaData.getColumnTypeName(i));
                 tableField.setPrecision(metaData.getPrecision(i));
                 tableField.setScale(metaData.getScale(i));
