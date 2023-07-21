@@ -448,7 +448,7 @@ public class ChartViewService {
             fieldMap.put("yAxis", yAxis);
             fieldMap.put("extStack", extStack);
             fieldMap.put("extBubble", extBubble);
-            PluginViewParam pluginViewParam = buildPluginParam(fieldMap, fieldCustomFilter, extFilterList, ds, table, view, rowPermissionsTree);
+            PluginViewParam pluginViewParam = buildPluginParam(fieldMap, fieldCustomFilter, extFilterList, ds, table, view, rowPermissionsTree, requestList);
             String sql = pluginViewSql(pluginViewParam, view);
             if (StringUtils.isBlank(sql)) {
                 return new ArrayList<String[]>();
@@ -982,7 +982,7 @@ public class ChartViewService {
             fieldMap.put("extBubble", extBubble);
             fieldMap.put("xAxis", xAxis);
             fieldMap.put("yAxis", yAxis);
-            PluginViewParam pluginViewParam = buildPluginParam(fieldMap, fieldCustomFilter, extFilterList, ds, table, view, rowPermissionsTree);
+            PluginViewParam pluginViewParam = buildPluginParam(fieldMap, fieldCustomFilter, extFilterList, ds, table, view, rowPermissionsTree, chartExtRequest);
             String sql = pluginViewSql(pluginViewParam, view);
             if (StringUtils.isBlank(sql)) {
                 return emptyChartViewDTO(view);
@@ -1441,12 +1441,13 @@ public class ChartViewService {
         return dto;
     }
 
-    private PluginViewParam buildPluginParam(Map<String, List<ChartViewFieldDTO>> fieldMap, List<ChartFieldCustomFilterDTO> customFilters, List<ChartExtFilterRequest> extFilters, Datasource ds, DatasetTable table, ChartViewDTO view, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree) {
+    private PluginViewParam buildPluginParam(Map<String, List<ChartViewFieldDTO>> fieldMap, List<ChartFieldCustomFilterDTO> customFilters, List<ChartExtFilterRequest> extFilters, Datasource ds, DatasetTable table, ChartViewDTO view, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, ChartExtRequest chartExtRequest) {
         PluginViewParam pluginViewParam = new PluginViewParam();
         PluginViewSetImpl pluginViewSet = BeanUtils.copyBean(new PluginViewSetImpl(), table);
         pluginViewSet.setDsType(ds.getType());
         pluginViewSet.setTableId(table.getId());
         pluginViewSet.setDs(ds);
+        pluginViewSet.setChartExtRequest(gson.toJson(chartExtRequest));
         PluginViewLimit pluginViewLimit = BeanUtils.copyBean(new PluginViewLimit(), view);
 
 
@@ -1851,8 +1852,8 @@ public class ChartViewService {
         chartViewMapper.updateByPrimaryKeySelective(chartView);
     }
 
-    private String handleVariable(String sql, ChartExtRequest requestList, QueryProvider qp, DataSetTableDTO table, Datasource ds) throws Exception {
-        List<SqlVariableDetails> sqlVariables = new Gson().fromJson(table.getSqlVariableDetails(), new TypeToken<List<SqlVariableDetails>>() {
+    public String preHandleVariable(String sql, ChartExtRequest requestList, QueryProvider qp, DataSetTableDTO table) {
+        List<SqlVariableDetails> sqlVariables = gson.fromJson(table.getSqlVariableDetails(), new TypeToken<List<SqlVariableDetails>>() {
         }.getType());
         if (requestList != null && CollectionUtils.isNotEmpty(requestList.getFilter())) {
             for (ChartExtFilterRequest chartExtFilterRequest : requestList.getFilter()) {
@@ -1863,7 +1864,7 @@ public class ChartViewService {
                     continue;
                 }
 
-                Boolean isEndParam = false;
+                boolean isEndParam = false;
                 for (String parameter : chartExtFilterRequest.getParameters()) {
                     if (parameter.contains("|DE|")) {
                         String[] parameterArray = parameter.split("\\|DE\\|");
@@ -1902,6 +1903,11 @@ public class ChartViewService {
                 }
             }
         }
+        return sql;
+    }
+
+    private String handleVariable(String sql, ChartExtRequest requestList, QueryProvider qp, DataSetTableDTO table, Datasource ds) throws Exception {
+        sql = preHandleVariable(sql, requestList, qp, table);
         sql = dataSetTableService.handleVariableDefaultValue(sql, null, ds.getType(), false);
         return sql;
     }
