@@ -626,7 +626,8 @@ export default {
     status: 'Authorization status',
     valid: 'Valid',
     invalid: 'Invalid',
-    expired: 'Expired'
+    expired: 'Expired',
+    expired_msg: 'license has expired since {0}.  It is recommended to update the license, which does not affect the use of enterprise version functions'
   },
   member: {
     create: 'Add members',

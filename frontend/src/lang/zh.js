@@ -625,7 +625,8 @@ export default {
     status: '授权状态',
     valid: '有效',
     invalid: '无效',
-    expired: '已过期'
+    expired: '已过期',
+    expired_msg: 'License已过期，过期时间：{0}，为了不影响企业版功能的使用，建议您更新License'
   },
   member: {
     create: '添加成员',
