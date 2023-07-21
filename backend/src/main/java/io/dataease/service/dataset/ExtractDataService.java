@@ -739,10 +739,7 @@ public class ExtractDataService {
                 totalSheets = excelXlsReader.totalSheets;
             }
             if (StringUtils.equalsIgnoreCase(suffix, "xlsx")) {
-                ExcelXlsxReader excelXlsxReader = new ExcelXlsxReader();
-                excelXlsxReader.setDatasetTableFields(datasetTableFields);
-                excelXlsxReader.process(new FileInputStream(excelSheetData.getPath()));
-                totalSheets = excelXlsxReader.totalSheets;
+                totalSheets = dataSetTableService.excelSheetDataList(new FileInputStream(excelSheetData.getPath()), false);
             }
 
             if (StringUtils.equalsIgnoreCase(suffix, "csv")) {
