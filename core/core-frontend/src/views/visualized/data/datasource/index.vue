@@ -14,6 +14,7 @@ import { listDatasources, getTableField, listDatasourceTables, deleteById } from
 import { Base64 } from 'js-base64'
 import type { Configuration, ApiConfiguration, SyncSetting } from './form/index.vue'
 import EditorDatasource from './form/index.vue'
+import ExcelInfo from './ExcelInfo.vue'
 import SheetTabs from './SheetTabs.vue'
 import BaseInfoItem from './BaseInfoItem.vue'
 import BaseInfoContent from './BaseInfoContent.vue'
@@ -274,7 +275,7 @@ const createDatasource = (data?: Tree) => {
   datasourceEditor.value.init(null, data?.id)
 }
 
-const editDatasource = editType => {
+const editDatasource = (editType?: number) => {
   if (nodeInfo.type === 'Excel') {
     nodeInfo.editType = editType
   }
@@ -541,68 +542,65 @@ const defaultProps = {
             <template v-if="slotProps.active">
               <el-row :gutter="24">
                 <el-col :span="12">
-                  <BaseInfoItem
-                    :value="nodeInfo.name"
-                    :label="t('common.name') + t('auth.datasource')"
-                  ></BaseInfoItem>
+                  <BaseInfoItem :label="t('common.name') + t('auth.datasource')">{{
+                    nodeInfo.name
+                  }}</BaseInfoItem>
                 </el-col>
                 <el-col :span="12">
-                  <BaseInfoItem :value="nodeInfo.type" :label="t('datasource.type')"></BaseInfoItem>
+                  <BaseInfoItem :label="t('datasource.type')">{{ nodeInfo.type }}</BaseInfoItem>
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col v-if="nodeInfo.type === 'Excel'" :span="12">
+                  <BaseInfoItem label="文件">
+                    <ExcelInfo :name="nodeInfo.type" :size="nodeInfo.type"></ExcelInfo>
+                  </BaseInfoItem>
+                </el-col>
+                <el-col v-else :span="24">
+                  <BaseInfoItem :label="t('common.description')">{{
+                    nodeInfo.description
+                  }}</BaseInfoItem>
+                </el-col>
+              </el-row>
+              <el-row :gutter="24">
+                <el-col :span="12">
+                  <BaseInfoItem label="驱动">驱动</BaseInfoItem>
+                </el-col>
+                <el-col :span="12">
+                  <BaseInfoItem :label="t('datasource.host')">{{
+                    nodeInfo.configuration.host
+                  }}</BaseInfoItem>
+                </el-col>
+              </el-row>
+              <el-row :gutter="24">
+                <el-col :span="12">
+                  <BaseInfoItem :label="t('datasource.port')">{{
+                    nodeInfo.configuration.port
+                  }}</BaseInfoItem>
+                </el-col>
+                <el-col :span="12">
+                  <BaseInfoItem :label="t('datasource.data_base')">{{
+                    nodeInfo.configuration.dataBase
+                  }}</BaseInfoItem>
+                </el-col>
+              </el-row>
+              <el-row :gutter="24">
+                <el-col :span="12">
+                  <BaseInfoItem :label="t('datasource.user_name')">{{
+                    nodeInfo.configuration.username
+                  }}</BaseInfoItem>
+                </el-col>
+                <el-col :span="12">
+                  <BaseInfoItem :label="t('datasource.password')">{{
+                    nodeInfo.configuration.password
+                  }}</BaseInfoItem>
                 </el-col>
               </el-row>
               <el-row>
                 <el-col :span="24">
-                  <BaseInfoItem
-                    :label="t('common.description')"
-                    :value="nodeInfo.description"
-                  ></BaseInfoItem>
-                </el-col>
-              </el-row>
-              <el-row :gutter="24">
-                <el-col :span="12">
-                  <BaseInfoItem value="驱动" label="驱动"></BaseInfoItem>
-                </el-col>
-                <el-col :span="12">
-                  <BaseInfoItem
-                    :value="nodeInfo.configuration.host"
-                    :label="t('datasource.host')"
-                  ></BaseInfoItem>
-                </el-col>
-              </el-row>
-              <el-row :gutter="24">
-                <el-col :span="12">
-                  <BaseInfoItem
-                    :value="nodeInfo.configuration.port"
-                    :label="t('datasource.port')"
-                  ></BaseInfoItem>
-                </el-col>
-                <el-col :span="12">
-                  <BaseInfoItem
-                    :value="nodeInfo.configuration.dataBase"
-                    :label="t('datasource.data_base')"
-                  ></BaseInfoItem>
-                </el-col>
-              </el-row>
-              <el-row :gutter="24">
-                <el-col :span="12">
-                  <BaseInfoItem
-                    :value="nodeInfo.configuration.username"
-                    :label="t('datasource.user_name')"
-                  ></BaseInfoItem>
-                </el-col>
-                <el-col :span="12">
-                  <BaseInfoItem
-                    :value="nodeInfo.configuration.password"
-                    :label="t('datasource.password')"
-                  ></BaseInfoItem>
-                </el-col>
-              </el-row>
-              <el-row>
-                <el-col :span="24">
-                  <BaseInfoItem
-                    :label="t('datasource.extra_params')"
-                    :value="nodeInfo.configuration.extraParams"
-                  ></BaseInfoItem>
+                  <BaseInfoItem :label="t('datasource.extra_params')">{{
+                    nodeInfo.configuration.extraParams
+                  }}</BaseInfoItem>
                 </el-col>
               </el-row>
               <span
@@ -617,30 +615,28 @@ const defaultProps = {
               <template v-if="showPriority">
                 <el-row :gutter="24">
                   <el-col :span="12">
-                    <BaseInfoItem
-                      :value="nodeInfo.configuration.initialPoolSize"
-                      :label="t('datasource.initial_pool_size')"
-                    ></BaseInfoItem>
+                    <BaseInfoItem :label="t('datasource.initial_pool_size')">{{
+                      nodeInfo.configuration.initialPoolSize
+                    }}</BaseInfoItem>
                   </el-col>
                   <el-col :span="12">
-                    <BaseInfoItem
-                      :value="nodeInfo.configuration.minPoolSize"
-                      :label="t('datasource.min_pool_size')"
-                    ></BaseInfoItem>
+                    <BaseInfoItem :label="t('datasource.min_pool_size')">{{
+                      nodeInfo.configuration.minPoolSize
+                    }}</BaseInfoItem>
                   </el-col>
                 </el-row>
                 <el-row :gutter="24">
                   <el-col :span="12">
-                    <BaseInfoItem
-                      :value="nodeInfo.configuration.maxPoolSize"
-                      :label="t('datasource.max_pool_size')"
-                    ></BaseInfoItem>
+                    <BaseInfoItem :label="t('datasource.max_pool_size')">{{
+                      nodeInfo.configuration.maxPoolSize
+                    }}</BaseInfoItem>
                   </el-col>
                   <el-col :span="12">
                     <BaseInfoItem
                       :value="nodeInfo.configuration.queryTimeout"
                       :label="t('datasource.query_timeout')"
-                    ></BaseInfoItem>
+                      >{{ nodeInfo.configuration.queryTimeout }}</BaseInfoItem
+                    >
                   </el-col>
                 </el-row>
               </template>
@@ -683,16 +679,14 @@ const defaultProps = {
             <template v-if="slotProps.active">
               <el-row :gutter="24">
                 <el-col :span="12">
-                  <BaseInfoItem
-                    :value="t(`dataset.${nodeInfo.syncSetting.updateType}`)"
-                    :label="t('dataset.update_type')"
-                  ></BaseInfoItem>
+                  <BaseInfoItem :label="t('dataset.update_type')">{{
+                    t(`dataset.${nodeInfo.syncSetting.updateType}`)
+                  }}</BaseInfoItem>
                 </el-col>
                 <el-col :span="12">
-                  <BaseInfoItem
-                    :value="rateValueMap[nodeInfo.syncSetting.syncRate]"
-                    :label="t('dataset.execute_rate')"
-                  ></BaseInfoItem>
+                  <BaseInfoItem :label="t('dataset.execute_rate')">{{
+                    rateValueMap[nodeInfo.syncSetting.syncRate]
+                  }}</BaseInfoItem>
                 </el-col>
               </el-row>
             </template>
