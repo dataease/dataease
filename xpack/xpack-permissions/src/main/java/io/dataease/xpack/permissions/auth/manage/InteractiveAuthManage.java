@@ -60,7 +60,7 @@ public class InteractiveAuthManage {
             return xpackFilter(orgResourceManage.menuIds());
         }
         List<UserRole> userRoles = roleManage.userRole(uid, user.getDefaultOid());
-        if (isRootAdmin(userRoles)) {
+        if (isRoot(userRoles)) {
             return xpackFilter(orgResourceManage.menuIds());
         }
         List<Long> rids = userRoles.stream().filter(item -> !item.isRoot()).map(UserRole::getId).toList();
@@ -68,7 +68,7 @@ public class InteractiveAuthManage {
             List<PermissionItem> permissionItems = menuAuthManage.permissionItems(rids);
             return xpackFilter(permissionItems.stream().map(PermissionItem::getId).toList());
         }
-        return null;
+        return new ArrayList<>();
     }
 
     private BusiPerPO rootNode(int weight) {
@@ -202,6 +202,10 @@ public class InteractiveAuthManage {
 
     private boolean isRootAdmin(List<UserRole> roles) {
         return roles.stream().anyMatch(UserRole::isRootAdmin);
+    }
+
+    private boolean isRoot(List<UserRole> roles) {
+        return roles.stream().anyMatch(UserRole::isRoot);
     }
 
 

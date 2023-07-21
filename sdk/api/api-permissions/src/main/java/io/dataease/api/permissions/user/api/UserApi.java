@@ -39,11 +39,11 @@ public interface UserApi {
     @PostMapping("/create")
     void create(@RequestBody UserCreator creator);
 
-    @DePermit({"m:read", "#p0.id + ':read'"})
+    @DePermit({"m:read", "#p0.id + ':manage'"})
     @PostMapping("/edit")
     void edit(@RequestBody UserEditor editor);
 
-    @DePermit({"m:read", "#p0 + ':read'"})
+    @DePermit({"m:read", "#p0 + ':manage'"})
     @PostMapping("/delete/{id}")
     void delete(@PathVariable("id") Long id);
 

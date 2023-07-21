@@ -48,7 +48,6 @@ public class MenuManage {
     private List<CoreMenu> filterAuth(List<CoreMenu> list) {
         if (ObjectUtils.isEmpty(interactiveAuthApi)) return list;
         List<Long> menuIds = interactiveAuthApi.menuIds();
-        if (CollectionUtil.isEmpty(menuIds)) return list;
         return list.stream().filter(menu -> !menu.getAuth() || menuIds.contains(menu.getId())).toList();
     }
 
