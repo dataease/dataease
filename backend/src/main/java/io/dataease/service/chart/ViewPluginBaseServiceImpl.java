@@ -4,6 +4,7 @@ import cn.hutool.core.util.ReflectUtil;
 import com.google.gson.Gson;
 import io.dataease.commons.model.PluginViewSetImpl;
 import io.dataease.commons.utils.TableUtils;
+import io.dataease.controller.request.chart.ChartExtRequest;
 import io.dataease.dto.dataset.DataSetTableUnionDTO;
 import io.dataease.dto.dataset.DataTableInfoDTO;
 import io.dataease.plugins.common.base.domain.ChartViewWithBLOBs;
@@ -46,6 +47,9 @@ public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
 
     @Resource
     private DataSetTableService dataSetTableService;
+
+    @Resource
+    private ChartViewService chartViewService;
 
 
     @Override
@@ -122,6 +126,10 @@ public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
                     break;
                 case SQL:
                     String sql = dataTableInfoDTO.isBase64Encryption() ? new String(java.util.Base64.getDecoder().decode(dataTableInfoDTO.getSql())) : dataTableInfoDTO.getSql();
+                    if (StringUtils.isNotBlank(pluginViewSet.getChartExtRequest())) {
+                        ChartExtRequest chartExtRequest = gson.fromJson(pluginViewSet.getChartExtRequest(), ChartExtRequest.class);
+                        sql = chartViewService.preHandleVariable(sql, chartExtRequest, ProviderFactory.getQueryProvider(pluginViewSet.getDsType()), dataSetTableService.getWithPermission(pluginViewSet.getTableId(), chartExtRequest.getUser()));
+                    }
                     tableName = dataSetTableService.handleVariableDefaultValue(sql, null, pluginViewSet.getDsType(), false);
                     tableName = "(" + sqlFix(tableName) + ")";
                     break;
