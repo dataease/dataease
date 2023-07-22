@@ -626,7 +626,8 @@ export default {
     status: '授權狀態',
     valid: '有效',
     invalid: '無效',
-    expired: '已過期'
+    expired: '已過期',
+    expired_msg: 'License已過期，過期時間：{0}，為了不影響企業版功能的使用，建議您更新License'
   },
   member: {
     create: '添加成員',
@@ -934,6 +935,8 @@ export default {
     password_input_error: '原始密碼輸入錯誤'
   },
   chart: {
+    empty_hide: '隱藏空值',
+    hide: '隱藏',
     chart_refresh_tips: '視圖刷新設置優先於儀表板刷新設置',
     '1-trend': '趨勢',
     '2-state': '狀態',

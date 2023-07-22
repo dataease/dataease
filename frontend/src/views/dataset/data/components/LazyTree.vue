@@ -34,7 +34,7 @@
           <span>
             <span
               style="margin-left: 6px"
-              v-html="data.name"
+              v-html="$xss(data.name)"
             />
           </span>
           <span

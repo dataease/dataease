@@ -18,7 +18,7 @@
         <span>{{ details.head }}</span>
       </el-row>
       <el-row class="content">
-        <span v-html="details.content" />
+        <span v-html="$xss(details.content)" />
       </el-row>
       <el-row class="bottom">
         <span class="span-box">{{ details.bottom }}</span>

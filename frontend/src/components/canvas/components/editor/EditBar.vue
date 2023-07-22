@@ -81,6 +81,14 @@
           @click.stop="showViewDetails('details')"
         />
       </span>
+      <span :title="$t('route.exportExcel')">
+        <i
+          v-if="exportExcelShow"
+          style="line-height: 24px"
+          class="el-icon-document-delete"
+          @click.stop="exportExcelDownload()"
+        />
+      </span>
       <setting-menu
         v-if="activeModel==='edit'"
         style="float: right;height: 24px!important;"
@@ -195,6 +203,8 @@ import Background from '@/views/background/index'
 import MapLayerController from '@/views/chart/components/map/MapLayerController'
 import { uploadFileResult } from '@/api/staticResource/staticResource'
 import eventBus from '@/components/canvas/utils/eventBus'
+import { hasDataPermission } from '@/utils/permission'
+import { exportExcelDownload } from '@/components/canvas/utils/utils'
 
 export default {
   components: { Background, LinkJumpSet, FieldsList, SettingMenu, LinkageField, MapLayerController },
@@ -282,6 +292,9 @@ export default {
     },
     detailsShow() {
       return this.curComponent.type === 'view' && this.terminal === 'pc' && this.curComponent.propValue.innerType && this.curComponent.propValue.innerType !== 'richTextView'
+    },
+    exportExcelShow() {
+      return this.detailsShow && hasDataPermission('export', this.$store.state.panel.panelInfo.privileges) && this.chart
     },
     enlargeShow() {
       return this.curComponent.type === 'view' && this.curComponent.propValue.innerType && this.curComponent.propValue.innerType !== 'richTextView' && !this.curComponent.propValue.innerType.includes('table')
@@ -454,6 +467,9 @@ export default {
     },
     showViewDetails(openType = 'details') {
       this.$emit('showViewDetails', { openType: openType })
+    },
+    exportExcelDownload() {
+      exportExcelDownload(this.chart)
     },
     auxiliaryMatrixChange() {
       if (this.curComponent.auxiliaryMatrix) {

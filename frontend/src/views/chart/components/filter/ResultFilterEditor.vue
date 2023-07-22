@@ -194,6 +194,13 @@ export default {
             value: 'ge',
             label: this.$t('chart.filter_ge')
           }]
+        },
+        {
+          label: '',
+          options: [{
+            value: 'not_null',
+            label: this.$t('chart.filter_not_null')
+          }]
         }
       ],
       valueOptions: [
@@ -225,6 +232,13 @@ export default {
           }, {
             value: 'ge',
             label: this.$t('chart.filter_ge')
+          }]
+        },
+        {
+          label: '',
+          options: [{
+            value: 'not_null',
+            label: this.$t('chart.filter_not_null')
           }]
         }
       ],

@@ -625,7 +625,8 @@ export default {
     status: '授权状态',
     valid: '有效',
     invalid: '无效',
-    expired: '已过期'
+    expired: '已过期',
+    expired_msg: 'License已过期，过期时间：{0}，为了不影响企业版功能的使用，建议您更新License'
   },
   member: {
     create: '添加成员',
@@ -933,6 +934,8 @@ export default {
     password_input_error: '原始密码输入错误'
   },
   chart: {
+    empty_hide: '隐藏空值',
+    hide: '隐藏',
     chart_refresh_tips: '视图刷新设置优先于仪表板刷新设置',
     '1-trend': '趋势',
     '2-state': '状态',
@@ -1936,7 +1939,7 @@ export default {
     jsonpath_info: '请填入JsonPath',
     req_param: '请求参数',
     headers: '请求头',
-    query_param: "QUERY參數",
+    query_param: "QUERY参数",
     query_info: "地址栏中跟在？后面的参数,如: updateapi?id=112",
     key: '键',
     value: '值',

@@ -190,7 +190,6 @@
 </template>
 
 <script>
-
 import { viewData } from '@/api/panel/panel'
 import { viewInfo } from '@/api/link'
 import ChartComponent from '@/views/chart/components/ChartComponent.vue'
@@ -353,14 +352,15 @@ export default {
         pageSize: 20,
         show: 0
       },
-      view: {}
+      view: {},
+      cancelTime: null
     }
   },
 
   computed: {
     // 首次加载且非编辑状态新复制的视图，使用外部filter
     initLoad() {
-      return !(this.isEdit && this.currentCanvasNewId.includes(this.element.id)) && this.isFirstLoad
+      return !(this.isEdit && this.currentCanvasNewId.includes(this.element.id)) && this.isFirstLoad && this.canvasId === 'canvas-main'
     },
     scaleCoefficient() {
       if (this.terminal === 'pc' && !this.mobileLayoutStatus) {
@@ -560,6 +560,12 @@ export default {
   },
 
   beforeDestroy() {
+    for (const key in this.chart) {
+      this.$delete(this.chart, key)
+    }
+    for (const key in this.view) {
+      this.$delete(this.view, key)
+    }
     this.innerRefreshTimer && clearInterval(this.innerRefreshTimer)
     bus.$off('plugin-chart-click', this.pluginChartClick)
     bus.$off('plugin-jump-click', this.pluginJumpClick)
@@ -570,6 +576,7 @@ export default {
     bus.$off('onThemeColorChange', this.optFromBatchThemeChange)
     bus.$off('onThemeAttrChange', this.optFromBatchSingleProp)
     bus.$off('clear_panel_linkage', this.clearPanelLinkage)
+    bus.$off('tab-canvas-change', this.tabSwitch)
   },
   created() {
     this.refId = uuid.v1
@@ -749,10 +756,20 @@ export default {
     },
     getData(id, cache = true, dataBroadcast = false) {
       if (id) {
-        if (this.getDataLoading) return
+        if (this.getDataLoading || Vue.prototype.$currentHttpRequestList.get(`/chart/view/getData/${id}/${this.panelInfo.id}`)) {
+          const url = `/chart/view/getData/${id}/${this.panelInfo.id}`
+          Vue.prototype.$cancelRequest(url)
+          Vue.prototype.$currentHttpRequestList.delete(url)
+          this.getDataLoading = false
+          this.getData(id, cache, dataBroadcast)
+          clearTimeout(this.cancelTime)
+          this.cancelTime = setTimeout(() => {
+            this.requestStatus = 'waiting'
+          }, 0)
+          return
+        }
         this.requestStatus = 'waiting'
         this.message = null
-
         // 增加判断 仪表板公共连接中使用viewInfo 正常使用viewData
         let method = viewData
         const token = this.$store.getters.token || getToken()
@@ -855,8 +872,8 @@ export default {
     },
     initCurFields(chartDetails) {
       this.curFields = []
-      this.dataRowSelect = []
-      this.dataRowNameSelect = []
+      this.dataRowSelect = {}
+      this.dataRowNameSelect = {}
       if (chartDetails.data && chartDetails.data.sourceFields) {
         const checkAllAxisStr = chartDetails.xaxis + chartDetails.xaxisExt + chartDetails.yaxis + chartDetails.yaxisExt
         chartDetails.data.sourceFields.forEach(field => {
