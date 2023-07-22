@@ -2425,56 +2425,6 @@ public class DataSetTableService {
         return excelFileData;
     }
 
-    //    public List<ExcelSheetData> parseExcel(String filename, InputStream inputStream, boolean isPreview) throws Exception {
-//        List<ExcelSheetData> excelSheetDataList = new ArrayList<>();
-//        try {
-//            String suffix = filename.substring(filename.lastIndexOf(".") + 1);
-//            if (StringUtils.equalsIgnoreCase(suffix, "xlsx")) {
-//
-//            }
-//
-//            if (StringUtils.equalsIgnoreCase(suffix, "csv")) {
-//                List<TableField> fields = new ArrayList<>();
-//                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
-//                String s = reader.readLine();// first line
-//                String[] split = s.split(",");
-//                for (String s1 : split) {
-//                    TableField tableFiled = new TableField();
-//                    tableFiled.setName(s1);
-//                    tableFiled.setOriginName(s1);
-//                    tableFiled.setFieldType("TEXT");
-//                    fields.add(tableFiled);
-//                }
-//                List<String[]> data = csvData(reader, isPreview);
-//                ExcelSheetData excelSheetData = new ExcelSheetData();
-//                String[] fieldArray = fields.stream().map(TableField::getName).toArray(String[]::new);
-//                excelSheetData.setFields(fields);
-//                excelSheetData.setData(data);
-//                excelSheetData.setExcelLabel(filename.substring(0, filename.lastIndexOf('.')));
-//                excelSheetDataList.add(excelSheetData);
-//            }
-//            inputStream.close();
-//            for (ExcelSheetData excelSheetData : excelSheetDataList) {
-//                List<String[]> data = excelSheetData.getData();
-//                String[] fieldArray = excelSheetData.getFields().stream().map(TableField::getName).toArray(String[]::new);
-//
-//                List<Map<String, Object>> jsonArray = new ArrayList<>();
-//                if (data != null) {
-//                    jsonArray = data.stream().map(ele -> {
-//                        Map<String, Object> map = new HashMap<>();
-//                        for (int i = 0; i < fieldArray.length; i++) {
-//                            map.put(fieldArray[i], i < ele.length ? ele[i] : "");
-//                        }
-//                        return map;
-//                    }).collect(Collectors.toList());
-//                }
-//                excelSheetData.setJsonArray(jsonArray);
-//            };
-//        } catch (Exception e) {
-//            DEException.throwException(e);
-//        }
-//        return excelSheetDataList;
-//    }
     public List<ExcelSheetData> excelSheetDataList(InputStream inputStream, boolean isPreview) {
         List<ExcelSheetData> excelSheetDataList = new ArrayList<>();
         NoModelDataListener noModelDataListener = new NoModelDataListener();
