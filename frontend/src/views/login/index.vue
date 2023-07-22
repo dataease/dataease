@@ -202,7 +202,7 @@
     <div
       v-if="showFoot"
       class="dynamic-login-foot"
-      v-html="$xss(footContent)"
+      v-html="footContent"
     />
   </div>
 </template>
@@ -216,6 +216,7 @@ import { changeFavicon, showMultiLoginMsg } from '@/utils/index'
 import { initTheme } from '@/utils/ThemeUtil'
 import PluginCom from '@/views/system/plugin/PluginCom'
 import Cookies from 'js-cookie'
+import xss from 'xss'
 export default {
   name: 'Login',
   components: { PluginCom },
@@ -449,7 +450,25 @@ export default {
         this.showFoot = this.uiInfo['ui.showFoot'].paramValue === true || this.uiInfo['ui.showFoot'].paramValue === 'true'
         if (this.showFoot) {
           const content = this.uiInfo['ui.footContent'] && this.uiInfo['ui.footContent'].paramValue
-          this.footContent = content
+          const myXss = new xss.FilterXSS({
+            css: {
+              whiteList: {
+                'background-color': true,
+                'text-align': true,
+                'margin-top': true,
+                'margin-bottom': true,
+                'line-height': true,
+                'box-sizing': true,
+                'padding-top': true,
+                'padding-bottom': true
+              }
+            },
+            whiteList: {
+              ...xss.whiteList,
+              p: ['style']
+            }
+          })
+          this.footContent = myXss.process(content)
         }
       }
     },
