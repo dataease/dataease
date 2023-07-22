@@ -455,6 +455,7 @@ export default {
               whiteList: {
                 'background-color': true,
                 'text-align': true,
+                'color': true,
                 'margin-top': true,
                 'margin-bottom': true,
                 'line-height': true,
@@ -465,7 +466,8 @@ export default {
             },
             whiteList: {
               ...xss.whiteList,
-              p: ['style']
+              p: ['style'],
+              span: ['style']
             }
           })
           this.footContent = myXss.process(content)
