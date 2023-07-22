@@ -60,6 +60,7 @@ public class OracleQueryProvider extends QueryProvider {
 
     @Override
     public Integer transFieldType(String field) {
+        field = field.split("()")[0];
         switch (field) {
             case "CHAR":
             case "VARCHAR2":
