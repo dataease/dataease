@@ -796,7 +796,7 @@ public class JdbcProvider extends DefaultJdbcProvider {
                 break;
             case sqlServer:
                 SqlServerConfiguration sqlServerConfiguration = new Gson().fromJson(datasource.getConfiguration(), SqlServerConfiguration.class);
-                if(!sqlServerConfiguration.getDataBase().matches("^[0-9a-zA-Z_.-\u4E00-\u9FA5\u8FBD-\u9FBB\uFA0E-\uFA29]{1,}$")){
+                if(!sqlServerConfiguration.getDataBase().matches("^[0-9a-zA-Z-_.\u4E00-\u9FA5\u8FBD-\u9FBB\uFA0E-\uFA29\u2e80-\u9fff]{1,}$")){
                     throw new Exception("Invalid database name");
                 }
                 break;
