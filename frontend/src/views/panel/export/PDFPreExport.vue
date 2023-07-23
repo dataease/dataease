@@ -15,7 +15,7 @@
         <div
           class="export_body_inner_class"
           :style="templateHtmlStyle"
-          v-html="templateContentChange"
+          v-html="$xss(templateContentChange)"
         />
       </div>
     </el-row>

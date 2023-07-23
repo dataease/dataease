@@ -9,7 +9,7 @@
         {{ details.head }}
       </el-row>
       <el-row class="card_content">
-        <span v-html="details.content" />
+        <span v-html="$xss(details.content)" />
       </el-row>
       <el-row class="card_bottom">
         {{ $t('wizard.click_show') }}

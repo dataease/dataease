@@ -16,7 +16,7 @@
     </parent>
 
     <properties>
-        <dataease.version>1.18.8</dataease.version>
+        <dataease.version>1.18.9</dataease.version>
     </properties>
 
     <name>dataease</name>

@@ -82,11 +82,9 @@ import ChartComponentG2 from '@/views/chart/components/ChartComponentG2'
 import PluginCom from '@/views/system/plugin/PluginCom'
 import ChartComponentS2 from '@/views/chart/components/ChartComponentS2'
 import LabelNormalText from '@/views/chart/components/normal/LabelNormalText'
-import { exportDetails, innerExportDetails } from '@/api/panel/panel'
 import html2canvas from 'html2canvasde'
 import { hexColorToRGBA } from '@/views/chart/chart/util'
-import { deepCopy, exportImg, imgUrlTrans } from '@/components/canvas/utils/utils'
-import { getLinkToken, getToken } from '@/utils/auth'
+import { deepCopy, exportExcelDownload, exportImg, imgUrlTrans } from '@/components/canvas/utils/utils'
 
 export default {
   name: 'UserViewDialog',
@@ -262,75 +260,8 @@ export default {
       this.lastMapChart = JSON.parse(JSON.stringify(data))
     },
     exportExcelDownload(snapshot, width, height, callBack) {
-      const excelHeader = JSON.parse(JSON.stringify(this.chart.data.fields)).map(item => item.name)
-      const excelTypes = JSON.parse(JSON.stringify(this.chart.data.fields)).map(item => item.deType)
-      const excelHeaderKeys = JSON.parse(JSON.stringify(this.chart.data.fields)).map(item => item.dataeaseName)
-      let excelData = JSON.parse(JSON.stringify(this.chart.data.tableRow)).map(item => excelHeaderKeys.map(i => item[i]))
-      const excelName = this.chart.name
-      let detailFields = []
-      if (this.chart.data.detailFields?.length) {
-        detailFields = this.chart.data.detailFields.map(item => {
-          const temp = {
-            name: item.name,
-            deType: item.deType,
-            dataeaseName: item.dataeaseName
-          }
-          return temp
-        })
-        excelData = JSON.parse(JSON.stringify(this.chart.data.tableRow)).map(item => {
-          const temp = excelHeaderKeys.map(i => {
-            if (i === 'detail' && !item[i] && Array.isArray(item['details'])) {
-              const arr = item['details']
-              if (arr?.length) {
-                return arr.map(ele => detailFields.map(field => ele[field.dataeaseName]))
-              }
-              return null
-            }
-            return item[i]
-          })
-          return temp
-        })
-      }
-      const request = {
-        proxy: null,
-        viewId: this.chart.id,
-        viewName: excelName,
-        header: excelHeader,
-        details: excelData,
-        excelTypes: excelTypes,
-        snapshot: snapshot,
-        snapshotWidth: width,
-        snapshotHeight: height,
-        componentFilterInfo: this.lastViewRequestInfo[this.chart.id],
-        excelHeaderKeys: excelHeaderKeys,
-        detailFields
-      }
-      let method = innerExportDetails
-      const token = this.$store.getters.token || getToken()
-      const linkToken = this.$store.getters.linkToken || getLinkToken()
-      if (!token && linkToken) {
-        method = exportDetails
-        this.linkLoading = true
-      }
-
-      if (this.panelInfo.proxy) {
-        request.proxy = { userId: this.panelInfo.proxy }
-      }
-      method(request).then((res) => {
-        const blob = new Blob([res], { type: 'application/vnd.ms-excel' })
-        const link = document.createElement('a')
-        link.style.display = 'none'
-        link.href = URL.createObjectURL(blob)
-        link.download = excelName + '.xlsx' // 下载的文件名
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
-        this.linkLoading = false
-        callBack && callBack()
-      }).catch(() => {
-        this.linkLoading = false
-        callBack && callBack()
-      })
+      const loadingWrapper = { val: this.linkLoading }
+      exportExcelDownload(this.chart, snapshot, width, height, loadingWrapper, callBack)
     },
 
     renderComponent() {

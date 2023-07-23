@@ -1,9 +1,18 @@
 <template>
+
   <div
-    v-if="!licValidate && licStatus !== 'no_record'"
-    class="lic"
+    v-if="!licValidate && licStatus !== 'no_record' && !tipClosed"
+    class="lic_tips"
   >
-    <strong>{{ $t(licMsg) }}</strong>
+    <el-alert
+      class="lic_alert"
+      :title="$t(licMsg)"
+      type="warning"
+      show-icon
+      center
+      @close="closeTip"
+    />
+
   </div>
 </template>
 
@@ -20,9 +29,7 @@ export default {
     }
   },
   computed: {
-    /* theme() {
-      return this.$store.state.settings.theme
-    }, */
+
     licValidate() {
       return this.$store.state.lic.validate
     },
@@ -30,40 +37,40 @@ export default {
       return this.$store.state.lic.licStatus || ''
     },
     licMsg() {
+      if (this.$store.state.lic?.licMsg?.includes('expired')) {
+        const message = this.$store.state.lic.licMsg
+        const exp = message.substring(message.indexOf('since ') + 6, message.indexOf(','))
+        return this.$t('license.expired_msg').replace('{0}', exp)
+      }
       return this.$store.state.lic.licMsg ? ('license.' + this.$store.state.lic.licMsg) : null
+    },
+    tipClosed() {
+      return localStorage.getItem('lic_closed')
     }
 
   },
 
   mounted() {
-    // this.validate()
   },
   methods: {
-    // validate() {
-    //   validateLic().then(res => {
-    //     this.lic = true
-    //     this.$store.dispatch('lic/setValidate', true)
-    //   }).catch((e) => {
-    //     this.msg = e.response.data.message
-    //     this.lic = false
-    //     this.$store.dispatch('lic/setValidate', false)
-    //   })
-    // }
+    closeTip() {
+      localStorage.setItem('lic_closed', true)
+    }
+
   }
 }
 </script>
 <style lang="scss" scoped>
-
-    .lic {
-        height: 24px;
-        background-color: #c92100;
-        color: #fff;
-        text-align: center;
-        /* padding: 6px 11px; */
-        position: fixed;
-        z-index: 1002;
-        top: 0;
-        width: 100%;
-    }
+  .lic_tips {
+    position: absolute;
+    z-index: 2000;
+    position:absolute;
+    top: 0;left:0;right:0;
+    margin: auto;
+  }
+  .lic_alert ::v-deep .el-icon-close{
+    top: 16px !important;
+    right: 10px !important;
+  }
 
 </style>

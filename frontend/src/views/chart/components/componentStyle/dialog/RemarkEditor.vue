@@ -14,6 +14,22 @@
 <script>
 import tinymce from 'tinymce/tinymce' // tinymce默认hidden，不引入不显示
 import Editor from '@tinymce/tinymce-vue'
+import 'tinymce/themes/silver/theme' // 编辑器主题
+import 'tinymce/icons/default' // 引入编辑器图标icon，不引入则不显示对应图标
+// 引入编辑器插件（基本免费插件都在这儿了）
+import 'tinymce/plugins/advlist' // 高级列表
+import 'tinymce/plugins/autolink' // 自动链接
+import 'tinymce/plugins/link' // 超链接
+import 'tinymce/plugins/image' // 插入编辑图片
+import 'tinymce/plugins/lists' // 列表插件
+import 'tinymce/plugins/charmap' // 特殊字符
+import 'tinymce/plugins/media' // 插入编辑媒体
+import 'tinymce/plugins/wordcount' // 字数统计
+import 'tinymce/plugins/table' // 表格
+import 'tinymce/plugins/contextmenu' // contextmenu
+import 'tinymce/plugins/directionality'
+import 'tinymce/plugins/nonbreaking'
+import 'tinymce/plugins/pagebreak'
 import { imgUrlTrans } from '@/components/canvas/utils/utils'
 import { mapState } from 'vuex'
 // 编辑器引入

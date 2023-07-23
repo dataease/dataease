@@ -381,7 +381,7 @@ export default {
 
     _filterFun(value, data, node) {
       if (!value) return true
-      return data.id.toString().indexOf(value.toString()) !== -1
+      return data.id.toString().toLocaleUpperCase().indexOf(value.toString().toLocaleUpperCase()) !== -1
     },
     // 树点击
     _nodeClickFun(data, node, vm) {

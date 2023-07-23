@@ -61,7 +61,7 @@ import ChartTitleUpdate from './ChartTitleUpdate.vue'
 import { equalsAny } from '@/utils/StringUtils'
 import { mapState } from 'vuex'
 import { baseFlowMapOption } from '@/views/chart/chart/map/map_antv'
-
+import { clear } from 'size-sensor'
 export default {
   name: 'ChartComponentG2',
   components: { TitleRemark, ViewTrackBar, ChartTitleUpdate },
@@ -166,7 +166,28 @@ export default {
     }
   },
   beforeDestroy() {
-    this.myChart.destroy()
+    if (this.myChart.container) {
+      if (typeof this.myChart.container.getAttribute === 'function') {
+        clear(this.myChart.container)
+      }
+    }
+    this.myChart?.clear?.()
+    this.myChart?.unbindSizeSensor?.()
+    this.myChart?.unbind?.()
+    this.myChart?.destroy?.()
+    if (this.myChart) {
+      for (const key in this.myChart.chart) {
+        this.myChart.chart[key] = null
+        this.$delete(this.myChart.chart, key)
+      }
+      for (const key in this.myChart) {
+        this.myChart[key] = null
+        this.$delete(this.myChart, key)
+      }
+    }
+    for (const key in this.pointParam) {
+      this.$delete(this.pointParam, key)
+    }
     window.removeEventListener('resize', this.calcHeightDelay)
     this.myChart = null
   },
@@ -222,7 +243,7 @@ export default {
       window.addEventListener('resize', this.calcHeightDelay)
     },
     drawView() {
-      const chart = this.chart
+      const chart = JSON.parse(JSON.stringify(this.chart))
       // type
       // if (chart.data) {
       this.antVRenderStatus = true

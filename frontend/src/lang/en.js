@@ -626,7 +626,8 @@ export default {
     status: 'Authorization status',
     valid: 'Valid',
     invalid: 'Invalid',
-    expired: 'Expired'
+    expired: 'Expired',
+    expired_msg: 'license has expired since {0}.  It is recommended to update the license, which does not affect the use of enterprise version functions'
   },
   member: {
     create: 'Add members',
@@ -935,6 +936,8 @@ export default {
     password_input_error: 'Original password input error'
   },
   chart: {
+    empty_hide: 'hide empty',
+    hide: 'hide',
     chart_refresh_tips: 'View refresh setting takes precedence over panel refresh setting',
     '1-trend': 'trend',
     '2-state': 'State',

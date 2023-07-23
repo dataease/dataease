@@ -3,10 +3,11 @@ package io.dataease.controller.sys;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import io.dataease.auth.annotation.SqlInjectValidator;
-import io.dataease.plugins.common.base.domain.MyPlugin;
+import io.dataease.commons.utils.DeFileUtils;
 import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
 import io.dataease.controller.sys.base.BaseGridRequest;
+import io.dataease.plugins.common.base.domain.MyPlugin;
 import io.dataease.service.sys.PluginService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -41,6 +42,7 @@ public class SysPluginController {
     @PostMapping("upload")
     @RequiresPermissions("plugin:upload")
     public Map<String, Object> localUpload(@RequestParam("file") MultipartFile file) throws Exception {
+        DeFileUtils.validateFile(file);
         return pluginService.localInstall(file);
     }
 
@@ -54,7 +56,8 @@ public class SysPluginController {
     @ApiOperation("更新插件")
     @PostMapping("/update/{pluginId}")
     @RequiresPermissions("plugin:upload")
-    public Map<String, Object> update(@PathVariable("pluginId") Long pluginId, @RequestParam("file") MultipartFile file) throws Exception{
+    public Map<String, Object> update(@PathVariable("pluginId") Long pluginId, @RequestParam("file") MultipartFile file) throws Exception {
+        DeFileUtils.validateFile(file);
         if (pluginService.uninstall(pluginId)) {
             return pluginService.localInstall(file);
         }

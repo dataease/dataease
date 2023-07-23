@@ -33,6 +33,7 @@ import io.dataease.plugins.common.base.mapper.ChartViewMapper;
 import io.dataease.plugins.common.base.mapper.DatasetTableFieldMapper;
 import io.dataease.plugins.common.base.mapper.PanelViewMapper;
 import io.dataease.plugins.common.constants.DatasetType;
+import io.dataease.plugins.common.constants.DatasourceTypes;
 import io.dataease.plugins.common.constants.datasource.SQLConstants;
 import io.dataease.plugins.common.dto.chart.ChartCustomFilterItemDTO;
 import io.dataease.plugins.common.dto.chart.ChartFieldCompareDTO;
@@ -447,7 +448,7 @@ public class ChartViewService {
             fieldMap.put("yAxis", yAxis);
             fieldMap.put("extStack", extStack);
             fieldMap.put("extBubble", extBubble);
-            PluginViewParam pluginViewParam = buildPluginParam(fieldMap, fieldCustomFilter, extFilterList, ds, table, view, rowPermissionsTree);
+            PluginViewParam pluginViewParam = buildPluginParam(fieldMap, fieldCustomFilter, extFilterList, ds, table, view, rowPermissionsTree, requestList);
             String sql = pluginViewSql(pluginViewParam, view);
             if (StringUtils.isBlank(sql)) {
                 return new ArrayList<String[]>();
@@ -611,7 +612,7 @@ public class ChartViewService {
             xAxis.addAll(xAxisExt);
         }
         List<ChartViewFieldDTO> yAxis = gson.fromJson(view.getYAxis(), tokenType);
-        if (StringUtils.equalsAnyIgnoreCase(view.getType(), "chart-mix","bidirectional-bar")) {
+        if (StringUtils.equalsAnyIgnoreCase(view.getType(), "chart-mix", "bidirectional-bar")) {
             List<ChartViewFieldDTO> yAxisExt = gson.fromJson(view.getYAxisExt(), tokenType);
             yAxis.addAll(yAxisExt);
         }
@@ -981,7 +982,7 @@ public class ChartViewService {
             fieldMap.put("extBubble", extBubble);
             fieldMap.put("xAxis", xAxis);
             fieldMap.put("yAxis", yAxis);
-            PluginViewParam pluginViewParam = buildPluginParam(fieldMap, fieldCustomFilter, extFilterList, ds, table, view, rowPermissionsTree);
+            PluginViewParam pluginViewParam = buildPluginParam(fieldMap, fieldCustomFilter, extFilterList, ds, table, view, rowPermissionsTree, chartExtRequest);
             String sql = pluginViewSql(pluginViewParam, view);
             if (StringUtils.isBlank(sql)) {
                 return emptyChartViewDTO(view);
@@ -1126,7 +1127,7 @@ public class ChartViewService {
             datasourceRequest.setTotalPageFlag(false);
             data = datasourceProvider.getData(datasourceRequest);
             if (CollectionUtils.isNotEmpty(assistFields)) {
-                datasourceAssistRequest.setQuery(assistSQL(datasourceRequest.getQuery(), assistFields));
+                datasourceAssistRequest.setQuery(assistSQL(datasourceRequest.getQuery(), assistFields, ds));
                 logger.info(datasourceAssistRequest.getQuery());
                 assistData = datasourceProvider.getData(datasourceAssistRequest);
             }
@@ -1158,7 +1159,7 @@ public class ChartViewService {
                 }
             }
             if (CollectionUtils.isNotEmpty(assistFields)) {
-                datasourceAssistRequest.setQuery(assistSQL(datasourceRequest.getQuery(), assistFields));
+                datasourceAssistRequest.setQuery(assistSQL(datasourceRequest.getQuery(), assistFields, ds));
                 logger.info(datasourceAssistRequest.getQuery());
                 assistData = datasourceProvider.getData(datasourceAssistRequest);
             }
@@ -1405,14 +1406,15 @@ public class ChartViewService {
         return res;
     }
 
-    public String assistSQL(String sql, List<ChartViewFieldDTO> assistFields) {
+    public String assistSQL(String sql, List<ChartViewFieldDTO> assistFields, Datasource ds) {
+        DatasourceTypes datasourceType = DatasourceTypes.valueOf(ds.getType());
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < assistFields.size(); i++) {
             ChartViewFieldDTO dto = assistFields.get(i);
             if (i == (assistFields.size() - 1)) {
-                stringBuilder.append(dto.getSummary() + "(" + dto.getOriginName() + ")");
+                stringBuilder.append(dto.getSummary() + "(" + datasourceType.getKeywordPrefix() + dto.getOriginName() + datasourceType.getKeywordSuffix() + ")");
             } else {
-                stringBuilder.append(dto.getSummary() + "(" + dto.getOriginName() + "),");
+                stringBuilder.append(dto.getSummary() + "(" + datasourceType.getKeywordPrefix() + dto.getOriginName() + datasourceType.getKeywordSuffix() + "),");
             }
         }
         return "SELECT " + stringBuilder + " FROM (" + sql + ") tmp";
@@ -1439,12 +1441,13 @@ public class ChartViewService {
         return dto;
     }
 
-    private PluginViewParam buildPluginParam(Map<String, List<ChartViewFieldDTO>> fieldMap, List<ChartFieldCustomFilterDTO> customFilters, List<ChartExtFilterRequest> extFilters, Datasource ds, DatasetTable table, ChartViewDTO view, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree) {
+    private PluginViewParam buildPluginParam(Map<String, List<ChartViewFieldDTO>> fieldMap, List<ChartFieldCustomFilterDTO> customFilters, List<ChartExtFilterRequest> extFilters, Datasource ds, DatasetTable table, ChartViewDTO view, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, ChartExtRequest chartExtRequest) {
         PluginViewParam pluginViewParam = new PluginViewParam();
         PluginViewSetImpl pluginViewSet = BeanUtils.copyBean(new PluginViewSetImpl(), table);
         pluginViewSet.setDsType(ds.getType());
         pluginViewSet.setTableId(table.getId());
         pluginViewSet.setDs(ds);
+        pluginViewSet.setChartExtRequest(gson.toJson(chartExtRequest));
         PluginViewLimit pluginViewLimit = BeanUtils.copyBean(new PluginViewLimit(), view);
 
 
@@ -1849,8 +1852,8 @@ public class ChartViewService {
         chartViewMapper.updateByPrimaryKeySelective(chartView);
     }
 
-    private String handleVariable(String sql, ChartExtRequest requestList, QueryProvider qp, DataSetTableDTO table, Datasource ds) throws Exception {
-        List<SqlVariableDetails> sqlVariables = new Gson().fromJson(table.getSqlVariableDetails(), new TypeToken<List<SqlVariableDetails>>() {
+    public String preHandleVariable(String sql, ChartExtRequest requestList, QueryProvider qp, DataSetTableDTO table) {
+        List<SqlVariableDetails> sqlVariables = gson.fromJson(table.getSqlVariableDetails(), new TypeToken<List<SqlVariableDetails>>() {
         }.getType());
         if (requestList != null && CollectionUtils.isNotEmpty(requestList.getFilter())) {
             for (ChartExtFilterRequest chartExtFilterRequest : requestList.getFilter()) {
@@ -1861,7 +1864,7 @@ public class ChartViewService {
                     continue;
                 }
 
-                Boolean isEndParam = false;
+                boolean isEndParam = false;
                 for (String parameter : chartExtFilterRequest.getParameters()) {
                     if (parameter.contains("|DE|")) {
                         String[] parameterArray = parameter.split("\\|DE\\|");
@@ -1900,6 +1903,11 @@ public class ChartViewService {
                 }
             }
         }
+        return sql;
+    }
+
+    private String handleVariable(String sql, ChartExtRequest requestList, QueryProvider qp, DataSetTableDTO table, Datasource ds) throws Exception {
+        sql = preHandleVariable(sql, requestList, qp, table);
         sql = dataSetTableService.handleVariableDefaultValue(sql, null, ds.getType(), false);
         return sql;
     }

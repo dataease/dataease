@@ -6,7 +6,16 @@
       class="item-axis"
       @close="removeItem"
     >
-      {{ item.name }}
+      <el-tooltip
+        v-if="toolTip"
+        class="item"
+        effect="dark"
+        :content="toolTip || item.name"
+        placement="top"
+      >
+        <span>{{ item.name }}</span>
+      </el-tooltip>
+      <span v-else>{{ item.name }}</span>
     </el-tag>
   </span>
 </template>
@@ -22,6 +31,11 @@ export default {
     index: {
       type: Number,
       required: true
+    },
+    toolTip: {
+      type: String,
+      required: false,
+      default: ''
     }
 
   },
