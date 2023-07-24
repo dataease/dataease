@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { reactive, ref, computed, watch, nextTick, onBeforeMount, useAttrs } from 'vue'
 import { ElTable, ElPagination } from 'element-plus-secondary'
+import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import TableBody from './TableBody.vue'
 import { propTypes } from '@/utils/propTypes'
 const props = defineProps({
@@ -101,7 +102,7 @@ defineExpose({
 </script>
 
 <template>
-  <div class="flex-table">
+  <div class="flex-table" :class="!tableData.length && 'no-data'">
     <el-table
       header-cell-class-name="header-cell"
       ref="table"
@@ -113,8 +114,11 @@ defineExpose({
       <table-body :columns="columns">
         <slot />
       </table-body>
+      <template #empty>
+        <empty-background description="暂无数据" img-type="noneWhite" />
+      </template>
     </el-table>
-    <div v-if="showPagination" class="pagination-cont">
+    <div v-if="showPagination && !!tableData.length" class="pagination-cont">
       <el-pagination
         v-model:current-page="state.paginationDefault.currentPage"
         v-model:page-size="state.paginationDefault.pageSize"
@@ -136,6 +140,12 @@ defineExpose({
     display: flex;
     justify-content: flex-end;
     margin-top: 10px;
+  }
+
+  &.no-data {
+    :deep(.ed-table__inner-wrapper::before) {
+      display: none;
+    }
   }
 }
 </style>
