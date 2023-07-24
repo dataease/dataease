@@ -58,11 +58,11 @@ public class SqlUtils {
             if (sqlKind.getOperandList().size() >= 2) {
                 addTableSchema(sqlKind.getOperandList().get(0), fromOrJoin, schema, config);
 
-                try {
-                    sqlKind.setOperand(0, SqlParser.create(schema + ".`" + sqlKind.getOperandList().get(0).toString() + "`", config).parseExpression());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+//                try {
+//                    sqlKind.setOperand(0, SqlParser.create(schema + ".`" + sqlKind.getOperandList().get(0).toString() + "`", config).parseExpression());
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
             }
         } else if (sqlNode.getKind() == SELECT) {
             SqlSelect sqlKind = (SqlSelect) sqlNode;
