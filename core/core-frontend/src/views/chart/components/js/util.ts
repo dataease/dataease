@@ -1,4 +1,4 @@
-import _ from 'lodash'
+import { isNumber } from 'lodash-es'
 import { DEFAULT_TITLE_STYLE } from '../editor/util/chart'
 import { equalsAny, includesAny } from '../editor/util/StringUtils'
 import { FeatureCollection } from '@antv/l7plot/dist/esm/plots/choropleth/types'
@@ -2579,7 +2579,7 @@ export function resetRgbOpacity(sourceColor, times) {
     const numbers = sourceColor.match(/(\d(\.\d+)?)+/g)
     if (numbers?.length === 4) {
       const opacity = parseFloat(numbers[3])
-      if (_.isNumber(opacity)) {
+      if (isNumber(opacity)) {
         let resultOpacity = parseFloat((opacity * times).toFixed(2))
         if (resultOpacity > 1) {
           resultOpacity = 1

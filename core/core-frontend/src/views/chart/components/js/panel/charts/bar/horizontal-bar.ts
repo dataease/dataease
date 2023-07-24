@@ -1,11 +1,14 @@
-import { G2PlotChartView, G2PlotDrawOptions } from '@/views/chart/components/js/panel/types'
+import {
+  G2PlotChartView,
+  G2PlotDrawOptions
+} from '@/views/chart/components/js/panel/types/impl/g2plot'
 import { Bar, BarOptions, Datum } from '@antv/g2plot'
 import {
   getPadding,
   setGradientColor,
   transAxisPosition
 } from '@/views/chart/components/js/panel/common/common_antv'
-import _ from 'lodash'
+import { cloneDeep } from 'lodash-es'
 import {
   antVCustomColor,
   flow,
@@ -33,7 +36,7 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
         }
       }
       // data
-      const data = _.cloneDeep(chart.data.data)
+      const data = cloneDeep(chart.data.data)
       // custom color
       let color = antVCustomColor(chart)
       if (customAttr.color.gradient) {

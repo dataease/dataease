@@ -61,6 +61,7 @@
     "@antv/g2plot": "^2.4.29",
     "@antv/l7": "^2.17.2",
     "@antv/l7plot": "^0.5.5",
+    "@antv/s2": "^1.49.0",
     "@codemirror/lang-sql": "^6.4.0",
     "@vueuse/core": "^9.13.0",
     "ace-builds": "^1.15.3",

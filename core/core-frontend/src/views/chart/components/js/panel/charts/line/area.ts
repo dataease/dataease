@@ -1,7 +1,10 @@
-import { G2PlotChartView, G2PlotDrawOptions } from '@/views/chart/components/js/panel/types'
+import {
+  G2PlotChartView,
+  G2PlotDrawOptions
+} from '@/views/chart/components/js/panel/types/impl/g2plot'
 import { Area as G2Area, AreaOptions, Datum } from '@antv/g2plot'
 import { getPadding, setGradientColor } from '@/views/chart/components/js/panel/common/common_antv'
-import _ from 'lodash'
+import { cloneDeep } from 'lodash-es'
 import {
   antVCustomColor,
   flow,
@@ -15,7 +18,7 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
     const chart = drawOptions.chart
     if (chart?.data) {
       // data
-      const data = _.cloneDeep(chart.data.data)
+      const data = cloneDeep(chart.data.data)
       // size
       let customAttr: DeepPartial<ChartAttr>
       let smooth, point, line
