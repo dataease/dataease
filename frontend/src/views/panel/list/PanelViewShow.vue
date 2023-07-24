@@ -249,6 +249,7 @@
             <Preview
               v-if="showMainFlag"
               ref="paneViewPreviewRef"
+              :class="fullscreen && 'fullscreen-visual-selects'"
               :component-data="mainCanvasComponentData"
               :canvas-style-data="canvasStyleData"
               :active-tab="activeTab"
@@ -922,6 +923,13 @@ export default {
 .preview-icon-svg {
   color: inherit;
   margin-right: 5px;
+}
+
+.fullscreen-visual-selects {
+  .VisualSelects {
+    top: inherit !important;
+    left: inherit !important;
+  }
 }
 </style>
 
