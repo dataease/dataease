@@ -72,7 +72,8 @@ public class SqlUtils {
 //            }
             addTableSchema(sqlKind.getFrom(), true, schema, config);
 
-//            if (((SqlSelect) sqlNode).getFrom().getKind() == IDENTIFIER) {
+//            if (((
+//            SqlSelect) sqlNode).getFrom().getKind() == IDENTIFIER) {
 //                try {
 //                    sqlKind.setFrom(SqlParser.create(schema + ".`" + ((SqlSelect) sqlNode).getFrom().toString() + "`", config).parseExpression());
 //                } catch (Exception e) {
