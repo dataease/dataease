@@ -1,4 +1,7 @@
-import { L7PlotChartView, L7PlotDrawOptions } from '@/views/chart/components/js/panel/types'
+import {
+  L7PlotChartView,
+  L7PlotDrawOptions
+} from '@/views/chart/components/js/panel/types/impl/l7plot'
 import { Choropleth, ChoroplethOptions } from '@antv/l7plot'
 import { flow, parseJson } from '@/views/chart/components/js/util'
 import { handleGeoJson } from '@/views/chart/components/js/panel/common/common_antv'

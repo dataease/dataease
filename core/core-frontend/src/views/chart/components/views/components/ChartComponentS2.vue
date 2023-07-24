@@ -9,6 +9,7 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import ViewTrackBar from '@/components/visualization/ViewTrackBar.vue'
 import { storeToRefs } from 'pinia'
 import { getGeoJsonFile, parseJson } from '@/views/chart/components/js/util'
+import { S2ChartView } from '@/views/chart/components/js/panel/types/impl/s2'
 const dvMainStore = dvMainStoreWithOut()
 const { nowPanelTrackInfo, nowPanelJumpInfo } = storeToRefs(dvMainStore)
 
@@ -54,20 +55,21 @@ const containerId = 'container-' + showPosition.value + '-' + view.value.id
 const viewTrack = ref(null)
 
 const calcData = view => {
-  if (view.tableId) {
-    state.loading = true
-    const v = JSON.parse(JSON.stringify(view))
-    getData(v)
-      .then(res => {
-        // console.log(res)
-        state.data = res?.data
-        emit('onDrillFilters', res?.drillFilters)
-        renderChart(res)
-      })
-      .finally(() => {
-        state.loading = false
-      })
+  if (!view.tableId) {
+    return
   }
+  state.loading = true
+  const v = JSON.parse(JSON.stringify(view))
+  getData(v)
+    .then(res => {
+      // console.log(res)
+      state.data = res?.data
+      emit('onDrillFilters', res?.drillFilters)
+      renderChart(res)
+    })
+    .finally(() => {
+      state.loading = false
+    })
 }
 
 const renderChart = async view => {
@@ -76,45 +78,14 @@ const renderChart = async view => {
   }
   // view 为引用对象 需要存库 view.data 直接赋值会导致保存不必要的数据
   const chart = { ...view, data: state.data }
-  const chartView = chartViewManager.getChartView(view.render, view.type)
-  switch (chartView.library) {
-    case ChartLibraryType.L7_PLOT:
-      await renderL7Plot(chart, chartView as L7PlotChartView<any, any>)
-      break
-    case ChartLibraryType.G2_PLOT:
-      renderG2Plot(chart, chartView as G2PlotChartView<any, any>)
-      break
-    default:
-      break
-  }
-}
-
-const renderG2Plot = (chart, chartView: G2PlotChartView<any, any>) => {
+  const chartView = chartViewManager.getChartView(view.render, view.type) as S2ChartView<any>
   state.myChart = chartView.drawChart({
-    chartObj: state.myChart,
     container: containerId,
-    chart: chart,
+    chart: toRaw(chart),
+    chartObj: state.myChart,
     action
   })
   state.myChart?.render()
-}
-
-const renderL7Plot = async (chart, chartView: L7PlotChartView<any, any>) => {
-  let map = parseJson(chart.customAttr).map
-  let areaId = map.id
-  if (dynamicAreaId.value) {
-    areaId = dynamicAreaId.value
-  }
-  const geoJson = await toRaw(getGeoJsonFile(areaId))
-  state.myChart = chartView.drawChart({
-    chartObj: toRaw(state.myChart),
-    container: containerId,
-    chart: chart,
-    areaId,
-    geoJson,
-    level: map.level,
-    action
-  })
 }
 
 const action = param => {
