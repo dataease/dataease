@@ -1,6 +1,9 @@
 import { Column, ColumnOptions } from '@antv/g2plot/lib/plots/column'
-import _ from 'lodash'
-import { G2PlotChartView, G2PlotDrawOptions } from '@/views/chart/components/js/panel/types'
+import { cloneDeep } from 'lodash-es'
+import {
+  G2PlotChartView,
+  G2PlotDrawOptions
+} from '@/views/chart/components/js/panel/types/impl/g2plot'
 import { flow, parseJson } from '@/views/chart/components/js/util'
 import { Datum } from '@antv/g2plot'
 import { singleDimensionTooltipFormatter } from '@/views/chart/components/js/formatter'
@@ -13,7 +16,7 @@ const DEFAULT_DATA: any[] = []
 export class Bar extends G2PlotChartView<ColumnOptions, Column> {
   drawChart(drawOptions: G2PlotDrawOptions<Column>): Column {
     if (drawOptions.chart?.data) {
-      const data = _.cloneDeep(drawOptions.chart.data?.data)
+      const data = cloneDeep(drawOptions.chart.data?.data)
       if (!data) return drawOptions.chartObj
       const initOptions: ColumnOptions = {
         xField: 'field',

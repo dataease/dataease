@@ -1,4 +1,7 @@
-import { G2PlotChartView, G2PlotDrawOptions } from '@/views/chart/components/js/panel/types'
+import {
+  G2PlotChartView,
+  G2PlotDrawOptions
+} from '@/views/chart/components/js/panel/types/impl/g2plot'
 import { Liquid as G2Liquid, LiquidOptions } from '@antv/g2plot'
 import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
 import { DEFAULT_LABEL, DEFAULT_SIZE } from '@/views/chart/components/editor/util/chart'
@@ -80,7 +83,7 @@ export class Liquid extends G2PlotChartView<LiquidOptions, G2Liquid> {
       if (label.show) {
         labelContent = {
           style: () => ({
-            fontSize: parseInt(label.fontSize),
+            fontSize: label.fontSize,
             color: label.color
           }),
           formatter: function (v) {

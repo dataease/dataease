@@ -1,4 +1,7 @@
-import { G2PlotChartView, G2PlotDrawOptions } from '@/views/chart/components/js/panel/types'
+import {
+  G2PlotChartView,
+  G2PlotDrawOptions
+} from '@/views/chart/components/js/panel/types/impl/g2plot'
 import { Gauge as G2Gauge, GaugeOptions } from '@antv/g2plot'
 import { flow, parseJson } from '@/views/chart/components/js/util'
 import {
