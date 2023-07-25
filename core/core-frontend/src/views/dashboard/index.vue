@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import componentList from '@/custom-component/component-list' // 左侧列表数据
+import componentList, { findNewComponentFromList } from '@/custom-component/component-list' // 左侧列表数据
 import { deepCopy } from '@/utils/utils'
 import { listenGlobalKeyDown } from '@/utils/shortcutKey'
 import { computed, nextTick, onMounted, reactive, ref, toRefs } from 'vue'
@@ -40,7 +40,8 @@ const {
   pcMatrixCount,
   basePcScreenSize,
   editMode,
-  batchOptStatus
+  batchOptStatus,
+  curOriginThemes
 } = storeToRefs(dvMainStore)
 const { editor } = storeToRefs(composeStore)
 const canvasOut = ref(null)
@@ -96,7 +97,7 @@ const findNewComponent = (componentName, innerType) => {
 const handleNew = newComponentInfo => {
   const { componentName, innerType } = newComponentInfo
   if (componentName) {
-    const component = findNewComponent(componentName, innerType)
+    const component = findNewComponentFromList(componentName, innerType, curOriginThemes)
     syncShapeItemStyle(component, baseWidth.value, baseHeight.value)
     component.id = guid()
     // changeComponentSizeWithScale(component)
@@ -112,7 +113,7 @@ const findDragComponent = componentInfo => {
   const componentInfoArray = componentInfo.split('&')
   const componentName = componentInfoArray[0]
   const innerType = componentInfoArray[1]
-  return findNewComponent(componentName, innerType)
+  return findNewComponentFromList(componentName, innerType, curOriginThemes)
 }
 
 const handleDrop = e => {
@@ -277,7 +278,7 @@ eventBus.on('handleNew', handleNew)
         class="left-sidebar"
         :class="{ 'preview-aside': editMode === 'preview' }"
       >
-        <component :is="findComponent(curComponent['component'] + 'Attr')" />
+        <component :is="findComponent(curComponent['component'] + 'Attr')" :themes="'light'" />
       </dv-sidebar>
       <dv-sidebar
         v-show="!curComponent && !batchOptStatus"

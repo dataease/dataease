@@ -1,5 +1,5 @@
 <script lang="tsx" setup>
-import { computed, reactive, ref, shallowRef } from 'vue'
+import { computed, reactive, ref, shallowRef, nextTick } from 'vue'
 import type { TabPaneName, Action } from 'element-plus-secondary'
 import { ElIcon, ElMessageBox, ElMessage } from 'element-plus-secondary'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
@@ -10,7 +10,13 @@ import type { Tree } from '../dataset/form/CreatDsGroup.vue'
 import { getDatasetPreview } from '@/api/dataset'
 import { useI18n } from '@/hooks/web/useI18n'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
-import { listDatasources, getTableField, listDatasourceTables, deleteById } from '@/api/datasource'
+import {
+  listDatasources,
+  getTableField,
+  listDatasourceTables,
+  deleteById,
+  save
+} from '@/api/datasource'
 import { Base64 } from 'js-base64'
 import type { Configuration, ApiConfiguration, SyncSetting } from './form/index.vue'
 import EditorDatasource from './form/index.vue'
@@ -21,6 +27,7 @@ import BaseInfoContent from './BaseInfoContent.vue'
 interface DsType {
   type: string
   name: string
+  leaf: boolean
   id?: string
   catalog: string
   extraParams: string
@@ -171,7 +178,7 @@ const searchDs = () => {
 }
 
 const getDsIconName = data => {
-  if (data.databaseClassification) return 'dv-folder'
+  if (!data.leaf) return 'dv-folder'
   return 'mysql-frame'
 }
 
@@ -179,6 +186,8 @@ const handleTabClick = tab => {
   handleLoadExcel()
   console.log('tab', tab)
 }
+
+const baseInfo = ref()
 
 const tabList = shallowRef([])
 
@@ -204,21 +213,33 @@ const nodeInfo = reactive<Node>({
   apiConfiguration: []
 })
 
+const saveDsFolder = (params, cmd) => {
+  save(params).then(res => {
+    listDs()
+  })
+}
+
 const listDs = () => {
   rawDatasourceList.value = []
-  listDatasources().then(array => {
-    for (let index = 0; index < array.length; index++) {
-      const element = array[index]
-      if (element.configuration) {
-        element.configuration = JSON.parse(Base64.decode(element.configuration))
-      }
-      if (element.apiConfigurationStr) {
-        element.apiConfiguration = JSON.parse(Base64.decode(element.apiConfigurationStr))
-      }
-      rawDatasourceList.value.push(element)
-    }
-    buildTree(rawDatasourceList.value)
+  listDatasources({}).then(array => {
+    convertConfig(array)
+    state.datasourceTree = array
   })
+}
+
+const convertConfig = array => {
+  for (let index = 0; index < array.length; index++) {
+    if (array[index].leaf) {
+      if (array[index].configuration) {
+        array[index].configuration = JSON.parse(Base64.decode(array[index].configuration))
+      }
+      if (array[index].apiConfigurationStr) {
+        array[index].apiConfiguration = JSON.parse(Base64.decode(array[index].apiConfigurationStr))
+      }
+    } else if (array[index].children && array[index].children.length > 0) {
+      convertConfig(array[index].children)
+    }
+  }
 }
 
 listDs()
@@ -254,7 +275,7 @@ const creatDsFolder = ref()
 
 const tableData = shallowRef([])
 const handleNodeClick = data => {
-  if (data.databaseClassification) return
+  if (!data.leaf) return
   const { name, createBy, id, type, configuration, syncSetting, apiConfiguration, description } =
     data
   Object.assign(nodeInfo, {
@@ -270,6 +291,9 @@ const handleNodeClick = data => {
   activeName.value = 'config'
   handleCurrentChange(1)
   handleClick(activeName.value)
+  nextTick(() => {
+    baseInfo.value.active = true
+  })
 }
 const createDatasource = (data?: Tree) => {
   datasourceEditor.value.init(null, data?.id)
@@ -384,10 +408,7 @@ const defaultProps = {
       >
         <template #default="{ node, data }">
           <span class="custom-tree-node">
-            <el-icon
-              :class="!data.databaseClassification && 'icon-border'"
-              style="width: 18px; height: 18px"
-            >
+            <el-icon :class="data.leaf && 'icon-border'" style="width: 18px; height: 18px">
               <Icon :name="getDsIconName(data)"></Icon>
             </el-icon>
             <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
@@ -397,12 +418,10 @@ const defaultProps = {
                 :menu-list="datasetTypeList"
                 icon-name="icon_add_outlined"
                 placement="bottom-start"
-                v-if="data.databaseClassification"
+                v-if="!data.leaf"
               ></handle-more>
               <handle-more
-                @handle-command="
-                  cmd => operation(cmd, data, data.databaseClassification ? 'datasource' : 'folder')
-                "
+                @handle-command="cmd => operation(cmd, data, data.leaf ? 'datasource' : 'folder')"
                 :menu-list="menuList"
               ></handle-more>
             </div>
@@ -506,12 +525,6 @@ const defaultProps = {
                 :label="t('datasource.table_name')"
               />
               <el-table-column
-                fixed="right"
-                key="description"
-                prop="description"
-                label="最近更新状态"
-              />
-              <el-table-column
                 key="__operation"
                 :label="t('common.operating')"
                 fixed="right"
@@ -538,7 +551,7 @@ const defaultProps = {
           </div>
         </div>
         <template v-else>
-          <BaseInfoContent v-slot="slotProps" :name="t('datasource.base_info')">
+          <BaseInfoContent ref="baseInfo" v-slot="slotProps" :name="t('datasource.base_info')">
             <template v-if="slotProps.active">
               <el-row :gutter="24">
                 <el-col :span="12">
@@ -562,83 +575,87 @@ const defaultProps = {
                   }}</BaseInfoItem>
                 </el-col>
               </el-row>
-              <el-row :gutter="24">
-                <el-col :span="12">
+              <template v-if="!['Excel', 'Api'].includes(nodeInfo.type)">
+                <el-row :gutter="24">
+                  <!-- <el-col :span="12">
                   <BaseInfoItem label="驱动">驱动</BaseInfoItem>
-                </el-col>
-                <el-col :span="12">
-                  <BaseInfoItem :label="t('datasource.host')">{{
-                    nodeInfo.configuration.host
-                  }}</BaseInfoItem>
-                </el-col>
-              </el-row>
-              <el-row :gutter="24">
-                <el-col :span="12">
-                  <BaseInfoItem :label="t('datasource.port')">{{
-                    nodeInfo.configuration.port
-                  }}</BaseInfoItem>
-                </el-col>
-                <el-col :span="12">
-                  <BaseInfoItem :label="t('datasource.data_base')">{{
-                    nodeInfo.configuration.dataBase
-                  }}</BaseInfoItem>
-                </el-col>
-              </el-row>
-              <el-row :gutter="24">
-                <el-col :span="12">
-                  <BaseInfoItem :label="t('datasource.user_name')">{{
-                    nodeInfo.configuration.username
-                  }}</BaseInfoItem>
-                </el-col>
-                <el-col :span="12">
-                  <BaseInfoItem :label="t('datasource.password')">{{
-                    nodeInfo.configuration.password
-                  }}</BaseInfoItem>
-                </el-col>
-              </el-row>
-              <el-row>
-                <el-col :span="24">
-                  <BaseInfoItem :label="t('datasource.extra_params')">{{
-                    nodeInfo.configuration.extraParams
-                  }}</BaseInfoItem>
-                </el-col>
-              </el-row>
-              <span
-                v-if="!['es', 'api', 'mongo'].includes(nodeInfo.type)"
-                class="de-expand"
-                @click="showPriority = !showPriority"
-                >{{ t('datasource.priority') }}
-                <el-icon>
-                  <Icon :name="showPriority ? 'icon_down_outlined' : 'icon_down_outlined-1'"></Icon>
-                </el-icon>
-              </span>
-              <template v-if="showPriority">
-                <el-row :gutter="24">
+                </el-col> -->
                   <el-col :span="12">
-                    <BaseInfoItem :label="t('datasource.initial_pool_size')">{{
-                      nodeInfo.configuration.initialPoolSize
-                    }}</BaseInfoItem>
-                  </el-col>
-                  <el-col :span="12">
-                    <BaseInfoItem :label="t('datasource.min_pool_size')">{{
-                      nodeInfo.configuration.minPoolSize
+                    <BaseInfoItem :label="t('datasource.host')">{{
+                      nodeInfo.configuration.host
                     }}</BaseInfoItem>
                   </el-col>
                 </el-row>
                 <el-row :gutter="24">
                   <el-col :span="12">
-                    <BaseInfoItem :label="t('datasource.max_pool_size')">{{
-                      nodeInfo.configuration.maxPoolSize
+                    <BaseInfoItem :label="t('datasource.port')">{{
+                      nodeInfo.configuration.port
                     }}</BaseInfoItem>
                   </el-col>
                   <el-col :span="12">
-                    <BaseInfoItem
-                      :value="nodeInfo.configuration.queryTimeout"
-                      :label="t('datasource.query_timeout')"
-                      >{{ nodeInfo.configuration.queryTimeout }}</BaseInfoItem
-                    >
+                    <BaseInfoItem :label="t('datasource.data_base')">{{
+                      nodeInfo.configuration.dataBase
+                    }}</BaseInfoItem>
                   </el-col>
                 </el-row>
+                <el-row :gutter="24">
+                  <el-col :span="12">
+                    <BaseInfoItem :label="t('datasource.user_name')">{{
+                      nodeInfo.configuration.username
+                    }}</BaseInfoItem>
+                  </el-col>
+                  <el-col :span="12">
+                    <BaseInfoItem :label="t('datasource.password')">{{
+                      nodeInfo.configuration.password
+                    }}</BaseInfoItem>
+                  </el-col>
+                </el-row>
+                <el-row>
+                  <el-col :span="24">
+                    <BaseInfoItem :label="t('datasource.extra_params')">{{
+                      nodeInfo.configuration.extraParams
+                    }}</BaseInfoItem>
+                  </el-col>
+                </el-row>
+                <span
+                  v-if="!['es', 'api', 'mongo'].includes(nodeInfo.type.toLowerCase())"
+                  class="de-expand"
+                  @click="showPriority = !showPriority"
+                  >{{ t('datasource.priority') }}
+                  <el-icon>
+                    <Icon
+                      :name="showPriority ? 'icon_down_outlined' : 'icon_down_outlined-1'"
+                    ></Icon>
+                  </el-icon>
+                </span>
+                <template v-if="showPriority">
+                  <el-row :gutter="24">
+                    <el-col :span="12">
+                      <BaseInfoItem :label="t('datasource.initial_pool_size')">{{
+                        nodeInfo.configuration.initialPoolSize
+                      }}</BaseInfoItem>
+                    </el-col>
+                    <el-col :span="12">
+                      <BaseInfoItem :label="t('datasource.min_pool_size')">{{
+                        nodeInfo.configuration.minPoolSize
+                      }}</BaseInfoItem>
+                    </el-col>
+                  </el-row>
+                  <el-row :gutter="24">
+                    <el-col :span="12">
+                      <BaseInfoItem :label="t('datasource.max_pool_size')">{{
+                        nodeInfo.configuration.maxPoolSize
+                      }}</BaseInfoItem>
+                    </el-col>
+                    <el-col :span="12">
+                      <BaseInfoItem
+                        :value="nodeInfo.configuration.queryTimeout"
+                        :label="t('datasource.query_timeout')"
+                        >{{ nodeInfo.configuration.queryTimeout }}</BaseInfoItem
+                      >
+                    </el-col>
+                  </el-row>
+                </template>
               </template>
             </template>
           </BaseInfoContent>
@@ -691,7 +708,11 @@ const defaultProps = {
               </el-row>
             </template>
           </BaseInfoContent>
-          <BaseInfoContent v-slot="slotProps" :name="t('dataset.data_preview')">
+          <BaseInfoContent
+            v-if="nodeInfo.type === 'Excel'"
+            v-slot="slotProps"
+            :name="t('dataset.data_preview')"
+          >
             <template v-if="slotProps.active">
               <div class="excel-table">
                 <SheetTabs @tab-click="handleTabClick" :tab-list="tabList"></SheetTabs>
@@ -771,7 +792,7 @@ const defaultProps = {
         />
       </el-table>
     </el-dialog>
-    <creat-ds-group @finish="listDs()" ref="creatDsFolder"></creat-ds-group>
+    <creat-ds-group @finish="saveDsFolder" ref="creatDsFolder"></creat-ds-group>
   </div>
 </template>
 

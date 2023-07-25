@@ -1,5 +1,5 @@
 :root {
-  font-family: Helvetica Neue,Helvetica,PingFang SC,Hiragino Sans GB,Microsoft YaHei,\5fae\8f6f\96c5\9ed1,Arial,sans-serif;
+  font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, \5fae\8f6f\96c5\9ed1, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
@@ -77,6 +77,7 @@
     color: #3370FF;
   }
 }
+
 .flex-center {
   display: flex;
   align-items: center;
@@ -116,6 +117,7 @@
 
 .excel-header-cell {
   background-color: #f5f6f7 !important;
+
   .ed-table-v2__header-cell {
     background-color: transparent
   }
@@ -156,8 +158,16 @@
   height: 24px !important;
   width: 24px !important;
   border-radius: 4px;
+
   &:hover {
     background: rgba(31, 35, 41, 0.1);
+  }
+}
+
+.hover-icon-in-table {
+  color: #3370FF !important;
+  &:hover {
+    background: rgba(51,112,255,.1);
   }
 }
 
@@ -183,9 +193,11 @@
   height: 18px !important;
   width: 18px !important;
   border-radius: 4px;
+
   &:hover {
     background: rgba(255, 255, 255, 0.1);
   }
+
   &:active {
     background: rgba(255, 255, 255, 0.2);
   }
@@ -193,17 +205,20 @@
 
 .chart-type-style-dark {
   background: @side-content-background !important;
-  .ed-popper__arrow{
+
+  .ed-popper__arrow {
     display: none !important;
   }
 }
 
 .chart-type-style-light {
   background: @side-content-background-light !important;
-  .ed-popper__arrow{
+
+  .ed-popper__arrow {
     display: none !important;
   }
 }
+
 .search-key-span {
   color: var(--ed-color-danger);
 }

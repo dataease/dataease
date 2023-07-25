@@ -135,6 +135,7 @@ export default {
     screen: '数据大屏',
     dataset: '数据集',
     datasource: '数据源',
+    all_types: '全部类型',
     empty_desc: '请选择用户/角色以及资源类型',
     row_column: '行列权限设置',
     row_permission: '行权限规则',

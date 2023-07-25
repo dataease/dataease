@@ -2,7 +2,7 @@
 import { ref, reactive, computed, watch, nextTick } from 'vue'
 import { ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
-import { getDatasetTree } from '@/api/dataset'
+import { save, listDatasources } from '@/api/datasource'
 import type { DatasetOrFolder } from '@/api/dataset'
 import nothingTree from '@/assets/img/nothing-tree.png'
 
@@ -148,12 +148,12 @@ const dfs = (arr: Tree[]) => {
 
 const createInit = (type, data: Tree, exec, name: string) => {
   nodeType.value = type
-  if (type === 'dataset') {
+  if (type === 'datasource') {
     request = data.request
   }
   if (data.id) {
-    getDatasetTree({
-      nodeType: 'folder'
+    listDatasources({
+      type: 'folder'
     }).then(res => {
       dfs(res as unknown as Tree[])
       state.tData = (res as unknown as Tree[]) || []

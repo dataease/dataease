@@ -23,7 +23,7 @@ export function uploadFileResult(file, callback) {
 }
 
 export function findResourceAsBase64(params) {
-  return request({
+  return request.post({
     url: '/staticResource/findResourceAsBase64',
     method: 'post',
     data: params,

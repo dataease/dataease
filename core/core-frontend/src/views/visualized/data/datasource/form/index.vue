@@ -8,15 +8,12 @@ import DsTypeList from './DsTypeList.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import EditorDetail from './EditorDetail.vue'
 import ExcelDetail from './ExcelDetail.vue'
-import { validate, save } from '@/api/datasource'
+import { validate } from '@/api/datasource'
 import { Base64 } from 'js-base64'
 import type { Param } from './ExcelDetail.vue'
 import { dsTypes, typeList, nameMap } from './option'
-import FinishPage from '../FinishPage.vue'
 import { uuid } from 'vue-uuid'
 import { cloneDeep } from 'lodash-es'
-import { ApiItem } from './ApiHttpRequestDraw.vue'
-import { boolean } from 'mathjs'
 interface Node {
   name: string
   id: string
@@ -28,7 +25,6 @@ interface Tree {
 }
 interface Form {
   name: string
-  pid?: string
   description: string
   type: string
   configuration?: Configuration
@@ -88,32 +84,12 @@ export interface SyncSetting {
   cron: string
 }
 
-const defaultForm = {
-  name: '',
-  description: '',
-  type: 'API',
-  apiConfiguration: []
-}
-
-const defaultForm2 = {
-  id: 0,
-  type: '',
-  editType: 0,
-  table: {
-    name: ''
-  }
-}
-const form = reactive<Form>(cloneDeep(defaultForm))
-const form2 = reactive<Param>(cloneDeep(defaultForm2))
 const activeStep = ref(0)
 const detail = ref()
 const excel = ref()
 const currentType = ref<DsType>('OLTP')
 const filterText = ref('')
 const currentDsType = ref('')
-const createDatasourceCompleted = ref(false)
-let pid = 0
-
 const selectDsType = (type: string) => {
   currentDsType.value = type
   activeStep.value = 1
@@ -154,21 +130,6 @@ const currentTypeList = computed(() => {
   })
 })
 
-const createDataset = () => {
-  console.log('createDataset---')
-}
-const backToDatasourceList = () => {
-  continueCreating()
-  visible.value = false
-}
-const continueCreating = () => {
-  currentDsType.value = ''
-  activeStep.value = 0
-  Object.assign(form, cloneDeep(defaultForm))
-  Object.assign(form2, cloneDeep(defaultForm2))
-  createDatasourceCompleted.value = false
-}
-
 const getDatasourceTypes = () => {
   const arr = [[], [], [], [], []]
   dsTypes.forEach(item => {
@@ -192,21 +153,9 @@ const next = () => {
   }
   activeStep.value = activeStep.value + 1
 }
-let requestParams = null
 
-const complete = (params, cb) => {
-  if (form.type === 'Excel') {
-    excel.value.saveExcelDs(params, cb)
-    return
-  } else if (form.type === 'API') {
-    save({ ...requestParams, ...params })
-      .then(res => {
-        console.log(res)
-      })
-      .finally(() => {
-        cb()
-      })
-  }
+const complete = (params, cmd) => {
+  excel.value.saveExcelDs(params, cmd)
   return
 }
 
@@ -241,61 +190,69 @@ const validateDS = () => {
 }
 
 const saveDS = () => {
-  requestParams = JSON.parse(JSON.stringify(form)) as unknown as Omit<
+  const request = JSON.parse(JSON.stringify(form)) as unknown as Omit<
     Form,
     'configuration' | 'apiConfiguration'
   > & {
     configuration: string
-    apiConfiguration: ApiItem[]
+    apiConfiguration: string
   }
   if (form.type === 'Excel') {
-    creatDsFolder.value.createInit('datasource', { id: form2.pid || pid }, '', 'datasource')
+    creatDsFolder.value.createInit('datasource', { id: '0' }, '', 'datasource')
     return
   } else if (form.type === 'API') {
     if (form.apiConfiguration.length == 0) {
       return
     }
-    for (var i = 0; i < requestParams.apiConfiguration.length; i++) {
+    for (var i = 0; i < request.apiConfiguration.length; i++) {
       if (
-        requestParams.apiConfiguration[i].deTableName === '' ||
-        requestParams.apiConfiguration[i].deTableName === undefined ||
-        requestParams.apiConfiguration[i].deTableName === null
+        request.apiConfiguration[i].deTableName === '' ||
+        request.apiConfiguration[i].deTableName === undefined ||
+        request.apiConfiguration[i].deTableName === null
       ) {
-        requestParams.apiConfiguration[i].deTableName =
-          'api_' + requestParams.apiConfiguration[i].name + '_' + uuid.v1()
+        request.apiConfiguration[i].deTableName =
+          'api_' + request.apiConfiguration[i].name + '_' + uuid.v1()
       }
     }
-    requestParams.configuration = Base64.encode(JSON.stringify(requestParams.apiConfiguration))
-    requestParams.syncSetting.startTime = new Date(requestParams.syncSetting.startTime).getTime()
-    requestParams.syncSetting.endTime = new Date(requestParams.syncSetting.endTime).getTime()
+    request.configuration = Base64.encode(JSON.stringify(request.apiConfiguration))
+    request.syncSetting.startTime = new Date(request.syncSetting.startTime).getTime()
+    request.syncSetting.endTime = new Date(request.syncSetting.endTime).getTime()
   } else {
-    requestParams.configuration = Base64.encode(JSON.stringify(requestParams.configuration))
+    request.configuration = Base64.encode(JSON.stringify(request.configuration))
   }
-  creatDsFolder.value.createInit('datasource', { id: form.pid || pid }, '', 'datasource')
+  creatDsFolder.value.createInit('datasource', { id: '0', request }, '', 'datasource')
 }
-
+const form = reactive<Form>({
+  name: '',
+  description: '',
+  type: 'API',
+  apiConfiguration: []
+})
+const form2 = reactive<Param>({
+  id: 0,
+  type: '',
+  editType: 0,
+  table: {
+    name: ''
+  }
+})
 const visible = ref(false)
-const isEdit = ref(false)
-const init = (nodeInfo: Form | Param, id = 0) => {
-  if (!!nodeInfo) {
+const editDs = ref(false)
+
+const init = (nodeInfo: Form | Param) => {
+  editDs.value = !!form
+  if (!!form) {
     if (nodeInfo.type == 'Excel') {
       Object.assign(form2, cloneDeep(nodeInfo))
     } else {
       Object.assign(form, cloneDeep(nodeInfo))
     }
-  } else {
-    pid = id
-    Object.assign(form2, cloneDeep(defaultForm2))
-    Object.assign(form, cloneDeep(defaultForm))
   }
-  activeStep.value = Number(!!nodeInfo)
-  isEdit.value = boolean(activeStep.value)
+  activeStep.value = Number(editDs.value)
   visible.value = true
-  if (!!nodeInfo) {
-    nextTick(() => {
-      selectDsType(nodeInfo.type)
-    })
-  }
+  nextTick(() => {
+    selectDsType(nodeInfo.type)
+  })
 }
 
 defineExpose({
@@ -313,7 +270,7 @@ defineExpose({
     v-model="visible"
   >
     <template #header="{ close }">
-      <span> {{ isEdit ? t('datasource.modify') : t('datasource.create') }}</span>
+      <span>{{ t('datasource.create') }}</span>
       <div class="editor-step flex-center">
         <el-steps space="150px" :active="activeStep" align-center>
           <el-step>
@@ -322,7 +279,7 @@ defineExpose({
                 <span class="icon">
                   {{ activeStep <= 0 ? '1' : '' }}
                 </span>
-                <span class="title">{{ t('deDataset.select_data_source') }}</span>
+                <span class="title">{{ t('datasource.select_ds_type') }}</span>
               </div>
             </template>
           </el-step>
@@ -332,7 +289,7 @@ defineExpose({
                 <span class="icon">
                   {{ activeStep <= 1 ? '2' : '' }}
                 </span>
-                <span class="title">配置信息</span>
+                <span class="title">{{ t('datasource.ds_info') }}</span>
               </div>
             </template>
           </el-step>
@@ -342,7 +299,7 @@ defineExpose({
                 <span class="icon">
                   {{ activeStep <= 2 ? '3' : '' }}
                 </span>
-                <span class="title">完成</span>
+                <span class="title">{{ t('datasource.sync_info') }}</span>
               </div>
             </template>
           </el-step>
@@ -352,8 +309,8 @@ defineExpose({
         <Icon name="icon_close_outlined"></Icon>
       </el-icon>
     </template>
-    <div v-show="!createDatasourceCompleted" class="datasource">
-      <div v-if="!isEdit" class="ds-type-select">
+    <div class="datasource">
+      <div class="ds-type-select">
         <div class="title">
           <el-input class="m24 w100" v-model="filterText" clearable>
             <template #prefix>
@@ -409,7 +366,7 @@ defineExpose({
           </template>
         </el-tree>
       </div>
-      <div class="ds-editor" :class="isEdit && 'w100'">
+      <div class="ds-editor">
         <div class="editor-content">
           <ds-type-list
             v-show="activeStep === 0"
@@ -419,11 +376,12 @@ defineExpose({
           <editor-detail
             ref="detail"
             :form="form"
+            :editDs="editDs"
             :active-step="activeStep"
             v-show="activeStep !== 0 && currentDsType && currentDsType !== 'Excel'"
           ></editor-detail>
           <template v-if="activeStep !== 0 && currentDsType == 'Excel'">
-            <excel-detail ref="excel" :param="form2"></excel-detail>
+            <excel-detail :editDs="editDs" ref="excel" :param="form2"></excel-detail>
           </template>
         </div>
       </div>
@@ -432,7 +390,7 @@ defineExpose({
         <el-button
           v-show="
             (activeStep === 0 && currentDsType !== 'API') ||
-            (activeStep < 2 && currentDsType === 'API')
+            (activeStep !== 2 && currentDsType === 'API')
           "
           type="primary"
           @click="next"
@@ -457,32 +415,23 @@ defineExpose({
         >
       </div>
     </div>
-    <FinishPage
-      v-if="createDatasourceCompleted"
-      @back-to-datasource-list="backToDatasourceList"
-      @continue-creating="continueCreating"
-      @create-dataset="createDataset"
-      name="datasource"
-    ></FinishPage>
   </el-drawer>
   <creat-ds-group @finish="complete" ref="creatDsFolder"></creat-ds-group>
 </template>
 
 <style lang="less">
 .datasource-drawer-fullscreen {
-  .btt {
-    & > .ed-drawer__body {
-      padding: 0;
-    }
+  .ed-drawer__body {
+    padding: 0;
+  }
 
-    & > .ed-drawer__header > :first-child {
-      flex: none;
-      width: auto;
-    }
+  .ed-drawer__header > :first-child {
+    flex: none;
+    width: auto;
+  }
 
-    & > .ed-drawer__header {
-      justify-content: space-between;
-    }
+  .ed-drawer__header {
+    justify-content: space-between;
   }
 
   .datasource-close {
@@ -626,10 +575,6 @@ defineExpose({
       float: left;
       width: calc(100% - 279px);
       height: calc(100% - 64px);
-
-      &.w100 {
-        width: 100%;
-      }
 
       .editor-content {
         padding: 8px 24px;

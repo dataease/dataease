@@ -228,7 +228,12 @@ const queryBackground = () => {
 
 const init = () => {
   state.commonBackground = deepCopy(props.commonBackgroundPop)
-  state.fileList.push({ url: imgUrlTrans(state.commonBackground['outerImage']) })
+  console.log('outerImage=' + state.commonBackground['outerImage'])
+  if (state.commonBackground['outerImage']) {
+    state.fileList.push({ url: imgUrlTrans(state.commonBackground['outerImage']) })
+  } else {
+    state.fileList = []
+  }
 }
 queryBackground()
 const commitStyle = () => {
@@ -241,6 +246,7 @@ const handleRemove = (file, fileList) => {
   state.uploadDisabled = false
   state.commonBackground['outerImage'] = null
   state.fileList = []
+  onBackgroundChange()
   commitStyle()
 }
 const handlePictureCardPreview = file => {
@@ -250,6 +256,7 @@ const handlePictureCardPreview = file => {
 const upload = file => {
   uploadFileResult(file.file, fileUrl => {
     state.commonBackground['outerImage'] = fileUrl
+    onBackgroundChange()
   })
 }
 
@@ -293,6 +300,10 @@ watch(
 .root-class {
   margin: 15px 0px 5px;
   text-align: center;
+}
+
+.avatar-uploader {
+  width: 120px;
 }
 
 .avatar-uploader :deep(.ed-upload) {
@@ -392,7 +403,7 @@ span {
 .ed-select-dropdown__item {
   height: 80px !important;
   text-align: center;
-  padding: 5px 0 0 0;
+  padding: 5px 15px;
 }
 
 .ed-radio {
