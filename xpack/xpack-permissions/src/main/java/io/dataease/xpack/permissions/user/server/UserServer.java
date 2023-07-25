@@ -8,10 +8,7 @@ import io.dataease.api.permissions.user.api.UserApi;
 import io.dataease.api.permissions.user.dto.LangSwitchRequest;
 import io.dataease.api.permissions.user.dto.UserCreator;
 import io.dataease.api.permissions.user.dto.UserEditor;
-import io.dataease.api.permissions.user.vo.CurUserVO;
-import io.dataease.api.permissions.user.vo.UserFormVO;
-import io.dataease.api.permissions.user.vo.UserGridVO;
-import io.dataease.api.permissions.user.vo.UserItem;
+import io.dataease.api.permissions.user.vo.*;
 import io.dataease.exception.DEException;
 import io.dataease.i18n.Lang;
 import io.dataease.license.config.XpackResource;
@@ -24,6 +21,8 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Primary;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -66,17 +65,17 @@ public class UserServer implements UserApi {
     }
 
     @Override
-    public List<UserItem> optionForRole(UserRequest request) {
-        List<UserItem> userItems = userPageManage.optionForRole(request);
+    public List<UserItemVO> optionForRole(UserRequest request) {
+        List<UserItemVO> userItems = userPageManage.optionForRole(request);
         if (CollectionUtil.isEmpty(userItems)) return userItems;
         return userItems.stream().filter(user -> !AuthUtils.isSysAdmin(user.getId())).toList();
     }
 
     @Override
-    public List<UserItem> selectedForRole(UserRequest request) {
-        List<UserItem> userItems = userPageManage.selectedForRole(request);
-        if (CollectionUtil.isEmpty(userItems)) return userItems;
-        return userItems.stream().filter(user -> !AuthUtils.isSysAdmin(user.getId())).toList();
+    public IPage<UserItemVO> selectedForRole(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody UserRequest request) {
+        Page<UserItemVO> page = new Page(goPage, pageSize);
+        IPage<UserItemVO> iPage = userPageManage.selectedWithRole(page, request);
+        return iPage;
     }
 
     @Override

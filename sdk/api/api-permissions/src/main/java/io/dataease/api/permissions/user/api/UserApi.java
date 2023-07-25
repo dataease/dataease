@@ -5,10 +5,7 @@ import io.dataease.api.permissions.role.dto.UserRequest;
 import io.dataease.api.permissions.user.dto.LangSwitchRequest;
 import io.dataease.api.permissions.user.dto.UserCreator;
 import io.dataease.api.permissions.user.dto.UserEditor;
-import io.dataease.api.permissions.user.vo.CurUserVO;
-import io.dataease.api.permissions.user.vo.UserFormVO;
-import io.dataease.api.permissions.user.vo.UserGridVO;
-import io.dataease.api.permissions.user.vo.UserItem;
+import io.dataease.api.permissions.user.vo.*;
 import io.dataease.auth.DeApiPath;
 import io.dataease.auth.DePermit;
 import io.dataease.model.KeywordRequest;
@@ -49,10 +46,10 @@ public interface UserApi {
 
 
     @PostMapping("/role/option")
-    List<UserItem> optionForRole(@RequestBody UserRequest request);
+    List<UserItemVO> optionForRole(@RequestBody UserRequest request);
 
-    @PostMapping("/role/selected")
-    List<UserItem> selectedForRole(@RequestBody UserRequest request);
+    @PostMapping("/role/selected/{goPage}/{pageSize}")
+    IPage<UserItemVO> selectedForRole(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody UserRequest request);
 
     @PostMapping("/switch/{oId}")
     String switchOrg(@PathVariable("oId") Long oId);
