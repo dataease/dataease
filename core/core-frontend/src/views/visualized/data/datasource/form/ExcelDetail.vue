@@ -14,6 +14,7 @@ import { cloneDeep } from 'lodash-es'
 
 export interface Param {
   editType: number
+  pid?: string
   type?: string
   id: number
   table: {
@@ -254,7 +255,7 @@ const uploadSuccess = (response, _, fileList) => {
 }
 // uploadSuccess({ data: mockData, headers: {} }, '', [])
 
-const saveExcelDs = () => {
+const saveExcelDs = (params, cb) => {
   let validate = true
   let selectedSheet = []
   let sheetFileMd5 = []
@@ -337,16 +338,16 @@ const saveExcelDs = () => {
       showClose: false,
       callback: (action: Action) => {
         if (action === 'confirm') {
-          saveExcelData(sheetFileMd5, table)
+          saveExcelData(sheetFileMd5, table, params, cb)
         }
       }
     })
   } else {
-    saveExcelData(sheetFileMd5, table)
+    saveExcelData(sheetFileMd5, table, params, cb)
   }
 }
 
-const saveExcelData = (sheetFileMd5, table) => {
+const saveExcelData = (sheetFileMd5, table, params, cb) => {
   table.configuration = Base64.encode(JSON.stringify(table.sheets))
   if (new Set(sheetFileMd5).size !== sheetFileMd5.length && !props.param.id) {
     ElMessageBox.confirm(t('dataset.merge_title'), {

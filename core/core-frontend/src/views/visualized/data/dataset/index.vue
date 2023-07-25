@@ -124,9 +124,9 @@ const getData = () => {
   const request = { busiFlag: 'dataset' } as BusiTreeRequest
   getDatasetTree(request).then(res => {
     const nodeData = (res as unknown as BusiTreeNode[]) || []
-    if (nodeData.length === 1 && nodeData[0]['id'] === '0' && nodeData[0]['name'] === 'root') {
+    if (nodeData.length && nodeData[0]['id'] === '0' && nodeData[0]['name'] === 'root') {
       rootManage.value = nodeData[0]['weight'] >= 3
-      state.datasetTree = nodeData[0]['children']
+      state.datasetTree = nodeData[0]['children'] || []
       return
     }
     state.datasetTree = nodeData

@@ -21,7 +21,7 @@ export interface Field {
 export interface ApiItem {
   status: string
   name: string
-  deTableName: string
+  deTableName?: string
   url: string
   method: string
   request: ApiRequest
@@ -117,7 +117,7 @@ const fieldType = (deType: number) => {
 const initApiItem = (val: ApiItem) => {
   Object.assign(apiItem, val)
   edit_api_item.value = true
-  active.value = 1
+  active.value = 0
 }
 
 const showApiData = () => {
@@ -300,13 +300,31 @@ defineExpose({
     direction="rtl"
   >
     <div class="flex-center">
-      <el-steps :active="active" align-center :space="144">
-        <el-step :title="t('datasource.api_step_1')" />
-        <el-step :title="t('datasource.api_step_2')" />
+      <el-steps :active="active" align-center>
+        <el-step>
+          <template #icon>
+            <div class="step-icon">
+              <span class="icon">
+                {{ active <= 0 ? '1' : '' }}
+              </span>
+              <span class="title">{{ t('datasource.api_step_1') }}</span>
+            </div>
+          </template>
+        </el-step>
+        <el-step>
+          <template #icon>
+            <div class="step-icon">
+              <span class="icon">
+                {{ active <= 1 ? '2' : '' }}
+              </span>
+              <span class="title">{{ t('datasource.api_step_2') }}</span>
+            </div>
+          </template>
+        </el-step>
       </el-steps>
     </div>
 
-    <el-row v-show="active === 1">
+    <el-row v-show="active === 0">
       <el-form
         ref="apiItemBasicInfo"
         :model="apiItem"
@@ -403,7 +421,7 @@ defineExpose({
         </div>
       </el-form>
     </el-row>
-    <el-row v-show="active === 2">
+    <el-row v-show="active === 1">
       <el-form
         style="width: 100%"
         ref="apiItemForm"
@@ -512,13 +530,13 @@ defineExpose({
     </el-row>
     <template #footer>
       <el-button @click="closeEditItem">{{ t('common.cancel') }}</el-button>
-      <el-button v-show="active === 1" type="primary" :disabled="disabledNext" @click="next"
+      <el-button v-show="active === 0" type="primary" :disabled="disabledNext" @click="next"
         >{{ t('common.next') }}
       </el-button>
-      <el-button v-show="active === 2" type="primary" @click="before"
+      <el-button v-show="active === 1" type="primary" @click="before"
         >{{ t('common.prev') }}
       </el-button>
-      <el-button v-show="active === 2" type="primary" @click="saveItem"
+      <el-button v-show="active === 1" type="primary" @click="saveItem"
         >{{ t('common.save') }}
       </el-button>
     </template>
@@ -529,7 +547,70 @@ defineExpose({
 .api-datasource-drawer {
   .flex-center {
     .ed-steps {
-      width: 400px;
+      width: 630px;
+    }
+    .ed-step.is-center .ed-step__line {
+      width: 208px;
+      right: 104px;
+      z-index: 5;
+      left: calc(100% - 104px);
+    }
+
+    .ed-step__icon.is-icon {
+      width: auto;
+      position: relative;
+      z-index: 0;
+    }
+
+    .ed-step__head.is-finish::after {
+      right: calc(100% - 133px);
+    }
+
+    .ed-step__head.is-process .ed-step__icon {
+      background-color: transparent;
+      .step-icon {
+        .icon {
+          background: #3370ff;
+        }
+      }
+    }
+
+    .ed-step__head.is-finish .ed-step__icon {
+      background-color: transparent;
+      .step-icon {
+        .icon {
+          border: 1px solid #3370ff;
+        }
+      }
+    }
+
+    .ed-step__head.is-wait .ed-step__icon {
+      background-color: transparent;
+      .step-icon {
+        .icon {
+          color: #8f959e;
+          border: 1px solid #8f959e;
+        }
+      }
+    }
+
+    .step-icon {
+      display: flex;
+      padding: 0 48px;
+      align-items: center;
+      .icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        line-height: 28px;
+      }
+      .title {
+        margin-left: 8px;
+        color: #1f2329;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 22px;
+      }
     }
   }
 

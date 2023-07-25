@@ -1,15 +1,16 @@
 <script lang="ts" setup>
 import { propTypes } from '@/utils/propTypes'
 defineProps({
-  label: propTypes.string.def(''),
-  value: propTypes.string.def('')
+  label: propTypes.string.def('')
 })
 </script>
 
 <template>
   <div class="base-info-item">
     <p class="label">{{ label }}</p>
-    <p class="value">{{ value || '-' }}</p>
+    <p class="value">
+      <slot></slot>
+    </p>
   </div>
 </template>
 

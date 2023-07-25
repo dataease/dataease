@@ -1,4 +1,7 @@
-import { G2PlotChartView, G2PlotDrawOptions } from '@/views/chart/components/js/panel/types'
+import {
+  G2PlotChartView,
+  G2PlotDrawOptions
+} from '@/views/chart/components/js/panel/types/impl/g2plot'
 import { Datum, WordCloud as G2WordCloud, WordCloudOptions } from '@antv/g2plot'
 import { flow, parseJson } from '@/views/chart/components/js/util'
 import { getPadding } from '@/views/chart/components/js/panel/common/common_antv'

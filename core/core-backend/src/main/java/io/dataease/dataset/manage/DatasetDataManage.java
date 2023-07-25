@@ -251,6 +251,7 @@ public class DatasetDataManage {
         // parser sql params and replace default value
         String sql = SqlparserUtils.handleVariableDefaultValue(datasetSQLManage.subPrefixSuffixChar(new String(Base64.getDecoder().decode(dto.getSql()))), dto.getSqlVariableDetails(), true);
         sql = SqlUtils.addSchema(sql, alias);
+        logger.info("calcite data preview sql: " + sql);
         Map<Long, DatasourceSchemaDTO> dsMap = new LinkedHashMap<>();
         dsMap.put(datasourceSchemaDTO.getId(), datasourceSchemaDTO);
         DatasourceRequest datasourceRequest = new DatasourceRequest();

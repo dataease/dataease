@@ -339,6 +339,11 @@ defineExpose({
 <template>
   <div class="editor-detail">
     <div class="detail-inner">
+      <div class="info-update">
+        <div :class="activeStep === 1 && 'active'" class="info-text">数据源信息</div>
+        <div class="update-info-line"></div>
+        <div :class="activeStep === 2 && 'active'" class="update-text">数据更新设置</div>
+      </div>
       <div class="title-form_primary" v-show="activeStep !== 2">
         {{ t('datasource.basic_info') }}
       </div>
@@ -801,6 +806,48 @@ defineExpose({
   }
   .detail-inner {
     width: 800px;
+
+    .info-update {
+      height: 22px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      font-family: PingFang SC;
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 22px;
+      justify-content: center;
+
+      .update-info-line {
+        width: 208px;
+        height: 1px;
+        background: #bcbdbf;
+        margin: 0 8px;
+      }
+
+      .info-text,
+      .update-text {
+        padding-left: 16px;
+        position: relative;
+        &::before {
+          width: 8px;
+          height: 8px;
+          content: '';
+          position: absolute;
+          left: 0;
+          top: 50%;
+          transform: translateY(-50%);
+          border: 1px solid #3370ff;
+          border-radius: 50%;
+        }
+
+        &.active::before {
+          border: none;
+          background: #3370ff;
+        }
+      }
+    }
 
     .title-form_primary {
       margin: 16px 0;

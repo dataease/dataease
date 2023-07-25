@@ -40,8 +40,8 @@ export interface Table {
   unableCheck?: boolean
 }
 
-export const listDatasources = async (): Promise<Array<IrNode>> => {
-  return request.get({ url: '/datasource/list' }).then(res => {
+export const listDatasources = async (data = {}) => {
+  return request.post({ url: '/datasource/list', data: data }).then(res => {
     return res?.data
   })
 }
@@ -88,12 +88,6 @@ export const getDatasetTree = async (data = {}): Promise<IResponse> => {
 }
 
 export const deleteById = (id: number) => request.get({ url: '/datasource/delete/' + id })
-
-export const getDatasourceList = async (): Promise<IResponse> => {
-  return request.post({ url: '/datasource/list', data: {} }).then(res => {
-    return res?.data
-  })
-}
 
 export const getTables = async (id): Promise<IResponse> => {
   return request.post({ url: `/datasource/getTables/${id}`, data: {} }).then(res => {

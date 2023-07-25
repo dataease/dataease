@@ -1,10 +1,13 @@
 package io.dataease.api.ds;
 
 import io.dataease.api.dataset.dto.DatasetTableDTO;
+import io.dataease.api.dataset.dto.DsBusiNodeVO;
 import io.dataease.api.ds.vo.*;
 import io.dataease.auth.DeApiPath;
 import io.dataease.auth.DePermit;
 import io.dataease.exception.DEException;
+import io.dataease.model.BusiNodeRequest;
+import io.dataease.model.BusiNodeVO;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -55,9 +58,8 @@ public interface DatasourceApi {
     List<TableField> getTableField(@PathVariable("datasourceId") String datasourceId, @PathVariable("tableName") String tableName) throws Exception;
 
     @DePermit("m:read")
-    @GetMapping("list")
-    List<DatasourceDTO> list() throws DEException;
-    // List<TreeNodeVO> list() throws DEException;
+    @PostMapping("list")
+    List<DsBusiNodeVO> list(BusiNodeRequest request) throws DEException;
 
     @DePermit({"m:read", "#p0+':manage'"})
     @GetMapping("getTables/{datasourceId}")

@@ -4,7 +4,10 @@ import io.dataease.api.permissions.auth.vo.PermissionItem;
 import io.dataease.api.permissions.auth.vo.PermissionOrigin;
 import io.dataease.auth.bo.TokenUserBO;
 import io.dataease.exception.DEException;
+import io.dataease.utils.AuthUtils;
 import io.dataease.utils.CommonBeanFactory;
+import io.dataease.xpack.permissions.org.bo.PerOrgItem;
+import io.dataease.xpack.permissions.org.manage.OrgPageManage;
 import io.dataease.xpack.permissions.user.entity.UserRole;
 import io.dataease.xpack.permissions.user.manage.RoleManage;
 import jakarta.annotation.Resource;
@@ -26,12 +29,15 @@ public class ApiAuthManage extends OrgResourceManage {
     @Resource
     private RoleAuthManage roleAuthManage;
 
+    @Resource
+    private OrgPageManage orgPageManage;
+
 
     public void checkMenu(Long menuId, Integer weight, TokenUserBO userBO) {
         Long uid = userBO.getUserId();
         Long oid = userBO.getDefaultOid();
         List<UserRole> userRoles = userRoles(uid, oid);
-        if (isRootAdmin(userRoles)) {
+        if (AuthUtils.isSysAdmin(uid) || isRootAdmin(userRoles)) {
             return;
         }
         if (isRootReadonly(userRoles) && weight == 1) {
@@ -53,7 +59,7 @@ public class ApiAuthManage extends OrgResourceManage {
             DEException.throwException(ERROR_MSG);
         }
         if (flag > 4) return;
-        if (isRootAdmin(userRoles)) {
+        if (AuthUtils.isSysAdmin(uid) || isRootAdmin(userRoles)) {
             return;
         }
         if (isRootReadonly(userRoles) && weight == 1) {
@@ -86,8 +92,16 @@ public class ApiAuthManage extends OrgResourceManage {
                 return manage.uids(oid);
             case 6:
                 return manage.rids(oid);
+            case 7:
+                return oids(oid);
         }
         return null;
+    }
+
+    private List<Long> oids(Long oid) {
+        Long userId = AuthUtils.getUser().getUserId();
+        List<PerOrgItem> perOrgItems = orgPageManage.queryByUser(userId, null);
+        return perOrgItems.stream().map(PerOrgItem::getId).toList();
     }
 
     private List<UserRole> userRoles(Long uid, Long oid) {

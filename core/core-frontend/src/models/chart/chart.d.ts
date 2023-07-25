@@ -483,6 +483,10 @@ declare interface Axis {
   name: string
   formatterCfg: AxisLabelFormatter
 }
+declare interface ChartViewField {
+  name: string
+  dataeaseName: string
+}
 declare type CustomAttr = DeepPartial<ChartAttr> | JSONString<DeepPartial<ChartAttr>>
 declare type CustomStyle = DeepPartial<ChartStyle> | JSONString<DeepPartial<ChartStyle>>
 declare type CustomSenior = DeepPartial<ChartSenior> | JSONString<DeepPartial<ChartSenior>>
@@ -499,6 +503,8 @@ declare interface Chart {
     data: any[]
     series?: any[]
     dynamicAssistLines?: AssistLine[]
+    fields: ChartViewField[]
+    tableRow: []
   }
   xAxis?: Axis[]
   xAxisExt?: Axis[]
@@ -509,4 +515,5 @@ declare interface Chart {
   senior: CustomSenior
   customAttr: CustomAttr
   customStyle: CustomStyle
+  drillFields: ChartViewField[]
 }

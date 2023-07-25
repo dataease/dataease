@@ -2,8 +2,7 @@
 import { ref, reactive, computed, watch, nextTick } from 'vue'
 import { ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
-import { getDatasetTree } from '@/api/dataset'
-import { save } from '@/api/datasource'
+import { save, listDatasources } from '@/api/datasource'
 import type { DatasetOrFolder } from '@/api/dataset'
 import nothingTree from '@/assets/img/nothing-tree.png'
 
@@ -149,12 +148,12 @@ const dfs = (arr: Tree[]) => {
 
 const createInit = (type, data: Tree, exec, name: string) => {
   nodeType.value = type
-  if (type === 'dataset') {
+  if (type === 'datasource') {
     request = data.request
   }
   if (data.id) {
-    getDatasetTree({
-      nodeType: 'folder'
+    listDatasources({
+      type: 'folder'
     }).then(res => {
       dfs(res as unknown as Tree[])
       state.tData = (res as unknown as Tree[]) || []
@@ -231,31 +230,7 @@ const saveDataset = () => {
           break
       }
       loading.value = true
-
-      if (!request) {
-        emits('finish', params, cmd.value)
-        return
-      }
-      save({ ...params, ...request })
-        .then(() => {
-          datasource.value.resetFields()
-          createDataset.value = false
-          switch (cmd.value) {
-            case 'move':
-              ElMessage.success('移动成功')
-              break
-            case 'rename':
-              ElMessage.success('重命名成功')
-              break
-            default:
-              ElMessage.success('新建数据集成功')
-              break
-          }
-          ElMessage.success(t('common.save_success'))
-        })
-        .finally(() => {
-          loading.value = false
-        })
+      emits('finish', params, finishCb)
     }
   })
 }
