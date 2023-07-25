@@ -1,4 +1,4 @@
-<script>
+<script setup lang="ts">
 import CommonAttr from '@/custom-component/common/CommonAttr.vue'
 import { toRefs } from 'vue'
 const props = defineProps({
@@ -9,9 +9,6 @@ const props = defineProps({
 })
 
 const { themes } = toRefs(props)
-export default {
-  components: { CommonAttr }
-}
 </script>
 
 <template>
