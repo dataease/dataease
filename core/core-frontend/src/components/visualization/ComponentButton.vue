@@ -6,18 +6,20 @@ import { ElCol, ElIcon } from 'element-plus-secondary'
 
 const props = defineProps({
   title: propTypes.string,
+  tips: propTypes.string,
   iconName: propTypes.string,
   showSplitLine: propTypes.bool,
   active: propTypes.bool
 })
 
-const { title, iconName, showSplitLine } = toRefs(props)
+const { title, tips, iconName, showSplitLine } = toRefs(props)
 const emits = defineEmits(['customClick'])
 </script>
 
 <template>
   <el-row
     class="group_icon"
+    :title="tips"
     :class="{ 'group-right-border': showSplitLine }"
     v-on:click="emits('customClick')"
   >

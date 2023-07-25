@@ -292,24 +292,26 @@ const saveLinkageSetting = () => {
         <component-group themes="light" icon-name="dv-media" title="图片">
           <media-group themes="light" :dv-model="dvModel"></media-group>
         </component-group>
-        <component-button icon-name="dv-tab" title="Tab"></component-button>
+        <component-button :show-split-line="true" icon-name="dv-tab" title="Tab"></component-button>
         <component-button
           icon-name="dv-copy"
           title="复用"
           @customClick="multiplexingCanvasOpen"
         ></component-button>
-        <component-button
-          @custom-click="batchOptStatusChange(true)"
-          icon-name="dv-batch"
-          title="批量操作"
-        ></component-button>
-        <component-button
-          @custom-click="openDataBoardSetting"
-          icon-name="dv-dashboard"
-          title="仪表板配置"
-        ></component-button>
       </div>
       <div class="right-area" v-show="!batchOptStatus && !linkageSettingStatus">
+        <component-button
+          tips="批量操作"
+          @custom-click="batchOptStatusChange(true)"
+          icon-name="dv-batch"
+        ></component-button>
+        <component-button
+          tips="仪表板配置"
+          @custom-click="openDataBoardSetting"
+          icon-name="dv-dashboard"
+        ></component-button>
+        <el-divider direction="vertical" />
+        <component-button tips="移动端布局" icon-name="dv_mobile_layout"></component-button>
         <el-button
           class="custom-normal-button"
           v-show="editMode === 'edit'"

@@ -8,7 +8,9 @@ import {
   ResourceOrFolder,
   savaOrUpdateBase
 } from '@/api/visualization/dataVisualization'
-
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { storeToRefs } from 'pinia'
+const dvMainStore = dvMainStoreWithOut()
 const props = defineProps({
   curCanvasType: {
     type: String,
@@ -25,6 +27,7 @@ const state = reactive({
   nameList: []
 })
 
+const showParentSelected = ref(false)
 const loading = ref(false)
 const nodeType = ref()
 const pid = ref()
@@ -34,12 +37,12 @@ const treeRef = ref()
 const filterText = ref('')
 const resourceForm = reactive({
   pid: '',
-  name: ''
+  name: '新建'
 })
 
 const nameMap = {
   newFolder: '新建文件夹',
-  newLeaf: '新建',
+  newLeaf: dvMainStore.dvInfo.type === 'dataV' ? '新建数据大屏' : '新建仪表板',
   move: '移动到',
   rename: '编辑'
 }
@@ -68,7 +71,7 @@ const nameValidator = (_, value, callback) => {
 }
 
 const showPid = computed(() => {
-  return ['newLeaf'].includes(cmd.value) && !pid.value
+  return ['newLeaf'].includes(cmd.value) && showParentSelected.value
 })
 
 const showName = computed(() => {
@@ -102,12 +105,15 @@ const resourceFormRules = ref()
 
 const resource = ref()
 const resourceDialogShow = ref(false)
-const dialogTitle = ref('新建文件夹')
+const dialogTitle = ref('')
 const filterMethod = value => {
   state.tData = [...state.tData].filter(item => item.name.includes(value))
 }
 const resetForm = () => {
   resource.value.clearValidate()
+  dialogTitle.value = null
+  resourceForm.name = '新建'
+  resourceForm.pid = ''
   resourceDialogShow.value = false
 }
 
@@ -120,18 +126,24 @@ const dfs = (arr: BusiTreeNode[]) => {
   })
 }
 
-const optInit = (type, data: BusiTreeNode, exec) => {
+const optInit = (type, data: BusiTreeNode, exec, parentSelect = false) => {
+  showParentSelected.value = parentSelect
   nodeType.value = type
   dialogTitle.value = nameMap[exec]
   const request = { busyFlag: curCanvasType.value, leaf: false, weight: 3 }
+  if (['newLeaf', 'newFolder'].includes(exec)) {
+    resourceForm.name = nameMap[exec]
+  }
   queryTreeApi(request).then(res => {
     const resultTree = res
     dfs(resultTree as unknown as BusiTreeNode[])
     state.tData = (resultTree as unknown as BusiTreeNode[]) || []
+    if (state.tData.length > 0 && state.tData[0].id === '0') {
+      state.tData = state.tData[0].children
+    }
     if (['newLeaf', 'newFolder'].includes(exec)) {
       resourceForm.pid = data.id as string
       pid.value = data.id
-      resourceForm.name = nameMap[exec]
     } else {
       pid.value = data['pid']
       id.value = data.id
@@ -217,7 +229,6 @@ const emits = defineEmits(['finish'])
     width="600px"
     :before-close="resetForm"
   >
-    loading={{ loading }}
     <el-form
       label-position="top"
       require-asterisk-position="right"
