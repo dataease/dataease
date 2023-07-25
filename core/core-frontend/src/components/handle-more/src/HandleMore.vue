@@ -19,7 +19,8 @@ defineProps({
     type: String as () => Placement,
     default: 'bottom-end'
   },
-  iconName: propTypes.string.def('icon_more_outlined')
+  iconName: propTypes.string.def('icon_more_outlined'),
+  inTable: propTypes.bool.def(false)
 })
 const handleCommand = (command: string | number | object) => {
   emit('handleCommand', command)
@@ -35,7 +36,7 @@ const emit = defineEmits(['handleCommand'])
     trigger="click"
     @command="handleCommand"
   >
-    <el-icon class="hover-icon" @click.stop>
+    <el-icon class="hover-icon" :class="inTable && 'hover-icon-in-table'" @click.stop>
       <Icon :name="iconName"></Icon>
     </el-icon>
     <template #dropdown>
