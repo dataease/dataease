@@ -10,7 +10,13 @@ import type { Tree } from '../dataset/form/CreatDsGroup.vue'
 import { getDatasetPreview } from '@/api/dataset'
 import { useI18n } from '@/hooks/web/useI18n'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
-import { listDatasources, getTableField, listDatasourceTables, deleteById } from '@/api/datasource'
+import {
+  listDatasources,
+  getTableField,
+  listDatasourceTables,
+  deleteById,
+  save
+} from '@/api/datasource'
 import { Base64 } from 'js-base64'
 import type { Configuration, ApiConfiguration, SyncSetting } from './form/index.vue'
 import EditorDatasource from './form/index.vue'
@@ -21,6 +27,7 @@ import BaseInfoContent from './BaseInfoContent.vue'
 interface DsType {
   type: string
   name: string
+  leaf: boolean
   id?: string
   catalog: string
   extraParams: string
@@ -171,7 +178,7 @@ const searchDs = () => {
 }
 
 const getDsIconName = data => {
-  if (data.databaseClassification) return 'dv-folder'
+  if (!data.leaf) return 'dv-folder'
   return 'mysql-frame'
 }
 
@@ -204,21 +211,33 @@ const nodeInfo = reactive<Node>({
   apiConfiguration: []
 })
 
+const saveDsFolder = (params, cmd) => {
+  save(params).then(res => {
+    listDs()
+  })
+}
+
 const listDs = () => {
   rawDatasourceList.value = []
-  listDatasources().then(array => {
-    for (let index = 0; index < array.length; index++) {
-      const element = array[index]
-      if (element.configuration) {
-        element.configuration = JSON.parse(Base64.decode(element.configuration))
-      }
-      if (element.apiConfigurationStr) {
-        element.apiConfiguration = JSON.parse(Base64.decode(element.apiConfigurationStr))
-      }
-      rawDatasourceList.value.push(element)
-    }
-    buildTree(rawDatasourceList.value)
+  listDatasources({}).then(array => {
+    convertConfig(array)
+    state.datasourceTree = array
   })
+}
+
+const convertConfig = array => {
+  for (let index = 0; index < array.length; index++) {
+    if (array[index].leaf) {
+      if (array[index].configuration) {
+        array[index].configuration = JSON.parse(Base64.decode(array[index].configuration))
+      }
+      if (array[index].apiConfigurationStr) {
+        array[index].apiConfiguration = JSON.parse(Base64.decode(array[index].apiConfigurationStr))
+      }
+    } else if (array[index].children && array[index].children.length > 0) {
+      convertConfig(array[index].children)
+    }
+  }
 }
 
 listDs()
@@ -254,7 +273,7 @@ const creatDsFolder = ref()
 
 const tableData = shallowRef([])
 const handleNodeClick = data => {
-  if (data.databaseClassification) return
+  if (!data.leaf) return
   const { name, createBy, id, type, configuration, syncSetting, apiConfiguration, description } =
     data
   Object.assign(nodeInfo, {
@@ -384,10 +403,7 @@ const defaultProps = {
       >
         <template #default="{ node, data }">
           <span class="custom-tree-node">
-            <el-icon
-              :class="!data.databaseClassification && 'icon-border'"
-              style="width: 18px; height: 18px"
-            >
+            <el-icon :class="!data.leaf && 'icon-border'" style="width: 18px; height: 18px">
               <Icon :name="getDsIconName(data)"></Icon>
             </el-icon>
             <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
@@ -397,12 +413,10 @@ const defaultProps = {
                 :menu-list="datasetTypeList"
                 icon-name="icon_add_outlined"
                 placement="bottom-start"
-                v-if="data.databaseClassification"
+                v-if="!data.leaf"
               ></handle-more>
               <handle-more
-                @handle-command="
-                  cmd => operation(cmd, data, data.databaseClassification ? 'datasource' : 'folder')
-                "
+                @handle-command="cmd => operation(cmd, data, data.leaf ? 'datasource' : 'folder')"
                 :menu-list="menuList"
               ></handle-more>
             </div>
@@ -771,7 +785,7 @@ const defaultProps = {
         />
       </el-table>
     </el-dialog>
-    <creat-ds-group @finish="listDs()" ref="creatDsFolder"></creat-ds-group>
+    <creat-ds-group @finish="saveDsFolder" ref="creatDsFolder"></creat-ds-group>
   </div>
 </template>
 

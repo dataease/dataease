@@ -5,9 +5,17 @@ import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapsho
 
 import { storeToRefs } from 'pinia'
 import { ElIcon, ElMessage } from 'element-plus-secondary'
-import { ref } from 'vue'
+import { ref, toRefs, watch } from 'vue'
 import { uploadFileResult } from '@/api/staticResource'
 import { imgUrlTrans } from '@/utils/imgUtils'
+const props = defineProps({
+  themes: {
+    type: String,
+    default: 'dark'
+  }
+})
+
+const { themes } = toRefs(props)
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 
@@ -55,10 +63,23 @@ const reUpload = e => {
 const sizeMessage = () => {
   ElMessage.success('图片大小不符合')
 }
+const init = () => {
+  if (curComponent.value.propValue.url) {
+    fileList.value = [{ url: imgUrlTrans(curComponent.value.propValue.url) }]
+  } else {
+    fileList.value = []
+  }
+}
+watch(
+  () => curComponent.value.propValue.url,
+  val => {
+    init(val)
+  }
+)
 </script>
 
 <template>
-  <div class="attr-list">
+  <div class="attr-list de-collapse-style">
     <input
       id="input"
       ref="files"
@@ -72,11 +93,12 @@ const sizeMessage = () => {
       "
       @change="reUpload"
     />
-    <CommonAttr>
+    <CommonAttr :themes="themes">
       <el-collapse-item title="图片" name="picture">
         <el-row class="img-area">
           <el-col style="width: 130px !important">
             <el-upload
+              :themes="themes"
               action=""
               accept=".jpeg,.jpg,.png,.gif,.svg"
               class="avatar-uploader"
@@ -114,6 +136,30 @@ const sizeMessage = () => {
 </template>
 
 <style lang="less" scoped>
+.de-collapse-style {
+  :deep(.ed-collapse-item__header) {
+    height: 34px !important;
+    line-height: 34px !important;
+    padding: 0 0 0 6px !important;
+    font-size: 12px !important;
+    font-weight: 400 !important;
+  }
+  :deep(.ed-collapse-item__content) {
+    padding: 16px !important;
+  }
+  :deep(.ed-form-item) {
+    display: block;
+    margin-bottom: 16px;
+  }
+  :deep(.ed-form-item__label) {
+    justify-content: flex-start;
+  }
+  :deep(.ed-checkbox__inner) {
+    width: 14px;
+    height: 14px;
+  }
+}
+
 .disabled :deep(.el-upload--picture-card) {
   display: none;
 }

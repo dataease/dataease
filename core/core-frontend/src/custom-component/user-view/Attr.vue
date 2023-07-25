@@ -2,15 +2,22 @@
 import CommonAttr from '@/custom-component/common/CommonAttr.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
-import UserViewEditor from '@/views/chart/components/editor/index.vue'
+import { toRefs } from 'vue'
+const props = defineProps({
+  themes: {
+    type: String,
+    default: 'dark'
+  }
+})
 
+const { themes } = toRefs(props)
 const dvMainStore = dvMainStoreWithOut()
 const { curComponent } = storeToRefs(dvMainStore)
 </script>
 
 <template>
   <div class="attr-list">
-    <CommonAttr></CommonAttr>
+    <CommonAttr :themes="themes"></CommonAttr>
     <!--    <user-view-editor></user-view-editor>-->
   </div>
 </template>

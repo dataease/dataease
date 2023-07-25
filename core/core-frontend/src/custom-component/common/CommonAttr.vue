@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, toRefs } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { styleData, selectKey, optionMap, positionData } from '@/utils/attr'
@@ -7,6 +7,14 @@ import DeInputNum from '@/custom-component/common/DeInputNum.vue'
 import ComponentPosition from '@/components/visualization/common/ComponentPosition.vue'
 import BackgroundOverallCommon from '@/components/visualization/component-background/BackgroundOverallCommon.vue'
 
+const props = defineProps({
+  themes: {
+    type: String,
+    default: 'dark'
+  }
+})
+
+const { themes } = toRefs(props)
 const dvMainStore = dvMainStoreWithOut()
 const { curComponent, dvInfo } = storeToRefs(dvMainStore)
 const activeName = ref(curComponent.value.collapseName)
@@ -46,7 +54,7 @@ const onBackgroundChange = val => {
 </script>
 
 <template>
-  <div class="v-common-attr">
+  <div class="v-common-attr" :class="{ 'attr-dark': themes === 'dark' }">
     <el-collapse v-model="activeName" @change="onChange()">
       <el-collapse-item title="位置" name="position" v-if="!dashboardActive">
         <component-position style="padding-top: 10px"></component-position>
@@ -55,14 +63,14 @@ const onBackgroundChange = val => {
       <el-collapse-item title="背景" name="background">
         <background-overall-common
           v-if="curComponent"
-          themes="dark"
+          :themes="themes"
           :common-background-pop="curComponent.commonBackground"
           component-position="component"
           @onBackgroundChange="onBackgroundChange"
         ></background-overall-common>
       </el-collapse-item>
 
-      <el-collapse-item title="样式" name="style">
+      <el-collapse-item title="样式" name="style" class="common-style-area">
         <div style="width: 100%">
           <div
             v-for="({ key, label }, index) in styleKeys"
@@ -70,7 +78,7 @@ const onBackgroundChange = val => {
             :title="label"
             style="display: flex; float: left; margin-top: 10px"
           >
-            <div style="width: 30px; overflow: hidden; text-align: right">
+            <div class="attr-custom-icon-main">
               <el-icon :title="label" class="attr-custom-icon">
                 <Icon :name="'dv-style-' + key"></Icon>
               </el-icon>
@@ -79,12 +87,14 @@ const onBackgroundChange = val => {
               <el-color-picker
                 v-if="isIncludesColor(key)"
                 v-model="curComponent.style[key]"
+                :themes="themes"
                 size="small"
                 show-alpha
               ></el-color-picker>
               <el-select
                 v-else-if="selectKey.includes(key)"
                 size="small"
+                :themes="themes"
                 v-model="curComponent.style[key]"
               >
                 <el-option
@@ -94,7 +104,11 @@ const onBackgroundChange = val => {
                   :value="item.value"
                 ></el-option>
               </el-select>
-              <de-input-num v-else v-model="curComponent.style[key]"></de-input-num>
+              <de-input-num
+                v-else
+                :themes="themes"
+                v-model="curComponent.style[key]"
+              ></de-input-num>
             </div>
           </div>
         </div>
@@ -111,20 +125,20 @@ const onBackgroundChange = val => {
   }
 }
 
-:deep(.ed-collapse-item__header) {
+.attr-dark :deep(.ed-collapse-item__header) {
   background-color: @side-area-background !important;
   color: #ffffff;
   padding-left: 5px;
   border-bottom: 1px solid rgba(85, 85, 85, 1);
   height: 38px !important;
 }
-:deep(.ed-collapse-item__content) {
+.attr-dark :deep(.ed-collapse-item__content) {
   background-color: @side-content-background;
   color: #ffffff;
   padding-left: 5px;
 }
 
-:deep(.ed-collapse-item__wrap) {
+.attr-dark :deep(.ed-collapse-item__wrap) {
   background-color: @side-content-background;
   border-bottom: 1px solid rgba(85, 85, 85, 1);
   padding-bottom: 10px;
@@ -133,19 +147,30 @@ const onBackgroundChange = val => {
   width: 100%;
 }
 
-:deep(.ed-input__wrapper) {
+.attr-dark :deep(.ed-input__wrapper) {
   background-color: rgba(37, 45, 54, 1);
 }
-:deep(.ed-input__inner) {
+.attr-dark :deep(.ed-input__inner) {
   color: #ffffff;
 }
-:deep(.ed-form-item__label) {
+.attr-dark :deep(.ed-form-item__label) {
   color: #ffffff;
+}
+
+.attr-custom-icon-main {
+  padding-top: 4px;
+  width: 30px;
+  overflow: hidden;
+  text-align: right;
 }
 
 .attr-custom-icon {
   font-size: 16px;
   color: #646a73;
   margin-right: 5px;
+}
+
+.common-style-area :deep(.ed-collapse-item__wrap) {
+  padding-bottom: 16px;
 }
 </style>

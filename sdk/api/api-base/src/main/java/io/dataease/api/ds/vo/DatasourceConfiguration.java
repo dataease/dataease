@@ -11,6 +11,7 @@ public class DatasourceConfiguration extends Configuration{
 
 
     static public enum DatasourceType {
+        folder("folder", "folder", "folder"),
         API("API", "API", "API"),
         Excel("Excel", "Excel", "LOCALFILE"),
         mysql("mysql", "Mysql", "OLTP"),

@@ -19,7 +19,7 @@ export const COMMON_COMPONENT_BACKGROUND_BASE = {
 
 export const COMMON_COMPONENT_BACKGROUND_LIGHT = {
   ...COMMON_COMPONENT_BACKGROUND_BASE,
-  backgroundColor: '#F5F6F7',
+  backgroundColor: '#ffffff',
   innerImageColor: '#1094E5'
 }
 
@@ -196,6 +196,20 @@ for (let i = 0, len = list.length; i < len; i++) {
   item.style = { ...commonStyle, ...item.style }
   item['commonBackground'] = deepCopy(COMMON_COMPONENT_BACKGROUND_BASE)
   list[i] = { ...commonAttr, ...item }
+}
+
+export function findNewComponentFromList(componentName, innerType, curOriginThemes) {
+  let newComponent
+  list.forEach(comp => {
+    if (comp.component === componentName) {
+      newComponent = deepCopy(comp)
+      ;(newComponent['commonBackground'] = deepCopy(
+        COMMON_COMPONENT_BACKGROUND_MAP[curOriginThemes.value]
+      )),
+        (newComponent.innerType = innerType)
+    }
+  })
+  return newComponent
 }
 
 export default list

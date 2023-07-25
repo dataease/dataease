@@ -11,7 +11,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-06-16
+ * @since 2023-07-24
  */
 @TableName("core_datasource")
 public class CoreDatasource implements Serializable {
@@ -38,6 +38,16 @@ public class CoreDatasource implements Serializable {
      * 类型
      */
     private String type;
+
+    /**
+     * 父级ID
+     */
+    private Long pid;
+
+    /**
+     * 更新方式：0：替换；1：追加
+     */
+    private String editType;
 
     /**
      * 详细信息
@@ -74,8 +84,6 @@ public class CoreDatasource implements Serializable {
      */
     private String taskStatus;
 
-    private String editType;
-
     public Long getId() {
         return id;
     }
@@ -106,6 +114,22 @@ public class CoreDatasource implements Serializable {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public Long getPid() {
+        return pid;
+    }
+
+    public void setPid(Long pid) {
+        this.pid = pid;
+    }
+
+    public String getEditType() {
+        return editType;
+    }
+
+    public void setEditType(String editType) {
+        this.editType = editType;
     }
 
     public String getConfiguration() {
@@ -164,14 +188,6 @@ public class CoreDatasource implements Serializable {
         this.taskStatus = taskStatus;
     }
 
-    public String getEditType() {
-        return editType;
-    }
-
-    public void setEditType(String editType) {
-        this.editType = editType;
-    }
-
     @Override
     public String toString() {
         return "CoreDatasource{" +
@@ -179,6 +195,8 @@ public class CoreDatasource implements Serializable {
         ", name = " + name +
         ", description = " + description +
         ", type = " + type +
+        ", pid = " + pid +
+        ", editType = " + editType +
         ", configuration = " + configuration +
         ", createTime = " + createTime +
         ", updateTime = " + updateTime +
@@ -186,7 +204,6 @@ public class CoreDatasource implements Serializable {
         ", status = " + status +
         ", qrtzInstance = " + qrtzInstance +
         ", taskStatus = " + taskStatus +
-        ", editType = " + editType +
         "}";
     }
 }

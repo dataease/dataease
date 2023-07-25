@@ -1,5 +1,6 @@
 package io.dataease.datasource.server;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -12,11 +13,16 @@ import io.dataease.api.permissions.auth.dto.BusiResourceCreator;
 import io.dataease.api.permissions.auth.dto.BusiResourceEditor;
 import io.dataease.commons.constants.DataSourceType;
 import io.dataease.commons.constants.TaskStatus;
+import io.dataease.dataset.dto.DataSetNodeBO;
 import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.entity.CoreDatasourceTask;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
+import io.dataease.datasource.dto.DatasourceNodeBO;
+import io.dataease.datasource.dto.DatasourceNodePO;
+import io.dataease.api.dataset.dto.DsBusiNodeVO;
+import io.dataease.datasource.ext.CoreDatasourceExtMapper;
 import io.dataease.datasource.manage.DataSourceManage;
 import io.dataease.datasource.manage.DatasourceSyncManage;
 import io.dataease.datasource.provider.ApiUtils;
@@ -25,9 +31,11 @@ import io.dataease.datasource.provider.ExcelUtils;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.exception.DEException;
+import io.dataease.model.BusiNodeRequest;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
 import io.dataease.utils.JsonUtil;
+import io.dataease.utils.TreeUtils;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -70,6 +78,10 @@ public class DatasourceServer implements DatasourceApi {
     private DataSourceManage dataSourceManage;
 
 
+    @Resource
+    private CoreDatasourceExtMapper coreDatasourceExtMapper;
+
+
     @Override
     public List<DatasourceDTO> query(String keyWord) {
         return null;
@@ -81,6 +93,10 @@ public class DatasourceServer implements DatasourceApi {
 
     @Override
     public DatasourceDTO save(DatasourceDTO dataSourceDTO) throws Exception {
+        if(dataSourceDTO.getNodeType().equals("folder")){
+            dataSourceDTO.setType("folder");
+            dataSourceDTO.setConfiguration("");
+        }
         if (dataSourceDTO.getId() != null && dataSourceDTO.getId() > 0) {
             return update(dataSourceDTO);
         }
@@ -292,9 +308,110 @@ public class DatasourceServer implements DatasourceApi {
         return datasourceDTO;
     }
 
+    public List<DsBusiNodeVO> list(BusiNodeRequest request) {
+        request.setBusyFlag(RESOURCE_FLAG);
+//        if (ObjectUtils.isNotEmpty(interactiveAuthApi)) {
+//            return interactiveAuthApi.resource(request);
+//        }
+        QueryWrapper queryWrapper = new QueryWrapper();
+        if(ObjectUtils.isNotEmpty(request.getLeaf())){
+            if(request.getLeaf()){
+                queryWrapper.ne("type", "folder");
+            }else {
+                queryWrapper.eq("type", "folder");
+            }
+        }
+        queryWrapper.orderByDesc("create_time");
+        List<DatasourceNodePO> pos = coreDatasourceExtMapper.query(queryWrapper);
 
-    @Override
-    // public List<TreeNodeVO> list() {
+        List<DatasourceNodeBO> nodes = new ArrayList<>();
+        if (ObjectUtils.isEmpty(request.getLeaf()) || !request.getLeaf()) nodes.add(rootNode());
+        List<DatasourceNodeBO> bos = pos.stream().map(this::convert).toList();
+        if (CollectionUtil.isNotEmpty(bos)) {
+            nodes.addAll(bos);
+        }
+        setDatasourceConfig(nodes);
+        List<DsBusiNodeVO> dsBusiNodeVOs = TreeUtils.mergeTree(nodes, DsBusiNodeVO.class, false);
+        return dsBusiNodeVOs;
+    }
+
+    private void setDatasourceConfig(List<DatasourceNodeBO> nodes){
+        TypeReference<List<ApiDefinition>> listTypeReference = new TypeReference<List<ApiDefinition>>() {
+        };
+
+        nodes.forEach(datasourceNodeBO -> {
+            if(datasourceNodeBO.getLeaf()){
+                List<DatasourceConfiguration.DatasourceType> datasourceConfigurations = datasourceTypes();
+                QueryWrapper<CoreDatasource> datasourceQueryWrapper = new QueryWrapper();
+                datasourceMapper.selectList(datasourceQueryWrapper).forEach(coreDatasource -> {
+                    if(coreDatasource.getId().equals(datasourceNodeBO.getId())){
+                        if (datasourceNodeBO.getType().equalsIgnoreCase(DatasourceConfiguration.DatasourceType.API.toString())) {
+                            List<ApiDefinition> apiDefinitionList = JsonUtil.parseList(coreDatasource.getConfiguration(), listTypeReference);
+                            List<ApiDefinition> apiDefinitionListWithStatus = new ArrayList<>();
+                            int success = 0;
+                            for (int i = 0; i < apiDefinitionList.size(); i++) {
+                                String status = null;
+                                if (StringUtils.isNotEmpty(coreDatasource.getStatus())) {
+                                    JsonNode jsonNode = null;
+                                    try {
+                                        jsonNode = objectMapper.readTree(coreDatasource.getStatus());
+                                    } catch (Exception e) {
+                                        DEException.throwException(e);
+                                    }
+                                    if (jsonNode.get(apiDefinitionList.get(i).getName()) != null) {
+                                        status = jsonNode.get(apiDefinitionList.get(i).getName()).asText();
+                                    }
+                                    apiDefinitionList.get(i).setStatus(status);
+                                }
+                                if (StringUtils.isNotEmpty(status) && status.equalsIgnoreCase("Success")) {
+                                    success++;
+                                }
+                                apiDefinitionListWithStatus.add(apiDefinitionList.get(i));
+                            }
+                            datasourceNodeBO.setApiConfigurationStr(new String(Base64.getEncoder().encode(JsonUtil.toJSONString(apiDefinitionListWithStatus).toString().getBytes())));
+                            if (success == apiDefinitionList.size()) {
+                                datasourceNodeBO.setStatus("Success");
+                            } else {
+                                if (success > 0 && success < apiDefinitionList.size()) {
+                                    datasourceNodeBO.setStatus("Warning");
+                                } else {
+                                    datasourceNodeBO.setStatus("Error");
+                                }
+                            }
+                            CoreDatasourceTask coreDatasourceTask = datasourceTaskServer.selectByDSId(datasourceNodeBO.getId());
+                            TaskDTO taskDTO = new TaskDTO();
+                            BeanUtils.copyBean(taskDTO, coreDatasourceTask);
+                            datasourceNodeBO.setSyncSetting(taskDTO);
+                        }
+                        datasourceNodeBO.setConfiguration(new String(Base64.getEncoder().encode(coreDatasource.getConfiguration().getBytes())));
+                    }
+                });
+            }
+        });
+    }
+
+    private DatasourceNodeBO rootNode() {
+        DatasourceNodeBO bo = new DatasourceNodeBO();
+        bo.setId(0L);
+        bo.setName("root");
+        bo.setLeaf(false);
+        bo.setWeight(3);
+        bo.setPid(-1L);
+        bo.setExtraFlag(0);
+        return bo;
+    }
+
+    private DatasourceNodeBO convert(DatasourceNodePO po) {
+        DatasourceNodeBO bo = new DatasourceNodeBO();
+        bo.setId(po.getId());
+        bo.setName(po.getName());
+        bo.setLeaf(!StringUtils.equals(po.getType(), "folder"));
+        bo.setWeight(3);
+        bo.setType(po.getType());
+        bo.setPid(po.getPid());
+        bo.setExtraFlag(0);
+        return bo;
+    }
     public List<DatasourceDTO> list() {
         List<DatasourceDTO> datasourceDTOS = new ArrayList<>();
         List<DatasourceConfiguration.DatasourceType> datasourceConfigurations = datasourceTypes();
@@ -312,7 +429,6 @@ public class DatasourceServer implements DatasourceApi {
             };
             if (datasourceDTO.getType().equalsIgnoreCase(DatasourceConfiguration.DatasourceType.API.toString())) {
                 List<ApiDefinition> apiDefinitionList = JsonUtil.parseList(datasourceDTO.getConfiguration(), listTypeReference);
-
                 List<ApiDefinition> apiDefinitionListWithStatus = new ArrayList<>();
                 int success = 0;
                 for (int i = 0; i < apiDefinitionList.size(); i++) {
@@ -435,7 +551,6 @@ public class DatasourceServer implements DatasourceApi {
         if (!datasourceTypes().stream().map(DatasourceConfiguration.DatasourceType::getType).collect(Collectors.toList()).contains(datasource.getType())) {
             DEException.throwException("Datasource type not supported.");
         }
-        //TODO check Configuration
         checkName(datasource.getName(), datasource.getType(), datasource.getId());
     }
 
@@ -452,7 +567,7 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     public void checkDatasourceStatus(CoreDatasource coreDatasource) throws DEException {
-        if (coreDatasource.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name())) {
+        if (coreDatasource.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name()) || coreDatasource.getType().equals(DatasourceConfiguration.DatasourceType.folder.name())) {
             return;
         }
         try {

@@ -27,7 +27,7 @@ onMounted(() => {
     <template #dropdown>
       <el-dropdown-menu>
         <el-dropdown-item :disabled="language === 'zh-CN'" command="zh-CN"
-        >简体中文</el-dropdown-item
+          >简体中文</el-dropdown-item
         >
         <el-dropdown-item :disabled="language === 'tw'" command="tw"> 繁體中文 </el-dropdown-item>
         <el-dropdown-item :disabled="language === 'en'" command="en"> English </el-dropdown-item>

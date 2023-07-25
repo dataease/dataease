@@ -17,6 +17,8 @@ public class DatasourceDTO implements Serializable {
     @JsonSerialize(using= ToStringSerializer.class)
     private Long id;
 
+    @JsonSerialize(using= ToStringSerializer.class)
+    private Long pid;
     /**
      * 数据源名称
      */
@@ -68,4 +70,5 @@ public class DatasourceDTO implements Serializable {
     private TaskDTO syncSetting;
 
     private Integer editType;
+    private String  nodeType;
 }

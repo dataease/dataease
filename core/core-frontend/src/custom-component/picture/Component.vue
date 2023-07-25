@@ -46,7 +46,7 @@ const imageAdapter = computed(() => {
   display: flex;
   width: 100%;
   height: 100%;
-  color: #ffffff;
+  color: #5370af;
   align-items: center;
   justify-content: center;
 }
