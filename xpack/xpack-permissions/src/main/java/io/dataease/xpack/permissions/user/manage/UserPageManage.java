@@ -3,16 +3,14 @@ package io.dataease.xpack.permissions.user.manage;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ArrayUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.dataease.api.permissions.role.dto.UserRequest;
 import io.dataease.api.permissions.user.dto.UserCreator;
 import io.dataease.api.permissions.user.dto.UserEditor;
-import io.dataease.api.permissions.user.vo.CurUserVO;
-import io.dataease.api.permissions.user.vo.UserFormVO;
-import io.dataease.api.permissions.user.vo.UserGridVO;
-import io.dataease.api.permissions.user.vo.UserItem;
+import io.dataease.api.permissions.user.vo.*;
 import io.dataease.auth.bo.TokenUserBO;
 import io.dataease.exception.DEException;
 import io.dataease.request.BaseGridRequest;
@@ -37,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Component
@@ -167,7 +166,7 @@ public class UserPageManage {
         return userFormVO;
     }
 
-    public List<UserItem> optionForRole(UserRequest request) {
+    public List<UserItemVO> optionForRole(UserRequest request) {
         Long defaultOid = AuthUtils.getUser().getDefaultOid();
         return userExtMapper.optionForRole(defaultOid, request.getRid(), request.getKeyword());
     }
@@ -178,6 +177,24 @@ public class UserPageManage {
         queryWrapper.like(StringUtils.isNotBlank(request.getKeyword()), "pu", request.getKeyword());
         List<UserItem> result = userExtMapper.selectedForRole(queryWrapper);
         return result;
+    }
+
+    public IPage<UserItemVO> selectedWithRole(Page<UserItemVO> page, UserRequest request) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("pur.rid", request.getRid());
+        if (StringUtils.isNotBlank(request.getKeyword())) {
+            queryWrapper.and((Consumer<QueryWrapper>) wrapper -> {
+                wrapper.like("pu.name", request.getKeyword());
+                wrapper.or();
+                wrapper.like("pu.account", request.getKeyword());
+            });
+        }
+        if (StringUtils.isNotBlank(request.getOrder())) {
+            queryWrapper.orderBy(true, request.getOrder().split(" ").length <= 1 || request.getOrder().split(" ")[1].equalsIgnoreCase("asc"),  request.getOrder().split(" ")[0]);
+        }
+        queryWrapper.orderByDesc("pu.create_time");
+        IPage<UserItemVO> iPage = userExtMapper.selectedWithRole(page, queryWrapper);
+        return iPage;
     }
 
     public void switchOrg(Long uid, Long oId) {

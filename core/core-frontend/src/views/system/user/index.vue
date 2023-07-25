@@ -333,7 +333,7 @@ const sortChange = param => {
     svg {
       width: 16px;
       height: 16px;
-      color: var(--ed-text-color-regular);
+      color: var(--ed-color-primary);
       background-color: var(--ed-color-white);
     }
   }
@@ -342,7 +342,7 @@ const sortChange = param => {
     cursor: pointer;
     svg {
       color: var(--ed-color-primary) !important;
-      background: var(--ed-color-primary-light-7) !important;
+      background: var(--ed-color-primary-light-9) !important;
     }
   }
 }

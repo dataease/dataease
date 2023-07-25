@@ -12,7 +12,8 @@ export const searchRoleApi = (keyword: string) =>
 
 export const userOptionForRoleApi = data => request.post({ url: '/user/role/option', data })
 
-export const userSelectedForRoleApi = data => request.post({ url: '/user/role/selected', data })
+export const userSelectedForRoleApi = (page: number, limit: number, data) =>
+  request.post({ url: '/user/role/selected/' + page + '/' + limit, data })
 
 export const userPageApi = (page: number, limit: number, data) =>
   request.post({ url: '/user/pager/' + page + '/' + limit, data })

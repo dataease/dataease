@@ -1,36 +1,32 @@
 <script lang="ts" setup>
-import { ref, shallowRef } from 'vue'
+import { ref, shallowRef, reactive } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
+import { userOptionForRoleApi, mountUserApi } from '@/api/user'
+import { setColorName } from '@/utils/utils'
+import { ElMessage } from 'element-plus-secondary'
 const { t } = useI18n()
 const dialogVisible = ref(false)
+const loading = ref(false)
 const userKeyword = ref('')
-const selectUserList = ref()
-const filterUserList = ref(
-  Array(10)
-    .fill(1)
-    .map((ele, index) => ({
-      name: '123123' + ele,
-      id: 123123 + index,
-      phone: 'oooo',
-      check: false,
-      colorName: '123123' + ele
-    }))
-)
-
-selectUserList.value = [...filterUserList.value]
+const props = defineProps({
+  rid: {
+    type: String
+  }
+})
+const state = reactive({
+  selectUserList: []
+})
 const checkAll = ref(false)
 const isIndeterminate = ref(false)
 const checkedUsers = shallowRef([])
 const triggerFilterUser = (val: string) => {
-  selectUserList.value = filterUserList.value.filter(ele => {
-    if (ele.name.includes(val)) {
-      ele.colorName = ele.name.replace(val, `<span style="color: #307eff">${val}</span>`)
-      return true
-    }
-    return false
+  state.selectUserList.forEach(item => {
+    setColorName(item, val)
+    item['hidden'] = val && !item.name.toLocaleLowerCase().includes(val.toLocaleLowerCase())
   })
+
   handleCheckedUsersChange()
-  if (!selectUserList.value.length) {
+  if (!state.selectUserList.length) {
     checkAll.value = false
     isIndeterminate.value = false
   }
@@ -43,39 +39,78 @@ const handleCheckAllChange = (val: boolean) => {
     checkedUsers.value = val
       ? [
           ...checkedUsers.value,
-          ...selectUserList.value.filter(ele => !checkedUserIds.includes(ele.id))
+          ...state.selectUserList.filter(ele => !checkedUserIds.includes(ele.id))
         ]
       : checkedUsers.value.filter(ele => !checkedUserIds.includes(ele.id))
     checkedUsers.value.forEach(ele => {
       ele.check = val
     })
   } else {
-    selectUserList.value.forEach(ele => {
+    state.selectUserList.forEach(ele => {
       ele.check = val
     })
-    checkedUsers.value = val ? selectUserList.value : []
+    checkedUsers.value = val ? state.selectUserList : []
   }
   isIndeterminate.value = false
 }
 const handleCheckedUsersChange = () => {
-  checkedUsers.value = filterUserList.value.filter(ele => ele.check)
-  const checkedCount = selectUserList.value.filter(ele => ele.check).length
-  checkAll.value = checkedCount === selectUserList.value.length
-  isIndeterminate.value = checkedCount > 0 && checkedCount < selectUserList.value.length
+  checkedUsers.value = state.selectUserList.filter(ele => ele.check)
+  const checkedCount = state.selectUserList.filter(ele => ele.check).length
+  checkAll.value = checkedCount === state.selectUserList.length
+  isIndeterminate.value = checkedCount > 0 && checkedCount < state.selectUserList.length
 }
 
 const init = () => {
   dialogVisible.value = true
+  checkAll.value = false
+  isIndeterminate.value = false
+  checkedUsers.value = []
+  userKeyword.value = ''
+  optionSearch(props.rid)
 }
 
 const handleClearUser = item => {
   item.check = false
   checkedUsers.value = checkedUsers.value.filter(ele => ele.id !== item.id)
+  const checkedCount = state.selectUserList.filter(ele => ele.check).length
+  checkAll.value = checkedCount === state.selectUserList.length
+  isIndeterminate.value = checkedCount > 0 && checkedCount < state.selectUserList.length
 }
 
 const clearAll = () => {
   handleCheckAllChange(false)
   checkAll.value = false
+}
+
+const optionSearch = (rid?: string) => {
+  const param = { rid }
+  if (rid) {
+    loading.value = true
+    userOptionForRoleApi(param).then(res => {
+      if (res?.data?.length) {
+        state.selectUserList = res.data
+      } else {
+        state.selectUserList = []
+      }
+      loading.value = false
+    })
+  }
+}
+const emits = defineEmits(['refresh-grid'])
+
+const bindUsers = () => {
+  const uids = checkedUsers.value.map(user => user.id)
+  const param = { rid: props.rid, uids }
+  loading.value = true
+  mountUserApi(param).then(() => {
+    ElMessage({
+      message: t('role.bind_success'),
+      type: 'success'
+    })
+    emits('refresh-grid')
+    loading.value = false
+    dialogVisible.value = false
+  })
 }
 
 defineExpose({
@@ -84,17 +119,23 @@ defineExpose({
 </script>
 
 <template>
-  <el-dialog v-model="dialogVisible" title="添加组织用户" width="600px" class="add-org-user-dialog">
+  <el-dialog
+    v-model="dialogVisible"
+    title="添加组织用户"
+    width="600px"
+    class="add-org-user-dialog"
+    v-loading="loading"
+  >
     <div class="add-org-user">
       <div class="select-user-list">
-        <el-input v-model="userKeyword" clearable @input="triggerFilterUser">
+        <el-input v-model="userKeyword" clearable @change="triggerFilterUser">
           <template #prefix>
             <el-icon>
               <Icon name="icon_search-outline_outlined"></Icon>
             </el-icon>
           </template>
         </el-input>
-        <template v-if="!!selectUserList.length">
+        <template v-if="!!state.selectUserList.length">
           <el-checkbox
             v-model="checkAll"
             :indeterminate="isIndeterminate"
@@ -104,13 +145,14 @@ defineExpose({
           <el-checkbox
             @change="handleCheckedUsersChange"
             v-model="user.check"
-            v-for="user in selectUserList"
+            v-for="user in state.selectUserList"
             :key="user.id"
             :label="user.id"
+            v-show="!user.hidden"
           >
-            <div class="user-label">
-              <span v-html="user.colorName"></span>
-              <span>{{ user.phone }}</span>
+            <div class="user-label" :title="user.name + '(' + user.account + ')'">
+              <span v-html="user.colorName || user.name"></span>
+              <span>{{ '(' + user.account + ')' }}</span>
             </div>
           </el-checkbox>
         </template>
@@ -122,9 +164,9 @@ defineExpose({
           <el-button @click="clearAll" text>{{ t('commons.clear') }}</el-button>
         </div>
         <div class="user-list" v-for="user in checkedUsers" :key="user.id">
-          <div class="info">
+          <div class="info" :title="user.name + '(' + user.account + ')'">
             <span>{{ user.name }}</span>
-            <span>{{ user.phone }}</span>
+            <span>{{ '(' + user.account + ')' }}</span>
           </div>
           <el-icon @click="handleClearUser(user)" class="hover-icon">
             <Icon name="icon_close_outlined"></Icon>
@@ -135,10 +177,7 @@ defineExpose({
     <template #footer>
       <span class="dialog-footer">
         <el-button secondary @click="dialogVisible = false">{{ t('chart.cancel') }}</el-button>
-        <el-button
-          :type="!!checkedUsers.length ? 'primary' : 'info'"
-          @click="dialogVisible = false"
-        >
+        <el-button :type="!!checkedUsers.length ? 'primary' : 'info'" @click="bindUsers">
           {{ t('common.add') }}
         </el-button>
       </span>
@@ -157,7 +196,7 @@ defineExpose({
     display: flex;
     .ed-checkbox {
       width: 100%;
-      height: 42px;
+      // height: 42px;
       margin: 0 0 8px 0;
       padding-left: 24px;
 
@@ -166,24 +205,30 @@ defineExpose({
       }
     }
     .user-label {
-      display: flex;
-      flex-direction: column;
-      height: 42px;
+      // display: flex;
+      // flex-direction: row;
+      height: 22px;
       font-family: PingFang SC;
       font-weight: 400;
       font-style: normal;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      -o-text-overflow: ellipsis;
+      -webkit-text-overflow: ellipsis;
+      -moz-text-overflow: ellipsis;
+      white-space: nowrap;
+      width: 220px;
 
       :nth-child(1) {
         font-size: 14px;
         line-height: 22px;
-        max-width: 220px;
       }
 
       :nth-child(2) {
         color: #8d9199;
         font-size: 12px;
         line-height: 20px;
-        max-width: 220px;
+        margin-top: 1px;
       }
     }
 
@@ -222,28 +267,32 @@ defineExpose({
         align-items: center;
         justify-content: space-between;
         padding: 0 12px 0 16px;
+        height: 34px;
         &:hover {
           background: rgba(31, 35, 41, 0.1);
         }
 
         .info {
-          display: flex;
-          flex-direction: column;
-          height: 42px;
           font-family: PingFang SC;
           font-weight: 400;
           font-style: normal;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          -o-text-overflow: ellipsis;
+          -webkit-text-overflow: ellipsis;
+          -moz-text-overflow: ellipsis;
+          white-space: nowrap;
+          width: 220px;
           :nth-child(1) {
             font-size: 14px;
             line-height: 22px;
-            max-width: 220px;
           }
 
           :nth-child(2) {
             color: #8d9199;
             font-size: 12px;
             line-height: 20px;
-            max-width: 220px;
+            margin-top: 1px;
           }
 
           .hover-icon {
