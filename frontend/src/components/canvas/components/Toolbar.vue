@@ -541,6 +541,8 @@ export default {
     clearCanvas() {
       this.$store.commit('setComponentData', [])
       this.$store.commit('recordSnapshot', 'clearCanvas')
+      bus.$emit('change_panel_right_draw', false)
+      this.$store.commit('setCurComponent', { component: null, index: null })
     },
 
     handlePreviewChange() {
