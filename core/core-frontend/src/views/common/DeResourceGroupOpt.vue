@@ -25,6 +25,7 @@ const state = reactive({
   nameList: []
 })
 
+const loading = ref(false)
 const nodeType = ref()
 const pid = ref()
 const id = ref()
@@ -100,7 +101,6 @@ let nameList = []
 const resourceFormRules = ref()
 
 const resource = ref()
-const loading = ref(false)
 const resourceDialogShow = ref(false)
 const dialogTitle = ref('新建文件夹')
 const filterMethod = value => {
@@ -123,7 +123,7 @@ const dfs = (arr: BusiTreeNode[]) => {
 const optInit = (type, data: BusiTreeNode, exec) => {
   nodeType.value = type
   dialogTitle.value = nameMap[exec]
-  const request = { busiFlag: curCanvasType.value, leaf: false, weight: 3 }
+  const request = { busyFlag: curCanvasType.value, leaf: false, weight: 3 }
   queryTreeApi(request).then(res => {
     const resultTree = res
     dfs(resultTree as unknown as BusiTreeNode[])
@@ -217,6 +217,7 @@ const emits = defineEmits(['finish'])
     width="600px"
     :before-close="resetForm"
   >
+    loading={{ loading }}
     <el-form
       label-position="top"
       require-asterisk-position="right"

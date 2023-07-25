@@ -34,6 +34,7 @@ public class StaticResourceServer implements StaticResourceApi {
 
     private final Path staticDir = Paths.get("/opt/dataease2.0/data/static-resource/");
 
+    @Override
     public void upload(String fileId, MultipartFile file) {
         // check if the path is valid (not outside staticDir)
         Assert.notNull(file, "Multipart file must not be null");
@@ -96,7 +97,7 @@ public class StaticResourceServer implements StaticResourceApi {
             LogUtil.error("template static resource save error" + e.getMessage());
         }
     }
-
+    @Override
     public Map<String, String> findResourceAsBase64(StaticResourceRequest resourceRequest) {
         Map<String, String> result = new HashMap<>();
         if (CollectionUtil.isNotEmpty(resourceRequest.getResourcePathList())) {
