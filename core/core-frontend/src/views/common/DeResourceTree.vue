@@ -2,7 +2,7 @@
 import { Search } from '@element-plus/icons-vue'
 import { onMounted, reactive, ref, toRefs, watch } from 'vue'
 import { deleteLogic, queryTreeApi } from '@/api/visualization/dataVisualization'
-import { ElIcon, ElMessage } from 'element-plus-secondary'
+import { ElIcon, ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { Icon } from '@/components/icon-custom'
 import { HandleMore } from '@/components/handle-more'
 import DeResourceGroupOpt from '@/views/common/DeResourceGroupOpt.vue'
@@ -13,6 +13,7 @@ import {
   DEFAULT_CANVAS_STYLE_DATA_DARK,
   DEFAULT_CANVAS_STYLE_DATA_LIGHT
 } from '@/views/chart/components/editor/util/dataVisualiztion'
+import { delDatasetTree } from '@/api/dataset'
 const props = defineProps({
   curCanvasType: {
     type: String,
@@ -112,17 +113,32 @@ const emit = defineEmits(['nodeClick'])
 
 const operation = (cmd: string, data: BusiTreeNode, nodeType: string) => {
   if (cmd === 'delete') {
-    deleteLogic(data.id).then(() => {
-      ElMessage.success('删除成功')
-      getTree()
+    ElMessageBox.confirm(
+      data.leaf ? '确定删除该' + resourceLabel + '吗？' : '确定删除该文件夹吗？',
+      {
+        confirmButtonType: 'danger',
+        type: 'warning',
+        autofocus: false,
+        showClose: false
+      }
+    ).then(() => {
+      deleteLogic(data.id).then(() => {
+        ElMessage.success('删除成功')
+        getTree()
+      })
     })
   } else {
     resourceGroupOpt.value.optInit(nodeType, data, cmd)
   }
 }
 
-const addOperation = (cmd: string, data?: BusiTreeNode, nodeType?: string) => {
-  resourceGroupOpt.value.optInit(nodeType, data || {}, cmd)
+const addOperation = (
+  cmd: string,
+  data?: BusiTreeNode,
+  nodeType?: string,
+  parentSelect?: boolean
+) => {
+  resourceGroupOpt.value.optInit(nodeType, data || {}, cmd, parentSelect)
 }
 
 const resourceEdit = resourceId => {
@@ -181,22 +197,21 @@ onMounted(() => {
     <div class="icon-methods" v-show="showPosition === 'preview'">
       <span class="title"> {{ resourceLabel }} </span>
       <div v-if="rootManage">
-        <el-icon
-          title="新建文件夹"
-          class="custom-icon"
-          style="margin-right: 20px"
-          @click="addOperation('newFolder', null, 'folder')"
-        >
-          <Icon name="dv-new-folder"></Icon>
-        </el-icon>
-        <el-icon
-          :title="newResourceLabel"
-          class="custom-icon"
-          @click="addOperation('newLeaf', null, 'leaf')"
-        >
-          <Icon v-if="curCanvasType === 'dashboard'" name="dv-new"></Icon>
-          <Icon v-else name="dv-screen-new"></Icon>
-        </el-icon>
+        <el-tooltip content="新建文件夹" placement="top" effect="dark">
+          <el-icon
+            class="custom-icon"
+            style="margin-right: 20px"
+            @click="addOperation('newFolder', null, 'folder')"
+          >
+            <Icon name="dv-new-folder"></Icon>
+          </el-icon>
+        </el-tooltip>
+        <el-tooltip :content="newResourceLabel" placement="top" effect="dark">
+          <el-icon class="custom-icon" @click="addOperation('newLeaf', null, 'leaf', true)">
+            <Icon v-if="curCanvasType === 'dashboard'" name="dv-new"></Icon>
+            <Icon v-else name="dv-screen-new"></Icon>
+          </el-icon>
+        </el-tooltip>
       </div>
     </div>
 

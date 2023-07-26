@@ -36,8 +36,18 @@
       <template #dropdown>
         <el-dropdown-menu style="width: 100px">
           <el-dropdown-item icon="Delete" @click="deleteComponent">删除</el-dropdown-item>
-          <el-dropdown-item icon="Link" @click="linkageSetting">联动设置</el-dropdown-item>
-          <el-dropdown-item icon="Connection" @click="linkJumpSetOpen">跳转设置</el-dropdown-item>
+          <el-dropdown-item
+            v-if="barShowCheck('linkageSetting')"
+            icon="Link"
+            @click="linkageSetting"
+            >联动设置</el-dropdown-item
+          >
+          <el-dropdown-item
+            v-if="barShowCheck('linkJumpSetting')"
+            icon="Connection"
+            @click="linkJumpSetOpen"
+            >跳转设置</el-dropdown-item
+          >
         </el-dropdown-menu>
       </template>
     </el-dropdown>
@@ -66,7 +76,7 @@ const { t } = useI18n()
 
 // bar所在位置可以显示的功能按钮
 const positionBarShow = {
-  canvas: ['enlarge', 'setting', 'unLinkage'],
+  canvas: ['enlarge', 'setting', 'unLinkage', 'linkageSetting', 'linkJumpSetting'],
   preview: ['enlarge', 'unLinkage'],
   multiplexing: ['multiplexing'],
   batchOpt: ['batchOpt'],
@@ -75,7 +85,16 @@ const positionBarShow = {
 
 // bar所属组件类型可以显示的功能按钮
 const componentTypeBarShow = {
-  UserView: ['enlarge', 'setting', 'multiplexing', 'batchOpt', 'linkage', 'unLinkage'],
+  UserView: [
+    'enlarge',
+    'setting',
+    'multiplexing',
+    'batchOpt',
+    'linkage',
+    'unLinkage',
+    'linkageSetting',
+    'linkJumpSetting'
+  ],
   default: ['setting', 'multiplexing']
 }
 

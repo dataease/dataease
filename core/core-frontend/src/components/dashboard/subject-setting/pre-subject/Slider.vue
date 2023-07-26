@@ -83,6 +83,7 @@
                     :key="item.id"
                     :subject-item="item"
                     @subjectDelete="subjectDelete"
+                    @subjectEdit="subjectEdit(item)"
                   />
                 </div>
               </li>
@@ -93,6 +94,7 @@
                     :key="item.id"
                     :subject-item="item"
                     @subjectDelete="subjectDelete"
+                    @subjectEdit="subjectEdit(item)"
                   />
                 </div>
               </li>
@@ -103,6 +105,7 @@
                     :key="item.id"
                     :subject-item="item"
                     @subjectDelete="subjectDelete"
+                    @subjectEdit="subjectEdit(item)"
                   />
                 </div>
               </li>
@@ -183,10 +186,14 @@
       </el-col>
       <el-col :span="7" class="save-area">
         <span
-          ><a @click="saveSelfSubject">{{ $t('commons.save') }}</a></span
+          ><a style="cursor: pointer" @click="saveSelfSubject">{{ $t('commons.save') }}</a></span
         >
       </el-col>
     </el-row>
+    <subject-edit-dialog
+      ref="subjectEditDialogRef"
+      @finish="subjectEditFinish"
+    ></subject-edit-dialog>
   </el-row>
 </template>
 
@@ -197,7 +204,7 @@ import {
   saveOrUpdateSubject,
   deleteSubject
 } from '@/api/visualization/dataVisualization'
-import { reactive, toRefs, computed, onMounted } from 'vue'
+import { reactive, toRefs, computed, onMounted, ref } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { ElMessage } from 'element-plus-secondary'
@@ -206,7 +213,9 @@ const dvMainStore = dvMainStoreWithOut()
 const { canvasStyleData } = storeToRefs(dvMainStore)
 const emit = defineEmits(['reload'])
 import { guid } from '@/views/visualized/data/dataset/form/util.js'
+import SubjectEditDialog from '@/components/dashboard/subject-setting/pre-subject/SubjectEditDialog.vue'
 
+const subjectEditDialogRef = ref(null)
 const props = defineProps({
   initialSpeed: {
     type: Number,
@@ -266,14 +275,10 @@ const subjectDelete = id => {
     querySubjectWithGroup()
   })
 }
-const saveSelfSubject = () => {
-  const canvasStyle = deepCopy(canvasStyleData.value)
-  canvasStyle.themeId = guid()
-  const request = {
-    details: JSON.stringify(canvasStyle)
-  }
+
+const subjectEditFinish = subjectItem => {
   state.slidersLoading = true
-  saveOrUpdateSubject(request)
+  saveOrUpdateSubject(subjectItem)
     .then(response => {
       ElMessage.success('保存成功')
       querySubjectWithGroup()
@@ -281,6 +286,26 @@ const saveSelfSubject = () => {
     .catch(() => {
       state.slidersLoading = false
     })
+}
+
+const subjectEdit = subjectItem => {
+  if (subjectItem && subjectItem.id) {
+    subjectEditDialogRef.value.optInit(subjectItem, 'edit')
+    //编辑
+  } else {
+    // 新建
+    subjectEditDialogRef.value.optInit(subjectItem, 'new')
+  }
+}
+const saveSelfSubject = () => {
+  const canvasStyle = deepCopy(canvasStyleData.value)
+  canvasStyle.themeId = guid()
+  const subjectItemNew = {
+    name: '新建主题',
+    coverUrl: null,
+    details: JSON.stringify(canvasStyle)
+  }
+  subjectEdit(subjectItemNew)
 }
 
 const animate = (des, direc, speed) => {

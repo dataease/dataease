@@ -63,25 +63,14 @@ public class VisualizationSubjectService implements VisualizationSubjectApi {
         if (StringUtils.isEmpty(request.getId())) {
             QueryWrapper<VisualizationSubject> wrapper = new QueryWrapper<>();
             wrapper.eq("type", "self");
-            wrapper.orderByDesc("create_time");
+            wrapper.eq("name", request.getName());
             List<VisualizationSubject> subjectAll =subjectMapper.selectList(wrapper);
-            int count = CollectionUtils.isEmpty(subjectAll) ? 1 : subjectAll.get(0).getCreateNum() + 1;
-            String subjectName = "个人主题" + count;
-            if (!CollectionUtils.isEmpty(subjectAll)) {
-                for (VisualizationSubject subject : subjectAll) {
-                    if (subjectName.equals(subject.getName())) {
-                        count++;
-                        subjectName = "个人主题" + count;
-                    } else {
-                        break;
-                    }
-                }
-            }
+
             request.setId(IDUtils.snowID().toString());
             request.setCreateTime(System.currentTimeMillis());
             request.setType("self");
-            request.setName("个人主题" + count);
-            request.setCreateNum(count);
+            request.setName(request.getName());
+//            request.setCreateNum(count);
             VisualizationSubject saveInfo = new VisualizationSubject();
             BeanUtils.copyBean(saveInfo,request);
             subjectMapper.insert(saveInfo);
@@ -93,7 +82,7 @@ public class VisualizationSubjectService implements VisualizationSubjectApi {
             if (CollectionUtils.isEmpty(subjectAll)) {
                 request.setUpdateTime(System.currentTimeMillis());
                 VisualizationSubject updateInfo = new VisualizationSubject();
-                BeanUtils.copyBean(request,updateInfo);
+                BeanUtils.copyBean(updateInfo,request);
                 subjectMapper.updateById(updateInfo);
             } else {
                 DataEaseException.throwException("名称已经存在");

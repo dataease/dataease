@@ -3,7 +3,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { Icon } from '@/components/icon-custom'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
 import OrgUser from './OrgUser.vue'
-import ExternalUser from './ExternalUser.vue'
+/* import ExternalUser from './ExternalUser.vue' */
 import {
   searchRoleApi,
   userSelectedForRoleApi,
@@ -214,13 +214,13 @@ const moveSelected2Option = (uids: string[]) => {
     })
   }
 }
-/* const openOutUser = () => {
+const openOutUser = () => {
   if (!selectedRoleId.value) {
     ElMessage.error('请先选择角色')
     return
   }
   outUserFormRef.value.init(selectedRoleId.value)
-} */
+}
 
 const triggerFilterRole = () => {
   const value = roleKeyword.value
@@ -236,13 +236,14 @@ const filterSelected = () => {
   selectedSearch(selectedRoleId.value)
 }
 const addOrgUserDialog = ref()
-const addExternalUserDialog = ref()
+// const addExternalUserDialog = ref()
 const handleCommand = (command: string) => {
   if ('org' === command) {
     addOrgUserDialog.value.init()
     return
   }
-  addExternalUserDialog.value.init()
+  openOutUser()
+  // addExternalUserDialog.value.init()
 }
 /* const optionFilter = val => {
   filterOptionkey.value = val ? val.toLocaleLowerCase() : val
@@ -452,7 +453,7 @@ onMounted(() => {
   <role-form ref="roleFormRef" @saved="roleSaved" />
   <out-user-form ref="outUserFormRef" @saved="outUserSaved" />
   <OrgUser ref="addOrgUserDialog" :rid="selectedRoleId" @refresh-grid="refreshGrid"></OrgUser>
-  <ExternalUser ref="addExternalUserDialog"></ExternalUser>
+  <!-- <ExternalUser ref="addExternalUserDialog"></ExternalUser> -->
 </template>
 
 <style lang="less" scoped>

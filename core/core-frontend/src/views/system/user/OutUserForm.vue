@@ -24,7 +24,14 @@ const roleId = ref(null)
 const roleForm = ref<FormInstance>()
 const searchMsg = ref('')
 const searchExist = ref(false)
-const externalUser = reactive<ExternalUser>({})
+const externalUser = reactive<ExternalUser>({
+  uid: '',
+  account: '',
+  name: '',
+  email: '',
+  phonePrefix: '',
+  phone: ''
+})
 const form = reactive<RoleForm>({
   id: null
 })
@@ -100,7 +107,6 @@ const searchUser = () => {
   }
   searchExternalUserApi(form.id).then(res => {
     if (res.data) {
-      searchMsg.value = t('role.search_one')
       searchExist.value = true
       Object.assign(externalUser, res.data)
     } else {
@@ -129,42 +135,34 @@ defineExpose({
       require-asterisk-position="right"
       :model="form"
       :rules="rule"
-      label-width="80px"
+      label-width="0px"
     >
-      <el-form-item :label="$t('user.user_id')" prop="id">
-        <el-col :span="19">
-          <el-input v-model="form.id" :placeholder="$t('user.user_id_empty')" />
-        </el-col>
-        <el-col :span="1" class="text-center">
-          <span class="text-gray-500"></span>
-        </el-col>
-        <el-col :span="4">
-          <el-button :disabled="!form.id" text @click="searchUser">{{
-            t('role.search_user')
-          }}</el-button>
-        </el-col>
+      <el-form-item label="" prop="id">
+        <el-input
+          v-model="form.id"
+          :placeholder="$t('user.user_id_empty')"
+          class="input-with-select"
+          :class="{ 'disabled-append': !form.id }"
+          clearable
+        >
+          <template #append>
+            <el-button
+              class="de-input-append-button"
+              :disabled="!form.id"
+              text
+              @click="searchUser"
+              >{{ t('role.search_user') }}</el-button
+            >
+          </template>
+        </el-input>
       </el-form-item>
       <div class="search-result-container">
         <div :class="'search-result-' + searchExist">{{ searchMsg }}</div>
         <div v-if="searchExist && externalUser">
-          <el-row>
-            <el-col :span="6">{{ t('user.account') + ':' }}</el-col>
-            <el-col :span="18">{{ externalUser.account }}</el-col>
-          </el-row>
-
-          <el-row>
-            <el-col :span="6">{{ t('user.name') + ':' }}</el-col>
-            <el-col :span="18">{{ externalUser.name }}</el-col>
-          </el-row>
-
-          <el-row>
-            <el-col :span="6">{{ t('common.phone') + ':' }}</el-col>
-            <el-col :span="18">{{ externalUser.phone }}</el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="6">{{ t('common.email') + ':' }}</el-col>
-            <el-col :span="18">{{ externalUser.email }}</el-col>
-          </el-row>
+          <div class="user-label" :title="externalUser.name + '(' + externalUser.account + ')'">
+            <span> {{ externalUser.name }}</span>
+            <span>{{ '(' + externalUser.account + ')' }}</span>
+          </div>
         </div>
       </div>
     </el-form>
@@ -173,7 +171,7 @@ defineExpose({
         <el-button @click="resetForm(roleForm)">{{ t('common.cancel') }}</el-button>
         <el-button
           :disabled="!searchExist || !externalUser"
-          type="primary"
+          :type="searchExist && externalUser ? 'primary' : 'info'"
           @click="submitForm(roleForm)"
         >
           {{ t('common.sure') }}
@@ -219,23 +217,69 @@ defineExpose({
   }
 }
 .input-with-select {
-  :deep(.ed-input-group__prepend) {
-    background-color: #fff;
+  ::v-deep .ed-input-group__append {
+    width: 70px;
+    background: none;
   }
-  .ed-select {
-    :deep(.ed-input__wrapper) {
-      width: 72px;
+}
+.input-with-select {
+  &:not(.disabled-append) ::v-deep .ed-input-group__append {
+    &:hover {
+      border-left: 0;
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+      box-shadow: 0 1px 0 0 var(--ed-color-primary) inset, 0 -1px 0 0 var(--ed-color-primary) inset,
+        1px 0 0 0 var(--ed-color-primary) inset, -1px 0 0 0 var(--ed-color-primary) inset;
     }
   }
 }
 .search-result-container {
-  padding-left: 80px;
   height: 100px;
   .search-result-true {
+    display: none;
     color: #039d12;
   }
   .search-result-false {
-    color: #d9001b;
+    // color: #d9001b;
+    color: #8d9199;
+    font-size: 14px;
+  }
+
+  .user-label {
+    // display: flex;
+    // flex-direction: row;
+    height: 22px;
+    font-family: PingFang SC;
+    font-weight: 400;
+    font-style: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
+    -webkit-text-overflow: ellipsis;
+    -moz-text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 490px;
+
+    :nth-child(1) {
+      font-size: 14px;
+      line-height: 22px;
+    }
+
+    :nth-child(2) {
+      color: #8d9199;
+      font-size: 12px;
+      line-height: 20px;
+      margin-top: 1px;
+    }
+  }
+}
+.de-input-append-button {
+  border-radius: 0px;
+  padding: 0px 7px;
+  height: 30px;
+  line-height: 30px;
+  &:not(.is-disabled):hover {
+    color: var(--ed-color-primary) !important;
   }
 }
 </style>
