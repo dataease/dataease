@@ -9,6 +9,9 @@ import { formatterItem, valueFormatter } from '@/views/chart/components/js/forma
 
 const DEFAULT_DATA = []
 export class WordCloud extends G2PlotChartView<WordCloudOptions, G2WordCloud> {
+  properties: EditorProperty[]
+  propertyInner: EditorPropertyInner
+  axis: AxisType[]
   drawChart(drawOptions: G2PlotDrawOptions<G2WordCloud>): G2WordCloud {
     const chart = drawOptions.chart
     if (chart?.data) {

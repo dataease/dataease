@@ -7,6 +7,9 @@ import { flow, parseJson } from '@/views/chart/components/js/util'
 import { handleGeoJson } from '@/views/chart/components/js/panel/common/common_antv'
 
 export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
+  properties: EditorProperty[]
+  propertyInner: EditorPropertyInner
+  axis: AxisType[]
   constructor() {
     super('map', [])
   }
