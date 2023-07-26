@@ -213,10 +213,15 @@ const nodeInfo = reactive<Node>({
   apiConfiguration: []
 })
 
-const saveDsFolder = (params, cmd) => {
-  save(params).then(res => {
-    listDs()
-  })
+const saveDsFolder = (params, successCb, finallyCb) => {
+  save(params)
+    .then(() => {
+      successCb()
+      listDs()
+    })
+    .finally(() => {
+      finallyCb()
+    })
 }
 
 const listDs = () => {
