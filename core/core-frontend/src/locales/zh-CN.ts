@@ -101,10 +101,10 @@ export default {
     bind_success: '绑定成功',
     bound_user: '已添加用户',
     option_user: '可添加用户',
-    out_user_title: '绑定组织外用户',
-    search_user: '查询用户',
+    out_user_title: '添加外部用户',
+    search_user: '查找用户',
     search_one: '查找到一个用户',
-    search_no: '用户不存在'
+    search_no: '暂无结果，用户可能不存在！'
   },
   org: {
     org_title: '组织管理',

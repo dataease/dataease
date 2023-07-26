@@ -124,9 +124,9 @@ defineExpose({
     title="添加组织用户"
     width="600px"
     class="add-org-user-dialog"
-    v-loading="loading"
+    v-if="dialogVisible"
   >
-    <div class="add-org-user">
+    <div class="add-org-user" v-loading="loading">
       <div class="select-user-list">
         <el-input v-model="userKeyword" clearable @change="triggerFilterUser">
           <template #prefix>
@@ -177,7 +177,11 @@ defineExpose({
     <template #footer>
       <span class="dialog-footer">
         <el-button secondary @click="dialogVisible = false">{{ t('chart.cancel') }}</el-button>
-        <el-button :type="!!checkedUsers.length ? 'primary' : 'info'" @click="bindUsers">
+        <el-button
+          :disabled="loading || !checkedUsers.length"
+          :type="!!checkedUsers.length ? 'primary' : 'info'"
+          @click="bindUsers"
+        >
           {{ t('common.add') }}
         </el-button>
       </span>
@@ -187,6 +191,9 @@ defineExpose({
 
 <style lang="less">
 .add-org-user-dialog {
+  .ed-dialog__body {
+    padding: 0 24px !important;
+  }
   .add-org-user {
     height: 428px;
     width: 100%;
@@ -217,7 +224,7 @@ defineExpose({
       -webkit-text-overflow: ellipsis;
       -moz-text-overflow: ellipsis;
       white-space: nowrap;
-      width: 220px;
+      width: 210px;
 
       :nth-child(1) {
         font-size: 14px;
@@ -282,7 +289,7 @@ defineExpose({
           -webkit-text-overflow: ellipsis;
           -moz-text-overflow: ellipsis;
           white-space: nowrap;
-          width: 220px;
+          width: 210px;
           :nth-child(1) {
             font-size: 14px;
             line-height: 22px;
