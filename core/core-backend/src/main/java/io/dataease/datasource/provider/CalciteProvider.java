@@ -11,7 +11,7 @@ import io.dataease.datasource.dao.auto.entity.CoreDriver;
 import io.dataease.datasource.dao.auto.mapper.CoreDriverMapper;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.datasource.type.*;
-import io.dataease.engine.utils.FunctionUtils;
+import io.dataease.engine.func.scalar.ScalarFunctions;
 import io.dataease.exception.DEException;
 import io.dataease.i18n.Translator;
 import io.dataease.utils.CommonBeanFactory;
@@ -188,13 +188,18 @@ public class CalciteProvider {
         Connection connection = getCalciteConnection(datasourceRequest);
         CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
         SchemaPlus rootSchema = buildSchema(datasourceRequest, calciteConnection);
-        Class<?> clazz = FunctionUtils.class;
+        addCustomFunctions(rootSchema);
+        return calciteConnection;
+    }
+
+    private void addCustomFunctions(SchemaPlus rootSchema) {
+        // scalar functions
+        Class<?> clazz = ScalarFunctions.class;
         Method[] methods = clazz.getMethods();
         for (Method method : methods) {
             rootSchema.add(method.getName().toUpperCase(), ScalarFunctionImpl.create(
-                    FunctionUtils.class, method.getName()));
+                    ScalarFunctions.class, method.getName()));
         }
-        return calciteConnection;
     }
 
     private void registerDriver(DatasourceRequest datasourceRequest) throws Exception {

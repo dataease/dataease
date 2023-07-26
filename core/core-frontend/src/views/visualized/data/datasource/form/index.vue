@@ -8,7 +8,7 @@ import DsTypeList from './DsTypeList.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import EditorDetail from './EditorDetail.vue'
 import ExcelDetail from './ExcelDetail.vue'
-import { validate } from '@/api/datasource'
+import { save, validate } from '@/api/datasource'
 import { Base64 } from 'js-base64'
 import type { Param } from './ExcelDetail.vue'
 import { dsTypes, typeList, nameMap } from './option'
@@ -25,6 +25,7 @@ interface Tree {
 }
 interface Form {
   name: string
+  pid?: string
   description: string
   type: string
   configuration?: Configuration
@@ -154,8 +155,8 @@ const next = () => {
   activeStep.value = activeStep.value + 1
 }
 
-const complete = (params, cmd) => {
-  excel.value.saveExcelDs(params, cmd)
+const complete = (params, successCb, finallyCb) => {
+  excel.value.saveExcelDs(params, successCb, finallyCb)
   return
 }
 
@@ -198,7 +199,11 @@ const saveDS = () => {
     apiConfiguration: string
   }
   if (form.type === 'Excel') {
-    creatDsFolder.value.createInit('datasource', { id: '0' }, '', 'datasource')
+    if (editDs.value) {
+      complete(null, null, null)
+    } else {
+      creatDsFolder.value.createInit('datasource', { id: pid.value }, '', form2.name)
+    }
     return
   } else if (form.type === 'API') {
     if (form.apiConfiguration.length == 0) {
@@ -220,7 +225,13 @@ const saveDS = () => {
   } else {
     request.configuration = Base64.encode(JSON.stringify(request.configuration))
   }
-  creatDsFolder.value.createInit('datasource', { id: '0', request }, '', 'datasource')
+  if (editDs.value) {
+    save(request).then(() => {
+      ElMessage.success('保存数据源成功')
+    })
+  } else {
+    creatDsFolder.value.createInit('datasource', { id: pid.value, request }, '', form.name)
+  }
 }
 const form = reactive<Form>({
   name: '',
@@ -229,30 +240,33 @@ const form = reactive<Form>({
   apiConfiguration: []
 })
 const form2 = reactive<Param>({
-  id: 0,
   type: '',
   editType: 0,
-  table: {
-    name: ''
-  }
+  name: ''
 })
 const visible = ref(false)
 const editDs = ref(false)
+const pid = ref('0')
 
-const init = (nodeInfo: Form | Param) => {
-  editDs.value = !!form
-  if (!!form) {
+const init = (nodeInfo: Form | Param, id?: string) => {
+  editDs.value = !!nodeInfo
+  if (!!nodeInfo) {
     if (nodeInfo.type == 'Excel') {
       Object.assign(form2, cloneDeep(nodeInfo))
     } else {
       Object.assign(form, cloneDeep(nodeInfo))
     }
+    pid.value = nodeInfo.pid || '0'
+  } else {
+    pid.value = id || '0'
   }
   activeStep.value = Number(editDs.value)
   visible.value = true
-  nextTick(() => {
-    selectDsType(nodeInfo.type)
-  })
+  if (!!nodeInfo) {
+    nextTick(() => {
+      selectDsType(nodeInfo.type)
+    })
+  }
 }
 
 defineExpose({

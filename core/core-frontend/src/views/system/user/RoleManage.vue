@@ -6,12 +6,10 @@ import OrgUser from './OrgUser.vue'
 import ExternalUser from './ExternalUser.vue'
 import {
   searchRoleApi,
-  userOptionForRoleApi,
   userSelectedForRoleApi,
   roleDelApi,
   beforeUnmountInfoApi,
-  unMountUserApi,
-  mountUserApi
+  unMountUserApi
 } from '@/api/user'
 import RoleForm from './RoleForm.vue'
 import OutUserForm from './OutUserForm.vue'
@@ -19,10 +17,8 @@ import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { setColorName } from '@/utils/utils'
 const selectedRoleId = ref('')
+const selectedRoleName = ref('')
 const roleKeyword = ref('')
-const optionKeyword = ref('')
-const filterOptionkey = ref('')
-const selectedKeyword = ref('')
 const selectedFilterkey = ref('')
 const roleFormRef = ref(null)
 const outUserFormRef = ref(null)
@@ -35,30 +31,28 @@ interface Tree {
   children?: Tree[]
   disabled: boolean
 }
-const treeRef = ref(null)
+
 const handleNodeClick = (data: Tree) => {
   if (data.disabled) {
     return
   }
   selectedRoleId.value = data.id
-  optionSearch(data.id)
+  selectedRoleName.value = data.name
   selectedSearch(data.id)
 }
 
 const state = reactive({
-  userList: [],
   paginationConfig: {
     currentPage: 1,
     pageSize: 10,
     total: 0
   },
-  orders: [],
   optionUserList: [],
   addedUserList: [],
   roleData: [],
   checkList: []
 })
-
+const order = ref(null)
 state.roleData = [
   {
     id: 'admin',
@@ -74,30 +68,23 @@ state.roleData = [
   }
 ]
 
-const optionSearch = (rid?: string) => {
-  const param = { rid }
-  if (rid) {
-    loading.value = true
-    userOptionForRoleApi(param).then(res => {
-      if (res?.data?.length) {
-        state.optionUserList = res.data
-      } else {
-        state.optionUserList = []
-      }
-      loading.value = false
-    })
-  }
-}
-
 const selectedSearch = (rid?: string) => {
-  const param = { rid }
+  const param = { rid, order: order.value, keyword: selectedFilterkey.value }
   if (rid) {
     loading.value = true
-    userSelectedForRoleApi(param).then(res => {
-      if (res?.data?.length) {
-        state.addedUserList = res.data
+    const page = state.paginationConfig.currentPage
+    const limit = state.paginationConfig.pageSize
+    userSelectedForRoleApi(page, limit, param).then(res => {
+      if (res?.data?.total) {
+        const records = res.data.records
+        records.forEach(item => {
+          setColorName(item, selectedFilterkey.value)
+        })
+        state.addedUserList = records
+        state.paginationConfig.total = res.data.total
       } else {
         state.addedUserList = []
+        state.paginationConfig.total = 0
       }
       loading.value = false
     })
@@ -167,20 +154,7 @@ const outUserSaved = () => {
   selectedSearch(selectedRoleId.value)
   emits('refresh-grid')
 }
-const bindUser = () => {
-  const param = { rid: selectedRoleId.value, uids: state.checkList }
-  loading.value = true
-  mountUserApi(param).then(() => {
-    ElMessage({
-      message: t('role.bind_success'),
-      type: 'success'
-    })
-    moveOption2Selected(param.uids)
-    state.checkList = []
-    emits('refresh-grid')
-    loading.value = false
-  })
-}
+
 const unBindUser = (uid: string) => {
   const param = { uid, rid: selectedRoleId.value }
   loading.value = true
@@ -220,16 +194,6 @@ const unMountUserHandler = (param: any, callback?) => {
   })
 }
 
-const moveOption2Selected = (uids: string[]) => {
-  let len = state.optionUserList.length
-  while (len--) {
-    const item = state.optionUserList[len]
-    if (uids.includes(item.id)) {
-      state.optionUserList.splice(len, 1)
-      state.addedUserList.push({ ...item })
-    }
-  }
-}
 const moveSelected = (uids: string[]): any[] => {
   const result = []
   let len = state.addedUserList.length
@@ -249,32 +213,27 @@ const moveSelected2Option = (uids: string[]) => {
       state.optionUserList.push({ ...item })
     })
   }
-  /* let len = state.addedUserList.length
-  while (len--) {
-    const item = state.addedUserList[len]
-    if (uids.includes(item.id)) {
-      state.addedUserList.splice(len, 1)
-      state.optionUserList.push({ ...item })
-    }
-  } */
 }
-const openOutUser = () => {
+/* const openOutUser = () => {
   if (!selectedRoleId.value) {
     ElMessage.error('请先选择角色')
     return
   }
   outUserFormRef.value.init(selectedRoleId.value)
+} */
+
+const triggerFilterRole = () => {
+  const value = roleKeyword.value
+  state.roleData.forEach(roleGroup => {
+    roleGroup.children?.forEach(data => {
+      setColorName(data, value)
+      data['hidden'] = value && !data.name.includes(value)
+    })
+  })
+  console.log(state.roleData)
 }
-const filterRoleNode = (value: string, data: Tree) => {
-  setColorName(data, value)
-  if (!value) return true
-  return data.name.includes(value)
-}
-const triggerFilterRole = val => {
-  treeRef.value?.filter(val)
-}
-const filterSelected = val => {
-  selectedFilterkey.value = val ? val.toLocaleLowerCase() : val
+const filterSelected = () => {
+  selectedSearch(selectedRoleId.value)
 }
 const addOrgUserDialog = ref()
 const addExternalUserDialog = ref()
@@ -285,29 +244,35 @@ const handleCommand = (command: string) => {
   }
   addExternalUserDialog.value.init()
 }
-const optionFilter = val => {
+/* const optionFilter = val => {
   filterOptionkey.value = val ? val.toLocaleLowerCase() : val
-}
+} */
 const pageChange = index => {
-  // state.paginationConfig.currentPage = index
-  // search()
+  state.paginationConfig.currentPage = index
+  selectedSearch(selectedRoleId.value)
 }
 const sizeChange = size => {
-  // state.paginationConfig.pageSize = size
-  // search()
+  state.paginationConfig.pageSize = size
+  selectedSearch(selectedRoleId.value)
 }
 const sortChange = param => {
-  // state.orders = []
-  // if (param.order && param.prop === 'name') {
-  //   const type = param.order.substring(0, param.order.indexOf('ending'))
-  //   state.orders.push('create_time ' + type)
-  //   search()
-  // }
+  order.value = null
+  if (param.order && param.prop === 'name') {
+    const type = param.order.substring(0, param.order.indexOf('ending'))
+    order.value = 'name ' + type
+  } else {
+    order.value = null
+  }
+  selectedSearch(selectedRoleId.value)
 }
 const userAddPopper = ref(false)
 
 const handleVisibleChange = (val: boolean) => {
   userAddPopper.value = val
+}
+const refreshGrid = () => {
+  selectedSearch(selectedRoleId.value)
+  emits('refresh-grid')
 }
 onMounted(() => {
   roleSearch()
@@ -333,49 +298,58 @@ onMounted(() => {
         </el-input>
       </div>
       <el-scrollbar class="role-tree-container">
-        <div class="role-title flex-align-center">
-          {{ t('role.org_admin') }}
-        </div>
-        <div class="list-item_primary" v-for="role in state.roleData[0].children" :key="role.id">
-          <span :class="role.root && 'flex-align-center'" class="label"
-            >{{ role.name }} <span v-if="role.root" class="mark flex-center">内置角色</span>
-          </span>
-          <span class="btn-list">
-            <el-icon @click.stop="roleEdit(role)" class="hover-icon">
-              <Icon name="icon_edit_outlined"></Icon>
-            </el-icon>
-            <el-icon @click.stop="delHandler(role)" class="hover-icon">
-              <Icon name="icon_delete-trash_outlined"></Icon>
-            </el-icon>
-          </span>
-        </div>
-        <el-divider />
-        <div class="role-title flex-align-center">
-          {{ t('role.average_role') }}
-        </div>
-        <div class="list-item_primary" v-for="role in state.roleData[1].children" :key="role.id">
-          <span :class="role.root && 'flex-align-center'" class="label"
-            >{{ role.name }}<span v-if="role.root" class="mark flex-center">内置角色</span></span
+        <div v-for="(roleGroup, index) in state.roleData" :key="roleGroup.id">
+          <div class="role-title flex-align-center">
+            {{ roleGroup.name }}
+          </div>
+          <div
+            class="list-item_primary"
+            :class="{ 'de-role-hidden': role.hidden, 'de-is-active': selectedRoleId === role.id }"
+            v-for="role in roleGroup.children"
+            :key="role.id"
+            @click.stop="handleNodeClick(role)"
           >
-          <span class="btn-list">
-            <el-icon @click.stop="roleEdit(role)" class="hover-icon">
-              <Icon name="icon_edit_outlined"></Icon>
-            </el-icon>
-            <el-icon @click.stop="delHandler(role)" class="hover-icon">
-              <Icon name="icon_delete-trash_outlined"></Icon>
-            </el-icon>
-          </span>
+            <span :class="role.root && 'flex-align-center'" class="label">
+              <span v-if="role.colorName" v-html="role.colorName" />
+              <span v-else>{{ role.name }}</span>
+              <span v-if="role.root" class="mark flex-center">系统</span>
+            </span>
+            <span class="btn-list" :class="{ 'de-disabled-btn': role.root }">
+              <el-tooltip
+                class="box-item"
+                effect="dark"
+                :content="role.root ? '系统角色无法编辑' : '编辑'"
+                placement="top"
+              >
+                <el-icon @click.stop="roleEdit(role)" class="hover-icon">
+                  <Icon name="icon_edit_outlined"></Icon>
+                </el-icon>
+              </el-tooltip>
+
+              <el-tooltip
+                class="box-item"
+                effect="dark"
+                :content="role.root ? '系统角色无法删除' : '删除'"
+                placement="top"
+              >
+                <el-icon @click.stop="delHandler(role)" class="hover-icon">
+                  <Icon name="icon_delete-trash_outlined"></Icon>
+                </el-icon>
+              </el-tooltip>
+            </span>
+          </div>
+          <el-divider v-if="!index" />
         </div>
       </el-scrollbar>
     </div>
     <div class="added-user-list role-height">
       <div class="user-info flex-align-center">
-        <span class="text">1312</span>
+        <span class="text">{{ selectedRoleName }}</span>
         <el-divider direction="vertical" />
         <el-icon>
           <Icon name="icon_member_filled"></Icon>
         </el-icon>
-        <span class="user-num">1</span>
+        <span class="user-num">{{ state.paginationConfig.total }}</span>
       </div>
       <el-row>
         <el-col :span="12">
@@ -414,9 +388,9 @@ onMounted(() => {
         <el-col :span="12" style="margin-bottom: 16px; text-align: right">
           <el-input
             style="width: 240px"
-            v-model="roleKeyword"
+            v-model="selectedFilterkey"
             clearable
-            @change="triggerFilterRole"
+            @change="filterSelected"
           >
             <template #prefix>
               <el-icon>
@@ -429,7 +403,7 @@ onMounted(() => {
       <div class="user-table">
         <GridTable
           :pagination="state.paginationConfig"
-          :table-data="state.userList"
+          :table-data="state.addedUserList"
           @page-change="pageChange"
           @size-change="sizeChange"
           @sort-change="sortChange"
@@ -441,9 +415,15 @@ onMounted(() => {
             prop="name"
             sortable="custom"
             :label="t('user.name')"
-          />
+          >
+            <template v-slot:default="scope">
+              <span v-if="scope.row.colorName" v-html="scope.row.colorName" />
+              <span v-else>{{ scope.row.name }}</span>
+            </template>
+          </el-table-column>
+
           <el-table-column
-            prop="userName"
+            prop="account"
             show-overflow-tooltip
             key="user_name"
             :label="t('datasource.user_name')"
@@ -468,83 +448,10 @@ onMounted(() => {
         </GridTable>
       </div>
     </div>
-    <div v-show="false" class="added-user-list role-height">
-      <div class="title">
-        {{ t('role.bound_user') }}
-        <el-input v-model="selectedKeyword" clearable @change="filterSelected">
-          <template #prefix>
-            <el-icon>
-              <Icon name="icon_search-outline_outlined"></Icon>
-            </el-icon>
-          </template>
-        </el-input>
-      </div>
-      <el-empty
-        v-if="!state.addedUserList || !state.addedUserList.length"
-        description="description"
-      />
-      <div
-        v-else
-        :key="ele.id"
-        v-for="ele in state.addedUserList.filter(
-          item => !selectedFilterkey || item.name.toLocaleLowerCase().includes(selectedFilterkey)
-        )"
-        class="user-list-item"
-      >
-        <span>{{ ele.name }}</span>
-        <div>
-          <Icon
-            @click.stop="unBindUser(ele.id)"
-            class="role-remove-icon"
-            name="icon_close_filled"
-          />
-        </div>
-      </div>
-    </div>
-    <div v-show="false" class="add-user-list role-height-option">
-      <div class="title">
-        {{ t('role.option_user') }}
-        <el-icon class="add-out-icon" @click.stop="openOutUser">
-          <Icon name="icon_add_outlined"></Icon>
-        </el-icon>
-        <el-input class="m24 w100" v-model="optionKeyword" clearable @change="optionFilter">
-          <template #prefix>
-            <el-icon>
-              <Icon name="icon_search-outline_outlined"></Icon>
-            </el-icon>
-          </template>
-        </el-input>
-      </div>
-      <el-empty
-        v-if="!state.optionUserList || !state.optionUserList.length"
-        description="description"
-      />
-      <div v-else class="content">
-        <el-checkbox-group v-model="state.checkList">
-          <div
-            :key="ele.id"
-            v-for="ele in state.optionUserList.filter(
-              item => !filterOptionkey || item.name.toLocaleLowerCase().includes(filterOptionkey)
-            )"
-            class="user-list-item"
-          >
-            <el-checkbox :label="ele.id">{{ ele.name }}</el-checkbox>
-          </div>
-        </el-checkbox-group>
-      </div>
-      <div class="foot1" v-if="state.optionUserList && state.optionUserList.length">
-        <el-button
-          :disabled="!state.checkList || !state.checkList.length"
-          @click="bindUser"
-          type="primary"
-          >{{ t('role.add_user', [state.checkList.length]) }}</el-button
-        >
-      </div>
-    </div>
   </div>
   <role-form ref="roleFormRef" @saved="roleSaved" />
   <out-user-form ref="outUserFormRef" @saved="outUserSaved" />
-  <OrgUser ref="addOrgUserDialog"></OrgUser>
+  <OrgUser ref="addOrgUserDialog" :rid="selectedRoleId" @refresh-grid="refreshGrid"></OrgUser>
   <ExternalUser ref="addExternalUserDialog"></ExternalUser>
 </template>
 
@@ -555,7 +462,7 @@ onMounted(() => {
   height: 100%;
 
   .role-height {
-    height: calc(100vh - 158px);
+    height: calc(100vh - 165px);
     overflow: auto;
     position: relative;
   }
@@ -599,7 +506,13 @@ onMounted(() => {
         height: 40px;
         padding-left: 16px;
       }
-
+      .de-role-hidden {
+        display: none !important;
+      }
+      .de-is-active {
+        background-color: var(--ed-menu-hover-bg-color);
+        color: var(--ed-menu-active-color);
+      }
       .list-item_primary {
         padding: 0 16px;
         .mark {
@@ -615,8 +528,23 @@ onMounted(() => {
           padding: 0 4px;
         }
         .btn-list {
-          display: flex;
-          align-items: center;
+          display: none;
+        }
+        &:hover {
+          cursor: pointer;
+          .btn-list {
+            display: flex;
+            align-items: center;
+          }
+          .de-disabled-btn {
+            i {
+              color: #bbbfc4;
+              cursor: not-allowed;
+              background-image: none;
+              background-color: var(--el-button-disabled-bg-color);
+              border-color: var(--el-button-disabled-border-color);
+            }
+          }
         }
       }
 
@@ -738,46 +666,7 @@ onMounted(() => {
     }
   }
 }
-.custom-tree-node {
-  display: flex;
-  span {
-    width: 160px;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-  }
-  .operate-icon-container {
-    display: none;
-  }
-  &:hover {
-    span {
-      width: 120px;
-    }
-    .operate-icon-container {
-      text-align: end;
-      font-size: 16px;
-      display: flex;
-      div {
-        width: 24px;
-        height: 20px;
-        padding: 0 3px;
-        cursor: pointer;
-        svg {
-          width: 16px;
-          height: 16px;
-          color: var(--ed-text-color-regular);
-          background-color: var(--ed-color-white);
-        }
-      }
-      div:hover {
-        svg {
-          color: var(--ed-color-primary) !important;
-          background: var(--ed-color-primary-light-7) !important;
-        }
-      }
-    }
-  }
-}
+
 .add-out-icon {
   cursor: pointer;
   color: var(--ed-text-color-regular);

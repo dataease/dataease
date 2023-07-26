@@ -9,4 +9,6 @@ public class UserRequest extends KeywordRequest  {
 
     private Long rid;
 
+    private String order;
+
 }

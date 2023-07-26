@@ -3,7 +3,7 @@ import { Icon } from '@/components/icon-custom'
 import { ElIcon, ElDropdown, ElDropdownItem, ElDropdownMenu } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ref, nextTick, shallowRef, reactive, computed, toRefs } from 'vue'
-import { ElTree, ElMessage, ElMessageBox } from 'element-plus-secondary'
+import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { save } from '@/api/datasource'
 import type { Action } from 'element-plus-secondary'
 import { Base64 } from 'js-base64'
@@ -16,10 +16,8 @@ export interface Param {
   editType: number
   pid?: string
   type?: string
-  id: number
-  table: {
-    name: string
-  }
+  id?: number
+  name?: string
 }
 
 export interface Field {
@@ -57,7 +55,7 @@ const { t } = useI18n()
 
 const token = useUserStoreWithOut().getToken
 
-const baseUrl = ''
+const baseUrl = import.meta.env.VITE_API_BASEPATH
 const headers = {
   'X-DE-TOKEN': token,
   'Accept-Language': 'zh'
@@ -102,7 +100,6 @@ const sheetFile = computed(() => {
 })
 
 const uploading = ref(false)
-const tree = ref<InstanceType<typeof ElTree>>()
 
 const fieldType = {
   TEXT: 'text',
@@ -255,38 +252,15 @@ const uploadSuccess = (response, _, fileList) => {
 }
 // uploadSuccess({ data: mockData, headers: {} }, '', [])
 
-const saveExcelDs = (params, cb) => {
+const saveExcelDs = (params, successCb, finallyCb) => {
   let validate = true
   let selectedSheet = []
   let sheetFileMd5 = []
   let effectExtField = false
   let changeFiled = false
-  let selectNode = tree.value.getCheckedNodes()
-  if (!props.param.id && selectNode.some(ele => ele.nameExist)) {
-    ElMessage({
-      message: t('deDataset.cannot_be_duplicate'),
-      type: 'error'
-    })
-    return
-  }
+  let selectNode = state.excelData[0]?.sheets
   for (let i = 0; i < selectNode.length; i++) {
     if (selectNode[i].sheet) {
-      if (!selectNode[i].tableName || selectNode[i].tableName === '') {
-        validate = false
-        ElMessage({
-          message: t('dataset.pls_input_name'),
-          type: 'error'
-        })
-        return
-      }
-      if (selectNode[i].tableName.length > 50 && !props.param.id) {
-        validate = false
-        ElMessage({
-          message: t('dataset.char_can_not_more_50'),
-          type: 'error'
-        })
-        return
-      }
       if (selectNode[i].effectExtField) {
         effectExtField = true
       }
@@ -338,17 +312,21 @@ const saveExcelDs = (params, cb) => {
       showClose: false,
       callback: (action: Action) => {
         if (action === 'confirm') {
-          saveExcelData(sheetFileMd5, table, params, cb)
+          saveExcelData(sheetFileMd5, table, params, successCb, finallyCb)
         }
       }
     })
   } else {
-    saveExcelData(sheetFileMd5, table, params, cb)
+    saveExcelData(sheetFileMd5, table, params, successCb, finallyCb)
   }
 }
 
-const saveExcelData = (sheetFileMd5, table, params, cb) => {
+const saveExcelData = (sheetFileMd5, table, params, successCb, finallyCb) => {
   table.configuration = Base64.encode(JSON.stringify(table.sheets))
+  if (!table.id) {
+    delete table.id
+    table.pid = params.pid
+  }
   if (new Set(sheetFileMd5).size !== sheetFileMd5.length && !props.param.id) {
     ElMessageBox.confirm(t('dataset.merge_title'), {
       confirmButtonText: t('dataset.merge'),
@@ -364,12 +342,14 @@ const saveExcelData = (sheetFileMd5, table, params, cb) => {
         if (action === 'confirm') {
           save(table)
             .then(() => {
+              successCb?.()
               ElMessage({
                 message: t('dataset.set_saved_successfully'),
                 type: 'success'
               })
             })
             .finally(() => {
+              finallyCb?.()
               loading.value = false
             })
         }
@@ -377,12 +357,14 @@ const saveExcelData = (sheetFileMd5, table, params, cb) => {
         if (action === 'cancel') {
           save(table)
             .then(() => {
+              successCb?.()
               ElMessage({
                 message: t('dataset.set_saved_successfully'),
                 type: 'success'
               })
             })
             .finally(() => {
+              finallyCb?.()
               loading.value = false
             })
         }
@@ -393,12 +375,14 @@ const saveExcelData = (sheetFileMd5, table, params, cb) => {
     loading.value = true
     save(table)
       .then(() => {
+        successCb?.()
         ElMessage({
           message: t('dataset.set_saved_successfully'),
           type: 'success'
         })
       })
       .finally(() => {
+        finallyCb?.()
         loading.value = false
       })
   }
@@ -431,7 +415,7 @@ defineExpose({
             :size="sheetFile.size"
           ></ExcelInfo>
           <el-upload
-            :action="baseUrl + 'api/datasource/uploadFile'"
+            :action="baseUrl + '/datasource/uploadFile'"
             :multiple="false"
             :show-file-list="false"
             :file-list="state.fileList"
@@ -459,7 +443,7 @@ defineExpose({
           ]"
         >
           <el-upload
-            :action="baseUrl + 'de2api/datasource/uploadFile'"
+            :action="baseUrl + '/datasource/uploadFile'"
             :multiple="false"
             :disabled="!!param.id"
             :show-file-list="false"

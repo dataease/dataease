@@ -49,6 +49,7 @@ const handleTabClick = tab => {
   .tab-btn {
     padding: 8px 12px;
     display: flex;
+    display: none;
     justify-content: space-between;
     width: 60px;
     height: 28px;

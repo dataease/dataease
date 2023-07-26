@@ -2,7 +2,7 @@
 import { ref, reactive, computed, watch, nextTick } from 'vue'
 import { ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
-import { save, listDatasources } from '@/api/datasource'
+import { listDatasources, save } from '@/api/datasource'
 import type { DatasetOrFolder } from '@/api/dataset'
 import nothingTree from '@/assets/img/nothing-tree.png'
 
@@ -24,11 +24,8 @@ export interface Tree {
 const { t } = useI18n()
 
 const state = reactive({
-  tData: [],
-  nameList: []
+  tData: []
 })
-
-let request = null
 
 const nodeType = ref()
 const pid = ref()
@@ -69,12 +66,11 @@ const showPid = computed(() => {
 })
 
 const labelName = computed(() => {
-  return nodeType.value === 'folder' ? t('deDataset.folder_name') : t('dataset.name')
+  return nodeType.value === 'folder' ? t('deDataset.folder_name') : '数据源名称'
 })
 
 const dialogTitle = computed(() => {
   let title = ''
-
   switch (nodeType.value) {
     case 'folder':
       title = t('deDataset.new_folder')
@@ -145,7 +141,7 @@ const dfs = (arr: Tree[]) => {
     }
   })
 }
-
+let request = null
 const createInit = (type, data: Tree, exec, name: string) => {
   nodeType.value = type
   if (type === 'datasource') {
@@ -167,9 +163,8 @@ const createInit = (type, data: Tree, exec, name: string) => {
         pid.value = data.id
       }
     })
-
-    cmd.value = exec
   }
+  cmd.value = data.id ? exec : ''
   name && (datasetForm.name = name)
   createDataset.value = true
   datasetFormRules.value = rules
@@ -191,10 +186,12 @@ const nodeClick = (data: Tree) => {
   datasetForm.pid = data.id as string
 }
 
-const finishCb = () => {
+const successCb = () => {
   datasource.value.resetFields()
+  request = null
+  datasetForm.pid = ''
+  datasetForm.name = ''
   createDataset.value = false
-  loading.value = false
   switch (cmd.value) {
     case 'move':
       ElMessage.success('移动成功')
@@ -206,6 +203,10 @@ const finishCb = () => {
       ElMessage.success('新建数据源成功')
       break
   }
+}
+
+const finallyCb = () => {
+  loading.value = false
 }
 
 const saveDataset = () => {
@@ -230,15 +231,24 @@ const saveDataset = () => {
           break
       }
       loading.value = true
-      emits('finish', params, finishCb)
+      if (request) {
+        save({ ...request, name: datasetForm.name, pid: params.pid })
+          .then(() => {
+            successCb()
+          })
+          .finally(() => {
+            loading.value = false
+          })
+        return
+      }
+      emits('finish', params, successCb, finallyCb)
     }
   })
 }
 
 defineExpose({
   createInit,
-  editeInit,
-  finishCb
+  editeInit
 })
 
 const emits = defineEmits(['finish'])
@@ -341,8 +351,10 @@ const emits = defineEmits(['finish'])
   border: 1px solid #dee0e3;
   border-radius: 4px;
   padding: 8px;
+  overflow-y: auto;
   .custom-tree-node {
     display: flex;
+    align-items: center;
     .node-text {
       margin-left: 8.75px;
       width: 120px;

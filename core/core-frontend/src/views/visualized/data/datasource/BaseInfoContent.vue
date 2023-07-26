@@ -4,7 +4,10 @@ import { propTypes } from '@/utils/propTypes'
 defineProps({
   name: propTypes.string.def('')
 })
-const active = ref()
+const active = ref(false)
+defineExpose({
+  active
+})
 </script>
 
 <template>

@@ -1,5 +1,5 @@
 <script lang="tsx" setup>
-import { computed, reactive, ref, shallowRef } from 'vue'
+import { computed, reactive, ref, shallowRef, nextTick } from 'vue'
 import type { TabPaneName, Action } from 'element-plus-secondary'
 import { ElIcon, ElMessageBox, ElMessage } from 'element-plus-secondary'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
@@ -187,6 +187,8 @@ const handleTabClick = tab => {
   console.log('tab', tab)
 }
 
+const baseInfo = ref()
+
 const tabList = shallowRef([])
 
 const initSearch = () => {
@@ -211,10 +213,15 @@ const nodeInfo = reactive<Node>({
   apiConfiguration: []
 })
 
-const saveDsFolder = (params, cmd) => {
-  save(params).then(res => {
-    listDs()
-  })
+const saveDsFolder = (params, successCb, finallyCb) => {
+  save(params)
+    .then(() => {
+      successCb()
+      listDs()
+    })
+    .finally(() => {
+      finallyCb()
+    })
 }
 
 const listDs = () => {
@@ -289,6 +296,9 @@ const handleNodeClick = data => {
   activeName.value = 'config'
   handleCurrentChange(1)
   handleClick(activeName.value)
+  nextTick(() => {
+    baseInfo.value.active = true
+  })
 }
 const createDatasource = (data?: Tree) => {
   datasourceEditor.value.init(null, data?.id)
@@ -403,7 +413,7 @@ const defaultProps = {
       >
         <template #default="{ node, data }">
           <span class="custom-tree-node">
-            <el-icon :class="!data.leaf && 'icon-border'" style="width: 18px; height: 18px">
+            <el-icon :class="data.leaf && 'icon-border'" style="width: 18px; height: 18px">
               <Icon :name="getDsIconName(data)"></Icon>
             </el-icon>
             <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
@@ -520,12 +530,6 @@ const defaultProps = {
                 :label="t('datasource.table_name')"
               />
               <el-table-column
-                fixed="right"
-                key="description"
-                prop="description"
-                label="最近更新状态"
-              />
-              <el-table-column
                 key="__operation"
                 :label="t('common.operating')"
                 fixed="right"
@@ -552,13 +556,13 @@ const defaultProps = {
           </div>
         </div>
         <template v-else>
-          <BaseInfoContent v-slot="slotProps" :name="t('datasource.base_info')">
+          <BaseInfoContent ref="baseInfo" v-slot="slotProps" :name="t('datasource.base_info')">
             <template v-if="slotProps.active">
               <el-row :gutter="24">
                 <el-col :span="12">
                   <BaseInfoItem :label="t('common.name') + t('auth.datasource')">{{
-                      nodeInfo.name
-                    }}</BaseInfoItem>
+                    nodeInfo.name
+                  }}</BaseInfoItem>
                 </el-col>
                 <el-col :span="12">
                   <BaseInfoItem :label="t('datasource.type')">{{ nodeInfo.type }}</BaseInfoItem>
@@ -572,87 +576,91 @@ const defaultProps = {
                 </el-col>
                 <el-col v-else :span="24">
                   <BaseInfoItem :label="t('common.description')">{{
-                      nodeInfo.description
-                    }}</BaseInfoItem>
+                    nodeInfo.description
+                  }}</BaseInfoItem>
                 </el-col>
               </el-row>
-              <el-row :gutter="24">
-                <el-col :span="12">
+              <template v-if="!['Excel', 'Api'].includes(nodeInfo.type)">
+                <el-row :gutter="24">
+                  <!-- <el-col :span="12">
                   <BaseInfoItem label="驱动">驱动</BaseInfoItem>
-                </el-col>
-                <el-col :span="12">
-                  <BaseInfoItem :label="t('datasource.host')">{{
+                </el-col> -->
+                  <el-col :span="12">
+                    <BaseInfoItem :label="t('datasource.host')">{{
                       nodeInfo.configuration.host
                     }}</BaseInfoItem>
-                </el-col>
-              </el-row>
-              <el-row :gutter="24">
-                <el-col :span="12">
-                  <BaseInfoItem :label="t('datasource.port')">{{
+                  </el-col>
+                </el-row>
+                <el-row :gutter="24">
+                  <el-col :span="12">
+                    <BaseInfoItem :label="t('datasource.port')">{{
                       nodeInfo.configuration.port
                     }}</BaseInfoItem>
-                </el-col>
-                <el-col :span="12">
-                  <BaseInfoItem :label="t('datasource.data_base')">{{
+                  </el-col>
+                  <el-col :span="12">
+                    <BaseInfoItem :label="t('datasource.data_base')">{{
                       nodeInfo.configuration.dataBase
                     }}</BaseInfoItem>
-                </el-col>
-              </el-row>
-              <el-row :gutter="24">
-                <el-col :span="12">
-                  <BaseInfoItem :label="t('datasource.user_name')">{{
+                  </el-col>
+                </el-row>
+                <el-row :gutter="24">
+                  <el-col :span="12">
+                    <BaseInfoItem :label="t('datasource.user_name')">{{
                       nodeInfo.configuration.username
                     }}</BaseInfoItem>
-                </el-col>
-                <el-col :span="12">
-                  <BaseInfoItem :label="t('datasource.password')">{{
+                  </el-col>
+                  <el-col :span="12">
+                    <BaseInfoItem :label="t('datasource.password')">{{
                       nodeInfo.configuration.password
                     }}</BaseInfoItem>
-                </el-col>
-              </el-row>
-              <el-row>
-                <el-col :span="24">
-                  <BaseInfoItem :label="t('datasource.extra_params')">{{
+                  </el-col>
+                </el-row>
+                <el-row>
+                  <el-col :span="24">
+                    <BaseInfoItem :label="t('datasource.extra_params')">{{
                       nodeInfo.configuration.extraParams
                     }}</BaseInfoItem>
-                </el-col>
-              </el-row>
-              <span
-                v-if="!['es', 'api', 'mongo'].includes(nodeInfo.type)"
-                class="de-expand"
-                @click="showPriority = !showPriority"
-              >{{ t('datasource.priority') }}
-                <el-icon>
-                  <Icon :name="showPriority ? 'icon_down_outlined' : 'icon_down_outlined-1'"></Icon>
-                </el-icon>
-              </span>
-              <template v-if="showPriority">
-                <el-row :gutter="24">
-                  <el-col :span="12">
-                    <BaseInfoItem :label="t('datasource.initial_pool_size')">{{
+                  </el-col>
+                </el-row>
+                <span
+                  v-if="!['es', 'api', 'mongo'].includes(nodeInfo.type.toLowerCase())"
+                  class="de-expand"
+                  @click="showPriority = !showPriority"
+                  >{{ t('datasource.priority') }}
+                  <el-icon>
+                    <Icon
+                      :name="showPriority ? 'icon_down_outlined' : 'icon_down_outlined-1'"
+                    ></Icon>
+                  </el-icon>
+                </span>
+                <template v-if="showPriority">
+                  <el-row :gutter="24">
+                    <el-col :span="12">
+                      <BaseInfoItem :label="t('datasource.initial_pool_size')">{{
                         nodeInfo.configuration.initialPoolSize
                       }}</BaseInfoItem>
-                  </el-col>
-                  <el-col :span="12">
-                    <BaseInfoItem :label="t('datasource.min_pool_size')">{{
+                    </el-col>
+                    <el-col :span="12">
+                      <BaseInfoItem :label="t('datasource.min_pool_size')">{{
                         nodeInfo.configuration.minPoolSize
                       }}</BaseInfoItem>
-                  </el-col>
-                </el-row>
-                <el-row :gutter="24">
-                  <el-col :span="12">
-                    <BaseInfoItem :label="t('datasource.max_pool_size')">{{
+                    </el-col>
+                  </el-row>
+                  <el-row :gutter="24">
+                    <el-col :span="12">
+                      <BaseInfoItem :label="t('datasource.max_pool_size')">{{
                         nodeInfo.configuration.maxPoolSize
                       }}</BaseInfoItem>
-                  </el-col>
-                  <el-col :span="12">
-                    <BaseInfoItem
-                      :value="nodeInfo.configuration.queryTimeout"
-                      :label="t('datasource.query_timeout')"
-                    >{{ nodeInfo.configuration.queryTimeout }}</BaseInfoItem
-                    >
-                  </el-col>
-                </el-row>
+                    </el-col>
+                    <el-col :span="12">
+                      <BaseInfoItem
+                        :value="nodeInfo.configuration.queryTimeout"
+                        :label="t('datasource.query_timeout')"
+                        >{{ nodeInfo.configuration.queryTimeout }}</BaseInfoItem
+                      >
+                    </el-col>
+                  </el-row>
+                </template>
               </template>
             </template>
           </BaseInfoContent>
@@ -667,11 +675,11 @@ const defaultProps = {
                   <el-col :span="19">
                     <span class="name ellipsis">{{ api.name }}</span>
                     <span v-if="api.status === 'Error'" class="de-tag error-color">{{
-                        t('datasource.invalid')
-                      }}</span>
+                      t('datasource.invalid')
+                    }}</span>
                     <span v-if="api.status === 'Success'" class="de-tag success-color">{{
-                        t('datasource.valid')
-                      }}</span>
+                      t('datasource.valid')
+                    }}</span>
                   </el-col>
                 </el-row>
                 <div class="req-title">
@@ -694,18 +702,22 @@ const defaultProps = {
               <el-row :gutter="24">
                 <el-col :span="12">
                   <BaseInfoItem :label="t('dataset.update_type')">{{
-                      t(`dataset.${nodeInfo.syncSetting.updateType}`)
-                    }}</BaseInfoItem>
+                    t(`dataset.${nodeInfo.syncSetting.updateType}`)
+                  }}</BaseInfoItem>
                 </el-col>
                 <el-col :span="12">
                   <BaseInfoItem :label="t('dataset.execute_rate')">{{
-                      rateValueMap[nodeInfo.syncSetting.syncRate]
-                    }}</BaseInfoItem>
+                    rateValueMap[nodeInfo.syncSetting.syncRate]
+                  }}</BaseInfoItem>
                 </el-col>
               </el-row>
             </template>
           </BaseInfoContent>
-          <BaseInfoContent v-slot="slotProps" :name="t('dataset.data_preview')">
+          <BaseInfoContent
+            v-if="nodeInfo.type === 'Excel'"
+            v-slot="slotProps"
+            :name="t('dataset.data_preview')"
+          >
             <template v-if="slotProps.active">
               <div class="excel-table">
                 <SheetTabs @tab-click="handleTabClick" :tab-list="tabList"></SheetTabs>
@@ -720,11 +732,11 @@ const defaultProps = {
                         :width="width"
                         :height="height"
                         fixed
-                      ><template #empty>
-                        <empty-background
-                          description="暂无数据"
-                          img-type="noneWhite"
-                        /> </template
+                        ><template #empty>
+                          <empty-background
+                            description="暂无数据"
+                            img-type="noneWhite"
+                          /> </template
                       ></el-table-v2>
                     </template>
                   </el-auto-resizer>
