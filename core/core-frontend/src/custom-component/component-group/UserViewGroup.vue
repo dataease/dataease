@@ -89,24 +89,27 @@ const groupActiveChange = category => {
         v-for="chartGroupInfo in state.chartGroupList"
         :key="chartGroupInfo.title"
       >
-        <el-col
-          class="item"
-          :span="8"
-          v-for="chartInfo in chartGroupInfo.details"
-          :key="chartInfo.title"
-        >
-          <div
-            v-on:click="newComponent(chartInfo.value)"
-            class="item-top"
-            draggable="true"
-            :data-id="'UserView&' + chartInfo.value"
+        <el-row class="group-title">{{ chartGroupInfo.title }}</el-row>
+        <el-row style="width: 100%">
+          <el-col
+            class="item"
+            :span="8"
+            v-for="chartInfo in chartGroupInfo.details"
+            :key="chartInfo.title"
           >
-            <Icon class-name="item-top-icon" :name="chartInfo.icon" />
-          </div>
-          <div class="item-bottom">
-            <span>{{ chartInfo.title }}</span>
-          </div>
-        </el-col>
+            <div
+              v-on:click="newComponent(chartInfo.value)"
+              class="item-top"
+              draggable="true"
+              :data-id="'UserView&' + chartInfo.value"
+            >
+              <Icon class-name="item-top-icon" :name="chartInfo.icon" />
+            </div>
+            <div class="item-bottom">
+              <span>{{ chartInfo.title }}</span>
+            </div>
+          </el-col>
+        </el-row>
       </el-row>
     </div>
   </el-row>
@@ -129,6 +132,9 @@ const groupActiveChange = category => {
   }
   :deep(.item-top-icon) {
     color: @chart-change-font-color-light!important;
+  }
+  :deep(.group-title) {
+    color: #1f2329;
   }
 }
 .group {
@@ -155,7 +161,7 @@ const groupActiveChange = category => {
         border-radius: 4px;
         padding-left: 8px;
         &:hover {
-          background: rgba(255, 255, 255, 0.1);
+          background: rgba(31, 35, 41, 0.1);
           cursor: pointer;
         }
       }
@@ -215,5 +221,13 @@ const groupActiveChange = category => {
     font-size: 12px;
     text-align: center;
   }
+}
+
+.group-title {
+  width: 100%;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 20px;
+  color: @canvas-main-font-color;
 }
 </style>

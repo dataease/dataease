@@ -4,12 +4,24 @@ import axios, {
   InternalAxiosRequestConfig,
   AxiosResponse,
   AxiosError,
+  AxiosRequestConfig,
   AxiosHeaders
 } from 'axios'
-
+import { tryShowLoading, tryHideLoading } from '@/utils/loading'
 import qs from 'qs'
+import { usePermissionStoreWithOut } from '@/store/modules/permission'
 
 import { config } from './config'
+
+type AxiosErrorWidthLoading<T> = T & {
+  config: {
+    loading?: boolean
+  }
+}
+
+type InternalAxiosRequestConfigWidthLoading<T> = T & {
+  loading?: boolean
+}
 
 import { ElMessage } from 'element-plus-secondary'
 import router from '@/router'
@@ -21,8 +33,13 @@ export const PATH_URL = window.DataEaseBi
   ? window.DataEaseBi?.baseUrl + 'de2api/'
   : import.meta.env.VITE_API_BASEPATH
 
+export interface AxiosInstanceWithLoading extends AxiosInstance {
+  <T = any, R = AxiosResponse<T>, D = any>(
+    config: AxiosRequestConfig<D> & { loading?: boolean }
+  ): Promise<R>
+}
 // 创建axios实例
-const service: AxiosInstance = axios.create({
+const service: AxiosInstanceWithLoading = axios.create({
   baseURL: PATH_URL, // api 的 base_url
   timeout: config.request_timeout // 请求超时时间
 })
@@ -31,9 +48,11 @@ const mapping = {
   en: 'en_US',
   tw: 'zh_TW'
 }
+const permissionStore = usePermissionStoreWithOut()
+
 // request拦截器
 service.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
+  (config: InternalAxiosRequestConfigWidthLoading<InternalAxiosRequestConfig>) => {
     if (
       config.method === 'post' &&
       (config.headers as AxiosRequestHeaders)['Content-Type'] ===
@@ -73,16 +92,22 @@ service.interceptors.request.use(
       config.params = {}
       config.url = url
     }
+    config.loading && tryShowLoading(permissionStore.getCurrentPath)
     return config
   },
-  (error: AxiosError) => {
+  (error: AxiosErrorWidthLoading<AxiosError>) => {
+    error.config.loading && tryHideLoading(permissionStore.getCurrentPath)
     Promise.reject(error)
   }
 )
 
 // response 拦截器
 service.interceptors.response.use(
-  (response: AxiosResponse<any>) => {
+  (
+    response: AxiosResponse<any> & { config: InternalAxiosRequestConfig & { loading?: boolean } }
+  ) => {
+    response.config.loading && tryHideLoading(permissionStore.getCurrentPath)
+
     if (response.config.responseType === 'blob') {
       // 如果是文件流，直接过
       return response
@@ -98,8 +123,9 @@ service.interceptors.response.use(
       ElMessage.error(response.data.msg)
     }
   },
-  (error: AxiosError) => {
+  (error: AxiosErrorWidthLoading<AxiosError>) => {
     ElMessage.error(error.message)
+    error.config.loading && tryHideLoading(permissionStore.getCurrentPath)
     const header = error.response.headers as AxiosHeaders
     if (header.has('DE-GATEWAY-FLAG')) {
       localStorage.clear()

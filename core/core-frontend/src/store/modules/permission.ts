@@ -9,13 +9,15 @@ export interface PermissionState {
   routers: AppRouteRecordRaw[]
   addRouters: AppRouteRecordRaw[]
   isAddRouters: boolean
+  currentPath: string
 }
 
 export const usePermissionStore = defineStore('permission', {
   state: (): PermissionState => ({
     routers: [],
     addRouters: [],
-    isAddRouters: false
+    isAddRouters: false,
+    currentPath: ''
   }),
   getters: {
     getRouters(): AppRouteRecordRaw[] {
@@ -29,6 +31,9 @@ export const usePermissionStore = defineStore('permission', {
     },
     getIsAddRouters(): boolean {
       return this.isAddRouters
+    },
+    getCurrentPath(): boolean {
+      return this.currentPath
     }
   },
   actions: {
@@ -52,6 +57,9 @@ export const usePermissionStore = defineStore('permission', {
         this.routers = cloneDeep(routes).concat(routerMap)
         resolve()
       })
+    },
+    setCurrentPath(currentPath: string): void {
+      this.currentPath = currentPath
     },
     setIsAddRouters(state: boolean): void {
       this.isAddRouters = state

@@ -5,7 +5,11 @@ import type { TabsPaneContext } from 'element-plus-secondary'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
 import imgtest from '@/assets/img/dataease-10000Star.jpg'
 import { HandleMore } from '@/components/handle-more'
+import { usePermissionStoreWithOut } from '@/store/modules/permission'
+import { useRequestStoreWithOut } from '@/store/modules/request'
 
+const permissionStore = usePermissionStoreWithOut()
+const requestStore = useRequestStoreWithOut()
 const { t } = useI18n()
 const panelKeyword = ref()
 const state = reactive({
@@ -104,7 +108,7 @@ const sortChange = param => {
 </script>
 
 <template>
-  <div class="workbranch">
+  <div class="workbranch" v-loading="requestStore.loadingMap[permissionStore.currentPath]">
     <div class="info-quick-creation">
       <div class="user-info">
         <el-icon class="main-color">

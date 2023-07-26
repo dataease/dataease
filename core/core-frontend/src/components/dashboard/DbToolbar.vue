@@ -150,8 +150,15 @@ const handleFileChange = e => {
   reader.readAsDataURL(file)
 }
 
-const preview = () => {
+const previewInner = () => {
   dvMainStore.setEditMode('preview')
+}
+
+const previewOuter = () => {
+  canvasSave(() => {
+    const url = '#/preview/?dvId=' + dvInfo.value.id
+    window.open(url, '_blank')
+  })
 }
 
 const edit = () => {
@@ -185,7 +192,7 @@ const multiplexingCanvasOpen = () => {
   multiplexingRef.value.dialogInit()
 }
 
-eventBus.on('preview', preview)
+eventBus.on('preview', previewInner)
 eventBus.on('save', saveCanvas)
 eventBus.on('clearCanvas', clearCanvas)
 
@@ -284,7 +291,7 @@ const saveLinkageSetting = () => {
           icon-name="dv-filter"
           title="查询组件"
         >
-          <query-group></query-group>
+          <query-group themes="light" :dv-model="dvModel"></query-group>
         </component-group>
         <component-group themes="light" :base-width="148" icon-name="dv-text" title="文本">
           <text-group themes="light" :dv-model="dvModel"></text-group>
@@ -292,31 +299,51 @@ const saveLinkageSetting = () => {
         <component-group themes="light" icon-name="dv-media" title="图片">
           <media-group themes="light" :dv-model="dvModel"></media-group>
         </component-group>
-        <component-button icon-name="dv-tab" title="Tab"></component-button>
+        <component-button :show-split-line="true" icon-name="dv-tab" title="Tab"></component-button>
         <component-button
           icon-name="dv-copy"
           title="复用"
           @customClick="multiplexingCanvasOpen"
         ></component-button>
-        <component-button
-          @custom-click="batchOptStatusChange(true)"
-          icon-name="dv-batch"
-          title="批量操作"
-        ></component-button>
-        <component-button
-          @custom-click="openDataBoardSetting"
-          icon-name="dv-dashboard"
-          title="仪表板配置"
-        ></component-button>
       </div>
       <div class="right-area" v-show="!batchOptStatus && !linkageSettingStatus">
-        <el-button
-          class="custom-normal-button"
-          v-show="editMode === 'edit'"
-          @click="preview()"
-          style="float: right; margin-right: 12px"
-          >预览</el-button
-        >
+        <component-button
+          tips="批量操作"
+          @custom-click="batchOptStatusChange(true)"
+          icon-name="dv-batch"
+        ></component-button>
+        <component-button
+          tips="仪表板配置"
+          @custom-click="openDataBoardSetting"
+          icon-name="dv-dashboard"
+        ></component-button>
+        <el-divider direction="vertical" />
+        <component-button tips="移动端布局" icon-name="dv_mobile_layout"></component-button>
+
+        <el-dropdown v-show="editMode === 'edit'" trigger="click">
+          <el-button class="custom-normal-button" style="float: right; margin-right: 12px"
+            >预览</el-button
+          >
+          <template #dropdown>
+            <el-dropdown-menu style="width: 120px">
+              <el-dropdown-item @click="previewInner()">
+                <Icon style="width: 16px; height: 16px" name="dv-preview-inner" />
+                当前预览</el-dropdown-item
+              >
+              <el-dropdown-item @click="previewOuter()">
+                <Icon style="width: 16px; height: 16px" name="dv-preview-outer" />
+                新页面预览
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
+        <!--        <el-button-->
+        <!--          class="custom-normal-button"-->
+        <!--          v-show="editMode === 'edit'"-->
+        <!--          @click="preview()"-->
+        <!--          style="float: right; margin-right: 12px"-->
+        <!--          >预览</el-button-->
+        <!--        >-->
         <el-button
           v-show="editMode === 'edit'"
           @click="saveCanvas()"

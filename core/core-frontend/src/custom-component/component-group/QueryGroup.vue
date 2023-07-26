@@ -20,6 +20,10 @@ const props = defineProps({
         propValue: null
       }
     }
+  },
+  themes: {
+    type: String,
+    default: 'dark'
   }
 })
 
@@ -46,12 +50,18 @@ const newComponent = componentName => {
     @dragend="handleDragEnd"
     v-on:click="newComponent('VQuery')"
   >
-    <drag-component name="Query" label="查询组件" drag-info="VQuery&VQuery"></drag-component>
+    <drag-component
+      :themes="themes"
+      name="Query"
+      label="查询组件"
+      drag-info="VQuery&VQuery"
+    ></drag-component>
   </div>
 </template>
 
 <style lang="less" scoped>
 .group {
+  padding-top: 5px;
 }
 .custom_img {
   width: 100px;
