@@ -8,26 +8,25 @@
     ]"
   >
     <div class="vertical-layout" @click.stop="subjectChange">
-      <img src="@/assets/img/subject_dark.png" alt="" width="172" height="79" />
+      <img
+        v-if="subjectItem.coverUrl"
+        :src="imgUrlTrans(subjectItem.coverUrl)"
+        alt=""
+        width="172"
+        height="79"
+      />
+      <Icon v-else name="dv-no-img" style="width: 172px; height: 79px"></Icon>
     </div>
-    <div class="title-main" @dblclick="setEdit">
+    <div class="title-main">
+      <!--    <div class="title-main" @dblclick="setEdit">-->
       <div class="title-area">
-        <el-input
-          v-if="state.canEdit"
-          ref="nameInput"
-          v-model="subjectItem.name"
-          size="mini"
-          @blur="loseFocus()"
-        />
-        <span
-          v-if="!state.canEdit"
-          style="margin-top: 8px; margin-left: 8px"
-          :title="subjectItem.name"
-          >{{ subjectItem.name }}</span
-        >
+        <span style="margin-top: 8px; margin-left: 8px" :title="subjectItem.name">{{
+          subjectItem.name
+        }}</span>
       </div>
-      <div v-if="subjectItem.type === 'self' && !state.canEdit">
-        <el-icon @click="subjectDelete()"><DeleteFilled /></el-icon>
+      <div class="edit-area" v-if="subjectItem.type === 'self'">
+        <el-icon @click="subjectDelete()"><Delete class="custom-icon" /></el-icon>
+        <el-icon @click="subjectEdit()"> <EditPen class="custom-icon" /> </el-icon>
       </div>
     </div>
   </div>
@@ -42,8 +41,9 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 
 import { storeToRefs } from 'pinia'
-import { ElMessage } from 'element-plus-secondary'
-import { saveOrUpdateSubject } from '@/api/visualization/dataVisualization'
+import { ElMessage, ElMessageBox } from 'element-plus-secondary'
+import { deleteLogic, saveOrUpdateSubject } from '@/api/visualization/dataVisualization'
+import Icon from '@/components/icon-custom/src/Icon.vue'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 
@@ -195,10 +195,21 @@ watch(
   { deep: true }
 )
 
-const emit = defineEmits(['subjectDelete', 'onSubjectChange', 'templateEdit'])
+const emit = defineEmits(['subjectDelete', 'onSubjectChange', 'templateEdit', 'subjectEdit'])
 
 const subjectDelete = () => {
-  emit('subjectDelete', subjectItem.value.id)
+  ElMessageBox.confirm('确定删除[' + subjectItem.value.name + ']吗?', {
+    confirmButtonType: 'danger',
+    type: 'warning',
+    autofocus: false,
+    showClose: false
+  }).then(() => {
+    emit('subjectDelete', subjectItem.value.id)
+  })
+}
+
+const subjectEdit = () => {
+  emit('subjectEdit')
 }
 
 const subjectChange = () => {
@@ -361,22 +372,35 @@ const selectChange = (callback, editCell) => {
   height: 31px;
   display: flex;
   border-top: 1px solid #dee0e3;
+  width: 180px;
 }
 
-.subject-template:hover > .title-main {
-  width: 150px;
-}
+//.subject-template:hover > .title-main {
+//  width: 150px;
+//}
 
-.subject-template:hover > .el-icon-delete {
-  z-index: 10;
+.subject-template:hover :deep(.custom-icon) {
   display: block;
 }
 
-.subject-template ::v-deep .el-icon-delete {
-  display: none;
+.subject-template :deep(.ed-input__wrapper) {
+  box-shadow: 0 0 0 0;
 }
 
 .chart-area {
   background-size: 100% 100% !important;
+}
+
+.edit-area {
+  display: inline-block;
+  line-height: 35px;
+}
+
+.custom-icon {
+  display: none;
+  margin: -13px 0 0 0;
+  &:hover {
+    color: red;
+  }
 }
 </style>
