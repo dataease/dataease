@@ -5,10 +5,11 @@ import { config } from './config'
 const { default_headers } = config
 
 const request = (option: any) => {
-  const { url, method, params, data, headersType, responseType } = option
+  const { url, method, params, data, headersType, responseType, loading } = option
   return service({
     url: url,
     method,
+    loading,
     params,
     data,
     responseType: responseType,
