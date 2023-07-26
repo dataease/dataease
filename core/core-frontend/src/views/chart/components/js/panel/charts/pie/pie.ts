@@ -9,6 +9,9 @@ import { formatterItem, valueFormatter } from '@/views/chart/components/js/forma
 
 const DEFAULT_DATA = []
 export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
+  axis: AxisType[]
+  properties: EditorProperty[]
+  propertyInner: EditorPropertyInner
   drawChart(drawOptions: G2PlotDrawOptions<G2Pie>): G2Pie {
     const chart = drawOptions.chart
     if (chart?.data) {

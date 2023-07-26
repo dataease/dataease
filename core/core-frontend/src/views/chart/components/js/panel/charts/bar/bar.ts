@@ -7,6 +7,10 @@ import {
 import { flow, parseJson } from '@/views/chart/components/js/util'
 import { Datum } from '@antv/g2plot'
 import { singleDimensionTooltipFormatter } from '@/views/chart/components/js/formatter'
+import {
+  BAR_EDITOR_PROPERTY,
+  BAR_EDITOR_PROPERTY_INNER
+} from '@/views/chart/components/js/panel/charts/bar/common'
 
 const DEFAULT_DATA: any[] = []
 
@@ -14,6 +18,11 @@ const DEFAULT_DATA: any[] = []
  * 柱状图
  */
 export class Bar extends G2PlotChartView<ColumnOptions, Column> {
+  properties = BAR_EDITOR_PROPERTY
+  propertyInner = BAR_EDITOR_PROPERTY_INNER
+
+  axis: AxisType[] = ['xAxis', 'yAxis', 'filter', 'drill']
+
   drawChart(drawOptions: G2PlotDrawOptions<Column>): Column {
     if (drawOptions.chart?.data) {
       const data = cloneDeep(drawOptions.chart.data?.data)

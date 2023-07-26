@@ -12,12 +12,19 @@ import {
 } from '@/views/chart/components/js/util'
 import { cloneDeep } from 'lodash-es'
 import { formatterItem, valueFormatter } from '@/views/chart/components/js/formatter'
+import {
+  LINE_EDITOR_PROPERTY,
+  LINE_EDITOR_PROPERTY_INNER
+} from '@/views/chart/components/js/panel/charts/line/common'
 
 const DEFAULT_DATA = []
 /**
  * 折线图
  */
 export class Line extends G2PlotChartView<LineOptions, G2Line> {
+  properties = LINE_EDITOR_PROPERTY
+  propertyInner = LINE_EDITOR_PROPERTY_INNER
+  axis: AxisType[]
   drawChart(drawOptions: G2PlotDrawOptions<G2Line>) {
     const chart = drawOptions.chart
     // data
