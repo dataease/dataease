@@ -1,4 +1,4 @@
-package io.dataease.engine.utils;
+package io.dataease.engine.func.scalar;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -6,7 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class FunctionUtils {
+public class ScalarFunctions {
     public static String format = "yyyy-MM-dd HH:mm:ss";
 
     public static String date_format(String date, String format) throws Exception {
