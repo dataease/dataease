@@ -13,7 +13,6 @@ import io.dataease.api.permissions.auth.dto.BusiResourceCreator;
 import io.dataease.api.permissions.auth.dto.BusiResourceEditor;
 import io.dataease.commons.constants.DataSourceType;
 import io.dataease.commons.constants.TaskStatus;
-import io.dataease.dataset.dto.DataSetNodeBO;
 import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
@@ -93,7 +92,7 @@ public class DatasourceServer implements DatasourceApi {
 
     @Override
     public DatasourceDTO save(DatasourceDTO dataSourceDTO) throws Exception {
-        if(dataSourceDTO.getNodeType().equals("folder")){
+        if(StringUtils.isNotEmpty(dataSourceDTO.getNodeType()) && dataSourceDTO.getNodeType().equals("folder")){
             dataSourceDTO.setType("folder");
             dataSourceDTO.setConfiguration("");
         }
@@ -308,6 +307,7 @@ public class DatasourceServer implements DatasourceApi {
         return datasourceDTO;
     }
 
+    @Override
     public List<DsBusiNodeVO> list(BusiNodeRequest request) {
         request.setBusyFlag(RESOURCE_FLAG);
 //        if (ObjectUtils.isNotEmpty(interactiveAuthApi)) {

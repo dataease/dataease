@@ -787,6 +787,24 @@ const viewPropertyInnerAll = computed(() => {
 const dynamicLabelShow = () => {
   onLabelChange(view.value.customAttr.label)
 }
+
+const autoInsert = element => {
+  var myValue = '[' + element.id + ']'
+  const myField = document.querySelector('#dynamic-label')
+  if (myField.selectionStart || myField.selectionStart === 0) {
+    var startPos = myField.selectionStart //选区开始位置
+    var endPos = myField.selectionEnd //选区结束位置
+    view.value.customAttr.label.formatter =
+      myField.value.substring(0, startPos) +
+      myValue +
+      myField.value.substring(endPos, myField.value.length)
+    nextTick() //修改数据之后立即使用这个方法获取更新后的DOM。
+    myField.focus()
+    myField.setSelectionRange(endPos + myValue.length, endPos + myValue.length)
+  } else {
+    view.value.customAttr.label.formatter += myValue
+  }
+}
 </script>
 
 <template>
@@ -1084,6 +1102,7 @@ const dynamicLabelShow = () => {
                                     @onLabelChange="onLabelChange"
                                   />
                                   <el-input
+                                    id="dynamic-label"
                                     v-model="view.customAttr.label.formatter"
                                     :autosize="{ minRows: 2, maxRows: 4 }"
                                     type="textarea"
@@ -1118,6 +1137,7 @@ const dynamicLabelShow = () => {
                                   @editItemFilter="showQuotaEditFilter"
                                   @editItemCompare="showQuotaEditCompare"
                                   @valueFormatter="valueFormatter"
+                                  @click="autoInsert(element)"
                                 />
                               </template>
                             </draggable>

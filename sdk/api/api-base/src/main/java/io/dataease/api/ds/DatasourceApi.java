@@ -59,7 +59,7 @@ public interface DatasourceApi {
 
     @DePermit("m:read")
     @PostMapping("list")
-    List<DsBusiNodeVO> list(BusiNodeRequest request) throws DEException;
+    List<DsBusiNodeVO> list(@RequestBody BusiNodeRequest request) throws DEException;
 
     @DePermit({"m:read", "#p0+':manage'"})
     @GetMapping("getTables/{datasourceId}")

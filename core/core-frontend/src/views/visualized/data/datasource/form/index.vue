@@ -242,7 +242,8 @@ const form = reactive<Form>({
 const form2 = reactive<Param>({
   type: '',
   editType: 0,
-  name: ''
+  name: '',
+  id: '0'
 })
 const visible = ref(false)
 const editDs = ref(false)

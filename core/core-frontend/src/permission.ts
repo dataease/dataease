@@ -34,6 +34,7 @@ router.beforeEach(async (to, from, next) => {
     if (to.path === '/login') {
       next({ path: '/workbranch/index' })
     } else {
+      permissionStore.setCurrentPath(to.path)
       if (permissionStore.getIsAddRouters) {
         next()
         return
@@ -59,6 +60,7 @@ router.beforeEach(async (to, from, next) => {
     }
   } else {
     if (whiteList.indexOf(to.path) !== -1) {
+      permissionStore.setCurrentPath(to.path)
       next()
     } else {
       next(`/login?redirect=${to.path}`) // 否则全部重定向到登录页
