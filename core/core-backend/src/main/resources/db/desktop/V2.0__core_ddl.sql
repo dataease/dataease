@@ -5,8 +5,8 @@ DROP TABLE IF EXISTS `core_datasource`;
 CREATE TABLE `core_datasource`
 (
     `id`            bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
-    `name`          varchar(50) NOT NULL COMMENT '名称',
-    `description`   varchar(50) DEFAULT NULL COMMENT '描述',
+    `name`          varchar(255) NOT NULL COMMENT '名称',
+    `description`   varchar(255) DEFAULT NULL COMMENT '描述',
     `type`          varchar(50) NOT NULL COMMENT '类型',
     `edit_type`     varchar(50) COMMENT '更新方式：0：替换；1：追加',
     `configuration` longtext    NOT NULL COMMENT '详细信息',
