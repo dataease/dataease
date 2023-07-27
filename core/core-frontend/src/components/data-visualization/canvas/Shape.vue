@@ -488,7 +488,7 @@ const componentActiveFlag = computed(() => {
 })
 
 const linkageActive = computed(() => {
-  return linkageSettingStatus.value && element.value === curLinkageView.value
+  return linkageSettingStatus.value && element.value.id === curLinkageView.value.id
 })
 
 const showViewDetails = () => {

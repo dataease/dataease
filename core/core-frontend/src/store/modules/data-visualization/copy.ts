@@ -49,7 +49,8 @@ export const copyStore = defineStore('copy', {
         _this.copyData = {
           data: deepCopy(curMultiplexingComponents.value[componentId]),
           copyCanvasViewInfo: canvasViewInfoPreview,
-          index: index
+          index: index,
+          copyFrom: 'multiplexing'
         }
         _this.paste()
       })
@@ -87,7 +88,7 @@ export const copyStore = defineStore('copy', {
       dvMainStore.addCopyComponent(newComponent, idMap, this.copyData.copyCanvasViewInfo)
       if (dvInfo.value.type === 'dashboard') {
         eventBus.emit('addDashboardItem', newComponent)
-        if (dvMainStore.multiplexingStyleAdapt) {
+        if (dvMainStore.multiplexingStyleAdapt && this.copyData.copyFrom === 'multiplexing') {
           adaptCurThemeCommonStyle(newComponent)
         }
       }
