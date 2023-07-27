@@ -4,20 +4,19 @@ import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
 import com.alibaba.excel.exception.ExcelAnalysisException;
 import io.dataease.api.permissions.user.vo.UserImportVO;
+import io.dataease.constant.AuthConstant;
 import io.dataease.exception.DEException;
-import io.dataease.utils.*;
+import io.dataease.utils.CacheUtils;
+import io.dataease.utils.LogUtil;
 import io.dataease.xpack.permissions.user.entity.ExcelCheckResult;
 import io.dataease.xpack.permissions.user.entity.ExcelImportErrDto;
 import io.dataease.xpack.permissions.user.entity.ExcelUserDTO;
 import io.dataease.xpack.permissions.user.helper.ExcelValiHelper;
 import io.dataease.xpack.permissions.user.manage.ExcelCheckManage;
-import org.apache.commons.collections4.CollectionUtils;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class ImportAnalysisEventListener extends AnalysisEventListener<ExcelUserDTO> {
     private final List<ExcelUserDTO> successList = new ArrayList<>();
@@ -81,7 +80,7 @@ public class ImportAnalysisEventListener extends AnalysisEventListener<ExcelUser
         vo.setSuccessCount(successList.size());
         vo.setErrorCount(errList.size());
         if (errList.size() > 0) {
-            CacheUtils.put("import-user-record", vo.getDataKey(), errList);
+            CacheUtils.put(AuthConstant.USER_IMPORT_ERROR_KEY, vo.getDataKey(), errList);
         }
     }
 
@@ -91,11 +90,5 @@ public class ImportAnalysisEventListener extends AnalysisEventListener<ExcelUser
         }
     }
 
-    private void exportErrorExcel() throws IOException {
-        List<Object> userResultList = errList.stream().map(ExcelImportErrDto::getObject).collect(Collectors.toList());
-        List<Map<Integer, String>> errMsgList = errList.stream().map(ExcelImportErrDto::getCellMap).collect(Collectors.toList());
-        if (CollectionUtils.isNotEmpty(userResultList)) {
-            CommonExcelUtils.writeExcel(ServletUtils.response(), userResultList, clazz, errMsgList, "error");
-        }
-    }
+
 }

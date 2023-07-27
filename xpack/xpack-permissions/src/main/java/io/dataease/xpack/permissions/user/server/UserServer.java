@@ -18,7 +18,6 @@ import io.dataease.utils.AuthUtils;
 import io.dataease.xpack.permissions.user.manage.UserBatchImportManage;
 import io.dataease.xpack.permissions.user.manage.UserPageManage;
 import jakarta.annotation.Resource;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Primary;
 import org.springframework.transaction.annotation.Transactional;
@@ -128,5 +127,9 @@ public class UserServer implements UserApi {
     @Override
     public UserImportVO batchImport(MultipartFile file) {
         return userBatchImportManage.upload(file);
+    }
+    @Override
+    public void errorRecord(String key) {
+        userBatchImportManage.exportErrorExcel(key);
     }
 }

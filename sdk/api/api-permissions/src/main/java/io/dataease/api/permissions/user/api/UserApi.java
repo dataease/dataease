@@ -69,4 +69,8 @@ public interface UserApi {
 
     @PostMapping("/batchImport")
     UserImportVO batchImport(@RequestPart(value = "file") MultipartFile file);
+
+
+    @GetMapping("/errorRecord/{key}")
+    void errorRecord(@PathVariable("key") String key);
 }

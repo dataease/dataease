@@ -1,16 +1,17 @@
 package io.dataease.xpack.permissions.user.manage;
 
 import io.dataease.api.permissions.user.vo.UserImportVO;
+import io.dataease.constant.AuthConstant;
 import io.dataease.exception.DEException;
-import io.dataease.utils.CommonExcelUtils;
-import io.dataease.utils.IDUtils;
-import io.dataease.utils.LogUtil;
-import io.dataease.utils.ServletUtils;
+import io.dataease.utils.*;
+import io.dataease.xpack.permissions.user.entity.ExcelImportErrDto;
 import io.dataease.xpack.permissions.user.entity.ExcelUserDTO;
 import io.dataease.xpack.permissions.user.listener.ImportAnalysisEventListener;
 import jakarta.annotation.Resource;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,9 +21,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 public class UserBatchImportManage {
@@ -99,5 +104,23 @@ public class UserBatchImportManage {
             }
         }
         return null;
+    }
+
+    public void exportErrorExcel(String key) {
+        Object o = CacheUtils.get(AuthConstant.USER_IMPORT_ERROR_KEY, key);
+        if (ObjectUtils.isEmpty(o)) {
+            DEException.throwException("import error record is expired");
+        }
+        List<ExcelImportErrDto> errList = (List<ExcelImportErrDto>) o;
+        List<Object> userResultList = errList.stream().map(ExcelImportErrDto::getObject).collect(Collectors.toList());
+        List<Map<Integer, String>> errMsgList = errList.stream().map(ExcelImportErrDto::getCellMap).collect(Collectors.toList());
+        if (CollectionUtils.isNotEmpty(userResultList)) {
+            try {
+                CommonExcelUtils.writeExcel(ServletUtils.response(), userResultList, ExcelUserDTO.class, errMsgList, "error");
+            } catch (IOException e) {
+                LogUtil.error(e.getMessage(), e);
+                DEException.throwException(e);
+            }
+        }
     }
 }
