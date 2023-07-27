@@ -26,6 +26,7 @@ interface Tree {
 interface Form {
   name: string
   pid?: string
+  id?: string
   description: string
   type: string
   configuration?: Configuration
@@ -233,17 +234,21 @@ const saveDS = () => {
     creatDsFolder.value.createInit('datasource', { id: pid.value, request }, '', form.name)
   }
 }
-const form = reactive<Form>({
+
+const defaultForm = {
   name: '',
   description: '',
   type: 'API',
   apiConfiguration: []
-})
-const form2 = reactive<Param>({
+}
+const form = reactive<Form>(defaultForm)
+const defaultForm2 = {
   type: '',
+  id: '0',
   editType: 0,
   name: ''
-})
+}
+const form2 = reactive<Param>(cloneDeep(defaultForm2))
 const visible = ref(false)
 const editDs = ref(false)
 const pid = ref('0')
@@ -258,6 +263,8 @@ const init = (nodeInfo: Form | Param, id?: string) => {
     }
     pid.value = nodeInfo.pid || '0'
   } else {
+    Object.assign(form2, cloneDeep(defaultForm2))
+    Object.assign(form, cloneDeep(defaultForm))
     pid.value = id || '0'
   }
   activeStep.value = Number(editDs.value)

@@ -590,6 +590,11 @@ const handleClick = () => {
     editerName.value.focus()
   })
 }
+
+const treeProps = {
+  children: 'children',
+  label: 'name'
+}
 </script>
 
 <template>
@@ -639,7 +644,7 @@ const handleClick = () => {
             <Icon name="icon_up-left_outlined"></Icon>
           </el-icon>
         </p>
-        <el-select
+        <!-- <el-select
           v-model="dataSource"
           class="ds-list"
           filterable
@@ -652,7 +657,19 @@ const handleClick = () => {
             :label="item.name"
             :value="item.id"
           />
-        </el-select>
+        </el-select> -->
+        <el-tree-select
+          :check-strictly="false"
+          @change="dsChange"
+          :placeholder="t('dataset.pls_slc_data_source')"
+          class="ds-list"
+          popper-class="tree-select-ds_popper"
+          v-model="dataSource"
+          node-key="id"
+          :props="treeProps"
+          :data="state.dataSourceList"
+          :render-after-expand="false"
+        />
         <p class="select-ds table-num">
           {{ t('datasource.data_table') }}
           <span class="num">
@@ -1171,6 +1188,11 @@ const handleClick = () => {
   .ed-icon {
     font-size: 14px;
     margin-right: 5.25px;
+  }
+}
+.tree-select-ds_popper {
+  .ed-tree-node.is-current > .ed-tree-node__content:not(.is-menu):after {
+    display: none !important;
   }
 }
 </style>
