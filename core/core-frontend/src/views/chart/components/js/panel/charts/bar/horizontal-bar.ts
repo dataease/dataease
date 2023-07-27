@@ -16,10 +16,17 @@ import {
   parseJson
 } from '@/views/chart/components/js/util'
 import { singleDimensionTooltipFormatter } from '@/views/chart/components/js/formatter'
+import {
+  BAR_EDITOR_PROPERTY,
+  BAR_EDITOR_PROPERTY_INNER
+} from '@/views/chart/components/js/panel/charts/bar/common'
 
 const DEFAULT_DATA = []
 
 export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
+  properties = BAR_EDITOR_PROPERTY
+  propertyInner = BAR_EDITOR_PROPERTY_INNER
+  axis: AxisType[] = ['xAxis', 'yAxis', 'filter', 'drill']
   drawChart(drawOptions: G2PlotDrawOptions<Bar>): Bar {
     const chart = drawOptions.chart
     if (chart?.data) {

@@ -53,6 +53,7 @@ declare module '@vue/runtime-core' {
     ElBreadcrumb: typeof import('element-plus-secondary/es')['ElBreadcrumb']
     ElBreadcrumbItem: typeof import('element-plus-secondary/es')['ElBreadcrumbItem']
     ElButton: typeof import('element-plus-secondary/es')['ElButton']
+    ElCascader: typeof import('element-plus-secondary/es')['ElCascader']
     ElCheckbox: typeof import('element-plus-secondary/es')['ElCheckbox']
     ElCheckboxGroup: typeof import('element-plus-secondary/es')['ElCheckboxGroup']
     ElCol: typeof import('element-plus-secondary/es')['ElCol']

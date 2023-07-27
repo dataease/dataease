@@ -8,6 +8,9 @@ import { getCurrentField } from '@/views/chart/components/js/panel/common/common
  * 汇总表
  */
 export class TableNormal extends S2ChartView<TableSheet> {
+  properties: EditorProperty[] = []
+  propertyInner: EditorPropertyInner
+  axis: AxisType[]
   drawChart(drawOption: S2DrawOptions<TableSheet>): TableSheet {
     const { container, chart } = drawOption
     let { chartObj: s2 } = drawOption
