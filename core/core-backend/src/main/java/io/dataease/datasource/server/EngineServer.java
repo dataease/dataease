@@ -45,9 +45,6 @@ public class EngineServer {
 
     public CoreDatasource getDeEngine(){
         List<CoreDeEngine> deEngines = deEngineMapper.selectList(null);
-//        if (CollectionUtils.isEmpty(deEngines)) {
-//            throw new Exception("未完整设置数据引擎");
-//        }
         CoreDatasource coreDatasource = new CoreDatasource();
         BeanUtils.copyBean(coreDatasource, deEngines.get(0));
         return coreDatasource;

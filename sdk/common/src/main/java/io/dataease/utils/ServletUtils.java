@@ -42,10 +42,6 @@ public class ServletUtils {
 
     public static boolean apisixCheck() {
         return true;
-//        String head = getHead(AuthConstant.APISIX_FLAG_KEY);
-//        if (StringUtils.isBlank(head)) return false;
-//        long time = Long.parseLong(head);
-//        return System.currentTimeMillis() - time < 10000;
     }
 
     public static void writeResult(ResultMessage resultMessage) {

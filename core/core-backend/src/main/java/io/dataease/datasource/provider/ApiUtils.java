@@ -241,12 +241,6 @@ public class ApiUtils {
                 handleStr(apiDefinition, response, fields, rootPath);
             }
             for (Map<String, Object> field : fields) {
-//                if (field.containsKey("children")) {
-//                    field.put("disabled", false);
-//                }
-//                if (field.containsKey("children")) {
-//                    field.put("disabled", true);
-//                }
             }
             apiDefinition.setJsonFields(fields);
             return apiDefinition;
