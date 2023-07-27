@@ -228,7 +228,6 @@ const queryBackground = () => {
 
 const init = () => {
   state.commonBackground = deepCopy(props.commonBackgroundPop)
-  console.log('outerImage=' + state.commonBackground['outerImage'])
   if (state.commonBackground['outerImage']) {
     state.fileList.push({ url: imgUrlTrans(state.commonBackground['outerImage']) })
   } else {

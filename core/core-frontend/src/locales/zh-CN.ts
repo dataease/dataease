@@ -1951,7 +1951,7 @@ export default {
     column_name: '字段名称',
     enable_column: '启用字段',
     open_model: '打开方式',
-    link_type: '链接类型',
+    link_type: '跳转类型',
     link_outer: '外部链接',
     link_panel: '仪表板',
     select_jump_panel: '选择关联的仪表板',
