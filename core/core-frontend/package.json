@@ -67,6 +67,7 @@
     "ace-builds": "^1.15.3",
     "axios": "^1.3.3",
     "crypto-js": "^4.1.1",
+    "dayjs": "^1.11.9",
     "deepmerge": "^4.3.1",
     "electron-devtools-installer": "^3.2.0",
     "element-plus-secondary": "^0.1.4",

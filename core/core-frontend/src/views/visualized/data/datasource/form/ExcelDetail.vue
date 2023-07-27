@@ -2,15 +2,15 @@
 import { Icon } from '@/components/icon-custom'
 import { ElIcon, ElDropdown, ElDropdownItem, ElDropdownMenu } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
-import { ref, nextTick, shallowRef, reactive, computed, toRefs } from 'vue'
+import { ref, shallowRef, reactive, computed, toRefs } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { save } from '@/api/datasource'
 import type { Action } from 'element-plus-secondary'
 import { Base64 } from 'js-base64'
-import { useUserStoreWithOut } from '@/store/modules/user'
 import ExcelInfo from '../ExcelInfo.vue'
 import SheetTabs from '../SheetTabs.vue'
 import { cloneDeep } from 'lodash-es'
+import { uploadFile } from '@/api/datasource'
 
 export interface Param {
   editType: number
@@ -32,13 +32,13 @@ const props = defineProps({
     required: false,
     default() {
       return reactive<{
-        id: number
+        id: string
         name: string
         desc: string
         type: string
         editType: number
       }>({
-        id: 0,
+        id: '0',
         name: '',
         desc: '',
         type: 'Excel',
@@ -52,14 +52,6 @@ const props = defineProps({
 const { param } = toRefs(props)
 
 const { t } = useI18n()
-
-const token = useUserStoreWithOut().getToken
-
-const baseUrl = import.meta.env.VITE_API_BASEPATH
-const headers = {
-  'X-DE-TOKEN': token,
-  'Accept-Language': 'zh'
-}
 
 const loading = ref(false)
 const columns = shallowRef([])
@@ -87,7 +79,7 @@ const state = reactive({
   excelData: [],
   defaultExpandedKeys: [],
   defaultCheckedKeys: [],
-  fileList: [],
+  fileList: null,
   sheets: []
 })
 
@@ -218,8 +210,8 @@ const handleExcelDel = () => {
   Object.assign(sheetObj, cloneDeep(defaultSheetObj))
 }
 
-const uploadSuccess = (response, _, fileList) => {
-  if (response.code !== 0) {
+const uploadSuccess = response => {
+  if (response?.code !== 0) {
     ElMessage.warning(response.msg)
     return
   }
@@ -238,20 +230,7 @@ const uploadSuccess = (response, _, fileList) => {
   const [sheet] = tabList.value
 
   sheet && handleTabClick(sheet)
-  // state.defaultExpandedKeys.push(response.data.id)
-  // state.defaultCheckedKeys.push(response.data.sheets[0].id)
-  nextTick(() => {
-    // tree.value.setCheckedKeys(state.defaultCheckedKeys)
-  })
-  state.fileList = fileList
-  // if (response.headers[RefreshTokenKey]) {
-  // const refreshToken = response.headers[RefreshTokenKey]
-  // setToken(refreshToken)
-  // store.dispatch('user/refreshToken', refreshToken)
-  // }
 }
-// uploadSuccess({ data: mockData, headers: {} }, '', [])
-
 const saveExcelDs = (params, successCb, finallyCb) => {
   let validate = true
   let selectedSheet = []
@@ -388,6 +367,26 @@ const saveExcelData = (sheetFileMd5, table, params, successCb, finallyCb) => {
   }
 }
 
+const onChange = file => {
+  state.fileList = file
+}
+
+const upload = ref()
+const uploadAgain = ref()
+
+const uploadExcel = () => {
+  const formData = new FormData()
+  formData.append('file', state.fileList.raw)
+  formData.append('type', '')
+  formData.append('editType', param.value.editType)
+  formData.append('id', param.value.id || 0)
+  return uploadFile(formData).then(res => {
+    upload.value?.clearFiles()
+    uploadAgain.value?.clearFiles()
+    uploadSuccess(res)
+  })
+}
+
 defineExpose({
   saveExcelDs
 })
@@ -415,17 +414,16 @@ defineExpose({
             :size="sheetFile.size"
           ></ExcelInfo>
           <el-upload
-            :action="baseUrl + '/datasource/uploadFile'"
+            action=""
             :multiple="false"
+            ref="uploadAgain"
             :show-file-list="false"
-            :file-list="state.fileList"
-            :data="param"
             accept=".xls,.xlsx,.csv"
             :before-upload="beforeUpload"
-            :on-success="uploadSuccess"
+            :on-change="onChange"
+            :http-request="uploadExcel"
             :on-error="uploadFail"
             name="file"
-            :headers="headers"
           >
             <template #trigger>
               <el-button text>重新上传</el-button>
@@ -433,8 +431,8 @@ defineExpose({
           </el-upload>
         </el-form-item>
         <el-form-item
-          v-else
           prop="name"
+          v-else
           label="文件"
           :rules="[
             {
@@ -443,17 +441,16 @@ defineExpose({
           ]"
         >
           <el-upload
-            :action="baseUrl + '/datasource/uploadFile'"
             :multiple="false"
+            action=""
+            ref="upload"
             :show-file-list="false"
-            :file-list="state.fileList"
-            :data="param"
             accept=".xls,.xlsx,.csv"
             :before-upload="beforeUpload"
-            :on-success="uploadSuccess"
+            :on-change="onChange"
+            :http-request="uploadExcel"
             :on-error="uploadFail"
             name="file"
-            :headers="headers"
           >
             <template #trigger>
               <el-button secondary>

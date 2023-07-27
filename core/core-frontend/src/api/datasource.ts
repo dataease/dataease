@@ -118,3 +118,15 @@ export const tableUpdate = async (data): Promise<IResponse> => {
     return res?.data
   })
 }
+
+export const uploadFile = async (data): Promise<IResponse> => {
+  return request
+    .post({
+      url: '/datasource/uploadFile',
+      data,
+      headersType: 'multipart/form-data;'
+    })
+    .then(res => {
+      return res
+    })
+}

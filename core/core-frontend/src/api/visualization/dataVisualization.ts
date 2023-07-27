@@ -8,6 +8,14 @@ export interface ResourceOrFolder {
   type: string
 }
 
+export interface Panel {
+  name: string
+  type: string
+  updateTime: number
+  createBy: string
+  updateBy: string
+}
+
 export const findById = dvId => request.get({ url: '/dataVisualization/findById/' + dvId })
 
 export const queryTreeApi = async (data: BusiTreeRequest): Promise<IResponse> => {
@@ -34,3 +42,9 @@ export const saveOrUpdateSubject = data =>
 export const deleteSubject = id => request.delete({ url: '/visualizationSubject/delete/' + id })
 
 export const dvNameCheck = data => request.post({ url: '/dataVisualization/nameCheck', data })
+
+export const findRecent = async (): Promise<Panel[]> => {
+  return request.post({ url: '/dataVisualization/findRecent', data: {} }).then(res => {
+    return res?.data
+  })
+}
