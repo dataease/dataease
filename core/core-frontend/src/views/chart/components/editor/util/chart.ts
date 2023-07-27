@@ -147,12 +147,18 @@ export const DEFAULT_TAB_COLOR_CASE_BASE = {
 
 export const DEFAULT_TAB_COLOR_CASE_DARK = {
   ...DEFAULT_TAB_COLOR_CASE_BASE,
-  headPosition: 'left'
+  headFontColor: '#FFFFFF',
+  headFontActiveColor: '#FFFFFF',
+  headBorderColor: '#131E42',
+  headBorderActiveColor: '#131E42'
 }
 
 export const DEFAULT_TAB_COLOR_CASE_LIGHT = {
   ...DEFAULT_TAB_COLOR_CASE_BASE,
-  headPosition: 'left'
+  headFontColor: '#OOOOOO',
+  headFontActiveColor: '#OOOOOO',
+  headBorderColor: '#OOOOOO',
+  headBorderActiveColor: '#OOOOOO'
 }
 
 export const DEFAULT_SIZE = {

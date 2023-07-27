@@ -4,6 +4,7 @@ import { deepCopy } from '@/utils/utils'
 import { BASE_VIEW_CONFIG, getViewConfig } from '@/views/chart/components/editor/util/chart'
 import { DEFAULT_CANVAS_STYLE_DATA_DARK } from '@/views/chart/components/editor/util/dataVisualiztion'
 import { useEmitt } from '@/hooks/web/useEmitt'
+// import { adaptCurThemeCommonStyle } from '@/utils/canvasStyle'
 
 export const dvMainStore = defineStore('dataVisualization', {
   state: () => {
@@ -273,6 +274,9 @@ export const dvMainStore = defineStore('dataVisualization', {
         }
         this.canvasViewInfo[component.id] = newView
       }
+      // if (adapt) {
+      //   adaptCurThemeCommonStyle(component)
+      // }
     },
     setLinkageInfo(targetLinkageInfo) {
       this.linkageSettingStatus = true

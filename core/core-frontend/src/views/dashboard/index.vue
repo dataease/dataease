@@ -25,6 +25,7 @@ import DbCanvasAttr from '@/components/dashboard/DbCanvasAttr.vue'
 import { initCanvasData } from '@/utils/canvasUtils'
 import { ElMessage } from 'element-plus-secondary'
 import ChartStyleBatchSet from '@/views/chart/components/editor/editor-style/ChartStyleBatchSet.vue'
+import { adaptCurThemeCommonStyle } from '@/utils/canvasStyle'
 
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
@@ -102,6 +103,7 @@ const handleNew = newComponentInfo => {
     component.id = guid()
     // changeComponentSizeWithScale(component)
     dvMainStore.addComponent({ component: component, index: undefined })
+    adaptCurThemeCommonStyle(component)
     nextTick(() => {
       cyGridster.value.addItemBox(component) //在适当的时候初始化布局组件
     })
@@ -283,7 +285,7 @@ eventBus.on('handleNew', handleNew)
       <dv-sidebar
         v-show="!curComponent && !batchOptStatus"
         :theme-info="'light'"
-        title="大屏配置"
+        title="仪表板配置"
         :width="420"
         aside-position="right"
         class="left-sidebar"

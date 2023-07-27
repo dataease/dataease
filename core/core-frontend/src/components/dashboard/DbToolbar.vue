@@ -99,57 +99,6 @@ const redo = () => {
   snapshotStore.redo()
 }
 
-const handleFileChange = e => {
-  const file = e.target.files[0]
-  if (!file.type.includes('image')) {
-    toast('只能插入图片')
-    return
-  }
-
-  const reader = new FileReader()
-  reader.onload = res => {
-    const fileResult = res.target.result
-    const img = new Image()
-    img.onload = () => {
-      const component = {
-        ...commonAttr,
-        id: generateID(),
-        component: 'Picture',
-        label: '图片',
-        icon: '',
-        propValue: {
-          url: fileResult,
-          flip: {
-            horizontal: false,
-            vertical: false
-          }
-        },
-        style: {
-          ...commonStyle,
-          top: 0,
-          left: 0,
-          width: img.width,
-          height: img.height
-        }
-      }
-
-      // 根据画面比例修改组件样式比例
-      changeComponentSizeWithScale(component)
-      dvMainStore.addComponent({ component: component, index: undefined })
-      snapshotStore.recordSnapshot('db-handleFileChange')
-
-      $('#input').setAttribute('type', 'text')
-      $('#input').setAttribute('type', 'file')
-    }
-
-    if (typeof fileResult === 'string') {
-      img.src = fileResult
-    }
-  }
-
-  reader.readAsDataURL(file)
-}
-
 const previewInner = () => {
   dvMainStore.setEditMode('preview')
 }

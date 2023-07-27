@@ -40,7 +40,7 @@ import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapsho
 import { storeToRefs } from 'pinia'
 import { ElMessageBox } from 'element-plus-secondary'
 import Icon from '@/components/icon-custom/src/Icon.vue'
-import { useEmitt } from '@/hooks/web/useEmitt'
+import { adaptCurThemeCommonStyleAll } from '@/utils/canvasStyle'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 
@@ -61,16 +61,6 @@ const props = defineProps({
 const { subjectItem } = toRefs(props)
 
 const themeSelected = computed(() => {
-  if (state.subjectItemDetails) {
-    console.log(
-      'details=' +
-        JSON.stringify(state.subjectItemDetails) +
-        '====id1=' +
-        state.subjectItemDetails.themeId +
-        ';id2=' +
-        canvasStyleData.value.themeId
-    )
-  }
   return (
     state.subjectItemDetails && state.subjectItemDetails.themeId === canvasStyleData.value.themeId
   )
@@ -95,6 +85,7 @@ const subjectChange = () => {
   if (!themeSelected.value) {
     dvMainStore.setCanvasStyle(JSON.parse(subjectItem.value.details))
     snapshotStore.recordSnapshot('subjectChange')
+    adaptCurThemeCommonStyleAll()
     emit('onSubjectChange')
   }
 }

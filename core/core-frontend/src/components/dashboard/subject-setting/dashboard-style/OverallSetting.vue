@@ -129,13 +129,12 @@ const dvMainStore = dvMainStoreWithOut()
 const { canvasStyleData } = storeToRefs(dvMainStore)
 import {
   adaptCurThemeCommonStyleAll,
-  DARK_THEME_COMPONENT_BACKGROUND,
   DARK_THEME_DASHBOARD_BACKGROUND,
-  LIGHT_THEME_COMPONENT_BACKGROUND,
   LIGHT_THEME_DASHBOARD_BACKGROUND
 } from '@/utils/canvasStyle'
 import {
   DEFAULT_COLOR_CASE_DARK,
+  DEFAULT_COLOR_CASE_LIGHT,
   DEFAULT_TAB_COLOR_CASE_DARK,
   DEFAULT_TAB_COLOR_CASE_LIGHT,
   DEFAULT_TITLE_STYLE_DARK,
@@ -147,9 +146,11 @@ import ColorButton from '@/components/assist-button/ColorButton.vue'
 import { reactive, onMounted } from 'vue'
 import { deepCopy } from '@/utils/utils'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
-import { DEFAULT_CANVAS_STYLE_DATA_DARK } from '@/views/chart/components/editor/util/dataVisualiztion'
-import { useEmitt } from '@/hooks/web/useEmitt'
 import { storeToRefs } from 'pinia'
+import {
+  COMMON_COMPONENT_BACKGROUND_DARK,
+  COMMON_COMPONENT_BACKGROUND_LIGHT
+} from '@/custom-component/component-list'
 const emits = defineEmits(['onThemeColorChange'])
 const snapshotStore = snapshotStoreWithOut()
 
@@ -164,14 +165,14 @@ const themeChange = modifyName => {
     canvasStyleData.value.backgroundType = 'backgroundColor'
     if (canvasStyleData.value.dashboard.themeColor === 'light') {
       canvasStyleData.value.backgroundColor = LIGHT_THEME_DASHBOARD_BACKGROUND
-      canvasStyleData.value.component.chartCommonStyle.color = LIGHT_THEME_COMPONENT_BACKGROUND
+      canvasStyleData.value.component.chartCommonStyle = deepCopy(COMMON_COMPONENT_BACKGROUND_LIGHT)
       canvasStyleData.value.component.chartTitle = deepCopy(DEFAULT_TITLE_STYLE_LIGHT)
-      canvasStyleData.value.component.chartColor = deepCopy(DEFAULT_TAB_COLOR_CASE_LIGHT)
+      canvasStyleData.value.component.chartColor = deepCopy(DEFAULT_COLOR_CASE_LIGHT)
       canvasStyleData.value.component.filterStyle = deepCopy(FILTER_COMMON_STYLE_LIGHT)
       canvasStyleData.value.component.tabStyle = deepCopy(DEFAULT_TAB_COLOR_CASE_LIGHT)
     } else {
       canvasStyleData.value.backgroundColor = DARK_THEME_DASHBOARD_BACKGROUND
-      canvasStyleData.value.component.chartCommonStyle.color = DARK_THEME_COMPONENT_BACKGROUND
+      canvasStyleData.value.component.chartCommonStyle = deepCopy(COMMON_COMPONENT_BACKGROUND_DARK)
       canvasStyleData.value.component.chartTitle = deepCopy(DEFAULT_TITLE_STYLE_DARK)
       canvasStyleData.value.component.chartColor = deepCopy(DEFAULT_COLOR_CASE_DARK)
       canvasStyleData.value.component.filterStyle = deepCopy(FILTER_COMMON_STYLE_DARK)
