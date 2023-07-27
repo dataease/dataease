@@ -64,6 +64,7 @@ declare module '@vue/runtime-core' {
     ElDatePicker: typeof import('element-plus-secondary/es')['ElDatePicker']
     ElDialog: typeof import('element-plus-secondary/es')['ElDialog']
     ElDivider: typeof import('element-plus-secondary/es')['ElDivider']
+    ElDraw: typeof import('element-plus-secondary/es')['ElDraw']
     ElDrawer: typeof import('element-plus-secondary/es')['ElDrawer']
     ElDropdown: typeof import('element-plus-secondary/es')['ElDropdown']
     ElDropdownItem: typeof import('element-plus-secondary/es')['ElDropdownItem']
