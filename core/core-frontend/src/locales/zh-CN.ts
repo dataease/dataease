@@ -77,7 +77,29 @@ export default {
     add_title: '添加用户',
     edit_title: '编辑用户',
     user_id: '用户',
-    user_id_empty: '请输入精准用户ID/帐号'
+    user_id_empty: '请输入精准用户ID/帐号',
+    search_placeholder: '搜索姓名、用户名、邮箱'
+  },
+  userimport: {
+    buttonText: '批量导入',
+    dialogTitle: '批量上传',
+    success: '导入成功',
+    placeholder: '点击选择文件',
+    defaultTip: '仅支持xlsx、xls格式的文件',
+    errorTip: '上传失败：文件中存在不合规数据，如需查看详情，',
+    downTip: '下载模版',
+    uploadAgain: '再次上传',
+    backUserGrid: '返回用户列表',
+    sure: '确定',
+    cancel: '取消',
+    repeatDown: '请勿重复下载',
+    limitMsg: '文件最大10M',
+    suffixMsg: '只支持.xlsx|.xls结尾的文件',
+    exceedMsg: '只能上传一个文件',
+    templateError: '用户模版错误',
+    first_please: '请先',
+    fill_and_upload: '，按要求填写后上传',
+    import: '导入'
   },
   role: {
     add_title: '添加角色',

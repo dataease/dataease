@@ -75,6 +75,7 @@ declare module '@vue/runtime-core' {
     ElIcon: typeof import('element-plus-secondary/es')['ElIcon']
     ElInput: typeof import('element-plus-secondary/es')['ElInput']
     ElInputNumber: typeof import('element-plus-secondary/es')['ElInputNumber']
+    ElLink: typeof import('element-plus-secondary/es')['ElLink']
     ElOption: typeof import('element-plus-secondary/es')['ElOption']
     ElOptionGroup: typeof import('element-plus-secondary/es')['ElOptionGroup']
     ElPageHeader: typeof import('element-plus-secondary/es')['ElPageHeader']
