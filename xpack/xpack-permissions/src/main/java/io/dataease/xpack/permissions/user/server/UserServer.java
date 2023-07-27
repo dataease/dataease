@@ -15,6 +15,7 @@ import io.dataease.license.config.XpackResource;
 import io.dataease.model.KeywordRequest;
 import io.dataease.request.BaseGridRequest;
 import io.dataease.utils.AuthUtils;
+import io.dataease.xpack.permissions.user.manage.UserBatchImportManage;
 import io.dataease.xpack.permissions.user.manage.UserPageManage;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -113,5 +115,18 @@ public class UserServer implements UserApi {
             DEException.throwException("无效language");
         }
         userPageManage.switchLang(AuthUtils.getUser().getUserId(), lang);
+    }
+
+    @Resource
+    private UserBatchImportManage userBatchImportManage;
+
+    @Override
+    public void excelTemplate() {
+        userBatchImportManage.templateDown();
+    }
+
+    @Override
+    public UserImportVO batchImport(MultipartFile file) {
+        return userBatchImportManage.upload(file);
     }
 }
