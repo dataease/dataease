@@ -48,3 +48,13 @@ export const searchExternalUserApi = keyword =>
 export const mountExternalUserApi = data => request.post({ url: '/role/mountExternalUser', data })
 
 export const switchLangApi = data => request.post({ url: '/user/switchLanguage', data })
+
+export const downExcelTemplateApi = () =>
+  request.post({ url: '/user/excelTemplate', responseType: 'blob' })
+
+export const importUserApi = data =>
+  request.post({
+    url: '/user/batchImport',
+    headersType: 'multipart/form-data',
+    data
+  })

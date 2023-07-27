@@ -10,10 +10,8 @@ import io.dataease.auth.DeApiPath;
 import io.dataease.auth.DePermit;
 import io.dataease.model.KeywordRequest;
 import io.dataease.request.BaseGridRequest;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -62,6 +60,13 @@ public interface UserApi {
 
     @GetMapping("/userCount")
     int userCount();
+
     @PostMapping("/switchLanguage")
     void switchLanguage(@RequestBody LangSwitchRequest request);
+
+    @PostMapping("/excelTemplate")
+    void excelTemplate();
+
+    @PostMapping("/batchImport")
+    UserImportVO batchImport(@RequestPart(value = "file") MultipartFile file);
 }

@@ -38,6 +38,7 @@
         <junit.version>4.13.2</junit.version>
         <httpclient.version>4.5.14</httpclient.version>
         <httpcore.version>4.4.16</httpcore.version>
+        <easyexcel.version>3.3.2</easyexcel.version>
     </properties>
     <packaging>pom</packaging>
 
@@ -105,6 +106,12 @@
                 <groupId>org.ehcache</groupId>
                 <artifactId>ehcache</artifactId>
                 <version>${ehcache.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>easyexcel</artifactId>
+                <version>${easyexcel.version}</version>
             </dependency>
 
         </dependencies>
