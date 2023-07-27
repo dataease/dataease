@@ -141,7 +141,8 @@ export const dvMainStore = defineStore('dataVisualization', {
       curOriginThemes: 'light',
       // 基础网格信息
       baseCellInfo: {},
-      dataPrepareState: false //数据准备状态
+      dataPrepareState: false, //数据准备状态
+      multiplexingStyleAdapt: true //复用样式跟随主题
     }
   },
   actions: {
@@ -226,7 +227,7 @@ export const dvMainStore = defineStore('dataVisualization', {
           if (canvasViewInfoPre[oldComponentId]) {
             const newComponentId = idMap[oldComponentId]
             _this.canvasViewInfo[newComponentId] = {
-              ...canvasViewInfoPre[oldComponentId],
+              ...deepCopy(canvasViewInfoPre[oldComponentId]),
               id: newComponentId
             }
           }

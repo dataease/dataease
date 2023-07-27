@@ -21,6 +21,7 @@ import ViewSimpleTitle from '@/components/dashboard/subject-setting/dashboard-st
 import FilterStyleSimpleSelector from '@/components/dashboard/subject-setting/dashboard-style/FilterStyleSimpleSelector.vue'
 import BackgroundOverallCommon from '@/components/visualization/component-background/BackgroundOverallCommon.vue'
 import { deepCopy } from '@/utils/utils'
+import { useEmitt } from '@/hooks/web/useEmitt'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const { canvasStyleData, componentData, canvasViewInfo } = storeToRefs(dvMainStore)
@@ -154,13 +155,16 @@ const onTextChange = val => {
 }
 const themeAttrChange = (custom, property, value) => {
   if (canvasAttrInit) {
+    // console.log('custom=' + custom + ';property=' + property + ';value=' + JSON.stringify(value))
     Object.keys(canvasViewInfo.value).forEach(function (viewId) {
       const viewInfo = canvasViewInfo.value[viewId]
+      console.log('viewInfo=' + JSON.stringify(viewInfo))
       Object.keys(value).forEach(function (key) {
         if (viewInfo[custom][property][key] !== undefined) {
           viewInfo[custom][property][key] = value[key]
         }
       })
+      useEmitt().emitter.emit('renderChart-' + viewId, viewInfo)
     })
     snapshotStore.recordSnapshot('DbCanvasAttr-themeAttrChange')
   }

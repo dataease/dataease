@@ -13,7 +13,6 @@ import io.dataease.api.permissions.auth.dto.BusiResourceCreator;
 import io.dataease.api.permissions.auth.dto.BusiResourceEditor;
 import io.dataease.commons.constants.DataSourceType;
 import io.dataease.commons.constants.TaskStatus;
-import io.dataease.dataset.dto.DataSetNodeBO;
 import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
@@ -93,7 +92,7 @@ public class DatasourceServer implements DatasourceApi {
 
     @Override
     public DatasourceDTO save(DatasourceDTO dataSourceDTO) throws Exception {
-        if(dataSourceDTO.getNodeType().equals("folder")){
+        if(StringUtils.isNotEmpty(dataSourceDTO.getNodeType()) && dataSourceDTO.getNodeType().equals("folder")){
             dataSourceDTO.setType("folder");
             dataSourceDTO.setConfiguration("");
         }
@@ -308,11 +307,9 @@ public class DatasourceServer implements DatasourceApi {
         return datasourceDTO;
     }
 
+    @Override
     public List<DsBusiNodeVO> list(BusiNodeRequest request) {
         request.setBusyFlag(RESOURCE_FLAG);
-//        if (ObjectUtils.isNotEmpty(interactiveAuthApi)) {
-//            return interactiveAuthApi.resource(request);
-//        }
         QueryWrapper queryWrapper = new QueryWrapper();
         if(ObjectUtils.isNotEmpty(request.getLeaf())){
             if(request.getLeaf()){
@@ -588,28 +585,6 @@ public class DatasourceServer implements DatasourceApi {
 
 
     public void updateDemoDs() {
-//        CoreDatasource datasource = datasourceMapper.selectById(1);
-//        if (datasource == null) {
-//            return;
-//        }
-//        JsonNode rootNode = null;
-//        try {
-//            rootNode = objectMapper.readTree(datasource.getConfiguration());
-//        } catch (Exception e) {
-//        }
-//        ObjectNode objectNode = (ObjectNode) rootNode;
-//        Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mysql://(.*):(\\d+)/(.*)");
-//        Matcher matcher = WITH_SQL_FRAGMENT.matcher(env.getProperty("spring.datasource.url"));
-//        if (!matcher.find()) {
-//            return;
-//        }
-//        objectNode.put("port", Integer.valueOf(matcher.group(2)));
-//        objectNode.put("dataBase", matcher.group(3).split("\\?")[0]);
-//        objectNode.put("extraParams", matcher.group(3).split("\\?")[1]);
-//        objectNode.put("username", env.getProperty("spring.datasource.username"));
-//        objectNode.put("password", env.getProperty("spring.datasource.password"));
-//        datasource.setConfiguration(JsonUtil.toJSONString(objectNode).toString());
-//        datasourceMapper.updateById(datasource);
     }
 
 

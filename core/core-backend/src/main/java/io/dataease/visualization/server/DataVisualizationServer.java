@@ -224,4 +224,22 @@ public class DataVisualizationServer implements DataVisualizationApi {
             DataEaseException.throwException("当前名称已经存在");
         }
     }
+
+    @Override
+    public List<DataVisualizationVO> findRecent(DataVisualizationBaseRequest request) {
+        QueryWrapper<DataVisualizationInfo> wrapper = new QueryWrapper<>();
+        wrapper.eq("delete_flag", 0);
+        wrapper.eq("node_type","leaf");
+        wrapper.like(StringUtils.isNotEmpty(request.getName()),"name", request.getName());
+        wrapper.eq(StringUtils.isNotEmpty(request.getType()),"type", request.getType());
+        List<DataVisualizationInfo> result = visualizationInfoMapper.selectList(wrapper);
+        List<DataVisualizationVO> returnResult = new ArrayList<>();
+        if(!CollectionUtils.isEmpty(result)){
+            result.stream().forEach(dataVisualizationInfo ->{
+                DataVisualizationVO dataVisualizationVO = new DataVisualizationVO();
+                returnResult.add(BeanUtils.copyBean(dataVisualizationVO,dataVisualizationInfo));
+            });
+        }
+        return returnResult;
+    }
 }

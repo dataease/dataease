@@ -345,7 +345,7 @@ export function componentScalePublic(chartInfo, heightScale, widthScale) {
 
 export function adaptCurTheme(customStyle, customAttr, chartType) {
   const canvasStyle = dvMainStore.canvasStyleData
-  const themeColor = canvasStyle.panel.themeColor
+  const themeColor = canvasStyle.dashboard.themeColor
   if (themeColor === 'light') {
     recursionThemTransObj(THEME_STYLE_TRANS_MAIN, customStyle, LIGHT_THEME_COLOR_MAIN)
     recursionThemTransObj(THEME_STYLE_TRANS_SLAVE1, customStyle, LIGHT_THEME_COLOR_SLAVE1)
@@ -359,7 +359,7 @@ export function adaptCurTheme(customStyle, customAttr, chartType) {
       // 符号地图特殊处理
       customStyle['baseMapStyle'] = { baseMapTheme: 'light' }
     }
-    customAttr['color'] = { ...DEFAULT_COLOR_CASE, ...canvasStyle.chartInfo.chartColor }
+    customAttr['color'] = { ...DEFAULT_COLOR_CASE, ...canvasStyle.component.chartColor }
   } else {
     recursionThemTransObj(THEME_STYLE_TRANS_MAIN, customStyle, DARK_THEME_COLOR_MAIN)
     recursionThemTransObj(THEME_STYLE_TRANS_SLAVE1, customStyle, DARK_THEME_COLOR_SLAVE1)
@@ -375,17 +375,14 @@ export function adaptCurTheme(customStyle, customAttr, chartType) {
         DARK_THEME_COMPONENT_BACKGROUND_BACK
       )
     }
-    customAttr['color'] = { ...DEFAULT_COLOR_CASE_DARK, ...canvasStyle.chartInfo.chartColor }
+    customAttr['color'] = { ...DEFAULT_COLOR_CASE_DARK, ...canvasStyle.component.chartColor }
   }
   customStyle['text'] = {
-    ...canvasStyle.chartInfo.chartTitle,
+    ...canvasStyle.component.chartTitle,
     title: customStyle['text']['title'],
     show: customStyle['text']['show'],
     remarkShow: customStyle['text']['remarkShow'],
     remark: customStyle['text']['remark']
-  }
-  if (customStyle.background) {
-    delete customStyle.background
   }
 }
 
@@ -405,22 +402,25 @@ export function adaptCurThemeCommonStyle(component) {
     }
   }
   // 通用样式-End
-  if (component.type === 'UserView') {
+  if (component.component === 'UserView') {
     // 视图-Begin
     const curViewInfo = dvMainStore.canvasViewInfo[component.id]
-    //标题-Begin
-    const titleStyle = dvMainStore.canvasStyleData.component.chartTitle
-    for (const key in titleStyle) {
-      curViewInfo.customStyle.text[key] = titleStyle[key]
-    }
-    //标题-End
 
-    //配色-Begin
-    const componentColorStyle = dvMainStore.canvasStyleData.component.chartColor
-    for (const key in componentColorStyle) {
-      curViewInfo.customAttr.color[key] = componentColorStyle[key]
-    }
-    //配色-End
+    // //标题-Begin
+    // const titleStyle = dvMainStore.canvasStyleData.component.chartTitle
+    // for (const key in titleStyle) {
+    //   curViewInfo.customStyle.text[key] = titleStyle[key]
+    // }
+    // //标题-End
+    //
+    // //配色-Begin
+    // const componentColorStyle = dvMainStore.canvasStyleData.component.chartColor
+    // for (const key in componentColorStyle) {
+    //   curViewInfo.customAttr.color[key] = componentColorStyle[key]
+    // }
+    // //配色-End
+
+    adaptCurTheme(curViewInfo.customStyle, curViewInfo.customAttr, curViewInfo.type)
     useEmitt().emitter.emit('renderChart-' + component.id, curViewInfo)
     // 视图-Begin
   }

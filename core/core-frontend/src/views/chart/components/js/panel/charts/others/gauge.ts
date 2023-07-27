@@ -14,6 +14,20 @@ import { valueFormatter } from '@/views/chart/components/editor/util/formatter'
 import { getPadding, setGradientColor } from '@/views/chart/components/js/panel/common/common_antv'
 const DEFAULT_DATA = []
 export class Gauge extends G2PlotChartView<GaugeOptions, G2Gauge> {
+  properties: EditorProperty[] = [
+    'background-overall-component',
+    'basic-style-selector',
+    'label-selector',
+    'title-selector'
+  ]
+  propertyInner: EditorPropertyInner = {
+    'background-overall-component': ['all'],
+    'basic-style-selector': ['colors', 'alpha', 'gaugeStyle'],
+    'label-selector': ['all'],
+    'title-selector': ['all']
+  }
+  axis: AxisType[] = ['yAxis', 'filter']
+
   drawChart(drawOptions: G2PlotDrawOptions<G2Gauge>): G2Gauge {
     const chart = drawOptions.chart
     if (chart?.data) {

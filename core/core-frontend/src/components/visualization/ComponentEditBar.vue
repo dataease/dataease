@@ -1,5 +1,14 @@
 <template>
-  <div class="bar-main" :class="showEditPosition" @click.stop>
+  <div
+    class="bar-main"
+    :class="[
+      showEditPosition,
+      {
+        'bar-main-background': showPosition !== 'multiplexing'
+      }
+    ]"
+    @click.stop
+  >
     <span :title="t('visualization.enlarge')" v-if="barShowCheck('enlarge')">
       <el-icon class="bar-base-icon" @click="userViewEnlargeOpen">
         <Icon name="dv-bar-enlarge"></Icon
@@ -278,6 +287,8 @@ const linkJumpSetOpen = () => {
   z-index: 2;
   border-radius: 2px;
   cursor: pointer !important;
+}
+.bar-main-background {
   background-color: var(--primary, #3370ff);
 }
 

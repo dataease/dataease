@@ -302,7 +302,7 @@ const saveExcelDs = (params, successCb, finallyCb) => {
 
 const saveExcelData = (sheetFileMd5, table, params, successCb, finallyCb) => {
   table.configuration = Base64.encode(JSON.stringify(table.sheets))
-  if (!table.id) {
+  if (!table.id || table.id === '0') {
     delete table.id
     table.pid = params.pid
   }

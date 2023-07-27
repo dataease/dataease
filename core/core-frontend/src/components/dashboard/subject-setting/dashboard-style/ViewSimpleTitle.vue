@@ -5,7 +5,7 @@
       <div style="padding-top: 4px; margin-right: 8px">
         <el-color-picker
           :title="t('chart.text_color')"
-          v-model="state.titleForm.color"
+          v-model="titleForm.color"
           class="color-picker-style"
           size="small"
           :predefine="state.predefineColors"
@@ -16,7 +16,7 @@
         <el-select
           style="width: 56px"
           :title="t('chart.text_fontsize')"
-          v-model="state.titleForm.fontSize"
+          v-model="titleForm.fontSize"
           :placeholder="'大小'"
           size="small"
           @change="changeTitleStyle('fontSize')"
@@ -30,18 +30,18 @@
         </el-select>
       </div>
       <div>
-        <el-checkbox v-model="state.titleForm.isBolder" :title="t('chart.bolder')"
+        <el-checkbox v-model="titleForm.isBolder" :title="t('chart.bolder')"
           ><Icon class-name="bash-icon" name="title-bold"
         /></el-checkbox>
       </div>
       <div>
-        <el-checkbox v-model="state.titleForm.isItalic" :title="t('chart.italic')"
+        <el-checkbox v-model="titleForm.isItalic" :title="t('chart.italic')"
           ><Icon class-name="bash-icon" name="title-italic"
         /></el-checkbox>
       </div>
       <div class="custom-divider"></div>
       <div>
-        <el-radio-group v-model="state.titleForm.hPosition" @change="changeTitleStyle('hPosition')">
+        <el-radio-group v-model="titleForm.hPosition" @change="changeTitleStyle('hPosition')">
           <el-radio label="left" :title="t('chart.text_pos_left')"
             ><Icon class-name="bash-icon" name="title-left"
           /></el-radio>
@@ -56,7 +56,7 @@
       <div class="custom-divider"></div>
       <div>
         <el-radio-group
-          v-model="state.titleForm.vPosition"
+          v-model="titleForm.vPosition"
           size="mini"
           @change="changeTitleStyle('vPosition')"
         >
@@ -76,7 +76,7 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive } from 'vue'
+import { computed, reactive, ref } from 'vue'
 import { COLOR_PANEL } from '@/views/chart/components/editor/util/chart'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -84,7 +84,8 @@ import Icon from '@/components/icon-custom/src/Icon.vue'
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
 const emits = defineEmits(['onTextChange'])
-
+const titleFormRef = ref(null)
+const titleForm = computed(() => dvMainStore.canvasStyleData.component.chartTitle)
 const state = reactive({
   titleForm: {},
   fontSize: [],
@@ -93,7 +94,7 @@ const state = reactive({
 })
 
 const initForm = () => {
-  state.titleForm = dvMainStore.canvasStyleData.component.chartTitle
+  // do
 }
 
 const init = () => {
@@ -107,8 +108,8 @@ const init = () => {
   state.fontSize = arr
 }
 const changeTitleStyle = modifyName => {
-  state.titleForm['modifyName'] = modifyName
-  emits('onTextChange', state.titleForm)
+  titleForm.value['modifyName'] = modifyName
+  emits('onTextChange', titleForm.value)
 }
 init()
 </script>

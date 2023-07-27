@@ -472,6 +472,7 @@ declare interface AssistLine {
   color: string
   lineType: string
   fontSize: number
+  fieldId: string
 }
 declare interface ChartSenior {
   functionCfg: ChartFunctionCfg

@@ -40,8 +40,8 @@ export interface Table {
   unableCheck?: boolean
 }
 
-export const listDatasources = async (data = {}) => {
-  return request.post({ url: '/datasource/list', data: data }).then(res => {
+export const listDatasources = (data = {}) => {
+  return request.post({ url: '/datasource/list', data }).then(res => {
     return res?.data
   })
 }

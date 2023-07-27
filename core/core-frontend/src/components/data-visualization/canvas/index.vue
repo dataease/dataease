@@ -30,6 +30,7 @@ import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapsho
 import UserViewEnlarge from '@/components/visualization/UserViewEnlarge.vue'
 import CanvasOptBar from '@/components/visualization/CanvasOptBar.vue'
 import LinkJumpSet from '@/components/visualization/LinkJumpSet.vue'
+import { adaptCurThemeCommonStyle } from '@/utils/canvasStyle'
 const snapshotStore = snapshotStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
 const composeStore = composeStoreWithOut()
@@ -1365,6 +1366,10 @@ const handleDragStartMoveIn = componentInfo => {
   moveInItemInfo.isShow = false
   moveInItemInfo.id = guid()
   dvMainStore.addComponent({ component: moveInItemInfo, index: undefined })
+  const adapt = dvInfo.value.type === 'dashboard' ? true : false
+  if (adapt) {
+    adaptCurThemeCommonStyle(moveInItemInfo)
+  }
   addItemBox(moveInItemInfo)
   if (!infoBox.value) {
     infoBox.value = {}

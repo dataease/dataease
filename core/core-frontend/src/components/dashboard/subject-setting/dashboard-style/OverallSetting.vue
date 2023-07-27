@@ -8,14 +8,14 @@
         <color-button
           class="margin-left2"
           :color-type="'light'"
-          :label="state.overallSettingForm.dashboard.themeColor"
+          :label="canvasStyleData.dashboard.themeColor"
           @onClick="colorButtonClick"
           >{{ t('visualization.theme_color_light') }}
         </color-button>
         <color-button
           class="margin-left32"
           :color-type="'dark'"
-          :label="state.overallSettingForm.dashboard.themeColor"
+          :label="canvasStyleData.dashboard.themeColor"
           @onClick="colorButtonClick"
           >{{ t('visualization.theme_color_dark') }}
         </color-button>
@@ -26,7 +26,7 @@
         ><span class="custom-item-text bl">{{ t('visualization.component_gap') }}</span>
       </el-row>
       <el-row class="function-area">
-        <el-radio-group v-model="state.overallSettingForm.dashboard.gap" @change="themeChange">
+        <el-radio-group v-model="canvasStyleData.dashboard.gap" @change="themeChange">
           <el-radio label="yes">{{ t('visualization.gap') }}</el-radio>
           <el-radio label="no">{{ t('visualization.no_gap') }}</el-radio>
         </el-radio-group>
@@ -35,29 +35,29 @@
     <el-row class="custom-row margin-top16">
       <el-row class="custom-item-text-row">
         <span class="custom-item-text bl">
-          <el-checkbox v-model="state.overallSettingForm.refreshViewEnable" @change="themeChange">{{
+          <el-checkbox v-model="canvasStyleData.refreshViewEnable" @change="themeChange">{{
             t('visualization.refresh_frequency')
           }}</el-checkbox>
         </span>
       </el-row>
       <el-row class="function-area">
         <el-input-number
-          v-model="state.overallSettingForm.refreshTime"
+          v-model="canvasStyleData.refreshTime"
           class="el-input-refresh-time"
           type="number"
           controls-position="right"
           :min="1"
           :max="3600"
           size="small"
-          :disabled="!state.overallSettingForm.refreshViewEnable"
+          :disabled="!canvasStyleData.refreshViewEnable"
           @change="themeChange"
         >
         </el-input-number>
         <el-select
-          v-model="state.overallSettingForm.refreshUnit"
+          v-model="canvasStyleData.refreshUnit"
           class="el-input-refresh-unit margin-left8"
           size="small"
-          :disabled="!state.overallSettingForm.refreshViewEnable"
+          :disabled="!canvasStyleData.refreshViewEnable"
           @change="themeChange"
         >
           <el-option :label="t('visualization.minute')" :value="'minute'" />
@@ -68,11 +68,9 @@
     <el-row class="custom-row margin-top16">
       <el-row class="custom-item-text-row">
         <span class="custom-item-text">
-          <el-checkbox
-            v-model="state.overallSettingForm.refreshViewLoading"
-            @change="themeChange"
-            >{{ t('visualization.enable_view_loading') }}</el-checkbox
-          >
+          <el-checkbox v-model="canvasStyleData.refreshViewLoading" @change="themeChange">{{
+            t('visualization.enable_view_loading')
+          }}</el-checkbox>
         </span>
       </el-row>
     </el-row>
@@ -95,7 +93,7 @@
       <el-row class="function-area custom-row">
         <el-row>
           <el-radio-group
-            v-model="state.overallSettingForm.dashboard.resultMode"
+            v-model="canvasStyleData.dashboard.resultMode"
             class="radio-span"
             @change="themeChange"
           >
@@ -109,13 +107,13 @@
         </el-row>
         <el-row class="margin-top8">
           <el-input-number
-            v-model="state.overallSettingForm.dashboard.resultCount"
+            v-model="canvasStyleData.dashboard.resultCount"
             controls-position="right"
             size="small"
             :min="1"
             :max="10000"
             @change="themeChange"
-            :disabled="state.overallSettingForm.dashboard.resultMode === 'all'"
+            :disabled="canvasStyleData.dashboard.resultMode === 'all'"
           ></el-input-number>
         </el-row>
       </el-row>
@@ -128,15 +126,15 @@ import { useI18n } from '@/hooks/web/useI18n'
 const { t } = useI18n()
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 const dvMainStore = dvMainStoreWithOut()
+const { canvasStyleData } = storeToRefs(dvMainStore)
 import {
   adaptCurThemeCommonStyleAll,
-  DARK_THEME_COMPONENT_BACKGROUND,
   DARK_THEME_DASHBOARD_BACKGROUND,
-  LIGHT_THEME_COMPONENT_BACKGROUND,
   LIGHT_THEME_DASHBOARD_BACKGROUND
 } from '@/utils/canvasStyle'
 import {
   DEFAULT_COLOR_CASE_DARK,
+  DEFAULT_COLOR_CASE_LIGHT,
   DEFAULT_TAB_COLOR_CASE_DARK,
   DEFAULT_TAB_COLOR_CASE_LIGHT,
   DEFAULT_TITLE_STYLE_DARK,
@@ -145,52 +143,51 @@ import {
   FILTER_COMMON_STYLE_LIGHT
 } from '@/views/chart/components/editor/util/chart'
 import ColorButton from '@/components/assist-button/ColorButton.vue'
-import { reactive } from 'vue'
+import { reactive, onMounted } from 'vue'
 import { deepCopy } from '@/utils/utils'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
-import { DEFAULT_CANVAS_STYLE_DATA_DARK } from '@/views/chart/components/editor/util/dataVisualiztion'
+import { storeToRefs } from 'pinia'
+import {
+  COMMON_COMPONENT_BACKGROUND_DARK,
+  COMMON_COMPONENT_BACKGROUND_LIGHT
+} from '@/custom-component/component-list'
 const emits = defineEmits(['onThemeColorChange'])
 const snapshotStore = snapshotStoreWithOut()
 
 const state = reactive({
-  colorIndex: 0,
-  overallSettingForm: deepCopy(DEFAULT_CANVAS_STYLE_DATA_DARK)
+  colorIndex: 0
 })
 
-const initForm = () => {
-  state.overallSettingForm = dvMainStore.canvasStyleData.value
-}
 const themeChange = modifyName => {
   if (modifyName === 'themeColor') {
     // 主题变更
-    dvMainStore.canvasStyleData.component.chartCommonStyle.backgroundColorSelect = true
-    dvMainStore.canvasStyleData.backgroundType = 'backgroundColor'
-    if (state.overallSettingForm.dashboard.themeColor === 'light') {
-      dvMainStore.canvasStyleData.backgroundColor = LIGHT_THEME_DASHBOARD_BACKGROUND
-      dvMainStore.canvasStyleData.component.chartCommonStyle.color =
-        LIGHT_THEME_COMPONENT_BACKGROUND
-      dvMainStore.canvasStyleData.component.chartTitle = deepCopy(DEFAULT_TITLE_STYLE_LIGHT)
-      dvMainStore.canvasStyleData.component.chartColor = deepCopy(DEFAULT_TAB_COLOR_CASE_LIGHT)
-      dvMainStore.canvasStyleData.component.filterStyle = deepCopy(FILTER_COMMON_STYLE_LIGHT)
-      dvMainStore.canvasStyleData.component.tabStyle = deepCopy(DEFAULT_TAB_COLOR_CASE_LIGHT)
+    canvasStyleData.value.component.chartCommonStyle.backgroundColorSelect = true
+    canvasStyleData.value.backgroundType = 'backgroundColor'
+    if (canvasStyleData.value.dashboard.themeColor === 'light') {
+      canvasStyleData.value.backgroundColor = LIGHT_THEME_DASHBOARD_BACKGROUND
+      canvasStyleData.value.component.chartCommonStyle = deepCopy(COMMON_COMPONENT_BACKGROUND_LIGHT)
+      canvasStyleData.value.component.chartTitle = deepCopy(DEFAULT_TITLE_STYLE_LIGHT)
+      canvasStyleData.value.component.chartColor = deepCopy(DEFAULT_COLOR_CASE_LIGHT)
+      canvasStyleData.value.component.filterStyle = deepCopy(FILTER_COMMON_STYLE_LIGHT)
+      canvasStyleData.value.component.tabStyle = deepCopy(DEFAULT_TAB_COLOR_CASE_LIGHT)
     } else {
-      dvMainStore.canvasStyleData.backgroundColor = DARK_THEME_DASHBOARD_BACKGROUND
-      dvMainStore.canvasStyleData.component.chartCommonStyle.color = DARK_THEME_COMPONENT_BACKGROUND
-      dvMainStore.canvasStyleData.component.chartTitle = deepCopy(DEFAULT_TITLE_STYLE_DARK)
-      dvMainStore.canvasStyleData.component.chartColor = deepCopy(DEFAULT_COLOR_CASE_DARK)
-      dvMainStore.canvasStyleData.component.filterStyle = deepCopy(FILTER_COMMON_STYLE_DARK)
-      dvMainStore.canvasStyleData.component.tabStyle = deepCopy(DEFAULT_TAB_COLOR_CASE_DARK)
+      canvasStyleData.value.backgroundColor = DARK_THEME_DASHBOARD_BACKGROUND
+      canvasStyleData.value.component.chartCommonStyle = deepCopy(COMMON_COMPONENT_BACKGROUND_DARK)
+      canvasStyleData.value.component.chartTitle = deepCopy(DEFAULT_TITLE_STYLE_DARK)
+      canvasStyleData.value.component.chartColor = deepCopy(DEFAULT_COLOR_CASE_DARK)
+      canvasStyleData.value.component.filterStyle = deepCopy(FILTER_COMMON_STYLE_DARK)
+      canvasStyleData.value.component.tabStyle = deepCopy(DEFAULT_TAB_COLOR_CASE_DARK)
     }
     adaptCurThemeCommonStyleAll()
   }
   snapshotStore.recordSnapshot('overallSetting-themeChange')
 }
 const colorButtonClick = val => {
-  if (val !== state.overallSettingForm.dashboard.themeColor) {
-    state.overallSettingForm.dashboard.themeColor = val
+  if (val !== canvasStyleData.value.dashboard.themeColor) {
+    canvasStyleData.value.dashboard.themeColor = val
     themeChange('themeColor')
   } else {
-    state.overallSettingForm.dashboard.themeColor = val
+    canvasStyleData.value.dashboard.themeColor = val
   }
 }
 </script>

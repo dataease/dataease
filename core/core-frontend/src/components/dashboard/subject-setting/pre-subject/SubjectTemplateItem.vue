@@ -18,7 +18,6 @@
       <Icon v-else name="dv-no-img" style="width: 172px; height: 79px"></Icon>
     </div>
     <div class="title-main">
-      <!--    <div class="title-main" @dblclick="setEdit">-->
       <div class="title-area">
         <span style="margin-top: 8px; margin-left: 8px" :title="subjectItem.name">{{
           subjectItem.name
@@ -33,22 +32,19 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref, toRefs, watch } from 'vue'
+import { computed, onMounted, reactive, ref, toRefs, watch } from 'vue'
 import { imgUrlTrans } from '@/utils/imgUtils'
-import { hexColorToRGBA } from '@/views/chart/components/js/util'
-import { chartTransStr2Object } from '@/utils/canvasUtils'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 
 import { storeToRefs } from 'pinia'
-import { ElMessage, ElMessageBox } from 'element-plus-secondary'
-import { deleteLogic, saveOrUpdateSubject } from '@/api/visualization/dataVisualization'
+import { ElMessageBox } from 'element-plus-secondary'
 import Icon from '@/components/icon-custom/src/Icon.vue'
+import { adaptCurThemeCommonStyleAll } from '@/utils/canvasStyle'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 
 const { canvasStyleData } = storeToRefs(dvMainStore)
-const nameInput = ref(null)
 
 const state = reactive({
   defaultSubject: {},
@@ -62,141 +58,14 @@ const props = defineProps({
     required: true
   }
 })
-
 const { subjectItem } = toRefs(props)
-
-const customBackground = computed(() => {
-  let style = {
-    width: '100%',
-    height: '100%',
-    background: 'background: 0% 0% / cover rgb(255, 255, 255)',
-    backgroundSize: '100% 100% !important'
-  }
-  if (state.subjectItemDetails) {
-    if (
-      state.subjectItemDetails.panel.backgroundType === 'image' &&
-      state.subjectItemDetails.panel.imageUrl
-    ) {
-      return {
-        width: '100%',
-        height: '100%',
-        background: `url(${imgUrlTrans(state.subjectItemDetails.panel.imageUrl)}) no-repeat`
-      }
-    } else {
-      return {
-        width: '100%',
-        height: '100%',
-        background: state.subjectItemDetails.panel.color
-      }
-    }
-  }
-  return style
-})
-
-const columnBackgroundLeft = computed(() => {
-  let style = {}
-  if (state.subjectItemDetails) {
-    style = {
-      opacity: state.subjectItemDetails.chartInfo.chartColor.alpha / 100,
-      background: state.subjectItemDetails.chartInfo.chartColor.colors[0]
-    }
-  }
-  return style
-})
-const columnBackgroundMiddle = computed(() => {
-  let style = {}
-  if (state.subjectItemDetails) {
-    style = {
-      opacity: state.subjectItemDetails.chartInfo.chartColor.alpha / 100,
-      background: state.subjectItemDetails.chartInfo.chartColor.colors[1]
-    }
-  }
-  return style
-})
-
-const columnBackgroundRight = computed(() => {
-  let style = {}
-  if (state.subjectItemDetails) {
-    style = {
-      opacity: state.subjectItemDetails.chartInfo.chartColor.alpha / 100,
-      background: state.subjectItemDetails.chartInfo.chartColor.colors[2]
-    }
-  }
-  return style
-})
-
-const tableHeadBackground = computed(() => {
-  let style = {}
-  if (state.subjectItemDetails) {
-    style = {
-      opacity: state.subjectItemDetails.chartInfo.chartColor.alpha / 100,
-      background: state.subjectItemDetails.chartInfo.chartColor.tableHeaderBgColor
-    }
-  }
-  return style
-})
-
-const tableFontColor = computed(() => {
-  let style = {}
-  if (state.subjectItemDetails) {
-    style = {
-      background: state.subjectItemDetails.chartInfo.chartColor.tableFontColor
-    }
-  }
-  return style
-})
-
-const chartBackground = computed(() => {
-  const style = {}
-  if (state.subjectItemDetails && state.subjectItemDetails.chartInfo.chartCommonStyle) {
-    const commonBackground = state.subjectItemDetails.chartInfo.chartCommonStyle
-    style['padding'] = (commonBackground.innerPadding || 0) + 'px'
-    style['border-radius'] = (commonBackground.borderRadius || 0) + 'px'
-    let colorRGBA = ''
-    if (commonBackground.backgroundColorSelect) {
-      colorRGBA = hexColorToRGBA(commonBackground.color, commonBackground.alpha)
-    }
-    if (commonBackground.enable) {
-      if (
-        commonBackground.backgroundType === 'innerImage' &&
-        typeof commonBackground.innerImage === 'string'
-      ) {
-        const innerImage = commonBackground.innerImage.replace('svg', 'png')
-        style['background'] = `url(${imgUrlTrans(innerImage)}) no-repeat ${colorRGBA}`
-      } else if (
-        commonBackground.backgroundType === 'outerImage' &&
-        typeof commonBackground.outerImage === 'string'
-      ) {
-        style['background'] = `url(${imgUrlTrans(
-          commonBackground.outerImage
-        )}) no-repeat ${colorRGBA}`
-      } else {
-        style['background-color'] = colorRGBA
-      }
-    } else {
-      style['background-color'] = colorRGBA
-    }
-    style['overflow'] = 'hidden'
-  }
-  return style
-})
 
 const themeSelected = computed(() => {
   return (
     state.subjectItemDetails && state.subjectItemDetails.themeId === canvasStyleData.value.themeId
   )
 })
-
-watch(
-  subjectItem.value,
-  newVal => {
-    state.subjectItemDetails = chartTransStr2Object(JSON.parse(newVal.details), 'Y')
-  },
-  { deep: true }
-)
-
-const emit = defineEmits(['subjectDelete', 'onSubjectChange', 'templateEdit', 'subjectEdit'])
-
+const emit = defineEmits(['subjectDelete', 'onSubjectChange', 'subjectEdit'])
 const subjectDelete = () => {
   ElMessageBox.confirm('确定删除[' + subjectItem.value.name + ']吗?', {
     confirmButtonType: 'danger',
@@ -216,53 +85,14 @@ const subjectChange = () => {
   if (!themeSelected.value) {
     dvMainStore.setCanvasStyle(JSON.parse(subjectItem.value.details))
     snapshotStore.recordSnapshot('subjectChange')
+    adaptCurThemeCommonStyleAll()
     emit('onSubjectChange')
   }
 }
-const templateEdit = () => {
-  emit('templateEdit')
-}
 
-const handleDelete = () => {
-  return null
-}
-// 双击事件
-const setEdit = () => {
-  if (subjectItem.value.type === 'self') {
-    state.canEdit = true
-  } else {
-    ElMessage.success('默认主题无法编辑')
-  }
-  // 将单元格变为输入框
-  // // 聚焦到单元格
-  setTimeout(() => {
-    nameInput.value.focus()
-  }, 20)
-}
-// 当输入框失去焦点时不显示输入框
-const loseFocus = () => {
-  if (
-    subjectItem.value.name &&
-    subjectItem.value.name.length > 0 &&
-    subjectItem.value.name.length < 20
-  ) {
-    const request = {
-      id: subjectItem.value.id,
-      name: subjectItem.value.name
-    }
-    saveOrUpdateSubject(request).then(response => {
-      ElMessage.success('保存成功')
-      state.canEdit = false
-    })
-  } else {
-    ElMessage.warning('主题名称不能为空')
-  }
-}
-const selectChange = (callback, editCell) => {
-  if (!callback) {
-    editCell.edit = false
-  }
-}
+onMounted(() => {
+  state.subjectItemDetails = JSON.parse(subjectItem.value.details)
+})
 </script>
 
 <style scoped lang="less">
@@ -285,7 +115,7 @@ const selectChange = (callback, editCell) => {
 .subject-template:hover {
   color: deepskyblue;
   cursor: pointer;
-  border: solid 1px #4b8fdf;
+  border: dashed 1px #4b8fdf;
 }
 
 .demonstration {
@@ -350,7 +180,7 @@ const selectChange = (callback, editCell) => {
 }
 
 .background-selected {
-  border: solid 2px #4b8fdf;
+  border: solid 1px #4b8fdf !important;
 }
 
 .delete-icon {

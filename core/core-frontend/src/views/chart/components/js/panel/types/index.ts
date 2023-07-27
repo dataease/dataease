@@ -14,6 +14,11 @@ export abstract class AbstractChartView {
   render: ChartRenderType
   library: ChartLibraryType
   name: string
+  title: string
+  abstract properties: EditorProperty[]
+  abstract propertyInner: EditorPropertyInner
+  abstract axis: AxisType[]
+  abstract axisDesc: AxisDesc
 
   protected defaultData: any[]
 
@@ -51,6 +56,7 @@ export interface AntVDrawOptions<O> {
 }
 
 export abstract class AntVAbstractChartView extends AbstractChartView {
+  axisDesc = {}
   protected constructor(library: ChartLibraryType, name: string, defaultData?: any[]) {
     super(ChartRenderType.ANT_V, library, name, defaultData)
   }

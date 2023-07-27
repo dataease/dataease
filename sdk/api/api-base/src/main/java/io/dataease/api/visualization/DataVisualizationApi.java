@@ -36,4 +36,7 @@ public interface DataVisualizationApi {
     @PostMapping("/nameCheck")
     void nameCheck(@RequestBody DataVisualizationBaseRequest request);
 
+    @PostMapping("/findRecent")
+    List<DataVisualizationVO> findRecent(@RequestBody DataVisualizationBaseRequest request);
+
 }

@@ -148,9 +148,7 @@ const createInit = (type, data: Tree, exec, name: string) => {
     request = data.request
   }
   if (data.id) {
-    listDatasources({
-      type: 'folder'
-    }).then(res => {
+    listDatasources({ leaf: false }).then(res => {
       dfs(res as unknown as Tree[])
       state.tData = (res as unknown as Tree[]) || []
       if (exec) {

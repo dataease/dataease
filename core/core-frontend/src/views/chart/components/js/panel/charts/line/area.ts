@@ -14,6 +14,9 @@ import {
 import { singleDimensionTooltipFormatter } from '@/views/chart/components/js/formatter'
 const DEFAULT_DATA = []
 export class Area extends G2PlotChartView<AreaOptions, G2Area> {
+  properties: EditorProperty[]
+  propertyInner: EditorPropertyInner
+  axis: AxisType[]
   drawChart(drawOptions: G2PlotDrawOptions<G2Area>): G2Area {
     const chart = drawOptions.chart
     if (chart?.data) {
