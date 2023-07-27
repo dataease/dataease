@@ -271,25 +271,6 @@ public class DatasetTableFieldManage {
         return results;
     }
 
-//    private List<BaseTreeNode> buildTreeNode(String[] row, Set<String> pkSet) {
-//        List<BaseTreeNode> nodes = new ArrayList<>();
-//        List<String> parentPkList = new ArrayList<>();
-//        for (int i = 0; i < row.length; i++) {
-//            String text = row[i];
-//
-//            parentPkList.add(text);
-//            String val = parentPkList.stream().collect(Collectors.joining(TreeUtils.SEPARATOR));
-//            String parentVal = i == 0 ? TreeUtils.DEFAULT_ROOT : row[i - 1];
-//            Long pk = parentPkList.stream().collect(Collectors.joining(TreeUtils.SEPARATOR));
-//            if (pkSet.contains(pk)) continue;
-//            pkSet.add(pk);
-//            BaseTreeNode node = new BaseTreeNode(val, parentVal, text, pk + TreeUtils.SEPARATOR + i);
-//            nodes.add(node);
-//        }
-//        return nodes;
-//
-//    }
-
     public List<DeSortField> buildSorts(List<DatasetTableFieldDTO> allFields, DeSortDTO sortDTO) {
         if (ObjectUtils.isEmpty(sortDTO) || sortDTO.getId() != null || StringUtils.isBlank(sortDTO.getSort()))
             return null;

@@ -13,17 +13,6 @@ import java.util.List;
  */
 @Mapper
 public interface ExtDatasourceTaskMapper {
-//    List<DataSetTaskLogDTO> listTaskLog(GridExample example);
-//
-//    List<DataSetTaskLogDTO> listUserTaskLog(GridExample example);
-//
-//    List<DataSetTaskDTO> taskList(GridExample example);
-//
-//    List<DataSetTaskDTO> userTaskList(GridExample example);
-//
-//    List<DataSetTaskDTO> findByPanelId(@Param("panelId") String panelId);
-//
-//    List<DataSetTaskDTO> findByTableIds(@Param("tableIds") List tableIds);
 
     List<CoreDatasourceTaskDTO> taskWithTriggers(GridExample example);
 

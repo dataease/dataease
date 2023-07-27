@@ -57,29 +57,11 @@ public class SqlUtils {
             SqlBasicCall sqlKind = (SqlBasicCall) sqlNode;
             if (sqlKind.getOperandList().size() >= 2) {
                 addTableSchema(sqlKind.getOperandList().get(0), fromOrJoin, schema, config);
-
-//                try {
-//                    sqlKind.setOperand(0, SqlParser.create(schema + ".`" + sqlKind.getOperandList().get(0).toString() + "`", config).parseExpression());
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
             }
         } else if (sqlNode.getKind() == SELECT) {
             SqlSelect sqlKind = (SqlSelect) sqlNode;
-//            List<SqlNode> list = sqlKind.getSelectList().getList();
-//            for (SqlNode i : list) {
-//                addTableSchema(i, false, schema);// select字段解析
-//            }
-            addTableSchema(sqlKind.getFrom(), true, schema, config);
 
-//            if (((
-//            SqlSelect) sqlNode).getFrom().getKind() == IDENTIFIER) {
-//                try {
-//                    sqlKind.setFrom(SqlParser.create(schema + ".`" + ((SqlSelect) sqlNode).getFrom().toString() + "`", config).parseExpression());
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//            }
+            addTableSchema(sqlKind.getFrom(), true, schema, config);
         }
     }
 }
