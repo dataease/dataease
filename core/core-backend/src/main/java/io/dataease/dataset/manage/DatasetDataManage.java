@@ -138,12 +138,10 @@ public class DatasetDataManage {
     public List<DatasetTableFieldDTO> transFields(List<TableField> tableFields, boolean defaultStatus) {
         return tableFields.stream().map(ele -> {
             DatasetTableFieldDTO dto = new DatasetTableFieldDTO();
-//            dto.setId(IDUtils.snowID());
             dto.setName(StringUtils.isNotEmpty(ele.getName()) ? ele.getName() : ele.getOriginName());
             dto.setOriginName(ele.getOriginName());
             dto.setChecked(defaultStatus);
             dto.setType(ele.getType());
-//            dto.setDescription(dto.getName());// 字段描述，不一定取的到
             int deType = FieldUtils.transType2DeType(ele.getType());
             dto.setDeExtractType(deType);
             dto.setDeType(deType);
@@ -269,10 +267,7 @@ public class DatasetDataManage {
 
     public Map<String, Object> buildPreviewData(Map<String, Object> data, List<DatasetTableFieldDTO> fields) {
         Map<String, Object> map = new LinkedHashMap<>();
-
-//        List<TableField> fieldList = (List<TableField>) data.get("fields");
         List<String[]> dataList = (List<String[]>) data.get("data");
-
         List<LinkedHashMap<String, Object>> dataObjectList = new ArrayList<>();
         if (ObjectUtils.isNotEmpty(dataList)) {
             for (int i = 0; i < dataList.size(); i++) {

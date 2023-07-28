@@ -261,8 +261,6 @@ public class DatasetTableFieldManage {
         }).collect(Collectors.toList());
         dto.setAllFields(allFields);
 
-        //TODO
-
         List<String[]> rows = new ArrayList<>();
         List<Object> results = rows.stream().map(row -> row[0]).distinct().collect(Collectors.toList());
         results.add("A");

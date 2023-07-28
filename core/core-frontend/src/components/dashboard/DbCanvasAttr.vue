@@ -158,7 +158,6 @@ const themeAttrChange = (custom, property, value) => {
     // console.log('custom=' + custom + ';property=' + property + ';value=' + JSON.stringify(value))
     Object.keys(canvasViewInfo.value).forEach(function (viewId) {
       const viewInfo = canvasViewInfo.value[viewId]
-      console.log('viewInfo=' + JSON.stringify(viewInfo))
       Object.keys(value).forEach(function (key) {
         if (viewInfo[custom][property][key] !== undefined) {
           viewInfo[custom][property][key] = value[key]

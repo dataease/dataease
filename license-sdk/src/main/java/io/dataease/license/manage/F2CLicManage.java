@@ -153,6 +153,5 @@ public class F2CLicManage {
 
     @PostConstruct
     public void init() {
-        System.out.println("123");
     }
 }

@@ -45,6 +45,7 @@
       <template #dropdown>
         <el-dropdown-menu style="width: 100px">
           <el-dropdown-item icon="Delete" @click="deleteComponent">删除</el-dropdown-item>
+          <el-dropdown-item icon="DocumentCopy" @click="copyComponent">复制</el-dropdown-item>
           <el-dropdown-item
             v-if="barShowCheck('linkageSetting')"
             icon="Link"
@@ -72,8 +73,10 @@ import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapsho
 import eventBus from '@/utils/eventBus'
 import LinkageField from '@/components/visualization/LinkageField.vue'
 import { getViewLinkageGather } from '@/api/visualization/linkage'
+import { copyStoreWithOut } from '@/store/modules/data-visualization/copy'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
+const copyStore = copyStoreWithOut()
 const emits = defineEmits([
   'userViewEnlargeOpen',
   'closePreview',
@@ -193,6 +196,12 @@ const showEditPosition = computed(() => {
 
 const deleteComponent = () => {
   eventBus.emit('removeMatrixItem', index.value)
+  dvMainStore.setCurComponent({ component: null, index: null })
+}
+
+const copyComponent = () => {
+  copyStore.copy()
+  copyStore.paste(false)
 }
 
 const userViewEnlargeOpen = e => {

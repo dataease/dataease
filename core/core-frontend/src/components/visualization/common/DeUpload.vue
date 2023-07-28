@@ -101,7 +101,6 @@ const handlePictureCardPreview = file => {
 const upload = file => {
   uploadFileResult(file.file, fileUrl => {
     imgUrlInner.value = fileUrl
-    // state.fileList = [{ url: imgUrlTrans(imgUrlInner.value) }]
     emits('onImgChange', fileUrl)
   })
 }
@@ -116,7 +115,6 @@ const reUpload = e => {
   }
   uploadFileResult(file, fileUrl => {
     imgUrlInner.value = fileUrl
-    // state.fileList.push({ url: imgUrlTrans(imgUrlInner.value) })
     emits('onImgChange', fileUrl)
   })
 }

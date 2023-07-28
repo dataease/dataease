@@ -70,7 +70,6 @@ htmlStream.pipe(parserStream).on('finish', () => {
     </div>
 </body>
 <script type="module">
-    // https://de2.fit2cloud.com
     DataEaseBi.create('DashboardEditor', { baseUrl: 'https://de2.fit2cloud.com/', token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1aWQiOjEsIm9pZCI6MSwiZXhwIjoxNjg2NTgzMDg5fQ.JYvk4Oe6as9Xbf-EPf3w5w9OexUo0pZUsFXXMZFM57U' })
     DataEaseBi.initialize({ container: '#dataease-container' })
 </script>

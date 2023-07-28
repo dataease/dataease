@@ -13,6 +13,7 @@ import GridTable from '@/components/grid-table/src/GridTable.vue'
 import { userPageApi, userDelApi } from '@/api/user'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { setColorName } from '@/utils/utils'
+import UserImport from './UserImport/index.vue'
 const { t } = useI18n()
 const activeName = ref('user')
 const isPluginLoaded = ref(false)
@@ -178,14 +179,18 @@ const sortChange = param => {
     <el-row class="user-table__filter top-operate">
       <el-col :span="12">
         <el-button @click="addUser" type="primary">
-          <template #icon>
-            <Icon name="icon_add_outlined"></Icon>
-          </template>
           {{ t('system.addUser') }}
         </el-button>
+
+        <user-import @refresh-grid="refreshGrid" />
       </el-col>
       <el-col :span="12" class="right-filter">
-        <el-input v-model="keyword" clearable @change="search">
+        <el-input
+          v-model="keyword"
+          clearable
+          :placeholder="t('user.search_placeholder')"
+          @change="search"
+        >
           <template #prefix>
             <el-icon>
               <Icon name="icon_search-outline_outlined"></Icon>

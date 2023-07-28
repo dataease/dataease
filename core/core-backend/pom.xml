@@ -85,11 +85,11 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>easyexcel</artifactId>
             <version>2.1.7</version>
-        </dependency>
+        </dependency>-->
     </dependencies>
 
     <profiles>
@@ -312,6 +312,7 @@
                     <include>**/*.xml</include>
                     <include>**/*.yml</include>
                     <include>**/*.sql</include>
+                    <include>**/*.xlsx</include>
                 </includes>
             </resource>
         </resources>

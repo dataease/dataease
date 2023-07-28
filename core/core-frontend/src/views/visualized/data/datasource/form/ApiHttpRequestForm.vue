@@ -118,9 +118,6 @@ watch(
 )
 
 const init = () => {
-  //   if (Object.prototype.toString.call(apiRequest).match(/\[object (\w+)\]/)[1].toLowerCase() !== 'object') {
-  //      Object.assign(apiRequest, JSON.parse(request))
-  //   }
   if (!apiRequest.value.body) {
     apiRequest.value.body = new Body()
   }

@@ -35,7 +35,13 @@
           </el-select>
         </el-col>
         <el-button class="close-button" @click="dialogShow = false">关闭</el-button>
-        <el-button type="primary" class="confirm-button" @click="saveMultiplexing">确定</el-button>
+        <el-button
+          type="primary"
+          :disabled="!selectComponentCount"
+          class="confirm-button"
+          @click="saveMultiplexing"
+          >确定</el-button
+        >
       </el-row>
     </template>
   </el-drawer>

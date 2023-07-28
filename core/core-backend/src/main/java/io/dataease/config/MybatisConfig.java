@@ -22,7 +22,6 @@ public class MybatisConfig {
         MybatisInterceptor interceptor = new MybatisInterceptor();
         List<MybatisInterceptorConfig> configList = new ArrayList<>();
         configList.add(new MybatisInterceptorConfig(CoreDeEngine.class, "configuration"));
-//        configList.add(new MybatisInterceptorConfig(CoreDatasource.class, "configuration"));
         interceptor.setInterceptorConfigList(configList);
         return interceptor;
     }

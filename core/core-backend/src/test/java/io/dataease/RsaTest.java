@@ -53,18 +53,11 @@ public class RsaTest {
     public void test1() {
         String separator = Base64Utils.encodeToUrlSafeString(PK_SEPARATOR.getBytes(StandardCharsets.UTF_8));
         String a = Base64Utils.encodeToString(PK_SEPARATOR.getBytes(StandardCharsets.UTF_8));
-//        System.out.println(separator);
-//        System.out.println(a);
         String aesKey = "0251434c0eca47977c50ef044f278cb9";
         String pk = "8OT02q8aALvMjvsr2Ws2PobmKVVgg3UjNN9r1jUKVilJMtn3fYAfe1oOozM3TTqxV9JmRA1MhV6Q/FoUfYN3mBIL4cDSYbEPSO+IRGTq4FmLZdBHMvUZilliMpt5+0vxXF43K3dZT3WStsK5usLfTKCcqZLLMZs0Wqo98XbEpgMZBMP+bKrolcpUfY06dwVqvgX9CN4ujYd8aTVXEq4/iVjX3opBGsbT8aD3Fb11ThXfAiQaUghsuT17NIfoV/P0uATIITQsrfmOkERDSmCz3wE0MfJVC7HQn9n8GXNkuOY=";
         byte[] bytes = HexUtil.decodeHex(aesKey);
         AES aes = new AES(bytes);
-
         String s = aes.decryptStr(pk);
-
-//        System.out.println(s);
-
-
     }
 
 
@@ -74,12 +67,9 @@ public class RsaTest {
                 "name, \n" +
                 "num\n" +
                 "FROM aaaa where name in (select name from aaaa where bb=DATAEASE_PATAMS_BI)";
-//        String sql = "SELECT * FROM sys_user where user_id > 0 and gender='男' and enabled=0 or is_admin=1 and is_admin2=1";
-//        String sql = "select * from emps e where e.deptno = (select d.deptno from depts d where d.deptno = e.deptno )";
         // 在解析前可以对 SQL 语句进行预处理，比如将不支持的 && 替换为 AND， != 替换为 <>
         SqlParser.Config config =
                 SqlParser.configBuilder()
-//                        .setParserFactory(FlinkSqlParserImpl.FACTORY)
                         .setLex(Lex.JAVA)
                         .setIdentifierMaxLength(256)
                         .build();
@@ -112,8 +102,6 @@ public class RsaTest {
         } else if (sqlNode.getKind() == IDENTIFIER) {
 
             if (fromOrJoin) {
-                // 获取 source 表名
-
             }
         } else if (sqlNode.getKind() == AS) {
             SqlBasicCall sqlKind = (SqlBasicCall) sqlNode;
@@ -130,8 +118,6 @@ public class RsaTest {
             sqlKind.setWhere(newWhere);
             getDependencies(sqlKind.getFrom(), true);
         } else {
-
-            // TODO 这里可根据需求拓展处理其他类型的 sqlNode
         }
     }
 
@@ -154,8 +140,6 @@ public class RsaTest {
                 }
                 return argHandler.result();
             }
-
-
         };
     }
 
