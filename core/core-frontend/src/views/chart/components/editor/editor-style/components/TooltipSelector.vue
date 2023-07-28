@@ -13,6 +13,9 @@ const props = defineProps({
   themes: {
     type: String,
     default: 'dark'
+  },
+  propertyInner: {
+    type: Array<string>
   }
 })
 
@@ -63,6 +66,8 @@ const init = () => {
   }
 }
 
+const showProperty = prop => props.propertyInner?.includes(prop)
+
 initFontSize()
 init()
 </script>
@@ -77,7 +82,11 @@ init()
         label-width="80px"
         size="small"
       >
-        <el-form-item :label="t('chart.text_fontsize')" class="form-item">
+        <el-form-item
+          :label="t('chart.text_fontsize')"
+          class="form-item"
+          v-show="showProperty('textStyle')"
+        >
           <el-select
             :effect="props.themes"
             v-model="state.tooltipForm.textStyle.fontSize"
@@ -93,7 +102,11 @@ init()
             />
           </el-select>
         </el-form-item>
-        <el-form-item :label="t('chart.text_color')" class="form-item">
+        <el-form-item
+          :label="t('chart.text_color')"
+          class="form-item"
+          v-show="showProperty('textStyle')"
+        >
           <el-color-picker
             v-model="state.tooltipForm.textStyle.color"
             class="color-picker-style"

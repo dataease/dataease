@@ -12,11 +12,15 @@ import {
   parseJson
 } from '@/views/chart/components/js/util'
 import { singleDimensionTooltipFormatter } from '@/views/chart/components/js/formatter'
+import {
+  LINE_EDITOR_PROPERTY,
+  LINE_EDITOR_PROPERTY_INNER
+} from '@/views/chart/components/js/panel/charts/line/common'
 const DEFAULT_DATA = []
 export class Area extends G2PlotChartView<AreaOptions, G2Area> {
-  properties: EditorProperty[]
-  propertyInner: EditorPropertyInner
-  axis: AxisType[]
+  properties = LINE_EDITOR_PROPERTY
+  propertyInner = LINE_EDITOR_PROPERTY_INNER
+  axis: AxisType[] = ['xAxis', 'yAxis', 'drill', 'filter']
   drawChart(drawOptions: G2PlotDrawOptions<G2Area>): G2Area {
     const chart = drawOptions.chart
     if (chart?.data) {

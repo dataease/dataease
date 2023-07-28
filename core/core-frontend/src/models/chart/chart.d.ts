@@ -118,24 +118,80 @@ declare interface LabelLine {
 }
 
 declare interface GaugeLabelFormatter {
-  type: string // auto,value,percent
-  unit: number // 换算单位
-  suffix: string // 单位后缀
-  decimalCount: number // 小数位数
-  thousandSeparator: boolean // 千分符
+  /**
+   * 格式类型
+   */
+  type: string
+  /**
+   * 换算单位
+   */
+  unit: number
+  /**
+   * 单位后缀
+   */
+  suffix: string
+  /**
+   * 保留小数位数
+   */
+  decimalCount: number
+  /**
+   * 千分符
+   */
+  thousandSeparator: boolean
 }
 
+/**
+ * 标签属性
+ */
 declare interface ChartLabelAttr {
+  /**
+   * 显隐
+   */
   show: boolean
+  /**
+   * 位置
+   */
   position: string
+  /**
+   * 字体颜色
+   */
   color: string
+  /**
+   * 字体大小
+   */
   fontSize: number
+  /**
+   * 格式类型
+   */
   formatter: string
-  gaugeFormatter: string
+  /**
+   * 标签引线
+   */
   labelLine: LabelLine
+  /**
+   * 标签格式化设置
+   */
   gaugeLabelFormatter: GaugeLabelFormatter
+  /**
+   * 标签保留小数位数
+   */
   reserveDecimalCount: number
+  /**
+   * 标签内容
+   */
   labelContent: string[]
+  /**
+   * 标签阴影
+   */
+  labelShadow: boolean
+  /**
+   * 标签背景颜色
+   */
+  labelBgColor: string
+  /**
+   * 标签阴影颜色
+   */
+  labelShadowColor: string
 }
 
 declare interface TextStyle {
@@ -144,11 +200,27 @@ declare interface TextStyle {
 }
 
 declare interface ChartTooltipAttr {
+  /**
+   * 显隐
+   */
   show: boolean
   trigger: string
   confine: boolean
-  textStyle: TextStyle
+  /**
+   * 字体颜色
+   */
+  color: string
+  /**
+   * 字体大小
+   */
+  fontSize: number
+  /**
+   * 字体格式化
+   */
   formatter: string
+  /**
+   * 背景颜色
+   */
   backgroundColor: string
 }
 
@@ -156,22 +228,64 @@ declare interface CalcTotals {
   aggregation: string
 }
 
+/**
+ * 汇总设置
+ */
 declare interface TotalConfig {
+  /**
+   * 总计显隐
+   */
   showGrandTotals: boolean
+  /**
+   * 小计显隐
+   */
   showSubTotals: boolean
+  /**
+   * 总计反转布局
+   */
   reverseLayout: boolean
+  /**
+   * 小计反转布局
+   */
   reverseSubLayout: boolean
+  /**
+   * 总计标签
+   */
   label: string
+  /**
+   * 小计标签
+   */
   subLabel: string
+  /**
+   * 小计维度
+   */
   subTotalsDimensions: []
+  /**
+   * 总计汇总设置
+   */
   calcTotals: CalcTotals
+  /**
+   * 小计汇总设置
+   */
   calcSubTotals: CalcTotals
+  /**
+   * 总计排序
+   */
   totalSort: string // asc,desc
+  /**
+   * 小计排序
+   */
   totalSortField: string
 }
 
-declare interface ChartTotalAttr {
+declare interface ChartTableTotalAttr {
+  /**
+   * 行汇总
+   */
   row: TotalConfig
+  /**
+   * 列汇总
+   */
   col: TotalConfig
 }
 
@@ -191,69 +305,198 @@ declare interface ChartTextStyle {
   fontShadow: boolean
 }
 
+/**
+ * 图例文字样式
+ */
 declare interface LegendTextStyle {
+  /**
+   * 颜色
+   */
   color: string
+  /**
+   * 大小
+   */
   fontSize: string
 }
 
+/**
+ * 图例设置
+ */
 declare interface ChartLegendStyle {
+  /**
+   * 显隐
+   */
   show: boolean
+  /**
+   * 水平位置
+   */
   hPosition: string
+  /**
+   * 垂直位置
+   */
   vPosition: string
+  /**
+   *
+   */
   orient: string
   icon: string
+  /**
+   * 字体设置
+   */
   textStyle: LegendTextStyle
 }
 
 declare interface NameTextStyle {
+  /**
+   * 字体颜色
+   */
   color: string
+  /**
+   * 字体大小
+   */
   fontSize: number
 }
 
+/**
+ * 轴线标签
+ */
 declare interface AxisLabel {
+  /**
+   * 显隐
+   */
   show: boolean
+  /**
+   * 标签颜色
+   */
   color: string
+  /**
+   * 字体大小
+   */
   fontSize: string
+  /**
+   * 旋转角度
+   */
   rotate: number
+  /**
+   * 格式化设置
+   */
   formatter: string
 }
 
 declare interface LineStyle {
+  /**
+   * 轴线颜色
+   */
   color: string
+  /**
+   * 轴线线条宽度
+   */
   width: number
   style: string
 }
 
 declare interface AxisLine {
+  /**
+   * 轴线显示
+   */
   show: boolean
+  /**
+   * 轴线样式设置
+   */
   lineStyle: LineStyle
 }
 
+/**
+ * 轴值设置
+ */
 declare interface AxisValue {
+  /**
+   * 自动轴值
+   */
   auto: boolean
+  /**
+   * 最小值
+   */
   min: number
+  /**
+   * 最大值
+   */
   max: number
+  /**
+   * 刻度数
+   */
   split: number
+  /**
+   * 刻度数
+   */
   splitCount: number
 }
 
+/**
+ * 轴线标签格式化属性
+ */
 declare interface AxisLabelFormatter {
-  type: string // auto,value,percent
-  unit: number // 换算单位
-  suffix: string // 单位后缀
-  decimalCount: number // 小数位数
-  thousandSeparator: boolean // 千分符
+  /**
+   * 格式化类型：auto,value,percent
+   */
+  type: string
+  /**
+   * 单位换算
+   */
+  unit: number
+  /**
+   * 单位后缀
+   */
+  suffix: string
+  /**
+   * 保留小数位数
+   */
+  decimalCount: number
+  /**
+   * 千分符
+   */
+  thousandSeparator: boolean
 }
 
+/**
+ * 视图轴设置
+ */
 declare interface ChartAxisStyle {
+  /**
+   * 是否显示轴线
+   */
   show: boolean
+  /**
+   * 轴线位置
+   */
   position: string
+  /**
+   * 轴线标题名称
+   */
   name: string
+  /**
+   * 轴线标题名称设置
+   */
   nameTextStyle: NameTextStyle
+  /**
+   * 轴线标签设置
+   */
   axisLabel: AxisLabel
+  /**
+   * 轴线设置
+   */
   axisLine: AxisLine
+  /**
+   * 网格线设置
+   */
   splitLine: AxisLine
+  /**
+   *  轴值设置
+   */
   axisValue: AxisValue
+  /**
+   * (值)轴线格式化设置
+   */
   axisLabelFormatter: AxisLabelFormatter
 }
 
@@ -320,11 +563,29 @@ declare interface ChartThreshold {
   textLabelThreshold: []
 }
 
+/**
+ * 样式设置
+ */
 declare interface ChartStyle {
+  /**
+   * 文本样式
+   */
   text: ChartTextStyle
+  /**
+   * 图例设置
+   */
   legend: ChartLegendStyle
+  /**
+   * 横轴设置
+   */
   xAxis: ChartAxisStyle
+  /**
+   * 值轴设置
+   */
   yAxis: ChartAxisStyle
+  /**
+   * 副值轴设置
+   */
   yAxisExt: ChartAxisStyle
   split: ChartSplitStyle
   background: {
@@ -332,6 +593,10 @@ declare interface ChartStyle {
     alpha: string
   }
 }
+
+/**
+ * 基础样式设置
+ */
 declare interface ChartBasicStyle {
   /**
    * 透明度
@@ -346,7 +611,7 @@ declare interface ChartBasicStyle {
    */
   tableScrollBarColor: string
   /**
-   * 表格列宽模式
+   * 表格列宽模式: 自适应和自定义
    */
   tableColumnMode: 'adopt' | 'custom'
   /**
@@ -450,18 +715,195 @@ declare interface ChartBasicStyle {
    */
   symbolStrokeWidth: number
 }
+
+/**
+ * 地图属性
+ */
 declare interface MapCfg {
+  /**
+   * 区域级别
+   */
   level: 'world' | 'country' | 'province' | 'city' | 'district'
+  /**
+   * 区域id
+   */
   id: string
 }
+
+/**
+ * 表头属性
+ */
+declare interface ChartTableHeaderAttr {
+  /**
+   * 表头背景颜色
+   */
+  tableHeaderBgColor: string
+  /**
+   * 表头字体大小
+   */
+  tableTitleFontSize: number
+  /**
+   * 表头字体颜色
+   */
+  tableHeaderFontColor: string
+  /**
+   * 表头行高
+   */
+  tableTitleHeight: number
+  /**
+   * 表头对齐方式
+   */
+  tableHeaderAlign: 'left' | 'center' | 'right'
+  /**
+   * 显示序号
+   */
+  showIndex: boolean
+  /**
+   * 序号表头名称
+   */
+  indexLabel: string
+}
+/**
+ * 单元格属性
+ */
+declare interface ChartTableCellAttr {
+  /**
+   * 单元格背景颜色
+   */
+  tableItemBgColor: string
+  /**
+   * 单元格字体大小
+   */
+  tableItemFontSize: number
+  /**
+   * 单元格字体颜色
+   */
+  tableFontColor: string
+  /**
+   * 单元格对齐方式
+   */
+  tableItemAlign: 'left' | 'center' | 'right'
+  /**
+   * 单元格行高
+   */
+  tableItemHeight: number
+}
+
+/**
+ * 文本/指标卡属性
+ */
+declare interface ChartCardAttr {
+  /**
+   * 值字体
+   */
+  valueFontFamily: string
+  /**
+   * 值字体大小
+   */
+  valueFontSize: number
+  /**
+   * 值字体颜色
+   */
+  valueFontColor: string
+  /**
+   * 值字体加粗
+   */
+  valueFontIsBolder: boolean
+  /**
+   * 值字体倾斜
+   */
+  valueFontIsItalic: boolean
+  /**
+   * 值字体间距
+   */
+  valueLetterSpace: number
+  /**
+   * 值字体阴影
+   */
+  valueFontShadow: boolean
+  /**
+   * 名称显隐
+   */
+  showName: boolean
+  /**
+   * 名称字体
+   */
+  nameFontFamily: string
+  /**
+   * 名称字体大小
+   */
+  nameFontSize: number
+  /**
+   * 名称字体颜色
+   */
+  nameFontColor: string
+  /**
+   * 名称字体加粗
+   */
+  nameFontIsBolder: boolean
+  /**
+   * 名称字体倾斜
+   */
+  nameFontIsItalic: boolean
+  /**
+   * 名称字体间距
+   */
+  nameLetterSpace: string
+  /**
+   * 名称字体阴影
+   */
+  nameFontShadow: boolean
+  /**
+   * 名/值间距
+   */
+  nameValueSpace: number
+  /**
+   * 水平位置
+   */
+  hPosition: 'left' | 'center' | 'right'
+  /**
+   * 垂直位置
+   */
+  vPosition: 'top' | 'center' | 'bottom'
+}
 declare interface ChartAttr {
+  /**
+   * 基础样式设置
+   */
   basicStyle: ChartBasicStyle
+  /**
+   * 表格表头配置
+   */
+  tableHeader: ChartTableHeaderAttr
+  /**
+   * 表格单元格配置
+   */
+  tableCell: ChartTableCellAttr
+  /**
+   * 表格总计设置
+   */
+  tableTotal: ChartTableTotalAttr
   color: ChartColorAttr
   tableColor: ChartColorAttr
+  /**
+   * 大小设置
+   */
   size: ChartSizeAttr
+  /**
+   * 标签设置
+   */
   label: ChartLabelAttr
+  /**
+   * 提示设置
+   */
   tooltip: ChartTooltipAttr
-  totalCfg: ChartTotalAttr
+  /**
+   * 文本/指标卡设置
+   */
+  cardCfg: ChartCardAttr
+  /**
+   * 地图设置
+   */
   map: MapCfg
 }
 

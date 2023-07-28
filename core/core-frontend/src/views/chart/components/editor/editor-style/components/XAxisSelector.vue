@@ -15,6 +15,9 @@ const props = defineProps({
   themes: {
     type: String,
     default: 'dark'
+  },
+  propertyInner: {
+    type: Array<string>
   }
 })
 
@@ -74,6 +77,8 @@ const init = () => {
     }
   }
 }
+
+const showProperty = prop => props.propertyInner?.includes(prop)
 
 initFontSize()
 init()

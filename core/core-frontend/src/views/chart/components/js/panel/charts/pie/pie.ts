@@ -6,12 +6,16 @@ import { Datum, Pie as G2Pie, PieOptions } from '@antv/g2plot'
 import { antVCustomColor, flow, parseJson } from '@/views/chart/components/js/util'
 import { getPadding } from '@/views/chart/components/js/panel/common/common_antv'
 import { formatterItem, valueFormatter } from '@/views/chart/components/js/formatter'
+import {
+  PIE_EDITOR_PROPERTY,
+  PIE_EDITOR_PROPERTY_INNER
+} from '@/views/chart/components/js/panel/charts/pie/common'
 
 const DEFAULT_DATA = []
 export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
-  axis: AxisType[]
-  properties: EditorProperty[]
-  propertyInner: EditorPropertyInner
+  axis: AxisType[] = ['xAxis', 'yAxis', 'drill', 'filter', 'extLabel', 'extTooltip']
+  properties = PIE_EDITOR_PROPERTY
+  propertyInner = PIE_EDITOR_PROPERTY_INNER
   drawChart(drawOptions: G2PlotDrawOptions<G2Pie>): G2Pie {
     const chart = drawOptions.chart
     if (chart?.data) {

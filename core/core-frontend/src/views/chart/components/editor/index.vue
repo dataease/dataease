@@ -1,5 +1,5 @@
 <script lang="tsx" setup>
-import { PropType, reactive, ref, watch, toRefs, computed, nextTick } from 'vue'
+import { PropType, reactive, ref, watch, toRefs, computed, nextTick, shallowRef } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Field, getFieldByDQ, saveChart } from '@/api/chart'
@@ -35,6 +35,8 @@ import { cloneDeep } from 'lodash-es'
 import { deleteField, deleteFieldByChartId, saveField } from '@/api/dataset'
 import LabelSelector from '@/views/chart/components/editor/editor-style/components/LabelSelector.vue'
 import { getWorldTree } from '@/api/map'
+import chartViewManager from '@/views/chart/components/js/panel'
+import { AbstractChartView } from '@/views/chart/components/js/panel/types'
 
 const snapshotStore = snapshotStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
@@ -134,10 +136,14 @@ watch(
   { deep: true }
 )
 
+const chartViewInstance = computed(() => {
+  return chartViewManager.getChartView(view.value.render, view.value.type)
+})
+const showAxis = (axis: AxisType) => chartViewInstance.value?.axis?.includes(axis)
 watch(
   () => view.value.type,
   newVal => {
-    if (newVal === 'map' && !state.worldTree?.length) {
+    if (showAxis('area') && !state.worldTree?.length) {
       getWorldTree().then(res => {
         state.worldTree = [res.data]
       })
@@ -882,11 +888,12 @@ const autoInsert = element => {
                           </span>
                         </span>
                       </el-row>
-                      <el-row class="padding-lr drag-data">
+                      <!--area-->
+                      <el-row class="padding-lr drag-data" v-show="showAxis('area')">
                         <span class="data-area-label">
                           {{ t('chart.area') }}
                         </span>
-                        <div style="margin-top: 8px">
+                        <div class="area-tree-select">
                           <el-tree-select
                             v-model="state.areaId"
                             :data="state.worldTree"
@@ -902,12 +909,7 @@ const autoInsert = element => {
                       </el-row>
 
                       <!--xAxis-->
-                      <el-row
-                        class="padding-lr drag-data"
-                        v-if="
-                          view.type !== 'text' && view.type !== 'gauge' && view.type !== 'liquid'
-                        "
-                      >
+                      <el-row class="padding-lr drag-data" v-if="showAxis('xAxis')">
                         <span class="data-area-label">
                           <dimension-label :view="view" />
                         </span>
@@ -940,14 +942,7 @@ const autoInsert = element => {
                       </el-row>
 
                       <!--yAxis-->
-                      <el-row
-                        class="padding-lr drag-data"
-                        v-if="
-                          view.type !== 'table-info' &&
-                          view.type !== 'label' &&
-                          view.type !== 'flow-map'
-                        "
-                      >
+                      <el-row class="padding-lr drag-data" v-if="showAxis('yAxis')">
                         <span class="data-area-label">
                           <quota-label :view="view" />
                         </span>
@@ -983,17 +978,7 @@ const autoInsert = element => {
                       </el-row>
 
                       <!--drill-->
-                      <el-row
-                        class="padding-lr drag-data"
-                        v-if="
-                          props.themes !== 'dark' &&
-                          view.type !== 'table-info' &&
-                          view.type !== 'text' &&
-                          view.type !== 'text-label' &&
-                          view.type !== 'liquid' &&
-                          view.type !== 'gauge'
-                        "
-                      >
+                      <el-row class="padding-lr drag-data" v-if="showAxis('drill')">
                         <span class="data-area-label">
                           <span>{{ t('chart.drill') }}</span>
                           /
@@ -1066,22 +1051,13 @@ const autoInsert = element => {
 
                       <!--extLabel等-->
                       <el-collapse
-                        v-if="
-                          view.type.includes('bar') ||
-                          view.type.includes('line') ||
-                          view.type.includes('area') ||
-                          view.type.includes('pie') ||
-                          view.type.includes('radar') ||
-                          view.type.includes('map') ||
-                          view.type.includes('scatter') ||
-                          view.type.includes('funnel')
-                        "
+                        v-if="showAxis('extLabel') || showAxis('extTooltip')"
                         v-model="state.extData"
                         class="style-collapse"
                       >
                         <el-collapse-item name="extLabel" :title="t('chart.more_settings')">
                           <!--extLabel-->
-                          <el-row class="padding-lr drag-data">
+                          <el-row class="padding-lr drag-data" v-if="showAxis('extLabel')">
                             <span class="data-area-label">
                               <span>{{ t('chart.label') }}</span>
                               <el-popover placement="left-start" :width="400" trigger="click">
@@ -1145,7 +1121,7 @@ const autoInsert = element => {
                           </el-row>
 
                           <!--extTooltip-->
-                          <el-row class="padding-lr drag-data">
+                          <el-row class="padding-lr drag-data" v-if="showAxis('extTooltip')">
                             <span class="data-area-label">
                               <span>{{ t('chart.tooltip') }}</span>
                             </span>
@@ -1230,8 +1206,8 @@ const autoInsert = element => {
                 style="width: 100%"
               >
                 <chart-style
-                  :properties="viewProperties"
-                  :property-inner-all="viewPropertyInnerAll"
+                  :properties="chartViewInstance.properties"
+                  :property-inner-all="chartViewInstance.propertyInner"
                   :chart="view"
                   :themes="themes"
                   :dimension-data="state.dimension"
@@ -2099,6 +2075,12 @@ span {
   margin-left: 6px;
   font-size: 14px;
   cursor: pointer;
+}
+.area-tree-select {
+  margin-top: 8px;
+  :deep(.ed-select) {
+    display: block;
+  }
 }
 </style>
 

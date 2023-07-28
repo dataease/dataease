@@ -11,6 +11,9 @@ const props = defineProps({
   chart: {
     type: Object,
     required: true
+  },
+  propertyInner: {
+    type: Array<string>
   }
 })
 
@@ -70,6 +73,8 @@ const init = () => {
     }
   }
 }
+
+const showProperty = prop => props.propertyInner?.includes(prop)
 
 initFontSize()
 init()
