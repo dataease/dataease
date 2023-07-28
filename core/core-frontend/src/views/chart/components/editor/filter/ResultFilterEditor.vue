@@ -188,10 +188,6 @@ const init = () => {
 const initEnumOptions = () => {
   // 查找枚举值
   if (item.value.deType === 0 || item.value.deType === 5) {
-    // todo 请求后端获取枚举值
-    // multFieldValues({ fieldIds: [item.id] }).then(res => {
-    //   fieldOptions = optionData(res.data)
-    // })
   }
 }
 const optionData = data => {

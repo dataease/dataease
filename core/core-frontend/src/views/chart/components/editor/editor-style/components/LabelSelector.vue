@@ -51,10 +51,6 @@ const state = reactive({
 const emit = defineEmits(['onLabelChange'])
 
 const changeLabelAttr = () => {
-  // if (!this.labelForm.show) {
-  //   this.isSetting = false
-  // }
-  // this.labelForm['modifyName'] = modifyName
   emit('onLabelChange', state.labelForm)
 }
 

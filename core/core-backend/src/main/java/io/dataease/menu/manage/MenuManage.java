@@ -35,7 +35,6 @@ public class MenuManage {
     @Autowired(required = false)
     private InteractiveAuthApi interactiveAuthApi;
 
-    // @Cacheable(value = "menu", key = "#root.methodName")
     public List<MenuVO> query() {
         QueryWrapper<CoreMenu> wrapper = new QueryWrapper<>();
         List<CoreMenu> coreMenus = coreMenuMapper.selectList(wrapper);
@@ -45,6 +44,7 @@ public class MenuManage {
         List<MenuVO> menuVOS = convertTree(treeNodes);
         return menuVOS;
     }
+    
     private List<CoreMenu> filterAuth(List<CoreMenu> list) {
         if (ObjectUtils.isEmpty(interactiveAuthApi)) return list;
         List<Long> menuIds = interactiveAuthApi.menuIds();

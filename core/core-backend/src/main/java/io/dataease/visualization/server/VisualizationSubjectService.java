@@ -70,7 +70,6 @@ public class VisualizationSubjectService implements VisualizationSubjectApi {
             request.setCreateTime(System.currentTimeMillis());
             request.setType("self");
             request.setName(request.getName());
-//            request.setCreateNum(count);
             VisualizationSubject saveInfo = new VisualizationSubject();
             BeanUtils.copyBean(saveInfo,request);
             subjectMapper.insert(saveInfo);
@@ -95,7 +94,5 @@ public class VisualizationSubjectService implements VisualizationSubjectApi {
         Assert.notNull(id, "subjectId should not be null");
         subjectMapper.deleteById(id);
     }
-
-
 
 }

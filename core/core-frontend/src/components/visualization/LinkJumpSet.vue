@@ -503,14 +503,6 @@ const init = viewItem => {
         state.linkJumpInfoArray.push(linkJumpInfo)
       }
     })
-    // state.linkJumpInfoArray.forEach(linkJumpInfo => {
-    //   linkJumpInfo.content = setNameIdTrans(
-    //     'sourceFieldId',
-    //     'sourceFieldName',
-    //     linkJumpInfo.content,
-    //     state.name2Auto
-    //   )
-    // })
     const firstNode = state.linkJumpInfoArray[0]
     state.initState = true
     nextTick(() => {
@@ -521,9 +513,6 @@ const init = viewItem => {
 }
 
 const save = () => {
-  // state.linkJumpInfoArray.forEach(jumpInfo => {
-  //   jumpInfo.content = setNameIdTrans('sourceFieldName', 'sourceFieldId', jumpInfo.content)
-  // })
   updateJumpSet(state.linkJump).then(rsp => {
     ElMessage.success('保存成功')
     // 刷新跳转信息

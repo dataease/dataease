@@ -127,8 +127,6 @@ onBeforeUnmount(() => {
 })
 
 const dragover = () => {
-  // const componentInfo = e.dataTransfer.getData('dimosion')
-  // console.log('dragover', e, componentInfo)
 }
 
 const infoFormat = (obj: Field & { datasetId: string }) => {
@@ -246,18 +244,6 @@ const queryData = () => {
     emitter.emit(`query-data-${ele}`)
   })
 }
-
-// const calcData = () => {
-//   console.log('calcData')
-// }
-// const renderChart = () => {
-//   console.log('renderChart')
-// }
-
-// defineExpose({
-//   calcData,
-//   renderChart
-// })
 </script>
 
 <template>

@@ -21,7 +21,6 @@ public class Utils {
 
     // 解析计算字段
     public static String calcFieldRegex(String originField, SQLObj tableObj, List<DatasetTableFieldDTO> originFields) {
-//        checkCircularReference(originField, originFields);
         try {
             return buildCalcField(originField, tableObj, originFields);
         } catch (Exception e) {

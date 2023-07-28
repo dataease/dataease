@@ -394,12 +394,6 @@ const confirmEditUnion = () => {
   allfields.value = diffArr(arr, allfields.value)
   fieldUnion.value.clearState()
   editUnion.value = false
-  // 校验关联关系与字段，必填
-  // if (this.checkUnion()) {
-  //   this.editUnion = false
-  // } else {
-  //   this.openMessageSuccess('dataset.union_error')
-  // }
 }
 
 const updateAllfields = () => {
