@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { ref, reactive, computed, watch, nextTick } from 'vue'
-import { ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { listDatasources, save } from '@/api/datasource'
 import type { DatasetOrFolder } from '@/api/dataset'
@@ -15,9 +14,8 @@ export interface Tree {
   level: number
   leaf?: boolean
   pid: string | number
-  union?: Array<{}>
+  type?: string
   createTime: number
-  allfields?: Array<{}>
   children?: Tree[]
   request: any
 }
@@ -142,8 +140,10 @@ const dfs = (arr: Tree[]) => {
   })
 }
 let request = null
+let dsType = ''
 const createInit = (type, data: Tree, exec, name: string) => {
   nodeType.value = type
+  dsType = data.type
   if (type === 'datasource') {
     request = data.request
   }
@@ -190,17 +190,6 @@ const successCb = () => {
   datasetForm.pid = ''
   datasetForm.name = ''
   createDataset.value = false
-  switch (cmd.value) {
-    case 'move':
-      ElMessage.success('移动成功')
-      break
-    case 'rename':
-      ElMessage.success('重命名成功')
-      break
-    default:
-      ElMessage.success('新建数据源成功')
-      break
-  }
 }
 
 const finallyCb = () => {
@@ -242,7 +231,7 @@ const saveDataset = () => {
           })
         return
       }
-      emits('finish', params, successCb, finallyCb)
+      emits('finish', params, successCb, finallyCb, cmd.value, dsType)
     }
   })
 }

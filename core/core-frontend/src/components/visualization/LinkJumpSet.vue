@@ -2,27 +2,42 @@
   <el-dialog
     ref="enlargeDialog"
     :append-to-body="true"
+    :title="t('visualization.jump_set')"
     v-model="dialogShow"
     width="70vw"
+    top="10vh"
     trigger="click"
   >
-    <el-row v-if="state.initState" style="height: 430px">
-      <el-row>
-        <span class="set-name-area">{{ t('visualization.jump_set') }}</span>
-        <el-checkbox v-model="state.linkJump.checked">{{
+    <el-row v-if="state.initState" style="height: 550px">
+      <el-row style="flex-direction: row">
+        <el-checkbox style="float: left" v-model="state.linkJump.checked">{{
           t('visualization.enable_jump')
         }}</el-checkbox>
+        <div class="top-area">
+          <span class="top-area-text">已选图表：</span>
+          <span class="top-area-value">
+            <Icon class-name="view-type-icon" :name="state.curJumpViewInfo.type" />
+            {{ state.curJumpViewInfo.title }}</span
+          >
+          <span class="top-area-text">所用数据集：</span>
+          <span class="top-area-value">
+            <Icon
+              style="vertical-align: -0.2em"
+              class-name="view-type-icon"
+              name="dataset-outline"
+            />
+            {{ state.curDatasetInfo.name }}</span
+          >
+        </div>
       </el-row>
       <el-row v-loading="state.loading">
         <el-row class="preview">
           <el-col :span="8" style="height: 100%; overflow-y: auto">
             <el-row class="tree-head">
-              <span style="float: left; margin-left: 30px">{{
-                t('visualization.column_name')
-              }}</span>
-              <span style="float: right; margin-right: 10px">{{
-                t('visualization.enable_column')
-              }}</span>
+              <span class="head-text">选择字段</span>
+              <span class="head-filter"
+                >仅看已选 <el-switch size="small" v-model="state.showSelected" />
+              </span>
             </el-row>
             <el-tree
               menu
@@ -35,9 +50,6 @@
             >
               <template #default="{ data }">
                 <span class="custom-tree-node">
-                  <span>
-                    <span style="margin-left: 6px">{{ data.sourceFieldName }}</span>
-                  </span>
                   <span @click.stop>
                     <div>
                       <span class="auth-span">
@@ -48,74 +60,90 @@
                       </span>
                     </div>
                   </span>
+                  <span>
+                    <span style="margin-left: 6px">{{ data.sourceFieldName }}</span>
+                  </span>
                 </span>
               </template>
             </el-tree>
           </el-col>
           <el-col :span="16" class="preview-show">
             <el-row v-if="state.linkJumpInfo">
-              <el-row style="height: 30px; margin-top: 10px">
-                <el-col :span="4" style="margin-left: 20px">
-                  {{ t('visualization.link_type') }}：
-                </el-col>
-                <el-col :span="10">
-                  <el-radio-group v-model="state.linkJumpInfo.linkType" size="mini">
+              <el-row class="content-head">
+                <div class="content-head-text">{{ t('visualization.link_type') }}</div>
+                <div>
+                  <el-radio-group
+                    v-model="state.linkJumpInfo.linkType"
+                    size="mini"
+                    @change="linkTypeChangeOpt"
+                  >
                     <el-radio label="outer">{{ t('visualization.link_outer') }}</el-radio>
                     <el-radio label="inner">{{ t('visualization.link_panel') }}</el-radio>
                   </el-radio-group>
-                </el-col>
-                <el-col v-if="state.linkJumpInfo.linkType === 'inner'" :span="9">
-                  <span>仪表板：</span>
-                  <el-tree-select
-                    v-model="state.linkJumpInfo.targetDvId"
-                    :data="state.panelList"
-                    :props="state.dvSelectProps"
-                    :render-after-expand="false"
-                    filterable
-                    @node-click="dvNodeClick"
-                    class="dv-selector"
-                  >
-                    <template #default="{ node, data }">
-                      <el-icon v-if="data.leaf">
-                        <Icon name="dv-dashboard-spine"></Icon>
-                      </el-icon>
-                      <el-icon v-else>
-                        <Icon name="dv-folder"></Icon>
-                      </el-icon>
-                      <span :title="node.label">{{ node.label }}</span>
-                    </template>
-                  </el-tree-select>
-                </el-col>
+                </div>
               </el-row>
-              <el-row style="height: 30px; margin-top: 10px">
-                <el-col :span="4" style="margin-left: 20px">
-                  {{ t('visualization.open_model') }}：
-                </el-col>
-                <el-col :span="10">
+              <el-row class="content-head">
+                <div class="content-head-text">{{ t('visualization.open_model') }}</div>
+                <div>
                   <el-radio-group v-model="state.linkJumpInfo.jumpType" size="mini">
                     <el-radio label="_self">{{ t('visualization.now_window') }}</el-radio>
                     <el-radio label="_blank">{{ t('visualization.new_window') }}</el-radio>
                   </el-radio-group>
-                </el-col>
+                </div>
               </el-row>
               <el-row
                 v-if="state.linkJumpInfo.linkType === 'inner'"
                 style="margin-top: 5px"
                 class="top_border"
               >
-                <el-row style="margin-top: 10px">
-                  <el-col :span="7">
-                    <div class="ellip">原字段</div>
+                <el-row class="inner-content">
+                  <el-col :span="11">当前仪表板</el-col>
+                  <el-col :span="2"></el-col>
+                  <el-col :span="11">目标仪表板</el-col>
+                </el-row>
+                <el-row style="width: 100%; padding: 0 16px">
+                  <el-col :span="11">
+                    <el-select style="width: 100%" v-model="dvInfo.name" disabled>
+                      <el-option :key="dvInfo.name" :label="dvInfo.name" :value="dvInfo.name">
+                      </el-option>
+                    </el-select>
                   </el-col>
-                  <el-col :span="7">
-                    <div class="ellip">{{ t('visualization.link_view') }}</div>
+                  <el-col :span="2" class="link-icon-area">
+                    <Icon style="width: 20px; height: 20px" name="dv-link-target"></Icon>
                   </el-col>
-                  <el-col :span="8">
-                    <div class="ellip">{{ t('visualization.link_view_field') }}</div>
+                  <el-col :span="11">
+                    <el-tree-select
+                      v-model="state.linkJumpInfo.targetDvId"
+                      :data="state.panelList"
+                      :props="state.dvSelectProps"
+                      :render-after-expand="false"
+                      filterable
+                      @node-click="dvNodeClick"
+                      class="dv-selector"
+                    >
+                      <template #default="{ node, data }">
+                        <el-icon v-if="data.leaf">
+                          <Icon name="dv-dashboard-spine"></Icon>
+                        </el-icon>
+                        <el-icon v-else>
+                          <Icon name="dv-folder"></Icon>
+                        </el-icon>
+                        <span :title="node.label">{{ node.label }}</span>
+                      </template>
+                    </el-tree-select>
                   </el-col>
                 </el-row>
-                <el-row style="display: inline-block; height: 180px; overflow-y: auto">
+                <el-row class="inner-content">
+                  <el-col :span="7"> 源字段 </el-col>
+                  <el-col :span="2"></el-col>
+                  <el-col :span="7">
+                    {{ t('visualization.link_view_field') }}
+                  </el-col>
+                  <el-col :span="8"> </el-col>
+                </el-row>
+                <el-row style="display: inline-block; max-height: 225px; overflow-y: auto">
                   <el-row
+                    style="padding: 0 16px 8px"
                     v-for="(targetViewInfo, index) in state.linkJumpInfo.targetViewInfoList"
                     :key="index"
                   >
@@ -123,8 +151,8 @@
                       <div class="select-filed">
                         <el-select
                           v-model="targetViewInfo.sourceFieldActiveId"
+                          :placeholder="'请选择字段'"
                           style="width: 100%"
-                          size="mini"
                         >
                           <el-option
                             v-for="curViewField in state.linkJumpCurViewFieldArray"
@@ -139,10 +167,15 @@
                         </el-select>
                       </div>
                     </el-col>
+                    <el-col :span="2" class="link-icon-area">
+                      <Icon style="width: 20px; height: 20px" name="dv-link-target"></Icon>
+                    </el-col>
                     <el-col :span="7">
                       <div class="select-filed">
                         <el-select
                           v-model="targetViewInfo.targetViewId"
+                          :disabled="!targetViewInfo.sourceFieldActiveId"
+                          :placeholder="'请选择视图'"
                           style="width: 100%"
                           size="mini"
                           @change="viewInfoOnChange(targetViewInfo)"
@@ -161,10 +194,12 @@
                         </el-select>
                       </div>
                     </el-col>
-                    <el-col :span="8">
+                    <el-col :span="7">
                       <div class="select-filed">
                         <el-select
                           v-model="targetViewInfo.targetFieldId"
+                          :placeholder="'请选择字段'"
+                          :disabled="!targetViewInfo.sourceFieldActiveId"
                           style="width: 100%"
                           size="mini"
                         >
@@ -203,7 +238,7 @@
                         </el-select>
                       </div>
                     </el-col>
-                    <el-col :span="2">
+                    <el-col :span="1">
                       <el-icon
                         style="margin-top: 10px; cursor: pointer"
                         @click="deleteLinkJumpField(index)"
@@ -213,41 +248,44 @@
                     </el-col>
                   </el-row>
                 </el-row>
-
-                <el-row class="bottom">
+                <el-row style="width: 100%; padding-left: 16px">
                   <el-button
                     :disabled="!state.linkJumpInfo.targetDvId"
+                    type="primary"
                     size="mini"
-                    type="success"
-                    icon="el-icon-plus"
-                    round
+                    icon="Plus"
+                    text
                     @click="addLinkJumpField"
                     >{{ t('visualization.add_jump_field') }}
                   </el-button>
                 </el-row>
               </el-row>
               <el-row
-                v-if="state.linkJumpInfo.linkType === 'outer'"
+                v-if="state.linkJumpInfo.linkType === 'outer' && dialogShow"
                 style="padding: 14px; border-top: 1px solid #e6e6e6"
               >
-                <el-row style="height: 230px; border: 1px solid #e6e6e6">
-                  <el-col :span="18" style="height: 100%">
-                    <el-row>
-                      <span>
-                        {{ t('visualization.target_url') }}
-                        <el-tooltip class="item" effect="dark" placement="bottom">
-                          <template #content>
-                            <div>
-                              {{ t('visualization.target_url_tips') }}
-                            </div>
-                          </template>
-                          <i class="el-icon-info" style="cursor: pointer" />
-                        </el-tooltip>
-                      </span>
-                      <span>codemirror</span>
+                <el-row class="url-text">
+                  {{ t('visualization.target_url') }}
+                  <el-tooltip class="item" effect="dark" placement="bottom">
+                    <template #content>
+                      {{ $t('visualization.target_url_tips') }}
+                    </template>
+                    <el-icon>
+                      <Icon name="icon_info_outlined"></Icon>
+                    </el-icon>
+                  </el-tooltip>
+                </el-row>
+                <el-row class="outer-content">
+                  <el-col :span="16" class="outer-content-mirror">
+                    <el-row style="width: 100%; height: 100%">
+                      <jump-set-outer-content-editor
+                        ref="outerContentEditor"
+                        :link-jump-info="state.linkJumpInfo"
+                        :link-jump-info-array="state.linkJumpInfoArray"
+                      ></jump-set-outer-content-editor>
                     </el-row>
                   </el-col>
-                  <el-col :span="6" style="height: 100%; border-left: 1px solid #e6e6e6">
+                  <el-col :span="8" style="height: 100%">
                     <el-col :span="24" style="height: 100%" class="padding-lr">
                       <span>
                         {{ t('visualization.select_world') }}
@@ -266,8 +304,25 @@
                         clearable
                       />
                       <div class="field-height">
-                        <el-divider />
-                        <span>drage group state.linkJumpInfoArray</span>
+                        <span
+                          v-for="item in state.linkJumpInfoArray.filter(
+                            item =>
+                              !state.searchField ||
+                              item.sourceFieldName.indexOf(state.searchField) > -1
+                          )"
+                          :key="item.sourceFieldId"
+                          class="item-dimension"
+                          :title="item.sourceFieldName"
+                          @click="insertFieldToCodeMirror('[' + item.sourceFieldName + ']')"
+                        >
+                          <el-icon>
+                            <Icon
+                              :name="`field_${fieldType(item.deExtractType)}`"
+                              :className="`field-icon-${fieldType(item.deExtractType)}`"
+                            ></Icon>
+                          </el-icon>
+                          {{ item.sourceFieldName }}
+                        </span>
                       </div>
                     </el-col>
                   </el-col>
@@ -297,25 +352,30 @@ import {
   updateJumpSet,
   viewTableDetailList
 } from '@/api/visualization/linkJump'
-import { reactive, ref, nextTick } from 'vue'
+import { reactive, ref, nextTick, onMounted } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { queryTreeApi } from '@/api/visualization/dataVisualization'
 import { ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
-import { listFieldByDatasetGroup } from '@/api/dataset'
+import { getDatasetDetails, listFieldByDatasetGroup } from '@/api/dataset'
 import { BusiTreeRequest } from '@/models/tree/TreeNode'
+import { CalcFieldType } from '@/views/visualized/data/dataset/form/CalcFieldEdit.vue'
+import JumpSetOuterContentEditor from '@/components/visualization/JumpSetOuterContentEditor.vue'
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo, canvasViewInfo } = storeToRefs(dvMainStore)
 const linkJumpInfoTree = ref(null)
 const { t } = useI18n()
 const dialogShow = ref(false)
+const searchField = ref('')
 
 const state = reactive({
+  showSelected: false,
+  curJumpViewInfo: {},
+  curDatasetInfo: {},
   tempId: null,
   initState: false,
   viewId: null,
-  codemirrorShow: true,
   name2Auto: [],
   searchField: '',
   searchFunction: '',
@@ -360,21 +420,16 @@ const state = reactive({
   },
   currentLinkPanelViewArray: [],
   viewIdFieldArrayMap: {},
-  cmOption: {
-    tabSize: 2,
-    styleActiveLine: true,
-    lineNumbers: true,
-    line: true,
-    mode: 'text/x-textile',
-    theme: 'solarized',
-    hintOptions: {
-      // 自定义提示选项
-      completeSingle: false // 当匹配只有一项的时候是否自动补全
-    }
-  }
+  dimensionData: [],
+  dimensionList: [],
+  quotaList: [],
+  quotaData: [],
+  dimension: [],
+  quota: []
 })
 
 const emits = defineEmits(['closeJumpSetDialog'])
+const outerContentEditor = ref(null)
 
 const dialogInit = viewItem => {
   dialogShow.value = true
@@ -386,6 +441,7 @@ const init = viewItem => {
   state.initState = false
   state.viewId = viewItem.id
   const chartDetails = canvasViewInfo.value[state.viewId]
+  state.curJumpViewInfo = chartDetails
   let checkAllAxisStr =
     JSON.stringify(chartDetails.xAxis) +
     JSON.stringify(chartDetails.xAxisExt) +
@@ -415,6 +471,11 @@ const init = viewItem => {
   // 获取可关联的仪表板
   queryTreeApi(request).then(rsp => {
     state.panelList = rsp
+  })
+
+  // 获取当前数据集信息
+  getDatasetDetails(chartDetails.tableId).then(res => {
+    state.curDatasetInfo = res || {}
   })
 
   // 获取当前视图的字段信息
@@ -478,7 +539,15 @@ const nodeClick = (data, node?) => {
   if (state.linkJumpInfo.targetDvId) {
     getPanelViewList(state.linkJumpInfo.targetDvId)
   }
+  codeMirrorContentSet(state.linkJumpInfo.content)
 }
+
+const codeMirrorContentSet = content => {
+  nextTick(() => {
+    outerContentEditor.value.editorInit(content)
+  })
+}
+
 // 获取当前视图字段 关联仪表板的视图信息列表
 const getPanelViewList = dvId => {
   viewTableDetailList(dvId).then(rsp => {
@@ -537,6 +606,27 @@ const cancel = () => {
   state.initState = false
 }
 
+const defaultForm = {
+  originName: '', // 物理字段名
+  name: '', // 字段显示名
+  groupType: 'd', // d=维度，q=指标
+  type: 'VARCHAR',
+  deType: 0, // 字段类型
+  extField: 2,
+  id: '',
+  checked: true
+}
+
+const fieldForm = reactive<CalcFieldType>({ ...(defaultForm as CalcFieldType) })
+
+const fieldType = (deType: number) => {
+  return ['text', 'time', 'value', 'value', '', 'location'][deType]
+}
+
+const insertFieldToCodeMirror = (value: string) => {
+  outerContentEditor.value.insertFieldToCodeMirror(value)
+}
+
 defineExpose({
   dialogInit
 })
@@ -561,20 +651,21 @@ defineExpose({
 
 .root-class {
   margin: 15px 0px 5px;
-  text-align: center;
+  justify-content: right;
 }
 
 .preview {
   margin-top: 5px;
   border: 1px solid #e6e6e6;
-  height: 350px !important;
+  border-radius: 4px;
+  height: 470px !important;
   overflow: hidden;
   background-size: 100% 100% !important;
 }
 
 .preview-show {
   border-left: 1px solid #e6e6e6;
-  height: 350px;
+  height: 470px;
   background-size: 100% 100% !important;
 }
 
@@ -609,8 +700,7 @@ defineExpose({
 
 .select-filed {
   /*width: 100%;*/
-  margin-left: 10px;
-  margin-right: 10px;
+  margin-right: 8px;
   overflow: hidden; /*超出部分隐藏*/
   white-space: nowrap; /*不换行*/
   text-overflow: ellipsis; /*超出部分文字以...显示*/
@@ -647,7 +737,6 @@ defineExpose({
 }
 
 .custom-tree-node {
-  flex: 1;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -655,18 +744,30 @@ defineExpose({
 }
 
 .auth-span {
-  float: right;
+  float: left;
   width: 30px;
-  margin-right: 5px;
+  margin-left: -8px;
 }
 
 .tree-head {
-  height: 30px;
-  line-height: 30px;
-  border-bottom: 1px solid #e6e6e6;
-  background-color: #f7f8fa;
+  height: 40px;
+  line-height: 40px;
   font-size: 12px;
   color: #3d4d66;
+  .head-text {
+    margin-left: 16px;
+    font-weight: 500;
+    font-size: 14px;
+    color: #1f2329;
+  }
+  .head-filter {
+    flex: 1;
+    text-align: right;
+    margin-right: 16px;
+    font-weight: 400;
+    font-size: 12px;
+    color: #646a73;
+  }
 }
 
 .padding-lr {
@@ -675,7 +776,7 @@ defineExpose({
 
 .field-height {
   height: calc(100% - 25px);
-  margin-top: 4px;
+  margin-top: 12px;
 }
 
 .drag-list {
@@ -751,8 +852,101 @@ span {
   width: 100%;
 }
 
-.dv-selector :deep(.ed-input__inner) {
-  height: 24px;
-  width: 110px;
+.dv-selector {
+  width: 100%;
+}
+
+.top-area {
+  float: left;
+  line-height: 33px;
+}
+
+.top-area-text {
+  font-weight: 400;
+  font-size: 14px;
+  color: #646a73;
+  margin-left: 24px;
+}
+
+.top-area-value {
+  font-weight: 400;
+  font-size: 14px;
+  color: #1f2329;
+}
+.view-type-icon {
+  color: #3370ff;
+  width: 16px;
+  height: 16px;
+}
+.content-head {
+  height: 30px;
+  margin-top: 10px;
+  .content-head-text {
+    margin-left: 16px;
+    font-weight: 400;
+    font-size: 14px;
+    color: #646a73;
+    line-height: 32px;
+    margin-right: 16px;
+  }
+}
+.link-icon-area {
+  text-align: center;
+  line-height: 35px;
+}
+.inner-content {
+  width: 100%;
+  padding: 16px 16px 8px 16px;
+  font-size: 14px !important;
+}
+
+.outer-content {
+  height: 340px;
+  border-radius: 4px;
+}
+
+.padding-lr {
+  height: 500px;
+  border: 1px solid var(--deCardStrokeColor, #dee0e3);
+  border-radius: 4px;
+  padding: 12px;
+  box-sizing: border-box;
+  margin-left: 12px;
+  width: 214px;
+  overflow-y: hidden;
+}
+
+.mb8 {
+  margin-bottom: 8px;
+  display: inline-flex;
+  align-items: center;
+
+  i {
+    margin-left: 4.67px;
+  }
+}
+
+.field-height {
+  height: calc(50% - 41px);
+  margin-top: 4px;
+  overflow-y: auto;
+}
+
+.class-na {
+  margin-top: 8px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--deTextDisable);
+}
+.outer-content-mirror {
+  border: 1px solid #bbbfc4;
+  border-radius: 4px;
+  height: 100%;
+  overflow: hidden;
+}
+.url-text {
+  width: 100%;
+  line-height: 14px;
+  margin-bottom: 8px;
 }
 </style>

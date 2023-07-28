@@ -6,6 +6,7 @@ import { generateID } from '@/utils/generateID'
 import { deepCopy } from '@/utils/utils'
 import { store } from '../../index'
 import eventBus from '@/utils/eventBus'
+import { adaptCurThemeCommonStyle } from '@/utils/canvasStyle'
 
 const dvMainStore = dvMainStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
@@ -48,7 +49,8 @@ export const copyStore = defineStore('copy', {
         _this.copyData = {
           data: deepCopy(curMultiplexingComponents.value[componentId]),
           copyCanvasViewInfo: canvasViewInfoPreview,
-          index: index
+          index: index,
+          copyFrom: 'multiplexing'
         }
         _this.paste()
       })
@@ -86,6 +88,9 @@ export const copyStore = defineStore('copy', {
       dvMainStore.addCopyComponent(newComponent, idMap, this.copyData.copyCanvasViewInfo)
       if (dvInfo.value.type === 'dashboard') {
         eventBus.emit('addDashboardItem', newComponent)
+        if (dvMainStore.multiplexingStyleAdapt && this.copyData.copyFrom === 'multiplexing') {
+          adaptCurThemeCommonStyle(newComponent)
+        }
       }
       if (this.isCut) {
         this.copyData = null

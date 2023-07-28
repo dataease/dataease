@@ -213,10 +213,21 @@ const nodeInfo = reactive<Node>({
   apiConfiguration: []
 })
 
-const saveDsFolder = (params, successCb, finallyCb) => {
+const saveDsFolder = (params, successCb, finallyCb, cmd) => {
   save(params)
     .then(() => {
       successCb()
+      switch (cmd) {
+        case 'move':
+          ElMessage.success('移动成功')
+          break
+        case 'rename':
+          ElMessage.success('重命名成功')
+          break
+        default:
+          ElMessage.success('新建成功')
+          break
+      }
       listDs()
     })
     .finally(() => {

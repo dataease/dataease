@@ -185,8 +185,6 @@ public class MybatisInterceptor implements Interceptor {
 
     @Override
     public void setProperties(Properties properties) {
-        // TODO Auto-generated method stub
-
     }
 
     public List<MybatisInterceptorConfig> getInterceptorConfigList() {

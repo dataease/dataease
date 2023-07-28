@@ -11,7 +11,6 @@ import { toPng } from 'html-to-image'
 import { initCanvasData, initCanvasDataPrepare } from '@/utils/canvasUtils'
 
 const dvMainStore = dvMainStoreWithOut()
-const { dvInfo } = storeToRefs(dvMainStore)
 const previewCanvasContainer = ref(null)
 const dashboardPreview = ref(null)
 const slideShow = ref(true)
@@ -61,7 +60,7 @@ const htmlToImage = () => {
   toPng(previewCanvasContainer.value.querySelector('.canvas-container'))
     .then(dataUrl => {
       const a = document.createElement('a')
-      a.setAttribute('download', dvInfo.value.name)
+      a.setAttribute('download', state.dvInfo.name)
       a.href = dataUrl
       a.click()
     })
@@ -98,7 +97,7 @@ defineExpose({
         <el-icon v-if="slideShow"><ArrowLeft /></el-icon>
         <el-icon v-else><ArrowRight /></el-icon>
       </div>
-      <template v-if="dvInfo.name">
+      <template v-if="state.dvInfo">
         <preview-head
           v-if="showPosition === 'preview'"
           @reload="loadCanvasData"

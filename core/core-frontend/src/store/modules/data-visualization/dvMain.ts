@@ -4,7 +4,6 @@ import { deepCopy } from '@/utils/utils'
 import { BASE_VIEW_CONFIG, getViewConfig } from '@/views/chart/components/editor/util/chart'
 import { DEFAULT_CANVAS_STYLE_DATA_DARK } from '@/views/chart/components/editor/util/dataVisualiztion'
 import { useEmitt } from '@/hooks/web/useEmitt'
-// import { adaptCurThemeCommonStyle } from '@/utils/canvasStyle'
 
 export const dvMainStore = defineStore('dataVisualization', {
   state: () => {
@@ -142,7 +141,8 @@ export const dvMainStore = defineStore('dataVisualization', {
       curOriginThemes: 'light',
       // 基础网格信息
       baseCellInfo: {},
-      dataPrepareState: false //数据准备状态
+      dataPrepareState: false, //数据准备状态
+      multiplexingStyleAdapt: true //复用样式跟随主题
     }
   },
   actions: {
@@ -227,7 +227,7 @@ export const dvMainStore = defineStore('dataVisualization', {
           if (canvasViewInfoPre[oldComponentId]) {
             const newComponentId = idMap[oldComponentId]
             _this.canvasViewInfo[newComponentId] = {
-              ...canvasViewInfoPre[oldComponentId],
+              ...deepCopy(canvasViewInfoPre[oldComponentId]),
               id: newComponentId
             }
           }
@@ -274,9 +274,6 @@ export const dvMainStore = defineStore('dataVisualization', {
         }
         this.canvasViewInfo[component.id] = newView
       }
-      // if (adapt) {
-      //   adaptCurThemeCommonStyle(component)
-      // }
     },
     setLinkageInfo(targetLinkageInfo) {
       this.linkageSettingStatus = true

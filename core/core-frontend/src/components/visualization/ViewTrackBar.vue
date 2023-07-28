@@ -74,7 +74,4 @@ defineExpose({
   margin-top: -80px !important;
 }
 
-.track-menu {
-  //border: #3a8ee6 1px solid;
-}
 </style>

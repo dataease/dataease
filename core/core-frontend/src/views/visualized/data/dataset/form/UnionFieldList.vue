@@ -45,17 +45,6 @@ const handleCheckAllChange = (val: boolean) => {
   isIndeterminate.value = false
   emit('checkedFields', multipleSelection.value)
 }
-// const fieldSearchList = computed(() => {
-//   if (search.value.trim() !== '') {
-//     const arr = props.fieldList.filter(ele =>
-//       ele.originName.toLocaleLowerCase().includes(search.value.trim().toLocaleLowerCase())
-//     )
-//     handleSelectionChange(arr)
-//     return arr
-//   }
-//   handleSelectionChange(props.fieldList.filter(ele => ele.checked))
-//   return props.fieldList
-// })
 
 const fieldSearchList = ref([])
 

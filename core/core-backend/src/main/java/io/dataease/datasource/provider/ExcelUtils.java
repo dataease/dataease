@@ -5,7 +5,7 @@ import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelReader;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
-import com.alibaba.excel.metadata.CellData;
+import com.alibaba.excel.metadata.data.ReadCellData;
 import com.alibaba.excel.read.metadata.ReadSheet;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -59,7 +59,7 @@ public class ExcelUtils {
                 if (StringUtils.equalsIgnoreCase(suffix, "csv")) {
                     BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
                     dataList = csvData(reader, false);
-                }else {
+                } else {
                     dataList = fetchExcelDataList(rootNode.get(i).get("tableName").asText(), inputStream);
                 }
             }
@@ -67,28 +67,28 @@ public class ExcelUtils {
         return dataList;
     }
 
-   public List<String[]> fetchExcelDataList(String sheetName, InputStream inputStream){
+    public List<String[]> fetchExcelDataList(String sheetName, InputStream inputStream) {
 
-       NoModelDataListener noModelDataListener = new NoModelDataListener();
-       ExcelReader excelReader = EasyExcel.read(inputStream, noModelDataListener).build();
-       List<ReadSheet> sheets = excelReader.excelExecutor().sheetList();
-       for (ReadSheet readSheet : sheets) {
-           if(!sheetName.equalsIgnoreCase(readSheet.getSheetName())){
-               continue;
-           }
-           noModelDataListener.clear();
-           List<TableField> fields = new ArrayList<>();
-           excelReader.read(readSheet);
-           for (String s : noModelDataListener.getHeader()) {
-               TableField tableFiled = new TableField();
-               tableFiled.setFieldType("TEXT");
-               tableFiled.setName(s);
-               tableFiled.setOriginName(s);
-               fields.add(tableFiled);
-           }
-       }
-       return noModelDataListener.getData();
-   }
+        NoModelDataListener noModelDataListener = new NoModelDataListener();
+        ExcelReader excelReader = EasyExcel.read(inputStream, noModelDataListener).build();
+        List<ReadSheet> sheets = excelReader.excelExecutor().sheetList();
+        for (ReadSheet readSheet : sheets) {
+            if (!sheetName.equalsIgnoreCase(readSheet.getSheetName())) {
+                continue;
+            }
+            noModelDataListener.clear();
+            List<TableField> fields = new ArrayList<>();
+            excelReader.read(readSheet);
+            for (String s : noModelDataListener.getHeader()) {
+                TableField tableFiled = new TableField();
+                tableFiled.setFieldType("TEXT");
+                tableFiled.setName(s);
+                tableFiled.setOriginName(s);
+                fields.add(tableFiled);
+            }
+        }
+        return noModelDataListener.getData();
+    }
 
     public static List<TableField> getTableFields(DatasourceRequest datasourceRequest) throws Exception {
         List<TableField> tableFields = new ArrayList<>();
@@ -185,12 +185,12 @@ public class ExcelUtils {
         return data;
     }
 
-    private String cellType(String value){
+    private String cellType(String value) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             sdf.parse(value);
             return "DATETIME";
-        }catch (Exception e1){
+        } catch (Exception e1) {
             try {
                 Double d = Double.valueOf(value);
                 double eps = 1e-10;
@@ -204,13 +204,14 @@ public class ExcelUtils {
             }
         }
     }
+
     private void cellType(String value, int i, TableField tableFiled) {
         if (StringUtils.isEmpty(value)) {
             return;
         }
         if (i == 0) {
             tableFiled.setFieldType(cellType(value));
-        }else {
+        } else {
             String type = cellType(value);
             if (type.equalsIgnoreCase("TEXT")) {
                 tableFiled.setFieldType(type);
@@ -221,7 +222,6 @@ public class ExcelUtils {
         }
 
 
-
     }
 
     @Data
@@ -229,12 +229,11 @@ public class ExcelUtils {
         private List<String[]> data = new ArrayList<>();
         private List<String> header = new ArrayList<>();
 
-
         @Override
-        public void invokeHead(Map<Integer, CellData> headMap, AnalysisContext context) {
+        public void invokeHead(Map<Integer, ReadCellData<?>> headMap, AnalysisContext context) {
             super.invokeHead(headMap, context);
             for (Integer key : headMap.keySet()) {
-                CellData cellData = headMap.get(key);
+                ReadCellData<?> cellData = headMap.get(key);
                 String value = cellData.getStringValue();
                 if (StringUtils.isEmpty(value)) {
                     value = "none_" + key;
@@ -260,12 +259,11 @@ public class ExcelUtils {
         public void doAfterAllAnalysed(AnalysisContext analysisContext) {
         }
 
-        public void clear(){
+        public void clear() {
             data.clear();
             header.clear();
         }
     }
-
 
 
     public List<ExcelSheetData> parseExcel(String filename, InputStream inputStream, boolean isPreview) throws Exception {
@@ -287,8 +285,8 @@ public class ExcelUtils {
                         tableFiled.setOriginName(s);
                         fields.add(tableFiled);
                     }
-                    List<String[]> data =  (isPreview && noModelDataListener.getData().size() > 100 ? new ArrayList<>(noModelDataListener.getData().subList(0, 100)) : noModelDataListener.getData());
-                    if(isPreview){
+                    List<String[]> data = (isPreview && noModelDataListener.getData().size() > 100 ? new ArrayList<>(noModelDataListener.getData().subList(0, 100)) : noModelDataListener.getData());
+                    if (isPreview) {
                         for (String[] datum : data) {
                             for (int i = 0; i < datum.length; i++) {
                                 if (i < fields.size()) {
@@ -341,7 +339,8 @@ public class ExcelUtils {
                     }).collect(Collectors.toList());
                 }
                 excelSheetData.setJsonArray(jsonArray);
-            };
+            }
+            ;
         } catch (Exception e) {
             DEException.throwException(e);
         }

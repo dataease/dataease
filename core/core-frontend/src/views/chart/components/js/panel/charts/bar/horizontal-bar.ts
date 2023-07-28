@@ -103,19 +103,6 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
       }
 
       const options = this.setupOptions(chart, initOptions)
-      // group
-      // if (isGroup) {
-      //   options.isGroup = true
-      // } else {
-      //   delete options.isGroup
-      // }
-      // // stack
-      // if (isStack) {
-      //   options.isStack = true
-      // } else {
-      //   delete options.isStack
-      // }
-      // options.isPercent = chart.type.includes('percentage')
 
       // 处理空值
       if (chart.senior) {

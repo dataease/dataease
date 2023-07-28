@@ -233,8 +233,12 @@ const queryData = (firstLoad = false) => {
 }
 
 const showChartView = (...libs: ChartLibraryType[]) => {
-  const chartView = chartViewManager.getChartView(view.value.render, view.value.type)
-  return libs?.includes(chartView.library)
+  if (view.value && view.value.render && view.value.type) {
+    const chartView = chartViewManager.getChartView(view.value.render, view.value.type)
+    return libs?.includes(chartView.library)
+  } else {
+    return false
+  }
 }
 
 onBeforeMount(() => {

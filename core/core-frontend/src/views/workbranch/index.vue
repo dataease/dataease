@@ -7,7 +7,11 @@ import imgtest from '@/assets/img/dataease-10000Star.jpg'
 import { HandleMore } from '@/components/handle-more'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import { useRequestStoreWithOut } from '@/store/modules/request'
+import { findRecent } from '@/api/visualization/dataVisualization'
+import { useRouter } from 'vue-router'
+import dayjs from 'dayjs'
 
+const { resolve } = useRouter()
 const permissionStore = usePermissionStoreWithOut()
 const requestStore = useRequestStoreWithOut()
 const { t } = useI18n()
@@ -54,6 +58,16 @@ const handleClick = (ele: TabsPaneContext) => {
   console.log(ele)
 }
 
+const formatterTime = (_, _column, cellValue) => {
+  return dayjs(new Date(cellValue)).format('YYYY-MM-DD HH:mm:ss')
+}
+
+const getTableData = () => {
+  findRecent().then(res => {
+    state.panelList = res
+  })
+}
+getTableData()
 const menuList = [
   {
     label: t('visualization.share'),
@@ -91,20 +105,17 @@ const operation = (cmd: string, id) => {
   }
 }
 
-const preview = id => {
-  console.log(id)
+const preview = ({ id, type }) => {
+  let path = type === 'dashboard' ? '/dashboard' : '/dvCanvas'
+  let query = type === 'dashboard' ? { resourceId: id } : { dvId: id }
+  const routeUrl = resolve({
+    path,
+    query
+  })
+  window.open(routeUrl.href, '_blank')
 }
 
 const activeCommand = ref('all_types')
-
-const sortChange = param => {
-  // state.orders = []
-  // if (param.order && param.prop === 'name') {
-  //   const type = param.order.substring(0, param.order.indexOf('ending'))
-  //   state.orders.push('create_time ' + type)
-  //   search()
-  // }
-}
 </script>
 
 <template>
@@ -258,11 +269,7 @@ const sortChange = param => {
           </el-col>
         </el-row>
         <div class="panel-table">
-          <GridTable
-            :show-pagination="false"
-            :table-data="state.panelList"
-            @sort-change="sortChange"
-          >
+          <GridTable :show-pagination="false" :table-data="state.panelList">
             <el-table-column key="name" width="280" prop="name" :label="t('common.name')">
               <template v-slot:default="scope">
                 <div class="name-content">
@@ -287,13 +294,19 @@ const sortChange = param => {
               :label="t('visualization.create_by')"
             />
 
-            <el-table-column prop="edite" show-overflow-tooltip key="edite" label="最近编辑人" />
+            <el-table-column
+              prop="updateBy"
+              show-overflow-tooltip
+              key="updateBy"
+              label="最近编辑人"
+            />
 
             <el-table-column
-              prop="time"
+              prop="updateTime"
               show-overflow-tooltip
-              sortable="custom"
-              key="time"
+              sortable
+              key="updateTime"
+              :formatter="formatterTime"
               label="最近编辑时间"
             />
 
@@ -304,11 +317,13 @@ const sortChange = param => {
               :label="$t('common.operate')"
             >
               <template #default="scope">
-                <el-tooltip effect="dark" content="新页面预览" placement="top">
-                  <el-icon class="hover-icon hover-icon-in-table" @click="preview(scope.row.id)">
-                    <Icon name="icon_pc_outlined"></Icon>
-                  </el-icon>
-                </el-tooltip>
+                <template v-if="['dashboard', 'dataV'].includes(scope.row.type)">
+                  <el-tooltip effect="dark" content="新页面预览" placement="top">
+                    <el-icon class="hover-icon hover-icon-in-table" @click="preview(scope.row)">
+                      <Icon name="icon_pc_outlined"></Icon>
+                    </el-icon>
+                  </el-tooltip>
+                </template>
                 <handle-more
                   inTable
                   @handle-command="cmd => operation(cmd, scope.row.id)"
