@@ -261,7 +261,7 @@
                 </el-row>
               </el-row>
               <el-row
-                v-show="state.linkJumpInfo.linkType === 'outer'"
+                v-if="state.linkJumpInfo.linkType === 'outer' && dialogShow"
                 style="padding: 14px; border-top: 1px solid #e6e6e6"
               >
                 <el-row class="url-text">
@@ -278,12 +278,11 @@
                 <el-row class="outer-content">
                   <el-col :span="16" class="outer-content-mirror">
                     <el-row style="width: 100%; height: 100%">
-                      <code-mirror
-                        :quotaMap="state.linkJumpInfoArray.map(ele => ele.sourceFieldName)"
-                        ref="myCm"
-                        dom-id="calcField"
-                        style="height: 100%"
-                      ></code-mirror>
+                      <jump-set-outer-content-editor
+                        ref="outerContentEditor"
+                        :link-jump-info="state.linkJumpInfo"
+                        :link-jump-info-array="state.linkJumpInfoArray"
+                      ></jump-set-outer-content-editor>
                     </el-row>
                   </el-col>
                   <el-col :span="8" style="height: 100%">
@@ -361,9 +360,8 @@ import { ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { getDatasetDetails, listFieldByDatasetGroup } from '@/api/dataset'
 import { BusiTreeRequest } from '@/models/tree/TreeNode'
-import CodeMirror from '@/views/visualized/data/dataset/form/CodeMirror.vue'
 import { CalcFieldType } from '@/views/visualized/data/dataset/form/CalcFieldEdit.vue'
-import { Field, getFieldByDQ } from '@/api/chart'
+import JumpSetOuterContentEditor from '@/components/visualization/JumpSetOuterContentEditor.vue'
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo, canvasViewInfo } = storeToRefs(dvMainStore)
 const linkJumpInfoTree = ref(null)
@@ -431,8 +429,7 @@ const state = reactive({
 })
 
 const emits = defineEmits(['closeJumpSetDialog'])
-const myCm = ref()
-const mirror = ref()
+const outerContentEditor = ref(null)
 
 const dialogInit = viewItem => {
   dialogShow.value = true
@@ -506,14 +503,14 @@ const init = viewItem => {
         state.linkJumpInfoArray.push(linkJumpInfo)
       }
     })
-    state.linkJumpInfoArray.forEach(linkJumpInfo => {
-      linkJumpInfo.content = setNameIdTrans(
-        'sourceFieldId',
-        'sourceFieldName',
-        linkJumpInfo.content,
-        state.name2Auto
-      )
-    })
+    // state.linkJumpInfoArray.forEach(linkJumpInfo => {
+    //   linkJumpInfo.content = setNameIdTrans(
+    //     'sourceFieldId',
+    //     'sourceFieldName',
+    //     linkJumpInfo.content,
+    //     state.name2Auto
+    //   )
+    // })
     const firstNode = state.linkJumpInfoArray[0]
     state.initState = true
     nextTick(() => {
@@ -524,9 +521,9 @@ const init = viewItem => {
 }
 
 const save = () => {
-  state.linkJumpInfoArray.forEach(jumpInfo => {
-    jumpInfo.content = setNameIdTrans('sourceFieldName', 'sourceFieldId', jumpInfo.content)
-  })
+  // state.linkJumpInfoArray.forEach(jumpInfo => {
+  //   jumpInfo.content = setNameIdTrans('sourceFieldName', 'sourceFieldId', jumpInfo.content)
+  // })
   updateJumpSet(state.linkJump).then(rsp => {
     ElMessage.success('保存成功')
     // 刷新跳转信息
@@ -553,8 +550,15 @@ const nodeClick = (data, node?) => {
   if (state.linkJumpInfo.targetDvId) {
     getPanelViewList(state.linkJumpInfo.targetDvId)
   }
-  codeMirrorContentSet()
+  codeMirrorContentSet(state.linkJumpInfo.content)
 }
+
+const codeMirrorContentSet = content => {
+  nextTick(() => {
+    outerContentEditor.value.editorInit(content)
+  })
+}
+
 // 获取当前视图字段 关联仪表板的视图信息列表
 const getPanelViewList = dvId => {
   viewTableDetailList(dvId).then(rsp => {
@@ -613,50 +617,6 @@ const cancel = () => {
   state.initState = false
 }
 
-const getFields = (id, chartId) => {
-  if (id) {
-    getFieldByDQ(id, chartId)
-      .then(res => {
-        state.dimension = (res.dimensionList as unknown as Field[]) || []
-        state.quota = (res.quotaList as unknown as Field[]) || []
-        state.dimensionData = JSON.parse(JSON.stringify(state.dimension))
-        state.quotaData = JSON.parse(JSON.stringify(state.quota))
-      })
-      .catch(e => {
-        state.dimension = []
-        state.quota = []
-        state.dimensionData = []
-        state.quotaData = []
-      })
-  } else {
-    state.dimension = []
-    state.quota = []
-    state.dimensionData = []
-    state.quotaData = []
-  }
-}
-
-const codeMirrorContentSet = () => {
-  nextTick(() => {
-    if (state.linkJumpInfo.linkType === 'outer') {
-      if (!mirror.value && myCm.value) {
-        mirror.value = myCm.value.codeComInit()
-      }
-      mirror.value.dispatch({
-        changes: {
-          from: 0,
-          to: mirror.value.viewState.state.doc.length,
-          insert: state.linkJumpInfo.content
-        }
-      })
-    }
-  })
-}
-
-const linkTypeChangeOpt = () => {
-  codeMirrorContentSet()
-}
-
 const defaultForm = {
   originName: '', // 物理字段名
   name: '', // 字段显示名
@@ -670,66 +630,12 @@ const defaultForm = {
 
 const fieldForm = reactive<CalcFieldType>({ ...(defaultForm as CalcFieldType) })
 
-const setFieldForm = () => {
-  const str = mirror.value.state.doc.toString()
-  const name2Auto = []
-  fieldForm.originName = setNameIdTrans('name', 'id', str, name2Auto)
-}
-
-const setNameIdTrans = (from, to, originName, name2Auto?: string[]) => {
-  if (!originName) {
-    return originName
-  }
-  let name2Id = originName
-  const nameIdMap = state.linkJumpInfoArray.reduce((pre, next) => {
-    pre[next[from]] = next[to]
-    return pre
-  }, {})
-  const on = originName.match(/\[(.+?)\]/g)
-  if (on) {
-    on.forEach(itm => {
-      const ele = itm.slice(1, -1)
-      if (name2Auto) {
-        name2Auto.push(nameIdMap[ele])
-      }
-      name2Id = name2Id.replace(`[${ele}]`, `[${nameIdMap[ele]}]`)
-    })
-  }
-  return name2Id
-}
-
-const initEdit = (obj, dimensionData, quotaData) => {
-  Object.assign(fieldForm, { ...defaultForm, ...obj })
-  state.dimensionData = dimensionData
-  state.quotaData = quotaData
-  if (!obj.originName) {
-    mirror.value.dispatch({
-      changes: {
-        from: 0,
-        to: mirror.value.viewState.state.doc.length,
-        insert: ''
-      }
-    })
-    return
-  }
-  mirror.value.dispatch({
-    changes: {
-      from: 0,
-      to: mirror.value.viewState.state.doc.length,
-      insert: setNameIdTrans('id', 'name', obj.originName)
-    }
-  })
-}
-
 const fieldType = (deType: number) => {
   return ['text', 'time', 'value', 'value', '', 'location'][deType]
 }
 
 const insertFieldToCodeMirror = (value: string) => {
-  mirror.value.dispatch({
-    changes: { from: mirror.value.viewState.state.selection.ranges[0].from, insert: value },
-    selection: { anchor: mirror.value.viewState.state.selection.ranges[0].from }
-  })
+  outerContentEditor.value.insertFieldToCodeMirror(value)
 }
 
 defineExpose({

@@ -113,6 +113,7 @@ declare module '@vue/runtime-core' {
     HyperlinksDialog: typeof import('./src/components/visualization/HyperlinksDialog.vue')['default']
     Icon: typeof import('./src/components/icon-custom/src/Icon.vue')['default']
     Index_back: typeof import('./src/components/data-visualization/canvas/index_back.vue')['default']
+    JumpSetOuterContentEditor: typeof import('./src/components/visualization/JumpSetOuterContentEditor.vue')['default']
     LinkageField: typeof import('./src/components/visualization/LinkageField.vue')['default']
     LinkJump: typeof import('./src/components/visualization/linkJump.vue')['default']
     LinkJumpSet: typeof import('./src/components/visualization/LinkJumpSet.vue')['default']
