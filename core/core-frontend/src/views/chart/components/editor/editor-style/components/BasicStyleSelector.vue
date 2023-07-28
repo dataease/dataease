@@ -197,42 +197,6 @@ init()
               </span>
             </div>
           </div>
-          <!--自定义系列或维度枚举值颜色-->
-          <!--                <div-->
-          <!--                  v-show="showProperty('colorPanel')"-->
-          <!--                  style="display: flex; align-items: center; margin-top: 10px"-->
-          <!--                >-->
-          <!--                  <span class="color-label" />-->
-          <!--                  <span>-->
-          <!--                    <span v-for="(c, index) in colorForm.colors" :key="index" style="padding: 2px">-->
-          <!--                      <span-->
-          <!--                        :style="{-->
-          <!--                          width: '20px',-->
-          <!--                          height: '20px',-->
-          <!--                          display: 'inline-block',-->
-          <!--                          backgroundColor: c-->
-          <!--                        }"-->
-          <!--                      />-->
-          <!--                    </span>-->
-          <!--                  </span>-->
-          <!--                </div>-->
-        </div>
-
-        <!--              <div class="custom-color-style">-->
-        <!--                <div-->
-        <!--                  v-for="(item, index) in state.colorForm.seriesColors"-->
-        <!--                  :key="index"-->
-        <!--                  style="display: flex; align-items: center; margin: 2px 0"-->
-        <!--                >-->
-        <!--                  <el-color-picker-->
-        <!--                    v-model="item.color"-->
-        <!--                    class="color-picker-style"-->
-        <!--                    :predefine="predefineColors"-->
-        <!--                    @change="switchCustomColor(index)"-->
-        <!--                  />-->
-        <!--                  <span class="span-label" :title="item.name">{{ item.name }}</span>-->
-        <!--                </div>-->
-        <!--              </div>-->
       </el-popover>
     </el-form-item>
     <el-form-item

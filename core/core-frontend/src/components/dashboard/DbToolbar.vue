@@ -286,13 +286,6 @@ const saveLinkageSetting = () => {
             </el-dropdown-menu>
           </template>
         </el-dropdown>
-        <!--        <el-button-->
-        <!--          class="custom-normal-button"-->
-        <!--          v-show="editMode === 'edit'"-->
-        <!--          @click="preview()"-->
-        <!--          style="float: right; margin-right: 12px"-->
-        <!--          >预览</el-button-->
-        <!--        >-->
         <el-button
           v-show="editMode === 'edit'"
           @click="saveCanvas()"

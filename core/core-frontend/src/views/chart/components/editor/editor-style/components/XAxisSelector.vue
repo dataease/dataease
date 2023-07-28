@@ -150,15 +150,6 @@ init()
         <span>
           <el-divider />
           <el-form-item :label="t('chart.axis_value')" class="form-item">
-            <!--              <span>-->
-            <!--                <span class="span-box">-->
-            <!--                  <span>{{ t('chart.axis_value') }}</span>-->
-            <!--                  <el-tooltip class="item" :effect="props.themes" placement="bottom">-->
-            <!--                    <template #content>{{ t('chart.axis_tip') }}</template>-->
-            <!--                    <i class="el-icon-info" style="cursor: pointer" />-->
-            <!--                  </el-tooltip>-->
-            <!--                </span>-->
-            <!--              </span>-->
             <el-checkbox
               :effect="props.themes"
               v-model="state.axisForm.axisValue.auto"
