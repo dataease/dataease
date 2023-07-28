@@ -3,6 +3,7 @@ import { type Field } from '@/api/chart'
 import type { BusiTreeRequest } from '@/models/tree/TreeNode'
 export interface DatasetOrFolder {
   name: string
+  action: string
   id?: number | string
   pid?: number | string
   nodeType: 'folder' | 'dataset'

@@ -2,6 +2,7 @@ package io.dataease.datasource.server;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -91,7 +92,38 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     @Override
+    public DatasourceDTO move(DatasourceDTO dataSourceDTO) throws Exception {
+        switch (dataSourceDTO.getAction()){
+            case "move":
+            case "rename":
+                checkName(dataSourceDTO.getName(), datasourceMapper.selectById(dataSourceDTO.getId()).getType(), dataSourceDTO.getId());
+                UpdateWrapper<CoreDatasource> updateWrapper = new UpdateWrapper<>();
+                updateWrapper.eq("id", dataSourceDTO.getId());
+                CoreDatasource record = new CoreDatasource();
+                record.setPid(dataSourceDTO.getPid());
+                record.setName(dataSourceDTO.getName());
+                datasourceMapper.update(record, updateWrapper);
+                break;
+            case "create":
+                checkName(dataSourceDTO.getName(), dataSourceDTO.getNodeType(), dataSourceDTO.getId());
+                CoreDatasource coreDatasource = new CoreDatasource();
+                BeanUtils.copyBean(coreDatasource, dataSourceDTO);
+                coreDatasource.setCreateTime(System.currentTimeMillis());
+                coreDatasource.setUpdateTime(System.currentTimeMillis());
+                coreDatasource.setTaskStatus(TaskStatus.WaitingForExecution.name());
+                coreDatasource.setId(IDUtils.snowID());
+                break;
+            default:
+                break;
+        }
+        return dataSourceDTO;
+    }
+    @Override
     public DatasourceDTO save(DatasourceDTO dataSourceDTO) throws Exception {
+        if(StringUtils.isNotEmpty(dataSourceDTO.getAction())){
+            move(dataSourceDTO);
+            return dataSourceDTO;
+        }
         if(StringUtils.isNotEmpty(dataSourceDTO.getNodeType()) && dataSourceDTO.getNodeType().equals("folder")){
             dataSourceDTO.setType("folder");
             dataSourceDTO.setConfiguration("");
@@ -318,11 +350,14 @@ public class DatasourceServer implements DatasourceApi {
                 queryWrapper.eq("type", "folder");
             }
         }
+        if(ObjectUtils.isNotEmpty(request.getId())){
+            queryWrapper.ne("id", request.getId());
+        }
         queryWrapper.orderByDesc("create_time");
         List<DatasourceNodePO> pos = coreDatasourceExtMapper.query(queryWrapper);
 
         List<DatasourceNodeBO> nodes = new ArrayList<>();
-        if (ObjectUtils.isEmpty(request.getLeaf()) || !request.getLeaf()) nodes.add(rootNode());
+//        if (ObjectUtils.isEmpty(request.getLeaf()) || !request.getLeaf()) nodes.add(rootNode());
         List<DatasourceNodeBO> bos = pos.stream().map(this::convert).toList();
         if (CollectionUtil.isNotEmpty(bos)) {
             nodes.addAll(bos);
@@ -555,7 +590,7 @@ public class DatasourceServer implements DatasourceApi {
         QueryWrapper<CoreDatasource> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("name", name);
         queryWrapper.eq("type", type);
-        if (id != null) {
+        if (id != null && id != 0) {
             queryWrapper.ne("id", id);
         }
         if (!CollectionUtils.isEmpty(datasourceMapper.selectList(queryWrapper))) {
