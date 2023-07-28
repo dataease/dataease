@@ -7,8 +7,8 @@
         <groupId>io.dataease</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
+    
     <modelVersion>4.0.0</modelVersion>
-
     <artifactId>xpack-base</artifactId>
 
     <properties>

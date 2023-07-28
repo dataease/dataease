@@ -1,5 +1,6 @@
-# dataease2.0
-**DataEase2.0 打包方式：**
+# DataEase 2.0 
+
+**打包方式**
 
 -   desktop(桌面版)：mvn clean package -Pdesktop
 -   standalone(单机版)：mvn clean package -Pstandalone

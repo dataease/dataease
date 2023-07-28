@@ -7,18 +7,14 @@
         <groupId>io.dataease</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
+    
     <modelVersion>4.0.0</modelVersion>
-
     <packaging>pom</packaging>
-
     <artifactId>core</artifactId>
 
     <modules>
         <module>core-frontend</module>
         <module>core-backend</module>
     </modules>
-
-
-
 
 </project>

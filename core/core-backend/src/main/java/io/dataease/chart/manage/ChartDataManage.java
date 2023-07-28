@@ -288,19 +288,13 @@ public class ChartDataManage {
         List<ChartDrillRequest> drillRequestList = chartExtRequest.getDrill();
         if (ObjectUtils.isNotEmpty(drillRequestList) && (drill.size() > drillRequestList.size())) {
             ArrayList<ChartViewFieldDTO> fieldsToFilter = new ArrayList<>();
-//            如果是从子维度开始下钻，那么其他维度的条件要先加上去
-//            分组和堆叠
             if (StringUtils.containsIgnoreCase(view.getType(), "group")) {
-//              分组堆叠
                 if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
-//                  分组和堆叠字段都有才有效
                     if (ObjectUtils.isNotEmpty(xAxisExt) && ObjectUtils.isNotEmpty(extStack)) {
-//                      从分组字段下钻，就加上堆叠字段的条件
                         if (Objects.equals(drill.get(0).getId(), xAxisExt.get(0).getId())) {
                             fieldsToFilter.addAll(xAxisBase);
                             fieldsToFilter.addAll(extStack);
                         }
-//                      从堆叠字段下钻，就加上分组字段的条件
                         if (Objects.equals(drill.get(0).getId(), extStack.get(0).getId())) {
                             fieldsToFilter.addAll(xAxisBase);
                             fieldsToFilter.addAll(xAxisExt);
@@ -313,7 +307,6 @@ public class ChartDataManage {
             } else if (StringUtils.containsIgnoreCase(view.getType(), "stack") &&
                     ObjectUtils.isNotEmpty(extStack) &&
                     Objects.equals(drill.get(0).getId(), extStack.get(0).getId())) {
-//              堆叠
                 fieldsToFilter.addAll(xAxisBase);
             }
             ChartDrillRequest head = drillRequestList.get(0);
