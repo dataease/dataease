@@ -188,6 +188,7 @@ init()
                     </span>
                   </div>
                 </div>
+              </div>
             </el-popover>
           </el-form-item>
           <!--alpha-->
