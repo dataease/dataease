@@ -76,4 +76,6 @@ public interface DatasourceApi {
     @PostMapping("/uploadFile")
     ExcelFileData excelUpload(@RequestParam("file") MultipartFile file, @RequestParam("id") long datasourceId, @RequestParam("editType") Integer editType) throws Exception;
 
+    @PostMapping("/previewData")
+    Map<String, Object> previewDataWithLimit(@RequestBody Map<String, Object> req) throws Exception;
 }

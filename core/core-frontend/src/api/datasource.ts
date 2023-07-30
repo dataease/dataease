@@ -63,6 +63,11 @@ export const getSchema = (data = {}) => {
   return request.post({ url: '/datasource/getSchema', data })
 }
 
+export const previewData = (data = {}) => {
+  return request.post({ url: '/datasource/previewData', data }).then(res => {
+    return res?.data
+  })
+}
 export const validate = (data = {}) => {
   return request.post({ url: '/datasource/validate', data })
 }

@@ -8,6 +8,7 @@ import { Icon } from '@/components/icon-custom'
 import CreatDsGroup from './form/CreatDsGroup.vue'
 import type { Tree } from '../dataset/form/CreatDsGroup.vue'
 import { getDatasetPreview } from '@/api/dataset'
+import { previewData } from '@/api/datasource'
 import { useI18n } from '@/hooks/web/useI18n'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import {
@@ -152,9 +153,9 @@ const generateColumns = (arr: Field[]) =>
 
 const dataPreviewLoading = ref(false)
 const columns = ref([])
-const handleLoadExcel = () => {
+const handleLoadExcel = data => {
   dataPreviewLoading.value = true
-  getDatasetPreview('1679405733190893568')
+  previewData(data)
     .then(res => {
       columns.value = generateColumns((res?.data?.fields as Field[]) || [])
       tableData.value = (res?.data?.data as Array<{}>) || []
@@ -183,8 +184,7 @@ const getDsIconName = data => {
 }
 
 const handleTabClick = tab => {
-  handleLoadExcel()
-  console.log('tab', tab)
+  handleLoadExcel({ table: tab.value })
 }
 
 const baseInfo = ref()
@@ -364,12 +364,19 @@ const operation = (cmd: string, data: Tree, nodeType: string) => {
 const handleClick = (tabName: TabPaneName) => {
   switch (tabName) {
     case 'config':
+      listDatasourceTables(nodeInfo.id).then(res => {
+        tabList.value = res.data.map(ele => {
+          const { name, tableName } = ele
+          return {
+            value: name,
+            label: tableName
+          }
+        })
+        tableData.value = res.data
+      })
       break
     case 'table':
-      listDatasourceTables(nodeInfo.id).then(res => {
-        tableData.value = res.data
-        initSearch()
-      })
+      initSearch()
       break
     default:
       break
