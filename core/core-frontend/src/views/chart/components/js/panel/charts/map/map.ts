@@ -102,11 +102,15 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
 
     return view
   }
-  private configColor(chart: Chart, options: ChoroplethOptions, extra: any[]): ChoroplethOptions {
+  private configBasicStyle(
+    chart: Chart,
+    options: ChoroplethOptions,
+    extra: any[]
+  ): ChoroplethOptions {
     const { geoJson, areaId }: L7PlotDrawOptions<any> = extra[0]
     const customAttr = parseJson(chart.customAttr)
     const senior = parseJson(chart.senior)
-    const curAreaNameMapping = senior.mapMapping?.[areaId]
+    const curAreaNameMapping = senior.areaMapping?.[areaId]
     handleGeoJson(geoJson, curAreaNameMapping)
     options.color = {
       field: 'value',
@@ -131,7 +135,7 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
         validArea += 1
       }
     })
-    let colors = customAttr.color.colors
+    let colors = customAttr.basicStyle.colors
     if (validArea < colors.length) {
       colors = colors.slice(0, validArea)
     }
@@ -150,7 +154,7 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       this.configLabel,
       this.configStyle,
       this.configTooltip,
-      this.configColor
+      this.configBasicStyle
     )(chart, options, extra)
   }
 }

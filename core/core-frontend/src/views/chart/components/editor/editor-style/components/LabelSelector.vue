@@ -47,14 +47,14 @@ const initFontSize = () => {
 }
 
 const state = reactive({
-  labelForm: JSON.parse(JSON.stringify(DEFAULT_LABEL)),
+  tableHeaderForm: JSON.parse(JSON.stringify(DEFAULT_LABEL)),
   fontSize: []
 })
 
 const emit = defineEmits(['onLabelChange'])
 
 const changeLabelAttr = () => {
-  emit('onLabelChange', state.labelForm)
+  emit('onLabelChange', state.tableHeaderForm)
 }
 
 const init = () => {
@@ -67,7 +67,7 @@ const init = () => {
       customAttr = JSON.parse(chart.customAttr)
     }
     if (customAttr.label) {
-      state.labelForm = customAttr.label
+      state.tableHeaderForm = customAttr.label
     }
   }
 }
@@ -81,8 +81,8 @@ init()
     <el-col>
       <el-form
         ref="labelForm"
-        :disabled="!state.labelForm.show"
-        :model="state.labelForm"
+        :disabled="!state.tableHeaderForm.show"
+        :model="state.tableHeaderForm"
         label-width="80px"
         size="small"
       >
@@ -93,7 +93,7 @@ init()
         >
           <el-select
             :effect="props.themes"
-            v-model.number="state.labelForm.fontSize"
+            v-model.number="state.tableHeaderForm.fontSize"
             :placeholder="t('chart.text_fontsize')"
             @change="changeLabelAttr('fontSize')"
           >
@@ -111,7 +111,7 @@ init()
           v-show="showProperty('color')"
         >
           <el-color-picker
-            v-model="state.labelForm.color"
+            v-model="state.tableHeaderForm.color"
             class="color-picker-style"
             :predefine="predefineColors"
             @change="changeLabelAttr('color')"
@@ -120,7 +120,7 @@ init()
         <el-form-item :label="t('chart.label_position')" class="form-item">
           <el-select
             :effect="props.themes"
-            v-model="state.labelForm.position"
+            v-model="state.tableHeaderForm.position"
             :placeholder="t('chart.label_position')"
             @change="changeLabelAttr('position')"
           >

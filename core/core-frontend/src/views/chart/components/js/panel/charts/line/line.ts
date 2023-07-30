@@ -31,25 +31,9 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
       return
     }
     const data = cloneDeep(chart.data.data)
-    // size
-    let customAttr: DeepPartial<ChartAttr> = {}
-    let smooth, point, lineStyle
-    if (chart.customAttr) {
-      customAttr = parseJson(chart.customAttr)
-      if (customAttr.size) {
-        const s = JSON.parse(JSON.stringify(customAttr.size)) as ChartSizeAttr
-        smooth = s.lineSmooth
-        point = {
-          size: s.lineSymbolSize,
-          shape: s.lineSymbol
-        }
-        lineStyle = {
-          lineWidth: s.lineWidth
-        }
-      }
-    }
     // custom color
-    const color = antVCustomColor(chart)
+    const customAttr = parseJson(chart.customAttr)
+    const color = customAttr.basicStyle.colors
     // options
     const initOptions: LineOptions = {
       data: data,
@@ -58,9 +42,6 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
       seriesField: 'category',
       appendPadding: getPadding(chart),
       color,
-      point,
-      lineStyle,
-      smooth,
       interactions: [
         {
           type: 'legend-active',
@@ -204,11 +185,32 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
     return { ...options, tooltip }
   }
 
+  protected configBasicStyle(chart: Chart, options: LineOptions): LineOptions {
+    // size
+    const customAttr: DeepPartial<ChartAttr> = parseJson(chart.customAttr)
+    const s = JSON.parse(JSON.stringify(customAttr.basicStyle))
+    const smooth = s.lineSmooth
+    const point = {
+      size: s.lineSymbolSize,
+      shape: s.lineSymbol
+    }
+    const lineStyle = {
+      lineWidth: s.lineWidth
+    }
+    return {
+      ...options,
+      smooth,
+      point,
+      lineStyle
+    }
+  }
+
   protected setupOptions(chart: Chart, options: LineOptions): LineOptions {
     return flow(
       this.configTheme,
       this.configLabel,
       this.configTooltip,
+      this.configBasicStyle,
       this.configLegend,
       this.configXAxis,
       this.configYAxis,

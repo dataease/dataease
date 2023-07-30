@@ -45,7 +45,7 @@ const initFontSize = () => {
   for (let i = 10; i <= 40; i = i + 2) {
     arr.push({
       name: i + '',
-      value: i + ''
+      value: i
     })
   }
   state.fontSize = arr
@@ -135,7 +135,7 @@ init()
         <el-form-item :label="t('chart.axis_name_fontsize')" class="form-item">
           <el-select
             :effect="props.themes"
-            v-model="state.axisForm.nameTextStyle.fontSize"
+            v-model.number="state.axisForm.nameTextStyle.fontSize"
             :placeholder="t('chart.axis_name_fontsize')"
             @change="changeAxisStyle('nameTextStyle')"
           >
@@ -260,7 +260,7 @@ init()
           <el-form-item :label="t('chart.axis_label_fontsize')" class="form-item">
             <el-select
               :effect="props.themes"
-              v-model="state.axisForm.axisLabel.fontSize"
+              v-model.number="state.axisForm.axisLabel.fontSize"
               :placeholder="t('chart.axis_label_fontsize')"
               @change="changeAxisStyle('axisLabel')"
             >

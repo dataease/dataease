@@ -105,23 +105,24 @@ export class TableNormal extends S2ChartView<TableSheet> {
     const s2Options: S2Options = {
       width: containerDom.offsetWidth,
       height: containerDom.offsetHeight,
-      showSeriesNumber: customAttr.size.showIndex,
-      style: this.configSize(chart),
+      showSeriesNumber: customAttr.tableHeader.showIndex,
+      style: this.configStyle(chart),
       totals: {}
       // conditions: getConditions(chart)
     }
     // 开启序号之后，第一列就是序号列，修改 label 即可
-    /*if (s2Options.showSeriesNumber) {
-      s2Options.colCell = (node) => {
+    if (s2Options.showSeriesNumber) {
+      s2Options.colCell = node => {
         if (node.colIndex === 0) {
-          if (!customAttr.size.indexLabel) {
+          if (!customAttr.tableHeader.indexLabel) {
             node.label = ' '
           } else {
-            node.label = customAttr.size.indexLabel
+            node.label = customAttr.tableHeader.indexLabel
           }
         }
+        return null
       }
-    }*/
+    }
 
     // 开始渲染
     if (s2) {

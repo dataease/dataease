@@ -4,13 +4,14 @@ import {
   G2PlotChartView,
   G2PlotDrawOptions
 } from '@/views/chart/components/js/panel/types/impl/g2plot'
-import { flow, parseJson } from '@/views/chart/components/js/util'
+import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
 import { Datum } from '@antv/g2plot'
 import { singleDimensionTooltipFormatter } from '@/views/chart/components/js/formatter'
 import {
   BAR_EDITOR_PROPERTY,
   BAR_EDITOR_PROPERTY_INNER
 } from '@/views/chart/components/js/panel/charts/bar/common'
+import { setGradientColor } from '@/views/chart/components/js/panel/common/common_antv'
 
 const DEFAULT_DATA: any[] = []
 
@@ -29,7 +30,6 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
       return
     }
     const data = cloneDeep(drawOptions.chart.data?.data)
-    if (!data) return drawOptions.chartObj
     const initOptions: ColumnOptions = {
       xField: 'field',
       yField: 'value',
@@ -124,9 +124,26 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
     return options
   }
 
+  protected configBasicStyle(chart: Chart, options: ColumnOptions): ColumnOptions {
+    const basicStyle = parseJson(chart.customAttr).basicStyle
+    if (basicStyle.gradient) {
+      let color = basicStyle.colors
+      color = color.map(ele => {
+        const tmp = hexColorToRGBA(ele, basicStyle.alpha)
+        return setGradientColor(tmp, true, 270)
+      })
+      options = {
+        ...options,
+        color
+      }
+    }
+    return options
+  }
+
   protected setupOptions(chart: Chart, options: ColumnOptions): ColumnOptions {
     return flow(
       this.configTheme,
+      this.configBasicStyle,
       this.configLabel,
       this.configTooltip,
       this.configLegend,

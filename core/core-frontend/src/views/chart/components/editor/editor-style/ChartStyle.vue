@@ -1,8 +1,7 @@
 <script lang="ts" setup>
 import { useI18n } from '@/hooks/web/useI18n'
-import { computed, PropType, toRefs, nextTick, watch } from 'vue'
-import ColorSelector from '@/views/chart/components/editor/editor-style/components/ColorSelector.vue'
-import SizeSelector from '@/views/chart/components/editor/editor-style/components/SizeSelector.vue'
+import { PropType, toRefs, nextTick, watch } from 'vue'
+import MiscSelector from '@/views/chart/components/editor/editor-style/components/MiscSelector.vue'
 import LabelSelector from '@/views/chart/components/editor/editor-style/components/LabelSelector.vue'
 import TooltipSelector from '@/views/chart/components/editor/editor-style/components/TooltipSelector.vue'
 import XAxisSelector from '@/views/chart/components/editor/editor-style/components/XAxisSelector.vue'
@@ -16,6 +15,10 @@ import { ElCollapseItem } from 'element-plus-secondary'
 import BasicStyleSelector from '@/views/chart/components/editor/editor-style/components/BasicStyleSelector.vue'
 import ComponentPosition from '@/components/visualization/common/ComponentPosition.vue'
 import BackgroundOverallCommon from '@/components/visualization/component-background/BackgroundOverallCommon.vue'
+import TableHeaderSelector from '@/views/chart/components/editor/editor-style/components/table/TableHeaderSelector.vue'
+import TableCellSelector from '@/views/chart/components/editor/editor-style/components/table/TableCellSelector.vue'
+import TableTotalSelector from '@/views/chart/components/editor/editor-style/components/table/TableTotalSelector.vue'
+
 const dvMainStore = dvMainStoreWithOut()
 const { curComponent, dvInfo, batchOptStatus } = storeToRefs(dvMainStore)
 const { t } = useI18n()
@@ -65,7 +68,7 @@ const props = defineProps({
 const { chart, themes, properties, propertyInnerAll } = toRefs(props)
 const emit = defineEmits([
   'onColorChange',
-  'onSizeChange',
+  'onMiscChange',
   'onLabelChange',
   'onTooltipChange',
   'onChangeXAxisForm',
@@ -73,17 +76,16 @@ const emit = defineEmits([
   'onTextChange',
   'onLegendChange',
   'onBasicStyleChange',
-  'onBackgroundChange'
+  'onBackgroundChange',
+  'onTableHeaderChange',
+  'onTableCellChange',
+  'onTableTotalChange'
 ])
 
 const showProperties = (property: EditorProperty) => properties.value?.includes(property)
 
-const onColorChange = val => {
-  state.initReady && emit('onColorChange', val)
-}
-
-const onSizeChange = val => {
-  state.initReady && emit('onSizeChange', val)
+const onMiscChange = val => {
+  emit('onMiscChange', val)
 }
 
 const onLabelChange = val => {
@@ -118,6 +120,15 @@ const onBackgroundChange = val => {
   state.initReady && emit('onBackgroundChange', val)
 }
 
+const onTableHeaderChange = val => {
+  emit('onTableHeaderChange', val)
+}
+const onTableCellChange = val => {
+  emit('onTableCellChange', val)
+}
+const onTableTotalChange = val => {
+  emit('onTableTotalChange', val)
+}
 watch(
   () => props.chart.id,
   () => {
@@ -150,7 +161,7 @@ watch(
           </el-collapse-item>
           <el-collapse-item
             name="basicStyle"
-            title="基础样式"
+            :title="t('chart.basic_style')"
             v-if="showProperties('basic-style-selector')"
           >
             <basic-style-selector
@@ -161,33 +172,49 @@ watch(
             />
           </el-collapse-item>
           <el-collapse-item
-            name="color"
-            :title="t('chart.color')"
-            v-if="showProperties('color-selector')"
+            name="tableHeader"
+            :title="t('chart.table_header')"
+            v-if="showProperties('table-header-selector')"
           >
-            <color-selector
-              :property-inner="propertyInnerAll['color-selector']"
+            <table-header-selector
+              :property-inner="propertyInnerAll['table-header-selector']"
               :themes="themes"
-              class="attr-selector"
               :chart="chart"
-              @onColorChange="onColorChange"
+              @onTableHeaderChange="onTableHeaderChange"
             />
           </el-collapse-item>
-
           <el-collapse-item
-            v-if="showProperties('size-selector')"
-            name="size"
-            :title="
-              chart.type && chart.type.includes('table') ? t('chart.table_config') : t('chart.size')
-            "
+            name="tableCell"
+            :title="t('chart.table_cell')"
+            v-if="showProperties('table-cell-selector')"
           >
-            <size-selector
+            <table-cell-selector
+              :property-inner="propertyInnerAll['table-cell-selector']"
+              :themes="themes"
+              :chart="chart"
+              @onTableCellChange="onTableCellChange"
+            />
+          </el-collapse-item>
+          <el-collapse-item
+            name="tableTotal"
+            :title="t('chart.table_total')"
+            v-if="showProperties('table-total-selector')"
+          >
+            <table-total-selector
+              :property-inner="propertyInnerAll['table-total-selector']"
+              :themes="themes"
+              :chart="chart"
+              @onTableTotalChange="onTableTotalChange"
+            />
+          </el-collapse-item>
+          <el-collapse-item v-if="showProperties('misc-selector')" name="size" title="杂项设置">
+            <misc-selector
               :property-inner="propertyInnerAll['size-selector']"
               :themes="themes"
               class="attr-selector"
               :chart="chart"
               :quota-fields="props.quotaData"
-              @onSizeChange="onSizeChange"
+              @onMiscChange="onMiscChange"
             />
           </el-collapse-item>
           <collapse-switch-item

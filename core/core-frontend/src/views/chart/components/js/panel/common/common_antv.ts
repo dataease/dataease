@@ -28,14 +28,14 @@ export function getTheme(chart: Chart) {
     tooltipBackgroundColor,
     legendColor,
     legendFontsize
-  let customAttr
+  let customAttr: DeepPartial<ChartAttr>
   if (chart.customAttr) {
-    customAttr = chart.customAttr
+    customAttr = parseJson(chart.customAttr)
     // color
-    if (customAttr.color) {
-      const c = JSON.parse(JSON.stringify(customAttr.color))
-      c.colors.forEach(ele => {
-        colors.push(hexColorToRGBA(ele, c.alpha))
+    if (customAttr.basicStyle) {
+      const b = JSON.parse(JSON.stringify(customAttr.basicStyle))
+      b.colors.forEach(ele => {
+        colors.push(hexColorToRGBA(ele, b.alpha))
       })
     }
     // label
@@ -47,15 +47,15 @@ export function getTheme(chart: Chart) {
     // tooltip
     if (customAttr.tooltip) {
       const t = JSON.parse(JSON.stringify(customAttr.tooltip))
-      tooltipColor = t.textStyle.color
-      tooltipFontsize = t.textStyle.fontSize
+      tooltipColor = t.color
+      tooltipFontsize = t.fontSize
       tooltipBackgroundColor = t.backgroundColor
     }
   }
 
-  let customStyle
+  let customStyle: DeepPartial<ChartStyle>
   if (chart.customStyle) {
-    customStyle = chart.customStyle
+    customStyle = parseJson(chart.customStyle)
     // bg
     if (customStyle.background) {
       bgColor = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
@@ -63,8 +63,8 @@ export function getTheme(chart: Chart) {
     // legend
     if (customStyle.legend) {
       const l = customStyle.legend
-      legendColor = l.textStyle.color
-      legendFontsize = l.textStyle.fontSize
+      legendColor = l.color
+      legendFontsize = l.fontSize
     }
   }
 
@@ -111,7 +111,7 @@ export function getTheme(chart: Chart) {
           itemName: {
             style: {
               fill: legendColor,
-              fontSize: parseInt(legendFontsize)
+              fontSize: legendFontsize
             }
           }
         }
@@ -326,7 +326,7 @@ export function getXAxis(chart: Chart) {
               rotate: (a.axisLabel.rotate * Math.PI) / 180,
               style: {
                 fill: a.axisLabel.color,
-                fontSize: parseInt(a.axisLabel.fontSize)
+                fontSize: a.axisLabel.fontSize
               }
             }
           : null
@@ -398,7 +398,7 @@ export function getYAxis(chart: Chart) {
               rotate: (a.axisLabel.rotate * Math.PI) / 180,
               style: {
                 fill: a.axisLabel.color,
-                fontSize: parseInt(a.axisLabel.fontSize)
+                fontSize: a.axisLabel.fontSize
               }
             }
           : null
@@ -575,7 +575,13 @@ function getLineDash(type) {
   }
 }
 
-export function setGradientColor(rawColor, show = false, angle = 0) {
+/**
+ * 将 RGBA 格式的颜色转换成 ANTV 支持的渐变色格式
+ * @param rawColor 原始 RGBA 颜色
+ * @param show
+ * @param angle 渐变角度
+ */
+export function setGradientColor(rawColor: string, show = false, angle = 0) {
   const item = rawColor.split(',')
   item.splice(3, 1, '0.3)')
   return show ? `l(${angle}) 0:${item.join(',')} 1:${rawColor}` : rawColor
@@ -623,13 +629,13 @@ export function configL7Tooltip(chart: Chart): TooltipOptions {
     domStyles: {
       'l7plot-tooltip': {
         'background-color': tooltip.backgroundColor,
-        'font-size': `${tooltip.textStyle.fontSize}px`
+        'font-size': `${tooltip.fontSize}px`
       },
       'l7plot-tooltip__name': {
-        color: tooltip.textStyle.color
+        color: tooltip.color
       },
       'l7plot-tooltip__value': {
-        color: tooltip.textStyle.color
+        color: tooltip.color
       }
     }
   }

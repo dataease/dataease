@@ -21,18 +21,9 @@ export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
     if (chart?.data) {
       // data
       const data = chart.data.data
-      // size
-      let customAttr, radius, innerRadius
-      if (chart.customAttr) {
-        customAttr = parseJson(chart.customAttr)
-        if (customAttr.size) {
-          const s = customAttr.size
-          radius = s.pieOuterRadius / 100
-          innerRadius = s.pieInnerRadius / 100
-        }
-      }
       // custom color
-      const color = antVCustomColor(chart)
+      const customAttr = parseJson(chart.customAttr)
+      const color = customAttr.basicStyle.colors
       // options
       const initOptions: PieOptions = {
         data: data,
@@ -40,8 +31,6 @@ export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
         colorField: 'field',
         appendPadding: getPadding(chart),
         color,
-        radius,
-        innerRadius,
         pieStyle: {
           lineWidth: 0
         },
