@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useI18n } from '@/hooks/web/useI18n'
-import { computed, PropType, toRefs } from 'vue'
+import { computed, PropType, toRefs, nextTick, watch } from 'vue'
 import ColorSelector from '@/views/chart/components/editor/editor-style/components/ColorSelector.vue'
 import SizeSelector from '@/views/chart/components/editor/editor-style/components/SizeSelector.vue'
 import LabelSelector from '@/views/chart/components/editor/editor-style/components/LabelSelector.vue'
@@ -22,7 +22,8 @@ const { t } = useI18n()
 
 const state = {
   attrActiveNames: [],
-  styleActiveNames: []
+  styleActiveNames: [],
+  initReady: true
 }
 type ChartObj = Omit<Chart, 'customStyle' | 'customAttr'> & {
   customAttr: ChartAttr
@@ -78,43 +79,56 @@ const emit = defineEmits([
 const showProperties = (property: EditorProperty) => properties.value?.includes(property)
 
 const onColorChange = val => {
-  emit('onColorChange', val)
+  state.initReady && emit('onColorChange', val)
 }
 
 const onSizeChange = val => {
-  emit('onSizeChange', val)
+  state.initReady && emit('onSizeChange', val)
 }
 
 const onLabelChange = val => {
-  emit('onLabelChange', val)
+  console.log('2-1-' + state.initReady)
+  state.initReady && emit('onLabelChange', val)
 }
 
 const onTooltipChange = val => {
-  emit('onTooltipChange', val)
+  state.initReady && emit('onTooltipChange', val)
 }
 
 const onChangeXAxisForm = val => {
-  emit('onChangeXAxisForm', val)
+  state.initReady && emit('onChangeXAxisForm', val)
 }
 
 const onChangeYAxisForm = val => {
-  emit('onChangeYAxisForm', val)
+  state.initReady && emit('onChangeYAxisForm', val)
 }
 
 const onTextChange = val => {
-  emit('onTextChange', val)
+  state.initReady && emit('onTextChange', val)
 }
 
 const onLegendChange = val => {
-  emit('onLegendChange', val)
+  state.initReady && emit('onLegendChange', val)
 }
 const onBasicStyleChange = val => {
-  emit('onBasicStyleChange', val)
+  state.initReady && emit('onBasicStyleChange', val)
 }
 
 const onBackgroundChange = val => {
-  emit('onBackgroundChange', val)
+  state.initReady && emit('onBackgroundChange', val)
 }
+
+watch(
+  () => props.chart.id,
+  () => {
+    console.log('props.chart-' + props.chart.id)
+    state.initReady = false
+    nextTick(() => {
+      state.initReady = true
+    })
+  },
+  { deep: true }
+)
 </script>
 
 <template>

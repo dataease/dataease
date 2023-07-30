@@ -20,9 +20,7 @@ const { propValue, element } = toRefs(props)
 </script>
 
 <template>
-  <div class="rect-shape">
-    this is test
-  </div>
+  <div class="rect-shape">this is test</div>
 </template>
 
 <style lang="less" scoped>

@@ -209,9 +209,9 @@ const saveLinkageSetting = () => {
 <template>
   <div class="toolbar-main">
     <div class="toolbar" :class="{ 'preview-state-head': editMode === 'preview' }">
-      <el-icon class="custom-el-icon back-icon" @click="backToMain()">
-        <Icon class="toolbar-icon hover-icon" name="icon_left_outlined" />
-      </el-icon>
+      <!--      <el-icon class="custom-el-icon back-icon" @click="backToMain()">-->
+      <!--        <Icon class="toolbar-icon hover-icon" name="icon_left_outlined" />-->
+      <!--      </el-icon>-->
       <div class="left-area" v-show="editMode === 'edit'">
         <span id="canvas-name" class="name-area" @dblclick="editCanvasName">{{ dvInfo.name }}</span>
         <div class="opt-area">

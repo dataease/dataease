@@ -249,7 +249,6 @@ eventBus.on('handleNew', handleNew)
             @drop="handleDrop"
             @dragover="handleDragOver"
             @mousedown="handleMouseDown"
-            @mouseup="deselectCurComponent"
           >
             <common-canvas
               ref="cyGridster"

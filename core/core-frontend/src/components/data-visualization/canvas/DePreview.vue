@@ -29,11 +29,6 @@ const props = defineProps({
     type: Object,
     required: true
   },
-  curGap: {
-    type: Number,
-    required: false,
-    default: 0
-  },
   canvasId: {
     type: String,
     required: false,
@@ -46,7 +41,7 @@ const props = defineProps({
   }
 })
 
-const { canvasStyleData, componentData, dvInfo, curGap, canvasId, canvasViewInfo, showPosition } =
+const { canvasStyleData, componentData, dvInfo, canvasId, canvasViewInfo, showPosition } =
   toRefs(props)
 const domId = 'preview-' + canvasId.value
 const scaleWidth = ref(100)
@@ -103,6 +98,12 @@ const getShapeItemShowStyle = item => {
     curGap: curGap.value
   })
 }
+
+const curGap = computed(() => {
+  return dashboardActive.value && canvasStyleData.value.dashboard.gap === 'yes'
+    ? canvasStyleData.value.dashboard.gapSize
+    : 0
+})
 
 onMounted(() => {
   restore()

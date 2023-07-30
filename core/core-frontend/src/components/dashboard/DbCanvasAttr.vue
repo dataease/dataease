@@ -163,6 +163,7 @@ const themeAttrChange = (custom, property, value) => {
           viewInfo[custom][property][key] = value[key]
         }
       })
+      console.log('1-3')
       useEmitt().emitter.emit('renderChart-' + viewId, viewInfo)
     })
     snapshotStore.recordSnapshot('DbCanvasAttr-themeAttrChange')
