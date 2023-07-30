@@ -10,7 +10,7 @@ export const BAR_EDITOR_PROPERTY: EditorProperty[] = [
 ]
 
 export const BAR_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
-  'background-overall-component': [],
+  'background-overall-component': ['all'],
   'basic-style-selector': ['colors', 'barDefault', 'barWidth', 'alpha'],
   'label-selector': ['fontSize', 'color', 'position'],
   'tooltip-selector': ['textStyle', 'backgroundColor'],

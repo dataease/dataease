@@ -8,9 +8,46 @@ import { getCurrentField } from '@/views/chart/components/js/panel/common/common
  * 汇总表
  */
 export class TableNormal extends S2ChartView<TableSheet> {
-  properties: EditorProperty[] = []
-  propertyInner: EditorPropertyInner
-  axis: AxisType[]
+  properties: EditorProperty[] = [
+    'background-overall-component',
+    'basic-style-selector',
+    'table-header-selector',
+    'table-cell-selector',
+    'title-selector'
+  ]
+  propertyInner: EditorPropertyInner = {
+    'background-overall-component': ['all'],
+    'basic-style-selector': ['lineWidth', 'tableBorderColor', 'tableScrollBarColor', 'alpha'],
+    'table-header-selector': [
+      'tableHeaderBgColor',
+      'tableTitleFontSize',
+      'tableHeaderFontColor',
+      'tableTitleHeight',
+      'tableHeaderAlign',
+      'showIndex',
+      'indexLabel'
+    ],
+    'table-cell-selector': [
+      'tableItemBgColor',
+      'tableItemFontSize',
+      'tableFontColor',
+      'tableItemAlign',
+      'tableItemHeight'
+    ],
+    'title-selector': [
+      'title',
+      'fontSize',
+      'color',
+      'hPosition',
+      'isItalic',
+      'isBolder',
+      'remarkShow',
+      'fontFamily',
+      'letterSpace',
+      'fontShadow'
+    ]
+  }
+  axis: AxisType[] = ['xAxis', 'yAxis', 'drill', 'filter']
   drawChart(drawOption: S2DrawOptions<TableSheet>): TableSheet {
     const { container, chart } = drawOption
     let { chartObj: s2 } = drawOption

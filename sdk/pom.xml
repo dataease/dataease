@@ -9,9 +9,7 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-
     <packaging>pom</packaging>
-
     <artifactId>sdk</artifactId>
 
     <modules>
@@ -19,8 +17,5 @@
         <module>api</module>
         <module>distributed</module>
     </modules>
-
-
-
 
 </project>

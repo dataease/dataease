@@ -35,7 +35,6 @@ public class MapManage {
         var areaNodeMap = new HashMap<String, AreaNode>();
         areaNodeMap.put(WORLD.getId(), WORLD);
         areas.forEach(area -> {
-//            当前节点不存在就添加，已存在就是子节点添加的，拷贝一下属性
             var node = areaNodeMap.get(area.getId());
             if (node == null) {
                 node = AreaNode.builder().build();
@@ -44,7 +43,6 @@ public class MapManage {
             } else {
                 BeanUtils.copyBean(node, area);
             }
-//            检查父节点是否存在，不存在就添加然后把自己加到子节点，已存在就加到子节点
             var pNode = areaNodeMap.get(area.getPid());
             if (pNode == null) {
                 var child = new ArrayList<AreaNode>();

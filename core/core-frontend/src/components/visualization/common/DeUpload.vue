@@ -14,10 +14,6 @@
     >
       <el-icon><Plus /></el-icon>
     </el-upload>
-    <!--    <el-row style="width: 100%">-->
-    <!--      <span v-if="imgUrlInner" class="re-update-span" @click="goFile">重新上传</span>-->
-    <!--      <span v-else class="image-hint">当前支持.jpeg,.jpg,.png,.gif文件,大小不要超过15M</span>-->
-    <!--    </el-row>-->
     <input
       id="input"
       ref="files"
@@ -101,7 +97,6 @@ const handlePictureCardPreview = file => {
 const upload = file => {
   uploadFileResult(file.file, fileUrl => {
     imgUrlInner.value = fileUrl
-    // state.fileList = [{ url: imgUrlTrans(imgUrlInner.value) }]
     emits('onImgChange', fileUrl)
   })
 }
@@ -116,7 +111,6 @@ const reUpload = e => {
   }
   uploadFileResult(file, fileUrl => {
     imgUrlInner.value = fileUrl
-    // state.fileList.push({ url: imgUrlTrans(imgUrlInner.value) })
     emits('onImgChange', fileUrl)
   })
 }

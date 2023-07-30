@@ -70,7 +70,7 @@
     "dayjs": "^1.11.9",
     "deepmerge": "^4.3.1",
     "electron-devtools-installer": "^3.2.0",
-    "element-plus-secondary": "^0.1.4",
+    "element-plus-secondary": "^0.1.5",
     "element-resize-detector": "^1.2.4",
     "highcharts": "^10.3.3",
     "html-to-image": "^1.11.11",

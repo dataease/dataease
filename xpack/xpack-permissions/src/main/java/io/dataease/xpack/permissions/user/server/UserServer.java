@@ -132,4 +132,9 @@ public class UserServer implements UserApi {
     public void errorRecord(String key) {
         userBatchImportManage.exportErrorExcel(key);
     }
+
+    @Override
+    public void clearErrorRecord(String key) {
+        userBatchImportManage.clearErrorData(key);
+    }
 }

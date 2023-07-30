@@ -13,6 +13,9 @@ const props = defineProps({
   themes: {
     type: String,
     default: 'dark'
+  },
+  propertyInner: {
+    type: Array<string>
   }
 })
 
@@ -51,10 +54,6 @@ const state = reactive({
 const emit = defineEmits(['onLabelChange'])
 
 const changeLabelAttr = () => {
-  // if (!this.labelForm.show) {
-  //   this.isSetting = false
-  // }
-  // this.labelForm['modifyName'] = modifyName
   emit('onLabelChange', state.labelForm)
 }
 
@@ -72,7 +71,7 @@ const init = () => {
     }
   }
 }
-
+const showProperty = prop => props.propertyInner?.includes(prop)
 initFontSize()
 init()
 </script>
@@ -87,23 +86,11 @@ init()
         label-width="80px"
         size="small"
       >
-        <!--          <el-form-item :label="t('chart.label_content')" class="form-item">-->
-        <!--            <el-checkbox-group-->
-        <!--              v-model="state.labelForm.labelContent"-->
-        <!--              :label="t('chart.label_content')"-->
-        <!--              :min="1"-->
-        <!--              :max="3"-->
-        <!--              @change="changeLabelAttr('labelContent')"-->
-        <!--            >-->
-        <!--              <el-checkbox-->
-        <!--                v-for="option in labelContentOptions"-->
-        <!--                :key="option.value"-->
-        <!--                :label="option.value"-->
-        <!--                >{{ option.name }}</el-checkbox-->
-        <!--              >-->
-        <!--            </el-checkbox-group>-->
-        <!--          </el-form-item>-->
-        <el-form-item :label="t('chart.text_fontsize')" class="form-item">
+        <el-form-item
+          :label="t('chart.text_fontsize')"
+          class="form-item"
+          v-show="showProperty('fontSize')"
+        >
           <el-select
             :effect="props.themes"
             v-model.number="state.labelForm.fontSize"
@@ -118,7 +105,11 @@ init()
             />
           </el-select>
         </el-form-item>
-        <el-form-item :label="t('chart.text_color')" class="form-item">
+        <el-form-item
+          :label="t('chart.text_color')"
+          class="form-item"
+          v-show="showProperty('color')"
+        >
           <el-color-picker
             v-model="state.labelForm.color"
             class="color-picker-style"
@@ -141,59 +132,6 @@ init()
             />
           </el-select>
         </el-form-item>
-        <!--          <el-form-item-->
-        <!--            v-show="props.chart.type.includes('pie')"-->
-        <!--            :label="t('chart.label_position')"-->
-        <!--            class="form-item"-->
-        <!--          >-->
-        <!--            <el-select-->
-        <!--              v-model="state.labelForm.position"-->
-        <!--              :placeholder="t('chart.label_position')"-->
-        <!--              @change="changeLabelAttr('position')"-->
-        <!--            >-->
-        <!--              <el-option-->
-        <!--                v-for="option in labelPositionPie"-->
-        <!--                :key="option.value"-->
-        <!--                :label="option.name"-->
-        <!--                :value="option.value"-->
-        <!--              />-->
-        <!--            </el-select>-->
-        <!--          </el-form-item>-->
-        <!--          <el-form-item-->
-        <!--            v-show="showProperty('position-h')"-->
-        <!--            :label="t('chart.label_position')"-->
-        <!--            class="form-item"-->
-        <!--          >-->
-        <!--            <el-select-->
-        <!--              v-model="state.labelForm.position"-->
-        <!--              :placeholder="t('chart.label_position')"-->
-        <!--              @change="changeLabelAttr('position')"-->
-        <!--            >-->
-        <!--              <el-option-->
-        <!--                v-for="option in labelPositionH"-->
-        <!--                :key="option.value"-->
-        <!--                :label="option.name"-->
-        <!--                :value="option.value"-->
-        <!--              />-->
-        <!--            </el-select>-->
-        <!--          </el-form-item>-->
-        <!--          <el-form-item-->
-        <!--            :label="t('chart.label_reserve_decimal_count')"-->
-        <!--            class="form-item"-->
-        <!--          >-->
-        <!--            <el-radio-group-->
-        <!--              v-model="state.labelForm.reserveDecimalCount"-->
-        <!--              :label="t('chart.label_reserve_decimal_count')"-->
-        <!--              @change="changeLabelAttr('reserveDecimalCount')"-->
-        <!--            >-->
-        <!--              <el-radio-->
-        <!--                v-for="option in reserveDecimalCountOptions"-->
-        <!--                :key="option.value"-->
-        <!--                :label="option.value"-->
-        <!--                >{{ option.name }}</el-radio-->
-        <!--              >-->
-        <!--            </el-radio-group>-->
-        <!--          </el-form-item>-->
       </el-form>
     </el-col>
   </div>

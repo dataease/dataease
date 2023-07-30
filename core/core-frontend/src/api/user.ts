@@ -58,3 +58,10 @@ export const importUserApi = data =>
     headersType: 'multipart/form-data',
     data
   })
+
+export const downErrorRecordApi = (key: string) =>
+  request.get({ url: `/user/errorRecord/${key}`, responseType: 'blob' })
+
+export const clearErrorApi = (key: string) => {
+  request.get({ url: `/user/clearErrorRecord/${key}` })
+}

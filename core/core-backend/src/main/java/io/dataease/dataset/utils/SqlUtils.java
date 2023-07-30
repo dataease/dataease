@@ -20,7 +20,6 @@ public class SqlUtils {
 
         SqlParser.Config config =
                 SqlParser.configBuilder()
-//                        .setParserFactory(FlinkSqlParserImpl.FACTORY)
                         .setLex(Lex.JAVA)
                         .setIdentifierMaxLength(256)
                         .build();

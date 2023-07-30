@@ -7,10 +7,9 @@
         <groupId>io.dataease</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
+
     <modelVersion>4.0.0</modelVersion>
-
     <artifactId>xpack-permissions</artifactId>
-
 
     <dependencies>
         <dependency>
@@ -18,18 +17,14 @@
             <artifactId>api-permissions</artifactId>
             <version>${project.version}</version>
         </dependency>
-
         <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
         </dependency>
-
-
     </dependencies>
 
-
     <profiles>
-        <!-- 权限服务只有单机版和分布式版本，因为桌面版根本不需要 -->
+        <!-- 权限服务只有单机版和分布式版本，桌面版不需要 -->
         <profile>
             <id>standalone</id>
             <activation>
@@ -75,6 +70,7 @@
                     <version>${project.version}</version>
                 </dependency>
             </dependencies>
+
             <build>
                 <resources>
                     <resource>
@@ -105,7 +101,6 @@
                         </executions>
                     </plugin>
                 </plugins>
-
             </build>
         </profile>
     </profiles>

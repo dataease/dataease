@@ -179,13 +179,10 @@ const sortChange = param => {
     <el-row class="user-table__filter top-operate">
       <el-col :span="12">
         <el-button @click="addUser" type="primary">
-          <!-- <template #icon>
-            <Icon name="icon_add_outlined"></Icon>
-          </template> -->
           {{ t('system.addUser') }}
         </el-button>
 
-        <user-import />
+        <user-import @refresh-grid="refreshGrid" />
       </el-col>
       <el-col :span="12" class="right-filter">
         <el-input

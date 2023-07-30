@@ -7,10 +7,9 @@
         <groupId>io.dataease</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
+
     <modelVersion>4.0.0</modelVersion>
-
     <packaging>jar</packaging>
-
     <artifactId>core-backend</artifactId>
 
     <dependencies>
@@ -19,26 +18,21 @@
             <artifactId>api-base</artifactId>
             <version>${project.version}</version>
         </dependency>
-
         <dependency>
             <groupId>io.dataease</groupId>
             <artifactId>api-permissions</artifactId>
             <version>${project.version}</version>
         </dependency>
-
-
         <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
         </dependency>
-
         <!--calcite核心包-->
         <dependency>
             <groupId>org.apache.calcite</groupId>
             <artifactId>calcite-core</artifactId>
             <version>${calcite-core.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-dbcp2</artifactId>
@@ -56,7 +50,6 @@
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path</artifactId>
@@ -68,12 +61,10 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
         </dependency>
-
         <dependency>
             <groupId>com.fit2cloud</groupId>
             <artifactId>quartz-spring-boot-starter</artifactId>
@@ -85,11 +76,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <!--<dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>easyexcel</artifactId>
-            <version>2.1.7</version>
-        </dependency>-->
     </dependencies>
 
     <profiles>
@@ -110,8 +96,8 @@
                     <version>${project.version}</version>
                 </dependency>
             </dependencies>
+            
             <build>
-
                 <plugins>
                     <plugin>
                         <artifactId>maven-clean-plugin</artifactId>
@@ -240,7 +226,6 @@
                 </resources>
             </build>
         </profile>
-
         <!-- 分布式版(企业版/saas版) -->
         <profile>
             <id>distributed</id>
@@ -270,7 +255,6 @@
                 </plugins>
             </build>
         </profile>
-
         <profile>
             <id>embedded</id>
             <properties>
@@ -316,7 +300,6 @@
                 </includes>
             </resource>
         </resources>
-
         <!-- springboot打包插件 -->
         <plugins>
             <plugin>
@@ -335,6 +318,5 @@
             </plugin>
         </plugins>
     </build>
-
 
 </project>

@@ -274,9 +274,6 @@ onMounted(() => {
     @contextmenu="handleContextMenu"
     @mousedown="handleMouseDown"
   >
-    <!-- 网格线 -->
-    <!--    <Grid />-->
-
     <!--页面组件列表展示-->
     <Shape
       v-for="(item, index) in componentData.filter(component => component.isShow)"

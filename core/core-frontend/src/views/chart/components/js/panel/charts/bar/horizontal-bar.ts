@@ -26,117 +26,105 @@ const DEFAULT_DATA = []
 export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
   properties = BAR_EDITOR_PROPERTY
   propertyInner = BAR_EDITOR_PROPERTY_INNER
-  axis: AxisType[] = ['xAxis', 'yAxis', 'filter', 'drill']
+  axis: AxisType[] = ['xAxis', 'yAxis', 'filter', 'drill', 'extLabel', 'extTooltip']
   drawChart(drawOptions: G2PlotDrawOptions<Bar>): Bar {
     const chart = drawOptions.chart
-    if (chart?.data) {
-      // size
-      let customAttr: DeepPartial<ChartAttr>
-      let barGap = undefined
-      if (chart.customAttr) {
-        customAttr = parseJson(chart.customAttr)
-        if (customAttr.size) {
-          const s = parseJson(customAttr).size
-          if (!s.barDefault) {
-            barGap = s.barGap
-          }
-        }
-      }
-      // data
-      const data = cloneDeep(chart.data.data)
-      // custom color
-      let color = antVCustomColor(chart)
-      if (customAttr.color.gradient) {
-        color = color.map(ele => {
-          return setGradientColor(ele, customAttr.color.gradient)
-        })
-      }
-
-      // options
-      const initOptions: BarOptions = {
-        data: data,
-        xField: 'value',
-        yField: 'field',
-        seriesField: 'category',
-        appendPadding: getPadding(chart),
-        color: color,
-        marginRatio: barGap,
-        interactions: [
-          {
-            type: 'legend-active',
-            cfg: {
-              start: [{ trigger: 'legend-item:mouseenter', action: ['element-active:reset'] }],
-              end: [{ trigger: 'legend-item:mouseleave', action: ['element-active:reset'] }]
-            }
-          },
-          {
-            type: 'legend-filter',
-            cfg: {
-              start: [
-                {
-                  trigger: 'legend-item:click',
-                  action: [
-                    'list-unchecked:toggle',
-                    'data-filter:filter',
-                    'element-active:reset',
-                    'element-highlight:reset'
-                  ]
-                }
-              ]
-            }
-          },
-          {
-            type: 'tooltip',
-            cfg: {
-              start: [{ trigger: 'interval:mousemove', action: 'tooltip:show' }],
-              end: [{ trigger: 'interval:mouseleave', action: 'tooltip:hide' }]
-            }
-          },
-          {
-            type: 'active-region',
-            cfg: {
-              start: [{ trigger: 'interval:mousemove', action: 'active-region:show' }],
-              end: [{ trigger: 'interval:mouseleave', action: 'active-region:hide' }]
-            }
-          }
-        ]
-      }
-
-      const options = this.setupOptions(chart, initOptions)
-      // group
-      // if (isGroup) {
-      //   options.isGroup = true
-      // } else {
-      //   delete options.isGroup
-      // }
-      // // stack
-      // if (isStack) {
-      //   options.isStack = true
-      // } else {
-      //   delete options.isStack
-      // }
-      // options.isPercent = chart.type.includes('percentage')
-
-      // 处理空值
-      if (chart.senior) {
-        let emptyDataStrategy = parseJson(chart.senior)?.functionCfg?.emptyDataStrategy
-        if (!emptyDataStrategy) {
-          emptyDataStrategy = 'breakLine'
-        }
-        handleEmptyDataStrategy(emptyDataStrategy, chart, data, options)
-      }
-
-      // 开始渲染
-      if (drawOptions.chartObj) {
-        drawOptions.chartObj.destroy()
-      }
-      drawOptions.chartObj = new Bar(drawOptions.container, options)
-
-      drawOptions.chartObj.off('interval:click')
-      drawOptions.chartObj.on('interval:click', drawOptions.action)
-
-      return drawOptions.chartObj
+    if (!chart.data?.data?.length) {
+      return
     }
+    // size
+    let customAttr: DeepPartial<ChartAttr>
+    let barGap = undefined
+    if (chart.customAttr) {
+      customAttr = parseJson(chart.customAttr)
+      if (customAttr.size) {
+        const s = parseJson(customAttr).size
+        if (!s.barDefault) {
+          barGap = s.barGap
+        }
+      }
+    }
+    // data
+    const data = cloneDeep(chart.data.data)
+    // custom color
+    let color = antVCustomColor(chart)
+    if (customAttr.color.gradient) {
+      color = color.map(ele => {
+        return setGradientColor(ele, customAttr.color.gradient)
+      })
+    }
+
+    // options
+    const initOptions: BarOptions = {
+      data: data,
+      xField: 'value',
+      yField: 'field',
+      seriesField: 'category',
+      appendPadding: getPadding(chart),
+      color: color,
+      marginRatio: barGap,
+      interactions: [
+        {
+          type: 'legend-active',
+          cfg: {
+            start: [{ trigger: 'legend-item:mouseenter', action: ['element-active:reset'] }],
+            end: [{ trigger: 'legend-item:mouseleave', action: ['element-active:reset'] }]
+          }
+        },
+        {
+          type: 'legend-filter',
+          cfg: {
+            start: [
+              {
+                trigger: 'legend-item:click',
+                action: [
+                  'list-unchecked:toggle',
+                  'data-filter:filter',
+                  'element-active:reset',
+                  'element-highlight:reset'
+                ]
+              }
+            ]
+          }
+        },
+        {
+          type: 'tooltip',
+          cfg: {
+            start: [{ trigger: 'interval:mousemove', action: 'tooltip:show' }],
+            end: [{ trigger: 'interval:mouseleave', action: 'tooltip:hide' }]
+          }
+        },
+        {
+          type: 'active-region',
+          cfg: {
+            start: [{ trigger: 'interval:mousemove', action: 'active-region:show' }],
+            end: [{ trigger: 'interval:mouseleave', action: 'active-region:hide' }]
+          }
+        }
+      ]
+    }
+
+    const options = this.setupOptions(chart, initOptions)
+
+    // 处理空值
+    if (chart.senior) {
+      let emptyDataStrategy = parseJson(chart.senior)?.functionCfg?.emptyDataStrategy
+      if (!emptyDataStrategy) {
+        emptyDataStrategy = 'breakLine'
+      }
+      handleEmptyDataStrategy(emptyDataStrategy, chart, data, options)
+    }
+
+    // 开始渲染
+    if (drawOptions.chartObj) {
+      drawOptions.chartObj.destroy()
+    }
+    drawOptions.chartObj = new Bar(drawOptions.container, options)
+
+    drawOptions.chartObj.off('interval:click')
+    drawOptions.chartObj.on('interval:click', drawOptions.action)
+
+    return drawOptions.chartObj
   }
 
   protected configTooltip(chart: Chart, options: BarOptions): BarOptions {

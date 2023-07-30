@@ -77,12 +77,6 @@ init()
           <el-checkbox v-model="state.scrollForm.open" @change="changeScrollCfg">{{
             t('chart.open')
           }}</el-checkbox>
-          <!--          <el-tooltip class="item" :effect="props.themes" placement="bottom">-->
-          <!--            <div slot="content">-->
-          <!--              {{ t('chart.table_scroll_tip') }}-->
-          <!--            </div>-->
-          <!--            <i class="el-icon-info" :style="{cursor: 'pointer', color: 'gray', fontSize: '12px'" />-->
-          <!--          </el-tooltip>-->
         </el-form-item>
         <span v-show="state.scrollForm.open">
           <el-form-item v-show="!state.isAutoBreakLine" :label="t('chart.row')" class="form-item">

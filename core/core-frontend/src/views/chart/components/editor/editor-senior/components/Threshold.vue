@@ -231,14 +231,6 @@ init()
             @change="gaugeThresholdChange"
           />
           <span>,100</span>
-          <!--          <el-tooltip class="item" :effect="props.themes" placement="bottom">-->
-          <!--            <div slot="content">-->
-          <!--              阈值设置，决定仪表盘区间颜色，为空则不开启阈值，范围(0-100)，逐级递增-->
-          <!--              <br />-->
-          <!--              例如：输入 30,70；表示：分为3段，分别为[0,30],(30,70],(70,100]-->
-          <!--            </div>-->
-          <!--            <i class="el-icon-info" style="cursor: pointer; margin-left: 10px; font-size: 12px" />-->
-          <!--          </el-tooltip>-->
         </el-form-item>
       </el-form>
     </el-col>

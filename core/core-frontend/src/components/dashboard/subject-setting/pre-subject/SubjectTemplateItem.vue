@@ -205,10 +205,6 @@ onMounted(() => {
   width: 180px;
 }
 
-//.subject-template:hover > .title-main {
-//  width: 150px;
-//}
-
 .subject-template:hover :deep(.custom-icon) {
   display: block;
 }

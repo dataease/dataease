@@ -26,6 +26,9 @@ const props = defineProps({
   quotaFields: {
     type: Array,
     required: true
+  },
+  propertyInner: {
+    type: Array<string>
   }
 })
 
@@ -236,6 +239,8 @@ const getQuotaField = id => {
 const isValidField = field => {
   return field.id !== 'count' && field.deType !== 0 && field.deType !== 1 && field.deType !== 5
 }
+
+const showProperty = prop => props.propertyInner?.includes(prop)
 
 initField()
 initFontSize()

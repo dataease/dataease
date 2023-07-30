@@ -130,11 +130,6 @@ const showApiData = () => {
         originFieldItem.jsonFields = response.data.jsonFields
       })
       loading.value = false
-      // res.data.jsonFields.forEach(((item) => {
-      //       item.checked = false
-      //     }))
-      //     originFieldItem.jsonFields = res.data.jsonFields
-      //     loading.value = false
     } else {
       return false
     }
