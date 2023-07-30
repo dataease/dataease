@@ -9,6 +9,7 @@ import { nextTick, ref } from 'vue'
 import draggable from 'vuedraggable'
 import { lockStoreWithOut } from '@/store/modules/data-visualization/lock'
 import ContextMenu from '@/components/data-visualization/canvas/ContextMenu.vue'
+import ContextMenuAsideDetails from '@/components/data-visualization/canvas/ContextMenuAsideDetails.vue'
 const lockStore = lockStoreWithOut()
 
 const dvMainStore = dvMainStoreWithOut()
@@ -163,18 +164,21 @@ const dragOnEnd = ({ oldIndex, newIndex }) => {
                 <el-icon v-show="getComponent(index).isLock" @click="unlock">
                   <Lock />
                 </el-icon>
-                <el-dropdown trigger="click">
+                <el-dropdown trigger="click" :teleported="false" effect="dark">
                   <el-icon @click="onClick(transformIndex(index))">
                     <MoreFilled />
                   </el-icon>
                   <template #dropdown>
-                    <div>More Action</div>
+                    <context-menu-aside-details
+                      :element="getComponent(index)"
+                    ></context-menu-aside-details>
                   </template>
                 </el-dropdown>
               </div>
             </div>
           </template>
         </draggable>
+        <el-row style="width: 100%; height: 150px"></el-row>
       </div>
     </el-row>
     <Teleport v-if="editComponentId && nameEdit" :to="editComponentId">

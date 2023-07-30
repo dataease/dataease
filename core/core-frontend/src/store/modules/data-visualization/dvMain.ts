@@ -235,7 +235,11 @@ export const dvMainStore = defineStore('dataVisualization', {
       }
     },
 
-    addComponent({ component, index }) {
+    addComponent({ component, index, isFromGroup = false }) {
+      if (isFromGroup) {
+        this.componentData.push(component)
+        return
+      }
       if (index !== undefined) {
         this.componentData.splice(index, 0, component)
         this.setCurComponent({ component: component, index: index })
