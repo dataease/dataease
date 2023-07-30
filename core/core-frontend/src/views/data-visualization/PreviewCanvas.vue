@@ -16,7 +16,27 @@ const state = reactive({
   curPreviewGap: 0
 })
 
-const loadCanvasData = (dvId, jumpInfoParam) => {
+const loadCanvasDataAsync = async (dvId, jumpInfoParam) => {
+  let jumpParam
+  // 获取外部跳转参数
+  if (jumpInfoParam) {
+    jumpParam = JSON.parse(Base64.decode(decodeURI(jumpInfoParam)))
+    const jumpRequestParam = {
+      sourceDvId: jumpParam.sourceDvId,
+      sourceViewId: jumpParam.sourceViewId,
+      sourceFieldId: null,
+      targetDvId: dvId
+    }
+    try {
+      // 刷新跳转目标仪表板联动信息
+      await queryTargetVisualizationJumpInfo(jumpRequestParam).then(rsp => {
+        dvMainStore.setNowTargetPanelJumpInfo(rsp.data)
+      })
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
   initCanvasData(
     dvId,
     function ({
@@ -31,36 +51,17 @@ const loadCanvasData = (dvId, jumpInfoParam) => {
       state.canvasViewInfoPreview = canvasViewInfoPreview
       state.dvInfo = dvInfo
       state.curPreviewGap = curPreviewGap
-      afterInit(jumpInfoParam)
+      if (jumpParam) {
+        dvMainStore.addViewTrackFilter(jumpParam)
+      }
     }
   )
-}
-
-const afterInit = tempParam => {
-  if (tempParam) {
-    const jumpParam = JSON.parse(Base64.decode(decodeURI(tempParam)))
-    const jumpRequestParam = {
-      sourceDvId: jumpParam.sourceDvId,
-      sourceViewId: jumpParam.sourceViewId,
-      sourceFieldId: null,
-      targetDvId: state.dvInfo.id
-    }
-    try {
-      // 刷新跳转目标仪表板联动信息
-      queryTargetVisualizationJumpInfo(jumpRequestParam).then(rsp => {
-        dvMainStore.setNowTargetPanelJumpInfo(rsp.data)
-        dvMainStore.addViewTrackFilter(jumpParam)
-      })
-    } catch (e) {
-      console.log(e)
-    }
-  }
 }
 
 onMounted(() => {
   const { dvId, jumpInfoParam } = router.currentRoute.value.query
   if (dvId) {
-    loadCanvasData(dvId, jumpInfoParam)
+    loadCanvasDataAsync(dvId, jumpInfoParam)
   }
 })
 </script>

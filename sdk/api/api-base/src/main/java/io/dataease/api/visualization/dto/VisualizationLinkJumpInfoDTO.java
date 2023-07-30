@@ -17,6 +17,8 @@ public class VisualizationLinkJumpInfoDTO extends VisualizationLinkJumpInfoVO {
 
     private String sourceJumpInfo;
 
+    private Integer sourceDeType;
+
     //存在公共链接的目标仪表板
     private String publicJumpId;
 

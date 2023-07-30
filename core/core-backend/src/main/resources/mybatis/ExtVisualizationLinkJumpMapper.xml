@@ -37,6 +37,7 @@
     <resultMap id="LinkJumpInfoMap" type="io.dataease.api.visualization.dto.VisualizationLinkJumpInfoDTO"
                extends="LinkJumpInfoBaseResultMap">
         <result column="source_field_id" jdbcType="VARCHAR" property="sourceFieldId"/>
+        <result column="source_de_type" jdbcType="INTEGER" property="sourceDeType"/>
         <result column="source_field_name" jdbcType="VARCHAR" property="sourceFieldName"/>
         <result column="publicJumpId" jdbcType="VARCHAR" property="publicJumpId"/>
         <collection property="targetViewInfoList"
@@ -69,7 +70,11 @@
     </resultMap>
 
     <select id="getLinkJumpInfo" resultMap="LinkJumpInfoMap">
-        SELECT core_dataset_table_field.id AS 'source_field_id', core_dataset_table_field.NAME AS 'source_field_name', visualization_link_jump_info.id,
+        SELECT
+            core_dataset_table_field.id AS 'source_field_id',
+            core_dataset_table_field.de_type AS 'source_de_type',
+        core_dataset_table_field.NAME AS 'source_field_name',
+        visualization_link_jump_info.id,
                visualization_link_jump_info.link_jump_id,
                visualization_link_jump_info.link_type,
                visualization_link_jump_info.jump_type,
@@ -240,7 +245,7 @@
 
     <select id="getTargetVisualizationJumpInfo" resultMap="AllJumpMap">
         SELECT DISTINCT
-        concat( lj.source_view_id, '#', lji.source_field_id ) AS 'sourceInfo',
+        concat( lj.source_view_id, '#', jtvi.source_field_active_id ) AS 'sourceInfo',
         concat( jtvi.target_view_id, '#', jtvi.target_field_id ) AS 'targetInfo'
         FROM
         visualization_link_jump_target_view_info jtvi
