@@ -1541,7 +1541,6 @@ defineExpose({
     <!-- 选中区域 -->
     <Area v-show="isShowArea" :start="start" :width="width" :height="height" />
     <user-view-enlarge ref="userViewEnlargeRef"></user-view-enlarge>
-    <!--    <link-jump ref="linkJumpRef"></link-jump>-->
     <link-jump-set ref="linkJumpRef"></link-jump-set>
   </div>
 </template>

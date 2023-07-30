@@ -73,4 +73,7 @@ public interface UserApi {
 
     @GetMapping("/errorRecord/{key}")
     void errorRecord(@PathVariable("key") String key);
+
+    @GetMapping("/clearErrorRecord/{key}")
+    void clearErrorRecord(@PathVariable("key") String key);
 }

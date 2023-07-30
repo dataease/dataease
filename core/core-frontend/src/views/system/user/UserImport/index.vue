@@ -1,27 +1,23 @@
 <script lang="ts" setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, h } from 'vue'
 import {
   ElMessage,
   ElMessageBox,
   ElLoading,
   UploadRequestOptions,
-  UploadProps
+  UploadProps,
+  ElButton
 } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
-import { downExcelTemplateApi, importUserApi } from '@/api/user'
+import { downExcelTemplateApi, importUserApi, downErrorRecordApi, clearErrorApi } from '@/api/user'
 const { t } = useI18n()
 const defaultTip = t('userimport.defaultTip')
-const errorTip = t('userimport.errorTip')
 const loadingInstance = ref(null)
 const dialogShow = ref(false)
 const form = ref({})
-
-const showError = ref(false)
-
 const file = ref(null)
 const fileName = ref('')
-const errorLink = ref()
-const userUpload = ref(null)
+const errorFileKey = ref(null)
 const emits = defineEmits(['refresh-grid'])
 const state = reactive({
   errList: [],
@@ -35,6 +31,9 @@ const closeLoading = () => {
   loadingInstance.value?.close()
 }
 const showDialog = () => {
+  file.value = null
+  fileName.value = null
+  errorFileKey.value = null
   dialogShow.value = true
 }
 const closeDialog = () => {
@@ -82,49 +81,24 @@ const buildFormData = (file, files, param) => {
   return formData
 }
 const downExcel = () => {
-  if (!showError.value) {
-    showLoading()
-    downExcelTemplateApi().then(res => {
-      const blobData = res.data
-      const blob = new Blob([blobData], { type: 'application/vnd.ms-excel' })
-      const link = document.createElement('a')
-      link.style.display = 'none'
-      link.href = URL.createObjectURL(blob)
-      link.download = 'user.xlsx' // 下载的文件名
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
-      closeLoading()
-    })
-  } else {
-    if (errorLink.value) {
-      errorLink.value.click()
-      clearErrorLink()
-    } else {
-      ElMessage.warning(t('userimport.repeatDown'))
-    }
-  }
+  showLoading()
+  downExcelTemplateApi().then(res => {
+    const blobData = res.data
+    const blob = new Blob([blobData], { type: 'application/vnd.ms-excel' })
+    const link = document.createElement('a')
+    link.style.display = 'none'
+    link.href = URL.createObjectURL(blob)
+    link.download = 'user.xlsx' // 下载的文件名
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    closeLoading()
+  })
 }
 
-const clearErrorLink = () => {
-  if (errorLink.value) {
-    document.body.removeChild(errorLink.value)
-    errorLink.value = null
-  }
-}
-const uploadAgain = () => {
-  clearErrorLink()
-  userUpload.value['clearFiles']()
-  file.value = null
-  fileName.value = ''
-  // userUpload.value.$refs['upload-inner'].handleClick()
-  showError.value = false
-}
 const toGrid = () => {
-  showError.value = false
   file.value = null
   fileName.value = ''
-  clearErrorLink()
   dialogShow.value = false
   emits('refresh-grid')
 }
@@ -134,33 +108,80 @@ const sure = () => {
   importUserApi(param).then(res => {
     closeLoading()
     const data = res.data
-    if (data.errorCount === 0) {
-      showTips('数据导入成功', data.successCount, data.errorCount)
-    } else if (data.errorCount > 0 && data.successCount > 0) {
-      showTips('部分数据导入失败', data.successCount, data.errorCount)
-    } else if (data.successCount === 0) {
-      showTips('数据导入失败', data.successCount, data.errorCount)
-    }
+    errorFileKey.value = data.dataKey
+    closeDialog()
+    showTips(data.successCount, data.errorCount)
   })
 }
-const showTips = (title, successCount, errorCount) => {
-  ElMessageBox.confirm(title, {
-    confirmButtonType: 'danger',
-    type: 'warning',
+const downErrorExcel = () => {
+  if (errorFileKey.value) {
+    showLoading()
+    downErrorRecordApi(errorFileKey.value).then(res => {
+      const blobData = res.data
+      const blob = new Blob([blobData], { type: 'application/vnd.ms-excel' })
+      const link = document.createElement('a')
+      link.style.display = 'none'
+      link.href = URL.createObjectURL(blob)
+      link.download = 'error.xlsx' // 下载的文件名
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      closeLoading()
+      // closeDialog()
+    })
+  }
+}
+const showTips = (successCount, errorCount) => {
+  let title = !errorCount ? '导入数据成功' : successCount ? '部分数据导入失败' : '数据导入失败'
+  const childrenDomList = [
+    h('strong', null, title),
+    h('br', null, null),
+    h('span', null, `成功导入数据 ${successCount} 条`)
+  ]
+  if (errorCount) {
+    const errorCountDom = h('span', null, `，导入失败 ${errorCount} 条 `)
+    const errorDom = h('div', { class: 'error-record-tip' }, [
+      h('span', null, '可'),
+      h(
+        ElButton,
+        {
+          onClick: downErrorExcel,
+          type: 'primary',
+          text: true,
+          class: 'down-button'
+        },
+        '下载错误报告'
+      ),
+      h('span', null, '，修改后重新导入')
+    ])
+
+    childrenDomList.push(errorCountDom)
+    childrenDomList.push(errorDom)
+  }
+  ElMessageBox.confirm('', {
+    confirmButtonType: 'primary',
+    type: !errorCount ? 'success' : successCount ? 'warning' : 'error',
     autofocus: false,
     dangerouslyUseHTMLString: true,
-    message:
-      '<strong style="font-size: 16px;">' +
-      '成功导入数据 ' +
-      successCount +
-      ' 条，导入失败 ' +
-      errorCount +
-      ' 条 \n 可 下载错误报告，修改后重新导入' +
-      '</strong>',
-    showClose: false
-  }).then(e => {
-    console.log(e)
+    message: h('div', { class: 'import-tip-box' }, childrenDomList),
+    showClose: false,
+    cancelButtonText: '返回查看',
+    confirmButtonText: '继续导入'
   })
+    .then(() => {
+      clearErrorRecord()
+      showDialog()
+      toGrid()
+    })
+    .catch(() => {
+      clearErrorRecord()
+      toGrid()
+    })
+}
+const clearErrorRecord = () => {
+  if (errorFileKey.value) {
+    clearErrorApi(errorFileKey.value)
+  }
 }
 </script>
 <template>
@@ -192,7 +213,6 @@ const showTips = (title, successCount, errorCount) => {
     <el-form ref="form" class="import-form" :model="form" label-width="0px">
       <el-form-item label="" style="margin-bottom: 36px">
         <el-upload
-          ref="userUpload"
           class="upload-user"
           action=""
           accept=".xlsx,.xls"
@@ -219,11 +239,7 @@ const showTips = (title, successCount, errorCount) => {
 
         <span style="float: left">
           <span>
-            <el-link class="color-danger font12" v-if="showError" type="danger" disabled>
-              {{ errorTip }}
-            </el-link>
-
-            <el-link class="font12" v-else type="info" disabled>
+            <el-link class="font12" type="info" disabled>
               {{ defaultTip }}
             </el-link>
           </span>
@@ -231,11 +247,7 @@ const showTips = (title, successCount, errorCount) => {
       </el-form-item>
     </el-form>
     <template #footer>
-      <span class="dialog-footer" v-if="showError">
-        <el-button type="primary" @click="uploadAgain">{{ t('userimport.uploadAgain') }}</el-button>
-        <el-button @click="toGrid">{{ t('userimport.backUserGrid') }}</el-button>
-      </span>
-      <span class="dialog-footer" v-else>
+      <span class="dialog-footer">
         <el-button @click="closeDialog">{{ t('common.cancel') }}</el-button>
         <el-button
           :type="file && fileName ? 'primary' : 'info'"
@@ -294,5 +306,16 @@ const showTips = (title, successCount, errorCount) => {
 }
 .import-form {
   margin-top: 20px;
+}
+.import-tip-box {
+  strong {
+    font-size: 16px;
+  }
+  span {
+    font-size: 13px;
+  }
+  .error-record-tip {
+    font-size: 13px;
+  }
 }
 </style>

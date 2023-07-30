@@ -18,13 +18,25 @@ export class Gauge extends G2PlotChartView<GaugeOptions, G2Gauge> {
     'background-overall-component',
     'basic-style-selector',
     'label-selector',
+    'size-selector',
     'title-selector'
   ]
   propertyInner: EditorPropertyInner = {
     'background-overall-component': ['all'],
     'basic-style-selector': ['colors', 'alpha', 'gaugeStyle'],
-    'label-selector': ['all'],
-    'title-selector': ['all']
+    'label-selector': ['fontSize', 'color'],
+    'title-selector': [
+      'title',
+      'fontSize',
+      'color',
+      'hPosition',
+      'isItalic',
+      'isBolder',
+      'remarkShow',
+      'fontFamily',
+      'letterSpace',
+      'fontShadow'
+    ]
   }
   axis: AxisType[] = ['yAxis', 'filter']
 

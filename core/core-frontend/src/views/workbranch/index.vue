@@ -105,12 +105,10 @@ const operation = (cmd: string, id) => {
   }
 }
 
-const preview = ({ id, type }) => {
-  let path = type === 'dashboard' ? '/dashboard' : '/dvCanvas'
-  let query = type === 'dashboard' ? { resourceId: id } : { dvId: id }
+const preview = ({ id }) => {
   const routeUrl = resolve({
-    path,
-    query
+    path: '/preview',
+    query: { dvId: id }
   })
   window.open(routeUrl.href, '_blank')
 }

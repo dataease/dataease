@@ -511,8 +511,9 @@ export const dvMainStore = defineStore('dataVisualization', {
         // 联动的视图情况历史条件
         // const currentFilters = []
 
-        data.dimensionList.forEach(dimension => {
-          const sourceInfo = viewId + '#' + dimension.id
+        const checkQDList = [...data.dimensionList, ...data.quotaList]
+        checkQDList.forEach(QDItem => {
+          const sourceInfo = viewId + '#' + QDItem.id
           // 获取所有目标联动信息
           const targetInfoList = trackInfo[sourceInfo] || []
           targetInfoList.forEach(targetInfo => {
@@ -524,7 +525,7 @@ export const dvMainStore = defineStore('dataVisualization', {
               const condition = {
                 fieldId: targetFieldId,
                 operator: 'eq',
-                value: [dimension.value],
+                value: [QDItem.value],
                 viewIds: [targetViewId],
                 sourceViewId: viewId
               }

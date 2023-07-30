@@ -23,7 +23,6 @@ target/
 .vscode/
 .lh/
 *.iml
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 node_modules/
 dist/
@@ -31,7 +30,6 @@ package-lock.json
 .DS_Store
 .stylelintcache
 core/core-frontend/release/
-
 plugins/vite-test
 core/core-frontend/.stylelintcache
 /core/core-backend/src/main/resources/static/

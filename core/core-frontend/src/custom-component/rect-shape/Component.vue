@@ -22,7 +22,6 @@ const { propValue, element } = toRefs(props)
 <template>
   <div class="rect-shape">
     this is test
-    <!--    <v-text :prop-value="element.propValue" :element="element" />-->
   </div>
 </template>
 

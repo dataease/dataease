@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref, reactive, onMounted } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
-import { ElButton, ElCol, ElRow, ElInput, FormRules } from 'element-plus-secondary'
+import { ElButton, ElRow, ElInput, FormRules } from 'element-plus-secondary'
 import { Icon } from '@/components/icon-custom'
 import { loginApi, queryDekey } from '@/api/login'
 import { useCache } from '@/hooks/web/useCache'
@@ -68,6 +68,11 @@ const showQr = () => {
   codeShow.value = !codeShow.value
 }
 
+const activeName = ref('simple')
+const handleClick = tab => {
+  console.log('tab', tab)
+}
+
 const changeLoginType = val => {
   toPlatformPage(val)
 }
@@ -89,6 +94,60 @@ const handleLogin = () => {
     router.push({ path: queryRedirectPath })
   })
 }
+
+const handleTypeClick = ele => {
+  state.loginForm.loginType = ele.type
+  changeLoginType(ele.type)
+  switch (ele.value) {
+    case 'qrcode':
+      activeName.value = 'dingding'
+      break
+    default:
+      break
+  }
+  if (['account', 'qrcode']) {
+    activeType.value = ele.value
+  }
+}
+
+const iconMap = {
+  OIDC: 'btn_oidc',
+  OAUTH: 'logo_oauth',
+  CAS: 'logo_cas',
+  Lark: 'logo_lark',
+  qrcode: 'icon_qr_outlined',
+  account: 'icon_member_filled'
+}
+
+const activeType = ref('account')
+
+const loginList = ref([
+  {
+    label: '扫码登录',
+    value: 'qrcode',
+    type: 0
+  },
+  {
+    label: 'OIDC',
+    value: 'OIDC',
+    type: 2
+  },
+  {
+    label: 'OAUTH 2',
+    value: 'OAUTH',
+    type: 0
+  },
+  {
+    label: 'CAS',
+    value: 'CAS',
+    type: 3
+  },
+  {
+    label: '国际飞书',
+    value: 'Lark',
+    type: 7
+  }
+])
 
 const switchCodeIndex = codeIndex => {
   codeIndex.value = codeIndex
@@ -113,8 +172,19 @@ onMounted(() => {
 <template>
   <div v-show="contentShow" class="login-background">
     <div class="login-container">
-      <el-row v-loading="loading" type="flex">
-        <el-col :span="12">
+      <div class="login-image-content" v-loading="!axiosFinished">
+        <div v-if="!loginImageUrl && axiosFinished" class="login-image" />
+        <div
+          v-if="loginImageUrl && axiosFinished"
+          class="login-image-de"
+          :style="{
+            background: 'url(' + loginImageUrl + ') no-repeat',
+            backgroundSize: 'contain'
+          }"
+        />
+      </div>
+      <div class="login-form-content" v-loading="loading">
+        <div class="login-form-center">
           <div
             v-show="state.qrTypes.length"
             :class="codeShow ? 'trans-pc' : 'trans'"
@@ -153,75 +223,96 @@ onMounted(() => {
                 ((state.uiInfo &&
                   state.uiInfo['ui.title'] &&
                   state.uiInfo['ui.title'].paramValue) ||
-                  ' DataEase')
+                  ' DataEase 数据可视化分析平台')
               }}
             </div>
             <div class="login-form">
-              <el-form-item v-if="state.radioTypes.length > 1">
-                <el-radio-group
-                  v-if="state.radioTypes.length > 1"
-                  v-model="state.loginForm.loginType"
-                  @change="changeLoginType"
-                >
-                  <el-radio :label="0" size="small">{{ $t('login.default_login') }}</el-radio>
-                  <el-radio v-if="state.loginTypes.includes(1)" :label="1" size="small"
-                    >LDAP</el-radio
-                  >
-                  <el-radio v-if="state.loginTypes.includes(2)" :label="2" size="small"
-                    >OIDC</el-radio
-                  >
-                  <el-radio v-if="state.loginTypes.includes(3)" :label="3" size="small"
-                    >CAS</el-radio
-                  >
-                  <el-radio v-if="state.loginTypes.includes(7)" :label="7" size="small"
-                    >Lark</el-radio
-                  >
-                </el-radio-group>
-              </el-form-item>
-              <el-form-item prop="username">
-                <el-input
-                  v-model="state.loginForm.username"
-                  :placeholder="
-                    t('common.account') + '/' + t('common.email') + '/' + t('common.phone')
-                  "
-                  autofocus
-                  :disabled="state.loginTypes.includes(2) && state.loginForm.loginType === 2"
-                />
-              </el-form-item>
-              <el-form-item prop="password">
-                <el-input
-                  v-model="state.loginForm.password"
-                  :placeholder="t('common.pwd')"
-                  show-password
-                  maxlength="30"
-                  show-word-limit
-                  autocomplete="new-password"
-                  :disabled="state.loginTypes.includes(2) && state.loginForm.loginType === 2"
-                  @keypress.enter="handleLogin"
-                />
-              </el-form-item>
-            </div>
-            <div class="login-btn">
-              <el-button
-                type="primary"
-                class="submit"
-                size="default"
-                :disabled="state.loginTypes.includes(2) && state.loginForm.loginType === 2"
-                @click="handleLogin"
-              >
-                {{ t('login.btn') }}
-              </el-button>
-              <div
-                v-if="
-                  state.uiInfo &&
-                  state.uiInfo['ui.demo.tips'] &&
-                  state.uiInfo['ui.demo.tips'].paramValue
-                "
-                class="demo-tips"
-              >
-                {{ state.uiInfo['ui.demo.tips'].paramValue }}
+              <el-tabs v-model="activeName" @tab-click="handleClick">
+                <template v-if="activeType === 'account'">
+                  <el-tab-pane label="普通登录" name="simple"></el-tab-pane>
+                  <el-tab-pane label="LDAP" name="ldap"></el-tab-pane>
+                </template>
+                <template v-else>
+                  <el-tab-pane label="企业微信" name="wx"></el-tab-pane>
+                  <el-tab-pane label="钉钉" name="dingding"></el-tab-pane>
+                  <el-tab-pane label="飞书" name="fly"></el-tab-pane>
+                </template>
+              </el-tabs>
+              <div class="login-qrcode" v-if="activeName === 'dingding'">
+                <div class="title">
+                  <el-icon>
+                    <Icon name="logo_dingtalk"></Icon>
+                  </el-icon>
+                  钉钉登录
+                </div>
+                <div class="qrcode">钉钉登录</div>
               </div>
+              <template v-else>
+                <el-form-item class="login-form-item" prop="username">
+                  <el-input
+                    v-model="state.loginForm.username"
+                    :placeholder="
+                      t('common.account') + '/' + t('common.email') + '/' + t('common.phone')
+                    "
+                    autofocus
+                    :disabled="state.loginTypes.includes(2) && state.loginForm.loginType === 2"
+                  />
+                </el-form-item>
+                <el-form-item prop="password">
+                  <el-input
+                    v-model="state.loginForm.password"
+                    :placeholder="t('common.pwd')"
+                    show-password
+                    maxlength="30"
+                    show-word-limit
+                    autocomplete="new-password"
+                    :disabled="state.loginTypes.includes(2) && state.loginForm.loginType === 2"
+                    @keypress.enter="handleLogin"
+                  />
+                </el-form-item>
+                <div class="login-btn">
+                  <el-button
+                    type="primary"
+                    class="submit"
+                    size="default"
+                    :disabled="state.loginTypes.includes(2) && state.loginForm.loginType === 2"
+                    @click="handleLogin"
+                  >
+                    {{ t('login.btn') }}
+                  </el-button>
+                  <div
+                    v-if="
+                      state.uiInfo &&
+                      state.uiInfo['ui.demo.tips'] &&
+                      state.uiInfo['ui.demo.tips'].paramValue
+                    "
+                    class="demo-tips"
+                  >
+                    {{ state.uiInfo['ui.demo.tips'].paramValue }}
+                  </div>
+                </div>
+              </template>
+              <el-divider> 其他登录方式 </el-divider>
+              <el-form-item v-if="state.radioTypes.length > 1">
+                <div class="login-list" v-if="state.radioTypes.length > 1">
+                  <div
+                    @click="handleTypeClick(ele)"
+                    v-for="ele in loginList"
+                    :key="ele.value"
+                    class="item"
+                    :class="ele.value"
+                  >
+                    <el-icon>
+                      <Icon :name="iconMap[ele.value]"></Icon>
+                    </el-icon>
+                    <span class="name">
+                      {{ ele.label }}
+                    </span>
+                  </div>
+                </div>
+              </el-form-item>
             </div>
+
             <div class="login-msg">
               {{ msg }}
             </div>
@@ -263,19 +354,8 @@ onMounted(() => {
               />
             </div>
           </div>
-        </el-col>
-        <el-col v-loading="!axiosFinished" :span="12">
-          <div v-if="!loginImageUrl && axiosFinished" class="login-image" />
-          <div
-            v-if="loginImageUrl && axiosFinished"
-            class="login-image-de"
-            :style="{
-              background: 'url(' + loginImageUrl + ') no-repeat',
-              backgroundSize: 'contain'
-            }"
-          />
-        </el-col>
-      </el-row>
+        </div>
+      </div>
     </div>
     <plugin-com
       v-if="state.loginTypes.includes(2) && state.loginForm.loginType === 2"
@@ -296,35 +376,39 @@ onMounted(() => {
 .login-background {
   background-color: #f5f7fa;
   height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  width: 100vw;
 }
 
 .login-container {
-  min-width: 900px;
-  width: 1280px;
-  height: 520px;
+  width: 100%;
+  height: 100%;
   background-color: var(--ContentBG, #ffffff);
-  @media only screen and (max-width: 1280px) {
-    width: 900px;
-    height: 380px;
+  display: flex;
+  .login-image-content {
+    height: 100%;
+    width: 800px;
   }
 
-  .login-logo {
-    margin-top: 50px;
-    text-align: center;
-    @media only screen and (max-width: 1280px) {
-      margin-top: 20px;
+  .login-form-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .login-form-center {
+      width: 480px;
     }
+  }
+  .login-logo {
+    text-align: center;
     img {
       /*width: 240px;*/
       width: auto;
-      max-height: 60px;
+      max-height: 52px;
       @media only screen and (max-width: 1280px) {
         /*width: 200px;*/
         width: auto;
-        max-height: 50px;
+        max-height: 52px;
       }
     }
   }
@@ -353,15 +437,14 @@ onMounted(() => {
   }
 
   .login-welcome {
-    margin-top: 20px;
-    font-size: 14px;
-    color: #3370ff;
-    letter-spacing: 0;
-    line-height: 18px;
     text-align: center;
-    @media only screen and (max-width: 1280px) {
-      margin-top: 20px;
-    }
+    margin-top: 8px;
+    color: #646a73;
+    font-family: PingFang SC;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
   }
 
   .demo-tips {
@@ -377,35 +460,115 @@ onMounted(() => {
   }
 
   .login-form {
-    margin-top: 80px;
-    padding: 0 40px;
+    margin-top: 40px;
+    padding: 40px;
+    padding-top: 20px;
+    box-shadow: 0px 6px 24px rgba(31, 35, 41, 0.08);
+    border: 1px solid #dee0e3;
+    border-radius: 4px;
 
-    @media only screen and (max-width: 1280px) {
-      margin-top: 40px;
+    .login-form-item {
+      margin-top: 24px;
     }
-    & :deep(.ed-input) {
-      margin: 6px 0;
+
+    .login-qrcode {
+      height: 300px;
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      .qrcode {
+        display: flex;
+        width: 200px;
+        height: 200px;
+        padding: 8px 12px;
+        justify-content: center;
+        align-items: center;
+        border-radius: 8px;
+        border: 1px solid #bbbfc4;
+        background: #fff;
+      }
+
+      .title {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 24px 0 12px 0;
+        overflow: hidden;
+        font-family: PingFang SC;
+        font-size: 18px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 26px;
+        .ed-icon {
+          margin-right: 8px;
+          font-size: 24px;
+        }
+      }
     }
-    /*  & :deep(.ed-input__inner) {
-      border-radius: 20px;
-      border: 1px solid transparent;
-      background: rgba(10, 123, 224, 0.1);
+
+    .login-list {
+      margin-top: -8px;
+      width: 100%;
+      display: flex;
+      .item {
+        width: 64px;
+        cursor: pointer;
+        margin-right: 16px;
+        &:last-child {
+          margin-right: 8px;
+        }
+
+        &.qrcode,
+        &.account {
+          .ed-icon {
+            padding: 5px;
+          }
+        }
+
+        .ed-icon {
+          font-size: 32px;
+          border: 1px solid #dee0e3;
+          border-radius: 50%;
+        }
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        justify-content: space-between;
+
+        .name {
+          margin-top: 8px;
+          color: #000;
+          text-align: center;
+          font-family: PingFang SC;
+          font-size: 12px;
+          font-style: normal;
+          font-weight: 400;
+          line-height: 20px; /* 166.667% */
+        }
+      }
     }
-    & :focus {
-      border: 1px solid #3370ff;
-    } */
+
+    .ed-form-item--default {
+      margin-bottom: 24px;
+    }
+  }
+
+  :deep(.ed-divider__text) {
+    color: #8f959e;
+    font-family: PingFang SC;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
+    padding: 0 8px;
   }
 
   .login-btn {
-    margin-top: 22px;
-    padding: 0 40px;
-    @media only screen and (max-width: 1280px) {
-      margin-top: 20px;
-    }
-
+    margin-bottom: 120px;
     .submit {
       width: 100%;
-      border-radius: 20px;
+      height: 40px;
+      line-height: 40px;
     }
   }
 
@@ -420,7 +583,7 @@ onMounted(() => {
     background: url(../../assets/login-desc.png) no-repeat;
     background-size: cover;
     width: 100%;
-    height: 520px;
+    height: 100%;
     @media only screen and (max-width: 1280px) {
       height: 380px;
     }
@@ -503,6 +666,6 @@ onMounted(() => {
 
 .login-logo-icon {
   width: auto;
-  height: 60px;
+  height: 52px;
 }
 </style>

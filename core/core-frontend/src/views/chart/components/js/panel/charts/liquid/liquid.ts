@@ -9,9 +9,32 @@ import { valueFormatter } from '@/views/chart/components/editor/util/formatter'
 
 const DEFAULT_LIQUID_DATA = []
 export class Liquid extends G2PlotChartView<LiquidOptions, G2Liquid> {
-  properties: EditorProperty[]
-  propertyInner: EditorPropertyInner
-  axis: AxisType[]
+  properties: EditorProperty[] = [
+    'background-overall-component',
+    'basic-style-selector',
+    'label-selector',
+    'size-selector',
+    'title-selector'
+  ]
+  propertyInner: EditorPropertyInner = {
+    'background-overall-component': ['all'],
+    'basic-style-selector': ['colors', 'alpha'],
+    'label-selector': ['fontSize', 'color', 'gaugeLabelFormatter'],
+    'size-selector': ['liquidShape', 'liquidMaxType', 'liquidMaxField'],
+    'title-selector': [
+      'title',
+      'fontSize',
+      'color',
+      'hPosition',
+      'isItalic',
+      'isBolder',
+      'remarkShow',
+      'fontFamily',
+      'letterSpace',
+      'fontShadow'
+    ]
+  }
+  axis: AxisType[] = ['yAxis', 'filter']
   drawChart(drawOptions: G2PlotDrawOptions<G2Liquid>): G2Liquid {
     const chart = drawOptions.chart
     if (chart?.data) {

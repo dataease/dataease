@@ -123,4 +123,10 @@ public class UserBatchImportManage {
             }
         }
     }
+
+    public void clearErrorData(String key) {
+        if (CacheUtils.keyExist(AuthConstant.USER_IMPORT_ERROR_KEY, key)) {
+            CacheUtils.keyRemove(AuthConstant.USER_IMPORT_ERROR_KEY, key);
+        }
+    }
 }

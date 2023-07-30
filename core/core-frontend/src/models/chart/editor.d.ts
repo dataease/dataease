@@ -13,6 +13,8 @@ declare type EditorProperty =
   | 'text-selector'
   | 'quota-selector'
   | 'line-selector'
+  | 'size-selector'
+  | 'color-selector'
 declare type EditorPropertyInner = {
   [key in EditorProperty]?: string[]
 }

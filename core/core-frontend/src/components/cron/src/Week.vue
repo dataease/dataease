@@ -176,18 +176,6 @@ const emits = defineEmits(['update:modelValue'])
       />
       {{ t('cron.day_exec') }}
     </div>
-    <!--    <div>-->
-    <!--      <el-radio v-model="type" label="7" size="small" border>指定周</el-radio>-->
-    <!--      <span style="margin-left: 10px; margin-right: 5px;">本月第</span>-->
-    <!--      <el-input-number v-model="week.start" :min="1" :max="4" size="small" style="width: 100px;" @change="type = '7'" />-->
-    <!--      <span style="margin-left: 5px; margin-right: 5px;">周，星期</span>-->
-    <!--      <el-input-number v-model="week.end" :min="1" :max="7" size="small" style="width: 100px;" @change="type = '7'" />-->
-    <!--    </div>-->
-    <!--    <div>-->
-    <!--      <el-radio v-model="type" label="6" size="small" border>本月最后一个</el-radio>-->
-    <!--      <span style="margin-left: 10px; margin-right: 5px;">星期</span>-->
-    <!--      <el-input-number v-model="last" :min="1" :max="7" size="small" style="width: 100px;" @change="type = '6'" />-->
-    <!--    </div>-->
     <div>
       <el-radio v-model="type" label="4" size="small" border>{{ t('cron.set') }}</el-radio>
       <el-checkbox-group v-model="state.appoint" style="margin-left: 50px; line-height: 25px">

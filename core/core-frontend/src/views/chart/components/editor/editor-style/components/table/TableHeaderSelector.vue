@@ -54,6 +54,10 @@ const state = reactive({
 const emit = defineEmits(['onLabelChange'])
 
 const changeLabelAttr = () => {
+  // if (!this.labelForm.show) {
+  //   this.isSetting = false
+  // }
+  // this.labelForm['modifyName'] = modifyName
   emit('onLabelChange', state.labelForm)
 }
 
@@ -71,7 +75,7 @@ const init = () => {
     }
   }
 }
-const showProperty = prop => props.propertyInner?.includes(prop)
+const showProperty = prop => true
 initFontSize()
 init()
 </script>

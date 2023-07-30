@@ -18,6 +18,5 @@ const { curComponent } = storeToRefs(dvMainStore)
 <template>
   <div class="attr-list">
     <CommonAttr :themes="themes"></CommonAttr>
-    <!--    <user-view-editor></user-view-editor>-->
   </div>
 </template>

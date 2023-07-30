@@ -288,7 +288,7 @@ export const DEFAULT_TOOLTIP = {
   formatter: '',
   backgroundColor: '#ffffff'
 }
-export const DEFAULT_TOTAL = {
+export const DEFAULT_TABLE_TOTAL: ChartTableTotalAttr = {
   row: {
     showGrandTotals: true,
     showSubTotals: true,
@@ -323,6 +323,42 @@ export const DEFAULT_TOTAL = {
     totalSort: 'none', // asc,desc
     totalSortField: ''
   }
+}
+export const DEFAULT_TABLE_HEADER: ChartTableHeaderAttr = {
+  indexLabel: '序号',
+  showIndex: false,
+  tableHeaderAlign: 'left',
+  tableHeaderBgColor: '#6D9A49',
+  tableHeaderFontColor: '#000000',
+  tableTitleFontSize: 12,
+  tableTitleHeight: 36
+}
+export const DEFAULT_TABLE_CELL: ChartTableCellAttr = {
+  tableFontColor: '#000000',
+  tableItemAlign: 'right',
+  tableItemBgColor: '#FFFFFF',
+  tableItemFontSize: 12,
+  tableItemHeight: 36
+}
+export const DEFAULT_CARD_CFG: ChartCardAttr = {
+  nameFontColor: '#000000',
+  nameFontFamily: 'Microsoft YaHei',
+  nameFontSize: 18,
+  nameFontIsBolder: false,
+  nameFontIsItalic: false,
+  nameFontShadow: false,
+  nameLetterSpace: '',
+  showName: false,
+  valueFontColor: '#5470c6',
+  valueFontFamily: 'Microsoft YaHei',
+  valueFontSize: 18,
+  valueFontIsBolder: false,
+  valueFontIsItalic: false,
+  valueFontShadow: false,
+  valueLetterSpace: 0,
+  nameValueSpace: 10,
+  hPosition: 'center',
+  vPosition: 'center'
 }
 export const DEFAULT_TITLE_STYLE = {
   show: true,
@@ -620,640 +656,6 @@ export const DEFAULT_SCROLL = {
   row: 1,
   interval: 2000,
   step: 50
-}
-// chart config
-export const BASE_BAR = {
-  title: {
-    text: '',
-    textStyle: {
-      fontWeight: 'normal'
-    }
-  },
-  grid: {
-    containLabel: true
-  },
-  tooltip: {},
-  legend: {
-    show: true,
-    type: 'scroll',
-    itemWidth: 10,
-    itemHeight: 10,
-    icon: 'rect',
-    data: []
-  },
-  xAxis: {
-    data: []
-  },
-  yAxis: {
-    type: 'value'
-  },
-  series: [],
-  dataZoom: [
-    {
-      type: 'slider',
-      show: false,
-      xAxisIndex: [0],
-      start: 0,
-      end: 100
-    },
-    {
-      type: 'slider',
-      show: false,
-      yAxisIndex: [0],
-      left: '93%',
-      start: 0,
-      end: 100
-    },
-    {
-      type: 'inside',
-      disabled: true,
-      xAxisIndex: [0],
-      start: 0,
-      end: 100
-    },
-    {
-      type: 'inside',
-      disabled: true,
-      yAxisIndex: [0],
-      start: 0,
-      end: 100
-    }
-  ]
-}
-export const HORIZONTAL_BAR = {
-  title: {
-    text: '',
-    textStyle: {
-      fontWeight: 'normal'
-    }
-  },
-  grid: {
-    containLabel: true
-  },
-  tooltip: {},
-  legend: {
-    show: true,
-    type: 'scroll',
-    itemWidth: 10,
-    itemHeight: 10,
-    icon: 'rect',
-    data: []
-  },
-  xAxis: {
-    type: 'value'
-  },
-  yAxis: {
-    data: []
-  },
-  series: [],
-  dataZoom: [
-    {
-      type: 'slider',
-      show: false,
-      xAxisIndex: [0],
-      start: 0,
-      end: 100
-    },
-    {
-      type: 'slider',
-      show: false,
-      yAxisIndex: [0],
-      left: '93%',
-      start: 0,
-      end: 100
-    },
-    {
-      type: 'inside',
-      disabled: true,
-      xAxisIndex: [0],
-      start: 0,
-      end: 100
-    },
-    {
-      type: 'inside',
-      disabled: true,
-      yAxisIndex: [0],
-      start: 0,
-      end: 100
-    }
-  ]
-}
-
-export const BASE_LINE = {
-  title: {
-    text: '',
-    textStyle: {
-      fontWeight: 'normal'
-    }
-  },
-  grid: {
-    containLabel: true
-  },
-  tooltip: {},
-  legend: {
-    show: true,
-    type: 'scroll',
-    itemWidth: 10,
-    itemHeight: 10,
-    icon: 'rect',
-    data: []
-  },
-  xAxis: {
-    boundaryGap: false,
-    data: []
-  },
-  yAxis: {
-    type: 'value'
-  },
-  series: [],
-  dataZoom: [
-    {
-      type: 'slider',
-      show: false,
-      xAxisIndex: [0],
-      start: 0,
-      end: 100
-    },
-    {
-      type: 'slider',
-      show: false,
-      yAxisIndex: [0],
-      left: '93%',
-      start: 0,
-      end: 100
-    },
-    {
-      type: 'inside',
-      disabled: true,
-      xAxisIndex: [0],
-      start: 0,
-      end: 100
-    },
-    {
-      type: 'inside',
-      disabled: true,
-      yAxisIndex: [0],
-      start: 0,
-      end: 100
-    }
-  ]
-}
-
-export const BASE_PIE = {
-  title: {
-    text: '',
-    textStyle: {
-      fontWeight: 'normal'
-    }
-  },
-  grid: {
-    containLabel: true
-  },
-  tooltip: {},
-  legend: {
-    show: true,
-    type: 'scroll',
-    itemWidth: 10,
-    itemHeight: 10,
-    icon: 'rect'
-  },
-  series: [
-    {
-      name: '',
-      type: 'pie',
-      radius: ['0%', '60%'],
-      avoidLabelOverlap: false,
-      emphasis: {
-        itemStyle: {
-          shadowBlur: 10,
-          shadowOffsetX: 0,
-          shadowColor: 'rgba(0, 0, 0, 0.5)'
-        }
-      },
-      data: []
-    }
-  ]
-}
-
-export const BASE_FUNNEL = {
-  title: {
-    text: '',
-    textStyle: {
-      fontWeight: 'normal'
-    }
-  },
-  grid: {
-    containLabel: true
-  },
-  tooltip: {
-    trigger: 'item'
-  },
-  legend: {
-    show: true,
-    type: 'scroll',
-    itemWidth: 10,
-    itemHeight: 10,
-    icon: 'rect'
-  },
-  series: [
-    {
-      name: '',
-      type: 'funnel',
-      left: 'center',
-      top: 60,
-      bottom: 60,
-      width: '80%',
-      min: 0,
-      max: 100,
-      minSize: '0%',
-      maxSize: '100%',
-      sort: 'descending',
-      gap: 1,
-      labelLine: {
-        length: 10,
-        lineStyle: {
-          width: 1,
-          type: 'solid'
-        }
-      },
-      itemStyle: {
-        borderColor: '#fff',
-        borderWidth: 1
-      },
-      emphasis: {
-        label: {
-          fontSize: 20
-        }
-      },
-      data: []
-    }
-  ]
-}
-
-export const BASE_RADAR = {
-  title: {
-    text: '',
-    textStyle: {
-      fontWeight: 'normal'
-    }
-  },
-  grid: {
-    containLabel: true
-  },
-  tooltip: {},
-  legend: {
-    show: true,
-    type: 'scroll',
-    itemWidth: 10,
-    itemHeight: 10,
-    icon: 'rect',
-    data: []
-  },
-  radar: {
-    shape: 'polygon',
-    name: {
-      show: true,
-      color: '#999999',
-      fontSize: '12'
-    },
-    splitNumber: 5,
-    axisLine: {
-      show: true,
-      lineStyle: {
-        color: '#999999',
-        width: 1,
-        type: 'solid'
-      }
-    },
-    axisTick: {
-      show: false,
-      length: 5,
-      lineStyle: {
-        color: '#999999',
-        width: 1,
-        type: 'solid'
-      }
-    },
-    axisLabel: {
-      show: false,
-      rotate: 0,
-      margin: 8,
-      color: '#999999',
-      fontSize: '12',
-      formatter: '{value}'
-    },
-    splitLine: {
-      show: true,
-      lineStyle: {
-        color: '#999999',
-        width: 1,
-        type: 'solid'
-      }
-    },
-    splitArea: {
-      show: true
-    },
-    indicator: []
-  },
-  series: []
-}
-
-export const BASE_GAUGE = {
-  title: {
-    text: '',
-    textStyle: {
-      fontWeight: 'normal'
-    }
-  },
-  grid: {
-    containLabel: true
-  },
-  tooltip: {},
-  legend: {
-    show: true,
-    type: 'scroll',
-    itemWidth: 10,
-    itemHeight: 10,
-    icon: 'rect'
-  },
-  series: [
-    {
-      name: '',
-      type: 'gauge',
-      startAngle: 225,
-      endAngle: -45,
-      min: 0,
-      max: 100,
-      progress: {
-        show: true
-      },
-      detail: {
-        show: true,
-        valueAnimation: true,
-        formatter: '{value}'
-      },
-      data: []
-    }
-  ]
-}
-
-export const BASE_CHART_STRING = {
-  stylePriority: 'view',
-  xAxis: '[]',
-  yAxis: '[]',
-  show: true,
-  type: 'panel',
-  title: '',
-  customAttr: JSON.stringify({
-    color: DEFAULT_COLOR_CASE,
-    tableColor: DEFAULT_COLOR_CASE,
-    size: DEFAULT_SIZE,
-    label: DEFAULT_LABEL,
-    tooltip: DEFAULT_TOOLTIP
-  }),
-  customStyle: JSON.stringify({
-    text: DEFAULT_TITLE_STYLE,
-    legend: DEFAULT_LEGEND_STYLE,
-    xAxis: DEFAULT_XAXIS_STYLE,
-    yAxis: DEFAULT_YAXIS_STYLE,
-    yAxisExt: DEFAULT_YAXIS_EXT_STYLE
-  }),
-  customFilter: '[]'
-}
-
-export const BASE_CHART = {
-  xAxis: [],
-  yAxis: [],
-  show: true,
-  type: 'panel',
-  title: '',
-  customAttr: {
-    color: DEFAULT_COLOR_CASE,
-    tableColor: DEFAULT_COLOR_CASE,
-    size: DEFAULT_SIZE,
-    label: DEFAULT_LABEL,
-    tooltip: DEFAULT_TOOLTIP
-  },
-  customStyle: {
-    text: DEFAULT_TITLE_STYLE,
-    legend: DEFAULT_LEGEND_STYLE,
-    xAxis: DEFAULT_XAXIS_STYLE,
-    yAxis: DEFAULT_YAXIS_STYLE,
-    yAxisExt: DEFAULT_YAXIS_EXT_STYLE
-  },
-  customFilter: []
-}
-
-export const BASE_MAP = {
-  title: {
-    text: '',
-    textStyle: {
-      fontWeight: 'normal'
-    }
-  },
-
-  tooltip: {},
-  visualMap: {
-    min: 50,
-    max: 52,
-    text: ['High', 'Low'],
-    realtime: false,
-    calculable: true,
-    inRange: {
-      color: ['lightskyblue', 'yellow', 'orangered']
-    },
-    seriesIndex: 0,
-    textStyle: {},
-    right: 0
-  },
-  geo: {
-    map: 'MAP',
-    roam: false,
-    nameMap: {},
-    itemStyle: {
-      normal: {},
-      emphasis: {
-        label: {
-          show: false
-        }
-      }
-    }
-  },
-  series: [
-    {
-      name: '',
-      type: 'map',
-      geoIndex: 0,
-      roam: true,
-      data: [],
-      itemStyle: {
-        normal: {},
-        emphasis: {
-          label: {
-            show: false
-          }
-        }
-      }
-    }
-  ]
-}
-
-export const BASE_SCATTER = {
-  title: {
-    text: '',
-    textStyle: {
-      fontWeight: 'normal'
-    }
-  },
-  grid: {
-    containLabel: true
-  },
-  tooltip: {},
-  legend: {
-    show: true,
-    type: 'scroll',
-    itemWidth: 10,
-    itemHeight: 10,
-    icon: 'rect',
-    data: []
-  },
-  xAxis: {
-    data: [],
-    boundaryGap: false
-  },
-  yAxis: {
-    type: 'value'
-  },
-  series: [],
-  dataZoom: [
-    {
-      type: 'slider',
-      show: false,
-      xAxisIndex: [0],
-      start: 0,
-      end: 100
-    },
-    {
-      type: 'slider',
-      show: false,
-      yAxisIndex: [0],
-      left: '93%',
-      start: 0,
-      end: 100
-    },
-    {
-      type: 'inside',
-      disabled: true,
-      xAxisIndex: [0],
-      start: 0,
-      end: 100
-    },
-    {
-      type: 'inside',
-      disabled: true,
-      yAxisIndex: [0],
-      start: 0,
-      end: 100
-    }
-  ]
-}
-
-export const BASE_TREEMAP = {
-  title: {
-    text: '',
-    textStyle: {
-      fontWeight: 'normal'
-    }
-  },
-  grid: {
-    containLabel: true
-  },
-  tooltip: {},
-  legend: {
-    show: true,
-    type: 'scroll',
-    itemWidth: 10,
-    itemHeight: 10,
-    icon: 'rect'
-  },
-  series: [
-    {
-      // name: '',
-      type: 'treemap',
-      roam: true,
-      itemStyle: {
-        gapWidth: 2
-      },
-      breadcrumb: {
-        show: false
-      },
-      data: []
-    }
-  ]
-}
-
-export const BASE_MIX = {
-  title: {
-    text: '',
-    textStyle: {
-      fontWeight: 'normal'
-    }
-  },
-  grid: {
-    containLabel: true
-  },
-  tooltip: {},
-  legend: {
-    show: true,
-    type: 'scroll',
-    itemWidth: 10,
-    itemHeight: 10,
-    icon: 'rect',
-    data: []
-  },
-  xAxis: {
-    data: []
-  },
-  yAxis: [
-    {
-      type: 'value'
-    },
-    {
-      type: 'value'
-    }
-  ],
-  series: [],
-  dataZoom: [
-    {
-      type: 'slider',
-      show: false,
-      xAxisIndex: [0],
-      start: 0,
-      end: 100
-    },
-    {
-      type: 'slider',
-      show: false,
-      yAxisIndex: [0],
-      left: '93%',
-      start: 0,
-      end: 100
-    },
-    {
-      type: 'inside',
-      disabled: true,
-      xAxisIndex: [0],
-      start: 0,
-      end: 100
-    },
-    {
-      type: 'inside',
-      disabled: true,
-      yAxisIndex: [0],
-      start: 0,
-      end: 100
-    }
-  ]
 }
 
 export const COLOR_PANEL = [
@@ -1587,7 +989,7 @@ export const NEW_CHART = {
     size: DEFAULT_SIZE,
     label: DEFAULT_LABEL,
     tooltip: DEFAULT_TOOLTIP,
-    totalCfg: DEFAULT_TOTAL
+    totalCfg: DEFAULT_TABLE_TOTAL
   },
   customStyle: {
     text: DEFAULT_TITLE_STYLE,
@@ -2087,7 +1489,10 @@ export const BASE_VIEW_CONFIG = {
     size: DEFAULT_SIZE,
     label: DEFAULT_LABEL,
     tooltip: DEFAULT_TOOLTIP,
-    totalCfg: DEFAULT_TOTAL,
+    totalCfg: DEFAULT_TABLE_TOTAL,
+    tableHeader: DEFAULT_TABLE_HEADER,
+    tableCell: DEFAULT_TABLE_CELL,
+    cardCfg: DEFAULT_CARD_CFG,
     map: {
       id: '000',
       level: 'world'

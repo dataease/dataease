@@ -21,69 +21,71 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
   properties = BAR_EDITOR_PROPERTY
   propertyInner = BAR_EDITOR_PROPERTY_INNER
 
-  axis: AxisType[] = ['xAxis', 'yAxis', 'filter', 'drill']
+  axis: AxisType[] = ['xAxis', 'yAxis', 'filter', 'drill', 'extLabel', 'extTooltip']
 
   drawChart(drawOptions: G2PlotDrawOptions<Column>): Column {
-    if (drawOptions.chart?.data) {
-      const data = cloneDeep(drawOptions.chart.data?.data)
-      if (!data) return drawOptions.chartObj
-      const initOptions: ColumnOptions = {
-        xField: 'field',
-        yField: 'value',
-        seriesField: 'category',
-        data: data,
-        interactions: [
-          {
-            type: 'legend-active',
-            cfg: {
-              start: [{ trigger: 'legend-item:mouseenter', action: ['element-active:reset'] }],
-              end: [{ trigger: 'legend-item:mouseleave', action: ['element-active:reset'] }]
-            }
-          },
-          {
-            type: 'legend-filter',
-            cfg: {
-              start: [
-                {
-                  trigger: 'legend-item:click',
-                  action: [
-                    'list-unchecked:toggle',
-                    'data-filter:filter',
-                    'element-active:reset',
-                    'element-highlight:reset'
-                  ]
-                }
-              ]
-            }
-          },
-          {
-            type: 'tooltip',
-            cfg: {
-              start: [{ trigger: 'interval:mousemove', action: 'tooltip:show' }],
-              end: [{ trigger: 'interval:mouseleave', action: 'tooltip:hide' }]
-            }
-          },
-          {
-            type: 'active-region',
-            cfg: {
-              start: [{ trigger: 'interval:mousemove', action: 'active-region:show' }],
-              end: [{ trigger: 'interval:mouseleave', action: 'active-region:hide' }]
-            }
-          }
-        ]
-      }
-      const options: ColumnOptions = this.setupOptions(drawOptions.chart, initOptions)
-
-      if (drawOptions.chartObj) {
-        drawOptions.chartObj.destroy()
-      }
-      drawOptions.chartObj = new Column(drawOptions.container, options)
-
-      drawOptions.chartObj.off('interval:click')
-      drawOptions.chartObj.on('interval:click', drawOptions.action)
-
-      return drawOptions.chartObj
+    const { chart } = drawOptions
+    if (!chart?.data?.data?.length) {
+      return
     }
+    const data = cloneDeep(drawOptions.chart.data?.data)
+    if (!data) return drawOptions.chartObj
+    const initOptions: ColumnOptions = {
+      xField: 'field',
+      yField: 'value',
+      seriesField: 'category',
+      data: data,
+      interactions: [
+        {
+          type: 'legend-active',
+          cfg: {
+            start: [{ trigger: 'legend-item:mouseenter', action: ['element-active:reset'] }],
+            end: [{ trigger: 'legend-item:mouseleave', action: ['element-active:reset'] }]
+          }
+        },
+        {
+          type: 'legend-filter',
+          cfg: {
+            start: [
+              {
+                trigger: 'legend-item:click',
+                action: [
+                  'list-unchecked:toggle',
+                  'data-filter:filter',
+                  'element-active:reset',
+                  'element-highlight:reset'
+                ]
+              }
+            ]
+          }
+        },
+        {
+          type: 'tooltip',
+          cfg: {
+            start: [{ trigger: 'interval:mousemove', action: 'tooltip:show' }],
+            end: [{ trigger: 'interval:mouseleave', action: 'tooltip:hide' }]
+          }
+        },
+        {
+          type: 'active-region',
+          cfg: {
+            start: [{ trigger: 'interval:mousemove', action: 'active-region:show' }],
+            end: [{ trigger: 'interval:mouseleave', action: 'active-region:hide' }]
+          }
+        }
+      ]
+    }
+    const options: ColumnOptions = this.setupOptions(drawOptions.chart, initOptions)
+
+    if (drawOptions.chartObj) {
+      drawOptions.chartObj.destroy()
+    }
+    drawOptions.chartObj = new Column(drawOptions.container, options)
+
+    drawOptions.chartObj.off('interval:click')
+    drawOptions.chartObj.on('interval:click', drawOptions.action)
+
+    return drawOptions.chartObj
   }
 
   protected configTooltip(chart: Chart, options: ColumnOptions): ColumnOptions {

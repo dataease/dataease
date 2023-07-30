@@ -7,8 +7,8 @@
         <groupId>io.dataease</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
 
+    <modelVersion>4.0.0</modelVersion>
     <artifactId>license-sdk</artifactId>
 
     <properties>
@@ -22,19 +22,6 @@
             <artifactId>common</artifactId>
             <version>${project.version}</version>
         </dependency>
-
     </dependencies>
-
-    <!--<build>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <includes>
-                    <include>db/migration/*.sql</include>
-                    <include>i18n/*.properties</include>
-                </includes>
-            </resource>
-        </resources>
-    </build>-->
 
 </project>
