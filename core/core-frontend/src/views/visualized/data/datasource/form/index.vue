@@ -443,7 +443,7 @@ defineExpose({
 <style lang="less">
 .datasource-drawer-fullscreen {
   .ed-drawer__body {
-    padding: 0;
+    padding: 0 !important;
   }
 
   .ed-drawer__header > :first-child {
