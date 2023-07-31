@@ -2,10 +2,15 @@ package io.dataease.datasource.server;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dataease.api.dataset.dto.DatasetTableDTO;
+import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
+import io.dataease.api.dataset.union.DatasetTableInfoDTO;
+import io.dataease.api.dataset.union.UnionDTO;
+import io.dataease.api.dataset.union.UnionParamDTO;
 import io.dataease.api.ds.DatasourceApi;
 import io.dataease.api.ds.vo.*;
 import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
@@ -14,6 +19,7 @@ import io.dataease.api.permissions.auth.dto.BusiResourceEditor;
 import io.dataease.commons.constants.DataSourceType;
 import io.dataease.commons.constants.TaskStatus;
 import io.dataease.dataset.dto.DatasourceSchemaDTO;
+import io.dataease.dataset.manage.DatasetDataManage;
 import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.entity.CoreDatasourceTask;
@@ -28,6 +34,7 @@ import io.dataease.datasource.provider.ApiUtils;
 import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.datasource.provider.ExcelUtils;
 import io.dataease.datasource.request.DatasourceRequest;
+import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.exception.DEException;
 import io.dataease.model.BusiNodeRequest;
@@ -76,6 +83,8 @@ public class DatasourceServer implements DatasourceApi {
     @Resource
     private DataSourceManage dataSourceManage;
 
+    @Resource
+    private DatasetDataManage datasetDataManage;
 
     @Resource
     private CoreDatasourceExtMapper coreDatasourceExtMapper;
@@ -91,8 +100,39 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     @Override
+    public DatasourceDTO move(DatasourceDTO dataSourceDTO) throws Exception {
+        switch (dataSourceDTO.getAction()){
+            case "move":
+            case "rename":
+                checkName(dataSourceDTO.getName(), datasourceMapper.selectById(dataSourceDTO.getId()).getType(), dataSourceDTO.getId());
+                UpdateWrapper<CoreDatasource> updateWrapper = new UpdateWrapper<>();
+                updateWrapper.eq("id", dataSourceDTO.getId());
+                CoreDatasource record = new CoreDatasource();
+                record.setPid(dataSourceDTO.getPid());
+                record.setName(dataSourceDTO.getName());
+                datasourceMapper.update(record, updateWrapper);
+                break;
+            case "create":
+                checkName(dataSourceDTO.getName(), dataSourceDTO.getNodeType(), dataSourceDTO.getId());
+                CoreDatasource coreDatasource = new CoreDatasource();
+                BeanUtils.copyBean(coreDatasource, dataSourceDTO);
+                coreDatasource.setCreateTime(System.currentTimeMillis());
+                coreDatasource.setUpdateTime(System.currentTimeMillis());
+                coreDatasource.setTaskStatus(TaskStatus.WaitingForExecution.name());
+                coreDatasource.setId(IDUtils.snowID());
+                break;
+            default:
+                break;
+        }
+        return dataSourceDTO;
+    }
+    @Override
     public DatasourceDTO save(DatasourceDTO dataSourceDTO) throws Exception {
-        if (StringUtils.isNotEmpty(dataSourceDTO.getNodeType()) && dataSourceDTO.getNodeType().equals("folder")) {
+        if(StringUtils.isNotEmpty(dataSourceDTO.getAction())){
+            move(dataSourceDTO);
+            return dataSourceDTO;
+        }
+        if(StringUtils.isNotEmpty(dataSourceDTO.getNodeType()) && dataSourceDTO.getNodeType().equals("folder")){
             dataSourceDTO.setType("folder");
             dataSourceDTO.setConfiguration("");
         }
@@ -320,11 +360,14 @@ public class DatasourceServer implements DatasourceApi {
                 queryWrapper.eq("type", "folder");
             }
         }
+        if(ObjectUtils.isNotEmpty(request.getId())){
+            queryWrapper.ne("id", request.getId());
+        }
         queryWrapper.orderByDesc("create_time");
         List<DatasourceNodePO> pos = coreDatasourceExtMapper.query(queryWrapper);
 
         List<DatasourceNodeBO> nodes = new ArrayList<>();
-        if (ObjectUtils.isEmpty(request.getLeaf()) || !request.getLeaf()) nodes.add(rootNode());
+//        if (ObjectUtils.isEmpty(request.getLeaf()) || !request.getLeaf()) nodes.add(rootNode());
         List<DatasourceNodeBO> bos = pos.stream().map(this::convert).toList();
         if (CollectionUtil.isNotEmpty(bos)) {
             nodes.addAll(bos);
@@ -555,7 +598,7 @@ public class DatasourceServer implements DatasourceApi {
         QueryWrapper<CoreDatasource> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("name", name);
         queryWrapper.eq("type", type);
-        if (id != null) {
+        if (id != null && id != 0) {
             queryWrapper.ne("id", id);
         }
         if (!CollectionUtils.isEmpty(datasourceMapper.selectList(queryWrapper))) {
@@ -587,5 +630,37 @@ public class DatasourceServer implements DatasourceApi {
     public void updateDemoDs() {
     }
 
+    @Override
+    public Map<String, Object> previewDataWithLimit(Map<String, Object> req) throws Exception {
+        String tableName = req.get("table").toString();
+        DatasetGroupInfoDTO datasetGroupInfoDTO = new DatasetGroupInfoDTO();
+        CoreDatasource coreDatasource = engineServer.getDeEngine();
+        DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
+        BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
+        datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, 0));
+        List<DatasetTableFieldDTO> list = null;
+        List<TableField> tableFields = null;
+        DatasourceRequest datasourceRequest = new DatasourceRequest();
+        datasourceRequest.setDsList(Map.of(datasourceSchemaDTO.getId(), datasourceSchemaDTO));
+        datasourceRequest.setQuery(TableUtils.tableName2Sql(datasourceSchemaDTO, tableName));
+        tableFields = (List<TableField>) calciteProvider.fetchResultField(datasourceRequest).get("fields");
+        list = datasetDataManage.transFields(tableFields, true);
+        datasetGroupInfoDTO.setAllFields(list);
+        List<UnionDTO> unionDTOS = new ArrayList<>();
+        UnionDTO unionDTO = new UnionDTO();
+        DatasetTableDTO datasetTableDTO = new DatasetTableDTO();
+        datasetTableDTO.setTableName(tableName);
+        DatasetTableInfoDTO tableInfoDTO = new DatasetTableInfoDTO();
+        tableInfoDTO.setTable(tableName);
+        datasetTableDTO.setInfo(JsonUtil.toJSONString(tableInfoDTO).toString());
+        unionDTO.setCurrentDs(datasetTableDTO);
+        unionDTO.setCurrentDsFields(list);
+        UnionParamDTO unionParamDTO= new UnionParamDTO();
+        unionParamDTO.setUnionType("left");
+        unionDTO.setUnionToParent(unionParamDTO);
+        unionDTOS.add(unionDTO);
+        datasetGroupInfoDTO.setUnion(unionDTOS);
+        return datasetDataManage.previewDataWithLimit(datasetGroupInfoDTO, 0, 100);
+    }
 
 }

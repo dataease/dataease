@@ -33,6 +33,11 @@ public interface DatasourceApi {
     @PostMapping("/save")
     DatasourceDTO save(@RequestBody DatasourceDTO dataSourceDTO) throws Exception;
 
+    @DePermit("m:read")
+    @PostMapping("/move")
+    DatasourceDTO move(@RequestBody DatasourceDTO dataSourceDTO) throws Exception;
+
+
     @DePermit({"m:read", "#p0.id+':manage'"})
     @PostMapping("/update")
     DatasourceDTO update(@RequestBody DatasourceDTO dataSourceDTO) throws Exception;
@@ -71,4 +76,6 @@ public interface DatasourceApi {
     @PostMapping("/uploadFile")
     ExcelFileData excelUpload(@RequestParam("file") MultipartFile file, @RequestParam("id") long datasourceId, @RequestParam("editType") Integer editType) throws Exception;
 
+    @PostMapping("/previewData")
+    Map<String, Object> previewDataWithLimit(@RequestBody Map<String, Object> req) throws Exception;
 }
