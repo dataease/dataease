@@ -793,15 +793,6 @@ const setFieldDefaultValue = field => {
   field.deExtractType = field.deType
 }
 
-const viewProperties = computed(() => {
-  const config = getViewConfig(view.value.type)
-  return config ? config.properties : null
-})
-
-const viewPropertyInnerAll = computed(() => {
-  return viewProperties.value ? viewProperties.value.propertyInner : null
-})
-
 const dynamicLabelShow = () => {
   onLabelChange(view.value.customAttr.label)
 }

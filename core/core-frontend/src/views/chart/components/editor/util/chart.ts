@@ -1327,7 +1327,7 @@ export const DEFAULT_BASIC_STYLE: ChartBasicStyle = {
   alpha: 100,
   tableBorderColor: '#CCCCCC',
   tableScrollBarColor: 'rgba(0, 0, 0, 0.15)',
-  tableColumnMode: 'adopt',
+  tableColumnMode: 'adapt',
   tableColumnWidth: 100,
   tablePageMode: 'page',
   tablePageSize: 20,
