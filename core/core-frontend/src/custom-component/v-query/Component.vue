@@ -127,6 +127,7 @@ onBeforeUnmount(() => {
 })
 
 const dragover = () => {
+  console.log('dragover')
 }
 
 const infoFormat = (obj: Field & { datasetId: string }) => {
