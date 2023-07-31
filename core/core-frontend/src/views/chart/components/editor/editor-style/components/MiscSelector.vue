@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, reactive, watch } from 'vue'
+import { computed, PropType, reactive, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import {
   CHART_FONT_FAMILY,
@@ -20,7 +20,7 @@ const props = defineProps({
     required: true
   },
   themes: {
-    type: String,
+    type: String as PropType<'plain' | 'dark' | 'light'>,
     default: 'dark'
   },
   quotaFields: {
