@@ -235,7 +235,11 @@ export const dvMainStore = defineStore('dataVisualization', {
       }
     },
 
-    addComponent({ component, index }) {
+    addComponent({ component, index, isFromGroup = false }) {
+      if (isFromGroup) {
+        this.componentData.push(component)
+        return
+      }
       if (index !== undefined) {
         this.componentData.splice(index, 0, component)
         this.setCurComponent({ component: component, index: index })
@@ -417,6 +421,7 @@ export const dvMainStore = defineStore('dataVisualization', {
       this.curBatchOptComponents.forEach(viewId => {
         const viewInfo = this.canvasViewInfo[viewId]
         viewInfo[propertyInfo.custom][propertyInfo.property] = propertyInfo.value
+        console.log('1-4')
         useEmitt().emitter.emit('renderChart-' + viewId, viewInfo)
       })
     },

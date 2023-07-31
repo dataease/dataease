@@ -1,18 +1,27 @@
 import { hexColorToRGBA, parseJson, resetRgbOpacity } from '../..//util'
-import { DEFAULT_COLOR_CASE, DEFAULT_SIZE } from '@/views/chart/components/editor/util/chart'
+import {
+  DEFAULT_BASIC_STYLE,
+  DEFAULT_COLOR_CASE,
+  DEFAULT_TABLE_CELL,
+  DEFAULT_TABLE_HEADER
+} from '@/views/chart/components/editor/util/chart'
 import { S2Theme, Style, TextAlign } from '@antv/s2'
+import { deepAssign } from '@antv/g2plot/lib/utils'
 
-export function getCustomTheme(chart: Chart) {
+export function getCustomTheme(chart: Chart): S2Theme {
   const headerColor = hexColorToRGBA(
-    DEFAULT_COLOR_CASE.tableHeaderBgColor,
-    DEFAULT_COLOR_CASE.alpha
+    DEFAULT_TABLE_HEADER.tableHeaderBgColor,
+    DEFAULT_BASIC_STYLE.alpha
   )
-  const itemColor = hexColorToRGBA(DEFAULT_COLOR_CASE.tableItemBgColor, DEFAULT_COLOR_CASE.alpha)
-  const borderColor = hexColorToRGBA(DEFAULT_COLOR_CASE.tableBorderColor, DEFAULT_COLOR_CASE.alpha)
-  const headerAlign = DEFAULT_SIZE.tableHeaderAlign as TextAlign
-  const itemAlign = DEFAULT_SIZE.tableItemAlign as TextAlign
-  const scrollBarColor = DEFAULT_COLOR_CASE.tableScrollBarColor
-  const scrollBarHoverColor = DEFAULT_COLOR_CASE.tableScrollBarHoverColor
+  const headerAlign = DEFAULT_TABLE_HEADER.tableHeaderAlign
+  const itemColor = hexColorToRGBA(DEFAULT_TABLE_CELL.tableItemBgColor, DEFAULT_BASIC_STYLE.alpha)
+  const itemAlign = DEFAULT_TABLE_CELL.tableItemAlign
+  const borderColor = hexColorToRGBA(
+    DEFAULT_BASIC_STYLE.tableBorderColor,
+    DEFAULT_BASIC_STYLE.alpha
+  )
+  const scrollBarColor = DEFAULT_BASIC_STYLE.tableScrollBarColor
+  const scrollBarHoverColor = resetRgbOpacity(scrollBarColor, 3)
 
   const theme: S2Theme = {
     background: {
@@ -27,21 +36,21 @@ export function getCustomTheme(chart: Chart) {
         backgroundColor: headerColor,
         horizontalBorderColor: borderColor,
         verticalBorderColor: borderColor,
-        verticalBorderWidth: chart.type === 'table-pivot' ? 1 : 0
+        verticalBorderWidth: 0
       },
       text: {
-        fill: DEFAULT_COLOR_CASE.tableHeaderFontColor,
-        fontSize: DEFAULT_SIZE.tableTitleFontSize,
+        fill: DEFAULT_TABLE_HEADER.tableHeaderFontColor,
+        fontSize: DEFAULT_TABLE_HEADER.tableTitleFontSize,
         textAlign: headerAlign
       },
       bolderText: {
-        fill: DEFAULT_COLOR_CASE.tableHeaderFontColor,
-        fontSize: DEFAULT_SIZE.tableTitleFontSize,
+        fill: DEFAULT_TABLE_HEADER.tableHeaderFontColor,
+        fontSize: DEFAULT_TABLE_HEADER.tableTitleFontSize,
         textAlign: headerAlign
       },
       measureText: {
-        fill: DEFAULT_COLOR_CASE.tableHeaderFontColor,
-        fontSize: DEFAULT_SIZE.tableTitleFontSize,
+        fill: DEFAULT_TABLE_HEADER.tableHeaderFontColor,
+        fontSize: DEFAULT_TABLE_HEADER.tableTitleFontSize,
         textAlign: headerAlign
       }
     },
@@ -52,24 +61,24 @@ export function getCustomTheme(chart: Chart) {
         verticalBorderColor: borderColor
       },
       text: {
-        fill: DEFAULT_COLOR_CASE.tableHeaderFontColor,
-        fontSize: DEFAULT_SIZE.tableTitleFontSize,
+        fill: DEFAULT_TABLE_HEADER.tableHeaderFontColor,
+        fontSize: DEFAULT_TABLE_HEADER.tableTitleFontSize,
         textAlign: headerAlign,
-        textBaseline: chart.type === 'table-pivot' ? 'top' : 'middle'
+        textBaseline: 'middle'
       },
       bolderText: {
-        fill: DEFAULT_COLOR_CASE.tableHeaderFontColor,
-        fontSize: DEFAULT_SIZE.tableTitleFontSize,
+        fill: DEFAULT_TABLE_HEADER.tableHeaderFontColor,
+        fontSize: DEFAULT_TABLE_HEADER.tableTitleFontSize,
         textAlign: headerAlign
       },
       measureText: {
-        fill: DEFAULT_COLOR_CASE.tableHeaderFontColor,
-        fontSize: DEFAULT_SIZE.tableTitleFontSize,
+        fill: DEFAULT_TABLE_HEADER.tableHeaderFontColor,
+        fontSize: DEFAULT_TABLE_HEADER.tableTitleFontSize,
         textAlign: headerAlign
       },
       seriesText: {
-        fill: DEFAULT_COLOR_CASE.tableItemBgColor,
-        fontSize: DEFAULT_SIZE.tableItemFontSize,
+        fill: DEFAULT_TABLE_CELL.tableItemBgColor,
+        fontSize: DEFAULT_TABLE_CELL.tableItemFontSize,
         textAlign: itemAlign
       }
     },
@@ -80,18 +89,18 @@ export function getCustomTheme(chart: Chart) {
         verticalBorderColor: borderColor
       },
       text: {
-        fill: DEFAULT_COLOR_CASE.tableHeaderFontColor,
-        fontSize: DEFAULT_SIZE.tableTitleFontSize,
+        fill: DEFAULT_TABLE_HEADER.tableHeaderFontColor,
+        fontSize: DEFAULT_TABLE_HEADER.tableTitleFontSize,
         textAlign: headerAlign
       },
       bolderText: {
-        fill: DEFAULT_COLOR_CASE.tableHeaderFontColor,
-        fontSize: DEFAULT_SIZE.tableTitleFontSize,
+        fill: DEFAULT_TABLE_HEADER.tableHeaderFontColor,
+        fontSize: DEFAULT_TABLE_HEADER.tableTitleFontSize,
         textAlign: headerAlign
       },
       measureText: {
-        fill: DEFAULT_COLOR_CASE.tableHeaderFontColor,
-        fontSize: DEFAULT_SIZE.tableTitleFontSize,
+        fill: DEFAULT_TABLE_HEADER.tableHeaderFontColor,
+        fontSize: DEFAULT_TABLE_HEADER.tableTitleFontSize,
         textAlign: headerAlign
       }
     },
@@ -102,18 +111,18 @@ export function getCustomTheme(chart: Chart) {
         verticalBorderColor: borderColor
       },
       text: {
-        fill: DEFAULT_COLOR_CASE.tableFontColor,
-        fontSize: DEFAULT_SIZE.tableItemFontSize,
+        fill: DEFAULT_TABLE_CELL.tableFontColor,
+        fontSize: DEFAULT_TABLE_CELL.tableItemFontSize,
         textAlign: itemAlign
       },
       bolderText: {
-        fill: DEFAULT_COLOR_CASE.tableFontColor,
-        fontSize: DEFAULT_SIZE.tableItemFontSize,
+        fill: DEFAULT_TABLE_CELL.tableFontColor,
+        fontSize: DEFAULT_TABLE_CELL.tableItemFontSize,
         textAlign: itemAlign
       },
       measureText: {
-        fill: DEFAULT_COLOR_CASE.tableFontColor,
-        fontSize: DEFAULT_SIZE.tableItemFontSize,
+        fill: DEFAULT_TABLE_CELL.tableFontColor,
+        fontSize: DEFAULT_TABLE_CELL.tableItemFontSize,
         textAlign: headerAlign
       }
     },
@@ -126,157 +135,177 @@ export function getCustomTheme(chart: Chart) {
   let customAttr: DeepPartial<ChartAttr>
   if (chart.customAttr) {
     customAttr = parseJson(chart.customAttr)
-    // color
-    if (customAttr.color) {
-      const c = JSON.parse(JSON.stringify(customAttr.color))
-      const h_c = hexColorToRGBA(c.tableHeaderBgColor, c.alpha)
-      const i_c = hexColorToRGBA(c.tableItemBgColor, c.alpha)
-      const b_c = c.tableBorderColor
-        ? hexColorToRGBA(c.tableBorderColor, c.alpha)
-        : hexColorToRGBA(DEFAULT_COLOR_CASE.tableBorderColor, c.alpha)
-      theme.splitLine.horizontalBorderColor = b_c
-      theme.splitLine.verticalBorderColor = b_c
-
-      theme.cornerCell.cell.backgroundColor = h_c
-      theme.cornerCell.cell.horizontalBorderColor = b_c
-      theme.cornerCell.cell.verticalBorderColor = b_c
-      theme.cornerCell.bolderText.fill = c.tableHeaderFontColor
-        ? c.tableHeaderFontColor
-        : c.tableFontColor
-      theme.cornerCell.text.fill = c.tableHeaderFontColor
-        ? c.tableHeaderFontColor
-        : c.tableFontColor
-      theme.cornerCell.measureText.fill = c.tableHeaderFontColor
-        ? c.tableHeaderFontColor
-        : c.tableFontColor
-
-      if (chart.type === 'table-pivot') {
-        theme.rowCell.cell.backgroundColor = h_c
-        theme.rowCell.cell.horizontalBorderColor = b_c
-        theme.rowCell.cell.verticalBorderColor = b_c
-        theme.rowCell.bolderText.fill = c.tableHeaderFontColor
-          ? c.tableHeaderFontColor
-          : c.tableFontColor
-        theme.rowCell.text.fill = c.tableHeaderFontColor ? c.tableHeaderFontColor : c.tableFontColor
-        theme.rowCell.measureText.fill = c.tableHeaderFontColor
-          ? c.tableHeaderFontColor
-          : c.tableFontColor
-        theme.rowCell.seriesText.fill = c.tableHeaderFontColor
-          ? c.tableHeaderFontColor
-          : c.tableFontColor
-      } else {
-        theme.rowCell.cell.backgroundColor = i_c // 这个参数其实只对开启序号列的行头生效
-        theme.rowCell.cell.horizontalBorderColor = i_c
-        theme.rowCell.cell.verticalBorderColor = i_c
-        theme.rowCell.bolderText.fill = c.tableFontColor
-        theme.rowCell.text.fill = c.tableFontColor
-        theme.rowCell.measureText.fill = c.tableFontColor
-        theme.rowCell.seriesText.fill = c.tableFontColor
+    const { basicStyle, tableHeader, tableCell } = customAttr
+    // basic
+    if (basicStyle) {
+      const tableBorderColor = hexColorToRGBA(basicStyle.tableBorderColor, basicStyle.alpha)
+      const tableScrollBarColor = basicStyle.tableScrollBarColor
+      const tmpTheme: S2Theme = {
+        splitLine: {
+          horizontalBorderColor: tableBorderColor,
+          verticalBorderColor: tableBorderColor
+        },
+        cornerCell: {
+          cell: {
+            horizontalBorderColor: tableBorderColor,
+            verticalBorderColor: tableBorderColor
+          }
+        },
+        colCell: {
+          cell: {
+            horizontalBorderColor: tableBorderColor,
+            verticalBorderColor: tableBorderColor
+          }
+        },
+        dataCell: {
+          cell: {
+            horizontalBorderColor: tableBorderColor,
+            verticalBorderColor: tableBorderColor
+          }
+        },
+        scrollBar: {
+          thumbColor: tableScrollBarColor,
+          thumbHoverColor: resetRgbOpacity(tableScrollBarColor, 1.5)
+        }
       }
-
-      theme.colCell.cell.backgroundColor = h_c
-      theme.colCell.cell.horizontalBorderColor = b_c
-      theme.colCell.cell.verticalBorderColor = b_c
-      theme.colCell.bolderText.fill = c.tableHeaderFontColor
-        ? c.tableHeaderFontColor
-        : c.tableFontColor
-      theme.colCell.text.fill = c.tableHeaderFontColor ? c.tableHeaderFontColor : c.tableFontColor
-      theme.colCell.measureText.fill = c.tableHeaderFontColor
-        ? c.tableHeaderFontColor
-        : c.tableFontColor
-
-      theme.dataCell.cell.crossBackgroundColor = i_c
-      theme.dataCell.cell.backgroundColor = i_c
-      theme.dataCell.cell.horizontalBorderColor = b_c
-      theme.dataCell.cell.verticalBorderColor = b_c
-      theme.dataCell.bolderText.fill = c.tableFontColor
-      theme.dataCell.text.fill = c.tableFontColor
-      theme.dataCell.measureText.fill = c.tableFontColor
-
-      theme.scrollBar.thumbColor = c.tableScrollBarColor
-      theme.scrollBar.thumbHoverColor = resetRgbOpacity(c.tableScrollBarColor, 1.5)
+      deepAssign(theme, tmpTheme)
     }
-    // size
-    if (customAttr.size) {
-      const s = JSON.parse(JSON.stringify(customAttr.size))
-      const h_a = (
-        s.tableHeaderAlign ? s.tableHeaderAlign : DEFAULT_SIZE.tableHeaderAlign
-      ) as TextAlign
-      const i_a = (s.tableItemAlign ? s.tableItemAlign : DEFAULT_SIZE.tableItemAlign) as TextAlign
-
-      theme.cornerCell.bolderText.fontSize = s.tableTitleFontSize
-      theme.cornerCell.bolderText.textAlign = h_a
-      theme.cornerCell.text.fontSize = s.tableTitleFontSize
-      theme.cornerCell.text.textAlign = h_a
-      theme.cornerCell.measureText.fontSize = s.tableTitleFontSize
-      theme.cornerCell.measureText.textAlign = h_a
-
-      if (chart.type === 'table-pivot') {
-        theme.rowCell.bolderText.fontSize = s.tableTitleFontSize
-        theme.rowCell.bolderText.textAlign = h_a
-        theme.rowCell.text.fontSize = s.tableTitleFontSize
-        theme.rowCell.text.textAlign = h_a
-        theme.rowCell.measureText.fontSize = s.tableTitleFontSize
-        theme.rowCell.measureText.textAlign = h_a
-        theme.rowCell.seriesText.fontSize = s.tableTitleFontSize
-        theme.rowCell.seriesText.textAlign = h_a
-      } else {
-        // 序号列的数字单元格内容样式使用指标的内容样式而不是表头的内容样式
-        theme.rowCell.bolderText.fontSize = s.tableItemFontSize
-        theme.rowCell.bolderText.textAlign = i_a
-        theme.rowCell.text.fontSize = s.tableItemFontSize
-        theme.rowCell.text.textAlign = i_a
-        theme.rowCell.measureText.fontSize = s.tableItemFontSize
-        theme.rowCell.measureText.textAlign = i_a
-        theme.rowCell.seriesText.fontSize = s.tableItemFontSize
-        theme.rowCell.seriesText.textAlign = i_a
+    // header
+    if (tableHeader) {
+      const tableHeaderFontColor = hexColorToRGBA(
+        tableHeader.tableHeaderFontColor,
+        basicStyle.alpha
+      )
+      const tableHeaderBgColor = hexColorToRGBA(tableHeader.tableHeaderBgColor, basicStyle.alpha)
+      const { tableHeaderAlign, tableTitleFontSize } = tableHeader
+      const tmpTheme: S2Theme = {
+        cornerCell: {
+          cell: {
+            backgroundColor: tableHeaderBgColor
+          },
+          bolderText: {
+            fill: tableHeaderFontColor,
+            fontSize: tableTitleFontSize,
+            textAlign: tableHeaderAlign
+          },
+          text: {
+            fill: tableHeaderFontColor,
+            fontSize: tableTitleFontSize,
+            textAlign: tableHeaderAlign
+          },
+          measureText: {
+            fill: tableHeaderFontColor,
+            fontSize: tableTitleFontSize,
+            textAlign: tableHeaderAlign
+          }
+        },
+        colCell: {
+          cell: {
+            backgroundColor: tableHeaderBgColor
+          },
+          bolderText: {
+            fill: tableHeaderFontColor,
+            fontSize: tableTitleFontSize,
+            textAlign: tableHeaderAlign
+          },
+          text: {
+            fill: tableHeaderFontColor,
+            fontSize: tableTitleFontSize,
+            textAlign: tableHeaderAlign
+          },
+          measureText: {
+            fill: tableHeaderFontColor,
+            fontSize: tableTitleFontSize,
+            textAlign: tableHeaderAlign
+          }
+        }
       }
-      theme.rowCell.seriesNumberWidth = s.tableColumnWidth
-
-      theme.colCell.bolderText.fontSize = s.tableTitleFontSize
-      theme.colCell.bolderText.textAlign = h_a
-      theme.colCell.text.fontSize = s.tableTitleFontSize
-      theme.colCell.text.textAlign = h_a
-      theme.colCell.measureText.fontSize = s.tableTitleFontSize
-      theme.colCell.measureText.textAlign = h_a
-
-      theme.dataCell.bolderText.fontSize = s.tableItemFontSize
-      theme.dataCell.bolderText.textAlign = i_a
-      theme.dataCell.text.fontSize = s.tableItemFontSize
-      theme.dataCell.text.textAlign = i_a
-      theme.dataCell.measureText.fontSize = s.tableItemFontSize
-      theme.dataCell.measureText.textAlign = i_a
+      deepAssign(theme, tmpTheme)
+    }
+    // cell
+    if (tableCell) {
+      const tableFontColor = hexColorToRGBA(tableCell.tableFontColor, basicStyle.alpha)
+      const tableItemBgColor = hexColorToRGBA(tableCell.tableItemBgColor, basicStyle.alpha)
+      const { tableItemAlign, tableItemFontSize } = tableCell
+      const tmpTheme: S2Theme = {
+        rowCell: {
+          cell: {
+            backgroundColor: tableItemBgColor,
+            horizontalBorderColor: tableItemBgColor,
+            verticalBorderColor: tableItemBgColor
+          },
+          bolderText: {
+            fill: tableFontColor,
+            textAlign: tableItemAlign,
+            fontSize: tableItemFontSize
+          },
+          text: {
+            fill: tableFontColor,
+            textAlign: tableItemAlign,
+            fontSize: tableItemFontSize
+          },
+          measureText: {
+            fill: tableFontColor,
+            textAlign: tableItemAlign,
+            fontSize: tableItemFontSize
+          },
+          seriesText: {
+            fill: tableFontColor,
+            textAlign: tableItemAlign,
+            fontSize: tableItemFontSize
+          }
+        },
+        dataCell: {
+          cell: {
+            crossBackgroundColor: tableItemBgColor,
+            backgroundColor: tableItemBgColor
+          },
+          text: {
+            fill: tableFontColor,
+            textAlign: tableItemAlign,
+            fontSize: tableItemFontSize
+          },
+          measureText: {
+            fill: tableFontColor,
+            textAlign: tableItemAlign,
+            fontSize: tableItemFontSize
+          },
+          seriesText: {
+            fill: tableFontColor,
+            textAlign: tableItemAlign,
+            fontSize: tableItemFontSize
+          }
+        }
+      }
+      deepAssign(theme, tmpTheme)
     }
   }
 
   return theme
 }
 
-export function getSize(chart: Chart): Style {
-  const size: Style = {}
+export function getStyle(chart: Chart): Style {
+  const style: Style = {}
   let customAttr: DeepPartial<ChartAttr>
   if (chart.customAttr) {
     customAttr = parseJson(chart.customAttr)
-    // size
-    if (customAttr.size) {
-      const s = JSON.parse(JSON.stringify(customAttr.size))
-      size.colCfg = {
-        height: s.tableTitleHeight
-      }
-      size.cellCfg = {
-        height: s.tableItemHeight
-      }
-      if (s.tableColumnMode && s.tableColumnMode === 'adapt') {
-        delete size.cellCfg.width
-        size.layoutWidthType = 'compact'
-      } else {
-        delete size.layoutWidthType
-        size.cellCfg.width = s.tableColumnWidth
-      }
+    const { basicStyle, tableHeader, tableCell } = customAttr
+    style.colCfg = {
+      height: tableHeader.tableTitleHeight
+    }
+    style.cellCfg = {
+      height: tableCell.tableItemHeight
+    }
+    if (basicStyle.tableColumnMode === 'adapt') {
+      delete style.cellCfg.width
+      style.layoutWidthType = 'compact'
+    } else {
+      delete style.layoutWidthType
+      style.cellCfg.width = basicStyle.tableColumnWidth
     }
   }
 
-  return size
+  return style
 }
 
 export function getCurrentField(valueFieldList: Axis[], field: ChartViewField) {
@@ -300,17 +329,17 @@ export function getCurrentField(valueFieldList: Axis[], field: ChartViewField) {
   return res
 }
 
-function getConditions(chart) {
+function getConditions(chart: Chart) {
   const res = {
     text: [],
     background: []
   }
   let conditions
   try {
-    const senior = JSON.parse(chart.senior)
+    const senior = parseJson(chart.senior)
     conditions = senior.threshold ? senior.threshold.tableThreshold : null
   } catch (err) {
-    const senior = JSON.parse(JSON.stringify(chart.senior))
+    const senior = parseJson(chart.senior)
     conditions = senior.threshold ? senior.threshold.tableThreshold : null
   }
 
@@ -319,10 +348,10 @@ function getConditions(chart) {
     let valueColor = DEFAULT_COLOR_CASE.tableFontColor
     let valueBgColor = DEFAULT_COLOR_CASE.tableItemBgColor
     if (chart.customAttr) {
-      const customAttr = JSON.parse(chart.customAttr)
+      const customAttr = parseJson(chart.customAttr)
       // color
-      if (customAttr.color) {
-        const c = JSON.parse(JSON.stringify(customAttr.color))
+      if (customAttr.tableCell) {
+        const c = JSON.parse(JSON.stringify(customAttr.tableCell))
         valueColor = c.tableFontColor
         valueBgColor = hexColorToRGBA(c.tableItemBgColor, c.alpha)
       }

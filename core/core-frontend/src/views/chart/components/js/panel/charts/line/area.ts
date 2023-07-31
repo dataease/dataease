@@ -26,45 +26,7 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
     if (chart?.data) {
       // data
       const data = cloneDeep(chart.data.data)
-      // size
-      let customAttr: DeepPartial<ChartAttr>
-      let smooth, point, line
-      if (chart.customAttr) {
-        customAttr = parseJson(chart.customAttr)
-        if (customAttr.size) {
-          const s: DeepPartial<ChartSizeAttr> = JSON.parse(JSON.stringify(customAttr.size))
-          smooth = s.lineSmooth
-          point = {
-            size: s.lineSymbolSize,
-            shape: s.lineSymbol
-          }
-          line = {
-            style: {
-              lineWidth: s.lineWidth
-            }
-          }
-        }
-      }
-      // custom color
-      const color = antVCustomColor(chart)
-      const areaColors = [...color, ...color]
-      let areaStyle
-      if (customAttr.color.gradient) {
-        areaStyle = () => {
-          const ele = areaColors.shift()
-          if (ele) {
-            return {
-              fill: setGradientColor(ele, customAttr.color.gradient, 270)
-            }
-          }
-        }
-      }
       const initOptions: AreaOptions = {
-        point,
-        smooth,
-        line,
-        areaStyle,
-        color,
         data: data,
         xField: 'field',
         yField: 'value',
@@ -166,11 +128,49 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
     return { ...options, tooltip }
   }
 
+  protected configBasicStyle(chart: Chart, options: AreaOptions): AreaOptions {
+    // size
+    const customAttr: DeepPartial<ChartAttr> = parseJson(chart.customAttr)
+    const s: DeepPartial<ChartBasicStyle> = JSON.parse(JSON.stringify(customAttr.basicStyle))
+    const smooth = s.lineSmooth
+    const point = {
+      size: s.lineSymbolSize,
+      shape: s.lineSymbol
+    }
+    const line = {
+      style: {
+        lineWidth: s.lineWidth
+      }
+    }
+    // custom color
+    const color = customAttr.basicStyle.colors
+    const areaColors = [...color, ...color]
+    let areaStyle
+    if (customAttr.basicStyle.gradient) {
+      areaStyle = () => {
+        const ele = areaColors.shift()
+        if (ele) {
+          return {
+            fill: setGradientColor(ele, true, 270)
+          }
+        }
+      }
+    }
+    return {
+      ...options,
+      smooth,
+      line,
+      point,
+      areaStyle
+    }
+  }
+
   protected setupOptions(chart: Chart, options: AreaOptions): AreaOptions {
     return flow(
       this.configTheme,
       this.configLabel,
       this.configTooltip,
+      this.configBasicStyle,
       this.configCustomLabel,
       this.configLegend,
       this.configXAxis,

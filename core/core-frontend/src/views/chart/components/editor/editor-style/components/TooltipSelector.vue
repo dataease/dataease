@@ -41,13 +41,13 @@ const initFontSize = () => {
   for (let i = 10; i <= 40; i = i + 2) {
     arr.push({
       name: i + '',
-      value: i + ''
+      value: i
     })
   }
   state.fontSize = arr
 }
 
-const changeTooltipAttr = () => {
+const changeTooltipAttr = val => {
   emit('onTooltipChange', state.tooltipForm)
 }
 
@@ -85,11 +85,11 @@ init()
         <el-form-item
           :label="t('chart.text_fontsize')"
           class="form-item"
-          v-show="showProperty('textStyle')"
+          v-show="showProperty('fontSize')"
         >
           <el-select
             :effect="props.themes"
-            v-model="state.tooltipForm.textStyle.fontSize"
+            v-model.number="state.tooltipForm.fontSize"
             :placeholder="t('chart.text_fontsize')"
             size="small"
             @change="changeTooltipAttr('textStyle')"
@@ -105,10 +105,10 @@ init()
         <el-form-item
           :label="t('chart.text_color')"
           class="form-item"
-          v-show="showProperty('textStyle')"
+          v-show="showProperty('color')"
         >
           <el-color-picker
-            v-model="state.tooltipForm.textStyle.color"
+            v-model="state.tooltipForm.color"
             class="color-picker-style"
             :predefine="predefineColors"
             @change="changeTooltipAttr('textStyle')"

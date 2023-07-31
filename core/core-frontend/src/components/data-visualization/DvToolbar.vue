@@ -172,9 +172,9 @@ eventBus.on('clearCanvas', clearCanvas)
 <template>
   <div class="toolbar-main">
     <div class="toolbar" :class="{ 'preview-state-head': editMode === 'preview' }">
-      <el-icon class="custom-el-icon back-icon" @click="backToMain()">
-        <Icon class="toolbar-icon" name="icon_left_outlined" />
-      </el-icon>
+      <!--      <el-icon class="custom-el-icon back-icon" @click="backToMain()">-->
+      <!--        <Icon class="toolbar-icon" name="icon_left_outlined" />-->
+      <!--      </el-icon>-->
       <div class="left-area">
         <span class="name-area">{{ dvInfo.name }}</span>
         <div class="opt-area">

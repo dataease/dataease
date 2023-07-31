@@ -238,7 +238,10 @@ eventBus.on('handleNew', handleNew)
 <template>
   <div class="dv-common-layout dv-teleport-query">
     <DbToolbar />
-    <el-container class="dv-layout-container">
+    <el-container
+      class="dv-layout-container"
+      :class="{ 'preview-content': editMode === 'preview' }"
+    >
       <!-- 中间画布 -->
       <main class="center">
         <div ref="canvasOut" class="content">
@@ -249,7 +252,6 @@ eventBus.on('handleNew', handleNew)
             @drop="handleDrop"
             @dragover="handleDragOver"
             @mousedown="handleMouseDown"
-            @mouseup="deselectCurComponent"
           >
             <common-canvas
               ref="cyGridster"
@@ -353,8 +355,16 @@ eventBus.on('handleNew', handleNew)
 }
 
 .preview-aside {
+  border: 0px !important;
   width: 0px !important;
   overflow: hidden;
   padding: 0px;
+}
+
+.preview-content {
+  height: 100vh !important;
+  :deep(.editor-light) {
+    border: 0 !important;
+  }
 }
 </style>

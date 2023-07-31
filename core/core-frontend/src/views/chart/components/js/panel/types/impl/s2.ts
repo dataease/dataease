@@ -4,7 +4,7 @@ import {
   ChartLibraryType
 } from '@/views/chart/components/js/panel/types'
 import { S2Theme, SpreadSheet, Style } from '@antv/s2'
-import { getCustomTheme, getSize } from '@/views/chart/components/js/panel/common/common_table'
+import { getCustomTheme, getStyle } from '@/views/chart/components/js/panel/common/common_table'
 
 export interface S2DrawOptions<O> extends AntVDrawOptions<O> {
   currentPage?: number
@@ -20,7 +20,7 @@ export abstract class S2ChartView<P extends SpreadSheet> extends AntVAbstractCha
     return getCustomTheme(chart)
   }
 
-  protected configSize(chart: Chart): Style {
-    return getSize(chart)
+  protected configStyle(chart: Chart): Style {
+    return getStyle(chart)
   }
 }

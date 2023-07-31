@@ -201,6 +201,13 @@ init()
       </el-popover>
     </el-form-item>
     <el-form-item
+      :label="t('chart.gradient')"
+      class="form-item form-item-slider"
+      v-show="showProperty('gradient')"
+    >
+      <el-checkbox v-model="state.basicStyleForm.gradient" @change="changeBasicStyle()" />
+    </el-form-item>
+    <el-form-item
       :label="t('chart.not_alpha')"
       class="form-item form-item-slider"
       v-show="showProperty('alpha')"
@@ -253,6 +260,7 @@ init()
     >
       <el-color-picker
         v-model="state.basicStyleForm.tableBorderColor"
+        color-format="hex"
         :predefine="predefineColors"
         @change="changeBasicStyle()"
       />

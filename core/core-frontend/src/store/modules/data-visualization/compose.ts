@@ -110,7 +110,7 @@ export const composeStore = defineStore('compose', {
       dvMainStore.deleteComponent()
       components.forEach(component => {
         decomposeComponent(component, editorRect, parentStyle)
-        dvMainStore.addComponent({ component: component, index: undefined })
+        dvMainStore.addComponent({ component: component, index: undefined, isFromGroup: true })
       })
     }
   }

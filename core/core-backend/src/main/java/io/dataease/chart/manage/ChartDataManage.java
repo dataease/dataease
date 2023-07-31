@@ -133,7 +133,7 @@ public class ChartDataManage {
 
         // 直连明细表分页
         Map<String, Object> mapAttr = view.getCustomAttr();
-        Map<String, Object> mapSize = (Map<String, Object>) mapAttr.get("size");
+        Map<String, Object> mapSize = (Map<String, Object>) mapAttr.get("basicStyle");
         if (StringUtils.equalsIgnoreCase(view.getType(), "table-info") && table.getMode() == 0) {
             if (StringUtils.equalsIgnoreCase((String) mapSize.get("tablePageMode"), "page") && !chartExtRequest.getExcelExportFlag()) {
                 if (chartExtRequest.getGoPage() == null) {
@@ -673,7 +673,7 @@ public class ChartDataManage {
         List<ChartViewFieldDTO> list = new ArrayList<>();
         Map<String, Object> customAttr = view.getCustomAttr();
 
-        Map<String, Object> size = (Map<String, Object>) customAttr.get("size");
+        Map<String, Object> size = (Map<String, Object>) customAttr.get("misc");
 
         ChartViewFieldDTO gaugeMinViewField = getDynamicField(size, "gaugeMinType", "gaugeMinField");
         if (gaugeMinViewField != null) {

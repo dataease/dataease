@@ -11,7 +11,7 @@ export const LINE_EDITOR_PROPERTY: EditorProperty[] = [
 export const LINE_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
   'background-overall-component': ['all'],
   'label-selector': ['fontSize', 'color', 'position'],
-  'tooltip-selector': ['textStyle', 'backgroundColor'],
+  'tooltip-selector': ['fontSize', 'color', 'backgroundColor'],
   'basic-style-selector': [
     'colors',
     'alpha',

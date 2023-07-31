@@ -26,7 +26,7 @@ const chartComponent = ref<any>()
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
 
-const { nowPanelJumpInfo, publicLinkStatus, dvInfo } = storeToRefs(dvMainStore)
+const { nowPanelJumpInfo, publicLinkStatus, dvInfo, curComponent } = storeToRefs(dvMainStore)
 
 const props = defineProps({
   element: {
@@ -56,6 +56,7 @@ const dynamicAreaId = ref('')
 const { view, showPosition, element } = toRefs(props)
 
 const state = reactive({
+  initReady: true, //curComponent 切换期间 不接收外部的calcData 和 renderChart 事件
   title_show: true,
   title_class: {
     margin: '0 0',
@@ -78,6 +79,15 @@ watch(
   },
   { deep: true }
 )
+
+watch([() => curComponent.value], () => {
+  if (curComponent.value && curComponent.value.id === view.value.id) {
+    state.initReady = false
+    nextTick(() => {
+      state.initReady = true
+    })
+  }
+})
 
 const initTitle = () => {
   if (view.value.customStyle) {
@@ -273,6 +283,10 @@ onMounted(() => {
   useEmitt({
     name: 'calcData-' + view.value.id,
     callback: function (val) {
+      if (!state.initReady) {
+        return
+      }
+      console.log('1-calcData')
       initTitle()
       nextTick(() => {
         view.value.chartExtRequest = filter(false)
@@ -283,6 +297,10 @@ onMounted(() => {
   useEmitt({
     name: 'renderChart-' + view.value.id,
     callback: function (val) {
+      if (!state.initReady) {
+        return
+      }
+      console.log('1-renderChart')
       initTitle()
       nextTick(() => {
         chartComponent?.value?.renderChart(val)

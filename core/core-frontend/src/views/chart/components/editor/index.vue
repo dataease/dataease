@@ -1,4 +1,4 @@
-<script lang="tsx" setup>
+<script lang="ts" setup>
 import { PropType, reactive, ref, watch, toRefs, computed, nextTick, shallowRef } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -36,7 +36,6 @@ import { deleteField, deleteFieldByChartId, saveField } from '@/api/dataset'
 import LabelSelector from '@/views/chart/components/editor/editor-style/components/LabelSelector.vue'
 import { getWorldTree } from '@/api/map'
 import chartViewManager from '@/views/chart/components/js/panel'
-import { AbstractChartView } from '@/views/chart/components/js/panel/types'
 
 const snapshotStore = snapshotStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
@@ -441,13 +440,26 @@ const onBasicStyleChange = val => {
   renderChart(view.value)
 }
 
+const onTableHeaderChange = val => {
+  view.value.customAttr.tableHeader = val
+  renderChart(view.value)
+}
+const onTableCellChange = val => {
+  view.value.customAttr.tableCell = val
+  renderChart(view.value)
+}
+const onTableTotalChange = val => {
+  view.value.customAttr.tableTotal = val
+  renderChart(view.value)
+}
+
 const onColorChange = val => {
   view.value.customAttr.color = val
   renderChart(view.value)
 }
 
-const onSizeChange = val => {
-  view.value.customAttr.size = val.data
+const onMiscChange = val => {
+  view.value.customAttr.misc = val.data
   if (val.requestData) {
     calcData(view.value)
   } else {
@@ -1213,7 +1225,7 @@ const autoInsert = element => {
                   :dimension-data="state.dimension"
                   :quota-data="state.quota"
                   @onColorChange="onColorChange"
-                  @onSizeChange="onSizeChange"
+                  @onMiscChange="onMiscChange"
                   @onLabelChange="onLabelChange"
                   @onTooltipChange="onTooltipChange"
                   @onChangeXAxisForm="onChangeXAxisForm"
@@ -1222,6 +1234,9 @@ const autoInsert = element => {
                   @onLegendChange="onLegendChange"
                   @onBackgroundChange="onBackgroundChange"
                   @onBasicStyleChange="onBasicStyleChange"
+                  @onTableHeaderChange="onTableHeaderChange"
+                  @onTableCellChange="onTableCellChange"
+                  @onTableTotalChange="onTableTotalChange"
                 />
               </el-tab-pane>
 

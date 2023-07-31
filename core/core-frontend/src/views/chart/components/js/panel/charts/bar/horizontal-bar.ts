@@ -10,9 +10,9 @@ import {
 } from '@/views/chart/components/js/panel/common/common_antv'
 import { cloneDeep } from 'lodash-es'
 import {
-  antVCustomColor,
   flow,
   handleEmptyDataStrategy,
+  hexColorToRGBA,
   parseJson
 } from '@/views/chart/components/js/util'
 import { singleDimensionTooltipFormatter } from '@/views/chart/components/js/formatter'
@@ -20,6 +20,7 @@ import {
   BAR_EDITOR_PROPERTY,
   BAR_EDITOR_PROPERTY_INNER
 } from '@/views/chart/components/js/panel/charts/bar/common'
+import { ColumnOptions } from '@antv/g2plot/lib/plots/column'
 
 const DEFAULT_DATA = []
 
@@ -32,27 +33,8 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
     if (!chart.data?.data?.length) {
       return
     }
-    // size
-    let customAttr: DeepPartial<ChartAttr>
-    let barGap = undefined
-    if (chart.customAttr) {
-      customAttr = parseJson(chart.customAttr)
-      if (customAttr.size) {
-        const s = parseJson(customAttr).size
-        if (!s.barDefault) {
-          barGap = s.barGap
-        }
-      }
-    }
     // data
     const data = cloneDeep(chart.data.data)
-    // custom color
-    let color = antVCustomColor(chart)
-    if (customAttr.color.gradient) {
-      color = color.map(ele => {
-        return setGradientColor(ele, customAttr.color.gradient)
-      })
-    }
 
     // options
     const initOptions: BarOptions = {
@@ -61,8 +43,6 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
       yField: 'field',
       seriesField: 'category',
       appendPadding: getPadding(chart),
-      color: color,
-      marginRatio: barGap,
       interactions: [
         {
           type: 'legend-active',
@@ -161,6 +141,23 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
     }
     return options
   }
+
+  protected configBasicStyle(chart: Chart, options: ColumnOptions): ColumnOptions {
+    const basicStyle = parseJson(chart.customAttr).basicStyle
+    if (basicStyle.gradient) {
+      let color = basicStyle.colors
+      color = color.map(ele => {
+        const tmp = hexColorToRGBA(ele, basicStyle.alpha)
+        return setGradientColor(tmp, true)
+      })
+      options = {
+        ...options,
+        color
+      }
+    }
+    return options
+  }
+
   constructor() {
     super('bar-horizontal', DEFAULT_DATA)
   }
@@ -168,6 +165,7 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
   protected setupOptions(chart: Chart, options: BarOptions): BarOptions {
     return flow(
       this.configTheme,
+      this.configBasicStyle,
       this.configLabel,
       this.configTooltip,
       this.configLegend,

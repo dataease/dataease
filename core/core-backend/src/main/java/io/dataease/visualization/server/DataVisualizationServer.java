@@ -134,10 +134,10 @@ public class DataVisualizationServer implements DataVisualizationApi {
                 }
             });
         }
-        // TODO 清理无用的视图
-        if (!CollectionUtils.isEmpty(viewIds)) {
-            chartViewManege.deleteBySceneId(request.getId(), viewIds);
-        }
+//        // 清理无用的视图
+//        if (!CollectionUtils.isEmpty(viewIds)) {
+//            chartViewManege.deleteBySceneId(request.getId(), viewIds);
+//        }
     }
 
     @Override

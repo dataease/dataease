@@ -149,7 +149,8 @@ public class DatasourceServer implements DatasourceApi {
         coreDatasource.setUpdateTime(System.currentTimeMillis());
         try {
             checkDatasourceStatus(coreDatasource);
-        }catch (Exception ignore){}
+        } catch (Exception ignore) {
+        }
         coreDatasource.setTaskStatus(TaskStatus.WaitingForExecution.name());
         coreDatasource.setId(IDUtils.snowID());
         datasourceMapper.insert(coreDatasource);
@@ -252,10 +253,10 @@ public class DatasourceServer implements DatasourceApi {
             }
             datasourceMapper.updateById(coreDatasource);
             datasourceSyncManage.addSchedule(coreDatasourceTask);
-        }else if (dataSourceDTO.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name())) {
+        } else if (dataSourceDTO.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name())) {
             List<String> sourceTables = ExcelUtils.getTables(sourceTableRequest).stream().map(DatasetTableDTO::getTableName).collect(Collectors.toList());
             List<String> tables = ExcelUtils.getTables(coreDatasourceRequest).stream().map(DatasetTableDTO::getTableName).collect(Collectors.toList());
-            if(dataSourceDTO.getEditType() == 0){
+            if (dataSourceDTO.getEditType() == 0) {
                 toCreateTables = tables;
                 toDeleteTables = sourceTables;
                 for (String deleteTable : toDeleteTables) {
@@ -267,11 +268,11 @@ public class DatasourceServer implements DatasourceApi {
                 }
                 datasourceMapper.updateById(coreDatasource);
                 datasourceSyncManage.extractExcelData(coreDatasource.getId(), "all_scope");
-            }else {
+            } else {
                 datasourceMapper.updateById(coreDatasource);
                 datasourceSyncManage.extractExcelData(coreDatasource.getId(), "add_scope");
             }
-        }else {
+        } else {
             datasourceMapper.updateById(coreDatasource);
         }
         if (ObjectUtils.isNotEmpty(interactiveAuthApi) && ObjectUtils.isNotEmpty(sourceData) && !StringUtils.equals(dataSourceDTO.getName(), sourceData.getName())) {
@@ -284,9 +285,10 @@ public class DatasourceServer implements DatasourceApi {
         return dataSourceDTO;
     }
 
-    private String excelDataTableName(String name){
-        return StringUtils.substring(name, 6, name.length()-37);
+    private String excelDataTableName(String name) {
+        return StringUtils.substring(name, 6, name.length() - 37);
     }
+
     @Override
     public List<DatasourceConfiguration.DatasourceType> datasourceTypes() {
         return Arrays.asList(DatasourceConfiguration.DatasourceType.values());
@@ -351,10 +353,10 @@ public class DatasourceServer implements DatasourceApi {
     public List<DsBusiNodeVO> list(BusiNodeRequest request) {
         request.setBusyFlag(RESOURCE_FLAG);
         QueryWrapper queryWrapper = new QueryWrapper();
-        if(ObjectUtils.isNotEmpty(request.getLeaf())){
-            if(request.getLeaf()){
+        if (ObjectUtils.isNotEmpty(request.getLeaf())) {
+            if (request.getLeaf()) {
                 queryWrapper.ne("type", "folder");
-            }else {
+            } else {
                 queryWrapper.eq("type", "folder");
             }
         }
@@ -375,16 +377,16 @@ public class DatasourceServer implements DatasourceApi {
         return dsBusiNodeVOs;
     }
 
-    private void setDatasourceConfig(List<DatasourceNodeBO> nodes){
+    private void setDatasourceConfig(List<DatasourceNodeBO> nodes) {
         TypeReference<List<ApiDefinition>> listTypeReference = new TypeReference<List<ApiDefinition>>() {
         };
 
         nodes.forEach(datasourceNodeBO -> {
-            if(datasourceNodeBO.getLeaf()){
+            if (datasourceNodeBO.getLeaf()) {
                 List<DatasourceConfiguration.DatasourceType> datasourceConfigurations = datasourceTypes();
                 QueryWrapper<CoreDatasource> datasourceQueryWrapper = new QueryWrapper();
                 datasourceMapper.selectList(datasourceQueryWrapper).forEach(coreDatasource -> {
-                    if(coreDatasource.getId().equals(datasourceNodeBO.getId())){
+                    if (coreDatasource.getId().equals(datasourceNodeBO.getId())) {
                         if (datasourceNodeBO.getType().equalsIgnoreCase(DatasourceConfiguration.DatasourceType.API.toString())) {
                             List<ApiDefinition> apiDefinitionList = JsonUtil.parseList(coreDatasource.getConfiguration(), listTypeReference);
                             List<ApiDefinition> apiDefinitionListWithStatus = new ArrayList<>();
@@ -452,6 +454,7 @@ public class DatasourceServer implements DatasourceApi {
         bo.setExtraFlag(0);
         return bo;
     }
+
     public List<DatasourceDTO> list() {
         List<DatasourceDTO> datasourceDTOS = new ArrayList<>();
         List<DatasourceConfiguration.DatasourceType> datasourceConfigurations = datasourceTypes();
@@ -534,7 +537,7 @@ public class DatasourceServer implements DatasourceApi {
             datasourceRequest.setDatasource(engineServer.getDeEngine());
             DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
             BeanUtils.copyBean(datasourceSchemaDTO, engineServer.getDeEngine());
-            datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, 0));
+            datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceId));
             datasourceRequest.setDsList(Map.of(datasourceSchemaDTO.getId(), datasourceSchemaDTO));
             datasourceRequest.setQuery(TableUtils.tableName2Sql(datasourceSchemaDTO, tableName));
             List<TableField> tableFields = (List<TableField>) calciteProvider.fetchResultField(datasourceRequest).get("fields");
@@ -545,7 +548,7 @@ public class DatasourceServer implements DatasourceApi {
 
         DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
         BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
-        datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, 0));
+        datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceId));
         datasourceRequest.setDsList(Map.of(datasourceSchemaDTO.getId(), datasourceSchemaDTO));
         datasourceRequest.setQuery(TableUtils.tableName2Sql(datasourceSchemaDTO, tableName));
         return (List<TableField>) calciteProvider.fetchResultField(datasourceRequest).get("fields");
@@ -553,23 +556,23 @@ public class DatasourceServer implements DatasourceApi {
 
     public ExcelFileData excelUpload(@RequestParam("file") MultipartFile file, @RequestParam("id") long datasourceId, @RequestParam("editType") Integer editType) throws Exception {
         ExcelUtils excelUtils = new ExcelUtils();
-        ExcelFileData excelFileData =  excelUtils.excelSaveAndParse(file);
-        if(editType == 1){ //追加，判断是否能追加成功，按照excel sheet 名称匹配
-            CoreDatasource coreDatasource  = datasourceMapper.selectById(datasourceId);
+        ExcelFileData excelFileData = excelUtils.excelSaveAndParse(file);
+        if (editType == 1) { //追加，判断是否能追加成功，按照excel sheet 名称匹配
+            CoreDatasource coreDatasource = datasourceMapper.selectById(datasourceId);
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(coreDatasource);
             List<DatasetTableDTO> datasetTableDTOS = ExcelUtils.getTables(datasourceRequest);
             List<ExcelSheetData> excelSheetDataList = new ArrayList<>();
             for (ExcelSheetData sheet : excelFileData.getSheets()) {
                 for (DatasetTableDTO datasetTableDTO : datasetTableDTOS) {
-                    if(excelDataTableName(datasetTableDTO.getTableName()).equals(sheet.getTableName())){
+                    if (excelDataTableName(datasetTableDTO.getTableName()).equals(sheet.getTableName())) {
                         sheet.setDeTableName(datasetTableDTO.getTableName());
                         excelSheetDataList.add(sheet);
                     }
                 }
 
             }
-            if(CollectionUtils.isEmpty(excelSheetDataList)){
+            if (CollectionUtils.isEmpty(excelSheetDataList)) {
                 DEException.throwException("无匹配的Sheet页!");
             }
             excelFileData.setSheets(excelSheetDataList);
