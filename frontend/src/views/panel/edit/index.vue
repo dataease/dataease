@@ -200,21 +200,23 @@
               <el-row class="this_mobile_canvas_inner_top">
                 {{ panelInfo.name }}
               </el-row>
-              <el-row
-                id="canvasInfoMobile"
-                class="this_mobile_canvas_main"
-                :style="mobileCanvasStyle"
-              >
-                <canvas-opt-bar v-if="!previewVisible&&mobileLayoutStatus"/>
-                <de-canvas
-                  v-if="!previewVisible&&mobileLayoutStatus"
-                  ref="canvasMainRef"
-                  :canvas-style-data="canvasStyleData"
-                  :component-data="mainCanvasComponentData"
-                  :canvas-id="canvasId"
-                  :canvas-pid="'0'"
-                  :mobile-layout-status="true"
-                />
+              <el-row class="this_mobile_canvas_main_outer">
+                <el-row
+                  id="canvasInfoMobile"
+                  class="this_mobile_canvas_main"
+                  :style="mobileCanvasStyle"
+                >
+                  <canvas-opt-bar v-if="!previewVisible&&mobileLayoutStatus"/>
+                  <de-canvas
+                    v-if="!previewVisible&&mobileLayoutStatus"
+                    ref="canvasMainRef"
+                    :canvas-style-data="canvasStyleData"
+                    :component-data="mainCanvasComponentData"
+                    :canvas-id="canvasId"
+                    :canvas-pid="'0'"
+                    :mobile-layout-status="true"
+                  />
+                </el-row>
               </el-row>
               <el-row class="this_mobile_canvas_inner_bottom">
                 <el-col :span="12">
@@ -536,6 +538,7 @@ import TextAttr from '@/components/canvas/components/TextAttr'
 import { userLoginInfo } from '@/api/systemInfo/userLogin'
 import { activeWatermark } from '@/components/canvas/tools/watermark'
 import PositionAdjust from '@/views/chart/view/PositionAdjust'
+import {hexColorToRGBA} from "@/views/chart/chart/util";
 export default {
   name: 'PanelEdit',
   components: {
@@ -699,8 +702,9 @@ export default {
             background: `url(${imgUrlTrans(styleInfo.imageUrl)}) no-repeat`
           }
         } else if (styleInfo.backgroundType === 'color') {
+          const colorRGBA = hexColorToRGBA(styleInfo.color, styleInfo.alpha||100)
           style = {
-            background: styleInfo.color
+            background: colorRGBA
           }
         } else {
           style = {
@@ -722,8 +726,9 @@ export default {
             ...style
           }
         } else if (this.canvasStyleData.panel.backgroundType === 'color') {
+          const colorRGBA = hexColorToRGBA(this.canvasStyleData.panel.color, this.canvasStyleData.panel.alpha||100)
           style = {
-            background: this.canvasStyleData.panel.color,
+            background: colorRGBA,
             ...style
           }
         }
@@ -1567,11 +1572,16 @@ export default {
   width: 100%;
 }
 
+.this_mobile_canvas_main_outer {
+  height: calc(100% - 120px);;
+  width: 100%;
+  background-color: #d7d9e3;
+}
+
 .this_mobile_canvas_main {
   overflow-x: hidden;
   overflow-y: auto;
-  height: calc(100% - 120px);;
-  background-color: #d7d9e3;
+  height: 100%;
   background-size: 100% 100% !important;
 }
 

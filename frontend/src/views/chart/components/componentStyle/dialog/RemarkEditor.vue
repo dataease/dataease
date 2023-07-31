@@ -32,6 +32,7 @@ import 'tinymce/plugins/nonbreaking'
 import 'tinymce/plugins/pagebreak'
 import { imgUrlTrans } from '@/components/canvas/utils/utils'
 import { mapState } from 'vuex'
+import {hexColorToRGBA} from "@/views/chart/chart/util";
 // 编辑器引入
 export default {
   name: 'RemarkEditor',
@@ -98,8 +99,9 @@ export default {
             ...style
           }
         } else if (this.canvasStyleData.panel.backgroundType === 'color') {
+          const colorRGBA = hexColorToRGBA(this.canvasStyleData.panel.color, this.canvasStyleData.panel.alpha||100)
           style = {
-            background: this.canvasStyleData.panel.color,
+            background: colorRGBA,
             ...style
           }
         }

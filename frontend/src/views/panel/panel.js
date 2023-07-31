@@ -32,6 +32,7 @@ export const FILTER_COMMON_STYLE_DARK = {
 export const MOBILE_SETTING = {
   customSetting: false,
   color: '#ffffff',
+  alpha: 100, // 新增透明度设置
   imageUrl: null,
   backgroundType: 'image'
 }
@@ -40,6 +41,7 @@ export const DEFAULT_PANEL_STYLE = {
   mobileSetting: MOBILE_SETTING,
   themeColor: 'light',
   color: '#ffffff',
+  alpha: 100, // 新增透明度设置
   imageUrl: null,
   backgroundType: 'image',
   gap: 'yes',
