@@ -1065,10 +1065,15 @@ public class MysqlQueryProvider extends QueryProvider {
                 if (field.getDeType() == 1) {
                     String format = transDateFormat(request.getDateStyle(), request.getDatePattern());
                     if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5 || field.getDeExtractType() == 1) {
-                        String date = String.format(MySQLConstants.DATE_FORMAT, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : MysqlConstants.DEFAULT_DATE_FORMAT);
-                        if(request.getOperator().equals("between")){
+                        String date;
+                        if (field.getType().equalsIgnoreCase("YEAR")) {
+                            date = String.format(MySQLConstants.DATE_FORMAT, "CONCAT(" + originName + ",'-01-01')", StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : MysqlConstants.DEFAULT_DATE_FORMAT);
+                        } else {
+                            date = String.format(MySQLConstants.DATE_FORMAT, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : MysqlConstants.DEFAULT_DATE_FORMAT);
+                        }
+                        if (request.getOperator().equals("between")) {
                             whereName = date;
-                        }else {
+                        } else {
                             if (StringUtils.equalsIgnoreCase(request.getDateStyle(), "y_Q")) {
                                 whereName = String.format(format,
                                         String.format(MysqlConstants.DATE_FORMAT, originName, "%Y"),
@@ -1080,11 +1085,11 @@ public class MysqlQueryProvider extends QueryProvider {
 
                     }
                     if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
-                        if(request.getOperator().equals("between")){
+                        if (request.getOperator().equals("between")) {
                             whereName = originName;
-                        }else {
+                        } else {
                             String cast = String.format(MySQLConstants.CAST, originName, MySQLConstants.DEFAULT_INT_FORMAT) + "/1000";
-                            if (StringUtils.equalsIgnoreCase(request.getDateStyle(),"y_Q")){
+                            if (StringUtils.equalsIgnoreCase(request.getDateStyle(), "y_Q")) {
                                 whereName = String.format(format,
                                         String.format(MysqlConstants.DATE_FORMAT, cast, "%Y"),
                                         String.format(MysqlConstants.QUARTER, String.format(MysqlConstants.DATE_FORMAT, field, MysqlConstants.DEFAULT_DATE_FORMAT)));
