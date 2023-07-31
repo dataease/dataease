@@ -1,9 +1,10 @@
 import { defineStore } from 'pinia'
 import { store } from '../../index'
 import { deepCopy } from '@/utils/utils'
-import { BASE_VIEW_CONFIG, getViewConfig } from '@/views/chart/components/editor/util/chart'
+import { BASE_VIEW_CONFIG } from '@/views/chart/components/editor/util/chart'
 import { DEFAULT_CANVAS_STYLE_DATA_DARK } from '@/views/chart/components/editor/util/dataVisualiztion'
 import { useEmitt } from '@/hooks/web/useEmitt'
+import chartViewManager from '@/views/chart/components/js/panel'
 
 export const dvMainStore = defineStore('dataVisualization', {
   state: () => {
@@ -348,13 +349,20 @@ export const dvMainStore = defineStore('dataVisualization', {
         // get view base info
         const viewBaseInfo = this.canvasViewInfo[id]
         // get properties
-        const viewConfig = getViewConfig(viewBaseInfo.type)
-        if (viewConfig) {
+        const chartViewInstance = chartViewManager.getChartView(
+          viewBaseInfo.render,
+          viewBaseInfo.type
+        )
+        if (chartViewInstance) {
           if (this.curBatchOptComponents.length === 1) {
             this.changeProperties.customAttr = viewBaseInfo.customAttr
             this.changeProperties.customStyle = viewBaseInfo.customStyle
           }
-          this.batchOptViews[id] = viewConfig
+          this.batchOptViews[id] = {
+            properties: chartViewInstance.properties,
+            propertyInner: chartViewInstance.propertyInner,
+            value: chartViewInstance.name
+          }
           this.setBatchOptChartInfo()
         }
       }

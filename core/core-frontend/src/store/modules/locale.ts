@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { store } from '../index'
 import { useCache } from '@/hooks/web/useCache'
-import { LocaleDropdownType } from 'types/localeDropdown'
+import type { LocaleDropdownType } from 'types/localeDropdown'
 import zhCn from 'element-plus-secondary/es/locale/lang/zh-cn'
 import en from 'element-plus-secondary/es/locale/lang/en'
 import tw from 'element-plus-secondary/es/locale/lang/zh-tw'

@@ -1,4 +1,4 @@
-<script lang="tsx" setup>
+<script lang="ts" setup>
 import { reactive, toRefs, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import {
@@ -36,7 +36,7 @@ const state = reactive({
 })
 
 watch(
-  () => props.chart.customStyle,
+  () => props.chart.customStyle.text,
   () => {
     init()
   },
@@ -50,7 +50,7 @@ const initFontSize = () => {
   for (let i = 12; i <= 40; i = i + 2) {
     arr.push({
       name: i + '',
-      value: i + ''
+      value: i
     })
   }
   state.fontSize = arr

@@ -11,7 +11,6 @@
       :property-inner-all="mixPropertiesInner"
       :dimension-data="state.dimensionData"
       :quota-data="state.quotaData"
-      @onColorChange="onColorChange"
       @onMiscChange="onMiscChange"
       @onLabelChange="onLabelChange"
       @onTooltipChange="onTooltipChange"
@@ -20,6 +19,10 @@
       @onTextChange="onTextChange"
       @onLegendChange="onLegendChange"
       @onBackgroundChange="onBackgroundChange"
+      @onBasicStyleChange="onBasicStyleChange"
+      @onTableHeaderChange="onTableHeaderChange"
+      @onTableCellChange="onTableCellChange"
+      @onTableTotalChange="onTableTotalChange"
     />
     <el-row v-else class="view-selected-message-class">
       <span class="select-view">{{ $t('visualization.select_view') }}</span>
@@ -63,10 +66,6 @@ const onTooltipChange = val => {
   batchOptChange('customAttr', 'tooltip', val)
 }
 
-const onTotalCfgChange = val => {
-  batchOptChange('customAttr', 'tableTotal', val)
-}
-
 const onChangeXAxisForm = val => {
   batchOptChange('customStyle', 'xAxis', val)
 }
@@ -97,6 +96,18 @@ const onSuspensionChange = val => {
 const onBackgroundChange = val => {
   dvMainStore.setBatchChangeBackground(val)
   snapshotStore.recordSnapshot('onBackgroundChange')
+}
+const onBasicStyleChange = val => {
+  batchOptChange('customAttr', 'basicStyle', val)
+}
+const onTableHeaderChange = val => {
+  batchOptChange('customAttr', 'tableHeader', val)
+}
+const onTableCellChange = val => {
+  batchOptChange('customAttr', 'tableCell', val)
+}
+const onTableTotalChange = val => {
+  batchOptChange('customAttr', 'tableTotal', val)
 }
 const batchOptChange = (custom, property, value) => {
   dvMainStore.setChangeProperties({
