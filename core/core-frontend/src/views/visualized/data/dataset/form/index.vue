@@ -477,8 +477,8 @@ const getDatasource = () => {
 getDatasource()
 
 const dsChange = (val: string) => {
+  sqlNode.datasourceId = dataSource.value
   getTables(val).then(res => {
-    sqlNode.datasourceId = dataSource.value
     tableList = (res as unknown as Table[]) || []
     state.tableData = [...tableList]
   })

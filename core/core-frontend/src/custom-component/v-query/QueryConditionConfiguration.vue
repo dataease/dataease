@@ -552,6 +552,7 @@ defineExpose({
       height: 100%;
       padding: 16px;
       width: 474px;
+      overflow-y: auto;
 
       .select-all {
         height: 40px;

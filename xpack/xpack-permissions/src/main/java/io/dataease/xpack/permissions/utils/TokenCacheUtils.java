@@ -1,18 +1,12 @@
 package io.dataease.xpack.permissions.utils;
 
 import io.dataease.utils.CacheUtils;
+import io.dataease.utils.DelayQueueUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class TokenCacheUtils {
 
-    private static List<String> delayQueueList = new ArrayList<>();
-
-    private static final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 
     public static void add(Long uid, String token) {
         Long expireTime = PerTokenUtils.getExpireTime(TimeUnit.SECONDS);
@@ -21,12 +15,7 @@ public class TokenCacheUtils {
 
     public static void delayDel(Long uid, String token) {
         String key = uid + token;
-        if (delayQueueList.contains(key)) return;
-        delayQueueList.add(key);
-        executorService.schedule(() -> {
-            del(uid, token);
-            delayQueueList.remove(key);
-        }, 5L, TimeUnit.SECONDS);
+        DelayQueueUtils.execute(key, () -> del(uid, token), 5L);
     }
 
     public static void del(Long uid, String token) {
