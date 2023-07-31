@@ -49,12 +49,9 @@ public class CacheUtils {
     public static void remove(String cacheName, String key, Consumer consumer) {
         deCacheService.keyRemove(cacheName, key);
         consumer.accept(null);
-        try {
-            TimeUnit.MILLISECONDS.sleep(1000L);
+        DelayQueueUtils.execute(IDUtils.randomID(16), () -> {
             deCacheService.keyRemove(cacheName, key);
-        } catch (Exception e) {
-            DEException.throwException(e);
-        }
+        }, 1L);
     }
 
     public static void remove(String[] cacheNames, String key, Consumer consumer) {
@@ -83,6 +80,7 @@ public class CacheUtils {
             DEException.throwException(e);
         }
     }
+
     public static void remove(String[] cacheNames, List<String> keys, Consumer consumer) {
         Arrays.stream(cacheNames).forEach(cacheName -> {
             keys.forEach(key -> deCacheService.keyRemove(cacheName, key));

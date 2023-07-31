@@ -106,7 +106,7 @@
         <key-type>java.lang.String</key-type>
         <value-type>java.lang.Integer</value-type>
         <expiry>
-            <none/>
+            <ttl unit="hours">8</ttl>
         </expiry>
         <resources>
             <heap unit="entries">100</heap>
