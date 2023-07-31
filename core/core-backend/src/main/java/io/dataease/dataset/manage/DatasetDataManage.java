@@ -237,7 +237,7 @@ public class DatasetDataManage {
     }
 
     public Map<String, Object> previewSql(PreviewSqlDTO dto) {
-        String alias = "SQL_ALIAS";
+        String alias = String.format(SQLConstants.SCHEMA, dto.getDatasourceId());
         CoreDatasource coreDatasource = coreDatasourceMapper.selectById(dto.getDatasourceId());
         DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
         if (coreDatasource.getType().equalsIgnoreCase("API") || coreDatasource.getType().equalsIgnoreCase("Excel")) {
