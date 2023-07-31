@@ -58,14 +58,13 @@ public class DatasetSQLManage {
         List<DatasetTableFieldDTO> checkedFields = new ArrayList<>();
         String sql = "";
 
-        // get table
-        String tableSchema = String.format(SQLConstants.SCHEMA, 0);
-
         if (ObjectUtils.isEmpty(union)) {
             return null;
         }
 
         DatasetTableDTO currentDs = union.get(0).getCurrentDs();
+        // get table
+        String tableSchema = String.format(SQLConstants.SCHEMA, currentDs.getDatasourceId());
         DatasetTableInfoDTO infoDTO = JsonUtil.parseObject(currentDs.getInfo(), DatasetTableInfoDTO.class);
         SQLObj tableName = getUnionTable(currentDs, infoDTO, tableSchema, 0);
         // get datasource and schema,put map
@@ -80,7 +79,7 @@ public class DatasetSQLManage {
             if (dsMap.containsKey(datasetTable.getDatasourceId())) {
                 schema = dsMap.get(datasetTable.getDatasourceId()).getSchemaAlias();
             } else {
-                schema = String.format(SQLConstants.SCHEMA, i);
+                schema = String.format(SQLConstants.SCHEMA, datasetTable.getDatasourceId());
                 putObj2Map(dsMap, datasetTable, schema);
             }
             SQLObj table = getUnionTable(datasetTable, tableInfo, schema, i);
@@ -199,7 +198,7 @@ public class DatasetSQLManage {
             if (dsMap.containsKey(datasetTable.getDatasourceId())) {
                 schema = dsMap.get(datasetTable.getDatasourceId()).getSchemaAlias();
             } else {
-                schema = String.format(SQLConstants.SCHEMA, index);
+                schema = String.format(SQLConstants.SCHEMA, datasetTable.getDatasourceId());
                 putObj2Map(dsMap, datasetTable, schema);
             }
             SQLObj table = getUnionTable(datasetTable, tableInfo, schema, index);

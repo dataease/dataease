@@ -12,6 +12,8 @@ public class BusiNodeRequest implements Serializable {
 
     private String busyFlag;
 
+    private String id;
+
     private Boolean leaf;
 
     private Integer weight;

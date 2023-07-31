@@ -1,10 +1,15 @@
 package io.dataease.datasource.server;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dataease.api.dataset.dto.DatasetTableDTO;
+import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
+import io.dataease.api.dataset.union.DatasetTableInfoDTO;
+import io.dataease.api.dataset.union.UnionDTO;
+import io.dataease.api.dataset.union.UnionParamDTO;
 import io.dataease.api.ds.DatasourceApi;
 import io.dataease.api.ds.vo.*;
 import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
@@ -13,6 +18,7 @@ import io.dataease.api.permissions.auth.dto.BusiResourceEditor;
 import io.dataease.commons.constants.DataSourceType;
 import io.dataease.commons.constants.TaskStatus;
 import io.dataease.dataset.dto.DatasourceSchemaDTO;
+import io.dataease.dataset.manage.DatasetDataManage;
 import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.entity.CoreDatasourceTask;
@@ -24,6 +30,7 @@ import io.dataease.datasource.provider.ApiUtils;
 import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.datasource.provider.ExcelUtils;
 import io.dataease.datasource.request.DatasourceRequest;
+import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.exception.DEException;
 import io.dataease.model.BusiNodeRequest;
@@ -72,6 +79,8 @@ public class DatasourceServer implements DatasourceApi {
     @Resource
     private DataSourceManage dataSourceManage;
 
+    @Resource
+    private DatasetDataManage datasetDataManage;
 
     @Override
     public List<DatasourceDTO> query(String keyWord) {
@@ -83,8 +92,40 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     @Override
+    public DatasourceDTO move(DatasourceDTO dataSourceDTO) throws Exception {
+        switch (dataSourceDTO.getAction()){
+            case "move":
+            case "rename":
+                checkName(dataSourceDTO.getName(), datasourceMapper.selectById(dataSourceDTO.getId()).getType(), dataSourceDTO.getId());
+                UpdateWrapper<CoreDatasource> updateWrapper = new UpdateWrapper<>();
+                updateWrapper.eq("id", dataSourceDTO.getId());
+                CoreDatasource record = new CoreDatasource();
+                record.setPid(dataSourceDTO.getPid());
+                record.setName(dataSourceDTO.getName());
+                datasourceMapper.update(record, updateWrapper);
+                break;
+            case "create":
+                checkName(dataSourceDTO.getName(), dataSourceDTO.getNodeType(), dataSourceDTO.getId());
+                CoreDatasource coreDatasource = new CoreDatasource();
+                BeanUtils.copyBean(coreDatasource, dataSourceDTO);
+                coreDatasource.setCreateTime(System.currentTimeMillis());
+                coreDatasource.setUpdateTime(System.currentTimeMillis());
+                coreDatasource.setTaskStatus(TaskStatus.WaitingForExecution.name());
+                coreDatasource.setId(IDUtils.snowID());
+                break;
+            default:
+                break;
+        }
+        return dataSourceDTO;
+    }
+    @Override
     public DatasourceDTO save(DatasourceDTO dataSourceDTO) throws Exception {
+
         boolean leaf = true;
+        if(StringUtils.isNotEmpty(dataSourceDTO.getAction())){
+            move(dataSourceDTO);
+            return dataSourceDTO;
+        }
         if (StringUtils.isNotEmpty(dataSourceDTO.getNodeType()) && dataSourceDTO.getNodeType().equalsIgnoreCase("folder")) {
             dataSourceDTO.setType("folder");
             dataSourceDTO.setConfiguration("");
@@ -320,15 +361,16 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     /*private void setDatasourceConfig(List<DatasourceNodeBO> nodes){
+
         TypeReference<List<ApiDefinition>> listTypeReference = new TypeReference<List<ApiDefinition>>() {
         };
 
         nodes.forEach(datasourceNodeBO -> {
-            if(datasourceNodeBO.getLeaf()){
+            if (datasourceNodeBO.getLeaf()) {
                 List<DatasourceConfiguration.DatasourceType> datasourceConfigurations = datasourceTypes();
                 QueryWrapper<CoreDatasource> datasourceQueryWrapper = new QueryWrapper();
                 datasourceMapper.selectList(datasourceQueryWrapper).forEach(coreDatasource -> {
-                    if(coreDatasource.getId().equals(datasourceNodeBO.getId())){
+                    if (coreDatasource.getId().equals(datasourceNodeBO.getId())) {
                         if (datasourceNodeBO.getType().equalsIgnoreCase(DatasourceConfiguration.DatasourceType.API.toString())) {
                             List<ApiDefinition> apiDefinitionList = JsonUtil.parseList(coreDatasource.getConfiguration(), listTypeReference);
                             List<ApiDefinition> apiDefinitionListWithStatus = new ArrayList<>();
@@ -385,17 +427,6 @@ public class DatasourceServer implements DatasourceApi {
         return bo;
     }
 
-    /*private DatasourceNodeBO convert(DatasourceNodePO po) {
-        DatasourceNodeBO bo = new DatasourceNodeBO();
-        bo.setId(po.getId());
-        bo.setName(po.getName());
-        bo.setLeaf(!StringUtils.equals(po.getType(), "folder"));
-        bo.setWeight(3);
-        bo.setType(po.getType());
-        bo.setPid(po.getPid());
-        bo.setExtraFlag(0);
-        return bo;
-    }*/
     public List<DatasourceDTO> list() {
         List<DatasourceDTO> datasourceDTOS = new ArrayList<>();
         List<DatasourceConfiguration.DatasourceType> datasourceConfigurations = datasourceTypes();
@@ -478,7 +509,7 @@ public class DatasourceServer implements DatasourceApi {
             datasourceRequest.setDatasource(engineServer.getDeEngine());
             DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
             BeanUtils.copyBean(datasourceSchemaDTO, engineServer.getDeEngine());
-            datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, 0));
+            datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceId));
             datasourceRequest.setDsList(Map.of(datasourceSchemaDTO.getId(), datasourceSchemaDTO));
             datasourceRequest.setQuery(TableUtils.tableName2Sql(datasourceSchemaDTO, tableName));
             List<TableField> tableFields = (List<TableField>) calciteProvider.fetchResultField(datasourceRequest).get("fields");
@@ -489,14 +520,11 @@ public class DatasourceServer implements DatasourceApi {
 
         DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
         BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
-        datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, 0));
+        datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceId));
         datasourceRequest.setDsList(Map.of(datasourceSchemaDTO.getId(), datasourceSchemaDTO));
         datasourceRequest.setQuery(TableUtils.tableName2Sql(datasourceSchemaDTO, tableName));
         return (List<TableField>) calciteProvider.fetchResultField(datasourceRequest).get("fields");
     }
-
-    ;
-
 
     public ExcelFileData excelUpload(@RequestParam("file") MultipartFile file, @RequestParam("id") long datasourceId, @RequestParam("editType") Integer editType) throws Exception {
         ExcelUtils excelUtils = new ExcelUtils();
@@ -542,7 +570,7 @@ public class DatasourceServer implements DatasourceApi {
         QueryWrapper<CoreDatasource> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("name", name);
         queryWrapper.eq("type", type);
-        if (id != null) {
+        if (id != null && id != 0) {
             queryWrapper.ne("id", id);
         }
         if (!CollectionUtils.isEmpty(datasourceMapper.selectList(queryWrapper))) {
@@ -574,5 +602,37 @@ public class DatasourceServer implements DatasourceApi {
     public void updateDemoDs() {
     }
 
+    @Override
+    public Map<String, Object> previewDataWithLimit(Map<String, Object> req) throws Exception {
+        String tableName = req.get("table").toString();
+        DatasetGroupInfoDTO datasetGroupInfoDTO = new DatasetGroupInfoDTO();
+        CoreDatasource coreDatasource = engineServer.getDeEngine();
+        DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
+        BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
+        datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, 0));
+        List<DatasetTableFieldDTO> list = null;
+        List<TableField> tableFields = null;
+        DatasourceRequest datasourceRequest = new DatasourceRequest();
+        datasourceRequest.setDsList(Map.of(datasourceSchemaDTO.getId(), datasourceSchemaDTO));
+        datasourceRequest.setQuery(TableUtils.tableName2Sql(datasourceSchemaDTO, tableName));
+        tableFields = (List<TableField>) calciteProvider.fetchResultField(datasourceRequest).get("fields");
+        list = datasetDataManage.transFields(tableFields, true);
+        datasetGroupInfoDTO.setAllFields(list);
+        List<UnionDTO> unionDTOS = new ArrayList<>();
+        UnionDTO unionDTO = new UnionDTO();
+        DatasetTableDTO datasetTableDTO = new DatasetTableDTO();
+        datasetTableDTO.setTableName(tableName);
+        DatasetTableInfoDTO tableInfoDTO = new DatasetTableInfoDTO();
+        tableInfoDTO.setTable(tableName);
+        datasetTableDTO.setInfo(JsonUtil.toJSONString(tableInfoDTO).toString());
+        unionDTO.setCurrentDs(datasetTableDTO);
+        unionDTO.setCurrentDsFields(list);
+        UnionParamDTO unionParamDTO= new UnionParamDTO();
+        unionParamDTO.setUnionType("left");
+        unionDTO.setUnionToParent(unionParamDTO);
+        unionDTOS.add(unionDTO);
+        datasetGroupInfoDTO.setUnion(unionDTOS);
+        return datasetDataManage.previewDataWithLimit(datasetGroupInfoDTO, 0, 100);
+    }
 
 }

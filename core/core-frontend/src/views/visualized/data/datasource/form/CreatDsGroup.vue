@@ -148,7 +148,7 @@ const createInit = (type, data: Tree, exec, name: string) => {
     request = data.request
   }
   if (data.id) {
-    listDatasources({ leaf: false }).then(res => {
+    listDatasources({ leaf: false, id: data.id }).then(res => {
       dfs(res as unknown as Tree[])
       state.tData = (res as unknown as Tree[]) || []
       if (exec) {
@@ -208,13 +208,16 @@ const saveDataset = () => {
         case 'move':
           params.pid = activeAll.value ? '0' : (datasetForm.pid as string)
           params.id = id.value
+          params.action = 'move'
           break
         case 'rename':
           params.pid = pid.value as string
           params.id = id.value
+          params.action = 'rename'
           break
         default:
           params.pid = datasetForm.pid || pid.value || '0'
+          params.action = 'create'
           break
       }
       loading.value = true
