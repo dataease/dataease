@@ -1,7 +1,9 @@
 package io.dataease.listener;
 
+import io.dataease.api.ds.vo.DatasourceDTO;
 import io.dataease.datasource.dao.auto.entity.CoreDatasourceTask;
 import io.dataease.datasource.manage.DatasourceSyncManage;
+import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.datasource.server.DatasourceServer;
 import io.dataease.datasource.server.DatasourceTaskServer;
 import io.dataease.datasource.server.EngineServer;
@@ -24,7 +26,8 @@ public class DataSourceInitStartListener implements ApplicationListener<Applicat
     private DatasourceServer datasourceServer;
     @Resource
     private DatasourceTaskServer datasourceTaskServer;
-
+    @Resource
+    private CalciteProvider calciteProvider;
     @Resource
     private EngineServer engineServer;
 
@@ -33,6 +36,7 @@ public class DataSourceInitStartListener implements ApplicationListener<Applicat
         try {
             engineServer.initSimpleEngine();
             datasourceServer.updateDemoDs();
+            calciteProvider.init();
         }catch (Exception e){
             e.printStackTrace();
         }

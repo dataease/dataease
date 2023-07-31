@@ -102,7 +102,7 @@ public class SyncAuthManage {
         CacheUtils.keyRemove("org_global_resource", globalKey);
         CacheUtils.keyRemove("all_oid_flag_resource", globalKey);
         if (CollectionUtil.isNotEmpty(uids)) {
-            List<String> userKeys = uids.stream().map(uid -> oid.toString() + uid.toString() + rtId.toString()).toList();
+            List<String> userKeys = uids.stream().map(uid -> oid + uid.toString() + rtId.toString()).toList();
             userKeys.forEach(userkey -> {
                 CacheUtils.keyRemove("user_busi_pers_interactive", userkey);
                 CacheUtils.keyRemove("user_busi_pers", userkey);

@@ -7,6 +7,8 @@ import org.apache.calcite.sql.*;
 import org.apache.calcite.sql.parser.SqlParseException;
 import org.apache.calcite.sql.parser.SqlParser;
 
+import java.util.List;
+
 import static org.apache.calcite.sql.SqlKind.*;
 
 /**
@@ -61,6 +63,20 @@ public class SqlUtils {
             SqlSelect sqlKind = (SqlSelect) sqlNode;
 
             addTableSchema(sqlKind.getFrom(), true, schema, config);
+        } else if (sqlNode.getKind() == UNION) {
+            SqlBasicCall sqlKind = (SqlBasicCall) sqlNode;
+            // 使用union，至少会有2个子SQL，否则语法不正确
+            if (sqlKind.getOperandList().size() >= 2) {
+                for (int i = 0; i < sqlKind.getOperandList().size(); i++) {
+                    addTableSchema(sqlKind.getOperandList().get(i), fromOrJoin, schema, config);
+                }
+            }
+        } else if (sqlNode.getKind() == ORDER_BY) {
+            SqlOrderBy sqlKind = (SqlOrderBy) sqlNode;
+            List<SqlNode> operandList = sqlKind.getOperandList();
+            if (operandList.size() > 0) {
+                addTableSchema(operandList.get(0), fromOrJoin, schema, config);
+            }
         }
     }
 }

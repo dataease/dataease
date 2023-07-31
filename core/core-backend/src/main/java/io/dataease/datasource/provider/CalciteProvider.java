@@ -1,22 +1,26 @@
 package io.dataease.datasource.provider;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.ds.vo.DatasourceConfiguration;
 import io.dataease.api.ds.vo.DatasourceConfiguration.DatasourceType;
+import io.dataease.api.ds.vo.DatasourceDTO;
 import io.dataease.api.ds.vo.TableField;
 import io.dataease.commons.exception.DataEaseException;
 import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.entity.CoreDriver;
-import io.dataease.datasource.dao.auto.mapper.CoreDriverMapper;
+import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
 import io.dataease.datasource.request.DatasourceRequest;
+import io.dataease.datasource.server.EngineServer;
 import io.dataease.datasource.type.*;
+import io.dataease.engine.constant.SQLConstants;
 import io.dataease.engine.func.scalar.ScalarFunctions;
 import io.dataease.exception.DEException;
 import io.dataease.i18n.Translator;
+import io.dataease.utils.BeanUtils;
 import io.dataease.utils.CommonBeanFactory;
 import io.dataease.utils.JsonUtil;
-import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import org.apache.calcite.adapter.jdbc.JdbcSchema;
 import org.apache.calcite.jdbc.CalciteConnection;
@@ -33,6 +37,8 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.sql.*;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicIntegerArray;
+import java.util.stream.Collectors;
 
 
 @Component("calciteProvider")
@@ -40,33 +46,39 @@ public class CalciteProvider {
 
     //TODO mongo impala es hive
     @Resource
-    protected CoreDriverMapper coreDriverMapper;
-
+    protected CoreDatasourceMapper coreDatasourceMapper;
+    @Resource
+    private EngineServer engineServer;
     protected ExtendedJdbcClassLoader extendedJdbcClassLoader;
     private Map<Long, ExtendedJdbcClassLoader> customJdbcClassLoaders = new HashMap<>();
     private final String FILE_PATH = "/opt/dataease/drivers";
     private final String CUSTOM_PATH = "/opt/dataease/custom-drivers/";
-    private static Map<String, Connection> connectionMap = new HashMap<>();
     private static String split = "DE";
 
-    @PostConstruct
+
+
     public void init() throws Exception {
-        String jarPath = FILE_PATH;
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        extendedJdbcClassLoader = new ExtendedJdbcClassLoader(new URL[]{new File(jarPath).toURI().toURL()}, classLoader);
-        File file = new File(jarPath);
-        File[] array = file.listFiles();
-        Optional.ofNullable(array).ifPresent(files -> {
-            for (File tmp : array) {
-                if (tmp.getName().endsWith(".jar")) {
-                    try {
-                        extendedJdbcClassLoader.addFile(tmp);
-                    } catch (IOException e) {
-                        e.printStackTrace();
+        try {
+            String jarPath = FILE_PATH;
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            extendedJdbcClassLoader = new ExtendedJdbcClassLoader(new URL[]{new File(jarPath).toURI().toURL()}, classLoader);
+            File file = new File(jarPath);
+            File[] array = file.listFiles();
+            Optional.ofNullable(array).ifPresent(files -> {
+                for (File tmp : array) {
+                    if (tmp.getName().endsWith(".jar")) {
+                        try {
+                            extendedJdbcClassLoader.addFile(tmp);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
-            }
-        });
+            });
+        }catch (Exception e){
+
+        }
+        initConnectionPool(capacity);
     }
 
 
@@ -107,31 +119,11 @@ public class CalciteProvider {
         return tableDesc;
     }
 
-    private String getDriver(DatasourceSchemaDTO ds) {
-        DatasourceType datasourceType = DatasourceType.valueOf(ds.getType());
-        switch (datasourceType) {
-            case mysql:
-            case TiDB:
-            case StarRocks:
-            case mariadb:
-                return ((DatasourceConfiguration) CommonBeanFactory.getBean("mysql")).getDriver();
-            case sqlServer:
-                return ((DatasourceConfiguration) CommonBeanFactory.getBean("sqlServer")).getDriver();
-            case oracle:
-                return ((DatasourceConfiguration) CommonBeanFactory.getBean("oracle")).getDriver();
-            case db2:
-                return ((DatasourceConfiguration) CommonBeanFactory.getBean("db2")).getDriver();
-            case ck:
-                return ((DatasourceConfiguration) CommonBeanFactory.getBean("ck")).getDriver();
-            case pg:
-                return ((DatasourceConfiguration) CommonBeanFactory.getBean("pg")).getDriver();
-            case redshift:
-                return ((DatasourceConfiguration) CommonBeanFactory.getBean("redshift")).getDriver();
-            case h2:
-                return ((DatasourceConfiguration) CommonBeanFactory.getBean("h2")).getDriver();
-            default:
-                return ((DatasourceConfiguration) CommonBeanFactory.getBean("mysql")).getDriver();
-        }
+    private List<String> getDriver() {
+        List<String> drivers = new ArrayList<>();
+        Map<String, DatasourceConfiguration> beansOfType = CommonBeanFactory.getApplicationContext().getBeansOfType((DatasourceConfiguration.class));
+        beansOfType.keySet().forEach( key -> drivers.add(beansOfType.get(key).getDriver()));
+        return drivers;
     }
 
     public String checkStatus(DatasourceRequest datasourceRequest) throws Exception {
@@ -152,10 +144,10 @@ public class CalciteProvider {
         List<String[]> list = new LinkedList<>();
         PreparedStatement statement = null;
         ResultSet resultSet = null;
-        CalciteConnection connection = null;
+        Connection connection = take();
         try {
-            connection = getConnection(datasourceRequest);
-            statement = connection.prepareStatement(datasourceRequest.getQuery());
+            CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
+            statement = calciteConnection.prepareStatement(datasourceRequest.getQuery());
             resultSet = statement.executeQuery();
             ResultSetMetaData metaData = resultSet.getMetaData();
             int columnCount = metaData.getColumnCount();
@@ -174,7 +166,7 @@ public class CalciteProvider {
             try {
                 if (resultSet != null) resultSet.close();
                 if (statement != null) statement.close();
-                if (connection != null) connection.close();
+                free(connection);
             } catch (Exception e) {
             }
         }
@@ -184,14 +176,17 @@ public class CalciteProvider {
         return map;
     }
 
-    private CalciteConnection getConnection(DatasourceRequest datasourceRequest) throws Exception {
-        Connection connection = getCalciteConnection(datasourceRequest);
+
+
+    public Connection initConnection(Map<Long, DatasourceSchemaDTO> dsMap) throws Exception{
+        Connection connection = getCalciteConnection();
         CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
+        DatasourceRequest datasourceRequest = new DatasourceRequest();
+        datasourceRequest.setDsList(dsMap);
         SchemaPlus rootSchema = buildSchema(datasourceRequest, calciteConnection);
         addCustomFunctions(rootSchema);
-        return calciteConnection;
+        return connection;
     }
-
     private void addCustomFunctions(SchemaPlus rootSchema) {
         // scalar functions
         Class<?> clazz = ScalarFunctions.class;
@@ -202,16 +197,15 @@ public class CalciteProvider {
         }
     }
 
-    private void registerDriver(DatasourceRequest datasourceRequest) throws Exception {
-        for (Map.Entry<Long, DatasourceSchemaDTO> next : datasourceRequest.getDsList().entrySet()) {
-            DatasourceSchemaDTO ds = next.getValue();
-            Driver driver = (Driver) extendedJdbcClassLoader.loadClass(getDriver(ds)).newInstance();
+    private void registerDriver() throws Exception {
+        for (String driverClass : getDriver()) {
+            Driver driver = (Driver) extendedJdbcClassLoader.loadClass(driverClass).newInstance();
             DriverManager.registerDriver(new DriverShim(driver));
         }
     }
 
-    private Connection getCalciteConnection(DatasourceRequest datasourceRequest) throws Exception {
-        registerDriver(datasourceRequest);
+    private Connection getCalciteConnection() throws Exception {
+        registerDriver();
         Properties info = new Properties();
         info.setProperty("lex", "JAVA");
         info.setProperty("caseSensitive", "false");
@@ -541,4 +535,101 @@ public class CalciteProvider {
         customJdbcClassLoaders.put(coreDriver.getId(), customJdbcClassLoader);
         return customJdbcClassLoader;
     }
+
+
+    private Connection[] connections;
+    private AtomicIntegerArray states;
+
+    private static int capacity = 10;
+
+    public void  initConnectionPool(int capacity) {
+        QueryWrapper<CoreDatasource> datasourceQueryWrapper = new QueryWrapper();
+        List<CoreDatasource> coreDatasources = coreDatasourceMapper.selectList(datasourceQueryWrapper).stream().filter(coreDatasource -> !Arrays.asList("folder", "API", "Excel").contains(coreDatasource.getType())).collect(Collectors.toList());
+        coreDatasources.add(engineServer.getDeEngine());
+        Map<Long, DatasourceSchemaDTO> dsMap = new HashMap<>();
+        for (CoreDatasource coreDatasource : coreDatasources) {
+            DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
+            BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
+            datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId()));
+            dsMap.put(datasourceSchemaDTO.getId(), datasourceSchemaDTO);
+        }
+
+        connections = new Connection[capacity];
+        states = new AtomicIntegerArray(new int[capacity]);
+        this.capacity = capacity;
+        for (int i = 0; i < capacity; i++) {
+            System.out.println(i);
+           try {
+               connections[i] = initConnection(dsMap);
+           }catch (Exception e) {
+
+           }
+        }
+    }
+
+    public void  update(DatasourceDTO datasourceDTO) throws Exception{
+        DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
+        BeanUtils.copyBean(datasourceSchemaDTO, datasourceDTO);
+        datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId()));
+
+        DatasourceRequest datasourceRequest = new DatasourceRequest();
+        datasourceRequest.setDsList(Map.of(datasourceSchemaDTO.getId(), datasourceSchemaDTO));
+
+        for (int i = 0; i < connections.length; i++) {
+            Connection connection = connections[i];
+            CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
+            SchemaPlus rootSchema = buildSchema(datasourceRequest, calciteConnection);
+            addCustomFunctions(rootSchema);
+        }
+    }
+    public Connection take() {
+        // 为了避免出现线程安全问题，这里使用 synchronized 锁，也可以使用 cas
+        while (true) {
+            for (int i = 0; i < connections.length; i++) {
+                if (states.get(i) == 0) {
+                    Connection connection = connections[i];
+                    if (states.compareAndSet(i, 0, 1)) {
+                        return connection;
+                    }
+                }
+            }
+
+            /**
+             *  整个容器都遍历完了，还是没有找到空闲的 Connection 连接对象
+             *  这里有很多的做法：
+             *    1.可以一直死等，等待有 Connection 连接对象被归还，然后被唤醒。再重新遍历容器，寻找空闲的 Connection 连接对象
+             *    2.也可以有超时时间的等待，不是一直死等
+             */
+            synchronized (this) {
+                try {
+                    this.wait(1000 * 1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    // 归还 Connection 连接对象
+    public void free(Connection connection) {
+        for (int i = 0; i < connections.length; i++) {
+            if (connection == connections[i]) {
+                // 将这个连接的对象设置为空闲，这样别的线程就可以拿到了
+
+                // 这里直接 set 就行了，不用使用 cas 了。
+                // 因为只会有一个线程拿到这个 Connection 连接对象，所以不会有线程安全的问题
+                states.set(i, 0);
+                // 记得唤醒其他正在等待 Connection 连接对象的线程
+                /**
+                 * 调用wait()，notify()和notifyAll()的线程在调用这些方法前必须"拥有"对象的锁。
+                 * 当前的线程不是此对象锁的所有者，却调用该对象的notify()，notify()，wait()方法时抛出 IllegalMonitorStateException 异常。
+                 */
+                synchronized (this) {
+                    this.notifyAll();
+                }
+                break;
+            }
+        }
+    }
+
 }
