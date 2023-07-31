@@ -13,6 +13,8 @@ public class DataSourceNodePO implements Serializable {
     @TableId
     private Long id;
 
+    private Long pid;
+
     private String name;
 
     private String type;

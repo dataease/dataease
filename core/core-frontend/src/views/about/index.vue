@@ -1,5 +1,5 @@
 <template>
-  <div style="display: flex; width: 100%; justify-content: center">
+  <div style="display: flex; width: 100%; justify-content: center" v-loading="loading">
     <el-card class="box-card about-card" :class="dynamicCardClass">
       <template #header>
         <div class="clearfix license-header">
@@ -101,6 +101,7 @@ const build = ref('')
 const isAdmin = ref(false)
 const fileList = reactive([])
 const dynamicCardClass = ref('')
+const loading = ref(false)
 onMounted(() => {
   isAdmin.value = userStore.getUid === '1'
   initVersion()
@@ -170,7 +171,9 @@ const getLicense = result => {
 }
 const update = (licKey: string) => {
   const param = { license: licKey }
+  loading.value = true
   updateInfoApi(param).then(response => {
+    loading.value = false
     if (response.data.status === 'valid') {
       ElMessage.success(t('about.update_success'))
       const info = getLicense(response.data)

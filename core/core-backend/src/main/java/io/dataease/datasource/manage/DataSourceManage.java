@@ -2,39 +2,65 @@ package io.dataease.datasource.manage;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import io.dataease.api.ds.vo.TreeNodeVO;
-import io.dataease.model.BusiNodeVO;
+import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
 import io.dataease.commons.constants.DataSourceType;
 import io.dataease.datasource.dao.ext.mapper.DataSourceExtMapper;
 import io.dataease.datasource.dao.ext.po.DataSourceNodePO;
+import io.dataease.datasource.dto.DatasourceNodeBO;
+import io.dataease.model.BusiNodeRequest;
+import io.dataease.model.BusiNodeVO;
+import io.dataease.utils.TreeUtils;
 import jakarta.annotation.Resource;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.ObjectUtils;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class DataSourceManage {
 
+    private static final String BUSI_FLAG = "datasource";
+
+    @Autowired(required = false)
+    private InteractiveAuthApi interactiveAuthApi;
+
     @Resource
     private DataSourceExtMapper dataSourceExtMapper;
-    public TreeNodeVO convertTreeVO(BusiNodeVO perVO) {
-        int extraFlag = perVO.getExtraFlag();
-        boolean valid = extraFlag >= 0;
-        int abs = Math.abs(extraFlag);
-        DataSourceType dataSourceType = DataSourceType.fromFlag(abs);
+
+    private DatasourceNodeBO rootNode() {
+        return new DatasourceNodeBO(0L, "root", false, 3, -1L, 0);
+    }
+
+    private DatasourceNodeBO convert(DataSourceNodePO po) {
+        DataSourceType dataSourceType = DataSourceType.valueOf(po.getType());
         if (ObjectUtils.isEmpty(dataSourceType)) {
             dataSourceType = DataSourceType.mysql;
         }
-        return new TreeNodeVO(perVO.getId(), perVO.getName(), dataSourceType.name(), valid);
+        Integer flag = dataSourceType.getFlag();
+        int extraFlag = StringUtils.equalsIgnoreCase("error", po.getStatus()) ? Math.negateExact(flag) : flag;
+        return new DatasourceNodeBO(po.getId(), po.getName(), !StringUtils.equals(po.getType(), "folder"), 3, po.getPid(), extraFlag);
     }
 
-    public List<TreeNodeVO> treeNodeQuery() {
+    public List<BusiNodeVO> tree(BusiNodeRequest request) {
+        request.setBusyFlag(BUSI_FLAG);
+        if (org.apache.commons.lang3.ObjectUtils.isNotEmpty(interactiveAuthApi)) {
+            return interactiveAuthApi.resource(request);
+        }
         QueryWrapper<DataSourceNodePO> queryWrapper = new QueryWrapper<>();
+        if (ObjectUtils.isNotEmpty(request.getLeaf()) && !request.getLeaf()) {
+            queryWrapper.eq("type", "folder");
+        }
         queryWrapper.orderByDesc("create_time");
-        List<DataSourceNodePO> poList = dataSourceExtMapper.selectList(queryWrapper);
-        if (CollectionUtil.isNotEmpty(poList))
-            return poList.stream().map(po -> new TreeNodeVO(po.getId(), po.getName(), po.getType(), po.getStatus().equals("Success"))).toList();
-        return null;
+        List<DatasourceNodeBO> nodes = new ArrayList<>();
+        List<DataSourceNodePO> pos = dataSourceExtMapper.selectList(queryWrapper);
+        if (ObjectUtils.isEmpty(request.getLeaf()) || !request.getLeaf()) nodes.add(rootNode());
+        if (CollectionUtil.isNotEmpty(pos)) {
+            nodes.addAll(pos.stream().map(this::convert).collect(Collectors.toList()));
+        }
+        return TreeUtils.mergeTree(nodes, BusiNodeVO.class, false);
     }
 }
