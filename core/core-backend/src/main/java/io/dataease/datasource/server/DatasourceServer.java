@@ -143,6 +143,7 @@ public class DatasourceServer implements DatasourceApi {
             dataSourceDTO.setConfiguration(new String(Base64.getDecoder().decode(dataSourceDTO.getConfiguration())));
         }
         preCheckDs(dataSourceDTO);
+        dataSourceDTO.setId(IDUtils.snowID());
         CoreDatasource coreDatasource = new CoreDatasource();
         BeanUtils.copyBean(coreDatasource, dataSourceDTO);
         coreDatasource.setCreateTime(System.currentTimeMillis());
@@ -152,7 +153,6 @@ public class DatasourceServer implements DatasourceApi {
         } catch (Exception ignore) {
         }
         coreDatasource.setTaskStatus(TaskStatus.WaitingForExecution.name());
-        coreDatasource.setId(IDUtils.snowID());
         datasourceMapper.insert(coreDatasource);
 
         if (dataSourceDTO.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name())) {
@@ -192,6 +192,7 @@ public class DatasourceServer implements DatasourceApi {
             creator.setExtraFlag(DataSourceType.valueOf(dataSourceDTO.getType()).getFlag());
             interactiveAuthApi.saveResource(creator);
         }
+        calciteProvider.update(dataSourceDTO);
         return dataSourceDTO;
     }
 
@@ -282,6 +283,7 @@ public class DatasourceServer implements DatasourceApi {
             editor.setName(dataSourceDTO.getName());
             interactiveAuthApi.editResource(editor);
         }
+        calciteProvider.update(dataSourceDTO);
         return dataSourceDTO;
     }
 

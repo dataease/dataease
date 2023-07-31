@@ -341,8 +341,10 @@ defineExpose({
     <div class="detail-inner">
       <div class="info-update">
         <div :class="activeStep === 1 && 'active'" class="info-text">数据源信息</div>
-        <div class="update-info-line"></div>
-        <div :class="activeStep === 2 && 'active'" class="update-text">数据更新设置</div>
+        <div v-show="form.type === 'API'" class="update-info-line"></div>
+        <div v-show="form.type === 'API'" :class="activeStep === 2 && 'active'" class="update-text">
+          数据更新设置
+        </div>
       </div>
       <div class="title-form_primary" v-show="activeStep !== 2">
         {{ t('datasource.basic_info') }}
