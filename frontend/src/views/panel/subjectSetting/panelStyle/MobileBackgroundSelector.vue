@@ -22,14 +22,28 @@
         v-show="mobileSetting.backgroundType==='color'"
         :span="10"
       >
-        <el-color-picker
-          v-model="mobileSetting.color"
-          :predefine="predefineColors"
-          size="mini"
-          class="color-picker-custom"
-          :disabled="!mobileSetting.customSetting"
-          @change="onChangeType"
-        />
+        <el-col :span="4">
+          <el-color-picker
+              v-model="mobileSetting.color"
+              :predefine="predefineColors"
+              size="mini"
+              class="color-picker-custom"
+              :disabled="!mobileSetting.customSetting"
+              @change="onChangeType"
+            />
+        </el-col>
+        <el-col :span="5">
+          <span class="params-title-small">{{ $t('chart.not_alpha') }}</span>
+        </el-col>
+        <el-col :span="15">
+          <el-slider
+            v-model="mobileSetting.alpha"
+            show-input
+            :show-input-controls="false"
+            input-size="mini"
+            @change="onChangeType"
+          />
+        </el-col>
       </el-col>
       <el-col
         v-show="mobileSetting.backgroundType==='image'"
@@ -264,5 +278,26 @@ span {
   font-size: 14px !important;
   color: var(--TextPrimary, #1F2329) !important;
   line-height: 22px;
+}
+
+
+::v-deep .el-slider__input {
+  width: 40px;
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+::v-deep .el-input__inner {
+  padding: 0px !important;
+}
+
+::v-deep .el-slider__runway {
+  margin-right: 60px !important;
+}
+
+.params-title-small {
+  font-size: 12px !important;
+  color: var(--TextPrimary, #1F2329) !important;
+  line-height: 40px;
 }
 </style>

@@ -164,6 +164,7 @@ import { queryAll } from '@/api/panel/pdfTemplate'
 import PDFPreExport from '@/views/panel/export/PDFPreExport'
 import { listenGlobalKeyDownPreview } from '@/components/canvas/utils/shortcutKey'
 import UserViewDialog from '@/components/canvas/customComponent/UserViewDialog'
+import {hexColorToRGBA} from "@/views/chart/chart/util";
 
 const erd = elementResizeDetectorMaker()
 export default {
@@ -343,8 +344,9 @@ export default {
             background: `url(${imgUrlTrans(styleInfo.imageUrl)}) no-repeat`
           }
         } else if (styleInfo.backgroundType === 'color') {
+          const colorRGBA = hexColorToRGBA(styleInfo.color, styleInfo.alpha||100)
           style = {
-            background: styleInfo.color
+            background: colorRGBA
           }
         } else {
           style = {
