@@ -8,9 +8,46 @@ import { getCurrentField } from '@/views/chart/components/js/panel/common/common
  * 汇总表
  */
 export class TableNormal extends S2ChartView<TableSheet> {
-  properties: EditorProperty[] = []
-  propertyInner: EditorPropertyInner
-  axis: AxisType[]
+  properties: EditorProperty[] = [
+    'background-overall-component',
+    'basic-style-selector',
+    'table-header-selector',
+    'table-cell-selector',
+    'title-selector'
+  ]
+  propertyInner: EditorPropertyInner = {
+    'background-overall-component': ['all'],
+    'basic-style-selector': ['lineWidth', 'tableBorderColor', 'tableScrollBarColor', 'alpha'],
+    'table-header-selector': [
+      'tableHeaderBgColor',
+      'tableTitleFontSize',
+      'tableHeaderFontColor',
+      'tableTitleHeight',
+      'tableHeaderAlign',
+      'showIndex',
+      'indexLabel'
+    ],
+    'table-cell-selector': [
+      'tableItemBgColor',
+      'tableItemFontSize',
+      'tableFontColor',
+      'tableItemAlign',
+      'tableItemHeight'
+    ],
+    'title-selector': [
+      'title',
+      'fontSize',
+      'color',
+      'hPosition',
+      'isItalic',
+      'isBolder',
+      'remarkShow',
+      'fontFamily',
+      'letterSpace',
+      'fontShadow'
+    ]
+  }
+  axis: AxisType[] = ['xAxis', 'yAxis', 'drill', 'filter']
   drawChart(drawOption: S2DrawOptions<TableSheet>): TableSheet {
     const { container, chart } = drawOption
     let { chartObj: s2 } = drawOption
@@ -68,23 +105,24 @@ export class TableNormal extends S2ChartView<TableSheet> {
     const s2Options: S2Options = {
       width: containerDom.offsetWidth,
       height: containerDom.offsetHeight,
-      showSeriesNumber: customAttr.size.showIndex,
-      style: this.configSize(chart),
+      showSeriesNumber: customAttr.tableHeader.showIndex,
+      style: this.configStyle(chart),
       totals: {}
       // conditions: getConditions(chart)
     }
     // 开启序号之后，第一列就是序号列，修改 label 即可
-    /*if (s2Options.showSeriesNumber) {
-      s2Options.colCell = (node) => {
+    if (s2Options.showSeriesNumber) {
+      s2Options.colCell = node => {
         if (node.colIndex === 0) {
-          if (!customAttr.size.indexLabel) {
+          if (!customAttr.tableHeader.indexLabel) {
             node.label = ' '
           } else {
-            node.label = customAttr.size.indexLabel
+            node.label = customAttr.tableHeader.indexLabel
           }
         }
+        return null
       }
-    }*/
+    }
 
     // 开始渲染
     if (s2) {

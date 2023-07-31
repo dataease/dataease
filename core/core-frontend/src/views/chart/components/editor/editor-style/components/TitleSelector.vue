@@ -18,6 +18,9 @@ const props = defineProps({
   themes: {
     type: String,
     default: 'dark'
+  },
+  propertyInner: {
+    type: Array<string>
   }
 })
 
@@ -71,6 +74,8 @@ const init = () => {
     }
   }
 }
+
+const showProperty = prop => props.propertyInner?.includes(prop)
 
 initFontSize()
 init()
@@ -187,58 +192,8 @@ init()
             >{{ t('chart.font_shadow') }}
           </el-checkbox>
         </el-form-item>
-
-        <!--          <el-form-item :label="t('chart.remark')" class="form-item">-->
-        <!--            <el-checkbox-->
-        <!--              v-model="state.titleForm.remarkShow"-->
-        <!--              @change="changeTitleStyle('remarkShow')"-->
-        <!--              >{{ t('chart.show') }}-->
-        <!--            </el-checkbox>-->
-        <!--          </el-form-item>-->
-        <!--          <span v-show="state.titleForm.remarkShow">-->
-        <!--            <el-form-item :label="t('chart.remark_edit')" class="form-item">-->
-        <!--              <el-button-->
-        <!--                :title="t('chart.edit')"-->
-        <!--                icon="el-icon-edit"-->
-        <!--                type="text"-->
-        <!--                size="small"-->
-        <!--                @click="editRemark"-->
-        <!--              />-->
-        <!--            </el-form-item>-->
-        <!--            <el-form-item :label="t('chart.remark_bg_color')" class="form-item">-->
-        <!--              <el-color-picker-->
-        <!--                v-model="state.titleForm.remarkBackgroundColor"-->
-        <!--                class="color-picker-style"-->
-        <!--                :predefine="predefineColors"-->
-        <!--                @change="changeTitleStyle('remarkBackgroundColor')"-->
-        <!--              />-->
-        <!--            </el-form-item>-->
-        <!--          </span>-->
       </el-form>
     </el-col>
-
-    <!--富文本编辑框-->
-    <!--    <el-dialog-->
-    <!--      v-if="showEditRemark"-->
-    <!--      :title="t('chart.remark')"-->
-    <!--      :visible="showEditRemark"-->
-    <!--      :show-close="false"-->
-    <!--      width="70%"-->
-    <!--      class="dialog-css"-->
-    <!--      append-to-body-->
-    <!--    >-->
-    <!--      <remark-editor-->
-    <!--        :remark="titleForm.remark"-->
-    <!--        :background="titleForm.remarkBackgroundColor"-->
-    <!--        @onRemarkChange="onRemarkChange"-->
-    <!--      />-->
-    <!--      <div slot="footer" class="dialog-footer">-->
-    <!--        <el-button size="small" @click="closeRemark">{{ t('chart.cancel') }} </el-button>-->
-    <!--        <el-button type="primary" size="small" @click="changeRemark"-->
-    <!--          >{{ t('chart.confirm') }}-->
-    <!--        </el-button>-->
-    <!--      </div>-->
-    <!--    </el-dialog>-->
   </div>
 </template>
 

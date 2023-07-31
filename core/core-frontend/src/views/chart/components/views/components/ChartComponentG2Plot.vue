@@ -94,6 +94,7 @@ const renderG2Plot = (chart, chartView: G2PlotChartView<any, any>) => {
     chartObj: state.myChart,
     container: containerId,
     chart: chart,
+    scale: 1,
     action
   })
   state.myChart?.render()

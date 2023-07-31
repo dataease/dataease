@@ -30,25 +30,12 @@ const { propValue, element } = toRefs(props)
     <div>
       <component-wrapper
         v-for="(item, index) in propValue"
-        :id="'group-component' + item.id"
+        :id="'component' + item.id"
         :view-info="canvasViewInfo[item.id]"
         :key="index"
         :config="item"
         :style="item.groupStyle"
       />
-      <!--      -->
-      <!--      <component-->
-      <!--        :is="findComponent(item.component)"-->
-      <!--        v-for="item in propValue"-->
-      <!--        :id="'component' + item.id"-->
-      <!--        :key="item.id"-->
-      <!--        class="component"-->
-      <!--        :style="item.groupStyle"-->
-      <!--        :prop-value="item.propValue"-->
-      <!--        :element="item"-->
-      <!--        :request="item.request"-->
-      <!--        :view="canvasViewInfo[item.id]"-->
-      <!--      />-->
     </div>
   </div>
 </template>

@@ -6,7 +6,7 @@ import { Gauge as G2Gauge, GaugeOptions } from '@antv/g2plot'
 import { flow, parseJson } from '@/views/chart/components/js/util'
 import {
   DEFAULT_LABEL,
-  DEFAULT_SIZE,
+  DEFAULT_MISC,
   DEFAULT_THRESHOLD,
   getScaleValue
 } from '@/views/chart/components/editor/util/chart'
@@ -18,13 +18,35 @@ export class Gauge extends G2PlotChartView<GaugeOptions, G2Gauge> {
     'background-overall-component',
     'basic-style-selector',
     'label-selector',
+    'misc-selector',
     'title-selector'
   ]
   propertyInner: EditorPropertyInner = {
     'background-overall-component': ['all'],
     'basic-style-selector': ['colors', 'alpha', 'gaugeStyle'],
-    'label-selector': ['all'],
-    'title-selector': ['all']
+    'label-selector': ['fontSize', 'color'],
+    'title-selector': [
+      'title',
+      'fontSize',
+      'color',
+      'hPosition',
+      'isItalic',
+      'isBolder',
+      'remarkShow',
+      'fontFamily',
+      'letterSpace',
+      'fontShadow'
+    ],
+    'misc-selector': [
+      'gaugeMinType',
+      'gaugeMinField',
+      'gaugeMin',
+      'gaugeMaxType',
+      'gaugeMaxField',
+      'gaugeMax',
+      'gaugeStartAngle',
+      'gaugeEndAngle'
+    ]
   }
   axis: AxisType[] = ['yAxis', 'filter']
 
@@ -73,35 +95,35 @@ export class Gauge extends G2PlotChartView<GaugeOptions, G2Gauge> {
     }
   }
 
-  protected configSize(chart: Chart, options: GaugeOptions): GaugeOptions {
+  protected configMisc(chart: Chart, options: GaugeOptions): GaugeOptions {
     const customAttr = parseJson(chart.customAttr)
     const data = chart.data.series[0].data[0]
     let min, max, startAngle, endAngle
-    if (customAttr.size) {
-      const size = customAttr.size
-      if (size.gaugeMinType === 'dynamic' && size.gaugeMaxType === 'dynamic') {
+    if (customAttr.misc) {
+      const misc = customAttr.misc
+      if (misc.gaugeMinType === 'dynamic' && misc.gaugeMaxType === 'dynamic') {
         min = chart.data?.series[chart.data?.series.length - 2]?.data[0]
         max = chart.data?.series[chart.data?.series.length - 1]?.data[0]
-      } else if (size.gaugeMinType !== 'dynamic' && size.gaugeMaxType === 'dynamic') {
-        min = size.gaugeMin ? size.gaugeMin : DEFAULT_SIZE.gaugeMin
+      } else if (misc.gaugeMinType !== 'dynamic' && misc.gaugeMaxType === 'dynamic') {
+        min = misc.gaugeMin ? misc.gaugeMin : DEFAULT_MISC.gaugeMin
         max = chart.data?.series[chart.data?.series.length - 1]?.data[0]
-      } else if (size.gaugeMinType === 'dynamic' && size.gaugeMaxType !== 'dynamic') {
+      } else if (misc.gaugeMinType === 'dynamic' && misc.gaugeMaxType !== 'dynamic') {
         min = chart.data?.series[chart.data?.series.length - 1]?.data[0]
-        max = size.gaugeMax ? size.gaugeMax : DEFAULT_SIZE.gaugeMax
+        max = misc.gaugeMax ? misc.gaugeMax : DEFAULT_MISC.gaugeMax
       } else {
-        min = size.gaugeMin ? size.gaugeMin : DEFAULT_SIZE.gaugeMin
-        max = size.gaugeMax ? size.gaugeMax : DEFAULT_SIZE.gaugeMax
+        min = misc.gaugeMin ? misc.gaugeMin : DEFAULT_MISC.gaugeMin
+        max = misc.gaugeMax ? misc.gaugeMax : DEFAULT_MISC.gaugeMax
       }
-      startAngle = (size.gaugeStartAngle * Math.PI) / 180
-      endAngle = (size.gaugeEndAngle * Math.PI) / 180
+      startAngle = (misc.gaugeStartAngle * Math.PI) / 180
+      endAngle = (misc.gaugeEndAngle * Math.PI) / 180
     }
     const percent = (parseFloat(data) - parseFloat(min)) / (parseFloat(max) - parseFloat(min))
-    const size = {
+    const tmp = {
       percent,
       startAngle,
       endAngle
     }
-    return { ...options, ...size }
+    return { ...options, ...tmp }
   }
 
   private configRange(chart: Chart, options: GaugeOptions, scale = 1): GaugeOptions {
@@ -171,9 +193,9 @@ export class Gauge extends G2PlotChartView<GaugeOptions, G2Gauge> {
       }
     }
     const customAttr = parseJson(chart.customAttr)
-    if (customAttr.color.gradient) {
+    if (customAttr.basicStyle.gradient) {
       const colorList = (theme.styleSheet?.paletteQualitative10 || []).map(ele => {
-        return setGradientColor(ele, customAttr.color.gradient)
+        return setGradientColor(ele, true)
       })
       if (!rangOptions.range) {
         rangOptions.range = {
@@ -220,7 +242,7 @@ export class Gauge extends G2PlotChartView<GaugeOptions, G2Gauge> {
   }
 
   protected setupOptions(chart: Chart, options: GaugeOptions): GaugeOptions {
-    return flow(this.configTheme, this.configSize, this.configLabel)(chart, options)
+    return flow(this.configTheme, this.configMisc, this.configLabel)(chart, options)
   }
   constructor() {
     super('gauge', DEFAULT_DATA)

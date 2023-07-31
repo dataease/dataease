@@ -14,10 +14,6 @@
     >
       <el-icon><Plus /></el-icon>
     </el-upload>
-    <!--    <el-row style="width: 100%">-->
-    <!--      <span v-if="imgUrlInner" class="re-update-span" @click="goFile">重新上传</span>-->
-    <!--      <span v-else class="image-hint">当前支持.jpeg,.jpg,.png,.gif文件,大小不要超过15M</span>-->
-    <!--    </el-row>-->
     <input
       id="input"
       ref="files"

@@ -42,6 +42,7 @@
             <el-tree
               menu
               ref="linkJumpInfoTree"
+              :filter-node-method="filterNodeMethod"
               :data="state.linkJumpInfoXArray"
               node-key="sourceFieldId"
               highlight-current
@@ -50,8 +51,8 @@
             >
               <template #default="{ data }">
                 <span class="custom-tree-node">
-                  <span @click.stop>
-                    <div>
+                  <span>
+                    <div @click.stop>
                       <span class="auth-span">
                         <el-checkbox
                           v-model="data.checked"
@@ -61,7 +62,15 @@
                     </div>
                   </span>
                   <span>
-                    <span style="margin-left: 6px">{{ data.sourceFieldName }}</span>
+                    <span class="tree-select-field">
+                      <el-icon>
+                        <Icon
+                          :name="`field_${fieldType(data.sourceDeType)}`"
+                          :className="`field-icon-${fieldType(data.sourceDeType)}`"
+                        ></Icon>
+                      </el-icon>
+                      {{ data.sourceFieldName }}
+                    </span>
                   </span>
                 </span>
               </template>
@@ -260,10 +269,7 @@
                   </el-button>
                 </el-row>
               </el-row>
-              <el-row
-                v-if="state.linkJumpInfo.linkType === 'outer' && dialogShow"
-                style="padding: 14px; border-top: 1px solid #e6e6e6"
-              >
+              <el-row v-if="outerContentShow" style="padding: 14px; border-top: 1px solid #e6e6e6">
                 <el-row class="url-text">
                   {{ t('visualization.target_url') }}
                   <el-tooltip class="item" effect="dark" placement="bottom">
@@ -317,8 +323,8 @@
                         >
                           <el-icon>
                             <Icon
-                              :name="`field_${fieldType(item.deExtractType)}`"
-                              :className="`field-icon-${fieldType(item.deExtractType)}`"
+                              :name="`field_${fieldType(item.sourceDeType)}`"
+                              :className="`field-icon-${fieldType(item.sourceDeType)}`"
                             ></Icon>
                           </el-icon>
                           {{ item.sourceFieldName }}
@@ -352,7 +358,7 @@ import {
   updateJumpSet,
   viewTableDetailList
 } from '@/api/visualization/linkJump'
-import { reactive, ref, nextTick, onMounted } from 'vue'
+import { reactive, ref, nextTick, onMounted, computed, watch } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { queryTreeApi } from '@/api/visualization/dataVisualization'
@@ -473,43 +479,45 @@ const init = viewItem => {
     state.panelList = rsp
   })
 
-  // 获取当前数据集信息
-  getDatasetDetails(chartDetails.tableId).then(res => {
-    state.curDatasetInfo = res || {}
-  })
+  if (chartDetails.tableId) {
+    // 获取当前数据集信息
+    getDatasetDetails(chartDetails.tableId).then(res => {
+      state.curDatasetInfo = res || {}
+    })
 
-  // 获取当前视图的字段信息
-  listFieldByDatasetGroup(chartDetails.tableId).then(rsp => {
-    state.linkJumpCurViewFieldArray = []
-    const sourceCurViewFieldArray = rsp.data
-    sourceCurViewFieldArray.forEach(fieldItem => {
-      if (checkAllAxisStr.indexOf(fieldItem.id) > -1) {
-        state.linkJumpCurViewFieldArray.push(fieldItem)
-      }
+    // 获取当前视图的字段信息
+    listFieldByDatasetGroup(chartDetails.tableId).then(rsp => {
+      state.linkJumpCurViewFieldArray = []
+      const sourceCurViewFieldArray = rsp.data
+      sourceCurViewFieldArray.forEach(fieldItem => {
+        if (checkAllAxisStr.indexOf(fieldItem.id) > -1) {
+          state.linkJumpCurViewFieldArray.push(fieldItem)
+        }
+      })
     })
-  })
 
-  // 获取当前视图的关联信息
-  queryWithViewId(dvInfo.value.id, state.viewId).then(rsp => {
-    state.linkJump = rsp.data
-    state.linkJumpInfoArray = []
-    state.linkJumpInfoXArray = []
-    state.linkJump.linkJumpInfoArray.forEach(linkJumpInfo => {
-      if (checkJumpStr.indexOf(linkJumpInfo.sourceFieldId) > -1) {
-        state.mapJumpInfoArray[linkJumpInfo.sourceFieldId] = linkJumpInfo
-        state.linkJumpInfoArray.push(linkJumpInfo)
-        state.linkJumpInfoXArray.push(linkJumpInfo)
-      } else if (checkAllAxisStr.indexOf(linkJumpInfo.sourceFieldId) > -1) {
-        state.linkJumpInfoArray.push(linkJumpInfo)
-      }
+    // 获取当前视图的关联信息
+    queryWithViewId(dvInfo.value.id, state.viewId).then(rsp => {
+      state.linkJump = rsp.data
+      state.linkJumpInfoArray = []
+      state.linkJumpInfoXArray = []
+      state.linkJump.linkJumpInfoArray.forEach(linkJumpInfo => {
+        if (checkJumpStr.indexOf(linkJumpInfo.sourceFieldId) > -1) {
+          state.mapJumpInfoArray[linkJumpInfo.sourceFieldId] = linkJumpInfo
+          state.linkJumpInfoArray.push(linkJumpInfo)
+          state.linkJumpInfoXArray.push(linkJumpInfo)
+        } else if (checkAllAxisStr.indexOf(linkJumpInfo.sourceFieldId) > -1) {
+          state.linkJumpInfoArray.push(linkJumpInfo)
+        }
+      })
+      const firstNode = state.linkJumpInfoArray[0]
+      state.initState = true
+      nextTick(() => {
+        linkJumpInfoTree.value.setCurrentKey(firstNode.sourceFieldId)
+        nodeClick(firstNode)
+      })
     })
-    const firstNode = state.linkJumpInfoArray[0]
-    state.initState = true
-    nextTick(() => {
-      linkJumpInfoTree.value.setCurrentKey(firstNode.sourceFieldId)
-      nodeClick(firstNode)
-    })
-  })
+  }
 }
 
 const save = () => {
@@ -626,6 +634,30 @@ const fieldType = (deType: number) => {
 const insertFieldToCodeMirror = (value: string) => {
   outerContentEditor.value.insertFieldToCodeMirror(value)
 }
+
+const outerContentShow = computed(() => {
+  return state.linkJumpInfo && state.linkJumpInfo.linkType === 'outer' && dialogShow.value
+})
+
+const filterNodeMethod = (value, data) => {
+  return !value || data.checked
+}
+
+watch(
+  () => state.showSelected,
+  (newValue, oldValue) => {
+    linkJumpInfoTree.value.filter(newValue)
+  }
+)
+
+watch(
+  () => outerContentShow.value,
+  (newValue, oldValue) => {
+    if (newValue) {
+      codeMirrorContentSet(state.linkJumpInfo.content)
+    }
+  }
+)
 
 defineExpose({
   dialogInit
@@ -785,11 +817,14 @@ defineExpose({
 }
 
 .item-dimension {
+  display: flex !important;
+  align-items: center;
   padding: 2px 10px;
   margin: 2px 2px 0 2px;
   border: solid 1px #eee;
   text-align: left;
   color: #606266;
+  font-size: 14px;
   /*background-color: rgba(35,46,64,.05);*/
   background-color: white;
   display: block;
@@ -948,5 +983,11 @@ span {
   width: 100%;
   line-height: 14px;
   margin-bottom: 8px;
+}
+
+.tree-select-field {
+  font-size: 14px;
+  display: flex;
+  align-items: center;
 }
 </style>

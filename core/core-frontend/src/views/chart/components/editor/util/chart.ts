@@ -161,40 +161,18 @@ export const DEFAULT_TAB_COLOR_CASE_LIGHT = {
   headBorderActiveColor: '#OOOOOO'
 }
 
-export const DEFAULT_SIZE = {
-  barDefault: true,
-  barWidth: 40,
-  barGap: 0.4,
-  lineWidth: 2,
-  lineType: 'solid',
-  lineSymbol: 'circle',
-  lineSymbolSize: 4,
-  lineSmooth: true,
-  lineArea: false,
+export const DEFAULT_MISC: ChartMiscAttr = {
   pieInnerRadius: 0,
   pieOuterRadius: 80,
-  pieRoseType: 'radius',
-  pieRoseRadius: 5,
-  funnelWidth: 80,
   radarShape: 'polygon',
   radarSize: 80,
-  tableTitleFontSize: 12,
-  tableItemFontSize: 12,
-  tableTitleHeight: 36,
-  tableItemHeight: 36,
-  tablePageSize: '20',
-  tableColumnMode: 'custom',
-  tableColumnWidth: 100,
-  tableHeaderAlign: 'left',
-  tableItemAlign: 'right',
-  tableAutoBreakLine: false,
-  gaugeMinType: 'fix', // fix or dynamic
+  gaugeMinType: 'fix',
   gaugeMinField: {
     id: '',
     summary: ''
   },
   gaugeMin: 0,
-  gaugeMaxType: 'fix', // fix or dynamic
+  gaugeMaxType: 'fix',
   gaugeMaxField: {
     id: '',
     summary: ''
@@ -202,22 +180,22 @@ export const DEFAULT_SIZE = {
   gaugeMax: 100,
   gaugeStartAngle: 225,
   gaugeEndAngle: -45,
-  gaugeTickCount: 5,
-  dimensionFontSize: 18,
-  quotaFontSize: 18,
-  spaceSplit: 10,
-  dimensionShow: true,
-  quotaShow: true,
-  quotaFontFamily: 'Microsoft YaHei',
-  quotaFontIsBolder: false,
-  quotaFontIsItalic: false,
-  quotaLetterSpace: '0',
-  quotaFontShadow: false,
-  dimensionFontFamily: 'Microsoft YaHei',
-  dimensionFontIsBolder: false,
-  dimensionFontIsItalic: false,
-  dimensionLetterSpace: '0',
-  dimensionFontShadow: false,
+  nameFontSize: 18,
+  valueFontSize: 18,
+  nameValueSpace: 10,
+  valueFontColor: '#5470c6',
+  valueFontFamily: 'Microsoft YaHei',
+  valueFontIsBolder: false,
+  valueFontIsItalic: false,
+  valueLetterSpace: 0,
+  valueFontShadow: false,
+  showName: true,
+  nameFontColor: '#000000',
+  nameFontFamily: 'Microsoft YaHei',
+  nameFontIsBolder: false,
+  nameFontIsItalic: false,
+  nameLetterSpace: '0',
+  nameFontShadow: false,
   scatterSymbol: 'circle',
   scatterSymbolSize: 20,
   treemapWidth: 80,
@@ -229,25 +207,15 @@ export const DEFAULT_SIZE = {
     summary: ''
   },
   liquidSize: 80,
-  liquidOutlineBorder: 4,
-  liquidOutlineDistance: 8,
-  liquidWaveLength: 128,
-  liquidWaveCount: 3,
   liquidShape: 'circle',
-  tablePageMode: 'page',
   symbolOpacity: 0.7,
   symbolStrokeWidth: 2,
-  showIndex: false,
-  indexLabel: '序号',
   hPosition: 'center',
   vPosition: 'center',
   mapPitch: 0,
   mapLineType: 'arc',
   mapLineWidth: 1,
-  mapLineAnimate: true,
-  mapLineAnimateDuration: 3,
-  mapLineAnimateInterval: 1,
-  mapLineAnimateTrailLength: 1
+  mapLineAnimateDuration: 3
 }
 export const DEFAULT_SUSPENSION = {
   show: true
@@ -257,38 +225,38 @@ export const DEFAULT_MARK = {
   fieldId: '',
   conditions: []
 }
-export const DEFAULT_LABEL = {
+export const DEFAULT_LABEL: ChartLabelAttr = {
   show: false,
   position: 'top',
   color: '#909399',
   fontSize: 10,
   formatter: '',
-  gaugeFormatter: '{value}',
   labelLine: {
     show: true
   },
   gaugeLabelFormatter: {
-    type: 'value', // auto,value,percent
-    unit: 1, // 换算单位
-    suffix: '', // 单位后缀
-    decimalCount: 2, // 小数位数
-    thousandSeparator: true // 千分符
+    type: 'value',
+    unit: 1,
+    suffix: '',
+    decimalCount: 2,
+    thousandSeparator: true
   },
   reserveDecimalCount: 2,
-  labelContent: ['dimension', 'proportion']
+  labelContent: ['dimension', 'proportion'],
+  labelShadow: false,
+  labelBgColor: '',
+  labelShadowColor: ''
 }
-export const DEFAULT_TOOLTIP = {
+export const DEFAULT_TOOLTIP: ChartTooltipAttr = {
   show: true,
   trigger: 'item',
   confine: true,
-  textStyle: {
-    fontSize: '10',
-    color: '#909399'
-  },
+  fontSize: 10,
+  color: '#909399',
   formatter: '',
   backgroundColor: '#ffffff'
 }
-export const DEFAULT_TOTAL = {
+export const DEFAULT_TABLE_TOTAL: ChartTableTotalAttr = {
   row: {
     showGrandTotals: true,
     showSubTotals: true,
@@ -303,7 +271,7 @@ export const DEFAULT_TOTAL = {
     calcSubTotals: {
       aggregation: 'SUM'
     },
-    totalSort: 'none', // asc,desc
+    totalSort: 'none',
     totalSortField: ''
   },
   col: {
@@ -324,7 +292,23 @@ export const DEFAULT_TOTAL = {
     totalSortField: ''
   }
 }
-export const DEFAULT_TITLE_STYLE = {
+export const DEFAULT_TABLE_HEADER: ChartTableHeaderAttr = {
+  indexLabel: '序号',
+  showIndex: false,
+  tableHeaderAlign: 'left',
+  tableHeaderBgColor: '#6D9A49',
+  tableHeaderFontColor: '#000000',
+  tableTitleFontSize: 12,
+  tableTitleHeight: 36
+}
+export const DEFAULT_TABLE_CELL: ChartTableCellAttr = {
+  tableFontColor: '#000000',
+  tableItemAlign: 'right',
+  tableItemBgColor: '#FFFFFF',
+  tableItemFontSize: 12,
+  tableItemHeight: 36
+}
+export const DEFAULT_TITLE_STYLE: ChartTextStyle = {
   show: true,
   fontSize: '18',
   color: '#000000',
@@ -414,7 +398,7 @@ export const DEFAULT_MARGIN_STYLE = {
   marginRight: 10
 }
 
-export const DEFAULT_XAXIS_STYLE = {
+export const DEFAULT_XAXIS_STYLE: ChartAxisStyle = {
   show: true,
   position: 'bottom',
   name: '',
@@ -425,7 +409,7 @@ export const DEFAULT_XAXIS_STYLE = {
   axisLabel: {
     show: true,
     color: '#333333',
-    fontSize: '12',
+    fontSize: 12,
     rotate: 0,
     formatter: '{value}'
   },
@@ -447,20 +431,20 @@ export const DEFAULT_XAXIS_STYLE = {
   },
   axisValue: {
     auto: true,
-    min: '',
-    max: '',
-    split: '',
-    splitCount: ''
+    min: 10,
+    max: 100,
+    split: 10,
+    splitCount: 10
   },
   axisLabelFormatter: {
-    type: 'auto', // auto,value,percent
-    unit: 1, // 换算单位
-    suffix: '', // 单位后缀
-    decimalCount: 2, // 小数位数
-    thousandSeparator: true // 千分符
+    type: 'auto',
+    unit: 1,
+    suffix: '',
+    decimalCount: 2,
+    thousandSeparator: true
   }
 }
-export const DEFAULT_YAXIS_STYLE = {
+export const DEFAULT_YAXIS_STYLE: ChartAxisStyle = {
   show: true,
   position: 'left',
   name: '',
@@ -471,7 +455,7 @@ export const DEFAULT_YAXIS_STYLE = {
   axisLabel: {
     show: true,
     color: '#333333',
-    fontSize: '12',
+    fontSize: 12,
     rotate: 0,
     formatter: '{value}'
   },
@@ -493,20 +477,20 @@ export const DEFAULT_YAXIS_STYLE = {
   },
   axisValue: {
     auto: true,
-    min: '',
-    max: '',
-    split: '',
-    splitCount: ''
+    min: 10,
+    max: 100,
+    split: 10,
+    splitCount: 10
   },
   axisLabelFormatter: {
-    type: 'auto', // auto,value,percent
-    unit: 1, // 换算单位
-    suffix: '', // 单位后缀
-    decimalCount: 2, // 小数位数
-    thousandSeparator: true // 千分符
+    type: 'auto',
+    unit: 1,
+    suffix: '',
+    decimalCount: 2,
+    thousandSeparator: true
   }
 }
-export const DEFAULT_YAXIS_EXT_STYLE = {
+export const DEFAULT_YAXIS_EXT_STYLE: ChartAxisStyle = {
   show: true,
   position: 'right',
   name: '',
@@ -517,7 +501,7 @@ export const DEFAULT_YAXIS_EXT_STYLE = {
   axisLabel: {
     show: true,
     color: '#333333',
-    fontSize: '12',
+    fontSize: 12,
     rotate: 0,
     formatter: '{value}'
   },
@@ -545,11 +529,11 @@ export const DEFAULT_YAXIS_EXT_STYLE = {
     splitCount: null
   },
   axisLabelFormatter: {
-    type: 'auto', // auto,value,percent
-    unit: 1, // 换算单位
-    suffix: '', // 单位后缀
-    decimalCount: 2, // 小数位数
-    thousandSeparator: true // 千分符
+    type: 'auto',
+    unit: 1,
+    suffix: '',
+    decimalCount: 2,
+    thousandSeparator: true
   }
 }
 export const DEFAULT_BACKGROUND_COLOR = {
@@ -601,659 +585,26 @@ export const DEFAULT_SPLIT = {
     show: true
   }
 }
-export const DEFAULT_FUNCTION_CFG = {
+export const DEFAULT_FUNCTION_CFG: ChartFunctionCfg = {
   sliderShow: false,
   sliderRange: [0, 10],
   sliderBg: '#FFFFFF',
   sliderFillBg: '#BCD6F1',
   sliderTextColor: '#999999',
-  emptyDataStrategy: 'breakLine'
+  emptyDataStrategy: 'breakLine',
+  emptyDataFieldCtrl: []
 }
-export const DEFAULT_THRESHOLD = {
+export const DEFAULT_THRESHOLD: ChartThreshold = {
   gaugeThreshold: '',
   labelThreshold: [],
   tableThreshold: [],
   textLabelThreshold: []
 }
-export const DEFAULT_SCROLL = {
+export const DEFAULT_SCROLL: ScrollCfg = {
   open: false,
   row: 1,
   interval: 2000,
   step: 50
-}
-// chart config
-export const BASE_BAR = {
-  title: {
-    text: '',
-    textStyle: {
-      fontWeight: 'normal'
-    }
-  },
-  grid: {
-    containLabel: true
-  },
-  tooltip: {},
-  legend: {
-    show: true,
-    type: 'scroll',
-    itemWidth: 10,
-    itemHeight: 10,
-    icon: 'rect',
-    data: []
-  },
-  xAxis: {
-    data: []
-  },
-  yAxis: {
-    type: 'value'
-  },
-  series: [],
-  dataZoom: [
-    {
-      type: 'slider',
-      show: false,
-      xAxisIndex: [0],
-      start: 0,
-      end: 100
-    },
-    {
-      type: 'slider',
-      show: false,
-      yAxisIndex: [0],
-      left: '93%',
-      start: 0,
-      end: 100
-    },
-    {
-      type: 'inside',
-      disabled: true,
-      xAxisIndex: [0],
-      start: 0,
-      end: 100
-    },
-    {
-      type: 'inside',
-      disabled: true,
-      yAxisIndex: [0],
-      start: 0,
-      end: 100
-    }
-  ]
-}
-export const HORIZONTAL_BAR = {
-  title: {
-    text: '',
-    textStyle: {
-      fontWeight: 'normal'
-    }
-  },
-  grid: {
-    containLabel: true
-  },
-  tooltip: {},
-  legend: {
-    show: true,
-    type: 'scroll',
-    itemWidth: 10,
-    itemHeight: 10,
-    icon: 'rect',
-    data: []
-  },
-  xAxis: {
-    type: 'value'
-  },
-  yAxis: {
-    data: []
-  },
-  series: [],
-  dataZoom: [
-    {
-      type: 'slider',
-      show: false,
-      xAxisIndex: [0],
-      start: 0,
-      end: 100
-    },
-    {
-      type: 'slider',
-      show: false,
-      yAxisIndex: [0],
-      left: '93%',
-      start: 0,
-      end: 100
-    },
-    {
-      type: 'inside',
-      disabled: true,
-      xAxisIndex: [0],
-      start: 0,
-      end: 100
-    },
-    {
-      type: 'inside',
-      disabled: true,
-      yAxisIndex: [0],
-      start: 0,
-      end: 100
-    }
-  ]
-}
-
-export const BASE_LINE = {
-  title: {
-    text: '',
-    textStyle: {
-      fontWeight: 'normal'
-    }
-  },
-  grid: {
-    containLabel: true
-  },
-  tooltip: {},
-  legend: {
-    show: true,
-    type: 'scroll',
-    itemWidth: 10,
-    itemHeight: 10,
-    icon: 'rect',
-    data: []
-  },
-  xAxis: {
-    boundaryGap: false,
-    data: []
-  },
-  yAxis: {
-    type: 'value'
-  },
-  series: [],
-  dataZoom: [
-    {
-      type: 'slider',
-      show: false,
-      xAxisIndex: [0],
-      start: 0,
-      end: 100
-    },
-    {
-      type: 'slider',
-      show: false,
-      yAxisIndex: [0],
-      left: '93%',
-      start: 0,
-      end: 100
-    },
-    {
-      type: 'inside',
-      disabled: true,
-      xAxisIndex: [0],
-      start: 0,
-      end: 100
-    },
-    {
-      type: 'inside',
-      disabled: true,
-      yAxisIndex: [0],
-      start: 0,
-      end: 100
-    }
-  ]
-}
-
-export const BASE_PIE = {
-  title: {
-    text: '',
-    textStyle: {
-      fontWeight: 'normal'
-    }
-  },
-  grid: {
-    containLabel: true
-  },
-  tooltip: {},
-  legend: {
-    show: true,
-    type: 'scroll',
-    itemWidth: 10,
-    itemHeight: 10,
-    icon: 'rect'
-  },
-  series: [
-    {
-      name: '',
-      type: 'pie',
-      radius: ['0%', '60%'],
-      avoidLabelOverlap: false,
-      emphasis: {
-        itemStyle: {
-          shadowBlur: 10,
-          shadowOffsetX: 0,
-          shadowColor: 'rgba(0, 0, 0, 0.5)'
-        }
-      },
-      data: []
-    }
-  ]
-}
-
-export const BASE_FUNNEL = {
-  title: {
-    text: '',
-    textStyle: {
-      fontWeight: 'normal'
-    }
-  },
-  grid: {
-    containLabel: true
-  },
-  tooltip: {
-    trigger: 'item'
-  },
-  legend: {
-    show: true,
-    type: 'scroll',
-    itemWidth: 10,
-    itemHeight: 10,
-    icon: 'rect'
-  },
-  series: [
-    {
-      name: '',
-      type: 'funnel',
-      left: 'center',
-      top: 60,
-      bottom: 60,
-      width: '80%',
-      min: 0,
-      max: 100,
-      minSize: '0%',
-      maxSize: '100%',
-      sort: 'descending',
-      gap: 1,
-      labelLine: {
-        length: 10,
-        lineStyle: {
-          width: 1,
-          type: 'solid'
-        }
-      },
-      itemStyle: {
-        borderColor: '#fff',
-        borderWidth: 1
-      },
-      emphasis: {
-        label: {
-          fontSize: 20
-        }
-      },
-      data: []
-    }
-  ]
-}
-
-export const BASE_RADAR = {
-  title: {
-    text: '',
-    textStyle: {
-      fontWeight: 'normal'
-    }
-  },
-  grid: {
-    containLabel: true
-  },
-  tooltip: {},
-  legend: {
-    show: true,
-    type: 'scroll',
-    itemWidth: 10,
-    itemHeight: 10,
-    icon: 'rect',
-    data: []
-  },
-  radar: {
-    shape: 'polygon',
-    name: {
-      show: true,
-      color: '#999999',
-      fontSize: '12'
-    },
-    splitNumber: 5,
-    axisLine: {
-      show: true,
-      lineStyle: {
-        color: '#999999',
-        width: 1,
-        type: 'solid'
-      }
-    },
-    axisTick: {
-      show: false,
-      length: 5,
-      lineStyle: {
-        color: '#999999',
-        width: 1,
-        type: 'solid'
-      }
-    },
-    axisLabel: {
-      show: false,
-      rotate: 0,
-      margin: 8,
-      color: '#999999',
-      fontSize: '12',
-      formatter: '{value}'
-    },
-    splitLine: {
-      show: true,
-      lineStyle: {
-        color: '#999999',
-        width: 1,
-        type: 'solid'
-      }
-    },
-    splitArea: {
-      show: true
-    },
-    indicator: []
-  },
-  series: []
-}
-
-export const BASE_GAUGE = {
-  title: {
-    text: '',
-    textStyle: {
-      fontWeight: 'normal'
-    }
-  },
-  grid: {
-    containLabel: true
-  },
-  tooltip: {},
-  legend: {
-    show: true,
-    type: 'scroll',
-    itemWidth: 10,
-    itemHeight: 10,
-    icon: 'rect'
-  },
-  series: [
-    {
-      name: '',
-      type: 'gauge',
-      startAngle: 225,
-      endAngle: -45,
-      min: 0,
-      max: 100,
-      progress: {
-        show: true
-      },
-      detail: {
-        show: true,
-        valueAnimation: true,
-        formatter: '{value}'
-      },
-      data: []
-    }
-  ]
-}
-
-export const BASE_CHART_STRING = {
-  stylePriority: 'view',
-  xAxis: '[]',
-  yAxis: '[]',
-  show: true,
-  type: 'panel',
-  title: '',
-  customAttr: JSON.stringify({
-    color: DEFAULT_COLOR_CASE,
-    tableColor: DEFAULT_COLOR_CASE,
-    size: DEFAULT_SIZE,
-    label: DEFAULT_LABEL,
-    tooltip: DEFAULT_TOOLTIP
-  }),
-  customStyle: JSON.stringify({
-    text: DEFAULT_TITLE_STYLE,
-    legend: DEFAULT_LEGEND_STYLE,
-    xAxis: DEFAULT_XAXIS_STYLE,
-    yAxis: DEFAULT_YAXIS_STYLE,
-    yAxisExt: DEFAULT_YAXIS_EXT_STYLE
-  }),
-  customFilter: '[]'
-}
-
-export const BASE_CHART = {
-  xAxis: [],
-  yAxis: [],
-  show: true,
-  type: 'panel',
-  title: '',
-  customAttr: {
-    color: DEFAULT_COLOR_CASE,
-    tableColor: DEFAULT_COLOR_CASE,
-    size: DEFAULT_SIZE,
-    label: DEFAULT_LABEL,
-    tooltip: DEFAULT_TOOLTIP
-  },
-  customStyle: {
-    text: DEFAULT_TITLE_STYLE,
-    legend: DEFAULT_LEGEND_STYLE,
-    xAxis: DEFAULT_XAXIS_STYLE,
-    yAxis: DEFAULT_YAXIS_STYLE,
-    yAxisExt: DEFAULT_YAXIS_EXT_STYLE
-  },
-  customFilter: []
-}
-
-export const BASE_MAP = {
-  title: {
-    text: '',
-    textStyle: {
-      fontWeight: 'normal'
-    }
-  },
-
-  tooltip: {},
-  visualMap: {
-    min: 50,
-    max: 52,
-    text: ['High', 'Low'],
-    realtime: false,
-    calculable: true,
-    inRange: {
-      color: ['lightskyblue', 'yellow', 'orangered']
-    },
-    seriesIndex: 0,
-    textStyle: {},
-    right: 0
-  },
-  geo: {
-    map: 'MAP',
-    roam: false,
-    nameMap: {},
-    itemStyle: {
-      normal: {},
-      emphasis: {
-        label: {
-          show: false
-        }
-      }
-    }
-  },
-  series: [
-    {
-      name: '',
-      type: 'map',
-      geoIndex: 0,
-      roam: true,
-      data: [],
-      itemStyle: {
-        normal: {},
-        emphasis: {
-          label: {
-            show: false
-          }
-        }
-      }
-    }
-  ]
-}
-
-export const BASE_SCATTER = {
-  title: {
-    text: '',
-    textStyle: {
-      fontWeight: 'normal'
-    }
-  },
-  grid: {
-    containLabel: true
-  },
-  tooltip: {},
-  legend: {
-    show: true,
-    type: 'scroll',
-    itemWidth: 10,
-    itemHeight: 10,
-    icon: 'rect',
-    data: []
-  },
-  xAxis: {
-    data: [],
-    boundaryGap: false
-  },
-  yAxis: {
-    type: 'value'
-  },
-  series: [],
-  dataZoom: [
-    {
-      type: 'slider',
-      show: false,
-      xAxisIndex: [0],
-      start: 0,
-      end: 100
-    },
-    {
-      type: 'slider',
-      show: false,
-      yAxisIndex: [0],
-      left: '93%',
-      start: 0,
-      end: 100
-    },
-    {
-      type: 'inside',
-      disabled: true,
-      xAxisIndex: [0],
-      start: 0,
-      end: 100
-    },
-    {
-      type: 'inside',
-      disabled: true,
-      yAxisIndex: [0],
-      start: 0,
-      end: 100
-    }
-  ]
-}
-
-export const BASE_TREEMAP = {
-  title: {
-    text: '',
-    textStyle: {
-      fontWeight: 'normal'
-    }
-  },
-  grid: {
-    containLabel: true
-  },
-  tooltip: {},
-  legend: {
-    show: true,
-    type: 'scroll',
-    itemWidth: 10,
-    itemHeight: 10,
-    icon: 'rect'
-  },
-  series: [
-    {
-      // name: '',
-      type: 'treemap',
-      roam: true,
-      itemStyle: {
-        gapWidth: 2
-      },
-      breadcrumb: {
-        show: false
-      },
-      data: []
-    }
-  ]
-}
-
-export const BASE_MIX = {
-  title: {
-    text: '',
-    textStyle: {
-      fontWeight: 'normal'
-    }
-  },
-  grid: {
-    containLabel: true
-  },
-  tooltip: {},
-  legend: {
-    show: true,
-    type: 'scroll',
-    itemWidth: 10,
-    itemHeight: 10,
-    icon: 'rect',
-    data: []
-  },
-  xAxis: {
-    data: []
-  },
-  yAxis: [
-    {
-      type: 'value'
-    },
-    {
-      type: 'value'
-    }
-  ],
-  series: [],
-  dataZoom: [
-    {
-      type: 'slider',
-      show: false,
-      xAxisIndex: [0],
-      start: 0,
-      end: 100
-    },
-    {
-      type: 'slider',
-      show: false,
-      yAxisIndex: [0],
-      left: '93%',
-      start: 0,
-      end: 100
-    },
-    {
-      type: 'inside',
-      disabled: true,
-      xAxisIndex: [0],
-      start: 0,
-      end: 100
-    },
-    {
-      type: 'inside',
-      disabled: true,
-      yAxisIndex: [0],
-      start: 0,
-      end: 100
-    }
-  ]
 }
 
 export const COLOR_PANEL = [
@@ -1526,17 +877,17 @@ export const CHART_FONT_FAMILY = [
 ]
 
 export const CHART_FONT_LETTER_SPACE = [
-  { name: '0px', value: '0' },
-  { name: '1px', value: '1' },
-  { name: '2px', value: '2' },
-  { name: '3px', value: '3' },
-  { name: '4px', value: '4' },
-  { name: '5px', value: '5' },
-  { name: '6px', value: '6' },
-  { name: '7px', value: '7' },
-  { name: '8px', value: '8' },
-  { name: '9px', value: '9' },
-  { name: '10px', value: '10' }
+  { name: '0px', value: 0 },
+  { name: '1px', value: 1 },
+  { name: '2px', value: 2 },
+  { name: '3px', value: 3 },
+  { name: '4px', value: 4 },
+  { name: '5px', value: 5 },
+  { name: '6px', value: 6 },
+  { name: '7px', value: 7 },
+  { name: '8px', value: 8 },
+  { name: '9px', value: 9 },
+  { name: '10px', value: 10 }
 ]
 
 export const NOT_SUPPORT_PAGE_DATASET = [
@@ -1559,50 +910,6 @@ export const DEFAULT_MAP = {
   lineAnimateDuration: 4,
   lineAnimateInterval: 0.5,
   lineAnimateTrailLength: 0.1
-}
-
-export const NEW_CHART = {
-  id: null, // 视图id
-  title: '图表',
-  sceneId: 0, // 仪表板id
-  tableId: '', // 数据集id
-  type: 'bar',
-  render: 'antv',
-  resultCount: 100,
-  resultMode: 'all',
-  refreshViewEnable: false,
-  refreshTime: 5,
-  refreshUnit: 'minute',
-  xAxis: [],
-  xAxisExt: [],
-  yAxis: [],
-  yAxisExt: [],
-  extStack: [],
-  drillFields: [],
-  viewFields: [],
-  extBubble: [],
-  customFilter: [],
-  customAttr: {
-    color: DEFAULT_COLOR_CASE,
-    size: DEFAULT_SIZE,
-    label: DEFAULT_LABEL,
-    tooltip: DEFAULT_TOOLTIP,
-    totalCfg: DEFAULT_TOTAL
-  },
-  customStyle: {
-    text: DEFAULT_TITLE_STYLE,
-    legend: DEFAULT_LEGEND_STYLE,
-    xAxis: DEFAULT_XAXIS_STYLE,
-    yAxis: DEFAULT_YAXIS_STYLE,
-    yAxisExt: DEFAULT_YAXIS_EXT_STYLE,
-    split: DEFAULT_SPLIT
-  },
-  senior: {
-    functionCfg: DEFAULT_FUNCTION_CFG,
-    assistLine: [],
-    threshold: DEFAULT_THRESHOLD,
-    scrollCfg: DEFAULT_SCROLL
-  }
 }
 
 export const CHART_TYPE_CONFIGS = [
@@ -2019,7 +1326,7 @@ export const CHART_TYPE_CONFIGS = [
 export const DEFAULT_BASIC_STYLE: ChartBasicStyle = {
   alpha: 100,
   tableBorderColor: '#CCCCCC',
-  tableScrollBarColor: 'rgba(255, 255, 255, 0.5)',
+  tableScrollBarColor: 'rgba(0, 0, 0, 0.15)',
   tableColumnMode: 'adopt',
   tableColumnWidth: 100,
   tablePageMode: 'page',
@@ -2083,11 +1390,12 @@ export const BASE_VIEW_CONFIG = {
   customFilter: [],
   customAttr: {
     basicStyle: DEFAULT_BASIC_STYLE,
-    color: DEFAULT_COLOR_CASE,
-    size: DEFAULT_SIZE,
+    misc: DEFAULT_MISC,
     label: DEFAULT_LABEL,
     tooltip: DEFAULT_TOOLTIP,
-    totalCfg: DEFAULT_TOTAL,
+    tableTotal: DEFAULT_TABLE_TOTAL,
+    tableHeader: DEFAULT_TABLE_HEADER,
+    tableCell: DEFAULT_TABLE_CELL,
     map: {
       id: '000',
       level: 'world'

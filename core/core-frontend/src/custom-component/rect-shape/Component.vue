@@ -20,10 +20,7 @@ const { propValue, element } = toRefs(props)
 </script>
 
 <template>
-  <div class="rect-shape">
-    this is test
-    <!--    <v-text :prop-value="element.propValue" :element="element" />-->
-  </div>
+  <div class="rect-shape">this is test</div>
 </template>
 
 <style lang="less" scoped>

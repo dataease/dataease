@@ -382,6 +382,7 @@ export default {
     select_type: '选择数据源类型'
   },
   chart: {
+    align: '对齐方式',
     reset: '重置',
     chart_refresh_tips: '视图刷新设置优先于仪表板刷新设置',
     '1-trend': '趋势',
@@ -1011,7 +1012,11 @@ export default {
     switch_chart: '切换图表',
     update_chart_data: '更新图表数据',
     second: '秒',
-    more_settings: '更多设置'
+    more_settings: '更多设置',
+    basic_style: '基础样式',
+    table_header: '表头',
+    table_cell: '单元格',
+    table_total: '汇总'
   },
   dataset: {
     scope_edit: '仅编辑时生效',

@@ -12,7 +12,7 @@
       :dimension-data="state.dimensionData"
       :quota-data="state.quotaData"
       @onColorChange="onColorChange"
-      @onSizeChange="onSizeChange"
+      @onMiscChange="onMiscChange"
       @onLabelChange="onLabelChange"
       @onTooltipChange="onTooltipChange"
       @onChangeXAxisForm="onChangeXAxisForm"
@@ -52,8 +52,8 @@ const calcStyle = () => {
 const onColorChange = val => {
   batchOptChange('customAttr', 'color', val)
 }
-const onSizeChange = val => {
-  batchOptChange('customAttr', 'size', val.data)
+const onMiscChange = val => {
+  batchOptChange('customAttr', 'misc', val.data)
 }
 
 const onLabelChange = val => {
@@ -64,7 +64,7 @@ const onTooltipChange = val => {
 }
 
 const onTotalCfgChange = val => {
-  batchOptChange('customAttr', 'totalCfg', val)
+  batchOptChange('customAttr', 'tableTotal', val)
 }
 
 const onChangeXAxisForm = val => {

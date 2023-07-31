@@ -4,14 +4,37 @@ import {
 } from '@/views/chart/components/js/panel/types/impl/g2plot'
 import { Liquid as G2Liquid, LiquidOptions } from '@antv/g2plot'
 import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
-import { DEFAULT_LABEL, DEFAULT_SIZE } from '@/views/chart/components/editor/util/chart'
+import { DEFAULT_LABEL, DEFAULT_MISC } from '@/views/chart/components/editor/util/chart'
 import { valueFormatter } from '@/views/chart/components/editor/util/formatter'
 
 const DEFAULT_LIQUID_DATA = []
 export class Liquid extends G2PlotChartView<LiquidOptions, G2Liquid> {
-  properties: EditorProperty[]
-  propertyInner: EditorPropertyInner
-  axis: AxisType[]
+  properties: EditorProperty[] = [
+    'background-overall-component',
+    'basic-style-selector',
+    'label-selector',
+    'misc-selector',
+    'title-selector'
+  ]
+  propertyInner: EditorPropertyInner = {
+    'background-overall-component': ['all'],
+    'basic-style-selector': ['colors', 'alpha'],
+    'label-selector': ['fontSize', 'color', 'gaugeLabelFormatter'],
+    'misc-selector': ['liquidShape', 'liquidMaxType', 'liquidMaxField'],
+    'title-selector': [
+      'title',
+      'fontSize',
+      'color',
+      'hPosition',
+      'isItalic',
+      'isBolder',
+      'remarkShow',
+      'fontFamily',
+      'letterSpace',
+      'fontShadow'
+    ]
+  }
+  axis: AxisType[] = ['yAxis', 'filter']
   drawChart(drawOptions: G2PlotDrawOptions<G2Liquid>): G2Liquid {
     const chart = drawOptions.chart
     if (chart?.data) {
@@ -31,9 +54,10 @@ export class Liquid extends G2PlotChartView<LiquidOptions, G2Liquid> {
   protected configTheme(chart: Chart, options: LiquidOptions): LiquidOptions {
     const customAttr = parseJson(chart.customAttr)
     const colors: string[] = []
-    if (customAttr.color) {
-      customAttr.color.colors.forEach(ele => {
-        colors.push(hexColorToRGBA(ele, customAttr.color.alpha))
+    if (customAttr.basicStyle) {
+      const basicStyle = customAttr.basicStyle
+      basicStyle.colors.forEach(ele => {
+        colors.push(hexColorToRGBA(ele, basicStyle.alpha))
       })
     }
     const customStyle = parseJson(chart.customStyle)
@@ -52,22 +76,22 @@ export class Liquid extends G2PlotChartView<LiquidOptions, G2Liquid> {
     return { ...options, theme }
   }
 
-  protected configSize(chart: Chart, options: LiquidOptions): LiquidOptions {
+  protected configMisc(chart: Chart, options: LiquidOptions): LiquidOptions {
     const customAttr = parseJson(chart.customAttr)
     let value = 0
     if (chart.data.series.length > 0) {
       value = chart.data.series[0].data[0]
     }
     let max, radius, shape
-    if (customAttr.size) {
-      const size = customAttr.size
-      if (size.liquidMaxType === 'dynamic') {
+    if (customAttr.misc) {
+      const misc = customAttr.misc
+      if (misc.liquidMaxType === 'dynamic') {
         max = chart.data?.series[chart.data?.series.length - 1]?.data[0]
       } else {
-        max = size.liquidMax ? size.liquidMax : DEFAULT_SIZE.liquidMax
+        max = misc.liquidMax ? misc.liquidMax : DEFAULT_MISC.liquidMax
       }
-      radius = (size.liquidSize ? size.liquidSize : DEFAULT_SIZE.liquidSize) / 100
-      shape = size.liquidShape ?? DEFAULT_SIZE.liquidShape
+      radius = (misc.liquidSize ? misc.liquidSize : DEFAULT_MISC.liquidSize) / 100
+      shape = misc.liquidShape ?? DEFAULT_MISC.liquidShape
     }
     const size: LiquidOptions = {
       percent: value / max,
@@ -105,7 +129,7 @@ export class Liquid extends G2PlotChartView<LiquidOptions, G2Liquid> {
   }
 
   protected setupOptions(chart: Chart, options: LiquidOptions): LiquidOptions {
-    return flow(this.configTheme, this.configSize, this.configLabel)(chart, options)
+    return flow(this.configTheme, this.configMisc, this.configLabel)(chart, options)
   }
   constructor() {
     super('liquid', DEFAULT_LIQUID_DATA)

@@ -1,9 +1,9 @@
-<script lang="tsx" setup>
+<script lang="ts" setup>
 import { computed, reactive, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import {
   CHART_FONT_FAMILY,
-  DEFAULT_SIZE,
+  DEFAULT_MISC,
   CHART_FONT_LETTER_SPACE
 } from '@/views/chart/components/editor/util/chart'
 import { ElMessage } from 'element-plus-secondary'
@@ -26,10 +26,13 @@ const props = defineProps({
   quotaFields: {
     type: Array,
     required: true
+  },
+  propertyInner: {
+    type: Array<string>
   }
 })
 
-const emit = defineEmits(['onSizeChange'])
+const emit = defineEmits(['onMiscChange'])
 
 watch(
   () => props.chart,
@@ -59,7 +62,7 @@ const validMaxField = computed(() => {
 })
 
 const state = reactive({
-  sizeForm: JSON.parse(JSON.stringify(DEFAULT_SIZE)),
+  miscForm: JSON.parse(JSON.stringify(DEFAULT_MISC)),
   fontSize: [],
   minField: {},
   maxField: {},
@@ -83,10 +86,10 @@ const liquidShapeOptions = [
 ]
 
 const pageSizeOptions = [
-  { name: '10' + t('chart.table_page_size_unit'), value: '10' },
-  { name: '20' + t('chart.table_page_size_unit'), value: '20' },
-  { name: '50' + t('chart.table_page_size_unit'), value: '50' },
-  { name: '100' + t('chart.table_page_size_unit'), value: '100' }
+  { name: '10' + t('chart.table_page_size_unit'), value: 10 },
+  { name: '20' + t('chart.table_page_size_unit'), value: 20 },
+  { name: '50' + t('chart.table_page_size_unit'), value: 50 },
+  { name: '100' + t('chart.table_page_size_unit'), value: 100 }
 ]
 
 const alignOptions = [
@@ -105,11 +108,11 @@ const lineTypeOptions = [
   { name: t('chart.map_line_type_arc_3d'), value: 'arc3d' }
 ]
 
-const changeBarSizeCase = (type = '', refresh = false) => {
-  if (state.sizeForm.gaugeMax <= state.sizeForm.gaugeMin) {
+const changeMisc = (type = '', refresh = false) => {
+  if (state.miscForm.gaugeMax <= state.miscForm.gaugeMin) {
     ElMessage.error(t('chart.max_more_than_mix'))
   }
-  emit('onSizeChange', { data: state.sizeForm, requestData: refresh })
+  emit('onMiscChange', { data: state.miscForm, requestData: refresh })
 }
 
 const initFontSize = () => {
@@ -117,7 +120,7 @@ const initFontSize = () => {
   for (let i = 10; i <= 60; i = i + 2) {
     arr.push({
       name: i + '',
-      value: i + ''
+      value: i
     })
   }
   state.fontSize = arr
@@ -132,87 +135,87 @@ const init = () => {
     } else {
       customAttr = JSON.parse(chart.customAttr)
     }
-    if (customAttr.size) {
-      state.sizeForm = customAttr.size
+    if (customAttr.misc) {
+      state.miscForm = customAttr.misc
     }
   }
 }
 
 const initField = () => {
   state.quotaData = props.quotaFields.filter(ele => ele.summary !== '' && ele.id !== '-1')
-  if (state.sizeForm.gaugeMinField.id) {
-    state.minField = getQuotaField(state.sizeForm.gaugeMinField.id)
+  if (state.miscForm.gaugeMinField.id) {
+    state.minField = getQuotaField(state.miscForm.gaugeMinField.id)
   }
-  if (state.sizeForm.gaugeMaxField.id) {
-    state.maxField = getQuotaField(state.sizeForm.gaugeMaxField.id)
+  if (state.miscForm.gaugeMaxField.id) {
+    state.maxField = getQuotaField(state.miscForm.gaugeMaxField.id)
   }
-  if (state.sizeForm.liquidMaxField.id) {
-    state.liquidMaxField = getQuotaField(state.sizeForm.liquidMaxField.id)
+  if (state.miscForm.liquidMaxField.id) {
+    state.liquidMaxField = getQuotaField(state.miscForm.liquidMaxField.id)
   }
 }
 
-const changeQuotaField = (type, resetSummary) => {
+const changeQuotaField = (type: string, resetSummary?: boolean) => {
   if (type === 'min') {
-    if (state.sizeForm.gaugeMinType === 'dynamic') {
-      if (!state.sizeForm.gaugeMinField.id) {
-        state.sizeForm.gaugeMinField.id = state.quotaData[0]?.id
+    if (state.miscForm.gaugeMinType === 'dynamic') {
+      if (!state.miscForm.gaugeMinField.id) {
+        state.miscForm.gaugeMinField.id = state.quotaData[0]?.id
       }
-      if (!state.sizeForm.gaugeMinField.summary) {
-        state.sizeForm.gaugeMinField.summary = 'count'
+      if (!state.miscForm.gaugeMinField.summary) {
+        state.miscForm.gaugeMinField.summary = 'count'
       }
       if (resetSummary) {
-        state.sizeForm.gaugeMinField.summary = 'count'
+        state.miscForm.gaugeMinField.summary = 'count'
       }
-      if (state.sizeForm.gaugeMinField.id && state.sizeForm.gaugeMinField.summary) {
-        state.minField = getQuotaField(state.sizeForm.gaugeMinField.id)
-        changeBarSizeCase('gaugeMinField', true)
+      if (state.miscForm.gaugeMinField.id && state.miscForm.gaugeMinField.summary) {
+        state.minField = getQuotaField(state.miscForm.gaugeMinField.id)
+        changeMisc('gaugeMinField', true)
       }
     } else {
-      if (state.sizeForm.gaugeMaxType === 'dynamic') {
-        if (state.sizeForm.gaugeMaxField.id && state.sizeForm.gaugeMaxField.summary) {
-          changeBarSizeCase('gaugeMinField', true)
+      if (state.miscForm.gaugeMaxType === 'dynamic') {
+        if (state.miscForm.gaugeMaxField.id && state.miscForm.gaugeMaxField.summary) {
+          changeMisc('gaugeMinField', true)
         }
       } else {
-        changeBarSizeCase('gaugeMinField', true)
+        changeMisc('gaugeMinField', true)
       }
     }
   } else if (type === 'max') {
     if (props.chart.type === 'liquid') {
-      if (!state.sizeForm.liquidMaxField.id) {
-        state.sizeForm.liquidMaxField.id = state.quotaData[0]?.id
+      if (!state.miscForm.liquidMaxField.id) {
+        state.miscForm.liquidMaxField.id = state.quotaData[0]?.id
       }
-      if (!state.sizeForm.liquidMaxField.summary) {
-        state.sizeForm.liquidMaxField.summary = 'count'
+      if (!state.miscForm.liquidMaxField.summary) {
+        state.miscForm.liquidMaxField.summary = 'count'
       }
       if (resetSummary) {
-        state.sizeForm.liquidMaxField.summary = 'count'
+        state.miscForm.liquidMaxField.summary = 'count'
       }
-      if (state.sizeForm.liquidMaxField.id && state.sizeForm.liquidMaxField.summary) {
-        state.maxField = getQuotaField(state.sizeForm.liquidMaxField.id)
-        changeBarSizeCase('liquidMaxField', true)
+      if (state.miscForm.liquidMaxField.id && state.miscForm.liquidMaxField.summary) {
+        state.maxField = getQuotaField(state.miscForm.liquidMaxField.id)
+        changeMisc('liquidMaxField', true)
       }
     } else {
-      if (state.sizeForm.gaugeMaxType === 'dynamic') {
-        if (!state.sizeForm.gaugeMaxField.id) {
-          state.sizeForm.gaugeMaxField.id = state.quotaData[0]?.id
+      if (state.miscForm.gaugeMaxType === 'dynamic') {
+        if (!state.miscForm.gaugeMaxField.id) {
+          state.miscForm.gaugeMaxField.id = state.quotaData[0]?.id
         }
-        if (!state.sizeForm.gaugeMaxField.summary) {
-          state.sizeForm.gaugeMaxField.summary = 'count'
+        if (!state.miscForm.gaugeMaxField.summary) {
+          state.miscForm.gaugeMaxField.summary = 'count'
         }
         if (resetSummary) {
-          state.sizeForm.gaugeMaxField.summary = 'count'
+          state.miscForm.gaugeMaxField.summary = 'count'
         }
-        if (state.sizeForm.gaugeMaxField.id && state.sizeForm.gaugeMaxField.summary) {
-          state.maxField = getQuotaField(state.sizeForm.gaugeMaxField.id)
-          changeBarSizeCase('gaugeMaxField', true)
+        if (state.miscForm.gaugeMaxField.id && state.miscForm.gaugeMaxField.summary) {
+          state.maxField = getQuotaField(state.miscForm.gaugeMaxField.id)
+          changeMisc('gaugeMaxField', true)
         }
       } else {
-        if (state.sizeForm.gaugeMinType === 'dynamic') {
-          if (state.sizeForm.gaugeMinField.id && state.sizeForm.gaugeMinField.summary) {
-            changeBarSizeCase('gaugeMaxField', true)
+        if (state.miscForm.gaugeMinType === 'dynamic') {
+          if (state.miscForm.gaugeMinField.id && state.miscForm.gaugeMinField.summary) {
+            changeMisc('gaugeMaxField', true)
           }
         } else {
-          changeBarSizeCase('gaugeMaxField', true)
+          changeMisc('gaugeMaxField', true)
         }
       }
     }
@@ -237,6 +240,8 @@ const isValidField = field => {
   return field.id !== 'count' && field.deType !== 0 && field.deType !== 1 && field.deType !== 5
 }
 
+const showProperty = prop => props.propertyInner?.includes(prop)
+
 initField()
 initFontSize()
 init()
@@ -245,314 +250,12 @@ init()
 <template>
   <div style="width: 100%">
     <el-col>
-      <el-form ref="sizeFormBar" :model="state.sizeForm" size="small">
-        <!--bar-begin-->
-        <div v-show="props.chart.type.includes('bar')">
-          <el-form-item :label="t('chart.adapt')" class="form-item">
-            <el-checkbox
-              v-model="state.sizeForm.barDefault"
-              @change="changeBarSizeCase('barDefault')"
-            >
-              {{ t('chart.adapt') }}
-            </el-checkbox>
-          </el-form-item>
-          <el-form-item :label="t('chart.bar_gap')" class="form-item form-item-slider">
-            <el-input-number
-              :effect="props.themes"
-              v-model="state.sizeForm.barGap"
-              :disabled="state.sizeForm.barDefault"
-              :min="0"
-              :max="5"
-              :step="0.1"
-              size="small"
-              controls-position="right"
-              @change="changeBarSizeCase('barGap')"
-            />
-          </el-form-item>
-        </div>
-        <!--bar-end-->
-
-        <!--line-begin-->
-        <div v-show="props.chart.type.includes('line') || props.chart.type.includes('area')">
-          <el-form-item :label="t('chart.line_width')" class="form-item form-item-slider">
-            <el-input-number
-              :effect="props.themes"
-              v-model="state.sizeForm.lineWidth"
-              :min="0"
-              :max="10"
-              size="small"
-              controls-position="right"
-              @change="changeBarSizeCase('lineWidth')"
-            />
-          </el-form-item>
-          <el-form-item :label="t('chart.line_symbol')" class="form-item">
-            <el-select
-              :effect="props.themes"
-              v-model="state.sizeForm.lineSymbol"
-              :placeholder="t('chart.line_symbol')"
-              @change="changeBarSizeCase('lineSymbol')"
-            >
-              <el-option
-                v-for="item in lineSymbolOptions"
-                :key="item.value"
-                :label="item.name"
-                :value="item.value"
-              />
-            </el-select>
-          </el-form-item>
-          <el-form-item :label="t('chart.line_symbol_size')" class="form-item form-item-slider">
-            <el-input-number
-              :effect="props.themes"
-              v-model="state.sizeForm.lineSymbolSize"
-              :min="0"
-              :max="20"
-              size="small"
-              controls-position="right"
-              @change="changeBarSizeCase('lineSymbolSize')"
-            />
-          </el-form-item>
-          <el-form-item :label="t('chart.line_smooth')" class="form-item">
-            <el-checkbox
-              v-model="state.sizeForm.lineSmooth"
-              @change="changeBarSizeCase('lineSmooth')"
-              >{{ t('chart.line_smooth') }}
-            </el-checkbox>
-          </el-form-item>
-        </div>
-        <!--line-end-->
-
-        <!--pie-begin-->
-        <div v-show="props.chart.type.includes('pie')">
-          <el-form-item
-            :label="t('chart.pie_inner_radius_percent')"
-            class="form-item form-item-slider"
-          >
-            <el-input-number
-              :effect="props.themes"
-              v-model="state.sizeForm.pieInnerRadius"
-              :min="0"
-              :max="100"
-              size="small"
-              controls-position="right"
-              @change="changeBarSizeCase('pieInnerRadius')"
-            />
-          </el-form-item>
-          <el-form-item
-            :label="t('chart.pie_outer_radius_size')"
-            class="form-item form-item-slider"
-          >
-            <el-input-number
-              :effect="props.themes"
-              v-model="state.sizeForm.pieOuterRadius"
-              :min="0"
-              :max="100"
-              size="small"
-              controls-position="right"
-              @change="changeBarSizeCase('pieOuterRadius')"
-            />
-          </el-form-item>
-        </div>
-        <!--pie-end-->
-
-        <!--table-begin-->
-        <div v-show="props.chart.type.includes('table')">
-          <el-form-item label-width="100px" :label="t('chart.table_page_mode')" class="form-item">
-            <el-select
-              :effect="props.themes"
-              v-model="state.sizeForm.tablePageMode"
-              :placeholder="t('chart.table_page_mode')"
-              @change="changeBarSizeCase('tablePageMode')"
-            >
-              <el-option :label="t('chart.page_mode_page')" value="page" />
-              <el-option :label="t('chart.page_mode_pull')" value="pull" />
-            </el-select>
-          </el-form-item>
-          <el-form-item
-            v-show="state.sizeForm.tablePageMode === 'page'"
-            label-width="100px"
-            :label="t('chart.table_page_size')"
-            class="form-item"
-          >
-            <el-select
-              :effect="props.themes"
-              v-model="state.sizeForm.tablePageSize"
-              :placeholder="t('chart.table_page_size')"
-              @change="changeBarSizeCase('tablePageSize')"
-            >
-              <el-option
-                v-for="item in pageSizeOptions"
-                :key="item.value"
-                :label="item.name"
-                :value="item.value"
-              />
-            </el-select>
-          </el-form-item>
-          <el-form-item
-            label-width="100px"
-            :label="t('chart.table_title_fontsize')"
-            class="form-item"
-          >
-            <el-select
-              :effect="props.themes"
-              v-model="state.sizeForm.tableTitleFontSize"
-              :placeholder="t('chart.table_title_fontsize')"
-              @change="changeBarSizeCase('tableTitleFontSize')"
-            >
-              <el-option
-                v-for="option in state.fontSize"
-                :key="option.value"
-                :label="option.name"
-                :value="option.value"
-              />
-            </el-select>
-          </el-form-item>
-          <el-form-item
-            label-width="100px"
-            :label="t('chart.table_item_fontsize')"
-            class="form-item"
-          >
-            <el-select
-              :effect="props.themes"
-              v-model="state.sizeForm.tableItemFontSize"
-              :placeholder="t('chart.table_item_fontsize')"
-              @change="changeBarSizeCase('tableItemFontSize')"
-            >
-              <el-option
-                v-for="option in state.fontSize"
-                :key="option.value"
-                :label="option.name"
-                :value="option.value"
-              />
-            </el-select>
-          </el-form-item>
-          <el-form-item
-            label-width="100px"
-            :label="t('chart.table_header_align')"
-            class="form-item"
-          >
-            <el-select
-              :effect="props.themes"
-              v-model="state.sizeForm.tableHeaderAlign"
-              :placeholder="t('chart.table_header_align')"
-              @change="changeBarSizeCase('tableHeaderAlign')"
-            >
-              <el-option
-                v-for="option in alignOptions"
-                :key="option.value"
-                :label="option.name"
-                :value="option.value"
-              />
-            </el-select>
-          </el-form-item>
-          <el-form-item label-width="100px" :label="t('chart.table_item_align')" class="form-item">
-            <el-select
-              :effect="props.themes"
-              v-model="state.sizeForm.tableItemAlign"
-              :placeholder="t('chart.table_item_align')"
-              @change="changeBarSizeCase('tableItemAlign')"
-            >
-              <el-option
-                v-for="option in alignOptions"
-                :key="option.value"
-                :label="option.name"
-                :value="option.value"
-              />
-            </el-select>
-          </el-form-item>
-          <el-form-item
-            label-width="100px"
-            :label="t('chart.table_title_height')"
-            class="form-item form-item-slider"
-          >
-            <el-input-number
-              :effect="props.themes"
-              v-model="state.sizeForm.tableTitleHeight"
-              :min="20"
-              :max="100"
-              size="small"
-              controls-position="right"
-              @change="changeBarSizeCase('tableTitleHeight')"
-            />
-          </el-form-item>
-          <el-form-item
-            label-width="100px"
-            :label="t('chart.table_item_height')"
-            class="form-item form-item-slider"
-          >
-            <el-input-number
-              :effect="props.themes"
-              v-model="state.sizeForm.tableItemHeight"
-              :min="20"
-              :max="100"
-              size="small"
-              controls-position="right"
-              @change="changeBarSizeCase('tableItemHeight')"
-            />
-          </el-form-item>
-          <el-form-item
-            label-width="100px"
-            :label="t('chart.table_column_width_config')"
-            class="form-item"
-          >
-            <el-radio-group
-              v-model="state.sizeForm.tableColumnMode"
-              @change="changeBarSizeCase('tableColumnMode')"
-            >
-              <el-radio :effect="props.themes" label="adapt"
-                ><span>{{ t('chart.table_column_adapt') }}</span></el-radio
-              >
-              <el-radio :effect="props.themes" label="custom">
-                <span>{{ t('chart.table_column_custom') }}</span>
-              </el-radio>
-            </el-radio-group>
-          </el-form-item>
-          <el-form-item
-            v-show="state.sizeForm.tableColumnMode === 'custom'"
-            label=""
-            label-width="100px"
-            class="form-item form-item-slider"
-          >
-            <el-input-number
-              :effect="props.themes"
-              v-model="state.sizeForm.tableColumnWidth"
-              :min="10"
-              :max="500"
-              size="small"
-              controls-position="right"
-              @change="changeBarSizeCase('tableColumnWidth')"
-            />
-          </el-form-item>
-          <el-form-item label-width="100px" :label="t('chart.table_show_index')" class="form-item">
-            <el-radio-group
-              v-model="state.sizeForm.showIndex"
-              input-size="small"
-              @change="changeBarSizeCase('showIndex')"
-            >
-              <el-radio :effect="props.themes" :label="true">{{ t('panel.yes') }}</el-radio>
-              <el-radio :effect="props.themes" :label="false">{{ t('panel.no') }}</el-radio>
-            </el-radio-group>
-          </el-form-item>
-          <el-form-item
-            v-show="state.sizeForm.showIndex"
-            label-width="100px"
-            :label="t('chart.table_index_desc')"
-            class="form-item"
-          >
-            <el-input
-              :effect="props.themes"
-              v-model="state.sizeForm.indexLabel"
-              type="text"
-              @blur="changeBarSizeCase('indexLabel')"
-            />
-          </el-form-item>
-        </div>
-        <!--table-end-->
-
+      <el-form :model="state.miscForm" size="small">
         <!--gauge-begin-->
         <div v-show="props.chart.type.includes('gauge')">
           <el-form-item :label="t('chart.min')" class="form-item">
             <el-radio-group
-              v-model="state.sizeForm.gaugeMinType"
+              v-model="state.miscForm.gaugeMinType"
               size="small"
               @change="changeQuotaField('min')"
             >
@@ -561,22 +264,22 @@ init()
             </el-radio-group>
           </el-form-item>
           <el-form-item
-            v-if="state.sizeForm.gaugeMinType === 'fix'"
+            v-if="state.miscForm.gaugeMinType === 'fix'"
             class="form-item form-item-slider"
           >
             <el-input-number
               :effect="props.themes"
-              v-model="state.sizeForm.gaugeMin"
+              v-model="state.miscForm.gaugeMin"
               size="small"
-              @change="changeBarSizeCase('gaugeMin')"
+              @change="changeMisc('gaugeMin')"
             />
           </el-form-item>
           <el-form-item
-            v-if="state.sizeForm.gaugeMinType === 'dynamic'"
+            v-if="state.miscForm.gaugeMinType === 'dynamic'"
             class="form-item dynamic-value-style"
           >
             <el-select
-              v-model="state.sizeForm.gaugeMinField.id"
+              v-model="state.miscForm.gaugeMinField.id"
               :placeholder="t('chart.field')"
               @change="changeQuotaField('min', true)"
               class="dynamic-item"
@@ -601,7 +304,7 @@ init()
               </el-option>
             </el-select>
             <el-select
-              v-model="state.sizeForm.gaugeMinField.summary"
+              v-model="state.miscForm.gaugeMinField.summary"
               :placeholder="t('chart.summary')"
               @change="changeQuotaField('min')"
               class="dynamic-item"
@@ -634,7 +337,7 @@ init()
 
           <el-form-item :label="t('chart.max')" class="form-item">
             <el-radio-group
-              v-model="state.sizeForm.gaugeMaxType"
+              v-model="state.miscForm.gaugeMaxType"
               size="small"
               @change="changeQuotaField('max')"
             >
@@ -643,22 +346,22 @@ init()
             </el-radio-group>
           </el-form-item>
           <el-form-item
-            v-if="state.sizeForm.gaugeMaxType === 'fix'"
+            v-if="state.miscForm.gaugeMaxType === 'fix'"
             class="form-item form-item-slider"
           >
             <el-input-number
               :effect="props.themes"
-              v-model="state.sizeForm.gaugeMax"
+              v-model="state.miscForm.gaugeMax"
               size="small"
-              @change="changeBarSizeCase('gaugeMax')"
+              @change="changeMisc('gaugeMax')"
             />
           </el-form-item>
           <el-form-item
-            v-if="state.sizeForm.gaugeMaxType === 'dynamic'"
+            v-if="state.miscForm.gaugeMaxType === 'dynamic'"
             class="form-item dynamic-value-style"
           >
             <el-select
-              v-model="state.sizeForm.gaugeMaxField.id"
+              v-model="state.miscForm.gaugeMaxField.id"
               :placeholder="t('chart.field')"
               @change="changeQuotaField('max', true)"
               class="dynamic-item"
@@ -683,7 +386,7 @@ init()
               </el-option>
             </el-select>
             <el-select
-              v-model="state.sizeForm.gaugeMaxField.summary"
+              v-model="state.miscForm.gaugeMaxField.summary"
               :placeholder="t('chart.summary')"
               @change="changeQuotaField('max')"
               class="dynamic-item"
@@ -717,23 +420,23 @@ init()
           <el-form-item :label="t('chart.start_angle')" class="form-item form-item-slider">
             <el-input-number
               :effect="props.themes"
-              v-model="state.sizeForm.gaugeStartAngle"
+              v-model="state.miscForm.gaugeStartAngle"
               :min="-360"
               :max="360"
               size="small"
               controls-position="right"
-              @change="changeBarSizeCase('gaugeStartAngle')"
+              @change="changeMisc('gaugeStartAngle')"
             />
           </el-form-item>
           <el-form-item :label="t('chart.end_angle')" class="form-item form-item-slider">
             <el-input-number
               :effect="props.themes"
-              v-model="state.sizeForm.gaugeEndAngle"
+              v-model="state.miscForm.gaugeEndAngle"
               :min="-360"
               :max="360"
               size="small"
               controls-position="right"
-              @change="changeBarSizeCase('gaugeEndAngle')"
+              @change="changeMisc('gaugeEndAngle')"
             />
           </el-form-item>
         </div>
@@ -744,9 +447,9 @@ init()
           <el-form-item :label="t('chart.liquid_shape')" class="form-item">
             <el-select
               :effect="props.themes"
-              v-model="state.sizeForm.liquidShape"
+              v-model="state.miscForm.liquidShape"
               :placeholder="t('chart.liquid_shape')"
-              @change="changeBarSizeCase('liquidShape')"
+              @change="changeMisc('liquidShape')"
             >
               <el-option
                 v-for="item in liquidShapeOptions"
@@ -758,7 +461,7 @@ init()
           </el-form-item>
           <el-form-item :label="t('chart.liquid_max')" class="form-item">
             <el-radio-group
-              v-model="state.sizeForm.liquidMaxType"
+              v-model="state.miscForm.liquidMaxType"
               size="small"
               @change="changeQuotaField('max')"
             >
@@ -769,23 +472,23 @@ init()
             </el-radio-group>
           </el-form-item>
           <el-form-item
-            v-if="state.sizeForm.liquidMaxType === 'fix'"
+            v-if="state.miscForm.liquidMaxType === 'fix'"
             class="form-item form-item-slider"
           >
             <el-input-number
               :effect="props.themes"
-              v-model="state.sizeForm.liquidMax"
+              v-model="state.miscForm.liquidMax"
               :min="1"
               size="small"
-              @change="changeBarSizeCase('liquidMax')"
+              @change="changeMisc('liquidMax')"
             />
           </el-form-item>
           <el-form-item
-            v-if="state.sizeForm.liquidMaxType === 'dynamic'"
+            v-if="state.miscForm.liquidMaxType === 'dynamic'"
             class="form-item dynamic-value-style"
           >
             <el-select
-              v-model="state.sizeForm.liquidMaxField.id"
+              v-model="state.miscForm.liquidMaxField.id"
               :placeholder="t('chart.field')"
               @change="changeQuotaField('max', true)"
               class="dynamic-item"
@@ -808,7 +511,7 @@ init()
               </el-option>
             </el-select>
             <el-select
-              v-model="state.sizeForm.liquidMaxField.summary"
+              v-model="state.miscForm.liquidMaxField.summary"
               :placeholder="t('chart.summary')"
               @change="changeQuotaField('max')"
               class="dynamic-item"
@@ -842,12 +545,12 @@ init()
           <el-form-item :label="t('chart.radar_size')" class="form-item form-item-slider">
             <el-input-number
               :effect="props.themes"
-              v-model="state.sizeForm.liquidSize"
+              v-model="state.miscForm.liquidSize"
               :min="1"
               :max="100"
               size="small"
               controls-position="right"
-              @change="changeBarSizeCase('liquidSize')"
+              @change="changeMisc('liquidSize')"
             />
           </el-form-item>
         </div>
@@ -858,9 +561,9 @@ init()
           <el-form-item :label="t('chart.quota_font_size')" class="form-item">
             <el-select
               :effect="props.themes"
-              v-model="state.sizeForm.quotaFontSize"
+              v-model="state.miscForm.quotaFontSize"
               :placeholder="t('chart.quota_font_size')"
-              @change="changeBarSizeCase('quotaFontSize')"
+              @change="changeMisc('quotaFontSize')"
             >
               <el-option
                 v-for="option in state.fontSize"
@@ -873,9 +576,9 @@ init()
           <el-form-item :label="t('chart.quota_font_family')" class="form-item">
             <el-select
               :effect="props.themes"
-              v-model="state.sizeForm.quotaFontFamily"
+              v-model="state.miscForm.quotaFontFamily"
               :placeholder="t('chart.quota_font_family')"
-              @change="changeBarSizeCase('quotaFontFamily')"
+              @change="changeMisc('quotaFontFamily')"
             >
               <el-option
                 v-for="option in fontFamily"
@@ -888,23 +591,23 @@ init()
           <el-form-item :label="t('chart.quota_text_style')" class="form-item">
             <el-checkbox
               :effect="props.themes"
-              v-model="state.sizeForm.quotaFontIsItalic"
-              @change="changeBarSizeCase('quotaFontIsItalic')"
+              v-model="state.miscForm.quotaFontIsItalic"
+              @change="changeMisc('quotaFontIsItalic')"
               >{{ t('chart.italic') }}</el-checkbox
             >
             <el-checkbox
               :effect="props.themes"
-              v-model="state.sizeForm.quotaFontIsBolder"
-              @change="changeBarSizeCase('quotaFontIsBolder')"
+              v-model="state.miscForm.quotaFontIsBolder"
+              @change="changeMisc('quotaFontIsBolder')"
               >{{ t('chart.bolder') }}</el-checkbox
             >
           </el-form-item>
           <el-form-item :label="t('chart.quota_letter_space')" class="form-item">
             <el-select
               :effect="props.themes"
-              v-model="state.sizeForm.quotaLetterSpace"
+              v-model="state.miscForm.quotaLetterSpace"
               :placeholder="t('chart.quota_letter_space')"
-              @change="changeBarSizeCase('quotaLetterSpace')"
+              @change="changeMisc('quotaLetterSpace')"
             >
               <el-option
                 v-for="option in fontLetterSpace"
@@ -917,8 +620,8 @@ init()
           <el-form-item :label="t('chart.font_shadow')" class="form-item">
             <el-checkbox
               :effect="props.themes"
-              v-model="state.sizeForm.quotaFontShadow"
-              @change="changeBarSizeCase('quotaFontShadow')"
+              v-model="state.miscForm.quotaFontShadow"
+              @change="changeMisc('quotaFontShadow')"
               >{{ t('chart.font_shadow') }}</el-checkbox
             >
           </el-form-item>
@@ -926,18 +629,18 @@ init()
           <el-form-item :label="t('chart.dimension_show')" class="form-item">
             <el-checkbox
               :effect="props.themes"
-              v-model="state.sizeForm.dimensionShow"
-              @change="changeBarSizeCase('dimensionShow')"
+              v-model="state.miscForm.dimensionShow"
+              @change="changeMisc('dimensionShow')"
               >{{ t('chart.show') }}</el-checkbox
             >
           </el-form-item>
-          <div v-show="state.sizeForm.dimensionShow">
+          <div v-show="state.miscForm.dimensionShow">
             <el-form-item :label="t('chart.dimension_font_size')" class="form-item">
               <el-select
                 :effect="props.themes"
-                v-model="state.sizeForm.dimensionFontSize"
+                v-model="state.miscForm.dimensionFontSize"
                 :placeholder="t('chart.dimension_font_size')"
-                @change="changeBarSizeCase('dimensionFontSize')"
+                @change="changeMisc('dimensionFontSize')"
               >
                 <el-option
                   v-for="option in state.fontSize"
@@ -950,9 +653,9 @@ init()
             <el-form-item :label="t('chart.dimension_font_family')" class="form-item">
               <el-select
                 :effect="props.themes"
-                v-model="state.sizeForm.dimensionFontFamily"
+                v-model="state.miscForm.dimensionFontFamily"
                 :placeholder="t('chart.dimension_font_family')"
-                @change="changeBarSizeCase('dimensionFontFamily')"
+                @change="changeMisc('dimensionFontFamily')"
               >
                 <el-option
                   v-for="option in fontFamily"
@@ -965,23 +668,23 @@ init()
             <el-form-item :label="t('chart.dimension_text_style')" class="form-item">
               <el-checkbox
                 :effect="props.themes"
-                v-model="state.sizeForm.dimensionFontIsItalic"
-                @change="changeBarSizeCase('dimensionFontIsItalic')"
+                v-model="state.miscForm.dimensionFontIsItalic"
+                @change="changeMisc('dimensionFontIsItalic')"
                 >{{ t('chart.italic') }}</el-checkbox
               >
               <el-checkbox
                 :effect="props.themes"
-                v-model="state.sizeForm.dimensionFontIsBolder"
-                @change="changeBarSizeCase('dimensionFontIsBolder')"
+                v-model="state.miscForm.dimensionFontIsBolder"
+                @change="changeMisc('dimensionFontIsBolder')"
                 >{{ t('chart.bolder') }}</el-checkbox
               >
             </el-form-item>
             <el-form-item :label="t('chart.dimension_letter_space')" class="form-item">
               <el-select
                 :effect="props.themes"
-                v-model="state.sizeForm.dimensionLetterSpace"
+                v-model="state.miscForm.dimensionLetterSpace"
                 :placeholder="t('chart.dimension_letter_space')"
-                @change="changeBarSizeCase('dimensionLetterSpace')"
+                @change="changeMisc('dimensionLetterSpace')"
               >
                 <el-option
                   v-for="option in fontLetterSpace"
@@ -994,8 +697,8 @@ init()
             <el-form-item :label="t('chart.font_shadow')" class="form-item">
               <el-checkbox
                 :effect="props.themes"
-                v-model="state.sizeForm.dimensionFontShadow"
-                @change="changeBarSizeCase('dimensionFontShadow')"
+                v-model="state.miscForm.dimensionFontShadow"
+                @change="changeMisc('dimensionFontShadow')"
                 >{{ t('chart.font_shadow') }}</el-checkbox
               >
             </el-form-item>
@@ -1003,18 +706,18 @@ init()
             <el-form-item :label="t('chart.space_split')" class="form-item">
               <el-input-number
                 :effect="props.themes"
-                v-model="state.sizeForm.spaceSplit"
+                v-model="state.miscForm.spaceSplit"
                 :min="0"
                 size="small"
-                @change="changeBarSizeCase('spaceSplit')"
+                @change="changeMisc('spaceSplit')"
               />
             </el-form-item>
             <el-form-item :label="t('chart.h_position')" class="form-item">
               <el-select
                 :effect="props.themes"
-                v-model="state.sizeForm.hPosition"
+                v-model="state.miscForm.hPosition"
                 :placeholder="t('chart.h_position')"
-                @change="changeBarSizeCase('hPosition')"
+                @change="changeMisc('hPosition')"
               >
                 <el-option value="start" :label="t('chart.p_left')">{{
                   t('chart.p_left')
@@ -1030,9 +733,9 @@ init()
             <el-form-item :label="t('chart.v_position')" class="form-item">
               <el-select
                 :effect="props.themes"
-                v-model="state.sizeForm.vPosition"
+                v-model="state.miscForm.vPosition"
                 :placeholder="t('chart.v_position')"
-                @change="changeBarSizeCase('vPosition')"
+                @change="changeMisc('vPosition')"
               >
                 <el-option value="start" :label="t('chart.p_top')">{{
                   t('chart.p_top')

@@ -13,6 +13,9 @@ const props = defineProps({
   themes: {
     type: String,
     default: 'dark'
+  },
+  propertyInner: {
+    type: Array<string>
   }
 })
 
@@ -68,7 +71,7 @@ const init = () => {
     }
   }
 }
-
+const showProperty = prop => props.propertyInner?.includes(prop)
 initFontSize()
 init()
 </script>
@@ -83,7 +86,7 @@ init()
         label-width="80px"
         size="small"
       >
-        <el-form-item :label="t('chart.icon')" class="form-item">
+        <el-form-item :label="t('chart.icon')" class="form-item" v-show="showProperty('icon')">
           <el-select
             :effect="props.themes"
             v-model="state.legendForm.icon"
@@ -98,7 +101,7 @@ init()
             />
           </el-select>
         </el-form-item>
-        <el-form-item :label="t('chart.orient')" class="form-item">
+        <el-form-item :label="t('chart.orient')" class="form-item" v-show="showProperty('orient')">
           <el-radio-group
             v-model="state.legendForm.orient"
             size="small"
@@ -110,7 +113,11 @@ init()
             <el-radio :effect="props.themes" label="vertical">{{ t('chart.vertical') }}</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item :label="t('chart.text_fontsize')" class="form-item">
+        <el-form-item
+          :label="t('chart.text_fontsize')"
+          class="form-item"
+          v-show="showProperty('textStyle')"
+        >
           <el-select
             :effect="props.themes"
             v-model="state.legendForm.textStyle.fontSize"
@@ -126,7 +133,11 @@ init()
             />
           </el-select>
         </el-form-item>
-        <el-form-item :label="t('chart.text_color')" class="form-item">
+        <el-form-item
+          :label="t('chart.text_color')"
+          class="form-item"
+          v-show="showProperty('textStyle')"
+        >
           <el-color-picker
             v-model="state.legendForm.textStyle.color"
             class="color-picker-style"
@@ -134,7 +145,11 @@ init()
             @change="changeLegendStyle('textStyle')"
           />
         </el-form-item>
-        <el-form-item :label="t('chart.text_h_position')" class="form-item">
+        <el-form-item
+          :label="t('chart.text_h_position')"
+          class="form-item"
+          v-show="showProperty('hPosition')"
+        >
           <el-radio-group
             v-model="state.legendForm.hPosition"
             size="small"
@@ -152,7 +167,11 @@ init()
             }}</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item :label="t('chart.text_v_position')" class="form-item">
+        <el-form-item
+          :label="t('chart.text_v_position')"
+          class="form-item"
+          v-show="showProperty('vPosition')"
+        >
           <el-radio-group
             v-model="state.legendForm.vPosition"
             size="small"

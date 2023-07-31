@@ -1,35 +1,16 @@
-export const LINE_EDITOR_PROPERTY: EditorProperty[] = [
+export const PIE_EDITOR_PROPERTY: EditorProperty[] = [
   'background-overall-component',
   'basic-style-selector',
-  'x-axis-selector',
-  'y-axis-selector',
   'title-selector',
   'legend-selector',
   'label-selector',
   'tooltip-selector'
 ]
-export const LINE_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
+export const PIE_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
   'background-overall-component': ['all'],
   'label-selector': ['fontSize', 'color', 'position'],
   'tooltip-selector': ['fontSize', 'color', 'backgroundColor'],
-  'basic-style-selector': [
-    'colors',
-    'alpha',
-    'lineWidth',
-    'lineSymbol',
-    'lineSymbolSize',
-    'lineSmooth'
-  ],
-  'x-axis-selector': ['name', 'position', 'axisLabel', 'axisLine', 'splitLine'],
-  'y-axis-selector': [
-    'name',
-    'position',
-    'axisLabel',
-    'axisLine',
-    'splitLine',
-    'axisValue',
-    'axisLabelFormatter'
-  ],
+  'basic-style-selector': ['colors', 'alpha'],
   'title-selector': [
     'title',
     'fontSize',

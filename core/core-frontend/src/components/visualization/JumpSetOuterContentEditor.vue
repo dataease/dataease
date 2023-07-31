@@ -86,7 +86,7 @@ defineExpose({
 
 onBeforeUnmount(() => {
   clearTimeout(timer.value)
-  mirror.value.destroy?.()
+  mirror.value && mirror.value.destroy?.()
 })
 </script>
 

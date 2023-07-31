@@ -421,6 +421,7 @@ export function adaptCurThemeCommonStyle(component) {
     // //配色-End
 
     adaptCurTheme(curViewInfo.customStyle, curViewInfo.customAttr, curViewInfo.type)
+    console.log('1-2')
     useEmitt().emitter.emit('renderChart-' + component.id, curViewInfo)
     // 视图-Begin
   }

@@ -163,6 +163,7 @@ const themeAttrChange = (custom, property, value) => {
           viewInfo[custom][property][key] = value[key]
         }
       })
+      console.log('1-3')
       useEmitt().emitter.emit('renderChart-' + viewId, viewInfo)
     })
     snapshotStore.recordSnapshot('DbCanvasAttr-themeAttrChange')
@@ -287,7 +288,6 @@ onMounted(() => {
             />
           </template>
           <view-simple-title class="item-show" @onTextChange="onTextChange"></view-simple-title>
-          <!--          <view-title @onTextChange="onTextChange" />-->
         </el-collapse-item>
         <el-collapse-item :title="t('visualization.filter_component')" name="filterComponent">
           <filter-style-simple-selector class="item-show"></filter-style-simple-selector>

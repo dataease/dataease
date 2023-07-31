@@ -12,55 +12,21 @@ import {
   parseJson
 } from '@/views/chart/components/js/util'
 import { singleDimensionTooltipFormatter } from '@/views/chart/components/js/formatter'
+import {
+  LINE_EDITOR_PROPERTY,
+  LINE_EDITOR_PROPERTY_INNER
+} from '@/views/chart/components/js/panel/charts/line/common'
 const DEFAULT_DATA = []
 export class Area extends G2PlotChartView<AreaOptions, G2Area> {
-  properties: EditorProperty[]
-  propertyInner: EditorPropertyInner
-  axis: AxisType[]
+  properties = LINE_EDITOR_PROPERTY
+  propertyInner = LINE_EDITOR_PROPERTY_INNER
+  axis: AxisType[] = ['xAxis', 'yAxis', 'drill', 'filter']
   drawChart(drawOptions: G2PlotDrawOptions<G2Area>): G2Area {
     const chart = drawOptions.chart
     if (chart?.data) {
       // data
       const data = cloneDeep(chart.data.data)
-      // size
-      let customAttr: DeepPartial<ChartAttr>
-      let smooth, point, line
-      if (chart.customAttr) {
-        customAttr = parseJson(chart.customAttr)
-        if (customAttr.size) {
-          const s: DeepPartial<ChartSizeAttr> = JSON.parse(JSON.stringify(customAttr.size))
-          smooth = s.lineSmooth
-          point = {
-            size: s.lineSymbolSize,
-            shape: s.lineSymbol
-          }
-          line = {
-            style: {
-              lineWidth: s.lineWidth
-            }
-          }
-        }
-      }
-      // custom color
-      const color = antVCustomColor(chart)
-      const areaColors = [...color, ...color]
-      let areaStyle
-      if (customAttr.color.gradient) {
-        areaStyle = () => {
-          const ele = areaColors.shift()
-          if (ele) {
-            return {
-              fill: setGradientColor(ele, customAttr.color.gradient, 270)
-            }
-          }
-        }
-      }
       const initOptions: AreaOptions = {
-        point,
-        smooth,
-        line,
-        areaStyle,
-        color,
         data: data,
         xField: 'field',
         yField: 'value',
@@ -162,11 +128,49 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
     return { ...options, tooltip }
   }
 
+  protected configBasicStyle(chart: Chart, options: AreaOptions): AreaOptions {
+    // size
+    const customAttr: DeepPartial<ChartAttr> = parseJson(chart.customAttr)
+    const s: DeepPartial<ChartBasicStyle> = JSON.parse(JSON.stringify(customAttr.basicStyle))
+    const smooth = s.lineSmooth
+    const point = {
+      size: s.lineSymbolSize,
+      shape: s.lineSymbol
+    }
+    const line = {
+      style: {
+        lineWidth: s.lineWidth
+      }
+    }
+    // custom color
+    const color = customAttr.basicStyle.colors
+    const areaColors = [...color, ...color]
+    let areaStyle
+    if (customAttr.basicStyle.gradient) {
+      areaStyle = () => {
+        const ele = areaColors.shift()
+        if (ele) {
+          return {
+            fill: setGradientColor(ele, true, 270)
+          }
+        }
+      }
+    }
+    return {
+      ...options,
+      smooth,
+      line,
+      point,
+      areaStyle
+    }
+  }
+
   protected setupOptions(chart: Chart, options: AreaOptions): AreaOptions {
     return flow(
       this.configTheme,
       this.configLabel,
       this.configTooltip,
+      this.configBasicStyle,
       this.configCustomLabel,
       this.configLegend,
       this.configXAxis,

@@ -11,8 +11,7 @@ declare type EditorProperty =
   | 'table-cell-selector'
   | 'table-total-selector'
   | 'text-selector'
-  | 'quota-selector'
-  | 'line-selector'
+  | 'misc-selector'
 declare type EditorPropertyInner = {
   [key in EditorProperty]?: string[]
 }

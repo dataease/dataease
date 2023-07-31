@@ -2430,12 +2430,12 @@ export function antVCustomColor(chart) {
   if (chart.customAttr) {
     const customAttr = JSON.parse(JSON.stringify(chart.customAttr))
     // color
-    if (customAttr.color) {
-      const c = JSON.parse(JSON.stringify(customAttr.color))
+    if (customAttr.basicStyle) {
+      const basicStyle = JSON.parse(JSON.stringify(customAttr.basicStyle))
 
-      const customColors = getColors(chart, c.colors, false)
+      const customColors = getColors(chart, basicStyle.colors, false)
       for (let i = 0; i < customColors.length; i++) {
-        colors.push(hexColorToRGBA(customColors[i].color, c.alpha))
+        colors.push(hexColorToRGBA(customColors[i].color, basicStyle.alpha))
       }
     }
   }
@@ -2580,7 +2580,7 @@ function handleIgnoreData(chart, data) {
   }
 }
 
-export function resetRgbOpacity(sourceColor, times) {
+export function resetRgbOpacity(sourceColor: string, times: number): string {
   if (sourceColor?.startsWith('rgb')) {
     const numbers = sourceColor.match(/(\d(\.\d+)?)+/g)
     if (numbers?.length === 4) {
@@ -2590,7 +2590,7 @@ export function resetRgbOpacity(sourceColor, times) {
         if (resultOpacity > 1) {
           resultOpacity = 1
         }
-        const colorArr = numbers.slice(0, 3).concat(resultOpacity)
+        const colorArr = numbers.slice(0, 3).concat(resultOpacity.toString())
         return `rgba(${colorArr.join(',')})`
       }
     }

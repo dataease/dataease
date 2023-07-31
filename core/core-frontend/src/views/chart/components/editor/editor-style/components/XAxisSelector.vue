@@ -15,6 +15,9 @@ const props = defineProps({
   themes: {
     type: String,
     default: 'dark'
+  },
+  propertyInner: {
+    type: Array<string>
   }
 })
 
@@ -42,7 +45,7 @@ const initFontSize = () => {
   for (let i = 10; i <= 40; i = i + 2) {
     arr.push({
       name: i + '',
-      value: i + ''
+      value: i
     })
   }
   state.fontSize = arr
@@ -74,6 +77,8 @@ const init = () => {
     }
   }
 }
+
+const showProperty = prop => props.propertyInner?.includes(prop)
 
 initFontSize()
 init()
@@ -130,7 +135,7 @@ init()
         <el-form-item :label="t('chart.axis_name_fontsize')" class="form-item">
           <el-select
             :effect="props.themes"
-            v-model="state.axisForm.nameTextStyle.fontSize"
+            v-model.number="state.axisForm.nameTextStyle.fontSize"
             :placeholder="t('chart.axis_name_fontsize')"
             @change="changeAxisStyle('nameTextStyle')"
           >
@@ -145,15 +150,6 @@ init()
         <span>
           <el-divider />
           <el-form-item :label="t('chart.axis_value')" class="form-item">
-            <!--              <span>-->
-            <!--                <span class="span-box">-->
-            <!--                  <span>{{ t('chart.axis_value') }}</span>-->
-            <!--                  <el-tooltip class="item" :effect="props.themes" placement="bottom">-->
-            <!--                    <template #content>{{ t('chart.axis_tip') }}</template>-->
-            <!--                    <i class="el-icon-info" style="cursor: pointer" />-->
-            <!--                  </el-tooltip>-->
-            <!--                </span>-->
-            <!--              </span>-->
             <el-checkbox
               :effect="props.themes"
               v-model="state.axisForm.axisValue.auto"
@@ -264,7 +260,7 @@ init()
           <el-form-item :label="t('chart.axis_label_fontsize')" class="form-item">
             <el-select
               :effect="props.themes"
-              v-model="state.axisForm.axisLabel.fontSize"
+              v-model.number="state.axisForm.axisLabel.fontSize"
               :placeholder="t('chart.axis_label_fontsize')"
               @change="changeAxisStyle('axisLabel')"
             >

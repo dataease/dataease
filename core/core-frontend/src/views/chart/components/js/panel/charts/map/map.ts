@@ -7,9 +7,32 @@ import { flow, parseJson } from '@/views/chart/components/js/util'
 import { handleGeoJson } from '@/views/chart/components/js/panel/common/common_antv'
 
 export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
-  properties: EditorProperty[]
-  propertyInner: EditorPropertyInner
-  axis: AxisType[]
+  properties: EditorProperty[] = [
+    'background-overall-component',
+    'basic-style-selector',
+    'title-selector',
+    'label-selector',
+    'tooltip-selector'
+  ]
+  propertyInner: EditorPropertyInner = {
+    'background-overall-component': ['all'],
+    'basic-style-selector': ['colors', 'alpha', 'areaBorderColor', 'suspension'],
+    'title-selector': [
+      'title',
+      'fontSize',
+      'color',
+      'hPosition',
+      'isItalic',
+      'isBolder',
+      'remarkShow',
+      'fontFamily',
+      'letterSpace',
+      'fontShadow'
+    ],
+    'label-selector': ['color', 'fontSize', 'labelBgColor', 'labelShadow', 'labelShadowColor'],
+    'tooltip-selector': ['color', 'fontSize', 'backgroundColor', 'formatter']
+  }
+  axis: AxisType[] = ['xAxis', 'yAxis', 'area', 'drill', 'filter']
   constructor() {
     super('map', [])
   }
@@ -79,11 +102,15 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
 
     return view
   }
-  private configColor(chart: Chart, options: ChoroplethOptions, extra: any[]): ChoroplethOptions {
+  private configBasicStyle(
+    chart: Chart,
+    options: ChoroplethOptions,
+    extra: any[]
+  ): ChoroplethOptions {
     const { geoJson, areaId }: L7PlotDrawOptions<any> = extra[0]
     const customAttr = parseJson(chart.customAttr)
     const senior = parseJson(chart.senior)
-    const curAreaNameMapping = senior.mapMapping?.[areaId]
+    const curAreaNameMapping = senior.areaMapping?.[areaId]
     handleGeoJson(geoJson, curAreaNameMapping)
     options.color = {
       field: 'value',
@@ -108,7 +135,7 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
         validArea += 1
       }
     })
-    let colors = customAttr.color.colors
+    let colors = customAttr.basicStyle.colors
     if (validArea < colors.length) {
       colors = colors.slice(0, validArea)
     }
@@ -127,7 +154,7 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       this.configLabel,
       this.configStyle,
       this.configTooltip,
-      this.configColor
+      this.configBasicStyle
     )(chart, options, extra)
   }
 }
