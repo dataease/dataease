@@ -24,15 +24,7 @@ import ExcelInfo from './ExcelInfo.vue'
 import SheetTabs from './SheetTabs.vue'
 import BaseInfoItem from './BaseInfoItem.vue'
 import BaseInfoContent from './BaseInfoContent.vue'
-interface DsType {
-  type: string
-  name: string
-  leaf: boolean
-  id?: string
-  catalog: string
-  extraParams: string
-  children?: Array<{}>
-}
+import type { BusiTreeNode, BusiTreeRequest } from '@/models/tree/TreeNode'
 
 interface Field {
   fieldShortName: string
@@ -58,7 +50,7 @@ export interface Node {
 const { t } = useI18n()
 
 const state = reactive({
-  datasourceTree: [] as DsType[],
+  datasourceTree: [] as BusiTreeNode[],
   dsTableData: [],
   paginationConfig: {
     currentPage: 1,
@@ -72,6 +64,7 @@ const dsTableDetail = reactive({
   tableName: '',
   remark: ''
 })
+const rootManage = ref(false)
 const nickName = ref('')
 const dsName = ref('')
 const userDrawer = ref(false)
@@ -237,9 +230,19 @@ const saveDsFolder = (params, successCb, finallyCb, cmd) => {
 
 const listDs = () => {
   rawDatasourceList.value = []
-  listDatasources({}).then(array => {
+  /* listDatasources({}).then(array => {
     convertConfig(array)
     state.datasourceTree = array
+  }) */
+  const request = { busiFlag: 'datasource' } as BusiTreeRequest
+  listDatasources(request).then(res => {
+    const nodeData = (res as unknown as BusiTreeNode[]) || []
+    if (nodeData.length && nodeData[0]['id'] === '0' && nodeData[0]['name'] === 'root') {
+      rootManage.value = nodeData[0]['weight'] >= 3
+      state.datasourceTree = nodeData[0]['children'] || []
+      return
+    }
+    state.datasourceTree = nodeData
   })
 }
 
@@ -388,20 +391,22 @@ const defaultProps = {
       <div class="filter-datasource">
         <div class="icon-methods">
           <span class="title"> {{ t('datasource.datasource') }} </span>
-          <el-tooltip effect="dark" content="新建文件夹" placement="top">
-            <el-button @click="() => handleDatasourceTree('folder')" text>
-              <template #icon>
-                <Icon name="dv-new-folder"></Icon>
-              </template>
-            </el-button>
-          </el-tooltip>
-          <el-tooltip effect="dark" :content="t('datasource.create')" placement="top">
-            <el-button @click="() => createDatasource()" text>
-              <template #icon>
-                <Icon name="icon_dataset_outlined"></Icon>
-              </template>
-            </el-button>
-          </el-tooltip>
+          <div v-if="rootManage">
+            <el-tooltip effect="dark" content="新建文件夹" placement="top">
+              <el-button @click="() => handleDatasourceTree('folder')" text>
+                <template #icon>
+                  <Icon name="dv-new-folder"></Icon>
+                </template>
+              </el-button>
+            </el-tooltip>
+            <el-tooltip effect="dark" :content="t('datasource.create')" placement="top">
+              <el-button @click="() => createDatasource()" text>
+                <template #icon>
+                  <Icon name="icon_dataset_outlined"></Icon>
+                </template>
+              </el-button>
+            </el-tooltip>
+          </div>
         </div>
 
         <div class="search-input">

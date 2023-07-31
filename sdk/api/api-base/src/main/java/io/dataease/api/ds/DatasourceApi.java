@@ -1,7 +1,6 @@
 package io.dataease.api.ds;
 
 import io.dataease.api.dataset.dto.DatasetTableDTO;
-import io.dataease.api.dataset.dto.DsBusiNodeVO;
 import io.dataease.api.ds.vo.*;
 import io.dataease.auth.DeApiPath;
 import io.dataease.auth.DePermit;
@@ -57,9 +56,11 @@ public interface DatasourceApi {
     @GetMapping("getTableField/{datasourceId}/{tableName}")
     List<TableField> getTableField(@PathVariable("datasourceId") String datasourceId, @PathVariable("tableName") String tableName) throws Exception;
 
+
     @DePermit("m:read")
-    @PostMapping("list")
-    List<DsBusiNodeVO> list(@RequestBody BusiNodeRequest request) throws DEException;
+    @PostMapping("tree")
+    List<BusiNodeVO> tree(BusiNodeRequest request) throws DEException;
+
 
     @DePermit({"m:read", "#p0+':manage'"})
     @GetMapping("getTables/{datasourceId}")
