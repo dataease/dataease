@@ -111,6 +111,7 @@ export default {
   data() {
     return {
       myChart: {},
+      bodyOverflow: false,
       chartId: uuid.v1(),
       showTrackBar: true,
       trackBarStyle: {
@@ -183,9 +184,13 @@ export default {
   },
   mounted() {
     bus.$on('change-series-id', this.changeSeriesId)
+    document.getElementById(this.chartId).addEventListener('mouseover', this.bodyMouseover)
+    document.getElementById(this.chartId).addEventListener('mouseout', this.bodyMouseout)
     this.preDraw()
   },
   beforeDestroy() {
+    document.getElementById(this.chartId).removeEventListener('mouseover', this.bodyMouseover)
+    document.getElementById(this.chartId).removeEventListener('mouseout', this.bodyMouseout)
     bus.$off('change-series-id', this.changeSeriesId)
     window.removeEventListener('resize', this.myChart.resize)
     this.myChart.dispose()
@@ -195,6 +200,15 @@ export default {
     this.loadThemeStyle()
   },
   methods: {
+    bodyMouseover() {
+      if (this.bodyOverflow) return
+      document.querySelector('body').style.overflow = 'hidden'
+      this.bodyOverflow = true
+    },
+    bodyMouseout() {
+      document.querySelector('body').style.overflow = 'inherit'
+      this.bodyOverflow = false
+    },
     scrollStatusChange() {
       if (this.haveScrollType.includes(this.chart.type)) {
         const opt = this.myChart.getOption()
@@ -278,8 +292,6 @@ export default {
           this.myChart = this.$echarts.init(document.getElementById(this.chartId))
         }
         this.drawEcharts()
-
-        this.myChart.off('click')
         this.myChart.on('click', function(param) {
           that.pointParam = param
           if (that.linkageActiveParam) {
