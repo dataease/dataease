@@ -70,11 +70,13 @@ public class DatasetGroupManage {
             datasetGroupInfoDTO.setInfo(Objects.requireNonNull(JsonUtil.toJSONString(datasetGroupInfoDTO.getUnion())).toString());
         }
         // save dataset/group
+        long time = System.currentTimeMillis();
         CoreDatasetGroup coreDatasetGroup = new CoreDatasetGroup();
         if (ObjectUtils.isEmpty(datasetGroupInfoDTO.getId())) {
             datasetGroupInfoDTO.setId(IDUtils.snowID());
             datasetGroupInfoDTO.setCreateBy("admin");// todo username
-            datasetGroupInfoDTO.setCreateTime(System.currentTimeMillis());
+            datasetGroupInfoDTO.setCreateTime(time);
+            datasetGroupInfoDTO.setLastUpdateTime(time);
             datasetGroupInfoDTO.setPid(datasetGroupInfoDTO.getPid() == null ? 0L : datasetGroupInfoDTO.getPid());
             BeanUtils.copyBean(coreDatasetGroup, datasetGroupInfoDTO);
             coreDatasetGroupMapper.insert(coreDatasetGroup);
@@ -93,6 +95,7 @@ public class DatasetGroupManage {
             }
             CoreDatasetGroup sourceData = coreDatasetGroupMapper.selectById(datasetGroupInfoDTO.getId());
             BeanUtils.copyBean(coreDatasetGroup, datasetGroupInfoDTO);
+            coreDatasetGroup.setLastUpdateTime(time);
             coreDatasetGroupMapper.updateById(coreDatasetGroup);
             if (ObjectUtils.isNotEmpty(interactiveAuthApi) && ObjectUtils.isNotEmpty(sourceData) && !StringUtils.equals(sourceData.getName(), coreDatasetGroup.getName())) {
                 BusiResourceEditor editor = new BusiResourceEditor();
