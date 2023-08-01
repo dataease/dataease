@@ -48,8 +48,8 @@
               <el-input
                 v-model="scope.row.name"
                 size="mini"
-                @blur="saveEdit(scope.row)"
-                @keyup.enter.native="saveEdit(scope.row)"
+                @blur="saveEdit(scope.row,false)"
+                @keyup.enter.native="saveEdit(scope.row,false)"
               />
             </template>
           </el-table-column>
@@ -284,8 +284,8 @@
               <el-input
                 v-model="scope.row.name"
                 size="mini"
-                @blur="saveEdit(scope.row)"
-                @keyup.enter.native="saveEdit(scope.row)"
+                @blur="saveEdit(scope.row,false)"
+                @keyup.enter.native="saveEdit(scope.row,false)"
               />
             </template>
           </el-table-column>
@@ -604,13 +604,18 @@ export default {
         this.filterField(this.searchField)
       })
     },
-    saveEdit(item) {
+    saveEdit(item, checkExp = true) {
       if (item.name && item.name.length > 50) {
         this.$message.error(this.$t('dataset.field_name_less_50'))
         return
       }
-
-      post('/chart/field/save/' + this.panelInfo.id, item).then(response => {
+      let url
+      if (checkExp) {
+        url = '/chart/field/save/'
+      } else {
+        url = '/chart/field/saveNotCheck/'
+      }
+      post(url + this.panelInfo.id, item).then(response => {
         this.initField()
       }).catch(res => {
         this.initField()
@@ -623,7 +628,7 @@ export default {
       } else if (val === 'q') {
         item.groupType = 'd'
       }
-      this.saveEdit(item)
+      this.saveEdit(item, false)
     },
 
     addCalcField() {

@@ -53,6 +53,13 @@ public class ChartViewFieldController {
         return chartViewFieldService.save(chartViewField);
     }
 
+    @DePermission(type = DePermissionType.PANEL, level = ResourceAuthLevel.PANEL_LEVEL_MANAGE)
+    @ApiOperation("保存不校验表达式")
+    @PostMapping("/saveNotCheck/{panelId}")
+    public ChartViewField saveNotCheck(@PathVariable String panelId, @RequestBody ChartViewField chartViewField) {
+        return chartViewFieldService.save(chartViewField);
+    }
+
     @DePermission(type = DePermissionType.PANEL, level = ResourceAuthLevel.PANEL_LEVEL_MANAGE, paramIndex = 1)
     @ApiOperation("删除")
     @PostMapping("/delete/{id}/{panelId}")

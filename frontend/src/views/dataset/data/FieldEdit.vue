@@ -88,8 +88,8 @@
                 v-model="scope.row.name"
                 size="mini"
                 :disabled="!hasDataPermission('manage', param.privileges)"
-                @blur="saveEdit(scope.row)"
-                @keyup.enter.native="saveEdit(scope.row)"
+                @blur="saveEdit(scope.row,false)"
+                @keyup.enter.native="saveEdit(scope.row,false)"
               />
             </template>
           </el-table-column>
@@ -427,8 +427,8 @@
                 v-model="scope.row.name"
                 size="mini"
                 :disabled="!hasDataPermission('manage', param.privileges)"
-                @blur="saveEdit(scope.row)"
-                @keyup.enter.native="saveEdit(scope.row)"
+                @blur="saveEdit(scope.row,false)"
+                @keyup.enter.native="saveEdit(scope.row,false)"
               />
             </template>
           </el-table-column>
@@ -850,7 +850,7 @@ export default {
         ]
       }
     },
-    saveEdit(item) {
+    saveEdit(item, checkExp = true) {
       if (item.name && item.name.length > 50) {
         this.$message.error(this.$t('dataset.field_name_less_50'))
         return
@@ -868,7 +868,13 @@ export default {
       if (item.dateFormatType === 'custom' && !item.dateFormat) {
         return
       }
-      post('/dataset/field/save', item)
+      let url
+      if (checkExp) {
+        url = '/dataset/field/save'
+      } else {
+        url = '/dataset/field/saveNotCheck'
+      }
+      post(url, item)
         .then((response) => {
           this.initField()
           localStorage.setItem('reloadDsData', 'true')
@@ -885,7 +891,7 @@ export default {
       } else if (val === 'q') {
         item.groupType = 'd'
       }
-      this.saveEdit(item)
+      this.saveEdit(item, false)
     },
 
     addCalcField() {
