@@ -550,6 +550,7 @@ export default {
       this.$emit('closeJumpSetDialog')
     },
     save() {
+      this.$store.commit('canvasChange')
       this.codemirrorShow = false
       this.linkJumpInfoArray.forEach(jumpInfo => {
         jumpInfo.content = this.setNameIdTrans('sourceFieldName', 'sourceFieldId', jumpInfo.content)
