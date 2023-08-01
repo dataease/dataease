@@ -302,6 +302,8 @@ const emits = defineEmits(['finish'])
   border: 1px solid #dee0e3;
   border-radius: 4px;
   padding: 8px;
+  overflow-y: auto;
+
   .custom-tree-node {
     display: flex;
     align-items: center;

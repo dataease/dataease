@@ -773,6 +773,7 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields'])
     :close-on-click-modal="false"
     size="calc(100% - 100px)"
     :with-header="false"
+    :close-on-press-escape="false"
     modal-class="sql-drawer-fullscreen"
     v-model="editSqlField"
   >

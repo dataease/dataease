@@ -142,6 +142,11 @@ watch(
   }
 )
 
+const treeProps = {
+  children: 'children',
+  label: 'name'
+}
+
 getDatasource()
 
 const emits = defineEmits(['close', 'save'])
@@ -221,6 +226,7 @@ const mouseupDrag = () => {
 const parseVariable = () => {
   state.variablesTmp = []
   const reg = new RegExp('\\${(.*?)}', 'gim')
+  console.log('codeCom.value.state.doc.toString()', codeCom.value.state.doc.toString())
   const match = codeCom.value.state.doc.toString().match(reg)
   const names = []
   if (match !== null) {
@@ -320,19 +326,18 @@ const mousedownDrag = () => {
           <Icon name="icon_up-left_outlined"></Icon>
         </el-icon>
       </p>
-      <el-select
-        v-model="sqlNode.datasourceId"
-        class="ds-list"
-        filterable
+      <el-tree-select
+        :check-strictly="false"
+        @change="dsChange"
         :placeholder="t('dataset.pls_slc_data_source')"
-      >
-        <el-option
-          v-for="item in state.dataSourceList"
-          :key="item.id"
-          :label="item.name"
-          :value="item.id"
-        />
-      </el-select>
+        class="ds-list"
+        popper-class="tree-select-ds_popper"
+        v-model="sqlNode.datasourceId"
+        node-key="id"
+        :props="treeProps"
+        :data="state.dataSourceList"
+        :render-after-expand="false"
+      />
       <p class="select-ds">{{ t('datasource.data_table') }}</p>
       <el-input
         v-model="searchTable"
@@ -443,13 +448,13 @@ const mousedownDrag = () => {
 
             <el-table-column
               key="__operation"
-              :label="t('common.operating')"
+              :label="t('commons.operating')"
               fixed="right"
               width="100"
             >
               <template #default="scope">
                 <el-button text @click="copyInfo(scope.row.sql)">
-                  {{ t('common.copy') }}
+                  {{ t('commons.copy') }}
                 </el-button>
               </template>
             </el-table-column>
@@ -469,12 +474,12 @@ const mousedownDrag = () => {
       <el-icon>
         <Icon name="icon_info_outlined"></Icon>
       </el-icon>
-      {{ $t('dataset.sql_variable_limit_1') }}<br />
-      {{ $t('dataset.sql_variable_limit_2') }}<br />
+      {{ t('dataset.sql_variable_limit_1') }}<br />
+      {{ t('dataset.sql_variable_limit_2') }}<br />
     </div>
     <el-table :data="state.variablesTmp">
-      <el-table-column prop="variableName" :label="$t('panel.param_name')" />
-      <el-table-column width="200" :label="$t('deDataset.parameter_type')">
+      <el-table-column prop="variableName" :label="t('visualization.param_name')" />
+      <el-table-column width="200" :label="t('deDataset.parameter_type')">
         <template #default="scope">
           <el-cascader
             class="select-type"
@@ -503,19 +508,19 @@ const mousedownDrag = () => {
           </span>
         </template>
       </el-table-column>
-      <el-table-column min-width="350" prop="defaultValue" :label="$t('common.params_value')">
+      <el-table-column min-width="350" prop="defaultValue" :label="t('commons.params_value')">
         <template #header>
-          {{ $t('common.params_value') }}
+          {{ t('commons.params_value') }}
         </template>
         <template #default="scope">
           <el-input
             v-if="getIconName(scope.row.type[0]) === 'text'"
             v-model="scope.row.defaultValue"
             type="text"
-            :placeholder="$t('fu.search_bar.please_input')"
+            :placeholder="t('common.please_input')"
           >
             <template #prepend>
-              <el-select v-model="scope.row.defaultValueScope" style="width: 100px">
+              <el-select v-model="scope.row.defaultValueScope" style="width: calc(100% + 22px)">
                 <el-option
                   v-for="item in defaultValueScopeList"
                   :key="item.value"
@@ -528,7 +533,7 @@ const mousedownDrag = () => {
           <el-input
             v-if="getIconName(scope.row.type[0]) === 'value'"
             v-model="scope.row.defaultValue"
-            :placeholder="$t('fu.search_bar.please_input')"
+            :placeholder="t('common.please_input')"
             type="number"
           >
             <template #prepend>
@@ -561,7 +566,7 @@ const mousedownDrag = () => {
               v-model="scope.row.defaultValue"
               type="year"
               value-format="yyyy"
-              :placeholder="$t('dataset.select_year')"
+              :placeholder="t('dataset.select_year')"
             />
 
             <el-date-picker
@@ -570,7 +575,7 @@ const mousedownDrag = () => {
               type="month"
               :format="scope.row.type[1]"
               :value-format="scope.row.type[1]"
-              :placeholder="$t('dataset.select_month')"
+              :placeholder="t('dataset.select_month')"
             />
 
             <el-date-picker
@@ -579,7 +584,7 @@ const mousedownDrag = () => {
               type="date"
               :format="scope.row.type[1]"
               :value-format="scope.row.type[1]"
-              :placeholder="$t('dataset.select_date')"
+              :placeholder="t('dataset.select_date')"
             />
 
             <el-date-picker
@@ -588,15 +593,15 @@ const mousedownDrag = () => {
               type="datetime"
               :format="scope.row.type[1]"
               :value-format="scope.row.type[1]"
-              :placeholder="$t('dataset.select_time')"
+              :placeholder="t('dataset.select_time')"
             />
           </div>
         </template>
       </el-table-column>
     </el-table>
     <template #footer>
-      <el-button secondary @click="showVariableMgm = false">{{ $t('dataset.cancel') }} </el-button>
-      <el-button type="primary" @click="saveVariable()">{{ $t('dataset.confirm') }} </el-button>
+      <el-button secondary @click="showVariableMgm = false">{{ t('dataset.cancel') }} </el-button>
+      <el-button type="primary" @click="saveVariable()">{{ t('dataset.confirm') }} </el-button>
     </template>
   </el-drawer>
 </template>
@@ -807,6 +812,11 @@ const mousedownDrag = () => {
 }
 </style>
 <style lang="less">
+.tree-select-ds_popper {
+  .ed-tree-node.is-current > .ed-tree-node__content:not(.is-menu):after {
+    display: none !important;
+  }
+}
 .sql-eidtor {
   .cm-scroller {
     height: 250px;

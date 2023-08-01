@@ -531,6 +531,7 @@ defineExpose({
   .detail-inner {
     width: 800px;
     padding-top: 24px;
+    height: calc(100vh - 280px);
 
     .title-form_primary {
       margin: 16px 0;
