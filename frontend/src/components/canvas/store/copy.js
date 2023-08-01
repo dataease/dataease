@@ -123,7 +123,7 @@ export default {
       if (data.type === 'view') {
         chartCopy(data.propValue.viewId, state.panel.panelInfo.id).then(res => {
           const newView = deepCopy(data)
-          Vue.set(newView, 'needAdaptor', needAdaptor)
+          Vue.set(newView, 'needAdaptor', store.state.multiplexingStyleAdapt?needAdaptor:false)
           newView.id = uuid.v1()
           newView.propValue.viewId = res.data
           newView['canvasId'] = data.canvasId
@@ -131,7 +131,9 @@ export default {
           if (newView.filters && newView.filters.length) {
             newView.filters = []
           }
-          needAdaptor && adaptCurThemeCommonStyle(newView)
+          if(needAdaptor && store.state.multiplexingStyleAdapt){
+            adaptCurThemeCommonStyle(newView)
+          }
           store.commit('addComponent', { component: newView })
         })
       } else if (data.type === 'de-tabs') {
@@ -143,20 +145,24 @@ export default {
             const newViewId = uuid.v1()
             sourceAndTargetIds[item.content.propValue.viewId] = newViewId
             item.content.propValue.viewId = newViewId
-            Vue.set(item.content, 'needAdaptor', needAdaptor)
+            Vue.set(item.content, 'needAdaptor', store.state.multiplexingStyleAdapt?needAdaptor:false)
             if (item.content.filters && item.content.filters.length) {
               item.content.filters = []
             }
           }
         })
         chartBatchCopy({ 'sourceAndTargetIds': sourceAndTargetIds }, state.panel.panelInfo.id).then((rsp) => {
-          needAdaptor && adaptCurThemeCommonStyle(newCop,'copy')
+          if(needAdaptor && store.state.multiplexingStyleAdapt){
+            adaptCurThemeCommonStyle(newCop,'copy')
+          }
           store.commit('addComponent', { component: newCop })
         })
       } else {
         const newCop = deepCopy(data)
         newCop.id = uuid.v1()
-        needAdaptor && adaptCurThemeCommonStyle(newCop,'copy')
+        if(needAdaptor && store.state.multiplexingStyleAdapt) {
+          adaptCurThemeCommonStyle(newCop,'copy')
+        }
         store.commit('addComponent', { component: newCop })
       }
       if (state.isCut) {

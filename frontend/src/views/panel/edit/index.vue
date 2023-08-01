@@ -428,6 +428,22 @@
           {{ $t('panel.multiplexing') }}
         </span>
         <span style="float: right;">
+          <span class="adapt-text"> 样式适配： </span>
+          <el-select
+            style="width: 120px;margin-right: 16px"
+            v-model="multiplexingStyleAdaptSelf"
+            placeholder="Select"
+            placement="top-start"
+            size="mini"
+            @change="multiplexingStyleAdaptChange"
+          >
+            <el-option
+              v-for="item in copyOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
           <el-button
             type="primary"
             size="mini"
@@ -630,7 +646,12 @@ export default {
       activeToolsName: 'view',
       rightDrawOpen: false,
       editType: null,
-      buttonVisible: false
+      buttonVisible: false,
+      copyOptions: [
+        { label: '适应新主题', value: true },
+        { label: '保持源样式', value: false }
+      ],
+      multiplexingStyleAdaptSelf : true
     }
   },
 
@@ -754,6 +775,9 @@ export default {
     curCanvasScaleSelf() {
       return this.curCanvasScaleMap[this.canvasId]
     },
+    selectComponentCount(){
+      return Object.keys(this.curMultiplexingComponents).length
+    },
     ...mapState([
       'curComponent',
       'curCanvasScaleMap',
@@ -770,7 +794,8 @@ export default {
       'mobileLayoutStyle',
       'scrollAutoMove',
       'batchOptStatus',
-      'curMultiplexingComponents'
+      'curMultiplexingComponents',
+      'multiplexingStyleAdapt'
     ])
   },
 
@@ -835,6 +860,7 @@ export default {
     })
     this.loadMultiplexingViewTree()
     this.init(this.$store.state.panel.panelInfo.id)
+    this.multiplexingStyleAdaptSelf = this.multiplexingStyleAdapt
   },
   beforeDestroy() {
     bus.$off('component-on-drag', this.componentOnDrag)
@@ -1448,6 +1474,9 @@ export default {
       this.$store.commit('copyMultiplexingComponents')
       this.$store.commit('recordSnapshot')
       this.$store.commit('canvasChange')
+    },
+    multiplexingStyleAdaptChange(value){
+      this.$store.commit('setMultiplexingStyleAdapt',value)
     }
   }
 }
@@ -1726,5 +1755,32 @@ export default {
 
 .dialog-css ::v-deep .el-dialog__body {
   padding: 10px 20px 20px;
+}
+
+.multiplexing-footer {
+  position: relative;
+}
+
+.adapt-count {
+  position: absolute;
+  top: 18px;
+  left: 20px;
+  color: #646a73;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+  text-align: left;
+}
+
+.adapt-select {
+  position: absolute;
+  top: 18px;
+  right: 220px;
+}
+.adapt-text {
+  font-size: 14px;
+  font-weight: 400;
+  color: #1f2329;
+  line-height: 22px;
 }
 </style>
