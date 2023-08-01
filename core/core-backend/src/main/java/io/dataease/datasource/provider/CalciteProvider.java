@@ -202,14 +202,18 @@ public class CalciteProvider {
         }
     }
 
-    private void registerDriver() throws Exception {
+    private void registerDriver() {
         for (String driverClass : getDriver()) {
-            Driver driver = (Driver) extendedJdbcClassLoader.loadClass(driverClass).newInstance();
-            DriverManager.registerDriver(new DriverShim(driver));
+            try {
+                Driver driver = (Driver) extendedJdbcClassLoader.loadClass(driverClass).newInstance();
+                DriverManager.registerDriver(new DriverShim(driver));
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
     }
 
-    private Connection getCalciteConnection() throws Exception {
+    private Connection getCalciteConnection() throws Exception{
         registerDriver();
         Properties info = new Properties();
         info.setProperty("lex", "JAVA");
@@ -222,12 +226,11 @@ public class CalciteProvider {
     }
 
     // 构建root schema
-    private SchemaPlus buildSchema(DatasourceRequest datasourceRequest, CalciteConnection calciteConnection) throws Exception {
+    private SchemaPlus buildSchema(DatasourceRequest datasourceRequest, CalciteConnection calciteConnection) {
         SchemaPlus rootSchema = calciteConnection.getRootSchema();
         Map<Long, DatasourceSchemaDTO> dsList = datasourceRequest.getDsList();
         for (Map.Entry<Long, DatasourceSchemaDTO> next : dsList.entrySet()) {
             DatasourceSchemaDTO ds = next.getValue();
-            LogUtil.info("ds: " + JsonUtil.toJSONString(ds));
             // build schema
             BasicDataSource dataSource = new BasicDataSource();
             Schema schema = null;
@@ -574,7 +577,9 @@ public class CalciteProvider {
                commonThreadPool.addTask( () -> {
                   try {
                       connections[finalI] = initConnection(dsMap);
-                  }catch (Exception e) {}
+                  }catch (Exception e) {
+                      e.printStackTrace();
+                  }
                });
 
            }catch (Exception e) {
