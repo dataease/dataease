@@ -96,13 +96,26 @@ public class DatasourceServer implements DatasourceApi {
         switch (dataSourceDTO.getAction()){
             case "move":
             case "rename":
-                checkName(dataSourceDTO.getName(), datasourceMapper.selectById(dataSourceDTO.getId()).getType(), dataSourceDTO.getId());
+                if (Objects.equals(dataSourceDTO.getId(), dataSourceDTO.getPid())) {
+                    DEException.throwException("pid can not equal to id.");
+                }
+                CoreDatasource sourceData = datasourceMapper.selectById(dataSourceDTO.getId());
+                checkName(dataSourceDTO.getName(), sourceData.getType(), dataSourceDTO.getId());
                 UpdateWrapper<CoreDatasource> updateWrapper = new UpdateWrapper<>();
                 updateWrapper.eq("id", dataSourceDTO.getId());
                 CoreDatasource record = new CoreDatasource();
                 record.setPid(dataSourceDTO.getPid());
                 record.setName(dataSourceDTO.getName());
                 datasourceMapper.update(record, updateWrapper);
+                if (ObjectUtils.isNotEmpty(interactiveAuthApi) && ObjectUtils.isNotEmpty(sourceData) && ( !StringUtils.equals(dataSourceDTO.getName(), sourceData.getName()) || sourceData.getPid().equals(dataSourceDTO.getPid()))) {
+                    BusiResourceEditor editor = new BusiResourceEditor();
+                    editor.setId(dataSourceDTO.getId());
+                    editor.setFlag(RESOURCE_FLAG);
+                    editor.setName(dataSourceDTO.getName());
+                    editor.setPid(dataSourceDTO.getPid());
+                    interactiveAuthApi.editResource(editor);
+                }
+
                 break;
             case "create":
                 checkName(dataSourceDTO.getName(), dataSourceDTO.getNodeType(), dataSourceDTO.getId());
@@ -111,7 +124,20 @@ public class DatasourceServer implements DatasourceApi {
                 coreDatasource.setCreateTime(System.currentTimeMillis());
                 coreDatasource.setUpdateTime(System.currentTimeMillis());
                 coreDatasource.setTaskStatus(TaskStatus.WaitingForExecution.name());
+                coreDatasource.setType(dataSourceDTO.getNodeType());
                 coreDatasource.setId(IDUtils.snowID());
+                coreDatasource.setConfiguration("");
+                datasourceMapper.insert(coreDatasource);
+                if (ObjectUtils.isNotEmpty(interactiveAuthApi)) {
+                    BusiResourceCreator creator = new BusiResourceCreator();
+                    creator.setId(coreDatasource.getId());
+                    creator.setPid(coreDatasource.getPid());
+                    creator.setFlag(RESOURCE_FLAG);
+                    creator.setName(dataSourceDTO.getName());
+                    creator.setLeaf(coreDatasource.getType().equals("folder") ? false : true);
+                    creator.setExtraFlag(DataSourceType.valueOf(coreDatasource.getType()).getFlag());
+                    interactiveAuthApi.saveResource(creator);
+                }
                 break;
             default:
                 break;
@@ -313,6 +339,54 @@ public class DatasourceServer implements DatasourceApi {
 
 
     @Override
+    public DatasourceDTO get(Long datasourceId) throws Exception {
+        DatasourceDTO datasourceDTO = new DatasourceDTO();
+        CoreDatasource datasource = datasourceMapper.selectById(datasourceId);
+        BeanUtils.copyBean(datasourceDTO, datasource);
+        TypeReference<List<ApiDefinition>> listTypeReference = new TypeReference<List<ApiDefinition>>() {};
+        if (datasourceDTO.getType().equalsIgnoreCase(DatasourceConfiguration.DatasourceType.API.toString())) {
+            List<ApiDefinition> apiDefinitionList = JsonUtil.parseList(datasourceDTO.getConfiguration(), listTypeReference);
+            List<ApiDefinition> apiDefinitionListWithStatus = new ArrayList<>();
+            int success = 0;
+            for (int i = 0; i < apiDefinitionList.size(); i++) {
+                String status = null;
+                if (StringUtils.isNotEmpty(datasourceDTO.getStatus())) {
+                    JsonNode jsonNode = null;
+                    try {
+                        jsonNode = objectMapper.readTree(datasourceDTO.getStatus());
+                    } catch (Exception e) {
+                        DEException.throwException(e);
+                    }
+                    if (jsonNode.get(apiDefinitionList.get(i).getName()) != null) {
+                        status = jsonNode.get(apiDefinitionList.get(i).getName()).asText();
+                    }
+                    apiDefinitionList.get(i).setStatus(status);
+                }
+                if (StringUtils.isNotEmpty(status) && status.equalsIgnoreCase("Success")) {
+                    success++;
+                }
+                apiDefinitionListWithStatus.add(apiDefinitionList.get(i));
+            }
+            datasourceDTO.setApiConfigurationStr(new String(Base64.getEncoder().encode(JsonUtil.toJSONString(apiDefinitionListWithStatus).toString().getBytes())));
+            if (success == apiDefinitionList.size()) {
+                datasourceDTO.setStatus("Success");
+            } else {
+                if (success > 0 && success < apiDefinitionList.size()) {
+                    datasourceDTO.setStatus("Warning");
+                } else {
+                    datasourceDTO.setStatus("Error");
+                }
+            }
+            CoreDatasourceTask coreDatasourceTask = datasourceTaskServer.selectByDSId(datasourceDTO.getId());
+            TaskDTO taskDTO = new TaskDTO();
+            BeanUtils.copyBean(taskDTO, coreDatasourceTask);
+            datasourceDTO.setSyncSetting(taskDTO);
+        }
+        datasourceDTO.setConfiguration(new String(Base64.getEncoder().encode(datasourceDTO.getConfiguration().getBytes())));
+        return datasourceDTO;
+    }
+
+    @Override
     public void delete(Long datasourceId) throws Exception {
         CoreDatasource coreDatasource = datasourceMapper.selectById(datasourceId);
         if (ObjectUtils.isEmpty(coreDatasource)) {
@@ -361,62 +435,6 @@ public class DatasourceServer implements DatasourceApi {
     public List<BusiNodeVO> tree(BusiNodeRequest request) throws DEException {
         return dataSourceManage.tree(request);
     }
-
-    /*private void setDatasourceConfig(List<DatasourceNodeBO> nodes){
-
-        TypeReference<List<ApiDefinition>> listTypeReference = new TypeReference<List<ApiDefinition>>() {
-        };
-
-        nodes.forEach(datasourceNodeBO -> {
-            if (datasourceNodeBO.getLeaf()) {
-                List<DatasourceConfiguration.DatasourceType> datasourceConfigurations = datasourceTypes();
-                QueryWrapper<CoreDatasource> datasourceQueryWrapper = new QueryWrapper();
-                datasourceMapper.selectList(datasourceQueryWrapper).forEach(coreDatasource -> {
-                    if (coreDatasource.getId().equals(datasourceNodeBO.getId())) {
-                        if (datasourceNodeBO.getType().equalsIgnoreCase(DatasourceConfiguration.DatasourceType.API.toString())) {
-                            List<ApiDefinition> apiDefinitionList = JsonUtil.parseList(coreDatasource.getConfiguration(), listTypeReference);
-                            List<ApiDefinition> apiDefinitionListWithStatus = new ArrayList<>();
-                            int success = 0;
-                            for (int i = 0; i < apiDefinitionList.size(); i++) {
-                                String status = null;
-                                if (StringUtils.isNotEmpty(coreDatasource.getStatus())) {
-                                    JsonNode jsonNode = null;
-                                    try {
-                                        jsonNode = objectMapper.readTree(coreDatasource.getStatus());
-                                    } catch (Exception e) {
-                                        DEException.throwException(e);
-                                    }
-                                    if (jsonNode.get(apiDefinitionList.get(i).getName()) != null) {
-                                        status = jsonNode.get(apiDefinitionList.get(i).getName()).asText();
-                                    }
-                                    apiDefinitionList.get(i).setStatus(status);
-                                }
-                                if (StringUtils.isNotEmpty(status) && status.equalsIgnoreCase("Success")) {
-                                    success++;
-                                }
-                                apiDefinitionListWithStatus.add(apiDefinitionList.get(i));
-                            }
-                            datasourceNodeBO.setApiConfigurationStr(new String(Base64.getEncoder().encode(JsonUtil.toJSONString(apiDefinitionListWithStatus).toString().getBytes())));
-                            if (success == apiDefinitionList.size()) {
-                                datasourceNodeBO.setStatus("Success");
-                            } else {
-                                if (success > 0 && success < apiDefinitionList.size()) {
-                                    datasourceNodeBO.setStatus("Warning");
-                                } else {
-                                    datasourceNodeBO.setStatus("Error");
-                                }
-                            }
-                            CoreDatasourceTask coreDatasourceTask = datasourceTaskServer.selectByDSId(datasourceNodeBO.getId());
-                            TaskDTO taskDTO = new TaskDTO();
-                            BeanUtils.copyBean(taskDTO, coreDatasourceTask);
-                            datasourceNodeBO.setSyncSetting(taskDTO);
-                        }
-                        datasourceNodeBO.setConfiguration(new String(Base64.getEncoder().encode(coreDatasource.getConfiguration().getBytes())));
-                    }
-                });
-            }
-        });
-    }*/
 
     private DatasourceNodeBO rootNode() {
         DatasourceNodeBO bo = new DatasourceNodeBO();

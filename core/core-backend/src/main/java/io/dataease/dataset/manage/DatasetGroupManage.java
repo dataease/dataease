@@ -97,11 +97,13 @@ public class DatasetGroupManage {
             BeanUtils.copyBean(coreDatasetGroup, datasetGroupInfoDTO);
             coreDatasetGroup.setLastUpdateTime(time);
             coreDatasetGroupMapper.updateById(coreDatasetGroup);
-            if (ObjectUtils.isNotEmpty(interactiveAuthApi) && ObjectUtils.isNotEmpty(sourceData) && !StringUtils.equals(sourceData.getName(), coreDatasetGroup.getName())) {
+            if (ObjectUtils.isNotEmpty(interactiveAuthApi) && ObjectUtils.isNotEmpty(sourceData) && (!StringUtils.equals(sourceData.getName(), coreDatasetGroup.getName()) || sourceData.getPid().equals(coreDatasetGroup.getPid()
+            ))) {
                 BusiResourceEditor editor = new BusiResourceEditor();
                 editor.setId(coreDatasetGroup.getId());
                 editor.setName(coreDatasetGroup.getName());
                 editor.setFlag(leafType);
+                editor.setPid(coreDatasetGroup.getPid());
                 interactiveAuthApi.editResource(editor);
             }
         }

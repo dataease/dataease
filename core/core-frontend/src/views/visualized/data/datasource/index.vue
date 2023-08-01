@@ -8,7 +8,7 @@ import { Icon } from '@/components/icon-custom'
 import CreatDsGroup from './form/CreatDsGroup.vue'
 import type { Tree } from '../dataset/form/CreatDsGroup.vue'
 import { getDatasetPreview } from '@/api/dataset'
-import { previewData } from '@/api/datasource'
+import { previewData, getById } from '@/api/datasource'
 import { useI18n } from '@/hooks/web/useI18n'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import {
@@ -295,23 +295,31 @@ const creatDsFolder = ref()
 const tableData = shallowRef([])
 const handleNodeClick = data => {
   if (!data.leaf) return
-  const { name, createBy, id, type, configuration, syncSetting, apiConfiguration, description } =
-    data
-  Object.assign(nodeInfo, {
-    name,
-    description,
-    createBy,
-    id,
-    type,
-    configuration,
-    syncSetting,
-    apiConfiguration
-  })
-  activeName.value = 'config'
-  handleCurrentChange(1)
-  handleClick(activeName.value)
-  nextTick(() => {
-    baseInfo.value.active = true
+  getById(data.id).then(res => {
+    let { name, createBy, id, type, configuration, syncSetting, apiConfigurationStr, description } =
+      res.data
+    if (configuration) {
+      configuration = JSON.parse(Base64.decode(configuration))
+    }
+    if (apiConfigurationStr) {
+      apiConfigurationStr = JSON.parse(Base64.decode(apiConfigurationStr))
+    }
+    Object.assign(nodeInfo, {
+      name,
+      description,
+      createBy,
+      id,
+      type,
+      configuration,
+      syncSetting,
+      apiConfigurationStr
+    })
+    activeName.value = 'config'
+    handleCurrentChange(1)
+    handleClick(activeName.value)
+    nextTick(() => {
+      baseInfo.value.active = true
+    })
   })
 }
 const createDatasource = (data?: Tree) => {
