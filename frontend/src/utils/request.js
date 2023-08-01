@@ -109,6 +109,16 @@ service.interceptors.response.use(response => {
   config.loading && tryHideLoading(store.getters.currentPath)
 
   let msg = ''
+  if (error?.response?.config?.url === 'dataset/table/exportDataset') {
+    checkAuth(error.response)
+    var reader = new FileReader()
+    reader.readAsText(error.response.data, 'utf-8')
+    reader.onload = () => {
+      $error((JSON.parse(reader.result) || {}).message)
+    }
+    return Promise.reject()
+  }
+
   if (error.response) {
     checkAuth(error.response)
     msg = error.response.data.message || error.response.data
@@ -118,7 +128,7 @@ service.interceptors.response.use(response => {
   if (msg.length > 600) {
     msg = msg.slice(0, 600)
   }
-  !config.hideMsg && (!headers['authentication-status']) && !msg?.startsWith("MultiLoginError") && $error(msg)
+  !config.hideMsg && (!headers['authentication-status']) && !msg?.startsWith('MultiLoginError') && $error(msg)
   return Promise.reject(config.url === '/dataset/table/sqlPreview' ? msg : error)
 })
 const checkDownError = response => {
