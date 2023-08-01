@@ -564,6 +564,7 @@ export default {
       this.close()
     },
     saveLinkage() {
+      this.$store.commit('canvasChange')
       // 字段检查
       for (const key in this.targetLinkageInfo) {
         let subCheckCount = 0
