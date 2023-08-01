@@ -168,6 +168,7 @@
 
                   <el-dropdown-item
                     v-if="hasDataPermission('export',panelInfo.privileges)&&panelInfo.status==='publish'"
+                    :disabled="componentData.length===0"
                     @click.native="saveToTemplate"
                   >
                     <svg-icon
@@ -190,6 +191,7 @@
 
                   <el-dropdown
                     v-if="hasDataPermission('export',panelInfo.privileges)&&panelInfo.status==='publish'"
+                    :disabled="componentData.length===0"
                     style="width: 100%"
                     trigger="hover"
                     placement="right-start"
