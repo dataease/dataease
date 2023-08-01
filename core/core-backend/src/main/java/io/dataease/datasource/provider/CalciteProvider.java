@@ -22,6 +22,7 @@ import io.dataease.i18n.Translator;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.CommonBeanFactory;
 import io.dataease.utils.JsonUtil;
+import io.dataease.utils.LogUtil;
 import jakarta.annotation.Resource;
 import org.apache.calcite.adapter.jdbc.JdbcSchema;
 import org.apache.calcite.jdbc.CalciteConnection;
@@ -226,6 +227,7 @@ public class CalciteProvider {
         Map<Long, DatasourceSchemaDTO> dsList = datasourceRequest.getDsList();
         for (Map.Entry<Long, DatasourceSchemaDTO> next : dsList.entrySet()) {
             DatasourceSchemaDTO ds = next.getValue();
+            LogUtil.info("ds: " + JsonUtil.toJSONString(ds));
             // build schema
             BasicDataSource dataSource = new BasicDataSource();
             Schema schema = null;
@@ -551,6 +553,7 @@ public class CalciteProvider {
     private static int capacity = 10;
 
     public void  initConnectionPool(int capacity) {
+        LogUtil.info("Begin to init datasource pool...");
         QueryWrapper<CoreDatasource> datasourceQueryWrapper = new QueryWrapper();
         List<CoreDatasource> coreDatasources = coreDatasourceMapper.selectList(datasourceQueryWrapper).stream().filter(coreDatasource -> !Arrays.asList("folder", "API", "Excel").contains(coreDatasource.getType())).collect(Collectors.toList());
         coreDatasources.add(engineServer.getDeEngine());
@@ -561,7 +564,7 @@ public class CalciteProvider {
             datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId()));
             dsMap.put(datasourceSchemaDTO.getId(), datasourceSchemaDTO);
         }
-
+        LogUtil.info("dsMap size..." + dsMap.keySet().size());
         connections = new Connection[capacity];
         states = new AtomicIntegerArray(new int[capacity]);
         this.capacity = capacity;
