@@ -620,9 +620,9 @@ defineExpose({
         </el-icon>
       </template>
     </el-input>
-    <el-divider class="resource-divider" />
     <el-tree
       menu
+      class="resource-tree"
       ref="resourceTreeRef"
       :data="state.resourceTreeData"
       :props="defaultProps"
@@ -649,13 +649,7 @@ defineExpose({
         ></el-tab-pane>
         <el-tab-pane :label="t('auth.role')" name="role"></el-tab-pane>
       </el-tabs>
-      <el-input class="search-table-input" v-model="targetkey" clearable @change="filterTarget">
-        <template #prefix>
-          <el-icon>
-            <Icon name="icon_search-outline_outlined"></Icon>
-          </el-icon>
-        </template>
-      </el-input>
+
       <div class="search-table-bt">
         <el-button :disabled="!state.uncommitted.length" @click="save" type="primary">{{
           t('common.sure')
@@ -667,10 +661,17 @@ defineExpose({
     </div>
     <div class="resource-table">
       <div class="tree-table">
+        <el-input class="search-table-input" v-model="targetkey" clearable @change="filterTarget">
+          <template #prefix>
+            <el-icon>
+              <Icon name="icon_search-outline_outlined"></Icon>
+            </el-icon>
+          </template>
+        </el-input>
         <el-table
           :data="state.tableData"
           style="width: 100%"
-          height="100%"
+          class="table-container"
           row-key="id"
           header-cell-class-name="header-cell"
           :row-class-name="dynamicResourceClass"
@@ -770,7 +771,7 @@ defineExpose({
     top: 0;
     left: 0;
     background: #fff;
-
+    width: 500px;
     .filter-input {
       margin: 8px 24px 16px;
       width: 200px;
@@ -790,22 +791,16 @@ defineExpose({
   .tab-search {
     height: 50px;
     position: relative;
-    // padding-top: 18px;
 
-    .search-table-input {
-      position: absolute;
-      right: 24px;
-      top: 7px;
-      width: 240px;
-    }
     .search-table-bt {
       position: absolute;
-      right: 250px;
+      right: 5px;
       top: 7px;
       width: 190px;
     }
     .tabs-mr {
       .border-bottom-tab(30px);
+      margin: 0 30px;
     }
   }
   .resource-table {
@@ -817,6 +812,12 @@ defineExpose({
       height: 100%;
       padding: 24px;
       overflow-y: auto;
+      .search-table-input {
+        margin-bottom: 16px;
+      }
+      .table-container {
+        height: calc(100% - 48px);
+      }
     }
   }
 }
@@ -832,9 +833,9 @@ defineExpose({
   height: 100%;
   padding: 24px;
   overflow-y: auto;
-  padding-top: 6px;
-  .resource-divider {
-    margin: 7px 0;
+  padding-top: 50px;
+  .filter-input {
+    margin-top: 24px;
   }
 }
 .custom-tree-node {
