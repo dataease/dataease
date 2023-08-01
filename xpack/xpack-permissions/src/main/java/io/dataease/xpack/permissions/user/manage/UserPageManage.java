@@ -3,7 +3,6 @@ package io.dataease.xpack.permissions.user.manage;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ArrayUtil;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -24,9 +23,11 @@ import io.dataease.xpack.permissions.user.dao.ext.entity.UserRolePO;
 import io.dataease.xpack.permissions.user.dao.ext.mapper.UserExtMapper;
 import io.dataease.xpack.permissions.user.entity.UserSortEntity;
 import io.dataease.xpack.permissions.utils.PerTokenUtils;
+import io.dataease.xpack.permissions.utils.TokenCacheUtils;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Lazy;
@@ -35,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -56,7 +58,9 @@ public class UserPageManage {
     private OrgPageManage orgPageManage;
 
 
-    private static final String DEFAULT_PWD = "DataEase123456";
+
+    @Value("${dataease.default-pwd:DataEase123456}")
+    private String DEFAULT_PWD;
 
 
     private Boolean stateFromCondition(BaseGridRequest request) {
@@ -149,16 +153,40 @@ public class UserPageManage {
     public void delete(Long id) {
         Long oid = AuthUtils.getUser().getDefaultOid();
         CacheUtils.remove("user_roles", id.toString() + oid, t -> {
-            int rCount = userExtMapper.userRoleMappingCount(id);
-            if (rCount > 0) {
-                userExtMapper.deleteUserRoleMapping(id, oid);
-                rCount = userExtMapper.userRoleMappingCount(id);
-            }
-            if (rCount == 0) {
-                perUserMapper.deleteById(id);
-            }
+            proxy().deleteLogic(id, oid);
         });
+    }
 
+    @CacheEvict(cacheNames = "user_count", key = "'de'")
+    public void batchDel(List<Long> ids) {
+        Long oid = AuthUtils.getUser().getDefaultOid();
+        List<String> keys = ids.stream().map(id -> id.toString() + oid).collect(Collectors.toList());
+        CacheUtils.remove("user_roles", keys, t -> {
+            proxy().batchDelLogic(ids, oid);
+        });
+    }
+
+    private UserPageManage proxy() {
+        return CommonBeanFactory.getBean(UserPageManage.class);
+    }
+
+    @Transactional
+    public void batchDelLogic(List<Long> ids, Long oid) {
+        for (Long id : ids) {
+            deleteLogic(id, oid);
+        }
+    }
+
+    @Transactional
+    public void deleteLogic(Long id, Long oid) {
+        int rCount = userExtMapper.userRoleMappingCount(id);
+        if (rCount > 0) {
+            userExtMapper.deleteUserRoleMapping(id, oid);
+            rCount = userExtMapper.userRoleMappingCount(id);
+        }
+        if (rCount == 0) {
+            perUserMapper.deleteById(id);
+        }
     }
 
     public UserFormVO queryForm(Long uid) {
@@ -190,7 +218,7 @@ public class UserPageManage {
             });
         }
         if (StringUtils.isNotBlank(request.getOrder())) {
-            queryWrapper.orderBy(true, request.getOrder().split(" ").length <= 1 || request.getOrder().split(" ")[1].equalsIgnoreCase("asc"),  request.getOrder().split(" ")[0]);
+            queryWrapper.orderBy(true, request.getOrder().split(" ").length <= 1 || request.getOrder().split(" ")[1].equalsIgnoreCase("asc"), request.getOrder().split(" ")[0]);
         }
         queryWrapper.orderByDesc("pu.create_time");
         IPage<UserItemVO> iPage = userExtMapper.selectedWithRole(page, queryWrapper);
@@ -267,5 +295,22 @@ public class UserPageManage {
 
     public void switchLang(Long id, String lang) {
         userExtMapper.updateLanguage(id, lang);
+    }
+
+
+    public String defaultPwd() {
+        return DEFAULT_PWD;
+    }
+
+    public void resetPwd(Long uid) {
+        PerUser user = null;
+        if (ObjectUtils.isNotEmpty(user = perUserMapper.selectById(uid))) {
+            user.setPwd(Md5Utils.md5(DEFAULT_PWD));
+            perUserMapper.updateById(user);
+            if (Objects.requireNonNull(AuthUtils.getUser()).getUserId().equals(uid)) {
+                TokenCacheUtils.del(uid, ServletUtils.getToken());
+            }
+        }
+        DEException.throwException("user does not exist");
     }
 }

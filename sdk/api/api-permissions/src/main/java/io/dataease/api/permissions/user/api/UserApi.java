@@ -42,6 +42,9 @@ public interface UserApi {
     @PostMapping("/delete/{id}")
     void delete(@PathVariable("id") Long id);
 
+    @DePermit({"m:read", "#p0 + ':manage'"})
+    @PostMapping("/batchDel")
+    void batchDel(@RequestBody List<Long> ids);
 
     @PostMapping("/role/option")
     List<UserItemVO> optionForRole(@RequestBody UserRequest request);
@@ -76,4 +79,12 @@ public interface UserApi {
 
     @GetMapping("/clearErrorRecord/{key}")
     void clearErrorRecord(@PathVariable("key") String key);
+
+    @DePermit({"m:read"})
+    @GetMapping("/defaultPwd")
+    String defaultPwd();
+
+    @DePermit({"m:read", "#p0 + ':manage'"})
+    @PostMapping("/resetPwd/{id}")
+    void resetPwd(@PathVariable("id") Long id);
 }

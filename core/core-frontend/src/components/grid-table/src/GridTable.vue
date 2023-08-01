@@ -29,6 +29,9 @@ const handleListeners = () => {
 const toggleRowSelection = row => {
   table.value.toggleRowSelection(row, true)
 }
+const clearSelection = () => {
+  table.value.clearSelection()
+}
 const handlerSelected = multipleSelection => {
   state.multipleSelectionCache = [...state.multipleSelectionCache, ...multipleSelection]
   const flags = state.multipleSelectionCache.map(ele => ele[props.selectedFlags])
@@ -97,6 +100,7 @@ watch(
 )
 defineExpose({
   toggleRowSelection,
+  clearSelection,
   multipleSelectionAll
 })
 </script>
