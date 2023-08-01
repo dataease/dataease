@@ -7,6 +7,7 @@ import io.dataease.api.ds.vo.DatasourceConfiguration.DatasourceType;
 import io.dataease.api.ds.vo.DatasourceDTO;
 import io.dataease.api.ds.vo.TableField;
 import io.dataease.commons.exception.DataEaseException;
+import io.dataease.commons.utils.CommonThreadPool;
 import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.entity.CoreDriver;
@@ -55,9 +56,12 @@ public class CalciteProvider {
     private final String CUSTOM_PATH = "/opt/dataease/custom-drivers/";
     private static String split = "DE";
 
+    @Resource
+    private CommonThreadPool commonThreadPool;
 
 
     public void init() throws Exception {
+
         try {
             String jarPath = FILE_PATH;
             ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
@@ -227,90 +231,94 @@ public class CalciteProvider {
             Schema schema = null;
             DatasourceConfiguration configuration = null;
             DatasourceType datasourceType = DatasourceType.valueOf(ds.getType());
-            switch (datasourceType) {
-                case mysql:
-                case mariadb:
-                case TiDB:
-                case StarRocks:
-                    configuration = JsonUtil.parseObject(ds.getConfiguration(), Mysql.class);
-                    dataSource.setUrl(configuration.getJdbc());
-                    dataSource.setUsername(configuration.getUsername());
-                    dataSource.setPassword(configuration.getPassword());
-                    dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
-                    schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getDataBase());
-                    rootSchema.add(ds.getSchemaAlias(), schema);
-                    break;
-                case sqlServer:
-                    configuration = JsonUtil.parseObject(ds.getConfiguration(), Sqlserver.class);
-                    dataSource.setUrl(configuration.getJdbc());
-                    dataSource.setUsername(configuration.getUsername());
-                    dataSource.setPassword(configuration.getPassword());
-                    dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
-                    schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getSchema());
-                    rootSchema.add(ds.getSchemaAlias(), schema);
-                    break;
-                case oracle:
-                    configuration = JsonUtil.parseObject(ds.getConfiguration(), Oracle.class);
-                    dataSource.setUrl(configuration.getJdbc());
-                    dataSource.setUsername(configuration.getUsername());
-                    dataSource.setPassword(configuration.getPassword());
-                    dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
-                    schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getSchema());
-                    rootSchema.add(ds.getSchemaAlias(), schema);
-                    break;
-                case db2:
-                    configuration = JsonUtil.parseObject(ds.getConfiguration(), Db2.class);
-                    dataSource.setUrl(configuration.getJdbc());
-                    dataSource.setUsername(configuration.getUsername());
-                    dataSource.setPassword(configuration.getPassword());
-                    dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
-                    schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getSchema());
-                    rootSchema.add(ds.getSchemaAlias(), schema);
-                    break;
-                case ck:
-                    configuration = JsonUtil.parseObject(ds.getConfiguration(), CK.class);
-                    dataSource.setUrl(configuration.getJdbc());
-                    dataSource.setUsername(configuration.getUsername());
-                    dataSource.setPassword(configuration.getPassword());
-                    dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
-                    schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getDataBase());
-                    rootSchema.add(ds.getSchemaAlias(), schema);
-                    break;
-                case pg:
-                    configuration = JsonUtil.parseObject(ds.getConfiguration(), Pg.class);
-                    dataSource.setUrl(configuration.getJdbc());
-                    dataSource.setUsername(configuration.getUsername());
-                    dataSource.setPassword(configuration.getPassword());
-                    dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
-                    schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getSchema());
-                    rootSchema.add(ds.getSchemaAlias(), schema);
-                    break;
-                case redshift:
-                    configuration = JsonUtil.parseObject(ds.getConfiguration(), Redshift.class);
-                    dataSource.setUrl(configuration.getJdbc());
-                    dataSource.setUsername(configuration.getUsername());
-                    dataSource.setPassword(configuration.getPassword());
-                    dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
-                    schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getSchema());
-                    rootSchema.add(ds.getSchemaAlias(), schema);
-                    break;
-                case h2:
-                    configuration = JsonUtil.parseObject(ds.getConfiguration(), H2.class);
-                    dataSource.setUrl(configuration.getJdbc());
-                    dataSource.setUsername(configuration.getUsername());
-                    dataSource.setPassword(configuration.getPassword());
-                    dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
-                    schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getDataBase());
-                    rootSchema.add(ds.getSchemaAlias(), schema);
-                    break;
-                default:
-                    configuration = JsonUtil.parseObject(ds.getConfiguration(), Mysql.class);
-                    dataSource.setUrl(configuration.getJdbc());
-                    dataSource.setUsername(configuration.getUsername());
-                    dataSource.setPassword(configuration.getPassword());
-                    dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
-                    schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getDataBase());
-                    rootSchema.add(ds.getSchemaAlias(), schema);
+            try {
+                switch (datasourceType) {
+                    case mysql:
+                    case mariadb:
+                    case TiDB:
+                    case StarRocks:
+                        configuration = JsonUtil.parseObject(ds.getConfiguration(), Mysql.class);
+                        dataSource.setUrl(configuration.getJdbc());
+                        dataSource.setUsername(configuration.getUsername());
+                        dataSource.setPassword(configuration.getPassword());
+                        dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
+                        schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getDataBase());
+                        rootSchema.add(ds.getSchemaAlias(), schema);
+                        break;
+                    case sqlServer:
+                        configuration = JsonUtil.parseObject(ds.getConfiguration(), Sqlserver.class);
+                        dataSource.setUrl(configuration.getJdbc());
+                        dataSource.setUsername(configuration.getUsername());
+                        dataSource.setPassword(configuration.getPassword());
+                        dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
+                        schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getSchema());
+                        rootSchema.add(ds.getSchemaAlias(), schema);
+                        break;
+                    case oracle:
+                        configuration = JsonUtil.parseObject(ds.getConfiguration(), Oracle.class);
+                        dataSource.setUrl(configuration.getJdbc());
+                        dataSource.setUsername(configuration.getUsername());
+                        dataSource.setPassword(configuration.getPassword());
+                        dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
+                        schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getSchema());
+                        rootSchema.add(ds.getSchemaAlias(), schema);
+                        break;
+                    case db2:
+                        configuration = JsonUtil.parseObject(ds.getConfiguration(), Db2.class);
+                        dataSource.setUrl(configuration.getJdbc());
+                        dataSource.setUsername(configuration.getUsername());
+                        dataSource.setPassword(configuration.getPassword());
+                        dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
+                        schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getSchema());
+                        rootSchema.add(ds.getSchemaAlias(), schema);
+                        break;
+                    case ck:
+                        configuration = JsonUtil.parseObject(ds.getConfiguration(), CK.class);
+                        dataSource.setUrl(configuration.getJdbc());
+                        dataSource.setUsername(configuration.getUsername());
+                        dataSource.setPassword(configuration.getPassword());
+                        dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
+                        schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getDataBase());
+                        rootSchema.add(ds.getSchemaAlias(), schema);
+                        break;
+                    case pg:
+                        configuration = JsonUtil.parseObject(ds.getConfiguration(), Pg.class);
+                        dataSource.setUrl(configuration.getJdbc());
+                        dataSource.setUsername(configuration.getUsername());
+                        dataSource.setPassword(configuration.getPassword());
+                        dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
+                        schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getSchema());
+                        rootSchema.add(ds.getSchemaAlias(), schema);
+                        break;
+                    case redshift:
+                        configuration = JsonUtil.parseObject(ds.getConfiguration(), Redshift.class);
+                        dataSource.setUrl(configuration.getJdbc());
+                        dataSource.setUsername(configuration.getUsername());
+                        dataSource.setPassword(configuration.getPassword());
+                        dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
+                        schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getSchema());
+                        rootSchema.add(ds.getSchemaAlias(), schema);
+                        break;
+                    case h2:
+                        configuration = JsonUtil.parseObject(ds.getConfiguration(), H2.class);
+                        dataSource.setUrl(configuration.getJdbc());
+                        dataSource.setUsername(configuration.getUsername());
+                        dataSource.setPassword(configuration.getPassword());
+                        dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
+                        schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getDataBase());
+                        rootSchema.add(ds.getSchemaAlias(), schema);
+                        break;
+                    default:
+                        configuration = JsonUtil.parseObject(ds.getConfiguration(), Mysql.class);
+                        dataSource.setUrl(configuration.getJdbc());
+                        dataSource.setUsername(configuration.getUsername());
+                        dataSource.setPassword(configuration.getPassword());
+                        dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
+                        schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getDataBase());
+                        rootSchema.add(ds.getSchemaAlias(), schema);
+                }
+            }catch (Exception e){
+                e.printStackTrace();
             }
         }
         return rootSchema;
@@ -558,9 +566,14 @@ public class CalciteProvider {
         states = new AtomicIntegerArray(new int[capacity]);
         this.capacity = capacity;
         for (int i = 0; i < capacity; i++) {
-            System.out.println(i);
            try {
-               connections[i] = initConnection(dsMap);
+               int finalI = i;
+               commonThreadPool.addTask( () -> {
+                  try {
+                      connections[finalI] = initConnection(dsMap);
+                  }catch (Exception e) {}
+               });
+
            }catch (Exception e) {
 
            }
