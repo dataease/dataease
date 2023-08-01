@@ -5,6 +5,10 @@ package io.dataease.provider.query;
  */
 public class SQLUtils {
     public static String transKeyword(String value) {
-        return value.replaceAll("'", "\\\\'");
+        if(value == null){
+            return null;
+        }else{
+            return value.replaceAll("'", "\\\\'");
+        }
     }
 }
