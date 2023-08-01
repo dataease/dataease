@@ -143,13 +143,10 @@ public class ApisixManage {
     /**
      * 目前用户权限数据结构未定 只提供接口
      *
-     * @param userInfo
-     * @param requirePermissions
      */
-    protected void checkPermission(TokenUserBO userInfo, String requirePermissions[]) {
+    protected void checkPermission(TokenUserBO userInfo, String[] requirePermissions) {
         if (ArrayUtil.isEmpty(requirePermissions) || AuthUtils.isSysAdmin(userInfo.getUserId())) return;
-        for (int i = 0; i < requirePermissions.length; i++) {
-            String permission = requirePermissions[i];
+        for (String permission : requirePermissions) {
             PerFormatter formatter = formatPer(permission);
             AuthResourceEnum resourceEnum = formatter.getAuthResourceEnum();
             if (StringUtils.contains(permission, ":m:")) {

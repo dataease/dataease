@@ -671,7 +671,7 @@ defineExpose({
         <el-tab-pane :label="t('auth.resource')" name="resource"></el-tab-pane>
         <el-tab-pane v-if="activeName === 'role'" :label="t('auth.menu')" name="menu"></el-tab-pane>
       </el-tabs>
-      <el-input
+      <!-- <el-input
         class="search-table-input"
         v-model="resourceKeyword"
         clearable
@@ -682,7 +682,7 @@ defineExpose({
             <Icon name="icon_search-outline_outlined"></Icon>
           </el-icon>
         </template>
-      </el-input>
+      </el-input> -->
       <div class="search-table-bt">
         <el-button :disabled="!state.uncommitted.length" @click="save" type="primary">{{
           t('common.sure')
@@ -706,13 +706,28 @@ defineExpose({
       </div>
       <div class="tree-table" :class="activeAuth === 'menu' ? 'full-tree-table' : ''">
         <el-empty v-if="emptyDescription" :description="emptyDescription" />
-        <el-table
+
+        <el-input
           v-else
+          class="search-table-input"
+          v-model="resourceKeyword"
+          clearable
+          @change="resourceFilter"
+        >
+          <template #prefix>
+            <el-icon>
+              <Icon name="icon_search-outline_outlined"></Icon>
+            </el-icon>
+          </template>
+        </el-input>
+
+        <el-table
+          class="table-container"
+          v-if="!emptyDescription"
           ref="authTable"
           :data="state.tableData"
           style="width: 100%"
           row-key="id"
-          height="100%"
           :row-class-name="dynamicResourceClass"
           header-cell-class-name="header-cell"
           :expand-row-keys="state.expandedKeys"
@@ -813,6 +828,7 @@ defineExpose({
     }
     .tabs-mr {
       .border-bottom-tab(30px);
+      margin: 0 30px;
     }
   }
   .role-tree-container {
@@ -830,20 +846,15 @@ defineExpose({
     height: 50px;
     position: relative;
 
-    .search-table-input {
-      position: absolute;
-      right: 24px;
-      top: 7px;
-      width: 240px;
-    }
     .search-table-bt {
       position: absolute;
-      right: 250px;
+      right: 5px;
       top: 7px;
       width: 190px;
     }
     .tabs-mr {
       .border-bottom-tab(30px);
+      margin: 0 30px;
     }
   }
 
@@ -863,9 +874,18 @@ defineExpose({
       height: 100%;
       border-left: 1px solid rgba(31, 35, 41, 0.15);
       padding: 24px;
+      .search-table-input {
+        margin-bottom: 16px;
+      }
+      .table-container {
+        height: calc(100% - 48px);
+      }
     }
     .full-tree-table {
       width: calc(100%) !important;
+      .table-container {
+        height: calc(100% - 25px);
+      }
     }
   }
 }

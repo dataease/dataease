@@ -1031,7 +1031,7 @@ export default {
     select_year: '选择年',
     sql_variable_limit_1: '1、SQL 变量只能在 WHERE 条件中使用',
     sql_variable_limit_2:
-      "2、示例：select * from table_name where column_name1='${param_name1}' and column_name2 in ${param_name2}",
+      "2、示例：select * from table_name where column_name1='${'{'}param_name1{'}'}' and column_name2 in ${'{'}param_name2{'}'}",
     select_month: '选择月',
     select_date: '选择日期',
     select_time: '选择时间',
@@ -1666,6 +1666,9 @@ export default {
       no_options_text: '没有可用选项',
       no_results_text: '没有匹配的结果'
     }
+  },
+  sql_variable: {
+    variable_mgm: '参数设置'
   },
   visualization: {
     forbidden_copy: '当前组件不允许复制',
