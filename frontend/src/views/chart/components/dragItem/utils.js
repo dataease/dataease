@@ -11,12 +11,12 @@ export function getItemType(dimensionData, quotaData, item) {
     for (let i = 0; i < dimensionData.length; i++) {
       const ele = dimensionData[i]
       if (item.chartId) {
-        if (ele.dataeaseName === item.dataeaseName && ele.deType === item.deType && ele.groupType === item.groupType) {
+        if (ele.dataeaseName === item.dataeaseName && ele.deType === item.deType && ele.groupType === item.groupType && ele.originName === item.originName) {
           checked = true
           break
         }
       } else {
-        if (ele.id === item.id && ele.deType === item.deType && ele.groupType === item.groupType) {
+        if (ele.id === item.id && ele.deType === item.deType && ele.groupType === item.groupType && ele.originName === item.originName) {
           checked = true
           break
         }
@@ -27,12 +27,12 @@ export function getItemType(dimensionData, quotaData, item) {
     for (let i = 0; i < quotaData.length; i++) {
       const ele = quotaData[i]
       if (item.chartId) {
-        if (ele.dataeaseName === item.dataeaseName && ele.deType === item.deType && ele.groupType === item.groupType) {
+        if (ele.dataeaseName === item.dataeaseName && ele.deType === item.deType && ele.groupType === item.groupType && ele.originName === item.originName) {
           checked = true
           break
         }
       } else {
-        if (ele.id === item.id && ele.deType === item.deType && ele.groupType === item.groupType) {
+        if (ele.id === item.id && ele.deType === item.deType && ele.groupType === item.groupType && ele.originName === item.originName) {
           checked = true
           break
         }
