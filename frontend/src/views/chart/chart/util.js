@@ -3710,7 +3710,7 @@ export function handleTableEmptyStrategy(tableData, chart) {
   }
   if (intersection.length) {
     newData = _.clone(tableData)
-    for (let i = 0; i < newData.length; i++) {
+    for (let i = newData.length - 1; i >= 0; i--) {
       for (let j = 0, tmp = intersection.length; j < tmp; j++) {
         const deName = intersection[j]
         if (newData[i][deName] === null) {
@@ -3719,6 +3719,7 @@ export function handleTableEmptyStrategy(tableData, chart) {
           }
           if (emptyDataStrategy === 'ignoreData') {
             newData = _.filter(newData, (_, index) => index !== i)
+            break
           }
         }
       }

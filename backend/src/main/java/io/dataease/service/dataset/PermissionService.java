@@ -239,7 +239,7 @@ public class PermissionService {
             request.setDatasetId(datasetId);
             request.setAuthTargetType("dept");
             List<Item> items = (List<Item>)columnPermissionService.authObjs(request);
-            if(items.stream().map(Item::getId).collect(Collectors.toList()).contains(deptId)){
+            if(CollectionUtils.isNotEmpty(items) && items.stream().filter(item -> item != null).map(Item::getId).collect(Collectors.toList()).contains(deptId)){
                 dataSetColumnPermissionsDTO.setAuthTargetIds(Collections.singletonList(deptId));
                 dataSetColumnPermissionsDTO.setAuthTargetType("dept");
                 List<DataSetColumnPermissionsDTO> deptColumnPermissionsDTOS = new ArrayList<>();

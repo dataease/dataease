@@ -172,6 +172,21 @@ public class DataSetTableFieldController {
         return dataSetTableFieldsService.save(datasetTableField);
     }
 
+    @DePermission(type = DePermissionType.DATASET, value = "tableId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
+    @ApiOperation("保存不校验表达式")
+    @PostMapping("saveNotCheck")
+    public DatasetTableField saveNotCheck(@RequestBody DatasetTableField datasetTableField) throws Exception {
+        dataSetTableFieldsService.checkFieldName(datasetTableField);
+        // 非直连数据集需先完成数据同步
+        DatasetTable datasetTable = dataSetTableService.get(datasetTableField.getTableId());
+        if (datasetTable.getMode() == 1) {
+            if (!dataSetTableService.checkEngineTableIsExists(datasetTableField.getTableId())) {
+                throw new RuntimeException(Translator.get("i18n_data_not_sync"));
+            }
+        }
+        return dataSetTableFieldsService.save(datasetTableField);
+    }
+
     @DePermissions(value = {
             @DePermission(type = DePermissionType.DATASET, level = ResourceAuthLevel.DATASET_LEVEL_MANAGE, paramIndex = 1)
     })

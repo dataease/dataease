@@ -263,6 +263,7 @@ import { deepCopy, imgUrlTrans } from '@/components/canvas/utils/utils'
 import { COLOR_PANEL } from '@/views/chart/chart/chart'
 import { uploadFileResult } from '@/api/staticResource/staticResource'
 import { COMMON_BACKGROUND_NONE } from '@/components/canvas/customComponent/component-list'
+import {hexColorToRGBA} from "@/views/chart/chart/util";
 
 export default {
   name: 'Background',
@@ -290,8 +291,9 @@ export default {
             ...style
           }
         } else if (this.canvasStyleData.panel.backgroundType === 'color') {
+          const colorRGBA = hexColorToRGBA(this.canvasStyleData.panel.color, this.canvasStyleData.panel.alpha||100)
           style = {
-            background: this.canvasStyleData.panel.color,
+            background: colorRGBA,
             ...style
           }
         }

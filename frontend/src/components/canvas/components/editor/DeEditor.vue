@@ -176,6 +176,7 @@ import _ from 'lodash'
 import _jq from 'jquery'
 import Background from '@/views/background/index'
 import PointShadow from '@/components/deDrag/PointShadow'
+import {hexColorToRGBA} from "@/views/chart/chart/util";
 
 // let positionBox = []
 // let coordinates = [] // 坐标点集合
@@ -984,8 +985,9 @@ export default {
             ...style
           }
         } else if (this.canvasStyleData.panel.backgroundType === 'color') {
+          const colorRGBA = hexColorToRGBA(this.canvasStyleData.panel.color, this.canvasStyleData.panel.alpha||100)
           style = {
-            background: this.canvasStyleData.panel.color,
+            background: colorRGBA,
             ...style
           }
         }

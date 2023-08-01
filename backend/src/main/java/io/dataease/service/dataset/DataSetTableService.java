@@ -3122,9 +3122,15 @@ public class NoModelDataListener extends AnalysisEventListener<Map<Integer, Stri
         for (Integer key : dataMap.keySet()) {
             String value = dataMap.get(key);
             if (StringUtils.isEmpty(value)) {
-                value = "none";
+                value = "";
             }
             line.add(value);
+        };
+        int size = line.size();
+        if(size < header.size()){
+            for (int i = 0; i < header.size() - size; i++) {
+                line.add("");
+            }
         }
         data.add(line);
     }

@@ -200,21 +200,23 @@
               <el-row class="this_mobile_canvas_inner_top">
                 {{ panelInfo.name }}
               </el-row>
-              <el-row
-                id="canvasInfoMobile"
-                class="this_mobile_canvas_main"
-                :style="mobileCanvasStyle"
-              >
-                <canvas-opt-bar v-if="!previewVisible&&mobileLayoutStatus"/>
-                <de-canvas
-                  v-if="!previewVisible&&mobileLayoutStatus"
-                  ref="canvasMainRef"
-                  :canvas-style-data="canvasStyleData"
-                  :component-data="mainCanvasComponentData"
-                  :canvas-id="canvasId"
-                  :canvas-pid="'0'"
-                  :mobile-layout-status="true"
-                />
+              <el-row class="this_mobile_canvas_main_outer">
+                <el-row
+                  id="canvasInfoMobile"
+                  class="this_mobile_canvas_main"
+                  :style="mobileCanvasStyle"
+                >
+                  <canvas-opt-bar v-if="!previewVisible&&mobileLayoutStatus"/>
+                  <de-canvas
+                    v-if="!previewVisible&&mobileLayoutStatus"
+                    ref="canvasMainRef"
+                    :canvas-style-data="canvasStyleData"
+                    :component-data="mainCanvasComponentData"
+                    :canvas-id="canvasId"
+                    :canvas-pid="'0'"
+                    :mobile-layout-status="true"
+                  />
+                </el-row>
               </el-row>
               <el-row class="this_mobile_canvas_inner_bottom">
                 <el-col :span="12">
@@ -426,6 +428,22 @@
           {{ $t('panel.multiplexing') }}
         </span>
         <span style="float: right;">
+          <span class="adapt-text"> 样式适配： </span>
+          <el-select
+            style="width: 120px;margin-right: 16px"
+            v-model="multiplexingStyleAdaptSelf"
+            placeholder="Select"
+            placement="top-start"
+            size="mini"
+            @change="multiplexingStyleAdaptChange"
+          >
+            <el-option
+              v-for="item in copyOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
           <el-button
             type="primary"
             size="mini"
@@ -536,6 +554,7 @@ import TextAttr from '@/components/canvas/components/TextAttr'
 import { userLoginInfo } from '@/api/systemInfo/userLogin'
 import { activeWatermark } from '@/components/canvas/tools/watermark'
 import PositionAdjust from '@/views/chart/view/PositionAdjust'
+import {hexColorToRGBA} from "@/views/chart/chart/util";
 export default {
   name: 'PanelEdit',
   components: {
@@ -627,7 +646,12 @@ export default {
       activeToolsName: 'view',
       rightDrawOpen: false,
       editType: null,
-      buttonVisible: false
+      buttonVisible: false,
+      copyOptions: [
+        { label: '适应新主题', value: true },
+        { label: '保持源样式', value: false }
+      ],
+      multiplexingStyleAdaptSelf : true
     }
   },
 
@@ -699,8 +723,9 @@ export default {
             background: `url(${imgUrlTrans(styleInfo.imageUrl)}) no-repeat`
           }
         } else if (styleInfo.backgroundType === 'color') {
+          const colorRGBA = hexColorToRGBA(styleInfo.color, styleInfo.alpha||100)
           style = {
-            background: styleInfo.color
+            background: colorRGBA
           }
         } else {
           style = {
@@ -722,8 +747,9 @@ export default {
             ...style
           }
         } else if (this.canvasStyleData.panel.backgroundType === 'color') {
+          const colorRGBA = hexColorToRGBA(this.canvasStyleData.panel.color, this.canvasStyleData.panel.alpha||100)
           style = {
-            background: this.canvasStyleData.panel.color,
+            background: colorRGBA,
             ...style
           }
         }
@@ -749,6 +775,9 @@ export default {
     curCanvasScaleSelf() {
       return this.curCanvasScaleMap[this.canvasId]
     },
+    selectComponentCount(){
+      return Object.keys(this.curMultiplexingComponents).length
+    },
     ...mapState([
       'curComponent',
       'curCanvasScaleMap',
@@ -765,7 +794,8 @@ export default {
       'mobileLayoutStyle',
       'scrollAutoMove',
       'batchOptStatus',
-      'curMultiplexingComponents'
+      'curMultiplexingComponents',
+      'multiplexingStyleAdapt'
     ])
   },
 
@@ -830,6 +860,7 @@ export default {
     })
     this.loadMultiplexingViewTree()
     this.init(this.$store.state.panel.panelInfo.id)
+    this.multiplexingStyleAdaptSelf = this.multiplexingStyleAdapt
   },
   beforeDestroy() {
     bus.$off('component-on-drag', this.componentOnDrag)
@@ -1443,6 +1474,9 @@ export default {
       this.$store.commit('copyMultiplexingComponents')
       this.$store.commit('recordSnapshot')
       this.$store.commit('canvasChange')
+    },
+    multiplexingStyleAdaptChange(value){
+      this.$store.commit('setMultiplexingStyleAdapt',value)
     }
   }
 }
@@ -1567,11 +1601,16 @@ export default {
   width: 100%;
 }
 
+.this_mobile_canvas_main_outer {
+  height: calc(100% - 120px);;
+  width: 100%;
+  background-color: #d7d9e3;
+}
+
 .this_mobile_canvas_main {
   overflow-x: hidden;
   overflow-y: auto;
-  height: calc(100% - 120px);;
-  background-color: #d7d9e3;
+  height: 100%;
   background-size: 100% 100% !important;
 }
 
@@ -1716,5 +1755,32 @@ export default {
 
 .dialog-css ::v-deep .el-dialog__body {
   padding: 10px 20px 20px;
+}
+
+.multiplexing-footer {
+  position: relative;
+}
+
+.adapt-count {
+  position: absolute;
+  top: 18px;
+  left: 20px;
+  color: #646a73;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+  text-align: left;
+}
+
+.adapt-select {
+  position: absolute;
+  top: 18px;
+  right: 220px;
+}
+.adapt-text {
+  font-size: 14px;
+  font-weight: 400;
+  color: #1f2329;
+  line-height: 22px;
 }
 </style>

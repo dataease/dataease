@@ -97,6 +97,8 @@ export function panelDataPrepare(componentData, componentStyle, callback) {
   componentStyle.themeId = (componentStyle.themeId || 'NO_THEME')
   componentStyle.panel.themeColor = (componentStyle.panel.themeColor || 'light')
   componentStyle.panel.mobileSetting = (componentStyle.panel.mobileSetting || deepCopy(MOBILE_SETTING))
+  componentStyle.panel.mobileSetting.alpha = (componentStyle.panel.mobileSetting.alpha === undefined ? 100 : componentStyle.panel.mobileSetting.alpha)
+  componentStyle.panel.alpha = (componentStyle.panel.alpha === undefined ? 100 : componentStyle.panel.alpha)
 
   // 主题增加组件背景设置
   if (componentStyle.chartCommonStyle) {
