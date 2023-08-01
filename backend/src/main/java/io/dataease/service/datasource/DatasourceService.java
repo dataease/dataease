@@ -647,8 +647,11 @@ public class DatasourceService {
         }
         mysqlConfiguration.setHost(matcher.group(1));
         mysqlConfiguration.setPort(Integer.valueOf(matcher.group(2)));
-        mysqlConfiguration.setDataBase(matcher.group(3).split("\\?")[0]);
-        mysqlConfiguration.setExtraParams(matcher.group(3).split("\\?")[1]);
+        String databaseParams = matcher.group(3);
+        mysqlConfiguration.setDataBase(databaseParams.split("\\?")[0]);
+        if (databaseParams.split("\\?").length > 1) {
+            mysqlConfiguration.setExtraParams(databaseParams.split("\\?")[1]);
+        }
         mysqlConfiguration.setUsername(env.getProperty("spring.datasource.username"));
         mysqlConfiguration.setPassword(env.getProperty("spring.datasource.password"));
         datasource.setConfiguration(new Gson().toJson(mysqlConfiguration));
