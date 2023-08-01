@@ -153,7 +153,8 @@ const data = {
     previewVisible: false,
     previewComponentData: [],
     currentCanvasNewId: [],
-    lastViewRequestInfo: {}
+    lastViewRequestInfo: {},
+    multiplexingStyleAdapt: true //复用样式跟随主题
   },
   mutations: {
     ...animation.mutations,
@@ -848,6 +849,9 @@ const data = {
       })
 
       bus.$emit('clear_panel_linkage', { viewId: viewId })
+    },
+    setMultiplexingStyleAdapt(state, value) {
+     state.multiplexingStyleAdapt = value
     }
   },
   modules: {
