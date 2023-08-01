@@ -32,8 +32,8 @@ const ignoreComponent = ['de-button', 'de-reset-button']
 // 与组件状态无关的操作
 const basemap = {
   [vKey]: paste,
-  [yKey]: redo,
-  [zKey]: undo
+  [gKey]: redo,
+  [bKey]: undo,
 }
 
 // 组件未锁定状态下可以执行的操作
@@ -41,8 +41,6 @@ const unlockMap = {
   ...basemap,
   [cKey]: copy,
   [xKey]: cut,
-  [gKey]: compose,
-  [bKey]: decompose,
   [dKey]: copyAndPast,
   [deleteKey]: deleteComponent,
   [lKey]: lock,
@@ -60,7 +58,7 @@ export function listenGlobalKeyDown() {
     if (keyCode === ctrlKey || keyCode === commandKey) {
       isCtrlOrCommandDown = true
     } else if (isCtrlOrCommandDown) {
-      if (keyCode === zKey || keyCode === yKey || keyCode === dKey || keyCode === sKey || keyCode === enlargeKey) {
+      if (keyCode === bKey || keyCode === gKey || keyCode === dKey || keyCode === sKey || keyCode === enlargeKey) {
         e.preventDefault()
         e.stopPropagation()
         unlockMap[keyCode]()
