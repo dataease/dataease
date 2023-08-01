@@ -69,16 +69,23 @@ export default {
   user: {
     change_password: '修改密码',
     account: '帐号',
-    name: '名称',
+    name: '姓名',
     role: '角色',
     state: '状态',
     default_pwd: '默认密码',
-    confirm_delete: '确认删除该用户吗？',
+    confirm_delete: '确定删除该用户吗？',
     add_title: '添加用户',
     edit_title: '编辑用户',
     user_id: '用户',
     user_id_empty: '请输入精准用户ID/帐号',
-    search_placeholder: '搜索姓名、用户名、邮箱'
+    search_placeholder: '搜索姓名、用户名、邮箱',
+    batch_del: '批量删除',
+    selection_info: '已选 {0} 项',
+    clear_button: '清空',
+    confirm_batch_delete: '确定删除{0}个用户吗？',
+    reset_pwd: '重置密码',
+    reset_confirm: '是否恢复为初始密码？',
+    reset_success: '重置成功'
   },
   userimport: {
     buttonText: '批量导入',

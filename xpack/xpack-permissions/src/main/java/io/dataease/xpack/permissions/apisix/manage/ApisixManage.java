@@ -1,5 +1,6 @@
 package io.dataease.xpack.permissions.apisix.manage;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ArrayUtil;
 import io.dataease.auth.DeApiPath;
 import io.dataease.auth.DePermit;
@@ -30,12 +31,17 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.util.ServletRequestPathUtils;
 
 import java.lang.reflect.Proxy;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @Service
 public class ApisixManage {
     private static final String PATH = "org.springframework.web.util.ServletRequestPathUtils.PATH";
     private static final String PARAM_VARIABLE_PREFIX = "p";
     private static final String SPRING_EL_FLAG = "#";
+
+    private static final String splitor = ":";
 
 
     private final ExpressionParser parser = new SpelExpressionParser();
@@ -58,7 +64,7 @@ public class ApisixManage {
      *
      * @return
      */
-    public void checkAuthenticationInfo(HttpServletRequest request) throws Exception{
+    public void checkAuthenticationInfo(HttpServletRequest request) throws Exception {
         String token = request.getHeader(AuthConstant.TOKEN_KEY);
         TokenBO tokenBO = apisixTokenManage.validate(token);
         UserUtils.setUserInfo(tokenBO);
@@ -74,14 +80,14 @@ public class ApisixManage {
      *
      * @return
      */
-    public void checkAuthorizationInfo(HttpServletRequest request) throws Exception{
-        String[] requirePermissions = getRequirePermissions(request);
+    public void checkAuthorizationInfo(HttpServletRequest request) throws Exception {
+        List<String> requirePermissions = getRequirePermissions(request);
         TokenUserBO user = AuthUtils.getUser();
         checkPermission(user, requirePermissions);
         ServletUtils.response().addHeader(AuthConstant.APISIX_FLAG_KEY, String.valueOf(System.currentTimeMillis()));
     }
 
-    public String[] getRequirePermissions(HttpServletRequest request) throws Exception{
+    public List<String> getRequirePermissions(HttpServletRequest request) throws Exception {
         Object attribute = request.getAttribute(PATH);
         ProxyRequest proxyRequest = new ProxyRequest(request);
         HttpServletRequest proxy = (HttpServletRequest) Proxy.newProxyInstance(request.getClass().getClassLoader(), request.getClass().getInterfaces(), proxyRequest);
@@ -107,45 +113,50 @@ public class ApisixManage {
         request.setAttribute(PATH, attribute);
         Object[] params = authMappingHandlerAdapter.getParams(proxy, ServletUtils.response(), handlerMethod);
 
-        String[] requirePermissions = methodAuth(params, valueArray, rt);
-        return requirePermissions;
+        return methodAuth(params, valueArray, rt);
     }
 
 
-    private String[] methodAuth(Object[] params, String[] expArray, AuthResourceEnum rt) {
+    private List<String> methodAuth(Object[] params, String[] expArray, AuthResourceEnum rt) {
         StandardEvaluationContext context = new StandardEvaluationContext();
         if (params != null && params.length == 1) {
             context.setRootObject(params[0]);
         }
 
-        for (int i = 0; i < params.length; i++) {
+        for (int i = 0; i < Objects.requireNonNull(params).length; i++) {
             Object paramValue = params[i];
             context.setVariable(PARAM_VARIABLE_PREFIX + i, paramValue);
         }
-        int len = expArray.length;
-        String[] result = new String[len];
-        String prefix = rt.name() + ":";
-        for (int i = 0; i < len; i++) {
-            result[i] = prefix + resolveValue(expArray[i], context);
+        List<String> result = new ArrayList<>();
+
+        String prefix = rt.name() + splitor;
+        for (String paramStr : expArray) {
+            String[] paramTags = paramStr.split(splitor);
+            String paramTag = paramTags[0];
+            String symbol = paramTag.replace("+", "").replace("'", "").trim();
+            Object paramValObj = resolveValue(symbol, context);
+            if (paramValObj instanceof List<?> paramList) {
+                paramList.forEach(item -> result.add(prefix + item + splitor + paramTags[1].replace("'", "")));
+                continue;
+            }
+            result.add(prefix + paramValObj + splitor + paramTags[1].replace("'", ""));
         }
         return result;
     }
 
-    private String resolveValue(String exp, EvaluationContext context) {
-        String result = exp;
+    private Object resolveValue(String exp, EvaluationContext context) {
         if (StringUtils.contains(exp, SPRING_EL_FLAG)) {
             Expression expression = parser.parseExpression(exp);
-            result = expression.getValue(context, String.class);
+            return expression.getValue(context);
         }
-        return result;
+        return exp;
     }
 
     /**
      * 目前用户权限数据结构未定 只提供接口
-     *
      */
-    protected void checkPermission(TokenUserBO userInfo, String[] requirePermissions) {
-        if (ArrayUtil.isEmpty(requirePermissions) || AuthUtils.isSysAdmin(userInfo.getUserId())) return;
+    protected void checkPermission(TokenUserBO userInfo, List<String> requirePermissions) {
+        if (CollectionUtil.isEmpty(requirePermissions) || AuthUtils.isSysAdmin(userInfo.getUserId())) return;
         for (String permission : requirePermissions) {
             PerFormatter formatter = formatPer(permission);
             AuthResourceEnum resourceEnum = formatter.getAuthResourceEnum();
@@ -168,7 +179,7 @@ public class ApisixManage {
     }
 
     @Data
-    class PerFormatter {
+    static class PerFormatter {
         private AuthResourceEnum authResourceEnum;
         private Integer weight;
         private String id;
