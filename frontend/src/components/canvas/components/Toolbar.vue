@@ -328,6 +328,7 @@ export default {
     eventBus.$on('preview', this.preview)
     eventBus.$on('checkAndSave', this.checkAndSave)
     eventBus.$on('clearCanvas', this.clearCanvas)
+    bus.$on('onSubjectChange', this.editPanelInit)
     this.scale = this.canvasStyleData.scale
     this.mobileLayoutInitStatus = this.mobileLayoutStatus
     this.showGridSwitch = this.canvasStyleData.aidedDesign.showGrid
@@ -339,6 +340,7 @@ export default {
     eventBus.$off('checkAndSave', this.checkAndSave)
     eventBus.$off('clearCanvas', this.clearCanvas)
     eventBus.$off('editPanelInitReady', this.editPanelInit)
+    bus.$off('onSubjectChange', this.editPanelInit)
     clearInterval(this.timer)
     this.timer = null
   },
