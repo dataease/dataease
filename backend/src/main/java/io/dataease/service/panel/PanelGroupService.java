@@ -531,6 +531,8 @@ public class PanelGroupService {
                 chartView.setId(newViewId);
                 chartView.setSceneId(newPanelId);
                 chartView.setDataFrom(CommonConstants.VIEW_DATA_FROM.TEMPLATE);
+                chartView.setCreateBy(AuthUtils.getUser().getUsername());
+                chartView.setCreateTime(System.currentTimeMillis());
                 // 数据处理 1.替换viewId 2.加入panelView 数据(数据来源为template) 3.加入模板view data数据
                 templateData = templateData.replaceAll(originViewId, newViewId);
                 panelViews.add(new PanelViewInsertDTO(newViewId, newPanelId, position));
