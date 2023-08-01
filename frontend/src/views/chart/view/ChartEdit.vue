@@ -1336,6 +1336,7 @@
         >
           <el-input
             v-model="itemForm.name"
+            @keypress.stop
             style="width: 200px"
             size="mini"
             clearable
