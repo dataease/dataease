@@ -1072,7 +1072,7 @@ public class MysqlQueryProvider extends QueryProvider {
                             date = String.format(MySQLConstants.DATE_FORMAT, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : MysqlConstants.DEFAULT_DATE_FORMAT);
                         }
                         if (request.getOperator().equals("between")) {
-                            whereName = date;
+                            whereName = String.format(MySQLConstants.UNIX_TIMESTAMP, date) + "*1000";
                         } else {
                             if (StringUtils.equalsIgnoreCase(request.getDateStyle(), "y_Q")) {
                                 whereName = String.format(format,
@@ -1131,15 +1131,13 @@ public class MysqlQueryProvider extends QueryProvider {
                 whereName = "upper(" + whereName + ")";
             } else if (StringUtils.containsIgnoreCase(request.getOperator(), "between")) {
                 if (request.getDatasetTableField().getDeType() == 1) {
-                    if (request.getDatasetTableField().getDeExtractType() == 2
-                            || request.getDatasetTableField().getDeExtractType() == 3
-                            || request.getDatasetTableField().getDeExtractType() == 4) {
-                        whereValue = String.format(MysqlConstants.WHERE_BETWEEN, value.get(0), value.get(1));
-                    } else {
+                    if (request.getDatasetTableField().getDeExtractType() == 1) {
                         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                        String startTime = simpleDateFormat.format(new Date(Long.parseLong(value.get(0))));
+                        String startTime = simpleDateFormat.format(new Date(Long.parseLong(value.get(0)) - 1000));
                         String endTime = simpleDateFormat.format(new Date(Long.parseLong(value.get(1))));
                         whereValue = String.format(MySQLConstants.WHERE_BETWEEN, startTime, endTime);
+                    } else {
+                        whereValue = String.format(MysqlConstants.WHERE_BETWEEN, value.get(0), value.get(1));
                     }
                 } else {
                     whereValue = String.format(MySQLConstants.WHERE_BETWEEN, value.get(0), value.get(1));
