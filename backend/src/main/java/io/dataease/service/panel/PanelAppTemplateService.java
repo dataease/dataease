@@ -355,6 +355,8 @@ public class PanelAppTemplateService {
             });
             chartView.setId(null);
             chartView.setSceneId(sceneId);
+            chartView.setCreateBy(AuthUtils.getUser().getUsername());
+            chartView.setCreateTime(System.currentTimeMillis());
             ChartViewWithBLOBs newOne = chartViewService.newOne(chartView);
             chartViewsRealMap.put(oldViewId, newOne.getId());
         }
