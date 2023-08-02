@@ -1,7 +1,7 @@
 <script lang="tsx" setup>
 import { useI18n } from '@/hooks/web/useI18n'
 import { reactive, toRefs, watch, ref } from 'vue'
-import { multFieldValuesForPermissions } from "@/api/dataset";
+import { multFieldValuesForPermissions } from '@/api/dataset'
 
 const { t } = useI18n()
 
