@@ -4,11 +4,7 @@ import {
 } from '@/views/chart/components/js/panel/types/impl/g2plot'
 import { Datum, Line as G2Line, LineOptions } from '@antv/g2plot'
 import { getPadding } from '../../common/common_antv'
-import {
-  flow,
-  handleEmptyDataStrategy,
-  parseJson
-} from '@/views/chart/components/js/util'
+import { flow, handleEmptyDataStrategy, parseJson } from '@/views/chart/components/js/util'
 import { cloneDeep } from 'lodash-es'
 import { formatterItem, valueFormatter } from '@/views/chart/components/js/formatter'
 import {

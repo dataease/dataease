@@ -5,11 +5,7 @@ import {
 import { Area as G2Area, AreaOptions, Datum } from '@antv/g2plot'
 import { getPadding, setGradientColor } from '@/views/chart/components/js/panel/common/common_antv'
 import { cloneDeep } from 'lodash-es'
-import {
-  flow,
-  handleEmptyDataStrategy,
-  parseJson
-} from '@/views/chart/components/js/util'
+import { flow, handleEmptyDataStrategy, parseJson } from '@/views/chart/components/js/util'
 import { singleDimensionTooltipFormatter } from '@/views/chart/components/js/formatter'
 import {
   LINE_EDITOR_PROPERTY,
