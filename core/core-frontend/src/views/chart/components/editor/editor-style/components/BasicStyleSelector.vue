@@ -578,6 +578,34 @@ init()
         @change="changeBasicStyle()"
       />
     </el-form-item>
+    <!-- pie/rose start -->
+    <el-form-item
+      :label="t('chart.pie_inner_radius_percent')"
+      class="form-item"
+      v-show="showProperty('innerRadius')"
+    >
+      <el-slider
+        v-model="state.basicStyleForm.innerRadius"
+        :min="1"
+        :max="100"
+        @change="changeBasicStyle()"
+        show-input
+      />
+    </el-form-item>
+    <el-form-item
+      :label="t('chart.pie_outer_radius')"
+      class="form-item form-item-slider"
+      v-show="showProperty('radius')"
+    >
+      <el-slider
+        v-model="state.basicStyleForm.radius"
+        :min="1"
+        :max="100"
+        @change="changeBasicStyle()"
+        show-input
+      />
+    </el-form-item>
+    <!-- pie/rose end -->
   </el-form>
 </template>
 <style scoped lang="less">

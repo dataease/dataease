@@ -6,7 +6,6 @@ import { Area as G2Area, AreaOptions, Datum } from '@antv/g2plot'
 import { getPadding, setGradientColor } from '@/views/chart/components/js/panel/common/common_antv'
 import { cloneDeep } from 'lodash-es'
 import {
-  antVCustomColor,
   flow,
   handleEmptyDataStrategy,
   parseJson
@@ -16,13 +15,15 @@ import {
   LINE_EDITOR_PROPERTY,
   LINE_EDITOR_PROPERTY_INNER
 } from '@/views/chart/components/js/panel/charts/line/common'
+
 const DEFAULT_DATA = []
 export class Area extends G2PlotChartView<AreaOptions, G2Area> {
   properties = LINE_EDITOR_PROPERTY
   propertyInner = LINE_EDITOR_PROPERTY_INNER
   axis: AxisType[] = ['xAxis', 'yAxis', 'drill', 'filter']
+
   drawChart(drawOptions: G2PlotDrawOptions<G2Area>): G2Area {
-    const chart = drawOptions.chart
+    const { chart, container, action } = drawOptions
     if (chart?.data) {
       // data
       const data = cloneDeep(chart.data.data)
@@ -86,15 +87,11 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
       }
 
       // 开始渲染
-      if (drawOptions.chartObj) {
-        drawOptions.chartObj.destroy()
-      }
-      drawOptions.chartObj = new G2Area(drawOptions.container, options)
+      const newChart = new G2Area(container, options)
 
-      drawOptions.chartObj.off('point:click')
-      drawOptions.chartObj.on('point:click', drawOptions.action)
+      newChart.on('point:click', action)
 
-      return drawOptions.chartObj
+      return newChart
     }
   }
 

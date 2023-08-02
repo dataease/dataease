@@ -3,8 +3,10 @@ import {
   L7PlotDrawOptions
 } from '@/views/chart/components/js/panel/types/impl/l7plot'
 import { Choropleth, ChoroplethOptions } from '@antv/l7plot'
-import { flow, parseJson } from '@/views/chart/components/js/util'
+import { flow, getGeoJsonFile, parseJson } from '@/views/chart/components/js/util'
 import { handleGeoJson } from '@/views/chart/components/js/panel/common/common_antv'
+import { FeatureCollection } from '@antv/l7plot/dist/esm/plots/choropleth/types'
+import { cloneDeep } from 'lodash-es'
 
 export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
   properties: EditorProperty[] = [
@@ -33,12 +35,14 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     'tooltip-selector': ['color', 'fontSize', 'backgroundColor', 'formatter']
   }
   axis: AxisType[] = ['xAxis', 'yAxis', 'area', 'drill', 'filter']
+  needInit = true
   constructor() {
     super('map', [])
   }
 
-  drawChart(drawOption: L7PlotDrawOptions<Choropleth>): Choropleth {
-    const { chart, geoJson, level } = drawOption
+  async drawChart(drawOption: L7PlotDrawOptions<Choropleth>): Promise<Choropleth> {
+    const { chart, chartObj, level, areaId, container, action } = drawOption
+    const geoJson = cloneDeep(await getGeoJsonFile(areaId))
     const options: ChoroplethOptions = {
       map: {
         type: 'mapbox',
@@ -87,16 +91,16 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       // 禁用线上地图数据
       customFetchGeoData: () => null
     }
-    this.setupOptions(chart, options, drawOption)
-    const view = new Choropleth(drawOption.container, options)
+    this.setupOptions(chart, options, drawOption, geoJson)
+    const view = new Choropleth(container, options)
     view.once('loaded', () => {
       // 要在当前实例加载完成再去删除上一个实例，避免内存泄露
-      if (drawOption.chartObj) {
-        drawOption.chartObj.destroy()
+      if (chartObj) {
+        chartObj.destroy()
       }
       view.on('fillAreaLayer:click', (_: MouseEvent) => {
         const param = {}
-        drawOption.action(param)
+        action(param)
       })
     })
 
@@ -107,7 +111,8 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     options: ChoroplethOptions,
     extra: any[]
   ): ChoroplethOptions {
-    const { geoJson, areaId }: L7PlotDrawOptions<any> = extra[0]
+    const { areaId }: L7PlotDrawOptions<any> = extra[0]
+    const geoJson: FeatureCollection = extra[1]
     const customAttr = parseJson(chart.customAttr)
     const senior = parseJson(chart.senior)
     const curAreaNameMapping = senior.areaMapping?.[areaId]

@@ -71,7 +71,6 @@ export class Rose extends G2PlotChartView<RoseOptions, G2Rose> {
     // 开始渲染
     const plot = new G2Rose(container, options)
 
-    plot.off('interval:click')
     plot.on('interval:click', action)
 
     return plot

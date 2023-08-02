@@ -25,7 +25,7 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
   axis: AxisType[] = ['xAxis', 'yAxis', 'filter', 'drill', 'extLabel', 'extTooltip']
 
   drawChart(drawOptions: G2PlotDrawOptions<Column>): Column {
-    const { chart } = drawOptions
+    const { chart, container, action } = drawOptions
     if (!chart?.data?.data?.length) {
       return
     }
@@ -75,17 +75,12 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
         }
       ]
     }
-    const options: ColumnOptions = this.setupOptions(drawOptions.chart, initOptions)
+    const options: ColumnOptions = this.setupOptions(chart, initOptions)
 
-    if (drawOptions.chartObj) {
-      drawOptions.chartObj.destroy()
-    }
-    drawOptions.chartObj = new Column(drawOptions.container, options)
+    const newChart = new Column(container, options)
+    newChart.on('interval:click', action)
 
-    drawOptions.chartObj.off('interval:click')
-    drawOptions.chartObj.on('interval:click', drawOptions.action)
-
-    return drawOptions.chartObj
+    return newChart
   }
 
   protected configTooltip(chart: Chart, options: ColumnOptions): ColumnOptions {

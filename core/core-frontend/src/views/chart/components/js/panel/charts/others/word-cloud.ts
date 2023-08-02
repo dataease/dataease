@@ -34,7 +34,7 @@ export class WordCloud extends G2PlotChartView<WordCloudOptions, G2WordCloud> {
   }
   axis: AxisType[] = ['xAxis', 'yAxis', 'filter']
   drawChart(drawOptions: G2PlotDrawOptions<G2WordCloud>): G2WordCloud {
-    const chart = drawOptions.chart
+    const { chart, container, action } = drawOptions
     if (chart?.data) {
       // data
       const data = chart.data.data
@@ -56,14 +56,9 @@ export class WordCloud extends G2PlotChartView<WordCloudOptions, G2WordCloud> {
         interactions: []
       }
       const options = this.setupOptions(chart, initOptions)
-
-      // 开始渲染
-      if (drawOptions.chartObj) {
-        drawOptions.chartObj.destroy()
-      }
-      drawOptions.chartObj = new G2WordCloud(drawOptions.container, options)
-
-      return drawOptions.chartObj
+      const newChart = new G2WordCloud(container, options)
+      newChart.on('point:click', action)
+      return newChart
     }
   }
 

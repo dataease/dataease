@@ -1362,7 +1362,9 @@ export const DEFAULT_BASIC_STYLE: ChartBasicStyle = {
   suspension: true,
   areaBaseColor: '#ffffff',
   symbolOpacity: 0.7,
-  symbolStrokeWidth: 2
+  symbolStrokeWidth: 2,
+  radius: 100,
+  innerRadius: 40
 }
 
 export const BASE_VIEW_CONFIG = {

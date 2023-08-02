@@ -3,21 +3,22 @@ import {
   G2PlotDrawOptions
 } from '@/views/chart/components/js/panel/types/impl/g2plot'
 import { Datum, Pie as G2Pie, PieOptions } from '@antv/g2plot'
-import { antVCustomColor, flow, parseJson } from '@/views/chart/components/js/util'
+import { flow, parseJson } from '@/views/chart/components/js/util'
 import { getPadding } from '@/views/chart/components/js/panel/common/common_antv'
 import { formatterItem, valueFormatter } from '@/views/chart/components/js/formatter'
 import {
+  PIE_AXIS_TYPE,
   PIE_EDITOR_PROPERTY,
   PIE_EDITOR_PROPERTY_INNER
 } from '@/views/chart/components/js/panel/charts/pie/common'
 
 const DEFAULT_DATA = []
 export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
-  axis: AxisType[] = ['xAxis', 'yAxis', 'drill', 'filter', 'extLabel', 'extTooltip']
+  axis: AxisType[] = PIE_AXIS_TYPE
   properties = PIE_EDITOR_PROPERTY
   propertyInner = PIE_EDITOR_PROPERTY_INNER
   drawChart(drawOptions: G2PlotDrawOptions<G2Pie>): G2Pie {
-    const chart = drawOptions.chart
+    const { chart, container, action } = drawOptions
     if (chart?.data) {
       // data
       const data = chart.data.data
@@ -87,16 +88,9 @@ export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
       }
       const options = this.setupOptions(chart, initOptions)
 
-      // 开始渲染
-      if (drawOptions.chartObj) {
-        drawOptions.chartObj.destroy()
-      }
-      drawOptions.chartObj = new G2Pie(drawOptions.container, options)
-
-      drawOptions.chartObj.off('interval:click')
-      drawOptions.chartObj.on('interval:click', drawOptions.action)
-
-      return drawOptions.chartObj
+      const newChart = new G2Pie(container, options)
+      newChart.on('interval:click', action)
+      return newChart
     }
   }
 

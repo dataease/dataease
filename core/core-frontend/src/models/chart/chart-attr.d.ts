@@ -155,6 +155,14 @@ declare interface ChartBasicStyle {
    * 符号边框宽度
    */
   symbolStrokeWidth: number
+  /**
+   * 环形图/玫瑰图内径占比
+   */
+  innerRadius: number
+  /**
+   * 环形图/玫瑰图外径占比
+   */
+  radius: number
 }
 /**
  * 表头属性
