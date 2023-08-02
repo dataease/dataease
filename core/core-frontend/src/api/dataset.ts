@@ -79,9 +79,9 @@ export const getDatasourceList = async (): Promise<IResponse> => {
   })
 }
 
-export const getTables = async (id): Promise<IResponse> => {
+export const getTables = async (id): Promise<Table[]> => {
   return request.get({ url: `/datasource/getTables/${id}` }).then(res => {
-    return res?.data as Table[]
+    return res?.data
   })
 }
 

@@ -76,7 +76,6 @@
 		where core_chart_view.id = #{viewId}
     </select>
 
-
     <delete id="deleteViewLinkage">
         delete from visualization_linkage where   visualization_linkage.dv_id = #{dvId}
         AND visualization_linkage.source_view_id = #{sourceViewId}

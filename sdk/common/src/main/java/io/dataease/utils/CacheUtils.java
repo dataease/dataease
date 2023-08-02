@@ -2,7 +2,6 @@ package io.dataease.utils;
 
 
 import io.dataease.cache.DECacheService;
-import io.dataease.exception.DEException;
 import org.apache.commons.lang3.ObjectUtils;
 
 import java.util.Arrays;
@@ -46,7 +45,7 @@ public class CacheUtils {
         deCacheService.keyRemove(cacheName, key);
     }
 
-    public static void remove(String cacheName, String key, Consumer consumer) {
+    public static void remove(String cacheName, String key, Consumer<Object> consumer) {
         deCacheService.keyRemove(cacheName, key);
         consumer.accept(null);
         DelayQueueUtils.execute(IDUtils.randomID(16), () -> {
@@ -54,45 +53,32 @@ public class CacheUtils {
         }, 1L);
     }
 
-    public static void remove(String[] cacheNames, String key, Consumer consumer) {
-        Arrays.stream(cacheNames).forEach(cacheName -> {
-            deCacheService.keyRemove(cacheName, key);
-        });
-
+    public static void remove(String[] cacheNames, String key, Consumer<Object> consumer) {
+        Arrays.stream(cacheNames).forEach(cacheName -> deCacheService.keyRemove(cacheName, key));
         consumer.accept(null);
-        try {
-            TimeUnit.MILLISECONDS.sleep(1000L);
-            Arrays.stream(cacheNames).forEach(cacheName -> {
-                deCacheService.keyRemove(cacheName, key);
-            });
-        } catch (Exception e) {
-            DEException.throwException(e);
-        }
+        DelayQueueUtils.execute(IDUtils.randomID(16), () -> {
+            Arrays.stream(cacheNames).forEach(cacheName -> deCacheService.keyRemove(cacheName, key));
+        }, 1L);
+
     }
 
-    public static void remove(String cacheName, List<String> keys, Consumer consumer) {
+    public static void remove(String cacheName, List<String> keys, Consumer<Object> consumer) {
         keys.forEach(key -> deCacheService.keyRemove(cacheName, key));
         consumer.accept(null);
-        try {
-            TimeUnit.MILLISECONDS.sleep(1000L);
+        DelayQueueUtils.execute(IDUtils.randomID(16), () -> {
             keys.forEach(key -> deCacheService.keyRemove(cacheName, key));
-        } catch (Exception e) {
-            DEException.throwException(e);
-        }
+        }, 1L);
     }
 
-    public static void remove(String[] cacheNames, List<String> keys, Consumer consumer) {
+    public static void remove(String[] cacheNames, List<String> keys, Consumer<Object> consumer) {
         Arrays.stream(cacheNames).forEach(cacheName -> {
             keys.forEach(key -> deCacheService.keyRemove(cacheName, key));
         });
         consumer.accept(null);
-        try {
-            TimeUnit.MILLISECONDS.sleep(1000L);
+        DelayQueueUtils.execute(IDUtils.randomID(16), () -> {
             Arrays.stream(cacheNames).forEach(cacheName -> {
                 keys.forEach(key -> deCacheService.keyRemove(cacheName, key));
             });
-        } catch (Exception e) {
-            DEException.throwException(e);
-        }
+        }, 1L);
     }
 }

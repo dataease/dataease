@@ -66,6 +66,11 @@ public class UserServer implements UserApi {
     }
 
     @Override
+    public void batchDel(List<Long> ids) {
+        userPageManage.batchDel(ids);
+    }
+
+    @Override
     public List<UserItemVO> optionForRole(UserRequest request) {
         List<UserItemVO> userItems = userPageManage.optionForRole(request);
         if (CollectionUtil.isEmpty(userItems)) return userItems;
@@ -128,6 +133,7 @@ public class UserServer implements UserApi {
     public UserImportVO batchImport(MultipartFile file) {
         return userBatchImportManage.upload(file);
     }
+
     @Override
     public void errorRecord(String key) {
         userBatchImportManage.exportErrorExcel(key);
@@ -136,5 +142,15 @@ public class UserServer implements UserApi {
     @Override
     public void clearErrorRecord(String key) {
         userBatchImportManage.clearErrorData(key);
+    }
+
+    @Override
+    public String defaultPwd() {
+        return userPageManage.defaultPwd();
+    }
+
+    @Override
+    public void resetPwd(Long id) {
+        userPageManage.resetPwd(id);
     }
 }

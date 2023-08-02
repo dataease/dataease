@@ -1,25 +1,29 @@
 <script lang="ts" setup>
 import { ref, reactive, onMounted } from 'vue'
 import { ElTabs, ElTabPane } from 'element-plus-secondary'
-import { columnNames } from './options'
 import { Icon } from '@/components/icon-custom'
 import { FilterText, convertFilterText } from '@/components/filter-text'
 import DrawerMain from '@/components/drawer-main/src/DrawerMain.vue'
 import UserForm from './UserForm.vue'
 import RoleManage from './RoleManage.vue'
 import { useI18n } from '@/hooks/web/useI18n'
-import ColumnList from '@/components/column-list/src/ColumnList.vue'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
-import { userPageApi, userDelApi } from '@/api/user'
+import { userPageApi, userDelApi, batchDelApi, defaultPwdApi, resetPwdApi } from '@/api/user'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { setColorName } from '@/utils/utils'
 import UserImport from './UserImport/index.vue'
+import useClipboard from 'vue-clipboard3'
+import { useUserStoreWithOut } from '@/store/modules/user'
+const userStore = useUserStoreWithOut()
+const { toClipboard } = useClipboard()
 const { t } = useI18n()
 const activeName = ref('user')
-const isPluginLoaded = ref(false)
 const drawerMainRef = ref(null)
 const userFormDialog = ref(null)
 const loading = ref(false)
+const multipleTableRef = ref(null)
+const defaultPwd = ref(null)
+
 const handleClick = () => {
   console.log('handleClick')
 }
@@ -55,7 +59,6 @@ const filterOption = [
 ]
 const state = reactive({
   userList: [],
-  columnList: [],
   filterTexts: [],
   paginationConfig: {
     currentPage: 1,
@@ -63,14 +66,11 @@ const state = reactive({
     total: 0
   },
   conditions: [],
-  orders: []
+  orders: [],
+  multipleSelection: []
 })
 const keyword = ref(null)
 state.filterTexts = []
-
-const columnChange = (columns: string[]) => {
-  state.columnList = columns
-}
 
 const clearFilter = (index?: number) => {
   if (isNaN(index)) {
@@ -91,6 +91,8 @@ const search = () => {
     const records = res.data.records
     records.forEach(item => {
       setColorName(item, keyword.value)
+      setColorName(item, keyword.value, 'account', 'colorAccount')
+      setColorName(item, keyword.value, 'email', 'colorEmail')
     })
     state.userList = records
     state.paginationConfig.total = res.data.total
@@ -113,22 +115,24 @@ const timestampFormatDate = value => {
 const edit = row => {
   userFormDialog.value.edit(row.id)
 }
-const unlock = row => {
-  console.log(row.id)
-}
+
 const delHandler = row => {
   ElMessageBox.confirm(t('user.confirm_delete'), {
     confirmButtonType: 'danger',
     type: 'warning',
     autofocus: false,
     showClose: false
-  }).then(() => {
-    loading.value = true
-    userDelApi(row.id).then(() => {
-      ElMessage.success(t('common.delete_success'))
-      search()
-    })
   })
+    .then(() => {
+      loading.value = true
+      userDelApi(row.id).then(() => {
+        ElMessage.success(t('common.delete_success'))
+        search()
+      })
+    })
+    .catch(() => {
+      console.log('cancel del')
+    })
 }
 const refreshRole = () => {
   userFormDialog.value.refreshRole()
@@ -169,6 +173,66 @@ const sortChange = param => {
     search()
   }
 }
+
+const handleSelectionChange = rows => {
+  state.multipleSelection = rows
+}
+const clearSelection = () => {
+  multipleTableRef.value?.clearSelection()
+}
+
+const batchDelHandler = () => {
+  ElMessageBox.confirm(t('user.confirm_batch_delete', [state.multipleSelection.length]), {
+    confirmButtonType: 'danger',
+    type: 'warning',
+    autofocus: false,
+    showClose: false
+  })
+    .then(() => {
+      batchDel()
+    })
+    .catch(() => {
+      clearSelection()
+    })
+}
+const batchDel = () => {
+  const ids = state.multipleSelection.map(item => item.id)
+  loading.value = true
+  batchDelApi(ids).then(() => {
+    loading.value = false
+    ElMessage.success(t('common.delete_success'))
+    search()
+  })
+}
+
+const loadRestInfo = async () => {
+  if (defaultPwd.value) {
+    return
+  }
+  const res = await defaultPwdApi()
+  defaultPwd.value = res.data
+}
+const resetPwd = row => {
+  resetPwdApi(row.id).then(() => {
+    ElMessage.success(t('user.reset_success'))
+    closeResetInfo(row)
+    if (row.id === userStore.getUid) {
+      userStore.clear()
+      userStore.$reset()
+    }
+  })
+}
+const closeResetInfo = row => {
+  row.resetInfoShow = false
+}
+const copyPwd = async () => {
+  try {
+    await toClipboard(defaultPwd.value)
+    ElMessage.success(t('common.copy_success'))
+  } catch (e) {
+    ElMessage.warning(t('common.copy_unsupported'), e)
+  }
+}
 </script>
 <template>
   <el-tabs v-model="activeName" @tab-click="handleClick">
@@ -203,11 +267,6 @@ const sortChange = param => {
           </template>
           {{ t('common.filter') }}
         </el-button>
-        <column-list
-          @column-change="columnChange"
-          :is-plugin-loaded="isPluginLoaded"
-          :column-names="columnNames"
-        ></column-list>
       </el-col>
     </el-row>
     <filter-text
@@ -217,21 +276,15 @@ const sortChange = param => {
     ></filter-text>
     <div :class="[state.filterTexts.length ? 'is-in-filter' : 'user-table__content']">
       <GridTable
-        :columns="state.columnList"
+        ref="multipleTableRef"
         :pagination="state.paginationConfig"
         :table-data="state.userList"
         @page-change="pageChange"
         @size-change="sizeChange"
         @sort-change="sortChange"
+        @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="30" />
-        <el-table-column
-          prop="account"
-          key="account"
-          label="ID"
-          show-overflow-tooltip
-          width="120"
-        />
         <el-table-column
           key="name"
           show-overflow-tooltip
@@ -242,6 +295,17 @@ const sortChange = param => {
           <template v-slot:default="scope">
             <span v-if="scope.row.colorName" v-html="scope.row.colorName" />
             <span v-else>{{ scope.row.name }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="account"
+          key="account"
+          :label="t('user.account')"
+          show-overflow-tooltip
+          width="120"
+        >
+          <template v-slot:default="scope">
+            <span v-html="scope.row.colorAccount || scope.row.account" />
           </template>
         </el-table-column>
 
@@ -262,7 +326,11 @@ const sortChange = param => {
           key="email"
           :label="t('common.email')"
           width="200"
-        />
+        >
+          <template v-slot:default="scope">
+            <span v-html="scope.row.colorEmail || scope.row.email" />
+          </template>
+        </el-table-column>
 
         <el-table-column prop="enable" key="enable" :label="t('user.state')" width="80">
           <template #default="scope">
@@ -287,13 +355,64 @@ const sortChange = param => {
         <el-table-column key="_operation" :label="$t('common.operate')">
           <template #default="scope">
             <div class="operate-icon-container" v-if="scope.row.id !== '1'">
-              <div><Icon name="edit" @click="edit(scope.row)"></Icon></div>
-              <div><Icon name="unlock" @click="unlock(scope.row)"></Icon></div>
+              <div><Icon name="icon_edit_outlined" @click="edit(scope.row)"></Icon></div>
+              <div @click="scope.row.resetInfoShow = true">
+                <el-popover
+                  placement="right"
+                  :width="300"
+                  trigger="click"
+                  @show="loadRestInfo"
+                  :visible="scope.row.resetInfoShow"
+                >
+                  <template #reference>
+                    <Icon name="unlock" />
+                  </template>
+                  <div class="reset-pwd-confirm">
+                    <div class="confirm-header">
+                      <span class="icon-span">
+                        <el-icon>
+                          <Icon name="icon_warning_filled"></Icon>
+                        </el-icon>
+                      </span>
+                      <span class="header-span">{{ t('user.reset_confirm') }}</span>
+                    </div>
+                    <div class="confirm-content">
+                      <span>{{ defaultPwd }}</span>
+                      <el-button text @click="copyPwd">{{ t('common.copy') }}</el-button>
+                    </div>
+                    <div class="confirm-foot">
+                      <el-button @click="closeResetInfo(scope.row)">{{
+                        t('common.cancel')
+                      }}</el-button>
+                      <el-button type="primary" @click="resetPwd(scope.row)">
+                        {{ t('common.sure') }}
+                      </el-button>
+                    </div>
+                  </div>
+                </el-popover>
+              </div>
               <div><Icon name="delete" @click="delHandler(scope.row)"></Icon></div>
             </div>
           </template>
         </el-table-column>
       </GridTable>
+      <div v-if="state.multipleSelection.length" class="bottom-bar">
+        <el-button
+          size="small"
+          type="danger"
+          class="batch-delete-button"
+          plain
+          @click="batchDelHandler"
+        >
+          {{ t('user.batch_del') }}
+        </el-button>
+        <span class="bottom-info">{{
+          t('user.selection_info', [state.multipleSelection.length])
+        }}</span>
+        <el-button size="small" class="clear-selection" @click="clearSelection" text>
+          {{ t('user.clear_button') }}
+        </el-button>
+      </div>
     </div>
   </div>
   <div v-else-if="activeName === 'role'" class="role-content">
@@ -340,6 +459,11 @@ const sortChange = param => {
       height: 16px;
       color: var(--ed-color-primary);
       background-color: var(--ed-color-white);
+      &:focus {
+        outline: none;
+        color: var(--ed-color-primary) !important;
+        background: var(--ed-color-primary-light-9) !important;
+      }
     }
   }
 
@@ -349,6 +473,62 @@ const sortChange = param => {
       color: var(--ed-color-primary) !important;
       background: var(--ed-color-primary-light-9) !important;
     }
+  }
+}
+
+.bottom-bar {
+  position: absolute;
+  bottom: 45px;
+  display: flex;
+  .bottom-info {
+    font-size: 12px;
+    color: var(--ed-color-info);
+    line-height: 26px;
+    padding: 0 15px;
+  }
+  .batch-delete-button {
+    color: var(--ed-button-text-color);
+    border-color: var(--ed-button-border-color);
+    &:hover {
+      color: var(--ed-button-hover-text-color);
+      border-color: var(--ed-button-hover-border-color);
+      background-color: var(--ed-button-hover-bg-color);
+      outline: none;
+    }
+  }
+  .clear-selection {
+    font-size: 12px;
+  }
+}
+.reset-pwd-confirm {
+  height: 115px;
+  padding: 5px 15px;
+  .confirm-header {
+    width: 100%;
+    height: 40px;
+    line-height: 40px;
+    display: flex;
+    flex-direction: row;
+    .icon-span {
+      color: var(--ed-color-warning);
+      font-size: 22px;
+      i {
+        top: 3px;
+      }
+    }
+    .header-span {
+      font-size: 16px;
+      font-weight: bold;
+      margin-left: 10px;
+    }
+  }
+  .confirm-foot {
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 15px;
   }
 }
 </style>

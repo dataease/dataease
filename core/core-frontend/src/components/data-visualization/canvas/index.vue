@@ -31,6 +31,7 @@ import UserViewEnlarge from '@/components/visualization/UserViewEnlarge.vue'
 import CanvasOptBar from '@/components/visualization/CanvasOptBar.vue'
 import LinkJumpSet from '@/components/visualization/LinkJumpSet.vue'
 import { adaptCurThemeCommonStyle } from '@/utils/canvasStyle'
+import LinkageSet from '@/components/visualization/LinkageSet.vue'
 const snapshotStore = snapshotStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
 const composeStore = composeStoreWithOut()
@@ -152,6 +153,7 @@ const isShowArea = ref(false)
 const svgFilterAttrs = ['width', 'height', 'top', 'left', 'rotate']
 const userViewEnlargeRef = ref(null)
 const linkJumpRef = ref(null)
+const linkageRef = ref(null)
 const showComponentData = computed(() => {
   return componentData.value.filter(component => component.isShow)
 })
@@ -1417,6 +1419,12 @@ const linkJumpSetOpen = item => {
     linkJumpRef.value.dialogInit(item)
   })
 }
+const linkageSetOpen = item => {
+  //跳转设置需要先触发保存
+  canvasSave(() => {
+    linkageRef.value.dialogInit(item)
+  })
+}
 
 onMounted(() => {
   initSnapshotTimer()
@@ -1496,6 +1504,7 @@ defineExpose({
       @onResizing="onResizing($event, item, index)"
       @userViewEnlargeOpen="userViewEnlargeOpen(item)"
       @linkJumpSetOpen="linkJumpSetOpen(item)"
+      @linkageSetOpen="linkageSetOpen(item)"
     >
       <!--如果是视图 则动态获取预存的chart-view数据-->
       <component
@@ -1542,6 +1551,7 @@ defineExpose({
     <Area v-show="isShowArea" :start="start" :width="width" :height="height" />
     <user-view-enlarge ref="userViewEnlargeRef"></user-view-enlarge>
     <link-jump-set ref="linkJumpRef"></link-jump-set>
+    <linkage-set ref="linkageRef"></linkage-set>
   </div>
 </template>
 
