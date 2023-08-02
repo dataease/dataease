@@ -1,6 +1,7 @@
 <script lang="tsx" setup>
 import { useI18n } from '@/hooks/web/useI18n'
-import { reactive, toRefs, watch } from 'vue'
+import { reactive, toRefs, watch, ref } from 'vue'
+import { multFieldValuesForPermissions } from "@/api/dataset";
 
 const { t } = useI18n()
 
@@ -16,6 +17,8 @@ const props = defineProps({
 })
 
 const { item } = toRefs(props)
+
+const needRequestEnum = ref(true)
 
 const state = reactive({
   textOptions: [
@@ -188,6 +191,10 @@ const init = () => {
 const initEnumOptions = () => {
   // 查找枚举值
   if (item.value.deType === 0 || item.value.deType === 5) {
+    multFieldValuesForPermissions({ fieldIds: [item.value] }).then(res => {
+      state.fieldOptions = optionData(res.data)
+      needRequestEnum.value = false
+    })
   }
 }
 const optionData = data => {
@@ -216,6 +223,9 @@ const logicChange = val => {
 }
 const filterTypeChange = val => {
   item.value.filterType = val
+  if (val === 'enum' && needRequestEnum.value) {
+    initEnumOptions()
+  }
 }
 const enumChange = val => {
   item.value.enumCheckField = state.enumCheckField
@@ -223,7 +233,6 @@ const enumChange = val => {
 
 initOptions()
 init()
-initEnumOptions()
 </script>
 
 <template>
