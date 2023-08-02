@@ -324,11 +324,11 @@ const columns = shallowRef([])
 const tableData = shallowRef([])
 const showTable = ref(false)
 const quota = computed(() => {
-  return cloneDeep(allfields.value.filter(ele => ele.groupType === 'q'))
+  return allfields.value.filter(ele => ele.groupType === 'q')
 })
 
 const dimensions = computed(() => {
-  return cloneDeep(allfields.value.filter(ele => ele.groupType === 'd'))
+  return allfields.value.filter(ele => ele.groupType === 'd')
 })
 
 const addComplete = () => {
@@ -373,9 +373,11 @@ const dfsFields = (arr, list) => {
 const diffArr = (newArr, oldArr) => {
   const idMapNew = newArr.map(ele => ele.id)
   const idMapOld = oldArr.map(ele => ele.id)
-  return newArr
-    .filter(ele => !idMapOld.includes(ele.id))
-    .concat(oldArr.filter(ele => idMapNew.includes(ele.id)))
+  return cloneDeep(
+    newArr
+      .filter(ele => !idMapOld.includes(ele.id))
+      .concat(oldArr.filter(ele => idMapNew.includes(ele.id)))
+  )
 }
 
 const closeEditUnion = () => {
@@ -479,7 +481,7 @@ getDatasource()
 const dsChange = (val: string) => {
   sqlNode.datasourceId = dataSource.value
   getTables(val).then(res => {
-    tableList = (res as unknown as Table[]) || []
+    tableList = res || []
     state.tableData = [...tableList]
   })
 }
@@ -638,20 +640,6 @@ const treeProps = {
             <Icon name="icon_up-left_outlined"></Icon>
           </el-icon>
         </p>
-        <!-- <el-select
-          v-model="dataSource"
-          class="ds-list"
-          filterable
-          @change="dsChange"
-          :placeholder="t('dataset.pls_slc_data_source')"
-        >
-          <el-option
-            v-for="item in state.dataSourceList"
-            :key="item.id"
-            :label="item.name"
-            :value="item.id"
-          />
-        </el-select> -->
         <el-tree-select
           :check-strictly="false"
           @change="dsChange"

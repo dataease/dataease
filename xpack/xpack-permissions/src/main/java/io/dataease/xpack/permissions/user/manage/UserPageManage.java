@@ -7,6 +7,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.dataease.api.permissions.role.dto.UserRequest;
+import io.dataease.api.permissions.user.dto.EnableSwitchRequest;
+import io.dataease.api.permissions.user.dto.ModifyPwdRequest;
 import io.dataease.api.permissions.user.dto.UserCreator;
 import io.dataease.api.permissions.user.dto.UserEditor;
 import io.dataease.api.permissions.user.vo.*;
@@ -58,7 +60,6 @@ public class UserPageManage {
     private OrgPageManage orgPageManage;
 
 
-
     @Value("${dataease.default-pwd:DataEase123456}")
     private String DEFAULT_PWD;
 
@@ -66,11 +67,18 @@ public class UserPageManage {
     private Boolean stateFromCondition(BaseGridRequest request) {
         if (CollectionUtil.isEmpty(request.getConditions())) return null;
         List<ConditionEntity> roleConditions = request.getConditions().stream().filter(item -> StringUtils.equals("status", item.getField()) && ObjectUtils.isNotEmpty(item.getValue())).toList();
-        if (CollectionUtil.isEmpty(roleConditions) || ((List) roleConditions.get(0).getValue()).size() != 1)
+        if (CollectionUtil.isEmpty(roleConditions) || ((List<?>) roleConditions.get(0).getValue()).size() != 1)
             return null;
         ConditionEntity conditionEntity = roleConditions.stream().findFirst().orElse(null);
         if (ObjectUtils.isEmpty(conditionEntity)) return null;
-        return (Boolean) ((List) conditionEntity.getValue()).get(0);
+        return (Boolean) ((List<?>) conditionEntity.getValue()).get(0);
+    }
+
+    private List<Long> ridsFromCondition(BaseGridRequest request) {
+        if (CollectionUtil.isEmpty(request.getConditions())) return null;
+        List<ConditionEntity> roleConditions = request.getConditions().stream().filter(item -> StringUtils.equals("rid", item.getField()) && ObjectUtils.isNotEmpty(item.getValue())).toList();
+        if (CollectionUtil.isEmpty(roleConditions)) return null;
+        return (List<Long>) roleConditions.get(0).getValue();
     }
 
     private UserSortEntity userSortFromCondition(BaseGridRequest request) {
@@ -102,7 +110,19 @@ public class UserPageManage {
         Boolean state = null;
         wrapper.eq(ObjectUtils.isNotEmpty(state = stateFromCondition(request)), "u.enable", state);
 
-        wrapper.like(StringUtils.isNotBlank(keyword), "u.name", keyword);
+        List<Long> rids = null;
+        if (CollectionUtil.isNotEmpty(rids = ridsFromCondition(request))) {
+            wrapper.in("pur.rid", rids);
+        }
+        if (StringUtils.isNotBlank(keyword)) {
+            wrapper.and((Consumer<QueryWrapper<UserGridVO>>) wra -> {
+                wra.like("u.name", keyword);
+                wra.or();
+                wra.like("u.account", keyword);
+                wra.or();
+                wra.like("u.email", request);
+            });
+        }
         UserSortEntity userSortEntity = userSortFromCondition(request);
         if (ObjectUtils.isEmpty(userSortEntity)) {
             userSortEntity = new UserSortEntity();
@@ -312,5 +332,25 @@ public class UserPageManage {
             }
         }
         DEException.throwException("user does not exist");
+    }
+
+    public void switchEnable(EnableSwitchRequest request) {
+        if (request.getId().equals(AuthUtils.getUser().getUserId())) {
+            DEException.throwException("prohibit switch current user");
+        }
+        userExtMapper.updateEnable(request.getId(), request.getEnable());
+    }
+
+    public void modifyPwd(ModifyPwdRequest request) {
+        Long userId = AuthUtils.getUser().getUserId();
+        QueryWrapper<PerUser> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("id", userId);
+        queryWrapper.eq("pwd", Md5Utils.md5(RsaUtils.decryptStr(request.getPwd())));
+        PerUser perUser = perUserMapper.selectOne(queryWrapper);
+        if (ObjectUtils.isEmpty(perUser)) {
+            DEException.throwException("user does not exist or pwd is error");
+        }
+        perUser.setPwd(Md5Utils.md5(RsaUtils.decryptStr(request.getNewPwd())));
+        perUserMapper.updateById(perUser);
     }
 }

@@ -24,7 +24,7 @@ export abstract class L7PlotChartView<
   O extends PlotOptions,
   P extends L7Plot<O>
 > extends AntVAbstractChartView {
-  public abstract drawChart(drawOption: L7PlotDrawOptions<P>): P
+  public abstract drawChart(drawOption: L7PlotDrawOptions<P>): P | Promise<P>
 
   protected configLabel(chart: Chart, options: O): O {
     const label = configL7Label(chart)

@@ -62,12 +62,11 @@ public class DatasetGroupManage {
         if (StringUtils.equalsIgnoreCase(datasetGroupInfoDTO.getNodeType(), leafType)) {
             // get union sql
             Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO);
-            if (ObjectUtils.isEmpty(sqlMap)) {
-                DEException.throwException("table error");
+            if (ObjectUtils.isNotEmpty(sqlMap)) {
+                String sql = (String) sqlMap.get("sql");
+                datasetGroupInfoDTO.setUnionSql(sql);
+                datasetGroupInfoDTO.setInfo(Objects.requireNonNull(JsonUtil.toJSONString(datasetGroupInfoDTO.getUnion())).toString());
             }
-            String sql = (String) sqlMap.get("sql");
-            datasetGroupInfoDTO.setUnionSql(sql);
-            datasetGroupInfoDTO.setInfo(Objects.requireNonNull(JsonUtil.toJSONString(datasetGroupInfoDTO.getUnion())).toString());
         }
         // save dataset/group
         long time = System.currentTimeMillis();
@@ -97,7 +96,7 @@ public class DatasetGroupManage {
             BeanUtils.copyBean(coreDatasetGroup, datasetGroupInfoDTO);
             coreDatasetGroup.setLastUpdateTime(time);
             coreDatasetGroupMapper.updateById(coreDatasetGroup);
-            if (ObjectUtils.isNotEmpty(interactiveAuthApi) && ObjectUtils.isNotEmpty(sourceData) && (!StringUtils.equals(sourceData.getName(), coreDatasetGroup.getName()) || sourceData.getPid().equals(coreDatasetGroup.getPid()
+            if (ObjectUtils.isNotEmpty(interactiveAuthApi) && ObjectUtils.isNotEmpty(sourceData) && (!StringUtils.equals(sourceData.getName(), coreDatasetGroup.getName()) || !sourceData.getPid().equals(coreDatasetGroup.getPid()
             ))) {
                 BusiResourceEditor editor = new BusiResourceEditor();
                 editor.setId(coreDatasetGroup.getId());
@@ -259,38 +258,37 @@ public class DatasetGroupManage {
         // table和field均由前端生成id（如果没有id）
         Long datasetGroupId = datasetGroupInfoDTO.getId();
         List<DatasetTableFieldDTO> allFields = datasetGroupInfoDTO.getAllFields();
-        if (ObjectUtils.isEmpty(allFields)) {
-            DEException.throwException("no fields");
-        }
-        // 获取内层union sql和字段
-        Map<String, Object> map = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO);
-        List<DatasetTableFieldDTO> unionFields = (List<DatasetTableFieldDTO>) map.get("field");
+        if (ObjectUtils.isNotEmpty(allFields)) {
+            // 获取内层union sql和字段
+            Map<String, Object> map = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO);
+            List<DatasetTableFieldDTO> unionFields = (List<DatasetTableFieldDTO>) map.get("field");
 
-        for (DatasetTableFieldDTO datasetTableFieldDTO : allFields) {
-            DatasetTableFieldDTO dto = datasetTableFieldManage.selectById(datasetTableFieldDTO.getId());
-            if (ObjectUtils.isEmpty(dto)) {
-                if (Objects.equals(datasetTableFieldDTO.getExtField(), ExtFieldConstant.EXT_NORMAL)) {
-                    for (DatasetTableFieldDTO fieldDTO : unionFields) {
-                        if (Objects.equals(datasetTableFieldDTO.getDatasetTableId(), fieldDTO.getDatasetTableId())
-                                && Objects.equals(datasetTableFieldDTO.getOriginName(), fieldDTO.getOriginName())) {
-                            datasetTableFieldDTO.setDataeaseName(fieldDTO.getDataeaseName());
-                            datasetTableFieldDTO.setFieldShortName(fieldDTO.getFieldShortName());
+            for (DatasetTableFieldDTO datasetTableFieldDTO : allFields) {
+                DatasetTableFieldDTO dto = datasetTableFieldManage.selectById(datasetTableFieldDTO.getId());
+                if (ObjectUtils.isEmpty(dto)) {
+                    if (Objects.equals(datasetTableFieldDTO.getExtField(), ExtFieldConstant.EXT_NORMAL)) {
+                        for (DatasetTableFieldDTO fieldDTO : unionFields) {
+                            if (Objects.equals(datasetTableFieldDTO.getDatasetTableId(), fieldDTO.getDatasetTableId())
+                                    && Objects.equals(datasetTableFieldDTO.getOriginName(), fieldDTO.getOriginName())) {
+                                datasetTableFieldDTO.setDataeaseName(fieldDTO.getDataeaseName());
+                                datasetTableFieldDTO.setFieldShortName(fieldDTO.getFieldShortName());
+                            }
                         }
                     }
+                    if (Objects.equals(datasetTableFieldDTO.getExtField(), ExtFieldConstant.EXT_CALC)) {
+                        String dataeaseName = TableUtils.fieldNameShort(datasetTableFieldDTO.getId() + "_" + datasetTableFieldDTO.getOriginName());
+                        datasetTableFieldDTO.setDataeaseName(dataeaseName);
+                        datasetTableFieldDTO.setFieldShortName(dataeaseName);
+                        datasetTableFieldDTO.setDeExtractType(datasetTableFieldDTO.getDeType());
+                    }
+                    datasetTableFieldDTO.setDatasetGroupId(datasetGroupId);
+                } else {
+                    datasetTableFieldDTO.setDataeaseName(dto.getDataeaseName());
+                    datasetTableFieldDTO.setFieldShortName(dto.getFieldShortName());
                 }
-                if (Objects.equals(datasetTableFieldDTO.getExtField(), ExtFieldConstant.EXT_CALC)) {
-                    String dataeaseName = TableUtils.fieldNameShort(datasetTableFieldDTO.getId() + "_" + datasetTableFieldDTO.getOriginName());
-                    datasetTableFieldDTO.setDataeaseName(dataeaseName);
-                    datasetTableFieldDTO.setFieldShortName(dataeaseName);
-                    datasetTableFieldDTO.setDeExtractType(datasetTableFieldDTO.getDeType());
-                }
-                datasetTableFieldDTO.setDatasetGroupId(datasetGroupId);
-            } else {
-                datasetTableFieldDTO.setDataeaseName(dto.getDataeaseName());
-                datasetTableFieldDTO.setFieldShortName(dto.getFieldShortName());
+                datasetTableFieldDTO = datasetTableFieldManage.save(datasetTableFieldDTO);
+                fieldIds.add(datasetTableFieldDTO.getId());
             }
-            datasetTableFieldDTO = datasetTableFieldManage.save(datasetTableFieldDTO);
-            fieldIds.add(datasetTableFieldDTO.getId());
         }
     }
 

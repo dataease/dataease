@@ -85,7 +85,9 @@ export default {
     confirm_batch_delete: '确定删除{0}个用户吗？',
     reset_pwd: '重置密码',
     reset_confirm: '是否恢复为初始密码？',
-    reset_success: '重置成功'
+    reset_success: '重置成功',
+    modify_cur_pwd: '修改当前用户密码后需要重新登录',
+    switch_success: '切换成功'
   },
   userimport: {
     buttonText: '批量导入',

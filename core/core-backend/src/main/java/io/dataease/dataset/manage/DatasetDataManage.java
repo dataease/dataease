@@ -355,7 +355,7 @@ public class DatasetDataManage {
             Field2SQLObj.field2sqlObj(sqlMeta, fields);
             WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, fields);
             Order2SQLObj.getOrders(sqlMeta, fields, datasetGroupInfoDTO.getSortFields());
-            String querySQL = SQLProvider.createQuerySQL(sqlMeta, false, needOrder);
+            String querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, 0, 1000);
 
             // 通过数据源请求数据
             // 调用数据源的calcite获得data

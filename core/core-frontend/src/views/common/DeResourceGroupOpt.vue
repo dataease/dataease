@@ -95,7 +95,7 @@ const rules = {
   pid: [
     {
       required: true,
-      message: t('fu.search_bar.please_select'),
+      message: t('common.please_select'),
       trigger: 'blur'
     }
   ]

@@ -29,7 +29,7 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
   propertyInner = BAR_EDITOR_PROPERTY_INNER
   axis: AxisType[] = ['xAxis', 'yAxis', 'filter', 'drill', 'extLabel', 'extTooltip']
   drawChart(drawOptions: G2PlotDrawOptions<Bar>): Bar {
-    const chart = drawOptions.chart
+    const { chart, container, action } = drawOptions
     if (!chart.data?.data?.length) {
       return
     }
@@ -96,15 +96,11 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
     }
 
     // 开始渲染
-    if (drawOptions.chartObj) {
-      drawOptions.chartObj.destroy()
-    }
-    drawOptions.chartObj = new Bar(drawOptions.container, options)
+    const newChart = new Bar(container, options)
 
-    drawOptions.chartObj.off('interval:click')
-    drawOptions.chartObj.on('interval:click', drawOptions.action)
+    newChart.on('interval:click', action)
 
-    return drawOptions.chartObj
+    return newChart
   }
 
   protected configTooltip(chart: Chart, options: BarOptions): BarOptions {

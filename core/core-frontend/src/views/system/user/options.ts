@@ -1,3 +1,15 @@
+import { useI18n } from '@/hooks/web/useI18n'
+const { t } = useI18n()
+
+export interface Tree {
+  id: string
+  name: string
+  readonly: boolean
+  children?: Tree[]
+  disabled: boolean
+  root: boolean
+}
+
 export const columnNames = [
   {
     label: 'ID',
@@ -25,3 +37,57 @@ export const columnNames = [
     props: 'createTime'
   }
 ]
+
+export const filterOption = [
+  {
+    type: 'enum',
+    option: [
+      {
+        id: true,
+        name: t('commons.enable')
+      },
+      {
+        id: false,
+        name: t('commons.disable')
+      }
+    ],
+    field: 'status',
+    title: t('commons.status'),
+    operate: 'in'
+  },
+
+  {
+    type: 'tree-select',
+    option: [
+      {
+        value: 'admin',
+        label: t('role.org_admin'),
+        children: [],
+        disabled: true
+      },
+      {
+        value: 'readonly',
+        label: t('role.average_role'),
+        children: [],
+        disabled: true
+      }
+    ],
+    field: 'rid',
+    title: t('commons.role'),
+    operate: 'in'
+  }
+]
+
+export const groupBy = (list: Tree[]) => {
+  const map = new Map()
+  list.forEach(item => {
+    const readonly = item.readonly
+    let arr = map.get(readonly)
+    if (!arr) {
+      arr = []
+    }
+    arr.push({ value: item.id, label: item.name, disabled: false })
+    map.set(readonly, arr)
+  })
+  return map
+}

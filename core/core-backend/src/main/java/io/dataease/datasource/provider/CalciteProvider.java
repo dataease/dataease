@@ -23,6 +23,7 @@ import io.dataease.utils.BeanUtils;
 import io.dataease.utils.CommonBeanFactory;
 import io.dataease.utils.JsonUtil;
 import io.dataease.utils.LogUtil;
+import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import org.apache.calcite.adapter.jdbc.JdbcSchema;
 import org.apache.calcite.jdbc.CalciteConnection;
@@ -60,9 +61,8 @@ public class CalciteProvider {
     @Resource
     private CommonThreadPool commonThreadPool;
 
-
+    @PostConstruct
     public void init() throws Exception {
-
         try {
             String jarPath = FILE_PATH;
             ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
@@ -83,9 +83,7 @@ public class CalciteProvider {
         }catch (Exception e){
 
         }
-        initConnectionPool(capacity);
     }
-
 
     public List<String> getSchema(DatasourceRequest datasourceRequest) throws Exception {
         List<String> schemas = new ArrayList<>();
@@ -553,7 +551,7 @@ public class CalciteProvider {
     private Connection[] connections;
     private AtomicIntegerArray states;
 
-    private static int capacity = 10;
+    public static int capacity = 10;
 
     public void  initConnectionPool(int capacity) {
         LogUtil.info("Begin to init datasource pool...");

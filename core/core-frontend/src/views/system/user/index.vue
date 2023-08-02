@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import { ElTabs, ElTabPane } from 'element-plus-secondary'
 import { Icon } from '@/components/icon-custom'
 import { FilterText, convertFilterText } from '@/components/filter-text'
@@ -8,13 +8,25 @@ import UserForm from './UserForm.vue'
 import RoleManage from './RoleManage.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
-import { userPageApi, userDelApi, batchDelApi, defaultPwdApi, resetPwdApi } from '@/api/user'
+import {
+  userPageApi,
+  userDelApi,
+  batchDelApi,
+  defaultPwdApi,
+  resetPwdApi,
+  switchEnableApi,
+  searchRoleApi
+} from '@/api/user'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { setColorName } from '@/utils/utils'
 import UserImport from './UserImport/index.vue'
 import useClipboard from 'vue-clipboard3'
 import { useUserStoreWithOut } from '@/store/modules/user'
+import { logoutHandler } from '@/utils/logout'
+import { filterOption, groupBy } from './options'
+
 const userStore = useUserStoreWithOut()
+const curUid = computed(() => userStore.getUid)
 const { toClipboard } = useClipboard()
 const { t } = useI18n()
 const activeName = ref('user')
@@ -23,7 +35,6 @@ const userFormDialog = ref(null)
 const loading = ref(false)
 const multipleTableRef = ref(null)
 const defaultPwd = ref(null)
-
 const handleClick = () => {
   console.log('handleClick')
 }
@@ -32,31 +43,21 @@ const addUser = () => {
   userFormDialog.value.init()
 }
 
-const drawerMainOpen = () => {
+const roleLoad = ref(false)
+const drawerMainOpen = async () => {
+  if (!roleLoad.value) {
+    const res = await searchRoleApi('')
+    const map = groupBy(res.data)
+    filterOption[1].option[0]['children'] = map.get(false)
+    filterOption[1].option[1]['children'] = map.get(true)
+    roleLoad.value = true
+  }
   drawerMainRef.value.init()
 }
 const drawerMainClose = () => {
   drawerMainRef.value.close()
 }
 
-const filterOption = [
-  {
-    type: 'enum',
-    option: [
-      {
-        id: true,
-        name: t('commons.enable')
-      },
-      {
-        id: false,
-        name: t('commons.disable')
-      }
-    ],
-    field: 'status',
-    title: '状态',
-    operate: 'in'
-  }
-]
 const state = reactive({
   userList: [],
   filterTexts: [],
@@ -104,7 +105,12 @@ const filterRoles = cellValue => {
   return roleNames.length ? roleNames.join() : '-'
 }
 const changeSwitch = row => {
-  console.log(row.id)
+  const param = { id: row.id, enable: row.enable }
+  loading.value = true
+  switchEnableApi(param).then(() => {
+    ElMessage.success(t('user.switch_success'))
+    loading.value = false
+  })
 }
 const timestampFormatDate = value => {
   if (!value) {
@@ -154,7 +160,9 @@ const searchCondition = conditions => {
   drawerMainClose()
 }
 const fillFilterText = () => {
-  const textArray = convertFilterText(state.conditions, filterOption)
+  const textArray = state.conditions?.length
+    ? convertFilterText(state.conditions, filterOption)
+    : []
   Object.assign(state.filterTexts, textArray)
 }
 const pageChange = index => {
@@ -216,9 +224,8 @@ const resetPwd = row => {
   resetPwdApi(row.id).then(() => {
     ElMessage.success(t('user.reset_success'))
     closeResetInfo(row)
-    if (row.id === userStore.getUid) {
-      userStore.clear()
-      userStore.$reset()
+    if (row.id === curUid.value) {
+      logoutHandler()
     }
   })
 }
@@ -261,11 +268,17 @@ const copyPwd = async () => {
             </el-icon>
           </template>
         </el-input>
-        <el-button @click="drawerMainOpen" plain>
+        <el-button
+          @click="drawerMainOpen"
+          :plain="!!state.conditions.length"
+          :class="state.conditions.length ? 'filter-condition-button' : 'filter-button'"
+        >
           <template #icon>
             <Icon name="icon-filter"></Icon>
           </template>
-          {{ t('common.filter') }}
+          {{
+            t('common.filter') + (state.conditions.length ? `(${state.conditions?.length})` : '')
+          }}
         </el-button>
       </el-col>
     </el-row>
@@ -279,7 +292,7 @@ const copyPwd = async () => {
         ref="multipleTableRef"
         :pagination="state.paginationConfig"
         :table-data="state.userList"
-        @page-change="pageChange"
+        @current-change="pageChange"
         @size-change="sizeChange"
         @sort-change="sortChange"
         @selection-change="handleSelectionChange"
@@ -335,7 +348,7 @@ const copyPwd = async () => {
         <el-table-column prop="enable" key="enable" :label="t('user.state')" width="80">
           <template #default="scope">
             <el-switch
-              :disabled="scope.row.id === '1'"
+              :disabled="scope.row.id === '1' || scope.row.id === curUid"
               v-model="scope.row.enable"
               inactive-color="#DCDFE6"
               @change="changeSwitch(scope.row)"
@@ -379,6 +392,9 @@ const copyPwd = async () => {
                     <div class="confirm-content">
                       <span>{{ defaultPwd }}</span>
                       <el-button text @click="copyPwd">{{ t('common.copy') }}</el-button>
+                    </div>
+                    <div v-if="scope.row.id === curUid" class="confirm-warning">
+                      <span>{{ t('user.modify_cur_pwd') }}</span>
                     </div>
                     <div class="confirm-foot">
                       <el-button @click="closeResetInfo(scope.row)">{{
@@ -501,7 +517,7 @@ const copyPwd = async () => {
   }
 }
 .reset-pwd-confirm {
-  height: 115px;
+  // height: 115px;
   padding: 5px 15px;
   .confirm-header {
     width: 100%;
@@ -529,6 +545,32 @@ const copyPwd = async () => {
     justify-content: flex-end;
     align-items: center;
     margin-top: 15px;
+  }
+  .confirm-warning {
+    font-size: 12px;
+    color: var(--ed-color-danger);
+    margin-left: 33px;
+  }
+  .confirm-content {
+    margin-left: 33px;
+  }
+}
+.right-filter {
+  .filter-button {
+    &:hover {
+      color: #bbbfc4;
+      border-color: #bbbfc4;
+      background-color: #f5f6f7;
+      outline: 0;
+    }
+    &:focus {
+      color: #bbbfc4;
+      border-color: #bbbfc4;
+      background-color: #eff0f1;
+      outline: 0;
+    }
+  }
+  .filter-condition-button {
   }
 }
 </style>

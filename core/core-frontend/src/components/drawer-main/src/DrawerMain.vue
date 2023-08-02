@@ -5,6 +5,7 @@ import { propTypes } from '@/utils/propTypes'
 import DrawerFilter from '@/components/drawer-filter/src/DrawerFilter.vue'
 import DrawerEnumFilter from '@/components/drawer-filter/src/DrawerEnumFilter.vue'
 import DrawerTimeFilter from '@/components/drawer-filter/src/DrawerTimeFilter.vue'
+import DrawerTreeFilter from '@/components/drawer-filter/src/DrawerTreeFilter.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 const { t } = useI18n()
 const props = defineProps({
@@ -18,7 +19,7 @@ const props = defineProps({
   ),
   title: propTypes.string
 })
-
+const myRefs = ref([])
 const componentList = computed(() => {
   return props.filterOptions
 })
@@ -31,8 +32,23 @@ const userDrawer = ref(false)
 const init = () => {
   userDrawer.value = true
 }
-
-const clearFilter = (id: number) => {
+const clearInnerTag = (index?: number) => {
+  if (isNaN(index)) {
+    for (let i = 0; i < componentList.value.length; i++) {
+      myRefs.value[i]?.clear()
+    }
+    return
+  }
+  const condition = state.conditions[index]
+  const field = condition?.field
+  for (let i = 0; i < componentList.value.length; i++) {
+    if (componentList.value[i].field === field) {
+      myRefs.value[i]?.clear()
+    }
+  }
+}
+const clearFilter = (id?: number) => {
+  clearInnerTag(id)
   if (isNaN(id)) {
     const len = state.conditions.length
     state.conditions.splice(0, len)
@@ -53,7 +69,8 @@ const filterChange = (value, field, operator) => {
     state.conditions.push({ field, value, operator })
   }
 }
-const cancel = () => {
+const reset = () => {
+  clearFilter()
   userDrawer.value = false
 }
 const close = () => {
@@ -61,7 +78,6 @@ const close = () => {
 }
 const emits = defineEmits(['trigger-filter'])
 const trigger = () => {
-  console.log('')
   emits('trigger-filter', state.conditions)
 }
 defineExpose({
@@ -75,34 +91,56 @@ defineExpose({
   <el-drawer
     :title="t('common.filter_condition')"
     v-model="userDrawer"
-    size="680px"
+    size="600px"
+    custom-class="drawer-main-container"
     direction="rtl"
   >
     <div v-for="(component, index) in componentList" :key="index">
+      <drawer-tree-filter
+        :ref="el => (myRefs[index] = el)"
+        v-if="component.type === 'tree-select'"
+        :option-list="component.option"
+        :title="component.title"
+        @filter-change="v => filterChange(v, component.field, 'in')"
+      />
       <drawer-filter
+        :ref="el => (myRefs[index] = el)"
         v-if="component.type === 'select'"
         :option-list="component.option"
         :title="component.title"
-        @filter-change="filterChange"
+        @filter-change="v => filterChange(v, component.field, 'in')"
       />
       <drawer-enum-filter
+        :ref="el => (myRefs[index] = el)"
         v-if="component.type === 'enum'"
         :option-list="component.option"
         :title="component.title"
         @filter-change="v => filterChange(v, component.field, 'in')"
       />
       <drawer-time-filter
+        :ref="el => (myRefs[index] = el)"
         v-if="component.type === 'time'"
         :title="component.title"
-        @filter-change="filterChange"
+        @filter-change="v => filterChange(v, component.field, 'eq')"
       />
     </div>
 
     <template #footer>
-      <el-button @click="cancel">{{ t('common.cancel') }}</el-button>
+      <el-button @click="reset">{{ t('commons.reset') }}</el-button>
       <el-button @click="trigger" type="primary">{{ t('common.sure') }}</el-button>
     </template>
   </el-drawer>
 </template>
 
-<style lang="less" scoped></style>
+<style lang="less">
+.drawer-main-container {
+  width: 600px;
+  .ed-drawer__body {
+    padding: 16px 24px 80px !important;
+  }
+  .ed-drawer__footer {
+    padding-top: 10px !important;
+    padding-right: 24px !important;
+  }
+}
+</style>
