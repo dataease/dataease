@@ -324,11 +324,11 @@ const columns = shallowRef([])
 const tableData = shallowRef([])
 const showTable = ref(false)
 const quota = computed(() => {
-  return cloneDeep(allfields.value.filter(ele => ele.groupType === 'q'))
+  return allfields.value.filter(ele => ele.groupType === 'q')
 })
 
 const dimensions = computed(() => {
-  return cloneDeep(allfields.value.filter(ele => ele.groupType === 'd'))
+  return allfields.value.filter(ele => ele.groupType === 'd')
 })
 
 const addComplete = () => {
@@ -373,9 +373,11 @@ const dfsFields = (arr, list) => {
 const diffArr = (newArr, oldArr) => {
   const idMapNew = newArr.map(ele => ele.id)
   const idMapOld = oldArr.map(ele => ele.id)
-  return newArr
-    .filter(ele => !idMapOld.includes(ele.id))
-    .concat(oldArr.filter(ele => idMapNew.includes(ele.id)))
+  return cloneDeep(
+    newArr
+      .filter(ele => !idMapOld.includes(ele.id))
+      .concat(oldArr.filter(ele => idMapNew.includes(ele.id)))
+  )
 }
 
 const closeEditUnion = () => {
