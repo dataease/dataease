@@ -10,16 +10,39 @@ const fieldText = (field, options) => {
     }
   }
 }
+const valueTextFormTree = (val, options) => {
+  let result = null
+  const stack = [...options]
+  while (stack.length) {
+    const item = stack.pop()
+    if (item.value === val) {
+      result = item.label
+      break
+    }
+    if (item.children?.length) {
+      item.children.forEach(kid => stack.push(kid))
+    }
+  }
+  return result || val
+}
 const valueText = (field, val, options) => {
   for (let index = 0; index < options.length; index++) {
     const element = options[index]
     if (field === element.field) {
+      let isTree = false
       const selectOption = element.option
       for (let i = 0; i < selectOption.length; i++) {
         const item = selectOption[i]
-        if (item.id === val) {
-          return item.name
+        if (item.hasOwnProperty('children')) {
+          isTree = true
+          break
         }
+        if ((item.id || item.value) === val) {
+          return item.name || item.label
+        }
+      }
+      if (isTree) {
+        return valueTextFormTree(val, selectOption)
       }
     }
   }

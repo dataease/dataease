@@ -26,10 +26,13 @@ const nodeChange = (id: string | number) => {
   }
   emits('filter-change', state.activeStatus)
 }
+const clear = () => {
+  state.activeStatus = []
+}
 const emits = defineEmits(['filter-change'])
-/* defineExpose({
-  activeStatus: state.activeStatus
-}) */
+defineExpose({
+  clear
+})
 </script>
 
 <template>

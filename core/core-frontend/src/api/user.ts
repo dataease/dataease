@@ -71,3 +71,5 @@ export const batchDelApi = data => request.post({ url: '/user/batchDel', data })
 export const defaultPwdApi = () => request.get({ url: '/user/defaultPwd' })
 
 export const resetPwdApi = uid => request.post({ url: `/user/resetPwd/${uid}` })
+
+export const siwtchEnableApi = data => request.post({ url: '/user/enable', data })

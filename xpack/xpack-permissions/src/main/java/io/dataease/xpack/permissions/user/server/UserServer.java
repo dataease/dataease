@@ -5,9 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.dataease.api.permissions.role.dto.UserRequest;
 import io.dataease.api.permissions.user.api.UserApi;
-import io.dataease.api.permissions.user.dto.LangSwitchRequest;
-import io.dataease.api.permissions.user.dto.UserCreator;
-import io.dataease.api.permissions.user.dto.UserEditor;
+import io.dataease.api.permissions.user.dto.*;
 import io.dataease.api.permissions.user.vo.*;
 import io.dataease.exception.DEException;
 import io.dataease.i18n.Lang;
@@ -152,5 +150,15 @@ public class UserServer implements UserApi {
     @Override
     public void resetPwd(Long id) {
         userPageManage.resetPwd(id);
+    }
+
+    @Override
+    public void enable(EnableSwitchRequest request) {
+        userPageManage.switchEnable(request);
+    }
+
+    @Override
+    public void modifyPwd(ModifyPwdRequest request) {
+        userPageManage.modifyPwd(request);
     }
 }
