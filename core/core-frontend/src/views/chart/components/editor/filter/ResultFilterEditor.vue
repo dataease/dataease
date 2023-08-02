@@ -191,7 +191,7 @@ const init = () => {
 const initEnumOptions = () => {
   // 查找枚举值
   if (item.value.deType === 0 || item.value.deType === 5) {
-    multFieldValuesForPermissions({ fieldIds: [item.value] }).then(res => {
+    multFieldValuesForPermissions({ fieldIds: [item.value.id] }).then(res => {
       state.fieldOptions = optionData(res.data)
       needRequestEnum.value = false
     })
