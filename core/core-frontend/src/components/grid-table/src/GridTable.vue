@@ -18,13 +18,12 @@ const attrs = useAttrs()
 
 const handleListeners = () => {
   Object.keys(attrs).forEach(key => {
-    if (['onSizeChange', 'onPrevClick', 'noNextClick'].includes(key)) {
+    if (['onSizeChange', 'onCurrentChange'].includes(key)) {
       state.paginationEvent[key.slice(2)] = attrs[key]
     } else {
       state.tableEvent[key] = attrs[key]
     }
   })
-  state.paginationEvent['currentChange'] = attrs['onPageChange']
 }
 const toggleRowSelection = row => {
   table.value.toggleRowSelection(row, true)
