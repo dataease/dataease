@@ -12,6 +12,7 @@
 
     <resultMap id="LinkageGatherMap" type="io.dataease.api.visualization.dto.VisualizationLinkageDTO">
         <result column="target_view_id" jdbcType="VARCHAR" property="targetViewId"/>
+        <result column="target_view_type" jdbcType="VARCHAR" property="targetViewType"/>
         <result column="table_id" jdbcType="VARCHAR" property="tableId"/>
         <result column="targetViewName" jdbcType="VARCHAR" property="targetViewName"/>
         <result column="sourceViewId" jdbcType="VARCHAR" property="sourceViewId"/>
@@ -37,6 +38,7 @@
         SELECT
         core_chart_view.`title` as 'targetViewName',
         core_chart_view.id as 'target_view_id',
+        core_chart_view.type as 'target_view_type',
         core_chart_view.table_id,
         visualization_linkage.source_view_id as 'sourceViewId',
         (case when visualization_linkage.target_view_id is null then 0 else visualization_linkage.linkage_active end) as 'linkageActive',

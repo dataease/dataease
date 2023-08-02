@@ -20,6 +20,9 @@ public interface VisualizationLinkageApi {
     @PostMapping("/getViewLinkageGather")
     Map getViewLinkageGather(@RequestBody VisualizationLinkageRequest request);
 
+    @PostMapping("/getViewLinkageGatherArray")
+    List getViewLinkageGatherArray(@RequestBody VisualizationLinkageRequest request);
+
     @PostMapping("/saveLinkage")
     BaseRspModel saveLinkage(@RequestBody VisualizationLinkageRequest request);
 

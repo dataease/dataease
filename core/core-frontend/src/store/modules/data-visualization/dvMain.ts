@@ -280,7 +280,7 @@ export const dvMainStore = defineStore('dataVisualization', {
         this.canvasViewInfo[component.id] = newView
       }
     },
-    setLinkageInfo(targetLinkageInfo) {
+    setLinkageTargetInfo(targetLinkageInfo) {
       this.linkageSettingStatus = true
       this.curLinkageView = this.curComponent
       this.targetLinkageInfo = targetLinkageInfo

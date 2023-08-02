@@ -3903,5 +3903,123 @@ CREATE TABLE `visualization_linkage_field`
     `copy_id`      varchar(255) DEFAULT NULL,
     PRIMARY KEY (`id`)
 );
+
+
+-- ----------------------------
+-- Table structure for visualization_background
+-- ----------------------------
+DROP TABLE IF EXISTS `visualization_background`;
+CREATE TABLE `visualization_background` (
+                                            `id` varchar(64) NOT NULL,
+                                            `name` varchar(255) DEFAULT NULL,
+                                            `classification` varchar(255) NOT NULL,
+                                            `content` longtext,
+                                            `remark` varchar(255) DEFAULT NULL,
+                                            `sort` int DEFAULT NULL,
+                                            `upload_time` bigint DEFAULT NULL,
+                                            `base_url` varchar(255) DEFAULT NULL,
+                                            `url` varchar(255) DEFAULT NULL,
+                                            PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+INSERT INTO `visualization_background` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`, `base_url`, `url`) VALUES ('board_1', '边框1', 'default', '', NULL, NULL, NULL, 'img/board', 'board/board_1.svg');
+INSERT INTO `visualization_background` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`, `base_url`, `url`) VALUES ('board_2', '边框2', 'default', NULL, NULL, NULL, NULL, 'img/board', 'board/board_2.svg');
+INSERT INTO `visualization_background` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`, `base_url`, `url`) VALUES ('board_3', '边框3', 'default', NULL, NULL, NULL, NULL, 'img/board', 'board/board_3.svg');
+INSERT INTO `visualization_background` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`, `base_url`, `url`) VALUES ('board_4', '边框4', 'default', NULL, NULL, NULL, NULL, 'img/board', 'board/board_4.svg');
+INSERT INTO `visualization_background` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`, `base_url`, `url`) VALUES ('board_5', '边框5', 'default', NULL, NULL, NULL, NULL, 'img/board', 'board/board_5.svg');
+INSERT INTO `visualization_background` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`, `base_url`, `url`) VALUES ('board_6', '边框6', 'default', NULL, NULL, NULL, NULL, 'img/board', 'board/board_6.svg');
+INSERT INTO `visualization_background` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`, `base_url`, `url`) VALUES ('board_7', '边框7', 'default', NULL, NULL, NULL, NULL, 'img/board', 'board/board_7.svg');
+INSERT INTO `visualization_background` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`, `base_url`, `url`) VALUES ('board_8', '边框8', 'default', NULL, NULL, NULL, NULL, 'img/board', 'board/board_8.svg');
+INSERT INTO `visualization_background` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`, `base_url`, `url`) VALUES ('board_9', '边框9', 'default', NULL, NULL, NULL, NULL, 'img/board', 'board/board_9.svg');
+INSERT INTO `visualization_background` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`, `base_url`, `url`) VALUES ('dark_1', '边框10', 'default', NULL, NULL, NULL, NULL, 'img/board', 'board/dark_1.svg');
+
+-- ----------------------------
+-- Table structure for visualization_background_image
+-- ----------------------------
+DROP TABLE IF EXISTS `visualization_background_image`;
+CREATE TABLE `visualization_background_image` (
+                                                  `id` varchar(64) NOT NULL,
+                                                  `name` varchar(255) DEFAULT NULL,
+                                                  `classification` varchar(255) NOT NULL,
+                                                  `content` longtext,
+                                                  `remark` varchar(255) DEFAULT NULL,
+                                                  `sort` int DEFAULT NULL,
+                                                  `upload_time` bigint DEFAULT NULL,
+                                                  `base_url` varchar(255) DEFAULT NULL,
+                                                  `url` varchar(255) DEFAULT NULL,
+                                                  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- ----------------------------
+-- Table structure for visualization_link_jump
+-- ----------------------------
+DROP TABLE IF EXISTS `visualization_link_jump`;
+CREATE TABLE `visualization_link_jump` (
+                                           `id` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+                                           `source_dv_id` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '源仪表板ID',
+                                           `source_view_id` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '源视图ID',
+                                           `link_jump_info` varchar(4000) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '跳转信息',
+                                           `checked` tinyint(1) DEFAULT NULL COMMENT '是否启用',
+                                           `copy_from` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+                                           `copy_id` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+                                           PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- ----------------------------
+-- Table structure for visualization_link_jump_info
+-- ----------------------------
+DROP TABLE IF EXISTS `visualization_link_jump_info`;
+CREATE TABLE `visualization_link_jump_info` (
+                                                `id` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+                                                `link_jump_id` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'link jump ID',
+                                                `link_type` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '关联类型 inner 内部仪表板，outer 外部链接',
+                                                `jump_type` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '跳转类型 _blank 新开页面 _self 当前窗口',
+                                                `target_dv_id` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '关联仪表板ID',
+                                                `source_field_id` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '字段ID',
+                                                `content` varchar(4000) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '内容 linkType = outer时使用',
+                                                `checked` tinyint(1) DEFAULT NULL COMMENT '是否可用',
+                                                `attach_params` tinyint(1) DEFAULT NULL COMMENT '是否附加点击参数',
+                                                `copy_from` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+                                                `copy_id` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+                                                PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- ----------------------------
+-- Table structure for visualization_link_jump_target_view_info
+-- ----------------------------
+DROP TABLE IF EXISTS `visualization_link_jump_target_view_info`;
+CREATE TABLE `visualization_link_jump_target_view_info` (
+                                                            `target_id` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+                                                            `link_jump_info_id` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+                                                            `source_field_active_id` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '勾选字段设置的匹配字段，也可以不是勾选字段本身',
+                                                            `target_view_id` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+                                                            `target_field_id` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+                                                            `copy_from` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+                                                            `copy_id` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+                                                            PRIMARY KEY (`target_id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- ----------------------------
+-- Table structure for visualization_subject
+-- ----------------------------
+DROP TABLE IF EXISTS `visualization_subject`;
+CREATE TABLE `visualization_subject` (
+                                         `id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+                                         `name` varchar(255) DEFAULT NULL COMMENT '主题名称',
+                                         `type` varchar(255) DEFAULT NULL COMMENT '主题类型 system 系统主题，self 自定义主题',
+                                         `details` longtext COMMENT '主题内容',
+                                         `delete_flag` tinyint(1) DEFAULT '0' COMMENT '删除标记',
+                                         `cover_url` varchar(255) DEFAULT NULL COMMENT '封面信息',
+                                         `create_num` int NOT NULL DEFAULT '0',
+                                         `create_time` bigint DEFAULT NULL COMMENT '创建时间',
+                                         `create_by` varchar(255) DEFAULT NULL COMMENT '创建人',
+                                         `update_time` bigint DEFAULT NULL COMMENT '更新时间',
+                                         `update_by` varchar(255) DEFAULT NULL COMMENT '更新人',
+                                         `delete_time` bigint DEFAULT NULL COMMENT '删除时间',
+                                         `delete_by` bigint DEFAULT NULL COMMENT '删除人',
+                                         PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
 commit;
 
