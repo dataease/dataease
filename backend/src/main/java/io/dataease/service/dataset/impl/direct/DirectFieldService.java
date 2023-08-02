@@ -7,12 +7,13 @@ import io.dataease.commons.model.BaseTreeNode;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.commons.utils.TreeUtils;
+import io.dataease.dto.dataset.DataSetTableUnionDTO;
+import io.dataease.dto.dataset.DataTableInfoDTO;
 import io.dataease.dto.dataset.DeSortDTO;
+import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.DatasetTable;
 import io.dataease.plugins.common.base.domain.DatasetTableField;
 import io.dataease.plugins.common.base.domain.Datasource;
-import io.dataease.commons.constants.ColumnPermissionConstants;
-import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.constants.DatasetType;
 import io.dataease.plugins.common.dto.chart.ChartFieldCustomFilterDTO;
 import io.dataease.plugins.common.dto.datasource.DeSortField;
@@ -24,8 +25,6 @@ import io.dataease.plugins.xpack.auth.dto.request.ColumnPermissionItem;
 import io.dataease.provider.ProviderFactory;
 import io.dataease.service.dataset.*;
 import io.dataease.service.datasource.DatasourceService;
-import io.dataease.dto.dataset.DataSetTableUnionDTO;
-import io.dataease.dto.dataset.DataTableInfoDTO;
 import io.dataease.service.engine.EngineService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -152,6 +151,7 @@ public class DirectFieldService implements DataSetFieldService {
 
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         Provider datasourceProvider = null;
+        String createSQL = null;
         if (datasetTable.getMode() == 0) {// 直连
             if (StringUtils.isEmpty(datasetTable.getDataSourceId())) return null;
             Datasource ds = datasourceService.get(datasetTable.getDataSourceId());
@@ -165,24 +165,25 @@ public class DirectFieldService implements DataSetFieldService {
             QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
             if (StringUtils.equalsIgnoreCase(datasetTable.getType(), DatasetType.DB.toString())) {
                 datasourceRequest.setTable(dataTableInfoDTO.getTable());
-                datasourceRequest.setQuery(qp.createQuerySQL(dataTableInfoDTO.getTable(), permissionFields, !needSort, ds, customFilter, rowPermissionsTree, deSortFields));
+                createSQL = qp.createQuerySQL(dataTableInfoDTO.getTable(), permissionFields, !needSort, ds, customFilter, rowPermissionsTree, deSortFields);
             } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), DatasetType.SQL.toString())) {
                 String sql = dataTableInfoDTO.getSql();
                 if (dataTableInfoDTO.isBase64Encryption()) {
                     sql = new String(java.util.Base64.getDecoder().decode(sql));
                 }
                 sql = dataSetTableService.handleVariableDefaultValue(sql, null, ds.getType(), false);
-                datasourceRequest.setQuery(qp.createQuerySQLAsTmp(sql, permissionFields, !needSort, customFilter, rowPermissionsTree, deSortFields));
+                createSQL = qp.createQuerySQLAsTmp(sql, permissionFields, !needSort, customFilter, rowPermissionsTree, deSortFields);
             } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), DatasetType.CUSTOM.toString())) {
                 DataTableInfoDTO dt = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class);
                 List<DataSetTableUnionDTO> listUnion = dataSetTableUnionService.listByTableId(dt.getList().get(0).getTableId());
                 String sql = dataSetTableService.getCustomSQLDatasource(dt, listUnion, ds);
-                datasourceRequest.setQuery(qp.createQuerySQLAsTmp(sql, permissionFields, !needSort, customFilter, rowPermissionsTree, deSortFields));
+                createSQL = qp.createQuerySQLAsTmp(sql, permissionFields, !needSort, customFilter, rowPermissionsTree, deSortFields);
             } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), DatasetType.UNION.toString())) {
                 DataTableInfoDTO dt = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class);
                 String sql = (String) dataSetTableService.getUnionSQLDatasource(dt, ds).get("sql");
-                datasourceRequest.setQuery(qp.createQuerySQLAsTmp(sql, permissionFields, !needSort, customFilter, rowPermissionsTree, deSortFields));
+                createSQL = qp.createQuerySQLAsTmp(sql, permissionFields, !needSort, customFilter, rowPermissionsTree, deSortFields);
             }
+            datasourceRequest.setQuery(qp.createSQLPreview(createSQL, null));
         } else if (datasetTable.getMode() == 1) {// 抽取
             // 连接doris，构建doris数据源查询
             Datasource ds = engineService.getDeEngine();
@@ -192,7 +193,8 @@ public class DirectFieldService implements DataSetFieldService {
             String tableName = "ds_" + datasetTable.getId().replaceAll("-", "_");
             datasourceRequest.setTable(tableName);
             QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
-            datasourceRequest.setQuery(qp.createQuerySQL(tableName, permissionFields, !needSort, null, customFilter, rowPermissionsTree, deSortFields));
+            createSQL = qp.createQuerySQL(tableName, permissionFields, !needSort, null, customFilter, rowPermissionsTree, deSortFields);
+            datasourceRequest.setQuery(qp.createSQLPreview(createSQL, null));
         }
         LogUtil.info(datasourceRequest.getQuery());
         datasourceRequest.setPermissionFields(permissionFields);
