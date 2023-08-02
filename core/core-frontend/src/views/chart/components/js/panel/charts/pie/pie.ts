@@ -19,79 +19,80 @@ export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
   propertyInner = PIE_EDITOR_PROPERTY_INNER
   drawChart(drawOptions: G2PlotDrawOptions<G2Pie>): G2Pie {
     const { chart, container, action } = drawOptions
-    if (chart?.data) {
-      // data
-      const data = chart.data.data
-      // custom color
-      const customAttr = parseJson(chart.customAttr)
-      const color = customAttr.basicStyle.colors
-      // options
-      const initOptions: PieOptions = {
-        data: data,
-        angleField: 'value',
-        colorField: 'field',
-        appendPadding: getPadding(chart),
-        color,
-        pieStyle: {
-          lineWidth: 0
-        },
-        statistic: {
-          title: false,
-          content: {
-            style: {
-              whiteSpace: 'pre-wrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis'
-            },
-            content: ''
-          }
-        },
-        interactions: [
-          {
-            type: 'legend-active',
-            cfg: {
-              start: [{ trigger: 'legend-item:mouseenter', action: ['element-active:reset'] }],
-              end: [{ trigger: 'legend-item:mouseleave', action: ['element-active:reset'] }]
-            }
-          },
-          {
-            type: 'legend-filter',
-            cfg: {
-              start: [
-                {
-                  trigger: 'legend-item:click',
-                  action: [
-                    'list-unchecked:toggle',
-                    'data-filter:filter',
-                    'element-active:reset',
-                    'element-highlight:reset'
-                  ]
-                }
-              ]
-            }
-          },
-          {
-            type: 'tooltip',
-            cfg: {
-              start: [{ trigger: 'interval:mousemove', action: 'tooltip:show' }],
-              end: [{ trigger: 'interval:mouseleave', action: 'tooltip:hide' }]
-            }
-          },
-          {
-            type: 'active-region',
-            cfg: {
-              start: [{ trigger: 'interval:mousemove', action: 'active-region:show' }],
-              end: [{ trigger: 'interval:mouseleave', action: 'active-region:hide' }]
-            }
-          }
-        ]
-      }
-      const options = this.setupOptions(chart, initOptions)
-
-      const newChart = new G2Pie(container, options)
-      newChart.on('interval:click', action)
-      return newChart
+    if (!chart.data) {
+      return
     }
+    // data
+    const data = chart.data.data
+    // custom color
+    const customAttr = parseJson(chart.customAttr)
+    const color = customAttr.basicStyle.colors
+    // options
+    const initOptions: PieOptions = {
+      data: data,
+      angleField: 'value',
+      colorField: 'field',
+      appendPadding: getPadding(chart),
+      color,
+      pieStyle: {
+        lineWidth: 0
+      },
+      statistic: {
+        title: false,
+        content: {
+          style: {
+            whiteSpace: 'pre-wrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis'
+          },
+          content: ''
+        }
+      },
+      interactions: [
+        {
+          type: 'legend-active',
+          cfg: {
+            start: [{ trigger: 'legend-item:mouseenter', action: ['element-active:reset'] }],
+            end: [{ trigger: 'legend-item:mouseleave', action: ['element-active:reset'] }]
+          }
+        },
+        {
+          type: 'legend-filter',
+          cfg: {
+            start: [
+              {
+                trigger: 'legend-item:click',
+                action: [
+                  'list-unchecked:toggle',
+                  'data-filter:filter',
+                  'element-active:reset',
+                  'element-highlight:reset'
+                ]
+              }
+            ]
+          }
+        },
+        {
+          type: 'tooltip',
+          cfg: {
+            start: [{ trigger: 'interval:mousemove', action: 'tooltip:show' }],
+            end: [{ trigger: 'interval:mouseleave', action: 'tooltip:hide' }]
+          }
+        },
+        {
+          type: 'active-region',
+          cfg: {
+            start: [{ trigger: 'interval:mousemove', action: 'active-region:show' }],
+            end: [{ trigger: 'interval:mouseleave', action: 'active-region:hide' }]
+          }
+        }
+      ]
+    }
+    const options = this.setupOptions(chart, initOptions)
+
+    const newChart = new G2Pie(container, options)
+    newChart.on('interval:click', action)
+    return newChart
   }
 
   protected configLabel(chart: Chart, options: PieOptions): PieOptions {
@@ -186,9 +187,18 @@ export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
     return { ...options, tooltip }
   }
 
+  protected configBasicStyle(chart: Chart, options: PieOptions): PieOptions {
+    const customAttr = parseJson(chart.customAttr)
+    return {
+      ...options,
+      radius: customAttr.basicStyle.radius
+    }
+  }
+
   protected setupOptions(chart: Chart, options: PieOptions): PieOptions {
     return flow(
       this.configTheme,
+      this.configBasicStyle,
       this.configLabel,
       this.configTooltip,
       this.configLegend
@@ -201,6 +211,19 @@ export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
 }
 
 export class PieDonut extends Pie {
+  propertyInner: EditorPropertyInner = {
+    ...PIE_EDITOR_PROPERTY_INNER,
+    'basic-style-selector': ['colors', 'alpha', 'radius', 'innerRadius']
+  }
+  protected configBasicStyle(chart: Chart, options: PieOptions): PieOptions {
+    const customAttr = parseJson(chart.customAttr)
+    return {
+      ...options,
+      radius: customAttr.basicStyle.radius,
+      innerRadius: customAttr.basicStyle.innerRadius
+    }
+  }
+
   constructor() {
     super()
     this.name = 'pie-donut'
