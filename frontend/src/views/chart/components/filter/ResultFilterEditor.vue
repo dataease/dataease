@@ -246,7 +246,8 @@ export default {
       logic: '',
       filterType: '',
       enumCheckField: [],
-      fieldOptions: []
+      fieldOptions: [],
+      needRequestEnum: true
     }
   },
   watch: {
@@ -257,7 +258,6 @@ export default {
   mounted() {
     this.initOptions()
     this.init()
-    this.initEnumOptions()
   },
   methods: {
     initOptions() {
@@ -281,6 +281,7 @@ export default {
       if (this.item.deType === 0 || this.item.deType === 5) {
         multFieldValues({ fieldIds: [this.item.id] }).then(res => {
           this.fieldOptions = this.optionData(res.data)
+          this.needRequestEnum = false
         })
       }
     },
@@ -308,6 +309,10 @@ export default {
     },
     filterTypeChange(val) {
       this.item.filterType = val
+      // init enum option
+      if (val === 'enum' && this.needRequestEnum) {
+        this.initEnumOptions()
+      }
     },
     enumChange(val) {
       this.item.enumCheckField = this.enumCheckField
