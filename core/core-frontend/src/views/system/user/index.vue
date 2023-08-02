@@ -279,7 +279,7 @@ const copyPwd = async () => {
         ref="multipleTableRef"
         :pagination="state.paginationConfig"
         :table-data="state.userList"
-        @page-change="pageChange"
+        @current-change="pageChange"
         @size-change="sizeChange"
         @sort-change="sortChange"
         @selection-change="handleSelectionChange"
