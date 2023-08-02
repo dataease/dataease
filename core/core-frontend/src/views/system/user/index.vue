@@ -14,7 +14,7 @@ import {
   batchDelApi,
   defaultPwdApi,
   resetPwdApi,
-  siwtchEnableApi,
+  switchEnableApi,
   searchRoleApi
 } from '@/api/user'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
@@ -107,7 +107,7 @@ const filterRoles = cellValue => {
 const changeSwitch = row => {
   const param = { id: row.id, enable: row.enable }
   loading.value = true
-  siwtchEnableApi(param).then(() => {
+  switchEnableApi(param).then(() => {
     ElMessage.success(t('user.switch_success'))
     loading.value = false
   })
