@@ -6,7 +6,6 @@ import useClipboard from 'vue-clipboard3'
 import { ElMessage } from 'element-plus-secondary'
 import CodeMirror from './CodeMirror.vue'
 import { getDatasourceList, getTables, getPreviewSql } from '@/api/dataset'
-import type { Table } from '@/api/dataset'
 import type { DataSource } from './index.vue'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
 import { EmptyBackground } from '@/components/empty-background'
@@ -180,6 +179,11 @@ const getSQLPreview = () => {
   })
 }
 
+let tableList = []
+watch(searchTable, val => {
+  state.tableData = tableList.filter(ele => ele.name.includes(val))
+})
+
 const getIconName = (type: string) => {
   if (
     ['DATETIME-YEAR', 'DATETIME-YEAR-MONTH', 'DATETIME', 'DATETIME-YEAR-MONTH-DAY'].includes(type)
@@ -200,9 +204,15 @@ const formatter = (_, __, cellValue) => {
   return cellValue ? `${cellValue} ${t(`commons.millisecond`)}` : '-'
 }
 
+const handleShowLeft = () => {
+  showLeft.value = !showLeft.value
+  LeftWidth.value = showLeft.value ? 240 : 0
+}
+
 const dsChange = (val: string) => {
   getTables(val).then(res => {
-    state.tableData = (res as unknown as Table[]) || []
+    tableList = res || []
+    state.tableData = [...tableList]
   })
 }
 
@@ -226,7 +236,6 @@ const mouseupDrag = () => {
 const parseVariable = () => {
   state.variablesTmp = []
   const reg = new RegExp('\\${(.*?)}', 'gim')
-  console.log('codeCom.value.state.doc.toString()', codeCom.value.state.doc.toString())
   const match = codeCom.value.state.doc.toString().match(reg)
   const names = []
   if (match !== null) {
@@ -303,7 +312,7 @@ const mousedownDrag = () => {
   </div>
 
   <div class="sql-eidtor" @mouseup="mouseupDrag">
-    <p v-show="!showLeft" class="arrow-right" @click="showLeft = true">
+    <p v-show="!showLeft" class="arrow-right" @click="handleShowLeft">
       <el-icon>
         <Icon name="icon_down-right_outlined"></Icon>
       </el-icon>
@@ -322,7 +331,7 @@ const mousedownDrag = () => {
     >
       <p class="select-ds">
         选择数据源
-        <el-icon @click="showLeft = false">
+        <el-icon @click="handleShowLeft">
           <Icon name="icon_up-left_outlined"></Icon>
         </el-icon>
       </p>

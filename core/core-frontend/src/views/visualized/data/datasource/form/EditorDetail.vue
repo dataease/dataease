@@ -555,7 +555,7 @@ defineExpose({
             <el-select
               v-model="form.configuration.schema"
               filterable
-              :placeholder="t('fu.search_bar.please_select')"
+              :placeholder="t('common.please_select')"
               class="de-select"
               @change="validatorSchema"
               @blur="validatorSchema"

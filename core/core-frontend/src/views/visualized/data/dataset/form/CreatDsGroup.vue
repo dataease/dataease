@@ -117,7 +117,7 @@ const rules = {
   pid: [
     {
       required: true,
-      message: t('fu.search_bar.please_select'),
+      message: t('common.please_select'),
       trigger: 'blur'
     }
   ]
@@ -146,6 +146,11 @@ const dfs = (arr: Tree[]) => {
 }
 
 const createInit = (type, data: Tree, exec, name: string) => {
+  pid.value = ''
+  id.value = ''
+  cmd.value = ''
+  datasetForm.pid = ''
+  datasetForm.name = ''
   nodeType.value = type
   if (type === 'dataset') {
     union = data.union
@@ -229,7 +234,7 @@ const saveDataset = () => {
               ElMessage.success('重命名成功')
               break
             default:
-              ElMessage.success('新建数据集成功')
+              ElMessage.success(nodeType.value === 'dataset' ? '新建数据集成功' : '新建文件夹成功')
               break
           }
         })

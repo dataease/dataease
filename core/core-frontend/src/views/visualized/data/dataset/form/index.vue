@@ -479,7 +479,7 @@ getDatasource()
 const dsChange = (val: string) => {
   sqlNode.datasourceId = dataSource.value
   getTables(val).then(res => {
-    tableList = (res as unknown as Table[]) || []
+    tableList = res || []
     state.tableData = [...tableList]
   })
 }
@@ -638,20 +638,6 @@ const treeProps = {
             <Icon name="icon_up-left_outlined"></Icon>
           </el-icon>
         </p>
-        <!-- <el-select
-          v-model="dataSource"
-          class="ds-list"
-          filterable
-          @change="dsChange"
-          :placeholder="t('dataset.pls_slc_data_source')"
-        >
-          <el-option
-            v-for="item in state.dataSourceList"
-            :key="item.id"
-            :label="item.name"
-            :value="item.id"
-          />
-        </el-select> -->
         <el-tree-select
           :check-strictly="false"
           @change="dsChange"

@@ -112,7 +112,7 @@ const rules = {
   pid: [
     {
       required: true,
-      message: t('fu.search_bar.please_select'),
+      message: t('common.please_select'),
       trigger: 'blur'
     }
   ]
@@ -142,6 +142,11 @@ const dfs = (arr: Tree[]) => {
 let request = null
 let dsType = ''
 const createInit = (type, data: Tree, exec, name: string) => {
+  pid.value = ''
+  id.value = ''
+  cmd.value = ''
+  datasetForm.pid = ''
+  datasetForm.name = ''
   nodeType.value = type
   dsType = data.type
   if (type === 'datasource') {
