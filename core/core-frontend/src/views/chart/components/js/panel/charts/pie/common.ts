@@ -25,3 +25,12 @@ export const PIE_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
   ],
   'legend-selector': ['icon', 'orient', 'textStyle', 'hPosition', 'vPosition']
 }
+
+export const PIE_AXIS_TYPE: AxisType[] = [
+  'xAxis',
+  'yAxis',
+  'drill',
+  'filter',
+  'extLabel',
+  'extTooltip'
+]
