@@ -48,6 +48,7 @@ declare module '@vue/runtime-core' {
     DrawerFilter: typeof import('./src/components/drawer-filter/src/DrawerFilter.vue')['default']
     DrawerMain: typeof import('./src/components/drawer-main/src/DrawerMain.vue')['default']
     DrawerTimeFilter: typeof import('./src/components/drawer-filter/src/DrawerTimeFilter.vue')['default']
+    DrawerTreeFilter: typeof import('./src/components/drawer-filter/src/DrawerTreeFilter.vue')['default']
     DvSidebar: typeof import('./src/components/visualization/DvSidebar.vue')['default']
     DvToolbar: typeof import('./src/components/data-visualization/DvToolbar.vue')['default']
     EditMenu: typeof import('./src/components/visualization/EditMenu.vue')['default']

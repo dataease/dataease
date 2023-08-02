@@ -1,14 +1,16 @@
 <script setup lang="ts">
 import { propTypes } from '@/utils/propTypes'
-import { ElSelect, ElPopover, ElOption, ElIcon } from 'element-plus-secondary'
+import { ElTreeSelect, ElPopover, ElIcon } from 'element-plus-secondary'
 import { computed, reactive, nextTick, ref } from 'vue'
 import { Icon } from '@/components/icon-custom'
 
 const props = defineProps({
   optionList: propTypes.arrayOf(
     propTypes.shape({
-      id: propTypes.string,
-      name: propTypes.string
+      value: propTypes.string,
+      label: propTypes.string,
+      children: Array,
+      disabled: Boolean
     })
   ),
   title: propTypes.string
@@ -21,13 +23,19 @@ const state = reactive({
 
 const elPopoverU = ref(null)
 const more = ref(null)
-
-const statusChange = (id: string | number) => {
-  state.activeStatus = state.activeStatus.filter(ele => ele.id !== id)
+const filterTree = ref(null)
+const statusChange = (value: string | number) => {
+  const node = filterTree.value?.getNode(value)
+  node.data.disabled = false
+  state.activeStatus = state.activeStatus.filter(ele => ele?.value !== value)
 }
-const selectStatus = ids => {
-  const [item] = ids
-  state.activeStatus.push(item)
+const selectStatus = nodes => {
+  nodes.forEach(node => {
+    if (node?.value && !state.activeStatus.some(ele => ele.value === node.value)) {
+      node.disabled = true
+      state.activeStatus.push(node)
+    }
+  })
   state.currentStatus = []
   nextTick(() => {
     elPopoverU.value?.hide()
@@ -35,12 +43,22 @@ const selectStatus = ids => {
   })
 }
 
+const checkChange = () => {
+  const nodes = filterTree.value?.getCheckedNodes()
+  selectStatus(nodes)
+  emits(
+    'filter-change',
+    state.activeStatus.map(item => item.value)
+  )
+}
+
 const optionListNotSelect = computed(() => {
-  return props.optionList.filter(ele => !state.activeStatus.map(t => t.id).includes(ele.id))
+  return [...props.optionList]
 })
 const clear = () => {
   state.activeStatus = []
 }
+const emits = defineEmits(['filter-change'])
 defineExpose({
   clear
 })
@@ -52,10 +70,10 @@ defineExpose({
     <div class="filter-item">
       <span
         v-for="ele in state.activeStatus"
-        :key="ele.id"
+        :key="ele.value"
         class="item active"
-        @click="statusChange(ele.id)"
-        >{{ $t(ele.name) }}</span
+        @click="statusChange(ele.value)"
+        >{{ $t(ele.label) }}</span
       >
       <slot v-if="!!optionListNotSelect.length">
         <el-popover
@@ -66,22 +84,21 @@ defineExpose({
           width="200"
           trigger="click"
         >
-          <el-select
+          <el-tree-select
+            ref="filterTree"
+            node-key="value"
             :teleported="false"
             style="width: 100%"
             v-model="state.currentStatus"
-            value-key="id"
-            filterable
+            :data="optionListNotSelect"
+            :highlight-current="true"
             multiple
-            @change="selectStatus"
-          >
-            <el-option
-              v-for="item in optionListNotSelect"
-              :key="item.name"
-              :label="item.name"
-              :value="item"
-            />
-          </el-select>
+            :render-after-expand="false"
+            :placeholder="$t('common.please_select') + $t('user.role')"
+            show-checkbox
+            check-on-click-node
+            @check-change="checkChange"
+          />
           <template #reference>
             <span ref="more" class="more">
               <el-icon>
