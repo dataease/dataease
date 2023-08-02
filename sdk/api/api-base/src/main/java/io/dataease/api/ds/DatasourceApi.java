@@ -58,6 +58,10 @@ public interface DatasourceApi {
     @GetMapping("/delete/{datasourceId}")
     void delete(@PathVariable("datasourceId") Long datasourceId) throws Exception;
 
+    @DePermit({"m:read", "#p0+':manage'"})
+    @GetMapping("/get/{datasourceId}")
+    DatasourceDTO get(@PathVariable("datasourceId") Long datasourceId) throws Exception;
+
     @GetMapping("getTableField/{datasourceId}/{tableName}")
     List<TableField> getTableField(@PathVariable("datasourceId") String datasourceId, @PathVariable("tableName") String tableName) throws Exception;
 

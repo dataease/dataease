@@ -136,6 +136,7 @@ public class SyncAuthManage {
         Optional.ofNullable(perBusiResourceMapper.selectById(editor.getId())).ifPresent(resource -> {
             resource.setName(editor.getName());
             resource.setExtraFlag(editor.getExtraFlag());
+            resource.setPid(editor.getPid());
             perBusiResourceMapper.updateById(resource);
         });
     }

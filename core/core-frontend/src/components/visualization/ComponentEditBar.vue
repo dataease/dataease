@@ -82,7 +82,8 @@ const emits = defineEmits([
   'closePreview',
   'showViewDetails',
   'amRemoveItem',
-  'linkJumpSetOpen'
+  'linkJumpSetOpen',
+  'linkageSetOpen'
 ])
 const { t } = useI18n()
 
@@ -277,6 +278,9 @@ const linkageInfo = computed(() => {
 // 清除相同sourceViewId 的 联动条件
 const clearLinkage = () => {
   dvMainStore.clearViewLinkage(element.value.id)
+}
+const linkageSetOpen = () => {
+  emits('linkageSetOpen')
 }
 
 // 联动-End

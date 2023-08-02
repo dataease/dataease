@@ -94,6 +94,8 @@ export const getDatasetTree = async (data = {}): Promise<IResponse> => {
 
 export const deleteById = (id: number) => request.get({ url: '/datasource/delete/' + id })
 
+export const getById = (id: number) => request.get({ url: '/datasource/get/' + id })
+
 export const getTables = async (id): Promise<IResponse> => {
   return request.post({ url: `/datasource/getTables/${id}`, data: {} }).then(res => {
     return res?.data as Table[]

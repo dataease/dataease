@@ -5,7 +5,13 @@ import { ElMessage, ElLoading } from 'element-plus-secondary'
 import { Icon } from '@/components/icon-custom'
 import { useI18n } from '@/hooks/web/useI18n'
 import type { FormInstance, FormRules } from 'element-plus-secondary'
-import { userCreateApi, userEditApi, roleOptionForUserApi, queryFormApi } from '@/api/user'
+import {
+  userCreateApi,
+  userEditApi,
+  roleOptionForUserApi,
+  queryFormApi,
+  defaultPwdApi
+} from '@/api/user'
 interface UserForm {
   id?: string | number
   account: string
@@ -29,10 +35,9 @@ const { toClipboard } = useClipboard()
 const { t } = useI18n()
 const dialogVisible = ref(false)
 const formType = ref('add')
-const defaultPWD = ref('DataEase123456')
+const defaultPWD = ref(null)
 const loadingInstance = ref(null)
 const createUserForm = ref<FormInstance>()
-
 const state = reactive({
   roleList: [],
   form: reactive<UserForm>({
@@ -240,7 +245,13 @@ const queryRole = () => {
 const refreshRole = () => {
   queryRole()
 }
-
+const loadPwdInfo = async () => {
+  showLoading()
+  defaultPwdApi().then(res => {
+    defaultPWD.value = res.data
+    closeLoading()
+  })
+}
 const showLoading = () => {
   loadingInstance.value = ElLoading.service({ target: '.user-form-dialog' })
 }
@@ -254,6 +265,7 @@ defineExpose({
 })
 onMounted(() => {
   queryRole()
+  loadPwdInfo()
 })
 </script>
 
