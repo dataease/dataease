@@ -227,8 +227,10 @@ const saveDS = () => {
     request.configuration = Base64.encode(JSON.stringify(request.configuration))
   }
   if (editDs.value) {
-    save(request).then(() => {
-      ElMessage.success('保存数据源成功')
+    save(request).then(res => {
+      if (res !== undefined) {
+        ElMessage.success('保存数据源成功')
+      }
     })
   } else {
     creatDsFolder.value.createInit('datasource', { id: pid.value, request }, '', form.name)
@@ -421,7 +423,11 @@ defineExpose({
         <el-button v-show="activeStep !== 0" type="primary" @click="prev">
           {{ t('common.prev') }}</el-button
         >
-        <el-button v-show="activeStep === 1" type="primary" @click="validateDS">
+        <el-button
+          v-show="activeStep === 1 && currentDsType !== 'Excel'"
+          type="primary"
+          @click="validateDS"
+        >
           {{ t('datasource.validate') }}</el-button
         >
         <el-button
