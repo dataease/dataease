@@ -1,8 +1,0 @@
-spring:
-  flyway:
-    enabled: true
-    table: de_standalone_version
-    validate-on-migrate: true
-    locations: classpath:db/migration
-    baseline-on-migrate: true
-    out-of-order: true

@@ -81,17 +81,6 @@ export function initCanvasDataPrepare(dvId, callBack) {
       dvInfo.type === 'dashboard' && canvasStyleResult['dashboard'].gap === 'yes'
         ? canvasStyleResult['dashboard'].gapSize
         : 0
-    // 刷新联动信息
-    getPanelAllLinkageInfo(dvInfo.id).then(rsp => {
-      dvMainStore.setNowPanelTrackInfo(rsp.data)
-    })
-    // 刷新跳转信息
-    queryVisualizationJumpInfo(dvInfo.id).then(rsp => {
-      dvMainStore.setNowPanelJumpInfo(rsp.data)
-    })
-
-    dvMainStore.updateCurDvInfo(dvInfo)
-
     callBack({ canvasDataResult, canvasStyleResult, dvInfo, canvasViewInfoPreview, curPreviewGap })
   })
 }
@@ -104,6 +93,14 @@ export function initCanvasData(dvId, callBack) {
       dvMainStore.setCanvasStyle(canvasStyleResult)
       dvMainStore.updateCurDvInfo(dvInfo)
       dvMainStore.setCanvasViewInfo(canvasViewInfoPreview)
+      // 刷新联动信息
+      getPanelAllLinkageInfo(dvInfo.id).then(rsp => {
+        dvMainStore.setNowPanelTrackInfo(rsp.data)
+      })
+      // 刷新跳转信息
+      queryVisualizationJumpInfo(dvInfo.id).then(rsp => {
+        dvMainStore.setNowPanelJumpInfo(rsp.data)
+      })
       callBack({ canvasDataResult, canvasStyleResult, dvInfo, canvasViewInfoPreview })
     }
   )

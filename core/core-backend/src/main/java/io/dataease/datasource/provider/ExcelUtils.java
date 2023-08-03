@@ -44,6 +44,7 @@ public class ExcelUtils {
             DatasetTableDTO datasetTableDTO = new DatasetTableDTO();
             datasetTableDTO.setTableName(rootNode.get(i).get("deTableName").asText());
             datasetTableDTO.setName(rootNode.get(i).get("deTableName").asText());
+            datasetTableDTO.setDatasourceId(datasourceRequest.getDatasource().getId());
             tableDescs.add(datasetTableDTO);
         }
         return tableDescs;

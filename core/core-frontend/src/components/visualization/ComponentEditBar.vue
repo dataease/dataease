@@ -4,7 +4,7 @@
     :class="[
       showEditPosition,
       {
-        'bar-main-background': showPosition !== 'multiplexing'
+        'bar-main-background': mainBackgroundShow
       }
     ]"
     @click.stop
@@ -126,6 +126,9 @@ const linkageCheckShowAttach = computed(() => {
   return curLinkageView.value !== element.value
 })
 
+const mainBackgroundShow = computed(() => {
+  return !['batchOpt', 'multiplexing'].includes(showPosition.value)
+})
 const props = defineProps({
   element: {
     type: Object,

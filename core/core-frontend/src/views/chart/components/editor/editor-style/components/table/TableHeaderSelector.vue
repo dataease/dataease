@@ -127,6 +127,7 @@ init()
           v-show="showProperty('tableHeaderAlign')"
         >
           <el-select
+            :effect="props.themes"
             v-model="state.tableHeaderForm.tableHeaderAlign"
             @change="changeTableHeader('tableHeaderAlign')"
           >
