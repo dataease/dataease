@@ -6,6 +6,8 @@ import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
 import com.alibaba.excel.metadata.CellData;
 import com.alibaba.excel.read.metadata.ReadSheet;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -2441,7 +2443,9 @@ public class DataSetTableService {
                 tableFiled.setRemarks(s);
                 fields.add(tableFiled);
             }
-            List<List<String>> data = (isPreview && noModelDataListener.getData().size() > 1000 ? new ArrayList<>(noModelDataListener.getData().subList(0, 1000)) : noModelDataListener.getData());
+            String json = JSON.toJSONString(noModelDataListener.getData());
+            List<List<String>> data = JSON.parseObject(json, new TypeReference< List<List<String>>>(){});
+            data = (isPreview && noModelDataListener.getData().size() > 1000 ? new ArrayList<>(data.subList(0, 1000)) : data);
             if (isPreview) {
                 for (List<String> datum : data) {
                     for (int i = 0; i < datum.size(); i++) {
@@ -2518,6 +2522,7 @@ public class DataSetTableService {
         }
 
         inputStream.close();
+
         excelSheetDataList.forEach(excelSheetData -> {
             List<List<String>> data = excelSheetData.getData();
             String[] fieldArray = excelSheetData.getFields().stream().map(TableField::getFieldName).toArray(String[]::new);
