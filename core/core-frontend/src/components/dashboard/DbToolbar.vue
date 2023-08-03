@@ -26,6 +26,7 @@ import { getPanelAllLinkageInfo, saveLinkage } from '@/api/visualization/linkage
 import { queryVisualizationJumpInfo } from '@/api/visualization/linkJump'
 import { canvasSave } from '@/utils/canvasUtils'
 import { useEmitt } from '@/hooks/web/useEmitt'
+import { copyStoreWithOut } from '@/store/modules/data-visualization/copy'
 const { t } = useI18n()
 const isShowPreview = ref(false)
 const isScreenshot = ref(false)
@@ -34,6 +35,7 @@ const dvMainStore = dvMainStoreWithOut()
 const composeStore = composeStoreWithOut()
 const lockStore = lockStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
+const copyStore = copyStoreWithOut()
 const {
   linkageSettingStatus,
   curLinkageView,
@@ -153,6 +155,24 @@ eventBus.on('clearCanvas', clearCanvas)
 
 const openDataBoardSetting = () => {
   dvMainStore.setCurComponent({ component: null, index: null })
+}
+
+const batchDelete = () => {
+  componentData.value.forEach((component, index) => {
+    if (curBatchOptComponents.value.includes(component.id)) {
+      eventBus.emit('removeMatrixItem', index)
+    }
+  })
+}
+
+const batchCopy = () => {
+  const multiplexingComponents = {}
+  componentData.value.forEach(component => {
+    if (curBatchOptComponents.value.includes(component.id)) {
+      multiplexingComponents[component.id] = component
+    }
+  })
+  copyStore.copyMultiplexingComponents(canvasViewInfo.value, multiplexingComponents)
 }
 
 const cancelBatchOpt = () => {
@@ -321,6 +341,28 @@ const saveLinkageSetting = () => {
       </div>
 
       <div class="right-area full-area" v-show="batchOptStatus">
+        <el-button
+          text
+          icon="CopyDocument"
+          class="custom-normal-button"
+          @click="batchCopy"
+          :disabled="curBatchOptComponents.length === 0"
+          style="float: right; margin-right: 12px"
+        >
+          复制</el-button
+        >
+
+        <el-button
+          text
+          icon="Delete"
+          class="custom-normal-button"
+          @click="batchDelete"
+          :disabled="curBatchOptComponents.length === 0"
+          style="float: right; margin-right: 12px"
+        >
+          删除</el-button
+        >
+
         <el-button
           class="custom-normal-button"
           @click="cancelBatchOpt"

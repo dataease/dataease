@@ -28,11 +28,14 @@ export const copyStore = defineStore('copy', {
     }
   },
   actions: {
-    copyMultiplexingComponents(canvasViewInfoPreview) {
+    copyMultiplexingComponents(
+      canvasViewInfoPreview,
+      outerMultiplexingComponents = curMultiplexingComponents.value
+    ) {
       // eslint-disable-next-line @typescript-eslint/no-this-alias
       const _this = this
-      Object.keys(curMultiplexingComponents.value).forEach(function (componentId, index) {
-        const newComponent = deepCopy(curMultiplexingComponents.value[componentId])
+      Object.keys(outerMultiplexingComponents).forEach(function (componentId, index) {
+        const newComponent = deepCopy(outerMultiplexingComponents[componentId])
         // dashboard 平铺4个
         const xPositionOffset = index % 4
         const yPositionOffset = index % 3
@@ -47,7 +50,7 @@ export const copyStore = defineStore('copy', {
         newComponent.style.height = newComponent.style.height * yPositionOffset
 
         _this.copyData = {
-          data: deepCopy(curMultiplexingComponents.value[componentId]),
+          data: deepCopy(outerMultiplexingComponents[componentId]),
           copyCanvasViewInfo: canvasViewInfoPreview,
           index: index,
           copyFrom: 'multiplexing'
