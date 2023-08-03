@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ElCollapseItem, ElSwitch } from 'element-plus-secondary'
-import { computed, ref, toRefs } from 'vue'
+import { computed, PropType, ref, toRefs } from 'vue'
 
 const props = defineProps({
   modelValue: {
@@ -9,10 +9,14 @@ const props = defineProps({
   changeModel: {
     type: Object
   },
-  title: String
+  title: String,
+  themes: {
+    type: String as PropType<'plain' | 'dark' | 'light'>,
+    default: 'dark'
+  }
 })
 const emit = defineEmits(['update:modelValue', 'modelChange'])
-const { changeModel, title } = toRefs(props)
+const { changeModel, title, themes } = toRefs(props)
 const onSwitchChange = e => {
   emit('modelChange', changeModel.value)
   if (switchValue.value !== collapseOpen.value) {
@@ -30,13 +34,18 @@ const switchValue = computed({
 const collapseOpen = ref(false)
 </script>
 <template>
-  <el-collapse-item @click="collapseOpen = !collapseOpen" v-bind="$attrs">
+  <el-collapse-item :effect="themes" @click="collapseOpen = !collapseOpen" v-bind="$attrs">
     <template #title>
       <div class="collapse-header">
         <span>
           {{ title }}
         </span>
-        <el-switch size="small" v-model="switchValue" @click.stop="e => onSwitchChange(e)" />
+        <el-switch
+          :effect="themes"
+          size="small"
+          v-model="switchValue"
+          @click.stop="e => onSwitchChange(e)"
+        />
       </div>
     </template>
     <slot />

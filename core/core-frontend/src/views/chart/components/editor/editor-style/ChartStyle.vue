@@ -147,10 +147,15 @@ watch(
     <div class="attr-style">
       <el-row class="de-collapse-style">
         <el-collapse v-model="state.attrActiveNames" class="style-collapse">
-          <el-collapse-item name="position" :title="'位置'" v-if="dvInfo.type !== 'dashboard'">
+          <el-collapse-item
+            :effect="themes"
+            name="position"
+            :title="'位置'"
+            v-if="dvInfo.type !== 'dashboard'"
+          >
             <component-position></component-position>
           </el-collapse-item>
-          <el-collapse-item name="background" :title="'背景'">
+          <el-collapse-item :effect="themes" name="background" :title="'背景'">
             <background-overall-common
               v-if="curComponent"
               :common-background-pop="curComponent.commonBackground"
@@ -160,6 +165,7 @@ watch(
             ></background-overall-common>
           </el-collapse-item>
           <el-collapse-item
+            :effect="themes"
             name="basicStyle"
             :title="t('chart.basic_style')"
             v-if="showProperties('basic-style-selector')"
@@ -172,6 +178,7 @@ watch(
             />
           </el-collapse-item>
           <el-collapse-item
+            :effect="themes"
             name="tableHeader"
             :title="t('chart.table_header')"
             v-if="showProperties('table-header-selector')"
@@ -184,6 +191,7 @@ watch(
             />
           </el-collapse-item>
           <el-collapse-item
+            :effect="themes"
             name="tableCell"
             :title="t('chart.table_cell')"
             v-if="showProperties('table-cell-selector')"
@@ -196,6 +204,7 @@ watch(
             />
           </el-collapse-item>
           <el-collapse-item
+            :effect="themes"
             name="tableTotal"
             :title="t('chart.table_total')"
             v-if="showProperties('table-total-selector')"
@@ -207,7 +216,12 @@ watch(
               @onTableTotalChange="onTableTotalChange"
             />
           </el-collapse-item>
-          <el-collapse-item v-if="showProperties('misc-selector')" name="size" title="杂项设置">
+          <el-collapse-item
+            :effect="themes"
+            v-if="showProperties('misc-selector')"
+            name="size"
+            title="杂项设置"
+          >
             <misc-selector
               :property-inner="propertyInnerAll['size-selector']"
               :themes="themes"
@@ -218,6 +232,7 @@ watch(
             />
           </el-collapse-item>
           <collapse-switch-item
+            :themes="themes"
             v-if="showProperties('label-selector')"
             v-model="chart.customAttr.label.show"
             :change-model="chart.customAttr.label"
@@ -234,6 +249,7 @@ watch(
             />
           </collapse-switch-item>
           <collapse-switch-item
+            :themes="themes"
             v-if="showProperties('tooltip-selector')"
             v-model="chart.customAttr.tooltip.show"
             :change-model="chart.customAttr.tooltip"
@@ -255,6 +271,7 @@ watch(
       <el-row class="de-collapse-style">
         <el-collapse v-model="state.styleActiveNames" class="style-collapse">
           <collapse-switch-item
+            :themes="themes"
             v-if="showProperties('x-axis-selector')"
             v-model="chart.customStyle.xAxis.show"
             :change-model="chart.customStyle.xAxis"
@@ -272,6 +289,7 @@ watch(
           </collapse-switch-item>
 
           <collapse-switch-item
+            :themes="themes"
             v-if="showProperties('y-axis-selector')"
             v-model="chart.customStyle.yAxis.show"
             :change-model="chart.customStyle.yAxis"
@@ -289,6 +307,7 @@ watch(
           </collapse-switch-item>
 
           <collapse-switch-item
+            :themes="themes"
             v-model="chart.customStyle.text.show"
             v-if="showProperties('title-selector')"
             :change-model="chart.customStyle.text"
@@ -306,6 +325,7 @@ watch(
           </collapse-switch-item>
 
           <collapse-switch-item
+            :themes="themes"
             v-if="showProperties('legend-selector')"
             v-model="chart.customStyle.legend.show"
             :change-model="chart.customStyle.legend"

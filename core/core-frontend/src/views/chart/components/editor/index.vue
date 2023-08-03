@@ -1059,7 +1059,11 @@ const autoInsert = element => {
                           v-model="state.extData"
                           class="style-collapse"
                         >
-                          <el-collapse-item name="extLabel" :title="t('chart.more_settings')">
+                          <el-collapse-item
+                            :effect="themes"
+                            name="extLabel"
+                            :title="t('chart.more_settings')"
+                          >
                             <!--extLabel-->
                             <el-row class="padding-lr drag-data" v-if="showAxis('extLabel')">
                               <span class="data-area-label">
@@ -1076,7 +1080,10 @@ const autoInsert = element => {
                                       @change="dynamicLabelShow"
                                     />
                                     <label-selector
-                                      :themes="props.themes"
+                                      :property-inner="
+                                        chartViewInstance.propertyInner['label-selector']
+                                      "
+                                      themes="light"
                                       class="attr-selector"
                                       :chart="view"
                                       @onLabelChange="onLabelChange"
@@ -1170,6 +1177,7 @@ const autoInsert = element => {
                           </span>
                           <span v-show="view.type !== 'richTextView'">
                             <el-radio-group
+                              :effect="themes"
                               v-model="view.resultMode"
                               class="radio-span"
                               size="small"
@@ -1180,6 +1188,7 @@ const autoInsert = element => {
                               >
                               <el-radio label="custom">
                                 <el-input
+                                  :effect="themes"
                                   v-model="view.resultCount"
                                   class="result-count"
                                   size="small"
@@ -1278,6 +1287,7 @@ const autoInsert = element => {
           </el-row>
           <el-row class="dataset-select">
             <el-tree-select
+              :effect="themes"
               v-model="view.tableId"
               :data="datasetTree"
               :props="dsSelectProps"
@@ -1627,49 +1637,6 @@ const autoInsert = element => {
   }
   :deep(.item-span-style) {
     color: @canvas-main-font-color-light!important;
-  }
-}
-
-// editor form 全局样式
-.editor-dark {
-  :deep(.ed-radio__label) {
-    color: var(--ed-color-white);
-  }
-  :deep(.ed-input__inner),
-  :deep(.ed-input__wrapper),
-  :deep(.ed-input.is-disabled .ed-input__wrapper) {
-    color: var(--ed-color-white);
-    background-color: @side-content-background;
-    border: none;
-  }
-  :deep(.ed-input__inner) {
-    border: none;
-  }
-  :deep(.ed-input__wrapper) {
-    box-shadow: 0 0 0 1px hsla(0, 0%, 100%, 0.15) inset !important;
-  }
-  :deep(.ed-input__wrapper:hover) {
-    box-shadow: 0 0 0 1px var(--ed-color-primary) inset !important;
-  }
-  :deep(input) {
-    font-size: 12px !important;
-  }
-
-  :deep(.ed-collapse-item__header) {
-    background-color: @side-area-background !important;
-    color: #ffffff;
-    padding-left: 5px;
-    border-bottom: 1px solid rgba(85, 85, 85, 1);
-    height: 38px !important;
-  }
-  :deep(.ed-collapse-item__content) {
-    background-color: @side-content-background;
-    color: #ffffff;
-    padding-left: 5px;
-  }
-
-  :deep(.ed-collapse-item__wrap) {
-    border-bottom: 1px solid rgba(85, 85, 85, 1);
   }
 }
 
