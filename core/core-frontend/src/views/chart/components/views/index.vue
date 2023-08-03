@@ -286,7 +286,6 @@ onMounted(() => {
       if (!state.initReady) {
         return
       }
-      console.log('1-calcData')
       initTitle()
       nextTick(() => {
         view.value.chartExtRequest = filter(false)
@@ -300,7 +299,6 @@ onMounted(() => {
       if (!state.initReady) {
         return
       }
-      console.log('1-renderChart')
       initTitle()
       nextTick(() => {
         chartComponent?.value?.renderChart(val)

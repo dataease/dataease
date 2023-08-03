@@ -4,9 +4,9 @@ import { generateID } from '@/utils/generateID'
 import toast from '@/utils/toast'
 import { commonStyle, commonAttr } from '@/custom-component/component-list'
 import eventBus from '@/utils/eventBus'
-import { $ } from '@/utils/utils'
+import { $, deepCopy } from '@/utils/utils'
 import { changeComponentSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
-import { nextTick, ref } from 'vue'
+import { nextTick, reactive, ref } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import { lockStoreWithOut } from '@/store/modules/data-visualization/lock'
@@ -25,6 +25,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { getPanelAllLinkageInfo, saveLinkage } from '@/api/visualization/linkage'
 import { queryVisualizationJumpInfo } from '@/api/visualization/linkJump'
 import { canvasSave } from '@/utils/canvasUtils'
+import { useEmitt } from '@/hooks/web/useEmitt'
 const { t } = useI18n()
 const isShowPreview = ref(false)
 const isScreenshot = ref(false)
@@ -44,7 +45,8 @@ const {
   canvasViewInfo,
   editMode,
   batchOptStatus,
-  targetLinkageInfo
+  targetLinkageInfo,
+  curBatchOptComponents
 } = storeToRefs(dvMainStore)
 const { areaData } = storeToRefs(composeStore)
 const dvModel = 'dashboard'
@@ -53,6 +55,10 @@ let scale = ref(canvasStyleData.value.scale)
 let nameEdit = ref(false)
 let inputName = ref('')
 let nameInput = ref(null)
+const state = reactive({
+  preBatchComponentData: [],
+  preBatchCanvasViewInfo: {}
+})
 
 const editCanvasName = () => {
   nameEdit.value = true
@@ -149,7 +155,26 @@ const openDataBoardSetting = () => {
   dvMainStore.setCurComponent({ component: null, index: null })
 }
 
+const cancelBatchOpt = () => {
+  dvMainStore.setComponentData(state.preBatchComponentData)
+  dvMainStore.setCanvasViewInfo(state.preBatchCanvasViewInfo)
+  Object.keys(canvasViewInfo.value).forEach(viewId => {
+    if (curBatchOptComponents.value.includes(viewId)) {
+      useEmitt().emitter.emit('renderChart-' + viewId, canvasViewInfo.value[viewId])
+    }
+  })
+  batchOptStatusChange(false)
+}
+
 const batchOptStatusChange = value => {
+  if (value) {
+    // 如果当前进入批量操作界面 提前保存镜像
+    state.preBatchComponentData = deepCopy(componentData.value)
+    state.preBatchCanvasViewInfo = deepCopy(canvasViewInfo.value)
+  } else {
+    state.preBatchComponentData = []
+    state.preBatchCanvasViewInfo = {}
+  }
   dvMainStore.setBatchOptStatus(value)
 }
 
@@ -298,11 +323,10 @@ const saveLinkageSetting = () => {
       <div class="right-area full-area" v-show="batchOptStatus">
         <el-button
           class="custom-normal-button"
-          @click="batchOptStatusChange(false)"
+          @click="cancelBatchOpt"
           style="float: right; margin-right: 12px"
         >
-          <!--          <Icon style="width: 20px; height: 20px" name="dv-batch"></Icon>-->
-          退出批量操作</el-button
+          取消</el-button
         >
         <el-button @click="saveBatchChange" style="float: right; margin-right: 12px" type="primary"
           >确定</el-button
