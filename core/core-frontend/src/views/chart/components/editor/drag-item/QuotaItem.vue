@@ -101,7 +101,7 @@ const isEnableCompare = () => {
     if (Object.prototype.toString.call(chart.value.xAxisExt) === '[object Array]') {
       xAxisExt = JSON.parse(JSON.stringify(chart.value.xAxisExt))
     } else {
-      xAxisExt = JSON.parse(chart.value.xaxisExt)
+      xAxisExt = JSON.parse(chart.value.xAxisExt)
     }
     const t2 = xAxisExt.filter(ele => {
       return ele.deType === 1 && SUPPORT_Y_M.includes(ele.dateStyle)

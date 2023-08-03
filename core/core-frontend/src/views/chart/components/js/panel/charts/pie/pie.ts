@@ -205,8 +205,8 @@ export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
     )(chart, options)
   }
 
-  constructor() {
-    super('pie', DEFAULT_DATA)
+  constructor(name = 'pie') {
+    super(name, DEFAULT_DATA)
   }
 }
 
@@ -225,7 +225,6 @@ export class PieDonut extends Pie {
   }
 
   constructor() {
-    super()
-    this.name = 'pie-donut'
+    super('pie-donut')
   }
 }

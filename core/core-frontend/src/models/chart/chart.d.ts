@@ -23,6 +23,9 @@ declare interface Chart {
   yAxisExt?: Axis[]
   extStack?: Axis[]
   extBubble?: Axis[]
+  extLabel?: Axis[]
+  extTooltip?: Axis[]
+  customFilter: []
   senior: CustomSenior
   customAttr: CustomAttr
   customStyle: CustomStyle

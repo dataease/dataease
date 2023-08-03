@@ -51,7 +51,7 @@ const renameForm = ref<FormInstance>()
 
 const props = defineProps({
   view: {
-    type: Object,
+    type: Object as PropType<ChartObj>,
     required: false,
     default() {
       return { ...BASE_VIEW_CONFIG }
@@ -62,7 +62,7 @@ const props = defineProps({
     default: () => []
   },
   themes: {
-    type: String,
+    type: String as PropType<EditorTheme>,
     default: 'dark'
   }
 })
@@ -141,7 +141,7 @@ const chartViewInstance = computed(() => {
 const showAxis = (axis: AxisType) => chartViewInstance.value?.axis?.includes(axis)
 watch(
   () => view.value.type,
-  newVal => {
+  () => {
     if (showAxis('area') && !state.worldTree?.length) {
       getWorldTree().then(res => {
         state.worldTree = [res.data]
@@ -239,7 +239,7 @@ const dimensionItemRemove = item => {
   if (item.removeType === 'dimension') {
     view.value.xAxis.splice(item.index, 1)
   } else if (item.removeType === 'dimensionExt') {
-    view.value.xaxisExt.splice(item.index, 1)
+    view.value.xAxisExt.splice(item.index, 1)
   }
   calcData(view.value)
 }
@@ -348,6 +348,28 @@ const addXaxis = e => {
     view.value.xAxis = [view.value.xAxis[0]]
   }
   calcData(view.value, true)
+}
+
+const addXaxisExt = e => {
+  if (view.value.type !== 'table-info') {
+    dragCheckType(view.value.xAxisExt, 'd')
+  }
+  dragMoveDuplicate(view.value.xAxisExt, e, 'chart')
+  if (
+    (view.value.type === 'map' || view.value.type === 'word-cloud') &&
+    view.value.xAxisExt.length > 1
+  ) {
+    view.value.xAxisExt = [view.value.xAxisExt[0]]
+  }
+  calcData(view.value, true)
+}
+
+const addExtStack = e => {
+  dragCheckType(view.value.extStack, 'd')
+  if (view.value.extStack?.length > 1) {
+    view.value.extStack = [view.value.extStack[0]]
+  }
+  calcData(view.value)
 }
 
 const addYaxis = e => {
@@ -943,6 +965,72 @@ const autoInsert = element => {
                             </template>
                           </draggable>
                           <drag-placeholder :drag-list="view.xAxis" />
+                        </el-row>
+
+                        <!--xAxisExt-->
+                        <el-row class="padding-lr drag-data" v-if="showAxis('xAxisExt')">
+                          <span class="data-area-label">
+                            <dimension-label :view="view" />
+                          </span>
+                          <draggable
+                            :list="view.xAxisExt"
+                            :move="onMove"
+                            item-key="id"
+                            group="drag"
+                            animation="300"
+                            class="drag-block-style"
+                            @add="addXaxisExt"
+                            @update="calcData(view)"
+                          >
+                            <template #item="{ element, index }">
+                              <dimension-item
+                                :dimension-data="state.dimension"
+                                :quota-data="state.quota"
+                                :chart="view"
+                                :item="element"
+                                :index="index"
+                                :themes="props.themes"
+                                @onDimensionItemChange="dimensionItemChange"
+                                @onDimensionItemRemove="dimensionItemRemove"
+                                @onNameEdit="showRename"
+                                @onCustomSort="onCustomSort"
+                              />
+                            </template>
+                          </draggable>
+                          <drag-placeholder :drag-list="view.xAxisExt" />
+                        </el-row>
+
+                        <!--extStack-->
+                        <el-row class="padding-lr drag-data" v-if="showAxis('extStack')">
+                          <span class="data-area-label">
+                            <dimension-label :view="view" />
+                          </span>
+                          <draggable
+                            :list="view.extStack"
+                            :move="onMove"
+                            item-key="id"
+                            group="drag"
+                            animation="300"
+                            class="drag-block-style"
+                            @add="addExtStack"
+                            @update="calcData(view)"
+                          >
+                            <template #item="{ element, index }">
+                              <dimension-item
+                                :dimension-data="state.dimension"
+                                :quota-data="state.quota"
+                                :chart="view"
+                                :item="element"
+                                :index="index"
+                                :themes="props.themes"
+                                @onDimensionItemChange="dimensionItemChange"
+                                @onDimensionItemRemove="dimensionItemRemove"
+                                @onNameEdit="showRename"
+                                @onCustomSort="onCustomSort"
+                              />
+                            </template>
+                          </draggable>
+                          <drag-placeholder :drag-list="view.extStack" />
                         </el-row>
 
                         <!--yAxis-->

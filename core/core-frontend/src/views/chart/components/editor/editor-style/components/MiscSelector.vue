@@ -20,7 +20,7 @@ const props = defineProps({
     required: true
   },
   themes: {
-    type: String as PropType<'plain' | 'dark' | 'light'>,
+    type: String as PropType<EditorTheme>,
     default: 'dark'
   },
   quotaFields: {
