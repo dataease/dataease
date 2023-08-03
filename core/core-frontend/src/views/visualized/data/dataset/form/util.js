@@ -111,8 +111,9 @@ const getFieldName = (fields, name) => {
 }
 
 const timeTypes = [
-  'yy-mm',
+  'yyyy-MM-dd',
   'yyyy/MM/dd',
+  'yyyyMMdd',
   'yyyy-MM-dd HH:mm:ss',
   'yyyy/MM/dd HH:mm:ss',
   'yyyyMMdd HH:mm:ss',
