@@ -12,10 +12,7 @@ import { formatterItem, valueFormatter } from '@/views/chart/components/js/forma
 export class Rose extends G2PlotChartView<RoseOptions, G2Rose> {
   axis: AxisType[] = PIE_AXIS_TYPE
   properties: EditorProperty[] = PIE_EDITOR_PROPERTY
-  propertyInner: EditorPropertyInner = {
-    ...PIE_EDITOR_PROPERTY_INNER,
-    'basic-style-selector': ['colors', 'alpha', 'radius']
-  }
+  propertyInner: EditorPropertyInner = PIE_EDITOR_PROPERTY_INNER
 
   drawChart(drawOptions: G2PlotDrawOptions<G2Rose>): G2Rose {
     const { chart, container, action } = drawOptions
@@ -71,7 +68,6 @@ export class Rose extends G2PlotChartView<RoseOptions, G2Rose> {
     // 开始渲染
     const plot = new G2Rose(container, options)
 
-    plot.off('interval:click')
     plot.on('interval:click', action)
 
     return plot
@@ -137,5 +133,25 @@ export class Rose extends G2PlotChartView<RoseOptions, G2Rose> {
 
   constructor() {
     super('pie-rose', [])
+  }
+}
+
+export class RoseDonut extends Rose {
+  propertyInner: EditorPropertyInner = {
+    ...PIE_EDITOR_PROPERTY_INNER,
+    'basic-style-selector': ['colors', 'alpha', 'radius', 'innerRadius']
+  }
+  protected configBasicStyle(chart: Chart, options: RoseOptions): RoseOptions {
+    const customAttr = parseJson(chart.customAttr)
+    return {
+      ...options,
+      radius: customAttr.basicStyle.radius,
+      innerRadius: customAttr.basicStyle.innerRadius
+    }
+  }
+
+  constructor() {
+    super()
+    this.name = 'pie-rose-donut'
   }
 }

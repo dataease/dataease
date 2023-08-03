@@ -19,6 +19,11 @@ public class VisualizationLinkageDTO extends VisualizationLinkageVO {
      * 目标视图名称
      */
     private String targetViewName;
+
+    /**
+     * 目标视图类型
+     */
+    private String targetViewType;
     /**
      * 联动字段
      */

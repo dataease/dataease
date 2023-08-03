@@ -5,6 +5,7 @@ import { ElMessage, ElLoading } from 'element-plus-secondary'
 import { Icon } from '@/components/icon-custom'
 import { useI18n } from '@/hooks/web/useI18n'
 import type { FormInstance, FormRules } from 'element-plus-secondary'
+import { groupBy } from './options'
 import {
   userCreateApi,
   userEditApi,
@@ -22,14 +23,14 @@ interface UserForm {
   phonePrefix: '+86'
   roleIds: string[]
 }
-interface Tree {
+/* interface Tree {
   id: string
   name: string
   readonly: boolean
   children?: Tree[]
   disabled: boolean
   root: boolean
-}
+} */
 
 const { toClipboard } = useClipboard()
 const { t } = useI18n()
@@ -65,7 +66,7 @@ state.roleList = [
     disabled: true
   }
 ]
-const groupBy = (list: Tree[]) => {
+/* const groupBy = (list: Tree[]) => {
   const map = new Map()
   list.forEach(item => {
     const readonly = item.readonly
@@ -77,7 +78,7 @@ const groupBy = (list: Tree[]) => {
     map.set(readonly, arr)
   })
   return map
-}
+} */
 const copyInfo = async () => {
   try {
     await toClipboard(defaultPWD.value)

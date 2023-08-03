@@ -5,9 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.dataease.api.permissions.role.dto.UserRequest;
 import io.dataease.api.permissions.user.api.UserApi;
-import io.dataease.api.permissions.user.dto.LangSwitchRequest;
-import io.dataease.api.permissions.user.dto.UserCreator;
-import io.dataease.api.permissions.user.dto.UserEditor;
+import io.dataease.api.permissions.user.dto.*;
 import io.dataease.api.permissions.user.vo.*;
 import io.dataease.exception.DEException;
 import io.dataease.i18n.Lang;
@@ -21,8 +19,6 @@ import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Primary;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -41,7 +37,7 @@ public class UserServer implements UserApi {
 
     @Override
     public IPage<UserGridVO> pager(int goPage, int pageSize, BaseGridRequest request) {
-        Page<UserGridVO> page = new Page(goPage, pageSize);
+        Page<UserGridVO> page = new Page<>(goPage, pageSize);
         return userPageManage.pager(page, request);
     }
 
@@ -78,10 +74,9 @@ public class UserServer implements UserApi {
     }
 
     @Override
-    public IPage<UserItemVO> selectedForRole(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody UserRequest request) {
-        Page<UserItemVO> page = new Page(goPage, pageSize);
-        IPage<UserItemVO> iPage = userPageManage.selectedWithRole(page, request);
-        return iPage;
+    public IPage<UserItemVO> selectedForRole(int goPage, int pageSize, UserRequest request) {
+        Page<UserItemVO> page = new Page<>(goPage, pageSize);
+        return userPageManage.selectedWithRole(page, request);
     }
 
     @Override
@@ -152,5 +147,15 @@ public class UserServer implements UserApi {
     @Override
     public void resetPwd(Long id) {
         userPageManage.resetPwd(id);
+    }
+
+    @Override
+    public void enable(EnableSwitchRequest request) {
+        userPageManage.switchEnable(request);
+    }
+
+    @Override
+    public void modifyPwd(ModifyPwdRequest request) {
+        userPageManage.modifyPwd(request);
     }
 }

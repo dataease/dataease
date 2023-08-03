@@ -4,12 +4,7 @@ import {
 } from '@/views/chart/components/js/panel/types/impl/g2plot'
 import { Datum, Line as G2Line, LineOptions } from '@antv/g2plot'
 import { getPadding } from '../../common/common_antv'
-import {
-  antVCustomColor,
-  flow,
-  handleEmptyDataStrategy,
-  parseJson
-} from '@/views/chart/components/js/util'
+import { flow, handleEmptyDataStrategy, parseJson } from '@/views/chart/components/js/util'
 import { cloneDeep } from 'lodash-es'
 import { formatterItem, valueFormatter } from '@/views/chart/components/js/formatter'
 import {
@@ -25,8 +20,9 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
   properties = LINE_EDITOR_PROPERTY
   propertyInner = LINE_EDITOR_PROPERTY_INNER
   axis: AxisType[] = ['xAxis', 'yAxis', 'drill', 'filter']
-  drawChart(drawOptions: G2PlotDrawOptions<G2Line>) {
-    const chart = drawOptions.chart
+
+  drawChart(drawOptions: G2PlotDrawOptions<G2Line>): G2Line {
+    const { chart, action, container } = drawOptions
     if (!chart.data.data?.length) {
       return
     }
@@ -92,15 +88,11 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
       handleEmptyDataStrategy(emptyDataStrategy, chart, data, options)
     }
     // 开始渲染
-    if (drawOptions.chartObj) {
-      drawOptions.chartObj.destroy()
-    }
-    drawOptions.chartObj = new G2Line(drawOptions.container, options)
+    const newChart = new G2Line(container, options)
 
-    drawOptions.chartObj.off('point:click')
-    drawOptions.chartObj.on('point:click', drawOptions.action)
+    newChart.on('point:click', action)
 
-    return drawOptions.chartObj
+    return newChart
   }
 
   protected configLabel(chart: Chart, options: LineOptions): LineOptions {

@@ -2,7 +2,7 @@
   <el-dialog
     ref="enlargeDialog"
     :append-to-body="true"
-    :title="t('visualization.jump_set')"
+    :title="t('visualization.linkage_setting')"
     v-model="dialogShow"
     width="70vw"
     top="10vh"
@@ -10,14 +10,11 @@
   >
     <el-row v-if="state.initState" style="height: 550px">
       <el-row style="flex-direction: row">
-        <el-checkbox style="float: left" v-model="state.linkJump.checked">{{
-          t('visualization.enable_jump')
-        }}</el-checkbox>
         <div class="top-area">
-          <span class="top-area-text">已选图表：</span>
+          <span class="top-area-text" style="margin-left: 0">已选图表：</span>
           <span class="top-area-value">
-            <Icon class-name="view-type-icon" :name="state.curJumpViewInfo.type" />
-            {{ state.curJumpViewInfo.title }}</span
+            <Icon class-name="view-type-icon" :name="state.curLinkageViewInfo.type" />
+            {{ state.curLinkageViewInfo.title }}</span
           >
           <span class="top-area-text">所用数据集：</span>
           <span class="top-area-value">
@@ -34,17 +31,17 @@
         <el-row class="preview">
           <el-col :span="8" style="height: 100%; overflow-y: auto">
             <el-row class="tree-head">
-              <span class="head-text">选择字段</span>
+              <span class="head-text">选择视图</span>
               <span class="head-filter"
                 >仅看已选 <el-switch size="small" v-model="state.showSelected" />
               </span>
             </el-row>
             <el-tree
               menu
-              ref="linkJumpInfoTree"
+              ref="linkageInfoTree"
               :filter-node-method="filterNodeMethod"
-              :data="state.linkJumpInfoXArray"
-              node-key="sourceFieldId"
+              :data="curLinkageOnlyTargetViewsInfo"
+              node-key="targetViewId"
               highlight-current
               :props="state.treeProp"
               @node-click="nodeClick"
@@ -54,22 +51,22 @@
                   <span>
                     <div @click.stop>
                       <span class="auth-span">
+                        <!--？？？-->
                         <el-checkbox
-                          v-model="data.checked"
-                          @change="sourceFieldCheckedChange(data)"
+                          v-model="data.linkageActive"
+                          @change="targetViewCheckedChange(data)"
                         />
                       </span>
                     </div>
                   </span>
                   <span>
                     <span class="tree-select-field">
-                      <el-icon>
-                        <Icon
-                          :name="`field_${fieldType(data.sourceDeType)}`"
-                          :className="`field-icon-${fieldType(data.sourceDeType)}`"
-                        ></Icon>
-                      </el-icon>
-                      {{ data.sourceFieldName }}
+                      <Icon
+                        class-name="view-type-icon"
+                        style="margin-right: 2px"
+                        :name="data.targetViewType"
+                      />
+                      {{ data.targetViewName }}
                     </span>
                   </span>
                 </span>
@@ -77,101 +74,43 @@
             </el-tree>
           </el-col>
           <el-col :span="16" class="preview-show">
-            <el-row v-if="state.linkJumpInfo">
-              <el-row class="content-head">
-                <div class="content-head-text">{{ t('visualization.link_type') }}</div>
-                <div>
-                  <el-radio-group
-                    v-model="state.linkJumpInfo.linkType"
-                    size="mini"
-                    @change="linkTypeChangeOpt"
-                  >
-                    <el-radio label="outer">{{ t('visualization.link_outer') }}</el-radio>
-                    <el-radio label="inner">{{ t('visualization.link_panel') }}</el-radio>
-                  </el-radio-group>
-                </div>
-              </el-row>
-              <el-row class="content-head">
-                <div class="content-head-text">{{ t('visualization.open_model') }}</div>
-                <div>
-                  <el-radio-group v-model="state.linkJumpInfo.jumpType" size="mini">
-                    <el-radio label="_self">{{ t('visualization.now_window') }}</el-radio>
-                    <el-radio label="_blank">{{ t('visualization.new_window') }}</el-radio>
-                  </el-radio-group>
-                </div>
-              </el-row>
-              <el-row
-                v-if="state.linkJumpInfo.linkType === 'inner'"
-                style="margin-top: 5px"
-                class="top_border"
-              >
+            <el-row class="content-head">配置视图间的字段关联关系</el-row>
+            <el-row v-if="state.linkageInfo">
+              <el-row style="margin-top: 5px">
                 <el-row class="inner-content">
-                  <el-col :span="11">当前仪表板</el-col>
+                  <el-col :span="11"> 当前视图源字段 </el-col>
                   <el-col :span="2"></el-col>
-                  <el-col :span="11">目标仪表板</el-col>
-                </el-row>
-                <el-row style="width: 100%; padding: 0 16px">
                   <el-col :span="11">
-                    <el-select style="width: 100%" v-model="dvInfo.name" disabled>
-                      <el-option :key="dvInfo.name" :label="dvInfo.name" :value="dvInfo.name">
-                      </el-option>
-                    </el-select>
-                  </el-col>
-                  <el-col :span="2" class="link-icon-area">
-                    <Icon style="width: 20px; height: 20px" name="dv-link-target"></Icon>
-                  </el-col>
-                  <el-col :span="11">
-                    <el-tree-select
-                      v-model="state.linkJumpInfo.targetDvId"
-                      :data="state.panelList"
-                      :props="state.dvSelectProps"
-                      :render-after-expand="false"
-                      filterable
-                      @node-click="dvNodeClick"
-                      class="dv-selector"
-                    >
-                      <template #default="{ node, data }">
-                        <el-icon v-if="data.leaf">
-                          <Icon name="dv-dashboard-spine"></Icon>
-                        </el-icon>
-                        <el-icon v-else>
-                          <Icon name="dv-folder"></Icon>
-                        </el-icon>
-                        <span :title="node.label">{{ node.label }}</span>
-                      </template>
-                    </el-tree-select>
-                  </el-col>
-                </el-row>
-                <el-row class="inner-content">
-                  <el-col :span="7"> 源字段 </el-col>
-                  <el-col :span="2"></el-col>
-                  <el-col :span="7">
                     {{ t('visualization.link_view_field') }}
                   </el-col>
-                  <el-col :span="8"> </el-col>
                 </el-row>
-                <el-row style="display: inline-block; max-height: 225px; overflow-y: auto">
+                <el-row style="display: inline-block; max-height: 350px; overflow-y: auto">
                   <el-row
                     style="padding: 0 16px 8px"
-                    v-for="(targetViewInfo, index) in state.linkJumpInfo.targetViewInfoList"
+                    v-for="(itemLinkage, index) in state.linkageInfo.linkageFields"
                     :key="index"
                   >
-                    <el-col :span="7">
+                    <el-col :span="10">
                       <div class="select-filed">
                         <el-select
-                          v-model="targetViewInfo.sourceFieldActiveId"
+                          v-model="itemLinkage.sourceField"
                           :placeholder="'请选择字段'"
                           style="width: 100%"
                         >
                           <el-option
-                            v-for="curViewField in state.linkJumpCurViewFieldArray"
-                            :key="curViewField.id"
-                            :label="curViewField.name"
-                            :value="curViewField.id"
+                            v-for="item in state.sourceLinkageInfo.targetViewFields"
+                            :key="item.id"
+                            :label="item.name"
+                            :value="item.id"
                           >
-                            <span style="float: left; font-size: 12px">{{
-                              curViewField.name
-                            }}</span>
+                            <span style="float: left">
+                              <Icon
+                                style="width: 14px; height: 14px"
+                                :name="`field_${fieldType(item.deType)}`"
+                                :className="`field-icon-${fieldType(item.deType)}`"
+                              ></Icon>
+                            </span>
+                            <span style="float: left; font-size: 12px">{{ item.name }}</span>
                           </el-option>
                         </el-select>
                       </div>
@@ -179,70 +118,28 @@
                     <el-col :span="2" class="link-icon-area">
                       <Icon style="width: 20px; height: 20px" name="dv-link-target"></Icon>
                     </el-col>
-                    <el-col :span="7">
+                    <el-col :span="11">
                       <div class="select-filed">
                         <el-select
-                          v-model="targetViewInfo.targetViewId"
-                          :disabled="!targetViewInfo.sourceFieldActiveId"
-                          :placeholder="'请选择视图'"
+                          v-model="itemLinkage.targetField"
+                          :placeholder="'请选择'"
                           style="width: 100%"
                           size="mini"
-                          @change="viewInfoOnChange(targetViewInfo)"
                         >
                           <el-option
-                            v-for="item in state.currentLinkPanelViewArray"
+                            v-for="item in state.linkageInfo.targetViewFields"
                             :key="item.id"
-                            :label="item.title"
+                            :label="item.name"
                             :value="item.id"
                           >
                             <span style="float: left">
-                              <svg-icon :icon-class="item.type" style="width: 14px; height: 14px" />
+                              <Icon
+                                style="width: 14px; height: 14px"
+                                :name="`field_${fieldType(item.deType)}`"
+                                :className="`field-icon-${fieldType(item.deType)}`"
+                              ></Icon>
                             </span>
-                            <span style="float: left; font-size: 12px">{{ item.title }}</span>
-                          </el-option>
-                        </el-select>
-                      </div>
-                    </el-col>
-                    <el-col :span="7">
-                      <div class="select-filed">
-                        <el-select
-                          v-model="targetViewInfo.targetFieldId"
-                          :placeholder="'请选择字段'"
-                          :disabled="!targetViewInfo.sourceFieldActiveId"
-                          style="width: 100%"
-                          size="mini"
-                        >
-                          <el-option
-                            v-for="viewField in state.viewIdFieldArrayMap[
-                              targetViewInfo.targetViewId
-                            ]"
-                            :key="viewField.id"
-                            :label="viewField.name"
-                            :value="viewField.id"
-                          >
-                            <span style="float: left">
-                              <svg-icon
-                                v-if="viewField.deType === 0"
-                                icon-class="field_text"
-                                class="field-icon-text"
-                              />
-                              <svg-icon
-                                v-if="viewField.deType === 1"
-                                icon-class="field_time"
-                                class="field-icon-time"
-                              />
-                              <svg-icon
-                                v-if="viewField.deType === 2 || viewField.deType === 3"
-                                icon-class="field_value"
-                                class="field-icon-value"
-                              />
-                              <svg-icon
-                                v-if="viewField.deType === 5"
-                                icon-class="field_location"
-                                class="field-icon-location"
-                              />
-                            </span>
-                            <span style="float: left; font-size: 12px">{{ viewField.name }}</span>
+                            <span style="float: left; font-size: 12px">{{ item.name }}</span>
                           </el-option>
                         </el-select>
                       </div>
@@ -250,7 +147,7 @@
                     <el-col :span="1">
                       <el-icon
                         style="margin-top: 10px; cursor: pointer"
-                        @click="deleteLinkJumpField(index)"
+                        @click="deleteLinkageField(index)"
                       >
                         <Delete />
                       </el-icon>
@@ -259,79 +156,13 @@
                 </el-row>
                 <el-row style="width: 100%; padding-left: 16px">
                   <el-button
-                    :disabled="!state.linkJumpInfo.targetDvId"
                     type="primary"
                     size="mini"
                     icon="Plus"
                     text
-                    @click="addLinkJumpField"
-                    >{{ t('visualization.add_jump_field') }}
+                    @click="addLinkageField('', '')"
+                    >追加联动依赖字段
                   </el-button>
-                </el-row>
-              </el-row>
-              <el-row v-if="outerContentShow" style="padding: 14px; border-top: 1px solid #e6e6e6">
-                <el-row class="url-text">
-                  {{ t('visualization.target_url') }}
-                  <el-tooltip class="item" effect="dark" placement="bottom">
-                    <template #content>
-                      {{ $t('visualization.target_url_tips') }}
-                    </template>
-                    <el-icon>
-                      <Icon name="icon_info_outlined"></Icon>
-                    </el-icon>
-                  </el-tooltip>
-                </el-row>
-                <el-row class="outer-content">
-                  <el-col :span="16" class="outer-content-mirror">
-                    <el-row style="width: 100%; height: 100%">
-                      <jump-set-outer-content-editor
-                        ref="outerContentEditor"
-                        :link-jump-info="state.linkJumpInfo"
-                        :link-jump-info-array="state.linkJumpInfoArray"
-                      ></jump-set-outer-content-editor>
-                    </el-row>
-                  </el-col>
-                  <el-col :span="8" style="height: 100%">
-                    <el-col :span="24" style="height: 100%" class="padding-lr">
-                      <span>
-                        {{ t('visualization.select_world') }}
-                        <el-tooltip class="item" effect="dark" placement="bottom">
-                          <template #content>
-                            <div v-html="t('chart.reference_field_tip')" />
-                          </template>
-                          <i class="el-icon-info" style="cursor: pointer" />
-                        </el-tooltip>
-                      </span>
-                      <el-input
-                        v-model="state.searchField"
-                        size="mini"
-                        :placeholder="t('dataset.search')"
-                        prefix-icon="el-icon-search"
-                        clearable
-                      />
-                      <div class="field-height">
-                        <span
-                          v-for="item in state.linkJumpInfoArray.filter(
-                            item =>
-                              !state.searchField ||
-                              item.sourceFieldName.indexOf(state.searchField) > -1
-                          )"
-                          :key="item.sourceFieldId"
-                          class="item-dimension"
-                          :title="item.sourceFieldName"
-                          @click="insertFieldToCodeMirror('[' + item.sourceFieldName + ']')"
-                        >
-                          <el-icon>
-                            <Icon
-                              :name="`field_${fieldType(item.sourceDeType)}`"
-                              :className="`field-icon-${fieldType(item.sourceDeType)}`"
-                            ></Icon>
-                          </el-icon>
-                          {{ item.sourceFieldName }}
-                        </span>
-                      </div>
-                    </el-col>
-                  </el-col>
                 </el-row>
               </el-row>
             </el-row>
@@ -343,7 +174,7 @@
       </el-row>
       <el-row class="root-class">
         <el-button size="mini" @click="cancel()">{{ t('commons.cancel') }} </el-button>
-        <el-button type="primary" size="mini" @click="save()"
+        <el-button type="primary" size="mini" @click="saveLinkageSetting()"
           >{{ t('commons.confirm') }}
         </el-button>
       </el-row>
@@ -361,81 +192,38 @@ import {
 import { reactive, ref, nextTick, onMounted, computed, watch } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
-import { queryTreeApi } from '@/api/visualization/dataVisualization'
 import { ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
-import { getDatasetDetails, listFieldByDatasetGroup } from '@/api/dataset'
-import { BusiTreeRequest } from '@/models/tree/TreeNode'
 import { CalcFieldType } from '@/views/visualized/data/dataset/form/CalcFieldEdit.vue'
-import JumpSetOuterContentEditor from '@/components/visualization/JumpSetOuterContentEditor.vue'
+import {
+  getPanelAllLinkageInfo,
+  getViewLinkageGatherArray,
+  saveLinkage
+} from '@/api/visualization/linkage'
+import { getDatasetDetails } from '@/api/dataset'
 const dvMainStore = dvMainStoreWithOut()
-const { dvInfo, canvasViewInfo } = storeToRefs(dvMainStore)
-const linkJumpInfoTree = ref(null)
+const { dvInfo, canvasViewInfo, componentData } = storeToRefs(dvMainStore)
+const linkageInfoTree = ref(null)
 const { t } = useI18n()
 const dialogShow = ref(false)
 const searchField = ref('')
 
 const state = reactive({
+  sourceLinkageInfo: {},
+  curLinkageTargetViewsInfo: [],
   showSelected: false,
-  curJumpViewInfo: {},
+  curLinkageViewInfo: {},
   curDatasetInfo: {},
-  tempId: null,
   initState: false,
   viewId: null,
-  name2Auto: [],
-  searchField: '',
-  searchFunction: '',
   loading: false,
-  inputType: 'self',
-  fieldName: 'name',
-  tableRadio: null,
-  keyWordSearch: '',
-  columnLabel: t('visualization.belong_to_category'),
-  templateList: [],
-  importTemplateInfo: {
-    snapshot: ''
-  },
-  sourceViewFields: [],
-  dvSelectProps: {
-    label: 'name',
-    children: 'children',
-    value: 'id',
-    isLeaf: 'leaf'
-  },
   treeProp: {
-    id: 'sourceFieldId',
-    label: 'sourceFieldName',
+    id: 'targetViewId',
+    label: 'targetViewName',
     children: 'children'
   },
-  linkJump: null,
-  linkJumpInfoArray: [],
-  linkJumpInfoXArray: [],
-  linkJumpCurViewFieldArray: [],
-  mapJumpInfoArray: {},
-  panelList: [],
-  linkJumpInfo: null,
-  currentFiledTreeNode: null,
-  defaultLinkJumpInfo: {
-    linkType: 'inner',
-    jumpType: '_self',
-    targetViewInfoList: []
-  },
-  defaultTargetViewInfo: {
-    targetViewId: null,
-    targetFieldId: null
-  },
-  currentLinkPanelViewArray: [],
-  viewIdFieldArrayMap: {},
-  dimensionData: [],
-  dimensionList: [],
-  quotaList: [],
-  quotaData: [],
-  dimension: [],
-  quota: []
+  linkageInfo: null
 })
-
-const emits = defineEmits(['closeJumpSetDialog'])
-const outerContentEditor = ref(null)
 
 const dialogInit = viewItem => {
   dialogShow.value = true
@@ -443,169 +231,122 @@ const dialogInit = viewItem => {
   init(viewItem)
 }
 
+const linkageSetting = curViewId => {
+  // sourceViewId 也加入查询
+  const targetViewIds = componentData.value
+    .filter(item => item.component === 'UserView')
+    .map(item => item.id)
+
+  // 获取当前仪表板当前视图联动信息
+  const requestInfo = {
+    dvId: dvInfo.value.id,
+    sourceViewId: curViewId,
+    targetViewIds: targetViewIds,
+    linkageInfo: null
+  }
+  getViewLinkageGatherArray(requestInfo).then(rsp => {
+    // 获取当前仪表板的视图(去掉当前视图)
+    state.curLinkageTargetViewsInfo = rsp.data
+    state.curLinkageTargetViewsInfo.forEach(item => {
+      if (item.targetViewId === curViewId) {
+        state.sourceLinkageInfo = item
+      }
+    })
+    let firstNode
+    if (curLinkageOnlyTargetViewsInfo.value && curLinkageOnlyTargetViewsInfo.value.length > 0) {
+      firstNode = curLinkageOnlyTargetViewsInfo.value[0]
+    }
+    state.initState = true
+    nextTick(() => {
+      if (firstNode) {
+        linkageInfoTree.value.setCurrentKey(firstNode.targetViewId)
+      }
+      nodeClick(firstNode)
+    })
+  })
+}
+
 const init = viewItem => {
   state.initState = false
   state.viewId = viewItem.id
+  state.curLinkageTargetViewsInfo = []
   const chartDetails = canvasViewInfo.value[state.viewId]
-  state.curJumpViewInfo = chartDetails
-  let checkAllAxisStr =
-    JSON.stringify(chartDetails.xAxis) +
-    JSON.stringify(chartDetails.xAxisExt) +
-    JSON.stringify(chartDetails.yAxis) +
-    JSON.stringify(chartDetails.yAxisExt) +
-    JSON.stringify(chartDetails.drillFields)
-  let checkJumpStr
-  // 堆叠图的可选参数分两种情况 1.如果有堆叠项 则指标只有第一个可选 2.如果没有堆叠项泽所有指标都可以选
-  if (chartDetails.type.indexOf('stack') > -1 && chartDetails.extStack.length > 2) {
-    const yAxisArray = chartDetails.yaxis
-    const yAxisNew = yAxisArray.length > 0 ? JSON.stringify(yAxisArray[0]) : '[]'
-    checkAllAxisStr =
-      JSON.stringify(chartDetails.xAxis) +
-      JSON.stringify(chartDetails.xAxisExt) +
-      JSON.stringify(yAxisNew) +
-      JSON.stringify(chartDetails.yAxisExt) +
-      JSON.stringify(chartDetails.drillFields)
-    checkJumpStr = checkAllAxisStr
-  } else if (chartDetails.type === 'table-pivot') {
-    checkJumpStr = checkAllAxisStr
-  } else if (chartDetails.type === 'table-info') {
-    checkJumpStr = chartDetails.xAxis + chartDetails.drillFields
-  } else {
-    checkJumpStr = checkAllAxisStr
-  }
-  const request = { busyFlag: dvInfo.value.type } as BusiTreeRequest
-  // 获取可关联的仪表板
-  queryTreeApi(request).then(rsp => {
-    state.panelList = rsp
-  })
-
+  state.curLinkageViewInfo = chartDetails
   if (chartDetails.tableId) {
     // 获取当前数据集信息
     getDatasetDetails(chartDetails.tableId).then(res => {
       state.curDatasetInfo = res || {}
     })
-
-    // 获取当前视图的字段信息
-    listFieldByDatasetGroup(chartDetails.tableId).then(rsp => {
-      state.linkJumpCurViewFieldArray = []
-      const sourceCurViewFieldArray = rsp.data
-      sourceCurViewFieldArray.forEach(fieldItem => {
-        if (checkAllAxisStr.indexOf(fieldItem.id) > -1) {
-          state.linkJumpCurViewFieldArray.push(fieldItem)
-        }
-      })
-    })
-
-    // 获取当前视图的关联信息
-    queryWithViewId(dvInfo.value.id, state.viewId).then(rsp => {
-      state.linkJump = rsp.data
-      state.linkJumpInfoArray = []
-      state.linkJumpInfoXArray = []
-      state.linkJump.linkJumpInfoArray.forEach(linkJumpInfo => {
-        if (checkJumpStr.indexOf(linkJumpInfo.sourceFieldId) > -1) {
-          state.mapJumpInfoArray[linkJumpInfo.sourceFieldId] = linkJumpInfo
-          state.linkJumpInfoArray.push(linkJumpInfo)
-          state.linkJumpInfoXArray.push(linkJumpInfo)
-        } else if (checkAllAxisStr.indexOf(linkJumpInfo.sourceFieldId) > -1) {
-          state.linkJumpInfoArray.push(linkJumpInfo)
-        }
-      })
-      const firstNode = state.linkJumpInfoArray[0]
-      state.initState = true
-      nextTick(() => {
-        linkJumpInfoTree.value.setCurrentKey(firstNode.sourceFieldId)
-        nodeClick(firstNode)
-      })
-    })
   }
+  linkageSetting(state.viewId)
 }
 
-const save = () => {
-  updateJumpSet(state.linkJump).then(rsp => {
+const saveLinkageSetting = () => {
+  // 字段检查
+  state.curLinkageTargetViewsInfo.forEach(linkageInfo => {
+    let subCheckCount = 0
+    const linkageFields = linkageInfo['linkageFields']
+    if (linkageFields) {
+      linkageFields.forEach(function (linkage) {
+        if (!(linkage.sourceField && linkage.targetField)) {
+          subCheckCount++
+        }
+      })
+    }
+
+    if (subCheckCount > 0) {
+      ElMessage.error(
+        t('visualization.datalist') +
+          '【' +
+          linkageInfo.targetViewName +
+          '】' +
+          t('visualization.exit_un_march_linkage_field')
+      )
+      return
+    }
+  })
+
+  const request = {
+    dvId: dvInfo.value.id,
+    sourceViewId: state.viewId,
+    linkageInfo: state.curLinkageTargetViewsInfo
+  }
+  saveLinkage(request).then(rsp => {
     ElMessage.success('保存成功')
     // 刷新联动信息
+    getPanelAllLinkageInfo(dvInfo.value.id).then(rsp => {
+      dvMainStore.setNowPanelTrackInfo(rsp.data)
+    })
+    cancelLinkageSetting()
+    // 刷新跳转信息
     queryVisualizationJumpInfo(dvInfo.value.id).then(rsp => {
       dvMainStore.setNowPanelJumpInfo(rsp.data)
       cancel()
     })
   })
 }
+
+const cancelLinkageSetting = () => {
+  dvMainStore.clearLinkageSettingInfo()
+}
+
 const nodeClick = (data, node?) => {
-  state.linkJumpInfo = state.mapJumpInfoArray[data.sourceFieldId]
-  if (!state.linkJumpInfo.linkType) {
-    state.linkJumpInfo.linkType = 'inner'
-  }
-  if (!state.linkJumpInfo.jumpType) {
-    state.linkJumpInfo.jumpType = '_blank'
-  }
-  if (!state.linkJumpInfo.content) {
-    state.linkJumpInfo.content = 'http://'
-  }
-  if (!state.linkJumpInfo.attachParams) {
-    state.linkJumpInfo.attachParams = false
-  }
-  if (state.linkJumpInfo.targetDvId) {
-    getPanelViewList(state.linkJumpInfo.targetDvId)
-  }
-  codeMirrorContentSet(state.linkJumpInfo.content)
+  state.linkageInfo = data
 }
 
-const codeMirrorContentSet = content => {
+const addLinkageField = (sourceFieldId?, targetFieldId?) => {
+  const linkageFieldItem = {
+    sourceField: sourceFieldId,
+    targetField: targetFieldId
+  }
+  state.linkageInfo.linkageFields.push(linkageFieldItem)
+}
+const deleteLinkageField = index => {
+  state.linkageInfo.linkageFields.splice(index, 1)
+}
+const targetViewCheckedChange = data => {
   nextTick(() => {
-    outerContentEditor.value.editorInit(content)
-  })
-}
-
-// 获取当前视图字段 关联仪表板的视图信息列表
-const getPanelViewList = dvId => {
-  viewTableDetailList(dvId).then(rsp => {
-    state.viewIdFieldArrayMap = {}
-    state.currentLinkPanelViewArray = rsp.data
-    if (state.currentLinkPanelViewArray) {
-      state.currentLinkPanelViewArray.forEach(view => {
-        state.viewIdFieldArrayMap[view.id] = view.tableFields
-      })
-    }
-  })
-}
-const dvNodeClick = (data, node) => {
-  if (data.nodeType !== 'folder') {
-    state.linkJumpInfo.targetViewInfoList = []
-    addLinkJumpField()
-    getPanelViewList(data.id)
-  }
-}
-const inputVal = value => {
-  if (!value) {
-    state.linkJumpInfo.targetViewInfoList = []
-    state.viewIdFieldArrayMap = {}
-    state.currentLinkPanelViewArray = []
-  }
-}
-const addLinkJumpField = () => {
-  state.linkJumpInfo.targetViewInfoList.push({
-    targetViewId: '',
-    targetFieldId: ''
-  })
-}
-const deleteLinkJumpField = index => {
-  state.linkJumpInfo.targetViewInfoList.splice(index, 1)
-}
-const normalizer = node => {
-  // 去掉children=null的属性
-  if (node.children === null || node.children === 'null') {
-    delete node.children
-  }
-}
-const viewInfoOnChange = targetViewInfo => {
-  targetViewInfo.targetFieldId = null
-}
-const sourceFieldCheckedChange = data => {
-  if (data.checked) {
-    state.linkJump.checked = true
-  }
-  nextTick(() => {
-    linkJumpInfoTree.value.setCurrentKey(data.sourceFieldId)
+    linkageInfoTree.value.setCurrentKey(data.targetViewId)
     nodeClick(data)
   })
 }
@@ -614,48 +355,21 @@ const cancel = () => {
   state.initState = false
 }
 
-const defaultForm = {
-  originName: '', // 物理字段名
-  name: '', // 字段显示名
-  groupType: 'd', // d=维度，q=指标
-  type: 'VARCHAR',
-  deType: 0, // 字段类型
-  extField: 2,
-  id: '',
-  checked: true
-}
-
-const fieldForm = reactive<CalcFieldType>({ ...(defaultForm as CalcFieldType) })
-
 const fieldType = (deType: number) => {
   return ['text', 'time', 'value', 'value', '', 'location'][deType]
 }
-
-const insertFieldToCodeMirror = (value: string) => {
-  outerContentEditor.value.insertFieldToCodeMirror(value)
-}
-
-const outerContentShow = computed(() => {
-  return state.linkJumpInfo && state.linkJumpInfo.linkType === 'outer' && dialogShow.value
-})
-
 const filterNodeMethod = (value, data) => {
-  return !value || data.checked
+  return !value || data.linkageActive
 }
+
+const curLinkageOnlyTargetViewsInfo = computed(() =>
+  state.curLinkageTargetViewsInfo.filter(viewInfo => viewInfo.targetViewId !== state.viewId)
+)
 
 watch(
   () => state.showSelected,
   (newValue, oldValue) => {
-    linkJumpInfoTree.value.filter(newValue)
-  }
-)
-
-watch(
-  () => outerContentShow.value,
-  (newValue, oldValue) => {
-    if (newValue) {
-      codeMirrorContentSet(state.linkJumpInfo.content)
-    }
+    linkageInfoTree.value.filter(newValue)
   }
 )
 
@@ -699,10 +413,6 @@ defineExpose({
   border-left: 1px solid #e6e6e6;
   height: 470px;
   background-size: 100% 100% !important;
-}
-
-.top_border {
-  border-top: 1px solid #e6e6e6;
 }
 
 .slot-class {
@@ -914,16 +624,14 @@ span {
   height: 16px;
 }
 .content-head {
-  height: 30px;
+  height: 22px;
   margin-top: 10px;
-  .content-head-text {
-    margin-left: 16px;
-    font-weight: 400;
-    font-size: 14px;
-    color: #646a73;
-    line-height: 32px;
-    margin-right: 16px;
-  }
+  margin-left: 16px;
+  font-weight: 500;
+  font-size: 14px;
+  color: #1f2329;
+  line-height: 32px;
+  margin-right: 16px;
 }
 .link-icon-area {
   text-align: center;

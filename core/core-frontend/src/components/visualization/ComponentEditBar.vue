@@ -49,7 +49,7 @@
           <el-dropdown-item
             v-if="barShowCheck('linkageSetting')"
             icon="Link"
-            @click="linkageSetting"
+            @click="linkageSetOpen"
             >联动设置</el-dropdown-item
           >
           <el-dropdown-item
@@ -253,7 +253,7 @@ const linkageSetting = () => {
     linkageInfo: null
   }
   getViewLinkageGather(requestInfo).then(rsp => {
-    dvMainStore.setLinkageInfo(rsp.data)
+    dvMainStore.setLinkageTargetInfo(rsp.data)
   })
 }
 

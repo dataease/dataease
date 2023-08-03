@@ -334,7 +334,7 @@ const linkageSetting = () => {
     targetViewIds: targetViewIds
   }
   getViewLinkageGather(requestInfo).then(rsp => {
-    dvMainStore.setLinkageInfo(rsp.data)
+    dvMainStore.setLinkageTargetInfo(rsp.data)
   })
 }
 const addTab = () => {

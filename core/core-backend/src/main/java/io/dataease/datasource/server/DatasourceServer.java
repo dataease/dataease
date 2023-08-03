@@ -107,7 +107,7 @@ public class DatasourceServer implements DatasourceApi {
                 record.setPid(dataSourceDTO.getPid());
                 record.setName(dataSourceDTO.getName());
                 datasourceMapper.update(record, updateWrapper);
-                if (ObjectUtils.isNotEmpty(interactiveAuthApi) && ObjectUtils.isNotEmpty(sourceData) && ( !StringUtils.equals(dataSourceDTO.getName(), sourceData.getName()) || sourceData.getPid().equals(dataSourceDTO.getPid()))) {
+                if (ObjectUtils.isNotEmpty(interactiveAuthApi) && ObjectUtils.isNotEmpty(sourceData) && ( !StringUtils.equals(dataSourceDTO.getName(), sourceData.getName()) || !sourceData.getPid().equals(dataSourceDTO.getPid()))) {
                     BusiResourceEditor editor = new BusiResourceEditor();
                     editor.setId(dataSourceDTO.getId());
                     editor.setFlag(RESOURCE_FLAG);
@@ -302,6 +302,7 @@ public class DatasourceServer implements DatasourceApi {
             editor.setId(pk);
             editor.setFlag(RESOURCE_FLAG);
             editor.setName(dataSourceDTO.getName());
+            editor.setPid(sourceData.getPid());
             interactiveAuthApi.editResource(editor);
         }
         calciteProvider.update(dataSourceDTO);

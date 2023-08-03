@@ -85,7 +85,9 @@ export default {
     confirm_batch_delete: '确定删除{0}个用户吗？',
     reset_pwd: '重置密码',
     reset_confirm: '是否恢复为初始密码？',
-    reset_success: '重置成功'
+    reset_success: '重置成功',
+    modify_cur_pwd: '修改当前用户密码后需要重新登录',
+    switch_success: '切换成功'
   },
   userimport: {
     buttonText: '批量导入',
@@ -130,10 +132,20 @@ export default {
     bind_success: '绑定成功',
     bound_user: '已添加用户',
     option_user: '可添加用户',
+    org_user_title: '添加组织用户',
     out_user_title: '添加外部用户',
     search_user: '查找用户',
     search_one: '查找到一个用户',
-    search_no: '暂无结果，用户可能不存在！'
+    search_no: '暂无结果，用户可能不存在！',
+    system_role: '系统内置角色',
+    custom_role: '自定义角色',
+    system: '系统',
+    user_search_placeholder: '搜索姓名、用户名',
+    manager: '管理员',
+    staff: '用户',
+    system_role_edit_tips: '系统角色无法编辑',
+    system_role_del_tips: '系统角色无法删除',
+    empty_description: '请先选择左侧角色'
   },
   org: {
     org_title: '组织管理',

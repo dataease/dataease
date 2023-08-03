@@ -299,7 +299,6 @@ const emits = defineEmits(['finish'])
             <el-icon>
               <Icon name="dv-folder"></Icon>
             </el-icon>
-            <span class="label"> 全部文件夹 </span>
           </div>
           <el-tree
             ref="treeRef"

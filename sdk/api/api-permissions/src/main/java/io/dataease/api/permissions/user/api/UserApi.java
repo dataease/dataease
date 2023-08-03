@@ -2,9 +2,7 @@ package io.dataease.api.permissions.user.api;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import io.dataease.api.permissions.role.dto.UserRequest;
-import io.dataease.api.permissions.user.dto.LangSwitchRequest;
-import io.dataease.api.permissions.user.dto.UserCreator;
-import io.dataease.api.permissions.user.dto.UserEditor;
+import io.dataease.api.permissions.user.dto.*;
 import io.dataease.api.permissions.user.vo.*;
 import io.dataease.auth.DeApiPath;
 import io.dataease.auth.DePermit;
@@ -87,4 +85,13 @@ public interface UserApi {
     @DePermit({"m:read", "#p0 + ':manage'"})
     @PostMapping("/resetPwd/{id}")
     void resetPwd(@PathVariable("id") Long id);
+
+    @DePermit({"m:read", "#p0.id + ':manage'"})
+    @PostMapping("/enable")
+    void enable(@RequestBody EnableSwitchRequest request);
+
+    @PostMapping("/modifyPwd")
+    void modifyPwd(@RequestBody ModifyPwdRequest request);
+
+
 }

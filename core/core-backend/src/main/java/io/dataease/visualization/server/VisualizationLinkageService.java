@@ -53,34 +53,39 @@ public class VisualizationLinkageService implements VisualizationLinkageApi {
     }
 
     @Override
+    public List<VisualizationLinkageDTO> getViewLinkageGatherArray(VisualizationLinkageRequest request) {
+        List<VisualizationLinkageDTO> linkageDTOList = extVisualizationLinkageMapper.getViewLinkageGather(request.getDvId(), request.getSourceViewId(), request.getTargetViewIds());
+        return linkageDTOList;
+    }
+
+    @Override
     @Transactional
     public BaseRspModel saveLinkage(VisualizationLinkageRequest request) {
         Long updateTime = System.currentTimeMillis();
-        Map<String, VisualizationLinkageDTO> linkageInfo =  request.getLinkageInfo();;
+        List<VisualizationLinkageDTO> linkageInfo =  request.getLinkageInfo();;
         String sourceViewId = request.getSourceViewId();
         String dvId = request.getDvId();
 
         Assert.notNull(sourceViewId, "source View ID can not be null");
         Assert.notNull(dvId, "dvId can not be null");
 
-        //去掉source view 的信息
-        linkageInfo.remove(sourceViewId);
-
         // 清理原有关系
         extVisualizationLinkageMapper.deleteViewLinkageField(dvId, sourceViewId);
         extVisualizationLinkageMapper.deleteViewLinkage(dvId, sourceViewId);
 
         //重新建立关系
-        for (Map.Entry<String, VisualizationLinkageDTO> entry : linkageInfo.entrySet()) {
-            String targetViewId = entry.getKey();
-            VisualizationLinkageDTO linkageDTO = entry.getValue();
+        for (VisualizationLinkageDTO linkageDTO:linkageInfo) {
+            //去掉source view 的信息
+            if(sourceViewId.equals(linkageDTO.getTargetViewId())){
+                continue;
+            }
             List<VisualizationLinkageFieldVO> linkageFields = linkageDTO.getLinkageFields();
             String linkageId = UUID.randomUUID().toString();
             VisualizationLinkage linkage = new VisualizationLinkage();
             linkage.setId(linkageId);
             linkage.setDvId(dvId);
             linkage.setSourceViewId(sourceViewId);
-            linkage.setTargetViewId(targetViewId);
+            linkage.setTargetViewId(linkageDTO.getTargetViewId());
             linkage.setUpdatePeople("");
             linkage.setUpdateTime(updateTime);
             linkage.setLinkageActive(linkageDTO.getLinkageActive());

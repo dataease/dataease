@@ -4,6 +4,7 @@ import io.dataease.api.visualization.dto.VisualizationLinkageDTO;
 import io.dataease.api.visualization.vo.VisualizationLinkageVO;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,6 @@ public class VisualizationLinkageRequest extends VisualizationLinkageVO {
     private List<String> targetViewIds;
 
 
-    private Map<String, VisualizationLinkageDTO> linkageInfo = new HashMap<>();
+    private List<VisualizationLinkageDTO> linkageInfo = new ArrayList<>();
 
 }

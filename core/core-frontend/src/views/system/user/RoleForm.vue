@@ -110,7 +110,8 @@ defineExpose({
     :before-close="reset"
     v-model="dialogVisible"
     :title="formType === 'add' ? t('role.add_title') : t('role.edit_title')"
-    width="540px"
+    width="420px"
+    height="282px"
   >
     <el-form
       ref="roleForm"
@@ -135,9 +136,9 @@ defineExpose({
         </el-radio-group>
       </el-form-item>
 
-      <el-form-item :label="$t('role.desc')" prop="desc">
+      <!-- <el-form-item :label="$t('role.desc')" prop="desc">
         <el-input v-model="form.desc" type="textarea" />
-      </el-form-item>
+      </el-form-item> -->
     </el-form>
     <template #footer>
       <span class="dialog-footer">

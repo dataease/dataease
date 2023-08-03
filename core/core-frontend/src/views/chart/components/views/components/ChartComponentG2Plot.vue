@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, onBeforeUnmount, onMounted, reactive, ref, toRaw, toRefs } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, toRaw, toRefs } from 'vue'
 import { getData } from '@/api/chart'
 import { ChartLibraryType } from '@/views/chart/components/js/panel/types'
 import { G2PlotChartView } from '@/views/chart/components/js/panel/types/impl/g2plot'
@@ -49,6 +49,7 @@ const state = reactive({
   loading: false,
   data: { fields: [] } // 图表数据
 })
+let mapObj = null
 
 const containerId = 'container-' + showPosition.value + '-' + view.value.id
 const viewTrack = ref(null)
@@ -75,7 +76,7 @@ const renderChart = async view => {
     return
   }
   // view 为引用对象 需要存库 view.data 直接赋值会导致保存不必要的数据
-  const chart = { ...view, data: state.data }
+  const chart = toRaw({ ...view, data: state.data })
   const chartView = chartViewManager.getChartView(view.render, view.type)
   switch (chartView.library) {
     case ChartLibraryType.L7_PLOT:
@@ -90,6 +91,7 @@ const renderChart = async view => {
 }
 
 const renderG2Plot = (chart, chartView: G2PlotChartView<any, any>) => {
+  state.myChart?.destroy()
   state.myChart = chartView.drawChart({
     chartObj: state.myChart,
     container: containerId,
@@ -101,19 +103,16 @@ const renderG2Plot = (chart, chartView: G2PlotChartView<any, any>) => {
 }
 
 const renderL7Plot = async (chart, chartView: L7PlotChartView<any, any>) => {
-  let map = parseJson(chart.customAttr).map
+  const map = parseJson(chart.customAttr).map
   let areaId = map.id
   if (dynamicAreaId.value) {
     areaId = dynamicAreaId.value
   }
-  const geoJson = await toRaw(getGeoJsonFile(areaId))
-  state.myChart = chartView.drawChart({
-    chartObj: toRaw(state.myChart),
+  mapObj = await chartView.drawChart({
+    chartObj: mapObj,
     container: containerId,
-    chart: chart,
+    chart,
     areaId,
-    geoJson,
-    level: map.level,
     action
   })
 }
