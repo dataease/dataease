@@ -172,16 +172,32 @@ const unBindUser = (uid: string) => {
         autofocus: false,
         tip: msg,
         showClose: false
-      }).then(() => {
-        unMountUserHandler(param, () => {
-          moveSelected([uid])
-        })
       })
+        .then(() => {
+          unMountUserHandler(param, () => {
+            moveSelected([uid])
+          })
+        })
+        .catch(() => {
+          loading.value = false
+        })
     } else {
       // 删除用户角色映射
-      unMountUserHandler(param, () => {
-        moveSelected2Option([uid])
+      ElMessageBox.confirm(t('role.confirm_unbind_user'), {
+        confirmButtonType: 'danger',
+        type: 'warning',
+        autofocus: false,
+        tip: '',
+        showClose: false
       })
+        .then(() => {
+          unMountUserHandler(param, () => {
+            moveSelected2Option([uid])
+          })
+        })
+        .catch(() => {
+          loading.value = false
+        })
     }
   })
 }
@@ -246,6 +262,9 @@ const handleCommand = (command: string) => {
 }
 
 const pageChange = index => {
+  if (typeof index !== 'number') {
+    return
+  }
   state.paginationConfig.currentPage = index
   selectedSearch(selectedRoleId.value)
 }
@@ -427,7 +446,7 @@ onMounted(() => {
           @size-change="sizeChange"
           @sort-change="sortChange"
         >
-          <el-table-column type="selection" width="30" />
+          <!-- <el-table-column type="selection" width="30" /> -->
           <el-table-column
             key="name"
             show-overflow-tooltip
