@@ -9,6 +9,7 @@ export interface Menu {
   label?: string
   command: string
   divided?: boolean
+  disabled?: boolean
 }
 
 defineProps({
@@ -46,6 +47,7 @@ const emit = defineEmits(['handleCommand'])
           :command="ele.command"
           v-for="ele in menuList"
           :key="ele.label"
+          :disabled="ele.disabled"
         >
           <el-icon class="handle-icon" v-if="ele.svgName">
             <Icon :name="ele.svgName"></Icon>
