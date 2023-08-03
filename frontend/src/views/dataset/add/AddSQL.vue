@@ -23,7 +23,7 @@
             />
           </el-select>
           <el-select
-            v-if="!param.tableId"
+            :disabled="param.tableId"
             v-model="mode"
             style="width: 120px; margin: 0 12px"
             filterable
@@ -42,6 +42,7 @@
             />
           </el-select>
           <el-select
+            :disabled="param.tableId"
             v-if="mode === '1'"
             v-model="syncType"
             style="width: 120px"
