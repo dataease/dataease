@@ -254,6 +254,9 @@ public class DatasetGroupManage {
     }
 
     public void saveField(DatasetGroupInfoDTO datasetGroupInfoDTO, List<Long> fieldIds) throws Exception {
+        if (ObjectUtils.isEmpty(datasetGroupInfoDTO.getUnion())) {
+            return;
+        }
         datasetDataManage.previewDataWithLimit(datasetGroupInfoDTO, 0, 1);
         // table和field均由前端生成id（如果没有id）
         Long datasetGroupId = datasetGroupInfoDTO.getId();
