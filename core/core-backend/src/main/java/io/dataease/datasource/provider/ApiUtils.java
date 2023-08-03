@@ -43,6 +43,7 @@ public class ApiUtils {
             DatasetTableDTO datasetTableDTO = new DatasetTableDTO();
             datasetTableDTO.setTableName(apiDefinition.getDeTableName());
             datasetTableDTO.setName(apiDefinition.getDeTableName());
+            datasetTableDTO.setDatasourceId(datasourceRequest.getDatasource().getId());
             tableDescs.add(datasetTableDTO);
         }
         return tableDescs;
