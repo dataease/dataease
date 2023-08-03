@@ -21,6 +21,7 @@ import io.dataease.xpack.permissions.org.bo.PerOrgItem;
 import io.dataease.xpack.permissions.org.manage.OrgPageManage;
 import io.dataease.xpack.permissions.user.dao.auto.entity.PerUser;
 import io.dataease.xpack.permissions.user.dao.auto.mapper.PerUserMapper;
+import io.dataease.xpack.permissions.user.dao.ext.entity.UserInfoPO;
 import io.dataease.xpack.permissions.user.dao.ext.entity.UserRolePO;
 import io.dataease.xpack.permissions.user.dao.ext.mapper.UserExtMapper;
 import io.dataease.xpack.permissions.user.entity.UserSortEntity;
@@ -210,8 +211,7 @@ public class UserPageManage {
     }
 
     public UserFormVO queryForm(Long uid) {
-        UserFormVO userFormVO = userExtMapper.queryForm(uid, AuthUtils.getUser().getDefaultOid());
-        return userFormVO;
+        return userExtMapper.queryForm(uid, AuthUtils.getUser().getDefaultOid());
     }
 
     public List<UserItemVO> optionForRole(UserRequest request) {
@@ -260,8 +260,10 @@ public class UserPageManage {
 
 
     public CurUserVO getUserInfo() {
-        Long userId = AuthUtils.getUser().getUserId();
-        return userExtMapper.userInfo(userId);
+        TokenUserBO user = AuthUtils.getUser();
+        UserInfoPO po = userExtMapper.userInfo(user.getUserId());
+        po.setOid(user.getDefaultOid());
+        return po;
     }
 
     @CacheEvict(cacheNames = "user_count", key = "'de'")

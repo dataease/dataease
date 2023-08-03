@@ -38,17 +38,18 @@ public class MenuAuthManage extends ServiceImpl<PerAuthMenuMapper, PerAuthMenu> 
 
     public List<PermissionOrigin> roleOrigin(List<Long> notMatchRids) {
         if (CollectionUtil.isNotEmpty(notMatchRids)) {
-            List<PermissionOrigin> permissionOrigins = menuAuthExtMapper.batchRolePermission(notMatchRids);
-            return permissionOrigins;
+            return menuAuthExtMapper.batchRolePermission(notMatchRids);
         }
         return null;
     }
+
     public List<PermissionItem> permissionItems(List<Long> rids) {
         List<PermissionItem> permissionItems = new ArrayList<>();
         List<Long> notMatchRids = rids.stream().filter(rid -> {
             String key = rid.toString();
             if (CacheUtils.keyExist(cacheName, key)) {
-                permissionItems.addAll((List<PermissionItem>) CacheUtils.get(cacheName, key));
+                Object o = CacheUtils.get(cacheName, key);
+                permissionItems.addAll((List<PermissionItem>) o);
                 return false;
             }
             return true;

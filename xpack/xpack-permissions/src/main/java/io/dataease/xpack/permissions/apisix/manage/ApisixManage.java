@@ -1,7 +1,6 @@
 package io.dataease.xpack.permissions.apisix.manage;
 
 import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.util.ArrayUtil;
 import io.dataease.auth.DeApiPath;
 import io.dataease.auth.DePermit;
 import io.dataease.auth.bo.TokenUserBO;
@@ -10,7 +9,6 @@ import io.dataease.constant.AuthEnum;
 import io.dataease.constant.AuthResourceEnum;
 import io.dataease.utils.AuthUtils;
 import io.dataease.utils.ServletUtils;
-import io.dataease.utils.TokenUtils;
 import io.dataease.utils.UserUtils;
 import io.dataease.xpack.permissions.apisix.proxy.ProxyRequest;
 import io.dataease.xpack.permissions.auth.manage.ApiAuthManage;
@@ -100,8 +98,8 @@ public class ApisixManage {
         DeApiPath deApiPath = handlerMethod.getBeanType().getAnnotation(DeApiPath.class);
         if (deApiPath == null) {
             Class<?>[] interfaces = handlerMethod.getBeanType().getInterfaces();
-            for (int i = 0; i < interfaces.length; i++) {
-                deApiPath = interfaces[i].getAnnotation(DeApiPath.class);
+            for (Class<?> anInterface : interfaces) {
+                deApiPath = anInterface.getAnnotation(DeApiPath.class);
                 if (deApiPath != null) {
                     break;
                 }

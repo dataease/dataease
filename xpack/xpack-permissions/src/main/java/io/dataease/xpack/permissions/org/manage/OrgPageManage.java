@@ -70,8 +70,7 @@ public class OrgPageManage {
 
     private List<OrgPageVO> convertTree(List<OrgTreeNode> roots) {
         List<OrgPageVO> result = new ArrayList<>();
-        for (int i = 0; i < roots.size(); i++) {
-            OrgTreeNode orgTreeNode = roots.get(i);
+        for (OrgTreeNode orgTreeNode : roots) {
             OrgPageVO vo = BeanUtils.copyBean(new OrgPageVO(), orgTreeNode, "children");
             vo.setReadOnly(orgTreeNode.isDisabled());
             result.add(vo);
@@ -85,8 +84,7 @@ public class OrgPageManage {
 
     private List<MountedVO> convertMountedTree(List<OrgTreeNode> roots) {
         List<MountedVO> result = new ArrayList<>();
-        for (int i = 0; i < roots.size(); i++) {
-            OrgTreeNode orgTreeNode = roots.get(i);
+        for (OrgTreeNode orgTreeNode : roots) {
             MountedVO vo = BeanUtils.copyBean(new MountedVO(), orgTreeNode, "children");
             vo.setReadOnly(orgTreeNode.isDisabled());
             result.add(vo);
@@ -100,12 +98,11 @@ public class OrgPageManage {
 
 
     private List<PerOrgItem> convertItems(List<PerOrg> perOrgs, boolean disabled) {
-        List<PerOrgItem> perOrgItems = perOrgs.stream().map(org -> {
+        return perOrgs.stream().map(org -> {
             PerOrgItem perOrgItem = BeanUtils.copyBean(new PerOrgItem(), org);
             perOrgItem.setDisabled(disabled);
             return perOrgItem;
         }).toList();
-        return perOrgItems;
     }
 
     public List<PerOrgItem> queryByUser(Long userId, String keyword) {
@@ -125,9 +122,9 @@ public class OrgPageManage {
         perOrgs = orgExtMapper.queryByUserId(queryWrapper);
         List<PerOrgItem> perOrgItems = convertItems(perOrgs, false);
         if (CollectionUtil.isNotEmpty(perOrgs)) {
-            List<Long> matchIds = perOrgs.stream().map(PerOrg::getId).collect(Collectors.toList());
+            List<Long> matchIds = perOrgs.stream().map(PerOrg::getId).toList();
             List<String> ids = perOrgs.stream().filter(item -> StringUtils.isNotBlank(item.getRootWay())).flatMap(item -> Arrays.stream(StringUtils.split(item.getRootWay(), ","))).distinct().filter(item -> !matchIds.contains(Long.parseLong(item))).collect(Collectors.toList());
-            if (CollectionUtil.isEmpty(ids))  {
+            if (CollectionUtil.isEmpty(ids)) {
                 return perOrgItems;
             }
             queryWrapper.clear();
@@ -169,8 +166,7 @@ public class OrgPageManage {
     }
 
     public PerOrg queryOne(Long id) {
-        PerOrg perOrg = perOrgMapper.selectById(id);
-        return perOrg;
+        return perOrgMapper.selectById(id);
     }
 
     public void edit(Long id, String name) {
@@ -194,7 +190,7 @@ public class OrgPageManage {
     }
 
     public boolean hasChildren(Long id) {
-        QueryWrapper<PerOrg> queryWrapper = new QueryWrapper();
+        QueryWrapper<PerOrg> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("pid", id);
         return perOrgMapper.selectCount(queryWrapper) > 0;
     }

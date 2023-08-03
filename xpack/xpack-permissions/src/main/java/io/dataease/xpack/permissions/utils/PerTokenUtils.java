@@ -17,6 +17,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.core.env.Environment;
 
 import java.util.Date;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 public class PerTokenUtils {
@@ -50,20 +51,19 @@ public class PerTokenUtils {
         return new TokenBO(userId, oid, ObjectUtils.isEmpty(expiresAt) ? null : expiresAt.getTime());
     }
 
-    public static boolean verify(String token, TokenUserBO bo, String secret) {
+    public static void verify(String token, TokenUserBO bo, String secret) {
         Algorithm algorithm = Algorithm.HMAC256(secret);
         Verification verification = JWT.require(algorithm).withClaim("uid", bo.getUserId()).withClaim("oid", bo.getDefaultOid());
         JWTVerifier verifier = verification.build();
         DecodedJWT decode = JWT.decode(token);
         algorithm.verify(decode);
         verifier.verify(token);
-        return true;
     }
 
     public static String refreshTemp(TokenBO tokenBO, String secret) {
         Long exp = tokenBO.getExp();
         long now = System.currentTimeMillis();
-        if (now + 10000 > exp) {
+        if (now + 10000L > exp) {
             String newToken = generate(tokenBO, secret);
             HttpServletResponse response = ServletUtils.response();
             response.addHeader(AuthConstant.REFRESH_TOKEN_KEY, newToken);
@@ -79,7 +79,7 @@ public class PerTokenUtils {
 
     public static Long getExpireTime(TimeUnit unit) {
         if (ObjectUtils.isEmpty(expireTime)) {
-            expireTime = CommonBeanFactory.getBean(Environment.class).getProperty("dataease.login_timeout", Long.class, 480L);
+            expireTime = Objects.requireNonNull(CommonBeanFactory.getBean(Environment.class)).getProperty("dataease.login_timeout", Long.class, 480L);
         }
         if (ObjectUtils.isEmpty(unit) || unit == TimeUnit.MINUTES) {
             return expireTime;
