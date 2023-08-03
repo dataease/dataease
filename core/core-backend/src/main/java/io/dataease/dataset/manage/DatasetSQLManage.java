@@ -63,12 +63,12 @@ public class DatasetSQLManage {
         }
 
         DatasetTableDTO currentDs = union.get(0).getCurrentDs();
+
+        // get datasource and schema,put map
+        String tableSchema = putObj2Map(dsMap, currentDs);
         // get table
-        String tableSchema = String.format(SQLConstants.SCHEMA, currentDs.getDatasourceId());
         DatasetTableInfoDTO infoDTO = JsonUtil.parseObject(currentDs.getInfo(), DatasetTableInfoDTO.class);
         SQLObj tableName = getUnionTable(currentDs, infoDTO, tableSchema, 0);
-        // get datasource and schema,put map
-        putObj2Map(dsMap, currentDs, tableSchema);
 
         for (int i = 0; i < union.size(); i++) {
             UnionDTO unionDTO = union.get(i);
@@ -79,8 +79,7 @@ public class DatasetSQLManage {
             if (dsMap.containsKey(datasetTable.getDatasourceId())) {
                 schema = dsMap.get(datasetTable.getDatasourceId()).getSchemaAlias();
             } else {
-                schema = String.format(SQLConstants.SCHEMA, datasetTable.getDatasourceId());
-                putObj2Map(dsMap, datasetTable, schema);
+                schema = putObj2Map(dsMap, datasetTable);
             }
             SQLObj table = getUnionTable(datasetTable, tableInfo, schema, i);
 
@@ -198,8 +197,7 @@ public class DatasetSQLManage {
             if (dsMap.containsKey(datasetTable.getDatasourceId())) {
                 schema = dsMap.get(datasetTable.getDatasourceId()).getSchemaAlias();
             } else {
-                schema = String.format(SQLConstants.SCHEMA, datasetTable.getDatasourceId());
-                putObj2Map(dsMap, datasetTable, schema);
+                schema = putObj2Map(dsMap, datasetTable);
             }
             SQLObj table = getUnionTable(datasetTable, tableInfo, schema, index);
 
@@ -282,21 +280,29 @@ public class DatasetSQLManage {
         return tableObj;
     }
 
-    private void putObj2Map(Map<Long, DatasourceSchemaDTO> dsMap, DatasetTableDTO ds, String schemaAlias) throws Exception {
+    private String putObj2Map(Map<Long, DatasourceSchemaDTO> dsMap, DatasetTableDTO ds) throws Exception {
+        String schemaAlias;
         if (StringUtils.equalsIgnoreCase(ds.getType(), DatasetTableType.DB) || StringUtils.equalsIgnoreCase(ds.getType(), DatasetTableType.SQL)) {
+            CoreDatasource coreDatasource = coreDatasourceMapper.selectById(ds.getDatasourceId());
+            schemaAlias = String.format(SQLConstants.SCHEMA, coreDatasource.getId());
             if (!dsMap.containsKey(ds.getDatasourceId())) {
-                CoreDatasource coreDatasource = coreDatasourceMapper.selectById(ds.getDatasourceId());
                 DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
                 BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
                 datasourceSchemaDTO.setSchemaAlias(schemaAlias);
                 dsMap.put(ds.getDatasourceId(), datasourceSchemaDTO);
+            } else {
+                schemaAlias = String.format(SQLConstants.SCHEMA, ds.getDatasourceId());
             }
         } else {
             CoreDatasource coreDatasource = engineServer.getDeEngine();
-            DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
-            BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
-            datasourceSchemaDTO.setSchemaAlias(schemaAlias);
-            dsMap.put(-1L, datasourceSchemaDTO);
+            schemaAlias = String.format(SQLConstants.SCHEMA, coreDatasource.getId());
+            if (!dsMap.containsKey(ds.getDatasourceId())) {
+                DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
+                BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
+                datasourceSchemaDTO.setSchemaAlias(schemaAlias);
+                dsMap.put(coreDatasource.getId(), datasourceSchemaDTO);
+            }
         }
+        return schemaAlias;
     }
 }
