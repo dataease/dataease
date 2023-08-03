@@ -187,6 +187,7 @@ public class DatasetDataManage {
         } else {
             querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, start, count);
         }
+        logger.info("calcite data preview sql: " + querySQL);
 
         // 通过数据源请求数据
         // 调用数据源的calcite获得data
@@ -205,7 +206,6 @@ public class DatasetDataManage {
             map.put("allFields", fieldList);
         }
         map.put("sql", Base64.getEncoder().encodeToString(querySQL.getBytes()));
-        logger.info("calcite data preview sql: " + querySQL);
         map.put("total", getDatasetTotal(datasetGroupInfoDTO));
         return map;
     }

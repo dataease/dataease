@@ -14,6 +14,7 @@ import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
@@ -59,12 +60,12 @@ public class UserAuthManage extends ServiceImpl<PerAuthBusiUserMapper, PerAuthBu
         return busiUser;
     }
 
+    @Transactional
     public void syncCascade(List<PerAuthBusiUser> pers, Long resourceId) {
         if (CollectionUtil.isEmpty(pers)) return;
-        List<PerAuthBusiUser> busiUsers = pers.stream().map(per -> {
+        List<PerAuthBusiUser> busiUsers = pers.stream().peek(per -> {
             per.setResourceId(resourceId);
             per.setId(IDUtils.snowID());
-            return per;
         }).toList();
         saveBatch(busiUsers);
     }

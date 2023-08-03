@@ -1,8 +1,8 @@
 package io.dataease.engine.trans;
 
-import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.api.dataset.union.model.SQLMeta;
 import io.dataease.api.dataset.union.model.SQLObj;
+import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.engine.constant.DeTypeConstants;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.constant.SQLConstants;
@@ -70,7 +70,7 @@ public class Field2SQLObj {
                     fieldName = String.format(SQLConstants.CAST, originField, SQLConstants.DEFAULT_FLOAT_FORMAT);
                 } else if (Objects.equals(f.getDeType(), DeTypeConstants.DE_TIME)) {
                     fieldName = StringUtils.isEmpty(f.getDateFormat()) ? String.format(SQLConstants.STR_TO_DATE, originField, SQLConstants.DEFAULT_DATE_FORMAT) :
-                            String.format(SQLConstants.DATE_FORMAT, String.format(SQLConstants.STR_TO_DATE, originField, f.getDateFormat()), SQLConstants.DEFAULT_DATE_FORMAT);
+                            String.format(SQLConstants.STR_TO_DATE, originField, f.getDateFormat());
                 } else {
                     fieldName = originField;
                 }

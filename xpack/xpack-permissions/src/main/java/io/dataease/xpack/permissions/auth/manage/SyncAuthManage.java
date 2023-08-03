@@ -6,10 +6,7 @@ import io.dataease.api.permissions.auth.dto.BusiResourceEditor;
 import io.dataease.auth.bo.TokenUserBO;
 import io.dataease.constant.BusiResourceEnum;
 import io.dataease.exception.DEException;
-import io.dataease.utils.AuthUtils;
-import io.dataease.utils.CacheUtils;
-import io.dataease.utils.CommonBeanFactory;
-import io.dataease.utils.LogUtil;
+import io.dataease.utils.*;
 import io.dataease.xpack.permissions.auth.dao.auto.entity.PerAuthBusiRole;
 import io.dataease.xpack.permissions.auth.dao.auto.entity.PerAuthBusiUser;
 import io.dataease.xpack.permissions.auth.dao.auto.entity.PerBusiResource;
@@ -25,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Component
@@ -120,12 +116,9 @@ public class SyncAuthManage {
 
     private void clear(Integer rtId, List<Long> uids, List<Long> rids) {
         clearCache(rtId, uids, rids);
-        try {
-            TimeUnit.MILLISECONDS.sleep(1000L);
+        DelayQueueUtils.execute(IDUtils.randomID(16), () -> {
             clearCache(rtId, uids, rids);
-        } catch (Exception e) {
-            DEException.throwException(e);
-        }
+        }, 1L);
     }
 
     private SyncAuthManage proxy() {
@@ -161,11 +154,11 @@ public class SyncAuthManage {
         List<String> rootList = null;
         if (StringUtils.isNotBlank(perBusiResource.getRootWay())) {
             rootList = Arrays.stream(perBusiResource.getRootWay().split(",")).toList();
-            rootList.addAll(ids.stream().map(temp -> temp.toString()).collect(Collectors.toList()));
+            rootList.addAll(ids.stream().map(Object::toString).toList());
         } else {
-            rootList = ids.stream().map(temp -> temp.toString()).collect(Collectors.toList());
+            rootList = ids.stream().map(Object::toString).collect(Collectors.toList());
         }
-        String rootWay = rootList.stream().collect(Collectors.joining(","));
+        String rootWay = String.join(",", rootList);
         List<PerAuthBusiUser> perAuthBusiUsers = userAuthManage.uidForRootWay(rootWay);
         PerAuthBusiUser authBusiUser = userAuthManage.curUserPer(id, rtId);
         perAuthBusiUsers = ObjectUtils.isEmpty(perAuthBusiUsers) ? new ArrayList<>() : perAuthBusiUsers;

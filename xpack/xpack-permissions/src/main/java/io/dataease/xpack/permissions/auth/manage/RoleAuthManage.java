@@ -32,7 +32,7 @@ import java.util.stream.Stream;
 @Component
 public class RoleAuthManage extends ServiceImpl<PerAuthBusiRoleMapper, PerAuthBusiRole> {
 
-    private static Map<Integer, List<Integer>> weightMap = new ConcurrentHashMap<>();
+    private static final Map<Integer, List<Integer>> weightMap = new ConcurrentHashMap<>();
 
     @Resource
     private PerAuthBusiRoleMapper perAuthBusiRoleMapper;
@@ -56,12 +56,12 @@ public class RoleAuthManage extends ServiceImpl<PerAuthBusiRoleMapper, PerAuthBu
         return perAuthBusiRoleMapper.selectBatchIds(ids);
     }
 
+    @Transactional
     public void syncCascade(List<PerAuthBusiRole> pers, Long resourceId) {
         if (CollectionUtil.isEmpty(pers)) return;
-        List<PerAuthBusiRole> perAuthBusiRoles = pers.stream().map(per -> {
+        List<PerAuthBusiRole> perAuthBusiRoles = pers.stream().peek(per -> {
             per.setId(IDUtils.snowID());
             per.setResourceId(resourceId);
-            return per;
         }).toList();
         saveBatch(perAuthBusiRoles);
     }
@@ -79,7 +79,7 @@ public class RoleAuthManage extends ServiceImpl<PerAuthBusiRoleMapper, PerAuthBu
         Map<Integer, List<ResourcePO>> listMap = pos.stream().collect(Collectors.groupingBy(ResourcePO::getType));
         if (CollectionUtil.isNotEmpty(listMap)) {
             List<Integer> busiTypes = List.of(1, 2, 3, 4);
-            List<PerAuthBusiRole> perAuthBusiRoles = busiTypes.stream().filter(t -> CollectionUtil.isNotEmpty(listMap.get(t))).flatMap(type -> syncBusiItem(type, listMap.get(type).stream().map(item -> item.getId()).toList(), perRole.getId(), readonly)).toList();
+            List<PerAuthBusiRole> perAuthBusiRoles = busiTypes.stream().filter(t -> CollectionUtil.isNotEmpty(listMap.get(t))).flatMap(type -> syncBusiItem(type, listMap.get(type).stream().map(ResourcePO::getId).toList(), perRole.getId(), readonly)).toList();
             saveBatch(perAuthBusiRoles, 1000);
         }
     }
@@ -130,8 +130,8 @@ public class RoleAuthManage extends ServiceImpl<PerAuthBusiRoleMapper, PerAuthBu
         String keySuffix = isMenu ? "" : flag.toString();
         List<PermissionOrigin> cachePermissionOrigins = new ArrayList<>();
         rids = rids.stream().filter(rid -> {
-            if (CacheUtils.keyExist(cacheName, rid.toString() + keySuffix)) {
-                Object o = CacheUtils.get(cacheName, rid.toString() + keySuffix);
+            if (CacheUtils.keyExist(cacheName, rid + keySuffix)) {
+                Object o = CacheUtils.get(cacheName, rid + keySuffix);
                 PermissionOrigin origin = new PermissionOrigin();
                 origin.setId(rid);
                 origin.setPermissions((List<PermissionItem>) o);
@@ -144,7 +144,7 @@ public class RoleAuthManage extends ServiceImpl<PerAuthBusiRoleMapper, PerAuthBu
         if (CollectionUtil.isNotEmpty(rids)) {
             permissionOrigins = isMenu ? menuAuthExtMapper.batchRolePermission(rids) : busiAuthExtMapper.batchRolePermission(rids, flag);
         }
-        permissionOrigins = CollectionUtil.addAllIfNotContains(permissionOrigins, cachePermissionOrigins);
+        CollectionUtil.addAllIfNotContains(permissionOrigins, cachePermissionOrigins);
         if (CollectionUtil.isNotEmpty(permissionOrigins)) {
             Map<Long, List<UserRole>> roleMap = userRoles.stream().collect(Collectors.groupingBy(UserRole::getId));
             permissionOrigins.forEach(permissionOrigin -> {

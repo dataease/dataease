@@ -166,6 +166,9 @@ const fillFilterText = () => {
   Object.assign(state.filterTexts, textArray)
 }
 const pageChange = index => {
+  if (typeof index !== 'number') {
+    return
+  }
   state.paginationConfig.currentPage = index
   search()
 }

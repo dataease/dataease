@@ -73,6 +73,7 @@ const onThresholdChange = val => {
           class="style-collapse"
         >
           <collapse-switch-item
+            :themes="themes"
             v-if="
               props.chart.type?.includes('bar') ||
               props.chart.type?.includes('line') ||
@@ -92,6 +93,7 @@ const onThresholdChange = val => {
           </collapse-switch-item>
 
           <el-collapse-item
+            :effect="themes"
             v-if="
               props.chart.type?.includes('bar') ||
               props.chart.type?.includes('line') ||
@@ -109,6 +111,7 @@ const onThresholdChange = val => {
           </el-collapse-item>
 
           <el-collapse-item
+            :effect="themes"
             v-if="props.chart.type?.includes('table')"
             name="scroll"
             :title="t('chart.scroll_cfg')"
@@ -121,6 +124,7 @@ const onThresholdChange = val => {
           </el-collapse-item>
 
           <el-collapse-item
+            :effect="themes"
             v-if="
               props.chart.type?.includes('table') ||
               props.chart.type?.includes('text') ||

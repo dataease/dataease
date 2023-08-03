@@ -79,23 +79,16 @@ public class ApiAuthManage extends OrgResourceManage {
     private List<Long> orgResource(Integer flag, Long oid) {
         ApiAuthManage manage = proxy();
 
-        switch (flag) {
-            case 1:
-                return manage.panelIds(oid);
-            case 2:
-                return manage.screenIds(oid);
-            case 3:
-                return manage.datasetIds(oid);
-            case 4:
-                return manage.datasourceIds(oid);
-            case 5:
-                return manage.uids(oid);
-            case 6:
-                return manage.rids(oid);
-            case 7:
-                return oids(oid);
-        }
-        return null;
+        return switch (flag) {
+            case 1 -> manage.panelIds(oid);
+            case 2 -> manage.screenIds(oid);
+            case 3 -> manage.datasetIds(oid);
+            case 4 -> manage.datasourceIds(oid);
+            case 5 -> manage.uids(oid);
+            case 6 -> manage.rids(oid);
+            case 7 -> oids(oid);
+            default -> null;
+        };
     }
 
     private List<Long> oids(Long oid) {

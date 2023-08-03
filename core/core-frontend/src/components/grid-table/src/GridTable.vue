@@ -18,10 +18,14 @@ const attrs = useAttrs()
 
 const handleListeners = () => {
   Object.keys(attrs).forEach(key => {
-    if (['onSizeChange', 'onCurrentChange'].includes(key)) {
-      state.paginationEvent[key.slice(2)] = attrs[key]
+    if (key.startsWith('on')) {
+      if (['onSizeChange', 'onCurrentChange'].includes(key)) {
+        state.paginationEvent[key.slice(2)] = attrs[key]
+      } else {
+        state.tableEvent[key] = attrs[key]
+      }
     } else {
-      state.tableEvent[key] = attrs[key]
+      state.tableAttrs[key] = attrs[key]
     }
   })
 }
@@ -62,7 +66,8 @@ const state = reactive({
     total: 0
   },
   multipleSelectionCache: [],
-  tableEvent: {}
+  tableEvent: {},
+  tableAttrs: {}
 })
 
 const table = ref(null)
@@ -109,7 +114,7 @@ defineExpose({
     <el-table
       header-cell-class-name="header-cell"
       ref="table"
-      v-bind="attrs"
+      v-bind="state.tableAttrs"
       :data="tableData"
       :style="{ width: '100%' }"
       v-on="state.tableEvent"

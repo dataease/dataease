@@ -3,7 +3,6 @@ import { ref, reactive, onMounted } from 'vue'
 import { Icon } from '@/components/icon-custom'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
 import OrgUser from './OrgUser.vue'
-/* import ExternalUser from './ExternalUser.vue' */
 import {
   searchRoleApi,
   userSelectedForRoleApi,
@@ -18,6 +17,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { setColorName } from '@/utils/utils'
 const selectedRoleId = ref('')
 const selectedRoleName = ref('')
+const selectedRoleRoot = ref(false)
 const roleKeyword = ref('')
 const selectedFilterkey = ref('')
 const roleFormRef = ref(null)
@@ -30,6 +30,7 @@ interface Tree {
   readonly: boolean
   children?: Tree[]
   disabled: boolean
+  root?: boolean
 }
 
 const handleNodeClick = (data: Tree) => {
@@ -38,6 +39,7 @@ const handleNodeClick = (data: Tree) => {
   }
   selectedRoleId.value = data.id
   selectedRoleName.value = data.name
+  selectedRoleRoot.value = data.root
   selectedSearch(data.id)
 }
 
@@ -55,16 +57,18 @@ const state = reactive({
 const order = ref(null)
 state.roleData = [
   {
-    id: 'admin',
-    name: t('role.org_admin'),
+    id: 'system',
+    name: t('role.system_role'),
     children: null,
-    disabled: true
+    disabled: true,
+    root: true
   },
   {
-    id: 'readonly',
-    name: t('role.average_role'),
+    id: 'custom',
+    name: t('role.custom_role'),
     children: null,
-    disabled: true
+    disabled: true,
+    root: false
   }
 ]
 
@@ -79,6 +83,7 @@ const selectedSearch = (rid?: string) => {
         const records = res.data.records
         records.forEach(item => {
           setColorName(item, selectedFilterkey.value)
+          setColorName(item, selectedFilterkey.value, 'account', 'colorAccount')
         })
         state.addedUserList = records
         state.paginationConfig.total = res.data.total
@@ -96,8 +101,8 @@ const roleSearch = () => {
   searchRoleApi(null).then(res => {
     const roles = res.data
     const map = groupBy(roles)
-    state.roleData[0].children = map.get(false)
-    state.roleData[1].children = map.get(true)
+    state.roleData[0].children = map.get(true)
+    state.roleData[1].children = map.get(false)
     loading.value = false
   })
 }
@@ -105,14 +110,14 @@ const roleSearch = () => {
 const groupBy = (list: Tree[]) => {
   const map = new Map()
   list.forEach(item => {
-    const readonly = item.readonly
-    let arr = map.get(readonly)
+    const root = item.root
+    let arr = map.get(root)
     if (!arr) {
       arr = []
     }
     item.disabled = false
     arr.push(item)
-    map.set(readonly, arr)
+    map.set(root, arr)
   })
   return map
 }
@@ -167,16 +172,32 @@ const unBindUser = (uid: string) => {
         autofocus: false,
         tip: msg,
         showClose: false
-      }).then(() => {
-        unMountUserHandler(param, () => {
-          moveSelected([uid])
-        })
       })
+        .then(() => {
+          unMountUserHandler(param, () => {
+            moveSelected([uid])
+          })
+        })
+        .catch(() => {
+          loading.value = false
+        })
     } else {
       // 删除用户角色映射
-      unMountUserHandler(param, () => {
-        moveSelected2Option([uid])
+      ElMessageBox.confirm(t('role.confirm_unbind_user'), {
+        confirmButtonType: 'danger',
+        type: 'warning',
+        autofocus: false,
+        tip: '',
+        showClose: false
       })
+        .then(() => {
+          unMountUserHandler(param, () => {
+            moveSelected2Option([uid])
+          })
+        })
+        .catch(() => {
+          loading.value = false
+        })
     }
   })
 }
@@ -215,10 +236,6 @@ const moveSelected2Option = (uids: string[]) => {
   }
 }
 const openOutUser = () => {
-  if (!selectedRoleId.value) {
-    ElMessage.error('请先选择角色')
-    return
-  }
   outUserFormRef.value.init(selectedRoleId.value)
 }
 
@@ -236,19 +253,18 @@ const filterSelected = () => {
   selectedSearch(selectedRoleId.value)
 }
 const addOrgUserDialog = ref()
-// const addExternalUserDialog = ref()
 const handleCommand = (command: string) => {
   if ('org' === command) {
     addOrgUserDialog.value.init()
     return
   }
   openOutUser()
-  // addExternalUserDialog.value.init()
 }
-/* const optionFilter = val => {
-  filterOptionkey.value = val ? val.toLocaleLowerCase() : val
-} */
+
 const pageChange = index => {
+  if (typeof index !== 'number') {
+    return
+  }
   state.paginationConfig.currentPage = index
   selectedSearch(selectedRoleId.value)
 }
@@ -286,11 +302,14 @@ onMounted(() => {
       <div class="title">
         <div class="text w100 flex-align-center">
           <span>{{ t('role.role_title') }}</span>
-          <el-icon @click="roleAdd" class="hover-icon">
-            <Icon name="icon_add_outlined"></Icon>
-          </el-icon>
         </div>
-        <el-input class="m16 w100" v-model="roleKeyword" clearable @change="triggerFilterRole">
+        <el-input
+          class="m16 w100"
+          v-model="roleKeyword"
+          clearable
+          @change="triggerFilterRole"
+          :placeholder="t('commons.search')"
+        >
           <template #prefix>
             <el-icon>
               <Icon name="icon_search-outline_outlined"></Icon>
@@ -300,8 +319,13 @@ onMounted(() => {
       </div>
       <el-scrollbar class="role-tree-container">
         <div v-for="(roleGroup, index) in state.roleData" :key="roleGroup.id">
-          <div class="role-title flex-align-center">
-            {{ roleGroup.name }}
+          <div class="role-title text flex-align-center">
+            <span>{{ roleGroup.name }}</span>
+            <span class="icon-span">
+              <el-icon v-if="!roleGroup.root" @click="roleAdd" class="hover-icon">
+                <Icon name="icon_add_outlined"></Icon>
+              </el-icon>
+            </span>
           </div>
           <div
             class="list-item_primary"
@@ -310,16 +334,27 @@ onMounted(() => {
             :key="role.id"
             @click.stop="handleNodeClick(role)"
           >
-            <span :class="role.root && 'flex-align-center'" class="label">
+            <span class="flex-align-center label">
               <span v-if="role.colorName" v-html="role.colorName" />
               <span v-else>{{ role.name }}</span>
-              <span v-if="role.root" class="mark flex-center">系统</span>
+              <el-tooltip
+                class="box-item"
+                effect="dark"
+                :content="t('role.system_role')"
+                placement="top"
+                v-if="role.root"
+              >
+                <span class="mark flex-center">{{ t('role.system') }}</span>
+              </el-tooltip>
+              <span v-else class="de-mark flex-center">{{
+                role.readonly ? t('role.manager') : t('role.staff')
+              }}</span>
             </span>
             <span class="btn-list" :class="{ 'de-disabled-btn': role.root }">
               <el-tooltip
                 class="box-item"
                 effect="dark"
-                :content="role.root ? '系统角色无法编辑' : '编辑'"
+                :content="role.root ? t('role.system_role_edit_tips') : t('common.edit')"
                 placement="top"
               >
                 <el-icon @click.stop="roleEdit(role)" class="hover-icon">
@@ -330,7 +365,7 @@ onMounted(() => {
               <el-tooltip
                 class="box-item"
                 effect="dark"
-                :content="role.root ? '系统角色无法删除' : '删除'"
+                :content="role.root ? t('role.system_role_del_tips') : t('common.delete')"
                 placement="top"
               >
                 <el-icon @click.stop="delHandler(role)" class="hover-icon">
@@ -343,9 +378,10 @@ onMounted(() => {
         </div>
       </el-scrollbar>
     </div>
-    <div class="added-user-list role-height">
+    <div class="added-user-list role-height" v-if="selectedRoleId">
       <div class="user-info flex-align-center">
         <span class="text">{{ selectedRoleName }}</span>
+        <span v-if="selectedRoleRoot" class="mark flex-center">{{ t('role.system') }}</span>
         <el-divider direction="vertical" />
         <el-icon>
           <Icon name="icon_member_filled"></Icon>
@@ -374,13 +410,13 @@ onMounted(() => {
                   <el-icon>
                     <Icon name="icon_team-add_outlined"></Icon>
                   </el-icon>
-                  添加组织用户
+                  {{ t('role.org_user_title') }}
                 </el-dropdown-item>
                 <el-dropdown-item command="external">
                   <el-icon>
                     <Icon name="icon_member-add_outlined"></Icon>
                   </el-icon>
-                  添加外部用户
+                  {{ t('role.out_user_title') }}
                 </el-dropdown-item>
               </el-dropdown-menu>
             </template>
@@ -392,6 +428,7 @@ onMounted(() => {
             v-model="selectedFilterkey"
             clearable
             @change="filterSelected"
+            :placeholder="t('role.user_search_placeholder')"
           >
             <template #prefix>
               <el-icon>
@@ -409,7 +446,7 @@ onMounted(() => {
           @size-change="sizeChange"
           @sort-change="sortChange"
         >
-          <el-table-column type="selection" width="30" />
+          <!-- <el-table-column type="selection" width="30" /> -->
           <el-table-column
             key="name"
             show-overflow-tooltip
@@ -428,7 +465,12 @@ onMounted(() => {
             show-overflow-tooltip
             key="user_name"
             :label="t('datasource.user_name')"
-          />
+          >
+            <template v-slot:default="scope">
+              <span v-if="scope.row.colorAccount" v-html="scope.row.colorAccount" />
+              <span v-else>{{ scope.row.account }}</span>
+            </template>
+          </el-table-column>
 
           <el-table-column
             prop="email"
@@ -437,7 +479,7 @@ onMounted(() => {
             :label="t('common.email')"
           />
 
-          <el-table-column key="_operation" :label="$t('common.operate')">
+          <el-table-column key="_operation" fixed="right" :label="$t('common.operate')">
             <template #default="scope">
               <el-button @click="unBindUser(scope.row.id)" text>
                 <template #icon>
@@ -449,11 +491,15 @@ onMounted(() => {
         </GridTable>
       </div>
     </div>
+    <el-empty
+      v-else
+      class="added-user-list role-height"
+      :description="t('role.empty_description')"
+    />
   </div>
   <role-form ref="roleFormRef" @saved="roleSaved" />
   <out-user-form ref="outUserFormRef" @saved="outUserSaved" />
   <OrgUser ref="addOrgUserDialog" :rid="selectedRoleId" @refresh-grid="refreshGrid"></OrgUser>
-  <!-- <ExternalUser ref="addExternalUserDialog"></ExternalUser> -->
 </template>
 
 <style lang="less" scoped>
@@ -482,13 +528,6 @@ onMounted(() => {
     padding: 24px 7px;
     .title {
       padding: 0 17px;
-
-      .text {
-        .ed-icon {
-          color: #3370ff;
-          margin-left: auto;
-        }
-      }
     }
 
     .m16 {
@@ -496,7 +535,13 @@ onMounted(() => {
     }
     .role-tree-container {
       height: calc(100% - 112px);
-
+      .text {
+        .icon-span {
+          color: #3370ff;
+          margin: 0 16px 0 auto;
+          font-size: 16px;
+        }
+      }
       .role-title {
         color: #8d9199;
         font-family: PingFang SC;
@@ -519,8 +564,20 @@ onMounted(() => {
         .mark {
           height: 16px;
           border-radius: 2px;
-          background: rgba(31, 35, 41, 0.1);
           margin-left: 8px;
+          background-color: var(--ed-color-primary-light-7);
+          color: var(--ed-menu-active-color);
+          font-family: PingFang SC;
+          font-size: 10px;
+          font-weight: 500;
+          line-height: 13px;
+          padding: 0 4px;
+        }
+        .de-mark {
+          height: 16px;
+          border-radius: 2px;
+          margin-left: 8px;
+          background-color: rgb(232 233 233);
           color: #646a73;
           font-family: PingFang SC;
           font-size: 10px;
@@ -619,6 +676,18 @@ onMounted(() => {
         color: #8d9199;
         font-weight: 400;
         line-height: 16px;
+      }
+      .mark {
+        height: 16px;
+        border-radius: 2px;
+        margin-left: 8px;
+        background-color: var(--ed-color-primary-light-7);
+        color: var(--ed-menu-active-color);
+        font-family: PingFang SC;
+        font-size: 10px;
+        font-weight: 500;
+        line-height: 13px;
+        padding: 0 4px;
       }
     }
 
