@@ -9,6 +9,7 @@ import { searchApi, resourceExistApi, deleteApi } from '@/api/org'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { setColorName } from '@/utils/utils'
+import { HandleMore } from '@/components/handle-more'
 const { t } = useI18n()
 const userStore = useUserStoreWithOut()
 const activeName = ref('manage')
@@ -40,6 +41,21 @@ interface Org {
 
 tableData.value = []
 allTableData.value = []
+
+const moreList = [
+  {
+    label: t('org.org_move'),
+    divided: false,
+    svgName: 'de-move',
+    command: 'move'
+  },
+  {
+    label: t('common.delete'),
+    divided: true,
+    svgName: 'icon_delete-trash_outlined',
+    command: 'delete'
+  }
+]
 
 const handleClick = () => {
   console.log('handleClick')
@@ -168,6 +184,14 @@ const clearExpandKeys = () => {
     expandRowKeys.value.splice(len, 1)
   }
 }
+
+const moreHandler = (cmd: string, row: Org) => {
+  if (cmd === 'delete') {
+    deptIsEmpty(row)
+    return
+  }
+  console.log('This module is under development')
+}
 onMounted(() => {
   search()
 })
@@ -239,7 +263,7 @@ const saveCallBack = () => {
         </el-table-column>
 
         <el-table-column :label="t('common.operate')" fixed="right" width="186">
-          <template #default="scope">
+          <!-- <template #default="scope">
             <span v-if="scope.row.readOnly"></span>
             <div v-else class="operate-icon-container">
               <div><Icon name="add" @click="addOrg(scope.row)"></Icon></div>
@@ -248,11 +272,34 @@ const saveCallBack = () => {
                 <Icon name="delete" @click="deptIsEmpty(scope.row)"></Icon>
               </div>
             </div>
+          </template> -->
+
+          <template #default="scope">
+            <span v-if="scope.row.readOnly"></span>
+            <div v-else>
+              <el-button @click="addOrg(scope.row)" text>
+                <template #icon>
+                  <Icon name="icon_add_outlined"></Icon>
+                </template>
+              </el-button>
+              <el-button @click="edit(scope.row)" text>
+                <template #icon>
+                  <Icon name="icon_edit_outlined  "></Icon>
+                </template>
+              </el-button>
+
+              <div class="icon-more" v-if="scope.row.id !== '1'">
+                <handle-more
+                  @handle-command="cmd => moreHandler(cmd, scope.row)"
+                  :menu-list="moreList"
+                />
+              </div>
+            </div>
           </template>
         </el-table-column>
       </el-table>
     </div>
-    <dept-editer ref="deptEditor" @saved="saveCallBack" :treeData="allTableData"></dept-editer>
+    <dept-editer ref="deptEditor" @saved="saveCallBack" :tree-data="allTableData"></dept-editer>
   </div>
   <div v-else class="org-table__content de-search-table">
     <org-resources></org-resources>
@@ -283,7 +330,42 @@ const saveCallBack = () => {
   margin-left: 12px;
   margin-right: 6px;
 }
-.operate-icon-container {
+.icon-more {
+  color: var(--ed-color-primary) !important;
+  border: 0 solid transparent;
+  background-color: transparent;
+  font-family: PingFang SC;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 26px;
+  height: 26px;
+  letter-spacing: 0;
+  text-align: center;
+  padding: 2px 4px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  height: 32px;
+  white-space: nowrap;
+  cursor: pointer;
+  box-sizing: border-box;
+  outline: 0;
+  transition: 0.1s;
+
+  user-select: none;
+  vertical-align: middle;
+
+  border-radius: var(--ed-border-radius-base);
+  .ed-dropdown {
+    color: var(--ed-color-primary) !important;
+    &:hover {
+      i {
+        background-color: rgba(51, 112, 255, 0.1);
+      }
+    }
+  }
+}
+/* .operate-icon-container {
   font-size: 16px;
   display: flex;
   div {
@@ -312,5 +394,5 @@ const saveCallBack = () => {
     background-color: var(--ed-button-disabled-bg-color);
     border-color: var(--ed-button-disabled-border-color);
   }
-}
+} */
 </style>
