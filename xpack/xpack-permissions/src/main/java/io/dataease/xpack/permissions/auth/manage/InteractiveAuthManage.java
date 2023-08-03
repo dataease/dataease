@@ -100,27 +100,25 @@ public class InteractiveAuthManage {
             perPOS.add(rootNode(9));
             return TreeUtils.mergeTree(filter(perPOS, request.getLeaf(), request.getWeight()), BusiNodeVO.class, false);
         }
-        int enumFlag = resourceEnumFlag;
 
         List<BusiPerPO> pos = new ArrayList<>();
-        List<BusiPerPO> userPerPOS = userPos(enumFlag);
+        List<BusiPerPO> userPerPOS = userPos(resourceEnumFlag);
         if (CollectionUtil.isNotEmpty(userPerPOS)) {
             pos.addAll(userPerPOS);
         }
-        int userRootWeight = busiRootAuthManage.userRootPer(enumFlag, oid, uid);
+        int userRootWeight = busiRootAuthManage.userRootPer(resourceEnumFlag, oid, uid);
         int roleRootWeight = 0;
         if (CollectionUtil.isNotEmpty(userRoles)) {
             List<Long> rids = userRoles.stream().map(UserRole::getId).toList();
-            roleRootWeight = busiRootAuthManage.roleRootPer(enumFlag, rids);
-            List<BusiPerPO> rolePos = rolePos(rids, enumFlag);
+            roleRootWeight = busiRootAuthManage.roleRootPer(resourceEnumFlag, rids);
+            List<BusiPerPO> rolePos = rolePos(rids, resourceEnumFlag);
             if (CollectionUtil.isNotEmpty(rolePos)) {
                 pos.addAll(rolePos);
             }
         }
         pos.add(rootNode(Math.max(userRootWeight, roleRootWeight)));
         pos = pos.stream().distinct().toList();
-        List<BusiNodeVO> vos = TreeUtils.mergeTree(filter(pos, request.getLeaf(), request.getWeight()), BusiNodeVO.class, false);
-        return vos;
+        return TreeUtils.mergeTree(filter(pos, request.getLeaf(), request.getWeight()), BusiNodeVO.class, false);
     }
 
     private List<BusiPerPO> filter(List<BusiPerPO> pos, Boolean leaf, Integer weight) {
