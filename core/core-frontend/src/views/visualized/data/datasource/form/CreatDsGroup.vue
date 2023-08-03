@@ -250,9 +250,14 @@ const emits = defineEmits(['finish'])
 </script>
 
 <template>
-  <el-dialog :title="dialogTitle" v-model="createDataset" width="600px" :before-close="resetForm">
+  <el-dialog
+    v-loading="loading"
+    :title="dialogTitle"
+    v-model="createDataset"
+    width="600px"
+    :before-close="resetForm"
+  >
     <el-form
-      v-loading="loading"
       label-position="top"
       require-asterisk-position="right"
       ref="datasource"
@@ -328,12 +333,8 @@ const emits = defineEmits(['finish'])
       </div>
     </el-form>
     <template #footer>
-      <el-button v-loading="loading" secondary @click="resetForm"
-        >{{ t('dataset.cancel') }}
-      </el-button>
-      <el-button v-loading="loading" type="primary" @click="saveDataset"
-        >{{ t('dataset.confirm') }}
-      </el-button>
+      <el-button secondary @click="resetForm">{{ t('dataset.cancel') }} </el-button>
+      <el-button type="primary" @click="saveDataset">{{ t('dataset.confirm') }} </el-button>
     </template>
   </el-dialog>
 </template>

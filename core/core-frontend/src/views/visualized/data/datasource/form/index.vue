@@ -291,7 +291,7 @@ defineExpose({
     v-model="visible"
   >
     <template #header="{ close }">
-      <span>{{ t('datasource.create') }}</span>
+      <span>{{ editDs ? t('datasource.modify') : t('datasource.create') }}</span>
       <div class="editor-step flex-center">
         <el-steps space="150px" :active="activeStep" align-center>
           <el-step>
@@ -331,7 +331,7 @@ defineExpose({
       </el-icon>
     </template>
     <div class="datasource">
-      <div class="ds-type-select">
+      <div class="ds-type-select" v-if="!editDs">
         <div class="title">
           <el-input class="m24 w100" v-model="filterText" clearable>
             <template #prefix>
@@ -387,7 +387,7 @@ defineExpose({
           </template>
         </el-tree>
       </div>
-      <div class="ds-editor">
+      <div class="ds-editor" :class="editDs && 'edit-ds'">
         <div class="editor-content">
           <ds-type-list
             v-show="activeStep === 0"
@@ -596,6 +596,10 @@ defineExpose({
       float: left;
       width: calc(100% - 279px);
       height: calc(100% - 64px);
+
+      &.edit-ds {
+        width: 100%;
+      }
 
       .editor-content {
         padding: 8px 24px;

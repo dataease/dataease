@@ -323,7 +323,7 @@ const saveExcelData = (sheetFileMd5, table, params, successCb, finallyCb) => {
             .then(() => {
               successCb?.()
               ElMessage({
-                message: t('dataset.set_saved_successfully'),
+                message: t('deDataset.set_saved_successfully'),
                 type: 'success'
               })
             })
@@ -338,7 +338,7 @@ const saveExcelData = (sheetFileMd5, table, params, successCb, finallyCb) => {
             .then(() => {
               successCb?.()
               ElMessage({
-                message: t('dataset.set_saved_successfully'),
+                message: t('deDataset.set_saved_successfully'),
                 type: 'success'
               })
             })
@@ -356,7 +356,7 @@ const saveExcelData = (sheetFileMd5, table, params, successCb, finallyCb) => {
       .then(() => {
         successCb?.()
         ElMessage({
-          message: t('dataset.set_saved_successfully'),
+          message: t('deDataset.set_saved_successfully'),
           type: 'success'
         })
       })

@@ -97,7 +97,7 @@ const defaultProps = {
 
 let tableList = []
 
-const dragHeight = ref(280)
+const dragHeight = ref(260)
 const fieldType = (deType: number) => {
   return ['text', 'time', 'value', 'value', 'location'][deType]
 }
@@ -444,15 +444,15 @@ const mousedownDragH = () => {
   document.querySelector('.dataset-db').addEventListener('mousemove', calculateHeight)
 }
 const calculateHeight = (e: MouseEvent) => {
-  if (e.pageY - 64 < 280) {
-    dragHeight.value = 280
+  if (e.pageY - 56 < 64) {
+    dragHeight.value = 64
     return
   }
-  if (e.pageY - 64 > document.documentElement.clientHeight - 170) {
-    dragHeight.value = document.documentElement.clientHeight - 170
+  if (e.pageY > document.documentElement.clientHeight - 57) {
+    dragHeight.value = document.documentElement.clientHeight - 113
     return
   }
-  dragHeight.value = e.pageY - 64
+  dragHeight.value = e.pageY - 56
 }
 
 const nameExistValidator = () => {
@@ -607,7 +607,7 @@ const treeProps = {
           </div>
         </template>
         <template v-else>
-          <span @click="handleClick" class="dataset-name" style="margin: 0 5px">{{
+          <span @click="handleClick" class="dataset-name ellipsis" style="margin: 0 5px">{{
             datasetName
           }}</span>
         </template>
@@ -636,8 +636,8 @@ const treeProps = {
       >
         <p class="select-ds">
           选择数据源
-          <el-icon @click="showLeft = false">
-            <Icon name="icon_up-left_outlined"></Icon>
+          <el-icon class="left-outlined" @click="showLeft = false">
+            <Icon name="group-3400"></Icon>
           </el-icon>
         </p>
         <el-tree-select
@@ -893,13 +893,21 @@ const treeProps = {
       position: relative;
       .dataset-name {
         cursor: pointer;
+        width: 294px;
       }
 
       .ed-input {
-        min-width: 96px;
-        .ed-input__inner {
-          line-height: 24px;
-          height: 24px;
+        width: 302px;
+        line-height: 24px;
+        height: 24px;
+        :deep(.ed-input__wrapper) {
+          background-color: #050e21;
+          box-shadow: 0 0 0 1px #3370ff;
+          padding: 0 4px;
+        }
+        :deep(.ed-input__inner) {
+          color: #fff;
+          font-size: 16px;
         }
       }
       i {
@@ -957,11 +965,20 @@ const treeProps = {
         justify-content: space-between;
         align-items: center;
         color: var(--deTextPrimary, #1f2329);
+        position: relative;
 
         i {
           cursor: pointer;
           font-size: 12px;
           color: var(--deTextPlaceholder, #8f959e);
+        }
+
+        .left-outlined {
+          position: absolute;
+          font-size: 36px;
+          right: -30px;
+          top: -5px;
+          z-index: 1;
         }
       }
 

@@ -332,7 +332,7 @@ const handleCurrentChange = (currentPage: number) => {
       <RowAuth ref="rowAuth" @save="save"></RowAuth>
     </div>
     <template v-if="rowPermissionForm.authTargetType !== 'user'">
-      <div class="title-form_primary m18">
+      <div class="title-form_primary m16">
         <span>{{ t('auth.white_list') }}</span>
         <span class="explain">{{ t('auth.white_user_not') }}</span>
       </div>
@@ -358,8 +358,8 @@ const handleCurrentChange = (currentPage: number) => {
     </template>
 
     <template #footer>
-      <el-button secondary @click="clearData">{{ t('fu.steps.cancel') }}</el-button>
-      <el-button type="primary" @click="confirm">{{ t('fu.table.ok') }}</el-button>
+      <el-button secondary @click="clearData">{{ t('dataset.cancel') }}</el-button>
+      <el-button type="primary" @click="confirm">{{ t('dataset.confirm') }}</el-button>
     </template>
   </el-drawer>
 </template>
@@ -374,8 +374,8 @@ const handleCurrentChange = (currentPage: number) => {
     color: #646a73;
   }
 
-  .m18 {
-    margin: 34px 0 18px 0;
+  .m16 {
+    margin: 34px 0 16px 0;
   }
 
   .white-list {
