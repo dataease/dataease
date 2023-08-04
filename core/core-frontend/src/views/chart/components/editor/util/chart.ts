@@ -964,6 +964,13 @@ export const CHART_TYPE_CONFIGS = [
         value: 'area',
         title: t('chart.chart_area'),
         icon: 'area'
+      },
+      {
+        render: 'antv',
+        category: 'trend',
+        value: 'line-stack',
+        title: t('chart.chart_line_stack'),
+        icon: 'line-stack'
       }
     ]
   },

@@ -8,23 +8,29 @@ import {
   setGradientColor,
   transAxisPosition
 } from '@/views/chart/components/js/panel/common/common_antv'
-import { cloneDeep, extend } from 'lodash-es'
+import { cloneDeep } from 'lodash-es'
 import {
   flow,
   handleEmptyDataStrategy,
   hexColorToRGBA,
   parseJson
 } from '@/views/chart/components/js/util'
-import { singleDimensionTooltipFormatter } from '@/views/chart/components/js/formatter'
+import {
+  formatterItem,
+  singleDimensionTooltipFormatter,
+  valueFormatter
+} from '@/views/chart/components/js/formatter'
 import {
   BAR_AXIS_TYPE,
   BAR_EDITOR_PROPERTY,
   BAR_EDITOR_PROPERTY_INNER
 } from '@/views/chart/components/js/panel/charts/bar/common'
-import { ColumnOptions } from '@antv/g2plot/lib/plots/column'
 
 const DEFAULT_DATA = []
 
+/**
+ * 条形图
+ */
 export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
   properties = BAR_EDITOR_PROPERTY
   propertyInner = {
@@ -32,7 +38,53 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
     'x-axis-selector': BAR_EDITOR_PROPERTY_INNER['y-axis-selector'],
     'y-axis-selector': BAR_EDITOR_PROPERTY_INNER['x-axis-selector']
   }
-  axis: AxisType[] = BAR_AXIS_TYPE
+  axis: AxisType[] = [...BAR_AXIS_TYPE]
+  protected baseOptions: BarOptions = {
+    data: [],
+    xField: 'value',
+    yField: 'field',
+    seriesField: 'category',
+    interactions: [
+      {
+        type: 'legend-active',
+        cfg: {
+          start: [{ trigger: 'legend-item:mouseenter', action: ['element-active:reset'] }],
+          end: [{ trigger: 'legend-item:mouseleave', action: ['element-active:reset'] }]
+        }
+      },
+      {
+        type: 'legend-filter',
+        cfg: {
+          start: [
+            {
+              trigger: 'legend-item:click',
+              action: [
+                'list-unchecked:toggle',
+                'data-filter:filter',
+                'element-active:reset',
+                'element-highlight:reset'
+              ]
+            }
+          ]
+        }
+      },
+      {
+        type: 'tooltip',
+        cfg: {
+          start: [{ trigger: 'interval:mousemove', action: 'tooltip:show' }],
+          end: [{ trigger: 'interval:mouseleave', action: 'tooltip:hide' }]
+        }
+      },
+      {
+        type: 'active-region',
+        cfg: {
+          start: [{ trigger: 'interval:mousemove', action: 'active-region:show' }],
+          end: [{ trigger: 'interval:mouseleave', action: 'active-region:hide' }]
+        }
+      }
+    ]
+  }
+
   drawChart(drawOptions: G2PlotDrawOptions<Bar>): Bar {
     const { chart, container, action } = drawOptions
     if (!chart.data?.data?.length) {
@@ -43,50 +95,9 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
 
     // options
     const initOptions: BarOptions = {
-      data: data,
-      xField: 'value',
-      yField: 'field',
-      seriesField: 'category',
-      appendPadding: getPadding(chart),
-      interactions: [
-        {
-          type: 'legend-active',
-          cfg: {
-            start: [{ trigger: 'legend-item:mouseenter', action: ['element-active:reset'] }],
-            end: [{ trigger: 'legend-item:mouseleave', action: ['element-active:reset'] }]
-          }
-        },
-        {
-          type: 'legend-filter',
-          cfg: {
-            start: [
-              {
-                trigger: 'legend-item:click',
-                action: [
-                  'list-unchecked:toggle',
-                  'data-filter:filter',
-                  'element-active:reset',
-                  'element-highlight:reset'
-                ]
-              }
-            ]
-          }
-        },
-        {
-          type: 'tooltip',
-          cfg: {
-            start: [{ trigger: 'interval:mousemove', action: 'tooltip:show' }],
-            end: [{ trigger: 'interval:mouseleave', action: 'tooltip:hide' }]
-          }
-        },
-        {
-          type: 'active-region',
-          cfg: {
-            start: [{ trigger: 'interval:mousemove', action: 'active-region:show' }],
-            end: [{ trigger: 'interval:mouseleave', action: 'active-region:hide' }]
-          }
-        }
-      ]
+      ...this.baseOptions,
+      padding: getPadding(chart),
+      data
     }
 
     const options = this.setupOptions(chart, initOptions)
@@ -143,7 +154,7 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
     return options
   }
 
-  protected configBasicStyle(chart: Chart, options: ColumnOptions): ColumnOptions {
+  protected configBasicStyle(chart: Chart, options: BarOptions): BarOptions {
     const basicStyle = parseJson(chart.customAttr).basicStyle
     if (basicStyle.gradient) {
       let color = basicStyle.colors
@@ -179,14 +190,199 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
   }
 }
 
+/**
+ * 堆叠条形图
+ */
 export class HorizontalStackBar extends HorizontalBar {
-  constructor(name = 'horizontal-stack-bar') {
+  protected configLabel(chart: Chart, options: BarOptions): BarOptions {
+    const baseOptions = super.configLabel(chart, options)
+    if (!baseOptions.label) {
+      return baseOptions
+    }
+    const { extStack, xAxisExt, yAxis } = chart
+    const label = {
+      ...options.label,
+      formatter: function (param: Datum) {
+        const res = param.value
+        let f
+        if (extStack?.length > 0 || xAxisExt?.length > 0) {
+          f = yAxis[0]
+        } else {
+          for (let i = 0; i < yAxis.length; i++) {
+            if (yAxis[i].name === param.category) {
+              f = yAxis[i]
+              break
+            }
+          }
+        }
+        if (!f) {
+          return res
+        }
+        if (!f.formatterCfg) {
+          f.formatterCfg = formatterItem
+        }
+        return valueFormatter(param.value, f.formatterCfg)
+      }
+    }
+    return {
+      ...baseOptions,
+      label
+    }
+  }
+
+  protected configTooltip(chart: Chart, options: BarOptions): BarOptions {
+    const tooltipAttr = parseJson(chart.customAttr).tooltip
+    if (!tooltipAttr.show) {
+      return {
+        ...options,
+        tooltip: false
+      }
+    }
+    const { extStack, yAxis } = chart
+    const tooltip = {
+      formatter: (param: Datum) => {
+        let res = param.value
+        let f
+        const obj = { name: param.category, value: param.value }
+        if (extStack?.length > 0) {
+          f = yAxis[0]
+        } else {
+          for (let i = 0; i < yAxis.length; i++) {
+            if (yAxis[i].name === param.category) {
+              f = yAxis[i]
+              break
+            }
+          }
+        }
+        if (!f) {
+          return res
+        }
+        if (!f.formatterCfg) {
+          f.formatterCfg = formatterItem
+        }
+        res = valueFormatter(param.value, f.formatterCfg)
+        obj.value = res ?? ''
+        return obj
+      }
+    }
+    return {
+      ...options,
+      tooltip
+    }
+  }
+
+  constructor(name = 'bar-stack-horizontal') {
     super(name)
+    this.baseOptions = {
+      ...this.baseOptions,
+      isStack: true
+    }
+    this.axis.push('extStack')
   }
 }
 
+/**
+ * 百分比堆叠条形图
+ */
 export class HorizontalPercentageStackBar extends HorizontalStackBar {
+  protected configLabel(chart: Chart, options: BarOptions): BarOptions {
+    const baseOptions = super.configLabel(chart, options)
+    if (!baseOptions.label) {
+      return baseOptions
+    }
+    const { extStack, xAxisExt, yAxis, customAttr } = chart
+    const l = parseJson(customAttr).label
+    const label = {
+      ...options.label,
+      formatter: function (param: Datum) {
+        let f
+        const res = param.value
+        if (extStack?.length > 0 || xAxisExt?.length > 0) {
+          f = yAxis[0]
+        } else {
+          for (let i = 0; i < yAxis.length; i++) {
+            if (yAxis[i].name === param.category) {
+              f = yAxis[i]
+              break
+            }
+          }
+        }
+        if (!f) {
+          return res
+        }
+        if (!f.formatterCfg) {
+          f.formatterCfg = formatterItem
+        }
+        if (!param.value) {
+          return
+        }
+        f.formatterCfg.type = 'percent'
+        f.formatterCfg.decimalCount = l.reserveDecimalCount
+        f.formatterCfg.thousandSeparator = false
+        return valueFormatter(param.value, f.formatterCfg)
+      }
+    }
+    return {
+      ...baseOptions,
+      label
+    }
+  }
+
+  protected configTooltip(chart: Chart, options: BarOptions): BarOptions {
+    const tooltipAttr = parseJson(chart.customAttr).tooltip
+    if (!tooltipAttr.show) {
+      return {
+        ...options,
+        tooltip: false
+      }
+    }
+    const { extStack, yAxis, customAttr } = chart
+    const l = parseJson(customAttr).label
+    const tooltip = {
+      formatter: (param: Datum) => {
+        let f
+        let res = param.value
+        const obj = { name: param.category, value: param.value }
+        if (extStack?.length > 0) {
+          f = yAxis[0]
+        } else {
+          for (let i = 0; i < yAxis.length; i++) {
+            if (yAxis[i].name === param.category) {
+              f = yAxis[i]
+              break
+            }
+          }
+        }
+        if (!f) {
+          return res
+        }
+        if (!f.formatterCfg) {
+          f.formatterCfg = formatterItem
+        }
+        if (!param.value) {
+          obj.value = 0
+          return obj
+        }
+        // 保留小数位数和标签保持一致，这边拿一下标签的配置
+        f.formatterCfg.type = 'percent'
+        f.formatterCfg.decimalCount = l.reserveDecimalCount
+        f.formatterCfg.thousandSeparator = false
+        res = valueFormatter(param.value, f.formatterCfg)
+        obj.value = res ?? ''
+        return obj
+      }
+    }
+    return {
+      ...options,
+      tooltip
+    }
+  }
+
   constructor() {
-    super('horizontal-percentage-stack-bar')
+    super('percentage-bar-stack-horizontal')
+    this.baseOptions = {
+      ...this.baseOptions,
+      isPercent: true
+    }
   }
 }
