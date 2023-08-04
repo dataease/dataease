@@ -290,8 +290,6 @@ public class DatasetSQLManage {
                 BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
                 datasourceSchemaDTO.setSchemaAlias(schemaAlias);
                 dsMap.put(ds.getDatasourceId(), datasourceSchemaDTO);
-            } else {
-                schemaAlias = String.format(SQLConstants.SCHEMA, ds.getDatasourceId());
             }
         } else {
             CoreDatasource coreDatasource = engineServer.getDeEngine();
