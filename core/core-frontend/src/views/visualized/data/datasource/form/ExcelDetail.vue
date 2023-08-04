@@ -320,12 +320,14 @@ const saveExcelData = (sheetFileMd5, table, params, successCb, finallyCb) => {
         table.mergeSheet = action === 'confirm'
         if (action === 'confirm') {
           save(table)
-            .then(() => {
-              successCb?.()
-              ElMessage({
-                message: t('deDataset.set_saved_successfully'),
-                type: 'success'
-              })
+            .then(res => {
+              if (res !== undefined) {
+                successCb?.()
+                ElMessage({
+                  message: t('deDataset.set_saved_successfully'),
+                  type: 'success'
+                })
+              }
             })
             .finally(() => {
               finallyCb?.()

@@ -33,6 +33,7 @@ import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.exception.DEException;
+import io.dataease.i18n.Translator;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import io.dataease.utils.BeanUtils;
@@ -600,8 +601,13 @@ public class DatasourceServer implements DatasourceApi {
         if (id != null && id != 0) {
             queryWrapper.ne("id", id);
         }
+        CoreDatasource datasource = datasourceMapper.selectById(id);
+        if(datasource != null){
+            queryWrapper.eq("pid", datasource.getPid());
+        }
+
         if (!CollectionUtils.isEmpty(datasourceMapper.selectList(queryWrapper))) {
-            DEException.throwException("ds_name_exists");
+            DEException.throwException(Translator.get("i18n_ds_name_exists"));
         }
     }
 
