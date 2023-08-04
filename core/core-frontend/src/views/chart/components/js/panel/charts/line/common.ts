@@ -20,7 +20,15 @@ export const LINE_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
     'lineSymbolSize',
     'lineSmooth'
   ],
-  'x-axis-selector': ['name', 'position', 'axisLabel', 'axisLine', 'splitLine'],
+  'x-axis-selector': [
+    'name',
+    'color',
+    'fontSize',
+    'position',
+    'axisLabel',
+    'axisLine',
+    'splitLine'
+  ],
   'y-axis-selector': [
     'name',
     'position',

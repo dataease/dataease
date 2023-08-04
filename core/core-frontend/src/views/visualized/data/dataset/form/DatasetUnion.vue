@@ -25,7 +25,7 @@ const props = defineProps({
   maskShow: propTypes.bool.def(false),
   offsetX: propTypes.number.def(0),
   offsetY: propTypes.number.def(0),
-  dragHeight: propTypes.number.def(280),
+  dragHeight: propTypes.number.def(260),
   getDsName: propTypes.func
 })
 
@@ -582,7 +582,7 @@ const drop_handler = ev => {
       tableName,
       type
     }).then(res => {
-      ;(res as unknown as Field[]).forEach(ele => {
+      ;((res as unknown as Field[]) || []).forEach(ele => {
         ele.checked = true
       })
       state.nodeList[0].currentDsFields = _.cloneDeep(res)
@@ -934,6 +934,7 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields'])
     width: 125px;
     height: 125px;
     margin-bottom: 8px;
+    -webkit-user-drag: none;
   }
 
   p {

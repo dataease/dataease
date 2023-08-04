@@ -237,7 +237,6 @@ public class DatasetDataManage {
     }
 
     public Map<String, Object> previewSql(PreviewSqlDTO dto) {
-        String alias = String.format(SQLConstants.SCHEMA, dto.getDatasourceId());
         CoreDatasource coreDatasource = coreDatasourceMapper.selectById(dto.getDatasourceId());
         DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
         if (coreDatasource.getType().equalsIgnoreCase("API") || coreDatasource.getType().equalsIgnoreCase("Excel")) {
@@ -245,6 +244,7 @@ public class DatasetDataManage {
         } else {
             BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
         }
+        String alias = String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId());
         datasourceSchemaDTO.setSchemaAlias(alias);
         // parser sql params and replace default value
         String sql = SqlparserUtils.handleVariableDefaultValue(datasetSQLManage.subPrefixSuffixChar(new String(Base64.getDecoder().decode(dto.getSql()))), dto.getSqlVariableDetails(), true);

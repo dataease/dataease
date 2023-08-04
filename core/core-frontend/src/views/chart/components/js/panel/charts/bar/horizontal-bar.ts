@@ -8,7 +8,7 @@ import {
   setGradientColor,
   transAxisPosition
 } from '@/views/chart/components/js/panel/common/common_antv'
-import { cloneDeep } from 'lodash-es'
+import { cloneDeep, extend } from 'lodash-es'
 import {
   flow,
   handleEmptyDataStrategy,
@@ -17,6 +17,7 @@ import {
 } from '@/views/chart/components/js/util'
 import { singleDimensionTooltipFormatter } from '@/views/chart/components/js/formatter'
 import {
+  BAR_AXIS_TYPE,
   BAR_EDITOR_PROPERTY,
   BAR_EDITOR_PROPERTY_INNER
 } from '@/views/chart/components/js/panel/charts/bar/common'
@@ -26,8 +27,12 @@ const DEFAULT_DATA = []
 
 export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
   properties = BAR_EDITOR_PROPERTY
-  propertyInner = BAR_EDITOR_PROPERTY_INNER
-  axis: AxisType[] = ['xAxis', 'yAxis', 'filter', 'drill', 'extLabel', 'extTooltip']
+  propertyInner = {
+    ...BAR_EDITOR_PROPERTY_INNER,
+    'x-axis-selector': BAR_EDITOR_PROPERTY_INNER['y-axis-selector'],
+    'y-axis-selector': BAR_EDITOR_PROPERTY_INNER['x-axis-selector']
+  }
+  axis: AxisType[] = BAR_AXIS_TYPE
   drawChart(drawOptions: G2PlotDrawOptions<Bar>): Bar {
     const { chart, container, action } = drawOptions
     if (!chart.data?.data?.length) {
@@ -154,8 +159,8 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
     return options
   }
 
-  constructor() {
-    super('bar-horizontal', DEFAULT_DATA)
+  constructor(name = 'bar-horizontal') {
+    super(name, DEFAULT_DATA)
   }
 
   protected setupOptions(chart: Chart, options: BarOptions): BarOptions {
@@ -171,5 +176,17 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
       this.configSlider,
       this.configAnalyseHorizontal
     )(chart, options)
+  }
+}
+
+export class HorizontalStackBar extends HorizontalBar {
+  constructor(name = 'horizontal-stack-bar') {
+    super(name)
+  }
+}
+
+export class HorizontalPercentageStackBar extends HorizontalStackBar {
+  constructor() {
+    super('horizontal-percentage-stack-bar')
   }
 }

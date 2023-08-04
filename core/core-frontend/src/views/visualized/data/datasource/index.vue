@@ -38,9 +38,11 @@ export interface Node {
   name: string
   createBy: string
   id: number
+  size: number
   description: string
   type: string
   nodeType: string
+  fileName: string
   syncSetting?: SyncSetting
   editType?: number
   configuration?: Configuration
@@ -198,8 +200,10 @@ const nodeInfo = reactive<Node>({
   createBy: '',
   description: '',
   id: 0,
+  size: 0,
   nodeType: '',
   type: '',
+  fileName: '',
   configuration: null,
   syncSetting: null,
   apiConfiguration: []
@@ -207,20 +211,22 @@ const nodeInfo = reactive<Node>({
 
 const saveDsFolder = (params, successCb, finallyCb, cmd) => {
   save(params)
-    .then(() => {
-      successCb()
-      switch (cmd) {
-        case 'move':
-          ElMessage.success('移动成功')
-          break
-        case 'rename':
-          ElMessage.success('重命名成功')
-          break
-        default:
-          ElMessage.success('新建成功')
-          break
+    .then(res => {
+      if (res !== undefined) {
+        successCb()
+        switch (cmd) {
+          case 'move':
+            ElMessage.success('移动成功')
+            break
+          case 'rename':
+            ElMessage.success('重命名成功')
+            break
+          default:
+            ElMessage.success('新建成功')
+            break
+        }
+        listDs()
       }
-      listDs()
     })
     .finally(() => {
       finallyCb()
@@ -295,8 +301,18 @@ const tableData = shallowRef([])
 const handleNodeClick = data => {
   if (!data.leaf) return
   getById(data.id).then(res => {
-    let { name, createBy, id, type, configuration, syncSetting, apiConfigurationStr, description } =
-      res.data
+    let {
+      name,
+      createBy,
+      id,
+      type,
+      configuration,
+      syncSetting,
+      apiConfigurationStr,
+      fileName,
+      size,
+      description
+    } = res.data
     if (configuration) {
       configuration = JSON.parse(Base64.decode(configuration))
     }
@@ -306,6 +322,8 @@ const handleNodeClick = data => {
     Object.assign(nodeInfo, {
       name,
       description,
+      fileName,
+      size,
       createBy,
       id,
       type,
@@ -601,7 +619,7 @@ const defaultProps = {
               <el-row>
                 <el-col v-if="nodeInfo.type === 'Excel'" :span="12">
                   <BaseInfoItem label="文件">
-                    <ExcelInfo :name="nodeInfo.type" :size="nodeInfo.type"></ExcelInfo>
+                    <ExcelInfo :name="nodeInfo.fileName" :size="nodeInfo.size"></ExcelInfo>
                   </BaseInfoItem>
                 </el-col>
                 <el-col v-else :span="24">

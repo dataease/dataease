@@ -93,7 +93,7 @@ public class DatasourceServer implements DatasourceApi {
 
     @Override
     public DatasourceDTO move(DatasourceDTO dataSourceDTO) throws Exception {
-        switch (dataSourceDTO.getAction()){
+        switch (dataSourceDTO.getAction()) {
             case "move":
             case "rename":
                 if (Objects.equals(dataSourceDTO.getId(), dataSourceDTO.getPid())) {
@@ -107,7 +107,7 @@ public class DatasourceServer implements DatasourceApi {
                 record.setPid(dataSourceDTO.getPid());
                 record.setName(dataSourceDTO.getName());
                 datasourceMapper.update(record, updateWrapper);
-                if (ObjectUtils.isNotEmpty(interactiveAuthApi) && ObjectUtils.isNotEmpty(sourceData) && ( !StringUtils.equals(dataSourceDTO.getName(), sourceData.getName()) || !sourceData.getPid().equals(dataSourceDTO.getPid()))) {
+                if (ObjectUtils.isNotEmpty(interactiveAuthApi) && ObjectUtils.isNotEmpty(sourceData) && (!StringUtils.equals(dataSourceDTO.getName(), sourceData.getName()) || !sourceData.getPid().equals(dataSourceDTO.getPid()))) {
                     BusiResourceEditor editor = new BusiResourceEditor();
                     editor.setId(dataSourceDTO.getId());
                     editor.setFlag(RESOURCE_FLAG);
@@ -144,11 +144,12 @@ public class DatasourceServer implements DatasourceApi {
         }
         return dataSourceDTO;
     }
+
     @Override
     public DatasourceDTO save(DatasourceDTO dataSourceDTO) throws Exception {
 
         boolean leaf = true;
-        if(StringUtils.isNotEmpty(dataSourceDTO.getAction())){
+        if (StringUtils.isNotEmpty(dataSourceDTO.getAction())) {
             move(dataSourceDTO);
             return dataSourceDTO;
         }
@@ -344,7 +345,8 @@ public class DatasourceServer implements DatasourceApi {
         DatasourceDTO datasourceDTO = new DatasourceDTO();
         CoreDatasource datasource = datasourceMapper.selectById(datasourceId);
         BeanUtils.copyBean(datasourceDTO, datasource);
-        TypeReference<List<ApiDefinition>> listTypeReference = new TypeReference<List<ApiDefinition>>() {};
+        TypeReference<List<ApiDefinition>> listTypeReference = new TypeReference<List<ApiDefinition>>() {
+        };
         if (datasourceDTO.getType().equalsIgnoreCase(DatasourceConfiguration.DatasourceType.API.toString())) {
             List<ApiDefinition> apiDefinitionList = JsonUtil.parseList(datasourceDTO.getConfiguration(), listTypeReference);
             List<ApiDefinition> apiDefinitionListWithStatus = new ArrayList<>();
@@ -382,6 +384,10 @@ public class DatasourceServer implements DatasourceApi {
             TaskDTO taskDTO = new TaskDTO();
             BeanUtils.copyBean(taskDTO, coreDatasourceTask);
             datasourceDTO.setSyncSetting(taskDTO);
+        }
+        if (datasourceDTO.getType().equalsIgnoreCase(DatasourceConfiguration.DatasourceType.Excel.toString())) {
+            datasourceDTO.setFileName(ExcelUtils.getFileName(datasource));
+            datasourceDTO.setSize(ExcelUtils.getSize(datasource));
         }
         datasourceDTO.setConfiguration(new String(Base64.getEncoder().encode(datasourceDTO.getConfiguration().getBytes())));
         return datasourceDTO;
@@ -530,9 +536,9 @@ public class DatasourceServer implements DatasourceApi {
             datasourceRequest.setDatasource(engineServer.getDeEngine());
             DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
             BeanUtils.copyBean(datasourceSchemaDTO, engineServer.getDeEngine());
-            datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceId));
+            datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId()));
             datasourceRequest.setDsList(Map.of(datasourceSchemaDTO.getId(), datasourceSchemaDTO));
-            datasourceRequest.setQuery(TableUtils.tableName2Sql(datasourceSchemaDTO, tableName));
+            datasourceRequest.setQuery(TableUtils.tableName2Sql(datasourceSchemaDTO, tableName) + " LIMIT 0 OFFSET 0");
             List<TableField> tableFields = (List<TableField>) calciteProvider.fetchResultField(datasourceRequest).get("fields");
             return tableFields.stream().filter(tableField -> {
                 return !tableField.getOriginName().equalsIgnoreCase("dataease_uuid");
@@ -541,9 +547,9 @@ public class DatasourceServer implements DatasourceApi {
 
         DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
         BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
-        datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceId));
+        datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId()));
         datasourceRequest.setDsList(Map.of(datasourceSchemaDTO.getId(), datasourceSchemaDTO));
-        datasourceRequest.setQuery(TableUtils.tableName2Sql(datasourceSchemaDTO, tableName));
+        datasourceRequest.setQuery(TableUtils.tableName2Sql(datasourceSchemaDTO, tableName) + " LIMIT 0 OFFSET 0");
         return (List<TableField>) calciteProvider.fetchResultField(datasourceRequest).get("fields");
     }
 
@@ -630,7 +636,7 @@ public class DatasourceServer implements DatasourceApi {
         CoreDatasource coreDatasource = engineServer.getDeEngine();
         DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
         BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
-        datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, 0));
+        datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId()));
         List<DatasetTableFieldDTO> list = null;
         List<TableField> tableFields = null;
         DatasourceRequest datasourceRequest = new DatasourceRequest();
@@ -642,13 +648,14 @@ public class DatasourceServer implements DatasourceApi {
         List<UnionDTO> unionDTOS = new ArrayList<>();
         UnionDTO unionDTO = new UnionDTO();
         DatasetTableDTO datasetTableDTO = new DatasetTableDTO();
+        datasetTableDTO.setDatasourceId(coreDatasource.getId());
         datasetTableDTO.setTableName(tableName);
         DatasetTableInfoDTO tableInfoDTO = new DatasetTableInfoDTO();
         tableInfoDTO.setTable(tableName);
         datasetTableDTO.setInfo(JsonUtil.toJSONString(tableInfoDTO).toString());
         unionDTO.setCurrentDs(datasetTableDTO);
         unionDTO.setCurrentDsFields(list);
-        UnionParamDTO unionParamDTO= new UnionParamDTO();
+        UnionParamDTO unionParamDTO = new UnionParamDTO();
         unionParamDTO.setUnionType("left");
         unionDTO.setUnionToParent(unionParamDTO);
         unionDTOS.add(unionDTO);

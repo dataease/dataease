@@ -153,7 +153,7 @@ const createInit = (type, data: Tree, exec, name: string) => {
     request = data.request
   }
   if (data.id) {
-    listDatasources({ leaf: false, id: data.id }).then(res => {
+    listDatasources({ leaf: false, id: data.id, weight: 3 }).then(res => {
       dfs(res as unknown as Tree[])
       state.tData = (res as unknown as Tree[]) || []
       if (exec) {
@@ -228,8 +228,10 @@ const saveDataset = () => {
       loading.value = true
       if (request) {
         save({ ...request, name: datasetForm.name, pid: params.pid })
-          .then(() => {
-            successCb()
+          .then(res => {
+            if (res !== undefined) {
+              successCb()
+            }
           })
           .finally(() => {
             loading.value = false
@@ -250,9 +252,14 @@ const emits = defineEmits(['finish'])
 </script>
 
 <template>
-  <el-dialog :title="dialogTitle" v-model="createDataset" width="600px" :before-close="resetForm">
+  <el-dialog
+    v-loading="loading"
+    :title="dialogTitle"
+    v-model="createDataset"
+    width="600px"
+    :before-close="resetForm"
+  >
     <el-form
-      v-loading="loading"
       label-position="top"
       require-asterisk-position="right"
       ref="datasource"
@@ -295,11 +302,7 @@ const emits = defineEmits(['finish'])
             @click="activeAll = !activeAll"
             v-if="showAll"
             class="list-item_primary"
-          >
-            <el-icon>
-              <Icon name="dv-folder"></Icon>
-            </el-icon>
-          </div>
+          ></div>
           <el-tree
             ref="treeRef"
             :filter-node-method="filterNode"
@@ -328,12 +331,8 @@ const emits = defineEmits(['finish'])
       </div>
     </el-form>
     <template #footer>
-      <el-button v-loading="loading" secondary @click="resetForm"
-        >{{ t('dataset.cancel') }}
-      </el-button>
-      <el-button v-loading="loading" type="primary" @click="saveDataset"
-        >{{ t('dataset.confirm') }}
-      </el-button>
+      <el-button secondary @click="resetForm">{{ t('dataset.cancel') }} </el-button>
+      <el-button type="primary" @click="saveDataset">{{ t('dataset.confirm') }} </el-button>
     </template>
   </el-dialog>
 </template>

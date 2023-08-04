@@ -132,7 +132,6 @@ const update_column_permission_dialog_title = ref('')
 const colKeywords = ref('')
 const whiteListUsers = shallowRef<User[]>([])
 const filedList = shallowRef([])
-const checkAll = ref(false)
 const numberM = ref()
 const authTarge = ref(false)
 const isIndeterminate = ref(false)
@@ -144,7 +143,11 @@ const emptyTips = computed(() => {
 })
 
 const preview = computed(() => {
-  const { customBuiltInRule = '', m = 1, n = 1 } = curCol?.desensitizationRule || {}
+  return previewFormatter(curCol)
+})
+
+const previewFormatter = val => {
+  const { customBuiltInRule = '', m = 1, n = 1 } = val?.desensitizationRule || {}
   if (customBuiltInRule === 'RetainMToN') {
     return [...Array(3).fill('*'), ...Array(n + 1 - m).fill('X'), '***'].join('')
   }
@@ -152,7 +155,7 @@ const preview = computed(() => {
     return [...Array(m).fill('X'), '***', ...Array(n).fill('X')].join('')
   }
   return ''
-})
+}
 
 watch([columnPermissionForm.authTargetId], ([val]) => {
   if (val) {
@@ -257,6 +260,8 @@ const permissionInfo = item => {
   }
 }
 
+const setDesensitizationRules = ref(false)
+
 const search = () => {
   columnPermissionList(
     paginationConfig.currentPage,
@@ -342,12 +347,13 @@ const create = permissionObj => {
 }
 
 const initSelect = () => {
-  handleSelectionChange(selectedId.value)
-  const [fir] = selectedId.value
-  const obj = state.tableData.find(ele => fir === ele.id)
-  if (obj?.id) {
-    selectCur(obj)
-  }
+  nextTick(() => {
+    state.tableData.forEach(ele => {
+      if (ele.selected) {
+        tableDesensitization.value.toggleRowSelection(ele, true)
+      }
+    })
+  })
 }
 
 const fetchTypeObjsList = () => {
@@ -371,6 +377,8 @@ const closeDialog = () => {
   update_column_permission.value = false
   resetTaskForm()
 }
+
+const tableDesensitization = ref()
 
 const resetTaskForm = () => {
   Object.assign(columnPermissionForm, cloneDeep(defaultForm))
@@ -403,6 +411,11 @@ const deletePermission = item => {
   })
 }
 
+const changeUserList = () => {
+  columnPermissionForm.whiteListUser = []
+  loadWhiteUserList()
+}
+
 const save = () => {
   if (validateAuthTarge()) return
   let params: Omit<ColumnForm, 'whiteListUser' | 'permissions'> & {
@@ -426,21 +439,23 @@ const save = () => {
 }
 const selectCur = ele => {
   Object.assign(curCol, ele)
+  setDesensitizationRules.value = true
   const { m = 1, n = 1 } = curCol.desensitizationRule
   curCol.desensitizationRule.m = m || 1
   curCol.desensitizationRule.n = n || 1
 }
-const handleCheckAllChange = val => {
-  selectedId.value = val ? state.tableData.map(ele => ele.id) : []
-  handleSelectionChange(selectedId.value)
-  isIndeterminate.value = false
-}
+
+const mapId = ref([])
+
 const handleSelectionChange = val => {
+  mapId.value = val.map(ele => ele.id)
   state.tableData.forEach(filed => {
-    filed.selected = val.includes(filed.id)
+    const selected = mapId.value.includes(filed.id)
+    if (!selected && filed.opt === 'Desensitization') {
+      filed.opt = 'Prohibit'
+    }
+    filed.selected = selected
   })
-  checkAll.value = val.length === state.tableData.length
-  isIndeterminate.value = val.length > 0 && val.length < state.tableData.length
 }
 const regionChange = () => {
   const { customBuiltInRule, m, n } = curCol.desensitizationRule
@@ -461,6 +476,17 @@ const handleSizeChange = (pageSize: number) => {
   paginationConfig.currentPage = 1
   paginationConfig.pageSize = pageSize
   search()
+}
+
+const saveCurCol = () => {
+  setDesensitizationRules.value = false
+  state.tableData.some(ele => {
+    if (ele.id === curCol.id) {
+      Object.assign(ele, curCol)
+      return true
+    }
+    return false
+  })
 }
 const handleCurrentChange = (currentPage: number) => {
   paginationConfig.currentPage = currentPage
@@ -551,104 +577,70 @@ const handleCurrentChange = (currentPage: number) => {
       </div>
       <p class="type">{{ t('auth.set_rules') }}</p>
     </div>
+    <el-input
+      clearable
+      style="margin-bottom: 12px"
+      v-model="colKeywords"
+      :placeholder="t('auth.search_by_field')"
+    ></el-input>
     <div class="mrbt40">
-      <div class="border-left" :class="[{ 'border-none': !curCol.id }]">
-        <el-input
-          clearable
-          style="margin-bottom: 12px"
-          v-model="colKeywords"
-          :placeholder="t('auth.search_by_field')"
-        ></el-input>
-        <el-checkbox
-          :indeterminate="isIndeterminate"
-          v-model="checkAll"
-          @change="handleCheckAllChange"
-        >
-          {{ t('dataset.check_all') }}
-        </el-checkbox>
-        <div style="margin-top: 12px" />
-        <el-checkbox-group v-model="selectedId" @change="handleSelectionChange">
-          <template :key="ele.id" v-for="ele in state.tableData">
-            <div :class="[{ 'is-active': curCol.id === ele.id }]" @click="selectCur(ele)">
-              <el-checkbox :label="ele.id">
-                <el-icon>
-                  <Icon
-                    :name="`field_${fieldEnums[ele.deType]}`"
-                    :class="`field-icon-${fieldEnums[ele.deType]}`"
-                  ></Icon>
-                </el-icon>
-
-                {{ ele.name }}
-              </el-checkbox>
+      <el-table
+        :data="state.tableData"
+        style="width: 100%"
+        ref="tableDesensitization"
+        class="table-container"
+        header-cell-class-name="header-cell"
+        @selection-change="handleSelectionChange"
+      >
+        <el-table-column type="selection" width="55" />
+        <el-table-column prop="name" :label="t('dataset.field_name')">
+          <template v-slot:default="scope">
+            <div class="flex-align-center">
+              <el-icon>
+                <Icon
+                  :name="`field_${fieldEnums[scope.row.deType]}`"
+                  :class="`field-icon-${fieldEnums[scope.row.deType]}`"
+                ></Icon>
+              </el-icon>
+              &nbsp;
+              {{ scope.row.name }}
             </div>
-            <div style="margin-top: 12px" />
           </template>
-        </el-checkbox-group>
-      </div>
-      <div class="border-right" v-if="!!curCol.id">
-        <el-form label-width="80px">
-          <el-form-item :label="t('commons.please_select')">
-            <el-radio-group v-model="curCol.opt">
-              <el-radio label="Prohibit">{{ t('dataset.column_permission.prohibit') }}</el-radio>
-              <el-radio label="Desensitization">{{
-                t('dataset.column_permission.desensitization')
-              }}</el-radio>
-            </el-radio-group>
-          </el-form-item>
-          <template v-if="curCol.opt === 'Desensitization'">
-            <el-form-item :label="t('dataset.column_permission.desensitization_rule')">
-              <el-radio
-                v-for="ele in optRules"
-                :key="ele.label"
-                v-model="curCol.desensitizationRule.builtInRule"
-                :label="ele.value"
+        </el-table-column>
+        <el-table-column align="center" label="规则预览">
+          <template #default="scope">
+            {{
+              scope.row.opt === 'Prohibit' || !scope.row.selected
+                ? '禁止查看'
+                : previewFormatter(scope.row)
+            }}
+          </template>
+        </el-table-column>
+        <el-table-column :label="t('common.operate')" fixed="right" width="186">
+          <template #default="scope">
+            <div class="flex-align-center">
+              <el-radio-group :disabled="!mapId.includes(scope.row.id)" v-model="scope.row.opt">
+                <el-radio label="Prohibit">{{ t('dataset.column_permission.prohibit') }}</el-radio>
+                <el-radio label="Desensitization">{{
+                  t('dataset.column_permission.desensitization')
+                }}</el-radio>
+              </el-radio-group>
+              <el-button
+                :disabled="!mapId.includes(scope.row.id) || scope.row.opt === 'Prohibit'"
+                @click="selectCur(scope.row)"
+                text
               >
-                {{ ele.label }}
-              </el-radio>
-            </el-form-item>
-            <template v-if="curCol.desensitizationRule.builtInRule === 'custom'">
-              <el-form-item>
-                <el-select
-                  @change="regionChange"
-                  v-model="curCol.desensitizationRule.customBuiltInRule"
-                >
-                  <el-option
-                    :key="ele.value"
-                    v-for="ele in regionList"
-                    :label="ele.label"
-                    :value="ele.value"
-                  ></el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item>
-                {{ t('dataset.column_permission.m') }}
-                <el-input-number
-                  ref="numberM"
-                  @change="regionChange"
-                  v-model="curCol.desensitizationRule.m"
-                  controls-position="right"
-                  :min="1"
-                  :max="20"
-                ></el-input-number>
-              </el-form-item>
-              <el-form-item>
-                {{ t('dataset.column_permission.n') }}
-                <el-input-number
-                  @change="regionChange"
-                  v-model="curCol.desensitizationRule.n"
-                  controls-position="right"
-                  :min="1"
-                  :max="20"
-                ></el-input-number>
-              </el-form-item>
-              <el-form-item> {{ t('dataset.preview') }} {{ preview }} </el-form-item>
-            </template>
+                <template #icon>
+                  <Icon name="icon_admin_outlined"></Icon>
+                </template>
+              </el-button>
+            </div>
           </template>
-        </el-form>
-      </div>
+        </el-table-column>
+      </el-table>
     </div>
     <template v-if="columnPermissionForm.authTargetType !== 'user'">
-      <div class="title-form_primary">
+      <div class="title-form_primary m16">
         <span>{{ t('auth.white_list') }}</span>
         <span class="explain">{{ t('auth.white_user_not') }}</span>
       </div>
@@ -659,7 +651,6 @@ const handleCurrentChange = (currentPage: number) => {
           clearable
           style="width: 100%"
           v-model="columnPermissionForm.whiteListUser"
-          :placeholder="t('user.select_users')"
         >
           <el-option
             v-for="item in whiteListUsers"
@@ -678,10 +669,68 @@ const handleCurrentChange = (currentPage: number) => {
       <el-button type="primary" @click="save()">{{ t('dataset.confirm') }} </el-button>
     </template>
   </el-drawer>
+  <el-dialog
+    class="set-desensitization-rules"
+    title="设置脱敏规则"
+    v-model="setDesensitizationRules"
+    width="420px"
+  >
+    <div class="border-right">
+      <el-radio
+        v-for="ele in optRules"
+        :key="ele.label"
+        v-model="curCol.desensitizationRule.builtInRule"
+        :label="ele.value"
+      >
+        {{ ele.label }}
+      </el-radio>
+      <template v-if="curCol.desensitizationRule.builtInRule === 'custom'">
+        <el-select @change="regionChange" v-model="curCol.desensitizationRule.customBuiltInRule">
+          <el-option
+            :key="ele.value"
+            v-for="ele in regionList"
+            :label="ele.label"
+            :value="ele.value"
+          ></el-option>
+        </el-select>
+        <div class="number">
+          &nbsp;从M &nbsp;
+          <el-input-number
+            ref="numberM"
+            @change="regionChange"
+            v-model="curCol.desensitizationRule.m"
+            controls-position="right"
+            :min="1"
+            :max="20"
+          ></el-input-number>
+          &nbsp; 至N &nbsp;
+          <el-input-number
+            @change="regionChange"
+            v-model="curCol.desensitizationRule.n"
+            controls-position="right"
+            :min="1"
+            :max="20"
+          ></el-input-number>
+        </div>
+        <div class="preview">
+          {{ t('dataset.preview') }} <span class="label">{{ preview }}</span>
+        </div>
+      </template>
+    </div>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="setDesensitizationRules = false">{{ t('chart.cancel') }} </el-button>
+        <el-button type="primary" @click="saveCurCol">{{ t('chart.confirm') }} </el-button>
+      </div>
+    </template>
+  </el-dialog>
 </template>
 
 <style lang="less" scoped>
 .column-permissions {
+  .m16 {
+    margin-bottom: 16px;
+  }
   .white-list {
     width: 100%;
   }
@@ -706,34 +755,10 @@ const handleCurrentChange = (currentPage: number) => {
 
   .mrbt40 {
     margin-bottom: 40px;
-    border: 1px solid var(--deBorderBase, #dcdfe6);
-    border-radius: 4px;
-    display: flex;
-    justify-content: space-between;
+    max-height: 387px;
 
-    .border-left {
-      flex: 1;
-      padding: 24px;
-      max-height: 490px;
-      border-right: 1px solid var(--deBorderBase, #dcdfe6);
-      overflow-y: auto;
-    }
-
-    .border-none {
-      border: none !important;
-    }
-
-    .border-right {
-      padding: 24px;
-      width: 490px;
-      min-width: 300px;
-      border-left: 1px solid var(--deBorderBase, #dcdfe6);
-      margin-left: -1px;
-      overflow-y: auto;
-    }
-
-    .is-active {
-      background-color: #f5f7fa;
+    .ed-radio {
+      margin-right: 16px;
     }
   }
 
@@ -742,6 +767,45 @@ const handleCurrentChange = (currentPage: number) => {
     display: flex;
     align-items: center;
     justify-content: space-between;
+  }
+}
+</style>
+<style lang="less">
+.set-desensitization-rules {
+  .border-right {
+    width: 100%;
+    .ed-radio {
+      width: 100%;
+    }
+
+    .ed-select,
+    .number,
+    .preview {
+      width: calc(100% - 20px);
+      margin-left: 20px;
+    }
+
+    .number {
+      display: flex;
+      align-items: center;
+      margin: 16px 0 16px 20px;
+    }
+
+    .ed-input-number {
+      width: 136px;
+    }
+
+    .preview {
+      color: #646a73;
+      font-family: PingFang SC;
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 22px; /* 157.143% */
+      .label {
+        color: #1f2329;
+      }
+    }
   }
 }
 </style>

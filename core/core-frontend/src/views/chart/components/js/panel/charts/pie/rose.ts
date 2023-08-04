@@ -131,8 +131,8 @@ export class Rose extends G2PlotChartView<RoseOptions, G2Rose> {
     )(chart, options)
   }
 
-  constructor() {
-    super('pie-rose', [])
+  constructor(name = 'pie-rose') {
+    super(name, [])
   }
 }
 
@@ -151,7 +151,6 @@ export class RoseDonut extends Rose {
   }
 
   constructor() {
-    super()
-    this.name = 'pie-rose-donut'
+    super('pie-rose-donut')
   }
 }

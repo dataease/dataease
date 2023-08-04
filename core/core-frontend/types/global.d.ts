@@ -51,4 +51,6 @@ declare global {
     stringify<T>(value: T): JSONString<T>
     parse<T>(text: JSONString<T>): T
   }
+
+  type EditorTheme = 'plain' | 'dark' | 'light'
 }
