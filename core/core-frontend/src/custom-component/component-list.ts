@@ -188,6 +188,23 @@ const list = [
       height: 100,
       color: ''
     }
+  },
+  {
+    component: 'DeTabs',
+    name: 'Tabs',
+    label: 'Tabs',
+    propValue: '',
+    icon: 'dv-tab',
+    innerType: '',
+    x: 1,
+    y: 1,
+    sizeX: 15,
+    sizeY: 15,
+    style: {
+      width: 150,
+      height: 100,
+      color: ''
+    }
   }
 ]
 
