@@ -8,9 +8,12 @@ import { flow, handleEmptyDataStrategy, parseJson } from '@/views/chart/componen
 import { cloneDeep } from 'lodash-es'
 import { formatterItem, valueFormatter } from '@/views/chart/components/js/formatter'
 import {
+  LINE_AXIS_TYPE,
   LINE_EDITOR_PROPERTY,
   LINE_EDITOR_PROPERTY_INNER
 } from '@/views/chart/components/js/panel/charts/line/common'
+import { Label } from '@antv/g2plot/lib/types/label'
+import { IntervalGeometryLabelPosition } from '@antv/g2/lib/interface'
 
 const DEFAULT_DATA = []
 /**
@@ -19,7 +22,7 @@ const DEFAULT_DATA = []
 export class Line extends G2PlotChartView<LineOptions, G2Line> {
   properties = LINE_EDITOR_PROPERTY
   propertyInner = LINE_EDITOR_PROPERTY_INNER
-  axis: AxisType[] = ['xAxis', 'yAxis', 'drill', 'filter']
+  axis: AxisType[] = [...LINE_AXIS_TYPE, 'xAxisExt']
 
   drawChart(drawOptions: G2PlotDrawOptions<G2Line>): G2Line {
     const { chart, action, container } = drawOptions
@@ -96,48 +99,43 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
   }
 
   protected configLabel(chart: Chart, options: LineOptions): LineOptions {
-    let customAttr: DeepPartial<ChartAttr>
-    let label
-    if (chart.customAttr) {
-      customAttr = parseJson(chart.customAttr)
-      if (customAttr.label) {
-        const labelAttr = customAttr.label
-        if (labelAttr.show) {
-          label = {
-            position: labelAttr.position,
-            offsetY: -8,
-            style: {
-              fill: labelAttr.color,
-              fontSize: labelAttr.fontSize
-            },
-            formatter: function (param: Datum) {
-              let res = param.value
-              const xAxisExt = chart.xAxisExt
-              const yAxis = chart.yAxis
-              let f
-              if (xAxisExt?.length > 0) {
-                f = yAxis[0]
-              } else {
-                for (let i = 0; i < yAxis.length; i++) {
-                  if (yAxis[i].name === param.category) {
-                    f = yAxis[i]
-                    break
-                  }
-                }
-              }
-              if (!f) {
-                return res
-              }
-              if (!f.formatterCfg) {
-                f.formatterCfg = formatterItem
-              }
-              res = valueFormatter(param.value, f.formatterCfg)
-              return res
+    const customAttr = parseJson(chart.customAttr)
+    const labelAttr = customAttr.label
+    if (!labelAttr?.show) {
+      return {
+        ...options,
+        label: false
+      }
+    }
+    const { xAxisExt, yAxis } = chart
+    const label: Label = {
+      position: labelAttr.position as IntervalGeometryLabelPosition,
+      offsetY: -8,
+      style: {
+        fill: labelAttr.color,
+        fontSize: labelAttr.fontSize
+      },
+      formatter: function (param: Datum) {
+        let res = param.value
+        let f
+        if (xAxisExt?.length > 0) {
+          f = yAxis[0]
+        } else {
+          for (let i = 0; i < yAxis.length; i++) {
+            if (yAxis[i].name === param.category) {
+              f = yAxis[i]
+              break
             }
           }
-        } else {
-          label = false
         }
+        if (!f) {
+          return res
+        }
+        if (!f.formatterCfg) {
+          f.formatterCfg = formatterItem
+        }
+        res = valueFormatter(param.value, f.formatterCfg)
+        return res
       }
     }
     return { ...options, label }

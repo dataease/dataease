@@ -638,7 +638,7 @@ export default {
     chart_bar_stack_horizontal: '横向堆叠柱状图',
     chart_percentage_bar_stack_horizontal: '横向百分比柱状图',
     chart_line: '基础折线图',
-    chart_line_stack: '堆叠折线图',
+    chart_area_stack: '堆叠面积图',
     chart_pie: '饼图',
     chart_pie_donut: '环形图',
     chart_pie_rose: '南丁格尔玫瑰图',
