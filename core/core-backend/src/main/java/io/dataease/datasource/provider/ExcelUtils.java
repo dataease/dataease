@@ -14,6 +14,7 @@ import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.ds.vo.ExcelFileData;
 import io.dataease.api.ds.vo.ExcelSheetData;
 import io.dataease.api.ds.vo.TableField;
+import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.exception.DEException;
 import io.dataease.utils.AuthUtils;
@@ -48,6 +49,22 @@ public class ExcelUtils {
             tableDescs.add(datasetTableDTO);
         }
         return tableDescs;
+    }
+
+    public static String getFileName(CoreDatasource datasource) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(datasource.getConfiguration());
+        for (int i = 0; i < rootNode.size(); i++) {
+            return rootNode.get(i).get("fileName").asText();
+        }
+        return "";
+    }
+
+    public static String getSize(CoreDatasource datasource) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(datasource.getConfiguration());
+        for (int i = 0; i < rootNode.size(); i++) {
+            return rootNode.get(i).get("size").asText();
+        }
+        return "0 B";
     }
 
     public List<String[]> fetchDataList(DatasourceRequest datasourceRequest) throws Exception {
@@ -121,16 +138,30 @@ public class ExcelUtils {
         String excelId = UUID.randomUUID().toString();
         String filePath = saveFile(file, excelId);
 
-        filename = filename.substring(0, filename.lastIndexOf('.'));
         for (ExcelSheetData excelSheetData : returnSheetDataList) {
             excelSheetData.setTableName(excelSheetData.getExcelLabel());
             excelSheetData.setDeTableName("excel_" + excelSheetData.getExcelLabel() + "_" + UUID.randomUUID().toString());
             excelSheetData.setPath(filePath);
             excelSheetData.setSheetId(UUID.randomUUID().toString());
             excelSheetData.setSheetExcelId(excelId);
+            excelSheetData.setFileName(filename);
+            long size = 0;
+            String unit = "B";
+            if (file.getSize() / 1024 == 0) {
+                size = file.getSize();
+            }
+            if (0 < file.getSize() / 1024 && file.getSize() / 1024 < 1024) {
+                size = file.getSize() / 1024;
+                unit = "KB";
+            }
+            if (1024 <= file.getSize() / 1024) {
+                size = file.getSize() / 1024 / 1024;
+                unit = "MB";
+            }
+            excelSheetData.setSize(size + " " + unit);
         }
         ExcelFileData excelFileData = new ExcelFileData();
-        excelFileData.setExcelLabel(filename);
+        excelFileData.setExcelLabel(filename.substring(0, filename.lastIndexOf('.')));
         excelFileData.setId(excelId);
         excelFileData.setPath(filePath);
         excelFileData.setSheets(returnSheetDataList);
@@ -288,10 +319,10 @@ public class ExcelUtils {
                     }
                     List<String[]> data = (isPreview && noModelDataListener.getData().size() > 100 ? new ArrayList<>(noModelDataListener.getData().subList(0, 100)) : noModelDataListener.getData());
                     if (isPreview) {
-                        for (String[] datum : data) {
-                            for (int i = 0; i < datum.length; i++) {
-                                if (i < fields.size()) {
-                                    cellType(datum[i], i, fields.get(i));
+                        for (int i = 0; i < data.size(); i++) {
+                            for (int j = 0; j < data.get(i).length; j++) {
+                                if (j < fields.size()) {
+                                    cellType(data.get(i)[j], i, fields.get(j));
                                 }
                             }
                         }
@@ -299,6 +330,7 @@ public class ExcelUtils {
                     ExcelSheetData excelSheetData = new ExcelSheetData();
                     excelSheetData.setFields(fields);
                     excelSheetData.setData(data);
+                    excelSheetData.setFileName(filename);
                     excelSheetData.setExcelLabel(readSheet.getSheetName());
                     excelSheetDataList.add(excelSheetData);
                 }
@@ -321,6 +353,7 @@ public class ExcelUtils {
                 String[] fieldArray = fields.stream().map(TableField::getName).toArray(String[]::new);
                 excelSheetData.setFields(fields);
                 excelSheetData.setData(data);
+                excelSheetData.setFileName(filename);
                 excelSheetData.setExcelLabel(filename.substring(0, filename.lastIndexOf('.')));
                 excelSheetDataList.add(excelSheetData);
             }

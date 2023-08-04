@@ -385,6 +385,10 @@ public class DatasourceServer implements DatasourceApi {
             BeanUtils.copyBean(taskDTO, coreDatasourceTask);
             datasourceDTO.setSyncSetting(taskDTO);
         }
+        if (datasourceDTO.getType().equalsIgnoreCase(DatasourceConfiguration.DatasourceType.Excel.toString())) {
+            datasourceDTO.setFileName(ExcelUtils.getFileName(datasource));
+            datasourceDTO.setSize(ExcelUtils.getSize(datasource));
+        }
         datasourceDTO.setConfiguration(new String(Base64.getEncoder().encode(datasourceDTO.getConfiguration().getBytes())));
         return datasourceDTO;
     }
@@ -534,7 +538,7 @@ public class DatasourceServer implements DatasourceApi {
             BeanUtils.copyBean(datasourceSchemaDTO, engineServer.getDeEngine());
             datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId()));
             datasourceRequest.setDsList(Map.of(datasourceSchemaDTO.getId(), datasourceSchemaDTO));
-            datasourceRequest.setQuery(TableUtils.tableName2Sql(datasourceSchemaDTO, tableName));
+            datasourceRequest.setQuery(TableUtils.tableName2Sql(datasourceSchemaDTO, tableName) + " LIMIT 0 OFFSET 0");
             List<TableField> tableFields = (List<TableField>) calciteProvider.fetchResultField(datasourceRequest).get("fields");
             return tableFields.stream().filter(tableField -> {
                 return !tableField.getOriginName().equalsIgnoreCase("dataease_uuid");
@@ -545,7 +549,7 @@ public class DatasourceServer implements DatasourceApi {
         BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
         datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId()));
         datasourceRequest.setDsList(Map.of(datasourceSchemaDTO.getId(), datasourceSchemaDTO));
-        datasourceRequest.setQuery(TableUtils.tableName2Sql(datasourceSchemaDTO, tableName));
+        datasourceRequest.setQuery(TableUtils.tableName2Sql(datasourceSchemaDTO, tableName) + " LIMIT 0 OFFSET 0");
         return (List<TableField>) calciteProvider.fetchResultField(datasourceRequest).get("fields");
     }
 
@@ -644,6 +648,7 @@ public class DatasourceServer implements DatasourceApi {
         List<UnionDTO> unionDTOS = new ArrayList<>();
         UnionDTO unionDTO = new UnionDTO();
         DatasetTableDTO datasetTableDTO = new DatasetTableDTO();
+        datasetTableDTO.setDatasourceId(coreDatasource.getId());
         datasetTableDTO.setTableName(tableName);
         DatasetTableInfoDTO tableInfoDTO = new DatasetTableInfoDTO();
         tableInfoDTO.setTable(tableName);

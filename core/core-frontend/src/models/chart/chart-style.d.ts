@@ -141,9 +141,13 @@ declare interface ChartAxisStyle {
    */
   name: string
   /**
-   * 轴线标题名称设置
+   * 轴线标题字体颜色
    */
-  nameTextStyle: BaseTextStyle
+  color: string
+  /**
+   * 轴线标题字体大小
+   */
+  fontSize: number
   /**
    * 轴线标签设置
    */
@@ -164,19 +168,6 @@ declare interface ChartAxisStyle {
    * (值)轴线格式化设置
    */
   axisLabelFormatter: BaseFormatter
-}
-/**
- * 文字样式
- */
-declare interface BaseTextStyle {
-  /**
-   * 字体颜色
-   */
-  color: string
-  /**
-   * 字体大小
-   */
-  fontSize: number
 }
 /**
  * 轴线标签

@@ -72,4 +72,6 @@ public class DatasourceDTO implements Serializable {
     private Integer editType;
     private String  nodeType;
     private String  action;
+    private String  fileName;
+    private String  size;
 }

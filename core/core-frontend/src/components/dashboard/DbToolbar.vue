@@ -27,6 +27,7 @@ import { queryVisualizationJumpInfo } from '@/api/visualization/linkJump'
 import { canvasSave } from '@/utils/canvasUtils'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { copyStoreWithOut } from '@/store/modules/data-visualization/copy'
+import TabsGroup from '@/custom-component/component-group/TabsGroup.vue'
 const { t } = useI18n()
 const isShowPreview = ref(false)
 const isScreenshot = ref(false)
@@ -293,6 +294,9 @@ const saveLinkageSetting = () => {
         <component-group themes="light" icon-name="dv-media" title="图片">
           <media-group themes="light" :dv-model="dvModel"></media-group>
         </component-group>
+        <!--        <component-group themes="light" icon-name="dv-tab" title="Tab">-->
+        <!--          <tabs-group themes="light" :dv-model="dvModel"></tabs-group>-->
+        <!--        </component-group>-->
         <component-button :show-split-line="true" icon-name="dv-tab" title="Tab"></component-button>
         <component-button
           icon-name="dv-copy"

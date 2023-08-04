@@ -211,7 +211,7 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
     )(chart, options)
   }
 
-  constructor() {
-    super('line', DEFAULT_DATA)
+  constructor(name = 'line') {
+    super(name, DEFAULT_DATA)
   }
 }

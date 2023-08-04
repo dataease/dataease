@@ -153,7 +153,7 @@ const createInit = (type, data: Tree, exec, name: string) => {
     request = data.request
   }
   if (data.id) {
-    listDatasources({ leaf: false, id: data.id }).then(res => {
+    listDatasources({ leaf: false, id: data.id, weight: 3 }).then(res => {
       dfs(res as unknown as Tree[])
       state.tData = (res as unknown as Tree[]) || []
       if (exec) {
@@ -228,8 +228,10 @@ const saveDataset = () => {
       loading.value = true
       if (request) {
         save({ ...request, name: datasetForm.name, pid: params.pid })
-          .then(() => {
-            successCb()
+          .then(res => {
+            if (res !== undefined) {
+              successCb()
+            }
           })
           .finally(() => {
             loading.value = false
@@ -300,11 +302,7 @@ const emits = defineEmits(['finish'])
             @click="activeAll = !activeAll"
             v-if="showAll"
             class="list-item_primary"
-          >
-            <el-icon>
-              <Icon name="dv-folder"></Icon>
-            </el-icon>
-          </div>
+          ></div>
           <el-tree
             ref="treeRef"
             :filter-node-method="filterNode"

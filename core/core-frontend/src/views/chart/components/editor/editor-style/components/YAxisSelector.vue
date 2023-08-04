@@ -1,5 +1,5 @@
 <script lang="tsx" setup>
-import { reactive, watch } from 'vue'
+import { PropType, reactive, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL, DEFAULT_YAXIS_STYLE } from '@/views/chart/components/editor/util/chart'
 import { formatterType, unitType } from '@/views/chart/components/editor/util/formatter'
@@ -8,6 +8,10 @@ import { ElMessage } from 'element-plus-secondary'
 const { t } = useI18n()
 
 const props = defineProps({
+  themes: {
+    type: String as PropType<'light' | 'dark' | 'plain'>,
+    default: 'dark'
+  },
   chart: {
     type: Object,
     required: true
@@ -47,7 +51,7 @@ const initFontSize = () => {
   state.fontSize = arr
 }
 
-const changeAxisStyle = () => {
+const changeAxisStyle = prop => {
   if (
     state.axisForm.axisValue.splitCount &&
     (parseInt(state.axisForm.axisValue.splitCount) > 100 ||
@@ -90,7 +94,11 @@ init()
         label-width="80px"
         size="small"
       >
-        <el-form-item :label="t('chart.position')" class="form-item">
+        <el-form-item
+          :label="t('chart.position')"
+          class="form-item"
+          v-show="showProperty('position')"
+        >
           <el-radio-group
             v-model="state.axisForm.position"
             size="small"
@@ -112,7 +120,7 @@ init()
             </div>
           </el-radio-group>
         </el-form-item>
-        <el-form-item :label="t('chart.name')" class="form-item">
+        <el-form-item :label="t('chart.name')" class="form-item" v-show="showProperty('name')">
           <el-input
             :effect="props.themes"
             v-model="state.axisForm.name"
@@ -120,20 +128,28 @@ init()
             @blur="changeAxisStyle('name')"
           />
         </el-form-item>
-        <el-form-item :label="t('chart.axis_name_color')" class="form-item">
+        <el-form-item
+          :label="t('chart.axis_name_color')"
+          class="form-item"
+          v-show="showProperty('color')"
+        >
           <el-color-picker
-            v-model="state.axisForm.nameTextStyle.color"
+            v-model="state.axisForm.color"
             class="color-picker-style"
             :predefine="predefineColors"
-            @change="changeAxisStyle('nameTextStyle')"
+            @change="changeAxisStyle('color')"
           />
         </el-form-item>
-        <el-form-item :label="t('chart.axis_name_fontsize')" class="form-item">
+        <el-form-item
+          :label="t('chart.axis_name_fontsize')"
+          class="form-item"
+          v-show="showProperty('fontSize')"
+        >
           <el-select
             :effect="props.themes"
-            v-model="state.axisForm.nameTextStyle.fontSize"
+            v-model="state.axisForm.fontSize"
             :placeholder="t('chart.axis_name_fontsize')"
-            @change="changeAxisStyle('nameTextStyle')"
+            @change="changeAxisStyle('fontSize')"
           >
             <el-option
               v-for="option in state.fontSize"
@@ -143,7 +159,7 @@ init()
             />
           </el-select>
         </el-form-item>
-        <span>
+        <span v-show="showProperty('axisValue')">
           <el-divider />
           <el-form-item :label="t('chart.axis_value')" class="form-item">
             <!--              <span>-->
@@ -162,7 +178,7 @@ init()
               >{{ t('chart.axis_auto') }}</el-checkbox
             >
           </el-form-item>
-          <span v-show="!state.axisForm.axisValue.auto">
+          <span v-show="showProperty('axisValue') && !state.axisForm.axisValue.auto">
             <el-form-item :label="t('chart.axis_value_min')" class="form-item">
               <el-input
                 :effect="props.themes"
@@ -196,7 +212,11 @@ init()
           </span>
         </span>
         <el-divider />
-        <el-form-item :label="t('chart.axis_show')" class="form-item">
+        <el-form-item
+          :label="t('chart.axis_show')"
+          class="form-item"
+          v-show="showProperty('axisLine')"
+        >
           <el-checkbox
             :effect="props.themes"
             v-model="state.axisForm.axisLine.show"
@@ -204,7 +224,11 @@ init()
             >{{ t('chart.axis_show') }}</el-checkbox
           >
         </el-form-item>
-        <el-form-item :label="t('chart.grid_show')" class="form-item">
+        <el-form-item
+          :label="t('chart.grid_show')"
+          class="form-item"
+          v-show="showProperty('splitLine')"
+        >
           <el-checkbox
             :effect="props.themes"
             v-model="state.axisForm.splitLine.show"
@@ -212,7 +236,7 @@ init()
             >{{ t('chart.grid_show') }}</el-checkbox
           >
         </el-form-item>
-        <span v-show="state.axisForm.splitLine.show">
+        <span v-show="showProperty('splitLine') && state.axisForm.splitLine.show">
           <el-form-item :label="t('chart.grid_color')" class="form-item">
             <el-color-picker
               v-model="state.axisForm.splitLine.lineStyle.color"
@@ -234,7 +258,11 @@ init()
           </el-form-item>
         </span>
         <el-divider />
-        <el-form-item :label="t('chart.axis_label_show')" class="form-item">
+        <el-form-item
+          :label="t('chart.axis_label_show')"
+          class="form-item"
+          v-show="showProperty('axisLabel')"
+        >
           <el-checkbox
             :effect="props.themes"
             v-model="state.axisForm.axisLabel.show"
@@ -242,7 +270,7 @@ init()
             >{{ t('chart.axis_label_show') }}</el-checkbox
           >
         </el-form-item>
-        <span v-show="state.axisForm.axisLabel.show">
+        <span v-show="showProperty('axisLabel') && state.axisForm.axisLabel.show">
           <el-form-item :label="t('chart.axis_label_color')" class="form-item">
             <el-color-picker
               v-model="state.axisForm.axisLabel.color"
@@ -278,7 +306,7 @@ init()
             </el-select>
           </el-form-item>
 
-          <span v-show="props.chart.type && props.chart.type.includes('horizontal')">
+          <span v-show="showProperty('axisLabelFormatter')">
             <el-form-item :label="t('chart.value_formatter_type')" class="form-item">
               <el-select
                 :effect="props.themes"
