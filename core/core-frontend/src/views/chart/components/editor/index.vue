@@ -1375,7 +1375,6 @@ const autoInsert = element => {
           </el-row>
           <el-row class="dataset-select">
             <el-tree-select
-              :effect="themes"
               v-model="view.tableId"
               :data="datasetTree"
               :props="dsSelectProps"
@@ -1725,6 +1724,26 @@ const autoInsert = element => {
   }
   :deep(.item-span-style) {
     color: @canvas-main-font-color-light!important;
+  }
+}
+
+// editor form 全局样式
+.editor-dark .dataset-selector {
+  :deep(.ed-input__inner),
+  :deep(.ed-input__wrapper),
+  :deep(.ed-input.is-disabled .ed-input__wrapper) {
+    color: var(--ed-color-white);
+    background-color: @side-content-background;
+    border: none;
+  }
+  :deep(.ed-input__inner) {
+    border: none;
+  }
+  :deep(.ed-input__wrapper) {
+    box-shadow: 0 0 0 1px hsla(0, 0%, 100%, 0.15) inset !important;
+  }
+  :deep(.ed-input__wrapper:hover) {
+    box-shadow: 0 0 0 1px var(--ed-color-primary) inset !important;
   }
 }
 
