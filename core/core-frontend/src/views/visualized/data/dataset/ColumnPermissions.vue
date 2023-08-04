@@ -135,7 +135,6 @@ const filedList = shallowRef([])
 const numberM = ref()
 const authTarge = ref(false)
 const isIndeterminate = ref(false)
-const selectedId = shallowRef([])
 const curCol = reactive<CurCol>(cloneDeep(defaultCol))
 const targetObjs = shallowRef<{ name: string; id: string }[]>([])
 const emptyTips = computed(() => {
@@ -147,9 +146,15 @@ const preview = computed(() => {
 })
 
 const previewFormatter = val => {
-  const { customBuiltInRule = '', m = 1, n = 1 } = val?.desensitizationRule || {}
+  const { customBuiltInRule = '', m = 1, n = 1, builtInRule = '' } = val?.desensitizationRule || {}
+  if (builtInRule && builtInRule !== 'custom') {
+    let obj = optRules.find(ele => ele.value === builtInRule)
+    if (obj?.label) {
+      return obj?.label
+    }
+  }
   if (customBuiltInRule === 'RetainMToN') {
-    return [...Array(3).fill('*'), ...Array(n + 1 - m).fill('X'), '***'].join('')
+    return [...Array(m - 1).fill('*'), ...Array(n + 1 - m).fill('X'), '***'].join('')
   }
   if (customBuiltInRule === 'RetainBeforeMAndAfterN') {
     return [...Array(m).fill('X'), '***', ...Array(n).fill('X')].join('')
@@ -163,13 +168,21 @@ watch([columnPermissionForm.authTargetId], ([val]) => {
   }
 })
 
+const isUpdateTableData = ref(false)
+
 watch(colKeywords, val => {
+  console.log(
+    'columnPermissionForm.permissions.columns',
+    cloneDeep(columnPermissionForm.permissions.columns)
+  )
   const tableData = columnPermissionForm.permissions.columns || []
   if (!val) {
     state.tableData = [...tableData]
   } else {
     state.tableData = tableData.filter(ele => ele.name.includes(val))
   }
+  isUpdateTableData.value = true
+  initSelect()
 })
 
 onBeforeMount(() => {
@@ -284,7 +297,6 @@ const search = () => {
 }
 
 const create = permissionObj => {
-  selectedId.value = []
   Object.assign(curCol, cloneDeep(defaultCol))
   if (!permissionObj) {
     targetObjs.value = []
@@ -329,9 +341,6 @@ const create = permissionObj => {
         if (item.id === columnsPermissions[j].id) {
           item.selected = columnsPermissions[j].selected
           item.opt = columnsPermissions[j].opt
-          if (item.selected) {
-            selectedId.value.push(item.id)
-          }
           if (columnsPermissions[j].desensitizationRule !== undefined) {
             item.desensitizationRule = columnsPermissions[j].desensitizationRule
           }
@@ -347,12 +356,16 @@ const create = permissionObj => {
 }
 
 const initSelect = () => {
+  isUpdateTableData.value = true
+  mapId.value = []
   nextTick(() => {
     state.tableData.forEach(ele => {
       if (ele.selected) {
+        mapId.value.push(ele.id)
         tableDesensitization.value.toggleRowSelection(ele, true)
       }
     })
+    isUpdateTableData.value = false
   })
 }
 
@@ -383,7 +396,7 @@ const tableDesensitization = ref()
 const resetTaskForm = () => {
   Object.assign(columnPermissionForm, cloneDeep(defaultForm))
   Object.assign(curCol, cloneDeep(defaultCol))
-  selectedId.value = []
+  state.tableData = []
   isIndeterminate.value = false
 }
 
@@ -398,7 +411,7 @@ const deletePermission = item => {
     showClose: false,
     callback: (action: Action) => {
       if (action === 'confirm') {
-        deleteColumnPermission({ id: item.id }).then(res => {
+        deleteColumnPermission({ id: item.id }).then(() => {
           ElMessage({
             message: t('dataset.delete_success'),
             type: 'success',
@@ -426,7 +439,7 @@ const save = () => {
     whiteListUser: JSON.stringify(columnPermissionForm.whiteListUser),
     permissions: JSON.stringify(columnPermissionForm.permissions)
   }
-  saveColumnPermission(params).then(res => {
+  saveColumnPermission(params).then(() => {
     ElMessage({
       message: t('dataset.save_success'),
       type: 'success',
@@ -438,7 +451,7 @@ const save = () => {
   resetTaskForm()
 }
 const selectCur = ele => {
-  Object.assign(curCol, ele)
+  Object.assign(curCol, cloneDeep(ele))
   setDesensitizationRules.value = true
   const { m = 1, n = 1 } = curCol.desensitizationRule
   curCol.desensitizationRule.m = m || 1
@@ -448,6 +461,7 @@ const selectCur = ele => {
 const mapId = ref([])
 
 const handleSelectionChange = val => {
+  if (isUpdateTableData.value) return
   mapId.value = val.map(ele => ele.id)
   state.tableData.forEach(filed => {
     const selected = mapId.value.includes(filed.id)
@@ -572,7 +586,7 @@ const handleCurrentChange = (currentPage: number) => {
       >
         <el-option v-for="item in targetObjs" :key="item.id" :label="item.name" :value="item.id" />
       </el-select>
-      <div v-if="authTarge" style="top: 100px; left: 0" class="el-form-item__error">
+      <div v-if="authTarge" style="top: 110px; left: 0" class="ed-form-item__error">
         {{ emptyTips }}
       </div>
       <p class="type">{{ t('auth.set_rules') }}</p>
