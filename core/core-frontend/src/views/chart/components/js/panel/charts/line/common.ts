@@ -52,3 +52,5 @@ export const LINE_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
   ],
   'legend-selector': ['icon', 'orient', 'textStyle', 'hPosition', 'vPosition']
 }
+
+export const LINE_AXIS_TYPE: AxisType[] = ['xAxis', 'yAxis', 'drill', 'filter']

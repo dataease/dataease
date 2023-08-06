@@ -23,7 +23,8 @@ const props = defineProps({
           props.view.type.includes('scatter') ||
           props.view.type === 'chart-mix' ||
           props.view.type === 'waterfall' ||
-          props.view.type === 'area')
+          props.view.type === 'area' ||
+          props.view.type === 'area-stack')
       "
       >{{ t('chart.drag_block_type_axis') }}</span
     >
