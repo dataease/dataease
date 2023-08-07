@@ -294,10 +294,10 @@ const saveLinkageSetting = () => {
         <component-group themes="light" icon-name="dv-media" title="图片">
           <media-group themes="light" :dv-model="dvModel"></media-group>
         </component-group>
-        <!--        <component-group themes="light" icon-name="dv-tab" title="Tab">-->
-        <!--          <tabs-group themes="light" :dv-model="dvModel"></tabs-group>-->
-        <!--        </component-group>-->
-        <component-button :show-split-line="true" icon-name="dv-tab" title="Tab"></component-button>
+        <component-group themes="light" icon-name="dv-tab" title="Tab">
+          <tabs-group themes="light" :dv-model="dvModel"></tabs-group>
+        </component-group>
+        <!--        <component-button :show-split-line="true" icon-name="dv-tab" title="Tab"></component-button>-->
         <component-button
           icon-name="dv-copy"
           title="复用"

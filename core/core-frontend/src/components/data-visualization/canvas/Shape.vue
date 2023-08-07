@@ -1,8 +1,13 @@
 <template>
-  <div class="shape">
+  <div class="shape" ref="shapeInnerRef" :id="domId">
     <div
       class="shape-outer"
-      :class="{ active, 'shape-edit': isEditMode, 'linkage-setting': linkageActive }"
+      :class="{
+        active,
+        'shape-edit': isEditMode,
+        'linkage-setting': linkageActive,
+        'drag-on-tab-collision': dragCollision
+      }"
     >
       <div
         class="shape-inner"
@@ -45,7 +50,7 @@ import eventBus from '@/utils/eventBus'
 import calculateComponentPositionAndSize from '@/utils/calculateComponentPositionAndSize'
 import { mod360 } from '@/utils/translate'
 import { isPreventDrop } from '@/utils/utils'
-import { computed, nextTick, onMounted, ref, toRefs, reactive } from 'vue'
+import { computed, nextTick, onMounted, ref, toRefs, reactive, onBeforeMount } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
@@ -59,9 +64,19 @@ const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
 const composeStore = composeStoreWithOut()
+const parentNode = ref(null)
+const shapeInnerRef = ref(null)
 
-const { curComponent, dvInfo, editMode, batchOptStatus, linkageSettingStatus, curLinkageView } =
-  storeToRefs(dvMainStore)
+const {
+  curComponent,
+  dvInfo,
+  editMode,
+  batchOptStatus,
+  linkageSettingStatus,
+  curLinkageView,
+  tabCollisionActiveId,
+  tabMoveInActiveId
+} = storeToRefs(dvMainStore)
 const { editor } = storeToRefs(composeStore)
 const emit = defineEmits([
   'userViewEnlargeOpen',
@@ -78,7 +93,15 @@ const isEditMode = computed(() => editMode.value === 'edit')
 const state = reactive({
   seriesIdMap: {
     id: ''
-  }
+  },
+  // 禁止移入Tab中的组件
+  ignoreTabMoveComponent: ['de-button', 'de-reset-button', 'DeTabs'],
+  // 当画布在tab中是 宽度左右拓展的余量
+  parentWidthTabOffset: 40,
+  canvasChangeTips: 'none',
+  tabMoveInYOffset: 70,
+  tabMoveInXOffset: 40,
+  collisionGap: 10 // 碰撞深度有效区域
 })
 
 const showPosition = computed(() => {
@@ -138,11 +161,21 @@ const props = defineProps({
     required: true,
     type: [Number, String],
     default: 0
+  },
+  // tab 移入检测
+  isTabMoveCheck: {
+    type: Boolean,
+    default: true
+  },
+  canvasId: {
+    type: String,
+    default: 'canvas-main'
   }
 })
 
-const { active, element, defaultStyle, baseCellInfo, index } = toRefs(props)
-
+const { active, element, defaultStyle, baseCellInfo, index, isTabMoveCheck, canvasId } =
+  toRefs(props)
+const domId = ref('shape-id-' + element.value.id)
 const pointList = ['lt', 't', 'rt', 'r', 'rb', 'b', 'lb', 'l']
 const pointList2 = ['r', 'l']
 const initialAngle = {
@@ -291,14 +324,25 @@ const handleMouseDownOnShape = e => {
 
   // 如果元素没有移动，则不保存快照
   let hasMove = false
+  let isFirst = true
   const move = moveEvent => {
-    dashboardActive.value && emit('onDragging', e)
     hasMove = true
     const curX = moveEvent.clientX
     const curY = moveEvent.clientY
     pos['top'] = curY - startY + startTop
     pos['left'] = curX - startX + startLeft
-
+    tabMoveInCheck()
+    // 仪表板模式 会造成移动现象 当检测组件正在碰撞有效区内或者移入有效区内 则周边组件不进行移动
+    if (
+      isFirst ||
+      (dashboardActive.value && !tabMoveInActiveId.value && !tabCollisionActiveId.value)
+    ) {
+      emit('onDragging', e)
+    }
+    // 防止首次组件在tab旁边无法触发矩阵移动
+    if (isFirst) {
+      isFirst = false
+    }
     // 修改当前组件样式
     dvMainStore.setShapeStyle(pos)
     // 等更新完当前组件的样式并绘制到屏幕后再判断是否需要吸附
@@ -502,6 +546,102 @@ const linkJumpSetOpen = () => {
 const linkageSetOpen = () => {
   emit('linkageSetOpen')
 }
+
+// 设置属性(属性跟随所属canvas component类型 要做出改变)
+const settingAttribute = () => {
+  // 设置Tab移入检测
+  shapeInnerRef.value.setAttribute('tab-is-check', `${isTabMoveCheck.value}`)
+  // 设置组件类型
+  shapeInnerRef.value.setAttribute('component-type', `${element.value.component}`)
+  // 设置组件ID
+  shapeInnerRef.value.setAttribute('component-id', `${element.value.id}`)
+}
+
+const tabMoveInCheck = async () => {
+  // console.log('tabMoveInCheck1')
+  const curNode = document.querySelector('#' + domId.value)
+  const width = curNode.offsetWidth
+  const height = curNode.offsetHeight
+  const left = curNode.offsetLeft
+  const top = curNode.offsetTop
+  // tab 移入检测开启 tab组件不能相互移入另一个tab组件
+  if (isTabMoveCheck.value && !state.ignoreTabMoveComponent.includes(element.value.component)) {
+    const nodes = Array.from(parentNode.value.childNodes) // 获取当前父节点下所有子节点
+    // console.log('tabMoveInCheck2-nodes=' + nodes.length)
+    for (const item of nodes) {
+      if (
+        item.className !== undefined &&
+        item.className.split(' ').includes('shape') &&
+        item.getAttribute('component-id') !== domId.value && // 去掉当前
+        item.getAttribute('tab-is-check') !== null &&
+        item.getAttribute('tab-is-check') !== 'false' &&
+        item.getAttribute('component-type') === 'DeTabs'
+      ) {
+        const componentId = item.getAttribute('component-id')
+
+        const tw = item.offsetWidth
+        const th = item.offsetHeight
+        const tl = item.offsetLeft
+        const tt = item.offsetTop
+
+        // 碰撞有效区域检查
+        const collisionT = tt + state.tabMoveInYOffset
+        const collisionL = tl + state.collisionGap - width
+        const collisionW = tw + 2 * width - state.collisionGap
+        const collisionH = th + height - state.tabMoveInYOffset
+
+        // 左上角靠近左上角区域
+        const tfAndTf = collisionT <= top && collisionL <= left
+        // 左下角靠近左下角区域
+        const bfAndBf = collisionT + collisionH >= top + height && collisionL <= left
+        // 右上角靠近右上角区域
+        const trAndTr = collisionT <= top && collisionL + collisionW >= left + width
+        // 右下角靠近右下角区域
+        const brAndBr =
+          collisionT + collisionH >= top + height && collisionL + collisionW >= left + width
+        if (tfAndTf && bfAndBf && trAndTr && brAndBr) {
+          console.log('collisionActive=====')
+          dvMainStore.setTabCollisionActiveId(componentId)
+        } else if (tabCollisionActiveId.value === componentId) {
+          dvMainStore.setTabCollisionActiveId(null)
+          console.log('not=collisionActive=====')
+        }
+
+        // 移入有效区域检查
+        // 碰撞有效区域检查
+        const activeT = tt + state.tabMoveInYOffset
+        const activeL = tl + state.collisionGap * 10 - width
+        const activeW = tw + 2 * width - state.collisionGap * 20
+        const activeH = th + height - 2 * state.tabMoveInYOffset
+
+        // 左上角靠近左上角区域
+        const activeTfAndTf = activeT <= top && activeL <= left
+        // 左下角靠近左下角区域
+        const activeBfAndBf = activeT + activeH >= top + height && activeL <= left
+        // 右上角靠近右上角区域
+        const activeTrAndTr = activeT <= top && activeL + activeW >= left + width
+        // 右下角靠近右下角区域
+        const activeBrAndBr = activeT + activeH >= top + height && activeL + activeW >= left + width
+        if (activeTfAndTf && activeBfAndBf && activeTrAndTr && activeBrAndBr) {
+          console.log('MoveInActive=====')
+          dvMainStore.setTabMoveInActiveId(componentId)
+        } else if (tabMoveInActiveId.value === componentId) {
+          console.log('not=MoveInActive=====')
+          dvMainStore.setTabMoveInActiveId(null)
+        }
+      }
+    }
+  }
+}
+
+const dragCollision = computed(() => {
+  return active.value && Boolean(tabCollisionActiveId.value)
+})
+
+onBeforeMount(() => {
+  parentNode.value = document.querySelector('#editor-' + canvasId.value)
+})
+
 onMounted(() => {
   // 用于 Group 组件
   if (curComponent.value) {
@@ -515,6 +655,7 @@ onMounted(() => {
   eventBus.on('stopAnimation', () => {
     // this.$el.classList.remove('animated', 'infinite')
   })
+  settingAttribute()
 })
 </script>
 
@@ -590,5 +731,9 @@ onMounted(() => {
 
 .linkage-setting {
   opacity: 0.5;
+}
+
+.drag-on-tab-collision {
+  z-index: 1000 !important;
 }
 </style>
