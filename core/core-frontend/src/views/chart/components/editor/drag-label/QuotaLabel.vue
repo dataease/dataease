@@ -20,7 +20,7 @@ const props = defineProps({
       v-else-if="
         props.view.type &&
         (includesAny(props.view.type, 'bar', 'line', 'scatter') ||
-          equalsAny(props.view.type, 'waterfall', 'area', 'flow-map'))
+          equalsAny(props.view.type, 'waterfall', 'area', 'area-stack', 'flow-map'))
       "
       >{{ t('chart.drag_block_value_axis') }}</span
     >

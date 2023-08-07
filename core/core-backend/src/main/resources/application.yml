@@ -1,6 +1,8 @@
 server:
   port: 8100
   max-http-request-header-size: 500KB
+  tomcat:
+    connection-timeout: 70000
 spring:
   profiles:
     active: '@profiles.active@'

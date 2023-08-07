@@ -22,7 +22,7 @@ const handleListeners = () => {
       if (['onSizeChange', 'onCurrentChange'].includes(key)) {
         state.paginationEvent[key.slice(2)] = attrs[key]
       } else {
-        state.tableEvent[key] = attrs[key]
+        state.tableEvent[key.slice(2)] = attrs[key]
       }
     } else {
       state.tableAttrs[key] = attrs[key]

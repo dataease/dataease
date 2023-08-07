@@ -507,7 +507,7 @@ export class PercentageStackBar extends GroupStackBar {
     }
   }
   constructor() {
-    super('bar-percentage')
+    super('percentage-bar-stack')
     this.baseOptions = {
       ...this.baseOptions,
       isStack: true,
@@ -515,6 +515,6 @@ export class PercentageStackBar extends GroupStackBar {
       isGroup: false,
       groupField: undefined
     }
-    this.axis = BAR_AXIS_TYPE.concat('extStack')
+    this.axis.push('extStack')
   }
 }

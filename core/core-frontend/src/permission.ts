@@ -23,7 +23,7 @@ router.beforeEach(async (to, from, next) => {
   start()
   loadStart()
   let isDesktop = wsCache.get('app.desktop')
-  if (!isDesktop) {
+  if (isDesktop === null) {
     await appStore.setAppModel()
     isDesktop = appStore.getDesktop
   }
