@@ -15,9 +15,9 @@ export const generateRoutesFn2 = (routes: AppCustomRouteRecordRaw[]): AppRouteRe
       route = decorate(route)
     }
 
-    if (route.plugin) {
-      const jsName = route.component
-      route.component = 'system/plugin/Dynamic'
+    if (route.component.startsWith('system')) {
+      const jsName = route.component.slice(7)
+      route.component = 'system/plugin'
       route.props = {
         jsname: jsName,
         inLayout: route.inLayout

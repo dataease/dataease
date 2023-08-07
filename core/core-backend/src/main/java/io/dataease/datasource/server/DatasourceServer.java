@@ -7,10 +7,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.dataset.dto.PreviewSqlDTO;
-import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
-import io.dataease.api.dataset.union.DatasetTableInfoDTO;
-import io.dataease.api.dataset.union.UnionDTO;
-import io.dataease.api.dataset.union.UnionParamDTO;
 import io.dataease.api.ds.DatasourceApi;
 import io.dataease.api.ds.vo.*;
 import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
@@ -31,9 +27,7 @@ import io.dataease.datasource.provider.ApiUtils;
 import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.datasource.provider.ExcelUtils;
 import io.dataease.datasource.request.DatasourceRequest;
-import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.engine.constant.SQLConstants;
-import io.dataease.engine.utils.SQLUtils;
 import io.dataease.exception.DEException;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
@@ -634,8 +628,12 @@ public class DatasourceServer implements DatasourceApi {
     @Override
     public Map<String, Object> previewDataWithLimit(Map<String, Object> req) throws Exception {
         String tableName = req.get("table").toString();
-        Long id = (Long) req.get("id");
-        String sql = "SELECT * FROM " + tableName;
+        Long id = Long.valueOf(req.get("id").toString());
+        if (ObjectUtils.isEmpty(tableName) || ObjectUtils.isEmpty(id)) {
+            return null;
+        }
+        String sql = "SELECT * FROM `" + tableName + "`";
+        sql = new String(Base64.getEncoder().encode(sql.getBytes()));
         PreviewSqlDTO previewSqlDTO = new PreviewSqlDTO();
         previewSqlDTO.setSql(sql);
         previewSqlDTO.setDatasourceId(id);
