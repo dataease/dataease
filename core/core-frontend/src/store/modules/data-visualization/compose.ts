@@ -33,7 +33,7 @@ export const composeStore = defineStore('compose', {
   },
   actions: {
     getEditor() {
-      this.editor = $('#editor')
+      this.editor = $('#editor-canvas-main')
     },
 
     setAreaData(data) {
