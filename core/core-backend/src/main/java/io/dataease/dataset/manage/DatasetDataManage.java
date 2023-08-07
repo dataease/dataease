@@ -28,6 +28,7 @@ import io.dataease.engine.trans.Field2SQLObj;
 import io.dataease.engine.trans.Order2SQLObj;
 import io.dataease.engine.trans.Table2SQLObj;
 import io.dataease.engine.trans.WhereTree2Str;
+import io.dataease.engine.utils.SQLUtils;
 import io.dataease.engine.utils.Utils;
 import io.dataease.exception.DEException;
 import io.dataease.utils.AuthUtils;
@@ -249,6 +250,8 @@ public class DatasetDataManage {
         // parser sql params and replace default value
         String sql = SqlparserUtils.handleVariableDefaultValue(datasetSQLManage.subPrefixSuffixChar(new String(Base64.getDecoder().decode(dto.getSql()))), dto.getSqlVariableDetails(), true);
         sql = SqlUtils.addSchema(sql, alias);
+        // sql 作为临时表，外层加上limit
+        sql = SQLUtils.buildOriginPreviewSql(sql);
         logger.info("calcite data preview sql: " + sql);
         Map<Long, DatasourceSchemaDTO> dsMap = new LinkedHashMap<>();
         dsMap.put(datasourceSchemaDTO.getId(), datasourceSchemaDTO);
