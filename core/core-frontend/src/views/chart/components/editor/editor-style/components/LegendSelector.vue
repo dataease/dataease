@@ -53,7 +53,7 @@ const initFontSize = () => {
   state.fontSize = arr
 }
 
-const changeLegendStyle = () => {
+const changeLegendStyle = prop => {
   emit('onLegendChange', state.legendForm)
 }
 
@@ -116,14 +116,14 @@ init()
         <el-form-item
           :label="t('chart.text_fontsize')"
           class="form-item"
-          v-show="showProperty('textStyle')"
+          v-show="showProperty('fontSize')"
         >
           <el-select
             :effect="props.themes"
-            v-model="state.legendForm.textStyle.fontSize"
+            v-model="state.legendForm.fontSize"
             :placeholder="t('chart.text_fontsize')"
             size="small"
-            @change="changeLegendStyle('textStyle')"
+            @change="changeLegendStyle('fontSize')"
           >
             <el-option
               v-for="option in state.fontSize"
@@ -136,13 +136,13 @@ init()
         <el-form-item
           :label="t('chart.text_color')"
           class="form-item"
-          v-show="showProperty('textStyle')"
+          v-show="showProperty('color')"
         >
           <el-color-picker
-            v-model="state.legendForm.textStyle.color"
+            v-model="state.legendForm.color"
             class="color-picker-style"
             :predefine="predefineColors"
-            @change="changeLegendStyle('textStyle')"
+            @change="changeLegendStyle('color')"
           />
         </el-form-item>
         <el-form-item
