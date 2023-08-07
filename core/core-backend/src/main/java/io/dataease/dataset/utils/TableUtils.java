@@ -49,6 +49,6 @@ public class TableUtils {
     }
 
     public static String tableName2Sql(DatasourceSchemaDTO ds, String tableName) {
-        return "SELECT * FROM " + ds.getSchemaAlias() + "." + String.format(format, tableName) + " LIMIT 100 OFFSET 0";
+        return "SELECT * FROM " + ds.getSchemaAlias() + "." + String.format(format, tableName);
     }
 }
