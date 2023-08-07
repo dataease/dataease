@@ -32,8 +32,7 @@ public class LicenseServer implements LicenseApi {
         if (StringUtils.isBlank(request.getLicense())) {
             return f2CLicManage.validate();
         }
-        F2CLicResult result = f2CLicManage.validate(product, request.getLicense());
-        return result;
+        return f2CLicManage.validate(product, request.getLicense());
     }
 
     @Override

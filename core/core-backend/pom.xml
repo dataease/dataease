@@ -88,15 +88,6 @@
             <properties>
                 <profiles.active>standalone</profiles.active>
             </properties>
-            <dependencies>
-                <!-- 单机版 引入权限模块实现 线程内调用权限方法 -->
-                <dependency>
-                    <groupId>io.dataease</groupId>
-                    <artifactId>xpack-permissions</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
-            </dependencies>
-            
             <build>
                 <plugins>
                     <plugin>
@@ -255,34 +246,6 @@
                 </plugins>
             </build>
         </profile>
-        <profile>
-            <id>embedded</id>
-            <properties>
-                <profiles.active>embedded</profiles.active>
-            </properties>
-            <dependencies>
-                <dependency>
-                    <groupId>io.dataease</groupId>
-                    <artifactId>xpack-permissions</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
-            </dependencies>
-
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-compiler-plugin</artifactId>
-                        <configuration>
-                            <excludes>
-                                <exclude>io/dataease/substitute/**</exclude>
-                                <exclude>io/dataease/CoreApplication.java</exclude>
-                            </excludes>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
     </profiles>
 
     <build>
@@ -305,14 +268,18 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
+                <!--<configuration>
                     <mainClass>io.dataease.CoreApplication</mainClass>
-                </configuration>
+                </configuration>-->
                 <executions>
                     <execution>
                         <goals>
                             <goal>repackage</goal>
                         </goals>
+                        <configuration>
+                            <finalName>CoreApplication</finalName>
+                            <layout>ZIP</layout>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
