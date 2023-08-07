@@ -632,7 +632,7 @@ public class DatasourceServer implements DatasourceApi {
         if (ObjectUtils.isEmpty(tableName) || ObjectUtils.isEmpty(id)) {
             return null;
         }
-        String sql = "SELECT * FROM " + tableName;
+        String sql = "SELECT * FROM `" + tableName + "`";
         sql = new String(Base64.getEncoder().encode(sql.getBytes()));
         PreviewSqlDTO previewSqlDTO = new PreviewSqlDTO();
         previewSqlDTO.setSql(sql);
