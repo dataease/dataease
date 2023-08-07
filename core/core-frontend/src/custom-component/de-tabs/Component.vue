@@ -14,13 +14,24 @@
       :name="item.name"
       closable
     >
-      {{ item.content }}
+      <common-canvas
+        ref="cyGridster"
+        v-if="canvasInitStatus"
+        :your-list="componentData"
+        :base-margin-left="baseMarginLeft"
+        :base-margin-top="baseMarginTop"
+        :base-width="baseWidth"
+        :base-height="baseHeight"
+        :dv-model="'dashboard'"
+      >
+      </common-canvas>
     </el-tab-pane>
   </de-full-tabs>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import CommonCanvas from '@/components/data-visualization/canvas/index.vue'
 import DeFullTabs from '@/custom-component/de-tabs/DeFullTabs.vue'
 const menus = [
   {

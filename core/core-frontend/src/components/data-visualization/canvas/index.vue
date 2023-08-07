@@ -45,6 +45,10 @@ const props = defineProps({
     type: Boolean,
     default: true
   },
+  canvasId: {
+    type: String,
+    default: 'canvas-main'
+  },
   dvModel: {
     type: String,
     default: 'dv'
@@ -137,7 +141,8 @@ const {
   resizing,
   resizeEnd,
   isEdit,
-  dvModel
+  dvModel,
+  canvasId
 } = toRefs(props)
 
 const editorX = ref(0)
@@ -154,6 +159,7 @@ const svgFilterAttrs = ['width', 'height', 'top', 'left', 'rotate']
 const userViewEnlargeRef = ref(null)
 const linkJumpRef = ref(null)
 const linkageRef = ref(null)
+const mainDomId = ref('editor-' + canvasId.value)
 const showComponentData = computed(() => {
   return componentData.value.filter(component => component.isShow)
 })
@@ -1464,7 +1470,7 @@ defineExpose({
 
 <template>
   <div
-    id="editor"
+    :id="mainDomId"
     ref="container"
     class="editor"
     :class="{ edit: isEdit }"

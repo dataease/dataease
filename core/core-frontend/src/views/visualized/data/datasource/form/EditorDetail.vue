@@ -338,15 +338,13 @@ defineExpose({
 
 <template>
   <div class="editor-detail">
-    <div class="detail-inner">
-      <div class="info-update">
+    <div class="detail-inner" :class="!(activeStep !== 2 && form.type === 'API') && 'pt16'">
+      <div v-show="form.type === 'API'" class="info-update">
         <div :class="activeStep === 1 && 'active'" class="info-text">数据源信息</div>
-        <div v-show="form.type === 'API'" class="update-info-line"></div>
-        <div v-show="form.type === 'API'" :class="activeStep === 2 && 'active'" class="update-text">
-          数据更新设置
-        </div>
+        <div class="update-info-line"></div>
+        <div :class="activeStep === 2 && 'active'" class="update-text">数据更新设置</div>
       </div>
-      <div class="title-form_primary" v-show="activeStep !== 2">
+      <div class="title-form_primary" v-show="activeStep !== 2 && form.type === 'API'">
         {{ t('datasource.basic_info') }}
       </div>
       <el-form
@@ -357,7 +355,11 @@ defineExpose({
         label-position="top"
         require-asterisk-position="right"
       >
-        <el-form-item :label="t('datasource.display_name')" prop="name" v-show="activeStep !== 2">
+        <el-form-item
+          :label="t('auth.datasource') + t('chart.name')"
+          prop="name"
+          v-show="activeStep !== 2"
+        >
           <el-input
             v-model="form.name"
             autocomplete="off"
@@ -808,6 +810,10 @@ defineExpose({
   }
   .detail-inner {
     width: 800px;
+
+    &.pt16 {
+      padding-top: 16px;
+    }
 
     .info-update {
       height: 22px;

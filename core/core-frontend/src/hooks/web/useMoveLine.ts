@@ -1,12 +1,10 @@
-import { ref, onBeforeUnmount, onMounted, Ref } from 'vue'
-
+import { ref, onBeforeUnmount, onMounted } from 'vue'
 import { useCache } from '@/hooks/web/useCache'
 
 type Sidebar = 'DATASET' | 'DASHBOARD' | 'DATASOURCE'
 
-export const useMoveLine = (type: Sidebar, node: Ref) => {
+export const useMoveLine = (type: Sidebar) => {
   const { wsCache } = useCache('localStorage')
-
   const width = ref(wsCache.get(type) || 260)
 
   const getCoordinates = () => {
@@ -32,6 +30,8 @@ export const useMoveLine = (type: Sidebar, node: Ref) => {
     document.removeEventListener('mousemove', setCoordinates)
   }
 
+  const node = ref()
+
   const ele = document.createElement('div')
   ele.className = 'sidebar-move-line'
   ele.style.top = '0'
@@ -50,6 +50,7 @@ export const useMoveLine = (type: Sidebar, node: Ref) => {
   })
 
   return {
-    width
+    width,
+    node
   }
 }

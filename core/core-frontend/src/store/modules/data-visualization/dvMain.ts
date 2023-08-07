@@ -571,6 +571,12 @@ export const dvMainStore = defineStore('dataVisualization', {
           useEmitt().emitter.emit('query-data-' + item.id)
         }
       })
+    },
+    setTabCollisionActiveId(tabId) {
+      this.tabCollisionActiveId = tabId
+    },
+    setTabMoveInActiveId(tabId) {
+      this.tabMoveInActiveId = tabId
     }
   }
 })
