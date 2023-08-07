@@ -634,7 +634,10 @@ public class DatasourceServer implements DatasourceApi {
     @Override
     public Map<String, Object> previewDataWithLimit(Map<String, Object> req) throws Exception {
         String tableName = req.get("table").toString();
-        Long id = (Long) req.get("id");
+        Long id = Long.valueOf(req.get("id").toString());
+        if (ObjectUtils.isEmpty(tableName) || ObjectUtils.isEmpty(id)) {
+            return null;
+        }
         String sql = "SELECT * FROM " + tableName;
         PreviewSqlDTO previewSqlDTO = new PreviewSqlDTO();
         previewSqlDTO.setSql(sql);
