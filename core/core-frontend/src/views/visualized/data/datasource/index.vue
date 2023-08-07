@@ -137,9 +137,9 @@ const fieldType = (deType: number) => {
 
 const generateColumns = (arr: Field[]) =>
   arr.map(ele => ({
-    key: ele.dataeaseName,
+    key: ele.originName,
     deType: ele.deType,
-    dataKey: ele.dataeaseName,
+    dataKey: ele.originName,
     title: ele.name,
     width: 150,
     headerCellRenderer: ({ column }) => (
@@ -188,7 +188,7 @@ const getDsIconName = data => {
 }
 
 const handleTabClick = tab => {
-  handleLoadExcel({ table: tab.value })
+  handleLoadExcel({ table: tab.value, id: nodeInfo.id })
 }
 
 const baseInfo = ref()

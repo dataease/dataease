@@ -6,10 +6,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dataease.api.dataset.dto.DatasetTableDTO;
-import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
-import io.dataease.api.dataset.union.DatasetTableInfoDTO;
-import io.dataease.api.dataset.union.UnionDTO;
-import io.dataease.api.dataset.union.UnionParamDTO;
+import io.dataease.api.dataset.dto.PreviewSqlDTO;
 import io.dataease.api.ds.DatasourceApi;
 import io.dataease.api.ds.vo.*;
 import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
@@ -30,7 +27,6 @@ import io.dataease.datasource.provider.ApiUtils;
 import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.datasource.provider.ExcelUtils;
 import io.dataease.datasource.request.DatasourceRequest;
-import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.exception.DEException;
 import io.dataease.model.BusiNodeRequest;
@@ -632,35 +628,16 @@ public class DatasourceServer implements DatasourceApi {
     @Override
     public Map<String, Object> previewDataWithLimit(Map<String, Object> req) throws Exception {
         String tableName = req.get("table").toString();
-        DatasetGroupInfoDTO datasetGroupInfoDTO = new DatasetGroupInfoDTO();
-        CoreDatasource coreDatasource = engineServer.getDeEngine();
-        DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
-        BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
-        datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId()));
-        List<DatasetTableFieldDTO> list = null;
-        List<TableField> tableFields = null;
-        DatasourceRequest datasourceRequest = new DatasourceRequest();
-        datasourceRequest.setDsList(Map.of(datasourceSchemaDTO.getId(), datasourceSchemaDTO));
-        datasourceRequest.setQuery(TableUtils.tableName2Sql(datasourceSchemaDTO, tableName));
-        tableFields = (List<TableField>) calciteProvider.fetchResultField(datasourceRequest).get("fields");
-        list = datasetDataManage.transFields(tableFields, true);
-        datasetGroupInfoDTO.setAllFields(list);
-        List<UnionDTO> unionDTOS = new ArrayList<>();
-        UnionDTO unionDTO = new UnionDTO();
-        DatasetTableDTO datasetTableDTO = new DatasetTableDTO();
-        datasetTableDTO.setDatasourceId(coreDatasource.getId());
-        datasetTableDTO.setTableName(tableName);
-        DatasetTableInfoDTO tableInfoDTO = new DatasetTableInfoDTO();
-        tableInfoDTO.setTable(tableName);
-        datasetTableDTO.setInfo(JsonUtil.toJSONString(tableInfoDTO).toString());
-        unionDTO.setCurrentDs(datasetTableDTO);
-        unionDTO.setCurrentDsFields(list);
-        UnionParamDTO unionParamDTO = new UnionParamDTO();
-        unionParamDTO.setUnionType("left");
-        unionDTO.setUnionToParent(unionParamDTO);
-        unionDTOS.add(unionDTO);
-        datasetGroupInfoDTO.setUnion(unionDTOS);
-        return datasetDataManage.previewDataWithLimit(datasetGroupInfoDTO, 0, 100);
+        Long id = Long.valueOf(req.get("id").toString());
+        if (ObjectUtils.isEmpty(tableName) || ObjectUtils.isEmpty(id)) {
+            return null;
+        }
+        String sql = "SELECT * FROM `" + tableName + "`";
+        sql = new String(Base64.getEncoder().encode(sql.getBytes()));
+        PreviewSqlDTO previewSqlDTO = new PreviewSqlDTO();
+        previewSqlDTO.setSql(sql);
+        previewSqlDTO.setDatasourceId(id);
+        return datasetDataManage.previewSql(previewSqlDTO);
     }
 
 }

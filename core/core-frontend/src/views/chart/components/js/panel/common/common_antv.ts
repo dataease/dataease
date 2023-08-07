@@ -118,9 +118,6 @@ export function getTheme(chart: Chart) {
       }
     }
   }
-  // TODO 搬到堆叠的图里面自行配置
-  // 堆叠柱状图需要取消 offset，因为在顶部类别占比较低的时候有可能会把标签挤出去
-  // 并且视觉上也比较不舒服
   return theme
 }
 // 通用label
@@ -289,8 +286,8 @@ export function getXAxis(chart: Chart) {
             ? {
                 text: a.name,
                 style: {
-                  fill: a.nameTextStyle.color,
-                  fontSize: a.nameTextStyle.fontSize
+                  fill: a.color,
+                  fontSize: a.fontSize
                 },
                 spacing: 8
               }
@@ -361,8 +358,8 @@ export function getYAxis(chart: Chart) {
             ? {
                 text: a.name,
                 style: {
-                  fill: a.nameTextStyle.color,
-                  fontSize: a.nameTextStyle.fontSize
+                  fill: a.color,
+                  fontSize: a.fontSize
                 },
                 spacing: 8
               }

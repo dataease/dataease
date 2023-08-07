@@ -28,6 +28,7 @@ import io.dataease.engine.trans.Field2SQLObj;
 import io.dataease.engine.trans.Order2SQLObj;
 import io.dataease.engine.trans.Table2SQLObj;
 import io.dataease.engine.trans.WhereTree2Str;
+import io.dataease.engine.utils.SQLUtils;
 import io.dataease.engine.utils.Utils;
 import io.dataease.exception.DEException;
 import io.dataease.utils.AuthUtils;
@@ -82,12 +83,13 @@ public class DatasetDataManage {
             datasourceRequest.setDsList(Map.of(datasourceSchemaDTO.getId(), datasourceSchemaDTO));
             if (StringUtils.equalsIgnoreCase(type, DatasetTableType.DB)) {
                 // add table schema
-                datasourceRequest.setQuery(TableUtils.tableName2Sql(datasourceSchemaDTO, tableInfoDTO.getTable()));
+                datasourceRequest.setQuery(TableUtils.tableName2Sql(datasourceSchemaDTO, tableInfoDTO.getTable()) + " LIMIT 0 OFFSET 0");
             } else {
                 // parser sql params and replace default value
                 String sql = SqlparserUtils.handleVariableDefaultValue(new String(Base64.getDecoder().decode(tableInfoDTO.getSql())), datasetTableDTO.getSqlVariableDetails(), true);
                 // add sql table schema
                 sql = SqlUtils.addSchema(sql, datasourceSchemaDTO.getSchemaAlias());
+                sql = SQLUtils.buildOriginPreviewSql(sql, 0, 0);
                 datasourceRequest.setQuery(sql);
             }
             // 获取数据源表的原始字段
@@ -101,7 +103,7 @@ public class DatasetDataManage {
 
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDsList(Map.of(datasourceSchemaDTO.getId(), datasourceSchemaDTO));
-            datasourceRequest.setQuery(TableUtils.tableName2Sql(datasourceSchemaDTO, tableInfoDTO.getTable()));
+            datasourceRequest.setQuery(TableUtils.tableName2Sql(datasourceSchemaDTO, tableInfoDTO.getTable()) + " LIMIT 0 OFFSET 0");
             tableFields = (List<TableField>) calciteProvider.fetchResultField(datasourceRequest).get("fields");
         }
 
@@ -249,6 +251,8 @@ public class DatasetDataManage {
         // parser sql params and replace default value
         String sql = SqlparserUtils.handleVariableDefaultValue(datasetSQLManage.subPrefixSuffixChar(new String(Base64.getDecoder().decode(dto.getSql()))), dto.getSqlVariableDetails(), true);
         sql = SqlUtils.addSchema(sql, alias);
+        // sql 作为临时表，外层加上limit
+        sql = SQLUtils.buildOriginPreviewSql(sql, 100, 0);
         logger.info("calcite data preview sql: " + sql);
         Map<Long, DatasourceSchemaDTO> dsMap = new LinkedHashMap<>();
         dsMap.put(datasourceSchemaDTO.getId(), datasourceSchemaDTO);
