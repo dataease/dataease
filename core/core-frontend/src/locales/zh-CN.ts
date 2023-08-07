@@ -68,6 +68,7 @@ export default {
   },
   user: {
     change_password: '修改密码',
+    select_users: '请选择用户',
     account: '帐号',
     name: '姓名',
     role: '角色',

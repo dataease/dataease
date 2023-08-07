@@ -2,7 +2,7 @@
 import { propTypes } from '@/utils/propTypes'
 defineProps({
   name: propTypes.string.def(''),
-  size: propTypes.string.def(''),
+  size: propTypes.number.def(0),
   showDel: propTypes.bool.def(false)
 })
 

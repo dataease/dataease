@@ -121,6 +121,7 @@ service.interceptors.response.use(
       return response
     } else {
       ElMessage.error(response.data.msg)
+      return Promise.reject(response.data.msg)
     }
   },
   (error: AxiosErrorWidthLoading<AxiosError>) => {

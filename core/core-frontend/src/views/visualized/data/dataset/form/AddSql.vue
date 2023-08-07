@@ -392,7 +392,6 @@ const mousedownDrag = () => {
         <div class="padding-24">
           <el-tabs v-model="tabActive">
             <el-tab-pane :label="t('deDataset.running_results')" name="result" />
-            <el-tab-pane :label="t('dataset.task.record')" name="execLog" />
           </el-tabs>
         </div>
         <div v-show="tabActive === 'result'" class="table-sql">
@@ -732,6 +731,7 @@ const mousedownDrag = () => {
       }
 
       .padding-24 {
+        width: calc(100% - 48px);
         .border-bottom-tab(24px);
       }
 

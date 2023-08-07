@@ -191,6 +191,11 @@ const validateDS = () => {
   })
 }
 
+const typeTitle = {
+  excel: '文件',
+  api: 'API'
+}
+
 const saveDS = () => {
   const request = JSON.parse(JSON.stringify(form)) as unknown as Omit<
     Form,
@@ -243,7 +248,7 @@ const defaultForm = {
   type: 'API',
   apiConfiguration: []
 }
-const form = reactive<Form>(defaultForm)
+const form = reactive<Form>(cloneDeep(defaultForm))
 const defaultForm2 = {
   type: '',
   id: '0',
@@ -257,6 +262,8 @@ const pid = ref('0')
 
 const init = (nodeInfo: Form | Param, id?: string) => {
   editDs.value = !!nodeInfo
+
+  console.log('nodeInfo', cloneDeep(nodeInfo))
   if (!!nodeInfo) {
     if (nodeInfo.type == 'Excel') {
       Object.assign(form2, cloneDeep(nodeInfo))
@@ -269,11 +276,13 @@ const init = (nodeInfo: Form | Param, id?: string) => {
     Object.assign(form, cloneDeep(defaultForm))
     pid.value = id || '0'
   }
+
   activeStep.value = Number(editDs.value)
   visible.value = true
   if (!!nodeInfo) {
     nextTick(() => {
-      selectDsType(nodeInfo.type)
+      currentDsType.value = nodeInfo.type
+      activeStep.value = 1
     })
   }
 }
@@ -294,7 +303,7 @@ defineExpose({
   >
     <template #header="{ close }">
       <span>{{ editDs ? t('datasource.modify') : t('datasource.create') }}</span>
-      <div class="editor-step flex-center">
+      <div v-if="!editDs" class="editor-step flex-center">
         <el-steps space="150px" :active="activeStep" align-center>
           <el-step>
             <template #icon>
@@ -390,7 +399,10 @@ defineExpose({
         </el-tree>
       </div>
       <div class="ds-editor" :class="editDs && 'edit-ds'">
-        <div class="editor-content">
+        <div v-show="activeStep !== 0 && !editDs" class="ds-type-title">
+          {{ typeTitle[currentDsType] || currentDsType }}
+        </div>
+        <div class="editor-content" :class="(activeStep === 0 || editDs) && 'type-title'">
           <ds-type-list
             v-show="activeStep === 0"
             @select-ds-type="selectDsType"
@@ -409,7 +421,7 @@ defineExpose({
         </div>
       </div>
       <div class="editor-footer">
-        <el-button secondary> {{ t('common.cancel') }}</el-button>
+        <el-button secondary @click="visible = false"> {{ t('common.cancel') }}</el-button>
         <el-button
           v-show="
             (activeStep === 0 && currentDsType !== 'API') ||
@@ -420,7 +432,11 @@ defineExpose({
         >
           {{ t('common.next') }}</el-button
         >
-        <el-button v-show="activeStep !== 0" type="primary" @click="prev">
+        <el-button
+          v-show="!(activeStep === 0 || (editDs && activeStep <= 1))"
+          type="primary"
+          @click="prev"
+        >
           {{ t('common.prev') }}</el-button
         >
         <el-button
@@ -607,10 +623,26 @@ defineExpose({
         width: 100%;
       }
 
+      .ds-type-title {
+        width: 100%;
+        padding: 16px 24px;
+        color: #1f2329;
+        font-family: PingFang SC;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 24px;
+        border-bottom: 1px solid rgba(31, 35, 41, 0.15);
+      }
+
       .editor-content {
         padding: 8px 24px;
-        height: calc(100vh - 221px);
+        height: calc(100vh - 278px);
         overflow-y: auto;
+
+        &.type-title {
+          height: calc(100vh - 221px);
+        }
       }
     }
     .editor-footer {
