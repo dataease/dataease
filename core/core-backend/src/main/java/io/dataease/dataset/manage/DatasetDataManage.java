@@ -89,6 +89,7 @@ public class DatasetDataManage {
                 String sql = SqlparserUtils.handleVariableDefaultValue(new String(Base64.getDecoder().decode(tableInfoDTO.getSql())), datasetTableDTO.getSqlVariableDetails(), true);
                 // add sql table schema
                 sql = SqlUtils.addSchema(sql, datasourceSchemaDTO.getSchemaAlias());
+                sql = SQLUtils.buildOriginPreviewSql(sql);
                 datasourceRequest.setQuery(sql);
             }
             // 获取数据源表的原始字段
