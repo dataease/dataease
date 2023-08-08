@@ -106,7 +106,7 @@ export class Funnel extends G2PlotChartView<FunnelOptions, G2Funnel> {
   ]
   propertyInner: EditorPropertyInner = {
     'background-overall-component': ['all'],
-    'label-selector': ['show', 'fontSize', 'color', 'position'],
+    'label-selector': ['show', 'fontSize', 'color', 'hPosition'],
     'tooltip-selector': ['color', 'fontSize', 'backgroundColor'],
     'title-selector': [
       'show',
@@ -124,6 +124,15 @@ export class Funnel extends G2PlotChartView<FunnelOptions, G2Funnel> {
     'legend-selector': ['icon', 'orient', 'color', 'fontSize', 'hPosition', 'vPosition']
   }
   axis: AxisType[] = ['xAxis', 'yAxis', 'filter', 'drill', 'extLabel', 'extTooltip']
+
+  setupDefaultOptions(chart: ChartObj): ChartObj {
+    const { customAttr } = chart
+    const { label } = customAttr
+    if (!['left', 'middle', 'right'].includes(label.position)) {
+      label.position = 'middle'
+    }
+    return chart
+  }
 
   constructor() {
     super('funnel', [])

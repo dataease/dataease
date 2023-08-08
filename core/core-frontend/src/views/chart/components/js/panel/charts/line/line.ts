@@ -14,6 +14,7 @@ import {
 } from '@/views/chart/components/js/panel/charts/line/common'
 import { Label } from '@antv/g2plot/lib/types/label'
 import { IntervalGeometryLabelPosition } from '@antv/g2/lib/interface'
+import { flow as flowLeft } from 'lodash-es'
 
 const DEFAULT_DATA = []
 /**
@@ -207,6 +208,10 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
       this.configSlider,
       this.configAnalyse
     )(chart, options)
+  }
+
+  setupDefaultOptions(chart: ChartObj): ChartObj {
+    return this.setupVerticalAxis(chart)
   }
 
   constructor(name = 'line') {

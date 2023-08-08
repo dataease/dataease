@@ -19,6 +19,13 @@ export abstract class AbstractChartView {
   abstract propertyInner: EditorPropertyInner
   abstract axis: AxisType[]
   abstract axisDesc: AxisDesc
+  /**
+   * 在新建和切换视图的时候处理默认值
+   * @param chart 数据库视图对象
+   */
+  setupDefaultOptions(chart: ChartObj): ChartObj {
+    return chart
+  }
 
   protected defaultData: any[]
 

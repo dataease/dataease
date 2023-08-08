@@ -96,27 +96,33 @@ init()
         <el-form-item
           :label="t('chart.position')"
           class="form-item"
-          v-show="showProperty('position')"
+          v-show="showProperty('hPosition')"
         >
           <el-radio-group
             v-model="state.axisForm.position"
             size="small"
             @change="changeAxisStyle('position')"
           >
-            <div v-if="!props.chart.type.includes('horizontal')">
-              <el-radio :effect="props.themes" label="top">{{ t('chart.text_pos_top') }}</el-radio>
-              <el-radio :effect="props.themes" label="bottom">{{
-                t('chart.text_pos_bottom')
-              }}</el-radio>
-            </div>
-            <div v-else>
-              <el-radio :effect="props.themes" label="left">{{
-                t('chart.text_pos_left')
-              }}</el-radio>
-              <el-radio :effect="props.themes" label="right">{{
-                t('chart.text_pos_center')
-              }}</el-radio>
-            </div>
+            <el-radio :effect="props.themes" label="left">{{ t('chart.text_pos_top') }}</el-radio>
+            <el-radio :effect="props.themes" label="right">{{
+              t('chart.text_pos_bottom')
+            }}</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item
+          :label="t('chart.position')"
+          class="form-item"
+          v-show="showProperty('vPosition')"
+        >
+          <el-radio-group
+            v-model="state.axisForm.position"
+            size="small"
+            @change="changeAxisStyle('position')"
+          >
+            <el-radio :effect="props.themes" label="top">{{ t('chart.text_pos_top') }}</el-radio>
+            <el-radio :effect="props.themes" label="bottom">{{
+              t('chart.text_pos_bottom')
+            }}</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item :label="t('chart.name')" class="form-item" v-show="showProperty('name')">
@@ -213,18 +219,6 @@ init()
             @change="changeAxisStyle('axisLine')"
             >{{ t('chart.axis_show') }}</el-checkbox
           >
-        </el-form-item>
-        <el-form-item
-          :label="t('chart.axis_line_color')"
-          class="form-item"
-          v-show="showProperty('axisLine')"
-        >
-          <el-color-picker
-            v-model="state.axisForm.axisLine.lineStyle.color"
-            class="el-color-picker"
-            :predefine="predefineColors"
-            @change="changeAxisStyle('axisLine')"
-          />
         </el-form-item>
         <el-form-item
           :label="t('chart.grid_show')"

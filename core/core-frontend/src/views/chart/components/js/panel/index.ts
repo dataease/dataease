@@ -13,7 +13,7 @@ class ChartViewManager {
   }
 
   public getChartView(render: string, name: string): AbstractChartView {
-    return ChartViewManager.CHART_VIEW_MAP.get(render).get(name)
+    return ChartViewManager.CHART_VIEW_MAP.get(render)?.get(name)
   }
 }
 

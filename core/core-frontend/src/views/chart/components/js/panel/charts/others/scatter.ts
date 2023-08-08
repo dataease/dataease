@@ -122,10 +122,10 @@ export class Scatter extends G2PlotChartView<ScatterOptions, G2Scatter> {
   ]
   propertyInner: EditorPropertyInner = {
     'basic-style-selector': ['colors', 'alpha'],
-    'label-selector': ['fontSize', 'color', 'position'],
+    'label-selector': ['fontSize', 'color', 'vPosition'],
     'tooltip-selector': ['fontSize', 'color', 'backgroundColor'],
     'x-axis-selector': [
-      'position',
+      'vPosition',
       'name',
       'color',
       'fontSize',
@@ -135,7 +135,7 @@ export class Scatter extends G2PlotChartView<ScatterOptions, G2Scatter> {
       'axisLabel'
     ],
     'y-axis-selector': [
-      'position',
+      'vPosition',
       'name',
       'color',
       'fontSize',
@@ -160,6 +160,10 @@ export class Scatter extends G2PlotChartView<ScatterOptions, G2Scatter> {
     'legend-selector': ['icon', 'orient', 'textStyle', 'hPosition', 'vPosition']
   }
   axis: AxisType[] = ['xAxis', 'yAxis', 'yAxisExt', 'filter', 'drill', 'extLabel', 'extTooltip']
+
+  setupDefaultOptions(chart: ChartObj): ChartObj {
+    return this.setupVerticalAxis(chart)
+  }
 
   constructor() {
     super('scatter', [])

@@ -8,7 +8,7 @@ export const PIE_EDITOR_PROPERTY: EditorProperty[] = [
 ]
 export const PIE_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
   'background-overall-component': ['all'],
-  'label-selector': ['fontSize', 'color', 'position'],
+  'label-selector': ['fontSize', 'color', 'rPosition'],
   'tooltip-selector': ['fontSize', 'color', 'backgroundColor'],
   'basic-style-selector': ['colors', 'alpha', 'radius'],
   'title-selector': [

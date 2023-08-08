@@ -81,6 +81,27 @@ export abstract class G2PlotChartView<
     const annotations = getAnalyseHorizontal(chart)
     return { ...options, annotations }
   }
+
+  protected setupVerticalAxis(chart: ChartObj) {
+    const customStyle = chart.customStyle
+    const { xAxis, yAxis } = customStyle
+    if (!['top', 'bottom'].includes(xAxis.position)) {
+      xAxis.position = 'bottom'
+    }
+    if (!['left', 'right'].includes(yAxis.position)) {
+      yAxis.position = 'left'
+    }
+    return chart
+  }
+
+  protected setupVerticalLabel(chart: ChartObj) {
+    const { label } = chart.customAttr
+    if (!['top', 'middle', 'bottom'].includes(label.position)) {
+      label.position = 'bottom'
+    }
+    return chart
+  }
+
   /**
    * 流式配置公共参数，处理常用的配置，后续如果有其他通用配置也可以放进来，需要单独配置的属性在各个视图自行实现。
    * @param chart 数据库视图对象。

@@ -18,6 +18,7 @@ import {
 } from '@/views/chart/components/js/panel/charts/line/common'
 import { IntervalGeometryLabelPosition } from '@antv/g2/lib/interface'
 import { Label } from '@antv/g2plot/lib/types/label'
+import { flow as flowLeft } from 'lodash-es'
 
 const DEFAULT_DATA = []
 export class Area extends G2PlotChartView<AreaOptions, G2Area> {
@@ -78,7 +79,7 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
       const initOptions: AreaOptions = {
         ...this.baseOptions,
         data,
-        padding: getPadding(chart)
+        appendPadding: getPadding(chart)
       }
       // options
       const options = this.setupOptions(chart, initOptions)
@@ -181,6 +182,11 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
       this.configAnalyse
     )(chart, options)
   }
+
+  setupDefaultOptions(chart: ChartObj): ChartObj {
+    return this.setupVerticalAxis(chart)
+  }
+
   constructor(name = 'area') {
     super(name, DEFAULT_DATA)
   }

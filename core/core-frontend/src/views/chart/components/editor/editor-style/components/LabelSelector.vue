@@ -29,6 +29,15 @@ watch(
 
 const predefineColors = COLOR_PANEL
 
+const labelPositionR = [
+  { name: t('chart.inside'), value: 'inner' },
+  { name: t('chart.outside'), value: 'outer' }
+]
+const labelPositionH = [
+  { name: t('chart.text_pos_left'), value: 'left' },
+  { name: t('chart.center'), value: 'middle' },
+  { name: t('chart.text_pos_right'), value: 'right' }
+]
 const labelPositionV = [
   { name: t('chart.text_pos_top'), value: 'top' },
   { name: t('chart.center'), value: 'middle' },
@@ -47,14 +56,14 @@ const initFontSize = () => {
 }
 
 const state = reactive({
-  tableHeaderForm: JSON.parse(JSON.stringify(DEFAULT_LABEL)),
+  labelForm: JSON.parse(JSON.stringify(DEFAULT_LABEL)),
   fontSize: []
 })
 
 const emit = defineEmits(['onLabelChange'])
 
-const changeLabelAttr = () => {
-  emit('onLabelChange', state.tableHeaderForm)
+const changeLabelAttr = prop => {
+  emit('onLabelChange', state.labelForm)
 }
 
 const init = () => {
@@ -67,7 +76,7 @@ const init = () => {
       customAttr = JSON.parse(chart.customAttr)
     }
     if (customAttr.label) {
-      state.tableHeaderForm = customAttr.label
+      state.labelForm = customAttr.label
     }
   }
 }
@@ -81,8 +90,8 @@ init()
     <el-col>
       <el-form
         ref="labelForm"
-        :disabled="!state.tableHeaderForm.show"
-        :model="state.tableHeaderForm"
+        :disabled="!state.labelForm.show"
+        :model="state.labelForm"
         label-width="80px"
         size="small"
       >
@@ -93,7 +102,7 @@ init()
         >
           <el-select
             :effect="props.themes"
-            v-model.number="state.tableHeaderForm.fontSize"
+            v-model.number="state.labelForm.fontSize"
             :placeholder="t('chart.text_fontsize')"
             @change="changeLabelAttr('fontSize')"
           >
@@ -111,16 +120,58 @@ init()
           v-show="showProperty('color')"
         >
           <el-color-picker
-            v-model="state.tableHeaderForm.color"
+            v-model="state.labelForm.color"
             class="color-picker-style"
             :predefine="predefineColors"
             @change="changeLabelAttr('color')"
           />
         </el-form-item>
-        <el-form-item :label="t('chart.label_position')" class="form-item">
+        <el-form-item
+          v-show="showProperty('rPosition')"
+          :label="t('chart.label_position')"
+          class="form-item"
+        >
           <el-select
             :effect="props.themes"
-            v-model="state.tableHeaderForm.position"
+            v-model="state.labelForm.position"
+            :placeholder="t('chart.label_position')"
+            @change="changeLabelAttr('position')"
+          >
+            <el-option
+              v-for="option in labelPositionR"
+              :key="option.value"
+              :label="option.name"
+              :value="option.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item
+          v-show="showProperty('hPosition')"
+          :label="t('chart.label_position')"
+          class="form-item"
+        >
+          <el-select
+            :effect="props.themes"
+            v-model="state.labelForm.position"
+            :placeholder="t('chart.label_position')"
+            @change="changeLabelAttr('position')"
+          >
+            <el-option
+              v-for="option in labelPositionH"
+              :key="option.value"
+              :label="option.name"
+              :value="option.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item
+          v-show="showProperty('vPosition')"
+          :label="t('chart.label_position')"
+          class="form-item"
+        >
+          <el-select
+            :effect="props.themes"
+            v-model="state.labelForm.position"
             :placeholder="t('chart.label_position')"
             @change="changeLabelAttr('position')"
           >

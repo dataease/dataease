@@ -12,10 +12,9 @@ export const BAR_EDITOR_PROPERTY: EditorProperty[] = [
 export const BAR_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
   'background-overall-component': ['all'],
   'basic-style-selector': ['colors', 'alpha', 'gradient'],
-  'label-selector': ['fontSize', 'color', 'position'],
+  'label-selector': ['fontSize', 'color'],
   'tooltip-selector': ['fontSize', 'color', 'backgroundColor'],
   'x-axis-selector': [
-    'position',
     'name',
     'color',
     'fontSize',
@@ -25,7 +24,6 @@ export const BAR_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
     'axisLabel'
   ],
   'y-axis-selector': [
-    'position',
     'name',
     'color',
     'fontSize',

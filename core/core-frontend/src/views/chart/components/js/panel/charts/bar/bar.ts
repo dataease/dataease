@@ -16,7 +16,8 @@ import {
   BAR_EDITOR_PROPERTY,
   BAR_EDITOR_PROPERTY_INNER
 } from '@/views/chart/components/js/panel/charts/bar/common'
-import { setGradientColor } from '@/views/chart/components/js/panel/common/common_antv'
+import { getPadding, setGradientColor } from '@/views/chart/components/js/panel/common/common_antv'
+import { flow as flowLeft } from 'lodash-es'
 
 const DEFAULT_DATA: any[] = []
 
@@ -25,7 +26,12 @@ const DEFAULT_DATA: any[] = []
  */
 export class Bar extends G2PlotChartView<ColumnOptions, Column> {
   properties = BAR_EDITOR_PROPERTY
-  propertyInner = BAR_EDITOR_PROPERTY_INNER
+  propertyInner = {
+    ...BAR_EDITOR_PROPERTY_INNER,
+    'x-axis-selector': [...BAR_EDITOR_PROPERTY_INNER['x-axis-selector'], 'vPosition'],
+    'y-axis-selector': [...BAR_EDITOR_PROPERTY_INNER['y-axis-selector'], 'vPosition'],
+    'label-selector': [...BAR_EDITOR_PROPERTY_INNER['label-selector'], 'vPosition']
+  }
   protected baseOptions: ColumnOptions = {
     xField: 'field',
     yField: 'value',
@@ -82,6 +88,7 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
     const data = cloneDeep(drawOptions.chart.data?.data)
     const initOptions: ColumnOptions = {
       ...this.baseOptions,
+      appendPadding: getPadding(chart),
       data
     }
     const options: ColumnOptions = this.setupOptions(chart, initOptions)
@@ -159,6 +166,10 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
     )(chart, options)
   }
 
+  setupDefaultOptions(chart: ChartObj): ChartObj {
+    return flowLeft(this.setupVerticalAxis, this.setupVerticalAxis)(chart)
+  }
+
   constructor(name = 'bar', defaultData = DEFAULT_DATA) {
     super(name, defaultData)
   }
@@ -175,7 +186,7 @@ export class StackBar extends Bar {
     }
     const { extStack, xAxisExt, yAxis } = chart
     const label = {
-      ...options.label,
+      ...baseOptions.label,
       formatter: function (param: Datum) {
         const res = param.value
         let f
@@ -250,7 +261,7 @@ export class StackBar extends Bar {
       ...this.baseOptions,
       isStack: true
     }
-    this.axis.push('extStack')
+    this.axis = [...this.axis, 'extStack']
   }
 }
 
@@ -320,7 +331,7 @@ export class GroupBar extends Bar {
       ...this.baseOptions,
       isGroup: true
     }
-    this.axis.push('xAxisExt')
+    this.axis = [...this.axis, 'xAxisExt']
   }
 }
 
@@ -406,7 +417,7 @@ export class GroupStackBar extends Bar {
       isGroup: true,
       groupField: 'group'
     }
-    this.axis.push('xAxisExt', 'extStack')
+    this.axis = [...this.axis, 'xAxisExt', 'extStack']
   }
 }
 
@@ -515,6 +526,6 @@ export class PercentageStackBar extends GroupStackBar {
       isGroup: false,
       groupField: undefined
     }
-    this.axis.push('extStack')
+    this.axis = [...this.axis, 'extStack']
   }
 }
