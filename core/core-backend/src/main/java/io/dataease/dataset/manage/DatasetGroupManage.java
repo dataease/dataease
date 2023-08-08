@@ -159,7 +159,10 @@ public class DatasetGroupManage {
             return interactiveAuthApi.resource(request);
         }
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq(ObjectUtils.isNotEmpty(request.getLeaf()), "node_type", request.getLeaf() ? "dataset" : "folder");
+        if (ObjectUtils.isNotEmpty(request.getLeaf())) {
+            queryWrapper.eq("node_type", request.getLeaf() ? "dataset" : "folder");
+        }
+
         queryWrapper.orderByDesc("create_time");
         List<DataSetNodePO> pos = coreDataSetExtMapper.query(queryWrapper);
         List<DataSetNodeBO> nodes = new ArrayList<>();

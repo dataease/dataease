@@ -126,16 +126,6 @@
                             </execution>
                         </executions>
                     </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-compiler-plugin</artifactId>
-                        <configuration>
-                            <excludes>
-                                <!-- 单机版 需要排除权限替补实现 否则就会出现多个权限实现 报错 -->
-                                <exclude>io/dataease/substitute/**</exclude>
-                            </excludes>
-                        </configuration>
-                    </plugin>
 
                 </plugins>
 
