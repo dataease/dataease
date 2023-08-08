@@ -297,12 +297,6 @@ const emits = defineEmits(['finish'])
           </template>
         </el-input>
         <div class="tree-content">
-          <div
-            :class="activeAll && 'active'"
-            @click="activeAll = !activeAll"
-            v-if="showAll"
-            class="list-item_primary"
-          ></div>
           <el-tree
             ref="treeRef"
             :filter-node-method="filterNode"

@@ -2,6 +2,7 @@ package io.dataease.dataset.manage;
 
 import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.dataset.dto.PreviewSqlDTO;
+import io.dataease.api.dataset.dto.SqlLogDTO;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.union.DatasetTableInfoDTO;
 import io.dataease.api.dataset.union.model.SQLMeta;
@@ -31,6 +32,7 @@ import io.dataease.engine.trans.WhereTree2Str;
 import io.dataease.engine.utils.SQLUtils;
 import io.dataease.engine.utils.Utils;
 import io.dataease.exception.DEException;
+import io.dataease.i18n.Translator;
 import io.dataease.utils.AuthUtils;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.JsonUtil;
@@ -65,6 +67,8 @@ public class DatasetDataManage {
     private DatasetGroupManage datasetGroupManage;
     @Resource
     private PermissionManage permissionManage;
+    @Resource
+    private DatasetTableSqlLogManage datasetTableSqlLogManage;
 
     private static Logger logger = LoggerFactory.getLogger(DatasetDataManage.class);
 
@@ -76,8 +80,11 @@ public class DatasetDataManage {
         if (StringUtils.equalsIgnoreCase(type, DatasetTableType.DB) || StringUtils.equalsIgnoreCase(type, DatasetTableType.SQL)) {
             CoreDatasource coreDatasource = coreDatasourceMapper.selectById(datasetTableDTO.getDatasourceId());
             DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
+            if (StringUtils.equalsIgnoreCase("excel", coreDatasource.getType()) || StringUtils.equalsIgnoreCase("api", coreDatasource.getType())) {
+                coreDatasource = engineServer.getDeEngine();
+            }
             BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
-            datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasetTableDTO.getDatasourceId()));
+            datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId()));
 
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDsList(Map.of(datasourceSchemaDTO.getId(), datasourceSchemaDTO));
@@ -99,7 +106,7 @@ public class DatasetDataManage {
             CoreDatasource coreDatasource = engineServer.getDeEngine();
             DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
             BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
-            datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, coreDatasource.getId()));
+            datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId()));
 
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDsList(Map.of(datasourceSchemaDTO.getId(), datasourceSchemaDTO));
@@ -160,7 +167,7 @@ public class DatasetDataManage {
         // 获取allFields
         List<DatasetTableFieldDTO> fields = datasetGroupInfoDTO.getAllFields();
         if (ObjectUtils.isEmpty(fields)) {
-            DEException.throwException("no fields");
+            DEException.throwException(Translator.get("i18n_no_fields"));
         }
         buildFieldName(sqlMap, fields);
 
@@ -236,6 +243,32 @@ public class DatasetDataManage {
             return Long.valueOf(dataList.get(0)[0]);
         }
         return 0L;
+    }
+
+    public Map<String, Object> previewSqlWithLog(PreviewSqlDTO dto) {
+        if (dto == null) {
+            return null;
+        }
+        SqlLogDTO sqlLogDTO = new SqlLogDTO();
+        String sql = new String(Base64.getDecoder().decode(dto.getSql()));
+        sqlLogDTO.setSql(sql);
+        Map<String, Object> map = null;
+        try {
+            sqlLogDTO.setStartTime(System.currentTimeMillis());
+            map = previewSql(dto);
+            sqlLogDTO.setEndTime(System.currentTimeMillis());
+            sqlLogDTO.setSpend(sqlLogDTO.getEndTime() - sqlLogDTO.getStartTime());
+            sqlLogDTO.setStatus("Completed");
+        } catch (Exception e) {
+            sqlLogDTO.setStatus("Error");
+            DEException.throwException(e);
+        } finally {
+            if (ObjectUtils.isNotEmpty(dto.getTableId())) {
+                sqlLogDTO.setTableId(dto.getTableId());
+                datasetTableSqlLogManage.save(sqlLogDTO);
+            }
+        }
+        return map;
     }
 
     public Map<String, Object> previewSql(PreviewSqlDTO dto) {
@@ -326,7 +359,7 @@ public class DatasetDataManage {
         for (Long id : ids) {
             DatasetTableFieldDTO field = datasetTableFieldManage.selectById(id);
             if (field == null) {
-                DEException.throwException("field is not exist");
+                DEException.throwException(Translator.get("i18n_no_field"));
             }
             DatasetGroupInfoDTO datasetGroupInfoDTO = datasetGroupManage.get(field.getDatasetGroupId(), null);
 
@@ -336,7 +369,7 @@ public class DatasetDataManage {
             // 获取allFields
             List<DatasetTableFieldDTO> fields = Collections.singletonList(field);
             if (ObjectUtils.isEmpty(fields)) {
-                DEException.throwException("no fields");
+                DEException.throwException(Translator.get("i18n_no_fields"));
             }
             buildFieldName(sqlMap, fields);
 

@@ -118,7 +118,7 @@ public class ChartDataManage {
 
         DatasetGroupInfoDTO table = datasetGroupManage.get(view.getTableId(), null);// todo
         if (table == null) {
-            DEException.throwException("Dataset is deleted");
+            DEException.throwException(Translator.get("i18n_no_ds"));
         }
         Map<String, ColumnPermissionItem> desensitizationList = new HashMap<>();// todo
         List<DataSetRowPermissionsTreeDTO> rowPermissionsTree = permissionManage.getRowPermissionsTree(table.getId(), chartExtRequest.getUser());
@@ -429,7 +429,7 @@ public class ChartDataManage {
             for (Map.Entry<Long, DatasourceSchemaDTO> next : dsMap.entrySet()) {
                 DatasourceSchemaDTO ds = next.getValue();
                 if (StringUtils.isNotEmpty(ds.getStatus()) && "Error".equalsIgnoreCase(ds.getStatus())) {
-                    throw new Exception(Translator.get("i18n_invalid_ds"));
+                    DEException.throwException(Translator.get("i18n_invalid_ds"));
                 }
             }
 
@@ -1195,7 +1195,7 @@ public class ChartDataManage {
             for (Map.Entry<Long, DatasourceSchemaDTO> next : dsMap.entrySet()) {
                 DatasourceSchemaDTO ds = next.getValue();
                 if (StringUtils.isNotEmpty(ds.getStatus()) && "Error".equalsIgnoreCase(ds.getStatus())) {
-                    throw new Exception(Translator.get("i18n_invalid_ds"));
+                    DEException.throwException(Translator.get("i18n_invalid_ds"));
                 }
             }
 

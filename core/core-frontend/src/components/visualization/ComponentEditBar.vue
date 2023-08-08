@@ -161,16 +161,19 @@ const props = defineProps({
     required: false,
     type: String,
     default: 'canvas'
+  },
+  canvasId: {
+    type: String,
+    default: 'canvas-main'
   }
 })
 
-const { element, active, index, showPosition } = toRefs(props)
+const { element, active, index, showPosition, canvasId } = toRefs(props)
 const {
   pcMatrixCount,
   curComponent,
   componentData,
   canvasStyleData,
-  linkageSettingStatus,
   targetLinkageInfo,
   curLinkageView,
   dvInfo
@@ -220,7 +223,7 @@ const showEditPosition = computed(() => {
 })
 
 const deleteComponent = () => {
-  eventBus.emit('removeMatrixItem', index.value)
+  eventBus.emit('removeMatrixItem-' + canvasId.value, index.value)
   dvMainStore.setCurComponent({ component: null, index: null })
 }
 

@@ -29,6 +29,7 @@ import io.dataease.datasource.provider.ExcelUtils;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.exception.DEException;
+import io.dataease.i18n.Translator;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import io.dataease.utils.BeanUtils;
@@ -96,7 +97,7 @@ public class DatasourceServer implements DatasourceApi {
                     DEException.throwException("pid can not equal to id.");
                 }
                 CoreDatasource sourceData = datasourceMapper.selectById(dataSourceDTO.getId());
-                checkName(dataSourceDTO.getName(), sourceData.getType(), dataSourceDTO.getId());
+                checkName(dataSourceDTO.getName(), sourceData.getType(), dataSourceDTO.getId(), dataSourceDTO.getPid());
                 UpdateWrapper<CoreDatasource> updateWrapper = new UpdateWrapper<>();
                 updateWrapper.eq("id", dataSourceDTO.getId());
                 CoreDatasource record = new CoreDatasource();
@@ -114,7 +115,7 @@ public class DatasourceServer implements DatasourceApi {
 
                 break;
             case "create":
-                checkName(dataSourceDTO.getName(), dataSourceDTO.getNodeType(), dataSourceDTO.getId());
+                checkName(dataSourceDTO.getName(), dataSourceDTO.getNodeType(), dataSourceDTO.getId(), dataSourceDTO.getPid());
                 CoreDatasource coreDatasource = new CoreDatasource();
                 BeanUtils.copyBean(coreDatasource, dataSourceDTO);
                 coreDatasource.setCreateTime(System.currentTimeMillis());
@@ -586,18 +587,26 @@ public class DatasourceServer implements DatasourceApi {
         if (!datasourceTypes().stream().map(DatasourceConfiguration.DatasourceType::getType).collect(Collectors.toList()).contains(datasource.getType())) {
             DEException.throwException("Datasource type not supported.");
         }
-        checkName(datasource.getName(), datasource.getType(), datasource.getId());
+        checkName(datasource.getName(), datasource.getType(), datasource.getId(), datasource.getPid());
     }
 
-    private void checkName(String name, String type, Long id) throws DEException {
+    private void checkName(String name, String type, Long id, Long pid) throws DEException {
         QueryWrapper<CoreDatasource> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("name", name);
         queryWrapper.eq("type", type);
         if (id != null && id != 0) {
             queryWrapper.ne("id", id);
         }
+        if (pid != null) {
+            queryWrapper.eq("pid", id);
+        }
+        CoreDatasource datasource = datasourceMapper.selectById(id);
+        if(datasource != null){
+            queryWrapper.eq("pid", datasource.getPid());
+        }
+
         if (!CollectionUtils.isEmpty(datasourceMapper.selectList(queryWrapper))) {
-            DEException.throwException("ds_name_exists");
+            DEException.throwException(Translator.get("i18n_ds_name_exists"));
         }
     }
 
