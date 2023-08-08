@@ -104,33 +104,24 @@ public class MysqlEngineProvider extends EngineProvider {
         for (TableField tableField : tableFields) {
             Column_Fields.append(tableField.getName()).append("` ");
             int size = tableField.getPrecision() * 4;
-            switch (tableField.getDeType()) {
+            switch (tableField.getDeExtractType()) {
                 case 0:
                     Column_Fields.append("longtext").append(",`");
                     break;
                 case 1:
-                    size = size < 50 ? 50 : size;
-                    if (size < 65533) {
-                        Column_Fields.append("varchar(length)".replace("length", String.valueOf(tableField.getPrecision()))).append(",`");
-                    } else {
-                        Column_Fields.append("longtext").append(",`");
-                    }
+                    Column_Fields.append("datetime").append(",`");
                     break;
                 case 2:
                     Column_Fields.append("bigint(20)").append(",`");
                     break;
                 case 3:
-                    Column_Fields.append("varchar(100)").append(",`");
+                    Column_Fields.append("decimal(27,8)").append(",`");
                     break;
                 case 4:
                     Column_Fields.append("TINYINT(length)".replace("length", String.valueOf(tableField.getPrecision()))).append(",`");
                     break;
                 default:
-                    if (size < 65533) {
-                        Column_Fields.append("varchar(length)".replace("length", String.valueOf(tableField.getPrecision()))).append(",`");
-                    } else {
-                        Column_Fields.append("longtext").append(",`");
-                    }
+                    Column_Fields.append("longtext").append(",`");
                     break;
             }
         }
