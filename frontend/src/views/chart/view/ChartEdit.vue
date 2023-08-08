@@ -1336,10 +1336,10 @@
         >
           <el-input
             v-model="itemForm.name"
-            @keypress.stop
             style="width: 200px"
             size="mini"
             clearable
+            @keypress.stop
           />
         </el-form-item>
       </el-form>
@@ -1955,11 +1955,11 @@ export default {
       return this.$store.state.panel.panelInfo
     },
     showCfg() {
-      return includesAny(this.view.type, 'bar', 'line', 'area', 'mix', 'gauge', 'table') ||
+      return includesAny(this.view.type, 'bar', 'line', 'area', 'gauge', 'table') ||
         equalsAny(this.view.type, 'text', 'label', 'map', 'buddle-map')
     },
     showSeniorCfg() {
-      return includesAny(this.view.type, 'bar', 'line', 'area', 'mix', 'table') ||
+      return includesAny(this.view.type, 'bar', 'line', 'area', 'table') ||
         equalsAny(this.view.type, 'table-normal', 'table-info', 'map')
     },
     showFunctionCfg() {
@@ -1973,7 +1973,7 @@ export default {
       if (this.view.type === 'bidirectional-bar') {
         return false
       }
-      return includesAny(this.view.type, 'bar', 'line', 'area', 'mix', 'gauge') ||
+      return includesAny(this.view.type, 'bar', 'line', 'area', 'gauge') ||
         equalsAny(this.view.type, 'text', 'label') ||
         (this.view.render === 'antv' && this.view.type.includes('table'))
     },
