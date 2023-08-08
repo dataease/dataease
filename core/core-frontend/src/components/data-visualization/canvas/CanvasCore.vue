@@ -14,7 +14,6 @@ import ContextMenu from './ContextMenu.vue'
 import MarkLine from './MarkLine.vue'
 import Area from './Area.vue'
 import eventBus from '@/utils/eventBus'
-import Grid from './Grid.vue'
 import { changeStyleWithScale } from '@/utils/translate'
 import { ref, onMounted, toRef, computed, toRefs, nextTick, onBeforeUnmount } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
@@ -24,7 +23,7 @@ import { storeToRefs } from 'pinia'
 import findComponent from '@/utils/components'
 import _ from 'lodash'
 import DragShadow from '@/components/data-visualization/canvas/DragShadow.vue'
-import { canvasSave, findDragComponent } from '@/utils/canvasUtils'
+import { canvasSave, findDragComponent, isMainCanvas, isSameCanvas } from '@/utils/canvasUtils'
 import { guid } from '@/views/visualized/data/dataset/form/util'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import UserViewEnlarge from '@/components/visualization/UserViewEnlarge.vue'
@@ -37,17 +36,32 @@ const dvMainStore = dvMainStoreWithOut()
 const composeStore = composeStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
 
-const { componentData, curComponent, canvasStyleData, canvasViewInfo, dvInfo, editMode } =
-  storeToRefs(dvMainStore)
+const { curComponent, dvInfo, editMode } = storeToRefs(dvMainStore)
 const { editor } = storeToRefs(composeStore)
 const props = defineProps({
   isEdit: {
     type: Boolean,
     default: true
   },
+  canvasStyleData: {
+    type: Object,
+    required: true
+  },
+  componentData: {
+    type: Array,
+    required: true
+  },
+  canvasViewInfo: {
+    type: Object,
+    required: true
+  },
   canvasId: {
     type: String,
     default: 'canvas-main'
+  },
+  dvModel: {
+    type: String,
+    default: 'dv'
   },
   baseWidth: {
     required: false,
@@ -137,7 +151,11 @@ const {
   resizing,
   resizeEnd,
   isEdit,
-  canvasId
+  dvModel,
+  canvasId,
+  canvasStyleData,
+  componentData,
+  canvasViewInfo
 } = toRefs(props)
 
 const editorX = ref(0)
@@ -634,16 +652,18 @@ function movePlayer(item, position) {
 
 function removeItem(index) {
   let item = componentData.value[index]
-  removeItemFromPositionBox(item)
-  let belowItems = findBelowItems(item)
-  _.forEach(belowItems, function (upItem) {
-    let canGoUpRows = canItemGoUp(upItem)
-    if (canGoUpRows > 0) {
-      moveItemUp(upItem, canGoUpRows)
-    }
-  })
-  componentData.value.splice(index, 1)
-  snapshotStore.recordSnapshot('removeItem')
+  if (item && isSameCanvas(item, canvasId.value)) {
+    removeItemFromPositionBox(item)
+    let belowItems = findBelowItems(item)
+    _.forEach(belowItems, function (upItem) {
+      let canGoUpRows = canItemGoUp(upItem)
+      if (canGoUpRows > 0) {
+        moveItemUp(upItem, canGoUpRows)
+      }
+    })
+    componentData.value.splice(index, 1)
+    snapshotStore.recordSnapshot('removeItem')
+  }
 }
 
 function addItem(item, index) {
@@ -1191,7 +1211,7 @@ const afterInitOk = func => {
   }, 100)
 }
 const addItemBox = item => {
-  // componentData.value.push(item)
+  syncShapeItemStyle(item, baseWidth.value, baseHeight.value)
   nextTick(function () {
     addItem(item, componentData.value.length - 1)
   })
@@ -1428,15 +1448,17 @@ const linkageSetOpen = item => {
 }
 
 onMounted(() => {
-  initSnapshotTimer()
-  // 获取编辑器元素
-  composeStore.getEditor()
-  eventBus.on('hideArea', hideArea)
-  eventBus.on('handleDragStartMoveIn', handleDragStartMoveIn)
-  eventBus.on('handleDragEnd', handleDragEnd)
-  eventBus.on('removeMatrixItem-canvas-main', removeItem)
-  eventBus.on('addDashboardItem', addItemBox)
-  eventBus.on('snapshotChange', canvasInit)
+  if (isMainCanvas(canvasId.value)) {
+    initSnapshotTimer()
+    // 获取编辑器元素
+    composeStore.getEditor()
+  }
+  eventBus.on('handleDragStartMoveIn-' + canvasId.value, handleDragStartMoveIn)
+  eventBus.on('handleDragEnd-' + canvasId.value, handleDragEnd)
+  eventBus.on('hideArea-' + canvasId.value, hideArea)
+  eventBus.on('removeMatrixItem-' + canvasId.value, removeItem)
+  eventBus.on('addDashboardItem-' + canvasId.value, addItemBox)
+  eventBus.on('snapshotChange-' + canvasId.value, canvasInit)
 })
 
 onBeforeUnmount(() => {
@@ -1444,12 +1466,12 @@ onBeforeUnmount(() => {
     clearInterval(snapshotTimer.value)
     snapshotTimer.value = null
   }
-  eventBus.off('hideArea', hideArea)
-  eventBus.off('handleDragStartMoveIn', handleDragStartMoveIn)
-  eventBus.off('handleDragEnd', handleDragEnd)
-  eventBus.off('removeMatrixItem-canvas-main', removeItem)
-  eventBus.off('addDashboardItem', addItemBox)
-  eventBus.off('snapshotChange', canvasInit)
+  eventBus.off('handleDragStartMoveIn-' + canvasId.value, handleDragStartMoveIn)
+  eventBus.off('handleDragEnd-' + canvasId.value, handleDragEnd)
+  eventBus.off('hideArea-' + canvasId.value, hideArea)
+  eventBus.off('removeMatrixItem-' + canvasId.value, removeItem)
+  eventBus.off('addDashboardItem-' + canvasId.value, addItemBox)
+  eventBus.off('snapshotChange-' + canvasId.value, canvasInit)
 })
 
 defineExpose({

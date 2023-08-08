@@ -236,17 +236,17 @@ export const dvMainStore = defineStore('dataVisualization', {
       }
     },
 
-    addComponent({ component, index, isFromGroup = false }) {
+    addComponent({ component, index, isFromGroup = false, componentData = this.componentData }) {
       if (isFromGroup) {
-        this.componentData.push(component)
+        componentData.push(component)
         return
       }
       if (index !== undefined) {
-        this.componentData.splice(index, 0, component)
+        componentData.splice(index, 0, component)
         this.setCurComponent({ component: component, index: index })
       } else {
-        this.componentData.push(component)
-        this.setCurComponent({ component: component, index: this.componentData.length - 1 })
+        componentData.push(component)
+        this.setCurComponent({ component: component, index: componentData.length - 1 })
       }
       //如果当前的组件是UserView 视图，则想canvasView中增加一项 UserView ID 和componentID保持一致
       if (component.component === 'UserView') {
@@ -296,18 +296,18 @@ export const dvMainStore = defineStore('dataVisualization', {
       })
     },
 
-    deleteComponent(index?) {
+    deleteComponent(index?, componentData = this.componentData) {
       if (index === undefined) {
         index = this.curComponentIndex
       }
 
       if (index == this.curComponentIndex) {
         this.curComponentIndex = null
-        this.curComponent = null
+        componentData = []
       }
 
       if (/\d/.test(index)) {
-        this.componentData.splice(index, 1)
+        componentData.splice(index, 1)
       }
     },
     updateCurDvInfo(dvInfo) {

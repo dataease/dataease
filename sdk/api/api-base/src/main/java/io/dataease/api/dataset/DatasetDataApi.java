@@ -23,6 +23,9 @@ public interface DatasetDataApi {
     @PostMapping("previewSql")
     Map<String, Object> previewSql(@RequestBody PreviewSqlDTO dto) throws Exception;
 
+    @PostMapping("previewSqlCheck")
+    Map<String, Object> previewSqlCheck(@RequestBody PreviewSqlDTO dto) throws Exception;
+
     @PostMapping("enumValue")
     List<String> getFieldEnum(@RequestBody List<Long> ids) throws Exception;
 }

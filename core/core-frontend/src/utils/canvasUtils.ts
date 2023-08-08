@@ -150,3 +150,21 @@ export function setIdValueTrans(from, to, content, colList) {
   }
   return name2Id
 }
+
+export function isMainCanvas(canvasId) {
+  return canvasId === 'canvas-main'
+}
+
+export function isSameCanvas(item, canvasId) {
+  return item.canvasId === canvasId
+}
+
+export function findComponentIndexById(componentId, componentDataMatch = componentData.value) {
+  let indexResult = -1
+  componentDataMatch.forEach((component, index) => {
+    if (component.id === componentId) {
+      indexResult = index
+    }
+  })
+  return indexResult
+}

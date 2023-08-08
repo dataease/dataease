@@ -36,6 +36,7 @@ export const COMMON_COMPONENT_BACKGROUND_MAP = {
 
 export const commonAttr = {
   animations: [],
+  canvasId: 'canvas-main',
   events: {},
   groupStyle: {}, // 当一个组件成为 Group 的子组件时使用
   isLock: false, // 是否锁定组件
@@ -193,7 +194,7 @@ const list = [
     component: 'DeTabs',
     name: 'Tabs',
     label: 'Tabs',
-    propValue: '',
+    propValue: [],
     icon: 'dv-tab',
     innerType: '',
     x: 1,
