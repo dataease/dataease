@@ -17,6 +17,7 @@ import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.exception.DEException;
+import io.dataease.i18n.Translator;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
 import io.dataease.utils.JsonUtil;
@@ -64,7 +65,7 @@ public class DatasetTableFieldManage {
         }
         List<CoreDatasetTableField> fields = coreDatasetTableFieldMapper.selectList(wrapper);
         if (ObjectUtils.isNotEmpty(fields)) {
-            DEException.throwException("name duplicated.");
+            DEException.throwException(Translator.get("i18n_field_name_duplicated"));
         }
         datasetTableFieldDTO.setDatasetGroupId(null);
         return save(datasetTableFieldDTO);
@@ -215,7 +216,7 @@ public class DatasetTableFieldManage {
         final List<Long> allTableFieldIds = fields.stream().map(DatasetTableFieldDTO::getId).collect(Collectors.toList());
         boolean multi = fieldIds.stream().anyMatch(item -> !allTableFieldIds.contains(item));
         if (multi && needMapping) {
-            DEException.throwException("Cross multiple dataset is not supported");
+            DEException.throwException(Translator.get("i18n_can_not_cross_ds"));
         }
         List<DatasetTableFieldDTO> permissionFields = fields;
         List<ChartFieldCustomFilterDTO> customFilter = new ArrayList<>();

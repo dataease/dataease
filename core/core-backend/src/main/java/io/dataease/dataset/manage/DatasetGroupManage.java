@@ -19,6 +19,7 @@ import io.dataease.dataset.utils.TableUtils;
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.exception.DEException;
+import io.dataease.i18n.Translator;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import io.dataease.utils.*;
@@ -73,7 +74,7 @@ public class DatasetGroupManage {
         CoreDatasetGroup coreDatasetGroup = new CoreDatasetGroup();
         if (ObjectUtils.isEmpty(datasetGroupInfoDTO.getId())) {
             datasetGroupInfoDTO.setId(IDUtils.snowID());
-            datasetGroupInfoDTO.setCreateBy("admin");// todo username
+            datasetGroupInfoDTO.setCreateBy(null);// todo username
             datasetGroupInfoDTO.setCreateTime(time);
             datasetGroupInfoDTO.setLastUpdateTime(time);
             datasetGroupInfoDTO.setPid(datasetGroupInfoDTO.getPid() == null ? 0L : datasetGroupInfoDTO.getPid());
@@ -90,7 +91,7 @@ public class DatasetGroupManage {
             }
         } else {
             if (Objects.equals(datasetGroupInfoDTO.getId(), datasetGroupInfoDTO.getPid())) {
-                DEException.throwException("pid can not equal to id.");
+                DEException.throwException(Translator.get("i18n_pid_not_eq_id"));
             }
             CoreDatasetGroup sourceData = coreDatasetGroupMapper.selectById(datasetGroupInfoDTO.getId());
             BeanUtils.copyBean(coreDatasetGroup, datasetGroupInfoDTO);
@@ -237,7 +238,7 @@ public class DatasetGroupManage {
         }
         List<CoreDatasetGroup> list = coreDatasetGroupMapper.selectList(wrapper);
         if (list.size() > 0) {
-            DEException.throwException("I18N_DATASET_TABLE_EXIST");
+            DEException.throwException(Translator.get("i18n_ds_name_exists"));
         }
     }
 
@@ -338,7 +339,7 @@ public class DatasetGroupManage {
 
     public List<DatasetTableDTO> getDetail(List<Long> ids) {
         if (ObjectUtils.isEmpty(ids)) {
-            DEException.throwException("id list can't be empty");
+            DEException.throwException(Translator.get("i18n_table_id_can_not_empty"));
         }
         List<DatasetTableDTO> list = new ArrayList<>();
         for (Long id : ids) {
