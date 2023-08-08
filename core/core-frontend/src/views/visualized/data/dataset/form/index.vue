@@ -405,8 +405,15 @@ const confirmEditUnion = () => {
   datasetDrag.value.setStateBack(cloneDeep(node), cloneDeep(parent))
   const arr = []
   dfsFields(arr, datasetDrag.value.nodeList)
+  console.log(cloneDeep(arr), cloneDeep(datasetDrag.value.nodeList), 'datasetDrag.value.nodeList')
   allfields.value = diffArr(arr, allfields.value)
   fieldUnion.value.clearState()
+  console.log(
+    cloneDeep(allfields.value),
+    cloneDeep(allfields.value),
+    cloneDeep(datasetDrag.value.nodeList),
+    'allfields.value'
+  )
   editUnion.value = false
 }
 
