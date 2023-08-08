@@ -19,4 +19,4 @@ HEALTHCHECK --interval=15s --timeout=5s --retries=20 --start-period=30s CMD curl
 
 #CMD ["/deployments/run-java.sh"]
 
-CMD java -Dloader.path=/opt/apps/xpack.jar -jar /opt/apps/app.jar -Xmx1024m
+CMD java -Dloader.path=/opt/apps/xpack-permission.jar, /opt/apps/xpack-base.jar -jar /opt/apps/app.jar -Xmx1024m
