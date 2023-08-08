@@ -54,8 +54,7 @@ const initFontSize = () => {
 const changeAxisStyle = prop => {
   if (
     state.axisForm.axisValue.splitCount &&
-    (parseInt(state.axisForm.axisValue.splitCount) > 100 ||
-      parseInt(state.axisForm.axisValue.splitCount) < 0)
+    (state.axisForm.axisValue.splitCount > 100 || state.axisForm.axisValue.splitCount < 0)
   ) {
     ElMessage.error(t('chart.splitCount_less_100'))
     return
@@ -214,6 +213,18 @@ init()
             @change="changeAxisStyle('axisLine')"
             >{{ t('chart.axis_show') }}</el-checkbox
           >
+        </el-form-item>
+        <el-form-item
+          :label="t('chart.axis_line_color')"
+          class="form-item"
+          v-show="showProperty('axisLine')"
+        >
+          <el-color-picker
+            v-model="state.axisForm.axisLine.lineStyle.color"
+            class="el-color-picker"
+            :predefine="predefineColors"
+            @change="changeAxisStyle('axisLine')"
+          />
         </el-form-item>
         <el-form-item
           :label="t('chart.grid_show')"

@@ -324,7 +324,7 @@ export const DEFAULT_TITLE_STYLE: ChartTextStyle = {
   fontShadow: false
 }
 
-export const DEFAULT_TITLE_STYLE_BASE = {
+export const DEFAULT_TITLE_STYLE_BASE: ChartTextStyle = {
   show: true,
   fontSize: '18',
   hPosition: 'left',
@@ -335,7 +335,9 @@ export const DEFAULT_TITLE_STYLE_BASE = {
   remark: '',
   fontFamily: 'Microsoft YaHei',
   letterSpace: '0',
-  fontShadow: false
+  fontShadow: false,
+  color: '',
+  remarkBackgroundColor: ''
 }
 
 export const DEFAULT_TITLE_STYLE_LIGHT = {
@@ -350,16 +352,14 @@ export const DEFAULT_TITLE_STYLE_DARK = {
   remarkBackgroundColor: '#5A5C62'
 }
 
-export const DEFAULT_LEGEND_STYLE = {
+export const DEFAULT_LEGEND_STYLE: ChartLegendStyle = {
   show: true,
   hPosition: 'center',
   vPosition: 'bottom',
   orient: 'horizontal',
   icon: 'circle',
-  textStyle: {
-    color: '#333333',
-    fontSize: '12'
-  }
+  color: '#333333',
+  fontSize: 12
 }
 
 export const DEFAULT_LEGEND_STYLE_BASE = {
@@ -368,26 +368,20 @@ export const DEFAULT_LEGEND_STYLE_BASE = {
   vPosition: 'bottom',
   orient: 'horizontal',
   icon: 'circle',
-  textStyle: {
-    color: '#333333',
-    fontSize: '12'
-  }
+  color: '#333333',
+  fontSize: '12'
 }
 
 export const DEFAULT_LEGEND_STYLE_LIGHT = {
   ...DEFAULT_LEGEND_STYLE_BASE,
-  textStyle: {
-    color: '#333333',
-    fontSize: '12'
-  }
+  color: '#333333',
+  fontSize: '12'
 }
 
 export const DEFAULT_LEGEND_STYLE_DARK = {
   ...DEFAULT_LEGEND_STYLE_BASE,
-  textStyle: {
-    color: '#ffffff',
-    fontSize: '12'
-  }
+  color: '#ffffff',
+  fontSize: '12'
 }
 
 export const DEFAULT_MARGIN_STYLE = {
@@ -1074,6 +1068,34 @@ export const CHART_TYPE_CONFIGS = [
         value: 'word-cloud',
         title: t('chart.chart_word_cloud'),
         icon: 'word-cloud'
+      },
+      {
+        render: 'antv',
+        category: 'distribute',
+        value: 'waterfall',
+        title: t('chart.chart_waterfall'),
+        icon: 'waterfall'
+      },
+      {
+        render: 'antv',
+        category: 'distribute',
+        value: 'funnel',
+        title: t('chart.chart_funnel'),
+        icon: 'funnel'
+      },
+      {
+        render: 'antv',
+        category: 'distribute',
+        value: 'scatter',
+        title: t('chart.chart_scatter'),
+        icon: 'scatter'
+      },
+      {
+        render: 'antv',
+        category: 'distribute',
+        value: 'treemap',
+        title: t('chart.chart_treemap'),
+        icon: 'treemap'
       }
     ]
   },
