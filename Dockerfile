@@ -10,7 +10,8 @@ WORKDIR /opt/apps
 
 #ADD core/core-backend/target/core-backend-$IMAGE_TAG.jar /opt/apps/app.jar
 ADD core/core-backend/target/CoreApplication.jar /opt/apps/app.jar
-ADD de-xpack/xpack-permissions/target/xpack-permissions-$IMAGE_TAG.jar /opt/apps/xpack.jar
+ADD de-xpack/xpack-permissions/target/xpack-permissions-$IMAGE_TAG.jar /opt/apps/xpack-permission.jar
+ADD de-xpack/xpack-base/target/xpack-base-$IMAGE_TAG.jar /opt/apps/xpack-base.jar
 
 ENV JAVA_APP_JAR=/opt/apps/app.jar
 

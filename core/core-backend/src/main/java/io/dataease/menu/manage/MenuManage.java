@@ -5,15 +5,18 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.api.menu.vo.MenuMeta;
 import io.dataease.api.menu.vo.MenuVO;
 import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
+import io.dataease.api.xpack.component.XpackComponentApi;
+import io.dataease.api.xpack.component.vo.XpackMenuVO;
 import io.dataease.menu.bo.MenuTreeNode;
 import io.dataease.menu.dao.auto.entity.CoreMenu;
 import io.dataease.menu.dao.auto.mapper.CoreMenuMapper;
 import io.dataease.utils.BeanUtils;
+import io.dataease.utils.LogUtil;
 import jakarta.annotation.Resource;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.ObjectUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +36,9 @@ public class MenuManage {
     @Autowired(required = false)
     private InteractiveAuthApi interactiveAuthApi;
 
+    @Autowired(required = false)
+    private XpackComponentApi xpackComponentApi;
+
     public List<MenuVO> query() {
         QueryWrapper<CoreMenu> wrapper = new QueryWrapper<>();
         List<CoreMenu> coreMenus = coreMenuMapper.selectList(wrapper);
@@ -43,11 +49,19 @@ public class MenuManage {
     }
 
     private List<CoreMenu> filterAuth(List<CoreMenu> list) {
-        List<Long> xpackIds = List.of(7L, 8L, 9L, 10L);
         if (ObjectUtils.isEmpty(interactiveAuthApi))
-            return list.stream().filter(item -> !xpackIds.contains(item.getId())).collect(Collectors.toList());
-        List<Long> menuIds = interactiveAuthApi.menuIds();
-        return list.stream().filter(menu -> !menu.getAuth() || menuIds.contains(menu.getId())).toList();
+            return list;
+        try {
+            List<XpackMenuVO> xpackMenus = null;
+            if (ObjectUtils.isNotEmpty(xpackComponentApi) && CollectionUtil.isNotEmpty(xpackMenus = xpackComponentApi.menu())) {
+                list.addAll(xpackMenus.stream().map(menu -> BeanUtils.copyBean(new CoreMenu(), menu)).collect(Collectors.toList()));
+            }
+            List<Long> menuIds = interactiveAuthApi.menuIds();
+            return list.stream().filter(menu -> !menu.getAuth() || menuIds.contains(menu.getId())).toList();
+        } catch (Exception e) {
+            LogUtil.error(e.getMessage());
+            return list;
+        }
     }
 
     private List<MenuTreeNode> buildPOTree(List<MenuTreeNode> coreMenus) {
@@ -64,8 +78,7 @@ public class MenuManage {
 
     private List<MenuVO> convertTree(List<MenuTreeNode> roots) {
         List<MenuVO> result = new ArrayList<>();
-        for (int i = 0; i < roots.size(); i++) {
-            MenuTreeNode menuTreeNode = roots.get(i);
+        for (MenuTreeNode menuTreeNode : roots) {
             MenuVO vo = convert(menuTreeNode);
             List<MenuTreeNode> children = null;
             if (CollectionUtil.isNotEmpty(children = menuTreeNode.getChildren())) {
@@ -79,6 +92,7 @@ public class MenuManage {
     }
 
     private MenuVO convert(CoreMenu coreMenu) {
+
         if (ROOTID != coreMenu.getPid() && StringUtils.startsWith(coreMenu.getPath(), "/")) {
             coreMenu.setPath(coreMenu.getPath().substring(1));
         }
@@ -88,7 +102,7 @@ public class MenuManage {
         meta.setTitle(I18N_PREFIX + coreMenu.getName());
         meta.setIcon(coreMenu.getIcon());
         menuVO.setMeta(meta);
-
+        menuVO.setPlugin(coreMenu.getId().equals(7L) || coreMenu.getPid().equals(7L));
         return menuVO;
     }
 }
