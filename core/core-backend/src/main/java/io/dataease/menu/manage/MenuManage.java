@@ -12,9 +12,7 @@ import io.dataease.utils.BeanUtils;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.util.ArrayList;
@@ -41,12 +39,13 @@ public class MenuManage {
         coreMenus = filterAuth(coreMenus);
         List<MenuTreeNode> menuTreeNodes = coreMenus.stream().map(menu -> BeanUtils.copyBean(new MenuTreeNode(), menu)).toList();
         List<MenuTreeNode> treeNodes = buildPOTree(menuTreeNodes);
-        List<MenuVO> menuVOS = convertTree(treeNodes);
-        return menuVOS;
+        return convertTree(treeNodes);
     }
-    
+
     private List<CoreMenu> filterAuth(List<CoreMenu> list) {
-        if (ObjectUtils.isEmpty(interactiveAuthApi)) return list;
+        List<Long> xpackIds = List.of(7L, 8L, 9L, 10L);
+        if (ObjectUtils.isEmpty(interactiveAuthApi))
+            return list.stream().filter(item -> !xpackIds.contains(item.getId())).collect(Collectors.toList());
         List<Long> menuIds = interactiveAuthApi.menuIds();
         return list.stream().filter(menu -> !menu.getAuth() || menuIds.contains(menu.getId())).toList();
     }
