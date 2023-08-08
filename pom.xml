@@ -9,8 +9,6 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>sdk</module>
-        <module>de-xpack</module>
-        <module>core</module>
         <module>license-sdk</module>
     </modules>
 
@@ -23,10 +21,10 @@
         <maven-compiler-plugin.version>3.9.0</maven-compiler-plugin.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <mybatis-plus.version>3.5.3</mybatis-plus.version>
+        <mybatis-plus.version>3.5.3.1</mybatis-plus.version>
         <h2.version>1.4.199</h2.version>
         <knife4j.version>4.1.0</knife4j.version>
-        <calcite-core.version>1.30.0</calcite-core.version>
+        <calcite-core.version>1.32.0</calcite-core.version>
         <commons-dbcp2.version>2.6.0</commons-dbcp2.version>
         <antlr.version>3.5.2</antlr.version>
         <java-jwt.version>3.12.1</java-jwt.version>

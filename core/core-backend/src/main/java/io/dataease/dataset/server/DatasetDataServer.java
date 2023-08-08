@@ -34,6 +34,11 @@ public class DatasetDataServer implements DatasetDataApi {
 
     @Override
     public Map<String, Object> previewSql(PreviewSqlDTO dto) throws Exception {
+        return datasetDataManage.previewSqlWithLog(dto);
+    }
+
+    @Override
+    public Map<String, Object> previewSqlCheck(PreviewSqlDTO dto) throws Exception {
         return datasetDataManage.previewSql(dto);
     }
 

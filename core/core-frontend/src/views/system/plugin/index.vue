@@ -8,11 +8,9 @@ const props = defineProps({
 })
 const plugin = ref()
 const loadComponent = (type: string) => {
-  import(`../../../../../../de-xpack/xpack-frontend/system/src/${type}/index.vue`).then(
-    (res: any) => {
-      plugin.value = res.default
-    }
-  )
+  import(`../../../../../../de-xpack/xpack-frontend/src/${type}/index.vue`).then((res: any) => {
+    plugin.value = res.default
+  })
 }
 watch(
   () => props.jsname,

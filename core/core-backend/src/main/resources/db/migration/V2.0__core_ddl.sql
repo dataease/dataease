@@ -4023,3 +4023,15 @@ CREATE TABLE `visualization_subject` (
 
 commit;
 
+DROP TABLE IF EXISTS `core_dataset_table_sql_log`;
+CREATE TABLE `core_dataset_table_sql_log` (
+                                   `id` varchar(50) NOT NULL DEFAULT '' COMMENT 'ID',
+                                   `table_id` varchar(50) NOT NULL DEFAULT '' COMMENT '数据集SQL节点ID',
+                                   `start_time` bigint(13) DEFAULT NULL COMMENT '开始时间',
+                                   `end_time` bigint(13) DEFAULT NULL COMMENT '结束时间',
+                                   `spend` bigint(13) DEFAULT NULL COMMENT '耗时(毫秒)',
+                                   `sql` longtext NOT NULL COMMENT '详细信息',
+                                   `status` varchar(45) DEFAULT NULL COMMENT '状态',
+                                   PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+
