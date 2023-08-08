@@ -80,7 +80,6 @@ const checkResult = computed(() => {
   return checklist.value.join(',')
 })
 const computedWidth = computed(() => {
-  console.log('props.item', cloneDeep(props.item))
   const { term, fieldId, filterType } = props.item
   const isNull = ['null', 'empty', 'not_null', 'not_empty'].includes(term) && filterType === 'logic'
   return {
@@ -171,7 +170,7 @@ const sysParamsIlnJudge = term => {
   }
 }
 const onOptionsChange = term => {
-  item.value = null
+  item.value.value = null
   sysParamsIlnJudge(term)
 }
 const optionData = data => {
