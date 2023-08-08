@@ -151,17 +151,20 @@ getDatasource()
 const emits = defineEmits(['close', 'save'])
 
 const saveClose = () => {
-  save()
-  close()
+  save(close)
 }
 
-const save = () => {
+const save = (cb?: () => void) => {
   parseVariable()
-  emits('save', {
-    ...sqlNode.value,
-    sql: Base64.encode(codeCom.value.state.doc.toString()),
-    sqlVariableDetails: JSON.stringify(state.variables)
-  })
+  emits(
+    'save',
+    {
+      ...sqlNode.value,
+      sql: Base64.encode(codeCom.value.state.doc.toString()),
+      sqlVariableDetails: JSON.stringify(state.variables)
+    },
+    cb
+  )
 }
 
 const close = () => {
@@ -306,7 +309,7 @@ const mousedownDrag = () => {
     </div>
     <div class="save-or-cancel">
       <el-button @click="close" secondary> 取消</el-button>
-      <el-button @click="save" type="primary"> 保存</el-button>
+      <el-button @click="save(() => {})" type="primary"> 保存</el-button>
       <el-button @click="saveClose" type="primary"> 保存并关闭</el-button>
     </div>
   </div>

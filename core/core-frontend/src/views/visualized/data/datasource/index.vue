@@ -1128,7 +1128,7 @@ const defaultProps = {
 
 <style scoped lang="less">
 .custom-tree-node {
-  flex: 1;
+  width: calc(100% - 30px);
   display: flex;
   align-items: center;
   padding-right: 4px;

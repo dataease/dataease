@@ -17,6 +17,14 @@ export interface Field {
   fieldShortName: string
 }
 
+export interface ComponentInfo {
+  id: string
+  name: string
+  deType: number
+  type: string
+  datasetId: string
+}
+
 export const getFieldByDQ = async (id, chartId): Promise<IResponse> => {
   return request.post({ url: `/chart/listByDQ/${id}/${chartId}`, data: {} }).then(res => {
     return res?.data

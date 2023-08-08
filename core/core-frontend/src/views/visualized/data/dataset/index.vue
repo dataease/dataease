@@ -612,7 +612,7 @@ const filterNode = (value: string, data: BusiTreeNode) => {
   background-color: #f5f6f7;
 }
 .custom-tree-node {
-  flex: 1;
+  width: calc(100% - 30px);
   display: flex;
   align-items: center;
   box-sizing: content-box;

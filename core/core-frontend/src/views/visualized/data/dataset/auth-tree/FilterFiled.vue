@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { ref, inject, computed, watch, onBeforeMount, toRefs } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
+import { cloneDeep } from 'lodash-es'
 import { multFieldValuesForPermissions } from '@/api/dataset'
 import {
   textOptions,
@@ -79,6 +80,7 @@ const checkResult = computed(() => {
   return checklist.value.join(',')
 })
 const computedWidth = computed(() => {
+  console.log('props.item', cloneDeep(props.item))
   const { term, fieldId, filterType } = props.item
   const isNull = ['null', 'empty', 'not_null', 'not_empty'].includes(term) && filterType === 'logic'
   return {

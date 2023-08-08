@@ -12,8 +12,12 @@ import { save, validate } from '@/api/datasource'
 import { Base64 } from 'js-base64'
 import type { Param } from './ExcelDetail.vue'
 import { dsTypes, typeList, nameMap } from './option'
+import { useRouter } from 'vue-router'
 import { uuid } from 'vue-uuid'
+import { useEmitt } from '@/hooks/web/useEmitt'
+import FinishPage from '../FinishPage.vue'
 import { cloneDeep } from 'lodash-es'
+import { useCache } from '@/hooks/web/useCache'
 interface Node {
   name: string
   id: string
@@ -36,6 +40,8 @@ interface Form {
 
 const { t } = useI18n()
 const creatDsFolder = ref()
+const router = useRouter()
+const { wsCache } = useCache()
 
 const state = reactive({
   datasourceTree: []
@@ -92,6 +98,8 @@ const excel = ref()
 const currentType = ref<DsType>('OLTP')
 const filterText = ref('')
 const currentDsType = ref('')
+
+const { emitter } = useEmitt()
 const selectDsType = (type: string) => {
   currentDsType.value = type
   activeStep.value = 1
@@ -160,6 +168,39 @@ const complete = (params, successCb, finallyCb) => {
   excel.value.saveExcelDs(params, successCb, finallyCb)
   return
 }
+
+const showFinishPage = ref(false)
+const dsInfo = reactive({
+  name: '',
+  id: ''
+})
+
+const createDataset = () => {
+  router.push({
+    path: '/dataset-form',
+    query: {
+      datasourceId: dsInfo.id
+    }
+  })
+}
+const backToDatasourceList = () => {
+  visible.value = false
+  showFinishPage.value = false
+}
+const continueCreating = () => {
+  showFinishPage.value = false
+  init(null)
+}
+
+const handleShowFinishPage = ({ id, name }) => {
+  if (editDs.value || wsCache.get('ds-create-success')) {
+    visible.value = false
+    return
+  }
+  showFinishPage.value = true
+  Object.assign(dsInfo, { id, name })
+}
+emitter.on('showFinishPage', handleShowFinishPage)
 
 const prev = () => {
   if (activeStep.value === 1) {
@@ -234,6 +275,7 @@ const saveDS = () => {
   if (editDs.value) {
     save(request).then(res => {
       if (res !== undefined) {
+        handleShowFinishPage(res)
         ElMessage.success('保存数据源成功')
       }
     })
@@ -263,7 +305,6 @@ const pid = ref('0')
 const init = (nodeInfo: Form | Param, id?: string) => {
   editDs.value = !!nodeInfo
 
-  console.log('nodeInfo', cloneDeep(nodeInfo))
   if (!!nodeInfo) {
     if (nodeInfo.type == 'Excel') {
       Object.assign(form2, cloneDeep(nodeInfo))
@@ -457,6 +498,13 @@ defineExpose({
           {{ t('common.sure') }}</el-button
         >
       </div>
+      <FinishPage
+        @continue-creating="continueCreating"
+        @back-to-datasource-list="backToDatasourceList"
+        @create-dataset="createDataset"
+        :name="dsInfo.name"
+        v-if="showFinishPage"
+      ></FinishPage>
     </div>
   </el-drawer>
   <creat-ds-group @finish="complete" ref="creatDsFolder"></creat-ds-group>
@@ -553,6 +601,7 @@ defineExpose({
     width: 100%;
     height: 100%;
     background: #fff;
+    position: relative;
     .ds-type-select {
       width: 279px;
       height: calc(100% - 64px);

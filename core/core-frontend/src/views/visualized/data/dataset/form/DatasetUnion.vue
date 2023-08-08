@@ -13,7 +13,7 @@ import { getTableField } from '@/api/dataset'
 import type { Field } from './UnionFieldList.vue'
 import type { SqlNode } from './AddSql.vue'
 import _ from 'lodash'
-
+import type { Table } from '@/api/dataset'
 const state = reactive({
   nodeList: [],
   pathList: [],
@@ -98,7 +98,7 @@ const delNode = (id, arr) => {
   })
 }
 
-const saveSqlNode = (val: SqlNode) => {
+const saveSqlNode = (val: SqlNode, cb) => {
   const { tableName, id, sql, datasourceId, sqlVariableDetails = null } = val
   if (state.visualNode) {
     Object.assign(state.visualNode, {
@@ -115,6 +115,21 @@ const saveSqlNode = (val: SqlNode) => {
     if (!state.nodeList.length) {
       state.visualNode.tableName = tableName
       state.nodeList.push(state.visualNode)
+      currentNode.value = state.nodeList[0]
+      getTableField({
+        datasourceId,
+        id: id,
+        info: state.visualNode.info,
+        tableName,
+        type: 'sql'
+      }).then(res => {
+        ;((res as unknown as Field[]) || []).forEach(ele => {
+          ele.checked = true
+        })
+        state.nodeList[0].currentDsFields = _.cloneDeep(res)
+        cb?.()
+        confirmEditUnion()
+      })
       confirm()
     }
     return
@@ -535,7 +550,7 @@ const dragenter_handler = ev => {
 const drop_handler = ev => {
   ev.preventDefault()
   let data = ev.dataTransfer.getData('text')
-  const { tableName, type, datasourceId } = JSON.parse(data)
+  const { tableName, type, datasourceId } = JSON.parse(data) as Table
   const extraData = {
     info: JSON.stringify({
       table: tableName,

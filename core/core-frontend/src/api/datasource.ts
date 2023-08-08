@@ -74,7 +74,7 @@ export const validate = (data = {}) => {
 
 export const validateById = (id: number) => request.get({ url: '/datasource/validate/' + id })
 
-export const save = async (data = {}): Promise<IResponse> => {
+export const save = async (data = {}): Promise<Dataset> => {
   return request.post({ url: '/datasource/save', data }).then(res => {
     return res?.data
   })
