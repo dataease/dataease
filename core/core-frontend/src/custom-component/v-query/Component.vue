@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import eventBus from '@/utils/eventBus'
 import QueryConditionConfiguration from './QueryConditionConfiguration.vue'
-import { type Field } from '@/api/chart'
+import type { Field, ComponentInfo } from '@/api/chart'
 import { onBeforeUnmount, reactive, ref, toRefs, watch, computed, nextTick } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
@@ -130,7 +130,7 @@ const dragover = () => {
   // do
 }
 
-const infoFormat = (obj: Field & { datasetId: string }) => {
+const infoFormat = (obj: ComponentInfo) => {
   const { id, name, deType, type, datasetId } = obj
   const base = {
     id: guid(),
@@ -165,9 +165,7 @@ const infoFormat = (obj: Field & { datasetId: string }) => {
 }
 
 const drop = e => {
-  const componentInfo: Field & { datasetId: string } = JSON.parse(
-    e.dataTransfer.getData('dimension') || '{}'
-  )
+  const componentInfo: ComponentInfo = JSON.parse(e.dataTransfer.getData('dimension') || '{}')
   if (!componentInfo.id) return
   list.value.push(infoFormat(componentInfo))
   element.value.propValue = [...list.value]
@@ -176,6 +174,30 @@ const drop = e => {
 const editeQueryConfig = (queryId: string) => {
   queryConfig.value.init(element.value.id, queryId)
 }
+
+const addQueryCriteria = () => {
+  const componentInfo: ComponentInfo = {
+    id: '',
+    name: '未命名',
+    deType: 0,
+    type: 'VARCHAR',
+    datasetId: ''
+  }
+  list.value.push(infoFormat(componentInfo))
+  element.value.propValue = [...list.value]
+  editeQueryConfig(list.value[list.value.length - 1].id)
+}
+
+const editQueryCriteria = () => {
+  if (!list.value.length) {
+    addQueryCriteria()
+    return
+  }
+  editeQueryConfig(list.value[0].id)
+}
+
+emitter.on(`addQueryCriteria${element.value.id}`, addQueryCriteria)
+emitter.on(`editQueryCriteria${element.value.id}`, editQueryCriteria)
 
 const delQueryConfig = index => {
   list.value.splice(index, 1)
@@ -312,7 +334,10 @@ const queryData = () => {
     </div>
   </div>
   <Teleport to="body">
-    <QueryConditionConfiguration ref="queryConfig"></QueryConditionConfiguration>
+    <QueryConditionConfiguration
+      @add-query-criteria="addQueryCriteria"
+      ref="queryConfig"
+    ></QueryConditionConfiguration>
   </Teleport>
 </template>
 
@@ -372,6 +397,7 @@ const queryData = () => {
           align-items: center;
           background: #fff;
           border-radius: 2px;
+          display: none;
           flex: 0 0 auto;
           height: 16px;
           line-height: 16px;
@@ -409,6 +435,13 @@ const queryData = () => {
     .query-fields-container {
       .query-field {
         padding-top: 18px;
+
+        &:hover {
+          .label-wrapper-tooltip {
+            display: inline-flex !important;
+            cursor: pointer;
+          }
+        }
         .label {
           align-items: center;
           height: 16px;
@@ -418,9 +451,6 @@ const queryData = () => {
           position: absolute;
           right: 0;
           top: 0;
-          .label-wrapper-tooltip {
-            display: inline-flex;
-          }
         }
       }
     }
@@ -453,6 +483,12 @@ const queryData = () => {
             right: 0;
             top: -5px;
             z-index: 11;
+          }
+        }
+        &:hover {
+          .label-wrapper-tooltip {
+            display: block;
+            cursor: pointer;
           }
         }
       }

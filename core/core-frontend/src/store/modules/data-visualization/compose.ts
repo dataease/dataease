@@ -28,19 +28,22 @@ export const composeStore = defineStore('compose', {
         },
         components: []
       },
+      editorMap: {},
       editor: null
     }
   },
   actions: {
-    getEditor() {
-      this.editor = $('#editor-canvas-main')
+    getEditor(canvasId = 'canvas-main') {
+      this.editorMap[canvasId] = $('#editor-' + canvasId)
+      // this.editor = $('#editor-' + canvasId)
     },
 
     setAreaData(data) {
       this.areaData = data
     },
 
-    compose: function () {
+    compose: function (canvasId = 'canvas-main') {
+      const editor = this.editorMap[canvasId]
       const { areaData } = this
       const components = []
       areaData.components.forEach(component => {
@@ -50,7 +53,7 @@ export const composeStore = defineStore('compose', {
           // 如果要组合的组件中，已经存在组合数据，则需要提前拆分
           const parentStyle = { ...component.style }
           const subComponents = component.propValue
-          const editorRect = this.editor.getBoundingClientRect()
+          const editorRect = editor.getBoundingClientRect()
 
           subComponents.forEach(component => {
             decomposeComponent(component, editorRect, parentStyle)
@@ -103,10 +106,11 @@ export const composeStore = defineStore('compose', {
       })
     },
 
-    decompose() {
+    decompose(canvasId = 'canvas-main') {
+      const editor = this.editorMap[canvasId]
       const parentStyle = { ...curComponent.value.style }
       const components = curComponent.value.propValue
-      const editorRect = this.editor.getBoundingClientRect()
+      const editorRect = editor.getBoundingClientRect()
       dvMainStore.deleteComponent()
       components.forEach(component => {
         decomposeComponent(component, editorRect, parentStyle)

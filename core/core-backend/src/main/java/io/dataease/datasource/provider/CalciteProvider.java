@@ -9,6 +9,7 @@ import io.dataease.api.ds.vo.TableField;
 import io.dataease.commons.exception.DataEaseException;
 import io.dataease.commons.utils.CommonThreadPool;
 import io.dataease.dataset.dto.DatasourceSchemaDTO;
+import io.dataease.dataset.utils.FieldUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.entity.CoreDriver;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
@@ -156,9 +157,12 @@ public class CalciteProvider {
             int columnCount = metaData.getColumnCount();
             for (int i = 1; i <= columnCount; i++) {
                 TableField tableField = new TableField();
-                tableField.setOriginName(metaData.getColumnLabel(i));// 用ColumnName取的是原字段取不到as的别名，所以使用ColumnLabel
+                tableField.setOriginName(metaData.getColumnLabel(i));
                 tableField.setType(metaData.getColumnTypeName(i));
                 tableField.setPrecision(metaData.getPrecision(i));
+                int deType = FieldUtils.transType2DeType(tableField.getType());
+                tableField.setDeExtractType(deType);
+                tableField.setDeType(deType);
                 tableField.setScale(metaData.getScale(i));
                 datasetTableFields.add(tableField);
             }

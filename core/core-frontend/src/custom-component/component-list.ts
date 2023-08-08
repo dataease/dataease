@@ -1,5 +1,6 @@
 // 公共样式
 import { deepCopy } from '@/utils/utils'
+import { guid } from '@/views/visualized/data/dataset/form/util'
 
 export const commonStyle = {
   rotate: 0,
@@ -36,6 +37,7 @@ export const COMMON_COMPONENT_BACKGROUND_MAP = {
 
 export const commonAttr = {
   animations: [],
+  canvasId: 'canvas-main',
   events: {},
   groupStyle: {}, // 当一个组件成为 Group 的子组件时使用
   isLock: false, // 是否锁定组件
@@ -193,13 +195,20 @@ const list = [
     component: 'DeTabs',
     name: 'Tabs',
     label: 'Tabs',
-    propValue: '',
+    propValue: [
+      {
+        name: 'tab',
+        title: '新建Tab',
+        componentData: [],
+        closable: true
+      }
+    ],
     icon: 'dv-tab',
     innerType: '',
     x: 1,
     y: 1,
     sizeX: 15,
-    sizeY: 15,
+    sizeY: 10,
     style: {
       width: 150,
       height: 100,
@@ -220,10 +229,13 @@ export function findNewComponentFromList(componentName, innerType, curOriginThem
   list.forEach(comp => {
     if (comp.component === componentName) {
       newComponent = deepCopy(comp)
-      ;(newComponent['commonBackground'] = deepCopy(
+      newComponent['commonBackground'] = deepCopy(
         COMMON_COMPONENT_BACKGROUND_MAP[curOriginThemes.value]
-      )),
-        (newComponent.innerType = innerType)
+      )
+      newComponent.innerType = innerType
+      if (comp.component === 'DeTabs') {
+        newComponent.propValue[0].name = guid()
+      }
     }
   })
   return newComponent

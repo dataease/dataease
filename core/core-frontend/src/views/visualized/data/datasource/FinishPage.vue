@@ -1,23 +1,27 @@
 <script lang="ts" setup>
 import { ref, onUnmounted } from 'vue'
 import { propTypes } from '@/utils/propTypes'
+import { useCache } from '@/hooks/web/useCache'
+
 defineProps({
   name: propTypes.string.def(''),
   disabled: propTypes.bool.def(false)
 })
 
+const { wsCache } = useCache()
+const emits = defineEmits(['createDataset', 'backToDatasourceList', 'continueCreating'])
 const num = ref(5)
 const checked = ref(false)
 let time = setInterval(() => {
   num.value -= 1
   if (num.value === 0) {
+    emits('backToDatasourceList')
     clearInterval(time)
   }
 }, 1000)
 onUnmounted(() => {
   clearInterval(time)
 })
-const emits = defineEmits(['createDataset', 'backToDatasourceList', 'continueCreating'])
 const createDataset = () => {
   emits('createDataset')
 }
@@ -26,6 +30,11 @@ const backToDatasourceList = () => {
 }
 const continueCreating = () => {
   emits('continueCreating')
+}
+
+checked.value = wsCache.get('ds-create-success') || false
+const handleChange = (val: boolean) => {
+  wsCache.set('ds-create-success', val)
 }
 </script>
 
@@ -49,7 +58,7 @@ const continueCreating = () => {
         <el-button @click="backToDatasourceList" type="primary"> 返回数据源列表 </el-button>
       </div>
       <div class="nolonger-tips">
-        <el-checkbox v-model="checked" label="下次不再提示" />
+        <el-checkbox @change="handleChange" v-model="checked" label="下次不再提示" />
       </div>
 
       <div class="maybe-want">
@@ -78,6 +87,9 @@ const continueCreating = () => {
   background: #fff;
   display: flex;
   justify-content: center;
+  position: absolute;
+  bottom: 0;
+  left: 0;
 
   .ed-button,
   :deep(.ed-checkbox__label) {

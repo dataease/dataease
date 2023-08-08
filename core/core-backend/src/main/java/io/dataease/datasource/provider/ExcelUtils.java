@@ -145,6 +145,32 @@ public class ExcelUtils {
             excelSheetData.setSheetId(UUID.randomUUID().toString());
             excelSheetData.setSheetExcelId(excelId);
             excelSheetData.setFileName(filename);
+            /**
+             * dataease字段类型：0-文本，1-时间，2-整型数值，3-浮点数值，4-布尔，5-地理位置，6-二进制
+             */
+            for (TableField field : excelSheetData.getFields()) {
+                //TEXT LONG DATETIME DOUBLE
+                if(field.getFieldType().equalsIgnoreCase("TEXT")){
+                    field.setDeType(0);
+                    field.setDeExtractType(0);
+                }
+                if(field.getFieldType().equalsIgnoreCase("DATETIME")){
+                    field.setDeType(1);
+                    field.setDeExtractType(1);
+                }
+                if(field.getFieldType().equalsIgnoreCase("LONG")){
+                    field.setDeType(2);
+                    field.setDeExtractType(2);
+                }
+                if(field.getFieldType().equalsIgnoreCase("DOUBLE")){
+                    field.setDeType(3);
+                    field.setDeExtractType(3);
+                }
+
+
+
+
+            }
             long size = 0;
             String unit = "B";
             if (file.getSize() / 1024 == 0) {

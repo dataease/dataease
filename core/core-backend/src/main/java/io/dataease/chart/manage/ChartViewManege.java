@@ -14,6 +14,7 @@ import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.func.FunctionConstant;
 import io.dataease.engine.utils.Utils;
 import io.dataease.exception.DEException;
+import io.dataease.i18n.Translator;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.JsonUtil;
 import jakarta.annotation.Resource;
@@ -43,7 +44,7 @@ public class ChartViewManege {
     public ChartViewDTO save(ChartViewDTO chartViewDTO) throws Exception {
         Long id = chartViewDTO.getId();
         if (id == null) {
-            DEException.throwException("no chart id");
+            DEException.throwException(Translator.get("i18n_no_id"));
         }
         CoreChartView coreChartView = coreChartViewMapper.selectById(id);
         CoreChartView record = transDTO2Record(chartViewDTO);

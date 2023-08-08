@@ -9,6 +9,18 @@
     ]"
     @click.stop
   >
+    <template v-if="element.component === 'VQuery'">
+      <span title="添加查询条件">
+        <el-icon class="bar-base-icon" @click="addQueryCriteria">
+          <Icon name="icon_add_outlined"></Icon
+        ></el-icon>
+      </span>
+      <span title="编辑查询条件">
+        <el-icon class="bar-base-icon" @click="editQueryCriteria">
+          <Icon name="icon_edit_outlined"></Icon
+        ></el-icon>
+      </span>
+    </template>
     <span :title="t('visualization.enlarge')" v-if="barShowCheck('enlarge')">
       <el-icon class="bar-base-icon" @click="userViewEnlargeOpen">
         <Icon name="dv-bar-enlarge"></Icon
@@ -71,6 +83,7 @@ import { storeToRefs } from 'pinia'
 import { useI18n } from '@/hooks/web/useI18n'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import eventBus from '@/utils/eventBus'
+import { useEmitt } from '@/hooks/web/useEmitt'
 import LinkageField from '@/components/visualization/LinkageField.vue'
 import { getViewLinkageGather } from '@/api/visualization/linkage'
 import { copyStoreWithOut } from '@/store/modules/data-visualization/copy'
@@ -86,7 +99,7 @@ const emits = defineEmits([
   'linkageSetOpen'
 ])
 const { t } = useI18n()
-
+const { emitter } = useEmitt()
 // bar所在位置可以显示的功能按钮
 const positionBarShow = {
   canvas: ['enlarge', 'setting', 'unLinkage', 'linkageSetting', 'linkJumpSetting'],
@@ -148,16 +161,19 @@ const props = defineProps({
     required: false,
     type: String,
     default: 'canvas'
+  },
+  canvasId: {
+    type: String,
+    default: 'canvas-main'
   }
 })
 
-const { element, active, index, showPosition } = toRefs(props)
+const { element, active, index, showPosition, canvasId } = toRefs(props)
 const {
   pcMatrixCount,
   curComponent,
   componentData,
   canvasStyleData,
-  linkageSettingStatus,
   targetLinkageInfo,
   curLinkageView,
   dvInfo
@@ -182,6 +198,14 @@ const state = reactive({
   batchOptCheckModel: false
 })
 
+const addQueryCriteria = () => {
+  emitter.emit(`addQueryCriteria${element.value.id}`)
+}
+
+const editQueryCriteria = () => {
+  emitter.emit(`editQueryCriteria${element.value.id}`)
+}
+
 const showEditPosition = computed(() => {
   if (showPosition.value === 'canvas') {
     const baseLeft = element.value.x - 1
@@ -199,7 +223,7 @@ const showEditPosition = computed(() => {
 })
 
 const deleteComponent = () => {
-  eventBus.emit('removeMatrixItem', index.value)
+  eventBus.emit('removeMatrixItem-' + canvasId.value, index.value)
   dvMainStore.setCurComponent({ component: null, index: null })
 }
 

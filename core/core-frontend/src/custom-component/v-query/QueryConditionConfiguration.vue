@@ -73,6 +73,17 @@ const handleCheckedFieldsChange = (value: string[]) => {
   const checkedCount = value.length
   checkAll.value = checkedCount === fields.value.length
   isIndeterminate.value = checkedCount > 0 && checkedCount < fields.value.length
+  setType()
+}
+
+const setType = () => {
+  if (curComponent.value.checkedFields?.length) {
+    const [id] = curComponent.value.checkedFields
+    const arr = fields.value.find(ele => ele.componentId === id)
+    const checkId = curComponent.value.checkedFieldsMap?.[id]
+    const field = (arr?.list || []).find(ele => checkId === ele.id)
+    field?.deType !== undefined && (displayType.value = `${field?.deType}`)
+  }
 }
 
 const cancelClick = () => {
@@ -257,6 +268,10 @@ const renameInputBlur = () => {
   activeConditionForRename.id = ''
 }
 
+const emits = defineEmits(['addQueryCriteria'])
+const addQueryCriteria = () => {
+  emits('addQueryCriteria')
+}
 defineExpose({
   init
 })
@@ -276,7 +291,7 @@ defineExpose({
       <div class="query-condition-list">
         <div class="title">
           查询条件
-          <el-icon>
+          <el-icon @click="addQueryCriteria">
             <Icon name="icon_add_outlined"></Icon>
           </el-icon>
         </div>
@@ -340,6 +355,7 @@ defineExpose({
               >
               <span class="dataset ellipsis">{{ field.name }}</span>
               <el-select
+                @change="setType"
                 v-if="curComponent.checkedFields.includes(field.componentId)"
                 v-model="curComponent.checkedFieldsMap[field.componentId]"
                 clearable
@@ -362,8 +378,10 @@ defineExpose({
             <div class="label">展示类型</div>
             <div class="value">
               <el-select v-model="displayType" clearable>
-                <el-option label="Zone one" value="shanghai" />
-                <el-option label="Zone two" value="beijing" />
+                <el-option v-if="displayType === '0'" label="文本下拉" value="0" />
+                <el-option v-if="displayType === '2'" label="数字下拉" value="2" />
+                <el-option v-if="displayType === '3'" label="数字下拉" value="3" />
+                <el-option v-if="displayType === '1'" label="时间" value="1" />
               </el-select>
             </div>
           </div>
@@ -526,6 +544,10 @@ defineExpose({
         display: flex;
         align-items: center;
         justify-content: space-between;
+
+        .ed-icon {
+          cursor: pointer;
+        }
       }
       .list-item_primary {
         border-radius: 0;

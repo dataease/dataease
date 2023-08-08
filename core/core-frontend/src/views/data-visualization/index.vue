@@ -29,12 +29,13 @@ const composeStore = composeStoreWithOut()
 const activeName = ref('attr')
 const { componentData, curComponent, isClickComponent, canvasStyleData, canvasViewInfo, editMode } =
   storeToRefs(dvMainStore)
-const { editor } = storeToRefs(composeStore)
+const { editorMap } = storeToRefs(composeStore)
 const canvasOut = ref(null)
 const dvLayout = ref(null)
 const state = reactive({
   datasetTree: [],
-  scaleHistory: 100
+  scaleHistory: 100,
+  canvasId: 'canvas-main'
 })
 
 const contentStyle = computed(() => {
@@ -72,7 +73,7 @@ const handleDrop = e => {
   e.preventDefault()
   e.stopPropagation()
   const componentInfo = e.dataTransfer.getData('id')
-  const rectInfo = editor.value.getBoundingClientRect()
+  const rectInfo = editorMap.value[state.canvasId].getBoundingClientRect()
   if (componentInfo) {
     const component = findDragComponent(componentInfo)
     component.style.top = e.clientY - rectInfo.y

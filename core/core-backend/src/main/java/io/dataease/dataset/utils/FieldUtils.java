@@ -13,6 +13,7 @@ public class FieldUtils {
             case "MEDIUMTEXT":
             case "LONGTEXT":
             case "ENUM":
+            case "ANY":
                 return 0;// 文本
             case "DATE":
             case "TIME":
