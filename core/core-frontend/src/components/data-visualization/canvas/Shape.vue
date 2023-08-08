@@ -363,6 +363,13 @@ const handleMouseDownOnShape = e => {
     eventBus.emit('unMove')
     document.removeEventListener('mousemove', move)
     document.removeEventListener('mouseup', up)
+
+    //如果当前存在移入的Tab 则将该组件加入到tab中 同时将该组件在主画布中进行删除
+    if (tabMoveInActiveId.value) {
+      eventBus.emit('onTabMoveIn-' + tabMoveInActiveId.value, element.value)
+      dvMainStore.setTabMoveInActiveId(null)
+      dvMainStore.setTabCollisionActiveId(null)
+    }
   }
 
   document.addEventListener('mousemove', move)
