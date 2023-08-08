@@ -79,8 +79,11 @@ public class DatasetDataManage {
         if (StringUtils.equalsIgnoreCase(type, DatasetTableType.DB) || StringUtils.equalsIgnoreCase(type, DatasetTableType.SQL)) {
             CoreDatasource coreDatasource = coreDatasourceMapper.selectById(datasetTableDTO.getDatasourceId());
             DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
+            if (StringUtils.equalsIgnoreCase("excel", coreDatasource.getType()) || StringUtils.equalsIgnoreCase("api", coreDatasource.getType())) {
+                coreDatasource = engineServer.getDeEngine();
+            }
             BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
-            datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasetTableDTO.getDatasourceId()));
+            datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId()));
 
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDsList(Map.of(datasourceSchemaDTO.getId(), datasourceSchemaDTO));
@@ -102,7 +105,7 @@ public class DatasetDataManage {
             CoreDatasource coreDatasource = engineServer.getDeEngine();
             DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
             BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
-            datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, coreDatasource.getId()));
+            datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId()));
 
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDsList(Map.of(datasourceSchemaDTO.getId(), datasourceSchemaDTO));

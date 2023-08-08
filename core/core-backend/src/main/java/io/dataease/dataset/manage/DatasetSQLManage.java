@@ -284,6 +284,9 @@ public class DatasetSQLManage {
         String schemaAlias;
         if (StringUtils.equalsIgnoreCase(ds.getType(), DatasetTableType.DB) || StringUtils.equalsIgnoreCase(ds.getType(), DatasetTableType.SQL)) {
             CoreDatasource coreDatasource = coreDatasourceMapper.selectById(ds.getDatasourceId());
+            if (StringUtils.equalsIgnoreCase("excel", coreDatasource.getType()) || StringUtils.equalsIgnoreCase("api", coreDatasource.getType())) {
+                coreDatasource = engineServer.getDeEngine();
+            }
             schemaAlias = String.format(SQLConstants.SCHEMA, coreDatasource.getId());
             if (!dsMap.containsKey(ds.getDatasourceId())) {
                 DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
