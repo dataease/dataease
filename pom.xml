@@ -9,7 +9,6 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>sdk</module>
-        <module>core</module>
         <module>license-sdk</module>
     </modules>
 
