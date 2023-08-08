@@ -78,13 +78,13 @@ function transSeparatorAndSuffix(value, formatter) {
   return str + formatter.suffix.replace(/(^\s*)|(\s*$)/g, '')
 }
 
-export function singleDimensionTooltipFormatter(param: Datum, chart: Chart) {
+export function singleDimensionTooltipFormatter(param: Datum, chart: Chart, prop = 'category') {
   let res
   const yAxis = chart.yAxis
-  const obj = { name: param.category, value: param.value }
+  const obj = { name: param[prop], value: param.value }
   for (let i = 0; i < yAxis.length; i++) {
     const f = yAxis[i]
-    if (f.name === param.category) {
+    if (f.name === param[prop]) {
       if (f.formatterCfg) {
         res = valueFormatter(param.value, f.formatterCfg)
       } else {

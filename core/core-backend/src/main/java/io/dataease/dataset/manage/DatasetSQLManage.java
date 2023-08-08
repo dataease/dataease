@@ -149,7 +149,7 @@ public class DatasetSQLManage {
                     }
                     String cPrefix = "";
                     if (Objects.equals(currentField.getExtField(), ExtFieldConstant.EXT_NORMAL)) {
-                        pPrefix = "`";
+                        cPrefix = "`";
                     }
                     join.append(parentSQLObj.getTableAlias()).append(".")
                             .append(pPrefix + parentField.getOriginName() + pPrefix)

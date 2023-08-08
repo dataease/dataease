@@ -7,9 +7,7 @@ import Main from './components/Main.vue'
 import { ElContainer } from 'element-plus-secondary'
 import { useRoute } from 'vue-router'
 const route = useRoute()
-const systemMenu = computed(
-  () => route.path.includes('system') || route.path.includes('visualized')
-)
+const systemMenu = computed(() => route.path.includes('system'))
 </script>
 
 <template>
@@ -45,7 +43,7 @@ const systemMenu = computed(
     }
 
     .with-sider {
-      padding: 24px 24px;
+      padding: 10px 24px 24px 24px;
     }
   }
 }

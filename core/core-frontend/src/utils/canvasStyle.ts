@@ -457,5 +457,5 @@ export function isFilterComponent(component) {
 }
 
 export function isTabComponent(component) {
-  return ['de-tabs'].includes(component)
+  return ['DeTabs'].includes(component)
 }

@@ -1,13 +1,11 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
 import { useMoveLine } from '@/hooks/web/useMoveLine'
 import { ElAside } from 'element-plus-secondary'
-const line = ref()
-const { width } = useMoveLine('DATASET', line)
+const { width, node } = useMoveLine('DATASET')
 </script>
 
 <template>
-  <el-aside ref="line" :width="width + 'px'">
+  <el-aside ref="node" :width="width + 'px'">
     <slot />
   </el-aside>
 </template>

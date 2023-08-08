@@ -9,6 +9,7 @@ import CreatDsGroup from './form/CreatDsGroup.vue'
 import type { Tree } from '../dataset/form/CreatDsGroup.vue'
 import { previewData, getById } from '@/api/datasource'
 import { useI18n } from '@/hooks/web/useI18n'
+import { useRouter } from 'vue-router'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import {
   listDatasources,
@@ -50,7 +51,7 @@ export interface Node {
 }
 
 const { t } = useI18n()
-
+const router = useRouter()
 const state = reactive({
   datasourceTree: [] as BusiTreeNode[],
   dsTableData: [],
@@ -61,6 +62,15 @@ const state = reactive({
   },
   filterTable: []
 })
+
+const createDataset = () => {
+  router.push({
+    path: '/dataset-form',
+    query: {
+      datasourceId: nodeInfo.id
+    }
+  })
+}
 
 const dsTableDetail = reactive({
   tableName: '',
@@ -511,7 +521,7 @@ const defaultProps = {
               123
             </el-popover>
             <div class="right-btn">
-              <el-button secondary>
+              <el-button secondary @click="createDataset">
                 <template #icon>
                   <Icon name="icon_dataset_outlined"></Icon>
                 </template>
@@ -658,9 +668,7 @@ const defaultProps = {
                     }}</BaseInfoItem>
                   </el-col>
                   <el-col :span="12">
-                    <BaseInfoItem :label="t('datasource.password')">{{
-                      nodeInfo.configuration.password
-                    }}</BaseInfoItem>
+                    <BaseInfoItem :label="t('datasource.password')">***********</BaseInfoItem>
                   </el-col>
                 </el-row>
                 <el-row>

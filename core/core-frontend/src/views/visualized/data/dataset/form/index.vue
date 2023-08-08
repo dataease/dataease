@@ -285,8 +285,20 @@ const generateColumns = (arr: Field[]) =>
     )
   }))
 
+const dsChange = (val: string) => {
+  sqlNode.datasourceId = dataSource.value
+  getTables(val).then(res => {
+    tableList = res || []
+    state.tableData = [...tableList]
+  })
+}
+
 const initEdite = () => {
-  const { id } = route.query
+  const { id, datasourceId } = route.query
+  if (datasourceId) {
+    dataSource.value = datasourceId as string
+    dsChange(datasourceId as string)
+  }
   if (!id) return
   loading.value = true
   getDatasetDetails(id)
@@ -478,13 +490,6 @@ const getDatasource = () => {
 
 getDatasource()
 
-const dsChange = (val: string) => {
-  sqlNode.datasourceId = dataSource.value
-  getTables(val).then(res => {
-    tableList = res || []
-    state.tableData = [...tableList]
-  })
-}
 const datasetSave = () => {
   if (nameExist.value) return
   if (nodeInfo.id) {
@@ -743,7 +748,6 @@ const treeProps = {
           </div>
           <el-tabs class="padding-24" v-model="tabActive">
             <el-tab-pane :label="$t('deDataset.running_results')" name="preview" />
-            <el-tab-pane :label="$t('dataset.task.record')" name="manage" />
           </el-tabs>
           <div v-if="tabActive === 'preview'" class="table-preview">
             <div class="preview-field">
@@ -1062,6 +1066,7 @@ const treeProps = {
         }
 
         .padding-24 {
+          width: 300px;
           .border-bottom-tab(24px);
         }
 

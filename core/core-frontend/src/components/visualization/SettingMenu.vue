@@ -25,7 +25,7 @@
             >{{ t('visualization.delete') }}
           </el-dropdown-item>
           <el-dropdown-item
-            v-if="curComponent.type === 'de-tabs'"
+            v-if="curComponent.component === 'DeTabs'"
             icon="el-icon-sort"
             @click="openCustomSort"
             >{{ t('chart.sort') }}
@@ -63,7 +63,7 @@
             >{{ t('visualization.carousel') }}
           </el-dropdown-item>
           <el-dropdown-item
-            v-if="'de-tabs' === curComponent.type"
+            v-if="'DeTabs' === curComponent.component"
             icon="el-icon-plus"
             @click="addTab"
             >{{ t('visualization.add_tab') }}
@@ -197,7 +197,7 @@ const state = reactive({
 })
 
 const tabCarouselShow = computed(() => {
-  return curComponent.value.type === 'de-tabs'
+  return curComponent.value.component === 'DeTabs'
 })
 
 const linkJumpSetShow = computed(() => {

@@ -8,7 +8,9 @@ ADD drivers/* /opt/dataease/drivers/
 
 WORKDIR /opt/apps
 
-ADD core/core-backend/target/core-backend-$IMAGE_TAG.jar /opt/apps/app.jar
+#ADD core/core-backend/target/core-backend-$IMAGE_TAG.jar /opt/apps/app.jar
+ADD core/core-backend/target/CoreApplication.jar /opt/apps/app.jar
+ADD de-xpack/xpack-permissions/target/xpack-permissions-$IMAGE_TAG.jar /opt/apps/xpack.jar
 
 ENV JAVA_APP_JAR=/opt/apps/app.jar
 
@@ -16,4 +18,4 @@ HEALTHCHECK --interval=15s --timeout=5s --retries=20 --start-period=30s CMD curl
 
 #CMD ["/deployments/run-java.sh"]
 
-CMD java -jar /opt/apps/app.jar -Xmx512m
+CMD java -Dloader.path=/opt/apps/xpack.jar -jar /opt/apps/app.jar -Xmx1024m

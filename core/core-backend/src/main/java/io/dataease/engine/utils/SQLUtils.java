@@ -8,7 +8,7 @@ public class SQLUtils {
         return value.replaceAll("'", "\\\\'");
     }
 
-    public static String buildOriginPreviewSql(String sql) {
-        return "SELECT * FROM (" + sql + ") tmp LIMIT 100 OFFSET 0";
+    public static String buildOriginPreviewSql(String sql, int limit, int offset) {
+        return "SELECT * FROM (" + sql + ") tmp LIMIT " + limit + " OFFSET " + offset;
     }
 }
