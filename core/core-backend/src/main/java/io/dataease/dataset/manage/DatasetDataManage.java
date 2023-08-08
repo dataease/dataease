@@ -2,6 +2,7 @@ package io.dataease.dataset.manage;
 
 import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.dataset.dto.PreviewSqlDTO;
+import io.dataease.api.dataset.dto.SqlLogDTO;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.union.DatasetTableInfoDTO;
 import io.dataease.api.dataset.union.model.SQLMeta;
@@ -65,6 +66,8 @@ public class DatasetDataManage {
     private DatasetGroupManage datasetGroupManage;
     @Resource
     private PermissionManage permissionManage;
+    @Resource
+    private DatasetTableSqlLogManage datasetTableSqlLogManage;
 
     private static Logger logger = LoggerFactory.getLogger(DatasetDataManage.class);
 
@@ -236,6 +239,32 @@ public class DatasetDataManage {
             return Long.valueOf(dataList.get(0)[0]);
         }
         return 0L;
+    }
+
+    public Map<String, Object> previewSqlWithLog(PreviewSqlDTO dto) {
+        if (dto == null) {
+            return null;
+        }
+        SqlLogDTO sqlLogDTO = new SqlLogDTO();
+        String sql = new String(Base64.getDecoder().decode(dto.getSql()));
+        sqlLogDTO.setSql(sql);
+        Map<String, Object> map = null;
+        try {
+            sqlLogDTO.setStartTime(System.currentTimeMillis());
+            map = previewSql(dto);
+            sqlLogDTO.setEndTime(System.currentTimeMillis());
+            sqlLogDTO.setSpend(sqlLogDTO.getEndTime() - sqlLogDTO.getStartTime());
+            sqlLogDTO.setStatus("Completed");
+        } catch (Exception e) {
+            sqlLogDTO.setStatus("Error");
+            DEException.throwException(e);
+        } finally {
+            if (ObjectUtils.isNotEmpty(dto.getTableId())) {
+                sqlLogDTO.setTableId(dto.getTableId());
+                datasetTableSqlLogManage.save(sqlLogDTO);
+            }
+        }
+        return map;
     }
 
     public Map<String, Object> previewSql(PreviewSqlDTO dto) {
