@@ -77,7 +77,7 @@ const {
   tabCollisionActiveId,
   tabMoveInActiveId
 } = storeToRefs(dvMainStore)
-const { editor } = storeToRefs(composeStore)
+const { editorMap } = storeToRefs(composeStore)
 const emit = defineEmits([
   'userViewEnlargeOpen',
   'onStartResize',
@@ -402,7 +402,7 @@ const handleMouseDownOnPoint = (point, e) => {
   }
 
   // 获取画布位移信息
-  const editorRectInfo = editor.value.getBoundingClientRect()
+  const editorRectInfo = editorMap.value[canvasId.value].getBoundingClientRect()
 
   // 获取 point 与实际拖动基准点的差值
   const pointRect = e.target.getBoundingClientRect()
@@ -451,6 +451,7 @@ const handleMouseDownOnPoint = (point, e) => {
       curPoint,
       symmetricPoint
     })
+    console.log('resize-move-' + JSON.stringify(style))
     dvMainStore.setShapeStyle(style)
     dashboardActive.value && emit('onResizing', moveEvent)
   }
@@ -645,11 +646,8 @@ const dragCollision = computed(() => {
   return active.value && Boolean(tabCollisionActiveId.value)
 })
 
-onBeforeMount(() => {
-  parentNode.value = document.querySelector('#editor-' + canvasId.value)
-})
-
 onMounted(() => {
+  parentNode.value = document.querySelector('#editor-' + canvasId.value)
   // 用于 Group 组件
   if (curComponent.value) {
     cursors.value = getCursor() // 根据旋转角度获取光标位置

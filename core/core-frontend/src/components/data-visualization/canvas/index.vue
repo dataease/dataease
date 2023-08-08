@@ -39,7 +39,7 @@ const contextmenuStore = contextmenuStoreWithOut()
 
 const { componentData, curComponent, canvasStyleData, canvasViewInfo, dvInfo, editMode } =
   storeToRefs(dvMainStore)
-const { editor } = storeToRefs(composeStore)
+const { editorMap } = storeToRefs(composeStore)
 const props = defineProps({
   isEdit: {
     type: Boolean,
@@ -213,7 +213,7 @@ const handleMouseDown = e => {
   }
   hideArea()
   // 获取编辑器的位移信息，每次点击时都需要获取一次。主要是为了方便开发时调试用。
-  const rectInfo = editor.value.getBoundingClientRect()
+  const rectInfo = editorMap.value[canvasId.value].getBoundingClientRect()
   editorX.value = rectInfo.x
   editorY.value = rectInfo.y
 
@@ -1430,7 +1430,7 @@ const linkageSetOpen = item => {
 onMounted(() => {
   initSnapshotTimer()
   // 获取编辑器元素
-  composeStore.getEditor()
+  composeStore.getEditor(canvasId.value)
   eventBus.on('hideArea', hideArea)
   eventBus.on('handleDragStartMoveIn', handleDragStartMoveIn)
   eventBus.on('handleDragEnd', handleDragEnd)

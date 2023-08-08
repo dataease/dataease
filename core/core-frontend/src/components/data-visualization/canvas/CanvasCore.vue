@@ -37,7 +37,7 @@ const composeStore = composeStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
 
 const { curComponent, dvInfo, editMode } = storeToRefs(dvMainStore)
-const { editor } = storeToRefs(composeStore)
+const { editorMap } = storeToRefs(composeStore)
 const props = defineProps({
   isEdit: {
     type: Boolean,
@@ -231,7 +231,7 @@ const handleMouseDown = e => {
   }
   hideArea()
   // 获取编辑器的位移信息，每次点击时都需要获取一次。主要是为了方便开发时调试用。
-  const rectInfo = editor.value.getBoundingClientRect()
+  const rectInfo = editorMap.value[canvasId.value].getBoundingClientRect()
   editorX.value = rectInfo.x
   editorY.value = rectInfo.y
 
@@ -553,6 +553,7 @@ function reCalcCellWidth() {
   let containerWidth = container.value.offsetWidth
   let cells = Math.round(containerWidth / cellWidth.value)
   maxCell.value = cells
+  itemMaxX = maxCell.value
 }
 function resizePlayer(item, newSize) {
   removeItemFromPositionBox(item)
@@ -1218,6 +1219,7 @@ const addItemBox = item => {
 }
 
 const onStartResize = (e, item, index) => {
+  console.log('onStartResize0=')
   // 移动时 换算矩阵和悬浮位置大小
   syncShapeItemStyle(item, cellWidth.value, cellHeight.value)
   if (!resizable.value) return
@@ -1240,6 +1242,7 @@ const onStartResize = (e, item, index) => {
   infoBox.value.oldY = item.y
   infoBox.value.oldSizeX = item.sizex
   infoBox.value.oldSizeY = item.sizey
+  console.log('onStartResize1=' + JSON.stringify(item))
 }
 
 const onStartMove = (e, item, index) => {
@@ -1450,9 +1453,9 @@ const linkageSetOpen = item => {
 onMounted(() => {
   if (isMainCanvas(canvasId.value)) {
     initSnapshotTimer()
-    // 获取编辑器元素
-    composeStore.getEditor()
   }
+  // 获取编辑器元素
+  composeStore.getEditor(canvasId.value)
   eventBus.on('handleDragStartMoveIn-' + canvasId.value, handleDragStartMoveIn)
   eventBus.on('handleDragEnd-' + canvasId.value, handleDragEnd)
   eventBus.on('hideArea-' + canvasId.value, hideArea)
@@ -1512,6 +1515,7 @@ defineExpose({
     <!--页面组件列表展示-->
     <Shape
       v-for="(item, index) in showComponentData"
+      :canvas-id="canvasId"
       :key="item.id"
       :default-style="item.style"
       :style="getShapeItemShowStyle(item)"
