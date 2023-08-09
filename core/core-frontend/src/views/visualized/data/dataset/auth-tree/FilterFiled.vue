@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { ref, inject, computed, watch, onBeforeMount, toRefs } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
-import { cloneDeep } from 'lodash-es'
 import { multFieldValuesForPermissions } from '@/api/dataset'
 import {
   textOptions,
@@ -295,7 +294,7 @@ const emits = defineEmits(['update:item', 'del'])
           </el-dropdown-menu>
         </template>
       </el-dropdown>
-      <div class="white-nowrap" style="position: relative" v-if="item.fieldId">
+      <div class="white-nowrap flex-align-center" style="position: relative" v-if="item.fieldId">
         <span class="filed-title">{{ t('auth.screen_method') }}</span>
         <el-select
           size="small"
@@ -351,6 +350,7 @@ const emits = defineEmits(['update:item', 'del'])
             <el-input-number
               class="w70 mar5"
               size="small"
+              effect="plain"
               v-model="item.value"
               controls-position="right"
             ></el-input-number>
@@ -482,6 +482,10 @@ const emits = defineEmits(['update:item', 'del'])
   justify-content: left;
   position: relative;
   white-space: nowrap;
+  :deep(.ed-input-number.is-controls-right .ed-input__wrapper) {
+    padding-left: 1px !important;
+    padding-right: 1px !important;
+  }
 
   .filed-title {
     word-wrap: break-word;
@@ -516,6 +520,19 @@ const emits = defineEmits(['update:item', 'del'])
 
   .mar5 {
     margin-left: -5px;
+  }
+
+  :deep(.ed-input-number__decrease:not(.is-disabled)),
+  :deep(.ed-input-number__increase:not(.is-disabled)) {
+    &:hover {
+      z-index: 10;
+      &::after {
+        display: block;
+      }
+      & ~ .ed-input:not(.is-disabled) .ed-input__wrapper {
+        box-shadow: 0 0 0 0 #000 inset !important;
+      }
+    }
   }
   :deep(.ed-input-number__decrease),
   :deep(.ed-input-number__increase) {
@@ -568,7 +585,7 @@ const emits = defineEmits(['update:item', 'del'])
 
   .ed-input-number {
     line-height: 26px;
-    height: 27px;
+    height: 26px;
   }
 
   :deep(.ed-select) {
