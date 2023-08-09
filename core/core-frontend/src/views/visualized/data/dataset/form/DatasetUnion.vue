@@ -646,7 +646,6 @@ const drop_handler = ev => {
 }
 
 const setStateBack = (node, parent) => {
-  console.log('node, parent', cloneDeep(node), cloneDeep(parent), cloneDeep(state.nodeList))
   delete parent.children
   delete node.children
   dfsNodeBack([parent, node], [parent.id, node.id], state.nodeList)
