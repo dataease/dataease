@@ -5,8 +5,13 @@
     check-strictly
     :render-after-expand="false"
     :props="props"
+    @visible-change="visibleChange"
+    class="tree-org"
     @change="changeVal"
   />
+  <ElIcon :class="[expand ? 'retract' : 'expand', 'tree-org-icon']">
+    <Icon name="icon_expand-right_filled"></Icon>
+  </ElIcon>
 </template>
 
 <script lang="ts" setup>
@@ -27,6 +32,12 @@ const state = reactive({
 
 const changeVal = val => {
   switchHandler(val)
+}
+
+const expand = ref(false)
+
+const visibleChange = val => {
+  expand.value = val
 }
 
 const switchHandler = (id: number | string) => {
@@ -61,5 +72,39 @@ onMounted(() => {
   color: var(--el-color-primary);
   display: flex;
   align-items: center;
+}
+</style>
+
+<style lang="less" scoped>
+.tree-org-icon {
+  font-size: 12px !important;
+  margin-left: -20px !important;
+}
+.expand {
+  transform: rotate(90deg);
+}
+
+.retract {
+  transform: rotate(-90deg);
+}
+.tree-org {
+  width: 140px;
+  :deep(.ed-input__wrapper),
+  :deep(.ed-input.is-focus .ed-input__wrapper) {
+    background: none;
+    box-shadow: 0 0 0 1px transparent inset !important;
+
+    .ed-input__suffix {
+      display: none;
+    }
+    .ed-input__inner {
+      color: rgba(255, 255, 255, 0.8);
+      font-family: PingFang SC;
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 22px;
+    }
+  }
 }
 </style>
