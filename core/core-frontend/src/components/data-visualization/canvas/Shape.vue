@@ -2,6 +2,7 @@
   <div class="shape" ref="shapeInnerRef" :id="domId">
     <div
       class="shape-outer"
+      v-show="contentDisplay"
       :class="{
         active,
         'shape-edit': isEditMode,
@@ -101,8 +102,10 @@ const state = reactive({
   canvasChangeTips: 'none',
   tabMoveInYOffset: 70,
   tabMoveInXOffset: 40,
-  collisionGap: 10 // 碰撞深度有效区域
+  collisionGap: 10 // 碰撞深度有效区域,
 })
+
+const contentDisplay = ref(true)
 
 const showPosition = computed(() => {
   let position
@@ -325,12 +328,70 @@ const handleMouseDownOnShape = e => {
   // 如果元素没有移动，则不保存快照
   let hasMove = false
   let isFirst = true
+
+  // 画布宽高
+  const canvasWidth = parentNode.value.offsetWidth
+  const canvasHeight = parentNode.value.offsetHeight
+  //当前组件宽高 定位
+  const componentWidth = shapeInnerRef.value.offsetWidth
+  const componentHeight = shapeInnerRef.value.offsetHeight
+  const componentTop = shapeInnerRef.value.offsetTop
+  const componentLeft = shapeInnerRef.value.offsetLeft
   const move = moveEvent => {
     hasMove = true
     const curX = moveEvent.clientX
     const curY = moveEvent.clientY
-    pos['top'] = curY - startY + startTop
-    pos['left'] = curX - startX + startLeft
+    const top = curY - startY + startTop
+    const left = curX - startX + startLeft
+    pos['top'] = top
+    pos['left'] = left
+    console.log(
+      'top-' +
+        top +
+        ';left-' +
+        left +
+        ';canvasWidth=' +
+        canvasWidth +
+        ';canvasHeight=' +
+        canvasHeight +
+        ';componentWidth=' +
+        componentWidth +
+        ';componentHeight=' +
+        componentHeight +
+        ';componentTop=' +
+        componentTop +
+        ';componentLeft=' +
+        componentLeft
+    )
+    // 非主画布的情况 需要检测是否从Tab中移除组件(向左移除30px 或者向右移除30px)
+    if (
+      canvasId.value !== 'canvas-main' &&
+      (left < -30 || left + componentWidth - canvasWidth > 30)
+    ) {
+      console.log(
+        'tab-move-out-' +
+          ';mouseX=' +
+          curX +
+          ';curY=' +
+          curY +
+          ';componentWidth=' +
+          componentWidth +
+          ';componentHeight=' +
+          componentHeight
+      )
+      contentDisplay.value = false
+      dvMainStore.setMousePointShadowMap({
+        mouseX: curX,
+        mouseY: curY,
+        width: componentWidth,
+        height: componentHeight
+      })
+      dvMainStore.setTabMoveOutComponentId(element.value.id)
+    } else {
+      console.log('tab-move-in')
+      dvMainStore.setTabMoveOutComponentId(null)
+      contentDisplay.value = true
+    }
     tabMoveInCheck()
     // 仪表板模式 会造成移动现象 当检测组件正在碰撞有效区内或者移入有效区内 则周边组件不进行移动
     if (
