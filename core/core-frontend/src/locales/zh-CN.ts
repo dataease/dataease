@@ -167,6 +167,14 @@ export default {
     move_resource_first: '先迁移资源'
   },
   auth: {
+    sysParams_type: {
+      user_id: '用户ID',
+      user_name: '用户名',
+      user_source: '用户来源',
+      user_email: '邮箱',
+      dept: '组织',
+      role: '角色'
+    },
     user_dimension: '按用户配置',
     resource_dimension: '按资源管理',
     user: '用户',

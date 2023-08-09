@@ -44,10 +44,8 @@ const deElDropdownMenuFixed = ref()
 const showDel = ref(false)
 const keywords = ref('')
 const activeName = ref('')
-const fieldEnum = ref(fieldEnums)
 const filterFiled = ref('')
 const enumList = ref([])
-const sysParamsIln = ref(sysParamsIlns)
 const showTextArea = ref()
 const keydownCanceled = ref(false)
 const checklist = ref([])
@@ -56,20 +54,8 @@ const textareaValue = ref('')
 
 const { item } = toRefs(props)
 
-const getAuthTargetType = inject(
-  'getAuthTargetType',
-  () => {
-    return ''
-  },
-  false
-)
-const filedList = inject(
-  'filedList',
-  () => {
-    return []
-  },
-  false
-)
+const getAuthTargetType = inject('getAuthTargetType')
+const filedList = inject('filedList')
 
 const checkListWithFilter = computed(() => {
   if (!filterFiled.value) return enumList.value
@@ -79,14 +65,27 @@ const checkResult = computed(() => {
   return checklist.value.join(',')
 })
 const computedWidth = computed(() => {
-  const { term, fieldId, filterType } = props.item
+  const { term, fieldId, filterType } = item.value
   const isNull = ['null', 'empty', 'not_null', 'not_empty'].includes(term) && filterType === 'logic'
   return {
     width: !fieldId ? '270px' : isNull ? '670px' : '750px'
   }
 })
+
+const sysParamsIln = computed(() => {
+  if (['in', 'not in'].includes(item.value.term)) {
+    return [
+      {
+        value: '${sysParams.roles}',
+        label: t('auth.sysParams_type.role')
+      }
+    ]
+  } else {
+    return sysParamsIlns
+  }
+})
 const operators = computed(() => {
-  const { deType } = props.item
+  const { deType } = item.value
   if (authTargetType.value === 'sysParams') {
     return textOptionsForSysParams
   }
@@ -102,31 +101,44 @@ const dimensions = computed(() => {
   if (!keywords.value) return computedFiledList.value
   return computedFiledList.value.filter(ele => ele.name.includes(keywords.value))
 })
-const computedFiledList = computed(() => filedList())
-const authTargetType = computed(() => getAuthTargetType())
+const computedFiledList = computed(() => {
+  return filedList.value || []
+})
 
 watch(checkResult, () => {
   cancelfixValue()
 })
 
+const authTargetType = ref('')
+
+watch(
+  () => getAuthTargetType.authTargetType,
+  value => {
+    if (authTargetType.value === value || !value) return
+    authTargetType.value = value
+  },
+  {
+    immediate: true
+  }
+)
+
 onBeforeMount(() => {
   initNameEnumName()
-  filterListInit(props.item.deType)
-  sysParamsIlnJudge(props.item.term)
+  filterListInit(item.value.deType)
 })
 
 const confirm = () => {
   enumInput.value.$el.click()
 }
 const initNameEnumName = () => {
-  const { name, enumValue, fieldId } = props.item
+  const { name, enumValue, fieldId } = item.value
   const arr = enumValue.trim() ? enumValue.split(',') : []
   if (!name && fieldId) {
     checklist.value = arr
   }
   if (!name && !fieldId) return
   initEnumOptions()
-  activeName.value = props.item.name
+  activeName.value = item.value.name
   checklist.value = arr
 }
 const cancelKeyDow = () => {
@@ -145,7 +157,7 @@ const initEnumOptions = () => {
   if (authTargetType.value === 'sysParams') {
     return
   }
-  const { deType, filterType, fieldId } = props.item
+  const { deType, filterType, fieldId } = item.value
   // 查找枚举值
   if (filterType === 'enum' && [0, 5].includes(deType)) {
     multFieldValuesForPermissions({ fieldIds: [fieldId] }).then(res => {
@@ -153,24 +165,9 @@ const initEnumOptions = () => {
     })
   }
 }
-const sysParamsIlnJudge = term => {
-  if (authTargetType.value !== 'sysParams') {
-    return
-  }
-  if (['in', 'not in'].includes(term)) {
-    sysParamsIln.value = [
-      {
-        value: '${sysParams.roles}',
-        label: t('auth.sysParams_type.role')
-      }
-    ]
-  } else {
-    sysParamsIln.value = sysParamsIln
-  }
-}
-const onOptionsChange = term => {
+
+const onOptionsChange = () => {
   item.value.value = null
-  sysParamsIlnJudge(term)
 }
 const optionData = data => {
   if (!data) return null
@@ -185,9 +182,10 @@ const cancelfixValue = () => {
 const delChecks = idx => {
   checklist.value.splice(idx, 1)
 }
+
 const selectItem = ({ name, id, deType }) => {
   activeName.value = name
-  Object.assign(props.item, {
+  Object.assign(item.value, {
     fieldId: id,
     name,
     deType,
@@ -277,18 +275,20 @@ const emits = defineEmits(['update:item', 'del'])
             </el-input>
             <ul class="dimension">
               <li
-                @click="selectItem(item)"
+                @click="selectItem(ele)"
                 :style="{
-                  backgroundColor: activeName === item.name ? '#f0f7ff' : ''
+                  backgroundColor: activeName === ele.name ? '#f0f7ff' : ''
                 }"
-                :key="item.id"
-                v-for="item in dimensions"
+                :key="ele.id"
+                v-for="ele in dimensions"
               >
-                <svg-icon
-                  :icon-class="`field_${fieldEnum[item.deType]}`"
-                  :class="`field-icon-${fieldEnum[item.deType]}`"
-                />
-                <span>{{ item.name }}</span>
+                <el-icon>
+                  <Icon
+                    :name="`field_${fieldEnums[ele.deType]}`"
+                    :className="`field-icon-${fieldEnums[ele.deType]}`"
+                  ></Icon>
+                </el-icon>
+                <span>{{ ele.name }}</span>
               </li>
             </ul>
           </el-dropdown-menu>
@@ -303,10 +303,10 @@ const emits = defineEmits(['update:item', 'del'])
           :placeholder="t('auth.select')"
         >
           <el-option
-            v-for="item in filterList"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
+            v-for="ele in filterList"
+            :key="ele.value"
+            :label="ele.label"
+            :value="ele.value"
           >
           </el-option>
         </el-select>
@@ -320,27 +320,25 @@ const emits = defineEmits(['update:item', 'del'])
             :placeholder="t('auth.default_method')"
           >
             <el-option
-              v-for="item in operators"
-              :key="item.value"
-              :label="t(item.label)"
-              :value="item.value"
+              v-for="ele in operators"
+              :key="ele.value"
+              :label="t(ele.label)"
+              :value="ele.value"
             >
             </el-option>
           </el-select>
-          <el-select
-            v-if="authTargetType === 'sysParams'"
-            class="w70 mar5"
-            size="small"
-            v-model="item.value"
-          >
-            <el-option
-              v-for="item in sysParamsIln"
-              :key="item.value"
-              :label="t(item.label)"
-              :value="item.value"
-            >
-            </el-option>
-          </el-select>
+
+          <template v-if="authTargetType === 'sysParams'">
+            <el-select class="w70 mar5" size="small" v-model="item.value">
+              <el-option
+                v-for="itx in sysParamsIln"
+                :key="itx.value"
+                :label="t(itx.label)"
+                :value="itx.value"
+              >
+              </el-option>
+            </el-select>
+          </template>
           <template
             v-else-if="
               [2, 3].includes(item.deType) &&
@@ -650,13 +648,10 @@ const emits = defineEmits(['update:item', 'del'])
     padding: 0;
     overflow-y: auto;
     li {
-      font-family: Alibaba-PuHuiTi-Regular, Helvetica Neue, Helvetica, Arial, PingFang SC,
-        Hiragino Sans GB, Microsoft YaHei, sans-serif;
-      font-variant: tabular-nums;
-      font-feature-settings: 'tnum';
       list-style: none;
       box-sizing: border-box;
-      display: block;
+      display: flex;
+      align-items: center;
       white-space: nowrap;
       cursor: pointer;
       transition: color 0.3s cubic-bezier(0.645, 0.045, 0.355, 1),
@@ -673,6 +668,9 @@ const emits = defineEmits(['update:item', 'del'])
       margin: 0;
       padding-left: 16px;
       color: rgba(0, 0, 0, 0.65);
+      .ed-icon {
+        margin-right: 5px;
+      }
     }
     li:hover {
       color: #2e74ff;
