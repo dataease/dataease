@@ -219,8 +219,8 @@ export class PieDonut extends Pie {
     const customAttr = parseJson(chart.customAttr)
     return {
       ...options,
-      radius: customAttr.basicStyle.radius,
-      innerRadius: customAttr.basicStyle.innerRadius
+      radius: customAttr.basicStyle.radius / 100,
+      innerRadius: customAttr.basicStyle.innerRadius / 100
     }
   }
 

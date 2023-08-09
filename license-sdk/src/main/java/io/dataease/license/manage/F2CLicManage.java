@@ -54,8 +54,10 @@ public class F2CLicManage {
             licenseMapper.deleteById(LICID);
             licenseMapper.insert(licensePO);
         });
+        CacheUtils.keyRemove(CacheConstant.LIC_RESULT_CACHE, key);
     }
 
+    @Transactional
     public F2CLicResult updateLicense(String product, String licenseKey) {
         F2CLicResult response = validate(product, licenseKey);
         if (response.getStatus() != F2CLicResult.Status.valid) {
@@ -137,7 +139,7 @@ public class F2CLicManage {
         }
     }
 
-    private static int execCommand(StringBuilder result, List<String> command) throws Exception {
+    private static void execCommand(StringBuilder result, List<String> command) throws Exception {
         ProcessBuilder builder = new ProcessBuilder();
         builder.command(command);
         Process process = builder.start();
@@ -146,9 +148,8 @@ public class F2CLicManage {
         while ((line = bufferedReader.readLine()) != null) {
             result.append(line).append("\n");
         }
-        int exitCode = process.waitFor();
+        process.waitFor();
         command.clear();
-        return exitCode;
     }
 
     @PostConstruct
