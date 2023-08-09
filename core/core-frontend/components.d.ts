@@ -15,7 +15,6 @@ declare module '@vue/runtime-core' {
     BackgroundOverall: typeof import('./src/components/visualization/component-background/BackgroundOverall.vue')['default']
     BackgroundOverallCommon: typeof import('./src/components/visualization/component-background/BackgroundOverallCommon.vue')['default']
     BackgroundOverallComponent: typeof import('./src/components/visualization/component-background/BackgroundOverallComponent.vue')['default']
-    CanvaCore: typeof import('./src/components/data-visualization/canvas/CanvaCore.vue')['default']
     Canvas: typeof import('./src/components/data-visualization/canvas/index.vue')['default']
     CanvasAttr: typeof import('./src/components/data-visualization/CanvasAttr.vue')['default']
     CanvasCore: typeof import('./src/components/data-visualization/canvas/CanvasCore.vue')['default']
