@@ -1,10 +1,11 @@
 package io.dataease.engine.utils;
 
-import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.api.dataset.union.model.SQLObj;
+import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.exception.DEException;
+import io.dataease.i18n.Translator;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
@@ -24,7 +25,7 @@ public class Utils {
         try {
             return buildCalcField(originField, tableObj, originFields);
         } catch (Exception e) {
-            DEException.throwException("Field has Circular Reference");
+            DEException.throwException(Translator.get("i18n_field_circular_ref"));
         }
         return null;
     }
@@ -155,7 +156,7 @@ public class Utils {
             for (DatasetTableFieldDTO ele : fields) {
                 if (StringUtils.containsIgnoreCase(id, ele.getId() + "")) {
                     if (ids.contains(id)) {
-                        DEException.throwException("Field has Circular Reference");
+                        DEException.throwException(Translator.get("i18n_field_circular_ref"));
                     }
                     ids.add(id);
                     if (Objects.equals(ele.getExtField(), ExtFieldConstant.EXT_CALC)) {
@@ -178,7 +179,7 @@ public class Utils {
             for (DatasetTableFieldDTO ele : fields) {
                 if (StringUtils.containsIgnoreCase(id, ele.getId() + "")) {
                     if (ids.contains(id)) {
-                        DEException.throwException("Field has Circular Reference");
+                        DEException.throwException(Translator.get("i18n_field_circular_ref"));
                     }
                     ids.add(id);
                     if (Objects.equals(ele.getExtField(), ExtFieldConstant.EXT_CALC)) {
