@@ -18,6 +18,7 @@ import BackgroundOverallCommon from '@/components/visualization/component-backgr
 import TableHeaderSelector from '@/views/chart/components/editor/editor-style/components/table/TableHeaderSelector.vue'
 import TableCellSelector from '@/views/chart/components/editor/editor-style/components/table/TableCellSelector.vue'
 import TableTotalSelector from '@/views/chart/components/editor/editor-style/components/table/TableTotalSelector.vue'
+import MiscStyleSelector from '@/views/chart/components/editor/editor-style/components/MiscStyleSelector.vue'
 
 const dvMainStore = dvMainStoreWithOut()
 const { curComponent, dvInfo, batchOptStatus } = storeToRefs(dvMainStore)
@@ -79,7 +80,8 @@ const emit = defineEmits([
   'onBackgroundChange',
   'onTableHeaderChange',
   'onTableCellChange',
-  'onTableTotalChange'
+  'onTableTotalChange',
+  'onChangeMiscStyleForm'
 ])
 
 const showProperties = (property: EditorProperty) => properties.value?.includes(property)
@@ -128,6 +130,9 @@ const onTableCellChange = val => {
 }
 const onTableTotalChange = val => {
   emit('onTableTotalChange', val)
+}
+const onChangeMiscStyleForm = val => {
+  emit('onChangeMiscStyleForm', val)
 }
 watch(
   () => props.chart.id,
@@ -270,6 +275,21 @@ watch(
 
       <el-row class="de-collapse-style">
         <el-collapse v-model="state.styleActiveNames" class="style-collapse">
+          <el-collapse-item
+            :effect="themes"
+            v-if="showProperties('misc-style-selector')"
+            name="size"
+            title="杂项设置"
+          >
+            <misc-style-selector
+              :property-inner="propertyInnerAll['misc-style-selector']"
+              :themes="themes"
+              class="attr-selector"
+              :chart="chart"
+              :quota-fields="props.quotaData"
+              @onChangeMiscStyleForm="onChangeMiscStyleForm"
+            />
+          </el-collapse-item>
           <collapse-switch-item
             :themes="themes"
             v-if="showProperties('x-axis-selector')"

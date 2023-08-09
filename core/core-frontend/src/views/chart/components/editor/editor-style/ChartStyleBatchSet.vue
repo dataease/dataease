@@ -23,6 +23,7 @@
       @onTableHeaderChange="onTableHeaderChange"
       @onTableCellChange="onTableCellChange"
       @onTableTotalChange="onTableTotalChange"
+      @onChangeMiscStyleForm="onChangeMiscStyleForm"
     />
     <el-row v-else class="view-selected-message-class">
       <span class="select-view">{{ $t('visualization.select_view') }}</span>
@@ -77,8 +78,8 @@ const onChangeYAxisExtForm = val => {
   batchOptChange('customStyle', 'yAxisExt', val)
 }
 
-const onChangeSplitForm = val => {
-  batchOptChange('customStyle', 'split', val)
+const onChangeMiscStyleForm = val => {
+  batchOptChange('customStyle', 'misc', val)
 }
 const onTextChange = val => {
   batchOptChange('customStyle', 'text', val)
