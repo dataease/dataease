@@ -325,7 +325,7 @@ const initEdite = () => {
 initEdite()
 
 const joinEditor = (arr: []) => {
-  Object.assign(state.editArr, arr)
+  state.editArr = cloneDeep(arr)
   editUnion.value = true
   nextTick(() => {
     fieldUnion.value.initState()
@@ -400,6 +400,7 @@ const closeEditUnion = () => {
 const fieldUnion = ref()
 const confirmEditUnion = () => {
   const { node, parent } = fieldUnion.value
+  console.log(cloneDeep(node), cloneDeep(parent), 'parent')
   setGuid(node.currentDsFields, node.id, node.datasourceId)
   setGuid(parent.currentDsFields, parent.id, parent.datasourceId)
   datasetDrag.value.setStateBack(cloneDeep(node), cloneDeep(parent))

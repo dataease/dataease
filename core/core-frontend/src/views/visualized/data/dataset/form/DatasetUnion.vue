@@ -12,7 +12,7 @@ import type { Node } from './UnionEdit.vue'
 import { getTableField } from '@/api/dataset'
 import type { Field } from './UnionFieldList.vue'
 import type { SqlNode } from './AddSql.vue'
-import _ from 'lodash'
+import { cloneDeep } from 'lodash-es'
 import type { Table } from '@/api/dataset'
 const state = reactive({
   nodeList: [],
@@ -126,7 +126,7 @@ const saveSqlNode = (val: SqlNode, cb) => {
         ;((res as unknown as Field[]) || []).forEach(ele => {
           ele.checked = true
         })
-        state.nodeList[0].currentDsFields = _.cloneDeep(res)
+        state.nodeList[0].currentDsFields = cloneDeep(res)
         cb?.()
         confirmEditUnion()
       })
@@ -205,7 +205,7 @@ const confirmEditUnion = () => {
 const handleCommand = (ele, command) => {
   if (command === 'editerField') {
     getNodeField(ele)
-    currentNode.value = _.cloneDeep(ele)
+    currentNode.value = cloneDeep(ele)
   }
 
   if (command === 'editerSql') {
@@ -600,7 +600,7 @@ const drop_handler = ev => {
       ;((res as unknown as Field[]) || []).forEach(ele => {
         ele.checked = true
       })
-      state.nodeList[0].currentDsFields = _.cloneDeep(res)
+      state.nodeList[0].currentDsFields = cloneDeep(res)
       confirmEditUnion()
     })
     nextTick(() => {
@@ -646,8 +646,9 @@ const drop_handler = ev => {
 }
 
 const setStateBack = (node, parent) => {
-  delete node.children
+  console.log('node, parent', cloneDeep(node), cloneDeep(parent), cloneDeep(state.nodeList))
   delete parent.children
+  delete node.children
   dfsNodeBack([parent, node], [parent.id, node.id], state.nodeList)
   if (state.visualNode) {
     confirm()
