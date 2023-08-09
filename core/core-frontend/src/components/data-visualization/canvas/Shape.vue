@@ -76,7 +76,8 @@ const {
   linkageSettingStatus,
   curLinkageView,
   tabCollisionActiveId,
-  tabMoveInActiveId
+  tabMoveInActiveId,
+  tabMoveOutComponentId
 } = storeToRefs(dvMainStore)
 const { editorMap } = storeToRefs(composeStore)
 const emit = defineEmits([
@@ -331,12 +332,9 @@ const handleMouseDownOnShape = e => {
 
   // 画布宽高
   const canvasWidth = parentNode.value.offsetWidth
-  const canvasHeight = parentNode.value.offsetHeight
   //当前组件宽高 定位
   const componentWidth = shapeInnerRef.value.offsetWidth
   const componentHeight = shapeInnerRef.value.offsetHeight
-  const componentTop = shapeInnerRef.value.offsetTop
-  const componentLeft = shapeInnerRef.value.offsetLeft
   const move = moveEvent => {
     hasMove = true
     const curX = moveEvent.clientX
@@ -345,40 +343,11 @@ const handleMouseDownOnShape = e => {
     const left = curX - startX + startLeft
     pos['top'] = top
     pos['left'] = left
-    console.log(
-      'top-' +
-        top +
-        ';left-' +
-        left +
-        ';canvasWidth=' +
-        canvasWidth +
-        ';canvasHeight=' +
-        canvasHeight +
-        ';componentWidth=' +
-        componentWidth +
-        ';componentHeight=' +
-        componentHeight +
-        ';componentTop=' +
-        componentTop +
-        ';componentLeft=' +
-        componentLeft
-    )
     // 非主画布的情况 需要检测是否从Tab中移除组件(向左移除30px 或者向右移除30px)
     if (
       canvasId.value !== 'canvas-main' &&
       (left < -30 || left + componentWidth - canvasWidth > 30)
     ) {
-      console.log(
-        'tab-move-out-' +
-          ';mouseX=' +
-          curX +
-          ';curY=' +
-          curY +
-          ';componentWidth=' +
-          componentWidth +
-          ';componentHeight=' +
-          componentHeight
-      )
       contentDisplay.value = false
       dvMainStore.setMousePointShadowMap({
         mouseX: curX,
@@ -386,7 +355,8 @@ const handleMouseDownOnShape = e => {
         width: componentWidth,
         height: componentHeight
       })
-      dvMainStore.setTabMoveOutComponentId(element.value.id)
+      const tabComponentId = element.value.canvasId.split('--')[0]
+      dvMainStore.setTabMoveOutComponentId(tabComponentId)
     } else {
       console.log('tab-move-in')
       dvMainStore.setTabMoveOutComponentId(null)
@@ -430,6 +400,12 @@ const handleMouseDownOnShape = e => {
       eventBus.emit('onTabMoveIn-' + tabMoveInActiveId.value, element.value)
       dvMainStore.setTabMoveInActiveId(null)
       dvMainStore.setTabCollisionActiveId(null)
+    }
+
+    //如果当前存在移出的Tab 则将该组件加入到主画布中 同时将该组件在tab画布中进行删除
+    if (tabMoveOutComponentId.value) {
+      eventBus.emit('onTabMoveOut-' + tabMoveOutComponentId.value, element.value)
+      dvMainStore.setTabMoveOutComponentId(null)
     }
   }
 

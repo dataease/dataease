@@ -1452,7 +1452,7 @@ onMounted(() => {
   eventBus.on('hideArea', hideArea)
   eventBus.on('handleDragStartMoveIn', handleDragStartMoveIn)
   eventBus.on('handleDragEnd', handleDragEnd)
-  eventBus.on('removeMatrixItem-canvas-main', removeItem)
+  eventBus.on('removeMatrixItem-' + canvasId.value, removeItem)
   eventBus.on('addDashboardItem', addItemBox)
   eventBus.on('snapshotChange', canvasInit)
 })

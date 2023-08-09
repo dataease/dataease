@@ -127,22 +127,28 @@ const showLine = (isDownward, isRightward) => {
 
     const needToShow = []
     const { rotate } = curComponent.value.style
-    Object.keys(conditions).forEach(key => {
-      // 遍历符合的条件并处理
-      conditions[key].forEach(condition => {
-        if (!condition.isNearly) return
-        // 修改当前组件位移
-        dvMainStore.setShapeSingleStyle({
-          key,
-          value:
-            rotate != 0
-              ? translateCurComponentShift(key, condition, curComponentStyle)
-              : condition.dragShift
-        })
-        condition.lineNode.style[key] = `${condition.lineShift}px`
-        needToShow.push(condition.line)
+    if (conditions) {
+      Object.keys(conditions).forEach(key => {
+        // 遍历符合的条件并处理
+        if (conditions[key]) {
+          conditions[key].forEach(condition => {
+            if (!condition.isNearly) return
+            // 修改当前组件位移
+            dvMainStore.setShapeSingleStyle({
+              key,
+              value:
+                rotate != 0
+                  ? translateCurComponentShift(key, condition, curComponentStyle)
+                  : condition.dragShift
+            })
+            if (condition.lineNode) {
+              condition.lineNode.style[key] = `${condition.lineShift}px`
+            }
+            needToShow.push(condition.line)
+          })
+        }
       })
-    })
+    }
 
     // 同一方向上同时显示三条线可能不太美观，因此才有了这个解决方案
     // 同一方向上的线只显示一条，例如多条横条只显示一条横线

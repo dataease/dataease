@@ -164,6 +164,10 @@ const addItemBox = component => {
   cyGridster.value.addItemBox(component)
 }
 
+const moveOutFromTab = component => {
+  addItemBox(component)
+}
+
 // 全局监听按键事件
 onMounted(() => {
   window.addEventListener('resize', canvasSizeInit)
@@ -174,7 +178,7 @@ onMounted(() => {
   canvasInit()
 })
 eventBus.on('handleNew', handleNew)
-
+eventBus.on('moveOutFromTab-' + canvasId.value, moveOutFromTab)
 defineExpose({
   addItemBox
 })
