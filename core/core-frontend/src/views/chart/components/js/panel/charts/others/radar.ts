@@ -119,7 +119,7 @@ export class Radar extends G2PlotChartView<RadarOptions, G2Radar> {
       tickLine: null,
       grid: {
         line: {
-          type: 'line',
+          type: basicStyle.radarShape,
           style: {
             stroke: misc.axisColor
           }

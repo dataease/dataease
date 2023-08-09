@@ -9,6 +9,7 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import ViewTrackBar from '@/components/visualization/ViewTrackBar.vue'
 import { storeToRefs } from 'pinia'
 import { getGeoJsonFile, parseJson } from '@/views/chart/components/js/util'
+import { debounce } from 'lodash-es'
 const dvMainStore = dvMainStoreWithOut()
 const { nowPanelTrackInfo, nowPanelJumpInfo } = storeToRefs(dvMainStore)
 
@@ -49,7 +50,6 @@ const state = reactive({
   loading: false,
   data: { fields: [] } // 图表数据
 })
-let mapObj = null
 
 const containerId = 'container-' + showPosition.value + '-' + view.value.id
 const viewTrack = ref(null)
@@ -80,7 +80,7 @@ const renderChart = async view => {
   const chartView = chartViewManager.getChartView(view.render, view.type)
   switch (chartView.library) {
     case ChartLibraryType.L7_PLOT:
-      await renderL7Plot(chart, chartView as L7PlotChartView<any, any>)
+      renderL7Plot(chart, chartView as L7PlotChartView<any, any>)
       break
     case ChartLibraryType.G2_PLOT:
       renderG2Plot(chart, chartView as G2PlotChartView<any, any>)
@@ -102,19 +102,22 @@ const renderG2Plot = (chart, chartView: G2PlotChartView<any, any>) => {
   state.myChart?.render()
 }
 
-const renderL7Plot = async (chart, chartView: L7PlotChartView<any, any>) => {
+const renderL7Plot = (chart, chartView: L7PlotChartView<any, any>) => {
   const map = parseJson(chart.customAttr).map
   let areaId = map.id
   if (dynamicAreaId.value) {
     areaId = dynamicAreaId.value
   }
-  mapObj = await chartView.drawChart({
-    chartObj: mapObj,
-    container: containerId,
-    chart,
-    areaId,
-    action
-  })
+  debounce(async () => {
+    state.myChart?.destroy()
+    state.myChart = await chartView.drawChart({
+      chartObj: state.myChart,
+      container: containerId,
+      chart,
+      areaId,
+      action
+    })
+  }, 0)()
 }
 
 const action = param => {
