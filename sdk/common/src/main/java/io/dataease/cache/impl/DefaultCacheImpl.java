@@ -27,7 +27,6 @@ public class DefaultCacheImpl implements DECacheService {
     private org.springframework.cache.CacheManager jcacheManager;
 
 
-
     @Override
     public void put(String cacheName, String key, Object value, Long expTime, TimeUnit unit) {
         Cache<String, Object> cache = null;
@@ -40,7 +39,10 @@ public class DefaultCacheImpl implements DECacheService {
             }
 
         }
-        cache.put(key, value);
+        if (ObjectUtils.isNotEmpty(cache)) {
+            cache.put(key, value);
+        }
+
     }
 
     @Override

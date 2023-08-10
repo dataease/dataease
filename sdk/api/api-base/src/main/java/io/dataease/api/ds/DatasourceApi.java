@@ -83,4 +83,8 @@ public interface DatasourceApi {
 
     @PostMapping("/previewData")
     Map<String, Object> previewDataWithLimit(@RequestBody Map<String, Object> req) throws Exception;
+
+    @PostMapping("/latestUse")
+    public List<String> latestUse();
+
 }

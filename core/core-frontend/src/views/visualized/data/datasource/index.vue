@@ -83,6 +83,7 @@ const userDrawer = ref(false)
 const rawDatasourceList = ref([])
 const showPriority = ref(false)
 const datasourceEditor = ref()
+const activeTab = ref('')
 const menuList = [
   {
     label: '移动到',
@@ -162,7 +163,7 @@ const handleLoadExcel = data => {
   previewData(data)
     .then(res => {
       columns.value = generateColumns((res?.data?.fields as Field[]) || [])
-      tableData.value = (res?.data?.data as Array<{}>) || []
+      tabData.value = (res?.data?.data as Array<{}>) || []
     })
     .finally(() => {
       dataPreviewLoading.value = false
@@ -188,6 +189,7 @@ const getDsIconName = data => {
 }
 
 const handleTabClick = tab => {
+  activeTab.value = tab.value
   handleLoadExcel({ table: tab.value, id: nodeInfo.id })
 }
 
@@ -314,6 +316,7 @@ const buildTree = array => {
 const creatDsFolder = ref()
 
 const tableData = shallowRef([])
+const tabData = shallowRef([])
 const handleNodeClick = data => {
   if (!data.leaf) return
   getById(data.id).then(res => {
@@ -428,7 +431,6 @@ const operation = (cmd: string, data: Tree, nodeType: string) => {
     creatDsFolder.value.createInit(nodeType, data, cmd)
   }
 }
-const activeTab = ref('')
 
 const handleClick = (tabName: TabPaneName) => {
   switch (tabName) {
@@ -832,7 +834,7 @@ const defaultProps = {
                         :columns="columns"
                         v-loading="dataPreviewLoading"
                         header-class="excel-header-cell"
-                        :data="tableData"
+                        :data="tabData"
                         :width="width"
                         :height="height"
                         fixed

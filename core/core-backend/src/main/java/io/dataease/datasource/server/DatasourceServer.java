@@ -32,6 +32,7 @@ import io.dataease.exception.DEException;
 import io.dataease.i18n.Translator;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
+import io.dataease.utils.AuthUtils;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
 import io.dataease.utils.JsonUtil;
@@ -109,7 +110,6 @@ public class DatasourceServer implements DatasourceApi {
                     editor.setId(dataSourceDTO.getId());
                     editor.setFlag(RESOURCE_FLAG);
                     editor.setName(dataSourceDTO.getName());
-                    editor.setPid(dataSourceDTO.getPid());
                     interactiveAuthApi.editResource(editor);
                 }
 
@@ -172,6 +172,7 @@ public class DatasourceServer implements DatasourceApi {
         } catch (Exception ignore) {
         }
         coreDatasource.setTaskStatus(TaskStatus.WaitingForExecution.name());
+        coreDatasource.setCreateBy(AuthUtils.getUser().getUserId().toString());
         datasourceMapper.insert(coreDatasource);
 
         if (dataSourceDTO.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name())) {
@@ -300,7 +301,6 @@ public class DatasourceServer implements DatasourceApi {
             editor.setId(pk);
             editor.setFlag(RESOURCE_FLAG);
             editor.setName(dataSourceDTO.getName());
-            editor.setPid(sourceData.getPid());
             interactiveAuthApi.editResource(editor);
         }
         calciteProvider.update(dataSourceDTO);
@@ -575,7 +575,7 @@ public class DatasourceServer implements DatasourceApi {
         }
         for (ExcelSheetData sheet : excelFileData.getSheets()) {
             for (int i = 0; i < sheet.getFields().size() -1 ; i++) {
-                for (int j = 1; j < sheet.getFields().size()  ; j++) {
+                for (int j = i + 1; j < sheet.getFields().size()  ; j++) {
                     if(sheet.getFields().get(i).getName().equalsIgnoreCase(sheet.getFields().get(j).getName())){
                         DEException.throwException(sheet.getExcelLabel() + Translator.get("i18n_field_name_repeat") + sheet.getFields().get(i).getName());
                     }
@@ -657,4 +657,21 @@ public class DatasourceServer implements DatasourceApi {
         return datasetDataManage.previewSql(previewSqlDTO);
     }
 
+    @Override
+    public List<String> latestUse(){
+        List<String> types = new ArrayList<>();
+        QueryWrapper<CoreDatasource> queryWrapper = new QueryWrapper();
+        queryWrapper.eq("create_by", AuthUtils.getUser().getUserId());
+        queryWrapper.ge("create_time", System.currentTimeMillis() - 24 * 60 * 1000);
+        List<CoreDatasource> coreDatasources = datasourceMapper.selectList(queryWrapper);
+        if(CollectionUtils.isEmpty(coreDatasources)){
+            return types;
+        }
+        for (CoreDatasource coreDatasource : coreDatasources) {
+            if(!coreDatasource.getType().equalsIgnoreCase("folder") && !types.contains(coreDatasource.getType())){
+                types.add(coreDatasource.getType());
+            }
+        }
+        return types;
+    }
 }
