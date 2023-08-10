@@ -101,6 +101,10 @@
         <key-type>java.lang.String</key-type>
         <value-type>io.dataease.api.map.vo.AreaNode</value-type>
     </cache>
+    <cache alias="login_user_pwd" uses-template="common-cache">
+        <key-type>java.lang.String</key-type>
+        <value-type>java.lang.String</value-type>
+    </cache>
 
     <cache alias="user_token_cache">
         <key-type>java.lang.String</key-type>

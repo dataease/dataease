@@ -104,7 +104,6 @@ public class DatasetGroupManage {
                 editor.setId(coreDatasetGroup.getId());
                 editor.setName(coreDatasetGroup.getName());
                 editor.setFlag(leafType);
-                editor.setPid(coreDatasetGroup.getPid());
                 interactiveAuthApi.editResource(editor);
             }
         }
