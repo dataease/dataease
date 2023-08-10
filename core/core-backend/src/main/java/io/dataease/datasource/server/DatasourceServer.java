@@ -577,7 +577,7 @@ public class DatasourceServer implements DatasourceApi {
         }
         for (ExcelSheetData sheet : excelFileData.getSheets()) {
             for (int i = 0; i < sheet.getFields().size() -1 ; i++) {
-                for (int j = 1; j < sheet.getFields().size()  ; j++) {
+                for (int j = i + 1; j < sheet.getFields().size()  ; j++) {
                     if(sheet.getFields().get(i).getName().equalsIgnoreCase(sheet.getFields().get(j).getName())){
                         DEException.throwException(sheet.getExcelLabel() + Translator.get("i18n_field_name_repeat") + sheet.getFields().get(i).getName());
                     }
