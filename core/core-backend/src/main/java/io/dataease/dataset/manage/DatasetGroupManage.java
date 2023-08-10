@@ -10,6 +10,7 @@ import io.dataease.api.dataset.vo.DataSetBarVO;
 import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
 import io.dataease.api.permissions.auth.dto.BusiResourceCreator;
 import io.dataease.api.permissions.auth.dto.BusiResourceEditor;
+import io.dataease.api.permissions.auth.dto.BusiResourceMover;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetGroup;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupMapper;
 import io.dataease.dataset.dao.ext.mapper.CoreDataSetExtMapper;
@@ -122,7 +123,8 @@ public class DatasetGroupManage {
         return datasetGroupInfoDTO;
     }
 
-    public DatasetGroupInfoDTO move(DatasetGroupInfoDTO datasetGroupInfoDTO) throws Exception {
+    @Transactional
+    public DatasetGroupInfoDTO move(DatasetGroupInfoDTO datasetGroupInfoDTO) {
         checkName(datasetGroupInfoDTO);
         // save dataset/group
         long time = System.currentTimeMillis();
@@ -134,14 +136,11 @@ public class DatasetGroupManage {
         BeanUtils.copyBean(coreDatasetGroup, datasetGroupInfoDTO);
         coreDatasetGroup.setLastUpdateTime(time);
         coreDatasetGroupMapper.updateById(coreDatasetGroup);
-        if (ObjectUtils.isNotEmpty(interactiveAuthApi) && ObjectUtils.isNotEmpty(sourceData) && (!StringUtils.equals(sourceData.getName(), coreDatasetGroup.getName()) || !sourceData.getPid().equals(coreDatasetGroup.getPid()
-        ))) {
-            BusiResourceEditor editor = new BusiResourceEditor();
-            editor.setId(coreDatasetGroup.getId());
-            editor.setName(coreDatasetGroup.getName());
-            editor.setFlag(leafType);
-            editor.setPid(coreDatasetGroup.getPid());
-            interactiveAuthApi.editResource(editor);
+        if (ObjectUtils.isNotEmpty(interactiveAuthApi) && ObjectUtils.isNotEmpty(sourceData)) {
+            BusiResourceMover mover = new BusiResourceMover();
+            mover.setId(sourceData.getId());
+            mover.setPid(coreDatasetGroup.getPid());
+            interactiveAuthApi.moveResource(mover);
         }
         return datasetGroupInfoDTO;
     }
