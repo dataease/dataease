@@ -9,9 +9,16 @@ import CreatDsGroup from './form/CreatDsGroup.vue'
 import type { BusiTreeNode, BusiTreeRequest } from '@/models/tree/TreeNode'
 import { getDatasetTree, delDatasetTree, getDatasetPreview, barInfoApi } from '@/api/dataset'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
+import DeResourceGroupOpt from '@/views/common/DeResourceGroupOpt.vue'
 import DatasetDetail from './DatasetDetail.vue'
 import RowPermissions from './RowPermissions.vue'
+import { guid } from '@/views/visualized/data/dataset/form/util.js'
+import { save } from '@/api/visualization/dataVisualization'
 import ColumnPermissions from './ColumnPermissions.vue'
+import {
+  DEFAULT_CANVAS_STYLE_DATA_DARK,
+  DEFAULT_CANVAS_STYLE_DATA_LIGHT
+} from '@/views/chart/components/editor/util/dataVisualiztion'
 import type { TabPaneName } from 'element-plus-secondary'
 import { timestampFormatDate } from './form/util.js'
 interface Field {
@@ -43,8 +50,55 @@ const fieldType = (deType: number) => {
   return fieldMap[deType]
 }
 
+const resourceGroupOpt = ref()
+const curCanvasType = ref('')
+
 const createPanel = path => {
-  console.log('path', path)
+  curCanvasType.value = path
+  addOperation('newLeaf', null, 'leaf', true)
+}
+
+const addOperation = (
+  cmd: string,
+  data?: BusiTreeNode,
+  nodeType?: string,
+  parentSelect?: boolean
+) => {
+  resourceGroupOpt.value.optInit(nodeType, data || {}, cmd, parentSelect)
+}
+
+const resourceOptFinish = param => {
+  if (param && param.opt === 'newLeaf') {
+    resourceCreate(param.pid, param.name)
+  }
+}
+
+const resourceCreate = (pid, name) => {
+  // 新建基础信息
+  const newResourceId = guid()
+  const bashResourceInfo = {
+    id: newResourceId,
+    name: name,
+    pid: pid,
+    type: curCanvasType.value,
+    status: 1,
+    selfWatermarkStatus: 0
+  }
+  const canvasStyleDataNew =
+    curCanvasType.value === 'dashboard'
+      ? DEFAULT_CANVAS_STYLE_DATA_LIGHT
+      : DEFAULT_CANVAS_STYLE_DATA_DARK
+  const canvasInfo = {
+    canvasStyleData: JSON.stringify(canvasStyleDataNew),
+    componentData: JSON.stringify([]),
+    canvasViewInfo: {},
+    ...bashResourceInfo
+  }
+  save(canvasInfo).then(() => {
+    const baseUrl =
+      curCanvasType.value === 'dataV' ? '#/dvCanvas/?dvId=' : '#/dashboard/?resourceId='
+    window.open(baseUrl + newResourceId, '_blank')
+  })
 }
 
 const creatDsFolder = ref()
@@ -397,7 +451,7 @@ const filterNode = (value: string, data: BusiTreeNode) => {
                 </template>
                 新建仪表板
               </el-button>
-              <el-button secondary @click="createPanel('dashboard')">
+              <el-button secondary @click="createPanel('dataV')">
                 <template #icon> <Icon name="icon_operation-analysis_outlined"></Icon> </template
                 >新建数据大屏
               </el-button>
@@ -456,6 +510,11 @@ const filterNode = (value: string, data: BusiTreeNode) => {
         <empty-background description="请在左侧选择数据集" img-type="select" />
       </template>
     </div>
+    <de-resource-group-opt
+      :cur-canvas-type="curCanvasType"
+      @finish="resourceOptFinish"
+      ref="resourceGroupOpt"
+    ></de-resource-group-opt>
     <creat-ds-group @finish="getData()" ref="creatDsFolder"></creat-ds-group>
   </div>
 </template>

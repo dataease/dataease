@@ -50,7 +50,7 @@ export function commonHandleDragStart(e, dvModel) {
   const componentInfo = e.target.dataset.id
   if (dvModel === 'dashboard') {
     // 仪表板使用组件消息传输方式
-    eventBus.emit('handleDragStartMoveIn', componentInfo)
+    eventBus.emit('handleDragStartMoveIn-canvas-main', componentInfo)
   } else {
     // 大屏使用组件消息传输方式
     e.dataTransfer.setData('id', componentInfo)
@@ -59,7 +59,7 @@ export function commonHandleDragStart(e, dvModel) {
 export function commonHandleDragEnd(e, dvModel) {
   if (dvModel === 'dashboard') {
     // 仪表板结束消息传输方式(用来清理未移入的组件)
-    eventBus.emit('handleDragEnd', e)
+    eventBus.emit('handleDragEnd-canvas-main', e)
   }
 }
 
@@ -167,4 +167,24 @@ export function findComponentIndexById(componentId, componentDataMatch = compone
     }
   })
   return indexResult
+}
+
+export function canvasChangeAdaptor(component, matrixBase, usePointShadow = false) {
+  const targetDomComponent = document.querySelector(
+    usePointShadow ? '#point-shadow-main' : '#component' + component.id
+  )
+  const componentWidth = targetDomComponent.offsetWidth
+  const componentHeight = targetDomComponent.offsetHeight
+  component.sizeX = Math.floor(componentWidth / matrixBase.baseWidth)
+  component.sizeY = Math.floor(componentHeight / matrixBase.baseHeight)
+  component.style.width = componentWidth
+  component.style.height = componentHeight
+  if (usePointShadow) {
+    const componentLeft = targetDomComponent.offsetLeft
+    const componentTop = targetDomComponent.offsetTop
+    component.x = Math.floor(componentLeft / matrixBase.baseWidth) + 1
+    component.y = Math.floor(componentTop / matrixBase.baseHeight) + 1
+    component.style.left = componentLeft
+    component.style.height = componentTop
+  }
 }

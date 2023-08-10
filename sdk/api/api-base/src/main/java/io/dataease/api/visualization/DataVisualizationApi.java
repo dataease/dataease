@@ -33,6 +33,9 @@ public interface DataVisualizationApi {
     @PostMapping("/savaOrUpdateBase")
     void savaOrUpdateBase(@RequestBody DataVisualizationBaseRequest request);
 
+    @PostMapping("/move")
+    void move(@RequestBody DataVisualizationBaseRequest request);
+
     @PostMapping("/nameCheck")
     void nameCheck(@RequestBody DataVisualizationBaseRequest request);
 

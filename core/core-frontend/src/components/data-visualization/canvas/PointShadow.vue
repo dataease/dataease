@@ -1,5 +1,5 @@
 <template>
-  <div class="point-shadow" :style="styleInfo">
+  <div class="point-shadow" id="point-shadow-main" :style="styleInfo">
     <div class="point-shadow-content">
       <div id="point-shadow-component" class="point-shadow-component" />
       <div class="point-shadow-tips" :style="tipsStyleInfo">

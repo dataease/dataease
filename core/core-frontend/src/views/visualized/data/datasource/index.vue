@@ -26,7 +26,7 @@ import SheetTabs from './SheetTabs.vue'
 import BaseInfoItem from './BaseInfoItem.vue'
 import BaseInfoContent from './BaseInfoContent.vue'
 import type { BusiTreeNode, BusiTreeRequest } from '@/models/tree/TreeNode'
-
+import { cloneDeep } from 'lodash-es'
 interface Field {
   fieldShortName: string
   name: string
@@ -83,6 +83,7 @@ const userDrawer = ref(false)
 const rawDatasourceList = ref([])
 const showPriority = ref(false)
 const datasourceEditor = ref()
+const activeTab = ref('')
 const menuList = [
   {
     label: '移动到',
@@ -162,7 +163,7 @@ const handleLoadExcel = data => {
   previewData(data)
     .then(res => {
       columns.value = generateColumns((res?.data?.fields as Field[]) || [])
-      tableData.value = (res?.data?.data as Array<{}>) || []
+      tabData.value = (res?.data?.data as Array<{}>) || []
     })
     .finally(() => {
       dataPreviewLoading.value = false
@@ -205,7 +206,8 @@ const pagingTable = computed(() => {
   const { currentPage, pageSize } = state.paginationConfig
   return state.filterTable.slice((currentPage - 1) * pageSize, currentPage * pageSize)
 })
-const nodeInfo = reactive<Node>({
+
+const defaultInfo = {
   name: '',
   createBy: '',
   description: '',
@@ -217,7 +219,8 @@ const nodeInfo = reactive<Node>({
   configuration: null,
   syncSetting: null,
   apiConfiguration: []
-})
+}
+const nodeInfo = reactive<Node>(cloneDeep(defaultInfo))
 
 const saveDsFolder = (params, successCb, finallyCb, cmd) => {
   save(params)
@@ -250,15 +253,19 @@ const listDs = () => {
     state.datasourceTree = array
   }) */
   const request = { busiFlag: 'datasource' } as BusiTreeRequest
-  listDatasources(request).then(res => {
-    const nodeData = (res as unknown as BusiTreeNode[]) || []
-    if (nodeData.length && nodeData[0]['id'] === '0' && nodeData[0]['name'] === 'root') {
-      rootManage.value = nodeData[0]['weight'] >= 3
-      state.datasourceTree = nodeData[0]['children'] || []
-      return
-    }
-    state.datasourceTree = nodeData
-  })
+  listDatasources(request)
+    .then(res => {
+      const nodeData = (res as unknown as BusiTreeNode[]) || []
+      if (nodeData.length && nodeData[0]['id'] === '0' && nodeData[0]['name'] === 'root') {
+        rootManage.value = nodeData[0]['weight'] >= 3
+        state.datasourceTree = nodeData[0]['children'] || []
+        return
+      }
+      state.datasourceTree = nodeData
+    })
+    .finally(() => {
+      updateTreeExpand()
+    })
 }
 
 const convertConfig = array => {
@@ -308,6 +315,7 @@ const buildTree = array => {
 const creatDsFolder = ref()
 
 const tableData = shallowRef([])
+const tabData = shallowRef([])
 const handleNodeClick = data => {
   if (!data.leaf) return
   getById(data.id).then(res => {
@@ -341,6 +349,7 @@ const handleNodeClick = data => {
       syncSetting,
       apiConfigurationStr
     })
+    activeTab.value = ''
     activeName.value = 'config'
     handleCurrentChange(1)
     handleClick(activeName.value)
@@ -351,6 +360,25 @@ const handleNodeClick = data => {
 }
 const createDatasource = (data?: Tree) => {
   datasourceEditor.value.init(null, data?.id)
+}
+
+const dsListTree = ref()
+const expandedKey = ref([])
+const dsListTreeShow = ref(true)
+
+const updateTreeExpand = () => {
+  dsListTreeShow.value = false
+  nextTick(() => {
+    dsListTreeShow.value = true
+  })
+}
+
+const nodeExpand = data => {
+  expandedKey.value.push(data.id)
+}
+
+const nodeCollapse = data => {
+  expandedKey.value = expandedKey.value.filter(ele => ele !== data.id)
 }
 
 const editDatasource = (editType?: number) => {
@@ -388,6 +416,9 @@ const operation = (cmd: string, data: Tree, nodeType: string) => {
         callback: (action: Action) => {
           if (action === 'confirm') {
             deleteById(data.id as number).then(() => {
+              if (data.id === nodeInfo.id) {
+                Object.assign(nodeInfo, cloneDeep(defaultInfo))
+              }
               listDs()
               ElMessage.success(t('dataset.delete_success'))
             })
@@ -399,6 +430,7 @@ const operation = (cmd: string, data: Tree, nodeType: string) => {
     creatDsFolder.value.createInit(nodeType, data, cmd)
   }
 }
+
 const handleClick = (tabName: TabPaneName) => {
   switch (tabName) {
     case 'config':
@@ -410,6 +442,10 @@ const handleClick = (tabName: TabPaneName) => {
             label: tableName
           }
         })
+        if (!!tabList.value.length && !activeTab.value) {
+          activeTab.value = tabList.value[0].value
+          handleTabClick(activeTab)
+        }
         tableData.value = res.data
       })
       break
@@ -419,6 +455,9 @@ const handleClick = (tabName: TabPaneName) => {
     default:
       break
   }
+}
+const refresh = () => {
+  listDs()
 }
 const activeName = ref('table')
 const defaultProps = {
@@ -465,6 +504,12 @@ const defaultProps = {
       <el-tree
         :expand-on-click-node="false"
         menu
+        v-if="dsListTreeShow"
+        ref="dsListTree"
+        node-key="id"
+        @node-expand="nodeExpand"
+        @node-collapse="nodeCollapse"
+        :default-expanded-keys="expandedKey"
         :data="state.datasourceTree"
         :props="defaultProps"
         @node-click="handleNodeClick"
@@ -595,7 +640,7 @@ const defaultProps = {
               >
                 <template #default="scope">
                   <el-tooltip effect="dark" content="新建数据集" placement="top">
-                    <el-button @click.stop text>
+                    <el-button @click.stop="createDataset" text>
                       <template #icon>
                         <Icon name="icon_dataset_outlined"></Icon>
                       </template>
@@ -776,7 +821,11 @@ const defaultProps = {
           >
             <template v-if="slotProps.active">
               <div class="excel-table">
-                <SheetTabs @tab-click="handleTabClick" :tab-list="tabList"></SheetTabs>
+                <SheetTabs
+                  :active-tab="activeTab"
+                  @tab-click="handleTabClick"
+                  :tab-list="tabList"
+                ></SheetTabs>
                 <div class="sheet-table-content">
                   <el-auto-resizer>
                     <template #default="{ height, width }">
@@ -784,7 +833,7 @@ const defaultProps = {
                         :columns="columns"
                         v-loading="dataPreviewLoading"
                         header-class="excel-header-cell"
-                        :data="tableData"
+                        :data="tabData"
                         :width="width"
                         :height="height"
                         fixed
@@ -803,10 +852,10 @@ const defaultProps = {
         </template>
       </template>
       <template v-else>
-        <empty-background :description="t('datasource.select_ds')" img-type="select" />
+        <empty-background :description="t('datasource.please_select_left')" img-type="select" />
       </template>
     </div>
-    <EditorDatasource ref="datasourceEditor"></EditorDatasource>
+    <EditorDatasource @refresh="refresh" ref="datasourceEditor"></EditorDatasource>
     <el-dialog
       :title="t('common.detail')"
       v-model="userDrawer"
