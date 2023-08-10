@@ -125,12 +125,10 @@ public class DatasetGroupManage {
     @Transactional
     public DatasetGroupInfoDTO move(DatasetGroupInfoDTO datasetGroupInfoDTO) {
         checkName(datasetGroupInfoDTO);
+        checkMove(datasetGroupInfoDTO);
         // save dataset/group
         long time = System.currentTimeMillis();
         CoreDatasetGroup coreDatasetGroup = new CoreDatasetGroup();
-        if (Objects.equals(datasetGroupInfoDTO.getId(), datasetGroupInfoDTO.getPid())) {
-            DEException.throwException(Translator.get("i18n_pid_not_eq_id"));
-        }
         CoreDatasetGroup sourceData = coreDatasetGroupMapper.selectById(datasetGroupInfoDTO.getId());
         BeanUtils.copyBean(coreDatasetGroup, datasetGroupInfoDTO);
         coreDatasetGroup.setLastUpdateTime(time);
@@ -377,5 +375,24 @@ public class DatasetGroupManage {
             }
         }
         return list;
+    }
+
+    public void checkMove(DatasetGroupInfoDTO datasetGroupInfoDTO) {
+        if (Objects.equals(datasetGroupInfoDTO.getId(), datasetGroupInfoDTO.getPid())) {
+            DEException.throwException(Translator.get("i18n_pid_not_eq_id"));
+        }
+        List<Long> ids = new ArrayList<>();
+        getParents(datasetGroupInfoDTO.getPid(), ids);
+        if (ids.contains(datasetGroupInfoDTO.getId())) {
+            DEException.throwException(Translator.get("i18n_pid_not_eq_id"));
+        }
+    }
+
+    private void getParents(Long pid, List<Long> ids) {
+        CoreDatasetGroup parent = coreDatasetGroupMapper.selectById(pid);// 查找父级folder
+        ids.add(parent.getId());
+        if (parent.getPid() != null && parent.getPid() != 0) {
+            getParents(parent.getPid(), ids);
+        }
     }
 }

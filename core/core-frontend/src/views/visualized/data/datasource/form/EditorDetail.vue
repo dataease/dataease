@@ -482,11 +482,7 @@ defineExpose({
             prop="configuration.authMethod"
             v-if="form.type === 'presto'"
           >
-            <el-select
-              style="width: 100%"
-              v-model="form.configuration.authMethod"
-              class="de-select"
-            >
+            <el-select v-model="form.configuration.authMethod" class="de-select">
               <el-option
                 v-for="item in authMethodList"
                 :key="item.id"
@@ -550,8 +546,11 @@ defineExpose({
           >
             <template v-slot:label>
               <span class="name">{{ t('datasource.schema') }}<i class="required" /></span>
-              <el-button type="text" icon="el-icon-plus" size="small" @click="getDsSchema()"
-                >{{ t('datasource.get_schema') }}
+              <el-button text size="small" @click="getDsSchema()">
+                <template #icon>
+                  <Icon name="icon_add_outlined"></Icon>
+                </template>
+                {{ t('datasource.get_schema') }}
               </el-button>
             </template>
             <el-select
@@ -564,7 +563,7 @@ defineExpose({
             >
               <el-option v-for="item in schemas" :key="item" :label="item" :value="item" />
             </el-select>
-            <div v-if="configurationSchema" class="el-form-item__error">
+            <div v-if="configurationSchema" class="ed-form-item__error">
               {{ t('datasource.please_choose_schema') }}
             </div>
           </el-form-item>
@@ -762,6 +761,10 @@ defineExpose({
   width: 100%;
   display: flex;
   justify-content: center;
+
+  .de-select {
+    width: 100%;
+  }
   .ed-form-item {
     margin-bottom: 16px;
   }
@@ -979,9 +982,10 @@ defineExpose({
 }
 
 .schema-label {
-  ::v-deep.el-form-item__label {
-    display: flex;
+  .ed-form-item__label {
+    display: flex !important;
     justify-content: space-between;
+    padding-right: 0;
     &::after {
       display: none;
     }
