@@ -5,6 +5,7 @@ import io.dataease.api.chart.dto.ChartViewDTO;
 import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
 import io.dataease.api.permissions.auth.dto.BusiResourceCreator;
 import io.dataease.api.permissions.auth.dto.BusiResourceEditor;
+import io.dataease.api.permissions.auth.dto.BusiResourceMover;
 import io.dataease.api.visualization.DataVisualizationApi;
 import io.dataease.api.visualization.request.DataVisualizationBaseRequest;
 import io.dataease.api.visualization.vo.DataVisualizationVO;
@@ -16,7 +17,6 @@ import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
-import io.dataease.utils.JsonUtil;
 import io.dataease.visualization.dao.auto.entity.DataVisualizationInfo;
 import io.dataease.visualization.dao.auto.mapper.DataVisualizationInfoMapper;
 import io.dataease.visualization.dao.ext.mapper.ExtDataVisualizationMapper;
@@ -123,7 +123,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         Map<Long, ChartViewDTO> chartViewsInfo = request.getCanvasViewInfo();
         if (!CollectionUtils.isEmpty(chartViewsInfo)) {
             chartViewsInfo.forEach((key, chartViewDTO) -> {
-                if(componentData.indexOf(chartViewDTO.getId()+"")>-1){
+                if (componentData.indexOf(chartViewDTO.getId() + "") > -1) {
                     try {
                         chartViewDTO.setSceneId(request.getId());
                         chartViewManege.save(chartViewDTO);
@@ -153,6 +153,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         }
     }
 
+    @Transactional
     @Override
     public void deleteLogic(Long dvId) {
         if (ObjectUtils.isNotEmpty(interactiveAuthApi) && !interactiveAuthApi.checkDel(dvId)) {
@@ -175,6 +176,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         return coreVisualizationManage.tree(request);
     }
 
+    @Transactional
     @Override
     public void savaOrUpdateBase(DataVisualizationBaseRequest request) {
         DataVisualizationInfo visualizationInfo = new DataVisualizationInfo();
@@ -209,13 +211,20 @@ public class DataVisualizationServer implements DataVisualizationApi {
         }
     }
 
+    @Transactional
     @Override
     public void move(DataVisualizationBaseRequest request) {
         DataVisualizationInfo visualizationInfo = new DataVisualizationInfo();
         BeanUtils.copyBean(visualizationInfo, request);
-        if( visualizationInfo.getId() !=null){
+        if (visualizationInfo.getId() != null) {
             visualizationInfo.setUpdateTime(System.currentTimeMillis());
             visualizationInfoMapper.updateById(visualizationInfo);
+            if (ObjectUtils.isNotEmpty(interactiveAuthApi)) {
+                BusiResourceMover mover = new BusiResourceMover();
+                mover.setId(visualizationInfo.getId());
+                mover.setPid(visualizationInfo.getPid());
+                interactiveAuthApi.moveResource(mover);
+            }
         }
     }
 
@@ -239,15 +248,15 @@ public class DataVisualizationServer implements DataVisualizationApi {
     public List<DataVisualizationVO> findRecent(DataVisualizationBaseRequest request) {
         QueryWrapper<DataVisualizationInfo> wrapper = new QueryWrapper<>();
         wrapper.eq("delete_flag", 0);
-        wrapper.eq("node_type","leaf");
-        wrapper.like(StringUtils.isNotEmpty(request.getName()),"name", request.getName());
-        wrapper.eq(StringUtils.isNotEmpty(request.getType()),"type", request.getType());
+        wrapper.eq("node_type", "leaf");
+        wrapper.like(StringUtils.isNotEmpty(request.getName()), "name", request.getName());
+        wrapper.eq(StringUtils.isNotEmpty(request.getType()), "type", request.getType());
         List<DataVisualizationInfo> result = visualizationInfoMapper.selectList(wrapper);
         List<DataVisualizationVO> returnResult = new ArrayList<>();
-        if(!CollectionUtils.isEmpty(result)){
-            result.stream().forEach(dataVisualizationInfo ->{
+        if (!CollectionUtils.isEmpty(result)) {
+            result.stream().forEach(dataVisualizationInfo -> {
                 DataVisualizationVO dataVisualizationVO = new DataVisualizationVO();
-                returnResult.add(BeanUtils.copyBean(dataVisualizationVO,dataVisualizationInfo));
+                returnResult.add(BeanUtils.copyBean(dataVisualizationVO, dataVisualizationInfo));
             });
         }
         return returnResult;
