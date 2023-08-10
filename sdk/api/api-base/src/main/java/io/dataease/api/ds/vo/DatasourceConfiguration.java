@@ -15,6 +15,7 @@ public class DatasourceConfiguration extends Configuration{
         API("API", "API", "API"),
         Excel("Excel", "Excel", "LOCALFILE"),
         mysql("mysql", "Mysql", "OLTP"),
+        impala("impala", "Apache Impala", "OLAP"),
         mariadb("mariadb", "Mariadb", "OLTP"),
         StarRocks("StarRocks", "StarRocks", "OLAP"),
         TiDB("TiDB", "TiDB", "OLTP"),
