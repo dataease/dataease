@@ -358,7 +358,6 @@ const handleMouseDownOnShape = e => {
       const tabComponentId = element.value.canvasId.split('--')[0]
       dvMainStore.setTabMoveOutComponentId(tabComponentId)
     } else {
-      console.log('tab-move-in')
       dvMainStore.setTabMoveOutComponentId(null)
       contentDisplay.value = true
     }

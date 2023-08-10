@@ -2,7 +2,7 @@
 import { ref, reactive, computed, watch, nextTick } from 'vue'
 import { ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
-import { saveDatasetTree, getDatasetTree } from '@/api/dataset'
+import { saveDatasetTree, getDatasetTree, moveDatasetTree } from '@/api/dataset'
 import type { DatasetOrFolder } from '@/api/dataset'
 import nothingTree from '@/assets/img/nothing-tree.png'
 import { BusiTreeRequest } from '@/models/tree/TreeNode'
@@ -221,7 +221,8 @@ const saveDataset = () => {
         params.allFields = allfields
       }
       loading.value = true
-      saveDatasetTree(params)
+      const req = cmd.value === 'move' ? moveDatasetTree : saveDatasetTree
+      req(params)
         .then(() => {
           dataset.value.resetFields()
           createDataset.value = false

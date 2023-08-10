@@ -32,6 +32,7 @@ import io.dataease.exception.DEException;
 import io.dataease.i18n.Translator;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
+import io.dataease.utils.AuthUtils;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
 import io.dataease.utils.JsonUtil;
@@ -171,6 +172,7 @@ public class DatasourceServer implements DatasourceApi {
         } catch (Exception ignore) {
         }
         coreDatasource.setTaskStatus(TaskStatus.WaitingForExecution.name());
+        coreDatasource.setCreateBy(AuthUtils.getUser().getUserId().toString());
         datasourceMapper.insert(coreDatasource);
 
         if (dataSourceDTO.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name())) {
@@ -655,4 +657,21 @@ public class DatasourceServer implements DatasourceApi {
         return datasetDataManage.previewSql(previewSqlDTO);
     }
 
+    @Override
+    public List<String> latestUse(){
+        List<String> types = new ArrayList<>();
+        QueryWrapper<CoreDatasource> queryWrapper = new QueryWrapper();
+        queryWrapper.eq("create_by", AuthUtils.getUser().getUserId());
+        queryWrapper.ge("create_time", System.currentTimeMillis() - 24 * 60 * 1000);
+        List<CoreDatasource> coreDatasources = datasourceMapper.selectList(queryWrapper);
+        if(CollectionUtils.isEmpty(coreDatasources)){
+            return types;
+        }
+        for (CoreDatasource coreDatasource : coreDatasources) {
+            if(!coreDatasource.getType().equalsIgnoreCase("folder") && !types.contains(coreDatasource.getType())){
+                types.add(coreDatasource.getType());
+            }
+        }
+        return types;
+    }
 }

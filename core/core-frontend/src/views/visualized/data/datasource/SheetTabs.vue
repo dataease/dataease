@@ -63,10 +63,13 @@ const nextClick = () => {
         v-for="tab in tabList"
         :key="tab.label"
         :id="`tab-${tab.value}`"
+        :title="tab.label"
         :class="[{ active: activeTab === tab.value }, 'sheet-tab']"
         @click="handleTabClick(tab)"
       >
-        {{ tab.label }}
+        <span class="ellipsis">
+          {{ tab.label }}
+        </span>
       </div>
     </div>
     <div class="tab-btn" v-if="showBtn">
@@ -136,9 +139,14 @@ const nextClick = () => {
     display: flex;
     align-items: center;
     height: 36px;
+    max-width: 200px;
     border-bottom: 1px solid rgba(31, 35, 41, 0.15);
     &:hover {
       color: #3370ff;
+    }
+
+    .ellipsis {
+      max-width: 200px;
     }
 
     &::after,

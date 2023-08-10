@@ -1,11 +1,16 @@
 <script lang="ts" setup>
-import { shallowRef, PropType, computed } from 'vue'
+import { shallowRef, PropType, computed, reactive } from 'vue'
 import { dsTypes, typeList, nameMap } from './option'
+import { latestUse } from '@/api/datasource'
+
 export type DsType = 'OLTP' | 'OLAP' | 'DL' | 'OTHER' | 'LOCAL' | 'latestUse' | 'all'
 const props = defineProps({
   currentType: {
     type: String as PropType<DsType>,
     default: 'OLTP'
+  },
+  latestUseTypes: {
+    type: Array
   }
 })
 
@@ -16,8 +21,32 @@ const currentTypeList = computed(() => {
       return { name: nameMap[ele], dbList: databaseList.value[index] }
     })
   }
-  const index = typeList.findIndex(ele => props.currentType === ele)
-  return [{ name: nameMap[props.currentType], dbList: databaseList.value[index] }] || []
+  if (props.currentType == 'latestUse') {
+    let catalogList = []
+    let dstypes = []
+    props.latestUseTypes.forEach(type => {
+      dsTypes.forEach(item => {
+        if (item.type === type && catalogList.indexOf(type) === -1) {
+          catalogList.push(item.catalog)
+        }
+      })
+    })
+    catalogList.forEach(catalog => {
+      let dbList = []
+      props.latestUseTypes.forEach(type => {
+        dsTypes.forEach(item => {
+          if (item.type === type && item.catalog === catalog) {
+            dbList.push(item)
+          }
+        })
+      })
+      dstypes.push({ name: catalog, dbList: dbList })
+    })
+    return dstypes
+  } else {
+    const index = typeList.findIndex(ele => props.currentType === ele)
+    return [{ name: nameMap[props.currentType], dbList: databaseList.value[index] }] || []
+  }
 })
 const getDatasourceTypes = () => {
   const arr = [[], [], [], [], []]

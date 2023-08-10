@@ -8,7 +8,7 @@ import DsTypeList from './DsTypeList.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import EditorDetail from './EditorDetail.vue'
 import ExcelDetail from './ExcelDetail.vue'
-import { save, validate } from '@/api/datasource'
+import { save, validate, latestUse } from '@/api/datasource'
 import { Base64 } from 'js-base64'
 import type { Param } from './ExcelDetail.vue'
 import { dsTypes, typeList, nameMap } from './option'
@@ -95,10 +95,11 @@ export interface SyncSetting {
 const activeStep = ref(0)
 const detail = ref()
 const excel = ref()
+const latestUseTypes = ref([])
 const currentType = ref<DsType>('OLTP')
 const filterText = ref('')
 const currentDsType = ref('')
-
+const emits = defineEmits(['refresh'])
 const { emitter } = useEmitt()
 const selectDsType = (type: string) => {
   currentDsType.value = type
@@ -156,6 +157,13 @@ const getDatasourceTypes = () => {
 }
 getDatasourceTypes()
 
+const getLatestUseTypes = () => {
+  latestUse({}).then(res => {
+    latestUseTypes.value = res.data
+  })
+}
+getLatestUseTypes()
+
 const next = () => {
   if (currentDsType.value === '') {
     ElMessage.error(t('datasource.select_type'))
@@ -185,6 +193,7 @@ const createDataset = () => {
 }
 const backToDatasourceList = () => {
   visible.value = false
+  emits('refresh')
   showFinishPage.value = false
 }
 const continueCreating = () => {
@@ -194,6 +203,7 @@ const continueCreating = () => {
 
 const handleShowFinishPage = ({ id, name }) => {
   if (editDs.value || wsCache.get('ds-create-success')) {
+    emits('refresh')
     visible.value = false
     return
   }
@@ -448,6 +458,7 @@ defineExpose({
             v-show="activeStep === 0"
             @select-ds-type="selectDsType"
             :current-type="currentType"
+            :latest-use-types="latestUseTypes"
           ></ds-type-list>
           <editor-detail
             ref="detail"
