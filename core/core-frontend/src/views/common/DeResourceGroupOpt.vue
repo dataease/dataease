@@ -4,6 +4,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { BusiTreeNode, BusiTreeRequest } from '@/models/tree/TreeNode'
 import {
   dvNameCheck,
+  moveResource,
   queryTreeApi,
   ResourceOrFolder,
   savaOrUpdateBase
@@ -200,7 +201,8 @@ const saveResource = () => {
         })
       } else {
         loading.value = true
-        savaOrUpdateBase(params)
+        const method = cmd.value === 'move' ? moveResource : savaOrUpdateBase
+        method(params)
           .then(() => {
             resourceDialogShow.value = false
             emits('finish')

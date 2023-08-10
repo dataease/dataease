@@ -29,6 +29,8 @@ export const save = data => request.post({ url: '/dataVisualization/save', data 
 export const savaOrUpdateBase = data =>
   request.post({ url: '/dataVisualization/savaOrUpdateBase', data })
 
+export const moveResource = data => request.post({ url: '/dataVisualization/move', data })
+
 export const update = data => request.post({ url: '/dataVisualization/update', data })
 
 export const deleteLogic = dvId => request.delete({ url: '/dataVisualization/deleteLogic/' + dvId })

@@ -210,6 +210,16 @@ public class DataVisualizationServer implements DataVisualizationApi {
     }
 
     @Override
+    public void move(DataVisualizationBaseRequest request) {
+        DataVisualizationInfo visualizationInfo = new DataVisualizationInfo();
+        BeanUtils.copyBean(visualizationInfo, request);
+        if( visualizationInfo.getId() !=null){
+            visualizationInfo.setUpdateTime(System.currentTimeMillis());
+            visualizationInfoMapper.updateById(visualizationInfo);
+        }
+    }
+
+    @Override
     public void nameCheck(DataVisualizationBaseRequest request) {
         QueryWrapper<DataVisualizationInfo> wrapper = new QueryWrapper<>();
         wrapper.eq("delete_flag", 0);
