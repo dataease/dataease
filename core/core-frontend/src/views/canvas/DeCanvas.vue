@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { findNewComponentFromList } from '@/custom-component/component-list' // 左侧列表数据
-import { computed, nextTick, onMounted, reactive, ref, toRefs } from 'vue'
+import { computed, nextTick, onMounted, reactive, ref, toRefs, onBeforeUnmount } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { storeToRefs } from 'pinia'
@@ -10,7 +10,7 @@ import elementResizeDetectorMaker from 'element-resize-detector'
 import { getCanvasStyle, syncShapeItemStyle } from '@/utils/style'
 import { adaptCurThemeCommonStyle } from '@/utils/canvasStyle'
 import CanvasCore from '@/components/data-visualization/canvas/CanvasCore.vue'
-import { isMainCanvas, isSameCanvas } from '@/utils/canvasUtils'
+import { canvasChangeAdaptor, isMainCanvas, isSameCanvas } from '@/utils/canvasUtils'
 
 // change-begin
 const props = defineProps({
@@ -38,8 +38,7 @@ const domId = ref('de-canvas-' + canvasId.value)
 
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
-const { curComponent, isClickComponent, pcMatrixCount, editMode, curOriginThemes } =
-  storeToRefs(dvMainStore)
+const { curComponent, pcMatrixCount, editMode, curOriginThemes } = storeToRefs(dvMainStore)
 const canvasOut = ref(null)
 const canvasInitStatus = ref(false)
 
@@ -67,20 +66,22 @@ const editStyle = computed(() => {
 })
 
 // 通过实时监听的方式直接添加组件
-const handleNew = newComponentInfo => {
-  if (isSameCanvas(newComponentInfo, canvasId.value)) {
-    const { componentName, innerType } = newComponentInfo
-    if (componentName) {
-      const component = findNewComponentFromList(componentName, innerType, curOriginThemes)
-      syncShapeItemStyle(component, baseWidth.value, baseHeight.value)
-      component.id = guid()
-      dvMainStore.addComponent({ component: component, index: undefined, componentData })
-      adaptCurThemeCommonStyle(component)
-      nextTick(() => {
-        cyGridster.value.addItemBox(component) //在适当的时候初始化布局组件
-      })
-      snapshotStore.recordSnapshot('handleNew')
-    }
+const handleNewFromCanvasMain = newComponentInfo => {
+  const { componentName, innerType } = newComponentInfo
+  if (componentName) {
+    const component = findNewComponentFromList(componentName, innerType, curOriginThemes)
+    syncShapeItemStyle(component, baseWidth.value, baseHeight.value)
+    component.id = guid()
+    dvMainStore.addComponent({
+      component: component,
+      index: undefined,
+      componentData: componentData.value
+    })
+    adaptCurThemeCommonStyle(component)
+    nextTick(() => {
+      cyGridster.value.addItemBox(component) //在适当的时候初始化布局组件
+    })
+    snapshotStore.recordSnapshot('handleNewFromCanvasMain')
   }
 }
 
@@ -165,6 +166,13 @@ const addItemBox = component => {
 }
 
 const moveOutFromTab = component => {
+  component.canvasId = canvasId.value
+  dvMainStore.addComponent({
+    component,
+    index: undefined,
+    isFromGroup: true,
+    componentData: componentData.value
+  })
   addItemBox(component)
 }
 
@@ -176,11 +184,29 @@ onMounted(() => {
     canvasSizeInit()
   })
   canvasInit()
+  if (isMainCanvas(canvasId.value)) {
+    eventBus.on('handleNew', handleNewFromCanvasMain)
+  }
+  eventBus.on('moveOutFromTab-' + canvasId.value, moveOutFromTab)
 })
-eventBus.on('handleNew', handleNew)
-eventBus.on('moveOutFromTab-' + canvasId.value, moveOutFromTab)
+
+onBeforeUnmount(() => {
+  if (isMainCanvas(canvasId.value)) {
+    eventBus.off('handleNew', handleNewFromCanvasMain)
+  }
+  eventBus.off('moveOutFromTab-' + canvasId.value, moveOutFromTab)
+})
+
+const getBaseMatrixSize = () => {
+  return {
+    baseWidth: baseWidth.value,
+    baseHeight: baseHeight.value
+  }
+}
+
 defineExpose({
-  addItemBox
+  addItemBox,
+  getBaseMatrixSize
 })
 </script>
 
