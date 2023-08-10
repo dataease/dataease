@@ -325,7 +325,7 @@ const initEdite = () => {
 initEdite()
 
 const joinEditor = (arr: []) => {
-  Object.assign(state.editArr, arr)
+  state.editArr = cloneDeep(arr)
   editUnion.value = true
   nextTick(() => {
     fieldUnion.value.initState()

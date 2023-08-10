@@ -35,7 +35,6 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     'tooltip-selector': ['color', 'fontSize', 'backgroundColor', 'formatter']
   }
   axis: AxisType[] = ['xAxis', 'yAxis', 'area', 'drill', 'filter']
-  needInit = true
   constructor() {
     super('map', [])
   }
@@ -94,10 +93,6 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     this.setupOptions(chart, options, drawOption, geoJson)
     const view = new Choropleth(container, options)
     view.once('loaded', () => {
-      // 要在当前实例加载完成再去删除上一个实例，避免内存泄露
-      if (chartObj) {
-        chartObj.destroy()
-      }
       view.on('fillAreaLayer:click', (_: MouseEvent) => {
         const param = {}
         action(param)

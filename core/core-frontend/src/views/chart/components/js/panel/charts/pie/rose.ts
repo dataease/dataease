@@ -121,6 +121,15 @@ export class Rose extends G2PlotChartView<RoseOptions, G2Rose> {
     }
   }
 
+  setupDefaultOptions(chart: ChartObj): ChartObj {
+    const customAttr = chart.customAttr
+    const { label } = customAttr
+    if (!['inner', 'outer'].includes(label.position)) {
+      label.position = 'outer'
+    }
+    return chart
+  }
+
   protected setupOptions(chart: Chart, options: RoseOptions): RoseOptions {
     return flow(
       this.configBasicStyle,
@@ -145,8 +154,8 @@ export class RoseDonut extends Rose {
     const customAttr = parseJson(chart.customAttr)
     return {
       ...options,
-      radius: customAttr.basicStyle.radius,
-      innerRadius: customAttr.basicStyle.innerRadius
+      radius: customAttr.basicStyle.radius / 100,
+      innerRadius: customAttr.basicStyle.innerRadius / 100
     }
   }
 

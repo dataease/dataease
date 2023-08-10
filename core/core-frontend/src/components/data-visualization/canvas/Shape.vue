@@ -2,6 +2,7 @@
   <div class="shape" ref="shapeInnerRef" :id="domId">
     <div
       class="shape-outer"
+      v-show="contentDisplay"
       :class="{
         active,
         'shape-edit': isEditMode,
@@ -75,9 +76,10 @@ const {
   linkageSettingStatus,
   curLinkageView,
   tabCollisionActiveId,
-  tabMoveInActiveId
+  tabMoveInActiveId,
+  tabMoveOutComponentId
 } = storeToRefs(dvMainStore)
-const { editor } = storeToRefs(composeStore)
+const { editorMap } = storeToRefs(composeStore)
 const emit = defineEmits([
   'userViewEnlargeOpen',
   'onStartResize',
@@ -101,8 +103,10 @@ const state = reactive({
   canvasChangeTips: 'none',
   tabMoveInYOffset: 70,
   tabMoveInXOffset: 40,
-  collisionGap: 10 // 碰撞深度有效区域
+  collisionGap: 10 // 碰撞深度有效区域,
 })
+
+const contentDisplay = ref(true)
 
 const showPosition = computed(() => {
   let position
@@ -325,12 +329,39 @@ const handleMouseDownOnShape = e => {
   // 如果元素没有移动，则不保存快照
   let hasMove = false
   let isFirst = true
+
+  // 画布宽高
+  const canvasWidth = parentNode.value.offsetWidth
+  //当前组件宽高 定位
+  const componentWidth = shapeInnerRef.value.offsetWidth
+  const componentHeight = shapeInnerRef.value.offsetHeight
   const move = moveEvent => {
     hasMove = true
     const curX = moveEvent.clientX
     const curY = moveEvent.clientY
-    pos['top'] = curY - startY + startTop
-    pos['left'] = curX - startX + startLeft
+    const top = curY - startY + startTop
+    const left = curX - startX + startLeft
+    pos['top'] = top
+    pos['left'] = left
+    // 非主画布的情况 需要检测是否从Tab中移除组件(向左移除30px 或者向右移除30px)
+    if (
+      canvasId.value !== 'canvas-main' &&
+      (left < -30 || left + componentWidth - canvasWidth > 30)
+    ) {
+      contentDisplay.value = false
+      dvMainStore.setMousePointShadowMap({
+        mouseX: curX,
+        mouseY: curY,
+        width: componentWidth,
+        height: componentHeight
+      })
+      const tabComponentId = element.value.canvasId.split('--')[0]
+      dvMainStore.setTabMoveOutComponentId(tabComponentId)
+    } else {
+      console.log('tab-move-in')
+      dvMainStore.setTabMoveOutComponentId(null)
+      contentDisplay.value = true
+    }
     tabMoveInCheck()
     // 仪表板模式 会造成移动现象 当检测组件正在碰撞有效区内或者移入有效区内 则周边组件不进行移动
     if (
@@ -370,6 +401,12 @@ const handleMouseDownOnShape = e => {
       dvMainStore.setTabMoveInActiveId(null)
       dvMainStore.setTabCollisionActiveId(null)
     }
+
+    //如果当前存在移出的Tab 则将该组件加入到主画布中 同时将该组件在tab画布中进行删除
+    if (tabMoveOutComponentId.value) {
+      eventBus.emit('onTabMoveOut-' + tabMoveOutComponentId.value, element.value)
+      dvMainStore.setTabMoveOutComponentId(null)
+    }
   }
 
   document.addEventListener('mousemove', move)
@@ -402,7 +439,7 @@ const handleMouseDownOnPoint = (point, e) => {
   }
 
   // 获取画布位移信息
-  const editorRectInfo = editor.value.getBoundingClientRect()
+  const editorRectInfo = editorMap.value[canvasId.value].getBoundingClientRect()
 
   // 获取 point 与实际拖动基准点的差值
   const pointRect = e.target.getBoundingClientRect()
@@ -451,6 +488,7 @@ const handleMouseDownOnPoint = (point, e) => {
       curPoint,
       symmetricPoint
     })
+    console.log('resize-move-' + JSON.stringify(style))
     dvMainStore.setShapeStyle(style)
     dashboardActive.value && emit('onResizing', moveEvent)
   }
@@ -645,11 +683,8 @@ const dragCollision = computed(() => {
   return active.value && Boolean(tabCollisionActiveId.value)
 })
 
-onBeforeMount(() => {
-  parentNode.value = document.querySelector('#editor-' + canvasId.value)
-})
-
 onMounted(() => {
+  parentNode.value = document.querySelector('#editor-' + canvasId.value)
   // 用于 Group 组件
   if (curComponent.value) {
     cursors.value = getCursor() // 根据旋转角度获取光标位置

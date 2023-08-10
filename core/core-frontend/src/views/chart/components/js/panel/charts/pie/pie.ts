@@ -96,62 +96,53 @@ export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
   }
 
   protected configLabel(chart: Chart, options: PieOptions): PieOptions {
-    let label
-    let customAttr: DeepPartial<ChartAttr>
-    if (chart.customAttr) {
-      customAttr = parseJson(chart.customAttr)
-      if (customAttr.label) {
-        const labelAttr = customAttr.label
-        if (labelAttr.show) {
-          label = {
-            type: labelAttr.position,
-            autoRotate: false,
-            style: {
-              fill: labelAttr.color,
-              fontSize: labelAttr.fontSize
+    const { label: labelAttr } = parseJson(chart.customAttr)
+    if (!labelAttr?.show) {
+      return {
+        ...options,
+        label: false
+      }
+    }
+    const yAxis = chart.yAxis
+    const label = {
+      type: labelAttr.position === 'outer' ? 'spider' : labelAttr.position,
+      autoRotate: false,
+      style: {
+        fill: labelAttr.color,
+        fontSize: labelAttr.fontSize
+      },
+      formatter: (param: Datum) => {
+        let res = param.value
+        for (let i = 0; i < yAxis.length; i++) {
+          const f = yAxis[i]
+          if (f.name === param.category) {
+            let formatterCfg = formatterItem
+            if (f.formatterCfg) {
+              formatterCfg = f.formatterCfg
             }
-          }
-          if (labelAttr.position === 'outer') {
-            label.type = 'spider'
-          }
-          // 格式化
-          const yAxis = chart.yAxis
-          label.formatter = function (param: Datum) {
-            let res = param.value
-            for (let i = 0; i < yAxis.length; i++) {
-              const f = yAxis[i]
-              if (f.name === param.category) {
-                let formatterCfg = formatterItem
-                if (f.formatterCfg) {
-                  formatterCfg = f.formatterCfg
-                }
-                const labelContent = labelAttr.labelContent ?? ['quota']
-                const contentItems = []
-                if (labelContent.includes('dimension')) {
-                  contentItems.push(param.field)
-                }
-                if (labelContent.includes('quota')) {
-                  contentItems.push(valueFormatter(param.value, formatterCfg))
-                }
-                if (labelContent.includes('proportion')) {
-                  const percentage = `${(Math.round(param.percent * 10000) / 100).toFixed(
-                    labelAttr.reserveDecimalCount
-                  )}%`
-                  if (labelContent.length === 3) {
-                    contentItems.push(`(${percentage})`)
-                  } else {
-                    contentItems.push(percentage)
-                  }
-                }
-                res = contentItems.join(' ')
-                break
+            const labelContent = labelAttr.labelContent ?? ['quota']
+            const contentItems = []
+            if (labelContent.includes('dimension')) {
+              contentItems.push(param.field)
+            }
+            if (labelContent.includes('quota')) {
+              contentItems.push(valueFormatter(param.value, formatterCfg))
+            }
+            if (labelContent.includes('proportion')) {
+              const percentage = `${(Math.round(param.percent * 10000) / 100).toFixed(
+                labelAttr.reserveDecimalCount
+              )}%`
+              if (labelContent.length === 3) {
+                contentItems.push(`(${percentage})`)
+              } else {
+                contentItems.push(percentage)
               }
             }
-            return res
+            res = contentItems.join(' ')
+            break
           }
-        } else {
-          label = false
         }
+        return res
       }
     }
     return { ...options, label }
@@ -194,6 +185,14 @@ export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
       radius: customAttr.basicStyle.radius
     }
   }
+  setupDefaultOptions(chart: ChartObj): ChartObj {
+    const customAttr = chart.customAttr
+    const { label } = customAttr
+    if (!['inner', 'outer'].includes(label.position)) {
+      label.position = 'outer'
+    }
+    return chart
+  }
 
   protected setupOptions(chart: Chart, options: PieOptions): PieOptions {
     return flow(
@@ -219,8 +218,8 @@ export class PieDonut extends Pie {
     const customAttr = parseJson(chart.customAttr)
     return {
       ...options,
-      radius: customAttr.basicStyle.radius,
-      innerRadius: customAttr.basicStyle.innerRadius
+      radius: customAttr.basicStyle.radius / 100,
+      innerRadius: customAttr.basicStyle.innerRadius / 100
     }
   }
 

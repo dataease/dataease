@@ -3,11 +3,7 @@ import {
   G2PlotDrawOptions
 } from '@/views/chart/components/js/panel/types/impl/g2plot'
 import { Bar, BarOptions, Datum } from '@antv/g2plot'
-import {
-  getPadding,
-  setGradientColor,
-  transAxisPosition
-} from '@/views/chart/components/js/panel/common/common_antv'
+import { getPadding, setGradientColor } from '@/views/chart/components/js/panel/common/common_antv'
 import { cloneDeep } from 'lodash-es'
 import {
   flow,
@@ -35,8 +31,8 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
   properties = BAR_EDITOR_PROPERTY
   propertyInner = {
     ...BAR_EDITOR_PROPERTY_INNER,
-    'x-axis-selector': BAR_EDITOR_PROPERTY_INNER['y-axis-selector'],
-    'y-axis-selector': BAR_EDITOR_PROPERTY_INNER['x-axis-selector']
+    'x-axis-selector': [...BAR_EDITOR_PROPERTY_INNER['y-axis-selector'], 'hPosition'],
+    'y-axis-selector': [...BAR_EDITOR_PROPERTY_INNER['x-axis-selector'], 'hPosition']
   }
   axis: AxisType[] = [...BAR_AXIS_TYPE]
   protected baseOptions: BarOptions = {
@@ -96,7 +92,7 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
     // options
     const initOptions: BarOptions = {
       ...this.baseOptions,
-      padding: getPadding(chart),
+      appendPadding: getPadding(chart),
       data
     }
 
@@ -141,7 +137,6 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
       const axisValue = parseJson(chart.customStyle).xAxis.axisValue
       if (!axisValue?.auto) {
         const axis = {
-          position: transAxisPosition(options.xAxis.position),
           xAxis: {
             min: axisValue.min,
             max: axisValue.max,
@@ -170,8 +165,20 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
     return options
   }
 
-  constructor(name = 'bar-horizontal') {
-    super(name, DEFAULT_DATA)
+  setupDefaultOptions(chart: ChartObj): ChartObj {
+    const { customStyle, customAttr } = chart
+    const { xAxis, yAxis } = customStyle
+    const { label } = customAttr
+    if (!['left', 'right'].includes(xAxis.position)) {
+      xAxis.position = 'right'
+    }
+    if (!['top', 'bottom'].includes(yAxis.position)) {
+      yAxis.position = 'bottom'
+    }
+    if (!['left', 'middle', 'right'].includes(label.position)) {
+      label.position = 'middle'
+    }
+    return chart
   }
 
   protected setupOptions(chart: Chart, options: BarOptions): BarOptions {
@@ -187,6 +194,10 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
       this.configSlider,
       this.configAnalyseHorizontal
     )(chart, options)
+  }
+
+  constructor(name = 'bar-horizontal') {
+    super(name, DEFAULT_DATA)
   }
 }
 
@@ -277,7 +288,7 @@ export class HorizontalStackBar extends HorizontalBar {
       ...this.baseOptions,
       isStack: true
     }
-    this.axis.push('extStack')
+    this.axis = [...this.axis, 'extStack']
   }
 }
 

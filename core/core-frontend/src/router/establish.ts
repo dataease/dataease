@@ -15,8 +15,10 @@ export const generateRoutesFn2 = (routes: AppCustomRouteRecordRaw[]): AppRouteRe
       route = decorate(route)
     }
 
-    if (route.component.startsWith('system')) {
-      const jsName = route.component.slice(7)
+    /* if (route.component.startsWith('system')) {
+      const jsName = route.component.slice(7) */
+    if (route.plugin) {
+      const jsName = route.component
       route.component = 'system/plugin'
       route.props = {
         jsname: jsName,

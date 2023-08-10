@@ -1,15 +1,12 @@
 package io.dataease.license.config;
 
 import cn.hutool.core.util.ArrayUtil;
-import io.dataease.exception.DEException;
 import io.dataease.license.bo.F2CLicResult;
 import io.dataease.license.utils.LicenseUtil;
 import io.dataease.result.ResultCode;
 import io.dataease.result.ResultMessage;
 import io.dataease.utils.ServletUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
@@ -22,9 +19,8 @@ import java.lang.reflect.Method;
 public class XpackHandler {
 
 
-
     @Around(value = "@within(io.dataease.license.config.XpackResource) || @annotation(io.dataease.license.config.XpackResource)")
-    public Object PermissionsAround(ProceedingJoinPoint point) throws Throwable{
+    public Object PermissionsAround(ProceedingJoinPoint point) throws Throwable {
         MethodSignature ms = (MethodSignature) point.getSignature();
         Method method = ms.getMethod();
         String methodName = method.getName();
@@ -41,7 +37,6 @@ public class XpackHandler {
             return point.proceed(point.getArgs());
         }
         ServletUtils.writeResult(new ResultMessage(ResultCode.INTERFACE_FORBID_VISIT.code(), licResult.getMessage()));
-        DEException.throwException(licResult.getMessage());
         return null;
     }
 }

@@ -23,9 +23,9 @@ declare interface ChartStyle {
    */
   yAxisExt: ChartAxisStyle
   /**
-   * 混合图设置
+   * 其他样式设置
    */
-  split: ChartSplitStyle
+  misc: ChartMiscStyle
   background: {
     color: string
     alpha: string
@@ -246,20 +246,32 @@ declare interface AxisValue {
    */
   splitCount: number
 }
-
-declare interface ChartSplitStyle {
-  name: SplitName
+/**
+ * 其他样式设置
+ */
+declare interface ChartMiscStyle {
+  /**
+   * 名称显示
+   */
+  showName: boolean
+  /**
+   * 颜色
+   */
+  color: string
+  /**
+   * 字体大小
+   */
+  fontSize: number
+  /**
+   * 轴颜色
+   */
+  axisColor: string
   splitNumber: number
   axisLine: SplitAxisLine
   axisTick: SplitAxisTick
   axisLabel: SplitAxisLabel
   splitLine: SplitAxisLine
   splitArea: SplitSplitArea
-}
-declare interface SplitName {
-  show: boolean
-  color: string
-  fontSize: string
 }
 declare interface SplitLineStyle {
   color: string

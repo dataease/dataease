@@ -2,7 +2,7 @@ package io.dataease.constant;
 
 public enum AuthResourceEnum {
 
-    PANEL(9, 1), SCREEN(10, 2), DATASET(11, 3), DATASOURCE(12, 4), SYSTEM(6, 0), USER(13, 5), ROLE(13, 6),  ORG(14, 7);
+    PANEL(2, 1), SCREEN(3, 2), DATASET(5, 3), DATASOURCE(6, 4), SYSTEM(7, 0), USER(8, 5), ROLE(8, 6),  ORG(9, 7);
 
     private long menuId;
 

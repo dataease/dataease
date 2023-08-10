@@ -11,6 +11,7 @@ import ExcelInfo from '../ExcelInfo.vue'
 import SheetTabs from '../SheetTabs.vue'
 import { cloneDeep } from 'lodash-es'
 import { uploadFile } from '@/api/datasource'
+import { useEmitt } from '@/hooks/web/useEmitt'
 
 export interface Param {
   editType: number
@@ -52,6 +53,7 @@ const props = defineProps({
 const { param } = toRefs(props)
 
 const { t } = useI18n()
+const { emitter } = useEmitt()
 
 const loading = ref(false)
 const columns = shallowRef([])
@@ -321,13 +323,12 @@ const saveExcelData = (sheetFileMd5, table, params, successCb, finallyCb) => {
         if (action === 'confirm') {
           save(table)
             .then(res => {
-              if (res !== undefined) {
-                successCb?.()
-                ElMessage({
-                  message: t('deDataset.set_saved_successfully'),
-                  type: 'success'
-                })
-              }
+              emitter.emit('showFinishPage', res)
+              successCb?.()
+              ElMessage({
+                message: t('deDataset.set_saved_successfully'),
+                type: 'success'
+              })
             })
             .finally(() => {
               finallyCb?.()
@@ -337,7 +338,8 @@ const saveExcelData = (sheetFileMd5, table, params, successCb, finallyCb) => {
 
         if (action === 'cancel') {
           save(table)
-            .then(() => {
+            .then(res => {
+              emitter.emit('showFinishPage', res)
               successCb?.()
               ElMessage({
                 message: t('deDataset.set_saved_successfully'),
@@ -355,7 +357,8 @@ const saveExcelData = (sheetFileMd5, table, params, successCb, finallyCb) => {
     if (loading.value) return
     loading.value = true
     save(table)
-      .then(() => {
+      .then(res => {
+        emitter.emit('showFinishPage', res)
         successCb?.()
         ElMessage({
           message: t('deDataset.set_saved_successfully'),
@@ -396,7 +399,6 @@ defineExpose({
 
 <template>
   <div class="excel-detail">
-    <div class="detail-operate">文件</div>
     <div class="detail-inner">
       <el-form require-asterisk-position="right" :model="param" label-position="top">
         <el-form-item

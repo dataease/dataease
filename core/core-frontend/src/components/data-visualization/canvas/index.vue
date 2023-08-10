@@ -32,14 +32,22 @@ import CanvasOptBar from '@/components/visualization/CanvasOptBar.vue'
 import LinkJumpSet from '@/components/visualization/LinkJumpSet.vue'
 import { adaptCurThemeCommonStyle } from '@/utils/canvasStyle'
 import LinkageSet from '@/components/visualization/LinkageSet.vue'
+import PointShadow from '@/components/data-visualization/canvas/PointShadow.vue'
 const snapshotStore = snapshotStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
 const composeStore = composeStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
 
-const { componentData, curComponent, canvasStyleData, canvasViewInfo, dvInfo, editMode } =
-  storeToRefs(dvMainStore)
-const { editor } = storeToRefs(composeStore)
+const {
+  componentData,
+  curComponent,
+  canvasStyleData,
+  canvasViewInfo,
+  dvInfo,
+  editMode,
+  tabMoveOutComponentId
+} = storeToRefs(dvMainStore)
+const { editorMap } = storeToRefs(composeStore)
 const props = defineProps({
   isEdit: {
     type: Boolean,
@@ -155,6 +163,16 @@ const userViewEnlargeRef = ref(null)
 const linkJumpRef = ref(null)
 const linkageRef = ref(null)
 const mainDomId = ref('editor-' + canvasId.value)
+
+const pointShadowShow = computed(() => {
+  return (
+    canvasId.value === 'canvas-main' &&
+    curComponent.value &&
+    curComponent.value.canvasId !== 'canvas-main' &&
+    tabMoveOutComponentId.value
+  )
+})
+
 const showComponentData = computed(() => {
   return componentData.value.filter(component => component.isShow)
 })
@@ -213,7 +231,7 @@ const handleMouseDown = e => {
   }
   hideArea()
   // 获取编辑器的位移信息，每次点击时都需要获取一次。主要是为了方便开发时调试用。
-  const rectInfo = editor.value.getBoundingClientRect()
+  const rectInfo = editorMap.value[canvasId.value].getBoundingClientRect()
   editorX.value = rectInfo.x
   editorY.value = rectInfo.y
 
@@ -1430,11 +1448,11 @@ const linkageSetOpen = item => {
 onMounted(() => {
   initSnapshotTimer()
   // 获取编辑器元素
-  composeStore.getEditor()
+  composeStore.getEditor(canvasId.value)
   eventBus.on('hideArea', hideArea)
   eventBus.on('handleDragStartMoveIn', handleDragStartMoveIn)
   eventBus.on('handleDragEnd', handleDragEnd)
-  eventBus.on('removeMatrixItem-canvas-main', removeItem)
+  eventBus.on('removeMatrixItem-' + canvasId.value, removeItem)
   eventBus.on('addDashboardItem', addItemBox)
   eventBus.on('snapshotChange', canvasInit)
 })
@@ -1486,6 +1504,9 @@ defineExpose({
       :cur-gap="curGap"
       :element="infoBox.moveItem"
     ></drag-shadow>
+
+    <!--切换canvas 拖拽阴影部分-->
+    <point-shadow v-if="pointShadowShow" :canvas-id="canvasId" />
 
     <!--页面组件列表展示-->
     <Shape

@@ -10,7 +10,7 @@ export const LINE_EDITOR_PROPERTY: EditorProperty[] = [
 ]
 export const LINE_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
   'background-overall-component': ['all'],
-  'label-selector': ['fontSize', 'color', 'position'],
+  'label-selector': ['fontSize', 'color'],
   'tooltip-selector': ['fontSize', 'color', 'backgroundColor'],
   'basic-style-selector': [
     'colors',
@@ -24,14 +24,14 @@ export const LINE_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
     'name',
     'color',
     'fontSize',
-    'position',
+    'vPosition',
     'axisLabel',
     'axisLine',
     'splitLine'
   ],
   'y-axis-selector': [
     'name',
-    'position',
+    'vPosition',
     'axisLabel',
     'axisLine',
     'splitLine',

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { PropType, reactive, ref, watch, toRefs, computed, nextTick, shallowRef } from 'vue'
+import { PropType, reactive, ref, watch, toRefs, computed, nextTick, shallowRef, toRaw } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Field, getFieldByDQ, saveChart } from '@/api/chart'
@@ -454,6 +454,11 @@ const onAreaChange = val => {
 
 const onTypeChange = val => {
   view.value.type = val
+  // 处理配置项默认值，不同视图的同一配置项默认值不同
+  const chartViewInstance = chartViewManager.getChartView(view.value.render, view.value.type)
+  if (chartViewInstance) {
+    view.value = chartViewInstance.setupDefaultOptions(view.value) as unknown as ChartObj
+  }
   calcData(view.value)
 }
 
@@ -506,6 +511,11 @@ const onChangeXAxisForm = val => {
 
 const onChangeYAxisForm = val => {
   view.value.customStyle.yAxis = val
+  renderChart(view.value)
+}
+
+const onChangeMiscStyleForm = val => {
+  view.value.customStyle.misc = val
   renderChart(view.value)
 }
 
@@ -1327,6 +1337,7 @@ const autoInsert = element => {
                   @onTableHeaderChange="onTableHeaderChange"
                   @onTableCellChange="onTableCellChange"
                   @onTableTotalChange="onTableTotalChange"
+                  @onChangeMiscStyleForm="onChangeMiscStyleForm"
                 />
               </el-tab-pane>
 

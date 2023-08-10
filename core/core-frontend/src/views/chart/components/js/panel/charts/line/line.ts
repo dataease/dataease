@@ -209,6 +209,10 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
     )(chart, options)
   }
 
+  setupDefaultOptions(chart: ChartObj): ChartObj {
+    return this.setupVerticalAxis(chart)
+  }
+
   constructor(name = 'line') {
     super(name, DEFAULT_DATA)
   }

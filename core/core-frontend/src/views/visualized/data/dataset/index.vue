@@ -43,6 +43,10 @@ const fieldType = (deType: number) => {
   return fieldMap[deType]
 }
 
+const createPanel = path => {
+  console.log('path', path)
+}
+
 const creatDsFolder = ref()
 
 const nodeInfo = reactive<Node>({
@@ -387,7 +391,16 @@ const filterNode = (value: string, data: BusiTreeNode) => {
               <dataset-detail :info-list="infoList" title-type="数据集"></dataset-detail>
             </el-popover>
             <div class="right-btn">
-              <el-button secondary> 新建数据大屏 </el-button>
+              <el-button secondary @click="createPanel('dashboard')">
+                <template #icon>
+                  <Icon name="icon_dashboard_outlined"></Icon>
+                </template>
+                新建仪表板
+              </el-button>
+              <el-button secondary @click="createPanel('dashboard')">
+                <template #icon> <Icon name="icon_operation-analysis_outlined"></Icon> </template
+                >新建数据大屏
+              </el-button>
               <el-button type="primary" @click="editorDataset">
                 <template #icon>
                   <Icon name="icon_edit_outlined"></Icon>
@@ -612,7 +625,7 @@ const filterNode = (value: string, data: BusiTreeNode) => {
   background-color: #f5f6f7;
 }
 .custom-tree-node {
-  flex: 1;
+  width: calc(100% - 30px);
   display: flex;
   align-items: center;
   box-sizing: content-box;

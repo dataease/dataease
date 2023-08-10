@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { reactive, ref, nextTick, shallowRef, computed, provide, toRefs } from 'vue'
+import { reactive, ref, nextTick, shallowRef, computed, provide, toRefs, watch } from 'vue'
 import { GridTable } from '@/components/grid-table'
 import { cloneDeep } from 'lodash-es'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -23,6 +23,7 @@ interface Pagination {
 interface User {
   name: string
   id: string
+  email: string
 }
 
 interface RowForm {
@@ -89,8 +90,8 @@ const initDatasetTableField = () => {
   })
 }
 
-provide('filedList', () => datasetTableFiled.value)
-provide('getAuthTargetType', () => rowPermissionForm.authTargetType)
+provide('filedList', datasetTableFiled)
+provide('getAuthTargetType', rowPermissionForm)
 
 const typeList = ['role', 'user', 'sysParams']
 
@@ -103,11 +104,27 @@ const formatterWhiteListUsers = (_, __, cellValue) => {
 
 const onAuthTypeChange = () => {
   whiteListUsers.value = []
-  rowPermissionForm.whiteListUser = []
   rowPermissionForm.authTargetId = ''
   fetchTypeObjsList()
   changeUserList()
 }
+
+const authTargetTypeLoading = ref(false)
+
+watch(
+  () => rowPermissionForm.authTargetType,
+  (newValue, oldValue) => {
+    if (authTargetTypeLoading.value) return
+    if ([newValue, oldValue].includes('sysParams')) {
+      nextTick(() => {
+        rowAuth.value.init([])
+      })
+    }
+    if (newValue === 'sysParams') {
+      whiteListUsersList()
+    }
+  }
+)
 
 const changeUserList = () => {
   rowPermissionForm.whiteListUser = []
@@ -200,7 +217,7 @@ const create = rowPermissionObj => {
     update_row_permission_dialog_title.value = t('dataset.row_permission.edit')
     listRowPermissions(rowPermissionObj)
   }
-  changeUserList()
+  whiteListUsersList()
   fetchTypeObjsList()
   update_row_permission.value = true
 }
@@ -230,8 +247,10 @@ const listRowPermissions = row => {
     whiteListUser: JSON.parse(whiteListUser),
     enable
   })
+  authTargetTypeLoading.value = true
   nextTick(() => {
     rowAuth.value.init(tree || {})
+    authTargetTypeLoading.value = false
   })
   loadingRowPermission.value = false
 }
@@ -352,6 +371,7 @@ const handleCurrentChange = (currentPage: number) => {
             :value="item.id"
           >
             <p class="name">{{ item.name }}</p>
+            <p class="email">{{ item.email }}</p>
           </el-option>
         </el-select>
       </div>

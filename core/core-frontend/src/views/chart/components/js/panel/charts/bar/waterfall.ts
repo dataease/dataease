@@ -1,8 +1,9 @@
-import { WaterfallOptions, Waterfall as G2Waterfall, Meta } from '@antv/g2plot'
+import { WaterfallOptions, Waterfall as G2Waterfall } from '@antv/g2plot'
 import { G2PlotChartView, G2PlotDrawOptions } from '../../types/impl/g2plot'
 import { flow, parseJson } from '../../../util'
 import { formatterItem, valueFormatter } from '../../../formatter'
 import { getPadding, setGradientColor } from '../../common/common_antv'
+import { flow as flowLeft } from 'lodash-es'
 
 /**
  * 瀑布图
@@ -140,7 +141,7 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
   propertyInner: EditorPropertyInner = {
     'background-overall-component': ['all'],
     'basic-style-selector': ['colors', 'alpha', 'gradient'],
-    'label-selector': ['fontSize', 'color', 'position'],
+    'label-selector': ['fontSize', 'color', 'vPosition'],
     'tooltip-selector': ['fontSize', 'color', 'backgroundColor'],
     'title-selector': [
       'title',
@@ -156,7 +157,7 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
     ],
     'legend-selector': ['icon', 'orient', 'textStyle', 'hPosition', 'vPosition'],
     'x-axis-selector': [
-      'position',
+      'vPosition',
       'name',
       'color',
       'fontSize',
@@ -166,7 +167,7 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
       'axisLabel'
     ],
     'y-axis-selector': [
-      'position',
+      'vPosition',
       'name',
       'color',
       'fontSize',
@@ -178,6 +179,10 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
     ]
   }
   axis: AxisType[] = ['xAxis', 'yAxis', 'filter', 'drill', 'extLabel', 'extTooltip']
+
+  setupDefaultOptions(chart: ChartObj): ChartObj {
+    return flowLeft(this.setupVerticalAxis, this.setupVerticalAxis)(chart)
+  }
 
   constructor() {
     super('waterfall', [])

@@ -8,10 +8,12 @@ import io.dataease.model.RSAModel;
 import io.dataease.rsa.dao.entity.CoreRsa;
 import io.dataease.rsa.manage.RsaManage;
 import jakarta.annotation.Resource;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Base64Utils;
 
 import java.nio.charset.StandardCharsets;
+import java.security.Security;
 
 @Component
 public class RsaUtils {
@@ -43,6 +45,11 @@ public class RsaUtils {
 
     public static String decryptStr(String data) {
         return decryptStr(data, privateKey());
+    }
+
+    public static String encryptStr(String data) {
+        RSA rsa = new RSA(privateKey(), publicKey());
+        return rsa.encryptBase64(data, KeyType.PublicKey);
     }
 
     public static String privateKey() {

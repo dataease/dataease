@@ -12,8 +12,8 @@ import type { Node } from './UnionEdit.vue'
 import { getTableField } from '@/api/dataset'
 import type { Field } from './UnionFieldList.vue'
 import type { SqlNode } from './AddSql.vue'
-import _ from 'lodash'
-
+import { cloneDeep } from 'lodash-es'
+import type { Table } from '@/api/dataset'
 const state = reactive({
   nodeList: [],
   pathList: [],
@@ -98,7 +98,7 @@ const delNode = (id, arr) => {
   })
 }
 
-const saveSqlNode = (val: SqlNode) => {
+const saveSqlNode = (val: SqlNode, cb) => {
   const { tableName, id, sql, datasourceId, sqlVariableDetails = null } = val
   if (state.visualNode) {
     Object.assign(state.visualNode, {
@@ -115,6 +115,21 @@ const saveSqlNode = (val: SqlNode) => {
     if (!state.nodeList.length) {
       state.visualNode.tableName = tableName
       state.nodeList.push(state.visualNode)
+      currentNode.value = state.nodeList[0]
+      getTableField({
+        datasourceId,
+        id: id,
+        info: state.visualNode.info,
+        tableName,
+        type: 'sql'
+      }).then(res => {
+        ;((res as unknown as Field[]) || []).forEach(ele => {
+          ele.checked = true
+        })
+        state.nodeList[0].currentDsFields = cloneDeep(res)
+        cb?.()
+        confirmEditUnion()
+      })
       confirm()
     }
     return
@@ -190,7 +205,7 @@ const confirmEditUnion = () => {
 const handleCommand = (ele, command) => {
   if (command === 'editerField') {
     getNodeField(ele)
-    currentNode.value = _.cloneDeep(ele)
+    currentNode.value = cloneDeep(ele)
   }
 
   if (command === 'editerSql') {
@@ -535,7 +550,7 @@ const dragenter_handler = ev => {
 const drop_handler = ev => {
   ev.preventDefault()
   let data = ev.dataTransfer.getData('text')
-  const { tableName, type, datasourceId } = JSON.parse(data)
+  const { tableName, type, datasourceId } = JSON.parse(data) as Table
   const extraData = {
     info: JSON.stringify({
       table: tableName,
@@ -585,7 +600,7 @@ const drop_handler = ev => {
       ;((res as unknown as Field[]) || []).forEach(ele => {
         ele.checked = true
       })
-      state.nodeList[0].currentDsFields = _.cloneDeep(res)
+      state.nodeList[0].currentDsFields = cloneDeep(res)
       confirmEditUnion()
     })
     nextTick(() => {
@@ -631,8 +646,8 @@ const drop_handler = ev => {
 }
 
 const setStateBack = (node, parent) => {
-  delete node.children
   delete parent.children
+  delete node.children
   dfsNodeBack([parent, node], [parent.id, node.id], state.nodeList)
   if (state.visualNode) {
     confirm()

@@ -2,60 +2,15 @@
   "name": "dataease",
   "private": true,
   "version": "0.0.0",
-  "main": "dist-electron/index.js",
   "scripts": {
     "dev": "vite --mode dev --host 0.0.0.0",
     "build:flush": "cd ./flushbonading && rimraf ./demo.html && npm i && node ./index.js",
-    "dev:desktop": "vite --mode desktop",
     "ts:check": "vue-tsc --noEmit",
     "build:base": "NODE_OPTIONS=--max_old_space_size=4096 vite build --mode base && npm run build:flush",
     "build:lib": "vite build --mode lib",
-    "build:desktop": "npm run ts:check && vite --mode desktop && electron-builder",
     "lint": "eslint . --ext .vue,.js,.ts,.jsx,.tsx --fix",
     "lint:stylelint": "stylelint --fix \"**/*.{vue,less,postcss,css,scss}\" --cache --cache-location node_modules/.cache/stylelint/",
     "preview": "vite preview"
-  },
-  "build": {
-    "appId": "com.smallpig.desktop",
-    "productName": "smallpig",
-    "asar": true,
-    "copyright": "Copyright © 2022 smallpig",
-    "directories": {
-      "output": "release/${version}"
-    },
-    "files": "dist-electron/index.js",
-    "mac": {
-      "artifactName": "${productName}_${version}.${ext}",
-      "target": [
-        "dmg"
-      ]
-    },
-    "win": {
-      "target": [
-        {
-          "target": "nsis",
-          "arch": [
-            "x64"
-          ]
-        }
-      ],
-      "artifactName": "${productName}_${version}.${ext}"
-    },
-    "nsis": {
-      "oneClick": false,
-      "perMachine": false,
-      "allowToChangeInstallationDirectory": true,
-      "deleteAppDataOnUninstall": false
-    },
-    "publish": [
-      {
-        "provider": "generic",
-        "url": "http://127.0.0.1:8080"
-      }
-    ],
-    "releaseInfo": {
-      "releaseNotes": "版本更新的具体内容"
-    }
   },
   "dependencies": {
     "@antv/g2plot": "^2.4.29",
@@ -63,13 +18,13 @@
     "@antv/l7plot": "^0.5.5",
     "@antv/s2": "^1.49.0",
     "@codemirror/lang-sql": "^6.4.0",
+    "@tinymce/tinymce-vue": "^5.1.0",
     "@vueuse/core": "^9.13.0",
     "ace-builds": "^1.15.3",
     "axios": "^1.3.3",
     "crypto-js": "^4.1.1",
     "dayjs": "^1.11.9",
     "deepmerge": "^4.3.1",
-    "electron-devtools-installer": "^3.2.0",
     "element-plus-secondary": "^0.1.5",
     "element-resize-detector": "^1.2.4",
     "highcharts": "^10.3.3",
@@ -87,6 +42,7 @@
     "pinia": "^2.0.32",
     "qs": "^6.11.0",
     "snowflake-id": "^1.1.0",
+    "tinymce": "^6.6.1",
     "vue": "^3.3.4",
     "vue-clipboard2": "^0.3.3",
     "vue-clipboard3": "^2.0.0",
@@ -111,8 +67,6 @@
     "@vitejs/plugin-vue-jsx": "^3.0.1",
     "autoprefixer": "^10.4.13",
     "consola": "^2.15.3",
-    "electron": "^22.2.0",
-    "electron-builder": "^23.6.0",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.6.0",
     "eslint-plugin-prettier": "^4.2.1",
@@ -135,8 +89,6 @@
     "unplugin-vue-components-secondary": "^0.24.6",
     "vite": "^4.1.3",
     "vite-plugin-compression": "^0.5.1",
-    "vite-plugin-electron": "^0.11.1",
-    "vite-plugin-electron-renderer": "^0.11.4",
     "vite-plugin-eslint": "^1.8.1",
     "vite-plugin-style-import": "^2.0.0",
     "vite-plugin-style-import-secondary": "^2.0.0",

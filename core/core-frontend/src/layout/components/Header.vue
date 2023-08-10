@@ -45,7 +45,7 @@ onMounted(() => {
 
 <template>
   <el-header class="header-flex">
-    <Icon className="logo" name="DataEase"></Icon>
+    <Icon className="logo" name="logo"></Icon>
     <el-menu
       :default-active="activeIndex"
       class="el-menu-demo"
