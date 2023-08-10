@@ -5,6 +5,7 @@ import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.api.permissions.auth.dto.BusiResourceCreator;
 import io.dataease.api.permissions.auth.dto.BusiResourceEditor;
+import io.dataease.api.permissions.auth.dto.BusiResourceMover;
 import io.dataease.api.permissions.auth.dto.OutAuthPlatformLoginRequest;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
@@ -61,5 +62,10 @@ public interface InteractiveAuthApi {
 
     @Operation(hidden = true)
     String outAuthPlatformLogin(@RequestBody OutAuthPlatformLoginRequest request);
+
+    @Operation(summary = "移动资源")
+    @ApiOperationSupport(order = 7)
+    @PostMapping("/moveResource")
+    void moveResource(@RequestBody BusiResourceMover mover);
 
 }
