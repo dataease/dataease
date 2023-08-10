@@ -1,6 +1,7 @@
 package io.dataease.dataset.server;
 
 import io.dataease.api.dataset.DatasetTreeApi;
+import io.dataease.api.dataset.dto.DatasetNodeDTO;
 import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.vo.DataSetBarVO;
@@ -22,6 +23,11 @@ public class DatasetTreeServer implements DatasetTreeApi {
     @Override
     public DatasetGroupInfoDTO save(DatasetGroupInfoDTO datasetNodeDTO) throws Exception {
         return datasetGroupManage.save(datasetNodeDTO);
+    }
+
+    @Override
+    public DatasetNodeDTO move(DatasetGroupInfoDTO dto) throws Exception {
+        return datasetGroupManage.move(dto);
     }
 
     @Override
