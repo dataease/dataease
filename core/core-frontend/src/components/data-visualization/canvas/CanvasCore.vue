@@ -31,12 +31,13 @@ import CanvasOptBar from '@/components/visualization/CanvasOptBar.vue'
 import LinkJumpSet from '@/components/visualization/LinkJumpSet.vue'
 import { adaptCurThemeCommonStyle } from '@/utils/canvasStyle'
 import LinkageSet from '@/components/visualization/LinkageSet.vue'
+import PointShadow from '@/components/data-visualization/canvas/PointShadow.vue'
 const snapshotStore = snapshotStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
 const composeStore = composeStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
 
-const { curComponent, dvInfo, editMode } = storeToRefs(dvMainStore)
+const { curComponent, dvInfo, editMode, tabMoveOutComponentId } = storeToRefs(dvMainStore)
 const { editorMap } = storeToRefs(composeStore)
 const props = defineProps({
   isEdit: {
@@ -175,6 +176,15 @@ const linkageRef = ref(null)
 const mainDomId = ref('editor-' + canvasId.value)
 const showComponentData = computed(() => {
   return componentData.value.filter(component => component.isShow)
+})
+
+const pointShadowShow = computed(() => {
+  return (
+    canvasId.value === 'canvas-main' &&
+    curComponent.value &&
+    curComponent.value.canvasId !== 'canvas-main' &&
+    tabMoveOutComponentId.value
+  )
 })
 
 const curGap = computed(() => {
@@ -1511,6 +1521,9 @@ defineExpose({
       :cur-gap="curGap"
       :element="infoBox.moveItem"
     ></drag-shadow>
+
+    <!--切换canvas 拖拽阴影部分-->
+    <point-shadow v-if="pointShadowShow" :canvas-id="canvasId" />
 
     <!--页面组件列表展示-->
     <Shape

@@ -34,9 +34,9 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { guid } from '@/views/visualized/data/dataset/form/util'
 import eventBus from '@/utils/eventBus'
-import { findComponentIndexById } from '@/utils/canvasUtils'
+import { canvasChangeAdaptor, findComponentIndexById } from '@/utils/canvasUtils'
 const dvMainStore = dvMainStoreWithOut()
-const { componentData, canvasStyleData, canvasViewInfo } = storeToRefs(dvMainStore)
+const { componentData, canvasStyleData, canvasViewInfo, bashMatrixInfo } = storeToRefs(dvMainStore)
 const tabCanvas = ref(null)
 
 const props = defineProps({
@@ -107,20 +107,25 @@ function removeTab(targetName: string) {
 
 const componentMoveIn = component => {
   console.log('componentMoveIn-' + JSON.stringify(component))
+  const targetDomComponent = document.querySelector('#component' + component.id)
+  const componentWidth = targetDomComponent.offsetWidth
+  const componentHeight = targetDomComponent.offsetHeight
   element.value.propValue.forEach((tabItem, index) => {
     if (editableTabsValue.value === tabItem.name) {
+      //获取主画布当前组件的index
+      const curIndex = findComponentIndexById(component.id)
+      // 从主画布中移除
+      eventBus.emit('removeMatrixItem-canvas-main', curIndex)
+      dvMainStore.setCurComponent({ component: null, index: null })
       component.canvasId = element.value.id + '--' + tabItem.name
+      const matrixBase = tabCanvas.value[index].getBaseMatrixSize() //矩阵基础大小
+      canvasChangeAdaptor(component, matrixBase)
       tabItem.componentData.push(component)
       nextTick(() => {
-        //获取主画布当前组件的index
-        const curIndex = findComponentIndexById(component.id)
-        // 从主画布中移除
-        eventBus.emit('removeMatrixItem-canvas-main', curIndex)
-        dvMainStore.setCurComponent({ component: null, index: null })
         component.x = 1
         component.y = 1
-        component.left = 0
-        component.top = 0
+        component.style.left = 0
+        component.style.top = 0
         tabCanvas.value[index].addItemBox(component) //在适当的时候初始化布局组件
       })
     }
@@ -137,6 +142,7 @@ const componentMoveOut = component => {
       curIndex = findComponentIndexById(component.id, tabItem.componentData)
     }
   })
+  canvasChangeAdaptor(component, bashMatrixInfo.value, true)
   // 从Tab画布中移除
   eventBus.emit('removeMatrixItem-' + component.canvasId, curIndex)
   // 主画布中添加
