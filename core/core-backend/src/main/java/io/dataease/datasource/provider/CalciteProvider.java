@@ -241,6 +241,7 @@ public class CalciteProvider {
             try {
                 switch (datasourceType) {
                     case mysql:
+                    case mongo:
                     case mariadb:
                     case TiDB:
                     case StarRocks:
@@ -368,6 +369,7 @@ public class CalciteProvider {
         DatasourceConfiguration configuration = null;
         switch (datasourceType) {
             case mysql:
+            case mongo:
             case mariadb:
             case TiDB:
             case StarRocks:
@@ -441,6 +443,7 @@ public class CalciteProvider {
         DatasourceConfiguration.DatasourceType datasourceType = DatasourceConfiguration.DatasourceType.valueOf(coreDatasource.getType());
         switch (datasourceType) {
             case mysql:
+            case mongo:
             case StarRocks:
             case TiDB:
             case mariadb:
