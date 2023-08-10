@@ -72,6 +72,10 @@ export const validate = (data = {}) => {
   return request.post({ url: '/datasource/validate', data })
 }
 
+export const latestUse = async (data = {}) => {
+  return request.post({ url: '/datasource/latestUse', data })
+}
+
 export const validateById = (id: number) => request.get({ url: '/datasource/validate/' + id })
 
 export const save = async (data = {}): Promise<Dataset> => {
