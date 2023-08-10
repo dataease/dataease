@@ -1,0 +1,162 @@
+#!/bin/bash
+action=$1
+target=$2
+args=$@
+
+DE_BASE=/opt
+DE_RUNNING_BASE=${DE_BASE}/dataease2.0
+DE_PORT=8100
+
+source ${DE_RUNNING_BASE}/.env
+
+export COMPOSE_HTTP_TIMEOUT=180
+
+compose_files="-f docker-compose.yml"
+
+compose_cmd="docker-compose"
+
+docker-compose version >/dev/null 2>&1
+if [ $? -ne 0 ]; then
+   docker compose version >/dev/null 2>&1
+   if [ $? -ne 0 ]; then
+      compose_cmd="docker compose"
+   fi
+fi
+
+if [[ ! ${DE_EXTERNAL_MYSQL} ]] || [ ${DE_EXTERNAL_MYSQL} = "false" ]; then
+  compose_files="${compose_files} -f docker-compose-mysql.yml"
+fi
+
+function usage() {
+   echo "DATAEASE 控制脚本"
+   echo
+   echo "Usage: "
+   echo "  ./dectl [COMMAND] [ARGS...]"
+   echo "  ./dectl --help"
+   echo
+   echo "Commands: "
+   echo "  status       查看 DATAEASE 服务运行状态"
+   echo "  start        启动 DATAEASE 服务"
+   echo "  stop         停止 DATAEASE 服务"
+   echo "  restart      重启 DATAEASE 服务"
+   echo "  reload       重新加载 DATAEASE 服务"
+   echo "  uninstall    卸载 DATAEASE 服务"
+   echo "  upgrade      升级 DATAEASE 服务"
+}
+function _healthcheck() {
+   echo
+   for b in {1..30}
+   do
+      sleep 3
+      http_code=$(curl -sILw "%{http_code}\n" http://localhost:${DE_PORT} -o /dev/null)
+      if [[ $http_code == 000 ]];then
+         echo "DataEase 服务状态 : 正在启动"
+      elif [[ $http_code == 200 ]];then
+         echo "DataEase 服务状态 : 正常运行"
+         break;
+      else
+         echo -e "DataEase 服务状态 : \033[31m无法访问\033[0m"
+         exit 1
+      fi
+   done
+   echo
+}
+function status() {
+   echo
+   echo "DataEase 容器运行状态"
+   cd ${DE_RUNNING_BASE}; ${compose_cmd} ${compose_files} ps
+
+   echo
+   docker_root_dir=$(docker info | grep "Docker Root Dir"  | awk -F': ' '{print $2}')
+   echo "Docker 目录及文件大小 : "
+   du -sh $docker_root_dir
+   echo
+   echo "Docker 目录所在磁盘使用情况 : "
+   df -H $docker_root_dir
+
+   echo
+   echo "日志文件大小 : "
+   du -Sh ${DE_RUNNING_BASE}/logs/
+
+   echo
+   echo "DataEase 运行目录及文件大小 : "
+   du -sh ${DE_BASE}
+   echo
+   echo "DataEase 运行目录使用情况 : "
+   df -H ${DE_BASE}
+
+   # echo
+   # read available_disk percent_disk<<< $(df -H --output=avail,pcent ${DE_BASE} | tail -1)
+   # available_disk=${available_disk%?}
+   # percent_disk=${percent_disk%?}
+   #    if [[ $available_disk < 2.0 ]];then
+   #    echo -e "\033[31m[警告] DataEase 运行目录所在磁盘剩余空间不足 2G !\033[0m"
+   # fi
+
+   _healthcheck
+}
+function start() {
+   echo
+   cd ${DE_RUNNING_BASE}; ${compose_cmd} ${compose_files} up -d
+   _healthcheck
+}
+function stop() {
+   echo
+   cd ${DE_RUNNING_BASE}; ${compose_cmd} ${compose_files} down -v ${target}
+}
+function restart() {
+   stop
+   start
+}
+function reload() {
+   start
+}
+function uninstall() {
+   stop
+}
+# function version() {
+#    echo
+#    de_version=$(grep "^    image:.*/dataease:" ${DE_BASE}/dataease/docker-compose.yml | awk -F'dataease:' '{print $2}')
+#    echo $de_version
+# }
+function upgrade() {
+   echo
+   cd ${DE_RUNNING_BASE}; ${compose_cmd} pull dataease
+   reload
+}
+
+function main() {
+    case "${action}" in
+      status)
+         status
+         ;;
+      start)
+         start
+         ;;
+      stop)
+         stop
+         ;;
+      restart)
+         restart
+         ;;
+      reload)
+         reload
+         ;;
+      uninstall)
+         uninstall
+         ;;
+      upgrade)
+         upgrade
+         ;;
+      help)
+         usage
+         ;;
+      --help)
+         usage
+         ;;
+      *)
+         echo "不支持的参数，请使用 help 或 --help 参数获取帮助"
+         ;;
+    esac
+}
+main

@@ -11,7 +11,6 @@ public class BusiResourceEditor implements Serializable {
     @Serial
     private static final long serialVersionUID = 5193320462388120821L;
     private Long id;
-    private Long pid;
     private String name;
     private String flag;
     private int extraFlag;
