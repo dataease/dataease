@@ -10,6 +10,7 @@ import io.dataease.api.dataset.vo.DataSetBarVO;
 import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
 import io.dataease.api.permissions.auth.dto.BusiResourceCreator;
 import io.dataease.api.permissions.auth.dto.BusiResourceEditor;
+import io.dataease.api.permissions.auth.dto.BusiResourceMover;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetGroup;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupMapper;
 import io.dataease.dataset.dao.ext.mapper.CoreDataSetExtMapper;
@@ -118,6 +119,28 @@ public class DatasetGroupManage {
             // 删除不要的table和field
             datasetTableManage.deleteByDatasetGroupUpdate(datasetGroupInfoDTO.getId(), tableIds);
             datasetTableFieldManage.deleteByDatasetGroupUpdate(datasetGroupInfoDTO.getId(), fieldIds);
+        }
+        return datasetGroupInfoDTO;
+    }
+
+    @Transactional
+    public DatasetGroupInfoDTO move(DatasetGroupInfoDTO datasetGroupInfoDTO) {
+        checkName(datasetGroupInfoDTO);
+        // save dataset/group
+        long time = System.currentTimeMillis();
+        CoreDatasetGroup coreDatasetGroup = new CoreDatasetGroup();
+        if (Objects.equals(datasetGroupInfoDTO.getId(), datasetGroupInfoDTO.getPid())) {
+            DEException.throwException(Translator.get("i18n_pid_not_eq_id"));
+        }
+        CoreDatasetGroup sourceData = coreDatasetGroupMapper.selectById(datasetGroupInfoDTO.getId());
+        BeanUtils.copyBean(coreDatasetGroup, datasetGroupInfoDTO);
+        coreDatasetGroup.setLastUpdateTime(time);
+        coreDatasetGroupMapper.updateById(coreDatasetGroup);
+        if (ObjectUtils.isNotEmpty(interactiveAuthApi) && ObjectUtils.isNotEmpty(sourceData)) {
+            BusiResourceMover mover = new BusiResourceMover();
+            mover.setId(sourceData.getId());
+            mover.setPid(coreDatasetGroup.getPid());
+            interactiveAuthApi.moveResource(mover);
         }
         return datasetGroupInfoDTO;
     }

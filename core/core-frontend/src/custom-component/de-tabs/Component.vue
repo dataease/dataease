@@ -20,7 +20,7 @@
         :component-data="tabItem.componentData"
         :canvas-style-data="canvasStyleData"
         :canvas-view-info="canvasViewInfo"
-        :canvas-id="element.id + '-' + tabItem.name"
+        :canvas-id="element.id + '--' + tabItem.name"
       ></de-canvas>
     </el-tab-pane>
   </de-full-tabs>
@@ -109,7 +109,7 @@ const componentMoveIn = component => {
   console.log('componentMoveIn-' + JSON.stringify(component))
   element.value.propValue.forEach((tabItem, index) => {
     if (editableTabsValue.value === tabItem.name) {
-      component.canvasId = element.value.id + '-' + tabItem.name
+      component.canvasId = element.value.id + '--' + tabItem.name
       tabItem.componentData.push(component)
       nextTick(() => {
         //获取主画布当前组件的index
@@ -127,11 +127,28 @@ const componentMoveIn = component => {
   })
 }
 
+const componentMoveOut = component => {
+  console.log('componentMoveOut-' + JSON.stringify(component))
+  //获tab画布当前组件的index
+  let curIndex = 0
+  element.value.propValue.forEach((tabItem, index) => {
+    if (editableTabsValue.value === tabItem.name) {
+      //获取当前画布组件的index
+      curIndex = findComponentIndexById(component.id, tabItem.componentData)
+    }
+  })
+  // 从Tab画布中移除
+  eventBus.emit('removeMatrixItem-' + component.canvasId, curIndex)
+  // 主画布中添加
+  eventBus.emit('moveOutFromTab-canvas-main', component)
+}
+
 onMounted(() => {
   if (element.value.propValue.length > 0) {
     editableTabsValue.value = element.value.propValue[0].name
   }
   eventBus.on('onTabMoveIn-' + element.value.id, componentMoveIn)
+  eventBus.on('onTabMoveOut-' + element.value.id, componentMoveOut)
 })
 </script>
 <style lang="less" scoped>

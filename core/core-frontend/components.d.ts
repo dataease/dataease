@@ -127,6 +127,7 @@ declare module '@vue/runtime-core' {
     Modal: typeof import('./src/components/data-visualization/Modal.vue')['default']
     Month: typeof import('./src/components/cron/src/Month.vue')['default']
     OverallSetting: typeof import('./src/components/dashboard/subject-setting/dashboard-style/OverallSetting.vue')['default']
+    PointShadow: typeof import('./src/components/data-visualization/canvas/PointShadow.vue')['default']
     Preview: typeof import('./src/components/data-visualization/canvas/Preview.vue')['default']
     RealTimeComponentList: typeof import('./src/components/data-visualization/RealTimeComponentList.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
