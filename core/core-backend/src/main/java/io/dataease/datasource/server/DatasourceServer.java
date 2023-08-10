@@ -110,7 +110,6 @@ public class DatasourceServer implements DatasourceApi {
                     editor.setId(dataSourceDTO.getId());
                     editor.setFlag(RESOURCE_FLAG);
                     editor.setName(dataSourceDTO.getName());
-                    editor.setPid(dataSourceDTO.getPid());
                     interactiveAuthApi.editResource(editor);
                 }
 
@@ -302,7 +301,6 @@ public class DatasourceServer implements DatasourceApi {
             editor.setId(pk);
             editor.setFlag(RESOURCE_FLAG);
             editor.setName(dataSourceDTO.getName());
-            editor.setPid(sourceData.getPid());
             interactiveAuthApi.editResource(editor);
         }
         calciteProvider.update(dataSourceDTO);
