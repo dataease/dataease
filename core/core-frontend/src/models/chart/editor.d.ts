@@ -12,6 +12,7 @@ declare type EditorProperty =
   | 'table-total-selector'
   | 'text-selector'
   | 'misc-selector'
+  | 'misc-style-selector'
 declare type EditorPropertyInner = {
   [key in EditorProperty]?: string[]
 }

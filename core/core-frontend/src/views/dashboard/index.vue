@@ -232,7 +232,18 @@ onMounted(() => {
   })
 })
 
+const addItemBox = component => {
+  cyGridster.value.addItemBox(component)
+}
+
+const moveOutFromTab = component => {
+  component.canvasId = 'canvas-main'
+  dvMainStore.addComponent({ component, index: undefined, isFromGroup: true })
+  addItemBox(component)
+}
+
 eventBus.on('handleNew', handleNew)
+eventBus.on('moveOutFromTab-canvas-main', moveOutFromTab)
 </script>
 
 <template>

@@ -4,10 +4,11 @@ import nothingInput from '@/assets/img/nothing-input.png'
 import nothingSelect from '@/assets/img/nothing-select.png'
 import nothingTable from '@/assets/img/nothing-table.png'
 import none from '@/assets/img/none.png'
+import nothingTreee from '@/assets/img/nothing-tree.png'
 import nothingNone from '@/assets/img/nothing-none.png'
 defineProps({
   imgType: {
-    type: String as PropType<'input' | 'select' | 'table' | 'none' | 'noneWhite'>,
+    type: String as PropType<'input' | 'select' | 'table' | 'none' | 'noneWhite' | 'tree'>,
     default: 'table'
   },
   imageSize: {
@@ -24,6 +25,7 @@ const getAssetsFile = {
   select: nothingSelect,
   table: nothingTable,
   noneWhite: nothingNone,
+  tree: nothingTreee,
   none
 }
 </script>

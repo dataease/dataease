@@ -582,6 +582,15 @@ export const dvMainStore = defineStore('dataVisualization', {
     },
     setTabMoveInActiveId(tabId) {
       this.tabMoveInActiveId = tabId
+    },
+    setMousePointShadowMap(mousePoint) {
+      this.mousePointShadowMap.mouseX = mousePoint.mouseX
+      this.mousePointShadowMap.mouseY = mousePoint.mouseY
+      this.mousePointShadowMap.width = mousePoint.width
+      this.mousePointShadowMap.height = mousePoint.height
+    },
+    setTabMoveOutComponentId(componentId) {
+      this.tabMoveOutComponentId = componentId
     }
   }
 })
