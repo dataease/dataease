@@ -529,12 +529,11 @@ export const DEFAULT_BACKGROUND_COLOR = {
   alpha: 0,
   borderRadius: 0
 }
-export const DEFAULT_SPLIT = {
-  name: {
-    show: true,
-    color: '#999999',
-    fontSize: '12'
-  },
+export const DEFAULT_MISC_STYLE: ChartMiscStyle = {
+  showName: false,
+  color: '#999',
+  fontSize: 12,
+  axisColor: '#999',
   splitNumber: 5,
   axisLine: {
     show: true,
@@ -1096,6 +1095,13 @@ export const CHART_TYPE_CONFIGS = [
         value: 'treemap',
         title: t('chart.chart_treemap'),
         icon: 'treemap'
+      },
+      {
+        render: 'antv',
+        category: 'chart.chart_type_distribute',
+        value: 'radar',
+        title: t('chart.chart_radar'),
+        icon: 'radar'
       }
     ]
   },
@@ -1190,7 +1196,7 @@ export const BASE_VIEW_CONFIG = {
     tableHeader: DEFAULT_TABLE_HEADER,
     tableCell: DEFAULT_TABLE_CELL,
     map: {
-      id: '000',
+      id: '',
       level: 'world'
     }
   },
@@ -1200,7 +1206,7 @@ export const BASE_VIEW_CONFIG = {
     xAxis: DEFAULT_XAXIS_STYLE,
     yAxis: DEFAULT_YAXIS_STYLE,
     yAxisExt: DEFAULT_YAXIS_EXT_STYLE,
-    split: DEFAULT_SPLIT
+    misc: DEFAULT_MISC_STYLE
   },
   senior: {
     functionCfg: DEFAULT_FUNCTION_CFG,

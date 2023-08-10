@@ -14,7 +14,6 @@ import {
 } from '@/views/chart/components/js/panel/charts/line/common'
 import { Label } from '@antv/g2plot/lib/types/label'
 import { IntervalGeometryLabelPosition } from '@antv/g2/lib/interface'
-import { flow as flowLeft } from 'lodash-es'
 
 const DEFAULT_DATA = []
 /**

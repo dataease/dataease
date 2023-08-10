@@ -514,6 +514,11 @@ const onChangeYAxisForm = val => {
   renderChart(view.value)
 }
 
+const onChangeMiscStyleForm = val => {
+  view.value.customStyle.misc = val
+  renderChart(view.value)
+}
+
 const onTextChange = val => {
   view.value.customStyle.text = val
   renderChart(view.value)
@@ -1332,6 +1337,7 @@ const autoInsert = element => {
                   @onTableHeaderChange="onTableHeaderChange"
                   @onTableCellChange="onTableCellChange"
                   @onTableTotalChange="onTableTotalChange"
+                  @onChangeMiscStyleForm="onChangeMiscStyleForm"
                 />
               </el-tab-pane>
 
