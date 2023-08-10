@@ -619,6 +619,7 @@ defineExpose({
       padding: 16px 7px;
       border-right: 1px solid #ccc;
       float: left;
+      overflow-y: auto;
 
       .icon-border {
         padding: 3px;
