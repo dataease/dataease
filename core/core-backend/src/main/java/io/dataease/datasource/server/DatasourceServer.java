@@ -573,6 +573,15 @@ public class DatasourceServer implements DatasourceApi {
             }
             excelFileData.setSheets(excelSheetDataList);
         }
+        for (ExcelSheetData sheet : excelFileData.getSheets()) {
+            for (int i = 0; i < sheet.getFields().size() -1 ; i++) {
+                for (int j = 1; j < sheet.getFields().size()  ; j++) {
+                    if(sheet.getFields().get(i).getName().equalsIgnoreCase(sheet.getFields().get(j).getName())){
+                        DEException.throwException(sheet.getExcelLabel() + Translator.get("i18n_field_name_repeat") + sheet.getFields().get(i).getName());
+                    }
+                }
+            }
+        }
         return excelFileData;
     }
 
@@ -593,7 +602,6 @@ public class DatasourceServer implements DatasourceApi {
     private void checkName(String name, String type, Long id, Long pid) throws DEException {
         QueryWrapper<CoreDatasource> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("name", name);
-        queryWrapper.eq("type", type);
         if (id != null && id != 0) {
             queryWrapper.ne("id", id);
         }
@@ -601,7 +609,7 @@ public class DatasourceServer implements DatasourceApi {
             queryWrapper.eq("pid", id);
         }
         CoreDatasource datasource = datasourceMapper.selectById(id);
-        if(datasource != null){
+        if (datasource != null) {
             queryWrapper.eq("pid", datasource.getPid());
         }
 

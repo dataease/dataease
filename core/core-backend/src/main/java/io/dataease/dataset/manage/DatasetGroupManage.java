@@ -122,6 +122,30 @@ public class DatasetGroupManage {
         return datasetGroupInfoDTO;
     }
 
+    public DatasetGroupInfoDTO move(DatasetGroupInfoDTO datasetGroupInfoDTO) throws Exception {
+        checkName(datasetGroupInfoDTO);
+        // save dataset/group
+        long time = System.currentTimeMillis();
+        CoreDatasetGroup coreDatasetGroup = new CoreDatasetGroup();
+        if (Objects.equals(datasetGroupInfoDTO.getId(), datasetGroupInfoDTO.getPid())) {
+            DEException.throwException(Translator.get("i18n_pid_not_eq_id"));
+        }
+        CoreDatasetGroup sourceData = coreDatasetGroupMapper.selectById(datasetGroupInfoDTO.getId());
+        BeanUtils.copyBean(coreDatasetGroup, datasetGroupInfoDTO);
+        coreDatasetGroup.setLastUpdateTime(time);
+        coreDatasetGroupMapper.updateById(coreDatasetGroup);
+        if (ObjectUtils.isNotEmpty(interactiveAuthApi) && ObjectUtils.isNotEmpty(sourceData) && (!StringUtils.equals(sourceData.getName(), coreDatasetGroup.getName()) || !sourceData.getPid().equals(coreDatasetGroup.getPid()
+        ))) {
+            BusiResourceEditor editor = new BusiResourceEditor();
+            editor.setId(coreDatasetGroup.getId());
+            editor.setName(coreDatasetGroup.getName());
+            editor.setFlag(leafType);
+            editor.setPid(coreDatasetGroup.getPid());
+            interactiveAuthApi.editResource(editor);
+        }
+        return datasetGroupInfoDTO;
+    }
+
     public void delete(Long id) {
         CoreDatasetGroup coreDatasetGroup = coreDatasetGroupMapper.selectById(id);
         if (ObjectUtils.isEmpty(coreDatasetGroup)) {

@@ -18,9 +18,11 @@ public interface DatasetTreeApi {
     @PostMapping("save")
     DatasetNodeDTO save(@RequestBody DatasetGroupInfoDTO dto) throws Exception;
 
+    @PostMapping("move")
+    DatasetNodeDTO move(@RequestBody DatasetGroupInfoDTO dto) throws Exception;
+
     @PostMapping("delete/{id}")
     void delete(@PathVariable Long id);
-
 
     @PostMapping("tree")
     List<BusiNodeVO> tree(@RequestBody BusiNodeRequest request);
