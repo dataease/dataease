@@ -232,6 +232,7 @@ export default {
     other: '其他',
     local_file: '本地文件',
     select_ds_type: '选择数据源类型',
+    select_ds: '选择数据源',
     ds_info: '录入数据源信息',
     sync_info: '数据同步设置',
     input_name: '请输入名称',
