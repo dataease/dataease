@@ -228,7 +228,7 @@ const uploadSuccess = response => {
       label: tableName
     }
   })
-  state.excelData.push(response.data)
+  state.excelData = [response.data]
   const [sheet] = tabList.value
 
   sheet && handleTabClick(sheet)

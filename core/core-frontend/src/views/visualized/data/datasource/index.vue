@@ -189,6 +189,7 @@ const getDsIconName = data => {
 }
 
 const handleTabClick = tab => {
+  activeTab.value = tab.value
   handleLoadExcel({ table: tab.value, id: nodeInfo.id })
 }
 
