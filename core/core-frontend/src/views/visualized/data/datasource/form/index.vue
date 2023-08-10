@@ -98,7 +98,7 @@ const excel = ref()
 const currentType = ref<DsType>('OLTP')
 const filterText = ref('')
 const currentDsType = ref('')
-
+const emits = defineEmits(['refresh'])
 const { emitter } = useEmitt()
 const selectDsType = (type: string) => {
   currentDsType.value = type
@@ -185,6 +185,7 @@ const createDataset = () => {
 }
 const backToDatasourceList = () => {
   visible.value = false
+  emits('refresh')
   showFinishPage.value = false
 }
 const continueCreating = () => {
@@ -194,6 +195,7 @@ const continueCreating = () => {
 
 const handleShowFinishPage = ({ id, name }) => {
   if (editDs.value || wsCache.get('ds-create-success')) {
+    emits('refresh')
     visible.value = false
     return
   }
