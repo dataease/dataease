@@ -14,6 +14,14 @@ export function baseGaugeOptionAntV(plot, container, chart, action, scale = 1) {
   const data = chart.data.series[0].data[0]
   // size
   let customAttr = {}
+  let axisLabel = {
+    style: {
+      fontSize: getScaleValue(14, scale) // 刻度值字体大小
+    },
+    formatter: function(v) {
+      return v === '0' ? v : (v * 100 + '%')
+    }
+  }
   if (chart.customAttr) {
     customAttr = JSON.parse(chart.customAttr)
     if (customAttr.size) {
@@ -33,6 +41,9 @@ export function baseGaugeOptionAntV(plot, container, chart, action, scale = 1) {
       }
       startAngel = parseInt(size.gaugeStartAngle) * Math.PI / 180
       endAngel = parseInt(size.gaugeEndAngle) * Math.PI / 180
+      if (customAttr.size.gaugeAxisLine === false) {
+        axisLabel = false
+      }
     }
   }
   const per = (parseFloat(data) - parseFloat(min)) / (parseFloat(max) - parseFloat(min))
@@ -101,14 +112,7 @@ export function baseGaugeOptionAntV(plot, container, chart, action, scale = 1) {
     },
     axis: {
       tickInterval: 0.2,
-      label: {
-        style: {
-          fontSize: getScaleValue(14, scale) // 刻度值字体大小
-        },
-        formatter: function(v) {
-          return v === '0' ? v : (v * 100 + '%')
-        }
-      },
+      label: axisLabel,
       tickLine: {
         length: getScaleValue(12, scale) * -1, // 刻度线长度
         style: {

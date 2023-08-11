@@ -1553,7 +1553,8 @@ export default {
     map_line_type_great_circle: '大圆弧',
     map_line_color_source_color: '起始颜色',
     map_line_color_target_color: '结束颜色',
-    map_line_theta_offset: '弧度'
+    map_line_theta_offset: '弧度',
+    gauge_axis_label: '刻度标签'
   },
   dataset: {
     scope_edit: '仅编辑时生效',

@@ -67,7 +67,12 @@ export function baseGaugeOption(chart_option, chart, scale = 1) {
           width: getScaleValue(2, scale) // 刻度线宽度
         }
       }
+      let showAxisLine = customAttr.size.gaugeAxisLine
+      if (showAxisLine === null || showAxisLine === undefined) {
+        showAxisLine = true
+      }
       chart_option.series[0].axisLabel = {
+        show: showAxisLine,
         distance: getScaleValue(20, scale), // 刻度值文字里刻度线距离
         fontSize: getScaleValue(20, scale)// 刻度值字体大小
       }

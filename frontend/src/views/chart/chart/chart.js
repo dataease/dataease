@@ -100,6 +100,7 @@ export const DEFAULT_SIZE = {
   gaugeMax: 100,
   gaugeStartAngle: 225,
   gaugeEndAngle: -45,
+  gaugeAxisLine: true,
   gaugeTickCount: 5,
   dimensionFontSize: 18,
   quotaFontSize: 18,

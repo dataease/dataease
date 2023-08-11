@@ -476,6 +476,16 @@
             @change="changeBarSizeCase('gaugeEndAngle')"
           />
         </el-form-item>
+        <el-form-item
+          v-show="showProperty('gaugeAxisLabel')"
+          :label="$t('chart.gauge_axis_label')"
+          class="form-item"
+        >
+          <el-checkbox
+            v-model="sizeForm.gaugeAxisLine"
+            @change="changeBarSizeCase('gaugeAxisLabel')"
+          />
+        </el-form-item>
         <!--gauge-end-->
         <!--text&label-start-->
         <el-form-item
@@ -1154,6 +1164,9 @@ export default {
           this.sizeForm.vPosition = this.sizeForm.vPosition ? this.sizeForm.vPosition : DEFAULT_SIZE.vPosition
 
           this.sizeForm.tableAutoBreakLine = this.sizeForm.tableAutoBreakLine ? this.sizeForm.tableAutoBreakLine : DEFAULT_SIZE.tableAutoBreakLine
+          if (this.sizeForm.gaugeAxisLine === null || this.sizeForm.gaugeAxisLine === undefined) {
+            this.sizeForm.gaugeAxisLine = DEFAULT_SIZE.gaugeAxisLine
+          }
         }
       }
     },
