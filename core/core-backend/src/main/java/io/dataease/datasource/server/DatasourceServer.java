@@ -12,6 +12,7 @@ import io.dataease.api.ds.vo.*;
 import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
 import io.dataease.api.permissions.auth.dto.BusiResourceCreator;
 import io.dataease.api.permissions.auth.dto.BusiResourceEditor;
+import io.dataease.api.permissions.auth.dto.BusiResourceMover;
 import io.dataease.commons.constants.DataSourceType;
 import io.dataease.commons.constants.TaskStatus;
 import io.dataease.dataset.dto.DatasourceSchemaDTO;
@@ -93,7 +94,6 @@ public class DatasourceServer implements DatasourceApi {
     public DatasourceDTO move(DatasourceDTO dataSourceDTO) throws Exception {
         switch (dataSourceDTO.getAction()) {
             case "move":
-            case "rename":
                 if (Objects.equals(dataSourceDTO.getId(), dataSourceDTO.getPid())) {
                     DEException.throwException("pid can not equal to id.");
                 }
@@ -106,6 +106,22 @@ public class DatasourceServer implements DatasourceApi {
                 record.setName(dataSourceDTO.getName());
                 datasourceMapper.update(record, updateWrapper);
                 if (ObjectUtils.isNotEmpty(interactiveAuthApi) && ObjectUtils.isNotEmpty(sourceData) && (!StringUtils.equals(dataSourceDTO.getName(), sourceData.getName()) || !sourceData.getPid().equals(dataSourceDTO.getPid()))) {
+                    BusiResourceMover mover = new BusiResourceMover();
+                    mover.setId(record.getId());
+                    mover.setPid(record.getPid());
+                    interactiveAuthApi.moveResource(mover);
+                }
+                break;
+            case "rename":
+                CoreDatasource datasource = datasourceMapper.selectById(dataSourceDTO.getId());
+                checkName(dataSourceDTO.getName(), datasource.getType(), dataSourceDTO.getId(), dataSourceDTO.getPid());
+                UpdateWrapper<CoreDatasource> wrapper = new UpdateWrapper<>();
+                wrapper.eq("id", dataSourceDTO.getId());
+                CoreDatasource coreDatasourceRecord = new CoreDatasource();
+                coreDatasourceRecord.setPid(dataSourceDTO.getPid());
+                coreDatasourceRecord.setName(dataSourceDTO.getName());
+                datasourceMapper.update(coreDatasourceRecord, wrapper);
+                if (ObjectUtils.isNotEmpty(interactiveAuthApi) && ObjectUtils.isNotEmpty(datasource) && (!StringUtils.equals(dataSourceDTO.getName(), datasource.getName()) || !datasource.getPid().equals(dataSourceDTO.getPid()))) {
                     BusiResourceEditor editor = new BusiResourceEditor();
                     editor.setId(dataSourceDTO.getId());
                     editor.setFlag(RESOURCE_FLAG);
