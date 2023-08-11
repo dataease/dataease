@@ -46,7 +46,7 @@ public class DataSourceManage {
     }
 
     public List<BusiNodeVO> tree(BusiNodeRequest request) {
-        request.setBusyFlag(BUSI_FLAG);
+        request.setBusiFlag(BUSI_FLAG);
         if (org.apache.commons.lang3.ObjectUtils.isNotEmpty(interactiveAuthApi)) {
             return interactiveAuthApi.resource(request);
         }

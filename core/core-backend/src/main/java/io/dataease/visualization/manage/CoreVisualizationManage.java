@@ -29,10 +29,10 @@ public class CoreVisualizationManage {
     private CoreVisualiationExtMapper coreVisualiationExtMapper;
 
     public List<BusiNodeVO> tree(BusiNodeRequest request) {
-        String busyType = request.getBusyFlag();
+        String busyType = request.getBusiFlag();
         if (ObjectUtils.isNotEmpty(interactiveAuthApi)) {
             String authFlag = StringUtils.equals("dataV", busyType) ? "screen" : "panel";
-            request.setBusyFlag(authFlag);
+            request.setBusiFlag(authFlag);
             return interactiveAuthApi.resource(request);
         }
         List<VisualizationNodeBO> nodes = new ArrayList<>();

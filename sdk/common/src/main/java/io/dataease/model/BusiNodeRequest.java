@@ -10,7 +10,7 @@ public class BusiNodeRequest implements Serializable {
     @Serial
     private static final long serialVersionUID = 3859379188035689316L;
 
-    private String busyFlag;
+    private String busiFlag;
 
     private String id;
 
