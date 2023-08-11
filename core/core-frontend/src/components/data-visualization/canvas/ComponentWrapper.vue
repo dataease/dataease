@@ -39,6 +39,10 @@ const props = defineProps({
     required: false,
     type: String,
     default: 'preview'
+  },
+  canvasId: {
+    type: String,
+    default: 'canvas-main'
   }
 })
 const { config, showPosition, index } = toRefs(props)
@@ -120,6 +124,7 @@ const commonBackgroundSvgInner = computed(() => {
     <div class="wrapper-inner" :class="showPosition" :style="componentBackgroundStyle">
       <component-edit-bar
         class="wrapper-edit-bar"
+        :canvas-id="canvasId"
         :index="index"
         :element="config"
         :show-position="showPosition"

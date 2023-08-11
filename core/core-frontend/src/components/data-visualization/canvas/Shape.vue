@@ -21,6 +21,7 @@
           :index="index"
           :element="element"
           :show-position="showPosition"
+          :canvas-id="canvasId"
           @userViewEnlargeOpen="userViewEnlargeOpen"
           @linkJumpSetOpen="linkJumpSetOpen"
           @linkageSetOpen="linkageSetOpen"
@@ -364,8 +365,8 @@ const handleMouseDownOnShape = e => {
     tabMoveInCheck()
     // 仪表板模式 会造成移动现象 当检测组件正在碰撞有效区内或者移入有效区内 则周边组件不进行移动
     if (
-      isFirst ||
-      (dashboardActive.value && !tabMoveInActiveId.value && !tabCollisionActiveId.value)
+      dashboardActive.value &&
+      (isFirst || (!tabMoveInActiveId.value && !tabCollisionActiveId.value))
     ) {
       emit('onDragging', e)
     }
@@ -487,7 +488,6 @@ const handleMouseDownOnPoint = (point, e) => {
       curPoint,
       symmetricPoint
     })
-    console.log('resize-move-' + JSON.stringify(style))
     dvMainStore.setShapeStyle(style)
     dashboardActive.value && emit('onResizing', moveEvent)
   }

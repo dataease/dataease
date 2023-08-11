@@ -56,7 +56,7 @@ const baseMarginTop = ref(0)
 const cyGridster = ref(null)
 
 const editStyle = computed(() => {
-  if (canvasStyleData.value) {
+  if (canvasStyleData.value && isMainCanvas(canvasId.value)) {
     return {
       ...getCanvasStyle(canvasStyleData.value)
     }

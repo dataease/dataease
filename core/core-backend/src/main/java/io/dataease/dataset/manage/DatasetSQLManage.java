@@ -284,6 +284,9 @@ public class DatasetSQLManage {
         String schemaAlias;
         if (StringUtils.equalsIgnoreCase(ds.getType(), DatasetTableType.DB) || StringUtils.equalsIgnoreCase(ds.getType(), DatasetTableType.SQL)) {
             CoreDatasource coreDatasource = coreDatasourceMapper.selectById(ds.getDatasourceId());
+            if (coreDatasource == null) {
+                DEException.throwException(Translator.get("i18n_dataset_ds_error") + ",ID:" + ds.getDatasourceId());
+            }
             if (StringUtils.equalsIgnoreCase("excel", coreDatasource.getType()) || StringUtils.equalsIgnoreCase("api", coreDatasource.getType())) {
                 coreDatasource = engineServer.getDeEngine();
             }
