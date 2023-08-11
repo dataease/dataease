@@ -152,7 +152,7 @@ public class DatasetGroupManage {
             delAuthMatch = interactiveAuthApi.checkDel(id);
         }
         if (!delAuthMatch) return;
-        CommonBeanFactory.getBean(this.getClass()).recursionDel(id);
+        Objects.requireNonNull(CommonBeanFactory.getBean(this.getClass())).recursionDel(id);
         if (ObjectUtils.isNotEmpty(interactiveAuthApi)) {
             interactiveAuthApi.delResource(id);
         }
@@ -179,7 +179,7 @@ public class DatasetGroupManage {
         if (ObjectUtils.isNotEmpty(interactiveAuthApi)) {
             return interactiveAuthApi.resource(request);
         }
-        QueryWrapper queryWrapper = new QueryWrapper();
+        QueryWrapper<Object> queryWrapper = new QueryWrapper<>();
         if (ObjectUtils.isNotEmpty(request.getLeaf())) {
             queryWrapper.eq("node_type", request.getLeaf() ? "dataset" : "folder");
         }

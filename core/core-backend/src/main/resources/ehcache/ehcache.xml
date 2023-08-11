@@ -130,5 +130,18 @@
         </resources>
     </cache>
 
+    <cache alias="core_menu_cache">
+        <key-type>java.lang.String</key-type>
+        <value-type>java.util.List</value-type>
+        <expiry>
+            <none/>
+        </expiry>
+        <resources>
+            <heap unit="entries">20</heap>
+            <offheap unit="MB">2</offheap>
+            <disk unit="MB" persistent="true">5</disk>
+        </resources>
+    </cache>
+
 </config>
 
