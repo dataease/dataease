@@ -6,6 +6,7 @@ import io.dataease.model.TreeBaseModel;
 import io.dataease.model.TreeModel;
 import io.dataease.model.TreeResultModel;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 public class TreeUtils {
@@ -23,7 +25,14 @@ public class TreeUtils {
     private final static String I18N_PREFIX = "i18n_auth_menu.";
 
     public static <T extends TreeResultModel, R extends TreeBaseModel> List<T> mergeTree(List<R> list, Class<T> tClass, boolean appendI18nPrefix) {
-        List<TreeModel> modelList = list.stream().map(item -> new TreeModel(item)).toList();
+        AtomicBoolean rootExist = new AtomicBoolean(false);
+        List<TreeModel> modelList = list.stream().map(item -> {
+            TreeModel treeModel = new TreeModel(item);
+            if (isRoot(treeModel)) {
+                rootExist.set(true);
+            }
+            return treeModel;
+        }).toList();
         List<TreeModel> modelResult = new ArrayList<>();
         Map<Long, List<TreeModel>> childMap = modelList.stream().collect(Collectors.groupingBy(TreeModel::getPid));
         List<Long> existedList = new ArrayList<>();
@@ -37,12 +46,22 @@ public class TreeUtils {
         if (CollectionUtil.isEmpty(modelList)) {
             return null;
         }
+        List<TreeModel> floatingList = modelList.stream().filter(node -> !isRoot(node) && !existedList.contains(node.getId())).toList();
         if (CollectionUtil.isNotEmpty(existedList)) {
             modelResult = modelList.stream().filter(node -> !existedList.contains(node.getId())).toList();
         } else {
             modelResult = modelList;
         }
+        if (rootExist.get() && CollectionUtil.isNotEmpty(floatingList)) {
+            modelResult = modelResult.stream().filter(TreeUtils::isRoot).collect(Collectors.toList());
+            modelResult.get(0).getChildren().addAll(floatingList);
+        }
+
         return convertTree(modelResult, tClass, appendI18nPrefix);
+    }
+
+    private static boolean isRoot(TreeModel node) {
+        return node.getId().equals(0L) && StringUtils.equalsIgnoreCase("root", node.getName());
     }
 
     public static <T extends TreeResultModel> List<T> convertTree(List<TreeModel> roots, Class<T> tClass, boolean appendI18nPrefix) {
