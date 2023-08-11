@@ -60,6 +60,10 @@ public class DatasetGroupManage {
     private static final String leafType = "dataset";
 
     public DatasetGroupInfoDTO save(DatasetGroupInfoDTO datasetGroupInfoDTO) throws Exception {
+        if (ObjectUtils.isEmpty(datasetGroupInfoDTO.getPid()) && ObjectUtils.isNotEmpty(datasetGroupInfoDTO.getId())) {
+            CoreDatasetGroup coreDatasetGroup = coreDatasetGroupMapper.selectById(datasetGroupInfoDTO.getId());
+            datasetGroupInfoDTO.setPid(coreDatasetGroup.getPid());
+        }
         checkName(datasetGroupInfoDTO);
         if (StringUtils.equalsIgnoreCase(datasetGroupInfoDTO.getNodeType(), leafType)) {
             // get union sql
