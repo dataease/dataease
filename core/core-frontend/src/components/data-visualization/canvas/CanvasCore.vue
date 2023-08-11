@@ -1554,6 +1554,7 @@ defineExpose({
         class="component"
         :style="getComponentStyle(item.style)"
         :prop-value="item.propValue"
+        :is-edit="true"
         :view="canvasViewInfo[item.id]"
         :element="item"
         :request="item.request"
@@ -1565,6 +1566,7 @@ defineExpose({
         v-else-if="item.component != 'VText'"
         :id="'component' + item.id"
         class="component"
+        :is-edit="true"
         :style="getComponentStyle(item.style)"
         :prop-value="item.propValue"
         :element="item"
@@ -1576,6 +1578,7 @@ defineExpose({
         v-else
         :id="'component' + item.id"
         class="component"
+        :is-edit="true"
         :style="getComponentStyle(item.style)"
         :prop-value="item.propValue"
         :element="item"

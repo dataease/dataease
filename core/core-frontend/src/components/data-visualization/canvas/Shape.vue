@@ -21,6 +21,7 @@
           :index="index"
           :element="element"
           :show-position="showPosition"
+          :canvas-id="canvasId"
           @userViewEnlargeOpen="userViewEnlargeOpen"
           @linkJumpSetOpen="linkJumpSetOpen"
           @linkageSetOpen="linkageSetOpen"

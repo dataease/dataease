@@ -9,6 +9,7 @@ import { storeToRefs } from 'pinia'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import UserViewEnlarge from '@/components/visualization/UserViewEnlarge.vue'
 import CanvasOptBar from '@/components/visualization/CanvasOptBar.vue'
+import { isMainCanvas } from '@/utils/canvasUtils'
 const dvMainStore = dvMainStoreWithOut()
 const { pcMatrixCount } = storeToRefs(dvMainStore)
 
@@ -57,7 +58,7 @@ const dashboardActive = computed(() => {
 })
 
 const canvasStyle = computed(() => {
-  if (canvasStyleData.value && canvasStyleData.value.width) {
+  if (canvasStyleData.value && canvasStyleData.value.width && isMainCanvas(canvasId.value)) {
     return {
       ...getCanvasStyle(canvasStyleData.value),
       height: dashboardActive.value
@@ -126,11 +127,13 @@ defineExpose({
 <template>
   <div id="previewCanvas" class="canvas-container" :style="canvasStyle" ref="previewCanvas">
     <canvas-opt-bar
+      :canvas-id="canvasId"
       :canvas-style-data="canvasStyleData"
       :component-data="componentData"
     ></canvas-opt-bar>
     <ComponentWrapper
       v-for="(item, index) in componentData"
+      :canvas-id="canvasId"
       :view-info="canvasViewInfo[item.id]"
       :key="index"
       :config="item"
@@ -146,6 +149,7 @@ defineExpose({
 .canvas-container {
   background-size: 100% 100% !important;
   width: 100%;
+  height: 100%;
   overflow-x: hidden;
   overflow-y: auto;
   position: relative;

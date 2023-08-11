@@ -1,43 +1,112 @@
 <template>
-  <de-full-tabs
-    v-model="editableTabsValue"
-    addable
-    addType="dropdown"
-    :dropdownMenus="menus"
-    @command="handleCommand"
-    @tab-remove="removeTab"
-  >
-    <el-tab-pane
-      class="el-tab-pane-custom"
-      :key="tabItem.name"
-      v-for="tabItem in element.propValue"
-      :label="tabItem.title"
-      :name="tabItem.name"
-      closable
+  <div style="width: 100%; height: 100%">
+    <de-custom-tab
+      v-model="editableTabsValue"
+      @tab-add="addTab"
+      :addable="isEdit"
+      :font-color="fontColor"
+      :active-color="activeColor"
+      :border-color="noBorderColor"
+      :border-active-color="borderActiveColor"
     >
-      <de-canvas
-        ref="tabCanvas"
-        :component-data="tabItem.componentData"
-        :canvas-style-data="canvasStyleData"
-        :canvas-view-info="canvasViewInfo"
-        :canvas-id="element.id + '--' + tabItem.name"
-      ></de-canvas>
-    </el-tab-pane>
-  </de-full-tabs>
+      <el-tab-pane
+        class="el-tab-pane-custom"
+        :key="tabItem.name"
+        v-for="tabItem in element.propValue"
+        :label="tabItem.title"
+        :name="tabItem.name"
+      >
+        <template #label>
+          <span :style="titleStyle(tabItem.name)">{{ tabItem.title }}</span>
+          <el-dropdown
+            v-if="dropdownShow"
+            style="line-height: 4 !important"
+            trigger="click"
+            @command="handleCommand"
+          >
+            <span class="el-dropdown-link">
+              <el-icon v-if="isEdit"><ArrowDown /></el-icon>
+            </span>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item :command="beforeHandleCommand('editTitle', tabItem)">
+                  编辑标题
+                </el-dropdown-item>
+
+                <el-dropdown-item
+                  v-if="element.propValue.length > 1"
+                  :command="beforeHandleCommand('deleteCur', tabItem)"
+                >
+                  删除
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+        </template>
+        <de-canvas
+          v-if="isEdit"
+          ref="tabCanvas"
+          :component-data="tabItem.componentData"
+          :canvas-style-data="canvasStyleData"
+          :canvas-view-info="canvasViewInfo"
+          :canvas-id="element.id + '--' + tabItem.name"
+        ></de-canvas>
+        <de-preview
+          v-else
+          ref="dashboardPreview"
+          :dv-info="dvInfo"
+          :cur-gap="curPreviewGap"
+          :component-data="tabItem.componentData"
+          :canvas-style-data="canvasStyleData"
+          :canvas-view-info="canvasViewInfo"
+          :canvas-id="element.id + '--' + tabItem.name"
+          show-position="preview"
+        ></de-preview>
+      </el-tab-pane>
+    </de-custom-tab>
+    <el-dialog
+      title="编辑标题"
+      :append-to-body="true"
+      v-model="state.dialogVisible"
+      width="30%"
+      :show-close="false"
+      :close-on-click-modal="false"
+      center
+    >
+      <el-input
+        v-model="state.textarea"
+        type="textarea"
+        :rows="2"
+        maxlength="10"
+        show-word-limit
+        :placeholder="$t('dataset.input_content')"
+      />
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="state.dialogVisible = false">取消</el-button>
+          <el-button :disabled="!titleValid" type="primary" @click="sureCurTitle">确认</el-button>
+        </span>
+      </template>
+    </el-dialog>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { nextTick, onMounted, ref, toRefs } from 'vue'
-import DeFullTabs from '@/custom-component/de-tabs/DeFullTabs.vue'
+import { computed, nextTick, onMounted, reactive, ref, toRefs } from 'vue'
 import DeCanvas from '@/views/canvas/DeCanvas.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { guid } from '@/views/visualized/data/dataset/form/util'
 import eventBus from '@/utils/eventBus'
 import { canvasChangeAdaptor, findComponentIndexById } from '@/utils/canvasUtils'
+import DeCustomTab from '@/custom-component/de-tabs/DeCustomTab.vue'
+import { useI18n } from '@/hooks/web/useI18n'
+import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
 const dvMainStore = dvMainStoreWithOut()
-const { componentData, canvasStyleData, canvasViewInfo, bashMatrixInfo } = storeToRefs(dvMainStore)
+const { componentData, canvasStyleData, canvasViewInfo, bashMatrixInfo, dvInfo } =
+  storeToRefs(dvMainStore)
 const tabCanvas = ref(null)
+const { t } = useI18n()
 
 const props = defineProps({
   element: {
@@ -47,44 +116,93 @@ const props = defineProps({
         propValue: []
       }
     }
+  },
+  isEdit: {
+    type: Boolean,
+    default: false
   }
 })
+const { element, isEdit } = toRefs(props)
 
-const { element } = toRefs(props)
-const menus = [
-  {
-    command: 'ADD',
-    label: '添加Tab'
-  },
-  {
-    command: 'CLOSE_ALL',
-    label: '关闭所有标签'
-  }
-]
+const state = reactive({
+  activeTabName: '',
+  curItem: {},
+  textarea: '',
+  dialogVisible: false
+})
+const curItem = ref(null)
+
 const editableTabsValue = ref(null)
 
-const editableTabs = ref([
-  {
-    name: '1',
-    title: 'Tab 1',
-    componentData: []
-  }
-]) as any
+const fontColor = ref('#999999')
+const activeColor = ref('#f18406')
+const borderColor = ref('#999999') // 可以设 none 全部边框消失
+const borderActiveColor = ref('#f18406')
 
-function handleCommand(name: string, obj: any) {
-  if (obj.command === 'CLOSE_ALL') {
-    element.value.propValue = []
-    editableTabsValue.value = ''
-  } else {
-    const newName = guid()
-    const newTab = {
-      name: newName,
-      title: '新建Tab',
-      componentData: [],
-      closable: true
+// 无边框
+const noBorderColor = ref('none')
+
+const beforeHandleCommand = (item, param) => {
+  return {
+    command: item,
+    param: param
+  }
+}
+const curPreviewGap = computed(() =>
+  dvInfo.value.type === 'dashboard' && canvasStyleData.value['dashboard'].gap === 'yes'
+    ? canvasStyleData.value['dashboard'].gapSize
+    : 0
+)
+
+function sureCurTitle() {
+  state.curItem.title = state.textarea
+  state.dialogVisible = false
+}
+
+function titleValid() {
+  return !!state.textarea && !!state.textarea.trim()
+}
+
+function addTab() {
+  const newName = guid()
+  const newTab = {
+    name: newName,
+    title: '新建Tab',
+    componentData: [],
+    closable: true
+  }
+  element.value.propValue.push(newTab)
+  editableTabsValue.value = newTab.name
+}
+
+function deleteCur(param) {
+  state.curItem = param
+  let len = element.value.propValue.length
+  while (len--) {
+    if (element.value.propValue[len].name === param.name) {
+      element.value.propValue.splice(len, 1)
+      const activeIndex =
+        (len - 1 + element.value.propValue.length) % element.value.propValue.length
+      editableTabsValue.value = element.value.propValue[activeIndex].name
     }
-    element.value.propValue.push(newTab)
-    editableTabsValue.value = newTab.name
+  }
+}
+
+function editCurTitle(param) {
+  state.activeTabName = param.name
+  state.curItem = param
+  state.textarea = param.title
+  state.dialogVisible = true
+}
+
+function handleCommand(command) {
+  switch (command.command) {
+    case 'editTitle':
+      editCurTitle(command.param)
+      break
+    case 'deleteCur':
+      deleteCur(command.param)
+      break
   }
 }
 function removeTab(targetName: string) {
@@ -107,9 +225,6 @@ function removeTab(targetName: string) {
 
 const componentMoveIn = component => {
   console.log('componentMoveIn-' + JSON.stringify(component))
-  const targetDomComponent = document.querySelector('#component' + component.id)
-  const componentWidth = targetDomComponent.offsetWidth
-  const componentHeight = targetDomComponent.offsetHeight
   element.value.propValue.forEach((tabItem, index) => {
     if (editableTabsValue.value === tabItem.name) {
       //获取主画布当前组件的index
@@ -147,6 +262,22 @@ const componentMoveOut = component => {
   eventBus.emit('removeMatrixItem-' + component.canvasId, curIndex)
   // 主画布中添加
   eventBus.emit('moveOutFromTab-canvas-main', component)
+}
+
+const dropdownShow = computed(() => {
+  return isEdit.value
+})
+
+const titleStyle = itemName => {
+  if (editableTabsValue.value === itemName) {
+    return {
+      fontSize: (element.value.style.activeFontSize || 18) + 'px'
+    }
+  } else {
+    return {
+      fontSize: (element.value.style.fontSize || 16) + 'px'
+    }
+  }
 }
 
 onMounted(() => {
