@@ -92,12 +92,12 @@
                 <dependency>
                     <groupId>io.dataease</groupId>
                     <artifactId>xpack-permissions</artifactId>
-                    <version>1.0-SNAPSHOT</version>
+                    <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>io.dataease</groupId>
                     <artifactId>xpack-base</artifactId>
-                    <version>1.0-SNAPSHOT</version>
+                    <version>${project.version}</version>
                 </dependency>
             </dependencies>-->
             <build>

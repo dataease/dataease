@@ -62,6 +62,7 @@ export const moveDatasetTree = async (data: DatasetOrFolder): Promise<IResponse>
 }
 
 export const getDatasetTree = async (data: BusiTreeRequest): Promise<IResponse> => {
+  data.busiFlag = 'dataset'
   return request.post({ url: '/datasetTree/tree', data }).then(res => {
     return res?.data
   })
