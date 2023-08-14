@@ -63,11 +63,12 @@ const state = reactive({
   filterTable: []
 })
 
-const createDataset = () => {
+const createDataset = (tableName?: string) => {
   router.push({
     path: '/dataset-form',
     query: {
-      datasourceId: nodeInfo.id
+      datasourceId: nodeInfo.id,
+      tableName
     }
   })
 }
@@ -567,7 +568,7 @@ const defaultProps = {
               123
             </el-popover>
             <div class="right-btn">
-              <el-button secondary @click="createDataset">
+              <el-button secondary @click="createDataset(null)">
                 <template #icon>
                   <Icon name="icon_dataset_outlined"></Icon>
                 </template>
@@ -641,7 +642,7 @@ const defaultProps = {
               >
                 <template #default="scope">
                   <el-tooltip effect="dark" content="新建数据集" placement="top">
-                    <el-button @click.stop="createDataset" text>
+                    <el-button @click.stop="createDataset(scope.row.name)" text>
                       <template #icon>
                         <Icon name="icon_dataset_outlined"></Icon>
                       </template>

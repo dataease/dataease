@@ -288,7 +288,7 @@ const generateColumns = (arr: Field[]) =>
 const dsChange = (val: string) => {
   dsLoading.value = true
   sqlNode.datasourceId = dataSource.value
-  getTables(val)
+  return getTables(val)
     .then(res => {
       tableList = res || []
       state.tableData = [...tableList]
@@ -298,11 +298,18 @@ const dsChange = (val: string) => {
     })
 }
 
+const getTableName = async (datasourceId, tableName) => {
+  await dsChange(datasourceId)
+  if (!!tableName) {
+    searchTable.value = tableName
+  }
+}
+
 const initEdite = () => {
-  const { id, datasourceId } = route.query
+  const { id, datasourceId, tableName } = route.query
   if (datasourceId) {
     dataSource.value = datasourceId as string
-    dsChange(datasourceId as string)
+    getTableName(datasourceId as string, tableName)
   }
   if (!id) return
   loading.value = true
@@ -409,7 +416,6 @@ const confirmEditUnion = () => {
   setGuid(parent.currentDsFields, parent.id, parent.datasourceId)
   const top = cloneDeep(node)
   const bottom = cloneDeep(parent)
-  debugger
   datasetDrag.value.setStateBack(top, bottom)
   const arr = []
   dfsFields(arr, datasetDrag.value.nodeList)
