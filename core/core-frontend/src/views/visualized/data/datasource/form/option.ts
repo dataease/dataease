@@ -97,12 +97,6 @@ export const dsTypes = [
     extraParams: ''
   },
   {
-    type: 'es',
-    name: 'Elasticsearch',
-    catalog: 'OLAP',
-    extraParams: ''
-  },
-  {
     type: 'API',
     name: 'API',
     catalog: 'OTHER',

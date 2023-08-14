@@ -473,7 +473,7 @@ const init = viewItem => {
   } else {
     checkJumpStr = checkAllAxisStr
   }
-  const request = { busyFlag: dvInfo.value.type } as BusiTreeRequest
+  const request = { busiFlag: dvInfo.value.type } as BusiTreeRequest
   // 获取可关联的仪表板
   queryTreeApi(request).then(rsp => {
     state.panelList = rsp

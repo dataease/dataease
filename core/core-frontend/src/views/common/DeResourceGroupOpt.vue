@@ -131,7 +131,7 @@ const optInit = (type, data: BusiTreeNode, exec, parentSelect = false) => {
   showParentSelected.value = parentSelect
   nodeType.value = type
   dialogTitle.value = nameMap[exec]
-  const request = { busyFlag: curCanvasType.value, leaf: false, weight: 3 }
+  const request = { busiFlag: curCanvasType.value, leaf: false, weight: 3 }
   if (['newLeaf', 'newFolder'].includes(exec)) {
     resourceForm.name = nameMap[exec]
   }

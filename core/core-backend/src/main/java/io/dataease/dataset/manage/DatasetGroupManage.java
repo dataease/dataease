@@ -7,10 +7,6 @@ import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.union.UnionDTO;
 import io.dataease.api.dataset.vo.DataSetBarVO;
-import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
-import io.dataease.api.permissions.auth.dto.BusiResourceCreator;
-import io.dataease.api.permissions.auth.dto.BusiResourceEditor;
-import io.dataease.api.permissions.auth.dto.BusiResourceMover;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetGroup;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupMapper;
 import io.dataease.dataset.dao.ext.mapper.CoreDataSetExtMapper;
@@ -21,13 +17,13 @@ import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.exception.DEException;
 import io.dataease.i18n.Translator;
+import io.dataease.license.config.XpackInteract;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import io.dataease.utils.*;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,15 +47,18 @@ public class DatasetGroupManage {
     @Resource
     private DatasetTableFieldManage datasetTableFieldManage;
 
-    @Autowired(required = false)
-    private InteractiveAuthApi interactiveAuthApi;
 
     @Resource
     private CoreDataSetExtMapper coreDataSetExtMapper;
 
     private static final String leafType = "dataset";
 
+
     public DatasetGroupInfoDTO save(DatasetGroupInfoDTO datasetGroupInfoDTO) throws Exception {
+        if (ObjectUtils.isEmpty(datasetGroupInfoDTO.getPid()) && ObjectUtils.isNotEmpty(datasetGroupInfoDTO.getId())) {
+            CoreDatasetGroup coreDatasetGroup = coreDatasetGroupMapper.selectById(datasetGroupInfoDTO.getId());
+            datasetGroupInfoDTO.setPid(coreDatasetGroup.getPid());
+        }
         checkName(datasetGroupInfoDTO);
         if (StringUtils.equalsIgnoreCase(datasetGroupInfoDTO.getNodeType(), leafType)) {
             // get union sql
@@ -72,42 +71,19 @@ public class DatasetGroupManage {
         }
         // save dataset/group
         long time = System.currentTimeMillis();
-        CoreDatasetGroup coreDatasetGroup = new CoreDatasetGroup();
         if (ObjectUtils.isEmpty(datasetGroupInfoDTO.getId())) {
             datasetGroupInfoDTO.setId(IDUtils.snowID());
             datasetGroupInfoDTO.setCreateBy(null);// todo username
             datasetGroupInfoDTO.setCreateTime(time);
             datasetGroupInfoDTO.setLastUpdateTime(time);
             datasetGroupInfoDTO.setPid(datasetGroupInfoDTO.getPid() == null ? 0L : datasetGroupInfoDTO.getPid());
-            BeanUtils.copyBean(coreDatasetGroup, datasetGroupInfoDTO);
-            coreDatasetGroupMapper.insert(coreDatasetGroup);
-            if (ObjectUtils.isNotEmpty(interactiveAuthApi)) {
-                BusiResourceCreator creator = new BusiResourceCreator();
-                creator.setId(datasetGroupInfoDTO.getId());
-                creator.setPid(datasetGroupInfoDTO.getPid());
-                creator.setFlag(leafType);
-                creator.setName(datasetGroupInfoDTO.getName());
-                creator.setLeaf(StringUtils.equals(leafType, datasetGroupInfoDTO.getNodeType()));
-                interactiveAuthApi.saveResource(creator);
-            }
+            Objects.requireNonNull(CommonBeanFactory.getBean(this.getClass())).innerSave(datasetGroupInfoDTO);
         } else {
             if (Objects.equals(datasetGroupInfoDTO.getId(), datasetGroupInfoDTO.getPid())) {
                 DEException.throwException(Translator.get("i18n_pid_not_eq_id"));
             }
-            CoreDatasetGroup sourceData = coreDatasetGroupMapper.selectById(datasetGroupInfoDTO.getId());
-            BeanUtils.copyBean(coreDatasetGroup, datasetGroupInfoDTO);
-            coreDatasetGroup.setLastUpdateTime(time);
-            coreDatasetGroupMapper.updateById(coreDatasetGroup);
-            if (ObjectUtils.isNotEmpty(interactiveAuthApi) && ObjectUtils.isNotEmpty(sourceData) && (!StringUtils.equals(sourceData.getName(), coreDatasetGroup.getName()) || !sourceData.getPid().equals(coreDatasetGroup.getPid()
-            ))) {
-                BusiResourceEditor editor = new BusiResourceEditor();
-                editor.setId(coreDatasetGroup.getId());
-                editor.setName(coreDatasetGroup.getName());
-                editor.setFlag(leafType);
-                interactiveAuthApi.editResource(editor);
-            }
+            Objects.requireNonNull(CommonBeanFactory.getBean(this.getClass())).innerEdit(datasetGroupInfoDTO);
         }
-
         // node_type=dataset需要创建dataset_table和field
         if (StringUtils.equalsIgnoreCase(datasetGroupInfoDTO.getNodeType(), "dataset")) {
             List<Long> tableIds = new ArrayList<>();
@@ -122,40 +98,39 @@ public class DatasetGroupManage {
         return datasetGroupInfoDTO;
     }
 
-    @Transactional
+    @XpackInteract(value = "authResourceTree", before = false)
+    public void innerEdit(DatasetGroupInfoDTO datasetGroupInfoDTO) {
+        CoreDatasetGroup coreDatasetGroup = BeanUtils.copyBean(new CoreDatasetGroup(), datasetGroupInfoDTO);
+        coreDatasetGroup.setLastUpdateTime(System.currentTimeMillis());
+        coreDatasetGroupMapper.updateById(coreDatasetGroup);
+    }
+
+    @XpackInteract(value = "authResourceTree", before = false)
+    public void innerSave(DatasetGroupInfoDTO datasetGroupInfoDTO) {
+        CoreDatasetGroup coreDatasetGroup = BeanUtils.copyBean(new CoreDatasetGroup(), datasetGroupInfoDTO);
+        coreDatasetGroupMapper.insert(coreDatasetGroup);
+    }
+
+    @XpackInteract(value = "authResourceTree", before = false)
     public DatasetGroupInfoDTO move(DatasetGroupInfoDTO datasetGroupInfoDTO) {
         checkName(datasetGroupInfoDTO);
         checkMove(datasetGroupInfoDTO);
         // save dataset/group
         long time = System.currentTimeMillis();
         CoreDatasetGroup coreDatasetGroup = new CoreDatasetGroup();
-        CoreDatasetGroup sourceData = coreDatasetGroupMapper.selectById(datasetGroupInfoDTO.getId());
         BeanUtils.copyBean(coreDatasetGroup, datasetGroupInfoDTO);
         coreDatasetGroup.setLastUpdateTime(time);
         coreDatasetGroupMapper.updateById(coreDatasetGroup);
-        if (ObjectUtils.isNotEmpty(interactiveAuthApi) && ObjectUtils.isNotEmpty(sourceData)) {
-            BusiResourceMover mover = new BusiResourceMover();
-            mover.setId(sourceData.getId());
-            mover.setPid(coreDatasetGroup.getPid());
-            interactiveAuthApi.moveResource(mover);
-        }
         return datasetGroupInfoDTO;
     }
 
+    @XpackInteract(value = "authResourceTree", before = false)
     public void delete(Long id) {
         CoreDatasetGroup coreDatasetGroup = coreDatasetGroupMapper.selectById(id);
         if (ObjectUtils.isEmpty(coreDatasetGroup)) {
-            return;
+            DEException.throwException("resource not exist");
         }
-        boolean delAuthMatch = false;
-        if (ObjectUtils.isNotEmpty(interactiveAuthApi)) {
-            delAuthMatch = interactiveAuthApi.checkDel(id);
-        }
-        if (!delAuthMatch) return;
-        CommonBeanFactory.getBean(this.getClass()).recursionDel(id);
-        if (ObjectUtils.isNotEmpty(interactiveAuthApi)) {
-            interactiveAuthApi.delResource(id);
-        }
+        Objects.requireNonNull(CommonBeanFactory.getBean(this.getClass())).recursionDel(id);
     }
 
     public void recursionDel(Long id) {
@@ -174,12 +149,10 @@ public class DatasetGroupManage {
     }
 
 
+    @XpackInteract(value = "authResourceTree", replace = true)
     public List<BusiNodeVO> tree(BusiNodeRequest request) {
-        request.setBusyFlag(leafType);
-        if (ObjectUtils.isNotEmpty(interactiveAuthApi)) {
-            return interactiveAuthApi.resource(request);
-        }
-        QueryWrapper queryWrapper = new QueryWrapper();
+
+        QueryWrapper<Object> queryWrapper = new QueryWrapper<>();
         if (ObjectUtils.isNotEmpty(request.getLeaf())) {
             queryWrapper.eq("node_type", request.getLeaf() ? "dataset" : "folder");
         }
@@ -205,38 +178,6 @@ public class DatasetGroupManage {
 
     private DataSetNodeBO convert(DataSetNodePO po) {
         return new DataSetNodeBO(po.getId(), po.getName(), StringUtils.equals(po.getNodeType(), leafType), 3, po.getPid(), 0);
-    }
-    /*public List tree(DatasetNodeDTO datasetNodeDTO) {
-        if (ObjectUtils.isNotEmpty(interactiveAuthApi)) {
-            List<BusiNodeVO> resource = interactiveAuthApi.resource(leafType);
-            if (StringUtils.equalsIgnoreCase("folder", datasetNodeDTO.getNodeType())) {
-                filterNode(resource);
-            }
-            return resource;
-        }
-        QueryWrapper<CoreDatasetGroup> wrapper = new QueryWrapper<>();
-        if (StringUtils.isNotEmpty(datasetNodeDTO.getNodeType())) {
-            wrapper.eq("node_type", datasetNodeDTO.getNodeType());
-        }
-        List<CoreDatasetGroup> coreDatasetTables = coreDatasetGroupMapper.selectList(wrapper);
-        List<DatasetTreeNodeVO> collect = coreDatasetTables.stream().map(ele -> {
-            DatasetTreeNodeVO vo = new DatasetTreeNodeVO();
-            BeanUtils.copyBean(vo, ele);
-            vo.setLeaf(!StringUtils.equalsIgnoreCase(ele.getNodeType(), "folder"));
-            return vo;
-        }).collect(Collectors.toList());
-        return TreeUtils.mergeTree(collect);
-    }*/
-
-    public void filterNode(List<BusiNodeVO> list) {
-        if (ObjectUtils.isNotEmpty(list)) {
-            list.removeIf(BusiNodeVO::getLeaf);
-            for (BusiNodeVO dto : list) {
-                if (ObjectUtils.isNotEmpty(dto.getChildren())) {
-                    filterNode(dto.getChildren());
-                }
-            }
-        }
     }
 
     public void checkName(DatasetGroupInfoDTO dto) {

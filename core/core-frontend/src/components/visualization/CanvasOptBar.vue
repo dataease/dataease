@@ -23,6 +23,11 @@ const props = defineProps({
   componentData: {
     type: Object,
     required: true
+  },
+  canvasId: {
+    type: String,
+    required: false,
+    default: 'canvas-main'
   }
 })
 
