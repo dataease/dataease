@@ -8,11 +8,11 @@ import { Icon } from '@/components/icon-custom'
 import { ElHeader, ElMenu } from 'element-plus-secondary'
 import SystemCfg from './SystemCfg.vue'
 import { useRouter, useRoute } from 'vue-router'
-import OrgSwicther from '@/layout/components/OrgSwitcher.vue'
 import LangSelector from '@/layout/components/LangSelector.vue'
 import TopDoc from '@/layout/components/TopDoc.vue'
 import AccountOperator from '@/layout/components/AccountOperator.vue'
 import { isDesktop } from '@/utils/ModelUtil'
+import { XpackComponent } from '@/components/plugin'
 const { push } = useRouter()
 const route = useRoute()
 
@@ -56,7 +56,7 @@ onMounted(() => {
       <HeaderMenuItem v-for="menu in routers" :key="menu.path" :menu="menu"></HeaderMenuItem>
     </el-menu>
     <div class="operate-setting" v-if="!desktop">
-      <OrgSwicther />
+      <XpackComponent jsname="c3dpdGNoZXI=" />
       <LangSelector />
       <TopDoc />
       <SystemCfg v-if="showSystem" />
