@@ -32,7 +32,8 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
   propertyInner = {
     ...BAR_EDITOR_PROPERTY_INNER,
     'x-axis-selector': [...BAR_EDITOR_PROPERTY_INNER['y-axis-selector'], 'hPosition'],
-    'y-axis-selector': [...BAR_EDITOR_PROPERTY_INNER['x-axis-selector'], 'hPosition']
+    'y-axis-selector': [...BAR_EDITOR_PROPERTY_INNER['x-axis-selector'], 'hPosition'],
+    'label-selector': [...BAR_EDITOR_PROPERTY_INNER['label-selector'], 'hPosition']
   }
   axis: AxisType[] = [...BAR_AXIS_TYPE]
   protected baseOptions: BarOptions = {
