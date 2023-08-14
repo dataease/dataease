@@ -97,7 +97,7 @@
                         @change="viewInfoOnChange(targetViewInfo)"
                       >
                         <el-option
-                          v-for="item in currentLinkPanelViewArray"
+                          v-for="item in currentLinkPanelViewArray.filter(curItem => !viewSelectedField.includes(curItem.id) || curItem.id === targetViewInfo.targetViewId)"
                           :key="item.id"
                           :label="item.name"
                           :value="item.id"
@@ -286,6 +286,14 @@ export default {
   computed: {
     panelInfo() {
       return this.$store.state.panel.panelInfo
+    },
+    viewSelectedField(){
+      const viewIds = []
+      this.outerParamsInfo.targetViewInfoList.forEach((targetViewInfo)=>{
+        viewIds.push(targetViewInfo.targetViewId)
+      })
+      console.log('viewIds='+JSON.stringify(viewIds))
+      return viewIds
     },
     ...mapState([
       'componentData',
