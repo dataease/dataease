@@ -1550,8 +1550,9 @@ defineExpose({
       <component
         :is="findComponent(item.component)"
         v-if="item.component === 'UserView'"
-        :id="'component' + item.id"
         class="component"
+        :id="'component' + item.id"
+        :active="item.id === (curComponent || {})['id']"
         :style="getComponentStyle(item.style)"
         :prop-value="item.propValue"
         :is-edit="true"

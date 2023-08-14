@@ -3,6 +3,10 @@ import { toRefs } from 'vue'
 import Chart from '@/views/chart/components/views/index.vue'
 
 const props = defineProps({
+  active: {
+    type: Boolean,
+    default: false
+  },
   propValue: {
     type: String,
     required: true,
@@ -31,12 +35,12 @@ const props = defineProps({
   }
 })
 
-const { propValue, element, view } = toRefs(props)
+const { propValue, element, view, active } = toRefs(props)
 </script>
 
 <template>
   <div class="bash-shape">
-    <chart :view="view" :element="element" :show-position="showPosition"></chart>
+    <chart :active="active" :view="view" :element="element" :show-position="showPosition"></chart>
   </div>
 </template>
 

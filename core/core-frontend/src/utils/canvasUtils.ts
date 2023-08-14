@@ -36,6 +36,11 @@ export function findNewComponent(componentName, innerType) {
     if (comp.component === componentName) {
       newComponent = deepCopy(comp)
       newComponent.innerType = innerType
+      if (newComponent.innerType === 'richText') {
+        newComponent.propValue = {
+          textValue: ''
+        }
+      }
       if (dvMainStore.curOriginThemes === 'light') {
         newComponent['commonBackground'] = deepCopy(COMMON_COMPONENT_BACKGROUND_LIGHT)
       } else {

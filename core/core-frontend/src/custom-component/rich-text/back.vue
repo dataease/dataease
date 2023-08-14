@@ -1,6 +1,14 @@
 <template>
   <div class="rich-main-class" :style="autoStyle" @dblclick="setEdit" v-loading="state.loading">
-    <!--    <de-rich-editor ref="editor" v-model="formState.contents" @getContent="getContent" />-->
+    <Editor
+      v-if="state.editShow"
+      :id="state.tinymceId"
+      v-model="state.myValue"
+      style="width: 100%; height: 100%"
+      :init="state.init"
+      :disabled="!state.canEdit"
+      @onClick="onClick"
+    />
   </div>
 </template>
 
@@ -26,7 +34,6 @@ import { uuid } from 'vue-uuid'
 import { ref, computed, nextTick, onMounted, reactive, toRefs, watch } from 'vue'
 import eventBus from '@/utils/eventBus'
 import { getData } from '@/api/chart'
-import DeRichEditor from '@/custom-component/rich-text/DeRichEditor.vue'
 
 const props = defineProps({
   scale: {
@@ -60,8 +67,6 @@ const { scale, element, position, active, disabled } = toRefs(props)
 const curFields = ref([])
 const dataRowSelect = ref({})
 const dataRowNameSelect = ref({})
-
-const myValue = ref('')
 
 const state = reactive({
   loading: false,
@@ -123,25 +128,18 @@ const changeRightDrawOpen = param => {
     state.drawRight = 'auto'
   }
 }
-
-const formState = reactive({ contents: '' })
-const getContent = (v: string) => {
-  formState.contents = v
-}
-
 const viewInit = () => {
-  // eventBus.on('fieldSelect-' + element.value['id'], fieldSelect)
-  // tinymce.init({})
-  // myValue.value = '测试富文本'
-  // // myValue.value = assignment(element.value['propValue'].textValue)
-  // eventBus.on('initCurFields-' + element.value['id'], initCurFieldsChange)
-  // nextTick(() => {
-  //   state.initReady = true
-  // })
+  eventBus.on('fieldSelect-' + element.value['id'], fieldSelect)
+  tinymce.init({})
+  state.myValue = assignment(element.value['propValue'].textValue)
+  eventBus.on('initCurFields-' + element.value['id'], initCurFieldsChange)
+  nextTick(() => {
+    state.initReady = true
+  })
 }
 const initCurFieldsChange = () => {
   if (!state.canEdit) {
-    myValue.value = assignment(element.value['propValue'].textValue)
+    state.myValue = assignment(element.value['propValue'].textValue)
   }
 }
 const assignment = content => {
@@ -204,9 +202,9 @@ const setEdit = () => {
   if (editStatus.value && state.canEdit === false) {
     state.canEdit = true
     element.value['editing'] = true
-    myValue.value = element.value['propValue'].textValue
+    state.myValue = element.value['propValue'].textValue
     const ed = tinymce.get(state.tinymceId)
-    ed.setContent(myValue.value)
+    ed.setContent(state.myValue)
     reShow()
   }
 }
@@ -230,15 +228,15 @@ watch(
       }
       state.canEdit = false
       reShow()
-      myValue.value = assignment(element.value['propValue'].textValue)
-      ed.setContent(myValue.value)
+      state.myValue = assignment(element.value['propValue'].textValue)
+      ed.setContent(state.myValue)
     }
   },
   { deep: true }
 )
 
 watch(
-  [myValue.value],
+  [state.myValue],
   () => {
     if (state.canEdit) {
       const ed = tinymce.get(state.tinymceId)
