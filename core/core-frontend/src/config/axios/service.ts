@@ -119,7 +119,13 @@ service.interceptors.response.use(
       //   TODO 处理静态文件
       return response
     } else {
-      ElMessage.error(response.data.msg)
+      if (
+        !response?.config?.url.startsWith('/xpackComponent/content') &&
+        response?.data?.code !== 60003
+      ) {
+        ElMessage.error(response.data.msg)
+      }
+
       return Promise.reject(response.data.msg)
     }
   },
