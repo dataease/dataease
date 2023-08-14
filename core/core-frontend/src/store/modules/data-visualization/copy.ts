@@ -90,7 +90,7 @@ export const copyStore = defineStore('copy', {
       const newComponent = deepCopyHelper(data, idMap)
       dvMainStore.addCopyComponent(newComponent, idMap, this.copyData.copyCanvasViewInfo)
       if (dvInfo.value.type === 'dashboard') {
-        eventBus.emit('addDashboardItem', newComponent)
+        eventBus.emit('addDashboardItem-canvas-main', newComponent)
         if (dvMainStore.multiplexingStyleAdapt && this.copyData.copyFrom === 'multiplexing') {
           adaptCurThemeCommonStyle(newComponent)
         }
