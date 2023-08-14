@@ -2,10 +2,6 @@ package io.dataease.visualization.server;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.api.chart.dto.ChartViewDTO;
-import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
-import io.dataease.api.permissions.auth.dto.BusiResourceCreator;
-import io.dataease.api.permissions.auth.dto.BusiResourceEditor;
-import io.dataease.api.permissions.auth.dto.BusiResourceMover;
 import io.dataease.api.visualization.DataVisualizationApi;
 import io.dataease.api.visualization.request.DataVisualizationBaseRequest;
 import io.dataease.api.visualization.vo.DataVisualizationVO;
@@ -16,15 +12,12 @@ import io.dataease.exception.DEException;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import io.dataease.utils.BeanUtils;
-import io.dataease.utils.IDUtils;
 import io.dataease.visualization.dao.auto.entity.DataVisualizationInfo;
 import io.dataease.visualization.dao.auto.mapper.DataVisualizationInfoMapper;
-import io.dataease.visualization.dao.ext.mapper.ExtDataVisualizationMapper;
 import io.dataease.visualization.manage.CoreVisualizationManage;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,11 +39,6 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @Resource
     private ChartViewManege chartViewManege;
 
-    @Resource
-    private ExtDataVisualizationMapper dvMapper;
-
-    @Autowired(required = false)
-    private InteractiveAuthApi interactiveAuthApi;
 
     @Resource
     private CoreVisualizationManage coreVisualizationManage;
@@ -84,40 +72,16 @@ public class DataVisualizationServer implements DataVisualizationApi {
         if (id == null) {
             DEException.throwException("no id");
         }
-        DataVisualizationInfo sourceData = null;
-        if (ObjectUtils.isNotEmpty(sourceData = visualizationInfoMapper.selectById(id))) {
-            request.setUpdateBy("");
-            request.setUpdateTime(System.currentTimeMillis());
-            DataVisualizationInfo visualizationInfo = new DataVisualizationInfo();
-            BeanUtils.copyBean(visualizationInfo, request);
-            visualizationInfoMapper.updateById(visualizationInfo);
-            if (ObjectUtils.isNotEmpty(interactiveAuthApi) && !StringUtils.equals(sourceData.getName(), visualizationInfo.getName())) {
-                BusiResourceEditor editor = new BusiResourceEditor();
-                editor.setId(id);
-                editor.setName(visualizationInfo.getName());
-                editor.setFlag(StringUtils.equals("dataV", visualizationInfo.getType()) ? "screen" : "panel");
-                interactiveAuthApi.editResource(editor);
-            }
+        if (ObjectUtils.isNotEmpty(visualizationInfoMapper.selectById(id))) {
+            coreVisualizationManage.innerEdit(BeanUtils.copyBean(new DataVisualizationInfo(), request));
         } else {
             DataVisualizationInfo visualizationInfo = new DataVisualizationInfo();
             BeanUtils.copyBean(visualizationInfo, request);
-            visualizationInfo.setDeleteFlag(DataVisualizationConstants.DELETE_FLAG.AVAILABLE);
             visualizationInfo.setNodeType(DataVisualizationConstants.NODE_TYPE.LEAF);
-            visualizationInfo.setCreateBy("");
-            visualizationInfo.setCreateTime(System.currentTimeMillis());
-            visualizationInfoMapper.insert(visualizationInfo);
-            if (ObjectUtils.isNotEmpty(interactiveAuthApi)) {
-                BusiResourceCreator creator = new BusiResourceCreator();
-                creator.setId(id);
-                creator.setName(visualizationInfo.getName());
-                creator.setLeaf(!StringUtils.equals("folder", visualizationInfo.getNodeType()));
-                creator.setPid(visualizationInfo.getPid());
-                creator.setFlag(StringUtils.equals("dataV", visualizationInfo.getType()) ? "screen" : "panel");
-                interactiveAuthApi.saveResource(creator);
-            }
+            coreVisualizationManage.innerSave(visualizationInfo);
         }
 
-        List<Long> viewIds = new ArrayList<>();
+        // List<Long> viewIds = new ArrayList<>();
         String componentData = request.getComponentData();
         //保存视图信
         Map<Long, ChartViewDTO> chartViewsInfo = request.getCanvasViewInfo();
@@ -127,17 +91,13 @@ public class DataVisualizationServer implements DataVisualizationApi {
                     try {
                         chartViewDTO.setSceneId(request.getId());
                         chartViewManege.save(chartViewDTO);
-                        viewIds.add(chartViewDTO.getId());
+                        // viewIds.add(chartViewDTO.getId());
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
                 }
             });
         }
-//        // 清理无用的视图
-//        if (!CollectionUtils.isEmpty(viewIds)) {
-//            chartViewManege.deleteBySceneId(request.getId(), viewIds);
-//        }
     }
 
     @Override
@@ -156,18 +116,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @Transactional
     @Override
     public void deleteLogic(Long dvId) {
-        if (ObjectUtils.isNotEmpty(interactiveAuthApi) && !interactiveAuthApi.checkDel(dvId)) {
-            return;
-        }
-        DataVisualizationInfo visualizationInfo = new DataVisualizationInfo();
-        visualizationInfo.setDeleteBy("");
-        visualizationInfo.setDeleteTime(System.currentTimeMillis());
-        visualizationInfo.setDeleteFlag(DataVisualizationConstants.DELETE_FLAG.DELETED);
-        visualizationInfo.setId(dvId);
-        visualizationInfoMapper.updateById(visualizationInfo);
-        if (ObjectUtils.isNotEmpty(interactiveAuthApi)) {
-            interactiveAuthApi.delResource(visualizationInfo.getId());
-        }
+        coreVisualizationManage.delete(dvId);
     }
 
 
@@ -182,50 +131,17 @@ public class DataVisualizationServer implements DataVisualizationApi {
         DataVisualizationInfo visualizationInfo = new DataVisualizationInfo();
         BeanUtils.copyBean(visualizationInfo, request);
         if (request.getId() == null) {
-            visualizationInfo.setDeleteFlag(DataVisualizationConstants.DELETE_FLAG.AVAILABLE);
-            visualizationInfo.setId(IDUtils.snowID());
-            visualizationInfo.setCreateBy("");
-            visualizationInfo.setCreateTime(System.currentTimeMillis());
-            visualizationInfoMapper.insert(visualizationInfo);
-            if (ObjectUtils.isNotEmpty(interactiveAuthApi)) {
-                BusiResourceCreator creator = new BusiResourceCreator();
-                creator.setName(visualizationInfo.getName());
-                creator.setId(visualizationInfo.getId());
-                creator.setLeaf(!StringUtils.equals("folder", visualizationInfo.getNodeType()));
-                creator.setPid(visualizationInfo.getPid());
-                creator.setFlag(StringUtils.equals("dataV", visualizationInfo.getType()) ? "screen" : "panel");
-                interactiveAuthApi.saveResource(creator);
-            }
+            coreVisualizationManage.innerSave(visualizationInfo);
+
         } else {
-            Long id = visualizationInfo.getId();
-            DataVisualizationInfo sourceData = visualizationInfoMapper.selectById(id);
-            visualizationInfo.setUpdateTime(System.currentTimeMillis());
-            visualizationInfoMapper.updateById(visualizationInfo);
-            if (ObjectUtils.isNotEmpty(interactiveAuthApi) && ObjectUtils.isNotEmpty(sourceData) && !StringUtils.equals(sourceData.getName(), visualizationInfo.getName())) {
-                BusiResourceEditor editor = new BusiResourceEditor();
-                editor.setId(id);
-                editor.setName(visualizationInfo.getName());
-                editor.setFlag(StringUtils.equals("dataV", visualizationInfo.getType()) ? "screen" : "panel");
-                interactiveAuthApi.editResource(editor);
-            }
+            coreVisualizationManage.innerEdit(visualizationInfo);
         }
     }
 
     @Transactional
     @Override
     public void move(DataVisualizationBaseRequest request) {
-        DataVisualizationInfo visualizationInfo = new DataVisualizationInfo();
-        BeanUtils.copyBean(visualizationInfo, request);
-        if (visualizationInfo.getId() != null) {
-            visualizationInfo.setUpdateTime(System.currentTimeMillis());
-            visualizationInfoMapper.updateById(visualizationInfo);
-            if (ObjectUtils.isNotEmpty(interactiveAuthApi)) {
-                BusiResourceMover mover = new BusiResourceMover();
-                mover.setId(visualizationInfo.getId());
-                mover.setPid(visualizationInfo.getPid());
-                interactiveAuthApi.moveResource(mover);
-            }
-        }
+        coreVisualizationManage.move(request);
     }
 
     @Override
@@ -254,7 +170,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         List<DataVisualizationInfo> result = visualizationInfoMapper.selectList(wrapper);
         List<DataVisualizationVO> returnResult = new ArrayList<>();
         if (!CollectionUtils.isEmpty(result)) {
-            result.stream().forEach(dataVisualizationInfo -> {
+            result.forEach(dataVisualizationInfo -> {
                 DataVisualizationVO dataVisualizationVO = new DataVisualizationVO();
                 returnResult.add(BeanUtils.copyBean(dataVisualizationVO, dataVisualizationInfo));
             });

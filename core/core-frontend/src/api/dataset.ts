@@ -62,6 +62,7 @@ export const moveDatasetTree = async (data: DatasetOrFolder): Promise<IResponse>
 }
 
 export const getDatasetTree = async (data: BusiTreeRequest): Promise<IResponse> => {
+  data.busiFlag = 'dataset'
   return request.post({ url: '/datasetTree/tree', data }).then(res => {
     return res?.data
   })
@@ -80,7 +81,7 @@ export const delDatasetTree = async (id): Promise<IResponse> => {
 }
 
 export const getDatasourceList = async (): Promise<IResponse> => {
-  return request.post({ url: '/datasource/tree', data: {} }).then(res => {
+  return request.post({ url: '/datasource/tree', data: { busiFlag: 'datasource' } }).then(res => {
     return res?.data
   })
 }

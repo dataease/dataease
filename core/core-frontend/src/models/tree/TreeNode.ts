@@ -8,7 +8,7 @@ export interface BusiTreeNode {
 }
 
 export interface BusiTreeRequest {
-  busyFlag?: string
+  busiFlag?: string
   leaf?: boolean
   weight?: number
 }

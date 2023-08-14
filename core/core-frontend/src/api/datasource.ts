@@ -41,9 +41,11 @@ export interface Table {
 }
 
 export const listDatasources = data => {
-  return request.post({ url: '/datasource/tree', data }).then(res => {
-    return res?.data
-  })
+  return request
+    .post({ url: '/datasource/tree', data: { ...data, ...{ busiFlag: 'datasource' } } })
+    .then(res => {
+      return res?.data
+    })
 }
 
 export const listDatasourceType = async (data = {}): Promise<IResponse> => {
@@ -91,9 +93,11 @@ export const checkApiItem = async (data = {}): Promise<IResponse> => {
 }
 
 export const getDatasetTree = async (data = {}): Promise<IResponse> => {
-  return request.post({ url: '/datasetTree/tree', data }).then(res => {
-    return res?.data
-  })
+  return request
+    .post({ url: '/datasetTree/tree', data: { ...data, ...{ busiFlag: 'dataset' } } })
+    .then(res => {
+      return res?.data
+    })
 }
 
 export const deleteById = (id: number) => request.get({ url: '/datasource/delete/' + id })
