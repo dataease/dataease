@@ -7,6 +7,8 @@ import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.union.UnionDTO;
 import io.dataease.api.dataset.vo.DataSetBarVO;
+import io.dataease.api.permissions.user.api.UserApi;
+import io.dataease.api.permissions.user.vo.UserFormVO;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetGroup;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupMapper;
 import io.dataease.dataset.dao.ext.mapper.CoreDataSetExtMapper;
@@ -24,6 +26,7 @@ import io.dataease.utils.*;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,6 +53,8 @@ public class DatasetGroupManage {
 
     @Resource
     private CoreDataSetExtMapper coreDataSetExtMapper;
+    @Autowired(required = false)
+    private UserApi userApi;
 
     private static final String leafType = "dataset";
 
@@ -73,7 +78,9 @@ public class DatasetGroupManage {
         long time = System.currentTimeMillis();
         if (ObjectUtils.isEmpty(datasetGroupInfoDTO.getId())) {
             datasetGroupInfoDTO.setId(IDUtils.snowID());
-            datasetGroupInfoDTO.setCreateBy(null);// todo username
+            if (userApi != null) {
+                datasetGroupInfoDTO.setCreateBy(userApi.info().getId() + "");
+            }
             datasetGroupInfoDTO.setCreateTime(time);
             datasetGroupInfoDTO.setLastUpdateTime(time);
             datasetGroupInfoDTO.setPid(datasetGroupInfoDTO.getPid() == null ? 0L : datasetGroupInfoDTO.getPid());
@@ -169,7 +176,15 @@ public class DatasetGroupManage {
     }
 
     public DataSetBarVO queryBarInfo(Long id) {
-        return coreDataSetExtMapper.queryBarInfo(id);
+        DataSetBarVO dataSetBarVO = coreDataSetExtMapper.queryBarInfo(id);
+        // get creator
+        if (userApi != null) {
+            UserFormVO userFormVO = userApi.queryById(Long.valueOf(dataSetBarVO.getCreateBy()));
+            if (userFormVO != null) {
+                dataSetBarVO.setCreator(userFormVO.getName());
+            }
+        }
+        return dataSetBarVO;
     }
 
     private DataSetNodeBO rootNode() {
@@ -267,6 +282,13 @@ public class DatasetGroupManage {
         }
         DatasetGroupInfoDTO dto = new DatasetGroupInfoDTO();
         BeanUtils.copyBean(dto, coreDatasetGroup);
+        // get creator
+        if (userApi != null) {
+            UserFormVO userFormVO = userApi.queryById(Long.valueOf(dto.getCreateBy()));
+            if (userFormVO != null) {
+                dto.setCreator(userFormVO.getName());
+            }
+        }
         dto.setUnionSql(null);
         if (StringUtils.equalsIgnoreCase(dto.getNodeType(), "dataset")) {
             List<UnionDTO> unionDTOList = JsonUtil.parseList(coreDatasetGroup.getInfo(), new TypeReference<>() {
