@@ -138,9 +138,6 @@ const optInit = (type, data: BusiTreeNode, exec, parentSelect = false) => {
     const resultTree = res
     dfs(resultTree as unknown as BusiTreeNode[])
     state.tData = (resultTree as unknown as BusiTreeNode[]) || []
-    if (state.tData.length > 0 && state.tData[0].id === '0') {
-      state.tData = state.tData[0].children
-    }
     if (['newLeaf', 'newFolder'].includes(exec)) {
       resourceForm.pid = data.id as string
       pid.value = data.id
@@ -251,10 +248,12 @@ const emits = defineEmits(['finish'])
           filterable
         >
           <template #default="{ data: { name } }">
-            <el-icon>
-              <Icon name="dv-folder"></Icon>
-            </el-icon>
-            <span :title="name">{{ name }}</span>
+            <span class="custom-tree-node">
+              <el-icon>
+                <Icon name="dv-folder"></Icon>
+              </el-icon>
+              <span :title="name">{{ name }}</span>
+            </span>
           </template>
         </el-tree-select>
       </el-form-item>
@@ -304,17 +303,17 @@ const emits = defineEmits(['finish'])
   border-radius: 4px;
   padding: 8px;
   overflow-y: auto;
+}
 
-  .custom-tree-node {
-    display: flex;
-    align-items: center;
-    span {
-      margin-left: 8.75px;
-      width: 120px;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      overflow: hidden;
-    }
+.custom-tree-node {
+  display: flex;
+  align-items: center;
+  span {
+    margin-left: 8.75px;
+    width: 120px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
   }
 }
 </style>
