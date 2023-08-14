@@ -503,7 +503,7 @@ defineExpose({
             prop="configuration.password"
             v-if="form.type === 'presto'"
           >
-            <el-input type="password" v-model="form.configuration.password" />
+            <el-input show-password type="password" v-model="form.configuration.password" />
             <p>
               {{ t('datasource.kerbers_info') }}
             </p>
@@ -520,7 +520,7 @@ defineExpose({
             prop="configuration.password"
             v-if="form.type !== 'presto'"
           >
-            <el-input type="password" v-model="form.configuration.password" />
+            <el-input show-password type="password" v-model="form.configuration.password" />
           </el-form-item>
           <el-form-item :label="t('datasource.extra_params')">
             <el-input v-model="form.configuration.extraParams" autocomplete="off" />
