@@ -360,8 +360,8 @@ const allfields = ref([])
 
 let num = +new Date()
 
-const expandedD = ref(false)
-const expandedQ = ref(false)
+const expandedD = ref(true)
+const expandedQ = ref(true)
 const setGuid = (arr, id, datasourceId) => {
   arr.forEach(ele => {
     if (!ele.id) {
@@ -774,6 +774,7 @@ const treeProps = {
                       <div class="operate">
                         <field-more
                           :extField="data.extField"
+                          trans-type="转换为指标"
                           :show-time="data.deType === 1 && data.deExtractType === 0"
                           @handle-command="type => handleFieldMore(data, type)"
                         ></field-more>
@@ -804,6 +805,7 @@ const treeProps = {
                       <span :title="data.name" class="label-tooltip">{{ data.name }}</span>
                       <div class="operate">
                         <field-more
+                          trans-type="转换为维度"
                           :extField="data.extField"
                           @handle-command="type => handleFieldMore(data, type)"
                         ></field-more>

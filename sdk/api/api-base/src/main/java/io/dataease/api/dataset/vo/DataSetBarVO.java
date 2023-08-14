@@ -22,4 +22,6 @@ public class DataSetBarVO implements Serializable {
     private String createBy;
 
     private Long createTime;
+
+    private String creator;
 }
