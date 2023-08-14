@@ -286,11 +286,16 @@ const generateColumns = (arr: Field[]) =>
   }))
 
 const dsChange = (val: string) => {
+  dsLoading.value = true
   sqlNode.datasourceId = dataSource.value
-  getTables(val).then(res => {
-    tableList = res || []
-    state.tableData = [...tableList]
-  })
+  getTables(val)
+    .then(res => {
+      tableList = res || []
+      state.tableData = [...tableList]
+    })
+    .finally(() => {
+      dsLoading.value = false
+    })
 }
 
 const initEdite = () => {
@@ -402,12 +407,16 @@ const confirmEditUnion = () => {
   const { node, parent } = fieldUnion.value
   setGuid(node.currentDsFields, node.id, node.datasourceId)
   setGuid(parent.currentDsFields, parent.id, parent.datasourceId)
-  datasetDrag.value.setStateBack(cloneDeep(node), cloneDeep(parent))
+  const top = cloneDeep(node)
+  const bottom = cloneDeep(parent)
+  debugger
+  datasetDrag.value.setStateBack(top, bottom)
   const arr = []
   dfsFields(arr, datasetDrag.value.nodeList)
   allfields.value = diffArr(arr, allfields.value)
   fieldUnion.value.clearState()
   editUnion.value = false
+  addComplete()
 }
 
 const updateAllfields = () => {
@@ -465,21 +474,6 @@ const calculateHeight = (e: MouseEvent) => {
     return
   }
   dragHeight.value = e.pageY - 56
-}
-
-const nameExistValidator = () => {
-  if (!state.nameList || state.nameList.length === 0) {
-    nameExist.value = false
-    return
-  }
-  nameExist.value = state.nameList.some(
-    name => name === datasetName.value && name !== originName.value
-  )
-}
-
-const nameBlur = () => {
-  nameExistValidator()
-  showInput.value = nameExist.value
 }
 
 const getDatasource = () => {
@@ -592,6 +586,10 @@ const handleClick = () => {
   })
 }
 
+const finish = name => {
+  datasetName.value = name
+}
+
 const treeProps = {
   children: 'children',
   label: 'name'
@@ -606,7 +604,7 @@ const treeProps = {
           <Icon name="icon_left_outlined"></Icon>
         </el-icon>
         <template v-if="showInput">
-          <el-input ref="editerName" v-model="datasetName" @blur="nameBlur" />
+          <el-input ref="editerName" v-model="datasetName" />
           <div v-if="nameExist" style="left: 55px" class="el-form-item__error">
             {{ t('deDataset.already_exists') }}
           </div>
@@ -854,7 +852,7 @@ const treeProps = {
       </template>
     </el-drawer>
   </div>
-  <creat-ds-group ref="creatDsFolder"></creat-ds-group>
+  <creat-ds-group @finish="finish" ref="creatDsFolder"></creat-ds-group>
   <el-dialog v-model="editCalcField" width="1000px" title="新建计算字段">
     <calc-field-edit ref="calcEdit" />
     <template #footer>
