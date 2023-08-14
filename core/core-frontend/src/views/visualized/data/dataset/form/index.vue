@@ -326,6 +326,9 @@ const initEdite = () => {
       originName.value = name
       allfields.value = res.allFields || []
       dfsUnion(arr, res.union || [])
+      const [fir] = res.union as { currentDs: { datasourceId: string } }[]
+      dataSource.value = fir?.currentDs?.datasourceId
+      dsChange(dataSource.value)
       datasetDrag.value.initState(arr)
     })
     .finally(() => {
