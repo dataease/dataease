@@ -363,10 +363,16 @@ const data = {
 
     // 添加联动 下钻 等过滤组件
     addViewTrackFilter(state, data) {
+      const dimensionSort = deepCopy(data.dimensionList)
       const viewId = data.viewId
       let trackInfo
       if (data.option === 'linkage') {
         trackInfo = state.nowPanelTrackInfo
+        // 兼容情况，当源视图多个个字段匹配目标视图一个字段的时候，默认只保留当前点击的维度，将改维度排序到组件结尾，去重时即可保留
+        const activeDimensionIndex = data.dimensionList.findIndex(dimension =>dimension.id === data.name)
+        const dimensionLast = dimensionSort[dimensionSort.length-1]
+        dimensionSort[dimensionSort.length-1] = dimensionSort[activeDimensionIndex]
+        dimensionSort[activeDimensionIndex] = dimensionLast
       } else {
         trackInfo = state.nowPanelJumpInfoTargetPanel
       }
@@ -379,7 +385,7 @@ const data = {
 
             const currentFilters = element.linkageFilters || [] // 当前联动filter
 
-            data.dimensionList.forEach(dimension => {
+            dimensionSort.forEach(dimension => {
               const sourceInfo = viewId + '#' + dimension.id
               // 获取所有目标联动信息
               const targetInfoList = trackInfo[sourceInfo] || []
@@ -394,7 +400,7 @@ const data = {
                   while (j--) {
                     const filter = currentFilters[j]
                     // 兼容性准备 viewIds 只会存放一个值
-                    if (targetFieldId === filter.fieldId && filter.viewIds.includes(targetViewId)) {
+                    if (targetFieldId === filter.fieldId && filter.viewIds.includes(targetViewId) && filter.value[0] !== data.value) {
                       currentFilters.splice(j, 1)
                     }
                   }
@@ -414,7 +420,7 @@ const data = {
         // 联动的视图情况历史条件
         // const currentFilters = []
 
-        data.dimensionList.forEach(dimension => {
+        dimensionSort.forEach(dimension => {
           const sourceInfo = viewId + '#' + dimension.id
           // 获取所有目标联动信息
           const targetInfoList = trackInfo[sourceInfo] || []
