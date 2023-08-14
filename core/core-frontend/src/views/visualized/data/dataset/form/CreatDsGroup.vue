@@ -226,7 +226,7 @@ const saveDataset = () => {
         .then(() => {
           dataset.value.resetFields()
           createDataset.value = false
-          emits('finish')
+          emits('finish', params.name)
           switch (cmd.value) {
             case 'move':
               ElMessage.success('移动成功')
