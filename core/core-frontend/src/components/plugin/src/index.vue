@@ -25,7 +25,8 @@ const loadComponent = (type: string) => {
         .then((res: any) => {
           plugin.value = res.default
         })
-        .catch(() => {
+        .catch(e => {
+          console.log(e)
           showNolic()
         })
     })

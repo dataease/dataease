@@ -284,14 +284,27 @@ public class DatasetDataManage {
         // parser sql params and replace default value
         String sql = SqlparserUtils.handleVariableDefaultValue(datasetSQLManage.subPrefixSuffixChar(new String(Base64.getDecoder().decode(dto.getSql()))), dto.getSqlVariableDetails(), true);
         sql = SqlUtils.addSchema(sql, alias);
-        // sql 作为临时表，外层加上limit
-        sql = SQLUtils.buildOriginPreviewSql(sql, 100, 0);
-        logger.info("calcite data preview sql: " + sql);
+
         Map<Long, DatasourceSchemaDTO> dsMap = new LinkedHashMap<>();
         dsMap.put(datasourceSchemaDTO.getId(), datasourceSchemaDTO);
         DatasourceRequest datasourceRequest = new DatasourceRequest();
-        datasourceRequest.setQuery(sql);
         datasourceRequest.setDsList(dsMap);
+        // sql 作为临时表，外层加上limit
+        if (Utils.isNeedOrder(List.of(datasourceSchemaDTO.getType()))) {
+            // 先根据sql获取表字段
+            String sqlField = SQLUtils.buildOriginPreviewSql(sql, 0, 0);
+            datasourceRequest.setQuery(sqlField);
+            // 获取数据源表的原始字段
+            List<TableField> list = (List<TableField>) calciteProvider.fetchResultField(datasourceRequest).get("fields");
+            if (ObjectUtils.isEmpty(list)) {
+                return null;
+            }
+            sql = SQLUtils.buildOriginPreviewSqlWithOrderBy(sql, 100, 0, list.get(0).getOriginName() + " ASC ");
+        } else {
+            sql = SQLUtils.buildOriginPreviewSql(sql, 100, 0);
+        }
+        logger.info("calcite data preview sql: " + sql);
+        datasourceRequest.setQuery(sql);
         Map<String, Object> data = calciteProvider.fetchResultField(datasourceRequest);
         // 重新构造data
         List<TableField> fList = (List<TableField>) data.get("fields");

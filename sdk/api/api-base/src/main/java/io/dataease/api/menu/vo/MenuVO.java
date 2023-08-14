@@ -1,5 +1,6 @@
 package io.dataease.api.menu.vo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,6 +16,9 @@ public class MenuVO implements Serializable {
 
     @Serial
     private static final long serialVersionUID = -2515621871016825978L;
+
+    @JsonIgnore
+    private Long id;
 
     private String path;
 

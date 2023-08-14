@@ -310,6 +310,12 @@ public class ExcelUtils {
                 }
                 line.add(value);
             }
+            int size = line.size();
+            if(size < header.size()){
+                for (int i = 0; i < header.size() - size; i++) {
+                    line.add("");
+                }
+            }
             data.add(line.toArray(new String[line.size()]));
         }
 

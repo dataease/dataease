@@ -22,8 +22,9 @@ const HeaderMenuItem = props => {
       ElSubMenu,
       {
         index: path,
+        'popper-class': 'popper-class-menu',
         expandCloseIcon: expandIcon('icon_expand-down_filled'),
-        expandOpenIcon: expandIcon('icon_expand-right_filled')
+        expandOpenIcon: expandIcon('icon_expand-down_filled')
       },
       {
         title: () => title(props),
@@ -42,3 +43,26 @@ const HeaderMenuItem = props => {
 }
 export default HeaderMenuItem
 </script>
+
+<style lang="less">
+.popper-class-menu {
+  &.is-light {
+    border: none;
+    margin-top: -2px;
+  }
+  .popper-class-menu {
+    width: 152px;
+    height: 80px;
+    border-radius: 4px;
+    border: 1px solid #dee0e3 !important;
+
+    .ed-menu--popup {
+      min-width: 150px;
+      padding: 3px 0;
+      .ed-menu-item {
+        padding-left: 11px !important;
+      }
+    }
+  }
+}
+</style>

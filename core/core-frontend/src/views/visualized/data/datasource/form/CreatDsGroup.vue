@@ -28,6 +28,7 @@ const state = reactive({
 const nodeType = ref()
 const pid = ref()
 const id = ref()
+const oldName = ref()
 const cmd = ref('')
 const treeRef = ref()
 const filterText = ref('')
@@ -153,19 +154,22 @@ const createInit = (type, data: Tree, exec, name: string) => {
     request = data.request
   }
   if (data.id) {
-    listDatasources({ leaf: false, id: data.id, weight: 3 }).then(res => {
-      dfs(res as unknown as Tree[])
-      state.tData = (res as unknown as Tree[]) || []
-      if (exec) {
-        pid.value = data.pid
-        id.value = data.id
-        datasetForm.pid = data.pid as string
-        datasetForm.name = data.name
-      } else {
-        datasetForm.pid = data.id as string
-        pid.value = data.id
-      }
-    })
+    if (exec !== 'rename') {
+      listDatasources({ leaf: false, id: data.id, weight: 3 }).then(res => {
+        dfs(res as unknown as Tree[])
+        state.tData = (res as unknown as Tree[]) || []
+      })
+    }
+    if (exec) {
+      pid.value = data.pid
+      id.value = data.id
+      datasetForm.pid = data.pid as string
+      datasetForm.name = data.name
+      oldName.value = data.name
+    } else {
+      datasetForm.pid = data.id as string
+      pid.value = data.id
+    }
   }
   cmd.value = data.id ? exec : ''
   name && (datasetForm.name = name)
@@ -224,6 +228,10 @@ const saveDataset = () => {
           params.pid = datasetForm.pid || pid.value || '0'
           params.action = 'create'
           break
+      }
+      if (cmd.value === 'rename' && oldName.value === params.name) {
+        successCb()
+        return
       }
       loading.value = true
       if (request) {

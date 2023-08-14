@@ -4,18 +4,14 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.api.menu.vo.MenuMeta;
 import io.dataease.api.menu.vo.MenuVO;
-import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
-import io.dataease.api.xpack.component.XpackComponentApi;
-import io.dataease.api.xpack.component.vo.XpackMenuVO;
+import io.dataease.license.config.XpackInteract;
 import io.dataease.menu.bo.MenuTreeNode;
 import io.dataease.menu.dao.auto.entity.CoreMenu;
 import io.dataease.menu.dao.auto.mapper.CoreMenuMapper;
 import io.dataease.utils.BeanUtils;
-import io.dataease.utils.LogUtil;
 import jakarta.annotation.Resource;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -33,36 +29,20 @@ public class MenuManage {
     @Resource
     private CoreMenuMapper coreMenuMapper;
 
-    @Autowired(required = false)
-    private InteractiveAuthApi interactiveAuthApi;
 
-    @Autowired(required = false)
-    private XpackComponentApi xpackComponentApi;
-
-    public List<MenuVO> query() {
-        QueryWrapper<CoreMenu> wrapper = new QueryWrapper<>();
-        List<CoreMenu> coreMenus = coreMenuMapper.selectList(wrapper);
-        coreMenus = filterAuth(coreMenus);
+    @XpackInteract(value = "menuApi")
+    public List<MenuVO> query(List<CoreMenu> coreMenus) {
         List<MenuTreeNode> menuTreeNodes = coreMenus.stream().map(menu -> BeanUtils.copyBean(new MenuTreeNode(), menu)).toList();
         List<MenuTreeNode> treeNodes = buildPOTree(menuTreeNodes);
         return convertTree(treeNodes);
     }
 
-    private List<CoreMenu> filterAuth(List<CoreMenu> list) {
-        if (ObjectUtils.isEmpty(interactiveAuthApi))
-            return list;
-        try {
-            List<XpackMenuVO> xpackMenus = null;
-            if (ObjectUtils.isNotEmpty(xpackComponentApi) && CollectionUtil.isNotEmpty(xpackMenus = xpackComponentApi.menu())) {
-                list.addAll(xpackMenus.stream().map(menu -> BeanUtils.copyBean(new CoreMenu(), menu)).collect(Collectors.toList()));
-            }
-            List<Long> menuIds = interactiveAuthApi.menuIds();
-            return list.stream().filter(menu -> !menu.getAuth() || menuIds.contains(menu.getId())).toList();
-        } catch (Exception e) {
-            LogUtil.error(e.getMessage());
-            return list;
-        }
+    @Cacheable(cacheNames = "core_menu_cache", key = "'-dataease-'")
+    public List<CoreMenu> coreMenus() {
+        QueryWrapper<CoreMenu> wrapper = new QueryWrapper<>();
+        return coreMenuMapper.selectList(wrapper);
     }
+
 
     private List<MenuTreeNode> buildPOTree(List<MenuTreeNode> coreMenus) {
         List<MenuTreeNode> result = new ArrayList<>();
