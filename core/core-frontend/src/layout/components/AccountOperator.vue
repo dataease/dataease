@@ -1,20 +1,17 @@
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue'
+import { computed } from 'vue'
 import { Icon } from '@/components/icon-custom'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import { logoutApi } from '@/api/login'
 import { logoutHandler } from '@/utils/logout'
-
 const userStore = useUserStoreWithOut()
-const name = ref('')
 
 const logout = async () => {
   await logoutApi()
   logoutHandler()
 }
-onMounted(() => {
-  name.value = userStore.getName
-})
+
+const name = computed(() => userStore.getName)
 </script>
 
 <template>
