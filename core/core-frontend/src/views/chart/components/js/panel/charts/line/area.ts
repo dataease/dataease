@@ -18,7 +18,6 @@ import {
 } from '@/views/chart/components/js/panel/charts/line/common'
 import { IntervalGeometryLabelPosition } from '@antv/g2/lib/interface'
 import { Label } from '@antv/g2plot/lib/types/label'
-import { flow as flowLeft } from 'lodash-es'
 
 const DEFAULT_DATA = []
 export class Area extends G2PlotChartView<AreaOptions, G2Area> {
