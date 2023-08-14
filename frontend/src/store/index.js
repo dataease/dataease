@@ -22,14 +22,14 @@ import layer from '@/components/canvas/store/layer'
 import snapshot from '@/components/canvas/store/snapshot'
 import lock from '@/components/canvas/store/lock'
 import task from './modules/task'
-import { formatCondition, valueValid } from '@/utils/conditionUtil'
-import { Condition } from '@/components/widget/bean/Condition'
+import {formatCondition, valueValid} from '@/utils/conditionUtil'
+import {Condition} from '@/components/widget/bean/Condition'
 
-import { DEFAULT_COMMON_CANVAS_STYLE_STRING } from '@/views/panel/panel'
+import {DEFAULT_COMMON_CANVAS_STYLE_STRING} from '@/views/panel/panel'
 import bus from '@/utils/bus'
-import { BASE_MOBILE_STYLE } from '@/components/canvas/customComponent/component-list'
-import { TYPE_CONFIGS } from '@/views/chart/chart/util'
-import { deepCopy } from '@/components/canvas/utils/utils'
+import {BASE_MOBILE_STYLE} from '@/components/canvas/customComponent/component-list'
+import {TYPE_CONFIGS} from '@/views/chart/chart/util'
+import {deepCopy} from '@/components/canvas/utils/utils'
 
 Vue.use(Vuex)
 
@@ -199,7 +199,7 @@ const data = {
       })
     },
 
-    setCurComponent(state, { component, index }) {
+    setCurComponent(state, {component, index}) {
       if (!component && state.curComponent) {
         Vue.set(state.curComponent, 'editing', false)
       }
@@ -237,7 +237,7 @@ const data = {
         state.previewCanvasScale.scalePointHeight = scale.scaleHeight
       }
     },
-    setShapeStyle({ curComponent, canvasStyleData, curCanvasScaleMap }, { top, left, width, height, rotate }) {
+    setShapeStyle({curComponent, canvasStyleData, curCanvasScaleMap}, {top, left, width, height, rotate}) {
       if (curComponent) {
         const curCanvasScaleSelf = curCanvasScaleMap[curComponent.canvasId]
         if (top || top === 0) curComponent.style.top = Math.round((top / curCanvasScaleSelf.scalePointHeight))
@@ -248,7 +248,7 @@ const data = {
       }
     },
 
-    setShapeSingleStyle({ curComponent }, { key, value }) {
+    setShapeSingleStyle({curComponent}, {key, value}) {
       curComponent.style[key] = value
     },
 
@@ -272,14 +272,14 @@ const data = {
     setMobileComponentData(state, mobileComponentData = []) {
       Vue.set(state, 'mobileComponentData', mobileComponentData)
     },
-    addComponent(state, { component, index }) {
+    addComponent(state, {component, index}) {
       if (index !== undefined) {
         state.componentData.splice(index, 0, component)
       } else {
         state.componentData.push(component)
         state.currentCanvasNewId.push(component.id)
       }
-      this.commit('setCurComponent', { component: component, index: index || state.componentData.length - 1 })
+      this.commit('setCurComponent', {component: component, index: index || state.componentData.length - 1})
     },
     removeViewFilter(state, componentId) {
       state.componentData = state.componentData.map(item => {
@@ -368,11 +368,13 @@ const data = {
       let trackInfo
       if (data.option === 'linkage') {
         trackInfo = state.nowPanelTrackInfo
-        // 兼容情况，当源视图多个个字段匹配目标视图一个字段的时候，默认只保留当前点击的维度，将改维度排序到组件结尾，去重时即可保留
-        const activeDimensionIndex = data.dimensionList.findIndex(dimension =>dimension.id === data.name)
-        const dimensionLast = dimensionSort[dimensionSort.length-1]
-        dimensionSort[dimensionSort.length-1] = dimensionSort[activeDimensionIndex]
-        dimensionSort[activeDimensionIndex] = dimensionLast
+        // 兼容情况，当源视图多个字段匹配目标视图一个字段的时候，默认只保留当前点击的维度，将改维度排序到组件结尾，去重时即可保留
+        const activeDimensionIndex = data.dimensionList.findIndex(dimension => dimension.id === data.name)
+        if (activeDimensionIndex > -1 && activeDimensionIndex != dimensionSort.length - 1) {
+          const dimensionLast = dimensionSort[dimensionSort.length - 1]
+          dimensionSort[dimensionSort.length - 1] = dimensionSort[activeDimensionIndex]
+          dimensionSort[activeDimensionIndex] = dimensionLast
+        }
       } else {
         trackInfo = state.nowPanelJumpInfoTargetPanel
       }
@@ -462,7 +464,7 @@ const data = {
           const currentFilters = element.outerParamsFilters || [] // 外部参数信息
 
           // 外部参数 可能会包含多个参数
-          Object.keys(params).forEach(function(sourceInfo) {
+          Object.keys(params).forEach(function (sourceInfo) {
             // 获取外部参数的值 sourceInfo 是外部参数名称 支持数组传入
             let paramValue = params[sourceInfo]
             let operator = 'in'
@@ -661,13 +663,13 @@ const data = {
         }
       }
     },
-    updateComponentViewsData(state, { viewId, propertyKey, propertyValue }) {
+    updateComponentViewsData(state, {viewId, propertyKey, propertyValue}) {
       state.componentViewsData[viewId][propertyKey] = propertyValue
     },
     removeCurMultiplexingComponentWithId(state, id) {
       delete state.curMultiplexingComponents[id]
     },
-    addCurMultiplexingComponent(state, { component, componentId }) {
+    addCurMultiplexingComponent(state, {component, componentId}) {
       if (componentId) {
         if (component.type === 'custom-button' && component.serviceName === 'buttonSureWidget') {
           const copyComponent = deepCopy(component)
@@ -764,7 +766,7 @@ const data = {
       state.changeProperties[propertyInfo.custom][propertyInfo.property] = propertyInfo.value
     },
     initCanvasBase(state) {
-      this.commit('setCurComponent', { component: null, index: null })
+      this.commit('setCurComponent', {component: null, index: null})
       this.commit('clearLinkageSettingInfo', false)
       this.commit('resetViewEditInfo')
       this.commit('initCurMultiplexingComponents')
@@ -854,10 +856,10 @@ const data = {
         }
       })
 
-      bus.$emit('clear_panel_linkage', { viewId: viewId })
+      bus.$emit('clear_panel_linkage', {viewId: viewId})
     },
     setMultiplexingStyleAdapt(state, value) {
-     state.multiplexingStyleAdapt = value
+      state.multiplexingStyleAdapt = value
     }
   },
   modules: {
