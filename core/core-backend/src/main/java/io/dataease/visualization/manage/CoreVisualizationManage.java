@@ -36,7 +36,7 @@ public class CoreVisualizationManage {
     @Resource
     private DataVisualizationInfoMapper mapper;
 
-    @XpackInteract(value = "VisualizationResourceTree", replace = true)
+    @XpackInteract(value = "visualizationResourceTree", replace = true)
     public List<BusiNodeVO> tree(BusiNodeRequest request) {
 
         List<VisualizationNodeBO> nodes = new ArrayList<>();
@@ -53,7 +53,7 @@ public class CoreVisualizationManage {
         return TreeUtils.mergeTree(nodes, BusiNodeVO.class, false);
     }
 
-    @XpackInteract(value = "VisualizationResourceTree", before = false)
+    @XpackInteract(value = "visualizationResourceTree", before = false)
     public void delete(Long id) {
         DataVisualizationInfo info = mapper.selectById(id);
         if (ObjectUtils.isEmpty(info)) {
@@ -74,7 +74,7 @@ public class CoreVisualizationManage {
         extMapper.batchDel(delIds, System.currentTimeMillis(), AuthUtils.getUser().getUserId());
     }
 
-    @XpackInteract(value = "VisualizationResourceTree", before = false)
+    @XpackInteract(value = "visualizationResourceTree", before = false)
     public void move(DataVisualizationBaseRequest request) {
         DataVisualizationInfo visualizationInfo = new DataVisualizationInfo();
         BeanUtils.copyBean(visualizationInfo, request);
@@ -85,7 +85,7 @@ public class CoreVisualizationManage {
         mapper.updateById(visualizationInfo);
     }
 
-    @XpackInteract(value = "VisualizationResourceTree", before = false)
+    @XpackInteract(value = "visualizationResourceTree", before = false)
     public void innerSave(DataVisualizationInfo visualizationInfo) {
         visualizationInfo.setDeleteFlag(DataVisualizationConstants.DELETE_FLAG.AVAILABLE);
         visualizationInfo.setId(IDUtils.snowID());
@@ -94,7 +94,7 @@ public class CoreVisualizationManage {
         mapper.insert(visualizationInfo);
     }
 
-    @XpackInteract(value = "VisualizationResourceTree", before = false)
+    @XpackInteract(value = "visualizationResourceTree", before = false)
     public void innerEdit(DataVisualizationInfo visualizationInfo) {
         visualizationInfo.setUpdateTime(System.currentTimeMillis());
         visualizationInfo.setUpdateBy(AuthUtils.getUser().getUserId().toString());
