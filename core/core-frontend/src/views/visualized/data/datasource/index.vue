@@ -446,7 +446,9 @@ const handleClick = (tabName: TabPaneName) => {
         })
         if (!!tabList.value.length && !activeTab.value) {
           activeTab.value = tabList.value[0].value
-          handleTabClick(activeTab)
+          if (nodeInfo.type === 'API' || nodeInfo.type === 'Excel') {
+            handleTabClick(activeTab)
+          }
         }
         tableData.value = res.data
       })

@@ -7,7 +7,8 @@ export enum ChartLibraryType {
   G2_PLOT = 'g2plot',
   L7_PLOT = 'l7plot',
   ECHARTS = 'echarts',
-  S2 = 's2'
+  S2 = 's2',
+  RICH_TEXT = 'richText'
 }
 
 export abstract class AbstractChartView {

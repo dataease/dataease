@@ -24,4 +24,6 @@ public class DatasetGroupInfoDTO extends DatasetNodeDTO {
     private String sql;
 
     private Long total;
+
+    private String creator;
 }

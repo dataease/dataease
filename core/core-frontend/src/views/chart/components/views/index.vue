@@ -18,6 +18,7 @@ import chartViewManager from '@/views/chart/components/js/panel'
 import { storeToRefs } from 'pinia'
 import { checkAddHttp, setIdValueTrans } from '@/utils/canvasUtils'
 import { Base64 } from 'js-base64'
+import DeRichTextView from '@/custom-component/rich-text/DeRichTextView.vue'
 
 const { wsCache } = useCache()
 
@@ -29,6 +30,10 @@ const dvMainStore = dvMainStoreWithOut()
 const { nowPanelJumpInfo, publicLinkStatus, dvInfo, curComponent } = storeToRefs(dvMainStore)
 
 const props = defineProps({
+  active: {
+    type: Boolean,
+    default: false
+  },
   element: {
     type: Object,
     default() {
@@ -52,8 +57,7 @@ const props = defineProps({
   }
 })
 const dynamicAreaId = ref('')
-
-const { view, showPosition, element } = toRefs(props)
+const { view, showPosition, element, active } = toRefs(props)
 
 const state = reactive({
   initReady: true, //curComponent 切换期间 不接收外部的calcData 和 renderChart 事件
@@ -312,7 +316,6 @@ onMounted(() => {
     }
   })
 })
-
 initTitle()
 </script>
 
@@ -320,12 +323,18 @@ initTitle()
   <div class="chart-area">
     <p v-if="state.title_show" :style="state.title_class">{{ view.title }}</p>
     <!--这里去渲染不同图库的视图-->
+    <de-rich-text-view
+      v-if="element.innerType === 'richText'"
+      ref="chartComponent"
+      :element="element"
+      :active="active"
+    />
     <chart-component-g2-plot
       style="flex: 1"
       :dynamic-area-id="dynamicAreaId"
       :view="view"
       :show-position="showPosition"
-      v-if="showChartView(ChartLibraryType.G2_PLOT, ChartLibraryType.L7_PLOT)"
+      v-else-if="showChartView(ChartLibraryType.G2_PLOT, ChartLibraryType.L7_PLOT)"
       ref="chartComponent"
       @onChartClick="chartClick"
       @onDrillFilters="onDrillFilters"

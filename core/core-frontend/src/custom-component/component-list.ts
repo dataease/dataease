@@ -121,7 +121,7 @@ const list = [
     component: 'UserView',
     name: '视图',
     label: '视图',
-    propValue: '',
+    propValue: { textValue: '' },
     icon: 'bar',
     innerType: 'bar',
     x: 1,
