@@ -88,7 +88,6 @@ public class CoreVisualizationManage {
     @XpackInteract(value = "visualizationResourceTree", before = false)
     public void innerSave(DataVisualizationInfo visualizationInfo) {
         visualizationInfo.setDeleteFlag(DataVisualizationConstants.DELETE_FLAG.AVAILABLE);
-        visualizationInfo.setId(IDUtils.snowID());
         visualizationInfo.setCreateBy(AuthUtils.getUser().getUserId().toString());
         visualizationInfo.setCreateTime(System.currentTimeMillis());
         mapper.insert(visualizationInfo);
