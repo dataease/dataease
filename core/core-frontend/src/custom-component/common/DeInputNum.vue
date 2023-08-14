@@ -17,7 +17,7 @@ const { name, value, min, max, themes } = toRefs(props)
     class="de-input-number"
     :class="themes + '-custom-input-number'"
     v-model="value"
-    :thems="themes"
+    :themes="themes"
     :min="min"
     :max="max"
     size="small"
@@ -41,11 +41,11 @@ const { name, value, min, max, themes } = toRefs(props)
 }
 
 .dark-custom-input-number :deep(.ed-input-number__decrease) {
-  background-color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0) !important;
   color: #ffffff;
 }
 .dark-custom-input-number :deep(.ed-input-number__increase) {
-  background-color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0) !important;
   color: #ffffff;
 }
 </style>

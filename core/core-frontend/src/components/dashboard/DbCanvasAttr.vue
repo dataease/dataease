@@ -251,9 +251,9 @@ onMounted(() => {
                   width="600px"
                   :append-to-body="true"
                   :destroy-on-close="true"
-                  v-model:visible="dialogVisible"
+                  v-model="dialogVisible"
                 >
-                  <img width="100%" :src="dialogImageUrl" />
+                  <img width="550" :src="dialogImageUrl" />
                 </el-dialog>
               </el-col>
             </el-row>

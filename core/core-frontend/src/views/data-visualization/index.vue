@@ -237,6 +237,11 @@ eventBus.on('handleNew', handleNew)
 </template>
 
 <style lang="less">
+::-webkit-scrollbar {
+  width: 0px !important;
+  height: 0px !important;
+}
+
 .preview-layout-container {
   height: 100vh !important;
 }
