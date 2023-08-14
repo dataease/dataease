@@ -3,6 +3,8 @@ package io.dataease.commons.utils;
 import static io.dataease.commons.constants.StaticResourceConstants.*;
 
 import cn.hutool.core.codec.Base64Encoder;
+import io.dataease.exception.DataEaseException;
+import io.dataease.i18n.Translator;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
@@ -19,6 +21,8 @@ import java.io.InputStream;
 public class StaticResourceUtils {
 
     private final static String FILE_BASE_PATH = USER_HOME+ FILE_SEPARATOR+UPLOAD_URL_PREFIX;
+
+    private static final String FILE_NAME_REGEX_PATTERN = "^[A-Za-z0-9.-]{1,255}$";
 
     public static String ensureBoth(@NonNull String string, @NonNull String bothfix) {
         return ensureBoth(string, bothfix, bothfix);
@@ -58,12 +62,22 @@ public class StaticResourceUtils {
         return StringUtils.removeEnd(string, suffix) + suffix;
     }
 
+    public static boolean validateStringFilenameUsingRegex(String filename) {
+        if (filename == null) {
+            return false;
+        }
+        return filename.matches(FILE_NAME_REGEX_PATTERN);
+    }
+
     /**
      *
      * @param imgFile  local storage path
      * @return
      */
     public static String getImgFileToBase64(String imgFile) {
+        if(!validateStringFilenameUsingRegex(imgFile)){
+            DataEaseException.throwException("Illegal File Name");
+        }
         //Convert the picture file into byte array  and encode it with Base64
         InputStream inputStream = null;
         byte[] buffer = null;
