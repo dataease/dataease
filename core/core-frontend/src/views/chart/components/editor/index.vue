@@ -135,6 +135,10 @@ watch(
   { deep: true }
 )
 
+const chartStyleShow = computed(() => {
+  return view.value.type !== 'richText'
+})
+
 const chartViewInstance = computed(() => {
   return chartViewManager.getChartView(view.value.render, view.value.type)
 })
@@ -1318,6 +1322,7 @@ const autoInsert = element => {
                 style="width: 100%"
               >
                 <chart-style
+                  v-if="chartStyleShow"
                   :properties="chartViewInstance.properties"
                   :property-inner-all="chartViewInstance.propertyInner"
                   :chart="view"

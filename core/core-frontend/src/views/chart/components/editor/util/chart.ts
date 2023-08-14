@@ -2,104 +2,124 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { deepCopy } from '@/utils/utils'
 const { t } = useI18n()
 
-export const DEFAULT_COLOR_CASE = {
-  value: 'default',
-  colors: [
-    '#5470c6',
-    '#91cc75',
-    '#fac858',
-    '#ee6666',
-    '#73c0de',
-    '#3ba272',
-    '#fc8452',
-    '#9a60b4',
-    '#ea7ccc'
-  ],
-  alpha: 100,
-  tableHeaderBgColor: '#6D9A49',
-  tableItemBgColor: '#FFFFFF',
-  tableHeaderFontColor: '#000000',
-  tableFontColor: '#000000',
-  tableStripe: true,
-  dimensionColor: '#000000',
-  quotaColor: '#5470c6',
-  tableBorderColor: '#E6E7E4',
-  seriesColors: [], // 格式：{"name":"s1","color":"","isCustom":false}
-  areaBorderColor: '#303133',
-  gradient: false,
-  areaBaseColor: '#FFFFFF',
-  tableScrollBarColor: 'rgba(0, 0, 0, 0.15)',
-  tableScrollBarHoverColor: 'rgba(0, 0, 0, 0.4)',
-  mapStyle: 'normal',
-  mapLineGradient: false,
-  mapLineSourceColor: '#146C94',
-  mapLineTargetColor: '#576CBC'
+export const DEFAULT_COLOR_CASE: DeepPartial<ChartAttr> = {
+  basicStyle: {
+    colorScheme: 'default',
+    colors: [
+      '#5470c6',
+      '#91cc75',
+      '#fac858',
+      '#ee6666',
+      '#73c0de',
+      '#3ba272',
+      '#fc8452',
+      '#9a60b4',
+      '#ea7ccc'
+    ],
+    alpha: 100,
+    gradient: false,
+    mapStyle: 'normal',
+    areaBaseColor: '#FFFFFF',
+    areaBorderColor: '#303133',
+    gaugeStyle: 'default',
+    tableBorderColor: '#E6E7E4',
+    tableScrollBarColor: 'rgba(0, 0, 0, 0.15)'
+  },
+  misc: {
+    mapLineGradient: false,
+    mapLineSourceColor: '#146C94',
+    mapLineTargetColor: '#576CBC',
+    nameFontColor: '#000000',
+    valueFontColor: '#5470c6'
+  },
+  tableHeader: {
+    tableHeaderBgColor: '#6D9A49',
+    tableHeaderFontColor: '#000000'
+  },
+  tableCell: {
+    tableItemBgColor: '#FFFFFF',
+    tableFontColor: '#000000'
+  }
 }
 
-export const DEFAULT_COLOR_CASE_LIGHT = {
-  value: 'default',
-  colors: [
-    '#5470c6',
-    '#91cc75',
-    '#fac858',
-    '#ee6666',
-    '#73c0de',
-    '#3ba272',
-    '#fc8452',
-    '#9a60b4',
-    '#ea7ccc'
-  ],
-  alpha: 100,
-  tableHeaderBgColor: '#6D9A49',
-  tableItemBgColor: '#FFFFFF',
-  tableHeaderFontColor: '#000000',
-  tableFontColor: '#000000',
-  tableStripe: true,
-  dimensionColor: '#000000',
-  quotaColor: '#5470c6',
-  tableBorderColor: '#E6E7E4',
-  seriesColors: [], // 格式：{"name":"s1","color":"","isCustom":false}
-  areaBorderColor: '#303133',
-  gradient: false,
-  areaBaseColor: '#FFFFFF',
-  tableScrollBarColor: 'rgba(0, 0, 0, 0.15)',
-  tableScrollBarHoverColor: 'rgba(0, 0, 0, 0.4)',
-  mapStyle: 'normal',
-  mapLineGradient: false,
-  mapLineSourceColor: '#146C94',
-  mapLineTargetColor: '#576CBC'
+export const DEFAULT_COLOR_CASE_LIGHT: DeepPartial<ChartAttr> = {
+  basicStyle: {
+    colorScheme: 'default',
+    colors: [
+      '#5470c6',
+      '#91cc75',
+      '#fac858',
+      '#ee6666',
+      '#73c0de',
+      '#3ba272',
+      '#fc8452',
+      '#9a60b4',
+      '#ea7ccc'
+    ],
+    alpha: 100,
+    gradient: false,
+    mapStyle: 'normal',
+    areaBaseColor: '#FFFFFF',
+    areaBorderColor: '#303133',
+    gaugeStyle: 'default',
+    tableBorderColor: '#E6E7E4',
+    tableScrollBarColor: 'rgba(0, 0, 0, 0.15)'
+  },
+  misc: {
+    mapLineGradient: false,
+    mapLineSourceColor: '#146C94',
+    mapLineTargetColor: '#576CBC',
+    nameFontColor: '#000000',
+    valueFontColor: '#5470c6'
+  },
+  tableHeader: {
+    tableHeaderBgColor: '#6D9A49',
+    tableHeaderFontColor: '#000000'
+  },
+  tableCell: {
+    tableItemBgColor: '#FFFFFF',
+    tableFontColor: '#000000'
+  }
 }
 
-export const DEFAULT_COLOR_CASE_DARK = {
-  value: 'default',
-  colors: [
-    '#5470c6',
-    '#91cc75',
-    '#fac858',
-    '#ee6666',
-    '#73c0de',
-    '#3ba272',
-    '#fc8452',
-    '#9a60b4',
-    '#ea7ccc'
-  ],
-  alpha: 100,
-  tableHeaderBgColor: '#5470c6',
-  tableItemBgColor: '#131E42',
-  tableFontColor: '#ffffff',
-  tableStripe: true,
-  dimensionColor: '#ffffff',
-  quotaColor: '#5470c6',
-  tableBorderColor: '#CCCCCC',
-  seriesColors: [], // 格式：{"name":"s1","color":"","isCustom":false}
-  areaBorderColor: '#EBEEF5',
-  areaBaseColor: '5470C6',
-  tableScrollBarColor: 'rgba(255, 255, 255, 0.5)',
-  tableScrollBarHoverColor: 'rgba(255, 255, 255, 0.8)',
-  mapStyle: 'darkblue',
-  mapLineGradient: false,
-  mapLineSourceColor: '#2F58CD',
-  mapLineTargetColor: '#3795BD'
+export const DEFAULT_COLOR_CASE_DARK: DeepPartial<ChartAttr> = {
+  basicStyle: {
+    colorScheme: 'default',
+    colors: [
+      '#5470c6',
+      '#91cc75',
+      '#fac858',
+      '#ee6666',
+      '#73c0de',
+      '#3ba272',
+      '#fc8452',
+      '#9a60b4',
+      '#ea7ccc'
+    ],
+    alpha: 100,
+    gradient: false,
+    mapStyle: 'darkblue',
+    areaBaseColor: '5470C6',
+    areaBorderColor: '#EBEEF5',
+    gaugeStyle: 'default',
+    tableBorderColor: '#CCCCCC',
+    tableScrollBarColor: 'rgba(255, 255, 255, 0.5)'
+  },
+  misc: {
+    mapLineGradient: false,
+    mapLineSourceColor: '#2F58CD',
+    mapLineTargetColor: '#3795BD',
+    nameFontColor: '#ffffff',
+    valueFontColor: '#5470c6'
+  },
+  tableHeader: {
+    tableHeaderBgColor: '#5470c6',
+    tableHeaderFontColor: '#000000'
+  },
+  tableCell: {
+    tableItemBgColor: '#131E42',
+    tableFontColor: '#ffffff'
+  }
 }
 
 export const TAB_COMMON_STYLE_BASE = {
@@ -201,7 +221,7 @@ export const DEFAULT_MISC: ChartMiscAttr = {
   treemapWidth: 80,
   treemapHeight: 80,
   liquidMax: 100,
-  liquidMaxType: 'fix', // fix or dynamic
+  liquidMaxType: 'fix',
   liquidMaxField: {
     id: '',
     summary: ''
@@ -215,7 +235,10 @@ export const DEFAULT_MISC: ChartMiscAttr = {
   mapPitch: 0,
   mapLineType: 'arc',
   mapLineWidth: 1,
-  mapLineAnimateDuration: 3
+  mapLineAnimateDuration: 3,
+  mapLineGradient: false,
+  mapLineSourceColor: '#146C94',
+  mapLineTargetColor: '#576CBC'
 }
 export const DEFAULT_SUSPENSION = {
   show: true
@@ -362,26 +385,26 @@ export const DEFAULT_LEGEND_STYLE: ChartLegendStyle = {
   fontSize: 12
 }
 
-export const DEFAULT_LEGEND_STYLE_BASE = {
+export const DEFAULT_LEGEND_STYLE_BASE: ChartLegendStyle = {
   show: true,
   hPosition: 'center',
   vPosition: 'bottom',
   orient: 'horizontal',
   icon: 'circle',
   color: '#333333',
-  fontSize: '12'
+  fontSize: 12
 }
 
-export const DEFAULT_LEGEND_STYLE_LIGHT = {
+export const DEFAULT_LEGEND_STYLE_LIGHT: ChartLegendStyle = {
   ...DEFAULT_LEGEND_STYLE_BASE,
   color: '#333333',
-  fontSize: '12'
+  fontSize: 12
 }
 
-export const DEFAULT_LEGEND_STYLE_DARK = {
+export const DEFAULT_LEGEND_STYLE_DARK: ChartLegendStyle = {
   ...DEFAULT_LEGEND_STYLE_BASE,
   color: '#ffffff',
-  fontSize: '12'
+  fontSize: 12
 }
 
 export const DEFAULT_MARGIN_STYLE = {

@@ -32,6 +32,7 @@ interface Field {
 interface Node {
   name: string
   createBy: string
+  creator: string
   id: string
   nodeType: string
   createTime: number
@@ -106,6 +107,7 @@ const creatDsFolder = ref()
 const nodeInfo = reactive<Node>({
   name: '',
   createBy: '',
+  creator: '',
   id: '',
   nodeType: '',
   createTime: 0
@@ -434,7 +436,7 @@ const filterNode = (value: string, data: BusiTreeNode) => {
           <div class="info-method">
             {{ nodeInfo.name }}
             <el-divider direction="vertical" />
-            <span class="create-user"> 创建人：{{ nodeInfo.createBy }} </span>
+            <span class="create-user"> 创建人：{{ nodeInfo.creator }} </span>
 
             <el-popover placement="bottom" width="420" trigger="hover">
               <template #reference>

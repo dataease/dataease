@@ -32,15 +32,6 @@ public interface DatasourceApi {
     @PostMapping("/save")
     DatasourceDTO save(@RequestBody DatasourceDTO dataSourceDTO) throws Exception;
 
-    @DePermit("m:read")
-    @PostMapping("/move")
-    DatasourceDTO move(@RequestBody DatasourceDTO dataSourceDTO) throws Exception;
-
-
-    @DePermit({"m:read", "#p0.id+':manage'"})
-    @PostMapping("/update")
-    DatasourceDTO update(@RequestBody DatasourceDTO dataSourceDTO) throws Exception;
-
     @GetMapping("/types")
     List<DatasourceConfiguration.DatasourceType> datasourceTypes() throws DEException;
 

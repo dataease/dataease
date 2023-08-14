@@ -6,6 +6,7 @@ import {
 
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { useEmitt } from '@/hooks/web/useEmitt'
+import { merge } from 'lodash-es'
 const dvMainStore = dvMainStoreWithOut()
 
 export const LIGHT_THEME_COLOR_MAIN = '#000000'
@@ -112,54 +113,45 @@ export function colorRgb(color, opacity) {
 }
 
 export const customAttrTrans = {
-  size: [
-    'barWidth',
-    'lineWidth',
-    'lineSymbolSize',
-    'funnelWidth', // 漏斗图 最大宽度
-    'tableTitleFontSize',
-    'tableItemFontSize',
-    'tableTitleHeight',
-    'tableItemHeight',
-    'dimensionFontSize',
-    'quotaFontSize',
+  basicStyle: ['barWidth', 'lineWidth', 'lineSymbolSize'],
+  tableHeader: ['tableTitleFontSize', 'tableTitleHeight'],
+  tableCell: ['tableItemFontSize', 'tableItemHeight'],
+  misc: [
+    'nameFontSize',
+    'valueFontSize',
     'spaceSplit', // 间隔
     'scatterSymbolSize', // 气泡大小，散点图
     'radarSize' // 雷达占比
   ],
   label: ['fontSize'],
-  tooltip: {
-    textStyle: ['fontSize']
-  }
+  tooltip: ['fontSize']
 }
 export const customStyleTrans = {
   text: ['fontSize'],
-  legend: {
-    textStyle: ['fontSize']
-  },
+  legend: ['fontSize'],
   xAxis: {
-    nameTextStyle: ['fontSize'],
+    fontSize: 'fontSize',
     axisLabel: ['fontSize'],
     splitLine: {
       lineStyle: ['width']
     }
   },
   yAxis: {
-    nameTextStyle: ['fontSize'],
+    fontSize: 'fontSize',
     axisLabel: ['fontSize'],
     splitLine: {
       lineStyle: ['width']
     }
   },
   yAxisExt: {
-    nameTextStyle: ['fontSize'],
+    fontSize: 'fontSize',
     axisLabel: ['fontSize'],
     splitLine: {
       lineStyle: ['width']
     }
   },
-  split: {
-    name: ['fontSize'],
+  misc: {
+    fontSize: 'fontSize',
     axisLine: {
       lineStyle: ['width']
     },
@@ -214,23 +206,22 @@ export const THEME_STYLE_TRANS_MAIN_BACK = {
 }
 
 export const THEME_STYLE_TRANS_MAIN = {
-  legend: {
-    textStyle: ['color']
-  },
+  legend: ['color'],
   xAxis: {
-    nameTextStyle: ['color'],
+    // 一级属性直接字符串
+    color: 'color',
     axisLabel: ['color']
   },
   yAxis: {
-    nameTextStyle: ['color'],
+    color: '',
     axisLabel: ['color']
   },
   yAxisExt: {
-    nameTextStyle: ['color'],
+    color: '',
     axisLabel: ['color']
   },
-  split: {
-    name: ['color'],
+  misc: {
+    color: 'color',
     axisTick: {
       lineStyle: ['color']
     },
@@ -254,7 +245,7 @@ export const THEME_STYLE_TRANS_SLAVE1 = {
       lineStyle: ['color']
     }
   },
-  split: {
+  misc: {
     splitLine: {
       lineStyle: ['color']
     },
@@ -266,9 +257,7 @@ export const THEME_STYLE_TRANS_SLAVE1 = {
 
 export const THEME_ATTR_TRANS_MAIN = {
   label: ['color'],
-  tooltip: {
-    textStyle: ['color']
-  }
+  tooltip: ['color']
 }
 
 export const THEME_ATTR_TRANS_MAIN_SYMBOL = {
@@ -307,6 +296,9 @@ export function recursionTransObj(template, infoObj, scale, terminal) {
           }
         }
       })
+    } else if (typeof template[templateKey] === 'string') {
+      // 一级字段为字符串直接赋值
+      infoObj[templateKey] = getScaleValue(infoObj[templateKey], scale)
     } else {
       // 如果是对象 继续进行递归
       if (infoObj[templateKey]) {
@@ -325,6 +317,9 @@ export function recursionThemTransObj(template, infoObj, color) {
           infoObj[templateKey][templateProp] = color
         }
       })
+    } else if (typeof template[templateKey] === 'string') {
+      // 一级字段为字符串直接赋值
+      infoObj[templateKey] = color
     } else {
       // 如果是对象 继续进行递归
       if (infoObj[templateKey]) {
@@ -343,7 +338,7 @@ export function componentScalePublic(chartInfo, heightScale, widthScale) {
   return chartInfo
 }
 
-export function adaptCurTheme(customStyle, customAttr, chartType) {
+export function adaptCurTheme(customStyle, customAttr) {
   const canvasStyle = dvMainStore.canvasStyleData
   const themeColor = canvasStyle.dashboard.themeColor
   if (themeColor === 'light') {
@@ -355,27 +350,17 @@ export function adaptCurTheme(customStyle, customAttr, chartType) {
       customAttr,
       LIGHT_THEME_COMPONENT_BACKGROUND
     )
-    if (chartType === 'symbol-map') {
-      // 符号地图特殊处理
-      customStyle['baseMapStyle'] = { baseMapTheme: 'light' }
-    }
-    customAttr['color'] = { ...DEFAULT_COLOR_CASE, ...canvasStyle.component.chartColor }
+    merge(customAttr, DEFAULT_COLOR_CASE, canvasStyle.component.chartColor)
   } else {
     recursionThemTransObj(THEME_STYLE_TRANS_MAIN, customStyle, DARK_THEME_COLOR_MAIN)
     recursionThemTransObj(THEME_STYLE_TRANS_SLAVE1, customStyle, DARK_THEME_COLOR_SLAVE1)
-    if (chartType === 'symbol-map') {
-      // 符号地图特殊处理
-      customStyle['baseMapStyle'] = { baseMapTheme: 'dark' }
-      recursionThemTransObj(THEME_ATTR_TRANS_MAIN_SYMBOL, customAttr, '#000000')
-    } else {
-      recursionThemTransObj(THEME_ATTR_TRANS_MAIN, customAttr, DARK_THEME_COLOR_MAIN)
-      recursionThemTransObj(
-        THEME_ATTR_TRANS_SLAVE1_BACKGROUND,
-        customAttr,
-        DARK_THEME_COMPONENT_BACKGROUND_BACK
-      )
-    }
-    customAttr['color'] = { ...DEFAULT_COLOR_CASE_DARK, ...canvasStyle.component.chartColor }
+    recursionThemTransObj(THEME_ATTR_TRANS_MAIN, customAttr, DARK_THEME_COLOR_MAIN)
+    recursionThemTransObj(
+      THEME_ATTR_TRANS_SLAVE1_BACKGROUND,
+      customAttr,
+      DARK_THEME_COMPONENT_BACKGROUND_BACK
+    )
+    merge(customAttr, DEFAULT_COLOR_CASE_DARK, canvasStyle.component.chartColor)
   }
   customStyle['text'] = {
     ...canvasStyle.component.chartTitle,
@@ -420,7 +405,7 @@ export function adaptCurThemeCommonStyle(component) {
     // }
     // //配色-End
 
-    adaptCurTheme(curViewInfo.customStyle, curViewInfo.customAttr, curViewInfo.type)
+    adaptCurTheme(curViewInfo.customStyle, curViewInfo.customAttr)
     console.log('1-2')
     useEmitt().emitter.emit('renderChart-' + component.id, curViewInfo)
     // 视图-Begin

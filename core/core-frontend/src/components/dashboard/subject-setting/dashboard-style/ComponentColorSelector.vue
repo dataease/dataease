@@ -4,7 +4,7 @@
       ref="colorFormRef"
       :model="colorForm"
       label-width="80px"
-      size="mini"
+      size="small"
       style="width: 100%"
     >
       <div>
@@ -13,7 +13,7 @@
             <template #reference>
               <div :style="{ cursor: 'pointer', marginTop: '2px', width: '180px' }">
                 <span
-                  v-for="(c, index) in colorForm.colors"
+                  v-for="(c, index) in colorForm.basicStyle.colors"
                   :key="index"
                   :style="{
                     width: '20px',
@@ -29,7 +29,7 @@
               <div>
                 <span class="color-label">{{ t('chart.system_case') }}</span>
                 <el-select
-                  v-model="colorForm['value']"
+                  v-model="colorForm.basicStyle.colorScheme"
                   :placeholder="t('chart.pls_slc_color_case')"
                   size="small"
                   @change="changeColorOption('value')"
@@ -71,7 +71,7 @@
                   <span>
                     <el-radio-group v-model="state.colorIndex" class="color-type">
                       <el-radio
-                        v-for="(c, index) in colorForm.colors"
+                        v-for="(c, index) in colorForm.basicStyle.colors"
                         :key="index"
                         :label="index"
                         style="padding: 2px"
@@ -107,10 +107,10 @@
         </el-form-item>
         <el-form-item :label="t('chart.not_alpha')" class="form-item form-item-slider">
           <el-slider
-            v-model="colorForm.alpha"
+            v-model="colorForm.basicStyle.alpha"
             show-input
             :show-input-controls="false"
-            input-size="mini"
+            input-size="small"
             @change="changeColorCase('alpha')"
           />
         </el-form-item>
@@ -120,7 +120,7 @@
         </el-row>
         <el-form-item :label="t('chart.quota_color')" class="form-item">
           <el-color-picker
-            v-model="colorForm.quotaColor"
+            v-model="colorForm.misc.valueFontColor"
             class="color-picker-style"
             size="small"
             :predefine="predefineColors"
@@ -129,7 +129,7 @@
         </el-form-item>
         <el-form-item :label="t('chart.dimension_color')" class="form-item">
           <el-color-picker
-            v-model="colorForm.dimensionColor"
+            v-model="colorForm.misc.nameFontColor"
             class="color-picker-style"
             size="small"
             :predefine="predefineColors"
@@ -144,7 +144,7 @@
       <div>
         <el-form-item :label="t('chart.table_header_bg')" class="form-item">
           <el-color-picker
-            v-model="colorForm.tableHeaderBgColor"
+            v-model="colorForm.tableHeader.tableHeaderBgColor"
             class="color-picker-style"
             size="small"
             :predefine="predefineColors"
@@ -153,7 +153,7 @@
         </el-form-item>
         <el-form-item :label="t('chart.table_item_bg')" class="form-item">
           <el-color-picker
-            v-model="colorForm.tableItemBgColor"
+            v-model="colorForm.tableCell.tableItemBgColor"
             class="color-picker-style"
             size="small"
             :predefine="predefineColors"
@@ -162,7 +162,7 @@
         </el-form-item>
         <el-form-item :label="t('chart.table_header_font_color')" class="form-item">
           <el-color-picker
-            v-model="colorForm.tableHeaderFontColor"
+            v-model="colorForm.tableHeader.tableHeaderFontColor"
             class="color-picker-style"
             size="small"
             :predefine="predefineColors"
@@ -171,7 +171,7 @@
         </el-form-item>
         <el-form-item :label="t('chart.table_item_font_color')" class="form-item">
           <el-color-picker
-            v-model="colorForm.tableFontColor"
+            v-model="colorForm.tableCell.tableFontColor"
             class="color-picker-style"
             size="small"
             :predefine="predefineColors"
@@ -180,7 +180,7 @@
         </el-form-item>
         <el-form-item :label="t('chart.table_border_color')" class="form-item">
           <el-color-picker
-            v-model="colorForm.tableBorderColor"
+            v-model="colorForm.basicStyle.tableBorderColor"
             class="color-picker-style"
             size="small"
             :predefine="predefineColors"
@@ -189,7 +189,7 @@
         </el-form-item>
         <el-form-item :label="t('chart.table_scroll_bar_color')" class="form-item">
           <el-color-picker
-            v-model="colorForm.tableScrollBarColor"
+            v-model="colorForm.basicStyle.tableScrollBarColor"
             class="color-picker-style"
             size="small"
             :predefine="predefineColors"
@@ -213,7 +213,9 @@ import { storeToRefs } from 'pinia'
 const { t } = useI18n()
 const emits = defineEmits(['onColorChange'])
 const colorFormRef = ref(null)
-const colorForm = computed(() => canvasStyleData.value.component.chartColor)
+const colorForm = computed(
+  () => canvasStyleData.value.component.chartColor as DeepPartial<ChartAttr>
+)
 const colorCases = COLOR_CASES
 
 const predefineColors = COLOR_PANEL
@@ -225,28 +227,25 @@ const state = reactive({
 const dvMainStore = dvMainStoreWithOut()
 const { canvasStyleData } = storeToRefs(dvMainStore)
 const initForm = () => {
-  colorForm.value['tableHeaderFontColor'] = colorForm.value['tableHeaderFontColor']
-    ? colorForm.value['tableHeaderFontColor']
-    : colorForm.value['tableFontColor']
+  const tableHeader = colorForm.value.tableHeader
+  const tableCell = colorForm.value.tableCell
+  tableHeader.tableHeaderFontColor = tableHeader.tableHeaderFontColor ?? tableCell.tableFontColor
 }
 const changeColorOption = (modifyName = 'value') => {
   const items = colorCases.filter(ele => {
-    return ele.value === colorForm.value['value']
+    return ele.value === colorForm.value.basicStyle.colorScheme
   })
-  colorForm.value['colors'] = JSON.parse(JSON.stringify(items[0].colors))
+  colorForm.value.basicStyle.colors = JSON.parse(JSON.stringify(items[0].colors))
 
-  state.customColor = colorForm.value['colors'][0]
+  state.customColor = colorForm.value.basicStyle.colors[0]
   state.colorIndex = 0
 
   // reset custom color
-  colorForm.value['seriesColors'] = []
   changeColorCase(modifyName)
 }
 
 const changeColorCase = modifyName => {
   colorForm.value['modifyName'] = modifyName
-  emits('onColorChange', colorForm.value)
-  colorForm.value['modifyName'] = 'colors'
   emits('onColorChange', colorForm.value)
 }
 
@@ -255,10 +254,8 @@ const switchColor = index => {
   state.customColor = colorForm.value['colors'][state.colorIndex]
 }
 const switchColorCase = () => {
-  colorForm.value['colors'][state.colorIndex] = state.customColor
+  colorForm.value.basicStyle.colors[state.colorIndex] = state.customColor
   colorForm.value['modifyName'] = 'value'
-  emits('onColorChange', colorForm.value)
-  colorForm.value['modifyName'] = 'colors'
   emits('onColorChange', colorForm.value)
 }
 

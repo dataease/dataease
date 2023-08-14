@@ -286,18 +286,30 @@ const generateColumns = (arr: Field[]) =>
   }))
 
 const dsChange = (val: string) => {
+  dsLoading.value = true
   sqlNode.datasourceId = dataSource.value
-  getTables(val).then(res => {
-    tableList = res || []
-    state.tableData = [...tableList]
-  })
+  return getTables(val)
+    .then(res => {
+      tableList = res || []
+      state.tableData = [...tableList]
+    })
+    .finally(() => {
+      dsLoading.value = false
+    })
+}
+
+const getTableName = async (datasourceId, tableName) => {
+  await dsChange(datasourceId)
+  if (!!tableName) {
+    searchTable.value = tableName
+  }
 }
 
 const initEdite = () => {
-  const { id, datasourceId } = route.query
+  const { id, datasourceId, tableName } = route.query
   if (datasourceId) {
     dataSource.value = datasourceId as string
-    dsChange(datasourceId as string)
+    getTableName(datasourceId as string, tableName)
   }
   if (!id) return
   loading.value = true
@@ -314,6 +326,9 @@ const initEdite = () => {
       originName.value = name
       allfields.value = res.allFields || []
       dfsUnion(arr, res.union || [])
+      const [fir] = res.union as { currentDs: { datasourceId: string } }[]
+      dataSource.value = fir?.currentDs?.datasourceId
+      dsChange(dataSource.value)
       datasetDrag.value.initState(arr)
     })
     .finally(() => {
@@ -360,8 +375,8 @@ const allfields = ref([])
 
 let num = +new Date()
 
-const expandedD = ref(false)
-const expandedQ = ref(false)
+const expandedD = ref(true)
+const expandedQ = ref(true)
 const setGuid = (arr, id, datasourceId) => {
   arr.forEach(ele => {
     if (!ele.id) {
@@ -402,12 +417,15 @@ const confirmEditUnion = () => {
   const { node, parent } = fieldUnion.value
   setGuid(node.currentDsFields, node.id, node.datasourceId)
   setGuid(parent.currentDsFields, parent.id, parent.datasourceId)
-  datasetDrag.value.setStateBack(cloneDeep(node), cloneDeep(parent))
+  const top = cloneDeep(node)
+  const bottom = cloneDeep(parent)
+  datasetDrag.value.setStateBack(top, bottom)
   const arr = []
   dfsFields(arr, datasetDrag.value.nodeList)
   allfields.value = diffArr(arr, allfields.value)
   fieldUnion.value.clearState()
   editUnion.value = false
+  addComplete()
 }
 
 const updateAllfields = () => {
@@ -465,21 +483,6 @@ const calculateHeight = (e: MouseEvent) => {
     return
   }
   dragHeight.value = e.pageY - 56
-}
-
-const nameExistValidator = () => {
-  if (!state.nameList || state.nameList.length === 0) {
-    nameExist.value = false
-    return
-  }
-  nameExist.value = state.nameList.some(
-    name => name === datasetName.value && name !== originName.value
-  )
-}
-
-const nameBlur = () => {
-  nameExistValidator()
-  showInput.value = nameExist.value
 }
 
 const getDatasource = () => {
@@ -592,6 +595,10 @@ const handleClick = () => {
   })
 }
 
+const finish = name => {
+  datasetName.value = name
+}
+
 const treeProps = {
   children: 'children',
   label: 'name'
@@ -606,7 +613,7 @@ const treeProps = {
           <Icon name="icon_left_outlined"></Icon>
         </el-icon>
         <template v-if="showInput">
-          <el-input ref="editerName" v-model="datasetName" @blur="nameBlur" />
+          <el-input ref="editerName" v-model="datasetName" />
           <div v-if="nameExist" style="left: 55px" class="el-form-item__error">
             {{ t('deDataset.already_exists') }}
           </div>
@@ -774,6 +781,7 @@ const treeProps = {
                       <div class="operate">
                         <field-more
                           :extField="data.extField"
+                          trans-type="转换为指标"
                           :show-time="data.deType === 1 && data.deExtractType === 0"
                           @handle-command="type => handleFieldMore(data, type)"
                         ></field-more>
@@ -804,6 +812,7 @@ const treeProps = {
                       <span :title="data.name" class="label-tooltip">{{ data.name }}</span>
                       <div class="operate">
                         <field-more
+                          trans-type="转换为维度"
                           :extField="data.extField"
                           @handle-command="type => handleFieldMore(data, type)"
                         ></field-more>
@@ -852,7 +861,7 @@ const treeProps = {
       </template>
     </el-drawer>
   </div>
-  <creat-ds-group ref="creatDsFolder"></creat-ds-group>
+  <creat-ds-group @finish="finish" ref="creatDsFolder"></creat-ds-group>
   <el-dialog v-model="editCalcField" width="1000px" title="新建计算字段">
     <calc-field-edit ref="calcEdit" />
     <template #footer>
