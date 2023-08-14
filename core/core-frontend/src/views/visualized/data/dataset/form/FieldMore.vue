@@ -18,6 +18,10 @@ defineProps({
   showTime: {
     type: Boolean,
     default: false
+  },
+  transType: {
+    type: String,
+    default: ''
   }
 })
 const handleCommand = (command: string | number | object) => {
@@ -64,7 +68,7 @@ const emit = defineEmits(['handleCommand'])
           <el-icon>
             <Icon name="icon_switch_outlined"></Icon>
           </el-icon>
-          转换为指标
+          {{ transType }}
         </el-dropdown-item>
         <el-dropdown-item>
           <el-dropdown
