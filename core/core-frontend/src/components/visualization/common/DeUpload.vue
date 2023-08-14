@@ -35,7 +35,7 @@
       :destroy-on-close="true"
       v-model="state.dialogVisible"
     >
-      <img style="width: 100%" :src="state.dialogImageUrl" />
+      <img style="width: 550" :src="state.dialogImageUrl" />
     </el-dialog>
   </el-row>
 </template>
@@ -65,7 +65,7 @@ const props = defineProps({
   }
 })
 
-const { themes } = toRefs(props)
+const { themes, imgUrl } = toRefs(props)
 const imgUrlInner = ref(null)
 
 const state = reactive({
@@ -76,7 +76,7 @@ const state = reactive({
 })
 
 const init = () => {
-  imgUrlInner.value = props.imgUrl
+  imgUrlInner.value = imgUrl.value
   if (imgUrlInner.value) {
     state.fileList.push({ url: imgUrlTrans(imgUrlInner.value) })
   } else {
@@ -124,7 +124,7 @@ onMounted(() => {
 })
 
 watch(
-  () => props.imgUrl,
+  () => imgUrl.value,
   () => {
     init()
   }

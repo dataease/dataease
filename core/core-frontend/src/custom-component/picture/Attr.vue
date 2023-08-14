@@ -114,11 +114,12 @@ watch(
             <el-dialog
               top="25vh"
               width="600px"
+              :effect="themes"
               :append-to-body="true"
               :destroy-on-close="true"
-              v-model:visible="dialogVisible"
+              v-model="dialogVisible"
             >
-              <img width="100%" :src="dialogImageUrl" />
+              <img width="550" :src="dialogImageUrl" alt="Preview Image" />
             </el-dialog>
           </el-col>
         </el-row>
@@ -187,6 +188,14 @@ watch(
 
 .image-hint {
   color: #8f959e;
+  size: 14px;
+  line-height: 22px;
+  font-weight: 400;
+}
+
+.re-update-span {
+  cursor: pointer;
+  color: #3370ff;
   size: 14px;
   line-height: 22px;
   font-weight: 400;
