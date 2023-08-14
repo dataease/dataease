@@ -2,31 +2,25 @@ package io.dataease.datasource.manage;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
 import io.dataease.commons.constants.DataSourceType;
 import io.dataease.datasource.dao.ext.mapper.DataSourceExtMapper;
 import io.dataease.datasource.dao.ext.po.DataSourceNodePO;
 import io.dataease.datasource.dto.DatasourceNodeBO;
+import io.dataease.license.config.XpackInteract;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import io.dataease.utils.TreeUtils;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class DataSourceManage {
 
-    private static final String BUSI_FLAG = "datasource";
-
-    @Autowired(required = false)
-    private InteractiveAuthApi interactiveAuthApi;
 
     @Resource
     private DataSourceExtMapper dataSourceExtMapper;
@@ -45,11 +39,9 @@ public class DataSourceManage {
         return new DatasourceNodeBO(po.getId(), po.getName(), !StringUtils.equals(po.getType(), "folder"), 3, po.getPid(), extraFlag);
     }
 
+    @XpackInteract(value = "authResourceTree", replace = true)
     public List<BusiNodeVO> tree(BusiNodeRequest request) {
-        request.setBusiFlag(BUSI_FLAG);
-        if (org.apache.commons.lang3.ObjectUtils.isNotEmpty(interactiveAuthApi)) {
-            return interactiveAuthApi.resource(request);
-        }
+
         QueryWrapper<DataSourceNodePO> queryWrapper = new QueryWrapper<>();
         if (ObjectUtils.isNotEmpty(request.getLeaf()) && !request.getLeaf()) {
             queryWrapper.eq("type", "folder");
@@ -59,7 +51,7 @@ public class DataSourceManage {
         List<DataSourceNodePO> pos = dataSourceExtMapper.selectList(queryWrapper);
         if (ObjectUtils.isEmpty(request.getLeaf()) || !request.getLeaf()) nodes.add(rootNode());
         if (CollectionUtil.isNotEmpty(pos)) {
-            nodes.addAll(pos.stream().map(this::convert).collect(Collectors.toList()));
+            nodes.addAll(pos.stream().map(this::convert).toList());
         }
         return TreeUtils.mergeTree(nodes, BusiNodeVO.class, false);
     }

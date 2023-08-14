@@ -82,8 +82,7 @@ public class DatasetGroupManage {
             if (Objects.equals(datasetGroupInfoDTO.getId(), datasetGroupInfoDTO.getPid())) {
                 DEException.throwException(Translator.get("i18n_pid_not_eq_id"));
             }
-            CoreDatasetGroup sourceData = coreDatasetGroupMapper.selectById(datasetGroupInfoDTO.getId());
-            Objects.requireNonNull(CommonBeanFactory.getBean(this.getClass())).innerEdit(datasetGroupInfoDTO, sourceData.getName());
+            Objects.requireNonNull(CommonBeanFactory.getBean(this.getClass())).innerEdit(datasetGroupInfoDTO);
         }
         // node_type=dataset需要创建dataset_table和field
         if (StringUtils.equalsIgnoreCase(datasetGroupInfoDTO.getNodeType(), "dataset")) {
@@ -100,12 +99,9 @@ public class DatasetGroupManage {
     }
 
     @XpackInteract(value = "authResourceTree", before = false)
-    public void innerEdit(DatasetGroupInfoDTO datasetGroupInfoDTO, String oldName) {
+    public void innerEdit(DatasetGroupInfoDTO datasetGroupInfoDTO) {
         CoreDatasetGroup coreDatasetGroup = BeanUtils.copyBean(new CoreDatasetGroup(), datasetGroupInfoDTO);
         coreDatasetGroup.setLastUpdateTime(System.currentTimeMillis());
-        if (!StringUtils.equals(oldName, datasetGroupInfoDTO.getName())) {
-            LogUtil.info("dataset [{}] rename to [{}]", oldName, datasetGroupInfoDTO.getName());
-        }
         coreDatasetGroupMapper.updateById(coreDatasetGroup);
     }
 

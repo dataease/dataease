@@ -131,7 +131,7 @@ public class DatasourceServer implements DatasourceApi {
                     creator.setPid(coreDatasource.getPid());
                     creator.setFlag(RESOURCE_FLAG);
                     creator.setName(dataSourceDTO.getName());
-                    creator.setLeaf(coreDatasource.getType().equals("folder") ? false : true);
+                    creator.setLeaf(!coreDatasource.getType().equals("folder"));
                     creator.setExtraFlag(DataSourceType.valueOf(coreDatasource.getType()).getFlag());
                     interactiveAuthApi.saveResource(creator);
                 }
@@ -440,7 +440,7 @@ public class DatasourceServer implements DatasourceApi {
         return dataSourceManage.tree(request);
     }
 
-    private DatasourceNodeBO rootNode() {
+    /*private DatasourceNodeBO rootNode() {
         DatasourceNodeBO bo = new DatasourceNodeBO();
         bo.setId(0L);
         bo.setName("root");
@@ -449,9 +449,9 @@ public class DatasourceServer implements DatasourceApi {
         bo.setPid(-1L);
         bo.setExtraFlag(0);
         return bo;
-    }
+    }*/
 
-    public List<DatasourceDTO> list() {
+    /*public List<DatasourceDTO> list() {
         List<DatasourceDTO> datasourceDTOS = new ArrayList<>();
         List<DatasourceConfiguration.DatasourceType> datasourceConfigurations = datasourceTypes();
         QueryWrapper<CoreDatasource> queryWrapper = new QueryWrapper();
@@ -508,7 +508,7 @@ public class DatasourceServer implements DatasourceApi {
             datasourceDTOS.add(datasourceDTO);
         });
         return datasourceDTOS;
-    }
+    }*/
 
     @Override
     public List<DatasetTableDTO> getTables(String datasourceId) throws Exception {

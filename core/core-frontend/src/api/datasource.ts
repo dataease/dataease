@@ -41,9 +41,11 @@ export interface Table {
 }
 
 export const listDatasources = data => {
-  return request.post({ url: '/datasource/tree', data }).then(res => {
-    return res?.data
-  })
+  return request
+    .post({ url: '/datasource/tree', data: { ...data, ...{ busiFlag: 'datasource' } } })
+    .then(res => {
+      return res?.data
+    })
 }
 
 export const listDatasourceType = async (data = {}): Promise<IResponse> => {
