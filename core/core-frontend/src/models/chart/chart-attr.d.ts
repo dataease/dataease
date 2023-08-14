@@ -393,6 +393,18 @@ declare interface ChartMiscAttr {
    */
   mapLineAnimateDuration: number
   /**
+   * 地图线条渐变
+   */
+  mapLineGradient: boolean
+  /**
+   * 地图线条渐变起始颜色
+   */
+  mapLineSourceColor: string
+  /**
+   * 地图线条渐变结束颜色
+   */
+  mapLineTargetColor: string
+  /**
    * 指标/文本卡值字体
    */
   valueFontFamily: string

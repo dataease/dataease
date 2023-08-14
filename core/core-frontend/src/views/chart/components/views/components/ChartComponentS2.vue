@@ -10,6 +10,8 @@ import ViewTrackBar from '@/components/visualization/ViewTrackBar.vue'
 import { storeToRefs } from 'pinia'
 import { getGeoJsonFile, parseJson } from '@/views/chart/components/js/util'
 import { S2ChartView } from '@/views/chart/components/js/panel/types/impl/s2'
+import debounce from 'lodash-es/debounce'
+import en from '@/locales/en'
 const dvMainStore = dvMainStoreWithOut()
 const { nowPanelTrackInfo, nowPanelJumpInfo } = storeToRefs(dvMainStore)
 
@@ -172,8 +174,20 @@ defineExpose({
   calcData,
   renderChart
 })
-
+const resize = (width, height) => {
+  debounce(() => {
+    state.myChart?.changeSheetSize(width, height)
+    state.myChart?.render()
+  }, 500)()
+}
 onMounted(() => {
+  const resizeObserver = new ResizeObserver(([entry] = []) => {
+    console.info(entry)
+    const [size] = entry.borderBoxSize || []
+    resize(size.inlineSize, size.blockSize)
+  })
+
+  resizeObserver.observe(document.getElementById(containerId))
   // queryData(true)
   // renderChart({ render: ChartRenderType.ANT_V, type: 'bar' })
 })

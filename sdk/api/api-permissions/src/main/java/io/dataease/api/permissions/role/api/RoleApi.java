@@ -55,7 +55,7 @@ public interface RoleApi {
     @GetMapping("/detail/{rid}")
     RoleDetailVO detail(@PathVariable("rid") Long rid);
 
-    @DePermit({"m:manage", "#p0.rid + ':manage'"})
+    @DePermit({"m:manage", "#p0 + ':manage'"})
     @PostMapping("/delete/{rid}")
     void delete(@PathVariable("rid") Long rid);
 
