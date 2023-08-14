@@ -10,7 +10,6 @@ import {
   savaOrUpdateBase
 } from '@/api/visualization/dataVisualization'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { storeToRefs } from 'pinia'
 const dvMainStore = dvMainStoreWithOut()
 const props = defineProps({
   curCanvasType: {
@@ -43,7 +42,7 @@ const resourceForm = reactive({
 
 const nameMap = {
   newFolder: '新建文件夹',
-  newLeaf: dvMainStore.dvInfo.type === 'dataV' ? '新建数据大屏' : '新建仪表板',
+  newLeaf: curCanvasType.value === 'dataV' ? '新建数据大屏' : '新建仪表板',
   move: '移动到',
   rename: '编辑'
 }

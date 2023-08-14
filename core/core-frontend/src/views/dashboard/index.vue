@@ -64,6 +64,7 @@ onMounted(() => {
       <!-- 中间画布 -->
       <main class="center">
         <de-canvas
+          style="overflow-x: hidden"
           v-if="dataInitState"
           :canvas-id="state.canvasId"
           :component-data="componentData"
