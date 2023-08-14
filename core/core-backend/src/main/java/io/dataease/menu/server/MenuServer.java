@@ -9,6 +9,7 @@ import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -22,6 +23,6 @@ public class MenuServer implements MenuApi {
     @Override
     public List<MenuVO> query() {
         List<CoreMenu> coreMenus = menuManage.coreMenus();
-        return menuManage.query(coreMenus);
+        return menuManage.query(new ArrayList<>(coreMenus));
     }
 }
