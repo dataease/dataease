@@ -441,9 +441,19 @@ public class ChartViewService {
         // 如果是插件视图 走插件内部的逻辑
         if (ObjectUtils.isNotEmpty(view.getIsPlugin()) && view.getIsPlugin()) {
             Map<String, List<ChartViewFieldDTO>> fieldMap = new HashMap<>();
-            List<ChartViewFieldDTO> xAxisExt = gson.fromJson(view.getXAxisExt(), new TypeToken<List<ChartViewFieldDTO>>() {
-            }.getType());
-            fieldMap.put("xAxisExt", xAxisExt);
+
+            if (StringUtils.equals(view.getType(), "race-bar")) {
+                List<ChartViewFieldDTO> xAxisExtList = gson.fromJson(view.getXAxisExt(), new TypeToken<List<ChartViewFieldDTO>>() {
+                }.getType());
+                xAxisExtList.forEach((x) -> {
+                    x.setExtField(1);
+                });
+                xAxis.addAll(xAxisExtList);
+            } else {
+                List<ChartViewFieldDTO> xAxisExt = gson.fromJson(view.getXAxisExt(), new TypeToken<List<ChartViewFieldDTO>>() {
+                }.getType());
+                fieldMap.put("xAxisExt", xAxisExt);
+            }
             fieldMap.put("xAxis", xAxis);
             fieldMap.put("yAxis", yAxis);
             fieldMap.put("extStack", extStack);
@@ -978,6 +988,14 @@ public class ChartViewService {
         if (ObjectUtils.isNotEmpty(view.getIsPlugin()) && view.getIsPlugin()) {
             Map<String, List<ChartViewFieldDTO>> fieldMap = ObjectUtils.isEmpty(extFieldsMap) ? new LinkedHashMap<>() : extFieldsMap;
 
+            if (StringUtils.equals(view.getType(), "race-bar")) {
+                List<ChartViewFieldDTO> xAxisExtList = gson.fromJson(view.getXAxisExt(), new TypeToken<List<ChartViewFieldDTO>>() {
+                }.getType());
+                xAxisExtList.forEach((x) -> {
+                    x.setExtField(1);
+                });
+                xAxis.addAll(xAxisExtList);
+            }
             fieldMap.put("extStack", extStack);
             fieldMap.put("extBubble", extBubble);
             fieldMap.put("xAxis", xAxis);
