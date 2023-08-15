@@ -26,6 +26,7 @@ const { chart } = toRefs(props)
       <el-row class="query-collapse-style">
         <el-collapse v-model="state.styleActiveNames" class="style-collapse">
           <collapse-switch-item
+            themes="light"
             v-model="chart.customStyle.component.show"
             name="component"
             :title="t('visualization.module')"
@@ -104,7 +105,6 @@ const { chart } = toRefs(props)
   display: flex;
   height: 100%;
   width: 100%;
-  border-top: 1px solid @side-outline-border-color;
 }
 
 .attr-style {
