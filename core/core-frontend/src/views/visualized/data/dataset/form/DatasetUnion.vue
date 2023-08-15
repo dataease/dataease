@@ -31,7 +31,7 @@ const props = defineProps({
 
 const iconName = {
   left: 'icon_left-association',
-  right: 'icon_left-association',
+  right: 'icon_right-association',
   inner: 'icon_intersect'
 }
 const { t } = useI18n()
@@ -890,6 +890,7 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields'])
   height: 100%;
   border: 1px solid #dee0e3;
   border-radius: 50%;
+  font-size: 22px;
   display: flex;
   align-items: center;
   justify-content: center;

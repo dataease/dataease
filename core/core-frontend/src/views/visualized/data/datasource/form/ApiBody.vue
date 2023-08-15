@@ -209,7 +209,7 @@ const emits = defineEmits(['headersChange'])
         {{ t('datasource.body_raw') }}
       </el-radio>
     </el-radio-group>
-    <div v-if="apiBody.type == 'Form_Data' || apiBody.type == 'WWW_FORM'" style="min-width: 1200px">
+    <div v-if="apiBody.type == 'Form_Data' || apiBody.type == 'WWW_FORM'">
       <api-variable
         :is-read-only="isReadOnly"
         :parameters="apiBody.kvs"
@@ -223,6 +223,7 @@ const emits = defineEmits(['headersChange'])
         ref="codeEdit"
         :read-only="isReadOnly"
         v-model="apiBody.raw"
+        class="api-body-code"
         :data="apiBody.raw"
         :modes="modes"
         mode="json"
@@ -234,6 +235,7 @@ const emits = defineEmits(['headersChange'])
       <code-edit
         ref="codeEdit"
         :read-only="isReadOnly"
+        class="api-body-code"
         v-model="apiBody.raw"
         :data="apiBody.raw"
         height="200px"
@@ -249,6 +251,7 @@ const emits = defineEmits(['headersChange'])
         v-model="apiBody.raw"
         :data="apiBody.raw"
         height="200px"
+        class="api-body-code"
         :modes="modes"
       />
     </div>
@@ -258,5 +261,16 @@ const emits = defineEmits(['headersChange'])
 <style lang="less" scoped>
 .ms-body {
   padding: 15px 0;
+}
+</style>
+
+<style lang="less">
+.ace_print-margin {
+  display: none;
+}
+
+.api-body-code {
+  border-radius: 4px;
+  border: 1px solid #bbbfc4;
 }
 </style>

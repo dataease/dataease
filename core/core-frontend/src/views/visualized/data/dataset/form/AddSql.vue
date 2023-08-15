@@ -233,10 +233,15 @@ const handleShowLeft = () => {
 }
 
 const dsChange = (val: string) => {
-  getTables(val).then(res => {
-    tableList = res || []
-    state.tableData = [...tableList]
-  })
+  dsLoading.value = true
+  getTables(val)
+    .then(res => {
+      tableList = res || []
+      state.tableData = [...tableList]
+    })
+    .finally(() => {
+      dsLoading.value = false
+    })
 }
 
 const listSqlLog = (value?: string) => {
@@ -312,8 +317,8 @@ const fieldType = (deType: number) => {
 <template>
   <div class="add-sql-name">
     <el-input class="name" ref="editerName" v-model="sqlNode.tableName" />
-    <div class="run-params-config">
-      <el-button @click="getSQLPreview" text>
+    <div class="save-or-cancel flex-align-center">
+      <el-button @click="getSQLPreview" text style="color: #1f2329">
         <template #icon>
           <el-icon>
             <Icon name="reference-play"></Icon>
@@ -329,11 +334,11 @@ const fieldType = (deType: number) => {
         </template>
         参数设置
       </el-button>
-    </div>
-    <div class="save-or-cancel">
-      <el-button @click="close" secondary> 取消</el-button>
       <el-button @click="save(() => {})" type="primary"> 保存</el-button>
-      <el-button @click="saveClose" type="primary"> 保存并关闭</el-button>
+      <el-divider direction="vertical" />
+      <el-icon class="hover-icon" @click="close">
+        <Icon name="icon_close_outlined"></Icon>
+      </el-icon>
     </div>
   </div>
 
@@ -356,9 +361,9 @@ const fieldType = (deType: number) => {
       :style="{ width: LeftWidth + 'px' }"
     >
       <p class="select-ds">
-        选择数据源
-        <el-icon @click="handleShowLeft">
-          <Icon name="icon_up-left_outlined"></Icon>
+        当前数据源
+        <el-icon class="left-outlined" @click="showLeft = false">
+          <Icon name="group-3400"></Icon>
         </el-icon>
       </p>
       <el-tree-select
@@ -373,7 +378,15 @@ const fieldType = (deType: number) => {
         :data="state.dataSourceList"
         :render-after-expand="false"
       />
-      <p class="select-ds">{{ t('datasource.data_table') }}</p>
+      <p class="select-ds table-num">
+        {{ t('datasource.data_table')
+        }}<span class="num">
+          <el-icon>
+            <Icon name="reference-table"></Icon>
+          </el-icon>
+          {{ state.tableData.length }}
+        </span>
+      </p>
       <el-input
         v-model="searchTable"
         class="search"
@@ -478,7 +491,7 @@ const fieldType = (deType: number) => {
         </template>
       </div>
     </div>
-    <div class="sql-code-right" :style="{ width: `calc(100% - ${LeftWidth}px)` }">
+    <div class="sql-code-right" :style="{ width: `calc(100% - ${showLeft ? LeftWidth : 0}px)` }">
       <code-mirror :height="`${dragHeight}px`" dom-id="sql-editor" ref="myCm"></code-mirror>
       <div class="sql-result" :style="{ height: `calc(100% - ${dragHeight}px)` }">
         <div class="sql-title">
@@ -756,10 +769,38 @@ const fieldType = (deType: number) => {
       display: flex;
       justify-content: space-between;
       color: var(--deTextPrimary, #1f2329);
+      position: relative;
 
       i {
         cursor: pointer;
         font-size: 12px;
+        color: var(--deTextPlaceholder, #8f959e);
+      }
+
+      .left-outlined {
+        position: absolute;
+        font-size: 36px;
+        right: -30px;
+        top: -5px;
+        z-index: 1;
+      }
+    }
+
+    .table-num {
+      .num {
+        display: flex;
+        align-items: center;
+        font-weight: 400;
+        font-size: 14px;
+        color: #646a73;
+        .ed-icon {
+          margin-right: 5.33px;
+        }
+      }
+
+      i {
+        cursor: auto;
+        font-size: 13.3px;
         color: var(--deTextPlaceholder, #8f959e);
       }
     }
@@ -910,7 +951,7 @@ const fieldType = (deType: number) => {
 .add-sql-name {
   height: 56px;
   width: 100%;
-  padding: 0 24px;
+  padding: 0 16px;
   display: flex;
   align-items: center;
   border-bottom: 1px solid rgba(31, 35, 41, 0.15);
@@ -921,6 +962,13 @@ const fieldType = (deType: number) => {
 
   .save-or-cancel {
     margin-left: auto;
+    .ed-divider--vertical {
+      margin: 0 10px 0 16px;
+    }
+
+    .is-text:hover {
+      background: rgba(31, 35, 41, 0.1);
+    }
   }
 }
 </style>
