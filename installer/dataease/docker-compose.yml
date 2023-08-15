@@ -8,7 +8,7 @@ services:
       - ${DE_PORT}:8100
     volumes:
       - ${DE_BASE}/dataease2.0/conf:/opt/apps/config
-      - ${DE_BASE}/dataease2.0/logs/dataease:/opt/dataease2.0/log
+      - ${DE_BASE}/dataease2.0/logs/dataease:/opt/dataease2.0/logs
       - ${DE_BASE}/dataease2.0/data/static-resource:/opt/dataease2.0/data/static-resource
       - ${DE_BASE}/dataease2.0/data/map:/opt/dataease2.0/data/map
       - ${DE_BASE}/dataease2.0/cache:/opt/dataease2.0/cache

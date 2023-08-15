@@ -11,8 +11,5 @@ spring:
     url: jdbc:mysql://${DE_MYSQL_HOST}:${DE_MYSQL_PORT}/${DE_MYSQL_DB}?${DE_MYSQL_PARAMS}
     username: ${DE_MYSQL_USER}
     password: ${DE_MYSQL_PASSWORD}
-logging:
-  file:
-    path: /opt/dataease2.0/log/dataease
 dataease:
   origin-list: localhost:8080,localhost:8100,localhost:9080
