@@ -138,6 +138,9 @@ public class DatasetSQLManage {
                         .append(tablePrefix + currentSQLObj.getTableName() + tablePrefix)
                         .append(" ").append(currentSQLObj.getTableAlias()).append(" ")
                         .append(" ON ");
+                if (unionParamDTO.getUnionFields().size() == 0) {
+                    DEException.throwException(Translator.get("i18n_union_field_can_not_empty"));
+                }
                 for (int i = 0; i < unionParamDTO.getUnionFields().size(); i++) {
                     UnionItemDTO unionItemDTO = unionParamDTO.getUnionFields().get(i);
                     // 通过field id取得field详情，并且以第一组为准，寻找dataset table
