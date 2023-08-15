@@ -4,7 +4,9 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { Base64 } from 'js-base64'
 import useClipboard from 'vue-clipboard3'
 import { ElMessage } from 'element-plus-secondary'
+import { getTableField } from '@/api/dataset'
 import CodeMirror from './CodeMirror.vue'
+import type { Field } from './UnionFieldList.vue'
 import { getDatasourceList, getTables, getPreviewSql } from '@/api/dataset'
 import type { DataSource } from './index.vue'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
@@ -91,6 +93,24 @@ onMounted(() => {
 onBeforeUnmount(() => {
   codeCom.value.destroy?.()
 })
+
+const gridData = ref([])
+const gridDataLoading = ref(false)
+
+const getNodeField = ({ datasourceId, tableName }) => {
+  gridDataLoading.value = true
+  let info = {
+    table: tableName,
+    sql: ''
+  }
+  getTableField({ datasourceId, info: JSON.stringify(info), tableName, type: 'db' })
+    .then(res => {
+      gridData.value = res as unknown as Field[]
+    })
+    .finally(() => {
+      gridDataLoading.value = false
+    })
+}
 
 const getDatasource = () => {
   getDatasourceList().then(res => {
@@ -213,14 +233,19 @@ const handleShowLeft = () => {
 }
 
 const dsChange = (val: string) => {
-  getTables(val).then(res => {
-    tableList = res || []
-    state.tableData = [...tableList]
-  })
+  dsLoading.value = true
+  getTables(val)
+    .then(res => {
+      tableList = res || []
+      state.tableData = [...tableList]
+    })
+    .finally(() => {
+      dsLoading.value = false
+    })
 }
 
-const listSqlLog = () => {
-  console.log(123)
+const listSqlLog = (value?: string) => {
+  console.log(value)
 }
 const copyInfo = async (value: string) => {
   try {
@@ -284,13 +309,16 @@ const saveVariable = () => {
 const mousedownDrag = () => {
   document.querySelector('.sql-eidtor').addEventListener('mousemove', calculateHeight)
 }
+const fieldType = (deType: number) => {
+  return ['text', 'time', 'value', 'value', 'location'][deType]
+}
 </script>
 
 <template>
   <div class="add-sql-name">
     <el-input class="name" ref="editerName" v-model="sqlNode.tableName" />
-    <div class="run-params-config">
-      <el-button @click="getSQLPreview" text>
+    <div class="save-or-cancel flex-align-center">
+      <el-button @click="getSQLPreview" text style="color: #1f2329">
         <template #icon>
           <el-icon>
             <Icon name="reference-play"></Icon>
@@ -306,11 +334,11 @@ const mousedownDrag = () => {
         </template>
         参数设置
       </el-button>
-    </div>
-    <div class="save-or-cancel">
-      <el-button @click="close" secondary> 取消</el-button>
       <el-button @click="save(() => {})" type="primary"> 保存</el-button>
-      <el-button @click="saveClose" type="primary"> 保存并关闭</el-button>
+      <el-divider direction="vertical" />
+      <el-icon class="hover-icon" @click="close">
+        <Icon name="icon_close_outlined"></Icon>
+      </el-icon>
     </div>
   </div>
 
@@ -333,9 +361,9 @@ const mousedownDrag = () => {
       :style="{ width: LeftWidth + 'px' }"
     >
       <p class="select-ds">
-        选择数据源
-        <el-icon @click="handleShowLeft">
-          <Icon name="icon_up-left_outlined"></Icon>
+        当前数据源
+        <el-icon class="left-outlined" @click="showLeft = false">
+          <Icon name="group-3400"></Icon>
         </el-icon>
       </p>
       <el-tree-select
@@ -350,7 +378,15 @@ const mousedownDrag = () => {
         :data="state.dataSourceList"
         :render-after-expand="false"
       />
-      <p class="select-ds">{{ t('datasource.data_table') }}</p>
+      <p class="select-ds table-num">
+        {{ t('datasource.data_table')
+        }}<span class="num">
+          <el-icon>
+            <Icon name="reference-table"></Icon>
+          </el-icon>
+          {{ state.tableData.length }}
+        </span>
+      </p>
       <el-input
         v-model="searchTable"
         class="search"
@@ -376,17 +412,86 @@ const mousedownDrag = () => {
             :title="ele.name"
             @click="setActiveName(ele)"
           >
+            <el-icon>
+              <Icon name="icon_form_outlined"></Icon>
+            </el-icon>
             <span class="label">{{ ele.name }}</span>
             <span class="name-copy">
-              <el-icon @click="copyInfo(ele.name)">
+              <el-icon class="hover-icon" @click="copyInfo(ele.name)">
                 <Icon name="icon_copy_outlined"></Icon>
               </el-icon>
+
+              <el-popover
+                popper-class="sql-table-info"
+                placement="right"
+                :width="502"
+                @show="getNodeField(ele)"
+                trigger="click"
+              >
+                <template #reference>
+                  <el-icon class="hover-icon">
+                    <Icon name="icon_info_outlined"></Icon>
+                  </el-icon>
+                </template>
+                <div class="table-filed" v-loading="gridDataLoading">
+                  <div class="top flex-align-center">
+                    <div class="title ellipsis">
+                      {{ ele.name }}
+                    </div>
+                    <el-icon
+                      style="color: #3370ff"
+                      class="hover-icon"
+                      @click.stop="copyInfo(ele.name)"
+                    >
+                      <Icon name="icon_copy_outlined"></Icon>
+                    </el-icon>
+                    <div class="num flex-align-center">
+                      <el-icon>
+                        <Icon name="icon_text-box_outlined"></Icon>
+                      </el-icon>
+                      &nbsp;
+                      {{ gridData.length }}
+                    </div>
+                  </div>
+                  <div class="table-grid">
+                    <el-table
+                      height="405"
+                      style="width: 100%"
+                      header-cell-class-name="header-cell"
+                      :data="gridData"
+                    >
+                      <el-table-column label="物理字段名">
+                        <template #default="scope">
+                          <el-icon>
+                            <Icon
+                              :className="`field-icon-${fieldType(scope.row.deType)}`"
+                              :name="`field_${fieldType(scope.row.deType)}`"
+                            ></Icon>
+                          </el-icon>
+                          {{ scope.row.originName }}
+                        </template>
+                      </el-table-column>
+                      <el-table-column :label="t('common.operate')">
+                        <template #default="scope">
+                          <el-icon
+                            style="color: #3370ff"
+                            class="hover-icon"
+                            @click.stop="copyInfo(scope.row.originName)"
+                          >
+                            <Icon name="icon_copy_outlined"></Icon>
+                          </el-icon>
+                        </template>
+                      </el-table-column>
+                    </el-table>
+                  </div>
+                </div>
+              </el-popover>
             </span>
           </div>
         </template>
       </div>
     </div>
-    <div class="sql-code-right" :style="{ width: `calc(100% - ${LeftWidth}px)` }">
+    <div class="sql-code-right" :style="{ width: `calc(100% - ${showLeft ? LeftWidth : 0}px)` }">
       <code-mirror :height="`${dragHeight}px`" dom-id="sql-editor" ref="myCm"></code-mirror>
       <div class="sql-result" :style="{ height: `calc(100% - ${dragHeight}px)` }">
         <div class="sql-title">
@@ -664,10 +769,38 @@ const mousedownDrag = () => {
       display: flex;
       justify-content: space-between;
       color: var(--deTextPrimary, #1f2329);
+      position: relative;
 
       i {
         cursor: pointer;
         font-size: 12px;
+        color: var(--deTextPlaceholder, #8f959e);
+      }
+
+      .left-outlined {
+        position: absolute;
+        font-size: 36px;
+        right: -30px;
+        top: -5px;
+        z-index: 1;
+      }
+    }
+
+    .table-num {
+      .num {
+        display: flex;
+        align-items: center;
+        font-weight: 400;
+        font-size: 14px;
+        color: #646a73;
+        .ed-icon {
+          margin-right: 5.33px;
+        }
+      }
+
+      i {
+        cursor: auto;
+        font-size: 13.3px;
         color: var(--deTextPlaceholder, #8f959e);
       }
     }
@@ -685,6 +818,12 @@ const mousedownDrag = () => {
       height: calc(100% - 190px);
       overflow-y: auto;
 
+      .list-item_primary {
+        .label {
+          width: 60%;
+        }
+      }
+
       .not-allow {
         cursor: not-allowed;
         color: var(--deTextDisable, #bbbfc4);
@@ -694,6 +833,9 @@ const mousedownDrag = () => {
         display: none;
         line-height: 24px;
         margin-left: auto;
+        .ed-icon + .ed-icon {
+          margin-left: -4px;
+        }
       }
 
       .list-item_primary:hover {
@@ -809,7 +951,7 @@ const mousedownDrag = () => {
 .add-sql-name {
   height: 56px;
   width: 100%;
-  padding: 0 24px;
+  padding: 0 16px;
   display: flex;
   align-items: center;
   border-bottom: 1px solid rgba(31, 35, 41, 0.15);
@@ -820,10 +962,47 @@ const mousedownDrag = () => {
 
   .save-or-cancel {
     margin-left: auto;
+    .ed-divider--vertical {
+      margin: 0 10px 0 16px;
+    }
+
+    .is-text:hover {
+      background: rgba(31, 35, 41, 0.1);
+    }
   }
 }
 </style>
 <style lang="less">
+.sql-table-info {
+  padding: 0 !important;
+  height: 480px;
+  .table-filed {
+    height: 480px;
+    .top {
+      padding: 16px;
+      border-bottom: 1px solid rgba(31, 35, 41, 0.15);
+      .title {
+        max-width: 50%;
+      }
+      .num {
+        margin-left: auto;
+        color: #646a73;
+        font-family: PingFang SC;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 22px;
+      }
+    }
+
+    .table-grid {
+      padding: 16px;
+      height: 423px;
+      padding-bottom: 0;
+      overflow-y: auto;
+    }
+  }
+}
 .tree-select-ds_popper {
   .ed-tree-node.is-current > .ed-tree-node__content:not(.is-menu):after {
     display: none !important;

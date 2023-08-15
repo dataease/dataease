@@ -129,5 +129,6 @@ defineExpose({
 .cm-editor,
 .cm-scroller {
   height: 100% !important;
+  background: #eff0f1;
 }
 </style>

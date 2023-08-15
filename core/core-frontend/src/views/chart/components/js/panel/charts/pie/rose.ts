@@ -2,12 +2,13 @@ import {
   G2PlotChartView,
   G2PlotDrawOptions
 } from '@/views/chart/components/js/panel/types/impl/g2plot'
-import { RoseOptions, Rose as G2Rose, Datum } from '@antv/g2plot'
+import { RoseOptions, Rose as G2Rose } from '@antv/g2plot/esm/plots/rose'
 import { PIE_AXIS_TYPE, PIE_EDITOR_PROPERTY, PIE_EDITOR_PROPERTY_INNER } from './common'
 import { getPadding } from '@/views/chart/components/js/panel/common/common_antv'
 import { parseJson, flow } from '@/views/chart/components/js/util'
 import { Label } from '@antv/g2plot/lib/types/label'
 import { formatterItem, valueFormatter } from '@/views/chart/components/js/formatter'
+import { Datum } from '@antv/g2plot/esm/types/common'
 
 export class Rose extends G2PlotChartView<RoseOptions, G2Rose> {
   axis: AxisType[] = PIE_AXIS_TYPE

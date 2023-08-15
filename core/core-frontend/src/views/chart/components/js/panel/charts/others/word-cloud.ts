@@ -2,10 +2,11 @@ import {
   G2PlotChartView,
   G2PlotDrawOptions
 } from '@/views/chart/components/js/panel/types/impl/g2plot'
-import { Datum, WordCloud as G2WordCloud, WordCloudOptions } from '@antv/g2plot'
+import { WordCloud as G2WordCloud, WordCloudOptions } from '@antv/g2plot/esm/plots/word-cloud'
 import { flow, parseJson } from '@/views/chart/components/js/util'
 import { getPadding } from '@/views/chart/components/js/panel/common/common_antv'
 import { formatterItem, valueFormatter } from '@/views/chart/components/js/formatter'
+import { Datum } from '@antv/g2plot/esm/types/common'
 
 const DEFAULT_DATA = []
 export class WordCloud extends G2PlotChartView<WordCloudOptions, G2WordCloud> {

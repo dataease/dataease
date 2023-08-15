@@ -349,7 +349,7 @@ const handleNodeClick = data => {
       type,
       configuration,
       syncSetting,
-      apiConfigurationStr
+      apiConfiguration: apiConfigurationStr
     })
     activeTab.value = ''
     activeName.value = 'config'

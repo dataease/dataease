@@ -4,6 +4,7 @@ import { computed, onBeforeMount, PropType, toRefs } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { KeyValue } from './ApiTestModel.js'
 import { guid } from '@/views/visualized/data/dataset/form/util.js'
+import draggable from 'vuedraggable'
 
 export interface Item {
   name: string
@@ -61,41 +62,20 @@ const typeChange = item => {
   }
 }
 
-const moveBottom = (index: number) => {
-  if (parameters.value.length < 2 || index === parameters.value.length - 2) {
-    return
-  }
-  const thisRow = parameters.value[index]
-  const nextRow = parameters.value[index + 1]
-  parameters.value[index] = nextRow
-  parameters.value[index + 1] = thisRow
-}
-const moveTop = (index: number) => {
-  if (index === 0) {
-    return
-  }
-  const thisRow = parameters.value[index]
-  const lastRow = parameters.value[index + 1]
-  parameters.value[index] = lastRow
-  parameters.value[index + 1] = thisRow
-}
 const remove = (index: number) => {
   if (isDisable(index)) return
   // 移除整行输入控件及内容
   parameters.value.splice(index, 1)
 }
 const change = () => {
-  const isNeedCreate = !parameters.value.some(item => !item.name && !item.value)
-  if (isNeedCreate) {
-    parameters.value.push(
-      new KeyValue({
-        type: 'text',
-        enable: true,
-        uuid: guid(),
-        contentType: 'text/plain'
-      })
-    )
-  }
+  parameters.value.push(
+    new KeyValue({
+      type: 'text',
+      enable: true,
+      uuid: guid(),
+      contentType: 'text/plain'
+    })
+  )
 }
 const isDisable = (index: number) => {
   return parameters.value.length - 1 === index
@@ -114,96 +94,113 @@ const createFilter = (queryString: string) => {
 </script>
 
 <template>
-  <div style="margin-bottom: 20px">
+  <div class="api-variable">
     <span v-if="description" class="kv-description">
       {{ description }}
     </span>
-    <div v-for="(item, index) in parameters" :key="index" style="margin-top: 10px">
-      <el-row :gutter="20" justify="space-between" align="middle">
-        <span style="margin-left: 10px" />
-        <i class="el-icon-top" style="cursor: pointer" @click="moveTop(index)" />
-        <i class="el-icon-bottom" style="cursor: pointer" @click="moveBottom(index)" />
-
-        <el-col :span="4">
-          <el-input
-            v-if="!suggestions"
-            v-model="item.name"
-            :disabled="isReadOnly"
-            maxlength="200"
-            :placeholder="keyText"
-            show-word-limit
-            @change="change"
-          >
-            <template #prepend>
-              <el-select
-                v-if="type === 'body'"
-                v-model="item.type"
+    <draggable tag="div" :list="parameters" handle=".handle">
+      <template #item="{ element, index }">
+        <div :key="index" style="margin-bottom: 16px">
+          <el-row :gutter="8">
+            <el-icon class="drag handle">
+              <Icon name="icon_drag_outlined"></Icon>
+            </el-icon>
+            <el-col :span="6">
+              <el-input
+                v-if="!suggestions"
+                v-model="element.name"
                 :disabled="isReadOnly"
-                class="kv-type"
-                @change="typeChange(item)"
+                maxlength="200"
+                :placeholder="keyText"
+                show-word-limit
               >
-                <el-option value="text" />
-                <el-option value="json" />
-              </el-select>
-            </template>
-          </el-input>
+                <template #prepend>
+                  <el-select
+                    v-if="type === 'body'"
+                    v-model="element.type"
+                    :disabled="isReadOnly"
+                    class="kv-type"
+                    @change="typeChange(item)"
+                  >
+                    <el-option value="text" />
+                    <el-option value="json" />
+                  </el-select>
+                </template>
+              </el-input>
 
-          <el-autocomplete
-            v-else
-            v-model="item.name"
-            :disabled="isReadOnly"
-            :fetch-suggestions="querySearch"
-            :placeholder="keyText"
-            show-word-limit
-            @change="change"
-          />
-        </el-col>
+              <el-autocomplete
+                v-else
+                v-model="element.name"
+                :disabled="isReadOnly"
+                :fetch-suggestions="querySearch"
+                :placeholder="keyText"
+                show-word-limit
+              />
+            </el-col>
 
-        <el-col v-if="item.type !== 'file'" :span="4">
-          <el-input
-            v-model="item.value"
-            :disabled="isReadOnly"
-            class="input-with-autocomplete"
-            :placeholder="valueText"
-            value-key="name"
-            highlight-first-item
-            @select="change"
-          />
-        </el-col>
+            <el-col v-if="element.type !== 'file'" :span="6">
+              <el-input
+                v-model="element.value"
+                :disabled="isReadOnly"
+                class="input-with-autocomplete"
+                :placeholder="valueText"
+                value-key="name"
+                highlight-first-item
+                @select="change"
+              />
+            </el-col>
 
-        <el-col :span="4">
-          <el-input
-            v-model="item.description"
-            maxlength="200"
-            :placeholder="$t('common.description')"
-            show-word-limit
-          />
-        </el-col>
-        <el-col :span="4">
-          <el-autocomplete
-            v-if="suggestions"
-            v-model="item.name"
-            :disabled="isReadOnly"
-            :fetch-suggestions="querySearch"
-            :placeholder="keyText"
-            show-word-limit
-            @change="change"
-          />
-        </el-col>
+            <el-col :span="5">
+              <el-input
+                v-model="element.description"
+                maxlength="200"
+                :placeholder="$t('common.description')"
+                show-word-limit
+              />
+            </el-col>
+            <el-col :span="5">
+              <el-autocomplete
+                v-if="suggestions"
+                v-model="element.name"
+                :disabled="isReadOnly"
+                :fetch-suggestions="querySearch"
+                :placeholder="keyText"
+                show-word-limit
+              />
+            </el-col>
 
-        <el-col :span="2">
-          <el-button text :disabled="isDisable(index) || isReadOnly" @click="remove(index)">
-            <template #icon>
-              <Icon name="icon_delete-trash_outlined"></Icon>
-            </template>
-          </el-button>
-        </el-col>
-      </el-row>
-    </div>
+            <el-col :span="1">
+              <el-button text :disabled="isDisable(index) || isReadOnly" @click="remove(index)">
+                <template #icon>
+                  <Icon name="icon_delete-trash_outlined"></Icon>
+                </template>
+              </el-button>
+            </el-col>
+          </el-row>
+        </div>
+      </template>
+    </draggable>
+
+    <el-button @click="change" text>
+      <template #icon>
+        <icon name="icon_add_outlined"></icon>
+      </template>
+      添加参数
+    </el-button>
   </div>
 </template>
 
 <style lang="less" scoped>
+.api-variable {
+  & > .ed-input,
+  .ed-autocomplete {
+    width: 100%;
+  }
+  .drag {
+    margin-top: 10px;
+    cursor: pointer;
+  }
+}
 .kv-description {
   font-size: 13px;
 }

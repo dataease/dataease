@@ -211,6 +211,17 @@ const emits = defineEmits(['changeId'])
   .request-tabs {
     margin: 0 24px;
     min-height: 200px;
+
+    :deep(.ed-tabs__item) {
+      font-family: PingFang SC;
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+    }
+
+    :deep(.ed-tabs__content) {
+      padding-top: 16px;
+    }
   }
 
   .ms-el-link {

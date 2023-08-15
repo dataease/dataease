@@ -81,7 +81,7 @@ let apiItem = reactive<ApiItem>({
   serialNumber: -1
 })
 let errMsg = []
-const api_table_title = ref('')
+const api_table_title = ref('datasource.data_table')
 const apiItemForm = ref()
 const showEmpty = ref(false)
 const edit_api_item = ref(false)
@@ -287,7 +287,7 @@ defineExpose({
 
 <template>
   <el-drawer
-    :title="api_table_title"
+    :title="t(api_table_title)"
     v-model="edit_api_item"
     custom-class="api-datasource-drawer"
     size="840px"
@@ -540,6 +540,16 @@ defineExpose({
 
 <style lang="less">
 .api-datasource-drawer {
+  .select-type {
+    .ed-select__prefix--light {
+      border-right: none;
+      padding: 0;
+      font-size: 16px;
+    }
+  }
+  .ed-drawer__body {
+    padding: 24px 24px 80px 24px !important;
+  }
   .flex-center {
     .ed-steps {
       width: 630px;

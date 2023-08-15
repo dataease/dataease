@@ -1,4 +1,4 @@
-import { Column, ColumnOptions } from '@antv/g2plot/lib/plots/column'
+import { Column, ColumnOptions } from '@antv/g2plot/esm/plots/column'
 import { cloneDeep } from 'lodash-es'
 import {
   G2PlotChartView,

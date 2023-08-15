@@ -31,7 +31,7 @@ const props = defineProps({
 
 const iconName = {
   left: 'icon_left-association',
-  right: 'icon_left-association',
+  right: 'icon_right-association',
   inner: 'icon_intersect'
 }
 const { t } = useI18n()
@@ -255,8 +255,11 @@ const dfsNodeBack = (arr, idArr, list) => {
     if (idArr.includes(ele.id)) {
       idArr.shift()
       const node = arr.shift()
+      console.log('arr.shift1', cloneDeep(ele), cloneDeep(node))
       Object.assign(ele, node)
+      console.log('arr.shift2', cloneDeep(ele), cloneDeep(node))
     }
+    console.log('arr.children', cloneDeep(ele))
     if (ele.children?.length) {
       dfsNodeBack(arr, idArr, ele.children)
     }
@@ -648,7 +651,9 @@ const drop_handler = ev => {
 const setStateBack = (node, parent) => {
   delete parent.children
   delete node.children
+  console.log('state.nodeList1', cloneDeep(state.nodeList), parent, node)
   dfsNodeBack([parent, node], [parent.id, node.id], state.nodeList)
+  console.log('state.nodeList2', cloneDeep(state.nodeList))
   if (state.visualNode) {
     confirm()
   }
@@ -885,6 +890,7 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields'])
   height: 100%;
   border: 1px solid #dee0e3;
   border-radius: 50%;
+  font-size: 22px;
   display: flex;
   align-items: center;
   justify-content: center;

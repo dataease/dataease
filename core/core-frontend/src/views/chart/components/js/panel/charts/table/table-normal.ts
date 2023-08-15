@@ -1,5 +1,5 @@
 import { S2ChartView, S2DrawOptions } from '@/views/chart/components/js/panel/types/impl/s2'
-import { ColCell, S2Event, S2Options, TableSheet } from '@antv/s2'
+import { ColCell, S2Event, S2Options, TableSheet } from '@antv/s2/esm/index'
 import { parseJson } from '@/views/chart/components/js/util'
 import { formatterItem, valueFormatter } from '@/views/chart/components/js/formatter'
 import { getCurrentField } from '@/views/chart/components/js/panel/common/common_table'

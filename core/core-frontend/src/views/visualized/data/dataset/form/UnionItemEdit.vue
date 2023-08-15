@@ -5,6 +5,11 @@ import type { Field } from './UnionFieldList.vue'
 // type UnionType = 'left' | 'right' | 'inner'
 const unionTypeFromParent = ref('left')
 const { t } = useI18n()
+const iconName = {
+  left: 'icon_left-association',
+  right: 'icon_right-association',
+  inner: 'icon_intersect'
+}
 const props = defineProps({
   tableName: {
     type: String,
@@ -63,7 +68,7 @@ const emit = defineEmits(['changeUnionFields', 'changeUnionType'])
         >
           <template #prefix>
             <el-icon>
-              <Icon :name="`${unionTypeFromParent || 'no'}-join`"></Icon>
+              <Icon :name="`${iconName[unionTypeFromParent] || 'no-join'}`"></Icon>
             </el-icon>
           </template>
           <el-option
@@ -198,6 +203,11 @@ const emit = defineEmits(['changeUnionFields', 'changeUnionType'])
 }
 .union-selector {
   width: 180px;
+  :deep(.ed-select__prefix--light) {
+    border-right: none;
+    font-size: 22px;
+    padding: 0;
+  }
 }
 .union-add {
   margin-left: 12px;

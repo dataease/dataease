@@ -524,7 +524,7 @@ defineExpose({
 <style lang="less">
 .datasource-drawer-fullscreen {
   .ed-drawer__body {
-    padding: 0 !important;
+    padding: 0;
   }
 
   .ed-drawer__header > :first-child {

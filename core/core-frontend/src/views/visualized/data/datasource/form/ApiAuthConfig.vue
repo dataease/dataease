@@ -53,7 +53,7 @@ const initData = () => {
 
 <template>
   <el-form label-position="top">
-    <el-form-item :label="t('datasource.verification_method')">
+    <el-form-item class="api-auth-config" :label="t('datasource.verification_method')">
       <el-select
         v-model="authConfig.verification"
         @change="change"
@@ -62,7 +62,7 @@ const initData = () => {
         <el-option v-for="item in options" :key="item.name" :label="item.name" :value="item.name" />
       </el-select>
     </el-form-item>
-    <el-row :gutter="24">
+    <el-row :gutter="16">
       <el-col :span="12">
         <el-form-item
           v-if="authConfig.verification === 'Basic Auth'"
@@ -90,3 +90,9 @@ const initData = () => {
     </el-row>
   </el-form>
 </template>
+
+<style lang="less">
+.api-auth-config {
+  margin-bottom: 16px !important;
+}
+</style>
