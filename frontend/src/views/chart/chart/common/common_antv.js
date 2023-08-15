@@ -623,8 +623,31 @@ export function getXAxis(chart) {
         const axisValue = a.axisValue
         if (chart.type.includes('horizontal')) {
           if (axisValue && !axisValue.auto) {
-            axisValue.min && (axis.minLimit = parseFloat(axisValue.min))
-            axisValue.max && (axis.maxLimit = parseFloat(axisValue.max))
+            const yAxisSeriesMaxList = []
+            const maxList = []
+            chart.data.data.forEach(ele => {
+              maxList.push(ele.value)
+            })
+            yAxisSeriesMaxList.push(Math.max.apply(null, maxList))
+            if (yAxisSeriesMaxList.length > 0 && !isNaN(axisValue.max)) {
+              const max = Math.max.apply(null, yAxisSeriesMaxList)
+              if (max <= parseFloat(axisValue.max)) {
+                axisValue.max && (axis.maxLimit = axis.max = parseFloat(axisValue.max))
+              }
+            }
+
+            const yAxisSeriesMinList = []
+            const minList = []
+            chart.data.data.forEach(ele => {
+              minList.push(ele.value)
+            })
+            yAxisSeriesMinList.push(Math.min.apply(null, minList))
+            if (yAxisSeriesMinList.length > 0 && !isNaN(axisValue.min)) {
+              const min = Math.min.apply(null, yAxisSeriesMinList)
+              if (min >= parseFloat(axisValue.min)) {
+                axisValue.min && (axis.minLimit = axis.min = parseFloat(axisValue.min))
+              }
+            }
             axisValue.splitCount && (axis.tickCount = parseFloat(axisValue.splitCount))
           }
         }
@@ -712,8 +735,31 @@ export function getYAxis(chart) {
         const axisValue = a.axisValue
         if (!chart.type.includes('horizontal')) {
           if (axisValue && !axisValue.auto) {
-            axisValue.min && (axis.minLimit = axis.min = parseFloat(axisValue.min))
-            axisValue.max && (axis.maxLimit = axis.max = parseFloat(axisValue.max))
+            const yAxisSeriesMaxList = []
+            const maxList = []
+            chart.data.data.forEach(ele => {
+              maxList.push(ele.value)
+            })
+            yAxisSeriesMaxList.push(Math.max.apply(null, maxList))
+            if (yAxisSeriesMaxList.length > 0 && !isNaN(axisValue.max)) {
+              const max = Math.max.apply(null, yAxisSeriesMaxList)
+              if (max <= parseFloat(axisValue.max)) {
+                axisValue.max && (axis.maxLimit = axis.max = parseFloat(axisValue.max))
+              }
+            }
+
+            const yAxisSeriesMinList = []
+            const minList = []
+            chart.data.data.forEach(ele => {
+              minList.push(ele.value)
+            })
+            yAxisSeriesMinList.push(Math.min.apply(null, minList))
+            if (yAxisSeriesMinList.length > 0 && !isNaN(axisValue.min)) {
+              const min = Math.min.apply(null, yAxisSeriesMinList)
+              if (min >= parseFloat(axisValue.min)) {
+                axisValue.min && (axis.minLimit = axis.min = parseFloat(axisValue.min))
+              }
+            }
             axisValue.splitCount && (axis.tickCount = parseFloat(axisValue.splitCount))
           }
         }
