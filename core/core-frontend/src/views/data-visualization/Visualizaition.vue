@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import DvCanvas from '@/components/data-visualization/canvas/index.vue'
 import RealTimeComponentList from '@/components/data-visualization/RealTimeComponentList.vue'
 import CanvasAttr from '@/components/data-visualization/CanvasAttr.vue'
 import { changeComponentSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
@@ -21,6 +20,7 @@ import { getDatasetTree } from '@/api/dataset'
 import { Tree } from '@/views/visualized/data/dataset/form/CreatDsGroup.vue'
 import { findDragComponent, findNewComponent, initCanvasData } from '@/utils/canvasUtils'
 import { ElMessage } from 'element-plus-secondary'
+import DeCanvas from '@/views/canvas/DeCanvas.vue'
 
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
@@ -177,18 +177,6 @@ eventBus.on('handleNew', handleNew)
       class="dv-layout-container"
       :class="{ 'preview-layout-container': previewStatus }"
     >
-      <!-- 左侧组件列表 -->
-      <dv-sidebar
-        :title="'图层'"
-        :width="180"
-        :aside-position="'left'"
-        :side-name="'realTimeComponent'"
-        class="left-sidebar"
-        :class="{ 'preview-aside': previewStatus }"
-      >
-        <RealTimeComponentList />
-      </dv-sidebar>
-      <!-- 中间画布 -->
       <main class="center">
         <div ref="canvasOut" class="content" :class="{ 'preview-content': previewStatus }">
           <div
@@ -198,41 +186,11 @@ eventBus.on('handleNew', handleNew)
             @mousedown="handleMouseDown"
             @mouseup="deselectCurComponent"
           >
-            <DvCanvas />
+            <DeCanvas />
           </div>
         </div>
         <ComponentToolBar :class="{ 'preview-aside-x': previewStatus }"></ComponentToolBar>
       </main>
-      <!-- 右侧侧组件列表 -->
-      <dv-sidebar
-        v-if="curComponent && !['UserView'].includes(curComponent.component)"
-        :title="'属性'"
-        :width="240"
-        :side-name="'componentProp'"
-        :aside-position="'right'"
-        class="left-sidebar"
-        :class="{ 'preview-aside': editMode === 'preview' }"
-      >
-        <component :is="findComponent(curComponent['component'] + 'Attr')" />
-      </dv-sidebar>
-      <dv-sidebar
-        v-if="!curComponent"
-        :title="'大屏配置'"
-        :width="240"
-        :side-name="'canvas'"
-        :aside-position="'right'"
-        class="left-sidebar"
-        :class="{ 'preview-aside': editMode === 'preview' }"
-      >
-        <CanvasAttr></CanvasAttr>
-      </dv-sidebar>
-      <editor
-        v-show="curComponent && ['UserView'].includes(curComponent.component)"
-        :view="canvasViewInfo[curComponent ? curComponent.id : 'default']"
-        themes="dark"
-        :dataset-tree="state.datasetTree"
-        :class="{ 'preview-aside': editMode === 'preview' }"
-      ></editor>
     </el-container>
   </div>
 </template>
