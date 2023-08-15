@@ -38,7 +38,7 @@ mybatis:
     map-underscore-to-camel-case: true
 logging:
   file:
-    path: /opt/dataease2.0/log/${spring.application.name}
+    path: /opt/dataease2.0/logs/${spring.application.name}
 # sql日志生产环境注释掉
 #mybatis-plus:
 #  configuration:
