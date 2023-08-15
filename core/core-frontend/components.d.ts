@@ -146,6 +146,8 @@ declare module '@vue/runtime-core' {
     TableBody: typeof import('./src/components/grid-table/src/TableBody.vue')['default']
     Toolbar: typeof import('./src/components/data-visualization/Toolbar.vue')['default']
     TreeSelect: typeof import('./src/components/tree-select/src/TreeSelect.vue')['default']
+    UserDetailsEnlarge: typeof import('./src/components/visualization/UserDetailsEnlarge.vue')['default']
+    UserViewDetailsEnlarge: typeof import('./src/components/visualization/UserViewDetailsEnlarge.vue')['default']
     UserViewEnlarge: typeof import('./src/components/visualization/UserViewEnlarge.vue')['default']
     ViewSimpleTitle: typeof import('./src/components/dashboard/subject-setting/dashboard-style/ViewSimpleTitle.vue')['default']
     ViewTitle: typeof import('./src/components/dashboard/subject-setting/dashboard-style/ViewTitle.vue')['default']
