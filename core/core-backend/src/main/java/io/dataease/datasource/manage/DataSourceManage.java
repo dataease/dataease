@@ -2,10 +2,14 @@ package io.dataease.datasource.manage;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import io.dataease.commons.constants.DataSourceType;
+import io.dataease.api.ds.vo.DatasourceDTO;
+import io.dataease.constant.DataSourceType;
+import io.dataease.datasource.dao.auto.entity.CoreDatasource;
+import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
 import io.dataease.datasource.dao.ext.mapper.DataSourceExtMapper;
 import io.dataease.datasource.dao.ext.po.DataSourceNodePO;
 import io.dataease.datasource.dto.DatasourceNodeBO;
+import io.dataease.exception.DEException;
 import io.dataease.license.config.XpackInteract;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
@@ -24,6 +28,9 @@ public class DataSourceManage {
 
     @Resource
     private DataSourceExtMapper dataSourceExtMapper;
+
+    @Resource
+    private CoreDatasourceMapper coreDatasourceMapper;
 
     private DatasourceNodeBO rootNode() {
         return new DatasourceNodeBO(0L, "root", false, 3, -1L, 0);
@@ -54,5 +61,27 @@ public class DataSourceManage {
             nodes.addAll(pos.stream().map(this::convert).toList());
         }
         return TreeUtils.mergeTree(nodes, BusiNodeVO.class, false);
+    }
+
+    @XpackInteract(value = "datasourceResourceTree", before = false)
+    public void innerSave(CoreDatasource coreDatasource) {
+        coreDatasourceMapper.insert(coreDatasource);
+    }
+
+    @XpackInteract(value = "datasourceResourceTree", before = false)
+    public void innerEdit(CoreDatasource coreDatasource) {
+        coreDatasourceMapper.updateById(coreDatasource);
+    }
+
+    @XpackInteract(value = "datasourceResourceTree", before = false)
+    public void move(DatasourceDTO dataSourceDTO) {
+        Long id = dataSourceDTO.getId();
+        CoreDatasource sourceData = null;
+        if (ObjectUtils.isEmpty(id) || ObjectUtils.isEmpty(sourceData = coreDatasourceMapper.selectById(id))) {
+            DEException.throwException("resource not exist");
+        }
+        sourceData.setPid(dataSourceDTO.getPid());
+        sourceData.setName(dataSourceDTO.getName());
+        coreDatasourceMapper.updateById(sourceData);
     }
 }
