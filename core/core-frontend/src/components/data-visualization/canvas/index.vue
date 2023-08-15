@@ -14,7 +14,6 @@ import ContextMenu from './ContextMenu.vue'
 import MarkLine from './MarkLine.vue'
 import Area from './Area.vue'
 import eventBus from '@/utils/eventBus'
-import Grid from './Grid.vue'
 import { changeStyleWithScale } from '@/utils/translate'
 import { ref, onMounted, toRef, computed, toRefs, nextTick, onBeforeUnmount } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
@@ -33,7 +32,7 @@ import LinkJumpSet from '@/components/visualization/LinkJumpSet.vue'
 import { adaptCurThemeCommonStyle } from '@/utils/canvasStyle'
 import LinkageSet from '@/components/visualization/LinkageSet.vue'
 import PointShadow from '@/components/data-visualization/canvas/PointShadow.vue'
-import userViewDetailsEnlargeOpen from "@/components/visualization/userViewDetailsEnlargeOpen.vue";
+import UserViewDetailsEnlarge from '@/components/visualization/UserViewDetailsEnlarge.vue'
 const snapshotStore = snapshotStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
 const composeStore = composeStoreWithOut()
@@ -1428,8 +1427,12 @@ const userViewEnlargeOpen = item => {
   userViewEnlargeRef.value.dialogInit(canvasStyleData.value, canvasViewInfo.value[item.id], item)
 }
 
-const userViewDetailsEnlargeOpenOpen = item => {
-  userViewDetailsEnlargeOpenRef.value.dialogInit(canvasStyleData.value, canvasViewInfo.value[item.id], item)
+const userViewDetailsEnlargeOpen = item => {
+  userViewDetailsEnlargeOpenRef.value.dialogInit(
+    canvasStyleData.value,
+    canvasViewInfo.value[item.id],
+    item
+  )
 }
 
 const initSnapshotTimer = () => {
@@ -1531,7 +1534,7 @@ defineExpose({
       @onDragging="onDragging($event, item, index)"
       @onResizing="onResizing($event, item, index)"
       @userViewEnlargeOpen="userViewEnlargeOpen(item)"
-      @userViewDetailsEnlargeOpenOpen="userViewDetailsEnlargeOpenOpen(item)"
+      @userViewDetailsEnlargeOpen="userViewDetailsEnlargeOpen(item)"
       @linkJumpSetOpen="linkJumpSetOpen(item)"
       @linkageSetOpen="linkageSetOpen(item)"
     >
@@ -1579,7 +1582,7 @@ defineExpose({
     <!-- 选中区域 -->
     <Area v-show="isShowArea" :start="start" :width="width" :height="height" />
     <user-view-enlarge ref="userViewEnlargeRef"></user-view-enlarge>
-    <user-details-enlarge ref="userViewDetailsEnlargeOpenRef"></user-details-enlarge>
+    <user-view-details-enlarge ref="userViewDetailsEnlargeOpenRef"></user-view-details-enlarge>
     <link-jump-set ref="linkJumpRef"></link-jump-set>
     <linkage-set ref="linkageRef"></linkage-set>
   </div>
