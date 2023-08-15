@@ -2,7 +2,7 @@ import {
   G2PlotChartView,
   G2PlotDrawOptions
 } from '@/views/chart/components/js/panel/types/impl/g2plot'
-import { Datum, Pie as G2Pie, PieOptions } from '@antv/g2plot'
+import { Pie as G2Pie, PieOptions } from '@antv/g2plot/esm/plots/pie'
 import { flow, parseJson } from '@/views/chart/components/js/util'
 import { getPadding } from '@/views/chart/components/js/panel/common/common_antv'
 import { formatterItem, valueFormatter } from '@/views/chart/components/js/formatter'
@@ -11,6 +11,7 @@ import {
   PIE_EDITOR_PROPERTY,
   PIE_EDITOR_PROPERTY_INNER
 } from '@/views/chart/components/js/panel/charts/pie/common'
+import { Datum } from '@antv/g2plot/esm/types/common'
 
 const DEFAULT_DATA = []
 export class Pie extends G2PlotChartView<PieOptions, G2Pie> {

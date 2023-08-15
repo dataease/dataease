@@ -2,7 +2,7 @@ import {
   G2PlotChartView,
   G2PlotDrawOptions
 } from '@/views/chart/components/js/panel/types/impl/g2plot'
-import { Gauge as G2Gauge, GaugeOptions } from '@antv/g2plot'
+import { Gauge as G2Gauge, GaugeOptions } from '@antv/g2plot/esm/plots/gauge'
 import { flow, parseJson } from '@/views/chart/components/js/util'
 import {
   DEFAULT_LABEL,

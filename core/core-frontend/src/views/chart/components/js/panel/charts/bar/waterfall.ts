@@ -1,4 +1,4 @@
-import { WaterfallOptions, Waterfall as G2Waterfall } from '@antv/g2plot'
+import { WaterfallOptions, Waterfall as G2Waterfall } from '@antv/g2plot/esm/plots/waterfall'
 import { G2PlotChartView, G2PlotDrawOptions } from '../../types/impl/g2plot'
 import { flow, parseJson } from '../../../util'
 import { formatterItem, valueFormatter } from '../../../formatter'

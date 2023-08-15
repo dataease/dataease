@@ -2,7 +2,7 @@ import {
   G2PlotChartView,
   G2PlotDrawOptions
 } from '@/views/chart/components/js/panel/types/impl/g2plot'
-import { Liquid as G2Liquid, LiquidOptions } from '@antv/g2plot'
+import { Liquid as G2Liquid, LiquidOptions } from '@antv/g2plot/esm/plots/liquid'
 import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
 import { DEFAULT_LABEL, DEFAULT_MISC } from '@/views/chart/components/editor/util/chart'
 import { valueFormatter } from '@/views/chart/components/editor/util/formatter'

@@ -2,7 +2,7 @@ import {
   L7PlotChartView,
   L7PlotDrawOptions
 } from '@/views/chart/components/js/panel/types/impl/l7plot'
-import { Choropleth, ChoroplethOptions } from '@antv/l7plot'
+import { Choropleth, ChoroplethOptions } from '@antv/l7plot/dist/esm/plots/choropleth'
 import { flow, getGeoJsonFile, parseJson } from '@/views/chart/components/js/util'
 import { handleGeoJson } from '@/views/chart/components/js/panel/common/common_antv'
 import { FeatureCollection } from '@antv/l7plot/dist/esm/plots/choropleth/types'

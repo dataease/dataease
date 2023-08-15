@@ -1,7 +1,6 @@
 package io.dataease.datasource.server;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,10 +31,12 @@ import io.dataease.utils.*;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.core.env.Environment;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
@@ -51,17 +52,13 @@ public class DatasourceServer implements DatasourceApi {
     @Resource
     private EngineServer engineServer;
     @Resource
-    private Environment env;
-    @Resource
     private DatasourceTaskServer datasourceTaskServer;
     @Resource
     private CalciteProvider calciteProvider;
     @Resource
     private DatasourceSyncManage datasourceSyncManage;
 
-    private static final String RESOURCE_FLAG = "datasource";
-
-    private static ObjectMapper objectMapper = new ObjectMapper();
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     @Resource
     private DataSourceManage dataSourceManage;
@@ -78,32 +75,23 @@ public class DatasourceServer implements DatasourceApi {
         all_scope, add_scope
     }
 
-    public DatasourceDTO move(DatasourceDTO dataSourceDTO) throws Exception {
+    public void move(DatasourceDTO dataSourceDTO) throws Exception {
         switch (dataSourceDTO.getAction()) {
-            case "move":
+            case "move" -> {
                 if (Objects.equals(dataSourceDTO.getId(), dataSourceDTO.getPid())) {
                     DEException.throwException("pid can not equal to id.");
                 }
                 CoreDatasource sourceData = datasourceMapper.selectById(dataSourceDTO.getId());
                 checkName(dataSourceDTO.getName(), sourceData.getType(), dataSourceDTO.getId(), dataSourceDTO.getPid());
-                UpdateWrapper<CoreDatasource> updateWrapper = new UpdateWrapper<>();
-                updateWrapper.eq("id", dataSourceDTO.getId());
-                CoreDatasource record = new CoreDatasource();
-                record.setPid(dataSourceDTO.getPid());
-                record.setName(dataSourceDTO.getName());
-                datasourceMapper.update(record, updateWrapper);
-                break;
-            case "rename":
+                dataSourceManage.move(dataSourceDTO);
+            }
+            case "rename" -> {
                 CoreDatasource datasource = datasourceMapper.selectById(dataSourceDTO.getId());
                 checkName(dataSourceDTO.getName(), datasource.getType(), dataSourceDTO.getId(), dataSourceDTO.getPid());
-                UpdateWrapper<CoreDatasource> wrapper = new UpdateWrapper<>();
-                wrapper.eq("id", dataSourceDTO.getId());
-                CoreDatasource coreDatasourceRecord = new CoreDatasource();
-                coreDatasourceRecord.setPid(dataSourceDTO.getPid());
-                coreDatasourceRecord.setName(dataSourceDTO.getName());
-                datasourceMapper.update(coreDatasourceRecord, wrapper);
-                break;
-            case "create":
+                datasource.setName(dataSourceDTO.getName());
+                dataSourceManage.innerEdit(datasource);
+            }
+            case "create" -> {
                 checkName(dataSourceDTO.getName(), dataSourceDTO.getNodeType(), dataSourceDTO.getId(), dataSourceDTO.getPid());
                 CoreDatasource coreDatasource = new CoreDatasource();
                 BeanUtils.copyBean(coreDatasource, dataSourceDTO);
@@ -113,16 +101,14 @@ public class DatasourceServer implements DatasourceApi {
                 coreDatasource.setType(dataSourceDTO.getNodeType());
                 coreDatasource.setId(IDUtils.snowID());
                 coreDatasource.setConfiguration("");
-                datasourceMapper.insert(coreDatasource);
-                break;
-            default:
-                break;
+                dataSourceManage.innerSave(coreDatasource);
+            }
+            default -> {
+            }
         }
-        return dataSourceDTO;
     }
 
     @Override
-    @XpackInteract(value = "tree", before = false)
     public DatasourceDTO save(DatasourceDTO dataSourceDTO) throws Exception {
         if (StringUtils.isNotEmpty(dataSourceDTO.getAction())) {
             move(dataSourceDTO);
@@ -150,7 +136,7 @@ public class DatasourceServer implements DatasourceApi {
         }
         coreDatasource.setTaskStatus(TaskStatus.WaitingForExecution.name());
         coreDatasource.setCreateBy(AuthUtils.getUser().getUserId().toString());
-        datasourceMapper.insert(coreDatasource);
+        dataSourceManage.innerSave(coreDatasource);
 
         if (dataSourceDTO.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name())) {
             DatasourceRequest datasourceRequest = new DatasourceRequest();
@@ -237,8 +223,8 @@ public class DatasourceServer implements DatasourceApi {
                 coreDatasourceRequest.setTable(toCreateTable);
                 datasourceSyncManage.createEngineTable(toCreateTable, ApiUtils.getTableFields(coreDatasourceRequest));
             }
-            datasourceMapper.updateById(coreDatasource);
             datasourceSyncManage.addSchedule(coreDatasourceTask);
+            dataSourceManage.innerEdit(coreDatasource);
         } else if (dataSourceDTO.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name())) {
             List<String> sourceTables = ExcelUtils.getTables(sourceTableRequest).stream().map(DatasetTableDTO::getTableName).collect(Collectors.toList());
             List<String> tables = ExcelUtils.getTables(coreDatasourceRequest).stream().map(DatasetTableDTO::getTableName).collect(Collectors.toList());
@@ -252,14 +238,14 @@ public class DatasourceServer implements DatasourceApi {
                     coreDatasourceRequest.setTable(toCreateTable);
                     datasourceSyncManage.createEngineTable(toCreateTable, ExcelUtils.getTableFields(coreDatasourceRequest));
                 }
-                datasourceMapper.updateById(coreDatasource);
                 datasourceSyncManage.extractExcelData(coreDatasource.getId(), "all_scope");
+                dataSourceManage.innerEdit(coreDatasource);
             } else {
-                datasourceMapper.updateById(coreDatasource);
                 datasourceSyncManage.extractExcelData(coreDatasource.getId(), "add_scope");
+                dataSourceManage.innerEdit(coreDatasource);
             }
         } else {
-            datasourceMapper.updateById(coreDatasource);
+            dataSourceManage.innerEdit(coreDatasource);
         }
         calciteProvider.update(dataSourceDTO);
         return dataSourceDTO;
@@ -306,7 +292,7 @@ public class DatasourceServer implements DatasourceApi {
             List<ApiDefinition> apiDefinitionList = JsonUtil.parseList(datasourceDTO.getConfiguration(), listTypeReference);
             List<ApiDefinition> apiDefinitionListWithStatus = new ArrayList<>();
             int success = 0;
-            for (int i = 0; i < apiDefinitionList.size(); i++) {
+            for (ApiDefinition apiDefinition : apiDefinitionList) {
                 String status = null;
                 if (StringUtils.isNotEmpty(datasourceDTO.getStatus())) {
                     JsonNode jsonNode = null;
@@ -315,17 +301,17 @@ public class DatasourceServer implements DatasourceApi {
                     } catch (Exception e) {
                         DEException.throwException(e);
                     }
-                    if (jsonNode.get(apiDefinitionList.get(i).getName()) != null) {
-                        status = jsonNode.get(apiDefinitionList.get(i).getName()).asText();
+                    if (jsonNode.get(apiDefinition.getName()) != null) {
+                        status = jsonNode.get(apiDefinition.getName()).asText();
                     }
-                    apiDefinitionList.get(i).setStatus(status);
+                    apiDefinition.setStatus(status);
                 }
                 if (StringUtils.isNotEmpty(status) && status.equalsIgnoreCase("Success")) {
                     success++;
                 }
-                apiDefinitionListWithStatus.add(apiDefinitionList.get(i));
+                apiDefinitionListWithStatus.add(apiDefinition);
             }
-            datasourceDTO.setApiConfigurationStr(new String(Base64.getEncoder().encode(JsonUtil.toJSONString(apiDefinitionListWithStatus).toString().getBytes())));
+            datasourceDTO.setApiConfigurationStr(new String(Base64.getEncoder().encode(Objects.requireNonNull(JsonUtil.toJSONString(apiDefinitionListWithStatus)).toString().getBytes())));
             if (success == apiDefinitionList.size()) {
                 datasourceDTO.setStatus("Success");
             } else {
@@ -349,8 +335,12 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     @Override
-    @XpackInteract(value = "tree", before = false)
+    @XpackInteract(value = "datasourceResourceTree", before = false)
     public void delete(Long datasourceId) throws Exception {
+        Objects.requireNonNull(CommonBeanFactory.getBean(DatasourceServer.class)).recursionDel(datasourceId);
+    }
+
+    public void recursionDel(Long datasourceId) throws Exception {
         CoreDatasource coreDatasource = datasourceMapper.selectById(datasourceId);
         if (ObjectUtils.isEmpty(coreDatasource)) {
             return;
@@ -418,7 +408,7 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     @Override
-    public List<TableField> getTableField(@PathVariable("datasourceId") String datasourceId, @PathVariable("tableName") String tableName) throws Exception {
+    public List<TableField> getTableField(String datasourceId, String tableName) throws Exception {
         CoreDatasource coreDatasource = datasourceMapper.selectById(datasourceId);
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(coreDatasource);
@@ -467,9 +457,9 @@ public class DatasourceServer implements DatasourceApi {
             excelFileData.setSheets(excelSheetDataList);
         }
         for (ExcelSheetData sheet : excelFileData.getSheets()) {
-            for (int i = 0; i < sheet.getFields().size() -1 ; i++) {
-                for (int j = i + 1; j < sheet.getFields().size()  ; j++) {
-                    if(sheet.getFields().get(i).getName().equalsIgnoreCase(sheet.getFields().get(j).getName())){
+            for (int i = 0; i < sheet.getFields().size() - 1; i++) {
+                for (int j = i + 1; j < sheet.getFields().size(); j++) {
+                    if (sheet.getFields().get(i).getName().equalsIgnoreCase(sheet.getFields().get(j).getName())) {
                         DEException.throwException(sheet.getExcelLabel() + Translator.get("i18n_field_name_repeat") + sheet.getFields().get(i).getName());
                     }
                 }
@@ -486,7 +476,7 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     private void preCheckDs(DatasourceDTO datasource) throws DEException {
-        if (!datasourceTypes().stream().map(DatasourceConfiguration.DatasourceType::getType).collect(Collectors.toList()).contains(datasource.getType())) {
+        if (!datasourceTypes().stream().map(DatasourceConfiguration.DatasourceType::getType).toList().contains(datasource.getType())) {
             DEException.throwException("Datasource type not supported.");
         }
         checkName(datasource.getName(), datasource.getType(), datasource.getId(), datasource.getPid());
@@ -546,17 +536,17 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     @Override
-    public List<String> latestUse(){
+    public List<String> latestUse() {
         List<String> types = new ArrayList<>();
-        QueryWrapper<CoreDatasource> queryWrapper = new QueryWrapper();
+        QueryWrapper<CoreDatasource> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("create_by", AuthUtils.getUser().getUserId());
         queryWrapper.ge("create_time", System.currentTimeMillis() - 24 * 60 * 1000);
         List<CoreDatasource> coreDatasources = datasourceMapper.selectList(queryWrapper);
-        if(CollectionUtils.isEmpty(coreDatasources)){
+        if (CollectionUtils.isEmpty(coreDatasources)) {
             return types;
         }
         for (CoreDatasource coreDatasource : coreDatasources) {
-            if(!coreDatasource.getType().equalsIgnoreCase("folder") && !types.contains(coreDatasource.getType())){
+            if (!coreDatasource.getType().equalsIgnoreCase("folder") && !types.contains(coreDatasource.getType())) {
                 types.add(coreDatasource.getType());
             }
         }

@@ -1,8 +1,10 @@
-import { Datum, FunnelOptions, Funnel as G2Funnel, Tooltip } from '@antv/g2plot'
+import { FunnelOptions, Funnel as G2Funnel } from '@antv/g2plot/esm/plots/funnel'
 import { G2PlotChartView, G2PlotDrawOptions } from '../../types/impl/g2plot'
 import { flow, parseJson } from '@/views/chart/components/js/util'
 import { getPadding } from '../../common/common_antv'
 import { formatterItem, singleDimensionTooltipFormatter, valueFormatter } from '../../../formatter'
+import { Tooltip } from '@antv/g2plot/esm/types/tooltip'
+import { Datum } from '@antv/g2plot/esm/types/common'
 
 /**
  * 漏斗图

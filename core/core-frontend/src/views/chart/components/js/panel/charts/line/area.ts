@@ -2,7 +2,7 @@ import {
   G2PlotChartView,
   G2PlotDrawOptions
 } from '@/views/chart/components/js/panel/types/impl/g2plot'
-import { Area as G2Area, AreaOptions, Datum } from '@antv/g2plot'
+import { Area as G2Area, AreaOptions } from '@antv/g2plot/esm/plots/area'
 import { getPadding, setGradientColor } from '@/views/chart/components/js/panel/common/common_antv'
 import { cloneDeep } from 'lodash-es'
 import { flow, handleEmptyDataStrategy, parseJson } from '@/views/chart/components/js/util'
@@ -18,6 +18,7 @@ import {
 } from '@/views/chart/components/js/panel/charts/line/common'
 import { IntervalGeometryLabelPosition } from '@antv/g2/lib/interface'
 import { Label } from '@antv/g2plot/lib/types/label'
+import { Datum } from '@antv/g2plot/esm/types/common'
 
 const DEFAULT_DATA = []
 export class Area extends G2PlotChartView<AreaOptions, G2Area> {

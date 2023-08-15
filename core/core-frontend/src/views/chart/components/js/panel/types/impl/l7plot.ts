@@ -1,7 +1,7 @@
-import { ViewLevel } from '@antv/l7plot/dist/lib/plots/choropleth/types'
+import { ViewLevel } from '@antv/l7plot/dist/esm/plots/choropleth/types'
 import { FeatureCollection } from '@antv/l7plot/dist/esm/plots/choropleth/types'
-import { PlotOptions } from '@antv/l7plot/dist/lib/types/plot'
-import { Plot as L7Plot } from '@antv/l7plot/dist/lib/core/plot'
+import { PlotOptions } from '@antv/l7plot/dist/esm/types/plot'
+import { Plot as L7Plot } from '@antv/l7plot/dist/esm/core/plot'
 import {
   configL7Label,
   configL7Style,
