@@ -248,8 +248,11 @@ const saveDsFolder = (params, successCb, finallyCb, cmd) => {
     })
 }
 
+const dsLoading = ref(false)
+
 const listDs = () => {
   rawDatasourceList.value = []
+  dsLoading.value = true
   /* listDatasources({}).then(array => {
     convertConfig(array)
     state.datasourceTree = array
@@ -266,6 +269,7 @@ const listDs = () => {
       state.datasourceTree = nodeData
     })
     .finally(() => {
+      dsLoading.value = false
       updateTreeExpand()
     })
 }
@@ -513,6 +517,7 @@ const defaultProps = {
       </div>
 
       <el-tree
+        v-loading="dsLoading"
         :expand-on-click-node="false"
         menu
         v-if="dsListTreeShow"
