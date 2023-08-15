@@ -109,7 +109,7 @@ const init = () => {
   }
 }
 watch([() => canvasStyleData.value.background], () => {
-  if (!fileList.value.length && !initReady) {
+  if (!fileList.value.length) {
     init()
   }
 })
@@ -122,9 +122,19 @@ watch([() => canvasStyleData.value.background], () => {
         <el-collapse-item title="尺寸" name="size">
           <el-row class="item-show">
             <span style="margin-left: 10px; color: #757575" title="宽">W</span>
-            <de-input-num v-model="canvasStyleData.width" :min="600" :max="4096"></de-input-num>
+            <de-input-num
+              themes="dark"
+              v-model="canvasStyleData.width"
+              :min="600"
+              :max="4096"
+            ></de-input-num>
             <span style="margin-left: 10px; color: #757575" title="高">H</span>
-            <de-input-num v-model="canvasStyleData.height" :min="600" :max="4096"></de-input-num>
+            <de-input-num
+              themes="dark"
+              v-model="canvasStyleData.height"
+              :min="600"
+              :max="4096"
+            ></de-input-num>
           </el-row>
         </el-collapse-item>
         <el-collapse-item title="背景" name="background">
@@ -157,9 +167,9 @@ watch([() => canvasStyleData.value.background], () => {
                 width="600px"
                 :append-to-body="true"
                 :destroy-on-close="true"
-                v-model:visible="dialogVisible"
+                v-model="dialogVisible"
               >
-                <img width="100%" :src="dialogImageUrl" />
+                <img width="550" :src="dialogImageUrl" />
               </el-dialog>
             </el-col>
           </el-row>
@@ -292,6 +302,7 @@ watch([() => canvasStyleData.value.background], () => {
   display: flex;
   text-align: center;
   padding-top: 18px;
+  min-width: 220px;
 }
 
 .attr-container {
@@ -300,6 +311,7 @@ watch([() => canvasStyleData.value.background], () => {
   z-index: 20;
   height: 100%;
   width: 100%;
+  min-width: 220px;
 }
 
 :deep(.ed-collapse-item__header) {

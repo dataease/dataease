@@ -1,5 +1,5 @@
 import { S2ChartView, S2DrawOptions } from '@/views/chart/components/js/panel/types/impl/s2'
-import { S2Event, S2Options, TableSheet } from '@antv/s2'
+import { ColCell, S2Event, S2Options, TableSheet } from '@antv/s2'
 import { parseJson } from '@/views/chart/components/js/util'
 import { formatterItem, valueFormatter } from '@/views/chart/components/js/formatter'
 import { getCurrentField } from '@/views/chart/components/js/panel/common/common_table'
@@ -112,7 +112,7 @@ export class TableNormal extends S2ChartView<TableSheet> {
     }
     // 开启序号之后，第一列就是序号列，修改 label 即可
     if (s2Options.showSeriesNumber) {
-      s2Options.colCell = node => {
+      s2Options.colCell = (node, spreadsheet, headerConfig) => {
         if (node.colIndex === 0) {
           if (!customAttr.tableHeader.indexLabel) {
             node.label = ' '
@@ -120,7 +120,7 @@ export class TableNormal extends S2ChartView<TableSheet> {
             node.label = customAttr.tableHeader.indexLabel
           }
         }
-        return null
+        return new ColCell(node, spreadsheet, headerConfig)
       }
     }
 

@@ -306,12 +306,8 @@ export const dvMainStore = defineStore('dataVisualization', {
         index = this.curComponentIndex
       }
 
-      if (index == this.curComponentIndex) {
-        this.curComponentIndex = null
-        componentData = []
-      }
-
       if (/\d/.test(index)) {
+        this.curComponentIndex = null
         componentData.splice(index, 1)
       }
     },

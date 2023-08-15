@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { useI18n } from '@/hooks/web/useI18n'
 import ChartComponentG2Plot from './components/ChartComponentG2Plot.vue'
-import { nextTick, onBeforeMount, onMounted, reactive, ref, toRefs, watch } from 'vue'
+import { nextTick, onBeforeMount, onMounted, PropType, reactive, ref, toRefs, watch } from 'vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { hexColorToRGBA } from '@/views/chart/components/js/util.js'
 import { DEFAULT_TITLE_STYLE } from '@/views/chart/components/editor/util/chart'
@@ -43,7 +43,7 @@ const props = defineProps({
     }
   },
   view: {
-    type: Object,
+    type: Object as PropType<ChartObj>,
     default() {
       return {
         propValue: null
@@ -323,34 +323,34 @@ initTitle()
   <div class="chart-area">
     <p v-if="state.title_show" :style="state.title_class">{{ view.title }}</p>
     <!--这里去渲染不同图库的视图-->
-    <de-rich-text-view
-      v-if="element.innerType === 'richText'"
-      ref="chartComponent"
-      :element="element"
-      :active="active"
-    />
-    <chart-component-g2-plot
-      style="flex: 1"
-      :dynamic-area-id="dynamicAreaId"
-      :view="view"
-      :show-position="showPosition"
-      v-else-if="showChartView(ChartLibraryType.G2_PLOT, ChartLibraryType.L7_PLOT)"
-      ref="chartComponent"
-      @onChartClick="chartClick"
-      @onDrillFilters="onDrillFilters"
-      @onJumpClick="jumpClick"
-    />
-    <chart-component-s2
-      style="flex: 1"
-      :view="view"
-      :show-position="showPosition"
-      v-else-if="showChartView(ChartLibraryType.S2)"
-      ref="chartComponent"
-      @onChartClick="chartClick"
-      @onDrillFilters="onDrillFilters"
-      @onJumpClick="jumpClick"
-    />
-    <drill-path :drill-filters="state.drillFilters" @onDrillJump="drillJump" />
+    <div style="flex: 1; overflow: hidden">
+      <de-rich-text-view
+        v-if="element.innerType === 'richText'"
+        ref="chartComponent"
+        :element="element"
+        :active="active"
+      />
+      <chart-component-g2-plot
+        :dynamic-area-id="dynamicAreaId"
+        :view="view"
+        :show-position="showPosition"
+        v-else-if="showChartView(ChartLibraryType.G2_PLOT, ChartLibraryType.L7_PLOT)"
+        ref="chartComponent"
+        @onChartClick="chartClick"
+        @onDrillFilters="onDrillFilters"
+        @onJumpClick="jumpClick"
+      />
+      <chart-component-s2
+        :view="view"
+        :show-position="showPosition"
+        v-else-if="showChartView(ChartLibraryType.S2)"
+        ref="chartComponent"
+        @onChartClick="chartClick"
+        @onDrillFilters="onDrillFilters"
+        @onJumpClick="jumpClick"
+      />
+      <drill-path :drill-filters="state.drillFilters" @onDrillJump="drillJump" />
+    </div>
   </div>
 </template>
 

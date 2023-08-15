@@ -12,6 +12,7 @@ import io.dataease.exception.DEException;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import io.dataease.utils.BeanUtils;
+import io.dataease.utils.IDUtils;
 import io.dataease.visualization.dao.auto.entity.DataVisualizationInfo;
 import io.dataease.visualization.dao.auto.mapper.DataVisualizationInfoMapper;
 import io.dataease.visualization.manage.CoreVisualizationManage;
@@ -60,7 +61,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
             }
             return result;
         } else {
-            DataEaseException.throwException("Can not find any data visualization info...");
+            DEException.throwException("Can not find any data visualization info...");
         }
         return null;
     }
@@ -131,6 +132,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         DataVisualizationInfo visualizationInfo = new DataVisualizationInfo();
         BeanUtils.copyBean(visualizationInfo, request);
         if (request.getId() == null) {
+            visualizationInfo.setId(IDUtils.snowID());
             coreVisualizationManage.innerSave(visualizationInfo);
 
         } else {
@@ -156,7 +158,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
             wrapper.ne("id", request.getId());
         }
         if (visualizationInfoMapper.exists(wrapper)) {
-            DataEaseException.throwException("当前名称已经存在");
+            DEException.throwException("当前名称已经存在");
         }
     }
 

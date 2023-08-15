@@ -10,21 +10,28 @@
         <span>{{ label }}</span>
       </div>
       <div style="width: 85px">
-        <de-input-num v-model="curComponent.style[key]"></de-input-num>
+        <de-input-num :themes="themes" v-model="curComponent.style[key]"></de-input-num>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, toRefs } from 'vue'
 import { positionData } from '@/utils/attr'
 import { storeToRefs } from 'pinia'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import DeInputNum from '@/custom-component/common/DeInputNum.vue'
 const dvMainStore = dvMainStoreWithOut()
 const { curComponent, dvInfo } = storeToRefs(dvMainStore)
+const props = defineProps({
+  themes: {
+    type: String,
+    default: 'dark'
+  }
+})
 
+const { themes } = toRefs(props)
 const positionKeys = computed(() => {
   if (curComponent.value) {
     const curComponentStyleKeys = Object.keys(curComponent.value.style)
@@ -39,6 +46,7 @@ const positionKeys = computed(() => {
 .position-main {
   width: 100%;
   height: 70px;
+  min-width: 220px;
   background-color: #292929 !important;
 }
 </style>

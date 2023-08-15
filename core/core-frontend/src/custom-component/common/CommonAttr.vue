@@ -57,7 +57,7 @@ const onBackgroundChange = val => {
   <div class="v-common-attr" :class="{ 'attr-dark': themes === 'dark' }">
     <el-collapse v-model="activeName" @change="onChange()">
       <el-collapse-item title="位置" name="position" v-if="!dashboardActive">
-        <component-position style="padding-top: 10px"></component-position>
+        <component-position :themes="themes" style="padding-top: 10px"></component-position>
       </el-collapse-item>
 
       <el-collapse-item title="背景" name="background">

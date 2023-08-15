@@ -1,4 +1,4 @@
-<script setup lang="tsx">
+<script setup lang="ts">
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { storeToRefs } from 'pinia'
@@ -22,6 +22,7 @@ import FilterStyleSimpleSelector from '@/components/dashboard/subject-setting/da
 import BackgroundOverallCommon from '@/components/visualization/component-background/BackgroundOverallCommon.vue'
 import { deepCopy } from '@/utils/utils'
 import { useEmitt } from '@/hooks/web/useEmitt'
+import { merge } from 'lodash-es'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const { canvasStyleData, componentData, canvasViewInfo } = storeToRefs(dvMainStore)
@@ -158,11 +159,15 @@ const themeAttrChange = (custom, property, value) => {
     // console.log('custom=' + custom + ';property=' + property + ';value=' + JSON.stringify(value))
     Object.keys(canvasViewInfo.value).forEach(function (viewId) {
       const viewInfo = canvasViewInfo.value[viewId]
-      Object.keys(value).forEach(function (key) {
-        if (viewInfo[custom][property][key] !== undefined) {
-          viewInfo[custom][property][key] = value[key]
-        }
-      })
+      if (custom === 'customAttr') {
+        merge(viewInfo['customAttr'], value)
+      } else {
+        Object.keys(value).forEach(function (key) {
+          if (viewInfo[custom][property][key] !== undefined) {
+            viewInfo[custom][property][key] = value[key]
+          }
+        })
+      }
       useEmitt().emitter.emit('renderChart-' + viewId, viewInfo)
     })
     snapshotStore.recordSnapshot('DbCanvasAttr-themeAttrChange')
@@ -246,9 +251,9 @@ onMounted(() => {
                   width="600px"
                   :append-to-body="true"
                   :destroy-on-close="true"
-                  v-model:visible="dialogVisible"
+                  v-model="dialogVisible"
                 >
-                  <img width="100%" :src="dialogImageUrl" />
+                  <img width="550" :src="dialogImageUrl" />
                 </el-dialog>
               </el-col>
             </el-row>
