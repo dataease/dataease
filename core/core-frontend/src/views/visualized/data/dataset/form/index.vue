@@ -419,11 +419,12 @@ const confirmEditUnion = () => {
   setGuid(parent.currentDsFields, parent.id, parent.datasourceId)
   const top = cloneDeep(node)
   const bottom = cloneDeep(parent)
+  console.log('top', top, bottom)
   datasetDrag.value.setStateBack(top, bottom)
   const arr = []
   dfsFields(arr, datasetDrag.value.nodeList)
   allfields.value = diffArr(arr, allfields.value)
-  fieldUnion.value.clearState()
+  // fieldUnion.value.clearState()
   editUnion.value = false
   addComplete()
 }

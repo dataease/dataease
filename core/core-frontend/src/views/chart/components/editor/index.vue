@@ -880,16 +880,16 @@ const autoInsert = element => {
           </el-row>
 
           <el-row style="height: calc(100vh - 110px)">
-            <el-tabs v-if="view.type === 'VQuery'" v-model="tabActiveVQuery" class="tab-header">
-              <el-tab-pane
-                name="style"
-                :label="t('chart.chart_style')"
-                class="padding-tab"
-                style="width: 100%"
-              >
+            <div class="query-style-tab" v-if="view.type === 'VQuery'">
+              <div class="tab-container" style="width: 100%">
+                <el-tabs v-model="tabActiveVQuery">
+                  <el-tab-pane name="style" :label="t('chart.chart_style')"> </el-tab-pane>
+                </el-tabs>
+              </div>
+              <div style="padding-top: 1px">
                 <VQueryChartStyle :chart="view" :themes="themes"></VQueryChartStyle>
-              </el-tab-pane>
-            </el-tabs>
+              </div>
+            </div>
             <el-tabs v-else v-model="tabActive" :stretch="true" class="tab-header">
               <el-tab-pane name="data" :label="t('chart.chart_data')" class="padding-tab">
                 <el-col>
@@ -1710,6 +1710,8 @@ const autoInsert = element => {
 </template>
 
 <style lang="less" scoped>
+@import '@/style/mixin.less';
+
 .editor-light {
   border-left: solid 1px @side-outline-border-color-light !important;
   color: @canvas-main-font-color-light!important;
@@ -1740,6 +1742,36 @@ const autoInsert = element => {
   }
   :deep(.item-span-style) {
     color: @canvas-main-font-color-light!important;
+  }
+
+  .query-style-tab {
+    width: 100%;
+    border-top: solid 1px @side-outline-border-color-light !important;
+
+    .tab-container {
+      .border-bottom-tab(8px);
+    }
+
+    margin-left: 0px !important;
+
+    :deep(.ed-tabs__header) {
+      border-top: none !important;
+    }
+
+    :deep(.ed-tabs__nav-wrap::after) {
+      background-color: rgba(31, 35, 41, 0.15);
+    }
+    :deep(.ed-tabs__nav-scroll) {
+      .ed-tabs__item {
+        height: 35px;
+        line-height: 35px;
+        color: #3370ff;
+        font-family: PingFang SC;
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 500;
+      }
+    }
   }
 }
 
