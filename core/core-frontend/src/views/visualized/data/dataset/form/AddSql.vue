@@ -4,7 +4,9 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { Base64 } from 'js-base64'
 import useClipboard from 'vue-clipboard3'
 import { ElMessage } from 'element-plus-secondary'
+import { getTableField } from '@/api/dataset'
 import CodeMirror from './CodeMirror.vue'
+import type { Field } from './UnionFieldList.vue'
 import { getDatasourceList, getTables, getPreviewSql } from '@/api/dataset'
 import type { DataSource } from './index.vue'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
@@ -91,6 +93,24 @@ onMounted(() => {
 onBeforeUnmount(() => {
   codeCom.value.destroy?.()
 })
+
+const gridData = ref([])
+const gridDataLoading = ref(false)
+
+const getNodeField = ({ datasourceId, tableName }) => {
+  gridDataLoading.value = true
+  let info = {
+    table: tableName,
+    sql: ''
+  }
+  getTableField({ datasourceId, info: JSON.stringify(info), tableName, type: 'db' })
+    .then(res => {
+      gridData.value = res as unknown as Field[]
+    })
+    .finally(() => {
+      gridDataLoading.value = false
+    })
+}
 
 const getDatasource = () => {
   getDatasourceList().then(res => {
@@ -219,8 +239,8 @@ const dsChange = (val: string) => {
   })
 }
 
-const listSqlLog = () => {
-  console.log(123)
+const listSqlLog = (value?: string) => {
+  console.log(value)
 }
 const copyInfo = async (value: string) => {
   try {
@@ -283,6 +303,9 @@ const saveVariable = () => {
 
 const mousedownDrag = () => {
   document.querySelector('.sql-eidtor').addEventListener('mousemove', calculateHeight)
+}
+const fieldType = (deType: number) => {
+  return ['text', 'time', 'value', 'value', 'location'][deType]
 }
 </script>
 
@@ -376,11 +399,80 @@ const mousedownDrag = () => {
             :title="ele.name"
             @click="setActiveName(ele)"
           >
+            <el-icon>
+              <Icon name="icon_form_outlined"></Icon>
+            </el-icon>
             <span class="label">{{ ele.name }}</span>
             <span class="name-copy">
-              <el-icon @click="copyInfo(ele.name)">
+              <el-icon class="hover-icon" @click="copyInfo(ele.name)">
                 <Icon name="icon_copy_outlined"></Icon>
               </el-icon>
+
+              <el-popover
+                popper-class="sql-table-info"
+                placement="right"
+                :width="502"
+                @show="getNodeField(ele)"
+                trigger="click"
+              >
+                <template #reference>
+                  <el-icon class="hover-icon">
+                    <Icon name="icon_info_outlined"></Icon>
+                  </el-icon>
+                </template>
+                <div class="table-filed" v-loading="gridDataLoading">
+                  <div class="top flex-align-center">
+                    <div class="title ellipsis">
+                      {{ ele.name }}
+                    </div>
+                    <el-icon
+                      style="color: #3370ff"
+                      class="hover-icon"
+                      @click.stop="copyInfo(ele.name)"
+                    >
+                      <Icon name="icon_copy_outlined"></Icon>
+                    </el-icon>
+                    <div class="num flex-align-center">
+                      <el-icon>
+                        <Icon name="icon_text-box_outlined"></Icon>
+                      </el-icon>
+                      &nbsp;
+                      {{ gridData.length }}
+                    </div>
+                  </div>
+                  <div class="table-grid">
+                    <el-table
+                      height="405"
+                      style="width: 100%"
+                      header-cell-class-name="header-cell"
+                      :data="gridData"
+                    >
+                      <el-table-column label="物理字段名">
+                        <template #default="scope">
+                          <el-icon>
+                            <Icon
+                              :className="`field-icon-${fieldType(scope.row.deType)}`"
+                              :name="`field_${fieldType(scope.row.deType)}`"
+                            ></Icon>
+                          </el-icon>
+                          {{ scope.row.originName }}
+                        </template>
+                      </el-table-column>
+                      <el-table-column :label="t('common.operate')">
+                        <template #default="scope">
+                          <el-icon
+                            style="color: #3370ff"
+                            class="hover-icon"
+                            @click.stop="copyInfo(scope.row.originName)"
+                          >
+                            <Icon name="icon_copy_outlined"></Icon>
+                          </el-icon>
+                        </template>
+                      </el-table-column>
+                    </el-table>
+                  </div>
+                </div>
+              </el-popover>
             </span>
           </div>
         </template>
@@ -685,6 +777,12 @@ const mousedownDrag = () => {
       height: calc(100% - 190px);
       overflow-y: auto;
 
+      .list-item_primary {
+        .label {
+          width: 60%;
+        }
+      }
+
       .not-allow {
         cursor: not-allowed;
         color: var(--deTextDisable, #bbbfc4);
@@ -694,6 +792,9 @@ const mousedownDrag = () => {
         display: none;
         line-height: 24px;
         margin-left: auto;
+        .ed-icon + .ed-icon {
+          margin-left: -4px;
+        }
       }
 
       .list-item_primary:hover {
@@ -824,6 +925,36 @@ const mousedownDrag = () => {
 }
 </style>
 <style lang="less">
+.sql-table-info {
+  padding: 0 !important;
+  height: 480px;
+  .table-filed {
+    height: 480px;
+    .top {
+      padding: 16px;
+      border-bottom: 1px solid rgba(31, 35, 41, 0.15);
+      .title {
+        max-width: 50%;
+      }
+      .num {
+        margin-left: auto;
+        color: #646a73;
+        font-family: PingFang SC;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 22px;
+      }
+    }
+
+    .table-grid {
+      padding: 16px;
+      height: 423px;
+      padding-bottom: 0;
+      overflow-y: auto;
+    }
+  }
+}
 .tree-select-ds_popper {
   .ed-tree-node.is-current > .ed-tree-node__content:not(.is-menu):after {
     display: none !important;

@@ -255,8 +255,11 @@ const dfsNodeBack = (arr, idArr, list) => {
     if (idArr.includes(ele.id)) {
       idArr.shift()
       const node = arr.shift()
+      console.log('arr.shift1', cloneDeep(ele), cloneDeep(node))
       Object.assign(ele, node)
+      console.log('arr.shift2', cloneDeep(ele), cloneDeep(node))
     }
+    console.log('arr.children', cloneDeep(ele))
     if (ele.children?.length) {
       dfsNodeBack(arr, idArr, ele.children)
     }
