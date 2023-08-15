@@ -1,5 +1,5 @@
 <script lang="tsx" setup>
-import { computed, reactive, ref, shallowRef, nextTick } from 'vue'
+import { computed, reactive, ref, shallowRef, nextTick, watch } from 'vue'
 import type { TabPaneName, Action } from 'element-plus-secondary'
 import { ElIcon, ElMessageBox, ElMessage } from 'element-plus-secondary'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
@@ -367,7 +367,9 @@ const createDatasource = (data?: Tree) => {
 const dsListTree = ref()
 const expandedKey = ref([])
 const dsListTreeShow = ref(true)
-
+watch(dsName, (val: string) => {
+  dsListTree.value.filter(val)
+})
 const updateTreeExpand = () => {
   dsListTreeShow.value = false
   nextTick(() => {
@@ -381,6 +383,11 @@ const nodeExpand = data => {
 
 const nodeCollapse = data => {
   expandedKey.value = expandedKey.value.filter(ele => ele !== data.id)
+}
+
+const filterNode = (value: string, data: BusiTreeNode) => {
+  if (!value) return true
+  return data.name?.toLocaleLowerCase().includes(value.toLocaleLowerCase())
 }
 
 const editDatasource = (editType?: number) => {
@@ -495,7 +502,7 @@ const defaultProps = {
         </div>
 
         <div class="search-input">
-          <el-input class="w100" v-model="dsName" clearable @blur="searchDs" @clear="searchDs">
+          <el-input class="w100" v-model="dsName" clearable>
             <template #prefix>
               <el-icon>
                 <Icon name="icon_search-outline_outlined"></Icon>
@@ -512,6 +519,7 @@ const defaultProps = {
         ref="dsListTree"
         node-key="id"
         @node-expand="nodeExpand"
+        :filter-node-method="filterNode"
         @node-collapse="nodeCollapse"
         :default-expanded-keys="expandedKey"
         :data="state.datasourceTree"
@@ -614,8 +622,6 @@ const defaultProps = {
               :placeholder="t('common.search_keywords')"
               clearable
               style="width: 240px"
-              @blur="initSearch"
-              @clear="initSearch"
             >
               <template #prefix>
                 <el-icon>
