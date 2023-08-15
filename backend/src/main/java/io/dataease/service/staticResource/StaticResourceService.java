@@ -68,7 +68,7 @@ public class StaticResourceService {
         if (image == null || image.getWidth() <= 0 || image.getHeight() <= 0) {
             return false;
         }
-        String originName = file.getOriginalFilename();
+        String originName = file.getOriginalFilename().toLowerCase();
         if (!(originName.endsWith(".jpg") || originName.endsWith(".png") || originName.endsWith(".gif"))) {
             return false;
         }
