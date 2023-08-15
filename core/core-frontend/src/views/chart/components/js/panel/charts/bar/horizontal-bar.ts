@@ -2,7 +2,7 @@ import {
   G2PlotChartView,
   G2PlotDrawOptions
 } from '@/views/chart/components/js/panel/types/impl/g2plot'
-import { Bar, BarOptions, Datum } from '@antv/g2plot'
+import { Bar, BarOptions } from '@antv/g2plot/esm/plots/bar'
 import { getPadding, setGradientColor } from '@/views/chart/components/js/panel/common/common_antv'
 import { cloneDeep } from 'lodash-es'
 import {
@@ -21,6 +21,7 @@ import {
   BAR_EDITOR_PROPERTY,
   BAR_EDITOR_PROPERTY_INNER
 } from '@/views/chart/components/js/panel/charts/bar/common'
+import { Datum } from '@antv/g2plot/esm/types/common'
 
 const DEFAULT_DATA = []
 

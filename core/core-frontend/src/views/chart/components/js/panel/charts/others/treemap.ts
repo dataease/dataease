@@ -1,9 +1,10 @@
-import { TreemapOptions, Treemap as G2Treemap, Datum } from '@antv/g2plot'
+import { TreemapOptions, Treemap as G2Treemap } from '@antv/g2plot/esm/plots/treemap'
 import { G2PlotChartView, G2PlotDrawOptions } from '../../types/impl/g2plot'
 import { flow, parseJson } from '../../../util'
 import { getPadding } from '../../common/common_antv'
 import { formatterItem, singleDimensionTooltipFormatter, valueFormatter } from '../../../formatter'
 import { Label } from '@antv/g2plot/lib/types/label'
+import { Datum } from '@antv/g2plot/esm/types/common'
 
 /**
  * 矩形树图

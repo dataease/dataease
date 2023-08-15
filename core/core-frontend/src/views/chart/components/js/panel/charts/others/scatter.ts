@@ -2,10 +2,11 @@ import {
   G2PlotChartView,
   G2PlotDrawOptions
 } from '@/views/chart/components/js/panel/types/impl/g2plot'
-import { ScatterOptions, Scatter as G2Scatter, Datum } from '@antv/g2plot'
+import { ScatterOptions, Scatter as G2Scatter } from '@antv/g2plot/esm/plots/scatter'
 import { flow, parseJson } from '../../../util'
 import { singleDimensionTooltipFormatter } from '../../../formatter'
 import { getPadding } from '../../common/common_antv'
+import { Datum } from '@antv/g2plot/esm/types/common'
 
 /**
  * 散点图

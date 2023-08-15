@@ -1,5 +1,5 @@
-import { PickOptions } from '@antv/g2plot/lib/core/plot'
-import { Plot } from '@antv/g2plot'
+import { PickOptions } from '@antv/g2plot/esm/core/plot'
+import { Plot } from '@antv/g2plot/esm/core/plot'
 import {
   getAnalyse,
   getAnalyseHorizontal,

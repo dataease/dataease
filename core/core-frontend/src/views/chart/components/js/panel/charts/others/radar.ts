@@ -1,8 +1,9 @@
-import { RadarOptions, Radar as G2Radar, Datum } from '@antv/g2plot'
+import { RadarOptions, Radar as G2Radar } from '@antv/g2plot/esm/plots/radar'
 import { G2PlotChartView, G2PlotDrawOptions } from '../../types/impl/g2plot'
 import { flow, parseJson } from '../../../util'
 import { getPadding } from '../../common/common_antv'
 import { singleDimensionTooltipFormatter } from '../../../formatter'
+import { Datum } from '@antv/g2plot/esm/types/common'
 
 export class Radar extends G2PlotChartView<RadarOptions, G2Radar> {
   public drawChart(drawOptions: G2PlotDrawOptions<G2Radar>): G2Radar {
