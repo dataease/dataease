@@ -98,7 +98,7 @@ public class Dimension2SQLObj {
                     }
                 }
             } else if (Objects.equals(x.getDeType(), DeTypeConstants.DE_STRING) && Objects.equals(x.getDeExtractType(), DeTypeConstants.DE_STRING)) {
-                fieldName = String.format(SQLConstants.CAST, originField, SQLConstants.VARCHAR);
+                fieldName = originField;
             } else {
                 if (Objects.equals(x.getDeType(), DeTypeConstants.DE_INT)) {
                     fieldName = String.format(SQLConstants.CAST, originField, SQLConstants.DEFAULT_INT_FORMAT);
