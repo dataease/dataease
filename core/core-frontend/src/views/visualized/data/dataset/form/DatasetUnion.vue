@@ -251,6 +251,7 @@ const dfsPath = (arr, idArr, list) => {
 }
 
 const dfsNodeBack = (arr, idArr, list) => {
+  console.log('idArr', idArr)
   list.forEach(ele => {
     if (idArr.includes(ele.id)) {
       idArr.shift()

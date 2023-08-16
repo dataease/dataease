@@ -317,7 +317,7 @@ const queryData = () => {
           v-if="customStyle.btnList.includes('sure')"
           type="primary"
         >
-          {{ t('common.sure') }}
+          {{ t('adv_search.search') }}
         </el-button>
       </div>
     </div>
@@ -329,7 +329,7 @@ const queryData = () => {
         {{ t('commons.clear') }}
       </el-button>
       <el-button @click.stop="queryData" v-if="customStyle.btnList.includes('sure')" type="primary">
-        {{ t('common.sure') }}
+        {{ t('adv_search.search') }}
       </el-button>
     </div>
   </div>

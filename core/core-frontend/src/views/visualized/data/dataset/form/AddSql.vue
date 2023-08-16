@@ -170,10 +170,6 @@ getDatasource()
 
 const emits = defineEmits(['close', 'save'])
 
-const saveClose = () => {
-  save(close)
-}
-
 const save = (cb?: () => void) => {
   parseVariable()
   emits(
@@ -188,6 +184,8 @@ const save = (cb?: () => void) => {
 }
 
 const close = () => {
+  state.plxTableData = []
+  state.fields = []
   emits('close')
 }
 const getSQLPreview = () => {
@@ -418,9 +416,11 @@ const fieldType = (deType: number) => {
             </el-icon>
             <span class="label">{{ ele.name }}</span>
             <span class="name-copy">
-              <el-icon class="hover-icon" @click="copyInfo(ele.name)">
-                <Icon name="icon_copy_outlined"></Icon>
-              </el-icon>
+              <el-tooltip effect="dark" :content="t('common.copy')" placement="top">
+                <el-icon class="hover-icon" @click="copyInfo(ele.name)">
+                  <Icon name="icon_copy_outlined"></Icon>
+                </el-icon>
+              </el-tooltip>
 
               <el-popover
                 popper-class="sql-table-info"
@@ -472,7 +472,7 @@ const fieldType = (deType: number) => {
                           {{ scope.row.originName }}
                         </template>
                       </el-table-column>
-                      <el-table-column :label="t('common.operate')">
+                      <el-table-column :label="t('commons.operate')">
                         <template #default="scope">
                           <el-icon
                             style="color: #3370ff"
@@ -507,14 +507,16 @@ const fieldType = (deType: number) => {
           <div class="table-scroll" v-if="state.fields.length">
             <el-table
               style="width: 100%"
+              height="100%"
               header-cell-class-name="header-cell"
               :data="state.plxTableData"
               border
             >
               <el-table-column
-                v-for="field in state.fields"
+                v-for="(field, index) in state.fields"
                 :key="field.originName"
-                min-width="200px"
+                :width="!!index ? '300px' : 'auto'"
+                show-overflow-tooltip
                 :prop="field.originName"
                 :label="field.originName"
                 resizable
@@ -534,8 +536,14 @@ const fieldType = (deType: number) => {
             </el-table>
           </div>
           <template v-else>
-            <empty-background description="点击运行查询" img-type="table">
-              即可查看运行结果
+            <empty-background description=" " img-type="noneWhite">
+              <div class="sql-tips flex-align-center">
+                点击上方
+                <el-icon>
+                  <icon name="icon_play-round_outlined"></icon>
+                </el-icon>
+                运行，即可查看运行结果
+              </div>
             </empty-background>
           </template>
         </div>
@@ -646,7 +654,7 @@ const fieldType = (deType: number) => {
             v-if="getIconName(scope.row.type[0]) === 'text'"
             v-model="scope.row.defaultValue"
             type="text"
-            :placeholder="t('common.please_input')"
+            :placeholder="t('commons.please_input')"
           >
             <template #prepend>
               <el-select v-model="scope.row.defaultValueScope" style="width: calc(100% + 22px)">
@@ -662,7 +670,7 @@ const fieldType = (deType: number) => {
           <el-input
             v-if="getIconName(scope.row.type[0]) === 'value'"
             v-model="scope.row.defaultValue"
-            :placeholder="t('common.please_input')"
+            :placeholder="t('commons.please_input')"
             type="number"
           >
             <template #prepend>
@@ -877,7 +885,7 @@ const fieldType = (deType: number) => {
         z-index: 5;
         .drag {
           position: absolute;
-          top: 0;
+          top: 4px;
           left: 50%;
           transform: translateX(-50%);
           height: 7px;
@@ -902,6 +910,8 @@ const fieldType = (deType: number) => {
 
         .table-scroll {
           float: left;
+          width: 100%;
+          height: 100%;
         }
       }
 
@@ -986,6 +996,19 @@ const fieldType = (deType: number) => {
 }
 </style>
 <style lang="less">
+.sql-tips {
+  color: #646a73;
+  text-align: center;
+  font-family: PingFang SC;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 22px;
+  margin-top: -35px;
+  .ed-icon {
+    margin: 0 4px;
+  }
+}
 .sql-table-info {
   padding: 0 !important;
   height: 480px;

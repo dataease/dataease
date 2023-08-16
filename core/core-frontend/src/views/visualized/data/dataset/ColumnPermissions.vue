@@ -401,11 +401,10 @@ const resetTaskForm = () => {
 }
 
 const deletePermission = item => {
-  ElMessageBox.confirm(t('dataset.confirm_delete'), {
+  ElMessageBox.confirm('确定删除列权限吗?', {
     confirmButtonText: t('commons.confirm'),
-    tip: t('dataset.tips'),
     cancelButtonText: t('dataset.cancel'),
-    confirmButtonType: 'primary',
+    confirmButtonType: 'danger',
     type: 'warning',
     autofocus: false,
     showClose: false,
@@ -513,7 +512,7 @@ const handleCurrentChange = (currentPage: number) => {
     <template #icon>
       <Icon name="icon_add_outlined"></Icon>
     </template>
-    {{ t('common.add') }}
+    {{ t('commons.add') }}
   </el-button>
   <GridTable
     @size-change="handleSizeChange"
@@ -630,7 +629,7 @@ const handleCurrentChange = (currentPage: number) => {
             }}
           </template>
         </el-table-column>
-        <el-table-column :label="t('common.operate')" fixed="right" width="186">
+        <el-table-column :label="t('commons.operate')" fixed="right" width="186">
           <template #default="scope">
             <div class="flex-align-center">
               <el-radio-group :disabled="!mapId.includes(scope.row.id)" v-model="scope.row.opt">
