@@ -552,7 +552,7 @@ const componentBackgroundStyle = computed(() => {
     } = element.value.commonBackground
     const style = { padding: innerPadding + 'px', borderRadius: borderRadius + 'px' }
     let colorRGBA = ''
-    if (backgroundColorSelect && backgroundColor && backgroundColor.indexOf('rgb') === -1) {
+    if (backgroundColorSelect && backgroundColor) {
       colorRGBA = hexColorToRGBA(backgroundColor, alpha)
     } else {
       colorRGBA = backgroundColor

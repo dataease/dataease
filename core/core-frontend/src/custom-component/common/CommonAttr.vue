@@ -71,7 +71,7 @@ const onBackgroundChange = val => {
       </el-collapse-item>
 
       <el-collapse-item title="样式" name="style" class="common-style-area">
-        <div style="width: 100%">
+        <div class="common-style-inner">
           <div
             v-for="({ key, label }, index) in styleKeys"
             :key="index"
@@ -172,5 +172,11 @@ const onBackgroundChange = val => {
 
 .common-style-area :deep(.ed-collapse-item__wrap) {
   padding-bottom: 16px;
+}
+
+.common-style-inner {
+  width: 100%;
+  min-width: 230px;
+  margin-left: -12px;
 }
 </style>

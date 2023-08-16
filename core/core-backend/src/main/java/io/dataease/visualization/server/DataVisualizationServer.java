@@ -94,7 +94,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
                         chartViewManege.save(chartViewDTO);
                         // viewIds.add(chartViewDTO.getId());
                     } catch (Exception e) {
-                        throw new RuntimeException(e);
+                        DEException.throwException(e);
                     }
                 }
             });
