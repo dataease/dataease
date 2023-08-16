@@ -94,12 +94,14 @@ const handleDragOver = e => {
 const handleMouseDown = e => {
   e.stopPropagation()
   dvMainStore.setClickComponentStatus(false)
+  // 点击画布的空区域 提前清空curComponent 防止右击菜单内容抖动
+  dvMainStore.setCurComponent({ component: null, index: null })
   dvMainStore.setInEditorStatus(true)
 }
 
 const deselectCurComponent = e => {
   if (!isClickComponent.value) {
-    dvMainStore.setCurComponent({ component: null, index: null })
+    curComponent.value && dvMainStore.setCurComponent({ component: null, index: null })
   }
 
   // 0 左击 1 滚轮 2 右击
@@ -202,6 +204,7 @@ eventBus.on('handleNew', handleNew)
             @mouseup="deselectCurComponent"
           >
             <canvas-core
+              class="canvas-area-shadow"
               v-if="state.canvasInitStatus"
               :component-data="componentData"
               :canvas-style-data="canvasStyleData"
@@ -300,5 +303,10 @@ eventBus.on('handleNew', handleNew)
   height: 0px !important;
   overflow: hidden;
   padding: 0px;
+}
+
+.canvas-area-shadow {
+  box-sizing: border-box;
+  border: 1px solid rgba(85, 85, 85, 0.4);
 }
 </style>
