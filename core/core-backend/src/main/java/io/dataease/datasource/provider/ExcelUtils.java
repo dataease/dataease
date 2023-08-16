@@ -334,7 +334,7 @@ public class ExcelUtils {
         List<ExcelSheetData> excelSheetDataList = new ArrayList<>();
         try {
             String suffix = filename.substring(filename.lastIndexOf(".") + 1);
-            if (StringUtils.equalsIgnoreCase(suffix, "xlsx")) {
+            if (StringUtils.equalsIgnoreCase(suffix, "xlsx") || StringUtils.equalsIgnoreCase(suffix, "xls")) {
                 NoModelDataListener noModelDataListener = new NoModelDataListener();
                 ExcelReader excelReader = EasyExcel.read(inputStream, noModelDataListener).build();
                 List<ReadSheet> sheets = excelReader.excelExecutor().sheetList();
@@ -406,7 +406,6 @@ public class ExcelUtils {
                 }
                 excelSheetData.setJsonArray(jsonArray);
             }
-            ;
         } catch (Exception e) {
             DEException.throwException(e);
         }
