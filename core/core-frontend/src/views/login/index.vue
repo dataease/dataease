@@ -252,7 +252,7 @@ onMounted(() => {
                   <el-input
                     v-model="state.loginForm.username"
                     :placeholder="
-                      t('commons.account') + '/' + t('commons.email') + '/' + t('commons.phone')
+                      t('common.account') + '/' + t('commons.email') + '/' + t('commons.phone')
                     "
                     autofocus
                     :disabled="state.loginTypes.includes(2) && state.loginForm.loginType === 2"
@@ -261,7 +261,7 @@ onMounted(() => {
                 <el-form-item prop="password">
                   <el-input
                     v-model="state.loginForm.password"
-                    :placeholder="t('commons.pwd')"
+                    :placeholder="t('common.pwd')"
                     show-password
                     maxlength="30"
                     show-word-limit
