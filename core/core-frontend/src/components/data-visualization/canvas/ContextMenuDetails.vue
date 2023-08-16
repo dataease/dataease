@@ -103,7 +103,7 @@ const composeDivider = computed(() => {
 </script>
 
 <template>
-  <div class="context-menu-details">
+  <div class="context-menu-details" @mousedown="handleComposeMouseDown">
     <ul @mouseup="handleMouseUp">
       <li
         v-show="areaData.components.length"

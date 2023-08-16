@@ -2,7 +2,6 @@ import { defineStore, storeToRefs } from 'pinia'
 import { store } from '../../index'
 import { dvMainStoreWithOut } from './dvMain'
 import { swap } from '@/utils/utils'
-import toast from '@/utils/toast'
 
 const dvMainStore = dvMainStoreWithOut()
 const { componentData, curComponentIndex, curComponent } = storeToRefs(dvMainStore)
@@ -12,10 +11,8 @@ export const layerStore = defineStore('layer', {
     upComponent() {
       // 上移图层 index，表示元素在数组中越往后
       if (curComponentIndex.value < componentData.value.length - 1) {
-        swap(componentData, curComponentIndex.value, curComponentIndex.value + 1)
+        swap(componentData.value, curComponentIndex.value, curComponentIndex.value + 1)
         curComponentIndex.value = curComponentIndex.value + 1
-      } else {
-        toast('已经到顶了')
       }
     },
 
@@ -24,8 +21,6 @@ export const layerStore = defineStore('layer', {
       if (curComponentIndex.value > 0) {
         swap(componentData.value, curComponentIndex.value, curComponentIndex.value - 1)
         curComponentIndex.value = curComponentIndex.value - 1
-      } else {
-        toast('已经到底了')
       }
     },
 
@@ -35,8 +30,6 @@ export const layerStore = defineStore('layer', {
         componentData.value.splice(curComponentIndex.value, 1)
         componentData.value.push(curComponent.value)
         curComponentIndex.value = componentData.value.length - 1
-      } else {
-        toast('已经到顶了')
       }
     },
 
@@ -46,8 +39,6 @@ export const layerStore = defineStore('layer', {
         componentData.value.splice(curComponentIndex.value, 1)
         componentData.value.unshift(curComponent.value)
         curComponentIndex.value = 0
-      } else {
-        toast('已经到底了')
       }
     },
 

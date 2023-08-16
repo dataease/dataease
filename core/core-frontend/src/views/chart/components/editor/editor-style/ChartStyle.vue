@@ -137,7 +137,6 @@ const onChangeMiscStyleForm = val => {
 watch(
   () => props.chart.id,
   () => {
-    console.log('props.chart-' + props.chart.id)
     state.initReady = false
     nextTick(() => {
       state.initReady = true

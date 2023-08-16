@@ -18,9 +18,9 @@ export function deepCopy(target) {
 }
 
 export function swap(arr, i, j) {
-  const temp = arr.value[i]
-  arr.value[i] = arr.value[j]
-  arr.value[j] = temp
+  const temp = arr[i]
+  arr[i] = arr[j]
+  arr[j] = temp
 }
 
 export function _$(selector) {
