@@ -9,11 +9,15 @@ import EmptyBackground from '@/components/empty-background/src/EmptyBackground.v
 import { storeToRefs } from 'pinia'
 import { toPng } from 'html-to-image'
 import { initCanvasData, initCanvasDataPrepare } from '@/utils/canvasUtils'
+import { useRequestStoreWithOut } from '@/store/modules/request'
+import { usePermissionStoreWithOut } from '@/store/modules/permission'
 
 const dvMainStore = dvMainStoreWithOut()
 const previewCanvasContainer = ref(null)
 const dashboardPreview = ref(null)
 const slideShow = ref(true)
+const requestStore = useRequestStoreWithOut()
+const permissionStore = usePermissionStoreWithOut()
 const state = reactive({
   canvasDataPreview: null,
   canvasStylePreview: null,
@@ -92,7 +96,10 @@ defineExpose({
         @node-click="loadCanvasData"
       ></de-resource-tree>
     </el-aside>
-    <el-container class="preview-area">
+    <el-container
+      class="preview-area"
+      v-loading="requestStore.loadingMap[permissionStore.currentPath]"
+    >
       <div @click="slideOpenChange" v-if="showPosition === 'preview'" class="flexible-button-area">
         <el-icon v-if="slideShow"><ArrowLeft /></el-icon>
         <el-icon v-else><ArrowRight /></el-icon>

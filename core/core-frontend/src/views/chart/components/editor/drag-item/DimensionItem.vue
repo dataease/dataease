@@ -60,7 +60,7 @@ const emit = defineEmits([
 const { item } = toRefs(props)
 
 watch(
-  [props.dimensionData, props.item],
+  [() => props.dimensionData, () => props.item],
   () => {
     getItemTagType()
   },
@@ -161,7 +161,11 @@ getItemTagType()
 <template>
   <span class="item-style">
     <el-dropdown effect="dark" trigger="click" @command="clickItem">
-      <el-tag class="item-axis" :class="'editor-' + props.themes">
+      <el-tag
+        class="item-axis"
+        :class="'editor-' + props.themes"
+        :style="{ backgroundColor: tagType + '0a', border: '1px solid ' + tagType }"
+      >
         <span style="display: flex">
           <el-icon>
             <Icon
@@ -356,7 +360,6 @@ getItemTagType()
 }
 
 .item-axis:hover {
-  background-color: #3370ff20;
   cursor: pointer;
 }
 

@@ -250,7 +250,6 @@ eventBus.on('handleNew', handleNew)
 .preview-content {
   display: flex;
   align-items: center;
-  overflow: hidden !important;
 }
 
 .dv-common-layout {
