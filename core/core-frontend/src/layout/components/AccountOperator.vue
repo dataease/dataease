@@ -25,7 +25,7 @@ const name = computed(() => userStore.getName)
     <template #dropdown>
       <el-dropdown-menu>
         <router-link to="/person-info/index" class="top-dropdown-link">
-          <el-dropdown-item>{{ $t('commons.personal_info') }}</el-dropdown-item>
+          <el-dropdown-item>{{ $t('common.personal_info') }}</el-dropdown-item>
         </router-link>
 
         <!-- <router-link
@@ -40,10 +40,10 @@ const name = computed(() => userStore.getName)
         </router-link>
 
         <router-link to="/about/index" class="top-dropdown-link">
-          <el-dropdown-item>{{ $t('commons.about') }}</el-dropdown-item>
+          <el-dropdown-item>{{ $t('common.about') }}</el-dropdown-item>
         </router-link>
         <el-dropdown-item divided @click="logout">
-          <span>{{ $t('commons.exit_system') }}</span>
+          <span>{{ $t('common.exit_system') }}</span>
         </el-dropdown-item>
       </el-dropdown-menu>
     </template>

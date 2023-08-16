@@ -114,7 +114,7 @@ const rules = {
   pid: [
     {
       required: true,
-      message: t('commons.please_select'),
+      message: t('common.please_select'),
       trigger: 'blur'
     }
   ]

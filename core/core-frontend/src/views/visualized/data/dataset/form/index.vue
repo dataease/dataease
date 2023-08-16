@@ -215,7 +215,7 @@ const copyField = item => {
 const deleteField = item => {
   ElMessageBox.confirm(t('dataset.confirm_delete'), {
     confirmButtonText: t('dataset.confirm'),
-    cancelButtonText: t('commons.cancel'),
+    cancelButtonText: t('common.cancel'),
     showCancelButton: true,
     tip: t('chart.tips'),
     confirmButtonType: 'primary',

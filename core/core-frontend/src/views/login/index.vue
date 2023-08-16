@@ -44,7 +44,7 @@ const state = reactive({
 
 const checkUsername = (_rule: any, value: any, callback: any) => {
   if (!value) {
-    return callback(new Error(t('commons.required')))
+    return callback(new Error(t('common.required')))
   }
   setTimeout(() => {
     const reg = /^[a-zA-Z][a-zA-Z0-9]{2,9}/
@@ -59,7 +59,7 @@ const checkUsername = (_rule: any, value: any, callback: any) => {
 const rules = reactive<FormRules>({
   username: [{ validator: checkUsername, trigger: 'blur' }],
   password: [
-    { required: true, message: t('commons.required'), trigger: 'blur' },
+    { required: true, message: t('common.required'), trigger: 'blur' },
     { min: 5, max: 15, message: t('login.pwd_format'), trigger: 'blur' }
   ]
 })
