@@ -443,14 +443,18 @@ public class ChartDataManage {
                 Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields));
                 querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
             } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
-                xAxis.addAll(extStack);
-                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields));
+                List<ChartViewFieldDTO> xFields = new ArrayList<>();
+                xFields.addAll(xAxis);
+                xFields.addAll(extStack);
+                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xFields, transFields(allFields));
                 Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields));
                 querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
             } else if (StringUtils.containsIgnoreCase(view.getType(), "scatter")) {
-                yAxis.addAll(extBubble);
+                List<ChartViewFieldDTO> yFields = new ArrayList<>();
+                yFields.addAll(yAxis);
+                yFields.addAll(extBubble);
                 Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields));
-                Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields));
+                Quota2SQLObj.quota2sqlObj(sqlMeta, yFields, transFields(allFields));
                 querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
             } else if (StringUtils.equalsIgnoreCase("table-info", view.getType())) {
                 Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields));
@@ -638,7 +642,7 @@ public class ChartDataManage {
                 mapChart = ChartDataBuild.transGroupStackDataAntV(xAxisBase, xAxis, xAxisExt, yAxis, extStack, data, view, isDrill);
             } else if (StringUtils.containsIgnoreCase(view.getType(), "bar-stack")) {
                 mapChart = ChartDataBuild.transStackChartDataAntV(xAxis, yAxis, view, data, extStack, isDrill);
-            } else if (StringUtils.containsIgnoreCase(view.getType(), "line-stack")) {
+            } else if (StringUtils.equalsAnyIgnoreCase(view.getType(), "line-stack", "area-stack")) {
                 mapChart = ChartDataBuild.transStackChartDataAntV(xAxis, yAxis, view, data, extStack, isDrill);
             } else if (StringUtils.containsIgnoreCase(view.getType(), "scatter")) {
                 mapChart = ChartDataBuild.transScatterDataAntV(xAxis, yAxis, view, data, extBubble, isDrill);
