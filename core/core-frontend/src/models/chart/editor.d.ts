@@ -32,8 +32,25 @@ declare type AxisType =
   | 'extTooltip'
   | 'area'
 /**
- * 轴类型对应描述，不同视图对于轴的描述不同
+ * 轴配置
  */
-declare type AxisDesc = {
-  [key in AxisType]?: string
+declare type AxisConfig = {
+  [key in AxisType]?: AxisSpec
+}
+/**
+ * 轴类型详细配置
+ */
+declare type AxisSpec = {
+  /**
+   * 轴名称
+   */
+  name: string
+  /**
+   * 轴维度/指标数量限制, 0表示不限制
+   */
+  limit?: number
+  /**
+   * 轴重复
+   */
+  duplicate?: boolean
 }
