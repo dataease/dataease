@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class DataSourceManage {
@@ -33,7 +34,7 @@ public class DataSourceManage {
     private CoreDatasourceMapper coreDatasourceMapper;
 
     private DatasourceNodeBO rootNode() {
-        return new DatasourceNodeBO(0L, "root", false, 3, -1L, 0);
+        return new DatasourceNodeBO(0L, "root", false, 3, -1L, 0, "mysql");
     }
 
     private DatasourceNodeBO convert(DataSourceNodePO po) {
@@ -43,7 +44,7 @@ public class DataSourceManage {
         }
         Integer flag = dataSourceType.getFlag();
         int extraFlag = StringUtils.equalsIgnoreCase("error", po.getStatus()) ? Math.negateExact(flag) : flag;
-        return new DatasourceNodeBO(po.getId(), po.getName(), !StringUtils.equals(po.getType(), "folder"), 3, po.getPid(), extraFlag);
+        return new DatasourceNodeBO(po.getId(), po.getName(), !StringUtils.equals(po.getType(), "folder"), 3, po.getPid(), extraFlag, dataSourceType.name());
     }
 
     @XpackInteract(value = "authResourceTree", replace = true)
@@ -59,6 +60,12 @@ public class DataSourceManage {
         if (ObjectUtils.isEmpty(request.getLeaf()) || !request.getLeaf()) nodes.add(rootNode());
         if (CollectionUtil.isNotEmpty(pos)) {
             nodes.addAll(pos.stream().map(this::convert).toList());
+        }
+        if (ObjectUtils.isNotEmpty(request.getLeaf()) && !request.getLeaf() && StringUtils.isNotEmpty(request.getId())) {
+            CoreDatasource coreDatasource = coreDatasourceMapper.selectById(request.getId());
+            if(coreDatasource != null){
+                nodes = nodes.stream().filter(node -> !node.getId().equals(coreDatasource.getPid())).collect(Collectors.toList());
+            }
         }
         return TreeUtils.mergeTree(nodes, BusiNodeVO.class, false);
     }

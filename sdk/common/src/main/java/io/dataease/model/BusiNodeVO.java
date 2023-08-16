@@ -28,6 +28,8 @@ public class BusiNodeVO implements TreeResultModel<BusiNodeVO>, Serializable {
     private Integer weight;
     @Schema(description = "额外标识")
     private int extraFlag;
+    @Schema(description = "类型")
+    private String type;
     @Schema(description = "子节点")
     private List<BusiNodeVO> children;
 }
