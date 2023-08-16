@@ -305,6 +305,7 @@ const saveVariable = () => {
   showVariableMgm.value = false
   ElMessage.success('参数设置成功')
 }
+const fieldMap = ['text', 'time', 'value', 'value', 'location']
 
 const mousedownDrag = () => {
   document.querySelector('.sql-eidtor').addEventListener('mousemove', calculateHeight)
@@ -517,7 +518,19 @@ const fieldType = (deType: number) => {
                 :prop="field.originName"
                 :label="field.originName"
                 resizable
-              />
+              >
+                <template #header>
+                  <div class="flex-align-center">
+                    <el-icon style="margin-right: 6px">
+                      <Icon
+                        :name="`field_${fieldMap[field.deType]}`"
+                        :className="`field-icon-${fieldMap[field.deType]}`"
+                      ></Icon>
+                    </el-icon>
+                    {{ field.originName }}
+                  </div>
+                </template>
+              </el-table-column>
             </el-table>
           </div>
           <template v-else>
