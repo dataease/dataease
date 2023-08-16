@@ -1,7 +1,7 @@
 spring:
 
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/de_standalone?autoReconnect=false&useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8&zeroDateTimeBehavior=convertToNull
+    url: jdbc:mysql://39.100.70.154:3306/dataease?autoReconnect=false&useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8&zeroDateTimeBehavior=convertToNull
     username: root
     password: Password123@mysql
   messages:
