@@ -94,7 +94,7 @@ defineExpose({
             :highlight-current="true"
             multiple
             :render-after-expand="false"
-            :placeholder="$t('commons.please_select') + $t('user.role')"
+            :placeholder="$t('common.please_select') + $t('user.role')"
             show-checkbox
             check-on-click-node
             @check-change="checkChange"

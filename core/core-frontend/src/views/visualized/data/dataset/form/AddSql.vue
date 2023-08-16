@@ -472,7 +472,7 @@ const fieldType = (deType: number) => {
                           {{ scope.row.originName }}
                         </template>
                       </el-table-column>
-                      <el-table-column :label="t('commons.operate')">
+                      <el-table-column :label="t('common.operate')">
                         <template #default="scope">
                           <el-icon
                             style="color: #3370ff"
@@ -591,7 +591,7 @@ const fieldType = (deType: number) => {
             >
               <template #default="scope">
                 <el-button text @click="copyInfo(scope.row.sql)">
-                  {{ t('commons.copy') }}
+                  {{ t('common.copy') }}
                 </el-button>
               </template>
             </el-table-column>
@@ -654,7 +654,7 @@ const fieldType = (deType: number) => {
             v-if="getIconName(scope.row.type[0]) === 'text'"
             v-model="scope.row.defaultValue"
             type="text"
-            :placeholder="t('commons.please_input')"
+            :placeholder="t('common.please_input')"
           >
             <template #prepend>
               <el-select v-model="scope.row.defaultValueScope" style="width: calc(100% + 22px)">
@@ -670,7 +670,7 @@ const fieldType = (deType: number) => {
           <el-input
             v-if="getIconName(scope.row.type[0]) === 'value'"
             v-model="scope.row.defaultValue"
-            :placeholder="t('commons.please_input')"
+            :placeholder="t('common.please_input')"
             type="number"
           >
             <template #prepend>

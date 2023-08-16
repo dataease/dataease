@@ -421,7 +421,7 @@ const operation = (cmd: string, data: Tree, nodeType: string) => {
       nodeType === 'folder' ? '确定删除该文件夹吗' : t('datasource.this_data_source'),
       {
         confirmButtonText: t('commons.sure'),
-        cancelButtonText: t('commons.cancel'),
+        cancelButtonText: t('common.cancel'),
         confirmButtonType: 'danger',
         type: 'warning',
         autofocus: false,
@@ -624,7 +624,7 @@ const defaultProps = {
             <el-input
               ref="search"
               v-model="nickName"
-              :placeholder="t('commons.search_keywords')"
+              :placeholder="t('common.search_keywords')"
               clearable
               style="width: 240px"
             >
@@ -678,7 +678,7 @@ const defaultProps = {
             <template v-if="slotProps.active">
               <el-row :gutter="24">
                 <el-col :span="12">
-                  <BaseInfoItem :label="t('commons.name') + t('auth.datasource')">{{
+                  <BaseInfoItem :label="t('common.name') + t('auth.datasource')">{{
                     nodeInfo.name
                   }}</BaseInfoItem>
                 </el-col>
@@ -693,7 +693,7 @@ const defaultProps = {
                   </BaseInfoItem>
                 </el-col>
                 <el-col v-else :span="24">
-                  <BaseInfoItem :label="t('commons.description')">{{
+                  <BaseInfoItem :label="t('common.description')">{{
                     nodeInfo.description
                   }}</BaseInfoItem>
                 </el-col>

@@ -113,7 +113,7 @@ const createFilter = (queryString: string) => {
                 v-if="!needMock"
                 v-model="element.value"
                 :disabled="isReadOnly"
-                :placeholder="unShowSelect ? t('commons.description') : valueText"
+                :placeholder="unShowSelect ? t('common.description') : valueText"
                 show-word-limit
               />
             </el-col>
@@ -122,7 +122,7 @@ const createFilter = (queryString: string) => {
               <el-input
                 v-model="element.description"
                 maxlength="200"
-                :placeholder="t('commons.description')"
+                :placeholder="t('common.description')"
                 show-word-limit
               />
             </el-col>
