@@ -424,7 +424,7 @@ const queryData = () => {
     align-self: flex-end;
     line-height: 28px;
     margin: auto 0 5px auto;
-    z-index: 3;
+    z-index: 0;
     button {
       margin: 8px 0 0 8px;
       min-width: 48px;
@@ -497,7 +497,7 @@ const queryData = () => {
     .query-button {
       align-self: flex-end;
       line-height: 28px;
-      z-index: 3;
+      z-index: 0;
       flex: 0 0 56px;
       margin: auto 0;
     }
