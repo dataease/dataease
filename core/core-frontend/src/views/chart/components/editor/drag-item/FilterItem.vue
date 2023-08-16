@@ -50,7 +50,7 @@ const emit = defineEmits(['onFilterItemRemove', 'editItemFilter'])
 const { item } = toRefs(props)
 
 watch(
-  [props.dimensionData, props.quotaData, props.item, item],
+  [() => props.dimensionData, () => props.quotaData, props.item, item],
   () => {
     getItemTagColor()
   },
@@ -168,7 +168,6 @@ getItemTagColor()
 }
 
 .item-axis:hover {
-  background-color: #3370ff20;
   cursor: pointer;
 }
 
