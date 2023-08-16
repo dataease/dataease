@@ -1466,7 +1466,7 @@ const autoInsert = element => {
                       <template #dropdown>
                         <el-dropdown-menu :effect="props.themes">
                           <el-dropdown-item :command="handleChartFieldEdit(element, 'copy')">
-                            {{ t('commons.copy') }}
+                            {{ t('common.copy') }}
                           </el-dropdown-item>
                           <span v-if="element.chartId">
                             <el-dropdown-item :command="handleChartFieldEdit(element, 'edit')">
@@ -1518,7 +1518,7 @@ const autoInsert = element => {
                       <template #dropdown>
                         <el-dropdown-menu :effect="props.themes">
                           <el-dropdown-item :command="handleChartFieldEdit(element, 'copy')">
-                            {{ t('commons.copy') }}
+                            {{ t('common.copy') }}
                           </el-dropdown-item>
                           <span v-if="element.chartId">
                             <el-dropdown-item :command="handleChartFieldEdit(element, 'edit')">

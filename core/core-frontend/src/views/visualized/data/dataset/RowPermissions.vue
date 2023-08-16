@@ -169,7 +169,7 @@ const save = ({ logic, items, errorMessage }) => {
     }
   params.expressionTree = JSON.stringify({ items, logic })
   saveRowPermission(params).then(res => {
-    ElMessage.success(t('commons.save_success'))
+    ElMessage.success(t('common.save_success'))
     search()
   })
   clearData()
@@ -225,7 +225,7 @@ const create = rowPermissionObj => {
 
 const deleteRow = row => {
   ElMessageBox.confirm('确定删除行权限吗?', {
-    confirmButtonText: t('commons.confirm'),
+    confirmButtonText: t('dataset.confirm'),
     cancelButtonText: t('dataset.cancel'),
     confirmButtonType: 'danger',
     type: 'warning',
@@ -288,7 +288,7 @@ const handleCurrentChange = (currentPage: number) => {
     <template #icon>
       <Icon name="icon_add_outlined"></Icon>
     </template>
-    {{ t('commons.add') }}
+    {{ t('common.add') }}
   </el-button>
   <GridTable
     @size-change="handleSizeChange"

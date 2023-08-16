@@ -160,7 +160,7 @@ const emits = defineEmits(['changeId'])
         key="body"
         :label="t('datasource.request_body')"
         name="body"
-        style="overflow: auto"
+        style="overflow: hidden"
       >
         <api-body
           ref="bodyRef"
