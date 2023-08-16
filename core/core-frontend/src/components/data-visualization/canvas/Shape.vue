@@ -554,8 +554,6 @@ const componentBackgroundStyle = computed(() => {
     let colorRGBA = ''
     if (backgroundColorSelect && backgroundColor) {
       colorRGBA = hexColorToRGBA(backgroundColor, alpha)
-    } else {
-      colorRGBA = backgroundColor
     }
     if (backgroundImageEnable) {
       if (backgroundType === 'outerImage' && typeof outerImage === 'string') {
