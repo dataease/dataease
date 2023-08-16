@@ -22,6 +22,10 @@ defineProps({
   transType: {
     type: String,
     default: ''
+  },
+  typeColor: {
+    type: String,
+    default: 'primary-color'
   }
 })
 const handleCommand = (command: string | number | object) => {
@@ -88,7 +92,7 @@ const emit = defineEmits(['handleCommand'])
             <template #dropdown>
               <el-dropdown-item command="text">
                 <el-icon>
-                  <Icon class-name="primary-color" name="icon_text_outlined"></Icon>
+                  <Icon :class-name="typeColor" name="icon_text_outlined"></Icon>
                 </el-icon>
                 文本
               </el-dropdown-item>
@@ -103,7 +107,7 @@ const emit = defineEmits(['handleCommand'])
                   >
                     <div class="field-type">
                       <el-icon>
-                        <Icon class-name="primary-color" name="icon_calendar_outlined"></Icon>
+                        <Icon :class-name="typeColor" name="icon_calendar_outlined"></Icon>
                       </el-icon>
                       时间
                     </div>
@@ -119,7 +123,7 @@ const emit = defineEmits(['handleCommand'])
                   </el-dropdown>
                   <template v-else>
                     <el-icon>
-                      <Icon class-name="primary-color" name="icon_calendar_outlined"></Icon>
+                      <Icon :class-name="typeColor" name="icon_calendar_outlined"></Icon>
                     </el-icon>
                     时间
                   </template>
@@ -127,19 +131,19 @@ const emit = defineEmits(['handleCommand'])
               </el-dropdown-menu>
               <el-dropdown-item command="location">
                 <el-icon>
-                  <Icon class-name="primary-color" name="icon_local_outlined"></Icon>
+                  <Icon :class-name="typeColor" name="icon_local_outlined"></Icon>
                 </el-icon>
                 地理位置
               </el-dropdown-item>
               <el-dropdown-item command="number">
                 <el-icon>
-                  <Icon class-name="primary-color" name="icon_number_outlined"></Icon>
+                  <Icon :class-name="typeColor" name="icon_number_outlined"></Icon>
                 </el-icon>
                 数值
               </el-dropdown-item>
               <el-dropdown-item command="float">
                 <el-icon>
-                  <Icon class-name="primary-color" name="icon_number_outlined"></Icon>
+                  <Icon :class-name="typeColor" name="icon_number_outlined"></Icon>
                 </el-icon>
                 数值 (小数)
               </el-dropdown-item>
