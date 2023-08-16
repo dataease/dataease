@@ -305,7 +305,7 @@ const queryData = () => {
           </div>
         </div>
       </div>
-      <div class="query-button" v-if="!!list.length && customStyle.layout === 'horizontal'">
+      <div class="query-button" v-if="!!list.length && customStyle.layout === 'vertical'">
         <el-button @click.stop="resetData" v-if="customStyle.btnList.includes('reset')" secondary>
           {{ t('chart.reset') }}
         </el-button>
@@ -317,11 +317,11 @@ const queryData = () => {
           v-if="customStyle.btnList.includes('sure')"
           type="primary"
         >
-          {{ t('adv_search.search') }}
+          {{ t('commons.adv_search.search') }}
         </el-button>
       </div>
     </div>
-    <div class="query-button" v-if="!!list.length && customStyle.layout === 'vertical'">
+    <div class="query-button" v-if="!!list.length && customStyle.layout === 'horizontal'">
       <el-button @click.stop="resetData" v-if="customStyle.btnList.includes('reset')" secondary>
         {{ t('chart.reset') }}
       </el-button>
@@ -329,7 +329,7 @@ const queryData = () => {
         {{ t('commons.clear') }}
       </el-button>
       <el-button @click.stop="queryData" v-if="customStyle.btnList.includes('sure')" type="primary">
-        {{ t('adv_search.search') }}
+        {{ t('commons.adv_search.search') }}
       </el-button>
     </div>
   </div>
