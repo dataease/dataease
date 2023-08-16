@@ -482,14 +482,14 @@ defineExpose({
           type="primary"
           @click="next"
         >
-          {{ t('commons.next') }}</el-button
+          {{ t('common.next') }}</el-button
         >
         <el-button
           v-show="!(activeStep === 0 || (editDs && activeStep <= 1))"
           type="primary"
           @click="prev"
         >
-          {{ t('commons.prev') }}</el-button
+          {{ t('common.prev') }}</el-button
         >
         <el-button
           v-show="activeStep === 1 && currentDsType !== 'Excel'"

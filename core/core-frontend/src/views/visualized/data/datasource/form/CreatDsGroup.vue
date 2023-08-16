@@ -274,7 +274,7 @@ const emits = defineEmits(['finish', 'handleShowFinishPage'])
       label-position="top"
       require-asterisk-position="right"
       ref="datasource"
-      @keydown.stop.prevent
+      @keydown.stop.prevent.enter
       :model="datasetForm"
       :rules="datasetFormRules"
     >
