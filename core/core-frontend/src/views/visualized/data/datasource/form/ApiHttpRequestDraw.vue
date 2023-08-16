@@ -157,13 +157,13 @@ const fieldOptions = [
 const disabledNext = ref(false)
 const saveItem = () => {
   if (apiItem.fields.length === 0) {
-    ElMessage.warning(t('datasource.api_field_not_empty'))
+    ElMessage.error(t('datasource.api_field_not_empty'))
     return
   }
   for (let i = 0; i < apiItem.fields.length - 1; i++) {
     for (let j = i + 1; j < apiItem.fields.length; j++) {
       if (apiItem.fields[i].name === apiItem.fields[j].name) {
-        ElMessage.warning(apiItem.fields[i].name + ', ' + t('datasource.has_repeat_field_name'))
+        ElMessage.error(apiItem.fields[i].name + ', ' + t('datasource.has_repeat_field_name'))
         return
       }
     }
@@ -532,7 +532,7 @@ defineExpose({
         >{{ t('common.prev') }}
       </el-button>
       <el-button v-show="active === 1" type="primary" @click="saveItem"
-        >{{ t('common.save') }}
+        >{{ t('commons.save') }}
       </el-button>
     </template>
   </el-drawer>

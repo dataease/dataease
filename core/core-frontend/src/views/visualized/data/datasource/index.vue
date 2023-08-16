@@ -420,7 +420,7 @@ const operation = (cmd: string, data: Tree, nodeType: string) => {
     ElMessageBox.confirm(
       nodeType === 'folder' ? '确定删除该文件夹吗' : t('datasource.this_data_source'),
       {
-        confirmButtonText: t('common.sure'),
+        confirmButtonText: t('commons.sure'),
         cancelButtonText: t('common.cancel'),
         confirmButtonType: 'danger',
         type: 'warning',
@@ -649,7 +649,7 @@ const defaultProps = {
               />
               <el-table-column
                 key="__operation"
-                :label="t('common.operating')"
+                :label="t('commons.operating')"
                 fixed="right"
                 width="108"
               >
@@ -872,7 +872,7 @@ const defaultProps = {
     </div>
     <EditorDatasource @refresh="refresh" ref="datasourceEditor"></EditorDatasource>
     <el-dialog
-      :title="t('common.detail')"
+      :title="t('commons.detail')"
       v-model="userDrawer"
       class="ds-table-drawer"
       width="840px"

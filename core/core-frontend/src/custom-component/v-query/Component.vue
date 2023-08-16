@@ -48,7 +48,9 @@ const defaultStyle = {
   text: '',
   borderWidth: 1,
   layout: 'horizontal',
-  btnList: []
+  btnList: [],
+  titleShow: false,
+  title: ''
 }
 const customStyle = reactive({ ...defaultStyle })
 
@@ -64,8 +66,18 @@ watch(
   () => view.value,
   val => {
     if (!val?.customStyle?.component) return
-    const { show, borderShow, borderColor, borderWidth, bgColorShow, btnList, bgColor, layout } =
-      val?.customStyle?.component
+    const {
+      show,
+      borderShow,
+      borderColor,
+      borderWidth,
+      bgColorShow,
+      btnList,
+      bgColor,
+      layout,
+      titleShow,
+      title
+    } = val?.customStyle?.component
     if (!show) {
       Object.assign(customStyle, { ...defaultStyle })
       return
@@ -75,6 +87,8 @@ watch(
     customStyle.btnList = [...btnList]
     customStyle.borderWidth = borderWidth
     customStyle.layout = layout
+    customStyle.titleShow = titleShow
+    customStyle.title = title
   },
   {
     deep: true,
@@ -86,8 +100,18 @@ watch(
   () => curComponentView.value,
   val => {
     if (!val) return
-    const { show, borderShow, borderColor, borderWidth, bgColorShow, btnList, bgColor, layout } =
-      val?.component
+    const {
+      show,
+      borderShow,
+      borderColor,
+      borderWidth,
+      bgColorShow,
+      btnList,
+      bgColor,
+      layout,
+      titleShow,
+      title
+    } = val?.component
     if (!show) {
       Object.assign(customStyle, { ...defaultStyle })
       return
@@ -97,6 +121,8 @@ watch(
     customStyle.btnList = [...btnList]
     customStyle.borderWidth = borderWidth
     customStyle.layout = layout
+    customStyle.titleShow = titleShow
+    customStyle.title = title
   },
   {
     deep: true,
@@ -270,39 +296,57 @@ const queryData = () => {
 </script>
 
 <template>
-  <div
-    :class="['v-query', customStyle.layout]"
-    @dragover.prevent.stop="dragover"
-    @drop.prevent.stop="drop"
-  >
-    <div class="query-fields-container">
-      <div class="query-item" :key="ele.id" v-for="(ele, index) in list">
-        <div class="query-field">
-          <div class="label">
-            <div class="label-wrapper">
-              <div class="label-wrapper-text">{{ ele.name }} ({{ ele.field.type }})</div>
+  <div class="v-query-container">
+    <p v-if="customStyle.titleShow" class="title">{{ customStyle.title }}</p>
+    <div
+      :class="['v-query', customStyle.layout]"
+      @dragover.prevent.stop="dragover"
+      @drop.prevent.stop="drop"
+    >
+      <div class="query-fields-container">
+        <div class="query-item" :key="ele.id" v-for="(ele, index) in list">
+          <div class="query-field">
+            <div class="label">
+              <div class="label-wrapper">
+                <div class="label-wrapper-text">{{ ele.name }} ({{ ele.field.type }})</div>
+              </div>
+              <div class="label-wrapper-tooltip">
+                <el-tooltip effect="dark" content="设置过滤条件" placement="top">
+                  <el-icon @click="editeQueryConfig(ele.id)">
+                    <Icon name="edit-in"></Icon>
+                  </el-icon>
+                </el-tooltip>
+                <el-tooltip effect="dark" content="删除条件" placement="top">
+                  <el-icon @click="delQueryConfig(index)">
+                    <Icon name="icon_delete-trash_outlined"></Icon>
+                  </el-icon>
+                </el-tooltip>
+              </div>
             </div>
-            <div class="label-wrapper-tooltip">
-              <el-tooltip effect="dark" content="设置过滤条件" placement="top">
-                <el-icon @click="editeQueryConfig(ele.id)">
-                  <Icon name="edit-in"></Icon>
-                </el-icon>
-              </el-tooltip>
-              <el-tooltip effect="dark" content="删除条件" placement="top">
-                <el-icon @click="delQueryConfig(index)">
-                  <Icon name="icon_delete-trash_outlined"></Icon>
-                </el-icon>
-              </el-tooltip>
+            <div class="query-select">
+              <component
+                :config="ele"
+                :isConfig="isConfig"
+                :customStyle="customStyle"
+                :is="filterTypeCom(ele.field.deType)"
+              ></component>
             </div>
           </div>
-          <div class="query-select">
-            <component
-              :config="ele"
-              :isConfig="isConfig"
-              :customStyle="customStyle"
-              :is="filterTypeCom(ele.field.deType)"
-            ></component>
-          </div>
+        </div>
+        <div class="query-button" v-if="!!list.length && customStyle.layout === 'vertical'">
+          <el-button @click.stop="resetData" v-if="customStyle.btnList.includes('reset')" secondary>
+            {{ t('chart.reset') }}
+          </el-button>
+          <el-button @click.stop="clearData" v-if="customStyle.btnList.includes('clear')" secondary>
+            {{ t('commons.clear') }}
+          </el-button>
+          <el-button
+            @click.stop="queryData"
+            v-if="customStyle.btnList.includes('sure')"
+            type="primary"
+          >
+            {{ t('commons.adv_search.search') }}
+          </el-button>
         </div>
       </div>
       <div class="query-button" v-if="!!list.length && customStyle.layout === 'horizontal'">
@@ -317,20 +361,9 @@ const queryData = () => {
           v-if="customStyle.btnList.includes('sure')"
           type="primary"
         >
-          {{ t('common.sure') }}
+          {{ t('commons.adv_search.search') }}
         </el-button>
       </div>
-    </div>
-    <div class="query-button" v-if="!!list.length && customStyle.layout === 'vertical'">
-      <el-button @click.stop="resetData" v-if="customStyle.btnList.includes('reset')" secondary>
-        {{ t('chart.reset') }}
-      </el-button>
-      <el-button @click.stop="clearData" v-if="customStyle.btnList.includes('clear')" secondary>
-        {{ t('commons.clear') }}
-      </el-button>
-      <el-button @click.stop="queryData" v-if="customStyle.btnList.includes('sure')" type="primary">
-        {{ t('common.sure') }}
-      </el-button>
     </div>
   </div>
   <Teleport to="body">
@@ -342,9 +375,25 @@ const queryData = () => {
 </template>
 
 <style lang="less" scoped>
-.v-query {
+.v-query-container {
   width: 100%;
   height: 100%;
+  padding: 16px;
+  overflow: auto;
+  .title {
+    color: #1f2329;
+    font-feature-settings: 'clig' off, 'liga' off;
+    font-family: PingFang SC;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 22px;
+    letter-spacing: -0.1px;
+  }
+}
+.v-query {
+  width: 100%;
+  height: calc(100% - 32px);
   line-height: 1.5;
   color: rgba(0, 0, 0, 0.87);
   align-items: center;

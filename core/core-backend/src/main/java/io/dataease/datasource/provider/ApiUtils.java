@@ -13,6 +13,7 @@ import io.dataease.api.ds.vo.TableField;
 import io.dataease.constant.AuthConstant;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.exception.DEException;
+import io.dataease.utils.CommonBeanFactory;
 import io.dataease.utils.HttpClientConfig;
 import io.dataease.utils.HttpClientUtil;
 import io.dataease.utils.JsonUtil;
@@ -27,9 +28,9 @@ import java.util.stream.Collectors;
 public class ApiUtils {
 
     private static String path = "['%s']";
-    private static ObjectMapper objectMapper = new ObjectMapper();
+    public static ObjectMapper objectMapper = CommonBeanFactory.getBean(ObjectMapper.class);
 
-    private static TypeReference<List<String>> listTypeReference = new TypeReference<List<String>>() {
+    private static TypeReference<List<Object>> listTypeReference = new TypeReference<List<Object>>() {
     };
     private static TypeReference<List<Map<String, Object>>> listForMapTypeReference = new TypeReference<List<Map<String, Object>>>() {
     };
@@ -400,7 +401,8 @@ public class ApiUtils {
     private static void mergeValue(Map<String, Object> field, ApiDefinition apiDefinition, Map<String, Object> item) throws DEException {
         try {
             if (!ObjectUtils.isEmpty(field.get("value")) && !ObjectUtils.isEmpty(item.get("value"))) {
-                List<String> array = objectMapper.readValue(field.get("value").toString(), listTypeReference);
+                List<Object> array = new ArrayList<>();
+                array.addAll(Arrays.asList(field.get("value").toString().substring(1, field.get("value").toString().length() -1).split(",")));
                 array.add(objectMapper.readValue(item.get("value").toString(), listTypeReference).get(0));
                 field.put("value", array);
             }

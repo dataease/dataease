@@ -237,7 +237,7 @@ const dimensionItemChange = item => {
   // this.calcData(true)
   // console.log(item)
   // console.log(view.value.xaxis)
-  calcData(view.value)
+  // calcData(view.value)
 }
 const dimensionItemRemove = item => {
   if (item.removeType === 'dimension') {
@@ -245,14 +245,14 @@ const dimensionItemRemove = item => {
   } else if (item.removeType === 'dimensionExt') {
     view.value.xAxisExt.splice(item.index, 1)
   }
-  calcData(view.value)
+  // calcData(view.value)
 }
 
 const quotaItemChange = item => {
   // this.calcData(true)
   // console.log(item)
   // console.log(view.value.xaxis)
-  calcData(view.value)
+  // calcData(view.value)
 }
 const quotaItemRemove = item => {
   if (item.removeType === 'quota') {
@@ -264,7 +264,6 @@ const quotaItemRemove = item => {
   } else if (item.removeType === 'extTooltip') {
     view.value.extTooltip.splice(item.index, 1)
   }
-  calcData(view.value)
 }
 
 const drillItemChange = item => {
@@ -294,7 +293,6 @@ const saveCustomSort = () => {
     }
   })
   closeCustomSort()
-  calcData(view.value)
 }
 const onCustomSort = item => {
   state.customSortField = view.value.xAxis[item.index]
@@ -351,7 +349,6 @@ const addXaxis = e => {
   ) {
     view.value.xAxis = [view.value.xAxis[0]]
   }
-  calcData(view.value, true)
 }
 
 const addXaxisExt = e => {
@@ -365,7 +362,6 @@ const addXaxisExt = e => {
   ) {
     view.value.xAxisExt = [view.value.xAxisExt[0]]
   }
-  calcData(view.value, true)
 }
 
 const addExtStack = e => {
@@ -373,7 +369,6 @@ const addExtStack = e => {
   if (view.value.extStack?.length > 1) {
     view.value.extStack = [view.value.extStack[0]]
   }
-  calcData(view.value)
 }
 
 const addYaxis = e => {
@@ -387,26 +382,22 @@ const addYaxis = e => {
   ) {
     view.value.yAxis = [view.value.yAxis[0]]
   }
-  calcData(view.value)
 }
 
 const addDrill = e => {
   dragCheckType(view.value.drillFields, 'd')
   dragMoveDuplicate(view.value.drillFields, e, '')
   dragRemoveAggField(view.value.drillFields, e)
-  calcData(view.value, true)
 }
 
 const addExtLabel = e => {
   dragCheckType(view.value.extLabel, 'q')
   dragMoveDuplicate(view.value.extLabel, e, '')
-  calcData(view.value)
 }
 
 const addExtTooltip = e => {
   dragCheckType(view.value.extTooltip, 'q')
   dragMoveDuplicate(view.value.extTooltip, e, '')
-  calcData(view.value)
 }
 
 const addCustomFilter = e => {
@@ -421,20 +412,16 @@ const addCustomFilter = e => {
   view.value.customFilter[e.newDraggableIndex].filter = []
   dragMoveDuplicate(view.value.customFilter, e, '')
   dragRemoveAggField(view.value.customFilter, e)
-  calcData(view.value)
 }
 const filterItemRemove = item => {
   view.value.customFilter.splice(item.index, 1)
-  calcData(view.value)
 }
 
 const moveToDimension = e => {
   dragMoveDuplicate(state.dimensionData, e, 'ds')
-  calcData(view.value)
 }
 const moveToQuota = e => {
   dragMoveDuplicate(state.quotaData, e, 'ds')
-  calcData(view.value)
 }
 
 const calcData = (view, resetDrill = false) => {
@@ -590,7 +577,6 @@ const saveRename = ref => {
       } else if (state.itemForm.renameType === 'extTooltip') {
         view.value.extTooltip[state.itemForm.index].chartShowName = state.itemForm.chartShowName
       }
-      // this.calcData(true)
       closeRename()
     } else {
       return false
@@ -631,7 +617,6 @@ const saveQuotaFilter = () => {
     view.value.yAxisExt[state.quotaItem.index].filter = state.quotaItem.filter
     view.value.yAxisExt[state.quotaItem.index].logic = state.quotaItem.logic
   }
-  calcData(view.value)
   closeQuotaFilter()
 }
 
@@ -678,7 +663,6 @@ const saveResultFilter = () => {
   view.value.customFilter[state.filterItem.index].logic = state.filterItem.logic
   view.value.customFilter[state.filterItem.index].filterType = state.filterItem.filterType
   view.value.customFilter[state.filterItem.index].enumCheckField = state.filterItem.enumCheckField
-  calcData(view.value)
   closeResultFilter()
 }
 
@@ -719,7 +703,6 @@ const saveQuotaEditCompare = () => {
     view.value.extTooltip[state.quotaItemCompare.index].compareCalc =
       state.quotaItemCompare.compareCalc
   }
-  calcData(view.value)
   closeQuotaEditCompare()
 }
 
@@ -753,7 +736,6 @@ const saveValueFormatter = () => {
     view.value.xAxis[state.valueFormatterItem.index].formatterCfg =
       state.valueFormatterItem.formatterCfg
   }
-  calcData(view.value)
   closeValueFormatter()
 }
 
@@ -961,7 +943,6 @@ const autoInsert = element => {
                             animation="300"
                             class="drag-block-style"
                             @add="addXaxis"
-                            @update="calcData(view)"
                           >
                             <template #item="{ element, index }">
                               <dimension-item
@@ -994,7 +975,6 @@ const autoInsert = element => {
                             animation="300"
                             class="drag-block-style"
                             @add="addXaxisExt"
-                            @update="calcData(view)"
                           >
                             <template #item="{ element, index }">
                               <dimension-item
@@ -1027,7 +1007,6 @@ const autoInsert = element => {
                             animation="300"
                             class="drag-block-style"
                             @add="addExtStack"
-                            @update="calcData(view)"
                           >
                             <template #item="{ element, index }">
                               <dimension-item
@@ -1060,7 +1039,6 @@ const autoInsert = element => {
                             animation="300"
                             class="drag-block-style"
                             @add="addYaxis"
-                            @update="calcData(view)"
                           >
                             <template #item="{ element, index }">
                               <quota-item
@@ -1138,7 +1116,6 @@ const autoInsert = element => {
                             animation="300"
                             class="drag-block-style"
                             @add="addCustomFilter"
-                            @update="calcData(view)"
                           >
                             <template #item="{ element, index }">
                               <filter-item
@@ -1209,7 +1186,6 @@ const autoInsert = element => {
                                 animation="300"
                                 class="drag-block-style"
                                 @add="addExtLabel"
-                                @update="calcData(view)"
                               >
                                 <template #item="{ element, index }">
                                   <quota-item
@@ -1246,7 +1222,6 @@ const autoInsert = element => {
                                 animation="300"
                                 class="drag-block-style"
                                 @add="addExtTooltip"
-                                @update="calcData(view)"
                               >
                                 <template #item="{ element, index }">
                                   <quota-item
@@ -1283,7 +1258,6 @@ const autoInsert = element => {
                               v-model="view.resultMode"
                               class="radio-span"
                               size="small"
-                              @change="calcData(view)"
                             >
                               <el-radio label="all"
                                 ><span>{{ t('chart.result_mode_all') }}</span></el-radio
@@ -1294,7 +1268,6 @@ const autoInsert = element => {
                                   v-model="view.resultCount"
                                   class="result-count"
                                   size="small"
-                                  @change="calcData(view)"
                                 />
                               </el-radio>
                             </el-radio-group>
@@ -1406,7 +1379,9 @@ const autoInsert = element => {
                 <el-icon v-if="data.leaf">
                   <Icon name="icon_dataset"></Icon>
                 </el-icon>
-                <span :title="node.label">{{ node.label }}</span>
+                <span style="margin-left: 4px" :title="node.label">
+                  {{ node.label }}
+                </span>
               </template>
             </el-tree-select>
             <el-icon
@@ -1491,7 +1466,7 @@ const autoInsert = element => {
                       <template #dropdown>
                         <el-dropdown-menu :effect="props.themes">
                           <el-dropdown-item :command="handleChartFieldEdit(element, 'copy')">
-                            {{ t('commons.copy') }}
+                            {{ t('common.copy') }}
                           </el-dropdown-item>
                           <span v-if="element.chartId">
                             <el-dropdown-item :command="handleChartFieldEdit(element, 'edit')">
@@ -1543,7 +1518,7 @@ const autoInsert = element => {
                       <template #dropdown>
                         <el-dropdown-menu :effect="props.themes">
                           <el-dropdown-item :command="handleChartFieldEdit(element, 'copy')">
-                            {{ t('commons.copy') }}
+                            {{ t('common.copy') }}
                           </el-dropdown-item>
                           <span v-if="element.chartId">
                             <el-dropdown-item :command="handleChartFieldEdit(element, 'edit')">

@@ -47,7 +47,8 @@ const checkUsername = (_rule: any, value: any, callback: any) => {
     return callback(new Error(t('common.required')))
   }
   setTimeout(() => {
-    const reg = /^[a-zA-Z][a-zA-Z0-9]{2,9}/
+    const pattern = '^[a-zA-Z0-9][a-zA-Z0-9\@._-]*$'
+    const reg = new RegExp(pattern)
     if (!reg.test(value)) {
       callback(new Error(t('login.username_format')))
     } else {
@@ -57,7 +58,15 @@ const checkUsername = (_rule: any, value: any, callback: any) => {
 }
 
 const rules = reactive<FormRules>({
-  username: [{ validator: checkUsername, trigger: 'blur' }],
+  username: [
+    { validator: checkUsername, trigger: 'blur' },
+    {
+      min: 1,
+      max: 25,
+      message: t('commons.input_limit', [1, 25]),
+      trigger: 'blur'
+    }
+  ],
   password: [
     { required: true, message: t('common.required'), trigger: 'blur' },
     { min: 5, max: 15, message: t('login.pwd_format'), trigger: 'blur' }
@@ -252,7 +261,7 @@ onMounted(() => {
                   <el-input
                     v-model="state.loginForm.username"
                     :placeholder="
-                      t('common.account') + '/' + t('common.email') + '/' + t('common.phone')
+                      t('common.account') + '/' + t('commons.email') + '/' + t('commons.phone')
                     "
                     autofocus
                     :disabled="state.loginTypes.includes(2) && state.loginForm.loginType === 2"

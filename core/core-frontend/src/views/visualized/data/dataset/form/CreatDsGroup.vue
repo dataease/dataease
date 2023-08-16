@@ -105,12 +105,12 @@ const rules = {
   name: [
     {
       required: true,
-      message: t('common.input_content'),
+      message: t('commons.input_content'),
       trigger: 'change'
     },
     {
       max: 50,
-      message: t('common.char_can_not_more_50'),
+      message: t('commons.char_can_not_more_50'),
       trigger: 'change'
     }
   ],
@@ -266,6 +266,7 @@ const emits = defineEmits(['finish'])
       label-position="top"
       require-asterisk-position="right"
       ref="dataset"
+      @keydown.stop.prevent.enter
       :model="datasetForm"
       :rules="datasetFormRules"
     >
@@ -277,6 +278,7 @@ const emits = defineEmits(['finish'])
           v-model="datasetForm.pid"
           :data="state.tData"
           popper-class="dataset-tree-select"
+          :render-after-expand="false"
           style="width: 100%"
           :props="props"
           @node-click="nodeClick"

@@ -2,6 +2,7 @@
  * 视图对象
  */
 declare interface Chart {
+  id: string
   render: string
   name: string
   type: string
@@ -30,6 +31,9 @@ declare interface Chart {
   customAttr: CustomAttr
   customStyle: CustomStyle
   drillFields: ChartViewField[]
+  datasetMode: 0 | 1
+  datasourceType: string
+  totalItems: number
 }
 declare type CustomAttr = DeepPartial<ChartAttr> | JSONString<DeepPartial<ChartAttr>>
 declare type CustomStyle = DeepPartial<ChartStyle> | JSONString<DeepPartial<ChartStyle>>

@@ -255,11 +255,8 @@ const dfsNodeBack = (arr, idArr, list) => {
     if (idArr.includes(ele.id)) {
       idArr.shift()
       const node = arr.shift()
-      console.log('arr.shift1', cloneDeep(ele), cloneDeep(node))
       Object.assign(ele, node)
-      console.log('arr.shift2', cloneDeep(ele), cloneDeep(node))
     }
-    console.log('arr.children', cloneDeep(ele))
     if (ele.children?.length) {
       dfsNodeBack(arr, idArr, ele.children)
     }
@@ -640,7 +637,7 @@ const drop_handler = ev => {
         tableName,
         type,
         datasourceId,
-        id: guid(),
+        id: state.visualNode.id,
         ...extraData
       },
       state.visualNodeParent
@@ -651,9 +648,7 @@ const drop_handler = ev => {
 const setStateBack = (node, parent) => {
   delete parent.children
   delete node.children
-  console.log('state.nodeList1', cloneDeep(state.nodeList), parent, node)
   dfsNodeBack([parent, node], [parent.id, node.id], state.nodeList)
-  console.log('state.nodeList2', cloneDeep(state.nodeList))
   if (state.visualNode) {
     confirm()
   }

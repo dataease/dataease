@@ -4,7 +4,8 @@ import { GridTable } from '@/components/grid-table'
 import { cloneDeep } from 'lodash-es'
 import { useI18n } from '@/hooks/web/useI18n'
 import RowAuth from './auth-tree/RowAuth.vue'
-import { ElMessage } from 'element-plus-secondary'
+import { ElMessage, ElMessageBox } from 'element-plus-secondary'
+import type { Action } from 'element-plus-secondary'
 import {
   rowPermissionList,
   rowPermissionTargetObjList,
@@ -223,9 +224,25 @@ const create = rowPermissionObj => {
 }
 
 const deleteRow = row => {
-  deleteRowPermission(row).then(res => {
-    ElMessage.success(t('common.save_success'))
-    search()
+  ElMessageBox.confirm('确定删除行权限吗?', {
+    confirmButtonText: t('dataset.confirm'),
+    cancelButtonText: t('dataset.cancel'),
+    confirmButtonType: 'danger',
+    type: 'warning',
+    autofocus: false,
+    showClose: false,
+    callback: (action: Action) => {
+      if (action === 'confirm') {
+        deleteRowPermission(row).then(() => {
+          ElMessage({
+            message: t('dataset.delete_success'),
+            type: 'success',
+            showClose: true
+          })
+          search()
+        })
+      }
+    }
   })
 }
 

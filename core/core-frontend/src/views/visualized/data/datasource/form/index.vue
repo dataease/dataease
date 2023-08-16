@@ -256,6 +256,10 @@ const saveDS = () => {
     apiConfiguration: string
   }
   if (form.type === 'Excel') {
+    if (!excel.value.sheetFile?.name) {
+      ElMessage.error('请先上传Excel文件!')
+      return
+    }
     if (editDs.value) {
       complete(null, null, null)
     } else {

@@ -1,5 +1,4 @@
 server:
-  max-http-request-header-size: 100MB
   tomcat:
     connection-timeout: 70000
 spring:

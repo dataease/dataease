@@ -6,8 +6,14 @@ import {
 import { S2Theme, SpreadSheet, Style } from '@antv/s2'
 import { getCustomTheme, getStyle } from '@/views/chart/components/js/panel/common/common_table'
 
+declare interface PageInfo {
+  currentPage: number
+  pageSize: number
+  total: number
+}
+
 export interface S2DrawOptions<O> extends AntVDrawOptions<O> {
-  currentPage?: number
+  pageInfo?: PageInfo
   tableHeaderClick?: (args: any[]) => void
 }
 

@@ -401,11 +401,10 @@ const resetTaskForm = () => {
 }
 
 const deletePermission = item => {
-  ElMessageBox.confirm(t('dataset.confirm_delete'), {
-    confirmButtonText: t('commons.confirm'),
-    tip: t('dataset.tips'),
+  ElMessageBox.confirm('确定删除列权限吗?', {
+    confirmButtonText: t('dataset.confirm'),
     cancelButtonText: t('dataset.cancel'),
-    confirmButtonType: 'primary',
+    confirmButtonType: 'danger',
     type: 'warning',
     autofocus: false,
     showClose: false,

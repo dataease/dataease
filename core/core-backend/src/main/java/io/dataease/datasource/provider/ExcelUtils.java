@@ -139,8 +139,11 @@ public class ExcelUtils {
         String filePath = saveFile(file, excelId);
 
         for (ExcelSheetData excelSheetData : returnSheetDataList) {
+            if(excelSheetData.getExcelLabel().length() > 40){
+                DEException.throwException(excelSheetData.getExcelLabel() + "长度不能大于40！");
+            }
             excelSheetData.setTableName(excelSheetData.getExcelLabel());
-            excelSheetData.setDeTableName("excel_" + excelSheetData.getExcelLabel() + "_" + UUID.randomUUID().toString());
+            excelSheetData.setDeTableName("excel_" + excelSheetData.getExcelLabel() + "_" + UUID.randomUUID().toString().replace("-", "").substring(0, 10));
             excelSheetData.setPath(filePath);
             excelSheetData.setSheetId(UUID.randomUUID().toString());
             excelSheetData.setSheetExcelId(excelId);
@@ -149,6 +152,9 @@ public class ExcelUtils {
              * dataease字段类型：0-文本，1-时间，2-整型数值，3-浮点数值，4-布尔，5-地理位置，6-二进制
              */
             for (TableField field : excelSheetData.getFields()) {
+                if(field.getOriginName().length() > 40){
+                    DEException.throwException(excelSheetData.getExcelLabel() + "的字段" + field.getOriginName() + "长度不能大于40！");
+                }
                 //TEXT LONG DATETIME DOUBLE
                 if(field.getFieldType().equalsIgnoreCase("TEXT")){
                     field.setDeType(0);
@@ -334,7 +340,7 @@ public class ExcelUtils {
         List<ExcelSheetData> excelSheetDataList = new ArrayList<>();
         try {
             String suffix = filename.substring(filename.lastIndexOf(".") + 1);
-            if (StringUtils.equalsIgnoreCase(suffix, "xlsx")) {
+            if (StringUtils.equalsIgnoreCase(suffix, "xlsx") || StringUtils.equalsIgnoreCase(suffix, "xls")) {
                 NoModelDataListener noModelDataListener = new NoModelDataListener();
                 ExcelReader excelReader = EasyExcel.read(inputStream, noModelDataListener).build();
                 List<ReadSheet> sheets = excelReader.excelExecutor().sheetList();
@@ -406,7 +412,6 @@ public class ExcelUtils {
                 }
                 excelSheetData.setJsonArray(jsonArray);
             }
-            ;
         } catch (Exception e) {
             DEException.throwException(e);
         }
