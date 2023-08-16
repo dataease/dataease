@@ -814,6 +814,7 @@ const treeProps = {
                       <div class="operate">
                         <field-more
                           trans-type="转换为维度"
+                          typeColor="green-color"
                           :extField="data.extField"
                           @handle-command="type => handleFieldMore(data, type)"
                         ></field-more>
@@ -1196,6 +1197,9 @@ const treeProps = {
 </style>
 
 <style lang="less">
+.green-color {
+  color: #04b49c;
+}
 .ed-select-dropdown__item {
   display: flex;
   align-items: center;
