@@ -247,7 +247,7 @@ const queryData = (firstLoad = false) => {
 }
 
 const showChartView = (...libs: ChartLibraryType[]) => {
-  if (view.value && view.value.render && view.value.type) {
+  if (view.value?.render && view.value?.type) {
     const chartView = chartViewManager.getChartView(view.value.render, view.value.type)
     return libs?.includes(chartView.library)
   } else {
@@ -349,8 +349,8 @@ initTitle()
         @onDrillFilters="onDrillFilters"
         @onJumpClick="jumpClick"
       />
-      <drill-path :drill-filters="state.drillFilters" @onDrillJump="drillJump" />
     </div>
+    <drill-path :drill-filters="state.drillFilters" @onDrillJump="drillJump" />
   </div>
 </template>
 
