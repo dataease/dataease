@@ -547,8 +547,12 @@ function removeItemFromPositionBox(item) {
   if (item.x <= 0 || item.y <= 0) return
   for (let i = item.x - 1; i < item.x - 1 + item.sizeX; i++) {
     for (let j = item.y - 1; j < item.y - 1 + item.sizeY; j++) {
-      if (pb[j][i]) {
-        pb[j][i].el = false
+      try {
+        if (pb[j][i]) {
+          pb[j][i].el = false
+        }
+      } catch (e) {
+        console.log('removeItemFromPositionBox-warn')
       }
     }
   }

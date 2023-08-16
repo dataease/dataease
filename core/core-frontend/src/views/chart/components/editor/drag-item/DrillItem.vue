@@ -1,6 +1,6 @@
 <script lang="tsx" setup>
 import { useI18n } from '@/hooks/web/useI18n'
-import { ref, toRefs } from 'vue'
+import { ref, toRefs, watch } from 'vue'
 import { getItemType } from '@/views/chart/components/editor/drag-item/utils'
 import { Delete, Edit, Filter } from '@element-plus/icons-vue'
 
@@ -43,6 +43,14 @@ const emit = defineEmits(['onDimensionItemRemove'])
 
 const { item } = toRefs(props)
 
+watch(
+  [() => props.dimensionData, () => props.item],
+  () => {
+    getItemTagType()
+  },
+  { deep: true }
+)
+
 const clickItem = param => {
   if (!param) {
     return
@@ -67,12 +75,18 @@ const removeItem = () => {
 const getItemTagType = () => {
   tagType.value = getItemType(props.dimensionData, props.quotaData, props.item)
 }
+
+getItemTagType()
 </script>
 
 <template>
   <span class="item-style">
     <el-dropdown effect="dark" trigger="click" size="mini" @command="clickItem">
-      <el-tag class="item-axis" :class="'editor-' + props.themes">
+      <el-tag
+        class="item-axis"
+        :class="'editor-' + props.themes"
+        :style="{ backgroundColor: tagType + '0a', border: '1px solid ' + tagType }"
+      >
         <span style="display: flex">
           <el-icon>
             <Icon
@@ -137,7 +151,6 @@ const getItemTagType = () => {
 }
 
 .item-axis:hover {
-  background-color: #3370ff20;
   cursor: pointer;
 }
 

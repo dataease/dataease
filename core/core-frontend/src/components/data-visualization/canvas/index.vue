@@ -15,7 +15,7 @@ import MarkLine from './MarkLine.vue'
 import Area from './Area.vue'
 import eventBus from '@/utils/eventBus'
 import { changeStyleWithScale } from '@/utils/translate'
-import { ref, onMounted, toRef, computed, toRefs, nextTick, onBeforeUnmount } from 'vue'
+import { ref, onMounted, toRef, computed, toRefs, nextTick, onBeforeUnmount, watch } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
@@ -33,6 +33,7 @@ import { adaptCurThemeCommonStyle } from '@/utils/canvasStyle'
 import LinkageSet from '@/components/visualization/LinkageSet.vue'
 import PointShadow from '@/components/data-visualization/canvas/PointShadow.vue'
 import UserViewDetailsEnlarge from '@/components/visualization/UserViewDetailsEnlarge.vue'
+import { changeRefComponentsSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
 const snapshotStore = snapshotStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
 const composeStore = composeStoreWithOut()
@@ -195,6 +196,26 @@ const baseCellInfo = computed(() => {
 const dashboardActive = computed(() => {
   return dvInfo.value.type === 'dashboard'
 })
+
+//custom-change
+let sourceScale = 60
+
+const previewRestore = () => {
+  sourceScale = canvasStyleData.value.scale
+  nextTick(() => {
+    if (container.value) {
+      //div容器获取tableBox.value.clientWidth
+      let canvasWidth = container.value.parentNode.clientWidth
+      let canvasHeight = container.value.parentNode.clientHeight
+      const scaleWidth = (canvasWidth * 100) / canvasStyleData.value.width
+      if (dashboardActive.value) {
+        //do dashboardActive
+      } else {
+        changeRefComponentsSizeWithScale(componentData.value, canvasStyleData.value, scaleWidth)
+      }
+    }
+  })
+}
 
 // 融合矩阵设计
 const renderOk = ref(false)
