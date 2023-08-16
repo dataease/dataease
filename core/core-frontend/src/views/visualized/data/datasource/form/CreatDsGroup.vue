@@ -2,6 +2,7 @@
 import { ref, reactive, computed, watch, nextTick } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { listDatasources, save } from '@/api/datasource'
+import { ElMessage } from 'element-plus-secondary'
 import type { DatasetOrFolder } from '@/api/dataset'
 import nothingTree from '@/assets/img/nothing-tree.png'
 
@@ -238,6 +239,8 @@ const saveDataset = () => {
         save({ ...request, name: datasetForm.name, pid: params.pid })
           .then(res => {
             if (res !== undefined) {
+              emits('handleShowFinishPage', res)
+              ElMessage.success('保存数据源成功')
               successCb()
             }
           })
@@ -256,7 +259,7 @@ defineExpose({
   editeInit
 })
 
-const emits = defineEmits(['finish'])
+const emits = defineEmits(['finish', 'handleShowFinishPage'])
 </script>
 
 <template>
@@ -283,6 +286,7 @@ const emits = defineEmits(['finish'])
           :data="state.tData"
           popper-class="dataset-tree-select"
           style="width: 100%"
+          :render-after-expand="false"
           :props="props"
           @node-click="nodeClick"
           :filter-method="filterMethod"

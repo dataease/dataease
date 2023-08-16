@@ -285,7 +285,7 @@ const saveDS = () => {
   if (editDs.value) {
     save(request).then(res => {
       if (res !== undefined) {
-        handleShowFinishPage(res)
+        handleShowFinishPage({ id: res.id, name: res.name })
         ElMessage.success('保存数据源成功')
       }
     })
@@ -518,7 +518,11 @@ defineExpose({
       ></FinishPage>
     </div>
   </el-drawer>
-  <creat-ds-group @finish="complete" ref="creatDsFolder"></creat-ds-group>
+  <creat-ds-group
+    @handle-show-finish-page="handleShowFinishPage"
+    @finish="complete"
+    ref="creatDsFolder"
+  ></creat-ds-group>
 </template>
 
 <style lang="less">
