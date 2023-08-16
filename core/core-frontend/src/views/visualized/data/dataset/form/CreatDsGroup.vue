@@ -105,19 +105,19 @@ const rules = {
   name: [
     {
       required: true,
-      message: t('common.input_content'),
+      message: t('commons.input_content'),
       trigger: 'change'
     },
     {
       max: 50,
-      message: t('common.char_can_not_more_50'),
+      message: t('commons.char_can_not_more_50'),
       trigger: 'change'
     }
   ],
   pid: [
     {
       required: true,
-      message: t('common.please_select'),
+      message: t('commons.please_select'),
       trigger: 'blur'
     }
   ]
@@ -266,6 +266,7 @@ const emits = defineEmits(['finish'])
       label-position="top"
       require-asterisk-position="right"
       ref="dataset"
+      @keydown.stop.prevent.enter
       :model="datasetForm"
       :rules="datasetFormRules"
     >

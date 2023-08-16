@@ -420,8 +420,8 @@ const operation = (cmd: string, data: Tree, nodeType: string) => {
     ElMessageBox.confirm(
       nodeType === 'folder' ? '确定删除该文件夹吗' : t('datasource.this_data_source'),
       {
-        confirmButtonText: t('common.sure'),
-        cancelButtonText: t('common.cancel'),
+        confirmButtonText: t('commons.sure'),
+        cancelButtonText: t('commons.cancel'),
         confirmButtonType: 'danger',
         type: 'warning',
         autofocus: false,
@@ -624,7 +624,7 @@ const defaultProps = {
             <el-input
               ref="search"
               v-model="nickName"
-              :placeholder="t('common.search_keywords')"
+              :placeholder="t('commons.search_keywords')"
               clearable
               style="width: 240px"
             >
@@ -649,7 +649,7 @@ const defaultProps = {
               />
               <el-table-column
                 key="__operation"
-                :label="t('common.operating')"
+                :label="t('commons.operating')"
                 fixed="right"
                 width="108"
               >
@@ -678,7 +678,7 @@ const defaultProps = {
             <template v-if="slotProps.active">
               <el-row :gutter="24">
                 <el-col :span="12">
-                  <BaseInfoItem :label="t('common.name') + t('auth.datasource')">{{
+                  <BaseInfoItem :label="t('commons.name') + t('auth.datasource')">{{
                     nodeInfo.name
                   }}</BaseInfoItem>
                 </el-col>
@@ -693,7 +693,7 @@ const defaultProps = {
                   </BaseInfoItem>
                 </el-col>
                 <el-col v-else :span="24">
-                  <BaseInfoItem :label="t('common.description')">{{
+                  <BaseInfoItem :label="t('commons.description')">{{
                     nodeInfo.description
                   }}</BaseInfoItem>
                 </el-col>
@@ -872,7 +872,7 @@ const defaultProps = {
     </div>
     <EditorDatasource @refresh="refresh" ref="datasourceEditor"></EditorDatasource>
     <el-dialog
-      :title="t('common.detail')"
+      :title="t('commons.detail')"
       v-model="userDrawer"
       class="ds-table-drawer"
       width="840px"

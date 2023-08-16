@@ -47,7 +47,7 @@ const editCalcField = ref(false)
 const calcEdit = ref()
 const editUnion = ref(false)
 const datasetDrag = ref()
-const datasetName = ref('新建数据集')
+const datasetName = ref('未命名数据集')
 const tabActive = ref('preview')
 const originName = ref('')
 const activeName = ref('')
@@ -215,7 +215,7 @@ const copyField = item => {
 const deleteField = item => {
   ElMessageBox.confirm(t('dataset.confirm_delete'), {
     confirmButtonText: t('dataset.confirm'),
-    cancelButtonText: t('common.cancel'),
+    cancelButtonText: t('commons.cancel'),
     showCancelButton: true,
     tip: t('chart.tips'),
     confirmButtonType: 'primary',
@@ -400,11 +400,12 @@ const dfsFields = (arr, list) => {
 const diffArr = (newArr, oldArr) => {
   const idMapNew = newArr.map(ele => ele.id)
   const idMapOld = oldArr.map(ele => ele.id)
-  return cloneDeep(
-    newArr
-      .filter(ele => !idMapOld.includes(ele.id))
-      .concat(oldArr.filter(ele => idMapNew.includes(ele.id)))
-  )
+  const arr = newArr.filter(ele => !idMapOld.includes(ele.id))
+  return cloneDeep([
+    ...oldArr.filter(ele => ele.extField === 2),
+    ...arr,
+    ...oldArr.filter(ele => idMapNew.includes(ele.id))
+  ])
 }
 
 const closeEditUnion = () => {
@@ -419,12 +420,11 @@ const confirmEditUnion = () => {
   setGuid(parent.currentDsFields, parent.id, parent.datasourceId)
   const top = cloneDeep(node)
   const bottom = cloneDeep(parent)
-  console.log('top', top, bottom)
   datasetDrag.value.setStateBack(top, bottom)
   const arr = []
   dfsFields(arr, datasetDrag.value.nodeList)
   allfields.value = diffArr(arr, allfields.value)
-  // fieldUnion.value.clearState()
+  fieldUnion.value.clearState()
   editUnion.value = false
   addComplete()
 }
@@ -701,7 +701,7 @@ const treeProps = {
             @click="setActiveName(sqlNode)"
           >
             <el-icon>
-              <Icon name="reference-table"></Icon>
+              <Icon name="icon_sql_outlined_1"></Icon>
             </el-icon>
             <span class="label">自定义SQL</span>
           </div>
@@ -744,30 +744,40 @@ const treeProps = {
           <div class="sql-title">
             <span class="drag" @mousedown="mousedownDragH" />
             <div class="field-data">
-              <el-button :disabled="!allfields.length" @click="datasetPreview" secondary>
+              <el-button @click="addCalcField('q')" secondary>
                 <template #icon>
                   <el-icon>
-                    <Icon name="scene"></Icon>
+                    <Icon name="icon_add_outlined"></Icon>
                   </el-icon>
                 </template>
-                刷新
+                {{ t('dataset.add_calc_field') }}
+              </el-button>
+              <el-button
+                style="min-width: 70px"
+                :disabled="!allfields.length"
+                @click="datasetPreview"
+                secondary
+              >
+                <template #icon>
+                  <el-icon>
+                    <Icon name="icon_replace_outlined"></Icon>
+                  </el-icon>
+                </template>
+                {{ t('commons.refresh') }}
               </el-button>
             </div>
           </div>
           <el-tabs class="padding-24" v-model="tabActive">
-            <el-tab-pane :label="$t('deDataset.running_results')" name="preview" />
+            <el-tab-pane :label="t('chart.data_preview')" name="preview" />
           </el-tabs>
-          <div v-if="tabActive === 'preview'" class="table-preview">
+          <div v-show="!!allfields.length" class="table-preview">
             <div class="preview-field">
               <div class="field-d">
                 <div :class="['title', { expanded: expandedD }]" @click="expandedD = !expandedD">
                   <ElIcon class="expand">
                     <Icon name="icon_expand-right_filled"></Icon>
                   </ElIcon>
-                  &nbsp;维度
-                  <ElIcon class="add hover-icon" @click.stop="addCalcField('d')">
-                    <Icon name="icon_add_outlined"></Icon>
-                  </ElIcon>
+                  &nbsp;{{ t('chart.dimension') }}
                 </div>
                 <el-tree v-if="expandedD" :data="dimensions" :props="defaultProps">
                   <template #default="{ data }">
@@ -796,10 +806,7 @@ const treeProps = {
                   <ElIcon class="expand">
                     <Icon name="icon_expand-right_filled"></Icon>
                   </ElIcon>
-                  &nbsp;指标
-                  <ElIcon class="add hover-icon" @click.stop="addCalcField('q')">
-                    <Icon name="icon_add_outlined"></Icon>
-                  </ElIcon>
+                  &nbsp;{{ t('chart.quota') }}
                 </div>
                 <el-tree v-if="expandedQ" :data="quota" :props="defaultProps">
                   <template #default="{ data }">
@@ -842,7 +849,6 @@ const treeProps = {
               </el-auto-resizer>
             </div>
           </div>
-          <div v-else class="table-manage"></div>
         </div>
       </div>
     </div>
@@ -1065,7 +1071,7 @@ const treeProps = {
 
           .drag {
             position: absolute;
-            top: 0;
+            top: 4px;
             left: 50%;
             transform: translateX(-50%);
             height: 7px;
@@ -1077,7 +1083,6 @@ const treeProps = {
         }
 
         .padding-24 {
-          width: 300px;
           .border-bottom-tab(24px);
         }
 
@@ -1134,16 +1139,6 @@ const treeProps = {
               }
             }
 
-            @keyframes hg {
-              from {
-                height: 0;
-              }
-
-              to {
-                height: 30px;
-              }
-            }
-
             .field-d,
             .field-q {
               padding: 0 8px;
@@ -1178,11 +1173,8 @@ const treeProps = {
                   }
                 }
               }
-              max-height: 200px;
+              height: 50%;
               overflow-y: auto;
-              .ed-tree {
-                animation: hg 0.5s;
-              }
             }
 
             .field-d {

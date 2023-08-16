@@ -154,7 +154,7 @@ const createFilter = (queryString: string) => {
               <el-input
                 v-model="element.description"
                 maxlength="200"
-                :placeholder="$t('common.description')"
+                :placeholder="$t('commons.description')"
                 show-word-limit
               />
             </el-col>

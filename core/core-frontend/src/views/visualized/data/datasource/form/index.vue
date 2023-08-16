@@ -473,7 +473,7 @@ defineExpose({
         </div>
       </div>
       <div class="editor-footer">
-        <el-button secondary @click="visible = false"> {{ t('common.cancel') }}</el-button>
+        <el-button secondary @click="visible = false"> {{ t('commons.cancel') }}</el-button>
         <el-button
           v-show="
             (activeStep === 0 && currentDsType !== 'API') ||
@@ -506,7 +506,7 @@ defineExpose({
           type="primary"
           @click="saveDS"
         >
-          {{ t('common.sure') }}</el-button
+          {{ t('commons.sure') }}</el-button
         >
       </div>
       <FinishPage
