@@ -400,11 +400,12 @@ const dfsFields = (arr, list) => {
 const diffArr = (newArr, oldArr) => {
   const idMapNew = newArr.map(ele => ele.id)
   const idMapOld = oldArr.map(ele => ele.id)
-  return cloneDeep(
-    newArr
-      .filter(ele => !idMapOld.includes(ele.id))
-      .concat(oldArr.filter(ele => idMapNew.includes(ele.id)))
-  )
+  const arr = newArr.filter(ele => !idMapOld.includes(ele.id))
+  return cloneDeep([
+    ...oldArr.filter(ele => ele.extField === 2),
+    ...arr,
+    ...oldArr.filter(ele => idMapNew.includes(ele.id))
+  ])
 }
 
 const closeEditUnion = () => {
@@ -419,14 +420,13 @@ const confirmEditUnion = () => {
   setGuid(parent.currentDsFields, parent.id, parent.datasourceId)
   const top = cloneDeep(node)
   const bottom = cloneDeep(parent)
-  console.log('top', top, bottom)
   datasetDrag.value.setStateBack(top, bottom)
-  // const arr = []
-  // dfsFields(arr, datasetDrag.value.nodeList)
-  // allfields.value = diffArr(arr, allfields.value)
-  // // fieldUnion.value.clearState()
-  // editUnion.value = false
-  // addComplete()
+  const arr = []
+  dfsFields(arr, datasetDrag.value.nodeList)
+  allfields.value = diffArr(arr, allfields.value)
+  fieldUnion.value.clearState()
+  editUnion.value = false
+  addComplete()
 }
 
 const updateAllfields = () => {
