@@ -61,12 +61,6 @@ public class DataSourceManage {
         if (CollectionUtil.isNotEmpty(pos)) {
             nodes.addAll(pos.stream().map(this::convert).toList());
         }
-        if (ObjectUtils.isNotEmpty(request.getLeaf()) && !request.getLeaf() && StringUtils.isNotEmpty(request.getId())) {
-            CoreDatasource coreDatasource = coreDatasourceMapper.selectById(request.getId());
-            if(coreDatasource != null){
-                nodes = nodes.stream().filter(node -> !node.getId().equals(coreDatasource.getPid())).collect(Collectors.toList());
-            }
-        }
         return TreeUtils.mergeTree(nodes, BusiNodeVO.class, false);
     }
 
