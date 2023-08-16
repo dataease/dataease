@@ -278,6 +278,7 @@ const emits = defineEmits(['finish'])
           v-model="datasetForm.pid"
           :data="state.tData"
           popper-class="dataset-tree-select"
+          :render-after-expand="false"
           style="width: 100%"
           :props="props"
           @node-click="nodeClick"
