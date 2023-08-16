@@ -69,7 +69,10 @@ export const composeStore = defineStore('compose', {
         name: '组合',
         label: '组合',
         icon: 'group',
-        commonBackground: deepCopy(COMMON_COMPONENT_BACKGROUND_MAP[curOriginThemes.value]),
+        commonBackground: {
+          ...deepCopy(COMMON_COMPONENT_BACKGROUND_MAP[curOriginThemes.value]),
+          backgroundColorSelect: false
+        },
         ...commonAttr,
         style: {
           ...commonStyle,
@@ -84,7 +87,7 @@ export const composeStore = defineStore('compose', {
         index: undefined
       })
 
-      eventBus.emit('hideArea')
+      eventBus.emit('hideArea-canvas-main')
       this.batchDeleteComponent(areaData.components)
       dvMainStore.setCurComponent({
         component: componentData.value[componentData.value.length - 1],

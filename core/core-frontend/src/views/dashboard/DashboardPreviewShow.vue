@@ -131,9 +131,14 @@ defineExpose({
 </template>
 
 <style lang="less">
+::-webkit-scrollbar {
+  width: 0px !important;
+  height: 0px !important;
+}
 .dv-preview {
   width: 100%;
   height: 100%;
+  overflow: hidden;
   display: flex;
   background: #ffffff;
   .resource-area {
