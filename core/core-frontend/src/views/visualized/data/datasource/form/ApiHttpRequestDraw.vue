@@ -142,8 +142,8 @@ const reqOptions = [
 ]
 
 const isUseJsonPath = [
-  { id: true, label: t('common.yes') },
-  { id: false, label: t('common.no') }
+  { id: true, label: t('commons.yes') },
+  { id: false, label: t('commons.no') }
 ]
 
 const fieldOptions = [
@@ -331,10 +331,10 @@ defineExpose({
         <div class="title-form_primary">
           <span>{{ t('datasource.base_info') }}</span>
         </div>
-        <el-form-item :label="t('common.name')" prop="name">
+        <el-form-item :label="t('commons.name')" prop="name">
           <el-input
             v-model="apiItem.name"
-            :placeholder="t('common.input_name')"
+            :placeholder="t('commons.input_name')"
             autocomplete="off"
           />
         </el-form-item>
@@ -524,15 +524,15 @@ defineExpose({
       </el-form>
     </el-row>
     <template #footer>
-      <el-button @click="closeEditItem">{{ t('common.cancel') }}</el-button>
+      <el-button @click="closeEditItem">{{ t('commons.cancel') }}</el-button>
       <el-button v-show="active === 0" type="primary" :disabled="disabledNext" @click="next"
-        >{{ t('common.next') }}
+        >{{ t('commons.next') }}
       </el-button>
       <el-button v-show="active === 1" type="primary" @click="before"
-        >{{ t('common.prev') }}
+        >{{ t('commons.prev') }}
       </el-button>
       <el-button v-show="active === 1" type="primary" @click="saveItem"
-        >{{ t('common.save') }}
+        >{{ t('commons.save') }}
       </el-button>
     </template>
   </el-drawer>

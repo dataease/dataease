@@ -268,7 +268,7 @@ const activeCommand = ref('all_types')
         </el-row>
         <div class="panel-table">
           <GridTable :show-pagination="false" :table-data="state.panelList">
-            <el-table-column key="name" width="280" prop="name" :label="t('common.name')">
+            <el-table-column key="name" width="280" prop="name" :label="t('commons.name')">
               <template v-slot:default="scope">
                 <div class="name-content">
                   <el-icon class="main-color"> <Icon name="icon_dashboard_outlined" /> </el-icon
@@ -312,7 +312,7 @@ const activeCommand = ref('all_types')
               width="96"
               fixed="right"
               key="_operation"
-              :label="$t('common.operate')"
+              :label="$t('commons.operate')"
             >
               <template #default="scope">
                 <template v-if="['dashboard', 'dataV'].includes(scope.row.type)">

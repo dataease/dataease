@@ -284,7 +284,7 @@ const saveExcelDs = (params, successCb, finallyCb) => {
 
   if (props.param.editType === 0 && props.param.id && (effectExtField || changeFiled)) {
     ElMessageBox.confirm(t('deDataset.replace_the_data'), {
-      confirmButtonText: t('common.confirm'),
+      confirmButtonText: t('commons.confirm'),
       tip: '替换可能会影响自定义数据集、关联数据集、仪表板等，是否替换？',
       cancelButtonText: 'Cancel',
       confirmButtonType: 'primary',
@@ -472,14 +472,16 @@ defineExpose({
           :rules="[
             {
               required: true,
-              message: t('common.please_input') + t('datasource.datasource') + t('common.name')
+              message: t('commons.please_input') + t('datasource.datasource') + t('commons.name')
             }
           ]"
-          :label="t('visualization.custom') + t('datasource.datasource') + t('common.name')"
+          :label="t('visualization.custom') + t('datasource.datasource') + t('commons.name')"
         >
           <el-input
             v-model="param.name"
-            :placeholder="t('common.please_input') + t('datasource.datasource') + t('common.name')"
+            :placeholder="
+              t('commons.please_input') + t('datasource.datasource') + t('commons.name')
+            "
           />
         </el-form-item>
       </el-form>
