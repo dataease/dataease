@@ -730,7 +730,7 @@ onMounted(() => {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  z-index: 1;
+  z-index: 0;
 }
 
 .icon-xiangyouxuanzhuan {

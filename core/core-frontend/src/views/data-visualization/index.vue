@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import DvCanvas from '@/components/data-visualization/canvas/index.vue'
 import RealTimeComponentList from '@/components/data-visualization/RealTimeComponentList.vue'
 import CanvasAttr from '@/components/data-visualization/CanvasAttr.vue'
 import { changeComponentSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
@@ -21,6 +20,7 @@ import { getDatasetTree } from '@/api/dataset'
 import { Tree } from '@/views/visualized/data/dataset/form/CreatDsGroup.vue'
 import { findDragComponent, findNewComponent, initCanvasData } from '@/utils/canvasUtils'
 import { ElMessage } from 'element-plus-secondary'
+import CanvasCore from '@/components/data-visualization/canvas/CanvasCore.vue'
 
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
@@ -35,7 +35,8 @@ const dvLayout = ref(null)
 const state = reactive({
   datasetTree: [],
   scaleHistory: 100,
-  canvasId: 'canvas-main'
+  canvasId: 'canvas-main',
+  canvasInitStatus: false
 })
 
 const contentStyle = computed(() => {
@@ -152,7 +153,9 @@ onMounted(() => {
   initDataset()
   const { dvId, pid } = window.DataEaseBi || router.currentRoute.value.query
   if (dvId) {
+    state.canvasInitStatus = false
     initCanvasData(dvId, function () {
+      state.canvasInitStatus = true
       // afterInit
       nextTick(() => {
         dvMainStore.setDataPrepareState(true)
@@ -198,7 +201,13 @@ eventBus.on('handleNew', handleNew)
             @mousedown="handleMouseDown"
             @mouseup="deselectCurComponent"
           >
-            <DvCanvas />
+            <canvas-core
+              v-if="state.canvasInitStatus"
+              :component-data="componentData"
+              :canvas-style-data="canvasStyleData"
+              :canvas-view-info="canvasViewInfo"
+              :canvas-id="state.canvasId"
+            ></canvas-core>
           </div>
         </div>
         <ComponentToolBar :class="{ 'preview-aside-x': previewStatus }"></ComponentToolBar>
