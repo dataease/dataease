@@ -25,4 +25,5 @@ public class DatasourceNodeBO implements TreeBaseModel<DatasourceNodeBO> {
     private Integer weight = 3;
     private Long pid;
     private Integer extraFlag;
+    private String type;
 }
