@@ -514,14 +514,12 @@ defineExpose({
           </el-form-item>
           <el-form-item
             :label="t('datasource.user_name')"
-            prop="configuration.username"
             v-if="form.type !== 'presto'"
           >
             <el-input v-model="form.configuration.username" autocomplete="off" />
           </el-form-item>
           <el-form-item
             :label="t('datasource.password')"
-            prop="configuration.password"
             v-if="form.type !== 'presto'"
           >
             <el-input show-password type="password" v-model="form.configuration.password" />
