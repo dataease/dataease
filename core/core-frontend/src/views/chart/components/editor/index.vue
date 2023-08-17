@@ -244,6 +244,8 @@ const dimensionItemRemove = item => {
     view.value.xAxis.splice(item.index, 1)
   } else if (item.removeType === 'dimensionExt') {
     view.value.xAxisExt.splice(item.index, 1)
+  } else if (item.removeType === 'dimensionStack') {
+    view.value.extStack.splice(item.index, 1)
   }
   // calcData(view.value)
 }
@@ -952,6 +954,7 @@ const autoInsert = element => {
                                 :item="element"
                                 :index="index"
                                 :themes="props.themes"
+                                type="dimension"
                                 @onDimensionItemChange="dimensionItemChange"
                                 @onDimensionItemRemove="dimensionItemRemove"
                                 @onNameEdit="showRename"
@@ -984,6 +987,7 @@ const autoInsert = element => {
                                 :item="element"
                                 :index="index"
                                 :themes="props.themes"
+                                type="dimensionExt"
                                 @onDimensionItemChange="dimensionItemChange"
                                 @onDimensionItemRemove="dimensionItemRemove"
                                 @onNameEdit="showRename"
@@ -1016,6 +1020,7 @@ const autoInsert = element => {
                                 :item="element"
                                 :index="index"
                                 :themes="props.themes"
+                                type="dimensionStack"
                                 @onDimensionItemChange="dimensionItemChange"
                                 @onDimensionItemRemove="dimensionItemRemove"
                                 @onNameEdit="showRename"

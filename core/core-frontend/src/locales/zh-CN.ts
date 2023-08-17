@@ -168,7 +168,9 @@ export default {
     delete_children_first: '请先删除子组织后，再删除当前组织',
     confirm_content: '友情提示，组织被删除后，组织下的资源也将被删除',
     give_up_resource: '放弃资源，直接删除',
-    move_resource_first: '先迁移资源'
+    move_resource_first: '先迁移资源',
+    default_parent_tips: '(默认当前组织)',
+    admin_parent_tips: '(默认根组织)'
   },
   auth: {
     sysParams_type: {
@@ -675,7 +677,7 @@ export default {
     date_split: 'yyyy/MM/dd',
     chartName: '新建视图',
     chart_show_error: '无法正常显示',
-    chart_error_tips: '如有疑问请联系管理员',
+    chart_error_tips: '获取数据异常，如有疑问请联系管理员',
     title_cannot_empty: '标题不能为空',
     table_title_height: '表头行高',
     table_item_height: '表格行高',

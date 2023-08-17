@@ -36,11 +36,11 @@ export const copyStore = defineStore('copy', {
       const _this = this
       Object.keys(outerMultiplexingComponents).forEach(function (componentId, index) {
         const newComponent = deepCopy(outerMultiplexingComponents[componentId])
-        // dashboard 平铺4个
-        const xPositionOffset = index % 4
+        // dashboard 平铺3个
+        const xPositionOffset = index % 3
         const yPositionOffset = index % 3
-        newComponent.sizeX = pcMatrixCount.value.x / 4
-        newComponent.sizey = pcMatrixCount.value.y / 3
+        newComponent.sizeX = pcMatrixCount.value.x / 3
+        newComponent.sizeY = pcMatrixCount.value.y / 3
         newComponent.x = newComponent.sizeX * xPositionOffset + 1
         newComponent.y = 200
         // dataV 数据大屏
@@ -50,7 +50,7 @@ export const copyStore = defineStore('copy', {
         newComponent.style.height = newComponent.style.height * yPositionOffset
 
         _this.copyData = {
-          data: deepCopy(outerMultiplexingComponents[componentId]),
+          data: newComponent,
           copyCanvasViewInfo: canvasViewInfoPreview,
           index: index,
           copyFrom: 'multiplexing'

@@ -43,7 +43,9 @@ export default {
     search_placeholder: 'Please enter a name to search',
     edit: 'Edit',
     parent: 'Superior',
-    default_cannot_move: 'The default organization cannot be deleted'
+    default_cannot_move: 'The default organization cannot be deleted',
+    default_parent_tips: '(default current organization)',
+    admin_parent_tips: '(default root organization)'
   },
   auth: {
     row_column: 'Row and column permission settings',

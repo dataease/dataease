@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { propTypes } from '@/utils/propTypes'
 import { ElTreeSelect, ElPopover, ElIcon } from 'element-plus-secondary'
-import { computed, reactive, nextTick, ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
 import { Icon } from '@/components/icon-custom'
 
 const props = defineProps({
@@ -25,11 +25,17 @@ const elPopoverU = ref(null)
 const more = ref(null)
 const filterTree = ref(null)
 const statusChange = (value: string | number) => {
-  const node = filterTree.value?.getNode(value)
-  node.data.disabled = false
+  // const node = filterTree.value?.getNode(value)
+  // node.data.disabled = false
+
   state.activeStatus = state.activeStatus.filter(ele => ele?.value !== value)
+  state.currentStatus = state.currentStatus.filter(val => val !== value)
+  emits(
+    'filter-change',
+    state.activeStatus.map(item => item.value)
+  )
 }
-const selectStatus = nodes => {
+/* const selectStatus = nodes => {
   nodes.forEach(node => {
     if (node?.value && !state.activeStatus.some(ele => ele.value === node.value)) {
       node.disabled = true
@@ -50,6 +56,16 @@ const checkChange = () => {
     'filter-change',
     state.activeStatus.map(item => item.value)
   )
+} */
+const treeChange = () => {
+  const nodes = state.currentStatus.map(id => {
+    return filterTree.value?.getNode(id).data
+  })
+  state.activeStatus = [...nodes]
+  emits(
+    'filter-change',
+    state.activeStatus.map(item => item.value)
+  )
 }
 
 const optionListNotSelect = computed(() => {
@@ -57,6 +73,7 @@ const optionListNotSelect = computed(() => {
 })
 const clear = () => {
   state.activeStatus = []
+  state.currentStatus = []
 }
 const emits = defineEmits(['filter-change'])
 defineExpose({
@@ -97,7 +114,7 @@ defineExpose({
             :placeholder="$t('common.please_select') + $t('user.role')"
             show-checkbox
             check-on-click-node
-            @check-change="checkChange"
+            @change="treeChange"
           />
           <template #reference>
             <span ref="more" class="more">

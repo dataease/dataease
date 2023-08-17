@@ -4,6 +4,8 @@ import io.dataease.api.chart.ChartViewApi;
 import io.dataease.api.chart.dto.ChartViewDTO;
 import io.dataease.api.chart.dto.ChartViewFieldDTO;
 import io.dataease.chart.manage.ChartViewManege;
+import io.dataease.exception.DEException;
+import io.dataease.result.ResultCode;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,7 +24,12 @@ public class ChartViewServer implements ChartViewApi {
 
     @Override
     public ChartViewDTO getData(Long id) throws Exception {
-        return chartViewManege.getChart(id);
+        try {
+            return chartViewManege.getChart(id);
+        } catch (Exception e) {
+            DEException.throwException(ResultCode.DATA_IS_WRONG.code(), e.getMessage());
+        }
+        return null;
     }
 
     @Override

@@ -123,7 +123,10 @@ public class SQLProvider {
         return sqlLimit(st.render(), view);
     }
 
-    private static String sqlLimit(String sql, ChartViewDTO view) {
+    public static String sqlLimit(String sql, ChartViewDTO view) {
+        if (StringUtils.equalsIgnoreCase(view.getType(), "table-info")) {
+            return sql;
+        }
         if (StringUtils.equalsIgnoreCase(view.getResultMode(), "custom")) {
             return sql + " LIMIT " + view.getResultCount() + " OFFSET 0";
         } else {
