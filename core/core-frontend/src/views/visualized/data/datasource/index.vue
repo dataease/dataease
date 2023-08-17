@@ -10,6 +10,8 @@ import type { Tree } from '../dataset/form/CreatDsGroup.vue'
 import { previewData, getById } from '@/api/datasource'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useRouter } from 'vue-router'
+import DatasetDetail from '@/views/visualized/data/dataset/DatasetDetail.vue'
+import { timestampFormatDate } from '@/views/visualized/data/dataset/form/util.js'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import {
   listDatasources,
@@ -38,6 +40,8 @@ interface Field {
 export interface Node {
   name: string
   createBy: string
+  creator: string
+  createTime: string
   id: number
   size: number
   description: string
@@ -212,6 +216,8 @@ const pagingTable = computed(() => {
 const defaultInfo = {
   name: '',
   createBy: '',
+  creator: '',
+  createTime: '',
   description: '',
   id: 0,
   size: 0,
@@ -223,7 +229,12 @@ const defaultInfo = {
   apiConfiguration: []
 }
 const nodeInfo = reactive<Node>(cloneDeep(defaultInfo))
-
+const infoList = computed(() => {
+  return {
+    creator: nodeInfo.creator,
+    createTime: timestampFormatDate(nodeInfo.createTime)
+  }
+})
 const saveDsFolder = (params, successCb, finallyCb, cmd) => {
   save(params)
     .then(res => {
@@ -329,6 +340,8 @@ const handleNodeClick = data => {
       name,
       createBy,
       id,
+      createTime,
+      creator,
       type,
       configuration,
       syncSetting,
@@ -348,6 +361,8 @@ const handleNodeClick = data => {
       description,
       fileName,
       size,
+      createTime,
+      creator,
       createBy,
       id,
       type,
@@ -580,7 +595,10 @@ const defaultProps = {
                   <Icon name="icon_info_outlined"></Icon>
                 </el-icon>
               </template>
-              123
+              <dataset-detail
+                :create-time="infoList.createTime"
+                :creator="infoList.creator"
+              ></dataset-detail>
             </el-popover>
             <div class="right-btn">
               <el-button secondary @click="createDataset(null)">

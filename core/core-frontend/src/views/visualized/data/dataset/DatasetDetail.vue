@@ -1,32 +1,36 @@
 <script lang="ts" setup>
-import { PropType } from 'vue'
+import { useI18n } from '@/hooks/web/useI18n'
 export interface Info {
   name: string
   value: string
 }
 defineProps({
-  titleType: {
+  creator: {
     type: String,
     default: ''
   },
-  infoList: {
-    type: Array as PropType<Info[]>,
-    default: () => []
+  createTime: {
+    type: String,
+    default: ''
   }
 })
+const { t } = useI18n()
 </script>
 
 <template>
   <div class="info-card">
-    <div class="title-type">{{ titleType }}</div>
-    <template v-for="info in infoList" :key="info.string">
-      <div class="info-title">
-        {{ info.name }}
-      </div>
-      <div class="info-content">
-        {{ info.value }}
-      </div>
-    </template>
+    <div class="info-title">
+      {{ t('dataset.create_by') }}
+    </div>
+    <div class="info-content">
+      {{ creator }}
+    </div>
+    <div class="info-title">
+      {{ t('dataset.create_time') }}
+    </div>
+    <div class="info-content">
+      {{ createTime }}
+    </div>
   </div>
 </template>
 
@@ -35,25 +39,17 @@ defineProps({
   font-family: 'PingFang SC';
   font-style: normal;
   padding-left: 4px;
+  font-weight: 400;
+  line-height: 22px;
 
-  .title-type {
-    font-size: 14px;
-    font-weight: 500;
-    margin-bottom: 12px;
-    color: var(--deTextPrimary, #1f2329);
-  }
   .info-title {
-    font-weight: 500;
-    font-size: 14px;
-    line-height: 22px;
     color: #646a73;
+    font-size: 14px;
     margin-bottom: 4px;
   }
   .info-content {
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 22px;
     color: #1f2329;
+    font-size: 14px;
     margin-bottom: 12px;
   }
 
