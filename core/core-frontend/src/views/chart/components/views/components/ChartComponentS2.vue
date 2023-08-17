@@ -227,10 +227,9 @@ const resize = (width, height) => {
     clearTimeout(timer)
   }
   timer = setTimeout(() => {
-    renderChart(view.value)
-    // myChart?.changeSheetSize(width, height)
-    // myChart?.render()
-  }, 300)
+    myChart?.changeSheetSize(width, height)
+    myChart?.render()
+  }, 500)
 }
 const preSize = [0, 0]
 const TOLERANCE = 1
