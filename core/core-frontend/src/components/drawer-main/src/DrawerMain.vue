@@ -59,13 +59,24 @@ const clearFilter = (id?: number) => {
 }
 const filterChange = (value, field, operator) => {
   let exits = false
-  state.conditions.forEach(condition => {
+  let len = state.conditions.length
+  while (len--) {
+    const condition = state.conditions[len]
     if (condition.field === field) {
       exits = true
       condition['value'] = value
     }
-  })
-  if (!exits) {
+    if (!value?.length) {
+      state.conditions.splice(len, 1)
+    }
+  }
+  /* state.conditions.forEach(condition => {
+    if (condition.field === field) {
+      exits = true
+      condition['value'] = value
+    }
+  }) */
+  if (!exits && value?.length) {
     state.conditions.push({ field, value, operator })
   }
 }
