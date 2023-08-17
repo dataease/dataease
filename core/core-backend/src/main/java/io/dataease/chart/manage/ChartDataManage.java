@@ -140,8 +140,8 @@ public class ChartDataManage {
                     chartExtRequest.setGoPage(1L);
                 }
                 if (chartExtRequest.getPageSize() == null) {
-                    String pageSize = (String) mapSize.get("tablePageSize");
-                    chartExtRequest.setPageSize(Math.min(Long.parseLong(pageSize), view.getResultCount().longValue()));
+                    int pageSize = (int) mapSize.get("tablePageSize");
+                    chartExtRequest.setPageSize(Math.min(pageSize, view.getResultCount().longValue()));
                 }
             } else {
                 if (StringUtils.equalsIgnoreCase(view.getResultMode(), "custom")) {
