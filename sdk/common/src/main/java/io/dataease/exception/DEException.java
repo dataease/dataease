@@ -15,6 +15,7 @@ public class DEException extends RuntimeException {
         this.code = code;
         this.msg = msg;
     }
+
     private DEException(String message) {
         this(ResultCode.SYSTEM_INNER_ERROR.code(), message);
     }
@@ -27,6 +28,10 @@ public class DEException extends RuntimeException {
 
     public static void throwException(String message) {
         throw new DEException(message);
+    }
+
+    public static void throwException(int code, String message) {
+        throw new DEException(code, message);
     }
 
     public static DEException getException(String message) {

@@ -359,45 +359,47 @@ const fieldType = (deType: number) => {
       class="table-list"
       :style="{ width: LeftWidth + 'px' }"
     >
-      <p class="select-ds">
-        当前数据源
-        <el-icon class="left-outlined" @click="showLeft = false">
-          <Icon name="group-3400"></Icon>
-        </el-icon>
-      </p>
-      <el-tree-select
-        :check-strictly="false"
-        @change="dsChange"
-        :placeholder="t('dataset.pls_slc_data_source')"
-        class="ds-list"
-        popper-class="tree-select-ds_popper"
-        v-model="sqlNode.datasourceId"
-        node-key="id"
-        :props="treeProps"
-        :data="state.dataSourceList"
-        :render-after-expand="false"
-      />
-      <p class="select-ds table-num">
-        {{ t('datasource.data_table')
-        }}<span class="num">
-          <el-icon>
-            <Icon name="reference-table"></Icon>
+      <div class="table-list-top">
+        <p class="select-ds">
+          当前数据源
+          <el-icon class="left-outlined" @click="showLeft = false">
+            <Icon name="group-3400"></Icon>
           </el-icon>
-          {{ state.tableData.length }}
-        </span>
-      </p>
-      <el-input
-        v-model="searchTable"
-        class="search"
-        :placeholder="t('deDataset.by_table_name')"
-        clearable
-      >
-        <template #prefix>
-          <el-icon>
-            <Icon name="icon_search-outline_outlined"></Icon>
-          </el-icon>
-        </template>
-      </el-input>
+        </p>
+        <el-tree-select
+          :check-strictly="false"
+          @change="dsChange"
+          :placeholder="t('dataset.pls_slc_data_source')"
+          class="ds-list"
+          popper-class="tree-select-ds_popper"
+          v-model="sqlNode.datasourceId"
+          node-key="id"
+          :props="treeProps"
+          :data="state.dataSourceList"
+          :render-after-expand="false"
+        />
+        <p class="select-ds table-num">
+          {{ t('datasource.data_table')
+          }}<span class="num">
+            <el-icon>
+              <Icon name="reference-table"></Icon>
+            </el-icon>
+            {{ state.tableData.length }}
+          </span>
+        </p>
+        <el-input
+          v-model="searchTable"
+          class="search"
+          :placeholder="t('deDataset.by_table_name')"
+          clearable
+        >
+          <template #prefix>
+            <el-icon>
+              <Icon name="icon_search-outline_outlined"></Icon>
+            </el-icon>
+          </template>
+        </el-input>
+      </div>
       <div v-if="!state.tableData.length && searchTable !== ''" class="el-empty">
         <div class="el-empty__description" style="margin-top: 80px; color: #5e6d82">
           没有找到相关内容
@@ -780,9 +782,16 @@ const fieldType = (deType: number) => {
     height: 100%;
     width: 240px;
     float: left;
-    padding: 16px 12px;
     font-family: PingFang SC;
     border-right: 1px solid rgba(31, 35, 41, 0.15);
+
+    .list-item_primary {
+      padding: 8px;
+    }
+    .table-list-top {
+      padding: 16px;
+      padding-bottom: 0;
+    }
 
     .select-ds {
       font-size: 14px;
@@ -838,6 +847,7 @@ const fieldType = (deType: number) => {
     .table-checkbox-list {
       height: calc(100% - 190px);
       overflow-y: auto;
+      padding: 0 8px;
 
       .list-item_primary {
         .label {

@@ -35,7 +35,11 @@ export const getFieldByDQ = async (id, chartId): Promise<IResponse> => {
 export const getData = async (data): Promise<IResponse> => {
   delete data.data
   return request.post({ url: '/chartData/getData', data }).then(res => {
-    return res?.data
+    if (res.code === 0) {
+      return res?.data
+    } else {
+      return res
+    }
   })
 }
 

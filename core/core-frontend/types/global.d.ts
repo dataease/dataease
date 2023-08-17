@@ -34,8 +34,9 @@ declare global {
   }
 
   interface IResponse<T = any> {
-    code: string
+    code: string | number
     data: T extends any ? T : T & any
+    msg: string
   }
 
   type DeepPartial<T> = {

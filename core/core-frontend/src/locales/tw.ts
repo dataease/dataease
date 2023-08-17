@@ -86,7 +86,9 @@ export default {
     delete_children_first: '请先删除子组织后，再删除当前组织',
     confirm_content: '友情提示，组织被删除后，组织下的资源也将被删除',
     give_up_resource: '放弃资源，直接删除',
-    move_resource_first: '先迁移资源'
+    move_resource_first: '先迁移资源',
+    default_parent_tips: '(默認當前組織)',
+    admin_parent_tips: '(默認根組織)'
   },
   auth: {
     user_dimension: '按用户配置',
