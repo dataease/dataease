@@ -269,7 +269,7 @@ export const dvMainStore = defineStore('dataVisualization', {
           type: component.innerType,
           customStyle: {
             component: {
-              show: false,
+              show: true,
               titleShow: false,
               borderShow: false,
               borderColor: '',
@@ -278,7 +278,7 @@ export const dvMainStore = defineStore('dataVisualization', {
               bgColorShow: false,
               bgColor: '',
               layout: 'horizontal',
-              btnList: []
+              btnList: ['sure']
             }
           }
         }
