@@ -382,7 +382,7 @@ const handleNodeClick = data => {
 const createDatasource = (data?: Tree) => {
   datasourceEditor.value.init(null, data?.id)
 }
-
+const showRecord = ref(false)
 const dsListTree = ref()
 const expandedKey = ref([])
 const dsListTreeShow = ref(true)
@@ -394,6 +394,17 @@ const updateTreeExpand = () => {
   nextTick(() => {
     dsListTreeShow.value = true
   })
+}
+
+const recordData = ref([])
+
+const getRecord = () => {
+  showRecord.value = true
+  recordData.value = [
+    {
+      date: 123213
+    }
+  ]
 }
 
 const nodeExpand = data => {
@@ -843,7 +854,7 @@ const defaultProps = {
                   <BaseInfoItem :label="t('dataset.execute_rate')">
                     <p class="value">{{ rateValueMap[nodeInfo.syncSetting.syncRate] }}</p>
                   </BaseInfoItem>
-                  <el-button class="update-records" text>
+                  <el-button @click="getRecord" class="update-records" text>
                     <template #icon>
                       <icon name="icon_describe_outlined"></icon>
                     </template>
@@ -942,6 +953,46 @@ const defaultProps = {
       </el-table>
     </el-dialog>
     <creat-ds-group @finish="saveDsFolder" ref="creatDsFolder"></creat-ds-group>
+    <el-drawer
+      v-model="showRecord"
+      :title="t('dataset.update_records')"
+      :close-on-press-escape="false"
+      :close-on-click-modal="false"
+      modal-class="record-drawer"
+      direction="rtl"
+      size="840px"
+    >
+      <el-table header-cell-class-name="header-cell" :data="recordData" style="width: 100%">
+        <el-table-column prop="date" label="更新频率" width="180" />
+        <el-table-column prop="name" label="更新结果" width="180">
+          <template #default="scope">
+            <div class="flex-align-center">
+              <el-icon>
+                <icon name="icon_succeed_filled"></icon>
+              </el-icon>
+              <el-icon>
+                <icon class="field-icon-location" name="icon_close_filled"></icon>
+              </el-icon>
+              <el-icon>
+                <icon name="icon-maybe_outlined"></icon>
+              </el-icon>
+              {{ t('dataset.error') || t('dataset.completed') || '-' }}
+              {{ scope.row.date }}
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column prop="result" label="更新状态" width="180">
+          <template #default="scope">
+            <span class="update-info to-be-updated">待更新</span>
+            <span class="update-info pause">{{ t('dataset.task.pending') }}</span>
+            <span class="update-info updating">更新中</span>
+            <span class="update-info updated">更新结束</span>
+            {{ scope.row.date }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="address" :label="t('commons.update_time')" />
+      </el-table>
+    </el-drawer>
   </div>
 </template>
 
@@ -957,6 +1008,31 @@ const defaultProps = {
     position: absolute;
     top: -24px;
     right: 12px;
+  }
+
+  .update-info {
+    display: inline-flex;
+    height: 24px;
+    padding: 1px 6px;
+    align-items: center;
+    border-radius: 2px;
+
+    &.to-be-updated {
+      background: rgba(31, 35, 41, 0.1);
+      color: #646a73;
+    }
+    &.updating {
+      color: #2b5fd9;
+      background: rgba(51, 112, 255, 0.2);
+    }
+    &.pause {
+      background: rgba(31, 35, 41, 0.1);
+      color: #646a73;
+    }
+    &.updated {
+      color: #2ca91f;
+      background: rgba(52, 199, 36, 0.2);
+    }
   }
 
   .icon-border {
@@ -1241,6 +1317,17 @@ const defaultProps = {
 }
 </style>
 <style lang="less">
+.record-drawer {
+  .ed-drawer__body {
+    padding: 24px;
+  }
+
+  .flex-align-center {
+    .ed-icon {
+      margin-right: 4px;
+    }
+  }
+}
 .ds-table-drawer {
   .table-value,
   .table-name {
