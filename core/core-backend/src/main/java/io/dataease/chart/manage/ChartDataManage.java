@@ -117,11 +117,13 @@ public class ChartDataManage {
         List<ChartFieldCustomFilterDTO> fieldCustomFilter = new ArrayList<>(view.getCustomFilter());
         List<ChartViewFieldDTO> drill = new ArrayList<>(view.getDrillFields());
 
-        DatasetGroupInfoDTO table = datasetGroupManage.get(view.getTableId(), null);// todo
+        DatasetGroupInfoDTO table = datasetGroupManage.get(view.getTableId(), null);
         if (table == null) {
             DEException.throwException(ResultCode.DATA_IS_WRONG.code(), Translator.get("i18n_no_ds"));
         }
-        Map<String, ColumnPermissionItem> desensitizationList = new HashMap<>();// todo
+        Map<String, ColumnPermissionItem> desensitizationList = new HashMap<>();
+        List<Long> allDatasetTableFieldDTOIds = permissionManage.filterColumnPermissions(transFields(allFields), desensitizationList, table.getId(), chartExtRequest.getUser()).stream().map(DatasetTableFieldDTO::getId).collect(Collectors.toList());
+        allFields = allFields.stream().filter(chartViewFieldDTO  -> allDatasetTableFieldDTOIds.contains(chartViewFieldDTO.getId())).collect(Collectors.toList());
         List<DataSetRowPermissionsTreeDTO> rowPermissionsTree = permissionManage.getRowPermissionsTree(table.getId(), chartExtRequest.getUser());
 
         for (ChartFieldCustomFilterDTO ele : fieldCustomFilter) {
@@ -142,7 +144,11 @@ public class ChartDataManage {
                 }
                 if (chartExtRequest.getPageSize() == null) {
                     int pageSize = (int) mapSize.get("tablePageSize");
-                    chartExtRequest.setPageSize(Math.min(pageSize, view.getResultCount().longValue()));
+                    if (StringUtils.equalsIgnoreCase(view.getResultMode(), "custom")) {
+                        chartExtRequest.setPageSize(Math.min(pageSize, view.getResultCount().longValue()));
+                    } else {
+                        chartExtRequest.setPageSize((long) pageSize);
+                    }
                 }
             } else {
                 if (StringUtils.equalsIgnoreCase(view.getResultMode(), "custom")) {
