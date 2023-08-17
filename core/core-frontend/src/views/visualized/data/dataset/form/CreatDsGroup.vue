@@ -235,7 +235,7 @@ const saveDataset = () => {
               ElMessage.success('重命名成功')
               break
             default:
-              ElMessage.success(nodeType.value === 'dataset' ? '新建数据集成功' : '新建文件夹成功')
+              ElMessage.success(t('common.save_success'))
               break
           }
         })
