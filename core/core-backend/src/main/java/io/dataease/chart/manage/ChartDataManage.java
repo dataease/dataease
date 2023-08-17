@@ -24,6 +24,7 @@ import io.dataease.engine.utils.SQLUtils;
 import io.dataease.engine.utils.Utils;
 import io.dataease.exception.DEException;
 import io.dataease.i18n.Translator;
+import io.dataease.result.ResultCode;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.JsonUtil;
 import jakarta.annotation.Resource;
@@ -68,7 +69,7 @@ public class ChartDataManage {
 
         ChartViewDTO chartViewDTO = new ChartViewDTO();
         if (ObjectUtils.isEmpty(view)) {
-            DEException.throwException(Translator.get("i18n_chart_delete"));
+            DEException.throwException(ResultCode.DATA_IS_WRONG.code(), Translator.get("i18n_chart_delete"));
         }
 
         List<ChartViewFieldDTO> viewFields = new ArrayList<>(view.getViewFields());
@@ -118,7 +119,7 @@ public class ChartDataManage {
 
         DatasetGroupInfoDTO table = datasetGroupManage.get(view.getTableId(), null);// todo
         if (table == null) {
-            DEException.throwException(Translator.get("i18n_no_ds"));
+            DEException.throwException(ResultCode.DATA_IS_WRONG.code(), Translator.get("i18n_no_ds"));
         }
         Map<String, ColumnPermissionItem> desensitizationList = new HashMap<>();// todo
         List<DataSetRowPermissionsTreeDTO> rowPermissionsTree = permissionManage.getRowPermissionsTree(table.getId(), chartExtRequest.getUser());
@@ -424,12 +425,12 @@ public class ChartDataManage {
         //如果不是插件视图 走原生逻辑
         if (table.getMode() == 0) {// 直连
             if (ObjectUtils.isEmpty(dsMap)) {
-                DEException.throwException(Translator.get("i18n_datasource_delete"));
+                DEException.throwException(ResultCode.DATA_IS_WRONG.code(), Translator.get("i18n_datasource_delete"));
             }
             for (Map.Entry<Long, DatasourceSchemaDTO> next : dsMap.entrySet()) {
                 DatasourceSchemaDTO ds = next.getValue();
                 if (StringUtils.isNotEmpty(ds.getStatus()) && "Error".equalsIgnoreCase(ds.getStatus())) {
-                    DEException.throwException(Translator.get("i18n_invalid_ds"));
+                    DEException.throwException(ResultCode.DATA_IS_WRONG.code(), Translator.get("i18n_invalid_ds"));
                 }
             }
 

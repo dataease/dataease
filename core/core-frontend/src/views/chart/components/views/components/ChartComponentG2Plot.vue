@@ -10,6 +10,8 @@ import ViewTrackBar from '@/components/visualization/ViewTrackBar.vue'
 import { storeToRefs } from 'pinia'
 import { getGeoJsonFile, parseJson } from '@/views/chart/components/js/util'
 import { debounce } from 'lodash-es'
+import ChartError from '@/views/chart/components/views/components/ChartError.vue'
+
 const dvMainStore = dvMainStoreWithOut()
 const { nowPanelTrackInfo, nowPanelJumpInfo } = storeToRefs(dvMainStore)
 
@@ -38,6 +40,9 @@ const emit = defineEmits(['onChartClick', 'onDrillFilters', 'onJumpClick'])
 
 const { view, showPosition, dynamicAreaId } = toRefs(props)
 
+const isError = ref(false)
+const errMsg = ref('')
+
 const state = reactive({
   trackBarStyle: {
     position: 'absolute',
@@ -57,13 +62,18 @@ const viewTrack = ref(null)
 const calcData = view => {
   if (view.tableId) {
     state.loading = true
+    isError.value = false
     const v = JSON.parse(JSON.stringify(view))
     getData(v)
       .then(res => {
-        // console.log(res)
-        state.data = res?.data
-        emit('onDrillFilters', res?.drillFilters)
-        renderChart(res)
+        if (res.code && res.code !== 0) {
+          isError.value = true
+          errMsg.value = res.msg
+        } else {
+          state.data = res?.data
+          emit('onDrillFilters', res?.drillFilters)
+          renderChart(res)
+        }
       })
       .finally(() => {
         state.loading = false
@@ -223,7 +233,8 @@ onBeforeUnmount(() => {
       :style="state.trackBarStyle"
       @trackClick="trackClick"
     />
-    <div class="canvas-content" :id="containerId"></div>
+    <div v-if="!isError" class="canvas-content" :id="containerId"></div>
+    <chart-error v-else :err-msg="errMsg" />
   </div>
 </template>
 

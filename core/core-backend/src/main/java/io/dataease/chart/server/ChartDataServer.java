@@ -3,6 +3,8 @@ package io.dataease.chart.server;
 import io.dataease.api.chart.ChartDataApi;
 import io.dataease.api.chart.dto.ChartViewDTO;
 import io.dataease.chart.manage.ChartDataManage;
+import io.dataease.exception.DEException;
+import io.dataease.result.ResultCode;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,7 +22,12 @@ public class ChartDataServer implements ChartDataApi {
 
     @Override
     public ChartViewDTO getData(ChartViewDTO chartViewDTO) throws Exception {
-        return chartDataManage.calcData(chartViewDTO);
+        try {
+            return chartDataManage.calcData(chartViewDTO);
+        } catch (Exception e) {
+            DEException.throwException(ResultCode.DATA_IS_WRONG.code(), e.getMessage());
+        }
+        return null;
     }
 
     @Override

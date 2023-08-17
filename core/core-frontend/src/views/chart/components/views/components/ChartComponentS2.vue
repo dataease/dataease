@@ -8,6 +8,7 @@ import { storeToRefs } from 'pinia'
 import { S2ChartView } from '@/views/chart/components/js/panel/types/impl/s2'
 import debounce from 'lodash-es/debounce'
 import { ElPagination } from 'element-plus-secondary'
+import ChartError from '@/views/chart/components/views/components/ChartError.vue'
 
 const dvMainStore = dvMainStoreWithOut()
 const { nowPanelTrackInfo, nowPanelJumpInfo } = storeToRefs(dvMainStore)
@@ -37,6 +38,9 @@ const emit = defineEmits(['onChartClick', 'onDrillFilters', 'onJumpClick'])
 
 const { view, showPosition, dynamicAreaId } = toRefs(props)
 
+const isError = ref(false)
+const errMsg = ref('')
+
 const state = reactive({
   trackBarStyle: {
     position: 'absolute',
@@ -64,13 +68,18 @@ const calcData = view => {
     return
   }
   state.loading = true
+  isError.value = false
   const v = JSON.parse(JSON.stringify(view))
   getData(v)
     .then(res => {
-      // console.log(res)
-      state.data = res?.data
-      emit('onDrillFilters', res?.drillFilters)
-      renderChart(res)
+      if (res.code && res.code !== 0) {
+        isError.value = true
+        errMsg.value = res.msg
+      } else {
+        state.data = res?.data
+        emit('onDrillFilters', res?.drillFilters)
+        renderChart(res)
+      }
     })
     .finally(() => {
       state.loading = false
@@ -237,10 +246,10 @@ onBeforeUnmount(() => {
       :style="state.trackBarStyle"
       @trackClick="trackClick"
     />
-    <div class="canvas-content">
+    <div v-if="!isError" class="canvas-content">
       <div style="height: 100%" :id="containerId"></div>
     </div>
-    <div class="table-page-info" v-if="showPage">
+    <div class="table-page-info" v-if="showPage && !isError">
       <div>共有{{ state.pageInfo.total }}条数据</div>
       <el-pagination
         layout="prev, pager, next"
@@ -251,6 +260,7 @@ onBeforeUnmount(() => {
         @update:current-page="handleCurrentChange"
       />
     </div>
+    <chart-error v-if="isError" :err-msg="errMsg" />
   </div>
 </template>
 
