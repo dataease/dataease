@@ -127,7 +127,13 @@ export const customAttrTrans = {
   ],
   'tooltip': {
     'textStyle': ['fontSize']
-  }
+  },
+  'slider': [
+    'fontSize'
+  ],
+  'graphic': [
+    'fontSize'
+  ]
 }
 export const customStyleTrans = {
   'text': ['fontSize'],
@@ -375,7 +381,7 @@ export function adaptCurTheme(customStyle, customAttr, chartType) {
   }
 }
 
-export function adaptCurThemeCommonStyle(component,adaptFrom = 'them') {
+export function adaptCurThemeCommonStyle(component, adaptFrom = 'them') {
   const commonStyle = store.state.canvasStyleData.chartInfo.chartCommonStyle
   for (const key in commonStyle) {
     Vue.set(component.commonBackground, key, commonStyle[key])
@@ -383,9 +389,9 @@ export function adaptCurThemeCommonStyle(component,adaptFrom = 'them') {
   if (isFilterComponent(component.component)) {
     const filterStyle = store.state.canvasStyleData.chartInfo.filterStyle
     for (const styleKey in filterStyle) {
-      if(adaptFrom === 'copy'){
+      if (adaptFrom === 'copy') {
         Vue.set(component.style, styleKey, filterStyle[styleKey])
-      }else if (adaptFrom === 'them' && styleKey !== 'horizontal' && styleKey !== 'vertical') {
+      } else if (adaptFrom === 'them' && styleKey !== 'horizontal' && styleKey !== 'vertical') {
         // 主题变化位置属性不修改
         Vue.set(component.style, styleKey, filterStyle[styleKey])
       }
