@@ -33,6 +33,11 @@ const props = defineProps({
         propValue: ''
       }
     }
+  },
+  showPosition: {
+    type: String,
+    required: true,
+    default: ''
   }
 })
 const { element, view } = toRefs(props)
@@ -310,7 +315,7 @@ const queryData = () => {
               <div class="label-wrapper">
                 <div class="label-wrapper-text">{{ ele.name }} ({{ ele.field.type }})</div>
               </div>
-              <div class="label-wrapper-tooltip">
+              <div class="label-wrapper-tooltip" v-if="showPosition !== 'preview'">
                 <el-tooltip effect="dark" content="设置过滤条件" placement="top">
                   <el-icon @click="editeQueryConfig(ele.id)">
                     <Icon name="edit-in"></Icon>
@@ -333,7 +338,7 @@ const queryData = () => {
             </div>
           </div>
         </div>
-        <div class="query-button" v-if="!!list.length && customStyle.layout === 'vertical'">
+        <div class="query-button" v-if="!!list.length && customStyle.layout === 'horizontal'">
           <el-button @click.stop="resetData" v-if="customStyle.btnList.includes('reset')" secondary>
             {{ t('chart.reset') }}
           </el-button>
@@ -349,7 +354,7 @@ const queryData = () => {
           </el-button>
         </div>
       </div>
-      <div class="query-button" v-if="!!list.length && customStyle.layout === 'horizontal'">
+      <div class="query-button" v-if="!!list.length && customStyle.layout === 'vertical'">
         <el-button @click.stop="resetData" v-if="customStyle.btnList.includes('reset')" secondary>
           {{ t('chart.reset') }}
         </el-button>
