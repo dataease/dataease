@@ -1955,7 +1955,7 @@ export default {
       return this.$store.state.panel.panelInfo
     },
     showCfg() {
-      return includesAny(this.view.type, 'bar', 'line', 'area', 'gauge', 'table') ||
+      return includesAny(this.view.type, 'bar', 'line', 'area', 'gauge', 'table') && this.view.type !== 'race-bar' ||
         equalsAny(this.view.type, 'text', 'label', 'map', 'buddle-map')
     },
     showSeniorCfg() {

@@ -130,6 +130,9 @@ export const customAttrTrans = {
   },
   'slider': [
     'fontSize'
+  ],
+  'graphic': [
+    'fontSize'
   ]
 }
 export const customStyleTrans = {
