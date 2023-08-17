@@ -459,7 +459,7 @@ public class ChartDataManage {
                 querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
             } else if (StringUtils.equalsIgnoreCase("table-info", view.getType())) {
                 Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields));
-                String originSql = SQLProvider.createQuerySQL(sqlMeta, false, needOrder, view);
+                String originSql = SQLProvider.createQuerySQL(sqlMeta, false, true, view);// 明细表强制加排序
                 String limit = ((pageInfo.getGoPage() != null && pageInfo.getPageSize() != null) ? " LIMIT " + pageInfo.getPageSize() + " OFFSET " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize() : "");
                 querySql = originSql + limit;
                 totalPageSql = "SELECT COUNT(*) FROM (" + originSql + ") COUNT_TEMP";
@@ -483,6 +483,9 @@ public class ChartDataManage {
                 datasourceRequest.setTotalPageFlag(true);
                 List<String[]> tmpData = (List<String[]>) calciteProvider.fetchResultField(datasourceRequest).get("data");
                 totalItems = ObjectUtils.isEmpty(tmpData) ? 0 : Long.valueOf(tmpData.get(0)[0]);
+                if (StringUtils.equalsIgnoreCase(view.getResultMode(), "custom")) {
+                    totalItems = totalItems <= view.getResultCount() ? totalItems : view.getResultCount();
+                }
                 totalPage = (totalItems / pageInfo.getPageSize()) + (totalItems % pageInfo.getPageSize() > 0 ? 1 : 0);
             }
 
