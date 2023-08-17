@@ -79,7 +79,7 @@ const dialogTitle = computed(() => {
       title = t('deDataset.new_folder')
       break
     case 'dataset':
-      title = t('deDataset.create') + t('auth.dataset')
+      title = t('common.save') + t('auth.dataset')
       break
     default:
       break
