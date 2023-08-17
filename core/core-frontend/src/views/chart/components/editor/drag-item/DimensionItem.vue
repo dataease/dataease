@@ -47,6 +47,10 @@ const props = defineProps({
   themes: {
     type: String,
     default: 'dark'
+  },
+  type: {
+    type: String,
+    required: true
   }
 })
 
@@ -140,14 +144,14 @@ const beforeDatePattern = type => {
 
 const showRename = () => {
   item.value.index = props.index
-  item.value.renameType = 'dimension'
+  item.value.renameType = props.type
   // item.value.dsFieldName = getOriginFieldName(props.dimensionData, props.quotaData, item.value)
   emit('onNameEdit', item.value)
 }
 
 const removeItem = () => {
   item.value.index = props.index
-  item.value.removeType = 'dimension'
+  item.value.removeType = props.type
   emit('onDimensionItemRemove', item.value)
 }
 
