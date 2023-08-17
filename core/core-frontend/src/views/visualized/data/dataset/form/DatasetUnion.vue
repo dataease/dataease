@@ -62,9 +62,19 @@ const nodeNameList = computed(() => {
   return arr
 })
 
+let shadowWidth = 0
+let shadowHeight = 0
+
+const setLayOut = () => {
+  svgWidth.value = `${shadowWidth * 100 + (shadowWidth + 1) * 200 + 48}px`
+  svgHeight.value = `${shadowHeight * 24 + (shadowHeight + 1) * 32 + 48}px`
+}
 const dfsNodeList = computed(() => {
   let nodeListLocation = []
+  shadowWidth = 0
+  shadowHeight = 0
   dfsNode(state.nodeList, nodeListLocation)
+  setLayOut()
   return nodeListLocation
 })
 
@@ -84,6 +94,9 @@ const initState = nodeList => {
 const activeNode = ref('')
 
 const editUnion = ref(false)
+
+const svgWidth = ref('200px')
+const svgHeight = ref('260px')
 
 const delNode = (id, arr) => {
   arr.some((ele, index) => {
@@ -379,6 +392,8 @@ const dfsNode = (arr, nodeListLocation, x = 0, y = 0) => {
         maxY,
         isShadow: !!ele.isShadow
       })
+      shadowHeight = Math.max(idxChild, shadowHeight)
+      shadowWidth = Math.max(x, shadowWidth)
     } else {
       const children = []
       const pre = nodeListLocation[index - 1]
@@ -402,6 +417,8 @@ const dfsNode = (arr, nodeListLocation, x = 0, y = 0) => {
         isShadow: !!ele.isShadow,
         children
       })
+      shadowHeight = Math.max(children[0].y, shadowHeight)
+      shadowWidth = Math.max(x, shadowWidth)
     }
   })
 }
@@ -689,8 +706,8 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields'])
     <svg
       version="1.1"
       baseProfile="full"
-      width="100%"
-      height="100%"
+      :width="svgWidth"
+      :height="svgHeight"
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
@@ -913,7 +930,7 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields'])
 
 .drag-mask {
   background: #f5f6f7;
-  overflow-x: auto;
+  overflow: auto;
   position: relative;
   width: 100%;
 }
