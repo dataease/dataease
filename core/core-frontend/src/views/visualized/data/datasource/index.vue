@@ -716,7 +716,7 @@ const defaultProps = {
                   }}</BaseInfoItem>
                 </el-col>
               </el-row>
-              <template v-if="!['Excel', 'Api'].includes(nodeInfo.type)">
+              <template v-if="!['Excel', 'API'].includes(nodeInfo.type)">
                 <el-row :gutter="24">
                   <!-- <el-col :span="12">
                   <BaseInfoItem label="驱动">驱动</BaseInfoItem>
@@ -840,9 +840,15 @@ const defaultProps = {
                   }}</BaseInfoItem>
                 </el-col>
                 <el-col :span="12">
-                  <BaseInfoItem :label="t('dataset.execute_rate')">{{
-                    rateValueMap[nodeInfo.syncSetting.syncRate]
-                  }}</BaseInfoItem>
+                  <BaseInfoItem :label="t('dataset.execute_rate')">
+                    <p class="value">{{ rateValueMap[nodeInfo.syncSetting.syncRate] }}</p>
+                  </BaseInfoItem>
+                  <el-button class="update-records" text>
+                    <template #icon>
+                      <icon name="icon_describe_outlined"></icon>
+                    </template>
+                    {{ t('dataset.update_records') }}
+                  </el-button>
                 </el-col>
               </el-row>
             </template>
@@ -947,6 +953,11 @@ const defaultProps = {
   width: 100%;
   height: 100%;
   background: #fff;
+  .update-records {
+    position: absolute;
+    top: -24px;
+    right: 12px;
+  }
 
   .icon-border {
     padding: 3px;

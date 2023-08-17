@@ -683,7 +683,7 @@ defineExpose({
                 <el-option :label="t('common.hour')" value="hour" />
                 <el-option :label="t('common.day')" value="day" />
               </el-select>
-              {{ t('commons.every_exec') }}
+              {{ t('common.every_exec') }}
             </div>
           </el-form-item>
           <el-form-item
