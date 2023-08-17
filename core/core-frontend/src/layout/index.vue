@@ -26,6 +26,7 @@ const systemMenu = computed(() => route.path.includes('system'))
 .common-layout {
   width: 100vw;
   height: 100vh;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   background: #fff;
