@@ -221,10 +221,23 @@ const resize = (width, height) => {
     state.myChart?.render()
   }, 500)()
 }
+const preSize = [0, 0]
+const TOLERANCE = 1
 onMounted(() => {
   const resizeObserver = new ResizeObserver(([entry] = []) => {
-    console.info(entry)
     const [size] = entry.borderBoxSize || []
+    // 拖动的时候宽高重新计算，误差范围内不重绘，误差先设置为1
+    if (!(preSize[0] || preSize[1])) {
+      preSize[0] = size.inlineSize
+      preSize[1] = size.blockSize
+    }
+    const widthOffset = Math.abs(size.inlineSize - preSize[0])
+    const heightOffset = Math.abs(size.blockSize - preSize[1])
+    if (widthOffset < TOLERANCE && heightOffset < TOLERANCE) {
+      return
+    }
+    preSize[0] = size.inlineSize
+    preSize[1] = size.blockSize
     resize(size.inlineSize, size.blockSize)
   })
 
@@ -253,10 +266,9 @@ onBeforeUnmount(() => {
       <div>共有{{ state.pageInfo.total }}条数据</div>
       <el-pagination
         layout="prev, pager, next"
-        :page-size="state.pageInfo.pageSize"
+        v-model:page-size="state.pageInfo.pageSize"
         v-model:current-page="state.pageInfo.currentPage"
         :total="state.pageInfo.total"
-        @current-change="handleCurrentChange"
         @update:current-page="handleCurrentChange"
       />
     </div>
