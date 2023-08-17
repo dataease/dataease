@@ -142,7 +142,11 @@ public class ChartDataManage {
                 }
                 if (chartExtRequest.getPageSize() == null) {
                     int pageSize = (int) mapSize.get("tablePageSize");
-                    chartExtRequest.setPageSize(Math.min(pageSize, view.getResultCount().longValue()));
+                    if (StringUtils.equalsIgnoreCase(view.getResultMode(), "custom")) {
+                        chartExtRequest.setPageSize(Math.min(pageSize, view.getResultCount().longValue()));
+                    } else {
+                        chartExtRequest.setPageSize((long) pageSize);
+                    }
                 }
             } else {
                 if (StringUtils.equalsIgnoreCase(view.getResultMode(), "custom")) {
