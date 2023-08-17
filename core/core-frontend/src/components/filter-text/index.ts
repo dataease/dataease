@@ -52,7 +52,7 @@ export const convertFilterText = (conditions, options) => {
   const result = []
   conditions.forEach(condition => {
     const field = condition.field
-    const ope = condition.operate
+    const ope = condition.operator
     const value = condition.value
     const fieldName = fieldText(field, options)
     const textOpe = ':'
@@ -70,8 +70,10 @@ export const convertFilterText = (conditions, options) => {
         const valTextArray = value.map(val => valueText(field, val, options))
         valText = valTextArray.join(separator)
       }
-      const obj = fieldName + textOpe + valText
-      result.push(obj)
+      if (valText?.length) {
+        const obj = fieldName + textOpe + valText
+        result.push(obj)
+      }
     }
   })
   return result

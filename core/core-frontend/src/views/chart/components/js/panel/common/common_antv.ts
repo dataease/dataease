@@ -4,11 +4,11 @@ import {
   DEFAULT_YAXIS_STYLE
 } from '@/views/chart/components/editor/util/chart'
 import { valueFormatter } from '@/views/chart/components/editor/util/formatter'
-import { Datum } from '@antv/g2plot'
 import { formatterItem } from '@/views/chart/components/js/formatter'
 import { AreaOptions, LabelOptions } from '@antv/l7plot'
 import { TooltipOptions } from '@antv/l7plot/dist/lib/types/tooltip'
 import { FeatureCollection } from '@antv/l7plot/dist/esm/plots/choropleth/types'
+import { Datum } from '@antv/g2plot/esm/types/common'
 
 export function getPadding(chart: Chart): number[] {
   if (chart.drill) {
@@ -132,6 +132,7 @@ export function getLabel(chart: Chart) {
       if (l.show) {
         label = {
           position: l.position,
+          layout: [{ type: 'limit-in-canvas' }],
           style: {
             fill: l.color,
             fontSize: l.fontSize

@@ -256,6 +256,10 @@ const saveDS = () => {
     apiConfiguration: string
   }
   if (form.type === 'Excel') {
+    if (!excel.value.sheetFile?.name) {
+      ElMessage.error('请先上传Excel文件!')
+      return
+    }
     if (editDs.value) {
       complete(null, null, null)
     } else {
@@ -473,7 +477,7 @@ defineExpose({
         </div>
       </div>
       <div class="editor-footer">
-        <el-button secondary @click="visible = false"> {{ t('commons.cancel') }}</el-button>
+        <el-button secondary @click="visible = false"> {{ t('common.cancel') }}</el-button>
         <el-button
           v-show="
             (activeStep === 0 && currentDsType !== 'API') ||
@@ -482,14 +486,14 @@ defineExpose({
           type="primary"
           @click="next"
         >
-          {{ t('commons.next') }}</el-button
+          {{ t('common.next') }}</el-button
         >
         <el-button
           v-show="!(activeStep === 0 || (editDs && activeStep <= 1))"
           type="primary"
           @click="prev"
         >
-          {{ t('commons.prev') }}</el-button
+          {{ t('common.prev') }}</el-button
         >
         <el-button
           v-show="activeStep === 1 && currentDsType !== 'Excel'"
@@ -506,7 +510,7 @@ defineExpose({
           type="primary"
           @click="saveDS"
         >
-          {{ t('commons.sure') }}</el-button
+          {{ t('common.sure') }}</el-button
         >
       </div>
       <FinishPage

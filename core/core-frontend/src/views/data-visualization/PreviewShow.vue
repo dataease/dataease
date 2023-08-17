@@ -2,7 +2,7 @@
 import { ElAside, ElContainer } from 'element-plus-secondary'
 import DeResourceTree from '@/views/common/DeResourceTree.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { reactive, ref } from 'vue'
+import { nextTick, reactive, ref } from 'vue'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
 import PreviewHead from '@/views/data-visualization/PreviewHead.vue'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
@@ -43,9 +43,10 @@ const loadCanvasData = dvId => {
       state.canvasViewInfoPreview = canvasViewInfoPreview
       state.dvInfo = dvInfo
       state.curPreviewGap = curPreviewGap
-
       dvMainStore.updateCurDvInfo(dvInfo)
-      dvPreview.value.restore()
+      nextTick(() => {
+        dvPreview.value.restore()
+      })
     }
   )
 }
@@ -123,9 +124,14 @@ const state = reactive({
 </template>
 
 <style lang="less">
+::-webkit-scrollbar {
+  width: 0px !important;
+  height: 0px !important;
+}
 .dv-preview {
   width: 100%;
   height: 100%;
+  overflow: hidden;
   display: flex;
   background: #ffffff;
   .resource-area {

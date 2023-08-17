@@ -28,7 +28,7 @@ export default {
   login: {
     welcome: 'Welcome',
     btn: 'Login',
-    username_format: '3-10 alphanumeric underscores and start with a letter',
+    username_format: '1-25 alphanumeric or ._-@ and start with a letter or number',
     pwd_format: 'Length should be 5 to 15'
   },
   user: {
@@ -43,7 +43,9 @@ export default {
     search_placeholder: 'Please enter a name to search',
     edit: 'Edit',
     parent: 'Superior',
-    default_cannot_move: 'The default organization cannot be deleted'
+    default_cannot_move: 'The default organization cannot be deleted',
+    default_parent_tips: '(default current organization)',
+    admin_parent_tips: '(default root organization)'
   },
   auth: {
     row_column: 'Row and column permission settings',

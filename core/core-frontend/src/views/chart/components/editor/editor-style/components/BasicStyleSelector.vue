@@ -77,10 +77,10 @@ const switchColorCase = () => {
 }
 
 const pageSizeOptions = [
-  { name: '10' + t('chart.table_page_size_unit'), value: '10' },
-  { name: '20' + t('chart.table_page_size_unit'), value: '20' },
-  { name: '50' + t('chart.table_page_size_unit'), value: '50' },
-  { name: '100' + t('chart.table_page_size_unit'), value: '100' }
+  { name: '10' + t('chart.table_page_size_unit'), value: 10 },
+  { name: '20' + t('chart.table_page_size_unit'), value: 20 },
+  { name: '50' + t('chart.table_page_size_unit'), value: 50 },
+  { name: '100' + t('chart.table_page_size_unit'), value: 100 }
 ]
 
 const gaugeStyleOptions = [{ name: '默认', value: 'default' }]

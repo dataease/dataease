@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Shape from './Shape.vue'
+import { useEmitt } from '@/hooks/web/useEmitt'
 import {
   getStyle,
   getComponentRotatedStyle,
@@ -177,6 +178,7 @@ const mainDomId = ref('editor-' + canvasId.value)
 const showComponentData = computed(() => {
   return componentData.value.filter(component => component.isShow)
 })
+const { emitter } = useEmitt()
 
 const pointShadowShow = computed(() => {
   return (
@@ -676,7 +678,18 @@ function removeItem(index) {
         moveItemUp(upItem, canGoUpRows)
       }
     })
+    let checkedFields = []
+    if (item.innerType === 'VQuery') {
+      item.propValue.forEach(ele => {
+        checkedFields = [...ele.checkedFields, ...checkedFields]
+      })
+    }
     componentData.value.splice(index, 1)
+    if (!!checkedFields.length) {
+      Array.from(new Set(checkedFields)).forEach(ele => {
+        emitter.emit(`query-data-${ele}`)
+      })
+    }
     snapshotStore.recordSnapshot('removeItem')
   }
 }

@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 import Header from './components/Header.vue'
+import HeaderSystem from './components/HeaderSystem.vue'
 import Sidebar from './components/Sidebar.vue'
 import Menu from './components/Menu.vue'
 import Main from './components/Main.vue'
@@ -12,7 +13,8 @@ const systemMenu = computed(() => route.path.includes('system'))
 
 <template>
   <div class="common-layout">
-    <Header></Header>
+    <HeaderSystem v-if="systemMenu"></HeaderSystem>
+    <Header v-else></Header>
     <el-container class="layout-container">
       <Sidebar v-if="systemMenu" class="layout-sidebar">
         <Menu style="height: 100%"></Menu>
@@ -26,6 +28,7 @@ const systemMenu = computed(() => route.path.includes('system'))
 .common-layout {
   width: 100vw;
   height: 100vh;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   background: #fff;

@@ -161,6 +161,6 @@ export class RoseDonut extends Rose {
   }
 
   constructor() {
-    super('pie-rose-donut')
+    super('pie-donut-rose')
   }
 }

@@ -114,7 +114,7 @@ const rules = {
   pid: [
     {
       required: true,
-      message: t('commons.please_select'),
+      message: t('common.please_select'),
       trigger: 'blur'
     }
   ]
@@ -274,7 +274,7 @@ const emits = defineEmits(['finish', 'handleShowFinishPage'])
       label-position="top"
       require-asterisk-position="right"
       ref="datasource"
-      @keydown.stop.prevent
+      @keydown.stop.prevent.enter
       :model="datasetForm"
       :rules="datasetFormRules"
     >

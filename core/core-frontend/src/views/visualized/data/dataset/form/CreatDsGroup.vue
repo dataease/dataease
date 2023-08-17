@@ -79,7 +79,7 @@ const dialogTitle = computed(() => {
       title = t('deDataset.new_folder')
       break
     case 'dataset':
-      title = t('deDataset.create') + t('auth.dataset')
+      title = t('common.save') + t('auth.dataset')
       break
     default:
       break
@@ -117,7 +117,7 @@ const rules = {
   pid: [
     {
       required: true,
-      message: t('commons.please_select'),
+      message: t('common.please_select'),
       trigger: 'blur'
     }
   ]
@@ -266,7 +266,7 @@ const emits = defineEmits(['finish'])
       label-position="top"
       require-asterisk-position="right"
       ref="dataset"
-      @keydown.stop.prevent
+      @keydown.stop.prevent.enter
       :model="datasetForm"
       :rules="datasetFormRules"
     >
@@ -278,6 +278,7 @@ const emits = defineEmits(['finish'])
           v-model="datasetForm.pid"
           :data="state.tData"
           popper-class="dataset-tree-select"
+          :render-after-expand="false"
           style="width: 100%"
           :props="props"
           @node-click="nodeClick"

@@ -342,9 +342,9 @@
         </el-row>
       </el-row>
       <el-row class="root-class">
-        <el-button size="mini" @click="cancel()">{{ t('commons.cancel') }} </el-button>
+        <el-button size="mini" @click="cancel()">{{ t('common.cancel') }} </el-button>
         <el-button type="primary" size="mini" @click="save()"
-          >{{ t('commons.confirm') }}
+          >{{ t('dataset.confirm') }}
         </el-button>
       </el-row>
     </el-row>

@@ -1,23 +1,21 @@
 <script lang="ts" setup>
-import { computed, onBeforeUnmount, onMounted, reactive, ref, toRaw, toRefs } from 'vue'
+import { computed, onBeforeUnmount, onMounted, PropType, reactive, ref, toRaw, toRefs } from 'vue'
 import { getData } from '@/api/chart'
-import { ChartLibraryType } from '@/views/chart/components/js/panel/types'
-import { G2PlotChartView } from '@/views/chart/components/js/panel/types/impl/g2plot'
-import { L7PlotChartView } from '@/views/chart/components/js/panel/types/impl/l7plot'
 import chartViewManager from '@/views/chart/components/js/panel'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import ViewTrackBar from '@/components/visualization/ViewTrackBar.vue'
 import { storeToRefs } from 'pinia'
-import { getGeoJsonFile, parseJson } from '@/views/chart/components/js/util'
 import { S2ChartView } from '@/views/chart/components/js/panel/types/impl/s2'
 import debounce from 'lodash-es/debounce'
-import en from '@/locales/en'
+import { ElPagination } from 'element-plus-secondary'
+import ChartError from '@/views/chart/components/views/components/ChartError.vue'
+
 const dvMainStore = dvMainStoreWithOut()
 const { nowPanelTrackInfo, nowPanelJumpInfo } = storeToRefs(dvMainStore)
 
 const props = defineProps({
   view: {
-    type: Object,
+    type: Object as PropType<ChartObj>,
     default() {
       return {
         propValue: null
@@ -40,6 +38,9 @@ const emit = defineEmits(['onChartClick', 'onDrillFilters', 'onJumpClick'])
 
 const { view, showPosition, dynamicAreaId } = toRefs(props)
 
+const isError = ref(false)
+const errMsg = ref('')
+
 const state = reactive({
   trackBarStyle: {
     position: 'absolute',
@@ -50,7 +51,13 @@ const state = reactive({
   pointParam: null,
   myChart: null,
   loading: false,
-  data: { fields: [] } // 图表数据
+  data: { fields: [] }, // 图表数据
+  pageInfo: {
+    total: 0,
+    pageSize: 20,
+    currentPage: 1
+  },
+  showPage: false
 })
 
 const containerId = 'container-' + showPosition.value + '-' + view.value.id
@@ -61,13 +68,18 @@ const calcData = view => {
     return
   }
   state.loading = true
+  isError.value = false
   const v = JSON.parse(JSON.stringify(view))
   getData(v)
     .then(res => {
-      // console.log(res)
-      state.data = res?.data
-      emit('onDrillFilters', res?.drillFilters)
-      renderChart(res)
+      if (res.code && res.code !== 0) {
+        isError.value = true
+        errMsg.value = res.msg
+      } else {
+        state.data = res?.data
+        emit('onDrillFilters', res?.drillFilters)
+        renderChart(res)
+      }
     })
     .finally(() => {
       state.loading = false
@@ -80,14 +92,43 @@ const renderChart = async view => {
   }
   // view 为引用对象 需要存库 view.data 直接赋值会导致保存不必要的数据
   const chart = { ...view, data: state.data }
+  setupPage(chart)
+  state.myChart?.destroy()
   const chartView = chartViewManager.getChartView(view.render, view.type) as S2ChartView<any>
   state.myChart = chartView.drawChart({
     container: containerId,
     chart: toRaw(chart),
     chartObj: state.myChart,
+    pageInfo: state.pageInfo,
     action
   })
   state.myChart?.render()
+}
+
+const setupPage = (chart: ChartObj) => {
+  const customAttr = chart.customAttr
+  if (chart.type !== 'table-info' || customAttr.basicStyle.tablePageMode !== 'page') {
+    return
+  }
+  const pageInfo = state.pageInfo
+  pageInfo.pageSize = customAttr.basicStyle.tablePageSize ?? 20
+  if (chart.totalItems > state.pageInfo.pageSize) {
+    pageInfo.total = chart.totalItems
+    state.showPage = true
+  }
+}
+
+const showPage = computed(() => {
+  if (view.value.type !== 'table-info') {
+    return false
+  }
+  return state.showPage
+})
+
+const handleCurrentChange = pageNum => {
+  const pageReq = { goPage: pageNum }
+  const chart = { ...view.value, chartExtRequest: pageReq }
+  calcData(chart)
 }
 
 const action = param => {
@@ -180,10 +221,23 @@ const resize = (width, height) => {
     state.myChart?.render()
   }, 500)()
 }
+const preSize = [0, 0]
+const TOLERANCE = 1
 onMounted(() => {
   const resizeObserver = new ResizeObserver(([entry] = []) => {
-    console.info(entry)
     const [size] = entry.borderBoxSize || []
+    // 拖动的时候宽高重新计算，误差范围内不重绘，误差先设置为1
+    if (!(preSize[0] || preSize[1])) {
+      preSize[0] = size.inlineSize
+      preSize[1] = size.blockSize
+    }
+    const widthOffset = Math.abs(size.inlineSize - preSize[0])
+    const heightOffset = Math.abs(size.blockSize - preSize[1])
+    if (widthOffset < TOLERANCE && heightOffset < TOLERANCE) {
+      return
+    }
+    preSize[0] = size.inlineSize
+    preSize[1] = size.blockSize
     resize(size.inlineSize, size.blockSize)
   })
 
@@ -205,18 +259,42 @@ onBeforeUnmount(() => {
       :style="state.trackBarStyle"
       @trackClick="trackClick"
     />
-    <div class="canvas-content" :id="containerId"></div>
+    <div v-if="!isError" class="canvas-content">
+      <div style="height: 100%" :id="containerId"></div>
+    </div>
+    <div class="table-page-info" v-if="showPage && !isError">
+      <div>共有{{ state.pageInfo.total }}条数据</div>
+      <el-pagination
+        layout="prev, pager, next"
+        v-model:page-size="state.pageInfo.pageSize"
+        v-model:current-page="state.pageInfo.currentPage"
+        :total="state.pageInfo.total"
+        @update:current-page="handleCurrentChange"
+      />
+    </div>
+    <chart-error v-if="isError" :err-msg="errMsg" />
   </div>
 </template>
 
 <style lang="less" scoped>
 .canvas-area {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   position: relative;
   width: 100%;
   height: 100%;
   .canvas-content {
+    flex: 1;
     width: 100%;
-    height: 100%;
+    overflow: hidden;
   }
+}
+.table-page-info {
+  margin: 4px;
+  height: 20px;
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
 }
 </style>

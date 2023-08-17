@@ -29,7 +29,7 @@ export default {
   login: {
     welcome: '欢迎使用',
     btn: '登录',
-    username_format: '3-10位字母数字下划线且以字母开头',
+    username_format: '1-25位字母数字或者._-@且以字母或数字开头',
     pwd_format: '密码长度在5-15'
   },
   component: {
@@ -86,7 +86,9 @@ export default {
     delete_children_first: '请先删除子组织后，再删除当前组织',
     confirm_content: '友情提示，组织被删除后，组织下的资源也将被删除',
     give_up_resource: '放弃资源，直接删除',
-    move_resource_first: '先迁移资源'
+    move_resource_first: '先迁移资源',
+    default_parent_tips: '(默認當前組織)',
+    admin_parent_tips: '(默認根組織)'
   },
   auth: {
     user_dimension: '按用户配置',

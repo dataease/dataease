@@ -229,7 +229,7 @@ public class ChartDataBuild {
                 axisChartDataDTO.setDimensionList(dimensionList);
 
                 // yAxis最后的数据对应extLabel和extTooltip，将他们从yAxis中去掉，同时转换成动态值
-                int size = yAxis.size();
+                int size = xAxis.size() + extStack.size() + yAxis.size();
                 int extSize = view.getExtLabel().size() + view.getExtTooltip().size();
 
                 if (ObjectUtils.isNotEmpty(yAxis)) {
@@ -329,7 +329,7 @@ public class ChartDataBuild {
             }
 
             // yAxis最后的数据对应extLabel和extTooltip，将他们从yAxis中去掉，同时转换成动态值
-            int size = xAxis.size() + yAxis.size();
+            int size = xAxis.size() + yAxis.size() + extBubble.size();
             int extSize = view.getExtLabel().size() + view.getExtTooltip().size();
 
             for (int i = xAxis.size(); i < size - extSize; i++) {

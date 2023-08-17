@@ -76,7 +76,7 @@ const restore = () => {
       //div容器获取tableBox.value.clientWidth
       let canvasWidth = previewCanvas.value.clientWidth
       let canvasHeight = previewCanvas.value.clientHeight
-      scaleWidth.value = (canvasWidth * 100) / canvasStyleData.value.width
+      scaleWidth.value = Math.floor((canvasWidth * 100) / canvasStyleData.value.width)
       if (dashboardActive.value) {
         cellWidth.value = canvasWidth / pcMatrixCount.value.x
         cellHeight.value = canvasHeight / pcMatrixCount.value.y
@@ -146,6 +146,11 @@ defineExpose({
 </template>
 
 <style lang="less" scoped>
+::-webkit-scrollbar {
+  width: 0px !important;
+  height: 0px !important;
+}
+
 .canvas-container {
   background-size: 100% 100% !important;
   width: 100%;

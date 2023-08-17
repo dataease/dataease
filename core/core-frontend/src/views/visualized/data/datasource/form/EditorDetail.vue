@@ -366,11 +366,7 @@ defineExpose({
             :placeholder="t('datasource.input_name')"
           />
         </el-form-item>
-        <el-form-item
-          :label="t('commons.description')"
-          prop="description"
-          v-show="activeStep !== 2"
-        >
+        <el-form-item :label="t('common.description')" prop="description" v-show="activeStep !== 2">
           <el-input
             type="textarea"
             v-model="form.description"
@@ -386,7 +382,7 @@ defineExpose({
               <template #icon>
                 <Icon name="icon_add_outlined"></Icon>
               </template>
-              {{ t('commons.add') }}
+              {{ t('common.add') }}
             </el-button>
           </div>
           <empty-background
@@ -440,13 +436,13 @@ defineExpose({
                           </div>
                           <div class="foot">
                             <el-button style="min-width: 48px" secondary @click="cancelItem(idx)">{{
-                              t('commons.cancel')
+                              t('common.cancel')
                             }}</el-button>
                             <el-button
                               style="min-width: 48px"
                               type="primary"
                               @click="deleteItem(api, idx)"
-                              >{{ t('commons.sure') }}</el-button
+                              >{{ t('common.sure') }}</el-button
                             >
                           </div>
                         </template>
@@ -552,7 +548,7 @@ defineExpose({
             <el-select
               v-model="form.configuration.schema"
               filterable
-              :placeholder="t('commons.please_select')"
+              :placeholder="t('common.please_select')"
               class="de-select"
               @change="validatorSchema"
               @blur="validatorSchema"
@@ -669,7 +665,7 @@ defineExpose({
             prop="rate"
           >
             <div class="simple-cron">
-              {{ t('commons.every') }}
+              {{ t('common.every') }}
               <el-input-number
                 v-model="form.syncSetting.simpleCronValue"
                 controls-position="right"
@@ -681,9 +677,9 @@ defineExpose({
                 filterable
                 @change="onSimpleCronChange()"
               >
-                <el-option :label="t('commons.minute')" value="minute" />
-                <el-option :label="t('commons.hour')" value="hour" />
-                <el-option :label="t('commons.day')" value="day" />
+                <el-option :label="t('common.minute')" value="minute" />
+                <el-option :label="t('common.hour')" value="hour" />
+                <el-option :label="t('common.day')" value="day" />
               </el-select>
               {{ t('commons.every_exec') }}
             </div>
@@ -691,7 +687,7 @@ defineExpose({
           <el-form-item
             v-if="form.syncSetting.syncRate === 'CRON'"
             prop="cron"
-            :label="t('commons.cron_exp')"
+            :label="t('common.cron_exp')"
           >
             <el-popover :width="834" v-model="cronEdit" trigger="click">
               <template #default>

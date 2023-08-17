@@ -59,13 +59,24 @@ const clearFilter = (id?: number) => {
 }
 const filterChange = (value, field, operator) => {
   let exits = false
-  state.conditions.forEach(condition => {
+  let len = state.conditions.length
+  while (len--) {
+    const condition = state.conditions[len]
     if (condition.field === field) {
       exits = true
       condition['value'] = value
     }
-  })
-  if (!exits) {
+    if (!value?.length) {
+      state.conditions.splice(len, 1)
+    }
+  }
+  /* state.conditions.forEach(condition => {
+    if (condition.field === field) {
+      exits = true
+      condition['value'] = value
+    }
+  }) */
+  if (!exits && value?.length) {
     state.conditions.push({ field, value, operator })
   }
 }
@@ -89,7 +100,7 @@ defineExpose({
 
 <template>
   <el-drawer
-    :title="t('commons.filter_condition')"
+    :title="t('common.filter_condition')"
     v-model="userDrawer"
     size="600px"
     custom-class="drawer-main-container"
@@ -127,7 +138,7 @@ defineExpose({
 
     <template #footer>
       <el-button @click="reset">{{ t('commons.reset') }}</el-button>
-      <el-button @click="trigger" type="primary">{{ t('commons.sure') }}</el-button>
+      <el-button @click="trigger" type="primary">{{ t('common.sure') }}</el-button>
     </template>
   </el-drawer>
 </template>

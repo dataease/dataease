@@ -47,7 +47,7 @@ const editCalcField = ref(false)
 const calcEdit = ref()
 const editUnion = ref(false)
 const datasetDrag = ref()
-const datasetName = ref('新建数据集')
+const datasetName = ref('未命名数据集')
 const tabActive = ref('preview')
 const originName = ref('')
 const activeName = ref('')
@@ -215,7 +215,7 @@ const copyField = item => {
 const deleteField = item => {
   ElMessageBox.confirm(t('dataset.confirm_delete'), {
     confirmButtonText: t('dataset.confirm'),
-    cancelButtonText: t('commons.cancel'),
+    cancelButtonText: t('common.cancel'),
     showCancelButton: true,
     tip: t('chart.tips'),
     confirmButtonType: 'primary',
@@ -647,45 +647,47 @@ const treeProps = {
         class="table-list"
         :style="{ width: LeftWidth + 'px' }"
       >
-        <p class="select-ds">
-          选择数据源
-          <el-icon class="left-outlined" @click="showLeft = false">
-            <Icon name="group-3400"></Icon>
-          </el-icon>
-        </p>
-        <el-tree-select
-          :check-strictly="false"
-          @change="dsChange"
-          :placeholder="t('dataset.pls_slc_data_source')"
-          class="ds-list"
-          popper-class="tree-select-ds_popper"
-          v-model="dataSource"
-          node-key="id"
-          :props="treeProps"
-          :data="state.dataSourceList"
-          :render-after-expand="false"
-        />
-        <p class="select-ds table-num">
-          {{ t('datasource.data_table') }}
-          <span class="num">
-            <el-icon>
-              <Icon name="reference-table"></Icon>
+        <div class="table-list-top">
+          <p class="select-ds">
+            选择数据源
+            <el-icon class="left-outlined" @click="showLeft = false">
+              <Icon name="group-3400"></Icon>
             </el-icon>
-            {{ state.tableData.length }}
-          </span>
-        </p>
-        <el-input
-          v-model="searchTable"
-          class="search"
-          :placeholder="t('deDataset.by_table_name')"
-          clearable
-        >
-          <template #prefix>
-            <el-icon>
-              <Icon name="icon_search-outline_outlined"></Icon>
-            </el-icon>
-          </template>
-        </el-input>
+          </p>
+          <el-tree-select
+            :check-strictly="false"
+            @change="dsChange"
+            :placeholder="t('dataset.pls_slc_data_source')"
+            class="ds-list"
+            popper-class="tree-select-ds_popper"
+            v-model="dataSource"
+            node-key="id"
+            :props="treeProps"
+            :data="state.dataSourceList"
+            :render-after-expand="false"
+          />
+          <p class="select-ds table-num">
+            {{ t('datasource.data_table') }}
+            <span class="num">
+              <el-icon>
+                <Icon name="reference-table"></Icon>
+              </el-icon>
+              {{ state.tableData.length }}
+            </span>
+          </p>
+          <el-input
+            v-model="searchTable"
+            class="search"
+            :placeholder="t('deDataset.by_table_name')"
+            clearable
+          >
+            <template #prefix>
+              <el-icon>
+                <Icon name="icon_search-outline_outlined"></Icon>
+              </el-icon>
+            </template>
+          </el-input>
+        </div>
         <div v-if="!state.tableData.length && searchTable !== ''" class="el-empty">
           <div class="el-empty__description" style="margin-top: 80px; color: #5e6d82">
             没有找到相关内容
@@ -728,7 +730,7 @@ const treeProps = {
           </template>
         </div>
       </div>
-      <div class="drag-right">
+      <div class="drag-right" :style="{ width: `calc(100vw - ${showLeft ? LeftWidth : 0}px)` }">
         <dataset-union
           @join-editor="joinEditor"
           :maskShow="maskShow"
@@ -744,7 +746,7 @@ const treeProps = {
           <div class="sql-title">
             <span class="drag" @mousedown="mousedownDragH" />
             <div class="field-data">
-              <el-button @click="addCalcField('q')" secondary>
+              <el-button :disabled="!allfields.length" @click="addCalcField('q')" secondary>
                 <template #icon>
                   <el-icon>
                     <Icon name="icon_add_outlined"></Icon>
@@ -870,7 +872,7 @@ const treeProps = {
     </el-drawer>
   </div>
   <creat-ds-group @finish="finish" ref="creatDsFolder"></creat-ds-group>
-  <el-dialog v-model="editCalcField" width="1000px" title="新建计算字段">
+  <el-dialog v-model="editCalcField" width="1000px" :title="t('dataset.add_calc_field')">
     <calc-field-edit ref="calcEdit" />
     <template #footer>
       <el-button secondary @click="closeEditCalc()">{{ t('dataset.cancel') }} </el-button>
@@ -969,13 +971,18 @@ const treeProps = {
     }
 
     .table-list {
-      p {
-        margin: 0;
+      .list-item_primary {
+        padding: 8px;
+      }
+      .table-list-top {
+        padding: 16px;
+        padding-bottom: 0;
       }
 
       height: 100%;
       width: 240px;
-      padding: 16px 12px;
+      padding-bottom: 16px;
+
       font-family: PingFang SC;
       border-right: 1px solid rgba(31, 35, 41, 0.15);
 
@@ -1034,6 +1041,7 @@ const treeProps = {
       .table-checkbox-list {
         height: calc(100% - 190px);
         overflow-y: auto;
+        padding: 0 8px;
 
         .not-allow {
           cursor: not-allowed;
@@ -1046,7 +1054,6 @@ const treeProps = {
   .dataset-db {
     display: flex;
     .drag-right {
-      flex: 1;
       height: calc(100vh - 56px);
       .sql-result {
         font-family: PingFang SC;

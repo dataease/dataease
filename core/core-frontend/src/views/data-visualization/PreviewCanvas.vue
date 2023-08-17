@@ -81,6 +81,11 @@ onMounted(() => {
 </template>
 
 <style lang="less">
+::-webkit-scrollbar {
+  width: 0px !important;
+  height: 0px !important;
+}
+
 .content {
   background-color: #ffffff;
   width: 100%;

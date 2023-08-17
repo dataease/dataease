@@ -9,7 +9,7 @@
     ]"
     @click.stop
   >
-    <template v-if="element.component === 'VQuery'">
+    <template v-if="element.component === 'VQuery' && showPosition !== 'preview'">
       <span title="添加查询条件">
         <el-icon class="bar-base-icon" @click="addQueryCriteria">
           <Icon name="icon_add_outlined"></Icon

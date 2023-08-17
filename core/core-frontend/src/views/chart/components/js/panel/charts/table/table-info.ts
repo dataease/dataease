@@ -1,31 +1,37 @@
-import { S2ChartView, S2DrawOptions } from '@/views/chart/components/js/panel/types/impl/s2'
-import { ColCell, S2Event, S2Options, TableSheet } from '@antv/s2/esm/index'
-import { parseJson } from '@/views/chart/components/js/util'
-import { formatterItem, valueFormatter } from '@/views/chart/components/js/formatter'
-import { getCurrentField } from '@/views/chart/components/js/panel/common/common_table'
+import { ColCell, DataCell, S2Event, S2Options, TableSheet } from '@antv/s2/esm/index'
+import { formatterItem, valueFormatter } from '../../../formatter'
+import { parseJson } from '../../../util'
+import { getCurrentField, getCustomTheme } from '../../common/common_table'
+import { S2ChartView, S2DrawOptions } from '../../types/impl/s2'
 import { TABLE_EDITOR_PROPERTY, TABLE_EDITOR_PROPERTY_INNER } from './common'
 
 /**
- * 汇总表
+ * 明细表
  */
-export class TableNormal extends S2ChartView<TableSheet> {
+export class TableInfo extends S2ChartView<TableSheet> {
   properties = TABLE_EDITOR_PROPERTY
-  propertyInner = TABLE_EDITOR_PROPERTY_INNER
-  axis: AxisType[] = ['xAxis', 'yAxis', 'drill', 'filter']
-  drawChart(drawOption: S2DrawOptions<TableSheet>): TableSheet {
-    const { container, chart } = drawOption
+  propertyInner = {
+    ...TABLE_EDITOR_PROPERTY_INNER,
+    'basic-style-selector': [
+      'tableColumnMode',
+      'tableBorderColor',
+      'tableScrollBarColor',
+      'alpha',
+      'tablePageMode'
+    ]
+  }
+  axis: AxisType[] = ['xAxis', 'filter', 'drill']
+  public drawChart(drawOption: S2DrawOptions<TableSheet>): TableSheet {
+    const { container, chart, pageInfo, action } = drawOption
     const containerDom = document.getElementById(container)
-    if (!containerDom) return
 
     // fields
     const fields = chart.data.fields
 
     const columns = []
     const meta = []
-
-    // add drill list
     fields.forEach(ele => {
-      const f = getCurrentField(chart.yAxis, ele)
+      const f = getCurrentField(chart.xAxis, ele)
       columns.push(ele.dataeaseName)
       meta.push({
         field: ele.dataeaseName,
@@ -37,15 +43,20 @@ export class TableNormal extends S2ChartView<TableSheet> {
           if (value === null || value === undefined) {
             return value
           }
-          if (f.formatterCfg) {
-            return valueFormatter(value, f.formatterCfg)
+          if (f.groupType === 'd') {
+            return value
           } else {
-            return valueFormatter(value, formatterItem)
+            if (f.formatterCfg) {
+              const v = valueFormatter(value, f.formatterCfg)
+              return v.includes('NaN') ? value : v
+            } else {
+              const v = valueFormatter(value, formatterItem)
+              return v.includes('NaN') ? value : v
+            }
           }
         }
       })
     })
-
     // 空值处理
     // const newData = handleTableEmptyStrategy(tableData, chart)
     // data config
@@ -62,9 +73,8 @@ export class TableNormal extends S2ChartView<TableSheet> {
     const s2Options: S2Options = {
       width: containerDom.offsetWidth,
       height: containerDom.offsetHeight,
-      showSeriesNumber: customAttr.tableHeader.showIndex,
-      style: this.configStyle(chart),
-      totals: {}
+      showSeriesNumber: customAttr.tableHeader.showIndex
+      // style: getSize(chart),
       // conditions: getConditions(chart)
     }
     // 开启序号之后，第一列就是序号列，修改 label 即可
@@ -79,21 +89,29 @@ export class TableNormal extends S2ChartView<TableSheet> {
         }
         return new ColCell(node, spreadsheet, headerConfig)
       }
+      s2Options.dataCell = viewMeta => {
+        if (viewMeta.colIndex === 0) {
+          viewMeta.fieldValue =
+            pageInfo.pageSize * (pageInfo.currentPage - 1) + viewMeta.rowIndex + 1
+        }
+        return new DataCell(viewMeta, viewMeta?.spreadsheet)
+      }
     }
 
     // 开始渲染
     const newChart = new TableSheet(containerDom, s2DataConfig, s2Options)
 
     // click
-    newChart.on(S2Event.DATA_CELL_CLICK, drawOption.action)
+    newChart.on(S2Event.DATA_CELL_CLICK, action)
 
     // theme
-    const customTheme = this.configTheme(chart)
+    const customTheme = getCustomTheme(chart)
     newChart.setThemeCfg({ theme: customTheme })
 
     return newChart
   }
+
   constructor() {
-    super('table-normal', [])
+    super('table-info', [])
   }
 }

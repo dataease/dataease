@@ -24,6 +24,7 @@ import io.dataease.engine.utils.SQLUtils;
 import io.dataease.engine.utils.Utils;
 import io.dataease.exception.DEException;
 import io.dataease.i18n.Translator;
+import io.dataease.result.ResultCode;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.JsonUtil;
 import jakarta.annotation.Resource;
@@ -68,7 +69,7 @@ public class ChartDataManage {
 
         ChartViewDTO chartViewDTO = new ChartViewDTO();
         if (ObjectUtils.isEmpty(view)) {
-            DEException.throwException(Translator.get("i18n_chart_delete"));
+            DEException.throwException(ResultCode.DATA_IS_WRONG.code(), Translator.get("i18n_chart_delete"));
         }
 
         List<ChartViewFieldDTO> viewFields = new ArrayList<>(view.getViewFields());
@@ -118,7 +119,7 @@ public class ChartDataManage {
 
         DatasetGroupInfoDTO table = datasetGroupManage.get(view.getTableId(), null);
         if (table == null) {
-            DEException.throwException(Translator.get("i18n_no_ds"));
+            DEException.throwException(ResultCode.DATA_IS_WRONG.code(), Translator.get("i18n_no_ds"));
         }
         Map<String, ColumnPermissionItem> desensitizationList = new HashMap<>();
         List<Long> allDatasetTableFieldDTOIds = permissionManage.filterColumnPermissions(transFields(allFields), desensitizationList, table.getId(), chartExtRequest.getUser()).stream().map(DatasetTableFieldDTO::getId).collect(Collectors.toList());
@@ -142,8 +143,12 @@ public class ChartDataManage {
                     chartExtRequest.setGoPage(1L);
                 }
                 if (chartExtRequest.getPageSize() == null) {
-                    String pageSize = (String) mapSize.get("tablePageSize");
-                    chartExtRequest.setPageSize(Math.min(Long.parseLong(pageSize), view.getResultCount().longValue()));
+                    int pageSize = (int) mapSize.get("tablePageSize");
+                    if (StringUtils.equalsIgnoreCase(view.getResultMode(), "custom")) {
+                        chartExtRequest.setPageSize(Math.min(pageSize, view.getResultCount().longValue()));
+                    } else {
+                        chartExtRequest.setPageSize((long) pageSize);
+                    }
                 }
             } else {
                 if (StringUtils.equalsIgnoreCase(view.getResultMode(), "custom")) {
@@ -426,12 +431,12 @@ public class ChartDataManage {
         //如果不是插件视图 走原生逻辑
         if (table.getMode() == 0) {// 直连
             if (ObjectUtils.isEmpty(dsMap)) {
-                DEException.throwException(Translator.get("i18n_datasource_delete"));
+                DEException.throwException(ResultCode.DATA_IS_WRONG.code(), Translator.get("i18n_datasource_delete"));
             }
             for (Map.Entry<Long, DatasourceSchemaDTO> next : dsMap.entrySet()) {
                 DatasourceSchemaDTO ds = next.getValue();
                 if (StringUtils.isNotEmpty(ds.getStatus()) && "Error".equalsIgnoreCase(ds.getStatus())) {
-                    DEException.throwException(Translator.get("i18n_invalid_ds"));
+                    DEException.throwException(ResultCode.DATA_IS_WRONG.code(), Translator.get("i18n_invalid_ds"));
                 }
             }
 
@@ -445,18 +450,22 @@ public class ChartDataManage {
                 Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields));
                 querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
             } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
-                xAxis.addAll(extStack);
-                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields));
+                List<ChartViewFieldDTO> xFields = new ArrayList<>();
+                xFields.addAll(xAxis);
+                xFields.addAll(extStack);
+                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xFields, transFields(allFields));
                 Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields));
                 querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
             } else if (StringUtils.containsIgnoreCase(view.getType(), "scatter")) {
-                yAxis.addAll(extBubble);
+                List<ChartViewFieldDTO> yFields = new ArrayList<>();
+                yFields.addAll(yAxis);
+                yFields.addAll(extBubble);
                 Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields));
-                Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields));
+                Quota2SQLObj.quota2sqlObj(sqlMeta, yFields, transFields(allFields));
                 querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
             } else if (StringUtils.equalsIgnoreCase("table-info", view.getType())) {
                 Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields));
-                String originSql = SQLProvider.createQuerySQL(sqlMeta, false, needOrder, view);
+                String originSql = SQLProvider.createQuerySQL(sqlMeta, false, true, view);// 明细表强制加排序
                 String limit = ((pageInfo.getGoPage() != null && pageInfo.getPageSize() != null) ? " LIMIT " + pageInfo.getPageSize() + " OFFSET " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize() : "");
                 querySql = originSql + limit;
                 totalPageSql = "SELECT COUNT(*) FROM (" + originSql + ") COUNT_TEMP";
@@ -480,6 +489,9 @@ public class ChartDataManage {
                 datasourceRequest.setTotalPageFlag(true);
                 List<String[]> tmpData = (List<String[]>) calciteProvider.fetchResultField(datasourceRequest).get("data");
                 totalItems = ObjectUtils.isEmpty(tmpData) ? 0 : Long.valueOf(tmpData.get(0)[0]);
+                if (StringUtils.equalsIgnoreCase(view.getResultMode(), "custom")) {
+                    totalItems = totalItems <= view.getResultCount() ? totalItems : view.getResultCount();
+                }
                 totalPage = (totalItems / pageInfo.getPageSize()) + (totalItems % pageInfo.getPageSize() > 0 ? 1 : 0);
             }
 
@@ -640,7 +652,7 @@ public class ChartDataManage {
                 mapChart = ChartDataBuild.transGroupStackDataAntV(xAxisBase, xAxis, xAxisExt, yAxis, extStack, data, view, isDrill);
             } else if (StringUtils.containsIgnoreCase(view.getType(), "bar-stack")) {
                 mapChart = ChartDataBuild.transStackChartDataAntV(xAxis, yAxis, view, data, extStack, isDrill);
-            } else if (StringUtils.containsIgnoreCase(view.getType(), "line-stack")) {
+            } else if (StringUtils.equalsAnyIgnoreCase(view.getType(), "line-stack", "area-stack")) {
                 mapChart = ChartDataBuild.transStackChartDataAntV(xAxis, yAxis, view, data, extStack, isDrill);
             } else if (StringUtils.containsIgnoreCase(view.getType(), "scatter")) {
                 mapChart = ChartDataBuild.transScatterDataAntV(xAxis, yAxis, view, data, extBubble, isDrill);
@@ -1209,18 +1221,22 @@ public class ChartDataManage {
                 Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields));
                 querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
             } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
-                xAxis.addAll(extStack);
-                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields));
+                List<ChartViewFieldDTO> xFields = new ArrayList<>();
+                xFields.addAll(xAxis);
+                xFields.addAll(extStack);
+                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xFields, transFields(allFields));
                 Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields));
                 querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
             } else if (StringUtils.containsIgnoreCase(view.getType(), "scatter")) {
-                yAxis.addAll(extBubble);
+                List<ChartViewFieldDTO> yFields = new ArrayList<>();
+                yFields.addAll(yAxis);
+                yFields.addAll(extBubble);
                 Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields));
-                Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields));
+                Quota2SQLObj.quota2sqlObj(sqlMeta, yFields, transFields(allFields));
                 querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
             } else if (StringUtils.equalsIgnoreCase("table-info", view.getType())) {
                 Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields));
-                querySql = SQLProvider.createQuerySQL(sqlMeta, false, needOrder, view);
+                querySql = SQLProvider.createQuerySQL(sqlMeta, false, true, view);
             } else {
                 Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields));
                 Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields));

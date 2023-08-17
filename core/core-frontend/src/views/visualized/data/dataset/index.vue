@@ -152,12 +152,10 @@ const allFieldsColumns = [
 const dataPreviewLoading = ref(false)
 
 const infoList = computed(() => {
-  return ['name', 'createBy', 'nodeType', 'createTime'].map(ele => {
-    return {
-      name: ele,
-      value: ele === 'createTime' ? timestampFormatDate(nodeInfo[ele]) : nodeInfo[ele]
-    }
-  })
+  return {
+    creator: nodeInfo.creator,
+    createTime: timestampFormatDate(nodeInfo.createTime)
+  }
 })
 
 const generateColumns = (arr: Field[]) =>
@@ -298,17 +296,17 @@ const activeName = ref('dataPreview')
 
 const menuList = [
   {
-    label: '移动到',
+    label: t('visualization.move_to'),
     svgName: 'icon_into-item_outlined',
     command: 'move'
   },
   {
-    label: '重命名',
+    label: t('visualization.rename'),
     svgName: 'icon_rename_outlined',
     command: 'rename'
   },
   {
-    label: '删除',
+    label: t('common.delete'),
     divided: true,
     svgName: 'icon_delete-trash_outlined',
     command: 'delete'
@@ -322,7 +320,7 @@ const datasetTypeList = [
     command: 'dataset'
   },
   {
-    label: '新建文件夹',
+    label: t('deDataset.new_folder'),
     divided: true,
     svgName: 'dv-folder',
     command: 'folder'
@@ -351,9 +349,14 @@ const filterNode = (value: string, data: BusiTreeNode) => {
     <div class="dataset-list dataset-height">
       <div class="filter-dataset">
         <div class="icon-methods">
-          <span class="title"> 数据集 </span>
+          <span class="title"> {{ t('auth.dataset') }} </span>
           <div v-if="rootManage">
-            <el-tooltip class="box-item" effect="dark" content="新建文件夹" placement="top">
+            <el-tooltip
+              class="box-item"
+              effect="dark"
+              :content="t('deDataset.new_folder')"
+              placement="top"
+            >
               <el-button @click="() => handleDatasetTree('folder')" text>
                 <template #icon>
                   <Icon name="dv-new-folder"></Icon>
@@ -436,7 +439,9 @@ const filterNode = (value: string, data: BusiTreeNode) => {
           <div class="info-method">
             {{ nodeInfo.name }}
             <el-divider direction="vertical" />
-            <span class="create-user"> 创建人：{{ nodeInfo.creator }} </span>
+            <span class="create-user">
+              {{ t('visualization.create_by') }}:{{ nodeInfo.creator }}
+            </span>
 
             <el-popover placement="bottom" width="420" trigger="hover">
               <template #reference>
@@ -444,14 +449,17 @@ const filterNode = (value: string, data: BusiTreeNode) => {
                   <Icon name="icon_info_outlined"></Icon>
                 </el-icon>
               </template>
-              <dataset-detail :info-list="infoList" title-type="数据集"></dataset-detail>
+              <dataset-detail
+                :create-time="infoList.createTime"
+                :creator="infoList.creator"
+              ></dataset-detail>
             </el-popover>
             <div class="right-btn">
               <el-button secondary @click="createPanel('dashboard')">
                 <template #icon>
                   <Icon name="icon_dashboard_outlined"></Icon>
                 </template>
-                新建仪表板
+                {{ t('visualization.panelAdd') }}
               </el-button>
               <el-button secondary @click="createPanel('dataV')">
                 <template #icon> <Icon name="icon_operation-analysis_outlined"></Icon> </template
@@ -461,16 +469,16 @@ const filterNode = (value: string, data: BusiTreeNode) => {
                 <template #icon>
                   <Icon name="icon_edit_outlined"></Icon>
                 </template>
-                编辑
+                {{ t('visualization.edit') }}
               </el-button>
             </div>
           </div>
           <div class="tab-border">
             <el-tabs v-model="activeName" @tab-change="handleClick">
-              <el-tab-pane label="数据预览" name="dataPreview"></el-tab-pane>
+              <el-tab-pane :label="t('chart.data_preview')" name="dataPreview"></el-tab-pane>
               <el-tab-pane label="结构预览" name="structPreview"></el-tab-pane>
-              <el-tab-pane label="行权限" name="row"></el-tab-pane>
-              <el-tab-pane label="列权限" name="column"></el-tab-pane>
+              <el-tab-pane :label="t('dataset.row_permissions')" name="row"></el-tab-pane>
+              <el-tab-pane :label="t('dataset.column_permissions')" name="column"></el-tab-pane>
             </el-tabs>
           </div>
         </div>
@@ -509,7 +517,7 @@ const filterNode = (value: string, data: BusiTreeNode) => {
         </div>
       </template>
       <template v-else>
-        <empty-background description="请在左侧选择数据集" img-type="select" />
+        <empty-background :description="t('deDataset.on_the_left')" img-type="select" />
       </template>
     </div>
     <de-resource-group-opt
