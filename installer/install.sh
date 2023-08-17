@@ -1,17 +1,15 @@
 #!/bin/bash
 
 CURRENT_DIR=$(
-   cd "$(dirname "$0")"
+   cd "$(dirname "$0")" || exit
    pwd
 )
 
 function log() {
    message="[DATAEASE Log]: $1 "
-   echo -e "${message}" 2>&1 | tee -a ${CURRENT_DIR}/install.log
+   echo -e "${message}" 2>&1 | tee -a "${CURRENT_DIR}"/install.log
 }
 
-args=$@
-os=$(uname -a)
 docker_config_folder="/etc/docker"
 compose_files="-f docker-compose.yml"
 
@@ -48,23 +46,23 @@ function prop {
    [ -f "$1" ] | grep -P "^\s*[^#]?${2}=.*$" $1 | cut -d'=' -f2
 }
 
-echo -e "*******************************************************\n" 2>&1 | tee -a ${CURRENT_DIR}/install.log
-echo -e " 当前部署模式为 ${DE_ENGINE_MODE}，如需切换模式，\n 请修改 $DE_BASE/dataease/.env 中的 DE_ENGINE_MODE 变量后，\n 重新执行 bash install.sh 即可\n" 2>&1 | tee -a ${CURRENT_DIR}/install.log
-echo -e "*******************************************************\n" 2>&1 | tee -a ${CURRENT_DIR}/install.log
+# echo -e "*******************************************************\n" 2>&1 | tee -a ${CURRENT_DIR}/install.log
+# echo -e " 当前部署模式为 ${DE_ENGINE_MODE}，如需切换模式，\n 请修改 $DE_BASE/dataease/.env 中的 DE_ENGINE_MODE 变量后，\n 重新执行 bash install.sh 即可\n" 2>&1 | tee -a "${CURRENT_DIR}"/install.log
+# echo -e "*******************************************************\n" 2>&1 | tee -a ${CURRENT_DIR}/install.log
 
 
 echo -e "======================= 开始安装 =======================" 2>&1 | tee -a ${CURRENT_DIR}/install.log
 
-mkdir -p ${DE_RUN_BASE}
-cp -r ./dataease/* ${DE_RUN_BASE}/
+mkdir -p "${DE_RUN_BASE}"
+cp -r ./dataease/* "${DE_RUN_BASE}"/
 
-cd $DE_RUN_BASE
+cd "$DE_RUN_BASE" || exit
 env | grep DE_ >.env
 
-mkdir -p ${DE_RUN_BASE}/{cache,logs,conf}
-mkdir -p ${DE_RUN_BASE}/data/{mysql,static-resource,map}
+mkdir -p "${DE_RUN_BASE}"/{cache,logs,conf}
+mkdir -p "${DE_RUN_BASE}"/data/{mysql,static-resource,map}
 
-if [ ${DE_EXTERNAL_MYSQL} = "false" ]; then
+if [ "${DE_EXTERNAL_MYSQL}" = "false" ]; then
    compose_files="${compose_files} -f docker-compose-mysql.yml"
    sed -i -e "s/^      DE_MYSQL_HOST/      ${DE_MYSQL_HOST}/g" docker-compose.yml
    sed -i -e "s/^. DE_MYSQL_HOST/  ${DE_MYSQL_HOST}/g" docker-compose-mysql.yml
@@ -73,19 +71,19 @@ else
 fi
 
 log "拷贝配置文件模板文件  -> $conf_folder"
-cd $DE_RUN_BASE
-cp -r $templates_folder/* $conf_folder
+cd "$DE_RUN_BASE" || exit
+cp -r "$templates_folder"/* "$conf_folder"
 
 log "根据安装配置参数调整配置文件"
-cd ${templates_folder}
+cd "${templates_folder}" || exit
 templates_files=( application.yml mysql.env )
 for i in ${templates_files[@]}; do
-   if [ -f $i ]; then
-      envsubst < $i > $conf_folder/$i
+   if [ -f "$i" ]; then
+      envsubst < "$i" > "$conf_folder"/"$i"
    fi
 done
 
-cd ${CURRENT_DIR}
+cd "${CURRENT_DIR}" || exit
 sed -i -e "s#DE_BASE=.*#DE_BASE=${DE_BASE}#g" dectl
 \cp dectl /usr/local/bin && chmod +x /usr/local/bin/dectl
 if [ ! -f /usr/bin/dectl ]; then
@@ -105,7 +103,7 @@ fi
 if which docker >/dev/null 2>&1; then
    log "检测到 Docker 已安装，跳过安装步骤"
    log "启动 Docker "
-   service docker start 2>&1 | tee -a ${CURRENT_DIR}/install.log
+   service docker start 2>&1 | tee -a "${CURRENT_DIR}"/install.log
 else
    if [[ -d docker ]]; then
       log "... 离线安装 docker"
@@ -114,17 +112,17 @@ else
       chmod +x /usr/bin/docker*
       chmod 754 /etc/systemd/system/docker.service
       log "... 启动 docker"
-      systemctl enable docker; systemctl daemon-reload; service docker start 2>&1 | tee -a ${CURRENT_DIR}/install.log
+      systemctl enable docker; systemctl daemon-reload; service docker start 2>&1 | tee -a "${CURRENT_DIR}"/install.log
    else
       log "... 在线安装 docker"
-      curl -fsSL https://resource.fit2cloud.com/get-docker-linux.sh -o get-docker.sh 2>&1 | tee -a ${CURRENT_DIR}/install.log
+      curl -fsSL https://resource.fit2cloud.com/get-docker-linux.sh -o get-docker.sh 2>&1 | tee -a "${CURRENT_DIR}"/install.log
       if [[ ! -f get-docker.sh ]];then
          log "docker 在线安装脚本下载失败，请稍候重试"
          exit 1
       fi
       sudo sh get-docker.sh 2>&1 | tee -a ${CURRENT_DIR}/install.log
       log "... 启动 docker"
-      systemctl enable docker; systemctl daemon-reload; service docker start 2>&1 | tee -a ${CURRENT_DIR}/install.log
+      systemctl enable docker; systemctl daemon-reload; service docker start 2>&1 | tee -a "${CURRENT_DIR}"/install.log
    fi
 
    if [ ! -d "$docker_config_folder" ];then
@@ -154,7 +152,7 @@ if [ $? -ne 0 ]; then
          chmod +x /usr/bin/docker-compose
       else
          log "... 在线安装 docker-compose"
-         curl -L https://resource.fit2cloud.com/docker/compose/releases/download/v2.16.0/docker-compose-$(uname -s | tr A-Z a-z)-$(uname -m) -o /usr/local/bin/docker-compose 2>&1 | tee -a ${CURRENT_DIR}/install.log
+         curl -L https://resource.fit2cloud.com/docker/compose/releases/download/v2.16.0/docker-compose-$(uname -s | tr A-Z a-z)-$(uname -m) -o /usr/local/bin/docker-compose 2>&1 | tee -a "${CURRENT_DIR}"/install.log
          if [[ ! -f /usr/local/bin/docker-compose ]];then
             log "docker-compose 下载失败，请稍候重试"
             exit 1
@@ -176,24 +174,24 @@ else
 fi
 
 export COMPOSE_HTTP_TIMEOUT=180
-cd ${CURRENT_DIR}
+cd "${CURRENT_DIR}" || exit
 # 加载镜像
 if [[ -d images ]]; then
    log "加载镜像"
    for i in $(ls images); do
-      docker load -i images/$i 2>&1 | tee -a ${CURRENT_DIR}/install.log
+      docker load -i images/"$i" 2>&1 | tee -a "${CURRENT_DIR}"/install.log
    done
 else
    log "拉取镜像"
-   cd ${DE_RUN_BASE} && docker-compose $compose_files pull 2>&1
+   cd "${DE_RUN_BASE}" && docker-compose "$compose_files" pull 2>&1
 
-   DEVERSION=$(cat ${CURRENT_DIR}/dataease/templates/version)
+   DEVERSION=$(cat "${CURRENT_DIR}"/dataease/templates/version)
    #curl -sfL https://resource.fit2cloud.com/installation-log.sh | sh -s de ${INSTALL_TYPE} ${DEVERSION}
-   cd -
+   cd - || exit
 fi
 
 log "配置 dataease Service"
-cp ${DE_RUN_BASE}/bin/dataease/dataease.service /etc/init.d/dataease
+cp "${DE_RUN_BASE}"/bin/dataease/dataease.service /etc/init.d/dataease
 chmod a+x /etc/init.d/dataease
 if which chkconfig;then
    chkconfig --add dataease
@@ -226,27 +224,27 @@ fi
 if which firewall-cmd >/dev/null; then
    if systemctl is-active firewalld &>/dev/null ;then
       log "防火墙端口开放"
-      firewall-cmd --zone=public --add-port=${DE_PORT}/tcp --permanent
+      firewall-cmd --zone=public --add-port="${DE_PORT}"/tcp --permanent
       firewall-cmd --reload
    else
       log "防火墙未开启，忽略端口开放"
    fi
 fi
 
-http_code=$(curl -sILw "%{http_code}\n" http://localhost:${DE_PORT} -o /dev/null)
+http_code=$(curl -sILw "%{http_code}\n" http://localhost:"${DE_PORT}" -o /dev/null)
 if [[ $http_code == 200 ]];then
    log "停止服务进行升级..."
    dectl uninstall
 fi
 
 log "启动服务"
-dectl start | tee -a ${CURRENT_DIR}/install.log
-dectl status 2>&1 | tee -a ${CURRENT_DIR}/install.log
+dectl start | tee -a "${CURRENT_DIR}"/install.log
+dectl status 2>&1 | tee -a "${CURRENT_DIR}"/install.log
 
 for b in {1..30}
 do
    sleep 3
-   http_code=$(curl -sILw "%{http_code}\n" http://localhost:${DE_PORT} -o /dev/null)
+   http_code=$(curl -sILw "%{http_code}\n" http://localhost:"${DE_PORT}" -o /dev/null)
    if [[ $http_code == 000 ]];then
       log "服务启动中，请稍候 ..."
    elif [[ $http_code == 200 ]];then
@@ -262,6 +260,6 @@ if [[ $http_code != 200 ]];then
    log "【警告】服务在等待时间内未完全启动！请稍后使用 dectl status 检查服务运行状况。"
 fi
 
-echo -e "======================= 安装完成 =======================\n" 2>&1 | tee -a ${CURRENT_DIR}/install.log
-echo -e "请通过以下方式访问:\n URL: http://\$LOCAL_IP:$DE_PORT\n 用户名: admin\n 初始密码: dataease" 2>&1 | tee -a ${CURRENT_DIR}/install.log
+echo -e "======================= 安装完成 =======================\n" 2>&1 | tee -a "${CURRENT_DIR}"/install.log
+echo -e "请通过以下方式访问:\n URL: http://\$LOCAL_IP:$DE_PORT\n 用户名: admin\n 初始密码: dataease" 2>&1 | tee -a "${CURRENT_DIR}"/install.log
 
