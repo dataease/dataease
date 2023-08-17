@@ -52,7 +52,7 @@ public class PermissionManage {
         List<ColumnPermissionItem> roleColumnPermissionItems = new ArrayList<>();
 
         for (DataSetColumnPermissionsDTO dataSetColumnPermissionsDTO : columnPermissions(datasetTableId, user)) {
-            ColumnPermissions columnPermissions = JsonUtil.parse(dataSetColumnPermissionsDTO.getPermissions(), ColumnPermissions.class);
+            ColumnPermissions columnPermissions = JsonUtil.parseObject(dataSetColumnPermissionsDTO.getPermissions(), ColumnPermissions.class);
             if (!columnPermissions.getEnable()) {
                 continue;
             }

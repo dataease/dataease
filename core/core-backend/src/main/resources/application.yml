@@ -28,7 +28,9 @@ spring:
     operations-sorter: alpha
   api-docs:
     path: /v3/api-docs
-
+  jackson:
+    parser:
+      allow-numeric-leading-zeros: true
 management:
   health:
     redis:

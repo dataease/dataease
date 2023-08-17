@@ -1,5 +1,6 @@
 package io.dataease.dataset.manage;
 
+import io.dataease.api.chart.dto.ColumnPermissionItem;
 import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.dataset.dto.PreviewSqlDTO;
 import io.dataease.api.dataset.dto.SqlLogDTO;
@@ -9,6 +10,7 @@ import io.dataease.api.dataset.union.model.SQLMeta;
 import io.dataease.api.ds.vo.TableField;
 import io.dataease.api.permissions.dataset.dto.DataSetRowPermissionsTreeDTO;
 import io.dataease.auth.bo.TokenUserBO;
+import io.dataease.chart.utils.ChartDataBuild;
 import io.dataease.commons.utils.SqlparserUtils;
 import io.dataease.dataset.constant.DatasetTableType;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetTable;
@@ -169,6 +171,10 @@ public class DatasetDataManage {
         if (ObjectUtils.isEmpty(fields)) {
             DEException.throwException(Translator.get("i18n_no_fields"));
         }
+
+        Map<String, ColumnPermissionItem> desensitizationList = new HashMap<>();
+        fields = permissionManage.filterColumnPermissions(fields, desensitizationList, datasetGroupInfoDTO.getId(), null);
+
         buildFieldName(sqlMap, fields);
 
         Map<Long, DatasourceSchemaDTO> dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
@@ -206,7 +212,7 @@ public class DatasetDataManage {
         Map<String, Object> data = calciteProvider.fetchResultField(datasourceRequest);
         Map<String, Object> map = new LinkedHashMap<>();
         // 重新构造data
-        Map<String, Object> previewData = buildPreviewData(data, fields);
+        Map<String, Object> previewData = buildPreviewData(data, fields, desensitizationList);
         map.put("data", previewData);
         if (ObjectUtils.isEmpty(datasetGroupInfoDTO.getId())) {
             map.put("allFields", fields);
@@ -309,13 +315,13 @@ public class DatasetDataManage {
         // 重新构造data
         List<TableField> fList = (List<TableField>) data.get("fields");
         List<DatasetTableFieldDTO> fields = transFields(fList, false);
-        Map<String, Object> previewData = buildPreviewData(data, fields);
+        Map<String, Object> previewData = buildPreviewData(data, fields, new HashMap<>());
         Map<String, Object> map = new LinkedHashMap<>();
         map.put("data", previewData);
         return map;
     }
 
-    public Map<String, Object> buildPreviewData(Map<String, Object> data, List<DatasetTableFieldDTO> fields) {
+    public Map<String, Object> buildPreviewData(Map<String, Object> data, List<DatasetTableFieldDTO> fields, Map<String, ColumnPermissionItem> desensitizationList) {
         Map<String, Object> map = new LinkedHashMap<>();
         List<String[]> dataList = (List<String[]>) data.get("data");
         List<LinkedHashMap<String, Object>> dataObjectList = new ArrayList<>();
@@ -325,8 +331,12 @@ public class DatasetDataManage {
                 LinkedHashMap<String, Object> obj = new LinkedHashMap<>();
                 if (row.length > 0) {
                     for (int j = 0; j < row.length; j++) {
-                        obj.put(ObjectUtils.isNotEmpty(fields.get(j).getDataeaseName()) ?
-                                fields.get(j).getDataeaseName() : fields.get(j).getOriginName(), row[j]);
+                        if (desensitizationList.keySet().contains(fields.get(j).getDataeaseName())) {
+                            obj.put(fields.get(j).getDataeaseName(), ChartDataBuild.desensitizationValue(desensitizationList.get(fields.get(j).getDataeaseName()), String.valueOf(row[j])));
+                        } else {
+                            obj.put(ObjectUtils.isNotEmpty(fields.get(j).getDataeaseName()) ?
+                                    fields.get(j).getDataeaseName() : fields.get(j).getOriginName(), row[j]);
+                        }
                     }
                 }
                 dataObjectList.add(obj);

@@ -116,11 +116,13 @@ public class ChartDataManage {
         List<ChartFieldCustomFilterDTO> fieldCustomFilter = new ArrayList<>(view.getCustomFilter());
         List<ChartViewFieldDTO> drill = new ArrayList<>(view.getDrillFields());
 
-        DatasetGroupInfoDTO table = datasetGroupManage.get(view.getTableId(), null);// todo
+        DatasetGroupInfoDTO table = datasetGroupManage.get(view.getTableId(), null);
         if (table == null) {
             DEException.throwException(Translator.get("i18n_no_ds"));
         }
-        Map<String, ColumnPermissionItem> desensitizationList = new HashMap<>();// todo
+        Map<String, ColumnPermissionItem> desensitizationList = new HashMap<>();
+        List<Long> allDatasetTableFieldDTOIds = permissionManage.filterColumnPermissions(transFields(allFields), desensitizationList, table.getId(), chartExtRequest.getUser()).stream().map(DatasetTableFieldDTO::getId).collect(Collectors.toList());
+        allFields = allFields.stream().filter(chartViewFieldDTO  -> allDatasetTableFieldDTOIds.contains(chartViewFieldDTO.getId())).collect(Collectors.toList());
         List<DataSetRowPermissionsTreeDTO> rowPermissionsTree = permissionManage.getRowPermissionsTree(table.getId(), chartExtRequest.getUser());
 
         for (ChartFieldCustomFilterDTO ele : fieldCustomFilter) {

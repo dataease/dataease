@@ -8,6 +8,7 @@ import java.util.List;
 public class ColumnPermissionItem {
     private Long id;
     private String name;
+    private Integer deType;
     private Boolean selected = false;
     private String opt;
 
