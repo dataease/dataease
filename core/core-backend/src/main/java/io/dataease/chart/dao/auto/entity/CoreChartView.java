@@ -9,7 +9,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-07-03
+ * @since 2023-08-18
  */
 @TableName("core_chart_view")
 public class CoreChartView implements Serializable {
@@ -180,6 +180,16 @@ public class CoreChartView implements Serializable {
      * 刷新时间
      */
     private Integer refreshTime;
+
+    /**
+     * 是否开启联动
+     */
+    private Boolean linkageActive;
+
+    /**
+     * 是否开启跳转
+     */
+    private Boolean jumpActive;
 
     public Long getId() {
         return id;
@@ -445,6 +455,22 @@ public class CoreChartView implements Serializable {
         this.refreshTime = refreshTime;
     }
 
+    public Boolean getLinkageActive() {
+        return linkageActive;
+    }
+
+    public void setLinkageActive(Boolean linkageActive) {
+        this.linkageActive = linkageActive;
+    }
+
+    public Boolean getJumpActive() {
+        return jumpActive;
+    }
+
+    public void setJumpActive(Boolean jumpActive) {
+        this.jumpActive = jumpActive;
+    }
+
     @Override
     public String toString() {
         return "CoreChartView{" +
@@ -481,6 +507,8 @@ public class CoreChartView implements Serializable {
         ", refreshViewEnable = " + refreshViewEnable +
         ", refreshUnit = " + refreshUnit +
         ", refreshTime = " + refreshTime +
+        ", linkageActive = " + linkageActive +
+        ", jumpActive = " + jumpActive +
         "}";
     }
 }
