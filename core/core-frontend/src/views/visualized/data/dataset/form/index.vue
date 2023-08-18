@@ -596,8 +596,14 @@ const handleClick = () => {
   })
 }
 
-const finish = name => {
+const finish = res => {
+  const { id, pid, name } = res
   datasetName.value = name
+  nodeInfo = {
+    id,
+    pid,
+    name
+  }
 }
 
 const treeProps = {

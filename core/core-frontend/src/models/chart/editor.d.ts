@@ -46,11 +46,19 @@ declare type AxisSpec = {
    */
   name: string
   /**
+   * 轴类型限制, 没有表示不限制
+   */
+  type?: 'q' | 'd'
+  /**
    * 轴维度/指标数量限制, 0表示不限制
    */
   limit?: number
   /**
-   * 轴重复
+   * 轴是否允许重复
    */
   duplicate?: boolean
+  /**
+   * 轴提示
+   */
+  tooltip?: string
 }

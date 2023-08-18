@@ -7,8 +7,13 @@ import { flow, parseJson } from '@/views/chart/components/js/util'
 import { getPadding } from '@/views/chart/components/js/panel/common/common_antv'
 import { formatterItem, valueFormatter } from '@/views/chart/components/js/formatter'
 import { Datum } from '@antv/g2plot/esm/types/common'
+import { useI18n } from '@/hooks/web/useI18n'
 
+const { t } = useI18n()
 const DEFAULT_DATA = []
+/**
+ * 词云图
+ */
 export class WordCloud extends G2PlotChartView<WordCloudOptions, G2WordCloud> {
   properties: EditorProperty[] = [
     'basic-style-selector',
@@ -34,6 +39,16 @@ export class WordCloud extends G2PlotChartView<WordCloudOptions, G2WordCloud> {
     'tooltip-selector': ['color', 'fontSize', 'backgroundColor']
   }
   axis: AxisType[] = ['xAxis', 'yAxis', 'filter']
+  axisConfig: AxisConfig = {
+    xAxis: {
+      name: `${t('chart.drag_block_word_cloud_label')}/${t('chart.dimension_or_quota')}`,
+      limit: 1
+    },
+    yAxis: {
+      name: `${t('chart.drag_block_word_cloud_size')}/${t('chart.quota')}`,
+      limit: 1
+    }
+  }
   drawChart(drawOptions: G2PlotDrawOptions<G2WordCloud>): G2WordCloud {
     const { chart, container, action } = drawOptions
     if (chart?.data) {

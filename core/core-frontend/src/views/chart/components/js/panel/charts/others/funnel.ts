@@ -5,11 +5,52 @@ import { getPadding } from '../../common/common_antv'
 import { formatterItem, singleDimensionTooltipFormatter, valueFormatter } from '../../../formatter'
 import { Tooltip } from '@antv/g2plot/esm/types/tooltip'
 import { Datum } from '@antv/g2plot/esm/types/common'
+import { useI18n } from '@/hooks/web/useI18n'
+
+const { t } = useI18n()
 
 /**
  * 漏斗图
  */
 export class Funnel extends G2PlotChartView<FunnelOptions, G2Funnel> {
+  properties: EditorProperty[] = [
+    'background-overall-component',
+    'basic-style-selector',
+    'label-selector',
+    'tooltip-selector',
+    'title-selector',
+    'legend-selector'
+  ]
+  propertyInner: EditorPropertyInner = {
+    'background-overall-component': ['all'],
+    'label-selector': ['show', 'fontSize', 'color', 'hPosition'],
+    'tooltip-selector': ['color', 'fontSize', 'backgroundColor'],
+    'title-selector': [
+      'show',
+      'title',
+      'fontSize',
+      'color',
+      'hPosition',
+      'isItalic',
+      'isBolder',
+      'remarkShow',
+      'fontFamily',
+      'letterSpace',
+      'fontShadow'
+    ],
+    'legend-selector': ['icon', 'orient', 'color', 'fontSize', 'hPosition', 'vPosition']
+  }
+  axis: AxisType[] = ['xAxis', 'yAxis', 'filter', 'drill', 'extLabel', 'extTooltip']
+  axisConfig: AxisConfig = {
+    xAxis: {
+      name: `${t('chart.drag_block_funnel_split')}/${t('chart.dimension')}`
+    },
+    yAxis: {
+      name: `${t('chart.drag_block_funnel_width')}/${t('chart.quota')}`,
+      limit: 1
+    }
+  }
+
   public drawChart(drawOptions: G2PlotDrawOptions<G2Funnel>): G2Funnel {
     const { chart, container, action } = drawOptions
     if (!chart.data?.data) {
@@ -97,36 +138,6 @@ export class Funnel extends G2PlotChartView<FunnelOptions, G2Funnel> {
       this.configLegend
     )(chart, options)
   }
-
-  properties: EditorProperty[] = [
-    'background-overall-component',
-    'basic-style-selector',
-    'label-selector',
-    'tooltip-selector',
-    'title-selector',
-    'legend-selector'
-  ]
-  propertyInner: EditorPropertyInner = {
-    'background-overall-component': ['all'],
-    'label-selector': ['show', 'fontSize', 'color', 'hPosition'],
-    'tooltip-selector': ['color', 'fontSize', 'backgroundColor'],
-    'title-selector': [
-      'show',
-      'title',
-      'fontSize',
-      'color',
-      'hPosition',
-      'isItalic',
-      'isBolder',
-      'remarkShow',
-      'fontFamily',
-      'letterSpace',
-      'fontShadow'
-    ],
-    'legend-selector': ['icon', 'orient', 'color', 'fontSize', 'hPosition', 'vPosition']
-  }
-  axis: AxisType[] = ['xAxis', 'yAxis', 'filter', 'drill', 'extLabel', 'extTooltip']
-
   setupDefaultOptions(chart: ChartObj): ChartObj {
     const { customAttr } = chart
     const { label } = customAttr

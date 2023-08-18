@@ -54,7 +54,11 @@ public class TreeUtils {
         }
         if (rootExist.get() && CollectionUtil.isNotEmpty(floatingList)) {
             modelResult = modelResult.stream().filter(TreeUtils::isRoot).collect(Collectors.toList());
-            modelResult.get(0).getChildren().addAll(floatingList);
+            TreeModel root = modelResult.get(0);
+            if (root.getChildren() == null) {
+                root.setChildren(new ArrayList<>());
+            }
+            root.getChildren().addAll(floatingList);
         }
 
         return convertTree(modelResult, tClass, appendI18nPrefix);

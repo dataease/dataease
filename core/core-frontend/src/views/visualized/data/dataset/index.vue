@@ -415,7 +415,6 @@ const filterNode = (value: string, data: BusiTreeNode) => {
       </div>
 
       <el-tree
-        :expand-on-click-node="false"
         menu
         ref="datasetListTree"
         :data="state.datasetTree"
