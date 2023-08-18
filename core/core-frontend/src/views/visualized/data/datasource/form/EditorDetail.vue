@@ -70,12 +70,6 @@ const rule = reactive<FormRules>({
       message: t('datasource.input_limit_2_25', [2, 25]),
       trigger: 'blur'
     }
-  ],
-  description: [
-    {
-      required: true,
-      trigger: 'blur'
-    }
   ]
 })
 const api_table_title = ref('')
@@ -366,7 +360,7 @@ defineExpose({
             :placeholder="t('datasource.input_name')"
           />
         </el-form-item>
-        <el-form-item :label="t('common.description')" prop="description" v-show="activeStep !== 2">
+        <el-form-item :label="t('common.description')" v-show="activeStep !== 2">
           <el-input
             type="textarea"
             v-model="form.description"
@@ -508,18 +502,10 @@ defineExpose({
               {{ t('datasource.kerbers_info') }}
             </p>
           </el-form-item>
-          <el-form-item
-            :label="t('datasource.user_name')"
-            prop="configuration.username"
-            v-if="form.type !== 'presto'"
-          >
+          <el-form-item :label="t('datasource.user_name')" v-if="form.type !== 'presto'">
             <el-input v-model="form.configuration.username" autocomplete="off" />
           </el-form-item>
-          <el-form-item
-            :label="t('datasource.password')"
-            prop="configuration.password"
-            v-if="form.type !== 'presto'"
-          >
+          <el-form-item :label="t('datasource.password')" v-if="form.type !== 'presto'">
             <el-input show-password type="password" v-model="form.configuration.password" />
           </el-form-item>
           <el-form-item :label="t('datasource.extra_params')">
@@ -689,7 +675,7 @@ defineExpose({
                 <el-option :label="t('common.hour')" value="hour" />
                 <el-option :label="t('common.day')" value="day" />
               </el-select>
-              {{ t('commons.every_exec') }}
+              {{ t('common.every_exec') }}
             </div>
           </el-form-item>
           <el-form-item

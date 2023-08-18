@@ -77,10 +77,10 @@ const switchColorCase = () => {
 }
 
 const pageSizeOptions = [
-  { name: '10' + t('chart.table_page_size_unit'), value: '10' },
-  { name: '20' + t('chart.table_page_size_unit'), value: '20' },
-  { name: '50' + t('chart.table_page_size_unit'), value: '50' },
-  { name: '100' + t('chart.table_page_size_unit'), value: '100' }
+  { name: '10' + t('chart.table_page_size_unit'), value: 10 },
+  { name: '20' + t('chart.table_page_size_unit'), value: 20 },
+  { name: '50' + t('chart.table_page_size_unit'), value: 50 },
+  { name: '100' + t('chart.table_page_size_unit'), value: 100 }
 ]
 
 const gaugeStyleOptions = [{ name: '默认', value: 'default' }]
@@ -229,7 +229,7 @@ init()
       v-show="showProperty('tableColumnMode')"
     >
       <el-radio-group v-model="state.basicStyleForm.tableColumnMode" @change="changeBasicStyle()">
-        <el-radio label="adopt" :effect="props.themes">
+        <el-radio label="adapt" :effect="props.themes">
           {{ t('chart.table_column_adapt') }}
         </el-radio>
         <el-radio label="custom" :effect="props.themes">

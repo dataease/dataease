@@ -3,6 +3,7 @@ package io.dataease.dataset.manage;
 import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.core.type.TypeReference;
+import io.dataease.api.chart.dto.ColumnPermissionItem;
 import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.union.UnionDTO;
@@ -49,8 +50,8 @@ public class DatasetGroupManage {
     private DatasetTableManage datasetTableManage;
     @Resource
     private DatasetTableFieldManage datasetTableFieldManage;
-
-
+    @Resource
+    private PermissionManage permissionManage;
     @Resource
     private CoreDataSetExtMapper coreDataSetExtMapper;
     @Autowired(required = false)
@@ -303,6 +304,9 @@ public class DatasetGroupManage {
                 datasetTableFieldDTO.setFieldShortName(ele.getDataeaseName());
                 return datasetTableFieldDTO;
             }).collect(Collectors.toList());
+
+            Map<String, ColumnPermissionItem> desensitizationList = new HashMap<>();
+            allFields = permissionManage.filterColumnPermissions(allFields, desensitizationList, id, null);
             dto.setAllFields(allFields);
 
             if ("preview".equalsIgnoreCase(type)) {

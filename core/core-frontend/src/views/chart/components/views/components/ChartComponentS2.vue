@@ -6,7 +6,6 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import ViewTrackBar from '@/components/visualization/ViewTrackBar.vue'
 import { storeToRefs } from 'pinia'
 import { S2ChartView } from '@/views/chart/components/js/panel/types/impl/s2'
-import debounce from 'lodash-es/debounce'
 import { ElPagination } from 'element-plus-secondary'
 import ChartError from '@/views/chart/components/views/components/ChartError.vue'
 
@@ -85,7 +84,8 @@ const calcData = view => {
       state.loading = false
     })
 }
-
+// 图表对象不用响应式
+let myChart = null
 const renderChart = async view => {
   if (!view) {
     return
@@ -93,21 +93,26 @@ const renderChart = async view => {
   // view 为引用对象 需要存库 view.data 直接赋值会导致保存不必要的数据
   const chart = { ...view, data: state.data }
   setupPage(chart)
-  state.myChart?.destroy()
+  myChart?.destroy()
   const chartView = chartViewManager.getChartView(view.render, view.type) as S2ChartView<any>
-  state.myChart = chartView.drawChart({
+  myChart = chartView.drawChart({
     container: containerId,
     chart: toRaw(chart),
-    chartObj: state.myChart,
+    chartObj: myChart,
     pageInfo: state.pageInfo,
     action
   })
-  state.myChart?.render()
+  myChart?.render()
 }
 
+const pageColor = computed(() => {
+  const text = view.value?.customStyle?.text
+  return text.color ?? 'white'
+})
 const setupPage = (chart: ChartObj) => {
   const customAttr = chart.customAttr
   if (chart.type !== 'table-info' || customAttr.basicStyle.tablePageMode !== 'page') {
+    state.showPage = false
     return
   }
   const pageInfo = state.pageInfo
@@ -215,25 +220,43 @@ defineExpose({
   calcData,
   renderChart
 })
+
+let timer
 const resize = (width, height) => {
-  debounce(() => {
-    state.myChart?.changeSheetSize(width, height)
-    state.myChart?.render()
-  }, 500)()
+  if (timer) {
+    clearTimeout(timer)
+  }
+  timer = setTimeout(() => {
+    myChart?.changeSheetSize(width, height)
+    myChart?.render()
+  }, 500)
 }
+const preSize = [0, 0]
+const TOLERANCE = 1
+let resizeObserver
 onMounted(() => {
-  const resizeObserver = new ResizeObserver(([entry] = []) => {
-    console.info(entry)
+  resizeObserver = new ResizeObserver(([entry] = []) => {
     const [size] = entry.borderBoxSize || []
+    // 拖动的时候宽高重新计算，误差范围内不重绘，误差先设置为1
+    if (!(preSize[0] || preSize[1])) {
+      preSize[0] = size.inlineSize
+      preSize[1] = size.blockSize
+    }
+    const widthOffset = Math.abs(size.inlineSize - preSize[0])
+    const heightOffset = Math.abs(size.blockSize - preSize[1])
+    if (widthOffset < TOLERANCE && heightOffset < TOLERANCE) {
+      return
+    }
+    preSize[0] = size.inlineSize
+    preSize[1] = size.blockSize
     resize(size.inlineSize, size.blockSize)
   })
 
   resizeObserver.observe(document.getElementById(containerId))
-  // queryData(true)
-  // renderChart({ render: ChartRenderType.ANT_V, type: 'bar' })
 })
 onBeforeUnmount(() => {
-  state.myChart?.destroy()
+  myChart?.destroy()
+  resizeObserver?.disconnect()
 })
 </script>
 
@@ -250,13 +273,15 @@ onBeforeUnmount(() => {
       <div style="height: 100%" :id="containerId"></div>
     </div>
     <div class="table-page-info" v-if="showPage && !isError">
-      <div>共有{{ state.pageInfo.total }}条数据</div>
+      <div :style="{ color: pageColor }">共有{{ state.pageInfo.total }}条数据</div>
       <el-pagination
+        class="table-page-content"
         layout="prev, pager, next"
-        :page-size="state.pageInfo.pageSize"
+        v-model:page-size="state.pageInfo.pageSize"
         v-model:current-page="state.pageInfo.currentPage"
+        :style="{ color: pageColor }"
+        :pager-count="5"
         :total="state.pageInfo.total"
-        @current-change="handleCurrentChange"
         @update:current-page="handleCurrentChange"
       />
     </div>
@@ -284,5 +309,17 @@ onBeforeUnmount(() => {
   display: flex;
   width: 100%;
   justify-content: space-between;
+  :deep(.table-page-content) {
+    button {
+      color: inherit;
+      background: transparent !important;
+    }
+    ul li {
+      &:not(.is-active) {
+        color: inherit;
+      }
+      background: transparent !important;
+    }
+  }
 }
 </style>

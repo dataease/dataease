@@ -229,7 +229,7 @@ public class ChartDataBuild {
                 axisChartDataDTO.setDimensionList(dimensionList);
 
                 // yAxis最后的数据对应extLabel和extTooltip，将他们从yAxis中去掉，同时转换成动态值
-                int size = yAxis.size();
+                int size = xAxis.size() + extStack.size() + yAxis.size();
                 int extSize = view.getExtLabel().size() + view.getExtTooltip().size();
 
                 if (ObjectUtils.isNotEmpty(yAxis)) {
@@ -329,7 +329,7 @@ public class ChartDataBuild {
             }
 
             // yAxis最后的数据对应extLabel和extTooltip，将他们从yAxis中去掉，同时转换成动态值
-            int size = xAxis.size() + yAxis.size();
+            int size = xAxis.size() + yAxis.size() + extBubble.size();
             int extSize = view.getExtLabel().size() + view.getExtTooltip().size();
 
             for (int i = xAxis.size(); i < size - extSize; i++) {
@@ -1087,10 +1087,10 @@ public class ChartDataBuild {
         } else {
             switch (columnPermissionItem.getDesensitizationRule().getCustomBuiltInRule()) {
                 case RetainBeforeMAndAfterN:
-                    if (StringUtils.isEmpty(originStr) || originStr.length() <= columnPermissionItem.getDesensitizationRule().getM() + columnPermissionItem.getDesensitizationRule().getN() + 1) {
+                    if (StringUtils.isEmpty(originStr) || originStr.length() < columnPermissionItem.getDesensitizationRule().getM() + columnPermissionItem.getDesensitizationRule().getN()) {
                         desensitizationStr = String.join("", Collections.nCopies(columnPermissionItem.getDesensitizationRule().getM(), "X")) + "***" + String.join("", Collections.nCopies(columnPermissionItem.getDesensitizationRule().getN(), "X"));
                     } else {
-                        desensitizationStr = StringUtils.substring(originStr, 0, columnPermissionItem.getDesensitizationRule().getM()) + "***" + StringUtils.substring(originStr, originStr.length() - columnPermissionItem.getDesensitizationRule().getN() - 1, originStr.length() - 1);
+                        desensitizationStr = StringUtils.substring(originStr, 0, columnPermissionItem.getDesensitizationRule().getM()) + "***" + StringUtils.substring(originStr, originStr.length() - columnPermissionItem.getDesensitizationRule().getN(), originStr.length() );
                     }
                     break;
                 case RetainMToN:
@@ -1118,7 +1118,7 @@ public class ChartDataBuild {
         return desensitizationStr;
     }
 
-    private static Map<String, Object> transTableNormal(List<ChartViewFieldDTO> fields, ChartViewDTO view, List<String[]> data, Map<String, ColumnPermissionItem> desensitizationList) {
+    public static Map<String, Object> transTableNormal(List<ChartViewFieldDTO> fields, ChartViewDTO view, List<String[]> data, Map<String, ColumnPermissionItem> desensitizationList) {
         Map<String, Object> map = new TreeMap<>();
         List<Map<String, Object>> tableRow = new ArrayList<>();
         data.forEach(ele -> {

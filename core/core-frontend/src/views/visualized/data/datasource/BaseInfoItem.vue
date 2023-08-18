@@ -14,7 +14,7 @@ defineProps({
   </div>
 </template>
 
-<style lang="less" scoped>
+<style lang="less">
 .base-info-item {
   margin-top: 16px;
   font-family: PingFang SC;
@@ -27,7 +27,7 @@ defineProps({
     color: #646a73;
   }
   .value {
-    margin-top: 2px;
+    margin-top: 4px;
     color: #1f2329;
   }
 }

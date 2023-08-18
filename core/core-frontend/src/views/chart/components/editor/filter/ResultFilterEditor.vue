@@ -187,6 +187,9 @@ const init = () => {
   state.logic = item.value.logic
   state.filterType = item.value.filterType
   state.enumCheckField = item.value.enumCheckField
+  if (item.value.filterType === 'enum') {
+    initEnumOptions()
+  }
 }
 const initEnumOptions = () => {
   // 查找枚举值
