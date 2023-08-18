@@ -229,7 +229,7 @@ init()
       v-show="showProperty('tableColumnMode')"
     >
       <el-radio-group v-model="state.basicStyleForm.tableColumnMode" @change="changeBasicStyle()">
-        <el-radio label="adopt" :effect="props.themes">
+        <el-radio label="adapt" :effect="props.themes">
           {{ t('chart.table_column_adapt') }}
         </el-radio>
         <el-radio label="custom" :effect="props.themes">

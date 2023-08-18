@@ -18,6 +18,8 @@ const dashboardPreview = ref(null)
 const slideShow = ref(true)
 const requestStore = useRequestStoreWithOut()
 const permissionStore = usePermissionStoreWithOut()
+
+const { dvInfo } = storeToRefs(dvMainStore)
 const state = reactive({
   canvasDataPreview: null,
   canvasStylePreview: null,
@@ -104,7 +106,8 @@ defineExpose({
         <el-icon v-if="slideShow"><ArrowLeft /></el-icon>
         <el-icon v-else><ArrowRight /></el-icon>
       </div>
-      <template v-if="state.dvInfo">
+      <!--从store中判断当前是否有点击仪表板 复用时也符合-->
+      <template v-if="dvInfo.name">
         <preview-head
           v-if="showPosition === 'preview'"
           @reload="loadCanvasData"
