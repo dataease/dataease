@@ -391,9 +391,13 @@ const uploadExcel = () => {
     uploadSuccess(res)
   })
 }
-
+const excelForm = ref()
+const submitForm = () => {
+  return excelForm.value.validate
+}
 defineExpose({
   saveExcelDs,
+  submitForm,
   sheetFile
 })
 </script>
@@ -401,10 +405,15 @@ defineExpose({
 <template>
   <div class="excel-detail">
     <div class="detail-inner">
-      <el-form require-asterisk-position="right" :model="param" label-position="top">
+      <el-form
+        ref="excelForm"
+        require-asterisk-position="right"
+        :model="param"
+        label-position="top"
+      >
         <el-form-item
           v-if="sheetFile.name"
-          prop="name"
+          prop="id"
           label="文件"
           :rules="[
             {
@@ -436,8 +445,8 @@ defineExpose({
           </el-upload>
         </el-form-item>
         <el-form-item
-          prop="name"
           v-else
+          prop="id"
           label="文件"
           :rules="[
             {

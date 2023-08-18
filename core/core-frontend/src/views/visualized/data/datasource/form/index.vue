@@ -260,11 +260,18 @@ const saveDS = () => {
       ElMessage.error('请先上传Excel文件!')
       return
     }
-    if (editDs.value) {
-      complete(null, null, null)
-    } else {
-      creatDsFolder.value.createInit('datasource', { id: pid.value }, '', form2.name)
-    }
+
+    const validate = excel.value.submitForm()
+    validate(val => {
+      if (val) {
+        if (editDs.value) {
+          complete(null, null, null)
+        } else {
+          creatDsFolder.value.createInit('datasource', { id: pid.value }, '', form2.name)
+        }
+      }
+    })
+
     return
   } else if (form.type === 'API') {
     if (form.apiConfiguration.length == 0) {
@@ -286,16 +293,21 @@ const saveDS = () => {
   } else {
     request.configuration = Base64.encode(JSON.stringify(request.configuration))
   }
-  if (editDs.value) {
-    save(request).then(res => {
-      if (res !== undefined) {
-        handleShowFinishPage({ id: res.id, name: res.name })
-        ElMessage.success('保存数据源成功')
+  const validate = detail.value.submitForm()
+  validate(val => {
+    if (val) {
+      if (editDs.value) {
+        save(request).then(res => {
+          if (res !== undefined) {
+            handleShowFinishPage({ id: res.id, name: res.name })
+            ElMessage.success('保存数据源成功')
+          }
+        })
+      } else {
+        creatDsFolder.value.createInit('datasource', { id: pid.value, request }, '', form.name)
       }
-    })
-  } else {
-    creatDsFolder.value.createInit('datasource', { id: pid.value, request }, '', form.name)
-  }
+    }
+  })
 }
 
 const defaultForm = {
