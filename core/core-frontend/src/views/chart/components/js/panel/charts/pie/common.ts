@@ -43,5 +43,10 @@ export const PIE_AXIS_CONFIG: AxisConfig = {
   xAxis: {
     name: `${t('chart.drag_block_pie_label')}/${t('chart.dimension')}`,
     type: 'd'
+  },
+  yAxis: {
+    name: `${t('chart.drag_block_pie_label')}/${t('chart.quota')}`,
+    type: 'q',
+    limit: 1
   }
 }

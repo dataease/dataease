@@ -19,6 +19,8 @@ export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
   axis: AxisType[] = PIE_AXIS_TYPE
   properties = PIE_EDITOR_PROPERTY
   propertyInner = PIE_EDITOR_PROPERTY_INNER
+  axisConfig = PIE_AXIS_CONFIG
+
   drawChart(drawOptions: G2PlotDrawOptions<G2Pie>): G2Pie {
     const { chart, container, action } = drawOptions
     if (!chart.data) {
@@ -208,10 +210,6 @@ export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
 
   constructor(name = 'pie') {
     super(name, DEFAULT_DATA)
-    this.axisConfig = {
-      ...this.axisConfig,
-      ...PIE_AXIS_CONFIG
-    }
   }
 }
 

@@ -5,9 +5,14 @@ import ScrollCfg from '@/views/chart/components/editor/editor-senior/components/
 import AssistLine from '@/views/chart/components/editor/editor-senior/components/AssistLine.vue'
 import Threshold from '@/views/chart/components/editor/editor-senior/components/Threshold.vue'
 import CollapseSwitchItem from '@/components/collapse-switch-item/src/CollapseSwitchItem.vue'
-import { toRefs } from 'vue'
+import { ref, toRefs } from 'vue'
+import LinkJumpSet from '@/components/visualization/LinkJumpSet.vue'
+import LinkageSet from '@/components/visualization/LinkageSet.vue'
+import { canvasSave } from '@/utils/canvasUtils'
 
 const { t } = useI18n()
+const linkJumpRef = ref(null)
+const linkageRef = ref(null)
 
 const state = {
   attrActiveNames: [],
@@ -52,6 +57,19 @@ const onScrollCfgChange = val => {
 
 const onThresholdChange = val => {
   emit('onThresholdChange', val)
+}
+
+const linkJumpSetOpen = () => {
+  //跳转设置需要先触发保存
+  canvasSave(() => {
+    linkJumpRef.value.dialogInit({ id: chart.value.id })
+  })
+}
+const linkageSetOpen = () => {
+  //跳转设置需要先触发保存
+  canvasSave(() => {
+    linkageRef.value.dialogInit({ id: chart.value.id })
+  })
 }
 </script>
 
@@ -140,12 +158,57 @@ const onThresholdChange = val => {
               @onThresholdChange="onThresholdChange"
             />
           </el-collapse-item>
+
+          <collapse-switch-item
+            :themes="themes"
+            name="linkage"
+            :title="'联动设置'"
+            v-model="chart.linkageActive"
+          >
+            <span>联动设置</span>
+            <el-button
+              class="circle-button"
+              :title="t('chart.edit')"
+              type="text"
+              size="small"
+              :style="{ width: '24px', marginLeft: '4px', float: 'right' }"
+              @click="linkageSetOpen"
+            >
+              <template #icon>
+                <Icon name="icon_edit_outlined"></Icon>
+              </template>
+            </el-button>
+          </collapse-switch-item>
+          <collapse-switch-item
+            :themes="themes"
+            name="jumpset"
+            :title="'跳转设置'"
+            v-model="chart.jumpActive"
+          >
+            <span>跳转设置</span>
+            <el-button
+              class="circle-button"
+              :title="t('chart.edit')"
+              type="text"
+              size="small"
+              :style="{ width: '24px', marginLeft: '4px', float: 'right' }"
+              @click="linkJumpSetOpen"
+            >
+              <template #icon>
+                <Icon name="icon_edit_outlined"></Icon>
+              </template>
+            </el-button>
+          </collapse-switch-item>
         </el-collapse>
         <div v-else class="no-senior">
           {{ t('chart.chart_no_senior') }}
         </div>
       </el-row>
     </div>
+    <!--跳转设置-->
+    <link-jump-set ref="linkJumpRef"></link-jump-set>
+    <!--联动设置-->
+    <linkage-set ref="linkageRef"></linkage-set>
   </el-row>
 </template>
 

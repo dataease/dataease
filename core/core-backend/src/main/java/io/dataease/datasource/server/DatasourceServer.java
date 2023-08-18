@@ -154,6 +154,9 @@ public class DatasourceServer implements DatasourceApi {
             BeanUtils.copyBean(coreDatasourceTask, dataSourceDTO.getSyncSetting());
             coreDatasourceTask.setName(coreDatasource.getName() + "-task");
             coreDatasourceTask.setDsId(coreDatasource.getId());
+            if(coreDatasourceTask.getStartTime() == null){
+                coreDatasourceTask.setStartTime(System.currentTimeMillis());
+            }
             datasourceTaskServer.insert(coreDatasourceTask);
             datasourceSyncManage.addSchedule(coreDatasourceTask);
             DatasourceRequest datasourceRequest = new DatasourceRequest();

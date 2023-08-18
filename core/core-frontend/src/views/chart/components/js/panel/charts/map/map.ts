@@ -40,10 +40,13 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
   axis: AxisType[] = ['xAxis', 'yAxis', 'area', 'drill', 'filter']
   axisConfig: AxisConfig = {
     xAxis: {
-      name: `${t('chart.area')}/${t('chart.dimension')}`
+      name: `${t('chart.area')}/${t('chart.dimension')}`,
+      type: 'd',
+      limit: 1
     },
     yAxis: {
       name: `${t('chart.chart_data')}/${t('chart.quota')}`,
+      type: 'q',
       limit: 1
     }
   }
@@ -54,6 +57,9 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
 
   async drawChart(drawOption: L7PlotDrawOptions<Choropleth>): Promise<Choropleth> {
     const { chart, chartObj, level, areaId, container, action } = drawOption
+    if (!areaId) {
+      return
+    }
     const geoJson = cloneDeep(await getGeoJsonFile(areaId))
     const options: ChoroplethOptions = {
       map: {

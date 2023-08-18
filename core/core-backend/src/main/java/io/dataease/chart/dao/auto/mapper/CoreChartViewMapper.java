@@ -10,7 +10,7 @@ import org.apache.ibatis.annotations.Mapper;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-05-10
+ * @since 2023-08-18
  */
 @Mapper
 public interface CoreChartViewMapper extends BaseMapper<CoreChartView> {

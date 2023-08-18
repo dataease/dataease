@@ -2115,6 +2115,7 @@ span {
 }
 
 .content-area {
+  height: 100%;
   position: relative;
   transition: 0.5s;
   overflow-x: hidden;
