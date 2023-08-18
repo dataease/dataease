@@ -36,6 +36,7 @@ const id = ref()
 const cmd = ref('')
 const treeRef = ref()
 const filterText = ref('')
+const resourceFormNameLabel = ref('')
 const resourceForm = reactive({
   pid: '',
   name: '新建'
@@ -115,6 +116,7 @@ const filterMethod = value => {
 const resetForm = () => {
   resource.value.clearValidate()
   dialogTitle.value = null
+  resourceFormNameLabel.value = ''
   resourceForm.name = ''
   resourceForm.pid = ''
   resourceDialogShow.value = false
@@ -132,7 +134,9 @@ const dfs = (arr: BusiTreeNode[]) => {
 const optInit = (type, data: BusiTreeNode, exec, parentSelect = false) => {
   showParentSelected.value = parentSelect
   nodeType.value = type
-  dialogTitle.value = nameMap[exec]
+  const optSource = data.leaf || type === 'leaf' ? sourceLabel.value : '文件夹'
+  dialogTitle.value = nameMap[exec] + ('rename' === exec ? optSource : '')
+  resourceFormNameLabel.value = (exec === 'move' ? '' : optSource) + '名称'
   const request = { busiFlag: curCanvasType.value, leaf: false, weight: 3 }
   if (['newLeaf', 'newFolder'].includes(exec)) {
     resourceForm.name = nameMap[exec]
@@ -242,10 +246,10 @@ const emits = defineEmits(['finish'])
       :model="resourceForm"
       :rules="resourceFormRules"
     >
-      <el-form-item v-if="showName" :label="'名称'" prop="name">
+      <el-form-item v-if="showName" :label="resourceFormNameLabel" prop="name">
         <el-input v-model="resourceForm.name" />
       </el-form-item>
-      <el-form-item v-if="showPid" :label="'目录'" prop="pid">
+      <el-form-item v-if="showPid" :label="'所属文件夹'" prop="pid">
         <el-tree-select
           style="width: 100%"
           v-model="resourceForm.pid"
