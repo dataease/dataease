@@ -164,7 +164,7 @@ public class DatasetDataManage {
         }).collect(Collectors.toList());
     }
 
-    public Map<String, Object> previewDataWithLimit(DatasetGroupInfoDTO datasetGroupInfoDTO, Integer start, Integer count) throws Exception {
+    public Map<String, Object> previewDataWithLimit(DatasetGroupInfoDTO datasetGroupInfoDTO, Integer start, Integer count, boolean checkPermission) throws Exception {
         Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO);
         String sql = (String) sqlMap.get("sql");
 
@@ -175,7 +175,9 @@ public class DatasetDataManage {
         }
 
         Map<String, ColumnPermissionItem> desensitizationList = new HashMap<>();
-        fields = permissionManage.filterColumnPermissions(fields, desensitizationList, datasetGroupInfoDTO.getId(), null);
+        if (checkPermission) {
+            fields = permissionManage.filterColumnPermissions(fields, desensitizationList, datasetGroupInfoDTO.getId(), null);
+        }
 
         buildFieldName(sqlMap, fields);
 
@@ -188,7 +190,7 @@ public class DatasetDataManage {
 
         List<DataSetRowPermissionsTreeDTO> rowPermissionsTree = new ArrayList<>();
         TokenUserBO user = AuthUtils.getUser();
-        if (user != null) {
+        if (user != null && checkPermission) {
             rowPermissionsTree = permissionManage.getRowPermissionsTree(datasetGroupInfoDTO.getId(), user.getUserId());
         }
 
