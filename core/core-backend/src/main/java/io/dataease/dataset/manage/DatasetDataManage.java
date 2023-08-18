@@ -101,6 +101,7 @@ public class DatasetDataManage {
                 sql = SQLUtils.buildOriginPreviewSql(sql, 0, 0);
                 datasourceRequest.setQuery(sql);
             }
+            logger.info("calcite data table field sql: " + datasourceRequest.getQuery());
             // 获取数据源表的原始字段
             tableFields = (List<TableField>) calciteProvider.fetchResultField(datasourceRequest).get("fields");
         } else {
@@ -113,6 +114,7 @@ public class DatasetDataManage {
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDsList(Map.of(datasourceSchemaDTO.getId(), datasourceSchemaDTO));
             datasourceRequest.setQuery(TableUtils.tableName2Sql(datasourceSchemaDTO, tableInfoDTO.getTable()) + " LIMIT 0 OFFSET 0");
+            logger.info("calcite data table field sql: " + datasourceRequest.getQuery());
             tableFields = (List<TableField>) calciteProvider.fetchResultField(datasourceRequest).get("fields");
         }
 
@@ -430,7 +432,7 @@ public class DatasetDataManage {
                 list.add(previewData);
             }
 
-            logger.info("calcite data preview sql: " + querySQL);
+            logger.info("calcite data enum sql: " + querySQL);
         }
 
         // 重新构造data

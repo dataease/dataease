@@ -32,6 +32,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 /**
@@ -59,54 +61,64 @@ public class DatasetGroupManage {
 
     private static final String leafType = "dataset";
 
+    private Lock lock = new ReentrantLock();
+
 
     public DatasetGroupInfoDTO save(DatasetGroupInfoDTO datasetGroupInfoDTO) throws Exception {
-        if (ObjectUtils.isEmpty(datasetGroupInfoDTO.getPid()) && ObjectUtils.isNotEmpty(datasetGroupInfoDTO.getId())) {
-            CoreDatasetGroup coreDatasetGroup = coreDatasetGroupMapper.selectById(datasetGroupInfoDTO.getId());
-            datasetGroupInfoDTO.setPid(coreDatasetGroup.getPid());
-        }
-        checkName(datasetGroupInfoDTO);
-        if (StringUtils.equalsIgnoreCase(datasetGroupInfoDTO.getNodeType(), leafType)) {
-            if (ObjectUtils.isEmpty(datasetGroupInfoDTO.getAllFields())) {
-                DEException.throwException(Translator.get("i18n_no_fields"));
+        lock.lock();
+        try {
+            if (ObjectUtils.isEmpty(datasetGroupInfoDTO.getPid()) && ObjectUtils.isNotEmpty(datasetGroupInfoDTO.getId())) {
+                CoreDatasetGroup coreDatasetGroup = coreDatasetGroupMapper.selectById(datasetGroupInfoDTO.getId());
+                datasetGroupInfoDTO.setPid(coreDatasetGroup.getPid());
             }
-            // get union sql
-            Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO);
-            if (ObjectUtils.isNotEmpty(sqlMap)) {
-                String sql = (String) sqlMap.get("sql");
-                datasetGroupInfoDTO.setUnionSql(sql);
-                datasetGroupInfoDTO.setInfo(Objects.requireNonNull(JsonUtil.toJSONString(datasetGroupInfoDTO.getUnion())).toString());
+            checkName(datasetGroupInfoDTO);
+            if (StringUtils.equalsIgnoreCase(datasetGroupInfoDTO.getNodeType(), leafType)) {
+                if (ObjectUtils.isEmpty(datasetGroupInfoDTO.getAllFields())) {
+                    DEException.throwException(Translator.get("i18n_no_fields"));
+                }
+                // get union sql
+                Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO);
+                if (ObjectUtils.isNotEmpty(sqlMap)) {
+                    String sql = (String) sqlMap.get("sql");
+                    datasetGroupInfoDTO.setUnionSql(sql);
+                    datasetGroupInfoDTO.setInfo(Objects.requireNonNull(JsonUtil.toJSONString(datasetGroupInfoDTO.getUnion())).toString());
+                }
             }
-        }
-        // save dataset/group
-        long time = System.currentTimeMillis();
-        if (ObjectUtils.isEmpty(datasetGroupInfoDTO.getId())) {
-            datasetGroupInfoDTO.setId(IDUtils.snowID());
-            if (userApi != null) {
-                datasetGroupInfoDTO.setCreateBy(userApi.info().getId() + "");
+            // save dataset/group
+            long time = System.currentTimeMillis();
+            if (ObjectUtils.isEmpty(datasetGroupInfoDTO.getId())) {
+                datasetGroupInfoDTO.setId(IDUtils.snowID());
+                if (userApi != null) {
+                    datasetGroupInfoDTO.setCreateBy(userApi.info().getId() + "");
+                }
+                datasetGroupInfoDTO.setCreateTime(time);
+                datasetGroupInfoDTO.setLastUpdateTime(time);
+                datasetGroupInfoDTO.setPid(datasetGroupInfoDTO.getPid() == null ? 0L : datasetGroupInfoDTO.getPid());
+                Objects.requireNonNull(CommonBeanFactory.getBean(this.getClass())).innerSave(datasetGroupInfoDTO);
+            } else {
+                if (Objects.equals(datasetGroupInfoDTO.getId(), datasetGroupInfoDTO.getPid())) {
+                    DEException.throwException(Translator.get("i18n_pid_not_eq_id"));
+                }
+                Objects.requireNonNull(CommonBeanFactory.getBean(this.getClass())).innerEdit(datasetGroupInfoDTO);
             }
-            datasetGroupInfoDTO.setCreateTime(time);
-            datasetGroupInfoDTO.setLastUpdateTime(time);
-            datasetGroupInfoDTO.setPid(datasetGroupInfoDTO.getPid() == null ? 0L : datasetGroupInfoDTO.getPid());
-            Objects.requireNonNull(CommonBeanFactory.getBean(this.getClass())).innerSave(datasetGroupInfoDTO);
-        } else {
-            if (Objects.equals(datasetGroupInfoDTO.getId(), datasetGroupInfoDTO.getPid())) {
-                DEException.throwException(Translator.get("i18n_pid_not_eq_id"));
+            // node_type=dataset需要创建dataset_table和field
+            if (StringUtils.equalsIgnoreCase(datasetGroupInfoDTO.getNodeType(), "dataset")) {
+                List<Long> tableIds = new ArrayList<>();
+                List<Long> fieldIds = new ArrayList<>();
+                // 解析tree，保存
+                saveTable(datasetGroupInfoDTO, datasetGroupInfoDTO.getUnion(), tableIds);
+                saveField(datasetGroupInfoDTO, fieldIds);
+                // 删除不要的table和field
+                datasetTableManage.deleteByDatasetGroupUpdate(datasetGroupInfoDTO.getId(), tableIds);
+                datasetTableFieldManage.deleteByDatasetGroupUpdate(datasetGroupInfoDTO.getId(), fieldIds);
             }
-            Objects.requireNonNull(CommonBeanFactory.getBean(this.getClass())).innerEdit(datasetGroupInfoDTO);
+            return datasetGroupInfoDTO;
+        } catch (Exception e) {
+            DEException.throwException(e);
+        } finally {
+            lock.unlock();
         }
-        // node_type=dataset需要创建dataset_table和field
-        if (StringUtils.equalsIgnoreCase(datasetGroupInfoDTO.getNodeType(), "dataset")) {
-            List<Long> tableIds = new ArrayList<>();
-            List<Long> fieldIds = new ArrayList<>();
-            // 解析tree，保存
-            saveTable(datasetGroupInfoDTO, datasetGroupInfoDTO.getUnion(), tableIds);
-            saveField(datasetGroupInfoDTO, fieldIds);
-            // 删除不要的table和field
-            datasetTableManage.deleteByDatasetGroupUpdate(datasetGroupInfoDTO.getId(), tableIds);
-            datasetTableFieldManage.deleteByDatasetGroupUpdate(datasetGroupInfoDTO.getId(), fieldIds);
-        }
-        return datasetGroupInfoDTO;
+        return null;
     }
 
     @XpackInteract(value = "authResourceTree", before = false)
