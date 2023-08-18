@@ -30,7 +30,6 @@ import BaseInfoItem from './BaseInfoItem.vue'
 import BaseInfoContent from './BaseInfoContent.vue'
 import type { BusiTreeNode, BusiTreeRequest } from '@/models/tree/TreeNode'
 import { cloneDeep } from 'lodash-es'
-import { format } from 'mathjs'
 interface Field {
   fieldShortName: string
   name: string
@@ -324,7 +323,25 @@ const listDs = () => {
     .finally(() => {
       dsLoading.value = false
       updateTreeExpand()
+      const id = nodeInfo.id
+      if (!!id) {
+        Object.assign(nodeInfo, cloneDeep(defaultInfo))
+        dfsDatasourceTree(state.datasourceTree, id)
+      }
     })
+}
+
+const dfsDatasourceTree = (ds, id) => {
+  ds.some(ele => {
+    if (ele.id === id) {
+      handleNodeClick(ele)
+      return true
+    }
+    if (!!ele.children?.length) {
+      dfsDatasourceTree(ele.children, id)
+    }
+    return false
+  })
 }
 
 const convertConfig = array => {
@@ -544,7 +561,7 @@ const defaultProps = {
 </script>
 
 <template>
-  <div class="datasource-manage">
+  <div class="datasource-manage" v-loading="dsLoading">
     <div class="datasource-list datasource-height">
       <div class="filter-datasource">
         <div class="icon-methods">
@@ -579,7 +596,6 @@ const defaultProps = {
       </div>
 
       <el-tree
-        v-loading="dsLoading"
         :expand-on-click-node="false"
         menu
         v-if="dsListTreeShow"

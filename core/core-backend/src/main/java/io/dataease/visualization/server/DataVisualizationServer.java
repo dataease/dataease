@@ -149,14 +149,18 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @Override
     public void nameCheck(DataVisualizationBaseRequest request) {
         QueryWrapper<DataVisualizationInfo> wrapper = new QueryWrapper<>();
-        wrapper.eq("delete_flag", 0);
-        wrapper.eq("pid", request.getPid());
-        wrapper.eq("name", request.getName());
-        wrapper.eq("node_type", request.getNodeType());
-        wrapper.eq("type", request.getType());
-        if ("update".equalsIgnoreCase(request.getOpt())) {
+        if (DataVisualizationConstants.RESOURCE_OPT_TYPE.MOVE.equals(request.getOpt()) || DataVisualizationConstants.RESOURCE_OPT_TYPE.RENAME.equals(request.getOpt())) {
+            if (request.getPid() == null) {
+                DataVisualizationInfo result = visualizationInfoMapper.selectById(request.getId());
+                request.setPid(result.getPid());
+            }
             wrapper.ne("id", request.getId());
         }
+        wrapper.eq("delete_flag", 0);
+        wrapper.eq("pid", request.getPid());
+        wrapper.eq("name", request.getName().trim());
+        wrapper.eq("node_type", request.getNodeType());
+        wrapper.eq("type", request.getType());
         if (visualizationInfoMapper.exists(wrapper)) {
             DEException.throwException("当前名称已经存在");
         }

@@ -276,7 +276,7 @@ onMounted(() => {
               v-if="!data.leaf"
             ></handle-more>
             <handle-more
-              @handle-command="cmd => operation(cmd, data, data.nodeType)"
+              @handle-command="cmd => operation(cmd, data, data.leaf ? 'leaf' : 'folder')"
               :menu-list="state.menuList"
             ></handle-more>
           </div>

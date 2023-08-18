@@ -244,11 +244,7 @@ const cancelItem = (index: number) => {
   state.itemRef[index].hide()
 }
 const submitForm = () => {
-  dsForm.value.validate(valid => {
-    if (valid) {
-    }
-  })
-  return form
+  return dsForm.value.validate
 }
 
 const resetForm = () => {
