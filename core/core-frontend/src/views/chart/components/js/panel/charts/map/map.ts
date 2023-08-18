@@ -57,6 +57,9 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
 
   async drawChart(drawOption: L7PlotDrawOptions<Choropleth>): Promise<Choropleth> {
     const { chart, chartObj, level, areaId, container, action } = drawOption
+    if (!areaId) {
+      return
+    }
     const geoJson = cloneDeep(await getGeoJsonFile(areaId))
     const options: ChoroplethOptions = {
       map: {
