@@ -12,6 +12,10 @@ import {
 } from '@/views/chart/components/editor/util/chart'
 import { valueFormatter } from '@/views/chart/components/editor/util/formatter'
 import { getPadding, setGradientColor } from '@/views/chart/components/js/panel/common/common_antv'
+import { useI18n } from '@/hooks/web/useI18n'
+
+const { t } = useI18n()
+
 const DEFAULT_DATA = []
 export class Gauge extends G2PlotChartView<GaugeOptions, G2Gauge> {
   properties: EditorProperty[] = [
@@ -49,6 +53,12 @@ export class Gauge extends G2PlotChartView<GaugeOptions, G2Gauge> {
     ]
   }
   axis: AxisType[] = ['yAxis', 'filter']
+  axisConfig: AxisConfig = {
+    yAxis: {
+      name: `${t('chart.drag_block_gauge_angel')}/${t('chart.quota')}`,
+      limit: 1
+    }
+  }
 
   drawChart(drawOptions: G2PlotDrawOptions<G2Gauge>): G2Gauge {
     const { chart, container, scale } = drawOptions

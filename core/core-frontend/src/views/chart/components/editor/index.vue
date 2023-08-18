@@ -338,52 +338,37 @@ const dragRemoveAggField = (list, e) => {
   }
 }
 
+const addAxis = (e, axis: AxisType) => {
+  const axisSpec = chartViewInstance.value.axisConfig[axis]
+  if (!axisSpec) {
+    return
+  }
+  const { type, limit, duplicate } = axisSpec
+  if (type) {
+    dragCheckType(view.value[axis], type)
+  }
+  if (!duplicate) {
+    dragMoveDuplicate(view.value[axis], e, 'chart')
+  }
+  if (limit) {
+    view.value[axis] = view.value[axis].splice(0, limit)
+  }
+}
+
 const addXaxis = e => {
-  if (view.value.type !== 'table-info') {
-    dragCheckType(view.value.xAxis, 'd')
-  }
-  dragMoveDuplicate(view.value.xAxis, e, 'chart')
-  if (
-    (view.value.type === 'map' ||
-      view.value.type === 'word-cloud' ||
-      view.value.type === 'label') &&
-    view.value.xAxis.length > 1
-  ) {
-    view.value.xAxis = [view.value.xAxis[0]]
-  }
+  addAxis(e, 'xAxis')
 }
 
 const addXaxisExt = e => {
-  if (view.value.type !== 'table-info') {
-    dragCheckType(view.value.xAxisExt, 'd')
-  }
-  dragMoveDuplicate(view.value.xAxisExt, e, 'chart')
-  if (
-    (view.value.type === 'map' || view.value.type === 'word-cloud') &&
-    view.value.xAxisExt.length > 1
-  ) {
-    view.value.xAxisExt = [view.value.xAxisExt[0]]
-  }
+  addAxis(e, 'xAxisExt')
 }
 
 const addExtStack = e => {
-  dragCheckType(view.value.extStack, 'd')
-  if (view.value.extStack?.length > 1) {
-    view.value.extStack = [view.value.extStack[0]]
-  }
+  addAxis(e, 'extStack')
 }
 
 const addYaxis = e => {
-  dragCheckType(view.value.yAxis, 'q')
-  dragMoveDuplicate(view.value.yAxis, e, '')
-  if (
-    (view.value.type === 'waterfall' ||
-      view.value.type === 'word-cloud' ||
-      view.value.type.includes('group')) &&
-    view.value.yAxis.length > 1
-  ) {
-    view.value.yAxis = [view.value.yAxis[0]]
-  }
+  addAxis(e, 'yAxis')
 }
 
 const addDrill = e => {
@@ -935,7 +920,7 @@ const autoInsert = element => {
                         <!--xAxis-->
                         <el-row class="padding-lr drag-data" v-if="showAxis('xAxis')">
                           <span class="data-area-label">
-                            <dimension-label :view="view" />
+                            {{ chartViewInstance.axisConfig.xAxis.name }}
                           </span>
                           <draggable
                             :list="view.xAxis"
@@ -968,7 +953,7 @@ const autoInsert = element => {
                         <!--xAxisExt-->
                         <el-row class="padding-lr drag-data" v-if="showAxis('xAxisExt')">
                           <span class="data-area-label">
-                            <dimension-label :view="view" />
+                            {{ chartViewInstance.axisConfig.xAxisExt.name }}
                           </span>
                           <draggable
                             :list="view.xAxisExt"
@@ -1001,7 +986,7 @@ const autoInsert = element => {
                         <!--extStack-->
                         <el-row class="padding-lr drag-data" v-if="showAxis('extStack')">
                           <span class="data-area-label">
-                            <dimension-label :view="view" />
+                            {{ chartViewInstance.axisConfig.extStack.name }}
                           </span>
                           <draggable
                             :list="view.extStack"
@@ -1034,7 +1019,7 @@ const autoInsert = element => {
                         <!--yAxis-->
                         <el-row class="padding-lr drag-data" v-if="showAxis('yAxis')">
                           <span class="data-area-label">
-                            <quota-label :view="view" />
+                            {{ chartViewInstance.axisConfig.yAxis.name }}
                           </span>
                           <draggable
                             :list="view.yAxis"

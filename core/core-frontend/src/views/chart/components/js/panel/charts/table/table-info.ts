@@ -4,6 +4,9 @@ import { parseJson } from '../../../util'
 import { getCurrentField, getCustomTheme } from '../../common/common_table'
 import { S2ChartView, S2DrawOptions } from '../../types/impl/s2'
 import { TABLE_EDITOR_PROPERTY, TABLE_EDITOR_PROPERTY_INNER } from './common'
+import { useI18n } from '@/hooks/web/useI18n'
+
+const { t } = useI18n()
 
 /**
  * 明细表
@@ -21,6 +24,12 @@ export class TableInfo extends S2ChartView<TableSheet> {
     ]
   }
   axis: AxisType[] = ['xAxis', 'filter', 'drill']
+  axisConfig: AxisConfig = {
+    xAxis: {
+      name: `${t('chart.drag_block_table_data_column')}/${t('chart.dimension_or_quota')}`
+    }
+  }
+
   public drawChart(drawOption: S2DrawOptions<TableSheet>): TableSheet {
     const { container, chart, pageInfo, action } = drawOption
     const containerDom = document.getElementById(container)

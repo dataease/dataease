@@ -470,10 +470,6 @@ const nodeExpand = data => {
   expandedKey.value.push(data.id)
 }
 
-const nodeCollapse = data => {
-  expandedKey.value = expandedKey.value.filter(ele => ele !== data.id)
-}
-
 const filterNode = (value: string, data: BusiTreeNode) => {
   if (!value) return true
   return data.name?.toLocaleLowerCase().includes(value.toLocaleLowerCase())
@@ -596,14 +592,12 @@ const defaultProps = {
       </div>
 
       <el-tree
-        :expand-on-click-node="false"
         menu
         v-if="dsListTreeShow"
         ref="dsListTree"
         node-key="id"
         @node-expand="nodeExpand"
         :filter-node-method="filterNode"
-        @node-collapse="nodeCollapse"
         :default-expanded-keys="expandedKey"
         :data="state.datasourceTree"
         :props="defaultProps"

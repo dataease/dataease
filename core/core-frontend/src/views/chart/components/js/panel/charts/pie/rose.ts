@@ -3,7 +3,12 @@ import {
   G2PlotDrawOptions
 } from '@/views/chart/components/js/panel/types/impl/g2plot'
 import { RoseOptions, Rose as G2Rose } from '@antv/g2plot/esm/plots/rose'
-import { PIE_AXIS_TYPE, PIE_EDITOR_PROPERTY, PIE_EDITOR_PROPERTY_INNER } from './common'
+import {
+  PIE_AXIS_CONFIG,
+  PIE_AXIS_TYPE,
+  PIE_EDITOR_PROPERTY,
+  PIE_EDITOR_PROPERTY_INNER
+} from './common'
 import { getPadding } from '@/views/chart/components/js/panel/common/common_antv'
 import { parseJson, flow } from '@/views/chart/components/js/util'
 import { Label } from '@antv/g2plot/lib/types/label'
@@ -143,6 +148,10 @@ export class Rose extends G2PlotChartView<RoseOptions, G2Rose> {
 
   constructor(name = 'pie-rose') {
     super(name, [])
+    this.axisConfig = {
+      ...this.axisConfig,
+      ...PIE_AXIS_CONFIG
+    }
   }
 }
 

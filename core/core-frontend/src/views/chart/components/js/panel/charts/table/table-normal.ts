@@ -4,7 +4,9 @@ import { parseJson } from '@/views/chart/components/js/util'
 import { formatterItem, valueFormatter } from '@/views/chart/components/js/formatter'
 import { getCurrentField } from '@/views/chart/components/js/panel/common/common_table'
 import { TABLE_EDITOR_PROPERTY, TABLE_EDITOR_PROPERTY_INNER } from './common'
+import { useI18n } from '@/hooks/web/useI18n'
 
+const { t } = useI18n()
 /**
  * 汇总表
  */
@@ -12,6 +14,15 @@ export class TableNormal extends S2ChartView<TableSheet> {
   properties = TABLE_EDITOR_PROPERTY
   propertyInner = TABLE_EDITOR_PROPERTY_INNER
   axis: AxisType[] = ['xAxis', 'yAxis', 'drill', 'filter']
+  axisConfig: AxisConfig = {
+    xAxis: {
+      name: `${t('chart.drag_block_table_data_column')}/${t('chart.dimension')}`
+    },
+    yAxis: {
+      name: `${t('chart.drag_block_table_data_column')}/${t('chart.quota')}`
+    }
+  }
+
   drawChart(drawOption: S2DrawOptions<TableSheet>): TableSheet {
     const { container, chart } = drawOption
     const containerDom = document.getElementById(container)
