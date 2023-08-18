@@ -2000,9 +2000,12 @@ public class ChartViewService {
 
     private List<ChartSeniorAssistDTO> getDynamicAssistFields(ChartViewDTO view) {
         String senior = view.getSenior();
+        List<ChartSeniorAssistDTO> list = new ArrayList<>();
+        if (StringUtils.isEmpty(senior)) {
+            return list;
+        }
         JSONObject jsonObject = JSONObject.parseObject(senior);
         JSONArray assistLine = jsonObject.getJSONArray("assistLine");
-        List<ChartSeniorAssistDTO> list = new ArrayList<>();
         if (ObjectUtils.isEmpty(assistLine) || StringUtils.isBlank(assistLine.toJSONString())) {
             return list;
         }
