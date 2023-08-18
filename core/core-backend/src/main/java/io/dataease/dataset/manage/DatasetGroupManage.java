@@ -141,7 +141,9 @@ public class DatasetGroupManage {
     @XpackInteract(value = "authResourceTree", before = false)
     public DatasetGroupInfoDTO move(DatasetGroupInfoDTO datasetGroupInfoDTO) {
         checkName(datasetGroupInfoDTO);
-        checkMove(datasetGroupInfoDTO);
+        if (datasetGroupInfoDTO.getPid() != 0) {
+            checkMove(datasetGroupInfoDTO);
+        }
         // save dataset/group
         long time = System.currentTimeMillis();
         CoreDatasetGroup coreDatasetGroup = new CoreDatasetGroup();
