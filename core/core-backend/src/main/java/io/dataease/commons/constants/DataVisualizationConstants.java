@@ -19,4 +19,17 @@ public class DataVisualizationConstants {
     }
 
 
+    //操作
+    public static final class RESOURCE_OPT_TYPE {
+        //新建资源节点
+        public static final String NEW_LEAF = "newLeaf";
+        //新建文件夹
+        public static final String NEW_FOLDER = "newFolder";
+        //移动
+        public static final String MOVE = "move";
+        //重命名
+        public static final String RENAME = "rename";
+    }
+
+
 }

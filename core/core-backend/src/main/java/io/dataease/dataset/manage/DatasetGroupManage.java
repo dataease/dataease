@@ -11,6 +11,7 @@ import io.dataease.api.dataset.vo.DataSetBarVO;
 import io.dataease.api.permissions.user.api.UserApi;
 import io.dataease.api.permissions.user.vo.UserFormVO;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetGroup;
+import io.dataease.dataset.dao.auto.entity.CoreDatasetTable;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupMapper;
 import io.dataease.dataset.dao.ext.mapper.CoreDataSetExtMapper;
 import io.dataease.dataset.dao.ext.po.DataSetNodePO;
@@ -67,6 +68,7 @@ public class DatasetGroupManage {
     public DatasetGroupInfoDTO save(DatasetGroupInfoDTO datasetGroupInfoDTO) throws Exception {
         lock.lock();
         try {
+            boolean isCreate;
             if (ObjectUtils.isEmpty(datasetGroupInfoDTO.getPid()) && ObjectUtils.isNotEmpty(datasetGroupInfoDTO.getId())) {
                 CoreDatasetGroup coreDatasetGroup = coreDatasetGroupMapper.selectById(datasetGroupInfoDTO.getId());
                 datasetGroupInfoDTO.setPid(coreDatasetGroup.getPid());
@@ -87,6 +89,7 @@ public class DatasetGroupManage {
             // save dataset/group
             long time = System.currentTimeMillis();
             if (ObjectUtils.isEmpty(datasetGroupInfoDTO.getId())) {
+                isCreate = true;
                 datasetGroupInfoDTO.setId(IDUtils.snowID());
                 if (userApi != null) {
                     datasetGroupInfoDTO.setCreateBy(userApi.info().getId() + "");
@@ -96,6 +99,7 @@ public class DatasetGroupManage {
                 datasetGroupInfoDTO.setPid(datasetGroupInfoDTO.getPid() == null ? 0L : datasetGroupInfoDTO.getPid());
                 Objects.requireNonNull(CommonBeanFactory.getBean(this.getClass())).innerSave(datasetGroupInfoDTO);
             } else {
+                isCreate = false;
                 if (Objects.equals(datasetGroupInfoDTO.getId(), datasetGroupInfoDTO.getPid())) {
                     DEException.throwException(Translator.get("i18n_pid_not_eq_id"));
                 }
@@ -106,7 +110,7 @@ public class DatasetGroupManage {
                 List<Long> tableIds = new ArrayList<>();
                 List<Long> fieldIds = new ArrayList<>();
                 // 解析tree，保存
-                saveTable(datasetGroupInfoDTO, datasetGroupInfoDTO.getUnion(), tableIds);
+                saveTable(datasetGroupInfoDTO, datasetGroupInfoDTO.getUnion(), tableIds, isCreate);
                 saveField(datasetGroupInfoDTO, fieldIds);
                 // 删除不要的table和field
                 datasetTableManage.deleteByDatasetGroupUpdate(datasetGroupInfoDTO.getId(), tableIds);
@@ -114,7 +118,7 @@ public class DatasetGroupManage {
             }
             return datasetGroupInfoDTO;
         } catch (Exception e) {
-            DEException.throwException(e);
+            DEException.throwException(e.getMessage());
         } finally {
             lock.unlock();
         }
@@ -137,7 +141,9 @@ public class DatasetGroupManage {
     @XpackInteract(value = "authResourceTree", before = false)
     public DatasetGroupInfoDTO move(DatasetGroupInfoDTO datasetGroupInfoDTO) {
         checkName(datasetGroupInfoDTO);
-        checkMove(datasetGroupInfoDTO);
+        if (datasetGroupInfoDTO.getPid() != 0) {
+            checkMove(datasetGroupInfoDTO);
+        }
         // save dataset/group
         long time = System.currentTimeMillis();
         CoreDatasetGroup coreDatasetGroup = new CoreDatasetGroup();
@@ -234,17 +240,21 @@ public class DatasetGroupManage {
         }
     }
 
-    public void saveTable(DatasetGroupInfoDTO datasetGroupInfoDTO, List<UnionDTO> union, List<Long> tableIds) {
+    public void saveTable(DatasetGroupInfoDTO datasetGroupInfoDTO, List<UnionDTO> union, List<Long> tableIds, boolean isCreate) {
         // table和field均由前端生成id（如果没有id）
         Long datasetGroupId = datasetGroupInfoDTO.getId();
         if (ObjectUtils.isNotEmpty(union)) {
             for (UnionDTO unionDTO : union) {
                 DatasetTableDTO currentDs = unionDTO.getCurrentDs();
+                CoreDatasetTable coreDatasetTable = datasetTableManage.selectById(currentDs.getId());
+                if (coreDatasetTable != null && isCreate) {
+                    DEException.throwException(Translator.get("i18n_table_duplicate"));
+                }
                 currentDs.setDatasetGroupId(datasetGroupId);
                 datasetTableManage.save(currentDs);
                 tableIds.add(currentDs.getId());
 
-                saveTable(datasetGroupInfoDTO, unionDTO.getChildrenDs(), tableIds);
+                saveTable(datasetGroupInfoDTO, unionDTO.getChildrenDs(), tableIds, isCreate);
             }
         }
     }

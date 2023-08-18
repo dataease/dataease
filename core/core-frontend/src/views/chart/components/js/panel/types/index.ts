@@ -1,3 +1,7 @@
+import { useI18n } from '@/hooks/web/useI18n'
+
+const { t } = useI18n()
+
 export enum ChartRenderType {
   ANT_V = 'antv',
   ECHARTS = 'echarts'
@@ -19,7 +23,7 @@ export abstract class AbstractChartView {
   abstract properties: EditorProperty[]
   abstract propertyInner: EditorPropertyInner
   abstract axis: AxisType[]
-  abstract axisDesc: AxisConfig
+  abstract axisConfig: AxisConfig
   /**
    * 在新建和切换视图的时候处理默认值
    * @param chart 数据库视图对象
@@ -64,7 +68,27 @@ export interface AntVDrawOptions<O> {
 }
 
 export abstract class AntVAbstractChartView extends AbstractChartView {
-  axisDesc = {}
+  axisConfig: AxisConfig = {
+    xAxis: {
+      name: `${t('chart.drag_block_type_axis')}/${t('chart.dimension')}`,
+      type: 'd'
+    },
+    xAxisExt: {
+      name: `${t('chart.chart_group')}/${t('chart.dimension')}`,
+      type: 'd',
+      limit: 1
+    },
+    extStack: {
+      name: `${t('chart.stack_item')}/${t('chart.dimension')}`,
+      type: 'd',
+      limit: 1
+    },
+    yAxis: {
+      name: `${t('chart.drag_block_value_axis')}/${t('chart.quota')}`,
+      type: 'q',
+      limit: 1
+    }
+  }
   protected constructor(library: ChartLibraryType, name: string, defaultData?: any[]) {
     super(ChartRenderType.ANT_V, library, name, defaultData)
   }

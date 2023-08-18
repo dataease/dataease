@@ -4,8 +4,51 @@ import { flow, parseJson } from '../../../util'
 import { getPadding } from '../../common/common_antv'
 import { singleDimensionTooltipFormatter } from '../../../formatter'
 import { Datum } from '@antv/g2plot/esm/types/common'
+import { useI18n } from '@/hooks/web/useI18n'
+
+const { t } = useI18n()
 
 export class Radar extends G2PlotChartView<RadarOptions, G2Radar> {
+  properties: EditorProperty[] = [
+    'background-overall-component',
+    'basic-style-selector',
+    'label-selector',
+    'tooltip-selector',
+    'title-selector',
+    'legend-selector',
+    'misc-style-selector'
+  ]
+  propertyInner: EditorPropertyInner = {
+    'basic-style-selector': ['colors', 'alpha', 'radarShape'],
+    'label-selector': ['fontSize', 'color', 'vPosition'],
+    'tooltip-selector': ['color', 'fontSize', 'backgroundColor'],
+    'misc-style-selector': ['showName', 'color', 'fontSize', 'axisColor'],
+    'title-selector': [
+      'show',
+      'title',
+      'fontSize',
+      'color',
+      'hPosition',
+      'isItalic',
+      'isBolder',
+      'remarkShow',
+      'fontFamily',
+      'letterSpace',
+      'fontShadow'
+    ],
+    'legend-selector': ['icon', 'orient', 'color', 'fontSize', 'hPosition', 'vPosition']
+  }
+  axis: AxisType[] = ['xAxis', 'yAxis', 'drill', 'filter', 'extLabel', 'extTooltip']
+  axisConfig: AxisConfig = {
+    xAxis: {
+      name: `${t('chart.drag_block_radar_label')}/${t('chart.dimension')}`
+    },
+    yAxis: {
+      name: `${t('chart.drag_block_radar_length')}/${t('chart.quota')}`,
+      limit: 1
+    }
+  }
+
   public drawChart(drawOptions: G2PlotDrawOptions<G2Radar>): G2Radar {
     const { chart, container, action } = drawOptions
     if (!chart.data?.data) {
@@ -143,36 +186,6 @@ export class Radar extends G2PlotChartView<RadarOptions, G2Radar> {
       this.configAxis
     )(chart, options)
   }
-  properties: EditorProperty[] = [
-    'background-overall-component',
-    'basic-style-selector',
-    'label-selector',
-    'tooltip-selector',
-    'title-selector',
-    'legend-selector',
-    'misc-style-selector'
-  ]
-  propertyInner: EditorPropertyInner = {
-    'basic-style-selector': ['colors', 'alpha', 'radarShape'],
-    'label-selector': ['fontSize', 'color', 'vPosition'],
-    'tooltip-selector': ['color', 'fontSize', 'backgroundColor'],
-    'misc-style-selector': ['showName', 'color', 'fontSize', 'axisColor'],
-    'title-selector': [
-      'show',
-      'title',
-      'fontSize',
-      'color',
-      'hPosition',
-      'isItalic',
-      'isBolder',
-      'remarkShow',
-      'fontFamily',
-      'letterSpace',
-      'fontShadow'
-    ],
-    'legend-selector': ['icon', 'orient', 'color', 'fontSize', 'hPosition', 'vPosition']
-  }
-  axis: AxisType[] = ['xAxis', 'yAxis', 'drill', 'filter', 'extLabel', 'extTooltip']
 
   constructor() {
     super('radar', [])

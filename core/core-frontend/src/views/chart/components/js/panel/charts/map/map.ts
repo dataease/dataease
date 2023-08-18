@@ -7,6 +7,9 @@ import { flow, getGeoJsonFile, parseJson } from '@/views/chart/components/js/uti
 import { handleGeoJson } from '@/views/chart/components/js/panel/common/common_antv'
 import { FeatureCollection } from '@antv/l7plot/dist/esm/plots/choropleth/types'
 import { cloneDeep } from 'lodash-es'
+import { useI18n } from '@/hooks/web/useI18n'
+
+const { t } = useI18n()
 
 export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
   properties: EditorProperty[] = [
@@ -35,6 +38,16 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     'tooltip-selector': ['color', 'fontSize', 'backgroundColor', 'formatter']
   }
   axis: AxisType[] = ['xAxis', 'yAxis', 'area', 'drill', 'filter']
+  axisConfig: AxisConfig = {
+    xAxis: {
+      name: `${t('chart.area')}/${t('chart.dimension')}`
+    },
+    yAxis: {
+      name: `${t('chart.chart_data')}/${t('chart.quota')}`,
+      limit: 1
+    }
+  }
+
   constructor() {
     super('map', [])
   }

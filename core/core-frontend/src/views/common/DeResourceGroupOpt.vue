@@ -151,9 +151,7 @@ const optInit = (type, data: BusiTreeNode, exec, parentSelect = false) => {
       resourceForm.pid = data.id as string
       pid.value = data.id
     } else {
-      pid.value = data['pid']
       id.value = data.id
-      resourceForm.pid = data['pid'] as string
       resourceForm.name = data.name
     }
   })
@@ -199,8 +197,8 @@ const saveResource = () => {
           params.pid = resourceForm.pid || pid.value || '0'
           break
       }
-      if (['newLeaf', 'newFolder'].includes(cmd.value)) {
-        await dvNameCheck({ opt: 'newLeaf', ...params })
+      if (['newLeaf', 'newFolder', 'rename', 'move'].includes(cmd.value)) {
+        await dvNameCheck({ opt: cmd.value, ...params })
       }
       if (cmd.value === 'newLeaf') {
         resourceDialogShow.value = false

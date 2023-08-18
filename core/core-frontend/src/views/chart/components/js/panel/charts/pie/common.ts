@@ -1,3 +1,7 @@
+import { useI18n } from '@/hooks/web/useI18n'
+
+const { t } = useI18n()
+
 export const PIE_EDITOR_PROPERTY: EditorProperty[] = [
   'background-overall-component',
   'basic-style-selector',
@@ -34,3 +38,10 @@ export const PIE_AXIS_TYPE: AxisType[] = [
   'extLabel',
   'extTooltip'
 ]
+
+export const PIE_AXIS_CONFIG: AxisConfig = {
+  xAxis: {
+    name: `${t('chart.drag_block_pie_label')}/${t('chart.dimension')}`,
+    type: 'd'
+  }
+}
