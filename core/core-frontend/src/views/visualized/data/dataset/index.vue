@@ -15,6 +15,7 @@ import RowPermissions from './RowPermissions.vue'
 import { guid } from '@/views/visualized/data/dataset/form/util.js'
 import { save } from '@/api/visualization/dataVisualization'
 import ColumnPermissions from './ColumnPermissions.vue'
+import { cloneDeep } from 'lodash-es'
 import {
   DEFAULT_CANVAS_STYLE_DATA_DARK,
   DEFAULT_CANVAS_STYLE_DATA_LIGHT
@@ -103,15 +104,16 @@ const resourceCreate = (pid, name) => {
 }
 
 const creatDsFolder = ref()
-
-const nodeInfo = reactive<Node>({
+const defaultNode = {
   name: '',
   createBy: '',
   creator: '',
   id: '',
   nodeType: '',
   createTime: 0
-})
+}
+
+const nodeInfo = reactive<Node>(cloneDeep(defaultNode))
 
 let allFields = []
 let columnsPreview = []
@@ -154,7 +156,7 @@ const dataPreviewLoading = ref(false)
 const infoList = computed(() => {
   return {
     creator: nodeInfo.creator,
-    createTime: timestampFormatDate(nodeInfo.createTime)
+    createTime: nodeInfo.createTime && timestampFormatDate(nodeInfo.createTime)
   }
 })
 
@@ -178,16 +180,40 @@ const generateColumns = (arr: Field[]) =>
     )
   }))
 
+const dtLoading = ref(false)
 const getData = () => {
+  dtLoading.value = true
   const request = { busiFlag: 'dataset' } as BusiTreeRequest
-  getDatasetTree(request).then(res => {
-    const nodeData = (res as unknown as BusiTreeNode[]) || []
-    if (nodeData.length && nodeData[0]['id'] === '0' && nodeData[0]['name'] === 'root') {
-      rootManage.value = nodeData[0]['weight'] >= 3
-      state.datasetTree = nodeData[0]['children'] || []
-      return
+  getDatasetTree(request)
+    .then(res => {
+      const nodeData = (res as unknown as BusiTreeNode[]) || []
+      if (nodeData.length && nodeData[0]['id'] === '0' && nodeData[0]['name'] === 'root') {
+        rootManage.value = nodeData[0]['weight'] >= 3
+        state.datasetTree = nodeData[0]['children'] || []
+        return
+      }
+      state.datasetTree = nodeData
+    })
+    .finally(() => {
+      dtLoading.value = false
+      const id = nodeInfo.id
+      if (!!id) {
+        Object.assign(nodeInfo, cloneDeep(defaultNode))
+        dfsDatasetTree(state.datasetTree, id)
+      }
+    })
+}
+
+const dfsDatasetTree = (ds, id) => {
+  ds.some(ele => {
+    if (ele.id === id) {
+      handleNodeClick(ele)
+      return true
     }
-    state.datasetTree = nodeData
+    if (!!ele.children?.length) {
+      dfsDatasetTree(ele.children, id)
+    }
+    return false
   })
 }
 
@@ -345,7 +371,7 @@ const filterNode = (value: string, data: BusiTreeNode) => {
 </script>
 
 <template>
-  <div class="dataset-manage">
+  <div class="dataset-manage" v-loading="dtLoading">
     <div class="dataset-list dataset-height">
       <div class="filter-dataset">
         <div class="icon-methods">
