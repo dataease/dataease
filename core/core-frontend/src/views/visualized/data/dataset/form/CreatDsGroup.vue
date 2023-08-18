@@ -223,10 +223,10 @@ const saveDataset = () => {
       loading.value = true
       const req = cmd.value === 'move' ? moveDatasetTree : saveDatasetTree
       req(params)
-        .then(() => {
+        .then(res => {
           dataset.value.resetFields()
           createDataset.value = false
-          emits('finish', params.name)
+          emits('finish', res)
           switch (cmd.value) {
             case 'move':
               ElMessage.success('移动成功')
