@@ -10,7 +10,7 @@ import month from './Month.vue'
 import week from './Week.vue'
 import year from './Year.vue'
 const props = defineProps({
-  value: propTypes.string.def('?'),
+  modelValue: propTypes.string.def('?'),
   isRate: propTypes.bool.def(false)
 })
 
@@ -60,7 +60,7 @@ onBeforeMount(() => {
 })
 
 watch(
-  () => props.value,
+  () => props.modelValue,
   () => {
     if (!props.isRate) return
     updateVal()
@@ -79,10 +79,10 @@ watch(
 )
 
 const updateVal = () => {
-  if (!props.value) {
+  if (!props.modelValue) {
     return
   }
-  const arrays = props.value.split(' ')
+  const arrays = props.modelValue.split(' ')
   state.sVal = arrays[0]
   state.mVal = arrays[1]
   state.hVal = arrays[2]

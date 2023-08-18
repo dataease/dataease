@@ -13,6 +13,7 @@ import { useRouter } from 'vue-router'
 import DatasetDetail from '@/views/visualized/data/dataset/DatasetDetail.vue'
 import { timestampFormatDate } from '@/views/visualized/data/dataset/form/util.js'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
+import dayjs from 'dayjs'
 import {
   listDatasources,
   getTableField,
@@ -29,6 +30,7 @@ import BaseInfoItem from './BaseInfoItem.vue'
 import BaseInfoContent from './BaseInfoContent.vue'
 import type { BusiTreeNode, BusiTreeRequest } from '@/models/tree/TreeNode'
 import { cloneDeep } from 'lodash-es'
+import { format } from 'mathjs'
 interface Field {
   fieldShortName: string
   name: string
@@ -186,6 +188,46 @@ const getFieldType = (fieldType: string | number) => {
 
 const searchDs = () => {
   buildTree(rawDatasourceList.value.filter(ele => ele.name.includes(dsName.value)))
+}
+
+const dialogErrorInfo = ref(false)
+
+const formatSimpleCron = (info?: SyncSetting) => {
+  const { syncRate, simpleCronValue, simpleCronType, startTime, endTime, cron } = info
+  let start = '-'
+  let end = '-'
+  if (startTime) {
+    start = dayjs(new Date(startTime)).format('YYYY-MM-DD HH:mm:ss')
+  }
+  if (endTime) {
+    end = dayjs(new Date(startTime)).format('YYYY-MM-DD HH:mm:ss')
+  }
+  let strArr = []
+  switch (syncRate) {
+    case 'SIMPLE':
+      strArr.push(t('dataset.execute_once'))
+      break
+    case 'CRON':
+      strArr.push(`${t('dataset.execute_once')}: ${cron}`)
+      strArr.push(`${t('dataset.start_time')}: ${start}`)
+      break
+    case 'SIMPLE_CRON':
+      const type = t(`common.${simpleCronType}`)
+      strArr.push(
+        `${t('dataset.execute_once')}: ${t('common.every')}${simpleCronValue}${type}更新一次`
+      )
+      strArr.push(`${t('dataset.start_time')}: ${start}`)
+      strArr.push(`${t('dataset.end_time')}: ${end}`)
+      break
+    default:
+      break
+  }
+
+  return strArr
+}
+
+const showErrorInfo = () => {
+  dialogErrorInfo.value = true
 }
 
 const getDsIconName = data => {
@@ -425,12 +467,6 @@ const editDatasource = (editType?: number) => {
     nodeInfo.editType = editType
   }
   datasourceEditor.value.init(nodeInfo)
-}
-
-const rateValueMap = {
-  SIMPLE: t('dataset.execute_once'),
-  CRON: t('dataset.cron_config'),
-  SIMPLE_CRON: t('dataset.simple_cron')
 }
 
 const handleDatasourceTree = (cmd: string, data?: Tree) => {
@@ -852,7 +888,13 @@ const defaultProps = {
                 </el-col>
                 <el-col :span="12">
                   <BaseInfoItem :label="t('dataset.execute_rate')">
-                    <p class="value">{{ rateValueMap[nodeInfo.syncSetting.syncRate] }}</p>
+                    <p
+                      class="value"
+                      :key="ele"
+                      v-for="ele in formatSimpleCron(nodeInfo.syncSetting)"
+                    >
+                      {{ ele }}
+                    </p>
                   </BaseInfoItem>
                   <el-button @click="getRecord" class="update-records" text>
                     <template #icon>
@@ -973,7 +1015,7 @@ const defaultProps = {
               <el-icon>
                 <icon class="field-icon-location" name="icon_close_filled"></icon>
               </el-icon>
-              <el-icon>
+              <el-icon @click="showErrorInfo" class="error-info">
                 <icon name="icon-maybe_outlined"></icon>
               </el-icon>
               {{ t('dataset.error') || t('dataset.completed') || '-' }}
@@ -993,6 +1035,22 @@ const defaultProps = {
         <el-table-column prop="address" :label="t('commons.update_time')" />
       </el-table>
     </el-drawer>
+    <el-dialog
+      v-model="dialogErrorInfo"
+      :close-on-press-escape="false"
+      :close-on-click-modal="false"
+      title="失败详情"
+      width="600px"
+    >
+      <span>This is a message</span>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button secondary @click="dialogErrorInfo = false">
+            {{ t('chart.close') }}
+          </el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -1325,6 +1383,10 @@ const defaultProps = {
   .flex-align-center {
     .ed-icon {
       margin-right: 4px;
+    }
+
+    .error-info {
+      cursor: pointer;
     }
   }
 }
