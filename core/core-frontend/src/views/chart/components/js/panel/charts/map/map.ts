@@ -40,10 +40,13 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
   axis: AxisType[] = ['xAxis', 'yAxis', 'area', 'drill', 'filter']
   axisConfig: AxisConfig = {
     xAxis: {
-      name: `${t('chart.area')}/${t('chart.dimension')}`
+      name: `${t('chart.area')}/${t('chart.dimension')}`,
+      type: 'd',
+      limit: 1
     },
     yAxis: {
       name: `${t('chart.chart_data')}/${t('chart.quota')}`,
+      type: 'q',
       limit: 1
     }
   }
