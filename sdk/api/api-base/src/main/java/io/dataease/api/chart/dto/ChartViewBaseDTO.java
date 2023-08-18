@@ -192,4 +192,14 @@ public class ChartViewBaseDTO implements Serializable {
      */
     private Integer refreshTime;
 
+    /**
+     * 是否开启联动
+     */
+    private Boolean linkageActive;
+
+    /**
+     * 是否开启跳转
+     */
+    private Boolean jumpActive;
+
 }
