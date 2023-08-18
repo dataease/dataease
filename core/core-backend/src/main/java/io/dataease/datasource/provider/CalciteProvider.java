@@ -452,7 +452,7 @@ public class CalciteProvider {
     }
 
 
-    public Connection getConnection(CoreDatasource coreDatasource) throws Exception {
+    public Connection getConnection(CoreDatasource coreDatasource) throws DEException {
         DatasourceConfiguration configuration = null;
         DatasourceConfiguration.DatasourceType datasourceType = DatasourceConfiguration.DatasourceType.valueOf(coreDatasource.getType());
         switch (datasourceType) {
@@ -499,13 +499,12 @@ public class CalciteProvider {
         }
         String driverClassName = configuration.getDriver();
         ExtendedJdbcClassLoader jdbcClassLoader = extendedJdbcClassLoader;
-        Driver driverClass = (Driver) jdbcClassLoader.loadClass(driverClassName).newInstance();
-        Connection conn;
+        Connection conn = null;
         try {
+            Driver driverClass = (Driver) jdbcClassLoader.loadClass(driverClassName).newInstance();
             conn = driverClass.connect(configuration.getJdbc(), props);
         } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
+            DEException.throwException(e);
         }
         return conn;
     }
