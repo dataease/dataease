@@ -67,6 +67,9 @@ public class DatasetGroupManage {
         }
         checkName(datasetGroupInfoDTO);
         if (StringUtils.equalsIgnoreCase(datasetGroupInfoDTO.getNodeType(), leafType)) {
+            if (ObjectUtils.isEmpty(datasetGroupInfoDTO.getAllFields())) {
+                DEException.throwException(Translator.get("i18n_no_fields"));
+            }
             // get union sql
             Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO);
             if (ObjectUtils.isNotEmpty(sqlMap)) {
