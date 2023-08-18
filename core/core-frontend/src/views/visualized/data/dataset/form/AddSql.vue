@@ -181,6 +181,7 @@ const save = (cb?: () => void) => {
     },
     cb
   )
+  ElMessage.success(t('common.save_success'))
 }
 
 const close = () => {

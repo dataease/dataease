@@ -4,7 +4,7 @@ import { propTypes } from '@/utils/propTypes'
 import { useI18n } from '@/hooks/web/useI18n'
 import type { Corn } from './Hour.vue'
 const props = defineProps({
-  value: propTypes.string.def('?')
+  modelValue: propTypes.string.def('?')
 })
 
 const { t } = useI18n()
@@ -61,7 +61,7 @@ onBeforeMount(() => {
 })
 
 watch(
-  () => props.value,
+  () => props.modelValue,
   () => {
     updateVal()
   }
@@ -75,47 +75,47 @@ watch(
 )
 
 const updateVal = () => {
-  if (!props.value) {
+  if (!props.modelValue) {
     return
   }
-  if (props.value === '?') {
+  if (props.modelValue === '?') {
     type.value = '5'
-  } else if (props.value.indexOf('-') !== -1) {
+  } else if (props.modelValue.indexOf('-') !== -1) {
     // 2周期
-    if (props.value.split('-').length === 2) {
+    if (props.modelValue.split('-').length === 2) {
       type.value = '2'
-      state.cycle.start = props.value.split('-')[0] as unknown as number
-      state.cycle.end = props.value.split('-')[1] as unknown as number
+      state.cycle.start = props.modelValue.split('-')[0] as unknown as number
+      state.cycle.end = props.modelValue.split('-')[1] as unknown as number
     }
-  } else if (props.value.indexOf('/') !== -1) {
+  } else if (props.modelValue.indexOf('/') !== -1) {
     // 3循环
-    if (props.value.split('/').length === 2) {
+    if (props.modelValue.split('/').length === 2) {
       type.value = '3'
-      state.loop.start = props.value.split('/')[0] as unknown as number
-      state.loop.end = props.value.split('/')[1] as unknown as number
+      state.loop.start = props.modelValue.split('/')[0] as unknown as number
+      state.loop.end = props.modelValue.split('/')[1] as unknown as number
     }
-  } else if (props.value.indexOf('*') !== -1) {
+  } else if (props.modelValue.indexOf('*') !== -1) {
     // 1每
     type.value = '1'
-  } else if (props.value.indexOf('L') !== -1) {
+  } else if (props.modelValue.indexOf('L') !== -1) {
     // 6最后
     type.value = '6'
-    last.value = props.value.replace('L', '')
-  } else if (props.value.indexOf('#') !== -1) {
+    last.value = props.modelValue.replace('L', '')
+  } else if (props.modelValue.indexOf('#') !== -1) {
     // 7指定周
-    if (props.value.split('#').length === 2) {
+    if (props.modelValue.split('#').length === 2) {
       type.value = '7'
-      state.week.start = props.value.split('#')[0]
-      state.week.end = props.value.split('#')[1]
+      state.week.start = props.modelValue.split('#')[0]
+      state.week.end = props.modelValue.split('#')[1]
     }
-  } else if (props.value.indexOf('W') !== -1) {
+  } else if (props.modelValue.indexOf('W') !== -1) {
     // 8工作日
     type.value = '8'
-    work.value = props.value.replace('W', '')
+    work.value = props.modelValue.replace('W', '')
   } else {
     // *
     type.value = '4'
-    state.appoint = props.value.split(',')
+    state.appoint = props.modelValue.split(',')
   }
 }
 
