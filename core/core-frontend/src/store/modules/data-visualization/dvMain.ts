@@ -587,6 +587,16 @@ export const dvMainStore = defineStore('dataVisualization', {
     },
     setTabMoveOutComponentId(componentId) {
       this.tabMoveOutComponentId = componentId
+    },
+    resetDvInfo() {
+      this.dvInfo = {
+        id: null,
+        name: null,
+        pid: null,
+        status: null,
+        selfWatermarkStatus: null,
+        type: null
+      }
     }
   }
 })

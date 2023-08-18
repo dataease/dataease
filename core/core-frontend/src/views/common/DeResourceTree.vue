@@ -13,7 +13,11 @@ import {
   DEFAULT_CANVAS_STYLE_DATA_DARK,
   DEFAULT_CANVAS_STYLE_DATA_LIGHT
 } from '@/views/chart/components/editor/util/dataVisualiztion'
-import { delDatasetTree } from '@/api/dataset'
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { storeToRefs } from 'pinia'
+const dvMainStore = dvMainStoreWithOut()
+const { dvInfo } = storeToRefs(dvMainStore)
+
 const props = defineProps({
   curCanvasType: {
     type: String,
@@ -124,6 +128,9 @@ const operation = (cmd: string, data: BusiTreeNode, nodeType: string) => {
     ).then(() => {
       deleteLogic(data.id).then(() => {
         ElMessage.success('删除成功')
+        if (dvInfo.value && dvInfo.value.id === data.id) {
+          dvMainStore.resetDvInfo()
+        }
         getTree()
       })
     })
