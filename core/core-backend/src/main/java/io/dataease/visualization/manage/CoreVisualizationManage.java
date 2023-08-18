@@ -38,9 +38,10 @@ public class CoreVisualizationManage {
 
     @XpackInteract(value = "visualizationResourceTree", replace = true)
     public List<BusiNodeVO> tree(BusiNodeRequest request) {
-
         List<VisualizationNodeBO> nodes = new ArrayList<>();
-        if (ObjectUtils.isEmpty(request.getLeaf()) || !request.getLeaf()) nodes.add(rootNode());
+        if (ObjectUtils.isEmpty(request.getLeaf()) || !request.getLeaf()){
+            nodes.add(rootNode());
+        }
         QueryWrapper<Object> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("delete_flag", false);
         queryWrapper.eq(ObjectUtils.isNotEmpty(request.getLeaf()), "node_type", ObjectUtils.isNotEmpty(request.getLeaf()) && request.getLeaf() ? "leaf" : "folder");
