@@ -2,6 +2,7 @@ package io.dataease.api.permissions.org.api;
 
 import io.dataease.api.permissions.org.dto.OrgCreator;
 import io.dataease.api.permissions.org.dto.OrgEditor;
+import io.dataease.api.permissions.org.dto.OrgRequest;
 import io.dataease.api.permissions.org.vo.MountedVO;
 import io.dataease.api.permissions.org.vo.OrgPageVO;
 import io.dataease.auth.DeApiPath;
@@ -22,7 +23,7 @@ public interface OrgApi {
 
     @PostMapping("/page/tree")
     @DePermit("m:read")
-    List<OrgPageVO> pageTree(@RequestBody KeywordRequest request);
+    List<OrgPageVO> pageTree(@RequestBody OrgRequest request);
 
     @DePermit({"m:read"})
     @PostMapping("/page/create")
