@@ -7,6 +7,7 @@ import { flow, parseJson } from '@/views/chart/components/js/util'
 import { getPadding } from '@/views/chart/components/js/panel/common/common_antv'
 import { formatterItem, valueFormatter } from '@/views/chart/components/js/formatter'
 import {
+  PIE_AXIS_CONFIG,
   PIE_AXIS_TYPE,
   PIE_EDITOR_PROPERTY,
   PIE_EDITOR_PROPERTY_INNER
@@ -207,6 +208,10 @@ export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
 
   constructor(name = 'pie') {
     super(name, DEFAULT_DATA)
+    this.axisConfig = {
+      ...this.axisConfig,
+      ...PIE_AXIS_CONFIG
+    }
   }
 }
 

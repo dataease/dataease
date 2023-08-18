@@ -5,11 +5,52 @@ import { getPadding } from '../../common/common_antv'
 import { formatterItem, singleDimensionTooltipFormatter, valueFormatter } from '../../../formatter'
 import { Label } from '@antv/g2plot/lib/types/label'
 import { Datum } from '@antv/g2plot/esm/types/common'
+import { useI18n } from '@/hooks/web/useI18n'
+
+const { t } = useI18n()
 
 /**
  * 矩形树图
  */
 export class Treemap extends G2PlotChartView<TreemapOptions, G2Treemap> {
+  properties: EditorProperty[] = [
+    'background-overall-component',
+    'basic-style-selector',
+    'title-selector',
+    'legend-selector',
+    'label-selector',
+    'tooltip-selector'
+  ]
+  propertyInner: EditorPropertyInner = {
+    'background-overall-component': ['all'],
+    'basic-style-selector': ['colors', 'alpha'],
+    'label-selector': ['fontSize', 'color'],
+    'legend-selector': ['icon', 'orient', 'textStyle', 'hPosition', 'vPosition'],
+    'tooltip-selector': ['fontSize', 'color', 'backgroundColor'],
+    'title-selector': [
+      'title',
+      'fontSize',
+      'color',
+      'hPosition',
+      'isItalic',
+      'isBolder',
+      'remarkShow',
+      'fontFamily',
+      'letterSpace',
+      'fontShadow'
+    ]
+  }
+  axis: AxisType[] = ['xAxis', 'yAxis', 'filter', 'drill', 'extLabel', 'extTooltip']
+  axisConfig: AxisConfig = {
+    xAxis: {
+      name: `${t('chart.drag_block_treemap_label')}/${t('chart.dimension')}`
+    },
+    yAxis: {
+      name: `${t('chart.drag_block_treemap_size')}/${t('chart.quota')}`,
+      limit: 1
+    }
+  }
+
   public drawChart(drawOptions: G2PlotDrawOptions<G2Treemap>): G2Treemap {
     const { chart, container, action } = drawOptions
     if (!chart.data?.data) {
@@ -118,34 +159,6 @@ export class Treemap extends G2PlotChartView<TreemapOptions, G2Treemap> {
       this.configLegend
     )(chart, options)
   }
-  properties: EditorProperty[] = [
-    'background-overall-component',
-    'basic-style-selector',
-    'title-selector',
-    'legend-selector',
-    'label-selector',
-    'tooltip-selector'
-  ]
-  propertyInner: EditorPropertyInner = {
-    'background-overall-component': ['all'],
-    'basic-style-selector': ['colors', 'alpha'],
-    'label-selector': ['fontSize', 'color'],
-    'legend-selector': ['icon', 'orient', 'textStyle', 'hPosition', 'vPosition'],
-    'tooltip-selector': ['fontSize', 'color', 'backgroundColor'],
-    'title-selector': [
-      'title',
-      'fontSize',
-      'color',
-      'hPosition',
-      'isItalic',
-      'isBolder',
-      'remarkShow',
-      'fontFamily',
-      'letterSpace',
-      'fontShadow'
-    ]
-  }
-  axis: AxisType[] = ['xAxis', 'yAxis', 'filter', 'drill', 'extLabel', 'extTooltip']
 
   constructor() {
     super('treemap', [])

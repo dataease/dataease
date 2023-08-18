@@ -6,8 +6,13 @@ import { Liquid as G2Liquid, LiquidOptions } from '@antv/g2plot/esm/plots/liquid
 import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
 import { DEFAULT_LABEL, DEFAULT_MISC } from '@/views/chart/components/editor/util/chart'
 import { valueFormatter } from '@/views/chart/components/editor/util/formatter'
+import { useI18n } from '@/hooks/web/useI18n'
 
+const { t } = useI18n()
 const DEFAULT_LIQUID_DATA = []
+/**
+ * 水波图
+ */
 export class Liquid extends G2PlotChartView<LiquidOptions, G2Liquid> {
   properties: EditorProperty[] = [
     'background-overall-component',
@@ -35,6 +40,12 @@ export class Liquid extends G2PlotChartView<LiquidOptions, G2Liquid> {
     ]
   }
   axis: AxisType[] = ['yAxis', 'filter']
+  axisConfig: AxisConfig = {
+    yAxis: {
+      name: `${t('chart.drag_block_progress')}/${t('chart.quota')}`,
+      limit: 1
+    }
+  }
 
   drawChart(drawOptions: G2PlotDrawOptions<G2Liquid>): G2Liquid {
     const { chart, container } = drawOptions
