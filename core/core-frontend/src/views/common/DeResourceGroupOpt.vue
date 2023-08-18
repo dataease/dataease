@@ -10,6 +10,7 @@ import {
   savaOrUpdateBase
 } from '@/api/visualization/dataVisualization'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { ElMessage } from 'element-plus-secondary'
 const dvMainStore = dvMainStoreWithOut()
 const props = defineProps({
   curCanvasType: {
@@ -44,8 +45,10 @@ const nameMap = {
   newFolder: '新建文件夹',
   newLeaf: curCanvasType.value === 'dataV' ? '新建数据大屏' : '新建仪表板',
   move: '移动到',
-  rename: '编辑'
+  rename: '重命名'
 }
+
+const sourceLabel = computed(() => (curCanvasType.value === 'dataV' ? '数据大屏' : '仪表板'))
 
 const filterNode = (value: string, data: BusiTreeNode) => {
   if (!value) return true
@@ -112,7 +115,7 @@ const filterMethod = value => {
 const resetForm = () => {
   resource.value.clearValidate()
   dialogTitle.value = null
-  resourceForm.name = '新建'
+  resourceForm.name = ''
   resourceForm.pid = ''
   resourceDialogShow.value = false
 }
@@ -133,6 +136,8 @@ const optInit = (type, data: BusiTreeNode, exec, parentSelect = false) => {
   const request = { busiFlag: curCanvasType.value, leaf: false, weight: 3 }
   if (['newLeaf', 'newFolder'].includes(exec)) {
     resourceForm.name = nameMap[exec]
+  } else {
+    resourceForm.name = data.name
   }
   queryTreeApi(request).then(res => {
     const resultTree = res
@@ -169,7 +174,7 @@ const nodeClick = (data: BusiTreeNode) => {
 }
 
 const saveResource = () => {
-  resource.value.validate(result => {
+  resource.value.validate(async result => {
     if (result) {
       const params: ResourceOrFolder = {
         nodeType: nodeType.value as 'folder' | 'leaf',
@@ -190,11 +195,12 @@ const saveResource = () => {
           params.pid = resourceForm.pid || pid.value || '0'
           break
       }
+      if (['newLeaf', 'newFolder'].includes(cmd.value)) {
+        await dvNameCheck({ opt: 'newLeaf', ...params })
+      }
       if (cmd.value === 'newLeaf') {
-        dvNameCheck({ opt: 'newLeaf', ...params }).then(() => {
-          resourceDialogShow.value = false
-          emits('finish', { opt: 'newLeaf', ...params })
-        })
+        resourceDialogShow.value = false
+        emits('finish', { opt: 'newLeaf', ...params })
       } else {
         loading.value = true
         const method = cmd.value === 'move' ? moveResource : savaOrUpdateBase
@@ -202,9 +208,11 @@ const saveResource = () => {
           .then(() => {
             resourceDialogShow.value = false
             emits('finish')
+            ElMessage.success('保存成功')
           })
           .finally(() => {
             loading.value = false
+            resetForm()
           })
       }
     }
