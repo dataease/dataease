@@ -279,6 +279,8 @@ CREATE TABLE `core_chart_view`
     `refresh_view_enable` tinyint(1) DEFAULT 0 COMMENT '是否开启刷新',
     `refresh_unit`        varchar(255)  DEFAULT 'minute' COMMENT '刷新时间单位',
     `refresh_time`        int           DEFAULT 5 COMMENT '刷新时间',
+    `linkage_active` tinyint(1) DEFAULT 0 COMMENT '是否开启联动',
+    `jump_active` tinyint(1) DEFAULT 0 COMMENT '是否开启跳转',
     PRIMARY KEY (`id`)
 );
 

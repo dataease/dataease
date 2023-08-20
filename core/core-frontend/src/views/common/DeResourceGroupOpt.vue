@@ -204,6 +204,10 @@ const saveResource = () => {
         resourceDialogShow.value = false
         emits('finish', { opt: 'newLeaf', ...params })
       } else {
+        if (params.pid === params.id) {
+          ElMessage.success('不能选择自身，请选择其他文件夹')
+          return
+        }
         loading.value = true
         const method = cmd.value === 'move' ? moveResource : savaOrUpdateBase
         method(params)
