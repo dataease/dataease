@@ -7,9 +7,10 @@ import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import { usePageLoading } from '@/hooks/web/usePageLoading'
 import { getRoleRouters } from '@/api/common'
 import { useCache } from '@/hooks/web/useCache'
+import { interactiveStoreWithOut } from '@/store/modules/interactive'
 const { wsCache } = useCache()
 const permissionStore = usePermissionStoreWithOut()
-
+const interactiveStore = interactiveStoreWithOut()
 const userStore = useUserStoreWithOut()
 const appStore = useAppStoreWithOut()
 
@@ -56,6 +57,7 @@ router.beforeEach(async (to, from, next) => {
       const redirect = decodeURIComponent(redirectPath as string)
       const nextData = to.path === redirect ? { ...to, replace: true } : { path: redirect }
       permissionStore.setIsAddRouters(true)
+      interactiveStore.initInteractive(false)
       next(nextData)
     }
   } else {

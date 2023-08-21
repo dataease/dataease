@@ -14,13 +14,7 @@ import DatasetDetail from '@/views/visualized/data/dataset/DatasetDetail.vue'
 import { timestampFormatDate } from '@/views/visualized/data/dataset/form/util.js'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import dayjs from 'dayjs'
-import {
-  listDatasources,
-  getTableField,
-  listDatasourceTables,
-  deleteById,
-  save
-} from '@/api/datasource'
+import { getTableField, listDatasourceTables, deleteById, save } from '@/api/datasource'
 import { Base64 } from 'js-base64'
 import type { Configuration, ApiConfiguration, SyncSetting } from './form/index.vue'
 import EditorDatasource from './form/index.vue'
@@ -30,6 +24,8 @@ import BaseInfoItem from './BaseInfoItem.vue'
 import BaseInfoContent from './BaseInfoContent.vue'
 import type { BusiTreeNode, BusiTreeRequest } from '@/models/tree/TreeNode'
 import { cloneDeep } from 'lodash-es'
+import { interactiveStoreWithOut } from '@/store/modules/interactive'
+const interactiveStore = interactiveStoreWithOut()
 interface Field {
   fieldShortName: string
   name: string
@@ -310,11 +306,28 @@ const listDs = () => {
     state.datasourceTree = array
   }) */
   const request = { busiFlag: 'datasource' } as BusiTreeRequest
-  listDatasources(request)
+  /* await interactiveStore.setInteractive(request)
+  const interactiveData = interactiveStore.getDatasource
+  const nodeData = interactiveData.treeNodes
+  rootManage.value = interactiveData.rootManage
+  if (nodeData.length && nodeData[0]['id'] === '0' && nodeData[0]['name'] === 'root') {
+    state.datasourceTree = nodeData[0]['children'] || []
+  } else {
+    state.datasourceTree = nodeData
+  }
+  dsLoading.value = false
+  updateTreeExpand()
+  const id = nodeInfo.id
+  if (!!id) {
+    Object.assign(nodeInfo, cloneDeep(defaultInfo))
+    dfsDatasourceTree(state.datasourceTree, id)
+  } */
+  interactiveStore
+    .setInteractive(request)
     .then(res => {
       const nodeData = (res as unknown as BusiTreeNode[]) || []
       if (nodeData.length && nodeData[0]['id'] === '0' && nodeData[0]['name'] === 'root') {
-        rootManage.value = nodeData[0]['weight'] >= 3
+        rootManage.value = nodeData[0]['weight'] >= 7
         state.datasourceTree = nodeData[0]['children'] || []
         return
       }
