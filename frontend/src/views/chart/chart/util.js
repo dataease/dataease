@@ -1756,7 +1756,8 @@ export const TYPE_CONFIGS = [
         'alpha'
       ],
       'size-selector-ant-v': [
-        'wordSizeRange'
+        'wordSizeRange',
+        'wordSpacing'
       ],
       'tooltip-selector-ant-v': [
         'show',

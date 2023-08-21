@@ -1368,7 +1368,7 @@
           <!-- word-cloud start -->
           <el-form-item
             v-show="showProperty('wordSizeRange') "
-            :label="$t('chart.text_fontsize')"
+            :label="$t('chart.word_size_range')"
             class="form-item form-item-slider"
           >
             <el-slider
@@ -1377,6 +1377,18 @@
               :max="100"
               range
               @change="changeBarSizeCase('wordSizeRange')"
+            />
+          </el-form-item>
+          <el-form-item
+            v-show="showProperty('wordSpacing') "
+            :label="$t('chart.word_spacing')"
+            class="form-item form-item-slider"
+          >
+            <el-slider
+              v-model="sizeForm.wordSpacing"
+              :min="0"
+              :max="20"
+              @change="changeBarSizeCase('wordSpacing')"
             />
           </el-form-item>
           <!-- word-cloud end -->
@@ -1589,9 +1601,10 @@ export default {
           this.sizeForm.mapLineAnimateInterval = this.sizeForm.mapLineAnimateInterval !== undefined ? this.sizeForm.mapLineAnimateInterval : DEFAULT_SIZE.mapLineAnimateInterval
           this.sizeForm.mapLineAnimateTrailLength = this.sizeForm.mapLineAnimateTrailLength !== undefined ? this.sizeForm.mapLineAnimateTrailLength : DEFAULT_SIZE.mapLineAnimateTrailLength
           if (this.sizeForm.gaugeAxisLine === null || this.sizeForm.gaugeAxisLine === undefined) {
-            this.sizeForm.gaugeAxisLine = DEFAULT_SIZE.gaugeAxisLin
+            this.sizeForm.gaugeAxisLine = DEFAULT_SIZE.gaugeAxisLine
           }
-          this.sizeForm.wordSizeRange = this.sizeForm !== undefined ? this.sizeForm.wordSizeRange : DEFAULTSIZE.wordSizeRange
+          this.sizeForm.wordSizeRange = this.sizeForm.wordSizeRange ?? DEFAULT_SIZE.wordSizeRange
+          this.sizeForm.wordSpacing = this.sizeForm.wordSpacing ?? DEFAULT_SIZE.wordSpacing
         }
       }
     },

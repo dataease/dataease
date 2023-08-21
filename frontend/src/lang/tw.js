@@ -1555,7 +1555,9 @@ export default {
     map_line_color_source_color: '起始顏色',
     map_line_color_target_color: '結束顏色',
     map_line_theta_offset: '弧度',
-    gauge_axis_label: '刻度標籤'
+    gauge_axis_label: '刻度標籤',
+    word_size_range: '字號區間',
+    word_spacing: '文字間隔'
   },
   dataset: {
     scope_edit: '僅編輯時生效',

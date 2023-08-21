@@ -147,7 +147,8 @@ export const DEFAULT_SIZE = {
   mapLineAnimateDuration: 3,
   mapLineAnimateInterval: 1,
   mapLineAnimateTrailLength: 1,
-  wordSizeRange: [8, 32]
+  wordSizeRange: [8, 32],
+  wordSpacing: 6
 }
 export const DEFAULT_SUSPENSION = {
   show: true
