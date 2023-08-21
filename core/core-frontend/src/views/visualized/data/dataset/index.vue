@@ -1,6 +1,6 @@
 <script lang="tsx" setup>
 import { useI18n } from '@/hooks/web/useI18n'
-import { ref, reactive, shallowRef, computed, watch } from 'vue'
+import { ref, reactive, shallowRef, computed, watch, nextTick } from 'vue'
 import { ElIcon, ElMessageBox, ElMessage, type ElMessageBoxOptions } from 'element-plus-secondary'
 import { HandleMore } from '@/components/handle-more'
 import { Icon } from '@/components/icon-custom'
@@ -57,7 +57,9 @@ const curCanvasType = ref('')
 
 const createPanel = path => {
   curCanvasType.value = path
-  addOperation('newLeaf', null, 'leaf', true)
+  nextTick(() => {
+    addOperation('newLeaf', null, 'leaf', true)
+  })
 }
 
 const addOperation = (
