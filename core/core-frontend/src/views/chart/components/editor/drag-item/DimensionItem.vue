@@ -166,7 +166,7 @@ getItemTagType()
   <span class="item-style">
     <el-dropdown effect="dark" trigger="click" @command="clickItem">
       <el-tag
-        class="item-axis"
+        class="item-axis father"
         :class="'editor-' + props.themes"
         :style="{ backgroundColor: tagType + '0a', border: '1px solid ' + tagType }"
       >
@@ -177,29 +177,24 @@ getItemTagType()
               :name="`field_${fieldType(item.deType)}`"
             ></Icon>
           </el-icon>
-          <!--          <svg-icon v-if="item.sort === 'asc'" icon-class="sort-asc" class-name="field-icon-sort" />-->
-          <!--          <svg-icon-->
-          <!--            v-if="item.sort === 'desc'"-->
-          <!--            icon-class="sort-desc"-->
-          <!--            class-name="field-icon-sort"-->
-          <!--          />-->
-          <!--          <svg-icon-->
-          <!--            v-if="item.sort === 'custom_sort'"-->
-          <!--            icon-class="custom_sort"-->
-          <!--            class-name="field-icon-sort"-->
-          <!--          />-->
         </span>
         <span class="item-span-style" :title="item.name">{{
           item.chartShowName ? item.chartShowName : item.name
         }}</span>
-        <el-icon style="position: absolute; top: 7px; right: 24px; color: #a6a6a6; cursor: pointer">
+        <el-icon
+          class="child"
+          style="position: absolute; top: 7px; right: 24px; color: #a6a6a6; cursor: pointer"
+        >
           <Icon
             name="icon_delete-trash_outlined"
             class="el-icon-arrow-down el-icon-delete"
             @click="removeItem"
           ></Icon>
         </el-icon>
-        <el-icon style="position: absolute; top: 7px; right: 8px; color: #a6a6a6; cursor: pointer">
+        <el-icon
+          class="child"
+          style="position: absolute; top: 7px; right: 8px; color: #a6a6a6; cursor: pointer"
+        >
           <Icon name="icon_down_outlined-1" class="el-icon-arrow-down el-icon-delete"></Icon>
         </el-icon>
       </el-tag>
@@ -415,5 +410,13 @@ span {
   :deep(.ed-dropdown-menu__item) {
     height: 32px;
   }
+}
+
+.father .child {
+  visibility: hidden;
+}
+
+.father:hover .child {
+  visibility: visible;
 }
 </style>
