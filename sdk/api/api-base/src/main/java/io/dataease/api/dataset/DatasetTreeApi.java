@@ -31,6 +31,10 @@ public interface DatasetTreeApi {
     @PostMapping("save")
     DatasetNodeDTO save(@RequestBody DatasetGroupInfoDTO dto) throws Exception;
 
+    @DePermit({"m:read", "#p0.id+':manage'"})
+    @PostMapping("rename")
+    DatasetNodeDTO rename(@RequestBody DatasetGroupInfoDTO dto) throws Exception;
+
     /**
      * 新建
      *
@@ -48,7 +52,7 @@ public interface DatasetTreeApi {
 
     @DePermit({"m:read", "#p0+':manage'"})
     @PostMapping("delete/{id}")
-    void delete(@PathVariable Long id);
+    void delete(@PathVariable("id") Long id);
 
     @DePermit({"m:read"})
     @PostMapping("tree")
@@ -59,10 +63,10 @@ public interface DatasetTreeApi {
     DataSetBarVO barInfo(@PathVariable("id") Long id);
 
     @PostMapping("get/{id}")
-    DatasetGroupInfoDTO get(@PathVariable Long id) throws Exception;
+    DatasetGroupInfoDTO get(@PathVariable("id") Long id) throws Exception;
 
     @PostMapping("details/{id}")
-    DatasetGroupInfoDTO details(@PathVariable Long id) throws Exception;
+    DatasetGroupInfoDTO details(@PathVariable("id") Long id) throws Exception;
 
     @PostMapping("dsDetails")
     List<DatasetTableDTO> panelGetDsDetails(@RequestBody List<Long> ids) throws Exception;

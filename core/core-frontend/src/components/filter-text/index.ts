@@ -37,7 +37,7 @@ const valueText = (field, val, options) => {
           isTree = true
           break
         }
-        if ((item.id || item.value) === val) {
+        if (item.id === val || item.value === val) {
           return item.name || item.label
         }
       }

@@ -24,7 +24,8 @@ export default {
     save_success: '保存成功',
     roger_that: '知道了',
     delete_success: '删除成功',
-    copy: '复制'
+    copy: '复制',
+    no_auth_tips: '缺少菜單權限，請聯系管理員'
   },
   login: {
     welcome: '欢迎使用',

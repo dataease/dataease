@@ -23,7 +23,8 @@ export default {
     input_limit: 'The length is between {0} and {1} characters',
     save_success: 'Save success',
     roger_that: 'Roger that',
-    delete_success: 'Delete success'
+    delete_success: 'Delete success',
+    no_auth_tips: 'Missing menu permissions, please contact the administrator'
   },
   login: {
     welcome: 'Welcome',

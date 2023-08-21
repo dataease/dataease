@@ -9,6 +9,7 @@ import { findById, save } from '@/api/visualization/dataVisualization'
 import { storeToRefs } from 'pinia'
 import { getPanelAllLinkageInfo } from '@/api/visualization/linkage'
 import { queryVisualizationJumpInfo } from '@/api/visualization/linkJump'
+import { getViewConfig } from '@/views/chart/components/editor/util/chart'
 const dvMainStore = dvMainStoreWithOut()
 const { curBatchOptComponents, dvInfo, canvasStyleData, componentData, canvasViewInfo } =
   storeToRefs(dvMainStore)
@@ -48,6 +49,11 @@ export function findNewComponent(componentName, innerType) {
       }
     }
   })
+  if (componentName === 'UserView') {
+    const viewConfig = getViewConfig(innerType)
+    newComponent.name = viewConfig.title
+    newComponent.label = viewConfig.title
+  }
   return newComponent
 }
 
