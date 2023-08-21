@@ -1,5 +1,7 @@
 package io.dataease.api.visualization;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.dataease.api.visualization.request.DataVisualizationBaseRequest;
 import io.dataease.api.visualization.vo.DataVisualizationVO;
 import io.dataease.model.BusiNodeRequest;
@@ -43,6 +45,7 @@ public interface DataVisualizationApi {
     List<DataVisualizationVO> findRecent(@RequestBody DataVisualizationBaseRequest request);
 
     @PostMapping("/copy")
-    Long copy(@RequestBody DataVisualizationBaseRequest request);
+    @JsonSerialize(using = ToStringSerializer.class)
+    String copy(@RequestBody DataVisualizationBaseRequest request);
 
 }

@@ -198,7 +198,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
     }
 
     @Override
-    public Long copy(DataVisualizationBaseRequest request) {
+    public String copy(DataVisualizationBaseRequest request) {
         Long sourceDvId = request.getId(); //源仪表板ID
         Long newDvId = IDUtils.snowID(); //目标仪表板ID
         Long copyId = IDUtils.snowID()/100; // 本次复制执行ID
@@ -221,15 +221,8 @@ public class DataVisualizationServer implements DataVisualizationApi {
                 componentData = componentData.replaceAll(String.valueOf(viewInfo.getCopyFrom()), String.valueOf(viewInfo.getId()));
             }
             newDv.setComponentData(componentData);
-            // 复制跳转信息 copy panel_link_jump panel_link_jump_info  panel_link_jump_target_view_info
-//            extPanelLinkJumpMapper.copyLinkJump(copyId);
-//            extPanelLinkJumpMapper.copyLinkJumpInfo(copyId);
-//            extPanelLinkJumpMapper.copyLinkJumpTarget(copyId);
-            // 复制联动信息 copy panel_view_linkage_field panel_view_linkage
-//            extPanelViewLinkageMapper.copyViewLinkage(copyId);
-//            extPanelViewLinkageMapper.copyViewLinkageField(copyId);
         }
         coreVisualizationManage.innerSave(newDv);
-        return newDvId;
+        return String.valueOf(newDvId);
     }
 }
