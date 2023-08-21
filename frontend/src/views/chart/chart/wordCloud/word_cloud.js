@@ -12,6 +12,14 @@ export function baseWordCloudOptionAntV(plot, container, chart, action) {
   const tooltip = getTooltip(chart)
   // data
   const data = chart.data.data
+  // size
+  let wordSizeRange = [8, 32]
+  if (chart.customAttr) {
+    const customAttr = JSON.parse(chart.customAttr)
+    if (customAttr?.size?.wordSizeRange) {
+      wordSizeRange = customAttr?.size?.wordSizeRange
+    }
+  }
   // options
   const options = {
     theme: theme,
@@ -21,7 +29,7 @@ export function baseWordCloudOptionAntV(plot, container, chart, action) {
     colorField: 'field',
     wordStyle: {
       fontFamily: 'Verdana',
-      fontSize: [8, 32],
+      fontSize: wordSizeRange,
       rotation: [0, 0],
       padding: 6
     },
