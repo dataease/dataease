@@ -566,7 +566,7 @@ const defaultProps = {
       <div class="filter-datasource">
         <div class="icon-methods">
           <span class="title"> {{ t('datasource.datasource') }} </span>
-          <div v-if="rootManage">
+          <div v-if="rootManage" class="flex-align-center">
             <el-tooltip effect="dark" content="新建文件夹" placement="top">
               <el-button @click="() => handleDatasourceTree('folder')" text>
                 <template #icon>
