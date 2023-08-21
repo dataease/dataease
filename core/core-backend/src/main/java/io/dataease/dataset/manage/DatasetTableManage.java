@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetTable;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableMapper;
+import io.dataease.exception.DEException;
+import io.dataease.i18n.Translator;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
 import jakarta.annotation.Resource;
@@ -22,6 +24,8 @@ public class DatasetTableManage {
     private CoreDatasetTableMapper coreDatasetTableMapper;
 
     public void save(CoreDatasetTable coreDatasetTable) {
+        checkNameLength(coreDatasetTable.getName());
+        checkNameLength(coreDatasetTable.getTableName());
         if (ObjectUtils.isEmpty(coreDatasetTable.getId())) {
             coreDatasetTable.setId(IDUtils.snowID());
             coreDatasetTableMapper.insert(coreDatasetTable);
@@ -31,6 +35,8 @@ public class DatasetTableManage {
     }
 
     public void save(DatasetTableDTO currentDs) {
+        checkNameLength(currentDs.getName());
+        checkNameLength(currentDs.getTableName());
         CoreDatasetTable coreDatasetTable = coreDatasetTableMapper.selectById(currentDs.getId());
         CoreDatasetTable record = new CoreDatasetTable();
         BeanUtils.copyBean(record, currentDs);
@@ -64,5 +70,11 @@ public class DatasetTableManage {
         QueryWrapper<CoreDatasetTable> wrapper = new QueryWrapper<>();
         wrapper.eq("dataset_group_id", datasetGroupId);
         coreDatasetTableMapper.delete(wrapper);
+    }
+
+    private void checkNameLength(String name) {
+        if (name.length() > 100) {
+            DEException.throwException(Translator.get("i18n_name_limit_100"));
+        }
     }
 }

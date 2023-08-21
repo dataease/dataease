@@ -45,6 +45,9 @@ public class ChartViewManege {
 
     @Transactional
     public ChartViewDTO save(ChartViewDTO chartViewDTO) throws Exception {
+        if (chartViewDTO.getTitle().length() > 100) {
+            DEException.throwException(Translator.get("i18n_name_limit_100"));
+        }
         Long id = chartViewDTO.getId();
         if (id == null) {
             DEException.throwException(Translator.get("i18n_no_id"));
