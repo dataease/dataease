@@ -9,7 +9,7 @@ import { $ } from '@/utils/utils'
 import changeComponentsSizeWithScale, {
   changeComponentSizeWithScale
 } from '@/utils/changeComponentsSizeWithScale'
-import { ref } from 'vue'
+import { ref, nextTick } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import { lockStoreWithOut } from '@/store/modules/data-visualization/lock'
@@ -26,6 +26,9 @@ import CommonGroup from '@/custom-component/component-group/CommonGroup.vue'
 const isShowPreview = ref(false)
 const isScreenshot = ref(false)
 let timer = null
+let nameEdit = ref(false)
+let inputName = ref('')
+let nameInput = ref(null)
 const dvMainStore = dvMainStoreWithOut()
 const composeStore = composeStoreWithOut()
 const lockStore = lockStoreWithOut()
@@ -41,6 +44,18 @@ const {
 } = storeToRefs(dvMainStore)
 const { areaData } = storeToRefs(composeStore)
 let scale = ref(canvasStyleData.value.scale)
+
+const closeEditCanvasName = () => {
+  nameEdit.value = false
+  if (!inputName.value || !inputName.value.trim()) {
+    return
+  }
+  if (inputName.value.trim() === dvInfo.value.name) {
+    return
+  }
+  dvInfo.value.name = inputName.value
+  inputName.value = ''
+}
 
 const handleScaleChange = () => {
   clearTimeout(timer)
@@ -160,8 +175,17 @@ const handlePreviewChange = () => {
   dvMainStore.setEditMode('edit')
 }
 
+const editCanvasName = () => {
+  nameEdit.value = true
+  inputName.value = dvInfo.value.name
+  nextTick(() => {
+    nameInput.value.focus()
+  })
+}
+
 const backToMain = () => {
-  alert('backToMain')
+  const url = '#/screen/index?dvId=' + dvInfo.value.id
+  window.open(url, '_self')
 }
 
 eventBus.on('preview', preview)
@@ -172,17 +196,19 @@ eventBus.on('clearCanvas', clearCanvas)
 <template>
   <div class="toolbar-main">
     <div class="toolbar" :class="{ 'preview-state-head': editMode === 'preview' }">
-      <!--      <el-icon class="custom-el-icon back-icon" @click="backToMain()">-->
-      <!--        <Icon class="toolbar-icon" name="icon_left_outlined" />-->
-      <!--      </el-icon>-->
+      <el-icon class="custom-el-icon back-icon" @click="backToMain()">
+        <Icon class="toolbar-icon" name="icon_left_outlined" />
+      </el-icon>
       <div class="left-area">
-        <span class="name-area">{{ dvInfo.name }}</span>
+        <span id="dv-canvas-name" class="name-area" @dblclick="editCanvasName">{{
+          dvInfo.name
+        }}</span>
         <div class="opt-area">
           <el-icon class="opt-icon-undo" @click="undo()">
-            <Icon class="toolbar-icon" name="icon_undo_outlined"></Icon>
+            <Icon class="toolbar-hover-icon" name="icon_undo_outlined"></Icon>
           </el-icon>
           <el-icon class="opt-icon-redo" @click="redo()">
-            <Icon class="toolbar-icon" name="icon_redo_outlined"></Icon>
+            <Icon class="toolbar-hover-icon" name="icon_redo_outlined"></Icon>
           </el-icon>
         </div>
       </div>
@@ -215,6 +241,9 @@ eventBus.on('clearCanvas', clearCanvas)
         >
       </div>
     </div>
+    <Teleport v-if="nameEdit" :to="'#dv-canvas-name'">
+      <input ref="nameInput" v-model="inputName" @blur="closeEditCanvasName" />
+    </Teleport>
     <!-- 预览 -->
     <Preview v-if="isShowPreview" :is-screenshot="isScreenshot" @close="handlePreviewChange" />
     <el-button
@@ -264,11 +293,25 @@ eventBus.on('clearCanvas', clearCanvas)
     display: flex;
     flex-direction: column;
     .name-area {
+      position: relative;
       line-height: 24px;
       height: 24px;
       font-size: 16px;
       width: 300px;
       overflow: hidden;
+      cursor: pointer;
+      input {
+        position: absolute;
+        left: 0;
+        width: 100%;
+        color: #fff;
+        background-color: #050e21;
+        outline: none;
+        border: 1px solid #295acc;
+        border-radius: 4px;
+        padding: 0 4px;
+        height: 100%;
+      }
     }
     .opt-area {
       width: 300px;
