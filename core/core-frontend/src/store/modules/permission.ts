@@ -4,6 +4,7 @@ import { routes } from '@/router'
 import { generateRoutesFn2 } from '@/router/establish'
 import { store } from '../index'
 import { cloneDeep } from 'lodash-es'
+import NotFoundPage from '@/views/404/index.vue'
 
 export interface PermissionState {
   routers: AppRouteRecordRaw[]
@@ -44,10 +45,17 @@ export const usePermissionStore = defineStore('permission', {
 
         // 动态路由，404一定要放到最后面
         this.addRouters = routerMap.concat([
-          {
+          /* {
             path: '/:path(.*)*',
             redirect: '/404',
             name: '404Page',
+            meta: {
+              hidden: true
+            }
+          } */
+          {
+            path: '/:catchAll(.*)',
+            component: NotFoundPage,
             meta: {
               hidden: true
             }
