@@ -4,6 +4,7 @@ import io.dataease.api.dataset.dto.DatasetNodeDTO;
 import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.vo.DataSetBarVO;
+import io.dataease.auth.DeApiPath;
 import io.dataease.auth.DePermit;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
@@ -14,13 +15,34 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
+import static io.dataease.constant.AuthResourceEnum.DATASET;
+
+@DeApiPath(value = "/datasetTree", rt = DATASET)
 public interface DatasetTreeApi {
 
-    @DePermit({"m:read", "#p0+':manage'"})
+    /**
+     * 编辑
+     *
+     * @param dto
+     * @return
+     * @throws Exception
+     */
+    @DePermit({"m:read", "#p0.id+':manage'"})
     @PostMapping("save")
     DatasetNodeDTO save(@RequestBody DatasetGroupInfoDTO dto) throws Exception;
 
-    @DePermit({"m:read", "#p0+':manage'"})
+    /**
+     * 新建
+     *
+     * @param dto
+     * @return
+     * @throws Exception
+     */
+    @DePermit({"m:read",})
+    @PostMapping("create")
+    DatasetNodeDTO create(@RequestBody DatasetGroupInfoDTO dto) throws Exception;
+
+    @DePermit({"m:read", "#p0.id+':manage'"})
     @PostMapping("move")
     DatasetNodeDTO move(@RequestBody DatasetGroupInfoDTO dto) throws Exception;
 

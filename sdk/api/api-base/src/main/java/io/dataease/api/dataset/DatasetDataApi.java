@@ -3,6 +3,7 @@ package io.dataease.api.dataset;
 import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.dataset.dto.PreviewSqlDTO;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
+import io.dataease.auth.DeApiPath;
 import io.dataease.auth.DePermit;
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,9 +12,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.util.List;
 import java.util.Map;
 
+import static io.dataease.constant.AuthResourceEnum.DATASET;
+
 /**
  * @Author Junjun
  */
+@DeApiPath(value = "/datasetData", rt = DATASET)
 public interface DatasetDataApi {
     @DePermit({"m:read"})
     @PostMapping("previewData")

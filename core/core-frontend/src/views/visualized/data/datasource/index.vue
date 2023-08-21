@@ -1,6 +1,6 @@
 <script lang="tsx" setup>
 import { computed, reactive, ref, shallowRef, nextTick, watch } from 'vue'
-import type { TabPaneName, Action } from 'element-plus-secondary'
+import type { TabPaneName, ElMessageBoxOptions } from 'element-plus-secondary'
 import { ElIcon, ElMessageBox, ElMessage } from 'element-plus-secondary'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
 import { HandleMore } from '@/components/handle-more'
@@ -492,28 +492,32 @@ const handleDatasourceTree = (cmd: string, data?: Tree) => {
 }
 const operation = (cmd: string, data: Tree, nodeType: string) => {
   if (cmd === 'delete') {
+    let options = {
+      confirmButtonText: t('common.sure'),
+      cancelButtonText: t('common.cancel'),
+      confirmButtonType: 'danger',
+      type: 'warning',
+      tip: '',
+      autofocus: false,
+      showClose: false
+    }
+    if (!!data.children?.length) {
+      options.tip = '删除后，此文件夹下的所有资源都会被删除，请谨慎操作。'
+    } else {
+      delete options.tip
+    }
     ElMessageBox.confirm(
       nodeType === 'folder' ? '确定删除该文件夹吗' : t('datasource.this_data_source'),
-      {
-        confirmButtonText: t('common.sure'),
-        cancelButtonText: t('common.cancel'),
-        confirmButtonType: 'danger',
-        type: 'warning',
-        autofocus: false,
-        showClose: false,
-        callback: (action: Action) => {
-          if (action === 'confirm') {
-            deleteById(data.id as number).then(() => {
-              if (data.id === nodeInfo.id) {
-                Object.assign(nodeInfo, cloneDeep(defaultInfo))
-              }
-              listDs()
-              ElMessage.success(t('dataset.delete_success'))
-            })
-          }
+      options as ElMessageBoxOptions
+    ).then(() => {
+      deleteById(data.id as number).then(() => {
+        if (data.id === nodeInfo.id) {
+          Object.assign(nodeInfo, cloneDeep(defaultInfo))
         }
-      }
-    )
+        listDs()
+        ElMessage.success(t('dataset.delete_success'))
+      })
+    })
   } else {
     creatDsFolder.value.createInit(nodeType, data, cmd)
   }
@@ -701,6 +705,7 @@ const defaultProps = {
               v-model="nickName"
               :placeholder="t('common.search_keywords')"
               clearable
+              @input="initSearch"
               style="width: 240px"
             >
               <template #prefix>
