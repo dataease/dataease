@@ -17,12 +17,6 @@ export const dsTypes = [
       'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'
   },
   {
-    type: 'hive',
-    name: 'Apache Hive',
-    catalog: 'DL',
-    extraParams: ''
-  },
-  {
     type: 'impala',
     name: 'Apache Impala',
     catalog: 'OLAP',
@@ -32,6 +26,13 @@ export const dsTypes = [
     type: 'mariadb',
     name: 'MariaDB',
     catalog: 'OLTP',
+    extraParams:
+      'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'
+  },
+  {
+    type: 'doris',
+    name: 'Apache Doris',
+    catalog: 'OLAP',
     extraParams:
       'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'
   },

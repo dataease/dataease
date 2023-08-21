@@ -72,15 +72,20 @@ public class ApiUtils {
         return apiDefinition.getFields();
     }
 
-    public static List<TableField> getTableFields(DatasourceRequest datasourceRequest) throws Exception {
+    public static List<TableField> getTableFields(DatasourceRequest datasourceRequest) throws DEException {
         TypeReference<List<ApiDefinition>> listTypeReference = new TypeReference<List<ApiDefinition>>() {
         };
-        List<ApiDefinition> lists = objectMapper.readValue(datasourceRequest.getDatasource().getConfiguration(), listTypeReference);
+
         List<TableField> tableFields = new ArrayList<>();
-        for (ApiDefinition apiDefinition : lists) {
-            if (datasourceRequest.getTable().equalsIgnoreCase(apiDefinition.getDeTableName())) {
-                tableFields = getTableFields(apiDefinition);
+        try {
+            List<ApiDefinition> lists = objectMapper.readValue(datasourceRequest.getDatasource().getConfiguration(), listTypeReference);
+            for (ApiDefinition apiDefinition : lists) {
+                if (datasourceRequest.getTable().equalsIgnoreCase(apiDefinition.getDeTableName())) {
+                    tableFields = getTableFields(apiDefinition);
+                }
             }
+        }catch (Exception e){
+
         }
         return tableFields;
     }

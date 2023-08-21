@@ -61,6 +61,7 @@ public class DatasourceDTO implements Serializable {
      * 创建人ID
      */
     private String createBy;
+    private String creator;
 
     /**
      * 状态

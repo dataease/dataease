@@ -9,6 +9,7 @@ import io.dataease.chart.dao.auto.entity.CoreChartView;
 import io.dataease.chart.dao.auto.mapper.CoreChartViewMapper;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetTableField;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableFieldMapper;
+import io.dataease.dataset.manage.PermissionManage;
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.func.FunctionConstant;
@@ -37,6 +38,8 @@ public class ChartViewManege {
     private ChartDataManage chartDataManage;
     @Resource
     private CoreDatasetTableFieldMapper coreDatasetTableFieldMapper;
+    @Resource
+    private PermissionManage permissionManage;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -109,13 +112,26 @@ public class ChartViewManege {
         wrapper.eq("dataset_group_id", id);
 
         List<CoreDatasetTableField> fields = coreDatasetTableFieldMapper.selectList(wrapper);
-        fields.add(createCountField(id));
-        List<ChartViewFieldDTO> list = transFieldDTO(fields);
+        List<DatasetTableFieldDTO> collect = fields.stream().map(ele -> {
+            DatasetTableFieldDTO dto = new DatasetTableFieldDTO();
+            BeanUtils.copyBean(dto, ele);
+            return dto;
+        }).collect(Collectors.toList());
+        // filter column disable field
+        Map<String, ColumnPermissionItem> desensitizationList = new HashMap<>();
+        List<DatasetTableFieldDTO> datasetTableFieldDTOS = permissionManage.filterColumnPermissions(collect, desensitizationList, id, null);
+
+        datasetTableFieldDTOS.add(createCountField(id));
+        List<ChartViewFieldDTO> list = transFieldDTO(datasetTableFieldDTOS);
 
         // 获取视图计算字段
         wrapper.clear();
         wrapper.eq("chart_id", chartId);
-        List<CoreDatasetTableField> chartFields = coreDatasetTableFieldMapper.selectList(wrapper);
+        List<DatasetTableFieldDTO> chartFields = coreDatasetTableFieldMapper.selectList(wrapper).stream().map(ele -> {
+            DatasetTableFieldDTO dto = new DatasetTableFieldDTO();
+            BeanUtils.copyBean(dto, ele);
+            return dto;
+        }).collect(Collectors.toList());
         list.addAll(transFieldDTO(chartFields));
 
         // 获取list中的聚合函数，将字段的summary设置成空
@@ -146,8 +162,8 @@ public class ChartViewManege {
         return map;
     }
 
-    public CoreDatasetTableField createCountField(Long id) {
-        CoreDatasetTableField dto = new CoreDatasetTableField();
+    public DatasetTableFieldDTO createCountField(Long id) {
+        DatasetTableFieldDTO dto = new DatasetTableFieldDTO();
         dto.setId(-1L);
         dto.setDatasetGroupId(id);
         dto.setOriginName("*");
@@ -162,7 +178,7 @@ public class ChartViewManege {
         return dto;
     }
 
-    public List<ChartViewFieldDTO> transFieldDTO(List<CoreDatasetTableField> list) {
+    public List<ChartViewFieldDTO> transFieldDTO(List<DatasetTableFieldDTO> list) {
         return list.stream().map(ele -> {
             ChartViewFieldDTO dto = new ChartViewFieldDTO();
             if (ele == null) return null;
