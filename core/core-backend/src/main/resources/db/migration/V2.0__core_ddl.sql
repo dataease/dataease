@@ -7,16 +7,16 @@ CREATE TABLE `core_datasource`
     `id`            bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
     `name`          varchar(255) NOT NULL COMMENT '名称',
     `description`   varchar(255) DEFAULT NULL COMMENT '描述',
-    `type`          varchar(50) NOT NULL COMMENT '类型',
-    `pid`           bigint        DEFAULT NULL COMMENT '父级ID',
+    `type`          varchar(50)  NOT NULL COMMENT '类型',
+    `pid`           bigint       DEFAULT NULL COMMENT '父级ID',
     `edit_type`     varchar(50) COMMENT '更新方式：0：替换；1：追加',
-    `configuration` longtext    NOT NULL COMMENT '详细信息',
-    `create_time`   bigint      NOT NULL COMMENT '创建时间',
-    `update_time`   bigint      NOT NULL COMMENT '更新时间',
-    `create_by`     varchar(50) DEFAULT NULL COMMENT '创建人ID',
+    `configuration` longtext     NOT NULL COMMENT '详细信息',
+    `create_time`   bigint       NOT NULL COMMENT '创建时间',
+    `update_time`   bigint       NOT NULL COMMENT '更新时间',
+    `create_by`     varchar(50)  DEFAULT NULL COMMENT '创建人ID',
     `status`        longtext COMMENT '状态',
     `qrtz_instance` longtext COMMENT '状态',
-    `task_status`   varchar(50) DEFAULT NULL COMMENT '任务状态',
+    `task_status`   varchar(50)  DEFAULT NULL COMMENT '任务状态',
     PRIMARY KEY (`id`)
 );
 
@@ -251,7 +251,7 @@ CREATE TABLE `core_chart_view`
     `id`                  bigint NOT NULL COMMENT 'ID',
     `title`               varchar(1024) DEFAULT NULL COMMENT '标题',
     `scene_id`            bigint NOT NULL COMMENT '场景ID chart_type为private的时候 是仪表板id',
-    `table_id`            bigint DEFAULT NULL COMMENT '数据集表ID',
+    `table_id`            bigint        DEFAULT NULL COMMENT '数据集表ID',
     `type`                varchar(50)   DEFAULT NULL COMMENT '图表类型',
     `render`              varchar(50)   DEFAULT NULL COMMENT '视图渲染方式',
     `result_count`        int           DEFAULT NULL COMMENT '展示结果',
@@ -281,10 +281,10 @@ CREATE TABLE `core_chart_view`
     `refresh_view_enable` tinyint(1) DEFAULT 0 COMMENT '是否开启刷新',
     `refresh_unit`        varchar(255)  DEFAULT 'minute' COMMENT '刷新时间单位',
     `refresh_time`        int           DEFAULT 5 COMMENT '刷新时间',
-    `linkage_active` tinyint(1) DEFAULT 0 COMMENT '是否开启联动',
-    `jump_active` tinyint(1) DEFAULT 0 COMMENT '是否开启跳转'
-    `copy_from`         bigint        DEFAULT NULL COMMENT '复制来源',
-    `copy_id`         bigint        DEFAULT NULL COMMENT '复制ID',
+    `linkage_active`      tinyint(1) DEFAULT 0 COMMENT '是否开启联动',
+    `jump_active`         tinyint(1) DEFAULT 0 COMMENT '是否开启跳转',
+    `copy_from`           bigint        DEFAULT NULL COMMENT '复制来源',
+    `copy_id`             bigint        DEFAULT NULL COMMENT '复制ID',
     PRIMARY KEY (`id`)
 );
 
@@ -3909,150 +3909,173 @@ CREATE TABLE `visualization_linkage_field`
 -- Table structure for visualization_background
 -- ----------------------------
 DROP TABLE IF EXISTS `visualization_background`;
-CREATE TABLE `visualization_background` (
-                                            `id` varchar(64) NOT NULL,
-                                            `name` varchar(255) DEFAULT NULL,
-                                            `classification` varchar(255) NOT NULL,
-                                            `content` longtext,
-                                            `remark` varchar(255) DEFAULT NULL,
-                                            `sort` int DEFAULT NULL,
-                                            `upload_time` bigint DEFAULT NULL,
-                                            `base_url` varchar(255) DEFAULT NULL,
-                                            `url` varchar(255) DEFAULT NULL,
-                                            PRIMARY KEY (`id`)
+CREATE TABLE `visualization_background`
+(
+    `id`             varchar(64)  NOT NULL,
+    `name`           varchar(255) DEFAULT NULL,
+    `classification` varchar(255) NOT NULL,
+    `content`        longtext,
+    `remark`         varchar(255) DEFAULT NULL,
+    `sort`           int          DEFAULT NULL,
+    `upload_time`    bigint       DEFAULT NULL,
+    `base_url`       varchar(255) DEFAULT NULL,
+    `url`            varchar(255) DEFAULT NULL,
+    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-INSERT INTO `visualization_background` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`, `base_url`, `url`) VALUES ('board_1', '边框1', 'default', '', NULL, NULL, NULL, 'img/board', 'board/board_1.svg');
-INSERT INTO `visualization_background` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`, `base_url`, `url`) VALUES ('board_2', '边框2', 'default', NULL, NULL, NULL, NULL, 'img/board', 'board/board_2.svg');
-INSERT INTO `visualization_background` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`, `base_url`, `url`) VALUES ('board_3', '边框3', 'default', NULL, NULL, NULL, NULL, 'img/board', 'board/board_3.svg');
-INSERT INTO `visualization_background` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`, `base_url`, `url`) VALUES ('board_4', '边框4', 'default', NULL, NULL, NULL, NULL, 'img/board', 'board/board_4.svg');
-INSERT INTO `visualization_background` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`, `base_url`, `url`) VALUES ('board_5', '边框5', 'default', NULL, NULL, NULL, NULL, 'img/board', 'board/board_5.svg');
-INSERT INTO `visualization_background` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`, `base_url`, `url`) VALUES ('board_6', '边框6', 'default', NULL, NULL, NULL, NULL, 'img/board', 'board/board_6.svg');
-INSERT INTO `visualization_background` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`, `base_url`, `url`) VALUES ('board_7', '边框7', 'default', NULL, NULL, NULL, NULL, 'img/board', 'board/board_7.svg');
-INSERT INTO `visualization_background` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`, `base_url`, `url`) VALUES ('board_8', '边框8', 'default', NULL, NULL, NULL, NULL, 'img/board', 'board/board_8.svg');
-INSERT INTO `visualization_background` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`, `base_url`, `url`) VALUES ('board_9', '边框9', 'default', NULL, NULL, NULL, NULL, 'img/board', 'board/board_9.svg');
-INSERT INTO `visualization_background` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`, `base_url`, `url`) VALUES ('dark_1', '边框10', 'default', NULL, NULL, NULL, NULL, 'img/board', 'board/dark_1.svg');
+INSERT INTO `visualization_background` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`,
+                                        `base_url`, `url`)
+VALUES ('board_1', '边框1', 'default', '', NULL, NULL, NULL, 'img/board', 'board/board_1.svg');
+INSERT INTO `visualization_background` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`,
+                                        `base_url`, `url`)
+VALUES ('board_2', '边框2', 'default', NULL, NULL, NULL, NULL, 'img/board', 'board/board_2.svg');
+INSERT INTO `visualization_background` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`,
+                                        `base_url`, `url`)
+VALUES ('board_3', '边框3', 'default', NULL, NULL, NULL, NULL, 'img/board', 'board/board_3.svg');
+INSERT INTO `visualization_background` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`,
+                                        `base_url`, `url`)
+VALUES ('board_4', '边框4', 'default', NULL, NULL, NULL, NULL, 'img/board', 'board/board_4.svg');
+INSERT INTO `visualization_background` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`,
+                                        `base_url`, `url`)
+VALUES ('board_5', '边框5', 'default', NULL, NULL, NULL, NULL, 'img/board', 'board/board_5.svg');
+INSERT INTO `visualization_background` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`,
+                                        `base_url`, `url`)
+VALUES ('board_6', '边框6', 'default', NULL, NULL, NULL, NULL, 'img/board', 'board/board_6.svg');
+INSERT INTO `visualization_background` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`,
+                                        `base_url`, `url`)
+VALUES ('board_7', '边框7', 'default', NULL, NULL, NULL, NULL, 'img/board', 'board/board_7.svg');
+INSERT INTO `visualization_background` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`,
+                                        `base_url`, `url`)
+VALUES ('board_8', '边框8', 'default', NULL, NULL, NULL, NULL, 'img/board', 'board/board_8.svg');
+INSERT INTO `visualization_background` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`,
+                                        `base_url`, `url`)
+VALUES ('board_9', '边框9', 'default', NULL, NULL, NULL, NULL, 'img/board', 'board/board_9.svg');
+INSERT INTO `visualization_background` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`,
+                                        `base_url`, `url`)
+VALUES ('dark_1', '边框10', 'default', NULL, NULL, NULL, NULL, 'img/board', 'board/dark_1.svg');
 
 -- ----------------------------
 -- Table structure for visualization_background_image
 -- ----------------------------
 DROP TABLE IF EXISTS `visualization_background_image`;
-CREATE TABLE `visualization_background_image` (
-                                                  `id` varchar(64) NOT NULL,
-                                                  `name` varchar(255) DEFAULT NULL,
-                                                  `classification` varchar(255) NOT NULL,
-                                                  `content` longtext,
-                                                  `remark` varchar(255) DEFAULT NULL,
-                                                  `sort` int DEFAULT NULL,
-                                                  `upload_time` bigint DEFAULT NULL,
-                                                  `base_url` varchar(255) DEFAULT NULL,
-                                                  `url` varchar(255) DEFAULT NULL,
-                                                  PRIMARY KEY (`id`)
+CREATE TABLE `visualization_background_image`
+(
+    `id`             varchar(64)  NOT NULL,
+    `name`           varchar(255) DEFAULT NULL,
+    `classification` varchar(255) NOT NULL,
+    `content`        longtext,
+    `remark`         varchar(255) DEFAULT NULL,
+    `sort`           int          DEFAULT NULL,
+    `upload_time`    bigint       DEFAULT NULL,
+    `base_url`       varchar(255) DEFAULT NULL,
+    `url`            varchar(255) DEFAULT NULL,
+    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- ----------------------------
 -- Table structure for visualization_link_jump
 -- ----------------------------
 DROP TABLE IF EXISTS `visualization_link_jump`;
-CREATE TABLE `visualization_link_jump` (
-                                           `id` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
-                                           `source_dv_id` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '源仪表板ID',
-                                           `source_view_id` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '源视图ID',
-                                           `link_jump_info` varchar(4000) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '跳转信息',
-                                           `checked` tinyint(1) DEFAULT NULL COMMENT '是否启用',
-                                           `copy_from` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
-                                           `copy_id` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
-                                           PRIMARY KEY (`id`)
+CREATE TABLE `visualization_link_jump`
+(
+    `id`             varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+    `source_dv_id`   varchar(50) COLLATE utf8mb4_general_ci   DEFAULT NULL COMMENT '源仪表板ID',
+    `source_view_id` varchar(50) COLLATE utf8mb4_general_ci   DEFAULT NULL COMMENT '源视图ID',
+    `link_jump_info` varchar(4000) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '跳转信息',
+    `checked`        tinyint(1) DEFAULT NULL COMMENT '是否启用',
+    `copy_from`      varchar(255) COLLATE utf8mb4_general_ci  DEFAULT NULL,
+    `copy_id`        varchar(255) COLLATE utf8mb4_general_ci  DEFAULT NULL,
+    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- ----------------------------
 -- Table structure for visualization_link_jump_info
 -- ----------------------------
 DROP TABLE IF EXISTS `visualization_link_jump_info`;
-CREATE TABLE `visualization_link_jump_info` (
-                                                `id` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
-                                                `link_jump_id` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'link jump ID',
-                                                `link_type` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '关联类型 inner 内部仪表板，outer 外部链接',
-                                                `jump_type` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '跳转类型 _blank 新开页面 _self 当前窗口',
-                                                `target_dv_id` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '关联仪表板ID',
-                                                `source_field_id` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '字段ID',
-                                                `content` varchar(4000) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '内容 linkType = outer时使用',
-                                                `checked` tinyint(1) DEFAULT NULL COMMENT '是否可用',
-                                                `attach_params` tinyint(1) DEFAULT NULL COMMENT '是否附加点击参数',
-                                                `copy_from` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
-                                                `copy_id` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
-                                                PRIMARY KEY (`id`)
+CREATE TABLE `visualization_link_jump_info`
+(
+    `id`              varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+    `link_jump_id`    varchar(50) COLLATE utf8mb4_general_ci   DEFAULT NULL COMMENT 'link jump ID',
+    `link_type`       varchar(255) COLLATE utf8mb4_general_ci  DEFAULT NULL COMMENT '关联类型 inner 内部仪表板，outer 外部链接',
+    `jump_type`       varchar(255) COLLATE utf8mb4_general_ci  DEFAULT NULL COMMENT '跳转类型 _blank 新开页面 _self 当前窗口',
+    `target_dv_id`    varchar(255) COLLATE utf8mb4_general_ci  DEFAULT NULL COMMENT '关联仪表板ID',
+    `source_field_id` varchar(255) COLLATE utf8mb4_general_ci  DEFAULT NULL COMMENT '字段ID',
+    `content`         varchar(4000) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '内容 linkType = outer时使用',
+    `checked`         tinyint(1) DEFAULT NULL COMMENT '是否可用',
+    `attach_params`   tinyint(1) DEFAULT NULL COMMENT '是否附加点击参数',
+    `copy_from`       varchar(255) COLLATE utf8mb4_general_ci  DEFAULT NULL,
+    `copy_id`         varchar(255) COLLATE utf8mb4_general_ci  DEFAULT NULL,
+    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- ----------------------------
 -- Table structure for visualization_link_jump_target_view_info
 -- ----------------------------
 DROP TABLE IF EXISTS `visualization_link_jump_target_view_info`;
-CREATE TABLE `visualization_link_jump_target_view_info` (
-                                                            `target_id` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
-                                                            `link_jump_info_id` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
-                                                            `source_field_active_id` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '勾选字段设置的匹配字段，也可以不是勾选字段本身',
-                                                            `target_view_id` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
-                                                            `target_field_id` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
-                                                            `copy_from` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
-                                                            `copy_id` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
-                                                            PRIMARY KEY (`target_id`) USING BTREE
+CREATE TABLE `visualization_link_jump_target_view_info`
+(
+    `target_id`              varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+    `link_jump_info_id`      varchar(50) COLLATE utf8mb4_general_ci  DEFAULT NULL,
+    `source_field_active_id` varchar(50) COLLATE utf8mb4_general_ci  DEFAULT NULL COMMENT '勾选字段设置的匹配字段，也可以不是勾选字段本身',
+    `target_view_id`         varchar(50) COLLATE utf8mb4_general_ci  DEFAULT NULL,
+    `target_field_id`        varchar(50) COLLATE utf8mb4_general_ci  DEFAULT NULL,
+    `copy_from`              varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+    `copy_id`                varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+    PRIMARY KEY (`target_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- ----------------------------
 -- Table structure for visualization_subject
 -- ----------------------------
 DROP TABLE IF EXISTS `visualization_subject`;
-CREATE TABLE `visualization_subject` (
-                                         `id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-                                         `name` varchar(255) DEFAULT NULL COMMENT '主题名称',
-                                         `type` varchar(255) DEFAULT NULL COMMENT '主题类型 system 系统主题，self 自定义主题',
-                                         `details` longtext COMMENT '主题内容',
-                                         `delete_flag` tinyint(1) DEFAULT '0' COMMENT '删除标记',
-                                         `cover_url` varchar(255) DEFAULT NULL COMMENT '封面信息',
-                                         `create_num` int NOT NULL DEFAULT '0',
-                                         `create_time` bigint DEFAULT NULL COMMENT '创建时间',
-                                         `create_by` varchar(255) DEFAULT NULL COMMENT '创建人',
-                                         `update_time` bigint DEFAULT NULL COMMENT '更新时间',
-                                         `update_by` varchar(255) DEFAULT NULL COMMENT '更新人',
-                                         `delete_time` bigint DEFAULT NULL COMMENT '删除时间',
-                                         `delete_by` bigint DEFAULT NULL COMMENT '删除人',
-                                         PRIMARY KEY (`id`)
+CREATE TABLE `visualization_subject`
+(
+    `id`          varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+    `name`        varchar(255)                                                          DEFAULT NULL COMMENT '主题名称',
+    `type`        varchar(255)                                                          DEFAULT NULL COMMENT '主题类型 system 系统主题，self 自定义主题',
+    `details`     longtext COMMENT '主题内容',
+    `delete_flag` tinyint(1) DEFAULT '0' COMMENT '删除标记',
+    `cover_url`   varchar(255)                                                          DEFAULT NULL COMMENT '封面信息',
+    `create_num`  int                                                          NOT NULL DEFAULT '0',
+    `create_time` bigint                                                                DEFAULT NULL COMMENT '创建时间',
+    `create_by`   varchar(255)                                                          DEFAULT NULL COMMENT '创建人',
+    `update_time` bigint                                                                DEFAULT NULL COMMENT '更新时间',
+    `update_by`   varchar(255)                                                          DEFAULT NULL COMMENT '更新人',
+    `delete_time` bigint                                                                DEFAULT NULL COMMENT '删除时间',
+    `delete_by`   bigint                                                                DEFAULT NULL COMMENT '删除人',
+    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
 commit;
 
 DROP TABLE IF EXISTS `core_dataset_table_sql_log`;
-CREATE TABLE `core_dataset_table_sql_log` (
-                                   `id` varchar(50) NOT NULL DEFAULT '' COMMENT 'ID',
-                                   `table_id` varchar(50) NOT NULL DEFAULT '' COMMENT '数据集SQL节点ID',
-                                   `start_time` bigint(13) DEFAULT NULL COMMENT '开始时间',
-                                   `end_time` bigint(13) DEFAULT NULL COMMENT '结束时间',
-                                   `spend` bigint(13) DEFAULT NULL COMMENT '耗时(毫秒)',
-                                   `sql` longtext NOT NULL COMMENT '详细信息',
-                                   `status` varchar(45) DEFAULT NULL COMMENT '状态',
-                                   PRIMARY KEY (`id`)
+CREATE TABLE `core_dataset_table_sql_log`
+(
+    `id`         varchar(50) NOT NULL DEFAULT '' COMMENT 'ID',
+    `table_id`   varchar(50) NOT NULL DEFAULT '' COMMENT '数据集SQL节点ID',
+    `start_time` bigint(13) DEFAULT NULL COMMENT '开始时间',
+    `end_time`   bigint(13) DEFAULT NULL COMMENT '结束时间',
+    `spend`      bigint(13) DEFAULT NULL COMMENT '耗时(毫秒)',
+    `sql`        longtext    NOT NULL COMMENT '详细信息',
+    `status`     varchar(45)          DEFAULT NULL COMMENT '状态',
+    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci;
 
-INSERT INTO `visualization_subject` (
-    `id`,
-    `name`,
-    `type`,
-    `details`,
-    `delete_flag`,
-    `cover_url`,
-    `create_num`,
-    `create_time`,
-    `create_by`,
-    `update_time`,
-    `update_by`,
-    `delete_time`,
-    `delete_by`
-)
-VALUES
-    (
-        '1689632620820885504',
+INSERT INTO `visualization_subject` (`id`,
+                                     `name`,
+                                     `type`,
+                                     `details`,
+                                     `delete_flag`,
+                                     `cover_url`,
+                                     `create_num`,
+                                     `create_time`,
+                                     `create_by`,
+                                     `update_time`,
+                                     `update_by`,
+                                     `delete_time`,
+                                     `delete_by`)
+VALUES ('1689632620820885504',
         '浅色主题',
         'self',
         '{\"width\":1920,\"height\":1080,\"refreshViewEnable\":false,\"refreshViewLoading\":true,\"refreshUnit\":\"minute\",\"refreshTime\":5,\"scale\":60,\"scaleWidth\":100,\"scaleHeight\":100,\"backgroundType\":\"backgroundColor\",\"background\":\"\",\"openCommonStyle\":true,\"opacity\":1,\"fontSize\":14,\"themeId\":\"7095398277276766208\",\"color\":\"#000000\",\"backgroundColor\":\"rgba(241, 243, 245, 1)\",\"dashboard\":{\"themeColor\":\"light\",\"gap\":\"yes\",\"gapSize\":5,\"resultMode\":\"all\",\"resultCount\":1000,\"mobileSetting\":{\"customSetting\":false,\"imageUrl\":null,\"backgroundType\":\"image\",\"color\":\"#000\"}},\"component\":{\"chartTitle\":{\"show\":true,\"fontSize\":\"18\",\"hPosition\":\"left\",\"vPosition\":\"top\",\"isItalic\":false,\"isBolder\":true,\"remarkShow\":false,\"remark\":\"\",\"fontFamily\":\"Microsoft YaHei\",\"letterSpace\":\"0\",\"fontShadow\":false,\"color\":\"#000000\",\"remarkBackgroundColor\":\"#ffffff\",\"modifyName\":\"color\"},\"chartColor\":{\"value\":\"default\",\"colors\":[\"#5470c6\",\"#91cc75\",\"#fac858\",\"#ee6666\",\"#73c0de\",\"#3ba272\",\"#fc8452\",\"#9a60b4\",\"#ea7ccc\"],\"alpha\":100,\"tableHeaderBgColor\":\"#6D9A49\",\"tableItemBgColor\":\"#FFFFFF\",\"tableHeaderFontColor\":\"#000000\",\"tableFontColor\":\"#000000\",\"tableStripe\":true,\"dimensionColor\":\"#000000\",\"quotaColor\":\"#5470c6\",\"tableBorderColor\":\"#E6E7E4\",\"seriesColors\":[],\"areaBorderColor\":\"#303133\",\"gradient\":false,\"areaBaseColor\":\"#FFFFFF\",\"tableScrollBarColor\":\"#00000024\",\"tableScrollBarHoverColor\":\"rgba(0, 0, 0, 0.4)\",\"mapStyle\":\"normal\",\"mapLineGradient\":false,\"mapLineSourceColor\":\"#146C94\",\"mapLineTargetColor\":\"#576CBC\",\"modifyName\":\"colors\"},\"chartCommonStyle\":{\"backgroundColorSelect\":true,\"alpha\":100,\"backgroundImageEnable\":false,\"backgroundType\":\"innerImage\",\"innerImage\":\"board/board_1.svg\",\"outerImage\":null,\"innerPadding\":0,\"borderRadius\":0,\"backgroundColor\":\"rgb(255, 255, 255)\",\"innerImageColor\":\"#1094E5\"},\"filterStyle\":{\"horizontal\":\"left\",\"vertical\":\"top\",\"color\":\"#000000\",\"brColor\":\"#4E4B4B\",\"wordColor\":\"#FFFFFF\",\"innerBgColor\":\"#131E42\"},\"tabStyle\":{\"headPosition\":\"left\",\"headFontColor\":\"#OOOOOO\",\"headFontActiveColor\":\"#OOOOOO\",\"headBorderColor\":\"#OOOOOO\",\"headBorderActiveColor\":\"#OOOOOO\"}}}',
@@ -4064,26 +4087,21 @@ VALUES
         1692057059517,
         NULL,
         NULL,
-        NULL
-    );
-INSERT INTO `visualization_subject` (
-    `id`,
-    `name`,
-    `type`,
-    `details`,
-    `delete_flag`,
-    `cover_url`,
-    `create_num`,
-    `create_time`,
-    `create_by`,
-    `update_time`,
-    `update_by`,
-    `delete_time`,
-    `delete_by`
-)
-VALUES
-    (
-        '1689632657248415744',
+        NULL);
+INSERT INTO `visualization_subject` (`id`,
+                                     `name`,
+                                     `type`,
+                                     `details`,
+                                     `delete_flag`,
+                                     `cover_url`,
+                                     `create_num`,
+                                     `create_time`,
+                                     `create_by`,
+                                     `update_time`,
+                                     `update_by`,
+                                     `delete_time`,
+                                     `delete_by`)
+VALUES ('1689632657248415744',
         '深色主题',
         'self',
         '{\"width\":1920,\"height\":1080,\"refreshViewEnable\":false,\"refreshViewLoading\":true,\"refreshUnit\":\"minute\",\"refreshTime\":5,\"scale\":60,\"scaleWidth\":100,\"scaleHeight\":100,\"backgroundType\":\"backgroundColor\",\"background\":\"\",\"openCommonStyle\":true,\"opacity\":1,\"fontSize\":14,\"themeId\":\"7095398323158257664\",\"color\":\"#000000\",\"backgroundColor\":\"rgba(3, 11, 46, 1)\",\"dashboard\":{\"themeColor\":\"dark\",\"gap\":\"yes\",\"gapSize\":5,\"resultMode\":\"all\",\"resultCount\":1000,\"mobileSetting\":{\"customSetting\":false,\"imageUrl\":null,\"backgroundType\":\"image\",\"color\":\"#000\"}},\"component\":{\"chartTitle\":{\"show\":true,\"fontSize\":\"18\",\"hPosition\":\"left\",\"vPosition\":\"top\",\"isItalic\":false,\"isBolder\":true,\"remarkShow\":false,\"remark\":\"\",\"fontFamily\":\"Microsoft YaHei\",\"letterSpace\":\"0\",\"fontShadow\":false,\"color\":\"#FFFFFF\",\"remarkBackgroundColor\":\"#5A5C62\",\"modifyName\":\"color\"},\"chartColor\":{\"value\":\"default\",\"colors\":[\"#5470c6\",\"#91cc75\",\"#fac858\",\"#ee6666\",\"#73c0de\",\"#3ba272\",\"#fc8452\",\"#9a60b4\",\"#ea7ccc\"],\"alpha\":100,\"tableHeaderBgColor\":\"#5470C6\",\"tableItemBgColor\":\"#131E42\",\"tableFontColor\":\"#FFFFFF\",\"tableStripe\":true,\"dimensionColor\":\"#FFFFFF\",\"quotaColor\":\"#5470c6\",\"tableBorderColor\":\"#CCCCCC\",\"seriesColors\":[],\"areaBorderColor\":\"#EBEEF5\",\"areaBaseColor\":\"5470C6\",\"tableScrollBarColor\":\"#FFFFFF80\",\"tableScrollBarHoverColor\":\"rgba(255, 255, 255, 0.8)\",\"mapStyle\":\"darkblue\",\"mapLineGradient\":false,\"mapLineSourceColor\":\"#2F58CD\",\"mapLineTargetColor\":\"#3795BD\",\"modifyName\":\"colors\",\"tableHeaderFontColor\":\"rgb(0, 0, 0)\"},\"chartCommonStyle\":{\"backgroundColorSelect\":true,\"alpha\":100,\"backgroundImageEnable\":false,\"backgroundType\":\"innerImage\",\"innerImage\":\"board/board_1.svg\",\"outerImage\":null,\"innerPadding\":0,\"borderRadius\":0,\"backgroundColor\":\"rgb(19, 30, 66)\",\"innerImageColor\":\"#1094E5\"},\"filterStyle\":{\"horizontal\":\"left\",\"vertical\":\"top\",\"color\":\"#FFFFFF\",\"brColor\":\"#4E4B4B\",\"wordColor\":\"#FFFFFF\",\"innerBgColor\":\"#131E42\"},\"tabStyle\":{\"headPosition\":\"left\",\"headFontColor\":\"#FFFFFF\",\"headFontActiveColor\":\"#FFFFFF\",\"headBorderColor\":\"#131E42\",\"headBorderActiveColor\":\"#131E42\"}}}',
@@ -4095,5 +4113,4 @@ VALUES
         1692057067797,
         NULL,
         NULL,
-        NULL
-    );
+        NULL);
