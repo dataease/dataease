@@ -19,6 +19,7 @@ import io.dataease.datasource.request.EngineRequest;
 import io.dataease.datasource.server.DatasourceServer;
 import io.dataease.datasource.server.DatasourceTaskServer;
 import io.dataease.datasource.server.EngineServer;
+import io.dataease.exception.DEException;
 import io.dataease.job.sechedule.ExtractDataJob;
 import io.dataease.job.sechedule.ScheduleManager;
 import io.dataease.utils.LogUtil;
@@ -296,7 +297,7 @@ public class DatasourceSyncManage {
         }
     }
 
-    public void createEngineTable(String tableName, List<TableField> tableFields) throws Exception {
+    public void createEngineTable(String tableName, List<TableField> tableFields) throws DEException {
         CoreDeEngine engine = engineServer.info();
         EngineRequest engineRequest = new EngineRequest();
         engineRequest.setEngine(engine);
@@ -305,7 +306,7 @@ public class DatasourceSyncManage {
         engineProvider.exec(engineRequest);
     }
 
-    public void dropEngineTable(String tableName) throws Exception {
+    public void dropEngineTable(String tableName) {
         CoreDeEngine engine = engineServer.info();
         EngineRequest engineRequest = new EngineRequest();
         engineRequest.setEngine(engine);
@@ -314,7 +315,7 @@ public class DatasourceSyncManage {
         engineProvider.exec(engineRequest);
     }
 
-    public void addSchedule(CoreDatasourceTask datasourceTask) throws Exception {
+    public void addSchedule(CoreDatasourceTask datasourceTask) throws DEException {
         if (StringUtils.equalsIgnoreCase(datasourceTask.getSyncRate(), DatasourceTaskServer.ScheduleType.RIGHTNOW.toString())) {
             scheduleManager.addOrUpdateSingleJob(new JobKey(datasourceTask.getId().toString(), datasourceTask.getDsId().toString()),
                     new TriggerKey(datasourceTask.getId().toString(), datasourceTask.getDsId().toString()),

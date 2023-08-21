@@ -34,6 +34,7 @@ import org.apache.calcite.schema.impl.ScalarFunctionImpl;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,6 +44,8 @@ import java.sql.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 import java.util.stream.Collectors;
+
+import static io.dataease.api.ds.vo.DatasourceConfiguration.DatasourceType.pg;
 
 
 @Component("calciteProvider")
@@ -86,7 +89,7 @@ public class CalciteProvider {
         }
     }
 
-    public List<String> getSchema(DatasourceRequest datasourceRequest) throws Exception {
+    public List<String> getSchema(DatasourceRequest datasourceRequest) {
         List<String> schemas = new ArrayList<>();
         String queryStr = getSchemaSql(datasourceRequest.getDatasource());
         try (Connection con = getConnection(datasourceRequest.getDatasource()); Statement statement = getStatement(con, 30); ResultSet resultSet = statement.executeQuery(queryStr)) {
@@ -99,7 +102,7 @@ public class CalciteProvider {
         return schemas;
     }
 
-    public List<DatasetTableDTO> getTables(DatasourceRequest datasourceRequest) throws DEException {
+    public List<DatasetTableDTO> getTables(DatasourceRequest datasourceRequest){
         List<DatasetTableDTO> tables = new ArrayList<>();
         List<String> tablesSqls = getTablesSql(datasourceRequest);
         for (String tablesSql : tablesSqls) {
@@ -131,10 +134,22 @@ public class CalciteProvider {
     }
 
     public String checkStatus(DatasourceRequest datasourceRequest) throws Exception {
+        DatasourceConfiguration.DatasourceType datasourceType = DatasourceConfiguration.DatasourceType.valueOf(datasourceRequest.getDatasource().getType());
+        switch (datasourceType){
+            case pg:
+                DatasourceConfiguration configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Pg.class);
+                List<String> schemas = getSchema(datasourceRequest);
+                if(CollectionUtils.isEmpty(schemas) || !schemas.contains(configuration.getSchema())){
+                    DEException.throwException("无效的 schema！");
+                }
+                break;
+            default:
+                break;
+        }
         String querySql = getTablesSql(datasourceRequest).get(0);
         try (Connection con = getConnection(datasourceRequest.getDatasource()); Statement statement = getStatement(con, 30); ResultSet resultSet = statement.executeQuery(querySql)) {
         } catch (Exception e) {
-            throw e;
+            DEException.throwException(e);
         }
         return "Success";
     }
@@ -246,6 +261,7 @@ public class CalciteProvider {
                             case mariadb:
                             case TiDB:
                             case StarRocks:
+                            case doris:
                                 configuration = JsonUtil.parseObject(ds.getConfiguration(), Mysql.class);
                                 dataSource.setUrl(configuration.getJdbc());
                                 dataSource.setUsername(configuration.getUsername());
@@ -387,6 +403,7 @@ public class CalciteProvider {
             case mariadb:
             case TiDB:
             case StarRocks:
+            case doris:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Mysql.class);
                 tableSqls.add(String.format("SELECT TABLE_NAME,TABLE_COMMENT FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '%s' ;", configuration.getDataBase()));
                 break;
@@ -406,6 +423,9 @@ public class CalciteProvider {
                 break;
             case sqlServer:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Sqlserver.class);
+                if (StringUtils.isEmpty(configuration.getSchema())) {
+                    DEException.throwException(Translator.get("i18n_schema_is_empty"));
+                }
                 tableSqls.add("SELECT TABLE_NAME FROM \"DATABASE\".INFORMATION_SCHEMA.VIEWS WHERE  TABLE_SCHEMA = 'DS_SCHEMA' ;"
                         .replace("DATABASE", configuration.getDataBase())
                         .replace("DS_SCHEMA", configuration.getSchema()));
@@ -452,13 +472,14 @@ public class CalciteProvider {
     }
 
 
-    public Connection getConnection(CoreDatasource coreDatasource) throws Exception {
+    public Connection getConnection(CoreDatasource coreDatasource) throws DEException {
         DatasourceConfiguration configuration = null;
         DatasourceConfiguration.DatasourceType datasourceType = DatasourceConfiguration.DatasourceType.valueOf(coreDatasource.getType());
         switch (datasourceType) {
             case mysql:
             case mongo:
             case StarRocks:
+            case doris:
             case TiDB:
             case mariadb:
                 configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Mysql.class);
@@ -468,6 +489,9 @@ public class CalciteProvider {
                 break;
             case sqlServer:
                 configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Sqlserver.class);
+                if(StringUtils.isEmpty(configuration.getSchema())){
+                    DEException.throwException("Schema 不能为空！");
+                }
                 break;
             case oracle:
                 configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Oracle.class);
@@ -499,13 +523,12 @@ public class CalciteProvider {
         }
         String driverClassName = configuration.getDriver();
         ExtendedJdbcClassLoader jdbcClassLoader = extendedJdbcClassLoader;
-        Driver driverClass = (Driver) jdbcClassLoader.loadClass(driverClassName).newInstance();
-        Connection conn;
+        Connection conn = null;
         try {
+            Driver driverClass = (Driver) jdbcClassLoader.loadClass(driverClassName).newInstance();
             conn = driverClass.connect(configuration.getJdbc(), props);
         } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
+            DEException.throwException(e);
         }
         return conn;
     }
@@ -610,7 +633,7 @@ public class CalciteProvider {
         }
     }
 
-    public void  update(DatasourceDTO datasourceDTO) throws Exception{
+    public void  update(DatasourceDTO datasourceDTO) throws DEException{
         DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
         BeanUtils.copyBean(datasourceSchemaDTO, datasourceDTO);
         datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId()));
@@ -619,10 +642,15 @@ public class CalciteProvider {
         datasourceRequest.setDsList(Map.of(datasourceSchemaDTO.getId(), datasourceSchemaDTO));
 
         for (int i = 0; i < connections.length; i++) {
-            Connection connection = connections[i];
-            CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
-            SchemaPlus rootSchema = buildSchema(datasourceRequest, calciteConnection);
-            addCustomFunctions(rootSchema);
+            try {
+                Connection connection = connections[i];
+                CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
+                SchemaPlus rootSchema = buildSchema(datasourceRequest, calciteConnection);
+                addCustomFunctions(rootSchema);
+            }catch (Exception e){
+                DEException.throwException(e);
+            }
+
         }
     }
     public Connection take() {

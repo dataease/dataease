@@ -4,6 +4,7 @@ import io.dataease.datasource.dao.auto.entity.CoreDeEngine;
 import io.dataease.api.ds.vo.TableField;
 
 import io.dataease.datasource.request.EngineRequest;
+import io.dataease.exception.DEException;
 
 
 import java.util.List;
@@ -25,6 +26,6 @@ public abstract class EngineProvider extends CalciteProvider {
 
     public abstract String insertSql(String name, List<String[]> dataList, int page, int pageNumber);
 
-    public void exec(EngineRequest datasourceRequest) throws Exception {
+    public void exec(EngineRequest datasourceRequest) throws DEException {
     }
 }
