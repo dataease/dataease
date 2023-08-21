@@ -49,8 +49,16 @@ export interface Table {
   unableCheck?: boolean
 }
 // 获取权限路
+// edit
 export const saveDatasetTree = async (data: DatasetOrFolder): Promise<IResponse> => {
   return request.post({ url: '/datasetTree/save', data }).then(res => {
+    return res?.data
+  })
+}
+
+// create
+export const createDatasetTree = async (data: DatasetOrFolder): Promise<IResponse> => {
+  return request.post({ url: '/datasetTree/create', data }).then(res => {
     return res?.data
   })
 }
