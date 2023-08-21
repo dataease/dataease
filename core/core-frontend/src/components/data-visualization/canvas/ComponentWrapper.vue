@@ -154,11 +154,11 @@ const commonBackgroundSvgInner = computed(() => {
 <style lang="less" scoped>
 .wrapper-outer {
   position: absolute;
+  overflow: hidden;
 }
 .wrapper-inner {
   width: 100%;
   height: 100%;
-  overflow: hidden;
   position: relative;
   background-size: 100% 100% !important;
 }
