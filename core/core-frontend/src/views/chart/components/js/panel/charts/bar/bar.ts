@@ -526,6 +526,6 @@ export class PercentageStackBar extends GroupStackBar {
       isGroup: false,
       groupField: undefined
     }
-    this.axis = [...this.axis, 'extStack']
+    this.axis = [...BAR_AXIS_TYPE, 'extStack']
   }
 }
