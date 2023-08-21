@@ -205,6 +205,10 @@ const init = (id: string, queryId: string) => {
     })
 }
 
+const weightlessness = () => {
+  valueSource.value = Array.from(new Set(valueSource.value))
+}
+
 const handleCondition = item => {
   activeCondition.value = item.id
   curComponent.value = conditions.value.find(ele => ele.id === item.id)
@@ -338,7 +342,7 @@ defineExpose({
             v-model="checkAll"
             :indeterminate="isIndeterminate"
             @change="handleCheckAllChange"
-            >全选</el-checkbox
+            >{{ t('dataset.check_all') }}</el-checkbox
           >
         </div>
         <div class="field-list">
@@ -393,8 +397,8 @@ defineExpose({
                   @change="handleValueSourceChange"
                   v-model="curComponent.optionValueSource"
                 >
-                  <el-radio :label="0">自动</el-radio>
-                  <el-radio :label="1">选择数据集</el-radio>
+                  <el-radio :label="0">{{ t('chart.margin_model_auto') }}</el-radio>
+                  <el-radio :label="1">{{ t('chart.select_dataset') }}</el-radio>
                   <el-radio :label="2">手动输入</el-radio>
                 </el-radio-group>
               </div>
@@ -446,15 +450,15 @@ defineExpose({
                       <template #icon>
                         <Icon name="edit-in"></Icon>
                       </template>
-                      编辑
+                      {{ t('common.edit') }}
                     </el-button>
                   </template>
                   <div class="manual-input-container">
-                    <div class="title">手工输入</div>
+                    <div class="title">{{ t('auth.manual_input') }}</div>
                     <div class="select-value">
                       <span> 选项值 </span>
                       <div :key="index" v-for="(_, index) in valueSource" class="select-item">
-                        <el-input v-model="valueSource[index]"></el-input>
+                        <el-input @blur="weightlessness" v-model="valueSource[index]"></el-input>
                         <el-button @click="valueSource.splice(index, 1)" class="value" text>
                           <template #icon>
                             <Icon name="icon_delete-trash_outlined"></Icon>
@@ -483,8 +487,8 @@ defineExpose({
             <div class="label">选项类型</div>
             <div class="value">
               <el-radio-group @change="multipleChange" v-model="multiple">
-                <el-radio :label="false">单选</el-radio>
-                <el-radio :label="true">多选</el-radio>
+                <el-radio :label="false">{{ t('visualization.single_choice') }}</el-radio>
+                <el-radio :label="true">{{ t('visualization.multiple_choice') }}</el-radio>
               </el-radio-group>
             </div>
           </div>
