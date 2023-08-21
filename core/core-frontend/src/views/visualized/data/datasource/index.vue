@@ -701,6 +701,7 @@ const defaultProps = {
               v-model="nickName"
               :placeholder="t('common.search_keywords')"
               clearable
+              @input="initSearch"
               style="width: 240px"
             >
               <template #prefix>
