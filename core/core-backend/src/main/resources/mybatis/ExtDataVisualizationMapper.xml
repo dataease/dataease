@@ -129,5 +129,48 @@
     <select id="findViewInfoByCopyId" resultType="io.dataease.chart.dao.auto.entity.CoreChartView">
         select id, copy_from from core_chart_view where copy_id = #{copyId}
     </select>
+    <select id="findDvInfo" resultType="io.dataease.api.visualization.vo.DataVisualizationVO">
+        SELECT
+            `id`,
+            `name`,
+            `pid`,
+            `org_id`,
+            `level`,
+            `node_type`,
+            `type`,
+            `canvas_style_data`,
+            `component_data`,
+            `mobile_layout`,
+            `status`,
+            `self_watermark_status`,
+            `sort`,
+            `create_time`,
+            `create_by`,
+            (
+                SELECT
+                    per_user.account
+                FROM
+                    per_user
+                WHERE
+                    per_user.id = data_visualization_info.create_by
+            ) AS creator_name,
+            (
+                SELECT
+                    per_user.account
+                FROM
+                    per_user
+                WHERE
+                    per_user.id = data_visualization_info.update_by
+            ) AS update_name,
+            `update_time`,
+            `update_by`,
+            `remark`,
+            `source`,
+            `delete_flag`,
+            `delete_time`,
+            `delete_by`
+        FROM
+            data_visualization_info where data_visualization_info.delete_flag = 0 and  data_visualization_info.id = #{dvId}
+    </select>
 
 </mapper>

@@ -54,13 +54,8 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
     @Override
     public DataVisualizationVO findById(Long dvId) {
-        QueryWrapper<DataVisualizationInfo> wrapper = new QueryWrapper<>();
-        wrapper.eq("delete_flag", 0);
-        wrapper.eq("id", dvId);
-        DataVisualizationInfo visualizationInfo = visualizationInfoMapper.selectOne(wrapper);
-        if (visualizationInfo != null) {
-            DataVisualizationVO result = new DataVisualizationVO();
-            BeanUtils.copyBean(result, visualizationInfo);
+        DataVisualizationVO result = extDataVisualizationMapper.findDvInfo(dvId);
+        if (result != null) {
             //获取视图信息
             List<ChartViewDTO> chartViewDTOS = chartViewManege.listBySceneId(dvId);
             if (!CollectionUtils.isEmpty(chartViewDTOS)) {
