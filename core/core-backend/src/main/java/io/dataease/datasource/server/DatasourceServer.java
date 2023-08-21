@@ -8,6 +8,8 @@ import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.dataset.dto.PreviewSqlDTO;
 import io.dataease.api.ds.DatasourceApi;
 import io.dataease.api.ds.vo.*;
+import io.dataease.api.permissions.user.api.UserApi;
+import io.dataease.api.permissions.user.vo.UserFormVO;
 import io.dataease.commons.constants.TaskStatus;
 import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import io.dataease.dataset.manage.DatasetDataManage;
@@ -31,6 +33,7 @@ import io.dataease.utils.*;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -65,6 +68,8 @@ public class DatasourceServer implements DatasourceApi {
 
     @Resource
     private DatasetDataManage datasetDataManage;
+    @Autowired(required = false)
+    private UserApi userApi;
 
     @Override
     public List<DatasourceDTO> query(String keyWord) {
@@ -75,7 +80,7 @@ public class DatasourceServer implements DatasourceApi {
         all_scope, add_scope
     }
 
-    public void move(DatasourceDTO dataSourceDTO) throws Exception {
+    public void move(DatasourceDTO dataSourceDTO) throws DEException {
         switch (dataSourceDTO.getAction()) {
             case "move" -> {
                 if (Objects.equals(dataSourceDTO.getId(), dataSourceDTO.getPid())) {
@@ -109,7 +114,7 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     @Override
-    public DatasourceDTO save(DatasourceDTO dataSourceDTO) throws Exception {
+    public DatasourceDTO save(DatasourceDTO dataSourceDTO) throws DEException {
         if (StringUtils.isNotEmpty(dataSourceDTO.getAction())) {
             move(dataSourceDTO);
             return dataSourceDTO;
@@ -172,7 +177,7 @@ public class DatasourceServer implements DatasourceApi {
         return dataSourceDTO;
     }
 
-    public DatasourceDTO update(DatasourceDTO dataSourceDTO) throws Exception {
+    public DatasourceDTO update(DatasourceDTO dataSourceDTO) throws DEException {
         Long pk = null;
         if (ObjectUtils.isEmpty(pk = dataSourceDTO.getId())) {
             return save(dataSourceDTO);
@@ -274,7 +279,7 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     @Override
-    public List<String> getSchema(DatasourceDTO dataSourceDTO) throws Exception {
+    public List<String> getSchema(DatasourceDTO dataSourceDTO) throws DEException {
         dataSourceDTO.setConfiguration(new String(Base64.getDecoder().decode(dataSourceDTO.getConfiguration())));
         CoreDatasource coreDatasource = new CoreDatasource();
         BeanUtils.copyBean(coreDatasource, dataSourceDTO);
@@ -285,7 +290,7 @@ public class DatasourceServer implements DatasourceApi {
 
 
     @Override
-    public DatasourceDTO get(Long datasourceId) throws Exception {
+    public DatasourceDTO get(Long datasourceId) throws DEException {
         DatasourceDTO datasourceDTO = new DatasourceDTO();
         CoreDatasource datasource = datasourceMapper.selectById(datasourceId);
         BeanUtils.copyBean(datasourceDTO, datasource);
@@ -334,16 +339,23 @@ public class DatasourceServer implements DatasourceApi {
             datasourceDTO.setSize(ExcelUtils.getSize(datasource));
         }
         datasourceDTO.setConfiguration(new String(Base64.getEncoder().encode(datasourceDTO.getConfiguration().getBytes())));
+
+        if (userApi != null) {
+            UserFormVO userFormVO = userApi.queryById(Long.valueOf(datasourceDTO.getCreateBy()));
+            if (userFormVO != null) {
+                datasourceDTO.setCreator(userFormVO.getName());
+            }
+        }
         return datasourceDTO;
     }
 
     @Override
     @XpackInteract(value = "datasourceResourceTree", before = false)
-    public void delete(Long datasourceId) throws Exception {
+    public void delete(Long datasourceId) throws DEException {
         Objects.requireNonNull(CommonBeanFactory.getBean(DatasourceServer.class)).recursionDel(datasourceId);
     }
 
-    public void recursionDel(Long datasourceId) throws Exception {
+    public void recursionDel(Long datasourceId) throws DEException {
         CoreDatasource coreDatasource = datasourceMapper.selectById(datasourceId);
         if (ObjectUtils.isEmpty(coreDatasource)) {
             return;
@@ -397,7 +409,7 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     @Override
-    public List<DatasetTableDTO> getTables(String datasourceId) throws Exception {
+    public List<DatasetTableDTO> getTables(String datasourceId) throws DEException {
         CoreDatasource coreDatasource = datasourceMapper.selectById(datasourceId);
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(coreDatasource);
@@ -411,7 +423,7 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     @Override
-    public List<TableField> getTableField(String datasourceId, String tableName) throws Exception {
+    public List<TableField> getTableField(String datasourceId, String tableName) throws DEException {
         CoreDatasource coreDatasource = datasourceMapper.selectById(datasourceId);
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(coreDatasource);
@@ -436,7 +448,7 @@ public class DatasourceServer implements DatasourceApi {
         return (List<TableField>) calciteProvider.fetchResultField(datasourceRequest).get("fields");
     }
 
-    public ExcelFileData excelUpload(@RequestParam("file") MultipartFile file, @RequestParam("id") long datasourceId, @RequestParam("editType") Integer editType) throws Exception {
+    public ExcelFileData excelUpload(@RequestParam("file") MultipartFile file, @RequestParam("id") long datasourceId, @RequestParam("editType") Integer editType) throws DEException {
         ExcelUtils excelUtils = new ExcelUtils();
         ExcelFileData excelFileData = excelUtils.excelSaveAndParse(file);
         if (editType == 1) { //追加，判断是否能追加成功，按照excel sheet 名称匹配
@@ -524,7 +536,7 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     @Override
-    public Map<String, Object> previewDataWithLimit(Map<String, Object> req) throws Exception {
+    public Map<String, Object> previewDataWithLimit(Map<String, Object> req) {
         String tableName = req.get("table").toString();
         Long id = Long.valueOf(req.get("id").toString());
         if (ObjectUtils.isEmpty(tableName) || ObjectUtils.isEmpty(id)) {

@@ -38,55 +38,73 @@ public class ExcelUtils {
     private static String path = "/opt/dataease/data/excel/";
     private static ObjectMapper objectMapper = new ObjectMapper();
 
-    public static List<DatasetTableDTO> getTables(DatasourceRequest datasourceRequest) throws Exception {
+    public static List<DatasetTableDTO> getTables(DatasourceRequest datasourceRequest) throws DEException {
         List<DatasetTableDTO> tableDescs = new ArrayList<>();
-        JsonNode rootNode = objectMapper.readTree(datasourceRequest.getDatasource().getConfiguration());
-        for (int i = 0; i < rootNode.size(); i++) {
-            DatasetTableDTO datasetTableDTO = new DatasetTableDTO();
-            datasetTableDTO.setTableName(rootNode.get(i).get("deTableName").asText());
-            datasetTableDTO.setName(rootNode.get(i).get("deTableName").asText());
-            datasetTableDTO.setDatasourceId(datasourceRequest.getDatasource().getId());
-            tableDescs.add(datasetTableDTO);
+        try {
+            JsonNode rootNode = objectMapper.readTree(datasourceRequest.getDatasource().getConfiguration());
+            for (int i = 0; i < rootNode.size(); i++) {
+                DatasetTableDTO datasetTableDTO = new DatasetTableDTO();
+                datasetTableDTO.setTableName(rootNode.get(i).get("deTableName").asText());
+                datasetTableDTO.setName(rootNode.get(i).get("deTableName").asText());
+                datasetTableDTO.setDatasourceId(datasourceRequest.getDatasource().getId());
+                tableDescs.add(datasetTableDTO);
+            }
+        } catch (Exception e) {
+            DEException.throwException(e);
         }
+
         return tableDescs;
     }
 
-    public static String getFileName(CoreDatasource datasource) throws Exception {
-        JsonNode rootNode = objectMapper.readTree(datasource.getConfiguration());
-        for (int i = 0; i < rootNode.size(); i++) {
-            return rootNode.get(i).get("fileName").asText();
+    public static String getFileName(CoreDatasource datasource) throws DEException {
+        try {
+            JsonNode rootNode = objectMapper.readTree(datasource.getConfiguration());
+            for (int i = 0; i < rootNode.size(); i++) {
+                return rootNode.get(i).get("fileName").asText();
+            }
+        } catch (Exception e) {
+            DEException.throwException(e);
         }
         return "";
     }
 
-    public static String getSize(CoreDatasource datasource) throws Exception {
-        JsonNode rootNode = objectMapper.readTree(datasource.getConfiguration());
-        for (int i = 0; i < rootNode.size(); i++) {
-            return rootNode.get(i).get("size").asText();
+    public static String getSize(CoreDatasource datasource) throws DEException {
+        try {
+            JsonNode rootNode = objectMapper.readTree(datasource.getConfiguration());
+            for (int i = 0; i < rootNode.size(); i++) {
+                return rootNode.get(i).get("size").asText();
+            }
+        } catch (Exception e) {
+            DEException.throwException(e);
         }
+
         return "0 B";
     }
 
-    public List<String[]> fetchDataList(DatasourceRequest datasourceRequest) throws Exception {
+    public List<String[]> fetchDataList(DatasourceRequest datasourceRequest) throws DEException {
         List<String[]> dataList = new ArrayList<>();
-        JsonNode rootNode = objectMapper.readTree(datasourceRequest.getDatasource().getConfiguration());
-        for (int i = 0; i < rootNode.size(); i++) {
-            if (rootNode.get(i).get("deTableName").asText().equalsIgnoreCase(datasourceRequest.getTable())) {
-                String suffix = rootNode.get(i).get("path").asText().substring(rootNode.get(i).get("path").asText().lastIndexOf(".") + 1);
-                InputStream inputStream = new FileInputStream(rootNode.get(i).get("path").asText());
-                if (StringUtils.equalsIgnoreCase(suffix, "csv")) {
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
-                    dataList = csvData(reader, false);
-                } else {
-                    dataList = fetchExcelDataList(rootNode.get(i).get("tableName").asText(), inputStream);
+        try {
+            JsonNode rootNode = objectMapper.readTree(datasourceRequest.getDatasource().getConfiguration());
+            for (int i = 0; i < rootNode.size(); i++) {
+                if (rootNode.get(i).get("deTableName").asText().equalsIgnoreCase(datasourceRequest.getTable())) {
+                    String suffix = rootNode.get(i).get("path").asText().substring(rootNode.get(i).get("path").asText().lastIndexOf(".") + 1);
+                    InputStream inputStream = new FileInputStream(rootNode.get(i).get("path").asText());
+                    if (StringUtils.equalsIgnoreCase(suffix, "csv")) {
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+                        reader.readLine();//去掉表头
+                        dataList = csvData(reader, false);
+                    } else {
+                        dataList = fetchExcelDataList(rootNode.get(i).get("tableName").asText(), inputStream);
+                    }
                 }
             }
+        } catch (Exception e) {
+            DEException.throwException(e);
         }
         return dataList;
     }
 
     public List<String[]> fetchExcelDataList(String sheetName, InputStream inputStream) {
-
         NoModelDataListener noModelDataListener = new NoModelDataListener();
         ExcelReader excelReader = EasyExcel.read(inputStream, noModelDataListener).build();
         List<ReadSheet> sheets = excelReader.excelExecutor().sheetList();
@@ -108,15 +126,19 @@ public class ExcelUtils {
         return noModelDataListener.getData();
     }
 
-    public static List<TableField> getTableFields(DatasourceRequest datasourceRequest) throws Exception {
+    public static List<TableField> getTableFields(DatasourceRequest datasourceRequest) throws DEException {
         List<TableField> tableFields = new ArrayList<>();
         TypeReference<List<TableField>> listTypeReference = new TypeReference<List<TableField>>() {
         };
-        JsonNode rootNode = objectMapper.readTree(datasourceRequest.getDatasource().getConfiguration());
-        for (int i = 0; i < rootNode.size(); i++) {
-            if (rootNode.get(i).get("deTableName").asText().equalsIgnoreCase(datasourceRequest.getTable())) {
-                tableFields = JsonUtil.parseList(rootNode.get(i).get("fields").toString(), listTypeReference);
+        try {
+            JsonNode rootNode = objectMapper.readTree(datasourceRequest.getDatasource().getConfiguration());
+            for (int i = 0; i < rootNode.size(); i++) {
+                if (rootNode.get(i).get("deTableName").asText().equalsIgnoreCase(datasourceRequest.getTable())) {
+                    tableFields = JsonUtil.parseList(rootNode.get(i).get("fields").toString(), listTypeReference);
+                }
             }
+        } catch (Exception e) {
+            DEException.throwException(e);
         }
         return tableFields;
     }
@@ -222,29 +244,33 @@ public class ExcelUtils {
         return filePath;
     }
 
-    public static List<String[]> csvData(BufferedReader reader, boolean isPreview) throws Exception {
+    public static List<String[]> csvData(BufferedReader reader, boolean isPreview) throws DEException {
         List<String[]> data = new ArrayList<>();
-        int num = 1;
-        String line;
-        while ((line = reader.readLine()) != null) {
-            if (isPreview && num > 1000) {
-                break;
-            }
-            String str;
-            line += ",";
-            Pattern pCells = Pattern.compile("(\"[^\"]*(\"{2})*[^\"]*\")*[^,]*,");
-            Matcher mCells = pCells.matcher(line);
-            List<String> cells = new ArrayList();//每行记录一个list
-            //读取每个单元格
-            while (mCells.find()) {
-                str = mCells.group();
-                str = str.replaceAll("(?sm)\"?([^\"]*(\"{2})*[^\"]*)\"?.*,", "$1");
-                str = str.replaceAll("(?sm)(\"(\"))", "$2");
-                cells.add(str);
-            }
+        try {
+            int num = 1;
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (isPreview && num > 1000) {
+                    break;
+                }
+                String str;
+                line += ",";
+                Pattern pCells = Pattern.compile("(\"[^\"]*(\"{2})*[^\"]*\")*[^,]*,");
+                Matcher mCells = pCells.matcher(line);
+                List<String> cells = new ArrayList();//每行记录一个list
+                //读取每个单元格
+                while (mCells.find()) {
+                    str = mCells.group();
+                    str = str.replaceAll("(?sm)\"?([^\"]*(\"{2})*[^\"]*)\"?.*,", "$1");
+                    str = str.replaceAll("(?sm)(\"(\"))", "$2");
+                    cells.add(str);
+                }
 
-            data.add(cells.toArray(new String[]{}));
-            num++;
+                data.add(cells.toArray(new String[]{}));
+                num++;
+            }
+        } catch (Exception e) {
+            DEException.throwException(e);
         }
         return data;
     }
@@ -336,7 +362,7 @@ public class ExcelUtils {
     }
 
 
-    public List<ExcelSheetData> parseExcel(String filename, InputStream inputStream, boolean isPreview) throws Exception {
+    public List<ExcelSheetData> parseExcel(String filename, InputStream inputStream, boolean isPreview) throws DEException {
         List<ExcelSheetData> excelSheetDataList = new ArrayList<>();
         try {
             String suffix = filename.substring(filename.lastIndexOf(".") + 1);

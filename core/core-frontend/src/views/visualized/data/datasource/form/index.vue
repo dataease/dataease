@@ -237,8 +237,13 @@ const validateDS = () => {
   } else {
     request.configuration = Base64.encode(JSON.stringify(request.configuration))
   }
-  validate(request).then(() => {
-    ElMessage.success(t('datasource.validate_success'))
+  const validateFrom = detail.value.submitForm()
+  validateFrom(val => {
+    if (val) {
+      validate(request).then(() => {
+        ElMessage.success(t('datasource.validate_success'))
+      })
+    }
   })
 }
 
@@ -491,6 +496,13 @@ defineExpose({
       <div class="editor-footer">
         <el-button secondary @click="visible = false"> {{ t('common.cancel') }}</el-button>
         <el-button
+          v-show="!(activeStep === 0 || (editDs && activeStep <= 1))"
+          type="primary"
+          @click="prev"
+        >
+          {{ t('common.prev') }}</el-button
+        >
+        <el-button
           v-show="
             (activeStep === 0 && currentDsType !== 'API') ||
             (activeStep !== 2 && currentDsType === 'API')
@@ -499,13 +511,6 @@ defineExpose({
           @click="next"
         >
           {{ t('common.next') }}</el-button
-        >
-        <el-button
-          v-show="!(activeStep === 0 || (editDs && activeStep <= 1))"
-          type="primary"
-          @click="prev"
-        >
-          {{ t('common.prev') }}</el-button
         >
         <el-button
           v-show="activeStep === 1 && currentDsType !== 'Excel'"
