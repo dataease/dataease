@@ -1271,22 +1271,9 @@ const defaultProps = {
     }
 
     .search-input {
-      margin: 16px 8px 8px 8px;
-      display: flex;
-      justify-content: space-between;
+      margin: 16px 0 8px 0;
       .ed-input {
-        flex: 1;
-      }
-
-      .filter-button {
-        width: 32px;
-        height: 32px;
-        margin-left: 8px;
-        border: 1px solid #bbbfc4;
-        border-radius: 4px;
-        line-height: 32px;
-        text-align: center;
-        cursor: pointer;
+        width: 100%;
       }
     }
   }
