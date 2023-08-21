@@ -70,21 +70,21 @@ export interface AntVDrawOptions<O> {
 export abstract class AntVAbstractChartView extends AbstractChartView {
   axisConfig: AxisConfig = {
     xAxis: {
-      name: `${t('chart.drag_block_type_axis')}/${t('chart.dimension')}`,
+      name: `${t('chart.drag_block_type_axis')} / ${t('chart.dimension')}`,
       type: 'd'
     },
     xAxisExt: {
-      name: `${t('chart.chart_group')}/${t('chart.dimension')}`,
+      name: `${t('chart.chart_group')} / ${t('chart.dimension')}`,
       type: 'd',
       limit: 1
     },
     extStack: {
-      name: `${t('chart.stack_item')}/${t('chart.dimension')}`,
+      name: `${t('chart.stack_item')} / ${t('chart.dimension')}`,
       type: 'd',
       limit: 1
     },
     yAxis: {
-      name: `${t('chart.drag_block_value_axis')}/${t('chart.quota')}`,
+      name: `${t('chart.drag_block_value_axis')} / ${t('chart.quota')}`,
       type: 'q',
       limit: 1
     }

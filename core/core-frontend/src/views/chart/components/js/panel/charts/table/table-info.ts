@@ -26,7 +26,7 @@ export class TableInfo extends S2ChartView<TableSheet> {
   axis: AxisType[] = ['xAxis', 'filter', 'drill']
   axisConfig: AxisConfig = {
     xAxis: {
-      name: `${t('chart.drag_block_table_data_column')}/${t('chart.dimension_or_quota')}`
+      name: `${t('chart.drag_block_table_data_column')} / ${t('chart.dimension_or_quota')}`
     }
   }
 

@@ -7,7 +7,7 @@ import { Icon } from '@/components/icon-custom'
 import { useRouter } from 'vue-router'
 import CreatDsGroup from './form/CreatDsGroup.vue'
 import type { BusiTreeNode, BusiTreeRequest } from '@/models/tree/TreeNode'
-import { getDatasetTree, delDatasetTree, getDatasetPreview, barInfoApi } from '@/api/dataset'
+import { delDatasetTree, getDatasetPreview, barInfoApi } from '@/api/dataset'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import DeResourceGroupOpt from '@/views/common/DeResourceGroupOpt.vue'
 import DatasetDetail from './DatasetDetail.vue'
@@ -22,6 +22,8 @@ import {
 } from '@/views/chart/components/editor/util/dataVisualiztion'
 import type { TabPaneName } from 'element-plus-secondary'
 import { timestampFormatDate } from './form/util.js'
+import { interactiveStoreWithOut } from '@/store/modules/interactive'
+const interactiveStore = interactiveStoreWithOut()
 interface Field {
   fieldShortName: string
   name: string
@@ -186,11 +188,27 @@ const dtLoading = ref(false)
 const getData = () => {
   dtLoading.value = true
   const request = { busiFlag: 'dataset' } as BusiTreeRequest
-  getDatasetTree(request)
+  /* await interactiveStore.setInteractive(request)
+  const interactiveData = interactiveStore.getDataset
+  const nodeData = interactiveData.treeNodes
+  rootManage.value = interactiveData.rootManage
+  if (nodeData.length && nodeData[0]['id'] === '0' && nodeData[0]['name'] === 'root') {
+    state.datasetTree = nodeData[0]['children'] || []
+  } else {
+    state.datasetTree = nodeData
+  }
+  dtLoading.value = false
+  const id = nodeInfo.id
+  if (!!id) {
+    Object.assign(nodeInfo, cloneDeep(defaultNode))
+    dfsDatasetTree(state.datasetTree, id)
+  } */
+  interactiveStore
+    .setInteractive(request)
     .then(res => {
       const nodeData = (res as unknown as BusiTreeNode[]) || []
       if (nodeData.length && nodeData[0]['id'] === '0' && nodeData[0]['name'] === 'root') {
-        rootManage.value = nodeData[0]['weight'] >= 3
+        rootManage.value = nodeData[0]['weight'] >= 7
         state.datasetTree = nodeData[0]['children'] || []
         return
       }
@@ -417,11 +435,6 @@ const filterNode = (value: string, data: BusiTreeNode) => {
               </el-icon>
             </template>
           </el-input>
-          <span class="filter-button">
-            <el-icon>
-              <Icon name="icon-filter"></Icon>
-            </el-icon>
-          </span>
         </div>
       </div>
 
@@ -442,7 +455,7 @@ const filterNode = (value: string, data: BusiTreeNode) => {
               <Icon name="icon_dataset"></Icon>
             </el-icon>
             <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
-            <div class="icon-more" v-if="data.weight >= 3">
+            <div class="icon-more" v-if="data.weight >= 7">
               <handle-more
                 @handle-command="cmd => handleDatasetTree(cmd, data)"
                 :menu-list="datasetTypeList"
@@ -627,22 +640,9 @@ const filterNode = (value: string, data: BusiTreeNode) => {
     }
 
     .search-input {
-      margin: 16px 8px 8px 8px;
-      display: flex;
-      justify-content: space-between;
+      margin: 16px 0 8px 0;
       .ed-input {
-        flex: 1;
-      }
-
-      .filter-button {
-        width: 32px;
-        height: 32px;
-        margin-left: 8px;
-        border: 1px solid #bbbfc4;
-        border-radius: 4px;
-        line-height: 32px;
-        text-align: center;
-        cursor: pointer;
+        width: 100%;
       }
     }
   }

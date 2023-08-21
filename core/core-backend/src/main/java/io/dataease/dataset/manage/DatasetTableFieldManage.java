@@ -47,6 +47,7 @@ public class DatasetTableFieldManage {
     private CalciteProvider calciteProvider;
 
     public void save(CoreDatasetTableField coreDatasetTableField) {
+        checkNameLength(coreDatasetTableField.getName());
         if (ObjectUtils.isEmpty(coreDatasetTableField.getId())) {
             coreDatasetTableField.setId(IDUtils.snowID());
             coreDatasetTableFieldMapper.insert(coreDatasetTableField);
@@ -56,6 +57,7 @@ public class DatasetTableFieldManage {
     }
 
     public DatasetTableFieldDTO chartFieldSave(DatasetTableFieldDTO datasetTableFieldDTO) {
+        checkNameLength(datasetTableFieldDTO.getName());
         CoreDatasetTableField coreDatasetTableField = coreDatasetTableFieldMapper.selectById(datasetTableFieldDTO.getId());
         QueryWrapper<CoreDatasetTableField> wrapper = new QueryWrapper<>();
         wrapper.eq("name", datasetTableFieldDTO.getName());
@@ -78,6 +80,7 @@ public class DatasetTableFieldManage {
      * @return
      */
     public DatasetTableFieldDTO save(DatasetTableFieldDTO datasetTableFieldDTO) {
+        checkNameLength(datasetTableFieldDTO.getName());
         CoreDatasetTableField coreDatasetTableField = coreDatasetTableFieldMapper.selectById(datasetTableFieldDTO.getId());
         CoreDatasetTableField record = new CoreDatasetTableField();
         BeanUtils.copyBean(record, datasetTableFieldDTO);
@@ -280,4 +283,9 @@ public class DatasetTableFieldManage {
         }).collect(Collectors.toList());
     }
 
+    private void checkNameLength(String name) {
+        if (name.length() > 100) {
+            DEException.throwException(Translator.get("i18n_name_limit_100"));
+        }
+    }
 }

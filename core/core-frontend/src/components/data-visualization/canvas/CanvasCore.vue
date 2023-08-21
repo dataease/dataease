@@ -680,7 +680,7 @@ function removeItem(index) {
     })
     let checkedFields = []
     if (item.innerType === 'VQuery') {
-      item.propValue.forEach(ele => {
+      ;(item.propValue || []).forEach(ele => {
         checkedFields = [...ele.checkedFields, ...checkedFields]
       })
     }

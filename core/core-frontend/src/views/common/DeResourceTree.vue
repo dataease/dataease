@@ -16,6 +16,8 @@ import {
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import DvHandleMore from '@/components/handle-more/src/DvHandleMore.vue'
+import { interactiveStoreWithOut } from '@/store/modules/interactive'
+const interactiveStore = interactiveStoreWithOut()
 import router from '@/router'
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo } = storeToRefs(dvMainStore)
@@ -144,21 +146,22 @@ const nodeClick = (data: BusiTreeNode) => {
   }
 }
 
-const getTree = () => {
+const getTree = async () => {
   const request = { busiFlag: curCanvasType.value } as BusiTreeRequest
   dataInitStatue.value = false
   expandedArray.value = []
-  queryTreeApi(request).then(res => {
-    const nodeData = (res as unknown as BusiTreeNode[]) || []
-    if (nodeData.length && nodeData[0]['id'] === '0' && nodeData[0]['name'] === 'root') {
-      rootManage.value = nodeData[0]['weight'] >= 3
-      state.resourceTree = nodeData[0]['children'] || []
-      afterTreeInit()
-      return
-    }
-    state.resourceTree = nodeData
+  const isDashboard = curCanvasType.value == 'dashboard'
+  await interactiveStore.setInteractive(request)
+  const interactiveData = isDashboard ? interactiveStore.getPanel : interactiveStore.getScreen
+  const nodeData = interactiveData.treeNodes
+  rootManage.value = interactiveData.rootManage
+  if (nodeData.length && nodeData[0]['id'] === '0' && nodeData[0]['name'] === 'root') {
+    state.resourceTree = nodeData[0]['children'] || []
     afterTreeInit()
-  })
+    return
+  }
+  state.resourceTree = nodeData
+  afterTreeInit()
 }
 
 const afterTreeInit = () => {
@@ -350,7 +353,7 @@ onMounted(() => {
             <Icon name="dv-screen-spine"></Icon>
           </el-icon>
           <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
-          <div class="icon-more" v-if="data.weight >= 3 && showPosition === 'preview'">
+          <div class="icon-more" v-if="data.weight >= 7 && showPosition === 'preview'">
             <span v-on:click.stop>
               <el-icon v-if="data.leaf" class="hover-icon" @click="resourceEdit(data.id)">
                 <Icon name="edit-in"></Icon>
