@@ -19,6 +19,7 @@ export class Rose extends G2PlotChartView<RoseOptions, G2Rose> {
   axis: AxisType[] = PIE_AXIS_TYPE
   properties: EditorProperty[] = PIE_EDITOR_PROPERTY
   propertyInner: EditorPropertyInner = PIE_EDITOR_PROPERTY_INNER
+  axisConfig = PIE_AXIS_CONFIG
 
   drawChart(drawOptions: G2PlotDrawOptions<G2Rose>): G2Rose {
     const { chart, container, action } = drawOptions
@@ -148,10 +149,6 @@ export class Rose extends G2PlotChartView<RoseOptions, G2Rose> {
 
   constructor(name = 'pie-rose') {
     super(name, [])
-    this.axisConfig = {
-      ...this.axisConfig,
-      ...PIE_AXIS_CONFIG
-    }
   }
 }
 

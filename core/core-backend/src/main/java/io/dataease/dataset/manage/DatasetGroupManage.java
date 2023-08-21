@@ -263,7 +263,7 @@ public class DatasetGroupManage {
         if (ObjectUtils.isEmpty(datasetGroupInfoDTO.getUnion())) {
             return;
         }
-        datasetDataManage.previewDataWithLimit(datasetGroupInfoDTO, 0, 1);
+        datasetDataManage.previewDataWithLimit(datasetGroupInfoDTO, 0, 1, false);
         // table和field均由前端生成id（如果没有id）
         Long datasetGroupId = datasetGroupInfoDTO.getId();
         List<DatasetTableFieldDTO> allFields = datasetGroupInfoDTO.getAllFields();
@@ -336,7 +336,7 @@ public class DatasetGroupManage {
 
             if ("preview".equalsIgnoreCase(type)) {
                 // 请求数据
-                Map<String, Object> map = datasetDataManage.previewDataWithLimit(dto, 0, 100);
+                Map<String, Object> map = datasetDataManage.previewDataWithLimit(dto, 0, 100, true);
                 // 获取data,sql
                 Map<String, List> data = (Map<String, List>) map.get("data");
                 String sql = (String) map.get("sql");
