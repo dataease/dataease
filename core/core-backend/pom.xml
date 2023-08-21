@@ -88,7 +88,7 @@
             <properties>
                 <profiles.active>standalone</profiles.active>
             </properties>
-            <!--<dependencies>
+            <dependencies>
                 <dependency>
                     <groupId>io.dataease</groupId>
                     <artifactId>xpack-permissions</artifactId>
@@ -99,7 +99,7 @@
                     <artifactId>xpack-base</artifactId>
                     <version>${project.version}</version>
                 </dependency>
-            </dependencies>-->
+            </dependencies>
             <build>
                 <plugins>
                     <plugin>
