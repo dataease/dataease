@@ -41,11 +41,11 @@ export const PIE_AXIS_TYPE: AxisType[] = [
 
 export const PIE_AXIS_CONFIG: AxisConfig = {
   xAxis: {
-    name: `${t('chart.drag_block_pie_label')}/${t('chart.dimension')}`,
+    name: `${t('chart.drag_block_pie_label')} / ${t('chart.dimension')}`,
     type: 'd'
   },
   yAxis: {
-    name: `${t('chart.drag_block_pie_label')}/${t('chart.quota')}`,
+    name: `${t('chart.drag_block_pie_label')} / ${t('chart.quota')}`,
     type: 'q',
     limit: 1
   }

@@ -55,7 +55,7 @@ export class Gauge extends G2PlotChartView<GaugeOptions, G2Gauge> {
   axis: AxisType[] = ['yAxis', 'filter']
   axisConfig: AxisConfig = {
     yAxis: {
-      name: `${t('chart.drag_block_gauge_angel')}/${t('chart.quota')}`,
+      name: `${t('chart.drag_block_gauge_angel')} / ${t('chart.quota')}`,
       type: 'q',
       limit: 1
     }

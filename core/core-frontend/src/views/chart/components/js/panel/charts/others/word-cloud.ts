@@ -41,12 +41,12 @@ export class WordCloud extends G2PlotChartView<WordCloudOptions, G2WordCloud> {
   axis: AxisType[] = ['xAxis', 'yAxis', 'filter']
   axisConfig: AxisConfig = {
     xAxis: {
-      name: `${t('chart.drag_block_word_cloud_label')}/${t('chart.dimension_or_quota')}`,
+      name: `${t('chart.drag_block_word_cloud_label')} / ${t('chart.dimension_or_quota')}`,
       type: 'd',
       limit: 1
     },
     yAxis: {
-      name: `${t('chart.drag_block_word_cloud_size')}/${t('chart.quota')}`,
+      name: `${t('chart.drag_block_word_cloud_size')} / ${t('chart.quota')}`,
       type: 'q',
       limit: 1
     }

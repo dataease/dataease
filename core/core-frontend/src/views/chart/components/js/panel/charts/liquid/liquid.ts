@@ -42,7 +42,7 @@ export class Liquid extends G2PlotChartView<LiquidOptions, G2Liquid> {
   axis: AxisType[] = ['yAxis', 'filter']
   axisConfig: AxisConfig = {
     yAxis: {
-      name: `${t('chart.drag_block_progress')}/${t('chart.quota')}`,
+      name: `${t('chart.drag_block_progress')}  /${t('chart.quota')}`,
       type: 'q',
       limit: 1
     }
