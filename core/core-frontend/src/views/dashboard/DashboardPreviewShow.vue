@@ -38,7 +38,7 @@ const props = defineProps({
 
 const { showPosition } = toRefs(props)
 
-const loadCanvasData = dvId => {
+const loadCanvasData = (dvId, weight?) => {
   // 复用不设置 dvMain 中的componentData 等画布信息
   const initMethod = showPosition.value === 'multiplexing' ? initCanvasDataPrepare : initCanvasData
   initMethod(
@@ -50,6 +50,7 @@ const loadCanvasData = dvId => {
       canvasViewInfoPreview,
       curPreviewGap
     }) {
+      dvInfo['weight'] = weight
       state.canvasDataPreview = canvasDataResult
       state.canvasStylePreview = canvasStyleResult
       state.canvasViewInfoPreview = canvasViewInfoPreview
@@ -83,6 +84,10 @@ const getPreviewStateInfo = () => {
   return state
 }
 
+const resourceNodeClick = data => {
+  loadCanvasData(data.id, data.weight)
+}
+
 defineExpose({
   getPreviewStateInfo
 })
@@ -95,7 +100,7 @@ defineExpose({
         v-show="slideShow"
         :cur-canvas-type="'dashboard'"
         :show-position="showPosition"
-        @node-click="loadCanvasData"
+        @node-click="resourceNodeClick"
       ></de-resource-tree>
     </el-aside>
     <el-container

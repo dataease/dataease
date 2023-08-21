@@ -28,7 +28,7 @@ const props = defineProps({
   }
 })
 
-const loadCanvasData = dvId => {
+const loadCanvasData = (dvId, weight?) => {
   initCanvasData(
     dvId,
     function ({
@@ -38,6 +38,7 @@ const loadCanvasData = dvId => {
       canvasViewInfoPreview,
       curPreviewGap
     }) {
+      dvInfo['weight'] = weight
       state.canvasDataPreview = canvasDataResult
       state.canvasStylePreview = canvasStyleResult
       state.canvasViewInfoPreview = canvasViewInfoPreview
@@ -68,6 +69,10 @@ const slideOpenChange = () => {
   slideShow.value = !slideShow.value
 }
 
+const resourceNodeClick = data => {
+  loadCanvasData(data.id, data.weight)
+}
+
 const state = reactive({
   canvasDataPreview: null,
   canvasStylePreview: null,
@@ -84,7 +89,7 @@ const state = reactive({
         v-show="slideShow"
         :cur-canvas-type="'dataV'"
         :show-position="showPosition"
-        @node-click="loadCanvasData"
+        @node-click="resourceNodeClick"
       ></de-resource-tree>
     </el-aside>
     <el-container
