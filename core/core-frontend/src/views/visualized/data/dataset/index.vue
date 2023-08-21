@@ -1,7 +1,7 @@
 <script lang="tsx" setup>
 import { useI18n } from '@/hooks/web/useI18n'
 import { ref, reactive, shallowRef, computed, watch } from 'vue'
-import { ElIcon, ElMessageBox, ElMessage } from 'element-plus-secondary'
+import { ElIcon, ElMessageBox, ElMessage, type ElMessageBoxOptions } from 'element-plus-secondary'
 import { HandleMore } from '@/components/handle-more'
 import { Icon } from '@/components/icon-custom'
 import { useRouter } from 'vue-router'
@@ -290,14 +290,23 @@ const handleClick = (tabName: TabPaneName) => {
 
 const operation = (cmd: string, data: BusiTreeNode, nodeType: string) => {
   if (cmd === 'delete') {
+    let options = {
+      confirmButtonType: 'danger',
+      type: 'warning',
+      autofocus: false,
+      showClose: false,
+      tip: ''
+    }
+
+    if (!!data.children?.length) {
+      options.tip = '删除后，此文件夹下的所有资源都会被删除，请谨慎操作。'
+    } else {
+      delete options.tip
+    }
+
     ElMessageBox.confirm(
       nodeType === 'folder' ? '确定删除该文件夹吗' : t('datasource.delete_this_dataset'),
-      {
-        confirmButtonType: 'danger',
-        type: 'warning',
-        autofocus: false,
-        showClose: false
-      }
+      options as ElMessageBoxOptions
     ).then(() => {
       delDatasetTree(data.id).then(() => {
         getData()
