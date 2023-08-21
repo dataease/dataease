@@ -16,11 +16,11 @@ export class TableNormal extends S2ChartView<TableSheet> {
   axis: AxisType[] = ['xAxis', 'yAxis', 'drill', 'filter']
   axisConfig: AxisConfig = {
     xAxis: {
-      name: `${t('chart.drag_block_table_data_column')}/${t('chart.dimension')}`,
+      name: `${t('chart.drag_block_table_data_column')} / ${t('chart.dimension')}`,
       type: 'd'
     },
     yAxis: {
-      name: `${t('chart.drag_block_table_data_column')}/${t('chart.quota')}`,
+      name: `${t('chart.drag_block_table_data_column')} / ${t('chart.quota')}`,
       type: 'q'
     }
   }

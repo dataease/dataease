@@ -69,6 +69,10 @@ const slideOpenChange = () => {
   slideShow.value = !slideShow.value
 }
 
+const reload = id => {
+  loadCanvasData(id, state.dvInfo.weight)
+}
+
 const resourceNodeClick = data => {
   loadCanvasData(data.id, data.weight)
 }
@@ -103,7 +107,7 @@ const state = reactive({
       <template v-if="dvInfo.name">
         <preview-head
           v-show="showPosition === 'preview'"
-          @reload="loadCanvasData"
+          @reload="reload"
           @download="htmlToImage"
         ></preview-head>
         <div ref="previewCanvasContainer" class="content">

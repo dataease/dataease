@@ -121,9 +121,20 @@ public class ChartDataManage {
         if (table == null) {
             DEException.throwException(ResultCode.DATA_IS_WRONG.code(), Translator.get("i18n_no_ds"));
         }
+
+        // column permission
         Map<String, ColumnPermissionItem> desensitizationList = new HashMap<>();
-        List<Long> allDatasetTableFieldDTOIds = permissionManage.filterColumnPermissions(transFields(allFields), desensitizationList, table.getId(), chartExtRequest.getUser()).stream().map(DatasetTableFieldDTO::getId).collect(Collectors.toList());
-        allFields = allFields.stream().filter(chartViewFieldDTO  -> allDatasetTableFieldDTOIds.contains(chartViewFieldDTO.getId())).collect(Collectors.toList());
+//        List<Long> allDatasetTableFieldDTOIds = permissionManage.filterColumnPermissions(transFields(allFields), desensitizationList, table.getId(), chartExtRequest.getUser()).stream().map(DatasetTableFieldDTO::getId).collect(Collectors.toList());
+//        allFields = allFields.stream().filter(chartViewFieldDTO  -> allDatasetTableFieldDTOIds.contains(chartViewFieldDTO.getId())).collect(Collectors.toList());
+        List<DatasetTableFieldDTO> columnPermissionFields = permissionManage.filterColumnPermissions(transFields(allFields), desensitizationList, table.getId(), chartExtRequest.getUser());
+        //将没有权限的列删掉
+        List<String> dataeaseNames = columnPermissionFields.stream().map(DatasetTableFieldDTO::getDataeaseName).collect(Collectors.toList());
+        dataeaseNames.add("*");
+        fieldCustomFilter = fieldCustomFilter.stream().filter(item -> !desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
+        extStack = extStack.stream().filter(item -> !desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
+        extBubble = extBubble.stream().filter(item -> !desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
+        drill = drill.stream().filter(item -> !desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
+        // row permission
         List<DataSetRowPermissionsTreeDTO> rowPermissionsTree = permissionManage.getRowPermissionsTree(table.getId(), chartExtRequest.getUser());
 
         for (ChartFieldCustomFilterDTO ele : fieldCustomFilter) {
@@ -166,6 +177,7 @@ public class ChartDataManage {
 
         switch (view.getType()) {
             case "label":
+                xAxis = xAxis.stream().filter(item -> !desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
                 yAxis = new ArrayList<>();
                 if (ObjectUtils.isEmpty(xAxis)) {
                     return emptyChartViewDTO(view);
@@ -175,23 +187,25 @@ public class ChartDataManage {
             case "gauge":
             case "liquid":
                 xAxis = new ArrayList<>();
+                yAxis = yAxis.stream().filter(item -> !desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
                 if (ObjectUtils.isEmpty(yAxis)) {
                     return emptyChartViewDTO(view);
                 }
                 break;
             case "table-info":
                 yAxis = new ArrayList<>();
+                xAxis = xAxis.stream().filter(item -> dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
                 if (ObjectUtils.isEmpty(xAxis)) {
                     return emptyChartViewDTO(view);
                 }
                 break;
             case "table-normal":
-                break;
-            case "bar-group":
-            case "bar-group-stack":
-            case "flow-map":
+                xAxis = xAxis.stream().filter(item -> dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
+                yAxis = yAxis.stream().filter(item -> dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
                 break;
             default:
+                xAxis = xAxis.stream().filter(item -> !desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
+                yAxis = yAxis.stream().filter(item -> !desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
         }
 
         // 过滤来自仪表板的条件
