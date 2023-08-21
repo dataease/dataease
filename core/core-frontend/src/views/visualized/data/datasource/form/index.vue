@@ -242,10 +242,31 @@ const validateDS = () => {
   })
 }
 
-const typeTitle = {
-  excel: '文件',
-  api: 'API'
-}
+// const typeTitle = {
+//   excel: '文件',
+//   api: 'API'
+// }
+
+const typeTitle = computed(() => {
+  if (!currentDsType.value) {
+    return ''
+  }
+
+  if (currentDsType.value === 'Excel') {
+    return '文件'
+  }
+  let str = ''
+  databaseList.value.some(ele => {
+    return ele.some(itx => {
+      if (itx.type === currentDsType.value) {
+        str = itx.name
+        return true
+      }
+      return false
+    })
+  })
+  return str
+})
 
 const saveDS = () => {
   const request = JSON.parse(JSON.stringify(form)) as unknown as Omit<
@@ -369,7 +390,7 @@ defineExpose({
     v-model="visible"
   >
     <template #header="{ close }">
-      <span>{{ editDs ? t('datasource.modify') : t('datasource.create') }}</span>
+      <span>{{ editDs ? t('datasource.modify') : '创建数据源' }}</span>
       <div v-if="!editDs" class="editor-step flex-center">
         <el-steps space="150px" :active="activeStep" align-center>
           <el-step>
@@ -467,7 +488,7 @@ defineExpose({
       </div>
       <div class="ds-editor" :class="editDs && 'edit-ds'">
         <div v-show="activeStep !== 0 && !editDs" class="ds-type-title">
-          {{ typeTitle[currentDsType] || currentDsType }}
+          {{ typeTitle }}
         </div>
         <div class="editor-content" :class="(activeStep === 0 || editDs) && 'type-title'">
           <ds-type-list
