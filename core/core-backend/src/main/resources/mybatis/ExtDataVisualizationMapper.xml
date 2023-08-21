@@ -74,7 +74,7 @@
                `linkage_active`,
                `jump_active`,
                core_chart_view.`id` as 'copy_from',
-               `copy_id`
+                #{copyId} as 'copy_id'
         FROM core_chart_view
         WHERE core_chart_view.scene_id = #{sourceDvId}
     </insert>

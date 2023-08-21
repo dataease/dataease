@@ -690,7 +690,10 @@ const treeProps = {
           </el-input>
         </div>
         <div v-if="!state.tableData.length && searchTable !== ''" class="el-empty">
-          <div class="el-empty__description" style="margin-top: 80px; color: #5e6d82">
+          <div
+            class="el-empty__description"
+            style="margin-top: 80px; color: #5e6d82; text-align: center"
+          >
             没有找到相关内容
           </div>
         </div>

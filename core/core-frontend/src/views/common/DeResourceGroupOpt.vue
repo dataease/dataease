@@ -44,14 +44,6 @@ const resourceForm = reactive({
 })
 const sourceLabel = computed(() => (curCanvasType.value === 'dataV' ? '数据大屏' : '仪表板'))
 
-const nameMap = {
-  newFolder: '新建文件夹',
-  newLeaf: curCanvasType.value === 'dataV' ? '新建数据大屏' : '新建仪表板',
-  move: '移动到',
-  copy: '复制' + sourceLabel.value,
-  rename: '重命名'
-}
-
 const methodMap = {
   move: moveResource,
   copy: copyResource
@@ -137,15 +129,25 @@ const dfs = (arr: BusiTreeNode[]) => {
   })
 }
 
+const getDialogTitle = exec => {
+  return {
+    newFolder: '新建文件夹',
+    newLeaf: props.curCanvasType === 'dataV' ? '新建数据大屏' : '新建仪表板',
+    move: '移动到',
+    copy: '复制' + sourceLabel.value,
+    rename: '重命名'
+  }[exec]
+}
+
 const optInit = (type, data: BusiTreeNode, exec, parentSelect = false) => {
   showParentSelected.value = parentSelect
   nodeType.value = type
   const optSource = data.leaf || type === 'leaf' ? sourceLabel.value : '文件夹'
-  dialogTitle.value = nameMap[exec] + ('rename' === exec ? optSource : '')
+  dialogTitle.value = getDialogTitle(exec) + ('rename' === exec ? optSource : '')
   resourceFormNameLabel.value = (exec === 'move' ? '' : optSource) + '名称'
   const request = { busiFlag: curCanvasType.value, leaf: false, weight: 3 }
   if (['newLeaf', 'newFolder'].includes(exec)) {
-    resourceForm.name = nameMap[exec]
+    resourceForm.name = getDialogTitle(exec)
   } else if ('copy' === exec) {
     resourceForm.name = data.name + '-copy'
   } else {

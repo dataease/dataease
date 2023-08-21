@@ -166,9 +166,6 @@ const initEnumOptions = () => {
   }
 }
 
-const onOptionsChange = () => {
-  item.value.value = null
-}
 const optionData = data => {
   if (!data) return null
   return data.filter(item => !!item)
@@ -315,7 +312,6 @@ const emits = defineEmits(['update:item', 'del'])
           <el-select
             class="w100"
             size="small"
-            @change="onOptionsChange"
             v-model="item.term"
             :placeholder="t('auth.default_method')"
           >

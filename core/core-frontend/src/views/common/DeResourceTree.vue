@@ -133,7 +133,7 @@ const filterNode = (value: string, data: BusiTreeNode) => {
 
 const nodeClick = (data: BusiTreeNode) => {
   if (data.leaf) {
-    emit('nodeClick', data.id)
+    emit('nodeClick', data)
   }
 }
 

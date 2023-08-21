@@ -49,7 +49,12 @@ const dvEdit = () => {
         <template #dropdown>
           <el-dropdown-menu style="width: 100px">
             <el-dropdown-item icon="Refresh" @click="reload()">刷新数据</el-dropdown-item>
-            <el-dropdown style="width: 100%" trigger="hover" placement="right-start">
+            <el-dropdown
+              style="width: 100%"
+              trigger="hover"
+              placement="right-start"
+              v-if="dvInfo.weight > 3"
+            >
               <div style="margin-left: 15px">
                 <el-icon><Download /></el-icon>
                 导出为
