@@ -216,15 +216,14 @@ const deleteField = item => {
     confirmButtonText: t('dataset.confirm'),
     cancelButtonText: t('common.cancel'),
     showCancelButton: true,
-    tip: t('chart.tips'),
-    confirmButtonType: 'primary',
+    confirmButtonType: 'danger',
     type: 'warning',
     autofocus: false,
     showClose: false,
     callback: (action: Action) => {
       if (action === 'confirm') {
-        const idx = allfields.value.indexOf(item.id)
-        allfields.value.splice(idx, 1)
+        allfields.value = allfields.value.filter(ele => ele.id !== item.id)
+        datasetDrag.value.dfsNodeFieldBack(datasetDrag.value.nodeList, item)
         ElMessage({
           message: t('chart.delete_success'),
           type: 'success'
