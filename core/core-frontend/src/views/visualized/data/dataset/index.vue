@@ -387,7 +387,7 @@ const filterNode = (value: string, data: BusiTreeNode) => {
       <div class="filter-dataset">
         <div class="icon-methods">
           <span class="title"> {{ t('auth.dataset') }} </span>
-          <div v-if="rootManage">
+          <div v-if="rootManage" class="flex-align-center">
             <el-tooltip
               class="box-item"
               effect="dark"

@@ -237,15 +237,32 @@ const validateDS = () => {
   } else {
     request.configuration = Base64.encode(JSON.stringify(request.configuration))
   }
-  validate(request).then(() => {
-    ElMessage.success(t('datasource.validate_success'))
+  const validateFrom = detail.value.submitForm()
+  validateFrom(val => {
+    if (val) {
+      validate(request).then(() => {
+        ElMessage.success(t('datasource.validate_success'))
+      })
+    }
   })
 }
 
-const typeTitle = {
-  excel: '文件',
-  api: 'API'
-}
+const typeTitle = computed(() => {
+  if (!currentDsType.value) {
+    return ''
+  }
+  let str = ''
+  databaseList.value.some(ele => {
+    return ele.some(itx => {
+      if (itx.type === currentDsType.value) {
+        str = itx.name
+        return true
+      }
+      return false
+    })
+  })
+  return str
+})
 
 const saveDS = () => {
   const request = JSON.parse(JSON.stringify(form)) as unknown as Omit<
@@ -369,7 +386,7 @@ defineExpose({
     v-model="visible"
   >
     <template #header="{ close }">
-      <span>{{ editDs ? t('datasource.modify') : t('datasource.create') }}</span>
+      <span>{{ editDs ? t('datasource.modify') : '创建数据源' }}</span>
       <div v-if="!editDs" class="editor-step flex-center">
         <el-steps space="150px" :active="activeStep" align-center>
           <el-step>
@@ -456,7 +473,7 @@ defineExpose({
           @node-click="handleDsNodeClick"
         >
           <template #default="{ node, data }">
-            <span class="custom-tree-node">
+            <span class="custom-tree-node flex-align-center">
               <el-icon v-if="!!data.catalog" class="icon-border" style="width: 18px; height: 18px">
                 <Icon :name="getDsIconName(data)"></Icon>
               </el-icon>
@@ -467,7 +484,7 @@ defineExpose({
       </div>
       <div class="ds-editor" :class="editDs && 'edit-ds'">
         <div v-show="activeStep !== 0 && !editDs" class="ds-type-title">
-          {{ typeTitle[currentDsType] || currentDsType }}
+          {{ typeTitle }}
         </div>
         <div class="editor-content" :class="(activeStep === 0 || editDs) && 'type-title'">
           <ds-type-list
@@ -491,6 +508,13 @@ defineExpose({
       <div class="editor-footer">
         <el-button secondary @click="visible = false"> {{ t('common.cancel') }}</el-button>
         <el-button
+          v-show="!(activeStep === 0 || (editDs && activeStep <= 1))"
+          type="primary"
+          @click="prev"
+        >
+          {{ t('common.prev') }}</el-button
+        >
+        <el-button
           v-show="
             (activeStep === 0 && currentDsType !== 'API') ||
             (activeStep !== 2 && currentDsType === 'API')
@@ -499,13 +523,6 @@ defineExpose({
           @click="next"
         >
           {{ t('common.next') }}</el-button
-        >
-        <el-button
-          v-show="!(activeStep === 0 || (editDs && activeStep <= 1))"
-          type="primary"
-          @click="prev"
-        >
-          {{ t('common.prev') }}</el-button
         >
         <el-button
           v-show="activeStep === 1 && currentDsType !== 'Excel'"
@@ -633,6 +650,12 @@ defineExpose({
     height: 100%;
     background: #fff;
     position: relative;
+
+    .custom-tree-node {
+      .ed-icon {
+        margin-right: 8px;
+      }
+    }
     .ds-type-select {
       width: 279px;
       height: calc(100% - 64px);

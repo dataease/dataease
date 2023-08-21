@@ -47,7 +47,8 @@ export default {
     copy_success: '复制成功',
     copy_unsupported: '您的浏览器不支持复制',
     filter: '筛选',
-    filter_condition: '筛选条件'
+    filter_condition: '筛选条件',
+    no_auth_tips: '缺少菜单权限，请联系管理员'
   },
   login: {
     welcome: '欢迎使用',

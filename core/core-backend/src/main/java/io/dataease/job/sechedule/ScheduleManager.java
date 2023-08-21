@@ -2,6 +2,7 @@ package io.dataease.job.sechedule;
 
 
 import io.dataease.commons.exception.DataEaseException;
+import io.dataease.exception.DEException;
 import io.dataease.i18n.Translator;
 import io.dataease.utils.LogUtil;
 import jakarta.annotation.Resource;
@@ -327,13 +328,16 @@ public class ScheduleManager {
     }
 
     public void addOrUpdateSingleJob(JobKey jobKey, TriggerKey triggerKey, Class clz,
-            Date date, JobDataMap jobDataMap) throws SchedulerException {
-        if (scheduler.checkExists(triggerKey)) {
-            modifySingleJobTime(triggerKey, date);
-        } else {
-            addSingleJob(jobKey, triggerKey, clz, date, jobDataMap);
+            Date date, JobDataMap jobDataMap) throws DEException {
+        try {
+            if (scheduler.checkExists(triggerKey)) {
+                modifySingleJobTime(triggerKey, date);
+            } else {
+                addSingleJob(jobKey, triggerKey, clz, date, jobDataMap);
+            }
+        }catch (Exception e){
+            DEException.throwException(e);
         }
-
     }
 
     public void addOrUpdateSingleJob(JobKey jobKey, TriggerKey triggerKey, Class clz,
@@ -357,14 +361,17 @@ public class ScheduleManager {
      * @throws SchedulerException
      */
     public void addOrUpdateCronJob(JobKey jobKey, TriggerKey triggerKey, Class jobClass, String cron, Date startTime,
-            Date endTime, JobDataMap jobDataMap) throws SchedulerException {
+            Date endTime, JobDataMap jobDataMap) throws DEException {
 
         LogUtil.info("AddOrUpdateCronJob: " + jobKey.getName() + "," + triggerKey.getGroup());
-
-        if (scheduler.checkExists(triggerKey)) {
-            modifyCronJobTime(triggerKey, cron, startTime, endTime);
-        } else {
-            addCronJob(jobKey, triggerKey, jobClass, cron, startTime, endTime, jobDataMap);
+        try {
+            if (scheduler.checkExists(triggerKey)) {
+                modifyCronJobTime(triggerKey, cron, startTime, endTime);
+            } else {
+                addCronJob(jobKey, triggerKey, jobClass, cron, startTime, endTime, jobDataMap);
+            }
+        }catch (Exception e){
+            DEException.throwException(e);
         }
     }
 

@@ -63,6 +63,13 @@ export const createDatasetTree = async (data: DatasetOrFolder): Promise<IRespons
   })
 }
 
+// rename
+export const renameDatasetTree = async (data: DatasetOrFolder): Promise<IResponse> => {
+  return request.post({ url: '/datasetTree/rename', data }).then(res => {
+    return res?.data
+  })
+}
+
 export const moveDatasetTree = async (data: DatasetOrFolder): Promise<IResponse> => {
   return request.post({ url: '/datasetTree/move', data }).then(res => {
     return res?.data

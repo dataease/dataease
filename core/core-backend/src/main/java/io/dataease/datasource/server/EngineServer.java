@@ -9,6 +9,7 @@ import io.dataease.datasource.provider.ProviderUtil;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.datasource.type.H2;
 import io.dataease.datasource.type.Mysql;
+import io.dataease.exception.DEException;
 import io.dataease.result.ResultMessage;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.JsonUtil;
@@ -35,10 +36,10 @@ public class EngineServer {
     private CoreDeEngineMapper deEngineMapper;
 
 
-    public CoreDeEngine info() throws Exception {
+    public CoreDeEngine info() throws DEException {
         List<CoreDeEngine> deEngines = deEngineMapper.selectList(null);
         if (CollectionUtils.isEmpty(deEngines)) {
-            throw new Exception("未完整设置数据引擎");
+            DEException.throwException("未完整设置数据引擎");
         }
         return deEngines.get(0);
     }

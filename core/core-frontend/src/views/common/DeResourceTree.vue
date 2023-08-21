@@ -242,7 +242,7 @@ onMounted(() => {
   <div class="resource-tree">
     <div class="icon-methods" v-show="showPosition === 'preview'">
       <span class="title"> {{ resourceLabel }} </span>
-      <div v-if="rootManage">
+      <div v-if="rootManage" class="flex-align-center">
         <el-tooltip content="新建文件夹" placement="top" effect="dark">
           <el-icon
             class="custom-icon"
@@ -387,7 +387,7 @@ onMounted(() => {
 }
 
 .custom-tree {
-  height: calc(100vh - 160px);
+  height: calc(100vh - 180px);
   overflow-y: auto;
 }
 

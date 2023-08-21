@@ -171,8 +171,9 @@ const save = ({ logic, items, errorMessage }) => {
   saveRowPermission(params).then(res => {
     ElMessage.success(t('common.save_success'))
     search()
+    clearData()
   })
-  clearData()
+
   loadingRowPermission.value = false
 }
 

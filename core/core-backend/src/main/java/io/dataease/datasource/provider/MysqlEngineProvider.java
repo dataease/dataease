@@ -9,6 +9,7 @@ import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.entity.CoreDeEngine;
 import io.dataease.datasource.request.EngineRequest;
 import io.dataease.datasource.type.Mysql;
+import io.dataease.exception.DEException;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -28,7 +29,7 @@ import java.util.List;
 public class MysqlEngineProvider extends EngineProvider {
 
 
-    public void exec(EngineRequest engineRequest) throws Exception {
+    public void exec(EngineRequest engineRequest) throws DEException {
         DatasourceConfiguration configuration = JsonUtil.parseObject(engineRequest.getEngine().getConfiguration(), Mysql.class);
         int queryTimeout = configuration.getQueryTimeout();
         CoreDatasource datasource = new CoreDatasource();

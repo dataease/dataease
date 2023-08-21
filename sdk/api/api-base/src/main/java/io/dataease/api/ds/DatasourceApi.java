@@ -30,7 +30,7 @@ public interface DatasourceApi {
 
     @DePermit("m:read")
     @PostMapping("/save")
-    DatasourceDTO save(@RequestBody DatasourceDTO dataSourceDTO) throws Exception;
+    DatasourceDTO save(@RequestBody DatasourceDTO dataSourceDTO) throws DEException;
 
     @GetMapping("/types")
     List<DatasourceConfiguration.DatasourceType> datasourceTypes() throws DEException;
@@ -39,7 +39,7 @@ public interface DatasourceApi {
     DatasourceDTO validate(@RequestBody DatasourceDTO dataSourceDTO) throws DEException;
 
     @PostMapping("/getSchema")
-    List<String> getSchema(@RequestBody DatasourceDTO dataSourceDTO) throws Exception;
+    List<String> getSchema(@RequestBody DatasourceDTO dataSourceDTO) throws DEException;
 
     @DePermit({"m:read", "#p0+':manage'"})
     @GetMapping("/validate/{datasourceId}")
@@ -47,14 +47,14 @@ public interface DatasourceApi {
 
     @DePermit({"m:read", "#p0+':manage'"})
     @GetMapping("/delete/{datasourceId}")
-    void delete(@PathVariable("datasourceId") Long datasourceId) throws Exception;
+    void delete(@PathVariable("datasourceId") Long datasourceId) throws DEException;
 
     @DePermit({"m:read", "#p0+':manage'"})
     @GetMapping("/get/{datasourceId}")
-    DatasourceDTO get(@PathVariable("datasourceId") Long datasourceId) throws Exception;
+    DatasourceDTO get(@PathVariable("datasourceId") Long datasourceId) throws DEException;
 
     @GetMapping("getTableField/{datasourceId}/{tableName}")
-    List<TableField> getTableField(@PathVariable("datasourceId") String datasourceId, @PathVariable("tableName") String tableName) throws Exception;
+    List<TableField> getTableField(@PathVariable("datasourceId") String datasourceId, @PathVariable("tableName") String tableName) throws DEException;
 
 
     @DePermit("m:read")
@@ -64,16 +64,16 @@ public interface DatasourceApi {
 
     @DePermit({"m:read", "#p0+':manage'"})
     @GetMapping("getTables/{datasourceId}")
-    List<DatasetTableDTO> getTables(@PathVariable("datasourceId") String datasourceId) throws Exception;
+    List<DatasetTableDTO> getTables(@PathVariable("datasourceId") String datasourceId) throws DEException;
 
     @PostMapping("/checkApiDatasource")
     ApiDefinition checkApiDatasource(@RequestBody Map<String, String> data) throws DEException;
 
     @PostMapping("/uploadFile")
-    ExcelFileData excelUpload(@RequestParam("file") MultipartFile file, @RequestParam("id") long datasourceId, @RequestParam("editType") Integer editType) throws Exception;
+    ExcelFileData excelUpload(@RequestParam("file") MultipartFile file, @RequestParam("id") long datasourceId, @RequestParam("editType") Integer editType) throws DEException;
 
     @PostMapping("/previewData")
-    Map<String, Object> previewDataWithLimit(@RequestBody Map<String, Object> req) throws Exception;
+    Map<String, Object> previewDataWithLimit(@RequestBody Map<String, Object> req) throws DEException;
 
     @PostMapping("/latestUse")
     public List<String> latestUse();

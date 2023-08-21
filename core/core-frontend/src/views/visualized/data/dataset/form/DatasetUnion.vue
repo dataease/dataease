@@ -280,6 +280,18 @@ const dfsNodeBack = (arr, idArr, list) => {
   })
 }
 
+const dfsNodeFieldBack = (list, { originName, datasetTableId }) => {
+  list.forEach(ele => {
+    if (datasetTableId === ele.id) {
+      const currentDsFields = ele.currentDsFields.filter(ele => ele.originName !== originName)
+      ele.currentDsFields = currentDsFields
+    }
+    if (ele.children?.length) {
+      dfsNodeFieldBack(ele.children, { originName, datasetTableId })
+    }
+  })
+}
+
 const menuList = [
   {
     svgName: 'icon_text-box_outlined',
@@ -732,6 +744,7 @@ defineExpose({
   nodeList: state.nodeList,
   setStateBack,
   notConfirm,
+  dfsNodeFieldBack,
   initState
 })
 

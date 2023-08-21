@@ -103,6 +103,7 @@ const initForm = type => {
       authMethod: '',
       port: ''
     }
+    schemas.value = []
     setRules()
   }
   if (type === 'API') {
