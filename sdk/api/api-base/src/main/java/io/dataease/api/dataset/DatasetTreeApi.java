@@ -20,11 +20,29 @@ import static io.dataease.constant.AuthResourceEnum.DATASET;
 @DeApiPath(value = "/datasetTree", rt = DATASET)
 public interface DatasetTreeApi {
 
-    @DePermit({"m:read", "#p0+':manage'"})
+    /**
+     * 编辑
+     *
+     * @param dto
+     * @return
+     * @throws Exception
+     */
+    @DePermit({"m:read", "#p0.id+':manage'"})
     @PostMapping("save")
     DatasetNodeDTO save(@RequestBody DatasetGroupInfoDTO dto) throws Exception;
 
-    @DePermit({"m:read", "#p0+':manage'"})
+    /**
+     * 新建
+     *
+     * @param dto
+     * @return
+     * @throws Exception
+     */
+    @DePermit({"m:read",})
+    @PostMapping("create")
+    DatasetNodeDTO create(@RequestBody DatasetGroupInfoDTO dto) throws Exception;
+
+    @DePermit({"m:read", "#p0.id+':manage'"})
     @PostMapping("move")
     DatasetNodeDTO move(@RequestBody DatasetGroupInfoDTO dto) throws Exception;
 
