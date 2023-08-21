@@ -1460,10 +1460,10 @@ const autoInsert = element => {
                           </el-dropdown-item>
                           <span v-if="element.chartId">
                             <el-dropdown-item :command="handleChartFieldEdit(element, 'edit')">
-                              {{ t('commons.edit') }}
+                              {{ t('common.edit') }}
                             </el-dropdown-item>
                             <el-dropdown-item :command="handleChartFieldEdit(element, 'delete')">
-                              {{ t('commons.delete') }}
+                              {{ t('common.delete') }}
                             </el-dropdown-item>
                           </span>
                         </el-dropdown-menu>
@@ -1512,10 +1512,10 @@ const autoInsert = element => {
                           </el-dropdown-item>
                           <span v-if="element.chartId">
                             <el-dropdown-item :command="handleChartFieldEdit(element, 'edit')">
-                              {{ t('commons.edit') }}
+                              {{ t('common.edit') }}
                             </el-dropdown-item>
                             <el-dropdown-item :command="handleChartFieldEdit(element, 'delete')">
-                              {{ t('commons.delete') }}
+                              {{ t('common.delete') }}
                             </el-dropdown-item>
                           </span>
                         </el-dropdown-menu>
@@ -2115,6 +2115,7 @@ span {
 }
 
 .content-area {
+  height: 100%;
   position: relative;
   transition: 0.5s;
   overflow-x: hidden;

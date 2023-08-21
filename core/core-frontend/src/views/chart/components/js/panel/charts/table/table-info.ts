@@ -1,7 +1,7 @@
 import { ColCell, DataCell, S2Event, S2Options, TableSheet } from '@antv/s2/esm/index'
 import { formatterItem, valueFormatter } from '../../../formatter'
 import { parseJson } from '../../../util'
-import { getCurrentField, getCustomTheme } from '../../common/common_table'
+import { getCurrentField } from '../../common/common_table'
 import { S2ChartView, S2DrawOptions } from '../../types/impl/s2'
 import { TABLE_EDITOR_PROPERTY, TABLE_EDITOR_PROPERTY_INNER } from './common'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -82,8 +82,8 @@ export class TableInfo extends S2ChartView<TableSheet> {
     const s2Options: S2Options = {
       width: containerDom.offsetWidth,
       height: containerDom.offsetHeight,
-      showSeriesNumber: customAttr.tableHeader.showIndex
-      // style: getSize(chart),
+      showSeriesNumber: customAttr.tableHeader.showIndex,
+      style: this.configStyle(chart)
       // conditions: getConditions(chart)
     }
     // 开启序号之后，第一列就是序号列，修改 label 即可
@@ -114,7 +114,7 @@ export class TableInfo extends S2ChartView<TableSheet> {
     newChart.on(S2Event.DATA_CELL_CLICK, action)
 
     // theme
-    const customTheme = getCustomTheme(chart)
+    const customTheme = this.configTheme(chart)
     newChart.setThemeCfg({ theme: customTheme })
 
     return newChart

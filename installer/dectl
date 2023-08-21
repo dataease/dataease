@@ -63,15 +63,15 @@ function _healthcheck() {
 function status() {
    echo
    echo "DataEase 容器运行状态"
-   cd ${DE_RUNNING_BASE} || exit; ${compose_cmd} "${compose_files}" ps
+   cd ${DE_RUNNING_BASE} || exit; ${compose_cmd} ${compose_files} ps
 
    echo
    docker_root_dir=$(docker info | grep "Docker Root Dir"  | awk -F': ' '{print $2}')
    echo "Docker 目录及文件大小 : "
-   du -sh "$docker_root_dir"
+   du -sh $docker_root_dir
    echo
    echo "Docker 目录所在磁盘使用情况 : "
-   df -H "$docker_root_dir"
+   df -H $docker_root_dir
 
    echo
    echo "日志文件大小 : "
@@ -96,12 +96,12 @@ function status() {
 }
 function start() {
    echo
-   cd ${DE_RUNNING_BASE} || exit; ${compose_cmd} "${compose_files}" up -d
+   cd ${DE_RUNNING_BASE} || exit; ${compose_cmd} ${compose_files} up -d
    _healthcheck
 }
 function stop() {
    echo
-   cd ${DE_RUNNING_BASE} || exit; ${compose_cmd} "${compose_files}" down -v ${target}
+   cd ${DE_RUNNING_BASE} || exit; ${compose_cmd} ${compose_files} down -v ${target}
 }
 function restart() {
    stop
@@ -120,7 +120,7 @@ function uninstall() {
 # }
 function upgrade() {
    echo
-   cd ${DE_RUNNING_BASE} || exit; ${compose_cmd} "${compose_files}" pull dataease
+   cd ${DE_RUNNING_BASE} || exit; ${compose_cmd} ${compose_files} pull dataease
    reload
 }
 

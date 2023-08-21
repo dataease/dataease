@@ -29,6 +29,8 @@ public class DataVisualizationConstants {
         public static final String MOVE = "move";
         //重命名
         public static final String RENAME = "rename";
+        //复制
+        public static final String COPY = "copy";
     }
 
 

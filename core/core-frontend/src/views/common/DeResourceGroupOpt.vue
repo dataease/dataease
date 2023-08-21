@@ -3,6 +3,7 @@ import { ref, reactive, computed, watch, toRefs } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { BusiTreeNode, BusiTreeRequest } from '@/models/tree/TreeNode'
 import {
+  copyResource,
   dvNameCheck,
   moveResource,
   queryTreeApi,
@@ -41,15 +42,20 @@ const resourceForm = reactive({
   pid: '',
   name: '新建'
 })
+const sourceLabel = computed(() => (curCanvasType.value === 'dataV' ? '数据大屏' : '仪表板'))
 
 const nameMap = {
   newFolder: '新建文件夹',
   newLeaf: curCanvasType.value === 'dataV' ? '新建数据大屏' : '新建仪表板',
   move: '移动到',
+  copy: '复制' + sourceLabel.value,
   rename: '重命名'
 }
 
-const sourceLabel = computed(() => (curCanvasType.value === 'dataV' ? '数据大屏' : '仪表板'))
+const methodMap = {
+  move: moveResource,
+  copy: copyResource
+}
 
 const filterNode = (value: string, data: BusiTreeNode) => {
   if (!value) return true
@@ -140,6 +146,8 @@ const optInit = (type, data: BusiTreeNode, exec, parentSelect = false) => {
   const request = { busiFlag: curCanvasType.value, leaf: false, weight: 3 }
   if (['newLeaf', 'newFolder'].includes(exec)) {
     resourceForm.name = nameMap[exec]
+  } else if ('copy' === exec) {
+    resourceForm.name = data.name + '-copy'
   } else {
     resourceForm.name = data.name
   }
@@ -152,7 +160,6 @@ const optInit = (type, data: BusiTreeNode, exec, parentSelect = false) => {
       pid.value = data.id
     } else {
       id.value = data.id
-      resourceForm.name = data.name
     }
   })
   cmd.value = exec
@@ -190,6 +197,7 @@ const saveResource = () => {
           params.id = id.value
           break
         case 'rename':
+        case 'copy':
           params.pid = pid.value as string
           params.id = id.value
           break
@@ -197,20 +205,29 @@ const saveResource = () => {
           params.pid = resourceForm.pid || pid.value || '0'
           break
       }
-      if (['newLeaf', 'newFolder', 'rename', 'move'].includes(cmd.value)) {
+      if (['newLeaf', 'newFolder', 'rename', 'move', 'copy'].includes(cmd.value)) {
         await dvNameCheck({ opt: cmd.value, ...params })
       }
       if (cmd.value === 'newLeaf') {
         resourceDialogShow.value = false
         emits('finish', { opt: 'newLeaf', ...params })
       } else {
+        if (params.pid === params.id) {
+          ElMessage.success('不能选择自身，请选择其他文件夹')
+          return
+        }
         loading.value = true
-        const method = cmd.value === 'move' ? moveResource : savaOrUpdateBase
+        const method = methodMap[cmd.value] ? methodMap[cmd.value] : savaOrUpdateBase
         method(params)
-          .then(() => {
+          .then(data => {
             resourceDialogShow.value = false
             emits('finish')
             ElMessage.success('保存成功')
+            if (cmd.value === 'copy') {
+              const baseUrl =
+                curCanvasType.value === 'dataV' ? '#/dvCanvas/?dvId=' : '#/dashboard/?resourceId='
+              window.open(baseUrl + data.data, '_blank')
+            }
           })
           .finally(() => {
             loading.value = false

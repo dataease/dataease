@@ -221,6 +221,10 @@ const handleCommand = (ele, command) => {
     currentNode.value = cloneDeep(ele)
   }
 
+  if (command === 'rename') {
+    tableRename({ name: ele.tableName, id: ele.id })
+  }
+
   if (command === 'editerSql') {
     const { tableName, datasourceId, info, id } = ele
     if (ele.type === 'sql') {
@@ -278,8 +282,8 @@ const dfsNodeBack = (arr, idArr, list) => {
 
 const menuList = [
   {
-    svgName: 'icon_edit_outlined',
-    label: '字段编辑',
+    svgName: 'icon_text-box_outlined',
+    label: '字段选择',
     command: 'editerField'
   },
   {
@@ -292,8 +296,13 @@ const menuList = [
 const sqlMenu = [
   {
     svgName: 'icon_edit_outlined',
-    label: 'SQL编辑',
+    label: '编辑SQL',
     command: 'editerSql'
+  },
+  {
+    svgName: 'icon_rename_outlined',
+    label: t('datasource.field_rename'),
+    command: 'rename'
   }
 ]
 
@@ -671,6 +680,40 @@ const setStateBack = (node, parent) => {
   }
 }
 
+const dialogRename = ref(false)
+const renameForm = ref()
+const defaultParam = {
+  name: '',
+  id: ''
+}
+const dfsNodeListRename = arr => {
+  arr.some(ele => {
+    if (ele.id === renameParam.id) {
+      ele.tableName = renameParam.name
+      return true
+    }
+
+    if (!!ele.children?.length) {
+      dfsNodeListRename(ele.children)
+    }
+  })
+}
+const renameParam = reactive(cloneDeep(defaultParam))
+const confirmRename = () => {
+  renameForm.value.validate(val => {
+    if (val) {
+      dfsNodeListRename(state.nodeList)
+      renameParam.name = ''
+      renameParam.id = ''
+      dialogRename.value = false
+    }
+  })
+}
+const tableRename = ({ name, id }) => {
+  renameParam.name = name
+  renameParam.id = id
+  dialogRename.value = true
+}
 const confirm = () => {
   state.visualNode.isShadow = false
   delete state.visualNode.flag
@@ -739,7 +782,7 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields'])
           ]"
         >
           <el-icon>
-            <Icon name="reference-table"></Icon>
+            <Icon :name="ele.type !== 'sql' ? 'reference-table' : 'icon_sql_outlined'"></Icon>
           </el-icon>
           <span class="tableName">{{ ele.tableName }}</span>
           <span class="placeholder">拖拽表或自定义SQL至此处</span>
@@ -782,6 +825,43 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields'])
       <p>拖拽到这里创建数据集</p>
     </div>
   </div>
+  <el-dialog
+    v-model="dialogRename"
+    :close-on-press-escape="false"
+    :close-on-click-modal="false"
+    title="重命名表"
+    width="420px"
+  >
+    <el-form
+      ref="renameForm"
+      require-asterisk-position="right"
+      :model="renameParam"
+      label-position="top"
+    >
+      <el-form-item
+        prop="name"
+        label="表名称"
+        :rules="[
+          {
+            required: true,
+            message: t('commons.cannot_be_null')
+          }
+        ]"
+      >
+        <el-input :placeholder="t('common.inputText')" v-model="renameParam.name"></el-input>
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button secondary @click="dialogRename = false">
+          {{ t('common.cancel') }}
+        </el-button>
+        <el-button type="primary" @click="confirmRename">
+          {{ t('common.sure') }}
+        </el-button>
+      </span>
+    </template>
+  </el-dialog>
   <el-drawer v-model="editUnion" custom-class="union-item-drawer" size="600px" direction="rtl">
     <template #header v-if="currentNode">
       <div class="info">

@@ -1,11 +1,13 @@
 package io.dataease.visualization.dao.ext.mapper;
 
 import io.dataease.api.visualization.vo.DataVisualizationBaseVO;
+import io.dataease.chart.dao.auto.entity.CoreChartView;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface ExtDataVisualizationMapper {
@@ -16,4 +18,7 @@ public interface ExtDataVisualizationMapper {
             "\tdata_visualization_info where delete_flag=0 <when test='nodeType !=null'> and node_type = #{nodeType} </when>  <when test='type !=null'> and type = #{type} </when> order by node_type desc </script>")
     List<DataVisualizationBaseVO> findBashInfo(@Param("nodeType") String nodeType, @Param("type") String type);
 
+    void dvCopy(@Param("sourceDvId") Long sourceDvId,@Param("newDvId") Long newDvId,@Param("copyId") Long copyId);
+    void viewCopyWithDv(@Param("sourceDvId") Long sourceDvId,@Param("newDvId") Long newDvId,@Param("copyId") Long copyId);
+    List<CoreChartView> findViewInfoByCopyId(@Param("copyId") Long copyId);
 }

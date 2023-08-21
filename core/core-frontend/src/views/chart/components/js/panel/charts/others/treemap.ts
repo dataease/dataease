@@ -43,7 +43,8 @@ export class Treemap extends G2PlotChartView<TreemapOptions, G2Treemap> {
   axis: AxisType[] = ['xAxis', 'yAxis', 'filter', 'drill', 'extLabel', 'extTooltip']
   axisConfig: AxisConfig = {
     xAxis: {
-      name: `${t('chart.drag_block_treemap_label')}/${t('chart.dimension')}`
+      name: `${t('chart.drag_block_treemap_label')}/${t('chart.dimension')}`,
+      type: 'd'
     },
     yAxis: {
       name: `${t('chart.drag_block_treemap_size')}/${t('chart.quota')}`,

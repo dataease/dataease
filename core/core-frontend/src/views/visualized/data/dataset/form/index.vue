@@ -61,7 +61,6 @@ const offsetY = ref(0)
 const showLeft = ref(true)
 const maskShow = ref(false)
 const loading = ref(false)
-const nameExist = ref(false)
 const updateCustomTime = ref(false)
 const editerName = ref()
 const currentField = ref({
@@ -495,7 +494,6 @@ const getDatasource = () => {
 getDatasource()
 
 const datasetSave = () => {
-  if (nameExist.value) return
   if (nodeInfo.id) {
     editeSave()
     return
@@ -620,10 +618,7 @@ const treeProps = {
           <Icon name="icon_left_outlined"></Icon>
         </el-icon>
         <template v-if="showInput">
-          <el-input ref="editerName" v-model="datasetName" />
-          <div v-if="nameExist" style="left: 55px" class="el-form-item__error">
-            {{ t('deDataset.already_exists') }}
-          </div>
+          <el-input ref="editerName" v-model="datasetName" @blur="showInput = false" />
         </template>
         <template v-else>
           <span @click="handleClick" class="dataset-name ellipsis" style="margin: 0 5px">{{

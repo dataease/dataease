@@ -16,10 +16,12 @@ export class TableNormal extends S2ChartView<TableSheet> {
   axis: AxisType[] = ['xAxis', 'yAxis', 'drill', 'filter']
   axisConfig: AxisConfig = {
     xAxis: {
-      name: `${t('chart.drag_block_table_data_column')}/${t('chart.dimension')}`
+      name: `${t('chart.drag_block_table_data_column')}/${t('chart.dimension')}`,
+      type: 'd'
     },
     yAxis: {
-      name: `${t('chart.drag_block_table_data_column')}/${t('chart.quota')}`
+      name: `${t('chart.drag_block_table_data_column')}/${t('chart.quota')}`,
+      type: 'q'
     }
   }
 
@@ -65,7 +67,8 @@ export class TableNormal extends S2ChartView<TableSheet> {
         columns: columns
       },
       meta: meta,
-      data: chart.data.tableRow
+      data: chart.data.tableRow,
+      style: this.configStyle(chart)
     }
 
     const customAttr = parseJson(chart.customAttr)
@@ -74,8 +77,7 @@ export class TableNormal extends S2ChartView<TableSheet> {
       width: containerDom.offsetWidth,
       height: containerDom.offsetHeight,
       showSeriesNumber: customAttr.tableHeader.showIndex,
-      style: this.configStyle(chart),
-      totals: {}
+      style: this.configStyle(chart)
       // conditions: getConditions(chart)
     }
     // 开启序号之后，第一列就是序号列，修改 label 即可
