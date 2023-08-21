@@ -5,6 +5,8 @@ import io.dataease.api.chart.dto.ChartViewDTO;
 import io.dataease.api.visualization.DataVisualizationApi;
 import io.dataease.api.visualization.request.DataVisualizationBaseRequest;
 import io.dataease.api.visualization.vo.DataVisualizationVO;
+import io.dataease.chart.dao.auto.entity.CoreChartView;
+import io.dataease.chart.dao.auto.mapper.CoreChartViewMapper;
 import io.dataease.chart.manage.ChartViewManege;
 import io.dataease.commons.constants.DataVisualizationConstants;
 import io.dataease.commons.exception.DataEaseException;
@@ -15,6 +17,7 @@ import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
 import io.dataease.visualization.dao.auto.entity.DataVisualizationInfo;
 import io.dataease.visualization.dao.auto.mapper.DataVisualizationInfoMapper;
+import io.dataease.visualization.dao.ext.mapper.ExtDataVisualizationMapper;
 import io.dataease.visualization.manage.CoreVisualizationManage;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
@@ -40,9 +43,14 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @Resource
     private ChartViewManege chartViewManege;
 
+    @Resource
+    private ExtDataVisualizationMapper extDataVisualizationMapper;
 
     @Resource
     private CoreVisualizationManage coreVisualizationManage;
+
+    @Resource
+    private CoreChartViewMapper coreChartViewMapper;
 
     @Override
     public DataVisualizationVO findById(Long dvId) {
@@ -149,12 +157,17 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @Override
     public void nameCheck(DataVisualizationBaseRequest request) {
         QueryWrapper<DataVisualizationInfo> wrapper = new QueryWrapper<>();
-        if (DataVisualizationConstants.RESOURCE_OPT_TYPE.MOVE.equals(request.getOpt()) || DataVisualizationConstants.RESOURCE_OPT_TYPE.RENAME.equals(request.getOpt())) {
+        if (DataVisualizationConstants.RESOURCE_OPT_TYPE.MOVE.equals(request.getOpt())
+                || DataVisualizationConstants.RESOURCE_OPT_TYPE.RENAME.equals(request.getOpt())
+                || DataVisualizationConstants.RESOURCE_OPT_TYPE.COPY.equals(request.getOpt())) {
             if (request.getPid() == null) {
                 DataVisualizationInfo result = visualizationInfoMapper.selectById(request.getId());
                 request.setPid(result.getPid());
             }
-            wrapper.ne("id", request.getId());
+            if (DataVisualizationConstants.RESOURCE_OPT_TYPE.MOVE.equals(request.getOpt())
+                    || DataVisualizationConstants.RESOURCE_OPT_TYPE.RENAME.equals(request.getOpt())) {
+                wrapper.ne("id", request.getId());
+            }
         }
         wrapper.eq("delete_flag", 0);
         wrapper.eq("pid", request.getPid());
@@ -182,5 +195,34 @@ public class DataVisualizationServer implements DataVisualizationApi {
             });
         }
         return returnResult;
+    }
+
+    @Override
+    public String copy(DataVisualizationBaseRequest request) {
+        Long sourceDvId = request.getId(); //源仪表板ID
+        Long newDvId = IDUtils.snowID(); //目标仪表板ID
+        Long copyId = IDUtils.snowID()/100; // 本次复制执行ID
+        // 复制仪表板
+        DataVisualizationInfo newDv = visualizationInfoMapper.selectById(sourceDvId);
+        if (StringUtils.isNotEmpty(request.getName())) {
+            // 插入校验
+            nameCheck(request);
+        }
+        newDv.setName(request.getName());
+        newDv.setId(newDvId);
+        newDv.setCreateTime(System.currentTimeMillis());
+        // 复制视图 chart_view
+        extDataVisualizationMapper.viewCopyWithDv(sourceDvId, newDvId, copyId);
+        List<CoreChartView> viewList = extDataVisualizationMapper.findViewInfoByCopyId(copyId);
+        if (!CollectionUtils.isEmpty(viewList)) {
+            String componentData = newDv.getComponentData();
+            // componentData viewId 数据  并保存
+            for (CoreChartView viewInfo : viewList) {
+                componentData = componentData.replaceAll(String.valueOf(viewInfo.getCopyFrom()), String.valueOf(viewInfo.getId()));
+            }
+            newDv.setComponentData(componentData);
+        }
+        coreVisualizationManage.innerSave(newDv);
+        return String.valueOf(newDvId);
     }
 }

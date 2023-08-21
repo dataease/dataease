@@ -15,6 +15,7 @@ import {
 } from '@/views/chart/components/editor/util/dataVisualiztion'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
+import DvHandleMore from '@/components/handle-more/src/DvHandleMore.vue'
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo } = storeToRefs(dvMainStore)
 
@@ -44,24 +45,60 @@ const resourceListTree = ref()
 const resourceGroupOpt = ref()
 const state = reactive({
   resourceTree: [] as BusiTreeNode[],
-  menuList: [],
+  menuList: [
+    {
+      label: '编辑',
+      command: 'edit',
+      svgName: 'dv-edit'
+    },
+    {
+      label: '分享',
+      command: 'share',
+      svgName: 'dv-share',
+      disabled: true
+    },
+    {
+      label: '复制',
+      command: 'copy',
+      svgName: 'dv-copy-dark'
+    },
+    {
+      label: '移动到',
+      command: 'move',
+      svgName: 'dv-move'
+    },
+    {
+      label: '重命名',
+      command: 'rename',
+      svgName: 'dv-rename'
+    },
+    {
+      label: '删除',
+      command: 'delete',
+      svgName: 'dv-delete',
+      divided: true
+    }
+  ],
+  folderMenuList: [
+    {
+      label: '移动到',
+      command: 'move',
+      svgName: 'dv-move'
+    },
+    {
+      label: '重命名',
+      command: 'rename',
+      svgName: 'dv-rename'
+    },
+    {
+      label: '删除',
+      command: 'delete',
+      svgName: 'dv-delete',
+      divided: true
+    }
+  ],
   resourceTypeList: []
 })
-
-state.menuList = [
-  {
-    label: '移动到',
-    command: 'move'
-  },
-  {
-    label: '重命名',
-    command: 'rename'
-  },
-  {
-    label: '删除',
-    command: 'delete'
-  }
-]
 
 state.resourceTypeList = [
   {
@@ -134,6 +171,8 @@ const operation = (cmd: string, data: BusiTreeNode, nodeType: string) => {
         getTree()
       })
     })
+  } else if (cmd === 'edit') {
+    resourceEdit(data.id)
   } else {
     resourceGroupOpt.value.optInit(nodeType, data, cmd)
   }
@@ -275,10 +314,10 @@ onMounted(() => {
               placement="bottom-start"
               v-if="!data.leaf"
             ></handle-more>
-            <handle-more
+            <dv-handle-more
               @handle-command="cmd => operation(cmd, data, data.leaf ? 'leaf' : 'folder')"
-              :menu-list="state.menuList"
-            ></handle-more>
+              :menu-list="data.leaf ? state.menuList : state.folderMenuList"
+            ></dv-handle-more>
           </div>
         </span>
       </template>
