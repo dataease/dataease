@@ -1365,6 +1365,21 @@
               @change="changeBarSizeCase('mapLineAnimateTrailLength')"
             />
           </el-form-item>
+          <!-- word-cloud start -->
+          <el-form-item
+            v-show="showProperty('wordSizeRange') "
+            :label="$t('chart.text_fontsize')"
+            class="form-item form-item-slider"
+          >
+            <el-slider
+              v-model="sizeForm.wordSizeRange"
+              :min="1"
+              :max="100"
+              range
+              @change="changeBarSizeCase('wordSizeRange')"
+            />
+          </el-form-item>
+          <!-- word-cloud end -->
         </div>
       </el-form>
       <!--flow-map-end-->
@@ -1574,8 +1589,9 @@ export default {
           this.sizeForm.mapLineAnimateInterval = this.sizeForm.mapLineAnimateInterval !== undefined ? this.sizeForm.mapLineAnimateInterval : DEFAULT_SIZE.mapLineAnimateInterval
           this.sizeForm.mapLineAnimateTrailLength = this.sizeForm.mapLineAnimateTrailLength !== undefined ? this.sizeForm.mapLineAnimateTrailLength : DEFAULT_SIZE.mapLineAnimateTrailLength
           if (this.sizeForm.gaugeAxisLine === null || this.sizeForm.gaugeAxisLine === undefined) {
-            this.sizeForm.gaugeAxisLine = DEFAULT_SIZE.gaugeAxisLine
+            this.sizeForm.gaugeAxisLine = DEFAULT_SIZE.gaugeAxisLin
           }
+          this.sizeForm.wordSizeRange = this.sizeForm !== undefined ? this.sizeForm.wordSizeRange : DEFAULTSIZE.wordSizeRange
         }
       }
     },

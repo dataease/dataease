@@ -1746,13 +1746,17 @@ export const TYPE_CONFIGS = [
     properties: [
       'color-selector',
       'tooltip-selector-ant-v',
-      'title-selector-ant-v'
+      'title-selector-ant-v',
+      'size-selector-ant-v'
     ],
     propertyInner: {
       'color-selector': [
         'value',
         'custom',
         'alpha'
+      ],
+      'size-selector-ant-v': [
+        'wordSizeRange'
       ],
       'tooltip-selector-ant-v': [
         'show',
