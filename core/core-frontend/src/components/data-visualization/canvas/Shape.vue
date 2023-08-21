@@ -714,12 +714,12 @@ onMounted(() => {
 .shape-edit {
   &:hover {
     cursor: move;
-    outline: 1px dashed #70c0ff;
+    outline: 2px solid #3370ff !important;
   }
 }
 
 .active {
-  outline: 1px solid #70c0ff !important;
+  outline: 1px solid #3370ff;
   user-select: none;
 }
 
