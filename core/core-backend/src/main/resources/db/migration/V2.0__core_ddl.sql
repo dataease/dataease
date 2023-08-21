@@ -282,7 +282,9 @@ CREATE TABLE `core_chart_view`
     `refresh_unit`        varchar(255)  DEFAULT 'minute' COMMENT '刷新时间单位',
     `refresh_time`        int           DEFAULT 5 COMMENT '刷新时间',
     `linkage_active` tinyint(1) DEFAULT 0 COMMENT '是否开启联动',
-    `jump_active` tinyint(1) DEFAULT 0 COMMENT '是否开启跳转',
+    `jump_active` tinyint(1) DEFAULT 0 COMMENT '是否开启跳转'
+    `copy_from`         bigint        DEFAULT NULL COMMENT '复制来源',
+    `copy_id`         bigint        DEFAULT NULL COMMENT '复制ID',
     PRIMARY KEY (`id`)
 );
 

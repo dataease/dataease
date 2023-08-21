@@ -9,7 +9,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-08-18
+ * @since 2023-08-20
  */
 @TableName("core_chart_view")
 public class CoreChartView implements Serializable {
@@ -190,6 +190,10 @@ public class CoreChartView implements Serializable {
      * 是否开启跳转
      */
     private Boolean jumpActive;
+
+    private Long copyFrom;
+
+    private Long copyId;
 
     public Long getId() {
         return id;
@@ -471,6 +475,22 @@ public class CoreChartView implements Serializable {
         this.jumpActive = jumpActive;
     }
 
+    public Long getCopyFrom() {
+        return copyFrom;
+    }
+
+    public void setCopyFrom(Long copyFrom) {
+        this.copyFrom = copyFrom;
+    }
+
+    public Long getCopyId() {
+        return copyId;
+    }
+
+    public void setCopyId(Long copyId) {
+        this.copyId = copyId;
+    }
+
     @Override
     public String toString() {
         return "CoreChartView{" +
@@ -509,6 +529,8 @@ public class CoreChartView implements Serializable {
         ", refreshTime = " + refreshTime +
         ", linkageActive = " + linkageActive +
         ", jumpActive = " + jumpActive +
+        ", copyFrom = " + copyFrom +
+        ", copyId = " + copyId +
         "}";
     }
 }

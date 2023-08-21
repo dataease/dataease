@@ -42,4 +42,7 @@ public interface DataVisualizationApi {
     @PostMapping("/findRecent")
     List<DataVisualizationVO> findRecent(@RequestBody DataVisualizationBaseRequest request);
 
+    @PostMapping("/copy")
+    Long copy(@RequestBody DataVisualizationBaseRequest request);
+
 }
