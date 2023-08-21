@@ -180,11 +180,13 @@ const emit = defineEmits(['nodeClick'])
 
 const operation = (cmd: string, data: BusiTreeNode, nodeType: string) => {
   if (cmd === 'delete') {
+    const msg = data.leaf ? '' : '删除后，此文件夹下的所有资源都会被删除，请谨慎操作。'
     ElMessageBox.confirm(
       data.leaf ? '确定删除该' + resourceLabel + '吗？' : '确定删除该文件夹吗？',
       {
         confirmButtonType: 'danger',
         type: 'warning',
+        tip: msg,
         autofocus: false,
         showClose: false
       }
