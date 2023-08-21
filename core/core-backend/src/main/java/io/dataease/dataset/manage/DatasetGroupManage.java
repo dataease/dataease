@@ -65,7 +65,7 @@ public class DatasetGroupManage {
     private Lock lock = new ReentrantLock();
 
 
-    public DatasetGroupInfoDTO save(DatasetGroupInfoDTO datasetGroupInfoDTO) throws Exception {
+    public DatasetGroupInfoDTO save(DatasetGroupInfoDTO datasetGroupInfoDTO, boolean rename) throws Exception {
         lock.lock();
         try {
             boolean isCreate;
@@ -75,7 +75,7 @@ public class DatasetGroupManage {
             }
             checkName(datasetGroupInfoDTO);
             if (StringUtils.equalsIgnoreCase(datasetGroupInfoDTO.getNodeType(), leafType)) {
-                if (ObjectUtils.isEmpty(datasetGroupInfoDTO.getAllFields())) {
+                if (!rename && ObjectUtils.isEmpty(datasetGroupInfoDTO.getAllFields())) {
                     DEException.throwException(Translator.get("i18n_no_fields"));
                 }
                 // get union sql

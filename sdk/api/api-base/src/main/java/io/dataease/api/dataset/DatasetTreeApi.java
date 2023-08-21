@@ -31,6 +31,10 @@ public interface DatasetTreeApi {
     @PostMapping("save")
     DatasetNodeDTO save(@RequestBody DatasetGroupInfoDTO dto) throws Exception;
 
+    @DePermit({"m:read", "#p0.id+':manage'"})
+    @PostMapping("rename")
+    DatasetNodeDTO rename(@RequestBody DatasetGroupInfoDTO dto) throws Exception;
+
     /**
      * 新建
      *

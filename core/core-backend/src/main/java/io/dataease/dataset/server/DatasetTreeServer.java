@@ -22,12 +22,17 @@ public class DatasetTreeServer implements DatasetTreeApi {
 
     @Override
     public DatasetGroupInfoDTO save(DatasetGroupInfoDTO datasetNodeDTO) throws Exception {
-        return datasetGroupManage.save(datasetNodeDTO);
+        return datasetGroupManage.save(datasetNodeDTO, false);
+    }
+
+    @Override
+    public DatasetNodeDTO rename(DatasetGroupInfoDTO dto) throws Exception {
+        return datasetGroupManage.save(dto, true);
     }
 
     @Override
     public DatasetNodeDTO create(DatasetGroupInfoDTO dto) throws Exception {
-        return datasetGroupManage.save(dto);
+        return datasetGroupManage.save(dto, false);
     }
 
     @Override
