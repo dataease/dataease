@@ -1561,7 +1561,9 @@ export default {
     map_line_color_source_color: 'Starting Color',
     map_line_color_target_color: 'End Color',
     map_line_theta_offset: 'Radian',
-    gauge_axis_label: 'Axis Label'
+    gauge_axis_label: 'Axis Label',
+    word_size_range: 'Word Size Range',
+    word_spacing: 'Word Spacing'
   },
   dataset: {
     scope_edit: 'Effective only when editing',
