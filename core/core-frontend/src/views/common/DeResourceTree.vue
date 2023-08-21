@@ -397,6 +397,7 @@ onMounted(() => {
   align-items: center;
   box-sizing: content-box;
   padding-right: 4px;
+  overflow: hidden;
 
   .label-tooltip {
     width: calc(100% - 66px);

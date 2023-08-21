@@ -84,6 +84,10 @@ const getPreviewStateInfo = () => {
   return state
 }
 
+const reload = id => {
+  loadCanvasData(id, state.dvInfo.weight)
+}
+
 const resourceNodeClick = data => {
   loadCanvasData(data.id, data.weight)
 }
@@ -115,7 +119,7 @@ defineExpose({
       <template v-if="dvInfo.name">
         <preview-head
           v-if="showPosition === 'preview'"
-          @reload="loadCanvasData"
+          @reload="reload"
           @download="htmlToImage"
         ></preview-head>
         <div ref="previewCanvasContainer" class="content">
