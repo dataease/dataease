@@ -489,9 +489,6 @@ public class CalciteProvider {
                 break;
             case sqlServer:
                 configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Sqlserver.class);
-                if(StringUtils.isEmpty(configuration.getSchema())){
-                    DEException.throwException("Schema 不能为空！");
-                }
                 break;
             case oracle:
                 configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Oracle.class);

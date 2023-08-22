@@ -308,11 +308,16 @@ const onSimpleCronChange = () => {
 }
 
 const getDsSchema = () => {
-  const request = JSON.parse(JSON.stringify(form.value))
-  request.configuration = Base64.encode(JSON.stringify(request.configuration))
-  getSchema(request).then(res => {
-    schemas.value = res.data
-    ElMessage.success(t('commons.success'))
+  const validateFrom = dsForm.value.validate
+  validateFrom(val => {
+    if (val) {
+      const request = JSON.parse(JSON.stringify(form.value))
+      request.configuration = Base64.encode(JSON.stringify(request.configuration))
+      getSchema(request).then(res => {
+        schemas.value = res.data
+        ElMessage.success(t('commons.success'))
+      })
+    }
   })
 }
 
