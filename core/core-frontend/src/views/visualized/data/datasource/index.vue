@@ -581,7 +581,7 @@ const defaultProps = {
         </div>
 
         <div class="search-input">
-          <el-input class="w100" v-model="dsName" clearable>
+          <el-input :placeholder="t('commons.search')" class="w100" v-model="dsName" clearable>
             <template #prefix>
               <el-icon>
                 <Icon name="icon_search-outline_outlined"></Icon>

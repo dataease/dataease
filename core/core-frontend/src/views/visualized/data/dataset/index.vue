@@ -431,7 +431,7 @@ const filterNode = (value: string, data: BusiTreeNode) => {
           </div>
         </div>
         <div class="search-input">
-          <el-input v-model="nickName" clearable>
+          <el-input :placeholder="t('commons.search')" v-model="nickName" clearable>
             <template #prefix>
               <el-icon>
                 <Icon name="icon_search-outline_outlined"></Icon>
