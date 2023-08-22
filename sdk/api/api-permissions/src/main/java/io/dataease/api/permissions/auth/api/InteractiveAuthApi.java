@@ -3,10 +3,7 @@ package io.dataease.api.permissions.auth.api;
 
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
-import io.dataease.api.permissions.auth.dto.BusiResourceCreator;
-import io.dataease.api.permissions.auth.dto.BusiResourceEditor;
-import io.dataease.api.permissions.auth.dto.BusiResourceMover;
-import io.dataease.api.permissions.auth.dto.OutAuthPlatformLoginRequest;
+import io.dataease.api.permissions.auth.dto.*;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -67,5 +64,10 @@ public interface InteractiveAuthApi {
     @ApiOperationSupport(order = 7)
     @PostMapping("/moveResource")
     void moveResource(@RequestBody BusiResourceMover mover);
+
+    @Operation(summary = "权限校验")
+    @ApiOperationSupport(order = 8)
+    @PostMapping("/checkAuth")
+    void checkAuth(@RequestBody BusiPerCheckDTO checkDTO);
 
 }
