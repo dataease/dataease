@@ -48,7 +48,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue'
+import { computed, reactive, ref, nextTick } from 'vue'
 import DashboardPreviewShow from '@/views/dashboard/DashboardPreviewShow.vue'
 import { copyStoreWithOut } from '@/store/modules/data-visualization/copy'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
@@ -75,7 +75,10 @@ const dialogInit = () => {
 const saveMultiplexing = () => {
   dialogShow.value = false
   const previewStateInfo = multiplexingPreviewShowRef.value.getPreviewStateInfo()
-  copyStore.copyMultiplexingComponents(previewStateInfo.canvasViewInfoPreview)
+  const canvasViewInfoPreview = previewStateInfo.canvasViewInfoPreview
+  nextTick(() => {
+    copyStore.copyMultiplexingComponents(canvasViewInfoPreview)
+  })
 }
 
 defineExpose({

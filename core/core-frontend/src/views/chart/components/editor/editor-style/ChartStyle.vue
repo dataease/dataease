@@ -91,7 +91,6 @@ const onMiscChange = val => {
 }
 
 const onLabelChange = val => {
-  console.log('2-1-' + state.initReady)
   state.initReady && emit('onLabelChange', val)
 }
 

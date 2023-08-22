@@ -218,7 +218,7 @@ public class DatasetGroupManage {
 
     public void checkName(DatasetGroupInfoDTO dto) {
         QueryWrapper<CoreDatasetGroup> wrapper = new QueryWrapper<>();
-        if (ObjectUtils.isNotEmpty(dto.getPid()) && dto.getPid() != 0) {
+        if ((ObjectUtils.isNotEmpty(dto.getPid()) && dto.getPid() != 0) || userApi == null) {
             wrapper.eq("pid", dto.getPid());
         }
         if (StringUtils.isNotEmpty(dto.getName())) {
