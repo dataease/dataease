@@ -61,7 +61,7 @@ const handleChange = (val: boolean) => {
         <el-checkbox @change="handleChange" v-model="checked" label="下次不再提示" />
       </div>
 
-      <div class="maybe-want">
+      <div class="maybe-want" v-permission="['dataset']">
         <div class="title">您可能还想</div>
         <div class="ds-info">
           <el-icon class="ds">
