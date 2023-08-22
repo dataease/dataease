@@ -124,8 +124,6 @@ public class ChartDataManage {
 
         // column permission
         Map<String, ColumnPermissionItem> desensitizationList = new HashMap<>();
-//        List<Long> allDatasetTableFieldDTOIds = permissionManage.filterColumnPermissions(transFields(allFields), desensitizationList, table.getId(), chartExtRequest.getUser()).stream().map(DatasetTableFieldDTO::getId).collect(Collectors.toList());
-//        allFields = allFields.stream().filter(chartViewFieldDTO  -> allDatasetTableFieldDTOIds.contains(chartViewFieldDTO.getId())).collect(Collectors.toList());
         List<DatasetTableFieldDTO> columnPermissionFields = permissionManage.filterColumnPermissions(transFields(allFields), desensitizationList, table.getId(), chartExtRequest.getUser());
         //将没有权限的列删掉
         List<String> dataeaseNames = columnPermissionFields.stream().map(DatasetTableFieldDTO::getDataeaseName).collect(Collectors.toList());
