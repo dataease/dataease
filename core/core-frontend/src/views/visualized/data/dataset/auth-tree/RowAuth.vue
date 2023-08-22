@@ -42,6 +42,10 @@ const submit = () => {
 }
 const errorDetected = ({ enumValue, deType, filterType, term, value }) => {
   if (filterType === 'logic') {
+    if (!term) {
+      errorMessage.value = '规则条件不能为空'
+      return
+    }
     if (!term.includes('null') && !term.includes('empty') && value === '') {
       errorMessage.value = t('chart.filter_value_can_null')
       return
