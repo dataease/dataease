@@ -633,7 +633,7 @@ const defaultProps = {
     <div class="datasource-content">
       <template v-if="!state.datasourceTree.length">
         <empty-background description="暂无数据源" img-type="none">
-          <el-button @click="() => createDatasource()" type="primary">
+          <el-button v-if="rootManage" @click="() => createDatasource()" type="primary">
             <template #icon>
               <Icon name="icon_add_outlined"></Icon>
             </template>
