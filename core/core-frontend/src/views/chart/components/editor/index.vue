@@ -1551,20 +1551,22 @@ const autoInsert = element => {
       :title="t('chart.show_name_set')"
       :visible="state.renameItem"
       v-model="state.renameItem"
-      :show-close="false"
-      width="600px"
+      width="420px"
+      :close-on-click-modal="false"
     >
-      <el-form ref="renameForm" label-width="80px" :model="state.itemForm" :rules="itemFormRules">
+      <el-form
+        ref="renameForm"
+        label-width="80px"
+        require-asterisk-position="right"
+        :model="state.itemForm"
+        :rules="itemFormRules"
+        label-position="top"
+      >
         <el-form-item :label="t('dataset.field_origin_name')" class="form-item">
-          <span style="padding: 0 16px">{{ state.itemForm.name }}</span>
+          <span>{{ state.itemForm.name }}</span>
         </el-form-item>
         <el-form-item :label="t('chart.show_name')" class="form-item" prop="chartShowName">
-          <el-input
-            v-model="state.itemForm.chartShowName"
-            style="width: 200px"
-            size="small"
-            clearable
-          />
+          <el-input v-model="state.itemForm.chartShowName" clearable />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -2116,7 +2118,6 @@ span {
 }
 :deep(.ed-form-item__label) {
   color: @canvas-main-font-color;
-  font-size: 12px;
 }
 :deep(.ed-checkbox) {
   color: @canvas-main-font-color;
