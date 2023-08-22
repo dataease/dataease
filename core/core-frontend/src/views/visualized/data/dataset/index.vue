@@ -349,6 +349,11 @@ const menuList = [
     command: 'delete'
   }
 ]
+const expandedKey = ref([])
+
+const nodeExpand = data => {
+  expandedKey.value.push(data.id)
+}
 
 const datasetTypeList = [
   {
@@ -423,8 +428,11 @@ const filterNode = (value: string, data: BusiTreeNode) => {
       <el-tree
         menu
         ref="datasetListTree"
+        node-key="id"
         :data="state.datasetTree"
         :filter-node-method="filterNode"
+        @node-expand="nodeExpand"
+        :default-expanded-keys="expandedKey"
         :props="defaultProps"
         @node-click="handleNodeClick"
       >
