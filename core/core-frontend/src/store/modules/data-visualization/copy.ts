@@ -70,7 +70,7 @@ export const copyStore = defineStore('copy', {
       this.isCut = false
     },
 
-    paste(isMouse) {
+    paste(isMouse?) {
       if (!this.copyData) {
         toast('请选择组件')
         return
@@ -90,10 +90,10 @@ export const copyStore = defineStore('copy', {
       const newComponent = deepCopyHelper(data, idMap)
       dvMainStore.addCopyComponent(newComponent, idMap, this.copyData.copyCanvasViewInfo)
       if (dvInfo.value.type === 'dashboard') {
-        eventBus.emit('addDashboardItem-canvas-main', newComponent)
         if (dvMainStore.multiplexingStyleAdapt && this.copyData.copyFrom === 'multiplexing') {
           adaptCurThemeCommonStyle(newComponent)
         }
+        eventBus.emit('addDashboardItem-canvas-main', newComponent)
       }
       if (this.isCut) {
         this.copyData = null
