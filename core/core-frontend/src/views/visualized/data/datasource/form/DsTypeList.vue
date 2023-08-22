@@ -26,7 +26,7 @@ const currentTypeList = computed(() => {
     let dstypes = []
     props.latestUseTypes.forEach(type => {
       dsTypes.forEach(item => {
-        if (item.type === type && catalogList.indexOf(type) === -1) {
+        if (item.type === type && catalogList.indexOf(item.catalog) === -1) {
           catalogList.push(item.catalog)
         }
       })
@@ -40,13 +40,12 @@ const currentTypeList = computed(() => {
           }
         })
       })
-      dstypes.push({ name: catalog, dbList: dbList })
+      dstypes.push({ name: nameMap[catalog], dbList: dbList })
     })
     return dstypes
-  } else {
-    const index = typeList.findIndex(ele => props.currentType === ele)
-    return [{ name: nameMap[props.currentType], dbList: databaseList.value[index] }] || []
   }
+  const index = typeList.findIndex(ele => props.currentType === ele)
+  return [{ name: nameMap[props.currentType], dbList: databaseList.value[index] }] || []
 })
 const getDatasourceTypes = () => {
   const arr = [[], [], [], [], []]
