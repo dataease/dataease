@@ -161,7 +161,7 @@ const openDataBoardSetting = () => {
 const batchDelete = () => {
   componentData.value.forEach((component, index) => {
     if (curBatchOptComponents.value.includes(component.id)) {
-      eventBus.emit('removeMatrixItem', index)
+      eventBus.emit('removeMatrixItem-' + component.canvasId, index)
     }
   })
 }

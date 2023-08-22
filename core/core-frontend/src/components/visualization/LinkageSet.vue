@@ -106,8 +106,8 @@
                             <span style="float: left">
                               <Icon
                                 style="width: 14px; height: 14px"
-                                :name="`field_${fieldType(item.deType)}`"
-                                :className="`field-icon-${fieldType(item.deType)}`"
+                                :name="`field_${fieldType[item.deType]}`"
+                                :className="`field-icon-${fieldType[item.deType]}`"
                               ></Icon>
                             </span>
                             <span style="float: left; font-size: 12px">{{ item.name }}</span>
@@ -135,8 +135,8 @@
                             <span style="float: left">
                               <Icon
                                 style="width: 14px; height: 14px"
-                                :name="`field_${fieldType(item.deType)}`"
-                                :className="`field-icon-${fieldType(item.deType)}`"
+                                :name="`field_${fieldType[item.deType]}`"
+                                :className="`field-icon-${fieldType[item.deType]}`"
                               ></Icon>
                             </span>
                             <span style="float: left; font-size: 12px">{{ item.name }}</span>
@@ -194,6 +194,7 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
+import { fieldType } from '@/utils/attr'
 import { CalcFieldType } from '@/views/visualized/data/dataset/form/CalcFieldEdit.vue'
 import {
   getPanelAllLinkageInfo,
@@ -355,9 +356,6 @@ const cancel = () => {
   state.initState = false
 }
 
-const fieldType = (deType: number) => {
-  return ['text', 'time', 'value', 'value', '', 'location'][deType]
-}
 const filterNodeMethod = (value, data) => {
   return !value || data.linkageActive
 }

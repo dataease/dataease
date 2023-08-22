@@ -76,7 +76,7 @@ public class Field2SQLObj {
                 }
             } else {
                 if (Objects.equals(f.getDeType(), DeTypeConstants.DE_TIME)) {
-                    String cast = String.format(SQLConstants.CAST, originField, SQLConstants.DEFAULT_INT_FORMAT) + "/1000";
+                    String cast = String.format(SQLConstants.CAST, originField, SQLConstants.DEFAULT_INT_FORMAT);
                     fieldName = String.format(SQLConstants.FROM_UNIXTIME, cast, SQLConstants.DEFAULT_DATE_FORMAT);
                 } else if (Objects.equals(f.getDeType(), DeTypeConstants.DE_INT)) {
                     fieldName = String.format(SQLConstants.CAST, originField, SQLConstants.DEFAULT_INT_FORMAT);

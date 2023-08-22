@@ -3,7 +3,7 @@ import { ref, reactive, onMounted, PropType, toRefs, watch, onBeforeUnmount } fr
 import { useI18n } from '@/hooks/web/useI18n'
 import { Base64 } from 'js-base64'
 import useClipboard from 'vue-clipboard3'
-import { ElMessage } from 'element-plus-secondary'
+import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { getTableField } from '@/api/dataset'
 import CodeMirror from './CodeMirror.vue'
 import type { Field } from './UnionFieldList.vue'
@@ -12,6 +12,7 @@ import type { DataSource } from './index.vue'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
 import { EmptyBackground } from '@/components/empty-background'
 import { timestampFormatDate, defaultValueScopeList, fieldOptions } from './util.js'
+import { fieldType } from '@/utils/attr'
 
 export interface SqlNode {
   sql: string
@@ -172,11 +173,16 @@ const emits = defineEmits(['close', 'save'])
 
 const save = (cb?: () => void) => {
   parseVariable()
+  let sql = codeCom.value.state.doc.toString()
+  if (!sql.trim()) {
+    ElMessage.error('SQL不能为空')
+    return
+  }
   emits(
     'save',
     {
       ...sqlNode.value,
-      sql: Base64.encode(codeCom.value.state.doc.toString()),
+      sql: Base64.encode(sql),
       sqlVariableDetails: JSON.stringify(state.variables)
     },
     cb
@@ -188,6 +194,18 @@ const close = () => {
   state.plxTableData = []
   state.fields = []
   emits('close')
+}
+
+const handleClose = () => {
+  ElMessageBox.confirm(t('chart.tips'), {
+    confirmButtonType: 'primary',
+    tip: '你填写的信息未保存，确认退出吗？',
+    type: 'warning',
+    autofocus: false,
+    showClose: false
+  }).then(() => {
+    close()
+  })
 }
 const getSQLPreview = () => {
   parseVariable()
@@ -309,9 +327,6 @@ const fieldMap = ['text', 'time', 'value', 'value', 'location']
 const mousedownDrag = () => {
   document.querySelector('.sql-eidtor').addEventListener('mousemove', calculateHeight)
 }
-const fieldType = (deType: number) => {
-  return ['text', 'time', 'value', 'value', 'location'][deType]
-}
 </script>
 
 <template>
@@ -336,7 +351,7 @@ const fieldType = (deType: number) => {
       </el-button>
       <el-button @click="save(() => {})" type="primary"> 保存</el-button>
       <el-divider direction="vertical" />
-      <el-icon class="hover-icon" @click="close">
+      <el-icon class="hover-icon" @click="handleClose">
         <Icon name="icon_close_outlined"></Icon>
       </el-icon>
     </div>
@@ -472,8 +487,8 @@ const fieldType = (deType: number) => {
                         <template #default="scope">
                           <el-icon>
                             <Icon
-                              :className="`field-icon-${fieldType(scope.row.deType)}`"
-                              :name="`field_${fieldType(scope.row.deType)}`"
+                              :className="`field-icon-${fieldType[scope.row.deType]}`"
+                              :name="`field_${fieldType[scope.row.deType]}`"
                             ></Icon>
                           </el-icon>
                           {{ scope.row.originName }}
