@@ -5,7 +5,7 @@ import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapsho
 
 import { storeToRefs } from 'pinia'
 import { ElIcon, ElMessage } from 'element-plus-secondary'
-import { ref, toRefs, watch } from 'vue'
+import { ref, toRefs, watch, onMounted } from 'vue'
 import { uploadFileResult } from '@/api/staticResource'
 import { imgUrlTrans } from '@/utils/imgUtils'
 const props = defineProps({
@@ -70,12 +70,9 @@ const init = () => {
     fileList.value = []
   }
 }
-watch(
-  () => curComponent.value.propValue.url,
-  val => {
-    init(val)
-  }
-)
+onMounted(() => {
+  init()
+})
 </script>
 
 <template>
