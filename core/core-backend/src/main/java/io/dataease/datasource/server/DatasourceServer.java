@@ -128,6 +128,7 @@ public class DatasourceServer implements DatasourceApi {
             dataSourceDTO.setConfiguration("");
         }
         if (dataSourceDTO.getId() != null && dataSourceDTO.getId() > 0) {
+            System.out.println(JsonUtil.toJSONString(dataSourceDTO));
             return update(dataSourceDTO);
         }
         if (StringUtils.isNotEmpty(dataSourceDTO.getConfiguration())) {
@@ -187,6 +188,7 @@ public class DatasourceServer implements DatasourceApi {
             return save(dataSourceDTO);
         }
         CoreDatasource sourceData = datasourceMapper.selectById(pk);
+        System.out.println(sourceData == null);
         dataSourceDTO.setConfiguration(new String(Base64.getDecoder().decode(dataSourceDTO.getConfiguration())));
         preCheckDs(dataSourceDTO);
 
@@ -571,7 +573,8 @@ public class DatasourceServer implements DatasourceApi {
         List<String> types = new ArrayList<>();
         QueryWrapper<CoreDatasource> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("create_by", AuthUtils.getUser().getUserId());
-        queryWrapper.ge("create_time", System.currentTimeMillis() - 24 * 60 * 1000);
+        queryWrapper.orderByDesc("create_time");
+        queryWrapper.last(" limit 5");
         List<CoreDatasource> coreDatasources = datasourceMapper.selectList(queryWrapper);
         if (CollectionUtils.isEmpty(coreDatasources)) {
             return types;
