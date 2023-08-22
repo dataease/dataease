@@ -5,7 +5,7 @@ import { layerStoreWithOut } from '@/store/modules/data-visualization/layer'
 import { storeToRefs } from 'pinia'
 import { ElCol, ElIcon, ElRow } from 'element-plus-secondary'
 import Icon from '../icon-custom/src/Icon.vue'
-import { nextTick, ref } from 'vue'
+import { computed, nextTick, ref } from 'vue'
 import draggable from 'vuedraggable'
 import { lockStoreWithOut } from '@/store/modules/data-visualization/lock'
 import ContextMenu from '@/components/data-visualization/canvas/ContextMenu.vue'
@@ -16,7 +16,7 @@ const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const layerStore = layerStoreWithOut()
 
-const { componentData, curComponent, curComponentIndex } = storeToRefs(dvMainStore)
+const { componentData, curComponent, curComponentIndex, canvasViewInfo } = storeToRefs(dvMainStore)
 const getComponent = index => {
   return componentData.value[componentData.value.length - 1 - index]
 }
@@ -120,6 +120,15 @@ const dragOnEnd = ({ oldIndex, newIndex }) => {
   componentData.value.splice(comLength - 1 - newIndex, 0, target)
   dvMainStore.setCurComponent({ component: target, index: transformIndex(comLength - oldIndex) })
 }
+
+const getIconName = item => {
+  if (item.component === 'UserView') {
+    const viewInfo = canvasViewInfo.value[item.id]
+    return viewInfo.type
+  } else {
+    return item.icon
+  }
+}
 </script>
 
 <template>
@@ -143,7 +152,7 @@ const dragOnEnd = ({ oldIndex, newIndex }) => {
               @dblclick="editComponentName(getComponent(index))"
             >
               <el-icon class="component-icon">
-                <Icon :name="getComponent(index).icon"></Icon>
+                <Icon :name="getIconName(getComponent(index))"></Icon>
               </el-icon>
               <span :id="`component-label-${getComponent(index).id}`" class="component-label">
                 {{ getComponent(index).name }}

@@ -56,8 +56,13 @@ router.beforeEach(async (to, from, next) => {
       const redirectPath = from.query.redirect || to.path
       const redirect = decodeURIComponent(redirectPath as string)
       const nextData = to.path === redirect ? { ...to, replace: true } : { path: redirect }
+
       permissionStore.setIsAddRouters(true)
-      interactiveStore.initInteractive(false)
+      await interactiveStore.initInteractive(true)
+      if (!pathValid(to.path) && to.path !== '/404') {
+        next({ path: '/404' })
+        return
+      }
       next(nextData)
     }
   } else {
@@ -74,3 +79,33 @@ router.afterEach(() => {
   done()
   loadDone()
 })
+
+const pathValid = path => {
+  const routers = permissionStore.getRouters
+  const temp = path.startsWith('/') ? path.substr(1) : path
+  const locations = temp.split('/')
+  if (locations.length === 0) {
+    return false
+  }
+
+  return hasCurrentRouter(locations, routers, 0)
+}
+/**
+ * 递归验证every level
+ * @param {*} locations
+ * @param {*} routers
+ * @param {*} index
+ * @returns
+ */
+const hasCurrentRouter = (locations, routers, index) => {
+  const location = locations[index]
+  let kids = []
+  const isvalid = routers.some(router => {
+    kids = router.children
+    return router.path === location || '/' + location === router.path
+  })
+  if (isvalid && index < locations.length - 1) {
+    return hasCurrentRouter(locations, kids, index + 1)
+  }
+  return isvalid
+}
