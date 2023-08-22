@@ -12,6 +12,7 @@ import type { DataSource } from './index.vue'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
 import { EmptyBackground } from '@/components/empty-background'
 import { timestampFormatDate, defaultValueScopeList, fieldOptions } from './util.js'
+import { fieldType } from '@/utils/attr'
 
 export interface SqlNode {
   sql: string
@@ -309,9 +310,6 @@ const fieldMap = ['text', 'time', 'value', 'value', 'location']
 const mousedownDrag = () => {
   document.querySelector('.sql-eidtor').addEventListener('mousemove', calculateHeight)
 }
-const fieldType = (deType: number) => {
-  return ['text', 'time', 'value', 'value', 'location'][deType]
-}
 </script>
 
 <template>
@@ -472,8 +470,8 @@ const fieldType = (deType: number) => {
                         <template #default="scope">
                           <el-icon>
                             <Icon
-                              :className="`field-icon-${fieldType(scope.row.deType)}`"
-                              :name="`field_${fieldType(scope.row.deType)}`"
+                              :className="`field-icon-${fieldType[scope.row.deType]}`"
+                              :name="`field_${fieldType[scope.row.deType]}`"
                             ></Icon>
                           </el-icon>
                           {{ scope.row.originName }}

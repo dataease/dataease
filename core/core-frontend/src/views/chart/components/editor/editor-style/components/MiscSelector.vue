@@ -7,10 +7,7 @@ import {
   CHART_FONT_LETTER_SPACE
 } from '@/views/chart/components/editor/util/chart'
 import { ElMessage } from 'element-plus-secondary'
-
-const fieldType = (deType: number) => {
-  return ['text', 'time', 'value', 'value', 'location'][deType]
-}
+import { fieldType } from '@/utils/attr'
 
 const { t } = useI18n()
 
@@ -293,8 +290,8 @@ init()
                 <span style="float: left">
                   <el-icon>
                     <Icon
-                      :className="`field-icon-${fieldType(item.deType)}`"
-                      :name="`field_${fieldType(item.deType)}`"
+                      :className="`field-icon-${fieldType[item.deType]}`"
+                      :name="`field_${fieldType[item.deType]}`"
                     ></Icon>
                   </el-icon>
                 </span>
@@ -375,8 +372,8 @@ init()
                 <span style="float: left">
                   <el-icon>
                     <Icon
-                      :className="`field-icon-${fieldType(item.deType)}`"
-                      :name="`field_${fieldType(item.deType)}`"
+                      :className="`field-icon-${fieldType[item.deType]}`"
+                      :name="`field_${fieldType[item.deType]}`"
                     ></Icon>
                   </el-icon>
                 </span>
@@ -502,8 +499,8 @@ init()
                 <span style="float: left">
                   <el-icon>
                     <Icon
-                      :className="`field-icon-${fieldType(item.deType)}`"
-                      :name="`field_${fieldType(item.deType)}`"
+                      :className="`field-icon-${fieldType[item.deType]}`"
+                      :name="`field_${fieldType[item.deType]}`"
                     ></Icon>
                   </el-icon>
                 </span>

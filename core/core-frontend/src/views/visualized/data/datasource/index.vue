@@ -5,6 +5,7 @@ import { ElIcon, ElMessageBox, ElMessage } from 'element-plus-secondary'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
 import { HandleMore } from '@/components/handle-more'
 import { Icon } from '@/components/icon-custom'
+import { fieldType } from '@/utils/attr'
 import CreatDsGroup from './form/CreatDsGroup.vue'
 import type { Tree } from '../dataset/form/CreatDsGroup.vue'
 import { previewData, getById } from '@/api/datasource'
@@ -133,11 +134,6 @@ const handleSizeChange = pageSize => {
 const handleCurrentChange = currentPage => {
   state.paginationConfig.currentPage = currentPage
 }
-const fieldMap = ['text', 'time', 'value', 'value', 'location']
-
-const fieldType = (deType: number) => {
-  return fieldMap[deType]
-}
 
 const generateColumns = (arr: Field[]) =>
   arr.map(ele => ({
@@ -150,8 +146,8 @@ const generateColumns = (arr: Field[]) =>
       <div style={{ width: '100%', display: 'flex', alignItems: 'center' }}>
         <ElIcon style={{ marginRight: '6px' }}>
           <Icon
-            name={`field_${fieldType(column.deType)}`}
-            className={`field-icon-${fieldType(column.deType)}`}
+            name={`field_${fieldType[column.deType]}`}
+            className={`field-icon-${fieldType[column.deType]}`}
           ></Icon>
         </ElIcon>
         {column.title}
@@ -173,13 +169,13 @@ const handleLoadExcel = data => {
     })
 }
 
-const getFieldType = (fieldType: string | number) => {
+const getFieldType = (type: string | number) => {
   return [
     t('dataset.text'),
     '',
     t('dataset.value'),
     t('dataset.value') + '(' + t('dataset.float') + ')'
-  ][fieldType]
+  ][type]
 }
 
 const searchDs = () => {

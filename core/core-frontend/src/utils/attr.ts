@@ -85,6 +85,8 @@ export const verticalAlignOptions = [
 
 export const selectKey = ['textAlign', 'borderStyle', 'verticalAlign']
 
+export const fieldType = ['text', 'time', 'value', 'value', 'value', 'location']
+
 export const optionMap = {
   textAlign: textAlignOptions,
   borderStyle: borderStyleOptions,

@@ -4,10 +4,7 @@ import { reactive, ref, toRefs, watch } from 'vue'
 import { formatterItem } from '../util/formatter'
 import { getItemType } from './utils'
 import { Delete, Edit, Filter } from '@element-plus/icons-vue'
-
-const fieldType = (deType: number) => {
-  return ['text', 'time', 'value', 'value', 'location'][deType]
-}
+import { fieldType } from '@/utils/attr'
 
 const { t } = useI18n()
 
@@ -107,8 +104,8 @@ getItemTagColor()
         <span style="display: flex">
           <el-icon>
             <Icon
-              :className="`field-icon-${fieldType(item.deType)}`"
-              :name="`field_${fieldType(item.deType)}`"
+              :className="`field-icon-${fieldType[item.deType]}`"
+              :name="`field_${fieldType[item.deType]}`"
             ></Icon>
           </el-icon>
         </span>

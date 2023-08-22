@@ -2,6 +2,7 @@
 import { ref, reactive, shallowRef, provide } from 'vue'
 import draggable from 'vuedraggable'
 import FilterHead from './FilterHead.vue'
+import { fieldType } from '@/utils/attr'
 const initials = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j']
 
 const selectValue = ref()
@@ -14,9 +15,7 @@ const activeName = ref('setting')
 const activeNameData = ref('dataset')
 const allParams = shallowRef([])
 const curTableViews = shallowRef([])
-const fieldType = (deType: number) => {
-  return ['text', 'time', 'value', 'value', 'location'][deType]
-}
+
 const widget = reactive({
   showSwitch: false,
   isTimeWidget: () => true,
@@ -156,8 +155,8 @@ const handleTabClick = () => {
             <div class="filter-db-row">
               <el-icon>
                 <Icon
-                  :name="`field_${fieldType(element.deType)}`"
-                  :className="`field-icon-${fieldType(element.deType)}`"
+                  :name="`field_${fieldType[element.deType]}`"
+                  :className="`field-icon-${fieldType[element.deType]}`"
                 ></Icon>
               </el-icon>
               <span :title="element.name">{{ element.name }}</span>
@@ -183,8 +182,8 @@ const handleTabClick = () => {
             <div class="filter-db-row">
               <el-icon>
                 <Icon
-                  :name="`field_${fieldType(element.deType)}`"
-                  :className="`field-icon-${fieldType(element.deType)}`"
+                  :name="`field_${fieldType[element.deType]}`"
+                  :className="`field-icon-${fieldType[element.deType]}`"
                 ></Icon>
               </el-icon>
               <span :title="element.name">{{ element.name }}</span>

@@ -16,6 +16,8 @@ import { guid } from '@/views/visualized/data/dataset/form/util.js'
 import { save } from '@/api/visualization/dataVisualization'
 import ColumnPermissions from './ColumnPermissions.vue'
 import { cloneDeep } from 'lodash-es'
+import { fieldType } from '@/utils/attr'
+
 import {
   DEFAULT_CANVAS_STYLE_DATA_DARK,
   DEFAULT_CANVAS_STYLE_DATA_LIGHT
@@ -48,12 +50,6 @@ const { t } = useI18n()
 const state = reactive({
   datasetTree: [] as BusiTreeNode[]
 })
-
-const fieldMap = ['text', 'time', 'value', 'value', 'location']
-
-const fieldType = (deType: number) => {
-  return fieldMap[deType]
-}
 
 const resourceGroupOpt = ref()
 const curCanvasType = ref('')
@@ -141,11 +137,11 @@ const allFieldsColumns = [
       <div style={{ width: '100%', display: 'flex', alignItems: 'center' }}>
         <ElIcon style={{ marginRight: '6px' }}>
           <Icon
-            name={`field_${fieldType(deType)}`}
-            className={`field-icon-${fieldType(deType)}`}
+            name={`field_${fieldType[deType]}`}
+            className={`field-icon-${fieldType[deType]}`}
           ></Icon>
         </ElIcon>
-        {t(`dataset.${fieldMap[deType]}`)}
+        {t(`dataset.${fieldType[deType]}`)}
       </div>
     )
   },
@@ -177,8 +173,8 @@ const generateColumns = (arr: Field[]) =>
       <div style={{ width: '100%', display: 'flex', alignItems: 'center' }}>
         <ElIcon style={{ marginRight: '6px' }}>
           <Icon
-            name={`field_${fieldType(column.deType)}`}
-            className={`field-icon-${fieldType(column.deType)}`}
+            name={`field_${fieldType[column.deType]}`}
+            className={`field-icon-${fieldType[column.deType]}`}
           ></Icon>
         </ElIcon>
         {column.title}

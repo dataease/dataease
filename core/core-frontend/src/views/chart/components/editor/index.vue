@@ -9,6 +9,7 @@ import { ElMessage, ElTreeSelect } from 'element-plus-secondary'
 import draggable from 'vuedraggable'
 import DimensionLabel from './drag-label/DimensionLabel.vue'
 import DimensionItem from './drag-item/DimensionItem.vue'
+import { fieldType } from '@/utils/attr'
 import QuotaLabel from './drag-label/QuotaLabel.vue'
 import QuotaItem from '@/views/chart/components/editor/drag-item/QuotaItem.vue'
 import DragPlaceholder from '@/views/chart/components/editor/drag-item/DragPlaceholder.vue'
@@ -72,10 +73,6 @@ const editCalcField = ref(false)
 const calcEdit = ref()
 
 const { view, datasetTree } = toRefs(props)
-
-const fieldType = (deType: number) => {
-  return ['text', 'time', 'value', 'value', 'location'][deType]
-}
 
 const dsFieldDragOptions = { group: { name: 'drag', pull: 'clone' }, sort: true }
 
@@ -1452,8 +1449,8 @@ const autoInsert = element => {
                   >
                     <el-icon>
                       <Icon
-                        :className="`field-icon-${fieldType(element.deType)}`"
-                        :name="`field_${fieldType(element.deType)}`"
+                        :className="`field-icon-${fieldType[element.deType]}`"
+                        :name="`field_${fieldType[element.deType]}`"
                       ></Icon>
                     </el-icon>
                     <span class="field-name">{{ element.name }}</span>
@@ -1504,8 +1501,8 @@ const autoInsert = element => {
                   <span class="item-dimension father" :title="element.name">
                     <el-icon>
                       <Icon
-                        :className="`field-icon-${fieldType(element.deType)}`"
-                        :name="`field_${fieldType(element.deType)}`"
+                        :className="`field-icon-${fieldType[element.deType]}`"
+                        :name="`field_${fieldType[element.deType]}`"
                       ></Icon>
                     </el-icon>
                     <span class="field-name">{{ element.name }}</span>
