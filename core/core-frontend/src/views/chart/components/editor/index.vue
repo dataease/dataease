@@ -1604,7 +1604,7 @@ const autoInsert = element => {
       :title="t('chart.add_filter')"
       :visible="state.quotaFilterEdit"
       :show-close="false"
-      width="800px"
+      width="600px"
       class="dialog-css"
     >
       <quota-filter-editor :item="state.quotaItem" />
@@ -1621,7 +1621,7 @@ const autoInsert = element => {
       :title="t('chart.add_filter')"
       :visible="state.resultFilterEdit"
       :show-close="false"
-      width="800px"
+      width="600px"
       class="dialog-css"
     >
       <result-filter-editor :chart="state.chartForFilter" :item="state.filterItem" />
