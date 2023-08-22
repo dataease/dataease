@@ -103,7 +103,7 @@ const resourceCreate = (pid, name) => {
   }
   save(canvasInfo).then(() => {
     const baseUrl =
-      curCanvasType.value === 'dataV' ? '#/dvCanvas/?dvId=' : '#/dashboard/?resourceId='
+      curCanvasType.value === 'dataV' ? '#/dvCanvas?dvId=' : '#/dashboard?resourceId='
     window.open(baseUrl + newResourceId, '_blank')
   })
 }
