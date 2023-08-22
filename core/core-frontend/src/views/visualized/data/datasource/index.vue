@@ -189,28 +189,32 @@ const searchDs = () => {
 const dialogErrorInfo = ref(false)
 
 const formatSimpleCron = (info?: SyncSetting) => {
-  const { syncRate, simpleCronValue, simpleCronType, startTime, endTime, cron } = info
+  const { syncRate, simpleCronValue, simpleCronType, startTime, endTime, cron, endLimit } = info
   let start = '-'
   let end = '-'
   if (startTime) {
     start = dayjs(new Date(startTime)).format('YYYY-MM-DD HH:mm:ss')
   }
-  if (endTime) {
+  if (endLimit === 1 && endTime) {
     end = dayjs(new Date(startTime)).format('YYYY-MM-DD HH:mm:ss')
+  }
+  if (endLimit === 0) {
+    end = '无限制'
   }
   let strArr = []
   switch (syncRate) {
-    case 'SIMPLE':
+    case 'RIGHTNOW':
       strArr.push(t('dataset.execute_once'))
       break
     case 'CRON':
-      strArr.push(`${t('dataset.execute_once')}: ${cron}`)
+      strArr.push(`${t('dataset.cron_config')}: ${cron}`)
       strArr.push(`${t('dataset.start_time')}: ${start}`)
+      strArr.push(`${t('dataset.end_time')}: ${end}`)
       break
     case 'SIMPLE_CRON':
       const type = t(`common.${simpleCronType}`)
       strArr.push(
-        `${t('dataset.execute_once')}: ${t('common.every')}${simpleCronValue}${type}更新一次`
+        `${t('dataset.simple_cron')}: ${t('common.every')}${simpleCronValue}${type}更新一次`
       )
       strArr.push(`${t('dataset.start_time')}: ${start}`)
       strArr.push(`${t('dataset.end_time')}: ${end}`)
@@ -629,7 +633,7 @@ const defaultProps = {
     <div class="datasource-content">
       <template v-if="!state.datasourceTree.length">
         <empty-background description="暂无数据源" img-type="none">
-          <el-button @click="() => createDatasource()" type="primary">
+          <el-button v-if="rootManage" @click="() => createDatasource()" type="primary">
             <template #icon>
               <Icon name="icon_add_outlined"></Icon>
             </template>

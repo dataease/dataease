@@ -38,6 +38,12 @@ export const usePermissionStore = defineStore('permission', {
     }
   },
   actions: {
+    clear() {
+      this.routers = cloneDeep(routes)
+      this.addRouters = []
+      this.isAddRouters = false
+      this.currentPath = ''
+    },
     generateRoutes(routers?: AppCustomRouteRecordRaw[] | string[]): Promise<unknown> {
       return new Promise<void>(resolve => {
         let routerMap: AppRouteRecordRaw[] = []

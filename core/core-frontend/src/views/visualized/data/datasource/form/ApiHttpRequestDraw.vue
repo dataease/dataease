@@ -123,8 +123,8 @@ const initApiItem = (val: ApiItem) => {
 const showApiData = () => {
   apiItemBasicInfo.value.validate(valid => {
     if (valid) {
-      if (apiItem.useJsonPath && apiItem.jsonPath) {
-        ElMessage.success(t('datasource.please_input_dataPath'))
+      if (apiItem.useJsonPath && !apiItem.jsonPath) {
+        ElMessage.warning(t('datasource.please_input_dataPath'))
         return
       }
       apiItem.showApiStructure = true
@@ -179,13 +179,17 @@ const before = () => {
   active.value -= 1
 }
 const next = () => {
+  if (apiItem.useJsonPath && !apiItem.jsonPath) {
+    ElMessage.warning(t('datasource.please_input_dataPath'))
+    return
+  }
   checkApiItem({ data: Base64.encode(JSON.stringify(apiItem)) }).then(response => {
     apiItem.jsonFields = response.data.jsonFields
     apiItem.fields = []
     handleFiledChange(apiItem)
     previewData()
+    active.value += 1
   })
-  active.value += 1
 }
 const closeEditItem = () => {
   edit_api_item.value = false

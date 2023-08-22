@@ -5,9 +5,6 @@ import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.List;
-
 @Data
 @Component("oracle")
 public class Oracle extends DatasourceConfiguration {
@@ -15,7 +12,7 @@ public class Oracle extends DatasourceConfiguration {
     private String extraParams = "";
 
     public String getJdbc() {
-        if(getConnectionType().equalsIgnoreCase("serviceName")){
+        if (StringUtils.isNotEmpty(getConnectionType()) && getConnectionType().equalsIgnoreCase("serviceName")) {
             return "jdbc:oracle:thin:@HOSTNAME:PORT/DATABASE"
                     .replace("HOSTNAME", getHost().trim())
                     .replace("PORT", getPort().toString().trim())
