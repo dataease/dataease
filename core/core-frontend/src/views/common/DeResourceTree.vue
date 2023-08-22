@@ -313,17 +313,11 @@ onMounted(() => {
         </el-tooltip>
       </div>
     </div>
-
-    <el-input
-      v-model="filterText"
-      size="small"
-      :placeholder="'搜索'"
-      prefix-icon="el-icon-search"
-      clearable
-      class="search-bar"
-    >
-      <template #append>
-        <el-button :icon="Search" />
+    <el-input v-model="filterText" :placeholder="'搜索'" clearable class="search-bar">
+      <template #prefix>
+        <el-icon>
+          <Icon name="icon_search-outline_outlined"></Icon>
+        </el-icon>
       </template>
     </el-input>
     <el-tree

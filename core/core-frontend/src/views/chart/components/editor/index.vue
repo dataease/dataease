@@ -46,7 +46,8 @@ const { t } = useI18n()
 const loading = ref(false)
 const tabActive = ref('data')
 const tabActiveVQuery = ref('style')
-
+const datasetSelector = ref(null)
+const curDatasetWeight = ref(0)
 const renameForm = ref<FormInstance>()
 
 const props = defineProps({
@@ -123,6 +124,18 @@ watch(
   [() => props.view.tableId],
   () => {
     getFields(props.view.tableId, props.view.id)
+  },
+  { deep: true }
+)
+
+watch(
+  [() => view.value['tableId']],
+  () => {
+    const nodeId = view.value['tableId']
+    const node = datasetSelector?.value.getNode(nodeId)
+    if (node?.data) {
+      curDatasetWeight.value = node.data.weight
+    }
   },
   { deep: true }
 )
@@ -1354,6 +1367,8 @@ const autoInsert = element => {
           </el-row>
           <el-row class="dataset-select">
             <el-tree-select
+              ref="datasetSelector"
+              node-key="id"
               v-model="view.tableId"
               :data="datasetTree"
               :props="dsSelectProps"
@@ -1377,6 +1392,7 @@ const autoInsert = element => {
             <el-icon
               :style="{ color: '#a6a6a6', cursor: 'pointer', marginLeft: '6px' }"
               @click="editDs"
+              v-if="curDatasetWeight >= 7"
             >
               <Icon name="icon_edit_outlined" class="el-icon-arrow-down el-icon-delete"></Icon>
             </el-icon>
@@ -1535,20 +1551,22 @@ const autoInsert = element => {
       :title="t('chart.show_name_set')"
       :visible="state.renameItem"
       v-model="state.renameItem"
-      :show-close="false"
-      width="600px"
+      width="420px"
+      :close-on-click-modal="false"
     >
-      <el-form ref="renameForm" label-width="80px" :model="state.itemForm" :rules="itemFormRules">
+      <el-form
+        ref="renameForm"
+        label-width="80px"
+        require-asterisk-position="right"
+        :model="state.itemForm"
+        :rules="itemFormRules"
+        label-position="top"
+      >
         <el-form-item :label="t('dataset.field_origin_name')" class="form-item">
-          <span style="padding: 0 16px">{{ state.itemForm.name }}</span>
+          <span>{{ state.itemForm.name }}</span>
         </el-form-item>
         <el-form-item :label="t('chart.show_name')" class="form-item" prop="chartShowName">
-          <el-input
-            v-model="state.itemForm.chartShowName"
-            style="width: 200px"
-            size="small"
-            clearable
-          />
+          <el-input v-model="state.itemForm.chartShowName" clearable />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -2100,7 +2118,6 @@ span {
 }
 :deep(.ed-form-item__label) {
   color: @canvas-main-font-color;
-  font-size: 12px;
 }
 :deep(.ed-checkbox) {
   color: @canvas-main-font-color;

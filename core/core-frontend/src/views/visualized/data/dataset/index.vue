@@ -39,6 +39,7 @@ interface Node {
   id: string
   nodeType: string
   createTime: number
+  weight: number
 }
 const rootManage = ref(false)
 const nickName = ref('')
@@ -114,7 +115,8 @@ const defaultNode = {
   creator: '',
   id: '',
   nodeType: '',
-  createTime: 0
+  createTime: 0,
+  weight: 0
 }
 
 const nodeInfo = reactive<Node>(cloneDeep(defaultNode))
@@ -246,8 +248,9 @@ const total = ref(0)
 const handleNodeClick = (data: BusiTreeNode) => {
   if (!data.leaf) return
   barInfoApi(data.id).then(res => {
-    const data = res as unknown as Node[]
-    Object.assign(nodeInfo, data)
+    const nodeData = res as unknown as Node[]
+    Object.assign(nodeInfo, nodeData)
+    nodeInfo.weight = data.weight
     columnsPreview = []
     dataPreview = []
     activeName.value = 'dataPreview'
@@ -512,17 +515,17 @@ const filterNode = (value: string, data: BusiTreeNode) => {
               ></dataset-detail>
             </el-popover>
             <div class="right-btn">
-              <el-button secondary @click="createPanel('dashboard')">
+              <el-button secondary @click="createPanel('dashboard')" v-permission="['panel']">
                 <template #icon>
                   <Icon name="icon_dashboard_outlined"></Icon>
                 </template>
                 {{ t('visualization.panelAdd') }}
               </el-button>
-              <el-button secondary @click="createPanel('dataV')">
+              <el-button secondary @click="createPanel('dataV')" v-permission="['screen']">
                 <template #icon> <Icon name="icon_operation-analysis_outlined"></Icon> </template
                 >新建数据大屏
               </el-button>
-              <el-button type="primary" @click="editorDataset">
+              <el-button type="primary" @click="editorDataset" v-if="nodeInfo.weight >= 7">
                 <template #icon>
                   <Icon name="icon_edit_outlined"></Icon>
                 </template>
