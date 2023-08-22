@@ -40,7 +40,11 @@ const submit = () => {
     errorMessage: errorMessage.value
   })
 }
-const errorDetected = ({ enumValue, deType, filterType, term, value }) => {
+const errorDetected = ({ enumValue, deType, filterType, term, value, name }) => {
+  if (!name) {
+    errorMessage.value = '过滤字段不能为空'
+    return
+  }
   if (filterType === 'logic') {
     if (!term) {
       errorMessage.value = '规则条件不能为空'
@@ -105,8 +109,8 @@ const dfsSubmit = arr => {
         subTree: { logic, items: subTree }
       })
     } else {
-      const { enumValue, fieldId, filterType, deType, term, value } = ele
-      errorDetected({ deType, enumValue, filterType, term, value })
+      const { enumValue, fieldId, filterType, deType, term, value, name } = ele
+      errorDetected({ deType, enumValue, filterType, term, value, name })
       if (fieldId) {
         items.push({
           enumValue: enumValue ? enumValue.split(',') : [],

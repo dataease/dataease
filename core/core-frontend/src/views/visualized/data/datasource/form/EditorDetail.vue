@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, reactive, computed, toRefs, nextTick } from 'vue'
+import { ref, reactive, computed, toRefs, nextTick, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import type { FormInstance, FormRules } from 'element-plus-secondary'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
@@ -57,7 +57,7 @@ const dsForm = ref<FormInstance>()
 
 const cronEdit = ref(true)
 
-const rule = reactive<FormRules>({
+const defaultRule = {
   name: [
     {
       required: true,
@@ -71,7 +71,9 @@ const rule = reactive<FormRules>({
       trigger: 'blur'
     }
   ]
-})
+}
+
+const rule = ref<FormRules>(cloneDeep(defaultRule))
 const api_table_title = ref('')
 const editApiItem = ref()
 const defaultApiItem = {
@@ -104,6 +106,7 @@ const initForm = type => {
       port: ''
     }
     schemas.value = []
+    rule.value = cloneDeep(defaultRule)
     setRules()
   }
   if (type === 'API') {
@@ -188,8 +191,21 @@ const setRules = () => {
       }
     ]
   }
-  Object.assign(rule, configRules)
+  rule.value = { ...cloneDeep(configRules), ...cloneDeep(defaultRule) }
 }
+
+watch(
+  () => form.value.type,
+  val => {
+    if (val !== 'API') {
+      rule.value = cloneDeep(defaultRule)
+      setRules()
+    }
+  },
+  {
+    immediate: true
+  }
+)
 
 const setItemRef = (ele: ComponentPublicInstance | null | Element) => {
   state.itemRef.push(ele)
@@ -504,10 +520,18 @@ defineExpose({
               {{ t('datasource.kerbers_info') }}
             </p>
           </el-form-item>
-          <el-form-item :label="t('datasource.user_name')" v-if="form.type !== 'presto'">
+          <el-form-item
+            prop="configuration.username"
+            :label="t('datasource.user_name')"
+            v-if="form.type !== 'presto'"
+          >
             <el-input v-model="form.configuration.username" autocomplete="off" />
           </el-form-item>
-          <el-form-item :label="t('datasource.password')" v-if="form.type !== 'presto'">
+          <el-form-item
+            prop="configuration.password"
+            :label="t('datasource.password')"
+            v-if="form.type !== 'presto'"
+          >
             <el-input show-password type="password" v-model="form.configuration.password" />
           </el-form-item>
           <el-form-item :label="t('datasource.extra_params')">
