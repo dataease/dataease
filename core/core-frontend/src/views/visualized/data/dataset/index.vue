@@ -7,7 +7,7 @@ import { Icon } from '@/components/icon-custom'
 import { useRouter } from 'vue-router'
 import CreatDsGroup from './form/CreatDsGroup.vue'
 import type { BusiTreeNode, BusiTreeRequest } from '@/models/tree/TreeNode'
-import { getDatasetTree, delDatasetTree, getDatasetPreview, barInfoApi } from '@/api/dataset'
+import { delDatasetTree, getDatasetPreview, barInfoApi } from '@/api/dataset'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import DeResourceGroupOpt from '@/views/common/DeResourceGroupOpt.vue'
 import DatasetDetail from './DatasetDetail.vue'
@@ -22,6 +22,8 @@ import {
 } from '@/views/chart/components/editor/util/dataVisualiztion'
 import type { TabPaneName } from 'element-plus-secondary'
 import { timestampFormatDate } from './form/util.js'
+import { interactiveStoreWithOut } from '@/store/modules/interactive'
+const interactiveStore = interactiveStoreWithOut()
 interface Field {
   fieldShortName: string
   name: string
@@ -37,6 +39,7 @@ interface Node {
   id: string
   nodeType: string
   createTime: number
+  weight: number
 }
 const rootManage = ref(false)
 const nickName = ref('')
@@ -112,7 +115,8 @@ const defaultNode = {
   creator: '',
   id: '',
   nodeType: '',
-  createTime: 0
+  createTime: 0,
+  weight: 0
 }
 
 const nodeInfo = reactive<Node>(cloneDeep(defaultNode))
@@ -186,11 +190,27 @@ const dtLoading = ref(false)
 const getData = () => {
   dtLoading.value = true
   const request = { busiFlag: 'dataset' } as BusiTreeRequest
-  getDatasetTree(request)
+  /* await interactiveStore.setInteractive(request)
+  const interactiveData = interactiveStore.getDataset
+  const nodeData = interactiveData.treeNodes
+  rootManage.value = interactiveData.rootManage
+  if (nodeData.length && nodeData[0]['id'] === '0' && nodeData[0]['name'] === 'root') {
+    state.datasetTree = nodeData[0]['children'] || []
+  } else {
+    state.datasetTree = nodeData
+  }
+  dtLoading.value = false
+  const id = nodeInfo.id
+  if (!!id) {
+    Object.assign(nodeInfo, cloneDeep(defaultNode))
+    dfsDatasetTree(state.datasetTree, id)
+  } */
+  interactiveStore
+    .setInteractive(request)
     .then(res => {
       const nodeData = (res as unknown as BusiTreeNode[]) || []
       if (nodeData.length && nodeData[0]['id'] === '0' && nodeData[0]['name'] === 'root') {
-        rootManage.value = nodeData[0]['weight'] >= 3
+        rootManage.value = nodeData[0]['weight'] >= 7
         state.datasetTree = nodeData[0]['children'] || []
         return
       }
@@ -228,8 +248,9 @@ const total = ref(0)
 const handleNodeClick = (data: BusiTreeNode) => {
   if (!data.leaf) return
   barInfoApi(data.id).then(res => {
-    const data = res as unknown as Node[]
-    Object.assign(nodeInfo, data)
+    const nodeData = res as unknown as Node[]
+    Object.assign(nodeInfo, nodeData)
+    nodeInfo.weight = data.weight
     columnsPreview = []
     dataPreview = []
     activeName.value = 'dataPreview'
@@ -349,6 +370,11 @@ const menuList = [
     command: 'delete'
   }
 ]
+const expandedKey = ref([])
+
+const nodeExpand = data => {
+  expandedKey.value.push(data.id)
+}
 
 const datasetTypeList = [
   {
@@ -387,7 +413,7 @@ const filterNode = (value: string, data: BusiTreeNode) => {
       <div class="filter-dataset">
         <div class="icon-methods">
           <span class="title"> {{ t('auth.dataset') }} </span>
-          <div v-if="rootManage">
+          <div v-if="rootManage" class="flex-align-center">
             <el-tooltip
               class="box-item"
               effect="dark"
@@ -417,19 +443,17 @@ const filterNode = (value: string, data: BusiTreeNode) => {
               </el-icon>
             </template>
           </el-input>
-          <span class="filter-button">
-            <el-icon>
-              <Icon name="icon-filter"></Icon>
-            </el-icon>
-          </span>
         </div>
       </div>
 
       <el-tree
         menu
         ref="datasetListTree"
+        node-key="id"
         :data="state.datasetTree"
         :filter-node-method="filterNode"
+        @node-expand="nodeExpand"
+        :default-expanded-keys="expandedKey"
         :props="defaultProps"
         @node-click="handleNodeClick"
       >
@@ -442,7 +466,7 @@ const filterNode = (value: string, data: BusiTreeNode) => {
               <Icon name="icon_dataset"></Icon>
             </el-icon>
             <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
-            <div class="icon-more" v-if="data.weight >= 3">
+            <div class="icon-more" v-if="data.weight >= 7">
               <handle-more
                 @handle-command="cmd => handleDatasetTree(cmd, data)"
                 :menu-list="datasetTypeList"
@@ -491,17 +515,17 @@ const filterNode = (value: string, data: BusiTreeNode) => {
               ></dataset-detail>
             </el-popover>
             <div class="right-btn">
-              <el-button secondary @click="createPanel('dashboard')">
+              <el-button secondary @click="createPanel('dashboard')" v-permission="['panel']">
                 <template #icon>
                   <Icon name="icon_dashboard_outlined"></Icon>
                 </template>
                 {{ t('visualization.panelAdd') }}
               </el-button>
-              <el-button secondary @click="createPanel('dataV')">
+              <el-button secondary @click="createPanel('dataV')" v-permission="['screen']">
                 <template #icon> <Icon name="icon_operation-analysis_outlined"></Icon> </template
                 >新建数据大屏
               </el-button>
-              <el-button type="primary" @click="editorDataset">
+              <el-button type="primary" @click="editorDataset" v-if="nodeInfo.weight >= 7">
                 <template #icon>
                   <Icon name="icon_edit_outlined"></Icon>
                 </template>
@@ -627,22 +651,9 @@ const filterNode = (value: string, data: BusiTreeNode) => {
     }
 
     .search-input {
-      margin: 16px 8px 8px 8px;
-      display: flex;
-      justify-content: space-between;
+      margin: 16px 0 8px 0;
       .ed-input {
-        flex: 1;
-      }
-
-      .filter-button {
-        width: 32px;
-        height: 32px;
-        margin-left: 8px;
-        border: 1px solid #bbbfc4;
-        border-radius: 4px;
-        line-height: 32px;
-        text-align: center;
-        cursor: pointer;
+        width: 100%;
       }
     }
   }

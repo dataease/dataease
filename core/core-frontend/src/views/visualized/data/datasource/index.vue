@@ -14,13 +14,7 @@ import DatasetDetail from '@/views/visualized/data/dataset/DatasetDetail.vue'
 import { timestampFormatDate } from '@/views/visualized/data/dataset/form/util.js'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import dayjs from 'dayjs'
-import {
-  listDatasources,
-  getTableField,
-  listDatasourceTables,
-  deleteById,
-  save
-} from '@/api/datasource'
+import { getTableField, listDatasourceTables, deleteById, save } from '@/api/datasource'
 import { Base64 } from 'js-base64'
 import type { Configuration, ApiConfiguration, SyncSetting } from './form/index.vue'
 import EditorDatasource from './form/index.vue'
@@ -30,6 +24,8 @@ import BaseInfoItem from './BaseInfoItem.vue'
 import BaseInfoContent from './BaseInfoContent.vue'
 import type { BusiTreeNode, BusiTreeRequest } from '@/models/tree/TreeNode'
 import { cloneDeep } from 'lodash-es'
+import { interactiveStoreWithOut } from '@/store/modules/interactive'
+const interactiveStore = interactiveStoreWithOut()
 interface Field {
   fieldShortName: string
   name: string
@@ -53,6 +49,7 @@ export interface Node {
   editType?: number
   configuration?: Configuration
   apiConfiguration?: ApiConfiguration[]
+  weight?: number
 }
 
 const { t } = useI18n()
@@ -271,7 +268,8 @@ const defaultInfo = {
   fileName: '',
   configuration: null,
   syncSetting: null,
-  apiConfiguration: []
+  apiConfiguration: [],
+  weight: 0
 }
 const nodeInfo = reactive<Node>(cloneDeep(defaultInfo))
 const infoList = computed(() => {
@@ -309,16 +307,13 @@ const dsLoading = ref(false)
 const listDs = () => {
   rawDatasourceList.value = []
   dsLoading.value = true
-  /* listDatasources({}).then(array => {
-    convertConfig(array)
-    state.datasourceTree = array
-  }) */
   const request = { busiFlag: 'datasource' } as BusiTreeRequest
-  listDatasources(request)
+  interactiveStore
+    .setInteractive(request)
     .then(res => {
       const nodeData = (res as unknown as BusiTreeNode[]) || []
       if (nodeData.length && nodeData[0]['id'] === '0' && nodeData[0]['name'] === 'root') {
-        rootManage.value = nodeData[0]['weight'] >= 3
+        rootManage.value = nodeData[0]['weight'] >= 7
         state.datasourceTree = nodeData[0]['children'] || []
         return
       }
@@ -431,7 +426,8 @@ const handleNodeClick = data => {
       type,
       configuration,
       syncSetting,
-      apiConfiguration: apiConfigurationStr
+      apiConfiguration: apiConfigurationStr,
+      weight: data.weight
     })
     activeTab.value = ''
     activeName.value = 'config'
@@ -570,7 +566,7 @@ const defaultProps = {
       <div class="filter-datasource">
         <div class="icon-methods">
           <span class="title"> {{ t('datasource.datasource') }} </span>
-          <div v-if="rootManage">
+          <div v-if="rootManage" class="flex-align-center">
             <el-tooltip effect="dark" content="新建文件夹" placement="top">
               <el-button @click="() => handleDatasourceTree('folder')" text>
                 <template #icon>
@@ -617,7 +613,7 @@ const defaultProps = {
               <Icon :name="getDsIconName(data)"></Icon>
             </el-icon>
             <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
-            <div class="icon-more">
+            <div class="icon-more" v-if="data.weight >= 7">
               <handle-more
                 @handle-command="cmd => handleDatasourceTree(cmd, data)"
                 :menu-list="datasetTypeList"
@@ -666,7 +662,7 @@ const defaultProps = {
               ></dataset-detail>
             </el-popover>
             <div class="right-btn">
-              <el-button secondary @click="createDataset(null)">
+              <el-button secondary @click="createDataset(null)" v-permission="['dataset']">
                 <template #icon>
                   <Icon name="icon_dataset_outlined"></Icon>
                 </template>
@@ -687,7 +683,7 @@ const defaultProps = {
                   追加数据
                 </el-button>
               </template>
-              <el-button v-else @click="editDatasource()" type="primary">
+              <el-button v-else-if="nodeInfo.weight >= 7" @click="editDatasource()" type="primary">
                 <template #icon>
                   <Icon name="icon_edit_outlined"></Icon>
                 </template>
@@ -739,7 +735,11 @@ const defaultProps = {
               >
                 <template #default="scope">
                   <el-tooltip effect="dark" content="新建数据集" placement="top">
-                    <el-button @click.stop="createDataset(scope.row.name)" text>
+                    <el-button
+                      @click.stop="createDataset(scope.row.name)"
+                      text
+                      v-permission="['dataset']"
+                    >
                       <template #icon>
                         <Icon name="icon_dataset_outlined"></Icon>
                       </template>
@@ -1275,22 +1275,9 @@ const defaultProps = {
     }
 
     .search-input {
-      margin: 16px 8px 8px 8px;
-      display: flex;
-      justify-content: space-between;
+      margin: 16px 0 8px 0;
       .ed-input {
-        flex: 1;
-      }
-
-      .filter-button {
-        width: 32px;
-        height: 32px;
-        margin-left: 8px;
-        border: 1px solid #bbbfc4;
-        border-radius: 4px;
-        line-height: 32px;
-        text-align: center;
-        cursor: pointer;
+        width: 100%;
       }
     }
   }

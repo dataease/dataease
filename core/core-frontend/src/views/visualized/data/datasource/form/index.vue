@@ -247,18 +247,9 @@ const validateDS = () => {
   })
 }
 
-// const typeTitle = {
-//   excel: '文件',
-//   api: 'API'
-// }
-
 const typeTitle = computed(() => {
   if (!currentDsType.value) {
     return ''
-  }
-
-  if (currentDsType.value === 'Excel') {
-    return '文件'
   }
   let str = ''
   databaseList.value.some(ele => {
@@ -482,7 +473,7 @@ defineExpose({
           @node-click="handleDsNodeClick"
         >
           <template #default="{ node, data }">
-            <span class="custom-tree-node">
+            <span class="custom-tree-node flex-align-center">
               <el-icon v-if="!!data.catalog" class="icon-border" style="width: 18px; height: 18px">
                 <Icon :name="getDsIconName(data)"></Icon>
               </el-icon>
@@ -659,6 +650,12 @@ defineExpose({
     height: 100%;
     background: #fff;
     position: relative;
+
+    .custom-tree-node {
+      .ed-icon {
+        margin-right: 8px;
+      }
+    }
     .ds-type-select {
       width: 279px;
       height: calc(100% - 64px);

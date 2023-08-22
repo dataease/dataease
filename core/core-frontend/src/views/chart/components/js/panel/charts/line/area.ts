@@ -5,7 +5,12 @@ import {
 import { Area as G2Area, AreaOptions } from '@antv/g2plot/esm/plots/area'
 import { getPadding, setGradientColor } from '@/views/chart/components/js/panel/common/common_antv'
 import { cloneDeep } from 'lodash-es'
-import { flow, handleEmptyDataStrategy, parseJson } from '@/views/chart/components/js/util'
+import {
+  flow,
+  handleEmptyDataStrategy,
+  hexColorToRGBA,
+  parseJson
+} from '@/views/chart/components/js/util'
 import {
   formatterItem,
   singleDimensionTooltipFormatter,
@@ -19,11 +24,15 @@ import {
 import { IntervalGeometryLabelPosition } from '@antv/g2/lib/interface'
 import { Label } from '@antv/g2plot/lib/types/label'
 import { Datum } from '@antv/g2plot/esm/types/common'
+import { color } from 'highcharts'
 
 const DEFAULT_DATA = []
 export class Area extends G2PlotChartView<AreaOptions, G2Area> {
   properties = LINE_EDITOR_PROPERTY
-  propertyInner = LINE_EDITOR_PROPERTY_INNER
+  propertyInner = {
+    ...LINE_EDITOR_PROPERTY_INNER,
+    'basic-style-selector': [...LINE_EDITOR_PROPERTY_INNER['basic-style-selector'], 'gradient']
+  }
   axis: AxisType[] = [...LINE_AXIS_TYPE]
   baseOptions: AreaOptions = {
     data: [],
@@ -147,15 +156,15 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
       }
     }
     // custom color
-    const color = customAttr.basicStyle.colors
-    const areaColors = [...color, ...color]
+    const { colors, alpha } = customAttr.basicStyle
+    const areaColors = [...colors, ...colors]
     let areaStyle
     if (customAttr.basicStyle.gradient) {
       areaStyle = () => {
         const ele = areaColors.shift()
         if (ele) {
           return {
-            fill: setGradientColor(ele, true, 270)
+            fill: setGradientColor(hexColorToRGBA(ele, alpha), true, 270)
           }
         }
       }

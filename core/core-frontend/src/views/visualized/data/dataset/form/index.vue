@@ -216,15 +216,14 @@ const deleteField = item => {
     confirmButtonText: t('dataset.confirm'),
     cancelButtonText: t('common.cancel'),
     showCancelButton: true,
-    tip: t('chart.tips'),
-    confirmButtonType: 'primary',
+    confirmButtonType: 'danger',
     type: 'warning',
     autofocus: false,
     showClose: false,
     callback: (action: Action) => {
       if (action === 'confirm') {
-        const idx = allfields.value.indexOf(item.id)
-        allfields.value.splice(idx, 1)
+        allfields.value = allfields.value.filter(ele => ele.id !== item.id)
+        datasetDrag.value.dfsNodeFieldBack(datasetDrag.value.nodeList, item)
         ElMessage({
           message: t('chart.delete_success'),
           type: 'success'
@@ -253,15 +252,23 @@ const closeEditCalc = () => {
 }
 
 const confirmEditCalc = () => {
-  calcEdit.value.setFieldForm()
-  const obj = cloneDeep(calcEdit.value.fieldForm)
-  const result = allfields.value.findIndex(ele => obj.id === ele.id)
-  if (result !== -1) {
-    allfields.value.splice(result, 1, obj)
-  } else {
-    allfields.value.push(obj)
-  }
-  editCalcField.value = false
+  calcEdit.value.formField.validate(val => {
+    if (val) {
+      calcEdit.value.setFieldForm()
+      if (!calcEdit.value.fieldForm.originName.trim()) {
+        ElMessage.error('表达式不能为空!')
+        return
+      }
+      const obj = cloneDeep(calcEdit.value.fieldForm)
+      const result = allfields.value.findIndex(ele => obj.id === ele.id)
+      if (result !== -1) {
+        allfields.value.splice(result, 1, obj)
+      } else {
+        allfields.value.push(obj)
+      }
+      editCalcField.value = false
+    }
+  })
 }
 
 const generateColumns = (arr: Field[]) =>

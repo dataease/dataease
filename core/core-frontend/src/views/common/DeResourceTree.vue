@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Search } from '@element-plus/icons-vue'
-import { onMounted, reactive, ref, toRefs, watch } from 'vue'
+import { computed, onMounted, reactive, ref, toRefs, watch, nextTick } from 'vue'
 import { deleteLogic, queryTreeApi } from '@/api/visualization/dataVisualization'
 import { ElIcon, ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { Icon } from '@/components/icon-custom'
@@ -16,6 +16,9 @@ import {
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import DvHandleMore from '@/components/handle-more/src/DvHandleMore.vue'
+import { interactiveStoreWithOut } from '@/store/modules/interactive'
+const interactiveStore = interactiveStoreWithOut()
+import router from '@/router'
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo } = storeToRefs(dvMainStore)
 
@@ -38,11 +41,12 @@ const rootManage = ref(false)
 const { curCanvasType, showPosition } = toRefs(props)
 const resourceLabel = curCanvasType.value === 'dataV' ? '数据大屏' : '仪表板'
 const newResourceLabel = '新建' + resourceLabel
-
+const selectedNodeKey = ref(null)
 const filterText = ref(null)
 const expandedArray = ref([])
 const resourceListTree = ref()
 const resourceGroupOpt = ref()
+const dataInitStatue = ref(false)
 const state = reactive({
   resourceTree: [] as BusiTreeNode[],
   menuList: [
@@ -114,6 +118,10 @@ state.resourceTypeList = [
   }
 ]
 
+const { dvId } = window.DataEaseBi || router.currentRoute.value.query
+if (dvId) {
+  selectedNodeKey.value = dvId
+}
 const nodeExpand = data => {
   if (data.id) {
     expandedArray.value.push(data.id)
@@ -132,21 +140,39 @@ const filterNode = (value: string, data: BusiTreeNode) => {
 }
 
 const nodeClick = (data: BusiTreeNode) => {
+  selectedNodeKey.value = data.id
   if (data.leaf) {
     emit('nodeClick', data)
   }
 }
 
-const getTree = () => {
+const getTree = async () => {
   const request = { busiFlag: curCanvasType.value } as BusiTreeRequest
-  queryTreeApi(request).then(res => {
-    const nodeData = (res as unknown as BusiTreeNode[]) || []
-    if (nodeData.length && nodeData[0]['id'] === '0' && nodeData[0]['name'] === 'root') {
-      rootManage.value = nodeData[0]['weight'] >= 3
-      state.resourceTree = nodeData[0]['children'] || []
-      return
+  dataInitStatue.value = false
+  expandedArray.value = []
+  const isDashboard = curCanvasType.value == 'dashboard'
+  await interactiveStore.setInteractive(request)
+  const interactiveData = isDashboard ? interactiveStore.getPanel : interactiveStore.getScreen
+  const nodeData = interactiveData.treeNodes
+  rootManage.value = interactiveData.rootManage
+  if (nodeData.length && nodeData[0]['id'] === '0' && nodeData[0]['name'] === 'root') {
+    state.resourceTree = nodeData[0]['children'] || []
+    afterTreeInit()
+    return
+  }
+  state.resourceTree = nodeData
+  afterTreeInit()
+}
+
+const afterTreeInit = () => {
+  if (selectedNodeKey.value) {
+    expandedArray.value = getDefaultExpandedKeys()
+  }
+  dataInitStatue.value = true
+  nextTick(() => {
+    if (selectedNodeKey.value) {
+      document.querySelector('.is-current').click()
     }
-    state.resourceTree = nodeData
   })
 }
 
@@ -154,11 +180,13 @@ const emit = defineEmits(['nodeClick'])
 
 const operation = (cmd: string, data: BusiTreeNode, nodeType: string) => {
   if (cmd === 'delete') {
+    const msg = data.leaf ? '' : '删除后，此文件夹下的所有资源都会被删除，请谨慎操作。'
     ElMessageBox.confirm(
       data.leaf ? '确定删除该' + resourceLabel + '吗？' : '确定删除该文件夹吗？',
       {
         confirmButtonType: 'danger',
         type: 'warning',
+        tip: msg,
         autofocus: false,
         showClose: false
       }
@@ -229,6 +257,31 @@ const resourceOptFinish = param => {
   }
 }
 
+const getParentKeys = (tree, targetKey, parentKeys = []) => {
+  for (const node of tree) {
+    if (node.id === targetKey) {
+      return parentKeys
+    }
+    if (node.children) {
+      const newParentKeys = [...parentKeys, node.id]
+      const result = getParentKeys(node.children, targetKey, newParentKeys)
+      if (result) {
+        return result
+      }
+    }
+  }
+  return null
+}
+
+const getDefaultExpandedKeys = () => {
+  const parentKeys = getParentKeys(state.resourceTree, selectedNodeKey.value)
+  if (parentKeys) {
+    return [selectedNodeKey.value, ...parentKeys]
+  } else {
+    return []
+  }
+}
+
 watch(filterText, val => {
   resourceListTree.value.filter(val)
 })
@@ -242,7 +295,7 @@ onMounted(() => {
   <div class="resource-tree">
     <div class="icon-methods" v-show="showPosition === 'preview'">
       <span class="title"> {{ resourceLabel }} </span>
-      <div v-if="rootManage">
+      <div v-if="rootManage" class="flex-align-center">
         <el-tooltip content="新建文件夹" placement="top" effect="dark">
           <el-icon
             class="custom-icon"
@@ -260,27 +313,24 @@ onMounted(() => {
         </el-tooltip>
       </div>
     </div>
-
-    <el-input
-      v-model="filterText"
-      size="small"
-      :placeholder="'搜索'"
-      prefix-icon="el-icon-search"
-      clearable
-      class="search-bar"
-    >
-      <template #append>
-        <el-button :icon="Search" />
+    <el-input v-model="filterText" :placeholder="'搜索'" clearable class="search-bar">
+      <template #prefix>
+        <el-icon>
+          <Icon name="icon_search-outline_outlined"></Icon>
+        </el-icon>
       </template>
     </el-input>
     <el-tree
       menu
+      v-if="dataInitStatue"
       ref="resourceListTree"
       class="custom-tree"
       :default-expanded-keys="expandedArray"
       :data="state.resourceTree"
       :props="defaultProps"
       node-key="id"
+      highlight-current
+      :current-node-key="selectedNodeKey"
       :expand-on-click-node="true"
       :filter-node-method="filterNode"
       @node-expand="nodeExpand"
@@ -299,7 +349,7 @@ onMounted(() => {
             <Icon name="dv-screen-spine"></Icon>
           </el-icon>
           <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
-          <div class="icon-more" v-if="data.weight >= 3 && showPosition === 'preview'">
+          <div class="icon-more" v-if="data.weight >= 7 && showPosition === 'preview'">
             <span v-on:click.stop>
               <el-icon v-if="data.leaf" class="hover-icon" @click="resourceEdit(data.id)">
                 <Icon name="edit-in"></Icon>
@@ -387,7 +437,7 @@ onMounted(() => {
 }
 
 .custom-tree {
-  height: calc(100vh - 160px);
+  height: calc(100vh - 180px);
   overflow-y: auto;
 }
 
@@ -397,6 +447,7 @@ onMounted(() => {
   align-items: center;
   box-sizing: content-box;
   padding-right: 4px;
+  overflow: hidden;
 
   .label-tooltip {
     width: calc(100% - 66px);

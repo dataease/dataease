@@ -155,6 +155,15 @@ const state = reactive({
           label: t('chart.filter_ge')
         }
       ]
+    },
+    {
+      label: '',
+      options: [
+        {
+          value: 'not_null',
+          label: t('chart.filter_not_null')
+        }
+      ]
     }
   ],
   options: [],

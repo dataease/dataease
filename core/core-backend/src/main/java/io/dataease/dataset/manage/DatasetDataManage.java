@@ -177,6 +177,9 @@ public class DatasetDataManage {
         Map<String, ColumnPermissionItem> desensitizationList = new HashMap<>();
         if (checkPermission) {
             fields = permissionManage.filterColumnPermissions(fields, desensitizationList, datasetGroupInfoDTO.getId(), null);
+            if (ObjectUtils.isEmpty(fields)) {
+                DEException.throwException(Translator.get("i18n_no_column_permission"));
+            }
         }
 
         buildFieldName(sqlMap, fields);

@@ -41,11 +41,11 @@ export class Radar extends G2PlotChartView<RadarOptions, G2Radar> {
   axis: AxisType[] = ['xAxis', 'yAxis', 'drill', 'filter', 'extLabel', 'extTooltip']
   axisConfig: AxisConfig = {
     xAxis: {
-      name: `${t('chart.drag_block_radar_label')}/${t('chart.dimension')}`,
+      name: `${t('chart.drag_block_radar_label')} / ${t('chart.dimension')}`,
       type: 'd'
     },
     yAxis: {
-      name: `${t('chart.drag_block_radar_length')}/${t('chart.quota')}`,
+      name: `${t('chart.drag_block_radar_length')} / ${t('chart.quota')}`,
       type: 'q',
       limit: 1
     }
