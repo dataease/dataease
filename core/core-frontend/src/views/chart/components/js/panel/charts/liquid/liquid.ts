@@ -112,6 +112,14 @@ export class Liquid extends G2PlotChartView<LiquidOptions, G2Liquid> {
 
   protected configLabel(chart: Chart, options: LiquidOptions): LiquidOptions {
     const customAttr = parseJson(chart.customAttr)
+    if (!customAttr.label?.show) {
+      return {
+        ...options,
+        statistic: {
+          content: false
+        }
+      }
+    }
     let labelContent
     if (customAttr.label) {
       const label = customAttr.label
@@ -134,7 +142,23 @@ export class Liquid extends G2PlotChartView<LiquidOptions, G2Liquid> {
     const statistic = {
       content: labelContent
     }
-    return { ...options, statistic }
+    const label = customAttr.label
+    const labelFormatter = label.gaugeLabelFormatter
+    return {
+      ...options,
+      statistic: {
+        content: {
+          style: {
+            fontSize: label.fontSize.toString(),
+            color: label.color
+          },
+          formatter: function (v) {
+            const value = v.percent
+            return valueFormatter(value, labelFormatter)
+          }
+        }
+      }
+    }
   }
 
   protected setupOptions(chart: Chart, options: LiquidOptions): LiquidOptions {
