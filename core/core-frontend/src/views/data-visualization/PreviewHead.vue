@@ -2,6 +2,7 @@
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { useI18n } from '@/hooks/web/useI18n'
+import DvDetailInfo from '@/views/common/DvDetailInfo.vue'
 
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo } = storeToRefs(dvMainStore)
@@ -36,7 +37,17 @@ const dvEdit = () => {
       <!--      <el-icon class="custom-icon" @click="reload()"><Refresh /></el-icon>-->
     </div>
     <el-divider style="margin-top: 15px" direction="vertical" />
-    <div class="create-area">创建人：admin</div>
+    <div class="create-area">
+      <span>创建人：{{ dvInfo.creatorName }}</span>
+      <el-popover placement="right-start" width="400" trigger="click">
+        <template #reference>
+          <div class="info-tips">
+            <el-icon><Icon name="dv-info"></Icon></el-icon>
+          </div>
+        </template>
+        <dv-detail-info></dv-detail-info>
+      </el-popover>
+    </div>
     <div class="canvas-opt-button">
       <!--      <el-button type="primary" @click="download()">导出</el-button>-->
       <el-button icon="DataAnalysis" @click="preview()">预览</el-button>
@@ -123,5 +134,9 @@ const dvEdit = () => {
     align-items: center;
     flex: 1;
   }
+}
+.info-tips {
+  float: right;
+  margin: 2px 0 0 4px;
 }
 </style>

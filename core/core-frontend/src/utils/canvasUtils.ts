@@ -83,7 +83,11 @@ export function initCanvasDataPrepare(dvId, callBack) {
       pid: canvasInfo.pid,
       status: canvasInfo.status,
       selfWatermarkStatus: canvasInfo.selfWatermarkStatus,
-      type: canvasInfo.type
+      type: canvasInfo.type,
+      creatorName: canvasInfo.creatorName,
+      updateName: canvasInfo.updateName,
+      createTime: canvasInfo.createTime,
+      updateTime: canvasInfo.updateTime
     }
     const canvasDataResult = JSON.parse(canvasInfo.componentData)
     const canvasStyleResult = JSON.parse(canvasInfo.canvasStyleData)

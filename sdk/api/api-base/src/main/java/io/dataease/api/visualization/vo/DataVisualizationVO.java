@@ -87,6 +87,10 @@ public class DataVisualizationVO  implements Serializable {
      * 创建人
      */
     private String createBy;
+    /**
+     * 创建人姓名
+     */
+    private String creatorName;
 
     /**
      * 更新时间
@@ -97,6 +101,10 @@ public class DataVisualizationVO  implements Serializable {
      * 更新人
      */
     private String updateBy;
+    /**
+     * 更新人姓名
+     */
+    private String updateName;
 
     /**
      * 备注

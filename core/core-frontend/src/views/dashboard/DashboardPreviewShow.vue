@@ -18,6 +18,7 @@ const dashboardPreview = ref(null)
 const slideShow = ref(true)
 const requestStore = useRequestStoreWithOut()
 const permissionStore = usePermissionStoreWithOut()
+const dataInitState = ref(true)
 
 const { dvInfo } = storeToRefs(dvMainStore)
 const state = reactive({
@@ -41,6 +42,7 @@ const { showPosition } = toRefs(props)
 const loadCanvasData = (dvId, weight?) => {
   // 复用不设置 dvMain 中的componentData 等画布信息
   const initMethod = showPosition.value === 'multiplexing' ? initCanvasDataPrepare : initCanvasData
+  dataInitState.value = false
   initMethod(
     dvId,
     function ({
@@ -56,6 +58,7 @@ const loadCanvasData = (dvId, weight?) => {
       state.canvasViewInfoPreview = canvasViewInfoPreview
       state.dvInfo = dvInfo
       state.curPreviewGap = curPreviewGap
+      dataInitState.value = true
       nextTick(() => {
         dashboardPreview.value.restore()
       })
@@ -125,7 +128,7 @@ defineExpose({
         <div ref="previewCanvasContainer" class="content">
           <de-preview
             ref="dashboardPreview"
-            v-if="state.canvasStylePreview"
+            v-if="state.canvasStylePreview && dataInitState"
             :dv-info="state.dvInfo"
             :cur-gap="state.curPreviewGap"
             :component-data="state.canvasDataPreview"

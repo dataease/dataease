@@ -23,7 +23,7 @@ const rules = {
   coverUrl: [
     {
       required: true,
-      message: t('commons.input_content'),
+      message: '请上传封面',
       trigger: 'change'
     }
   ]
@@ -46,8 +46,12 @@ const optInit = (subjectItem, opt) => {
 }
 
 const saveSubject = () => {
-  emits('finish', subjectForm.value)
-  resetForm()
+  subject.value.validate(result => {
+    if (result) {
+      emits('finish', subjectForm.value)
+      resetForm()
+    }
+  })
 }
 
 defineExpose({

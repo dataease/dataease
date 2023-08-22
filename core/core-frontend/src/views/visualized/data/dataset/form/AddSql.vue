@@ -432,6 +432,7 @@ const fieldType = (deType: number) => {
                 popper-class="sql-table-info"
                 placement="right"
                 :width="502"
+                :persistent="false"
                 @show="getNodeField(ele)"
                 trigger="click"
               >

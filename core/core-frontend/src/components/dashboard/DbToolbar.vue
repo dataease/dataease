@@ -142,8 +142,8 @@ const handlePreviewChange = () => {
 }
 
 const backToMain = () => {
-  // window.opener.focus()
-  window.opener.focus()
+  const url = '#/panel/index?dvId=' + dvInfo.value.id
+  window.open(url, '_self')
 }
 
 const multiplexingCanvasOpen = () => {
@@ -255,6 +255,9 @@ const saveLinkageSetting = () => {
 <template>
   <div class="toolbar-main">
     <div class="toolbar" :class="{ 'preview-state-head': editMode === 'preview' }">
+      <el-icon class="custom-el-icon back-icon" @click="backToMain()">
+        <Icon class="toolbar-icon" name="icon_left_outlined" />
+      </el-icon>
       <div class="left-area" v-show="editMode === 'edit'">
         <span id="canvas-name" class="name-area" @dblclick="editCanvasName">{{ dvInfo.name }}</span>
         <div class="opt-area">

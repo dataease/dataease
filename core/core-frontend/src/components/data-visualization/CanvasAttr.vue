@@ -113,6 +113,9 @@ watch([() => canvasStyleData.value.background], () => {
     init()
   }
 })
+onMounted(() => {
+  init()
+})
 </script>
 
 <template>

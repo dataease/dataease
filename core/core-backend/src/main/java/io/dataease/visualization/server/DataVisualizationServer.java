@@ -13,6 +13,7 @@ import io.dataease.commons.exception.DataEaseException;
 import io.dataease.exception.DEException;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
+import io.dataease.utils.AuthUtils;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
 import io.dataease.visualization.dao.auto.entity.DataVisualizationInfo;
@@ -54,13 +55,8 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
     @Override
     public DataVisualizationVO findById(Long dvId) {
-        QueryWrapper<DataVisualizationInfo> wrapper = new QueryWrapper<>();
-        wrapper.eq("delete_flag", 0);
-        wrapper.eq("id", dvId);
-        DataVisualizationInfo visualizationInfo = visualizationInfoMapper.selectOne(wrapper);
-        if (visualizationInfo != null) {
-            DataVisualizationVO result = new DataVisualizationVO();
-            BeanUtils.copyBean(result, visualizationInfo);
+        DataVisualizationVO result = extDataVisualizationMapper.findDvInfo(dvId);
+        if (result != null) {
             //获取视图信息
             List<ChartViewDTO> chartViewDTOS = chartViewManege.listBySceneId(dvId);
             if (!CollectionUtils.isEmpty(chartViewDTOS)) {
@@ -174,6 +170,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         wrapper.eq("name", request.getName().trim());
         wrapper.eq("node_type", request.getNodeType());
         wrapper.eq("type", request.getType());
+        wrapper.eq("org_id", AuthUtils.getUser().getDefaultOid());
         if (visualizationInfoMapper.exists(wrapper)) {
             DEException.throwException("当前名称已经存在");
         }

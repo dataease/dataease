@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Search } from '@element-plus/icons-vue'
-import { onMounted, reactive, ref, toRefs, watch } from 'vue'
-import { deleteLogic } from '@/api/visualization/dataVisualization'
+import { computed, onMounted, reactive, ref, toRefs, watch, nextTick } from 'vue'
+import { deleteLogic, queryTreeApi } from '@/api/visualization/dataVisualization'
 import { ElIcon, ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { Icon } from '@/components/icon-custom'
 import { HandleMore } from '@/components/handle-more'
@@ -18,6 +18,7 @@ import { storeToRefs } from 'pinia'
 import DvHandleMore from '@/components/handle-more/src/DvHandleMore.vue'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
 const interactiveStore = interactiveStoreWithOut()
+import router from '@/router'
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo } = storeToRefs(dvMainStore)
 
@@ -40,11 +41,12 @@ const rootManage = ref(false)
 const { curCanvasType, showPosition } = toRefs(props)
 const resourceLabel = curCanvasType.value === 'dataV' ? '数据大屏' : '仪表板'
 const newResourceLabel = '新建' + resourceLabel
-
+const selectedNodeKey = ref(null)
 const filterText = ref(null)
 const expandedArray = ref([])
 const resourceListTree = ref()
 const resourceGroupOpt = ref()
+const dataInitStatue = ref(false)
 const state = reactive({
   resourceTree: [] as BusiTreeNode[],
   menuList: [
@@ -116,6 +118,10 @@ state.resourceTypeList = [
   }
 ]
 
+const { dvId } = window.DataEaseBi || router.currentRoute.value.query
+if (dvId) {
+  selectedNodeKey.value = dvId
+}
 const nodeExpand = data => {
   if (data.id) {
     expandedArray.value.push(data.id)
@@ -134,6 +140,7 @@ const filterNode = (value: string, data: BusiTreeNode) => {
 }
 
 const nodeClick = (data: BusiTreeNode) => {
+  selectedNodeKey.value = data.id
   if (data.leaf) {
     emit('nodeClick', data)
   }
@@ -141,6 +148,8 @@ const nodeClick = (data: BusiTreeNode) => {
 
 const getTree = async () => {
   const request = { busiFlag: curCanvasType.value } as BusiTreeRequest
+  dataInitStatue.value = false
+  expandedArray.value = []
   const isDashboard = curCanvasType.value == 'dashboard'
   await interactiveStore.setInteractive(request)
   const interactiveData = isDashboard ? interactiveStore.getPanel : interactiveStore.getScreen
@@ -148,20 +157,36 @@ const getTree = async () => {
   rootManage.value = interactiveData.rootManage
   if (nodeData.length && nodeData[0]['id'] === '0' && nodeData[0]['name'] === 'root') {
     state.resourceTree = nodeData[0]['children'] || []
+    afterTreeInit()
     return
   }
   state.resourceTree = nodeData
+  afterTreeInit()
+}
+
+const afterTreeInit = () => {
+  if (selectedNodeKey.value) {
+    expandedArray.value = getDefaultExpandedKeys()
+  }
+  dataInitStatue.value = true
+  nextTick(() => {
+    if (selectedNodeKey.value) {
+      document.querySelector('.is-current').click()
+    }
+  })
 }
 
 const emit = defineEmits(['nodeClick'])
 
 const operation = (cmd: string, data: BusiTreeNode, nodeType: string) => {
   if (cmd === 'delete') {
+    const msg = data.leaf ? '' : '删除后，此文件夹下的所有资源都会被删除，请谨慎操作。'
     ElMessageBox.confirm(
       data.leaf ? '确定删除该' + resourceLabel + '吗？' : '确定删除该文件夹吗？',
       {
         confirmButtonType: 'danger',
         type: 'warning',
+        tip: msg,
         autofocus: false,
         showClose: false
       }
@@ -232,6 +257,31 @@ const resourceOptFinish = param => {
   }
 }
 
+const getParentKeys = (tree, targetKey, parentKeys = []) => {
+  for (const node of tree) {
+    if (node.id === targetKey) {
+      return parentKeys
+    }
+    if (node.children) {
+      const newParentKeys = [...parentKeys, node.id]
+      const result = getParentKeys(node.children, targetKey, newParentKeys)
+      if (result) {
+        return result
+      }
+    }
+  }
+  return null
+}
+
+const getDefaultExpandedKeys = () => {
+  const parentKeys = getParentKeys(state.resourceTree, selectedNodeKey.value)
+  if (parentKeys) {
+    return [selectedNodeKey.value, ...parentKeys]
+  } else {
+    return []
+  }
+}
+
 watch(filterText, val => {
   resourceListTree.value.filter(val)
 })
@@ -278,12 +328,15 @@ onMounted(() => {
     </el-input>
     <el-tree
       menu
+      v-if="dataInitStatue"
       ref="resourceListTree"
       class="custom-tree"
       :default-expanded-keys="expandedArray"
       :data="state.resourceTree"
       :props="defaultProps"
       node-key="id"
+      highlight-current
+      :current-node-key="selectedNodeKey"
       :expand-on-click-node="true"
       :filter-node-method="filterNode"
       @node-expand="nodeExpand"
