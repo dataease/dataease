@@ -102,8 +102,7 @@ const resourceCreate = (pid, name) => {
     ...bashResourceInfo
   }
   save(canvasInfo).then(() => {
-    const baseUrl =
-      curCanvasType.value === 'dataV' ? '#/dvCanvas?dvId=' : '#/dashboard?resourceId='
+    const baseUrl = curCanvasType.value === 'dataV' ? '#/dvCanvas?dvId=' : '#/dashboard?resourceId='
     window.open(baseUrl + newResourceId, '_blank')
   })
 }

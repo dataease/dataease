@@ -1,7 +1,9 @@
 <script lang="tsx" setup>
-import { reactive, watch } from 'vue'
+import { PropType, reactive, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL, DEFAULT_LABEL } from '@/views/chart/components/editor/util/chart'
+import { formatterType } from '../../util/formatter'
+import { unitList } from '../../../js/formatter'
 
 const { t } = useI18n()
 
@@ -11,7 +13,7 @@ const props = defineProps({
     required: true
   },
   themes: {
-    type: String,
+    type: String as PropType<EditorTheme>,
     default: 'dark'
   },
   propertyInner: {
@@ -43,6 +45,7 @@ const labelPositionV = [
   { name: t('chart.center'), value: 'middle' },
   { name: t('chart.text_pos_bottom'), value: 'bottom' }
 ]
+const typeList = formatterType
 
 const initFontSize = () => {
   const arr = []
@@ -183,6 +186,74 @@ init()
             />
           </el-select>
         </el-form-item>
+        <div v-show="showProperty('gaugeLabelFormatter')">
+          <el-form-item :label="$t('chart.value_formatter_type')" class="form-item">
+            <el-select
+              :effect="props.themes"
+              v-model="state.labelForm.gaugeLabelFormatter.type"
+              @change="changeLabelAttr('gaugeLabelFormatter')"
+            >
+              <el-option
+                v-for="type in typeList"
+                :key="type.value"
+                :label="$t('chart.' + type.name)"
+                :value="type.value"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item
+            v-show="state.labelForm.gaugeLabelFormatter.type !== 'auto'"
+            :label="$t('chart.value_formatter_decimal_count')"
+            class="form-item"
+          >
+            <el-input-number
+              :effect="props.themes"
+              v-model="state.labelForm.gaugeLabelFormatter.decimalCount"
+              :precision="0"
+              :min="0"
+              :max="10"
+              size="small"
+              @change="changeLabelAttr('gaugeLabelFormatter')"
+            />
+          </el-form-item>
+          <el-form-item
+            v-show="state.labelForm.gaugeLabelFormatter.type !== 'percent'"
+            :label="$t('chart.value_formatter_unit')"
+            class="form-item"
+          >
+            <el-select
+              :effect="props.themes"
+              v-model="state.labelForm.gaugeLabelFormatter.unit"
+              :placeholder="$t('chart.pls_select_field')"
+              size="small"
+              @change="changeLabelAttr('gaugeLabelFormatter')"
+            >
+              <el-option
+                v-for="item in unitList"
+                :key="item.value"
+                :label="$t('chart.' + item.name)"
+                :value="item.value"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item :label="$t('chart.value_formatter_suffix')" class="form-item">
+            <el-input
+              :effect="props.themes"
+              v-model="state.labelForm.gaugeLabelFormatter.suffix"
+              size="small"
+              clearable
+              :placeholder="$t('commons.input_content')"
+              @change="changeLabelAttr('gaugeLabelFormatter')"
+            />
+          </el-form-item>
+          <el-form-item :label="$t('chart.value_formatter_thousand_separator')" class="form-item">
+            <el-checkbox
+              :effect="props.themes"
+              v-model="state.labelForm.gaugeLabelFormatter.thousandSeparator"
+              @change="changeLabelAttr('gaugeLabelFormatter')"
+            />
+          </el-form-item>
+        </div>
       </el-form>
     </el-col>
   </div>
