@@ -1281,8 +1281,11 @@ const autoInsert = element => {
                                 ><span>{{ t('chart.result_mode_all') }}</span></el-radio
                               >
                               <el-radio label="custom">
-                                <el-input
+                                <el-input-number
+                                  :min="1"
+                                  :controls="false"
                                   :effect="themes"
+                                  :step-strictly="true"
                                   v-model="view.resultCount"
                                   class="result-count"
                                   size="small"
