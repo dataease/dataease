@@ -173,11 +173,16 @@ const emits = defineEmits(['close', 'save'])
 
 const save = (cb?: () => void) => {
   parseVariable()
+  let sql = codeCom.value.state.doc.toString()
+  if (!sql.trim()) {
+    ElMessage.error('SQL不能为空')
+    return
+  }
   emits(
     'save',
     {
       ...sqlNode.value,
-      sql: Base64.encode(codeCom.value.state.doc.toString()),
+      sql: Base64.encode(sql),
       sqlVariableDetails: JSON.stringify(state.variables)
     },
     cb
