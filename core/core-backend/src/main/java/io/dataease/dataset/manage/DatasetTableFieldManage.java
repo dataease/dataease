@@ -284,7 +284,7 @@ public class DatasetTableFieldManage {
     }
 
     private void checkNameLength(String name) {
-        if (name.length() > 100) {
+        if (name != null && name.length() > 100) {
             DEException.throwException(Translator.get("i18n_name_limit_100"));
         }
     }
