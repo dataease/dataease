@@ -395,7 +395,7 @@ onMounted(() => {
   display: flex;
   .login-image-content {
     height: 100%;
-    width: 800px;
+    width: 45%;
   }
 
   .login-form-content {
@@ -589,13 +589,15 @@ onMounted(() => {
   }
 
   .login-image {
-    background: url(../../assets/login-desc.png) no-repeat;
-    background-size: cover;
+    /* background: url(../../assets/login-desc-de.png) no-repeat; */
+    background: url(../../assets/login-desc-de.png);
+    // background-size: cover;
+    background-size: 100% 100%;
     width: 100%;
     height: 100%;
-    @media only screen and (max-width: 1280px) {
+    /* @media only screen and (max-width: 1280px) {
       height: 380px;
-    }
+    } */
   }
   .login-image-de {
     background-size: cover;
