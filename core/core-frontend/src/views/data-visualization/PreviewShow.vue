@@ -19,6 +19,7 @@ const dvPreview = ref(null)
 const slideShow = ref(true)
 const requestStore = useRequestStoreWithOut()
 const permissionStore = usePermissionStoreWithOut()
+const dataInitState = ref(true)
 
 const props = defineProps({
   showPosition: {
@@ -29,6 +30,7 @@ const props = defineProps({
 })
 
 const loadCanvasData = (dvId, weight?) => {
+  dataInitState.value = false
   initCanvasData(
     dvId,
     function ({
@@ -45,6 +47,7 @@ const loadCanvasData = (dvId, weight?) => {
       state.dvInfo = dvInfo
       state.curPreviewGap = curPreviewGap
       dvMainStore.updateCurDvInfo(dvInfo)
+      dataInitState.value = true
       nextTick(() => {
         dvPreview.value.restore()
       })
@@ -114,7 +117,7 @@ const state = reactive({
           <div class="content-inner">
             <de-preview
               ref="dvPreview"
-              v-if="state.canvasStylePreview"
+              v-if="state.canvasStylePreview && dataInitState"
               :component-data="state.canvasDataPreview"
               :canvas-style-data="state.canvasStylePreview"
               :canvas-view-info="state.canvasViewInfoPreview"

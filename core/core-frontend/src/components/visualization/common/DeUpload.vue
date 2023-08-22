@@ -35,7 +35,7 @@
       :destroy-on-close="true"
       v-model="state.dialogVisible"
     >
-      <img style="width: 550" :src="state.dialogImageUrl" />
+      <img width="550" :src="state.dialogImageUrl" />
     </el-dialog>
   </el-row>
 </template>

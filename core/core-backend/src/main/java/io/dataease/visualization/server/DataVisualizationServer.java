@@ -13,6 +13,7 @@ import io.dataease.commons.exception.DataEaseException;
 import io.dataease.exception.DEException;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
+import io.dataease.utils.AuthUtils;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
 import io.dataease.visualization.dao.auto.entity.DataVisualizationInfo;
@@ -169,6 +170,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         wrapper.eq("name", request.getName().trim());
         wrapper.eq("node_type", request.getNodeType());
         wrapper.eq("type", request.getType());
+        wrapper.eq("org_id", AuthUtils.getUser().getDefaultOid());
         if (visualizationInfoMapper.exists(wrapper)) {
             DEException.throwException("当前名称已经存在");
         }

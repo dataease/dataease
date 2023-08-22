@@ -151,9 +151,9 @@
               width="600px"
               :append-to-body="true"
               :destroy-on-close="true"
-              v-model:visible="state.dialogVisible"
+              v-model="state.dialogVisible"
             >
-              <img width="100%" :src="state.dialogImageUrl" />
+              <img width="550" :src="state.dialogImageUrl" />
             </el-dialog>
           </el-col>
         </el-row>
