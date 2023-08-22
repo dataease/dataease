@@ -65,9 +65,12 @@ export const interactiveStore = defineStore('interactive', {
           const param: BusiTreeRequest = {
             busiFlag: busiFlagMap[index]
           }
-          this.setInteractive(param)
+          await this.setInteractive(param)
         }
       }
+    },
+    clear() {
+      this.data = {}
     }
   }
 })

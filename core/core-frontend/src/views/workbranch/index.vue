@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useI18n } from '@/hooks/web/useI18n'
-import { ref, shallowRef, reactive, onMounted } from 'vue'
+import { ref, shallowRef, reactive } from 'vue'
 import type { TabsPaneContext } from 'element-plus-secondary'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
 import imgtest from '@/assets/img/dataease-10000Star.jpg'
@@ -10,8 +10,6 @@ import { useRequestStoreWithOut } from '@/store/modules/request'
 import { findRecent } from '@/api/visualization/dataVisualization'
 import { useRouter } from 'vue-router'
 import dayjs from 'dayjs'
-import { interactiveStoreWithOut } from '@/store/modules/interactive'
-const interactiveStore = interactiveStoreWithOut()
 const { resolve } = useRouter()
 const permissionStore = usePermissionStoreWithOut()
 const requestStore = useRequestStoreWithOut()
@@ -115,10 +113,6 @@ const preview = ({ id }) => {
 }
 
 const activeCommand = ref('all_types')
-
-onMounted(async () => {
-  await interactiveStore.initInteractive(true)
-})
 </script>
 
 <template>
