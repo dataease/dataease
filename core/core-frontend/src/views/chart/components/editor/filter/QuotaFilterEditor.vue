@@ -88,34 +88,38 @@ init()
 
 <template>
   <el-col>
-    <div style="display: flex; padding: 10px 0">
-      <el-button circle size="small" class="circle-button" @click="addFilter">
-        <template #icon>
-          <Icon name="icon_add_outlined"></Icon>
-        </template>
-      </el-button>
-      <el-radio-group
-        v-show="item.filter && item.filter.length > 1"
+    <div
+      v-show="item.filter && item.filter.length > 0"
+      style="display: flex; padding: 10px 0; align-items: center"
+    >
+      <span>{{ t('chart.conform_below') }}</span>
+      <el-select
         v-model="state.logic"
-        style="margin-left: 10px"
         @change="logicChange"
+        size="small"
+        style="width: 60px; margin: 0 6px"
       >
-        <el-radio-button label="and">{{ t('chart.and') }}</el-radio-button>
-        <el-radio-button label="or">{{ t('chart.or') }}</el-radio-button>
-      </el-radio-group>
+        <el-option :label="t('chart.logic_and')" value="and" />
+        <el-option :label="t('chart.logic_or')" value="or" />
+      </el-select>
+      <span>{{ t('chart.addition') }}</span>
     </div>
 
-    <div style="max-height: 50vh; overflow-y: auto">
-      <el-row v-for="(f, index) in item.filter" :key="index" class="filter-item">
-        <el-col :span="4">
-          <span>
-            {{ item.name }}
-            <span v-show="item.summary && item.summary !== ''">
-              ({{ t('chart.' + item.summary) }})
-            </span>
+    <div
+      style="max-height: 50vh; overflow-y: auto"
+      v-show="item.filter && item.filter.length > 0"
+      class="addition-style"
+    >
+      <el-col style="margin: 0 10px">
+        <span>
+          {{ item.name }}
+          <span v-show="item.summary && item.summary !== ''">
+            ({{ t('chart.' + item.summary) }})
           </span>
-        </el-col>
-        <el-col :span="8">
+        </span>
+      </el-col>
+      <el-row v-for="(f, index) in item.filter" :key="index" class="filter-item">
+        <el-col :span="9">
           <el-select v-model="f.term">
             <el-option-group v-for="(group, idx) in state.options" :key="idx" :label="group.label">
               <el-option
@@ -127,7 +131,7 @@ init()
             </el-option-group>
           </el-select>
         </el-col>
-        <el-col :span="6">
+        <el-col :span="14">
           <el-input
             v-show="!f.term.includes('null')"
             v-model="f.value"
@@ -136,8 +140,8 @@ init()
             clearable
           />
         </el-col>
-        <el-col :span="6">
-          <el-button type="text" circle style="float: right" @click="removeFilter(index)">
+        <el-col :span="1">
+          <el-button class="btn-delete" type="text" circle @click="removeFilter(index)">
             <template #icon>
               <Icon name="icon_delete-trash_outlined"></Icon>
             </template>
@@ -145,15 +149,17 @@ init()
         </el-col>
       </el-row>
     </div>
+    <el-button text class="circle-button" @click="addFilter" style="margin-top: 10px">
+      <Icon name="icon_add_outlined" style="width: 14px"></Icon>
+      {{ t('chart.add_addition') }}
+    </el-button>
   </el-col>
 </template>
 
 <style lang="less" scoped>
 .filter-item {
   width: 100%;
-  border-radius: 4px;
-  border: 1px solid #dcdfe6;
-  padding: 4px 14px;
+  padding: 4px 10px;
   margin-bottom: 10px;
   display: flex;
   justify-content: left;
@@ -174,5 +180,13 @@ span {
 .el-select-dropdown__item {
   padding: 0 20px;
   font-size: 12px;
+}
+
+.addition-style {
+  padding: 10px;
+  background: #f5f6f7;
+}
+.btn-delete {
+  min-width: auto !important;
 }
 </style>

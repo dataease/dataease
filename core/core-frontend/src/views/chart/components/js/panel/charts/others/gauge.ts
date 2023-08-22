@@ -28,7 +28,7 @@ export class Gauge extends G2PlotChartView<GaugeOptions, G2Gauge> {
   propertyInner: EditorPropertyInner = {
     'background-overall-component': ['all'],
     'basic-style-selector': ['colors', 'alpha', 'gaugeStyle', 'gradient'],
-    'label-selector': ['fontSize', 'color'],
+    'label-selector': ['fontSize', 'color', 'gaugeLabelFormatter'],
     'title-selector': [
       'title',
       'fontSize',

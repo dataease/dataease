@@ -25,6 +25,11 @@ export class TableNormal extends S2ChartView<TableSheet> {
     }
   }
 
+  setupDefaultOptions(chart: ChartObj): ChartObj {
+    chart.xAxis = []
+    return chart
+  }
+
   drawChart(drawOption: S2DrawOptions<TableSheet>): TableSheet {
     const { container, chart } = drawOption
     const containerDom = document.getElementById(container)

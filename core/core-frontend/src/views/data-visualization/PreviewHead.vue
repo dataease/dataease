@@ -23,7 +23,7 @@ const download = () => {
 }
 
 const dvEdit = () => {
-  const baseUrl = dvInfo.value.type === 'dataV' ? '#/dvCanvas/?dvId=' : '#/dashboard/?resourceId='
+  const baseUrl = dvInfo.value.type === 'dataV' ? '#/dvCanvas?dvId=' : '#/dashboard?resourceId='
   window.open(baseUrl + dvInfo.value.id, '_blank')
 }
 </script>

@@ -34,6 +34,9 @@ declare interface Chart {
   datasetMode: 0 | 1
   datasourceType: string
   totalItems: number
+  tableId: number
+  resultMode: string
+  resultCount: number
 }
 declare type CustomAttr = DeepPartial<ChartAttr> | JSONString<DeepPartial<ChartAttr>>
 declare type CustomStyle = DeepPartial<ChartStyle> | JSONString<DeepPartial<ChartStyle>>

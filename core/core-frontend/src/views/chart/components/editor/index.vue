@@ -114,7 +114,9 @@ const state = reactive({
     id: view.value.customAttr.map.id,
     name: ''
   },
-  areaId: view.value.customAttr.map.id
+  areaId: view.value.customAttr.map.id,
+  chartTypeOptions: [],
+  useless: null
 })
 
 watch(
@@ -155,12 +157,14 @@ const chartViewInstance = computed(() => {
 const showAxis = (axis: AxisType) => chartViewInstance.value?.axis?.includes(axis)
 watch(
   () => view.value.type,
-  () => {
+  newVal => {
     if (showAxis('area') && !state.worldTree?.length) {
       getWorldTree().then(res => {
         state.worldTree = [res.data]
       })
     }
+    state.chartTypeOptions = [getViewConfig(newVal)]
+    state.useless = newVal
   },
   { immediate: true }
 )
@@ -875,37 +879,47 @@ const autoInsert = element => {
                   <div class="drag_main_area attr-style theme-border-class">
                     <el-row style="height: 100%">
                       <div style="height: calc(100% - 80px); overflow: auto">
-                        <el-row v-if="props.themes !== 'dark'" class="chart_type_area padding-lr">
-                          <span class="switch-chart" :class="'switch-chart-' + themes">
-                            <span>{{ t('chart.switch_chart') }}</span>
-                            <span style="float: right; width: 140px">
-                              <el-popover
-                                placement="bottom-end"
-                                width="434"
-                                trigger="click"
-                                :append-to-body="true"
-                                :popper-class="'chart-type-style-' + themes"
+                        <el-row v-if="props.themes !== 'dark'" class="drag-data padding-lr">
+                          <span class="data-area-label">{{ t('chart.switch_chart') }}</span>
+                          <el-popover
+                            placement="bottom-end"
+                            width="434"
+                            trigger="click"
+                            :append-to-body="true"
+                            :popper-class="'chart-type-style-' + themes"
+                            :persistent="false"
+                          >
+                            <template #reference>
+                              <el-select
+                                popper-class="chart-type-hide-options"
+                                class="chart-type-select"
+                                v-model="state.useless"
+                                size="small"
                               >
-                                <template #reference>
-                                  <el-button
-                                    :effect="themes"
-                                    size="small"
-                                    style="width: 100%; padding: 0"
-                                  >
-                                    {{ t('chart.change_chart_type') }}
-                                    <i class="el-icon-caret-bottom" />
-                                  </el-button>
-                                </template>
-                                <template #default>
-                                  <chart-type
-                                    :themes="themes"
-                                    :type="view.type"
-                                    @onTypeChange="onTypeChange"
+                                <template #prefix>
+                                  <Icon
+                                    class-name="chart-type-select-icon"
+                                    :name="state.chartTypeOptions[0].icon"
                                   />
                                 </template>
-                              </el-popover>
-                            </span>
-                          </span>
+                                <template #default>
+                                  <el-option
+                                    v-for="item in state.chartTypeOptions"
+                                    :key="item.value"
+                                    :label="item.title"
+                                    :value="item.value"
+                                  />
+                                </template>
+                              </el-select>
+                            </template>
+                            <template #default>
+                              <chart-type
+                                :themes="themes"
+                                :type="view.type"
+                                @onTypeChange="onTypeChange"
+                              />
+                            </template>
+                          </el-popover>
                         </el-row>
                         <!--area-->
                         <el-row class="padding-lr drag-data" v-show="showAxis('area')">
@@ -915,6 +929,7 @@ const autoInsert = element => {
                           <div class="area-tree-select">
                             <el-tree-select
                               v-model="state.areaId"
+                              :effect="themes"
                               :data="state.worldTree"
                               :props="treeProps"
                               :filterNodeMethod="filterNode"
@@ -1263,8 +1278,11 @@ const autoInsert = element => {
                                 ><span>{{ t('chart.result_mode_all') }}</span></el-radio
                               >
                               <el-radio label="custom">
-                                <el-input
+                                <el-input-number
+                                  :min="1"
+                                  :controls="false"
                                   :effect="themes"
+                                  :step-strictly="true"
                                   v-model="view.resultCount"
                                   class="result-count"
                                   size="small"
@@ -1583,7 +1601,7 @@ const autoInsert = element => {
       :title="t('chart.add_filter')"
       :visible="state.quotaFilterEdit"
       :show-close="false"
-      width="800px"
+      width="600px"
       class="dialog-css"
     >
       <quota-filter-editor :item="state.quotaItem" />
@@ -1600,7 +1618,7 @@ const autoInsert = element => {
       :title="t('chart.add_filter')"
       :visible="state.resultFilterEdit"
       :show-close="false"
-      width="800px"
+      width="600px"
       class="dialog-css"
     >
       <result-filter-editor :chart="state.chartForFilter" :item="state.filterItem" />
@@ -2192,11 +2210,31 @@ span {
     display: block;
   }
 }
+
+.chart-type-select {
+  width: 100%;
+  margin-top: 8px;
+  :deep(.ed-select__prefix--light) {
+    padding: 0;
+    margin: 0;
+    border: none;
+    .chart-type-select-icon {
+      width: 23px;
+      height: 16px;
+    }
+  }
+  :deep(.ed-input) {
+    height: 28px;
+  }
+}
 </style>
 
 <style lang="less">
 .ed-select-dropdown__item {
   display: flex;
   align-items: center;
+}
+.chart-type-hide-options {
+  display: none;
 }
 </style>
