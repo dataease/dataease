@@ -252,15 +252,23 @@ const closeEditCalc = () => {
 }
 
 const confirmEditCalc = () => {
-  calcEdit.value.setFieldForm()
-  const obj = cloneDeep(calcEdit.value.fieldForm)
-  const result = allfields.value.findIndex(ele => obj.id === ele.id)
-  if (result !== -1) {
-    allfields.value.splice(result, 1, obj)
-  } else {
-    allfields.value.push(obj)
-  }
-  editCalcField.value = false
+  calcEdit.value.formField.validate(val => {
+    if (val) {
+      calcEdit.value.setFieldForm()
+      if (!calcEdit.value.fieldForm.originName.trim()) {
+        ElMessage.error('表达式不能为空!')
+        return
+      }
+      const obj = cloneDeep(calcEdit.value.fieldForm)
+      const result = allfields.value.findIndex(ele => obj.id === ele.id)
+      if (result !== -1) {
+        allfields.value.splice(result, 1, obj)
+      } else {
+        allfields.value.push(obj)
+      }
+      editCalcField.value = false
+    }
+  })
 }
 
 const generateColumns = (arr: Field[]) =>

@@ -142,10 +142,13 @@ const initFunction = () => {
   })
 }
 
+const formField = ref()
+
 defineExpose({
   initEdit,
   setFieldForm,
-  fieldForm
+  fieldForm,
+  formField
 })
 
 initFunction()
@@ -156,8 +159,22 @@ initFunction()
     <div class="calcu-cont" style="height: 544px">
       <div style="flex: 1">
         <div style="max-width: 488px">
-          <el-form ref="form" :model="fieldForm" label-position="top">
-            <el-form-item :label="t('dataset.field_edit_name')">
+          <el-form
+            require-asterisk-position="right"
+            ref="formField"
+            :model="fieldForm"
+            label-position="top"
+          >
+            <el-form-item
+              prop="name"
+              :rules="[
+                {
+                  required: true,
+                  message: t('dataset.input_edit_name')
+                }
+              ]"
+              :label="t('dataset.field_edit_name')"
+            >
               <el-input v-model="fieldForm.name" :placeholder="t('dataset.input_edit_name')" />
             </el-form-item>
           </el-form>
