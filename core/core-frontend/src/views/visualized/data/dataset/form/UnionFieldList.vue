@@ -3,6 +3,7 @@ import { ref, PropType, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { propTypes } from '@/utils/propTypes'
 import { ElTable } from 'element-plus-secondary'
+import { fieldType } from '@/utils/attr'
 export interface Field {
   checked: boolean
   deExtractType: number
@@ -22,9 +23,6 @@ const props = defineProps({
 })
 const emit = defineEmits(['checkedFields'])
 
-const fieldType = (deType: number) => {
-  return ['text', 'time', 'value', 'value', 'location'][deType]
-}
 const multipleTableRef = ref<InstanceType<typeof ElTable>>()
 const search = ref('')
 const checkAll = ref(false)
@@ -130,8 +128,8 @@ watch(
           <template #default="scope">
             <el-icon>
               <Icon
-                :className="`field-icon-${fieldType(scope.row.deType)}`"
-                :name="`field_${fieldType(scope.row.deType)}`"
+                :className="`field-icon-${fieldType[scope.row.deType]}`"
+                :name="`field_${fieldType[scope.row.deType]}`"
               ></Icon>
             </el-icon>
             {{ scope.row.originName }}

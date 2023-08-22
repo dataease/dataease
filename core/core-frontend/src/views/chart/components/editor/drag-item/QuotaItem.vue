@@ -6,10 +6,7 @@ import { getItemType, resetValueFormatter } from '@/views/chart/components/edito
 import { Delete, Edit, Filter, Memo } from '@element-plus/icons-vue'
 import { quotaViews } from '@/views/chart/components/js/util'
 import { SUPPORT_Y_M } from '@/views/chart/components/editor/util/chart'
-
-const fieldType = (deType: number) => {
-  return ['text', 'time', 'value', 'value', 'location'][deType]
-}
+import { fieldType } from '@/utils/attr'
 
 const { t } = useI18n()
 
@@ -288,8 +285,8 @@ getItemTagType()
         <span style="display: flex">
           <el-icon>
             <Icon
-              :className="`field-icon-${fieldType(item.deType)}`"
-              :name="`field_${fieldType(item.deType)}`"
+              :className="`field-icon-${fieldType[item.deType]}`"
+              :name="`field_${fieldType[item.deType]}`"
             ></Icon>
           </el-icon>
         </span>

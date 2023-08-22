@@ -2,6 +2,7 @@
 import { PropType, ref } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import type { Field } from './UnionFieldList.vue'
+import { fieldType } from '@/utils/attr'
 // type UnionType = 'left' | 'right' | 'inner'
 const unionTypeFromParent = ref('left')
 const { t } = useI18n()
@@ -28,9 +29,6 @@ const props = defineProps({
     default: () => ({})
   }
 })
-const fieldType = (deType: number) => {
-  return ['text', 'time', 'value', 'value', 'location'][deType]
-}
 
 const unionOptions = [
   { label: t('dataset.left_join'), value: 'left' },
@@ -113,8 +111,8 @@ const emit = defineEmits(['changeUnionFields', 'changeUnionType'])
               >
                 <el-icon>
                   <Icon
-                    :name="`field_${fieldType(item.deType)}`"
-                    :className="`field-icon-${fieldType(item.deType)}`"
+                    :name="`field_${fieldType[item.deType]}`"
+                    :className="`field-icon-${fieldType[item.deType]}`"
                   ></Icon>
                 </el-icon>
                 <span>
@@ -144,8 +142,8 @@ const emit = defineEmits(['changeUnionFields', 'changeUnionType'])
               >
                 <el-icon>
                   <Icon
-                    :name="`field_${fieldType(item.deType)}`"
-                    :className="`field-icon-${fieldType(item.deType)}`"
+                    :name="`field_${fieldType[item.deType]}`"
+                    :className="`field-icon-${fieldType[item.deType]}`"
                   ></Icon>
                 </el-icon>
                 <span>

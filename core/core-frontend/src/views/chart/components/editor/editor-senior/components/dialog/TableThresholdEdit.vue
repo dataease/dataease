@@ -2,12 +2,9 @@
 import { reactive } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL } from '../../../util/chart'
+import { fieldType } from '@/utils/attr'
 
 const { t } = useI18n()
-
-const fieldType = (deType: number) => {
-  return ['text', 'time', 'value', 'value', 'location'][deType]
-}
 
 const props = defineProps({
   chart: {
@@ -287,8 +284,8 @@ init()
               <span style="float: left">
                 <el-icon>
                   <Icon
-                    :className="`field-icon-${fieldType(fieldOption.deType)}`"
-                    :name="`field_${fieldType(fieldOption.deType)}`"
+                    :className="`field-icon-${fieldType[fieldOption.deType]}`"
+                    :name="`field_${fieldType[fieldOption.deType]}`"
                   ></Icon>
                 </el-icon>
               </span>

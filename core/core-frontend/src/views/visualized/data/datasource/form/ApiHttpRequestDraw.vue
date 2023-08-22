@@ -10,6 +10,7 @@ import { Base64 } from 'js-base64'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import { checkApiItem } from '@/api/datasource'
 import { cloneDeep } from 'lodash-es'
+import { fieldType } from '@/utils/attr'
 
 export interface Field {
   name: string
@@ -111,9 +112,7 @@ const rule = reactive<FormRules>({
     }
   ]
 })
-const fieldType = (deType: number) => {
-  return ['text', '', 'value', 'value'][deType]
-}
+
 const initApiItem = (val: ApiItem) => {
   Object.assign(apiItem, val)
   edit_api_item.value = true
@@ -478,8 +477,8 @@ defineExpose({
                   <template #prefix>
                     <el-icon>
                       <Icon
-                        :name="`field_${fieldType(scope.row.deType)}`"
-                        :className="`field-icon-${fieldType(scope.row.deType)}`"
+                        :name="`field_${fieldType[scope.row.deType]}`"
+                        :className="`field-icon-${fieldType[scope.row.deType]}`"
                       ></Icon>
                     </el-icon>
                   </template>
@@ -492,8 +491,8 @@ defineExpose({
                     <span style="float: left">
                       <el-icon>
                         <Icon
-                          :name="`field_${fieldType(scope.row.deType)}`"
-                          :className="`field-icon-${fieldType(scope.row.deType)}`"
+                          :name="`field_${fieldType[scope.row.deType]}`"
+                          :className="`field-icon-${fieldType[scope.row.deType]}`"
                         ></Icon>
                       </el-icon>
                     </span>
