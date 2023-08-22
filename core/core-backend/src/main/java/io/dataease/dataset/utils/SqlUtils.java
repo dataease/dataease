@@ -62,7 +62,16 @@ public class SqlUtils {
         } else if (sqlNode.getKind() == SELECT) {
             SqlSelect sqlKind = (SqlSelect) sqlNode;
 
+            // 解析from
             addTableSchema(sqlKind.getFrom(), true, schema, config);
+
+            // 解析where
+            SqlBasicCall where = (SqlBasicCall) sqlKind.getWhere();
+            if (where != null && where.getOperandList().size() >= 2) {
+                for (int i = 0; i < where.getOperandList().size(); i++) {
+                    addTableSchema(where.getOperandList().get(i), fromOrJoin, schema, config);
+                }
+            }
         } else if (sqlNode.getKind() == UNION) {
             SqlBasicCall sqlKind = (SqlBasicCall) sqlNode;
             // 使用union，至少会有2个子SQL，否则语法不正确
