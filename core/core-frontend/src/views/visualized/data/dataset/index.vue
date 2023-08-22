@@ -102,8 +102,7 @@ const resourceCreate = (pid, name) => {
     ...bashResourceInfo
   }
   save(canvasInfo).then(() => {
-    const baseUrl =
-      curCanvasType.value === 'dataV' ? '#/dvCanvas/?dvId=' : '#/dashboard/?resourceId='
+    const baseUrl = curCanvasType.value === 'dataV' ? '#/dvCanvas?dvId=' : '#/dashboard?resourceId='
     window.open(baseUrl + newResourceId, '_blank')
   })
 }
@@ -486,7 +485,7 @@ const filterNode = (value: string, data: BusiTreeNode) => {
     <div class="dataset-content">
       <template v-if="!state.datasetTree.length">
         <empty-background description="暂无数据集" img-type="none">
-          <el-button @click="() => createDataset()" type="primary">
+          <el-button v-if="rootManage" @click="() => createDataset()" type="primary">
             <template #icon>
               <Icon name="icon_add_outlined"></Icon>
             </template>

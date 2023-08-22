@@ -1052,7 +1052,13 @@ export default {
     basic_style: '基础样式',
     table_header: '表头',
     table_cell: '单元格',
-    table_total: '汇总'
+    table_total: '汇总',
+    slc_logic: '选择逻辑关系',
+    add_addition: '添加条件',
+    logic_and: '所有',
+    logic_or: '任一',
+    conform_below: '符合以下',
+    addition: '条件'
   },
   dataset: {
     scope_edit: '仅编辑时生效',

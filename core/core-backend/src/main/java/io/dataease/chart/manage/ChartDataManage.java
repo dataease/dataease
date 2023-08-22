@@ -6,9 +6,12 @@ import io.dataease.api.chart.request.ChartDrillRequest;
 import io.dataease.api.chart.request.ChartExtRequest;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.union.model.SQLMeta;
+import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
+import io.dataease.api.permissions.auth.dto.BusiPerCheckDTO;
 import io.dataease.api.permissions.dataset.dto.DataSetRowPermissionsTreeDTO;
 import io.dataease.chart.constant.ChartConstants;
 import io.dataease.chart.utils.ChartDataBuild;
+import io.dataease.constant.AuthEnum;
 import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import io.dataease.dataset.manage.DatasetGroupManage;
 import io.dataease.dataset.manage.DatasetSQLManage;
@@ -32,6 +35,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -58,6 +62,8 @@ public class ChartDataManage {
     private ChartViewManege chartViewManege;
     @Resource
     private PermissionManage permissionManage;
+    @Autowired(required = false)
+    private InteractiveAuthApi interactiveAuthApi;
 
     private static Logger logger = LoggerFactory.getLogger(ChartDataManage.class);
 
@@ -120,6 +126,13 @@ public class ChartDataManage {
         DatasetGroupInfoDTO table = datasetGroupManage.get(view.getTableId(), null);
         if (table == null) {
             DEException.throwException(ResultCode.DATA_IS_WRONG.code(), Translator.get("i18n_no_ds"));
+        }
+        // check permission
+        if (interactiveAuthApi != null) {
+            BusiPerCheckDTO dto = new BusiPerCheckDTO();
+            dto.setId(table.getId());
+            dto.setAuthEnum(AuthEnum.READ);
+            interactiveAuthApi.checkAuth(dto);
         }
 
         // column permission

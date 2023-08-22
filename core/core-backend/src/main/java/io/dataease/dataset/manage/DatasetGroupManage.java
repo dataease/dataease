@@ -72,7 +72,9 @@ public class DatasetGroupManage {
                 CoreDatasetGroup coreDatasetGroup = coreDatasetGroupMapper.selectById(datasetGroupInfoDTO.getId());
                 datasetGroupInfoDTO.setPid(coreDatasetGroup.getPid());
             }
-            checkName(datasetGroupInfoDTO);
+            if (datasetGroupInfoDTO.getPid() != 0 || userApi == null) {
+                checkName(datasetGroupInfoDTO);
+            }
             if (StringUtils.equalsIgnoreCase(datasetGroupInfoDTO.getNodeType(), leafType)) {
                 if (!rename && ObjectUtils.isEmpty(datasetGroupInfoDTO.getAllFields())) {
                     DEException.throwException(Translator.get("i18n_no_fields"));
@@ -218,7 +220,7 @@ public class DatasetGroupManage {
 
     public void checkName(DatasetGroupInfoDTO dto) {
         QueryWrapper<CoreDatasetGroup> wrapper = new QueryWrapper<>();
-        if (ObjectUtils.isNotEmpty(dto.getPid()) && dto.getPid() != 0) {
+        if (ObjectUtils.isNotEmpty(dto.getPid())) {
             wrapper.eq("pid", dto.getPid());
         }
         if (StringUtils.isNotEmpty(dto.getName())) {
