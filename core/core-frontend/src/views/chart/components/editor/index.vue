@@ -46,7 +46,8 @@ const { t } = useI18n()
 const loading = ref(false)
 const tabActive = ref('data')
 const tabActiveVQuery = ref('style')
-
+const datasetSelector = ref(null)
+const curDatasetWeight = ref(0)
 const renameForm = ref<FormInstance>()
 
 const props = defineProps({
@@ -123,6 +124,18 @@ watch(
   [() => props.view.tableId],
   () => {
     getFields(props.view.tableId, props.view.id)
+  },
+  { deep: true }
+)
+
+watch(
+  [() => view.value['tableId']],
+  () => {
+    const nodeId = view.value['tableId']
+    const node = datasetSelector?.value.getNode(nodeId)
+    if (node?.data) {
+      curDatasetWeight.value = node.data.weight
+    }
   },
   { deep: true }
 )
@@ -1354,6 +1367,8 @@ const autoInsert = element => {
           </el-row>
           <el-row class="dataset-select">
             <el-tree-select
+              ref="datasetSelector"
+              node-key="id"
               v-model="view.tableId"
               :data="datasetTree"
               :props="dsSelectProps"
@@ -1377,6 +1392,7 @@ const autoInsert = element => {
             <el-icon
               :style="{ color: '#a6a6a6', cursor: 'pointer', marginLeft: '6px' }"
               @click="editDs"
+              v-if="curDatasetWeight >= 7"
             >
               <Icon name="icon_edit_outlined" class="el-icon-arrow-down el-icon-delete"></Icon>
             </el-icon>

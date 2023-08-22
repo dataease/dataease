@@ -49,6 +49,7 @@ export interface Node {
   editType?: number
   configuration?: Configuration
   apiConfiguration?: ApiConfiguration[]
+  weight?: number
 }
 
 const { t } = useI18n()
@@ -263,7 +264,8 @@ const defaultInfo = {
   fileName: '',
   configuration: null,
   syncSetting: null,
-  apiConfiguration: []
+  apiConfiguration: [],
+  weight: 0
 }
 const nodeInfo = reactive<Node>(cloneDeep(defaultInfo))
 const infoList = computed(() => {
@@ -301,27 +303,7 @@ const dsLoading = ref(false)
 const listDs = () => {
   rawDatasourceList.value = []
   dsLoading.value = true
-  /* listDatasources({}).then(array => {
-    convertConfig(array)
-    state.datasourceTree = array
-  }) */
   const request = { busiFlag: 'datasource' } as BusiTreeRequest
-  /* await interactiveStore.setInteractive(request)
-  const interactiveData = interactiveStore.getDatasource
-  const nodeData = interactiveData.treeNodes
-  rootManage.value = interactiveData.rootManage
-  if (nodeData.length && nodeData[0]['id'] === '0' && nodeData[0]['name'] === 'root') {
-    state.datasourceTree = nodeData[0]['children'] || []
-  } else {
-    state.datasourceTree = nodeData
-  }
-  dsLoading.value = false
-  updateTreeExpand()
-  const id = nodeInfo.id
-  if (!!id) {
-    Object.assign(nodeInfo, cloneDeep(defaultInfo))
-    dfsDatasourceTree(state.datasourceTree, id)
-  } */
   interactiveStore
     .setInteractive(request)
     .then(res => {
@@ -440,7 +422,8 @@ const handleNodeClick = data => {
       type,
       configuration,
       syncSetting,
-      apiConfiguration: apiConfigurationStr
+      apiConfiguration: apiConfigurationStr,
+      weight: data.weight
     })
     activeTab.value = ''
     activeName.value = 'config'
@@ -626,7 +609,7 @@ const defaultProps = {
               <Icon :name="getDsIconName(data)"></Icon>
             </el-icon>
             <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
-            <div class="icon-more">
+            <div class="icon-more" v-if="data.weight >= 7">
               <handle-more
                 @handle-command="cmd => handleDatasourceTree(cmd, data)"
                 :menu-list="datasetTypeList"
@@ -675,7 +658,7 @@ const defaultProps = {
               ></dataset-detail>
             </el-popover>
             <div class="right-btn">
-              <el-button secondary @click="createDataset(null)">
+              <el-button secondary @click="createDataset(null)" v-permission="['dataset']">
                 <template #icon>
                   <Icon name="icon_dataset_outlined"></Icon>
                 </template>
@@ -696,7 +679,7 @@ const defaultProps = {
                   追加数据
                 </el-button>
               </template>
-              <el-button v-else @click="editDatasource()" type="primary">
+              <el-button v-else-if="nodeInfo.weight >= 7" @click="editDatasource()" type="primary">
                 <template #icon>
                   <Icon name="icon_edit_outlined"></Icon>
                 </template>
@@ -748,7 +731,11 @@ const defaultProps = {
               >
                 <template #default="scope">
                   <el-tooltip effect="dark" content="新建数据集" placement="top">
-                    <el-button @click.stop="createDataset(scope.row.name)" text>
+                    <el-button
+                      @click.stop="createDataset(scope.row.name)"
+                      text
+                      v-permission="['dataset']"
+                    >
                       <template #icon>
                         <Icon name="icon_dataset_outlined"></Icon>
                       </template>
