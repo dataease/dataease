@@ -1238,8 +1238,18 @@ const afterInitOk = func => {
     }
   }, 100)
 }
+
+const forceComputed = () => {
+  // 这里强制触发复制添加计算，因为位置计算使用的是method 并没有内部样式属性变化
+  // 在一些情况下无法触发重新计算导致位置偏移 cellHeight 属性是在监控中的，这里进行强制计算
+  cellHeight.value = cellHeight.value + 0.001
+  nextTick(function () {
+    cellHeight.value = cellHeight.value - 0.001
+  })
+}
 const addItemBox = item => {
   syncShapeItemStyle(item, baseWidth.value, baseHeight.value)
+  forceComputed()
   nextTick(function () {
     addItem(item, componentData.value.length - 1)
   })
