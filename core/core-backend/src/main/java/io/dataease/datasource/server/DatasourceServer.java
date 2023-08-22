@@ -11,6 +11,8 @@ import io.dataease.api.ds.vo.*;
 import io.dataease.api.permissions.user.api.UserApi;
 import io.dataease.api.permissions.user.vo.UserFormVO;
 import io.dataease.commons.constants.TaskStatus;
+import io.dataease.dataset.dao.auto.entity.CoreDatasetTable;
+import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableMapper;
 import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import io.dataease.dataset.manage.DatasetDataManage;
 import io.dataease.dataset.utils.TableUtils;
@@ -53,6 +55,8 @@ public class DatasourceServer implements DatasourceApi {
     @Resource
     private CoreDatasourceMapper datasourceMapper;
     @Resource
+    private CoreDatasetTableMapper coreDatasetTableMapper;
+    @Resource
     private EngineServer engineServer;
     @Resource
     private DatasourceTaskServer datasourceTaskServer;
@@ -87,12 +91,12 @@ public class DatasourceServer implements DatasourceApi {
                     DEException.throwException("pid can not equal to id.");
                 }
                 CoreDatasource sourceData = datasourceMapper.selectById(dataSourceDTO.getId());
-                checkName(dataSourceDTO.getName(), sourceData.getType(), dataSourceDTO.getId(), dataSourceDTO.getPid());
+                checkName(dataSourceDTO.getName(), sourceData.getType(), sourceData.getId(), sourceData.getPid());
                 dataSourceManage.move(dataSourceDTO);
             }
             case "rename" -> {
                 CoreDatasource datasource = datasourceMapper.selectById(dataSourceDTO.getId());
-                checkName(dataSourceDTO.getName(), datasource.getType(), dataSourceDTO.getId(), dataSourceDTO.getPid());
+                checkName(dataSourceDTO.getName(), datasource.getType(), datasource.getId(), datasource.getPid());
                 datasource.setName(dataSourceDTO.getName());
                 dataSourceManage.innerEdit(datasource);
             }
@@ -360,6 +364,15 @@ public class DatasourceServer implements DatasourceApi {
         if (ObjectUtils.isEmpty(coreDatasource)) {
             return;
         }
+        if (!coreDatasource.getType().equals(DatasourceConfiguration.DatasourceType.folder.name())) {
+            QueryWrapper<CoreDatasetTable> wrapper = new QueryWrapper<>();
+            wrapper.eq("datasource_id", coreDatasource.getId());
+            List<CoreDatasetTable> coreDatasetTables = coreDatasetTableMapper.selectList(wrapper);
+            if(!CollectionUtils.isEmpty(coreDatasetTables)){
+                HashSet<Long> set = new HashSet<>(coreDatasetTables.stream().map(CoreDatasetTable::getDatasetGroupId).collect(Collectors.toList()));
+                DEException.throwException(set.size() + " 个数据集正在使用，不能删除!");
+            }
+        }
         if (coreDatasource.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name())) {
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(coreDatasource);
@@ -379,6 +392,8 @@ public class DatasourceServer implements DatasourceApi {
             }
             datasourceTaskServer.deleteByDSId(datasourceId);
         }
+
+
         datasourceMapper.deleteById(datasourceId);
         if (coreDatasource.getType().equals(DatasourceConfiguration.DatasourceType.folder.name())) {
             QueryWrapper<CoreDatasource> wrapper = new QueryWrapper<>();
@@ -506,6 +521,7 @@ public class DatasourceServer implements DatasourceApi {
         if (pid != null) {
             queryWrapper.eq("pid", pid);
         }
+
         if (!CollectionUtils.isEmpty(datasourceMapper.selectList(queryWrapper))) {
             DEException.throwException(Translator.get("i18n_ds_name_exists"));
         }
