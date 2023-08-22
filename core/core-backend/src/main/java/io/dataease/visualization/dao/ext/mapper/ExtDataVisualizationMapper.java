@@ -1,6 +1,7 @@
 package io.dataease.visualization.dao.ext.mapper;
 
 import io.dataease.api.visualization.vo.DataVisualizationBaseVO;
+import io.dataease.api.visualization.vo.DataVisualizationVO;
 import io.dataease.chart.dao.auto.entity.CoreChartView;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -21,4 +22,6 @@ public interface ExtDataVisualizationMapper {
     void dvCopy(@Param("sourceDvId") Long sourceDvId,@Param("newDvId") Long newDvId,@Param("copyId") Long copyId);
     void viewCopyWithDv(@Param("sourceDvId") Long sourceDvId,@Param("newDvId") Long newDvId,@Param("copyId") Long copyId);
     List<CoreChartView> findViewInfoByCopyId(@Param("copyId") Long copyId);
+
+    DataVisualizationVO findDvInfo(@Param("dvId") Long dvId);
 }

@@ -83,7 +83,7 @@ getItemTagType()
   <span class="item-style">
     <el-dropdown effect="dark" trigger="click" size="mini" @command="clickItem">
       <el-tag
-        class="item-axis"
+        class="item-axis father"
         :class="'editor-' + props.themes"
         :style="{ backgroundColor: tagType + '0a', border: '1px solid ' + tagType }"
       >
@@ -96,14 +96,20 @@ getItemTagType()
           </el-icon>
         </span>
         <span class="item-span-style" :title="item.name">{{ item.name }}</span>
-        <el-icon style="position: absolute; top: 7px; right: 24px; color: #a6a6a6; cursor: pointer">
+        <el-icon
+          class="child"
+          style="position: absolute; top: 7px; right: 24px; color: #a6a6a6; cursor: pointer"
+        >
           <Icon
             name="icon_delete-trash_outlined"
             class="el-icon-arrow-down el-icon-delete"
             @click="removeItem"
           ></Icon>
         </el-icon>
-        <el-icon style="position: absolute; top: 7px; right: 8px; color: #a6a6a6; cursor: pointer">
+        <el-icon
+          class="child"
+          style="position: absolute; top: 7px; right: 8px; color: #a6a6a6; cursor: pointer"
+        >
           <Icon name="icon_down_outlined-1" class="el-icon-arrow-down el-icon-delete"></Icon>
         </el-icon>
       </el-tag>
@@ -195,5 +201,13 @@ span {
   :deep(.ed-dropdown-menu__item) {
     height: 32px;
   }
+}
+
+.father .child {
+  visibility: hidden;
+}
+
+.father:hover .child {
+  visibility: visible;
 }
 </style>

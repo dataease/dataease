@@ -1,6 +1,7 @@
 // 公共样式
 import { deepCopy } from '@/utils/utils'
 import { guid } from '@/views/visualized/data/dataset/form/util'
+import { getViewConfig } from '@/views/chart/components/editor/util/chart'
 
 export const commonStyle = {
   rotate: 0,
@@ -238,6 +239,12 @@ export function findNewComponentFromList(componentName, innerType, curOriginThem
       }
     }
   })
+
+  if (componentName === 'UserView') {
+    const viewConfig = getViewConfig(innerType)
+    newComponent.name = viewConfig.title
+    newComponent.label = viewConfig.title
+  }
   return newComponent
 }
 

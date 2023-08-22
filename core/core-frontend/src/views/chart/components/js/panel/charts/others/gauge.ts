@@ -27,7 +27,7 @@ export class Gauge extends G2PlotChartView<GaugeOptions, G2Gauge> {
   ]
   propertyInner: EditorPropertyInner = {
     'background-overall-component': ['all'],
-    'basic-style-selector': ['colors', 'alpha', 'gaugeStyle'],
+    'basic-style-selector': ['colors', 'alpha', 'gaugeStyle', 'gradient'],
     'label-selector': ['fontSize', 'color'],
     'title-selector': [
       'title',
@@ -93,9 +93,7 @@ export class Gauge extends G2PlotChartView<GaugeOptions, G2Gauge> {
           }
         }
       }
-      let options = this.setupOptions(chart, initOptions)
-      options = this.configRange(chart, options, scale)
-
+      const options = this.setupOptions(chart, initOptions, scale)
       return new G2Gauge(container, options)
     }
   }
@@ -131,7 +129,8 @@ export class Gauge extends G2PlotChartView<GaugeOptions, G2Gauge> {
     return { ...options, ...tmp }
   }
 
-  private configRange(chart: Chart, options: GaugeOptions, scale = 1): GaugeOptions {
+  private configRange(chart: Chart, options: GaugeOptions, extra: any[]): GaugeOptions {
+    const [scale] = extra
     const range = [0]
     let index = 0
     let flag = false
@@ -246,8 +245,13 @@ export class Gauge extends G2PlotChartView<GaugeOptions, G2Gauge> {
     return { ...options, statistic }
   }
 
-  protected setupOptions(chart: Chart, options: GaugeOptions): GaugeOptions {
-    return flow(this.configTheme, this.configMisc, this.configLabel)(chart, options)
+  protected setupOptions(chart: Chart, options: GaugeOptions, ...extra: any[]): GaugeOptions {
+    return flow(
+      this.configTheme,
+      this.configMisc,
+      this.configLabel,
+      this.configRange
+    )(chart, options, extra)
   }
   constructor() {
     super('gauge', DEFAULT_DATA)

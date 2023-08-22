@@ -259,6 +259,7 @@ export const dvMainStore = defineStore('dataVisualization', {
         const chartViewInstance = chartViewManager.getChartView(newView.render, newView.type)
         if (chartViewInstance) {
           newView = chartViewInstance.setupDefaultOptions(newView)
+          newView['title'] = component.name
         }
         this.canvasViewInfo[component.id] = newView
       }
