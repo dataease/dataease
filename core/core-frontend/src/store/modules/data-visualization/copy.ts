@@ -84,6 +84,9 @@ export const copyStore = defineStore('copy', {
           data.style.top += 10
           data.style.left += 10
         }
+      } else {
+        // 向下移动一个高度矩阵单位
+        data.y = data.y + data.sizeY
       }
       // 旧-新ID映射关系
       const idMap = {}
