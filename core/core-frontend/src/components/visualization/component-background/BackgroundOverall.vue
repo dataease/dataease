@@ -141,6 +141,7 @@
               :class="{ disabled: state.uploadDisabled }"
               :on-preview="handlePictureCardPreview"
               :on-remove="handleRemove"
+              :before-upload="beforeUploadCheck"
               :http-request="upload"
               :file-list="state.fileList"
             >
@@ -171,7 +172,7 @@ import { storeToRefs } from 'pinia'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import eventBus from '@/utils/eventBus'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
-import { uploadFileResult } from '@/api/staticResource'
+import { beforeUploadCheck, uploadFileResult } from '@/api/staticResource'
 import { useI18n } from '@/hooks/web/useI18n'
 const dvMainStore = dvMainStoreWithOut()
 const { canvasStyleData, componentData, curComponent } = storeToRefs(dvMainStore)
