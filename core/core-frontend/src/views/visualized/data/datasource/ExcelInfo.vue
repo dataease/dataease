@@ -18,8 +18,8 @@ const del = () => {
       <Icon name="icon_excel"></Icon>
     </el-icon>
     <div class="info">
-      <p class="name">{{ name || '-' }}</p>
-      <p class="size">{{ size || '-' }}</p>
+      <p class="name ellipsis">{{ name || '-' }}</p>
+      <p class="size ellipsis">{{ size || '-' }}</p>
     </div>
     <el-icon v-if="showDel" @click="del" class="delete">
       <Icon name="icon_delete-trash_outlined"></Icon>
@@ -45,10 +45,13 @@ const del = () => {
     font-family: PingFang SC;
     font-style: normal;
     font-weight: 400;
+    width: 80%;
+
     .name {
       color: #1f2329;
       font-size: 14px;
       line-height: 22px;
+      width: 100%;
     }
 
     .size {

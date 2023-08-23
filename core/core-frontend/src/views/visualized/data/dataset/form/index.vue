@@ -420,6 +420,17 @@ const closeEditUnion = () => {
 const fieldUnion = ref()
 const confirmEditUnion = () => {
   const { node, parent } = fieldUnion.value
+
+  let unionFieldsLost = node.unionFields.some(ele => {
+    const { currentField, parentField } = ele
+    return !currentField || !parentField
+  })
+
+  if (unionFieldsLost) {
+    ElMessage.error('关联关系不正确!')
+    return
+  }
+
   setGuid(node.currentDsFields, node.id, node.datasourceId)
   setGuid(parent.currentDsFields, parent.id, parent.datasourceId)
   const top = cloneDeep(node)
