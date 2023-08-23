@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { Icon } from '@/components/icon-custom'
 import { ref } from 'vue'
-import { timeTypes } from './util.js'
+import { timeTypes } from './util'
 
 export interface Menu {
   svgName: string

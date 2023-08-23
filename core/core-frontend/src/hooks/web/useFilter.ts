@@ -42,42 +42,47 @@ export const useFilter = (curComponentId: number, firstLoad = false) => {
   const queryComponentList = componentData.value.filter(ele => ele.component === 'VQuery')
   queryComponentList.forEach(ele => {
     if (!!ele.propValue?.length) {
-      ele.propValue.forEach(item => {
-        if (item.checkedFields.includes(curComponentId) && item.checkedFieldsMap[curComponentId]) {
-          let selectValue = ''
-          const {
-            operator = 'eq',
-            selectValue: value,
-            defaultValueCheck,
-            defaultValue,
-            parameters = [],
-            isTree = false,
-            field,
-            multiple
-          } = item
-          selectValue = getValueByDefaultValueCheckOrFirstLoad(
-            defaultValueCheck,
-            defaultValue,
-            value,
-            firstLoad,
-            multiple
-          )
-
+      ele.propValue
+        .filter(itx => itx.visible)
+        .forEach(item => {
           if (
-            !!selectValue.length ||
-            Object.prototype.toString.call(selectValue) === '[object Date]'
+            item.checkedFields.includes(curComponentId) &&
+            item.checkedFieldsMap[curComponentId]
           ) {
-            filter.push({
-              componentId: ele.id,
-              fieldId: item.checkedFieldsMap[curComponentId],
-              operator,
-              value: forMatterValue(field.deType, selectValue),
-              parameters,
-              isTree
-            })
+            let selectValue = ''
+            const {
+              operator = 'eq',
+              selectValue: value,
+              defaultValueCheck,
+              defaultValue,
+              parameters = [],
+              isTree = false,
+              field,
+              multiple
+            } = item
+            selectValue = getValueByDefaultValueCheckOrFirstLoad(
+              defaultValueCheck,
+              defaultValue,
+              value,
+              firstLoad,
+              multiple
+            )
+
+            if (
+              !!selectValue.length ||
+              Object.prototype.toString.call(selectValue) === '[object Date]'
+            ) {
+              filter.push({
+                componentId: ele.id,
+                fieldId: item.checkedFieldsMap[curComponentId],
+                operator,
+                value: forMatterValue(field.deType, selectValue),
+                parameters,
+                isTree
+              })
+            }
           }
-        }
-      })
+        })
     }
   })
   return {

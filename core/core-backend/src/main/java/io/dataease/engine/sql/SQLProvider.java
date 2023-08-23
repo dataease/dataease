@@ -25,15 +25,15 @@ public class SQLProvider {
      * @param isGroup 是否聚合
      * @return
      */
-    public static String createQuerySQLAsTmp(SQLMeta sqlMeta, boolean isGroup, boolean needOrder) {
-        return createQuerySQL(sqlMeta, isGroup, needOrder);
+    public static String createQuerySQLAsTmp(SQLMeta sqlMeta, boolean isGroup, boolean needOrder, boolean distinct) {
+        return createQuerySQL(sqlMeta, isGroup, needOrder, distinct);
     }
 
-    public static String createQuerySQLWithLimit(SQLMeta sqlMeta, boolean isGroup, boolean needOrder, int start, int count) {
-        return createQuerySQL(sqlMeta, isGroup, needOrder) + " LIMIT " + count + " OFFSET " + start;
+    public static String createQuerySQLWithLimit(SQLMeta sqlMeta, boolean isGroup, boolean needOrder, boolean distinct, int start, int count) {
+        return createQuerySQL(sqlMeta, isGroup, needOrder, distinct) + " LIMIT " + count + " OFFSET " + start;
     }
 
-    public static String createQuerySQL(SQLMeta sqlMeta, boolean isGroup, boolean needOrder) {
+    public static String createQuerySQL(SQLMeta sqlMeta, boolean isGroup, boolean needOrder, boolean distinct) {
         List<SQLObj> xFields = sqlMeta.getXFields();
         SQLObj tableObj = sqlMeta.getTable();
         List<SQLObj> xOrders = sqlMeta.getXOrders();
@@ -41,6 +41,7 @@ public class SQLProvider {
         STGroup stg = new STGroupString(SqlTemplate.PREVIEW_SQL);
         ST st_sql = stg.getInstanceOf("previewSql");
         st_sql.add("isGroup", isGroup);
+        st_sql.add("distinct", distinct);
         if (ObjectUtils.isNotEmpty(xFields)) st_sql.add("groups", xFields);
         if (ObjectUtils.isNotEmpty(tableObj)) st_sql.add("table", tableObj);
         String customWheres = sqlMeta.getCustomWheres();
