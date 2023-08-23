@@ -1,9 +1,10 @@
 <script lang="ts" setup>
-import { ref, reactive, onMounted, onBeforeUnmount } from 'vue'
+import { ref, reactive, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import CodeMirror from './CodeMirror.vue'
 import { getFunction } from '@/api/dataset'
 import { fieldType } from '@/utils/attr'
+import { cloneDeep } from 'lodash-es'
 export interface CalcFieldType {
   id?: string
   datasourceId?: string // 数据源id
@@ -85,10 +86,14 @@ const setNameIdTrans = (from, to, originName, name2Auto?: string[]) => {
   return name2Id
 }
 
+let quotaDataList = []
+let dimensionDataList = []
 const initEdit = (obj, dimensionData, quotaData) => {
   Object.assign(fieldForm, { ...defaultForm, ...obj })
   state.dimensionData = dimensionData
   state.quotaData = quotaData
+  quotaDataList = cloneDeep(quotaData)
+  dimensionDataList = cloneDeep(dimensionData)
   if (!obj.originName) {
     mirror.value.dispatch({
       changes: {
@@ -132,12 +137,58 @@ const insertParamToCodeMirror = (value: string) => {
     selection: { anchor: mirror.value.viewState.state.selection.ranges[0].from }
   })
 }
-
+let functions = []
 const initFunction = () => {
   getFunction().then(res => {
-    state.functionData = res
+    functions = cloneDeep(res)
+    state.functionData = cloneDeep(res)
   })
 }
+watch(
+  () => searchField.value,
+  val => {
+    if (val && val !== '') {
+      state.dimensionData = JSON.parse(
+        JSON.stringify(
+          dimensionDataList.filter(
+            ele =>
+              ele.name.toLocaleLowerCase().includes(val.toLocaleLowerCase()) && ele.extField === 0
+          )
+        )
+      )
+      state.quotaData = JSON.parse(
+        JSON.stringify(
+          quotaDataList.filter(
+            ele =>
+              ele.name.toLocaleLowerCase().includes(val.toLocaleLowerCase()) && ele.extField === 0
+          )
+        )
+      )
+    } else {
+      state.dimensionData = JSON.parse(JSON.stringify(dimensionDataList)).filter(
+        ele => ele.extField === 0
+      )
+      state.quotaData = JSON.parse(JSON.stringify(quotaDataList)).filter(ele => ele.extField === 0)
+    }
+  }
+)
+
+watch(
+  () => searchFunction.value,
+  val => {
+    if (val && val !== '') {
+      state.functionData = JSON.parse(
+        JSON.stringify(
+          functions.filter(ele => {
+            return ele.func.toLocaleLowerCase().includes(val.toLocaleLowerCase())
+          })
+        )
+      )
+    } else {
+      state.functionData = cloneDeep(functions)
+    }
+  }
+)
 
 const formField = ref()
 
