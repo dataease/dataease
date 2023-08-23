@@ -31,6 +31,8 @@ export const LINE_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
   ],
   'y-axis-selector': [
     'name',
+    'color',
+    'fontSize',
     'vPosition',
     'axisLabel',
     'axisLine',

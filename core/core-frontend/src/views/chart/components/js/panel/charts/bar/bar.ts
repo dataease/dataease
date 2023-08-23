@@ -117,24 +117,6 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
     return { ...options, tooltip }
   }
 
-  protected configCustomYAxis(chart: Chart, options: ColumnOptions): ColumnOptions {
-    if (options.yAxis) {
-      const axisValue = parseJson(chart.customStyle).yAxis.axisValue
-      if (!axisValue?.auto) {
-        const yAxis = {
-          ...options.yAxis,
-          min: axisValue.min,
-          max: axisValue.max,
-          minLimit: axisValue.min,
-          maxLimit: axisValue.max,
-          tickCount: axisValue.splitCount
-        }
-        return { ...options, yAxis }
-      }
-    }
-    return options
-  }
-
   protected configBasicStyle(chart: Chart, options: ColumnOptions): ColumnOptions {
     const basicStyle = parseJson(chart.customAttr).basicStyle
     if (basicStyle.gradient) {
@@ -151,6 +133,34 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
     return options
   }
 
+  protected configYAxis(chart: Chart, options: ColumnOptions): ColumnOptions {
+    const tmpOptions = super.configYAxis(chart, options)
+    if (!tmpOptions.yAxis) {
+      return tmpOptions
+    }
+    const yAxis = parseJson(chart.customStyle).yAxis
+    const axisValue = yAxis.axisValue
+    if (tmpOptions.yAxis.label) {
+      tmpOptions.yAxis.label.formatter = value => {
+        return valueFormatter(value, yAxis.axisLabelFormatter)
+      }
+    }
+    if (!axisValue?.auto) {
+      const axis = {
+        yAxis: {
+          ...tmpOptions.yAxis,
+          min: axisValue.min,
+          max: axisValue.max,
+          minLimit: axisValue.min,
+          maxLimit: axisValue.max,
+          tickCount: axisValue.splitCount
+        }
+      }
+      return { ...tmpOptions, ...axis }
+    }
+    return tmpOptions
+  }
+
   protected setupOptions(chart: Chart, options: ColumnOptions): ColumnOptions {
     return flow(
       this.configTheme,
@@ -160,7 +170,6 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
       this.configLegend,
       this.configXAxis,
       this.configYAxis,
-      this.configCustomYAxis,
       this.configSlider,
       this.configAnalyse
     )(chart, options)

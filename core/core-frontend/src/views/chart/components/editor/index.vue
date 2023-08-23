@@ -9,6 +9,7 @@ import { ElMessage, ElTreeSelect } from 'element-plus-secondary'
 import draggable from 'vuedraggable'
 import DimensionLabel from './drag-label/DimensionLabel.vue'
 import DimensionItem from './drag-item/DimensionItem.vue'
+import { fieldType } from '@/utils/attr'
 import QuotaLabel from './drag-label/QuotaLabel.vue'
 import QuotaItem from '@/views/chart/components/editor/drag-item/QuotaItem.vue'
 import DragPlaceholder from '@/views/chart/components/editor/drag-item/DragPlaceholder.vue'
@@ -69,13 +70,10 @@ const props = defineProps({
 })
 
 const editCalcField = ref(false)
+const isCalcFieldAdd = ref(true)
 const calcEdit = ref()
 
 const { view, datasetTree } = toRefs(props)
-
-const fieldType = (deType: number) => {
-  return ['text', 'time', 'value', 'value', 'location'][deType]
-}
 
 const dsFieldDragOptions = { group: { name: 'drag', pull: 'clone' }, sort: true }
 
@@ -745,6 +743,7 @@ const saveValueFormatter = () => {
 
 const addCalcField = groupType => {
   editCalcField.value = true
+  isCalcFieldAdd.value = true
   nextTick(() => {
     calcEdit.value.initEdit(
       { groupType, id: guid() },
@@ -755,6 +754,7 @@ const addCalcField = groupType => {
 }
 const editField = item => {
   editCalcField.value = true
+  isCalcFieldAdd.value = false
   nextTick(() => {
     calcEdit.value.initEdit(
       item,
@@ -1470,8 +1470,8 @@ const autoInsert = element => {
                   >
                     <el-icon>
                       <Icon
-                        :className="`field-icon-${fieldType(element.deType)}`"
-                        :name="`field_${fieldType(element.deType)}`"
+                        :className="`field-icon-${fieldType[element.deType]}`"
+                        :name="`field_${fieldType[element.deType]}`"
                       ></Icon>
                     </el-icon>
                     <span class="field-name">{{ element.name }}</span>
@@ -1522,8 +1522,8 @@ const autoInsert = element => {
                   <span class="item-dimension father" :title="element.name">
                     <el-icon>
                       <Icon
-                        :className="`field-icon-${fieldType(element.deType)}`"
-                        :name="`field_${fieldType(element.deType)}`"
+                        :className="`field-icon-${fieldType[element.deType]}`"
+                        :name="`field_${fieldType[element.deType]}`"
                       ></Icon>
                     </el-icon>
                     <span class="field-name">{{ element.name }}</span>
@@ -1603,7 +1603,7 @@ const autoInsert = element => {
       v-if="state.quotaFilterEdit"
       :title="t('chart.add_filter')"
       :visible="state.quotaFilterEdit"
-      :show-close="false"
+      :close-on-click-modal="false"
       width="600px"
       class="dialog-css"
     >
@@ -1620,7 +1620,7 @@ const autoInsert = element => {
       v-if="state.resultFilterEdit"
       :title="t('chart.add_filter')"
       :visible="state.resultFilterEdit"
-      :show-close="false"
+      :close-on-click-modal="false"
       width="600px"
       class="dialog-css"
     >
@@ -1639,7 +1639,7 @@ const autoInsert = element => {
       v-if="state.showEditQuotaCompare"
       :title="t('chart.yoy_setting')"
       :visible="state.showEditQuotaCompare"
-      :show-close="false"
+      :close-on-click-modal="false"
       width="600px"
       class="dialog-css"
     >
@@ -1660,7 +1660,7 @@ const autoInsert = element => {
       v-if="state.showValueFormatter"
       :title="t('chart.value_formatter') + ' - ' + state.valueFormatterItem.name"
       :visible="state.showValueFormatter"
-      :show-close="false"
+      :close-on-click-modal="false"
       width="600px"
       class="dialog-css"
     >
@@ -1681,7 +1681,7 @@ const autoInsert = element => {
       v-if="state.showCustomSort"
       :title="t('chart.custom_sort')"
       :visible="state.showCustomSort"
-      :show-close="false"
+      :close-on-click-modal="false"
       width="500px"
       class="dialog-css"
     >
@@ -1700,7 +1700,12 @@ const autoInsert = element => {
     </el-dialog>
 
     <!--视图计算字段-->
-    <el-dialog v-model="editCalcField" width="1000px" title="新建计算字段">
+    <el-dialog
+      v-model="editCalcField"
+      width="1000px"
+      :title="isCalcFieldAdd ? t('dataset.add_calc_field') : t('dataset.edit_calc_field')"
+      :close-on-click-modal="false"
+    >
       <calc-field-edit ref="calcEdit" />
       <template #footer>
         <el-button secondary @click="closeEditCalc()">{{ t('dataset.cancel') }} </el-button>

@@ -4,7 +4,7 @@ import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapsho
 import { storeToRefs } from 'pinia'
 import { onMounted, reactive, ref, watch } from 'vue'
 import DeInputNum from '@/custom-component/common/DeInputNum.vue'
-import { uploadFileResult } from '@/api/staticResource'
+import { beforeUploadCheck, uploadFileResult } from '@/api/staticResource'
 import { ElIcon, ElMessage } from 'element-plus-secondary'
 import {
   COLOR_CASES,
@@ -43,12 +43,14 @@ const handleRemove = (file, fileList) => {
   uploadDisabled.value = false
   canvasStyleData.value.background = null
   fileList.value = []
-  snapshotStore.recordSnapshot('handleRemove')
+  snapshotStore.recordSnapshot()
 }
 async function upload(file) {
   uploadFileResult(file.file, fileUrl => {
-    canvasStyleData.value.background = fileUrl
-    fileList.value = [{ url: imgUrlTrans(canvasStyleData.value.background) }]
+    if (fileUrl) {
+      canvasStyleData.value.background = fileUrl
+      fileList.value = [{ url: imgUrlTrans(canvasStyleData.value.background) }]
+    }
   })
 }
 
@@ -160,6 +162,7 @@ onMounted(() => {
                 :class="{ disabled: uploadDisabled }"
                 :on-preview="handlePictureCardPreview"
                 :on-remove="handleRemove"
+                :before-upload="beforeUploadCheck"
                 :http-request="upload"
                 :file-list="fileList"
               >

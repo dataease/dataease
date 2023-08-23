@@ -65,8 +65,8 @@
                     <span class="tree-select-field">
                       <el-icon>
                         <Icon
-                          :name="`field_${fieldType(data.sourceDeType)}`"
-                          :className="`field-icon-${fieldType(data.sourceDeType)}`"
+                          :name="`field_${fieldType[data.sourceDeType]}`"
+                          :className="`field-icon-${fieldType[data.sourceDeType]}`"
                         ></Icon>
                       </el-icon>
                       {{ data.sourceFieldName }}
@@ -323,8 +323,8 @@
                         >
                           <el-icon>
                             <Icon
-                              :name="`field_${fieldType(item.sourceDeType)}`"
-                              :className="`field-icon-${fieldType(item.sourceDeType)}`"
+                              :name="`field_${fieldType[item.sourceDeType]}`"
+                              :className="`field-icon-${fieldType[item.sourceDeType]}`"
                             ></Icon>
                           </el-icon>
                           {{ item.sourceFieldName }}
@@ -360,6 +360,7 @@ import {
 } from '@/api/visualization/linkJump'
 import { reactive, ref, nextTick, onMounted, computed, watch } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { fieldType } from '@/utils/attr'
 import { storeToRefs } from 'pinia'
 import { queryTreeApi } from '@/api/visualization/dataVisualization'
 import { ElMessage } from 'element-plus-secondary'
@@ -626,10 +627,6 @@ const defaultForm = {
 }
 
 const fieldForm = reactive<CalcFieldType>({ ...(defaultForm as CalcFieldType) })
-
-const fieldType = (deType: number) => {
-  return ['text', 'time', 'value', 'value', '', 'location'][deType]
-}
 
 const insertFieldToCodeMirror = (value: string) => {
   outerContentEditor.value.insertFieldToCodeMirror(value)

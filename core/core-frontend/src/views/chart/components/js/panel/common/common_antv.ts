@@ -346,73 +346,65 @@ export function getXAxis(chart: Chart) {
 }
 // yAxis
 export function getYAxis(chart: Chart) {
-  let axis = {}
-  let customStyle: CustomStyle
-  if (chart.customStyle) {
-    customStyle = parseJson(chart.customStyle)
-    // legend
-    if (customStyle.yAxis) {
-      const a = JSON.parse(JSON.stringify(customStyle.yAxis))
-      if (a.show) {
-        const title =
-          a.name && a.name !== ''
-            ? {
-                text: a.name,
-                style: {
-                  fill: a.color,
-                  fontSize: a.fontSize
-                },
-                spacing: 8
-              }
-            : null
-        const grid = a.splitLine.show
-          ? {
-              line: {
-                style: {
-                  stroke: a.splitLine.lineStyle.color,
-                  lineWidth: a.splitLine.lineStyle.width
-                }
-              }
-            }
-          : null
-        const axisCfg = a.axisLine ? a.axisLine : DEFAULT_YAXIS_STYLE.axisLine
-        const line = axisCfg.show
-          ? {
-              style: {
-                stroke: axisCfg.lineStyle.color,
-                lineWidth: axisCfg.lineStyle.width
-              }
-            }
-          : null
-        const tickLine = axisCfg.show
-          ? {
-              style: {
-                stroke: axisCfg.lineStyle.color
-              }
-            }
-          : null
-        const label = a.axisLabel.show
-          ? {
-              rotate: (a.axisLabel.rotate * Math.PI) / 180,
-              style: {
-                fill: a.axisLabel.color,
-                fontSize: a.axisLabel.fontSize
-              }
-            }
-          : null
-
-        axis = {
-          position: a.position,
-          title,
-          grid,
-          label,
-          line,
-          tickLine
+  let axis: Record<string, any> | boolean = {}
+  const yAxis = parseJson(chart.customStyle).yAxis
+  if (!yAxis.show) {
+    return false
+  }
+  const title =
+    yAxis.name && yAxis.name !== ''
+      ? {
+          text: yAxis.name,
+          style: {
+            fill: yAxis.color,
+            fontSize: yAxis.fontSize
+          },
+          spacing: 8
         }
-      } else {
-        axis = false
+      : null
+  const grid = yAxis.splitLine.show
+    ? {
+        line: {
+          style: {
+            stroke: yAxis.splitLine.lineStyle.color,
+            lineWidth: yAxis.splitLine.lineStyle.width
+          }
+        }
       }
-    }
+    : null
+  const axisCfg = yAxis.axisLine ? yAxis.axisLine : DEFAULT_YAXIS_STYLE.axisLine
+  const line = axisCfg.show
+    ? {
+        style: {
+          stroke: axisCfg.lineStyle.color,
+          lineWidth: axisCfg.lineStyle.width
+        }
+      }
+    : null
+  const tickLine = axisCfg.show
+    ? {
+        style: {
+          stroke: axisCfg.lineStyle.color
+        }
+      }
+    : null
+  const label = yAxis.axisLabel.show
+    ? {
+        rotate: (yAxis.axisLabel.rotate * Math.PI) / 180,
+        style: {
+          fill: yAxis.axisLabel.color,
+          fontSize: yAxis.axisLabel.fontSize
+        }
+      }
+    : null
+
+  axis = {
+    position: yAxis.position,
+    title,
+    grid,
+    label,
+    line,
+    tickLine
   }
   return axis
 }

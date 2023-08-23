@@ -12,6 +12,7 @@ import UnionEdit from './UnionEdit.vue'
 import type { FormInstance } from 'element-plus-secondary'
 import CreatDsGroup from './CreatDsGroup.vue'
 import { guid, getFieldName, timeTypes } from './util.js'
+import { fieldType } from '@/utils/attr'
 import {
   getDatasourceList,
   getTables,
@@ -97,9 +98,6 @@ const defaultProps = {
 let tableList = []
 
 const dragHeight = ref(260)
-const fieldType = (deType: number) => {
-  return ['text', 'time', 'value', 'value', 'location'][deType]
-}
 
 const getDsName = (id: string) => {
   return (state.dataSourceList.find(ele => ele.id === id) || {}).name
@@ -282,8 +280,8 @@ const generateColumns = (arr: Field[]) =>
       <div style={{ width: '100%', display: 'flex', alignItems: 'center' }}>
         <ElIcon>
           <Icon
-            name={`field_${fieldType(column.deType)}`}
-            className={`field-icon-${fieldType(column.deType)}`}
+            name={`field_${fieldType[column.deType]}`}
+            className={`field-icon-${fieldType[column.deType]}`}
           ></Icon>
         </ElIcon>
         {column.title}
@@ -797,8 +795,8 @@ const treeProps = {
                     <span class="custom-tree-node">
                       <el-icon>
                         <Icon
-                          :name="`field_${fieldType(data.deType)}`"
-                          :className="`field-icon-${fieldType(data.deType)}`"
+                          :name="`field_${fieldType[data.deType]}`"
+                          :className="`field-icon-${fieldType[data.deType]}`"
                         ></Icon>
                       </el-icon>
                       <span :title="data.name" class="label-tooltip">{{ data.name }}</span>
@@ -826,8 +824,8 @@ const treeProps = {
                     <span class="custom-tree-node">
                       <el-icon>
                         <Icon
-                          :name="`field_${fieldType(data.deType)}`"
-                          :className="`field-icon-${fieldType(data.deType)}`"
+                          :name="`field_${fieldType[data.deType]}`"
+                          :className="`field-icon-${fieldType[data.deType]}`"
                         ></Icon>
                       </el-icon>
                       <span :title="data.name" class="label-tooltip">{{ data.name }}</span>

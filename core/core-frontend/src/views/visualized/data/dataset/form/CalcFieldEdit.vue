@@ -3,6 +3,7 @@ import { ref, reactive, onMounted, onBeforeUnmount } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import CodeMirror from './CodeMirror.vue'
 import { getFunction } from '@/api/dataset'
+import { fieldType } from '@/utils/attr'
 export interface CalcFieldType {
   id?: string
   datasourceId?: string // 数据源id
@@ -107,10 +108,6 @@ const initEdit = (obj, dimensionData, quotaData) => {
   })
 }
 
-const fieldType = (deType: number) => {
-  return ['text', 'time', 'value', 'value', '', 'location'][deType]
-}
-
 const insertFieldToCodeMirror = (value: string) => {
   mirror.value.dispatch({
     changes: { from: mirror.value.viewState.state.selection.ranges[0].from, insert: value },
@@ -203,8 +200,8 @@ initFunction()
                   <template #prefix>
                     <el-icon>
                       <Icon
-                        :name="`field_${fieldType(fieldForm.deType)}`"
-                        :className="`field-icon-${fieldType(fieldForm.deType)}`"
+                        :name="`field_${fieldType[fieldForm.deType]}`"
+                        :className="`field-icon-${fieldType[fieldForm.deType]}`"
                       ></Icon>
                     </el-icon>
                   </template>
@@ -217,8 +214,8 @@ initFunction()
                     <span style="display: flex; align-items: center">
                       <el-icon>
                         <Icon
-                          :name="`field_${fieldType(item.value)}`"
-                          :className="`field-icon-${fieldType(item.value)}`"
+                          :name="`field_${fieldType[item.value]}`"
+                          :className="`field-icon-${fieldType[item.value]}`"
                         ></Icon>
                       </el-icon>
                     </span>
@@ -291,8 +288,8 @@ initFunction()
             >
               <el-icon>
                 <Icon
-                  :name="`field_${fieldType(item.deType)}`"
-                  :className="`field-icon-${fieldType(item.deType)}`"
+                  :name="`field_${fieldType[item.deType]}`"
+                  :className="`field-icon-${fieldType[item.deType]}`"
                 ></Icon>
               </el-icon>
               {{ item.name }}
@@ -312,8 +309,8 @@ initFunction()
             >
               <el-icon>
                 <Icon
-                  :name="`field_${fieldType(item.deType)}`"
-                  :className="`field-icon-${fieldType(item.deType)}`"
+                  :name="`field_${fieldType[item.deType]}`"
+                  :className="`field-icon-${fieldType[item.deType]}`"
                 ></Icon>
               </el-icon>
               {{ item.name }}

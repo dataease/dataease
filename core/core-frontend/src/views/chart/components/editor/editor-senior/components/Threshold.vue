@@ -6,12 +6,9 @@ import { DEFAULT_THRESHOLD } from '@/views/chart/components/editor/util/chart'
 import TableThresholdEdit from '@/views/chart/components/editor/editor-senior/components/dialog/TableThresholdEdit.vue'
 import TextLabelThresholdEdit from '@/views/chart/components/editor/editor-senior/components/dialog/TextLabelThresholdEdit.vue'
 import TextThresholdEdit from '@/views/chart/components/editor/editor-senior/components/dialog/TextThresholdEdit.vue'
+import { fieldType } from '@/utils/attr'
 
 const { t } = useI18n()
-
-const fieldType = (deType: number) => {
-  return ['text', 'time', 'value', 'value', 'location'][deType]
-}
 
 const props = defineProps({
   chart: {
@@ -384,8 +381,8 @@ init()
               <span>
                 <el-icon>
                   <Icon
-                    :className="`field-icon-${fieldType(fieldItem.field.deType.deType)}`"
-                    :name="`field_${fieldType(fieldItem.field.deType.deType)}`"
+                    :className="`field-icon-${fieldType[fieldItem.field.deType.deType]}`"
+                    :name="`field_${fieldType[fieldItem.field.deType.deType]}`"
                   ></Icon>
                 </el-icon>
               </span>
