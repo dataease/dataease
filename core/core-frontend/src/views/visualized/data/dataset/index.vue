@@ -140,7 +140,8 @@ const allFieldsColumns = [
             className={`field-icon-${fieldType[deType]}`}
           ></Icon>
         </ElIcon>
-        {t(`dataset.${fieldType[deType]}`)}
+        {t(`dataset.${fieldType[deType]}`) +
+          `${deType === 3 ? '(' + t('dataset.float') + ')' : ''}`}
       </div>
     )
   },

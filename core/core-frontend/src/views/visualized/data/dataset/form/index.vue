@@ -157,8 +157,9 @@ const editeSave = () => {
 }
 
 const handleFieldMore = (ele, type) => {
-  if (fieldType.includes(type as string)) {
-    ele.deType = fieldType.indexOf(type)
+  const arr = ['text', 'time', 'value', 'float', 'value', 'location']
+  if (arr.includes(type as string)) {
+    ele.deType = arr.indexOf(type)
     ele.dateFormat = ''
     return
   }
