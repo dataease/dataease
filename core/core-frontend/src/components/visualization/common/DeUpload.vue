@@ -10,6 +10,7 @@
       :on-preview="handlePictureCardPreview"
       :on-remove="handleRemove"
       :http-request="upload"
+      :before-upload="beforeUploadCheck"
       :file-list="state.fileList"
     >
       <el-icon><Plus /></el-icon>
@@ -45,7 +46,7 @@ import { onMounted, reactive, ref, toRefs, watch } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
-import { uploadFileResult } from '@/api/staticResource'
+import { beforeUploadCheck, uploadFileResult } from '@/api/staticResource'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ElMessage } from 'element-plus-secondary'
 const dvMainStore = dvMainStoreWithOut()
