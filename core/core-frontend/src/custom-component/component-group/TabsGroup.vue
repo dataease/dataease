@@ -60,6 +60,6 @@ const handleDragEnd = e => {
 
 <style lang="less" scoped>
 .group {
-  padding-top: 5px;
+  padding: 12px 8px;
 }
 </style>

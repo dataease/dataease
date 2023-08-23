@@ -11,7 +11,7 @@ import { getDatasourceList, getTables, getPreviewSql } from '@/api/dataset'
 import type { DataSource } from './index.vue'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
 import { EmptyBackground } from '@/components/empty-background'
-import { timestampFormatDate, defaultValueScopeList, fieldOptions } from './util.js'
+import { timestampFormatDate, defaultValueScopeList, fieldOptions } from './util'
 import { fieldType } from '@/utils/attr'
 
 export interface SqlNode {
@@ -171,9 +171,15 @@ getDatasource()
 
 const emits = defineEmits(['close', 'save'])
 
+let changeFlag = false
+const setFlag = () => {
+  changeFlag = true
+}
+let sql = ''
+
 const save = (cb?: () => void) => {
   parseVariable()
-  let sql = codeCom.value.state.doc.toString()
+  sql = codeCom.value.state.doc.toString()
   if (!sql.trim()) {
     ElMessage.error('SQL不能为空')
     return
@@ -187,6 +193,7 @@ const save = (cb?: () => void) => {
     },
     cb
   )
+  changeFlag = false
   ElMessage.success(t('common.save_success'))
 }
 
@@ -197,15 +204,25 @@ const close = () => {
 }
 
 const handleClose = () => {
-  ElMessageBox.confirm(t('chart.tips'), {
-    confirmButtonType: 'primary',
-    tip: '你填写的信息未保存，确认退出吗？',
-    type: 'warning',
-    autofocus: false,
-    showClose: false
-  }).then(() => {
+  let sqlNew = codeCom.value.state.doc.toString()
+  if (Base64.decode(sqlNode.value.sql) && !sqlNew.trim()) {
+    ElMessage.error('SQL不能为空')
+    return
+  }
+  if (changeFlag || sql !== sqlNew) {
+    ElMessageBox.confirm(t('chart.tips'), {
+      confirmButtonType: 'primary',
+      tip: '你填写的信息未保存，确认退出吗？',
+      type: 'warning',
+      autofocus: false,
+      showClose: false
+    }).then(() => {
+      close()
+      changeFlag = false
+    })
+  } else {
     close()
-  })
+  }
 }
 const getSQLPreview = () => {
   parseVariable()
@@ -331,7 +348,7 @@ const mousedownDrag = () => {
 
 <template>
   <div class="add-sql-name">
-    <el-input class="name" ref="editerName" v-model="sqlNode.tableName" />
+    <el-input class="name" ref="editerName" v-model="sqlNode.tableName" @change="setFlag" />
     <div class="save-or-cancel flex-align-center">
       <el-button @click="getSQLPreview" text style="color: #1f2329">
         <template #icon>
@@ -645,7 +662,7 @@ const mousedownDrag = () => {
             popper-class="cascader-panel"
             v-model="scope.row.type"
             :options="fieldOptions"
-            @change="scope.row = ''"
+            @change="scope.row.defaultValue = ''"
           >
             <template v-slot="{ data }">
               <el-icon>
@@ -696,7 +713,7 @@ const mousedownDrag = () => {
             type="number"
           >
             <template #prepend>
-              <el-select v-model="scope.row.defaultValueScope" style="width: 100px">
+              <el-select v-model="scope.row.defaultValueScope" style="width: calc(100% + 22px)">
                 <el-option
                   v-for="item in defaultValueScopeList"
                   :key="item.value"
@@ -708,10 +725,10 @@ const mousedownDrag = () => {
           </el-input>
           <div
             v-if="getIconName(scope.row.type[0]) === 'time'"
-            class="el-input-group el-input-group--prepend de-group__prepend"
+            class="ed-input-group ed-input-group--prepend de-group__prepend"
           >
-            <div class="el-input-group__prepend">
-              <el-select v-model="scope.row.defaultValueScope" style="width: 100px" size="small">
+            <div class="ed-input-group__prepend">
+              <el-select v-model="scope.row.defaultValueScope" style="width: 168px">
                 <el-option
                   v-for="item in defaultValueScopeList"
                   :key="item.value"
@@ -724,7 +741,6 @@ const mousedownDrag = () => {
               v-if="scope.row.type[0] === 'DATETIME-YEAR'"
               v-model="scope.row.defaultValue"
               type="year"
-              value-format="yyyy"
               :placeholder="t('dataset.select_year')"
             />
 
@@ -1088,6 +1104,20 @@ const mousedownDrag = () => {
 .sql-dataset-drawer {
   .de-group__prepend {
     width: 100%;
+
+    .ed-input-group__prepend {
+      .ed-select {
+        margin: 0 -10px 0 -10px;
+      }
+    }
+
+    .ed-date-editor {
+      .ed-input__wrapper {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+        width: 100%;
+      }
+    }
   }
 
   .ed-date-editor {

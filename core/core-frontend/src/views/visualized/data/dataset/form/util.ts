@@ -8,7 +8,7 @@ const guid = () => {
   return snowflake.generate()
 }
 
-const timestampFormatDate = (timestamp, showMs) => {
+const timestampFormatDate = (timestamp, showMs?: boolean) => {
   if (!timestamp || timestamp === -1) {
     return '-'
   }
@@ -18,19 +18,19 @@ const timestampFormatDate = (timestamp, showMs) => {
   const y = date.getFullYear()
 
   let MM = date.getMonth() + 1
-  MM = MM < 10 ? '0' + MM : MM
+  MM = (MM < 10 ? '0' + MM : MM) as number
 
   let d = date.getDate()
-  d = d < 10 ? '0' + d : d
+  d = (d < 10 ? '0' + d : d) as number
 
   let h = date.getHours()
-  h = h < 10 ? '0' + h : h
+  h = (h < 10 ? '0' + h : h) as number
 
   let m = date.getMinutes()
-  m = m < 10 ? '0' + m : m
+  m = (m < 10 ? '0' + m : m) as number
 
   let s = date.getSeconds()
-  s = s < 10 ? '0' + s : s
+  s = (s < 10 ? '0' + s : s) as number
 
   let format = y + '-' + MM + '-' + d + ' ' + h + ':' + m + ':' + s
 
@@ -59,11 +59,11 @@ const fieldOptions = [
     value: 'DATETIME-YEAR-MONTH',
     children: [
       {
-        value: 'yyyy-MM',
+        value: 'YYYY-MM',
         label: 'YYYY-MM'
       },
       {
-        value: 'yyyy/MM',
+        value: 'YYYY/MM',
         label: 'YYYY/MM'
       }
     ]
@@ -73,11 +73,11 @@ const fieldOptions = [
     value: 'DATETIME-YEAR-MONTH-DAY',
     children: [
       {
-        value: 'yyyy-MM-dd',
+        value: 'YYYY-MM-DD',
         label: 'YYYY-MM-DD'
       },
       {
-        value: 'yyyy/MM/dd',
+        value: 'YYYY/MM/DD',
         label: 'YYYY/MM/DD'
       }
     ]
@@ -87,11 +87,11 @@ const fieldOptions = [
     value: 'DATETIME',
     children: [
       {
-        value: 'yyyy-MM-dd HH:mm:ss',
+        value: 'YYYY-MM-DD HH:mm:ss',
         label: 'YYYY-MM-DD HH:MI:SS'
       },
       {
-        value: 'yyyy/MM/dd HH:mm:ss',
+        value: 'YYYY/MM/DD HH:mm:ss',
         label: 'YYYY/MM/DD HH:MI:SS'
       }
     ]

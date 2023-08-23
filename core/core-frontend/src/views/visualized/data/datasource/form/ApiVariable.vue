@@ -3,7 +3,7 @@ import { propTypes } from '@/utils/propTypes'
 import { computed, onBeforeMount, PropType, toRefs } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { KeyValue } from './ApiTestModel.js'
-import { guid } from '@/views/visualized/data/dataset/form/util.js'
+import { guid } from '@/views/visualized/data/dataset/form/util'
 import draggable from 'vuedraggable'
 
 export interface Item {

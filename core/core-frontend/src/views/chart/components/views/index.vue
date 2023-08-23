@@ -1,7 +1,19 @@
 <script lang="ts" setup>
 import { useI18n } from '@/hooks/web/useI18n'
 import ChartComponentG2Plot from './components/ChartComponentG2Plot.vue'
-import { nextTick, onBeforeMount, onMounted, PropType, reactive, ref, toRefs, watch } from 'vue'
+import {
+  nextTick,
+  onBeforeMount,
+  onMounted,
+  PropType,
+  provide,
+  reactive,
+  ref,
+  ShallowRef,
+  shallowRef,
+  toRefs,
+  watch
+} from 'vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { hexColorToRGBA } from '@/views/chart/components/js/util.js'
 import { DEFAULT_TITLE_STYLE } from '@/views/chart/components/editor/util/chart'
@@ -92,6 +104,9 @@ watch([() => curComponent.value], () => {
     })
   }
 })
+
+const chartExtRequest = shallowRef(null)
+provide('chartExtRequest', chartExtRequest)
 
 const initTitle = () => {
   if (view.value.customStyle) {
@@ -243,6 +258,7 @@ const queryData = (firstLoad = false) => {
   const queryFilter = filter(firstLoad)
   let params = cloneDeep(view.value)
   params['chartExtRequest'] = queryFilter
+  chartExtRequest.value = queryFilter
   chartComponent?.value?.calcData(params)
 }
 

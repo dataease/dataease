@@ -29,13 +29,13 @@ const onClick = index => {
 const deleteComponent = (number: number) => {
   setTimeout(() => {
     dvMainStore.deleteComponent()
-    snapshotStore.recordSnapshot('realTime-deleteComponent')
+    snapshotStore.recordSnapshot()
   })
 }
 const upComponent = (number: number) => {
   setTimeout(() => {
     layerStore.upComponent()
-    snapshotStore.recordSnapshot('realTime-upComponent')
+    snapshotStore.recordSnapshot()
   })
 }
 const downComponent = (number: number) => {
@@ -104,7 +104,7 @@ const hideComponent = () => {
 const showComponent = () => {
   setTimeout(() => {
     layerStore.showComponent()
-    snapshotStore.recordSnapshot('realTime-showComponent')
+    snapshotStore.recordSnapshot()
   })
 }
 
@@ -210,7 +210,7 @@ const getIconName = item => {
         height: 30px;
         width: 100%;
         cursor: grab;
-        color: #fff;
+        color: @dv-canvas-main-font-color;
         display: flex;
         align-items: center;
         justify-content: flex-start;
@@ -219,12 +219,11 @@ const getIconName = item => {
         user-select: none;
 
         .component-icon {
-          color: #4772f1;
-          font-size: 20px;
+          font-size: 14px;
         }
 
         > span.component-label {
-          font-size: 14px;
+          font-size: 12px;
           margin-left: 10px;
           position: relative;
           width: 60%;
@@ -270,7 +269,13 @@ const getIconName = item => {
         }
       }
       .activated {
-        background-color: rgba(200, 200, 200, 0.2);
+        background-color: rgba(51, 112, 255, 0.1);
+        :deep(.component-icon) {
+          color: #3370ff;
+        }
+        :deep(.component-label) {
+          color: #3370ff;
+        }
       }
     }
   }

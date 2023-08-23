@@ -11,7 +11,7 @@ import { useRoute, useRouter } from 'vue-router'
 import UnionEdit from './UnionEdit.vue'
 import type { FormInstance } from 'element-plus-secondary'
 import CreatDsGroup from './CreatDsGroup.vue'
-import { guid, getFieldName, timeTypes } from './util.js'
+import { guid, getFieldName, timeTypes } from './util'
 import { fieldType } from '@/utils/attr'
 import {
   getDatasourceList,
@@ -157,7 +157,7 @@ const editeSave = () => {
 }
 
 const handleFieldMore = (ele, type) => {
-  const arr = ['text', 'time', 'number', 'float', 'location']
+  const arr = ['text', 'time', 'value', 'float', 'value', 'location']
   if (arr.includes(type as string)) {
     ele.deType = arr.indexOf(type)
     ele.dateFormat = ''
@@ -804,7 +804,9 @@ const treeProps = {
                         <field-more
                           :extField="data.extField"
                           trans-type="转换为指标"
-                          :show-time="data.deType === 1 && data.deExtractType === 0"
+                          :show-time="
+                            (data.deType === 1 && data.deExtractType === 0) || data.deType === 0
+                          "
                           @handle-command="type => handleFieldMore(data, type)"
                         ></field-more>
                       </div>
@@ -833,6 +835,9 @@ const treeProps = {
                         <field-more
                           trans-type="转换为维度"
                           typeColor="green-color"
+                          :show-time="
+                            (data.deType === 1 && data.deExtractType === 0) || data.deType === 0
+                          "
                           :extField="data.extField"
                           @handle-command="type => handleFieldMore(data, type)"
                         ></field-more>

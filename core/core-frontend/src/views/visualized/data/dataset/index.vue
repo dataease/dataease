@@ -12,7 +12,7 @@ import EmptyBackground from '@/components/empty-background/src/EmptyBackground.v
 import DeResourceGroupOpt from '@/views/common/DeResourceGroupOpt.vue'
 import DatasetDetail from './DatasetDetail.vue'
 import RowPermissions from './RowPermissions.vue'
-import { guid } from '@/views/visualized/data/dataset/form/util.js'
+import { guid } from '@/views/visualized/data/dataset/form/util'
 import { save } from '@/api/visualization/dataVisualization'
 import ColumnPermissions from './ColumnPermissions.vue'
 import { cloneDeep } from 'lodash-es'
@@ -23,7 +23,7 @@ import {
   DEFAULT_CANVAS_STYLE_DATA_LIGHT
 } from '@/views/chart/components/editor/util/dataVisualiztion'
 import type { TabPaneName } from 'element-plus-secondary'
-import { timestampFormatDate } from './form/util.js'
+import { timestampFormatDate } from './form/util'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
 const interactiveStore = interactiveStoreWithOut()
 interface Field {
@@ -140,7 +140,8 @@ const allFieldsColumns = [
             className={`field-icon-${fieldType[deType]}`}
           ></Icon>
         </ElIcon>
-        {t(`dataset.${fieldType[deType]}`)}
+        {t(`dataset.${fieldType[deType]}`) +
+          `${deType === 3 ? '(' + t('dataset.float') + ')' : ''}`}
       </div>
     )
   },

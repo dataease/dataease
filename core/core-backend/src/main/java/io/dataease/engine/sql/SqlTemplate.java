@@ -43,7 +43,7 @@ public class SqlTemplate {
             "<endif>\n" +
             ">>";
 
-    public static String PREVIEW_SQL = "previewSql(limitFiled, groups, aggregators, filters, orders, table, isGroup, notUseAs, useAliasForGroup)\n" +
+    public static String PREVIEW_SQL = "previewSql(limitFiled, groups, aggregators, filters, orders, table, isGroup, notUseAs, useAliasForGroup, distinct)\n" +
             "::=<<\n" +
             "SELECT\n" +
             "<if(limitFiled)>\n" +
@@ -56,7 +56,7 @@ public class SqlTemplate {
             "    <groups:{group|<if(group)><group.fieldName> <endif>}; separator=\",\\n\">\n" +
             "<endif>\n" +
             "<if(groups && !notUseAs)>\n" +
-            "    <groups:{group|<if(group)><group.fieldName> AS <group.fieldAlias><endif>}; separator=\",\\n\">\n" +
+            "    <groups:{group|<if(group)><if(distinct)> DISTINCT <endif> <group.fieldName> AS <group.fieldAlias><endif>}; separator=\",\\n\">\n" +
             "<endif>\n" +
             "    <if(groups && aggregators)>,<endif>\n" +
             "<if(aggregators)>\n" +

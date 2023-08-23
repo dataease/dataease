@@ -854,8 +854,8 @@ const autoInsert = element => {
           size="20px"
           @click="collapseChange('chartAreaCollapse')"
         >
-          <Fold v-if="canvasCollapse.chartAreaCollapse" />
-          <Expand v-else />
+          <Fold class="collapse-icon" v-if="canvasCollapse.chartAreaCollapse" />
+          <Expand class="collapse-icon" v-else />
         </el-icon>
         <div class="collapse-title" v-show="canvasCollapse.chartAreaCollapse">
           <span style="font-size: 14px">{{ view.title }}</span>
@@ -1373,8 +1373,8 @@ const autoInsert = element => {
           size="20px"
           @click="collapseChange('datasetAreaCollapse')"
         >
-          <Fold v-if="canvasCollapse.datasetAreaCollapse" />
-          <Expand v-else />
+          <Fold class="collapse-icon" v-if="canvasCollapse.datasetAreaCollapse" />
+          <Expand class="collapse-icon" v-else />
         </el-icon>
         <div class="collapse-title" v-show="canvasCollapse.datasetAreaCollapse">
           <span style="font-size: 14px">数据集</span>
@@ -1717,7 +1717,9 @@ const autoInsert = element => {
 
 <style lang="less" scoped>
 @import '@/style/mixin.less';
-
+.collapse-icon {
+  color: @canvas-main-font-color;
+}
 .editor-light {
   border-left: solid 1px @side-outline-border-color-light !important;
   color: @canvas-main-font-color-light!important;
@@ -1994,6 +1996,8 @@ span {
   }
 
   .editor-title {
+    color: @dv-canvas-main-font-color;
+    font-weight: 500;
     height: @component-toolbar-height;
     display: flex;
     align-items: center;
@@ -2123,6 +2127,8 @@ span {
 }
 
 .collapse-title {
+  color: @dv-canvas-main-font-color;
+  font-width: 500;
   width: 35px;
   text-align: center;
   padding: 5px;
