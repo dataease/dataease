@@ -168,10 +168,8 @@ const openDataBoardSetting = () => {
 }
 
 const batchDelete = () => {
-  componentData.value.forEach((component, index) => {
-    if (curBatchOptComponents.value.includes(component.id)) {
-      eventBus.emit('removeMatrixItem-' + component.canvasId, index)
-    }
+  curBatchOptComponents.value.forEach(componentId => {
+    eventBus.emit('removeMatrixItemById-canvas-main', componentId)
   })
 }
 
@@ -182,7 +180,7 @@ const batchCopy = () => {
       multiplexingComponents[component.id] = component
     }
   })
-  copyStore.copyMultiplexingComponents(canvasViewInfo.value, multiplexingComponents)
+  copyStore.copyMultiplexingComponents(canvasViewInfo.value, multiplexingComponents, true)
 }
 
 const cancelBatchOpt = () => {

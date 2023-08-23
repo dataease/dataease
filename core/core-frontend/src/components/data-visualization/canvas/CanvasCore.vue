@@ -667,6 +667,16 @@ function movePlayer(item, position) {
   }
 }
 
+function removeItemById(componentId) {
+  if (componentId) {
+    componentData.value.forEach((component, index) => {
+      if (componentId === component['id']) {
+        removeItem(index)
+      }
+    })
+  }
+}
+
 function removeItem(index) {
   let item = componentData.value[index]
   if (item && isSameCanvas(item, canvasId.value)) {
@@ -1497,6 +1507,7 @@ onMounted(() => {
   eventBus.on('handleDragEnd-' + canvasId.value, handleDragEnd)
   eventBus.on('hideArea-' + canvasId.value, hideArea)
   eventBus.on('removeMatrixItem-' + canvasId.value, removeItem)
+  eventBus.on('removeMatrixItemById-' + canvasId.value, removeItemById)
   eventBus.on('addDashboardItem-' + canvasId.value, addItemBox)
   eventBus.on('snapshotChange-' + canvasId.value, canvasInit)
 })
@@ -1510,6 +1521,7 @@ onBeforeUnmount(() => {
   eventBus.off('handleDragEnd-' + canvasId.value, handleDragEnd)
   eventBus.off('hideArea-' + canvasId.value, hideArea)
   eventBus.off('removeMatrixItem-' + canvasId.value, removeItem)
+  eventBus.off('removeMatrixItemById-' + canvasId.value, removeItemById)
   eventBus.off('addDashboardItem-' + canvasId.value, addItemBox)
   eventBus.off('snapshotChange-' + canvasId.value, canvasInit)
 })
