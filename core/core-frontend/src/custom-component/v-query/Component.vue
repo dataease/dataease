@@ -313,7 +313,7 @@ const queryData = () => {
           <div class="query-field">
             <div class="label">
               <div class="label-wrapper">
-                <div class="label-wrapper-text">{{ ele.name }} ({{ ele.field.type }})</div>
+                <div class="label-wrapper-text">{{ ele.name }}</div>
               </div>
               <div class="label-wrapper-tooltip" v-if="showPosition !== 'preview'">
                 <el-tooltip effect="dark" content="设置过滤条件" placement="top">
