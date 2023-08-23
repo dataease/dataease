@@ -14,6 +14,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -137,7 +138,9 @@ public class WhereTree2Str {
             } else if (StringUtils.containsIgnoreCase(item.getTerm(), "like")) {
                 whereValue = "'%" + value + "%'";
             } else {
-                value = Utils.allDateFormat2Long(value) + "";
+                if (Arrays.asList("le", "lt", "ge", "gt").contains(item.getTerm())) {
+                    value = Utils.allDateFormat2Long(value) + "";
+                }
                 whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE, value);
             }
             SQLObj build = SQLObj.builder()

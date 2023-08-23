@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -94,7 +95,9 @@ public class CustomWhere2Str {
                         } else if (StringUtils.containsIgnoreCase(filterItemDTO.getTerm(), "like")) {
                             whereValue = "'%" + value + "%'";
                         } else {
-                            value = Utils.allDateFormat2Long(value) + "";
+                            if (Arrays.asList("le", "lt", "ge", "gt").contains(filterItemDTO.getTerm())) {
+                                value = Utils.allDateFormat2Long(value) + "";
+                            }
                             whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE, value);
                         }
                         list.add(SQLObj.builder()
