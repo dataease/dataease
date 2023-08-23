@@ -66,7 +66,7 @@ const handleNew = newComponentInfo => {
     component.id = guid()
     changeComponentSizeWithScale(component)
     dvMainStore.addComponent({ component: component, index: undefined })
-    snapshotStore.recordSnapshot('dv-handleNew')
+    snapshotStore.recordSnapshot()
   }
 }
 
