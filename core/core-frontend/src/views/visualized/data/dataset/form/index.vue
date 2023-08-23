@@ -157,9 +157,8 @@ const editeSave = () => {
 }
 
 const handleFieldMore = (ele, type) => {
-  const arr = ['text', 'time', 'number', 'float', 'location']
-  if (arr.includes(type as string)) {
-    ele.deType = arr.indexOf(type)
+  if (fieldType.includes(type as string)) {
+    ele.deType = fieldType.indexOf(type)
     ele.dateFormat = ''
     return
   }
@@ -804,7 +803,9 @@ const treeProps = {
                         <field-more
                           :extField="data.extField"
                           trans-type="转换为指标"
-                          :show-time="data.deType === 1 && data.deExtractType === 0"
+                          :show-time="
+                            (data.deType === 1 && data.deExtractType === 0) || data.deType === 0
+                          "
                           @handle-command="type => handleFieldMore(data, type)"
                         ></field-more>
                       </div>
@@ -833,6 +834,9 @@ const treeProps = {
                         <field-more
                           trans-type="转换为维度"
                           typeColor="green-color"
+                          :show-time="
+                            (data.deType === 1 && data.deExtractType === 0) || data.deType === 0
+                          "
                           :extField="data.extField"
                           @handle-command="type => handleFieldMore(data, type)"
                         ></field-more>
