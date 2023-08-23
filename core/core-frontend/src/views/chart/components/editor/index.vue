@@ -70,6 +70,7 @@ const props = defineProps({
 })
 
 const editCalcField = ref(false)
+const isCalcFieldAdd = ref(true)
 const calcEdit = ref()
 
 const { view, datasetTree } = toRefs(props)
@@ -742,6 +743,7 @@ const saveValueFormatter = () => {
 
 const addCalcField = groupType => {
   editCalcField.value = true
+  isCalcFieldAdd.value = true
   nextTick(() => {
     calcEdit.value.initEdit(
       { groupType, id: guid() },
@@ -752,6 +754,7 @@ const addCalcField = groupType => {
 }
 const editField = item => {
   editCalcField.value = true
+  isCalcFieldAdd.value = false
   nextTick(() => {
     calcEdit.value.initEdit(
       item,
@@ -1600,7 +1603,7 @@ const autoInsert = element => {
       v-if="state.quotaFilterEdit"
       :title="t('chart.add_filter')"
       :visible="state.quotaFilterEdit"
-      :show-close="false"
+      :close-on-click-modal="false"
       width="600px"
       class="dialog-css"
     >
@@ -1617,7 +1620,7 @@ const autoInsert = element => {
       v-if="state.resultFilterEdit"
       :title="t('chart.add_filter')"
       :visible="state.resultFilterEdit"
-      :show-close="false"
+      :close-on-click-modal="false"
       width="600px"
       class="dialog-css"
     >
@@ -1636,7 +1639,7 @@ const autoInsert = element => {
       v-if="state.showEditQuotaCompare"
       :title="t('chart.yoy_setting')"
       :visible="state.showEditQuotaCompare"
-      :show-close="false"
+      :close-on-click-modal="false"
       width="600px"
       class="dialog-css"
     >
@@ -1657,7 +1660,7 @@ const autoInsert = element => {
       v-if="state.showValueFormatter"
       :title="t('chart.value_formatter') + ' - ' + state.valueFormatterItem.name"
       :visible="state.showValueFormatter"
-      :show-close="false"
+      :close-on-click-modal="false"
       width="600px"
       class="dialog-css"
     >
@@ -1678,7 +1681,7 @@ const autoInsert = element => {
       v-if="state.showCustomSort"
       :title="t('chart.custom_sort')"
       :visible="state.showCustomSort"
-      :show-close="false"
+      :close-on-click-modal="false"
       width="500px"
       class="dialog-css"
     >
@@ -1697,7 +1700,12 @@ const autoInsert = element => {
     </el-dialog>
 
     <!--视图计算字段-->
-    <el-dialog v-model="editCalcField" width="1000px" title="新建计算字段">
+    <el-dialog
+      v-model="editCalcField"
+      width="1000px"
+      :title="isCalcFieldAdd ? t('dataset.add_calc_field') : t('dataset.edit_calc_field')"
+      :close-on-click-modal="false"
+    >
       <calc-field-edit ref="calcEdit" />
       <template #footer>
         <el-button secondary @click="closeEditCalc()">{{ t('dataset.cancel') }} </el-button>
