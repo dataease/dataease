@@ -282,10 +282,10 @@ onMounted(() => {
           ></background-overall-common>
         </el-collapse-item>
         <el-collapse-item :title="'视图配色'" name="graphical">
-          <component-color-selector
-            class="item-show"
-            @onColorChange="onColorChange"
-          ></component-color-selector>
+          <!--          <component-color-selector-->
+          <!--            class="item-show"-->
+          <!--            @onColorChange="onColorChange"-->
+          <!--          ></component-color-selector>-->
         </el-collapse-item>
         <el-collapse-item name="viewTitle">
           <template #title>
