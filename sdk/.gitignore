@@ -54,5 +54,8 @@ pnpm-debug.log*
 .lh
 .factorypath
 
+### Spring flatten ###
+.flattened-pom.xml
+
 package-lock.json
 *.versionsBackup

@@ -54,5 +54,7 @@ pnpm-debug.log*
 .settings/
 .lh
 
+### Spring flatten ###
+.flattened-pom.xml
 
 package-lock.json
