@@ -287,7 +287,7 @@ const saveLinkageSetting = () => {
           <user-view-group themes="light" :dv-model="dvModel"></user-view-group>
         </component-group>
         <component-group
-          :base-width="148"
+          :base-width="115"
           :show-split-line="true"
           themes="light"
           icon-name="dv-filter"
@@ -295,13 +295,13 @@ const saveLinkageSetting = () => {
         >
           <query-group themes="light" :dv-model="dvModel"></query-group>
         </component-group>
-        <component-group themes="light" :base-width="148" icon-name="dv-text" title="文本">
+        <component-group themes="light" :base-width="115" icon-name="dv-text" title="文本">
           <text-group themes="light" :dv-model="dvModel"></text-group>
         </component-group>
-        <component-group themes="light" icon-name="dv-media" title="图片">
+        <component-group themes="light" :base-width="115" icon-name="dv-media" title="图片">
           <media-group themes="light" :dv-model="dvModel"></media-group>
         </component-group>
-        <component-group themes="light" icon-name="dv-tab" title="Tab">
+        <component-group themes="light" :base-width="115" icon-name="dv-tab" title="Tab">
           <tabs-group themes="light" :dv-model="dvModel"></tabs-group>
         </component-group>
         <!--        <component-button :show-split-line="true" icon-name="dv-tab" title="Tab"></component-button>-->
