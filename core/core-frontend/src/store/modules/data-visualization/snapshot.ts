@@ -30,7 +30,7 @@ let defaultCanvasInfo = {
 export const snapshotStore = defineStore('snapshot', {
   state: () => {
     return {
-      styleChangeTimes: 0, // 组件样式修改次数
+      styleChangeTimes: -1, // 组件样式修改次数
       cacheStyleChangeTimes: 0, // 仪表板未缓存的组件样式修改次数
       snapshotCacheTimes: 0, // 当前未计入镜像中的修改变动次数, 此为定时缓存，缓存间隔时间5秒一次 针对类型样式这种变动不大的修改
       cacheViewIdInfo: {
@@ -125,9 +125,13 @@ export const snapshotStore = defineStore('snapshot', {
       }
     },
 
-    recordSnapshot(type) {
+    resetStyleChangeTimes() {
+      this.styleChangeTimes = 0
+    },
+
+    recordSnapshot() {
+      this.styleChangeTimes = ++this.styleChangeTimes
       if (dataPrepareState.value) {
-        // console.log('recordSnapshot-' + type)
         // 添加新的快照
         const newSnapshot = {
           componentData: deepCopy(componentData.value),
@@ -140,7 +144,6 @@ export const snapshotStore = defineStore('snapshot', {
         if (this.snapshotIndex < this.snapshotData.length - 1) {
           this.snapshotData = this.snapshotData.slice(0, this.snapshotIndex + 1)
         }
-        // console.log('recordSnapshot-' + JSON.stringify(this.snapshotData))
         // 清理缓存计数器
         this.snapshotCacheTimes = 0
       }

@@ -13,7 +13,7 @@
             <template #reference>
               <div :style="{ cursor: 'pointer', marginTop: '2px', width: '180px' }">
                 <span
-                  v-for="(c, index) in colorForm.basicStyle.colors"
+                  v-for="(c, index) in colorForm.basicStyle?.colors"
                   :key="index"
                   :style="{
                     width: '20px',
