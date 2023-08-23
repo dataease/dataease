@@ -94,12 +94,7 @@ public class CustomWhere2Str {
                         } else if (StringUtils.containsIgnoreCase(filterItemDTO.getTerm(), "like")) {
                             whereValue = "'%" + value + "%'";
                         } else {
-                            try {
-                                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                                value = simpleDateFormat.parse(value).getTime() + "";
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
+                            value = Utils.allDateFormat2Long(value) + "";
                             whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE, value);
                         }
                         list.add(SQLObj.builder()
