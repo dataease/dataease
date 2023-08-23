@@ -3,7 +3,7 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { storeToRefs } from 'pinia'
 import { nextTick, onMounted, reactive, ref, watch } from 'vue'
-import { uploadFileResult } from '@/api/staticResource'
+import { beforeUploadCheck, uploadFileResult } from '@/api/staticResource'
 import { ElIcon, ElMessage } from 'element-plus-secondary'
 import {
   COLOR_CASES,
@@ -58,8 +58,10 @@ const handleRemove = (file, fileList) => {
 }
 async function upload(file) {
   uploadFileResult(file.file, fileUrl => {
-    canvasStyleData.value.background = fileUrl
-    fileList.value = [{ url: imgUrlTrans(canvasStyleData.value.background) }]
+    if (fileUrl) {
+      canvasStyleData.value.background = fileUrl
+      fileList.value = [{ url: imgUrlTrans(canvasStyleData.value.background) }]
+    }
   })
 }
 
@@ -104,8 +106,10 @@ const reUpload = e => {
     sizeMessage()
   }
   uploadFileResult(file, fileUrl => {
-    canvasStyleData.value.background = fileUrl
-    fileList.value = [{ url: imgUrlTrans(canvasStyleData.value.background) }]
+    if (fileUrl) {
+      canvasStyleData.value.background = fileUrl
+      fileList.value = [{ url: imgUrlTrans(canvasStyleData.value.background) }]
+    }
   })
 }
 
@@ -242,6 +246,7 @@ onMounted(() => {
                   :on-preview="handlePictureCardPreview"
                   :on-remove="handleRemove"
                   :http-request="upload"
+                  :before-upload="beforeUploadCheck"
                   :file-list="fileList"
                 >
                   <el-icon><Plus /></el-icon>
