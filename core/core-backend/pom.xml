@@ -88,18 +88,7 @@
             <properties>
                 <profiles.active>standalone</profiles.active>
             </properties>
-            <dependencies>
-                <dependency>
-                    <groupId>io.dataease</groupId>
-                    <artifactId>xpack-permissions</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>io.dataease</groupId>
-                    <artifactId>xpack-base</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
-            </dependencies>
+
             <build>
                 <plugins>
                     <plugin>
