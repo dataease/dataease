@@ -160,19 +160,36 @@
   color: #04B49C;
 }
 
+
+
 .hover-icon {
   cursor: pointer;
   height: 24px !important;
   width: 24px !important;
+  font-size: 16px !important;
   border-radius: 4px;
+  color: #646A73 !important;
+
+  &[aria-expanded="true"] {
+    background: rgba(31, 35, 41, 0.1);
+  }
 
   &:hover {
     background: rgba(31, 35, 41, 0.1);
   }
 }
 
+.tree-icon {
+  cursor: pointer;
+  font-size: 16px;
+  border-radius: 4px;
+}
+
 .hover-icon-in-table {
   color: #3370FF !important;
+  &[aria-expanded="true"] {
+    background: rgba(51,112,255,.1);
+  }
   &:hover {
     background: rgba(51,112,255,.1);
   }

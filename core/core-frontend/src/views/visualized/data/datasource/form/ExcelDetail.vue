@@ -264,7 +264,9 @@ const saveExcelDs = (params, successCb, finallyCb) => {
   }
 
   let table = {}
-  param.value.name = params.name
+  if (params) {
+    param.value.name = params.name
+  }
   if (!props.param.id) {
     table = {
       id: props.param.id,
@@ -396,10 +398,18 @@ const excelForm = ref()
 const submitForm = () => {
   return excelForm.value.validate
 }
+
+const showName = ref(true)
+
+const appendReplaceExcel = response => {
+  showName.value = false
+  uploadSuccess(response)
+}
 defineExpose({
   saveExcelDs,
   submitForm,
-  sheetFile
+  sheetFile,
+  appendReplaceExcel
 })
 </script>
 
@@ -480,6 +490,7 @@ defineExpose({
         </el-form-item>
         <el-form-item
           prop="name"
+          v-if="showName"
           :rules="[
             {
               required: true,
