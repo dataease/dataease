@@ -227,7 +227,7 @@ const validateDS = () => {
     configuration: string
     apiConfiguration: string
   }
-  if (form.type === 'API') {
+  if (currentDsType.value === 'API') {
     if (form.apiConfiguration.length == 0) {
       return
     }
@@ -272,7 +272,7 @@ const saveDS = () => {
     configuration: string
     apiConfiguration: string
   }
-  if (form.type === 'Excel') {
+  if (currentDsType.value === 'Excel') {
     if (!excel.value.sheetFile?.name) {
       ElMessage.error('请先上传Excel文件!')
       return
@@ -290,7 +290,7 @@ const saveDS = () => {
     })
 
     return
-  } else if (form.type === 'API') {
+  } else if (currentDsType.value === 'API') {
     if (form.apiConfiguration.length == 0) {
       return
     }
@@ -348,7 +348,7 @@ const visible = ref(false)
 const editDs = ref(false)
 const pid = ref('0')
 
-const init = (nodeInfo: Form | Param, id?: string) => {
+const init = (nodeInfo: Form | Param, id?: string, res?: object) => {
   editDs.value = !!nodeInfo
 
   if (!!nodeInfo) {
@@ -370,9 +370,22 @@ const init = (nodeInfo: Form | Param, id?: string) => {
     nextTick(() => {
       currentDsType.value = nodeInfo.type
       activeStep.value = 1
+      if (!!res) {
+        nextTick(() => {
+          excel.value.appendReplaceExcel(res)
+        })
+      }
     })
   }
 }
+
+const drawTitle = computed(() => {
+  const { id, editType } = form2
+  if (id && currentDsType.value == 'Excel') {
+    return editType === 1 ? '追加数据' : '替换数据'
+  }
+  return editDs.value ? t('datasource.modify') : '创建数据源'
+})
 
 defineExpose({
   init
@@ -389,7 +402,7 @@ defineExpose({
     v-model="visible"
   >
     <template #header="{ close }">
-      <span>{{ editDs ? t('datasource.modify') : '创建数据源' }}</span>
+      <span>{{ drawTitle }}</span>
       <div v-if="!editDs" class="editor-step flex-center">
         <el-steps space="150px" :active="activeStep" align-center>
           <el-step>
