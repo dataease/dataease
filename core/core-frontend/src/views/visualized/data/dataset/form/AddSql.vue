@@ -171,6 +171,10 @@ getDatasource()
 
 const emits = defineEmits(['close', 'save'])
 
+let changeFlag = false
+const setFlag = () => {
+  changeFlag = true
+}
 const save = (cb?: () => void) => {
   parseVariable()
   let sql = codeCom.value.state.doc.toString()
@@ -197,15 +201,21 @@ const close = () => {
 }
 
 const handleClose = () => {
-  ElMessageBox.confirm(t('chart.tips'), {
-    confirmButtonType: 'primary',
-    tip: '你填写的信息未保存，确认退出吗？',
-    type: 'warning',
-    autofocus: false,
-    showClose: false
-  }).then(() => {
+  let sql = codeCom.value.state.doc.toString()
+  if (changeFlag || Base64.decode(sqlNode.value.sql) !== sql) {
+    ElMessageBox.confirm(t('chart.tips'), {
+      confirmButtonType: 'primary',
+      tip: '你填写的信息未保存，确认退出吗？',
+      type: 'warning',
+      autofocus: false,
+      showClose: false
+    }).then(() => {
+      close()
+      changeFlag = false
+    })
+  } else {
     close()
-  })
+  }
 }
 const getSQLPreview = () => {
   parseVariable()
@@ -331,7 +341,7 @@ const mousedownDrag = () => {
 
 <template>
   <div class="add-sql-name">
-    <el-input class="name" ref="editerName" v-model="sqlNode.tableName" />
+    <el-input class="name" ref="editerName" v-model="sqlNode.tableName" @change="setFlag" />
     <div class="save-or-cancel flex-align-center">
       <el-button @click="getSQLPreview" text style="color: #1f2329">
         <template #icon>
