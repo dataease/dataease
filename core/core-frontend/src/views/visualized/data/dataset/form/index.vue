@@ -11,7 +11,7 @@ import { useRoute, useRouter } from 'vue-router'
 import UnionEdit from './UnionEdit.vue'
 import type { FormInstance } from 'element-plus-secondary'
 import CreatDsGroup from './CreatDsGroup.vue'
-import { guid, getFieldName, timeTypes } from './util.js'
+import { guid, getFieldName, timeTypes } from './util'
 import { fieldType } from '@/utils/attr'
 import {
   getDatasourceList,

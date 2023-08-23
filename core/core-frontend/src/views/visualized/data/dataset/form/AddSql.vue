@@ -11,7 +11,7 @@ import { getDatasourceList, getTables, getPreviewSql } from '@/api/dataset'
 import type { DataSource } from './index.vue'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
 import { EmptyBackground } from '@/components/empty-background'
-import { timestampFormatDate, defaultValueScopeList, fieldOptions } from './util.js'
+import { timestampFormatDate, defaultValueScopeList, fieldOptions } from './util'
 import { fieldType } from '@/utils/attr'
 
 export interface SqlNode {
@@ -662,7 +662,7 @@ const mousedownDrag = () => {
             popper-class="cascader-panel"
             v-model="scope.row.type"
             :options="fieldOptions"
-            @change="scope.row = ''"
+            @change="scope.row.defaultValue = ''"
           >
             <template v-slot="{ data }">
               <el-icon>
@@ -713,7 +713,7 @@ const mousedownDrag = () => {
             type="number"
           >
             <template #prepend>
-              <el-select v-model="scope.row.defaultValueScope" style="width: 100px">
+              <el-select v-model="scope.row.defaultValueScope" style="width: 168px">
                 <el-option
                   v-for="item in defaultValueScopeList"
                   :key="item.value"
@@ -725,10 +725,10 @@ const mousedownDrag = () => {
           </el-input>
           <div
             v-if="getIconName(scope.row.type[0]) === 'time'"
-            class="el-input-group el-input-group--prepend de-group__prepend"
+            class="ed-input-group ed-input-group--prepend de-group__prepend"
           >
-            <div class="el-input-group__prepend">
-              <el-select v-model="scope.row.defaultValueScope" style="width: 100px" size="small">
+            <div class="ed-input-group__prepend">
+              <el-select v-model="scope.row.defaultValueScope" style="width: 168px">
                 <el-option
                   v-for="item in defaultValueScopeList"
                   :key="item.value"
@@ -741,7 +741,6 @@ const mousedownDrag = () => {
               v-if="scope.row.type[0] === 'DATETIME-YEAR'"
               v-model="scope.row.defaultValue"
               type="year"
-              value-format="yyyy"
               :placeholder="t('dataset.select_year')"
             />
 
@@ -1105,6 +1104,20 @@ const mousedownDrag = () => {
 .sql-dataset-drawer {
   .de-group__prepend {
     width: 100%;
+
+    .ed-input-group__prepend {
+      .ed-select {
+        margin: 0 -10px 0 -10px;
+      }
+    }
+
+    .ed-date-editor {
+      .ed-input__wrapper {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+        width: 100%;
+      }
+    }
   }
 
   .ed-date-editor {
