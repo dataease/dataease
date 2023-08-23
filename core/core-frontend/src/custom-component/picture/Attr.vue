@@ -6,7 +6,7 @@ import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapsho
 import { storeToRefs } from 'pinia'
 import { ElIcon, ElMessage } from 'element-plus-secondary'
 import { ref, toRefs, watch, onMounted } from 'vue'
-import { uploadFileResult } from '@/api/staticResource'
+import { beforeUploadCheck, uploadFileResult } from '@/api/staticResource'
 import { imgUrlTrans } from '@/utils/imgUtils'
 const props = defineProps({
   themes: {
@@ -103,6 +103,7 @@ onMounted(() => {
               :class="{ disabled: uploadDisabled }"
               :on-preview="handlePictureCardPreview"
               :on-remove="handleRemove"
+              :before-upload="beforeUploadCheck"
               :http-request="upload"
               :file-list="fileList"
             >
