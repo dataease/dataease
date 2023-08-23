@@ -2272,7 +2272,7 @@ export default {
           ele.filter = []
         }
       })
-      if (equalsAny(view.type, 'table-pivot', 'bar-group', 'bar-group-stack', 'flow-map') ||
+      if (equalsAny(view.type, 'table-pivot', 'bar-group', 'bar-group-stack', 'flow-map', 'race-bar') ||
         (view.render === 'antv' && view.type === 'line')) {
         view.xaxisExt.forEach(function(ele) {
           if (!ele.dateStyle || ele.dateStyle === '') {
