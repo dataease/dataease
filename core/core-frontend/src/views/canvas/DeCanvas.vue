@@ -115,7 +115,7 @@ const handleMouseDown = e => {
 }
 
 const canvasInit = () => {
-  nextTick(() => {
+  setTimeout(function () {
     if (canvasOut.value) {
       dashboardCanvasSizeInit()
       nextTick(() => {
@@ -127,8 +127,8 @@ const canvasInit = () => {
     }
     // afterInit
     dvMainStore.setDataPrepareState(true)
-    snapshotStore.recordSnapshot('db-init')
-  })
+    snapshotStore.recordSnapshot()
+  }, 500)
 }
 
 const canvasSizeInit = () => {
