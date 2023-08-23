@@ -301,7 +301,10 @@ const saveDS = () => {
         request.apiConfiguration[i].deTableName === null
       ) {
         request.apiConfiguration[i].deTableName =
-          'api_' + request.apiConfiguration[i].name + '_' + uuid.v1()
+          'api_' +
+          request.apiConfiguration[i].name +
+          '_' +
+          uuid.v1().replaceAll('-', '').substring(0, 10)
       }
     }
     request.configuration = Base64.encode(JSON.stringify(request.apiConfiguration))
