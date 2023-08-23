@@ -264,6 +264,7 @@ const saveExcelDs = (params, successCb, finallyCb) => {
   }
 
   let table = {}
+  param.value.name = params.name
   if (!props.param.id) {
     table = {
       id: props.param.id,
