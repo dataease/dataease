@@ -84,7 +84,7 @@ public class Dimension2SQLObj {
                                 String.format(SQLConstants.DATE_FORMAT, String.format(SQLConstants.STR_TO_DATE, originField, SQLConstants.DEFAULT_DATE_FORMAT), "yyyy"),
                                 String.format(SQLConstants.QUARTER, String.format(SQLConstants.STR_TO_DATE, originField, SQLConstants.DEFAULT_DATE_FORMAT)));
                     } else {
-                        fieldName = String.format(SQLConstants.DATE_FORMAT, originField, format);
+                        fieldName = String.format(SQLConstants.CAST_DATE_FORMAT, originField, StringUtils.isEmpty(x.getDateFormat()) ? SQLConstants.DEFAULT_DATE_FORMAT : x.getDateFormat(), format);
                     }
                 } else {
                     String cast = String.format(SQLConstants.CAST, originField, SQLConstants.DEFAULT_INT_FORMAT);
