@@ -5,8 +5,16 @@ import cn.hutool.core.util.HexUtil;
 import cn.hutool.crypto.asymmetric.KeyType;
 import cn.hutool.crypto.asymmetric.RSA;
 import cn.hutool.crypto.symmetric.AES;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.dataease.api.chart.dto.ColumnPermissions;
+import io.dataease.api.ds.vo.ApiDefinition;
+import io.dataease.api.ds.vo.TableField;
 import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
+import io.dataease.datasource.provider.ApiUtils;
 import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.datasource.type.CK;
@@ -19,13 +27,16 @@ import org.apache.calcite.sql.*;
 import org.apache.calcite.sql.parser.SqlParseException;
 import org.apache.calcite.sql.parser.SqlParser;
 import org.apache.calcite.sql.util.SqlShuttle;
+import org.apache.commons.lang3.StringUtils;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.util.Base64Utils;
 
+import java.awt.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.List;
 
 import static org.apache.calcite.sql.SqlKind.*;
 
@@ -38,15 +49,74 @@ public class RsaTest {
 
     @Test
     public void test() {
-        RSA rsa = new RSA();
-        String privateKeyBase64 = rsa.getPrivateKeyBase64();
-        String publicKeyBase64 = rsa.getPublicKeyBase64();
-        LogUtil.info("private is {}", privateKeyBase64);
-        LogUtil.info("public is {}", publicKeyBase64);
-        String data = "my name is cyw";
-        String s = rsa.encryptBase64(data, KeyType.PublicKey);
-        String s1 = rsa.decryptStr(s, KeyType.PrivateKey);
-        LogUtil.info(s1);
+        System.out.println(System.currentTimeMillis() - 24 * 60 * 1000);
+        System.out.println(StringUtils.substring("123456789", 0, 3 ));
+//        RSA rsa = new RSA();
+//        String privateKeyBase64 = rsa.getPrivateKeyBase64();
+//        String publicKeyBase64 = rsa.getPublicKeyBase64();
+//        LogUtil.info("private is {}", privateKeyBase64);
+//        LogUtil.info("public is {}", publicKeyBase64);
+//        String data = "my name is cyw";
+//        String s = rsa.encryptBase64(data, KeyType.PublicKey);
+//        String s1 = rsa.decryptStr(s, KeyType.PrivateKey);
+//        LogUtil.info(s1);
+    }
+
+    @Test
+    public void testAPI() throws Exception{
+//        String str="[\"json-server\", \"python\"]";
+//        List<Object> arry = new ArrayList<>();
+//        arry.addAll(Arrays.asList(str.substring(1, str.length() -1).split(",")));
+//        arry.add("aaa");
+//        System.out.println(arry);
+        String data = "[\n" +
+                "    {\n" +
+                "        \"id\": 1,\n" +
+                "        \"title\": \"aaa\",\n" +
+                "        \"author\": \"typicode\"\n" +
+                "    },\n" +
+                "    {\n" +
+                "        \"id\": 3,\n" +
+                "        \"title\": \"java\",\n" +
+                "        \"author\": \"mahaha\"\n" +
+                "    },\n" +
+                "    {\n" +
+                "        \"id\": 55,\n" +
+                "        \"title\": \"aaa\",\n" +
+                "        \"author\": 225\n" +
+                "    },\n" +
+
+                "    {\n" +
+                "        \"id\": 88,\n" +
+                "        \"title\": \"bbb\",\n" +
+                "        \"author\": 4262\n" +
+                "    }\n" +
+                "]";
+
+
+
+        ApiDefinition apiDefinition = new ApiDefinition();
+        apiDefinition.setFields(new ArrayList<>());
+        apiDefinition.setUseJsonPath(false);
+        JsonFactory jsonFactory = new JsonFactory();
+        jsonFactory.configure(JsonParser.Feature.ALLOW_NUMERIC_LEADING_ZEROS, true);
+        ObjectMapper objectMapper = new ObjectMapper(jsonFactory);
+
+        ApiUtils.objectMapper = objectMapper;
+        ApiUtils.checkApiDefinition(apiDefinition, data);
+
+        for (Map<String, Object> field : apiDefinition.getJsonFields()) {
+            System.out.println( JsonUtil.toJSONString(field));
+        }
+        String jsonArray = "[\"apple\", \"banana\", \"orange\"]";
+
+        // 解析 JSON 数组
+        List<String> fruits = objectMapper.readValue(jsonArray, new TypeReference<List<String>>(){});
+
+        System.out.println("解析得到的数组：");
+        for (String fruit : fruits) {
+            System.out.println(fruit);
+        }
     }
 
     @Test
