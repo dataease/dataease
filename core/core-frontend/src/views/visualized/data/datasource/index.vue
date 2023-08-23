@@ -996,10 +996,18 @@ const defaultProps = {
         <el-table-column prop="originName" :label="t('datasource.column_name')" />
         <el-table-column prop="type" :label="t('datasource.field_type')">
           <template #default="scope">
-            <span v-if="nodeInfo.type !== 'api'">
-              {{ scope.row.type }}
-            </span>
-            <span v-if="nodeInfo.type === 'api'">{{ getFieldType(scope.row.fieldType) }}</span>
+            <div class="flex-align-center icon">
+              <el-icon>
+                <icon
+                  :name="`field_${fieldType[scope.row.deType]}`"
+                  :class="`field-icon-${fieldType[scope.row.deType]}`"
+                ></icon>
+              </el-icon>
+              {{
+                t(`dataset.${fieldType[scope.row.deType]}`) +
+                `${scope.row.deType === 3 ? '(' + t('dataset.float') + ')' : ''}`
+              }}
+            </div>
           </template>
         </el-table-column>
         <el-table-column
