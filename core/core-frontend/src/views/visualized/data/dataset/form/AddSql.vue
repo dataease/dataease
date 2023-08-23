@@ -175,9 +175,11 @@ let changeFlag = false
 const setFlag = () => {
   changeFlag = true
 }
+let sql = ''
+
 const save = (cb?: () => void) => {
   parseVariable()
-  let sql = codeCom.value.state.doc.toString()
+  sql = codeCom.value.state.doc.toString()
   if (!sql.trim()) {
     ElMessage.error('SQL不能为空')
     return
@@ -191,6 +193,7 @@ const save = (cb?: () => void) => {
     },
     cb
   )
+  changeFlag = false
   ElMessage.success(t('common.save_success'))
 }
 
@@ -201,8 +204,12 @@ const close = () => {
 }
 
 const handleClose = () => {
-  let sql = codeCom.value.state.doc.toString()
-  if (changeFlag || Base64.decode(sqlNode.value.sql) !== sql) {
+  let sqlNew = codeCom.value.state.doc.toString()
+  if (Base64.decode(sqlNode.value.sql) && !sqlNew.trim()) {
+    ElMessage.error('SQL不能为空')
+    return
+  }
+  if (changeFlag || sql !== sqlNew) {
     ElMessageBox.confirm(t('chart.tips'), {
       confirmButtonType: 'primary',
       tip: '你填写的信息未保存，确认退出吗？',
