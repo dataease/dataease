@@ -52,7 +52,7 @@ const newComponent = componentName => {
   >
     <drag-component
       :themes="themes"
-      name="Text"
+      name="文本"
       label="文本"
       drag-info="VText&VText"
     ></drag-component>
@@ -61,7 +61,7 @@ const newComponent = componentName => {
 
 <style lang="less" scoped>
 .group {
-  padding-top: 5px;
+  padding: 12px 8px;
 }
 .custom_img {
   width: 100px;

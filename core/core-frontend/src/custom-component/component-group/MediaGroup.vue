@@ -51,7 +51,7 @@ const handleDragEnd = e => {
   >
     <drag-component
       :themes="themes"
-      icon="other_media"
+      icon="dv-picture"
       label="图片"
       drag-info="Picture&Picture"
     ></drag-component>
@@ -60,6 +60,6 @@ const handleDragEnd = e => {
 
 <style lang="less" scoped>
 .group {
-  padding-top: 5px;
+  padding: 12px 8px;
 }
 </style>
