@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import eventBus from '@/utils/eventBus'
 import QueryConditionConfiguration from './QueryConditionConfiguration.vue'
-import type { Field, ComponentInfo } from '@/api/chart'
+import type { ComponentInfo } from '@/api/chart'
 import { onBeforeUnmount, reactive, ref, toRefs, watch, computed, nextTick } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
@@ -279,6 +279,9 @@ const clearData = () => {
     })
   })
 }
+const listVisible = computed(() => {
+  return list.value.filter(itx => itx.visible)
+})
 
 const queryData = () => {
   const emitterList = (element.value.propValue || []).reduce((pre, next) => {
@@ -309,7 +312,7 @@ const queryData = () => {
       @drop.prevent.stop="drop"
     >
       <div class="query-fields-container">
-        <div class="query-item" :key="ele.id" v-for="(ele, index) in list">
+        <div class="query-item" :key="ele.id" v-for="(ele, index) in listVisible">
           <div class="query-field">
             <div class="label">
               <div class="label-wrapper">
@@ -338,7 +341,10 @@ const queryData = () => {
             </div>
           </div>
         </div>
-        <div class="query-button" v-if="!!list.length && customStyle.layout === 'horizontal'">
+        <div
+          class="query-button"
+          v-if="!!listVisible.length && customStyle.layout === 'horizontal'"
+        >
           <el-button @click.stop="resetData" v-if="customStyle.btnList.includes('reset')" secondary>
             {{ t('chart.reset') }}
           </el-button>
@@ -354,7 +360,7 @@ const queryData = () => {
           </el-button>
         </div>
       </div>
-      <div class="query-button" v-if="!!list.length && customStyle.layout === 'vertical'">
+      <div class="query-button" v-if="!!listVisible.length && customStyle.layout === 'vertical'">
         <el-button @click.stop="resetData" v-if="customStyle.btnList.includes('reset')" secondary>
           {{ t('chart.reset') }}
         </el-button>
