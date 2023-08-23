@@ -4,7 +4,7 @@ import {
 } from '@/views/chart/components/js/panel/types/impl/g2plot'
 import { ScatterOptions, Scatter as G2Scatter } from '@antv/g2plot/esm/plots/scatter'
 import { flow, parseJson } from '../../../util'
-import { singleDimensionTooltipFormatter } from '../../../formatter'
+import { singleDimensionTooltipFormatter, valueFormatter } from '../../../formatter'
 import { getPadding } from '../../common/common_antv'
 import { Datum } from '@antv/g2plot/esm/types/common'
 
@@ -96,6 +96,20 @@ export class Scatter extends G2PlotChartView<ScatterOptions, G2Scatter> {
       size: basicStyle.scatterSymbolSize,
       shape: basicStyle.scatterSymbol
     }
+  }
+
+  protected configYAxis(chart: Chart, options: ScatterOptions): ScatterOptions {
+    const tmpOptions = super.configYAxis(chart, options)
+    if (!tmpOptions.yAxis) {
+      return tmpOptions
+    }
+    const yAxis = parseJson(chart.customStyle).yAxis
+    if (tmpOptions.yAxis.label) {
+      tmpOptions.yAxis.label.formatter = value => {
+        return valueFormatter(value, yAxis.axisLabelFormatter)
+      }
+    }
+    return tmpOptions
   }
 
   protected setupOptions(chart: Chart, options: ScatterOptions) {

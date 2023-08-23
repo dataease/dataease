@@ -196,6 +196,20 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
     }
   }
 
+  protected configYAxis(chart: Chart, options: LineOptions): LineOptions {
+    const tmpOptions = super.configYAxis(chart, options)
+    if (!tmpOptions.yAxis) {
+      return tmpOptions
+    }
+    const yAxis = parseJson(chart.customStyle).yAxis
+    if (tmpOptions.yAxis.label) {
+      tmpOptions.yAxis.label.formatter = value => {
+        return valueFormatter(value, yAxis.axisLabelFormatter)
+      }
+    }
+    return tmpOptions
+  }
+
   protected setupOptions(chart: Chart, options: LineOptions): LineOptions {
     return flow(
       this.configTheme,
