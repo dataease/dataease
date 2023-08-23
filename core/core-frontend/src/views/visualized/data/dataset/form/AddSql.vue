@@ -713,7 +713,7 @@ const mousedownDrag = () => {
             type="number"
           >
             <template #prepend>
-              <el-select v-model="scope.row.defaultValueScope" style="width: 168px">
+              <el-select v-model="scope.row.defaultValueScope" style="width: calc(100% + 22px)">
                 <el-option
                   v-for="item in defaultValueScopeList"
                   :key="item.value"
