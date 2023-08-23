@@ -8,11 +8,15 @@ import java.util.Date;
 
 public class ScalarFunctions {
     public static String format = "yyyy-MM-dd HH:mm:ss";
+    public static String timeOnly = "HH:mm:ss";
 
     public static String date_format(String date, String format) {
         try {
             if (StringUtils.isEmpty(date)) {
                 return null;
+            }
+            if (StringUtils.equalsIgnoreCase(format, timeOnly)) {
+                date = date.split(" ")[1];
             }
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
             Date parse = simpleDateFormat.parse(date);
@@ -26,6 +30,9 @@ public class ScalarFunctions {
         try {
             if (StringUtils.isEmpty(date)) {
                 return null;
+            }
+            if (StringUtils.equalsIgnoreCase(format, timeOnly)) {
+                date = date.split(" ")[1];
             }
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
             Date parse = simpleDateFormat.parse(date);

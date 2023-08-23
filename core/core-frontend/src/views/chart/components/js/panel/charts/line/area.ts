@@ -24,7 +24,6 @@ import {
 import { IntervalGeometryLabelPosition } from '@antv/g2/lib/interface'
 import { Label } from '@antv/g2plot/lib/types/label'
 import { Datum } from '@antv/g2plot/esm/types/common'
-import { color } from 'highcharts'
 
 const DEFAULT_DATA = []
 export class Area extends G2PlotChartView<AreaOptions, G2Area> {
@@ -176,6 +175,20 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
       point,
       areaStyle
     }
+  }
+
+  protected configYAxis(chart: Chart, options: AreaOptions): AreaOptions {
+    const tmpOptions = super.configYAxis(chart, options)
+    if (!tmpOptions.yAxis) {
+      return tmpOptions
+    }
+    const yAxis = parseJson(chart.customStyle).yAxis
+    if (tmpOptions.yAxis.label) {
+      tmpOptions.yAxis.label.formatter = value => {
+        return valueFormatter(value, yAxis.axisLabelFormatter)
+      }
+    }
+    return tmpOptions
   }
 
   protected setupOptions(chart: Chart, options: AreaOptions): AreaOptions {

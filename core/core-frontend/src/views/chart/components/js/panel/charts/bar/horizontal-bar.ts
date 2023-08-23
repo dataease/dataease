@@ -134,21 +134,30 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
     }
     return { ...options, tooltip }
   }
-  protected configCustomXAxis(chart: Chart, options: BarOptions): BarOptions {
-    if (options.xAxis) {
-      const axisValue = parseJson(chart.customStyle).xAxis.axisValue
-      if (!axisValue?.auto) {
-        const axis = {
-          xAxis: {
-            min: axisValue.min,
-            max: axisValue.max,
-            tickCount: axisValue.splitCount
-          }
-        }
-        return { ...options, ...axis }
+  protected configXAxis(chart: Chart, options: BarOptions): BarOptions {
+    const tmpOptions = super.configXAxis(chart, options)
+    if (!tmpOptions.xAxis) {
+      return tmpOptions
+    }
+    const xAxis = parseJson(chart.customStyle).xAxis
+    const axisValue = xAxis.axisValue
+    if (tmpOptions.xAxis.label) {
+      tmpOptions.xAxis.label.formatter = value => {
+        return valueFormatter(value, xAxis.axisLabelFormatter)
       }
     }
-    return options
+    if (!axisValue?.auto) {
+      const axis = {
+        xAxis: {
+          ...tmpOptions.xAxis,
+          min: axisValue.min,
+          max: axisValue.max,
+          tickCount: axisValue.splitCount
+        }
+      }
+      return { ...tmpOptions, ...axis }
+    }
+    return tmpOptions
   }
 
   protected configBasicStyle(chart: Chart, options: BarOptions): BarOptions {
@@ -191,7 +200,6 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
       this.configTooltip,
       this.configLegend,
       this.configXAxis,
-      this.configCustomXAxis,
       this.configYAxis,
       this.configSlider,
       this.configAnalyseHorizontal
