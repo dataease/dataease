@@ -149,6 +149,7 @@
               :class="{ disabled: state.uploadDisabled }"
               :on-preview="handlePictureCardPreview"
               :on-remove="handleRemove"
+              :before-upload="beforeUploadCheck"
               :http-request="upload"
               :file-list="state.fileList"
             >
@@ -178,7 +179,7 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
-import { uploadFileResult } from '@/api/staticResource'
+import { beforeUploadCheck, uploadFileResult } from '@/api/staticResource'
 import { useI18n } from '@/hooks/web/useI18n'
 import { deepCopy } from '@/utils/utils'
 const dvMainStore = dvMainStoreWithOut()
@@ -236,7 +237,7 @@ const init = () => {
 }
 queryBackground()
 const commitStyle = () => {
-  snapshotStore.recordSnapshot('BackgroundOverallCommon-themeChange')
+  snapshotStore.recordSnapshot()
 }
 const onChangeType = () => {
   commitStyle()

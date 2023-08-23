@@ -195,9 +195,6 @@ public class ExcelUtils {
                     field.setDeExtractType(3);
                 }
 
-
-
-
             }
             long size = 0;
             String unit = "B";
@@ -338,7 +335,7 @@ public class ExcelUtils {
             for (Integer key : dataMap.keySet()) {
                 String value = dataMap.get(key);
                 if (StringUtils.isEmpty(value)) {
-                    value = "none";
+                    value = "";
                 }
                 line.add(value);
             }
@@ -381,8 +378,11 @@ public class ExcelUtils {
                         tableFiled.setOriginName(s);
                         fields.add(tableFiled);
                     }
-                    List<String[]> data = (isPreview && noModelDataListener.getData().size() > 100 ? new ArrayList<>(noModelDataListener.getData().subList(0, 100)) : noModelDataListener.getData());
+                    List<String[]> data = new ArrayList<>(noModelDataListener.getData());
                     if (isPreview) {
+                        if(data.size() > 100){
+                            data = data.subList(0, 100);
+                        }
                         for (int i = 0; i < data.size(); i++) {
                             for (int j = 0; j < data.get(i).length; j++) {
                                 if (j < fields.size()) {

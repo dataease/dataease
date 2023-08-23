@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ElMessage } from 'element-plus-secondary'
+import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { generateID } from '@/utils/generateID'
 import toast from '@/utils/toast'
 import Preview from '@/components/data-visualization/canvas/Preview.vue'
@@ -16,7 +16,7 @@ import { lockStoreWithOut } from '@/store/modules/data-visualization/lock'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { storeToRefs } from 'pinia'
 import Icon from '../icon-custom/src/Icon.vue'
-import { update, save } from '@/api/visualization/dataVisualization'
+import { update, save, deleteLogic } from '@/api/visualization/dataVisualization'
 import ComponentGroup from '@/components/visualization/ComponentGroup.vue'
 import UserViewGroup from '@/custom-component/component-group/UserViewGroup.vue'
 import MediaGroup from '@/custom-component/component-group/MediaGroup.vue'
@@ -33,6 +33,7 @@ const dvMainStore = dvMainStoreWithOut()
 const composeStore = composeStoreWithOut()
 const lockStore = lockStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
+const { styleChangeTimes } = storeToRefs(snapshotStore)
 const {
   curComponent,
   canvasStyleData,
@@ -160,6 +161,7 @@ const saveCanvas = () => {
     ...dvInfo.value
   }
   save(canvasInfo).then(res => {
+    snapshotStore.resetStyleChangeTimes()
     ElMessage.success('保存成功')
   })
 }
@@ -185,7 +187,18 @@ const editCanvasName = () => {
 
 const backToMain = () => {
   const url = '#/screen/index?dvId=' + dvInfo.value.id
-  window.open(url, '_self')
+  if (styleChangeTimes.value > 0) {
+    ElMessageBox.confirm('当前的更改尚未保存，确定退出吗？', {
+      confirmButtonType: 'danger',
+      type: 'warning',
+      autofocus: false,
+      showClose: false
+    }).then(() => {
+      window.open(url, '_self')
+    })
+  } else {
+    window.open(url, '_self')
+  }
 }
 
 eventBus.on('preview', preview)
@@ -236,7 +249,11 @@ eventBus.on('clearCanvas', clearCanvas)
           style="float: right; margin-right: 12px"
           >预览</el-button
         >
-        <el-button @click="saveCanvas()" style="float: right; margin-right: 12px" type="primary"
+        <el-button
+          @click="saveCanvas()"
+          :disabled="styleChangeTimes < 1"
+          style="float: right; margin-right: 12px"
+          type="primary"
           >保存</el-button
         >
       </div>
@@ -300,11 +317,12 @@ eventBus.on('clearCanvas', clearCanvas)
       width: 300px;
       overflow: hidden;
       cursor: pointer;
+      color: @dv-canvas-main-font-color;
       input {
         position: absolute;
         left: 0;
         width: 100%;
-        color: #fff;
+        color: @dv-canvas-main-font-color;
         background-color: #050e21;
         outline: none;
         border: 1px solid #295acc;

@@ -3,7 +3,10 @@ package io.dataease.dataset.manage;
 import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.dataset.union.*;
 import io.dataease.api.dataset.union.model.SQLObj;
+import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
+import io.dataease.api.permissions.auth.dto.BusiPerCheckDTO;
 import io.dataease.commons.utils.SqlparserUtils;
+import io.dataease.constant.AuthEnum;
 import io.dataease.dataset.constant.DatasetTableType;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableMapper;
 import io.dataease.dataset.dto.DatasourceSchemaDTO;
@@ -25,6 +28,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -45,10 +49,11 @@ public class DatasetSQLManage {
     private CoreDatasourceMapper coreDatasourceMapper;
     @Resource
     private EngineServer engineServer;
+    @Autowired(required = false)
+    private InteractiveAuthApi interactiveAuthApi;
 
     private static Logger logger = LoggerFactory.getLogger(DatasetSQLManage.class);
 
-    // 编辑模式下使用
     public Map<String, Object> getUnionSQLForEdit(DatasetGroupInfoDTO dataTableInfoDTO) throws Exception {
         Map<Long, DatasourceSchemaDTO> dsMap = new LinkedHashMap<>();
         List<UnionDTO> union = dataTableInfoDTO.getUnion();
@@ -284,6 +289,14 @@ public class DatasetSQLManage {
     }
 
     private String putObj2Map(Map<Long, DatasourceSchemaDTO> dsMap, DatasetTableDTO ds) throws Exception {
+        // 通过datasource id校验数据源权限
+        if (interactiveAuthApi != null) {
+            BusiPerCheckDTO dto = new BusiPerCheckDTO();
+            dto.setId(ds.getDatasourceId());
+            dto.setAuthEnum(AuthEnum.READ);
+            interactiveAuthApi.checkAuth(dto);
+        }
+
         String schemaAlias;
         if (StringUtils.equalsIgnoreCase(ds.getType(), DatasetTableType.DB) || StringUtils.equalsIgnoreCase(ds.getType(), DatasetTableType.SQL)) {
             CoreDatasource coreDatasource = coreDatasourceMapper.selectById(ds.getDatasourceId());
@@ -294,16 +307,16 @@ public class DatasetSQLManage {
                 coreDatasource = engineServer.getDeEngine();
             }
             schemaAlias = String.format(SQLConstants.SCHEMA, coreDatasource.getId());
-            if (!dsMap.containsKey(ds.getDatasourceId())) {
+            if (!dsMap.containsKey(coreDatasource.getId())) {
                 DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
                 BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
                 datasourceSchemaDTO.setSchemaAlias(schemaAlias);
-                dsMap.put(ds.getDatasourceId(), datasourceSchemaDTO);
+                dsMap.put(coreDatasource.getId(), datasourceSchemaDTO);
             }
         } else {
             CoreDatasource coreDatasource = engineServer.getDeEngine();
             schemaAlias = String.format(SQLConstants.SCHEMA, coreDatasource.getId());
-            if (!dsMap.containsKey(ds.getDatasourceId())) {
+            if (!dsMap.containsKey(coreDatasource.getId())) {
                 DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
                 BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
                 datasourceSchemaDTO.setSchemaAlias(schemaAlias);

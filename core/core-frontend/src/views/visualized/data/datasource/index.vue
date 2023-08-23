@@ -532,7 +532,7 @@ const handleClick = (tabName: TabPaneName) => {
         })
         if (!!tabList.value.length && !activeTab.value) {
           activeTab.value = tabList.value[0].value
-          if (nodeInfo.type === 'API' || nodeInfo.type === 'Excel') {
+          if (nodeInfo.type === 'Excel') {
             handleTabClick(activeTab)
           }
         }

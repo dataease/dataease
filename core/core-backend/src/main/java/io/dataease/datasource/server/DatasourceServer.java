@@ -128,7 +128,6 @@ public class DatasourceServer implements DatasourceApi {
             dataSourceDTO.setConfiguration("");
         }
         if (dataSourceDTO.getId() != null && dataSourceDTO.getId() > 0) {
-            System.out.println(JsonUtil.toJSONString(dataSourceDTO));
             return update(dataSourceDTO);
         }
         if (StringUtils.isNotEmpty(dataSourceDTO.getConfiguration())) {
@@ -158,14 +157,16 @@ public class DatasourceServer implements DatasourceApi {
                 datasourceSyncManage.createEngineTable(datasourceRequest.getTable(), tableFields);
             }
             datasourceSyncManage.extractExcelData(coreDatasource.getId(), "all_scope");
-        }
-        if (dataSourceDTO.getType().equals(DatasourceConfiguration.DatasourceType.API.name())) {
+        } else if (dataSourceDTO.getType().equals(DatasourceConfiguration.DatasourceType.API.name())) {
             CoreDatasourceTask coreDatasourceTask = new CoreDatasourceTask();
             BeanUtils.copyBean(coreDatasourceTask, dataSourceDTO.getSyncSetting());
             coreDatasourceTask.setName(coreDatasource.getName() + "-task");
             coreDatasourceTask.setDsId(coreDatasource.getId());
             if(coreDatasourceTask.getStartTime() == null){
-                coreDatasourceTask.setStartTime(System.currentTimeMillis());
+                coreDatasourceTask.setStartTime(System.currentTimeMillis() - 20 * 1000);
+            }
+            if (StringUtils.equalsIgnoreCase(coreDatasourceTask.getSyncRate(), DatasourceTaskServer.ScheduleType.RIGHTNOW.toString())) {
+                coreDatasourceTask.setCron(null);
             }
             datasourceTaskServer.insert(coreDatasourceTask);
             datasourceSyncManage.addSchedule(coreDatasourceTask);
@@ -177,8 +178,9 @@ public class DatasourceServer implements DatasourceApi {
                 List<TableField> tableFields = ApiUtils.getTableFields(datasourceRequest);
                 datasourceSyncManage.createEngineTable(datasourceRequest.getTable(), tableFields);
             }
+        }else {
+            calciteProvider.update(dataSourceDTO);
         }
-        calciteProvider.update(dataSourceDTO);
         return dataSourceDTO;
     }
 
@@ -188,8 +190,8 @@ public class DatasourceServer implements DatasourceApi {
             return save(dataSourceDTO);
         }
         CoreDatasource sourceData = datasourceMapper.selectById(pk);
-        System.out.println(sourceData == null);
         dataSourceDTO.setConfiguration(new String(Base64.getDecoder().decode(dataSourceDTO.getConfiguration())));
+        dataSourceDTO.setPid(sourceData.getPid());
         preCheckDs(dataSourceDTO);
 
         CoreDatasource coreDatasource = new CoreDatasource();
@@ -229,6 +231,9 @@ public class DatasourceServer implements DatasourceApi {
             BeanUtils.copyBean(coreDatasourceTask, dataSourceDTO.getSyncSetting());
             coreDatasourceTask.setName(coreDatasource.getName() + "-task");
             coreDatasourceTask.setDsId(coreDatasource.getId());
+            if (StringUtils.equalsIgnoreCase(coreDatasourceTask.getSyncRate(), DatasourceTaskServer.ScheduleType.RIGHTNOW.toString())) {
+                coreDatasourceTask.setCron(null);
+            }
             datasourceTaskServer.update(coreDatasourceTask);
             for (String deleteTable : toDeleteTables) {
                 datasourceSyncManage.dropEngineTable(deleteTable);
@@ -260,8 +265,8 @@ public class DatasourceServer implements DatasourceApi {
             }
         } else {
             dataSourceManage.innerEdit(coreDatasource);
+            calciteProvider.update(dataSourceDTO);
         }
-        calciteProvider.update(dataSourceDTO);
         return dataSourceDTO;
     }
 

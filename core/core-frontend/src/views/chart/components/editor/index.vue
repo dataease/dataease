@@ -70,6 +70,7 @@ const props = defineProps({
 })
 
 const editCalcField = ref(false)
+const isCalcFieldAdd = ref(true)
 const calcEdit = ref()
 
 const { view, datasetTree } = toRefs(props)
@@ -742,6 +743,7 @@ const saveValueFormatter = () => {
 
 const addCalcField = groupType => {
   editCalcField.value = true
+  isCalcFieldAdd.value = true
   nextTick(() => {
     calcEdit.value.initEdit(
       { groupType, id: guid() },
@@ -752,6 +754,7 @@ const addCalcField = groupType => {
 }
 const editField = item => {
   editCalcField.value = true
+  isCalcFieldAdd.value = false
   nextTick(() => {
     calcEdit.value.initEdit(
       item,
@@ -851,8 +854,8 @@ const autoInsert = element => {
           size="20px"
           @click="collapseChange('chartAreaCollapse')"
         >
-          <Fold v-if="canvasCollapse.chartAreaCollapse" />
-          <Expand v-else />
+          <Fold class="collapse-icon" v-if="canvasCollapse.chartAreaCollapse" />
+          <Expand class="collapse-icon" v-else />
         </el-icon>
         <div class="collapse-title" v-show="canvasCollapse.chartAreaCollapse">
           <span style="font-size: 14px">{{ view.title }}</span>
@@ -1370,8 +1373,8 @@ const autoInsert = element => {
           size="20px"
           @click="collapseChange('datasetAreaCollapse')"
         >
-          <Fold v-if="canvasCollapse.datasetAreaCollapse" />
-          <Expand v-else />
+          <Fold class="collapse-icon" v-if="canvasCollapse.datasetAreaCollapse" />
+          <Expand class="collapse-icon" v-else />
         </el-icon>
         <div class="collapse-title" v-show="canvasCollapse.datasetAreaCollapse">
           <span style="font-size: 14px">数据集</span>
@@ -1600,7 +1603,7 @@ const autoInsert = element => {
       v-if="state.quotaFilterEdit"
       :title="t('chart.add_filter')"
       :visible="state.quotaFilterEdit"
-      :show-close="false"
+      :close-on-click-modal="false"
       width="600px"
       class="dialog-css"
     >
@@ -1617,7 +1620,7 @@ const autoInsert = element => {
       v-if="state.resultFilterEdit"
       :title="t('chart.add_filter')"
       :visible="state.resultFilterEdit"
-      :show-close="false"
+      :close-on-click-modal="false"
       width="600px"
       class="dialog-css"
     >
@@ -1636,7 +1639,7 @@ const autoInsert = element => {
       v-if="state.showEditQuotaCompare"
       :title="t('chart.yoy_setting')"
       :visible="state.showEditQuotaCompare"
-      :show-close="false"
+      :close-on-click-modal="false"
       width="600px"
       class="dialog-css"
     >
@@ -1657,7 +1660,7 @@ const autoInsert = element => {
       v-if="state.showValueFormatter"
       :title="t('chart.value_formatter') + ' - ' + state.valueFormatterItem.name"
       :visible="state.showValueFormatter"
-      :show-close="false"
+      :close-on-click-modal="false"
       width="600px"
       class="dialog-css"
     >
@@ -1678,7 +1681,7 @@ const autoInsert = element => {
       v-if="state.showCustomSort"
       :title="t('chart.custom_sort')"
       :visible="state.showCustomSort"
-      :show-close="false"
+      :close-on-click-modal="false"
       width="500px"
       class="dialog-css"
     >
@@ -1697,7 +1700,12 @@ const autoInsert = element => {
     </el-dialog>
 
     <!--视图计算字段-->
-    <el-dialog v-model="editCalcField" width="1000px" title="新建计算字段">
+    <el-dialog
+      v-model="editCalcField"
+      width="1000px"
+      :title="isCalcFieldAdd ? t('dataset.add_calc_field') : t('dataset.edit_calc_field')"
+      :close-on-click-modal="false"
+    >
       <calc-field-edit ref="calcEdit" />
       <template #footer>
         <el-button secondary @click="closeEditCalc()">{{ t('dataset.cancel') }} </el-button>
@@ -1709,7 +1717,9 @@ const autoInsert = element => {
 
 <style lang="less" scoped>
 @import '@/style/mixin.less';
-
+.collapse-icon {
+  color: @canvas-main-font-color;
+}
 .editor-light {
   border-left: solid 1px @side-outline-border-color-light !important;
   color: @canvas-main-font-color-light!important;
@@ -1986,6 +1996,8 @@ span {
   }
 
   .editor-title {
+    color: @dv-canvas-main-font-color;
+    font-weight: 500;
     height: @component-toolbar-height;
     display: flex;
     align-items: center;
@@ -2115,6 +2127,8 @@ span {
 }
 
 .collapse-title {
+  color: @dv-canvas-main-font-color;
+  font-width: 500;
   width: 35px;
   text-align: center;
   padding: 5px;

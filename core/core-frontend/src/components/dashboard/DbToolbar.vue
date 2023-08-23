@@ -1,11 +1,7 @@
 <script setup lang="ts">
-import { ElMessage } from 'element-plus-secondary'
-import { generateID } from '@/utils/generateID'
-import toast from '@/utils/toast'
-import { commonStyle, commonAttr } from '@/custom-component/component-list'
+import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import eventBus from '@/utils/eventBus'
 import { $, deepCopy } from '@/utils/utils'
-import { changeComponentSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
 import { nextTick, reactive, ref } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
@@ -37,6 +33,7 @@ const composeStore = composeStoreWithOut()
 const lockStore = lockStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const copyStore = copyStoreWithOut()
+const { styleChangeTimes } = storeToRefs(snapshotStore)
 const {
   linkageSettingStatus,
   curLinkageView,
@@ -126,6 +123,7 @@ const edit = () => {
 const saveCanvas = () => {
   dvMainStore.matrixSizeAdaptor()
   canvasSave(() => {
+    snapshotStore.resetStyleChangeTimes()
     ElMessage.success('保存成功')
   })
 }
@@ -143,7 +141,18 @@ const handlePreviewChange = () => {
 
 const backToMain = () => {
   const url = '#/panel/index?dvId=' + dvInfo.value.id
-  window.open(url, '_self')
+  if (styleChangeTimes.value > 0) {
+    ElMessageBox.confirm('当前的更改尚未保存，确定退出吗？', {
+      confirmButtonType: 'danger',
+      type: 'warning',
+      autofocus: false,
+      showClose: false
+    }).then(() => {
+      window.open(url, '_self')
+    })
+  } else {
+    window.open(url, '_self')
+  }
 }
 
 const multiplexingCanvasOpen = () => {
@@ -159,10 +168,8 @@ const openDataBoardSetting = () => {
 }
 
 const batchDelete = () => {
-  componentData.value.forEach((component, index) => {
-    if (curBatchOptComponents.value.includes(component.id)) {
-      eventBus.emit('removeMatrixItem-' + component.canvasId, index)
-    }
+  curBatchOptComponents.value.forEach(componentId => {
+    eventBus.emit('removeMatrixItemById-canvas-main', componentId)
   })
 }
 
@@ -173,7 +180,7 @@ const batchCopy = () => {
       multiplexingComponents[component.id] = component
     }
   })
-  copyStore.copyMultiplexingComponents(canvasViewInfo.value, multiplexingComponents)
+  copyStore.copyMultiplexingComponents(canvasViewInfo.value, multiplexingComponents, true)
 }
 
 const cancelBatchOpt = () => {
@@ -337,6 +344,7 @@ const saveLinkageSetting = () => {
         </el-dropdown>
         <el-button
           v-show="editMode === 'edit'"
+          :disabled="styleChangeTimes < 1"
           @click="saveCanvas()"
           style="float: right; margin-right: 12px"
           type="primary"
