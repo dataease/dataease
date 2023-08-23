@@ -62,7 +62,7 @@ public class Dimension2SQLObj {
         String fieldName = "";
         if (Objects.equals(x.getDeExtractType(), DeTypeConstants.DE_TIME)) {
             if (Objects.equals(x.getDeType(), DeTypeConstants.DE_INT) || Objects.equals(x.getDeType(), DeTypeConstants.DE_FLOAT)) {
-                fieldName = String.format(SQLConstants.UNIX_TIMESTAMP, originField) + "*1000";
+                fieldName = String.format(SQLConstants.UNIX_TIMESTAMP, originField);
             } else if (Objects.equals(x.getDeType(), DeTypeConstants.DE_TIME)) {
                 String format = Utils.transDateFormat(x.getDateStyle(), x.getDatePattern());
                 if (StringUtils.equalsIgnoreCase(x.getDateStyle(), "y_Q")) {
