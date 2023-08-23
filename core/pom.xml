@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>dataease-server</artifactId>
+    <version>${dataease.version}</version>
+    <packaging>pom</packaging>
+
+    <parent>
+        <groupId>io.dataease</groupId>
+        <artifactId>dataease</artifactId>
+        <version>${dataease.version}</version>
+    </parent>
+
+    <!--<parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.4.3</version>
+        <relativePath/>
+    </parent>-->
+
+    <name>dataease</name>
+
+    <modules>
+        <module>frontend</module>
+        <module>mobile</module>
+        <module>backend</module>
+    </modules>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.dataease</groupId>
+                <artifactId>dataease-plugin-interface</artifactId>
+                <version>${dataease.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>guava</artifactId>
+                        <groupId>com.google.guava</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>io.dataease</groupId>
+                <artifactId>dataease-plugin-view</artifactId>
+                <version>${dataease.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.dataease</groupId>
+                <artifactId>dataease-plugin-datasource</artifactId>
+                <version>${dataease.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+    </build>
+
+</project>

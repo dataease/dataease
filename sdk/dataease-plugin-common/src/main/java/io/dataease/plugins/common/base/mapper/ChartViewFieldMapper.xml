@@ -1,0 +1,447 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.dataease.plugins.common.base.mapper.ChartViewFieldMapper">
+  <resultMap id="BaseResultMap" type="io.dataease.plugins.common.base.domain.ChartViewField">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="table_id" jdbcType="VARCHAR" property="tableId" />
+    <result column="chart_id" jdbcType="VARCHAR" property="chartId" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="dataease_name" jdbcType="VARCHAR" property="dataeaseName" />
+    <result column="group_type" jdbcType="VARCHAR" property="groupType" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="size" jdbcType="INTEGER" property="size" />
+    <result column="de_type" jdbcType="INTEGER" property="deType" />
+    <result column="de_type_format" jdbcType="INTEGER" property="deTypeFormat" />
+    <result column="de_extract_type" jdbcType="INTEGER" property="deExtractType" />
+    <result column="ext_field" jdbcType="INTEGER" property="extField" />
+    <result column="checked" jdbcType="BIT" property="checked" />
+    <result column="column_index" jdbcType="INTEGER" property="columnIndex" />
+    <result column="last_sync_time" jdbcType="BIGINT" property="lastSyncTime" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="io.dataease.plugins.common.base.domain.ChartViewField">
+    <result column="origin_name" jdbcType="LONGVARCHAR" property="originName" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, table_id, chart_id, `name`, dataease_name, group_type, `type`, `size`, de_type,
+    de_type_format, de_extract_type, ext_field, `checked`, column_index, last_sync_time
+  </sql>
+  <sql id="Blob_Column_List">
+    origin_name
+  </sql>
+  <select id="selectByExampleWithBLOBs" parameterType="io.dataease.plugins.common.base.domain.ChartViewFieldExample" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from chart_view_field
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" parameterType="io.dataease.plugins.common.base.domain.ChartViewFieldExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from chart_view_field
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="ResultMapWithBLOBs">
+    select
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from chart_view_field
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from chart_view_field
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="io.dataease.plugins.common.base.domain.ChartViewFieldExample">
+    delete from chart_view_field
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="io.dataease.plugins.common.base.domain.ChartViewField">
+    insert into chart_view_field (id, table_id, chart_id,
+      `name`, dataease_name, group_type,
+      `type`, `size`, de_type,
+      de_type_format, de_extract_type, ext_field,
+      `checked`, column_index, last_sync_time,
+      origin_name)
+    values (#{id,jdbcType=VARCHAR}, #{tableId,jdbcType=VARCHAR}, #{chartId,jdbcType=VARCHAR},
+      #{name,jdbcType=VARCHAR}, #{dataeaseName,jdbcType=VARCHAR}, #{groupType,jdbcType=VARCHAR},
+      #{type,jdbcType=VARCHAR}, #{size,jdbcType=INTEGER}, #{deType,jdbcType=INTEGER},
+      #{deTypeFormat,jdbcType=INTEGER}, #{deExtractType,jdbcType=INTEGER}, #{extField,jdbcType=INTEGER},
+      #{checked,jdbcType=BIT}, #{columnIndex,jdbcType=INTEGER}, #{lastSyncTime,jdbcType=BIGINT},
+      #{originName,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="io.dataease.plugins.common.base.domain.ChartViewField">
+    insert into chart_view_field
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="tableId != null">
+        table_id,
+      </if>
+      <if test="chartId != null">
+        chart_id,
+      </if>
+      <if test="name != null">
+        `name`,
+      </if>
+      <if test="dataeaseName != null">
+        dataease_name,
+      </if>
+      <if test="groupType != null">
+        group_type,
+      </if>
+      <if test="type != null">
+        `type`,
+      </if>
+      <if test="size != null">
+        `size`,
+      </if>
+      <if test="deType != null">
+        de_type,
+      </if>
+      <if test="deTypeFormat != null">
+        de_type_format,
+      </if>
+      <if test="deExtractType != null">
+        de_extract_type,
+      </if>
+      <if test="extField != null">
+        ext_field,
+      </if>
+      <if test="checked != null">
+        `checked`,
+      </if>
+      <if test="columnIndex != null">
+        column_index,
+      </if>
+      <if test="lastSyncTime != null">
+        last_sync_time,
+      </if>
+      <if test="originName != null">
+        origin_name,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="tableId != null">
+        #{tableId,jdbcType=VARCHAR},
+      </if>
+      <if test="chartId != null">
+        #{chartId,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="dataeaseName != null">
+        #{dataeaseName,jdbcType=VARCHAR},
+      </if>
+      <if test="groupType != null">
+        #{groupType,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="size != null">
+        #{size,jdbcType=INTEGER},
+      </if>
+      <if test="deType != null">
+        #{deType,jdbcType=INTEGER},
+      </if>
+      <if test="deTypeFormat != null">
+        #{deTypeFormat,jdbcType=INTEGER},
+      </if>
+      <if test="deExtractType != null">
+        #{deExtractType,jdbcType=INTEGER},
+      </if>
+      <if test="extField != null">
+        #{extField,jdbcType=INTEGER},
+      </if>
+      <if test="checked != null">
+        #{checked,jdbcType=BIT},
+      </if>
+      <if test="columnIndex != null">
+        #{columnIndex,jdbcType=INTEGER},
+      </if>
+      <if test="lastSyncTime != null">
+        #{lastSyncTime,jdbcType=BIGINT},
+      </if>
+      <if test="originName != null">
+        #{originName,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="io.dataease.plugins.common.base.domain.ChartViewFieldExample" resultType="java.lang.Long">
+    select count(*) from chart_view_field
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update chart_view_field
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=VARCHAR},
+      </if>
+      <if test="record.tableId != null">
+        table_id = #{record.tableId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.chartId != null">
+        chart_id = #{record.chartId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.name != null">
+        `name` = #{record.name,jdbcType=VARCHAR},
+      </if>
+      <if test="record.dataeaseName != null">
+        dataease_name = #{record.dataeaseName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.groupType != null">
+        group_type = #{record.groupType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.type != null">
+        `type` = #{record.type,jdbcType=VARCHAR},
+      </if>
+      <if test="record.size != null">
+        `size` = #{record.size,jdbcType=INTEGER},
+      </if>
+      <if test="record.deType != null">
+        de_type = #{record.deType,jdbcType=INTEGER},
+      </if>
+      <if test="record.deTypeFormat != null">
+        de_type_format = #{record.deTypeFormat,jdbcType=INTEGER},
+      </if>
+      <if test="record.deExtractType != null">
+        de_extract_type = #{record.deExtractType,jdbcType=INTEGER},
+      </if>
+      <if test="record.extField != null">
+        ext_field = #{record.extField,jdbcType=INTEGER},
+      </if>
+      <if test="record.checked != null">
+        `checked` = #{record.checked,jdbcType=BIT},
+      </if>
+      <if test="record.columnIndex != null">
+        column_index = #{record.columnIndex,jdbcType=INTEGER},
+      </if>
+      <if test="record.lastSyncTime != null">
+        last_sync_time = #{record.lastSyncTime,jdbcType=BIGINT},
+      </if>
+      <if test="record.originName != null">
+        origin_name = #{record.originName,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map">
+    update chart_view_field
+    set id = #{record.id,jdbcType=VARCHAR},
+      table_id = #{record.tableId,jdbcType=VARCHAR},
+      chart_id = #{record.chartId,jdbcType=VARCHAR},
+      `name` = #{record.name,jdbcType=VARCHAR},
+      dataease_name = #{record.dataeaseName,jdbcType=VARCHAR},
+      group_type = #{record.groupType,jdbcType=VARCHAR},
+      `type` = #{record.type,jdbcType=VARCHAR},
+      `size` = #{record.size,jdbcType=INTEGER},
+      de_type = #{record.deType,jdbcType=INTEGER},
+      de_type_format = #{record.deTypeFormat,jdbcType=INTEGER},
+      de_extract_type = #{record.deExtractType,jdbcType=INTEGER},
+      ext_field = #{record.extField,jdbcType=INTEGER},
+      `checked` = #{record.checked,jdbcType=BIT},
+      column_index = #{record.columnIndex,jdbcType=INTEGER},
+      last_sync_time = #{record.lastSyncTime,jdbcType=BIGINT},
+      origin_name = #{record.originName,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update chart_view_field
+    set id = #{record.id,jdbcType=VARCHAR},
+      table_id = #{record.tableId,jdbcType=VARCHAR},
+      chart_id = #{record.chartId,jdbcType=VARCHAR},
+      `name` = #{record.name,jdbcType=VARCHAR},
+      dataease_name = #{record.dataeaseName,jdbcType=VARCHAR},
+      group_type = #{record.groupType,jdbcType=VARCHAR},
+      `type` = #{record.type,jdbcType=VARCHAR},
+      `size` = #{record.size,jdbcType=INTEGER},
+      de_type = #{record.deType,jdbcType=INTEGER},
+      de_type_format = #{record.deTypeFormat,jdbcType=INTEGER},
+      de_extract_type = #{record.deExtractType,jdbcType=INTEGER},
+      ext_field = #{record.extField,jdbcType=INTEGER},
+      `checked` = #{record.checked,jdbcType=BIT},
+      column_index = #{record.columnIndex,jdbcType=INTEGER},
+      last_sync_time = #{record.lastSyncTime,jdbcType=BIGINT}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="io.dataease.plugins.common.base.domain.ChartViewField">
+    update chart_view_field
+    <set>
+      <if test="tableId != null">
+        table_id = #{tableId,jdbcType=VARCHAR},
+      </if>
+      <if test="chartId != null">
+        chart_id = #{chartId,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        `name` = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="dataeaseName != null">
+        dataease_name = #{dataeaseName,jdbcType=VARCHAR},
+      </if>
+      <if test="groupType != null">
+        group_type = #{groupType,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        `type` = #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="size != null">
+        `size` = #{size,jdbcType=INTEGER},
+      </if>
+      <if test="deType != null">
+        de_type = #{deType,jdbcType=INTEGER},
+      </if>
+      <if test="deTypeFormat != null">
+        de_type_format = #{deTypeFormat,jdbcType=INTEGER},
+      </if>
+      <if test="deExtractType != null">
+        de_extract_type = #{deExtractType,jdbcType=INTEGER},
+      </if>
+      <if test="extField != null">
+        ext_field = #{extField,jdbcType=INTEGER},
+      </if>
+      <if test="checked != null">
+        `checked` = #{checked,jdbcType=BIT},
+      </if>
+      <if test="columnIndex != null">
+        column_index = #{columnIndex,jdbcType=INTEGER},
+      </if>
+      <if test="lastSyncTime != null">
+        last_sync_time = #{lastSyncTime,jdbcType=BIGINT},
+      </if>
+      <if test="originName != null">
+        origin_name = #{originName,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="io.dataease.plugins.common.base.domain.ChartViewField">
+    update chart_view_field
+    set table_id = #{tableId,jdbcType=VARCHAR},
+      chart_id = #{chartId,jdbcType=VARCHAR},
+      `name` = #{name,jdbcType=VARCHAR},
+      dataease_name = #{dataeaseName,jdbcType=VARCHAR},
+      group_type = #{groupType,jdbcType=VARCHAR},
+      `type` = #{type,jdbcType=VARCHAR},
+      `size` = #{size,jdbcType=INTEGER},
+      de_type = #{deType,jdbcType=INTEGER},
+      de_type_format = #{deTypeFormat,jdbcType=INTEGER},
+      de_extract_type = #{deExtractType,jdbcType=INTEGER},
+      ext_field = #{extField,jdbcType=INTEGER},
+      `checked` = #{checked,jdbcType=BIT},
+      column_index = #{columnIndex,jdbcType=INTEGER},
+      last_sync_time = #{lastSyncTime,jdbcType=BIGINT},
+      origin_name = #{originName,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="io.dataease.plugins.common.base.domain.ChartViewField">
+    update chart_view_field
+    set table_id = #{tableId,jdbcType=VARCHAR},
+      chart_id = #{chartId,jdbcType=VARCHAR},
+      `name` = #{name,jdbcType=VARCHAR},
+      dataease_name = #{dataeaseName,jdbcType=VARCHAR},
+      group_type = #{groupType,jdbcType=VARCHAR},
+      `type` = #{type,jdbcType=VARCHAR},
+      `size` = #{size,jdbcType=INTEGER},
+      de_type = #{deType,jdbcType=INTEGER},
+      de_type_format = #{deTypeFormat,jdbcType=INTEGER},
+      de_extract_type = #{deExtractType,jdbcType=INTEGER},
+      ext_field = #{extField,jdbcType=INTEGER},
+      `checked` = #{checked,jdbcType=BIT},
+      column_index = #{columnIndex,jdbcType=INTEGER},
+      last_sync_time = #{lastSyncTime,jdbcType=BIGINT}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>
