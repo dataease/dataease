@@ -10,7 +10,9 @@ import io.dataease.engine.utils.Utils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -44,11 +46,13 @@ public class CustomWhere2Str {
                 }
                 if (field.getDeType() == 1) {
                     if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                        whereName = String.format(SQLConstants.STR_TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : SQLConstants.DEFAULT_DATE_FORMAT);
+//                        whereName = String.format(SQLConstants.STR_TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : SQLConstants.DEFAULT_DATE_FORMAT);
+                        whereName = String.format(SQLConstants.UNIX_TIMESTAMP, originName);
                     }
                     if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
-                        String cast = String.format(SQLConstants.CAST, originName, SQLConstants.DEFAULT_INT_FORMAT);
-                        whereName = String.format(SQLConstants.FROM_UNIXTIME, cast, SQLConstants.DEFAULT_DATE_FORMAT);
+//                        String cast = String.format(SQLConstants.CAST, originName, SQLConstants.DEFAULT_INT_FORMAT);
+//                        whereName = String.format(SQLConstants.FROM_UNIXTIME, cast, SQLConstants.DEFAULT_DATE_FORMAT);
+                        whereName = originName;
                     }
                     if (field.getDeExtractType() == 1) {
                         whereName = originName;
@@ -91,6 +95,9 @@ public class CustomWhere2Str {
                         } else if (StringUtils.containsIgnoreCase(filterItemDTO.getTerm(), "like")) {
                             whereValue = "'%" + value + "%'";
                         } else {
+                            if (Arrays.asList("le", "lt", "ge", "gt").contains(filterItemDTO.getTerm())) {
+                                value = Utils.allDateFormat2Long(value) + "";
+                            }
                             whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE, value);
                         }
                         list.add(SQLObj.builder()

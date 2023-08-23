@@ -205,9 +205,9 @@ public class DatasetDataManage {
         Order2SQLObj.getOrders(sqlMeta, fields, datasetGroupInfoDTO.getSortFields());
         String querySQL;
         if (start == null || count == null) {
-            querySQL = SQLProvider.createQuerySQL(sqlMeta, false, needOrder);
+            querySQL = SQLProvider.createQuerySQL(sqlMeta, false, false, needOrder);
         } else {
-            querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, start, count);
+            querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, false, start, count);
         }
         logger.info("calcite data preview sql: " + querySQL);
 
@@ -422,7 +422,7 @@ public class DatasetDataManage {
             Field2SQLObj.field2sqlObj(sqlMeta, fields);
             WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, fields);
             Order2SQLObj.getOrders(sqlMeta, fields, datasetGroupInfoDTO.getSortFields());
-            String querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, 0, 1000);
+            String querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, true, 0, 1000);
 
             // 通过数据源请求数据
             // 调用数据源的calcite获得data
