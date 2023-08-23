@@ -13,7 +13,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -138,12 +137,7 @@ public class WhereTree2Str {
             } else if (StringUtils.containsIgnoreCase(item.getTerm(), "like")) {
                 whereValue = "'%" + value + "%'";
             } else {
-                try {
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    value = simpleDateFormat.parse(value).getTime() + "";
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                value = Utils.allDateFormat2Long(value) + "";
                 whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE, value);
             }
             SQLObj build = SQLObj.builder()
