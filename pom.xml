@@ -17,6 +17,7 @@
     <modules>
         <module>sdk</module>
         <module>core</module>
+        <module>extensions</module>
     </modules>
 
     <parent>

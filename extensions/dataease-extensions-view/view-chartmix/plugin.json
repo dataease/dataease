@@ -1,0 +1,13 @@
+{
+    "name": "AntV 组合图",
+    "free": 0,
+    "store": "default",
+    "cost": 0,
+    "category": "view",
+    "descript": "AntV G2Plot 组合图插件",
+    "version": "1.18.9",
+    "creator": "DATAEASE",
+    "moduleName": "view-chartmix-backend",
+    "require": "1.18.9",
+    "dsType": ""
+}
