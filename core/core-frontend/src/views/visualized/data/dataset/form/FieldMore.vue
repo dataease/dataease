@@ -34,7 +34,7 @@ const handleCommand = (command: string | number | object) => {
     replaceType.value.handleClose()
     translate.value.handleClose()
   }
-  if (['text', 'time', 'location', 'number', 'float'].includes(command as string)) {
+  if (['text', 'time', 'location', 'value', 'float'].includes(command as string)) {
     replaceType.value.handleClose()
     setTimeout(() => {
       emit('handleCommand', command)
@@ -135,7 +135,7 @@ const emit = defineEmits(['handleCommand'])
                 </el-icon>
                 地理位置
               </el-dropdown-item>
-              <el-dropdown-item command="number">
+              <el-dropdown-item command="value">
                 <el-icon>
                   <Icon :class-name="typeColor" name="icon_number_outlined"></Icon>
                 </el-icon>
