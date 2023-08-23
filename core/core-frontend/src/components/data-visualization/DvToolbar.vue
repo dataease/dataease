@@ -317,11 +317,12 @@ eventBus.on('clearCanvas', clearCanvas)
       width: 300px;
       overflow: hidden;
       cursor: pointer;
+      color: @dv-canvas-main-font-color;
       input {
         position: absolute;
         left: 0;
         width: 100%;
-        color: #fff;
+        color: @dv-canvas-main-font-color;
         background-color: #050e21;
         outline: none;
         border: 1px solid #295acc;
