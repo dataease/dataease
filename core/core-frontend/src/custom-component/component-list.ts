@@ -127,11 +127,11 @@ const list = [
     innerType: 'bar',
     x: 1,
     y: 1,
-    sizeX: 10,
-    sizeY: 5,
+    sizeX: 18,
+    sizeY: 9,
     style: {
-      width: 200,
-      height: 200
+      width: 600,
+      height: 300
     },
     matrixStyle: {}
   },
