@@ -192,10 +192,10 @@ const formatSimpleCron = (info?: SyncSetting) => {
   if (startTime) {
     start = dayjs(new Date(startTime)).format('YYYY-MM-DD HH:mm:ss')
   }
-  if (endLimit === 1 && endTime) {
-    end = dayjs(new Date(startTime)).format('YYYY-MM-DD HH:mm:ss')
+  if (endLimit === '1' && endTime) {
+    end = dayjs(new Date(endTime)).format('YYYY-MM-DD HH:mm:ss')
   }
-  if (endLimit === 0) {
+  if (endLimit === '0') {
     end = '无限制'
   }
   let strArr = []

@@ -17,6 +17,7 @@ public class TableField {
     private String fieldType;
     private int deType;
     private int deExtractType;
+    private int extField;
     private String jsonPath;
     List<Object> value;
 
