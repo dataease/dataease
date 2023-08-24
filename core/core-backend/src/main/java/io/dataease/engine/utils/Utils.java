@@ -32,6 +32,9 @@ public class Utils {
     }
 
     public static String buildCalcField(String originField, SQLObj tableObj, List<DatasetTableFieldDTO> originFields) throws Exception {
+        if (originField == null) {
+            DEException.throwException(Translator.get("i18n_field_circular_error"));
+        }
         originField = originField.replaceAll("[\\t\\n\\r]]", "");
         // 正则提取[xxx]
         String regex = "\\[(.*?)]";
