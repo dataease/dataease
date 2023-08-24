@@ -47,7 +47,7 @@ const initFontSize = () => {
   for (let i = 10; i <= 40; i = i + 2) {
     arr.push({
       name: i + '',
-      value: i + ''
+      value: i
     })
   }
   state.fontSize = arr
