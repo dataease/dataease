@@ -13,6 +13,11 @@ declare type EditorProperty =
   | 'text-selector'
   | 'misc-selector'
   | 'misc-style-selector'
+  | 'function-cfg'
+  | 'assist-line'
+  | 'scroll-cfg'
+  | 'threshold'
+  | 'map-mapping'
 declare type EditorPropertyInner = {
   [key in EditorProperty]?: string[]
 }
@@ -61,4 +66,17 @@ declare type AxisSpec = {
    * 轴提示
    */
   tooltip?: string
+}
+/**
+ * 视图编辑表单
+ */
+declare interface ChartEditorForm<T> {
+  /**
+   * 属性表单
+   */
+  data: T
+  /**
+   * 是否拉取数据
+   */
+  requestData: boolean
 }
