@@ -5,7 +5,7 @@ import type { TabsPaneContext } from 'element-plus-secondary'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
 import { useRouter } from 'vue-router'
 import dayjs from 'dayjs'
-import { shotcutOption } from './ShortcutOption'
+import { shortcutOption } from './ShortcutOption'
 const { resolve } = useRouter()
 const { t } = useI18n()
 
@@ -28,9 +28,9 @@ const handleCommand = (command: string) => {
   activeCommand.value = command
 }
 const handleClick = (ele: TabsPaneContext) => {
-  shotcutOption.setBusiFlag(ele.paneName)
-  state.curTypeList = shotcutOption.getBusiList()
-  state.tableColumn = shotcutOption.getColmunList()
+  shortcutOption.setBusiFlag(ele.paneName)
+  state.curTypeList = shortcutOption.getBusiList()
+  state.tableColumn = shortcutOption.getColmunList()
   loadTableData()
 }
 const triggerFilterPanel = val => {
@@ -57,7 +57,7 @@ const overTime = ref(false)
 const passwdProtect = ref(false)
 
 const loadTableData = () => {
-  shotcutOption.loadData({}).then(res => {
+  shortcutOption.loadData({}).then(res => {
     state.tableData = res.data
   })
 }

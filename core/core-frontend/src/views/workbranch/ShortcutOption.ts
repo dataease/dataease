@@ -3,7 +3,7 @@ import request from '@/config/axios'
 const { t } = useI18n()
 
 export interface ShortcutRequest {
-  keyworkd?: string
+  keyword?: string
   type?: string
   asc?: boolean
 }
@@ -90,7 +90,7 @@ class ShortcutOption {
     return this.busiRecordMap[this.busiFlag].dataCache
   }
   emptyParam(param: ShortcutRequest) {
-    return !param.asc && !param.keyworkd && !param.type
+    return !param.asc && !param.keyword && !param.type
   }
   setBusiFlag(busiFlag) {
     this.busiFlag = busiFlag
@@ -101,4 +101,4 @@ class ShortcutOption {
   }
 }
 
-export const shotcutOption = new ShortcutOption()
+export const shortcutOption = new ShortcutOption()
