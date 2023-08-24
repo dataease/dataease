@@ -24,15 +24,20 @@ public class Utils {
     // 解析计算字段
     public static String calcFieldRegex(String originField, SQLObj tableObj, List<DatasetTableFieldDTO> originFields) {
         try {
-            return buildCalcField(originField, tableObj, originFields);
+            int i = 0;
+            return buildCalcField(originField, tableObj, originFields, i);
         } catch (Exception e) {
             DEException.throwException(Translator.get("i18n_field_circular_ref"));
         }
         return null;
     }
 
-    public static String buildCalcField(String originField, SQLObj tableObj, List<DatasetTableFieldDTO> originFields) throws Exception {
+    public static String buildCalcField(String originField, SQLObj tableObj, List<DatasetTableFieldDTO> originFields, int i) throws Exception {
         try {
+            i++;
+            if (i > 100) {
+                DEException.throwException(Translator.get("i18n_field_circular_error"));
+            }
             originField = originField.replaceAll("[\\t\\n\\r]]", "");
             // 正则提取[xxx]
             String regex = "\\[(.*?)]";
@@ -54,7 +59,7 @@ public class Utils {
                                 String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), ele.getDataeaseName()));
                     } else {
                         originField = originField.replaceAll("\\[" + ele.getId() + "]", ele.getOriginName());
-                        originField = buildCalcField(originField, tableObj, originFields);
+                        originField = buildCalcField(originField, tableObj, originFields, i);
                     }
                 }
             }
