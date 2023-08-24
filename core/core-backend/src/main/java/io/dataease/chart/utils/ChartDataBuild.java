@@ -332,7 +332,7 @@ public class ChartDataBuild {
             int size = xAxis.size() + yAxis.size() + extBubble.size();
             int extSize = view.getExtLabel().size() + view.getExtTooltip().size();
 
-            for (int i = xAxis.size(); i < size - extSize; i++) {
+            for (int i = xAxis.size(); i < size - extSize - extBubble.size(); i++) {
                 AxisChartDataAntVDTO axisChartDataDTO = new AxisChartDataAntVDTO();
                 axisChartDataDTO.setField(a.toString());
                 axisChartDataDTO.setName(a.toString());
@@ -363,7 +363,7 @@ public class ChartDataBuild {
                 // pop
                 if (ObjectUtils.isNotEmpty(extBubble)) {
                     try {
-                        axisChartDataDTO.setPopSize(StringUtils.isEmpty(row[size - extSize]) ? null : new BigDecimal(row[size - extSize]));
+                        axisChartDataDTO.setPopSize(StringUtils.isEmpty(row[size - extSize - extBubble.size()]) ? null : new BigDecimal(row[size - extSize - extBubble.size()]));
                     } catch (Exception e) {
                         axisChartDataDTO.setPopSize(new BigDecimal(0));
                     }
@@ -1090,7 +1090,7 @@ public class ChartDataBuild {
                     if (StringUtils.isEmpty(originStr) || originStr.length() < columnPermissionItem.getDesensitizationRule().getM() + columnPermissionItem.getDesensitizationRule().getN()) {
                         desensitizationStr = String.join("", Collections.nCopies(columnPermissionItem.getDesensitizationRule().getM(), "X")) + "***" + String.join("", Collections.nCopies(columnPermissionItem.getDesensitizationRule().getN(), "X"));
                     } else {
-                        desensitizationStr = StringUtils.substring(originStr, 0, columnPermissionItem.getDesensitizationRule().getM()) + "***" + StringUtils.substring(originStr, originStr.length() - columnPermissionItem.getDesensitizationRule().getN(), originStr.length() );
+                        desensitizationStr = StringUtils.substring(originStr, 0, columnPermissionItem.getDesensitizationRule().getM()) + "***" + StringUtils.substring(originStr, originStr.length() - columnPermissionItem.getDesensitizationRule().getN(), originStr.length());
                     }
                     break;
                 case RetainMToN:
