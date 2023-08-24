@@ -228,7 +228,7 @@ const jumpClick = param => {
           }
         } else {
           const url =
-            '#/preview/?dvId=' +
+            '#/preview?dvId=' +
             jumpInfo.targetDvId +
             '&jumpInfoParam=' +
             encodeURI(Base64.encode(JSON.stringify(param)))
