@@ -1,0 +1,13 @@
+{
+    "name":"Presto 数据源插件",
+    "free":0,
+    "store":"default",
+    "cost":0,
+    "category":"datasource",
+    "descript":"Presto 插件，值得拥有",
+    "version":"1.18.0",
+    "creator":"DATAEASE",
+    "moduleName":"presto-backend",
+    "require":"1.11.0",
+    "dsType":"presto"
+}

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd" >
+<generatorConfiguration>
+    <!--配置数据库连接的位置-->
+    <properties url="file:///opt/dataease/conf/dataease.properties"/>
+    <!-- 设置mysql驱动路径 -->
+    <!-- 此处指定生成针对MyBatis3的DAO -->
+    <context id="mysql" targetRuntime="MyBatis3">
+        <!-- 字段带`,解决列表跟关键字冲突问题 -->
+        <property name="autoDelimitKeywords" value="true" />
+        <property name="beginningDelimiter" value="`" />
+        <property name="endingDelimiter" value="`" />
+
+        <plugin type="org.mybatis.generator.plugins.SerializablePlugin"/>
+        <plugin type="org.mybatis.generator.plugins.UnmergeableXmlMappersPlugin" />
+        <!-- Lombok插件 -->
+        <plugin type="com.itfsw.mybatis.generator.plugins.LombokPlugin">
+            <!-- @Data 默认开启,同时插件会对子类自动附加@EqualsAndHashCode(callSuper = true)，@ToString(callSuper = true) -->
+            <property name="@Data" value="true"/>
+            <!-- @Builder 必须在 Lombok 版本 >= 1.18.2 的情况下开启，对存在继承关系的类自动替换成@SuperBuilder -->
+            <property name="@Builder" value="false"/>
+            <!-- @NoArgsConstructor 和 @AllArgsConstructor 使用规则和Lombok一致 -->
+            <property name="@AllArgsConstructor" value="false"/>
+            <property name="@NoArgsConstructor" value="false"/>
+            <!-- @Getter、@Setter、@Accessors 等使用规则参见官方文档 -->
+            <property name="@Accessors(chain = true)" value="false"/>
+            <!-- 临时解决IDEA工具对@SuperBuilder的不支持问题，开启后(默认未开启)插件在遇到@SuperBuilder注解时会调用ModelBuilderPlugin来生成相应的builder代码 -->
+            <property name="supportSuperBuilderForIdea" value="false"/>
+        </plugin>
+        <!-- 用来除去时间信息的，这在配合类似subversion的代码管理工具时使用很有效，因为可以减少没有必要的注释迁入 -->
+        <commentGenerator>
+            <property name="suppressDate" value="true"/>
+            <!--  关闭自动生成的注释  -->
+            <property name="suppressAllComments" value="true"/>
+        </commentGenerator>
+
+        <!-- jdbc连接信息 --> <!-- EduLoanManage EduTestDataBase -->
+        <jdbcConnection driverClass="com.mysql.cj.jdbc.Driver"
+                        connectionURL="${spring.datasource.url}&amp;nullCatalogMeansCurrent=true"
+                        userId="${spring.datasource.username}" password="${spring.datasource.password}"/>
+
+        <!-- javaTypeResolver式类型转换的信息 -->
+        <javaTypeResolver>
+            <property name="forceBigDecimals" value="false"/>
+        </javaTypeResolver>
+        <!-- 模型对象 -->
+        <javaModelGenerator targetPackage="io.dataease.plugins.common.base.domain" targetProject="src/main/java">
+            <property name="enableSubPackages" value="true"/>
+            <property name="trimStrings" value="true"/>
+        </javaModelGenerator>
+        <!-- XML映射文件 -->
+        <sqlMapGenerator targetPackage="io.dataease.plugins.common.base.mapper" targetProject="src/main/java">
+            <property name="enableSubPackages" value="true"/>
+        </sqlMapGenerator>
+        <!-- 接口 -->
+        <javaClientGenerator type="XMLMAPPER" targetPackage="io.dataease.plugins.common.base.mapper"
+                             targetProject="src/main/java">
+            <property name="enableSubPackages" value="true"/>
+        </javaClientGenerator>
+
+        <!--要生成的数据库表 -->
+
+
+
+        <table tableName="panel_app_template_log">
+
+        </table>
+
+<!--        <table tableName="dataset_table_field">-->
+<!--            <columnOverride column="origin_name"    jdbcType="VARCHAR"/>-->
+<!--            <columnOverride column="name"    jdbcType="VARCHAR"/>-->
+<!--        </table>-->
+
+
+    </context>
+</generatorConfiguration>
