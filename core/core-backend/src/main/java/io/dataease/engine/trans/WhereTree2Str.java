@@ -127,7 +127,7 @@ public class WhereTree2Str {
 
             if (field.getDeType() == 1) {
                 // 规定几种日期格式，一一匹配，匹配到就是该格式
-                whereName = String.format(SQLConstants.DATE_FORMAT, whereName, String.format(SQLConstants.GET_DATE_FORMAT, item.getValue()));
+                whereName = String.format(SQLConstants.DATE_FORMAT, whereName, String.format(SQLConstants.GET_DATE_FORMAT, "'" + item.getValue() + "'"));
                 whereName = String.format(SQLConstants.UNIX_TIMESTAMP, whereName);
             }
 

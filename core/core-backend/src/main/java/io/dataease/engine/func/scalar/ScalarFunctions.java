@@ -22,7 +22,12 @@ public class ScalarFunctions {
                 return null;
             }
             if (StringUtils.equalsIgnoreCase(format, timeOnly)) {
-                date = date.split(" ")[1];
+                String[] s = date.split(" ");
+                if (s.length > 1) {
+                    date = s[1];
+                } else {
+                    date = s[0];
+                }
             }
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
             Date parse = simpleDateFormat.parse(date);
@@ -38,7 +43,12 @@ public class ScalarFunctions {
                 return null;
             }
             if (StringUtils.equalsIgnoreCase(format, timeOnly)) {
-                date = date.split(" ")[1];
+                String[] s = date.split(" ");
+                if (s.length > 1) {
+                    date = s[1];
+                } else {
+                    date = s[0];
+                }
             }
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
             Date parse = simpleDateFormat.parse(date);
