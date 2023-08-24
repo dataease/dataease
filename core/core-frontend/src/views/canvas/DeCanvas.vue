@@ -72,6 +72,7 @@ const handleNewFromCanvasMain = newComponentInfo => {
     const component = findNewComponentFromList(componentName, innerType, curOriginThemes)
     syncShapeItemStyle(component, baseWidth.value, baseHeight.value)
     component.id = guid()
+    component.y = 200
     dvMainStore.addComponent({
       component: component,
       index: undefined,
@@ -81,7 +82,7 @@ const handleNewFromCanvasMain = newComponentInfo => {
     nextTick(() => {
       cyGridster.value.addItemBox(component) //在适当的时候初始化布局组件
     })
-    snapshotStore.recordSnapshot('handleNewFromCanvasMain')
+    snapshotStore.recordSnapshot('')
   }
 }
 
