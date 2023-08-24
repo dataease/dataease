@@ -1,0 +1,13 @@
+{
+    "name": "ECharts 动态排序图",
+    "free": 0,
+    "store": "thirdpart",
+    "cost": 0,
+    "category": "view",
+    "descript": "ECharts 动态排序图插件",
+    "version": "1.18.10",
+    "creator": "DATAEASE",
+    "moduleName": "view-racebar-backend",
+    "require": "1.18.10",
+    "dsType": ""
+}
