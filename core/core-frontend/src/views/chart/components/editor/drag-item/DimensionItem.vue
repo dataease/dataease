@@ -161,7 +161,7 @@ getItemTagType()
 
 <template>
   <span class="item-style">
-    <el-dropdown effect="dark" trigger="click" @command="clickItem">
+    <el-dropdown :effect="themes" trigger="click" @command="clickItem">
       <el-tag
         class="item-axis father"
         :class="'editor-' + props.themes"
@@ -196,9 +196,14 @@ getItemTagType()
         </el-icon>
       </el-tag>
       <template #dropdown>
-        <el-dropdown-menu effect="dark" class="drop-style">
+        <el-dropdown-menu :effect="themes" class="drop-style">
           <el-dropdown-item>
-            <el-dropdown effect="dark" placement="right-start" style="width: 100%" @command="sort">
+            <el-dropdown
+              :effect="themes"
+              placement="right-start"
+              style="width: 100%"
+              @command="sort"
+            >
               <span class="el-dropdown-link inner-dropdown-menu">
                 <span class="item-span-drop">
                   <el-icon>
@@ -212,7 +217,7 @@ getItemTagType()
                 </el-icon>
               </span>
               <template #dropdown>
-                <el-dropdown-menu effect="dark" class="drop-style">
+                <el-dropdown-menu :effect="themes" class="drop-style">
                   <el-dropdown-item :command="beforeSort('none')">
                     {{ t('chart.none') }}
                   </el-dropdown-item>
@@ -234,7 +239,7 @@ getItemTagType()
           </el-dropdown-item>
           <el-dropdown-item v-if="item.deType === 1" divided>
             <el-dropdown
-              effect="dark"
+              :effect="themes"
               placement="right-start"
               style="width: 100%"
               @command="dateStyle"
@@ -252,7 +257,7 @@ getItemTagType()
                 </el-icon>
               </span>
               <template #dropdown>
-                <el-dropdown-menu effect="dark" class="drop-style">
+                <el-dropdown-menu :effect="themes" class="drop-style">
                   <el-dropdown-item :command="beforeDateStyle('y')">{{
                     t('chart.y')
                   }}</el-dropdown-item>
@@ -283,7 +288,7 @@ getItemTagType()
           </el-dropdown-item>
           <el-dropdown-item v-if="item.deType === 1">
             <el-dropdown
-              effect="dark"
+              :effect="themes"
               placement="right-start"
               style="width: 100%"
               @command="datePattern"
@@ -301,7 +306,7 @@ getItemTagType()
                 </el-icon>
               </span>
               <template #dropdown>
-                <el-dropdown-menu effect="dark">
+                <el-dropdown-menu :effect="themes">
                   <el-dropdown-item :command="beforeDatePattern('date_sub')"
                     >{{ t('chart.date_sub') }}(1990-01-01)</el-dropdown-item
                   >

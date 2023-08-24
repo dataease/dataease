@@ -276,7 +276,7 @@ getItemTagType()
 
 <template>
   <span class="item-style">
-    <el-dropdown effect="dark" trigger="click" @command="clickItem">
+    <el-dropdown :effect="themes" trigger="click" @command="clickItem">
       <el-tag
         class="item-axis father"
         :class="'editor-' + props.themes"
@@ -327,13 +327,13 @@ getItemTagType()
         </el-icon>
       </el-tag>
       <template #dropdown>
-        <el-dropdown-menu effect="dark" class="drop-style">
+        <el-dropdown-menu :effect="themes" class="drop-style">
           <el-dropdown-item
             v-if="!item.chartId && chart.type !== 'table-info' && item.summary !== ''"
             :divided="chart.type === 'chart-mix'"
           >
             <el-dropdown
-              effect="dark"
+              :effect="themes"
               placement="right-start"
               style="width: 100%"
               @command="summary"
@@ -354,7 +354,7 @@ getItemTagType()
                 </el-icon>
               </span>
               <template #dropdown>
-                <el-dropdown-menu effect="dark" class="drop-style">
+                <el-dropdown-menu :effect="themes" class="drop-style">
                   <el-dropdown-item
                     v-if="
                       item.id !== '-1' &&
@@ -439,7 +439,7 @@ getItemTagType()
           <el-dropdown-item v-if="chart.type !== 'table-info'">
             <el-dropdown
               placement="right-start"
-              effect="dark"
+              :effect="themes"
               style="width: 100%"
               @command="quickCalc"
             >
@@ -463,7 +463,7 @@ getItemTagType()
                 </el-icon>
               </span>
               <template #dropdown>
-                <el-dropdown-menu effect="dark" class="drop-style">
+                <el-dropdown-menu :effect="themes" class="drop-style">
                   <el-dropdown-item :command="beforeQuickCalc('none')">
                     {{ t('chart.none') }}
                   </el-dropdown-item>
@@ -488,7 +488,12 @@ getItemTagType()
             v-if="props.type !== 'extLabel' && props.type !== 'extTooltip'"
             :divided="chart.type !== 'table-info'"
           >
-            <el-dropdown effect="dark" placement="right-start" style="width: 100%" @command="sort">
+            <el-dropdown
+              :effect="themes"
+              placement="right-start"
+              style="width: 100%"
+              @command="sort"
+            >
               <span class="el-dropdown-link inner-dropdown-menu">
                 <span class="item-span-drop">
                   <el-icon>
@@ -502,7 +507,7 @@ getItemTagType()
                 </el-icon>
               </span>
               <template #dropdown>
-                <el-dropdown-menu effect="dark" class="drop-style">
+                <el-dropdown-menu :effect="themes" class="drop-style">
                   <el-dropdown-item :command="beforeSort('none')">
                     {{ t('chart.none') }}
                   </el-dropdown-item>
