@@ -292,6 +292,7 @@ const saveDS = () => {
     return
   } else if (currentDsType.value === 'API') {
     if (form.apiConfiguration.length == 0) {
+      ElMessage.error('数据表不能为空!')
       return
     }
     for (var i = 0; i < request.apiConfiguration.length; i++) {
