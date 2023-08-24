@@ -91,17 +91,14 @@ public class DatasourceServer implements DatasourceApi {
                     DEException.throwException("pid can not equal to id.");
                 }
                 CoreDatasource sourceData = datasourceMapper.selectById(dataSourceDTO.getId());
-                checkName(dataSourceDTO.getName(), sourceData.getType(), sourceData.getId(), sourceData.getPid());
                 dataSourceManage.move(dataSourceDTO);
             }
             case "rename" -> {
                 CoreDatasource datasource = datasourceMapper.selectById(dataSourceDTO.getId());
-                checkName(dataSourceDTO.getName(), datasource.getType(), datasource.getId(), datasource.getPid());
                 datasource.setName(dataSourceDTO.getName());
                 dataSourceManage.innerEdit(datasource);
             }
             case "create" -> {
-                checkName(dataSourceDTO.getName(), dataSourceDTO.getNodeType(), dataSourceDTO.getId(), dataSourceDTO.getPid());
                 CoreDatasource coreDatasource = new CoreDatasource();
                 BeanUtils.copyBean(coreDatasource, dataSourceDTO);
                 coreDatasource.setCreateTime(System.currentTimeMillis());
@@ -505,7 +502,6 @@ public class DatasourceServer implements DatasourceApi {
         return excelFileData;
     }
 
-
     public ApiDefinition checkApiDatasource(@RequestBody Map<String, String> request) throws DEException {
         ApiDefinition apiDefinition = JsonUtil.parseObject(new String(java.util.Base64.getDecoder().decode(request.get("data"))), ApiDefinition.class);
         String response = ApiUtils.execHttpRequest(apiDefinition, 10);
@@ -515,22 +511,6 @@ public class DatasourceServer implements DatasourceApi {
     private void preCheckDs(DatasourceDTO datasource) throws DEException {
         if (!datasourceTypes().stream().map(DatasourceConfiguration.DatasourceType::getType).toList().contains(datasource.getType())) {
             DEException.throwException("Datasource type not supported.");
-        }
-        checkName(datasource.getName(), datasource.getType(), datasource.getId(), datasource.getPid());
-    }
-
-    private void checkName(String name, String type, Long id, Long pid) throws DEException {
-        QueryWrapper<CoreDatasource> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("name", name);
-        if (id != null && id != 0) {
-            queryWrapper.ne("id", id);
-        }
-        if (pid != null) {
-            queryWrapper.eq("pid", pid);
-        }
-
-        if (!CollectionUtils.isEmpty(datasourceMapper.selectList(queryWrapper))) {
-            DEException.throwException(Translator.get("i18n_ds_name_exists"));
         }
     }
 

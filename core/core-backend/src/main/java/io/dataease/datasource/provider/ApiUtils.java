@@ -133,7 +133,7 @@ public class ApiUtils {
                 && apiDefinitionRequest.getAuthManager().getVerification().equals("Basic Auth")) {
             String authValue = "Basic " + Base64.getUrlEncoder().encodeToString((apiDefinitionRequest.getAuthManager().getUsername()
                     + ":" + apiDefinitionRequest.getAuthManager().getPassword()).getBytes());
-            httpClientConfig.addHeader(AuthConstant.TOKEN_KEY, authValue);
+            httpClientConfig.addHeader("Authorization", authValue);
         }
 
         switch (apiDefinition.getMethod()) {
@@ -185,10 +185,14 @@ public class ApiUtils {
         if (apiDefinition.isUseJsonPath()) {
             List<LinkedHashMap> currentData = new ArrayList<>();
             Object object = JsonPath.read(response, apiDefinition.getJsonPath());
-            if (object instanceof List) {
-                currentData = (List<LinkedHashMap>) object;
-            } else {
-                currentData.add((LinkedHashMap) object);
+            try {
+                if (object instanceof List) {
+                    currentData = (List<LinkedHashMap>) object;
+                } else {
+                    currentData.add((LinkedHashMap) object);
+                }
+            } catch (Exception e) {
+                DEException.throwException(e);
             }
             int i = 0;
             for (LinkedHashMap data : currentData) {
@@ -210,18 +214,18 @@ public class ApiUtils {
                     }
                 }
                 for (Map<String, Object> field : fields) {
-                    List<Object> array = new ArrayList<>();
+                    JSONArray array = new JSONArray();
                     if (field.get("value") != null) {
-                        TypeReference<List<Object>> listTypeReference = new TypeReference<List<Object>>() {
-                        };
                         try {
+                            TypeReference<JSONArray> listTypeReference = new TypeReference<JSONArray>() {
+                            };
                             array = objectMapper.readValue(field.get("value").toString(), listTypeReference);
                         } catch (Exception e) {
+                            e.printStackTrace();
                             DEException.throwException(e);
                         }
                         array.add(Optional.ofNullable(data.get(field.get("originName"))).orElse("").toString().replaceAll("\n", " ").replaceAll("\r", " "));
                     } else {
-                        array = new ArrayList();
                         array.add(Optional.ofNullable(data.get(field.get("originName"))).orElse("").toString().replaceAll("\n", " ").replaceAll("\r", " "));
                     }
                     field.put("value", array);
@@ -246,8 +250,6 @@ public class ApiUtils {
             } else {
                 rootPath = "$";
                 handleStr(apiDefinition, response, fields, rootPath);
-            }
-            for (Map<String, Object> field : fields) {
             }
             apiDefinition.setJsonFields(fields);
             return apiDefinition;
@@ -280,17 +282,26 @@ public class ApiUtils {
             while (fieldNames.hasNext()) {
                 String fieldName = fieldNames.next();
                 String value = jsonNode.get(fieldName).toString();
+                if (StringUtils.isNotEmpty(value) && !value.startsWith("[") && !value.startsWith("{")){
+                    value = jsonNode.get(fieldName).asText();
+                }
                 if (StringUtils.isNotEmpty(value) && value.startsWith("[")) {
                     Map<String, Object> o = new HashMap<>();
                     try {
                         JsonNode jsonArray = objectMapper.readTree(value);
                         List<Map<String, Object>> childrenField = new ArrayList<>();
                         for (JsonNode node : jsonArray) {
+                            if (StringUtils.isNotEmpty(node.toString()) && !node.toString().startsWith("[") && !node.toString().startsWith("{")){
+                                throw new Exception(node + "is not json type");
+                            }
+                        }
+                        for (JsonNode node : jsonArray) {
                             handleStr(apiDefinition, node.toString(), childrenField, rootPath + "." + fieldName + "[*]");
                         }
                         o.put("children", childrenField);
                         o.put("childrenDataType", "LIST");
                     } catch (Exception e) {
+                        e.printStackTrace();
                         JSONArray array = new JSONArray();
                         array.add(StringUtils.isNotEmpty(jsonNode.get(fieldName).toString()) ? jsonNode.get(fieldName).toString() : "");
                         o.put("value", array);
@@ -379,9 +390,8 @@ public class ApiUtils {
             List<Map<String, Object>> fieldChildren = null;
             List<Map<String, Object>> itemChildren = null;
             try {
-                fieldChildren = objectMapper.readValue(field.get("children").toString(), listForMapTypeReference);
-                itemChildren = objectMapper.readValue(item.get("children").toString(), listForMapTypeReference);
-
+                fieldChildren = objectMapper.readValue(JsonUtil.toJSONString(field.get("children")).toString(), listForMapTypeReference);
+                itemChildren = objectMapper.readValue(JsonUtil.toJSONString(item.get("children")).toString(), listForMapTypeReference);
             } catch (Exception e) {
                 DEException.throwException(e);
             }
@@ -404,17 +414,17 @@ public class ApiUtils {
     }
 
     private static void mergeValue(Map<String, Object> field, ApiDefinition apiDefinition, Map<String, Object> item) throws DEException {
+        TypeReference<JSONArray> listTypeReference = new TypeReference<JSONArray>() {
+        };
         try {
             if (!ObjectUtils.isEmpty(field.get("value")) && !ObjectUtils.isEmpty(item.get("value"))) {
-                List<Object> array = new ArrayList<>();
-                array.addAll(Arrays.asList(field.get("value").toString().substring(1, field.get("value").toString().length() -1).split(",")));
-                array.add(objectMapper.readValue(item.get("value").toString(), listTypeReference).get(0));
+                JSONArray array = objectMapper.readValue(JsonUtil.toJSONString(field.get("value")).toString(), listTypeReference);
+                array.add(objectMapper.readValue(JsonUtil.toJSONString(item.get("value")).toString(), listTypeReference).get(0));
                 field.put("value", array);
             }
             if (!ObjectUtils.isEmpty(field.get("children")) && !ObjectUtils.isEmpty(item.get("children"))) {
-                List<Map<String, Object>> fieldChildren = objectMapper.readValue(field.get("children").toString(), listForMapTypeReference);
-                List<Map<String, Object>> itemChildren = objectMapper.readValue(item.get("children").toString(), listForMapTypeReference);
-
+                List<Map<String, Object>> fieldChildren = objectMapper.readValue(JsonUtil.toJSONString(field.get("children")).toString(), listForMapTypeReference);
+                List<Map<String, Object>> itemChildren = objectMapper.readValue(JsonUtil.toJSONString(item.get("children")).toString(), listForMapTypeReference);
                 List<Map<String, Object>> fieldArrayChildren = new ArrayList<>();
                 for (Map<String, Object> fieldChild : fieldChildren) {
                     Map<String, Object> find = null;
@@ -431,6 +441,7 @@ public class ApiUtils {
                 field.put("children", fieldArrayChildren);
             }
         } catch (Exception e) {
+            e.printStackTrace();
             DEException.throwException(e);
         }
 
