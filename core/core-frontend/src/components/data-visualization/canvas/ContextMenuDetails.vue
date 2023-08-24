@@ -118,27 +118,22 @@ const composeDivider = computed(() => {
       >
         取消组合
       </li>
-      <el-divider v-show="composeDivider" />
+      <el-divider class="custom-divider" v-show="composeDivider" />
       <template v-if="curComponent">
         <template v-if="!curComponent['isLock']">
-          <li @click="upComponent">
-            <el-icon><ArrowUpBold /></el-icon>
-            上移
-          </li>
-          <li @click="downComponent">
-            <el-icon><ArrowDownBold /></el-icon>
-            下移
-          </li>
+          <li @click="upComponent">上移一层</li>
+          <li @click="downComponent">下移一层</li>
           <li @click="topComponent">置于顶层</li>
           <li @click="bottomComponent">置于底层</li>
-          <el-divider />
+          <el-divider class="custom-divider" />
           <li @click="hide">隐藏</li>
           <li @click="lock">锁定</li>
-          <el-divider />
+          <el-divider class="custom-divider" />
           <li @click="rename">重命名</li>
           <li @click="copy">复制</li>
           <li @click="paste">粘贴</li>
           <li @click="cut">剪切</li>
+          <el-divider class="custom-divider" />
           <li @click="deleteComponent">删除</li>
         </template>
         <li v-else @click="unlock">解锁</li>
@@ -151,10 +146,11 @@ const composeDivider = computed(() => {
 <style lang="less" scoped>
 .context-menu-details {
   z-index: 1000;
-  border: #bbb 1px solid;
+  border: #434343 1px solid;
+  width: 220px;
   ul {
     padding: 4px 0;
-    background-color: #000;
+    background-color: #292929;
     box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
     box-sizing: border-box;
     ::v-deep(.ed-divider) {
@@ -163,12 +159,12 @@ const composeDivider = computed(() => {
 
     li {
       font-size: 14px;
-      padding: 0 60px;
+      padding: 0 12px;
       position: relative;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      color: #fff;
+      color: #ebebeb;
       height: 34px;
       line-height: 34px;
       box-sizing: border-box;
@@ -186,5 +182,9 @@ const composeDivider = computed(() => {
       }
     }
   }
+}
+
+.custom-divider {
+  border-color: #434343 !important;
 }
 </style>
