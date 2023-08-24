@@ -4129,3 +4129,19 @@ CREATE TABLE `core_store`
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- ----------------------------
+-- Table structure for xpack_share
+-- ----------------------------
+DROP TABLE IF EXISTS `xpack_share`;
+CREATE TABLE `xpack_share`
+(
+    `id`          bigint                                 NOT NULL COMMENT 'ID',
+    `creator`     bigint                                 NOT NULL COMMENT '创建人',
+    `time`        bigint                                 NOT NULL COMMENT '创建时间',
+    `exp`         bigint                                  DEFAULT NULL COMMENT '过期时间',
+    `uuid`        varchar(16) COLLATE utf8mb4_general_ci NOT NULL COMMENT 'uuid',
+    `pwd`         varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '密码',
+    `resource_id` bigint                                 NOT NULL COMMENT '资源ID',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+

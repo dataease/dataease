@@ -6,6 +6,7 @@ import GridTable from '@/components/grid-table/src/GridTable.vue'
 import { useRouter } from 'vue-router'
 import dayjs from 'dayjs'
 import { shortcutOption } from './ShortcutOption'
+import { XpackComponent } from '@/components/plugin'
 const { resolve } = useRouter()
 const { t } = useI18n()
 
@@ -28,10 +29,12 @@ const handleCommand = (command: string) => {
   activeCommand.value = command
 }
 const handleClick = (ele: TabsPaneContext) => {
-  shortcutOption.setBusiFlag(ele.paneName)
-  state.curTypeList = shortcutOption.getBusiList()
-  state.tableColumn = shortcutOption.getColmunList()
-  loadTableData()
+  if (ele.paneName === 'recent' || ele.paneName === 'store') {
+    shortcutOption.setBusiFlag(ele.paneName)
+    state.curTypeList = shortcutOption.getBusiList()
+    state.tableColumn = shortcutOption.getColmunList()
+    loadTableData()
+  }
 }
 const triggerFilterPanel = val => {
   console.log(val)
@@ -80,9 +83,11 @@ onMounted(() => {
     <el-tabs v-model="activeName" class="dashboard-type-tabs" @tab-click="handleClick">
       <el-tab-pane label="最近使用" name="recent"></el-tab-pane>
       <el-tab-pane label="我的收藏" name="store"></el-tab-pane>
-      <el-tab-pane label="分享" name="share"></el-tab-pane>
+      <XpackComponent jsname="c2hhcmUtcGFuZWw=" />
+      <!-- <el-tab-pane label="分享" name="share"></el-tab-pane> -->
     </el-tabs>
-    <el-row>
+    <XpackComponent :active-name="activeName" jsname="c2hhcmU=" />
+    <el-row v-if="activeName === 'recent' || activeName === 'store'">
       <el-col :span="12">
         <el-dropdown
           placement="bottom-start"
@@ -130,7 +135,7 @@ onMounted(() => {
         </el-input>
       </el-col>
     </el-row>
-    <div class="panel-table">
+    <div v-if="activeName === 'recent' || activeName === 'store'" class="panel-table">
       <GridTable :show-pagination="false" :table-data="state.tableData">
         <el-table-column key="name" width="280" prop="name" :label="t('common.name')">
           <template v-slot:default="scope">
