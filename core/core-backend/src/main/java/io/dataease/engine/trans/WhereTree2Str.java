@@ -92,14 +92,12 @@ public class WhereTree2Str {
         if (field.getDeType() == 1) {
             if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
                 whereName = String.format(SQLConstants.STR_TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : SQLConstants.DEFAULT_DATE_FORMAT);
-//                whereName = String.format(SQLConstants.UNIX_TIMESTAMP, originName);
             }
             if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                 String cast = String.format(SQLConstants.CAST, originName, SQLConstants.DEFAULT_INT_FORMAT);
                 whereName = String.format(SQLConstants.FROM_UNIXTIME, cast, SQLConstants.DEFAULT_DATE_FORMAT);
             }
             if (field.getDeExtractType() == 1) {
-//                whereName = originName;
                 String f = ScalarFunctions.get_date_format(originName);
                 whereName = String.format(SQLConstants.DATE_FORMAT, originName, f);
             }
