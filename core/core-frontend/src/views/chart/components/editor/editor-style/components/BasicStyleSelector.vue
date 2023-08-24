@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PropType, reactive, toRef, toRefs, watch } from 'vue'
+import { PropType, reactive, watch } from 'vue'
 import {
   ElCheckbox,
   ElForm,
@@ -45,7 +45,9 @@ watch(
   { deep: true }
 )
 const emit = defineEmits(['onBasicStyleChange'])
-const changeBasicStyle = (prop?: string) => emit('onBasicStyleChange', state.basicStyleForm)
+const changeBasicStyle = (prop?: string, requestData = false) => {
+  emit('onBasicStyleChange', { data: state.basicStyleForm, requestData })
+}
 const init = () => {
   const basicStyle = JSON.parse(JSON.stringify(props.chart.customAttr.basicStyle))
   state.basicStyleForm = basicStyle as ChartBasicStyle
@@ -109,7 +111,7 @@ init()
 <template>
   <el-form :model="state.basicStyleForm" label-width="80px" size="small">
     <el-form-item :label="t('chart.color_case')" class="form-item" v-show="showProperty('colors')">
-      <el-popover placement="bottom" width="400" trigger="click">
+      <el-popover placement="bottom" width="400" trigger="click" :persistent="false">
         <template #reference>
           <div :style="{ cursor: 'pointer', marginTop: '2px', width: '180px' }">
             <span
@@ -288,7 +290,7 @@ init()
         :effect="props.themes"
         v-model="state.basicStyleForm.tablePageMode"
         :placeholder="t('chart.table_page_mode')"
-        @change="changeBasicStyle()"
+        @change="changeBasicStyle('tablePageMode', true)"
       >
         <el-option :label="t('chart.page_mode_page')" value="page" />
         <el-option :label="t('chart.page_mode_pull')" value="pull" />
@@ -303,7 +305,7 @@ init()
         :effect="props.themes"
         v-model="state.basicStyleForm.tablePageSize"
         :placeholder="t('chart.table_page_size')"
-        @change="changeBasicStyle()"
+        @change="changeBasicStyle('tablePageSize', true)"
       >
         <el-option
           v-for="item in pageSizeOptions"

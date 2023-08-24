@@ -156,7 +156,7 @@ public class DatasourceServer implements DatasourceApi {
                 List<TableField> tableFields = ExcelUtils.getTableFields(datasourceRequest);
                 datasourceSyncManage.createEngineTable(datasourceRequest.getTable(), tableFields);
             }
-            datasourceSyncManage.extractExcelData(coreDatasource.getId(), "all_scope");
+            datasourceSyncManage.extractExcelData(coreDatasource, "all_scope");
         } else if (dataSourceDTO.getType().equals(DatasourceConfiguration.DatasourceType.API.name())) {
             CoreDatasourceTask coreDatasourceTask = new CoreDatasourceTask();
             BeanUtils.copyBean(coreDatasourceTask, dataSourceDTO.getSyncSetting());
@@ -257,10 +257,10 @@ public class DatasourceServer implements DatasourceApi {
                     coreDatasourceRequest.setTable(toCreateTable);
                     datasourceSyncManage.createEngineTable(toCreateTable, ExcelUtils.getTableFields(coreDatasourceRequest));
                 }
-                datasourceSyncManage.extractExcelData(coreDatasource.getId(), "all_scope");
+                datasourceSyncManage.extractExcelData(coreDatasource, "all_scope");
                 dataSourceManage.innerEdit(coreDatasource);
             } else {
-                datasourceSyncManage.extractExcelData(coreDatasource.getId(), "add_scope");
+                datasourceSyncManage.extractExcelData(coreDatasource, "add_scope");
                 dataSourceManage.innerEdit(coreDatasource);
             }
         } else {
@@ -271,7 +271,7 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     private String excelDataTableName(String name) {
-        return StringUtils.substring(name, 6, name.length() - 37);
+        return StringUtils.substring(name, 6, name.length() - 11);
     }
 
     @Override

@@ -94,6 +94,7 @@ const initEdit = (obj, dimensionData, quotaData) => {
   state.quotaData = quotaData
   quotaDataList = cloneDeep(quotaData)
   dimensionDataList = cloneDeep(dimensionData)
+  formField.value.clearValidate()
   if (!obj.originName) {
     mirror.value.dispatch({
       changes: {

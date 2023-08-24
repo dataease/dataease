@@ -1,5 +1,6 @@
 package io.dataease.utils;
 
+import io.dataease.exception.DEException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -31,6 +32,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static io.dataease.result.ResultCode.SYSTEM_INNER_ERROR;
+
 public class HttpClientUtil {
 
     private static Logger logger = LoggerFactory.getLogger(HttpClientUtil.class);
@@ -60,7 +63,7 @@ public class HttpClientUtil {
                 return HttpClientBuilder.create().build();
             }
         } catch (Exception e) {
-            throw new RuntimeException("HttpClient构建失败", e);
+            throw new DEException(SYSTEM_INNER_ERROR.code(), "HttpClient查询失败: " + e.getMessage());
         }
     }
     /**
@@ -88,7 +91,7 @@ public class HttpClientUtil {
             return getResponseStr(response, config);
         } catch (Exception e) {
             logger.error("HttpClient查询失败", e);
-            throw new RuntimeException("HttpClient查询失败: " + e.getMessage());
+            throw new DEException(SYSTEM_INNER_ERROR.code(), "HttpClient查询失败: " + e.getMessage());
         } finally {
             try {
                 httpClient.close();
@@ -129,7 +132,7 @@ public class HttpClientUtil {
             return getResponseStr(response, config);
         } catch (Exception e) {
             logger.error("HttpClient查询失败", e);
-            throw new RuntimeException("HttpClient查询失败: " + e.getMessage());
+            throw new DEException(SYSTEM_INNER_ERROR.code(), "HttpClient查询失败: " + e.getMessage());
         } finally {
             try {
                 httpClient.close();
@@ -180,7 +183,7 @@ public class HttpClientUtil {
                     httpPost.setEntity(new UrlEncodedFormEntity(nvps, config.getCharset()));
                 } catch (Exception e) {
                     logger.error("HttpClient转换编码错误", e);
-                    throw new RuntimeException("HttpClient转换编码错误", e);
+                    throw new DEException(SYSTEM_INNER_ERROR.code(), "HttpClient转换编码错误: " + e.getMessage());
                 }
             }
 
@@ -188,7 +191,7 @@ public class HttpClientUtil {
             return getResponseStr(response, config);
         } catch (Exception e) {
             logger.error("HttpClient查询失败", e);
-            throw new RuntimeException("HttpClient查询失败: " + e.getMessage());
+            throw new DEException(SYSTEM_INNER_ERROR.code(), "HttpClient查询失败: " + e.getMessage());
         } finally {
             try {
                 httpClient.close();

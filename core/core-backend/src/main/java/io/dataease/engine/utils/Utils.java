@@ -214,44 +214,49 @@ public class Utils {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             return simpleDateFormat.parse(value).getTime();
         } catch (Exception e) {
-            e.printStackTrace();
         }
         try {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             return simpleDateFormat.parse(value).getTime();
         } catch (Exception e) {
-            e.printStackTrace();
         }
         try {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH");
             return simpleDateFormat.parse(value).getTime();
         } catch (Exception e) {
-            e.printStackTrace();
         }
         try {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
             return simpleDateFormat.parse(value).getTime();
         } catch (Exception e) {
-            e.printStackTrace();
         }
         try {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM");
             return simpleDateFormat.parse(value).getTime();
         } catch (Exception e) {
-            e.printStackTrace();
         }
         try {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy");
             return simpleDateFormat.parse(value).getTime();
         } catch (Exception e) {
-            e.printStackTrace();
         }
         try {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
             return simpleDateFormat.parse(value).getTime();
         } catch (Exception e) {
-            e.printStackTrace();
         }
         return 0;
+    }
+
+    public static String parseTime(String time, String sourceFormat, String targetFormat) {
+        if (StringUtils.equalsIgnoreCase(sourceFormat, targetFormat)) {
+            String[] s = time.split(" ");
+            if (s.length > 1) {
+                time = s[1];
+            } else {
+                time = s[0];
+            }
+        }
+        return time;
     }
 }
