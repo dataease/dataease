@@ -711,7 +711,7 @@ defineExpose({
           >
             <el-popover :width="834" v-model="cronEdit" trigger="click">
               <template #default>
-                <div style="width: 814px">
+                <div style="width: 814px; height: 400px; overflow-y: auto">
                   <cron
                     v-model="form.syncSetting.cron"
                     :is-rate="form.syncRate === 'CRON'"
