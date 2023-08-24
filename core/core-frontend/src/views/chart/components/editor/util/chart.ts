@@ -1181,8 +1181,10 @@ export const DEFAULT_BASIC_STYLE: ChartBasicStyle = {
   areaBorderColor: '#EBEEF5',
   suspension: true,
   areaBaseColor: '#ffffff',
-  symbolOpacity: 0.7,
-  symbolStrokeWidth: 2,
+  mapSymbolOpacity: 0.7,
+  mapSymbolStrokeWidth: 2,
+  mapSymbol: 'circle',
+  mapSymbolSize: 20,
   radius: 100,
   innerRadius: 40
 }
