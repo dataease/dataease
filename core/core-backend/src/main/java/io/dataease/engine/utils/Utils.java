@@ -24,40 +24,50 @@ public class Utils {
     // 解析计算字段
     public static String calcFieldRegex(String originField, SQLObj tableObj, List<DatasetTableFieldDTO> originFields) {
         try {
-            return buildCalcField(originField, tableObj, originFields);
+            int i = 0;
+            return buildCalcField(originField, tableObj, originFields, i);
         } catch (Exception e) {
             DEException.throwException(Translator.get("i18n_field_circular_ref"));
         }
         return null;
     }
 
-    public static String buildCalcField(String originField, SQLObj tableObj, List<DatasetTableFieldDTO> originFields) throws Exception {
-        originField = originField.replaceAll("[\\t\\n\\r]]", "");
-        // 正则提取[xxx]
-        String regex = "\\[(.*?)]";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(originField);
-        Set<String> ids = new HashSet<>();
-        while (matcher.find()) {
-            String id = matcher.group(1);
-            ids.add(id);
-        }
-        if (CollectionUtils.isEmpty(ids)) {
-            return originField;
-        }
-        for (DatasetTableFieldDTO ele : originFields) {
-            if (StringUtils.containsIgnoreCase(originField, ele.getId() + "")) {
-                // 计算字段允许二次引用，这里递归查询完整引用链
-                if (Objects.equals(ele.getExtField(), ExtFieldConstant.EXT_NORMAL)) {
-                    originField = originField.replaceAll("\\[" + ele.getId() + "]",
-                            String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), ele.getDataeaseName()));
-                } else {
-                    originField = originField.replaceAll("\\[" + ele.getId() + "]", ele.getOriginName());
-                    originField = buildCalcField(originField, tableObj, originFields);
+    public static String buildCalcField(String originField, SQLObj tableObj, List<DatasetTableFieldDTO> originFields, int i) throws Exception {
+        try {
+            i++;
+            if (i > 100) {
+                DEException.throwException(Translator.get("i18n_field_circular_error"));
+            }
+            originField = originField.replaceAll("[\\t\\n\\r]]", "");
+            // 正则提取[xxx]
+            String regex = "\\[(.*?)]";
+            Pattern pattern = Pattern.compile(regex);
+            Matcher matcher = pattern.matcher(originField);
+            Set<String> ids = new HashSet<>();
+            while (matcher.find()) {
+                String id = matcher.group(1);
+                ids.add(id);
+            }
+            if (CollectionUtils.isEmpty(ids)) {
+                return originField;
+            }
+            for (DatasetTableFieldDTO ele : originFields) {
+                if (StringUtils.containsIgnoreCase(originField, ele.getId() + "")) {
+                    // 计算字段允许二次引用，这里递归查询完整引用链
+                    if (Objects.equals(ele.getExtField(), ExtFieldConstant.EXT_NORMAL)) {
+                        originField = originField.replaceAll("\\[" + ele.getId() + "]",
+                                String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), ele.getDataeaseName()));
+                    } else {
+                        originField = originField.replaceAll("\\[" + ele.getId() + "]", ele.getOriginName());
+                        originField = buildCalcField(originField, tableObj, originFields, i);
+                    }
                 }
             }
+            return originField;
+        } catch (Exception e) {
+            DEException.throwException(Translator.get("i18n_field_circular_error"));
         }
-        return originField;
+        return null;
     }
 
     public static String getLogic(String logic) {
@@ -214,44 +224,49 @@ public class Utils {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             return simpleDateFormat.parse(value).getTime();
         } catch (Exception e) {
-            e.printStackTrace();
         }
         try {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             return simpleDateFormat.parse(value).getTime();
         } catch (Exception e) {
-            e.printStackTrace();
         }
         try {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH");
             return simpleDateFormat.parse(value).getTime();
         } catch (Exception e) {
-            e.printStackTrace();
         }
         try {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
             return simpleDateFormat.parse(value).getTime();
         } catch (Exception e) {
-            e.printStackTrace();
         }
         try {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM");
             return simpleDateFormat.parse(value).getTime();
         } catch (Exception e) {
-            e.printStackTrace();
         }
         try {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy");
             return simpleDateFormat.parse(value).getTime();
         } catch (Exception e) {
-            e.printStackTrace();
         }
         try {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
             return simpleDateFormat.parse(value).getTime();
         } catch (Exception e) {
-            e.printStackTrace();
         }
         return 0;
+    }
+
+    public static String parseTime(String time, String sourceFormat, String targetFormat) {
+        if (StringUtils.equalsIgnoreCase(sourceFormat, targetFormat)) {
+            String[] s = time.split(" ");
+            if (s.length > 1) {
+                time = s[1];
+            } else {
+                time = s[0];
+            }
+        }
+        return time;
     }
 }

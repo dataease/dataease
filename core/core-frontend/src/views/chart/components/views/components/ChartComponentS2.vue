@@ -36,17 +36,12 @@ const props = defineProps({
     type: String,
     required: false,
     default: 'canvas'
-  },
-  dynamicAreaId: {
-    type: String,
-    required: false,
-    default: ''
   }
 })
 
 const emit = defineEmits(['onChartClick', 'onDrillFilters', 'onJumpClick'])
 
-const { view, showPosition, dynamicAreaId } = toRefs(props)
+const { view, showPosition } = toRefs(props)
 
 const isError = ref(false)
 const errMsg = ref('')
@@ -74,7 +69,7 @@ const state = reactive({
 const containerId = 'container-' + showPosition.value + '-' + view.value.id
 const viewTrack = ref(null)
 
-const calcData = view => {
+const calcData = (view: Chart, resetPageInfo = true) => {
   if (!view.tableId) {
     return
   }
@@ -88,8 +83,10 @@ const calcData = view => {
         errMsg.value = res.msg
       } else {
         state.data = res?.data
-        emit('onDrillFilters', res?.drillFilters)
-        renderChart(res)
+        if (res?.drillFilters?.length) {
+          emit('onDrillFilters', res?.drillFilters)
+        }
+        renderChart(res as unknown as Chart, resetPageInfo)
       }
     })
     .finally(() => {
@@ -98,13 +95,13 @@ const calcData = view => {
 }
 // 图表对象不用响应式
 let myChart = null
-const renderChart = async view => {
+const renderChart = async (view: Chart, resetPageInfo: boolean) => {
   if (!view) {
     return
   }
   // view 为引用对象 需要存库 view.data 直接赋值会导致保存不必要的数据
-  const chart = { ...view, data: state.data }
-  setupPage(chart)
+  const chart = { ...view, data: state.data } as ChartObj
+  setupPage(chart, resetPageInfo)
   myChart?.destroy()
   const chartView = chartViewManager.getChartView(view.render, view.type) as S2ChartView<any>
   myChart = chartView.drawChart({
@@ -121,7 +118,7 @@ const pageColor = computed(() => {
   const text = view.value?.customStyle?.text
   return text.color ?? 'white'
 })
-const setupPage = (chart: ChartObj) => {
+const setupPage = (chart: ChartObj, resetPageInfo?: boolean) => {
   const customAttr = chart.customAttr
   if (chart.type !== 'table-info' || customAttr.basicStyle.tablePageMode !== 'page') {
     state.showPage = false
@@ -132,6 +129,11 @@ const setupPage = (chart: ChartObj) => {
   if (chart.totalItems > state.pageInfo.pageSize) {
     pageInfo.total = chart.totalItems
     state.showPage = true
+  } else {
+    state.showPage = false
+  }
+  if (resetPageInfo) {
+    state.pageInfo.currentPage = 1
   }
 }
 
@@ -148,7 +150,7 @@ const handleCurrentChange = pageNum => {
     extReq = { ...extReq, ...chartExtRequest.value }
   }
   const chart = { ...view.value, chartExtRequest: extReq }
-  calcData(chart)
+  calcData(chart, false)
 }
 
 const action = param => {

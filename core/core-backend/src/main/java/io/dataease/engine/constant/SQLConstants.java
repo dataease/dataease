@@ -57,6 +57,8 @@ public class SQLConstants {
 
     public static final String STR_TO_DATE = "STR_TO_DATE(%s,'%s')";
 
+    public static final String GET_DATE_FORMAT = "GET_DATE_FORMAT(%s)";
+
     public static final String CAST = "CAST(%s AS %s)";
 
     public static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";

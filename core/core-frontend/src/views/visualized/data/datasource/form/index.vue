@@ -169,6 +169,15 @@ const next = () => {
     ElMessage.error(t('datasource.select_type'))
     return
   }
+
+  if (
+    form.apiConfiguration?.length === 0 &&
+    currentDsType.value === 'API' &&
+    activeStep.value !== 2
+  ) {
+    ElMessage.error('数据表不能为空')
+    return
+  }
   activeStep.value = activeStep.value + 1
 }
 
@@ -291,9 +300,6 @@ const saveDS = () => {
 
     return
   } else if (currentDsType.value === 'API') {
-    if (form.apiConfiguration.length == 0) {
-      return
-    }
     for (var i = 0; i < request.apiConfiguration.length; i++) {
       if (
         request.apiConfiguration[i].deTableName === '' ||

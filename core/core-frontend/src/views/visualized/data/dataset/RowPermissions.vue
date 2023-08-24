@@ -168,7 +168,7 @@ const save = ({ logic, items, errorMessage }) => {
       whiteListUser: JSON.stringify(rowPermissionForm.whiteListUser)
     }
   params.expressionTree = JSON.stringify({ items, logic })
-  saveRowPermission(params).then(res => {
+  saveRowPermission(params).then(() => {
     ElMessage.success(t('common.save_success'))
     search()
     clearData()
@@ -179,8 +179,7 @@ const save = ({ logic, items, errorMessage }) => {
 
 const clearData = () => {
   Object.assign(rowPermissionForm, cloneDeep(defaultForm))
-  rowAuth.value.relationList = []
-  rowAuth.value.logic = 'or'
+  rowAuth.value.init({})
   update_row_permission.value = false
 }
 

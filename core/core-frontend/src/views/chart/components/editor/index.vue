@@ -203,6 +203,13 @@ const getFields = (id, chartId) => {
   }
 }
 
+const quotaData = computed(() => {
+  if (view.value?.type === 'table-info') {
+    return state.quotaData?.filter(item => item.id !== '-1')
+  }
+  return state.quotaData
+})
+
 const startToMove = (e, item) => {
   e.dataTransfer.setData('dimension', JSON.stringify({ ...item, datasetId: view.value.tableId }))
 }
@@ -386,6 +393,10 @@ const addYaxis = e => {
   addAxis(e, 'yAxis')
 }
 
+const addExtBubble = e => {
+  addAxis(e, 'extBubble')
+}
+
 const addDrill = e => {
   dragCheckType(view.value.drillFields, 'd')
   dragMoveDuplicate(view.value.drillFields, e, '')
@@ -455,9 +466,14 @@ const onTypeChange = val => {
   calcData(view.value)
 }
 
-const onBasicStyleChange = val => {
-  view.value.customAttr.basicStyle = val
-  renderChart(view.value)
+const onBasicStyleChange = (chartForm: ChartEditorForm<ChartBasicStyle>) => {
+  const { data, requestData } = chartForm
+  view.value.customAttr.basicStyle = data
+  if (requestData) {
+    calcData(view.value)
+  } else {
+    renderChart(view.value)
+  }
 }
 
 const onTableHeaderChange = val => {
@@ -1078,6 +1094,40 @@ const autoInsert = element => {
                           </draggable>
                           <drag-placeholder :drag-list="view.yAxis" />
                         </el-row>
+                        <!-- extBubble -->
+                        <el-row class="padding-lr drag-data" v-if="showAxis('extBubble')">
+                          <span class="data-area-label">
+                            {{ chartViewInstance.axisConfig.extBubble.name }}
+                          </span>
+                          <draggable
+                            :list="view.extBubble"
+                            :move="onMove"
+                            item-key="id"
+                            group="drag"
+                            animation="300"
+                            class="drag-block-style"
+                            @add="addExtBubble"
+                          >
+                            <template #item="{ element, index }">
+                              <quota-item
+                                :dimension-data="state.dimension"
+                                :quota-data="state.quota"
+                                :chart="view"
+                                :item="element"
+                                :index="index"
+                                type="quota"
+                                :themes="props.themes"
+                                @onQuotaItemChange="quotaItemChange"
+                                @onQuotaItemRemove="quotaItemRemove"
+                                @onNameEdit="showRename"
+                                @editItemFilter="showQuotaEditFilter"
+                                @editItemCompare="showQuotaEditCompare"
+                                @valueFormatter="valueFormatter"
+                              />
+                            </template>
+                          </draggable>
+                          <drag-placeholder :drag-list="view.extBubble" />
+                        </el-row>
 
                         <!--drill-->
                         <el-row class="padding-lr drag-data" v-if="showAxis('drill')">
@@ -1510,7 +1560,7 @@ const autoInsert = element => {
             <div class="padding-lr field-height">
               <span>{{ t('chart.quota') }}</span>
               <draggable
-                :list="state.quotaData"
+                :list="quotaData"
                 :group="dsFieldDragOptions.group"
                 :move="onMove"
                 item-key="id"

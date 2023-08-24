@@ -117,6 +117,9 @@ const initApiItem = (val: ApiItem) => {
   Object.assign(apiItem, val)
   edit_api_item.value = true
   active.value = 0
+  nextTick(() => {
+    apiItemBasicInfo.value.clearValidate()
+  })
 }
 
 const showApiData = () => {
@@ -178,16 +181,20 @@ const before = () => {
   active.value -= 1
 }
 const next = () => {
-  if (apiItem.useJsonPath && !apiItem.jsonPath) {
-    ElMessage.warning(t('datasource.please_input_dataPath'))
-    return
-  }
-  checkApiItem({ data: Base64.encode(JSON.stringify(apiItem)) }).then(response => {
-    apiItem.jsonFields = response.data.jsonFields
-    apiItem.fields = []
-    handleFiledChange(apiItem)
-    previewData()
-    active.value += 1
+  apiItemBasicInfo.value.validate(val => {
+    if (val) {
+      if (apiItem.useJsonPath && !apiItem.jsonPath) {
+        ElMessage.warning(t('datasource.please_input_dataPath'))
+        return
+      }
+      checkApiItem({ data: Base64.encode(JSON.stringify(apiItem)) }).then(response => {
+        apiItem.jsonFields = response.data.jsonFields
+        apiItem.fields = []
+        handleFiledChange(apiItem)
+        previewData()
+        active.value += 1
+      })
+    }
   })
 }
 const closeEditItem = () => {

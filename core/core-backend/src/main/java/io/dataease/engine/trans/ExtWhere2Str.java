@@ -1,17 +1,15 @@
 package io.dataease.engine.trans;
 
 import io.dataease.api.chart.dto.ChartExtFilterDTO;
-import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.api.dataset.union.model.SQLMeta;
 import io.dataease.api.dataset.union.model.SQLObj;
+import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.engine.utils.Utils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -91,11 +89,8 @@ public class ExtWhere2Str {
                                 || request.getDatasetTableField().getDeExtractType() == 4) {
                             whereValue = String.format(SQLConstants.WHERE_BETWEEN, value.get(0), value.get(1));
                         } else {
-                            String format = ObjectUtils.isNotEmpty(request.getDatasetTableField().getDateFormat()) ? request.getDatasetTableField().getDateFormat() : "yyyy-MM-dd HH:mm:ss";
-                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
-                            String startTime = simpleDateFormat.format(new Date(Long.parseLong(value.get(0))));
-                            String endTime = simpleDateFormat.format(new Date(Long.parseLong(value.get(1))));
-                            whereValue = String.format(SQLConstants.WHERE_BETWEEN, startTime, endTime);
+                            whereName = String.format(SQLConstants.UNIX_TIMESTAMP, whereName);
+                            whereValue = String.format(SQLConstants.WHERE_BETWEEN, Long.parseLong(value.get(0)), Long.parseLong(value.get(1)));
                         }
                     } else {
                         whereValue = String.format(SQLConstants.WHERE_BETWEEN, value.get(0), value.get(1));
