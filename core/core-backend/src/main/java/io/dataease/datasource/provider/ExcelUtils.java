@@ -315,6 +315,7 @@ public class ExcelUtils {
     public class NoModelDataListener extends AnalysisEventListener<Map<Integer, String>> {
         private List<String[]> data = new ArrayList<>();
         private List<String> header = new ArrayList<>();
+        private List<Integer> headerKey = new ArrayList<>();
 
         @Override
         public void invokeHead(Map<Integer, ReadCellData<?>> headMap, AnalysisContext context) {
@@ -325,6 +326,7 @@ public class ExcelUtils {
                 if (StringUtils.isEmpty(value)) {
                     value = "none_" + key;
                 }
+                headerKey.add(key);
                 header.add(value);
             }
         }
@@ -337,7 +339,9 @@ public class ExcelUtils {
                 if (StringUtils.isEmpty(value)) {
                     value = "";
                 }
-                line.add(value);
+                if(headerKey.contains(key)){
+                    line.add(value);
+                }
             }
             int size = line.size();
             if(size < header.size()){
@@ -359,9 +363,8 @@ public class ExcelUtils {
     }
 
 
-    public List<ExcelSheetData> parseExcel(String filename, InputStream inputStream, boolean isPreview) throws DEException {
+    public List<ExcelSheetData> parseExcel(String filename, InputStream inputStream, boolean isPreview) throws IOException {
         List<ExcelSheetData> excelSheetDataList = new ArrayList<>();
-        try {
             String suffix = filename.substring(filename.lastIndexOf(".") + 1);
             if (StringUtils.equalsIgnoreCase(suffix, "xlsx") || StringUtils.equalsIgnoreCase(suffix, "xls")) {
                 NoModelDataListener noModelDataListener = new NoModelDataListener();
@@ -371,6 +374,9 @@ public class ExcelUtils {
                     noModelDataListener.clear();
                     List<TableField> fields = new ArrayList<>();
                     excelReader.read(readSheet);
+                    if(CollectionUtils.isEmpty(noModelDataListener.getHeader())){
+                        DEException.throwException("首行不能为空！");
+                    }
                     for (String s : noModelDataListener.getHeader()) {
                         TableField tableFiled = new TableField();
                         tableFiled.setFieldType("TEXT");
@@ -422,6 +428,7 @@ public class ExcelUtils {
                 excelSheetDataList.add(excelSheetData);
             }
             inputStream.close();
+
             for (ExcelSheetData excelSheetData : excelSheetDataList) {
                 List<String[]> data = excelSheetData.getData();
                 String[] fieldArray = excelSheetData.getFields().stream().map(TableField::getName).toArray(String[]::new);
@@ -438,9 +445,7 @@ public class ExcelUtils {
                 }
                 excelSheetData.setJsonArray(jsonArray);
             }
-        } catch (Exception e) {
-            DEException.throwException(e);
-        }
+
         return excelSheetDataList;
     }
 
