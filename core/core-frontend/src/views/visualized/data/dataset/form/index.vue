@@ -104,7 +104,21 @@ const getDsName = (id: string) => {
 }
 
 const backToMain = () => {
-  push('/data/dataset')
+  if (!nodeInfo.id) {
+    ElMessageBox.confirm('数据集未保存,确认退出吗?', {
+      confirmButtonText: t('dataset.confirm'),
+      cancelButtonText: t('common.cancel'),
+      showCancelButton: true,
+      confirmButtonType: 'primary',
+      type: 'warning',
+      autofocus: false,
+      showClose: false
+    }).then(() => {
+      push('/data/dataset')
+    })
+  } else {
+    push('/data/dataset')
+  }
 }
 
 const closeCustomTime = () => {
