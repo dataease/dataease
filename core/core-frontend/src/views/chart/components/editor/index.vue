@@ -393,6 +393,10 @@ const addYaxis = e => {
   addAxis(e, 'yAxis')
 }
 
+const addExtBubble = e => {
+  addAxis(e, 'extBubble')
+}
+
 const addDrill = e => {
   dragCheckType(view.value.drillFields, 'd')
   dragMoveDuplicate(view.value.drillFields, e, '')
@@ -1089,6 +1093,40 @@ const autoInsert = element => {
                             </template>
                           </draggable>
                           <drag-placeholder :drag-list="view.yAxis" />
+                        </el-row>
+                        <!-- extBubble -->
+                        <el-row class="padding-lr drag-data" v-if="showAxis('extBubble')">
+                          <span class="data-area-label">
+                            {{ chartViewInstance.axisConfig.extBubble.name }}
+                          </span>
+                          <draggable
+                            :list="view.extBubble"
+                            :move="onMove"
+                            item-key="id"
+                            group="drag"
+                            animation="300"
+                            class="drag-block-style"
+                            @add="addExtBubble"
+                          >
+                            <template #item="{ element, index }">
+                              <quota-item
+                                :dimension-data="state.dimension"
+                                :quota-data="state.quota"
+                                :chart="view"
+                                :item="element"
+                                :index="index"
+                                type="quota"
+                                :themes="props.themes"
+                                @onQuotaItemChange="quotaItemChange"
+                                @onQuotaItemRemove="quotaItemRemove"
+                                @onNameEdit="showRename"
+                                @editItemFilter="showQuotaEditFilter"
+                                @editItemCompare="showQuotaEditCompare"
+                                @valueFormatter="valueFormatter"
+                              />
+                            </template>
+                          </draggable>
+                          <drag-placeholder :drag-list="view.extBubble" />
                         </el-row>
 
                         <!--drill-->

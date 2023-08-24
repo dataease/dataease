@@ -148,13 +148,21 @@ declare interface ChartBasicStyle {
    */
   areaBaseColor: string
   /**
+   * 符号地图符号形状
+   */
+  mapSymbol: string
+  /**
+   * 符号地图符号大小
+   */
+  mapSymbolSize: number
+  /**
    * 符号透明度
    */
-  symbolOpacity: number
+  mapSymbolOpacity: number
   /**
    * 符号边框宽度
    */
-  symbolStrokeWidth: number
+  mapSymbolStrokeWidth: number
   /**
    * 环形图/玫瑰图内径占比
    */
@@ -344,14 +352,6 @@ declare interface ChartMiscAttr {
    * 仪表盘结束角度
    */
   gaugeEndAngle: number
-  /**
-   * 散点图气泡形状
-   */
-  scatterSymbol: string
-  /**
-   * 散点图气泡大小
-   */
-  scatterSymbolSize: number
   treemapWidth: number
   treemapHeight: number
   /**
@@ -374,8 +374,6 @@ declare interface ChartMiscAttr {
    * 水波图形状
    */
   liquidShape: string
-  symbolOpacity: number
-  symbolStrokeWidth: number
   /**
    * 地图倾角
    */

@@ -7,11 +7,72 @@ import { flow, parseJson } from '../../../util'
 import { singleDimensionTooltipFormatter, valueFormatter } from '../../../formatter'
 import { getPadding } from '../../common/common_antv'
 import { Datum } from '@antv/g2plot/esm/types/common'
+import { useI18n } from '@/hooks/web/useI18n'
 
+const { t } = useI18n()
 /**
  * 散点图
  */
 export class Scatter extends G2PlotChartView<ScatterOptions, G2Scatter> {
+  properties: EditorProperty[] = [
+    'background-overall-component',
+    'basic-style-selector',
+    'x-axis-selector',
+    'y-axis-selector',
+    'title-selector',
+    'label-selector',
+    'tooltip-selector',
+    'legend-selector'
+  ]
+  propertyInner: EditorPropertyInner = {
+    'basic-style-selector': ['colors', 'alpha', 'scatterSymbol', 'scatterSymbolSize'],
+    'label-selector': ['fontSize', 'color', 'vPosition'],
+    'tooltip-selector': ['fontSize', 'color', 'backgroundColor'],
+    'x-axis-selector': [
+      'vPosition',
+      'name',
+      'color',
+      'fontSize',
+      'axisLine',
+      'splitLine',
+      'axisForm',
+      'axisLabel'
+    ],
+    'y-axis-selector': [
+      'vPosition',
+      'name',
+      'color',
+      'fontSize',
+      'axisValue',
+      'axisLine',
+      'splitLine',
+      'axisForm',
+      'axisLabel',
+      'axisLabelFormatter'
+    ],
+    'title-selector': [
+      'title',
+      'fontSize',
+      'color',
+      'hPosition',
+      'isItalic',
+      'isBolder',
+      'remarkShow',
+      'fontFamily',
+      'letterSpace',
+      'fontShadow'
+    ],
+    'legend-selector': ['icon', 'orient', 'color', 'fontSize', 'hPosition', 'vPosition']
+  }
+  axis: AxisType[] = ['xAxis', 'yAxis', 'extBubble', 'filter', 'drill', 'extLabel', 'extTooltip']
+  axisConfig: AxisConfig = {
+    ...this.axisConfig,
+    extBubble: {
+      name: `${t('chart.bubble_size')} / ${t('chart.quota')}`,
+      type: 'q',
+      limit: 1
+    }
+  }
   public drawChart(drawOptions: G2PlotDrawOptions<G2Scatter>) {
     const { chart, container, action } = drawOptions
     if (!chart.data?.data) {
@@ -83,11 +144,11 @@ export class Scatter extends G2PlotChartView<ScatterOptions, G2Scatter> {
   protected configBasicStyle(chart: Chart, options: ScatterOptions): ScatterOptions {
     const customAttr = parseJson(chart.customAttr)
     const basicStyle = customAttr.basicStyle
-    if (chart.yAxisExt?.length) {
+    if (chart.extBubble?.length) {
       return {
         ...options,
         size: [5, 30],
-        sizeField: 'extValue',
+        sizeField: 'popSize',
         shape: basicStyle.scatterSymbol
       }
     }
@@ -125,57 +186,6 @@ export class Scatter extends G2PlotChartView<ScatterOptions, G2Scatter> {
       this.configBasicStyle
     )(chart, options)
   }
-  properties: EditorProperty[] = [
-    'background-overall-component',
-    'basic-style-selector',
-    'x-axis-selector',
-    'y-axis-selector',
-    'title-selector',
-    'label-selector',
-    'tooltip-selector',
-    'legend-selector'
-  ]
-  propertyInner: EditorPropertyInner = {
-    'basic-style-selector': ['colors', 'alpha'],
-    'label-selector': ['fontSize', 'color', 'vPosition'],
-    'tooltip-selector': ['fontSize', 'color', 'backgroundColor'],
-    'x-axis-selector': [
-      'vPosition',
-      'name',
-      'color',
-      'fontSize',
-      'axisLine',
-      'splitLine',
-      'axisForm',
-      'axisLabel'
-    ],
-    'y-axis-selector': [
-      'vPosition',
-      'name',
-      'color',
-      'fontSize',
-      'axisValue',
-      'axisLine',
-      'splitLine',
-      'axisForm',
-      'axisLabel',
-      'axisLabelFormatter'
-    ],
-    'title-selector': [
-      'title',
-      'fontSize',
-      'color',
-      'hPosition',
-      'isItalic',
-      'isBolder',
-      'remarkShow',
-      'fontFamily',
-      'letterSpace',
-      'fontShadow'
-    ],
-    'legend-selector': ['icon', 'orient', 'textStyle', 'hPosition', 'vPosition']
-  }
-  axis: AxisType[] = ['xAxis', 'yAxis', 'yAxisExt', 'filter', 'drill', 'extLabel', 'extTooltip']
 
   setupDefaultOptions(chart: ChartObj): ChartObj {
     return this.setupVerticalAxis(chart)
