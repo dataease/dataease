@@ -18,7 +18,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 const { t } = useI18n()
 const props = defineProps({
   chart: {
-    type: Object as PropType<Omit<Chart, 'customAttr'> & { customAttr: DeepPartial<ChartAttr> }>,
+    type: Object as PropType<ChartObj>,
     required: true
   },
   themes: {
@@ -38,7 +38,7 @@ const state = reactive({
   colorIndex: 0
 })
 watch(
-  props.chart.customAttr.basicStyle,
+  () => props.chart.customAttr.basicStyle,
   () => {
     init()
   },
@@ -87,7 +87,7 @@ const pageSizeOptions = [
 
 const gaugeStyleOptions = [{ name: '默认', value: 'default' }]
 
-const lineSymbolOptions = [
+const symbolOptions = [
   { name: t('chart.line_symbol_circle'), value: 'circle' },
   { name: t('chart.line_symbol_rect'), value: 'square' },
   { name: t('chart.line_symbol_triangle'), value: 'triangle' },
@@ -261,6 +261,7 @@ init()
       v-show="showProperty('tableBorderColor')"
     >
       <el-color-picker
+        :persistent="false"
         v-model="state.basicStyleForm.tableBorderColor"
         color-format="hex"
         :predefine="predefineColors"
@@ -273,6 +274,7 @@ init()
       v-show="showProperty('tableScrollBarColor')"
     >
       <el-color-picker
+        :persistent="false"
         v-model="state.basicStyleForm.tableScrollBarColor"
         class="color-picker-style"
         :predefine="predefineColors"
@@ -389,7 +391,7 @@ init()
         @change="changeBasicStyle()"
       >
         <el-option
-          v-for="item in lineSymbolOptions"
+          v-for="item in symbolOptions"
           :key="item.value"
           :label="item.name"
           :value="item.value"
@@ -459,7 +461,7 @@ init()
         @change="changeBasicStyle('scatterSymbol')"
       >
         <el-option
-          v-for="item in lineSymbolOptions"
+          v-for="item in symbolOptions"
           :key="item.value"
           :label="item.name"
           :value="item.value"
@@ -488,6 +490,7 @@ init()
       v-show="showProperty('areaBorderColor')"
     >
       <el-color-picker
+        :persistent="false"
         v-model="state.basicStyleForm.areaBorderColor"
         class="color-picker-style"
         :predefine="predefineColors"
@@ -500,6 +503,7 @@ init()
       v-show="showProperty('areaBaseColor')"
     >
       <el-color-picker
+        :persistent="false"
         v-model="state.basicStyleForm.areaBaseColor"
         class="color-picker-style"
         :predefine="predefineColors"
@@ -522,16 +526,16 @@ init()
     <el-form-item
       :label="t('chart.bubble_symbol')"
       class="form-item"
-      v-show="showProperty('scatterSymbol')"
+      v-show="showProperty('mapSymbol')"
     >
       <el-select
         :effect="props.themes"
-        v-model="state.basicStyleForm.scatterSymbol"
+        v-model="state.basicStyleForm.mapSymbol"
         :placeholder="t('chart.line_symbol')"
         @change="changeBasicStyle"
       >
         <el-option
-          v-for="item in lineSymbolOptions"
+          v-for="item in symbolOptions"
           :key="item.value"
           :label="item.name"
           :value="item.value"
@@ -541,12 +545,12 @@ init()
     <el-form-item
       :label="t('chart.bubble_size')"
       class="form-item form-item-slider"
-      v-show="showProperty('scatterSymbolSize')"
+      v-show="showProperty('mapSymbolSize')"
     >
       <el-input-number
         :effect="props.themes"
         controls-position="right"
-        v-model="state.basicStyleForm.scatterSymbolSize"
+        v-model="state.basicStyleForm.mapSymbolSize"
         :min="1"
         :max="40"
         @change="changeBasicStyle()"
@@ -555,26 +559,26 @@ init()
     <el-form-item
       :label="t('chart.not_alpha')"
       class="form-item form-item-slider"
-      v-show="showProperty('symbolOpacity')"
+      v-show="showProperty('mapSymbolOpacity')"
     >
       <el-input-number
         :effect="props.themes"
         controls-position="right"
-        v-model="state.basicStyleForm.symbolOpacity"
+        v-model="state.basicStyleForm.mapSymbolOpacity"
         :min="1"
         :max="100"
         @change="changeBasicStyle()"
       />
     </el-form-item>
     <el-form-item
-      v-show="showProperty('scatterSymbol') && state.basicStyleForm.scatterSymbol !== 'marker'"
+      v-show="showProperty('mapSymbol') && state.basicStyleForm.mapSymbol !== 'marker'"
       :label="t('visualization.border_color')"
       class="form-item form-item-slider"
     >
       <el-input-number
         :effect="props.themes"
         controls-position="right"
-        v-model="state.basicStyleForm.symbolStrokeWidth"
+        v-model="state.basicStyleForm.mapSymbolStrokeWidth"
         :min="0"
         :max="5"
         @change="changeBasicStyle()"

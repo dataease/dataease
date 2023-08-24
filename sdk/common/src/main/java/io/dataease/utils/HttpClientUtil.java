@@ -47,6 +47,9 @@ public class HttpClientUtil {
      * @return CloseableHttpClient实例
      */
     private static CloseableHttpClient buildHttpClient(String url) {
+        if(StringUtils.isEmpty(url)){
+            throw new DEException(SYSTEM_INNER_ERROR.code(), "HttpClient查询失败: url 不能为空！");
+        }
         try {
             if (url.startsWith(HTTPS)) {
                 SSLContextBuilder builder = new SSLContextBuilder();

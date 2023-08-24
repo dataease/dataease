@@ -216,8 +216,6 @@ export const DEFAULT_MISC: ChartMiscAttr = {
   nameFontIsItalic: false,
   nameLetterSpace: '0',
   nameFontShadow: false,
-  scatterSymbol: 'circle',
-  scatterSymbolSize: 20,
   treemapWidth: 80,
   treemapHeight: 80,
   liquidMax: 100,
@@ -228,8 +226,6 @@ export const DEFAULT_MISC: ChartMiscAttr = {
   },
   liquidSize: 80,
   liquidShape: 'circle',
-  symbolOpacity: 0.7,
-  symbolStrokeWidth: 2,
   hPosition: 'center',
   vPosition: 'center',
   mapPitch: 0,
@@ -332,7 +328,7 @@ export const DEFAULT_TABLE_CELL: ChartTableCellAttr = {
   tableItemHeight: 36
 }
 export const DEFAULT_TITLE_STYLE: ChartTextStyle = {
-  show: false,
+  show: true,
   fontSize: '18',
   color: '#ffffff',
   hPosition: 'left',
@@ -1181,8 +1177,10 @@ export const DEFAULT_BASIC_STYLE: ChartBasicStyle = {
   areaBorderColor: '#EBEEF5',
   suspension: true,
   areaBaseColor: '#ffffff',
-  symbolOpacity: 0.7,
-  symbolStrokeWidth: 2,
+  mapSymbolOpacity: 0.7,
+  mapSymbolStrokeWidth: 2,
+  mapSymbol: 'circle',
+  mapSymbolSize: 20,
   radius: 100,
   innerRadius: 40
 }

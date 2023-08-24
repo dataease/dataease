@@ -129,7 +129,7 @@ export const snapshotStore = defineStore('snapshot', {
       this.styleChangeTimes = 0
     },
 
-    recordSnapshot() {
+    recordSnapshot(type?) {
       this.styleChangeTimes = ++this.styleChangeTimes
       if (dataPrepareState.value) {
         // 添加新的快照
