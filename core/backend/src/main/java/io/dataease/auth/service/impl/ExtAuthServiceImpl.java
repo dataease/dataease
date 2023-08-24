@@ -2,6 +2,7 @@ package io.dataease.auth.service.impl;
 
 import io.dataease.auth.entity.AuthItem;
 import io.dataease.auth.service.ExtAuthService;
+import io.dataease.commons.constants.SysAuthConstants;
 import io.dataease.plugins.common.base.domain.SysAuth;
 import io.dataease.ext.ExtAuthMapper;
 import io.dataease.commons.constants.AuthConstants;
@@ -66,59 +67,95 @@ public class ExtAuthServiceImpl implements ExtAuthService {
     @Cacheable(value = AuthConstants.USER_LINK_NAME, key = "'user' + #userId")
     @Override
     public List<AuthItem> dataSourceIdByUser(Long userId) {
-        return extAuthMapper.dataSourceIdByUser(userId.toString());
+        return extAuthMapper.queryAuthItems(
+                SysAuthConstants.AUTH_TARGET_TYPE_USER,
+                userId.toString(),
+                SysAuthConstants.AUTH_SOURCE_TYPE_DATASOURCE
+        );
     }
 
     @Cacheable(value = AuthConstants.USER_DATASET_NAME, key = "'user' + #userId")
     @Override
     public List<AuthItem> dataSetIdByUser(Long userId) {
-        return extAuthMapper.dataSetIdByUser(userId.toString());
+        return extAuthMapper.queryAuthItems(
+                SysAuthConstants.AUTH_TARGET_TYPE_USER,
+                userId.toString(),
+                SysAuthConstants.AUTH_SOURCE_TYPE_DATASET
+        );
     }
 
     @Cacheable(value = AuthConstants.USER_PANEL_NAME, key = "'user' + #userId")
     @Override
     public List<AuthItem> panelIdByUser(Long userId) {
-        return extAuthMapper.panelIdByUser(userId.toString());
+        return extAuthMapper.queryAuthItems(
+                SysAuthConstants.AUTH_TARGET_TYPE_USER,
+                userId.toString(),
+                SysAuthConstants.AUTH_SOURCE_TYPE_PANEL
+        );
     }
 
 
     @Cacheable(value = AuthConstants.ROLE_LINK_NAME, key = "'role' + #roleId")
     @Override
     public List<AuthItem> dataSourceIdByRole(Long roleId) {
-        return extAuthMapper.dataSourceIdByRole(roleId.toString());
+        return extAuthMapper.queryAuthItems(
+                SysAuthConstants.AUTH_TARGET_TYPE_ROLE,
+                roleId.toString(),
+                SysAuthConstants.AUTH_SOURCE_TYPE_DATASOURCE
+        );
     }
 
     @Cacheable(value = AuthConstants.ROLE_DATASET_NAME, key = "'role' + #roleId")
     @Override
     public List<AuthItem> dataSetIdByRole(Long roleId) {
-        return extAuthMapper.dataSetIdByRole(roleId.toString());
+        return extAuthMapper.queryAuthItems(
+                SysAuthConstants.AUTH_TARGET_TYPE_ROLE,
+                roleId.toString(),
+                SysAuthConstants.AUTH_SOURCE_TYPE_DATASET
+        );
     }
 
     @Cacheable(value = AuthConstants.ROLE_PANEL_NAME, key = "'role' + #roleId")
     @Override
     public List<AuthItem> panelIdByRole(Long roleId) {
-        return extAuthMapper.panelIdByRole(roleId.toString());
+        return extAuthMapper.queryAuthItems(
+                SysAuthConstants.AUTH_TARGET_TYPE_ROLE,
+                roleId.toString(),
+                SysAuthConstants.AUTH_SOURCE_TYPE_PANEL
+        );
     }
 
     @Cacheable(value = AuthConstants.DEPT_LINK_NAME, key = "'dept' + #deptId")
     @Override
     public List<AuthItem> dataSourceIdByDept(Long deptId) {
         if (ObjectUtils.isEmpty(deptId)) return emptyResult;
-        return extAuthMapper.dataSourceIdByDept(deptId.toString());
+        return extAuthMapper.queryAuthItems(
+                SysAuthConstants.AUTH_TARGET_TYPE_DEPT,
+                deptId.toString(),
+                SysAuthConstants.AUTH_SOURCE_TYPE_DATASOURCE
+        );
     }
 
     @Cacheable(value = AuthConstants.DEPT_DATASET_NAME, key = "'dept' + #deptId")
     @Override
     public List<AuthItem> dataSetIdByDept(Long deptId) {
         if (ObjectUtils.isEmpty(deptId)) return emptyResult;
-        return extAuthMapper.dataSetIdByDept(deptId.toString());
+        return extAuthMapper.queryAuthItems(
+                SysAuthConstants.AUTH_TARGET_TYPE_DEPT,
+                deptId.toString(),
+                SysAuthConstants.AUTH_SOURCE_TYPE_DATASET
+        );
     }
 
     @Cacheable(value = AuthConstants.DEPT_PANEL_NAME, key = "'dept' + #deptId")
     @Override
     public List<AuthItem> panelIdByDept(Long deptId) {
         if (ObjectUtils.isEmpty(deptId)) return emptyResult;
-        return extAuthMapper.panelIdByDept(deptId.toString());
+        return extAuthMapper.queryAuthItems(
+                SysAuthConstants.AUTH_TARGET_TYPE_DEPT,
+                deptId.toString(),
+                SysAuthConstants.AUTH_SOURCE_TYPE_PANEL
+        );
     }
 
     @Caching(evict = {
