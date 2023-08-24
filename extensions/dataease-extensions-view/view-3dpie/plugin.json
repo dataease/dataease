@@ -1,0 +1,13 @@
+{
+    "name": "3D 饼图插件",
+    "free": 0,
+    "store": "thirdpart",
+    "cost": 0,
+    "category": "view",
+    "descript": "High Chart 3D 饼图插件",
+    "version": "1.18.3",
+    "creator": "DATAEASE",
+    "moduleName": "view-3dpie-backend",
+    "require": "1.10.0",
+    "dsType": ""
+}

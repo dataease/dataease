@@ -1,0 +1,582 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.dataease.plugins.common.base.mapper.PanelAppTemplateMapper">
+  <resultMap id="BaseResultMap" type="io.dataease.plugins.common.base.domain.PanelAppTemplate">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="node_type" jdbcType="VARCHAR" property="nodeType" />
+    <result column="level" jdbcType="INTEGER" property="level" />
+    <result column="pid" jdbcType="VARCHAR" property="pid" />
+    <result column="version" jdbcType="VARCHAR" property="version" />
+    <result column="update_time" jdbcType="BIGINT" property="updateTime" />
+    <result column="update_user" jdbcType="VARCHAR" property="updateUser" />
+    <result column="create_time" jdbcType="BIGINT" property="createTime" />
+    <result column="create_user" jdbcType="VARCHAR" property="createUser" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="io.dataease.plugins.common.base.domain.PanelAppTemplateWithBLOBs">
+    <result column="icon" jdbcType="LONGVARCHAR" property="icon" />
+    <result column="application_info" jdbcType="LONGVARCHAR" property="applicationInfo" />
+    <result column="panel_info" jdbcType="LONGVARCHAR" property="panelInfo" />
+    <result column="panel_views_info" jdbcType="LONGVARCHAR" property="panelViewsInfo" />
+    <result column="chart_views_info" jdbcType="LONGVARCHAR" property="chartViewsInfo" />
+    <result column="chart_view_fields_info" jdbcType="LONGVARCHAR" property="chartViewFieldsInfo" />
+    <result column="dataset_tables_info" jdbcType="LONGVARCHAR" property="datasetTablesInfo" />
+    <result column="dataset_table_fields_info" jdbcType="LONGVARCHAR" property="datasetTableFieldsInfo" />
+    <result column="dataset_tasks_info" jdbcType="LONGVARCHAR" property="datasetTasksInfo" />
+    <result column="datasource_info" jdbcType="LONGVARCHAR" property="datasourceInfo" />
+    <result column="link_jumps" jdbcType="LONGVARCHAR" property="linkJumps" />
+    <result column="link_jump_infos" jdbcType="LONGVARCHAR" property="linkJumpInfos" />
+    <result column="linkages" jdbcType="LONGVARCHAR" property="linkages" />
+    <result column="linkage_fields" jdbcType="LONGVARCHAR" property="linkageFields" />
+    <result column="snapshot" jdbcType="LONGVARCHAR" property="snapshot" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, `name`, node_type, `level`, pid, version, update_time, update_user, create_time, 
+    create_user
+  </sql>
+  <sql id="Blob_Column_List">
+    icon, application_info, panel_info, panel_views_info, chart_views_info, chart_view_fields_info, 
+    dataset_tables_info, dataset_table_fields_info, dataset_tasks_info, datasource_info, 
+    link_jumps, link_jump_infos, linkages, linkage_fields, snapshot
+  </sql>
+  <select id="selectByExampleWithBLOBs" parameterType="io.dataease.plugins.common.base.domain.PanelAppTemplateExample" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from panel_app_template
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" parameterType="io.dataease.plugins.common.base.domain.PanelAppTemplateExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from panel_app_template
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from panel_app_template
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from panel_app_template
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="io.dataease.plugins.common.base.domain.PanelAppTemplateExample">
+    delete from panel_app_template
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="io.dataease.plugins.common.base.domain.PanelAppTemplateWithBLOBs">
+    insert into panel_app_template (id, `name`, node_type, 
+      `level`, pid, version, 
+      update_time, update_user, create_time, 
+      create_user, icon, application_info, 
+      panel_info, panel_views_info, chart_views_info, 
+      chart_view_fields_info, dataset_tables_info, 
+      dataset_table_fields_info, dataset_tasks_info, 
+      datasource_info, link_jumps, link_jump_infos, 
+      linkages, linkage_fields, snapshot
+      )
+    values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{nodeType,jdbcType=VARCHAR}, 
+      #{level,jdbcType=INTEGER}, #{pid,jdbcType=VARCHAR}, #{version,jdbcType=VARCHAR}, 
+      #{updateTime,jdbcType=BIGINT}, #{updateUser,jdbcType=VARCHAR}, #{createTime,jdbcType=BIGINT}, 
+      #{createUser,jdbcType=VARCHAR}, #{icon,jdbcType=LONGVARCHAR}, #{applicationInfo,jdbcType=LONGVARCHAR}, 
+      #{panelInfo,jdbcType=LONGVARCHAR}, #{panelViewsInfo,jdbcType=LONGVARCHAR}, #{chartViewsInfo,jdbcType=LONGVARCHAR}, 
+      #{chartViewFieldsInfo,jdbcType=LONGVARCHAR}, #{datasetTablesInfo,jdbcType=LONGVARCHAR}, 
+      #{datasetTableFieldsInfo,jdbcType=LONGVARCHAR}, #{datasetTasksInfo,jdbcType=LONGVARCHAR}, 
+      #{datasourceInfo,jdbcType=LONGVARCHAR}, #{linkJumps,jdbcType=LONGVARCHAR}, #{linkJumpInfos,jdbcType=LONGVARCHAR}, 
+      #{linkages,jdbcType=LONGVARCHAR}, #{linkageFields,jdbcType=LONGVARCHAR}, #{snapshot,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="io.dataease.plugins.common.base.domain.PanelAppTemplateWithBLOBs">
+    insert into panel_app_template
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="name != null">
+        `name`,
+      </if>
+      <if test="nodeType != null">
+        node_type,
+      </if>
+      <if test="level != null">
+        `level`,
+      </if>
+      <if test="pid != null">
+        pid,
+      </if>
+      <if test="version != null">
+        version,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="updateUser != null">
+        update_user,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="createUser != null">
+        create_user,
+      </if>
+      <if test="icon != null">
+        icon,
+      </if>
+      <if test="applicationInfo != null">
+        application_info,
+      </if>
+      <if test="panelInfo != null">
+        panel_info,
+      </if>
+      <if test="panelViewsInfo != null">
+        panel_views_info,
+      </if>
+      <if test="chartViewsInfo != null">
+        chart_views_info,
+      </if>
+      <if test="chartViewFieldsInfo != null">
+        chart_view_fields_info,
+      </if>
+      <if test="datasetTablesInfo != null">
+        dataset_tables_info,
+      </if>
+      <if test="datasetTableFieldsInfo != null">
+        dataset_table_fields_info,
+      </if>
+      <if test="datasetTasksInfo != null">
+        dataset_tasks_info,
+      </if>
+      <if test="datasourceInfo != null">
+        datasource_info,
+      </if>
+      <if test="linkJumps != null">
+        link_jumps,
+      </if>
+      <if test="linkJumpInfos != null">
+        link_jump_infos,
+      </if>
+      <if test="linkages != null">
+        linkages,
+      </if>
+      <if test="linkageFields != null">
+        linkage_fields,
+      </if>
+      <if test="snapshot != null">
+        snapshot,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="nodeType != null">
+        #{nodeType,jdbcType=VARCHAR},
+      </if>
+      <if test="level != null">
+        #{level,jdbcType=INTEGER},
+      </if>
+      <if test="pid != null">
+        #{pid,jdbcType=VARCHAR},
+      </if>
+      <if test="version != null">
+        #{version,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=BIGINT},
+      </if>
+      <if test="updateUser != null">
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=BIGINT},
+      </if>
+      <if test="createUser != null">
+        #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="icon != null">
+        #{icon,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="applicationInfo != null">
+        #{applicationInfo,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="panelInfo != null">
+        #{panelInfo,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="panelViewsInfo != null">
+        #{panelViewsInfo,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="chartViewsInfo != null">
+        #{chartViewsInfo,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="chartViewFieldsInfo != null">
+        #{chartViewFieldsInfo,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="datasetTablesInfo != null">
+        #{datasetTablesInfo,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="datasetTableFieldsInfo != null">
+        #{datasetTableFieldsInfo,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="datasetTasksInfo != null">
+        #{datasetTasksInfo,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="datasourceInfo != null">
+        #{datasourceInfo,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="linkJumps != null">
+        #{linkJumps,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="linkJumpInfos != null">
+        #{linkJumpInfos,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="linkages != null">
+        #{linkages,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="linkageFields != null">
+        #{linkageFields,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="snapshot != null">
+        #{snapshot,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="io.dataease.plugins.common.base.domain.PanelAppTemplateExample" resultType="java.lang.Long">
+    select count(*) from panel_app_template
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update panel_app_template
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=VARCHAR},
+      </if>
+      <if test="record.name != null">
+        `name` = #{record.name,jdbcType=VARCHAR},
+      </if>
+      <if test="record.nodeType != null">
+        node_type = #{record.nodeType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.level != null">
+        `level` = #{record.level,jdbcType=INTEGER},
+      </if>
+      <if test="record.pid != null">
+        pid = #{record.pid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.version != null">
+        version = #{record.version,jdbcType=VARCHAR},
+      </if>
+      <if test="record.updateTime != null">
+        update_time = #{record.updateTime,jdbcType=BIGINT},
+      </if>
+      <if test="record.updateUser != null">
+        update_user = #{record.updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createTime != null">
+        create_time = #{record.createTime,jdbcType=BIGINT},
+      </if>
+      <if test="record.createUser != null">
+        create_user = #{record.createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.icon != null">
+        icon = #{record.icon,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.applicationInfo != null">
+        application_info = #{record.applicationInfo,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.panelInfo != null">
+        panel_info = #{record.panelInfo,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.panelViewsInfo != null">
+        panel_views_info = #{record.panelViewsInfo,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.chartViewsInfo != null">
+        chart_views_info = #{record.chartViewsInfo,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.chartViewFieldsInfo != null">
+        chart_view_fields_info = #{record.chartViewFieldsInfo,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.datasetTablesInfo != null">
+        dataset_tables_info = #{record.datasetTablesInfo,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.datasetTableFieldsInfo != null">
+        dataset_table_fields_info = #{record.datasetTableFieldsInfo,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.datasetTasksInfo != null">
+        dataset_tasks_info = #{record.datasetTasksInfo,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.datasourceInfo != null">
+        datasource_info = #{record.datasourceInfo,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.linkJumps != null">
+        link_jumps = #{record.linkJumps,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.linkJumpInfos != null">
+        link_jump_infos = #{record.linkJumpInfos,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.linkages != null">
+        linkages = #{record.linkages,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.linkageFields != null">
+        linkage_fields = #{record.linkageFields,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.snapshot != null">
+        snapshot = #{record.snapshot,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map">
+    update panel_app_template
+    set id = #{record.id,jdbcType=VARCHAR},
+      `name` = #{record.name,jdbcType=VARCHAR},
+      node_type = #{record.nodeType,jdbcType=VARCHAR},
+      `level` = #{record.level,jdbcType=INTEGER},
+      pid = #{record.pid,jdbcType=VARCHAR},
+      version = #{record.version,jdbcType=VARCHAR},
+      update_time = #{record.updateTime,jdbcType=BIGINT},
+      update_user = #{record.updateUser,jdbcType=VARCHAR},
+      create_time = #{record.createTime,jdbcType=BIGINT},
+      create_user = #{record.createUser,jdbcType=VARCHAR},
+      icon = #{record.icon,jdbcType=LONGVARCHAR},
+      application_info = #{record.applicationInfo,jdbcType=LONGVARCHAR},
+      panel_info = #{record.panelInfo,jdbcType=LONGVARCHAR},
+      panel_views_info = #{record.panelViewsInfo,jdbcType=LONGVARCHAR},
+      chart_views_info = #{record.chartViewsInfo,jdbcType=LONGVARCHAR},
+      chart_view_fields_info = #{record.chartViewFieldsInfo,jdbcType=LONGVARCHAR},
+      dataset_tables_info = #{record.datasetTablesInfo,jdbcType=LONGVARCHAR},
+      dataset_table_fields_info = #{record.datasetTableFieldsInfo,jdbcType=LONGVARCHAR},
+      dataset_tasks_info = #{record.datasetTasksInfo,jdbcType=LONGVARCHAR},
+      datasource_info = #{record.datasourceInfo,jdbcType=LONGVARCHAR},
+      link_jumps = #{record.linkJumps,jdbcType=LONGVARCHAR},
+      link_jump_infos = #{record.linkJumpInfos,jdbcType=LONGVARCHAR},
+      linkages = #{record.linkages,jdbcType=LONGVARCHAR},
+      linkage_fields = #{record.linkageFields,jdbcType=LONGVARCHAR},
+      snapshot = #{record.snapshot,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update panel_app_template
+    set id = #{record.id,jdbcType=VARCHAR},
+      `name` = #{record.name,jdbcType=VARCHAR},
+      node_type = #{record.nodeType,jdbcType=VARCHAR},
+      `level` = #{record.level,jdbcType=INTEGER},
+      pid = #{record.pid,jdbcType=VARCHAR},
+      version = #{record.version,jdbcType=VARCHAR},
+      update_time = #{record.updateTime,jdbcType=BIGINT},
+      update_user = #{record.updateUser,jdbcType=VARCHAR},
+      create_time = #{record.createTime,jdbcType=BIGINT},
+      create_user = #{record.createUser,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="io.dataease.plugins.common.base.domain.PanelAppTemplateWithBLOBs">
+    update panel_app_template
+    <set>
+      <if test="name != null">
+        `name` = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="nodeType != null">
+        node_type = #{nodeType,jdbcType=VARCHAR},
+      </if>
+      <if test="level != null">
+        `level` = #{level,jdbcType=INTEGER},
+      </if>
+      <if test="pid != null">
+        pid = #{pid,jdbcType=VARCHAR},
+      </if>
+      <if test="version != null">
+        version = #{version,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=BIGINT},
+      </if>
+      <if test="updateUser != null">
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=BIGINT},
+      </if>
+      <if test="createUser != null">
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="icon != null">
+        icon = #{icon,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="applicationInfo != null">
+        application_info = #{applicationInfo,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="panelInfo != null">
+        panel_info = #{panelInfo,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="panelViewsInfo != null">
+        panel_views_info = #{panelViewsInfo,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="chartViewsInfo != null">
+        chart_views_info = #{chartViewsInfo,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="chartViewFieldsInfo != null">
+        chart_view_fields_info = #{chartViewFieldsInfo,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="datasetTablesInfo != null">
+        dataset_tables_info = #{datasetTablesInfo,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="datasetTableFieldsInfo != null">
+        dataset_table_fields_info = #{datasetTableFieldsInfo,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="datasetTasksInfo != null">
+        dataset_tasks_info = #{datasetTasksInfo,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="datasourceInfo != null">
+        datasource_info = #{datasourceInfo,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="linkJumps != null">
+        link_jumps = #{linkJumps,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="linkJumpInfos != null">
+        link_jump_infos = #{linkJumpInfos,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="linkages != null">
+        linkages = #{linkages,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="linkageFields != null">
+        linkage_fields = #{linkageFields,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="snapshot != null">
+        snapshot = #{snapshot,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="io.dataease.plugins.common.base.domain.PanelAppTemplateWithBLOBs">
+    update panel_app_template
+    set `name` = #{name,jdbcType=VARCHAR},
+      node_type = #{nodeType,jdbcType=VARCHAR},
+      `level` = #{level,jdbcType=INTEGER},
+      pid = #{pid,jdbcType=VARCHAR},
+      version = #{version,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=BIGINT},
+      update_user = #{updateUser,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=BIGINT},
+      create_user = #{createUser,jdbcType=VARCHAR},
+      icon = #{icon,jdbcType=LONGVARCHAR},
+      application_info = #{applicationInfo,jdbcType=LONGVARCHAR},
+      panel_info = #{panelInfo,jdbcType=LONGVARCHAR},
+      panel_views_info = #{panelViewsInfo,jdbcType=LONGVARCHAR},
+      chart_views_info = #{chartViewsInfo,jdbcType=LONGVARCHAR},
+      chart_view_fields_info = #{chartViewFieldsInfo,jdbcType=LONGVARCHAR},
+      dataset_tables_info = #{datasetTablesInfo,jdbcType=LONGVARCHAR},
+      dataset_table_fields_info = #{datasetTableFieldsInfo,jdbcType=LONGVARCHAR},
+      dataset_tasks_info = #{datasetTasksInfo,jdbcType=LONGVARCHAR},
+      datasource_info = #{datasourceInfo,jdbcType=LONGVARCHAR},
+      link_jumps = #{linkJumps,jdbcType=LONGVARCHAR},
+      link_jump_infos = #{linkJumpInfos,jdbcType=LONGVARCHAR},
+      linkages = #{linkages,jdbcType=LONGVARCHAR},
+      linkage_fields = #{linkageFields,jdbcType=LONGVARCHAR},
+      snapshot = #{snapshot,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="io.dataease.plugins.common.base.domain.PanelAppTemplate">
+    update panel_app_template
+    set `name` = #{name,jdbcType=VARCHAR},
+      node_type = #{nodeType,jdbcType=VARCHAR},
+      `level` = #{level,jdbcType=INTEGER},
+      pid = #{pid,jdbcType=VARCHAR},
+      version = #{version,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=BIGINT},
+      update_user = #{updateUser,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=BIGINT},
+      create_user = #{createUser,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

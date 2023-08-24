@@ -1,0 +1,13 @@
+{
+    "name": "符号地图",
+    "free": 0,
+    "store": "thirdpart",
+    "cost": 0,
+    "category": "view",
+    "descript": "AntV L7 符号地图插件",
+    "version": "1.18.3",
+    "creator": "DATAEASE",
+    "moduleName": "view-symbolmap-backend",
+    "require": "1.10.0",
+    "dsType": ""
+}

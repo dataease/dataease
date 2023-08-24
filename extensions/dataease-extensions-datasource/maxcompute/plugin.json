@@ -1,0 +1,13 @@
+{
+    "name":"Maxcompute 数据源插件",
+    "free":0,
+    "store":"default",
+    "cost":0,
+    "category":"datasource",
+    "descript":"Maxcompute 插件，值得拥有",
+    "version":"1.18.0",
+    "creator":"DATAEASE",
+    "moduleName":"maxcompute-backend",
+    "require":"1.10.0",
+    "dsType":"maxcompute"
+}
