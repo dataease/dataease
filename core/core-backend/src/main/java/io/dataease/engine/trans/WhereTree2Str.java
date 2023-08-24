@@ -8,13 +8,13 @@ import io.dataease.api.permissions.dataset.dto.DatasetRowPermissionsTreeObj;
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.constant.SQLConstants;
+import io.dataease.engine.func.scalar.ScalarFunctions;
 import io.dataease.engine.utils.Utils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -100,7 +100,8 @@ public class WhereTree2Str {
             }
             if (field.getDeExtractType() == 1) {
 //                whereName = originName;
-                whereName = String.format(SQLConstants.DATE_FORMAT, originName, String.format(SQLConstants.GET_DATE_FORMAT, originName));
+                String f = ScalarFunctions.get_date_format(originName);
+                whereName = String.format(SQLConstants.DATE_FORMAT, originName, f);
             }
         } else if (field.getDeType() == 2 || field.getDeType() == 3) {
             if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
@@ -127,7 +128,8 @@ public class WhereTree2Str {
 
             if (field.getDeType() == 1) {
                 // 规定几种日期格式，一一匹配，匹配到就是该格式
-                whereName = String.format(SQLConstants.DATE_FORMAT, whereName, String.format(SQLConstants.GET_DATE_FORMAT, "'" + item.getValue() + "'"));
+                String f = ScalarFunctions.get_date_format(item.getValue());
+                whereName = String.format(SQLConstants.DATE_FORMAT, whereName, f);
                 whereName = String.format(SQLConstants.UNIX_TIMESTAMP, whereName);
             }
 

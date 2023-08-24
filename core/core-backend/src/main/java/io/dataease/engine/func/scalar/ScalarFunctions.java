@@ -21,14 +21,7 @@ public class ScalarFunctions {
             if (StringUtils.isEmpty(date)) {
                 return null;
             }
-            if (StringUtils.equalsIgnoreCase(format, timeOnly)) {
-                String[] s = date.split(" ");
-                if (s.length > 1) {
-                    date = s[1];
-                } else {
-                    date = s[0];
-                }
-            }
+            Utils.parseTime(date, format, timeOnly);
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
             Date parse = simpleDateFormat.parse(date);
             return simpleDateFormat.format(parse);
@@ -42,14 +35,7 @@ public class ScalarFunctions {
             if (StringUtils.isEmpty(date)) {
                 return null;
             }
-            if (StringUtils.equalsIgnoreCase(format, timeOnly)) {
-                String[] s = date.split(" ");
-                if (s.length > 1) {
-                    date = s[1];
-                } else {
-                    date = s[0];
-                }
-            }
+            Utils.parseTime(date, format, timeOnly);
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
             Date parse = simpleDateFormat.parse(date);
             return simpleDateFormat.format(parse);
@@ -63,9 +49,7 @@ public class ScalarFunctions {
             if (StringUtils.isEmpty(date)) {
                 return null;
             }
-            if (StringUtils.equalsIgnoreCase(sourceFormat, timeOnly)) {
-                date = date.split(" ")[1];
-            }
+            Utils.parseTime(date, format, timeOnly);
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(sourceFormat);
             Date parse = simpleDateFormat.parse(date);
 
@@ -93,49 +77,42 @@ public class ScalarFunctions {
             simpleDateFormat.parse(date);
             return format;
         } catch (Exception e) {
-            e.printStackTrace();
         }
         try {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(minuteFormat);
             simpleDateFormat.parse(date);
             return minuteFormat;
         } catch (Exception e) {
-            e.printStackTrace();
         }
         try {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(hourFormat);
             simpleDateFormat.parse(date);
             return hourFormat;
         } catch (Exception e) {
-            e.printStackTrace();
         }
         try {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateOnly);
             simpleDateFormat.parse(date);
             return dateOnly;
         } catch (Exception e) {
-            e.printStackTrace();
         }
         try {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(monthOnly);
             simpleDateFormat.parse(date);
             return monthOnly;
         } catch (Exception e) {
-            e.printStackTrace();
         }
         try {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(yearOnly);
             simpleDateFormat.parse(date);
             return yearOnly;
         } catch (Exception e) {
-            e.printStackTrace();
         }
         try {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(timeOnly);
             simpleDateFormat.parse(date);
             return timeOnly;
         } catch (Exception e) {
-            e.printStackTrace();
         }
         return format;
     }

@@ -6,6 +6,7 @@ import io.dataease.api.dataset.union.model.SQLMeta;
 import io.dataease.api.dataset.union.model.SQLObj;
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.engine.constant.SQLConstants;
+import io.dataease.engine.func.scalar.ScalarFunctions;
 import io.dataease.engine.utils.Utils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -56,7 +57,8 @@ public class CustomWhere2Str {
                     }
                     if (field.getDeExtractType() == 1) {
                         // 此处获取标准格式的日期
-                        whereName = String.format(SQLConstants.DATE_FORMAT, originName, String.format(SQLConstants.GET_DATE_FORMAT, originName));
+                        String f = ScalarFunctions.get_date_format(originName);
+                        whereName = String.format(SQLConstants.DATE_FORMAT, originName, f);
                     }
                 } else if (field.getDeType() == 2 || field.getDeType() == 3) {
                     if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
@@ -85,7 +87,8 @@ public class CustomWhere2Str {
 
                         if (field.getDeType() == 1) {
                             // 规定几种日期格式，一一匹配，匹配到就是该格式
-                            whereName = String.format(SQLConstants.DATE_FORMAT, whereName, String.format(SQLConstants.GET_DATE_FORMAT, "'" + filterItemDTO.getValue() + "'"));
+                            String f = ScalarFunctions.get_date_format(filterItemDTO.getValue());
+                            whereName = String.format(SQLConstants.DATE_FORMAT, whereName, f);
                             whereName = String.format(SQLConstants.UNIX_TIMESTAMP, whereName);
                         }
 
