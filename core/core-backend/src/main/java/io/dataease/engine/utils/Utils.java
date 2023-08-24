@@ -32,35 +32,37 @@ public class Utils {
     }
 
     public static String buildCalcField(String originField, SQLObj tableObj, List<DatasetTableFieldDTO> originFields) throws Exception {
-        if (originField == null) {
-            DEException.throwException(Translator.get("i18n_field_circular_error"));
-        }
-        originField = originField.replaceAll("[\\t\\n\\r]]", "");
-        // 正则提取[xxx]
-        String regex = "\\[(.*?)]";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(originField);
-        Set<String> ids = new HashSet<>();
-        while (matcher.find()) {
-            String id = matcher.group(1);
-            ids.add(id);
-        }
-        if (CollectionUtils.isEmpty(ids)) {
-            return originField;
-        }
-        for (DatasetTableFieldDTO ele : originFields) {
-            if (StringUtils.containsIgnoreCase(originField, ele.getId() + "")) {
-                // 计算字段允许二次引用，这里递归查询完整引用链
-                if (Objects.equals(ele.getExtField(), ExtFieldConstant.EXT_NORMAL)) {
-                    originField = originField.replaceAll("\\[" + ele.getId() + "]",
-                            String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), ele.getDataeaseName()));
-                } else {
-                    originField = originField.replaceAll("\\[" + ele.getId() + "]", ele.getOriginName());
-                    originField = buildCalcField(originField, tableObj, originFields);
+        try {
+            originField = originField.replaceAll("[\\t\\n\\r]]", "");
+            // 正则提取[xxx]
+            String regex = "\\[(.*?)]";
+            Pattern pattern = Pattern.compile(regex);
+            Matcher matcher = pattern.matcher(originField);
+            Set<String> ids = new HashSet<>();
+            while (matcher.find()) {
+                String id = matcher.group(1);
+                ids.add(id);
+            }
+            if (CollectionUtils.isEmpty(ids)) {
+                return originField;
+            }
+            for (DatasetTableFieldDTO ele : originFields) {
+                if (StringUtils.containsIgnoreCase(originField, ele.getId() + "")) {
+                    // 计算字段允许二次引用，这里递归查询完整引用链
+                    if (Objects.equals(ele.getExtField(), ExtFieldConstant.EXT_NORMAL)) {
+                        originField = originField.replaceAll("\\[" + ele.getId() + "]",
+                                String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), ele.getDataeaseName()));
+                    } else {
+                        originField = originField.replaceAll("\\[" + ele.getId() + "]", ele.getOriginName());
+                        originField = buildCalcField(originField, tableObj, originFields);
+                    }
                 }
             }
+            return originField;
+        } catch (Exception e) {
+            DEException.throwException(Translator.get("i18n_field_circular_error"));
         }
-        return originField;
+        return null;
     }
 
     public static String getLogic(String logic) {
