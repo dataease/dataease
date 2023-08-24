@@ -6,7 +6,9 @@ export const BAR_EDITOR_PROPERTY: EditorProperty[] = [
   'x-axis-selector',
   'y-axis-selector',
   'title-selector',
-  'legend-selector'
+  'legend-selector',
+  'function-cfg',
+  'assist-line'
 ]
 
 export const BAR_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
@@ -28,6 +30,7 @@ export const BAR_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
     'color',
     'fontSize',
     'axisValue',
+    'axisLine',
     'splitLine',
     'axisForm',
     'axisLabel',
@@ -45,7 +48,8 @@ export const BAR_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
     'letterSpace',
     'fontShadow'
   ],
-  'legend-selector': ['icon', 'orient', 'textStyle', 'hPosition', 'vPosition']
+  'legend-selector': ['icon', 'orient', 'fontSize', 'color', 'hPosition', 'vPosition'],
+  'function-cfg': ['slider', 'emptyStrategy']
 }
 
 export const BAR_AXIS_TYPE: AxisType[] = [
