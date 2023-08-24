@@ -203,6 +203,13 @@ const getFields = (id, chartId) => {
   }
 }
 
+const quotaData = computed(() => {
+  if (view.value?.type === 'table-info') {
+    return state.quotaData?.filter(item => item.id !== '-1')
+  }
+  return state.quotaData
+})
+
 const startToMove = (e, item) => {
   e.dataTransfer.setData('dimension', JSON.stringify({ ...item, datasetId: view.value.tableId }))
 }
@@ -1515,7 +1522,7 @@ const autoInsert = element => {
             <div class="padding-lr field-height">
               <span>{{ t('chart.quota') }}</span>
               <draggable
-                :list="state.quotaData"
+                :list="quotaData"
                 :group="dsFieldDragOptions.group"
                 :move="onMove"
                 item-key="id"
