@@ -229,18 +229,18 @@ eventBus.on('clearCanvas', clearCanvas)
         <component-group :base-width="410" icon-name="dv-view" title="图表">
           <user-view-group></user-view-group>
         </component-group>
-        <component-group :base-width="148" icon-name="dv-text" title="文本">
+        <component-group :base-width="115" icon-name="dv-text" title="文本">
           <text-group></text-group>
         </component-group>
-        <component-group icon-name="dv-media" title="媒体">
+        <component-group :base-width="115" icon-name="dv-media" title="媒体">
           <media-group></media-group>
         </component-group>
         <component-group :base-width="410" icon-name="dv-material" title="素材">
           <common-group></common-group>
         </component-group>
-        <component-group icon-name="dv-params" title="参数">
-          <div>setting</div>
-        </component-group>
+        <!--        <component-group icon-name="dv-params" title="参数">-->
+        <!--          <div>setting</div>-->
+        <!--        </component-group>-->
       </div>
       <div class="right-area">
         <el-button
@@ -317,11 +317,12 @@ eventBus.on('clearCanvas', clearCanvas)
       width: 300px;
       overflow: hidden;
       cursor: pointer;
+      color: @dv-canvas-main-font-color;
       input {
         position: absolute;
         left: 0;
         width: 100%;
-        color: #fff;
+        color: @dv-canvas-main-font-color;
         background-color: #050e21;
         outline: none;
         border: 1px solid #295acc;

@@ -73,7 +73,7 @@ const nameValidator = (_, value, callback) => {
 }
 
 const showPid = computed(() => {
-  return ['newLeaf'].includes(cmd.value) && showParentSelected.value
+  return ['newLeaf', 'copy'].includes(cmd.value) && showParentSelected.value
 })
 
 const showName = computed(() => {
@@ -198,8 +198,11 @@ const saveResource = () => {
           params.pid = resourceForm.pid as string
           params.id = id.value
           break
-        case 'rename':
         case 'copy':
+          params.id = id.value
+          params.pid = resourceForm.pid || pid.value || '0'
+          break
+        case 'rename':
           params.pid = pid.value as string
           params.id = id.value
           break

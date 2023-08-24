@@ -10,6 +10,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -206,5 +207,51 @@ public class Utils {
         List<String> strings = Arrays.asList(list);
         List<String> collect = strings.stream().filter(dsList::contains).collect(Collectors.toList());
         return ObjectUtils.isNotEmpty(collect);
+    }
+
+    public static long allDateFormat2Long(String value) {
+        try {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            return simpleDateFormat.parse(value).getTime();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            return simpleDateFormat.parse(value).getTime();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH");
+            return simpleDateFormat.parse(value).getTime();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            return simpleDateFormat.parse(value).getTime();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM");
+            return simpleDateFormat.parse(value).getTime();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy");
+            return simpleDateFormat.parse(value).getTime();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
+            return simpleDateFormat.parse(value).getTime();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 }

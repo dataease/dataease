@@ -4,7 +4,12 @@ import {
 } from '@/views/chart/components/js/panel/types/impl/g2plot'
 import { Line as G2Line, LineOptions } from '@antv/g2plot/esm/plots/line'
 import { getPadding } from '../../common/common_antv'
-import { flow, handleEmptyDataStrategy, parseJson } from '@/views/chart/components/js/util'
+import {
+  flow,
+  handleEmptyDataStrategy,
+  hexColorToRGBA,
+  parseJson
+} from '@/views/chart/components/js/util'
 import { cloneDeep } from 'lodash-es'
 import { formatterItem, valueFormatter } from '@/views/chart/components/js/formatter'
 import {
@@ -196,6 +201,15 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
     }
   }
 
+  protected configCustomColors(chart: Chart, options: LineOptions): LineOptions {
+    const basicStyle = parseJson(chart.customAttr).basicStyle
+    const color = basicStyle.colors.map(item => hexColorToRGBA(item, basicStyle.alpha))
+    return {
+      ...options,
+      color
+    }
+  }
+
   protected configYAxis(chart: Chart, options: LineOptions): LineOptions {
     const tmpOptions = super.configYAxis(chart, options)
     if (!tmpOptions.yAxis) {
@@ -216,6 +230,7 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
       this.configLabel,
       this.configTooltip,
       this.configBasicStyle,
+      this.configCustomColors,
       this.configLegend,
       this.configXAxis,
       this.configYAxis,

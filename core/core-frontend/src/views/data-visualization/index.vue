@@ -66,7 +66,7 @@ const handleNew = newComponentInfo => {
     component.id = guid()
     changeComponentSizeWithScale(component)
     dvMainStore.addComponent({ component: component, index: undefined })
-    snapshotStore.recordSnapshot('dv-handleNew')
+    snapshotStore.recordSnapshot()
   }
 }
 
@@ -266,6 +266,7 @@ eventBus.on('handleNew', handleNew)
 .dv-common-layout {
   height: 100vh;
   width: 100vw;
+  color: @dv-canvas-main-font-color;
   .dv-layout-container {
     height: calc(100vh - @top-bar-height);
     .left-sidebar {

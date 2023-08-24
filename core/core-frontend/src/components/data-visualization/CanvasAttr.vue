@@ -324,7 +324,7 @@ onMounted(() => {
   background-color: @side-area-background !important;
   color: #ffffff;
   padding-left: 5px;
-  border-bottom: 1px solid rgba(85, 85, 85, 1);
+  border-bottom: 1px solid @main-collapse-border-dark !important;
   height: 38px !important;
 }
 :deep(.ed-collapse-item__content) {
@@ -334,7 +334,7 @@ onMounted(() => {
 }
 
 :deep(.ed-collapse-item__wrap) {
-  border-bottom: 1px solid rgba(85, 85, 85, 1);
+  border-bottom: 1px solid rgb(57 57 57) !important;
 }
 :deep(.ed-collapse) {
   width: 100%;

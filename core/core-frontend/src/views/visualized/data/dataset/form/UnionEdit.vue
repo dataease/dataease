@@ -106,7 +106,7 @@ defineExpose({
 </script>
 
 <template>
-  <div style="height: calc(100% - 55px); overflow-y: auto">
+  <div style="height: 100%; overflow-y: auto">
     <div class="field-style">
       <div class="fields" v-loading="!parentField.length">
         <p :title="parent.tableName">

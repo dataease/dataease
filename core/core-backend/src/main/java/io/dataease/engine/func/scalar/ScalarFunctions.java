@@ -42,6 +42,24 @@ public class ScalarFunctions {
         }
     }
 
+    public static String cast_date_format(String date, String sourceFormat, String targetFormat) {
+        try {
+            if (StringUtils.isEmpty(date)) {
+                return null;
+            }
+            if (StringUtils.equalsIgnoreCase(sourceFormat, timeOnly)) {
+                date = date.split(" ")[1];
+            }
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(sourceFormat);
+            Date parse = simpleDateFormat.parse(date);
+
+            SimpleDateFormat s = new SimpleDateFormat(targetFormat);
+            return s.format(parse);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     public static Long unix_timestamp(String date) {
         try {
             if (StringUtils.isEmpty(date)) {

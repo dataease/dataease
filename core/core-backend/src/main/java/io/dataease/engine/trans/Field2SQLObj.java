@@ -59,7 +59,7 @@ public class Field2SQLObj {
             // 处理横轴字段
             if (Objects.equals(f.getDeExtractType(), DeTypeConstants.DE_TIME)) {
                 if (Objects.equals(f.getDeType(), DeTypeConstants.DE_INT) || Objects.equals(f.getDeType(), DeTypeConstants.DE_FLOAT)) {
-                    fieldName = String.format(SQLConstants.UNIX_TIMESTAMP, originField) + "*1000";
+                    fieldName = String.format(SQLConstants.UNIX_TIMESTAMP, originField);
                 } else {
                     fieldName = originField;
                 }

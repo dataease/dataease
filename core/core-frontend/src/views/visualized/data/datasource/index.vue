@@ -6,13 +6,14 @@ import GridTable from '@/components/grid-table/src/GridTable.vue'
 import { HandleMore } from '@/components/handle-more'
 import { Icon } from '@/components/icon-custom'
 import { fieldType } from '@/utils/attr'
+import { uploadFile } from '@/api/datasource'
 import CreatDsGroup from './form/CreatDsGroup.vue'
 import type { Tree } from '../dataset/form/CreatDsGroup.vue'
 import { previewData, getById } from '@/api/datasource'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useRouter } from 'vue-router'
 import DatasetDetail from '@/views/visualized/data/dataset/DatasetDetail.vue'
-import { timestampFormatDate } from '@/views/visualized/data/dataset/form/util.js'
+import { timestampFormatDate } from '@/views/visualized/data/dataset/form/util'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import dayjs from 'dayjs'
 import { getTableField, listDatasourceTables, deleteById, save } from '@/api/datasource'
@@ -40,7 +41,7 @@ export interface Node {
   createBy: string
   creator: string
   createTime: string
-  id: number
+  id: number | string
   size: number
   description: string
   type: string
@@ -123,7 +124,7 @@ const datasetTypeList = [
 const selectDataset = row => {
   Object.assign(dsTableDetail, row)
   userDrawer.value = true
-  getTableField(nodeInfo.id, row.tableName).then(res => {
+  getTableField(nodeInfo.id as number, row.tableName).then(res => {
     state.dsTableData = res.data
   })
 }
@@ -388,7 +389,10 @@ const creatDsFolder = ref()
 const tableData = shallowRef([])
 const tabData = shallowRef([])
 const handleNodeClick = data => {
-  if (!data.leaf) return
+  if (!data.leaf) {
+    dsListTree.value.setCurrentKey(null)
+    return
+  }
   getById(data.id).then(res => {
     let {
       name,
@@ -549,6 +553,23 @@ const handleClick = (tabName: TabPaneName) => {
 const refresh = () => {
   listDs()
 }
+
+let fileList = null
+const onChange = file => {
+  fileList = file
+}
+
+const uploadExcel = editType => {
+  const formData = new FormData()
+  formData.append('file', fileList.raw)
+  formData.append('type', '')
+  formData.append('editType', editType)
+  formData.append('id', (nodeInfo.id || 0) as string)
+  return uploadFile(formData).then(res => {
+    nodeInfo.editType = editType
+    datasourceEditor.value.init(nodeInfo, nodeInfo.id, res)
+  })
+}
 const activeName = ref('table')
 const defaultProps = {
   children: 'children',
@@ -657,7 +678,7 @@ const defaultProps = {
                 :creator="infoList.creator"
               ></dataset-detail>
             </el-popover>
-            <div class="right-btn">
+            <div class="right-btn flex-align-center">
               <el-button secondary @click="createDataset(null)" v-permission="['dataset']">
                 <template #icon>
                   <Icon name="icon_dataset_outlined"></Icon>
@@ -666,18 +687,45 @@ const defaultProps = {
               </el-button>
 
               <template v-if="nodeInfo.type === 'Excel'">
-                <el-button @click="editDatasource(0)" type="primary">
-                  <template #icon>
-                    <Icon name="icon_edit_outlined"></Icon>
+                <el-upload
+                  action=""
+                  :multiple="false"
+                  ref="uploadAgain"
+                  :show-file-list="false"
+                  accept=".xls,.xlsx,.csv"
+                  :on-change="onChange"
+                  :http-request="() => uploadExcel(0)"
+                  name="file"
+                >
+                  <template #trigger>
+                    <el-button type="primary">
+                      <template #icon>
+                        <Icon name="icon_edit_outlined"></Icon>
+                      </template>
+                      替换数据
+                    </el-button>
                   </template>
-                  替换数据
-                </el-button>
-                <el-button @click="editDatasource(1)" type="primary">
-                  <template #icon>
-                    <Icon name="icon_edit_outlined"></Icon>
+                </el-upload>
+
+                <el-upload
+                  action=""
+                  :multiple="false"
+                  ref="uploadAgain"
+                  :show-file-list="false"
+                  accept=".xls,.xlsx,.csv"
+                  :on-change="onChange"
+                  :http-request="() => uploadExcel(1)"
+                  name="file"
+                >
+                  <template #trigger>
+                    <el-button type="primary">
+                      <template #icon>
+                        <Icon name="icon_edit_outlined"></Icon>
+                      </template>
+                      追加数据
+                    </el-button>
                   </template>
-                  追加数据
-                </el-button>
+                </el-upload>
               </template>
               <el-button v-else-if="nodeInfo.weight >= 7" @click="editDatasource()" type="primary">
                 <template #icon>
@@ -996,10 +1044,18 @@ const defaultProps = {
         <el-table-column prop="originName" :label="t('datasource.column_name')" />
         <el-table-column prop="type" :label="t('datasource.field_type')">
           <template #default="scope">
-            <span v-if="nodeInfo.type !== 'api'">
-              {{ scope.row.type }}
-            </span>
-            <span v-if="nodeInfo.type === 'api'">{{ getFieldType(scope.row.fieldType) }}</span>
+            <div class="flex-align-center icon">
+              <el-icon>
+                <icon
+                  :name="`field_${fieldType[scope.row.deType]}`"
+                  :class="`field-icon-${fieldType[scope.row.deType]}`"
+                ></icon>
+              </el-icon>
+              {{
+                t(`dataset.${fieldType[scope.row.deType]}`) +
+                `${scope.row.deType === 3 ? '(' + t('dataset.float') + ')' : ''}`
+              }}
+            </div>
           </template>
         </el-table-column>
         <el-table-column
@@ -1325,6 +1381,9 @@ const defaultProps = {
 
         .right-btn {
           margin-left: auto;
+          & > :nth-child(2) {
+            margin: 0 8px;
+          }
         }
       }
       .tab-border {

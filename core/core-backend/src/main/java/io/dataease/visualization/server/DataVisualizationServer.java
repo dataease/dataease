@@ -201,12 +201,9 @@ public class DataVisualizationServer implements DataVisualizationApi {
         Long copyId = IDUtils.snowID()/100; // 本次复制执行ID
         // 复制仪表板
         DataVisualizationInfo newDv = visualizationInfoMapper.selectById(sourceDvId);
-        if (StringUtils.isNotEmpty(request.getName())) {
-            // 插入校验
-            nameCheck(request);
-        }
         newDv.setName(request.getName());
         newDv.setId(newDvId);
+        newDv.setPid(request.getPid());
         newDv.setCreateTime(System.currentTimeMillis());
         // 复制视图 chart_view
         extDataVisualizationMapper.viewCopyWithDv(sourceDvId, newDvId, copyId);

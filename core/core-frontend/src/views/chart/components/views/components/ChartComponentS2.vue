@@ -1,5 +1,16 @@
 <script lang="ts" setup>
-import { computed, onBeforeUnmount, onMounted, PropType, reactive, ref, toRaw, toRefs } from 'vue'
+import {
+  computed,
+  inject,
+  onBeforeUnmount,
+  onMounted,
+  PropType,
+  reactive,
+  ref,
+  ShallowRef,
+  toRaw,
+  toRefs
+} from 'vue'
 import { getData } from '@/api/chart'
 import chartViewManager from '@/views/chart/components/js/panel'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
@@ -39,6 +50,7 @@ const { view, showPosition, dynamicAreaId } = toRefs(props)
 
 const isError = ref(false)
 const errMsg = ref('')
+const chartExtRequest = inject('chartExtRequest') as ShallowRef<object>
 
 const state = reactive({
   trackBarStyle: {
@@ -131,8 +143,11 @@ const showPage = computed(() => {
 })
 
 const handleCurrentChange = pageNum => {
-  const pageReq = { goPage: pageNum }
-  const chart = { ...view.value, chartExtRequest: pageReq }
+  let extReq = { goPage: pageNum }
+  if (chartExtRequest) {
+    extReq = { ...extReq, ...chartExtRequest.value }
+  }
+  const chart = { ...view.value, chartExtRequest: extReq }
   calcData(chart)
 }
 
@@ -291,6 +306,7 @@ onBeforeUnmount(() => {
 
 <style lang="less" scoped>
 .canvas-area {
+  z-index: 0;
   display: flex;
   flex-direction: column;
   overflow: hidden;

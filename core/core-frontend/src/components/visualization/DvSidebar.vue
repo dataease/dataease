@@ -49,12 +49,13 @@ const widthShow = computed(() => `${canvasCollapse.value[sideName.value] ? 36 : 
       <span v-show="!canvasCollapse[sideName]">{{ title }}</span>
       <el-icon :title="title" class="custom-icon" size="20px" @click="collapseChange">
         <Expand
+          class="collapse-icon"
           v-if="
             (canvasCollapse[sideName] && asidePosition === 'left') ||
             (!canvasCollapse[sideName] && asidePosition === 'right')
           "
         />
-        <Fold v-else />
+        <Fold class="collapse-icon" v-else />
       </el-icon>
     </el-row>
     <div class="main-content" v-show="!canvasCollapse[sideName]">
@@ -68,7 +69,7 @@ const widthShow = computed(() => `${canvasCollapse.value[sideName.value] ? 36 : 
 
 <style lang="less">
 .aside-area-dark {
-  color: #fff;
+  color: @dv-canvas-main-font-color;
   background-color: @side-area-background;
 }
 
@@ -80,7 +81,9 @@ const widthShow = computed(() => `${canvasCollapse.value[sideName.value] ? 36 : 
   position: relative;
   transition: 0.5s;
   .title {
-    border-bottom: rgba(31, 35, 41, 0.15) 1px solid;
+    font-size: 14px;
+    font-weight: 500;
+    border-bottom: rgba(255, 255, 255, 0.15) 1px solid !important;
     height: 45px;
     overflow: hidden;
     white-space: nowrap;
@@ -89,6 +92,8 @@ const widthShow = computed(() => `${canvasCollapse.value[sideName.value] ? 36 : 
   }
   .collapse-title {
     width: 35px;
+    font-size: 14px;
+    font-weight: 500;
     text-align: center;
     padding: 5px;
   }
@@ -121,5 +126,9 @@ const widthShow = computed(() => `${canvasCollapse.value[sideName.value] ? 36 : 
 }
 .is-active {
   border-bottom-color: rgba(31, 35, 41, 0.15) !important;
+}
+
+.collapse-icon {
+  color: @canvas-main-font-color;
 }
 </style>
