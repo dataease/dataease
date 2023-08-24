@@ -117,6 +117,9 @@ const initApiItem = (val: ApiItem) => {
   Object.assign(apiItem, val)
   edit_api_item.value = true
   active.value = 0
+  nextTick(() => {
+    apiItemBasicInfo.value.clearValidate()
+  })
 }
 
 const showApiData = () => {

@@ -306,6 +306,7 @@ onBeforeUnmount(() => {
 
 <style lang="less" scoped>
 .canvas-area {
+  z-index: 0;
   display: flex;
   flex-direction: column;
   overflow: hidden;

@@ -46,14 +46,14 @@ public class DatasourceSyncManage {
     @Resource
     private ScheduleManager scheduleManager;
 
-    public void extractExcelData(Long datasourceId, String type) {
-        CoreDatasource coreDatasource = datasourceMapper.selectById(datasourceId);
+    public void extractExcelData(CoreDatasource coreDatasource, String type) {
+
         if (coreDatasource == null) {
-            LogUtil.error("Can not find CoreDatasource: " + datasourceId);
+            LogUtil.error("Can not find CoreDatasource: " + coreDatasource.getName());
             return;
         }
         Long startTime = System.currentTimeMillis();
-        CoreDatasourceTaskLog datasetTableTaskLog = datasourceTaskServer.initTaskLog(datasourceId, null, startTime, coreDatasource.getName());
+        CoreDatasourceTaskLog datasetTableTaskLog = datasourceTaskServer.initTaskLog(coreDatasource.getId(), null, startTime, coreDatasource.getName());
         DatasourceServer.UpdateType updateType = DatasourceServer.UpdateType.valueOf(type);
 
         boolean msg = false;

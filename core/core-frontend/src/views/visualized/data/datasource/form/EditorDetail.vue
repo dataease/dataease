@@ -440,7 +440,7 @@ defineExpose({
                           </el-icon>
                         </template>
                         <template #default>
-                          <el-icon class="de-copy-icon icon-warning hover-icon">
+                          <el-icon class="de-copy-icon icon-warning">
                             <Icon name="icon_warning_filled"></Icon>
                           </el-icon>
                           <div class="tips">

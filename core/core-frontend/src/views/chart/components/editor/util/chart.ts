@@ -332,9 +332,9 @@ export const DEFAULT_TABLE_CELL: ChartTableCellAttr = {
   tableItemHeight: 36
 }
 export const DEFAULT_TITLE_STYLE: ChartTextStyle = {
-  show: true,
+  show: false,
   fontSize: '18',
-  color: '#000000',
+  color: '#ffffff',
   hPosition: 'left',
   vPosition: 'top',
   isItalic: false,
