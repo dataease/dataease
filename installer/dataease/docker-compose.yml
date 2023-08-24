@@ -1,0 +1,34 @@
+version: '2.1'
+services:
+
+  dataease:
+    image: registry.cn-qingdao.aliyuncs.com/dataease/dataease:DE_TAG
+    container_name: dataease
+    ports:
+      - ${DE_PORT}:8081
+    mem_limit: 4096m
+    volumes:
+      - ${DE_BASE}/dataease/conf:/opt/dataease/conf
+      - ${DE_BASE}/dataease/logs:/opt/dataease/logs
+      - ${DE_BASE}/dataease/plugins/thirdpart:/opt/dataease/plugins/thirdpart
+      - ${DE_BASE}/dataease/data/kettle:/opt/dataease/data/kettle
+      - ${DE_BASE}/dataease/data/static-resource:/opt/dataease/data/static-resource
+      - ${DE_BASE}/dataease/custom-drivers:/opt/dataease/custom-drivers
+      - ${DE_BASE}/dataease/data/custom:/opt/dataease/data/custom
+      - ${DE_BASE}/dataease/data/business:/opt/dataease/data/business
+      - ${DE_BASE}/dataease/data/ehcache:/opt/dataease/data/ehcache
+    shm_size: 1gb
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - dataease-network
+
+networks:
+  dataease-network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: ${DE_DOCKER_SUBNET}
+          gateway: ${DE_DOCKER_GATEWAY}
