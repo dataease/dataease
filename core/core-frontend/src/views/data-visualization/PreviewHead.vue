@@ -3,12 +3,14 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { useI18n } from '@/hooks/web/useI18n'
 import DvDetailInfo from '@/views/common/DvDetailInfo.vue'
-
+import { storeApi, storeStatusApi } from '@/api/visualization/dataVisualization'
+import { ref } from 'vue'
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo } = storeToRefs(dvMainStore)
 const emit = defineEmits(['reload', 'download'])
 const { t } = useI18n()
 
+const favorited = ref(false)
 const preview = () => {
   const url = '#/preview?dvId=' + dvInfo.value.id
   window.open(url, '_blank')
@@ -26,15 +28,34 @@ const dvEdit = () => {
   const baseUrl = dvInfo.value.type === 'dataV' ? '#/dvCanvas?dvId=' : '#/dashboard?resourceId='
   window.open(baseUrl + dvInfo.value.id, '_blank')
 }
+
+const executeStore = () => {
+  const param = {
+    id: dvInfo.value.id,
+    type: dvInfo.value.type === 'dashboard' ? 'panel' : 'screen'
+  }
+  storeApi(param).then(() => {
+    storeQuery()
+  })
+  console.log(dvInfo.value)
+}
+const storeQuery = () => {
+  if (!dvInfo?.value?.id) return
+  storeStatusApi(dvInfo.value.id).then(res => {
+    favorited.value = res.data
+  })
+}
+storeQuery()
 </script>
 
 <template>
   <div class="preview-head">
     <div class="canvas-name">{{ dvInfo.name }}</div>
     <div class="canvas-opt-icon">
-      <el-icon class="custom-icon"><Star /></el-icon>
-      <!--      <el-icon class="custom-icon"><Share /></el-icon>-->
-      <!--      <el-icon class="custom-icon" @click="reload()"><Refresh /></el-icon>-->
+      <el-icon class="custom-icon" @click="executeStore">
+        <Star v-if="!favorited" />
+        <Icon v-else name="visual-star" />
+      </el-icon>
     </div>
     <el-divider style="margin-top: 15px" direction="vertical" />
     <div class="create-area">
@@ -121,6 +142,9 @@ const dvEdit = () => {
         background-color: #ecf5ff;
         cursor: pointer;
       }
+    }
+    .with-light {
+      color: red;
     }
   }
   .create-area {
