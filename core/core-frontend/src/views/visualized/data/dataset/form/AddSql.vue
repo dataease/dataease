@@ -13,12 +13,17 @@ import GridTable from '@/components/grid-table/src/GridTable.vue'
 import { EmptyBackground } from '@/components/empty-background'
 import { timestampFormatDate, defaultValueScopeList, fieldOptions } from './util'
 import { fieldType } from '@/utils/attr'
-
+import { cloneDeep } from 'lodash-es'
 export interface SqlNode {
   sql: string
   tableName: string
   datasourceId: string
   id: string
+  variables: Array<{
+    variableName: string
+    defaultValue: string
+    defaultValueScope: string
+  }>
   sqlVariableDetails?: string
 }
 
@@ -156,9 +161,13 @@ watch(
 watch(
   () => sqlNode.value.id,
   () => {
+    state.variables = sqlNode.value.variables
     if (codeCom.value) {
       insertParamToCodeMirror(Base64.decode(sqlNode.value.sql))
     }
+  },
+  {
+    immediate: true
   }
 )
 
@@ -296,6 +305,7 @@ const mouseupDrag = () => {
 }
 
 const parseVariable = () => {
+  console.log('namename')
   state.variablesTmp = []
   const reg = new RegExp('\\${(.*?)}', 'gim')
   const match = codeCom.value.state.doc.toString().match(reg)
@@ -306,7 +316,8 @@ const parseVariable = () => {
       if (names.indexOf(name) < 0) {
         names.push(name)
         // eslint-disable-next-line
-            let obj = undefined
+        let obj = undefined
+        console.log('name', name, cloneDeep(state.variables))
         for (let i = 0; i < state.variables.length; i++) {
           if (state.variables[i].variableName === name) {
             obj = state.variables[i]

@@ -600,8 +600,8 @@ const dfsUnion = (arr, list) => {
     if (ele.childrenDs?.length) {
       dfsUnion(children, ele.childrenDs)
     }
-    const { unionToParent, currentDsFields, currentDs, sqlVariableDetails } = ele
-    const { tableName, type, datasourceId, id, info } = currentDs || {}
+    const { unionToParent, currentDsFields, currentDs } = ele
+    const { tableName, type, datasourceId, id, info, sqlVariableDetails } = currentDs || {}
     const { unionType, unionFields } = unionToParent || {}
     arr.push({
       sqlVariableDetails,
