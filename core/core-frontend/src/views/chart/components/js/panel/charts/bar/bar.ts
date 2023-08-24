@@ -36,6 +36,7 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
     xField: 'field',
     yField: 'value',
     seriesField: 'category',
+    isGroup: true,
     data: [],
     interactions: [
       {
@@ -268,7 +269,8 @@ export class StackBar extends Bar {
     super(name)
     this.baseOptions = {
       ...this.baseOptions,
-      isStack: true
+      isStack: true,
+      isGroup: false
     }
     this.axis = [...this.axis, 'extStack']
   }
@@ -337,8 +339,7 @@ export class GroupBar extends Bar {
   constructor(name = 'bar-group') {
     super(name)
     this.baseOptions = {
-      ...this.baseOptions,
-      isGroup: true
+      ...this.baseOptions
     }
     this.axis = [...this.axis, 'xAxisExt']
   }

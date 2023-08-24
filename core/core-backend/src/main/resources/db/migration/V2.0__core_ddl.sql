@@ -4114,3 +4114,18 @@ VALUES ('1689632657248415744',
         NULL,
         NULL,
         NULL);
+
+-- ----------------------------
+-- Table structure for core_store
+-- ----------------------------
+DROP TABLE IF EXISTS `core_store`;
+CREATE TABLE `core_store`
+(
+    `id`            bigint NOT NULL COMMENT 'ID',
+    `resource_id`   bigint NOT NULL COMMENT '资源ID',
+    `uid`           bigint NOT NULL COMMENT '用户ID',
+    `resource_type` int    NOT NULL COMMENT '资源类型',
+    `time`          bigint NOT NULL COMMENT '收藏时间',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+

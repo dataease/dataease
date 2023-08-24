@@ -600,6 +600,7 @@ const handleCurrentChange = (currentPage: number) => {
       <el-table
         :data="state.tableData"
         style="width: 100%"
+        max-height="387"
         ref="tableDesensitization"
         class="table-container"
         header-cell-class-name="header-cell"
@@ -768,7 +769,6 @@ const handleCurrentChange = (currentPage: number) => {
 
   .mrbt40 {
     margin-bottom: 40px;
-    max-height: 387px;
 
     .ed-radio {
       margin-right: 16px;
@@ -776,7 +776,6 @@ const handleCurrentChange = (currentPage: number) => {
   }
 
   .between {
-    justify-content: space-between;
     display: flex;
     align-items: center;
     justify-content: space-between;

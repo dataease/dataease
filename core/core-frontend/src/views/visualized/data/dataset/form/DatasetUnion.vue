@@ -226,12 +226,13 @@ const handleCommand = (ele, command) => {
   }
 
   if (command === 'editerSql') {
-    const { tableName, datasourceId, info, id } = ele
+    const { tableName, datasourceId, info, id, sqlVariableDetails } = ele
     if (ele.type === 'sql') {
       sqlNode.value = {
         sql: ((JSON.parse(info) as { sql: string }) || {}).sql,
         tableName,
         id,
+        variables: JSON.parse(sqlVariableDetails),
         datasourceId
       }
       editSqlField.value = true

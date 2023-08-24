@@ -207,6 +207,13 @@ watch(
   }
 )
 
+watch(
+  () => activeStep.value,
+  () => {
+    showCron.value = form.value.syncSetting?.syncRate === 'CRON'
+  }
+)
+
 const setItemRef = (ele: ComponentPublicInstance | null | Element) => {
   state.itemRef.push(ele)
 }
@@ -282,6 +289,8 @@ const returnItem = apiItem => {
   }
 }
 
+const showCron = ref(false)
+
 const onRateChange = () => {
   if (form.value.syncSetting.syncRate === 'SIMPLE') {
     form.value.syncSetting.endLimit = 0
@@ -294,6 +303,9 @@ const onRateChange = () => {
   if (form.value.syncSetting.syncRate === 'CRON') {
     form.value.syncSetting.cron = '00 00 * ? * * *'
   }
+  nextTick(() => {
+    showCron.value = form.value.syncSetting.syncRate === 'CRON'
+  })
 }
 
 const onSimpleCronChange = () => {
@@ -711,8 +723,9 @@ defineExpose({
           >
             <el-popover :width="834" v-model="cronEdit" trigger="click">
               <template #default>
-                <div style="width: 814px">
+                <div style="width: 814px; height: 400px; overflow-y: auto">
                   <cron
+                    v-if="showCron"
                     v-model="form.syncSetting.cron"
                     :is-rate="form.syncRate === 'CRON'"
                     @close="cronEdit = false"
