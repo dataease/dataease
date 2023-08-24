@@ -14,18 +14,18 @@ public class MybatisPlusGenerator {
      * 第一 我嫌麻烦
      * 第二 后面配置会放到nacos读起来更麻烦了
      */
-    private static final String url = "jdbc:mysql://39.98.78.97:3306/dataease-wjh?autoReconnect=false&useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false";
+    private static final String url = "jdbc:mysql://127.0.0.1:3306/de_standalone?autoReconnect=false&useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false";
     private static final String username = "root";
     private static final String password = "Password123@mysql";
 
     /**
      * 业务模块例如datasource,dataset,panel等
      */
-    private static final String busi = "chart";
+    private static final String busi = "visualization";
     /**
      * 这是要生成代码的表名称
      */
-    private static final String TABLE_NAME = "core_chart_view";
+    private static final String TABLE_NAME = "core_store";
 
     /**
      * 下面两个配置基本上不用动
@@ -51,7 +51,7 @@ public class MybatisPlusGenerator {
                     builder.parent(packageName);
                 })
                 .strategyConfig(builder -> {
-                    builder.addInclude(TABLE_NAME).entityBuilder().enableFileOverride().mapperBuilder().enableFileOverride(); //设置需要生成的表名
+                    builder.addInclude(TABLE_NAME).entityBuilder().enableFileOverride().mapperBuilder().mapperAnnotation(org.apache.ibatis.annotations.Mapper.class).enableFileOverride(); //设置需要生成的表名
                 })
                 .templateConfig(builder -> {
                     builder.disable(TemplateType.CONTROLLER).disable(TemplateType.SERVICE).disable(TemplateType.SERVICE_IMPL).disable(TemplateType.XML).build();

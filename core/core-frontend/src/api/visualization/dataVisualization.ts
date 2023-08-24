@@ -47,8 +47,10 @@ export const deleteSubject = id => request.delete({ url: '/visualizationSubject/
 
 export const dvNameCheck = data => request.post({ url: '/dataVisualization/nameCheck', data })
 
-export const findRecent = async (): Promise<Panel[]> => {
-  return request.post({ url: '/dataVisualization/findRecent', data: {} }).then(res => {
-    return res?.data
-  })
+export const storeApi = (data): Promise<IResponse> => {
+  return request.post({ url: '/store/execute', data })
+}
+
+export const storeStatusApi = (id: string): Promise<IResponse> => {
+  return request.get({ url: `/store/favorited/${id}` })
 }
