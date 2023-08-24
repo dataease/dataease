@@ -12,4 +12,5 @@ public class ChartCustomFilterItemDTO implements Serializable {
     private Long fieldId;
     private String term;
     private String value;
+    private String filterDateFormat;
 }

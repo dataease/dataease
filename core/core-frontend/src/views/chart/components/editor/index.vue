@@ -455,9 +455,14 @@ const onTypeChange = val => {
   calcData(view.value)
 }
 
-const onBasicStyleChange = val => {
-  view.value.customAttr.basicStyle = val
-  renderChart(view.value)
+const onBasicStyleChange = (chartForm: ChartEditorForm<ChartBasicStyle>) => {
+  const { data, requestData } = chartForm
+  view.value.customAttr.basicStyle = data
+  if (requestData) {
+    calcData(view.value)
+  } else {
+    renderChart(view.value)
+  }
 }
 
 const onTableHeaderChange = val => {
