@@ -1,0 +1,14 @@
+version: '2.1'
+services:
+
+  kettle:
+    image: registry.cn-qingdao.aliyuncs.com/dataease/kettle:v8.3-0318
+    container_name: kettle
+    environment:
+      - PENTAHO_DI_JAVA_OPTIONS=-Xms1024m -Xmx4096m -XX:MaxPermSize=256m -Dfile.encoding=utf-8
+    volumes:
+      - ${DE_BASE}/dataease/conf/:/opt/dataease/conf
+      - ${DE_BASE}/dataease/data/kettle:/opt/dataease/data/kettle
+    networks:
+      - dataease-network
+    restart: always
