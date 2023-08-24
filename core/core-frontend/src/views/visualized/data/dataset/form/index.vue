@@ -213,7 +213,7 @@ const dqTrans = id => {
 }
 
 const copyField = item => {
-  const param = { ...item }
+  const param = cloneDeep(item)
   param.id = guid()
   param.extField = 2
   param.originName = item.extField === 2 ? item.originName : '[' + item.id + ']'
