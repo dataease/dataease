@@ -10,7 +10,7 @@ const emit = defineEmits(['reload', 'download'])
 const { t } = useI18n()
 
 const preview = () => {
-  const url = '#/preview/?dvId=' + dvInfo.value.id
+  const url = '#/preview?dvId=' + dvInfo.value.id
   window.open(url, '_blank')
 }
 

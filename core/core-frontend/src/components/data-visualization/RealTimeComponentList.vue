@@ -162,7 +162,7 @@ const getIconName = item => {
                 class="icon-container"
               >
                 <el-icon v-show="!getComponent(index).isShow" @click="showComponent">
-                  <Hide />
+                  <Icon name="dv-eye-close"></Icon>
                 </el-icon>
                 <el-icon v-show="getComponent(index).isShow" @click="hideComponent">
                   <View />

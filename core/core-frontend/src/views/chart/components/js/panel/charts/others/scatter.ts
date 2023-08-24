@@ -155,6 +155,7 @@ export class Scatter extends G2PlotChartView<ScatterOptions, G2Scatter> {
       'color',
       'fontSize',
       'axisValue',
+      'axisLine',
       'splitLine',
       'axisForm',
       'axisLabel',

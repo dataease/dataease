@@ -88,16 +88,7 @@ public class ExtWhere2Str {
                                 || request.getDatasetTableField().getDeExtractType() == 3
                                 || request.getDatasetTableField().getDeExtractType() == 4) {
                             whereValue = String.format(SQLConstants.WHERE_BETWEEN, value.get(0), value.get(1));
-                        } /*else if (request.getDatasetTableField().getDeExtractType() == 0
-                                || request.getDatasetTableField().getDeExtractType() == 5) {
-                            String format = ObjectUtils.isNotEmpty(request.getDatasetTableField().getDateFormat()) ? request.getDatasetTableField().getDateFormat() : "yyyy-MM-dd HH:mm:ss";
-                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
-                            String startTime = simpleDateFormat.format(new Date(Long.parseLong(value.get(0))));
-                            String endTime = simpleDateFormat.format(new Date(Long.parseLong(value.get(1))));
-                            whereValue = String.format(SQLConstants.WHERE_BETWEEN, String.format(SQLConstants.UNIX_TIMESTAMP, startTime), String.format(SQLConstants.UNIX_TIMESTAMP, endTime));
-                            // trans timestamp
-                            whereName = String.format(SQLConstants.UNIX_TIMESTAMP, whereName);
-                        }*/ else {
+                        } else {
                             whereName = String.format(SQLConstants.UNIX_TIMESTAMP, whereName);
                             whereValue = String.format(SQLConstants.WHERE_BETWEEN, Long.parseLong(value.get(0)), Long.parseLong(value.get(1)));
                         }

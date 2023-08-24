@@ -65,7 +65,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
             }
             return result;
         } else {
-            DEException.throwException("Can not find any data visualization info...");
+            DEException.throwException("资源不存在或已经被删除...");
         }
         return null;
     }
