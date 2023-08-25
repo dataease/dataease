@@ -181,7 +181,7 @@ const linkageSetOpen = () => {
           </collapse-switch-item>
           <collapse-switch-item
             :themes="themes"
-            name="jumpset"
+            name="jumpSet"
             :title="'跳转设置'"
             v-model="chart.jumpActive"
           >

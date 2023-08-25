@@ -102,11 +102,11 @@
         SELECT core_chart_view.id                      AS source_view_id,
                visualization_link_jump.id,
                #{dvId} as 'source_dv_id', visualization_link_jump.link_jump_info,
-               ifnull(visualization_link_jump.checked, 0) AS checked
+               ifnull(core_chart_view.jump_active, 0) AS checked
         FROM core_chart_view
                  LEFT JOIN visualization_link_jump ON core_chart_view.id = visualization_link_jump.source_view_id
         WHERE visualization_link_jump.source_dv_id = #{dvId}
-          and visualization_link_jump.checked = 1
+          and core_chart_view.jump_active = 1
     </select>
 
     <select id="getViewTableDetails" resultMap="ViewTableFieldDetailsMap">

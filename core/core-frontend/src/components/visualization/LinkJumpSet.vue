@@ -10,9 +10,6 @@
   >
     <el-row v-if="state.initState" style="height: 550px">
       <el-row style="flex-direction: row">
-        <el-checkbox style="float: left" v-model="state.linkJump.checked">{{
-          t('visualization.enable_jump')
-        }}</el-checkbox>
         <div class="top-area">
           <span class="top-area-text">已选图表：</span>
           <span class="top-area-value">
@@ -602,9 +599,6 @@ const viewInfoOnChange = targetViewInfo => {
   targetViewInfo.targetFieldId = null
 }
 const sourceFieldCheckedChange = data => {
-  if (data.checked) {
-    state.linkJump.checked = true
-  }
   nextTick(() => {
     linkJumpInfoTree.value.setCurrentKey(data.sourceFieldId)
     nodeClick(data)
@@ -897,7 +891,6 @@ span {
   font-weight: 400;
   font-size: 14px;
   color: #646a73;
-  margin-left: 24px;
 }
 
 .top-area-value {
