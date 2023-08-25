@@ -18,7 +18,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 const { t } = useI18n()
 const props = defineProps({
   chart: {
-    type: Object as PropType<Omit<Chart, 'customAttr'> & { customAttr: DeepPartial<ChartAttr> }>,
+    type: Object as PropType<ChartObj>,
     required: true
   },
   themes: {
@@ -38,7 +38,7 @@ const state = reactive({
   colorIndex: 0
 })
 watch(
-  props.chart.customAttr.basicStyle,
+  () => props.chart.customAttr.basicStyle,
   () => {
     init()
   },
@@ -261,6 +261,7 @@ init()
       v-show="showProperty('tableBorderColor')"
     >
       <el-color-picker
+        :persistent="false"
         v-model="state.basicStyleForm.tableBorderColor"
         color-format="hex"
         :predefine="predefineColors"
@@ -273,6 +274,7 @@ init()
       v-show="showProperty('tableScrollBarColor')"
     >
       <el-color-picker
+        :persistent="false"
         v-model="state.basicStyleForm.tableScrollBarColor"
         class="color-picker-style"
         :predefine="predefineColors"
@@ -488,6 +490,7 @@ init()
       v-show="showProperty('areaBorderColor')"
     >
       <el-color-picker
+        :persistent="false"
         v-model="state.basicStyleForm.areaBorderColor"
         class="color-picker-style"
         :predefine="predefineColors"
@@ -500,6 +503,7 @@ init()
       v-show="showProperty('areaBaseColor')"
     >
       <el-color-picker
+        :persistent="false"
         v-model="state.basicStyleForm.areaBaseColor"
         class="color-picker-style"
         :predefine="predefineColors"

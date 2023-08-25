@@ -72,9 +72,6 @@ public class DatasetGroupManage {
                 CoreDatasetGroup coreDatasetGroup = coreDatasetGroupMapper.selectById(datasetGroupInfoDTO.getId());
                 datasetGroupInfoDTO.setPid(coreDatasetGroup.getPid());
             }
-            if (datasetGroupInfoDTO.getPid() != 0 || userApi == null) {
-                checkName(datasetGroupInfoDTO);
-            }
             if (StringUtils.equalsIgnoreCase(datasetGroupInfoDTO.getNodeType(), leafType)) {
                 if (!rename && ObjectUtils.isEmpty(datasetGroupInfoDTO.getAllFields())) {
                     DEException.throwException(Translator.get("i18n_no_fields"));
@@ -141,7 +138,6 @@ public class DatasetGroupManage {
 
     @XpackInteract(value = "authResourceTree", before = false)
     public DatasetGroupInfoDTO move(DatasetGroupInfoDTO datasetGroupInfoDTO) {
-        checkName(datasetGroupInfoDTO);
         if (datasetGroupInfoDTO.getPid() != 0) {
             checkMove(datasetGroupInfoDTO);
         }

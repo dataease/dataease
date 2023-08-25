@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, watch } from 'vue'
+import { ref, watch, useAttrs } from 'vue'
 import { propTypes } from '@/utils/propTypes'
 import { load } from '@/api/plugin'
 import noLic from './nolic.vue'
@@ -11,6 +11,8 @@ const props = defineProps({
 const plugin = ref()
 
 const loading = ref(false)
+
+const attrs = useAttrs()
 
 const showNolic = () => {
   plugin.value = noLic
@@ -46,7 +48,7 @@ watch(
 </script>
 
 <template>
-  <component :is="plugin" v-loading="loading"></component>
+  <component :is="plugin" v-loading="loading" v-bind="attrs"></component>
 </template>
 
 <style lang="less" scoped></style>

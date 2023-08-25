@@ -223,7 +223,7 @@ watch(
             :effect="themes"
             v-if="showProperties('misc-selector')"
             name="size"
-            title="杂项设置"
+            title="大小"
           >
             <misc-selector
               :property-inner="propertyInnerAll['size-selector']"
