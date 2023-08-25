@@ -959,6 +959,7 @@ const autoInsert = element => {
                               node-key="id"
                               check-strictly
                               filterable
+                              :persistent="false"
                             />
                           </div>
                         </el-row>
@@ -1446,6 +1447,7 @@ const autoInsert = element => {
               filterable
               @node-click="dsClick"
               class="dataset-selector"
+              :persistent="false"
             >
               <template #default="{ node, data }">
                 <el-icon v-if="!data.leaf">
