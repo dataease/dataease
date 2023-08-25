@@ -943,6 +943,7 @@ export default {
     '3-rank': '排名',
     '4-location': '位置',
     '5-weather': '天氣',
+    '6-power': '能源',
     chinese: '中文',
     mark_field: '字段',
     mark_value: '值',

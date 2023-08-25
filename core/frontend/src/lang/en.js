@@ -944,6 +944,7 @@ export default {
     '3-rank': 'Rank',
     '4-location': 'Location',
     '5-weather': 'Weather',
+    '6-power': 'Power',
     chinese: 'Chinese',
     mark_field: 'Field',
     mark_value: 'Value',
