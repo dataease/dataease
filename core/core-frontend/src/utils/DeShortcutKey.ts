@@ -16,6 +16,10 @@ const { areaData } = storeToRefs(composeStore)
 
 const ctrlKey = 17,
   commandKey = 91, // mac command
+  leftKey = 37, // 向左
+  upKey = 38, // 向上
+  rightKey = 39, // 向右
+  downKey = 40, // 向下
   vKey = 86, // 粘贴
   cKey = 67, // 复制
   xKey = 88, // 剪切
@@ -43,6 +47,14 @@ const basemap = {
   [eKey]: clearCanvas
 }
 
+// 当处于大屏状态时 按上下左右键 可以移动位置
+const positionMoveKey = {
+  [leftKey]: move,
+  [upKey]: move,
+  [rightKey]: move,
+  [downKey]: move
+}
+
 // 组件锁定状态下可以执行的操作
 const lockMap = {
   ...basemap,
@@ -66,9 +78,11 @@ let isCtrlOrCommandDown = false
 export function listenGlobalKeyDown() {
   window.onkeydown = e => {
     if (!isInEditor) return
-
     const { keyCode } = e
-    if (keyCode === ctrlKey || keyCode === commandKey) {
+    if (positionMoveKey[keyCode] && curComponent.value) {
+      positionMoveKey[keyCode](keyCode)
+      e.preventDefault()
+    } else if (keyCode === ctrlKey || keyCode === commandKey) {
       isCtrlOrCommandDown = true
     } else if (keyCode == deleteKey && curComponent.value) {
       dvMainStore.deleteComponent()
@@ -102,6 +116,21 @@ function copy() {
 function paste() {
   copyStore.paste(false)
   snapshotStore.recordSnapshot('key-paste')
+}
+
+function move(keyCode) {
+  if (curComponent.value) {
+    if (keyCode === leftKey) {
+      curComponent.value.style.left = --curComponent.value.style.left
+    } else if (keyCode === rightKey) {
+      curComponent.value.style.left = ++curComponent.value.style.left
+    } else if (keyCode === upKey) {
+      curComponent.value.style.top = --curComponent.value.style.top
+    } else if (keyCode === downKey) {
+      curComponent.value.style.top = ++curComponent.value.style.top
+    }
+  }
+  // snapshotStore.recordSnapshot('key-paste')
 }
 
 function cut() {
