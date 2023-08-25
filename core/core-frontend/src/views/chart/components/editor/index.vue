@@ -287,6 +287,8 @@ const quotaItemRemove = item => {
     view.value.extLabel.splice(item.index, 1)
   } else if (item.removeType === 'extTooltip') {
     view.value.extTooltip.splice(item.index, 1)
+  } else if (item.removeType === 'extBubble') {
+    view.value.extBubble.splice(item.index, 1)
   }
 }
 
@@ -1115,7 +1117,7 @@ const autoInsert = element => {
                                 :chart="view"
                                 :item="element"
                                 :index="index"
-                                type="quota"
+                                type="extBubble"
                                 :themes="props.themes"
                                 @onQuotaItemChange="quotaItemChange"
                                 @onQuotaItemRemove="quotaItemRemove"
