@@ -10,3 +10,6 @@ export const saveLinkage = data => request.post({ url: '/linkage/saveLinkage', d
 
 export const getPanelAllLinkageInfo = dvId =>
   request.get({ url: '/linkage/getVisualizationAllLinkageInfo/' + dvId })
+
+export const updateLinkageActive = data =>
+  request.post({ url: '/linkage/updateLinkageActive', data })

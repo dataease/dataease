@@ -1,11 +1,15 @@
 package io.dataease.visualization.server;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import io.dataease.api.permissions.dataset.dto.DataSetRowPermissionsTreeDTO;
 import io.dataease.api.visualization.VisualizationLinkJumpApi;
 import io.dataease.api.visualization.dto.VisualizationLinkJumpDTO;
 import io.dataease.api.visualization.dto.VisualizationLinkJumpInfoDTO;
 import io.dataease.api.visualization.request.VisualizationLinkJumpBaseRequest;
 import io.dataease.api.visualization.response.VisualizationLinkJumpBaseResponse;
 import io.dataease.api.visualization.vo.VisualizationViewTableVO;
+import io.dataease.chart.dao.auto.entity.CoreChartView;
+import io.dataease.chart.dao.auto.mapper.CoreChartViewMapper;
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.utils.BeanUtils;
 import io.dataease.visualization.dao.auto.entity.VisualizationLinkJump;
@@ -48,6 +52,9 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
 
     @Resource
     private VisualizationLinkJumpTargetViewInfoMapper visualizationLinkJumpTargetViewInfoMapper;
+
+    @Resource
+    private CoreChartViewMapper coreChartViewMapper;
 
 
     @Override
@@ -136,4 +143,14 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
     public List<VisualizationViewTableVO> viewTableDetailList(String dvId) {
         return extVisualizationLinkJumpMapper.getViewTableDetails(dvId);
     }
+
+    @Override
+    public VisualizationLinkJumpBaseResponse updateJumpSetActive(VisualizationLinkJumpBaseRequest request) {
+        CoreChartView coreChartView = new CoreChartView();
+        coreChartView.setId(Long.valueOf(request.getSourceViewId()));
+        coreChartView.setJumpActive(request.getActiveStatus());
+        coreChartViewMapper.updateById(coreChartView);
+        return queryVisualizationJumpInfo(request.getSourceDvId());
+    }
+
 }

@@ -29,4 +29,7 @@ public interface VisualizationLinkageApi {
     @GetMapping("/getVisualizationAllLinkageInfo/{dvId}")
     Map<String, List<String>> getVisualizationAllLinkageInfo(@PathVariable String dvId);
 
+    @PostMapping("/updateLinkageActive")
+    Map updateLinkageActive(@RequestBody VisualizationLinkageRequest request);
+
 }

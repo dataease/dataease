@@ -36,4 +36,7 @@ public interface VisualizationLinkJumpApi {
 
     @GetMapping("/viewTableDetailList/{dvId}")
     List<VisualizationViewTableVO> viewTableDetailList(@PathVariable String dvId);
+
+    @PostMapping("/updateJumpSetActive")
+    VisualizationLinkJumpBaseResponse updateJumpSetActive(@RequestBody VisualizationLinkJumpBaseRequest request);
 }

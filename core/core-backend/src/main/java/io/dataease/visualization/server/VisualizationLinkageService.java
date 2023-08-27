@@ -6,6 +6,8 @@ import io.dataease.api.visualization.dto.LinkageInfoDTO;
 import io.dataease.api.visualization.dto.VisualizationLinkageDTO;
 import io.dataease.api.visualization.request.VisualizationLinkageRequest;
 import io.dataease.api.visualization.vo.VisualizationLinkageFieldVO;
+import io.dataease.chart.dao.auto.entity.CoreChartView;
+import io.dataease.chart.dao.auto.mapper.CoreChartViewMapper;
 import io.dataease.utils.BeanUtils;
 import io.dataease.visualization.dao.auto.entity.VisualizationLinkage;
 import io.dataease.visualization.dao.auto.entity.VisualizationLinkageField;
@@ -42,6 +44,9 @@ public class VisualizationLinkageService implements VisualizationLinkageApi {
 
     @Resource
     private DataVisualizationInfoMapper dataVisualizationInfoMapper;
+
+    @Resource
+    private CoreChartViewMapper coreChartViewMapper;
 
     @Override
     public Map<String, VisualizationLinkageDTO> getViewLinkageGather(VisualizationLinkageRequest request) {
@@ -107,5 +112,14 @@ public class VisualizationLinkageService implements VisualizationLinkageApi {
     public Map<String, List<String>> getVisualizationAllLinkageInfo(String dvId) {
         List<LinkageInfoDTO> info = extVisualizationLinkageMapper.getPanelAllLinkageInfo(dvId);
         return Optional.ofNullable(info).orElse(new ArrayList<>()).stream().collect(Collectors.toMap(LinkageInfoDTO::getSourceInfo, LinkageInfoDTO::getTargetInfoList));
+    }
+
+    @Override
+    public Map updateLinkageActive(VisualizationLinkageRequest request) {
+        CoreChartView coreChartView = new CoreChartView();
+        coreChartView.setId(Long.valueOf(request.getSourceViewId()));
+        coreChartView.setLinkageActive(request.getActiveStatus());
+        coreChartViewMapper.updateById(coreChartView);
+        return getVisualizationAllLinkageInfo(request.getDvId());
     }
 }
