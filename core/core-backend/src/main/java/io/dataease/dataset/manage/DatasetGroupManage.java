@@ -72,9 +72,6 @@ public class DatasetGroupManage {
                 CoreDatasetGroup coreDatasetGroup = coreDatasetGroupMapper.selectById(datasetGroupInfoDTO.getId());
                 datasetGroupInfoDTO.setPid(coreDatasetGroup.getPid());
             }
-            if (datasetGroupInfoDTO.getPid() != 0 || userApi == null) {
-                checkName(datasetGroupInfoDTO);
-            }
             if (StringUtils.equalsIgnoreCase(datasetGroupInfoDTO.getNodeType(), leafType)) {
                 if (!rename && ObjectUtils.isEmpty(datasetGroupInfoDTO.getAllFields())) {
                     DEException.throwException(Translator.get("i18n_no_fields"));
@@ -94,6 +91,7 @@ public class DatasetGroupManage {
                 datasetGroupInfoDTO.setId(IDUtils.snowID());
                 if (userApi != null) {
                     datasetGroupInfoDTO.setCreateBy(userApi.info().getId() + "");
+                    datasetGroupInfoDTO.setUpdateBy(userApi.info().getId() + "");
                 }
                 datasetGroupInfoDTO.setCreateTime(time);
                 datasetGroupInfoDTO.setLastUpdateTime(time);
@@ -103,6 +101,9 @@ public class DatasetGroupManage {
                 isCreate = false;
                 if (Objects.equals(datasetGroupInfoDTO.getId(), datasetGroupInfoDTO.getPid())) {
                     DEException.throwException(Translator.get("i18n_pid_not_eq_id"));
+                }
+                if (userApi != null) {
+                    datasetGroupInfoDTO.setUpdateBy(userApi.info().getId() + "");
                 }
                 Objects.requireNonNull(CommonBeanFactory.getBean(this.getClass())).innerEdit(datasetGroupInfoDTO);
             }
@@ -141,7 +142,6 @@ public class DatasetGroupManage {
 
     @XpackInteract(value = "authResourceTree", before = false)
     public DatasetGroupInfoDTO move(DatasetGroupInfoDTO datasetGroupInfoDTO) {
-        checkName(datasetGroupInfoDTO);
         if (datasetGroupInfoDTO.getPid() != 0) {
             checkMove(datasetGroupInfoDTO);
         }
@@ -149,6 +149,9 @@ public class DatasetGroupManage {
         long time = System.currentTimeMillis();
         CoreDatasetGroup coreDatasetGroup = new CoreDatasetGroup();
         BeanUtils.copyBean(coreDatasetGroup, datasetGroupInfoDTO);
+        if (userApi != null) {
+            datasetGroupInfoDTO.setUpdateBy(userApi.info().getId() + "");
+        }
         coreDatasetGroup.setLastUpdateTime(time);
         coreDatasetGroupMapper.updateById(coreDatasetGroup);
         return datasetGroupInfoDTO;
@@ -205,6 +208,10 @@ public class DatasetGroupManage {
             UserFormVO userFormVO = userApi.queryById(Long.valueOf(dataSetBarVO.getCreateBy()));
             if (userFormVO != null) {
                 dataSetBarVO.setCreator(userFormVO.getName());
+            }
+            UserFormVO userFormVOUpdateBy = userApi.queryById(Long.valueOf(dataSetBarVO.getUpdateBy()));
+            if (userFormVOUpdateBy != null) {
+                dataSetBarVO.setUpdater(userFormVOUpdateBy.getName());
             }
         }
         return dataSetBarVO;
@@ -314,6 +321,10 @@ public class DatasetGroupManage {
             UserFormVO userFormVO = userApi.queryById(Long.valueOf(dto.getCreateBy()));
             if (userFormVO != null) {
                 dto.setCreator(userFormVO.getName());
+            }
+            UserFormVO userFormVOUpdateBy = userApi.queryById(Long.valueOf(dto.getUpdateBy()));
+            if (userFormVOUpdateBy != null) {
+                dto.setUpdater(userFormVOUpdateBy.getName());
             }
         }
         dto.setUnionSql(null);

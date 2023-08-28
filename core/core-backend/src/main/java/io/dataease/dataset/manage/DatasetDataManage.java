@@ -95,7 +95,7 @@ public class DatasetDataManage {
                 datasourceRequest.setQuery(TableUtils.tableName2Sql(datasourceSchemaDTO, tableInfoDTO.getTable()) + " LIMIT 0 OFFSET 0");
             } else {
                 // parser sql params and replace default value
-                String sql = SqlparserUtils.handleVariableDefaultValue(new String(Base64.getDecoder().decode(tableInfoDTO.getSql())), datasetTableDTO.getSqlVariableDetails(), true);
+                String sql = SqlparserUtils.handleVariableDefaultValue(new String(Base64.getDecoder().decode(tableInfoDTO.getSql())), datasetTableDTO.getSqlVariableDetails(), false);
                 // add sql table schema
                 sql = SqlUtils.addSchema(sql, datasourceSchemaDTO.getSchemaAlias());
                 sql = SQLUtils.buildOriginPreviewSql(sql, 0, 0);

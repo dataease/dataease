@@ -21,6 +21,8 @@ public class VisualizationLinkJumpBaseRequest {
 
     private String linkJumpId;
 
+    private Boolean activeStatus;
+
     public VisualizationLinkJumpBaseRequest() {
     }
 

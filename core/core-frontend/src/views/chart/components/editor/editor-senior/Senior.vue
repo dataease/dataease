@@ -9,6 +9,10 @@ import { ref, toRefs } from 'vue'
 import LinkJumpSet from '@/components/visualization/LinkJumpSet.vue'
 import LinkageSet from '@/components/visualization/LinkageSet.vue'
 import { canvasSave } from '@/utils/canvasUtils'
+import { updateJumpSetActive } from '@/api/visualization/linkJump'
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { updateLinkageActive } from '@/api/visualization/linkage'
+const dvMainStore = dvMainStoreWithOut()
 
 const { t } = useI18n()
 const linkJumpRef = ref(null)
@@ -69,6 +73,28 @@ const linkageSetOpen = () => {
   //跳转设置需要先触发保存
   canvasSave(() => {
     linkageRef.value.dialogInit({ id: chart.value.id })
+  })
+}
+
+const linkJumpActiveChange = () => {
+  // 直接触发刷新
+  const params = {
+    sourceDvId: chart.value.sceneId,
+    sourceViewId: chart.value.id,
+    activeStatus: chart.value.jumpActive
+  }
+  updateJumpSetActive(params).then(rsp => {
+    dvMainStore.setNowPanelJumpInfo(rsp.data)
+  })
+}
+const linkageActiveChange = () => {
+  const params = {
+    dvId: chart.value.sceneId,
+    sourceViewId: chart.value.id,
+    activeStatus: chart.value.linkageActive
+  }
+  updateLinkageActive(params).then(rsp => {
+    dvMainStore.setNowPanelTrackInfo(rsp.data)
   })
 }
 </script>
@@ -164,6 +190,7 @@ const linkageSetOpen = () => {
             name="linkage"
             :title="'联动设置'"
             v-model="chart.linkageActive"
+            @modelChange="linkageActiveChange"
           >
             <span>联动设置</span>
             <el-button
@@ -181,9 +208,10 @@ const linkageSetOpen = () => {
           </collapse-switch-item>
           <collapse-switch-item
             :themes="themes"
-            name="jumpset"
+            name="jumpSet"
             :title="'跳转设置'"
             v-model="chart.jumpActive"
+            @modelChange="linkJumpActiveChange"
           >
             <span>跳转设置</span>
             <el-button

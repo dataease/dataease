@@ -21,6 +21,7 @@ import { Tree } from '@/views/visualized/data/dataset/form/CreatDsGroup.vue'
 import { findDragComponent, findNewComponent, initCanvasData } from '@/utils/canvasUtils'
 import { ElMessage } from 'element-plus-secondary'
 import CanvasCore from '@/components/data-visualization/canvas/CanvasCore.vue'
+import { listenGlobalKeyDown } from '@/utils/DeShortcutKey'
 
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
@@ -117,7 +118,7 @@ const initDataset = () => {
 }
 
 // 全局监听按键事件
-// listenGlobalKeyDown()
+listenGlobalKeyDown()
 
 const initScroll = () => {
   nextTick(() => {

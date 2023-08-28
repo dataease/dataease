@@ -39,3 +39,11 @@ export function viewTableDetailList(dvId) {
     loading: false
   })
 }
+
+export function updateJumpSetActive(requestInfo) {
+  return request.post({
+    url: '/linkJump/updateJumpSetActive',
+    data: requestInfo,
+    loading: true
+  })
+}

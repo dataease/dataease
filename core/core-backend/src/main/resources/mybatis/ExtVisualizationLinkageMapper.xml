@@ -96,17 +96,18 @@
     </delete>
 
     <select id="getPanelAllLinkageInfo" resultMap="AllLinkageMap">
-      SELECT
-        distinct
-        CONCAT( visualization_linkage.source_view_id, '#', visualization_linkage_field.source_field ) AS 'sourceInfo',
-        CONCAT( visualization_linkage.target_view_id, '#', visualization_linkage_field.target_field ) AS 'targetInfo'
+        SELECT DISTINCT
+            CONCAT( visualization_linkage.source_view_id, '#', visualization_linkage_field.source_field ) AS 'sourceInfo',
+                CONCAT( visualization_linkage.target_view_id, '#', visualization_linkage_field.target_field ) AS 'targetInfo'
         FROM
             visualization_linkage
-            LEFT JOIN visualization_linkage_field ON visualization_linkage.id = visualization_linkage_field.linkage_id
+                LEFT JOIN core_chart_view ON visualization_linkage.source_view_id = core_chart_view.id
+                LEFT JOIN visualization_linkage_field ON visualization_linkage.id = visualization_linkage_field.linkage_id
         WHERE
             visualization_linkage.dv_id = #{dvId}
-      and visualization_linkage.linkage_active=1
-      and visualization_linkage_field.id is not null
+          AND core_chart_view.linkage_active = 1
+          AND visualization_linkage.linkage_active = 1
+          AND visualization_linkage_field.id IS NOT NULL
     </select>
 
     <insert id="copyViewLinkage">

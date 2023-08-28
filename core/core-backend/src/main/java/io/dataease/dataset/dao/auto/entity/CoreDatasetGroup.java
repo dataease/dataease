@@ -9,7 +9,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-04-14
+ * @since 2023-08-28
  */
 @TableName("core_dataset_group")
 public class CoreDatasetGroup implements Serializable {
@@ -72,6 +72,11 @@ public class CoreDatasetGroup implements Serializable {
      * 同步状态
      */
     private String syncStatus;
+
+    /**
+     * 更新人ID
+     */
+    private String updateBy;
 
     /**
      * 最后同步时间
@@ -179,6 +184,14 @@ public class CoreDatasetGroup implements Serializable {
         this.syncStatus = syncStatus;
     }
 
+    public String getUpdateBy() {
+        return updateBy;
+    }
+
+    public void setUpdateBy(String updateBy) {
+        this.updateBy = updateBy;
+    }
+
     public Long getLastUpdateTime() {
         return lastUpdateTime;
     }
@@ -210,6 +223,7 @@ public class CoreDatasetGroup implements Serializable {
         ", createTime = " + createTime +
         ", qrtzInstance = " + qrtzInstance +
         ", syncStatus = " + syncStatus +
+        ", updateBy = " + updateBy +
         ", lastUpdateTime = " + lastUpdateTime +
         ", unionSql = " + unionSql +
         "}";

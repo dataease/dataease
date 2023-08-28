@@ -2,7 +2,7 @@ import { FunnelOptions, Funnel as G2Funnel } from '@antv/g2plot/esm/plots/funnel
 import { G2PlotChartView, G2PlotDrawOptions } from '../../types/impl/g2plot'
 import { flow, parseJson } from '@/views/chart/components/js/util'
 import { getPadding } from '../../common/common_antv'
-import { formatterItem, singleDimensionTooltipFormatter, valueFormatter } from '../../../formatter'
+import { formatterItem, valueFormatter } from '../../../formatter'
 import { Tooltip } from '@antv/g2plot/esm/types/tooltip'
 import { Datum } from '@antv/g2plot/esm/types/common'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -23,6 +23,7 @@ export class Funnel extends G2PlotChartView<FunnelOptions, G2Funnel> {
   ]
   propertyInner: EditorPropertyInner = {
     'background-overall-component': ['all'],
+    'basic-style-selector': ['colors', 'alpha'],
     'label-selector': ['show', 'fontSize', 'color', 'hPosition'],
     'tooltip-selector': ['color', 'fontSize', 'backgroundColor'],
     'title-selector': [

@@ -1,5 +1,4 @@
 import { defineStore, storeToRefs } from 'pinia'
-import toast from '@/utils/toast'
 import { dvMainStoreWithOut } from './dvMain'
 import { contextmenuStoreWithOut } from './contextmenu'
 import { generateID } from '@/utils/generateID'
@@ -7,8 +6,10 @@ import { deepCopy } from '@/utils/utils'
 import { store } from '../../index'
 import eventBus from '@/utils/eventBus'
 import { adaptCurThemeCommonStyle } from '@/utils/canvasStyle'
+import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 
 const dvMainStore = dvMainStoreWithOut()
+const composeStore = composeStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
 const {
   curComponent,
@@ -23,6 +24,7 @@ const { menuTop, menuLeft } = storeToRefs(contextmenuStore)
 export const copyStore = defineStore('copy', {
   state: () => {
     return {
+      copyDataArray: [], // 批量复制粘贴剪切
       copyData: null, // 复制粘贴剪切
       isCut: false
     }
@@ -54,7 +56,7 @@ export const copyStore = defineStore('copy', {
           newComponent.style.top = newComponent.style.height * yPositionOffset
         }
         _this.copyData = {
-          data: newComponent,
+          data: [newComponent],
           copyCanvasViewInfo: canvasViewInfoPreview,
           index: index,
           copyFrom: 'multiplexing'
@@ -63,61 +65,57 @@ export const copyStore = defineStore('copy', {
       })
     },
     copy() {
-      if (!curComponent.value) {
-        toast('请选择组件')
-        return
+      if (curComponent.value) {
+        this.copyDataInfo([curComponent.value])
+      } else if (composeStore.areaData.components.length) {
+        this.copyDataInfo(composeStore.areaData.components)
       }
-
-      // 如果有剪切的数据，需要先还原
-      this.restorePreCutData()
-      this.copyDataInfo()
       this.isCut = false
     },
 
     paste(isMouse?) {
       if (!this.copyData) {
-        toast('请选择组件')
         return
       }
-      const data = this.copyData.data
-      if (dvInfo.value.type === 'dataV') {
-        if (isMouse) {
-          data.style.top = menuTop
-          data.style.left = menuLeft
+      const dataArray = this.copyData.data
+      dataArray.forEach(data => {
+        if (dvInfo.value.type === 'dataV') {
+          if (isMouse) {
+            data.style.top = menuTop
+            data.style.left = menuLeft
+          } else {
+            data.style.top += 10
+            data.style.left += 10
+          }
         } else {
-          data.style.top += 10
-          data.style.left += 10
+          // 向下移动一个高度矩阵单位
+          data.y = data.y + data.sizeY
         }
-      } else {
-        // 向下移动一个高度矩阵单位
-        data.y = data.y + data.sizeY
-      }
-      // 旧-新ID映射关系
-      const idMap = {}
-      const newComponent = deepCopyHelper(data, idMap)
-      dvMainStore.addCopyComponent(newComponent, idMap, this.copyData.copyCanvasViewInfo)
-      if (dvInfo.value.type === 'dashboard') {
-        if (dvMainStore.multiplexingStyleAdapt && this.copyData.copyFrom === 'multiplexing') {
-          adaptCurThemeCommonStyle(newComponent)
+        // 旧-新ID映射关系
+        const idMap = {}
+        const newComponent = deepCopyHelper(data, idMap)
+        dvMainStore.addCopyComponent(newComponent, idMap, this.copyData.copyCanvasViewInfo)
+        if (dvInfo.value.type === 'dashboard') {
+          if (dvMainStore.multiplexingStyleAdapt && this.copyData.copyFrom === 'multiplexing') {
+            adaptCurThemeCommonStyle(newComponent)
+          }
+          eventBus.emit('addDashboardItem-canvas-main', newComponent)
         }
-        eventBus.emit('addDashboardItem-canvas-main', newComponent)
-      }
+      })
       if (this.isCut) {
         this.copyData = null
       }
     },
-
     cut() {
-      if (!curComponent.value) {
-        toast('请选择组件')
-        return
+      if (curComponent.value) {
+        this.copyDataInfo([curComponent.value])
+        dvMainStore.deleteComponent()
+      } else if (composeStore.areaData.components.length) {
+        this.copyDataInfo(composeStore.areaData.components)
+        composeStore.areaData.components.forEach(component => {
+          dvMainStore.deleteComponentById(component.id)
+        })
       }
-
-      // 如果重复剪切，需要恢复上一次剪切的数据
-      this.restorePreCutData()
-      this.copyDataInfo()
-
-      dvMainStore.deleteComponent()
       this.isCut = true
     },
 
@@ -134,9 +132,13 @@ export const copyStore = defineStore('copy', {
       }
     },
 
-    copyDataInfo() {
+    copyDataArrayInfo() {
+      this.copyDataArray = deepCopy(composeStore.areaData.components)
+    },
+
+    copyDataInfo(copyData) {
       this.copyData = {
-        data: deepCopy(curComponent.value),
+        data: deepCopy(copyData),
         index: curComponentIndex
       }
     }

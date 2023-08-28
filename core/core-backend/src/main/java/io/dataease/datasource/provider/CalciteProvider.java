@@ -84,7 +84,7 @@ public class CalciteProvider {
                     }
                 }
             });
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
     }
@@ -102,7 +102,7 @@ public class CalciteProvider {
         return schemas;
     }
 
-    public List<DatasetTableDTO> getTables(DatasourceRequest datasourceRequest){
+    public List<DatasetTableDTO> getTables(DatasourceRequest datasourceRequest) {
         List<DatasetTableDTO> tables = new ArrayList<>();
         List<String> tablesSqls = getTablesSql(datasourceRequest);
         for (String tablesSql : tablesSqls) {
@@ -129,17 +129,17 @@ public class CalciteProvider {
     private List<String> getDriver() {
         List<String> drivers = new ArrayList<>();
         Map<String, DatasourceConfiguration> beansOfType = CommonBeanFactory.getApplicationContext().getBeansOfType((DatasourceConfiguration.class));
-        beansOfType.keySet().forEach( key -> drivers.add(beansOfType.get(key).getDriver()));
+        beansOfType.keySet().forEach(key -> drivers.add(beansOfType.get(key).getDriver()));
         return drivers;
     }
 
     public String checkStatus(DatasourceRequest datasourceRequest) throws Exception {
         DatasourceConfiguration.DatasourceType datasourceType = DatasourceConfiguration.DatasourceType.valueOf(datasourceRequest.getDatasource().getType());
-        switch (datasourceType){
+        switch (datasourceType) {
             case pg:
                 DatasourceConfiguration configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Pg.class);
                 List<String> schemas = getSchema(datasourceRequest);
-                if(CollectionUtils.isEmpty(schemas) || !schemas.contains(configuration.getSchema())){
+                if (CollectionUtils.isEmpty(schemas) || !schemas.contains(configuration.getSchema())) {
                     DEException.throwException("无效的 schema！");
                 }
                 break;
@@ -183,7 +183,7 @@ public class CalciteProvider {
             }
             list = getDataResult(resultSet);
         } catch (Exception e) {
-            DEException.throwException(e.getMessage());
+            DEException.throwException(Translator.get("i18n_fetch_error") + e.getMessage());
         } finally {
             try {
                 if (resultSet != null) resultSet.close();
@@ -199,8 +199,7 @@ public class CalciteProvider {
     }
 
 
-
-    public Connection initConnection(Map<Long, DatasourceSchemaDTO> dsMap) throws Exception{
+    public Connection initConnection(Map<Long, DatasourceSchemaDTO> dsMap) throws Exception {
         Connection connection = getCalciteConnection();
         CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
         DatasourceRequest datasourceRequest = new DatasourceRequest();
@@ -209,6 +208,7 @@ public class CalciteProvider {
         addCustomFunctions(rootSchema);
         return connection;
     }
+
     private void addCustomFunctions(SchemaPlus rootSchema) {
         // scalar functions
         Class<?> clazz = ScalarFunctions.class;
@@ -224,13 +224,13 @@ public class CalciteProvider {
             try {
                 Driver driver = (Driver) extendedJdbcClassLoader.loadClass(driverClass).newInstance();
                 DriverManager.registerDriver(new DriverShim(driver));
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
 
-    private Connection getCalciteConnection() throws Exception{
+    private Connection getCalciteConnection() throws Exception {
         registerDriver();
         Properties info = new Properties();
         info.setProperty("lex", "JAVA");
@@ -248,7 +248,7 @@ public class CalciteProvider {
         Map<Long, DatasourceSchemaDTO> dsList = datasourceRequest.getDsList();
         for (Map.Entry<Long, DatasourceSchemaDTO> next : dsList.entrySet()) {
             DatasourceSchemaDTO ds = next.getValue();
-            commonThreadPool.addTask( () -> {
+            commonThreadPool.addTask(() -> {
                 try {
                     BasicDataSource dataSource = new BasicDataSource();
                     Schema schema = null;
@@ -351,10 +351,10 @@ public class CalciteProvider {
                                 schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getDataBase());
                                 rootSchema.add(ds.getSchemaAlias(), schema);
                         }
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
-                }catch (Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             });
@@ -597,7 +597,7 @@ public class CalciteProvider {
 
     public static int capacity = 10;
 
-    public void  initConnectionPool(int capacity) {
+    public void initConnectionPool(int capacity) {
         LogUtil.info("Begin to init datasource pool...");
         QueryWrapper<CoreDatasource> datasourceQueryWrapper = new QueryWrapper();
         List<CoreDatasource> coreDatasources = coreDatasourceMapper.selectList(datasourceQueryWrapper).stream().filter(coreDatasource -> !Arrays.asList("folder", "API", "Excel").contains(coreDatasource.getType())).collect(Collectors.toList());
@@ -614,23 +614,23 @@ public class CalciteProvider {
         states = new AtomicIntegerArray(new int[capacity]);
         this.capacity = capacity;
         for (int i = 0; i < capacity; i++) {
-           try {
-               int finalI = i;
-               commonThreadPool.addTask( () -> {
-                  try {
-                      connections[finalI] = initConnection(dsMap);
-                  }catch (Exception e) {
-                      e.printStackTrace();
-                  }
-               });
+            try {
+                int finalI = i;
+                commonThreadPool.addTask(() -> {
+                    try {
+                        connections[finalI] = initConnection(dsMap);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                });
 
-           }catch (Exception e) {
+            } catch (Exception e) {
 
-           }
+            }
         }
     }
 
-    public void  update(DatasourceDTO datasourceDTO) throws DEException{
+    public void update(DatasourceDTO datasourceDTO) throws DEException {
         DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
         BeanUtils.copyBean(datasourceSchemaDTO, datasourceDTO);
         datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId()));
@@ -644,12 +644,13 @@ public class CalciteProvider {
                 CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
                 SchemaPlus rootSchema = buildSchema(datasourceRequest, calciteConnection);
                 addCustomFunctions(rootSchema);
-            }catch (Exception e){
+            } catch (Exception e) {
                 DEException.throwException(e);
             }
 
         }
     }
+
     public Connection take() {
         // 为了避免出现线程安全问题，这里使用 synchronized 锁，也可以使用 cas
         while (true) {

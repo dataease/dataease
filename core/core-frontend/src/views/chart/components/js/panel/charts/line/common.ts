@@ -6,7 +6,9 @@ export const LINE_EDITOR_PROPERTY: EditorProperty[] = [
   'title-selector',
   'legend-selector',
   'label-selector',
-  'tooltip-selector'
+  'tooltip-selector',
+  'assist-line',
+  'function-cfg'
 ]
 export const LINE_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
   'background-overall-component': ['all'],
@@ -52,7 +54,7 @@ export const LINE_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
     'letterSpace',
     'fontShadow'
   ],
-  'legend-selector': ['icon', 'orient', 'textStyle', 'hPosition', 'vPosition']
+  'legend-selector': ['icon', 'orient', 'fontSize', 'color', 'hPosition', 'vPosition']
 }
 
 export const LINE_AXIS_TYPE: AxisType[] = [

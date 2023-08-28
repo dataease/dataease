@@ -11,7 +11,7 @@ const props = defineProps({
   dimensionMap: propTypes.arrayOf(String).def(() => [])
 })
 
-const codeComInit = (doc: string) => {
+const codeComInit = (doc: string, sqlMode?: boolean) => {
   function _optionalChain(ops) {
     let lastAccessLHS = undefined
     let value = ops[0]
@@ -103,10 +103,10 @@ const codeComInit = (doc: string) => {
       return false
     }
   }
-
+  const extensionsAttach = sqlMode ? [basicSetup, sql(), placeholders] : [basicSetup, placeholders]
   return new EditorView({
     doc,
-    extensions: [basicSetup, sql(), placeholders],
+    extensions: extensionsAttach,
     parent: document.querySelector(`#${props.domId}`)
   })
 }

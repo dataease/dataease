@@ -21,9 +21,9 @@ public class VisualizationLinkageRequest extends VisualizationLinkageVO {
      * */
     private String dvId;
 
-
     private String sourceViewId;
 
+    private Boolean ActiveStatus;
 
     private List<String> targetViewIds;
 

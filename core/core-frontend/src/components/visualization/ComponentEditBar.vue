@@ -33,13 +33,6 @@
         @change="multiplexingCheck"
       />
     </div>
-    <div v-if="barShowCheck('linkage') && linkageCheckShowAttach" class="bar-checkbox-area">
-      <el-checkbox size="medium" v-model="linkageInfo.linkageActive" />
-    </div>
-    <linkage-field
-      v-if="linkageInfo && linkageInfo.linkageActive"
-      :element="element"
-    ></linkage-field>
     <span
       :title="t('visualization.cancel_linkage')"
       v-if="barShowCheck('unLinkage') && existLinkage"
@@ -58,18 +51,6 @@
         <el-dropdown-menu style="width: 100px">
           <el-dropdown-item icon="Delete" @click="deleteComponent">删除</el-dropdown-item>
           <el-dropdown-item icon="DocumentCopy" @click="copyComponent">复制</el-dropdown-item>
-          <el-dropdown-item
-            v-if="barShowCheck('linkageSetting')"
-            icon="Link"
-            @click="linkageSetOpen"
-            >联动设置</el-dropdown-item
-          >
-          <el-dropdown-item
-            v-if="barShowCheck('linkJumpSetting')"
-            icon="Connection"
-            @click="linkJumpSetOpen"
-            >跳转设置</el-dropdown-item
-          >
         </el-dropdown-menu>
       </template>
     </el-dropdown>

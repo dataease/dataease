@@ -25,7 +25,7 @@ export class Treemap extends G2PlotChartView<TreemapOptions, G2Treemap> {
     'background-overall-component': ['all'],
     'basic-style-selector': ['colors', 'alpha'],
     'label-selector': ['fontSize', 'color'],
-    'legend-selector': ['icon', 'orient', 'textStyle', 'hPosition', 'vPosition'],
+    'legend-selector': ['icon', 'orient', 'fontSize', 'color', 'hPosition', 'vPosition'],
     'tooltip-selector': ['fontSize', 'color', 'backgroundColor'],
     'title-selector': [
       'title',

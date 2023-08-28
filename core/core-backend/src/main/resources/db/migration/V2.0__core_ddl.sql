@@ -101,6 +101,7 @@ CREATE TABLE `core_dataset_group`
     `create_time`      bigint        DEFAULT NULL COMMENT '创建时间',
     `qrtz_instance`    varchar(1024) DEFAULT NULL,
     `sync_status`      varchar(45)   DEFAULT NULL COMMENT '同步状态',
+    `update_by`        varchar(50)   DEFAULT NULL COMMENT '更新人ID',
     `last_update_time` bigint        DEFAULT '0' COMMENT '最后同步时间',
     `union_sql`        longtext COMMENT '关联sql',
     PRIMARY KEY (`id`)
@@ -4077,7 +4078,7 @@ INSERT INTO `visualization_subject` (`id`,
                                      `delete_by`)
 VALUES ('1689632620820885504',
         '浅色主题',
-        'self',
+        'system',
         '{\"width\":1920,\"height\":1080,\"refreshViewEnable\":false,\"refreshViewLoading\":true,\"refreshUnit\":\"minute\",\"refreshTime\":5,\"scale\":60,\"scaleWidth\":100,\"scaleHeight\":100,\"backgroundType\":\"backgroundColor\",\"background\":\"\",\"openCommonStyle\":true,\"opacity\":1,\"fontSize\":14,\"themeId\":\"7095398277276766208\",\"color\":\"#000000\",\"backgroundColor\":\"rgba(241, 243, 245, 1)\",\"dashboard\":{\"themeColor\":\"light\",\"gap\":\"yes\",\"gapSize\":5,\"resultMode\":\"all\",\"resultCount\":1000,\"mobileSetting\":{\"customSetting\":false,\"imageUrl\":null,\"backgroundType\":\"image\",\"color\":\"#000\"}},\"component\":{\"chartTitle\":{\"show\":true,\"fontSize\":\"18\",\"hPosition\":\"left\",\"vPosition\":\"top\",\"isItalic\":false,\"isBolder\":true,\"remarkShow\":false,\"remark\":\"\",\"fontFamily\":\"Microsoft YaHei\",\"letterSpace\":\"0\",\"fontShadow\":false,\"color\":\"#000000\",\"remarkBackgroundColor\":\"#ffffff\",\"modifyName\":\"color\"},\"chartColor\":{\"value\":\"default\",\"colors\":[\"#5470c6\",\"#91cc75\",\"#fac858\",\"#ee6666\",\"#73c0de\",\"#3ba272\",\"#fc8452\",\"#9a60b4\",\"#ea7ccc\"],\"alpha\":100,\"tableHeaderBgColor\":\"#6D9A49\",\"tableItemBgColor\":\"#FFFFFF\",\"tableHeaderFontColor\":\"#000000\",\"tableFontColor\":\"#000000\",\"tableStripe\":true,\"dimensionColor\":\"#000000\",\"quotaColor\":\"#5470c6\",\"tableBorderColor\":\"#E6E7E4\",\"seriesColors\":[],\"areaBorderColor\":\"#303133\",\"gradient\":false,\"areaBaseColor\":\"#FFFFFF\",\"tableScrollBarColor\":\"#00000024\",\"tableScrollBarHoverColor\":\"rgba(0, 0, 0, 0.4)\",\"mapStyle\":\"normal\",\"mapLineGradient\":false,\"mapLineSourceColor\":\"#146C94\",\"mapLineTargetColor\":\"#576CBC\",\"modifyName\":\"colors\"},\"chartCommonStyle\":{\"backgroundColorSelect\":true,\"alpha\":100,\"backgroundImageEnable\":false,\"backgroundType\":\"innerImage\",\"innerImage\":\"board/board_1.svg\",\"outerImage\":null,\"innerPadding\":0,\"borderRadius\":0,\"backgroundColor\":\"rgb(255, 255, 255)\",\"innerImageColor\":\"#1094E5\"},\"filterStyle\":{\"horizontal\":\"left\",\"vertical\":\"top\",\"color\":\"#000000\",\"brColor\":\"#4E4B4B\",\"wordColor\":\"#FFFFFF\",\"innerBgColor\":\"#131E42\"},\"tabStyle\":{\"headPosition\":\"left\",\"headFontColor\":\"#OOOOOO\",\"headFontActiveColor\":\"#OOOOOO\",\"headBorderColor\":\"#OOOOOO\",\"headBorderActiveColor\":\"#OOOOOO\"}}}',
         0,
         '/static-resource/inner-subject-light.png',
@@ -4103,7 +4104,7 @@ INSERT INTO `visualization_subject` (`id`,
                                      `delete_by`)
 VALUES ('1689632657248415744',
         '深色主题',
-        'self',
+        'system',
         '{\"width\":1920,\"height\":1080,\"refreshViewEnable\":false,\"refreshViewLoading\":true,\"refreshUnit\":\"minute\",\"refreshTime\":5,\"scale\":60,\"scaleWidth\":100,\"scaleHeight\":100,\"backgroundType\":\"backgroundColor\",\"background\":\"\",\"openCommonStyle\":true,\"opacity\":1,\"fontSize\":14,\"themeId\":\"7095398323158257664\",\"color\":\"#000000\",\"backgroundColor\":\"rgba(3, 11, 46, 1)\",\"dashboard\":{\"themeColor\":\"dark\",\"gap\":\"yes\",\"gapSize\":5,\"resultMode\":\"all\",\"resultCount\":1000,\"mobileSetting\":{\"customSetting\":false,\"imageUrl\":null,\"backgroundType\":\"image\",\"color\":\"#000\"}},\"component\":{\"chartTitle\":{\"show\":true,\"fontSize\":\"18\",\"hPosition\":\"left\",\"vPosition\":\"top\",\"isItalic\":false,\"isBolder\":true,\"remarkShow\":false,\"remark\":\"\",\"fontFamily\":\"Microsoft YaHei\",\"letterSpace\":\"0\",\"fontShadow\":false,\"color\":\"#FFFFFF\",\"remarkBackgroundColor\":\"#5A5C62\",\"modifyName\":\"color\"},\"chartColor\":{\"value\":\"default\",\"colors\":[\"#5470c6\",\"#91cc75\",\"#fac858\",\"#ee6666\",\"#73c0de\",\"#3ba272\",\"#fc8452\",\"#9a60b4\",\"#ea7ccc\"],\"alpha\":100,\"tableHeaderBgColor\":\"#5470C6\",\"tableItemBgColor\":\"#131E42\",\"tableFontColor\":\"#FFFFFF\",\"tableStripe\":true,\"dimensionColor\":\"#FFFFFF\",\"quotaColor\":\"#5470c6\",\"tableBorderColor\":\"#CCCCCC\",\"seriesColors\":[],\"areaBorderColor\":\"#EBEEF5\",\"areaBaseColor\":\"5470C6\",\"tableScrollBarColor\":\"#FFFFFF80\",\"tableScrollBarHoverColor\":\"rgba(255, 255, 255, 0.8)\",\"mapStyle\":\"darkblue\",\"mapLineGradient\":false,\"mapLineSourceColor\":\"#2F58CD\",\"mapLineTargetColor\":\"#3795BD\",\"modifyName\":\"colors\",\"tableHeaderFontColor\":\"rgb(0, 0, 0)\"},\"chartCommonStyle\":{\"backgroundColorSelect\":true,\"alpha\":100,\"backgroundImageEnable\":false,\"backgroundType\":\"innerImage\",\"innerImage\":\"board/board_1.svg\",\"outerImage\":null,\"innerPadding\":0,\"borderRadius\":0,\"backgroundColor\":\"rgb(19, 30, 66)\",\"innerImageColor\":\"#1094E5\"},\"filterStyle\":{\"horizontal\":\"left\",\"vertical\":\"top\",\"color\":\"#FFFFFF\",\"brColor\":\"#4E4B4B\",\"wordColor\":\"#FFFFFF\",\"innerBgColor\":\"#131E42\"},\"tabStyle\":{\"headPosition\":\"left\",\"headFontColor\":\"#FFFFFF\",\"headFontActiveColor\":\"#FFFFFF\",\"headBorderColor\":\"#131E42\",\"headBorderActiveColor\":\"#131E42\"}}}',
         0,
         '/static-resource/inner-subject-dark.png',
@@ -4114,3 +4115,34 @@ VALUES ('1689632657248415744',
         NULL,
         NULL,
         NULL);
+
+-- ----------------------------
+-- Table structure for core_store
+-- ----------------------------
+DROP TABLE IF EXISTS `core_store`;
+CREATE TABLE `core_store`
+(
+    `id`            bigint NOT NULL COMMENT 'ID',
+    `resource_id`   bigint NOT NULL COMMENT '资源ID',
+    `uid`           bigint NOT NULL COMMENT '用户ID',
+    `resource_type` int    NOT NULL COMMENT '资源类型',
+    `time`          bigint NOT NULL COMMENT '收藏时间',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- ----------------------------
+-- Table structure for xpack_share
+-- ----------------------------
+DROP TABLE IF EXISTS `xpack_share`;
+CREATE TABLE `xpack_share`
+(
+    `id`          bigint                                 NOT NULL COMMENT 'ID',
+    `creator`     bigint                                 NOT NULL COMMENT '创建人',
+    `time`        bigint                                 NOT NULL COMMENT '创建时间',
+    `exp`         bigint                                  DEFAULT NULL COMMENT '过期时间',
+    `uuid`        varchar(16) COLLATE utf8mb4_general_ci NOT NULL COMMENT 'uuid',
+    `pwd`         varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '密码',
+    `resource_id` bigint                                 NOT NULL COMMENT '资源ID',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+

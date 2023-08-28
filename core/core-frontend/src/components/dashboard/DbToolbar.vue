@@ -111,7 +111,7 @@ const previewInner = () => {
 
 const previewOuter = () => {
   canvasSave(() => {
-    const url = '#/preview/?dvId=' + dvInfo.value.id
+    const url = '#/preview?dvId=' + dvInfo.value.id
     window.open(url, '_blank')
   })
 }

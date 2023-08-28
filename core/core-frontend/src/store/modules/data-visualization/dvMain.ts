@@ -302,6 +302,16 @@ export const dvMainStore = defineStore('dataVisualization', {
       })
     },
 
+    deleteComponentById(componentId, componentData = this.componentData) {
+      let indexResult
+      componentData.forEach((component, index) => {
+        if (componentId === component.id) {
+          indexResult = index
+        }
+      })
+      this.deleteComponent(indexResult, componentData)
+    },
+
     deleteComponent(index?, componentData = this.componentData) {
       if (index === undefined) {
         index = this.curComponentIndex

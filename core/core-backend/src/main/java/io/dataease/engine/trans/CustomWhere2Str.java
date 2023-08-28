@@ -2,15 +2,15 @@ package io.dataease.engine.trans;
 
 import io.dataease.api.chart.dto.ChartCustomFilterItemDTO;
 import io.dataease.api.chart.dto.ChartFieldCustomFilterDTO;
-import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.api.dataset.union.model.SQLMeta;
 import io.dataease.api.dataset.union.model.SQLObj;
+import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.engine.constant.SQLConstants;
+import io.dataease.engine.func.scalar.ScalarFunctions;
 import io.dataease.engine.utils.Utils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -46,16 +46,18 @@ public class CustomWhere2Str {
                 }
                 if (field.getDeType() == 1) {
                     if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-//                        whereName = String.format(SQLConstants.STR_TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : SQLConstants.DEFAULT_DATE_FORMAT);
-                        whereName = String.format(SQLConstants.UNIX_TIMESTAMP, originName);
+                        // 此处获取标准格式的日期
+                        whereName = String.format(SQLConstants.STR_TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : SQLConstants.DEFAULT_DATE_FORMAT);
                     }
                     if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
-//                        String cast = String.format(SQLConstants.CAST, originName, SQLConstants.DEFAULT_INT_FORMAT);
-//                        whereName = String.format(SQLConstants.FROM_UNIXTIME, cast, SQLConstants.DEFAULT_DATE_FORMAT);
-                        whereName = originName;
+                        String cast = String.format(SQLConstants.CAST, originName, SQLConstants.DEFAULT_INT_FORMAT);
+                        // 此处获取标准格式的日期
+                        whereName = String.format(SQLConstants.FROM_UNIXTIME, cast, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : SQLConstants.DEFAULT_DATE_FORMAT);
                     }
                     if (field.getDeExtractType() == 1) {
-                        whereName = originName;
+                        // 此处获取标准格式的日期
+                        String f = ScalarFunctions.get_date_format(originName);
+                        whereName = String.format(SQLConstants.DATE_FORMAT, originName, f);
                     }
                 } else if (field.getDeType() == 2 || field.getDeType() == 3) {
                     if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
@@ -82,6 +84,13 @@ public class CustomWhere2Str {
                         String whereTerm = Utils.transFilterTerm(filterItemDTO.getTerm());
                         String whereValue = "";
 
+                        if (field.getDeType() == 1) {
+                            // 规定几种日期格式，一一匹配，匹配到就是该格式
+                            String f = ScalarFunctions.get_date_format(filterItemDTO.getValue());
+                            whereName = String.format(SQLConstants.DATE_FORMAT, whereName, f);
+                            whereName = String.format(SQLConstants.UNIX_TIMESTAMP, whereName);
+                        }
+
                         if (StringUtils.equalsIgnoreCase(filterItemDTO.getTerm(), "null")) {
                             whereValue = "";
                         } else if (StringUtils.equalsIgnoreCase(filterItemDTO.getTerm(), "not_null")) {
@@ -95,7 +104,7 @@ public class CustomWhere2Str {
                         } else if (StringUtils.containsIgnoreCase(filterItemDTO.getTerm(), "like")) {
                             whereValue = "'%" + value + "%'";
                         } else {
-                            if (Arrays.asList("le", "lt", "ge", "gt").contains(filterItemDTO.getTerm())) {
+                            if (field.getDeType() == 1) {
                                 value = Utils.allDateFormat2Long(value) + "";
                             }
                             whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE, value);

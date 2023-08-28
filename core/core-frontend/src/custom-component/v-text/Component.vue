@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { keycodes } from '@/utils/shortcutKey.js'
+import { keycodes } from '@/utils/DeShortcutKey.js'
 import eventBus from '@/utils/eventBus'
 import { nextTick, onBeforeUnmount, ref } from 'vue'
 import { toRefs } from 'vue'
@@ -48,7 +48,7 @@ const handleInput = e => {
 const handleKeydown = e => {
   // 阻止冒泡，防止触发复制、粘贴组件操作
   canEdit.value && e.stopPropagation()
-  if (e.keyCode == this.ctrlKey) {
+  if (e.keyCode == ctrlKey.value) {
     isCtrlDown.value = true
   } else if (isCtrlDown.value && canEdit.value && keycodes.includes(e.keyCode)) {
     e.stopPropagation()

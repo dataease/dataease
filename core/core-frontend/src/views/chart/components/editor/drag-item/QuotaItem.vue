@@ -436,7 +436,7 @@ getItemTagType()
           </el-dropdown-item>
 
           <!--同比/环比等快速计算-->
-          <el-dropdown-item v-if="chart.type !== 'table-info'">
+          <el-dropdown-item v-if="chart.type !== 'table-info' && props.type !== 'extBubble'">
             <el-dropdown
               placement="right-start"
               :effect="themes"
@@ -485,7 +485,9 @@ getItemTagType()
           </el-dropdown-item>
 
           <el-dropdown-item
-            v-if="props.type !== 'extLabel' && props.type !== 'extTooltip'"
+            v-if="
+              props.type !== 'extLabel' && props.type !== 'extTooltip' && props.type !== 'extBubble'
+            "
             :divided="chart.type !== 'table-info'"
           >
             <el-dropdown
@@ -529,7 +531,7 @@ getItemTagType()
           </el-dropdown-item>
 
           <el-dropdown-item
-            v-if="item.groupType === 'q'"
+            v-if="item.groupType === 'q' && props.type !== 'extBubble'"
             :icon="Memo"
             :divided="chart.type !== 'table-info'"
             :command="beforeClickItem('formatter')"
@@ -537,14 +539,21 @@ getItemTagType()
             <span>{{ t('chart.value_formatter') }}...</span>
           </el-dropdown-item>
           <el-dropdown-item
-            v-if="props.type !== 'extLabel' && props.type !== 'extTooltip'"
+            v-if="
+              props.type !== 'extLabel' && props.type !== 'extTooltip' && props.type !== 'extBubble'
+            "
             :icon="Filter"
             :command="beforeClickItem('filter')"
           >
             <span>{{ t('chart.filter') }}...</span>
           </el-dropdown-item>
 
-          <el-dropdown-item :icon="Edit" divided :command="beforeClickItem('rename')">
+          <el-dropdown-item
+            v-if="props.type !== 'extBubble'"
+            :icon="Edit"
+            divided
+            :command="beforeClickItem('rename')"
+          >
             <span>{{ t('chart.show_name_set') }}</span>
           </el-dropdown-item>
           <el-dropdown-item :icon="Delete" divided :command="beforeClickItem('remove')">

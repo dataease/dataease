@@ -104,7 +104,21 @@ const getDsName = (id: string) => {
 }
 
 const backToMain = () => {
-  push('/data/dataset')
+  if (!nodeInfo.id) {
+    ElMessageBox.confirm('数据集未保存,确认退出吗?', {
+      confirmButtonText: t('dataset.confirm'),
+      cancelButtonText: t('common.cancel'),
+      showCancelButton: true,
+      confirmButtonType: 'primary',
+      type: 'warning',
+      autofocus: false,
+      showClose: false
+    }).then(() => {
+      push('/data/dataset')
+    })
+  } else {
+    push('/data/dataset')
+  }
 }
 
 const closeCustomTime = () => {
@@ -199,7 +213,7 @@ const dqTrans = id => {
 }
 
 const copyField = item => {
-  const param = { ...item }
+  const param = cloneDeep(item)
   param.id = guid()
   param.extField = 2
   param.originName = item.extField === 2 ? item.originName : '[' + item.id + ']'
@@ -586,8 +600,8 @@ const dfsUnion = (arr, list) => {
     if (ele.childrenDs?.length) {
       dfsUnion(children, ele.childrenDs)
     }
-    const { unionToParent, currentDsFields, currentDs, sqlVariableDetails } = ele
-    const { tableName, type, datasourceId, id, info } = currentDs || {}
+    const { unionToParent, currentDsFields, currentDs } = ele
+    const { tableName, type, datasourceId, id, info, sqlVariableDetails } = currentDs || {}
     const { unionType, unionFields } = unionToParent || {}
     arr.push({
       sqlVariableDetails,
