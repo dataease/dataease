@@ -22,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
+import java.net.URLEncoder;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -117,7 +118,7 @@ public class ApiUtils {
     }
 
 
-    public static String execHttpRequest(ApiDefinition apiDefinition, int socketTimeout) throws DEException {
+    public static String execHttpRequest(ApiDefinition apiDefinition, int socketTimeout) {
         String response = "";
         HttpClientConfig httpClientConfig = new HttpClientConfig();
         httpClientConfig.setSocketTimeout(socketTimeout * 1000);
@@ -136,8 +137,19 @@ public class ApiUtils {
             httpClientConfig.addHeader("Authorization", authValue);
         }
 
+        List<String>  params = new ArrayList<>();
+        for (Map<String, String> argument : apiDefinition.getRequest().getArguments()) {
+            if(StringUtils.isNotEmpty(argument.get("name")) && StringUtils.isNotEmpty(argument.get("value"))){
+                params.add(argument.get("name") + "=" + URLEncoder.encode(argument.get("value")));
+            }
+        }
+        if(org.apache.commons.collections4.CollectionUtils.isNotEmpty(params)){
+            apiDefinition.setUrl(apiDefinition.getUrl() + "?" + StringUtils.join(params, "&"));
+        }
+
         switch (apiDefinition.getMethod()) {
             case "GET":
+
                 response = HttpClientUtil.get(apiDefinition.getUrl().trim(), httpClientConfig);
                 break;
             case "POST":
@@ -155,15 +167,18 @@ public class ApiUtils {
                 if (StringUtils.equalsAny(type, "Form_Data", "WWW_FORM")) {
                     if (apiDefinitionRequest.getBody().get("kvs") != null) {
                         Map<String, String> body = new HashMap<>();
-                        JsonNode rootNode = null;
+                        TypeReference<List<JsonNode>> listTypeReference = new TypeReference<List<JsonNode>>() {
+                        };
+                        List<JsonNode> rootNode = null;
                         try {
-                            rootNode = objectMapper.readTree(apiDefinitionRequest.getBody().get("kvs").toString());
+                            rootNode = objectMapper.readValue(JsonUtil.toJSONString(apiDefinition.getRequest().getBody().get("kvs")).toString(), listTypeReference);
                         } catch (Exception e) {
+                            e.printStackTrace();
                             DEException.throwException(e);
                         }
                         for (JsonNode jsonNode : rootNode) {
                             if (jsonNode.has("name")) {
-                                body.put(jsonNode.get("name").asText(), jsonNode.get("value").toString());
+                                body.put(jsonNode.get("name").asText(), jsonNode.get("value").asText());
                             }
                         }
                         response = HttpClientUtil.post(apiDefinition.getUrl(), body, httpClientConfig);

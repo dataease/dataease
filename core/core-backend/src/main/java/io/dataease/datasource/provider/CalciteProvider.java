@@ -45,8 +45,6 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 import java.util.stream.Collectors;
 
-import static io.dataease.api.ds.vo.DatasourceConfiguration.DatasourceType.pg;
-
 
 @Component("calciteProvider")
 public class CalciteProvider {
@@ -199,9 +197,14 @@ public class CalciteProvider {
     }
 
 
-    public Connection initConnection(Map<Long, DatasourceSchemaDTO> dsMap) throws Exception {
+    public Connection initConnection(Map<Long, DatasourceSchemaDTO> dsMap) {
         Connection connection = getCalciteConnection();
-        CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
+        CalciteConnection calciteConnection = null;
+        try {
+            calciteConnection = connection.unwrap(CalciteConnection.class);
+        } catch (Exception e) {
+            DEException.throwException(e);
+        }
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDsList(dsMap);
         SchemaPlus rootSchema = buildSchema(datasourceRequest, calciteConnection);
@@ -230,15 +233,20 @@ public class CalciteProvider {
         }
     }
 
-    private Connection getCalciteConnection() throws Exception {
+    private Connection getCalciteConnection() {
         registerDriver();
         Properties info = new Properties();
         info.setProperty("lex", "JAVA");
         info.setProperty("caseSensitive", "false");
         info.setProperty("remarks", "true");
         info.setProperty("parserFactory", "org.apache.calcite.sql.parser.impl.SqlParserImpl#FACTORY");
-        Class.forName("org.apache.calcite.jdbc.Driver");
-        Connection connection = DriverManager.getConnection("jdbc:calcite:", info);
+        Connection connection = null;
+        try {
+            Class.forName("org.apache.calcite.jdbc.Driver");
+            connection = DriverManager.getConnection("jdbc:calcite:", info);
+        } catch (Exception e) {
+            DEException.throwException(e);
+        }
         return connection;
     }
 
@@ -362,33 +370,37 @@ public class CalciteProvider {
         return rootSchema;
     }
 
-    private List<String[]> getDataResult(ResultSet rs) throws Exception {
+    private List<String[]> getDataResult(ResultSet rs) {
         List<String[]> list = new LinkedList<>();
-        ResultSetMetaData metaData = rs.getMetaData();
-        int columnCount = metaData.getColumnCount();
-        while (rs.next()) {
-            String[] row = new String[columnCount];
-            for (int j = 0; j < columnCount; j++) {
-                int columnType = metaData.getColumnType(j + 1);
-                switch (columnType) {
-                    case Types.DATE:
-                        if (rs.getDate(j + 1) != null) {
-                            row[j] = rs.getDate(j + 1).toString();
-                        }
-                        break;
-                    case Types.BOOLEAN:
-                        row[j] = rs.getBoolean(j + 1) ? "1" : "0";
-                        break;
-                    default:
-                        if (metaData.getColumnTypeName(j + 1).toLowerCase().equalsIgnoreCase("blob")) {
-                            row[j] = rs.getBlob(j + 1) == null ? "" : rs.getBlob(j + 1).toString();
-                        } else {
-                            row[j] = rs.getString(j + 1);
-                        }
-                        break;
+        try {
+            ResultSetMetaData metaData = rs.getMetaData();
+            int columnCount = metaData.getColumnCount();
+            while (rs.next()) {
+                String[] row = new String[columnCount];
+                for (int j = 0; j < columnCount; j++) {
+                    int columnType = metaData.getColumnType(j + 1);
+                    switch (columnType) {
+                        case Types.DATE:
+                            if (rs.getDate(j + 1) != null) {
+                                row[j] = rs.getDate(j + 1).toString();
+                            }
+                            break;
+                        case Types.BOOLEAN:
+                            row[j] = rs.getBoolean(j + 1) ? "1" : "0";
+                            break;
+                        default:
+                            if (metaData.getColumnTypeName(j + 1).toLowerCase().equalsIgnoreCase("blob")) {
+                                row[j] = rs.getBlob(j + 1) == null ? "" : rs.getBlob(j + 1).toString();
+                            } else {
+                                row[j] = rs.getString(j + 1);
+                            }
+                            break;
+                    }
                 }
+                list.add(row);
             }
-            list.add(row);
+        } catch (Exception e) {
+            DEException.throwException(e);
         }
         return list;
     }
@@ -533,14 +545,16 @@ public class CalciteProvider {
         return conn;
     }
 
-    public Statement getStatement(Connection connection, int queryTimeout) throws Exception {
+    public Statement getStatement(Connection connection, int queryTimeout) {
         if (connection == null) {
-            throw new Exception("Failed to get connection!");
+            DEException.throwException("Failed to get connection!");
         }
-        Statement stat = connection.createStatement();
+        Statement stat = null;
         try {
+            stat = connection.createStatement();
             stat.setQueryTimeout(queryTimeout);
         } catch (Exception e) {
+            DEException.throwException(e);
         }
         return stat;
     }
@@ -549,9 +563,9 @@ public class CalciteProvider {
         return StringUtils.isEmpty(customDriver) || customDriver.equalsIgnoreCase("default");
     }
 
-    protected ExtendedJdbcClassLoader getCustomJdbcClassLoader(CoreDriver coreDriver) throws Exception {
+    protected ExtendedJdbcClassLoader getCustomJdbcClassLoader(CoreDriver coreDriver) {
         if (coreDriver == null) {
-            throw new Exception("Can not found custom Driver");
+            DEException.throwException("Can not found custom Driver");
         }
         ExtendedJdbcClassLoader customJdbcClassLoader = customJdbcClassLoaders.get(coreDriver.getId());
         if (customJdbcClassLoader == null) {
@@ -566,7 +580,7 @@ public class CalciteProvider {
         }
     }
 
-    private synchronized ExtendedJdbcClassLoader addCustomJdbcClassLoader(CoreDriver coreDriver) throws Exception {
+    private synchronized ExtendedJdbcClassLoader addCustomJdbcClassLoader(CoreDriver coreDriver) {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         while (classLoader.getParent() != null) {
             classLoader = classLoader.getParent();
@@ -574,24 +588,28 @@ public class CalciteProvider {
                 break;
             }
         }
-        ExtendedJdbcClassLoader customJdbcClassLoader = new ExtendedJdbcClassLoader(new URL[]{new File(CUSTOM_PATH + coreDriver.getId()).toURI().toURL()}, classLoader);
-        customJdbcClassLoader.setDriver(coreDriver.getDriverClass());
-        File file = new File(CUSTOM_PATH + coreDriver.getId());
-        File[] array = file.listFiles();
-        Optional.ofNullable(array).ifPresent(files -> {
-            for (File tmp : array) {
-                if (tmp.getName().endsWith(".jar")) {
-                    try {
-                        customJdbcClassLoader.addFile(tmp);
-                    } catch (IOException e) {
-                        e.printStackTrace();
+        try {
+            ExtendedJdbcClassLoader customJdbcClassLoader = new ExtendedJdbcClassLoader(new URL[]{new File(CUSTOM_PATH + coreDriver.getId()).toURI().toURL()}, classLoader);
+            customJdbcClassLoader.setDriver(coreDriver.getDriverClass());
+            File file = new File(CUSTOM_PATH + coreDriver.getId());
+            File[] array = file.listFiles();
+            Optional.ofNullable(array).ifPresent(files -> {
+                for (File tmp : array) {
+                    if (tmp.getName().endsWith(".jar")) {
+                        try {
+                            customJdbcClassLoader.addFile(tmp);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
-            }
-        });
-
-        customJdbcClassLoaders.put(coreDriver.getId(), customJdbcClassLoader);
-        return customJdbcClassLoader;
+            });
+            customJdbcClassLoaders.put(coreDriver.getId(), customJdbcClassLoader);
+            return customJdbcClassLoader;
+        } catch (Exception e) {
+            DEException.throwException(e);
+        }
+        return null;
     }
 
 

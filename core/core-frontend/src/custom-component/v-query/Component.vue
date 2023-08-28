@@ -285,9 +285,6 @@ const listVisible = computed(() => {
 
 const queryData = () => {
   const emitterList = (element.value.propValue || []).reduce((pre, next) => {
-    if (!next.selectValue) {
-      return pre
-    }
     const keyList = Object.entries(next.checkedFieldsMap)
       .filter(ele => next.checkedFields.includes(ele[0]))
       .filter(ele => !!ele[1])
