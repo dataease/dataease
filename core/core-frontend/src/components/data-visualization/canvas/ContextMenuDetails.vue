@@ -19,7 +19,6 @@ const composeStore = composeStoreWithOut()
 
 const { areaData } = storeToRefs(composeStore)
 const { curComponent } = storeToRefs(dvMainStore)
-const copyData = ref(null)
 const lock = () => {
   lockStore.lock()
 }
@@ -95,23 +94,22 @@ const handleComposeMouseDown = e => {
 }
 
 const composeDivider = computed(() => {
-  return (
-    areaData.value.components.length ||
-    !(!curComponent || curComponent['isLock'] || curComponent['component'] != 'Group')
-  )
+  return !(!curComponent || curComponent['isLock'] || curComponent['component'] != 'Group')
 })
 </script>
 
 <template>
   <div class="context-menu-details" @mousedown="handleComposeMouseDown">
     <ul @mouseup="handleMouseUp">
-      <li
-        v-show="areaData.components.length"
-        @mousedown="handleComposeMouseDown"
-        @click="componentCompose"
-      >
-        组合
-      </li>
+      <template v-if="areaData.components.length">
+        <li @mousedown="handleComposeMouseDown" @click="componentCompose">组合</li>
+        <el-divider class="custom-divider" />
+        <li @click="copy">复制</li>
+        <li @click="paste">粘贴</li>
+        <li @click="cut">剪切</li>
+        <el-divider class="custom-divider" />
+        <li @click="deleteComponent">删除</li>
+      </template>
       <li
         v-show="!(!curComponent || curComponent['isLock'] || curComponent['component'] != 'Group')"
         @click="decompose()"
@@ -138,7 +136,7 @@ const composeDivider = computed(() => {
         </template>
         <li v-else @click="unlock">解锁</li>
       </template>
-      <li v-else @click="paste">粘贴</li>
+      <li v-else-if="!curComponent && !areaData.components.length" @click="paste">粘贴</li>
     </ul>
   </div>
 </template>

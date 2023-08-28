@@ -33,6 +33,7 @@ const ctrlKey = 17,
   pKey = 80, // 预览
   dKey = 68, // 删除
   deleteKey = 46, // 删除
+  macDeleteKey = 8, // 删除
   eKey = 69 // 清空画布
 
 export const keycodes = [66, 67, 68, 69, 71, 76, 80, 83, 85, 86, 88, 89, 90]
@@ -84,9 +85,8 @@ export function listenGlobalKeyDown() {
       e.preventDefault()
     } else if (keyCode === ctrlKey || keyCode === commandKey) {
       isCtrlOrCommandDown = true
-    } else if (keyCode == deleteKey && curComponent.value) {
-      dvMainStore.deleteComponent()
-      snapshotStore.recordSnapshot('listenGlobalKeyDown')
+    } else if ((keyCode == deleteKey || keyCode == macDeleteKey) && curComponent.value) {
+      deleteComponent()
     } else if (isCtrlOrCommandDown) {
       if (unlockMap[keyCode] && (!curComponent.value || !curComponent.value.isLock)) {
         e.preventDefault()
@@ -171,8 +171,13 @@ function preview() {
 function deleteComponent() {
   if (curComponent.value) {
     dvMainStore.deleteComponent()
-    snapshotStore.recordSnapshot('key-deleteComponent')
+  } else if (areaData.value.components.length) {
+    areaData.value.components.forEach(component => {
+      dvMainStore.deleteComponentById(component.id)
+    })
+    eventBus.emit('hideArea-canvas-main')
   }
+  snapshotStore.recordSnapshot('listenGlobalKeyDown')
 }
 
 function clearCanvas() {

@@ -8,6 +8,7 @@ import { layerStoreWithOut } from '@/store/modules/data-visualization/layer'
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import { storeToRefs } from 'pinia'
 import { computed, ref, toRefs } from 'vue'
+import eventBus from '@/utils/eventBus'
 const dvMainStore = dvMainStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
 const copyStore = copyStoreWithOut()
@@ -60,7 +61,14 @@ const paste = () => {
 }
 
 const deleteComponent = () => {
-  dvMainStore.deleteComponent()
+  if (curComponent.value) {
+    dvMainStore.deleteComponent()
+  } else if (areaData.value.components.length) {
+    areaData.value.components.forEach(component => {
+      dvMainStore.deleteComponentById(component.id)
+    })
+  }
+  eventBus.emit('hideArea-canvas-main')
   snapshotStore.recordSnapshot('deleteComponent')
 }
 
