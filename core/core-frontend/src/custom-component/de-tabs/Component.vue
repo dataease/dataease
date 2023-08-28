@@ -105,6 +105,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
 const dvMainStore = dvMainStoreWithOut()
 const {
+  curComponent,
   componentData,
   canvasStyleData,
   canvasViewInfo,
@@ -246,18 +247,10 @@ const componentMoveIn = component => {
 }
 
 const componentMoveOut = component => {
-  console.log('componentMoveOut-' + JSON.stringify(component))
-  //获tab画布当前组件的index
-  let curIndex = 0
-  element.value.propValue.forEach((tabItem, index) => {
-    if (editableTabsValue.value === tabItem.name) {
-      //获取当前画布组件的index
-      curIndex = findComponentIndexById(component.id, tabItem.componentData)
-    }
-  })
   canvasChangeAdaptor(component, bashMatrixInfo.value, true)
   // 从Tab画布中移除
-  eventBus.emit('removeMatrixItem-' + component.canvasId, curIndex)
+  eventBus.emit('removeMatrixItemById-' + component.canvasId, component.id)
+  dvMainStore.setCurComponent({ component: null, index: null })
   // 主画布中添加
   eventBus.emit('moveOutFromTab-canvas-main', component)
 }
@@ -338,6 +331,10 @@ const titleValid = computed(() => {
   return !!state.textarea && !!state.textarea.trim()
 })
 
+const isCurrentEdit = computed(() => {
+  return isEdit.value && curComponent.value && curComponent.value.id === element.value.id
+})
+
 onMounted(() => {
   if (element.value.propValue.length > 0) {
     editableTabsValue.value = element.value.propValue[0].name
@@ -349,6 +346,9 @@ onMounted(() => {
 <style lang="less" scoped>
 :deep(.ed-tabs__content) {
   height: calc(100% - 46px) !important;
+}
+:deep(.ed-tabs__new-tab) {
+  margin-right: 25px;
 }
 .el-tab-pane-custom {
   height: 100%;

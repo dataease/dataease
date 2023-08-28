@@ -51,7 +51,7 @@
 import eventBus from '@/utils/eventBus'
 import calculateComponentPositionAndSize from '@/utils/calculateComponentPositionAndSize'
 import { mod360 } from '@/utils/translate'
-import { isPreventDrop } from '@/utils/utils'
+import { deepCopy, isPreventDrop } from '@/utils/utils'
 import { computed, nextTick, onMounted, ref, toRefs, reactive, onBeforeMount } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
@@ -404,7 +404,7 @@ const handleMouseDownOnShape = e => {
 
     //如果当前存在移出的Tab 则将该组件加入到主画布中 同时将该组件在tab画布中进行删除
     if (tabMoveOutComponentId.value) {
-      eventBus.emit('onTabMoveOut-' + tabMoveOutComponentId.value, element.value)
+      eventBus.emit('onTabMoveOut-' + tabMoveOutComponentId.value, deepCopy(element.value))
       dvMainStore.setTabMoveOutComponentId(null)
     }
   }

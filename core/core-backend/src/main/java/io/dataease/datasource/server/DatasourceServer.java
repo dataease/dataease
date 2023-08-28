@@ -169,6 +169,7 @@ public class DatasourceServer implements DatasourceApi {
             if (StringUtils.equalsIgnoreCase(coreDatasourceTask.getSyncRate(), DatasourceTaskServer.ScheduleType.RIGHTNOW.toString())) {
                 coreDatasourceTask.setCron(null);
             }
+            coreDatasourceTask.setStatus(TaskStatus.WaitingForExecution.name());
             datasourceTaskServer.insert(coreDatasourceTask);
             datasourceSyncManage.addSchedule(coreDatasourceTask);
             DatasourceRequest datasourceRequest = new DatasourceRequest();
@@ -180,7 +181,7 @@ public class DatasourceServer implements DatasourceApi {
                 try {
                     datasourceSyncManage.createEngineTable(datasourceRequest.getTable(), tableFields);
                 }catch (Exception e){
-                    DEException.throwException("Failed to create table " + datasourceRequest.getTable());
+                    DEException.throwException("Failed to create table " + datasourceRequest.getTable()+ ": " + e.getMessage());
                 }
             }
         }else {
