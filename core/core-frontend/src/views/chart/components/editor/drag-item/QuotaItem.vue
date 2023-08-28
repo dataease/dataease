@@ -287,7 +287,7 @@ getItemTagType()
             <Icon
               :className="`field-icon-${fieldType[item.deType]}`"
               :name="`field_${fieldType[item.deType]}`"
-            ></Icon>
+            />
           </el-icon>
         </span>
         <span class="item-span-style" :title="item.name">
@@ -317,34 +317,35 @@ getItemTagType()
             name="icon_delete-trash_outlined"
             class="el-icon-arrow-down el-icon-delete"
             @click="removeItem"
-          ></Icon>
+          />
         </el-icon>
         <el-icon
           class="child"
           style="position: absolute; top: 7px; right: 8px; color: #a6a6a6; cursor: pointer"
         >
-          <Icon name="icon_down_outlined-1" class="el-icon-arrow-down el-icon-delete"></Icon>
+          <Icon name="icon_down_outlined-1" class="el-icon-arrow-down el-icon-delete" />
         </el-icon>
       </el-tag>
       <template #dropdown>
         <el-dropdown-menu :effect="themes" class="drop-style">
           <el-dropdown-item
+            @click.prevent
             v-if="!item.chartId && chart.type !== 'table-info' && item.summary !== ''"
             :divided="chart.type === 'chart-mix'"
           >
             <el-dropdown
               :effect="themes"
               placement="right-start"
-              style="width: 100%"
+              style="width: 100%; height: 100%"
               @command="summary"
             >
-              <span class="el-dropdown-link inner-dropdown-menu">
+              <span class="el-dropdown-link inner-dropdown-menu menu-item-padding">
                 <span class="item-span-drop">
                   <el-icon>
                     <Icon
                       name="icon_gridlines_outlined"
                       class="el-icon-arrow-down el-icon-delete"
-                    ></Icon>
+                    />
                   </el-icon>
                   <span>{{ t('chart.summary') }}</span>
                   <span class="summary-span-item">({{ t('chart.' + item.summary) }})</span>
@@ -356,6 +357,7 @@ getItemTagType()
               <template #dropdown>
                 <el-dropdown-menu :effect="themes" class="drop-style">
                   <el-dropdown-item
+                    class="menu-item-padding"
                     v-if="
                       item.id !== '-1' &&
                       item.deType !== 0 &&
@@ -367,6 +369,7 @@ getItemTagType()
                     {{ t('chart.sum') }}
                   </el-dropdown-item>
                   <el-dropdown-item
+                    class="menu-item-padding"
                     v-if="
                       item.id !== '-1' &&
                       item.deType !== 0 &&
@@ -378,6 +381,7 @@ getItemTagType()
                     {{ t('chart.avg') }}
                   </el-dropdown-item>
                   <el-dropdown-item
+                    class="menu-item-padding"
                     v-if="
                       item.id !== '-1' &&
                       item.deType !== 0 &&
@@ -389,6 +393,7 @@ getItemTagType()
                     {{ t('chart.max') }}
                   </el-dropdown-item>
                   <el-dropdown-item
+                    class="menu-item-padding"
                     v-if="
                       item.id !== '-1' &&
                       item.deType !== 0 &&
@@ -400,6 +405,7 @@ getItemTagType()
                     {{ t('chart.min') }}
                   </el-dropdown-item>
                   <el-dropdown-item
+                    class="menu-item-padding"
                     v-if="
                       item.id !== '-1' &&
                       item.deType !== 0 &&
@@ -411,6 +417,7 @@ getItemTagType()
                     {{ t('chart.stddev_pop') }}
                   </el-dropdown-item>
                   <el-dropdown-item
+                    class="menu-item-padding"
                     v-if="
                       item.id !== '-1' &&
                       item.deType !== 0 &&
@@ -421,10 +428,11 @@ getItemTagType()
                   >
                     {{ t('chart.var_pop') }}
                   </el-dropdown-item>
-                  <el-dropdown-item :command="beforeSummary('count')">
+                  <el-dropdown-item class="menu-item-padding" :command="beforeSummary('count')">
                     {{ t('chart.count') }}
                   </el-dropdown-item>
                   <el-dropdown-item
+                    class="menu-item-padding"
                     v-if="item.id !== '-1'"
                     :command="beforeSummary('count_distinct')"
                   >
@@ -436,20 +444,20 @@ getItemTagType()
           </el-dropdown-item>
 
           <!--同比/环比等快速计算-->
-          <el-dropdown-item v-if="chart.type !== 'table-info' && props.type !== 'extBubble'">
+          <el-dropdown-item
+            @click.prevent
+            v-if="chart.type !== 'table-info' && props.type !== 'extBubble'"
+          >
             <el-dropdown
               placement="right-start"
               :effect="themes"
-              style="width: 100%"
+              style="width: 100%; height: 100%"
               @command="quickCalc"
             >
-              <span class="el-dropdown-link inner-dropdown-menu">
+              <span class="el-dropdown-link inner-dropdown-menu menu-item-padding">
                 <span class="item-span-drop">
                   <el-icon>
-                    <Icon
-                      name="icon_describe_outlined"
-                      class="el-icon-arrow-down el-icon-delete"
-                    ></Icon>
+                    <Icon name="icon_describe_outlined" class="el-icon-arrow-down el-icon-delete" />
                   </el-icon>
                   <span>{{ t('chart.quick_calc') }}</span>
                   <span class="summary-span-item">
@@ -459,21 +467,23 @@ getItemTagType()
                   </span>
                 </span>
                 <el-icon>
-                  <Icon name="icon_right_outlined" class="el-icon-arrow-down el-icon-delete"></Icon>
+                  <Icon name="icon_right_outlined" class="el-icon-arrow-down el-icon-delete" />
                 </el-icon>
               </span>
               <template #dropdown>
                 <el-dropdown-menu :effect="themes" class="drop-style">
-                  <el-dropdown-item :command="beforeQuickCalc('none')">
+                  <el-dropdown-item class="menu-item-padding" :command="beforeQuickCalc('none')">
                     {{ t('chart.none') }}
                   </el-dropdown-item>
                   <el-dropdown-item
+                    class="menu-item-padding"
                     :disabled="state.disableEditCompare"
                     :command="beforeQuickCalc('setting')"
                   >
                     {{ t('chart.yoy_label') }}...
                   </el-dropdown-item>
                   <el-dropdown-item
+                    class="menu-item-padding"
                     :disabled="state.quotaViews.indexOf(chart.type) > -1"
                     :command="beforeQuickCalc('percent')"
                   >
@@ -485,6 +495,7 @@ getItemTagType()
           </el-dropdown-item>
 
           <el-dropdown-item
+            @click.prevent
             v-if="
               props.type !== 'extLabel' && props.type !== 'extTooltip' && props.type !== 'extBubble'
             "
@@ -493,33 +504,34 @@ getItemTagType()
             <el-dropdown
               :effect="themes"
               placement="right-start"
-              style="width: 100%"
+              style="width: 100%; height: 100%"
               @command="sort"
             >
-              <span class="el-dropdown-link inner-dropdown-menu">
+              <span class="el-dropdown-link inner-dropdown-menu menu-item-padding">
                 <span class="item-span-drop">
                   <el-icon>
-                    <Icon name="icon_add_outlined" class="el-icon-arrow-down el-icon-delete"></Icon>
+                    <Icon name="icon_add_outlined" class="el-icon-arrow-down el-icon-delete" />
                   </el-icon>
                   <span>{{ t('chart.sort') }}</span>
                   <span class="summary-span-item">({{ t('chart.' + props.item.sort) }})</span>
                 </span>
                 <el-icon>
-                  <Icon name="icon_right_outlined" class="el-icon-arrow-down el-icon-delete"></Icon>
+                  <Icon name="icon_right_outlined" class="el-icon-arrow-down el-icon-delete" />
                 </el-icon>
               </span>
               <template #dropdown>
                 <el-dropdown-menu :effect="themes" class="drop-style">
-                  <el-dropdown-item :command="beforeSort('none')">
+                  <el-dropdown-item class="menu-item-padding" :command="beforeSort('none')">
                     {{ t('chart.none') }}
                   </el-dropdown-item>
-                  <el-dropdown-item :command="beforeSort('asc')">
+                  <el-dropdown-item class="menu-item-padding" :command="beforeSort('asc')">
                     {{ t('chart.asc') }}
                   </el-dropdown-item>
-                  <el-dropdown-item :command="beforeSort('desc')">
+                  <el-dropdown-item class="menu-item-padding" :command="beforeSort('desc')">
                     {{ t('chart.desc') }}
                   </el-dropdown-item>
                   <el-dropdown-item
+                    class="menu-item-padding"
                     v-if="!item.chartId && (item.deType === 0 || item.deType === 5)"
                     :command="beforeSort('custom_sort')"
                   >
@@ -531,6 +543,7 @@ getItemTagType()
           </el-dropdown-item>
 
           <el-dropdown-item
+            class="menu-item-padding"
             v-if="item.groupType === 'q' && props.type !== 'extBubble'"
             :icon="Memo"
             :divided="chart.type !== 'table-info'"
@@ -539,6 +552,7 @@ getItemTagType()
             <span>{{ t('chart.value_formatter') }}...</span>
           </el-dropdown-item>
           <el-dropdown-item
+            class="menu-item-padding"
             v-if="
               props.type !== 'extLabel' && props.type !== 'extTooltip' && props.type !== 'extBubble'
             "
@@ -549,6 +563,7 @@ getItemTagType()
           </el-dropdown-item>
 
           <el-dropdown-item
+            class="menu-item-padding"
             v-if="props.type !== 'extBubble'"
             :icon="Edit"
             divided
@@ -556,7 +571,12 @@ getItemTagType()
           >
             <span>{{ t('chart.show_name_set') }}</span>
           </el-dropdown-item>
-          <el-dropdown-item :icon="Delete" divided :command="beforeClickItem('remove')">
+          <el-dropdown-item
+            class="menu-item-padding"
+            :icon="Delete"
+            divided
+            :command="beforeClickItem('remove')"
+          >
             <span>{{ t('chart.delete') }}</span>
           </el-dropdown-item>
         </el-dropdown-menu>
@@ -566,6 +586,18 @@ getItemTagType()
 </template>
 
 <style lang="less" scoped>
+:deep(.ed-dropdown-menu__item) {
+  padding: 0;
+}
+
+:deep(.ed-dropdown-menu__item.menu-item-padding) {
+  padding: 5px 16px;
+}
+
+.menu-item-padding {
+  padding: 5px 16px;
+}
+
 .item-style {
   position: relative;
   width: 100%;
