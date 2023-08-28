@@ -95,7 +95,7 @@ getItemTagColor()
 
 <template>
   <span class="item-style">
-    <el-dropdown effect="dark" trigger="click" @command="clickItem">
+    <el-dropdown :effect="themes" trigger="click" @command="clickItem">
       <el-tag
         class="item-axis father"
         :class="'editor-' + props.themes"
@@ -128,7 +128,7 @@ getItemTagColor()
         </el-icon>
       </el-tag>
       <template #dropdown>
-        <el-dropdown-menu effect="dark" class="drop-style">
+        <el-dropdown-menu :effect="themes" class="drop-style">
           <el-dropdown-item :icon="Filter" :command="beforeClickItem('filter')">
             <span>{{ $t('chart.filter') }}...</span>
           </el-dropdown-item>

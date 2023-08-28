@@ -26,4 +26,6 @@ public class DatasetGroupInfoDTO extends DatasetNodeDTO {
     private Long total;
 
     private String creator;
+
+    private String updater;
 }

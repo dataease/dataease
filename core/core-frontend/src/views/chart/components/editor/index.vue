@@ -131,14 +131,10 @@ watch(
 watch(
   [() => view.value['tableId']],
   () => {
-    try {
-      const nodeId = view.value['tableId']
-      const node = datasetSelector?.value.getNode(nodeId)
-      if (node?.data) {
-        curDatasetWeight.value = node.data.weight
-      }
-    } catch (e) {
-      console.log('watch error')
+    const nodeId = view.value['tableId']
+    const node = datasetSelector?.value.getNode(nodeId)
+    if (node?.data) {
+      curDatasetWeight.value = node.data.weight
     }
   },
   { deep: true }
@@ -831,6 +827,7 @@ const handleChartFieldEdit = (item, type) => {
 const setFieldDefaultValue = field => {
   field.extField = 2
   field.chartId = view.value.id
+  field.datasetGroupId = view.value.tableId
   field.dataeaseName = null
   field.lastSyncTime = null
   field.columnIndex = state.dimension.length + state.quota.length
@@ -1446,12 +1443,12 @@ const autoInsert = element => {
               node-key="id"
               v-model="view.tableId"
               :data="datasetTree"
+              :teleported="false"
               :props="dsSelectProps"
               :render-after-expand="false"
               filterable
               @node-click="dsClick"
               class="dataset-selector"
-              :persistent="false"
             >
               <template #default="{ node, data }">
                 <el-icon v-if="!data.leaf">

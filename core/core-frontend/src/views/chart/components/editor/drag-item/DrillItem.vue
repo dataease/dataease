@@ -78,7 +78,7 @@ getItemTagType()
 
 <template>
   <span class="item-style">
-    <el-dropdown effect="dark" trigger="click" size="mini" @command="clickItem">
+    <el-dropdown :effect="themes" trigger="click" size="mini" @command="clickItem">
       <el-tag
         class="item-axis father"
         :class="'editor-' + props.themes"
@@ -111,7 +111,7 @@ getItemTagType()
         </el-icon>
       </el-tag>
       <template #dropdown>
-        <el-dropdown-menu effect="dark" class="drop-style">
+        <el-dropdown-menu :effect="themes" class="drop-style">
           <el-dropdown-item :icon="Delete" :command="beforeClickItem('remove')">
             <span>{{ t('chart.delete') }}</span>
           </el-dropdown-item>

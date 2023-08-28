@@ -21,7 +21,7 @@ public class ScalarFunctions {
             if (StringUtils.isEmpty(date)) {
                 return null;
             }
-            Utils.parseTime(date, format, timeOnly);
+            date = Utils.parseTime(date, format, timeOnly);
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
             Date parse = simpleDateFormat.parse(date);
             return simpleDateFormat.format(parse);
@@ -35,7 +35,7 @@ public class ScalarFunctions {
             if (StringUtils.isEmpty(date)) {
                 return null;
             }
-            Utils.parseTime(date, format, timeOnly);
+            date = Utils.parseTime(date, format, timeOnly);
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
             Date parse = simpleDateFormat.parse(date);
             return simpleDateFormat.format(parse);
@@ -49,7 +49,7 @@ public class ScalarFunctions {
             if (StringUtils.isEmpty(date)) {
                 return null;
             }
-            Utils.parseTime(date, format, timeOnly);
+            date = Utils.parseTime(date, format, timeOnly);
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(sourceFormat);
             Date parse = simpleDateFormat.parse(date);
 

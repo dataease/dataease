@@ -12,7 +12,7 @@ public class DataSetBarVO implements Serializable {
     @Serial
     private static final long serialVersionUID = 7791029875759340927L;
 
-    @JsonSerialize(using= ToStringSerializer.class)
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     private String name;
@@ -24,4 +24,10 @@ public class DataSetBarVO implements Serializable {
     private Long createTime;
 
     private String creator;
+
+    private Long lastUpdateTime;
+
+    private String updateBy;
+
+    private String updater;
 }
