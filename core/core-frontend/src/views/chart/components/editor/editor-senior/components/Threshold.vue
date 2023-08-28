@@ -214,12 +214,16 @@ init()
 <template>
   <div style="width: 100%">
     <!--仪表盘-->
-    <el-col v-if="props.chart.type && props.chart.type === 'gauge'">
+    <el-col v-if="chart.type && chart.type === 'gauge'">
       <el-form ref="thresholdForm" :model="state.thresholdForm" label-width="80px">
-        <el-form-item :label="t('chart.threshold_range') + '(%)'" class="form-item">
+        <el-form-item
+          :label="t('chart.threshold_range') + '(%)'"
+          class="form-item"
+          label-width="auto"
+        >
           <span>0,</span>
           <el-input
-            :effect="props.themes"
+            :effect="themes"
             v-model="state.thresholdForm.gaugeThreshold"
             style="width: 100px; margin: 0 10px"
             :placeholder="t('chart.threshold_range')"
@@ -228,6 +232,14 @@ init()
             @change="gaugeThresholdChange"
           />
           <span>,100</span>
+          <el-tooltip effect="dark" placement="bottom">
+            <el-icon style="margin-left: 10px"><InfoFilled /></el-icon>
+            <template #content>
+              阈值设置，决定仪表盘区间颜色，为空则不开启阈值，范围(0-100)，逐级递增
+              <br />
+              例如：输入 30,70；表示：分为3段，分别为[0,30],(30,70],(70,100]
+            </template>
+          </el-tooltip>
         </el-form-item>
       </el-form>
     </el-col>
