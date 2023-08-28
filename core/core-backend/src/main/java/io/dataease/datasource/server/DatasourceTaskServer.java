@@ -102,7 +102,7 @@ public class DatasourceTaskServer {
         updateWrapper.ne("task_status", TaskStatus.UnderExecution.name());
         CoreDatasource coreDatasource = new CoreDatasource();
         coreDatasource.setTaskStatus(TaskStatus.UnderExecution.name());
-        Boolean existSyncTask = coreDatasourceMapper.update(coreDatasource, updateWrapper) != 0;
+        Boolean existSyncTask = coreDatasourceMapper.update(coreDatasource, updateWrapper) == 0;
         if (!existSyncTask) {
             UpdateWrapper<CoreDatasourceTask> updateTaskWrapper = new UpdateWrapper<>();
             updateWrapper.eq("id", taskId);

@@ -124,8 +124,7 @@ public class ScheduleManager {
 
             triggerBuilder.withIdentity(triggerKey);
 
-            triggerBuilder.startAt(date);
-
+            triggerBuilder.startAt(date).startNow();
             Trigger trigger = triggerBuilder.build();
 
             scheduler.scheduleJob(jobDetail, trigger);

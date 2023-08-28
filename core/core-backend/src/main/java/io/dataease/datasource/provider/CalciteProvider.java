@@ -435,6 +435,9 @@ public class CalciteProvider {
                 break;
             case pg:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Pg.class);
+                if (StringUtils.isEmpty(configuration.getSchema())) {
+                    DEException.throwException(Translator.get("i18n_schema_is_empty"));
+                }
                 tableSqls.add("SELECT tablename FROM  pg_tables WHERE  schemaname='SCHEMA' ;".replace("SCHEMA", configuration.getSchema()));
                 break;
             case redshift:
