@@ -69,7 +69,6 @@ public class DatasetTableFieldManage {
         if (ObjectUtils.isNotEmpty(fields)) {
             DEException.throwException(Translator.get("i18n_field_name_duplicated"));
         }
-        datasetTableFieldDTO.setDatasetGroupId(null);
         return save(datasetTableFieldDTO);
     }
 

@@ -191,6 +191,15 @@ const setRules = () => {
       }
     ]
   }
+  if (['oracle', 'sqlServer', 'pg', 'redshift', 'db2'].includes(form.value.type)) {
+    configRules['configuration.schema'] = [
+      {
+        required: true,
+        message: t('datasource.please_choose_schema'),
+        trigger: 'blur'
+      }
+    ]
+  }
   rule.value = { ...cloneDeep(configRules), ...cloneDeep(defaultRule) }
 }
 
@@ -350,7 +359,7 @@ const getDsSchema = () => {
 }
 
 const validatorSchema = () => {
-  configurationSchema.value = !form.value.configuration.schema
+  dsForm.value.validateField('configuration.schema')
 }
 
 defineExpose({
@@ -559,6 +568,7 @@ defineExpose({
           <el-form-item
             v-if="['oracle', 'sqlServer', 'pg', 'redshift', 'db2'].includes(form.type)"
             class="schema-label"
+            prop="configuration.schema"
           >
             <template v-slot:label>
               <span class="name">{{ t('datasource.schema') }}<i class="required" /></span>
@@ -579,9 +589,6 @@ defineExpose({
             >
               <el-option v-for="item in schemas" :key="item" :label="item" :value="item" />
             </el-select>
-            <div v-if="configurationSchema" class="ed-form-item__error">
-              {{ t('datasource.please_choose_schema') }}
-            </div>
           </el-form-item>
           <span
             v-if="!['es', 'api', 'mongo'].includes(form.type)"

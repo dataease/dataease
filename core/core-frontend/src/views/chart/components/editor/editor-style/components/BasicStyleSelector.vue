@@ -180,6 +180,7 @@ init()
                         width: '20px',
                         height: '20px',
                         display: 'inline-block',
+                        'border-radius': '3px',
                         backgroundColor: c
                       }"
                     />
@@ -425,10 +426,11 @@ init()
     <el-form-item :label="t('chart.shape')" class="form-item" v-show="showProperty('radarShape')">
       <el-radio-group
         v-model="state.basicStyleForm.radarShape"
+        size="small"
         @change="changeBasicStyle('radarShape')"
       >
-        <el-radio :effect="props.themes" label="polygon">{{ t('chart.polygon') }}</el-radio>
-        <el-radio :effect="props.themes" label="circle">{{ t('chart.circle') }}</el-radio>
+        <el-radio :effect="themes" label="polygon">{{ t('chart.polygon') }}</el-radio>
+        <el-radio :effect="themes" label="circle">{{ t('chart.circle') }}</el-radio>
       </el-radio-group>
     </el-form-item>
     <!--radar end-->
@@ -641,15 +643,21 @@ init()
   .ed-radio {
     margin: 0 2px 0 0 !important;
     border: 1px solid transparent;
+    border-radius: 5px;
   }
-}
 
-.ed-radio :deep(.ed-radio__label) {
-  padding-left: 0;
-}
+  .ed-radio.ed-radio--small {
+    height: 26px;
+  }
 
-.ed-radio.is-checked {
-  border: 1px solid #0a7be0;
+  .ed-radio :deep(.ed-radio__label) {
+    padding-left: 0;
+    height: 20px;
+  }
+
+  .ed-radio.is-checked {
+    border: 1px solid #0a7be0;
+  }
 }
 
 .custom-color-style {
