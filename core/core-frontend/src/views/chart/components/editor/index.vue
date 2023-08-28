@@ -827,6 +827,7 @@ const handleChartFieldEdit = (item, type) => {
 const setFieldDefaultValue = field => {
   field.extField = 2
   field.chartId = view.value.id
+  field.datasetGroupId = view.value.tableId
   field.dataeaseName = null
   field.lastSyncTime = null
   field.columnIndex = state.dimension.length + state.quota.length
