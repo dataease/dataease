@@ -78,6 +78,7 @@ const onBackgroundChange = val => {
             :title="label"
             style="display: flex; float: left; margin-top: 10px"
           >
+            la-{{ key }}
             <div class="attr-custom-icon-main">
               <el-icon :title="label" class="attr-custom-icon">
                 <Icon :name="'dv-style-' + key"></Icon>

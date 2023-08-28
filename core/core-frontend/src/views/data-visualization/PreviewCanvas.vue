@@ -6,7 +6,7 @@ import router from '@/router'
 import { initCanvasData } from '@/utils/canvasUtils'
 import { queryTargetVisualizationJumpInfo } from '@/api/visualization/linkJump'
 import { Base64 } from 'js-base64'
-
+import { useEmitt } from '@/hooks/web/useEmitt'
 const dvMainStore = dvMainStoreWithOut()
 const state = reactive({
   canvasDataPreview: null,
@@ -62,7 +62,14 @@ onMounted(() => {
   const { dvId, jumpInfoParam } = router.currentRoute.value.query
   if (dvId) {
     loadCanvasDataAsync(dvId, jumpInfoParam)
+    return
   }
+  useEmitt({
+    name: 'load-canvas-data',
+    callback: function (resourceId) {
+      loadCanvasDataAsync(resourceId, jumpInfoParam)
+    }
+  })
 })
 </script>
 
