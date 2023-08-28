@@ -103,19 +103,7 @@ const linkageActiveChange = () => {
   <el-row class="view-panel" :class="'senior-' + themes">
     <div class="attr-style">
       <el-row class="de-collapse-style">
-        <el-collapse
-          v-if="
-            props.chart.type?.includes('bar') ||
-            props.chart.type?.includes('line') ||
-            props.chart.type?.includes('area') ||
-            props.chart.type?.includes('table') ||
-            props.chart.type?.includes('text') ||
-            props.chart.type?.includes('label') ||
-            props.chart.type?.includes('gauge')
-          "
-          v-model="state.attrActiveNames"
-          class="style-collapse"
-        >
+        <el-collapse v-model="state.attrActiveNames" class="style-collapse">
           <collapse-switch-item
             :themes="themes"
             v-if="
@@ -228,9 +216,6 @@ const linkageActiveChange = () => {
             </el-button>
           </collapse-switch-item>
         </el-collapse>
-        <div v-else class="no-senior">
-          {{ t('chart.chart_no_senior') }}
-        </div>
       </el-row>
     </div>
     <!--跳转设置-->
