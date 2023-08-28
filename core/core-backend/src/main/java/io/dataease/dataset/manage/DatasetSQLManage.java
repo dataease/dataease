@@ -277,7 +277,7 @@ public class DatasetSQLManage {
             tableObj = SQLObj.builder().tableSchema(tableSchema).tableName(infoDTO.getTable()).tableAlias(tableAlias).build();
         } else if (StringUtils.equalsIgnoreCase(currentDs.getType(), DatasetTableTypeConstants.DATASET_TABLE_SQL)) {
             // parser sql params and replace default value
-            String sql = SqlparserUtils.handleVariableDefaultValue(new String(Base64.getDecoder().decode(infoDTO.getSql())), currentDs.getSqlVariableDetails(), true);
+            String sql = SqlparserUtils.handleVariableDefaultValue(new String(Base64.getDecoder().decode(infoDTO.getSql())), currentDs.getSqlVariableDetails(), false);
             // add table schema
             sql = SqlUtils.addSchema(sql, tableSchema);
             tableObj = SQLObj.builder().tableSchema("").tableName("(" + sql + ")").tableAlias(tableAlias).build();

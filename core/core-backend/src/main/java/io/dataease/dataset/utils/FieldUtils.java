@@ -31,6 +31,7 @@ public class FieldUtils {
             case "FLOAT":
             case "DOUBLE":
             case "DECIMAL":
+            case "REAL":
                 return 3;// 浮点
             case "BIT":
             case "TINYINT":

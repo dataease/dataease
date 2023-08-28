@@ -26,6 +26,6 @@ public abstract class EngineProvider extends CalciteProvider {
 
     public abstract String insertSql(String name, List<String[]> dataList, int page, int pageNumber);
 
-    public void exec(EngineRequest datasourceRequest) throws DEException {
+    public void exec(EngineRequest datasourceRequest) throws Exception {
     }
 }
