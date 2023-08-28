@@ -59,7 +59,7 @@ router.beforeEach(async (to, from, next) => {
 
       permissionStore.setIsAddRouters(true)
       await interactiveStore.initInteractive(true)
-      if (!pathValid(to.path) && to.path !== '/404') {
+      if (!pathValid(to.path) && to.path !== '/404' && !to.path.startsWith('/de-link')) {
         next({ path: '/404' })
         return
       }
