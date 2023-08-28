@@ -21,4 +21,8 @@ public class XpackShareProxyVO implements Serializable {
 
     @JsonSerialize(using = ToStringSerializer.class)
     private Long uid;
+
+    private boolean exp;
+
+    private boolean pwdValid;
 }
