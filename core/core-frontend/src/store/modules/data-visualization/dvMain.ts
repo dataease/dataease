@@ -219,7 +219,23 @@ export const dvMainStore = defineStore('dataVisualization', {
     },
 
     addCopyComponent(component, idMap, canvasViewInfoPre = this.canvasViewInfo) {
-      this.componentData.push(component)
+      // 查找所属画布
+      if (component.canvasId === 'canvas-main') {
+        this.componentData.push(component)
+      } else {
+        this.componentData.forEach(componentItem => {
+          if (
+            component.canvasId.includes(componentItem.id) &&
+            componentItem.component == 'DeTabs'
+          ) {
+            componentItem.propValue.forEach(tabItem => {
+              if (component.canvasId.includes(tabItem.name)) {
+                tabItem.componentData.push(component)
+              }
+            })
+          }
+        })
+      }
       // eslint-disable-next-line @typescript-eslint/no-this-alias
       const _this = this
       //组件组内部可能还有多个视图
