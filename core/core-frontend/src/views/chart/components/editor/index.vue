@@ -827,6 +827,7 @@ const handleChartFieldEdit = (item, type) => {
 const setFieldDefaultValue = field => {
   field.extField = 2
   field.chartId = view.value.id
+  field.datasetGroupId = view.value.tableId
   field.dataeaseName = null
   field.lastSyncTime = null
   field.columnIndex = state.dimension.length + state.quota.length
@@ -1442,12 +1443,12 @@ const autoInsert = element => {
               node-key="id"
               v-model="view.tableId"
               :data="datasetTree"
+              :teleported="false"
               :props="dsSelectProps"
               :render-after-expand="false"
               filterable
               @node-click="dsClick"
               class="dataset-selector"
-              :persistent="false"
             >
               <template #default="{ node, data }">
                 <el-icon v-if="!data.leaf">
@@ -1806,6 +1807,15 @@ const autoInsert = element => {
     color: @canvas-main-font-color-light!important;
   }
 
+  :deep(.editor-title) {
+    color: #1f2329 !important;
+  }
+  :deep(.collapse-title) {
+    color: #1f2329 !important;
+  }
+  :deep(.collapse-icon) {
+    color: #646a73 !important;
+  }
   .query-style-tab {
     width: 100%;
     border-top: solid 1px @side-outline-border-color-light !important;

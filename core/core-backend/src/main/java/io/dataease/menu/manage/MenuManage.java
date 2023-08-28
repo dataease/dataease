@@ -9,6 +9,7 @@ import io.dataease.menu.bo.MenuTreeNode;
 import io.dataease.menu.dao.auto.entity.CoreMenu;
 import io.dataease.menu.dao.auto.mapper.CoreMenuMapper;
 import io.dataease.utils.BeanUtils;
+import io.dataease.xpack.permissions.utils.PerConstant;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
@@ -82,7 +83,8 @@ public class MenuManage {
         meta.setTitle(I18N_PREFIX + coreMenu.getName());
         meta.setIcon(coreMenu.getIcon());
         menuVO.setMeta(meta);
-        menuVO.setPlugin(coreMenu.getId().equals(7L) || coreMenu.getPid().equals(7L));
+
+        menuVO.setPlugin(PerConstant.XPACK_MENU_IDS.contains(coreMenu.getId()));
         return menuVO;
     }
 }

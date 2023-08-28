@@ -375,7 +375,7 @@ public class ExcelUtils {
                     List<TableField> fields = new ArrayList<>();
                     excelReader.read(readSheet);
                     if(CollectionUtils.isEmpty(noModelDataListener.getHeader())){
-                        DEException.throwException("首行不能为空！");
+                        DEException.throwException(readSheet.getSheetName() + "首行不能为空！");
                     }
                     for (String s : noModelDataListener.getHeader()) {
                         TableField tableFiled = new TableField();

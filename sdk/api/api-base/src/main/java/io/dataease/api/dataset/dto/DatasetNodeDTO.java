@@ -12,7 +12,7 @@ public class DatasetNodeDTO implements Serializable {
     /**
      * ID
      */
-    @JsonSerialize(using= ToStringSerializer.class)
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     /**
@@ -23,7 +23,7 @@ public class DatasetNodeDTO implements Serializable {
     /**
      * 父级ID
      */
-    @JsonSerialize(using= ToStringSerializer.class)
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long pid;
 
     /**
@@ -67,6 +67,11 @@ public class DatasetNodeDTO implements Serializable {
      * 同步状态
      */
     private String syncStatus;
+
+    /**
+     * 创建人ID
+     */
+    private String updateBy;
 
     /**
      * 最后同步时间

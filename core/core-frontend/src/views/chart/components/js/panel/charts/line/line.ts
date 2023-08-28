@@ -221,6 +221,20 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
         return valueFormatter(value, yAxis.axisLabelFormatter)
       }
     }
+    const axisValue = yAxis.axisValue
+    if (!axisValue?.auto) {
+      const axis = {
+        yAxis: {
+          ...tmpOptions.yAxis,
+          min: axisValue.min,
+          max: axisValue.max,
+          minLimit: axisValue.min,
+          maxLimit: axisValue.max,
+          tickCount: axisValue.splitCount
+        }
+      }
+      return { ...tmpOptions, ...axis }
+    }
     return tmpOptions
   }
 

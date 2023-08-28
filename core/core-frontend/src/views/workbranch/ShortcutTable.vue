@@ -14,7 +14,6 @@ const panelKeyword = ref()
 const activeName = ref('recent')
 const userAddPopper = ref(false)
 const activeCommand = ref('all_types')
-const dialogVisible = ref(false)
 const state = reactive({
   tableData: [],
   curTypeList: [],
@@ -50,15 +49,6 @@ const formatterTime = (_, _column, cellValue) => {
   return dayjs(new Date(cellValue)).format('YYYY-MM-DD HH:mm:ss')
 }
 
-const share = data => {
-  dialogVisible.value = true
-  console.log(data)
-}
-
-const openShare = ref(true)
-const overTime = ref(false)
-const passwdProtect = ref(false)
-
 const loadTableData = () => {
   shortcutOption.loadData({}).then(res => {
     state.tableData = res.data
@@ -84,7 +74,6 @@ onMounted(() => {
       <el-tab-pane label="最近使用" name="recent"></el-tab-pane>
       <el-tab-pane label="我的收藏" name="store"></el-tab-pane>
       <XpackComponent jsname="c2hhcmUtcGFuZWw=" />
-      <!-- <el-tab-pane label="分享" name="share"></el-tab-pane> -->
     </el-tabs>
     <XpackComponent :active-name="activeName" jsname="c2hhcmU=" />
     <el-row v-if="activeName === 'recent' || activeName === 'store'">
@@ -178,45 +167,17 @@ onMounted(() => {
                 </el-icon>
               </el-tooltip>
 
-              <el-tooltip effect="dark" :content="t('visualization.share')" placement="top">
-                <el-icon class="hover-icon hover-icon-in-table" @click="share(scope.row)">
-                  <Icon name="icon_share-label_outlined"></Icon>
-                </el-icon>
-              </el-tooltip>
+              <XpackComponent
+                :in-grid="true"
+                jsname="c2hhcmUtaGFuZGxlcg=="
+                :resource-id="activeName === 'recent' ? scope.row.id : scope.row.resourceId"
+              />
             </template>
           </template>
         </el-table-column>
       </GridTable>
     </div>
   </div>
-  <el-dialog
-    class="copy-link_dialog"
-    v-model="dialogVisible"
-    title="公共链接分享"
-    width="480px"
-    :show-close="false"
-  >
-    <div class="copy-link">
-      <div class="open-share flex-align-center">
-        <el-switch size="small" v-model="openShare" />
-        开启后，互联网用户可通过链接访问大屏
-      </div>
-      <div class="text">https://perier123.youdata.163.com/dash</div>
-      <div>
-        <el-checkbox v-model="overTime" :label="t('visualization.over_time')" />
-      </div>
-      <div>
-        <el-checkbox v-model="passwdProtect" :label="t('visualization.passwd_protect')" />
-      </div>
-    </div>
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button type="primary" @click="dialogVisible = false">
-          {{ t('visualization.copy_link') }}
-        </el-button>
-      </span>
-    </template>
-  </el-dialog>
 </template>
 
 <style lang="less" scoped>
@@ -257,40 +218,6 @@ onMounted(() => {
     .name-star {
       font-size: 15px;
       padding-left: 5px;
-    }
-  }
-}
-.copy-link_dialog {
-  .ed-dialog__footer {
-    border-top: 1px solid rgba(31, 35, 41, 0.15);
-    padding: 16px;
-  }
-  .copy-link {
-    font-weight: 400;
-    font-family: PingFang SC;
-
-    .open-share {
-      margin: -18px 0 8px 0;
-      color: #646a73;
-      font-size: 12px;
-      font-style: normal;
-      line-height: 20px;
-      .ed-switch {
-        margin-right: 8px;
-      }
-    }
-
-    .text {
-      border-radius: 4px;
-      border: 1px solid #bbbfc4;
-      background: #eff0f1;
-      margin-bottom: 16px;
-      height: 32px;
-      padding: 5px 12px;
-      color: #8f959e;
-      font-size: 14px;
-      font-style: normal;
-      line-height: 22px;
     }
   }
 }

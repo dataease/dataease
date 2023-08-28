@@ -23,7 +23,7 @@ class ShortcutOption {
   busiRecordMap: {
     recent: BusiRecord
     store: BusiRecord
-    share: BusiRecord
+    // share: BusiRecord
   }
 
   constructor() {
@@ -50,8 +50,8 @@ class ShortcutOption {
           { field: 'lastEditor', label: '最近编辑人' },
           { field: 'lastEditTime', label: '最近编辑时间', type: 'time' }
         ]
-      },
-      share: {
+      }
+      /* share: {
         url: '/share/query',
         busiList: ['panel', 'screen'],
         dataCache: [],
@@ -60,7 +60,7 @@ class ShortcutOption {
           { field: 'time', label: '分享时间' },
           { field: 'exp', label: '有效期', type: 'time' }
         ]
-      }
+      } */
     }
   }
   getColmunList() {

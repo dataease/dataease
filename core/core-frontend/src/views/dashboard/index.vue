@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref, toRefs } from 'vue'
+import { computed, onMounted, reactive, ref, toRefs } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
@@ -38,6 +38,14 @@ const initDataset = () => {
     state.datasetTree = (res as unknown as Tree[]) || []
   })
 }
+
+const viewEditorShow = computed(() => {
+  return Boolean(
+    curComponent.value &&
+      ['UserView', 'VQuery'].includes(curComponent.value.component) &&
+      !batchOptStatus.value
+  )
+})
 
 // 全局监听按键事件
 onMounted(() => {
@@ -101,9 +109,7 @@ onMounted(() => {
         <DbCanvasAttr></DbCanvasAttr>
       </dv-sidebar>
       <view-editor
-        v-show="
-          curComponent && ['UserView', 'VQuery'].includes(curComponent.component) && !batchOptStatus
-        "
+        v-show="viewEditorShow"
         :themes="'light'"
         :view="canvasViewInfo[curComponent ? curComponent.id : 'default']"
         :dataset-tree="state.datasetTree"
