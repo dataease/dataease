@@ -22,6 +22,7 @@ public class ScalarFunctions {
                 return null;
             }
             date = Utils.parseTime(date, format, timeOnly);
+            format = get_date_format(format);
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
             Date parse = simpleDateFormat.parse(date);
             return simpleDateFormat.format(parse);
@@ -36,6 +37,7 @@ public class ScalarFunctions {
                 return null;
             }
             date = Utils.parseTime(date, format, timeOnly);
+            format = get_date_format(format);
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
             Date parse = simpleDateFormat.parse(date);
             return simpleDateFormat.format(parse);
@@ -50,6 +52,7 @@ public class ScalarFunctions {
                 return null;
             }
             date = Utils.parseTime(date, format, timeOnly);
+            sourceFormat = get_date_format(sourceFormat);
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(sourceFormat);
             Date parse = simpleDateFormat.parse(date);
 
