@@ -33,6 +33,7 @@ import LinkJumpSet from '@/components/visualization/LinkJumpSet.vue'
 import { adaptCurThemeCommonStyle } from '@/utils/canvasStyle'
 import LinkageSet from '@/components/visualization/LinkageSet.vue'
 import PointShadow from '@/components/data-visualization/canvas/PointShadow.vue'
+import PGrid from '@/components/data-visualization/canvas/PGrid.vue'
 const snapshotStore = snapshotStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
 const composeStore = composeStoreWithOut()
@@ -216,8 +217,8 @@ const cellHeight = ref(0)
 const maxCell = ref(0)
 const infoBox = ref(null)
 const container = ref(null)
-let positionBox = []
-let coordinates = [] //坐标点集合
+const positionBox = ref([])
+const coordinates = ref([]) //坐标点集合
 
 let lastTask = undefined
 let isOverlay = false //是否正在交换位置
@@ -505,7 +506,7 @@ function resetPositionBox() {
         el: false
       })
     }
-    positionBox.push(row)
+    positionBox.value.push(row)
   }
 }
 
@@ -513,7 +514,7 @@ function resetPositionBox() {
  * 填充位置盒子
  */
 function addItemToPositionBox(item) {
-  let pb = positionBox
+  let pb = positionBox.value
   if (item.x <= 0 || item.y <= 0) return
   for (let i = item.x - 1; i < item.x - 1 + item.sizeX; i++) {
     for (let j = item.y - 1; j < item.y - 1 + item.sizeY; j++) {
@@ -525,7 +526,7 @@ function addItemToPositionBox(item) {
 }
 
 function fillPositionBox(maxY) {
-  let pb = positionBox
+  let pb = positionBox.value
   maxY += 2
   for (let j = 0; j < maxY; j++) {
     if (pb[j] == undefined) {
@@ -545,17 +546,17 @@ function fillPositionBox(maxY) {
 }
 
 function removeItemFromPositionBox(item) {
-  let pb = positionBox
+  let pb = positionBox.value
   if (item.x <= 0 || item.y <= 0) return
   for (let i = item.x - 1; i < item.x - 1 + item.sizeX; i++) {
     for (let j = item.y - 1; j < item.y - 1 + item.sizeY; j++) {
-      try {
-        if (pb[j][i]) {
-          pb[j][i].el = false
-        }
-      } catch (e) {
-        console.log('removeItemFromPositionBox-warn')
+      // try {
+      if (pb[j][i]) {
+        pb[j][i].el = false
       }
+      // } catch (e) {
+      //   console.log('removeItemFromPositionBox-warn')
+      // }
     }
   }
 }
@@ -737,10 +738,10 @@ function changeToCoordinate(left, top, width, height) {
  */
 function findClosetCoords(item, tCoordinate) {
   if (isOverlay) return
-  let i = coordinates.length
+  let i = coordinates.value.length
   let collisionsItem = []
   while (i--) {
-    let nowCoordinate = coordinates[i]
+    let nowCoordinate = coordinates.value[i]
     if (item._dragId == nowCoordinate.el._dragId) {
       continue
     }
@@ -794,7 +795,7 @@ function makeCoordinate(item) {
     c2: top + height / 2,
     el: item
   }
-  coordinates.push(coordinate)
+  coordinates.value.push(coordinate)
 }
 function changeItemCoordinate(item) {
   let width = cellWidth.value * item.sizeX - baseMarginLeft.value
@@ -811,11 +812,11 @@ function changeItemCoordinate(item) {
     c2: top + height / 2,
     el: item
   }
-  let index = _.findIndex(coordinates, function (o) {
+  let index = _.findIndex(coordinates.value, function (o) {
     return o.el._dragId == item._dragId
   })
   if (index != -1) {
-    coordinates.splice(index, 1, coordinate)
+    coordinates.value.splice(index, 1, coordinate)
   }
 }
 
@@ -841,7 +842,7 @@ function canItemGoUp(item) {
   let upperRows = 0
   for (let row = item.y - 2; row >= 0; row--) {
     for (let cell = item.x - 1; cell < item.x - 1 + item.sizeX; cell++) {
-      if (positionBox[row][cell] && positionBox[row][cell].el) {
+      if (positionBox.value[row][cell] && positionBox.value[row][cell].el) {
         return upperRows
       }
     }
@@ -891,7 +892,7 @@ function calcDiff(parent, son, size) {
   for (let i = son.x - 1; i < son.x - 1 + son.sizeX; i++) {
     let temp_y = 0
     for (let j = parent.y - 1 + parent.sizeY; j < son.y - 1; j++) {
-      if (positionBox[j][i] && positionBox[j][i].el == false) {
+      if (positionBox.value[j][i] && positionBox.value[j][i].el == false) {
         temp_y++
       }
     }
@@ -921,8 +922,8 @@ function moveItemUp(item, size) {
 function findBelowItems(item) {
   let belowItems = {}
   for (let cell = item.x - 1; cell < item.x - 1 + item.sizeX; cell++) {
-    for (let row = item.y - 1; row < positionBox.length; row++) {
-      let target = positionBox[row][cell]
+    for (let row = item.y - 1; row < positionBox.value.length; row++) {
+      let target = positionBox.value[row][cell]
       if (target && target.el) {
         belowItems[target.el._dragId] = target.el
         break
@@ -1174,8 +1175,8 @@ const canvasSizeInit = () => {
 
 const canvasInit = () => {
   cellInit()
-  positionBox = []
-  coordinates = [] //坐标点集合
+  positionBox.value = []
+  coordinates.value = [] //坐标点集合
   lastTask = undefined
   isOverlay = false //是否正在交换位置
   moveTime = 200 //移动动画时间
@@ -1553,6 +1554,7 @@ defineExpose({
     ></canvas-opt-bar>
     <!-- 网格线 -->
     <!--    <Grid />-->
+    <!--    <p-grid></p-grid>-->
     <drag-shadow
       v-if="infoBox && infoBox.moveItem"
       :base-height="baseHeight"

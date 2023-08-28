@@ -213,7 +213,17 @@ const list = [
     style: {
       width: 150,
       height: 100,
-      color: ''
+      fontSize: 16,
+      activeFontSize: 18,
+      switchTime: 5,
+      carouselEnable: false,
+      borderWidth: 0,
+      borderColor: '#000000',
+      headFontColor: '#000000',
+      headFontActiveColor: '#000000',
+      headBorderColor: '#000000',
+      headBorderActiveColor: '#000000',
+      headHorizontalPosition: 'left'
     }
   }
 ]
