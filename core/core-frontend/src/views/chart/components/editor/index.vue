@@ -131,10 +131,14 @@ watch(
 watch(
   [() => view.value['tableId']],
   () => {
-    const nodeId = view.value['tableId']
-    const node = datasetSelector?.value.getNode(nodeId)
-    if (node?.data) {
-      curDatasetWeight.value = node.data.weight
+    try {
+      const nodeId = view.value['tableId']
+      const node = datasetSelector?.value.getNode(nodeId)
+      if (node?.data) {
+        curDatasetWeight.value = node.data.weight
+      }
+    } catch (e) {
+      console.log('watch error')
     }
   },
   { deep: true }
@@ -1806,6 +1810,15 @@ const autoInsert = element => {
     color: @canvas-main-font-color-light!important;
   }
 
+  :deep(.editor-title) {
+    color: #1f2329 !important;
+  }
+  :deep(.collapse-title) {
+    color: #1f2329 !important;
+  }
+  :deep(.collapse-icon) {
+    color: #646a73 !important;
+  }
   .query-style-tab {
     width: 100%;
     border-top: solid 1px @side-outline-border-color-light !important;

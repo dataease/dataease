@@ -47,7 +47,12 @@ const widthShow = computed(() => `${canvasCollapse.value[sideName.value] ? 36 : 
   >
     <el-row align="middle" class="title" justify="space-between">
       <span v-show="!canvasCollapse[sideName]">{{ title }}</span>
-      <el-icon :title="title" class="custom-icon" size="20px" @click="collapseChange">
+      <el-icon
+        :title="title"
+        :class="'custom-icon-' + themeInfo"
+        size="20px"
+        @click="collapseChange"
+      >
         <Expand
           class="collapse-icon"
           v-if="
@@ -128,7 +133,11 @@ const widthShow = computed(() => `${canvasCollapse.value[sideName.value] ? 36 : 
   border-bottom-color: rgba(31, 35, 41, 0.15) !important;
 }
 
-.collapse-icon {
+.collapse-icon-light {
+  color: #646a73;
+}
+
+.collapse-icon-dark {
   color: @canvas-main-font-color;
 }
 </style>
