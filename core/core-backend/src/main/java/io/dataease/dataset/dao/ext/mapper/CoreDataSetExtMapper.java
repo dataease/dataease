@@ -19,6 +19,6 @@ public interface CoreDataSetExtMapper {
             """)
     List<DataSetNodePO> query(@Param("ew") QueryWrapper queryWrapper);
 
-    @Select("select id, name, node_type, create_by, create_time from core_dataset_group where id = #{id}")
+    @Select("select id, name, node_type, create_by, create_time, update_by, last_update_time from core_dataset_group where id = #{id}")
     DataSetBarVO queryBarInfo(@Param("id") Long id);
 }

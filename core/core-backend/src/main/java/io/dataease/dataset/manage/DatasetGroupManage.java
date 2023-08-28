@@ -209,6 +209,10 @@ public class DatasetGroupManage {
             if (userFormVO != null) {
                 dataSetBarVO.setCreator(userFormVO.getName());
             }
+            UserFormVO userFormVOUpdateBy = userApi.queryById(Long.valueOf(dataSetBarVO.getUpdateBy()));
+            if (userFormVOUpdateBy != null) {
+                dataSetBarVO.setUpdater(userFormVOUpdateBy.getName());
+            }
         }
         return dataSetBarVO;
     }
