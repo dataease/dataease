@@ -50,6 +50,7 @@
           :canvas-style-data="canvasStyleData"
           :canvas-view-info="canvasViewInfo"
           :canvas-id="element.id + '--' + tabItem.name"
+          :class="moveActive ? 'canvas-move-in' : ''"
         ></de-canvas>
         <de-preview
           v-else
@@ -103,8 +104,14 @@ import DeCustomTab from '@/custom-component/de-tabs/DeCustomTab.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
 const dvMainStore = dvMainStoreWithOut()
-const { componentData, canvasStyleData, canvasViewInfo, bashMatrixInfo, dvInfo } =
-  storeToRefs(dvMainStore)
+const {
+  componentData,
+  canvasStyleData,
+  canvasViewInfo,
+  bashMatrixInfo,
+  dvInfo,
+  tabMoveInActiveId
+} = storeToRefs(dvMainStore)
 const tabCanvas = ref(null)
 const { t } = useI18n()
 
@@ -134,11 +141,6 @@ const curItem = ref(null)
 
 const editableTabsValue = ref(null)
 
-const fontColor = ref('#999999')
-const activeColor = ref('#f18406')
-const borderColor = ref('#999999') // 可以设 none 全部边框消失
-const borderActiveColor = ref('#f18406')
-
 // 无边框
 const noBorderColor = ref('none')
 
@@ -157,10 +159,6 @@ const curPreviewGap = computed(() =>
 function sureCurTitle() {
   state.curItem.title = state.textarea
   state.dialogVisible = false
-}
-
-function titleValid() {
-  return !!state.textarea && !!state.textarea.trim()
 }
 
 function addTab() {
@@ -264,6 +262,10 @@ const componentMoveOut = component => {
   eventBus.emit('moveOutFromTab-canvas-main', component)
 }
 
+const moveActive = computed(() => {
+  return tabMoveInActiveId.value && tabMoveInActiveId.value === element.value.id
+})
+
 const dropdownShow = computed(() => {
   return isEdit.value
 })
@@ -280,6 +282,62 @@ const titleStyle = itemName => {
   }
 }
 
+const fontColor = computed(() => {
+  if (
+    element.value &&
+    element.value.style &&
+    element.value.style.headFontColor &&
+    typeof element.value.style.headFontColor === 'string'
+  ) {
+    return element.value.style.headFontColor
+  } else {
+    return 'none'
+  }
+})
+
+const activeColor = computed(() => {
+  if (
+    element.value &&
+    element.value.style &&
+    element.value.style.headFontActiveColor &&
+    typeof element.value.style.headFontActiveColor === 'string'
+  ) {
+    return element.value.style.headFontActiveColor
+  } else {
+    return 'none'
+  }
+})
+
+const borderColor = computed(() => {
+  if (
+    element.value &&
+    element.value.style &&
+    element.value.style.headBorderColor &&
+    typeof element.value.style.headBorderColor === 'string'
+  ) {
+    return element.value.style.headBorderColor
+  } else {
+    return 'none'
+  }
+})
+
+const borderActiveColor = computed(() => {
+  if (
+    element.value &&
+    element.value.style &&
+    element.value.style.headBorderActiveColor &&
+    typeof element.value.style.headBorderActiveColor === 'string'
+  ) {
+    return element.value.style.headBorderActiveColor
+  } else {
+    return 'none'
+  }
+})
+
+const titleValid = computed(() => {
+  return !!state.textarea && !!state.textarea.trim()
+})
+
 onMounted(() => {
   if (element.value.propValue.length > 0) {
     editableTabsValue.value = element.value.propValue[0].name
@@ -294,5 +352,9 @@ onMounted(() => {
 }
 .el-tab-pane-custom {
   height: 100%;
+}
+.canvas-move-in {
+  border: 2px dotted transparent;
+  border-color: blueviolet;
 }
 </style>

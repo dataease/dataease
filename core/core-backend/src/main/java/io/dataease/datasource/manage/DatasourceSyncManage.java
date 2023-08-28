@@ -55,9 +55,7 @@ public class DatasourceSyncManage {
         Long startTime = System.currentTimeMillis();
         CoreDatasourceTaskLog datasetTableTaskLog = datasourceTaskServer.initTaskLog(coreDatasource.getId(), null, startTime, coreDatasource.getName());
         DatasourceServer.UpdateType updateType = DatasourceServer.UpdateType.valueOf(type);
-
         boolean msg = false;
-
         Long execTime = System.currentTimeMillis();
         try {
             DatasourceRequest datasourceRequest = new DatasourceRequest();
@@ -85,7 +83,7 @@ public class DatasourceSyncManage {
                 } catch (Exception e) {
                     try {
                         if (updateType.equals(DatasourceServer.UpdateType.all_scope)) {
-                            createEngineTable(TableUtils.tmpName(datasourceRequest.getTable()), tableFields);
+                            dropEngineTable(TableUtils.tmpName(datasourceRequest.getTable()));
                         }
                     }catch (Exception ignore){}
                     datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Failed to sync datatable: " + datasourceRequest.getTable() + ", " + e.getMessage());
@@ -297,7 +295,7 @@ public class DatasourceSyncManage {
         }
     }
 
-    public void createEngineTable(String tableName, List<TableField> tableFields) throws DEException {
+    public void createEngineTable(String tableName, List<TableField> tableFields) throws Exception {
         CoreDeEngine engine = engineServer.info();
         EngineRequest engineRequest = new EngineRequest();
         engineRequest.setEngine(engine);
@@ -306,7 +304,7 @@ public class DatasourceSyncManage {
         engineProvider.exec(engineRequest);
     }
 
-    public void dropEngineTable(String tableName) {
+    public void dropEngineTable(String tableName) throws Exception{
         CoreDeEngine engine = engineServer.info();
         EngineRequest engineRequest = new EngineRequest();
         engineRequest.setEngine(engine);

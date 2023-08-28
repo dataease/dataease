@@ -26,17 +26,15 @@ import java.util.UUID;
 public class H2EngineProvider extends EngineProvider {
 
 
-    public void exec(EngineRequest engineRequest) throws DEException {
+    public void exec(EngineRequest engineRequest) throws Exception {
         DatasourceConfiguration configuration = JsonUtil.parseObject(engineRequest.getEngine().getConfiguration(), H2.class);
         int queryTimeout = configuration.getQueryTimeout();
         CoreDatasource datasource = new CoreDatasource();
         BeanUtils.copyBean(datasource, engineRequest.getEngine());
         try (Connection connection = getConnection(datasource); Statement stat = getStatement(connection, queryTimeout)) {
             Boolean result = stat.execute(engineRequest.getQuery());
-        } catch (SQLException e) {
-            DataEaseException.throwException(e);
         } catch (Exception e) {
-            DataEaseException.throwException(e);
+            throw e;
         }
     }
 
