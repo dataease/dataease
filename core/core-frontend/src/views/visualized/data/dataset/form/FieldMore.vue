@@ -29,12 +29,17 @@ defineProps({
   }
 })
 const handleCommand = (command: string | number | object) => {
+  if ('time' === command) {
+    translate.value.handleOpen()
+    return
+  }
+
   if (typeof command === 'object') return
   if ('custom' === command) {
     replaceType.value.handleClose()
     translate.value.handleClose()
   }
-  if (['text', 'time', 'location', 'value', 'float'].includes(command as string)) {
+  if (['text', 'location', 'value', 'float'].includes(command as string)) {
     replaceType.value.handleClose()
     setTimeout(() => {
       emit('handleCommand', command)

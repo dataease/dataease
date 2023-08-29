@@ -204,7 +204,7 @@ initFunction()
 </script>
 
 <template>
-  <div class="calcu-field">
+  <div @keydown.stop @keyup.stop class="calcu-field">
     <div class="calcu-cont" style="height: 544px">
       <div style="flex: 1">
         <div style="max-width: 488px">

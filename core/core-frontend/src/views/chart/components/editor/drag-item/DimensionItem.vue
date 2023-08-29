@@ -168,7 +168,16 @@ getItemTagType()
         :class="'editor-' + props.themes"
         :style="{ backgroundColor: tagType + '0a', border: '1px solid ' + tagType }"
       >
-        <span style="display: flex">
+        <span style="display: flex; color: #646a73">
+          <el-icon v-if="'asc' === item.sort">
+            <Icon name="icon_sort-a-to-z_outlined" />
+          </el-icon>
+          <el-icon v-if="'desc' === item.sort">
+            <Icon name="icon_sort-z-to-a_outlined" />
+          </el-icon>
+          <el-icon v-if="'custom_sort' === item.sort">
+            <Icon name="icon_sort_outlined" />
+          </el-icon>
           <el-icon>
             <Icon
               :className="`field-icon-${fieldType[item.deType]}`"
@@ -176,9 +185,15 @@ getItemTagType()
             />
           </el-icon>
         </span>
-        <span class="item-span-style" :title="item.name">
-          {{ item.chartShowName ? item.chartShowName : item.name }}
-        </span>
+        <el-tooltip
+          effect="dark"
+          placement="top"
+          :content="item.chartShowName ? item.chartShowName : item.name"
+        >
+          <span class="item-span-style">
+            <span class="item-name">{{ item.chartShowName ? item.chartShowName : item.name }}</span>
+          </span>
+        </el-tooltip>
 
         <el-tooltip effect="dark" placement="top">
           <template #content>
@@ -199,7 +214,11 @@ getItemTagType()
         </el-icon>
       </el-tag>
       <template #dropdown>
-        <el-dropdown-menu :effect="themes" class="drop-style">
+        <el-dropdown-menu
+          :effect="themes"
+          class="drop-style"
+          :class="themes === 'dark' ? 'dark' : ''"
+        >
           <el-dropdown-item @click.prevent>
             <el-dropdown
               :effect="themes"
@@ -207,11 +226,8 @@ getItemTagType()
               style="width: 100%; height: 100%"
               @command="sort"
             >
-              <span class="el-dropdown-link inner-dropdown-menu menu-item-padding">
-                <span
-                  class="menu-item-content"
-                  :class="themes === 'dark' ? 'dark-theme-content' : ''"
-                >
+              <span class="inner-dropdown-menu menu-item-padding">
+                <span class="menu-item-content">
                   <el-icon size="14px">
                     <Icon name="icon_sort_outlined" />
                   </el-icon>
@@ -223,22 +239,58 @@ getItemTagType()
                 </el-icon>
               </span>
               <template #dropdown>
-                <el-dropdown-menu :effect="themes" class="drop-style sub">
+                <el-dropdown-menu
+                  :effect="themes"
+                  class="drop-style sub"
+                  :class="themes === 'dark' ? 'dark' : ''"
+                >
                   <el-dropdown-item class="menu-item-padding" :command="beforeSort('none')">
-                    <span>{{ t('chart.none') }}</span>
+                    <span
+                      class="sub-menu-content"
+                      :class="'none' === item.sort ? 'content-active' : ''"
+                    >
+                      {{ t('chart.none') }}
+                      <el-icon class="sub-menu-content--icon">
+                        <Icon name="icon_done_outlined" v-if="'none' === item.sort" />
+                      </el-icon>
+                    </span>
                   </el-dropdown-item>
                   <el-dropdown-item class="menu-item-padding" :command="beforeSort('asc')">
-                    <span>{{ t('chart.asc') }}</span>
+                    <span
+                      class="sub-menu-content"
+                      :class="'asc' === item.sort ? 'content-active' : ''"
+                    >
+                      {{ t('chart.asc') }}
+                      <el-icon class="sub-menu-content--icon">
+                        <Icon name="icon_done_outlined" v-if="'asc' === item.sort" />
+                      </el-icon>
+                    </span>
                   </el-dropdown-item>
                   <el-dropdown-item class="menu-item-padding" :command="beforeSort('desc')">
-                    <span>{{ t('chart.desc') }}</span>
+                    <span
+                      class="sub-menu-content"
+                      :class="'desc' === item.sort ? 'content-active' : ''"
+                    >
+                      {{ t('chart.desc') }}
+                      <el-icon class="sub-menu-content--icon">
+                        <Icon name="icon_done_outlined" v-if="'desc' === item.sort" />
+                      </el-icon>
+                    </span>
                   </el-dropdown-item>
                   <el-dropdown-item
                     class="menu-item-padding"
                     v-if="!item.chartId && (item.deType === 0 || item.deType === 5)"
                     :command="beforeSort('custom_sort')"
                   >
-                    <span>{{ t('chart.custom_sort') }}...</span>
+                    <span
+                      class="sub-menu-content"
+                      :class="'custom_sort' === item.sort ? 'content-active' : ''"
+                    >
+                      {{ t('chart.custom_sort') }}...
+                      <el-icon class="sub-menu-content--icon">
+                        <Icon name="icon_done_outlined" v-if="'custom_sort' === item.sort" />
+                      </el-icon>
+                    </span>
                   </el-dropdown-item>
                 </el-dropdown-menu>
               </template>
@@ -252,11 +304,8 @@ getItemTagType()
               style="width: 100%; height: 100%"
               @command="dateStyle"
             >
-              <span class="el-dropdown-link inner-dropdown-menu menu-item-padding">
-                <span
-                  class="menu-item-content"
-                  :class="themes === 'dark' ? 'dark-theme-content' : ''"
-                >
+              <span class="inner-dropdown-menu menu-item-padding">
+                <span class="menu-item-content">
                   <el-icon size="14px">
                     <!--                    <Icon name="icon_add_outlined" />-->
                   </el-icon>
@@ -268,48 +317,116 @@ getItemTagType()
                 </el-icon>
               </span>
               <template #dropdown>
-                <el-dropdown-menu :effect="themes" class="drop-style sub">
+                <el-dropdown-menu
+                  :effect="themes"
+                  class="drop-style sub"
+                  :class="themes === 'dark' ? 'dark' : ''"
+                >
                   <el-dropdown-item class="menu-item-padding" :command="beforeDateStyle('y')">
-                    <span>{{ t('chart.y') }}</span>
+                    <span
+                      class="sub-menu-content"
+                      :class="'y' === item.dateStyle ? 'content-active' : ''"
+                    >
+                      {{ t('chart.y') }}
+                      <el-icon class="sub-menu-content--icon">
+                        <Icon name="icon_done_outlined" v-if="'y' === item.dateStyle" />
+                      </el-icon>
+                    </span>
                   </el-dropdown-item>
                   <el-dropdown-item
                     class="menu-item-padding"
                     v-if="showDateExt"
                     :command="beforeDateStyle('y_Q')"
                   >
-                    <span>{{ t('chart.y_Q') }}</span>
+                    <span
+                      class="sub-menu-content"
+                      :class="'y_Q' === item.dateStyle ? 'content-active' : ''"
+                    >
+                      {{ t('chart.y_Q') }}
+                      <el-icon class="sub-menu-content--icon">
+                        <Icon name="icon_done_outlined" v-if="'y_Q' === item.dateStyle" />
+                      </el-icon>
+                    </span>
                   </el-dropdown-item>
                   <el-dropdown-item class="menu-item-padding" :command="beforeDateStyle('y_M')">
-                    <span>{{ t('chart.y_M') }}</span>
+                    <span
+                      class="sub-menu-content"
+                      :class="'y_M' === item.dateStyle ? 'content-active' : ''"
+                    >
+                      {{ t('chart.y_M') }}
+                      <el-icon class="sub-menu-content--icon">
+                        <Icon name="icon_done_outlined" v-if="'y_M' === item.dateStyle" />
+                      </el-icon>
+                    </span>
                   </el-dropdown-item>
                   <el-dropdown-item
                     class="menu-item-padding"
                     v-if="showDateExt"
                     :command="beforeDateStyle('y_W')"
                   >
-                    <span>{{ t('chart.y_W') }}</span>
+                    <span
+                      class="sub-menu-content"
+                      :class="'y_W' === item.dateStyle ? 'content-active' : ''"
+                    >
+                      {{ t('chart.y_W') }}
+                      <el-icon class="sub-menu-content--icon">
+                        <Icon name="icon_done_outlined" v-if="'y_W' === item.dateStyle" />
+                      </el-icon>
+                    </span>
                   </el-dropdown-item>
                   <el-dropdown-item class="menu-item-padding" :command="beforeDateStyle('y_M_d')">
-                    <span>{{ t('chart.y_M_d') }}</span>
+                    <span
+                      class="sub-menu-content"
+                      :class="'y_M_d' === item.dateStyle ? 'content-active' : ''"
+                    >
+                      {{ t('chart.y_M_d') }}
+                      <el-icon class="sub-menu-content--icon">
+                        <Icon name="icon_done_outlined" v-if="'y_M_d' === item.dateStyle" />
+                      </el-icon>
+                    </span>
                   </el-dropdown-item>
                   <el-dropdown-item
                     class="menu-item-padding"
                     :command="beforeDateStyle('H_m_s')"
                     divided
                   >
-                    <span>{{ t('chart.H_m_s') }}</span>
+                    <span
+                      class="sub-menu-content"
+                      :class="'H_m_s' === item.dateStyle ? 'content-active' : ''"
+                    >
+                      {{ t('chart.H_m_s') }}
+                      <el-icon class="sub-menu-content--icon">
+                        <Icon name="icon_done_outlined" v-if="'H_m_s' === item.dateStyle" />
+                      </el-icon>
+                    </span>
                   </el-dropdown-item>
                   <el-dropdown-item
                     class="menu-item-padding"
                     :command="beforeDateStyle('y_M_d_H_m')"
                   >
-                    <span>{{ t('chart.y_M_d_H_m') }}</span>
+                    <span
+                      class="sub-menu-content"
+                      :class="'y_M_d_H_m' === item.dateStyle ? 'content-active' : ''"
+                    >
+                      {{ t('chart.y_M_d_H_m') }}
+                      <el-icon class="sub-menu-content--icon">
+                        <Icon name="icon_done_outlined" v-if="'y_M_d_H_m' === item.dateStyle" />
+                      </el-icon>
+                    </span>
                   </el-dropdown-item>
                   <el-dropdown-item
                     class="menu-item-padding"
                     :command="beforeDateStyle('y_M_d_H_m_s')"
                   >
-                    <span>{{ t('chart.y_M_d_H_m_s') }}</span>
+                    <span
+                      class="sub-menu-content"
+                      :class="'y_M_d_H_m_s' === item.dateStyle ? 'content-active' : ''"
+                    >
+                      {{ t('chart.y_M_d_H_m_s') }}
+                      <el-icon class="sub-menu-content--icon">
+                        <Icon name="icon_done_outlined" v-if="'y_M_d_H_m_s' === item.dateStyle" />
+                      </el-icon>
+                    </span>
                   </el-dropdown-item>
                 </el-dropdown-menu>
               </template>
@@ -322,11 +439,8 @@ getItemTagType()
               style="width: 100%; height: 100%"
               @command="datePattern"
             >
-              <span class="el-dropdown-link inner-dropdown-menu menu-item-padding">
-                <span
-                  class="menu-item-content"
-                  :class="themes === 'dark' ? 'dark-theme-content' : ''"
-                >
+              <span class="inner-dropdown-menu menu-item-padding">
+                <span class="menu-item-content">
                   <el-icon size="14px">
                     <!--                    <Icon name="icon_add_outlined" />-->
                   </el-icon>
@@ -338,18 +452,38 @@ getItemTagType()
                 </el-icon>
               </span>
               <template #dropdown>
-                <el-dropdown-menu :effect="themes" class="drop-style sub">
+                <el-dropdown-menu
+                  :effect="themes"
+                  class="drop-style sub"
+                  :class="themes === 'dark' ? 'dark' : ''"
+                >
                   <el-dropdown-item
                     class="menu-item-padding"
                     :command="beforeDatePattern('date_sub')"
                   >
-                    <span>{{ t('chart.date_sub') }}(1990-01-01)</span>
+                    <span
+                      class="sub-menu-content"
+                      :class="'date_sub' === item.datePattern ? 'content-active' : ''"
+                    >
+                      {{ t('chart.date_sub') }}(1990-01-01)
+                      <el-icon class="sub-menu-content--icon">
+                        <Icon name="icon_done_outlined" v-if="'date_sub' === item.datePattern" />
+                      </el-icon>
+                    </span>
                   </el-dropdown-item>
                   <el-dropdown-item
                     class="menu-item-padding"
                     :command="beforeDatePattern('date_split')"
                   >
-                    <span>{{ t('chart.date_split') }}(1990/01/01)</span>
+                    <span
+                      class="sub-menu-content"
+                      :class="'date_split' === item.datePattern ? 'content-active' : ''"
+                    >
+                      {{ t('chart.date_split') }}(1990/01/01)
+                      <el-icon class="sub-menu-content--icon">
+                        <Icon name="icon_done_outlined" v-if="'date_split' === item.datePattern" />
+                      </el-icon>
+                    </span>
                   </el-dropdown-item>
                 </el-dropdown-menu>
               </template>
@@ -446,9 +580,20 @@ span {
     flex-direction: row;
     align-items: center;
   }
+}
 
-  .dark-theme-content {
-    color: #a6a6a6;
+.sub-menu-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+
+  &.content-active {
+    color: #3370ff;
+  }
+
+  .sub-menu-content--icon {
+    margin-left: 8px;
   }
 }
 
@@ -458,13 +603,17 @@ span {
 }
 
 .item-span-style {
-  display: inline-block;
-  width: 100px;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
+  display: flex;
+  max-width: 180px;
   color: #1f2329;
   margin-left: 4px;
+
+  .item-name {
+    flex: 1;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
 }
 
 .editor-dark {
@@ -487,6 +636,24 @@ span {
       min-width: 118px;
     }
   }
+  :deep(.ed-dropdown-menu__item:not(.is_disabled):focus) {
+    color: inherit;
+    background-color: rgba(31, 35, 41, 0.1);
+  }
+  &.dark {
+    .inner-dropdown-menu {
+      color: rgba(235, 235, 235, 1);
+    }
+    :deep(.ed-dropdown-menu__item) {
+      color: rgba(235, 235, 235, 1);
+    }
+    :deep(.ed-dropdown-menu__item.is-disabled) {
+      color: #a6a6a6;
+    }
+    :deep(.ed-dropdown-menu__item:not(.is_disabled):focus) {
+      background-color: rgba(235, 235, 235, 0.1);
+    }
+  }
 }
 
 .father .child {
@@ -495,5 +662,9 @@ span {
 
 .father:hover .child {
   visibility: visible;
+}
+
+.father:hover .item-span-style {
+  max-width: 150px;
 }
 </style>
