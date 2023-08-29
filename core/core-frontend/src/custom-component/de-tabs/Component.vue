@@ -1,5 +1,5 @@
 <template>
-  <div style="width: 100%; height: 100%">
+  <div style="width: 100%; height: 100%" :class="headClass">
     <de-custom-tab
       v-model="editableTabsValue"
       @tab-add="addTab"
@@ -54,13 +54,14 @@
         ></de-canvas>
         <de-preview
           v-else
-          ref="dashboardPreview"
+          :ref="'dashboardPreview'"
           :dv-info="dvInfo"
           :cur-gap="curPreviewGap"
           :component-data="tabItem.componentData"
           :canvas-style-data="canvasStyleData"
           :canvas-view-info="canvasViewInfo"
           :canvas-id="element.id + '--' + tabItem.name"
+          :preview-active="editableTabsValue === tabItem.name"
           show-position="preview"
         ></de-preview>
       </el-tab-pane>
@@ -93,7 +94,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onMounted, reactive, ref, toRefs } from 'vue'
+import { computed, nextTick, onMounted, reactive, ref, toRefs, watch } from 'vue'
 import DeCanvas from '@/views/canvas/DeCanvas.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
@@ -139,7 +140,7 @@ const state = reactive({
   dialogVisible: false
 })
 const curItem = ref(null)
-
+const tabsAreaScroll = ref(false)
 const editableTabsValue = ref(null)
 
 // 无边框
@@ -263,6 +264,28 @@ const dropdownShow = computed(() => {
   return isEdit.value
 })
 
+const headClass = computed(() => {
+  if (tabsAreaScroll.value) {
+    return 'tab-head-left'
+  } else {
+    return 'tab-head-' + element.value.style.headHorizontalPosition
+  }
+})
+
+const calcTabLength = () => {
+  // nextTick(() => {
+  //   if (element.value.propValue.length > 1) {
+  //     const containerDom = document.getElementById(
+  //       'tab-' + element.value.propValue[element.value.propValue.length - 1].name
+  //     )
+  //     tabsAreaScroll.value =
+  //       containerDom.parentNode.scrollWidth > containerDom.parentNode.parentNode.scrollWidth
+  //   } else {
+  //     tabsAreaScroll.value = false
+  //   }
+  // })
+}
+
 const titleStyle = itemName => {
   if (editableTabsValue.value === itemName) {
     return {
@@ -335,10 +358,19 @@ const isCurrentEdit = computed(() => {
   return isEdit.value && curComponent.value && curComponent.value.id === element.value.id
 })
 
+watch(
+  () => element.value,
+  () => {
+    calcTabLength()
+  },
+  { deep: true }
+)
+
 onMounted(() => {
   if (element.value.propValue.length > 0) {
     editableTabsValue.value = element.value.propValue[0].name
   }
+  calcTabLength()
   eventBus.on('onTabMoveIn-' + element.value.id, componentMoveIn)
   eventBus.on('onTabMoveOut-' + element.value.id, componentMoveOut)
 })
@@ -349,12 +381,29 @@ onMounted(() => {
 }
 :deep(.ed-tabs__new-tab) {
   margin-right: 25px;
+  background-color: #fff;
 }
 .el-tab-pane-custom {
+  width: 100%;
   height: 100%;
 }
 .canvas-move-in {
   border: 2px dotted transparent;
   border-color: blueviolet;
+}
+
+.tab-head-left :deep(.ed-tabs__nav-scroll) {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.tab-head-right :deep(.ed-tabs__nav-scroll) {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.tab-head-center :deep(.ed-tabs__nav-scroll) {
+  display: flex;
+  justify-content: center;
 }
 </style>

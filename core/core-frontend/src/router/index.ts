@@ -82,6 +82,13 @@ export const routes: AppRouteRecordRaw[] = [
     hidden: true,
     meta: {},
     component: () => import('@/views/data-visualization/PreviewCanvas.vue')
+  },
+  {
+    path: '/de-link/:uuid',
+    name: 'link',
+    hidden: true,
+    meta: {},
+    component: () => import('@/views/data-visualization/LinkContainer.vue')
   }
 ]
 

@@ -78,6 +78,7 @@ const noBorder = computed(() => props.borderColor === 'none')
     }
 
     .ed-tabs__active-bar {
+      height: 0px;
       background-color: var(--de-active-color);
     }
   }
@@ -131,6 +132,7 @@ const noBorder = computed(() => props.borderColor === 'none')
     }
 
     .ed-tabs__active-bar {
+      height: 0px;
       background-color: var(--de-active-color);
     }
   }

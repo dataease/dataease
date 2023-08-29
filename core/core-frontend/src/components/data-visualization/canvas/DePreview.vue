@@ -2,7 +2,7 @@
 import { getStyle, getCanvasStyle, getShapeItemStyle } from '@/utils/style'
 import ComponentWrapper from './ComponentWrapper.vue'
 import { changeStyleWithScale } from '@/utils/translate'
-import { computed, nextTick, onMounted, ref, toRefs } from 'vue'
+import { computed, nextTick, onMounted, ref, toRefs, watch } from 'vue'
 import { changeRefComponentsSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
@@ -39,11 +39,22 @@ const props = defineProps({
     required: false,
     type: String,
     default: 'preview'
+  },
+  previewActive: {
+    type: Boolean,
+    default: true
   }
 })
 
-const { canvasStyleData, componentData, dvInfo, canvasId, canvasViewInfo, showPosition } =
-  toRefs(props)
+const {
+  canvasStyleData,
+  componentData,
+  dvInfo,
+  canvasId,
+  canvasViewInfo,
+  showPosition,
+  previewActive
+} = toRefs(props)
 const domId = 'preview-' + canvasId.value
 const scaleWidth = ref(100)
 const previewCanvas = ref(null)
@@ -69,6 +80,22 @@ const canvasStyle = computed(() => {
     return {}
   }
 })
+
+const forceRender = () => {
+  cellWidth.value = cellWidth.value + 0.01
+  nextTick(() => {
+    cellWidth.value = cellWidth.value - 0.01
+  })
+}
+
+watch(
+  () => previewActive.value,
+  () => {
+    if (previewActive.value) {
+      restore()
+    }
+  }
+)
 
 const restore = () => {
   nextTick(() => {

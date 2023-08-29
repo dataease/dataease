@@ -21,7 +21,6 @@ public class ScalarFunctions {
             if (StringUtils.isEmpty(date)) {
                 return null;
             }
-            date = Utils.parseTime(date, format, timeOnly);
             format = get_date_format(date);
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
             Date parse = simpleDateFormat.parse(date);
@@ -36,7 +35,6 @@ public class ScalarFunctions {
             if (StringUtils.isEmpty(date)) {
                 return null;
             }
-            date = Utils.parseTime(date, format, timeOnly);
             format = get_date_format(date);
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
             Date parse = simpleDateFormat.parse(date);
@@ -51,7 +49,6 @@ public class ScalarFunctions {
             if (StringUtils.isEmpty(date)) {
                 return null;
             }
-            date = Utils.parseTime(date, format, timeOnly);
             sourceFormat = get_date_format(date);
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(sourceFormat);
             Date parse = simpleDateFormat.parse(date);

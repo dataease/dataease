@@ -22,7 +22,7 @@ interface DatasetField {
   tableId: string
 }
 const dialogVisible = ref(false)
-const renameInput = ref()
+const renameInput = ref([])
 const valueSource = ref([])
 const conditions = ref([])
 const displayType = ref('')
@@ -153,12 +153,9 @@ const init = (id: string, queryId: string) => {
   if (!datasetTree.value.length) {
     initDataset()
   }
+  renameInput.value = []
   conditions.value = cloneDeep(componentData.value.find(ele => ele.id === id).propValue) || []
   handleCondition({ id: queryId })
-  valueSource.value = cloneDeep(curComponent.value.valueSource)
-  if (!valueSource.value.length) {
-    valueSource.value.push('')
-  }
   dialogVisible.value = true
   const datasetFieldIdList = datasetFieldList.value.map(ele => ele.tableId)
   for (const i in datasetMap) {
@@ -225,6 +222,10 @@ const handleCondition = item => {
     handleCheckedFieldsChange(curComponent.value.checkedFields)
   }
   multipleChange(curComponent.value.multiple, false)
+  valueSource.value = cloneDeep(curComponent.value.valueSource)
+  if (!valueSource.value.length) {
+    valueSource.value.push('')
+  }
 }
 
 const getOptions = (id, component) => {
@@ -237,18 +238,24 @@ const getOptions = (id, component) => {
   })
 }
 
+const setRenameInput = val => {
+  renameInput.value.push(val)
+}
+
 const addOperation = (cmd, condition, index) => {
   switch (cmd) {
     case 'del':
+      renameInput.value = []
       conditions.value.splice(index, 1)
       break
     case 'rename':
+      renameInput.value = []
+      Object.assign(activeConditionForRename, condition)
       setTimeout(() => {
-        Object.assign(activeConditionForRename, condition)
         nextTick(() => {
           renameInput.value[index].focus()
         })
-      }, 200)
+      }, 400)
       break
     default:
       break
@@ -307,9 +314,9 @@ defineExpose({
           :class="condition.id === activeCondition && 'active'"
         >
           <el-icon>
-            <Icon name="more_v"></Icon>
+            <Icon name="icon_drag_outlined"></Icon>
           </el-icon>
-          <div class="label">
+          <div class="label" :title="condition.name">
             {{ condition.name }}
           </div>
           <div class="condition-icon flex-align-center">
@@ -319,17 +326,21 @@ defineExpose({
               icon-name="more_v"
               placement="bottom-end"
             ></handle-more>
-            <el-icon @click.stop="condition.visible = !condition.visible" v-if="condition.visible">
+            <el-icon
+              class="hover-icon"
+              @click.stop="condition.visible = !condition.visible"
+              v-if="condition.visible"
+            >
               <Icon name="icon_visible_outlined"></Icon>
             </el-icon>
-            <el-icon @click.stop="condition.visible = !condition.visible" v-else>
+            <el-icon class="hover-icon" @click.stop="condition.visible = !condition.visible" v-else>
               <Icon name="de_pwd_invisible"></Icon>
             </el-icon>
           </div>
           <div @click.stop v-if="activeConditionForRename.id === condition.id" class="rename">
             <el-input
               @blur="renameInputBlur"
-              ref="renameInput"
+              :ref="setRenameInput"
               v-model="activeConditionForRename.name"
             ></el-input>
           </div>
@@ -381,7 +392,7 @@ defineExpose({
           <div class="list-item">
             <div class="label">展示类型</div>
             <div class="value">
-              <el-select v-model="displayType" clearable>
+              <el-select v-model="displayType">
                 <el-option v-if="displayType === '0'" label="文本下拉" value="0" />
                 <el-option v-if="displayType === '2'" label="数字下拉" value="2" />
                 <el-option v-if="displayType === '3'" label="数字下拉" value="3" />
