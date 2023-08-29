@@ -2,10 +2,12 @@
 import { computed, ref, toRefs } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
-import { styleData, selectKey, optionMap, positionData } from '@/utils/attr'
+import { styleData, selectKey, optionMap, positionData, horizontalPosition } from '@/utils/attr'
 import DeInputNum from '@/custom-component/common/DeInputNum.vue'
 import ComponentPosition from '@/components/visualization/common/ComponentPosition.vue'
 import BackgroundOverallCommon from '@/components/visualization/component-background/BackgroundOverallCommon.vue'
+import { useI18n } from '@/hooks/web/useI18n'
+const { t } = useI18n()
 
 const props = defineProps({
   themes: {
@@ -78,7 +80,6 @@ const onBackgroundChange = val => {
             :title="label"
             style="display: flex; float: left; margin-top: 10px"
           >
-            la-{{ key }}
             <div class="attr-custom-icon-main">
               <el-icon :title="label" class="attr-custom-icon">
                 <Icon :name="'dv-style-' + key"></Icon>
@@ -92,6 +93,20 @@ const onBackgroundChange = val => {
                 size="small"
                 show-alpha
               ></el-color-picker>
+              <el-radio-group
+                v-else-if="horizontalPosition.includes(key)"
+                v-model="curComponent.style[key]"
+              >
+                <el-radio label="left" :title="t('chart.text_pos_left')"
+                  ><Icon class-name="bash-icon" name="filter-h-left"
+                /></el-radio>
+                <el-radio label="center" :title="t('chart.text_pos_center')"
+                  ><Icon class-name="bash-icon" name="filter-h-center"
+                /></el-radio>
+                <el-radio label="right" :title="t('chart.text_pos_right')"
+                  ><Icon class-name="bash-icon" name="filter-h-right"
+                /></el-radio>
+              </el-radio-group>
               <el-select
                 v-else-if="selectKey.includes(key)"
                 size="small"
@@ -179,5 +194,38 @@ const onBackgroundChange = val => {
   width: 100%;
   min-width: 230px;
   margin-left: -12px;
+}
+
+:deep(.ed-radio) {
+  margin-right: 0;
+  .ed-radio__label {
+    padding: 0 4px 0 0;
+  }
+}
+
+:deep(.ed-radio.is-checked) {
+  .ed-radio__label {
+    .bash-icon {
+      background: rgba(51, 112, 255, 0.1);
+      border-radius: 4px;
+    }
+  }
+}
+
+:deep(.ed-radio__input) {
+  display: none;
+}
+
+:deep(.ed-radio__input.is-checked) {
+  .ed-radio__inner {
+    padding: 4px;
+    background-color: green;
+    background-clip: content-box;
+  }
+}
+
+.bash-icon {
+  width: 24px;
+  height: 24px;
 }
 </style>

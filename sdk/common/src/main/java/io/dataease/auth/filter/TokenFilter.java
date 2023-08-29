@@ -40,6 +40,13 @@ public class TokenFilter implements Filter {
         if (StringUtils.isNotBlank(refreshToken = ServletUtils.request().getHeader(AuthConstant.REFRESH_TOKEN_KEY))) {
             ServletUtils.response().addHeader(AuthConstant.REFRESH_TOKEN_KEY, refreshToken);
         }
+        String linkToken = ServletUtils.getHead(AuthConstant.LINK_TOKEN_KEY);
+        if (StringUtils.isNotBlank(linkToken)) {
+            TokenUserBO tokenUserBO = TokenUtils.validateLinkToken(linkToken);
+            UserUtils.setUserInfo(tokenUserBO);
+            filterChain.doFilter(servletRequest, servletResponse);
+            return;
+        }
         String token = ServletUtils.getToken();
         TokenUserBO userBO = TokenUtils.validate(token);
         UserUtils.setUserInfo(userBO);

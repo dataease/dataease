@@ -10,6 +10,7 @@ import axios, {
 import { tryShowLoading, tryHideLoading } from '@/utils/loading'
 import qs from 'qs'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
+import { useLinkStoreWithOut } from '@/store/modules/link'
 
 import { config } from './config'
 
@@ -49,6 +50,7 @@ const mapping = {
   tw: 'zh_TW'
 }
 const permissionStore = usePermissionStoreWithOut()
+const linkStore = useLinkStoreWithOut()
 
 // request拦截器
 service.interceptors.request.use(
@@ -63,7 +65,9 @@ service.interceptors.request.use(
     if (window.DataEaseBi?.baseUrl) {
       config.baseURL = window.DataEaseBi.baseUrl + 'de2api/'
     }
-    if (wsCache.get('user.token')) {
+    if (linkStore.getLinkToken) {
+      ;(config.headers as AxiosRequestHeaders)['X-DE-LINK-TOKEN'] = linkStore.getLinkToken
+    } else if (wsCache.get('user.token')) {
       ;(config.headers as AxiosRequestHeaders)['X-DE-TOKEN'] = wsCache.get('user.token')
     } else if (window.DataEaseBi?.token) {
       ;(config.headers as AxiosRequestHeaders)['X-EMBEDDED-TOKEN'] = window.DataEaseBi.token
@@ -106,10 +110,14 @@ service.interceptors.response.use(
   (
     response: AxiosResponse<any> & { config: InternalAxiosRequestConfig & { loading?: boolean } }
   ) => {
-    response.config.loading && tryHideLoading(permissionStore.getCurrentPath)
     if (response.headers['x-de-refresh-token']) {
       wsCache.set('user.token', response.headers['x-de-refresh-token'])
     }
+    if (response.headers['x-de-link-token']) {
+      linkStore.setLinkToken(response.headers['x-de-link-token'])
+    }
+    response.config.loading && tryHideLoading(permissionStore.getCurrentPath)
+
     if (response.config.responseType === 'blob') {
       // 如果是文件流，直接过
       return response
@@ -130,7 +138,10 @@ service.interceptors.response.use(
     }
   },
   (error: AxiosErrorWidthLoading<AxiosError>) => {
-    ElMessage.error(error.message)
+    if (!error.config.url.startsWith('/xpackComponent/content')) {
+      ElMessage.error(error.message)
+    }
+
     error.config.loading && tryHideLoading(permissionStore.getCurrentPath)
     const header = error.response.headers as AxiosHeaders
     if (header.has('DE-GATEWAY-FLAG')) {
