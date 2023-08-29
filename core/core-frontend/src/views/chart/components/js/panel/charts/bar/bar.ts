@@ -399,9 +399,10 @@ export class GroupStackBar extends Bar {
     }
     const yAxis = chart.yAxis
     const tooltip = {
+      fields: [],
       formatter: (param: Datum) => {
         let res = param.value
-        const obj = { name: param.category, value: param.value }
+        const obj = { name: `${param.category} - ${param.group}`, value: param.value }
         for (let i = 0; i < yAxis.length; i++) {
           const f = yAxis[i]
           if (f.formatterCfg) {
