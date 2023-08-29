@@ -185,9 +185,13 @@ getItemTagType()
             />
           </el-icon>
         </span>
-        <el-tooltip effect="dark" placement="top" :content="item.name">
+        <el-tooltip
+          effect="dark"
+          placement="top"
+          :content="item.chartShowName ? item.chartShowName : item.name"
+        >
           <span class="item-span-style">
-            {{ item.chartShowName ? item.chartShowName : item.name }}
+            <span class="item-name">{{ item.chartShowName ? item.chartShowName : item.name }}</span>
           </span>
         </el-tooltip>
 
@@ -599,13 +603,17 @@ span {
 }
 
 .item-span-style {
-  display: inline-block;
-  width: 100px;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
+  display: flex;
+  max-width: 180px;
   color: #1f2329;
   margin-left: 4px;
+
+  .item-name {
+    flex: 1;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
 }
 
 .editor-dark {
@@ -654,5 +662,9 @@ span {
 
 .father:hover .child {
   visibility: visible;
+}
+
+.father:hover .item-span-style {
+  max-width: 150px;
 }
 </style>
