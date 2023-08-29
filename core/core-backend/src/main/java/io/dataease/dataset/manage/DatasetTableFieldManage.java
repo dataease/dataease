@@ -69,6 +69,7 @@ public class DatasetTableFieldManage {
         if (ObjectUtils.isNotEmpty(fields)) {
             DEException.throwException(Translator.get("i18n_field_name_duplicated"));
         }
+        datasetTableFieldDTO.setDatasetGroupId(null);
         return save(datasetTableFieldDTO);
     }
 
@@ -107,6 +108,12 @@ public class DatasetTableFieldManage {
             coreDatasetTableFieldMapper.updateById(record);
         }
         return datasetTableFieldDTO;
+    }
+
+    public List<DatasetTableFieldDTO> getChartCalcFields(Long chartId) {
+        QueryWrapper<CoreDatasetTableField> wrapper = new QueryWrapper<>();
+        wrapper.eq("chart_id", chartId);
+        return transDTO(coreDatasetTableFieldMapper.selectList(wrapper));
     }
 
     public void deleteById(Long id) {

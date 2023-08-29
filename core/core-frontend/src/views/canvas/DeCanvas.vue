@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { findNewComponentFromList } from '@/custom-component/component-list' // 左侧列表数据
-import { computed, nextTick, onMounted, reactive, ref, toRefs, onBeforeUnmount } from 'vue'
+import { computed, nextTick, onMounted, reactive, ref, toRefs, onBeforeUnmount, watch } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { storeToRefs } from 'pinia'
@@ -30,9 +30,13 @@ const props = defineProps({
     type: String,
     required: false,
     default: 'canvas-main'
+  },
+  canvasActive: {
+    type: Boolean,
+    default: true
   }
 })
-const { canvasStyleData, componentData, canvasViewInfo, canvasId } = toRefs(props)
+const { canvasStyleData, componentData, canvasViewInfo, canvasId, canvasActive } = toRefs(props)
 const domId = ref('de-canvas-' + canvasId.value)
 // change-end
 
@@ -204,6 +208,15 @@ const getBaseMatrixSize = () => {
     baseHeight: baseHeight.value
   }
 }
+
+watch(
+  () => canvasActive.value,
+  () => {
+    if (canvasActive.value) {
+      canvasSizeInit()
+    }
+  }
+)
 
 defineExpose({
   addItemBox,

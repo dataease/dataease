@@ -10,6 +10,7 @@ import Select from './Select.vue'
 import Time from './Time.vue'
 import { getDatasetTree } from '@/api/dataset'
 import { Tree } from '@/views/visualized/data/dataset/form/CreatDsGroup.vue'
+import draggable from 'vuedraggable'
 
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
@@ -21,8 +22,15 @@ interface DatasetField {
   id: string
   tableId: string
 }
+
+const props = defineProps({
+  addQueryCriteriaConfig: {
+    type: Function,
+    default: () => ({})
+  }
+})
 const dialogVisible = ref(false)
-const renameInput = ref()
+const renameInput = ref([])
 const valueSource = ref([])
 const conditions = ref([])
 const displayType = ref('')
@@ -106,7 +114,10 @@ const handleValueSourceChange = () => {
   multipleChange(curComponent.value.multiple)
 }
 
-const multipleChange = (val: boolean, isTemporary = false) => {
+const multipleChange = (val: boolean, isTemporary = false, isMultipleChange = false) => {
+  if (isMultipleChange) {
+    curComponent.value.defaultValue = val ? [] : ''
+  }
   const { defaultValue, temporaryValue } = curComponent.value
   const value = isTemporary ? temporaryValue : defaultValue
   if (Array.isArray(value)) {
@@ -153,12 +164,9 @@ const init = (id: string, queryId: string) => {
   if (!datasetTree.value.length) {
     initDataset()
   }
+  renameInput.value = []
   conditions.value = cloneDeep(componentData.value.find(ele => ele.id === id).propValue) || []
   handleCondition({ id: queryId })
-  valueSource.value = cloneDeep(curComponent.value.valueSource)
-  if (!valueSource.value.length) {
-    valueSource.value.push('')
-  }
   dialogVisible.value = true
   const datasetFieldIdList = datasetFieldList.value.map(ele => ele.tableId)
   for (const i in datasetMap) {
@@ -225,6 +233,10 @@ const handleCondition = item => {
     handleCheckedFieldsChange(curComponent.value.checkedFields)
   }
   multipleChange(curComponent.value.multiple, false)
+  valueSource.value = cloneDeep(curComponent.value.valueSource)
+  if (!valueSource.value.length) {
+    valueSource.value.push('')
+  }
 }
 
 const getOptions = (id, component) => {
@@ -237,18 +249,24 @@ const getOptions = (id, component) => {
   })
 }
 
+const setRenameInput = val => {
+  renameInput.value.push(val)
+}
+
 const addOperation = (cmd, condition, index) => {
   switch (cmd) {
     case 'del':
+      renameInput.value = []
       conditions.value.splice(index, 1)
       break
     case 'rename':
+      renameInput.value = []
+      Object.assign(activeConditionForRename, condition)
       setTimeout(() => {
-        Object.assign(activeConditionForRename, condition)
         nextTick(() => {
-          renameInput.value[index].focus()
+          renameInput.value[0].focus()
         })
-      }, 200)
+      }, 400)
       break
     default:
       break
@@ -272,9 +290,8 @@ const renameInputBlur = () => {
   activeConditionForRename.id = ''
 }
 
-const emits = defineEmits(['addQueryCriteria'])
 const addQueryCriteria = () => {
-  emits('addQueryCriteria')
+  conditions.value.push(props.addQueryCriteriaConfig())
 }
 defineExpose({
   init
@@ -299,41 +316,48 @@ defineExpose({
             <Icon name="icon_add_outlined"></Icon>
           </el-icon>
         </div>
-        <div
-          v-for="(condition, index) in conditions"
-          :key="condition.id"
-          @click="handleCondition(condition)"
-          class="list-item_primary"
-          :class="condition.id === activeCondition && 'active'"
-        >
-          <el-icon>
-            <Icon name="more_v"></Icon>
-          </el-icon>
-          <div class="label">
-            {{ condition.name }}
-          </div>
-          <div class="condition-icon flex-align-center">
-            <handle-more
-              @handle-command="cmd => addOperation(cmd, condition, index)"
-              :menu-list="typeList"
-              icon-name="more_v"
-              placement="bottom-end"
-            ></handle-more>
-            <el-icon @click.stop="condition.visible = !condition.visible" v-if="condition.visible">
-              <Icon name="icon_visible_outlined"></Icon>
-            </el-icon>
-            <el-icon @click.stop="condition.visible = !condition.visible" v-else>
-              <Icon name="de_pwd_invisible"></Icon>
-            </el-icon>
-          </div>
-          <div @click.stop v-if="activeConditionForRename.id === condition.id" class="rename">
-            <el-input
-              @blur="renameInputBlur"
-              ref="renameInput"
-              v-model="activeConditionForRename.name"
-            ></el-input>
-          </div>
-        </div>
+        <draggable tag="div" :list="conditions" handle=".handle">
+          <template #item="{ element, index }">
+            <div
+              :key="element.id"
+              @click.stop="handleCondition(element)"
+              class="list-item_primary"
+              :class="element.id === activeCondition && 'active'"
+            >
+              <el-icon class="handle">
+                <Icon name="icon_drag_outlined"></Icon>
+              </el-icon>
+              <div class="label" :title="element.name">
+                {{ element.name }}
+              </div>
+              <div class="condition-icon flex-align-center">
+                <handle-more
+                  @handle-command="cmd => addOperation(cmd, element, index)"
+                  :menu-list="typeList"
+                  icon-name="more_v"
+                  placement="bottom-end"
+                ></handle-more>
+                <el-icon
+                  class="hover-icon"
+                  @click.stop="element.visible = !element.visible"
+                  v-if="element.visible"
+                >
+                  <Icon name="icon_visible_outlined"></Icon>
+                </el-icon>
+                <el-icon class="hover-icon" @click.stop="element.visible = !element.visible" v-else>
+                  <Icon name="de_pwd_invisible"></Icon>
+                </el-icon>
+              </div>
+              <div @click.stop v-if="activeConditionForRename.id === element.id" class="rename">
+                <el-input
+                  @blur="renameInputBlur"
+                  :ref="setRenameInput"
+                  v-model="activeConditionForRename.name"
+                ></el-input>
+              </div>
+            </div>
+          </template>
+        </draggable>
       </div>
       <div class="chart-field">
         <div class="title">选择图表及字段</div>
@@ -381,7 +405,7 @@ defineExpose({
           <div class="list-item">
             <div class="label">展示类型</div>
             <div class="value">
-              <el-select v-model="displayType" clearable>
+              <el-select v-model="displayType">
                 <el-option v-if="displayType === '0'" label="文本下拉" value="0" />
                 <el-option v-if="displayType === '2'" label="数字下拉" value="2" />
                 <el-option v-if="displayType === '3'" label="数字下拉" value="3" />
@@ -389,7 +413,7 @@ defineExpose({
               </el-select>
             </div>
           </div>
-          <div class="list-item top-item">
+          <div class="list-item top-item" v-if="displayType !== '1'">
             <div class="label">选项值来源</div>
             <div class="value">
               <div class="value">
@@ -486,7 +510,10 @@ defineExpose({
           <div class="list-item">
             <div class="label">选项类型</div>
             <div class="value">
-              <el-radio-group @change="multipleChange" v-model="multiple">
+              <el-radio-group
+                @change="val => multipleChange(val as boolean, false, true)"
+                v-model="multiple"
+              >
                 <el-radio :label="false">{{ t('visualization.single_choice') }}</el-radio>
                 <el-radio :label="true">{{ t('visualization.multiple_choice') }}</el-radio>
               </el-radio-group>
@@ -566,7 +593,7 @@ defineExpose({
           left: 0;
           width: 100%;
           height: 100%;
-          background: #fff;
+          background: rgba(51, 112, 255, 0.1);
           padding: 4px 10px;
           z-index: 5;
         }

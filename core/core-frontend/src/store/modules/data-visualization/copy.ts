@@ -39,6 +39,7 @@ export const copyStore = defineStore('copy', {
       const _this = this
       Object.keys(outerMultiplexingComponents).forEach(function (componentId, index) {
         const newComponent = deepCopy(outerMultiplexingComponents[componentId])
+        newComponent.canvasId = 'canvas-main'
         if (keepSize) {
           newComponent.style.top = newComponent.style.height + newComponent.style.top
         } else {
@@ -99,7 +100,7 @@ export const copyStore = defineStore('copy', {
           if (dvMainStore.multiplexingStyleAdapt && this.copyData.copyFrom === 'multiplexing') {
             adaptCurThemeCommonStyle(newComponent)
           }
-          eventBus.emit('addDashboardItem-canvas-main', newComponent)
+          eventBus.emit('addDashboardItem-' + newComponent.canvasId, newComponent)
         }
       })
       if (this.isCut) {
@@ -153,6 +154,14 @@ function deepCopyHelper(data, idMap) {
   if (result.component === 'Group') {
     result.propValue.forEach((component, i) => {
       result.propValue[i] = deepCopyHelper(component, idMap)
+    })
+  }
+  // 深度拷贝Tab
+  if (result.component === 'DeTabs') {
+    result.propValue.forEach(tabItem => {
+      tabItem.componentData.forEach((tabComponent, i) => {
+        tabItem.componentData[i] = deepCopyHelper(tabComponent, idMap)
+      })
     })
   }
 

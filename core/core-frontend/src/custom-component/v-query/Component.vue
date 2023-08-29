@@ -219,6 +219,17 @@ const addQueryCriteria = () => {
   editeQueryConfig(list.value[list.value.length - 1].id)
 }
 
+const addQueryCriteriaConfig = () => {
+  const componentInfo: ComponentInfo = {
+    id: '',
+    name: '未命名',
+    deType: 0,
+    type: 'VARCHAR',
+    datasetId: ''
+  }
+  return infoFormat(componentInfo)
+}
+
 const editQueryCriteria = () => {
   if (!list.value.length) {
     addQueryCriteria()
@@ -285,9 +296,6 @@ const listVisible = computed(() => {
 
 const queryData = () => {
   const emitterList = (element.value.propValue || []).reduce((pre, next) => {
-    if (!next.selectValue) {
-      return pre
-    }
     const keyList = Object.entries(next.checkedFieldsMap)
       .filter(ele => next.checkedFields.includes(ele[0]))
       .filter(ele => !!ele[1])
@@ -379,7 +387,7 @@ const queryData = () => {
   </div>
   <Teleport to="body">
     <QueryConditionConfiguration
-      @add-query-criteria="addQueryCriteria"
+      :add-query-criteria-config="addQueryCriteriaConfig"
       ref="queryConfig"
     ></QueryConditionConfiguration>
   </Teleport>

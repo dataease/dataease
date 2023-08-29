@@ -236,6 +236,11 @@ public class Utils {
         } catch (Exception e) {
         }
         try {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
+            return simpleDateFormat.parse(value).getTime();
+        } catch (Exception e) {
+        }
+        try {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
             return simpleDateFormat.parse(value).getTime();
         } catch (Exception e) {
@@ -247,11 +252,6 @@ public class Utils {
         }
         try {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy");
-            return simpleDateFormat.parse(value).getTime();
-        } catch (Exception e) {
-        }
-        try {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
             return simpleDateFormat.parse(value).getTime();
         } catch (Exception e) {
         }

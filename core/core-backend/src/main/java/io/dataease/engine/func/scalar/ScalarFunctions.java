@@ -21,8 +21,20 @@ public class ScalarFunctions {
             if (StringUtils.isEmpty(date)) {
                 return null;
             }
-            date = Utils.parseTime(date, format, timeOnly);
             format = get_date_format(date);
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
+            Date parse = simpleDateFormat.parse(date);
+            return simpleDateFormat.format(parse);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static String date_format_real(String date, String format) {
+        try {
+            if (StringUtils.isEmpty(date)) {
+                return null;
+            }
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
             Date parse = simpleDateFormat.parse(date);
             return simpleDateFormat.format(parse);
@@ -36,7 +48,6 @@ public class ScalarFunctions {
             if (StringUtils.isEmpty(date)) {
                 return null;
             }
-            date = Utils.parseTime(date, format, timeOnly);
             format = get_date_format(date);
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
             Date parse = simpleDateFormat.parse(date);
@@ -51,7 +62,6 @@ public class ScalarFunctions {
             if (StringUtils.isEmpty(date)) {
                 return null;
             }
-            date = Utils.parseTime(date, format, timeOnly);
             sourceFormat = get_date_format(date);
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(sourceFormat);
             Date parse = simpleDateFormat.parse(date);
@@ -94,6 +104,12 @@ public class ScalarFunctions {
         } catch (Exception e) {
         }
         try {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(timeOnly);
+            simpleDateFormat.parse(date);
+            return timeOnly;
+        } catch (Exception e) {
+        }
+        try {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateOnly);
             simpleDateFormat.parse(date);
             return dateOnly;
@@ -109,12 +125,6 @@ public class ScalarFunctions {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(yearOnly);
             simpleDateFormat.parse(date);
             return yearOnly;
-        } catch (Exception e) {
-        }
-        try {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(timeOnly);
-            simpleDateFormat.parse(date);
-            return timeOnly;
         } catch (Exception e) {
         }
         return format;
