@@ -51,6 +51,7 @@
           :canvas-view-info="canvasViewInfo"
           :canvas-id="element.id + '--' + tabItem.name"
           :class="moveActive ? 'canvas-move-in' : ''"
+          :canvas-active="editableTabsValue === tabItem.name"
         ></de-canvas>
         <de-preview
           v-else
@@ -62,7 +63,7 @@
           :canvas-view-info="canvasViewInfo"
           :canvas-id="element.id + '--' + tabItem.name"
           :preview-active="editableTabsValue === tabItem.name"
-          show-position="preview"
+          :show-position="showPosition"
         ></de-preview>
       </el-tab-pane>
     </de-custom-tab>
@@ -129,9 +130,14 @@ const props = defineProps({
   isEdit: {
     type: Boolean,
     default: false
+  },
+  showPosition: {
+    type: String,
+    required: false,
+    default: 'canvas'
   }
 })
-const { element, isEdit } = toRefs(props)
+const { element, isEdit, showPosition } = toRefs(props)
 
 const state = reactive({
   activeTabName: '',

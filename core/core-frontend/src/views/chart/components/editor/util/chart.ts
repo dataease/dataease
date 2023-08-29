@@ -1030,7 +1030,7 @@ export const CHART_TYPE_CONFIGS = [
         category: 'compare',
         value: 'bar-stack-horizontal',
         title: t('chart.chart_bar_stack_horizontal'),
-        icon: 'bar-horizontal'
+        icon: 'bar-stack-horizontal'
       },
       {
         render: 'antv',

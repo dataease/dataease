@@ -186,17 +186,17 @@ export function findComponentIndexById(componentId, componentDataMatch = compone
 
 export function canvasChangeAdaptor(component, matrixBase, usePointShadow = false) {
   const targetDomComponent = document.querySelector(
-    usePointShadow ? '#point-shadow-main' : '#component' + component.id
+    usePointShadow ? '#point-shadow-main' : '#shape-id-' + component.id
   )
-  const componentWidth = targetDomComponent.offsetWidth
-  const componentHeight = targetDomComponent.offsetHeight
+  const componentWidth = targetDomComponent['offsetWidth']
+  const componentHeight = targetDomComponent['offsetHeight']
   component.sizeX = Math.floor(componentWidth / matrixBase.baseWidth) + 1
   component.sizeY = Math.floor(componentHeight / matrixBase.baseHeight) + 1
   component.style.width = componentWidth
   component.style.height = componentHeight
   if (usePointShadow) {
-    const componentLeft = targetDomComponent.offsetLeft
-    const componentTop = targetDomComponent.offsetTop
+    const componentLeft = targetDomComponent['offsetLeft']
+    const componentTop = targetDomComponent['offsetTop']
     component.x = Math.floor(componentLeft / matrixBase.baseWidth) + 1
     component.y = Math.floor(componentTop / matrixBase.baseHeight) + 1
     component.style.left = componentLeft

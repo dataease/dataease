@@ -300,6 +300,7 @@ const drillItemRemove = item => {
   calcData(view.value)
 }
 
+const customSortAxis = ref<AxisType>('xAxis')
 const customSort = () => {
   state.showCustomSort = true
 }
@@ -312,7 +313,7 @@ const closeCustomSort = () => {
   state.customSortList = []
 }
 const saveCustomSort = () => {
-  view.value.xAxis.forEach(ele => {
+  view.value[customSortAxis.value].forEach(ele => {
     if (ele.id === state.customSortField.id) {
       ele.sort = 'custom_sort'
       ele.customSort = state.customSortList
@@ -322,6 +323,19 @@ const saveCustomSort = () => {
 }
 const onCustomSort = item => {
   state.customSortField = view.value.xAxis[item.index]
+  customSortAxis.value = 'xAxis'
+  customSort()
+}
+
+const onStackCustomSort = item => {
+  state.customSortField = view.value.extStack[item.index]
+  customSortAxis.value = 'extStack'
+  customSort()
+}
+
+const onExtCustomSort = item => {
+  state.customSortField = view.value.xAxisExt[item.index]
+  customSortAxis.value = 'xAxisExt'
   customSort()
 }
 
@@ -658,6 +672,7 @@ const closeResultFilter = () => {
   state.resultFilterEdit = false
 }
 const saveResultFilter = () => {
+  console.log(view)
   if (
     ((state.filterItem.deType === 0 || state.filterItem.deType === 5) &&
       state.filterItem.filterType !== 'enum') ||
@@ -1024,7 +1039,7 @@ const autoInsert = element => {
                                 @onDimensionItemChange="dimensionItemChange"
                                 @onDimensionItemRemove="dimensionItemRemove"
                                 @onNameEdit="showRename"
-                                @onCustomSort="onCustomSort"
+                                @onCustomSort="onExtCustomSort"
                               />
                             </template>
                           </draggable>
@@ -1057,7 +1072,7 @@ const autoInsert = element => {
                                 @onDimensionItemChange="dimensionItemChange"
                                 @onDimensionItemRemove="dimensionItemRemove"
                                 @onNameEdit="showRename"
-                                @onCustomSort="onCustomSort"
+                                @onCustomSort="onStackCustomSort"
                               />
                             </template>
                           </draggable>
@@ -1484,6 +1499,7 @@ const autoInsert = element => {
                   ></Icon>
                 </el-icon>
                 <el-icon
+                  v-if="false"
                   :style="{ color: '#a6a6a6', cursor: 'pointer', marginRight: '6px' }"
                   @click="addCalcField('d')"
                 >
@@ -1531,7 +1547,7 @@ const autoInsert = element => {
                     </el-icon>
                     <span class="field-name">{{ element.name }}</span>
                     <el-dropdown
-                      v-if="element.id !== '-1'"
+                      v-if="element.id !== '-1' && false"
                       :effect="props.themes"
                       placement="right-start"
                       trigger="click"
@@ -1565,7 +1581,7 @@ const autoInsert = element => {
             <div class="padding-lr field-height">
               <span>{{ t('chart.quota') }}</span>
               <draggable
-                :list="quotaData"
+                :list="state.quotaData"
                 :group="dsFieldDragOptions.group"
                 :move="onMove"
                 item-key="id"
@@ -1583,7 +1599,7 @@ const autoInsert = element => {
                     </el-icon>
                     <span class="field-name">{{ element.name }}</span>
                     <el-dropdown
-                      v-if="element.id !== '-1'"
+                      v-if="element.id !== '-1' && false"
                       :effect="props.themes"
                       placement="right-start"
                       trigger="click"
@@ -1742,7 +1758,7 @@ const autoInsert = element => {
     >
       <custom-sort-edit
         :chart="view"
-        field-type="xAxis"
+        :field-type="customSortAxis"
         :field="state.customSortField"
         @onSortChange="customSortChange"
       />

@@ -110,6 +110,12 @@ public class DatasetTableFieldManage {
         return datasetTableFieldDTO;
     }
 
+    public List<DatasetTableFieldDTO> getChartCalcFields(Long chartId) {
+        QueryWrapper<CoreDatasetTableField> wrapper = new QueryWrapper<>();
+        wrapper.eq("chart_id", chartId);
+        return transDTO(coreDatasetTableFieldMapper.selectList(wrapper));
+    }
+
     public void deleteById(Long id) {
         coreDatasetTableFieldMapper.deleteById(id);
     }
