@@ -3,9 +3,11 @@ import { ref, reactive, nextTick, computed, shallowRef } from 'vue'
 import { storeToRefs } from 'pinia'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { useI18n } from '@/hooks/web/useI18n'
+import { fieldType } from '@/utils/attr'
 import { ElMessage } from 'element-plus-secondary'
 import type { DatasetDetail } from '@/api/dataset'
 import { getDsDetails } from '@/api/dataset'
+import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import { cloneDeep } from 'lodash-es'
 import Select from './Select.vue'
 import Time from './Time.vue'
@@ -63,6 +65,34 @@ const isIndeterminate = ref(false)
 const datasetTree = shallowRef([])
 const fields = ref<DatasetDetail[]>()
 let componentId = ''
+
+const getDetype = (id, arr) => {
+  return arr.find(ele => ele.id === id)?.deType
+}
+
+const showConfiguration = computed(() => {
+  if (!curComponent.value) return false
+  if (!curComponent.value.checkedFields?.length) return false
+  return Object.values(curComponent.value.checkedFieldsMap).some(ele => !!ele)
+})
+
+const showTypeError = computed(() => {
+  if (!curComponent.value) return false
+  if (!curComponent.value.checkedFields?.length) return false
+  if (!fields.value?.length) return false
+  let displayTypeField = null
+  return curComponent.value.checkedFields.some(id => {
+    const arr = fields.value.find(ele => ele.componentId === id)
+    const checkId = curComponent.value.checkedFieldsMap?.[id]
+    const field = (arr?.list || []).find(ele => checkId === ele.id)
+    if (!field) return false
+    if (displayTypeField === null) {
+      displayTypeField = field?.deType
+      return false
+    }
+    return displayTypeField !== field?.deType
+  })
+})
 const typeList = [
   {
     label: '重命名',
@@ -134,7 +164,17 @@ const multipleChange = (val: boolean, isTemporary = false, isMultipleChange = fa
   curComponent.value.operator = val ? 'in' : 'eq'
 }
 
+const validate = () => {
+  return conditions.value.some(ele => {
+    if (!ele.checkedFields?.length || ele.checkedFields.some(itx => !ele.checkedFieldsMap[itx])) {
+      ElMessage.error('请先勾选需要联动的图表及字段')
+      return true
+    }
+  })
+}
+
 const confirmClick = () => {
+  if (validate()) return
   dialogVisible.value = false
   let obj = componentData.value.find(ele => ele.id === componentId)
   conditions.value.forEach(ele => {
@@ -287,6 +327,11 @@ const dsSelectProps = {
 }
 
 const renameInputBlur = () => {
+  if (activeConditionForRename.name.trim() === '') {
+    ElMessage.error('条件名不能为空')
+    activeConditionForRename.id = ''
+    return
+  }
   conditions.value.some(ele => {
     if (activeConditionForRename.id === ele.id) {
       ele.name = activeConditionForRename.name
@@ -395,12 +440,40 @@ defineExpose({
                 v-model="curComponent.checkedFieldsMap[field.componentId]"
                 clearable
               >
+                <template #prefix>
+                  <el-icon>
+                    <Icon
+                      :name="`field_${
+                        fieldType[
+                          getDetype(curComponent.checkedFieldsMap[field.componentId], field.list)
+                        ]
+                      }`"
+                      :className="`field-icon-${
+                        fieldType[
+                          getDetype(curComponent.checkedFieldsMap[field.componentId], field.list)
+                        ]
+                      }`"
+                    ></Icon>
+                  </el-icon>
+                </template>
                 <el-option
                   v-for="ele in field.list"
                   :key="ele.id"
                   :label="ele.name"
                   :value="ele.id"
-                />
+                >
+                  <div class="flex-align-center icon">
+                    <el-icon>
+                      <Icon
+                        :name="`field_${fieldType[ele.deType]}`"
+                        :className="`field-icon-${fieldType[ele.deType]}`"
+                      ></Icon>
+                    </el-icon>
+                    <span>
+                      {{ ele.name }}
+                    </span>
+                  </div>
+                </el-option>
               </el-select>
             </div>
           </el-checkbox-group>
@@ -408,7 +481,7 @@ defineExpose({
       </div>
       <div class="condition-configuration">
         <div class="title">查询条件配置</div>
-        <div class="configuration-list">
+        <div v-show="showConfiguration && !showTypeError" class="configuration-list">
           <div class="list-item">
             <div class="label">展示类型</div>
             <div class="value">
@@ -555,6 +628,12 @@ defineExpose({
             </div>
           </div>
         </div>
+        <div v-if="showTypeError && showConfiguration" class="empty">
+          <empty-background description="所选字段类型不一致，无法进行查询配置" img-type="error" />
+        </div>
+        <div v-else-if="!showConfiguration" class="empty">
+          <empty-background description="请先勾选需要联动的图表及字段" img-type="noneWhite" />
+        </div>
       </div>
     </div>
     <template #footer>
@@ -568,6 +647,9 @@ defineExpose({
 
 <style lang="less">
 .query-condition-configuration {
+  .ed-input .ed-select__prefix--light {
+    border-right: none;
+  }
   .container {
     font-size: 14px;
     font-family: PingFang SC;
