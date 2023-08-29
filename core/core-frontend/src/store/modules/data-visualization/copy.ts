@@ -99,7 +99,7 @@ export const copyStore = defineStore('copy', {
           if (dvMainStore.multiplexingStyleAdapt && this.copyData.copyFrom === 'multiplexing') {
             adaptCurThemeCommonStyle(newComponent)
           }
-          eventBus.emit('addDashboardItem-canvas-main', newComponent)
+          eventBus.emit('addDashboardItem-' + newComponent.canvasId, newComponent)
         }
       })
       if (this.isCut) {
@@ -153,6 +153,14 @@ function deepCopyHelper(data, idMap) {
   if (result.component === 'Group') {
     result.propValue.forEach((component, i) => {
       result.propValue[i] = deepCopyHelper(component, idMap)
+    })
+  }
+  // 深度拷贝Tab
+  if (result.component === 'DeTabs') {
+    result.propValue.forEach((tabItem, i) => {
+      tabItem.componentData.forEach((tabComponent, i) => {
+        tabItem.componentData[i] = deepCopyHelper(tabComponent, idMap)
+      })
     })
   }
 

@@ -215,15 +215,9 @@ const list = [
       height: 100,
       fontSize: 16,
       activeFontSize: 18,
-      switchTime: 5,
-      carouselEnable: false,
-      borderWidth: 0,
-      borderColor: '#000000',
+      headHorizontalPosition: 'left',
       headFontColor: '#000000',
-      headFontActiveColor: '#000000',
-      headBorderColor: '#000000',
-      headBorderActiveColor: '#000000',
-      headHorizontalPosition: 'left'
+      headFontActiveColor: '#000000'
     }
   }
 ]
