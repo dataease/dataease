@@ -1346,9 +1346,9 @@ const autoInsert = element => {
                               class="radio-span"
                               size="small"
                             >
-                              <el-radio label="all"
-                                ><span>{{ t('chart.result_mode_all') }}</span></el-radio
-                              >
+                              <el-radio label="all" :effect="themes">
+                                <span>{{ t('chart.result_mode_all') }}</span>
+                              </el-radio>
                               <el-radio label="custom">
                                 <el-input-number
                                   :min="1"
