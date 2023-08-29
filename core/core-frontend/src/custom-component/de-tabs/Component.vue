@@ -54,13 +54,14 @@
         ></de-canvas>
         <de-preview
           v-else
-          ref="dashboardPreview"
+          :ref="'dashboardPreview'"
           :dv-info="dvInfo"
           :cur-gap="curPreviewGap"
           :component-data="tabItem.componentData"
           :canvas-style-data="canvasStyleData"
           :canvas-view-info="canvasViewInfo"
           :canvas-id="element.id + '--' + tabItem.name"
+          :preview-active="editableTabsValue === tabItem.name"
           show-position="preview"
         ></de-preview>
       </el-tab-pane>
@@ -383,6 +384,7 @@ onMounted(() => {
   background-color: #fff;
 }
 .el-tab-pane-custom {
+  width: 100%;
   height: 100%;
 }
 .canvas-move-in {
