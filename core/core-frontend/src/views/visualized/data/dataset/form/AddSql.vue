@@ -19,7 +19,7 @@ export interface SqlNode {
   tableName: string
   datasourceId: string
   id: string
-  variables: Array<{
+  variables?: Array<{
     variableName: string
     defaultValue: string
     defaultValueScope: string
