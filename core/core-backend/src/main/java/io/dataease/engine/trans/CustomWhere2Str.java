@@ -86,7 +86,7 @@ public class CustomWhere2Str {
                         if (field.getDeType() == 1) {
                             // 规定几种日期格式，一一匹配，匹配到就是该格式
                             String f = ScalarFunctions.get_date_format(filterItemDTO.getValue());
-                            whereName = String.format(SQLConstants.DATE_FORMAT, whereName, f);
+                            whereName = String.format(SQLConstants.DATE_FORMAT_REAL, whereName, f);
                             whereName = String.format(SQLConstants.UNIX_TIMESTAMP, whereName);
                         }
 

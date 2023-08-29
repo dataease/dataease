@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { reactive, computed, ref, nextTick } from 'vue'
+import { reactive, computed, ref, nextTick, onMounted } from 'vue'
 // import { throttle } from 'lodash'
 import AddSql from './AddSql.vue'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -89,6 +89,9 @@ const dfsNodeNameList = (list, arr) => {
 
 const initState = nodeList => {
   Object.assign(state.nodeList, nodeList)
+  nextTick(() => {
+    emits('addComplete')
+  })
 }
 
 const activeNode = ref('')
