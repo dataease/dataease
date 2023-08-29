@@ -1554,6 +1554,7 @@ export default {
     mobile_phone_number: '手机号码',
     role: '角色',
     personal_info: '个人信息',
+    user_center: '用户中心',
     api_keys: 'API Keys',
     quota: '配额管理',
     status: '状态',

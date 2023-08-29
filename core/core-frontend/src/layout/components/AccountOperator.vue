@@ -4,6 +4,7 @@ import { Icon } from '@/components/icon-custom'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import { logoutApi } from '@/api/login'
 import { logoutHandler } from '@/utils/logout'
+import { XpackComponent } from '@/components/plugin'
 const userStore = useUserStoreWithOut()
 
 const logout = async () => {
@@ -24,20 +25,7 @@ const name = computed(() => userStore.getName)
     </div>
     <template #dropdown>
       <el-dropdown-menu>
-        <router-link to="/person-info/index" class="top-dropdown-link">
-          <el-dropdown-item>{{ $t('common.personal_info') }}</el-dropdown-item>
-        </router-link>
-
-        <!-- <router-link
-            v-if="$store.getters.validate"
-            to="/ukey/index"
-          >
-            <el-dropdown-item>{{ $t('commons.ukey_title') }}</el-dropdown-item>
-          </router-link> -->
-
-        <router-link to="/person-pwd/index" class="top-dropdown-link">
-          <el-dropdown-item>{{ $t('user.change_password') }}</el-dropdown-item>
-        </router-link>
+        <XpackComponent jsname="dWNlbnRlci1oYW5kbGVy" />
 
         <router-link to="/about/index" class="top-dropdown-link">
           <el-dropdown-item>{{ $t('common.about') }}</el-dropdown-item>
