@@ -31,4 +31,21 @@ public class TokenUtils {
         TokenUserBO tokenUserBO = userBOByToken(token);
         return tokenUserBO;
     }
+
+    public static TokenUserBO validateLinkToken(String linkToken) {
+        if (StringUtils.isBlank(linkToken)) {
+            String uri = ServletUtils.request().getRequestURI();
+            DEException.throwException("link token is empty for uri {" + uri + "}");
+        }
+        if (StringUtils.length(linkToken) < 100) {
+            DEException.throwException("token is invalid");
+        }
+        DecodedJWT jwt = JWT.decode(linkToken);
+        Long userId = jwt.getClaim("uid").asLong();
+        Long oid = jwt.getClaim("oid").asLong();
+        if (ObjectUtils.isEmpty(userId)) {
+            DEException.throwException("link token格式错误！");
+        }
+        return new TokenUserBO(userId, oid);
+    }
 }
