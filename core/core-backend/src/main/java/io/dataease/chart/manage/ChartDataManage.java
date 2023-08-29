@@ -1,5 +1,6 @@
 package io.dataease.chart.manage;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.dataease.api.chart.dto.*;
 import io.dataease.api.chart.request.ChartDrillRequest;
@@ -1090,10 +1091,10 @@ public class ChartDataManage {
         ChartExtRequest requestList = view.getChartExtRequest();
         List<String[]> sqlData = sqlData(view, requestList, fieldId);
         List<ChartViewFieldDTO> fieldList = new ArrayList<>();
-        if (StringUtils.equalsIgnoreCase(fieldType, "xAxis")) {
-            fieldList = view.getXAxis();
-        } else if (StringUtils.equalsIgnoreCase(fieldType, "extStack")) {
-            fieldList = view.getExtStack();
+        switch (fieldType) {
+            case "xAxis" -> fieldList = view.getXAxis();
+            case "xAxisExt" -> fieldList = view.getXAxisExt();
+            case "extStack" -> fieldList = view.getExtStack();
         }
         DatasetTableFieldDTO field = datasetTableFieldManage.selectById(fieldId);
 
@@ -1113,11 +1114,18 @@ public class ChartDataManage {
                     getIndex = i;
                 }
             }
-            if (StringUtils.equalsIgnoreCase(fieldType, "extStack")) {
-                List<ChartViewFieldDTO> stack = view.getXAxis();
-                index += stack.size();
-                getIndex += stack.size();
+            if (StringUtils.equalsIgnoreCase(fieldType, "xAxisExt")) {
+                List<ChartViewFieldDTO> xAxis = view.getXAxis();
+                index += xAxis.size();
+                getIndex += xAxis.size();
             }
+            if (StringUtils.equalsIgnoreCase(fieldType, "extStack")) {
+                int xAxisSize = CollectionUtil.size(view.getXAxis());
+                int extSize = CollectionUtil.size(view.getXAxisExt());
+                index += xAxisSize + extSize;
+                getIndex += xAxisSize + extSize;
+            }
+
             List<String[]> sortResult = resultCustomSort(fieldList, sqlData);
             if (ObjectUtils.isNotEmpty(chartViewFieldDTO) && (getIndex >= index)) {
                 // 获取自定义值与data对应列的结果

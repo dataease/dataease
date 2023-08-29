@@ -300,6 +300,7 @@ const drillItemRemove = item => {
   calcData(view.value)
 }
 
+const customSortAxis = ref<AxisType>('xAxis')
 const customSort = () => {
   state.showCustomSort = true
 }
@@ -312,7 +313,7 @@ const closeCustomSort = () => {
   state.customSortList = []
 }
 const saveCustomSort = () => {
-  view.value.xAxis.forEach(ele => {
+  view.value[customSortAxis.value].forEach(ele => {
     if (ele.id === state.customSortField.id) {
       ele.sort = 'custom_sort'
       ele.customSort = state.customSortList
@@ -322,6 +323,19 @@ const saveCustomSort = () => {
 }
 const onCustomSort = item => {
   state.customSortField = view.value.xAxis[item.index]
+  customSortAxis.value = 'xAxis'
+  customSort()
+}
+
+const onStackCustomSort = item => {
+  state.customSortField = view.value.extStack[item.index]
+  customSortAxis.value = 'extStack'
+  customSort()
+}
+
+const onExtCustomSort = item => {
+  state.customSortField = view.value.xAxisExt[item.index]
+  customSortAxis.value = 'xAxisExt'
   customSort()
 }
 
@@ -1024,7 +1038,7 @@ const autoInsert = element => {
                                 @onDimensionItemChange="dimensionItemChange"
                                 @onDimensionItemRemove="dimensionItemRemove"
                                 @onNameEdit="showRename"
-                                @onCustomSort="onCustomSort"
+                                @onCustomSort="onExtCustomSort"
                               />
                             </template>
                           </draggable>
@@ -1057,7 +1071,7 @@ const autoInsert = element => {
                                 @onDimensionItemChange="dimensionItemChange"
                                 @onDimensionItemRemove="dimensionItemRemove"
                                 @onNameEdit="showRename"
-                                @onCustomSort="onCustomSort"
+                                @onCustomSort="onStackCustomSort"
                               />
                             </template>
                           </draggable>
@@ -1742,7 +1756,7 @@ const autoInsert = element => {
     >
       <custom-sort-edit
         :chart="view"
-        field-type="xAxis"
+        :field-type="customSortAxis"
         :field="state.customSortField"
         @onSortChange="customSortChange"
       />
