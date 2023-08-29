@@ -1,5 +1,6 @@
 package io.dataease.dataset.manage;
 
+import io.dataease.api.chart.dto.ChartViewDTO;
 import io.dataease.api.chart.dto.ColumnPermissionItem;
 import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.dataset.dto.PreviewSqlDTO;
@@ -10,6 +11,7 @@ import io.dataease.api.dataset.union.model.SQLMeta;
 import io.dataease.api.ds.vo.TableField;
 import io.dataease.api.permissions.dataset.dto.DataSetRowPermissionsTreeDTO;
 import io.dataease.auth.bo.TokenUserBO;
+import io.dataease.chart.manage.ChartViewManege;
 import io.dataease.chart.utils.ChartDataBuild;
 import io.dataease.commons.utils.SqlparserUtils;
 import io.dataease.dataset.constant.DatasetTableType;
@@ -72,6 +74,8 @@ public class DatasetDataManage {
     private PermissionManage permissionManage;
     @Resource
     private DatasetTableSqlLogManage datasetTableSqlLogManage;
+    @Resource
+    private ChartViewManege chartViewManege;
 
     private static Logger logger = LoggerFactory.getLogger(DatasetDataManage.class);
 
@@ -392,7 +396,15 @@ public class DatasetDataManage {
             if (field == null) {
                 DEException.throwException(Translator.get("i18n_no_field"));
             }
-            DatasetGroupInfoDTO datasetGroupInfoDTO = datasetGroupManage.get(field.getDatasetGroupId(), null);
+            // 根据视图计算字段，获取数据集
+            Long datasetGroupId;
+            if (field.getDatasetGroupId() == null && field.getChartId() != null) {
+                ChartViewDTO chart = chartViewManege.getChart(field.getChartId());
+                datasetGroupId = chart.getTableId();
+            } else {
+                datasetGroupId = field.getDatasetGroupId();
+            }
+            DatasetGroupInfoDTO datasetGroupInfoDTO = datasetGroupManage.get(datasetGroupId, null);
 
             Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO);
             List<DatasetTableFieldDTO> allFields = datasetGroupInfoDTO.getAllFields();
