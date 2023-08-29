@@ -396,24 +396,27 @@ public class DatasetDataManage {
             if (field == null) {
                 DEException.throwException(Translator.get("i18n_no_field"));
             }
+            List<DatasetTableFieldDTO> allFields = new ArrayList<>();
             // 根据视图计算字段，获取数据集
             Long datasetGroupId;
             if (field.getDatasetGroupId() == null && field.getChartId() != null) {
                 ChartViewDTO chart = chartViewManege.getChart(field.getChartId());
                 datasetGroupId = chart.getTableId();
+                allFields.addAll(datasetTableFieldManage.getChartCalcFields(field.getChartId()));
             } else {
                 datasetGroupId = field.getDatasetGroupId();
             }
             DatasetGroupInfoDTO datasetGroupInfoDTO = datasetGroupManage.get(datasetGroupId, null);
 
             Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO);
-            List<DatasetTableFieldDTO> allFields = datasetGroupInfoDTO.getAllFields();
             String sql = (String) sqlMap.get("sql");
+
+            allFields.addAll(datasetGroupInfoDTO.getAllFields());
 
             // build query sql
             SQLMeta sqlMeta = new SQLMeta();
             Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")");
-            // 计算字段先完成内容替换，当成普通字段处理
+            // 计算字段先完成内容替换
             if (Objects.equals(field.getExtField(), ExtFieldConstant.EXT_CALC)) {
                 String originField = Utils.calcFieldRegex(field.getOriginName(), sqlMeta.getTable(), allFields);
                 // 此处是数据集预览，获取数据库原始字段枚举值等操作使用，如果遇到聚合函数则将originField设置为null
@@ -424,7 +427,6 @@ public class DatasetDataManage {
                     }
                 }
                 field.setOriginName(originField);
-                field.setExtField(ExtFieldConstant.EXT_NORMAL);
             }
 
             // 获取allFields
