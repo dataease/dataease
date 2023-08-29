@@ -49,13 +49,6 @@ const { chart } = toRefs(props)
                 :disabled="!chart.customStyle.component.borderShow"
                 :predefine="predefineColors"
               />
-              <el-input-number
-                v-model="chart.customStyle.component.borderWidth"
-                :min="1"
-                :max="100"
-                :disabled="!chart.customStyle.component.borderShow"
-                controls-position="right"
-              />
             </div>
             <el-checkbox v-model="chart.customStyle.component.bgColorShow">{{
               t('chart.custom_case') + t('chart.backgroundColor')

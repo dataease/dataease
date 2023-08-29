@@ -3,6 +3,7 @@ import { ref, reactive, nextTick, computed, shallowRef } from 'vue'
 import { storeToRefs } from 'pinia'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { useI18n } from '@/hooks/web/useI18n'
+import { ElMessage } from 'element-plus-secondary'
 import type { DatasetDetail } from '@/api/dataset'
 import { getDsDetails } from '@/api/dataset'
 import { cloneDeep } from 'lodash-es'
@@ -146,10 +147,15 @@ const confirmClick = () => {
 }
 
 const cancelValueSource = () => {
+  valueSource.value = cloneDeep(curComponent.value.valueSource)
   manual.value.hide()
 }
 
 const confirmValueSource = () => {
+  if (valueSource.value.some(ele => !ele.trim())) {
+    ElMessage.error('手工输入-选项值不能为空')
+    return
+  }
   curComponent.value.valueSource = cloneDeep(valueSource.value.filter(ele => ele.trim()))
   handleValueSourceChange()
   cancelValueSource()
@@ -235,6 +241,7 @@ const handleCondition = item => {
   multipleChange(curComponent.value.multiple, false)
   valueSource.value = cloneDeep(curComponent.value.valueSource)
   if (!valueSource.value.length) {
+    valueSource.value.push('')
     valueSource.value.push('')
   }
 }
@@ -483,7 +490,12 @@ defineExpose({
                       <span> 选项值 </span>
                       <div :key="index" v-for="(_, index) in valueSource" class="select-item">
                         <el-input @blur="weightlessness" v-model="valueSource[index]"></el-input>
-                        <el-button @click="valueSource.splice(index, 1)" class="value" text>
+                        <el-button
+                          v-if="valueSource.length !== 1"
+                          @click="valueSource.splice(index, 1)"
+                          class="value"
+                          text
+                        >
                           <template #icon>
                             <Icon name="icon_delete-trash_outlined"></Icon>
                           </template>
@@ -523,7 +535,7 @@ defineExpose({
             <div class="label">
               <el-checkbox v-model="curComponent.parametersCheck" label="绑定参数" />
             </div>
-            <div class="parameters">
+            <div v-if="curComponent.parametersCheck" class="parameters">
               <el-select multiple v-model="curComponent.parameters" clearable>
                 <el-option label="Zone one" value="shanghai" />
                 <el-option label="Zone two" value="beijing" />
@@ -534,7 +546,7 @@ defineExpose({
             <div class="label">
               <el-checkbox v-model="curComponent.defaultValueCheck" label="设置默认值" />
             </div>
-            <div class="parameters">
+            <div v-if="curComponent.defaultValueCheck" class="parameters">
               <component
                 :config="curComponent"
                 isConfig
