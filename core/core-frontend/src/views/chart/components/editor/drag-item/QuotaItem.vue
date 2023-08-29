@@ -343,7 +343,10 @@ getItemTagType()
               @command="summary"
             >
               <span class="el-dropdown-link inner-dropdown-menu menu-item-padding">
-                <span class="menu-item-content">
+                <span
+                  class="menu-item-content"
+                  :class="themes === 'dark' ? 'dark-theme-content' : ''"
+                >
                   <el-icon size="14px">
                     <Icon name="icon_functions_outlined" />
                   </el-icon>
@@ -455,7 +458,10 @@ getItemTagType()
               @command="quickCalc"
             >
               <span class="el-dropdown-link inner-dropdown-menu menu-item-padding">
-                <span class="menu-item-content">
+                <span
+                  class="menu-item-content"
+                  :class="themes === 'dark' ? 'dark-theme-content' : ''"
+                >
                   <el-icon size="14px">
                     <!--                    <Icon name="icon_describe_outlined" />-->
                   </el-icon>
@@ -508,7 +514,10 @@ getItemTagType()
               @command="sort"
             >
               <span class="el-dropdown-link inner-dropdown-menu menu-item-padding">
-                <span class="menu-item-content">
+                <span
+                  class="menu-item-content"
+                  :class="themes === 'dark' ? 'dark-theme-content' : ''"
+                >
                   <el-icon size="14px">
                     <Icon name="icon_sort_outlined" />
                   </el-icon>
@@ -655,6 +664,10 @@ span {
     flex-direction: row;
     align-items: center;
   }
+
+  .dark-theme-content {
+    color: #a6a6a6;
+  }
 }
 
 .item-span-drop {
@@ -680,7 +693,6 @@ span {
 
 .summary-span-item {
   margin-left: 4px;
-  color: #a6a6a6;
 }
 
 .drop-style {
