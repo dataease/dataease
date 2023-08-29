@@ -35,6 +35,9 @@ const loadComponent = (type: string) => {
     .catch(() => {
       showNolic()
     })
+    .finally(() => {
+      loading.value = false
+    })
 }
 watch(
   () => props.jsname,

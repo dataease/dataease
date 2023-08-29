@@ -51,7 +51,6 @@ const defaultStyle = {
   border: '',
   background: '',
   text: '',
-  borderWidth: 1,
   layout: 'horizontal',
   btnList: [],
   titleShow: false,
@@ -75,7 +74,6 @@ watch(
       show,
       borderShow,
       borderColor,
-      borderWidth,
       bgColorShow,
       btnList,
       bgColor,
@@ -90,7 +88,6 @@ watch(
     customStyle.background = bgColorShow ? bgColor || '' : ''
     customStyle.border = borderShow ? borderColor || '' : ''
     customStyle.btnList = [...btnList]
-    customStyle.borderWidth = borderWidth
     customStyle.layout = layout
     customStyle.titleShow = titleShow
     customStyle.title = title
@@ -109,7 +106,6 @@ watch(
       show,
       borderShow,
       borderColor,
-      borderWidth,
       bgColorShow,
       btnList,
       bgColor,
@@ -124,7 +120,6 @@ watch(
     customStyle.background = bgColorShow ? bgColor || '' : ''
     customStyle.border = borderShow ? borderColor || '' : ''
     customStyle.btnList = [...btnList]
-    customStyle.borderWidth = borderWidth
     customStyle.layout = layout
     customStyle.titleShow = titleShow
     customStyle.title = title
@@ -217,6 +212,17 @@ const addQueryCriteria = () => {
   list.value.push(infoFormat(componentInfo))
   element.value.propValue = [...list.value]
   editeQueryConfig(list.value[list.value.length - 1].id)
+}
+
+const addQueryCriteriaConfig = () => {
+  const componentInfo: ComponentInfo = {
+    id: '',
+    name: '未命名',
+    deType: 0,
+    type: 'VARCHAR',
+    datasetId: ''
+  }
+  return infoFormat(componentInfo)
 }
 
 const editQueryCriteria = () => {
@@ -376,7 +382,7 @@ const queryData = () => {
   </div>
   <Teleport to="body">
     <QueryConditionConfiguration
-      @add-query-criteria="addQueryCriteria"
+      :add-query-criteria-config="addQueryCriteriaConfig"
       ref="queryConfig"
     ></QueryConditionConfiguration>
   </Teleport>

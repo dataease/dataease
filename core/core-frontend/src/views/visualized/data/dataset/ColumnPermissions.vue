@@ -262,7 +262,7 @@ const loadWhiteUserList = () => {
     datasetId: datasetId.value
   }
   whiteListUsersForPermissions(param).then(res => {
-    whiteListUsers.value = [] = res.data
+    whiteListUsers.value = res.data || []
   })
 }
 

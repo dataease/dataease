@@ -19,7 +19,7 @@ export interface SqlNode {
   tableName: string
   datasourceId: string
   id: string
-  variables: Array<{
+  variables?: Array<{
     variableName: string
     defaultValue: string
     defaultValueScope: string
@@ -277,7 +277,7 @@ const handleShowLeft = () => {
 
 const dsChange = (val: string) => {
   dsLoading.value = true
-  getTables(val)
+  getTables({ datasourceId: val })
     .then(res => {
       tableList = res || []
       state.tableData = [...tableList]
@@ -317,8 +317,7 @@ const parseVariable = () => {
         names.push(name)
         // eslint-disable-next-line
         let obj = undefined
-        console.log('name', name, cloneDeep(state.variables))
-        for (let i = 0; i < state.variables.length; i++) {
+        for (let i = 0; i < state.variables?.length; i++) {
           if (state.variables[i].variableName === name) {
             obj = state.variables[i]
             if (!obj.hasOwnProperty('defaultValueScope')) {

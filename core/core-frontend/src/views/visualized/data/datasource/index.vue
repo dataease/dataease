@@ -526,7 +526,7 @@ const operation = (cmd: string, data: Tree, nodeType: string) => {
 const handleClick = (tabName: TabPaneName) => {
   switch (tabName) {
     case 'config':
-      listDatasourceTables(nodeInfo.id).then(res => {
+      listDatasourceTables({ datasourceId: nodeInfo.id }).then(res => {
         tabList.value = res.data.map(ele => {
           const { name, tableName } = ele
           return {

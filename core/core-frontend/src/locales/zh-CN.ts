@@ -1850,7 +1850,7 @@ export default {
     share: '分享',
     remove_share_confirm: '确认取消当前仪表板所有分享？',
     share_in: '分享给我',
-    share_out: '我分享的',
+    share_out: '我的分享',
     who_share: '分享人',
     when_share: '分享时间',
     share_to: '分享对象',
