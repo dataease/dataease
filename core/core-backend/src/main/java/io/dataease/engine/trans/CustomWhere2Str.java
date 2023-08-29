@@ -83,11 +83,14 @@ public class CustomWhere2Str {
                         String whereTerm = Utils.transFilterTerm(filterItemDTO.getTerm());
                         String whereValue = "";
 
+                        String whereNameReal;
                         if (field.getDeType() == 1) {
                             // 规定几种日期格式，一一匹配，匹配到就是该格式
                             String f = ScalarFunctions.get_date_format(filterItemDTO.getValue());
-                            whereName = String.format(SQLConstants.DATE_FORMAT_REAL, whereName, f);
-                            whereName = String.format(SQLConstants.UNIX_TIMESTAMP, whereName);
+                            String n = String.format(SQLConstants.DATE_FORMAT_REAL, whereName, f);
+                            whereNameReal = String.format(SQLConstants.UNIX_TIMESTAMP, n);
+                        } else {
+                            whereNameReal = whereName;
                         }
 
                         if (StringUtils.equalsIgnoreCase(filterItemDTO.getTerm(), "null")) {
@@ -109,7 +112,7 @@ public class CustomWhere2Str {
                             whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE, value);
                         }
                         list.add(SQLObj.builder()
-                                .whereField(whereName)
+                                .whereField(whereNameReal)
                                 .whereTermAndValue(whereTerm + whereValue)
                                 .build());
                     }
