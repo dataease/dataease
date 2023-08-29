@@ -317,8 +317,7 @@ const parseVariable = () => {
         names.push(name)
         // eslint-disable-next-line
         let obj = undefined
-        console.log('name', name, cloneDeep(state.variables))
-        for (let i = 0; i < state.variables.length; i++) {
+        for (let i = 0; i < state.variables?.length; i++) {
           if (state.variables[i].variableName === name) {
             obj = state.variables[i]
             if (!obj.hasOwnProperty('defaultValueScope')) {
