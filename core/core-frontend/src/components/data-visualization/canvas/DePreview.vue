@@ -137,7 +137,7 @@ onMounted(() => {
   restore()
   window.addEventListener('resize', restore)
   const erd = elementResizeDetectorMaker()
-  erd.listenTo(document.getElementById('previewCanvas'), element => {
+  erd.listenTo(document.getElementById(domId), element => {
     restore()
   })
 })
@@ -152,7 +152,7 @@ defineExpose({
 </script>
 
 <template>
-  <div id="previewCanvas" class="canvas-container" :style="canvasStyle" ref="previewCanvas">
+  <div :id="domId" class="canvas-container" :style="canvasStyle" ref="previewCanvas">
     <canvas-opt-bar
       :canvas-id="canvasId"
       :canvas-style-data="canvasStyleData"
