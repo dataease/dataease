@@ -26,6 +26,7 @@ import io.dataease.datasource.server.EngineServer;
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.constant.SQLConstants;
+import io.dataease.engine.func.FunctionConstant;
 import io.dataease.engine.sql.SQLProvider;
 import io.dataease.engine.trans.Field2SQLObj;
 import io.dataease.engine.trans.Order2SQLObj;
@@ -394,12 +395,31 @@ public class DatasetDataManage {
             DatasetGroupInfoDTO datasetGroupInfoDTO = datasetGroupManage.get(field.getDatasetGroupId(), null);
 
             Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO);
+            List<DatasetTableFieldDTO> allFields = datasetGroupInfoDTO.getAllFields();
             String sql = (String) sqlMap.get("sql");
+
+            // build query sql
+            SQLMeta sqlMeta = new SQLMeta();
+            Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")");
+            // 计算字段先完成内容替换，当成普通字段处理
+            if (Objects.equals(field.getExtField(), ExtFieldConstant.EXT_CALC)) {
+                String originField = Utils.calcFieldRegex(field.getOriginName(), sqlMeta.getTable(), allFields);
+                // 此处是数据集预览，获取数据库原始字段枚举值等操作使用，如果遇到聚合函数则将originField设置为null
+                for (String func : FunctionConstant.AGG_FUNC) {
+                    if (Utils.matchFunction(func, originField)) {
+                        originField = null;
+                        break;
+                    }
+                }
+                field.setOriginName(originField);
+                field.setExtField(ExtFieldConstant.EXT_NORMAL);
+            }
 
             // 获取allFields
             List<DatasetTableFieldDTO> fields = Collections.singletonList(field);
+            fields = permissionManage.filterColumnPermissions(fields, new HashMap<>(), datasetGroupInfoDTO.getId(), null);
             if (ObjectUtils.isEmpty(fields)) {
-                DEException.throwException(Translator.get("i18n_no_fields"));
+                DEException.throwException(Translator.get("i18n_no_column_permission"));
             }
             buildFieldName(sqlMap, fields);
 
@@ -416,9 +436,6 @@ public class DatasetDataManage {
                 rowPermissionsTree = permissionManage.getRowPermissionsTree(datasetGroupInfoDTO.getId(), user.getUserId());
             }
 
-            // build query sql
-            SQLMeta sqlMeta = new SQLMeta();
-            Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")");
             Field2SQLObj.field2sqlObj(sqlMeta, fields);
             WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, fields);
             Order2SQLObj.getOrders(sqlMeta, fields, datasetGroupInfoDTO.getSortFields());
