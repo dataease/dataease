@@ -344,9 +344,13 @@ const onSimpleCronChange = () => {
   }
 }
 
+const showSchema = ref(false)
+
 const getDsSchema = () => {
+  showSchema.value = true
   const validateFrom = dsForm.value.validate
   validateFrom(val => {
+    showSchema.value = false
     if (val) {
       const request = JSON.parse(JSON.stringify(form.value))
       request.configuration = Base64.encode(JSON.stringify(request.configuration))
@@ -568,7 +572,7 @@ defineExpose({
           <el-form-item
             v-if="['oracle', 'sqlServer', 'pg', 'redshift', 'db2'].includes(form.type)"
             class="schema-label"
-            prop="configuration.schema"
+            :prop="showSchema ? '' : 'configuration.schema'"
           >
             <template v-slot:label>
               <span class="name">{{ t('datasource.schema') }}<i class="required" /></span>
