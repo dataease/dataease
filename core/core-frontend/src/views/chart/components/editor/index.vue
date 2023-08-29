@@ -658,6 +658,7 @@ const closeResultFilter = () => {
   state.resultFilterEdit = false
 }
 const saveResultFilter = () => {
+  console.log(view)
   if (
     ((state.filterItem.deType === 0 || state.filterItem.deType === 5) &&
       state.filterItem.filterType !== 'enum') ||
@@ -1484,6 +1485,7 @@ const autoInsert = element => {
                   ></Icon>
                 </el-icon>
                 <el-icon
+                  v-if="false"
                   :style="{ color: '#a6a6a6', cursor: 'pointer', marginRight: '6px' }"
                   @click="addCalcField('d')"
                 >
@@ -1531,7 +1533,7 @@ const autoInsert = element => {
                     </el-icon>
                     <span class="field-name">{{ element.name }}</span>
                     <el-dropdown
-                      v-if="element.id !== '-1'"
+                      v-if="element.id !== '-1' && false"
                       :effect="props.themes"
                       placement="right-start"
                       trigger="click"
@@ -1565,7 +1567,7 @@ const autoInsert = element => {
             <div class="padding-lr field-height">
               <span>{{ t('chart.quota') }}</span>
               <draggable
-                :list="quotaData"
+                :list="state.quotaData"
                 :group="dsFieldDragOptions.group"
                 :move="onMove"
                 item-key="id"
@@ -1583,7 +1585,7 @@ const autoInsert = element => {
                     </el-icon>
                     <span class="field-name">{{ element.name }}</span>
                     <el-dropdown
-                      v-if="element.id !== '-1'"
+                      v-if="element.id !== '-1' && false"
                       :effect="props.themes"
                       placement="right-start"
                       trigger="click"
