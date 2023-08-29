@@ -10,6 +10,7 @@ import Select from './Select.vue'
 import Time from './Time.vue'
 import { getDatasetTree } from '@/api/dataset'
 import { Tree } from '@/views/visualized/data/dataset/form/CreatDsGroup.vue'
+import draggable from 'vuedraggable'
 
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
@@ -21,6 +22,13 @@ interface DatasetField {
   id: string
   tableId: string
 }
+
+const props = defineProps({
+  addQueryCriteriaConfig: {
+    type: Function,
+    default: () => ({})
+  }
+})
 const dialogVisible = ref(false)
 const renameInput = ref([])
 const valueSource = ref([])
@@ -106,7 +114,10 @@ const handleValueSourceChange = () => {
   multipleChange(curComponent.value.multiple)
 }
 
-const multipleChange = (val: boolean, isTemporary = false) => {
+const multipleChange = (val: boolean, isTemporary = false, isMultipleChange = false) => {
+  if (isMultipleChange) {
+    curComponent.value.defaultValue = val ? [] : ''
+  }
   const { defaultValue, temporaryValue } = curComponent.value
   const value = isTemporary ? temporaryValue : defaultValue
   if (Array.isArray(value)) {
@@ -253,7 +264,7 @@ const addOperation = (cmd, condition, index) => {
       Object.assign(activeConditionForRename, condition)
       setTimeout(() => {
         nextTick(() => {
-          renameInput.value[index].focus()
+          renameInput.value[0].focus()
         })
       }, 400)
       break
@@ -279,9 +290,8 @@ const renameInputBlur = () => {
   activeConditionForRename.id = ''
 }
 
-const emits = defineEmits(['addQueryCriteria'])
 const addQueryCriteria = () => {
-  emits('addQueryCriteria')
+  conditions.value.push(props.addQueryCriteriaConfig())
 }
 defineExpose({
   init
@@ -306,45 +316,48 @@ defineExpose({
             <Icon name="icon_add_outlined"></Icon>
           </el-icon>
         </div>
-        <div
-          v-for="(condition, index) in conditions"
-          :key="condition.id"
-          @click="handleCondition(condition)"
-          class="list-item_primary"
-          :class="condition.id === activeCondition && 'active'"
-        >
-          <el-icon>
-            <Icon name="icon_drag_outlined"></Icon>
-          </el-icon>
-          <div class="label" :title="condition.name">
-            {{ condition.name }}
-          </div>
-          <div class="condition-icon flex-align-center">
-            <handle-more
-              @handle-command="cmd => addOperation(cmd, condition, index)"
-              :menu-list="typeList"
-              icon-name="more_v"
-              placement="bottom-end"
-            ></handle-more>
-            <el-icon
-              class="hover-icon"
-              @click.stop="condition.visible = !condition.visible"
-              v-if="condition.visible"
+        <draggable tag="div" :list="conditions" handle=".handle">
+          <template #item="{ element, index }">
+            <div
+              :key="element.id"
+              @click.stop="handleCondition(element)"
+              class="list-item_primary"
+              :class="element.id === activeCondition && 'active'"
             >
-              <Icon name="icon_visible_outlined"></Icon>
-            </el-icon>
-            <el-icon class="hover-icon" @click.stop="condition.visible = !condition.visible" v-else>
-              <Icon name="de_pwd_invisible"></Icon>
-            </el-icon>
-          </div>
-          <div @click.stop v-if="activeConditionForRename.id === condition.id" class="rename">
-            <el-input
-              @blur="renameInputBlur"
-              :ref="setRenameInput"
-              v-model="activeConditionForRename.name"
-            ></el-input>
-          </div>
-        </div>
+              <el-icon class="handle">
+                <Icon name="icon_drag_outlined"></Icon>
+              </el-icon>
+              <div class="label" :title="element.name">
+                {{ element.name }}
+              </div>
+              <div class="condition-icon flex-align-center">
+                <handle-more
+                  @handle-command="cmd => addOperation(cmd, element, index)"
+                  :menu-list="typeList"
+                  icon-name="more_v"
+                  placement="bottom-end"
+                ></handle-more>
+                <el-icon
+                  class="hover-icon"
+                  @click.stop="element.visible = !element.visible"
+                  v-if="element.visible"
+                >
+                  <Icon name="icon_visible_outlined"></Icon>
+                </el-icon>
+                <el-icon class="hover-icon" @click.stop="element.visible = !element.visible" v-else>
+                  <Icon name="de_pwd_invisible"></Icon>
+                </el-icon>
+              </div>
+              <div @click.stop v-if="activeConditionForRename.id === element.id" class="rename">
+                <el-input
+                  @blur="renameInputBlur"
+                  :ref="setRenameInput"
+                  v-model="activeConditionForRename.name"
+                ></el-input>
+              </div>
+            </div>
+          </template>
+        </draggable>
       </div>
       <div class="chart-field">
         <div class="title">选择图表及字段</div>
@@ -400,7 +413,7 @@ defineExpose({
               </el-select>
             </div>
           </div>
-          <div class="list-item top-item">
+          <div class="list-item top-item" v-if="displayType !== '1'">
             <div class="label">选项值来源</div>
             <div class="value">
               <div class="value">
@@ -497,7 +510,10 @@ defineExpose({
           <div class="list-item">
             <div class="label">选项类型</div>
             <div class="value">
-              <el-radio-group @change="multipleChange" v-model="multiple">
+              <el-radio-group
+                @change="val => multipleChange(val as boolean, false, true)"
+                v-model="multiple"
+              >
                 <el-radio :label="false">{{ t('visualization.single_choice') }}</el-radio>
                 <el-radio :label="true">{{ t('visualization.multiple_choice') }}</el-radio>
               </el-radio-group>
@@ -577,7 +593,7 @@ defineExpose({
           left: 0;
           width: 100%;
           height: 100%;
-          background: #fff;
+          background: rgba(51, 112, 255, 0.1);
           padding: 4px 10px;
           z-index: 5;
         }

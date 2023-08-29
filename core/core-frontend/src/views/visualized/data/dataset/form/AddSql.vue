@@ -19,7 +19,7 @@ export interface SqlNode {
   tableName: string
   datasourceId: string
   id: string
-  variables: Array<{
+  variables?: Array<{
     variableName: string
     defaultValue: string
     defaultValueScope: string
@@ -277,7 +277,7 @@ const handleShowLeft = () => {
 
 const dsChange = (val: string) => {
   dsLoading.value = true
-  getTables(val)
+  getTables({ datasourceId: val })
     .then(res => {
       tableList = res || []
       state.tableData = [...tableList]

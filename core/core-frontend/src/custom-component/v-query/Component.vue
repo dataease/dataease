@@ -219,6 +219,17 @@ const addQueryCriteria = () => {
   editeQueryConfig(list.value[list.value.length - 1].id)
 }
 
+const addQueryCriteriaConfig = () => {
+  const componentInfo: ComponentInfo = {
+    id: '',
+    name: '未命名',
+    deType: 0,
+    type: 'VARCHAR',
+    datasetId: ''
+  }
+  return infoFormat(componentInfo)
+}
+
 const editQueryCriteria = () => {
   if (!list.value.length) {
     addQueryCriteria()
@@ -376,7 +387,7 @@ const queryData = () => {
   </div>
   <Teleport to="body">
     <QueryConditionConfiguration
-      @add-query-criteria="addQueryCriteria"
+      :add-query-criteria-config="addQueryCriteriaConfig"
       ref="queryConfig"
     ></QueryConditionConfiguration>
   </Teleport>

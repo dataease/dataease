@@ -39,6 +39,7 @@ export const copyStore = defineStore('copy', {
       const _this = this
       Object.keys(outerMultiplexingComponents).forEach(function (componentId, index) {
         const newComponent = deepCopy(outerMultiplexingComponents[componentId])
+        newComponent.canvasId = 'canvas-main'
         if (keepSize) {
           newComponent.style.top = newComponent.style.height + newComponent.style.top
         } else {
@@ -157,7 +158,7 @@ function deepCopyHelper(data, idMap) {
   }
   // 深度拷贝Tab
   if (result.component === 'DeTabs') {
-    result.propValue.forEach((tabItem, i) => {
+    result.propValue.forEach(tabItem => {
       tabItem.componentData.forEach((tabComponent, i) => {
         tabItem.componentData[i] = deepCopyHelper(tabComponent, idMap)
       })
