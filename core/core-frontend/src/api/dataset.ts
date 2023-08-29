@@ -101,8 +101,8 @@ export const getDatasourceList = async (): Promise<IResponse> => {
   })
 }
 
-export const getTables = async (id): Promise<Table[]> => {
-  return request.get({ url: `/datasource/getTables/${id}` }).then(res => {
+export const getTables = async (data): Promise<Table[]> => {
+  return request.post({ url: `/datasource/getTables`, data }).then(res => {
     return res?.data
   })
 }

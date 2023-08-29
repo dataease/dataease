@@ -55,6 +55,17 @@ const loadTableData = () => {
   })
 }
 
+const panelLoad = paneInfo => {
+  tablePaneList.value.push({
+    title: paneInfo.title,
+    name: paneInfo.name
+  })
+}
+
+const tablePaneList = ref([
+  { title: '最近使用', name: 'recent' },
+  { title: '我的收藏', name: 'store' }
+])
 onMounted(() => {
   handleClick({
     paneName: 'recent',
@@ -71,10 +82,14 @@ onMounted(() => {
 <template>
   <div class="dashboard-type">
     <el-tabs v-model="activeName" class="dashboard-type-tabs" @tab-click="handleClick">
-      <el-tab-pane label="最近使用" name="recent"></el-tab-pane>
-      <el-tab-pane label="我的收藏" name="store"></el-tab-pane>
-      <XpackComponent jsname="c2hhcmUtcGFuZWw=" />
+      <el-tab-pane
+        v-for="item in tablePaneList"
+        :key="item.name"
+        :label="item.title"
+        :name="item.name"
+      />
     </el-tabs>
+    <XpackComponent jsname="c2hhcmUtcGFuZWw=" @loaded="panelLoad" />
     <XpackComponent :active-name="activeName" jsname="c2hhcmU=" />
     <el-row v-if="activeName === 'recent' || activeName === 'store'">
       <el-col :span="12">

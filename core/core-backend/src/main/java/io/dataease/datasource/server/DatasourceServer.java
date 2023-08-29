@@ -462,8 +462,8 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     @Override
-    public List<DatasetTableDTO> getTables(String datasourceId) throws DEException {
-        CoreDatasource coreDatasource = datasourceMapper.selectById(datasourceId);
+    public List<DatasetTableDTO> getTables(DatasetTableDTO datasetTableDTO) throws DEException {
+        CoreDatasource coreDatasource = datasourceMapper.selectById(datasetTableDTO.getDatasourceId());
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(coreDatasource);
         if (coreDatasource.getType().equals("API")) {
@@ -513,8 +513,15 @@ public class DatasourceServer implements DatasourceApi {
             for (ExcelSheetData sheet : excelFileData.getSheets()) {
                 for (DatasetTableDTO datasetTableDTO : datasetTableDTOS) {
                     if (excelDataTableName(datasetTableDTO.getTableName()).equals(sheet.getTableName())) {
-                        sheet.setDeTableName(datasetTableDTO.getTableName());
-                        excelSheetDataList.add(sheet);
+                        List<String> fieldNames = sheet.getFields().stream().map(TableField::getName).collect(Collectors.toList());
+                        Collections.sort(fieldNames);
+                        datasourceRequest.setTable(datasetTableDTO.getTableName());
+                        List<String> oldFieldNames = ExcelUtils.getTableFields(datasourceRequest).stream().map(TableField::getName).collect(Collectors.toList());
+                        Collections.sort(oldFieldNames);
+                        if(fieldNames.equals(oldFieldNames)){
+                            sheet.setDeTableName(datasetTableDTO.getTableName());
+                            excelSheetDataList.add(sheet);
+                        }
                     }
                 }
 

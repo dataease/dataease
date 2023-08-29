@@ -63,8 +63,8 @@ public interface DatasourceApi {
 
 
     @DePermit({"m:read", "#p0+':manage'"})
-    @GetMapping("getTables/{datasourceId}")
-    List<DatasetTableDTO> getTables(@PathVariable("datasourceId") String datasourceId) throws DEException;
+    @PostMapping("getTables")
+    List<DatasetTableDTO> getTables(@RequestBody  DatasetTableDTO datasetTableDTO) throws DEException;
 
     @PostMapping("/checkApiDatasource")
     ApiDefinition checkApiDatasource(@RequestBody Map<String, String> data) throws DEException;

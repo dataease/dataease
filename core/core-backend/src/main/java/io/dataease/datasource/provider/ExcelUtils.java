@@ -337,7 +337,7 @@ public class ExcelUtils {
             for (Integer key : dataMap.keySet()) {
                 String value = dataMap.get(key);
                 if (StringUtils.isEmpty(value)) {
-                    value = "";
+                    value = null;
                 }
                 if(headerKey.contains(key)){
                     line.add(value);
@@ -346,7 +346,7 @@ public class ExcelUtils {
             int size = line.size();
             if(size < header.size()){
                 for (int i = 0; i < header.size() - size; i++) {
-                    line.add("");
+                    line.add(null);
                 }
             }
             data.add(line.toArray(new String[line.size()]));
