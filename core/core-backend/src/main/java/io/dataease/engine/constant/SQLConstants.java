@@ -51,6 +51,8 @@ public class SQLConstants {
 
     public static final String DATE_FORMAT = "DATE_FORMAT(%s,'%s')";
 
+    public static final String DATE_FORMAT_REAL = "DATE_FORMAT_REAL(%s,'%s')";
+
     public static final String CAST_DATE_FORMAT = "CAST_DATE_FORMAT(%s,'%s','%s')";
 
     public static final String FROM_UNIXTIME = "FROM_UNIXTIME(%s,'%s')";
