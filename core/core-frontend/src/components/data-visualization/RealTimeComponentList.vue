@@ -8,8 +8,8 @@ import Icon from '../icon-custom/src/Icon.vue'
 import { computed, nextTick, ref } from 'vue'
 import draggable from 'vuedraggable'
 import { lockStoreWithOut } from '@/store/modules/data-visualization/lock'
-import ContextMenu from '@/components/data-visualization/canvas/ContextMenu.vue'
 import ContextMenuAsideDetails from '@/components/data-visualization/canvas/ContextMenuAsideDetails.vue'
+const dropdownMore = ref(null)
 const lockStore = lockStoreWithOut()
 
 const dvMainStore = dvMainStoreWithOut()
@@ -129,6 +129,21 @@ const getIconName = item => {
     return item.icon
   }
 }
+
+const menuAsideClose = (param, index) => {
+  const iconDom = document.querySelector('.dropdownMore-' + index)
+  if (iconDom) {
+    iconDom.click()
+  }
+  if (param.opt === 'rename') {
+    setTimeout(() => {
+      editComponentName(getComponent(index))
+    }, 200)
+  }
+}
+const rename = item => {
+  editComponentName(item)
+}
 </script>
 
 <template>
@@ -173,13 +188,16 @@ const getIconName = item => {
                 <el-icon v-show="getComponent(index).isLock" @click="unlock">
                   <Lock />
                 </el-icon>
-                <el-dropdown trigger="click" :teleported="false" effect="dark">
-                  <el-icon @click="onClick(transformIndex(index))">
-                    <MoreFilled />
-                  </el-icon>
+                <el-dropdown ref="dropdownMore" trigger="click" effect="dark">
+                  <span :class="'dropdownMore-' + index" @click="onClick(transformIndex(index))">
+                    <el-icon>
+                      <MoreFilled />
+                    </el-icon>
+                  </span>
                   <template #dropdown>
                     <context-menu-aside-details
                       :element="getComponent(index)"
+                      @close="menuAsideClose($event, index)"
                     ></context-menu-aside-details>
                   </template>
                 </el-dropdown>
@@ -251,12 +269,13 @@ const getIconName = item => {
           background-color: rgba(200, 200, 200, 0.4);
 
           .icon-container {
-            display: flex;
+            opacity: 1;
           }
         }
 
         .icon-container {
-          display: none;
+          display: flex;
+          opacity: 0;
           justify-content: space-around;
           align-items: center;
           flex-grow: 1;

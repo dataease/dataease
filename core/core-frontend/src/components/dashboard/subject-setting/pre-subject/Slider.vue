@@ -357,7 +357,7 @@ onMounted(() => {
 .item-area {
   width: 420px;
   height: 290px;
-  padding: 0 20px;
+  padding: 0 5px;
 }
 
 .save-area {
