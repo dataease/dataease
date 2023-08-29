@@ -306,7 +306,7 @@ const generateColumns = (arr: Field[]) =>
 const dsChange = (val: string) => {
   dsLoading.value = true
   sqlNode.datasourceId = dataSource.value
-  return getTables(val)
+  return getTables({ datasourceId: val })
     .then(res => {
       tableList = res || []
       state.tableData = [...tableList]

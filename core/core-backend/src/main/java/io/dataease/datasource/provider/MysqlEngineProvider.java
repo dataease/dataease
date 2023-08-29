@@ -69,7 +69,7 @@ public class MysqlEngineProvider extends EngineProvider {
             values.append("('").append(String.join("','", Arrays.asList(strings1)))
                     .append("'),");
         }
-        return (insertSql + values.substring(0, values.length() - 1)).replaceAll(",'null'", ",null");
+        return (insertSql + values.substring(0, values.length() - 1)).replaceAll("'null'", "null");
     }
 
 

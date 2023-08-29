@@ -277,7 +277,7 @@ const handleShowLeft = () => {
 
 const dsChange = (val: string) => {
   dsLoading.value = true
-  getTables(val)
+  getTables({ datasourceId: val })
     .then(res => {
       tableList = res || []
       state.tableData = [...tableList]
