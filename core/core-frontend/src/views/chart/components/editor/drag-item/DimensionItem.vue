@@ -168,7 +168,16 @@ getItemTagType()
         :class="'editor-' + props.themes"
         :style="{ backgroundColor: tagType + '0a', border: '1px solid ' + tagType }"
       >
-        <span style="display: flex">
+        <span style="display: flex; color: #646a73">
+          <el-icon v-if="'asc' === item.sort">
+            <Icon name="icon_sort-a-to-z_outlined" />
+          </el-icon>
+          <el-icon v-if="'desc' === item.sort">
+            <Icon name="icon_sort-z-to-a_outlined" />
+          </el-icon>
+          <el-icon v-if="'custom_sort' === item.sort">
+            <Icon name="icon_sort_outlined" />
+          </el-icon>
           <el-icon>
             <Icon
               :className="`field-icon-${fieldType[item.deType]}`"
@@ -176,9 +185,11 @@ getItemTagType()
             />
           </el-icon>
         </span>
-        <span class="item-span-style" :title="item.name">
-          {{ item.chartShowName ? item.chartShowName : item.name }}
-        </span>
+        <el-tooltip effect="dark" placement="top" :content="item.name">
+          <span class="item-span-style">
+            {{ item.chartShowName ? item.chartShowName : item.name }}
+          </span>
+        </el-tooltip>
 
         <el-tooltip effect="dark" placement="top">
           <template #content>
