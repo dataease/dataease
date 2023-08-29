@@ -1223,7 +1223,7 @@ const autoInsert = element => {
                                   <template #reference>
                                     <el-icon class="icon-setting label-icon"><Setting /></el-icon>
                                   </template>
-                                  <div>
+                                  <div @keydown.stop @keyup.stop>
                                     <el-checkbox
                                       v-model="view.customAttr.label.show"
                                       :label="t('commons.show')"
@@ -1627,21 +1627,23 @@ const autoInsert = element => {
       width="420px"
       :close-on-click-modal="false"
     >
-      <el-form
-        ref="renameForm"
-        label-width="80px"
-        require-asterisk-position="right"
-        :model="state.itemForm"
-        :rules="itemFormRules"
-        label-position="top"
-      >
-        <el-form-item :label="t('dataset.field_origin_name')" class="form-item">
-          <span>{{ state.itemForm.name }}</span>
-        </el-form-item>
-        <el-form-item :label="t('chart.show_name')" class="form-item" prop="chartShowName">
-          <el-input v-model="state.itemForm.chartShowName" clearable />
-        </el-form-item>
-      </el-form>
+      <div @keydown.stop @keyup.stop>
+        <el-form
+          ref="renameForm"
+          label-width="80px"
+          require-asterisk-position="right"
+          :model="state.itemForm"
+          :rules="itemFormRules"
+          label-position="top"
+        >
+          <el-form-item :label="t('dataset.field_origin_name')" class="form-item">
+            <span>{{ state.itemForm.name }}</span>
+          </el-form-item>
+          <el-form-item :label="t('chart.show_name')" class="form-item" prop="chartShowName">
+            <el-input v-model="state.itemForm.chartShowName" clearable />
+          </el-form-item>
+        </el-form>
+      </div>
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="closeRename(renameForm)">{{ t('chart.cancel') }} </el-button>

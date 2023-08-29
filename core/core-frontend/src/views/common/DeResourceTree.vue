@@ -173,7 +173,7 @@ const afterTreeInit = () => {
     nextTick(() => {
       if (selectedNodeKey.value) {
         const nodeDom = document.querySelector('.is-current')
-        nodeDom || nodeDom.click()
+        nodeDom && nodeDom.click()
       }
     })
   })

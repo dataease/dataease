@@ -36,7 +36,7 @@ const ctrlKey = 17,
   macDeleteKey = 8, // 删除
   eKey = 69 // 清空画布
 
-export const keycodes = [66, 67, 68, 69, 71, 76, 80, 83, 85, 86, 88, 89, 90]
+export const keycodes = [8, 37, 38, 39, 40, 66, 67, 68, 69, 71, 76, 80, 83, 85, 86, 88, 89, 90]
 
 // 与组件状态无关的操作
 const basemap = {
