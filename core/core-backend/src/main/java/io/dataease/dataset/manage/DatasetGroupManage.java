@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.dataease.api.dataset.dto.DatasetTableDTO;
+import io.dataease.api.dataset.dto.SqlVariableDetails;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.union.UnionDTO;
 import io.dataease.api.dataset.vo.DataSetBarVO;
@@ -77,7 +78,7 @@ public class DatasetGroupManage {
                     DEException.throwException(Translator.get("i18n_no_fields"));
                 }
                 // get union sql
-                Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO);
+                Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO, null);
                 if (ObjectUtils.isNotEmpty(sqlMap)) {
                     String sql = (String) sqlMap.get("sql");
                     datasetGroupInfoDTO.setUnionSql(sql);
@@ -277,7 +278,7 @@ public class DatasetGroupManage {
         List<DatasetTableFieldDTO> allFields = datasetGroupInfoDTO.getAllFields();
         if (ObjectUtils.isNotEmpty(allFields)) {
             // 获取内层union sql和字段
-            Map<String, Object> map = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO);
+            Map<String, Object> map = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO, null);
             List<DatasetTableFieldDTO> unionFields = (List<DatasetTableFieldDTO>) map.get("field");
 
             for (DatasetTableFieldDTO datasetTableFieldDTO : allFields) {
@@ -374,6 +375,26 @@ public class DatasetGroupManage {
                 Map<String, List<DatasetTableFieldDTO>> listByDQ = datasetTableFieldManage.listByDQ(id);
                 dto.setFields(listByDQ);
                 list.add(dto);
+            }
+        }
+        return list;
+    }
+
+    public List<SqlVariableDetails> getSqlParams(List<Long> ids) {
+        if (ObjectUtils.isEmpty(ids)) {
+            DEException.throwException(Translator.get("i18n_table_id_can_not_empty"));
+        }
+        List<SqlVariableDetails> list = new ArrayList<>();
+        TypeReference<List<SqlVariableDetails>> listTypeReference = new TypeReference<List<SqlVariableDetails>>() {
+        };
+        for (Long id : ids) {
+            List<CoreDatasetTable> datasetTables = datasetTableManage.selectByDatasetGroupId(id);
+            for (CoreDatasetTable datasetTable : datasetTables) {
+                if(StringUtils.isNotEmpty(datasetTable.getSqlVariableDetails())){
+                    List<SqlVariableDetails> defaultsSqlVariableDetails = JsonUtil.parseList(datasetTable.getSqlVariableDetails(), listTypeReference);
+                    defaultsSqlVariableDetails.forEach(sqlVariableDetails -> {sqlVariableDetails.setDatasetGroupId(id); sqlVariableDetails.setDatasetTableId(datasetTable.getId());});
+                    list.addAll(defaultsSqlVariableDetails);
+                }
             }
         }
         return list;

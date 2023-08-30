@@ -99,7 +99,8 @@ const onBackgroundChange = val => {
   snapshotStore.recordSnapshot('onBackgroundChange')
 }
 const onBasicStyleChange = val => {
-  batchOptChange('customAttr', 'basicStyle', val)
+  //基础样式差异化处理
+  batchOptChange('customAttr', 'basicStyle', val.data)
 }
 const onTableHeaderChange = val => {
   batchOptChange('customAttr', 'tableHeader', val)

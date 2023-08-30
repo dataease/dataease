@@ -13,6 +13,9 @@ const props = defineProps({
   themes: {
     type: String,
     default: 'dark'
+  },
+  propertyInner: {
+    type: Array<string>
   }
 })
 
@@ -36,6 +39,8 @@ const changeFunctionCfg = () => {
   emit('onFunctionCfgChange', state.functionForm)
 }
 
+const showProperty = prop => props.propertyInner?.includes(prop)
+
 const init = () => {
   const chart = JSON.parse(JSON.stringify(props.chart))
   if (chart.senior) {
@@ -57,52 +62,56 @@ init()
 <template>
   <div style="width: 100%">
     <el-col>
-      <el-form
-        ref="functionForm"
-        :disabled="!state.functionForm.sliderShow"
-        :model="state.functionForm"
-        label-width="80px"
-        size="small"
-      >
-        <div>
-          <el-form-item :label="t('chart.slider_range') + '(%)'" class="form-item form-item-slider">
-            <el-slider
-              v-model="state.functionForm.sliderRange"
-              style="width: 90%"
-              :min="0"
-              :max="100"
-              input-size="small"
-              range
-              @change="changeFunctionCfg"
-            />
+      <el-form ref="functionForm" :model="state.functionForm" label-width="80px" size="small">
+        <div v-show="showProperty('slider')">
+          <el-form-item :label="t('chart.slider')" class="form-item">
+            <el-checkbox v-model="state.functionForm.sliderShow" @change="changeFunctionCfg">{{
+              t('chart.show')
+            }}</el-checkbox>
           </el-form-item>
-          <el-form-item :label="t('chart.slider_bg')" class="form-item">
-            <el-color-picker
-              v-model="state.functionForm.sliderBg"
-              class="color-picker-style"
-              :predefine="state.predefineColors"
-              @change="changeFunctionCfg"
-            />
-          </el-form-item>
-          <el-form-item :label="t('chart.slider_fill_bg')" class="form-item">
-            <el-color-picker
-              v-model="state.functionForm.sliderFillBg"
-              class="color-picker-style"
-              :predefine="state.predefineColors"
-              @change="changeFunctionCfg"
-            />
-          </el-form-item>
-          <el-form-item :label="t('chart.slider_text_color')" class="form-item">
-            <el-color-picker
-              v-model="state.functionForm.sliderTextColor"
-              class="color-picker-style"
-              :predefine="state.predefineColors"
-              @change="changeFunctionCfg"
-            />
-          </el-form-item>
+          <div v-show="state.functionForm.sliderShow">
+            <el-form-item
+              :label="t('chart.slider_range') + '(%)'"
+              class="form-item form-item-slider"
+            >
+              <el-slider
+                v-model="state.functionForm.sliderRange"
+                style="width: 90%"
+                :min="0"
+                :max="100"
+                input-size="small"
+                range
+                @change="changeFunctionCfg"
+              />
+            </el-form-item>
+            <el-form-item :label="t('chart.slider_bg')" class="form-item">
+              <el-color-picker
+                v-model="state.functionForm.sliderBg"
+                class="color-picker-style"
+                :predefine="state.predefineColors"
+                @change="changeFunctionCfg"
+              />
+            </el-form-item>
+            <el-form-item :label="t('chart.slider_fill_bg')" class="form-item">
+              <el-color-picker
+                v-model="state.functionForm.sliderFillBg"
+                class="color-picker-style"
+                :predefine="state.predefineColors"
+                @change="changeFunctionCfg"
+              />
+            </el-form-item>
+            <el-form-item :label="t('chart.slider_text_color')" class="form-item">
+              <el-color-picker
+                v-model="state.functionForm.sliderTextColor"
+                class="color-picker-style"
+                :predefine="state.predefineColors"
+                @change="changeFunctionCfg"
+              />
+            </el-form-item>
+          </div>
         </div>
         <el-form-item
-          v-show="state.showEmptyStrategy"
+          v-show="showProperty('emptyDataStrategy')"
           :label="t('chart.empty_data_strategy')"
           class="form-item"
         >
@@ -163,6 +172,7 @@ span {
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
+  align-items: flex-start;
   label {
     line-height: 28px;
   }

@@ -1,5 +1,5 @@
 <script lang="tsx" setup>
-import { reactive, watch } from 'vue'
+import { PropType, reactive, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ElMessage } from 'element-plus-secondary'
 import { DEFAULT_THRESHOLD } from '@/views/chart/components/editor/util/chart'
@@ -16,10 +16,14 @@ const props = defineProps({
     required: true
   },
   themes: {
-    type: String,
+    type: String as PropType<EditorTheme>,
     default: 'dark'
+  },
+  propertyInner: {
+    type: Array<string>
   }
 })
+const showProperty = prop => props.propertyInner?.includes(prop)
 
 const emit = defineEmits(['onThresholdChange'])
 
@@ -214,7 +218,7 @@ init()
 <template>
   <div style="width: 100%">
     <!--仪表盘-->
-    <el-col v-if="chart.type && chart.type === 'gauge'">
+    <el-col v-show="showProperty('gaugeThreshold')">
       <el-form ref="thresholdForm" :model="state.thresholdForm" label-width="80px">
         <el-form-item
           :label="t('chart.threshold_range') + '(%)'"
@@ -370,7 +374,7 @@ init()
     </el-col>
 
     <!--表格-->
-    <el-col v-if="props.chart.type && props.chart.type.includes('table')">
+    <el-col v-show="showProperty('tableThreshold')">
       <el-col>
         <el-button
           :title="t('chart.edit')"

@@ -43,8 +43,8 @@ getExampleValue()
     <el-form
       ref="form"
       :model="formatterItem.formatterCfg"
-      label-width="80px"
       class="formatter-form"
+      label-position="top"
     >
       <el-form-item :label="t('chart.value_formatter_type')">
         <el-radio-group v-model="formatterItem.formatterCfg.type" @change="getExampleValue">
@@ -74,6 +74,7 @@ getExampleValue()
           v-model="formatterItem.formatterCfg.unit"
           :placeholder="t('chart.pls_select_field')"
           @change="getExampleValue"
+          style="width: 100%"
         >
           <el-option
             v-for="item in state.unitList"
@@ -93,15 +94,17 @@ getExampleValue()
         />
       </el-form-item>
 
-      <el-form-item :label="t('chart.value_formatter_thousand_separator')">
+      <el-form-item>
         <el-checkbox
           v-model="formatterItem.formatterCfg.thousandSeparator"
           @change="getExampleValue"
+          :label="t('chart.value_formatter_thousand_separator')"
         />
       </el-form-item>
 
-      <el-form-item :label="t('chart.value_formatter_example')">
-        <span>{{ state.exampleResult }}</span>
+      <el-form-item>
+        <span style="color: #646a73">{{ t('chart.value_formatter_example') }}</span>
+        <span style="margin-left: 12px">{{ state.exampleResult }}</span>
       </el-form-item>
     </el-form>
   </div>
@@ -111,16 +114,34 @@ getExampleValue()
 .el-form-item {
   margin-bottom: 10px !important;
 }
-.formatter-form :deep(.el-form-item__label) {
-  font-size: 12px !important;
-  font-weight: 400 !important;
+.formatter-form {
+  :deep(.ed-form-item) {
+    margin-bottom: 14px !important;
+  }
+
+  :deep(.ed-form-item__label) {
+    color: #1f2329;
+    margin-bottom: 8px !important;
+    font-size: 14px !important;
+    font-weight: 400 !important;
+  }
+
+  :deep(.ed-checkbox) {
+    color: #1f2329;
+  }
+  :deep(.ed-checkbox__label) {
+    font-size: 14px !important;
+    font-weight: 400 !important;
+  }
+
+  :deep(.ed-radio__label) {
+    font-size: 14px !important;
+    font-weight: 400 !important;
+  }
 }
-.formatter-form :deep(.el-radio__label) {
-  font-size: 12px !important;
-  font-weight: 400 !important;
-}
+
 .el-select-dropdown__item :deep(span) {
-  font-size: 12px !important;
+  font-size: 14px !important;
 }
 .exp-style {
   color: #c0c4cc;

@@ -10,7 +10,11 @@
         <span>{{ label }}</span>
       </div>
       <div style="width: 85px">
-        <de-input-num :themes="themes" v-model="curComponent.style[key]"></de-input-num>
+        <de-input-num
+          :disabled="curComponent['isLock']"
+          :themes="themes"
+          v-model="curComponent.style[key]"
+        ></de-input-num>
       </div>
     </div>
   </div>

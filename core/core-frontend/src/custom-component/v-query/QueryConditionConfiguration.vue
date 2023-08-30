@@ -210,6 +210,10 @@ const confirmClick = () => {
 
 const cancelValueSource = () => {
   valueSource.value = cloneDeep(curComponent.value.valueSource)
+  if (!valueSource.value.length) {
+    valueSource.value.push('')
+    valueSource.value.push('')
+  }
   manual.value.hide()
 }
 
@@ -434,7 +438,7 @@ defineExpose({
         </draggable>
       </div>
       <div class="chart-field">
-        <div class="title">选择图表及字段</div>
+        <div class="title">选择关联图表及字段</div>
         <div class="select-all">
           <el-checkbox
             v-model="checkAll"
@@ -520,7 +524,7 @@ defineExpose({
                 />
                 <el-option
                   :disabled="curComponent.displayType !== '3'"
-                  label="数字下拉"
+                  label="数字下拉(小数)"
                   value="3"
                 />
                 <el-option
@@ -712,9 +716,16 @@ defineExpose({
         display: flex;
         align-items: center;
         justify-content: space-between;
+        font-family: PingFang SC;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 22px;
 
         .ed-icon {
           cursor: pointer;
+          font-size: 16px;
+          color: #3370ff;
         }
       }
       .list-item_primary {
@@ -743,6 +754,13 @@ defineExpose({
       padding: 16px;
       width: 474px;
       overflow-y: auto;
+      .title {
+        font-family: PingFang SC;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 22px;
+      }
 
       .select-all {
         height: 40px;
@@ -783,6 +801,11 @@ defineExpose({
       width: 467px;
       .title {
         margin-bottom: 16px;
+        font-family: PingFang SC;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 22px;
       }
 
       .configuration-list {
@@ -838,7 +861,7 @@ defineExpose({
     }
     .select-value {
       padding: 0 0 16px 16px;
-      height: 374px;
+      height: 280px;
       overflow-y: auto;
       .value {
         color: #646a73;

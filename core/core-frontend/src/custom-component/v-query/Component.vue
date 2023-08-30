@@ -242,48 +242,27 @@ const delQueryConfig = index => {
 }
 
 const resetData = () => {
-  isConfig.value = true
-  nextTick(() => {
-    const emitterList = (list.value || []).reduce((pre, next) => {
-      next.selectValue = Array.isArray(next.defaultValue)
-        ? [...next.defaultValue]
-        : next.defaultValue
-
-      const keyList = Object.entries(next.checkedFieldsMap)
-        .filter(ele => next.checkedFields.includes(ele[0]))
-        .filter(ele => !!ele[1])
-        .map(ele => ele[0])
-      pre = [...new Set([...keyList, ...pre])]
-      return pre
-    }, [])
-    isConfig.value = false
-    if (!emitterList.length) return
-
-    emitterList.forEach(ele => {
-      emitter.emit(`query-data-${ele}`)
-    })
-  })
+  ;(list.value || []).reduce((pre, next) => {
+    next.selectValue = Array.isArray(next.defaultValue) ? [...next.defaultValue] : next.defaultValue
+    const keyList = Object.entries(next.checkedFieldsMap)
+      .filter(ele => next.checkedFields.includes(ele[0]))
+      .filter(ele => !!ele[1])
+      .map(ele => ele[0])
+    pre = [...new Set([...keyList, ...pre])]
+    return pre
+  }, [])
 }
 
 const clearData = () => {
-  isConfig.value = true
-  nextTick(() => {
-    const emitterList = (list.value || []).reduce((pre, next) => {
-      next.selectValue = next.multiple ? [] : ''
-      const keyList = Object.entries(next.checkedFieldsMap)
-        .filter(ele => next.checkedFields.includes(ele[0]))
-        .filter(ele => !!ele[1])
-        .map(ele => ele[0])
-      pre = [...new Set([...keyList, ...pre])]
-      return pre
-    }, [])
-    isConfig.value = false
-    if (!emitterList.length) return
-
-    emitterList.forEach(ele => {
-      emitter.emit(`query-data-${ele}`)
-    })
-  })
+  ;(list.value || []).reduce((pre, next) => {
+    next.selectValue = next.multiple ? [] : ''
+    const keyList = Object.entries(next.checkedFieldsMap)
+      .filter(ele => next.checkedFields.includes(ele[0]))
+      .filter(ele => !!ele[1])
+      .map(ele => ele[0])
+    pre = [...new Set([...keyList, ...pre])]
+    return pre
+  }, [])
 }
 const listVisible = computed(() => {
   return list.value.filter(itx => itx.visible)
@@ -379,6 +358,12 @@ const queryData = () => {
         </el-button>
       </div>
     </div>
+    <div v-if="!listVisible.length" class="no-list-label flex-align-center">
+      <div class="container flex-align-center">
+        将右侧的字段拖拽到这里 或 点击
+        <el-button @click="addQueryCriteria" text> 添加查询条件 </el-button>
+      </div>
+    </div>
   </div>
   <Teleport to="body">
     <QueryConditionConfiguration
@@ -394,6 +379,33 @@ const queryData = () => {
   height: 100%;
   padding: 16px;
   overflow: auto;
+  position: relative;
+
+  .no-list-label {
+    width: 100%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 0;
+    .container {
+      width: 100%;
+      justify-content: center;
+      color: #646a73;
+      text-align: center;
+      font-family: PingFang SC;
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 24px;
+      .ed-button {
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 24px;
+      }
+    }
+  }
   .title {
     color: #1f2329;
     font-feature-settings: 'clig' off, 'liga' off;
@@ -411,7 +423,9 @@ const queryData = () => {
   line-height: 1.5;
   color: rgba(0, 0, 0, 0.87);
   align-items: center;
+  position: relative;
   display: flex;
+  z-index: 3;
   margin: auto 0;
   .query-fields-container {
     display: flex;

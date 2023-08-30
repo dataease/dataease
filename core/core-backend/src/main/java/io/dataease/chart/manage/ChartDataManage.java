@@ -230,11 +230,6 @@ public class ChartDataManage {
                 if (request.getIsTree() == null) {
                     request.setIsTree(false);
                 }
-                boolean hasParameters = false;
-
-                if (hasParameters) {
-                    continue;
-                }
                 if (StringUtils.isNotEmpty(fieldId)) {
                     List<Long> fieldIds = Arrays.stream(fieldId.split(",")).map(Long::valueOf).collect(Collectors.toList());
 
@@ -388,7 +383,7 @@ public class ChartDataManage {
         }
 
         // 获取dsMap,union sql
-        Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(table);
+        Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(table, chartExtRequest);
         String sql = (String) sqlMap.get("sql");
         Map<Long, DatasourceSchemaDTO> dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
         List<String> dsList = new ArrayList<>();
@@ -1218,7 +1213,7 @@ public class ChartDataManage {
         }
 
         // 获取dsMap,union sql
-        Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(table);
+        Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(table, null);
         String sql = (String) sqlMap.get("sql");
         Map<Long, DatasourceSchemaDTO> dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
         List<String> dsList = new ArrayList<>();

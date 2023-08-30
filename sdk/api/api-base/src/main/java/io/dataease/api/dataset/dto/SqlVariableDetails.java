@@ -1,4 +1,4 @@
-package io.dataease.dataset.dto;
+package io.dataease.api.dataset.dto;
 
 import lombok.Data;
 
@@ -13,7 +13,11 @@ public class SqlVariableDetails {
     private String defaultValue;
     private DefaultValueScope defaultValueScope;
     private String id;
+    private Long datasetTableId;
+    private Long datasetGroupId;
     private boolean required;
+    private String operator;
+    private List<String> value;
 
     public enum DefaultValueScope {
         EDIT("EDIT"),
