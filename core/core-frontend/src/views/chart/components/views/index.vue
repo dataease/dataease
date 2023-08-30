@@ -175,9 +175,6 @@ const filter = (firstLoad?: boolean) => {
 
 const onDrillFilters = param => {
   state.drillFilters = param ? param : []
-  nextTick(() => {
-    chartComponent?.value?.renderChart(view.value)
-  })
 }
 
 const windowsJump = (url, jumpType) => {
