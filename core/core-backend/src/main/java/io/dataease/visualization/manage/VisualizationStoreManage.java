@@ -9,6 +9,7 @@ import io.dataease.api.visualization.request.VisualizationWorkbranchQueryRequest
 import io.dataease.api.visualization.vo.VisualizationStoreVO;
 import io.dataease.constant.BusiResourceEnum;
 import io.dataease.exception.DEException;
+import io.dataease.license.config.XpackInteract;
 import io.dataease.utils.AuthUtils;
 import io.dataease.utils.CommonBeanFactory;
 import io.dataease.utils.IDUtils;
@@ -64,12 +65,18 @@ public class VisualizationStoreManage {
         return coreStoreMapper.exists(queryWrapper);
     }
 
-    public List<VisualizationStoreVO> query(VisualizationWorkbranchQueryRequest request) {
-        int pageNum = 1;
-        int pageSize = 20;
+    @XpackInteract(value = "perFilterManage", recursion = true)
+    public IPage<VisualizationStoreVO> query(int pageNum, int pageSize, VisualizationWorkbranchQueryRequest request) {
         IPage<StorePO> storePOIPage = proxy().queryStorePage(pageNum, pageSize, request);
-        if (ObjectUtils.isEmpty(storePOIPage)) return new ArrayList<>();
-        return proxy().formatResult(storePOIPage.getRecords());
+        if (ObjectUtils.isEmpty(storePOIPage)) return null;
+        List<VisualizationStoreVO> vos = proxy().formatResult(storePOIPage.getRecords());
+        IPage<VisualizationStoreVO> ipage = new Page<>();
+        ipage.setCurrent(storePOIPage.getCurrent());
+        ipage.setPages(storePOIPage.getPages());
+        ipage.setSize(storePOIPage.getSize());
+        ipage.setTotal(storePOIPage.getTotal());
+        ipage.setRecords(vos);
+        return ipage;
     }
 
     public VisualizationStoreManage proxy() {
@@ -81,7 +88,7 @@ public class VisualizationStoreManage {
         return pos.stream().map(po ->
                 new VisualizationStoreVO(
                         po.getStoreId(), po.getResourceId(), po.getName(),
-                        po.getType(), "admin", "admin",
+                        po.getType(), po.getCreator().toString(), ObjectUtils.isEmpty(po.getEditor()) ? null : po.getEditor().toString(),
                         po.getEditTime(), 9)).toList();
     }
 

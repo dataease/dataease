@@ -1,5 +1,6 @@
 package io.dataease.visualization.server;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import io.dataease.api.visualization.VisualizationStoreApi;
 import io.dataease.api.visualization.request.VisualizationStoreRequest;
 import io.dataease.api.visualization.request.VisualizationWorkbranchQueryRequest;
@@ -24,7 +25,8 @@ public class VisualizationStoreServer implements VisualizationStoreApi {
 
     @Override
     public List<VisualizationStoreVO> query(VisualizationWorkbranchQueryRequest request) {
-        return visualizationStoreManage.query(request);
+        IPage<VisualizationStoreVO> iPage = visualizationStoreManage.query(1, 20, request);
+        return iPage.getRecords();
     }
 
     @Override

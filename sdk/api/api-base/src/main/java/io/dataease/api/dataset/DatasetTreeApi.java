@@ -2,6 +2,7 @@ package io.dataease.api.dataset;
 
 import io.dataease.api.dataset.dto.DatasetNodeDTO;
 import io.dataease.api.dataset.dto.DatasetTableDTO;
+import io.dataease.api.dataset.dto.SqlVariableDetails;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.vo.DataSetBarVO;
 import io.dataease.auth.DeApiPath;
@@ -70,4 +71,7 @@ public interface DatasetTreeApi {
 
     @PostMapping("dsDetails")
     List<DatasetTableDTO> panelGetDsDetails(@RequestBody List<Long> ids) throws Exception;
+
+    @PostMapping("getSqlParams")
+    List<SqlVariableDetails> getSqlParams(@RequestBody List<Long> ids) throws Exception;
 }

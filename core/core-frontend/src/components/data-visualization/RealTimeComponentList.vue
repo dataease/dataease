@@ -231,7 +231,13 @@ const rename = item => {
       </div>
     </el-row>
     <Teleport v-if="editComponentId && nameEdit" :to="editComponentId">
-      <input ref="nameInput" v-model="inputName" @blur="closeEditComponentName" />
+      <input
+        @keydown.stop
+        @keyup.stop
+        ref="nameInput"
+        v-model="inputName"
+        @blur="closeEditComponentName"
+      />
     </Teleport>
   </div>
 </template>

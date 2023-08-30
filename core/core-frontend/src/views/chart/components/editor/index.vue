@@ -873,7 +873,7 @@ const autoInsert = element => {
 </script>
 
 <template>
-  <div class="chart-edit" :class="'editor-' + themes">
+  <div class="chart-edit" :class="'editor-' + themes" @keydown.stop @keyup.stop>
     <el-row v-loading="loading" class="de-chart-editor">
       <div
         class="content-area"
@@ -1593,7 +1593,12 @@ const autoInsert = element => {
                 @add="moveToQuota"
               >
                 <template #item="{ element }">
-                  <span class="item-dimension father" :title="element.name">
+                  <span
+                    @dragstart="$event => startToMove($event, element)"
+                    :draggable="true"
+                    class="item-dimension father"
+                    :title="element.name"
+                  >
                     <el-icon>
                       <Icon
                         :className="`field-icon-${fieldType[element.deType]}`"
@@ -1655,17 +1660,17 @@ const autoInsert = element => {
           :rules="itemFormRules"
           label-position="top"
         >
-          <el-form-item :label="t('dataset.field_origin_name')" class="form-item">
-            <span>{{ state.itemForm.name }}</span>
+          <el-form-item :label="t('dataset.field_origin_name')" class="name-edit-form">
+            <span style="font-size: 14px">{{ state.itemForm.name }}</span>
           </el-form-item>
-          <el-form-item :label="t('chart.show_name')" class="form-item" prop="chartShowName">
+          <el-form-item :label="t('chart.show_name')" class="name-edit-form" prop="chartShowName">
             <el-input v-model="state.itemForm.chartShowName" clearable />
           </el-form-item>
         </el-form>
       </div>
       <template #footer>
         <div class="dialog-footer">
-          <el-button @click="closeRename(renameForm)">{{ t('chart.cancel') }} </el-button>
+          <el-button @click="closeRename">{{ t('chart.cancel') }} </el-button>
           <el-button type="primary" @click="saveRename(renameForm)"
             >{{ t('chart.confirm') }}
           </el-button>
@@ -1737,7 +1742,7 @@ const autoInsert = element => {
       :title="t('chart.value_formatter') + ' - ' + state.valueFormatterItem.name"
       :visible="state.showValueFormatter"
       :close-on-click-modal="false"
-      width="600px"
+      width="420px"
       class="dialog-css"
     >
       <value-formatter-edit :formatter-item="state.valueFormatterItem" :chart="view" />
@@ -2328,12 +2333,20 @@ span {
 }
 </style>
 
-<style lang="less">
-.ed-select-dropdown__item {
+<style lang="less" scoped>
+:deep(.ed-select-dropdown__item) {
   display: flex;
   align-items: center;
 }
 .chart-type-hide-options {
   display: none;
+}
+.name-edit-form {
+  margin-bottom: 8px !important;
+
+  :deep(.ed-form-item__label) {
+    color: #1f2329;
+    margin-bottom: 0 !important;
+  }
 }
 </style>

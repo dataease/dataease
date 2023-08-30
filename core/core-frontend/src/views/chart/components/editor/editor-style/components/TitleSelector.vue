@@ -7,6 +7,10 @@ import {
   CHART_FONT_LETTER_SPACE,
   DEFAULT_TITLE_STYLE
 } from '@/views/chart/components/editor/util/chart'
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { storeToRefs } from 'pinia'
+const dvMainStore = dvMainStoreWithOut()
+const { batchOptStatus } = storeToRefs(dvMainStore)
 
 const { t } = useI18n()
 
@@ -91,7 +95,7 @@ init()
         label-width="80px"
         size="small"
       >
-        <el-form-item :label="t('chart.title')" class="form-item">
+        <el-form-item :label="t('chart.title')" class="form-item" v-if="!batchOptStatus">
           <el-input
             :effect="props.themes"
             v-model="chart.title"

@@ -148,7 +148,11 @@ export const getDsDetails = async (data): Promise<DatasetDetail[]> => {
     return res?.data
   })
 }
-
+export const getSqlParams = async (data): Promise<DatasetDetail[]> => {
+  return request.post({ url: '/datasetTree/getSqlParams', data }).then(res => {
+    return res?.data
+  })
+}
 export const rowPermissionList = (page: number, limit: number, datasetId: number) =>
   request.get({ url: '/dataset/rowPermissions/pager/' + datasetId + '/' + page + '/' + limit })
 

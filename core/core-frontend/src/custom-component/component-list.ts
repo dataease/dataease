@@ -101,8 +101,8 @@ const list = [
     innerType: 'VQuery',
     x: 1,
     y: 1,
-    sizeX: 10,
-    sizeY: 5,
+    sizeX: 36,
+    sizeY: 2,
     request: {
       method: 'GET',
       data: [],
@@ -111,10 +111,6 @@ const list = [
       time: 1000, // 定时更新时间
       paramType: '', // string object array
       requestCount: 0 // 请求次数限制，0 为无限
-    },
-    style: {
-      width: 800,
-      height: 150
     },
     matrixStyle: {}
   },
