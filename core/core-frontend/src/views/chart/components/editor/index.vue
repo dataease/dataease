@@ -1591,7 +1591,12 @@ const autoInsert = element => {
                 @add="moveToQuota"
               >
                 <template #item="{ element }">
-                  <span class="item-dimension father" :title="element.name">
+                  <span
+                    @dragstart="$event => startToMove($event, element)"
+                    :draggable="true"
+                    class="item-dimension father"
+                    :title="element.name"
+                  >
                     <el-icon>
                       <Icon
                         :className="`field-icon-${fieldType[element.deType]}`"

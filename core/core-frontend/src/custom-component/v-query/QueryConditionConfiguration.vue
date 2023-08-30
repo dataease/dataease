@@ -520,7 +520,7 @@ defineExpose({
                 />
                 <el-option
                   :disabled="curComponent.displayType !== '3'"
-                  label="数字下拉"
+                  label="数字下拉(小数)"
                   value="3"
                 />
                 <el-option
