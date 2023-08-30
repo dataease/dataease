@@ -873,7 +873,7 @@ const autoInsert = element => {
 </script>
 
 <template>
-  <div class="chart-edit" :class="'editor-' + themes">
+  <div class="chart-edit" :class="'editor-' + themes" @keydown.stop @keyup.stop>
     <el-row v-loading="loading" class="de-chart-editor">
       <div
         class="content-area"
