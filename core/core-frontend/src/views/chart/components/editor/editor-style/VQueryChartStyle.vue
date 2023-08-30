@@ -45,6 +45,7 @@ const { chart } = toRefs(props)
             }}</el-checkbox>
             <div class="query-collapse-item">
               <el-color-picker
+                is-custom
                 v-model="chart.customStyle.component.borderColor"
                 :disabled="!chart.customStyle.component.borderShow"
                 :predefine="predefineColors"
@@ -55,6 +56,7 @@ const { chart } = toRefs(props)
             }}</el-checkbox>
             <div class="query-collapse-item">
               <el-color-picker
+                is-custom
                 v-model="chart.customStyle.component.bgColor"
                 :disabled="!chart.customStyle.component.bgColorShow"
                 :predefine="predefineColors"
@@ -73,18 +75,24 @@ const { chart } = toRefs(props)
               {{ t('chart.label_position') }}
             </span>
             <div class="query-collapse-item query-component">
-              <el-radio-group v-model="chart.customStyle.component.layout" size="small">
-                <el-radio-button label="vertical">
-                  <el-icon>
-                    <icon name="icon_title-left-align_outlined"></icon>
-                  </el-icon>
-                </el-radio-button>
-                <el-radio-button label="horizontal">
-                  <el-icon>
-                    <icon name="icon_title-top-align_outlined"></icon>
-                  </el-icon>
-                </el-radio-button>
-              </el-radio-group>
+              <el-icon
+                :class="[
+                  'layout-icon',
+                  chart.customStyle.component.layout === 'vertical' && 'active'
+                ]"
+                @click="chart.customStyle.component.layout = 'vertical'"
+              >
+                <icon name="icon_title-top-align_outlined"></icon>
+              </el-icon>
+              <el-icon
+                :class="[
+                  'layout-icon',
+                  chart.customStyle.component.layout === 'horizontal' && 'active'
+                ]"
+                @click="chart.customStyle.component.layout = 'horizontal'"
+              >
+                <icon name="icon_title-left-align_outlined"></icon>
+              </el-icon>
             </div>
           </collapse-switch-item>
         </el-collapse>
@@ -106,13 +114,30 @@ const { chart } = toRefs(props)
   width: 100%;
 
   .query-collapse-style {
+    :deep(.ed-checkbox__label) {
+      color: #1f2329;
+      font-family: PingFang SC;
+      font-size: 12px !important;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 20px !important;
+    }
+
+    :deep(.ed-checkbox__inner) {
+      width: 14px;
+      height: 14px;
+      &::after {
+        left: 4px;
+      }
+    }
     :deep(.ed-collapse-item__content) {
-      padding: 8px 16px;
+      padding: 16px;
       .query-collapse-item {
         padding: 8px 8px 0 22px;
         display: flex;
         align-items: center;
         margin-bottom: 16px;
+        --ed-component-size: 28px;
 
         .ed-input-number {
           margin-left: 8px;
@@ -126,6 +151,23 @@ const { chart } = toRefs(props)
 
       .query-component {
         padding: 8px 0 0 0;
+
+        .layout-icon {
+          width: 24px;
+          height: 24px;
+          font-size: 16px;
+          color: #1f2329;
+          cursor: pointer;
+
+          & + .layout-icon {
+            margin-left: 8px;
+          }
+          &.active {
+            color: #3370ff;
+            border-radius: 4px;
+            background: rgba(51, 112, 255, 0.1);
+          }
+        }
         .ed-checkbox {
           margin-right: 16px;
         }
