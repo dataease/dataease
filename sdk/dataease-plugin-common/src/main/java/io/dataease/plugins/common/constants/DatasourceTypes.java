@@ -13,7 +13,7 @@ public enum DatasourceTypes {
     StarRocks("StarRocks", "StarRocks", "`", "`", "'", "'", "characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true", true, DatasourceCalculationMode.DIRECT_AND_SYNC, null,null, true, DatabaseClassification.OLAP),
     ds_doris("ds_doris", "Doris", "`", "`", "'", "'", "characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true", true, DatasourceCalculationMode.DIRECT_AND_SYNC, null, null,true, DatabaseClassification.OLAP),
     pg("pg", "PostgreSQL", "\"", "\"", "\"", "\"", "", true, DatasourceCalculationMode.DIRECT_AND_SYNC, null, null,true, DatabaseClassification.OLTP),
-    kingbase("kingbase", "KingBase", "\"", "\"", "\"", "\"", "", true, DatasourceCalculationMode.DIRECT_AND_SYNC, null,null,true, DatabaseClassification.OLTP),
+    kingbase("kingbase", "KingBase", "\"", "\"", "\"", "\"", "", true, DatasourceCalculationMode.DIRECT, null,null,true, DatabaseClassification.OLTP),
     sqlServer("sqlServer", "SQL Server", "\"", "\"", "\"", "\"", "", true, DatasourceCalculationMode.DIRECT_AND_SYNC, null, null,true, DatabaseClassification.OLTP),
     oracle("oracle", "Oracle", "\"", "\"", "\"", "\"", "", true, DatasourceCalculationMode.DIRECT_AND_SYNC, Arrays.asList("Default", "GBK", "BIG5", "ISO-8859-1", "UTF-8", "UTF-16", "CP850", "EUC_JP", "EUC_KR"), Arrays.asList("Default", "GBK", "UTF-8"),true, DatabaseClassification.OLTP),
     mongo("mongo", "MongoDB", "`", "`", "\"", "\"", "rebuildschema=true&authSource=admin", true, DatasourceCalculationMode.DIRECT, null, null,true, DatabaseClassification.OLTP),

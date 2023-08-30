@@ -53,7 +53,7 @@ public class KingbaseService extends DatasourceService {
     @Override
     public DataSourceType getDataSourceType() {
         DataSourceType dataSourceType = new DataSourceType("kingbase", "KingBase", true, "",
-                DatasourceCalculationMode.DIRECT_AND_SYNC, true);
+                DatasourceCalculationMode.DIRECT, true);
         dataSourceType.setKeywordPrefix("\"");
         dataSourceType.setKeywordSuffix("\"");
         dataSourceType.setAliasPrefix("\"");
