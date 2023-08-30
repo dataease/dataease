@@ -1,15 +1,27 @@
 <script lang="ts" setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { Icon } from '@/components/icon-custom'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import { logoutApi } from '@/api/login'
 import { logoutHandler } from '@/utils/logout'
 import { XpackComponent } from '@/components/plugin'
+import { useI18n } from '@/hooks/web/useI18n'
 const userStore = useUserStoreWithOut()
+const { t } = useI18n()
+const dropLinkList = ref([])
+const aboutLink = {
+  link: '/about/index',
+  label: t('common.about')
+}
+dropLinkList.value.push(aboutLink)
 
 const logout = async () => {
   await logoutApi()
   logoutHandler()
+}
+
+const ucenterLoaded = items => {
+  items.forEach(item => dropLinkList.value.push(item))
 }
 
 const name = computed(() => userStore.getName)
@@ -23,19 +35,24 @@ const name = computed(() => userStore.getName)
         <Icon name="icon_expand-down_filled" />
       </el-icon>
     </div>
+
     <template #dropdown>
       <el-dropdown-menu>
-        <XpackComponent jsname="dWNlbnRlci1oYW5kbGVy" />
-
-        <router-link to="/about/index" class="top-dropdown-link">
-          <el-dropdown-item>{{ $t('common.about') }}</el-dropdown-item>
+        <router-link
+          v-for="(item, index) in dropLinkList"
+          :key="index"
+          :to="item.link"
+          class="top-dropdown-link"
+        >
+          <el-dropdown-item>{{ item.label }}</el-dropdown-item>
         </router-link>
         <el-dropdown-item divided @click="logout">
-          <span>{{ $t('common.exit_system') }}</span>
+          <span>{{ t('common.exit_system') }}</span>
         </el-dropdown-item>
       </el-dropdown-menu>
     </template>
   </el-dropdown>
+  <XpackComponent jsname="dWNlbnRlci1oYW5kbGVy" @loaded="ucenterLoaded" />
 </template>
 
 <style lang="less">
