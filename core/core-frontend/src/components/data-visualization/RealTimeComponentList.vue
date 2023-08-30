@@ -131,7 +131,7 @@ const getIconName = item => {
 }
 
 const menuAsideClose = (param, index) => {
-  const iconDom = document.querySelector('.dropdownMore-' + index)
+  const iconDom = document.getElementById('close-button')
   if (iconDom) {
     iconDom.click()
   }
@@ -149,6 +149,7 @@ const rename = item => {
 <template>
   <!--为了保持图层视觉上的一致性 这里进行数组的倒序排列 相应的展示和移动按照倒序处理-->
   <div class="real-time-component-list">
+    <button hidden="true" id="close-button"></button>
     <el-row class="list-wrap">
       <div class="list-container">
         <draggable
@@ -161,7 +162,7 @@ const rename = item => {
           <template #item="{ index }">
             <div
               :title="getComponent(index).name"
-              :class="{ activated: transformIndex(index) === curComponentIndex }"
+              :class="{ activated: curComponent && curComponent.id === getComponent(index).id }"
               class="component-item"
               @click="onClick(transformIndex(index))"
               @dblclick="editComponentName(getComponent(index))"
@@ -176,22 +177,43 @@ const rename = item => {
                 v-show="!nameEdit || (nameEdit && curComponent.id !== getComponent(index).id)"
                 class="icon-container"
               >
-                <el-icon v-show="!getComponent(index).isShow" @click="showComponent">
-                  <Icon name="dv-eye-close"></Icon>
+                <el-icon
+                  class="component-opt-icon"
+                  v-show="!getComponent(index).isShow"
+                  @click="showComponent"
+                >
+                  <Icon name="dv-eye-close" class="opt-icon"></Icon>
                 </el-icon>
-                <el-icon v-show="getComponent(index).isShow" @click="hideComponent">
-                  <View />
+                <el-icon
+                  class="component-opt-icon"
+                  v-show="getComponent(index).isShow"
+                  @click="hideComponent"
+                >
+                  <Icon name="dv-show" class="opt-icon"></Icon>
                 </el-icon>
-                <el-icon v-show="!getComponent(index).isLock" @click="lock">
-                  <Unlock />
+                <el-icon
+                  v-show="!getComponent(index).isLock"
+                  class="component-opt-icon"
+                  @click="lock"
+                >
+                  <Icon class="opt-icon" name="dv-unlock"></Icon>
                 </el-icon>
-                <el-icon v-show="getComponent(index).isLock" @click="unlock">
-                  <Lock />
+                <el-icon
+                  class="component-opt-icon"
+                  v-show="getComponent(index).isLock"
+                  @click="unlock"
+                >
+                  <Icon name="dv-lock" class="opt-icon"></Icon>
                 </el-icon>
-                <el-dropdown ref="dropdownMore" trigger="click" effect="dark">
+                <el-dropdown
+                  ref="dropdownMore"
+                  trigger="click"
+                  :placement="'bottom-end'"
+                  effect="dark"
+                >
                   <span :class="'dropdownMore-' + index" @click="onClick(transformIndex(index))">
-                    <el-icon>
-                      <MoreFilled />
+                    <el-icon class="component-opt-icon">
+                      <Icon name="dv-more" class="opt-icon"></Icon>
                     </el-icon>
                   </span>
                   <template #dropdown>
@@ -233,7 +255,7 @@ const rename = item => {
         align-items: center;
         justify-content: flex-start;
         font-size: 12px;
-        padding: 0 10px;
+        padding: 0 2px 0 10px;
         user-select: none;
 
         .component-icon {
@@ -302,5 +324,24 @@ const rename = item => {
 
 .real-time-component-list :deep(.ed-popper) {
   background: #303133 !important;
+}
+
+.component-opt-icon {
+  cursor: pointer;
+  height: 22px !important;
+  width: 22px !important;
+  border-radius: 4px;
+
+  .opt-icon {
+    font-size: 14px;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  &:active {
+    background: rgba(255, 255, 255, 0.2);
+  }
 }
 </style>
