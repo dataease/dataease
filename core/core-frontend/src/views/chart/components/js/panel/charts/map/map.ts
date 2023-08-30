@@ -64,7 +64,7 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       return
     }
     const geoJson = cloneDeep(await getGeoJsonFile(areaId))
-    const options: ChoroplethOptions = {
+    let options: ChoroplethOptions = {
       map: {
         type: 'mapbox',
         style: 'blank'
@@ -112,7 +112,7 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       // 禁用线上地图数据
       customFetchGeoData: () => null
     }
-    this.setupOptions(chart, options, drawOption, geoJson)
+    options = this.setupOptions(chart, options, drawOption, geoJson)
     const view = new Choropleth(container, options)
     view.once('loaded', () => {
       view.on('fillAreaLayer:click', (_: MouseEvent) => {
@@ -142,8 +142,16 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
         unknown: customAttr.basicStyle.areaBaseColor
       }
     }
+    const suspension = customAttr.basicStyle.suspension
+    if (!suspension) {
+      options = {
+        ...options,
+        legend: false,
+        zoom: false
+      }
+    }
     if (!chart.data?.data?.length || !geoJson?.features?.length) {
-      return
+      return options
     }
     const data = chart.data.data
     const areaMap = data.reduce((obj, value) => {
