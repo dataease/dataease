@@ -84,7 +84,12 @@ const groupActiveChange = category => {
             draggable="true"
             :data-id="groupInfo.category + '&' + chartInfo.value"
           >
-            <Icon class-name="item-top-icon" :name="chartInfo.icon" />
+            <Icon
+              v-if="chartInfo.type === 'outer_svg'"
+              class-name="item-top-icon"
+              :name="chartInfo.icon"
+            />
+            <component v-else style="color: #a6a6a6" :is="chartInfo.icon"></component>
           </div>
           <div v-if="chartInfo.title" class="item-bottom">
             <span>{{ chartInfo.title }}</span>
