@@ -1,6 +1,9 @@
 package io.dataease.dataset.manage;
 
+import io.dataease.api.chart.dto.ChartExtFilterDTO;
+import io.dataease.api.chart.request.ChartExtRequest;
 import io.dataease.api.dataset.dto.DatasetTableDTO;
+import io.dataease.api.dataset.dto.SqlVariableDetails;
 import io.dataease.api.dataset.union.*;
 import io.dataease.api.dataset.union.model.SQLObj;
 import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
@@ -54,7 +57,28 @@ public class DatasetSQLManage {
 
     private static Logger logger = LoggerFactory.getLogger(DatasetSQLManage.class);
 
-    public Map<String, Object> getUnionSQLForEdit(DatasetGroupInfoDTO dataTableInfoDTO) throws Exception {
+    private List<SqlVariableDetails> filterParameters(ChartExtRequest chartExtRequest, Long datasetTableId) {
+        List<SqlVariableDetails> parameters = new ArrayList<>();
+        if (chartExtRequest != null && ObjectUtils.isNotEmpty(chartExtRequest.getFilter())) {
+            for (ChartExtFilterDTO filterDTO : chartExtRequest.getFilter()) {
+                if (CollectionUtils.isEmpty(filterDTO.getValue())) {
+                    continue;
+                }
+                if (ObjectUtils.isNotEmpty(filterDTO.getParameters())) {
+                    for (SqlVariableDetails parameter : filterDTO.getParameters()) {
+                        if (parameter.getDatasetTableId().equals(datasetTableId)) {
+                            parameter.setValue(filterDTO.getValue());
+                            parameter.setOperator(filterDTO.getOperator());
+                            parameters.add(parameter);
+                        }
+                    }
+                }
+            }
+        }
+        return parameters;
+    }
+
+    public Map<String, Object> getUnionSQLForEdit(DatasetGroupInfoDTO dataTableInfoDTO, ChartExtRequest chartExtRequest) throws Exception {
         Map<Long, DatasourceSchemaDTO> dsMap = new LinkedHashMap<>();
         List<UnionDTO> union = dataTableInfoDTO.getUnion();
         // 所有选中的字段，即select后的查询字段
@@ -73,7 +97,9 @@ public class DatasetSQLManage {
         String tableSchema = putObj2Map(dsMap, currentDs);
         // get table
         DatasetTableInfoDTO infoDTO = JsonUtil.parseObject(currentDs.getInfo(), DatasetTableInfoDTO.class);
-        SQLObj tableName = getUnionTable(currentDs, infoDTO, tableSchema, 0);
+
+
+        SQLObj tableName = getUnionTable(currentDs, infoDTO, tableSchema, 0, filterParameters(chartExtRequest, currentDs.getId()));
 
         for (int i = 0; i < union.size(); i++) {
             UnionDTO unionDTO = union.get(i);
@@ -86,7 +112,7 @@ public class DatasetSQLManage {
             } else {
                 schema = putObj2Map(dsMap, datasetTable);
             }
-            SQLObj table = getUnionTable(datasetTable, tableInfo, schema, i);
+            SQLObj table = getUnionTable(datasetTable, tableInfo, schema, i, filterParameters(chartExtRequest, currentDs.getId()));
 
             // 获取前端传过来选中的字段
             List<DatasetTableFieldDTO> fields = unionDTO.getCurrentDsFields();
@@ -109,7 +135,7 @@ public class DatasetSQLManage {
             checkedFields.addAll(fields);
             // 获取child的fields和union
             if (!CollectionUtils.isEmpty(unionDTO.getChildrenDs())) {
-                getUnionForEdit(datasetTable, table, unionDTO.getChildrenDs(), checkedInfo, unionList, checkedFields, dsMap);
+                getUnionForEdit(datasetTable, table, unionDTO.getChildrenDs(), checkedInfo, unionList, checkedFields, dsMap, chartExtRequest);
             }
         }
         // build sql
@@ -193,7 +219,7 @@ public class DatasetSQLManage {
     private void getUnionForEdit(DatasetTableDTO parentTable, SQLObj parentSQLObj,
                                  List<UnionDTO> childrenDs, Map<String, String[]> checkedInfo,
                                  List<UnionParamDTO> unionList, List<DatasetTableFieldDTO> checkedFields,
-                                 Map<Long, DatasourceSchemaDTO> dsMap) throws Exception {
+                                 Map<Long, DatasourceSchemaDTO> dsMap, ChartExtRequest chartExtRequest) throws Exception {
         for (int i = 0; i < childrenDs.size(); i++) {
             int index = unionList.size() + 1;
 
@@ -207,7 +233,7 @@ public class DatasetSQLManage {
             } else {
                 schema = putObj2Map(dsMap, datasetTable);
             }
-            SQLObj table = getUnionTable(datasetTable, tableInfo, schema, index);
+            SQLObj table = getUnionTable(datasetTable, tableInfo, schema, index, filterParameters(chartExtRequest, datasetTable.getId()));
 
             List<DatasetTableFieldDTO> fields = unionDTO.getCurrentDsFields();
             fields = fields.stream().filter(DatasetTableFieldDTO::getChecked).collect(Collectors.toList());
@@ -236,7 +262,7 @@ public class DatasetSQLManage {
             unionToParent.setCurrentSQLObj(table);
             unionList.add(unionToParent);
             if (!CollectionUtils.isEmpty(unionDTO.getChildrenDs())) {
-                getUnionForEdit(datasetTable, table, unionDTO.getChildrenDs(), checkedInfo, unionList, checkedFields, dsMap);
+                getUnionForEdit(datasetTable, table, unionDTO.getChildrenDs(), checkedInfo, unionList, checkedFields, dsMap, chartExtRequest);
             }
         }
     }
@@ -270,14 +296,14 @@ public class DatasetSQLManage {
         }
     }
 
-    private SQLObj getUnionTable(DatasetTableDTO currentDs, DatasetTableInfoDTO infoDTO, String tableSchema, int index) {
+    private SQLObj getUnionTable(DatasetTableDTO currentDs, DatasetTableInfoDTO infoDTO, String tableSchema, int index, List<SqlVariableDetails> parameters) {
         SQLObj tableObj;
         String tableAlias = String.format(SQLConstants.TABLE_ALIAS_PREFIX, index);
         if (StringUtils.equalsIgnoreCase(currentDs.getType(), DatasetTableTypeConstants.DATASET_TABLE_DB)) {
             tableObj = SQLObj.builder().tableSchema(tableSchema).tableName(infoDTO.getTable()).tableAlias(tableAlias).build();
         } else if (StringUtils.equalsIgnoreCase(currentDs.getType(), DatasetTableTypeConstants.DATASET_TABLE_SQL)) {
             // parser sql params and replace default value
-            String sql = SqlparserUtils.handleVariableDefaultValue(new String(Base64.getDecoder().decode(infoDTO.getSql())), currentDs.getSqlVariableDetails(), false);
+            String sql = SqlparserUtils.handleVariableDefaultValue(new String(Base64.getDecoder().decode(infoDTO.getSql())), currentDs.getSqlVariableDetails(), false, parameters);
             // add table schema
             sql = SqlUtils.addSchema(sql, tableSchema);
             tableObj = SQLObj.builder().tableSchema("").tableName("(" + sql + ")").tableAlias(tableAlias).build();
