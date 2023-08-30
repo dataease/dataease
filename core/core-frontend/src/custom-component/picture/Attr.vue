@@ -5,9 +5,10 @@ import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapsho
 
 import { storeToRefs } from 'pinia'
 import { ElIcon, ElMessage } from 'element-plus-secondary'
-import { ref, toRefs, watch, onMounted } from 'vue'
+import { ref, toRefs, watch, onMounted, onBeforeUnmount } from 'vue'
 import { beforeUploadCheck, uploadFileResult } from '@/api/staticResource'
 import { imgUrlTrans } from '@/utils/imgUtils'
+import eventBus from '@/utils/eventBus'
 const props = defineProps({
   themes: {
     type: String,
@@ -72,6 +73,10 @@ const init = () => {
 }
 onMounted(() => {
   init()
+  eventBus.on('uploadImg', goFile)
+})
+onBeforeUnmount(() => {
+  eventBus.off('uploadImg', goFile)
 })
 </script>
 
