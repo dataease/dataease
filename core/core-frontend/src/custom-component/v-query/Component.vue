@@ -62,8 +62,8 @@ const curComponentView = computed(() => {
   return (canvasViewInfo.value[element.value.id] || {}).customStyle
 })
 
-const filterTypeCom = (deType: number) => {
-  return deType === 1 ? Time : Select
+const filterTypeCom = (displayType: string) => {
+  return ['1', '7'].includes(displayType) ? Time : Select
 }
 
 watch(
@@ -169,9 +169,8 @@ const infoFormat = (obj: ComponentInfo) => {
     },
     operator: deType === 1 ? 'between' : 'eq',
     defaultValue: '',
-    temporaryValue: '',
     selectValue: '',
-    optionValueSource: 1,
+    optionValueSource: 0,
     valueSource: [],
     dataset: {
       id: datasetId,
@@ -181,6 +180,7 @@ const infoFormat = (obj: ComponentInfo) => {
     visible: true,
     defaultValueCheck: false,
     multiple: false,
+    displayType: '0',
     checkedFields: [],
     checkedFieldsMap: {}
   }
@@ -337,9 +337,9 @@ const queryData = () => {
             <div class="query-select">
               <component
                 :config="ele"
-                :isConfig="isConfig"
+                :isConfig="false"
                 :customStyle="customStyle"
-                :is="filterTypeCom(ele.field.deType)"
+                :is="filterTypeCom(ele.displayType)"
               ></component>
             </div>
           </div>

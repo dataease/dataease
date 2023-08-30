@@ -73,7 +73,9 @@ storeQuery()
       <!--      <el-button type="primary" @click="download()">导出</el-button>-->
       <el-button icon="DataAnalysis" @click="preview()">预览</el-button>
       <!--      <el-button icon="Share">分享</el-button>-->
-      <el-button type="primary" icon="EditPen" @click="dvEdit()">编辑</el-button>
+      <el-button v-if="dvInfo.weight > 6" type="primary" icon="EditPen" @click="dvEdit()"
+        >编辑</el-button
+      >
       <el-dropdown trigger="click">
         <el-icon style="margin-left: 8px" class="hover-icon">
           <Icon name="dv-head-more"></Icon>
