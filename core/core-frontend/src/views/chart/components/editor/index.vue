@@ -1,5 +1,16 @@
 <script lang="ts" setup>
-import { PropType, reactive, ref, watch, toRefs, computed, nextTick, shallowRef, toRaw } from 'vue'
+import {
+  PropType,
+  reactive,
+  ref,
+  watch,
+  toRefs,
+  computed,
+  nextTick,
+  shallowRef,
+  toRaw,
+  onMounted
+} from 'vue'
 import type { FormInstance, FormRules } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Field, getFieldByDQ, saveChart } from '@/api/chart'
@@ -111,11 +122,7 @@ const state = reactive({
   customSortField: {},
   currEditField: {},
   worldTree: [],
-  areaNode: {
-    id: view.value.customAttr.map.id,
-    name: ''
-  },
-  areaId: view.value.customAttr.map.id,
+  areaId: '',
   chartTypeOptions: [],
   useless: null
 })
@@ -162,6 +169,7 @@ watch(
     if (showAxis('area') && !state.worldTree?.length) {
       getWorldTree().then(res => {
         state.worldTree = [res.data]
+        state.areaId = view.value?.customAttr?.map?.id
       })
     }
     state.chartTypeOptions = [getViewConfig(newVal)]
@@ -970,12 +978,13 @@ const autoInsert = element => {
                               :data="state.worldTree"
                               :props="treeProps"
                               :filterNodeMethod="filterNode"
+                              :current-node-key="state.areaId"
                               @node-click="onAreaChange"
                               empty-text="请选择区域"
                               node-key="id"
                               check-strictly
                               filterable
-                              :persistent="false"
+                              :teleported="false"
                             />
                           </div>
                         </el-row>

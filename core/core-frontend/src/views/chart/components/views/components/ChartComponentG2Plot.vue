@@ -28,17 +28,12 @@ const props = defineProps({
     type: String,
     required: false,
     default: 'canvas'
-  },
-  dynamicAreaId: {
-    type: String,
-    required: false,
-    default: ''
   }
 })
 
 const emit = defineEmits(['onChartClick', 'onDrillFilters', 'onJumpClick'])
 
-const { view, showPosition, dynamicAreaId } = toRefs(props)
+const { view, showPosition } = toRefs(props)
 
 const isError = ref(false)
 const errMsg = ref('')
@@ -72,6 +67,9 @@ const calcData = view => {
         } else {
           state.data = res?.data
           emit('onDrillFilters', res?.drillFilters)
+          if (!res?.drillFilters?.length) {
+            dynamicAreaId.value = ''
+          }
           renderChart(res)
         }
       })
@@ -111,10 +109,15 @@ const renderG2Plot = (chart, chartView: G2PlotChartView<any, any>) => {
   })
   state.myChart?.render()
 }
-
+const dynamicAreaId = ref('')
+const country = ref('')
 const renderL7Plot = (chart, chartView: L7PlotChartView<any, any>) => {
   const map = parseJson(chart.customAttr).map
   let areaId = map.id
+  // 首次加载记录 countryId
+  if (!country.value) {
+    country.value = areaId.slice(0, 3)
+  }
   if (dynamicAreaId.value) {
     areaId = dynamicAreaId.value
   }
@@ -150,12 +153,17 @@ const action = param => {
 
 const trackClick = trackAction => {
   const param = state.pointParam
-  if (!param || !param.data || !param.data.dimensionList) {
+  if (!param?.data?.dimensionList) {
     // 地图提示没有关联字段 其他没有维度信息的 直接返回
     // if (this.chart.type === 'map') {
     //   this.$warning(this.$t('panel.no_drill_field'))
     // }
     return
+  }
+  // 地图
+  dynamicAreaId.value = param.data.adcode + ''
+  if (!dynamicAreaId.value?.startsWith(country.value)) {
+    dynamicAreaId.value = country.value + dynamicAreaId.value
   }
   const quotaList = state.pointParam.data.quotaList
   quotaList[0]['value'] = state.pointParam.data.value
