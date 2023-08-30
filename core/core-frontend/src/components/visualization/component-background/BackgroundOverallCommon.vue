@@ -89,6 +89,7 @@
         <el-row>
           <el-radio-group
             :effect="themes"
+            :disabled="!state.commonBackground.backgroundImageEnable"
             v-model="state.commonBackground.backgroundType"
             @change="onBackgroundChange"
           >
@@ -104,6 +105,7 @@
           >
             <el-color-picker
               v-model="state.commonBackground.innerImageColor"
+              :disabled="!state.commonBackground.backgroundImageEnable"
               :effect="themes"
               :title="t('visualization.border_color_setting')"
               style="position: absolute; top: -3px; left: 60px"
@@ -115,6 +117,7 @@
             <el-select
               v-model="state.commonBackground.innerImage"
               :effect="themes"
+              :disabled="!state.commonBackground.backgroundImageEnable"
               placeholder="选择边框..."
               style="width: 155px; margin-left: 8px"
               size="small"
@@ -152,6 +155,7 @@
               :before-upload="beforeUploadCheck"
               :http-request="upload"
               :file-list="state.fileList"
+              :disabled="!state.commonBackground.backgroundImageEnable"
             >
               <el-icon><Plus /></el-icon>
             </el-upload>
