@@ -33,121 +33,16 @@
         where a.auth_source = #{resourceId} and  b.privilege_value = 1
     </select>
 
-    <select id="dataSourceIdByUser" resultMap="AuthItemMap">
+    <select id="queryAuthItems" resultMap="AuthItemMap">
         SELECT
             auth_source, MAX(d.privilege_type) as level
         FROM
             sys_auth a
         LEFT JOIN sys_auth_detail d on d.auth_id = a.id
         WHERE
-            auth_source_type = 'link'
-            AND auth_target_type = 'user'
-            AND auth_target = #{userId}
-            AND d.privilege_value = 1
-        GROUP BY a.id
-    </select>
-    <select id="dataSetIdByUser" resultMap="AuthItemMap" >
-        SELECT
-            auth_source, MAX(d.privilege_type) as level
-        FROM
-            sys_auth a
-        LEFT JOIN sys_auth_detail d on d.auth_id = a.id
-        WHERE
-            auth_source_type = 'dataset'
-            AND auth_target_type = 'user'
-            AND auth_target = #{userId}
-            AND d.privilege_value = 1
-        GROUP BY a.id
-    </select>
-    <select id="panelIdByUser" resultMap="AuthItemMap">
-        SELECT
-            auth_source, MAX(d.privilege_type) as level
-        FROM
-            sys_auth a
-        LEFT JOIN sys_auth_detail d on d.auth_id = a.id
-
-        WHERE
-            auth_source_type = 'panel'
-            AND auth_target_type = 'user'
-            AND auth_target = #{userId}
-            AND d.privilege_value = 1
-        GROUP BY a.id
-    </select>
-    <select id="dataSourceIdByRole" resultMap="AuthItemMap" >
-        SELECT
-            auth_source, MAX(d.privilege_type) as level
-        FROM
-            sys_auth a
-        LEFT JOIN sys_auth_detail d on d.auth_id = a.id
-        WHERE
-            auth_source_type = 'link'
-            AND auth_target_type = 'role'
-            AND auth_target = #{roleId}
-            AND d.privilege_value = 1
-        GROUP BY a.id
-    </select>
-    <select id="dataSetIdByRole" resultMap="AuthItemMap" >
-        SELECT
-            auth_source, MAX(d.privilege_type) as level
-        FROM
-            sys_auth a
-        LEFT JOIN sys_auth_detail d on d.auth_id = a.id
-        WHERE
-            auth_source_type = 'dataset'
-            AND auth_target_type = 'role'
-            AND auth_target = #{roleId}
-            AND d.privilege_value = 1
-        GROUP BY a.id
-    </select>
-    <select id="panelIdByRole" resultMap="AuthItemMap" >
-        SELECT
-            auth_source, MAX(d.privilege_type) as level
-        FROM
-            sys_auth a
-        LEFT JOIN sys_auth_detail d on d.auth_id = a.id
-        WHERE
-            auth_source_type = 'panel'
-            AND auth_target_type = 'role'
-            AND auth_target = #{roleId}
-            AND d.privilege_value = 1
-        GROUP BY a.id
-    </select>
-    <select id="dataSourceIdByDept" resultMap="AuthItemMap" >
-        SELECT
-            auth_source, MAX(d.privilege_type) as level
-        FROM
-            sys_auth a
-        LEFT JOIN sys_auth_detail d on d.auth_id = a.id
-        WHERE
-            auth_source_type = 'link'
-            AND auth_target_type = 'dept'
-            AND auth_target = #{deptId}
-            AND d.privilege_value = 1
-        GROUP BY a.id
-    </select>
-    <select id="dataSetIdByDept" resultMap="AuthItemMap" >
-        SELECT
-            auth_source, MAX(d.privilege_type) as level
-        FROM
-            sys_auth a
-        LEFT JOIN sys_auth_detail d on d.auth_id = a.id
-        WHERE
-            auth_source_type = 'dataset'
-            AND auth_target_type = 'dept'
-            AND auth_target = #{deptId}
-            AND d.privilege_value = 1
-        GROUP BY a.id
-    </select>
-    <select id="panelIdByDept" resultMap="AuthItemMap" >
-        SELECT
-            auth_source, MAX(d.privilege_type) as level
-        FROM
-            sys_auth a
-        LEFT JOIN sys_auth_detail d on d.auth_id = a.id
-        WHERE
-            auth_source_type = 'panel'
-            AND auth_target_type = 'dept'
-            AND auth_target = #{deptId}
+            auth_source_type = #{sourceType}
+            AND auth_target_type = #{authTargetType}
+            AND auth_target = #{authTarget}
             AND d.privilege_value = 1
         GROUP BY a.id
     </select>
@@ -155,7 +50,5 @@
     <select id="parentResource" resultType="String" >
         select GET_V_AUTH_MODEL_WITH_PARENT(#{resourceId}, #{type})
     </select>
-
-
 
 </mapper>
