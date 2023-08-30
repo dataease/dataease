@@ -1,6 +1,5 @@
 package io.dataease.plugins.datasource.kingbase.query;
 
-import cn.hutool.json.JSONArray;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
@@ -10,8 +9,8 @@ import io.dataease.plugins.common.base.domain.DatasetTableFieldExample;
 import io.dataease.plugins.common.base.domain.Datasource;
 import io.dataease.plugins.common.base.mapper.DatasetTableFieldMapper;
 import io.dataease.plugins.common.constants.DeTypeConstants;
-import io.dataease.plugins.common.constants.datasource.OracleConstants;
 import io.dataease.plugins.common.constants.datasource.SQLConstants;
+import io.dataease.plugins.common.constants.datasource.SqlServerSQLConstants;
 import io.dataease.plugins.common.dto.chart.ChartCustomFilterItemDTO;
 import io.dataease.plugins.common.dto.chart.ChartFieldCustomFilterDTO;
 import io.dataease.plugins.common.dto.chart.ChartViewFieldDTO;
@@ -20,10 +19,10 @@ import io.dataease.plugins.common.dto.sqlObj.SQLObj;
 import io.dataease.plugins.common.request.chart.ChartExtFilterRequest;
 import io.dataease.plugins.common.request.permission.DataSetRowPermissionsTreeDTO;
 import io.dataease.plugins.common.request.permission.DatasetRowPermissionsTreeItem;
-import io.dataease.plugins.datasource.kingbase.provider.KingbaseConfig;
 import io.dataease.plugins.datasource.entity.Dateformat;
 import io.dataease.plugins.datasource.entity.JdbcConfiguration;
 import io.dataease.plugins.datasource.entity.PageInfo;
+import io.dataease.plugins.datasource.kingbase.provider.KingbaseConfig;
 import io.dataease.plugins.datasource.query.QueryProvider;
 import io.dataease.plugins.datasource.query.Utils;
 import org.apache.commons.collections4.CollectionUtils;
@@ -46,96 +45,142 @@ import static io.dataease.plugins.common.constants.datasource.SQLConstants.TABLE
 
 @Component()
 public class KingbaseQueryProvider extends QueryProvider {
-
     @Resource
     private DatasetTableFieldMapper datasetTableFieldMapper;
+    private static final Gson json = new Gson();
 
-    /**
-     * 字段类型
-     */
     @Override
     public Integer transFieldType(String field) {
+        field = field.toLowerCase();
         switch (field) {
-            case "CHAR":
-            case "VARCHAR2":
-            case "VARCHAR":
-            case "TEXT":
-            case "TINYTEXT":
-            case "MEDIUMTEXT":
-            case "LONGTEXT":
-            case "ENUM":
-            case "LONG":
-            case "NVARCHAR2":
-            case "NCHAR":
-                return 0;// 文本
-            case "DATE":
-            case "TIME":
-            case "YEAR":
-            case "DATETIME":
-            case "TIMESTAMP":
-                return 1;// 时间
-            case "INT":
-            case "INT2":
-            case "INT4":
-            case "INT8":
-            case "SMALLINT":
-            case "MEDIUMINT":
+            case "bpchar":
+            case "varchar":
+            case "text":
+            case "tsquery":
+            case "tsvector":
+            case "uuid":
+            case "xml":
+            case "json":
+            case "bit":
+            case "jsonb":
+            case "cidr":
+            case "inet":
+            case "macaddr":
+            case "txid_snapshot":
+            case "box":
+            case "circle":
+            case "line":
+            case "lseg":
+            case "path":
+            case "point":
+            case "polygon":
+            case "bool":
+            case "interval":
+                return DeTypeConstants.DE_STRING;// 文本
+            case "date":
+            case "time":
+            case "timestamp":
+            case "timestamptz":
+                return DeTypeConstants.DE_TIME;// 时间
+            case "int2":
+            case "int4":
+            case "int8":
             case "INTEGER":
             case "BIGINT":
-                return 2;// 整型
-            case "NUMBER":
-            case "FLOAT":
-            case "FLOAT4":
-            case "FLOAT8":
-            case "DOUBLE":
-            case "DECIMAL":
-            case "DEC":
-            case "NUMERIC":
-                return 3;// 浮点
-            case "BIT":
+                return DeTypeConstants.DE_INT;// 整型
+            case "numeric":
+            case "float4":
+            case "float8":
+            case "money":
+                return DeTypeConstants.DE_FLOAT;// 浮点
             case "TINYINT":
-                return 4;// 布尔
+                return DeTypeConstants.DE_BOOL;// 布尔
+            case "bytea":
+                return DeTypeConstants.DE_BINARY;// 二进制
             default:
-                return 0;
+                return DeTypeConstants.DE_STRING;
         }
     }
 
-    /**
-     * 查询一千行数据
-     *
-     * @param sql
-     * @param orderBy
-     * @return
-     */
     @Override
     public String createSQLPreview(String sql, String orderBy) {
-        return "SELECT * FROM (" + sqlFix(sql) + ") DE_TMP " + " WHERE rownum <= 1000";
+        return "SELECT * FROM (" + sqlFix(sql) + ") AS tmp   " + " LIMIT 1000 offset 0";
     }
 
-    /**
-     * 创建查询 SQL
-     *
-     * @param table
-     * @param fields
-     * @param isGroup
-     * @param ds
-     * @param fieldCustomFilter
-     * @param rowPermissionsTree
-     * @param sortFields
-     * @return
-     */
     @Override
     public String createQuerySQL(String table, List<DatasetTableField> fields, boolean isGroup, Datasource ds,
                                  List<ChartFieldCustomFilterDTO> fieldCustomFilter,
-                                 List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<DeSortField> sortFields) {
+                                 List<DataSetRowPermissionsTreeDTO> rowPermissionsTree) {
+        return createQuerySQL(table, fields, isGroup, ds, fieldCustomFilter, rowPermissionsTree, null);
+    }
+
+    @Override
+    public String createQuerySQL(String table, List<DatasetTableField> fields, boolean isGroup, Datasource ds,
+                                 List<ChartFieldCustomFilterDTO> fieldCustomFilter,
+                                 List<DataSetRowPermissionsTreeDTO> rowPermissionsTree,
+                                 List<DeSortField> sortFields) {
         SQLObj tableObj = SQLObj.builder()
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table
-                        : String.format(OracleConstants.KEYWORD_TABLE, table))
-                .tableAlias(String.format(OracleConstants.ALIAS_FIX, String.format(TABLE_ALIAS_PREFIX, 0)))
+                        : String.format(KingbaseConstants.KEYWORD_TABLE, table))
+                .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
 
-        //setSchema(tableObj, ds);
-        List<SQLObj> xFields = xFields(table, fields);
+        setSchema(tableObj, ds);
+        List<SQLObj> xFields = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(fields)) {
+            for (int i = 0; i < fields.size(); i++) {
+                DatasetTableField f = fields.get(i);
+                String originField;
+                if (ObjectUtils.isNotEmpty(f.getExtField()) && f.getExtField() == 2) {
+                    // 解析origin name中有关联的字段生成sql表达式
+                    originField = calcFieldRegex(f.getOriginName(), tableObj);
+                } else if (ObjectUtils.isNotEmpty(f.getExtField()) && f.getExtField() == 1) {
+                    originField = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(),
+                            f.getOriginName());
+                } else {
+                    originField = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(),
+                            f.getOriginName());
+                }
+                String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
+                String fieldName = "";
+                // 处理横轴字段
+                if (f.getDeExtractType() == DeTypeConstants.DE_TIME) {
+                    if (f.getDeType() == DeTypeConstants.DE_INT || f.getDeType() == DeTypeConstants.DE_FLOAT) {
+                        fieldName = String.format(KingbaseConstants.UNIX_TIMESTAMP, originField);
+                    } else {
+                        fieldName = originField;
+                    }
+                } else if (f.getDeExtractType() == DeTypeConstants.DE_STRING) {
+                    if (f.getDeType() == DeTypeConstants.DE_INT) {
+                        fieldName = String.format(KingbaseConstants.CAST, originField,
+                                KingbaseConstants.DEFAULT_INT_FORMAT);
+                    } else if (f.getDeType() == DeTypeConstants.DE_FLOAT) {
+                        fieldName = String.format(KingbaseConstants.CAST, originField,
+                                KingbaseConstants.DEFAULT_FLOAT_FORMAT);
+                    } else if (f.getDeType() == DeTypeConstants.DE_TIME) {
+                        fieldName = String.format(KingbaseConstants.STR_TO_DATE, originField,
+                                StringUtils.isNotEmpty(f.getDateFormat()) ? f.getDateFormat()
+                                        : KingbaseConstants.DEFAULT_DATE_FORMAT);
+                    } else {
+                        fieldName = originField;
+                    }
+                } else {
+                    if (f.getDeType() == DeTypeConstants.DE_TIME) {
+                        String cast = String.format(KingbaseConstants.CAST, originField, "bigint");
+                        fieldName = String.format(KingbaseConstants.FROM_UNIXTIME, cast);
+                    } else if (f.getDeType() == DeTypeConstants.DE_INT) {
+                        fieldName = String.format(KingbaseConstants.CAST, originField,
+                                KingbaseConstants.DEFAULT_INT_FORMAT);
+                    } else {
+                        fieldName = originField;
+                    }
+                }
+                xFields.add(SQLObj.builder()
+                        .fieldName(fieldName)
+                        .fieldAlias(fieldAlias)
+                        .build());
+            }
+        }
 
         STGroup stg = new STGroupFile(SQLConstants.SQL_TEMPLATE);
         ST st_sql = stg.getInstanceOf("previewSql");
@@ -170,86 +215,43 @@ public class KingbaseQueryProvider extends QueryProvider {
         return st_sql.render();
     }
 
-    @Override
-    public String createQuerySQL(String table, List<DatasetTableField> fields, boolean isGroup, Datasource ds,
-                                 List<ChartFieldCustomFilterDTO> fieldCustomFilter,
-                                 List<DataSetRowPermissionsTreeDTO> rowPermissionsTree) {
-
-        return createQuerySQL(table, fields, isGroup, ds, fieldCustomFilter, rowPermissionsTree, null);
-    }
-
-    /**
-     * 以临时表的方式创建查询 SQL
-     *
-     * @param sql
-     * @param fields
-     * @param isGroup
-     * @param fieldCustomFilter
-     * @param rowPermissionsTree
-     * @param sortFields
-     * @return
-     */
-    @Override
-    public String createQuerySQLAsTmp(String sql, List<DatasetTableField> fields, boolean isGroup,
-                                      List<ChartFieldCustomFilterDTO> fieldCustomFilter,
-                                      List<DataSetRowPermissionsTreeDTO> rowPermissionsTree,
-                                      List<DeSortField> sortFields) {
-        return createQuerySQL("(" + sqlFix(sql) + ")", fields, isGroup, null, fieldCustomFilter, rowPermissionsTree,
-                sortFields);
-    }
-
-    /**
-     * 获取表名 schema + ".表名"
-     *
-     * @param tableObj
-     * @param ds
-     */
-    public void setSchema(SQLObj tableObj, Datasource ds) {
-        if (ds != null && !tableObj.getTableName().startsWith("(") && !tableObj.getTableName().endsWith(")")) {
-            String schema = new Gson().fromJson(ds.getConfiguration(), JdbcConfiguration.class).getSchema();
-            schema = String.format(OracleConstants.KEYWORD_TABLE, schema);
-            tableObj.setTableName(schema + "." + tableObj.getTableName());
-        }
-    }
-
     private SQLObj buildSortField(DeSortField f, SQLObj tableObj, int index) {
         String originField;
         if (ObjectUtils.isNotEmpty(f.getExtField()) && f.getExtField() == 2) {
             // 解析origin name中有关联的字段生成sql表达式
             originField = calcFieldRegex(f.getOriginName(), tableObj);
         } else if (ObjectUtils.isNotEmpty(f.getExtField()) && f.getExtField() == 1) {
-            originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getOriginName());
+            originField = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getOriginName());
         } else {
-            originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getOriginName());
+            originField = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getOriginName());
         }
-        String fieldAlias = String.format(OracleConstants.ALIAS_FIX,
-                String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, index));
+        String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, index);
         String fieldName = "";
         // 处理横轴字段
-        if (f.getDeExtractType() == 1) {
-            if (f.getDeType() == 2 || f.getDeType() == 3) {
-                fieldName = String.format(OracleConstants.UNIX_TIMESTAMP, originField) + "*1000";
+        if (f.getDeExtractType() == DeTypeConstants.DE_TIME) {
+            if (f.getDeType() == DeTypeConstants.DE_INT || f.getDeType() == DeTypeConstants.DE_FLOAT) {
+                fieldName = String.format(KingbaseConstants.UNIX_TIMESTAMP, originField);
             } else {
                 fieldName = originField;
             }
-        } else if (f.getDeExtractType() == 0) {
-            if (f.getDeType() == 2) {
-                fieldName = String.format(OracleConstants.CAST, originField, OracleConstants.DEFAULT_INT_FORMAT);
-            } else if (f.getDeType() == 3) {
-                fieldName = String.format(OracleConstants.CAST, originField, OracleConstants.DEFAULT_FLOAT_FORMAT);
-            } else if (f.getDeType() == 1) {
-                fieldName = String.format(OracleConstants.DATE_FORMAT, originField,
-                        OracleConstants.DEFAULT_DATE_FORMAT);
+        } else if (f.getDeExtractType() == DeTypeConstants.DE_STRING) {
+            if (f.getDeType() == DeTypeConstants.DE_INT) {
+                fieldName = String.format(KingbaseConstants.CAST, originField, KingbaseConstants.DEFAULT_INT_FORMAT);
+            } else if (f.getDeType() == DeTypeConstants.DE_FLOAT) {
+                fieldName = String.format(KingbaseConstants.CAST, originField, KingbaseConstants.DEFAULT_FLOAT_FORMAT);
+            } else if (f.getDeType() == DeTypeConstants.DE_TIME) {
+                fieldName = String.format(KingbaseConstants.STR_TO_DATE, originField,
+                        StringUtils.isNotEmpty(f.getDateFormat()) ? f.getDateFormat()
+                                : KingbaseConstants.DEFAULT_DATE_FORMAT);
             } else {
                 fieldName = originField;
             }
         } else {
-            if (f.getDeType() == 1) {
-                String cast = String.format(OracleConstants.CAST, originField, OracleConstants.DEFAULT_INT_FORMAT)
-                        + "/1000";
-                fieldName = String.format(OracleConstants.FROM_UNIXTIME, cast, OracleConstants.DEFAULT_DATE_FORMAT);
-            } else if (f.getDeType() == 2) {
-                fieldName = String.format(OracleConstants.CAST, originField, OracleConstants.DEFAULT_INT_FORMAT);
+            if (f.getDeType() == DeTypeConstants.DE_TIME) {
+                String cast = String.format(KingbaseConstants.CAST, originField, "bigint");
+                fieldName = String.format(KingbaseConstants.FROM_UNIXTIME, cast);
+            } else if (f.getDeType() == DeTypeConstants.DE_INT) {
+                fieldName = String.format(KingbaseConstants.CAST, originField, KingbaseConstants.DEFAULT_INT_FORMAT);
             } else {
                 fieldName = originField;
             }
@@ -259,77 +261,13 @@ public class KingbaseQueryProvider extends QueryProvider {
         return result;
     }
 
-    private List<SQLObj> xFields(String table, List<DatasetTableField> fields) {
-        SQLObj tableObj = SQLObj.builder()
-                .tableName((table.startsWith("(") && table.endsWith(")")) ? table
-                        : String.format(OracleConstants.KEYWORD_TABLE, table))
-                .tableAlias(String.format(OracleConstants.ALIAS_FIX, String.format(TABLE_ALIAS_PREFIX, 0)))
-                .build();
-        List<SQLObj> xFields = new ArrayList<>();
-        if (CollectionUtils.isNotEmpty(fields)) {
-            for (int i = 0; i < fields.size(); i++) {
-                DatasetTableField f = fields.get(i);
-                String originField;
-                if (ObjectUtils.isNotEmpty(f.getExtField()) && f.getExtField() == 2) {
-                    // 解析origin name中有关联的字段生成sql表达式
-                    originField = calcFieldRegex(f.getOriginName(), tableObj);
-                } else if (ObjectUtils.isNotEmpty(f.getExtField()) && f.getExtField() == 1) {
-                    originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(),
-                            f.getOriginName());
-                } else {
-                    originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(),
-                            f.getOriginName());
-                }
-                String fieldAlias = String.format(OracleConstants.ALIAS_FIX,
-                        String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i));
-                String fieldName = "";
-                // 处理横轴字段
-                if (f.getDeExtractType() == 1) {
-                    if (f.getDeType() == 2 || f.getDeType() == 3) {
-                        fieldName = String.format(OracleConstants.UNIX_TIMESTAMP, originField) + "*1000";
-                    } else {
-                        fieldName = originField;
-                    }
-                } else if (f.getDeExtractType() == 0) {
-                    if (f.getDeType() == 2) {
-                        fieldName = String.format(OracleConstants.CAST, originField,
-                                OracleConstants.DEFAULT_INT_FORMAT);
-                    } else if (f.getDeType() == 3) {
-                        fieldName = String.format(OracleConstants.CAST, originField,
-                                OracleConstants.DEFAULT_FLOAT_FORMAT);
-                    } else if (f.getDeType() == 1) {
-                        fieldName = String.format(OracleConstants.DATE_FORMAT, originField,
-                                OracleConstants.DEFAULT_DATE_FORMAT);
-                    } else {
-                        fieldName = originField;
-                    }
-                } else {
-                    if (f.getDeType() == 1) {
-                        String cast = String.format(OracleConstants.CAST, originField,
-                                OracleConstants.DEFAULT_INT_FORMAT) + "/1000";
-                        fieldName = String.format(OracleConstants.FROM_UNIXTIME, cast,
-                                OracleConstants.DEFAULT_DATE_FORMAT);
-                    } else if (f.getDeType() == 2) {
-                        fieldName = String.format(OracleConstants.CAST, originField,
-                                OracleConstants.DEFAULT_INT_FORMAT);
-                    } else {
-                        fieldName = originField;
-                    }
-                }
-                xFields.add(SQLObj.builder()
-                        .fieldName(fieldName)
-                        .fieldAlias(fieldAlias)
-                        .build());
-            }
-        }
-        return xFields;
-    }
-
-    private String sqlColumn(List<SQLObj> xFields) {
-        String[] array = xFields.stream().map(f -> {
-            return f.getFieldAlias();
-        }).toArray(String[]::new);
-        return StringUtils.join(array, ",");
+    @Override
+    public String createQuerySQLAsTmp(String sql, List<DatasetTableField> fields, boolean isGroup,
+                                      List<ChartFieldCustomFilterDTO> fieldCustomFilter,
+                                      List<DataSetRowPermissionsTreeDTO> rowPermissionsTree,
+                                      List<DeSortField> sortFields) {
+        return createQuerySQL("(" + sqlFix(sql) + ")", fields, isGroup, null, fieldCustomFilter, rowPermissionsTree,
+                sortFields);
     }
 
     @Override
@@ -344,12 +282,8 @@ public class KingbaseQueryProvider extends QueryProvider {
                                            Integer realSize, boolean isGroup, Datasource ds,
                                            List<ChartFieldCustomFilterDTO> fieldCustomFilter,
                                            List<DataSetRowPermissionsTreeDTO> rowPermissionsTree) {
-        List<SQLObj> xFields = xFields(table, fields);
-
-        return MessageFormat.format(
-                "SELECT {0} FROM ( SELECT DE_TMP.*, rownum r FROM ( {1} ) DE_TMP WHERE rownum <= {2} ) WHERE r > {3} ",
-                sqlColumn(xFields), createQuerySQL(table, fields, isGroup, ds, fieldCustomFilter, rowPermissionsTree),
-                Integer.valueOf(page * realSize).toString(), Integer.valueOf((page - 1) * pageSize).toString());
+        return createQuerySQL(table, fields, isGroup, ds, fieldCustomFilter, rowPermissionsTree) + " LIMIT " + realSize
+                + " offset " + (page - 1) * pageSize;
     }
 
     @Override
@@ -357,11 +291,8 @@ public class KingbaseQueryProvider extends QueryProvider {
                                          Integer realSize, boolean isGroup,
                                          List<ChartFieldCustomFilterDTO> fieldCustomFilter,
                                          List<DataSetRowPermissionsTreeDTO> rowPermissionsTree) {
-        List<SQLObj> xFields = xFields("(" + sqlFix(sql) + ")", fields);
-        return MessageFormat.format(
-                "SELECT {0} FROM ( SELECT DE_TMP.*, rownum r FROM ( {1} ) DE_TMP WHERE rownum <= {2} ) WHERE r > {3} ",
-                sqlColumn(xFields), createQuerySQLAsTmp(sql, fields, isGroup, fieldCustomFilter, rowPermissionsTree),
-                Integer.valueOf(page * realSize).toString(), Integer.valueOf((page - 1) * pageSize).toString());
+        return createQuerySQLAsTmp(sql, fields, isGroup, fieldCustomFilter, rowPermissionsTree) + " LIMIT " + realSize
+                + " offset " + (page - 1) * pageSize;
     }
 
     @Override
@@ -369,32 +300,29 @@ public class KingbaseQueryProvider extends QueryProvider {
                                             boolean isGroup, Datasource ds,
                                             List<ChartFieldCustomFilterDTO> fieldCustomFilter,
                                             List<DataSetRowPermissionsTreeDTO> rowPermissionsTree) {
-        /*String schema = new Gson().fromJson(ds.getConfiguration(), JdbcConfiguration.class).getSchema();
-        return String.format("SELECT *  from %s  WHERE rownum <= %s ",
-                schema + "." + String.format(OracleConstants.KEYWORD_TABLE, table), limit.toString());*/
-        return String.format("SELECT *  from %s  WHERE rownum <= %s ",
-                String.format(OracleConstants.KEYWORD_TABLE, table), limit.toString());
+        return createQuerySQL(table, fields, isGroup, ds, fieldCustomFilter, rowPermissionsTree) + " LIMIT " + limit
+                + " offset 0";
     }
 
     @Override
     public String createQuerySqlWithLimit(String sql, List<DatasetTableField> fields, Integer limit, boolean isGroup,
                                           List<ChartFieldCustomFilterDTO> fieldCustomFilter,
                                           List<DataSetRowPermissionsTreeDTO> rowPermissionsTree) {
-        return String.format("SELECT * from %s  WHERE rownum <= %s ", "(" + sqlFix(sql) + ")", limit.toString());
+        return createQuerySQLAsTmp(sql, fields, isGroup, fieldCustomFilter, rowPermissionsTree) + " LIMIT " + limit
+                + " offset 0";
     }
 
     @Override
     public String getSQL(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis,
                          List<ChartFieldCustomFilterDTO> fieldCustomFilter,
                          List<DataSetRowPermissionsTreeDTO> rowPermissionsTree,
-                         List<ChartExtFilterRequest> extFilterRequestList,
-                         Datasource ds, ChartViewWithBLOBs view) {
+                         List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view) {
         SQLObj tableObj = SQLObj.builder()
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table
-                        : String.format(OracleConstants.KEYWORD_TABLE, table))
-                .tableAlias(String.format(OracleConstants.ALIAS_FIX, String.format(TABLE_ALIAS_PREFIX, 0)))
+                        : String.format(KingbaseConstants.KEYWORD_TABLE, table))
+                .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
-        //setSchema(tableObj, ds);
+        setSchema(tableObj, ds);
         List<SQLObj> xFields = new ArrayList<>();
         List<SQLObj> xOrders = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(xAxis)) {
@@ -405,14 +333,13 @@ public class KingbaseQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(x.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 1) {
-                    originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(),
+                    originField = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(),
                             x.getOriginName());
                 } else {
-                    originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(),
+                    originField = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(),
                             x.getOriginName());
                 }
-                String fieldAlias = String.format(OracleConstants.ALIAS_FIX,
-                        String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i));
+                String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段
                 xFields.add(getXFields(x, originField, fieldAlias));
                 // 处理横轴排序
@@ -436,14 +363,13 @@ public class KingbaseQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(y.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == 1) {
-                    originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(),
+                    originField = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(),
                             y.getOriginName());
                 } else {
-                    originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(),
+                    originField = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(),
                             y.getOriginName());
                 }
-                String fieldAlias = String.format(OracleConstants.ALIAS_FIX,
-                        String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i));
+                String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i);
                 // 处理纵轴字段
                 yFields.add(getYFields(y, originField, fieldAlias));
                 // 处理纵轴过滤
@@ -498,7 +424,7 @@ public class KingbaseQueryProvider extends QueryProvider {
 
         ST st = stg.getInstanceOf("querySql");
         SQLObj tableSQL = SQLObj.builder()
-                .tableName(String.format(OracleConstants.BRACKETS, sql))
+                .tableName(String.format(KingbaseConstants.BRACKETS, sql))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
                 .build();
         if (CollectionUtils.isNotEmpty(aggWheres))
@@ -510,6 +436,25 @@ public class KingbaseQueryProvider extends QueryProvider {
         return sqlLimit(st.render(), view);
     }
 
+    @Override
+    public String getSQLWithPage(boolean isTable, String table, List<ChartViewFieldDTO> xAxis,
+                                 List<ChartFieldCustomFilterDTO> fieldCustomFilter,
+                                 List<DataSetRowPermissionsTreeDTO> rowPermissionsTree,
+                                 List<ChartExtFilterRequest> extFilterRequestList, Datasource ds,
+                                 ChartViewWithBLOBs view,
+                                 PageInfo pageInfo) {
+        String limit = ((pageInfo.getGoPage() != null && pageInfo.getPageSize() != null)
+                ? " LIMIT " + pageInfo.getPageSize() + " offset " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize()
+                : "");
+        if (isTable) {
+            return originalTableInfo(table, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds,
+                    view) + limit;
+        } else {
+            return originalTableInfo("(" + sqlFix(table) + ")", xAxis, fieldCustomFilter, rowPermissionsTree,
+                    extFilterRequestList, ds, view) + limit;
+        }
+    }
+
     private String originalTableInfo(String table, List<ChartViewFieldDTO> xAxis,
                                      List<ChartFieldCustomFilterDTO> fieldCustomFilter,
                                      List<DataSetRowPermissionsTreeDTO> rowPermissionsTree,
@@ -517,10 +462,10 @@ public class KingbaseQueryProvider extends QueryProvider {
                                      ChartViewWithBLOBs view) {
         SQLObj tableObj = SQLObj.builder()
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table
-                        : String.format(OracleConstants.KEYWORD_TABLE, table))
-                .tableAlias(String.format(OracleConstants.ALIAS_FIX, String.format(TABLE_ALIAS_PREFIX, 0)))
+                        : String.format(KingbaseConstants.KEYWORD_TABLE, table))
+                .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
-        //setSchema(tableObj, ds);
+        setSchema(tableObj, ds);
         List<SQLObj> xFields = new ArrayList<>();
         List<SQLObj> xOrders = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(xAxis)) {
@@ -531,20 +476,20 @@ public class KingbaseQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(x.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 1) {
-                    originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(),
+                    originField = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(),
                             x.getOriginName());
                 } else {
                     if (x.getDeType() == 2 || x.getDeType() == 3) {
-                        originField = String.format(OracleConstants.CAST,
-                                String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName()),
-                                OracleConstants.DEFAULT_FLOAT_FORMAT);
+                        originField = String.format(KingbaseConstants.CAST,
+                                String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(),
+                                        x.getOriginName()),
+                                KingbaseConstants.DEFAULT_FLOAT_FORMAT);
                     } else {
-                        originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(),
+                        originField = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(),
                                 x.getOriginName());
                     }
                 }
-                String fieldAlias = String.format(OracleConstants.ALIAS_FIX,
-                        String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i));
+                String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段
                 xFields.add(getXFields(x, originField, fieldAlias));
                 // 处理横轴排序
@@ -593,7 +538,7 @@ public class KingbaseQueryProvider extends QueryProvider {
         ST st = stg.getInstanceOf("previewSql");
         st.add("isGroup", false);
         SQLObj tableSQL = SQLObj.builder()
-                .tableName(String.format(OracleConstants.BRACKETS, sql))
+                .tableName(String.format(KingbaseConstants.BRACKETS, sql))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
                 .build();
         if (CollectionUtils.isNotEmpty(orders))
@@ -609,25 +554,9 @@ public class KingbaseQueryProvider extends QueryProvider {
                                   List<DataSetRowPermissionsTreeDTO> rowPermissionsTree,
                                   List<ChartExtFilterRequest> extFilterRequestList, Datasource ds,
                                   ChartViewWithBLOBs view) {
-        return sqlLimit(originalTableInfo(table, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList,
-                ds, view), view);
-    }
-
-    @Override
-    public String getSQLWithPage(boolean isTable, String table, List<ChartViewFieldDTO> xAxis,
-                                 List<ChartFieldCustomFilterDTO> fieldCustomFilter,
-                                 List<DataSetRowPermissionsTreeDTO> rowPermissionsTree,
-                                 List<ChartExtFilterRequest> extFilterRequestList, Datasource ds,
-                                 ChartViewWithBLOBs view, PageInfo pageInfo) {
-        String limit = ((pageInfo.getGoPage() != null && pageInfo.getPageSize() != null) ?
-                " LIMIT " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize() + "," + pageInfo.getPageSize() : "");
-        if (isTable) {
-            return originalTableInfo(table, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds,
-                    view) + limit;
-        } else {
-            return originalTableInfo("(" + sqlFix(table) + ")", xAxis, fieldCustomFilter, rowPermissionsTree,
-                    extFilterRequestList, ds, view) + limit;
-        }
+        return sqlLimit(
+                originalTableInfo(table, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view),
+                view);
     }
 
     @Override
@@ -637,7 +566,7 @@ public class KingbaseQueryProvider extends QueryProvider {
                                        List<ChartExtFilterRequest> extFilterRequestList, Datasource ds,
                                        ChartViewWithBLOBs view) {
         return getSQLTableInfo("(" + sqlFix(sql) + ")", xAxis, fieldCustomFilter, rowPermissionsTree,
-                extFilterRequestList, null, view);
+                extFilterRequestList, ds, view);
     }
 
     @Override
@@ -653,14 +582,15 @@ public class KingbaseQueryProvider extends QueryProvider {
     public String getSQLStack(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis,
                               List<ChartFieldCustomFilterDTO> fieldCustomFilter,
                               List<DataSetRowPermissionsTreeDTO> rowPermissionsTree,
-                              List<ChartExtFilterRequest> extFilterRequestList,
-                              List<ChartViewFieldDTO> extStack, Datasource ds, ChartViewWithBLOBs view) {
+                              List<ChartExtFilterRequest> extFilterRequestList, List<ChartViewFieldDTO> extStack,
+                              Datasource ds,
+                              ChartViewWithBLOBs view) {
         SQLObj tableObj = SQLObj.builder()
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table
-                        : String.format(OracleConstants.KEYWORD_TABLE, table))
-                .tableAlias(String.format(OracleConstants.ALIAS_FIX, String.format(TABLE_ALIAS_PREFIX, 0)))
+                        : String.format(KingbaseConstants.KEYWORD_TABLE, table))
+                .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
-        //setSchema(tableObj, ds);
+        setSchema(tableObj, ds);
         List<SQLObj> xFields = new ArrayList<>();
         List<SQLObj> xOrders = new ArrayList<>();
         List<ChartViewFieldDTO> xList = new ArrayList<>();
@@ -674,14 +604,13 @@ public class KingbaseQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(x.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 1) {
-                    originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(),
+                    originField = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(),
                             x.getOriginName());
                 } else {
-                    originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(),
+                    originField = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(),
                             x.getOriginName());
                 }
-                String fieldAlias = String.format(OracleConstants.ALIAS_FIX,
-                        String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i));
+                String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段
                 xFields.add(getXFields(x, originField, fieldAlias));
                 // 处理横轴排序
@@ -705,14 +634,13 @@ public class KingbaseQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(y.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == 1) {
-                    originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(),
+                    originField = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(),
                             y.getOriginName());
                 } else {
-                    originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(),
+                    originField = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(),
                             y.getOriginName());
                 }
-                String fieldAlias = String.format(OracleConstants.ALIAS_FIX,
-                        String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i));
+                String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i);
                 // 处理纵轴字段
                 yFields.add(getYFields(y, originField, fieldAlias));
                 // 处理纵轴过滤
@@ -767,7 +695,7 @@ public class KingbaseQueryProvider extends QueryProvider {
 
         ST st = stg.getInstanceOf("querySql");
         SQLObj tableSQL = SQLObj.builder()
-                .tableName(String.format(OracleConstants.BRACKETS, sql))
+                .tableName(String.format(KingbaseConstants.BRACKETS, sql))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
                 .build();
         if (CollectionUtils.isNotEmpty(aggWheres))
@@ -783,39 +711,25 @@ public class KingbaseQueryProvider extends QueryProvider {
     public String getSQLAsTmpStack(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis,
                                    List<ChartFieldCustomFilterDTO> fieldCustomFilter,
                                    List<DataSetRowPermissionsTreeDTO> rowPermissionsTree,
-                                   List<ChartExtFilterRequest> extFilterRequestList,
-                                   List<ChartViewFieldDTO> extStack, ChartViewWithBLOBs view) {
+                                   List<ChartExtFilterRequest> extFilterRequestList, List<ChartViewFieldDTO> extStack,
+                                   ChartViewWithBLOBs view) {
         return getSQLStack("(" + sqlFix(table) + ")", xAxis, yAxis, fieldCustomFilter, rowPermissionsTree,
-                extFilterRequestList, extStack,
-                null, view);
+                extFilterRequestList, extStack, null, view);
     }
 
-    /**
-     * 获取 SQL 函数
-     *
-     * @param table
-     * @param xAxis
-     * @param yAxis
-     * @param fieldCustomFilter
-     * @param rowPermissionsTree
-     * @param extFilterRequestList
-     * @param extBubble
-     * @param ds
-     * @param view
-     * @return
-     */
     @Override
     public String getSQLScatter(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis,
                                 List<ChartFieldCustomFilterDTO> fieldCustomFilter,
                                 List<DataSetRowPermissionsTreeDTO> rowPermissionsTree,
-                                List<ChartExtFilterRequest> extFilterRequestList,
-                                List<ChartViewFieldDTO> extBubble, Datasource ds, ChartViewWithBLOBs view) {
+                                List<ChartExtFilterRequest> extFilterRequestList, List<ChartViewFieldDTO> extBubble,
+                                Datasource ds,
+                                ChartViewWithBLOBs view) {
         SQLObj tableObj = SQLObj.builder()
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table
-                        : String.format(OracleConstants.KEYWORD_TABLE, table))
-                .tableAlias(String.format(OracleConstants.ALIAS_FIX, String.format(TABLE_ALIAS_PREFIX, 0)))
+                        : String.format(KingbaseConstants.KEYWORD_TABLE, table))
+                .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
-        //setSchema(tableObj, ds);
+        setSchema(tableObj, ds);
         List<SQLObj> xFields = new ArrayList<>();
         List<SQLObj> xOrders = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(xAxis)) {
@@ -826,14 +740,13 @@ public class KingbaseQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(x.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 1) {
-                    originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(),
+                    originField = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(),
                             x.getOriginName());
                 } else {
-                    originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(),
+                    originField = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(),
                             x.getOriginName());
                 }
-                String fieldAlias = String.format(OracleConstants.ALIAS_FIX,
-                        String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i));
+                String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段
                 xFields.add(getXFields(x, originField, fieldAlias));
                 // 处理横轴排序
@@ -860,14 +773,13 @@ public class KingbaseQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(y.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == 1) {
-                    originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(),
+                    originField = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(),
                             y.getOriginName());
                 } else {
-                    originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(),
+                    originField = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(),
                             y.getOriginName());
                 }
-                String fieldAlias = String.format(OracleConstants.ALIAS_FIX,
-                        String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i));
+                String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i);
                 // 处理纵轴字段
                 yFields.add(getYFields(y, originField, fieldAlias));
                 // 处理纵轴过滤
@@ -922,7 +834,7 @@ public class KingbaseQueryProvider extends QueryProvider {
 
         ST st = stg.getInstanceOf("querySql");
         SQLObj tableSQL = SQLObj.builder()
-                .tableName(String.format(OracleConstants.BRACKETS, sql))
+                .tableName(String.format(KingbaseConstants.BRACKETS, sql))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
                 .build();
         if (CollectionUtils.isNotEmpty(aggWheres))
@@ -939,18 +851,12 @@ public class KingbaseQueryProvider extends QueryProvider {
                                      List<ChartFieldCustomFilterDTO> fieldCustomFilter,
                                      List<DataSetRowPermissionsTreeDTO> rowPermissionsTree,
                                      List<ChartExtFilterRequest> extFilterRequestList,
-                                     List<ChartViewFieldDTO> extBubble, ChartViewWithBLOBs view) {
+                                     List<ChartViewFieldDTO> extBubble,
+                                     ChartViewWithBLOBs view) {
         return getSQLScatter("(" + sqlFix(table) + ")", xAxis, yAxis, fieldCustomFilter, rowPermissionsTree,
-                extFilterRequestList,
-                extBubble, null, view);
+                extFilterRequestList, extBubble, null, view);
     }
 
-    /**
-     * 查询表
-     *
-     * @param table
-     * @return
-     */
     @Override
     public String searchTable(String table) {
         return "SELECT table_name FROM information_schema.TABLES WHERE table_name ='" + table + "'";
@@ -960,15 +866,15 @@ public class KingbaseQueryProvider extends QueryProvider {
     public String getSQLSummary(String table, List<ChartViewFieldDTO> yAxis,
                                 List<ChartFieldCustomFilterDTO> fieldCustomFilter,
                                 List<DataSetRowPermissionsTreeDTO> rowPermissionsTree,
-                                List<ChartExtFilterRequest> extFilterRequestList,
-                                ChartViewWithBLOBs view, Datasource ds) {
+                                List<ChartExtFilterRequest> extFilterRequestList, ChartViewWithBLOBs view,
+                                Datasource ds) {
         // 字段汇总 排序等
         SQLObj tableObj = SQLObj.builder()
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table
-                        : String.format(OracleConstants.KEYWORD_TABLE, table))
-                .tableAlias(String.format(OracleConstants.ALIAS_FIX, String.format(TABLE_ALIAS_PREFIX, 0)))
+                        : String.format(KingbaseConstants.KEYWORD_TABLE, table))
+                .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
-        //setSchema(tableObj, ds);
+        setSchema(tableObj, ds);
         List<SQLObj> yFields = new ArrayList<>();
         List<String> yWheres = new ArrayList<>();
         List<SQLObj> yOrders = new ArrayList<>();
@@ -980,10 +886,10 @@ public class KingbaseQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(y.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == 1) {
-                    originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(),
+                    originField = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(),
                             y.getOriginName());
                 } else {
-                    originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(),
+                    originField = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(),
                             y.getOriginName());
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i);
@@ -1017,6 +923,7 @@ public class KingbaseQueryProvider extends QueryProvider {
             wheres.add(extWheres);
         if (whereTrees != null)
             wheres.add(whereTrees);
+        List<SQLObj> groups = new ArrayList<>();
         // 外层再次套sql
         List<SQLObj> orders = new ArrayList<>();
         orders.addAll(yOrders);
@@ -1035,7 +942,7 @@ public class KingbaseQueryProvider extends QueryProvider {
 
         ST st = stg.getInstanceOf("querySql");
         SQLObj tableSQL = SQLObj.builder()
-                .tableName(String.format(OracleConstants.BRACKETS, sql))
+                .tableName(String.format(KingbaseConstants.BRACKETS, sql))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
                 .build();
         if (CollectionUtils.isNotEmpty(aggWheres))
@@ -1051,8 +958,7 @@ public class KingbaseQueryProvider extends QueryProvider {
     public String getSQLSummaryAsTmp(String sql, List<ChartViewFieldDTO> yAxis,
                                      List<ChartFieldCustomFilterDTO> fieldCustomFilter,
                                      List<DataSetRowPermissionsTreeDTO> rowPermissionsTree,
-                                     List<ChartExtFilterRequest> extFilterRequestList,
-                                     ChartViewWithBLOBs view) {
+                                     List<ChartExtFilterRequest> extFilterRequestList, ChartViewWithBLOBs view) {
         return getSQLSummary("(" + sqlFix(sql) + ")", yAxis, fieldCustomFilter, rowPermissionsTree,
                 extFilterRequestList, view, null);
     }
@@ -1063,33 +969,43 @@ public class KingbaseQueryProvider extends QueryProvider {
         if (sql.lastIndexOf(";") == (sql.length() - 1)) {
             sql = sql.substring(0, sql.length() - 1);
         }
-        String tmpSql = "SELECT * FROM (" + sql + ") DE_TMP " + " where rownum <= 0";
+        String tmpSql = "SELECT * FROM (" + sql + ") AS tmp " + " LIMIT 0 ";
         return tmpSql;
+    }
+
+    public String getTotalCount(boolean isTable, String sql, Datasource ds) {
+        if (isTable) {
+            String schema = new Gson().fromJson(ds.getConfiguration(), JdbcConfiguration.class).getSchema();
+            String tableWithSchema = String.format(KingbaseConstants.KEYWORD_TABLE, schema) + "."
+                    + String.format(KingbaseConstants.KEYWORD_TABLE, sql);
+            return "SELECT COUNT(*) from " + tableWithSchema;
+        } else {
+            return "SELECT COUNT(*) from ( " + sqlFix(sql) + " ) DE_COUNT_TEMP";
+        }
     }
 
     @Override
     public String createRawQuerySQL(String table, List<DatasetTableField> fields, Datasource ds) {
         String[] array = fields.stream().map(f -> {
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append("\"").append(f.getOriginName()).append("\"");
+            stringBuilder.append("\"").append(f.getOriginName()).append("\" AS ").append(f.getDataeaseName());
             return stringBuilder.toString();
         }).toArray(String[]::new);
-        KingbaseConfig kingbaseConfig = new Gson().fromJson(ds.getConfiguration(), KingbaseConfig.class);
-        /*return MessageFormat.format("SELECT {0} FROM {1}", StringUtils.join(array, ","),
-                kingbaseConfig.getSchema() + ".\"" + table + "\"");*/
-        return MessageFormat.format("SELECT {0} FROM {1}", StringUtils.join(array, ","),
-                table + "\"");
+        if (ds != null) {
+            String schema = new Gson().fromJson(ds.getConfiguration(), JdbcConfiguration.class).getSchema();
+            String tableWithSchema = String.format(SqlServerSQLConstants.KEYWORD_TABLE, schema) + "."
+                    + String.format(SqlServerSQLConstants.KEYWORD_TABLE, table);
+            return MessageFormat.format("SELECT {0} FROM {1}  LIMIT DE_PAGE_SIZE OFFSET DE_OFFSET ",
+                    StringUtils.join(array, ","), tableWithSchema);
+        } else {
+            return MessageFormat.format("SELECT {0} FROM {1}  LIMIT DE_PAGE_SIZE OFFSET DE_OFFSET ",
+                    StringUtils.join(array, ","), table);
+        }
     }
 
     @Override
     public String createRawQuerySQLAsTmp(String sql, List<DatasetTableField> fields) {
-        String[] array = fields.stream().map(f -> {
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append(" \"").append(f.getOriginName()).append("\"");
-            return stringBuilder.toString();
-        }).toArray(String[]::new);
-        return MessageFormat.format("SELECT {0} FROM {1}", StringUtils.join(array, ","),
-                " (" + sqlFix(sql) + ") DE_TMP ");
+        return createRawQuerySQL(" (" + sqlFix(sql) + ") AS DE_TEMP ", fields, null);
     }
 
     @Override
@@ -1105,33 +1021,29 @@ public class KingbaseQueryProvider extends QueryProvider {
             // 解析origin name中有关联的字段生成sql表达式
             originName = calcFieldRegex(field.getOriginName(), tableObj);
         } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 1) {
-            originName = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(),
-                    field.getOriginName());
+            originName = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
         } else {
-            originName = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(),
-                    field.getOriginName());
+            originName = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
         }
-
         if (field.getDeType() == 1) {
             if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                whereName = String.format(OracleConstants.TO_DATE, originName,
-                        StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() :
-                                OracleConstants.DEFAULT_DATE_FORMAT);
+                whereName = String.format(KingbaseConstants.STR_TO_DATE, originName,
+                        StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat()
+                                : KingbaseConstants.DEFAULT_DATE_FORMAT);
             }
             if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
-                String cast = String.format(OracleConstants.CAST, originName, OracleConstants.DEFAULT_INT_FORMAT)
-                        + "/1000";
-                whereName = String.format(OracleConstants.FROM_UNIXTIME, cast, OracleConstants.DEFAULT_DATE_FORMAT);
+                String cast = String.format(KingbaseConstants.CAST, originName, "bigint");
+                whereName = String.format(KingbaseConstants.FROM_UNIXTIME, cast);
             }
             if (field.getDeExtractType() == 1) {
                 whereName = originName;
             }
         } else if (field.getDeType() == 2 || field.getDeType() == 3) {
             if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                whereName = String.format(OracleConstants.CAST, originName, OracleConstants.DEFAULT_FLOAT_FORMAT);
+                whereName = String.format(KingbaseConstants.CAST, originName, KingbaseConstants.DEFAULT_FLOAT_FORMAT);
             }
             if (field.getDeExtractType() == 1) {
-                whereName = String.format(OracleConstants.UNIX_TIMESTAMP, originName) + "*1000";
+                whereName = String.format(KingbaseConstants.UNIX_TIMESTAMP, originName);
             }
             if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                 whereName = originName;
@@ -1163,12 +1075,7 @@ public class KingbaseQueryProvider extends QueryProvider {
             } else if (StringUtils.containsIgnoreCase(item.getTerm(), "like")) {
                 whereValue = "'%" + value + "%'";
             } else {
-                if (field.getDeType() == 1) {
-                    whereValue = String.format(OracleConstants.TO_DATE, "'" + value + "'",
-                            OracleConstants.DEFAULT_DATE_FORMAT);
-                } else {
-                    whereValue = String.format(OracleConstants.WHERE_VALUE_VALUE, value);
-                }
+                whereValue = String.format(KingbaseConstants.WHERE_VALUE_VALUE, value);
             }
             SQLObj build = SQLObj.builder()
                     .whereField(whereName)
@@ -1181,12 +1088,11 @@ public class KingbaseQueryProvider extends QueryProvider {
 
     @Override
     public String convertTableToSql(String tableName, Datasource ds) {
-        /*String schema = new Gson().fromJson(ds.getConfiguration(), JdbcConfiguration.class).getSchema();
-        schema = String.format(OracleConstants.KEYWORD_TABLE, schema);
-        return createSQLPreview(
-                "SELECT * FROM " + schema + "." + String.format(OracleConstants.KEYWORD_TABLE, tableName), null);*/
-        return createSQLPreview(
-                "SELECT * FROM " + String.format(OracleConstants.KEYWORD_TABLE, tableName), null);
+        String schema = new Gson().fromJson(ds.getConfiguration(), JdbcConfiguration.class).getSchema();
+        schema = String.format(KingbaseConstants.KEYWORD_TABLE, schema);
+        return createSQLPreview("SELECT * FROM " + schema + "." + String.format(KingbaseConstants.KEYWORD_TABLE,
+                        tableName),
+                null);
     }
 
     public String transMysqlFilterTerm(String term) {
@@ -1244,33 +1150,32 @@ public class KingbaseQueryProvider extends QueryProvider {
                 // 解析origin name中有关联的字段生成sql表达式
                 originName = calcFieldRegex(field.getOriginName(), tableObj);
             } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 1) {
-                originName = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(),
+                originName = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(),
                         field.getOriginName());
             } else {
-                originName = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(),
+                originName = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(),
                         field.getOriginName());
             }
-
             if (field.getDeType() == 1) {
                 if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                    whereName = String.format(OracleConstants.TO_DATE, originName,
-                            StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() :
-                                    OracleConstants.DEFAULT_DATE_FORMAT);
+                    whereName = String.format(KingbaseConstants.STR_TO_DATE, originName,
+                            StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat()
+                                    : KingbaseConstants.DEFAULT_DATE_FORMAT);
                 }
                 if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
-                    String cast = String.format(OracleConstants.CAST, originName, OracleConstants.DEFAULT_INT_FORMAT)
-                            + "/1000";
-                    whereName = String.format(OracleConstants.FROM_UNIXTIME, cast, OracleConstants.DEFAULT_DATE_FORMAT);
+                    String cast = String.format(KingbaseConstants.CAST, originName, "bigint");
+                    whereName = String.format(KingbaseConstants.FROM_UNIXTIME, cast);
                 }
                 if (field.getDeExtractType() == 1) {
                     whereName = originName;
                 }
             } else if (field.getDeType() == 2 || field.getDeType() == 3) {
                 if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                    whereName = String.format(OracleConstants.CAST, originName, OracleConstants.DEFAULT_FLOAT_FORMAT);
+                    whereName = String.format(KingbaseConstants.CAST, originName,
+                            KingbaseConstants.DEFAULT_FLOAT_FORMAT);
                 }
                 if (field.getDeExtractType() == 1) {
-                    whereName = String.format(OracleConstants.UNIX_TIMESTAMP, originName) + "*1000";
+                    whereName = String.format(KingbaseConstants.UNIX_TIMESTAMP, originName);
                 }
                 if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                     whereName = originName;
@@ -1304,12 +1209,7 @@ public class KingbaseQueryProvider extends QueryProvider {
                     } else if (StringUtils.containsIgnoreCase(filterItemDTO.getTerm(), "like")) {
                         whereValue = "'%" + value + "%'";
                     } else {
-                        if (field.getDeType() == 1) {
-                            whereValue = String.format(OracleConstants.TO_DATE, "'" + value + "'",
-                                    OracleConstants.DEFAULT_DATE_FORMAT);
-                        } else {
-                            whereValue = String.format(OracleConstants.WHERE_VALUE_VALUE, value);
-                        }
+                        whereValue = String.format(KingbaseConstants.WHERE_VALUE_VALUE, value);
                     }
                     list.add(SQLObj.builder()
                             .whereField(whereName)
@@ -1354,35 +1254,51 @@ public class KingbaseQueryProvider extends QueryProvider {
                     // 解析origin name中有关联的字段生成sql表达式
                     originName = calcFieldRegex(field.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 1) {
-                    originName = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(),
+                    originName = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(),
                             field.getOriginName());
                 } else {
-                    originName = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(),
+                    originName = String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(),
                             field.getOriginName());
                 }
 
                 if (field.getDeType() == 1) {
-                    if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                        whereName = String.format(OracleConstants.TO_DATE, originName,
-                                OracleConstants.DEFAULT_DATE_FORMAT);
+                    String format = transDateFormat(request.getDateStyle(), request.getDatePattern());
+                    if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5
+                            || field.getDeExtractType() == 1) {
+                        String timestamp = String.format(KingbaseConstants.STR_TO_DATE, originName,
+                                StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat()
+                                        : KingbaseConstants.DEFAULT_DATE_FORMAT);
+                        if (request.getOperator().equals("between")) {
+                            whereName = timestamp;
+                        } else {
+                            whereName = String.format(KingbaseConstants.DATE_FORMAT, timestamp, format);
+                        }
                     }
                     if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3
                             || field.getDeExtractType() == 4) {
-                        String cast = String.format(OracleConstants.CAST, originName,
-                                OracleConstants.DEFAULT_INT_FORMAT) + "/1000";
-                        whereName = String.format(OracleConstants.FROM_UNIXTIME, cast,
-                                OracleConstants.DEFAULT_DATE_FORMAT);
+                        String cast = String.format(KingbaseConstants.CAST, originName, "bigint");
+                        String timestamp = String.format(KingbaseConstants.FROM_UNIXTIME, cast);
+                        if (request.getOperator().equals("between")) {
+                            whereName = timestamp;
+                        } else {
+                            whereName = String.format(KingbaseConstants.DATE_FORMAT, timestamp, format);
+                        }
                     }
                     if (field.getDeExtractType() == 1) {
-                        whereName = originName;
+                        if (request.getOperator().equals("between")) {
+                            whereName = originName;
+                        } else {
+                            whereName = String.format(KingbaseConstants.DATE_FORMAT, originName, format);
+                        }
+
                     }
                 } else if (field.getDeType() == 2 || field.getDeType() == 3) {
                     if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                        whereName = String.format(OracleConstants.CAST, originName,
-                                OracleConstants.DEFAULT_FLOAT_FORMAT);
+                        whereName = String.format(KingbaseConstants.CAST, originName,
+                                KingbaseConstants.DEFAULT_FLOAT_FORMAT);
                     }
                     if (field.getDeExtractType() == 1) {
-                        whereName = String.format(OracleConstants.UNIX_TIMESTAMP, originName) + "*1000";
+                        whereName = String.format(KingbaseConstants.UNIX_TIMESTAMP, originName);
                     }
                     if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3
                             || field.getDeExtractType() == 4) {
@@ -1396,7 +1312,7 @@ public class KingbaseQueryProvider extends QueryProvider {
 
             String whereName = "";
             if (request.getIsTree()) {
-                whereName = StringUtils.join(whereNameList, "||','||");
+                whereName = "CONCAT(" + StringUtils.join(whereNameList, ",',',") + ")";
             } else {
                 whereName = whereNameList.get(0);
             }
@@ -1411,19 +1327,15 @@ public class KingbaseQueryProvider extends QueryProvider {
                 whereName = "upper(" + whereName + ")";
             } else if (StringUtils.containsIgnoreCase(request.getOperator(), "between")) {
                 if (request.getDatasetTableField().getDeType() == 1) {
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
                     String startTime = simpleDateFormat.format(new Date(Long.parseLong(value.get(0))));
                     String endTime = simpleDateFormat.format(new Date(Long.parseLong(value.get(1))));
-                    String st = String.format(OracleConstants.TO_DATE, "'" + startTime + "'",
-                            OracleConstants.DEFAULT_DATE_FORMAT);
-                    String et = String.format(OracleConstants.TO_DATE, "'" + endTime + "'",
-                            OracleConstants.DEFAULT_DATE_FORMAT);
-                    whereValue = st + " AND " + et;
+                    whereValue = String.format(KingbaseConstants.WHERE_BETWEEN, startTime, endTime);
                 } else {
-                    whereValue = String.format(OracleConstants.WHERE_BETWEEN, value.get(0), value.get(1));
+                    whereValue = String.format(KingbaseConstants.WHERE_BETWEEN, value.get(0), value.get(1));
                 }
             } else {
-                whereValue = String.format(OracleConstants.WHERE_VALUE_VALUE, value.get(0));
+                whereValue = String.format(KingbaseConstants.WHERE_VALUE_VALUE, value.get(0));
             }
             list.add(SQLObj.builder()
                     .whereField(whereName)
@@ -1435,12 +1347,6 @@ public class KingbaseQueryProvider extends QueryProvider {
         return CollectionUtils.isNotEmpty(list) ? "(" + String.join(" AND ", strList) + ")" : null;
     }
 
-    /**
-     * 去除 SQL 语句的 "；"
-     *
-     * @param sql
-     * @return
-     */
     private String sqlFix(String sql) {
         if (sql.lastIndexOf(";") == (sql.length() - 1)) {
             sql = sql.substring(0, sql.length() - 1);
@@ -1459,7 +1365,7 @@ public class KingbaseQueryProvider extends QueryProvider {
         }
 
         if (StringUtils.isEmpty(dateStyle)) {
-            return OracleConstants.DEFAULT_DATE_FORMAT;
+            return "YYYY-MM-DD HH24:MI:SS";
         }
 
         switch (dateStyle) {
@@ -1476,58 +1382,42 @@ public class KingbaseQueryProvider extends QueryProvider {
             case "y_M_d_H_m_s":
                 return "YYYY" + split + "MM" + split + "DD" + " HH24:MI:SS";
             default:
-                return OracleConstants.DEFAULT_DATE_FORMAT;
+                return "YYYY-MM-DD HH24:MI:SS";
         }
     }
 
     private SQLObj getXFields(ChartViewFieldDTO x, String originField, String fieldAlias) {
         String fieldName = "";
         if (x.getDeExtractType() == DeTypeConstants.DE_TIME) {
-            if (x.getDeType() == DeTypeConstants.DE_INT || x.getDeType() == DeTypeConstants.DE_FLOAT) { // 时间转数值
-                if (x.getType().equalsIgnoreCase("DATE")) {
-                    String date = String.format(OracleConstants.CALC_SUB, originField,
-                            String.format(OracleConstants.TO_DATE, OracleConstants.DEFAULT_START_DATE,
-                                    OracleConstants.DEFAULT_DATE_FORMAT));
-                    fieldName = String.format(OracleConstants.TO_NUMBER, date) + OracleConstants.TO_MS;
-                } else {
-                    String toChar = String.format(OracleConstants.TO_CHAR, originField,
-                            OracleConstants.DEFAULT_DATE_FORMAT);
-                    String toDate = String.format(OracleConstants.TO_DATE, toChar, OracleConstants.DEFAULT_DATE_FORMAT);
-                    String toDate1 = String.format(OracleConstants.TO_DATE, OracleConstants.DEFAULT_START_DATE,
-                            OracleConstants.DEFAULT_DATE_FORMAT);
-                    fieldName = String.format(OracleConstants.TO_NUMBER,
-                            String.format(OracleConstants.CALC_SUB, toDate, toDate1)) + OracleConstants.TO_MS;
-                }
-            } else if (x.getDeType() == DeTypeConstants.DE_TIME) { // 格式化显示时间
+            if (x.getDeType() == 2 || x.getDeType() == 3) {
+                fieldName = String.format(KingbaseConstants.UNIX_TIMESTAMP, originField);
+            } else if (x.getDeType() == DeTypeConstants.DE_TIME) {
                 String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
-                if (x.getType().equalsIgnoreCase("DATE")) {
-                    fieldName = String.format(OracleConstants.TO_CHAR, originField, format);
-                } else {
-                    String toChar = String.format(OracleConstants.TO_CHAR, originField,
-                            OracleConstants.DEFAULT_DATE_FORMAT);
-                    String toDate = String.format(OracleConstants.TO_DATE, toChar, OracleConstants.DEFAULT_DATE_FORMAT);
-                    fieldName = String.format(OracleConstants.TO_CHAR, toDate, format);
-                }
+                fieldName = String.format(KingbaseConstants.DATE_FORMAT, originField, format);
             } else {
                 fieldName = originField;
             }
         } else {
             if (x.getDeType() == DeTypeConstants.DE_TIME) {
                 String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
-                if (x.getDeExtractType() == DeTypeConstants.DE_STRING) { // 字符串转时间
-                    String toDate = String.format(OracleConstants.TO_DATE, originField,
-                            OracleConstants.DEFAULT_DATE_FORMAT);
-                    fieldName = String.format(OracleConstants.TO_CHAR, toDate, format);
-                } else { // 数值转时间
-                    String date = originField + "/(1000 * 60 * 60 * 24)+" + String.format(OracleConstants.TO_DATE,
-                            OracleConstants.DEFAULT_START_DATE, OracleConstants.DEFAULT_DATE_FORMAT);
-                    fieldName = String.format(OracleConstants.TO_CHAR, date, format);
+                if (x.getDeExtractType() == DeTypeConstants.DE_STRING) {
+                    fieldName = String.format(KingbaseConstants.DATE_FORMAT,
+                            String.format(KingbaseConstants.STR_TO_DATE, originField,
+                                    StringUtils.isNotEmpty(x.getDateFormat()) ? x.getDateFormat()
+                                            : KingbaseConstants.DEFAULT_DATE_FORMAT),
+                            format);
+                } else {
+                    String cast = String.format(KingbaseConstants.CAST, originField, "bigint");
+                    String from_unixtime = String.format(KingbaseConstants.FROM_UNIXTIME, cast);
+                    fieldName = String.format(KingbaseConstants.DATE_FORMAT, from_unixtime, format);
                 }
             } else {
                 if (x.getDeType() == DeTypeConstants.DE_INT) {
-                    fieldName = String.format(OracleConstants.CAST, originField, OracleConstants.DEFAULT_INT_FORMAT);
+                    fieldName = String.format(KingbaseConstants.CAST, originField,
+                            KingbaseConstants.DEFAULT_INT_FORMAT);
                 } else if (x.getDeType() == DeTypeConstants.DE_FLOAT) {
-                    fieldName = String.format(OracleConstants.CAST, originField, OracleConstants.DEFAULT_FLOAT_FORMAT);
+                    fieldName = String.format(KingbaseConstants.CAST, originField,
+                            KingbaseConstants.DEFAULT_FLOAT_FORMAT);
                 } else {
                     fieldName = originField;
                 }
@@ -1539,71 +1429,34 @@ public class KingbaseQueryProvider extends QueryProvider {
                 .build();
     }
 
-    private List<SQLObj> getXWheres(ChartViewFieldDTO x, String originField, String fieldAlias) {
-        List<SQLObj> list = new ArrayList<>();
-        if (CollectionUtils.isNotEmpty(x.getFilter()) && x.getFilter().size() > 0) {
-            x.getFilter().forEach(f -> {
-                String whereName = "";
-                String whereTerm = transMysqlFilterTerm(f.getTerm());
-                String whereValue = "";
-                if (x.getDeType() == 1 && x.getDeExtractType() != 1) {
-                    String cast = String.format(OracleConstants.CAST, originField, OracleConstants.DEFAULT_INT_FORMAT)
-                            + "/1000";
-                    whereName = String.format(OracleConstants.FROM_UNIXTIME, cast, OracleConstants.DEFAULT_DATE_FORMAT);
-                } else {
-                    whereName = originField;
-                }
-                if (StringUtils.equalsIgnoreCase(f.getTerm(), "null")) {
-                    whereValue = "";
-                } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "not_null")) {
-                    whereValue = "";
-                } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "empty")) {
-                    whereValue = "''";
-                } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "not_empty")) {
-                    whereValue = "''";
-                } else if (StringUtils.containsIgnoreCase(f.getTerm(), "in")) {
-                    whereValue = "('" + StringUtils.join(f.getValue(), "','") + "')";
-                } else if (StringUtils.containsIgnoreCase(f.getTerm(), "like")) {
-                    whereValue = "'%" + f.getValue() + "%'";
-                } else {
-                    whereValue = String.format(OracleConstants.WHERE_VALUE_VALUE, f.getValue());
-                }
-                list.add(SQLObj.builder()
-                        .whereField(whereName)
-                        .whereAlias(fieldAlias)
-                        .whereTermAndValue(whereTerm + whereValue)
-                        .build());
-            });
-        }
-        return list;
-    }
-
     private SQLObj getYFields(ChartViewFieldDTO y, String originField, String fieldAlias) {
         String fieldName = "";
         if (StringUtils.equalsIgnoreCase(y.getOriginName(), "*")) {
-            fieldName = OracleConstants.AGG_COUNT;
+            fieldName = KingbaseConstants.AGG_COUNT;
         } else if (SQLConstants.DIMENSION_TYPE.contains(y.getDeType())) {
             if (StringUtils.equalsIgnoreCase(y.getSummary(), "count_distinct")) {
-                fieldName = String.format(OracleConstants.AGG_FIELD, "COUNT", "DISTINCT " + originField);
+                fieldName = String.format(KingbaseConstants.AGG_FIELD, "COUNT", "DISTINCT " + originField);
             } else if (StringUtils.equalsIgnoreCase(y.getSummary(), "group_concat")) {
-                fieldName = String.format(OracleConstants.GROUP_CONCAT, originField, originField);
+                fieldName = String.format(KingbaseConstants.GROUP_CONCAT, originField);
             } else {
-                fieldName = String.format(OracleConstants.AGG_FIELD, y.getSummary(), originField);
+                fieldName = String.format(KingbaseConstants.AGG_FIELD, y.getSummary(), originField);
             }
         } else {
             if (StringUtils.equalsIgnoreCase(y.getSummary(), "avg")
                     || StringUtils.containsIgnoreCase(y.getSummary(), "pop")) {
-                String cast = String.format(OracleConstants.CAST, originField,
-                        y.getDeType() == 2 ? OracleConstants.DEFAULT_INT_FORMAT : OracleConstants.DEFAULT_FLOAT_FORMAT);
-                String agg = String.format(OracleConstants.AGG_FIELD, y.getSummary(), cast);
-                fieldName = String.format(OracleConstants.CAST, agg, OracleConstants.DEFAULT_FLOAT_FORMAT);
+                String cast = String.format(KingbaseConstants.CAST, originField,
+                        y.getDeType() == DeTypeConstants.DE_INT ? KingbaseConstants.DEFAULT_INT_FORMAT
+                                : KingbaseConstants.DEFAULT_FLOAT_FORMAT);
+                String agg = String.format(KingbaseConstants.AGG_FIELD, y.getSummary(), cast);
+                fieldName = String.format(KingbaseConstants.CAST, agg, KingbaseConstants.DEFAULT_FLOAT_FORMAT);
             } else {
-                String cast = String.format(OracleConstants.CAST, originField,
-                        y.getDeType() == 2 ? OracleConstants.DEFAULT_INT_FORMAT : OracleConstants.DEFAULT_FLOAT_FORMAT);
+                String cast = String.format(KingbaseConstants.CAST, originField,
+                        y.getDeType() == DeTypeConstants.DE_INT ? KingbaseConstants.DEFAULT_INT_FORMAT
+                                : KingbaseConstants.DEFAULT_FLOAT_FORMAT);
                 if (StringUtils.equalsIgnoreCase(y.getSummary(), "count_distinct")) {
-                    fieldName = String.format(OracleConstants.AGG_FIELD, "COUNT", "DISTINCT " + cast);
+                    fieldName = String.format(KingbaseConstants.AGG_FIELD, "COUNT", "DISTINCT " + cast);
                 } else {
-                    fieldName = String.format(OracleConstants.AGG_FIELD, y.getSummary(), cast);
+                    fieldName = String.format(KingbaseConstants.AGG_FIELD, y.getSummary(), cast);
                 }
             }
         }
@@ -1633,7 +1486,7 @@ public class KingbaseQueryProvider extends QueryProvider {
                 } else if (StringUtils.containsIgnoreCase(f.getTerm(), "like")) {
                     whereValue = "'%" + f.getValue() + "%'";
                 } else {
-                    whereValue = String.format(OracleConstants.WHERE_VALUE_VALUE, f.getValue());
+                    whereValue = String.format(KingbaseConstants.WHERE_VALUE_VALUE, f.getValue());
                 }
                 list.add(SQLObj.builder()
                         .whereField(fieldAlias)
@@ -1667,23 +1520,32 @@ public class KingbaseQueryProvider extends QueryProvider {
         List<DatasetTableField> calcFields = datasetTableFieldMapper.selectByExample(datasetTableFieldExample);
         for (DatasetTableField ele : calcFields) {
             originField = originField.replaceAll("\\[" + ele.getId() + "]",
-                    String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), ele.getOriginName()));
+                    String.format(KingbaseConstants.KEYWORD_FIX, tableObj.getTableAlias(), ele.getOriginName()));
         }
         return originField;
     }
 
-    /**
-     * 数据条数限制
-     *
-     * @param sql
-     * @param view
-     * @return
-     */
     private String sqlLimit(String sql, ChartViewWithBLOBs view) {
         if (StringUtils.equalsIgnoreCase(view.getResultMode(), "custom")) {
-            return "SELECT * FROM (" + sqlFix(sql) + ") DE_RESULT_TMP " + " WHERE rownum <= " + view.getResultCount();
+            return sql + " LIMIT " + view.getResultCount() + " offset 0";
         } else {
             return sql;
+        }
+    }
+
+    @Override
+    public String sqlForPreview(String table, Datasource ds) {
+        String schema = new Gson().fromJson(ds.getConfiguration(), JdbcConfiguration.class).getSchema();
+        schema = String.format(KingbaseConstants.KEYWORD_TABLE, schema);
+        return "SELECT * FROM " + schema + "." + String.format(KingbaseConstants.KEYWORD_TABLE, table);
+    }
+
+    public void setSchema(SQLObj tableObj, Datasource ds) {
+        if (ds != null && !tableObj.getTableName().startsWith("(") && !tableObj.getTableName().endsWith(")")) {
+            KingbaseConfig kingbaseConfig = json.fromJson(ds.getConfiguration(), KingbaseConfig.class);
+            String schema = kingbaseConfig.getSchema();
+            String database = kingbaseConfig.getDataBase();
+            tableObj.setTableName(database + "." + schema + "." + tableObj.getTableName());
         }
     }
 
@@ -1692,12 +1554,12 @@ public class KingbaseQueryProvider extends QueryProvider {
         List<Dateformat> dateformats = new ArrayList<>();
         try {
             dateformats = objectMapper.readValue("[\n" +
-                    "{\"dateformat\": \"YYYY-MM-DD\"},\n" +
-                    "{\"dateformat\": \"YYYY/MM/DD\"},\n" +
-                    "{\"dateformat\": \"YYYYMMDD\"},\n" +
-                    "{\"dateformat\": \"YYYY-MM-DD HH24:MI:SS\"},\n" +
-                    "{\"dateformat\": \"YYYY/MM/DD HH24:MI:SS\"},\n" +
-                    "{\"dateformat\": \"YYYYMMDD HH24:MI:SS\"}\n" +
+                    "{\"dateformat\": \"yyyy-MM-dd\"},\n" +
+                    "{\"dateformat\": \"yyyy/MM/dd\"},\n" +
+                    "{\"dateformat\": \"yyyyMMdd\"},\n" +
+                    "{\"dateformat\": \"yyyy-MM-dd HH:mm:s\"},\n" +
+                    "{\"dateformat\": \"yyyy-MM-dd HH:mm:s\"},\n" +
+                    "{\"dateformat\": \"yyyy-MM-dd HH:mm:s\"}\n" +
                     "]", new TypeReference<List<Dateformat>>() {
             });
         } catch (Exception e) {
