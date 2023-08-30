@@ -100,7 +100,7 @@ public class DatasetDataManage {
                 datasourceRequest.setQuery(TableUtils.tableName2Sql(datasourceSchemaDTO, tableInfoDTO.getTable()) + " LIMIT 0 OFFSET 0");
             } else {
                 // parser sql params and replace default value
-                String sql = SqlparserUtils.handleVariableDefaultValue(new String(Base64.getDecoder().decode(tableInfoDTO.getSql())), datasetTableDTO.getSqlVariableDetails(), false);
+                String sql = SqlparserUtils.handleVariableDefaultValue(new String(Base64.getDecoder().decode(tableInfoDTO.getSql())), datasetTableDTO.getSqlVariableDetails(), false, null);
                 // add sql table schema
                 sql = SqlUtils.addSchema(sql, datasourceSchemaDTO.getSchemaAlias());
                 sql = SQLUtils.buildOriginPreviewSql(sql, 0, 0);
@@ -170,7 +170,7 @@ public class DatasetDataManage {
     }
 
     public Map<String, Object> previewDataWithLimit(DatasetGroupInfoDTO datasetGroupInfoDTO, Integer start, Integer count, boolean checkPermission) throws Exception {
-        Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO);
+        Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO, null);
         String sql = (String) sqlMap.get("sql");
 
         // 获取allFields
@@ -238,7 +238,7 @@ public class DatasetDataManage {
     }
 
     public Long getDatasetTotal(DatasetGroupInfoDTO datasetGroupInfoDTO) throws Exception {
-        Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO);
+        Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO, null);
         String sql = (String) sqlMap.get("sql");
 
         Map<Long, DatasourceSchemaDTO> dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
@@ -300,7 +300,7 @@ public class DatasetDataManage {
         String alias = String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId());
         datasourceSchemaDTO.setSchemaAlias(alias);
         // parser sql params and replace default value
-        String sql = SqlparserUtils.handleVariableDefaultValue(datasetSQLManage.subPrefixSuffixChar(new String(Base64.getDecoder().decode(dto.getSql()))), dto.getSqlVariableDetails(), true);
+        String sql = SqlparserUtils.handleVariableDefaultValue(datasetSQLManage.subPrefixSuffixChar(new String(Base64.getDecoder().decode(dto.getSql()))), dto.getSqlVariableDetails(), true, null);
         sql = SqlUtils.addSchema(sql, alias);
 
         Map<Long, DatasourceSchemaDTO> dsMap = new LinkedHashMap<>();
@@ -408,7 +408,7 @@ public class DatasetDataManage {
             }
             DatasetGroupInfoDTO datasetGroupInfoDTO = datasetGroupManage.get(datasetGroupId, null);
 
-            Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO);
+            Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO, null);
             String sql = (String) sqlMap.get("sql");
 
             allFields.addAll(datasetGroupInfoDTO.getAllFields());
