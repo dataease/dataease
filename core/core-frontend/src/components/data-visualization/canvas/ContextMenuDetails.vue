@@ -7,7 +7,7 @@ import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapsho
 import { layerStoreWithOut } from '@/store/modules/data-visualization/layer'
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import { storeToRefs } from 'pinia'
-import { computed, ref } from 'vue'
+import { computed, ref, toRefs } from 'vue'
 import { ElDivider, ElIcon } from 'element-plus-secondary'
 const dvMainStore = dvMainStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
@@ -19,72 +19,102 @@ const composeStore = composeStoreWithOut()
 
 const { areaData } = storeToRefs(composeStore)
 const { curComponent } = storeToRefs(dvMainStore)
+const emit = defineEmits(['close', 'rename'])
+const props = defineProps({
+  activePosition: {
+    type: String,
+    default: 'canvas'
+  }
+})
+
+const { activePosition } = toRefs(props)
+
 const lock = () => {
   lockStore.lock()
+  menuOpt('lock')
 }
 
 const unlock = () => {
   lockStore.unlock()
+  menuOpt('unlock')
 }
 
 // 点击菜单时不取消当前组件的选中状态
 const handleMouseUp = e => {
   dvMainStore.setClickComponentStatus(true)
+  activePosition.value === 'aside' && emit('close')
+}
+
+const menuOpt = optName => {
+  const param = { opt: optName }
+  activePosition.value === 'aside' && emit('close', param)
 }
 
 const cut = () => {
   copyStore.cut()
+  menuOpt('cut')
 }
 
 const copy = () => {
   copyStore.copy()
+  menuOpt('copy')
 }
 
 const hide = () => {
   layerStore.hideComponent()
+  menuOpt('hide')
 }
 
 const rename = () => {
-  console.log('rename')
+  emit('rename')
+  menuOpt('rename')
 }
 const paste = () => {
   copyStore.paste(true)
   snapshotStore.recordSnapshot('paste')
+  menuOpt('paste')
 }
 
 const deleteComponent = () => {
   dvMainStore.deleteComponent()
   snapshotStore.recordSnapshot('deleteComponent')
+  menuOpt('deleteComponent')
 }
 
 const upComponent = () => {
   layerStore.upComponent()
   snapshotStore.recordSnapshot('upComponent')
+  menuOpt('upComponent')
 }
 
 const downComponent = () => {
   layerStore.downComponent()
   snapshotStore.recordSnapshot('downComponent')
+  menuOpt('downComponent')
 }
 
 const topComponent = () => {
   layerStore.topComponent()
   snapshotStore.recordSnapshot('topComponent')
+  menuOpt('topComponent')
 }
 
 const bottomComponent = () => {
   layerStore.bottomComponent()
   snapshotStore.recordSnapshot('bottomComponent')
+  menuOpt('bottomComponent')
 }
 
 const componentCompose = () => {
   composeStore.compose()
   snapshotStore.recordSnapshot('componentCompose')
+  menuOpt('componentCompose')
 }
 
 const decompose = () => {
   composeStore.decompose()
   snapshotStore.recordSnapshot('decompose')
+  menuOpt('decompose')
 }
 
 // 阻止事件向父级组件传播调用父级的handleMouseDown 导致areaData 被隐藏
@@ -127,7 +157,7 @@ const composeDivider = computed(() => {
           <li @click="hide">隐藏</li>
           <li @click="lock">锁定</li>
           <el-divider class="custom-divider" />
-          <li @click="rename">重命名</li>
+          <li v-if="activePosition === 'aside'" @click="rename">重命名</li>
           <li @click="copy">复制</li>
           <li @click="paste">粘贴</li>
           <li @click="cut">剪切</li>
