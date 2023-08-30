@@ -1,8 +1,8 @@
 package io.dataease.commons.utils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import io.dataease.api.dataset.dto.SqlVariableDetails;
 import io.dataease.commons.exception.DataEaseException;
-import io.dataease.dataset.dto.SqlVariableDetails;
 import io.dataease.i18n.Translator;
 import io.dataease.utils.JsonUtil;
 import org.apache.calcite.config.Lex;
@@ -10,9 +10,12 @@ import org.apache.calcite.sql.*;
 import org.apache.calcite.sql.parser.SqlParseException;
 import org.apache.calcite.sql.parser.SqlParser;
 import org.apache.calcite.sql.util.SqlShuttle;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -98,16 +101,20 @@ public class SqlparserUtils {
         };
     }
 
-    public static String handleVariableDefaultValue(String sql, String sqlVariableDetails, boolean isEdit) {
+    public static String handleVariableDefaultValue(String sql, String sqlVariableDetails, boolean isEdit, List<SqlVariableDetails> parameters) {
         if (StringUtils.isEmpty(sql)) {
             DataEaseException.throwException(Translator.get("i18n_sql_not_empty"));
         }
+
         if (StringUtils.isNotEmpty(sqlVariableDetails)) {
             TypeReference<List<SqlVariableDetails>> listTypeReference = new TypeReference<List<SqlVariableDetails>>() {
             };
             List<SqlVariableDetails> defaultsSqlVariableDetails = JsonUtil.parseList(sqlVariableDetails, listTypeReference);
             Pattern pattern = Pattern.compile(regex);
             Matcher matcher = pattern.matcher(sql);
+
+
+
             while (matcher.find()) {
                 SqlVariableDetails defaultsSqlVariableDetail = null;
                 for (SqlVariableDetails sqlVariableDetail : defaultsSqlVariableDetails) {
@@ -116,21 +123,46 @@ public class SqlparserUtils {
                         break;
                     }
                 }
-                if (defaultsSqlVariableDetail != null && StringUtils.isNotEmpty(defaultsSqlVariableDetail.getDefaultValue())) {
-                    if (!isEdit && defaultsSqlVariableDetail.getDefaultValueScope().equals(SqlVariableDetails.DefaultValueScope.ALLSCOPE)) {
-                        sql = sql.replace(matcher.group(), defaultsSqlVariableDetail.getDefaultValue());
+                SqlVariableDetails filterParameter = null;
+                if (ObjectUtils.isNotEmpty(parameters)) {
+                    for (SqlVariableDetails parameter : parameters) {
+                        if(parameter.getVariableName().equalsIgnoreCase(defaultsSqlVariableDetail.getVariableName())){
+                            filterParameter = parameter;
+                        }
                     }
-                    if (isEdit) {
-                        sql = sql.replace(matcher.group(), defaultsSqlVariableDetail.getDefaultValue());
+                }
+                if(filterParameter != null){
+                    sql = sql.replace(matcher.group(), transFilter(filterParameter));
+                }else {
+                    if (defaultsSqlVariableDetail != null && StringUtils.isNotEmpty(defaultsSqlVariableDetail.getDefaultValue())) {
+                        if (!isEdit && defaultsSqlVariableDetail.getDefaultValueScope().equals(SqlVariableDetails.DefaultValueScope.ALLSCOPE)) {
+                            sql = sql.replace(matcher.group(), defaultsSqlVariableDetail.getDefaultValue());
+                        }
+                        if (isEdit) {
+                            sql = sql.replace(matcher.group(), defaultsSqlVariableDetail.getDefaultValue());
+                        }
                     }
                 }
             }
         }
+
         try {
             sql = removeVariables(sql);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return sql;
+    }
+
+
+    private static String transFilter(SqlVariableDetails sqlVariableDetails) {
+        if (sqlVariableDetails.getOperator().equals("in")) {
+            return "('" + String.join("','", sqlVariableDetails.getValue()) + "')";
+        } else if (sqlVariableDetails.getOperator().equals("between")) {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(sqlVariableDetails.getType().size() > 1 ? (String)sqlVariableDetails.getType().get(1) : "YYYY");
+            return simpleDateFormat.format(new Date(Long.parseLong((String)sqlVariableDetails.getValue().get(0))));
+        } else {
+            return (String)sqlVariableDetails.getValue().get(0);
+        }
     }
 }
