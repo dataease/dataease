@@ -2,7 +2,9 @@
 import draggable from 'vuedraggable'
 import { getFieldData } from '@/api/chart'
 import { reactive, watch, ref } from 'vue'
+import { useCache } from '@/hooks/web/useCache'
 
+const { wsCache } = useCache()
 const loading = ref(false)
 
 const state = reactive({
@@ -36,7 +38,13 @@ watch(
 
 const init = () => {
   loading.value = true
-  getFieldData(props.field.id, props.fieldType, props.chart)
+  const chart = props.chart
+  if (!chart.chartExtRequest) {
+    chart.chartExtRequest = {
+      user: wsCache.get('user.uid')
+    }
+  }
+  getFieldData(props.field.id, props.fieldType, chart)
     .then(response => {
       const strArr = response.data
       state.sortList = strArr.map(ele => {

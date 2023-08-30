@@ -6,7 +6,7 @@ import CollapseSwitchItem from '@/components/collapse-switch-item/src/CollapseSw
 const { t } = useI18n()
 
 const state = {
-  styleActiveNames: []
+  styleActiveNames: ['component']
 }
 
 const props = defineProps({
@@ -141,11 +141,6 @@ const { chart } = toRefs(props)
 
         .ed-input-number {
           margin-left: 8px;
-        }
-
-        .ed-color-picker__mask {
-          height: 30px;
-          width: 30px;
         }
       }
 

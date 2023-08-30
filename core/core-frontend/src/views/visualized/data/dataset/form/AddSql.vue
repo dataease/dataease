@@ -13,7 +13,6 @@ import GridTable from '@/components/grid-table/src/GridTable.vue'
 import { EmptyBackground } from '@/components/empty-background'
 import { timestampFormatDate, defaultValueScopeList, fieldOptions } from './util'
 import { fieldType } from '@/utils/attr'
-import { cloneDeep } from 'lodash-es'
 export interface SqlNode {
   sql: string
   tableName: string
@@ -193,6 +192,7 @@ const save = (cb?: () => void) => {
     ElMessage.error('SQL不能为空')
     return
   }
+  sqlNode.value.sql = Base64.encode(sql)
   emits(
     'save',
     {
@@ -209,16 +209,15 @@ const save = (cb?: () => void) => {
 const close = () => {
   state.plxTableData = []
   state.fields = []
+  if (codeCom.value) {
+    insertParamToCodeMirror(Base64.decode(sqlNode.value.sql))
+  }
   emits('close')
 }
 
 const handleClose = () => {
   let sqlNew = codeCom.value.state.doc.toString()
-  if (Base64.decode(sqlNode.value.sql) && !sqlNew.trim()) {
-    ElMessage.error('SQL不能为空')
-    return
-  }
-  if (changeFlag || sql !== sqlNew) {
+  if (changeFlag || sql !== sqlNew || !sqlNew.trim()) {
     ElMessageBox.confirm(t('chart.tips'), {
       confirmButtonType: 'primary',
       tip: '你填写的信息未保存，确认退出吗？',
@@ -305,7 +304,6 @@ const mouseupDrag = () => {
 }
 
 const parseVariable = () => {
-  console.log('namename')
   state.variablesTmp = []
   const reg = new RegExp('\\${(.*?)}', 'gim')
   const match = codeCom.value.state.doc.toString().match(reg)
