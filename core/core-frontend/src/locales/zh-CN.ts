@@ -2078,5 +2078,13 @@ export default {
     export_user: '导出用户',
     export_time: '导出时间',
     you_can_type_here: '可以在这里输入其他内容'
+  },
+  pblink: {
+    key_pwd: '请输入密码打开链接',
+    input_placeholder: '请输入4位数字或字母',
+    pwd_error: '密码错误',
+    pwd_format_error: '请输入4位数字或字母',
+    sure_bt: '确定',
+    back_parent: '返回上一级'
   }
 }
