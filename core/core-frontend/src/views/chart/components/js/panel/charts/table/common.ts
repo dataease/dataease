@@ -3,7 +3,10 @@ export const TABLE_EDITOR_PROPERTY: EditorProperty[] = [
   'basic-style-selector',
   'table-header-selector',
   'table-cell-selector',
-  'title-selector'
+  'title-selector',
+  'function-cfg',
+  'threshold',
+  'scroll-cfg'
 ]
 export const TABLE_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
   'background-overall-component': ['all'],
@@ -35,5 +38,7 @@ export const TABLE_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
     'fontFamily',
     'letterSpace',
     'fontShadow'
-  ]
+  ],
+  'function-cfg': ['emptyDataStrategy'],
+  threshold: ['tableThreshold']
 }

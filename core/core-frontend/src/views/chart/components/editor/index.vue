@@ -1420,6 +1420,8 @@ const autoInsert = element => {
                   :chart="view"
                   :quota-data="view.yAxis"
                   :themes="themes"
+                  :properties="chartViewInstance.properties"
+                  :property-inner-all="chartViewInstance.propertyInner"
                   @onFunctionCfgChange="onFunctionCfgChange"
                   @onAssistLineChange="onAssistLineChange"
                   @onScrollCfgChange="onScrollCfgChange"
