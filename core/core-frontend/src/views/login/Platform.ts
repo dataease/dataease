@@ -24,7 +24,6 @@ export const toPlatformPage = val => {
 }
 
 export const setLoginForm = state => {
-  console.log('----------')
   const platform = wsCache.get('out_auth_platform')
   state.loginForm.loginType = 0
   if (platform === 'default') {
