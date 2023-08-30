@@ -69,8 +69,8 @@ const list = [
     innerType: 'VText',
     x: 1,
     y: 1,
-    sizeX: 10,
-    sizeY: 5,
+    sizeX: 18,
+    sizeY: 4,
     request: {
       method: 'GET',
       data: [],
@@ -124,7 +124,7 @@ const list = [
     x: 1,
     y: 1,
     sizeX: 18,
-    sizeY: 9,
+    sizeY: 7,
     style: {
       width: 600,
       height: 300
@@ -139,8 +139,8 @@ const list = [
     innerType: 'Picture',
     x: 1,
     y: 1,
-    sizeX: 10,
-    sizeY: 5,
+    sizeX: 18,
+    sizeY: 7,
     propValue: {
       url: '',
       flip: {
@@ -204,8 +204,8 @@ const list = [
     innerType: '',
     x: 1,
     y: 1,
-    sizeX: 15,
-    sizeY: 10,
+    sizeX: 18,
+    sizeY: 7,
     style: {
       width: 150,
       height: 100,
