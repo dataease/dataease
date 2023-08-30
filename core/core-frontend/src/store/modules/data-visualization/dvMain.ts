@@ -457,7 +457,6 @@ export const dvMainStore = defineStore('dataVisualization', {
       this.curBatchOptComponents.forEach(viewId => {
         const viewInfo = this.canvasViewInfo[viewId]
         viewInfo[propertyInfo.custom][propertyInfo.property] = propertyInfo.value
-        console.log('1-4')
         useEmitt().emitter.emit('renderChart-' + viewId, viewInfo)
       })
     },
