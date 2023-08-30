@@ -242,48 +242,27 @@ const delQueryConfig = index => {
 }
 
 const resetData = () => {
-  isConfig.value = true
-  nextTick(() => {
-    const emitterList = (list.value || []).reduce((pre, next) => {
-      next.selectValue = Array.isArray(next.defaultValue)
-        ? [...next.defaultValue]
-        : next.defaultValue
-
-      const keyList = Object.entries(next.checkedFieldsMap)
-        .filter(ele => next.checkedFields.includes(ele[0]))
-        .filter(ele => !!ele[1])
-        .map(ele => ele[0])
-      pre = [...new Set([...keyList, ...pre])]
-      return pre
-    }, [])
-    isConfig.value = false
-    if (!emitterList.length) return
-
-    emitterList.forEach(ele => {
-      emitter.emit(`query-data-${ele}`)
-    })
-  })
+  ;(list.value || []).reduce((pre, next) => {
+    next.selectValue = Array.isArray(next.defaultValue) ? [...next.defaultValue] : next.defaultValue
+    const keyList = Object.entries(next.checkedFieldsMap)
+      .filter(ele => next.checkedFields.includes(ele[0]))
+      .filter(ele => !!ele[1])
+      .map(ele => ele[0])
+    pre = [...new Set([...keyList, ...pre])]
+    return pre
+  }, [])
 }
 
 const clearData = () => {
-  isConfig.value = true
-  nextTick(() => {
-    const emitterList = (list.value || []).reduce((pre, next) => {
-      next.selectValue = next.multiple ? [] : ''
-      const keyList = Object.entries(next.checkedFieldsMap)
-        .filter(ele => next.checkedFields.includes(ele[0]))
-        .filter(ele => !!ele[1])
-        .map(ele => ele[0])
-      pre = [...new Set([...keyList, ...pre])]
-      return pre
-    }, [])
-    isConfig.value = false
-    if (!emitterList.length) return
-
-    emitterList.forEach(ele => {
-      emitter.emit(`query-data-${ele}`)
-    })
-  })
+  ;(list.value || []).reduce((pre, next) => {
+    next.selectValue = next.multiple ? [] : ''
+    const keyList = Object.entries(next.checkedFieldsMap)
+      .filter(ele => next.checkedFields.includes(ele[0]))
+      .filter(ele => !!ele[1])
+      .map(ele => ele[0])
+    pre = [...new Set([...keyList, ...pre])]
+    return pre
+  }, [])
 }
 const listVisible = computed(() => {
   return list.value.filter(itx => itx.visible)
