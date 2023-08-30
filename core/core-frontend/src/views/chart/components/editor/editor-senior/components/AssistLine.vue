@@ -20,6 +20,9 @@ const props = defineProps({
   themes: {
     type: String,
     default: 'dark'
+  },
+  propertyInner: {
+    type: Array<string>
   }
 })
 

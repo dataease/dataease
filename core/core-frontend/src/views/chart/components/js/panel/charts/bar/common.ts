@@ -49,7 +49,7 @@ export const BAR_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
     'fontShadow'
   ],
   'legend-selector': ['icon', 'orient', 'fontSize', 'color', 'hPosition', 'vPosition'],
-  'function-cfg': ['slider', 'emptyStrategy']
+  'function-cfg': ['slider', 'emptyDataStrategy']
 }
 
 export const BAR_AXIS_TYPE: AxisType[] = [
