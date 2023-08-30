@@ -424,7 +424,7 @@ const mousedownDrag = () => {
         <p class="select-ds table-num">
           {{ t('datasource.data_table')
           }}<span class="num">
-            <el-icon>
+            <el-icon class="icon-color">
               <Icon name="reference-table"></Icon>
             </el-icon>
             {{ state.tableData.length }}
@@ -459,7 +459,7 @@ const mousedownDrag = () => {
             :title="ele.name"
             @click="setActiveName(ele)"
           >
-            <el-icon>
+            <el-icon class="icon-color">
               <Icon name="icon_form_outlined"></Icon>
             </el-icon>
             <span class="label">{{ ele.name }}</span>
@@ -850,7 +850,7 @@ const mousedownDrag = () => {
       i {
         cursor: pointer;
         font-size: 12px;
-        color: var(--deTextPlaceholder, #8f959e);
+        color: var(--deTextPlaceholder, rgba(31, 35, 41, 0.15));
       }
 
       .left-outlined {
@@ -876,8 +876,8 @@ const mousedownDrag = () => {
 
       i {
         cursor: auto;
-        font-size: 13.3px;
-        color: var(--deTextPlaceholder, #8f959e);
+        font-size: 16px;
+        color: var(--deTextPlaceholder, #646a73);
       }
     }
 
@@ -1049,6 +1049,9 @@ const mousedownDrag = () => {
       background: rgba(31, 35, 41, 0.1);
     }
   }
+}
+.icon-color {
+  color: #646a73;
 }
 </style>
 <style lang="less">

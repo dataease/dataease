@@ -17,7 +17,9 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     'basic-style-selector',
     'title-selector',
     'label-selector',
-    'tooltip-selector'
+    'tooltip-selector',
+    'function-cfg',
+    'map-mapping'
   ]
   propertyInner: EditorPropertyInner = {
     'background-overall-component': ['all'],
@@ -35,9 +37,10 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       'fontShadow'
     ],
     'label-selector': ['color', 'fontSize', 'labelBgColor', 'labelShadow', 'labelShadowColor'],
-    'tooltip-selector': ['color', 'fontSize', 'backgroundColor', 'formatter']
+    'tooltip-selector': ['color', 'fontSize', 'backgroundColor', 'formatter'],
+    'function-cfg': ['emptyDataStrategy']
   }
-  axis: AxisType[] = ['xAxis', 'yAxis', 'area', 'drill', 'filter']
+  axis: AxisType[] = ['xAxis', 'yAxis', 'area', 'drill', 'filter', 'extLabel', 'extTooltip']
   axisConfig: AxisConfig = {
     xAxis: {
       name: `${t('chart.area')} / ${t('chart.dimension')}`,
