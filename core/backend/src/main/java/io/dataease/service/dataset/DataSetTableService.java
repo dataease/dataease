@@ -1756,6 +1756,7 @@ public class DataSetTableService {
         if (StringUtils.isNotEmpty(schema) && (StringUtils.equalsIgnoreCase(ds.getType(), DatasourceTypes.db2.getType()) ||
                 StringUtils.equalsIgnoreCase(ds.getType(), DatasourceTypes.sqlServer.getType()) ||
                 StringUtils.equalsIgnoreCase(ds.getType(), DatasourceTypes.oracle.getType()) ||
+                StringUtils.equalsIgnoreCase(ds.getType(), DatasourceTypes.kingbase.getType()) ||
                 StringUtils.equalsIgnoreCase(ds.getType(), DatasourceTypes.pg.getType()))) {
             joinPrefix = String.format(keyword, schema) + ".";
         }

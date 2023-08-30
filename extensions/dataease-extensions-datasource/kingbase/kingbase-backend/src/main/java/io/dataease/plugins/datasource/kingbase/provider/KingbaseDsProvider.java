@@ -3,7 +3,6 @@ package io.dataease.plugins.datasource.kingbase.provider;
 import com.google.gson.Gson;
 import io.dataease.plugins.common.base.domain.DeDriver;
 import io.dataease.plugins.common.base.mapper.DeDriverMapper;
-import io.dataease.plugins.common.constants.DatasourceTypes;
 import io.dataease.plugins.common.dto.datasource.TableDesc;
 import io.dataease.plugins.common.dto.datasource.TableField;
 import io.dataease.plugins.common.exception.DataEaseException;
@@ -15,7 +14,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.lang.reflect.Method;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -46,43 +44,20 @@ public class KingbaseDsProvider extends DefaultJdbcProvider {
         KingbaseConfig kingbaseConfig = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(),
                 KingbaseConfig.class);
 
+        String username = kingbaseConfig.getUsername();
+        String password = kingbaseConfig.getPassword();
         String defaultDriver = kingbaseConfig.getDriver();
         String customDriver = kingbaseConfig.getCustomDriver();
-
         String url = kingbaseConfig.getJdbc();
         Properties props = new Properties();
         DeDriver deDriver = null;
-        if (StringUtils.isNotEmpty(kingbaseConfig.getAuthMethod()) && kingbaseConfig.getAuthMethod().equalsIgnoreCase("kerberos")) {
-            System.setProperty("java.security.krb5.conf", "/opt/dataease/conf/krb5.conf");
-            ExtendedJdbcClassLoader classLoader;
-            if (isDefaultClassLoader(customDriver)) {
-                classLoader = extendedJdbcClassLoader;
-            } else {
-                deDriver = deDriverMapper.selectByPrimaryKey(customDriver);
-                classLoader = getCustomJdbcClassLoader(deDriver);
-            }
-            Class<?> ConfigurationClass = classLoader.loadClass("org.apache.hadoop.conf.Configuration");
-            Method set = ConfigurationClass.getMethod("set", String.class, String.class);
-            Object obj = ConfigurationClass.newInstance();
-            set.invoke(obj, "hadoop.security.authentication", "Kerberos");
 
-            Class<?> UserGroupInformationClass = classLoader.loadClass("org.apache.hadoop.security" +
-                    ".UserGroupInformation");
-            Method setConfiguration = UserGroupInformationClass.getMethod("setConfiguration", ConfigurationClass);
-            Method loginUserFromKeytab = UserGroupInformationClass.getMethod("loginUserFromKeytab", String.class,
-                    String.class);
-            setConfiguration.invoke(null, obj);
-            loginUserFromKeytab.invoke(null, kingbaseConfig.getUsername(),
-                    "/opt/dataease/conf/" + kingbaseConfig.getPassword());
-        } else {
-            if (StringUtils.isNotBlank(kingbaseConfig.getUsername())) {
-                props.setProperty("user", kingbaseConfig.getUsername());
-                if (StringUtils.isNotBlank(kingbaseConfig.getPassword())) {
-                    props.setProperty("password", kingbaseConfig.getPassword());
-                }
+        if (StringUtils.isNotBlank(username)) {
+            props.setProperty("user", username);
+            if (StringUtils.isNotBlank(password)) {
+                props.setProperty("password", password);
             }
         }
-
         Connection conn;
         String driverClassName;
         ExtendedJdbcClassLoader jdbcClassLoader;
@@ -147,24 +122,18 @@ public class KingbaseDsProvider extends DefaultJdbcProvider {
      */
     @Override
     public List<TableField> getTableFields(DatasourceRequest datasourceRequest) throws Exception {
+
         List<TableField> list = new LinkedList<>();
         try (Connection connection = getConnectionFromPool(datasourceRequest)) {
             DatabaseMetaData databaseMetaData = connection.getMetaData();
-            ResultSet resultSet = databaseMetaData.getColumns(null, null, datasourceRequest.getTable(), "%");
+            String tableNamePattern = datasourceRequest.getTable();
+            String schemaPattern = "%";
+            ResultSet resultSet = databaseMetaData.getColumns(null, schemaPattern, tableNamePattern, "%");
             while (resultSet.next()) {
-                String tableName = resultSet.getString("TABLE_NAME").toUpperCase();
-                String database;
-                database = resultSet.getString("TABLE_CAT");
-                if (database != null) {
-                    if (tableName.equals(datasourceRequest.getTable()) && database.equalsIgnoreCase(getDatabase(datasourceRequest))) {
-                        TableField tableField = getTableFiled(resultSet, datasourceRequest);
-                        list.add(tableField);
-                    }
-                } else {
-                    if (tableName.equals(datasourceRequest.getTable())) {
-                        TableField tableField = getTableFiled(resultSet, datasourceRequest);
-                        list.add(tableField);
-                    }
+                String tableName = resultSet.getString("TABLE_NAME");
+                if (tableName.equals(datasourceRequest.getTable())) {
+                    TableField tableField = getTableFiled(resultSet, datasourceRequest);
+                    list.add(tableField);
                 }
             }
             resultSet.close();
@@ -189,6 +158,7 @@ public class KingbaseDsProvider extends DefaultJdbcProvider {
      * 获取表字段
      */
     private TableField getTableFiled(ResultSet resultSet, DatasourceRequest datasourceRequest) throws SQLException {
+
         TableField tableField = new TableField();
         String colName = resultSet.getString("COLUMN_NAME");
         tableField.setFieldName(colName);
@@ -206,16 +176,17 @@ public class KingbaseDsProvider extends DefaultJdbcProvider {
             tableField.setFieldSize(50);
         }
 
-        if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.hive.name()) && tableField.getFieldType().equalsIgnoreCase("BOOLEAN")) {
+        String size = resultSet.getString("COLUMN_SIZE");
+        if (size == null) {
             tableField.setFieldSize(1);
         } else {
-            String size = resultSet.getString("COLUMN_SIZE");
-            if (size == null) {
-                tableField.setFieldSize(1);
-            } else {
-                tableField.setFieldSize(Integer.valueOf(size));
-            }
+            tableField.setFieldSize(Integer.valueOf(size));
         }
+
+        if (StringUtils.isNotEmpty(tableField.getFieldType()) && tableField.getFieldType().equalsIgnoreCase("DECIMAL")) {
+            tableField.setAccuracy(Integer.valueOf(resultSet.getString("DECIMAL_DIGITS")));
+        }
+
         return tableField;
     }
 
@@ -224,6 +195,7 @@ public class KingbaseDsProvider extends DefaultJdbcProvider {
      */
     @Override
     public String checkStatus(DatasourceRequest datasourceRequest) throws Exception {
+
         String queryStr = getTablesSql(datasourceRequest);
         JdbcConfiguration jdbcConfiguration =
                 new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), JdbcConfiguration.class);
@@ -246,10 +218,7 @@ public class KingbaseDsProvider extends DefaultJdbcProvider {
         if (StringUtils.isEmpty(kingbaseConfig.getSchema())) {
             throw new Exception("Database schema is empty.");
         }
-        /*return "select a.table_name, b.comments from all_tables a, user_tab_comments b where a.table_name = b
-        .table_name and owner=upper('OWNER') ".replaceAll("OWNER",
-                kingbaseConfig.getSchema());*/
-        return ("select table_name from all_tables where owner=upper('OWNER') ").replaceAll("OWNER",
+        return ("select tablename from pg_tables where schemaname = 'SCHEMA' ").replaceAll("SCHEMA",
                 kingbaseConfig.getSchema());
     }
 
@@ -258,7 +227,6 @@ public class KingbaseDsProvider extends DefaultJdbcProvider {
      */
     @Override
     public String getSchemaSql(DatasourceRequest datasourceRequest) {
-        return "select * from all_users";
+        return "SELECT nspname FROM pg_namespace";
     }
-
 }
