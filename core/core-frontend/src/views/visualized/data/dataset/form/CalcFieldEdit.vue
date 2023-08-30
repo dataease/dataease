@@ -220,6 +220,10 @@ initFunction()
                 {
                   required: true,
                   message: t('dataset.input_edit_name')
+                },
+                {
+                  max: 50,
+                  message: t('commons.char_can_not_more_50')
                 }
               ]"
               :label="t('dataset.field_edit_name')"
