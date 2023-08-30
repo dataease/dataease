@@ -29,6 +29,7 @@ const handleCommand = (command: string) => {
 }
 const handleClick = (ele: TabsPaneContext) => {
   if (ele.paneName === 'recent' || ele.paneName === 'store') {
+    loading.value = true
     shortcutOption.setBusiFlag(ele.paneName)
     state.curTypeList = shortcutOption.getBusiList()
     state.tableColumn = shortcutOption.getColmunList()
@@ -50,9 +51,14 @@ const formatterTime = (_, _column, cellValue) => {
 }
 
 const loadTableData = () => {
-  shortcutOption.loadData({}).then(res => {
-    state.tableData = res.data
-  })
+  shortcutOption
+    .loadData({})
+    .then(res => {
+      state.tableData = res.data
+    })
+    .finally(() => {
+      loading.value = false
+    })
 }
 
 const panelLoad = paneInfo => {
@@ -77,10 +83,12 @@ onMounted(() => {
     isClosable: false
   })
 })
+
+const loading = ref(false)
 </script>
 
 <template>
-  <div class="dashboard-type">
+  <div class="dashboard-type" v-loading="loading">
     <el-tabs v-model="activeName" class="dashboard-type-tabs" @tab-click="handleClick">
       <el-tab-pane
         v-for="item in tablePaneList"
