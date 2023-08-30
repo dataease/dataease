@@ -10,7 +10,9 @@ import { cloneDeep } from 'lodash-es'
 import { useI18n } from '@/hooks/web/useI18n'
 
 const { t } = useI18n()
-
+type MapMouseEvent = MouseEvent & {
+  feature: GeoJSON.Feature
+}
 export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
   properties: EditorProperty[] = [
     'background-overall-component',
@@ -115,9 +117,9 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     options = this.setupOptions(chart, options, drawOption, geoJson)
     const view = new Choropleth(container, options)
     view.once('loaded', () => {
-      view.on('fillAreaLayer:click', (_: MouseEvent) => {
-        const param = {}
-        action(param)
+      view.on('fillAreaLayer:click', (ev: MapMouseEvent) => {
+        const param = ev.feature.properties
+        action({ data: { data: param } })
       })
     })
 
