@@ -1742,7 +1742,7 @@ const autoInsert = element => {
       :title="t('chart.value_formatter') + ' - ' + state.valueFormatterItem.name"
       :visible="state.showValueFormatter"
       :close-on-click-modal="false"
-      width="600px"
+      width="420px"
       class="dialog-css"
     >
       <value-formatter-edit :formatter-item="state.valueFormatterItem" :chart="view" />
