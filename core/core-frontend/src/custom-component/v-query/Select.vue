@@ -6,8 +6,8 @@ import { cloneDeep, debounce } from 'lodash-es'
 interface SelectConfig {
   selectValue: any
   defaultValue: any
-  temporaryValue: any
   checkedFieldsMap: object
+  displayType: string
   checkedFields: string[]
   field: {
     id: string
@@ -28,7 +28,7 @@ const props = defineProps({
       return {
         selectValue: '',
         defaultValue: '',
-        temporaryValue: '',
+        displayType: '',
         defaultValueCheck: false,
         optionValueSource: 0,
         multiple: false,
@@ -68,11 +68,23 @@ const handleValueChange = () => {
     config.value.selectValue = Array.isArray(selectValue.value)
       ? [...selectValue.value]
       : selectValue.value
-    config.value.temporaryValue = value
     return
   }
   config.value.defaultValue = value
 }
+
+watch(
+  () => config.value.displayType,
+  (_, oldValue) => {
+    if (!props.isConfig) return
+    if (['1', '7', undefined].includes(oldValue)) {
+      config.value.defaultValue = config.value.multiple ? [] : ''
+    }
+  },
+  {
+    immediate: true
+  }
+)
 
 const handleFieldIdChange = (val: string[]) => {
   loading.value = true
@@ -86,6 +98,9 @@ const handleFieldIdChange = (val: string[]) => {
       })
     })
     .finally(() => {
+      selectValue.value = Array.isArray(selectValue.value)
+        ? [...selectValue.value]
+        : selectValue.value
       loading.value = false
     })
 }
@@ -96,10 +111,11 @@ const visibleChange = (val: boolean) => {
 }
 
 watch(
-  () => config.value.selectValue,
+  () => config.value.defaultValue,
   val => {
-    if (!props.isConfig) return
-    selectValue.value = Array.isArray(val) ? [...val] : val
+    if (config.value.multiple) {
+      selectValue.value = Array.isArray(val) ? [...val] : val
+    }
     nextTick(() => {
       multiple.value = config.value.multiple
     })
@@ -107,12 +123,37 @@ watch(
 )
 
 watch(
-  () => config.value.multiple,
+  () => config.value.selectValue,
   val => {
     if (props.isConfig) return
-    selectValue.value = val ? [] : ''
+    if (config.value.multiple) {
+      selectValue.value = Array.isArray(val) ? [...val] : val
+    }
+    nextTick(() => {
+      multiple.value = config.value.multiple
+      if (!config.value.multiple) {
+        selectValue.value = Array.isArray(config.value.selectValue)
+          ? [...config.value.selectValue]
+          : config.value.selectValue
+      }
+    })
+  }
+)
+
+watch(
+  () => config.value.multiple,
+  val => {
+    if (!props.isConfig) return
+    if (val) {
+      selectValue.value = []
+    }
     nextTick(() => {
       multiple.value = val
+      if (!val) {
+        nextTick(() => {
+          selectValue.value = ''
+        })
+      }
     })
   }
 )
