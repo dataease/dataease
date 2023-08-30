@@ -51,7 +51,6 @@ const defaultStyle = {
   border: '',
   background: '',
   text: '',
-  borderWidth: 1,
   layout: 'horizontal',
   btnList: [],
   titleShow: false,
@@ -63,8 +62,8 @@ const curComponentView = computed(() => {
   return (canvasViewInfo.value[element.value.id] || {}).customStyle
 })
 
-const filterTypeCom = (deType: number) => {
-  return deType === 1 ? Time : Select
+const filterTypeCom = (displayType: string) => {
+  return ['1', '7'].includes(displayType) ? Time : Select
 }
 
 watch(
@@ -75,7 +74,6 @@ watch(
       show,
       borderShow,
       borderColor,
-      borderWidth,
       bgColorShow,
       btnList,
       bgColor,
@@ -90,7 +88,6 @@ watch(
     customStyle.background = bgColorShow ? bgColor || '' : ''
     customStyle.border = borderShow ? borderColor || '' : ''
     customStyle.btnList = [...btnList]
-    customStyle.borderWidth = borderWidth
     customStyle.layout = layout
     customStyle.titleShow = titleShow
     customStyle.title = title
@@ -109,7 +106,6 @@ watch(
       show,
       borderShow,
       borderColor,
-      borderWidth,
       bgColorShow,
       btnList,
       bgColor,
@@ -124,7 +120,6 @@ watch(
     customStyle.background = bgColorShow ? bgColor || '' : ''
     customStyle.border = borderShow ? borderColor || '' : ''
     customStyle.btnList = [...btnList]
-    customStyle.borderWidth = borderWidth
     customStyle.layout = layout
     customStyle.titleShow = titleShow
     customStyle.title = title
@@ -174,9 +169,8 @@ const infoFormat = (obj: ComponentInfo) => {
     },
     operator: deType === 1 ? 'between' : 'eq',
     defaultValue: '',
-    temporaryValue: '',
     selectValue: '',
-    optionValueSource: 1,
+    optionValueSource: 0,
     valueSource: [],
     dataset: {
       id: datasetId,
@@ -186,6 +180,7 @@ const infoFormat = (obj: ComponentInfo) => {
     visible: true,
     defaultValueCheck: false,
     multiple: false,
+    displayType: '0',
     checkedFields: [],
     checkedFieldsMap: {}
   }
@@ -342,9 +337,9 @@ const queryData = () => {
             <div class="query-select">
               <component
                 :config="ele"
-                :isConfig="isConfig"
+                :isConfig="false"
                 :customStyle="customStyle"
-                :is="filterTypeCom(ele.field.deType)"
+                :is="filterTypeCom(ele.displayType)"
               ></component>
             </div>
           </div>
@@ -384,6 +379,12 @@ const queryData = () => {
         </el-button>
       </div>
     </div>
+    <div v-if="!listVisible.length" class="no-list-label flex-align-center">
+      <div class="container flex-align-center">
+        将右侧的字段拖拽到这里 或 点击
+        <el-button @click="addQueryCriteria" text> 添加查询条件 </el-button>
+      </div>
+    </div>
   </div>
   <Teleport to="body">
     <QueryConditionConfiguration
@@ -399,6 +400,33 @@ const queryData = () => {
   height: 100%;
   padding: 16px;
   overflow: auto;
+  position: relative;
+
+  .no-list-label {
+    width: 100%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 0;
+    .container {
+      width: 100%;
+      justify-content: center;
+      color: #646a73;
+      text-align: center;
+      font-family: PingFang SC;
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 24px;
+      .ed-button {
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 24px;
+      }
+    }
+  }
   .title {
     color: #1f2329;
     font-feature-settings: 'clig' off, 'liga' off;
@@ -416,7 +444,9 @@ const queryData = () => {
   line-height: 1.5;
   color: rgba(0, 0, 0, 0.87);
   align-items: center;
+  position: relative;
   display: flex;
+  z-index: 3;
   margin: auto 0;
   .query-fields-container {
     display: flex;

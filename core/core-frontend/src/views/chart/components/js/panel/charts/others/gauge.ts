@@ -23,7 +23,8 @@ export class Gauge extends G2PlotChartView<GaugeOptions, G2Gauge> {
     'basic-style-selector',
     'label-selector',
     'misc-selector',
-    'title-selector'
+    'title-selector',
+    'threshold'
   ]
   propertyInner: EditorPropertyInner = {
     'background-overall-component': ['all'],
@@ -50,7 +51,8 @@ export class Gauge extends G2PlotChartView<GaugeOptions, G2Gauge> {
       'gaugeMax',
       'gaugeStartAngle',
       'gaugeEndAngle'
-    ]
+    ],
+    threshold: ['gaugeThreshold']
   }
   axis: AxisType[] = ['yAxis', 'filter']
   axisConfig: AxisConfig = {

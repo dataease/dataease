@@ -54,12 +54,12 @@ const state = reactive({
       command: 'edit',
       svgName: 'dv-edit'
     },
-    {
+    /* {
       label: '分享',
       command: 'share',
       svgName: 'dv-share',
       disabled: true
-    },
+    }, */
     {
       label: '复制',
       command: 'copy',
@@ -173,7 +173,7 @@ const afterTreeInit = () => {
     nextTick(() => {
       if (selectedNodeKey.value) {
         const nodeDom = document.querySelector('.is-current')
-        nodeDom || nodeDom.click()
+        nodeDom && nodeDom.click()
       }
     })
   })

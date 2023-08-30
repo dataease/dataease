@@ -8,8 +8,8 @@ import Icon from '../icon-custom/src/Icon.vue'
 import { computed, nextTick, ref } from 'vue'
 import draggable from 'vuedraggable'
 import { lockStoreWithOut } from '@/store/modules/data-visualization/lock'
-import ContextMenu from '@/components/data-visualization/canvas/ContextMenu.vue'
 import ContextMenuAsideDetails from '@/components/data-visualization/canvas/ContextMenuAsideDetails.vue'
+const dropdownMore = ref(null)
 const lockStore = lockStoreWithOut()
 
 const dvMainStore = dvMainStoreWithOut()
@@ -129,11 +129,27 @@ const getIconName = item => {
     return item.icon
   }
 }
+
+const menuAsideClose = (param, index) => {
+  const iconDom = document.getElementById('close-button')
+  if (iconDom) {
+    iconDom.click()
+  }
+  if (param.opt === 'rename') {
+    setTimeout(() => {
+      editComponentName(getComponent(index))
+    }, 200)
+  }
+}
+const rename = item => {
+  editComponentName(item)
+}
 </script>
 
 <template>
   <!--为了保持图层视觉上的一致性 这里进行数组的倒序排列 相应的展示和移动按照倒序处理-->
   <div class="real-time-component-list">
+    <button hidden="true" id="close-button"></button>
     <el-row class="list-wrap">
       <div class="list-container">
         <draggable
@@ -146,7 +162,7 @@ const getIconName = item => {
           <template #item="{ index }">
             <div
               :title="getComponent(index).name"
-              :class="{ activated: transformIndex(index) === curComponentIndex }"
+              :class="{ activated: curComponent && curComponent.id === getComponent(index).id }"
               class="component-item"
               @click="onClick(transformIndex(index))"
               @dblclick="editComponentName(getComponent(index))"
@@ -161,25 +177,49 @@ const getIconName = item => {
                 v-show="!nameEdit || (nameEdit && curComponent.id !== getComponent(index).id)"
                 class="icon-container"
               >
-                <el-icon v-show="!getComponent(index).isShow" @click="showComponent">
-                  <Icon name="dv-eye-close"></Icon>
+                <el-icon
+                  class="component-opt-icon"
+                  v-show="!getComponent(index).isShow"
+                  @click="showComponent"
+                >
+                  <Icon name="dv-eye-close" class="opt-icon"></Icon>
                 </el-icon>
-                <el-icon v-show="getComponent(index).isShow" @click="hideComponent">
-                  <View />
+                <el-icon
+                  class="component-opt-icon"
+                  v-show="getComponent(index).isShow"
+                  @click="hideComponent"
+                >
+                  <Icon name="dv-show" class="opt-icon"></Icon>
                 </el-icon>
-                <el-icon v-show="!getComponent(index).isLock" @click="lock">
-                  <Unlock />
+                <el-icon
+                  v-show="!getComponent(index).isLock"
+                  class="component-opt-icon"
+                  @click="lock"
+                >
+                  <Icon class="opt-icon" name="dv-unlock"></Icon>
                 </el-icon>
-                <el-icon v-show="getComponent(index).isLock" @click="unlock">
-                  <Lock />
+                <el-icon
+                  class="component-opt-icon"
+                  v-show="getComponent(index).isLock"
+                  @click="unlock"
+                >
+                  <Icon name="dv-lock" class="opt-icon"></Icon>
                 </el-icon>
-                <el-dropdown trigger="click" :teleported="false" effect="dark">
-                  <el-icon @click="onClick(transformIndex(index))">
-                    <MoreFilled />
-                  </el-icon>
+                <el-dropdown
+                  ref="dropdownMore"
+                  trigger="click"
+                  :placement="'bottom-end'"
+                  effect="dark"
+                >
+                  <span :class="'dropdownMore-' + index" @click="onClick(transformIndex(index))">
+                    <el-icon class="component-opt-icon">
+                      <Icon name="dv-more" class="opt-icon"></Icon>
+                    </el-icon>
+                  </span>
                   <template #dropdown>
                     <context-menu-aside-details
                       :element="getComponent(index)"
+                      @close="menuAsideClose($event, index)"
                     ></context-menu-aside-details>
                   </template>
                 </el-dropdown>
@@ -191,7 +231,13 @@ const getIconName = item => {
       </div>
     </el-row>
     <Teleport v-if="editComponentId && nameEdit" :to="editComponentId">
-      <input ref="nameInput" v-model="inputName" @blur="closeEditComponentName" />
+      <input
+        @keydown.stop
+        @keyup.stop
+        ref="nameInput"
+        v-model="inputName"
+        @blur="closeEditComponentName"
+      />
     </Teleport>
   </div>
 </template>
@@ -215,7 +261,7 @@ const getIconName = item => {
         align-items: center;
         justify-content: flex-start;
         font-size: 12px;
-        padding: 0 10px;
+        padding: 0 2px 0 10px;
         user-select: none;
 
         .component-icon {
@@ -251,12 +297,13 @@ const getIconName = item => {
           background-color: rgba(200, 200, 200, 0.4);
 
           .icon-container {
-            display: flex;
+            opacity: 1;
           }
         }
 
         .icon-container {
-          display: none;
+          display: flex;
+          opacity: 0;
           justify-content: space-around;
           align-items: center;
           flex-grow: 1;
@@ -283,5 +330,24 @@ const getIconName = item => {
 
 .real-time-component-list :deep(.ed-popper) {
   background: #303133 !important;
+}
+
+.component-opt-icon {
+  cursor: pointer;
+  height: 22px !important;
+  width: 22px !important;
+  border-radius: 4px;
+
+  .opt-icon {
+    font-size: 14px;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  &:active {
+    background: rgba(255, 255, 255, 0.2);
+  }
 }
 </style>

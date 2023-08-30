@@ -3,8 +3,11 @@ import { ref, reactive, nextTick, computed, shallowRef } from 'vue'
 import { storeToRefs } from 'pinia'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { useI18n } from '@/hooks/web/useI18n'
+import { fieldType } from '@/utils/attr'
+import { ElMessage } from 'element-plus-secondary'
 import type { DatasetDetail } from '@/api/dataset'
 import { getDsDetails } from '@/api/dataset'
+import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import { cloneDeep } from 'lodash-es'
 import Select from './Select.vue'
 import Time from './Time.vue'
@@ -33,7 +36,6 @@ const dialogVisible = ref(false)
 const renameInput = ref([])
 const valueSource = ref([])
 const conditions = ref([])
-const displayType = ref('')
 const checkAll = ref(false)
 const multiple = ref(false)
 const activeConditionForRename = reactive({
@@ -62,6 +64,36 @@ const isIndeterminate = ref(false)
 const datasetTree = shallowRef([])
 const fields = ref<DatasetDetail[]>()
 let componentId = ''
+
+const getDetype = (id, arr) => {
+  return arr.find(ele => ele.id === id)?.deType
+}
+
+const showConfiguration = computed(() => {
+  if (!curComponent.value) return false
+  if (!curComponent.value.checkedFields?.length) return false
+  return curComponent.value.checkedFields.some(ele => {
+    return !!curComponent.value.checkedFieldsMap[ele]
+  })
+})
+
+const showTypeError = computed(() => {
+  if (!curComponent.value) return false
+  if (!curComponent.value.checkedFields?.length) return false
+  if (!fields.value?.length) return false
+  let displayTypeField = null
+  return curComponent.value.checkedFields.some(id => {
+    const arr = fields.value.find(ele => ele.componentId === id)
+    const checkId = curComponent.value.checkedFieldsMap?.[id]
+    const field = (arr?.list || []).find(ele => checkId === ele.id)
+    if (!field) return false
+    if (displayTypeField === null) {
+      displayTypeField = field?.deType
+      return false
+    }
+    return displayTypeField !== field?.deType
+  })
+})
 const typeList = [
   {
     label: '重命名',
@@ -90,7 +122,8 @@ const setType = () => {
     const arr = fields.value.find(ele => ele.componentId === id)
     const checkId = curComponent.value.checkedFieldsMap?.[id]
     const field = (arr?.list || []).find(ele => checkId === ele.id)
-    field?.deType !== undefined && (displayType.value = `${field?.deType}`)
+    if (field?.deType === 1 && curComponent.value.displayType === '7') return
+    field?.deType !== undefined && (curComponent.value.displayType = `${field?.deType}`)
   }
 }
 
@@ -114,16 +147,15 @@ const handleValueSourceChange = () => {
   multipleChange(curComponent.value.multiple)
 }
 
-const multipleChange = (val: boolean, isTemporary = false, isMultipleChange = false) => {
+const multipleChange = (val: boolean, isMultipleChange = false) => {
   if (isMultipleChange) {
     curComponent.value.defaultValue = val ? [] : ''
   }
-  const { defaultValue, temporaryValue } = curComponent.value
-  const value = isTemporary ? temporaryValue : defaultValue
-  if (Array.isArray(value)) {
-    curComponent.value.selectValue = val ? value : ''
+  const { defaultValue } = curComponent.value
+  if (Array.isArray(defaultValue)) {
+    curComponent.value.selectValue = val ? defaultValue : ''
   } else {
-    curComponent.value.selectValue = val ? (value ? [value] : []) : value
+    curComponent.value.selectValue = val ? (defaultValue ? [defaultValue] : []) : defaultValue
   }
   if (curComponent.value.field.deType === 1) {
     curComponent.value.multiple = val
@@ -133,30 +165,70 @@ const multipleChange = (val: boolean, isTemporary = false, isMultipleChange = fa
   curComponent.value.operator = val ? 'in' : 'eq'
 }
 
+const validate = () => {
+  return conditions.value.some(ele => {
+    if (!ele.checkedFields?.length || ele.checkedFields.some(itx => !ele.checkedFieldsMap[itx])) {
+      ElMessage.error('请先勾选需要联动的图表及字段')
+      return true
+    }
+
+    if (ele.optionValueSource === 1 && !ele.field.id) {
+      ElMessage.error('请选择数据集的选项值字段')
+      return true
+    }
+
+    let displayTypeField = null
+    if (
+      ele.checkedFields.some(id => {
+        const arr = fields.value.find(itx => itx.componentId === id)
+        const checkId = ele.checkedFieldsMap?.[id]
+        const field = (arr?.list || []).find(itx => checkId === itx.id)
+        if (!field) return false
+        if (displayTypeField === null) {
+          displayTypeField = field?.deType
+          return false
+        }
+        return displayTypeField !== field?.deType
+      })
+    ) {
+      ElMessage.error('所选字段类型不一致，无法进行查询配置')
+      return true
+    }
+  })
+}
+
 const confirmClick = () => {
+  if (validate()) return
   dialogVisible.value = false
   let obj = componentData.value.find(ele => ele.id === componentId)
   conditions.value.forEach(ele => {
     curComponent.value = ele
-    if (curComponent.value.temporaryValue?.length) {
-      multipleChange(curComponent.value.multiple, true)
-    }
+    multipleChange(curComponent.value.multiple)
   })
   obj.propValue = cloneDeep(conditions.value)
 }
 
 const cancelValueSource = () => {
+  valueSource.value = cloneDeep(curComponent.value.valueSource)
+  if (!valueSource.value.length) {
+    valueSource.value.push('')
+    valueSource.value.push('')
+  }
   manual.value.hide()
 }
 
 const confirmValueSource = () => {
+  if (valueSource.value.some(ele => !ele.trim())) {
+    ElMessage.error('手工输入-选项值不能为空')
+    return
+  }
   curComponent.value.valueSource = cloneDeep(valueSource.value.filter(ele => ele.trim()))
   handleValueSourceChange()
   cancelValueSource()
 }
 
-const filterTypeCom = (deType: number) => {
-  return deType === 1 ? Time : Select
+const filterTypeCom = (displayType: string) => {
+  return ['1', '7'].includes(displayType) ? Time : Select
 }
 
 const init = (id: string, queryId: string) => {
@@ -232,9 +304,10 @@ const handleCondition = item => {
   if (!!fields.value?.length) {
     handleCheckedFieldsChange(curComponent.value.checkedFields)
   }
-  multipleChange(curComponent.value.multiple, false)
+  multipleChange(curComponent.value.multiple)
   valueSource.value = cloneDeep(curComponent.value.valueSource)
   if (!valueSource.value.length) {
+    valueSource.value.push('')
     valueSource.value.push('')
   }
 }
@@ -280,6 +353,11 @@ const dsSelectProps = {
 }
 
 const renameInputBlur = () => {
+  if (activeConditionForRename.name.trim() === '') {
+    ElMessage.error('条件名不能为空')
+    activeConditionForRename.id = ''
+    return
+  }
   conditions.value.some(ele => {
     if (activeConditionForRename.id === ele.id) {
       ele.name = activeConditionForRename.name
@@ -388,12 +466,40 @@ defineExpose({
                 v-model="curComponent.checkedFieldsMap[field.componentId]"
                 clearable
               >
+                <template #prefix>
+                  <el-icon>
+                    <Icon
+                      :name="`field_${
+                        fieldType[
+                          getDetype(curComponent.checkedFieldsMap[field.componentId], field.list)
+                        ]
+                      }`"
+                      :className="`field-icon-${
+                        fieldType[
+                          getDetype(curComponent.checkedFieldsMap[field.componentId], field.list)
+                        ]
+                      }`"
+                    ></Icon>
+                  </el-icon>
+                </template>
                 <el-option
                   v-for="ele in field.list"
                   :key="ele.id"
                   :label="ele.name"
                   :value="ele.id"
-                />
+                >
+                  <div class="flex-align-center icon">
+                    <el-icon>
+                      <Icon
+                        :name="`field_${fieldType[ele.deType]}`"
+                        :className="`field-icon-${fieldType[ele.deType]}`"
+                      ></Icon>
+                    </el-icon>
+                    <span>
+                      {{ ele.name }}
+                    </span>
+                  </div>
+                </el-option>
               </el-select>
             </div>
           </el-checkbox-group>
@@ -401,19 +507,40 @@ defineExpose({
       </div>
       <div class="condition-configuration">
         <div class="title">查询条件配置</div>
-        <div class="configuration-list">
+        <div v-show="showConfiguration && !showTypeError" class="configuration-list">
           <div class="list-item">
             <div class="label">展示类型</div>
             <div class="value">
-              <el-select v-model="displayType">
-                <el-option v-if="displayType === '0'" label="文本下拉" value="0" />
-                <el-option v-if="displayType === '2'" label="数字下拉" value="2" />
-                <el-option v-if="displayType === '3'" label="数字下拉" value="3" />
-                <el-option v-if="displayType === '1'" label="时间" value="1" />
+              <el-select v-model="curComponent.displayType">
+                <el-option
+                  :disabled="curComponent.displayType !== '0'"
+                  label="文本下拉"
+                  value="0"
+                />
+                <el-option
+                  :disabled="curComponent.displayType !== '2'"
+                  label="数字下拉"
+                  value="2"
+                />
+                <el-option
+                  :disabled="curComponent.displayType !== '3'"
+                  label="数字下拉(小数)"
+                  value="3"
+                />
+                <el-option
+                  :disabled="!['1', '7'].includes(curComponent.displayType)"
+                  label="时间"
+                  value="1"
+                />
+                <el-option
+                  :disabled="!['1', '7'].includes(curComponent.displayType)"
+                  label="时间范围"
+                  value="7"
+                />
               </el-select>
             </div>
           </div>
-          <div class="list-item top-item" v-if="displayType !== '1'">
+          <div class="list-item top-item" v-if="!['1', '7'].includes(curComponent.displayType)">
             <div class="label">选项值来源</div>
             <div class="value">
               <div class="value">
@@ -451,7 +578,7 @@ defineExpose({
                   </el-tree-select>
                 </div>
                 <div class="value">
-                  <el-select v-model="curComponent.field.id" clearable>
+                  <el-select v-model="curComponent.field.id">
                     <el-option
                       v-for="ele in curComponent.dataset.fields"
                       :key="ele.id"
@@ -483,7 +610,12 @@ defineExpose({
                       <span> 选项值 </span>
                       <div :key="index" v-for="(_, index) in valueSource" class="select-item">
                         <el-input @blur="weightlessness" v-model="valueSource[index]"></el-input>
-                        <el-button @click="valueSource.splice(index, 1)" class="value" text>
+                        <el-button
+                          v-if="valueSource.length !== 1"
+                          @click="valueSource.splice(index, 1)"
+                          class="value"
+                          text
+                        >
                           <template #icon>
                             <Icon name="icon_delete-trash_outlined"></Icon>
                           </template>
@@ -507,11 +639,11 @@ defineExpose({
               </div>
             </div>
           </div>
-          <div class="list-item">
+          <div v-if="!['1', '7'].includes(curComponent.displayType)" class="list-item">
             <div class="label">选项类型</div>
             <div class="value">
               <el-radio-group
-                @change="val => multipleChange(val as boolean, false, true)"
+                @change="val => multipleChange(val as boolean, true)"
                 v-model="multiple"
               >
                 <el-radio :label="false">{{ t('visualization.single_choice') }}</el-radio>
@@ -523,7 +655,7 @@ defineExpose({
             <div class="label">
               <el-checkbox v-model="curComponent.parametersCheck" label="绑定参数" />
             </div>
-            <div class="parameters">
+            <div v-if="curComponent.parametersCheck" class="parameters">
               <el-select multiple v-model="curComponent.parameters" clearable>
                 <el-option label="Zone one" value="shanghai" />
                 <el-option label="Zone two" value="beijing" />
@@ -534,14 +666,20 @@ defineExpose({
             <div class="label">
               <el-checkbox v-model="curComponent.defaultValueCheck" label="设置默认值" />
             </div>
-            <div class="parameters">
+            <div v-if="curComponent.defaultValueCheck" class="parameters">
               <component
                 :config="curComponent"
                 isConfig
-                :is="filterTypeCom(curComponent.field.deType)"
+                :is="filterTypeCom(curComponent.displayType)"
               ></component>
             </div>
           </div>
+        </div>
+        <div v-if="showTypeError && showConfiguration" class="empty">
+          <empty-background description="所选字段类型不一致，无法进行查询配置" img-type="error" />
+        </div>
+        <div v-else-if="!showConfiguration" class="empty">
+          <empty-background description="请先勾选需要联动的图表及字段" img-type="noneWhite" />
         </div>
       </div>
     </div>
@@ -556,6 +694,9 @@ defineExpose({
 
 <style lang="less">
 .query-condition-configuration {
+  .ed-input .ed-select__prefix--light {
+    border-right: none;
+  }
   .container {
     font-size: 14px;
     font-family: PingFang SC;
@@ -701,7 +842,7 @@ defineExpose({
     }
     .select-value {
       padding: 0 0 16px 16px;
-      height: 374px;
+      height: 280px;
       overflow-y: auto;
       .value {
         color: #646a73;

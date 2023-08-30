@@ -1,90 +1,13 @@
-<template>
-  <div style="display: flex; width: 100%; justify-content: center" v-loading="loading">
-    <el-card class="box-card about-card" :class="dynamicCardClass">
-      <template #header>
-        <div class="clearfix license-header">
-          <img src="@/assets/img/DataEase-white.png" alt="" width="300" />
-        </div>
-      </template>
-      <div class="license-content">
-        <div v-if="license.status === 'Fail'">{{ $t('about.invalid_license') }}</div>
-        <div v-if="license.status !== 'Fail'">
-          <table>
-            <tr>
-              <th>{{ $t('about.auth_to') }}</th>
-              <td>{{ license.corporation }}</td>
-            </tr>
-            <tr>
-              <th>{{ $t('about.expiration_time') }}</th>
-              <td>
-                <label v-if="license.status === 'expired'" style="color: red"
-                  >{{ license.expired }} {{ $t('about.expirationed') }}</label
-                >
-                <label v-if="license.status === 'valid'">{{ license.expired }}</label>
-              </td>
-            </tr>
-            <tr>
-              <th>{{ $t('about.auth_num') }}</th>
-              <td>{{ license.count }}</td>
-            </tr>
-            <tr>
-              <th>{{ $t('about.version') }}</th>
-              <td>
-                <span v-if="license.edition">
-                  <span v-if="license.edition === 'Standard'">{{ $t('about.standard') }}</span>
-                  <span v-if="license.edition === 'Enterprise'">{{ $t('about.enterprise') }}</span>
-                </span>
-              </td>
-            </tr>
-            <tr>
-              <th>{{ $t('about.version_num') }}</th>
-              <td>
-                <span>{{ build }}</span>
-              </td>
-            </tr>
-            <tr v-if="license.serialNo">
-              <th>{{ $t('about.serial_no') }}</th>
-              <td>
-                <span>{{ license.serialNo }}</span>
-              </td>
-            </tr>
-            <tr v-if="license.remark">
-              <th>{{ $t('about.remark') }}</th>
-              <td>
-                <span>{{ license.remark }}</span>
-              </td>
-            </tr>
-          </table>
-        </div>
-
-        <div class="md-padding" />
-        <div v-if="isAdmin" layout="row" layout-align="space-between center" class="lic_rooter">
-          <el-upload
-            action=""
-            :multiple="false"
-            :show-file-list="false"
-            :file-list="fileList"
-            accept=".key"
-            name="file"
-            :before-upload="beforeUpload"
-          >
-            <a class="md-primary pointer">{{ $t('about.update_license') }}</a>
-          </el-upload>
-
-          <a class="md-primary pointer" @click="support">{{ $t('about.support') }}</a>
-        </div>
-      </div>
-    </el-card>
-  </div>
-</template>
-
 <script lang="ts" setup>
+import aboutBg from '@/assets/img/about-bg.png'
 import { ref, reactive, onMounted } from 'vue'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import { F2CLicense } from './index'
 import { validateApi, buildVersionApi, updateInfoApi } from '@/api/about'
 import { ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
+import { useEmitt } from '@/hooks/web/useEmitt'
+const dialogVisible = ref(true)
 const { t } = useI18n()
 const userStore = useUserStoreWithOut()
 const license: F2CLicense = reactive({
@@ -106,6 +29,12 @@ onMounted(() => {
   isAdmin.value = userStore.getUid === '1'
   initVersion()
   getLicenseInfo()
+  useEmitt({
+    name: 'open-about-dialog',
+    callback: function () {
+      dialogVisible.value = true
+    }
+  })
 })
 
 const initVersion = () => {
@@ -184,55 +113,115 @@ const update = (licKey: string) => {
   })
 }
 </script>
+
+<template>
+  <el-dialog title="关于" width="840px" v-model="dialogVisible" class="about-dialog">
+    <img width="792" height="180" :src="aboutBg" />
+    <el-icon class="logo">
+      <icon name="logo"></icon>
+    </el-icon>
+    <div class="content">
+      <div class="item">
+        <div class="label">{{ $t('about.auth_to') }}</div>
+        <div class="value">{{ license.corporation }}</div>
+      </div>
+      <div class="item">
+        <div class="label">代理商</div>
+        <div class="value">代理商</div>
+      </div>
+      <div class="item">
+        <div class="label">{{ $t('about.expiration_time') }}</div>
+        <div class="value" :class="{ 'expired-mark': license.status === 'expired' }">
+          {{ license.expired }}
+        </div>
+      </div>
+      <div class="item">
+        <div class="label">{{ $t('about.auth_num') }}</div>
+        <div class="value">{{ license.count }}</div>
+      </div>
+      <div class="item">
+        <div class="label">{{ $t('about.version') }}</div>
+        <div class="value">
+          {{ license.edition === 'Standard' ? $t('about.standard') : $t('about.enterprise') }}
+        </div>
+      </div>
+      <div class="item">
+        <div class="label">{{ $t('about.version_num') }}</div>
+        <div class="value">{{ build }}</div>
+      </div>
+      <div class="item">
+        <div class="label">{{ $t('about.serial_no') }}</div>
+        <div class="value">{{ license.serialNo }}</div>
+      </div>
+      <div class="item">
+        <div class="label">{{ $t('about.remark') }}</div>
+        <div class="value ellipsis">{{ license.remark }}</div>
+      </div>
+
+      <div style="margin-top: 24px" class="lic_rooter">
+        <el-upload
+          action=""
+          :multiple="false"
+          :show-file-list="false"
+          :file-list="fileList"
+          accept=".key"
+          name="file"
+          :before-upload="beforeUpload"
+        >
+          <el-button plain> {{ $t('about.update_license') }} </el-button>
+        </el-upload>
+        <!-- <el-button plain> {{ $t('about.update_license') }} </el-button> -->
+        <el-button plain @click="support"> {{ $t('about.support') }} </el-button>
+      </div>
+    </div>
+  </el-dialog>
+</template>
+
 <style lang="less">
-.about-card {
-  background: inherit;
-  margin-top: 5%;
-  flex-direction: row;
-  width: 640px;
-  min-width: 640px;
-  height: 400px;
-  position: relative;
-  .ed-card__header {
-    padding: 0;
-  }
-}
-
-.about-card-medium {
-  height: 415px !important;
-}
-.about-card-max {
-  height: 430px !important;
-}
-.license-header {
-  height: 100px;
-  background-image: url('@/assets/img/license_header.png');
-  text-align: center;
-  padding: 10px 0;
-  background-size: 100% 100%;
-}
-
-.license-content {
-  font-size: 16px;
-  padding: 50px;
-  table {
-    width: 100%;
+.about-dialog {
+  img {
+    border-radius: 4px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
   }
 
-  th {
-    text-align: left;
-    width: 45%;
+  .logo {
+    font-size: 400px;
+    position: absolute;
+    top: -40px;
+    left: 228px;
   }
-  td {
-    display: table-cell;
-    vertical-align: inherit;
-    label {
-      font-weight: 700;
+
+  .content {
+    border-radius: 4px;
+    border: 1px solid #dee0e3;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    padding: 24px 40px;
+    margin-top: -7px;
+
+    .item {
+      font-family: PingFang SC;
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 24px;
+      margin-bottom: 16px;
+      display: flex;
+      .expired-mark {
+        color: red;
+      }
+      .label {
+        color: #646a73;
+        width: 300px;
+      }
+
+      .value {
+        margin-left: 24px;
+        max-width: 388px;
+      }
     }
   }
-}
-.md-padding {
-  padding: 10px;
 }
 .lic_rooter {
   flex-direction: row;
@@ -240,12 +229,7 @@ const update = (licKey: string) => {
   display: flex;
   align-items: center;
   align-content: center;
-  max-width: 100%;
+  max-width: 250px;
   justify-content: space-between;
-
-  a {
-    color: rgb(10, 123, 224);
-    cursor: pointer;
-  }
 }
 </style>

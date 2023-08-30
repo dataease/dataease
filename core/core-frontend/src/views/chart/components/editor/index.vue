@@ -1238,7 +1238,7 @@ const autoInsert = element => {
                                   <template #reference>
                                     <el-icon class="icon-setting label-icon"><Setting /></el-icon>
                                   </template>
-                                  <div>
+                                  <div @keydown.stop @keyup.stop>
                                     <el-checkbox
                                       v-model="view.customAttr.label.show"
                                       :label="t('commons.show')"
@@ -1346,9 +1346,9 @@ const autoInsert = element => {
                               class="radio-span"
                               size="small"
                             >
-                              <el-radio label="all"
-                                ><span>{{ t('chart.result_mode_all') }}</span></el-radio
-                              >
+                              <el-radio label="all" :effect="themes">
+                                <span>{{ t('chart.result_mode_all') }}</span>
+                              </el-radio>
                               <el-radio label="custom">
                                 <el-input-number
                                   :min="1"
@@ -1420,6 +1420,8 @@ const autoInsert = element => {
                   :chart="view"
                   :quota-data="view.yAxis"
                   :themes="themes"
+                  :properties="chartViewInstance.properties"
+                  :property-inner-all="chartViewInstance.propertyInner"
                   @onFunctionCfgChange="onFunctionCfgChange"
                   @onAssistLineChange="onAssistLineChange"
                   @onScrollCfgChange="onScrollCfgChange"
@@ -1591,7 +1593,12 @@ const autoInsert = element => {
                 @add="moveToQuota"
               >
                 <template #item="{ element }">
-                  <span class="item-dimension father" :title="element.name">
+                  <span
+                    @dragstart="$event => startToMove($event, element)"
+                    :draggable="true"
+                    class="item-dimension father"
+                    :title="element.name"
+                  >
                     <el-icon>
                       <Icon
                         :className="`field-icon-${fieldType[element.deType]}`"
@@ -1644,21 +1651,23 @@ const autoInsert = element => {
       width="420px"
       :close-on-click-modal="false"
     >
-      <el-form
-        ref="renameForm"
-        label-width="80px"
-        require-asterisk-position="right"
-        :model="state.itemForm"
-        :rules="itemFormRules"
-        label-position="top"
-      >
-        <el-form-item :label="t('dataset.field_origin_name')" class="form-item">
-          <span>{{ state.itemForm.name }}</span>
-        </el-form-item>
-        <el-form-item :label="t('chart.show_name')" class="form-item" prop="chartShowName">
-          <el-input v-model="state.itemForm.chartShowName" clearable />
-        </el-form-item>
-      </el-form>
+      <div @keydown.stop @keyup.stop>
+        <el-form
+          ref="renameForm"
+          label-width="80px"
+          require-asterisk-position="right"
+          :model="state.itemForm"
+          :rules="itemFormRules"
+          label-position="top"
+        >
+          <el-form-item :label="t('dataset.field_origin_name')" class="form-item">
+            <span>{{ state.itemForm.name }}</span>
+          </el-form-item>
+          <el-form-item :label="t('chart.show_name')" class="form-item" prop="chartShowName">
+            <el-input v-model="state.itemForm.chartShowName" clearable />
+          </el-form-item>
+        </el-form>
+      </div>
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="closeRename(renameForm)">{{ t('chart.cancel') }} </el-button>

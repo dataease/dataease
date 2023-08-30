@@ -1,5 +1,10 @@
 <template>
-  <Icon class-name="de-svg-main" :name="element.innerType" />
+  <Icon
+    v-if="element.innerType.includes('board')"
+    class-name="de-svg-main"
+    :name="element.innerType"
+  />
+  <component v-else :is="element.innerType"></component>
 </template>
 
 <script setup lang="ts">

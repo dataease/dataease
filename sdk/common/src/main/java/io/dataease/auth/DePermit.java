@@ -13,4 +13,6 @@ public @interface DePermit {
      * @return
      */
     String[] value() default {};
+
+    String busiFlag() default "";
 }

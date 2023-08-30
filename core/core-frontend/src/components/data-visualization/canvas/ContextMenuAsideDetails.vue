@@ -9,6 +9,7 @@ import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import { storeToRefs } from 'pinia'
 import { computed, ref, toRefs } from 'vue'
 import eventBus from '@/utils/eventBus'
+import ContextMenuDetails from '@/components/data-visualization/canvas/ContextMenuDetails.vue'
 const dvMainStore = dvMainStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
 const copyStore = copyStoreWithOut()
@@ -20,12 +21,16 @@ const composeStore = composeStoreWithOut()
 const { areaData } = storeToRefs(composeStore)
 const { curComponent } = storeToRefs(dvMainStore)
 const copyData = ref(null)
+const emit = defineEmits(['close'])
 const props = defineProps({
   element: {
     type: Object
+  },
+  index: {
+    type: Number
   }
 })
-const { element } = toRefs(props)
+const { element, index } = toRefs(props)
 
 const lock = () => {
   lockStore.lock()
@@ -52,9 +57,6 @@ const hide = () => {
   layerStore.hideComponent()
 }
 
-const rename = () => {
-  console.log('rename')
-}
 const paste = () => {
   copyStore.paste(true)
   snapshotStore.recordSnapshot('paste')
@@ -114,16 +116,18 @@ const composeDivider = computed(() => {
     !(!curComponent || curComponent['isLock'] || curComponent['component'] != 'Group')
   )
 })
+
+const onClick = () => {
+  dvMainStore.setCurComponent({ component: element.value, index })
+}
+
+const close = param => {
+  emit('close', param)
+}
 </script>
 
 <template>
-  <el-dropdown-menu @mouseup="handleMouseUp" effect="dark">
-    <el-dropdown-item v-if="element['component'] === 'Group'" @click="decompose()"
-      >取消组合</el-dropdown-item
-    >
-    <el-dropdown-item @click="copy">复制</el-dropdown-item>
-    <el-dropdown-item @click="deleteComponent">删除</el-dropdown-item>
-  </el-dropdown-menu>
+  <context-menu-details active-position="aside" @close="close"></context-menu-details>
 </template>
 
 <style lang="less" scoped>

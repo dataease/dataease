@@ -1,13 +1,12 @@
 <script lang="ts" setup>
-import { toRefs, provide, PropType, ref, onBeforeMount, watch } from 'vue'
+import { toRefs, provide, PropType, ref, onBeforeMount, watch, nextTick } from 'vue'
 import { Calendar } from '@element-plus/icons-vue'
 
 interface SelectConfig {
   selectValue: any
   defaultValue: any
-  temporaryValue: any
   defaultValueCheck: boolean
-  multiple: boolean
+  displayType: string
   options?: Array<{
     label: string
     value: string
@@ -21,9 +20,8 @@ const props = defineProps({
       return {
         selectValue: '',
         defaultValue: '',
-        temporaryValue: '',
         defaultValueCheck: false,
-        multiple: false
+        displayType: '1'
       }
     }
   },
@@ -83,18 +81,37 @@ provide('$custom-style-filter', customStyle)
 watch(
   () => config.value.selectValue,
   val => {
-    if (!props.isConfig) return
+    if (props.isConfig) return
     selectValue.value = Array.isArray(val) ? [...val] : val
-    multiple.value = config.value.multiple
+    multiple.value = config.value.displayType === '7'
   }
 )
 
 watch(
-  () => config.value.multiple,
+  () => config.value.defaultValue,
   val => {
-    if (props.isConfig) return
-    selectValue.value = val ? [] : ''
-    multiple.value = val
+    const isMultiple = config.value.displayType === '7'
+    if (isMultiple) {
+      selectValue.value = Array.isArray(val) ? [...val] : val
+    }
+    nextTick(() => {
+      multiple.value = isMultiple
+    })
+  }
+)
+
+watch(
+  () => config.value.displayType,
+  (val, oldValue) => {
+    if (!props.isConfig) return
+    selectValue.value = val === '7' ? [] : ''
+    multiple.value = val === '7'
+    if (!['1', '7', undefined].includes(oldValue)) {
+      config.value.defaultValue = multiple.value ? [] : ''
+    }
+  },
+  {
+    immediate: true
   }
 )
 
@@ -104,14 +121,14 @@ const handleValueChange = () => {
     config.value.selectValue = Array.isArray(selectValue.value)
       ? [...selectValue.value]
       : selectValue.value
-    config.value.temporaryValue = value
     return
   }
   config.value.defaultValue = value
 }
 
 onBeforeMount(() => {
-  const { defaultValueCheck, multiple: plus, defaultValue } = config.value
+  const { defaultValueCheck, displayType, defaultValue } = config.value
+  const plus = displayType === '7'
   if (defaultValueCheck) {
     config.value.selectValue = Array.isArray(defaultValue) ? [...defaultValue] : defaultValue
     selectValue.value = Array.isArray(defaultValue) ? [...defaultValue] : defaultValue
@@ -119,7 +136,7 @@ onBeforeMount(() => {
     config.value.selectValue = plus ? [] : ''
     selectValue.value = plus ? [] : ''
   }
-  multiple.value = config.value.multiple
+  multiple.value = config.value.displayType === '7'
 })
 </script>
 

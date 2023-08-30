@@ -1,14 +1,34 @@
 <script lang="ts" setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { Icon } from '@/components/icon-custom'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import { logoutApi } from '@/api/login'
 import { logoutHandler } from '@/utils/logout'
+import { XpackComponent } from '@/components/plugin'
+import { useI18n } from '@/hooks/web/useI18n'
+import { useEmitt } from '@/hooks/web/useEmitt'
+import router from '@/router'
 const userStore = useUserStoreWithOut()
+const { t } = useI18n()
+const dropLinkList = ref([])
+
+// dropLinkList.value.push(aboutLink)
 
 const logout = async () => {
   await logoutApi()
   logoutHandler()
+}
+
+const ucenterLoaded = items => {
+  items.forEach(item => dropLinkList.value.push(item))
+}
+
+const toAbout = () => {
+  if (router.currentRoute.value.fullPath === '/about/index') {
+    useEmitt().emitter.emit('open-about-dialog')
+  } else {
+    router.push('/about/index')
+  }
 }
 
 const name = computed(() => userStore.getName)
@@ -22,32 +42,28 @@ const name = computed(() => userStore.getName)
         <Icon name="icon_expand-down_filled" />
       </el-icon>
     </div>
+
     <template #dropdown>
       <el-dropdown-menu>
-        <router-link to="/person-info/index" class="top-dropdown-link">
-          <el-dropdown-item>{{ $t('common.personal_info') }}</el-dropdown-item>
-        </router-link>
+        <el-dropdown-item @click="toAbout">
+          <span>{{ t('common.about') }}</span>
+        </el-dropdown-item>
 
-        <!-- <router-link
-            v-if="$store.getters.validate"
-            to="/ukey/index"
-          >
-            <el-dropdown-item>{{ $t('commons.ukey_title') }}</el-dropdown-item>
-          </router-link> -->
-
-        <router-link to="/person-pwd/index" class="top-dropdown-link">
-          <el-dropdown-item>{{ $t('user.change_password') }}</el-dropdown-item>
-        </router-link>
-
-        <router-link to="/about/index" class="top-dropdown-link">
-          <el-dropdown-item>{{ $t('common.about') }}</el-dropdown-item>
+        <router-link
+          v-for="(item, index) in dropLinkList"
+          :key="index"
+          :to="item.link"
+          class="top-dropdown-link"
+        >
+          <el-dropdown-item>{{ item.label }}</el-dropdown-item>
         </router-link>
         <el-dropdown-item divided @click="logout">
-          <span>{{ $t('common.exit_system') }}</span>
+          <span>{{ t('common.exit_system') }}</span>
         </el-dropdown-item>
       </el-dropdown-menu>
     </template>
   </el-dropdown>
+  <XpackComponent jsname="dWNlbnRlci1oYW5kbGVy" @loaded="ucenterLoaded" />
 </template>
 
 <style lang="less">

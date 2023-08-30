@@ -5,7 +5,7 @@ import ScrollCfg from '@/views/chart/components/editor/editor-senior/components/
 import AssistLine from '@/views/chart/components/editor/editor-senior/components/AssistLine.vue'
 import Threshold from '@/views/chart/components/editor/editor-senior/components/Threshold.vue'
 import CollapseSwitchItem from '@/components/collapse-switch-item/src/CollapseSwitchItem.vue'
-import { ref, toRefs } from 'vue'
+import { PropType, ref, toRefs } from 'vue'
 import LinkJumpSet from '@/components/visualization/LinkJumpSet.vue'
 import LinkageSet from '@/components/visualization/LinkageSet.vue'
 import { canvasSave } from '@/utils/canvasUtils'
@@ -40,12 +40,26 @@ const props = defineProps({
     required: true
   },
   themes: {
-    type: String,
+    type: String as PropType<EditorTheme>,
     default: 'dark'
+  },
+  properties: {
+    type: Array as PropType<EditorProperty[]>,
+    required: false,
+    default: () => {
+      return []
+    }
+  },
+  propertyInnerAll: {
+    type: Object as PropType<EditorPropertyInner>,
+    required: false,
+    default: () => {
+      return {}
+    }
   }
 })
 
-const { chart, themes } = toRefs(props)
+const { chart, themes, properties, propertyInnerAll } = toRefs(props)
 
 const onFunctionCfgChange = val => {
   emit('onFunctionCfgChange', val)
@@ -61,6 +75,10 @@ const onScrollCfgChange = val => {
 
 const onThresholdChange = val => {
   emit('onThresholdChange', val)
+}
+
+const showProperties = (prop: EditorProperty) => {
+  return properties?.value?.includes(prop)
 }
 
 const linkJumpSetOpen = () => {
@@ -104,33 +122,24 @@ const linkageActiveChange = () => {
     <div class="attr-style">
       <el-row class="de-collapse-style">
         <el-collapse v-model="state.attrActiveNames" class="style-collapse">
-          <collapse-switch-item
-            :themes="themes"
-            v-if="
-              props.chart.type?.includes('bar') ||
-              props.chart.type?.includes('line') ||
-              props.chart.type?.includes('area')
-            "
+          <el-collapse-item
+            :effect="themes"
+            v-if="showProperties('function-cfg')"
             name="function"
             :title="t('chart.function_cfg')"
-            v-model="chart.senior.functionCfg.sliderShow"
-            :change-model="chart.senior.functionCfg"
             @modelChange="onFunctionCfgChange"
           >
             <function-cfg
               :themes="themes"
               :chart="props.chart"
+              :property-inner="propertyInnerAll['function-cfg']"
               @onFunctionCfgChange="onFunctionCfgChange"
             />
-          </collapse-switch-item>
+          </el-collapse-item>
 
           <el-collapse-item
             :effect="themes"
-            v-if="
-              props.chart.type?.includes('bar') ||
-              props.chart.type?.includes('line') ||
-              props.chart.type?.includes('area')
-            "
+            v-if="showProperties('assist-line')"
             name="analyse"
             :title="t('chart.assist_line')"
           >
@@ -138,37 +147,35 @@ const linkageActiveChange = () => {
               :chart="props.chart"
               :themes="themes"
               :quota-data="props.quotaData"
+              :property-inner="propertyInnerAll['assist-line']"
               @onAssistLineChange="onAssistLineChange"
             />
           </el-collapse-item>
 
           <el-collapse-item
             :effect="themes"
-            v-if="props.chart.type?.includes('table')"
+            v-if="showProperties('scroll-cfg')"
             name="scroll"
             :title="t('chart.scroll_cfg')"
           >
             <scroll-cfg
               :themes="themes"
               :chart="props.chart"
+              :property-inner="propertyInnerAll['scroll-cfg']"
               @onScrollCfgChange="onScrollCfgChange"
             />
           </el-collapse-item>
 
           <el-collapse-item
             :effect="themes"
-            v-if="
-              props.chart.type?.includes('table') ||
-              props.chart.type?.includes('text') ||
-              props.chart.type?.includes('label') ||
-              props.chart.type?.includes('gauge')
-            "
+            v-if="showProperties('threshold')"
             name="threshold"
             :title="t('chart.threshold')"
           >
             <threshold
               :themes="themes"
               :chart="props.chart"
+              :property-inner="propertyInnerAll['threshold']"
               @onThresholdChange="onThresholdChange"
             />
           </el-collapse-item>

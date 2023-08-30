@@ -283,7 +283,16 @@ getItemTagType()
         :class="'editor-' + props.themes"
         :style="{ backgroundColor: tagType + '0a', border: '1px solid ' + tagType }"
       >
-        <span style="display: flex">
+        <span style="display: flex; color: #646a73">
+          <el-icon v-if="'asc' === item.sort">
+            <Icon name="icon_sort-a-to-z_outlined" />
+          </el-icon>
+          <el-icon v-if="'desc' === item.sort">
+            <Icon name="icon_sort-z-to-a_outlined" />
+          </el-icon>
+          <el-icon v-if="'custom_sort' === item.sort">
+            <Icon name="icon_sort_outlined" />
+          </el-icon>
           <el-icon>
             <Icon
               :className="`field-icon-${fieldType[item.deType]}`"
@@ -291,9 +300,16 @@ getItemTagType()
             />
           </el-icon>
         </span>
-        <span class="item-span-style" :title="item.name">
-          {{ item.chartShowName ? item.chartShowName : item.name }}
-        </span>
+        <el-tooltip
+          effect="dark"
+          placement="top"
+          :content="item.chartShowName ? item.chartShowName : item.name"
+        >
+          <span class="item-span-style">
+            <span class="item-name">{{ item.chartShowName ? item.chartShowName : item.name }}</span>
+            <span class="item-right-summary">({{ t('chart.' + item.summary) }})</span>
+          </span>
+        </el-tooltip>
         <span
           v-if="false && chart.type !== 'table-info' && item.summary && !item.chartId"
           class="summary-span"
@@ -330,7 +346,11 @@ getItemTagType()
         </el-icon>
       </el-tag>
       <template #dropdown>
-        <el-dropdown-menu :effect="themes" class="drop-style">
+        <el-dropdown-menu
+          :effect="themes"
+          class="drop-style"
+          :class="themes === 'dark' ? 'dark' : ''"
+        >
           <el-dropdown-item
             @click.prevent
             v-if="!item.chartId && chart.type !== 'table-info' && item.summary !== ''"
@@ -343,10 +363,7 @@ getItemTagType()
               @command="summary"
             >
               <span class="el-dropdown-link inner-dropdown-menu menu-item-padding">
-                <span
-                  class="menu-item-content"
-                  :class="themes === 'dark' ? 'dark-theme-content' : ''"
-                >
+                <span class="menu-item-content">
                   <el-icon size="14px">
                     <Icon name="icon_functions_outlined" />
                   </el-icon>
@@ -358,7 +375,11 @@ getItemTagType()
                 </el-icon>
               </span>
               <template #dropdown>
-                <el-dropdown-menu :effect="themes" class="drop-style sub">
+                <el-dropdown-menu
+                  :effect="themes"
+                  class="drop-style sub"
+                  :class="themes === 'dark' ? 'dark' : ''"
+                >
                   <el-dropdown-item
                     class="menu-item-padding"
                     v-if="
@@ -369,7 +390,15 @@ getItemTagType()
                     "
                     :command="beforeSummary('sum')"
                   >
-                    <span>{{ t('chart.sum') }}</span>
+                    <span
+                      class="sub-menu-content"
+                      :class="'sum' === item.summary ? 'content-active' : ''"
+                    >
+                      {{ t('chart.sum') }}
+                      <el-icon class="sub-menu-content--icon">
+                        <Icon name="icon_done_outlined" v-if="'sum' === item.summary" />
+                      </el-icon>
+                    </span>
                   </el-dropdown-item>
                   <el-dropdown-item
                     class="menu-item-padding"
@@ -381,7 +410,15 @@ getItemTagType()
                     "
                     :command="beforeSummary('avg')"
                   >
-                    <span>{{ t('chart.avg') }}</span>
+                    <span
+                      class="sub-menu-content"
+                      :class="'avg' === item.summary ? 'content-active' : ''"
+                    >
+                      {{ t('chart.avg') }}
+                      <el-icon class="sub-menu-content--icon">
+                        <Icon name="icon_done_outlined" v-if="'avg' === item.summary" />
+                      </el-icon>
+                    </span>
                   </el-dropdown-item>
                   <el-dropdown-item
                     class="menu-item-padding"
@@ -393,7 +430,15 @@ getItemTagType()
                     "
                     :command="beforeSummary('max')"
                   >
-                    <span>{{ t('chart.max') }}</span>
+                    <span
+                      class="sub-menu-content"
+                      :class="'max' === item.summary ? 'content-active' : ''"
+                    >
+                      {{ t('chart.max') }}
+                      <el-icon class="sub-menu-content--icon">
+                        <Icon name="icon_done_outlined" v-if="'max' === item.summary" />
+                      </el-icon>
+                    </span>
                   </el-dropdown-item>
                   <el-dropdown-item
                     class="menu-item-padding"
@@ -405,7 +450,15 @@ getItemTagType()
                     "
                     :command="beforeSummary('min')"
                   >
-                    <span>{{ t('chart.min') }}</span>
+                    <span
+                      class="sub-menu-content"
+                      :class="'min' === item.summary ? 'content-active' : ''"
+                    >
+                      {{ t('chart.min') }}
+                      <el-icon class="sub-menu-content--icon">
+                        <Icon name="icon_done_outlined" v-if="'min' === item.summary" />
+                      </el-icon>
+                    </span>
                   </el-dropdown-item>
                   <el-dropdown-item
                     class="menu-item-padding"
@@ -417,7 +470,15 @@ getItemTagType()
                     "
                     :command="beforeSummary('stddev_pop')"
                   >
-                    <span>{{ t('chart.stddev_pop') }}</span>
+                    <span
+                      class="sub-menu-content"
+                      :class="'stddev_pop' === item.summary ? 'content-active' : ''"
+                    >
+                      {{ t('chart.stddev_pop') }}
+                      <el-icon class="sub-menu-content--icon">
+                        <Icon name="icon_done_outlined" v-if="'stddev_pop' === item.summary" />
+                      </el-icon>
+                    </span>
                   </el-dropdown-item>
                   <el-dropdown-item
                     class="menu-item-padding"
@@ -429,17 +490,41 @@ getItemTagType()
                     "
                     :command="beforeSummary('var_pop')"
                   >
-                    <span>{{ t('chart.var_pop') }}</span>
+                    <span
+                      class="sub-menu-content"
+                      :class="'var_pop' === item.summary ? 'content-active' : ''"
+                    >
+                      {{ t('chart.var_pop') }}
+                      <el-icon class="sub-menu-content--icon">
+                        <Icon name="icon_done_outlined" v-if="'var_pop' === item.summary" />
+                      </el-icon>
+                    </span>
                   </el-dropdown-item>
                   <el-dropdown-item class="menu-item-padding" :command="beforeSummary('count')">
-                    <span>{{ t('chart.count') }}</span>
+                    <span
+                      class="sub-menu-content"
+                      :class="'count' === item.summary ? 'content-active' : ''"
+                    >
+                      {{ t('chart.count') }}
+                      <el-icon class="sub-menu-content--icon">
+                        <Icon name="icon_done_outlined" v-if="'count' === item.summary" />
+                      </el-icon>
+                    </span>
                   </el-dropdown-item>
                   <el-dropdown-item
                     class="menu-item-padding"
                     v-if="item.id !== '-1'"
                     :command="beforeSummary('count_distinct')"
                   >
-                    <span>{{ t('chart.count_distinct') }}</span>
+                    <span
+                      class="sub-menu-content"
+                      :class="'count_distinct' === item.summary ? 'content-active' : ''"
+                    >
+                      {{ t('chart.count_distinct') }}
+                      <el-icon class="sub-menu-content--icon">
+                        <Icon name="icon_done_outlined" v-if="'count_distinct' === item.summary" />
+                      </el-icon>
+                    </span>
                   </el-dropdown-item>
                 </el-dropdown-menu>
               </template>
@@ -458,10 +543,7 @@ getItemTagType()
               @command="quickCalc"
             >
               <span class="el-dropdown-link inner-dropdown-menu menu-item-padding">
-                <span
-                  class="menu-item-content"
-                  :class="themes === 'dark' ? 'dark-theme-content' : ''"
-                >
+                <span class="menu-item-content">
                   <el-icon size="14px">
                     <!--                    <Icon name="icon_describe_outlined" />-->
                   </el-icon>
@@ -477,23 +559,57 @@ getItemTagType()
                 </el-icon>
               </span>
               <template #dropdown>
-                <el-dropdown-menu :effect="themes" class="drop-style sub">
+                <el-dropdown-menu
+                  :effect="themes"
+                  class="drop-style sub"
+                  :class="themes === 'dark' ? 'dark' : ''"
+                >
                   <el-dropdown-item class="menu-item-padding" :command="beforeQuickCalc('none')">
-                    <span>{{ t('chart.none') }}</span>
+                    <span
+                      class="sub-menu-content"
+                      :class="'none' === item.compareCalc.type ? 'content-active' : ''"
+                    >
+                      {{ t('chart.none') }}
+                      <el-icon class="sub-menu-content--icon">
+                        <Icon name="icon_done_outlined" v-if="'none' === item.compareCalc.type" />
+                      </el-icon>
+                    </span>
                   </el-dropdown-item>
                   <el-dropdown-item
                     class="menu-item-padding"
                     :disabled="state.disableEditCompare"
                     :command="beforeQuickCalc('setting')"
                   >
-                    <span>{{ t('chart.yoy_label') }}...</span>
+                    <span
+                      class="sub-menu-content"
+                      :class="'yoy_label' === item.compareCalc.type ? 'content-active' : ''"
+                    >
+                      {{ t('chart.yoy_label') }}...
+                      <el-icon class="sub-menu-content--icon">
+                        <Icon
+                          name="icon_done_outlined"
+                          v-if="'yoy_label' === item.compareCalc.type"
+                        />
+                      </el-icon>
+                    </span>
                   </el-dropdown-item>
                   <el-dropdown-item
                     class="menu-item-padding"
                     :disabled="state.quotaViews.indexOf(chart.type) > -1"
                     :command="beforeQuickCalc('percent')"
                   >
-                    <span>{{ t('chart.percent') }}</span>
+                    <span
+                      class="sub-menu-content"
+                      :class="'percent' === item.compareCalc.type ? 'content-active' : ''"
+                    >
+                      {{ t('chart.percent') }}
+                      <el-icon class="sub-menu-content--icon">
+                        <Icon
+                          name="icon_done_outlined"
+                          v-if="'percent' === item.compareCalc.type"
+                        />
+                      </el-icon>
+                    </span>
                   </el-dropdown-item>
                 </el-dropdown-menu>
               </template>
@@ -514,37 +630,70 @@ getItemTagType()
               @command="sort"
             >
               <span class="el-dropdown-link inner-dropdown-menu menu-item-padding">
-                <span
-                  class="menu-item-content"
-                  :class="themes === 'dark' ? 'dark-theme-content' : ''"
-                >
+                <span class="menu-item-content">
                   <el-icon size="14px">
                     <Icon name="icon_sort_outlined" />
                   </el-icon>
                   <span>{{ t('chart.sort') }}</span>
-                  <span class="summary-span-item">({{ t('chart.' + props.item.sort) }})</span>
+                  <span class="summary-span-item">({{ t('chart.' + item.sort) }})</span>
                 </span>
                 <el-icon>
                   <Icon name="icon_right_outlined" />
                 </el-icon>
               </span>
               <template #dropdown>
-                <el-dropdown-menu :effect="themes" class="drop-style sub">
+                <el-dropdown-menu
+                  :effect="themes"
+                  class="drop-style sub"
+                  :class="themes === 'dark' ? 'dark' : ''"
+                >
                   <el-dropdown-item class="menu-item-padding" :command="beforeSort('none')">
-                    <span>{{ t('chart.none') }}</span>
+                    <span
+                      class="sub-menu-content"
+                      :class="'none' === item.sort ? 'content-active' : ''"
+                    >
+                      {{ t('chart.none') }}
+                      <el-icon class="sub-menu-content--icon">
+                        <Icon name="icon_done_outlined" v-if="'none' === item.sort" />
+                      </el-icon>
+                    </span>
                   </el-dropdown-item>
                   <el-dropdown-item class="menu-item-padding" :command="beforeSort('asc')">
-                    <span>{{ t('chart.asc') }}</span>
+                    <span
+                      class="sub-menu-content"
+                      :class="'asc' === item.sort ? 'content-active' : ''"
+                    >
+                      {{ t('chart.asc') }}
+                      <el-icon class="sub-menu-content--icon">
+                        <Icon name="icon_done_outlined" v-if="'asc' === item.sort" />
+                      </el-icon>
+                    </span>
                   </el-dropdown-item>
                   <el-dropdown-item class="menu-item-padding" :command="beforeSort('desc')">
-                    <span>{{ t('chart.desc') }}</span>
+                    <span
+                      class="sub-menu-content"
+                      :class="'desc' === item.sort ? 'content-active' : ''"
+                    >
+                      {{ t('chart.desc') }}
+                      <el-icon class="sub-menu-content--icon">
+                        <Icon name="icon_done_outlined" v-if="'desc' === item.sort" />
+                      </el-icon>
+                    </span>
                   </el-dropdown-item>
                   <el-dropdown-item
                     class="menu-item-padding"
                     v-if="!item.chartId && (item.deType === 0 || item.deType === 5)"
                     :command="beforeSort('custom_sort')"
                   >
-                    <span>{{ t('chart.custom_sort') }}...</span>
+                    <span
+                      class="sub-menu-content"
+                      :class="'custom_sort' === item.sort ? 'content-active' : ''"
+                    >
+                      {{ t('chart.custom_sort') }}...
+                      <el-icon class="sub-menu-content--icon">
+                        <Icon name="icon_done_outlined" v-if="'custom_sort' === item.sort" />
+                      </el-icon>
+                    </span>
                   </el-dropdown-item>
                 </el-dropdown-menu>
               </template>
@@ -664,9 +813,20 @@ span {
     flex-direction: row;
     align-items: center;
   }
+}
 
-  .dark-theme-content {
-    color: #a6a6a6;
+.sub-menu-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+
+  &.content-active {
+    color: #3370ff;
+  }
+
+  .sub-menu-content--icon {
+    margin-left: 8px;
   }
 }
 
@@ -676,13 +836,22 @@ span {
 }
 
 .item-span-style {
-  display: inline-block;
-  width: 100px;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
+  display: flex;
+  max-width: 180px;
   color: #1f2329;
   margin-left: 4px;
+
+  .item-name {
+    flex: 1;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+
+  .item-right-summary {
+    flex-shrink: 0;
+    margin-left: 4px;
+  }
 }
 
 .editor-dark {
@@ -705,6 +874,24 @@ span {
       min-width: 118px;
     }
   }
+  :deep(.ed-dropdown-menu__item:not(.is_disabled):focus) {
+    color: inherit;
+    background-color: rgba(31, 35, 41, 0.1);
+  }
+  &.dark {
+    .inner-dropdown-menu {
+      color: rgba(235, 235, 235, 1);
+    }
+    :deep(.ed-dropdown-menu__item) {
+      color: rgba(235, 235, 235, 1);
+    }
+    :deep(.ed-dropdown-menu__item.is-disabled) {
+      color: #a6a6a6;
+    }
+    :deep(.ed-dropdown-menu__item:not(.is_disabled):focus) {
+      background-color: rgba(235, 235, 235, 0.1);
+    }
+  }
 }
 
 .father .child {
@@ -713,5 +900,9 @@ span {
 
 .father:hover .child {
   visibility: visible;
+}
+
+.father:hover .item-span-style {
+  max-width: 150px;
 }
 </style>
