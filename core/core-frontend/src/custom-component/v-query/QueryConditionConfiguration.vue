@@ -210,6 +210,10 @@ const confirmClick = () => {
 
 const cancelValueSource = () => {
   valueSource.value = cloneDeep(curComponent.value.valueSource)
+  if (!valueSource.value.length) {
+    valueSource.value.push('')
+    valueSource.value.push('')
+  }
   manual.value.hide()
 }
 
@@ -838,7 +842,7 @@ defineExpose({
     }
     .select-value {
       padding: 0 0 16px 16px;
-      height: 374px;
+      height: 280px;
       overflow-y: auto;
       .value {
         color: #646a73;
