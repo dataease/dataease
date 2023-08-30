@@ -438,7 +438,7 @@ defineExpose({
         </draggable>
       </div>
       <div class="chart-field">
-        <div class="title">选择图表及字段</div>
+        <div class="title">选择关联图表及字段</div>
         <div class="select-all">
           <el-checkbox
             v-model="checkAll"
@@ -716,9 +716,16 @@ defineExpose({
         display: flex;
         align-items: center;
         justify-content: space-between;
+        font-family: PingFang SC;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 22px;
 
         .ed-icon {
           cursor: pointer;
+          font-size: 16px;
+          color: #3370ff;
         }
       }
       .list-item_primary {
@@ -747,6 +754,13 @@ defineExpose({
       padding: 16px;
       width: 474px;
       overflow-y: auto;
+      .title {
+        font-family: PingFang SC;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 22px;
+      }
 
       .select-all {
         height: 40px;
@@ -787,6 +801,11 @@ defineExpose({
       width: 467px;
       .title {
         margin-bottom: 16px;
+        font-family: PingFang SC;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 22px;
       }
 
       .configuration-list {
