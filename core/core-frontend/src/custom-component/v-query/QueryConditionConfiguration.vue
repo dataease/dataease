@@ -231,13 +231,27 @@ const filterTypeCom = (displayType: string) => {
   return ['1', '7'].includes(displayType) ? Time : Select
 }
 
+const setCondition = (id: string, queryId: string) => {
+  conditions.value = cloneDeep(componentData.value.find(ele => ele.id === id).propValue) || []
+  init(id, queryId)
+}
+
+const setConditionInit = (id: string, queryId: string) => {
+  init(id, queryId)
+}
+
+const setConditionOut = (id: string) => {
+  conditions.value = cloneDeep(componentData.value.find(ele => ele.id === id).propValue) || []
+  addQueryCriteria()
+  init(id, conditions.value[conditions.value.length - 1].id)
+}
+
 const init = (id: string, queryId: string) => {
   componentId = id
   if (!datasetTree.value.length) {
     initDataset()
   }
   renameInput.value = []
-  conditions.value = cloneDeep(componentData.value.find(ele => ele.id === id).propValue) || []
   handleCondition({ id: queryId })
   dialogVisible.value = true
   const datasetFieldIdList = datasetFieldList.value.map(ele => ele.tableId)
@@ -371,8 +385,18 @@ const renameInputBlur = () => {
 const addQueryCriteria = () => {
   conditions.value.push(props.addQueryCriteriaConfig())
 }
+
+const addCriteriaConfig = () => {
+  conditions.value = []
+  addQueryCriteria()
+  return conditions.value[0].id
+}
+
 defineExpose({
-  init
+  setCondition,
+  setConditionInit,
+  addCriteriaConfig,
+  setConditionOut
 })
 </script>
 
