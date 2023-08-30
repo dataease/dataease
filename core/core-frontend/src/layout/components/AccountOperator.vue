@@ -6,14 +6,13 @@ import { logoutApi } from '@/api/login'
 import { logoutHandler } from '@/utils/logout'
 import { XpackComponent } from '@/components/plugin'
 import { useI18n } from '@/hooks/web/useI18n'
+import { useEmitt } from '@/hooks/web/useEmitt'
+import router from '@/router'
 const userStore = useUserStoreWithOut()
 const { t } = useI18n()
 const dropLinkList = ref([])
-const aboutLink = {
-  link: '/about/index',
-  label: t('common.about')
-}
-dropLinkList.value.push(aboutLink)
+
+// dropLinkList.value.push(aboutLink)
 
 const logout = async () => {
   await logoutApi()
@@ -22,6 +21,14 @@ const logout = async () => {
 
 const ucenterLoaded = items => {
   items.forEach(item => dropLinkList.value.push(item))
+}
+
+const toAbout = () => {
+  if (router.currentRoute.value.fullPath === '/about/index') {
+    useEmitt().emitter.emit('open-about-dialog')
+  } else {
+    router.push('/about/index')
+  }
 }
 
 const name = computed(() => userStore.getName)
@@ -38,6 +45,10 @@ const name = computed(() => userStore.getName)
 
     <template #dropdown>
       <el-dropdown-menu>
+        <el-dropdown-item @click="toAbout">
+          <span>{{ t('common.about') }}</span>
+        </el-dropdown-item>
+
         <router-link
           v-for="(item, index) in dropLinkList"
           :key="index"
