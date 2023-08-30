@@ -140,7 +140,7 @@ const list = [
     x: 1,
     y: 1,
     sizeX: 18,
-    sizeY: 7,
+    sizeY: 6,
     propValue: {
       url: '',
       flip: {
