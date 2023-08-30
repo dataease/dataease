@@ -700,7 +700,7 @@ const treeProps = {
           <p class="select-ds table-num">
             {{ t('datasource.data_table') }}
             <span class="num">
-              <el-icon>
+              <el-icon class="icon-color">
                 <Icon name="reference-table"></Icon>
               </el-icon>
               {{ state.tableData.length }}
@@ -736,7 +736,7 @@ const treeProps = {
             :draggable="true"
             @click="setActiveName(sqlNode)"
           >
-            <el-icon>
+            <el-icon class="icon-color">
               <Icon name="icon_sql_outlined_1"></Icon>
             </el-icon>
             <span class="label">自定义SQL</span>
@@ -745,7 +745,6 @@ const treeProps = {
             <div
               :class="[
                 {
-                  active: activeName === ele.tableName,
                   'not-allow': state.nodeNameList.includes(ele.tableName)
                 }
               ]"
@@ -756,7 +755,7 @@ const treeProps = {
               :draggable="!state.nodeNameList.includes(ele.tableName)"
               @click="setActiveName(ele)"
             >
-              <el-icon>
+              <el-icon class="icon-color">
                 <Icon name="reference-table"></Icon>
               </el-icon>
               <span class="label">{{ ele.tableName }}</span>
@@ -817,7 +816,7 @@ const treeProps = {
                 </div>
                 <el-tree v-if="expandedD" :data="dimensions" :props="defaultProps">
                   <template #default="{ data }">
-                    <span class="custom-tree-node">
+                    <span class="custom-tree-node father">
                       <el-icon>
                         <Icon
                           :name="`field_${fieldType[data.deType]}`"
@@ -825,7 +824,7 @@ const treeProps = {
                         ></Icon>
                       </el-icon>
                       <span :title="data.name" class="label-tooltip">{{ data.name }}</span>
-                      <div class="operate">
+                      <div class="operate child">
                         <field-more
                           :extField="data.extField"
                           trans-type="转换为指标"
@@ -848,7 +847,7 @@ const treeProps = {
                 </div>
                 <el-tree v-if="expandedQ" :data="quota" :props="defaultProps">
                   <template #default="{ data }">
-                    <span class="custom-tree-node">
+                    <span class="custom-tree-node father">
                       <el-icon>
                         <Icon
                           :name="`field_${fieldType[data.deType]}`"
@@ -856,7 +855,7 @@ const treeProps = {
                         ></Icon>
                       </el-icon>
                       <span :title="data.name" class="label-tooltip">{{ data.name }}</span>
-                      <div class="operate">
+                      <div class="operate child">
                         <field-more
                           trans-type="转换为维度"
                           typeColor="green-color"
@@ -1037,7 +1036,7 @@ const treeProps = {
         i {
           cursor: pointer;
           font-size: 12px;
-          color: var(--deTextPlaceholder, #8f959e);
+          color: var(--deTextPlaceholder, rgba(31, 35, 41, 0.15));
         }
 
         .left-outlined {
@@ -1063,8 +1062,8 @@ const treeProps = {
 
         i {
           cursor: auto;
-          font-size: 13.3px;
-          color: var(--deTextPlaceholder, #8f959e);
+          font-size: 16px;
+          color: var(--deTextPlaceholder, #646a73);
         }
       }
 
@@ -1130,6 +1129,9 @@ const treeProps = {
 
         .padding-24 {
           .border-bottom-tab(24px);
+          :deep(.ed-tabs__header::after) {
+            display: none;
+          }
         }
 
         .table-preview {
@@ -1143,6 +1145,10 @@ const treeProps = {
 
             :deep(.ed-table-v2__header-cell) {
               background-color: #f5f6f7 !important;
+            }
+
+            :deep(.header-cell) {
+              border-top: none;
             }
           }
 
@@ -1216,6 +1222,7 @@ const treeProps = {
                 &.expanded {
                   .expand {
                     transform: rotate(90deg);
+                    font-size: 10px;
                   }
                 }
               }
@@ -1231,6 +1238,22 @@ const treeProps = {
       }
     }
   }
+}
+.icon-color {
+  color: #646a73;
+}
+
+.ed-button.is-secondary.is-disabled {
+  color: #bbbfc4 !important;
+  border-color: #bbbfc4 !important;
+}
+
+.father .child {
+  visibility: hidden;
+}
+
+.father:hover .child {
+  visibility: visible;
 }
 </style>
 
