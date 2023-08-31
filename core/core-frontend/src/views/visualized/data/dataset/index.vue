@@ -673,6 +673,7 @@ const filterNode = (value: string, data: BusiTreeNode) => {
       padding-top: 12px;
       height: 90px;
       .info-method {
+        height: 32px;
         width: 100%;
         display: flex;
         align-items: center;
