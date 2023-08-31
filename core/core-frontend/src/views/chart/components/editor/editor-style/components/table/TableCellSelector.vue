@@ -68,53 +68,61 @@ init()
 <template>
   <div style="width: 100%">
     <el-col>
-      <el-form ref="tableCellForm" :model="state.tableCellForm" label-width="80px" size="small">
+      <el-form ref="tableCellForm" :model="state.tableCellForm" size="small" label-position="top">
         <el-form-item
           :label="t('chart.backgroundColor')"
           class="form-item"
-          v-show="showProperty('tableItemBgColor')"
+          v-if="showProperty('tableItemBgColor')"
         >
           <el-color-picker
             v-model="state.tableCellForm.tableItemBgColor"
             :predefine="predefineColors"
             @change="changeTableCell('tableItemBgColor')"
+            is-custom
           />
         </el-form-item>
-        <el-form-item
-          :label="t('chart.text_fontsize')"
-          class="form-item"
-          v-show="showProperty('tableItemFontSize')"
-        >
-          <el-select
-            :effect="props.themes"
-            v-model="state.tableCellForm.tableItemFontSize"
-            @change="changeTableCell('tableItemFontSize')"
+        <div class="custom-form-item-label">{{ t('chart.text') }}</div>
+        <div style="display: flex">
+          <el-form-item
+            class="form-item"
+            v-if="showProperty('tableFontColor')"
+            style="padding-right: 4px"
           >
-            <el-option
-              v-for="option in state.fontSize"
-              :key="option.value"
-              :label="option.name"
-              :value="option.value"
+            <el-color-picker
+              v-model="state.tableCellForm.tableFontColor"
+              :predefine="predefineColors"
+              @change="changeTableCell('tableFontColor')"
+              is-custom
             />
-          </el-select>
-        </el-form-item>
-        <el-form-item
-          :label="t('chart.text_color')"
-          class="form-item"
-          v-show="showProperty('tableFontColor')"
-        >
-          <el-color-picker
-            v-model="state.tableCellForm.tableFontColor"
-            :predefine="predefineColors"
-            @change="changeTableCell('tableFontColor')"
-          />
-        </el-form-item>
+          </el-form-item>
+          <el-form-item
+            class="form-item"
+            v-if="showProperty('tableItemFontSize')"
+            style="padding-left: 4px"
+          >
+            <el-select
+              style="width: 108px"
+              :effect="props.themes"
+              v-model="state.tableCellForm.tableItemFontSize"
+              @change="changeTableCell('tableItemFontSize')"
+            >
+              <el-option
+                v-for="option in state.fontSize"
+                :key="option.value"
+                :label="option.name"
+                :value="option.value"
+              />
+            </el-select>
+          </el-form-item>
+        </div>
+
         <el-form-item
           :label="t('chart.align')"
           class="form-item"
-          v-show="showProperty('tableItemAlign')"
+          v-if="showProperty('tableItemAlign')"
         >
           <el-select
+            style="width: 100%"
             v-model="state.tableCellForm.tableItemAlign"
             :effect="props.themes"
             @change="changeTableCell('tableHeaderAlign')"
@@ -127,7 +135,7 @@ init()
         <el-form-item
           :label="t('visualization.lineHeight')"
           class="form-item"
-          v-show="showProperty('tableItemHeight')"
+          v-if="showProperty('tableItemHeight')"
         >
           <el-slider
             v-model="state.tableCellForm.tableItemHeight"
@@ -142,6 +150,20 @@ init()
 </template>
 
 <style lang="less" scoped>
+:deep(.ed-color-picker.is-custom .ed-color-picker__trigger) {
+  height: 24px;
+}
+.custom-form-item-label {
+  margin-bottom: 4px;
+  line-height: 20px;
+  color: #a6a6a6;
+  font-size: 12px;
+  padding: 2px 12px 0 0;
+}
+.form-item-checkbox {
+  margin-bottom: 10px !important;
+}
+
 .form-item-slider :deep(.ed-form-item__label) {
   font-size: 12px;
   line-height: 38px;

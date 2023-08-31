@@ -68,51 +68,64 @@ init()
 <template>
   <div style="width: 100%">
     <el-col>
-      <el-form ref="tableHeaderForm" :model="state.tableHeaderForm" label-width="80px" size="small">
+      <el-form
+        ref="tableHeaderForm"
+        :model="state.tableHeaderForm"
+        size="small"
+        label-position="top"
+      >
         <el-form-item
           :label="t('chart.backgroundColor')"
           class="form-item"
-          v-show="showProperty('tableHeaderBgColor')"
+          v-if="showProperty('tableHeaderBgColor')"
         >
           <el-color-picker
             v-model="state.tableHeaderForm.tableHeaderBgColor"
             :predefine="predefineColors"
             @change="changeTableHeader('tableHeaderBgColor')"
+            is-custom
           />
         </el-form-item>
-        <el-form-item
-          :label="t('chart.text_fontsize')"
-          class="form-item"
-          v-show="showProperty('tableTitleFontSize')"
-        >
-          <el-select
-            :effect="props.themes"
-            v-model="state.tableHeaderForm.tableTitleFontSize"
-            @change="changeTableHeader('tableTitleFontSize')"
+
+        <div class="custom-form-item-label">{{ t('chart.text') }}</div>
+        <div style="display: flex">
+          <el-form-item
+            class="form-item"
+            v-if="showProperty('tableHeaderFontColor')"
+            style="padding-right: 4px"
           >
-            <el-option
-              v-for="option in state.fontSize"
-              :key="option.value"
-              :label="option.name"
-              :value="option.value"
+            <el-color-picker
+              v-model="state.tableHeaderForm.tableHeaderFontColor"
+              :predefine="predefineColors"
+              @change="changeTableHeader('tableHeaderFontColor')"
+              is-custom
             />
-          </el-select>
-        </el-form-item>
-        <el-form-item
-          :label="t('chart.text_color')"
-          class="form-item"
-          v-show="showProperty('tableHeaderFontColor')"
-        >
-          <el-color-picker
-            v-model="state.tableHeaderForm.tableHeaderFontColor"
-            :predefine="predefineColors"
-            @change="changeTableHeader('tableHeaderFontColor')"
-          />
-        </el-form-item>
+          </el-form-item>
+          <el-form-item
+            class="form-item"
+            v-if="showProperty('tableTitleFontSize')"
+            style="padding-left: 4px"
+          >
+            <el-select
+              style="width: 108px"
+              :effect="props.themes"
+              v-model="state.tableHeaderForm.tableTitleFontSize"
+              @change="changeTableHeader('tableTitleFontSize')"
+            >
+              <el-option
+                v-for="option in state.fontSize"
+                :key="option.value"
+                :label="option.name"
+                :value="option.value"
+              />
+            </el-select>
+          </el-form-item>
+        </div>
+
         <el-form-item
           :label="t('visualization.lineHeight')"
           class="form-item"
-          v-show="showProperty('tableTitleHeight')"
+          v-if="showProperty('tableTitleHeight')"
         >
           <el-slider
             v-model="state.tableHeaderForm.tableTitleHeight"
@@ -124,9 +137,10 @@ init()
         <el-form-item
           :label="t('chart.align')"
           class="form-item"
-          v-show="showProperty('tableHeaderAlign')"
+          v-if="showProperty('tableHeaderAlign')"
         >
           <el-select
+            style="width: 100%"
             :effect="props.themes"
             v-model="state.tableHeaderForm.tableHeaderAlign"
             @change="changeTableHeader('tableHeaderAlign')"
@@ -136,20 +150,18 @@ init()
             <el-option value="right" :label="t('chart.table_align_right')" />
           </el-select>
         </el-form-item>
-        <el-form-item
-          :label="t('chart.table_show_index')"
-          class="form-item"
-          v-show="showProperty('showIndex')"
-        >
+        <el-form-item class="form-item" v-if="showProperty('showIndex')">
           <el-checkbox
             v-model="state.tableHeaderForm.showIndex"
             @change="changeTableHeader('showIndex')"
-          />
+          >
+            {{ t('chart.table_show_index') }}
+          </el-checkbox>
         </el-form-item>
         <el-form-item
           :label="t('chart.table_index_desc')"
           class="form-item"
-          v-show="showProperty('showIndex') && state.tableHeaderForm.showIndex"
+          v-if="showProperty('showIndex') && state.tableHeaderForm.showIndex"
         >
           <el-input
             v-model="state.tableHeaderForm.indexLabel"
@@ -162,6 +174,20 @@ init()
 </template>
 
 <style lang="less" scoped>
+:deep(.ed-color-picker.is-custom .ed-color-picker__trigger) {
+  height: 24px;
+}
+.custom-form-item-label {
+  margin-bottom: 4px;
+  line-height: 20px;
+  color: #a6a6a6;
+  font-size: 12px;
+  padding: 2px 12px 0 0;
+}
+.form-item-checkbox {
+  margin-bottom: 10px !important;
+}
+
 .form-item-slider :deep(.ed-form-item__label) {
   font-size: 12px;
   line-height: 38px;
