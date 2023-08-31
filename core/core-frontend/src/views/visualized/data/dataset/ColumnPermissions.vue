@@ -668,12 +668,11 @@ const handleCurrentChange = (currentPage: number) => {
         >
           <el-option
             v-for="item in whiteListUsers"
-            :key="item.userId + item.email"
-            :label="item.nickName"
-            :value="item.userId"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id"
           >
-            <p class="name">{{ item.nickName }}</p>
-            <p class="email">{{ item.email }}</p>
+            <p class="name">{{ item.name }}</p>
           </el-option>
         </el-select>
       </div>

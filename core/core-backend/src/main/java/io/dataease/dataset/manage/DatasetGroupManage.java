@@ -16,6 +16,7 @@ import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupMapper;
 import io.dataease.dataset.dao.ext.mapper.CoreDataSetExtMapper;
 import io.dataease.dataset.dao.ext.po.DataSetNodePO;
 import io.dataease.dataset.dto.DataSetNodeBO;
+import io.dataease.dataset.utils.FieldUtils;
 import io.dataease.dataset.utils.TableUtils;
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.engine.constant.ExtFieldConstant;
@@ -397,6 +398,10 @@ public class DatasetGroupManage {
                 }
             }
         }
+        list.forEach(sqlVariableDetail -> {
+            sqlVariableDetail.setId(sqlVariableDetail.getDatasetTableId() + "|DE|" + sqlVariableDetail.getVariableName());
+            sqlVariableDetail.setDeType(FieldUtils.transType2DeType(sqlVariableDetail.getType().get(0)));
+        });
         return list;
     }
 
