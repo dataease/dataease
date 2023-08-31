@@ -220,18 +220,22 @@ public class Utils {
     }
 
     public static long allDateFormat2Long(String value) {
+        String split = "-";
+        if (value != null && value.contains("/")) {
+            split = "/";
+        }
         try {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy" + split + "MM" + split + "dd HH:mm:ss");
             return simpleDateFormat.parse(value).getTime();
         } catch (Exception e) {
         }
         try {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy" + split + "MM" + split + "dd HH:mm");
             return simpleDateFormat.parse(value).getTime();
         } catch (Exception e) {
         }
         try {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH");
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy" + split + "MM" + split + "dd HH");
             return simpleDateFormat.parse(value).getTime();
         } catch (Exception e) {
         }
@@ -241,12 +245,12 @@ public class Utils {
         } catch (Exception e) {
         }
         try {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy" + split + "MM" + split + "dd");
             return simpleDateFormat.parse(value).getTime();
         } catch (Exception e) {
         }
         try {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM");
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy" + split + "MM");
             return simpleDateFormat.parse(value).getTime();
         } catch (Exception e) {
         }
