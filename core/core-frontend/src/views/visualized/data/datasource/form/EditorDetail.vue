@@ -841,6 +841,7 @@ defineExpose({
   }
   .detail-inner {
     width: 800px;
+    padding-top: 16px;
 
     &.pt16 {
       padding-top: 16px;
@@ -942,11 +943,11 @@ defineExpose({
     }
   }
   .req-title {
-    color: var(--deTextPrimary, #1f2329);
+    color: var(--deTextSecondary, #646a73);
     margin: 16px 0 4px 0;
   }
   .req-value {
-    color: var(--deTextSecondary, #646a73);
+    color: var(--deTextPrimary, #1f2329);
   }
   .de-copy-icon {
     margin-right: 16px;
