@@ -1059,7 +1059,8 @@ export default {
     logic_and: '所有',
     logic_or: '任一',
     conform_below: '符合以下',
-    addition: '条件'
+    addition: '条件',
+    drill_field_error: '下钻起始字段需在维度中'
   },
   dataset: {
     scope_edit: '仅编辑时生效',

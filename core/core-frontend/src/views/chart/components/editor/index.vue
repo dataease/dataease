@@ -301,11 +301,11 @@ const quotaItemRemove = item => {
 }
 
 const drillItemChange = item => {
-  calcData(view.value)
+  calcData(view.value, true)
 }
 const drillItemRemove = item => {
   view.value.drillFields.splice(item.index, 1)
-  calcData(view.value)
+  calcData(view.value, true)
 }
 
 const customSortAxis = ref<AxisType>('xAxis')
@@ -487,7 +487,7 @@ const onTypeChange = val => {
   if (chartViewInstance) {
     view.value = chartViewInstance.setupDefaultOptions(view.value) as unknown as ChartObj
   }
-  calcData(view.value)
+  calcData(view.value, true)
 }
 
 const onBasicStyleChange = (chartForm: ChartEditorForm<ChartBasicStyle>) => {
@@ -1183,7 +1183,7 @@ const autoInsert = element => {
                             :move="onMove"
                             class="drag-block-style"
                             @add="addDrill"
-                            @update="calcData(view)"
+                            @update="calcData(view, true)"
                           >
                             <template #item="{ element, index }">
                               <drill-item
@@ -1376,7 +1376,7 @@ const autoInsert = element => {
                         <el-button
                           type="primary"
                           class="result-style-button"
-                          @click="calcData(view)"
+                          @click="calcData(view, true)"
                         >
                           <span style="font-size: 12px">
                             {{ t('chart.update_chart_data') }}
