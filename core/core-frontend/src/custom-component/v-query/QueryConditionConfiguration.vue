@@ -20,7 +20,8 @@ const dvMainStore = dvMainStoreWithOut()
 const { componentData, canvasViewInfo } = storeToRefs(dvMainStore)
 
 interface DatasetField {
-  type: string
+  type?: string
+  innerType?: string
   title: string
   id: string
   tableId: string
@@ -47,12 +48,14 @@ const datasetMap = {}
 const datasetMapParams = {}
 
 const datasetFieldList = computed(() => {
-  return Object.values(canvasViewInfo.value)
-    .filter(ele => (ele as DatasetField).type !== 'VQuery')
+  return componentData.value
+    .filter(ele => (ele as DatasetField).innerType !== 'VQuery')
     .map(ele => {
-      const { id, title, tableId } = ele as DatasetField
+      const obj = canvasViewInfo.value[ele.id]
+      const { id, title, tableId, type } = obj as DatasetField
       return {
         id,
+        type,
         title,
         tableId
       }
