@@ -167,6 +167,9 @@ const createInit = (type, data: Tree, exec, name: string) => {
     getDatasetTree(request).then(res => {
       dfs(res as unknown as Tree[])
       state.tData = (res as unknown as Tree[]) || []
+      if (state.tData.length && state.tData[0].name === 'root' && state.tData[0].id === '0') {
+        state.tData[0].name = '数据集'
+      }
       if (exec) {
         pid.value = data.pid
         id.value = data.id
@@ -309,7 +312,7 @@ const emits = defineEmits(['finish'])
           </template>
         </el-input>
         <div class="tree-content">
-          <div
+          <!-- <div
             :class="activeAll && 'active'"
             @click="activeAll = !activeAll"
             v-if="showAll"
@@ -319,7 +322,7 @@ const emits = defineEmits(['finish'])
               <Icon name="dv-folder"></Icon>
             </el-icon>
             <span class="label"> 全部文件夹 </span>
-          </div>
+          </div> -->
           <el-tree
             ref="treeRef"
             :filter-node-method="filterNode"

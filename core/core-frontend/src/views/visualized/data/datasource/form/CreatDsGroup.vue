@@ -159,6 +159,9 @@ const createInit = (type, data: Tree, exec, name: string) => {
       listDatasources({ leaf: false, id: data.id, weight: 3 }).then(res => {
         dfs(res as unknown as Tree[])
         state.tData = (res as unknown as Tree[]) || []
+        if (state.tData.length && state.tData[0].name === 'root' && state.tData[0].id === '0') {
+          state.tData[0].name = '数据源'
+        }
       })
     }
     if (exec) {
