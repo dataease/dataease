@@ -1,7 +1,7 @@
 <template>
   <div class="position-main">
     <div
-      v-for="({ key, label }, index) in positionKeys"
+      v-for="({ key, label, min, max, step }, index) in positionKeys"
       :key="index"
       :title="label"
       style="display: flex; float: left; margin-top: 10px"
@@ -12,6 +12,9 @@
       <div style="width: 85px">
         <de-input-num
           :disabled="curComponent['isLock']"
+          :min="min"
+          :max="max"
+          :step="step"
           :themes="themes"
           v-model="curComponent.style[key]"
         ></de-input-num>

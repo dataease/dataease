@@ -75,7 +75,7 @@ const onBackgroundChange = val => {
       <el-collapse-item title="样式" name="style" class="common-style-area">
         <div class="common-style-inner">
           <div
-            v-for="({ key, label }, index) in styleKeys"
+            v-for="({ key, label, min, max, step }, index) in styleKeys"
             :key="index"
             :title="label"
             style="display: flex; float: left; margin-top: 10px"
@@ -122,6 +122,9 @@ const onBackgroundChange = val => {
               </el-select>
               <de-input-num
                 v-else
+                :min="min"
+                :max="max"
+                :step="step"
                 :themes="themes"
                 v-model="curComponent.style[key]"
               ></de-input-num>

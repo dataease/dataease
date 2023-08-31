@@ -81,8 +81,8 @@ const list = [
       requestCount: 0 // 请求次数限制，0 为无限
     },
     style: {
-      width: 200,
-      height: 100,
+      width: 600,
+      height: 300,
       fontSize: 14,
       fontWeight: 400,
       lineHeight: 1,
@@ -183,8 +183,8 @@ const list = [
     sizeX: 15,
     sizeY: 15,
     style: {
-      width: 150,
-      height: 100,
+      width: 600,
+      height: 300,
       color: ''
     }
   },
@@ -207,8 +207,8 @@ const list = [
     sizeX: 18,
     sizeY: 7,
     style: {
-      width: 150,
-      height: 100,
+      width: 600,
+      height: 300,
       fontSize: 16,
       activeFontSize: 18,
       headHorizontalPosition: 'left',
