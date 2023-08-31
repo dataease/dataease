@@ -683,6 +683,7 @@ export default {
     title_cannot_empty: '标题不能为空',
     table_title_height: '表头行高',
     table_item_height: '表格行高',
+    text: '文本',
     axis_show: '轴线显示',
     axis_color: '轴线颜色',
     axis_width: '轴线宽度',
