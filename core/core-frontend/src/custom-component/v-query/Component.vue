@@ -192,8 +192,7 @@ const infoFormat = (obj: ComponentInfo) => {
 const drop = e => {
   const componentInfo: ComponentInfo = JSON.parse(e.dataTransfer.getData('dimension') || '{}')
   if (!componentInfo.id) return
-  list.value.push(infoFormat(componentInfo))
-  element.value.propValue = [...list.value]
+  addCriteriaConfigOut()
 }
 
 const editeQueryConfig = (queryId: string) => {
