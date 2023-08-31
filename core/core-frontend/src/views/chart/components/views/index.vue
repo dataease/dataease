@@ -148,6 +148,12 @@ const drillJump = index => {
 }
 
 const chartClick = param => {
+  // 下钻字段第一个没有在维度中不允许下钻
+  const xIds = view.value.xAxis.map(ele => ele.id)
+  if (xIds.indexOf(props.view.drillFields[0].id) == -1) {
+    ElMessage.error(t('chart.drill_field_error'))
+    return
+  }
   if (state.drillClickDimensionList.length < props.view.drillFields.length - 1) {
     state.drillClickDimensionList.push({ dimensionList: param.data.dimensionList })
     view.value.chartExtRequest = filter()

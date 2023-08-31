@@ -186,7 +186,7 @@ const infoFormat = (obj: ComponentInfo) => {
   if (deType === 1) {
     return base
   }
-  return { ...base, parameters: [], parametersCheck: false }
+  return { ...base, parameters: [], parametersCheck: false, parametersList: [] }
 }
 
 const drop = e => {

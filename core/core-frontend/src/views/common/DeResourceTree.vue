@@ -366,6 +366,7 @@ onMounted(() => {
             ></handle-more>
             <dv-handle-more
               @handle-command="cmd => operation(cmd, data, data.leaf ? 'leaf' : 'folder')"
+              :node="data"
               :menu-list="data.leaf ? state.menuList : state.folderMenuList"
             ></dv-handle-more>
           </div>

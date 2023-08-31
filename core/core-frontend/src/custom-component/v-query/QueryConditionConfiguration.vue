@@ -6,7 +6,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { fieldType } from '@/utils/attr'
 import { ElMessage } from 'element-plus-secondary'
 import type { DatasetDetail } from '@/api/dataset'
-import { getDsDetails } from '@/api/dataset'
+import { getDsDetails, getSqlParams } from '@/api/dataset'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import { cloneDeep } from 'lodash-es'
 import Select from './Select.vue'
@@ -44,6 +44,7 @@ const activeConditionForRename = reactive({
   visible: false
 })
 const datasetMap = {}
+const datasetMapParams = {}
 
 const datasetFieldList = computed(() => {
   return Object.values(canvasViewInfo.value)
@@ -63,6 +64,7 @@ const activeCondition = ref('')
 const isIndeterminate = ref(false)
 const datasetTree = shallowRef([])
 const fields = ref<DatasetDetail[]>()
+const parameters = ref([])
 let componentId = ''
 
 const getDetype = (id, arr) => {
@@ -258,6 +260,7 @@ const init = (id: string, queryId: string) => {
   for (const i in datasetMap) {
     if (!datasetFieldIdList.includes(i)) {
       delete datasetMap[i]
+      delete datasetMapParams[i]
     }
   }
 
@@ -268,6 +271,12 @@ const init = (id: string, queryId: string) => {
       .map(ele => {
         if (!datasetMap[ele.tableId]) return null
         return { ...datasetMap[ele.tableId], componentId: ele.id }
+      })
+      .filter(ele => !!ele)
+    parameters.value = datasetFieldList.value
+      .map(ele => {
+        if (!datasetMapParams[ele.tableId]) return null
+        return { ...datasetMapParams[ele.tableId], componentId: ele.id }
       })
       .filter(ele => !!ele)
     return
@@ -297,6 +306,25 @@ const init = (id: string, queryId: string) => {
     .finally(() => {
       handleCheckedFieldsChange(curComponent.value.checkedFields)
     })
+  getSqlParams([
+    ...new Set(
+      datasetFieldList.value.map(ele => ele.tableId).filter(ele => !datasetMapKeyList.includes(ele))
+    )
+  ]).then(res => {
+    ;(res || []).forEach(ele => {
+      if (!datasetMapParams[ele.datasetGroupId]) {
+        if (Array.isArray(datasetMapParams[ele.datasetGroupId])) {
+          datasetMapParams[ele.datasetGroupId].push(ele)
+        } else {
+          datasetMapParams[ele.datasetGroupId] = [ele]
+        }
+      }
+    })
+    parameters.value = datasetFieldList.value.map(ele => {
+      if (!datasetMapParams[ele.tableId]) return null
+      return { ...datasetMapParams[ele.tableId], componentId: ele.id }
+    })
+  })
 }
 
 const weightlessness = () => {
@@ -333,6 +361,15 @@ const getOptions = (id, component) => {
       const { dimensionList, quotaList } = ele.fields
       component.dataset.fields = [...dimensionList, ...quotaList]
     })
+  })
+
+  getSqlParams([id]).then(res => {
+    console.log('res', res)
+    // res.forEach(ele => {
+    //   if (!ele) return
+    //   const { dimensionList, quotaList } = ele.fields
+    //   component.parametersList = [...dimensionList, ...quotaList]
+    // })
   })
 }
 

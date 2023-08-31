@@ -206,6 +206,7 @@ const setLoading = (val: boolean) => {
               <XpackComponent
                 :in-grid="true"
                 jsname="c2hhcmUtaGFuZGxlcg=="
+                :weight="scope.row.weight"
                 :resource-id="activeName === 'recent' ? scope.row.id : scope.row.resourceId"
               />
             </template>

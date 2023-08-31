@@ -1,5 +1,7 @@
 package io.dataease.api.dataset.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 
 import java.util.List;
@@ -12,8 +14,11 @@ public class SqlVariableDetails {
     private String details;
     private String defaultValue;
     private DefaultValueScope defaultValueScope;
+    @JsonSerialize(using = ToStringSerializer.class)
     private String id;
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long datasetTableId;
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long datasetGroupId;
     private boolean required;
     private String operator;
