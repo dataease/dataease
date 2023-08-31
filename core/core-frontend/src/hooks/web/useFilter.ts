@@ -56,6 +56,7 @@ export const useFilter = (curComponentId: number, firstLoad = false) => {
               defaultValueCheck,
               defaultValue,
               parameters = [],
+              parametersCheck = false,
               isTree = false,
               field,
               multiple
@@ -77,7 +78,7 @@ export const useFilter = (curComponentId: number, firstLoad = false) => {
                 fieldId: item.checkedFieldsMap[curComponentId],
                 operator,
                 value: forMatterValue(field.deType, selectValue),
-                parameters,
+                parameters: parametersCheck ? parameters : [],
                 isTree
               })
             }

@@ -45,7 +45,6 @@ const activeConditionForRename = reactive({
   visible: false
 })
 const datasetMap = {}
-const datasetMapParams = {}
 
 const datasetFieldList = computed(() => {
   return componentData.value
@@ -68,6 +67,14 @@ const isIndeterminate = ref(false)
 const datasetTree = shallowRef([])
 const fields = ref<DatasetDetail[]>()
 const parameters = ref([])
+const parametersFilter = computed(() => {
+  return parameters.value.filter(ele => {
+    if (curComponent.value.displayType === '2') {
+      return [2, 3].includes(ele.deType)
+    }
+    return ele.deType === +curComponent.value.displayType
+  })
+})
 let componentId = ''
 
 const getDetype = (id, arr) => {
@@ -128,7 +135,8 @@ const setType = () => {
     const checkId = curComponent.value.checkedFieldsMap?.[id]
     const field = (arr?.list || []).find(ele => checkId === ele.id)
     if (field?.deType === 1 && curComponent.value.displayType === '7') return
-    field?.deType !== undefined && (curComponent.value.displayType = `${field?.deType}`)
+    field?.deType !== undefined &&
+      (curComponent.value.displayType = `${field?.deType === 3 ? 2 : field?.deType}`)
   }
 }
 
@@ -263,7 +271,6 @@ const init = (id: string, queryId: string) => {
   for (const i in datasetMap) {
     if (!datasetFieldIdList.includes(i)) {
       delete datasetMap[i]
-      delete datasetMapParams[i]
     }
   }
 
@@ -274,12 +281,6 @@ const init = (id: string, queryId: string) => {
       .map(ele => {
         if (!datasetMap[ele.tableId]) return null
         return { ...datasetMap[ele.tableId], componentId: ele.id }
-      })
-      .filter(ele => !!ele)
-    parameters.value = datasetFieldList.value
-      .map(ele => {
-        if (!datasetMapParams[ele.tableId]) return null
-        return { ...datasetMapParams[ele.tableId], componentId: ele.id }
       })
       .filter(ele => !!ele)
     return
@@ -314,19 +315,7 @@ const init = (id: string, queryId: string) => {
       datasetFieldList.value.map(ele => ele.tableId).filter(ele => !datasetMapKeyList.includes(ele))
     )
   ]).then(res => {
-    ;(res || []).forEach(ele => {
-      if (!datasetMapParams[ele.datasetGroupId]) {
-        if (Array.isArray(datasetMapParams[ele.datasetGroupId])) {
-          datasetMapParams[ele.datasetGroupId].push(ele)
-        } else {
-          datasetMapParams[ele.datasetGroupId] = [ele]
-        }
-      }
-    })
-    parameters.value = datasetFieldList.value.map(ele => {
-      if (!datasetMapParams[ele.tableId]) return null
-      return { ...datasetMapParams[ele.tableId], componentId: ele.id }
-    })
+    parameters.value = res || []
   })
 }
 
@@ -364,15 +353,6 @@ const getOptions = (id, component) => {
       const { dimensionList, quotaList } = ele.fields
       component.dataset.fields = [...dimensionList, ...quotaList]
     })
-  })
-
-  getSqlParams([id]).then(res => {
-    console.log('res', res)
-    // res.forEach(ele => {
-    //   if (!ele) return
-    //   const { dimensionList, quotaList } = ele.fields
-    //   component.parametersList = [...dimensionList, ...quotaList]
-    // })
   })
 }
 
@@ -518,7 +498,8 @@ defineExpose({
           >
             <div v-for="field in fields" :key="field.componentId" class="list-item">
               <el-checkbox :label="field.componentId"
-                ><el-icon> <Icon name="icon_add_outlined"></Icon> </el-icon
+                ><el-icon class="component-type">
+                  <Icon :name="canvasViewInfo[field.componentId].type"></Icon> </el-icon
                 ><span class="checkbox-name ellipsis">{{
                   canvasViewInfo[field.componentId].title
                 }}</span></el-checkbox
@@ -585,11 +566,6 @@ defineExpose({
                   :disabled="curComponent.displayType !== '2'"
                   label="数字下拉"
                   value="2"
-                />
-                <el-option
-                  :disabled="curComponent.displayType !== '3'"
-                  label="数字下拉(小数)"
-                  value="3"
                 />
                 <el-option
                   :disabled="!['1', '7'].includes(curComponent.displayType)"
@@ -721,8 +697,13 @@ defineExpose({
             </div>
             <div v-if="curComponent.parametersCheck" class="parameters">
               <el-select multiple v-model="curComponent.parameters" clearable>
-                <el-option label="Zone one" value="shanghai" />
-                <el-option label="Zone two" value="beijing" />
+                <el-option
+                  v-for="item in parametersFilter"
+                  value-key="id"
+                  :key="item.id"
+                  :label="item.variableName"
+                  :value="item"
+                />
               </el-select>
             </div>
           </div>
@@ -831,6 +812,10 @@ defineExpose({
       }
 
       .field-list {
+        .component-type {
+          margin-right: 4px;
+          font-size: 16px;
+        }
         .list-item {
           height: 32px;
           display: flex;
