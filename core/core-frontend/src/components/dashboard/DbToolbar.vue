@@ -446,7 +446,7 @@ const saveLinkageSetting = () => {
   right: 10px;
   top: 10px;
   position: absolute;
-  z-index: 2;
+  z-index: 10;
 }
 .toolbar-main {
   position: relative;

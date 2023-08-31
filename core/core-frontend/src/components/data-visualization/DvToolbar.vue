@@ -298,7 +298,7 @@ eventBus.on('clearCanvas', clearCanvas)
   right: 10px;
   top: 10px;
   position: absolute;
-  z-index: 2;
+  z-index: 10;
 }
 .toolbar {
   height: @top-bar-height;

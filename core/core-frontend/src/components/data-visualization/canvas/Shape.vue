@@ -643,7 +643,6 @@ const tabMoveInCheck = async () => {
         const brAndBr =
           collisionT + collisionH >= top + height && collisionL + collisionW >= left + width
         if (tfAndTf && bfAndBf && trAndTr && brAndBr) {
-          console.log('collisionActive=====')
           dvMainStore.setTabCollisionActiveId(componentId)
         } else if (tabCollisionActiveId.value === componentId) {
           dvMainStore.setTabCollisionActiveId(null)

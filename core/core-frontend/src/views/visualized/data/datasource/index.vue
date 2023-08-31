@@ -16,7 +16,13 @@ import DatasetDetail from '@/views/visualized/data/dataset/DatasetDetail.vue'
 import { timestampFormatDate } from '@/views/visualized/data/dataset/form/util'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import dayjs from 'dayjs'
-import { getTableField, listDatasourceTables, deleteById, save } from '@/api/datasource'
+import {
+  getTableField,
+  listDatasourceTables,
+  deleteById,
+  save,
+  validateById
+} from '@/api/datasource'
 import { Base64 } from 'js-base64'
 import type { Configuration, ApiConfiguration, SyncSetting } from './form/index.vue'
 import EditorDatasource from './form/index.vue'
@@ -188,17 +194,14 @@ const handleLoadExcel = data => {
     })
 }
 
-const getFieldType = (type: string | number) => {
-  return [
-    t('dataset.text'),
-    '',
-    t('dataset.value'),
-    t('dataset.value') + '(' + t('dataset.float') + ')'
-  ][type]
-}
-
-const searchDs = () => {
-  buildTree(rawDatasourceList.value.filter(ele => ele.name.includes(dsName.value)))
+const validateDS = () => {
+  validateById(nodeInfo.id as number)
+    .then(() => {
+      ElMessage.success('校验成功')
+    })
+    .catch(() => {
+      ElMessage.error('校验失败')
+    })
 }
 
 const dialogErrorInfo = ref(false)
@@ -256,8 +259,6 @@ const handleTabClick = tab => {
   activeTab.value = tab.value
   handleLoadExcel({ table: tab.value, id: nodeInfo.id })
 }
-
-const baseInfo = ref()
 
 const tabList = shallowRef([])
 
@@ -374,6 +375,8 @@ const convertConfig = array => {
     }
   }
 }
+
+const updateRecordsTime = ref(new Date()['format']())
 
 listDs()
 
@@ -682,12 +685,12 @@ const defaultProps = {
         <div class="datasource-info">
           <div class="info-method">
             <el-icon class="icon-border">
-              <Icon name="mysql-frame"></Icon>
+              <Icon :name="`${nodeInfo.type}-ds`"></Icon>
             </el-icon>
             <span class="name">
               {{ nodeInfo.name }}
             </span>
-            <el-popover placement="bottom" width="420" trigger="hover">
+            <el-popover placement="bottom" width="290" trigger="hover">
               <template #reference>
                 <el-icon class="create-user">
                   <Icon name="icon_info_outlined"></Icon>
@@ -705,6 +708,7 @@ const defaultProps = {
                 </template>
                 新建数据集
               </el-button>
+              <el-button secondary @click="validateDS"> {{ t('datasource.validate') }}</el-button>
 
               <template v-if="nodeInfo.type === 'Excel'">
                 <el-upload
@@ -952,7 +956,9 @@ const defaultProps = {
                 </div>
                 <div class="req-value">
                   <span>{{ api.method }}</span>
-                  <span :title="api.url">{{ api.url }}</span>
+                  <el-tooltip w effect="dark" :content="api.url" placement="top">
+                    <span>{{ api.url }}</span>
+                  </el-tooltip>
                 </div>
               </div>
             </div>
@@ -961,6 +967,7 @@ const defaultProps = {
             v-if="nodeInfo.type === 'API'"
             v-slot="slotProps"
             :name="t('dataset.update_setting')"
+            :time="updateRecordsTime"
           >
             <template v-if="slotProps.active">
               <el-row :gutter="24">
@@ -979,15 +986,15 @@ const defaultProps = {
                       {{ ele }}
                     </p>
                   </BaseInfoItem>
-                  <el-button @click="getRecord" class="update-records" text>
-                    <template #icon>
-                      <icon name="icon_describe_outlined"></icon>
-                    </template>
-                    {{ t('dataset.update_records') }}
-                  </el-button>
                 </el-col>
               </el-row>
             </template>
+            <el-button @click="getRecord" class="update-records" text>
+              <template #icon>
+                <icon name="icon_describe_outlined"></icon>
+              </template>
+              {{ t('dataset.update_records') }}
+            </el-button>
           </BaseInfoContent>
           <BaseInfoContent
             v-if="nodeInfo.type === 'Excel'"
@@ -1162,7 +1169,7 @@ const defaultProps = {
   background: #fff;
   .update-records {
     position: absolute;
-    top: -24px;
+    top: 19px;
     right: 12px;
   }
 
@@ -1192,11 +1199,7 @@ const defaultProps = {
   }
 
   .icon-border {
-    padding: 3px;
-    border: 1px solid #dee0e3;
-    border-radius: 3px;
-    width: 24px;
-    height: 24px;
+    font-size: 18px;
   }
 
   .excel-table {
@@ -1390,6 +1393,10 @@ const defaultProps = {
         font-size: 16px;
         font-weight: 500;
 
+        .ed-icon {
+          font-size: 24px;
+        }
+
         .name {
           margin: 0 8px;
         }
@@ -1408,7 +1415,7 @@ const defaultProps = {
 
         .right-btn {
           margin-left: auto;
-          & > :nth-child(2) {
+          & > :nth-child(3) {
             margin: 0 8px;
           }
         }
