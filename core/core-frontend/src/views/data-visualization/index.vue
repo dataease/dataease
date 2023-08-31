@@ -250,12 +250,7 @@ eventBus.on('handleNew', handleNew)
   </div>
 </template>
 
-<style lang="less">
-::-webkit-scrollbar {
-  width: 0px !important;
-  height: 0px !important;
-}
-
+<style lang="less">bar-main
 .preview-layout-container {
   height: 100vh !important;
 }
