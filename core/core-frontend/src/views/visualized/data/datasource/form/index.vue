@@ -465,8 +465,8 @@ defineExpose({
             class="list-item_primary"
           >
             最近使用
-            <el-divider />
           </p>
+          <el-divider />
           <p
             :class="currentType === 'all' && 'active'"
             @click="handleNodeClick({ type: 'all', name: 'all', id: 'all' })"
@@ -497,7 +497,7 @@ defineExpose({
           <template #default="{ node, data }">
             <span class="custom-tree-node flex-align-center">
               <el-icon v-if="!!data.catalog" class="icon-border" style="width: 18px; height: 18px">
-                <Icon :name="getDsIconName(data)"></Icon>
+                <Icon :name="`${data.type}-ds`"></Icon>
               </el-icon>
               <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
             </span>
@@ -682,17 +682,13 @@ defineExpose({
       width: 279px;
       height: calc(100% - 64px);
       padding: 16px 7px;
-      border-right: 1px solid #ccc;
+      border-right: 1px solid #3370ff1a;
       float: left;
       overflow-y: auto;
 
       .icon-border {
-        padding: 3px;
-        border: 1px solid #dee0e3;
-        border-radius: 3px;
-        width: 24px;
+        font-size: 18px;
         margin-right: 8px;
-        height: 24px;
       }
       .title {
         display: flex;
@@ -721,9 +717,7 @@ defineExpose({
         }
       }
       .ed-divider--horizontal {
-        margin: 4px 0;
-        position: absolute;
-        bottom: -5px;
+        margin: 4px 0 4px 16px;
         width: calc(100% - 34px);
       }
 

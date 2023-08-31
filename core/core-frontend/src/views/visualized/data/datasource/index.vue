@@ -237,8 +237,6 @@ const handleTabClick = tab => {
   handleLoadExcel({ table: tab.value, id: nodeInfo.id })
 }
 
-const baseInfo = ref()
-
 const tabList = shallowRef([])
 
 const initSearch = () => {
@@ -354,6 +352,8 @@ const convertConfig = array => {
     }
   }
 }
+
+const updateRecordsTime = ref(new Date()['format']())
 
 listDs()
 
@@ -659,7 +659,7 @@ const defaultProps = {
         <div class="datasource-info">
           <div class="info-method">
             <el-icon class="icon-border">
-              <Icon name="mysql-frame"></Icon>
+              <Icon :name="`${nodeInfo.type}-ds`"></Icon>
             </el-icon>
             <span class="name">
               {{ nodeInfo.name }}
@@ -938,6 +938,7 @@ const defaultProps = {
             v-if="nodeInfo.type === 'API'"
             v-slot="slotProps"
             :name="t('dataset.update_setting')"
+            :time="updateRecordsTime"
           >
             <template v-if="slotProps.active">
               <el-row :gutter="24">
@@ -956,15 +957,15 @@ const defaultProps = {
                       {{ ele }}
                     </p>
                   </BaseInfoItem>
-                  <el-button @click="getRecord" class="update-records" text>
-                    <template #icon>
-                      <icon name="icon_describe_outlined"></icon>
-                    </template>
-                    {{ t('dataset.update_records') }}
-                  </el-button>
                 </el-col>
               </el-row>
             </template>
+            <el-button @click="getRecord" class="update-records" text>
+              <template #icon>
+                <icon name="icon_describe_outlined"></icon>
+              </template>
+              {{ t('dataset.update_records') }}
+            </el-button>
           </BaseInfoContent>
           <BaseInfoContent
             v-if="nodeInfo.type === 'Excel'"
@@ -1132,7 +1133,7 @@ const defaultProps = {
   background: #fff;
   .update-records {
     position: absolute;
-    top: -24px;
+    top: 19px;
     right: 12px;
   }
 
@@ -1162,11 +1163,7 @@ const defaultProps = {
   }
 
   .icon-border {
-    padding: 3px;
-    border: 1px solid #dee0e3;
-    border-radius: 3px;
-    width: 24px;
-    height: 24px;
+    font-size: 18px;
   }
 
   .excel-table {
@@ -1359,6 +1356,10 @@ const defaultProps = {
         font-family: PingFang SC;
         font-size: 16px;
         font-weight: 500;
+
+        .ed-icon {
+          font-size: 24px;
+        }
 
         .name {
           margin: 0 8px;

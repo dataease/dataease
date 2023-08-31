@@ -75,7 +75,7 @@ export const dsTypes = [
   },
   {
     type: 'mongo',
-    name: 'MongoDB',
+    name: 'Mongodb-BI',
     catalog: 'OLTP',
     extraParams: 'rebuildschema=true&authSource=admin'
   },
