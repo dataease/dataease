@@ -533,8 +533,16 @@ const filterNode = (value: string, data: BusiTreeNode) => {
             <el-tabs v-model="activeName" @tab-change="handleClick">
               <el-tab-pane :label="t('chart.data_preview')" name="dataPreview"></el-tab-pane>
               <el-tab-pane label="结构预览" name="structPreview"></el-tab-pane>
-              <el-tab-pane :label="t('dataset.row_permissions')" name="row"></el-tab-pane>
-              <el-tab-pane :label="t('dataset.column_permissions')" name="column"></el-tab-pane>
+              <el-tab-pane
+                v-if="nodeInfo.weight >= 7"
+                :label="t('dataset.row_permissions')"
+                name="row"
+              ></el-tab-pane>
+              <el-tab-pane
+                v-if="nodeInfo.weight >= 7"
+                :label="t('dataset.column_permissions')"
+                name="column"
+              ></el-tab-pane>
             </el-tabs>
           </div>
         </div>
