@@ -43,6 +43,7 @@ declare module '@vue/runtime-core' {
     DbToolbar: typeof import('./src/components/dashboard/DbToolbar.vue')['default']
     DePreview: typeof import('./src/components/data-visualization/canvas/DePreview.vue')['default']
     DeUpload: typeof import('./src/components/visualization/common/DeUpload.vue')['default']
+    DragInfo: typeof import('./src/components/visualization/common/DragInfo.vue')['default']
     DragShadow: typeof import('./src/components/data-visualization/canvas/DragShadow.vue')['default']
     DrawerEnumFilter: typeof import('./src/components/drawer-filter/src/DrawerEnumFilter.vue')['default']
     DrawerFilter: typeof import('./src/components/drawer-filter/src/DrawerFilter.vue')['default']

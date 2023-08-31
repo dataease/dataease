@@ -10,7 +10,9 @@ import { cloneDeep } from 'lodash-es'
 import { useI18n } from '@/hooks/web/useI18n'
 
 const { t } = useI18n()
-
+type MapMouseEvent = MouseEvent & {
+  feature: GeoJSON.Feature
+}
 export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
   properties: EditorProperty[] = [
     'background-overall-component',
@@ -64,7 +66,7 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       return
     }
     const geoJson = cloneDeep(await getGeoJsonFile(areaId))
-    const options: ChoroplethOptions = {
+    let options: ChoroplethOptions = {
       map: {
         type: 'mapbox',
         style: 'blank'
@@ -112,12 +114,12 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       // 禁用线上地图数据
       customFetchGeoData: () => null
     }
-    this.setupOptions(chart, options, drawOption, geoJson)
+    options = this.setupOptions(chart, options, drawOption, geoJson)
     const view = new Choropleth(container, options)
     view.once('loaded', () => {
-      view.on('fillAreaLayer:click', (_: MouseEvent) => {
-        const param = {}
-        action(param)
+      view.on('fillAreaLayer:click', (ev: MapMouseEvent) => {
+        const param = ev.feature.properties
+        action({ data: { data: param } })
       })
     })
 
@@ -142,8 +144,16 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
         unknown: customAttr.basicStyle.areaBaseColor
       }
     }
+    const suspension = customAttr.basicStyle.suspension
+    if (!suspension) {
+      options = {
+        ...options,
+        legend: false,
+        zoom: false
+      }
+    }
     if (!chart.data?.data?.length || !geoJson?.features?.length) {
-      return
+      return options
     }
     const data = chart.data.data
     const areaMap = data.reduce((obj, value) => {

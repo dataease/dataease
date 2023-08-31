@@ -1,5 +1,16 @@
 <script lang="ts" setup>
-import { PropType, reactive, ref, watch, toRefs, computed, nextTick, shallowRef, toRaw } from 'vue'
+import {
+  PropType,
+  reactive,
+  ref,
+  watch,
+  toRefs,
+  computed,
+  nextTick,
+  shallowRef,
+  toRaw,
+  onMounted
+} from 'vue'
 import type { FormInstance, FormRules } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Field, getFieldByDQ, saveChart } from '@/api/chart'
@@ -111,11 +122,7 @@ const state = reactive({
   customSortField: {},
   currEditField: {},
   worldTree: [],
-  areaNode: {
-    id: view.value.customAttr.map.id,
-    name: ''
-  },
-  areaId: view.value.customAttr.map.id,
+  areaId: '',
   chartTypeOptions: [],
   useless: null
 })
@@ -162,6 +169,7 @@ watch(
     if (showAxis('area') && !state.worldTree?.length) {
       getWorldTree().then(res => {
         state.worldTree = [res.data]
+        state.areaId = view.value?.customAttr?.map?.id
       })
     }
     state.chartTypeOptions = [getViewConfig(newVal)]
@@ -293,11 +301,11 @@ const quotaItemRemove = item => {
 }
 
 const drillItemChange = item => {
-  calcData(view.value)
+  calcData(view.value, true)
 }
 const drillItemRemove = item => {
   view.value.drillFields.splice(item.index, 1)
-  calcData(view.value)
+  calcData(view.value, true)
 }
 
 const customSortAxis = ref<AxisType>('xAxis')
@@ -479,7 +487,7 @@ const onTypeChange = val => {
   if (chartViewInstance) {
     view.value = chartViewInstance.setupDefaultOptions(view.value) as unknown as ChartObj
   }
-  calcData(view.value)
+  calcData(view.value, true)
 }
 
 const onBasicStyleChange = (chartForm: ChartEditorForm<ChartBasicStyle>) => {
@@ -873,7 +881,7 @@ const autoInsert = element => {
 </script>
 
 <template>
-  <div class="chart-edit" :class="'editor-' + themes">
+  <div class="chart-edit" :class="'editor-' + themes" @keydown.stop @keyup.stop>
     <el-row v-loading="loading" class="de-chart-editor">
       <div
         class="content-area"
@@ -970,12 +978,13 @@ const autoInsert = element => {
                               :data="state.worldTree"
                               :props="treeProps"
                               :filterNodeMethod="filterNode"
+                              :current-node-key="state.areaId"
                               @node-click="onAreaChange"
                               empty-text="请选择区域"
                               node-key="id"
                               check-strictly
                               filterable
-                              :persistent="false"
+                              :teleported="false"
                             />
                           </div>
                         </el-row>
@@ -1174,7 +1183,7 @@ const autoInsert = element => {
                             :move="onMove"
                             class="drag-block-style"
                             @add="addDrill"
-                            @update="calcData(view)"
+                            @update="calcData(view, true)"
                           >
                             <template #item="{ element, index }">
                               <drill-item
@@ -1367,7 +1376,7 @@ const autoInsert = element => {
                         <el-button
                           type="primary"
                           class="result-style-button"
-                          @click="calcData(view)"
+                          @click="calcData(view, true)"
                         >
                           <span style="font-size: 12px">
                             {{ t('chart.update_chart_data') }}

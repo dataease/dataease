@@ -34,6 +34,7 @@ import { adaptCurThemeCommonStyle } from '@/utils/canvasStyle'
 import LinkageSet from '@/components/visualization/LinkageSet.vue'
 import PointShadow from '@/components/data-visualization/canvas/PointShadow.vue'
 import PGrid from '@/components/data-visualization/canvas/PGrid.vue'
+import DragInfo from '@/components/visualization/common/DragInfo.vue'
 const snapshotStore = snapshotStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
 const composeStore = composeStoreWithOut()
@@ -1548,6 +1549,7 @@ defineExpose({
     @contextmenu="handleContextMenu"
     @mousedown="handleMouseDown"
   >
+    <drag-info v-if="componentData.length === 0 && canvasId === 'canvas-main'"></drag-info>
     <canvas-opt-bar
       :canvas-style-data="canvasStyleData"
       :component-data="componentData"

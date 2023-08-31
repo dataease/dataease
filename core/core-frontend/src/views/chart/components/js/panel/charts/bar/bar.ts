@@ -285,7 +285,7 @@ export class GroupBar extends Bar {
     if (baseOptions.label) {
       const yAxis = chart.yAxis
       const label = {
-        ...options.label,
+        ...baseOptions.label,
         formatter: function (param: Datum) {
           const f = yAxis[0]
           let res = param.value
@@ -369,7 +369,7 @@ export class GroupStackBar extends Bar {
     if (baseOptions.label) {
       const yAxis = chart.yAxis
       const label = {
-        ...options.label,
+        ...baseOptions.label,
         formatter: function (param: Datum) {
           const f = yAxis[0]
           let res = param.value
@@ -444,7 +444,7 @@ export class PercentageStackBar extends GroupStackBar {
     const { extStack, xAxisExt, yAxis, customAttr } = chart
     const l = parseJson(customAttr).label
     const label = {
-      ...options.label,
+      ...baseOptions.label,
       formatter: function (param: Datum) {
         let f
         const res = param.value

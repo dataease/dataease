@@ -30,4 +30,6 @@ public class XpackShareGridVO implements Serializable {
 
     private Long exp;
 
+    private Integer weight;
+
 }

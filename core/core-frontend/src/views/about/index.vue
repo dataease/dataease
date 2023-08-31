@@ -158,7 +158,7 @@ const update = (licKey: string) => {
         <div class="value ellipsis">{{ license.remark }}</div>
       </div>
 
-      <div style="margin-top: 24px" class="lic_rooter">
+      <div v-if="isAdmin" style="margin-top: 24px" class="lic_rooter">
         <el-upload
           action=""
           :multiple="false"
@@ -170,7 +170,6 @@ const update = (licKey: string) => {
         >
           <el-button plain> {{ $t('about.update_license') }} </el-button>
         </el-upload>
-        <!-- <el-button plain> {{ $t('about.update_license') }} </el-button> -->
         <el-button plain @click="support"> {{ $t('about.support') }} </el-button>
       </div>
     </div>

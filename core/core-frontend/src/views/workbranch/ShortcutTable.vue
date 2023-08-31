@@ -26,17 +26,19 @@ const handleVisibleChange = (val: boolean) => {
 
 const handleCommand = (command: string) => {
   activeCommand.value = command
+  loadTableData()
 }
 const handleClick = (ele: TabsPaneContext) => {
   if (ele.paneName === 'recent' || ele.paneName === 'store') {
+    loading.value = true
     shortcutOption.setBusiFlag(ele.paneName)
     state.curTypeList = shortcutOption.getBusiList()
     state.tableColumn = shortcutOption.getColmunList()
     loadTableData()
   }
 }
-const triggerFilterPanel = val => {
-  console.log(val)
+const triggerFilterPanel = () => {
+  loadTableData()
 }
 const preview = id => {
   const routeUrl = resolve({
@@ -50,9 +52,16 @@ const formatterTime = (_, _column, cellValue) => {
 }
 
 const loadTableData = () => {
-  shortcutOption.loadData({}).then(res => {
-    state.tableData = res.data
-  })
+  loading.value = true
+  const queryType = activeCommand.value === 'all_types' ? '' : activeCommand.value
+  shortcutOption
+    .loadData({ type: queryType, keyword: panelKeyword.value, asc: !orderDesc.value })
+    .then(res => {
+      state.tableData = res.data
+    })
+    .finally(() => {
+      loading.value = false
+    })
 }
 
 const panelLoad = paneInfo => {
@@ -77,10 +86,21 @@ onMounted(() => {
     isClosable: false
   })
 })
+const orderDesc = ref(true)
+const loading = ref(false)
+const sortChange = param => {
+  orderDesc.value = true
+  const type = param.order.substring(0, param.order.indexOf('ending'))
+  orderDesc.value = type === 'desc'
+  loadTableData()
+}
+const setLoading = (val: boolean) => {
+  loading.value = val
+}
 </script>
 
 <template>
-  <div class="dashboard-type">
+  <div class="dashboard-type" v-loading="loading">
     <el-tabs v-model="activeName" class="dashboard-type-tabs" @tab-click="handleClick">
       <el-tab-pane
         v-for="item in tablePaneList"
@@ -90,7 +110,7 @@ onMounted(() => {
       />
     </el-tabs>
     <XpackComponent jsname="c2hhcmUtcGFuZWw=" @loaded="panelLoad" />
-    <XpackComponent :active-name="activeName" jsname="c2hhcmU=" />
+    <XpackComponent :active-name="activeName" jsname="c2hhcmU=" @set-loading="setLoading" />
     <el-row v-if="activeName === 'recent' || activeName === 'store'">
       <el-col :span="12">
         <el-dropdown
@@ -140,7 +160,7 @@ onMounted(() => {
       </el-col>
     </el-row>
     <div v-if="activeName === 'recent' || activeName === 'store'" class="panel-table">
-      <GridTable :show-pagination="false" :table-data="state.tableData">
+      <GridTable :show-pagination="false" :table-data="state.tableData" @sort-change="sortChange">
         <el-table-column key="name" width="280" prop="name" :label="t('common.name')">
           <template v-slot:default="scope">
             <div class="name-content">
@@ -160,6 +180,7 @@ onMounted(() => {
           :key="item.label"
           prop="name"
           show-overflow-tooltip
+          :sortable="item.type === 'time'"
           :label="item.label"
         >
           <template #default="scope">
@@ -185,6 +206,7 @@ onMounted(() => {
               <XpackComponent
                 :in-grid="true"
                 jsname="c2hhcmUtaGFuZGxlcg=="
+                :weight="scope.row.weight"
                 :resource-id="activeName === 'recent' ? scope.row.id : scope.row.resourceId"
               />
             </template>
