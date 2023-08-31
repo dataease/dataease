@@ -26,6 +26,7 @@ const handleVisibleChange = (val: boolean) => {
 
 const handleCommand = (command: string) => {
   activeCommand.value = command
+  loadTableData()
 }
 const handleClick = (ele: TabsPaneContext) => {
   if (ele.paneName === 'recent' || ele.paneName === 'store') {
@@ -36,8 +37,8 @@ const handleClick = (ele: TabsPaneContext) => {
     loadTableData()
   }
 }
-const triggerFilterPanel = val => {
-  console.log(val)
+const triggerFilterPanel = () => {
+  loadTableData()
 }
 const preview = id => {
   const routeUrl = resolve({
@@ -51,8 +52,10 @@ const formatterTime = (_, _column, cellValue) => {
 }
 
 const loadTableData = () => {
+  loading.value = true
+  const queryType = activeCommand.value === 'all_types' ? '' : activeCommand.value
   shortcutOption
-    .loadData({})
+    .loadData({ type: queryType, keyword: panelKeyword.value, asc: !orderDesc.value })
     .then(res => {
       state.tableData = res.data
     })
@@ -83,8 +86,17 @@ onMounted(() => {
     isClosable: false
   })
 })
-
+const orderDesc = ref(true)
 const loading = ref(false)
+const sortChange = param => {
+  orderDesc.value = true
+  const type = param.order.substring(0, param.order.indexOf('ending'))
+  orderDesc.value = type === 'desc'
+  loadTableData()
+}
+const setLoading = (val: boolean) => {
+  loading.value = val
+}
 </script>
 
 <template>
@@ -98,7 +110,7 @@ const loading = ref(false)
       />
     </el-tabs>
     <XpackComponent jsname="c2hhcmUtcGFuZWw=" @loaded="panelLoad" />
-    <XpackComponent :active-name="activeName" jsname="c2hhcmU=" />
+    <XpackComponent :active-name="activeName" jsname="c2hhcmU=" @set-loading="setLoading" />
     <el-row v-if="activeName === 'recent' || activeName === 'store'">
       <el-col :span="12">
         <el-dropdown
@@ -148,7 +160,7 @@ const loading = ref(false)
       </el-col>
     </el-row>
     <div v-if="activeName === 'recent' || activeName === 'store'" class="panel-table">
-      <GridTable :show-pagination="false" :table-data="state.tableData">
+      <GridTable :show-pagination="false" :table-data="state.tableData" @sort-change="sortChange">
         <el-table-column key="name" width="280" prop="name" :label="t('common.name')">
           <template v-slot:default="scope">
             <div class="name-content">
@@ -168,6 +180,7 @@ const loading = ref(false)
           :key="item.label"
           prop="name"
           show-overflow-tooltip
+          :sortable="item.type === 'time'"
           :label="item.label"
         >
           <template #default="scope">

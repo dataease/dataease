@@ -1,8 +1,10 @@
 package io.dataease.api.xpack.share;
 
 import io.dataease.api.xpack.share.request.XpackShareExpRequest;
+import io.dataease.api.xpack.share.request.XpackShareProxyRequest;
 import io.dataease.api.xpack.share.request.XpackSharePwdRequest;
 import io.dataease.api.visualization.request.VisualizationWorkbranchQueryRequest;
+import io.dataease.api.xpack.share.request.XpackSharePwdValidator;
 import io.dataease.api.xpack.share.vo.XpackShareGridVO;
 import io.dataease.api.xpack.share.vo.XpackShareProxyVO;
 import io.dataease.api.xpack.share.vo.XpackShareVO;
@@ -33,6 +35,9 @@ public interface XpackShareApi {
     @PostMapping("/query")
     List<XpackShareGridVO> query(@RequestBody VisualizationWorkbranchQueryRequest request);
 
-    @GetMapping("/proxyInfo/{uuid}")
-    XpackShareProxyVO proxyInfo(@PathVariable("uuid") String uuid);
+    @PostMapping("/proxyInfo")
+    XpackShareProxyVO proxyInfo(@RequestBody XpackShareProxyRequest request);
+
+    @PostMapping("/validate")
+    boolean validatePwd(@RequestBody XpackSharePwdValidator validator);
 }
