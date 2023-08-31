@@ -31,16 +31,31 @@ export class TableNormal extends S2ChartView<TableSheet> {
   }
 
   drawChart(drawOption: S2DrawOptions<TableSheet>): TableSheet {
-    const { container, chart } = drawOption
+    const { container, chart, action } = drawOption
     const containerDom = document.getElementById(container)
     if (!containerDom) return
 
     // fields
-    const fields = chart.data.fields
+    let fields = chart.data.fields
 
     const columns = []
     const meta = []
-
+    if (chart.drill) {
+      // 下钻过滤字段
+      const filterFields = chart.drillFilters.map(i => i.fieldId)
+      // 下钻入口的字段下标
+      const drillFieldId = chart.drillFields[0].id
+      const drillFieldIndex = chart.xAxis.findIndex(ele => ele.id === drillFieldId)
+      // 当前下钻字段
+      const curDrillFieldId = chart.drillFields[filterFields.length].id
+      const curDrillField = fields.filter(ele => ele.id === curDrillFieldId)
+      filterFields.push(curDrillFieldId)
+      // 移除下钻字段，把当前下钻字段插入到下钻入口位置
+      fields = fields.filter(ele => {
+        return !filterFields.includes(ele.id)
+      })
+      fields.splice(drillFieldIndex, 0, ...curDrillField)
+    }
     // add drill list
     fields.forEach(ele => {
       const f = getCurrentField(chart.yAxis, ele)
@@ -103,8 +118,33 @@ export class TableNormal extends S2ChartView<TableSheet> {
     const newChart = new TableSheet(containerDom, s2DataConfig, s2Options)
 
     // click
-    newChart.on(S2Event.DATA_CELL_CLICK, drawOption.action)
+    newChart.on(S2Event.DATA_CELL_CLICK, ev => {
+      const cell = newChart.getCell(ev.target)
+      const meta = cell.getMeta()
+      const nameIdMap = fields.reduce((pre, next) => {
+        pre[next['dataeaseName']] = next['id']
+        return pre
+      }, {})
 
+      const rowData = chart.data.tableRow[meta.rowIndex] as any
+      const dimensionList = []
+      for (const key in rowData) {
+        if (nameIdMap[key]) {
+          dimensionList.push({ id: nameIdMap[key], value: rowData[key] })
+        }
+      }
+      const param = {
+        x: ev.x,
+        y: ev.y,
+        data: {
+          dimensionList,
+          name: nameIdMap[meta.valueField],
+          sourceType: 'table-normal',
+          quotaList: []
+        }
+      }
+      action(param)
+    })
     // theme
     const customTheme = this.configTheme(chart)
     newChart.setThemeCfg({ theme: customTheme })

@@ -83,9 +83,7 @@ const calcData = (view: Chart, resetPageInfo = true) => {
         errMsg.value = res.msg
       } else {
         state.data = res?.data
-        if (res?.drillFilters?.length) {
-          emit('onDrillFilters', res?.drillFilters)
-        }
+        emit('onDrillFilters', res?.drillFilters)
         renderChart(res as unknown as Chart, resetPageInfo)
       }
     })
@@ -155,11 +153,7 @@ const handleCurrentChange = pageNum => {
 
 const action = param => {
   // 下钻 联动 跳转
-  state.pointParam = param.data
-  state.linkageActiveParam = {
-    category: state.pointParam.data.category ? state.pointParam.data.category : 'NO_DATA',
-    name: state.pointParam.data.name ? state.pointParam.data.name : 'NO_DATA'
-  }
+  state.pointParam = param
   if (trackMenu.value.length < 2) {
     // 只有一个事件直接调用
     trackClick(trackMenu.value[0])
@@ -173,30 +167,24 @@ const action = param => {
 
 const trackClick = trackAction => {
   const param = state.pointParam
-  if (!param || !param.data || !param.data.dimensionList) {
-    // 地图提示没有关联字段 其他没有维度信息的 直接返回
-    // if (this.chart.type === 'map') {
-    //   this.$warning(this.$t('panel.no_drill_field'))
-    // }
+  if (!param?.data?.dimensionList) {
     return
   }
-  const quotaList = state.pointParam.data.quotaList
-  quotaList[0]['value'] = state.pointParam.data.value
   const linkageParam = {
     option: 'linkage',
     name: state.pointParam.data.name,
     viewId: view.value.id,
     dimensionList: state.pointParam.data.dimensionList,
-    quotaList: quotaList
+    quotaList: state.pointParam.data.quotaList
   }
   const jumpParam = {
     option: 'jump',
     name: state.pointParam.data.name,
     viewId: view.value.id,
     dimensionList: state.pointParam.data.dimensionList,
-    quotaList: quotaList
+    quotaList: state.pointParam.data.quotaList,
+    sourceType: state.pointParam.data.sourceType
   }
-
   switch (trackAction) {
     case 'drill':
       emit('onChartClick', param)
@@ -290,7 +278,7 @@ onBeforeUnmount(() => {
       <div style="height: 100%" :id="containerId"></div>
     </div>
     <div class="table-page-info" v-if="showPage && !isError">
-      <div :style="{ color: pageColor }">共有{{ state.pageInfo.total }}条数据</div>
+      <div :style="{ color: pageColor }">{{ state.pageInfo.total }}条数据</div>
       <el-pagination
         class="table-page-content"
         layout="prev, pager, next"

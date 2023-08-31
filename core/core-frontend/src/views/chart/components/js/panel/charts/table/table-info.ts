@@ -5,6 +5,7 @@ import { getCurrentField } from '../../common/common_table'
 import { S2ChartView, S2DrawOptions } from '../../types/impl/s2'
 import { TABLE_EDITOR_PROPERTY, TABLE_EDITOR_PROPERTY_INNER } from './common'
 import { useI18n } from '@/hooks/web/useI18n'
+import { el } from 'element-plus-secondary/es/locale'
 
 const { t } = useI18n()
 
@@ -35,12 +36,31 @@ export class TableInfo extends S2ChartView<TableSheet> {
     const containerDom = document.getElementById(container)
 
     // fields
-    const fields = chart.data.fields
-
+    let fields = chart.data.fields
     const columns = []
     const meta = []
+    const axisMap = chart.xAxis.reduce((pre, cur) => {
+      pre[cur.dataeaseName] = cur
+      return pre
+    }, {})
+    if (chart.drill) {
+      // 下钻过滤字段
+      const filterFields = chart.drillFilters.map(i => i.fieldId)
+      // 下钻入口的字段下标
+      const drillFieldId = chart.drillFields[0].id
+      const drillFieldIndex = chart.xAxis.findIndex(ele => ele.id === drillFieldId)
+      // 当前下钻字段
+      const curDrillFieldId = chart.drillFields[filterFields.length].id
+      const curDrillField = fields.filter(ele => ele.id === curDrillFieldId)
+      filterFields.push(curDrillFieldId)
+      // 移除下钻字段，把当前下钻字段插入到下钻入口位置
+      fields = fields.filter(ele => {
+        return !filterFields.includes(ele.id)
+      })
+      fields.splice(drillFieldIndex, 0, ...curDrillField)
+    }
     fields.forEach(ele => {
-      const f = getCurrentField(chart.xAxis, ele)
+      const f = axisMap[ele.dataeaseName]
       columns.push(ele.dataeaseName)
       meta.push({
         field: ele.dataeaseName,
@@ -111,7 +131,33 @@ export class TableInfo extends S2ChartView<TableSheet> {
     const newChart = new TableSheet(containerDom, s2DataConfig, s2Options)
 
     // click
-    newChart.on(S2Event.DATA_CELL_CLICK, action)
+    newChart.on(S2Event.DATA_CELL_CLICK, ev => {
+      const cell = newChart.getCell(ev.target)
+      const meta = cell.getMeta()
+      const nameIdMap = fields.reduce((pre, next) => {
+        pre[next['dataeaseName']] = next['id']
+        return pre
+      }, {})
+
+      const rowData = chart.data.tableRow[meta.rowIndex] as any
+      const dimensionList = []
+      for (const key in rowData) {
+        if (nameIdMap[key]) {
+          dimensionList.push({ id: nameIdMap[key], value: rowData[key] })
+        }
+      }
+      const param = {
+        x: ev.x,
+        y: ev.y,
+        data: {
+          dimensionList,
+          name: nameIdMap[meta.valueField],
+          sourceType: 'table-info',
+          quotaList: []
+        }
+      }
+      action(param)
+    })
 
     // theme
     const customTheme = this.configTheme(chart)

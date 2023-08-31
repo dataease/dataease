@@ -31,6 +31,7 @@ declare interface Chart {
   customAttr: CustomAttr
   customStyle: CustomStyle
   drillFields: ChartViewField[]
+  drillFilters: Filter[]
   datasetMode: 0 | 1
   datasourceType: string
   totalItems: number
@@ -75,14 +76,22 @@ declare interface BaseFormatter {
 }
 
 declare interface Axis {
+  id: string
   name: string
+  dataeaseName: string
   formatterCfg: BaseFormatter
 }
 declare interface ChartViewField {
   name: string
   dataeaseName: string
+  id: string
   /**
    * 视图自定义字段名称
    */
   chartShowName: string
+}
+
+declare interface Filter {
+  datasetTableField: ChartViewField
+  fieldId: string
 }
