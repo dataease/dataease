@@ -193,6 +193,7 @@ onMounted(() => {
     eventBus.on('handleNew', handleNewFromCanvasMain)
   }
   eventBus.on('moveOutFromTab-' + canvasId.value, moveOutFromTab)
+  eventBus.on('matrix-canvasInit', canvasInit)
 })
 
 onBeforeUnmount(() => {
@@ -200,6 +201,7 @@ onBeforeUnmount(() => {
     eventBus.off('handleNew', handleNewFromCanvasMain)
   }
   eventBus.off('moveOutFromTab-' + canvasId.value, moveOutFromTab)
+  eventBus.off('matrix-canvasInit', canvasInit)
 })
 
 const getBaseMatrixSize = () => {

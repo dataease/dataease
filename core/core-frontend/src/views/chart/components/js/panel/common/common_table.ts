@@ -297,11 +297,11 @@ export function getStyle(chart: Chart): Style {
       height: tableCell.tableItemHeight
     }
     if (basicStyle.tableColumnMode === 'adapt') {
-      delete style.cellCfg.width
+      delete style.colCfg.width
       style.layoutWidthType = 'compact'
     } else {
       delete style.layoutWidthType
-      style.cellCfg.width = basicStyle.tableColumnWidth
+      style.colCfg.width = basicStyle.tableColumnWidth
     }
   }
 

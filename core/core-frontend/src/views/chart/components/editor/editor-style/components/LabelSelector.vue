@@ -95,46 +95,45 @@ init()
         ref="labelForm"
         :disabled="!state.labelForm.show"
         :model="state.labelForm"
-        label-width="80px"
         size="small"
+        label-position="top"
       >
-        <el-form-item
-          :label="t('chart.text_fontsize')"
-          class="form-item"
-          v-show="showProperty('fontSize')"
-        >
-          <el-select
-            :effect="props.themes"
-            v-model.number="state.labelForm.fontSize"
-            :placeholder="t('chart.text_fontsize')"
-            @change="changeLabelAttr('fontSize')"
-          >
-            <el-option
-              v-for="option in state.fontSize"
-              :key="option.value"
-              :label="option.name"
-              :value="option.value"
+        <div class="custom-form-item-label">{{ t('chart.text') }}</div>
+        <div style="display: flex">
+          <el-form-item v-if="showProperty('color')" style="padding-right: 4px">
+            <el-color-picker
+              v-model="state.labelForm.color"
+              class="color-picker-style"
+              :predefine="predefineColors"
+              @change="changeLabelAttr('color')"
+              is-custom
             />
-          </el-select>
-        </el-form-item>
+          </el-form-item>
+          <el-form-item v-if="showProperty('fontSize')" style="padding-left: 4px">
+            <el-select
+              style="width: 108px"
+              :effect="props.themes"
+              v-model.number="state.labelForm.fontSize"
+              :placeholder="t('chart.text_fontsize')"
+              @change="changeLabelAttr('fontSize')"
+            >
+              <el-option
+                v-for="option in state.fontSize"
+                :key="option.value"
+                :label="option.name"
+                :value="option.value"
+              />
+            </el-select>
+          </el-form-item>
+        </div>
+
         <el-form-item
-          :label="t('chart.text_color')"
-          class="form-item"
-          v-show="showProperty('color')"
-        >
-          <el-color-picker
-            v-model="state.labelForm.color"
-            class="color-picker-style"
-            :predefine="predefineColors"
-            @change="changeLabelAttr('color')"
-          />
-        </el-form-item>
-        <el-form-item
-          v-show="showProperty('rPosition')"
+          v-if="showProperty('rPosition')"
           :label="t('chart.label_position')"
           class="form-item"
         >
           <el-select
+            style="width: 100%"
             :effect="props.themes"
             v-model="state.labelForm.position"
             :placeholder="t('chart.label_position')"
@@ -149,11 +148,12 @@ init()
           </el-select>
         </el-form-item>
         <el-form-item
-          v-show="showProperty('hPosition')"
+          v-if="showProperty('hPosition')"
           :label="t('chart.label_position')"
           class="form-item"
         >
           <el-select
+            style="width: 100%"
             :effect="props.themes"
             v-model="state.labelForm.position"
             :placeholder="t('chart.label_position')"
@@ -168,11 +168,12 @@ init()
           </el-select>
         </el-form-item>
         <el-form-item
-          v-show="showProperty('vPosition')"
+          v-if="showProperty('vPosition')"
           :label="t('chart.label_position')"
           class="form-item"
         >
           <el-select
+            style="width: 100%"
             :effect="props.themes"
             v-model="state.labelForm.position"
             :placeholder="t('chart.label_position')"
@@ -186,9 +187,11 @@ init()
             />
           </el-select>
         </el-form-item>
-        <div v-show="showProperty('gaugeLabelFormatter')">
+
+        <template v-if="showProperty('gaugeLabelFormatter')">
           <el-form-item :label="$t('chart.value_formatter_type')" class="form-item">
             <el-select
+              style="width: 100%"
               :effect="props.themes"
               v-model="state.labelForm.gaugeLabelFormatter.type"
               @change="changeLabelAttr('gaugeLabelFormatter')"
@@ -202,11 +205,12 @@ init()
             </el-select>
           </el-form-item>
           <el-form-item
-            v-show="state.labelForm.gaugeLabelFormatter.type !== 'auto'"
+            v-if="state.labelForm.gaugeLabelFormatter.type !== 'auto'"
             :label="$t('chart.value_formatter_decimal_count')"
             class="form-item"
           >
             <el-input-number
+              style="width: 100%"
               :effect="props.themes"
               v-model="state.labelForm.gaugeLabelFormatter.decimalCount"
               :precision="0"
@@ -216,47 +220,70 @@ init()
               @change="changeLabelAttr('gaugeLabelFormatter')"
             />
           </el-form-item>
-          <el-form-item
-            v-show="state.labelForm.gaugeLabelFormatter.type !== 'percent'"
-            :label="$t('chart.value_formatter_unit')"
-            class="form-item"
-          >
-            <el-select
-              :effect="props.themes"
-              v-model="state.labelForm.gaugeLabelFormatter.unit"
-              :placeholder="$t('chart.pls_select_field')"
-              size="small"
-              @change="changeLabelAttr('gaugeLabelFormatter')"
-            >
-              <el-option
-                v-for="item in unitList"
-                :key="item.value"
-                :label="$t('chart.' + item.name)"
-                :value="item.value"
-              />
-            </el-select>
-          </el-form-item>
-          <el-form-item :label="$t('chart.value_formatter_suffix')" class="form-item">
-            <el-input
-              :effect="props.themes"
-              v-model="state.labelForm.gaugeLabelFormatter.suffix"
-              size="small"
-              clearable
-              :placeholder="$t('commons.input_content')"
-              @change="changeLabelAttr('gaugeLabelFormatter')"
-            />
-          </el-form-item>
-          <el-form-item :label="$t('chart.value_formatter_thousand_separator')" class="form-item">
+
+          <el-row :gutter="8">
+            <el-col :span="12">
+              <el-form-item
+                v-if="state.labelForm.gaugeLabelFormatter.type !== 'percent'"
+                :label="$t('chart.value_formatter_unit')"
+                class="form-item"
+              >
+                <el-select
+                  :effect="props.themes"
+                  v-model="state.labelForm.gaugeLabelFormatter.unit"
+                  :placeholder="$t('chart.pls_select_field')"
+                  size="small"
+                  @change="changeLabelAttr('gaugeLabelFormatter')"
+                >
+                  <el-option
+                    v-for="item in unitList"
+                    :key="item.value"
+                    :label="$t('chart.' + item.name)"
+                    :value="item.value"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item :label="$t('chart.value_formatter_suffix')">
+                <el-input
+                  :effect="props.themes"
+                  v-model="state.labelForm.gaugeLabelFormatter.suffix"
+                  size="small"
+                  clearable
+                  :placeholder="$t('commons.input_content')"
+                  @change="changeLabelAttr('gaugeLabelFormatter')"
+                />
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-form-item class="form-item">
             <el-checkbox
               :effect="props.themes"
               v-model="state.labelForm.gaugeLabelFormatter.thousandSeparator"
               @change="changeLabelAttr('gaugeLabelFormatter')"
+              :label="t('chart.value_formatter_thousand_separator')"
             />
           </el-form-item>
-        </div>
+        </template>
       </el-form>
     </el-col>
   </div>
 </template>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+:deep(.ed-color-picker.is-custom .ed-color-picker__trigger) {
+  height: 24px;
+}
+.custom-form-item-label {
+  margin-bottom: 4px;
+  line-height: 20px;
+  color: #a6a6a6;
+  font-size: 12px;
+  padding: 2px 12px 0 0;
+}
+.form-item-checkbox {
+  margin-bottom: 10px !important;
+}
+</style>

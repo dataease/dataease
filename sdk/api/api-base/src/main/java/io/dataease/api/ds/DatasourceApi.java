@@ -51,7 +51,7 @@ public interface DatasourceApi {
     @GetMapping("/delete/{datasourceId}")
     void delete(@PathVariable("datasourceId") Long datasourceId) throws DEException;
 
-    @DePermit({"m:read", "#p0+':manage'"})
+    @DePermit({"m:read", "#p0+':read'"})
     @GetMapping("/get/{datasourceId}")
     DatasourceDTO get(@PathVariable("datasourceId") Long datasourceId) throws DEException;
 

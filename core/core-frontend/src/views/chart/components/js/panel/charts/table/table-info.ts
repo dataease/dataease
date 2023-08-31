@@ -44,7 +44,7 @@ export class TableInfo extends S2ChartView<TableSheet> {
       columns.push(ele.dataeaseName)
       meta.push({
         field: ele.dataeaseName,
-        name: ele.name,
+        name: ele.chartShowName ?? ele.name,
         formatter: function (value) {
           if (!f) {
             return value

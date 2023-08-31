@@ -1,7 +1,6 @@
 <script lang="ts" setup>
-import { shallowRef, PropType, computed, reactive } from 'vue'
+import { shallowRef, PropType, computed } from 'vue'
 import { dsTypes, typeList, nameMap } from './option'
-import { latestUse } from '@/api/datasource'
 
 export type DsType = 'OLTP' | 'OLAP' | 'DL' | 'OTHER' | 'LOCAL' | 'latestUse' | 'all'
 const props = defineProps({
@@ -21,7 +20,7 @@ const currentTypeList = computed(() => {
       return { name: nameMap[ele], dbList: databaseList.value[index] }
     })
   }
-  if (props.currentType == 'latestUse') {
+  if (props.currentType === 'latestUse') {
     let catalogList = []
     let dstypes = []
     props.latestUseTypes.forEach(type => {
@@ -31,8 +30,8 @@ const currentTypeList = computed(() => {
         }
       })
     })
+    let dbList = []
     catalogList.forEach(catalog => {
-      let dbList = []
       props.latestUseTypes.forEach(type => {
         dsTypes.forEach(item => {
           if (item.type === type && item.catalog === catalog) {
@@ -40,8 +39,8 @@ const currentTypeList = computed(() => {
           }
         })
       })
-      dstypes.push({ name: nameMap[catalog], dbList: dbList })
     })
+    dstypes.push({ name: '最近创建', dbList })
     return dstypes
   }
   const index = typeList.findIndex(ele => props.currentType === ele)
@@ -61,10 +60,6 @@ const getDatasourceTypes = () => {
     })
   })
 }
-const getDsIconName = data => {
-  if (!data.type) return 'dv-folder'
-  return 'mysql-frame'
-}
 getDatasourceTypes()
 const emits = defineEmits(['selectDsType'])
 const selectDs = ({ type }) => {
@@ -81,7 +76,7 @@ const selectDs = ({ type }) => {
       <div class="item-container">
         <div v-for="db in ele.dbList" :key="db.type" class="db-card" @click="selectDs(db)">
           <el-icon class="icon-border">
-            <Icon :name="getDsIconName(db)"></Icon>
+            <Icon :name="`${db.type}-ds`"></Icon>
           </el-icon>
           <p class="db-name">{{ db.name }}</p>
         </div>
@@ -123,12 +118,8 @@ const selectDs = ({ type }) => {
     cursor: pointer;
 
     .icon-border {
-      padding: 5.3px;
-      border: 1px solid #dee0e3;
-      border-radius: 3px;
-      width: 32px;
       margin-right: 12px;
-      height: 32px;
+      font-size: 32px;
     }
 
     &:hover {
