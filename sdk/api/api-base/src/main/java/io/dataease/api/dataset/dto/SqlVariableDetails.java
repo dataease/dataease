@@ -11,6 +11,7 @@ public class SqlVariableDetails {
     private String variableName;
     private String alias;
     private List<String> type;
+    private int deType;
     private String details;
     private String defaultValue;
     private DefaultValueScope defaultValueScope;

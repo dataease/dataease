@@ -6,11 +6,12 @@ const props = defineProps({
   name: String,
   min: Number,
   max: Number,
+  step: Number,
   disabled: Boolean,
   themes: String
 })
 
-const { name, value, min, max, themes, disabled } = toRefs(props)
+const { name, value, min, max, step, themes, disabled } = toRefs(props)
 </script>
 
 <template>
@@ -22,6 +23,7 @@ const { name, value, min, max, themes, disabled } = toRefs(props)
     :disabled="disabled"
     :min="min"
     :max="max"
+    :step="step"
     size="small"
     controls-position="right"
   />
