@@ -105,6 +105,13 @@ const rule = reactive<FormRules>({
       trigger: 'blur'
     }
   ],
+  url: [
+    {
+      required: true,
+      message: '请输入请求地址',
+      trigger: 'blur'
+    }
+  ],
   desc: [
     {
       required: true,
@@ -126,7 +133,7 @@ const showApiData = () => {
   apiItemBasicInfo.value.validate(valid => {
     if (valid) {
       if (apiItem.useJsonPath && !apiItem.jsonPath) {
-        ElMessage.warning(t('datasource.please_input_dataPath'))
+        ElMessage.error(t('datasource.please_input_dataPath'))
         return
       }
       apiItem.showApiStructure = true
@@ -184,7 +191,7 @@ const next = () => {
   apiItemBasicInfo.value.validate(val => {
     if (val) {
       if (apiItem.useJsonPath && !apiItem.jsonPath) {
-        ElMessage.warning(t('datasource.please_input_dataPath'))
+        ElMessage.error(t('datasource.please_input_dataPath'))
         return
       }
       checkApiItem({ data: Base64.encode(JSON.stringify(apiItem)) }).then(response => {
@@ -193,6 +200,23 @@ const next = () => {
         handleFiledChange(apiItem)
         previewData()
         active.value += 1
+      })
+    }
+  })
+}
+
+const validate = () => {
+  apiItemBasicInfo.value.validate(val => {
+    if (val) {
+      if (apiItem.useJsonPath && !apiItem.jsonPath) {
+        ElMessage.error(t('datasource.please_input_dataPath'))
+        return
+      }
+      checkApiItem({ data: Base64.encode(JSON.stringify(apiItem)) }).then(response => {
+        apiItem.jsonFields = response.data.jsonFields
+        apiItem.fields = []
+        handleFiledChange(apiItem)
+        previewData()
       })
     }
   })
@@ -292,6 +316,8 @@ const changeId = (val: string) => {
   apiItem.request.body.typeChange = val
 }
 
+const activeColumnInfo = ref(true)
+const activeDataPreview = ref(true)
 const returnAPIItem = defineEmits(['returnItem'])
 
 defineExpose({
@@ -342,7 +368,7 @@ defineExpose({
         require-asterisk-position="right"
         :rules="rule"
       >
-        <div class="title-form_primary">
+        <div class="title-form_primary base-info">
           <span>{{ t('datasource.base_info') }}</span>
         </div>
         <el-form-item :label="t('common.name')" prop="name">
@@ -373,7 +399,7 @@ defineExpose({
         </el-form-item>
 
         <div v-loading="loading">
-          <div class="title-form_primary mr40">
+          <div class="title-form_primary request-info">
             <span>{{ t('datasource.req_param') }}</span>
           </div>
           <!-- HTTP 请求参数 -->
@@ -386,9 +412,11 @@ defineExpose({
           </el-form-item>
         </div>
 
-        <el-form-item :label="t('datasource.isUseJsonPath')">
+        <div class="title-form_primary request-info">
+          <span>{{ t('datasource.isUseJsonPath') }}</span>
+        </div>
+        <el-form-item>
           <el-input
-            :disabled="!apiItem.useJsonPath"
             v-model="apiItem.jsonPath"
             :placeholder="t('datasource.jsonpath_info')"
             class="input-with-select"
@@ -404,14 +432,12 @@ defineExpose({
               </el-select>
             </template>
             <template #append>
-              <el-button :disabled="!apiItem.useJsonPath" @click="showApiData"
-                >{{ t('datasource.show_api_data') }}
-              </el-button>
+              <el-button @click="showApiData">查看数据结构 </el-button>
             </template>
           </el-input>
         </el-form-item>
 
-        <div class="title-form_primary" v-show="apiItem.useJsonPath">
+        <div class="title-form_primary request-info" v-show="apiItem.useJsonPath">
           <span>{{ t('datasource.column_info') }}</span>
         </div>
         <div class="table-container de-svg-in-table" v-show="apiItem.useJsonPath">
@@ -439,11 +465,22 @@ defineExpose({
         label-width="100px"
         :rules="rule"
       >
-        <div class="title-form_primary">
-          <span>{{ t('datasource.column_info') }}</span>
-        </div>
-        <div class="table-container de-svg-in-table">
-          <el-table :data="apiItem.jsonFields" style="width: 100%" row-key="jsonPath">
+        <p
+          :class="[activeColumnInfo ? 'active' : 'deactivate', 'column-info-title']"
+          @click="activeColumnInfo = !activeColumnInfo"
+        >
+          <el-icon style="font-size: 10px">
+            <Icon name="icon_expand-right_filled"></Icon>
+          </el-icon>
+          <span class="name">{{ t('datasource.column_info') }}</span>
+        </p>
+        <div v-show="activeColumnInfo" class="de-svg-in-table">
+          <el-table
+            header-cell-class-name="header-cell"
+            :data="apiItem.jsonFields"
+            style="width: 100%"
+            row-key="jsonPath"
+          >
             <el-table-column
               class-name="checkbox-table"
               prop="originName"
@@ -512,11 +549,16 @@ defineExpose({
             </el-table-column>
           </el-table>
         </div>
-
-        <div class="title-form_primary">
-          <span>{{ t('datasource.data_preview') }}</span>
-        </div>
-        <div class="info-table">
+        <p
+          :class="[activeDataPreview ? 'active' : 'deactivate', 'column-info-title']"
+          @click="activeDataPreview = !activeDataPreview"
+        >
+          <el-icon style="font-size: 10px">
+            <Icon name="icon_expand-right_filled"></Icon>
+          </el-icon>
+          <span class="name">{{ t('datasource.data_preview') }}</span>
+        </p>
+        <div v-show="activeDataPreview" class="info-table">
           <empty-background
             v-if="showEmpty"
             description="暂无数据，请在数据结构勾选字段"
@@ -538,13 +580,14 @@ defineExpose({
       </el-form>
     </el-row>
     <template #footer>
-      <el-button @click="closeEditItem">{{ t('common.cancel') }}</el-button>
-      <el-button v-show="active === 0" type="primary" :disabled="disabledNext" @click="next"
+      <el-button secondary @click="closeEditItem">{{ t('common.cancel') }}</el-button>
+      <el-button v-show="active === 0" secondary @click="validate"
+        >{{ t('commons.validate') }}
+      </el-button>
+      <el-button type="primary" v-show="active === 0" :disabled="disabledNext" @click="next"
         >{{ t('common.next') }}
       </el-button>
-      <el-button v-show="active === 1" type="primary" @click="before"
-        >{{ t('common.prev') }}
-      </el-button>
+      <el-button v-show="active === 1" secondary @click="before">{{ t('common.prev') }} </el-button>
       <el-button v-show="active === 1" type="primary" @click="saveItem"
         >{{ t('commons.save') }}
       </el-button>
@@ -583,6 +626,7 @@ defineExpose({
 
     .ed-step__head.is-finish::after {
       right: calc(100% - 133px);
+      top: 44%;
     }
 
     .ed-step__head.is-process .ed-step__icon {
@@ -620,8 +664,8 @@ defineExpose({
       .icon {
         width: 28px;
         height: 28px;
+        line-height: 27px;
         border-radius: 50%;
-        line-height: 28px;
       }
       .title {
         margin-left: 8px;
@@ -635,11 +679,20 @@ defineExpose({
 
   .ed-form {
     width: 100%;
+
+    .ed-form-item {
+      margin-bottom: 16px;
+    }
   }
 
-  .title-form_primary {
-    margin: 16px 0;
+  .base-info {
+    margin: 24px 0 16px 0;
   }
+
+  .request-info {
+    margin: 32px 0 16px 0;
+  }
+
   .input-with-select {
     .ed-input-group__prepend {
       background-color: #fff;
@@ -647,6 +700,10 @@ defineExpose({
       .ed-select {
         width: 84px !important;
       }
+    }
+
+    .ed-input-group__append {
+      background-color: #fff;
     }
   }
   .table-container {
@@ -659,6 +716,36 @@ defineExpose({
     height: 200px;
     .ed-table-v2__header-cell {
       background-color: #f5f6f7;
+    }
+  }
+
+  .column-info-title {
+    margin: 24px 0 16px 0;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    .name {
+      color: #1f2329;
+      font-family: PingFang SC;
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 500;
+      line-height: 24px;
+      margin-left: 8px;
+    }
+
+    &.active {
+      .ed-icon {
+        transform: rotate(90deg);
+        color: #3370ff;
+      }
+    }
+
+    &.deactivate {
+      .ed-icon {
+        transform: rotate(0);
+        color: #3370ff;
+      }
     }
   }
 }
