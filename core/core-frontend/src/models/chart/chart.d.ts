@@ -81,4 +81,8 @@ declare interface Axis {
 declare interface ChartViewField {
   name: string
   dataeaseName: string
+  /**
+   * 视图自定义字段名称
+   */
+  chartShowName: string
 }
