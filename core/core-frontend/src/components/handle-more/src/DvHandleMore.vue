@@ -2,8 +2,8 @@
 import { Icon } from '@/components/icon-custom'
 import { propTypes } from '@/utils/propTypes'
 import type { Placement } from 'element-plus-secondary'
-import { PropType } from 'vue'
-
+import { ref, PropType } from 'vue'
+import { XpackComponent } from '@/components/plugin'
 export interface Menu {
   svgName?: string
   label?: string
@@ -12,7 +12,7 @@ export interface Menu {
   disabled?: boolean
 }
 
-defineProps({
+const props = defineProps({
   menuList: {
     type: Array as PropType<Menu[]>
   },
@@ -21,12 +21,27 @@ defineProps({
     default: 'bottom-end'
   },
   iconName: propTypes.string.def('icon_more_outlined'),
-  inTable: propTypes.bool.def(false)
+  inTable: propTypes.bool.def(false),
+  node: {
+    type: Object,
+    deafult: {}
+  }
 })
+
+const shareComponent = ref(null)
+const menus = ref([...props.menuList])
 const handleCommand = (command: string | number | object) => {
+  if (command === 'share') {
+    shareComponent.value.invokeMethod({ methodName: 'execute' })
+    return
+  }
   emit('handleCommand', command)
 }
-
+const callBack = param => {
+  if (props.node.leaf && props.node?.weight >= 4) {
+    menus.value.splice(2, 0, param)
+  }
+}
 const emit = defineEmits(['handleCommand'])
 </script>
 
@@ -45,7 +60,7 @@ const emit = defineEmits(['handleCommand'])
         <el-dropdown-item
           :divided="ele.divided"
           :command="ele.command"
-          v-for="ele in menuList"
+          v-for="ele in menus"
           :key="ele.label"
           :disabled="ele.disabled"
         >
@@ -57,6 +72,12 @@ const emit = defineEmits(['handleCommand'])
       </el-dropdown-menu>
     </template>
   </el-dropdown>
+  <XpackComponent
+    ref="shareComponent"
+    jsname="c2hhcmUtaGFuZGxlcg=="
+    :resource-id="props.node.id"
+    @loaded="callBack"
+  />
 </template>
 
 <style lang="less">
