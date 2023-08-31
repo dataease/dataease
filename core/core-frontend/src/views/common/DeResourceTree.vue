@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref, toRefs, watch, nextTick } from 'vue'
-import { deleteLogic, queryTreeApi } from '@/api/visualization/dataVisualization'
+import { deleteLogic } from '@/api/visualization/dataVisualization'
 import { ElIcon, ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { Icon } from '@/components/icon-custom'
 import { HandleMore } from '@/components/handle-more'
