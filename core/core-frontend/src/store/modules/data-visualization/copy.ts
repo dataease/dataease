@@ -47,11 +47,11 @@ export const copyStore = defineStore('copy', {
           const xPositionOffset = index % 2
           const yPositionOffset = index % 2
           newComponent.sizeX = pcMatrixCount.value.x / 2
-          newComponent.sizeY = pcMatrixCount.value.y / 2
+          newComponent.sizeY = 7
           newComponent.x = newComponent.sizeX * xPositionOffset + 1
           newComponent.y = 200
           // dataV 数据大屏
-          newComponent.style.width = canvasStyleData.value.width / 4
+          newComponent.style.width = canvasStyleData.value.width / 3
           newComponent.style.height = canvasStyleData.value.height / 3
           newComponent.style.left = newComponent.style.width * xPositionOffset
           newComponent.style.top = newComponent.style.height * yPositionOffset

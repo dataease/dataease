@@ -305,7 +305,7 @@ const linkJumpSetOpen = () => {
 .bar-main {
   position: absolute;
   float: right;
-  z-index: 2;
+  z-index: 10;
   border-radius: 2px;
   cursor: pointer !important;
 }

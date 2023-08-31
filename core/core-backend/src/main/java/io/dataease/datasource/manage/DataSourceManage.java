@@ -47,7 +47,7 @@ public class DataSourceManage {
         return new DatasourceNodeBO(po.getId(), po.getName(), !StringUtils.equals(po.getType(), "folder"), 3, po.getPid(), extraFlag, dataSourceType.name());
     }
 
-    @XpackInteract(value = "authResourceTree", replace = true)
+    @XpackInteract(value = "datasourceResourceTree", replace = true)
     public List<BusiNodeVO> tree(BusiNodeRequest request) {
 
         QueryWrapper<DataSourceNodePO> queryWrapper = new QueryWrapper<>();
