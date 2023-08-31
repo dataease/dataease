@@ -499,7 +499,7 @@ const filterNode = (value: string, data: BusiTreeNode) => {
               {{ t('visualization.create_by') }}:{{ nodeInfo.creator }}
             </span>
 
-            <el-popover placement="bottom" width="420" trigger="hover">
+            <el-popover placement="bottom" width="290" trigger="hover">
               <template #reference>
                 <el-icon class="create-user">
                   <Icon name="icon_info_outlined"></Icon>
@@ -533,8 +533,16 @@ const filterNode = (value: string, data: BusiTreeNode) => {
             <el-tabs v-model="activeName" @tab-change="handleClick">
               <el-tab-pane :label="t('chart.data_preview')" name="dataPreview"></el-tab-pane>
               <el-tab-pane label="结构预览" name="structPreview"></el-tab-pane>
-              <el-tab-pane :label="t('dataset.row_permissions')" name="row"></el-tab-pane>
-              <el-tab-pane :label="t('dataset.column_permissions')" name="column"></el-tab-pane>
+              <el-tab-pane
+                v-if="nodeInfo.weight >= 7"
+                :label="t('dataset.row_permissions')"
+                name="row"
+              ></el-tab-pane>
+              <el-tab-pane
+                v-if="nodeInfo.weight >= 7"
+                :label="t('dataset.column_permissions')"
+                name="column"
+              ></el-tab-pane>
             </el-tabs>
           </div>
         </div>
@@ -665,6 +673,7 @@ const filterNode = (value: string, data: BusiTreeNode) => {
       padding-top: 12px;
       height: 90px;
       .info-method {
+        height: 32px;
         width: 100%;
         display: flex;
         align-items: center;

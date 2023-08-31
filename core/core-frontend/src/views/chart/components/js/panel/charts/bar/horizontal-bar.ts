@@ -224,7 +224,7 @@ export class HorizontalStackBar extends HorizontalBar {
     }
     const { extStack, xAxisExt, yAxis } = chart
     const label = {
-      ...options.label,
+      ...baseOptions.label,
       formatter: function (param: Datum) {
         const res = param.value
         let f
@@ -316,7 +316,7 @@ export class HorizontalPercentageStackBar extends HorizontalStackBar {
     const { extStack, xAxisExt, yAxis, customAttr } = chart
     const l = parseJson(customAttr).label
     const label = {
-      ...options.label,
+      ...baseOptions.label,
       formatter: function (param: Datum) {
         let f
         const res = param.value

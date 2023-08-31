@@ -54,7 +54,7 @@ const state = reactive({
 //仪表板矩阵信息适配，
 const baseWidth = ref(0)
 const baseHeight = ref(0)
-const renderState = ref('loading...')
+const renderState = ref(false) // 仪表板默认
 const baseMarginLeft = ref(0)
 const baseMarginTop = ref(0)
 const cyGridster = ref(null)
@@ -119,20 +119,21 @@ const handleMouseDown = e => {
   }
 }
 
-const canvasInit = () => {
+const canvasInit = (isFistLoad = true) => {
+  renderState.value = true
   setTimeout(function () {
     if (canvasOut.value) {
       dashboardCanvasSizeInit()
       nextTick(() => {
         cyGridster.value.canvasInit() //在适当的时候初始化布局组件
         cyGridster.value.afterInitOk(function () {
-          renderState.value = 'done...'
+          renderState.value = false
         })
       })
     }
     // afterInit
     dvMainStore.setDataPrepareState(true)
-    snapshotStore.recordSnapshot()
+    isFistLoad && snapshotStore.recordSnapshot()
   }, 500)
 }
 
@@ -193,6 +194,7 @@ onMounted(() => {
     eventBus.on('handleNew', handleNewFromCanvasMain)
   }
   eventBus.on('moveOutFromTab-' + canvasId.value, moveOutFromTab)
+  eventBus.on('matrix-canvasInit', canvasInit)
 })
 
 onBeforeUnmount(() => {
@@ -200,6 +202,7 @@ onBeforeUnmount(() => {
     eventBus.off('handleNew', handleNewFromCanvasMain)
   }
   eventBus.off('moveOutFromTab-' + canvasId.value, moveOutFromTab)
+  eventBus.off('matrix-canvasInit', canvasInit)
 })
 
 const getBaseMatrixSize = () => {
@@ -225,7 +228,7 @@ defineExpose({
 </script>
 
 <template>
-  <div ref="canvasOut" class="content">
+  <div ref="canvasOut" class="content" :class="{ 'render-active': renderState }">
     <div
       :id="domId"
       class="db-canvas"
@@ -261,5 +264,9 @@ defineExpose({
     width: 100%;
     height: 100%;
   }
+}
+
+.render-active {
+  opacity: 1;
 }
 </style>

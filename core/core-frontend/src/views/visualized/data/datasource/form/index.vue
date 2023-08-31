@@ -104,6 +104,7 @@ const { emitter } = useEmitt()
 const selectDsType = (type: string) => {
   currentDsType.value = type
   activeStep.value = 1
+  activeApiStep.value = 1
   detail.value.initForm(type)
 }
 
@@ -164,6 +165,8 @@ const getLatestUseTypes = () => {
 }
 getLatestUseTypes()
 
+const activeApiStep = ref(0)
+
 const next = () => {
   if (currentDsType.value === '') {
     ElMessage.error(t('datasource.select_type'))
@@ -178,6 +181,9 @@ const next = () => {
     ElMessage.error('数据表不能为空')
     return
   }
+  activeApiStep.value = activeStep.value + 1
+
+  if (currentDsType.value === 'API' && activeStep.value === 1) return
   activeStep.value = activeStep.value + 1
 }
 
@@ -222,6 +228,11 @@ const handleShowFinishPage = ({ id, name }) => {
 emitter.on('showFinishPage', handleShowFinishPage)
 
 const prev = () => {
+  if (currentDsType.value === 'API' && activeApiStep.value === 2) {
+    activeApiStep.value = activeStep.value = 1
+    return
+  }
+
   if (activeStep.value === 1) {
     currentDsType.value = ''
   }
@@ -237,7 +248,8 @@ const validateDS = () => {
     apiConfiguration: string
   }
   if (currentDsType.value === 'API') {
-    if (form.apiConfiguration.length == 0) {
+    if (form.apiConfiguration.length === 0) {
+      ElMessage.error('需要添加数据表')
       return
     }
     request.configuration = Base64.encode(JSON.stringify(request.apiConfiguration))
@@ -347,7 +359,8 @@ const defaultForm2 = {
   type: '',
   id: '0',
   editType: 0,
-  name: ''
+  name: '',
+  creator: ''
 }
 const form2 = reactive<Param>(cloneDeep(defaultForm2))
 const visible = ref(false)
@@ -371,11 +384,14 @@ const init = (nodeInfo: Form | Param, id?: string, res?: object) => {
   }
 
   activeStep.value = Number(editDs.value)
+  activeApiStep.value = activeStep.value
+
   visible.value = true
   if (!!nodeInfo) {
     nextTick(() => {
       currentDsType.value = nodeInfo.type
       activeStep.value = 1
+      activeApiStep.value = activeStep.value
       if (!!res) {
         nextTick(() => {
           excel.value.appendReplaceExcel(res)
@@ -386,8 +402,8 @@ const init = (nodeInfo: Form | Param, id?: string, res?: object) => {
 }
 
 const drawTitle = computed(() => {
-  const { id, editType } = form2
-  if (id && currentDsType.value == 'Excel') {
+  const { id, editType, creator } = form2
+  if (creator && id && currentDsType.value == 'Excel') {
     return editType === 1 ? '追加数据' : '替换数据'
   }
   return editDs.value ? t('datasource.modify') : '创建数据源'
@@ -417,7 +433,7 @@ defineExpose({
                 <span class="icon">
                   {{ activeStep <= 0 ? '1' : '' }}
                 </span>
-                <span class="title">{{ t('datasource.select_ds_type') }}</span>
+                <span class="title">{{ t('deDataset.select_data_source') }}</span>
               </div>
             </template>
           </el-step>
@@ -427,17 +443,7 @@ defineExpose({
                 <span class="icon">
                   {{ activeStep <= 1 ? '2' : '' }}
                 </span>
-                <span class="title">{{ t('datasource.ds_info') }}</span>
-              </div>
-            </template>
-          </el-step>
-          <el-step v-if="currentDsType === 'API'">
-            <template #icon>
-              <div class="step-icon">
-                <span class="icon">
-                  {{ activeStep <= 2 ? '3' : '' }}
-                </span>
-                <span class="title">{{ t('datasource.sync_info') }}</span>
+                <span class="title">配置信息</span>
               </div>
             </template>
           </el-step>
@@ -465,8 +471,8 @@ defineExpose({
             class="list-item_primary"
           >
             最近使用
-            <el-divider />
           </p>
+          <el-divider />
           <p
             :class="currentType === 'all' && 'active'"
             @click="handleNodeClick({ type: 'all', name: 'all', id: 'all' })"
@@ -497,7 +503,7 @@ defineExpose({
           <template #default="{ node, data }">
             <span class="custom-tree-node flex-align-center">
               <el-icon v-if="!!data.catalog" class="icon-border" style="width: 18px; height: 18px">
-                <Icon :name="getDsIconName(data)"></Icon>
+                <Icon :name="`${data.type}-ds`"></Icon>
               </el-icon>
               <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
             </span>
@@ -519,7 +525,7 @@ defineExpose({
             ref="detail"
             :form="form"
             :editDs="editDs"
-            :active-step="activeStep"
+            :active-step="activeApiStep"
             v-show="activeStep !== 0 && currentDsType && currentDsType !== 'Excel'"
           ></editor-detail>
           <template v-if="activeStep !== 0 && currentDsType == 'Excel'">
@@ -530,16 +536,23 @@ defineExpose({
       <div class="editor-footer">
         <el-button secondary @click="visible = false"> {{ t('common.cancel') }}</el-button>
         <el-button
-          v-show="!(activeStep === 0 || (editDs && activeStep <= 1))"
-          type="primary"
+          v-show="!(activeStep === 0 || (editDs && activeApiStep <= 1))"
+          secondary
           @click="prev"
         >
           {{ t('common.prev') }}</el-button
         >
         <el-button
+          v-show="activeStep === 1 && currentDsType !== 'Excel'"
+          secondary
+          @click="validateDS"
+        >
+          {{ t('datasource.validate') }}</el-button
+        >
+        <el-button
           v-show="
             (activeStep === 0 && currentDsType !== 'API') ||
-            (activeStep !== 2 && currentDsType === 'API')
+            (activeApiStep !== 2 && currentDsType === 'API')
           "
           type="primary"
           @click="next"
@@ -547,21 +560,14 @@ defineExpose({
           {{ t('common.next') }}</el-button
         >
         <el-button
-          v-show="activeStep === 1 && currentDsType !== 'Excel'"
-          type="primary"
-          @click="validateDS"
-        >
-          {{ t('datasource.validate') }}</el-button
-        >
-        <el-button
           v-show="
             (activeStep === 1 && currentDsType !== 'API') ||
-            (activeStep === 2 && currentDsType === 'API')
+            (activeApiStep === 2 && currentDsType === 'API')
           "
           type="primary"
           @click="saveDS"
         >
-          {{ t('common.sure') }}</el-button
+          {{ t('common.save') }}</el-button
         >
       </div>
       <FinishPage
@@ -618,6 +624,7 @@ defineExpose({
 
     .ed-step__head.is-finish::after {
       right: calc(100% - 66px);
+      top: 44%;
     }
 
     .ed-step__head.is-process .ed-step__icon {
@@ -655,8 +662,8 @@ defineExpose({
       .icon {
         width: 28px;
         height: 28px;
+        line-height: 27px;
         border-radius: 50%;
-        line-height: 28px;
       }
       .title {
         margin-left: 8px;
@@ -682,17 +689,13 @@ defineExpose({
       width: 279px;
       height: calc(100% - 64px);
       padding: 16px 7px;
-      border-right: 1px solid #ccc;
+      border-right: 1px solid #3370ff1a;
       float: left;
       overflow-y: auto;
 
       .icon-border {
-        padding: 3px;
-        border: 1px solid #dee0e3;
-        border-radius: 3px;
-        width: 24px;
+        font-size: 18px;
         margin-right: 8px;
-        height: 24px;
       }
       .title {
         display: flex;
@@ -721,9 +724,7 @@ defineExpose({
         }
       }
       .ed-divider--horizontal {
-        margin: 4px 0;
-        position: absolute;
-        bottom: -5px;
+        margin: 4px 0 4px 16px;
         width: calc(100% - 34px);
       }
 
@@ -762,7 +763,7 @@ defineExpose({
       }
 
       .editor-content {
-        padding: 8px 24px;
+        padding: 16px 24px;
         height: calc(100vh - 278px);
         overflow-y: auto;
 

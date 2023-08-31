@@ -99,10 +99,12 @@ const decompose = () => {
 
 const undo = () => {
   snapshotStore.undo()
+  eventBus.emit('matrix-canvasInit', false)
 }
 
 const redo = () => {
   snapshotStore.redo()
+  eventBus.emit('matrix-canvasInit', false)
 }
 
 const previewInner = () => {
@@ -446,7 +448,7 @@ const saveLinkageSetting = () => {
   right: 10px;
   top: 10px;
   position: absolute;
-  z-index: 2;
+  z-index: 10;
 }
 .toolbar-main {
   position: relative;

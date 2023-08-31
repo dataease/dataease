@@ -79,6 +79,7 @@
     </dependencies>
 
     <profiles>
+
         <!-- 单机版 默认就是这个版本 -->
         <profile>
             <id>standalone</id>
