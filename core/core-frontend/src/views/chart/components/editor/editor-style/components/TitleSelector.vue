@@ -195,7 +195,7 @@ init()
             </template>
             <div
               class="icon-btn"
-              :class="state.titleForm.isBolder ? 'active' : ''"
+              :class="{ dark: themes === 'dark', active: state.titleForm.isBolder }"
               @click="checkBold"
             >
               <el-icon>
@@ -210,7 +210,7 @@ init()
             </template>
             <div
               class="icon-btn"
-              :class="state.titleForm.isItalic ? 'active' : ''"
+              :class="{ dark: themes === 'dark', active: state.titleForm.isItalic }"
               @click="checkItalic"
             >
               <el-icon>
@@ -227,7 +227,7 @@ init()
             </template>
             <div
               class="icon-btn"
-              :class="state.titleForm.hPosition === 'left' ? 'active' : ''"
+              :class="{ dark: themes === 'dark', active: state.titleForm.hPosition === 'left' }"
               @click="setPosition('left')"
             >
               <el-icon>
@@ -241,7 +241,7 @@ init()
             </template>
             <div
               class="icon-btn"
-              :class="state.titleForm.hPosition === 'center' ? 'active' : ''"
+              :class="{ dark: themes === 'dark', active: state.titleForm.hPosition === 'center' }"
               @click="setPosition('center')"
             >
               <el-icon>
@@ -255,7 +255,7 @@ init()
             </template>
             <div
               class="icon-btn"
-              :class="state.titleForm.hPosition === 'right' ? 'active' : ''"
+              :class="{ dark: themes === 'dark', active: state.titleForm.hPosition === 'right' }"
               @click="setPosition('right')"
             >
               <el-icon>
@@ -307,6 +307,17 @@ init()
   color: #1f2329;
 
   cursor: pointer;
+
+  &.dark {
+    color: #a6a6a6;
+    &.active {
+      color: #3370ff;
+      background-color: rgba(51, 112, 255, 0.1);
+    }
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+  }
 
   &.active {
     color: #3370ff;
