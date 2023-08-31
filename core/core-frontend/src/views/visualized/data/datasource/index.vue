@@ -1121,20 +1121,25 @@ const defaultProps = {
         <el-table-column prop="status" label="更新结果">
           <template #default="scope">
             <div class="flex-align-center">
-              <el-icon v-show="scope.row.status === 'Completed'">
-                <icon name="icon_succeed_filled"></icon>
+              <template v-if="scope.row.status === 'Completed'">
+                <el-icon>
+                  <icon name="icon_succeed_filled"></icon>
+                </el-icon>
                 {{ t('dataset.completed') }}
-              </el-icon>
-              <el-icon v-show="scope.row.status === 'UnderExecution'">
+              </template>
+              <template v-if="scope.row.status === 'UnderExecution'">
                 {{ t('dataset.underway') }}
-              </el-icon>
-              <el-icon
-                @click="showErrorInfo(scope.row.info)"
-                class="error-info"
-                v-show="scope.row.status === 'Error' || scope.row.status === 'Warning'"
-              >
+              </template>
+
+              <template v-if="scope.row.status === 'Error' || scope.row.status === 'Warning'">
+                <el-icon>
+                  <icon class="field-icon-location" name="icon_close_filled"></icon>
+                </el-icon>
                 {{ t('dataset.error') }}
-              </el-icon>
+                <el-icon @click="showErrorInfo(scope.row.info)" class="error-info">
+                  <icon name="icon-maybe_outlined"></icon>
+                </el-icon>
+              </template>
             </div>
           </template>
         </el-table-column>
@@ -1477,7 +1482,7 @@ const defaultProps = {
 
   .flex-align-center {
     .ed-icon {
-      margin-right: 4px;
+      margin: 0 4px;
     }
 
     .error-info {
