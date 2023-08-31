@@ -248,7 +248,8 @@ const validateDS = () => {
     apiConfiguration: string
   }
   if (currentDsType.value === 'API') {
-    if (form.apiConfiguration.length == 0) {
+    if (form.apiConfiguration.length === 0) {
+      ElMessage.error('需要添加数据表')
       return
     }
     request.configuration = Base64.encode(JSON.stringify(request.apiConfiguration))
