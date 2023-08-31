@@ -76,6 +76,7 @@ const emit = defineEmits(['handleCommand'])
     ref="shareComponent"
     jsname="c2hhcmUtaGFuZGxlcg=="
     :resource-id="props.node.id"
+    :weight="node.weight"
     @loaded="callBack"
   />
 </template>
