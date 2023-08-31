@@ -1243,7 +1243,12 @@ const autoInsert = element => {
                             <el-row class="padding-lr drag-data" v-if="showAxis('extLabel')">
                               <span class="data-area-label">
                                 <span>{{ t('chart.label') }}</span>
-                                <el-popover placement="left-start" :width="400" trigger="click">
+                                <el-popover
+                                  :effect="props.themes"
+                                  placement="left-start"
+                                  :width="400"
+                                  trigger="click"
+                                >
                                   <template #reference>
                                     <el-icon class="icon-setting label-icon"><Setting /></el-icon>
                                   </template>
@@ -1258,18 +1263,10 @@ const autoInsert = element => {
                                       :property-inner="
                                         chartViewInstance.propertyInner['label-selector']
                                       "
-                                      themes="light"
+                                      :themes="props.themes"
                                       class="attr-selector"
                                       :chart="view"
                                       @onLabelChange="onLabelChange"
-                                    />
-                                    <el-input
-                                      id="dynamic-label"
-                                      v-model="view.customAttr.label.formatter"
-                                      :autosize="{ minRows: 2, maxRows: 4 }"
-                                      type="textarea"
-                                      placeholder="Please input"
-                                      style="padding: 0 16px"
                                     />
                                   </div>
                                 </el-popover>
@@ -1593,7 +1590,7 @@ const autoInsert = element => {
             <div class="padding-lr field-height">
               <span>{{ t('chart.quota') }}</span>
               <draggable
-                :list="state.quotaData"
+                :list="quotaData"
                 :group="dsFieldDragOptions.group"
                 :move="onMove"
                 item-key="id"
