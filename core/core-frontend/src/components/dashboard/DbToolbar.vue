@@ -99,12 +99,12 @@ const decompose = () => {
 
 const undo = () => {
   snapshotStore.undo()
-  eventBus.emit('matrix-canvasInit')
+  eventBus.emit('matrix-canvasInit', false)
 }
 
 const redo = () => {
   snapshotStore.redo()
-  eventBus.emit('matrix-canvasInit')
+  eventBus.emit('matrix-canvasInit', false)
 }
 
 const previewInner = () => {
