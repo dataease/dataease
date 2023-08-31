@@ -93,6 +93,7 @@ declare module '@vue/runtime-core' {
     ElSelect: typeof import('element-plus-secondary/es')['ElSelect']
     ElSelectV2: typeof import('element-plus-secondary/es')['ElSelectV2']
     ElSlider: typeof import('element-plus-secondary/es')['ElSlider']
+    ElSpace: typeof import('element-plus-secondary/es')['ElSpace']
     ElStep: typeof import('element-plus-secondary/es')['ElStep']
     ElSteps: typeof import('element-plus-secondary/es')['ElSteps']
     ElSwitch: typeof import('element-plus-secondary/es')['ElSwitch']
