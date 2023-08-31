@@ -19,6 +19,7 @@ export interface Param {
   type?: string
   id?: string
   name?: string
+  creator?: string
 }
 
 export interface Field {
@@ -560,7 +561,7 @@ defineExpose({
   }
   .detail-inner {
     width: 800px;
-    padding-top: 24px;
+    padding-top: 16px;
     height: calc(100vh - 280px);
 
     .title-form_primary {

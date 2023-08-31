@@ -16,7 +16,13 @@ import DatasetDetail from '@/views/visualized/data/dataset/DatasetDetail.vue'
 import { timestampFormatDate } from '@/views/visualized/data/dataset/form/util'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import dayjs from 'dayjs'
-import { getTableField, listDatasourceTables, deleteById, save } from '@/api/datasource'
+import {
+  getTableField,
+  listDatasourceTables,
+  deleteById,
+  save,
+  validateById
+} from '@/api/datasource'
 import { Base64 } from 'js-base64'
 import type { Configuration, ApiConfiguration, SyncSetting } from './form/index.vue'
 import EditorDatasource from './form/index.vue'
@@ -188,17 +194,14 @@ const handleLoadExcel = data => {
     })
 }
 
-const getFieldType = (type: string | number) => {
-  return [
-    t('dataset.text'),
-    '',
-    t('dataset.value'),
-    t('dataset.value') + '(' + t('dataset.float') + ')'
-  ][type]
-}
-
-const searchDs = () => {
-  buildTree(rawDatasourceList.value.filter(ele => ele.name.includes(dsName.value)))
+const validateDS = () => {
+  validateById(nodeInfo.id as number)
+    .then(() => {
+      ElMessage.success('校验成功')
+    })
+    .catch(() => {
+      ElMessage.error('校验失败')
+    })
 }
 
 const dialogErrorInfo = ref(false)
@@ -687,7 +690,7 @@ const defaultProps = {
             <span class="name">
               {{ nodeInfo.name }}
             </span>
-            <el-popover placement="bottom" width="420" trigger="hover">
+            <el-popover placement="bottom" width="290" trigger="hover">
               <template #reference>
                 <el-icon class="create-user">
                   <Icon name="icon_info_outlined"></Icon>
@@ -705,6 +708,7 @@ const defaultProps = {
                 </template>
                 新建数据集
               </el-button>
+              <el-button secondary @click="validateDS"> {{ t('datasource.validate') }}</el-button>
 
               <template v-if="nodeInfo.type === 'Excel'">
                 <el-upload
@@ -952,7 +956,9 @@ const defaultProps = {
                 </div>
                 <div class="req-value">
                   <span>{{ api.method }}</span>
-                  <span :title="api.url">{{ api.url }}</span>
+                  <el-tooltip w effect="dark" :content="api.url" placement="top">
+                    <span>{{ api.url }}</span>
+                  </el-tooltip>
                 </div>
               </div>
             </div>
@@ -1409,7 +1415,7 @@ const defaultProps = {
 
         .right-btn {
           margin-left: auto;
-          & > :nth-child(2) {
+          & > :nth-child(3) {
             margin: 0 8px;
           }
         }

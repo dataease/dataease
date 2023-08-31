@@ -30,8 +30,8 @@ const currentTypeList = computed(() => {
         }
       })
     })
+    let dbList = []
     catalogList.forEach(catalog => {
-      let dbList = []
       props.latestUseTypes.forEach(type => {
         dsTypes.forEach(item => {
           if (item.type === type && item.catalog === catalog) {
@@ -39,8 +39,8 @@ const currentTypeList = computed(() => {
           }
         })
       })
-      dstypes.push({ name: nameMap[catalog], dbList: dbList })
     })
+    dstypes.push({ name: '最近创建', dbList })
     return dstypes
   }
   const index = typeList.findIndex(ele => props.currentType === ele)
@@ -68,7 +68,7 @@ const selectDs = ({ type }) => {
 </script>
 
 <template>
-  <div class="ds-type-list" :class="[currentType == 'latestUse' && 'latest-use']">
+  <div class="ds-type-list">
     <template v-for="ele in currentTypeList" :key="ele.name">
       <div class="title-form_primary">
         {{ ele.name }}
@@ -129,17 +129,6 @@ const selectDs = ({ type }) => {
 
   .marLeft {
     margin-left: 0;
-  }
-
-  &.latest-use {
-    .title-form_primary {
-      display: none;
-    }
-
-    .item-container {
-      width: auto;
-      margin-right: 16px;
-    }
   }
 }
 </style>
