@@ -34,6 +34,7 @@ import { adaptCurThemeCommonStyle } from '@/utils/canvasStyle'
 import LinkageSet from '@/components/visualization/LinkageSet.vue'
 import PointShadow from '@/components/data-visualization/canvas/PointShadow.vue'
 import PGrid from '@/components/data-visualization/canvas/PGrid.vue'
+import DragInfo from '@/components/visualization/common/DragInfo.vue'
 const snapshotStore = snapshotStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
 const composeStore = composeStoreWithOut()
@@ -497,7 +498,7 @@ function scrollScreen(e) {
 function resetPositionBox() {
   //根据当前容器的宽度来决定多少列
   itemMaxX = maxCell.value
-  let rows = 1 //初始100行，后面根据需求会自动增加
+  let rows = 36 //初始36行，后面根据需求会自动增加
   for (let i = 0; i < rows; i++) {
     let row = []
 
@@ -518,8 +519,12 @@ function addItemToPositionBox(item) {
   if (item.x <= 0 || item.y <= 0) return
   for (let i = item.x - 1; i < item.x - 1 + item.sizeX; i++) {
     for (let j = item.y - 1; j < item.y - 1 + item.sizeY; j++) {
-      if (pb[j][i]) {
-        pb[j][i].el = item
+      try {
+        if (pb[j][i]) {
+          pb[j][i].el = item
+        }
+      } catch (e) {
+        console.log('addItemToPositionBox-error')
       }
     }
   }
@@ -550,13 +555,13 @@ function removeItemFromPositionBox(item) {
   if (item.x <= 0 || item.y <= 0) return
   for (let i = item.x - 1; i < item.x - 1 + item.sizeX; i++) {
     for (let j = item.y - 1; j < item.y - 1 + item.sizeY; j++) {
-      // try {
-      if (pb[j][i]) {
-        pb[j][i].el = false
+      try {
+        if (pb[j][i]) {
+          pb[j][i].el = false
+        }
+      } catch (e) {
+        console.log('removeItemFromPositionBox-warn')
       }
-      // } catch (e) {
-      //   console.log('removeItemFromPositionBox-warn')
-      // }
     }
   }
 }
@@ -1548,6 +1553,7 @@ defineExpose({
     @contextmenu="handleContextMenu"
     @mousedown="handleMouseDown"
   >
+    <drag-info v-if="componentData.length === 0 && canvasId === 'canvas-main'"></drag-info>
     <canvas-opt-bar
       :canvas-style-data="canvasStyleData"
       :component-data="componentData"
