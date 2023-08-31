@@ -250,7 +250,7 @@ eventBus.on('handleNew', handleNew)
   </div>
 </template>
 
-<style lang="less">bar-main
+<style lang="less">
 .preview-layout-container {
   height: 100vh !important;
 }
