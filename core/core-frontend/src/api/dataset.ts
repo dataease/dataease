@@ -15,6 +15,11 @@ interface Fields {
   fields: Array<{}>
   data: Array<{}>
 }
+export interface ParamsDetail {
+  datasetGroupId: string
+  type: Array<string | number>
+  variableName: string
+}
 
 export interface DatasetDetail {
   id: string
@@ -148,7 +153,7 @@ export const getDsDetails = async (data): Promise<DatasetDetail[]> => {
     return res?.data
   })
 }
-export const getSqlParams = async (data): Promise<DatasetDetail[]> => {
+export const getSqlParams = async (data): Promise<ParamsDetail[]> => {
   return request.post({ url: '/datasetTree/getSqlParams', data }).then(res => {
     return res?.data
   })

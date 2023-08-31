@@ -152,6 +152,8 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
           ...tmpOptions.xAxis,
           min: axisValue.min,
           max: axisValue.max,
+          minLimit: axisValue.min,
+          maxLimit: axisValue.max,
           tickCount: axisValue.splitCount
         }
       }

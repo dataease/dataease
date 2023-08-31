@@ -90,7 +90,7 @@ class ShortcutOption {
     return this.busiRecordMap[this.busiFlag].dataCache
   }
   emptyParam(param: ShortcutRequest) {
-    return !param.asc && !param.keyword && !param.type
+    return param.asc == null && !param.keyword && !param.type
   }
   setBusiFlag(busiFlag) {
     this.busiFlag = busiFlag

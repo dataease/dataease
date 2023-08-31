@@ -453,9 +453,6 @@ const handleNodeClick = data => {
     activeName.value = 'config'
     handleCurrentChange(1)
     handleClick(activeName.value)
-    nextTick(() => {
-      baseInfo.value.active = true
-    })
   })
 }
 const createDatasource = (data?: Tree) => {
@@ -825,7 +822,7 @@ const defaultProps = {
           </div>
         </div>
         <template v-else>
-          <BaseInfoContent ref="baseInfo" v-slot="slotProps" :name="t('datasource.base_info')">
+          <BaseInfoContent v-slot="slotProps" :name="t('datasource.base_info')">
             <template v-if="slotProps.active">
               <el-row :gutter="24">
                 <el-col :span="12">
@@ -1218,7 +1215,7 @@ const defaultProps = {
   }
 
   .api-card {
-    width: 528px;
+    width: calc(50% - 16px);
     height: 120px;
     border-radius: 4px;
     border: 1px solid var(--deCardStrokeColor, #dee0e3);
@@ -1243,18 +1240,18 @@ const defaultProps = {
 
       :nth-child(2) {
         margin-left: 24px;
-        max-width: 200px;
+        max-width: calc(100% - 124px);
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
       }
     }
     .req-title {
-      color: var(--deTextPrimary, #1f2329);
+      color: var(--deTextSecondary, #646a73);
       margin: 16px 0 4px 0;
     }
     .req-value {
-      color: var(--deTextSecondary, #646a73);
+      color: var(--deTextPrimary, #1f2329);
     }
     .de-copy-icon {
       cursor: pointer;

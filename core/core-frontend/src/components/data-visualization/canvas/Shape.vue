@@ -5,6 +5,7 @@
       v-show="contentDisplay"
       :class="{
         active,
+        'shape-lock': element['isLock'],
         'shape-edit': isEditMode,
         'linkage-setting': linkageActive,
         'drag-on-tab-collision': dragCollision
@@ -26,7 +27,7 @@
           @linkJumpSetOpen="linkJumpSetOpen"
           @linkageSetOpen="linkageSetOpen"
         ></component-edit-bar>
-        <span v-show="element['isLock']" class="iconfont icon-suo"></span>
+        <Icon v-show="element['isLock']" class="iconfont icon-suo" name="dv-lock"></Icon>
         <!--边框背景-->
         <Icon
           v-if="svgInnerEnable"
@@ -718,6 +719,12 @@ onMounted(() => {
   }
 }
 
+.shape-lock {
+  &:hover {
+    cursor: not-allowed !important;
+  }
+}
+
 .active {
   outline: 1px solid #3370ff;
   user-select: none;
@@ -749,6 +756,9 @@ onMounted(() => {
 }
 
 .icon-suo {
+  width: 22px;
+  height: 22px;
+  z-index: 1;
   position: absolute;
   top: 0;
   right: 0;

@@ -6,7 +6,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { fieldType } from '@/utils/attr'
 import { ElMessage } from 'element-plus-secondary'
 import type { DatasetDetail } from '@/api/dataset'
-import { getDsDetails } from '@/api/dataset'
+import { getDsDetails, getSqlParams } from '@/api/dataset'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import { cloneDeep } from 'lodash-es'
 import Select from './Select.vue'
@@ -44,6 +44,7 @@ const activeConditionForRename = reactive({
   visible: false
 })
 const datasetMap = {}
+const datasetMapParams = {}
 
 const datasetFieldList = computed(() => {
   return Object.values(canvasViewInfo.value)
@@ -63,6 +64,7 @@ const activeCondition = ref('')
 const isIndeterminate = ref(false)
 const datasetTree = shallowRef([])
 const fields = ref<DatasetDetail[]>()
+const parameters = ref([])
 let componentId = ''
 
 const getDetype = (id, arr) => {
@@ -231,19 +233,34 @@ const filterTypeCom = (displayType: string) => {
   return ['1', '7'].includes(displayType) ? Time : Select
 }
 
+const setCondition = (id: string, queryId: string) => {
+  conditions.value = cloneDeep(componentData.value.find(ele => ele.id === id).propValue) || []
+  init(id, queryId)
+}
+
+const setConditionInit = (id: string, queryId: string) => {
+  init(id, queryId)
+}
+
+const setConditionOut = (id: string) => {
+  conditions.value = cloneDeep(componentData.value.find(ele => ele.id === id).propValue) || []
+  addQueryCriteria()
+  init(id, conditions.value[conditions.value.length - 1].id)
+}
+
 const init = (id: string, queryId: string) => {
   componentId = id
   if (!datasetTree.value.length) {
     initDataset()
   }
   renameInput.value = []
-  conditions.value = cloneDeep(componentData.value.find(ele => ele.id === id).propValue) || []
   handleCondition({ id: queryId })
   dialogVisible.value = true
   const datasetFieldIdList = datasetFieldList.value.map(ele => ele.tableId)
   for (const i in datasetMap) {
     if (!datasetFieldIdList.includes(i)) {
       delete datasetMap[i]
+      delete datasetMapParams[i]
     }
   }
 
@@ -254,6 +271,12 @@ const init = (id: string, queryId: string) => {
       .map(ele => {
         if (!datasetMap[ele.tableId]) return null
         return { ...datasetMap[ele.tableId], componentId: ele.id }
+      })
+      .filter(ele => !!ele)
+    parameters.value = datasetFieldList.value
+      .map(ele => {
+        if (!datasetMapParams[ele.tableId]) return null
+        return { ...datasetMapParams[ele.tableId], componentId: ele.id }
       })
       .filter(ele => !!ele)
     return
@@ -283,6 +306,25 @@ const init = (id: string, queryId: string) => {
     .finally(() => {
       handleCheckedFieldsChange(curComponent.value.checkedFields)
     })
+  getSqlParams([
+    ...new Set(
+      datasetFieldList.value.map(ele => ele.tableId).filter(ele => !datasetMapKeyList.includes(ele))
+    )
+  ]).then(res => {
+    ;(res || []).forEach(ele => {
+      if (!datasetMapParams[ele.datasetGroupId]) {
+        if (Array.isArray(datasetMapParams[ele.datasetGroupId])) {
+          datasetMapParams[ele.datasetGroupId].push(ele)
+        } else {
+          datasetMapParams[ele.datasetGroupId] = [ele]
+        }
+      }
+    })
+    parameters.value = datasetFieldList.value.map(ele => {
+      if (!datasetMapParams[ele.tableId]) return null
+      return { ...datasetMapParams[ele.tableId], componentId: ele.id }
+    })
+  })
 }
 
 const weightlessness = () => {
@@ -319,6 +361,15 @@ const getOptions = (id, component) => {
       const { dimensionList, quotaList } = ele.fields
       component.dataset.fields = [...dimensionList, ...quotaList]
     })
+  })
+
+  getSqlParams([id]).then(res => {
+    console.log('res', res)
+    // res.forEach(ele => {
+    //   if (!ele) return
+    //   const { dimensionList, quotaList } = ele.fields
+    //   component.parametersList = [...dimensionList, ...quotaList]
+    // })
   })
 }
 
@@ -371,8 +422,18 @@ const renameInputBlur = () => {
 const addQueryCriteria = () => {
   conditions.value.push(props.addQueryCriteriaConfig())
 }
+
+const addCriteriaConfig = () => {
+  conditions.value = []
+  addQueryCriteria()
+  return conditions.value[0].id
+}
+
 defineExpose({
-  init
+  setCondition,
+  setConditionInit,
+  addCriteriaConfig,
+  setConditionOut
 })
 </script>
 
@@ -438,7 +499,7 @@ defineExpose({
         </draggable>
       </div>
       <div class="chart-field">
-        <div class="title">选择图表及字段</div>
+        <div class="title">选择关联图表及字段</div>
         <div class="select-all">
           <el-checkbox
             v-model="checkAll"
@@ -716,9 +777,16 @@ defineExpose({
         display: flex;
         align-items: center;
         justify-content: space-between;
+        font-family: PingFang SC;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 22px;
 
         .ed-icon {
           cursor: pointer;
+          font-size: 16px;
+          color: #3370ff;
         }
       }
       .list-item_primary {
@@ -747,6 +815,13 @@ defineExpose({
       padding: 16px;
       width: 474px;
       overflow-y: auto;
+      .title {
+        font-family: PingFang SC;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 22px;
+      }
 
       .select-all {
         height: 40px;
@@ -787,6 +862,11 @@ defineExpose({
       width: 467px;
       .title {
         margin-bottom: 16px;
+        font-family: PingFang SC;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 22px;
       }
 
       .configuration-list {

@@ -33,7 +33,7 @@ const composeStore = composeStoreWithOut()
 const lockStore = lockStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const copyStore = copyStoreWithOut()
-const { styleChangeTimes } = storeToRefs(snapshotStore)
+const { styleChangeTimes, snapshotIndex } = storeToRefs(snapshotStore)
 const {
   linkageSettingStatus,
   curLinkageView,
@@ -171,6 +171,9 @@ const batchDelete = () => {
   curBatchOptComponents.value.forEach(componentId => {
     eventBus.emit('removeMatrixItemById-canvas-main', componentId)
   })
+  nextTick(() => {
+    saveBatchChange()
+  })
 }
 
 const batchCopy = () => {
@@ -181,6 +184,7 @@ const batchCopy = () => {
     }
   })
   copyStore.copyMultiplexingComponents(canvasViewInfo.value, multiplexingComponents, true)
+  saveBatchChange()
 }
 
 const cancelBatchOpt = () => {
@@ -262,19 +266,34 @@ const saveLinkageSetting = () => {
 <template>
   <div class="toolbar-main">
     <div class="toolbar" :class="{ 'preview-state-head': editMode === 'preview' }">
-      <el-icon class="custom-el-icon back-icon" @click="backToMain()">
+      <el-icon v-show="!batchOptStatus" class="custom-el-icon back-icon" @click="backToMain()">
         <Icon class="toolbar-icon" name="icon_left_outlined" />
       </el-icon>
-      <div class="left-area" v-show="editMode === 'edit'">
+      <div class="left-area" v-show="editMode === 'edit' && !batchOptStatus">
         <span id="canvas-name" class="name-area" @dblclick="editCanvasName">{{ dvInfo.name }}</span>
         <div class="opt-area">
           <el-icon class="opt-icon-undo" @click="undo()">
-            <Icon class="toolbar-hover-icon" name="icon_undo_outlined"></Icon>
+            <Icon
+              class="toolbar-hover-icon"
+              :class="{ 'toolbar-icon-disabled': snapshotIndex < 1 }"
+              name="icon_undo_outlined"
+            ></Icon>
           </el-icon>
           <el-icon class="opt-icon-redo" @click="redo()">
-            <Icon class="toolbar-hover-icon" name="icon_redo_outlined"></Icon>
+            <Icon
+              class="toolbar-hover-icon"
+              :class="{
+                'toolbar-icon-disabled': snapshotIndex === snapshotStore.snapshotData.length - 1
+              }"
+              name="icon_redo_outlined"
+            ></Icon>
           </el-icon>
         </div>
+      </div>
+      <div class="left-area" v-show="batchOptStatus">
+        <el-col class="adapt-count">
+          <span>已选 {{ curBatchOptComponents.length }} 项</span>
+        </el-col>
       </div>
       <div class="middle-area" v-show="!batchOptStatus && !linkageSettingStatus">
         <component-group
@@ -375,15 +394,15 @@ const saveLinkageSetting = () => {
           删除</el-button
         >
 
-        <el-button
-          class="custom-normal-button"
-          @click="cancelBatchOpt"
-          style="float: right; margin-right: 12px"
-        >
-          取消</el-button
-        >
+        <!--        <el-button-->
+        <!--          class="custom-normal-button"-->
+        <!--          @click="cancelBatchOpt"-->
+        <!--          style="float: right; margin-right: 12px"-->
+        <!--        >-->
+        <!--          取消</el-button-->
+        <!--        >-->
         <el-button @click="saveBatchChange" style="float: right; margin-right: 12px" type="primary"
-          >确定</el-button
+          >完成</el-button
         >
       </div>
 
@@ -521,5 +540,13 @@ const saveLinkageSetting = () => {
   &:hover {
     color: #3370ff;
   }
+}
+
+.adapt-count {
+  color: #ffffff;
+  margin-left: 10px;
+  font-size: 14px;
+  font-weight: 400;
+  padding-top: 14px;
 }
 </style>

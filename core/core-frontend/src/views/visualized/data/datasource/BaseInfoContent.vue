@@ -4,7 +4,7 @@ import { propTypes } from '@/utils/propTypes'
 defineProps({
   name: propTypes.string.def('')
 })
-const active = ref(false)
+const active = ref(true)
 defineExpose({
   active
 })

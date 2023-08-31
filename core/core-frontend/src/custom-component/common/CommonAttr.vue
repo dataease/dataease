@@ -141,6 +141,10 @@ const onBackgroundChange = val => {
   }
 }
 
+:deep(.ed-collapse-item__content) {
+  border-top: 0 !important;
+}
+
 .attr-dark :deep(.ed-collapse-item__header) {
   background-color: @side-area-background !important;
   color: #ffffff;

@@ -2,7 +2,7 @@
 import eventBus from '@/utils/eventBus'
 import QueryConditionConfiguration from './QueryConditionConfiguration.vue'
 import type { ComponentInfo } from '@/api/chart'
-import { onBeforeUnmount, reactive, ref, toRefs, watch, computed, nextTick } from 'vue'
+import { onBeforeUnmount, reactive, ref, toRefs, watch, computed } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -46,7 +46,6 @@ const dvMainStore = dvMainStoreWithOut()
 const { curComponent, canvasViewInfo } = storeToRefs(dvMainStore)
 const canEdit = ref(false)
 const queryConfig = ref()
-const isConfig = ref(false)
 const defaultStyle = {
   border: '',
   background: '',
@@ -187,7 +186,7 @@ const infoFormat = (obj: ComponentInfo) => {
   if (deType === 1) {
     return base
   }
-  return { ...base, parameters: [], parametersCheck: false }
+  return { ...base, parameters: [], parametersCheck: false, parametersList: [] }
 }
 
 const drop = e => {
@@ -198,7 +197,7 @@ const drop = e => {
 }
 
 const editeQueryConfig = (queryId: string) => {
-  queryConfig.value.init(element.value.id, queryId)
+  queryConfig.value.setCondition(element.value.id, queryId)
 }
 
 const addQueryCriteria = () => {
@@ -233,7 +232,11 @@ const editQueryCriteria = () => {
   editeQueryConfig(list.value[0].id)
 }
 
-emitter.on(`addQueryCriteria${element.value.id}`, addQueryCriteria)
+const addCriteriaConfigOut = () => {
+  queryConfig.value.setConditionOut(element.value.id)
+}
+
+emitter.on(`addQueryCriteria${element.value.id}`, addCriteriaConfigOut)
 emitter.on(`editQueryCriteria${element.value.id}`, editQueryCriteria)
 
 const delQueryConfig = index => {
@@ -242,52 +245,35 @@ const delQueryConfig = index => {
 }
 
 const resetData = () => {
-  isConfig.value = true
-  nextTick(() => {
-    const emitterList = (list.value || []).reduce((pre, next) => {
-      next.selectValue = Array.isArray(next.defaultValue)
-        ? [...next.defaultValue]
-        : next.defaultValue
-
-      const keyList = Object.entries(next.checkedFieldsMap)
-        .filter(ele => next.checkedFields.includes(ele[0]))
-        .filter(ele => !!ele[1])
-        .map(ele => ele[0])
-      pre = [...new Set([...keyList, ...pre])]
-      return pre
-    }, [])
-    isConfig.value = false
-    if (!emitterList.length) return
-
-    emitterList.forEach(ele => {
-      emitter.emit(`query-data-${ele}`)
-    })
-  })
+  ;(list.value || []).reduce((pre, next) => {
+    next.selectValue = Array.isArray(next.defaultValue) ? [...next.defaultValue] : next.defaultValue
+    const keyList = Object.entries(next.checkedFieldsMap)
+      .filter(ele => next.checkedFields.includes(ele[0]))
+      .filter(ele => !!ele[1])
+      .map(ele => ele[0])
+    pre = [...new Set([...keyList, ...pre])]
+    return pre
+  }, [])
 }
 
 const clearData = () => {
-  isConfig.value = true
-  nextTick(() => {
-    const emitterList = (list.value || []).reduce((pre, next) => {
-      next.selectValue = next.multiple ? [] : ''
-      const keyList = Object.entries(next.checkedFieldsMap)
-        .filter(ele => next.checkedFields.includes(ele[0]))
-        .filter(ele => !!ele[1])
-        .map(ele => ele[0])
-      pre = [...new Set([...keyList, ...pre])]
-      return pre
-    }, [])
-    isConfig.value = false
-    if (!emitterList.length) return
-
-    emitterList.forEach(ele => {
-      emitter.emit(`query-data-${ele}`)
-    })
-  })
+  ;(list.value || []).reduce((pre, next) => {
+    next.selectValue = next.multiple ? [] : ''
+    const keyList = Object.entries(next.checkedFieldsMap)
+      .filter(ele => next.checkedFields.includes(ele[0]))
+      .filter(ele => !!ele[1])
+      .map(ele => ele[0])
+    pre = [...new Set([...keyList, ...pre])]
+    return pre
+  }, [])
 }
 const listVisible = computed(() => {
   return list.value.filter(itx => itx.visible)
 })
+
+const addCriteriaConfig = () => {
+  queryConfig.value.setConditionInit(element.value.id, queryConfig.value.addCriteriaConfig())
+}
 
 const queryData = () => {
   const emitterList = (element.value.propValue || []).reduce((pre, next) => {
@@ -337,7 +323,7 @@ const queryData = () => {
             <div class="query-select">
               <component
                 :config="ele"
-                :isConfig="false"
+                :is-config="false"
                 :customStyle="customStyle"
                 :is="filterTypeCom(ele.displayType)"
               ></component>
@@ -382,7 +368,7 @@ const queryData = () => {
     <div v-if="!listVisible.length" class="no-list-label flex-align-center">
       <div class="container flex-align-center">
         将右侧的字段拖拽到这里 或 点击
-        <el-button @click="addQueryCriteria" text> 添加查询条件 </el-button>
+        <el-button @click="addCriteriaConfig" text> 添加查询条件 </el-button>
       </div>
     </div>
   </div>
@@ -440,7 +426,7 @@ const queryData = () => {
 }
 .v-query {
   width: 100%;
-  height: calc(100% - 32px);
+  height: 100%;
   line-height: 1.5;
   color: rgba(0, 0, 0, 0.87);
   align-items: center;

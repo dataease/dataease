@@ -45,7 +45,7 @@ const widthShow = computed(() => `${canvasCollapse.value[sideName.value] ? 36 : 
     :class="['aside-' + asidePosition + '-' + themeInfo, 'aside-area-' + themeInfo]"
     :width="widthShow"
   >
-    <el-row align="middle" class="title" justify="space-between">
+    <el-row align="middle" :class="'title-' + themeInfo" justify="space-between">
       <span v-show="!canvasCollapse[sideName]">{{ title }}</span>
       <el-icon
         :title="title"
@@ -81,14 +81,27 @@ const widthShow = computed(() => `${canvasCollapse.value[sideName.value] ? 36 : 
 .aside-area-light {
   color: @canvas-main-font-color-light;
   background-color: #fff;
+  :deep(.title) {
+    border-bottom: #d5d6d8 1px solid !important;
+  }
 }
 .dv-aside {
   position: relative;
   transition: 0.5s;
-  .title {
+  .title-dark {
     font-size: 14px;
     font-weight: 500;
-    border-bottom: rgba(255, 255, 255, 0.15) 1px solid !important;
+    border-bottom: rgba(255, 255, 255, 0.15) 1px solid;
+    height: 45px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    padding: 8px 10px 8px 8px;
+  }
+  .title-light {
+    font-size: 14px;
+    font-weight: 500;
+    border-bottom: #d5d6d8 1px solid;
     height: 45px;
     overflow: hidden;
     white-space: nowrap;

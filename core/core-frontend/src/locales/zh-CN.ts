@@ -1059,7 +1059,8 @@ export default {
     logic_and: '所有',
     logic_or: '任一',
     conform_below: '符合以下',
-    addition: '条件'
+    addition: '条件',
+    drill_field_error: '下钻起始字段需在维度中'
   },
   dataset: {
     scope_edit: '仅编辑时生效',
@@ -2078,5 +2079,13 @@ export default {
     export_user: '导出用户',
     export_time: '导出时间',
     you_can_type_here: '可以在这里输入其他内容'
+  },
+  pblink: {
+    key_pwd: '请输入密码打开链接',
+    input_placeholder: '请输入4位数字或字母',
+    pwd_error: '密码错误',
+    pwd_format_error: '请输入4位数字或字母',
+    sure_bt: '确定',
+    back_parent: '返回上一级'
   }
 }

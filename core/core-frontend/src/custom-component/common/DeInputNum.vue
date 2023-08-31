@@ -6,10 +6,11 @@ const props = defineProps({
   name: String,
   min: Number,
   max: Number,
+  disabled: Boolean,
   themes: String
 })
 
-const { name, value, min, max, themes } = toRefs(props)
+const { name, value, min, max, themes, disabled } = toRefs(props)
 </script>
 
 <template>
@@ -18,6 +19,7 @@ const { name, value, min, max, themes } = toRefs(props)
     :class="themes + '-custom-input-number'"
     v-model="value"
     :themes="themes"
+    :disabled="disabled"
     :min="min"
     :max="max"
     size="small"
@@ -31,7 +33,7 @@ const { name, value, min, max, themes } = toRefs(props)
   width: 80px;
 }
 .dark-custom-input-number :deep(.ed-input__wrapper) {
-  background-color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0) !important;
   padding-left: 5px !important;
   padding-right: 30px !important;
 }
