@@ -6,7 +6,7 @@ import GridTable from '@/components/grid-table/src/GridTable.vue'
 import { HandleMore } from '@/components/handle-more'
 import { Icon } from '@/components/icon-custom'
 import { fieldType } from '@/utils/attr'
-import { uploadFile } from '@/api/datasource'
+import { listSyncRecord, uploadFile } from '@/api/datasource'
 import CreatDsGroup from './form/CreatDsGroup.vue'
 import type { Tree } from '../dataset/form/CreatDsGroup.vue'
 import { previewData, getById } from '@/api/datasource'
@@ -16,7 +16,13 @@ import DatasetDetail from '@/views/visualized/data/dataset/DatasetDetail.vue'
 import { timestampFormatDate } from '@/views/visualized/data/dataset/form/util'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import dayjs from 'dayjs'
-import { getTableField, listDatasourceTables, deleteById, save } from '@/api/datasource'
+import {
+  getTableField,
+  listDatasourceTables,
+  deleteById,
+  save,
+  validateById
+} from '@/api/datasource'
 import { Base64 } from 'js-base64'
 import type { Configuration, ApiConfiguration, SyncSetting } from './form/index.vue'
 import EditorDatasource from './form/index.vue'
@@ -65,6 +71,14 @@ const state = reactive({
     total: 0
   },
   filterTable: []
+})
+
+const recordState = reactive({
+  paginationConfig: {
+    currentPage: 1,
+    pageSize: 10,
+    total: 0
+  }
 })
 
 const createDataset = (tableName?: string) => {
@@ -136,6 +150,16 @@ const handleCurrentChange = currentPage => {
   state.paginationConfig.currentPage = currentPage
 }
 
+const handleRecordSizeChange = pageSize => {
+  recordState.paginationConfig.currentPage = 1
+  recordState.paginationConfig.pageSize = pageSize
+  getRecord()
+}
+const handleRecordCurrentChange = currentPage => {
+  recordState.paginationConfig.currentPage = currentPage
+  getRecord()
+}
+
 const generateColumns = (arr: Field[]) =>
   arr.map(ele => ({
     key: ele.originName,
@@ -170,20 +194,18 @@ const handleLoadExcel = data => {
     })
 }
 
-const getFieldType = (type: string | number) => {
-  return [
-    t('dataset.text'),
-    '',
-    t('dataset.value'),
-    t('dataset.value') + '(' + t('dataset.float') + ')'
-  ][type]
-}
-
-const searchDs = () => {
-  buildTree(rawDatasourceList.value.filter(ele => ele.name.includes(dsName.value)))
+const validateDS = () => {
+  validateById(nodeInfo.id as number)
+    .then(() => {
+      ElMessage.success('校验成功')
+    })
+    .catch(() => {
+      ElMessage.error('校验失败')
+    })
 }
 
 const dialogErrorInfo = ref(false)
+const dialogMsg = ref('')
 
 const formatSimpleCron = (info?: SyncSetting) => {
   const { syncRate, simpleCronValue, simpleCronType, startTime, endTime, cron, endLimit } = info
@@ -223,7 +245,8 @@ const formatSimpleCron = (info?: SyncSetting) => {
   return strArr
 }
 
-const showErrorInfo = () => {
+const showErrorInfo = info => {
+  dialogMsg.value = info
   dialogErrorInfo.value = true
 }
 
@@ -236,8 +259,6 @@ const handleTabClick = tab => {
   activeTab.value = tab.value
   handleLoadExcel({ table: tab.value, id: nodeInfo.id })
 }
-
-const baseInfo = ref()
 
 const tabList = shallowRef([])
 
@@ -355,6 +376,8 @@ const convertConfig = array => {
   }
 }
 
+const updateRecordsTime = ref(new Date()['format']())
+
 listDs()
 
 const buildTree = array => {
@@ -433,9 +456,6 @@ const handleNodeClick = data => {
     activeName.value = 'config'
     handleCurrentChange(1)
     handleClick(activeName.value)
-    nextTick(() => {
-      baseInfo.value.active = true
-    })
   })
 }
 const createDatasource = (data?: Tree) => {
@@ -459,11 +479,14 @@ const recordData = ref([])
 
 const getRecord = () => {
   showRecord.value = true
-  recordData.value = [
-    {
-      date: 123213
-    }
-  ]
+  listSyncRecord(
+    recordState.paginationConfig.currentPage,
+    recordState.paginationConfig.pageSize,
+    nodeInfo.id
+  ).then(res => {
+    recordData.value = res.data.records
+    recordState.paginationConfig.total = res.data.total
+  })
 }
 
 const nodeExpand = data => {
@@ -662,12 +685,12 @@ const defaultProps = {
         <div class="datasource-info">
           <div class="info-method">
             <el-icon class="icon-border">
-              <Icon name="mysql-frame"></Icon>
+              <Icon :name="`${nodeInfo.type}-ds`"></Icon>
             </el-icon>
             <span class="name">
               {{ nodeInfo.name }}
             </span>
-            <el-popover placement="bottom" width="420" trigger="hover">
+            <el-popover placement="bottom" width="290" trigger="hover">
               <template #reference>
                 <el-icon class="create-user">
                   <Icon name="icon_info_outlined"></Icon>
@@ -685,6 +708,7 @@ const defaultProps = {
                 </template>
                 新建数据集
               </el-button>
+              <el-button secondary @click="validateDS"> {{ t('datasource.validate') }}</el-button>
 
               <template v-if="nodeInfo.type === 'Excel'">
                 <el-upload
@@ -802,7 +826,7 @@ const defaultProps = {
           </div>
         </div>
         <template v-else>
-          <BaseInfoContent ref="baseInfo" v-slot="slotProps" :name="t('datasource.base_info')">
+          <BaseInfoContent v-slot="slotProps" :name="t('datasource.base_info')">
             <template v-if="slotProps.active">
               <el-row :gutter="24">
                 <el-col :span="12">
@@ -932,7 +956,9 @@ const defaultProps = {
                 </div>
                 <div class="req-value">
                   <span>{{ api.method }}</span>
-                  <span :title="api.url">{{ api.url }}</span>
+                  <el-tooltip w effect="dark" :content="api.url" placement="top">
+                    <span>{{ api.url }}</span>
+                  </el-tooltip>
                 </div>
               </div>
             </div>
@@ -941,6 +967,7 @@ const defaultProps = {
             v-if="nodeInfo.type === 'API'"
             v-slot="slotProps"
             :name="t('dataset.update_setting')"
+            :time="updateRecordsTime"
           >
             <template v-if="slotProps.active">
               <el-row :gutter="24">
@@ -959,15 +986,15 @@ const defaultProps = {
                       {{ ele }}
                     </p>
                   </BaseInfoItem>
-                  <el-button @click="getRecord" class="update-records" text>
-                    <template #icon>
-                      <icon name="icon_describe_outlined"></icon>
-                    </template>
-                    {{ t('dataset.update_records') }}
-                  </el-button>
                 </el-col>
               </el-row>
             </template>
+            <el-button @click="getRecord" class="update-records" text>
+              <template #icon>
+                <icon name="icon_describe_outlined"></icon>
+              </template>
+              {{ t('dataset.update_records') }}
+            </el-button>
           </BaseInfoContent>
           <BaseInfoContent
             v-if="nodeInfo.type === 'Excel'"
@@ -1075,36 +1102,43 @@ const defaultProps = {
       direction="rtl"
       size="840px"
     >
-      <el-table header-cell-class-name="header-cell" :data="recordData" style="width: 100%">
-        <el-table-column prop="date" label="更新频率" width="180" />
-        <el-table-column prop="name" label="更新结果" width="180">
+      <grid-table
+        :pagination="recordState.paginationConfig"
+        :table-data="recordData"
+        @size-change="handleRecordSizeChange"
+        @current-change="handleRecordCurrentChange"
+      >
+        <el-table-column prop="startTime" :label="t('datasource.start_time')">
+          <template v-slot:default="scope">
+            <span>{{ timestampFormatDate(scope.row.startTime) }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="endTime" :label="t('datasource.end_time')">
+          <template v-slot:default="scope">
+            <span>{{ timestampFormatDate(scope.row.endTime) }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="status" label="更新结果">
           <template #default="scope">
             <div class="flex-align-center">
-              <el-icon>
+              <el-icon v-show="scope.row.status === 'Completed'">
                 <icon name="icon_succeed_filled"></icon>
+                {{ t('dataset.completed') }}
               </el-icon>
-              <el-icon>
-                <icon class="field-icon-location" name="icon_close_filled"></icon>
+              <el-icon v-show="scope.row.status === 'UnderExecution'">
+                {{ t('dataset.underway') }}
               </el-icon>
-              <el-icon @click="showErrorInfo" class="error-info">
-                <icon name="icon-maybe_outlined"></icon>
+              <el-icon
+                @click="showErrorInfo(scope.row.info)"
+                class="error-info"
+                v-show="scope.row.status === 'Error' || scope.row.status === 'Warning'"
+              >
+                {{ t('dataset.error') }}
               </el-icon>
-              {{ t('dataset.error') || t('dataset.completed') || '-' }}
-              {{ scope.row.date }}
             </div>
           </template>
         </el-table-column>
-        <el-table-column prop="result" label="更新状态" width="180">
-          <template #default="scope">
-            <span class="update-info to-be-updated">待更新</span>
-            <span class="update-info pause">{{ t('dataset.task.pending') }}</span>
-            <span class="update-info updating">更新中</span>
-            <span class="update-info updated">更新结束</span>
-            {{ scope.row.date }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="address" :label="t('commons.update_time')" />
-      </el-table>
+      </grid-table>
     </el-drawer>
     <el-dialog
       v-model="dialogErrorInfo"
@@ -1113,7 +1147,7 @@ const defaultProps = {
       title="失败详情"
       width="600px"
     >
-      <span>This is a message</span>
+      <span>{{ dialogMsg }}</span>
       <template #footer>
         <span class="dialog-footer">
           <el-button secondary @click="dialogErrorInfo = false">
@@ -1135,7 +1169,7 @@ const defaultProps = {
   background: #fff;
   .update-records {
     position: absolute;
-    top: -24px;
+    top: 19px;
     right: 12px;
   }
 
@@ -1165,11 +1199,7 @@ const defaultProps = {
   }
 
   .icon-border {
-    padding: 3px;
-    border: 1px solid #dee0e3;
-    border-radius: 3px;
-    width: 24px;
-    height: 24px;
+    font-size: 18px;
   }
 
   .excel-table {
@@ -1188,7 +1218,7 @@ const defaultProps = {
   }
 
   .api-card {
-    width: 528px;
+    width: calc(50% - 16px);
     height: 120px;
     border-radius: 4px;
     border: 1px solid var(--deCardStrokeColor, #dee0e3);
@@ -1213,18 +1243,18 @@ const defaultProps = {
 
       :nth-child(2) {
         margin-left: 24px;
-        max-width: 200px;
+        max-width: calc(100% - 124px);
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
       }
     }
     .req-title {
-      color: var(--deTextPrimary, #1f2329);
+      color: var(--deTextSecondary, #646a73);
       margin: 16px 0 4px 0;
     }
     .req-value {
-      color: var(--deTextSecondary, #646a73);
+      color: var(--deTextPrimary, #1f2329);
     }
     .de-copy-icon {
       cursor: pointer;
@@ -1363,6 +1393,10 @@ const defaultProps = {
         font-size: 16px;
         font-weight: 500;
 
+        .ed-icon {
+          font-size: 24px;
+        }
+
         .name {
           margin: 0 8px;
         }
@@ -1381,7 +1415,7 @@ const defaultProps = {
 
         .right-btn {
           margin-left: auto;
-          & > :nth-child(2) {
+          & > :nth-child(3) {
             margin: 0 8px;
           }
         }

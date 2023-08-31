@@ -88,7 +88,7 @@ onMounted(() => {
           !batchOptStatus
         "
         :theme-info="'light'"
-        :title="'属性'"
+        :title="curComponent.label || '属性'"
         :width="420"
         :side-name="'componentProp'"
         :aside-position="'right'"
@@ -118,7 +118,7 @@ onMounted(() => {
       <dv-sidebar
         v-if="batchOptStatus"
         :theme-info="'light'"
-        title="批量操作"
+        title="批量操作设置样式"
         :width="280"
         aside-position="right"
         class="left-sidebar"

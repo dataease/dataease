@@ -2,9 +2,10 @@
 import { ref } from 'vue'
 import { propTypes } from '@/utils/propTypes'
 defineProps({
-  name: propTypes.string.def('')
+  name: propTypes.string.def(''),
+  time: propTypes.string.def('')
 })
-const active = ref(false)
+const active = ref(true)
 defineExpose({
   active
 })
@@ -17,6 +18,7 @@ defineExpose({
         <Icon name="icon_expand-right_filled"></Icon>
       </el-icon>
       <span class="name">{{ name }}</span>
+      <span v-if="time" class="update-records-time">数据更新时间:{{ time }}</span>
     </p>
     <slot :active="active"></slot>
   </div>
@@ -28,6 +30,17 @@ defineExpose({
   border-radius: 4px;
   background: #fff;
   margin: 24px 24px 0 24px;
+  position: relative;
+
+  .update-records-time {
+    color: #646a73;
+    font-family: PingFang SC;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 22px;
+    margin-left: 8px;
+  }
 
   .title {
     display: flex;
@@ -62,6 +75,7 @@ defineExpose({
     .title {
       .ed-icon {
         transform: rotate(0);
+        color: #3370ff;
       }
     }
   }

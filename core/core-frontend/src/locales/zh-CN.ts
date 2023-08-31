@@ -346,7 +346,7 @@ export default {
     jsonpath_info: '请填入JsonPath',
     req_param: '请求参数',
     headers: '请求头',
-    query_param: 'QUERY參數',
+    query_param: 'QUERY参数',
     query_info: '地址栏中跟在？后面的参数,如: updateapi?id=112',
     key: '键',
     value: '值',
@@ -683,6 +683,7 @@ export default {
     title_cannot_empty: '标题不能为空',
     table_title_height: '表头行高',
     table_item_height: '表格行高',
+    text: '文本',
     axis_show: '轴线显示',
     axis_color: '轴线颜色',
     axis_width: '轴线宽度',
@@ -1059,7 +1060,8 @@ export default {
     logic_and: '所有',
     logic_or: '任一',
     conform_below: '符合以下',
-    addition: '条件'
+    addition: '条件',
+    drill_field_error: '下钻起始字段需在维度中'
   },
   dataset: {
     scope_edit: '仅编辑时生效',
@@ -2078,5 +2080,13 @@ export default {
     export_user: '导出用户',
     export_time: '导出时间',
     you_can_type_here: '可以在这里输入其他内容'
+  },
+  pblink: {
+    key_pwd: '请输入密码打开链接',
+    input_placeholder: '请输入4位数字或字母',
+    pwd_error: '密码错误',
+    pwd_format_error: '请输入4位数字或字母',
+    sure_bt: '确定',
+    back_parent: '返回上一级'
   }
 }

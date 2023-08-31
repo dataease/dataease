@@ -375,13 +375,13 @@ defineExpose({
 
 <template>
   <div class="editor-detail">
-    <div class="detail-inner" :class="!(activeStep !== 2 && form.type === 'API') && 'pt16'">
+    <div class="detail-inner">
       <div v-show="form.type === 'API'" class="info-update">
-        <div :class="activeStep === 1 && 'active'" class="info-text">数据源信息</div>
+        <div :class="activeStep === 1 && 'active'" class="info-text">数据源配置信息</div>
         <div class="update-info-line"></div>
         <div :class="activeStep === 2 && 'active'" class="update-text">数据更新设置</div>
       </div>
-      <div class="title-form_primary" v-show="activeStep !== 2 && form.type === 'API'">
+      <div class="title-form_primary base-info" v-show="activeStep !== 2 && form.type === 'API'">
         {{ t('datasource.basic_info') }}
       </div>
       <el-form
@@ -405,15 +405,16 @@ defineExpose({
         </el-form-item>
         <el-form-item :label="t('common.description')" v-show="activeStep !== 2">
           <el-input
+            class="description-text"
             type="textarea"
             v-model="form.description"
-            :row="5"
+            :row="10"
             :maxlength="50"
             show-word-limit
           />
         </el-form-item>
         <template v-if="form.type === 'API'">
-          <div class="title-form_primary flex-space" v-show="activeStep !== 2">
+          <div class="title-form_primary flex-space table-info-mr" v-show="activeStep !== 2">
             <span>{{ t('datasource.data_table') }}</span>
             <el-button type="primary" style="margin-left: auto" @click="() => addApiItem(null)">
               <template #icon>
@@ -493,7 +494,9 @@ defineExpose({
                 </div>
                 <div class="req-value">
                   <span>{{ api.method }}</span>
-                  <span :title="api.url">{{ api.url }}</span>
+                  <el-tooltip w effect="dark" :content="api.url" placement="top">
+                    <span>{{ api.url }}</span>
+                  </el-tooltip>
                 </div>
               </div>
             </div>
@@ -841,9 +844,20 @@ defineExpose({
   }
   .detail-inner {
     width: 800px;
+    padding-top: 8px;
 
-    &.pt16 {
-      padding-top: 16px;
+    .description-text {
+      :deep(.ed-textarea__inner) {
+        height: 92px;
+      }
+    }
+
+    .base-info {
+      margin: 24px 0 16px 0;
+    }
+
+    .table-info-mr {
+      margin: 28px 0 12px 0;
     }
 
     .info-update {
@@ -886,10 +900,6 @@ defineExpose({
           background: #3370ff;
         }
       }
-    }
-
-    .title-form_primary {
-      margin: 16px 0;
     }
 
     .detail-operate {
@@ -942,11 +952,11 @@ defineExpose({
     }
   }
   .req-title {
-    color: var(--deTextPrimary, #1f2329);
+    color: var(--deTextSecondary, #646a73);
     margin: 16px 0 4px 0;
   }
   .req-value {
-    color: var(--deTextSecondary, #646a73);
+    color: var(--deTextPrimary, #1f2329);
   }
   .de-copy-icon {
     margin-right: 16px;

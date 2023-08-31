@@ -140,3 +140,6 @@ export const uploadFile = async (data): Promise<IResponse> => {
       return res
     })
 }
+
+export const listSyncRecord = (page: number, limit: number, dsId: number | string) =>
+  request.post({ url: '/datasource/listSyncRecord/' + dsId + '/' + page + '/' + limit })

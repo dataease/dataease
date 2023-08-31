@@ -33,7 +33,7 @@ const dvMainStore = dvMainStoreWithOut()
 const composeStore = composeStoreWithOut()
 const lockStore = lockStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
-const { styleChangeTimes } = storeToRefs(snapshotStore)
+const { styleChangeTimes, snapshotIndex } = storeToRefs(snapshotStore)
 const {
   curComponent,
   canvasStyleData,
@@ -218,10 +218,20 @@ eventBus.on('clearCanvas', clearCanvas)
         }}</span>
         <div class="opt-area">
           <el-icon class="opt-icon-undo" @click="undo()">
-            <Icon class="toolbar-hover-icon" name="icon_undo_outlined"></Icon>
+            <Icon
+              class="toolbar-hover-icon"
+              :class="{ 'toolbar-icon-disabled': snapshotIndex < 1 }"
+              name="icon_undo_outlined"
+            ></Icon>
           </el-icon>
           <el-icon class="opt-icon-redo" @click="redo()">
-            <Icon class="toolbar-hover-icon" name="icon_redo_outlined"></Icon>
+            <Icon
+              class="toolbar-hover-icon"
+              :class="{
+                'toolbar-icon-disabled': snapshotIndex === snapshotStore.snapshotData.length - 1
+              }"
+              name="icon_redo_outlined"
+            ></Icon>
           </el-icon>
         </div>
       </div>
