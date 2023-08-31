@@ -390,6 +390,12 @@ span {
 
 .function-area {
   margin-top: 8px;
+  :deep(.ed-radio__input) {
+    display: inline-flex;
+  }
+  :deep(.ed-radio) {
+    margin-right: 32px;
+  }
 }
 
 .margin-top16 {
