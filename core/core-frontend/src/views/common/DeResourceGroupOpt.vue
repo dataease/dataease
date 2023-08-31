@@ -154,9 +154,13 @@ const optInit = (type, data: BusiTreeNode, exec, parentSelect = false) => {
     resourceForm.name = data.name
   }
   queryTreeApi(request).then(res => {
+    debugger
     const resultTree = res
     dfs(resultTree as unknown as BusiTreeNode[])
     state.tData = (resultTree as unknown as BusiTreeNode[]) || []
+    if (state.tData.length && state.tData[0].name === 'root' && state.tData[0].id === '0') {
+      state.tData[0].name = curCanvasType.value === 'dataV' ? '数据大屏' : '仪表板'
+    }
     if (['newLeaf', 'newFolder'].includes(exec)) {
       resourceForm.pid = data.id as string
       pid.value = data.id
