@@ -1,6 +1,8 @@
 package io.dataease.datasource.server;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -8,6 +10,7 @@ import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.dataset.dto.PreviewSqlDTO;
 import io.dataease.api.ds.DatasourceApi;
 import io.dataease.api.ds.vo.*;
+import io.dataease.api.permissions.dataset.dto.DataSetRowPermissionsTreeDTO;
 import io.dataease.api.permissions.user.api.UserApi;
 import io.dataease.api.permissions.user.vo.UserFormVO;
 import io.dataease.commons.constants.TaskStatus;
@@ -19,6 +22,7 @@ import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.entity.CoreDatasourceTask;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
+import io.dataease.datasource.dao.ext.mapper.TaskLogExtMapper;
 import io.dataease.datasource.manage.DataSourceManage;
 import io.dataease.datasource.manage.DatasourceSyncManage;
 import io.dataease.datasource.provider.ApiUtils;
@@ -64,7 +68,8 @@ public class DatasourceServer implements DatasourceApi {
     private CalciteProvider calciteProvider;
     @Resource
     private DatasourceSyncManage datasourceSyncManage;
-
+    @Resource
+    private TaskLogExtMapper taskLogExtMapper;
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     @Resource
@@ -611,5 +616,13 @@ public class DatasourceServer implements DatasourceApi {
             }
         }
         return types;
+    }
+
+    public IPage<CoreDatasourceTaskLogDTO> listSyncRecord(int goPage, int pageSize, Long dsId) {
+        QueryWrapper<CoreDatasourceTaskLogDTO> wrapper = new QueryWrapper<>();
+        wrapper.eq("ds_id", dsId);
+        Page<CoreDatasourceTaskLogDTO> page = new Page<>(goPage, pageSize);
+        IPage<CoreDatasourceTaskLogDTO> pager = taskLogExtMapper.pager(page, wrapper);
+        return pager;
     }
 }

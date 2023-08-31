@@ -1,5 +1,6 @@
 package io.dataease.api.ds;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.ds.vo.*;
 import io.dataease.auth.DeApiPath;
@@ -7,6 +8,7 @@ import io.dataease.auth.DePermit;
 import io.dataease.exception.DEException;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
+import io.dataease.request.BaseGridRequest;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -78,4 +80,6 @@ public interface DatasourceApi {
     @PostMapping("/latestUse")
     public List<String> latestUse();
 
+    @PostMapping("/listSyncRecord/{dsId}/{goPage}/{pageSize}")
+    IPage<CoreDatasourceTaskLogDTO> listSyncRecord(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @PathVariable("dsId") Long dsId);
 }

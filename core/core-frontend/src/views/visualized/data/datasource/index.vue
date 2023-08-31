@@ -6,7 +6,7 @@ import GridTable from '@/components/grid-table/src/GridTable.vue'
 import { HandleMore } from '@/components/handle-more'
 import { Icon } from '@/components/icon-custom'
 import { fieldType } from '@/utils/attr'
-import { uploadFile } from '@/api/datasource'
+import { listSyncRecord, uploadFile } from '@/api/datasource'
 import CreatDsGroup from './form/CreatDsGroup.vue'
 import type { Tree } from '../dataset/form/CreatDsGroup.vue'
 import { previewData, getById } from '@/api/datasource'
@@ -65,6 +65,14 @@ const state = reactive({
     total: 0
   },
   filterTable: []
+})
+
+const recordState = reactive({
+  paginationConfig: {
+    currentPage: 1,
+    pageSize: 10,
+    total: 0
+  }
 })
 
 const createDataset = (tableName?: string) => {
@@ -136,6 +144,16 @@ const handleCurrentChange = currentPage => {
   state.paginationConfig.currentPage = currentPage
 }
 
+const handleRecordSizeChange = pageSize => {
+  recordState.paginationConfig.currentPage = 1
+  recordState.paginationConfig.pageSize = pageSize
+  getRecord()
+}
+const handleRecordCurrentChange = currentPage => {
+  recordState.paginationConfig.currentPage = currentPage
+  getRecord()
+}
+
 const generateColumns = (arr: Field[]) =>
   arr.map(ele => ({
     key: ele.originName,
@@ -184,6 +202,7 @@ const searchDs = () => {
 }
 
 const dialogErrorInfo = ref(false)
+const dialogMsg = ref('')
 
 const formatSimpleCron = (info?: SyncSetting) => {
   const { syncRate, simpleCronValue, simpleCronType, startTime, endTime, cron, endLimit } = info
@@ -223,7 +242,8 @@ const formatSimpleCron = (info?: SyncSetting) => {
   return strArr
 }
 
-const showErrorInfo = () => {
+const showErrorInfo = info => {
+  dialogMsg.value = info
   dialogErrorInfo.value = true
 }
 
@@ -459,11 +479,14 @@ const recordData = ref([])
 
 const getRecord = () => {
   showRecord.value = true
-  recordData.value = [
-    {
-      date: 123213
-    }
-  ]
+  listSyncRecord(
+    recordState.paginationConfig.currentPage,
+    recordState.paginationConfig.pageSize,
+    nodeInfo.id
+  ).then(res => {
+    recordData.value = res.data.records
+    recordState.paginationConfig.total = res.data.total
+  })
 }
 
 const nodeExpand = data => {
@@ -1075,36 +1098,43 @@ const defaultProps = {
       direction="rtl"
       size="840px"
     >
-      <el-table header-cell-class-name="header-cell" :data="recordData" style="width: 100%">
-        <el-table-column prop="date" label="更新频率" width="180" />
-        <el-table-column prop="name" label="更新结果" width="180">
+      <grid-table
+        :pagination="recordState.paginationConfig"
+        :table-data="recordData"
+        @size-change="handleRecordSizeChange"
+        @current-change="handleRecordCurrentChange"
+      >
+        <el-table-column prop="startTime" :label="t('datasource.start_time')">
+          <template v-slot:default="scope">
+            <span>{{ timestampFormatDate(scope.row.startTime) }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="endTime" :label="t('datasource.end_time')">
+          <template v-slot:default="scope">
+            <span>{{ timestampFormatDate(scope.row.endTime) }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="status" label="更新结果">
           <template #default="scope">
             <div class="flex-align-center">
-              <el-icon>
+              <el-icon v-show="scope.row.status === 'Completed'">
                 <icon name="icon_succeed_filled"></icon>
+                {{ t('dataset.completed') }}
               </el-icon>
-              <el-icon>
-                <icon class="field-icon-location" name="icon_close_filled"></icon>
+              <el-icon v-show="scope.row.status === 'UnderExecution'">
+                {{ t('dataset.underway') }}
               </el-icon>
-              <el-icon @click="showErrorInfo" class="error-info">
-                <icon name="icon-maybe_outlined"></icon>
+              <el-icon
+                @click="showErrorInfo(scope.row.info)"
+                class="error-info"
+                v-show="scope.row.status === 'Error' || scope.row.status === 'Warning'"
+              >
+                {{ t('dataset.error') }}
               </el-icon>
-              {{ t('dataset.error') || t('dataset.completed') || '-' }}
-              {{ scope.row.date }}
             </div>
           </template>
         </el-table-column>
-        <el-table-column prop="result" label="更新状态" width="180">
-          <template #default="scope">
-            <span class="update-info to-be-updated">待更新</span>
-            <span class="update-info pause">{{ t('dataset.task.pending') }}</span>
-            <span class="update-info updating">更新中</span>
-            <span class="update-info updated">更新结束</span>
-            {{ scope.row.date }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="address" :label="t('commons.update_time')" />
-      </el-table>
+      </grid-table>
     </el-drawer>
     <el-dialog
       v-model="dialogErrorInfo"
@@ -1113,7 +1143,7 @@ const defaultProps = {
       title="失败详情"
       width="600px"
     >
-      <span>This is a message</span>
+      <span>{{ dialogMsg }}</span>
       <template #footer>
         <span class="dialog-footer">
           <el-button secondary @click="dialogErrorInfo = false">
