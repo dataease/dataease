@@ -92,6 +92,7 @@ const loadThemeStyle = () => {
   cursor: pointer;
 }
 .drill {
+  z-index: 1;
   height: 20px;
   padding: 0 16px;
 }

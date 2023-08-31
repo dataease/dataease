@@ -153,6 +153,7 @@ const commonBackgroundSvgInner = computed(() => {
 
 <style lang="less" scoped>
 .wrapper-outer {
+  z-index: 5;
   position: absolute;
   overflow: hidden;
 }
