@@ -32,6 +32,10 @@ defineExpose({
   margin: 24px 24px 0 24px;
   position: relative;
 
+  & + .base-info-content {
+    margin-top: 16px;
+  }
+
   .update-records-time {
     color: #646a73;
     font-family: PingFang SC;

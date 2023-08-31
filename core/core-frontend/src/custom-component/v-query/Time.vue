@@ -148,9 +148,9 @@ onBeforeMount(() => {
     :shortcuts="shortcuts"
     @change="handleValueChange"
     :prefix-icon="Calendar"
-    range-separator="To"
-    start-placeholder="Start date"
-    end-placeholder="End date"
+    :range-separator="$t('cron.to')"
+    :start-placeholder="$t('datasource.start_time')"
+    :end-placeholder="$t('datasource.end_time')"
   />
   <el-date-picker
     v-else
@@ -158,7 +158,7 @@ onBeforeMount(() => {
     @change="handleValueChange"
     type="datetime"
     :prefix-icon="Calendar"
-    placeholder="Pick a Date"
+    :placeholder="$t('commons.date.select_date_time')"
     format="YYYY/MM/DD HH:mm:ss"
   />
 </template>
