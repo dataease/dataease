@@ -49,13 +49,13 @@ const saveSubject = () => {
   subject.value.validate(result => {
     if (result) {
       emits('finish', subjectForm.value)
-      resetForm()
     }
   })
 }
 
 defineExpose({
-  optInit
+  optInit,
+  resetForm
 })
 
 const emits = defineEmits(['finish'])

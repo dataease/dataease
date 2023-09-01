@@ -103,7 +103,10 @@ const groupActiveChange = category => {
               draggable="true"
               :data-id="'UserView&' + chartInfo.value"
             >
-              <Icon class-name="item-top-icon" :name="chartInfo.icon" />
+              <Icon
+                class-name="item-top-icon"
+                :name="chartInfo.icon + (props.themes === 'dark' ? '-dark' : '')"
+              />
             </div>
             <div class="item-bottom">
               <span>{{ chartInfo.title }}</span>
@@ -122,7 +125,7 @@ const groupActiveChange = category => {
     border-left: 1px solid @side-outline-border-color-light!important;
   }
   :deep(.item-top) {
-    background-color: #dee0e3 !important;
+    background-color: #f5f6f7 !important;
   }
   :deep(.ul-custom) {
     color: @chart-change-font-color-light!important;
@@ -199,6 +202,10 @@ const groupActiveChange = category => {
 
 .item {
   margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   .item-top {
     width: 88px;
     height: 64px;

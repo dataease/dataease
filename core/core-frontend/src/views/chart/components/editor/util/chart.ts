@@ -946,16 +946,16 @@ export const CHART_TYPE_CONFIGS = [
       {
         render: 'antv',
         category: 'table',
-        value: 'table-normal',
-        title: t('chart.chart_table_normal'),
-        icon: 'table-normal'
+        value: 'table-info',
+        title: t('chart.chart_table_info'),
+        icon: 'table-info'
       },
       {
         render: 'antv',
         category: 'table',
-        value: 'table-info',
-        title: t('chart.chart_table_info'),
-        icon: 'table-info'
+        value: 'table-normal',
+        title: t('chart.chart_table_normal'),
+        icon: 'table-normal'
       }
     ]
   },
@@ -1000,9 +1000,16 @@ export const CHART_TYPE_CONFIGS = [
       {
         render: 'antv',
         category: 'compare',
-        value: 'bar-horizontal',
-        title: t('chart.chart_bar_horizontal'),
-        icon: 'bar-horizontal'
+        value: 'bar-stack',
+        title: t('chart.chart_bar_stack'),
+        icon: 'bar-stack'
+      },
+      {
+        render: 'antv',
+        category: 'compare',
+        value: 'percentage-bar-stack',
+        title: t('chart.chart_percentage_bar_stack'),
+        icon: 'percentage-bar-stack'
       },
       {
         render: 'antv',
@@ -1014,13 +1021,6 @@ export const CHART_TYPE_CONFIGS = [
       {
         render: 'antv',
         category: 'compare',
-        value: 'bar-stack',
-        title: t('chart.chart_bar_stack'),
-        icon: 'bar-stack'
-      },
-      {
-        render: 'antv',
-        category: 'compare',
         value: 'bar-group-stack',
         title: t('chart.chart_bar_group_stack'),
         icon: 'bar-group-stack'
@@ -1028,16 +1028,23 @@ export const CHART_TYPE_CONFIGS = [
       {
         render: 'antv',
         category: 'compare',
-        value: 'bar-stack-horizontal',
-        title: t('chart.chart_bar_stack_horizontal'),
-        icon: 'bar-stack-horizontal'
+        value: 'waterfall',
+        title: t('chart.chart_waterfall'),
+        icon: 'waterfall'
       },
       {
         render: 'antv',
         category: 'compare',
-        value: 'percentage-bar-stack',
-        title: t('chart.chart_percentage_bar_stack'),
-        icon: 'percentage-bar-stack'
+        value: 'bar-horizontal',
+        title: t('chart.chart_bar_horizontal'),
+        icon: 'bar-horizontal'
+      },
+      {
+        render: 'antv',
+        category: 'compare',
+        value: 'bar-stack-horizontal',
+        title: t('chart.chart_bar_stack_horizontal'),
+        icon: 'bar-stack-horizontal'
       },
       {
         render: 'antv',
@@ -1082,31 +1089,10 @@ export const CHART_TYPE_CONFIGS = [
       },
       {
         render: 'antv',
-        category: 'distribute',
-        value: 'word-cloud',
-        title: t('chart.chart_word_cloud'),
-        icon: 'word-cloud'
-      },
-      {
-        render: 'antv',
-        category: 'distribute',
-        value: 'waterfall',
-        title: t('chart.chart_waterfall'),
-        icon: 'waterfall'
-      },
-      {
-        render: 'antv',
-        category: 'distribute',
-        value: 'funnel',
-        title: t('chart.chart_funnel'),
-        icon: 'funnel'
-      },
-      {
-        render: 'antv',
-        category: 'distribute',
-        value: 'scatter',
-        title: t('chart.chart_scatter'),
-        icon: 'scatter'
+        category: 'chart.chart_type_distribute',
+        value: 'radar',
+        title: t('chart.chart_radar'),
+        icon: 'radar'
       },
       {
         render: 'antv',
@@ -1117,10 +1103,10 @@ export const CHART_TYPE_CONFIGS = [
       },
       {
         render: 'antv',
-        category: 'chart.chart_type_distribute',
-        value: 'radar',
-        title: t('chart.chart_radar'),
-        icon: 'radar'
+        category: 'distribute',
+        value: 'word-cloud',
+        title: t('chart.chart_word_cloud'),
+        icon: 'word-cloud'
       }
     ]
   },
@@ -1133,7 +1119,27 @@ export const CHART_TYPE_CONFIGS = [
         category: 'map',
         value: 'map',
         title: t('chart.chart_map'),
-        icon: 'map_mini'
+        icon: 'map'
+      }
+    ]
+  },
+  {
+    category: 'relation',
+    title: t('chart.chart_type_relation'),
+    details: [
+      {
+        render: 'antv',
+        category: 'distribute',
+        value: 'scatter',
+        title: t('chart.chart_scatter'),
+        icon: 'scatter'
+      },
+      {
+        render: 'antv',
+        category: 'distribute',
+        value: 'funnel',
+        title: t('chart.chart_funnel'),
+        icon: 'funnel'
       }
     ]
   }
