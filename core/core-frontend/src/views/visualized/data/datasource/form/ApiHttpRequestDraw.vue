@@ -212,12 +212,17 @@ const validate = () => {
         ElMessage.error(t('datasource.please_input_dataPath'))
         return
       }
-      checkApiItem({ data: Base64.encode(JSON.stringify(apiItem)) }).then(response => {
-        apiItem.jsonFields = response.data.jsonFields
-        apiItem.fields = []
-        handleFiledChange(apiItem)
-        previewData()
-      })
+      checkApiItem({ data: Base64.encode(JSON.stringify(apiItem)) })
+        .then(response => {
+          apiItem.jsonFields = response.data.jsonFields
+          apiItem.fields = []
+          handleFiledChange(apiItem)
+          previewData()
+          ElMessage.success(t('datasource.validate_success'))
+        })
+        .catch(() => {
+          ElMessage.error('校验失败')
+        })
     }
   })
 }
