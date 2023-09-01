@@ -75,24 +75,27 @@ const groupActiveChange = category => {
         v-for="chartGroupInfo in state.chartGroupList"
         :key="chartGroupInfo.title"
       >
-        <el-col
-          class="item"
-          :span="8"
-          v-for="chartInfo in chartGroupInfo.details"
-          :key="chartInfo.title"
-        >
-          <div
-            v-on:click="newComponent(chartInfo.value)"
-            class="item-top"
-            :class="props.type === chartInfo.value ? 'item-active' : ''"
-            :data-id="'UserView&' + chartInfo.value"
+        <el-row class="group-title">{{ chartGroupInfo.title }}</el-row>
+        <el-row style="width: 100%">
+          <el-col
+            class="item"
+            :span="8"
+            v-for="chartInfo in chartGroupInfo.details"
+            :key="chartInfo.title"
           >
-            <Icon class-name="item-top-icon" :name="chartInfo.icon" />
-          </div>
-          <div class="item-bottom">
-            <span>{{ chartInfo.title }}</span>
-          </div>
-        </el-col>
+            <div
+              v-on:click="newComponent(chartInfo.value)"
+              class="item-top"
+              :class="props.type === chartInfo.value ? 'item-active' : ''"
+              :data-id="'UserView&' + chartInfo.value"
+            >
+              <Icon class-name="item-top-icon" :name="chartInfo.icon" />
+            </div>
+            <div class="item-bottom">
+              <span>{{ chartInfo.title }}</span>
+            </div>
+          </el-col>
+        </el-row>
       </el-row>
     </div>
   </el-row>
@@ -105,7 +108,7 @@ const groupActiveChange = category => {
     border-left: 1px solid @side-outline-border-color-light!important;
   }
   :deep(.item-top) {
-    background-color: #dee0e3 !important;
+    background-color: #f5f6f7 !important;
   }
   :deep(.ul-custom) {
     color: @chart-change-font-color-light!important;
@@ -179,6 +182,10 @@ const groupActiveChange = category => {
 
 .item {
   margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   .item-top {
     width: 88px;
     height: 64px;
@@ -204,5 +211,14 @@ const groupActiveChange = category => {
     font-size: 12px;
     text-align: center;
   }
+}
+
+.group-title {
+  width: 100%;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 20px;
+  color: #1f2329;
+  padding: 0 6px 2px;
 }
 </style>

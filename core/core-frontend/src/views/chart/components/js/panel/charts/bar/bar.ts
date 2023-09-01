@@ -484,7 +484,9 @@ export class PercentageStackBar extends GroupStackBar {
     if (!tooltipAttr.show) {
       return {
         ...options,
-        tooltip: false
+        tooltip: {
+          showContent: false
+        }
       }
     }
     const { extStack, yAxis, customAttr } = chart
