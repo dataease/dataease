@@ -100,7 +100,7 @@ const nickName = ref('')
 const dsName = ref('')
 const userDrawer = ref(false)
 const rawDatasourceList = ref([])
-const showPriority = ref(false)
+const showPriority = ref(true)
 const datasourceEditor = ref()
 const activeTab = ref('')
 const menuList = [
@@ -771,7 +771,7 @@ const defaultProps = {
             <el-input
               ref="search"
               v-model="nickName"
-              :placeholder="t('common.search_keywords')"
+              :placeholder="t('commons.search')"
               clearable
               @input="initSearch"
               style="width: 240px"
@@ -880,11 +880,6 @@ const defaultProps = {
                     }}</BaseInfoItem>
                   </el-col>
                   <el-col :span="12">
-                    <BaseInfoItem :label="t('datasource.password')">***********</BaseInfoItem>
-                  </el-col>
-                </el-row>
-                <el-row>
-                  <el-col :span="24">
                     <BaseInfoItem :label="t('datasource.extra_params')">{{
                       nodeInfo.configuration.extraParams
                     }}</BaseInfoItem>
@@ -905,26 +900,27 @@ const defaultProps = {
                   <el-row :gutter="24">
                     <el-col :span="12">
                       <BaseInfoItem :label="t('datasource.initial_pool_size')">{{
-                        nodeInfo.configuration.initialPoolSize
+                        nodeInfo.configuration.initialPoolSize || 5
                       }}</BaseInfoItem>
                     </el-col>
                     <el-col :span="12">
                       <BaseInfoItem :label="t('datasource.min_pool_size')">{{
-                        nodeInfo.configuration.minPoolSize
+                        nodeInfo.configuration.minPoolSize || 5
                       }}</BaseInfoItem>
                     </el-col>
                   </el-row>
                   <el-row :gutter="24">
                     <el-col :span="12">
                       <BaseInfoItem :label="t('datasource.max_pool_size')">{{
-                        nodeInfo.configuration.maxPoolSize
+                        nodeInfo.configuration.maxPoolSize || 5
                       }}</BaseInfoItem>
                     </el-col>
                     <el-col :span="12">
                       <BaseInfoItem
                         :value="nodeInfo.configuration.queryTimeout"
                         :label="t('datasource.query_timeout')"
-                        >{{ nodeInfo.configuration.queryTimeout }}</BaseInfoItem
+                        >{{ nodeInfo.configuration.queryTimeout || '30'
+                        }}{{ t('common.second') }}</BaseInfoItem
                       >
                     </el-col>
                   </el-row>
