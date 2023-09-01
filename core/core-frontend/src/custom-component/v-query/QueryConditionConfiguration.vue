@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, reactive, nextTick, computed, shallowRef } from 'vue'
+import { ref, reactive, nextTick, computed, shallowRef, toRefs, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -31,6 +31,15 @@ const props = defineProps({
   addQueryCriteriaConfig: {
     type: Function,
     default: () => ({})
+  },
+  queryElement: {
+    type: Object,
+    default() {
+      return {
+        id: null,
+        propValue: []
+      }
+    }
   }
 })
 const dialogVisible = ref(false)
@@ -46,20 +55,41 @@ const activeConditionForRename = reactive({
 })
 const datasetMap = {}
 
-const datasetFieldList = computed(() => {
-  return componentData.value
-    .filter(ele => (ele as DatasetField).innerType !== 'VQuery')
-    .map(ele => {
-      const obj = canvasViewInfo.value[ele.id]
-      const { id, title, tableId, type } = obj as DatasetField
-      return {
-        id,
-        type,
-        title,
-        tableId
+const dfsComponentData = () => {
+  const isMain = componentData.value.some(ele => ele.id === queryElement.value.id)
+  let arr = []
+  if (!isMain) {
+    componentData.value.some(ele => {
+      if (ele.innerType === 'DeTabs') {
+        return ele.propValue.some(itx => {
+          if (itx.componentData.some(item => item.id === queryElement.value.id)) {
+            arr = itx.componentData.filter(com => !['VQuery', 'DeTabs'].includes(com.innerType))
+            return true
+          }
+          return false
+        })
       }
+      return false
     })
+
+    return arr
+  }
+  return componentData.value.filter(com => !['VQuery', 'DeTabs'].includes(com.innerType))
+}
+
+const datasetFieldList = computed(() => {
+  return dfsComponentData().map(ele => {
+    const obj = canvasViewInfo.value[ele.id]
+    const { id, title, tableId, type } = obj as DatasetField
+    return {
+      id,
+      type,
+      title,
+      tableId
+    }
+  })
 })
+
 const curComponent = ref()
 const manual = ref()
 const activeCondition = ref('')
@@ -75,7 +105,7 @@ const parametersFilter = computed(() => {
     return ele.deType === +curComponent.value.displayType
   })
 })
-let componentId = ''
+const { queryElement } = toRefs(props)
 
 const getDetype = (id, arr) => {
   return arr.find(ele => ele.id === id)?.deType
@@ -213,12 +243,11 @@ const validate = () => {
 const confirmClick = () => {
   if (validate()) return
   dialogVisible.value = false
-  let obj = componentData.value.find(ele => ele.id === componentId)
   conditions.value.forEach(ele => {
     curComponent.value = ele
     multipleChange(curComponent.value.multiple)
   })
-  obj.propValue = cloneDeep(conditions.value)
+  queryElement.value.propValue = cloneDeep(conditions.value)
 }
 
 const cancelValueSource = () => {
@@ -244,23 +273,22 @@ const filterTypeCom = (displayType: string) => {
   return ['1', '7'].includes(displayType) ? Time : Select
 }
 
-const setCondition = (id: string, queryId: string) => {
-  conditions.value = cloneDeep(componentData.value.find(ele => ele.id === id).propValue) || []
-  init(id, queryId)
+const setCondition = (queryId: string) => {
+  conditions.value = cloneDeep(props.queryElement.propValue) || []
+  init(queryId)
 }
 
-const setConditionInit = (id: string, queryId: string) => {
-  init(id, queryId)
+const setConditionInit = (queryId: string) => {
+  init(queryId)
 }
 
-const setConditionOut = (id: string) => {
-  conditions.value = cloneDeep(componentData.value.find(ele => ele.id === id).propValue) || []
+const setConditionOut = () => {
+  conditions.value = cloneDeep(props.queryElement.propValue) || []
   addQueryCriteria()
-  init(id, conditions.value[conditions.value.length - 1].id)
+  init(conditions.value[conditions.value.length - 1].id)
 }
 
-const init = (id: string, queryId: string) => {
-  componentId = id
+const init = (queryId: string) => {
   if (!datasetTree.value.length) {
     initDataset()
   }
