@@ -356,7 +356,9 @@ export class HorizontalPercentageStackBar extends HorizontalStackBar {
     if (!tooltipAttr.show) {
       return {
         ...options,
-        tooltip: false
+        tooltip: {
+          showContent: false
+        }
       }
     }
     const { extStack, yAxis, customAttr } = chart

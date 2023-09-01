@@ -40,10 +40,12 @@ const widthShow = computed(() => `${canvasCollapse.value[sideName.value] ? 36 : 
 </script>
 
 <template>
-  <el-aside
+  <div
+    @keyup.stop
+    @keydown.stop
     class="dv-aside"
     :class="['aside-' + asidePosition + '-' + themeInfo, 'aside-area-' + themeInfo]"
-    :width="widthShow"
+    :style="{ width: widthShow }"
   >
     <el-row align="middle" :class="'title-' + themeInfo" justify="space-between">
       <span v-show="!canvasCollapse[sideName]">{{ title }}</span>
@@ -69,7 +71,7 @@ const widthShow = computed(() => `${canvasCollapse.value[sideName.value] ? 36 : 
     <div class="collapse-title" v-show="canvasCollapse[sideName]">
       <span>{{ title }}</span>
     </div>
-  </el-aside>
+  </div>
 </template>
 
 <style lang="less">

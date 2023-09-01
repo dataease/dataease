@@ -177,13 +177,7 @@ export function getTooltip(chart: Chart) {
           }
         }
       } else {
-        // 百分比堆叠柱状图隐藏 tooltip 设置 show 为 false 或者直接设置 tooltip 为 false 都无效，会变成分组显示，
-        // 需要将容器(container)或者内容框(showContent)设置为 false 或者 null 才可以隐藏
-        if (chart.type.includes('percentage')) {
-          tooltip.showContent = false
-        } else {
-          tooltip = false
-        }
+        tooltip = false
       }
     }
   }
