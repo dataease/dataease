@@ -701,6 +701,7 @@ onMounted(() => {
 <style lang="less" scoped>
 .shape {
   position: absolute;
+  z-index: 5;
 }
 
 .shape-inner {
@@ -765,6 +766,7 @@ onMounted(() => {
 
 .svg-background {
   position: absolute;
+  z-index: 0;
   top: 0;
   left: 0;
   width: 100% !important;
