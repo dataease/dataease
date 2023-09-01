@@ -117,6 +117,29 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
     }
   }
 
+  protected configYAxis(chart: Chart, options: WaterfallOptions): WaterfallOptions {
+    const tmpOptions = super.configYAxis(chart, options)
+    if (!tmpOptions.yAxis) {
+      return tmpOptions
+    }
+    const yAxis = parseJson(chart.customStyle).yAxis
+    const axisValue = yAxis.axisValue
+    if (!axisValue?.auto) {
+      const axis = {
+        yAxis: {
+          ...tmpOptions.yAxis,
+          min: axisValue.min,
+          max: axisValue.max,
+          minLimit: axisValue.min,
+          maxLimit: axisValue.max,
+          tickCount: axisValue.splitCount
+        }
+      }
+      return { ...tmpOptions, ...axis }
+    }
+    return tmpOptions
+  }
+
   protected setupOptions(chart: Chart, options: WaterfallOptions): WaterfallOptions {
     return flow(
       this.configTheme,
