@@ -154,7 +154,6 @@ const optInit = (type, data: BusiTreeNode, exec, parentSelect = false) => {
     resourceForm.name = data.name
   }
   queryTreeApi(request).then(res => {
-    debugger
     const resultTree = res
     dfs(resultTree as unknown as BusiTreeNode[])
     state.tData = (resultTree as unknown as BusiTreeNode[]) || []
