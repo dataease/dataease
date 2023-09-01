@@ -70,9 +70,13 @@ public class DatasetGroupManage {
         lock.lock();
         try {
             boolean isCreate;
+            // 用于重命名获取pid
             if (ObjectUtils.isEmpty(datasetGroupInfoDTO.getPid()) && ObjectUtils.isNotEmpty(datasetGroupInfoDTO.getId())) {
                 CoreDatasetGroup coreDatasetGroup = coreDatasetGroupMapper.selectById(datasetGroupInfoDTO.getId());
                 datasetGroupInfoDTO.setPid(coreDatasetGroup.getPid());
+            }
+            if (userApi == null) {
+                checkName(datasetGroupInfoDTO);
             }
             if (StringUtils.equalsIgnoreCase(datasetGroupInfoDTO.getNodeType(), leafType)) {
                 if (!rename && ObjectUtils.isEmpty(datasetGroupInfoDTO.getAllFields())) {
@@ -144,6 +148,9 @@ public class DatasetGroupManage {
 
     @XpackInteract(value = "authResourceTree", before = false)
     public DatasetGroupInfoDTO move(DatasetGroupInfoDTO datasetGroupInfoDTO) {
+        if (userApi == null) {
+            checkName(datasetGroupInfoDTO);
+        }
         if (datasetGroupInfoDTO.getPid() != 0) {
             checkMove(datasetGroupInfoDTO);
         }
@@ -391,9 +398,12 @@ public class DatasetGroupManage {
         for (Long id : ids) {
             List<CoreDatasetTable> datasetTables = datasetTableManage.selectByDatasetGroupId(id);
             for (CoreDatasetTable datasetTable : datasetTables) {
-                if(StringUtils.isNotEmpty(datasetTable.getSqlVariableDetails())){
+                if (StringUtils.isNotEmpty(datasetTable.getSqlVariableDetails())) {
                     List<SqlVariableDetails> defaultsSqlVariableDetails = JsonUtil.parseList(datasetTable.getSqlVariableDetails(), listTypeReference);
-                    defaultsSqlVariableDetails.forEach(sqlVariableDetails -> {sqlVariableDetails.setDatasetGroupId(id); sqlVariableDetails.setDatasetTableId(datasetTable.getId());});
+                    defaultsSqlVariableDetails.forEach(sqlVariableDetails -> {
+                        sqlVariableDetails.setDatasetGroupId(id);
+                        sqlVariableDetails.setDatasetTableId(datasetTable.getId());
+                    });
                     list.addAll(defaultsSqlVariableDetails);
                 }
             }

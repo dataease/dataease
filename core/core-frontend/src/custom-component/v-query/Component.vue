@@ -299,6 +299,12 @@ const queryData = () => {
       @dragover.prevent.stop="dragover"
       @drop.prevent.stop="drop"
     >
+      <div v-if="!listVisible.length" class="no-list-label flex-align-center">
+        <div class="container flex-align-center">
+          将右侧的字段拖拽到这里 或 点击
+          <el-button @click="addCriteriaConfig" text> 添加查询条件 </el-button>
+        </div>
+      </div>
       <div class="query-fields-container">
         <div class="query-item" :key="ele.id" v-for="(ele, index) in listVisible">
           <div class="query-field">
@@ -362,12 +368,6 @@ const queryData = () => {
         >
           {{ t('commons.adv_search.search') }}
         </el-button>
-      </div>
-    </div>
-    <div v-if="!listVisible.length" class="no-list-label flex-align-center">
-      <div class="container flex-align-center">
-        将右侧的字段拖拽到这里 或 点击
-        <el-button @click="addCriteriaConfig" text> 添加查询条件 </el-button>
       </div>
     </div>
   </div>
