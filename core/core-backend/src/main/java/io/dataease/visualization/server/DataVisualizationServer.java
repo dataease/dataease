@@ -9,7 +9,6 @@ import io.dataease.chart.dao.auto.entity.CoreChartView;
 import io.dataease.chart.dao.auto.mapper.CoreChartViewMapper;
 import io.dataease.chart.manage.ChartViewManege;
 import io.dataease.commons.constants.DataVisualizationConstants;
-import io.dataease.commons.exception.DataEaseException;
 import io.dataease.exception.DEException;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
@@ -114,7 +113,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
             BeanUtils.copyBean(visualizationInfo, request);
             visualizationInfoMapper.updateById(visualizationInfo);
         } else {
-            DataEaseException.throwException("Id can not be null");
+            DEException.throwException("Id can not be null");
         }
     }
 

@@ -13,9 +13,7 @@
       :before-upload="beforeUploadCheck"
       :file-list="state.fileList"
     >
-      <template>
-        <el-icon><Plus /></el-icon>
-      </template>
+      <el-icon><Plus /></el-icon>
     </el-upload>
     <input
       id="input"

@@ -51,9 +51,9 @@ public class StaticResourceServer implements StaticResourceApi {
             file.transferTo(uploadPath);
         } catch (IOException e) {
             LogUtil.error("文件上传失败", e);
-            DataEaseException.throwException("文件上传失败");
+            DEException.throwException("文件上传失败");
         } catch (Exception e) {
-            DataEaseException.throwException(e);
+            DEException.throwException(e);
         }
     }
 
