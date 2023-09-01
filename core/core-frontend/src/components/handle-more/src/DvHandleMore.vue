@@ -24,7 +24,7 @@ const props = defineProps({
   inTable: propTypes.bool.def(false),
   node: {
     type: Object,
-    deafult: {}
+    default: {}
   }
 })
 
