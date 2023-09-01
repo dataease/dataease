@@ -2337,16 +2337,6 @@ span {
     height: 28px;
   }
 }
-</style>
-
-<style lang="less" scoped>
-:deep(.ed-select-dropdown__item) {
-  display: flex;
-  align-items: center;
-}
-.chart-type-hide-options {
-  display: none;
-}
 .name-edit-form {
   margin-bottom: 8px !important;
 
@@ -2354,5 +2344,15 @@ span {
     color: #1f2329;
     margin-bottom: 0 !important;
   }
+}
+</style>
+
+<style lang="less">
+:deep(.ed-select-dropdown__item) {
+  display: flex;
+  align-items: center;
+}
+.chart-type-hide-options {
+  display: none;
 }
 </style>
