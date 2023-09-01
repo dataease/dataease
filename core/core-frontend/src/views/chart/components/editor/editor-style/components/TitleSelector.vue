@@ -151,6 +151,7 @@ init()
           </el-form-item>
           <el-form-item class="form-item" style="padding: 0 4px">
             <el-select
+              style="width: 56px"
               :effect="props.themes"
               v-model="state.titleForm.fontSize"
               :placeholder="t('chart.text_fontsize')"
