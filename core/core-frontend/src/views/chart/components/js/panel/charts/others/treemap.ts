@@ -19,7 +19,9 @@ export class Treemap extends G2PlotChartView<TreemapOptions, G2Treemap> {
     'title-selector',
     'legend-selector',
     'label-selector',
-    'tooltip-selector'
+    'tooltip-selector',
+    'jump-set',
+    'linkage'
   ]
   propertyInner: EditorPropertyInner = {
     'background-overall-component': ['all'],

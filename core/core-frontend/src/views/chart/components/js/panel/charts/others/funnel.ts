@@ -19,7 +19,9 @@ export class Funnel extends G2PlotChartView<FunnelOptions, G2Funnel> {
     'label-selector',
     'tooltip-selector',
     'title-selector',
-    'legend-selector'
+    'legend-selector',
+    'jump-set',
+    'linkage'
   ]
   propertyInner: EditorPropertyInner = {
     'background-overall-component': ['all'],

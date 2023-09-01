@@ -8,7 +8,9 @@ export const PIE_EDITOR_PROPERTY: EditorProperty[] = [
   'title-selector',
   'legend-selector',
   'label-selector',
-  'tooltip-selector'
+  'tooltip-selector',
+  'jump-set',
+  'linkage'
 ]
 export const PIE_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
   'background-overall-component': ['all'],
