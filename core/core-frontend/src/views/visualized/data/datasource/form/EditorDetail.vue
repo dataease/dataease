@@ -558,7 +558,12 @@ defineExpose({
             <el-input v-model="form.configuration.extraParams" autocomplete="off" />
           </el-form-item>
           <el-form-item :label="t('datasource.port')" prop="configuration.port">
-            <el-input v-model="form.configuration.port" autocomplete="off" type="number" min="0" />
+            <el-input-number
+              v-model="form.configuration.port"
+              autocomplete="off"
+              controls-position="right"
+              type="number"
+            />
           </el-form-item>
           <el-form-item
             v-if="form.type == 'oracle'"
@@ -807,6 +812,7 @@ defineExpose({
   .input-with-append {
     :deep(.ed-input-group__append) {
       width: 55px;
+      background: #fff;
     }
   }
 
