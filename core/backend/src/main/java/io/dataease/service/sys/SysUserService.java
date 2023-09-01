@@ -73,6 +73,7 @@ public class SysUserService {
         gridExample.setExtendCondition(keyWord);
         List<SysUserGridResponse> lists = extSysUserMapper.query(gridExample);
         lists.forEach(item -> {
+            item.setPassword("");
             List<SysUserRole> roles = item.getRoles();
             List<Long> roleIds = roles.stream().filter(ObjectUtils::isNotEmpty).map(SysUserRole::getRoleId).collect(Collectors.toList());
             item.setRoleIds(roleIds);
