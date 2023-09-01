@@ -21,7 +21,9 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     'label-selector',
     'tooltip-selector',
     'function-cfg',
-    'map-mapping'
+    'map-mapping',
+    'jump-set',
+    'linkage'
   ]
   propertyInner: EditorPropertyInner = {
     'background-overall-component': ['all'],

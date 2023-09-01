@@ -18,6 +18,8 @@ declare type EditorProperty =
   | 'scroll-cfg'
   | 'threshold'
   | 'map-mapping'
+  | 'jump-set'
+  | 'linkage'
 declare type EditorPropertyInner = {
   [key in EditorProperty]?: string[]
 }

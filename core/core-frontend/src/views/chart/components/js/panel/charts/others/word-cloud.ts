@@ -19,7 +19,9 @@ export class WordCloud extends G2PlotChartView<WordCloudOptions, G2WordCloud> {
     'basic-style-selector',
     'background-overall-component',
     'title-selector',
-    'tooltip-selector'
+    'tooltip-selector',
+    'jump-set',
+    'linkage'
   ]
   propertyInner: EditorPropertyInner = {
     'background-overall-component': ['all'],
