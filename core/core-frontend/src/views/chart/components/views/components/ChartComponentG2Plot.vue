@@ -114,10 +114,7 @@ const country = ref('')
 const renderL7Plot = (chart, chartView: L7PlotChartView<any, any>) => {
   const map = parseJson(chart.customAttr).map
   let areaId = map.id
-  // 首次加载记录 countryId
-  if (!country.value) {
-    country.value = areaId.slice(0, 3)
-  }
+  country.value = areaId.slice(0, 3)
   if (dynamicAreaId.value) {
     areaId = dynamicAreaId.value
   }
@@ -154,10 +151,6 @@ const action = param => {
 const trackClick = trackAction => {
   const param = state.pointParam
   if (!param?.data?.dimensionList) {
-    // 地图提示没有关联字段 其他没有维度信息的 直接返回
-    // if (this.chart.type === 'map') {
-    //   this.$warning(this.$t('panel.no_drill_field'))
-    // }
     return
   }
   // 地图

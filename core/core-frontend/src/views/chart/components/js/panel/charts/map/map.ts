@@ -118,8 +118,12 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     const view = new Choropleth(container, options)
     view.once('loaded', () => {
       view.on('fillAreaLayer:click', (ev: MapMouseEvent) => {
-        const param = ev.feature.properties
-        action({ data: { data: param } })
+        const data = ev.feature.properties
+        action({
+          x: ev.x,
+          y: ev.y,
+          data: { data }
+        })
       })
     })
 
