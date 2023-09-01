@@ -195,6 +195,7 @@ const linkageActiveChange = () => {
               size="small"
               :style="{ width: '24px', marginLeft: '4px', float: 'right' }"
               @click="linkageSetOpen"
+              :disabled="!chart.linkageActive"
             >
               <template #icon>
                 <Icon name="icon_edit_outlined"></Icon>
@@ -216,6 +217,7 @@ const linkageActiveChange = () => {
               size="small"
               :style="{ width: '24px', marginLeft: '4px', float: 'right' }"
               @click="linkJumpSetOpen"
+              :disabled="!chart.jumpActive"
             >
               <template #icon>
                 <Icon name="icon_edit_outlined"></Icon>
@@ -245,7 +247,7 @@ const linkageActiveChange = () => {
 }
 
 span {
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .view-panel {
@@ -255,13 +257,6 @@ span {
 }
 
 .de-collapse-style {
-  :deep(.ed-collapse-item__header) {
-    height: 34px !important;
-    line-height: 34px !important;
-    padding: 0 0 0 6px !important;
-    font-size: 12px !important;
-    font-weight: 400 !important;
-  }
   :deep(.ed-collapse-item__content) {
     padding: 16px !important;
   }
