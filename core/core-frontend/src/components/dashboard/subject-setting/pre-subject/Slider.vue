@@ -280,6 +280,7 @@ const subjectEditFinish = subjectItem => {
   state.slidersLoading = true
   saveOrUpdateSubject(subjectItem)
     .then(response => {
+      subjectEditDialogRef.value.resetForm()
       ElMessage.success('保存成功')
       querySubjectWithGroup()
     })
