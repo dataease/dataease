@@ -708,10 +708,13 @@ const defaultProps = {
                 </template>
                 新建数据集
               </el-button>
-              <el-button secondary @click="validateDS"> {{ t('datasource.validate') }}</el-button>
+              <el-button v-if="nodeInfo.type !== 'Excel' && nodeInfo.weight >= 7" secondary @click="validateDS">
+                {{ t('datasource.validate') }}</el-button
+              >
 
               <template v-if="nodeInfo.type === 'Excel'">
                 <el-upload
+                  v-if="nodeInfo.weight >= 7"
                   action=""
                   :multiple="false"
                   ref="uploadAgain"
@@ -732,6 +735,7 @@ const defaultProps = {
                 </el-upload>
 
                 <el-upload
+                  v-if="nodeInfo.weight >= 7"
                   action=""
                   :multiple="false"
                   ref="uploadAgain"
