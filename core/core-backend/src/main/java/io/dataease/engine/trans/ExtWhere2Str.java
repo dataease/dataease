@@ -5,6 +5,7 @@ import io.dataease.api.dataset.union.model.SQLMeta;
 import io.dataease.api.dataset.union.model.SQLObj;
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.engine.constant.SQLConstants;
+import io.dataease.engine.func.scalar.ScalarFunctions;
 import io.dataease.engine.utils.Utils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -52,7 +53,21 @@ public class ExtWhere2Str {
                     }
 
                     if (field.getDeType() == 1) {
-                        whereName = originName;
+//                        whereName = originName;
+                        String date_format = ScalarFunctions.get_date_format(value.get(0));
+                        if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
+                            // 此处获取标准格式的日期
+                            whereName = String.format(SQLConstants.DATE_FORMAT_REAL, originName, date_format);
+                        }
+                        if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
+                            String cast = String.format(SQLConstants.CAST, originName, SQLConstants.DEFAULT_INT_FORMAT);
+                            // 此处获取标准格式的日期
+                            whereName = String.format(SQLConstants.FROM_UNIXTIME, cast, date_format);
+                        }
+                        if (field.getDeExtractType() == 1) {
+                            // 此处获取标准格式的日期
+                            whereName = String.format(SQLConstants.DATE_FORMAT_REAL, originName, date_format);
+                        }
                     } else if (field.getDeType() == 2 || field.getDeType() == 3) {
                         if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
                             whereName = String.format(SQLConstants.CAST, originName, SQLConstants.DEFAULT_FLOAT_FORMAT);
