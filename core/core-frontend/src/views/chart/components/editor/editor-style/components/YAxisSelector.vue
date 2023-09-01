@@ -191,7 +191,7 @@ init()
                     controls-position="right"
                     :effect="props.themes"
                     v-model.number="state.axisForm.axisValue.max"
-                    @blur="changeAxisStyle('axisValue')"
+                    @change="changeAxisStyle('axisValue')"
                   />
                 </el-form-item>
               </el-col>
@@ -201,7 +201,7 @@ init()
                     controls-position="right"
                     :effect="props.themes"
                     v-model.number="state.axisForm.axisValue.min"
-                    @blur="changeAxisStyle('axisValue')"
+                    @change="changeAxisStyle('axisValue')"
                   />
                 </el-form-item>
               </el-col>
@@ -224,7 +224,7 @@ init()
                 style="width: 100%"
                 :effect="props.themes"
                 v-model.number="state.axisForm.axisValue.splitCount"
-                @blur="changeAxisStyle('axisValue')"
+                @change="changeAxisStyle('axisValue')"
               />
             </el-form-item>
           </template>
