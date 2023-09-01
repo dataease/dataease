@@ -37,6 +37,18 @@ router.beforeEach(async (to, from, next) => {
     } else {
       permissionStore.setCurrentPath(to.path)
       if (permissionStore.getIsAddRouters) {
+        let str = ''
+        if (((from.query.redirect as string) || '?').split('?')[0] === to.path) {
+          str = ((from.query.redirect as string) || '?').split('?')[1]
+        }
+        if (str) {
+          to.fullPath += '?' + str
+          to.query = str.split('&').reduce((pre, itx) => {
+            const [key, val] = itx.split('=')
+            pre[key] = val
+            return pre
+          }, {})
+        }
         next()
         return
       }
