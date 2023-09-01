@@ -1,1 +1,6 @@
-<svg t="1628490858856" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2380" width="200" height="200"><path d="M64 128h512v448H64z m0 512h512v256H64z m576-192h320v448H640z m0-320h320v256H640z" p-id="2381"></path></svg>
+<svg width="80" height="56" viewBox="0 0 80 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M44 8H12V32H44V8Z" fill="#3370FF"/>
+<path d="M68 24H46V48H68V24Z" fill="#3370FF"/>
+<path d="M68 8H46V22H68V8Z" fill="#00D6B9"/>
+<path d="M44 34H12V48H44V34Z" fill="#00D6B9"/>
+</svg>
