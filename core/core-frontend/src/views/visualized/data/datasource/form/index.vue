@@ -294,8 +294,9 @@ const saveDS = () => {
     apiConfiguration: string
   }
   if (currentDsType.value === 'Excel') {
+    excel.value.uploadStatus(false)
     if (!excel.value.sheetFile?.name) {
-      ElMessage.error('请先上传Excel文件!')
+      excel.value.uploadStatus(true)
       return
     }
 
