@@ -1939,10 +1939,46 @@ span {
     height: 100%;
   }
 
-  .view-panel-row :deep(.ed-collapse-item__header) {
-    padding: 0 !important;
-    font-size: 12px !important;
-    font-weight: 400 !important;
+  .view-panel-row {
+    :deep(.ed-collapse-item__header) {
+      padding: 0 !important;
+      font-size: 12px !important;
+      font-weight: 500 !important;
+
+      &.is-active {
+        color: #1f2329;
+      }
+
+      .ed-collapse-item__arrow {
+        &.is-active {
+          color: #646a73;
+        }
+      }
+    }
+
+    :deep(.style-dark) {
+      .ed-collapse-item__header {
+        &.is-active {
+          color: #fff;
+        }
+
+        .ed-collapse-item__arrow {
+          &.is-active {
+            color: #a6a6a6;
+          }
+        }
+      }
+    }
+    :deep(.ed-collapse-item.ed-collapse--dark .ed-collapse-item__header) {
+      &.is-active {
+        color: #fff;
+      }
+      .ed-collapse-item__arrow {
+        &.is-active {
+          color: #a6a6a6;
+        }
+      }
+    }
   }
 
   .tab-header {

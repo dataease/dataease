@@ -22,6 +22,7 @@ import { findDragComponent, findNewComponent, initCanvasData } from '@/utils/can
 import { ElMessage } from 'element-plus-secondary'
 import CanvasCore from '@/components/data-visualization/canvas/CanvasCore.vue'
 import { listenGlobalKeyDown } from '@/utils/DeShortcutKey'
+import { adaptCurThemeCommonStyle } from '@/utils/canvasStyle'
 
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
@@ -67,6 +68,7 @@ const handleNew = newComponentInfo => {
     component.id = guid()
     changeComponentSizeWithScale(component)
     dvMainStore.addComponent({ component: component, index: undefined })
+    adaptCurThemeCommonStyle(component)
     snapshotStore.recordSnapshot()
   }
 }
@@ -83,6 +85,7 @@ const handleDrop = e => {
     component.id = guid()
     changeComponentSizeWithScale(component)
     dvMainStore.addComponent({ component: component, index: 0 })
+    adaptCurThemeCommonStyle(component)
     snapshotStore.recordSnapshot('dv-handleDrop')
   }
 }
