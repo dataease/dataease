@@ -410,11 +410,18 @@ const appendReplaceExcel = response => {
   showName.value = false
   uploadSuccess(response)
 }
+
+const status = ref(false)
+
+const uploadStatus = val => {
+  status.value = val
+}
 defineExpose({
   saveExcelDs,
   submitForm,
   sheetFile,
-  appendReplaceExcel
+  appendReplaceExcel,
+  uploadStatus
 })
 </script>
 
@@ -491,9 +498,11 @@ defineExpose({
               </el-button>
             </template>
           </el-upload>
-          <p style="width: 100%">仅支持xlsx、xls、csv格式的文件</p>
+          <p class="upload-tip" style="width: 100%">仅支持xlsx、xls、csv格式的文件</p>
+          <div class="ed-form-item__error" v-if="status">请上传文件</div>
         </el-form-item>
         <el-form-item
+          :class="status && !sheetFile.name && 'error-status'"
           prop="name"
           v-if="showName"
           :rules="[
@@ -563,6 +572,19 @@ defineExpose({
     width: 800px;
     padding-top: 16px;
     height: calc(100vh - 280px);
+
+    .error-status {
+      margin-top: 32px;
+    }
+
+    .upload-tip {
+      color: #8f959e;
+      font-family: PingFang SC;
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 22px;
+    }
 
     .title-form_primary {
       margin: 16px 0;
