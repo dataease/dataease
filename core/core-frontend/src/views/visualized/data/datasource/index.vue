@@ -252,7 +252,7 @@ const showErrorInfo = info => {
 
 const getDsIconName = data => {
   if (!data.leaf) return 'dv-folder'
-  return 'mysql-frame'
+  return `${data.type}-ds`
 }
 
 const handleTabClick = tab => {
@@ -689,6 +689,10 @@ const defaultProps = {
             </el-icon>
             <span class="name">
               {{ nodeInfo.name }}
+            </span>
+            <el-divider direction="vertical" />
+            <span class="create-user">
+              {{ t('visualization.create_by') }}:{{ nodeInfo.creator }}
             </span>
             <el-popover placement="bottom" width="290" trigger="hover">
               <template #reference>
@@ -1399,7 +1403,7 @@ const defaultProps = {
         }
 
         .name {
-          margin: 0 8px;
+          margin-left: 8px;
         }
 
         .create-user {
