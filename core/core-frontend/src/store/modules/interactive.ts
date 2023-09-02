@@ -4,7 +4,7 @@ import { queryTreeApi } from '@/api/visualization/dataVisualization'
 import { getDatasetTree } from '@/api/dataset'
 import { listDatasources } from '@/api/datasource'
 import type { BusiTreeRequest, BusiTreeNode } from '@/models/tree/TreeNode'
-import router from '@/router'
+import { pathValid } from '@/store/modules/permission'
 
 interface InnerInteractive {
   rootManage: boolean
@@ -98,14 +98,14 @@ const convertInteractive = (list): InnerInteractive => {
 }
 
 const hasMenuAuth = (flag: number): boolean => {
-  let name = 'panel'
+  let path = '/panel/index'
   if (flag === 1) {
-    name = 'screen'
+    path = '/screen/index'
   } else if (flag === 2) {
-    name = 'dataset'
+    path = '/data/dataset'
   } else if (flag === 3) {
-    name = 'datasource'
+    path = '/data/datasource'
   }
-  const match = router.hasRoute(name)
-  return match
+  const valid = pathValid(path)
+  return valid
 }

@@ -3,7 +3,7 @@ import { useUserStoreWithOut } from '@/store/modules/user'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import type { RouteRecordRaw } from 'vue-router'
 import { useNProgress } from '@/hooks/web/useNProgress'
-import { usePermissionStoreWithOut } from '@/store/modules/permission'
+import { usePermissionStoreWithOut, pathValid } from '@/store/modules/permission'
 import { usePageLoading } from '@/hooks/web/usePageLoading'
 import { getRoleRouters } from '@/api/common'
 import { useCache } from '@/hooks/web/useCache'
@@ -91,33 +91,3 @@ router.afterEach(() => {
   done()
   loadDone()
 })
-
-const pathValid = path => {
-  const routers = permissionStore.getRouters
-  const temp = path.startsWith('/') ? path.substr(1) : path
-  const locations = temp.split('/')
-  if (locations.length === 0) {
-    return false
-  }
-
-  return hasCurrentRouter(locations, routers, 0)
-}
-/**
- * 递归验证every level
- * @param {*} locations
- * @param {*} routers
- * @param {*} index
- * @returns
- */
-const hasCurrentRouter = (locations, routers, index) => {
-  const location = locations[index]
-  let kids = []
-  const isvalid = routers.some(router => {
-    kids = router.children
-    return router.path === location || '/' + location === router.path
-  })
-  if (isvalid && index < locations.length - 1) {
-    return hasCurrentRouter(locations, kids, index + 1)
-  }
-  return isvalid
-}
