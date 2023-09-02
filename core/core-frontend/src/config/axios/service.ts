@@ -24,7 +24,7 @@ type InternalAxiosRequestConfigWidthLoading<T> = T & {
   loading?: boolean
 }
 
-import { ElMessage } from 'element-plus-secondary'
+import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import router from '@/router'
 const { result_code } = config
 import { useCache } from '@/hooks/web/useCache'
@@ -110,6 +110,7 @@ service.interceptors.response.use(
   (
     response: AxiosResponse<any> & { config: InternalAxiosRequestConfig & { loading?: boolean } }
   ) => {
+    executeVersionHandler(response)
     if (response.headers['x-de-refresh-token']) {
       wsCache.set('user.token', response.headers['x-de-refresh-token'])
     }
@@ -161,4 +162,29 @@ service.interceptors.response.use(
   }
 )
 
+const executeVersionHandler = (response: AxiosResponse) => {
+  const key = 'x-de-execute-version'
+  const executeVersion = response.headers[key]
+  const cacheVal = wsCache.get(key)
+  if (!cacheVal) {
+    return
+  }
+  if (executeVersion && executeVersion !== cacheVal) {
+    wsCache.set(key, executeVersion)
+    ElMessageBox.confirm('升级提示', {
+      confirmButtonType: 'danger',
+      type: 'warning',
+      confirmButtonText: '刷新',
+      cancelButtonText: '取消',
+      autofocus: false,
+      showClose: false
+    })
+      .then(() => {
+        window.location.reload()
+      })
+      .catch(() => {
+        console.info('are you f**king kidding me')
+      })
+  }
+}
 export { service }

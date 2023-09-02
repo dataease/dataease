@@ -6,7 +6,6 @@ import io.dataease.utils.*;
 import jakarta.servlet.FilterConfig;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
@@ -39,6 +38,10 @@ public class TokenFilter implements Filter {
         String refreshToken = null;
         if (StringUtils.isNotBlank(refreshToken = ServletUtils.request().getHeader(AuthConstant.REFRESH_TOKEN_KEY))) {
             ServletUtils.response().addHeader(AuthConstant.REFRESH_TOKEN_KEY, refreshToken);
+        }
+        String executeVersion = null;
+        if (StringUtils.isNotBlank(executeVersion = VersionUtil.getRandomVersion())) {
+            ServletUtils.response().addHeader(AuthConstant.DE_EXECUTE_VERSION, executeVersion);
         }
         String linkToken = ServletUtils.getHead(AuthConstant.LINK_TOKEN_KEY);
         if (StringUtils.isNotBlank(linkToken)) {
