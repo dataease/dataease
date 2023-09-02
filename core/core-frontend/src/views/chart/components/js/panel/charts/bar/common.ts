@@ -8,7 +8,9 @@ export const BAR_EDITOR_PROPERTY: EditorProperty[] = [
   'title-selector',
   'legend-selector',
   'function-cfg',
-  'assist-line'
+  'assist-line',
+  'jump-set',
+  'linkage'
 ]
 
 export const BAR_EDITOR_PROPERTY_INNER: EditorPropertyInner = {

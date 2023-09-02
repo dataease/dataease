@@ -20,17 +20,12 @@ const props = defineProps({
       }
     }
   },
-  propValue: {
-    type: String,
-    required: true,
-    default: ''
-  },
   element: {
     type: Object,
     default() {
       return {
         id: null,
-        propValue: ''
+        propValue: []
       }
     }
   },
@@ -196,7 +191,7 @@ const drop = e => {
 }
 
 const editeQueryConfig = (queryId: string) => {
-  queryConfig.value.setCondition(element.value.id, queryId)
+  queryConfig.value.setCondition(queryId)
 }
 
 const addQueryCriteria = () => {
@@ -232,7 +227,7 @@ const editQueryCriteria = () => {
 }
 
 const addCriteriaConfigOut = () => {
-  queryConfig.value.setConditionOut(element.value.id)
+  queryConfig.value.setConditionOut()
 }
 
 emitter.on(`addQueryCriteria${element.value.id}`, addCriteriaConfigOut)
@@ -271,7 +266,7 @@ const listVisible = computed(() => {
 })
 
 const addCriteriaConfig = () => {
-  queryConfig.value.setConditionInit(element.value.id, queryConfig.value.addCriteriaConfig())
+  queryConfig.value.setConditionInit(queryConfig.value.addCriteriaConfig())
 }
 
 const queryData = () => {
@@ -374,6 +369,7 @@ const queryData = () => {
   <Teleport to="body">
     <QueryConditionConfiguration
       :add-query-criteria-config="addQueryCriteriaConfig"
+      :query-element="element"
       ref="queryConfig"
     ></QueryConditionConfiguration>
   </Teleport>

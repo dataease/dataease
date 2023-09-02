@@ -40,6 +40,21 @@ const getValueByDefaultValueCheckOrFirstLoad = (
 export const useFilter = (curComponentId: number, firstLoad = false) => {
   const filter = []
   const queryComponentList = componentData.value.filter(ele => ele.component === 'VQuery')
+  searchQuery(queryComponentList, filter, curComponentId, firstLoad)
+  componentData.value.forEach(ele => {
+    if (ele.innerType === 'DeTabs') {
+      ele.propValue.forEach(itx => {
+        const arr = itx.componentData.filter(item => item.innerType === 'VQuery')
+        searchQuery(arr, filter, curComponentId, firstLoad)
+      })
+    }
+  })
+  return {
+    filter
+  }
+}
+
+export const searchQuery = (queryComponentList, filter, curComponentId, firstLoad) => {
   queryComponentList.forEach(ele => {
     if (!!ele.propValue?.length) {
       ele.propValue
@@ -86,7 +101,4 @@ export const useFilter = (curComponentId: number, firstLoad = false) => {
         })
     }
   })
-  return {
-    filter
-  }
 }
