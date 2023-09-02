@@ -3,7 +3,7 @@ import { routes } from '@/router'
 
 import { generateRoutesFn2 } from '@/router/establish'
 import { store } from '../index'
-import { cloneDeep } from 'lodash-es'
+import { cloneDeep, forEach } from 'lodash-es'
 import NotFoundPage from '@/views/404/index.vue'
 
 export interface PermissionState {
@@ -114,4 +114,32 @@ const hasCurrentRouter = (locations, routers, index) => {
     return hasCurrentRouter(locations, kids, index + 1)
   }
   return isvalid
+}
+
+export const getFirstAuthMenu = () => {
+  const permissionStore = usePermissionStore(store)
+  const routers = permissionStore.getRouters
+  const nodePathArray = []
+  getPathway(routers, nodePathArray)
+  if (nodePathArray.length) {
+    nodePathArray.reverse()
+    return nodePathArray.join('/')
+  }
+  return null
+}
+
+const getPathway = (tree, nodePathArray) => {
+  for (let index = 0; index < tree.length; index++) {
+    if (tree[index].children) {
+      const endRecursiveLoop = getPathway(tree[index].children, nodePathArray)
+      if (endRecursiveLoop) {
+        nodePathArray.push(tree[index].path)
+        return true
+      }
+    }
+    if (!tree[index].children?.length && !tree[index].hidden) {
+      nodePathArray.push(tree[index].path)
+      return true
+    }
+  }
 }

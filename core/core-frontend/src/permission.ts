@@ -3,7 +3,7 @@ import { useUserStoreWithOut } from '@/store/modules/user'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import type { RouteRecordRaw } from 'vue-router'
 import { useNProgress } from '@/hooks/web/useNProgress'
-import { usePermissionStoreWithOut, pathValid } from '@/store/modules/permission'
+import { usePermissionStoreWithOut, pathValid, getFirstAuthMenu } from '@/store/modules/permission'
 import { usePageLoading } from '@/hooks/web/usePageLoading'
 import { getRoleRouters } from '@/api/common'
 import { useCache } from '@/hooks/web/useCache'
@@ -71,8 +71,10 @@ router.beforeEach(async (to, from, next) => {
 
       permissionStore.setIsAddRouters(true)
       await interactiveStore.initInteractive(true)
+
       if (!pathValid(to.path) && to.path !== '/404' && !to.path.startsWith('/de-link')) {
-        next({ path: '/404' })
+        const firstPath = getFirstAuthMenu()
+        next({ path: firstPath || '/404' })
         return
       }
       next(nextData)
