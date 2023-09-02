@@ -4,7 +4,7 @@ import { storeToRefs } from 'pinia'
 import { useI18n } from '@/hooks/web/useI18n'
 import DvDetailInfo from '@/views/common/DvDetailInfo.vue'
 import { storeApi, storeStatusApi } from '@/api/visualization/dataVisualization'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo } = storeToRefs(dvMainStore)
 const emit = defineEmits(['reload', 'download'])
@@ -46,6 +46,12 @@ const storeQuery = () => {
   })
 }
 storeQuery()
+watch(
+  () => dvInfo.value.id,
+  () => {
+    storeQuery()
+  }
+)
 </script>
 
 <template>
