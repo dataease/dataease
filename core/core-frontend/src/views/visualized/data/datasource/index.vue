@@ -100,7 +100,7 @@ const nickName = ref('')
 const dsName = ref('')
 const userDrawer = ref(false)
 const rawDatasourceList = ref([])
-const showPriority = ref(false)
+const showPriority = ref(true)
 const datasourceEditor = ref()
 const activeTab = ref('')
 const menuList = [
@@ -252,7 +252,7 @@ const showErrorInfo = info => {
 
 const getDsIconName = data => {
   if (!data.leaf) return 'dv-folder'
-  return 'mysql-frame'
+  return `${data.type}-ds`
 }
 
 const handleTabClick = tab => {
@@ -690,6 +690,10 @@ const defaultProps = {
             <span class="name">
               {{ nodeInfo.name }}
             </span>
+            <el-divider direction="vertical" />
+            <span class="create-user">
+              {{ t('visualization.create_by') }}:{{ nodeInfo.creator }}
+            </span>
             <el-popover placement="bottom" width="290" trigger="hover">
               <template #reference>
                 <el-icon class="create-user">
@@ -775,7 +779,7 @@ const defaultProps = {
             <el-input
               ref="search"
               v-model="nickName"
-              :placeholder="t('common.search_keywords')"
+              :placeholder="t('commons.search')"
               clearable
               @input="initSearch"
               style="width: 240px"
@@ -884,11 +888,6 @@ const defaultProps = {
                     }}</BaseInfoItem>
                   </el-col>
                   <el-col :span="12">
-                    <BaseInfoItem :label="t('datasource.password')">***********</BaseInfoItem>
-                  </el-col>
-                </el-row>
-                <el-row>
-                  <el-col :span="24">
                     <BaseInfoItem :label="t('datasource.extra_params')">{{
                       nodeInfo.configuration.extraParams
                     }}</BaseInfoItem>
@@ -909,26 +908,27 @@ const defaultProps = {
                   <el-row :gutter="24">
                     <el-col :span="12">
                       <BaseInfoItem :label="t('datasource.initial_pool_size')">{{
-                        nodeInfo.configuration.initialPoolSize
+                        nodeInfo.configuration.initialPoolSize || 5
                       }}</BaseInfoItem>
                     </el-col>
                     <el-col :span="12">
                       <BaseInfoItem :label="t('datasource.min_pool_size')">{{
-                        nodeInfo.configuration.minPoolSize
+                        nodeInfo.configuration.minPoolSize || 5
                       }}</BaseInfoItem>
                     </el-col>
                   </el-row>
                   <el-row :gutter="24">
                     <el-col :span="12">
                       <BaseInfoItem :label="t('datasource.max_pool_size')">{{
-                        nodeInfo.configuration.maxPoolSize
+                        nodeInfo.configuration.maxPoolSize || 5
                       }}</BaseInfoItem>
                     </el-col>
                     <el-col :span="12">
                       <BaseInfoItem
                         :value="nodeInfo.configuration.queryTimeout"
                         :label="t('datasource.query_timeout')"
-                        >{{ nodeInfo.configuration.queryTimeout }}</BaseInfoItem
+                        >{{ nodeInfo.configuration.queryTimeout || '30'
+                        }}{{ t('common.second') }}</BaseInfoItem
                       >
                     </el-col>
                   </el-row>
@@ -1407,7 +1407,7 @@ const defaultProps = {
         }
 
         .name {
-          margin: 0 8px;
+          margin-left: 8px;
         }
 
         .create-user {

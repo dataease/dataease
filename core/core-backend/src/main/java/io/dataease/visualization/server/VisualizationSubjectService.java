@@ -6,6 +6,7 @@ import io.dataease.api.visualization.request.VisualizationSubjectRequest;
 import io.dataease.api.visualization.vo.VisualizationSubjectVO;
 import io.dataease.commons.UUIDUtils;
 import io.dataease.commons.exception.DataEaseException;
+import io.dataease.exception.DEException;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
 import io.dataease.visualization.dao.auto.entity.DataVisualizationInfo;
@@ -65,14 +66,17 @@ public class VisualizationSubjectService implements VisualizationSubjectApi {
             wrapper.eq("type", "self");
             wrapper.eq("name", request.getName());
             List<VisualizationSubject> subjectAll =subjectMapper.selectList(wrapper);
-
-            request.setId(IDUtils.snowID().toString());
-            request.setCreateTime(System.currentTimeMillis());
-            request.setType("self");
-            request.setName(request.getName());
-            VisualizationSubject saveInfo = new VisualizationSubject();
-            BeanUtils.copyBean(saveInfo,request);
-            subjectMapper.insert(saveInfo);
+            if (CollectionUtils.isEmpty(subjectAll)) {
+                request.setId(IDUtils.snowID().toString());
+                request.setCreateTime(System.currentTimeMillis());
+                request.setType("self");
+                request.setName(request.getName());
+                VisualizationSubject saveInfo = new VisualizationSubject();
+                BeanUtils.copyBean(saveInfo,request);
+                subjectMapper.insert(saveInfo);
+            } else {
+                DEException.throwException("名称已经存在");
+            }
         } else {
             QueryWrapper<VisualizationSubject> wrapper = new QueryWrapper<>();
             wrapper.eq("name", request.getName());
@@ -84,7 +88,7 @@ public class VisualizationSubjectService implements VisualizationSubjectApi {
                 BeanUtils.copyBean(updateInfo,request);
                 subjectMapper.updateById(updateInfo);
             } else {
-                DataEaseException.throwException("名称已经存在");
+                DEException.throwException("名称已经存在");
             }
         }
     }

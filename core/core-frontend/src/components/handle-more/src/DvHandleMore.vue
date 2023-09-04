@@ -24,7 +24,9 @@ const props = defineProps({
   inTable: propTypes.bool.def(false),
   node: {
     type: Object,
-    deafult: {}
+    default() {
+      return {}
+    }
   }
 })
 
@@ -38,7 +40,7 @@ const handleCommand = (command: string | number | object) => {
   emit('handleCommand', command)
 }
 const callBack = param => {
-  if (props.node.leaf && props.node?.weight >= 4) {
+  if (props.node.leaf && props.node?.weight >= 7) {
     menus.value.splice(2, 0, param)
   }
 }

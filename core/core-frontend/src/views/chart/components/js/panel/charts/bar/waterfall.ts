@@ -1,6 +1,6 @@
 import { WaterfallOptions, Waterfall as G2Waterfall } from '@antv/g2plot/esm/plots/waterfall'
 import { G2PlotChartView, G2PlotDrawOptions } from '../../types/impl/g2plot'
-import { flow, parseJson } from '../../../util'
+import { flow, hexColorToRGBA, parseJson } from '../../../util'
 import { formatterItem, valueFormatter } from '../../../formatter'
 import { getPadding, setGradientColor } from '../../common/common_antv'
 import { flow as flowLeft } from 'lodash-es'
@@ -71,14 +71,14 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
 
   protected configBasicStyle(chart: Chart, options: WaterfallOptions): WaterfallOptions {
     const customAttr = parseJson(chart.customAttr)
-    const { colors, gradient } = customAttr.basicStyle
+    const { colors, gradient, alpha } = customAttr.basicStyle
     const [risingColorRgba, fallingColorRgba, totalColorRgba] = colors
     return {
       ...options,
       total: {
         label: '合计',
         style: {
-          fill: setGradientColor(totalColorRgba, gradient, 270)
+          fill: setGradientColor(hexColorToRGBA(totalColorRgba, alpha), gradient, 270)
         }
       },
       legend: {
@@ -88,7 +88,7 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
             value: '',
             marker: {
               style: {
-                fill: setGradientColor(risingColorRgba, gradient, 270)
+                fill: setGradientColor(hexColorToRGBA(risingColorRgba, alpha), gradient, 270)
               }
             }
           },
@@ -97,7 +97,7 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
             value: '',
             marker: {
               style: {
-                fill: setGradientColor(fallingColorRgba, gradient, 270)
+                fill: setGradientColor(hexColorToRGBA(fallingColorRgba, alpha), gradient, 270)
               }
             }
           },
@@ -106,15 +106,38 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
             value: '',
             marker: {
               style: {
-                fill: setGradientColor(totalColorRgba, gradient, 270)
+                fill: setGradientColor(hexColorToRGBA(totalColorRgba, alpha), gradient, 270)
               }
             }
           }
         ]
       },
-      risingFill: setGradientColor(risingColorRgba, gradient, 270),
-      fallingFill: setGradientColor(fallingColorRgba, gradient, 270)
+      risingFill: setGradientColor(hexColorToRGBA(risingColorRgba, alpha), gradient, 270),
+      fallingFill: setGradientColor(hexColorToRGBA(fallingColorRgba, alpha), gradient, 270)
     }
+  }
+
+  protected configYAxis(chart: Chart, options: WaterfallOptions): WaterfallOptions {
+    const tmpOptions = super.configYAxis(chart, options)
+    if (!tmpOptions.yAxis) {
+      return tmpOptions
+    }
+    const yAxis = parseJson(chart.customStyle).yAxis
+    const axisValue = yAxis.axisValue
+    if (!axisValue?.auto) {
+      const axis = {
+        yAxis: {
+          ...tmpOptions.yAxis,
+          min: axisValue.min,
+          max: axisValue.max,
+          minLimit: axisValue.min,
+          maxLimit: axisValue.max,
+          tickCount: axisValue.splitCount
+        }
+      }
+      return { ...tmpOptions, ...axis }
+    }
+    return tmpOptions
   }
 
   protected setupOptions(chart: Chart, options: WaterfallOptions): WaterfallOptions {

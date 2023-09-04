@@ -1,5 +1,6 @@
 [default.extend-words]
 ser = "ser"
 Referer = "Referer"
+Encryp = "Encryp"
 [files]
 extend-exclude = ["mapFiles/**"]

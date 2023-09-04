@@ -143,7 +143,7 @@ const resetForm = () => {
 }
 
 const dfs = (arr: Tree[]) => {
-  arr.forEach(ele => {
+  arr?.forEach(ele => {
     ele.value = ele.id
     if (ele.children?.length) {
       dfs(ele.children)

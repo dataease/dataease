@@ -46,7 +46,6 @@ export const MOBILE_SETTING_DARK = {
 }
 
 export const DEFAULT_DASHBOARD_STYLE_BASE = {
-  themeColor: 'light',
   gap: 'yes',
   gapSize: 5,
   resultMode: 'all', // 视图结果显示模式 all 视图 custom 仪表板自定义
@@ -55,11 +54,13 @@ export const DEFAULT_DASHBOARD_STYLE_BASE = {
 
 export const DEFAULT_DASHBOARD_STYLE_LIGHT = {
   ...DEFAULT_DASHBOARD_STYLE_BASE,
+  themeColor: 'light',
   mobileSetting: MOBILE_SETTING_LIGHT
 }
 
 export const DEFAULT_DASHBOARD_STYLE_DARK = {
   ...DEFAULT_DASHBOARD_STYLE_BASE,
+  themeColor: 'dark',
   mobileSetting: MOBILE_SETTING_DARK
 }
 

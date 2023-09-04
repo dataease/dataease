@@ -1,17 +1,18 @@
-<script lang="tsx" setup>
+<script lang="ts" setup>
 import { useI18n } from '@/hooks/web/useI18n'
 import FunctionCfg from '@/views/chart/components/editor/editor-senior/components/FunctionCfg.vue'
 import ScrollCfg from '@/views/chart/components/editor/editor-senior/components/ScrollCfg.vue'
 import AssistLine from '@/views/chart/components/editor/editor-senior/components/AssistLine.vue'
 import Threshold from '@/views/chart/components/editor/editor-senior/components/Threshold.vue'
 import CollapseSwitchItem from '@/components/collapse-switch-item/src/CollapseSwitchItem.vue'
-import { PropType, ref, toRefs } from 'vue'
+import { computed, PropType, ref, toRefs } from 'vue'
 import LinkJumpSet from '@/components/visualization/LinkJumpSet.vue'
 import LinkageSet from '@/components/visualization/LinkageSet.vue'
 import { canvasSave } from '@/utils/canvasUtils'
 import { updateJumpSetActive } from '@/api/visualization/linkJump'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { updateLinkageActive } from '@/api/visualization/linkage'
+import { includesAny } from '../util/StringUtils'
 const dvMainStore = dvMainStoreWithOut()
 
 const { t } = useI18n()
@@ -93,6 +94,19 @@ const linkageSetOpen = () => {
     linkageRef.value.dialogInit({ id: chart.value.id })
   })
 }
+
+const SENIOR_PROP: EditorProperty[] = [
+  'map-mapping',
+  'function-cfg',
+  'assist-line',
+  'scroll-cfg',
+  'threshold',
+  'jump-set',
+  'linkage'
+]
+const noSenior = computed(() => {
+  return !includesAny(properties.value, ...SENIOR_PROP)
+})
 
 const linkJumpActiveChange = () => {
   // 直接触发刷新
@@ -181,6 +195,7 @@ const linkageActiveChange = () => {
           </el-collapse-item>
 
           <collapse-switch-item
+            v-if="showProperties('linkage')"
             :themes="themes"
             name="linkage"
             :title="'联动设置'"
@@ -195,6 +210,7 @@ const linkageActiveChange = () => {
               size="small"
               :style="{ width: '24px', marginLeft: '4px', float: 'right' }"
               @click="linkageSetOpen"
+              :disabled="!chart.linkageActive"
             >
               <template #icon>
                 <Icon name="icon_edit_outlined"></Icon>
@@ -202,6 +218,7 @@ const linkageActiveChange = () => {
             </el-button>
           </collapse-switch-item>
           <collapse-switch-item
+            v-if="showProperties('jump-set')"
             :themes="themes"
             name="jumpSet"
             :title="'跳转设置'"
@@ -216,6 +233,7 @@ const linkageActiveChange = () => {
               size="small"
               :style="{ width: '24px', marginLeft: '4px', float: 'right' }"
               @click="linkJumpSetOpen"
+              :disabled="!chart.jumpActive"
             >
               <template #icon>
                 <Icon name="icon_edit_outlined"></Icon>
@@ -224,6 +242,9 @@ const linkageActiveChange = () => {
           </collapse-switch-item>
         </el-collapse>
       </el-row>
+    </div>
+    <div v-show="noSenior" class="no-senior">
+      {{ t('chart.chart_no_senior') }}
     </div>
     <!--跳转设置-->
     <link-jump-set ref="linkJumpRef"></link-jump-set>
@@ -245,7 +266,7 @@ const linkageActiveChange = () => {
 }
 
 span {
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .view-panel {
@@ -255,13 +276,6 @@ span {
 }
 
 .de-collapse-style {
-  :deep(.ed-collapse-item__header) {
-    height: 34px !important;
-    line-height: 34px !important;
-    padding: 0 0 0 6px !important;
-    font-size: 12px !important;
-    font-weight: 400 !important;
-  }
   :deep(.ed-collapse-item__content) {
     padding: 16px !important;
   }

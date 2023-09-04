@@ -20,17 +20,12 @@ const props = defineProps({
       }
     }
   },
-  propValue: {
-    type: String,
-    required: true,
-    default: ''
-  },
   element: {
     type: Object,
     default() {
       return {
         id: null,
-        propValue: ''
+        propValue: []
       }
     }
   },
@@ -196,7 +191,7 @@ const drop = e => {
 }
 
 const editeQueryConfig = (queryId: string) => {
-  queryConfig.value.setCondition(element.value.id, queryId)
+  queryConfig.value.setCondition(queryId)
 }
 
 const addQueryCriteria = () => {
@@ -232,7 +227,7 @@ const editQueryCriteria = () => {
 }
 
 const addCriteriaConfigOut = () => {
-  queryConfig.value.setConditionOut(element.value.id)
+  queryConfig.value.setConditionOut()
 }
 
 emitter.on(`addQueryCriteria${element.value.id}`, addCriteriaConfigOut)
@@ -271,7 +266,7 @@ const listVisible = computed(() => {
 })
 
 const addCriteriaConfig = () => {
-  queryConfig.value.setConditionInit(element.value.id, queryConfig.value.addCriteriaConfig())
+  queryConfig.value.setConditionInit(queryConfig.value.addCriteriaConfig())
 }
 
 const queryData = () => {
@@ -299,6 +294,12 @@ const queryData = () => {
       @dragover.prevent.stop="dragover"
       @drop.prevent.stop="drop"
     >
+      <div v-if="!listVisible.length" class="no-list-label flex-align-center">
+        <div class="container flex-align-center">
+          将右侧的字段拖拽到这里 或 点击
+          <el-button @click="addCriteriaConfig" text> 添加查询条件 </el-button>
+        </div>
+      </div>
       <div class="query-fields-container">
         <div class="query-item" :key="ele.id" v-for="(ele, index) in listVisible">
           <div class="query-field">
@@ -364,16 +365,11 @@ const queryData = () => {
         </el-button>
       </div>
     </div>
-    <div v-if="!listVisible.length" class="no-list-label flex-align-center">
-      <div class="container flex-align-center">
-        将右侧的字段拖拽到这里 或 点击
-        <el-button @click="addCriteriaConfig" text> 添加查询条件 </el-button>
-      </div>
-    </div>
   </div>
   <Teleport to="body">
     <QueryConditionConfiguration
       :add-query-criteria-config="addQueryCriteriaConfig"
+      :query-element="element"
       ref="queryConfig"
     ></QueryConditionConfiguration>
   </Teleport>

@@ -10,18 +10,7 @@ defineProps({
 
 const { wsCache } = useCache()
 const emits = defineEmits(['createDataset', 'backToDatasourceList', 'continueCreating'])
-const num = ref(5)
 const checked = ref(false)
-let time = setInterval(() => {
-  num.value -= 1
-  if (num.value === 0) {
-    emits('backToDatasourceList')
-    clearInterval(time)
-  }
-}, 1000)
-onUnmounted(() => {
-  clearInterval(time)
-})
 const createDataset = () => {
   emits('createDataset')
 }
@@ -35,6 +24,7 @@ const continueCreating = () => {
 checked.value = wsCache.get('ds-create-success') || false
 const handleChange = (val: boolean) => {
   wsCache.set('ds-create-success', val)
+  emits('backToDatasourceList')
 }
 </script>
 
@@ -46,13 +36,6 @@ const handleChange = (val: boolean) => {
       </el-icon>
 
       <div class="succeed-text">创建成功</div>
-
-      <div class="countdown-text">
-        <span class="num">
-          {{ num }}
-        </span>
-        秒后返回数据源列表
-      </div>
       <div class="btn-list">
         <el-button @click="continueCreating" secondary> 继续创建 </el-button>
         <el-button @click="backToDatasourceList" type="primary"> 返回数据源列表 </el-button>
@@ -119,15 +102,6 @@ const handleChange = (val: boolean) => {
       margin: 16px 0;
     }
 
-    .countdown-text {
-      margin-bottom: 16px;
-      font-size: 14px;
-      line-height: 22px;
-      .num {
-        color: #3370ff;
-        margin-right: 4px;
-      }
-    }
     .btn-list {
       margin-bottom: 16px;
     }

@@ -278,7 +278,7 @@ onBeforeUnmount(() => {
       <div style="height: 100%" :id="containerId"></div>
     </div>
     <div class="table-page-info" v-if="showPage && !isError">
-      <div :style="{ color: pageColor }">{{ state.pageInfo.total }}条数据</div>
+      <div :style="{ color: pageColor }">共{{ state.pageInfo.total }}条</div>
       <el-pagination
         class="table-page-content"
         layout="prev, pager, next"

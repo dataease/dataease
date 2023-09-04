@@ -6,7 +6,9 @@ export const TABLE_EDITOR_PROPERTY: EditorProperty[] = [
   'title-selector',
   'function-cfg',
   'threshold',
-  'scroll-cfg'
+  'scroll-cfg',
+  'jump-set',
+  'linkage'
 ]
 export const TABLE_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
   'background-overall-component': ['all'],

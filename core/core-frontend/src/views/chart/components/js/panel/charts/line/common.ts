@@ -8,7 +8,9 @@ export const LINE_EDITOR_PROPERTY: EditorProperty[] = [
   'label-selector',
   'tooltip-selector',
   'assist-line',
-  'function-cfg'
+  'function-cfg',
+  'jump-set',
+  'linkage'
 ]
 export const LINE_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
   'background-overall-component': ['all'],
