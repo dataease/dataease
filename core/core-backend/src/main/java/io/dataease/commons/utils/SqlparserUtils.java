@@ -101,7 +101,7 @@ public class SqlparserUtils {
         };
     }
 
-    public static String handleVariableDefaultValue(String sql, String sqlVariableDetails, boolean isEdit, List<SqlVariableDetails> parameters) {
+    public static String handleVariableDefaultValue(String sql, String sqlVariableDetails, boolean isEdit, boolean isFromDataSet, List<SqlVariableDetails> parameters) {
         if (StringUtils.isEmpty(sql)) {
             DataEaseException.throwException(Translator.get("i18n_sql_not_empty"));
         }
@@ -112,8 +112,6 @@ public class SqlparserUtils {
             List<SqlVariableDetails> defaultsSqlVariableDetails = JsonUtil.parseList(sqlVariableDetails, listTypeReference);
             Pattern pattern = Pattern.compile(regex);
             Matcher matcher = pattern.matcher(sql);
-
-
 
             while (matcher.find()) {
                 SqlVariableDetails defaultsSqlVariableDetail = null;
@@ -135,7 +133,7 @@ public class SqlparserUtils {
                     sql = sql.replace(matcher.group(), transFilter(filterParameter));
                 }else {
                     if (defaultsSqlVariableDetail != null && StringUtils.isNotEmpty(defaultsSqlVariableDetail.getDefaultValue())) {
-                        if (!isEdit && defaultsSqlVariableDetail.getDefaultValueScope().equals(SqlVariableDetails.DefaultValueScope.ALLSCOPE)) {
+                        if (!isEdit && isFromDataSet && defaultsSqlVariableDetail.getDefaultValueScope().equals(SqlVariableDetails.DefaultValueScope.ALLSCOPE)) {
                             sql = sql.replace(matcher.group(), defaultsSqlVariableDetail.getDefaultValue());
                         }
                         if (isEdit) {
