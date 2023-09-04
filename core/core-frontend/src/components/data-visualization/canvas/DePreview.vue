@@ -2,7 +2,7 @@
 import { getStyle, getCanvasStyle, getShapeItemStyle } from '@/utils/style'
 import ComponentWrapper from './ComponentWrapper.vue'
 import { changeStyleWithScale } from '@/utils/translate'
-import { computed, nextTick, onMounted, ref, toRefs, watch } from 'vue'
+import { computed, nextTick, onMounted, ref, toRefs, watch, onBeforeUnmount } from 'vue'
 import { changeRefComponentsSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
@@ -63,6 +63,8 @@ const domHeight = ref()
 const cellWidth = ref(10)
 const cellHeight = ref(10)
 const userViewEnlargeRef = ref(null)
+const searchCount = ref(0)
+const refreshTimer = ref(null)
 
 const dashboardActive = computed(() => {
   return dvInfo.value.type === 'dashboard'
@@ -133,13 +135,37 @@ const curGap = computed(() => {
     : 0
 })
 
+const initRefreshTimer = () => {
+  // 数据刷新计时器 (仪表开启刷新并且是预览状态才启动刷新)
+  if (canvasStyleData.value.refreshViewEnable && showPosition.value === 'preview') {
+    searchCount.value = 0
+    refreshTimer.value && clearInterval(refreshTimer.value)
+    let refreshTime = 300000
+    if (canvasStyleData.value.refreshTime && canvasStyleData.value.refreshTime > 0) {
+      if (canvasStyleData.value.refreshUnit === 'second') {
+        refreshTime = canvasStyleData.value.refreshTime * 1000
+      } else {
+        refreshTime = canvasStyleData.value.refreshTime * 60000
+      }
+    }
+    refreshTimer.value = setInterval(() => {
+      searchCount.value++
+    }, refreshTime)
+  }
+}
+
 onMounted(() => {
+  initRefreshTimer()
   restore()
   window.addEventListener('resize', restore)
   const erd = elementResizeDetectorMaker()
   erd.listenTo(document.getElementById(domId), element => {
     restore()
   })
+})
+
+onBeforeUnmount(() => {
+  clearInterval(refreshTimer.value)
 })
 
 const userViewEnlargeOpen = item => {
@@ -166,6 +192,7 @@ defineExpose({
       :config="item"
       :style="getShapeItemShowStyle(item)"
       :show-position="showPosition"
+      :search-count="searchCount"
       @userViewEnlargeOpen="userViewEnlargeOpen(item)"
     />
     <user-view-enlarge ref="userViewEnlargeRef"></user-view-enlarge>
