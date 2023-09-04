@@ -1,13 +1,15 @@
 <script lang="tsx" setup>
-import { reactive, watch } from 'vue'
+import { computed, PropType, reactive, ref, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL, DEFAULT_FUNCTION_CFG } from '@/views/chart/components/editor/util/chart'
+import { equalsAny, includesAny } from '../../util/StringUtils'
+import { parseJson } from '../../../js/util'
 
 const { t } = useI18n()
 
 const props = defineProps({
   chart: {
-    type: Object,
+    type: Object as PropType<ChartObj>,
     required: true
   },
   themes: {
@@ -44,18 +46,46 @@ const showProperty = prop => props.propertyInner?.includes(prop)
 const init = () => {
   const chart = JSON.parse(JSON.stringify(props.chart))
   if (chart.senior) {
-    let senior = null
-    if (Object.prototype.toString.call(chart.senior) === '[object Object]') {
-      senior = JSON.parse(JSON.stringify(chart.senior))
-    } else {
-      senior = JSON.parse(chart.senior)
-    }
+    let senior = parseJson(chart.senior)
     if (senior.functionCfg) {
       state.functionForm = senior.functionCfg
     }
+    initFieldCtrl()
   }
 }
+const showIgnoreOption = computed(() => {
+  return !equalsAny(props.chart.type, 'map', 'table-pivot', 'table-info')
+})
 
+const showEmptyDataFieldCtrl = computed(() => {
+  return (
+    showProperty('emptyDataStrategy') &&
+    includesAny(props.chart.type, 'table') &&
+    state.functionForm.emptyDataStrategy !== 'breakLine'
+  )
+})
+
+const fieldOptions = ref([])
+const initFieldCtrl = () => {
+  if (showEmptyDataFieldCtrl.value) {
+    fieldOptions.value = []
+    let axis
+    if (equalsAny(props.chart.type, 'table-normal', 'table-pivot')) {
+      axis = props.chart.yAxis
+    }
+    if (props.chart.type === 'table-info') {
+      axis = props.chart.xAxis
+    }
+    axis.forEach(item => {
+      if (item.groupType === 'q') {
+        fieldOptions.value.push({
+          label: item.name,
+          value: item.dataeaseName
+        })
+      }
+    })
+  }
+}
 init()
 </script>
 
@@ -123,10 +153,29 @@ init()
               t('chart.break_line')
             }}</el-radio>
             <el-radio :effect="props.themes" :label="'setZero'">{{ t('chart.set_zero') }}</el-radio>
-            <el-radio :effect="props.themes" :label="'ignoreData'">{{
+            <el-radio v-show="showIgnoreOption" :effect="props.themes" :label="'ignoreData'">{{
               t('chart.ignore_data')
             }}</el-radio>
           </el-radio-group>
+        </el-form-item>
+        <el-form-item
+          v-show="showEmptyDataFieldCtrl"
+          :label="t('chart.empty_data_field_ctrl')"
+          class="form-item"
+        >
+          <el-select
+            v-model="state.functionForm.emptyDataFieldCtrl"
+            multiple
+            :effect="props.themes"
+            @change="changeFunctionCfg"
+          >
+            <el-option
+              v-for="option in fieldOptions"
+              :key="option.value"
+              :label="option.label"
+              :value="option.value"
+            />
+          </el-select>
         </el-form-item>
       </el-form>
     </el-col>

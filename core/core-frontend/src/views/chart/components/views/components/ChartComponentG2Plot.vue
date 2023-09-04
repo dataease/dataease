@@ -54,29 +54,26 @@ const state = reactive({
 const containerId = 'container-' + showPosition.value + '-' + view.value.id
 const viewTrack = ref(null)
 
-const calcData = (view, callBack) => {
+const calcData = async (view, callback) => {
   if (view.tableId) {
     state.loading = true
     isError.value = false
     const v = JSON.parse(JSON.stringify(view))
-    getData(v)
-      .then(res => {
-        if (res.code && res.code !== 0) {
-          isError.value = true
-          errMsg.value = res.msg
-        } else {
-          state.data = res?.data
-          emit('onDrillFilters', res?.drillFilters)
-          if (!res?.drillFilters?.length) {
-            dynamicAreaId.value = ''
-          }
-          renderChart(res)
+    await getData(v).then(res => {
+      if (res.code && res.code !== 0) {
+        isError.value = true
+        errMsg.value = res.msg
+      } else {
+        state.data = res?.data
+        emit('onDrillFilters', res?.drillFilters)
+        if (!res?.drillFilters?.length) {
+          dynamicAreaId.value = ''
         }
-      })
-      .finally(() => {
-        callBack()
-      })
+        renderChart(res)
+      }
+    })
   }
+  callback?.()
 }
 
 const renderChart = async view => {
@@ -84,7 +81,7 @@ const renderChart = async view => {
     return
   }
   // view 为引用对象 需要存库 view.data 直接赋值会导致保存不必要的数据
-  const chart = toRaw({ ...view, data: state.data })
+  const chart = toRaw({ ...view, data: toRaw(state.data) })
   const chartView = chartViewManager.getChartView(view.render, view.type)
   switch (chartView.library) {
     case ChartLibraryType.L7_PLOT:
@@ -109,6 +106,7 @@ const renderG2Plot = (chart, chartView: G2PlotChartView<any, any>) => {
   })
   state.myChart?.render()
 }
+
 const dynamicAreaId = ref('')
 const country = ref('')
 const renderL7Plot = (chart, chartView: L7PlotChartView<any, any>) => {
@@ -194,17 +192,15 @@ const trackMenu = computed(() => {
   const trackMenuInfo = []
   let linkageCount = 0
   let jumpCount = 0
-  state.data &&
-    state.data?.fields &&
-    state.data?.fields.forEach(item => {
-      const sourceInfo = view.value.id + '#' + item.id
-      if (nowPanelTrackInfo.value[sourceInfo]) {
-        linkageCount++
-      }
-      if (nowPanelJumpInfo.value[sourceInfo]) {
-        jumpCount++
-      }
-    })
+  state.data?.fields?.forEach(item => {
+    const sourceInfo = view.value.id + '#' + item.id
+    if (nowPanelTrackInfo.value[sourceInfo]) {
+      linkageCount++
+    }
+    if (nowPanelJumpInfo.value[sourceInfo]) {
+      jumpCount++
+    }
+  })
   jumpCount && trackMenuInfo.push('jump')
   linkageCount && trackMenuInfo.push('linkage')
   view.value.drillFields.length && trackMenuInfo.push('drill')

@@ -63,32 +63,31 @@ const state = reactive({
     pageSize: 20,
     currentPage: 1
   },
+  totalItems: 0,
   showPage: false
 })
 
 const containerId = 'container-' + showPosition.value + '-' + view.value.id
 const viewTrack = ref(null)
 
-const calcData = (view: Chart, resetPageInfo = true, callback) => {
+const calcData = async (view: Chart, resetPageInfo = true, callback) => {
   if (!view.tableId) {
     return
   }
   isError.value = false
   const v = JSON.parse(JSON.stringify(view))
-  getData(v)
-    .then(res => {
-      if (res.code && res.code !== 0) {
-        isError.value = true
-        errMsg.value = res.msg
-      } else {
-        state.data = res?.data
-        emit('onDrillFilters', res?.drillFilters)
-        renderChart(res as unknown as Chart, resetPageInfo)
-      }
-    })
-    .finally(() => {
-      callback()
-    })
+  await getData(v).then(res => {
+    if (res.code && res.code !== 0) {
+      isError.value = true
+      errMsg.value = res.msg
+    } else {
+      state.data = res?.data
+      state.totalItems = res?.totalItems
+      emit('onDrillFilters', res?.drillFilters)
+      renderChart(res as unknown as Chart, resetPageInfo)
+    }
+  })
+  callback?.()
 }
 // 图表对象不用响应式
 let myChart = null
@@ -97,7 +96,7 @@ const renderChart = async (view: Chart, resetPageInfo: boolean) => {
     return
   }
   // view 为引用对象 需要存库 view.data 直接赋值会导致保存不必要的数据
-  const chart = { ...view, data: state.data } as ChartObj
+  const chart = { ...view, data: toRaw(state.data) } as ChartObj
   setupPage(chart, resetPageInfo)
   myChart?.destroy()
   const chartView = chartViewManager.getChartView(view.render, view.type) as S2ChartView<any>
@@ -123,8 +122,8 @@ const setupPage = (chart: ChartObj, resetPageInfo?: boolean) => {
   }
   const pageInfo = state.pageInfo
   pageInfo.pageSize = customAttr.basicStyle.tablePageSize ?? 20
-  if (chart.totalItems > state.pageInfo.pageSize) {
-    pageInfo.total = chart.totalItems
+  if (state.totalItems > state.pageInfo.pageSize) {
+    pageInfo.total = state.totalItems
     state.showPage = true
   } else {
     state.showPage = false
@@ -203,17 +202,15 @@ const trackMenu = computed(() => {
   const trackMenuInfo = []
   let linkageCount = 0
   let jumpCount = 0
-  state.data &&
-    state.data?.fields &&
-    state.data?.fields.forEach(item => {
-      const sourceInfo = view.value.id + '#' + item.id
-      if (nowPanelTrackInfo.value[sourceInfo]) {
-        linkageCount++
-      }
-      if (nowPanelJumpInfo.value[sourceInfo]) {
-        jumpCount++
-      }
-    })
+  state.data?.fields?.forEach(item => {
+    const sourceInfo = view.value.id + '#' + item.id
+    if (nowPanelTrackInfo.value[sourceInfo]) {
+      linkageCount++
+    }
+    if (nowPanelJumpInfo.value[sourceInfo]) {
+      jumpCount++
+    }
+  })
   jumpCount && trackMenuInfo.push('jump')
   linkageCount && trackMenuInfo.push('linkage')
   view.value.drillFields.length && trackMenuInfo.push('drill')

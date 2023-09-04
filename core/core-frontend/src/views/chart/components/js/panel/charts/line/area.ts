@@ -91,15 +91,6 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
       }
       // options
       const options = this.setupOptions(chart, initOptions)
-      // 处理空值
-      if (chart.senior) {
-        let emptyDataStrategy = parseJson(chart.senior)?.functionCfg?.emptyDataStrategy
-        if (!emptyDataStrategy) {
-          emptyDataStrategy = 'breakLine'
-        }
-        handleEmptyDataStrategy(emptyDataStrategy, chart, data, options)
-      }
-
       // 开始渲染
       const newChart = new G2Area(container, options)
 
@@ -215,7 +206,8 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
       this.configXAxis,
       this.configYAxis,
       this.configSlider,
-      this.configAnalyse
+      this.configAnalyse,
+      this.configEmptyDataStragy
     )(chart, options)
   }
 

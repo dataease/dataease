@@ -1,12 +1,12 @@
 import { hexColorToRGBA, parseJson, resetRgbOpacity } from '../..//util'
 import {
   DEFAULT_BASIC_STYLE,
-  DEFAULT_COLOR_CASE,
   DEFAULT_TABLE_CELL,
   DEFAULT_TABLE_HEADER
 } from '@/views/chart/components/editor/util/chart'
 import { S2Theme, Style, TextAlign } from '@antv/s2'
 import { deepAssign } from '@antv/g2plot/lib/utils'
+import { keys, intersection, filter, cloneDeep } from 'lodash-es'
 
 export function getCustomTheme(chart: Chart): S2Theme {
   const headerColor = hexColorToRGBA(
@@ -329,33 +329,17 @@ export function getCurrentField(valueFieldList: Axis[], field: ChartViewField) {
   return res
 }
 
-function getConditions(chart: Chart) {
+export function getConditions(chart: Chart) {
   const res = {
     text: [],
     background: []
   }
-  let conditions
-  try {
-    const senior = parseJson(chart.senior)
-    conditions = senior.threshold ? senior.threshold.tableThreshold : null
-  } catch (err) {
-    const senior = parseJson(chart.senior)
-    conditions = senior.threshold ? senior.threshold.tableThreshold : null
-  }
+  const conditions = parseJson(chart.senior).threshold.tableThreshold ?? []
 
-  if (conditions && conditions.length > 0) {
-    // table item color
-    let valueColor = DEFAULT_COLOR_CASE.tableFontColor
-    let valueBgColor = DEFAULT_COLOR_CASE.tableItemBgColor
-    if (chart.customAttr) {
-      const customAttr = parseJson(chart.customAttr)
-      // color
-      if (customAttr.tableCell) {
-        const c = JSON.parse(JSON.stringify(customAttr.tableCell))
-        valueColor = c.tableFontColor
-        valueBgColor = hexColorToRGBA(c.tableItemBgColor, c.alpha)
-      }
-    }
+  if (conditions?.length > 0) {
+    const { tableCell, basicStyle } = parseJson(chart.customAttr)
+    const valueColor = tableCell.tableFontColor
+    const valueBgColor = hexColorToRGBA(tableCell.tableItemBgColor, basicStyle.alpha)
 
     for (let i = 0; i < conditions.length; i++) {
       const field = conditions[i]
@@ -511,4 +495,37 @@ function mappingColor(value, defaultColor, field, type) {
     }
   }
   return color
+}
+
+export function handleTableEmptyStrategy(chart: Chart) {
+  let newData = chart.data?.tableRow as Record<string, any>[]
+  let intersectionArr = []
+  const senior = parseJson(chart.senior)
+  let emptyDataStrategy = senior?.functionCfg?.emptyDataStrategy
+  if (!emptyDataStrategy) {
+    emptyDataStrategy = 'breakLine'
+  }
+  const emptyDataFieldCtrl = senior?.functionCfg?.emptyDataFieldCtrl
+  if (emptyDataStrategy !== 'breakLine' && emptyDataFieldCtrl?.length && newData?.length) {
+    const deNames = keys(newData[0])
+    intersectionArr = intersection(deNames, emptyDataFieldCtrl)
+  }
+  if (intersectionArr.length) {
+    newData = cloneDeep(newData)
+    for (let i = newData.length - 1; i >= 0; i--) {
+      for (let j = 0, tmp = intersectionArr.length; j < tmp; j++) {
+        const deName = intersectionArr[j]
+        if (newData[i][deName] === null) {
+          if (emptyDataStrategy === 'setZero') {
+            newData[i][deName] = 0
+          }
+          if (emptyDataStrategy === 'ignoreData') {
+            newData = filter(newData, (_, index) => index !== i)
+            break
+          }
+        }
+      }
+    }
+  }
+  return newData
 }
