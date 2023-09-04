@@ -281,8 +281,7 @@ onMounted(() => {
             @onBackgroundChange="componentBackgroundChange"
           ></background-overall-common>
         </el-collapse-item>
-        <el-collapse-item :title="'视图配色'" name="graphical">
-        </el-collapse-item>
+        <el-collapse-item :title="'视图配色'" name="graphical"> </el-collapse-item>
         <el-collapse-item name="viewTitle">
           <template #title>
             {{ t('visualization.chart_title') }}

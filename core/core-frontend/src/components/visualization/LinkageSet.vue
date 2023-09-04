@@ -37,8 +37,10 @@
               </span>
             </el-row>
             <el-tree
+              class="custom-tree"
               menu
               ref="linkageInfoTree"
+              :empty-text="'暂无可用图表'"
               :filter-node-method="filterNodeMethod"
               :data="curLinkageOnlyTargetViewsInfo"
               node-key="targetViewId"
@@ -167,7 +169,8 @@
               </el-row>
             </el-row>
             <el-row v-else style="height: 100%" class="custom-position">
-              {{ t('visualization.select_dimension') }}
+              <Icon style="width: 116px; height: 100px" name="dv-empty"></Icon>
+              <span>请先勾选需要联动的图表</span>
             </el-row>
           </el-col>
         </el-row>
@@ -284,6 +287,7 @@ const init = viewItem => {
 
 const saveLinkageSetting = () => {
   // 字段检查
+  let subCheckCountAll = 0
   state.curLinkageTargetViewsInfo.forEach(linkageInfo => {
     let subCheckCount = 0
     const linkageFields = linkageInfo['linkageFields']
@@ -291,6 +295,7 @@ const saveLinkageSetting = () => {
       linkageFields.forEach(function (linkage) {
         if (!(linkage.sourceField && linkage.targetField)) {
           subCheckCount++
+          subCheckCountAll++
         }
       })
     }
@@ -306,6 +311,9 @@ const saveLinkageSetting = () => {
       return
     }
   })
+  if (subCheckCountAll) {
+    return
+  }
 
   const request = {
     dvId: dvInfo.value.id,
@@ -455,10 +463,15 @@ defineExpose({
   flex: 1;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   font-size: 14px;
   flex-flow: row nowrap;
   color: #9ea6b2;
+  flex-direction: column;
+  span {
+    line-height: 22px;
+    color: #646a73;
+  }
 }
 
 .tree-style {
@@ -695,5 +708,10 @@ span {
   font-size: 14px;
   display: flex;
   align-items: center;
+}
+
+.custom-tree {
+  height: 100%;
+  overflow-y: auto;
 }
 </style>
