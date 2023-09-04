@@ -65,7 +65,7 @@ public class TreeUtils {
     }
 
     private static boolean isRoot(TreeModel node) {
-        return node.getId().equals(0L) && StringUtils.equalsIgnoreCase("root", node.getName());
+        return node.getId().equals(0L) && (ObjectUtils.isEmpty(node.getPid()) || node.getPid().equals(-1L));
     }
 
     public static <T extends TreeResultModel> List<T> convertTree(List<TreeModel> roots, Class<T> tClass, boolean appendI18nPrefix) {
