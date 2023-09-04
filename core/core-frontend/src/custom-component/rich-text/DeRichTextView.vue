@@ -130,6 +130,7 @@ const getContent = (v: string) => {
 }
 
 const viewInit = () => {
+  // do viewInit
 }
 const initCurFieldsChange = () => {
   if (!state.canEdit) {
