@@ -327,7 +327,7 @@ const saveLinkageSetting = () => {
         </component-group>
         <!--        <component-button :show-split-line="true" icon-name="dv-tab" title="Tab"></component-button>-->
         <component-button
-          icon-name="dv-copy"
+          icon-name="icon_copy_filled"
           title="复用"
           @customClick="multiplexingCanvasOpen"
         ></component-button>
