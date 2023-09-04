@@ -69,26 +69,31 @@ const state = reactive({
 const containerId = 'container-' + showPosition.value + '-' + view.value.id
 const viewTrack = ref(null)
 
-const calcData = (view: Chart, resetPageInfo = true, callback) => {
-  if (!view.tableId) {
-    return
+const calcData = (view: Chart, callback) => {
+  return calcDataReady(view, true, callback)
+}
+
+const calcDataReady = (view: Chart, resetPageInfo = true, callback?) => {
+  if (view.tableId) {
+    isError.value = false
+    const v = JSON.parse(JSON.stringify(view))
+    getData(v)
+      .then(res => {
+        if (res.code && res.code !== 0) {
+          isError.value = true
+          errMsg.value = res.msg
+        } else {
+          state.data = res?.data
+          emit('onDrillFilters', res?.drillFilters)
+          renderChart(res as unknown as Chart, resetPageInfo)
+        }
+      })
+      .finally(() => {
+        callback()
+      })
+  } else {
+    callback()
   }
-  isError.value = false
-  const v = JSON.parse(JSON.stringify(view))
-  getData(v)
-    .then(res => {
-      if (res.code && res.code !== 0) {
-        isError.value = true
-        errMsg.value = res.msg
-      } else {
-        state.data = res?.data
-        emit('onDrillFilters', res?.drillFilters)
-        renderChart(res as unknown as Chart, resetPageInfo)
-      }
-    })
-    .finally(() => {
-      callback()
-    })
 }
 // 图表对象不用响应式
 let myChart = null
@@ -147,7 +152,7 @@ const handleCurrentChange = pageNum => {
     extReq = { ...extReq, ...chartExtRequest.value }
   }
   const chart = { ...view.value, chartExtRequest: extReq }
-  calcData(chart, false)
+  calcDataReady(chart, false)
 }
 
 const action = param => {

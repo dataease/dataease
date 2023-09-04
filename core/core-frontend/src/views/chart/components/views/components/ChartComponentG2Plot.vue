@@ -76,6 +76,8 @@ const calcData = (view, callBack) => {
       .finally(() => {
         callBack()
       })
+  } else {
+    callBack()
   }
 }
 

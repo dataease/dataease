@@ -79,6 +79,12 @@ public class ChartDataManage {
             DEException.throwException(ResultCode.DATA_IS_WRONG.code(), Translator.get("i18n_chart_delete"));
         }
 
+        // 如果是从仪表板获取视图数据，则仪表板的查询模式，查询结果的数量，覆盖视图对应的属性
+        if (ChartConstants.VIEW_RESULT_MODE.CUSTOM.equals(chartExtRequest.getResultMode())) {
+            view.setResultMode(chartExtRequest.getResultMode());
+            view.setResultCount(chartExtRequest.getResultCount());
+        }
+
         List<ChartViewFieldDTO> viewFields = new ArrayList<>(view.getViewFields());
         final Map<String, List<ChartViewFieldDTO>> extFieldsMap = new LinkedHashMap<>();
         if (ObjectUtils.isNotEmpty(viewFields)) {
