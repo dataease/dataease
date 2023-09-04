@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, reactive, nextTick, computed, shallowRef, toRefs, onMounted } from 'vue'
+import { ref, reactive, nextTick, computed, shallowRef, toRefs } from 'vue'
 import { storeToRefs } from 'pinia'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -57,24 +57,23 @@ const datasetMap = {}
 
 const dfsComponentData = () => {
   const isMain = componentData.value.some(ele => ele.id === queryElement.value.id)
-  let arr = []
-  if (!isMain) {
-    componentData.value.some(ele => {
-      if (ele.innerType === 'DeTabs') {
-        return ele.propValue.some(itx => {
-          if (itx.componentData.some(item => item.id === queryElement.value.id)) {
-            arr = itx.componentData.filter(com => !['VQuery', 'DeTabs'].includes(com.innerType))
-            return true
-          }
-          return false
-        })
-      }
-      return false
-    })
-
-    return arr
-  }
-  return componentData.value.filter(com => !['VQuery', 'DeTabs'].includes(com.innerType))
+  let arr = componentData.value.filter(com => !['VQuery', 'DeTabs'].includes(com.innerType))
+  let tabArr = []
+  componentData.value.forEach(ele => {
+    if (ele.innerType === 'DeTabs') {
+      ele.propValue.forEach(itx => {
+        if (itx.componentData.some(item => item.id === queryElement.value.id) && !isMain) {
+          tabArr = itx.componentData.filter(com => !['VQuery', 'DeTabs'].includes(com.innerType))
+        } else {
+          arr = [
+            ...arr,
+            ...itx.componentData.filter(com => !['VQuery', 'DeTabs'].includes(com.innerType))
+          ]
+        }
+      })
+    }
+  })
+  return isMain ? arr : tabArr
 }
 
 const datasetFieldList = computed(() => {
@@ -198,7 +197,11 @@ const multipleChange = (val: boolean, isMultipleChange = false) => {
   if (Array.isArray(defaultValue)) {
     curComponent.value.selectValue = val ? defaultValue : ''
   } else {
-    curComponent.value.selectValue = val ? (defaultValue ? [defaultValue] : []) : defaultValue
+    curComponent.value.selectValue = val
+      ? defaultValue !== undefined
+        ? [defaultValue]
+        : []
+      : defaultValue
   }
   if (curComponent.value.field.deType === 1) {
     curComponent.value.multiple = val
@@ -315,7 +318,9 @@ const init = (queryId: string) => {
   }
   getDsDetails([
     ...new Set(
-      datasetFieldList.value.map(ele => ele.tableId).filter(ele => !datasetMapKeyList.includes(ele))
+      datasetFieldList.value
+        .map(ele => ele.tableId)
+        .filter(ele => !datasetMapKeyList.includes(ele) && ele)
     )
   ])
     .then(res => {
@@ -340,7 +345,9 @@ const init = (queryId: string) => {
     })
   getSqlParams([
     ...new Set(
-      datasetFieldList.value.map(ele => ele.tableId).filter(ele => !datasetMapKeyList.includes(ele))
+      datasetFieldList.value
+        .map(ele => ele.tableId)
+        .filter(ele => !datasetMapKeyList.includes(ele) && ele)
     )
   ]).then(res => {
     parameters.value = res || []
@@ -354,6 +361,7 @@ const weightlessness = () => {
 const handleCondition = item => {
   activeCondition.value = item.id
   curComponent.value = conditions.value.find(ele => ele.id === item.id)
+
   multiple.value = curComponent.value.multiple
   if (!curComponent.value.dataset.fields.length) {
     getOptions(curComponent.value.dataset.id, curComponent.value)

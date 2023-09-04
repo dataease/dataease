@@ -6,6 +6,7 @@ interface SelectConfig {
   selectValue: any
   defaultValue: any
   defaultValueCheck: boolean
+  id: string
   displayType: string
   options?: Array<{
     label: string
@@ -101,17 +102,20 @@ watch(
 )
 
 watch(
+  () => config.value.id,
+  () => {
+    init()
+  }
+)
+
+watch(
   () => config.value.displayType,
-  (val, oldValue) => {
+  val => {
     if (!props.isConfig) return
     selectValue.value = val === '7' ? [] : ''
     multiple.value = val === '7'
-    if (!['1', '7', undefined].includes(oldValue)) {
-      config.value.defaultValue = multiple.value ? [] : ''
-    }
-  },
-  {
-    immediate: true
+    config.value.defaultValue = multiple.value ? [] : ''
+    selectValue.value = multiple.value ? [] : ''
   }
 )
 
@@ -126,7 +130,7 @@ const handleValueChange = () => {
   config.value.defaultValue = value
 }
 
-onBeforeMount(() => {
+const init = () => {
   const { defaultValueCheck, displayType, defaultValue } = config.value
   const plus = displayType === '7'
   if (defaultValueCheck) {
@@ -137,6 +141,10 @@ onBeforeMount(() => {
     selectValue.value = plus ? [] : ''
   }
   multiple.value = config.value.displayType === '7'
+}
+
+onBeforeMount(() => {
+  init()
 })
 </script>
 

@@ -21,6 +21,7 @@ import io.dataease.dataset.manage.DatasetDataManage;
 import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.entity.CoreDatasourceTask;
+import io.dataease.datasource.dao.auto.entity.CoreDatasourceTaskLog;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
 import io.dataease.datasource.dao.ext.mapper.TaskLogExtMapper;
 import io.dataease.datasource.manage.DataSourceManage;
@@ -371,6 +372,13 @@ public class DatasourceServer implements DatasourceApi {
             TaskDTO taskDTO = new TaskDTO();
             BeanUtils.copyBean(taskDTO, coreDatasourceTask);
             datasourceDTO.setSyncSetting(taskDTO);
+
+            CoreDatasourceTaskLog coreDatasourceTaskLog = datasourceTaskServer.lastSyncLog(datasourceDTO.getId());
+            if(coreDatasourceTaskLog!=null){
+                datasourceDTO.setLastSyncTime(coreDatasourceTaskLog.getStartTime());
+            }
+
+
         }
         if (datasourceDTO.getType().equalsIgnoreCase(DatasourceConfiguration.DatasourceType.Excel.toString())) {
             datasourceDTO.setFileName(ExcelUtils.getFileName(datasource));
@@ -621,6 +629,7 @@ public class DatasourceServer implements DatasourceApi {
     public IPage<CoreDatasourceTaskLogDTO> listSyncRecord(int goPage, int pageSize, Long dsId) {
         QueryWrapper<CoreDatasourceTaskLogDTO> wrapper = new QueryWrapper<>();
         wrapper.eq("ds_id", dsId);
+        wrapper.orderByDesc("start_time");
         Page<CoreDatasourceTaskLogDTO> page = new Page<>(goPage, pageSize);
         IPage<CoreDatasourceTaskLogDTO> pager = taskLogExtMapper.pager(page, wrapper);
         return pager;

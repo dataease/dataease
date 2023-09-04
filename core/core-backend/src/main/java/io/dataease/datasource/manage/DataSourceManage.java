@@ -2,6 +2,7 @@ package io.dataease.datasource.manage;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import io.dataease.api.ds.vo.DatasourceDTO;
 import io.dataease.constant.DataSourceType;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
@@ -71,7 +72,9 @@ public class DataSourceManage {
 
     @XpackInteract(value = "datasourceResourceTree", before = false)
     public void innerEdit(CoreDatasource coreDatasource) {
-        coreDatasourceMapper.updateById(coreDatasource);
+        UpdateWrapper<CoreDatasource> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", coreDatasource.getId());
+        coreDatasourceMapper.update(coreDatasource, updateWrapper);
     }
 
     @XpackInteract(value = "datasourceResourceTree", before = false)

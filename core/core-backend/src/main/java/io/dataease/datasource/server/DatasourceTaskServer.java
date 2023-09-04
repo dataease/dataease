@@ -50,6 +50,19 @@ public class DatasourceTaskServer {
         return CollectionUtils.isEmpty(coreDatasourceTasks) ? new CoreDatasourceTask() : coreDatasourceTasks.get(0);
     }
 
+    public CoreDatasourceTaskLog lastSyncLog(Long dsId){
+        QueryWrapper<CoreDatasourceTaskLog> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("ds_id", dsId);
+        queryWrapper.eq("status", "Completed");
+        queryWrapper.orderByDesc("start_time");
+        List<CoreDatasourceTaskLog> logs = coreDatasourceTaskLogMapper.selectList(queryWrapper);
+        if(CollectionUtils.isEmpty(logs)){
+            return null;
+        }else {
+            return logs.get(0);
+        }
+    }
+
     public void deleteByDSId(Long dsId) {
         QueryWrapper<CoreDatasourceTask> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("ds_id", dsId);
