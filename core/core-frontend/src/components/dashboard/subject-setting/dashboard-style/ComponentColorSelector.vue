@@ -9,7 +9,7 @@
     >
       <div>
         <el-form-item :label="t('chart.color_case')" class="form-item">
-          <el-popover placement="bottom" width="400" trigger="click">
+          <el-popover placement="bottom" width="400" trigger="click" :persistent="false">
             <template #reference>
               <div :style="{ cursor: 'pointer', marginTop: '2px', width: '180px' }">
                 <span
@@ -74,7 +74,7 @@
                         v-for="(c, index) in colorForm.basicStyle.colors"
                         :key="index"
                         :label="index"
-                        style="padding: 2px"
+                        style="height: 26px; padding: 2px; border-radius: 3px"
                         @change="switchColor(index)"
                       >
                         <span
@@ -82,6 +82,7 @@
                             width: '20px',
                             height: '20px',
                             display: 'inline-block',
+                            'border-radius': '3px',
                             backgroundColor: c
                           }"
                         />
@@ -97,6 +98,7 @@
                       size="small"
                       class="color-picker-style"
                       :predefine="predefineColors"
+                      is-custom
                       @change="switchColorCase"
                     />
                   </span>
@@ -124,6 +126,7 @@
             class="color-picker-style"
             size="small"
             :predefine="predefineColors"
+            is-custom
             @change="changeColorCase('quotaColor')"
           />
         </el-form-item>
@@ -133,6 +136,7 @@
             class="color-picker-style"
             size="small"
             :predefine="predefineColors"
+            is-custom
             @change="changeColorCase('dimensionColor')"
           />
         </el-form-item>
@@ -148,6 +152,7 @@
             class="color-picker-style"
             size="small"
             :predefine="predefineColors"
+            is-custom
             @change="changeColorCase('tableHeaderBgColor')"
           />
         </el-form-item>
@@ -157,6 +162,7 @@
             class="color-picker-style"
             size="small"
             :predefine="predefineColors"
+            is-custom
             @change="changeColorCase('tableItemBgColor')"
           />
         </el-form-item>
@@ -166,6 +172,7 @@
             class="color-picker-style"
             size="small"
             :predefine="predefineColors"
+            is-custom
             @change="changeColorCase('tableHeaderFontColor')"
           />
         </el-form-item>
@@ -175,6 +182,7 @@
             class="color-picker-style"
             size="small"
             :predefine="predefineColors"
+            is-custom
             @change="changeColorCase('tableFontColor')"
           />
         </el-form-item>
@@ -184,6 +192,7 @@
             class="color-picker-style"
             size="small"
             :predefine="predefineColors"
+            is-custom
             @change="changeColorCase('tableBorderColor')"
           />
         </el-form-item>
@@ -195,6 +204,7 @@
             :predefine="predefineColors"
             color-format="rgb"
             show-alpha
+            is-custom
             @change="changeColorCase('tableScrollBarColor')"
           />
         </el-form-item>
@@ -227,6 +237,7 @@ const state = reactive({
 const dvMainStore = dvMainStoreWithOut()
 const { canvasStyleData } = storeToRefs(dvMainStore)
 const initForm = () => {
+  state.customColor = colorForm.value.basicStyle.colors[0]
   const tableHeader = colorForm.value.tableHeader
   const tableCell = colorForm.value.tableCell
   tableHeader.tableHeaderFontColor = tableHeader.tableHeaderFontColor ?? tableCell.tableFontColor
@@ -251,7 +262,7 @@ const changeColorCase = modifyName => {
 
 const switchColor = index => {
   state.colorIndex = index
-  state.customColor = colorForm.value['colors'][state.colorIndex]
+  state.customColor = colorForm.value.basicStyle.colors[state.colorIndex]
 }
 const switchColorCase = () => {
   colorForm.value.basicStyle.colors[state.colorIndex] = state.customColor
@@ -307,6 +318,7 @@ onMounted(() => {
 
 .ed-radio :deep(.ed-radio__label) {
   padding-left: 0;
+  padding-top: 3px;
 }
 
 .ed-radio.is-checked {

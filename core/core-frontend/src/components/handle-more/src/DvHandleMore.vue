@@ -10,6 +10,7 @@ export interface Menu {
   command: string
   divided?: boolean
   disabled?: boolean
+  hidden?: boolean
 }
 
 const props = defineProps({
@@ -27,11 +28,19 @@ const props = defineProps({
     default() {
       return {}
     }
-  }
+  },
+  anyManage: propTypes.bool.def(false)
 })
 
 const shareComponent = ref(null)
-const menus = ref([...props.menuList])
+const menus = ref([
+  ...props.menuList.map(item => {
+    if (!props.anyManage && (item.command === 'copy' || item.command === 'move')) {
+      item.hidden = true
+    }
+    return item
+  })
+])
 const handleCommand = (command: string | number | object) => {
   if (command === 'share') {
     shareComponent.value.invokeMethod({ methodName: 'execute' })
@@ -65,6 +74,7 @@ const emit = defineEmits(['handleCommand'])
           v-for="ele in menus"
           :key="ele.label"
           :disabled="ele.disabled"
+          :class="{ 'de-hidden-drop-item': ele.hidden }"
         >
           <el-icon class="handle-icon" v-if="ele.svgName">
             <Icon :name="ele.svgName"></Icon>
@@ -84,6 +94,9 @@ const emit = defineEmits(['handleCommand'])
 </template>
 
 <style lang="less">
+.de-hidden-drop-item {
+  display: none;
+}
 .menu-more-dv_popper {
   width: 120px;
   margin-top: -10px !important;

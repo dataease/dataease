@@ -37,6 +37,7 @@ const defaultProps = {
   label: 'name'
 }
 const rootManage = ref(false)
+const anyManage = ref(false)
 const { curCanvasType, showPosition } = toRefs(props)
 const resourceLabel = curCanvasType.value === 'dataV' ? '数据大屏' : '仪表板'
 const newResourceLabel = '新建' + resourceLabel
@@ -153,6 +154,7 @@ const getTree = async () => {
   const interactiveData = isDashboard ? interactiveStore.getPanel : interactiveStore.getScreen
   const nodeData = interactiveData.treeNodes
   rootManage.value = interactiveData.rootManage
+  anyManage.value = interactiveData.anyManage
   if (nodeData.length && nodeData[0]['id'] === '0' && nodeData[0]['name'] === 'root') {
     state.resourceTree = nodeData[0]['children'] || []
     afterTreeInit()
@@ -367,6 +369,7 @@ onMounted(() => {
             <dv-handle-more
               @handle-command="cmd => operation(cmd, data, data.leaf ? 'leaf' : 'folder')"
               :node="data"
+              :any-manage="anyManage"
               :menu-list="data.leaf ? state.menuList : state.folderMenuList"
             ></dv-handle-more>
           </div>

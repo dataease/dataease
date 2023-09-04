@@ -58,6 +58,7 @@ export interface Node {
   configuration?: Configuration
   apiConfiguration?: ApiConfiguration[]
   weight?: number
+  lastSyncTime?: number
 }
 
 const { t } = useI18n()
@@ -429,7 +430,8 @@ const handleNodeClick = data => {
       apiConfigurationStr,
       fileName,
       size,
-      description
+      description,
+      lastSyncTime
     } = res.data
     if (configuration) {
       configuration = JSON.parse(Base64.decode(configuration))
@@ -450,7 +452,8 @@ const handleNodeClick = data => {
       configuration,
       syncSetting,
       apiConfiguration: apiConfigurationStr,
-      weight: data.weight
+      weight: data.weight,
+      lastSyncTime
     })
     activeTab.value = ''
     activeName.value = 'config'
@@ -712,10 +715,17 @@ const defaultProps = {
                 </template>
                 新建数据集
               </el-button>
-              <el-button secondary @click="validateDS"> {{ t('datasource.validate') }}</el-button>
+              <el-button
+                v-if="nodeInfo.type !== 'Excel' && nodeInfo.weight >= 7"
+                secondary
+                @click="validateDS"
+              >
+                {{ t('datasource.validate') }}</el-button
+              >
 
               <template v-if="nodeInfo.type === 'Excel'">
                 <el-upload
+                  v-if="nodeInfo.weight >= 7"
                   action=""
                   :multiple="false"
                   ref="uploadAgain"
@@ -736,6 +746,7 @@ const defaultProps = {
                 </el-upload>
 
                 <el-upload
+                  v-if="nodeInfo.weight >= 7"
                   action=""
                   :multiple="false"
                   ref="uploadAgain"
@@ -967,7 +978,7 @@ const defaultProps = {
             v-if="nodeInfo.type === 'API'"
             v-slot="slotProps"
             :name="t('dataset.update_setting')"
-            :time="updateRecordsTime"
+            :time="nodeInfo.lastSyncTime"
           >
             <template v-if="slotProps.active">
               <el-row :gutter="24">

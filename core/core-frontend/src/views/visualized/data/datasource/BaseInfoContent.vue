@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { propTypes } from '@/utils/propTypes'
+import { timestampFormatDate } from '../dataset/form/util'
 defineProps({
   name: propTypes.string.def(''),
   time: propTypes.string.def('')
@@ -18,7 +19,9 @@ defineExpose({
         <Icon name="icon_expand-right_filled"></Icon>
       </el-icon>
       <span class="name">{{ name }}</span>
-      <span v-if="time" class="update-records-time">数据更新时间:{{ time }}</span>
+      <span v-if="time" class="update-records-time"
+        >数据更新时间: {{ timestampFormatDate(time) }}</span
+      >
     </p>
     <slot :active="active"></slot>
   </div>
