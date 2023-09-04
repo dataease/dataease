@@ -49,16 +49,7 @@ export const usePermissionStore = defineStore('permission', {
         let routerMap: AppRouteRecordRaw[] = []
         routerMap = generateRoutesFn2(routers as AppCustomRouteRecordRaw[]) || []
 
-        // 动态路由，404一定要放到最后面
         this.addRouters = routerMap.concat([
-          /* {
-            path: '/:path(.*)*',
-            redirect: '/404',
-            name: '404Page',
-            meta: {
-              hidden: true
-            }
-          } */
           {
             path: '/:catchAll(.*)',
             component: NotFoundPage,
