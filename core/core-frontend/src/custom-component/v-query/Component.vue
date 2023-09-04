@@ -240,6 +240,9 @@ const delQueryConfig = index => {
 
 const resetData = () => {
   ;(list.value || []).reduce((pre, next) => {
+    if (!next.defaultValueCheck) {
+      return pre
+    }
     next.selectValue = Array.isArray(next.defaultValue) ? [...next.defaultValue] : next.defaultValue
     const keyList = Object.entries(next.checkedFieldsMap)
       .filter(ele => next.checkedFields.includes(ele[0]))
