@@ -56,8 +56,4 @@
         <appender-ref ref="error_log" />
     </root>
 
-    <!--<logger name="io.dataease.*.mapper" level="DEBUG" additivity="false">
-        <appender-ref ref="info_log" />
-        <appender-ref ref="error_log" />
-    </logger>-->
 </configuration>

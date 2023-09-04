@@ -327,7 +327,7 @@ const saveLinkageSetting = () => {
         </component-group>
         <!--        <component-button :show-split-line="true" icon-name="dv-tab" title="Tab"></component-button>-->
         <component-button
-          icon-name="dv-copy"
+          icon-name="icon_copy_filled"
           title="复用"
           @customClick="multiplexingCanvasOpen"
         ></component-button>
@@ -396,13 +396,6 @@ const saveLinkageSetting = () => {
           删除</el-button
         >
 
-        <!--        <el-button-->
-        <!--          class="custom-normal-button"-->
-        <!--          @click="cancelBatchOpt"-->
-        <!--          style="float: right; margin-right: 12px"-->
-        <!--        >-->
-        <!--          取消</el-button-->
-        <!--        >-->
         <el-button @click="saveBatchChange" style="float: right; margin-right: 12px" type="primary"
           >完成</el-button
         >

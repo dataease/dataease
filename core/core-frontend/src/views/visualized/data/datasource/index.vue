@@ -1,7 +1,7 @@
 <script lang="tsx" setup>
 import { computed, reactive, ref, shallowRef, nextTick, watch } from 'vue'
 import type { TabPaneName, ElMessageBoxOptions } from 'element-plus-secondary'
-import { ElIcon, ElMessageBox, ElMessage } from 'element-plus-secondary'
+import { ElIcon, ElMessageBox, ElMessage, ElScrollbar } from 'element-plus-secondary'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
 import { HandleMore } from '@/components/handle-more'
 import { Icon } from '@/components/icon-custom'
@@ -1043,6 +1043,7 @@ const defaultProps = {
       v-model="userDrawer"
       class="ds-table-drawer"
       width="840px"
+      top="60px"
     >
       <el-row :gutter="24">
         <el-col :span="12">
@@ -1062,35 +1063,37 @@ const defaultProps = {
           </p>
         </el-col>
       </el-row>
-      <el-table
-        header-cell-class-name="header-cell"
-        :data="state.dsTableData"
-        stripe
-        style="width: 100%"
-      >
-        <el-table-column prop="originName" :label="t('datasource.column_name')" />
-        <el-table-column prop="type" :label="t('datasource.field_type')">
-          <template #default="scope">
-            <div class="flex-align-center icon">
-              <el-icon>
-                <icon
-                  :name="`field_${fieldType[scope.row.deType]}`"
-                  :class="`field-icon-${fieldType[scope.row.deType]}`"
-                ></icon>
-              </el-icon>
-              {{
-                t(`dataset.${fieldType[scope.row.deType]}`) +
-                `${scope.row.deType === 3 ? '(' + t('dataset.float') + ')' : ''}`
-              }}
-            </div>
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="remarks"
-          show-overflow-tooltip
-          :label="t('datasource.field_description')"
-        />
-      </el-table>
+      <el-scrollbar>
+        <el-table
+          header-cell-class-name="header-cell"
+          :data="state.dsTableData"
+          stripe
+          style="width: 100%"
+        >
+          <el-table-column prop="originName" :label="t('datasource.column_name')" />
+          <el-table-column prop="type" :label="t('datasource.field_type')">
+            <template #default="scope">
+              <div class="flex-align-center icon">
+                <el-icon>
+                  <icon
+                    :name="`field_${fieldType[scope.row.deType]}`"
+                    :class="`field-icon-${fieldType[scope.row.deType]}`"
+                  ></icon>
+                </el-icon>
+                {{
+                  t(`dataset.${fieldType[scope.row.deType]}`) +
+                  `${scope.row.deType === 3 ? '(' + t('dataset.float') + ')' : ''}`
+                }}
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="remarks"
+            show-overflow-tooltip
+            :label="t('datasource.field_description')"
+          />
+        </el-table>
+      </el-scrollbar>
     </el-dialog>
     <creat-ds-group @finish="saveDsFolder" ref="creatDsFolder"></creat-ds-group>
     <el-drawer
@@ -1491,6 +1494,14 @@ const defaultProps = {
   }
 }
 .ds-table-drawer {
+  max-height: calc(100% - 120px);
+  display: flex;
+  flex-direction: column;
+
+  .ed-dialog__body {
+    overflow-y: auto;
+  }
+
   .table-value,
   .table-name {
     font-family: PingFang SC;

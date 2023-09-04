@@ -454,6 +454,9 @@ const filterItemRemove = item => {
   view.value.customFilter.splice(item.index, 1)
 }
 
+const cloneItem = param => {
+  return cloneDeep(param)
+}
 const moveToDimension = e => {
   dragMoveDuplicate(state.dimensionData, e, 'ds')
 }
@@ -647,7 +650,7 @@ const saveQuotaFilter = () => {
       ElMessage.error(t('chart.filter_value_can_null'))
       return
     }
-    if (isNaN(f.value)) {
+    if (!f.term.includes('null') && !f.term.includes('empty') && isNaN(f.value)) {
       ElMessage.error(t('chart.filter_value_can_not_str'))
       return
     }
@@ -680,7 +683,6 @@ const closeResultFilter = () => {
   state.resultFilterEdit = false
 }
 const saveResultFilter = () => {
-  console.log(view)
   if (
     ((state.filterItem.deType === 0 || state.filterItem.deType === 5) &&
       state.filterItem.filterType !== 'enum') ||
@@ -695,7 +697,7 @@ const saveResultFilter = () => {
         return
       }
       if (state.filterItem.deType === 2 || state.filterItem.deType === 3) {
-        if (isNaN(f.value)) {
+        if (!f.term.includes('null') && !f.term.includes('empty') && isNaN(f.value)) {
           ElMessage.error(t('chart.filter_value_can_not_str'))
           return
         }
@@ -1539,6 +1541,7 @@ const autoInsert = element => {
                 item-key="id"
                 animation="300"
                 class="drag-list"
+                :clone="cloneItem"
                 @add="moveToDimension"
               >
                 <template #item="{ element }">
@@ -1596,6 +1599,7 @@ const autoInsert = element => {
                 item-key="id"
                 animation="300"
                 class="drag-list"
+                :clone="cloneItem"
                 @add="moveToQuota"
               >
                 <template #item="{ element }">

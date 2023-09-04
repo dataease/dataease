@@ -1559,8 +1559,6 @@ defineExpose({
       :component-data="componentData"
     ></canvas-opt-bar>
     <!-- 网格线 -->
-    <!--    <Grid />-->
-    <!--    <p-grid></p-grid>-->
     <drag-shadow
       v-if="infoBox && infoBox.moveItem"
       :base-height="baseHeight"

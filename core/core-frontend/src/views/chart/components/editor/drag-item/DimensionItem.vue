@@ -307,7 +307,6 @@ getItemTagType()
               <span class="inner-dropdown-menu menu-item-padding">
                 <span class="menu-item-content">
                   <el-icon size="14px">
-                    <!--                    <Icon name="icon_add_outlined" />-->
                   </el-icon>
                   <span>{{ t('chart.dateStyle') }}</span>
                   <span class="summary-span-item">({{ t('chart.' + item.dateStyle) }})</span>
@@ -442,7 +441,6 @@ getItemTagType()
               <span class="inner-dropdown-menu menu-item-padding">
                 <span class="menu-item-content">
                   <el-icon size="14px">
-                    <!--                    <Icon name="icon_add_outlined" />-->
                   </el-icon>
                   <span>{{ t('chart.datePattern') }}</span>
                   <span class="summary-span-item">({{ t('chart.' + item.datePattern) }})</span>
