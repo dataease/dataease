@@ -98,11 +98,11 @@ const state = reactive({
 })
 
 const resultMode = computed(() => {
-  return (canvasStyleData.value.dashboard && canvasStyleData.value.dashboard.resultMode) || null
+  return canvasStyleData.value.dashboard?.resultMode || null
 })
 
 const resultCount = computed(() => {
-  return (canvasStyleData.value.dashboard && canvasStyleData.value.dashboard.resultCount) || null
+  return canvasStyleData.value.dashboard?.resultCount || null
 })
 
 watch(
