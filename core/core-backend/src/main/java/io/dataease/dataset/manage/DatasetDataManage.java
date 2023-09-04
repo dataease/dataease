@@ -2,6 +2,7 @@ package io.dataease.dataset.manage;
 
 import io.dataease.api.chart.dto.ChartViewDTO;
 import io.dataease.api.chart.dto.ColumnPermissionItem;
+import io.dataease.api.chart.request.ChartExtRequest;
 import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.dataset.dto.PreviewSqlDTO;
 import io.dataease.api.dataset.dto.SqlLogDTO;
@@ -100,7 +101,7 @@ public class DatasetDataManage {
                 datasourceRequest.setQuery(TableUtils.tableName2Sql(datasourceSchemaDTO, tableInfoDTO.getTable()) + " LIMIT 0 OFFSET 0");
             } else {
                 // parser sql params and replace default value
-                String sql = SqlparserUtils.handleVariableDefaultValue(new String(Base64.getDecoder().decode(tableInfoDTO.getSql())), datasetTableDTO.getSqlVariableDetails(), false, null);
+                String sql = SqlparserUtils.handleVariableDefaultValue(new String(Base64.getDecoder().decode(tableInfoDTO.getSql())), datasetTableDTO.getSqlVariableDetails(), false, false, null);
                 // add sql table schema
                 sql = SqlUtils.addSchema(sql, datasourceSchemaDTO.getSchemaAlias());
                 sql = SQLUtils.buildOriginPreviewSql(sql, 0, 0);
@@ -300,7 +301,7 @@ public class DatasetDataManage {
         String alias = String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId());
         datasourceSchemaDTO.setSchemaAlias(alias);
         // parser sql params and replace default value
-        String sql = SqlparserUtils.handleVariableDefaultValue(datasetSQLManage.subPrefixSuffixChar(new String(Base64.getDecoder().decode(dto.getSql()))), dto.getSqlVariableDetails(), true, null);
+        String sql = SqlparserUtils.handleVariableDefaultValue(datasetSQLManage.subPrefixSuffixChar(new String(Base64.getDecoder().decode(dto.getSql()))), dto.getSqlVariableDetails(), true, true, null);
         sql = SqlUtils.addSchema(sql, alias);
 
         Map<Long, DatasourceSchemaDTO> dsMap = new LinkedHashMap<>();
@@ -408,7 +409,7 @@ public class DatasetDataManage {
             }
             DatasetGroupInfoDTO datasetGroupInfoDTO = datasetGroupManage.get(datasetGroupId, null);
 
-            Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO, null);
+            Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO, new ChartExtRequest());
             String sql = (String) sqlMap.get("sql");
 
             allFields.addAll(datasetGroupInfoDTO.getAllFields());

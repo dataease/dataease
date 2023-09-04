@@ -75,4 +75,8 @@ public class DatasourceDTO implements Serializable {
     private String  action;
     private String  fileName;
     private String  size;
+    /**
+     * 上次成功更新时间
+     */
+    private Long lastSyncTime;
 }
