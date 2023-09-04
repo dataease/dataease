@@ -5,6 +5,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import DvDetailInfo from '@/views/common/DvDetailInfo.vue'
 import { storeApi, storeStatusApi } from '@/api/visualization/dataVisualization'
 import { ref, watch } from 'vue'
+import { XpackComponent } from '@/components/plugin'
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo } = storeToRefs(dvMainStore)
 const emit = defineEmits(['reload', 'download'])
@@ -78,7 +79,12 @@ watch(
     <div class="canvas-opt-button">
       <!--      <el-button type="primary" @click="download()">导出</el-button>-->
       <el-button icon="DataAnalysis" @click="preview()">预览</el-button>
-      <!--      <el-button icon="Share">分享</el-button>-->
+      <XpackComponent
+        jsname="c2hhcmUtaGFuZGxlcg=="
+        :resource-id="dvInfo.id"
+        :weight="dvInfo.weight"
+        :is-button="true"
+      />
       <el-button v-if="dvInfo.weight > 6" type="primary" icon="EditPen" @click="dvEdit()"
         >编辑</el-button
       >
