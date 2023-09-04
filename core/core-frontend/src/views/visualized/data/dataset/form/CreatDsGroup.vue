@@ -33,6 +33,7 @@ const state = reactive({
   nameList: []
 })
 
+const placeholder = ref('')
 const nodeType = ref()
 const pid = ref()
 const id = ref()
@@ -158,6 +159,7 @@ const createInit = (type, data: Tree, exec, name: string) => {
   datasetForm.pid = ''
   datasetForm.name = ''
   nodeType.value = type
+  placeholder.value = type === 'folder' ? '请输入文件夹名称' : '请输入数据集名称'
   if (type === 'dataset') {
     union = data.union
     allfields = data.allfields
@@ -281,7 +283,7 @@ const emits = defineEmits(['finish'])
       :rules="datasetFormRules"
     >
       <el-form-item v-if="showName" :label="labelName" prop="name">
-        <el-input v-model="datasetForm.name" />
+        <el-input :placeholder="placeholder" v-model="datasetForm.name" />
       </el-form-item>
       <el-form-item v-if="showPid" :label="t('deDataset.folder')" prop="pid">
         <el-tree-select

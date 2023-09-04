@@ -407,6 +407,7 @@ defineExpose({
           <el-input
             class="description-text"
             type="textarea"
+            :placeholder="t('common.inputText')"
             v-model="form.description"
             :row="10"
             :maxlength="50"
@@ -522,7 +523,11 @@ defineExpose({
             prop="configuration.authMethod"
             v-if="form.type === 'presto'"
           >
-            <el-select v-model="form.configuration.authMethod" class="de-select">
+            <el-select
+              :placeholder="t('common.inputText') + t('datasource.auth_method')"
+              v-model="form.configuration.authMethod"
+              class="de-select"
+            >
               <el-option
                 v-for="item in authMethodList"
                 :key="item.id"
@@ -536,31 +541,55 @@ defineExpose({
             prop="configuration.username"
             v-if="form.type === 'presto'"
           >
-            <el-input v-model="form.configuration.username" autocomplete="off" />
+            <el-input
+              :placeholder="t('common.inputText') + t('datasource.client_principal')"
+              v-model="form.configuration.username"
+              autocomplete="off"
+            />
           </el-form-item>
           <el-form-item
             :label="t('datasource.keytab_Key_path')"
             prop="configuration.password"
             v-if="form.type === 'presto'"
           >
-            <el-input show-password type="password" v-model="form.configuration.password" />
+            <el-input
+              :placeholder="t('common.inputText') + t('datasource.keytab_Key_path')"
+              show-password
+              type="password"
+              v-model="form.configuration.password"
+            />
             <p>
               {{ t('datasource.kerbers_info') }}
             </p>
           </el-form-item>
           <el-form-item :label="t('datasource.user_name')" v-if="form.type !== 'presto'">
-            <el-input v-model="form.configuration.username" autocomplete="off" />
+            <el-input
+              :placeholder="t('common.inputText') + t('datasource.user_name')"
+              v-model="form.configuration.username"
+              autocomplete="off"
+            />
           </el-form-item>
           <el-form-item :label="t('datasource.password')" v-if="form.type !== 'presto'">
-            <el-input show-password type="password" v-model="form.configuration.password" />
+            <el-input
+              :placeholder="t('common.inputText') + t('datasource.password')"
+              show-password
+              type="password"
+              v-model="form.configuration.password"
+            />
           </el-form-item>
           <el-form-item :label="t('datasource.extra_params')">
-            <el-input v-model="form.configuration.extraParams" autocomplete="off" />
+            <el-input
+              :placeholder="t('common.inputText') + t('datasource.extra_params')"
+              v-model="form.configuration.extraParams"
+              autocomplete="off"
+            />
           </el-form-item>
           <el-form-item :label="t('datasource.port')" prop="configuration.port">
             <el-input-number
               v-model="form.configuration.port"
               autocomplete="off"
+              class="text-left"
+              :placeholder="t('common.inputText') + t('datasource.port')"
               controls-position="right"
               type="number"
             />
@@ -807,6 +836,12 @@ defineExpose({
 
   .ed-input-number {
     width: 100%;
+  }
+
+  .text-left {
+    :deep(.ed-input__inner) {
+      text-align: left;
+    }
   }
 
   .input-with-append {
