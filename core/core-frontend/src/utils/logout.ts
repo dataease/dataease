@@ -26,7 +26,6 @@ export const logoutHandler = () => {
 
 const removeCache = () => {
   const keys = Object.keys(wsCache['storage'])
-  wsCache.delete('DataEaseKey')
   keys.forEach(key => {
     if (key.startsWith('de-plugin-')) {
       wsCache.delete(key)
