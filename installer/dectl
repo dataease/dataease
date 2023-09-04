@@ -5,9 +5,11 @@ target=$2
 DE_BASE=/opt
 DE_RUNNING_BASE=${DE_BASE}/dataease2.0
 DE_PORT=8100
-
+DE_APISIX_BASE=$DE_RUNNING_BASE/apisix
+need_init_apisix=false
+set -a
 source ${DE_RUNNING_BASE}/.env
-
+set +a
 export COMPOSE_HTTP_TIMEOUT=180
 
 compose_files="-f docker-compose.yml"
@@ -41,7 +43,31 @@ function usage() {
    echo "  reload       重新加载 DATAEASE 服务"
    echo "  uninstall    卸载 DATAEASE 服务"
    echo "  upgrade      升级 DATAEASE 服务"
+   echo "  clear-images 清理 DATAEASE 旧版本的相关镜像"
 }
+function _check_apisix_init() {
+   echo "_check_apisix_init : $DE_APISIX_KEY"
+   if [[ $DE_INSTALL_MODE = "enterprise" ]];then
+      _prepare_apisix
+   fi
+}
+function _prepare_apisix() {
+   echo "_prepare_apisix : $DE_APISIX_KEY"
+   if [[ -z $DE_APISIX_KEY ]];then
+      need_init_apisix=true
+      DE_APISIX_KEY=$(uuidgen | sed 's/-//g')
+      export DE_APISIX_KEY=$DE_APISIX_KEY
+      cd $DE_RUNNING_BASE || exit
+      env | grep DE_ >.env
+      sed -i -e "s/DE_APISIX_KEY/${DE_APISIX_KEY}/g" $DE_RUNNING_BASE/apisix/apisix_conf/config.yaml
+   fi
+   echo "_prepare_apisix need_init_apisix : $need_init_apisix"
+   compose_files="${compose_files} -f docker-compose-apisix.yml"
+}
+function _init_apisix() {
+   DE_APISIX_KEY=$DE_APISIX_KEY sh $DE_RUNNING_BASE/bin/apisix/init.sh
+}
+
 function _healthcheck() {
    echo
    for b in {1..30}
@@ -63,6 +89,7 @@ function _healthcheck() {
 function status() {
    echo
    echo "DataEase 容器运行状态"
+   _check_apisix_init
    cd ${DE_RUNNING_BASE} || exit; ${compose_cmd} ${compose_files} ps
 
    echo
@@ -96,11 +123,17 @@ function status() {
 }
 function start() {
    echo
+   _check_apisix_init
    cd ${DE_RUNNING_BASE} || exit; ${compose_cmd} ${compose_files} up -d
    _healthcheck
+   if [ $? -eq 0 ] && [[ $need_init_apisix = true ]]; then
+      echo "start need_init_apisix : $need_init_apisix"
+      _init_apisix
+   fi
 }
 function stop() {
    echo
+   _check_apisix_init
    cd ${DE_RUNNING_BASE} || exit; ${compose_cmd} ${compose_files} down -v ${target}
 }
 function restart() {
@@ -123,7 +156,34 @@ function upgrade() {
    cd ${DE_RUNNING_BASE} || exit; ${compose_cmd} ${compose_files} pull dataease
    reload
 }
+function _clear_component_docker_images() {
+   component=$1
+   compose_file=$DE_RUNNING_BASE/docker-compose-${component}.yml
+   if [ $1 = "dataease2.0" ];then
+      compose_file=$DE_RUNNING_BASE/docker-compose.yml
+   fi
+   component_image_defined=$(grep "^    image:.*/$component:" ${compose_file} | uniq)
+   component_version=$(echo ${component_image_defined} | awk -F"${component}:" '{print $2}' | uniq)
+   component_image=$(echo ${component_image_defined} | awk -F'image: ' '{print $2}' | awk -F':' '{print $1}')
 
+   if test -z $(docker images | grep "dataease" | grep "$component_image" | grep -v " $component_version "); then
+      echo "$component_image 不存在旧版本镜像"
+   else
+      echo "清理${component}镜像"
+      docker rmi $(docker images | grep "dataease" | grep "$component_image" | grep -v " $component_version " | awk -F' ' '{print $1":"$2}')
+      echo "清理完毕"
+   fi
+}
+function clear_images() {
+   echo
+   _clear_component_docker_images 'dataease2.0'
+   _clear_component_docker_images 'mysql'
+   if test ! -z "$(docker images -f dangling=true -q)"; then
+      echo "清理虚悬镜像"
+      docker rmi $(docker images -f dangling=true -q)
+      echo "清理完毕"
+   fi
+}
 function main() {
     case "${action}" in
       status)
@@ -146,6 +206,9 @@ function main() {
          ;;
       upgrade)
          upgrade
+         ;;
+      clear-images)
+         clear_images
          ;;
       help)
          usage

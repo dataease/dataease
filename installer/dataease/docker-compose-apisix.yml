@@ -1,0 +1,53 @@
+version: "3"
+
+services:
+  apisix-dashboard:
+    image: apache/apisix-dashboard:3.0.1-alpine
+    container_name: apisix-dashboard
+    restart: always
+    volumes:
+    - ${DE_BASE}/dataease2.0/apisix/dashboard_conf/conf.yaml:/usr/local/apisix-dashboard/conf/conf.yaml
+    ports:
+    - "9000:9000"
+    networks:
+      dataease-network:
+
+  apisix:
+    image: apache/apisix:3.4.1-debian
+    container_name: apisix
+    environment:
+      - TZ=Asia/Shanghai
+    restart: always
+    volumes:
+      - ${DE_BASE}/dataease2.0/apisix/apisix_conf/config.yaml:/usr/local/apisix/conf/config.yaml:ro
+      - ${DE_BASE}/dataease2.0/apisix/logs:/usr/local/apisix/logs
+    depends_on:
+      - etcd
+    ports:
+      - "9180:9180/tcp"
+      - "9080:9080/tcp"
+      - "9091:9091/tcp"
+      - "9443:9443/tcp"
+      - "9092:9092/tcp"
+    networks:
+      dataease-network:
+
+  etcd:
+    image: bitnami/etcd:3.4.15
+    container_name: apisix-etcd
+    restart: always
+    # volumes:
+    #   - ${DE_BASE}/dataease2.0/data/etcd_data:/bitnami/etcd
+    environment:
+      ETCD_ENABLE_V2: "true"
+      ALLOW_NONE_AUTHENTICATION: "yes"
+      ETCD_ADVERTISE_CLIENT_URLS: "http://apisix-etcd:2379"
+    #   ETCD_LISTEN_CLIENT_URLS: "http://0.0.0.0:2379"
+    # ports:
+    #   - "2379:2379/tcp"
+    networks:
+      dataease-network:
+
+volumes:
+  etcd_data:
+    driver: local

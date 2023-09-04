@@ -366,6 +366,7 @@ import { getDatasetDetails, listFieldByDatasetGroup } from '@/api/dataset'
 import { BusiTreeRequest } from '@/models/tree/TreeNode'
 import { CalcFieldType } from '@/views/visualized/data/dataset/form/CalcFieldEdit.vue'
 import JumpSetOuterContentEditor from '@/components/visualization/JumpSetOuterContentEditor.vue'
+import { getPanelAllLinkageInfo, saveLinkage } from '@/api/visualization/linkage'
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo, canvasViewInfo } = storeToRefs(dvMainStore)
 const linkJumpInfoTree = ref(null)
@@ -519,6 +520,37 @@ const init = viewItem => {
 }
 
 const save = () => {
+  // 字段检查
+  let subCheckCountAll = 0
+  state.linkJump.linkJumpInfoArray.forEach(linkJumpInfo => {
+    let subCheckCount = 0
+    if (linkJumpInfo.linkType === 'inner') {
+      if (linkJumpInfo.targetDvId) {
+        subCheckCount++
+        subCheckCountAll++
+      }
+      linkJumpInfo.targetViewInfoList &&
+        linkJumpInfo.targetViewInfoList.forEach(function (link) {
+          if (!(link.sourceFieldActiveId && link.targetFieldId && link.targetViewId)) {
+            subCheckCount++
+            subCheckCountAll++
+          }
+        })
+    }
+    if (linkJumpInfo.linkType === 'outer') {
+      if (!linkJumpInfo.content) {
+        subCheckCount++
+        subCheckCountAll++
+      }
+    }
+    if (subCheckCount > 0) {
+      ElMessage.error('字段【' + linkJumpInfo.sourceFieldName + '】存在空配置，请先完善配置！')
+    }
+  })
+  if (subCheckCountAll) {
+    return
+  }
+
   updateJumpSet(state.linkJump).then(rsp => {
     ElMessage.success('保存成功')
     // 刷新跳转信息

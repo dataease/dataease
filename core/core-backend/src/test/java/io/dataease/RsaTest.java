@@ -51,24 +51,10 @@ public class RsaTest {
     public void test() {
         System.out.println(System.currentTimeMillis() - 24 * 60 * 1000);
         System.out.println(StringUtils.substring("123456789", 0, 3 ));
-//        RSA rsa = new RSA();
-//        String privateKeyBase64 = rsa.getPrivateKeyBase64();
-//        String publicKeyBase64 = rsa.getPublicKeyBase64();
-//        LogUtil.info("private is {}", privateKeyBase64);
-//        LogUtil.info("public is {}", publicKeyBase64);
-//        String data = "my name is cyw";
-//        String s = rsa.encryptBase64(data, KeyType.PublicKey);
-//        String s1 = rsa.decryptStr(s, KeyType.PrivateKey);
-//        LogUtil.info(s1);
     }
 
     @Test
     public void testAPI() throws Exception{
-//        String str="[\"json-server\", \"python\"]";
-//        List<Object> arry = new ArrayList<>();
-//        arry.addAll(Arrays.asList(str.substring(1, str.length() -1).split(",")));
-//        arry.add("aaa");
-//        System.out.println(arry);
         String data = "[\n" +
                 "    {\n" +
                 "        \"id\": 1,\n" +
