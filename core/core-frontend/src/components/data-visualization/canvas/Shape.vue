@@ -701,7 +701,6 @@ onMounted(() => {
 <style lang="less" scoped>
 .shape {
   position: absolute;
-  z-index: 5;
 }
 
 .shape-inner {

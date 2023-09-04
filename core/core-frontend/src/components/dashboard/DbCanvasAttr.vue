@@ -233,6 +233,7 @@ onMounted(() => {
               <el-color-picker
                 v-model="canvasStyleData.backgroundColor"
                 show-alpha
+                is-custom
               ></el-color-picker>
             </el-row>
             <el-row v-show="canvasStyleData.backgroundType === 'background'" class="img-area">
@@ -281,7 +282,12 @@ onMounted(() => {
             @onBackgroundChange="componentBackgroundChange"
           ></background-overall-common>
         </el-collapse-item>
-        <el-collapse-item :title="'视图配色'" name="graphical"> </el-collapse-item>
+        <el-collapse-item :title="'视图配色'" name="graphical">
+          <component-color-selector
+            class="item-show"
+            @onColorChange="onColorChange"
+          ></component-color-selector>
+        </el-collapse-item>
         <el-collapse-item name="viewTitle">
           <template #title>
             {{ t('visualization.chart_title') }}
