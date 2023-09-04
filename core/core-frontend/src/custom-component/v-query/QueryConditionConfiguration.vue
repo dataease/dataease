@@ -842,7 +842,7 @@ defineExpose({
       .field-list {
         .component-type {
           margin-right: 4px;
-          font-size: 16px;
+          font-size: 20px;
         }
         .list-item {
           height: 32px;
