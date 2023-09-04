@@ -41,7 +41,7 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
     const color = customAttr.basicStyle.colors
     // options
     const initOptions: LineOptions = {
-      data: data,
+      data,
       xField: 'field',
       yField: 'value',
       seriesField: 'category',
@@ -88,14 +88,6 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
       ]
     }
     const options = this.setupOptions(chart, initOptions)
-    // 处理空值
-    if (chart.senior) {
-      let emptyDataStrategy = parseJson(chart.senior)?.functionCfg?.emptyDataStrategy
-      if (!emptyDataStrategy) {
-        emptyDataStrategy = 'breakLine'
-      }
-      handleEmptyDataStrategy(emptyDataStrategy, chart, data, options)
-    }
     // 开始渲染
     const newChart = new G2Line(container, options)
 
@@ -249,7 +241,8 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
       this.configXAxis,
       this.configYAxis,
       this.configSlider,
-      this.configAnalyse
+      this.configAnalyse,
+      this.configEmptyDataStragy
     )(chart, options)
   }
 

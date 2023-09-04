@@ -1,11 +1,9 @@
 import { ColCell, DataCell, S2Event, S2Options, TableSheet } from '@antv/s2/esm/index'
 import { formatterItem, valueFormatter } from '../../../formatter'
 import { parseJson } from '../../../util'
-import { getCurrentField } from '../../common/common_table'
 import { S2ChartView, S2DrawOptions } from '../../types/impl/s2'
 import { TABLE_EDITOR_PROPERTY, TABLE_EDITOR_PROPERTY_INNER } from './common'
 import { useI18n } from '@/hooks/web/useI18n'
-import { el } from 'element-plus-secondary/es/locale'
 
 const { t } = useI18n()
 
@@ -87,14 +85,14 @@ export class TableInfo extends S2ChartView<TableSheet> {
       })
     })
     // 空值处理
-    // const newData = handleTableEmptyStrategy(tableData, chart)
+    const newData = this.configEmptyDataStrategy(chart)
     // data config
     const s2DataConfig = {
       fields: {
         columns: columns
       },
       meta: meta,
-      data: chart.data.tableRow
+      data: newData
     }
 
     const customAttr = parseJson(chart.customAttr)
@@ -103,8 +101,8 @@ export class TableInfo extends S2ChartView<TableSheet> {
       width: containerDom.offsetWidth,
       height: containerDom.offsetHeight,
       showSeriesNumber: customAttr.tableHeader.showIndex,
-      style: this.configStyle(chart)
-      // conditions: getConditions(chart)
+      style: this.configStyle(chart),
+      conditions: this.configConditions(chart)
     }
     // 开启序号之后，第一列就是序号列，修改 label 即可
     if (s2Options.showSeriesNumber) {
