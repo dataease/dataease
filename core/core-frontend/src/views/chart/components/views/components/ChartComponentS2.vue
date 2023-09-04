@@ -69,11 +69,10 @@ const state = reactive({
 const containerId = 'container-' + showPosition.value + '-' + view.value.id
 const viewTrack = ref(null)
 
-const calcData = (view: Chart, resetPageInfo = true) => {
+const calcData = (view: Chart, resetPageInfo = true, callback) => {
   if (!view.tableId) {
     return
   }
-  state.loading = true
   isError.value = false
   const v = JSON.parse(JSON.stringify(view))
   getData(v)
@@ -88,7 +87,7 @@ const calcData = (view: Chart, resetPageInfo = true) => {
       }
     })
     .finally(() => {
-      state.loading = false
+      callback()
     })
 }
 // 图表对象不用响应式
@@ -266,7 +265,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="canvas-area" v-loading="state.loading">
+  <div class="canvas-area">
     <view-track-bar
       ref="viewTrack"
       :track-menu="trackMenu"
