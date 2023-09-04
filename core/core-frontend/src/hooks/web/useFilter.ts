@@ -73,7 +73,7 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
               parameters = [],
               parametersCheck = false,
               isTree = false,
-              field,
+              displayType,
               multiple
             } = item
             selectValue = getValueByDefaultValueCheckOrFirstLoad(
@@ -91,8 +91,8 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
               filter.push({
                 componentId: ele.id,
                 fieldId: item.checkedFieldsMap[curComponentId],
-                operator,
-                value: forMatterValue(field.deType, selectValue),
+                operator: +displayType === 1 ? 'between' : operator,
+                value: forMatterValue(+displayType, selectValue),
                 parameters: parametersCheck ? parameters : [],
                 isTree
               })
