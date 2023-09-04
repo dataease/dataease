@@ -130,14 +130,7 @@ const getContent = (v: string) => {
 }
 
 const viewInit = () => {
-  // eventBus.on('fieldSelect-' + element.value['id'], fieldSelect)
-  // tinymce.init({})
-  // myValue.value = '测试富文本'
-  // // myValue.value = assignment(element.value['propValue'].textValue)
-  // eventBus.on('initCurFields-' + element.value['id'], initCurFieldsChange)
-  // nextTick(() => {
-  //   state.initReady = true
-  // })
+  // do viewInit
 }
 const initCurFieldsChange = () => {
   if (!state.canEdit) {

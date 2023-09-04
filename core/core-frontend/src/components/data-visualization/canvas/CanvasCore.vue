@@ -1272,7 +1272,6 @@ const addItemBox = item => {
 }
 
 const onStartResize = (e, item, index) => {
-  console.log('onStartResize0=')
   // 移动时 换算矩阵和悬浮位置大小
   syncShapeItemStyle(item, cellWidth.value, cellHeight.value)
   if (!resizable.value) return
@@ -1295,7 +1294,6 @@ const onStartResize = (e, item, index) => {
   infoBox.value.oldY = item.y
   infoBox.value.oldSizeX = item.sizex
   infoBox.value.oldSizeY = item.sizey
-  console.log('onStartResize1=' + JSON.stringify(item))
 }
 
 const onStartMove = (e, item, index) => {
@@ -1559,8 +1557,6 @@ defineExpose({
       :component-data="componentData"
     ></canvas-opt-bar>
     <!-- 网格线 -->
-    <!--    <Grid />-->
-    <!--    <p-grid></p-grid>-->
     <drag-shadow
       v-if="infoBox && infoBox.moveItem"
       :base-height="baseHeight"

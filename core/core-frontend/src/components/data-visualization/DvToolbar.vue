@@ -248,9 +248,6 @@ eventBus.on('clearCanvas', clearCanvas)
         <component-group :base-width="410" icon-name="dv-material" title="素材">
           <common-group></common-group>
         </component-group>
-        <!--        <component-group icon-name="dv-params" title="参数">-->
-        <!--          <div>setting</div>-->
-        <!--        </component-group>-->
       </div>
       <div class="right-area">
         <el-button

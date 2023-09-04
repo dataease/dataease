@@ -61,6 +61,8 @@ env | grep DE_ >.env
 
 mkdir -p ${DE_RUN_BASE}/{cache,logs,conf}
 mkdir -p ${DE_RUN_BASE}/data/{mysql,static-resource,map}
+mkdir -p ${DE_RUN_BASE}/apisix/logs
+chmod 777 ${DE_RUN_BASE}/apisix/logs
 
 if [ "${DE_EXTERNAL_MYSQL}" = "false" ]; then
    compose_files="${compose_files} -f docker-compose-mysql.yml"
