@@ -732,10 +732,9 @@ defineExpose({
               <el-checkbox v-model="curComponent.parametersCheck" label="绑定参数" />
             </div>
             <div v-if="curComponent.parametersCheck" class="parameters">
-              <el-select multiple v-model="curComponent.parameters" clearable>
+              <el-select value-key="id" multiple v-model="curComponent.parameters" clearable>
                 <el-option
                   v-for="item in parametersFilter"
-                  value-key="id"
                   :key="item.id"
                   :label="item.variableName"
                   :value="item"
