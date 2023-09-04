@@ -32,15 +32,27 @@ const props = defineProps({
     type: String,
     required: false,
     default: 'canvas'
+  },
+  // 仪表板刷新计时器
+  searchCount: {
+    type: Number,
+    required: false,
+    default: 0
   }
 })
 
-const { propValue, element, view, active } = toRefs(props)
+const { propValue, element, view, active, searchCount } = toRefs(props)
 </script>
 
 <template>
   <div class="bash-shape">
-    <chart :active="active" :view="view" :element="element" :show-position="showPosition"></chart>
+    <chart
+      :active="active"
+      :view="view"
+      :element="element"
+      :show-position="showPosition"
+      :search-count="searchCount"
+    ></chart>
   </div>
 </template>
 

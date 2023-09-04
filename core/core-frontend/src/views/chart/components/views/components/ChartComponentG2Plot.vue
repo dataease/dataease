@@ -54,7 +54,7 @@ const state = reactive({
 const containerId = 'container-' + showPosition.value + '-' + view.value.id
 const viewTrack = ref(null)
 
-const calcData = view => {
+const calcData = (view, callBack) => {
   if (view.tableId) {
     state.loading = true
     isError.value = false
@@ -74,7 +74,7 @@ const calcData = view => {
         }
       })
       .finally(() => {
-        state.loading = false
+        callBack()
       })
   }
 }
@@ -226,7 +226,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="canvas-area" v-loading="state.loading">
+  <div class="canvas-area">
     <view-track-bar
       ref="viewTrack"
       :track-menu="trackMenu"

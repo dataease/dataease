@@ -2,6 +2,7 @@
 import { useI18n } from '@/hooks/web/useI18n'
 import ChartComponentG2Plot from './components/ChartComponentG2Plot.vue'
 import {
+  computed,
   nextTick,
   onBeforeMount,
   onMounted,
@@ -39,7 +40,8 @@ const chartComponent = ref<any>()
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
 
-const { nowPanelJumpInfo, publicLinkStatus, dvInfo, curComponent } = storeToRefs(dvMainStore)
+const { nowPanelJumpInfo, publicLinkStatus, dvInfo, curComponent, canvasStyleData } =
+  storeToRefs(dvMainStore)
 
 const props = defineProps({
   active: {
@@ -66,12 +68,19 @@ const props = defineProps({
     type: String,
     required: false,
     default: 'canvas'
+  },
+  // 仪表板刷新计时器
+  searchCount: {
+    type: Number,
+    required: false,
+    default: 0
   }
 })
 const dynamicAreaId = ref('')
-const { view, showPosition, element, active } = toRefs(props)
+const { view, showPosition, element, active, searchCount } = toRefs(props)
 
 const state = reactive({
+  loading: false,
   initReady: true, //curComponent 切换期间 不接收外部的calcData 和 renderChart 事件
   title_show: true,
   title_class: {
@@ -95,6 +104,10 @@ watch(
   },
   { deep: true }
 )
+
+watch([() => searchCount.value], () => {
+  queryData()
+})
 
 watch([() => curComponent.value], () => {
   if (curComponent.value && curComponent.value.id === view.value.id) {
@@ -251,11 +264,14 @@ const jumpClick = param => {
 }
 
 const queryData = (firstLoad = false) => {
+  state.loading = true
   const queryFilter = filter(firstLoad)
   let params = cloneDeep(view.value)
   params['chartExtRequest'] = queryFilter
   chartExtRequest.value = queryFilter
-  chartComponent?.value?.calcData(params)
+  chartComponent?.value?.calcData(params, () => {
+    state.loading = false
+  })
 }
 
 const showChartView = (...libs: ChartLibraryType[]) => {
@@ -330,11 +346,16 @@ onMounted(() => {
     }
   })
 })
+
+// 1.开启仪表板刷新 2.首次加载（searchCount =0 ）3.正在请求数据 则显示加载状态
+const loadingFlag = computed(() => {
+  return (canvasStyleData.value.refreshViewLoading || searchCount.value === 0) && state.loading
+})
 initTitle()
 </script>
 
 <template>
-  <div class="chart-area">
+  <div class="chart-area" v-loading="loadingFlag">
     <p v-if="state.title_show" :style="state.title_class">{{ view.title }}</p>
     <!--这里去渲染不同图库的视图-->
     <div style="flex: 1; overflow: hidden">

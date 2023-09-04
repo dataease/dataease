@@ -43,9 +43,15 @@ const props = defineProps({
   canvasId: {
     type: String,
     default: 'canvas-main'
+  },
+  // 仪表板刷新计时器
+  searchCount: {
+    type: Number,
+    required: false,
+    default: 0
   }
 })
-const { config, showPosition, index } = toRefs(props)
+const { config, showPosition, index, searchCount } = toRefs(props)
 let currentInstance
 const component = ref(null)
 const emits = defineEmits(['userViewEnlargeOpen'])
@@ -146,6 +152,7 @@ const commonBackgroundSvgInner = computed(() => {
         :request="config?.request"
         :linkage="config?.linkage"
         :show-position="showPosition"
+        :search-count="searchCount"
       />
     </div>
   </div>

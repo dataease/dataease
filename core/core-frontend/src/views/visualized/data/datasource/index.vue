@@ -58,7 +58,7 @@ export interface Node {
   configuration?: Configuration
   apiConfiguration?: ApiConfiguration[]
   weight?: number
-  lastSyncTime?: number
+  lastSyncTime?: number | string
 }
 
 const { t } = useI18n()
@@ -802,6 +802,7 @@ const defaultProps = {
             <grid-table
               :pagination="state.paginationConfig"
               :table-data="pagingTable"
+              :is-search="!!nickName.trim()"
               @size-change="handleSizeChange"
               @current-change="handleCurrentChange"
             >
@@ -978,7 +979,7 @@ const defaultProps = {
             v-if="nodeInfo.type === 'API'"
             v-slot="slotProps"
             :name="t('dataset.update_setting')"
-            :time="nodeInfo.lastSyncTime"
+            :time="(nodeInfo.lastSyncTime as string)"
           >
             <template v-if="slotProps.active">
               <el-row :gutter="24">
@@ -1067,7 +1068,7 @@ const defaultProps = {
         </el-col>
         <el-col :span="12">
           <p class="table-name">
-            {{ t('datasource.remark') }}
+            {{ t('datasource.table_description') }}
           </p>
           <p class="table-value">
             {{ dsTableDetail.remark || '-' }}
