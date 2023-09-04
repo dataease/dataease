@@ -8,6 +8,7 @@ interface SelectConfig {
   defaultValue: any
   checkedFieldsMap: object
   displayType: string
+  id: string
   checkedFields: string[]
   field: {
     id: string
@@ -70,19 +71,16 @@ const handleValueChange = () => {
       : selectValue.value
     return
   }
+
   config.value.defaultValue = value
 }
 
 watch(
   () => config.value.displayType,
-  (_, oldValue) => {
+  () => {
     if (!props.isConfig) return
-    if (['1', '7', undefined].includes(oldValue)) {
-      config.value.defaultValue = config.value.multiple ? [] : ''
-    }
-  },
-  {
-    immediate: true
+    config.value.defaultValue = config.value.multiple ? [] : ''
+    selectValue.value = config.value.multiple ? [] : ''
   }
 )
 
@@ -104,9 +102,11 @@ const handleFieldIdChange = (val: string[]) => {
       loading.value = false
     })
 }
+
+const visible = ref(false)
 const visibleChange = (val: boolean) => {
   setTimeout(() => {
-    loading.value = !val
+    visible.value = !val
   }, 50)
 }
 
@@ -119,6 +119,13 @@ watch(
     nextTick(() => {
       multiple.value = config.value.multiple
     })
+  }
+)
+
+watch(
+  () => config.value.id,
+  () => {
+    init()
   }
 )
 
@@ -226,7 +233,7 @@ const setOptions = (num: number) => {
 
 const debounceOptions = debounce(setOptions, 300)
 
-onBeforeMount(() => {
+const init = () => {
   const { defaultValueCheck, multiple: plus, defaultValue, optionValueSource } = config.value
   if (defaultValueCheck) {
     config.value.selectValue = Array.isArray(defaultValue) ? [...defaultValue] : defaultValue
@@ -239,6 +246,10 @@ onBeforeMount(() => {
     multiple.value = config.value.multiple
   })
   debounceOptions(optionValueSource)
+}
+
+onBeforeMount(() => {
+  init()
 })
 </script>
 
@@ -247,10 +258,11 @@ onBeforeMount(() => {
     v-if="multiple"
     key="multiple"
     v-model="selectValue"
+    v-loading="loading"
     filterable
     @change="handleValueChange"
     @visible-change="visibleChange"
-    :popper-class="loading ? 'load-select' : ''"
+    :popper-class="visible ? 'load-select' : ''"
     multiple
     show-checked
     clearable
@@ -263,11 +275,12 @@ onBeforeMount(() => {
     v-else
     v-model="selectValue"
     key="single"
+    v-loading="loading"
     @change="handleValueChange"
     clearable
     filterable
     @visible-change="visibleChange"
-    :popper-class="loading ? 'load-select' : ''"
+    :popper-class="visible ? 'load-select' : ''"
     :options="options"
   >
     <template #default="{ item }">
