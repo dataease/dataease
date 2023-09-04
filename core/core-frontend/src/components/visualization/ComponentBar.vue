@@ -33,13 +33,6 @@
     <div v-if="normalAreaShow">
       <span :title="t('visualization.edit')">
         <el-icon style="height: 22px" @click="edit"><Link /></el-icon>
-        <!--        <i-->
-        <!--          v-if="-->
-        <!--            activeModel === 'edit' && curComponent && state.editFilter.includes(curComponent.type)-->
-        <!--          "-->
-        <!--          class="icon iconfont icon-edit"-->
-        <!--          @click.stop="edit"-->
-        <!--        />-->
       </span>
       <span :title="t('visualization.enlarge')">
         <i

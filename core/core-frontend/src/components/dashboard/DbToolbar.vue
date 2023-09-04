@@ -396,13 +396,6 @@ const saveLinkageSetting = () => {
           删除</el-button
         >
 
-        <!--        <el-button-->
-        <!--          class="custom-normal-button"-->
-        <!--          @click="cancelBatchOpt"-->
-        <!--          style="float: right; margin-right: 12px"-->
-        <!--        >-->
-        <!--          取消</el-button-->
-        <!--        >-->
         <el-button @click="saveBatchChange" style="float: right; margin-right: 12px" type="primary"
           >完成</el-button
         >
