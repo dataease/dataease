@@ -30,6 +30,7 @@ interface DragEvent extends MouseEvent {
 export interface DataSource {
   id: string
   name: string
+  children?: DataSource[]
 }
 
 interface Field {
@@ -517,7 +518,12 @@ const calculateHeight = (e: MouseEvent) => {
 
 const getDatasource = () => {
   getDatasourceList().then(res => {
-    state.dataSourceList = (res as unknown as DataSource[]) || []
+    const _list = (res as unknown as DataSource[]) || []
+    if (_list && _list.length > 0 && _list[0].id === '0') {
+      state.dataSourceList = _list[0].children
+    } else {
+      state.dataSourceList = _list
+    }
   })
 }
 
