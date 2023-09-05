@@ -13,10 +13,11 @@ public class PgConfiguration extends JdbcConfiguration {
     private String extraParams = "";
     public String getJdbc() {
         if(StringUtils.isEmpty(extraParams.trim())){
-            return "jdbc:postgresql://HOSTNAME:PORT/DATABASE"
+            return "jdbc:postgresql://HOSTNAME:PORT/DATABASE?currentSchema=SCHEMA"
                     .replace("HOSTNAME", getHost().trim())
                     .replace("PORT", getPort().toString().trim())
-                    .replace("DATABASE", getDataBase().trim());
+                    .replace("DATABASE", getDataBase().trim())
+                    .replace("SCHEMA", getSchema().trim());
         }else {
             return "jdbc:postgresql://HOSTNAME:PORT/DATABASE?EXTRA_PARAMS"
                     .replace("HOSTNAME", getHost().trim())
