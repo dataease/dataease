@@ -54,26 +54,29 @@ const state = reactive({
 const containerId = 'container-' + showPosition.value + '-' + view.value.id
 const viewTrack = ref(null)
 
-const calcData = async (view, callback) => {
+const calcData = (view, callback) => {
   if (view.tableId) {
     state.loading = true
     isError.value = false
     const v = JSON.parse(JSON.stringify(view))
-    await getData(v).then(res => {
-      if (res.code && res.code !== 0) {
-        isError.value = true
-        errMsg.value = res.msg
-      } else {
-        state.data = res?.data
-        emit('onDrillFilters', res?.drillFilters)
-        if (!res?.drillFilters?.length) {
-          dynamicAreaId.value = ''
+    getData(v)
+      .then(res => {
+        if (res.code && res.code !== 0) {
+          isError.value = true
+          errMsg.value = res.msg
+        } else {
+          state.data = res?.data
+          emit('onDrillFilters', res?.drillFilters)
+          if (!res?.drillFilters?.length) {
+            dynamicAreaId.value = ''
+          }
+          renderChart(res)
         }
-        renderChart(res)
-      }
-    })
+      })
+      .finally(callback?.())
+  } else {
+    callback?.()
   }
-  callback?.()
 }
 
 const renderChart = async view => {
