@@ -926,7 +926,10 @@ const autoInsert = element => {
                   <div class="drag_main_area attr-style theme-border-class">
                     <el-row style="height: 100%">
                       <div style="height: calc(100% - 80px); overflow: auto">
-                        <el-row v-if="props.themes !== 'dark'" class="drag-data padding-lr">
+                        <el-row
+                          v-if="props.themes !== 'dark' && view.type !== 'rich-text'"
+                          class="drag-data padding-lr"
+                        >
                           <span class="data-area-label">{{ t('chart.switch_chart') }}</span>
                           <el-popover
                             placement="bottom-end"
