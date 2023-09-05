@@ -5,7 +5,7 @@ type Sidebar = 'DATASET' | 'DASHBOARD' | 'DATASOURCE'
 
 export const useMoveLine = (type: Sidebar) => {
   const { wsCache } = useCache('localStorage')
-  const width = ref(wsCache.get(type) || 260)
+  const width = ref(wsCache.get(type) || 280)
 
   const getCoordinates = () => {
     document.addEventListener('mousemove', setCoordinates)
@@ -15,8 +15,8 @@ export const useMoveLine = (type: Sidebar) => {
 
   const setCoordinates = (e: MouseEvent) => {
     const x = e.clientX
-    if (x > 401 || x < 259) {
-      width.value = Math.max(Math.min(401, x), 259)
+    if (x > 401 || x < 279) {
+      width.value = Math.max(Math.min(401, x), 279)
       ele.style.left = width.value - 2 + 'px'
       return
     }
@@ -39,13 +39,13 @@ export const useMoveLine = (type: Sidebar) => {
   ele.addEventListener('mousedown', getCoordinates)
 
   onMounted(() => {
-    node.value.$el.appendChild(ele)
+    ;(node.value?.$el || node.value)?.appendChild(ele)
   })
 
   onBeforeUnmount(() => {
     cancelEvent()
     ele.removeEventListener('mousedown', getCoordinates)
-    node.value.$el?.removeChild?.(ele)
+    ;(node.value?.$el || node.value)?.removeChild?.(ele)
     width.value = null
   })
 

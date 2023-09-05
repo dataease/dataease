@@ -1,22 +1,11 @@
 <script lang="ts" setup>
-import {
-  PropType,
-  reactive,
-  ref,
-  watch,
-  toRefs,
-  computed,
-  nextTick,
-  shallowRef,
-  toRaw,
-  onMounted
-} from 'vue'
+import { PropType, reactive, ref, watch, toRefs, computed, nextTick } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Field, getFieldByDQ, saveChart } from '@/api/chart'
 import { Tree } from '../../../visualized/data/dataset/form/CreatDsGroup.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
-import { ElMessage, ElTreeSelect } from 'element-plus-secondary'
+import { ElMessage, ElPopover, ElTreeSelect } from 'element-plus-secondary'
 import draggable from 'vuedraggable'
 import DimensionLabel from './drag-label/DimensionLabel.vue'
 import DimensionItem from './drag-item/DimensionItem.vue'
@@ -48,6 +37,7 @@ import { deleteField, deleteFieldByChartId, saveField } from '@/api/dataset'
 import LabelSelector from '@/views/chart/components/editor/editor-style/components/LabelSelector.vue'
 import { getWorldTree } from '@/api/map'
 import chartViewManager from '@/views/chart/components/js/panel'
+import DatasetSelect from '@/views/chart/components/editor/dataset-select/DatasetSelect.vue'
 
 const snapshotStore = snapshotStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
@@ -139,7 +129,7 @@ watch(
   [() => view.value['tableId']],
   () => {
     const nodeId = view.value['tableId']
-    const node = datasetSelector?.value.getNode(nodeId)
+    const node = datasetSelector?.value?.getNode(nodeId)
     if (node?.data) {
       curDatasetWeight.value = node.data.weight
     }
@@ -241,21 +231,6 @@ const fieldFilter = val => {
   } else {
     state.dimensionData = JSON.parse(JSON.stringify(state.dimension))
     state.quotaData = JSON.parse(JSON.stringify(state.quota))
-  }
-}
-
-const dsSelectProps = {
-  label: 'name',
-  children: 'children',
-  value: 'id',
-  isLeaf: node => !node.children?.length
-}
-
-const dsClick = (data: Tree) => {
-  if (data.leaf) {
-    // deleteFieldByChartId(view.value.id).then(() => {
-    getFields(data.id, view.value.id)
-    // })
   }
 }
 
@@ -1467,36 +1442,20 @@ const autoInsert = element => {
             <span style="font-size: 14px">数据集</span>
           </el-row>
           <el-row class="dataset-select">
-            <el-tree-select
+            <dataset-select
               ref="datasetSelector"
-              node-key="id"
+              style="flex: 1"
+              :view-id="view.id"
+              :state-obj="state"
               v-model="view.tableId"
-              :data="datasetTree"
-              :teleported="false"
-              :props="dsSelectProps"
-              :render-after-expand="false"
-              filterable
-              @node-click="dsClick"
-              class="dataset-selector"
-            >
-              <template #default="{ node, data }">
-                <el-icon v-if="!data.leaf">
-                  <Icon name="dv-folder"></Icon>
-                </el-icon>
-                <el-icon v-if="data.leaf">
-                  <Icon name="icon_dataset"></Icon>
-                </el-icon>
-                <span style="margin-left: 4px" :title="node.label">
-                  {{ node.label }}
-                </span>
-              </template>
-            </el-tree-select>
+              :themes="themes"
+            />
             <el-icon
               :style="{ color: '#a6a6a6', cursor: 'pointer', marginLeft: '6px' }"
               @click="editDs"
               v-if="curDatasetWeight >= 7"
             >
-              <Icon name="icon_edit_outlined" class="el-icon-arrow-down el-icon-delete"></Icon>
+              <Icon name="icon_edit_outlined" class="el-icon-arrow-down el-icon-delete" />
             </el-icon>
           </el-row>
           <el-row class="dataset-search padding-lr">
@@ -1507,10 +1466,7 @@ const autoInsert = element => {
                   :style="{ color: '#a6a6a6', cursor: 'pointer', marginRight: '6px' }"
                   @click="getFields(view.tableId, view.id)"
                 >
-                  <Icon
-                    name="icon_refresh_outlined"
-                    class="el-icon-arrow-down el-icon-delete"
-                  ></Icon>
+                  <Icon name="icon_refresh_outlined" class="el-icon-arrow-down el-icon-delete" />
                 </el-icon>
                 <el-icon
                   v-if="false"
@@ -2142,6 +2098,14 @@ span {
     align-items: center;
     justify-content: space-between;
     padding: 0 8px;
+
+    span {
+      width: calc(100% - 24px);
+      overflow-x: hidden;
+      text-overflow: ellipsis;
+      word-break: break-all;
+      white-space: nowrap;
+    }
   }
 
   .ed-tabs {
@@ -2321,8 +2285,8 @@ span {
 .dataset-select {
   padding: 2px;
   display: flex;
+  flex-wrap: nowrap;
   align-items: center;
-  justify-content: flex-start;
   border-top: 1px solid #363636;
 }
 .style-collapse {

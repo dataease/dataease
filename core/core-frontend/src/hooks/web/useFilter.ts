@@ -5,7 +5,7 @@ const dvMainStore = dvMainStoreWithOut()
 const { componentData } = storeToRefs(dvMainStore)
 
 const forMatterValue = (type: number, selectValue: any) => {
-  if (type !== 1) {
+  if (![1, 7].includes(type)) {
     return Array.isArray(selectValue) ? selectValue : [selectValue]
   }
   return Array.isArray(selectValue)
@@ -85,13 +85,13 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
             )
 
             if (
-              !!selectValue.length ||
+              !!selectValue?.length ||
               Object.prototype.toString.call(selectValue) === '[object Date]'
             ) {
               filter.push({
                 componentId: ele.id,
                 fieldId: item.checkedFieldsMap[curComponentId],
-                operator: +displayType === 1 ? 'between' : operator,
+                operator: [1, 7].includes(+displayType) ? 'between' : operator,
                 value: forMatterValue(+displayType, selectValue),
                 parameters: parametersCheck ? parameters : [],
                 isTree
