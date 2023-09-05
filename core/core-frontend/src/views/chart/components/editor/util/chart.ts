@@ -1142,6 +1142,19 @@ export const CHART_TYPE_CONFIGS = [
         icon: 'funnel'
       }
     ]
+  },
+  {
+    category: 'other',
+    title: '富文本',
+    details: [
+      {
+        render: 'antv',
+        category: 'quota',
+        value: 'rich-text',
+        title: '富文本',
+        icon: 'rich-text'
+      }
+    ]
   }
 ]
 

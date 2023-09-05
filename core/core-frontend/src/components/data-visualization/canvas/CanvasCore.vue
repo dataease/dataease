@@ -424,6 +424,9 @@ const getShapeItemShowStyle = item => {
 }
 
 const handleInput = (element, value) => {
+  if (element.component !== 'VText') {
+    return
+  }
   // 根据文本组件高度调整 shape 高度
   dvMainStore.setShapeStyle({
     top: null,
