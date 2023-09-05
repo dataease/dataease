@@ -4,6 +4,7 @@ import { ref, reactive, shallowRef, computed, watch, nextTick } from 'vue'
 import { ElIcon, ElMessageBox, ElMessage, type ElMessageBoxOptions } from 'element-plus-secondary'
 import { HandleMore } from '@/components/handle-more'
 import { Icon } from '@/components/icon-custom'
+import { useMoveLine } from '@/hooks/web/useMoveLine'
 import { useRouter } from 'vue-router'
 import CreatDsGroup from './form/CreatDsGroup.vue'
 import type { BusiTreeNode, BusiTreeRequest } from '@/models/tree/TreeNode'
@@ -154,6 +155,7 @@ const allFieldsColumns = [
 ]
 
 const dataPreviewLoading = ref(false)
+const { width, node } = useMoveLine('DATASOURCE')
 
 const infoList = computed(() => {
   return {
@@ -242,7 +244,10 @@ const tableData = shallowRef([])
 const total = ref(0)
 
 const handleNodeClick = (data: BusiTreeNode) => {
-  if (!data.leaf) return
+  if (!data.leaf) {
+    datasetListTree.value.setCurrentKey(null)
+    return
+  }
   barInfoApi(data.id).then(res => {
     const nodeData = res as unknown as Node[]
     Object.assign(nodeInfo, nodeData)
@@ -405,7 +410,7 @@ const filterNode = (value: string, data: BusiTreeNode) => {
 
 <template>
   <div class="dataset-manage" v-loading="dtLoading">
-    <div class="dataset-list dataset-height">
+    <div class="dataset-list dataset-height" ref="node" :style="{ width: width + 'px' }">
       <div class="filter-dataset">
         <div class="icon-methods">
           <span class="title"> {{ t('auth.dataset') }} </span>
@@ -442,43 +447,45 @@ const filterNode = (value: string, data: BusiTreeNode) => {
         </div>
       </div>
 
-      <el-tree
-        menu
-        ref="datasetListTree"
-        node-key="id"
-        :data="state.datasetTree"
-        :filter-node-method="filterNode"
-        @node-expand="nodeExpand"
-        :default-expanded-keys="expandedKey"
-        :props="defaultProps"
-        @node-click="handleNodeClick"
-      >
-        <template #default="{ node, data }">
-          <span class="custom-tree-node">
-            <el-icon v-if="!data.leaf" style="font-size: 18px">
-              <Icon name="dv-folder"></Icon>
-            </el-icon>
-            <el-icon v-if="data.leaf" style="font-size: 18px">
-              <Icon name="icon_dataset"></Icon>
-            </el-icon>
-            <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
-            <div class="icon-more" v-if="data.weight >= 7">
-              <handle-more
-                icon-size="24px"
-                @handle-command="cmd => handleDatasetTree(cmd, data)"
-                :menu-list="datasetTypeList"
-                icon-name="icon_add_outlined"
-                placement="bottom-start"
-                v-if="!data.leaf"
-              ></handle-more>
-              <handle-more
-                @handle-command="cmd => operation(cmd, data, data.leaf ? 'dataset' : 'folder')"
-                :menu-list="menuList"
-              ></handle-more>
-            </div>
-          </span>
-        </template>
-      </el-tree>
+      <div class="data-tree">
+        <el-tree
+          menu
+          ref="datasetListTree"
+          node-key="id"
+          :data="state.datasetTree"
+          :filter-node-method="filterNode"
+          @node-expand="nodeExpand"
+          :default-expanded-keys="expandedKey"
+          :props="defaultProps"
+          @node-click="handleNodeClick"
+        >
+          <template #default="{ node, data }">
+            <span class="custom-tree-node">
+              <el-icon v-if="!data.leaf" style="font-size: 18px">
+                <Icon name="dv-folder"></Icon>
+              </el-icon>
+              <el-icon v-if="data.leaf" style="font-size: 18px">
+                <Icon name="icon_dataset"></Icon>
+              </el-icon>
+              <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
+              <div class="icon-more" v-if="data.weight >= 7">
+                <handle-more
+                  icon-size="24px"
+                  @handle-command="cmd => handleDatasetTree(cmd, data)"
+                  :menu-list="datasetTypeList"
+                  icon-name="icon_add_outlined"
+                  placement="bottom-start"
+                  v-if="!data.leaf"
+                ></handle-more>
+                <handle-more
+                  @handle-command="cmd => operation(cmd, data, data.leaf ? 'dataset' : 'folder')"
+                  :menu-list="menuList"
+                ></handle-more>
+              </div>
+            </span>
+          </template>
+        </el-tree>
+      </div>
     </div>
     <div class="dataset-content">
       <template v-if="!state.datasetTree.length">
@@ -615,13 +622,14 @@ const filterNode = (value: string, data: BusiTreeNode) => {
 
   .dataset-list {
     width: 279px;
-    padding: 16px;
+    padding: 16px 8px;
   }
 
   .filter-dataset {
     position: sticky;
     top: 0;
     left: 16px;
+    padding: 0 8px;
     z-index: 5;
     background: white;
     &::before {

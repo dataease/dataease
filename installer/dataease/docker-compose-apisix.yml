@@ -36,8 +36,8 @@ services:
     image: bitnami/etcd:3.4.15
     container_name: apisix-etcd
     restart: always
-    # volumes:
-    #   - ${DE_BASE}/dataease2.0/data/etcd_data:/bitnami/etcd
+    volumes:
+      - ${DE_BASE}/dataease2.0/data/etcd_data:/bitnami/etcd
     environment:
       ETCD_ENABLE_V2: "true"
       ALLOW_NONE_AUTHENTICATION: "yes"
@@ -47,7 +47,3 @@ services:
     #   - "2379:2379/tcp"
     networks:
       dataease-network:
-
-volumes:
-  etcd_data:
-    driver: local

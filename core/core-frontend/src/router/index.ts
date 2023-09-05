@@ -89,6 +89,13 @@ export const routes: AppRouteRecordRaw[] = [
     hidden: true,
     meta: {},
     component: () => import('@/views/data-visualization/LinkContainer.vue')
+  },
+  {
+    path: '/rich-text',
+    name: 'rich-text',
+    hidden: true,
+    meta: {},
+    component: () => import('@/custom-component/rich-text/DeRichTextView.vue')
   }
 ]
 

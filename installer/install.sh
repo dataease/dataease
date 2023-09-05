@@ -46,11 +46,6 @@ function prop {
    [ -f "$1" ] | grep -P "^\s*[^#]?${2}=.*$" $1 | cut -d'=' -f2
 }
 
-# echo -e "*******************************************************\n" 2>&1 | tee -a ${CURRENT_DIR}/install.log
-# echo -e " 当前部署模式为 ${DE_ENGINE_MODE}，如需切换模式，\n 请修改 $DE_BASE/dataease/.env 中的 DE_ENGINE_MODE 变量后，\n 重新执行 bash install.sh 即可\n" 2>&1 | tee -a "${CURRENT_DIR}"/install.log
-# echo -e "*******************************************************\n" 2>&1 | tee -a ${CURRENT_DIR}/install.log
-
-
 echo -e "======================= 开始安装 =======================" 2>&1 | tee -a ${CURRENT_DIR}/install.log
 
 mkdir -p ${DE_RUN_BASE}
@@ -60,9 +55,9 @@ cd $DE_RUN_BASE || exit
 env | grep DE_ >.env
 
 mkdir -p ${DE_RUN_BASE}/{cache,logs,conf}
-mkdir -p ${DE_RUN_BASE}/data/{mysql,static-resource,map}
+mkdir -p ${DE_RUN_BASE}/data/{mysql,static-resource,map,etcd_data}
 mkdir -p ${DE_RUN_BASE}/apisix/logs
-chmod 777 ${DE_RUN_BASE}/apisix/logs
+chmod 777 ${DE_RUN_BASE}/apisix/logs ${DE_RUN_BASE}/data/etcd_data
 
 if [ "${DE_EXTERNAL_MYSQL}" = "false" ]; then
    compose_files="${compose_files} -f docker-compose-mysql.yml"

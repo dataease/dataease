@@ -15,7 +15,7 @@ const { width, node } = useMoveLine('DATASET')
   position: relative;
 }
 .sidebar-move-line {
-  width: 2px;
+  width: 3px;
   height: 100%;
   position: absolute;
   cursor: col-resize;

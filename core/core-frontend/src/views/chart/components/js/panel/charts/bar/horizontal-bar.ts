@@ -196,7 +196,7 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
       this.configYAxis,
       this.configSlider,
       this.configAnalyseHorizontal,
-      this.configEmptyDataStragy
+      this.configEmptyDataStrategy
     )(chart, options)
   }
 

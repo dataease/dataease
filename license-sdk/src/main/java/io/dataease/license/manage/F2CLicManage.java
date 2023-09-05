@@ -1,7 +1,6 @@
 package io.dataease.license.manage;
 
 import io.dataease.license.bo.F2CLicResult;
-import io.dataease.license.constant.CacheConstant;
 import io.dataease.license.dao.mapper.LicenseMapper;
 import io.dataease.license.dao.po.LicensePO;
 import io.dataease.utils.CacheUtils;
@@ -23,6 +22,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import static io.dataease.constant.CacheConstant.LicenseCacheConstant.*;
+
 @Component
 public class F2CLicManage {
     private static final Long LICID = 1L;
@@ -35,7 +36,7 @@ public class F2CLicManage {
 
 
     public LicensePO read() {
-        Object o = CacheUtils.get(CacheConstant.cacheName, CacheConstant.cacheKey);
+        Object o = CacheUtils.get(cacheName, cacheKey);
         if (ObjectUtils.isNotEmpty(o)) {
             return (LicensePO) o;
         }
@@ -43,18 +44,18 @@ public class F2CLicManage {
         if (ObjectUtils.isEmpty(po)) {
             po = new LicensePO();
         }
-        CacheUtils.put(CacheConstant.cacheName, CacheConstant.cacheKey, po);
+        CacheUtils.put(cacheName, cacheKey, po);
         return po;
     }
 
     @Transactional
     public void write(String key, F2CLicResult licResult) {
-        CacheUtils.remove(CacheConstant.cacheName, CacheConstant.cacheKey, t -> {
+        CacheUtils.remove(cacheName, cacheKey, t -> {
             LicensePO licensePO = new LicensePO(LICID, System.currentTimeMillis(), key, JsonUtil.toJSONString(licResult).toString());
             licenseMapper.deleteById(LICID);
             licenseMapper.insert(licensePO);
         });
-        CacheUtils.keyRemove(CacheConstant.LIC_RESULT_CACHE, key);
+        CacheUtils.keyRemove(LIC_RESULT_CACHE, key);
     }
 
     @Transactional
@@ -98,8 +99,8 @@ public class F2CLicManage {
         if (StringUtils.isBlank(licenseKey)) {
             return F2CLicResult.noRecord();
         }
-        if (CacheUtils.keyExist(CacheConstant.LIC_RESULT_CACHE, licenseKey)) {
-            Object cacheResult = CacheUtils.get(CacheConstant.LIC_RESULT_CACHE, licenseKey);
+        if (CacheUtils.keyExist(LIC_RESULT_CACHE, licenseKey)) {
+            Object cacheResult = CacheUtils.get(LIC_RESULT_CACHE, licenseKey);
             if (ObjectUtils.isNotEmpty(cacheResult)) {
                 F2CLicResult result = (F2CLicResult) cacheResult;
                 if (dateMatch(result)) {
@@ -128,10 +129,10 @@ public class F2CLicManage {
                 String expired = f2CLicResult.getLicense().getExpired();
                 Date date = formatDate(expired);
                 long expiredTime = date.getTime() - System.currentTimeMillis();
-                CacheUtils.put(CacheConstant.LIC_RESULT_CACHE, licenseKey, f2CLicResult, expiredTime, TimeUnit.MILLISECONDS);
+                CacheUtils.put(LIC_RESULT_CACHE, licenseKey, f2CLicResult, expiredTime, TimeUnit.MILLISECONDS);
                 return f2CLicResult;
             }
-            CacheUtils.put(CacheConstant.LIC_RESULT_CACHE, licenseKey, f2CLicResult);
+            CacheUtils.put(LIC_RESULT_CACHE, licenseKey, f2CLicResult);
             return f2CLicResult;
         } catch (Exception e) {
             LogUtil.error(e.getMessage());
