@@ -417,9 +417,7 @@ const tableData = shallowRef([])
 const tabData = shallowRef([])
 const handleNodeClick = data => {
   if (!data.leaf) {
-    setTimeout(() => {
-      dsListTree.value.setCurrentKey(null)
-    }, 1000)
+    dsListTree.value.setCurrentKey(null)
     return
   }
   getById(data.id).then(res => {

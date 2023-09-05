@@ -244,7 +244,10 @@ const tableData = shallowRef([])
 const total = ref(0)
 
 const handleNodeClick = (data: BusiTreeNode) => {
-  if (!data.leaf) return
+  if (!data.leaf) {
+    datasetListTree.value.setCurrentKey(null)
+    return
+  }
   barInfoApi(data.id).then(res => {
     const nodeData = res as unknown as Node[]
     Object.assign(nodeInfo, nodeData)
