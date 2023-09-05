@@ -63,42 +63,42 @@ const state = reactive({
     pageSize: 20,
     currentPage: 1
   },
+  totalItems: 0,
   showPage: false
 })
 
 const containerId = 'container-' + showPosition.value + '-' + view.value.id
 const viewTrack = ref(null)
 
-const calcData = (view: Chart, resetPageInfo = true) => {
-  if (!view.tableId) {
-    return
+const calcData = (view: Chart, callback, resetPageInfo = true) => {
+  if (view.tableId) {
+    isError.value = false
+    const v = JSON.parse(JSON.stringify(view))
+    getData(v)
+      .then(res => {
+        if (res.code && res.code !== 0) {
+          isError.value = true
+          errMsg.value = res.msg
+        } else {
+          state.data = res?.data
+          state.totalItems = res?.totalItems
+          emit('onDrillFilters', res?.drillFilters)
+          renderChart(res as unknown as Chart, resetPageInfo)
+        }
+      })
+      .finally(callback?.())
+  } else {
+    callback?.()
   }
-  state.loading = true
-  isError.value = false
-  const v = JSON.parse(JSON.stringify(view))
-  getData(v)
-    .then(res => {
-      if (res.code && res.code !== 0) {
-        isError.value = true
-        errMsg.value = res.msg
-      } else {
-        state.data = res?.data
-        emit('onDrillFilters', res?.drillFilters)
-        renderChart(res as unknown as Chart, resetPageInfo)
-      }
-    })
-    .finally(() => {
-      state.loading = false
-    })
 }
 // 图表对象不用响应式
 let myChart = null
-const renderChart = async (view: Chart, resetPageInfo: boolean) => {
+const renderChart = (view: Chart, resetPageInfo: boolean) => {
   if (!view) {
     return
   }
   // view 为引用对象 需要存库 view.data 直接赋值会导致保存不必要的数据
-  const chart = { ...view, data: state.data } as ChartObj
+  const chart = { ...view, data: toRaw(state.data) } as ChartObj
   setupPage(chart, resetPageInfo)
   myChart?.destroy()
   const chartView = chartViewManager.getChartView(view.render, view.type) as S2ChartView<any>
@@ -124,8 +124,8 @@ const setupPage = (chart: ChartObj, resetPageInfo?: boolean) => {
   }
   const pageInfo = state.pageInfo
   pageInfo.pageSize = customAttr.basicStyle.tablePageSize ?? 20
-  if (chart.totalItems > state.pageInfo.pageSize) {
-    pageInfo.total = chart.totalItems
+  if (state.totalItems > state.pageInfo.pageSize) {
+    pageInfo.total = state.totalItems
     state.showPage = true
   } else {
     state.showPage = false
@@ -148,7 +148,7 @@ const handleCurrentChange = pageNum => {
     extReq = { ...extReq, ...chartExtRequest.value }
   }
   const chart = { ...view.value, chartExtRequest: extReq }
-  calcData(chart, false)
+  calcData(chart, null, false)
 }
 
 const action = param => {
@@ -204,17 +204,15 @@ const trackMenu = computed(() => {
   const trackMenuInfo = []
   let linkageCount = 0
   let jumpCount = 0
-  state.data &&
-    state.data?.fields &&
-    state.data?.fields.forEach(item => {
-      const sourceInfo = view.value.id + '#' + item.id
-      if (nowPanelTrackInfo.value[sourceInfo]) {
-        linkageCount++
-      }
-      if (nowPanelJumpInfo.value[sourceInfo]) {
-        jumpCount++
-      }
-    })
+  state.data?.fields?.forEach(item => {
+    const sourceInfo = view.value.id + '#' + item.id
+    if (nowPanelTrackInfo.value[sourceInfo]) {
+      linkageCount++
+    }
+    if (nowPanelJumpInfo.value[sourceInfo]) {
+      jumpCount++
+    }
+  })
   jumpCount && trackMenuInfo.push('jump')
   linkageCount && trackMenuInfo.push('linkage')
   view.value.drillFields.length && trackMenuInfo.push('drill')
@@ -266,7 +264,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="canvas-area" v-loading="state.loading">
+  <div class="canvas-area">
     <view-track-bar
       ref="viewTrack"
       :track-menu="trackMenu"

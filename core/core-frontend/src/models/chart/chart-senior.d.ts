@@ -111,7 +111,7 @@ declare interface ChartThreshold {
   /**
    * 表格阈值
    */
-  tableThreshold: []
+  tableThreshold: Threshold[]
   /**
    * 文本卡阈值
    */
@@ -136,7 +136,7 @@ declare interface Threshold {
   /**
    *
    */
-  field: number
+  field: ChartViewField
   /**
    * 目标值
    */
@@ -145,6 +145,10 @@ declare interface Threshold {
    * 颜色
    */
   color: string
+  /**
+   * 背景颜色
+   */
+  backgroundColor: string
 }
 
 /**

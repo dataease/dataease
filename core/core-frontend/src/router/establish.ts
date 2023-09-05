@@ -15,8 +15,6 @@ export const generateRoutesFn2 = (routes: AppCustomRouteRecordRaw[]): AppRouteRe
       route = decorate(route)
     }
 
-    /* if (route.component.startsWith('system')) {
-      const jsName = route.component.slice(7) */
     if (route.plugin) {
       const jsName = route.component
       route.component = pluginComponent
@@ -64,7 +62,7 @@ export const formatRoute = (arr: AppCustomRouteRecordRaw[]): AppCustomRouteRecor
     const router = cloneDeep(ele)
     const { path, children = [] } = router
 
-    if (children?.length === 1) {
+    if (children?.length === 1 && router.path !== '/data') {
       const [route] = children
       router.path = `${path}/${route.path}`
       router.children = []

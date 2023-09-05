@@ -6,6 +6,7 @@ import TableBody from './TableBody.vue'
 import { propTypes } from '@/utils/propTypes'
 const props = defineProps({
   columns: propTypes.arrayOf(propTypes.string),
+  isSearch: propTypes.bool.def(false),
   showPagination: propTypes.bool.def(true),
   multipleSelection: propTypes.array.def(() => []),
   pagination: propTypes.object,
@@ -123,7 +124,7 @@ defineExpose({
         <slot />
       </table-body>
       <template #empty>
-        <empty-background description="暂无数据" img-type="noneWhite" />
+        <empty-background description="暂无数据" :img-type="isSearch ? 'tree' : 'noneWhite'" />
       </template>
     </el-table>
     <div v-if="showPagination && !!tableData.length" class="pagination-cont">

@@ -58,7 +58,7 @@ export interface Node {
   configuration?: Configuration
   apiConfiguration?: ApiConfiguration[]
   weight?: number
-  lastSyncTime?: number
+  lastSyncTime?: number | string
 }
 
 const { t } = useI18n()
@@ -414,7 +414,9 @@ const tableData = shallowRef([])
 const tabData = shallowRef([])
 const handleNodeClick = data => {
   if (!data.leaf) {
-    dsListTree.value.setCurrentKey(null)
+    setTimeout(() => {
+      dsListTree.value.setCurrentKey(null)
+    }, 1000)
     return
   }
   getById(data.id).then(res => {
@@ -652,12 +654,13 @@ const defaultProps = {
       >
         <template #default="{ node, data }">
           <span class="custom-tree-node">
-            <el-icon :class="data.leaf && 'icon-border'" style="width: 18px; height: 18px">
+            <el-icon :class="data.leaf && 'icon-border'" style="font-size: 18px">
               <Icon :name="getDsIconName(data)"></Icon>
             </el-icon>
             <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
             <div class="icon-more" v-if="data.weight >= 7">
               <handle-more
+                icon-size="24px"
                 @handle-command="cmd => handleDatasourceTree(cmd, data)"
                 :menu-list="datasetTypeList"
                 icon-name="icon_add_outlined"
@@ -802,6 +805,7 @@ const defaultProps = {
             <grid-table
               :pagination="state.paginationConfig"
               :table-data="pagingTable"
+              :is-search="!!nickName.trim()"
               @size-change="handleSizeChange"
               @current-change="handleCurrentChange"
             >
@@ -978,7 +982,7 @@ const defaultProps = {
             v-if="nodeInfo.type === 'API'"
             v-slot="slotProps"
             :name="t('dataset.update_setting')"
-            :time="nodeInfo.lastSyncTime"
+            :time="(nodeInfo.lastSyncTime as string)"
           >
             <template v-if="slotProps.active">
               <el-row :gutter="24">
@@ -1067,7 +1071,7 @@ const defaultProps = {
         </el-col>
         <el-col :span="12">
           <p class="table-name">
-            {{ t('datasource.remark') }}
+            {{ t('datasource.table_description') }}
           </p>
           <p class="table-value">
             {{ dsTableDetail.remark || '-' }}

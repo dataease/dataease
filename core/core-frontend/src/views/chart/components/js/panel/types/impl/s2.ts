@@ -4,7 +4,12 @@ import {
   ChartLibraryType
 } from '@/views/chart/components/js/panel/types'
 import { S2Theme, SpreadSheet, Style } from '@antv/s2'
-import { getCustomTheme, getStyle } from '@/views/chart/components/js/panel/common/common_table'
+import {
+  getConditions,
+  getCustomTheme,
+  getStyle,
+  handleTableEmptyStrategy
+} from '@/views/chart/components/js/panel/common/common_table'
 
 declare interface PageInfo {
   currentPage: number
@@ -28,5 +33,13 @@ export abstract class S2ChartView<P extends SpreadSheet> extends AntVAbstractCha
 
   protected configStyle(chart: Chart): Style {
     return getStyle(chart)
+  }
+
+  protected configEmptyDataStrategy(chart: Chart): Record<string, any>[] {
+    return handleTableEmptyStrategy(chart)
+  }
+
+  protected configConditions(chart: Chart) {
+    return getConditions(chart)
   }
 }

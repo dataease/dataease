@@ -16,6 +16,7 @@ import {
   AntVDrawOptions,
   ChartLibraryType
 } from '@/views/chart/components/js/panel/types'
+import { handleEmptyDataStrategy } from '../../../util'
 
 export interface G2PlotDrawOptions<O> extends AntVDrawOptions<O> {
   /**
@@ -80,6 +81,10 @@ export abstract class G2PlotChartView<
   protected configAnalyseHorizontal(chart: Chart, options: O): O {
     const annotations = getAnalyseHorizontal(chart)
     return { ...options, annotations }
+  }
+
+  protected configEmptyDataStragy(chart: Chart, options: O): O {
+    return handleEmptyDataStrategy(chart, options)
   }
 
   protected setupVerticalAxis(chart: ChartObj) {

@@ -2,6 +2,7 @@
 import { useI18n } from '@/hooks/web/useI18n'
 import ChartComponentG2Plot from './components/ChartComponentG2Plot.vue'
 import {
+  computed,
   nextTick,
   onBeforeMount,
   onMounted,
@@ -39,7 +40,8 @@ const chartComponent = ref<any>()
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
 
-const { nowPanelJumpInfo, publicLinkStatus, dvInfo, curComponent } = storeToRefs(dvMainStore)
+const { nowPanelJumpInfo, publicLinkStatus, dvInfo, curComponent, canvasStyleData } =
+  storeToRefs(dvMainStore)
 
 const props = defineProps({
   active: {
@@ -66,10 +68,16 @@ const props = defineProps({
     type: String,
     required: false,
     default: 'canvas'
+  },
+  // 仪表板刷新计时器
+  searchCount: {
+    type: Number,
+    required: false,
+    default: 0
   }
 })
 const dynamicAreaId = ref('')
-const { view, showPosition, element, active } = toRefs(props)
+const { view, showPosition, element, active, searchCount } = toRefs(props)
 
 const state = reactive({
   initReady: true, //curComponent 切换期间 不接收外部的calcData 和 renderChart 事件
@@ -88,6 +96,16 @@ const state = reactive({
   drillClickDimensionList: []
 })
 
+const loading = ref(false)
+
+const resultMode = computed(() => {
+  return canvasStyleData.value.dashboard?.resultMode || null
+})
+
+const resultCount = computed(() => {
+  return canvasStyleData.value.dashboard?.resultCount || null
+})
+
 watch(
   [() => view.value],
   () => {
@@ -95,6 +113,18 @@ watch(
   },
   { deep: true }
 )
+
+watch([() => searchCount.value], () => {
+  queryData()
+})
+// 仪表板的查询结果设置变化 视图数据需要刷新
+watch([() => resultCount.value], () => {
+  queryData()
+})
+
+watch([() => resultMode.value], () => {
+  queryData()
+})
 
 watch([() => curComponent.value], () => {
   if (curComponent.value && curComponent.value.id === view.value.id) {
@@ -144,7 +174,7 @@ const drillJump = index => {
   //   this.backToParent(index, length)
   // }
   view.value.chartExtRequest = filter()
-  chartComponent?.value?.calcData(view.value)
+  calcData(view.value)
 }
 
 const chartClick = param => {
@@ -157,7 +187,7 @@ const chartClick = param => {
   if (state.drillClickDimensionList.length < props.view.drillFields.length - 1) {
     state.drillClickDimensionList.push({ dimensionList: param.data.dimensionList })
     view.value.chartExtRequest = filter()
-    chartComponent?.value?.calcData(view.value)
+    calcData(view.value)
     // this.getData(this.element.propValue.viewId)
   } else if (props.view.drillFields.length > 0) {
     ElMessage.error(t('chart.last_layer'))
@@ -172,9 +202,9 @@ const filter = (firstLoad?: boolean) => {
     filter,
     linkageFilters: element.value.linkageFilters,
     // outerParamsFilters: this.element.outerParamsFilters,
-    drill: state.drillClickDimensionList
-    // resultCount: this.resultCount,
-    // resultMode: this.resultMode,
+    drill: state.drillClickDimensionList,
+    resultCount: resultCount.value,
+    resultMode: resultMode.value
     // queryFrom: 'panel'
   }
 }
@@ -255,7 +285,16 @@ const queryData = (firstLoad = false) => {
   let params = cloneDeep(view.value)
   params['chartExtRequest'] = queryFilter
   chartExtRequest.value = queryFilter
-  chartComponent?.value?.calcData(params)
+  calcData(params)
+}
+
+const calcData = params => {
+  loading.value = true
+  nextTick(() => {
+    chartComponent?.value?.calcData(params, () => {
+      loading.value = false
+    })
+  })
 }
 
 const showChartView = (...libs: ChartLibraryType[]) => {
@@ -286,7 +325,7 @@ onMounted(() => {
           cacheViewInfo.snapshotCacheViewCalc.includes('all')
         ) {
           view.value.chartExtRequest = filter(false)
-          chartComponent?.value?.calcData(view.value)
+          calcData(view.value)
         } else if (
           cacheViewInfo.snapshotCacheViewRender.includes(view.value.id) ||
           cacheViewInfo.snapshotCacheViewRender.includes('all')
@@ -305,7 +344,7 @@ onMounted(() => {
       initTitle()
       nextTick(() => {
         view.value.chartExtRequest = filter(false)
-        chartComponent?.value?.calcData(val)
+        calcData(val)
       })
     }
   })
@@ -330,11 +369,16 @@ onMounted(() => {
     }
   })
 })
+
+// 1.开启仪表板刷新 2.首次加载（searchCount =0 ）3.正在请求数据 则显示加载状态
+const loadingFlag = computed(() => {
+  return (canvasStyleData.value.refreshViewLoading || searchCount.value === 0) && loading.value
+})
 initTitle()
 </script>
 
 <template>
-  <div class="chart-area">
+  <div class="chart-area" v-loading="loadingFlag">
     <p v-if="state.title_show" :style="state.title_class">{{ view.title }}</p>
     <!--这里去渲染不同图库的视图-->
     <div style="flex: 1; overflow: hidden">

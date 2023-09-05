@@ -119,6 +119,7 @@ const rules = {
     }
   ]
 }
+const placeholder = ref('')
 const datasetFormRules = ref()
 const activeAll = ref(false)
 const showAll = ref(true)
@@ -150,6 +151,7 @@ const createInit = (type, data: Tree, exec, name: string) => {
   datasetForm.pid = ''
   datasetForm.name = ''
   nodeType.value = type
+  placeholder.value = type === 'folder' ? '请输入文件夹名称' : '请输入数据集名称'
   dsType = data.type
   if (type === 'datasource') {
     request = data.request
@@ -282,7 +284,7 @@ const emits = defineEmits(['finish', 'handleShowFinishPage'])
       :rules="datasetFormRules"
     >
       <el-form-item v-if="showName" :label="labelName" prop="name">
-        <el-input v-model="datasetForm.name" />
+        <el-input :placeholder="placeholder" v-model="datasetForm.name" />
       </el-form-item>
       <el-form-item v-if="showPid" :label="t('deDataset.folder')" prop="pid">
         <el-tree-select

@@ -5,6 +5,8 @@ import { FeatureCollection } from '@antv/l7plot/dist/esm/plots/choropleth/types'
 import { useMapStoreWithOut } from '@/store/modules/map'
 import { getGeoJson } from '@/api/map'
 import { toRaw } from 'vue'
+import { Options } from '@antv/g2plot/esm'
+import { PickOptions } from '@antv/g2plot/esm/core/plot'
 
 // 同时支持将hex和rgb，转换成rgba
 export function hexColorToRGBA(hex, alpha) {
@@ -240,42 +242,45 @@ export function getRemark(chart) {
 
 export const quotaViews = ['label', 'richTextView', 'text', 'gauge', 'liquid']
 
-export function handleEmptyDataStrategy(strategy, chart, data, options) {
+export function handleEmptyDataStrategy<O extends PickOptions>(chart: Chart, options: O): O {
+  const { data } = options as unknown as Options
   if (!data?.length) {
-    return
+    return options
   }
+  const strategy = parseJson(chart.senior).functionCfg.emptyDataStrategy
   if (strategy === 'ignoreData') {
-    handleIgnoreData(chart, data)
-    return
+    handleIgnoreData(data)
+    return options
   }
-  const yaxis = JSON.parse(JSON.stringify(chart.yAxis))
+  const yAxis = JSON.parse(JSON.stringify(chart.yAxis))
   const extAxis = JSON.parse(JSON.stringify(chart.xAxisExt))
-  const multiDimension = yaxis?.length >= 2 || extAxis?.length > 0
+  const multiDimension = yAxis?.length >= 2 || extAxis?.length > 0
   switch (strategy) {
     case 'breakLine': {
-      options.connectNulls = false
       if (multiDimension) {
-        // 多维度线条断开
-        handleBreakLineMultiDimension(chart, data)
+        // 多维度保持空
+        handleBreakLineMultiDimension(data)
       }
-      break
+      return {
+        ...options,
+        connectNulls: false
+      }
     }
     case 'setZero': {
-      if (multiDimension > 0) {
+      if (multiDimension) {
         // 多维度置0
-        handleSetZeroMultiDimension(chart, data, options)
+        handleSetZeroMultiDimension(data)
       } else {
         // 单维度置0
-        handleSetZeroSingleDimension(chart, data, options)
+        handleSetZeroSingleDimension(data)
       }
       break
     }
-    default:
-      break
   }
+  return options
 }
 
-function handleBreakLineMultiDimension(chart, data) {
+function handleBreakLineMultiDimension(data) {
   const dimensionInfoMap = new Map()
   const subDimensionSet = new Set()
   for (let i = 0; i < data.length; i++) {
@@ -308,7 +313,7 @@ function handleBreakLineMultiDimension(chart, data) {
   })
 }
 
-function handleSetZeroMultiDimension(chart, data) {
+function handleSetZeroMultiDimension(data: Record<string, any>[]) {
   const dimensionInfoMap = new Map()
   const subDimensionSet = new Set()
   for (let i = 0; i < data.length; i++) {
@@ -343,7 +348,7 @@ function handleSetZeroMultiDimension(chart, data) {
   })
 }
 
-function handleSetZeroSingleDimension(chart, data) {
+function handleSetZeroSingleDimension(data: Record<string, any>[]) {
   data.forEach(item => {
     if (item.value === null) {
       item.value = 0
@@ -351,7 +356,7 @@ function handleSetZeroSingleDimension(chart, data) {
   })
 }
 
-function handleIgnoreData(chart, data) {
+function handleIgnoreData(data: Record<string, any>[]) {
   for (let i = data.length - 1; i >= 0; i--) {
     const item = data[i]
     if (item.value === null) {

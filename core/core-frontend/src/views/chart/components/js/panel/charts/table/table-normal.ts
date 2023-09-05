@@ -80,14 +80,14 @@ export class TableNormal extends S2ChartView<TableSheet> {
     })
 
     // 空值处理
-    // const newData = handleTableEmptyStrategy(tableData, chart)
+    const newData = this.configEmptyDataStrategy(chart)
     // data config
     const s2DataConfig = {
       fields: {
         columns: columns
       },
       meta: meta,
-      data: chart.data.tableRow,
+      data: newData,
       style: this.configStyle(chart)
     }
 
@@ -97,8 +97,8 @@ export class TableNormal extends S2ChartView<TableSheet> {
       width: containerDom.offsetWidth,
       height: containerDom.offsetHeight,
       showSeriesNumber: customAttr.tableHeader.showIndex,
-      style: this.configStyle(chart)
-      // conditions: getConditions(chart)
+      style: this.configStyle(chart),
+      conditions: this.configConditions(chart)
     }
     // 开启序号之后，第一列就是序号列，修改 label 即可
     if (s2Options.showSeriesNumber) {
