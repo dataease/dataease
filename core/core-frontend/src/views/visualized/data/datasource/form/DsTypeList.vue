@@ -8,6 +8,10 @@ const props = defineProps({
     type: String as PropType<DsType>,
     default: 'OLTP'
   },
+  filterText: {
+    type: String,
+    default: ''
+  },
   latestUseTypes: {
     type: Array
   }
@@ -17,7 +21,12 @@ const databaseList = shallowRef([])
 const currentTypeList = computed(() => {
   if (props.currentType == 'all') {
     return typeList.map((ele, index) => {
-      return { name: nameMap[ele], dbList: databaseList.value[index] }
+      return {
+        name: nameMap[ele],
+        dbList: databaseList.value[index].filter(ele =>
+          ele.name.toLowerCase().includes(props.filterText.trim())
+        )
+      }
     })
   }
   if (props.currentType === 'latestUse') {
@@ -40,11 +49,21 @@ const currentTypeList = computed(() => {
         })
       })
     })
+    dbList = dbList.filter(ele => ele.name.toLowerCase().includes(props.filterText.trim()))
     dstypes.push({ name: '最近创建', dbList })
     return dstypes
   }
   const index = typeList.findIndex(ele => props.currentType === ele)
-  return [{ name: nameMap[props.currentType], dbList: databaseList.value[index] }] || []
+  return (
+    [
+      {
+        name: nameMap[props.currentType],
+        dbList: databaseList.value[index].filter(ele =>
+          ele.name.toLowerCase().includes(props.filterText.trim())
+        )
+      }
+    ] || []
+  )
 })
 const getDatasourceTypes = () => {
   const arr = [[], [], [], [], []]

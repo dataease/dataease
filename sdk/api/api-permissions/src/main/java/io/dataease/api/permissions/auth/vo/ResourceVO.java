@@ -23,4 +23,8 @@ public class ResourceVO implements TreeResultModel<ResourceVO>, Serializable {
     private String name;
     @Schema(description = "子节点")
     private List<ResourceVO> children;
+    @Schema(description = "叶子节点")
+    private boolean leaf = false;
+    @Schema(description = "额外标识")
+    private Integer extraFlag = 0;
 }
