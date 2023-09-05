@@ -173,7 +173,7 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
       this.configYAxis,
       this.configSlider,
       this.configAnalyse,
-      this.configEmptyDataStragy
+      this.configEmptyDataStrategy
     )(chart, options)
   }
 
