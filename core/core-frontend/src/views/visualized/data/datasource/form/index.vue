@@ -131,10 +131,6 @@ const filterNode = (value: string, data: Tree) => {
   if (!value) return true
   return data.name.toLowerCase().includes(value)
 }
-const getDsIconName = data => {
-  if (!data.catalog) return 'dv-folder'
-  return 'mysql-frame'
-}
 const databaseList = ref([])
 const currentTypeList = computed(() => {
   return typeList.map((ele, index) => {
@@ -457,7 +453,12 @@ defineExpose({
     <div class="datasource">
       <div class="ds-type-select" v-if="!editDs">
         <div class="title">
-          <el-input class="m24 w100" v-model="filterText" clearable>
+          <el-input
+            :placeholder="t('chart.search')"
+            class="m24 w100"
+            v-model="filterText"
+            clearable
+          >
             <template #prefix>
               <el-icon>
                 <Icon name="icon_search-outline_outlined"></Icon>
@@ -471,7 +472,7 @@ defineExpose({
             @click="handleNodeClick({ type: 'latestUse', name: 'latestUse', id: 'latestUse' })"
             class="list-item_primary"
           >
-            最近使用
+            最近创建
           </p>
           <el-divider />
           <p
@@ -518,6 +519,7 @@ defineExpose({
         <div class="editor-content" :class="(activeStep === 0 || editDs) && 'type-title'">
           <ds-type-list
             v-show="activeStep === 0"
+            :filter-text="filterText"
             @select-ds-type="selectDsType"
             :current-type="currentType"
             :latest-use-types="latestUseTypes"
