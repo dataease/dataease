@@ -23,6 +23,7 @@ const HeaderMenuItem = props => {
       {
         index: path,
         'popper-class': 'popper-class-menu',
+        showTimeout: 1,
         expandCloseIcon: expandIcon('icon_expand-down_filled'),
         expandOpenIcon: expandIcon('icon_expand-down_filled')
       },
@@ -46,6 +47,7 @@ export default HeaderMenuItem
 
 <style lang="less">
 .popper-class-menu {
+  --active-color: #1f2329;
   &.is-light {
     border: none;
     margin-top: -2px;
