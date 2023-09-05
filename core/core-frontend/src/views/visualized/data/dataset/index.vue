@@ -455,15 +455,16 @@ const filterNode = (value: string, data: BusiTreeNode) => {
       >
         <template #default="{ node, data }">
           <span class="custom-tree-node">
-            <el-icon v-if="!data.leaf">
+            <el-icon v-if="!data.leaf" style="font-size: 18px">
               <Icon name="dv-folder"></Icon>
             </el-icon>
-            <el-icon v-if="data.leaf">
+            <el-icon v-if="data.leaf" style="font-size: 18px">
               <Icon name="icon_dataset"></Icon>
             </el-icon>
             <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
             <div class="icon-more" v-if="data.weight >= 7">
               <handle-more
+                icon-size="24px"
                 @handle-command="cmd => handleDatasetTree(cmd, data)"
                 :menu-list="datasetTypeList"
                 icon-name="icon_add_outlined"

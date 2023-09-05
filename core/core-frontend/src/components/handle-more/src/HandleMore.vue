@@ -21,6 +21,7 @@ defineProps({
     default: 'bottom-end'
   },
   iconName: propTypes.string.def('icon_more_outlined'),
+  iconSize: propTypes.string.def('16px'),
   inTable: propTypes.bool.def(false)
 })
 const handleCommand = (command: string | number | object) => {
@@ -49,7 +50,7 @@ const emit = defineEmits(['handleCommand'])
           :key="ele.label"
           :disabled="ele.disabled"
         >
-          <el-icon class="handle-icon" v-if="ele.svgName">
+          <el-icon :style="{ fontSize: iconSize }" v-if="ele.svgName">
             <Icon :name="ele.svgName"></Icon>
           </el-icon>
           {{ ele.label }}
@@ -65,9 +66,5 @@ const emit = defineEmits(['handleCommand'])
   .ed-popper__arrow {
     display: none;
   }
-}
-
-.handle-icon {
-  font-size: 20px;
 }
 </style>
