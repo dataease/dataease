@@ -80,6 +80,7 @@
 }
 
 .tox-tinymce-inline {
+  max-width: 800px;
   border: none;
   box-shadow: none;
 }

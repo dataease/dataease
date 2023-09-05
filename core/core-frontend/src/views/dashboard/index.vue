@@ -109,6 +109,7 @@ onMounted(() => {
         <DbCanvasAttr></DbCanvasAttr>
       </dv-sidebar>
       <view-editor
+        v-if="curComponent && curComponent.innerType !== 'rich-text'"
         v-show="viewEditorShow"
         :themes="'light'"
         :view="canvasViewInfo[curComponent ? curComponent.id : 'default']"

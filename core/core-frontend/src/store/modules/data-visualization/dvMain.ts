@@ -187,6 +187,17 @@ export const dvMainStore = defineStore('dataVisualization', {
     },
 
     setCurComponent({ component, index }) {
+      if (!component && this.curComponent) {
+        this.curComponent['editing'] = false
+      }
+      if (component) {
+        // Is the current component in editing status
+        if (!this.curComponent) {
+          component['editing'] = false
+        } else if (component.id !== this.curComponent.id) {
+          component['editing'] = false
+        }
+      }
       this.curComponent = component
       this.curComponentIndex = index
     },

@@ -79,6 +79,8 @@ const props = defineProps({
 const dynamicAreaId = ref('')
 const { view, showPosition, element, active, searchCount } = toRefs(props)
 
+const titleShow = computed(() => element.value.innerType !== 'rich-text' && state.title_show)
+
 const state = reactive({
   initReady: true, //curComponent 切换期间 不接收外部的calcData 和 renderChart 事件
   title_show: true,
@@ -378,12 +380,12 @@ initTitle()
 </script>
 
 <template>
-  <div class="chart-area" v-loading="loadingFlag">
-    <p v-if="state.title_show" :style="state.title_class">{{ view.title }}</p>
+  <div class="chart-area">
+    <p v-if="titleShow" :style="state.title_class">{{ view.title }}</p>
     <!--这里去渲染不同图库的视图-->
     <div style="flex: 1; overflow: hidden">
       <de-rich-text-view
-        v-if="element.innerType === 'richText'"
+        v-if="element.innerType === 'rich-text'"
         ref="chartComponent"
         :element="element"
         :active="active"
