@@ -97,6 +97,14 @@ const state = reactive({
   drillClickDimensionList: []
 })
 
+const resultMode = computed(() => {
+  return canvasStyleData.value.dashboard?.resultMode || null
+})
+
+const resultCount = computed(() => {
+  return canvasStyleData.value.dashboard?.resultCount || null
+})
+
 watch(
   [() => view.value],
   () => {
@@ -106,6 +114,14 @@ watch(
 )
 
 watch([() => searchCount.value], () => {
+  queryData()
+})
+// 仪表板的查询结果设置变化 视图数据需要刷新
+watch([() => resultCount.value], () => {
+  queryData()
+})
+
+watch([() => resultMode.value], () => {
   queryData()
 })
 
@@ -157,7 +173,7 @@ const drillJump = index => {
   //   this.backToParent(index, length)
   // }
   view.value.chartExtRequest = filter()
-  chartComponent?.value?.calcData(view.value)
+  calcData(view.value)
 }
 
 const chartClick = param => {
@@ -170,7 +186,7 @@ const chartClick = param => {
   if (state.drillClickDimensionList.length < props.view.drillFields.length - 1) {
     state.drillClickDimensionList.push({ dimensionList: param.data.dimensionList })
     view.value.chartExtRequest = filter()
-    chartComponent?.value?.calcData(view.value)
+    calcData(view.value)
     // this.getData(this.element.propValue.viewId)
   } else if (props.view.drillFields.length > 0) {
     ElMessage.error(t('chart.last_layer'))
@@ -185,9 +201,9 @@ const filter = (firstLoad?: boolean) => {
     filter,
     linkageFilters: element.value.linkageFilters,
     // outerParamsFilters: this.element.outerParamsFilters,
-    drill: state.drillClickDimensionList
-    // resultCount: this.resultCount,
-    // resultMode: this.resultMode,
+    drill: state.drillClickDimensionList,
+    resultCount: resultCount.value,
+    resultMode: resultMode.value
     // queryFrom: 'panel'
   }
 }
@@ -264,11 +280,15 @@ const jumpClick = param => {
 }
 
 const queryData = (firstLoad = false) => {
-  state.loading = true
   const queryFilter = filter(firstLoad)
   let params = cloneDeep(view.value)
   params['chartExtRequest'] = queryFilter
   chartExtRequest.value = queryFilter
+  calcData(params)
+}
+
+const calcData = params => {
+  state.loading = true
   chartComponent?.value?.calcData(params, () => {
     state.loading = false
   })
@@ -302,7 +322,7 @@ onMounted(() => {
           cacheViewInfo.snapshotCacheViewCalc.includes('all')
         ) {
           view.value.chartExtRequest = filter(false)
-          chartComponent?.value?.calcData(view.value)
+          calcData(view.value)
         } else if (
           cacheViewInfo.snapshotCacheViewRender.includes(view.value.id) ||
           cacheViewInfo.snapshotCacheViewRender.includes('all')
@@ -321,7 +341,7 @@ onMounted(() => {
       initTitle()
       nextTick(() => {
         view.value.chartExtRequest = filter(false)
-        chartComponent?.value?.calcData(val)
+        calcData(val)
       })
     }
   })
