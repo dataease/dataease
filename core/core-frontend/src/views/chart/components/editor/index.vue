@@ -2095,6 +2095,14 @@ span {
     align-items: center;
     justify-content: space-between;
     padding: 0 8px;
+
+    span {
+      width: calc(100% - 24px);
+      overflow-x: hidden;
+      text-overflow: ellipsis;
+      word-break: break-all;
+      white-space: nowrap;
+    }
   }
 
   .ed-tabs {
