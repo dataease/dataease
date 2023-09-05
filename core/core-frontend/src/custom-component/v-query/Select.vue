@@ -198,10 +198,8 @@ watch(
 )
 
 const setOptions = (num: number) => {
-  console.log('num', num, config.value.optionValueSource)
   if (num !== config.value.optionValueSource) return
   const { optionValueSource, checkedFieldsMap, checkedFields, field, valueSource } = config.value
-  console.log('valueSource', valueSource)
   switch (optionValueSource) {
     case 0:
       const arr = Object.values(checkedFieldsMap).filter(ele => !!ele) as string[]
