@@ -414,7 +414,9 @@ const tableData = shallowRef([])
 const tabData = shallowRef([])
 const handleNodeClick = data => {
   if (!data.leaf) {
-    dsListTree.value.setCurrentKey(null)
+    setTimeout(() => {
+      dsListTree.value.setCurrentKey(null)
+    }, 1000)
     return
   }
   getById(data.id).then(res => {
@@ -652,12 +654,13 @@ const defaultProps = {
       >
         <template #default="{ node, data }">
           <span class="custom-tree-node">
-            <el-icon :class="data.leaf && 'icon-border'" style="width: 18px; height: 18px">
+            <el-icon :class="data.leaf && 'icon-border'" style="font-size: 18px">
               <Icon :name="getDsIconName(data)"></Icon>
             </el-icon>
             <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
             <div class="icon-more" v-if="data.weight >= 7">
               <handle-more
+                icon-size="24px"
                 @handle-command="cmd => handleDatasourceTree(cmd, data)"
                 :menu-list="datasetTypeList"
                 icon-name="icon_add_outlined"
@@ -1330,8 +1333,8 @@ const defaultProps = {
   }
 
   .datasource-list {
-    width: 269px;
-    padding: 16px;
+    width: 279px;
+    padding: 16px 8px;
   }
 
   .datasource-content {
@@ -1343,6 +1346,7 @@ const defaultProps = {
     position: sticky;
     top: 0;
     left: 16px;
+    padding: 0 8px;
     z-index: 5;
     background: white;
     &::before {

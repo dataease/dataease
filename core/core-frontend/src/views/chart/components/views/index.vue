@@ -80,7 +80,6 @@ const dynamicAreaId = ref('')
 const { view, showPosition, element, active, searchCount } = toRefs(props)
 
 const state = reactive({
-  loading: false,
   initReady: true, //curComponent 切换期间 不接收外部的calcData 和 renderChart 事件
   title_show: true,
   title_class: {
@@ -96,6 +95,8 @@ const state = reactive({
   drillFilters: [],
   drillClickDimensionList: []
 })
+
+const loading = ref(false)
 
 const resultMode = computed(() => {
   return canvasStyleData.value.dashboard?.resultMode || null
@@ -288,9 +289,11 @@ const queryData = (firstLoad = false) => {
 }
 
 const calcData = params => {
-  state.loading = true
-  chartComponent?.value?.calcData(params, () => {
-    state.loading = false
+  loading.value = true
+  nextTick(() => {
+    chartComponent?.value?.calcData(params, () => {
+      loading.value = false
+    })
   })
 }
 
@@ -369,7 +372,7 @@ onMounted(() => {
 
 // 1.开启仪表板刷新 2.首次加载（searchCount =0 ）3.正在请求数据 则显示加载状态
 const loadingFlag = computed(() => {
-  return (canvasStyleData.value.refreshViewLoading || searchCount.value === 0) && state.loading
+  return (canvasStyleData.value.refreshViewLoading || searchCount.value === 0) && loading.value
 })
 initTitle()
 </script>
