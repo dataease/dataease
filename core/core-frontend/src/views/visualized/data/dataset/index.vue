@@ -4,6 +4,7 @@ import { ref, reactive, shallowRef, computed, watch, nextTick } from 'vue'
 import { ElIcon, ElMessageBox, ElMessage, type ElMessageBoxOptions } from 'element-plus-secondary'
 import { HandleMore } from '@/components/handle-more'
 import { Icon } from '@/components/icon-custom'
+import { useMoveLine } from '@/hooks/web/useMoveLine'
 import { useRouter } from 'vue-router'
 import CreatDsGroup from './form/CreatDsGroup.vue'
 import type { BusiTreeNode, BusiTreeRequest } from '@/models/tree/TreeNode'
@@ -154,6 +155,7 @@ const allFieldsColumns = [
 ]
 
 const dataPreviewLoading = ref(false)
+const { width, node } = useMoveLine('DATASOURCE')
 
 const infoList = computed(() => {
   return {
@@ -405,7 +407,7 @@ const filterNode = (value: string, data: BusiTreeNode) => {
 
 <template>
   <div class="dataset-manage" v-loading="dtLoading">
-    <div class="dataset-list dataset-height">
+    <div class="dataset-list dataset-height" ref="node" :style="{ width: width + 'px' }">
       <div class="filter-dataset">
         <div class="icon-methods">
           <span class="title"> {{ t('auth.dataset') }} </span>

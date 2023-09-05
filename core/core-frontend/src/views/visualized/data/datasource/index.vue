@@ -31,6 +31,7 @@ import SheetTabs from './SheetTabs.vue'
 import BaseInfoItem from './BaseInfoItem.vue'
 import BaseInfoContent from './BaseInfoContent.vue'
 import type { BusiTreeNode, BusiTreeRequest } from '@/models/tree/TreeNode'
+import { useMoveLine } from '@/hooks/web/useMoveLine'
 import { cloneDeep } from 'lodash-es'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
 const interactiveStore = interactiveStoreWithOut()
@@ -91,6 +92,8 @@ const createDataset = (tableName?: string) => {
     }
   })
 }
+
+const { width, node } = useMoveLine('DATASOURCE')
 
 const dsTableDetail = reactive({
   tableName: '',
@@ -607,7 +610,7 @@ const defaultProps = {
 
 <template>
   <div class="datasource-manage" v-loading="dsLoading">
-    <div class="datasource-list datasource-height">
+    <div class="datasource-list datasource-height" ref="node" :style="{ width: width + 'px' }">
       <div class="filter-datasource">
         <div class="icon-methods">
           <span class="title"> {{ t('datasource.datasource') }} </span>
@@ -739,7 +742,7 @@ const defaultProps = {
                   name="file"
                 >
                   <template #trigger>
-                    <el-button type="primary">
+                    <el-button class="replace-excel" type="primary">
                       <template #icon>
                         <Icon name="icon_edit_outlined"></Icon>
                       </template>
@@ -1439,8 +1442,8 @@ const defaultProps = {
 
         .right-btn {
           margin-left: auto;
-          & > :nth-child(3) {
-            margin: 0 8px;
+          .replace-excel {
+            margin: 0 12px;
           }
         }
       }
