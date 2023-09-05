@@ -171,7 +171,8 @@ export default {
     give_up_resource: '放弃资源，直接删除',
     move_resource_first: '先迁移资源',
     default_parent_tips: '(默认当前组织)',
-    admin_parent_tips: '(默认根组织)'
+    admin_parent_tips: '(默认根组织)',
+    please_login_per_changed: '当前用户权限已变更，请重新登录'
   },
   auth: {
     sysParams_type: {
