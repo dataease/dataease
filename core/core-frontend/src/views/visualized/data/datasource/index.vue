@@ -139,10 +139,11 @@ const datasetTypeList = [
 const selectDataset = row => {
   Object.assign(dsTableDetail, row)
   userDrawer.value = true
-  getTableField(nodeInfo.id as number, row.tableName).then(res => {
+  getTableField({ tableName: row.tableName, datasourceId: nodeInfo.id }).then(res => {
     state.dsTableData = res.data
   })
 }
+
 const handleSizeChange = pageSize => {
   state.paginationConfig.currentPage = 1
   state.paginationConfig.pageSize = pageSize

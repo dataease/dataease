@@ -389,10 +389,10 @@ public class DatasetGroupManage {
     }
 
     public List<SqlVariableDetails> getSqlParams(List<Long> ids) {
-        if (ObjectUtils.isEmpty(ids)) {
-            DEException.throwException(Translator.get("i18n_table_id_can_not_empty"));
-        }
         List<SqlVariableDetails> list = new ArrayList<>();
+        if (ObjectUtils.isEmpty(ids)) {
+            return list;
+        }
         TypeReference<List<SqlVariableDetails>> listTypeReference = new TypeReference<List<SqlVariableDetails>>() {
         };
         for (Long id : ids) {
