@@ -293,7 +293,7 @@ const queryData = (firstLoad = false) => {
 const calcData = params => {
   loading.value = true
   nextTick(() => {
-    chartComponent?.value?.calcData(params, () => {
+    chartComponent?.value?.calcData?.(params, () => {
       loading.value = false
     })
   })
@@ -385,7 +385,7 @@ initTitle()
     <!--这里去渲染不同图库的视图-->
     <div style="flex: 1; overflow: hidden">
       <de-rich-text-view
-        v-if="element.innerType === 'rich-text'"
+        v-if="showChartView(ChartLibraryType.RICH_TEXT)"
         ref="chartComponent"
         :element="element"
         :active="active"
