@@ -44,15 +44,14 @@ function usage() {
    echo "  uninstall    卸载 DATAEASE 服务"
    echo "  upgrade      升级 DATAEASE 服务"
    echo "  clear-images 清理 DATAEASE 旧版本的相关镜像"
+   echo "  version      查看 DATAEASE 版本"
 }
 function _check_apisix_init() {
-   echo "_check_apisix_init : $DE_APISIX_KEY"
    if [[ $DE_INSTALL_MODE = "enterprise" ]];then
       _prepare_apisix
    fi
 }
 function _prepare_apisix() {
-   echo "_prepare_apisix : $DE_APISIX_KEY"
    if [[ -z $DE_APISIX_KEY ]];then
       need_init_apisix=true
       DE_APISIX_KEY=$(uuidgen | sed 's/-//g')
@@ -61,7 +60,6 @@ function _prepare_apisix() {
       env | grep DE_ >.env
       sed -i -e "s/DE_APISIX_KEY/${DE_APISIX_KEY}/g" $DE_RUNNING_BASE/apisix/apisix_conf/config.yaml
    fi
-   echo "_prepare_apisix need_init_apisix : $need_init_apisix"
    compose_files="${compose_files} -f docker-compose-apisix.yml"
 }
 function _init_apisix() {
@@ -111,14 +109,6 @@ function status() {
    echo "DataEase 运行目录使用情况 : "
    df -H ${DE_BASE}
 
-   # echo
-   # read available_disk percent_disk<<< $(df -H --output=avail,pcent ${DE_BASE} | tail -1)
-   # available_disk=${available_disk%?}
-   # percent_disk=${percent_disk%?}
-   #    if [[ $available_disk < 2.0 ]];then
-   #    echo -e "\033[31m[警告] DataEase 运行目录所在磁盘剩余空间不足 2G !\033[0m"
-   # fi
-
    _healthcheck
 }
 function start() {
@@ -146,11 +136,11 @@ function reload() {
 function uninstall() {
    stop
 }
-# function version() {
-#    echo
-#    de_version=$(grep "^    image:.*/dataease:" ${DE_BASE}/dataease/docker-compose.yml | awk -F'dataease:' '{print $2}')
-#    echo $de_version
-# }
+function version() {
+   echo
+   de_version=$(grep "^    image:.*/dataease2.0:" ${DE_RUNNING_BASE}/docker-compose.yml | awk -F'dataease2.0:' '{print $2}')
+   echo $de_version
+}
 function upgrade() {
    echo
    cd ${DE_RUNNING_BASE} || exit; ${compose_cmd} ${compose_files} pull dataease
@@ -209,6 +199,9 @@ function main() {
          ;;
       clear-images)
          clear_images
+         ;;
+      version)
+         version
          ;;
       help)
          usage

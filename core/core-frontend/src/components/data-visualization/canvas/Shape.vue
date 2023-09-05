@@ -306,6 +306,10 @@ const getCursor = () => {
 }
 
 const handleMouseDownOnShape = e => {
+  dvMainStore.setCurComponent({ component: element.value, index: index.value })
+  if (element.value['editing']) {
+    return
+  }
   dashboardActive.value && emit('onStartMove', e)
   // 将当前点击组件的事件传播出去
   nextTick(() => eventBus.emit('componentClick'))
@@ -316,7 +320,6 @@ const handleMouseDownOnShape = e => {
   }
 
   e.stopPropagation()
-  dvMainStore.setCurComponent({ component: element.value, index: index.value })
   if (element.value['isLock'] || !isEditMode.value) return
 
   cursors.value = getCursor() // 根据旋转角度获取光标位置

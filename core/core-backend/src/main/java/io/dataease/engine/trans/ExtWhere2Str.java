@@ -53,7 +53,12 @@ public class ExtWhere2Str {
                     }
 
                     if (field.getDeType() == 1) {
-                        String date_format = ScalarFunctions.get_date_format(value.get(0));
+                        String date_format;
+                        if (StringUtils.containsIgnoreCase(request.getOperator(), "between")) {
+                            date_format = ScalarFunctions.format;
+                        } else {
+                            date_format = ScalarFunctions.get_date_format(value.get(0));
+                        }
                         if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
                             // 此处获取标准格式的日期
                             whereName = String.format(SQLConstants.CAST_DATE_FORMAT, originName, StringUtils.isEmpty(field.getDateFormat()) ? SQLConstants.DEFAULT_DATE_FORMAT : field.getDateFormat(), date_format);
