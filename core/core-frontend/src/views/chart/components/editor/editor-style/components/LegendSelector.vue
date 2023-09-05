@@ -219,7 +219,7 @@ init()
           <el-space wrap style="margin-bottom: 16px">
             <el-tooltip effect="dark" placement="top">
               <template #content>
-                {{ t('chart.text_pos_left') }}
+                {{ t('chart.text_pos_top') }}
               </template>
               <div
                 class="icon-btn"
@@ -256,7 +256,7 @@ init()
 
             <el-tooltip effect="dark" placement="top">
               <template #content>
-                {{ t('chart.text_pos_right') }}
+                {{ t('chart.text_pos_bottom') }}
               </template>
               <div
                 class="icon-btn"
