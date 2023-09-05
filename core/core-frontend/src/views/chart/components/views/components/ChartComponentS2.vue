@@ -70,23 +70,26 @@ const state = reactive({
 const containerId = 'container-' + showPosition.value + '-' + view.value.id
 const viewTrack = ref(null)
 
-const calcData = async (view: Chart, callback, resetPageInfo = true) => {
+const calcData = (view: Chart, callback, resetPageInfo = true) => {
   if (view.tableId) {
     isError.value = false
     const v = JSON.parse(JSON.stringify(view))
-    await getData(v).then(res => {
-      if (res.code && res.code !== 0) {
-        isError.value = true
-        errMsg.value = res.msg
-      } else {
-        state.data = res?.data
-        state.totalItems = res?.totalItems
-        emit('onDrillFilters', res?.drillFilters)
-        renderChart(res as unknown as Chart, resetPageInfo)
-      }
-    })
+    getData(v)
+      .then(res => {
+        if (res.code && res.code !== 0) {
+          isError.value = true
+          errMsg.value = res.msg
+        } else {
+          state.data = res?.data
+          state.totalItems = res?.totalItems
+          emit('onDrillFilters', res?.drillFilters)
+          renderChart(res as unknown as Chart, resetPageInfo)
+        }
+      })
+      .finally(callback?.())
+  } else {
+    callback?.()
   }
-  callback?.()
 }
 // 图表对象不用响应式
 let myChart = null
