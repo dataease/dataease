@@ -334,7 +334,7 @@ const saveExcelData = (sheetFileMd5, table, params, successCb, finallyCb) => {
               emitter.emit('showFinishPage', res)
               successCb?.()
               ElMessage({
-                message: t('deDataset.set_saved_successfully'),
+                message: t('commons.save_success'),
                 type: 'success'
               })
             })
@@ -350,7 +350,7 @@ const saveExcelData = (sheetFileMd5, table, params, successCb, finallyCb) => {
               emitter.emit('showFinishPage', res)
               successCb?.()
               ElMessage({
-                message: t('deDataset.set_saved_successfully'),
+                message: t('commons.save_success'),
                 type: 'success'
               })
             })
@@ -369,7 +369,7 @@ const saveExcelData = (sheetFileMd5, table, params, successCb, finallyCb) => {
         emitter.emit('showFinishPage', res)
         successCb?.()
         ElMessage({
-          message: t('deDataset.set_saved_successfully'),
+          message: t('commons.save_success'),
           type: 'success'
         })
       })
