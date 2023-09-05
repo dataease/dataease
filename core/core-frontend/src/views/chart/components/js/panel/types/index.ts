@@ -4,7 +4,8 @@ const { t } = useI18n()
 
 export enum ChartRenderType {
   ANT_V = 'antv',
-  ECHARTS = 'echarts'
+  ECHARTS = 'echarts',
+  CUSTOM = 'custom'
 }
 
 export enum ChartLibraryType {
@@ -12,7 +13,7 @@ export enum ChartLibraryType {
   L7_PLOT = 'l7plot',
   ECHARTS = 'echarts',
   S2 = 's2',
-  RICH_TEXT = 'richText'
+  RICH_TEXT = 'rich-text'
 }
 
 export abstract class AbstractChartView {

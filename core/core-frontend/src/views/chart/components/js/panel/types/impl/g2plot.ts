@@ -83,7 +83,7 @@ export abstract class G2PlotChartView<
     return { ...options, annotations }
   }
 
-  protected configEmptyDataStragy(chart: Chart, options: O): O {
+  protected configEmptyDataStrategy(chart: Chart, options: O): O {
     return handleEmptyDataStrategy(chart, options)
   }
 

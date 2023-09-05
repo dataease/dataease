@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static io.dataease.constant.CacheConstant.OrgCacheConstant.CORE_MENU_CACHE;
+
 @Component
 public class MenuManage {
 
@@ -37,7 +39,7 @@ public class MenuManage {
         return convertTree(treeNodes);
     }
 
-    @Cacheable(cacheNames = "core_menu_cache", key = "'-dataease-'")
+    @Cacheable(cacheNames = CORE_MENU_CACHE, key = "'-dataease-'")
     public List<CoreMenu> coreMenus() {
         QueryWrapper<CoreMenu> wrapper = new QueryWrapper<>();
         return coreMenuMapper.selectList(wrapper);

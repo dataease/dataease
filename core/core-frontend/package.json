@@ -42,7 +42,7 @@
     "pinia": "^2.0.32",
     "qs": "^6.11.0",
     "snowflake-id": "^1.1.0",
-    "tinymce": "^6.6.1",
+    "tinymce": "^5.8.2",
     "vue": "^3.3.4",
     "vue-clipboard2": "^0.3.3",
     "vue-clipboard3": "^2.0.0",

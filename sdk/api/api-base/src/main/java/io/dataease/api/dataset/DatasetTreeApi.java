@@ -43,11 +43,11 @@ public interface DatasetTreeApi {
      * @return
      * @throws Exception
      */
-    @DePermit({"m:read",})
+    @DePermit({"m:read", "#p0.pid+':manage'"})
     @PostMapping("create")
     DatasetNodeDTO create(@RequestBody DatasetGroupInfoDTO dto) throws Exception;
 
-    @DePermit({"m:read", "#p0.id+':manage'"})
+    @DePermit({"m:read", "#p0.id+':manage'", "#p0.pid+':manage'"})
     @PostMapping("move")
     DatasetNodeDTO move(@RequestBody DatasetGroupInfoDTO dto) throws Exception;
 
