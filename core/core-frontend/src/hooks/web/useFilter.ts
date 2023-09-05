@@ -85,7 +85,7 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
             )
 
             if (
-              !!selectValue.length ||
+              !!selectValue?.length ||
               Object.prototype.toString.call(selectValue) === '[object Date]'
             ) {
               filter.push({

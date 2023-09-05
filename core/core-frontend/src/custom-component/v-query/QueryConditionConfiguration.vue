@@ -936,7 +936,7 @@ defineExpose({
   }
 }
 .manual-input {
-  height: 490px;
+  height: 405px;
   padding: 0 !important;
 
   .manual-input-container {
