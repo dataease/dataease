@@ -207,7 +207,7 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
       this.configYAxis,
       this.configSlider,
       this.configAnalyse,
-      this.configEmptyDataStragy
+      this.configEmptyDataStrategy
     )(chart, options)
   }
 

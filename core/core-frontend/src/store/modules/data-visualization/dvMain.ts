@@ -280,7 +280,8 @@ export const dvMainStore = defineStore('dataVisualization', {
         let newView = {
           ...JSON.parse(JSON.stringify(BASE_VIEW_CONFIG)),
           id: component.id,
-          type: component.innerType
+          type: component.innerType,
+          render: component.render
         } as unknown as ChartObj
         // 处理配置项默认值，不同视图的同一配置项默认值不同
         const chartViewInstance = chartViewManager.getChartView(newView.render, newView.type)

@@ -250,6 +250,7 @@ export function findNewComponentFromList(componentName, innerType, curOriginThem
     const viewConfig = getViewConfig(innerType)
     newComponent.name = viewConfig.title
     newComponent.label = viewConfig.title
+    newComponent.render = viewConfig.render
   }
   return newComponent
 }
