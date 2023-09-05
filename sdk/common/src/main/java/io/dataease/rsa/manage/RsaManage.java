@@ -11,6 +11,8 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
+import static io.dataease.constant.CacheConstant.CommonCacheConstant.RSA_CACHE;
+
 @Component
 public class RsaManage {
 
@@ -37,7 +39,7 @@ public class RsaManage {
         coreRsaMapper.insert(coreRsa);
     }
 
-    @Cacheable(value = "rsa", key = "'-de-'", unless = "#result == null")
+    @Cacheable(value = RSA_CACHE, key = "'-de-'", unless = "#result == null")
     public CoreRsa query() {
         CoreRsa coreRsa = coreRsaMapper.selectById(1);
         return coreRsa;

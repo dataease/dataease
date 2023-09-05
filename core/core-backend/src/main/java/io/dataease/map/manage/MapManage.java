@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static io.dataease.constant.CacheConstant.CommonCacheConstant.WORLD_MAP_CACHE;
+
 @Component
 public class MapManage {
     private final static AreaNode WORLD;
@@ -28,7 +30,7 @@ public class MapManage {
     @Resource
     private AreaMapper areaMapper;
 
-    @Cacheable(value = "world_map", key = "'world_map'")
+    @Cacheable(value = WORLD_MAP_CACHE, key = "'world_map'")
     public AreaNode getWorldTree() {
         List<Area> areas = areaMapper.selectList(null);
         WORLD.setChildren(new ArrayList<>());
