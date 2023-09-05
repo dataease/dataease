@@ -1333,8 +1333,8 @@ const defaultProps = {
   }
 
   .datasource-list {
-    width: 269px;
-    padding: 16px;
+    width: 279px;
+    padding: 16px 8px;
   }
 
   .datasource-content {
@@ -1346,6 +1346,7 @@ const defaultProps = {
     position: sticky;
     top: 0;
     left: 16px;
+    padding: 0 8px;
     z-index: 5;
     background: white;
     &::before {
