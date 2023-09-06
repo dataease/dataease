@@ -522,150 +522,151 @@
         label-width="100px"
         size="mini"
       >
-        <el-form-item
-          v-show="showProperty('gaugeMin')"
-          :label="$t('chart.min')"
-          class="form-item"
-        >
-          <el-radio-group
-            v-model="sizeForm.gaugeMinType"
-            size="mini"
-            @change="changeQuotaField('min')"
+        <div v-show="!batchOptStatus">
+          <el-form-item
+              v-show="showProperty('gaugeMin')"
+              :label="$t('chart.min')"
+              class="form-item"
           >
-            <el-radio-button label="fix">{{ $t('chart.fix') }}</el-radio-button>
-            <el-radio-button label="dynamic">{{ $t('chart.dynamic') }}</el-radio-button>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item
-          v-if="showProperty('gaugeMin') && sizeForm.gaugeMinType === 'fix'"
-          class="form-item form-item-slider"
-        >
-          <el-input-number
-            v-model="sizeForm.gaugeMin"
-            size="mini"
-            @change="changeBarSizeCase('gaugeMin')"
-          />
-        </el-form-item>
-        <el-form-item
-          v-if="showProperty('gaugeMin') && sizeForm.gaugeMinType === 'dynamic'"
-          class="form-item form-flex"
-        >
-          <el-select
-            v-model="sizeForm.gaugeMinField.id"
-            :placeholder="$t('chart.field')"
-            @change="changeQuotaField('min',true)"
-          >
-            <el-option
-              v-for="item in quotaData"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id"
+            <el-radio-group
+                v-model="sizeForm.gaugeMinType"
+                size="mini"
+                @change="changeQuotaField('min')"
             >
+              <el-radio-button label="fix">{{ $t('chart.fix') }}</el-radio-button>
+              <el-radio-button label="dynamic">{{ $t('chart.dynamic') }}</el-radio-button>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item
+              v-if="showProperty('gaugeMin') && sizeForm.gaugeMinType === 'fix'"
+              class="form-item form-item-slider"
+          >
+            <el-input-number
+                v-model="sizeForm.gaugeMin"
+                size="mini"
+                @change="changeBarSizeCase('gaugeMin')"
+            />
+          </el-form-item>
+          <el-form-item
+              v-if="showProperty('gaugeMin') && sizeForm.gaugeMinType === 'dynamic'"
+              class="form-item form-flex"
+          >
+            <el-select
+                v-model="sizeForm.gaugeMinField.id"
+                :placeholder="$t('chart.field')"
+                @change="changeQuotaField('min',true)"
+            >
+              <el-option
+                  v-for="item in quotaData"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
+              >
               <span style="float: left">
                 <svg-icon
-                  v-if="item.deType === 0"
-                  icon-class="field_text"
-                  class="field-icon-text"
+                    v-if="item.deType === 0"
+                    icon-class="field_text"
+                    class="field-icon-text"
                 />
                 <svg-icon
-                  v-if="item.deType === 1"
-                  icon-class="field_time"
-                  class="field-icon-time"
+                    v-if="item.deType === 1"
+                    icon-class="field_time"
+                    class="field-icon-time"
                 />
                 <svg-icon
-                  v-if="item.deType === 2 || item.deType === 3"
-                  icon-class="field_value"
-                  class="field-icon-value"
+                    v-if="item.deType === 2 || item.deType === 3"
+                    icon-class="field_value"
+                    class="field-icon-value"
                 />
                 <svg-icon
-                  v-if="item.deType === 5"
-                  icon-class="field_location"
-                  class="field-icon-location"
+                    v-if="item.deType === 5"
+                    icon-class="field_location"
+                    class="field-icon-location"
                 />
               </span>
-              <span style="float: left; color: #8492a6; font-size: 12px">{{ item.name }}</span>
-            </el-option>
-          </el-select>
-          <el-select
-            v-model="sizeForm.gaugeMinField.summary"
-            :placeholder="$t('chart.summary')"
-            @change="changeQuotaField('min')"
-          >
-            <el-option
-              v-if="validMinField"
-              key="sum"
-              value="sum"
-              :label="$t('chart.sum')"
-            />
-            <el-option
-              v-if="validMinField"
-              key="avg"
-              value="avg"
-              :label="$t('chart.avg')"
-            />
-            <el-option
-              v-if="validMinField"
-              key="max"
-              value="max"
-              :label="$t('chart.max')"
-            />
-            <el-option
-              v-if="validMinField"
-              key="min"
-              value="min"
-              :label="$t('chart.min')"
-            />
-            <el-option
-              v-if="validMinField"
-              key="stddev_pop"
-              value="stddev_pop"
-              :label="$t('chart.stddev_pop')"
-            />
-            <el-option
-              v-if="validMinField"
-              key="var_pop"
-              value="var_pop"
-              :label="$t('chart.var_pop')"
-            />
-            <el-option
-              key="count"
-              value="count"
-              :label="$t('chart.count')"
-            />
-            <el-option
-              v-if="minField.id !== 'count'"
-              key="count_distinct"
-              value="count_distinct"
-              :label="$t('chart.count_distinct')"
-            />
-          </el-select>
-        </el-form-item>
+                <span style="float: left; color: #8492a6; font-size: 12px">{{ item.name }}</span>
+              </el-option>
+            </el-select>
+            <el-select
+                v-model="sizeForm.gaugeMinField.summary"
+                :placeholder="$t('chart.summary')"
+                @change="changeQuotaField('min')"
+            >
+              <el-option
+                  v-if="validMinField"
+                  key="sum"
+                  value="sum"
+                  :label="$t('chart.sum')"
+              />
+              <el-option
+                  v-if="validMinField"
+                  key="avg"
+                  value="avg"
+                  :label="$t('chart.avg')"
+              />
+              <el-option
+                  v-if="validMinField"
+                  key="max"
+                  value="max"
+                  :label="$t('chart.max')"
+              />
+              <el-option
+                  v-if="validMinField"
+                  key="min"
+                  value="min"
+                  :label="$t('chart.min')"
+              />
+              <el-option
+                  v-if="validMinField"
+                  key="stddev_pop"
+                  value="stddev_pop"
+                  :label="$t('chart.stddev_pop')"
+              />
+              <el-option
+                  v-if="validMinField"
+                  key="var_pop"
+                  value="var_pop"
+                  :label="$t('chart.var_pop')"
+              />
+              <el-option
+                  key="count"
+                  value="count"
+                  :label="$t('chart.count')"
+              />
+              <el-option
+                  v-if="minField.id !== 'count'"
+                  key="count_distinct"
+                  value="count_distinct"
+                  :label="$t('chart.count_distinct')"
+              />
+            </el-select>
+          </el-form-item>
 
-        <el-form-item
-          v-show="showProperty('gaugeMax')"
-          :label="$t('chart.max')"
-          class="form-item"
-        >
-          <el-radio-group
-            v-model="sizeForm.gaugeMaxType"
-            size="mini"
-            @change="changeQuotaField('max')"
+          <el-form-item
+              v-show="showProperty('gaugeMax')"
+              :label="$t('chart.max')"
+              class="form-item"
           >
-            <el-radio-button label="fix">{{ $t('chart.fix') }}</el-radio-button>
-            <el-radio-button label="dynamic">{{ $t('chart.dynamic') }}</el-radio-button>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item
-          v-if="showProperty('gaugeMax') && sizeForm.gaugeMaxType === 'fix'"
-          class="form-item form-item-slider"
-        >
-          <el-input-number
-            v-model="sizeForm.gaugeMax"
-            size="mini"
-            @change="changeBarSizeCase('gaugeMax')"
-          />
-        </el-form-item>
-        <el-form-item
+            <el-radio-group
+                v-model="sizeForm.gaugeMaxType"
+                size="mini"
+                @change="changeQuotaField('max')"
+            >
+              <el-radio-button label="fix">{{ $t('chart.fix') }}</el-radio-button>
+              <el-radio-button label="dynamic">{{ $t('chart.dynamic') }}</el-radio-button>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item
+              v-if="showProperty('gaugeMax') && sizeForm.gaugeMaxType === 'fix'"
+              class="form-item form-item-slider"
+          >
+            <el-input-number
+                v-model="sizeForm.gaugeMax"
+                size="mini"
+                @change="changeBarSizeCase('gaugeMax')"
+            />
+          </el-form-item>
+          <el-form-item
           v-if="showProperty('gaugeMax') && sizeForm.gaugeMaxType === 'dynamic'"
           class="form-item form-flex"
         >
@@ -759,6 +760,7 @@
             />
           </el-select>
         </el-form-item>
+        </div>
 
         <el-form-item
           v-show="showProperty('gaugeStartAngle')"
@@ -1405,6 +1407,7 @@
 <script>
 import { CHART_FONT_FAMILY, CHART_FONT_LETTER_SPACE, DEFAULT_SIZE } from '../../chart/chart'
 import { equalsAny } from '@/utils/StringUtils'
+import { mapState } from 'vuex'
 
 export default {
   name: 'SizeSelectorAntV',
@@ -1493,7 +1496,8 @@ export default {
         return customAttr.color.mapLineGradient && equalsAny(this.sizeForm.mapLineType, 'line', 'arc')
       }
       return false
-    }
+    },
+    ...mapState(['batchOptStatus'])
   },
   watch: {
     'chart': {
