@@ -276,7 +276,9 @@ onBeforeMount(() => {
     filterable
     @change="handleValueChange"
     @visible-change="visibleChange"
-    :popper-class="visible ? 'load-select' : ''"
+    :popper-class="
+      visible ? 'load-select filter-select-popper_class' : 'filter-select-popper_class'
+    "
     multiple
     show-checked
     clearable
@@ -284,8 +286,7 @@ onBeforeMount(() => {
     collapse-tags
     :options="options"
     collapse-tags-tooltip
-  >
-  </el-select-v2>
+  ></el-select-v2>
   <el-select-v2
     v-else
     v-model="selectValue"
@@ -296,13 +297,36 @@ onBeforeMount(() => {
     :style="selectStyle"
     filterable
     @visible-change="visibleChange"
-    :popper-class="visible ? 'load-select' : ''"
+    :popper-class="
+      visible ? 'load-select filter-select-popper_class' : 'filter-select-popper_class'
+    "
     :options="options"
   >
     <template #default="{ item }">
       <el-radio-group v-model="selectValue">
-        <el-radio :label="item.value">{{ item.label }}</el-radio>
+        <el-radio :title="item.label" :label="item.value">{{ item.label }}</el-radio>
       </el-radio-group>
     </template>
   </el-select-v2>
 </template>
+
+<style lang="less">
+.filter-select-popper_class {
+  .ed-select-dropdown__option-item {
+    .ed-radio-group,
+    .ed-checkbox {
+      width: 100%;
+      .ed-radio {
+        width: 100%;
+      }
+      .ed-radio__label,
+      .ed-checkbox__label {
+        width: calc(100% - 16px);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+}
+</style>
