@@ -1077,8 +1077,8 @@ public class DorisQueryProvider extends QueryProvider {
                     String format = transDateFormat(request.getDateStyle(), request.getDatePattern());
                     if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5 || field.getDeExtractType() == 1) {
                         String date = String.format(MySQLConstants.STR_TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : MysqlConstants.DEFAULT_DATE_FORMAT);
-                        if (request.getOperator().equals("between")) {
-                            whereName = date;
+                        if (request.getOperator().equals("between") && request.getDatasetTableField().getDeExtractType() != 1) {
+                            whereName = String.format(MySQLConstants.UNIX_TIMESTAMP, date) + "*1000";
                         } else {
                             whereName = String.format(MySQLConstants.DATE_FORMAT, date, format);
                         }
@@ -1126,10 +1126,14 @@ public class DorisQueryProvider extends QueryProvider {
                 whereName = "upper(" + whereName + ")";
             } else if (StringUtils.containsIgnoreCase(request.getOperator(), "between")) {
                 if (request.getDatasetTableField().getDeType() == 1) {
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-                    String startTime = simpleDateFormat.format(new Date(Long.parseLong(value.get(0))));
-                    String endTime = simpleDateFormat.format(new Date(Long.parseLong(value.get(1))));
-                    whereValue = String.format(DorisConstants.WHERE_BETWEEN, startTime, endTime);
+                    if (request.getDatasetTableField().getDeExtractType() == 1) {
+                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+                        String startTime = simpleDateFormat.format(new Date(Long.parseLong(value.get(0))));
+                        String endTime = simpleDateFormat.format(new Date(Long.parseLong(value.get(1))));
+                        whereValue = String.format(DorisConstants.WHERE_BETWEEN, startTime, endTime);
+                    } else {
+                        whereValue = String.format(MysqlConstants.WHERE_BETWEEN, value.get(0), value.get(1));
+                    }
                 } else {
                     whereValue = String.format(DorisConstants.WHERE_BETWEEN, value.get(0), value.get(1));
                 }
