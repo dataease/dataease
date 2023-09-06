@@ -1148,7 +1148,7 @@ export const CHART_TYPE_CONFIGS = [
     title: '富文本',
     details: [
       {
-        render: 'antv',
+        render: 'custom',
         category: 'quota',
         value: 'rich-text',
         title: '富文本',
