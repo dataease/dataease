@@ -277,14 +277,9 @@ fillCardInfo()
         font-style: normal;
         display: flex;
         flex-direction: column;
-        cursor: pointer;
         width: 109px;
         height: 70px;
         padding: 8px;
-        &:not(.de-item-hidden):hover {
-          border-radius: 4px;
-          background: rgba(31, 35, 41, 0.1);
-        }
 
         .name {
           color: #646a73;
