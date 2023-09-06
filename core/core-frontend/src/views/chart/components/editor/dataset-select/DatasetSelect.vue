@@ -240,12 +240,14 @@ onMounted(() => {
                     class="tree-row-item"
                     :class="{ dark: themes === 'dark', active: _modelValue === data.id }"
                   >
-                    <el-icon class="m-icon" v-if="!data.leaf">
-                      <Icon name="dv-folder" />
-                    </el-icon>
-                    <el-icon class="m-icon" v-if="data.leaf">
-                      <Icon name="icon_dataset" />
-                    </el-icon>
+                    <div class="m-icon">
+                      <el-icon v-if="!data.leaf">
+                        <Icon name="dv-folder" />
+                      </el-icon>
+                      <el-icon v-if="data.leaf">
+                        <Icon name="icon_dataset" />
+                      </el-icon>
+                    </div>
                     <el-tooltip
                       effect="dark"
                       :content="node.label"
@@ -439,6 +441,10 @@ onMounted(() => {
         line-height: 20px;
         .m-icon {
           margin-right: 4px;
+          font-size: 16px;
+          height: 20px;
+          display: inline-block;
+          vertical-align: bottom;
         }
 
         &.active {
