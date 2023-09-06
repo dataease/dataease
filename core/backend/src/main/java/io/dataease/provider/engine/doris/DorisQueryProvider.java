@@ -1077,6 +1077,9 @@ public class DorisQueryProvider extends QueryProvider {
                     String format = transDateFormat(request.getDateStyle(), request.getDatePattern());
                     if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5 || field.getDeExtractType() == 1) {
                         String date = String.format(MySQLConstants.STR_TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : MysqlConstants.DEFAULT_DATE_FORMAT);
+                        if (field.getType().equalsIgnoreCase("YEAR") || StringUtils.equalsIgnoreCase(field.getDateFormat(), "%Y")) {
+                            date = String.format(MySQLConstants.DATE_FORMAT, "CONCAT(" + date + ",'-01-01')", "%Y-01-01");
+                        }
                         if (request.getOperator().equals("between") && request.getDatasetTableField().getDeExtractType() != 1) {
                             whereName = String.format(MySQLConstants.UNIX_TIMESTAMP, date) + "*1000";
                         } else {
@@ -1132,7 +1135,7 @@ public class DorisQueryProvider extends QueryProvider {
                         String endTime = simpleDateFormat.format(new Date(Long.parseLong(value.get(1))));
                         whereValue = String.format(DorisConstants.WHERE_BETWEEN, startTime, endTime);
                     } else {
-                        whereValue = String.format(MysqlConstants.WHERE_BETWEEN, value.get(0), value.get(1));
+                        whereValue = String.format(DorisConstants.WHERE_BETWEEN, value.get(0), value.get(1));
                     }
                 } else {
                     whereValue = String.format(DorisConstants.WHERE_BETWEEN, value.get(0), value.get(1));
