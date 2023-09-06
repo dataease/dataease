@@ -1465,6 +1465,7 @@ export default {
     dimension_text_style: '名稱樣式',
     dimension_letter_space: '名稱字間距',
     font_family: '字體',
+    font_family_tip: '只有操作系統上已安裝該字體才能生效',
     letter_space: '字間距',
     font_shadow: '字體陰影',
     chart_area: '面積圖',
