@@ -3,10 +3,10 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite --mode dev --host 0.0.0.0 --force",
+    "dev": "vite --mode dev --host 0.0.0.0",
     "build:flush": "cd ./flushbonading && rimraf ./demo.html && npm i && node ./index.js",
     "ts:check": "vue-tsc --noEmit",
-    "build:base": "NODE_OPTIONS=--max_old_space_size=4096 vite build --force --mode base && npm run build:flush",
+    "build:base": "NODE_OPTIONS=--max_old_space_size=4096 vite build --mode base && npm run build:flush",
     "build:lib": "vite build --mode lib",
     "lint": "eslint . --ext .vue,.js,.ts,.jsx,.tsx --fix",
     "lint:stylelint": "stylelint --fix \"**/*.{vue,less,postcss,css,scss}\" --cache --cache-location node_modules/.cache/stylelint/",

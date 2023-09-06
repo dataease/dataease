@@ -264,6 +264,7 @@ onBeforeMount(() => {
     @visible-change="visibleChange"
     :popper-class="visible ? 'load-select' : ''"
     multiple
+    style="width: 227px"
     show-checked
     clearable
     collapse-tags
@@ -278,6 +279,7 @@ onBeforeMount(() => {
     v-loading="loading"
     @change="handleValueChange"
     clearable
+    style="width: 227px"
     filterable
     @visible-change="visibleChange"
     :popper-class="visible ? 'load-select' : ''"
