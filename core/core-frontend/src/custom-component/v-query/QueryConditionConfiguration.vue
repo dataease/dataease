@@ -364,6 +364,7 @@ const weightlessness = () => {
 }
 
 const handleCondition = item => {
+  if (activeConditionForRename.id) return
   activeCondition.value = item.id
   curComponent.value = conditions.value.find(ele => ele.id === item.id)
 
@@ -434,8 +435,8 @@ const dsSelectProps = {
 
 const renameInputBlur = () => {
   if (activeConditionForRename.name.trim() === '') {
-    ElMessage.error('条件名不能为空')
-    activeConditionForRename.id = ''
+    ElMessage.error('字段名称不能为空')
+    renameInput.value[0]?.focus()
     return
   }
   conditions.value.some(ele => {
