@@ -8,7 +8,7 @@
       <draggable v-model="view.xaxis" group="drag" animation="300" :move="onMove" class="drag-block-style"
                  @add="addXaxis" @update="calcData(true)">
         <transition-group class="draggable-group">
-          <sankey-dimension-item v-for="(item,index) in view.xaxis" :key="index"
+          <dimension-item v-for="(item,index) in view.xaxis" :key="index"
                                  :param="param"
                                  :index="0"
                                  :item="item"
@@ -98,7 +98,7 @@
 </template>
 
 <script>
-import SankeyDimensionItem from '@/components/views/SankeyDimensionItem'
+import DimensionItem from '@/components/views/DimensionItem'
 import QuotaItem from '@/components/views/QuotaItem'
 import QuotaExtItem from '@/components/views/QuotaExtItem'
 import FilterItem from '@/components/views/FilterItem'
@@ -118,7 +118,7 @@ export default {
     },
   },
   components: {
-    SankeyDimensionItem,
+    DimensionItem,
     QuotaItem,
     QuotaExtItem,
     FilterItem

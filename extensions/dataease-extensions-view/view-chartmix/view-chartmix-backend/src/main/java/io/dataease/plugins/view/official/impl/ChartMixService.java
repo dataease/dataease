@@ -3,7 +3,7 @@ package io.dataease.plugins.view.official.impl;
 import com.google.gson.Gson;
 import io.dataease.plugins.common.dto.StaticResource;
 import io.dataease.plugins.view.entity.*;
-import io.dataease.plugins.view.official.handler.DefaultViewStatHandler;
+import io.dataease.plugins.view.official.handler.ChartMixViewStatHandler;
 import io.dataease.plugins.view.service.ViewPluginService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -110,11 +110,10 @@ public class ChartMixService extends ViewPluginService {
         if (CollectionUtils.isNotEmpty(yAxisExt)) {
             yAxis.addAll(yAxisExt);
         }*/
-        System.out.println(new Gson().toJson(yAxis));
         if (CollectionUtils.isEmpty(xAxis) || CollectionUtils.isEmpty(yAxis)) {
             return null;
         }
-        String sql = new DefaultViewStatHandler().build(param, this);
+        String sql = new ChartMixViewStatHandler().build(param, this);
         System.out.println(sql);
         return sql;
 
