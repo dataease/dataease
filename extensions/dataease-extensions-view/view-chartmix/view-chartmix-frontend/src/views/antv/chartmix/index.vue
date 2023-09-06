@@ -36,7 +36,13 @@ import {Mix} from '@antv/g2plot'
 import {uuid, hexColorToRGBA} from '@/utils/chartmix'
 import ViewTrackBar from '@/components/views/ViewTrackBar'
 import {getRemark} from "@/components/views/utils";
-import {DEFAULT_TITLE_STYLE, DEFAULT_XAXIS_STYLE, DEFAULT_YAXIS_STYLE, transAxisPosition, getLineDash} from '@/utils/map';
+import {
+  DEFAULT_TITLE_STYLE,
+  DEFAULT_XAXIS_STYLE,
+  DEFAULT_YAXIS_STYLE,
+  transAxisPosition,
+  getLineDash
+} from '@/utils/map';
 import ChartTitleUpdate from '@/components/views/ChartTitleUpdate';
 import _ from 'lodash';
 import {clear} from 'size-sensor'
@@ -294,6 +300,7 @@ export default {
       let customAttr = undefined;
       let colors = undefined;
       let labelSetting = undefined;
+      let labelPosition = 'middle';
       if (this.chart.customAttr) {
         customAttr = JSON.parse(this.chart.customAttr);
         if (customAttr) {
@@ -302,15 +309,12 @@ export default {
           }
           if (customAttr.label) {
             labelSetting = customAttr.label.show ? {
-              callback: function (x) {
-                return {
-                  style: {
-                    fill: customAttr.label.color,
-                    fontSize: parseInt(customAttr.label.fontSize),
-                  },
-                };
+              style: {
+                fill: customAttr.label.color,
+                fontSize: parseInt(customAttr.label.fontSize),
               },
             } : false
+            labelPosition = customAttr.label.position;
           }
         }
       }
@@ -330,8 +334,16 @@ export default {
 
         names.push(t.name);
 
+        const _chartType = this.getChartType(yaxisList[_index].chartType);
+
+        if (_chartType === "column") {
+          _labelSetting.position = labelPosition;
+        } else {
+          _labelSetting.position = undefined;
+        }
+
         return {
-          type: this.getChartType(yaxisList[_index].chartType),
+          type: _chartType,
           name: t.name,
           options: {
             data: _.map(t.data, (v) => {
@@ -374,8 +386,17 @@ export default {
 
         names.push(t.name);
 
+
+        const _chartType = this.getChartType(yaxisExtList[_index].chartType);
+
+        if (_chartType === "column") {
+          _labelSetting.position = labelPosition;
+        } else {
+          _labelSetting.position = undefined;
+        }
+
         return {
-          type: this.getChartType(yaxisExtList[_index].chartType),
+          type: _chartType,
           name: t.name,
           options: {
             data: _.map(t.data, (v) => {
@@ -444,7 +465,6 @@ export default {
                   item.value = valueFormatter(item.data.value, yaxisExtList[item.data.i].formatterCfg)
                 }
               })
-              console.log(originalItems)
               return _.filter(originalItems, (item) => {
                 const v = item.data.key;
                 if (item.title === v && item.title === item.value && item.name === "key" || !names.includes(item.name)) {
