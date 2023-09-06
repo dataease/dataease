@@ -141,6 +141,11 @@ export function getLabel(chart) {
           if (l.position === 'inner') {
             label.offset = -10
           }
+        } else if (chart.type.includes('bar')) {
+          label = {
+            layout: [{ type: 'limit-in-canvas' }],
+            position: l.position
+          }
         } else {
           label = {
             position: l.position
