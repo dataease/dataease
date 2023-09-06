@@ -55,7 +55,7 @@ import { baseRadarOptionAntV } from '@/views/chart/chart/radar/radar_antv'
 import { baseWaterfallOptionAntV } from '@/views/chart/chart/waterfall/waterfall'
 import { baseWordCloudOptionAntV } from '@/views/chart/chart/wordCloud/word_cloud'
 import TitleRemark from '@/views/chart/view/TitleRemark'
-import { DEFAULT_TITLE_STYLE } from '@/views/chart/chart/chart'
+import { CHART_CONT_FAMILY_MAP, DEFAULT_TITLE_STYLE } from '@/views/chart/chart/chart'
 import { baseMixOptionAntV } from '@/views/chart/chart/mix/mix_antv'
 import ChartTitleUpdate from './ChartTitleUpdate.vue'
 import { equalsAny } from '@/utils/StringUtils'
@@ -429,7 +429,7 @@ export default {
           this.title_class.fontStyle = customStyle.text.isItalic ? 'italic' : 'normal'
           this.title_class.fontWeight = customStyle.text.isBolder ? 'bold' : 'normal'
 
-          this.title_class.fontFamily = customStyle.text.fontFamily ? customStyle.text.fontFamily : DEFAULT_TITLE_STYLE.fontFamily
+          this.title_class.fontFamily = customStyle.text.fontFamily ? CHART_CONT_FAMILY_MAP[customStyle.text.fontFamily] : DEFAULT_TITLE_STYLE.fontFamily
           this.title_class.letterSpacing = (customStyle.text.letterSpace ? customStyle.text.letterSpace : DEFAULT_TITLE_STYLE.letterSpace) + 'px'
           this.title_class.textShadow = customStyle.text.fontShadow ? '2px 2px 4px' : 'none'
         }

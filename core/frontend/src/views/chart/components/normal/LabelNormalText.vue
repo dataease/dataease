@@ -61,7 +61,7 @@ import { getRemark, hexColorToRGBA } from '../../chart/util'
 import eventBus from '@/components/canvas/utils/eventBus'
 import ViewTrackBar from '@/components/canvas/components/editor/ViewTrackBar'
 import TitleRemark from '@/views/chart/view/TitleRemark'
-import { DEFAULT_SIZE, DEFAULT_TITLE_STYLE } from '@/views/chart/chart/chart'
+import { CHART_CONT_FAMILY_MAP, DEFAULT_SIZE, DEFAULT_TITLE_STYLE } from '@/views/chart/chart/chart'
 import ChartTitleUpdate from '../ChartTitleUpdate.vue'
 
 export default {
@@ -236,7 +236,7 @@ export default {
           this.title_class.fontStyle = customStyle.text.isItalic ? 'italic' : 'normal'
           this.title_class.fontWeight = customStyle.text.isBolder ? 'bold' : 'normal'
 
-          this.title_class.fontFamily = customStyle.text.fontFamily ? customStyle.text.fontFamily : DEFAULT_TITLE_STYLE.fontFamily
+          this.title_class.fontFamily = customStyle.text.fontFamily ? CHART_CONT_FAMILY_MAP[customStyle.text.fontFamily] : DEFAULT_TITLE_STYLE.fontFamily
           this.title_class.letterSpacing = (customStyle.text.letterSpace ? customStyle.text.letterSpace : DEFAULT_TITLE_STYLE.letterSpace) + 'px'
           this.title_class.textShadow = customStyle.text.fontShadow ? '2px 2px 4px' : 'none'
         }

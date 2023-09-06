@@ -1466,6 +1466,7 @@ export default {
     dimension_text_style: 'Name Style',
     dimension_letter_space: 'Name Letter Space',
     font_family: 'Font Family',
+    font_family_tip: 'The font will only take effect if it is installed on the operating system',
     letter_space: 'Letter Space',
     font_shadow: 'Font Shadow',
     chart_area: 'Area',
