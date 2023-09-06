@@ -5,6 +5,7 @@ import { seizeLogin } from '@/api/user'
 import router from '@/router'
 import store from '@/store'
 import { Loading } from 'element-ui'
+import { getSysUI } from '@/utils/auth'
 export function timeSection(date, type, labelFormat = 'yyyy-MM-dd') {
   if (!date) {
     return null
@@ -308,6 +309,10 @@ export function getQueryVariable(variable) {
 }
 
 export function isMobile() {
+  const uiInfo = getSysUI()
+  if (uiInfo['ui.autoMobile']?.paramValue === 'false') {
+    return false
+  }
   const flag = navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)
   return flag
 }
