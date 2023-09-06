@@ -615,6 +615,7 @@ export default {
 
 .bar-main-preview {
   right: 0px;
+  z-index: 10;
 }
 
 </style>
