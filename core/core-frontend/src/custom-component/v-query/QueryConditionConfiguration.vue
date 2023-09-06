@@ -660,12 +660,36 @@ defineExpose({
                 </div>
                 <div class="value">
                   <el-select v-model="curComponent.field.id">
+                    <template #prefix>
+                      <el-icon>
+                        <Icon
+                          :name="`field_${
+                            fieldType[getDetype(curComponent.field.id, curComponent.dataset.fields)]
+                          }`"
+                          :className="`field-icon-${
+                            fieldType[getDetype(curComponent.field.id, curComponent.dataset.fields)]
+                          }`"
+                        ></Icon>
+                      </el-icon>
+                    </template>
                     <el-option
                       v-for="ele in curComponent.dataset.fields"
                       :key="ele.id"
                       :label="ele.name"
                       :value="ele.id"
-                    />
+                    >
+                      <div class="flex-align-center icon">
+                        <el-icon>
+                          <Icon
+                            :name="`field_${fieldType[ele.deType]}`"
+                            :className="`field-icon-${fieldType[ele.deType]}`"
+                          ></Icon>
+                        </el-icon>
+                        <span>
+                          {{ ele.name }}
+                        </span>
+                      </div>
+                    </el-option>
                   </el-select>
                 </div>
               </template>

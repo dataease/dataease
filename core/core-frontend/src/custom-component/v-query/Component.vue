@@ -46,7 +46,7 @@ const defaultStyle = {
   background: '',
   text: '',
   layout: 'horizontal',
-  btnList: [],
+  btnList: ['sure'],
   titleShow: false,
   title: ''
 }
