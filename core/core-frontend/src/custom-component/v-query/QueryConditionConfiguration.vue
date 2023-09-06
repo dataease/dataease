@@ -77,16 +77,21 @@ const dfsComponentData = () => {
 }
 
 const datasetFieldList = computed(() => {
-  return dfsComponentData().map(ele => {
-    const obj = canvasViewInfo.value[ele.id]
-    const { id, title, tableId, type } = obj as DatasetField
-    return {
-      id,
-      type,
-      title,
-      tableId
-    }
-  })
+  return dfsComponentData()
+    .map(ele => {
+      const obj = canvasViewInfo.value[ele.id]
+      if (!obj) return null
+      const { id, title, tableId, type } = obj as DatasetField
+      return !!id && !!tableId
+        ? {
+            id,
+            type,
+            title,
+            tableId
+          }
+        : null
+    })
+    .filter(ele => !!ele)
 })
 
 const curComponent = ref()

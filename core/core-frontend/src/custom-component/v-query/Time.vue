@@ -144,6 +144,7 @@ onBeforeMount(() => {
   <el-date-picker
     v-model="selectValue"
     type="datetimerange"
+    style="width: 470px"
     v-if="multiple"
     :shortcuts="shortcuts"
     @change="handleValueChange"
@@ -157,6 +158,7 @@ onBeforeMount(() => {
     v-model="selectValue"
     @change="handleValueChange"
     type="datetime"
+    style="width: 227px"
     :prefix-icon="Calendar"
     :placeholder="$t('commons.date.select_date_time')"
     format="YYYY/MM/DD HH:mm:ss"
