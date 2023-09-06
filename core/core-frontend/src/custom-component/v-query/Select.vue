@@ -1,5 +1,15 @@
 <script lang="ts" setup>
-import { ref, toRefs, provide, PropType, onBeforeMount, shallowRef, watch, nextTick } from 'vue'
+import {
+  ref,
+  toRefs,
+  provide,
+  PropType,
+  onBeforeMount,
+  shallowRef,
+  watch,
+  nextTick,
+  computed
+} from 'vue'
 import { getEnumValue } from '@/api/dataset'
 import { cloneDeep, debounce } from 'lodash-es'
 
@@ -248,6 +258,10 @@ const init = () => {
   debounceOptions(optionValueSource)
 }
 
+const selectStyle = computed(() => {
+  return props.isConfig ? {} : { width: '227px' }
+})
+
 onBeforeMount(() => {
   init()
 })
@@ -264,9 +278,9 @@ onBeforeMount(() => {
     @visible-change="visibleChange"
     :popper-class="visible ? 'load-select' : ''"
     multiple
-    style="width: 227px"
     show-checked
     clearable
+    :style="selectStyle"
     collapse-tags
     :options="options"
     collapse-tags-tooltip
@@ -279,7 +293,7 @@ onBeforeMount(() => {
     v-loading="loading"
     @change="handleValueChange"
     clearable
-    style="width: 227px"
+    :style="selectStyle"
     filterable
     @visible-change="visibleChange"
     :popper-class="visible ? 'load-select' : ''"

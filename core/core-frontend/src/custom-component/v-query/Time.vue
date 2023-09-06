@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { toRefs, provide, PropType, ref, onBeforeMount, watch, nextTick } from 'vue'
+import { toRefs, provide, PropType, ref, onBeforeMount, watch, nextTick, computed } from 'vue'
 import { Calendar } from '@element-plus/icons-vue'
 
 interface SelectConfig {
@@ -135,6 +135,10 @@ const init = () => {
   multiple.value = config.value.displayType === '7'
 }
 
+const selectStyle = computed(() => {
+  return props.isConfig ? {} : { width: multiple.value ? '470px' : '227px' }
+})
+
 onBeforeMount(() => {
   init()
 })
@@ -144,7 +148,7 @@ onBeforeMount(() => {
   <el-date-picker
     v-model="selectValue"
     type="datetimerange"
-    style="width: 470px"
+    :style="selectStyle"
     v-if="multiple"
     :shortcuts="shortcuts"
     @change="handleValueChange"
@@ -158,7 +162,7 @@ onBeforeMount(() => {
     v-model="selectValue"
     @change="handleValueChange"
     type="datetime"
-    style="width: 227px"
+    :style="selectStyle"
     :prefix-icon="Calendar"
     :placeholder="$t('commons.date.select_date_time')"
     format="YYYY/MM/DD HH:mm:ss"

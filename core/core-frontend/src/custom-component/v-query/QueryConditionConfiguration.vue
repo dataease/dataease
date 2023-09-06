@@ -720,7 +720,11 @@ defineExpose({
                     <div class="select-value">
                       <span> 选项值 </span>
                       <div :key="index" v-for="(_, index) in valueSource" class="select-item">
-                        <el-input @blur="weightlessness" v-model="valueSource[index]"></el-input>
+                        <el-input
+                          maxlength="20"
+                          @blur="weightlessness"
+                          v-model="valueSource[index]"
+                        ></el-input>
                         <el-button
                           v-if="valueSource.length !== 1"
                           @click="valueSource.splice(index, 1)"
