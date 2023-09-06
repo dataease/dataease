@@ -1071,7 +1071,7 @@ public class MysqlQueryProvider extends QueryProvider {
                         } else {
                             date = String.format(MySQLConstants.DATE_FORMAT, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : MysqlConstants.DEFAULT_DATE_FORMAT);
                         }
-                        if (request.getOperator().equals("between")) {
+                        if (request.getOperator().equals("between") && request.getDatasetTableField().getDeExtractType() != 1) {
                             whereName = String.format(MySQLConstants.UNIX_TIMESTAMP, date) + "*1000";
                         } else {
                             if (StringUtils.equalsIgnoreCase(request.getDateStyle(), "y_Q")) {
