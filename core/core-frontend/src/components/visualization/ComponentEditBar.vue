@@ -49,7 +49,9 @@
     </div>
 
     <el-dropdown trigger="click" v-if="barShowCheck('setting')">
-      <el-icon :title="t('visualization.setting')" class="bar-base-icon"><Setting /></el-icon>
+      <el-icon :title="t('visualization.setting')" class="bar-base-icon">
+        <icon name="icon_more_outlined"></icon>
+      </el-icon>
       <template #dropdown>
         <el-dropdown-menu style="width: 100px">
           <el-dropdown-item icon="Delete" @click="deleteComponent">删除</el-dropdown-item>
