@@ -791,13 +791,13 @@
           />
         </el-form-item>
         <el-form-item
-            v-show="showProperty('gaugeAxisLabel')"
-            :label="$t('chart.gauge_axis_label')"
-            class="form-item"
+          v-show="showProperty('gaugeAxisLabel')"
+          :label="$t('chart.gauge_axis_label')"
+          class="form-item"
         >
           <el-checkbox
-              v-model="sizeForm.gaugeAxisLine"
-              @change="changeBarSizeCase('gaugeAxisLabel')"
+            v-model="sizeForm.gaugeAxisLine"
+            @change="changeBarSizeCase('gaugeAxisLabel')"
           />
         </el-form-item>
         <!--        <el-form-item v-show="showProperty('gaugeTickCount')" :label="$t('chart.tick_count')" class="form-item form-item-slider">-->
@@ -1369,7 +1369,7 @@
           <el-form-item
             v-show="showProperty('wordSizeRange') "
             :label="$t('chart.word_size_range')"
-            class="form-item form-item-slider"
+            class="form-item form-item-slider form-item-range-slider"
           >
             <el-slider
               v-model="sizeForm.wordSizeRange"
@@ -1386,6 +1386,9 @@
           >
             <el-slider
               v-model="sizeForm.wordSpacing"
+              show-input
+              :show-input-controls="false"
+              input-size="mini"
               :min="0"
               :max="20"
               @change="changeBarSizeCase('wordSpacing')"
@@ -1748,6 +1751,10 @@ export default {
   .form-item-slider ::v-deep .el-form-item__label {
     font-size: 12px;
     line-height: 38px;
+  }
+
+  .form-item-range-slider ::v-deep .el-form-item__content {
+    padding-right: 6px
   }
 
   .form-item ::v-deep .el-form-item__label {
