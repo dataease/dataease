@@ -9,18 +9,18 @@
                  @add="addXaxis" @update="calcData(true)">
         <transition-group class="draggable-group">
           <dimension-item v-for="(item,index) in view.xaxis" :key="index"
-                                 :param="param"
-                                 :index="0"
-                                 :item="item"
-                                 :dimension-data="dimension"
-                                 :quota-data="quotaData"
-                                 :chart="chart"
-                                 @onDimensionItemChange="dimensionItemChange"
-                                 @onDimensionItemRemove="dimensionItemRemove"
-                                 @editItemFilter="showDimensionEditFilter"
-                                 @onNameEdit="showRename"
-                                 dimension-name="dimension"
-                                 :bus="bus"
+                          :param="param"
+                          :index="0"
+                          :item="item"
+                          :dimension-data="dimension"
+                          :quota-data="quotaData"
+                          :chart="chart"
+                          @onDimensionItemChange="dimensionItemChange"
+                          @onDimensionItemRemove="dimensionItemRemove"
+                          @editItemFilter="showDimensionEditFilter"
+                          @onNameEdit="showRename"
+                          dimension-name="dimension"
+                          :bus="bus"
           />
         </transition-group>
       </draggable>
@@ -84,7 +84,7 @@
                  @add="addCustomFilter" @update="calcData(true)">
         <transition-group class="draggable-group">
           <filter-item v-for="(item,index) in view.customFilter" :key="item.id" :param="param" :index="index"
-                       :item="item" :dimension-data="dimension" :quota-data="quota"
+                       :item="item" :dimension-data="dimension" :quota-data="quota" :bus="bus"
                        @onFilterItemRemove="filterItemRemove"
                        @editItemFilter="showEditFilter"/>
         </transition-group>

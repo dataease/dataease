@@ -97,7 +97,7 @@
                  @add="addCustomFilter" @update="calcData(true)">
         <transition-group class="draggable-group">
           <filter-item v-for="(item,index) in view.customFilter" :key="item.id" :param="param" :index="index"
-                       :item="item" :dimension-data="dimension" :quota-data="quota"
+                       :item="item" :dimension-data="dimension" :quota-data="quota" :bus="bus"
                        @onFilterItemRemove="filterItemRemove"
                        @editItemFilter="showEditFilter"/>
         </transition-group>
