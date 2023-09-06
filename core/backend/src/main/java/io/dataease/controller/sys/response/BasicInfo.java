@@ -29,5 +29,7 @@ public class BasicInfo extends LoginLimitInfo implements Serializable {
     private String dsCheckInterval;
     @ApiModelProperty("数据源检测时间间隔类型")
     private String dsCheckIntervalType;
+    @ApiModelProperty("自动识别移动端")
+    private String autoMobile = "true";
 
 }

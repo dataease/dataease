@@ -2407,6 +2407,7 @@ export default {
     themeDark: '深色',
     themeCustom: '自定义',
     openHomePage: '显示首页',
+    auto_identify_mobile_devices: '自动识别移动设备',
     openMarketPage: '显示模板市场',
     mobileBG: '移动端登录页背景',
     helpLink: '帮助文档链接',
