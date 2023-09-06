@@ -354,9 +354,6 @@ export default {
 .component {
   position: absolute;
 }
-.component-outer:hover {
-  box-shadow: 0px 0px 3px #0a7be0;
-}
 
 .gap_class {
   padding: 5px;
