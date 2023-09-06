@@ -46,7 +46,7 @@ import {
   componentStyle,
   seniorCfg,
   DEFAULT_SLIDER,
-  DEFAULT_Graphic,
+  DEFAULT_Graphic, getMarginUnit,
 } from '../../../utils/map';
 import ChartTitleUpdate from '../../../components/views/ChartTitleUpdate';
 import {mapState} from 'vuex'
@@ -554,17 +554,20 @@ export default {
           chart_option.graphic.elements[0].style.text = extX;
           chart_option.graphic.elements[0].style.fill = hexColorToRGBA(DEFAULT_Graphic.color, DEFAULT_Graphic.alpha);
           chart_option.graphic.elements[0].style.font = 'bolder ' + DEFAULT_Graphic.fontSize + 'px monospace';
-          chart_option.graphic.elements[0].right = DEFAULT_Graphic.right;
-          chart_option.graphic.elements[0].bottom = DEFAULT_Graphic.bottom;
+          chart_option.graphic.elements[0].right = DEFAULT_Graphic.right + 'px';
+          chart_option.graphic.elements[0].bottom = DEFAULT_Graphic.bottom + 'px';
 
           if (customAttr.graphic) {
             chart_option.graphic.elements[0].style.fill = hexColorToRGBA(customAttr.graphic.color, customAttr.graphic.alpha);
             chart_option.graphic.elements[0].style.font = 'bolder ' + customAttr.graphic.fontSize + 'px monospace';
+
+            const unit = _.defaultTo(getMarginUnit(customAttr.graphic), '');
+
             if (customAttr.graphic.right !== undefined) {
-              chart_option.graphic.elements[0].right = customAttr.graphic.right;
+              chart_option.graphic.elements[0].right = customAttr.graphic.right + unit;
             }
             if (customAttr.graphic.bottom !== undefined) {
-              chart_option.graphic.elements[0].bottom = customAttr.graphic.bottom;
+              chart_option.graphic.elements[0].bottom = customAttr.graphic.bottom + unit;
             }
           }
         } else {

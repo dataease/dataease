@@ -1,7 +1,7 @@
 <template>
   <div style="width: 100%;">
     <el-col>
-      <el-form v-show="chart.type" ref="labelForm" :model="labelForm" label-width="80px" size="mini">
+      <el-form v-show="chart.type" ref="labelForm" :model="labelForm" label-width="80px" size="mini" :rules="rules">
         <el-form-item :label="$t('chart.show')" class="form-item">
           <el-checkbox v-model="labelForm.show" @change="changeAttr">{{ $t('chart.show') }}</el-checkbox>
         </el-form-item>
@@ -30,29 +30,57 @@
           </el-form-item>
 
           <el-form-item
+            :label="$t('chart.margin_model')"
+            class="form-item"
+          >
+            <el-radio-group
+              v-model="labelForm.marginModel"
+              size="mini"
+              @change="changeMarginStyle(labelForm.marginModel, 'marginModel')"
+            >
+              <el-radio-button label="absolute">{{ $t('chart.margin_model_absolute') }}</el-radio-button>
+              <el-radio-button label="relative">{{ $t('chart.margin_model_relative') }}</el-radio-button>
+            </el-radio-group>
+          </el-form-item>
+
+          <el-form-item
             :label="$t('chart.text_pos_bottom')"
             class="form-item"
-            prop="marginBottom"
+            prop="bottom"
           >
             <el-input
               v-model="labelForm.bottom"
               type="number"
               class="hide-icon-number"
               @change="changeAttr"
-            />
+            >
+              <template
+                v-if="unitSuffix"
+                slot="append"
+              >
+                {{ unitSuffix }}
+              </template>
+            </el-input>
           </el-form-item>
 
           <el-form-item
             :label="$t('chart.text_pos_right')"
             class="form-item"
-            prop="marginRight"
+            prop="right"
           >
             <el-input
               v-model="labelForm.right"
               type="number"
               class="hide-icon-number"
               @change="changeAttr"
-            />
+            >
+              <template
+                v-if="unitSuffix"
+                slot="append"
+              >
+                {{ unitSuffix }}
+              </template>
+            </el-input>
           </el-form-item>
 
         </div>
@@ -62,7 +90,7 @@
 </template>
 
 <script>
-import {DEFAULT_Graphic, COLOR_PANEL} from '../../utils/map'
+import {DEFAULT_Graphic, COLOR_PANEL, getMarginUnit} from '../../utils/map'
 
 export default {
   name: 'SliderSetting',
@@ -76,12 +104,25 @@ export default {
       required: true
     }
   },
+  computed: {
+    unitSuffix() {
+      return getMarginUnit(this.labelForm)
+    },
+  },
   data() {
     return {
       labelForm: JSON.parse(JSON.stringify(DEFAULT_Graphic)),
       isSetting: false,
       predefineColors: COLOR_PANEL,
       fontSize: [],
+      rules: {
+        bottom: [
+          {validator: this.validateMarginNumber, trigger: ['blur', 'change']}
+        ],
+        right: [
+          {validator: this.validateMarginNumber, trigger: ['blur', 'change']}
+        ]
+      }
     }
   },
   watch: {
@@ -129,6 +170,35 @@ export default {
       }
       this.$emit('onChange', this.labelForm)
     },
+    changeMarginStyle(value, modifyName) {
+      if (modifyName === 'marginModel') {
+        if (value === 'absolute') {
+          this.labelForm.bottom = JSON.parse(JSON.stringify(DEFAULT_Graphic)).bottom
+          this.labelForm.right = JSON.parse(JSON.stringify(DEFAULT_Graphic)).right
+        }
+        if (value === 'relative') {
+          this.labelForm.bottom = 15
+          this.labelForm.right = 5
+        }
+      }
+      this.labelForm['modifyName'] = modifyName
+      this.changeAttr()
+    },
+    validateMarginNumber(rule, value, callBack) {
+      if (value == null || value === '') {
+        callBack()
+        return
+      }
+      if (this.labelForm.marginModel === 'absolute' && (value < 0 || value > 200)) {
+        callBack(new Error(this.$t('chart.margin_placeholder')))
+        this.labelForm[rule.field] = 0
+      } else if (this.labelForm.marginModel === 'relative' && (value < 0 || value > 50)) {
+        callBack(new Error(this.$t('chart.margin_absolute_placeholder')))
+        this.labelForm[rule.field] = 0
+      } else {
+        callBack()
+      }
+    }
   }
 }
 </script>
