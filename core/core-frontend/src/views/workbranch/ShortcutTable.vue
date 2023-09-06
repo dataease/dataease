@@ -1,15 +1,16 @@
 <script lang="ts" setup>
 import { useI18n } from '@/hooks/web/useI18n'
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import type { TabsPaneContext } from 'element-plus-secondary'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
 import { useRouter } from 'vue-router'
 import dayjs from 'dayjs'
 import { shortcutOption } from './ShortcutOption'
 import { XpackComponent } from '@/components/plugin'
+import { interactiveStoreWithOut } from '@/store/modules/interactive'
 const { resolve } = useRouter()
 const { t } = useI18n()
-
+const interactiveStore = interactiveStoreWithOut()
 const panelKeyword = ref()
 const activeName = ref('recent')
 const userAddPopper = ref(false)
@@ -19,6 +20,7 @@ const state = reactive({
   curTypeList: [],
   tableColumn: []
 })
+const busiDataMap = computed(() => interactiveStore.getData)
 
 const handleVisibleChange = (val: boolean) => {
   userAddPopper.value = val
@@ -32,10 +34,22 @@ const handleClick = (ele: TabsPaneContext) => {
   if (ele.paneName === 'recent' || ele.paneName === 'store') {
     loading.value = true
     shortcutOption.setBusiFlag(ele.paneName)
-    state.curTypeList = shortcutOption.getBusiList()
+    state.curTypeList = shortcutOption
+      .getBusiList()
+      .filter(busi => busi === 'all_types' || busiAuthList.includes(busi))
     state.tableColumn = shortcutOption.getColmunList()
     loadTableData()
   }
+}
+const getBusiListWithPermission = () => {
+  const baseFlagList = ['panel', 'screen', 'dataset', 'datasource']
+  const busiFlagList = []
+  for (const key in busiDataMap.value) {
+    if (busiDataMap.value[key].menuAuth) {
+      busiFlagList.push(baseFlagList[parseInt(key)])
+    }
+  }
+  return busiFlagList
 }
 const triggerFilterPanel = () => {
   loadTableData()
@@ -75,6 +89,8 @@ const tablePaneList = ref([
   { title: '最近使用', name: 'recent' },
   { title: '我的收藏', name: 'store' }
 ])
+
+const busiAuthList = getBusiListWithPermission()
 onMounted(() => {
   handleClick({
     paneName: 'recent',
