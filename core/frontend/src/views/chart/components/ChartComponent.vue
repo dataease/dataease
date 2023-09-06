@@ -292,6 +292,7 @@ export default {
           this.myChart = this.$echarts.init(document.getElementById(this.chartId))
         }
         this.drawEcharts()
+        this.myChart.off('click')
         this.myChart.on('click', function(param) {
           that.pointParam = param
           if (that.linkageActiveParam) {
