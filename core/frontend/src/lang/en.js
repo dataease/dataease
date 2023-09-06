@@ -2412,6 +2412,7 @@ export default {
     themeDark: 'Dark',
     themeCustom: 'Custom',
     openHomePage: 'Show Home Page',
+    auto_identify_mobile_devices: 'Automatically identify mobile devices',
     openMarketPage: 'Show Market Page',
     mobileBG: 'Mobile Login page BG',
     helpLink: 'Help Document Link',

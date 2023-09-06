@@ -165,6 +165,8 @@ import PDFPreExport from '@/views/panel/export/PDFPreExport'
 import { listenGlobalKeyDownPreview } from '@/components/canvas/utils/shortcutKey'
 import UserViewDialog from '@/components/canvas/customComponent/UserViewDialog'
 import {hexColorToRGBA} from "@/views/chart/chart/util";
+import { isMobile } from '@/utils/index'
+  
 
 const erd = elementResizeDetectorMaker()
 export default {
@@ -623,9 +625,8 @@ export default {
       return -1
     },
     _isMobile() {
-      const flag = navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)
+      const flag = isMobile()
       this.terminal = flag ? 'mobile' : 'pc'
-      // this.terminal = 'mobile'
     },
     canvasStyleDataInit() {
       // 数据刷新计时器
