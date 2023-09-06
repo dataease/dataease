@@ -791,13 +791,13 @@
           />
         </el-form-item>
         <el-form-item
-          v-show="showProperty('gaugeAxisLabel')"
+          v-show="showProperty('gaugeAxisLine')"
           :label="$t('chart.gauge_axis_label')"
           class="form-item"
         >
           <el-checkbox
             v-model="sizeForm.gaugeAxisLine"
-            @change="changeBarSizeCase('gaugeAxisLabel')"
+            @change="changeBarSizeCase('gaugeAxisLine')"
           />
         </el-form-item>
         <!--        <el-form-item v-show="showProperty('gaugeTickCount')" :label="$t('chart.tick_count')" class="form-item form-item-slider">-->
