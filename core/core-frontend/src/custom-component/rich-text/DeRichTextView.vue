@@ -1,5 +1,10 @@
 <template>
-  <div class="rich-main-class" :class="{ 'edit-model': canEdit }" @dblclick="setEdit">
+  <div
+    class="rich-main-class"
+    :class="{ 'edit-model': canEdit }"
+    :style="autoStyle"
+    @dblclick="setEdit"
+  >
     <Editor
       v-if="editShow"
       :id="tinymceId"
@@ -31,15 +36,24 @@ import 'tinymce/plugins/contextmenu' // contextmenu
 import 'tinymce/plugins/directionality'
 import 'tinymce/plugins/nonbreaking'
 import 'tinymce/plugins/pagebreak'
-import { computed, nextTick, ref, toRefs, watch } from 'vue'
+import { computed, nextTick, reactive, ref, toRefs, watch, onMounted } from 'vue'
+import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
+import eventBus from '@/utils/eventBus'
+import { guid } from '@/views/visualized/data/dataset/form/util'
+import { getData } from '@/api/chart'
+import { storeToRefs } from 'pinia'
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+const snapshotStore = snapshotStoreWithOut()
+const errMsg = ref('')
+const curFields = ref([])
+const dvMainStore = dvMainStoreWithOut()
+const { canvasViewInfo } = storeToRefs(dvMainStore)
+
 const props = defineProps({
-  terminal: {
-    type: String,
-    default: 'pc'
-  },
-  propValue: {
-    type: String,
-    require: true
+  scale: {
+    type: Number,
+    required: false,
+    default: 1
   },
   element: {
     type: Object
@@ -61,14 +75,23 @@ const props = defineProps({
   }
 })
 
-const { terminal, propValue, element, editMode, active, disabled } = toRefs(props)
-const emits = defineEmits(['onClick'])
+const { scale, element, editMode, active, disabled } = toRefs(props)
 
+const state = reactive({
+  data: null,
+  totalItems: 0
+})
+const dataRowSelect = ref({})
+const dataRowNameSelect = ref({})
+const drawLeft = ref('none')
+const drawRight = ref('auto')
+const initReady = ref(false)
+const editReady = ref(false)
 const editShow = ref(true)
 const canEdit = ref(false)
 // 初始化配置
-const tinymceId = 'tinymce-view-' + element.value['id']
-const myValue = ref(element.value.propValue.textValue)
+const tinymceId = 'tinymce-view-' + element.value.id
+const myValue = ref('')
 const init = ref({
   selector: '#' + tinymceId,
   toolbar_items_size: 'small',
@@ -80,8 +103,8 @@ const init = ref({
     'advlist autolink link image lists charmap  media wordcount table contextmenu directionality pagebreak', // 插件
   // 工具栏
   toolbar:
-    'undo redo |fontselect fontsizeselect |forecolor backcolor bold italic |underline strikethrough link| alignleft aligncenter alignright |' +
-    'formatselect | bullist numlist |' +
+    'undo redo |fontselect fontsizeselect |forecolor backcolor bold italic |underline strikethrough link| formatselect |' +
+    'alignleft aligncenter alignright | bullist numlist |' +
     ' blockquote subscript superscript removeformat | table image media | fullscreen ' +
     '| bdmap indent2em lineheight formatpainter axupimgs',
   toolbar_location: '/',
@@ -94,40 +117,141 @@ const init = ref({
   branding: false
 })
 
-const editStatus = computed(() => editMode.value === 'edit')
+const editStatus = computed(() => {
+  return editMode.value === 'edit'
+})
+
+const autoStyle = computed(() => {
+  return {
+    height: 100 / scale.value + '%!important',
+    width: 100 / scale.value + '%!important',
+    left: 50 * (1 - 1 / scale.value) + '%', // 放大余量 除以 2
+    top: 50 * (1 - 1 / scale.value) + '%',
+    transform: 'scale(' + scale.value + ')'
+  }
+})
 
 watch(
   () => active.value,
   val => {
     if (!val) {
+      const ed = tinymce.editors[tinymceId]
+      if (canEdit.value) {
+        element.value.propValue.textValue = ed.getContent()
+      }
       element.value['editing'] = false
       canEdit.value = false
       reShow()
+      myValue.value = assignment(element.value.propValue.textValue)
+      ed.setContent(myValue.value)
     }
   }
 )
 
 watch(
-  () => element.value.propValue.textValue,
-  newValue => {
-    myValue.value = newValue == null ? '' : newValue
-  }
-)
-
-watch(
   () => myValue.value,
-  newValue => {
-    element.value.propValue.textValue = newValue
+  val => {
+    if (canEdit.value) {
+      const ed = tinymce.editors[tinymceId]
+      element.value.propValue.textValue = ed.getContent()
+    }
+    if (initReady.value) {
+      // snapshotStore.recordSnapshotCache()
+    }
   }
 )
 
+const changeRightDrawOpen = param => {
+  if (param) {
+    drawLeft.value = 'auto!important'
+    drawRight.value = '380px'
+  } else {
+    drawLeft.value = 'none'
+    drawRight.value = 'auto'
+  }
+}
+
+const viewInit = () => {
+  eventBus.on('fieldSelect-' + element.value.id, fieldSelect)
+  tinymce.init({})
+  myValue.value = assignment(element.value.propValue.textValue)
+}
+const initCurFieldsChange = () => {
+  if (!canEdit.value) {
+    myValue.value = assignment(element.value.propValue.textValue)
+  }
+}
+
+const assignment = content => {
+  const on = content.match(/\[(.+?)\]/g)
+  if (on) {
+    on.forEach(itm => {
+      const ele = itm.slice(1, -1)
+      if (initReady.value) {
+        content = content.replace(
+          itm,
+          dataRowNameSelect.value[ele] !== undefined
+            ? dataRowNameSelect.value[ele]
+            : '[未获取字段值]'
+        )
+      } else {
+        content = content.replace(
+          itm,
+          dataRowNameSelect.value[ele] !== undefined ? dataRowNameSelect.value[ele] : '[获取中...]'
+        )
+      }
+    })
+  }
+  content = content.replace('class="base-selected"', '')
+  resetSelect()
+  return content
+}
+const fieldSelect = field => {
+  const ed = tinymce.editors[tinymceId]
+  const fieldId = 'changeText-' + guid()
+  const value =
+    '<span id="' +
+    fieldId +
+    '"><span class="mceNonEditable" contenteditable="false" data-mce-content="[' +
+    field.name +
+    ']">[' +
+    field.name +
+    ']</span></span>'
+  const attachValue = '<span id="attachValue">&nbsp;</span>'
+  ed.insertContent(value)
+  ed.insertContent(attachValue)
+}
 const onClick = e => {
-  emits('onClick', e, tinymce)
+  const node = tinymce.activeEditor.selection.getNode()
+  resetSelect(node)
+}
+const resetSelect = (node?) => {
+  const edInner = tinymce.get(tinymceId)
+  if (edInner.dom) {
+    const nodeArray = edInner.dom.select('.base-selected')
+    if (nodeArray) {
+      nodeArray.forEach(nodeInner => {
+        nodeInner.removeAttribute('class')
+      })
+    }
+    if (node) {
+      const pNode = node.parentElement
+      if (pNode && pNode.id && pNode.id.indexOf('changeText') > -1) {
+        const innerId = '#' + pNode.id
+        const domTest = edInner.dom.select(innerId)[0]
+        domTest.setAttribute('class', 'base-selected')
+        edInner.selection.select(domTest)
+      }
+    }
+  }
 }
 const setEdit = () => {
-  if (editStatus.value) {
+  if (editStatus.value && canEdit.value === false) {
     canEdit.value = true
     element.value['editing'] = true
+    myValue.value = element.value.propValue.textValue
+    const ed = tinymce.editors[tinymceId]
+    ed.setContent(myValue.value)
     reShow()
   }
 }
@@ -137,13 +261,124 @@ const reShow = () => {
     editShow.value = true
   })
 }
+const chartResize = () => {
+  // ignore
+}
+
+const calcData = (view: Chart, callback) => {
+  if (view.tableId) {
+    // console.log('richText-calcData')
+    const v = JSON.parse(JSON.stringify(view))
+    getData(v)
+      .then(res => {
+        if (res.code && res.code !== 0) {
+          errMsg.value = res.msg
+        } else {
+          state.data = res?.data
+          state.totalItems = res?.totalItems
+          const curViewInfo = canvasViewInfo.value[element.value.id]
+          curViewInfo['curFields'] = res.data.fields
+          initCurFields(res)
+        }
+      })
+      .finally(() => {
+        nextTick(() => {
+          initReady.value = true
+        })
+        callback?.()
+      })
+  } else {
+    nextTick(() => {
+      initReady.value = true
+    })
+    callback?.()
+  }
+}
+
+const initCurFields = chartDetails => {
+  curFields.value = []
+  dataRowSelect.value = {}
+  dataRowNameSelect.value = {}
+  if (chartDetails.data && chartDetails.data.sourceFields) {
+    const checkAllAxisStr =
+      JSON.stringify(chartDetails.xAxis) +
+      JSON.stringify(chartDetails.xAxisExt) +
+      JSON.stringify(chartDetails.yAxis) +
+      JSON.stringify(chartDetails.yAxisExt)
+    chartDetails.data.sourceFields.forEach(field => {
+      if (checkAllAxisStr.indexOf(field.id) > -1) {
+        curFields.value.push(field)
+      }
+    })
+    // Get the corresponding relationship between id and value
+    const nameIdMap = chartDetails.data.fields.reduce((pre, next) => {
+      pre[next['dataeaseName']] = next['id']
+      return pre
+    }, {})
+    const sourceFieldNameIdMap = chartDetails.data.fields.reduce((pre, next) => {
+      pre[next['dataeaseName']] = next['name']
+      return pre
+    }, {})
+    const rowData = chartDetails.data.tableRow[0]
+    if (chartDetails.type === 'rich-text') {
+      let yAxis = JSON.parse(JSON.stringify(chartDetails.yAxis))
+      const yDataeaseNames = []
+      const yDataeaseNamesCfg = []
+      yAxis.forEach(yItem => {
+        yDataeaseNames.push(yItem.dataeaseName)
+        yDataeaseNamesCfg[yItem.dataeaseName] = yItem.formatterCfg
+      })
+      rowDataFormat(rowData, yDataeaseNames, yDataeaseNamesCfg)
+    }
+    for (const key in rowData) {
+      dataRowSelect.value[nameIdMap[key]] = rowData[key]
+      dataRowNameSelect.value[sourceFieldNameIdMap[key]] = rowData[key]
+    }
+  }
+  element.value.propValue['innerType'] = chartDetails.type
+  element.value.propValue['render'] = chartDetails.render
+  if (chartDetails.type === 'rich-text') {
+    nextTick(() => {
+      initCurFieldsChange()
+      eventBus.emit('initCurFields-' + element.value.id)
+    })
+  }
+}
+
+const rowDataFormat = (rowData, yDataeaseNames, yDataeaseNamesCfg) => {
+  for (const key in rowData) {
+    // if (yDataeaseNames.includes(key)) {
+    //   const formatterCfg = yDataeaseNamesCfg[key]
+    //   const value = rowData[key]
+    //   if (value === null || value === undefined) {
+    //     rowData[key] = '-'
+    //   }
+    //   if (formatterCfg) {
+    //     const v = valueFormatter(value, formatterCfg)
+    //     rowData[key] = v && v.includes('NaN') ? value : v
+    //   } else {
+    //     const v = valueFormatter(value, formatterItem)
+    //     rowData[key] = v && v.includes('NaN') ? value : v
+    //   }
+    // }
+  }
+}
+
+const renderChart = () => {
+  //do nothing
+}
+
+onMounted(() => {
+  viewInit()
+})
+
+defineExpose({
+  calcData,
+  renderChart
+})
 </script>
 
 <style lang="less" scoped>
-.edit-model {
-  cursor: text;
-}
-
 .rich-main-class {
   width: 100%;
   height: 100%;
@@ -156,7 +391,7 @@ const reShow = () => {
   height: 0px !important;
 }
 
-:deep(ol) {
+:deep(.ol) {
   display: block !important;
   list-style-type: decimal;
   margin-block-start: 1em !important;
@@ -181,8 +416,27 @@ const reShow = () => {
   text-align: -webkit-match-parent !important;
 }
 
+:deep(.base-selected) {
+  background-color: #b4d7ff;
+}
+
 :deep(p) {
   margin: 0px;
   padding: 0px;
+}
+
+.edit-model {
+  cursor: text;
+}
+
+.mceNonEditable {
+  background: rgba(51, 112, 255, 0.04);
+}
+</style>
+
+<style lang="less">
+.tox-tinymce-inline {
+  left: var(--drawLeft);
+  right: var(--drawRight);
 }
 </style>

@@ -217,46 +217,53 @@ onMounted(() => {
             />
           </el-header>
           <el-main :class="{ dark: themes === 'dark' }">
-            <div class="m-loading" v-if="loadingDatasetTree" v-loading="loadingDatasetTree"></div>
-            <div class="empty-info" v-if="showEmptyInfo">暂无数据集</div>
-            <!--          <div class="empty-info" v-if="showEmptySearchInfo">暂无相关数据</div>-->
-            <el-tree
-              :class="{ dark: themes === 'dark' }"
-              v-if="showTree"
-              ref="datasetSelector"
-              node-key="id"
-              :data="computedTree"
-              :teleported="false"
-              :props="dsSelectProps"
-              :render-after-expand="false"
-              filterable
-              @node-click="dsClick"
-              :filter-node-method="filterNode"
-              empty-text="暂无相关数据"
-            >
-              <template #default="{ node, data }">
-                <div
-                  class="tree-row-item"
-                  :class="{ dark: themes === 'dark', active: _modelValue === data.id }"
-                >
-                  <el-icon class="m-icon" v-if="!data.leaf">
-                    <Icon name="dv-folder" />
-                  </el-icon>
-                  <el-icon class="m-icon" v-if="data.leaf">
-                    <Icon name="icon_dataset" />
-                  </el-icon>
-                  <el-tooltip
-                    effect="dark"
-                    :content="node.label"
-                    placement="top"
-                    :enterable="false"
+            <el-scrollbar max-height="250px" always>
+              <div class="m-loading" v-if="loadingDatasetTree" v-loading="loadingDatasetTree"></div>
+              <div class="empty-info" v-if="showEmptyInfo">暂无数据集</div>
+              <!--          <div class="empty-info" v-if="showEmptySearchInfo">暂无相关数据</div>-->
+              <el-tree
+                :class="{ dark: themes === 'dark' }"
+                v-if="showTree"
+                ref="datasetSelector"
+                node-key="id"
+                :data="computedTree"
+                :teleported="false"
+                :props="dsSelectProps"
+                :render-after-expand="false"
+                filterable
+                @node-click="dsClick"
+                :filter-node-method="filterNode"
+                empty-text="暂无相关数据"
+              >
+                <template #default="{ node, data }">
+                  <div
+                    class="tree-row-item"
+                    :class="{ dark: themes === 'dark', active: _modelValue === data.id }"
                   >
-                    {{ node.label }}
-                  </el-tooltip>
-                </div>
-                <!--       todo 选中打勾       -->
-              </template>
-            </el-tree>
+                    <div class="m-icon">
+                      <el-icon v-if="!data.leaf">
+                        <Icon name="dv-folder" />
+                      </el-icon>
+                      <el-icon v-if="data.leaf">
+                        <Icon name="icon_dataset" />
+                      </el-icon>
+                    </div>
+                    <el-tooltip
+                      effect="dark"
+                      :content="node.label"
+                      placement="top"
+                      :enterable="false"
+                    >
+                      {{ node.label }}
+                    </el-tooltip>
+
+                    <el-icon class="checked-item" v-if="_modelValue === data.id">
+                      <Icon name="icon_done_outlined" />
+                    </el-icon>
+                  </div>
+                </template>
+              </el-tree>
+            </el-scrollbar>
           </el-main>
           <el-footer>
             <el-button type="primary" :icon="Plus" link class="add-btn" @click="addDataset">
@@ -351,10 +358,9 @@ onMounted(() => {
     }
 
     .ed-main {
-      --ed-main-padding: 8px 11px 0;
-      display: flex;
-      flex-direction: column;
-      overflow-y: auto;
+      --ed-main-padding: 0 11px 0;
+      margin-top: 8px;
+      overflow-x: hidden;
 
       .empty-info {
         color: #646a73;
@@ -435,10 +441,22 @@ onMounted(() => {
         line-height: 20px;
         .m-icon {
           margin-right: 4px;
+          font-size: 16px;
+          height: 20px;
+          display: inline-block;
+          vertical-align: bottom;
         }
 
         &.active {
           color: #3370ff;
+          padding-right: 30px;
+        }
+        .checked-item {
+          position: absolute;
+          right: 10px;
+          padding-top: 2px;
+          color: #3370ff;
+          font-size: 16px;
         }
       }
     }

@@ -177,6 +177,7 @@ const next = () => {
     ElMessage.error('数据表不能为空')
     return
   }
+
   activeApiStep.value = activeStep.value + 1
 
   if (currentDsType.value === 'API' && activeStep.value === 1) return
@@ -321,6 +322,10 @@ const saveDS = () => {
           '_' +
           uuid.v1().replaceAll('-', '').substring(0, 10)
       }
+      request.apiConfiguration[i].jsonFields = []
+      for (var j = 0; j < request.apiConfiguration[i].fields.length; j++) {
+        request.apiConfiguration[i].fields[j].value = []
+      }
     }
     request.configuration = Base64.encode(JSON.stringify(request.apiConfiguration))
     request.syncSetting.startTime = new Date(request.syncSetting.startTime).getTime()
@@ -329,6 +334,7 @@ const saveDS = () => {
     request.configuration = Base64.encode(JSON.stringify(request.configuration))
   }
   const validate = detail.value.submitForm()
+  console.log(request)
   validate(val => {
     if (val) {
       if (editDs.value) {

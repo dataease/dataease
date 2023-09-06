@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref, reactive, onMounted } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
-import { ElButton, ElRow, ElInput, FormRules } from 'element-plus-secondary'
+import { FormRules, FormInstance } from 'element-plus-secondary'
 import { Icon } from '@/components/icon-custom'
 import { loginApi, queryDekey } from '@/api/login'
 import { useCache } from '@/hooks/web/useCache'
@@ -92,15 +92,28 @@ const getCurLocation = () => {
   }
   return queryRedirectPath
 }
+
+const formRef = ref<FormInstance | undefined>()
+const duringLogin = ref(false)
 const handleLogin = () => {
-  const name = state.loginForm.username
-  const pwd = state.loginForm.password
-  const param = { name: rsaEncryp(name), pwd: rsaEncryp(pwd) }
-  loginApi(param).then(res => {
-    const token = res.data
-    userStore.setToken(token)
-    const queryRedirectPath = getCurLocation()
-    router.push({ path: queryRedirectPath })
+  if (!formRef.value) return
+  formRef.value.validate((valid: boolean) => {
+    if (valid) {
+      const name = state.loginForm.username
+      const pwd = state.loginForm.password
+      const param = { name: rsaEncryp(name), pwd: rsaEncryp(pwd) }
+      duringLogin.value = true
+      loginApi(param)
+        .then(res => {
+          const token = res.data
+          userStore.setToken(token)
+          const queryRedirectPath = getCurLocation()
+          router.push({ path: queryRedirectPath })
+        })
+        .finally(() => {
+          duringLogin.value = false
+        })
+    }
   })
 }
 
@@ -203,7 +216,7 @@ onMounted(() => {
           </div>
           <el-form
             v-show="!codeShow"
-            ref="loginForm"
+            ref="formRef"
             :model="state.loginForm"
             :rules="rules"
             size="default"
@@ -284,7 +297,10 @@ onMounted(() => {
                     type="primary"
                     class="submit"
                     size="default"
-                    :disabled="state.loginTypes.includes(2) && state.loginForm.loginType === 2"
+                    :disabled="
+                      (state.loginTypes.includes(2) && state.loginForm.loginType === 2) ||
+                      duringLogin
+                    "
                     @click="handleLogin"
                   >
                     {{ t('login.btn') }}

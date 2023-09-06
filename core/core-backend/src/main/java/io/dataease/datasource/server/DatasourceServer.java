@@ -10,7 +10,6 @@ import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.dataset.dto.PreviewSqlDTO;
 import io.dataease.api.ds.DatasourceApi;
 import io.dataease.api.ds.vo.*;
-import io.dataease.api.permissions.dataset.dto.DataSetRowPermissionsTreeDTO;
 import io.dataease.api.permissions.user.api.UserApi;
 import io.dataease.api.permissions.user.vo.UserFormVO;
 import io.dataease.commons.constants.TaskStatus;
@@ -93,10 +92,12 @@ public class DatasourceServer implements DatasourceApi {
     public void move(DatasourceDTO dataSourceDTO) throws DEException {
         switch (dataSourceDTO.getAction()) {
             case "move" -> {
+                if (dataSourceDTO.getPid() == null) {
+                    DEException.throwException("目录必选！");
+                }
                 if (Objects.equals(dataSourceDTO.getId(), dataSourceDTO.getPid())) {
                     DEException.throwException("pid can not equal to id.");
                 }
-                CoreDatasource sourceData = datasourceMapper.selectById(dataSourceDTO.getId());
                 dataSourceManage.move(dataSourceDTO);
             }
             case "rename" -> {
@@ -181,6 +182,7 @@ public class DatasourceServer implements DatasourceApi {
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(coreDatasource);
             List<DatasetTableDTO> tables = ApiUtils.getTables(datasourceRequest);
+            checkName(tables.stream().map(DatasetTableDTO::getName).collect(Collectors.toList()));
             for (DatasetTableDTO api : tables) {
                 datasourceRequest.setTable(api.getTableName());
                 List<TableField> tableFields = ApiUtils.getTableFields(datasourceRequest);
@@ -196,6 +198,16 @@ public class DatasourceServer implements DatasourceApi {
         return dataSourceDTO;
     }
 
+    private static void checkName(List<String> tables) {
+        for (int i = 0; i < tables.size() - 1; i++) {
+            for (int j = i + 1; j < tables.size(); j++) {
+                if (tables.get(i).equalsIgnoreCase(tables.get(j))) {
+                    DEException.throwException(Translator.get("i18n_table_name_repeat") + tables.get(i));
+                }
+            }
+        }
+    }
+
     public DatasourceDTO update(DatasourceDTO dataSourceDTO) throws DEException {
         Long pk = null;
         if (ObjectUtils.isEmpty(pk = dataSourceDTO.getId())) {
@@ -206,30 +218,32 @@ public class DatasourceServer implements DatasourceApi {
         dataSourceDTO.setPid(sourceData.getPid());
         preCheckDs(dataSourceDTO);
 
-        CoreDatasource coreDatasource = new CoreDatasource();
-        BeanUtils.copyBean(coreDatasource, dataSourceDTO);
-        coreDatasource.setUpdateTime(System.currentTimeMillis());
+        CoreDatasource requestDatasource = new CoreDatasource();
+        BeanUtils.copyBean(requestDatasource, dataSourceDTO);
+        requestDatasource.setUpdateTime(System.currentTimeMillis());
         try {
-            checkDatasourceStatus(coreDatasource);
+            checkDatasourceStatus(requestDatasource);
         } catch (Exception ignore) {
         }
 
         DatasourceRequest sourceTableRequest = new DatasourceRequest();
         sourceTableRequest.setDatasource(sourceData);
-        DatasourceRequest coreDatasourceRequest = new DatasourceRequest();
-        coreDatasourceRequest.setDatasource(coreDatasource);
+        DatasourceRequest datasourceRequest = new DatasourceRequest();
+        datasourceRequest.setDatasource(requestDatasource);
         List<String> toCreateTables = new ArrayList<>();
         List<String> toDeleteTables = new ArrayList<>();
         if (dataSourceDTO.getType().equals(DatasourceConfiguration.DatasourceType.API.name())) {
             List<String> sourceTables = ApiUtils.getTables(sourceTableRequest).stream().map(DatasetTableDTO::getTableName).collect(Collectors.toList());
-            List<String> tables = ApiUtils.getTables(coreDatasourceRequest).stream().map(DatasetTableDTO::getTableName).collect(Collectors.toList());
+            List<DatasetTableDTO> datasetTableDTOS = ApiUtils.getTables(datasourceRequest);
+            List<String> tables = datasetTableDTOS.stream().map(DatasetTableDTO::getTableName).collect(Collectors.toList());
+            checkName(datasetTableDTOS.stream().map(DatasetTableDTO::getName).collect(Collectors.toList()));
             toCreateTables = tables.stream().filter(table -> !sourceTables.contains(table)).collect(Collectors.toList());
             toDeleteTables = sourceTables.stream().filter(table -> !tables.contains(table)).collect(Collectors.toList());
             for (String table : tables) {
                 for (String sourceTable : sourceTables) {
                     if (table.equals(sourceTable)) {
-                        coreDatasourceRequest.setTable(table);
-                        List<String> tableFields = ApiUtils.getTableFields(coreDatasourceRequest).stream().map(TableField::getName).sorted().collect(Collectors.toList());
+                        datasourceRequest.setTable(table);
+                        List<String> tableFields = ApiUtils.getTableFields(datasourceRequest).stream().map(TableField::getName).sorted().collect(Collectors.toList());
                         sourceTableRequest.setTable(sourceTable);
                         List<String> sourceTableFields = ApiUtils.getTableFields(sourceTableRequest).stream().map(TableField::getName).sorted().collect(Collectors.toList());
                         if (!String.join(",", tableFields).equals(String.join(",", sourceTableFields))) {
@@ -241,8 +255,8 @@ public class DatasourceServer implements DatasourceApi {
             }
             CoreDatasourceTask coreDatasourceTask = new CoreDatasourceTask();
             BeanUtils.copyBean(coreDatasourceTask, dataSourceDTO.getSyncSetting());
-            coreDatasourceTask.setName(coreDatasource.getName() + "-task");
-            coreDatasourceTask.setDsId(coreDatasource.getId());
+            coreDatasourceTask.setName(requestDatasource.getName() + "-task");
+            coreDatasourceTask.setDsId(requestDatasource.getId());
             if (StringUtils.equalsIgnoreCase(coreDatasourceTask.getSyncRate(), DatasourceTaskServer.ScheduleType.RIGHTNOW.toString())) {
                 coreDatasourceTask.setCron(null);
             }
@@ -255,18 +269,18 @@ public class DatasourceServer implements DatasourceApi {
                 }
             }
             for (String toCreateTable : toCreateTables) {
-                coreDatasourceRequest.setTable(toCreateTable);
+                datasourceRequest.setTable(toCreateTable);
                 try {
-                    datasourceSyncManage.createEngineTable(toCreateTable, ApiUtils.getTableFields(coreDatasourceRequest));
+                    datasourceSyncManage.createEngineTable(toCreateTable, ApiUtils.getTableFields(datasourceRequest));
                 }catch (Exception e){
                     DEException.throwException("Failed to create table " + toCreateTable);
                 }
             }
             datasourceSyncManage.addSchedule(coreDatasourceTask);
-            dataSourceManage.innerEdit(coreDatasource);
+            dataSourceManage.innerEdit(requestDatasource);
         } else if (dataSourceDTO.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name())) {
             List<String> sourceTables = ExcelUtils.getTables(sourceTableRequest).stream().map(DatasetTableDTO::getTableName).collect(Collectors.toList());
-            List<String> tables = ExcelUtils.getTables(coreDatasourceRequest).stream().map(DatasetTableDTO::getTableName).collect(Collectors.toList());
+            List<String> tables = ExcelUtils.getTables(datasourceRequest).stream().map(DatasetTableDTO::getTableName).collect(Collectors.toList());
             if (dataSourceDTO.getEditType() == 0) {
                 toCreateTables = tables;
                 toDeleteTables = sourceTables;
@@ -278,21 +292,21 @@ public class DatasourceServer implements DatasourceApi {
                     }
                 }
                 for (String toCreateTable : toCreateTables) {
-                    coreDatasourceRequest.setTable(toCreateTable);
+                    datasourceRequest.setTable(toCreateTable);
                     try {
-                        datasourceSyncManage.createEngineTable(toCreateTable, ExcelUtils.getTableFields(coreDatasourceRequest));
+                        datasourceSyncManage.createEngineTable(toCreateTable, ExcelUtils.getTableFields(datasourceRequest));
                     }catch (Exception e){
                         DEException.throwException("Failed to create table " + toCreateTable);
                     }
                 }
-                datasourceSyncManage.extractExcelData(coreDatasource, "all_scope");
-                dataSourceManage.innerEdit(coreDatasource);
+                datasourceSyncManage.extractExcelData(requestDatasource, "all_scope");
+                dataSourceManage.innerEdit(requestDatasource);
             } else {
-                datasourceSyncManage.extractExcelData(coreDatasource, "add_scope");
-                dataSourceManage.innerEdit(coreDatasource);
+                datasourceSyncManage.extractExcelData(requestDatasource, "add_scope");
+                dataSourceManage.innerEdit(requestDatasource);
             }
         } else {
-            dataSourceManage.innerEdit(coreDatasource);
+            dataSourceManage.innerEdit(requestDatasource);
             calciteProvider.update(dataSourceDTO);
         }
         return dataSourceDTO;
@@ -489,7 +503,9 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     @Override
-    public List<TableField> getTableField(String datasourceId, String tableName) throws DEException {
+    public List<TableField> getTableField(Map<String, String> req) throws DEException {
+        String tableName = req.get("tableName");
+        String datasourceId = req.get("datasourceId");
         CoreDatasource coreDatasource = datasourceMapper.selectById(datasourceId);
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(coreDatasource);

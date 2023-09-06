@@ -280,3 +280,19 @@
 .ed-tree-node.is-current>.ed-tree-node__content:not(.is-menu):after {
   display: none;
 }
+
+
+.create-dialog {
+  .ed-form-item {
+    margin-bottom: 16px;
+    &.is-error {
+      margin-bottom: 40px;
+    }
+    &:last-child {
+      &.is-error {
+        margin-bottom: 24px;
+      }
+      margin-bottom: 0;
+    }
+  }
+}

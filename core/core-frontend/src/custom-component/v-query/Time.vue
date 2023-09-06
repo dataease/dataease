@@ -80,21 +80,13 @@ const { config, customStyle } = toRefs(props)
 provide('$custom-style-filter', customStyle)
 
 watch(
-  () => config.value.selectValue,
-  val => {
-    if (props.isConfig) return
-    selectValue.value = Array.isArray(val) ? [...val] : val
-    multiple.value = config.value.displayType === '7'
-  }
-)
-
-watch(
   () => config.value.defaultValue,
   val => {
     const isMultiple = config.value.displayType === '7'
     if (isMultiple) {
-      selectValue.value = Array.isArray(val) ? [...val] : val
+      multiple.value = isMultiple
     }
+    selectValue.value = Array.isArray(val) ? [...val] : val
     nextTick(() => {
       multiple.value = isMultiple
     })
