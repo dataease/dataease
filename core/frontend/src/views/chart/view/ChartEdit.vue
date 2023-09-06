@@ -1322,6 +1322,7 @@
         ref="itemForm"
         label-width="80px"
         :model="itemForm"
+        @submit.native.prevent
         :rules="itemFormRules"
       >
         <el-form-item
@@ -1339,7 +1340,6 @@
             style="width: 200px"
             size="mini"
             clearable
-            @keypress.stop
           />
         </el-form-item>
       </el-form>
