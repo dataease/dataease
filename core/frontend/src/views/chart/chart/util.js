@@ -297,7 +297,7 @@ export const TYPE_CONFIGS = [
         'gaugeStartAngle',
         'gaugeEndAngle',
         'gaugeTickCount',
-        'gaugeAxisLabel'
+        'gaugeAxisLine'
       ],
       'label-selector-ant-v': [
         'labelGauge'
@@ -2160,7 +2160,7 @@ export const TYPE_CONFIGS = [
         'gaugeMax',
         'gaugeStartAngle',
         'gaugeEndAngle',
-        'gaugeAxisLabel'
+        'gaugeAxisLine'
       ],
       'label-selector': [
         'show',
