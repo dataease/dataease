@@ -723,7 +723,7 @@ export default {
             background: `url(${imgUrlTrans(styleInfo.imageUrl)}) no-repeat`
           }
         } else if (styleInfo.backgroundType === 'color') {
-          const colorRGBA = hexColorToRGBA(styleInfo.color, styleInfo.alpha||100)
+          const colorRGBA = hexColorToRGBA(styleInfo.color, styleInfo.alpha === undefined ? 100 : styleInfo.alpha)
           style = {
             background: colorRGBA
           }
