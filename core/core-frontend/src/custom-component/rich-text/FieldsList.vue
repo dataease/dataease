@@ -13,9 +13,9 @@
   </div>
 </template>
 
-<script lang="ts" setup>
-import eventBus from '@/utils/eventBus'
+<script setup lang="ts">
 import { toRefs } from 'vue'
+import eventBus from '@/utils/eventBus'
 
 const props = defineProps({
   fields: {
@@ -35,12 +35,11 @@ const fieldSelect = field => {
 }
 
 const fieldsAreaDown = e => {
-  // ignore
   e.preventDefault()
 }
 </script>
 
-<style scoped lang="less">
+<style lang="less" scoped>
 .field-main {
   width: 183px;
   max-height: 300px;

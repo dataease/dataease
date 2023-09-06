@@ -2,7 +2,7 @@
 import eventBus from '@/utils/eventBus'
 import QueryConditionConfiguration from './QueryConditionConfiguration.vue'
 import type { ComponentInfo } from '@/api/chart'
-import { onBeforeUnmount, reactive, ref, toRefs, watch, computed } from 'vue'
+import { onBeforeUnmount, reactive, ref, toRefs, watch, computed, onMounted } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -143,7 +143,14 @@ const onComponentClick = () => {
 const { emitter } = useEmitt()
 
 onBeforeUnmount(() => {
+  emitter.off(`addQueryCriteria${element.value.id}`)
+  emitter.off(`editQueryCriteria${element.value.id}`)
   eventBus.off('componentClick', onComponentClick)
+})
+
+onMounted(() => {
+  emitter.on(`addQueryCriteria${element.value.id}`, addCriteriaConfigOut)
+  emitter.on(`editQueryCriteria${element.value.id}`, editQueryCriteria)
 })
 
 const dragover = () => {
@@ -229,9 +236,6 @@ const editQueryCriteria = () => {
 const addCriteriaConfigOut = () => {
   queryConfig.value.setConditionOut()
 }
-
-emitter.on(`addQueryCriteria${element.value.id}`, addCriteriaConfigOut)
-emitter.on(`editQueryCriteria${element.value.id}`, editQueryCriteria)
 
 const delQueryConfig = index => {
   list.value.splice(index, 1)

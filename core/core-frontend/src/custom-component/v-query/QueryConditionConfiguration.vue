@@ -371,6 +371,11 @@ const handleCondition = item => {
       curComponent.value.checkedFieldsMap[ele.id] = ''
     }
   })
+
+  const idMap = datasetFieldList.value.map(ele => ele.id)
+  curComponent.value.checkedFields = curComponent.value.checkedFields.filter(ele =>
+    idMap.includes(ele)
+  )
   if (!!fields.value?.length) {
     handleCheckedFieldsChange(curComponent.value.checkedFields)
   }
@@ -936,7 +941,7 @@ defineExpose({
   }
 }
 .manual-input {
-  height: 490px;
+  height: 405px;
   padding: 0 !important;
 
   .manual-input-container {

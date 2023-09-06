@@ -183,7 +183,7 @@ watch(
 watch(
   [() => config.value.checkedFields, () => config.value.checkedFieldsMap],
   () => {
-    debounceOptions(0)
+    debounceOptions(config.value.optionValueSource)
   },
   {
     deep: true

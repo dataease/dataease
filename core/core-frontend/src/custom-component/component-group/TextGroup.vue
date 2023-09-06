@@ -39,7 +39,7 @@ const handleDragEnd = e => {
 }
 
 const newComponent = componentName => {
-  eventBus.emit('handleNew', { componentName: componentName, innerType: componentName })
+  eventBus.emit('handleNew', { componentName: 'UserView', innerType: 'rich-text' })
 }
 </script>
 
@@ -52,8 +52,8 @@ const newComponent = componentName => {
   >
     <drag-component
       :themes="themes"
-      name="文本"
-      label="文本"
+      name="富文本"
+      label="富文本"
       drag-info="VText&VText"
     ></drag-component>
   </div>

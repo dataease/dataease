@@ -21,7 +21,10 @@
         ></el-icon>
       </span>
     </template>
-    <span :title="t('visualization.enlarge')" v-if="barShowCheck('enlarge')">
+    <span
+      :title="t('visualization.enlarge')"
+      v-if="element.innerType !== 'rich-text' && barShowCheck('enlarge')"
+    >
       <el-icon class="bar-base-icon" @click="userViewEnlargeOpen">
         <Icon name="dv-bar-enlarge"></Icon
       ></el-icon>
@@ -54,11 +57,18 @@
         </el-dropdown-menu>
       </template>
     </el-dropdown>
+
+    <el-popover v-if="selectFieldShow" width="200" trigger="click" @mousedown="fieldsAreaDown">
+      <template #reference>
+        <el-icon class="bar-base-icon"> <Icon name="database"></Icon></el-icon>
+      </template>
+      <fields-list :fields="state.curFields" :element="element" />
+    </el-popover>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { computed, reactive, toRefs } from 'vue'
+import { computed, onBeforeUnmount, onMounted, onUnmounted, reactive, ref, toRefs } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -157,7 +167,8 @@ const {
   canvasStyleData,
   targetLinkageInfo,
   curLinkageView,
-  dvInfo
+  dvInfo,
+  canvasViewInfo
 } = storeToRefs(dvMainStore)
 
 const state = reactive({
@@ -297,8 +308,48 @@ const linkageSetOpen = () => {
 const linkJumpSetOpen = () => {
   emits('linkJumpSetOpen')
 }
-
 // 跳转-End
+
+// 富文本-Begin
+
+const fieldsAreaDown = e => {
+  // ignore
+  e.preventDefault()
+}
+
+const selectFieldShow = computed(() => {
+  return (
+    showPosition.value === 'canvas' &&
+    curComponent.value?.innerType === 'rich-text' &&
+    curComponent.value.editing
+  )
+})
+
+const initCurFields = () => {
+  if (element.value.component === 'UserView') {
+    const chartInfo = canvasViewInfo.value[element.value.id]
+    if (chartInfo) {
+      state.curFields = []
+      if (chartInfo.type === 'rich-text' && chartInfo.curFields) {
+        state.curFields = chartInfo.curFields
+      }
+    }
+  }
+}
+// 富文本-End
+
+onMounted(() => {
+  if (element.value.component === 'UserView') {
+    eventBus.on('initCurFields-' + element.value.id, initCurFields)
+  }
+  initCurFields()
+})
+
+onBeforeUnmount(() => {
+  if (element.value.component === 'UserView') {
+    eventBus.off('initCurFields-' + element.value.id, initCurFields)
+  }
+})
 </script>
 
 <style lang="less" scoped>

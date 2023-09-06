@@ -272,7 +272,8 @@ const emits = defineEmits(['finish', 'handleShowFinishPage'])
     v-loading="loading"
     :title="dialogTitle"
     v-model="createDataset"
-    width="600px"
+    width="420px"
+    class="create-dialog"
     :before-close="resetForm"
   >
     <el-form
