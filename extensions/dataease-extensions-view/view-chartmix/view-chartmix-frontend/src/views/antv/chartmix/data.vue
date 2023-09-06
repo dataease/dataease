@@ -197,7 +197,9 @@ export default {
     },
 
     addXaxis(e) {
-
+      if (this.view.type !== 'table-info') {
+        this.dragCheckType(this.view.xaxis, 'd')
+      }
       this.dragMoveDuplicate(this.view.xaxis, e)
       /*if (this.view.xaxis.length > 1) {
         this.view.xaxis = [this.view.xaxis[0]]
