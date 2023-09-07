@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, reactive, nextTick, computed, shallowRef, toRefs } from 'vue'
+import { ref, reactive, nextTick, computed, shallowRef, toRefs, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -223,6 +223,10 @@ const validate = () => {
       return true
     }
 
+    if ([1, 7].includes(+ele.displayType)) {
+      return false
+    }
+
     if (ele.optionValueSource === 1 && !ele.field.id) {
       ElMessage.error('请选择数据集的选项值字段')
       return true
@@ -403,6 +407,27 @@ const getOptions = (id, component) => {
   })
 }
 
+const showError = computed(() => {
+  if (!curComponent.value) return false
+  const { optionValueSource, checkedFieldsMap, checkedFields, field, valueSource, displayType } =
+    curComponent.value
+  const arr = checkedFields.filter(ele => !!checkedFieldsMap[ele])
+  if (!checkedFields.length || !arr.length) {
+    return true
+  }
+  if ([1, 7].includes(+displayType)) {
+    return false
+  }
+  return (optionValueSource === 1 && !field.id) || (optionValueSource === 2 && !valueSource.length)
+})
+
+watch(
+  () => showError.value,
+  val => {
+    curComponent.value.showError = val
+  }
+)
+
 const setRenameInput = val => {
   renameInput.value.push(val)
 }
@@ -496,7 +521,10 @@ defineExpose({
               <el-icon class="handle">
                 <Icon name="icon_drag_outlined"></Icon>
               </el-icon>
-              <div class="label" :title="element.name">
+              <div class="label flex-align-center icon" :title="element.name">
+                <el-icon v-if="element.showError" style="font-size: 16px; color: #f54a45">
+                  <icon name="icon_warning_filled"></icon>
+                </el-icon>
                 {{ element.name }}
               </div>
               <div class="condition-icon flex-align-center">
@@ -699,7 +727,7 @@ defineExpose({
                   </el-select>
                 </div>
               </template>
-              <div v-if="curComponent.optionValueSource === 2" class="value">
+              <div v-if="curComponent.optionValueSource === 2" class="value flex-align-center">
                 <el-popover
                   placement="bottom-start"
                   popper-class="manual-input"
@@ -751,6 +779,9 @@ defineExpose({
                     </div>
                   </div>
                 </el-popover>
+                <div v-if="!!curComponent.valueSource.length" class="config-flag flex-align-center">
+                  已配置
+                </div>
               </div>
             </div>
           </div>
@@ -922,6 +953,20 @@ defineExpose({
     .condition-configuration {
       padding: 16px;
       width: 467px;
+
+      .config-flag {
+        color: #646a73;
+        height: 16px;
+        padding: 0px 4px;
+        font-family: PingFang SC;
+        font-size: 10px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 13px;
+        border-radius: 2px;
+        background: rgba(31, 35, 41, 0.1);
+        margin-left: 8px;
+      }
       .title {
         margin-bottom: 16px;
         font-family: PingFang SC;
