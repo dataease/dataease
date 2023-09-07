@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite --mode dev --host 0.0.0.0",
+    "dev": "vite --mode dev --host 0.0.0.0 --force",
     "build:flush": "cd ./flushbonading && rimraf ./demo.html && npm i && node ./index.js",
     "ts:check": "vue-tsc --noEmit",
     "build:base": "NODE_OPTIONS=--max_old_space_size=4096 vite build --mode base && npm run build:flush",
@@ -25,7 +25,7 @@
     "crypto-js": "^4.1.1",
     "dayjs": "^1.11.9",
     "deepmerge": "^4.3.1",
-    "element-plus-secondary": "^0.2.5",
+    "element-plus-secondary": "^0.2.8",
     "element-resize-detector": "^1.2.4",
     "highcharts": "^10.3.3",
     "html-to-image": "^1.11.11",

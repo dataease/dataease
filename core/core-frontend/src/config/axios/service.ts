@@ -132,7 +132,11 @@ service.interceptors.response.use(
         !response?.config?.url.startsWith('/xpackComponent/content') &&
         response?.data?.code !== 60003
       ) {
-        ElMessage.error(response.data.msg)
+        ElMessage({
+          type: 'error',
+          message: response.data.msg,
+          showClose: true
+        })
       }
 
       return Promise.reject(response.data.msg)
@@ -140,7 +144,11 @@ service.interceptors.response.use(
   },
   (error: AxiosErrorWidthLoading<AxiosError>) => {
     if (!error.config.url.startsWith('/xpackComponent/content')) {
-      ElMessage.error(error.message)
+      ElMessage({
+        type: 'error',
+        message: error.message,
+        showClose: true
+      })
     }
 
     error.config.loading && tryHideLoading(permissionStore.getCurrentPath)
@@ -156,7 +164,11 @@ service.interceptors.response.use(
       router.push(`/login?redirect=${queryRedirectPath}`)
     }
     if (header.has('DE-FORBIDDEN-FLAG')) {
-      ElMessage.error(header.has('DE-FORBIDDEN-FLAG').toString())
+      ElMessage({
+        type: 'error',
+        message: header.has('DE-FORBIDDEN-FLAG').toString(),
+        showClose: true
+      })
     }
     return Promise.reject(error)
   }

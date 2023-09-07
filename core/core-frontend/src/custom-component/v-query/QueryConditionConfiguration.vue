@@ -403,6 +403,17 @@ const getOptions = (id, component) => {
   })
 }
 
+const showWarning = computed(() => {
+  const { optionValueSource, checkedFieldsMap, checkedFields, field, valueSource } =
+    curComponent.value
+  const arr = checkedFields.filter(ele => !!checkedFieldsMap[ele])
+  console.log(checkedFields, arr)
+  if (!checkedFields.length || !arr.length) {
+    return true
+  }
+  return (optionValueSource === 1 && !field.id) || (optionValueSource === 2 && !valueSource.length)
+})
+
 const setRenameInput = val => {
   renameInput.value.push(val)
 }
@@ -496,7 +507,13 @@ defineExpose({
               <el-icon class="handle">
                 <Icon name="icon_drag_outlined"></Icon>
               </el-icon>
-              <div class="label" :title="element.name">
+              <div class="label flex-align-center icon" :title="element.name">
+                <el-icon
+                  v-if="showWarning && element.id === curComponent.id"
+                  style="font-size: 16px; color: #f54a45"
+                >
+                  <icon name="icon_warning_filled"></icon>
+                </el-icon>
                 {{ element.name }}
               </div>
               <div class="condition-icon flex-align-center">
@@ -699,7 +716,7 @@ defineExpose({
                   </el-select>
                 </div>
               </template>
-              <div v-if="curComponent.optionValueSource === 2" class="value">
+              <div v-if="curComponent.optionValueSource === 2" class="value flex-align-center">
                 <el-popover
                   placement="bottom-start"
                   popper-class="manual-input"
@@ -751,6 +768,9 @@ defineExpose({
                     </div>
                   </div>
                 </el-popover>
+                <div v-if="!!curComponent.valueSource.length" class="config-flag flex-align-center">
+                  已配置
+                </div>
               </div>
             </div>
           </div>
@@ -922,6 +942,20 @@ defineExpose({
     .condition-configuration {
       padding: 16px;
       width: 467px;
+
+      .config-flag {
+        color: #646a73;
+        height: 16px;
+        padding: 0px 4px;
+        font-family: PingFang SC;
+        font-size: 10px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 13px;
+        border-radius: 2px;
+        background: rgba(31, 35, 41, 0.1);
+        margin-left: 8px;
+      }
       .title {
         margin-bottom: 16px;
         font-family: PingFang SC;
