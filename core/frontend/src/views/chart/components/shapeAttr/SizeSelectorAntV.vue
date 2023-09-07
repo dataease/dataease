@@ -915,6 +915,54 @@
             @change="changeBarSizeCase('quotaFontShadow')"
           >{{ $t('chart.font_shadow') }}</el-checkbox>
         </el-form-item>
+        <el-form-item
+          v-show="showProperty('hPosition')"
+          :label="$t('chart.h_position')"
+          class="form-item"
+        >
+          <el-select
+            v-model="sizeForm.hPosition"
+            :placeholder="$t('chart.h_position')"
+            @change="changeBarSizeCase('hPosition')"
+          >
+            <el-option
+              value="start"
+              :label="$t('chart.p_left')"
+            >{{ $t('chart.p_left') }}</el-option>
+            <el-option
+              value="center"
+              :label="$t('chart.p_center')"
+            >{{ $t('chart.p_center') }}</el-option>
+            <el-option
+              value="end"
+              :label="$t('chart.p_right')"
+            >{{ $t('chart.p_right') }}</el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item
+          v-show="showProperty('vPosition')"
+          :label="$t('chart.v_position')"
+          class="form-item"
+        >
+          <el-select
+            v-model="sizeForm.vPosition"
+            :placeholder="$t('chart.v_position')"
+            @change="changeBarSizeCase('vPosition')"
+          >
+            <el-option
+              value="start"
+              :label="$t('chart.p_top')"
+            >{{ $t('chart.p_top') }}</el-option>
+            <el-option
+              value="center"
+              :label="$t('chart.p_center')"
+            >{{ $t('chart.p_center') }}</el-option>
+            <el-option
+              value="end"
+              :label="$t('chart.p_bottom')"
+            >{{ $t('chart.p_bottom') }}</el-option>
+          </el-select>
+        </el-form-item>
         <el-divider v-if="showProperty('dimensionShow')" />
         <el-form-item
           v-show="showProperty('dimensionShow')"
@@ -1005,7 +1053,6 @@
               @change="changeBarSizeCase('dimensionFontShadow')"
             >{{ $t('chart.font_shadow') }}</el-checkbox>
           </el-form-item>
-          <el-divider v-if="showProperty('spaceSplit')" />
           <el-form-item
             v-show="showProperty('spaceSplit')"
             :label="$t('chart.space_split')"
@@ -1017,54 +1064,6 @@
               size="mini"
               @change="changeBarSizeCase('spaceSplit')"
             />
-          </el-form-item>
-          <el-form-item
-            v-show="showProperty('hPosition')"
-            :label="$t('chart.h_position')"
-            class="form-item"
-          >
-            <el-select
-              v-model="sizeForm.hPosition"
-              :placeholder="$t('chart.h_position')"
-              @change="changeBarSizeCase('hPosition')"
-            >
-              <el-option
-                value="start"
-                :label="$t('chart.p_left')"
-              >{{ $t('chart.p_left') }}</el-option>
-              <el-option
-                value="center"
-                :label="$t('chart.p_center')"
-              >{{ $t('chart.p_center') }}</el-option>
-              <el-option
-                value="end"
-                :label="$t('chart.p_right')"
-              >{{ $t('chart.p_right') }}</el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item
-            v-show="showProperty('vPosition')"
-            :label="$t('chart.v_position')"
-            class="form-item"
-          >
-            <el-select
-              v-model="sizeForm.vPosition"
-              :placeholder="$t('chart.v_position')"
-              @change="changeBarSizeCase('vPosition')"
-            >
-              <el-option
-                value="start"
-                :label="$t('chart.p_top')"
-              >{{ $t('chart.p_top') }}</el-option>
-              <el-option
-                value="center"
-                :label="$t('chart.p_center')"
-              >{{ $t('chart.p_center') }}</el-option>
-              <el-option
-                value="end"
-                :label="$t('chart.p_bottom')"
-              >{{ $t('chart.p_bottom') }}</el-option>
-            </el-select>
           </el-form-item>
         </div>
         <!--text&label-end-->
