@@ -13,7 +13,11 @@ export const checkPermission = (el, binding) => {
     const needPermissions = value
     // 满足指令中的每个权限才可放行 而不是 满足任意一个即可
     const hasPermission = needPermissions.every(needP => {
-      const result = permissionData && permissionData[needP] && permissionData[needP]['anyManage']
+      const result =
+        permissionData &&
+        permissionData[needP] &&
+        permissionData[needP]['menuAuth'] &&
+        permissionData[needP]['anyManage']
       return result
     })
     if (!hasPermission) {

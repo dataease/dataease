@@ -51,16 +51,6 @@ class ShortcutOption {
           { field: 'lastEditTime', label: '最近编辑时间', type: 'time' }
         ]
       }
-      /* share: {
-        url: '/share/query',
-        busiList: ['panel', 'screen'],
-        dataCache: [],
-        columnList: [
-          { field: 'creator', label: '分享人' },
-          { field: 'time', label: '分享时间' },
-          { field: 'exp', label: '有效期', type: 'time' }
-        ]
-      } */
     }
   }
   getColmunList() {

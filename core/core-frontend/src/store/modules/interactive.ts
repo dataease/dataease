@@ -6,10 +6,12 @@ import { listDatasources } from '@/api/datasource'
 import type { BusiTreeRequest, BusiTreeNode } from '@/models/tree/TreeNode'
 import { pathValid } from '@/store/modules/permission'
 
-interface InnerInteractive {
+export interface InnerInteractive {
   rootManage: boolean
   anyManage: boolean
   treeNodes: BusiTreeNode[]
+  leafNodeCount: number
+  menuAuth: boolean
 }
 
 interface InteractiveState {
@@ -48,7 +50,9 @@ export const interactiveStore = defineStore('interactive', {
         const tempData: InnerInteractive = {
           rootManage: false,
           anyManage: false,
-          treeNodes: []
+          treeNodes: [],
+          leafNodeCount: 0,
+          menuAuth: false
         }
         this.data[flag] = tempData
         return []
@@ -81,19 +85,26 @@ const convertInteractive = (list): InnerInteractive => {
   const result: InnerInteractive = {
     rootManage: list[0]['weight'] >= 7,
     anyManage: false,
-    treeNodes: (list as unknown as BusiTreeNode[]) || []
+    treeNodes: (list as unknown as BusiTreeNode[]) || [],
+    leafNodeCount: 0,
+    menuAuth: true
   }
   const stack = [...list]
+  let leafNodeCount = 0
   while (stack.length) {
     const node = stack.pop()
     if (!node['leaf'] && node['weight'] >= 7) {
       result.anyManage = true
-      break
+      // break
+    }
+    if (node['leaf'] && node['weight']) {
+      ++leafNodeCount
     }
     if (node?.children?.length) {
       node.children.forEach(kid => stack.push(kid))
     }
   }
+  result.leafNodeCount = leafNodeCount
   return result
 }
 

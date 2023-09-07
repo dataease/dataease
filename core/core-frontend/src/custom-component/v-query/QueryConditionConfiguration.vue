@@ -77,16 +77,21 @@ const dfsComponentData = () => {
 }
 
 const datasetFieldList = computed(() => {
-  return dfsComponentData().map(ele => {
-    const obj = canvasViewInfo.value[ele.id]
-    const { id, title, tableId, type } = obj as DatasetField
-    return {
-      id,
-      type,
-      title,
-      tableId
-    }
-  })
+  return dfsComponentData()
+    .map(ele => {
+      const obj = canvasViewInfo.value[ele.id]
+      if (!obj) return null
+      const { id, title, tableId, type } = obj as DatasetField
+      return !!id && !!tableId
+        ? {
+            id,
+            type,
+            title,
+            tableId
+          }
+        : null
+    })
+    .filter(ele => !!ele)
 })
 
 const curComponent = ref()
@@ -359,6 +364,7 @@ const weightlessness = () => {
 }
 
 const handleCondition = item => {
+  if (activeConditionForRename.id) return
   activeCondition.value = item.id
   curComponent.value = conditions.value.find(ele => ele.id === item.id)
 
@@ -371,6 +377,11 @@ const handleCondition = item => {
       curComponent.value.checkedFieldsMap[ele.id] = ''
     }
   })
+
+  const idMap = datasetFieldList.value.map(ele => ele.id)
+  curComponent.value.checkedFields = curComponent.value.checkedFields.filter(ele =>
+    idMap.includes(ele)
+  )
   if (!!fields.value?.length) {
     handleCheckedFieldsChange(curComponent.value.checkedFields)
   }
@@ -424,8 +435,8 @@ const dsSelectProps = {
 
 const renameInputBlur = () => {
   if (activeConditionForRename.name.trim() === '') {
-    ElMessage.error('条件名不能为空')
-    activeConditionForRename.id = ''
+    ElMessage.error('字段名称不能为空')
+    renameInput.value[0]?.focus()
     return
   }
   conditions.value.some(ele => {
@@ -655,12 +666,36 @@ defineExpose({
                 </div>
                 <div class="value">
                   <el-select v-model="curComponent.field.id">
+                    <template #prefix>
+                      <el-icon>
+                        <Icon
+                          :name="`field_${
+                            fieldType[getDetype(curComponent.field.id, curComponent.dataset.fields)]
+                          }`"
+                          :className="`field-icon-${
+                            fieldType[getDetype(curComponent.field.id, curComponent.dataset.fields)]
+                          }`"
+                        ></Icon>
+                      </el-icon>
+                    </template>
                     <el-option
                       v-for="ele in curComponent.dataset.fields"
                       :key="ele.id"
                       :label="ele.name"
                       :value="ele.id"
-                    />
+                    >
+                      <div class="flex-align-center icon">
+                        <el-icon>
+                          <Icon
+                            :name="`field_${fieldType[ele.deType]}`"
+                            :className="`field-icon-${fieldType[ele.deType]}`"
+                          ></Icon>
+                        </el-icon>
+                        <span>
+                          {{ ele.name }}
+                        </span>
+                      </div>
+                    </el-option>
                   </el-select>
                 </div>
               </template>
@@ -685,7 +720,11 @@ defineExpose({
                     <div class="select-value">
                       <span> 选项值 </span>
                       <div :key="index" v-for="(_, index) in valueSource" class="select-item">
-                        <el-input @blur="weightlessness" v-model="valueSource[index]"></el-input>
+                        <el-input
+                          maxlength="20"
+                          @blur="weightlessness"
+                          v-model="valueSource[index]"
+                        ></el-input>
                         <el-button
                           v-if="valueSource.length !== 1"
                           @click="valueSource.splice(index, 1)"

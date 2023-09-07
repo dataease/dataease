@@ -1,5 +1,15 @@
 <script lang="ts" setup>
-import { ref, toRefs, provide, PropType, onBeforeMount, shallowRef, watch, nextTick } from 'vue'
+import {
+  ref,
+  toRefs,
+  provide,
+  PropType,
+  onBeforeMount,
+  shallowRef,
+  watch,
+  nextTick,
+  computed
+} from 'vue'
 import { getEnumValue } from '@/api/dataset'
 import { cloneDeep, debounce } from 'lodash-es'
 
@@ -248,6 +258,10 @@ const init = () => {
   debounceOptions(optionValueSource)
 }
 
+const selectStyle = computed(() => {
+  return props.isConfig ? {} : { width: '227px' }
+})
+
 onBeforeMount(() => {
   init()
 })
@@ -262,15 +276,17 @@ onBeforeMount(() => {
     filterable
     @change="handleValueChange"
     @visible-change="visibleChange"
-    :popper-class="visible ? 'load-select' : ''"
+    :popper-class="
+      visible ? 'load-select filter-select-popper_class' : 'filter-select-popper_class'
+    "
     multiple
     show-checked
     clearable
+    :style="selectStyle"
     collapse-tags
     :options="options"
     collapse-tags-tooltip
-  >
-  </el-select-v2>
+  ></el-select-v2>
   <el-select-v2
     v-else
     v-model="selectValue"
@@ -278,15 +294,39 @@ onBeforeMount(() => {
     v-loading="loading"
     @change="handleValueChange"
     clearable
+    :style="selectStyle"
     filterable
     @visible-change="visibleChange"
-    :popper-class="visible ? 'load-select' : ''"
+    :popper-class="
+      visible ? 'load-select filter-select-popper_class' : 'filter-select-popper_class'
+    "
     :options="options"
   >
     <template #default="{ item }">
       <el-radio-group v-model="selectValue">
-        <el-radio :label="item.value">{{ item.label }}</el-radio>
+        <el-radio :title="item.label" :label="item.value">{{ item.label }}</el-radio>
       </el-radio-group>
     </template>
   </el-select-v2>
 </template>
+
+<style lang="less">
+.filter-select-popper_class {
+  .ed-select-dropdown__option-item {
+    .ed-radio-group,
+    .ed-checkbox {
+      width: 100%;
+      .ed-radio {
+        width: 100%;
+      }
+      .ed-radio__label,
+      .ed-checkbox__label {
+        width: calc(100% - 16px);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+}
+</style>

@@ -1,15 +1,16 @@
 <script lang="ts" setup>
 import { useI18n } from '@/hooks/web/useI18n'
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import type { TabsPaneContext } from 'element-plus-secondary'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
 import { useRouter } from 'vue-router'
 import dayjs from 'dayjs'
 import { shortcutOption } from './ShortcutOption'
 import { XpackComponent } from '@/components/plugin'
+import { interactiveStoreWithOut } from '@/store/modules/interactive'
 const { resolve } = useRouter()
 const { t } = useI18n()
-
+const interactiveStore = interactiveStoreWithOut()
 const panelKeyword = ref()
 const activeName = ref('recent')
 const userAddPopper = ref(false)
@@ -19,6 +20,7 @@ const state = reactive({
   curTypeList: [],
   tableColumn: []
 })
+const busiDataMap = computed(() => interactiveStore.getData)
 
 const handleVisibleChange = (val: boolean) => {
   userAddPopper.value = val
@@ -32,10 +34,25 @@ const handleClick = (ele: TabsPaneContext) => {
   if (ele.paneName === 'recent' || ele.paneName === 'store') {
     loading.value = true
     shortcutOption.setBusiFlag(ele.paneName)
-    state.curTypeList = shortcutOption.getBusiList()
+    state.curTypeList = shortcutOption
+      .getBusiList()
+      .filter(busi => busi === 'all_types' || busiAuthList.includes(busi))
     state.tableColumn = shortcutOption.getColmunList()
     loadTableData()
   }
+}
+const getBusiListWithPermission = () => {
+  const baseFlagList = ['panel', 'screen', 'dataset', 'datasource']
+  const busiFlagList = []
+  for (const key in busiDataMap.value) {
+    if (busiDataMap.value[key].menuAuth) {
+      busiFlagList.push(baseFlagList[parseInt(key)])
+    }
+  }
+  tablePaneList.value[0].disabled = !busiFlagList?.length
+  tablePaneList.value[1].disabled =
+    !busiFlagList.includes('panel') && !busiFlagList.includes('screen')
+  return busiFlagList
 }
 const triggerFilterPanel = () => {
   loadTableData()
@@ -67,24 +84,28 @@ const loadTableData = () => {
 const panelLoad = paneInfo => {
   tablePaneList.value.push({
     title: paneInfo.title,
-    name: paneInfo.name
+    name: paneInfo.name,
+    disabled: tablePaneList.value[1].disabled
   })
 }
 
 const tablePaneList = ref([
-  { title: '最近使用', name: 'recent' },
-  { title: '我的收藏', name: 'store' }
+  { title: '最近使用', name: 'recent', disabled: false },
+  { title: '我的收藏', name: 'store', disabled: false }
 ])
+
+const busiAuthList = getBusiListWithPermission()
 onMounted(() => {
-  handleClick({
-    paneName: 'recent',
-    uid: 0,
-    slots: undefined,
-    props: undefined,
-    active: false,
-    index: '',
-    isClosable: false
-  })
+  !!busiAuthList.length &&
+    handleClick({
+      paneName: 'recent',
+      uid: 0,
+      slots: undefined,
+      props: undefined,
+      active: false,
+      index: '',
+      isClosable: false
+    })
 })
 const orderDesc = ref(true)
 const loading = ref(false)
@@ -100,14 +121,24 @@ const setLoading = (val: boolean) => {
 </script>
 
 <template>
-  <div class="dashboard-type" v-loading="loading">
+  <div class="dashboard-type" v-if="busiAuthList.length" v-loading="loading">
     <el-tabs v-model="activeName" class="dashboard-type-tabs" @tab-click="handleClick">
       <el-tab-pane
         v-for="item in tablePaneList"
         :key="item.name"
+        :disabled="item.disabled"
         :label="item.title"
         :name="item.name"
-      />
+      >
+        <template #label>
+          <span class="custom-tabs-label">
+            <el-tooltip placement="top" v-if="item.disabled" content="没有权限">
+              <span>{{ item.title }}</span>
+            </el-tooltip>
+            <span v-else>{{ item.title }}</span>
+          </span>
+        </template>
+      </el-tab-pane>
     </el-tabs>
     <XpackComponent jsname="c2hhcmUtcGFuZWw=" @loaded="panelLoad" />
     <XpackComponent :active-name="activeName" jsname="c2hhcmU=" @set-loading="setLoading" />
@@ -215,6 +246,7 @@ const setLoading = (val: boolean) => {
       </GridTable>
     </div>
   </div>
+  <el-empty class="dashboard-type" v-else description="没有任何业务菜单权限，请联系管理员授权" />
 </template>
 
 <style lang="less" scoped>

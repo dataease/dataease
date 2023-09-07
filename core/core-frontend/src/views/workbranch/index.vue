@@ -1,16 +1,20 @@
 <script lang="ts" setup>
 import { useI18n } from '@/hooks/web/useI18n'
-import { ref, shallowRef } from 'vue'
+import { ref, shallowRef, computed } from 'vue'
 
 import imgtest from '@/assets/img/dataease-10000Star.jpg'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import { useRequestStoreWithOut } from '@/store/modules/request'
-
+import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import ShortcutTable from './ShortcutTable.vue'
-
+import { useUserStoreWithOut } from '@/store/modules/user'
+const userStore = useUserStoreWithOut()
+const interactiveStore = interactiveStoreWithOut()
 const permissionStore = usePermissionStoreWithOut()
 const requestStore = useRequestStoreWithOut()
 const { t } = useI18n()
+const busiDataMap = computed(() => interactiveStore.getData)
+const busiCountCardList = ref([])
 
 const quickCreationList = shallowRef([
   {
@@ -40,6 +44,50 @@ const tabBtnList = ['推荐仪表板', t('auth.screen'), '应用模版']
 const activeTabBtn = ref('推荐仪表板')
 const typeList = quickCreationList.value.map(ele => ele.name)
 typeList.unshift('all_types')
+
+const fillCardInfo = () => {
+  for (const key in busiDataMap.value) {
+    if (key !== '3') {
+      busiCountCardList.value.push(busiDataMap.value[key])
+    }
+    quickCreationList.value[key]['menuAuth'] = busiDataMap.value[key]['menuAuth']
+    quickCreationList.value[key]['anyManage'] = busiDataMap.value[key]['anyManage']
+  }
+}
+const quickCreate = (flag: number, hasAuth: boolean) => {
+  if (!hasAuth) {
+    return
+  }
+  switch (flag) {
+    case 0:
+      createPanel()
+      break
+    case 1:
+      createScreen()
+      break
+    case 2:
+      createDataset()
+      break
+    case 3:
+      createDatasource()
+      break
+    default:
+      break
+  }
+}
+const createPanel = () => {
+  console.error('please contact Jiahao Wang')
+}
+const createScreen = () => {
+  console.error('please contact Jiahao Wang')
+}
+const createDataset = () => {
+  console.error('please contact junjie Xia')
+}
+const createDatasource = () => {
+  console.error('please contact Jinlong Tao')
+}
+fillCardInfo()
 </script>
 
 <template>
@@ -51,28 +99,21 @@ typeList.unshift('all_types')
         </el-icon>
         <div class="info">
           <div class="name-role flex-align-center">
-            <span class="name">裴佩尔</span>
-            <span class="role main-btn">{{ t('role.org_admin') }}</span>
+            <span class="name">{{ userStore.getName }}</span>
+            <span class="role main-btn" />
           </div>
-          <span class="id"> ID: 226204665738747993 </span>
+          <span class="id"> {{ `ID: ${userStore.getUid}` }} </span>
         </div>
-        <div class="item">
+        <div
+          class="item"
+          :class="{ 'de-item-hidden': !item['menuAuth'] }"
+          v-for="(item, index) in busiCountCardList"
+          :key="index"
+        >
           <span class="name">
-            {{ t('auth.dataset') }}
+            {{ t(`auth.${quickCreationList[index].name}`) }}
           </span>
-          <span class="num"> 28 </span>
-        </div>
-        <div class="item">
-          <span class="name">
-            {{ t('auth.panel') }}
-          </span>
-          <span class="num"> 28 </span>
-        </div>
-        <div class="item">
-          <span class="name">
-            {{ t('auth.screen') }}
-          </span>
-          <span class="num"> 28 </span>
+          <span class="num"> {{ item['menuAuth'] ? item['leafNodeCount'] : '*' }} </span>
         </div>
       </div>
 
@@ -80,11 +121,23 @@ typeList.unshift('all_types')
         <span class="label"> 快速创建 </span>
         <div class="item-creation">
           <div
-            v-permission="[ele.name]"
             :key="ele.name"
             class="item"
-            v-for="ele in quickCreationList"
+            :class="{
+              'quick-create-disabled': !ele['menuAuth'] || !ele['anyManage']
+            }"
+            v-for="(ele, index) in quickCreationList"
+            @click="quickCreate(index, ele['menuAuth'] && ele['anyManage'])"
           >
+            <el-tooltip
+              v-if="!ele['menuAuth'] || !ele['anyManage']"
+              class="box-item"
+              effect="dark"
+              content="缺少创建权限"
+              placement="top"
+            >
+              <div class="empty-tooltip-container" />
+            </el-tooltip>
             <el-icon class="main-color">
               <Icon :name="ele.icon" />
             </el-icon>
@@ -199,6 +252,7 @@ typeList.unshift('all_types')
           }
 
           .role {
+            width: 55px;
             display: inline-flex;
             margin-left: 4px;
             height: 20px;
@@ -207,7 +261,7 @@ typeList.unshift('all_types')
             font-size: 12px;
             color: #2b5fd9;
             border-radius: 2px;
-            background: rgba(51, 112, 255, 0.2);
+            // background: rgba(51, 112, 255, 0.2);
           }
         }
         .id {
@@ -223,14 +277,9 @@ typeList.unshift('all_types')
         font-style: normal;
         display: flex;
         flex-direction: column;
-        cursor: pointer;
         width: 109px;
         height: 70px;
         padding: 8px;
-        &:hover {
-          border-radius: 4px;
-          background: rgba(31, 35, 41, 0.1);
-        }
 
         .name {
           color: #646a73;
@@ -245,6 +294,10 @@ typeList.unshift('all_types')
           line-height: 28px;
           letter-spacing: -0.2px;
         }
+      }
+
+      .de-item-hidden {
+        cursor: not-allowed;
       }
     }
 
@@ -296,6 +349,25 @@ typeList.unshift('all_types')
             font-style: normal;
             font-weight: 400;
             line-height: 22px;
+          }
+        }
+        .quick-create-disabled {
+          cursor: not-allowed;
+          color: var(--ed-color-info-light-5);
+          background-color: var(--ed-color-info-light-9);
+          border-color: var(--ed-color-info-light-8);
+          .name {
+            color: var(--ed-color-info-light-5) !important;
+          }
+          .main-color {
+            background-color: var(--ed-color-primary-light-8) !important;
+            border-color: var(--ed-color-info-light-8) !important;
+          }
+          .empty-tooltip-container {
+            width: 146px;
+            position: absolute;
+            height: 52px;
+            margin-left: -16px;
           }
         }
       }

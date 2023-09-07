@@ -66,7 +66,9 @@ const { chart } = toRefs(props)
             <span> 展示按钮 </span>
             <div class="query-collapse-item query-component">
               <el-checkbox-group v-model="chart.customStyle.component.btnList">
-                <el-checkbox label="sure"> {{ t('commons.adv_search.search') }}</el-checkbox>
+                <el-checkbox disabled label="sure">
+                  {{ t('commons.adv_search.search') }}</el-checkbox
+                >
                 <el-checkbox label="clear"> {{ t('commons.clear') }}</el-checkbox>
                 <el-checkbox label="reset">{{ t('commons.adv_search.reset') }}</el-checkbox>
               </el-checkbox-group>
@@ -141,6 +143,11 @@ const { chart } = toRefs(props)
 
         .ed-input-number {
           margin-left: 8px;
+        }
+
+        .ed-checkbox__input.is-disabled.is-checked .ed-checkbox__inner {
+          background-color: var(--ed-color-primary-light-5);
+          color: var(--ed-color-primary-light-5);
         }
       }
 

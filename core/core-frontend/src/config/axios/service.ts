@@ -167,6 +167,7 @@ const executeVersionHandler = (response: AxiosResponse) => {
   const executeVersion = response.headers[key]
   const cacheVal = wsCache.get(key)
   if (!cacheVal) {
+    wsCache.set(key, executeVersion)
     return
   }
   if (executeVersion && executeVersion !== cacheVal) {

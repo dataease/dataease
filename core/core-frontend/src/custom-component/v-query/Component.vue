@@ -46,7 +46,7 @@ const defaultStyle = {
   background: '',
   text: '',
   layout: 'horizontal',
-  btnList: [],
+  btnList: ['sure'],
   titleShow: false,
   title: ''
 }
@@ -312,7 +312,11 @@ const queryData = () => {
           <div class="query-field">
             <div class="label">
               <div class="label-wrapper">
-                <div class="label-wrapper-text">{{ ele.name }}</div>
+                <div class="label-wrapper-text">
+                  <el-tooltip effect="dark" :content="ele.name" placement="top">
+                    {{ ele.name }}
+                  </el-tooltip>
+                </div>
               </div>
               <div class="label-wrapper-tooltip" v-if="showPosition !== 'preview'">
                 <el-tooltip effect="dark" content="设置过滤条件" placement="top">
@@ -321,7 +325,7 @@ const queryData = () => {
                   </el-icon>
                 </el-tooltip>
                 <el-tooltip effect="dark" content="删除条件" placement="top">
-                  <el-icon @click="delQueryConfig(index)">
+                  <el-icon style="margin-left: 8px" @click="delQueryConfig(index)">
                     <Icon name="icon_delete-trash_outlined"></Icon>
                   </el-icon>
                 </el-tooltip>
@@ -337,15 +341,12 @@ const queryData = () => {
             </div>
           </div>
         </div>
-        <div
-          class="query-button"
-          v-if="!!listVisible.length && customStyle.layout === 'horizontal'"
-        >
-          <el-button @click.stop="resetData" v-if="customStyle.btnList.includes('reset')" secondary>
-            {{ t('chart.reset') }}
-          </el-button>
+        <div class="query-button" v-if="!!listVisible.length">
           <el-button @click.stop="clearData" v-if="customStyle.btnList.includes('clear')" secondary>
             {{ t('commons.clear') }}
+          </el-button>
+          <el-button @click.stop="resetData" v-if="customStyle.btnList.includes('reset')" secondary>
+            {{ t('chart.reset') }}
           </el-button>
           <el-button
             @click.stop="queryData"
@@ -355,21 +356,6 @@ const queryData = () => {
             {{ t('commons.adv_search.search') }}
           </el-button>
         </div>
-      </div>
-      <div class="query-button" v-if="!!listVisible.length && customStyle.layout === 'vertical'">
-        <el-button @click.stop="resetData" v-if="customStyle.btnList.includes('reset')" secondary>
-          {{ t('chart.reset') }}
-        </el-button>
-        <el-button @click.stop="clearData" v-if="customStyle.btnList.includes('clear')" secondary>
-          {{ t('commons.clear') }}
-        </el-button>
-        <el-button
-          @click.stop="queryData"
-          v-if="customStyle.btnList.includes('sure')"
-          type="primary"
-        >
-          {{ t('commons.adv_search.search') }}
-        </el-button>
       </div>
     </div>
   </div>
@@ -440,28 +426,25 @@ const queryData = () => {
     display: flex;
     flex-wrap: wrap;
     width: 100%;
+    height: 100%;
   }
   .query-item {
-    font-size: 12px;
     position: relative;
     line-height: 28px;
-    margin: 5px 6px 5px 0;
+    margin: 5px 16px 5px 0;
     max-width: 100%;
     min-width: 60px;
     .query-field {
       position: relative;
       .label {
         display: flex;
-        font-size: 12px;
         overflow: hidden;
-        padding-right: 6px;
         color: #1f2329;
 
         .label-wrapper {
           visibility: visible;
           pointer-events: auto;
           cursor: auto;
-          font-size: 12px;
           line-height: 16px;
           color: #575757;
           box-sizing: border-box;
@@ -478,11 +461,18 @@ const queryData = () => {
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
+          color: #1f2329;
+          font-family: PingFang SC;
+          font-size: 14px;
+          font-style: normal;
+          font-weight: 400;
+          line-height: 22px;
         }
         .label-wrapper-tooltip {
           align-items: center;
           background: #fff;
           border-radius: 2px;
+          font-size: 16px;
           display: none;
           flex: 0 0 auto;
           height: 16px;
@@ -494,7 +484,6 @@ const queryData = () => {
       .query-select {
         display: flex;
         flex-wrap: wrap;
-        margin-top: -5px;
         line-height: 28px;
         :deep(.ed-date-editor--datetime .ed-input__wrapper) {
           width: 100%;
@@ -511,16 +500,12 @@ const queryData = () => {
     line-height: 28px;
     margin: auto 0 5px auto;
     z-index: 0;
-    button {
-      margin: 8px 0 0 8px;
-      min-width: 48px;
-    }
   }
 
   &.horizontal {
     .query-fields-container {
       .query-field {
-        padding-top: 18px;
+        padding-top: 30px;
 
         &:hover {
           .label-wrapper-tooltip {
@@ -550,10 +535,9 @@ const queryData = () => {
     margin: auto 0;
     .query-fields-container {
       align-items: flex-start;
-      flex-direction: column;
 
       .query-field {
-        align-items: flex-start;
+        align-items: center;
         display: flex;
         .label {
           visibility: visible;
@@ -562,13 +546,23 @@ const queryData = () => {
           line-height: 28px;
           box-sizing: border-box;
           flex: 0 0 auto;
+          margin-right: 8px;
+
+          .label-wrapper {
+            max-width: 200px;
+          }
           .label-wrapper-tooltip {
-            line-height: 16px;
-            box-shadow: 0 0 4px #777;
             position: absolute;
             right: 0;
-            top: -5px;
+            top: -26px;
             z-index: 11;
+            padding: 4px 8px;
+            height: 26px;
+            width: 58px;
+            border-radius: 4px;
+            border: 1px solid #dee0e3;
+            background: #fff;
+            box-shadow: 0px 4px 8px 0px rgba(31, 35, 41, 0.1);
           }
         }
         &:hover {
@@ -578,14 +572,6 @@ const queryData = () => {
           }
         }
       }
-    }
-
-    .query-button {
-      align-self: flex-end;
-      line-height: 28px;
-      z-index: 0;
-      flex: 0 0 56px;
-      margin: auto 0;
     }
   }
 }

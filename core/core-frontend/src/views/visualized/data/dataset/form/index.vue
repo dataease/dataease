@@ -379,6 +379,10 @@ const dimensions = computed(() => {
 
 const addComplete = () => {
   state.nodeNameList = [...datasetDrag.value.nodeNameList]
+  if (!state.nodeNameList) {
+    columns.value = []
+    tableData.value = []
+  }
 }
 
 const state = reactive({
@@ -804,7 +808,7 @@ const treeProps = {
                     <Icon name="icon_replace_outlined"></Icon>
                   </el-icon>
                 </template>
-                {{ t('commons.refresh') }}
+                刷新数据
               </el-button>
             </div>
           </div>
