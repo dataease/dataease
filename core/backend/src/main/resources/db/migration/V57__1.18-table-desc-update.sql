@@ -47,7 +47,6 @@ ALTER TABLE `demo_stny_carbon_emission_trend` COMMENT = '官方示例模板数�
 ALTER TABLE `demo_stny_disposable_energy` COMMENT = '官方示例模板数据（双碳及能源情况概览）';
 ALTER TABLE `demo_stny_energy_consumption_proportion` COMMENT = '官方示例模板数据（双碳及能源情况概览）';
 ALTER TABLE `demo_stny_energy_consumption_total` COMMENT = '官方示例模板数据（双碳及能源情况概览）';
-ALTER TABLE `demo_stny_province_city_ index` COMMENT = '官方示例模板数据（双碳及能源情况概览）';
 ALTER TABLE `de_engine` COMMENT = '引擎设置表';
 ALTER TABLE `file_content` COMMENT = '文件内容表';
 ALTER TABLE `file_metadata` COMMENT = '文件基础信息表';
