@@ -924,6 +924,7 @@
                             :param="param"
                             :index="index"
                             :item="item"
+                            :chart="chart"
                             :dimension-data="dimension"
                             :quota-data="quota"
                             @onItemChange="bubbleItemChange"
