@@ -1190,6 +1190,8 @@ public class MysqlQueryProvider extends QueryProvider {
                 return "%Y" + split + "%m" + split + "%d";
             case "H_m_s":
                 return "%H:%i:%S";
+            case "y_M_d_H":
+                return "%Y" + split + "%m" + split + "%d" + " %H";
             case "y_M_d_H_m":
                 return "%Y" + split + "%m" + split + "%d" + " %H:%i";
             case "y_M_d_H_m_s":

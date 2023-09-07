@@ -1122,25 +1122,25 @@ public class Db2QueryProvider extends QueryProvider {
                         } else {
                             originName = String.format(Db2Constants.STR_TO_DATE, originName);
                         }
-                        if(request.getOperator().equals("between")){
+                        if (request.getOperator().equals("between")) {
                             whereName = originName;
-                        }else {
+                        } else {
                             whereName = String.format(Db2Constants.DATE_FORMAT, originName, format);
                         }
                     }
                     if (field.getDeExtractType() == DeTypeConstants.DE_INT || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
-                        if(request.getOperator().equals("between")){
+                        if (request.getOperator().equals("between")) {
                             String cast = String.format(Db2Constants.CAST, originName, Db2Constants.DEFAULT_INT_FORMAT);
                             whereName = String.format(Db2Constants.FROM_UNIXTIME, cast, Db2Constants.DEFAULT_DATE_FORMAT);
-                        }else {
+                        } else {
                             String cast = String.format(Db2Constants.CAST, originName, Db2Constants.DEFAULT_INT_FORMAT);
                             whereName = String.format(Db2Constants.FROM_UNIXTIME, cast, format);
                         }
                     }
                     if (field.getDeExtractType() == DeTypeConstants.DE_TIME) {
-                        if(request.getOperator().equals("between")){
+                        if (request.getOperator().equals("between")) {
                             whereName = originName;
-                        }else {
+                        } else {
                             if (field.getType().equalsIgnoreCase("TIME")) {
                                 whereName = String.format(Db2Constants.FORMAT_TIME, originName, format);
                             } else if (field.getType().equalsIgnoreCase("DATE")) {
@@ -1242,6 +1242,8 @@ public class Db2QueryProvider extends QueryProvider {
                 return "YYYY" + split + "MM" + split + "DD";
             case "H_m_s":
                 return "HH24:MI:SS";
+            case "y_M_d_H":
+                return "YYYY" + split + "MM" + split + "DD" + " HH24";
             case "y_M_d_H_m":
                 return "YYYY" + split + "MM" + split + "DD" + " HH24:MI";
             case "y_M_d_H_m_s":

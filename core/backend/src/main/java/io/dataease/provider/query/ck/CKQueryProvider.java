@@ -820,9 +820,9 @@ public class CKQueryProvider extends QueryProvider {
     }
 
     public String getTotalCount(boolean isTable, String sql, Datasource ds) {
-        if(isTable){
+        if (isTable) {
             return "SELECT COUNT(*) from " + String.format(CKConstants.KEYWORD_TABLE, sql);
-        }else {
+        } else {
             return "SELECT COUNT(*) from ( " + sqlFix(sql) + " ) DE_COUNT_TEMP";
         }
     }
@@ -1251,6 +1251,8 @@ public class CKQueryProvider extends QueryProvider {
                 return "%Y" + split + "%m" + split + "%d";
             case "H_m_s":
                 return "%H:%M:%S";
+            case "y_M_d_H":
+                return "%Y" + split + "%m" + split + "%d" + " %H";
             case "y_M_d_H_m":
                 return "%Y" + split + "%m" + split + "%d" + " %H:%M";
             case "y_M_d_H_m_s":
