@@ -1,29 +1,34 @@
 package io.dataease.controller.sys;
 
 
-import io.dataease.plugins.common.base.domain.SystemParameter;
 import io.dataease.commons.constants.ParamConstants;
+import io.dataease.commons.utils.LogUtil;
+import io.dataease.controller.ResultHolder;
 import io.dataease.controller.sys.response.BasicInfo;
 import io.dataease.controller.sys.response.MailInfo;
 import io.dataease.dto.SystemParameterDTO;
 import io.dataease.listener.DatasetCheckListener;
 import io.dataease.listener.util.CacheUtils;
+import io.dataease.plugins.common.base.domain.SystemParameter;
 import io.dataease.plugins.common.util.GlobalFileUtil;
 import io.dataease.plugins.xpack.cas.dto.CasSaveResult;
 import io.dataease.service.FileService;
+import io.dataease.service.sys.SysUserService;
 import io.dataease.service.system.EmailService;
 import io.dataease.service.system.SystemParameterService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.annotation.Resource;
 import java.io.IOException;
-
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.List;
@@ -42,6 +47,23 @@ public class SystemParameterController {
     @Resource
     private EmailService emailService;
 
+    @Resource
+    private SysUserService sysUserService;
+
+    @PostMapping("/email/checkAdmin")
+    public ResultHolder checkAdminEmail() {
+        String email = sysUserService.adminEmail();
+        if (StringUtils.isBlank(email)) {
+            return ResultHolder.error("管理员邮箱地址为空，请尽快配置");
+        }
+        try {
+            emailService.testConnection(email);
+        } catch (Exception e) {
+            LogUtil.error(e.getMessage(), e);
+            return ResultHolder.error(e.getMessage());
+        }
+        return ResultHolder.success(true);
+    }
 
     @RequiresPermissions("sysparam:read")
     @GetMapping("/mail/info")

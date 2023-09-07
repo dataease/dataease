@@ -9,4 +9,6 @@ public interface ExtSysUserMapper {
     List<SysUserGridResponse> query(GridExample example);
 
     List<String> ldapUserNames(Integer from);
+
+    String queryAdminEmail();
 }
