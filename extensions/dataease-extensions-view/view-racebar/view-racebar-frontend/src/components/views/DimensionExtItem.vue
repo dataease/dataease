@@ -65,7 +65,7 @@
           />
         </el-tag>
         <el-dropdown-menu slot="dropdown">
-<!--          <el-dropdown-item>
+          <el-dropdown-item>
             <el-dropdown
               placement="right-start"
               size="mini"
@@ -78,7 +78,7 @@
                   <span>{{ $t('chart.sort') }}</span>
                   <span class="summary-span-item">({{ $t('chart.' + item.sort) }})</span>
                 </span>
-                <i class="el-icon-arrow-right el-icon&#45;&#45;right"/>
+                <i class="el-icon-arrow-right el-icon--right"/>
               </span>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item :command="beforeSort('none')">{{ $t('chart.none') }}</el-dropdown-item>
@@ -86,7 +86,7 @@
                 <el-dropdown-item :command="beforeSort('desc')">{{ $t('chart.desc') }}</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
-          </el-dropdown-item>-->
+          </el-dropdown-item>
 
           <el-dropdown-item
             v-show="item.deType === 1"

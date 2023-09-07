@@ -1474,6 +1474,8 @@ public class ChartViewService {
 
         List<PluginViewField> pluginViewFields = fieldMap.entrySet().stream().flatMap(entry -> entry.getValue().stream().map(field -> {
             PluginViewField pluginViewField = BeanUtils.copyBean(new PluginViewField(), field);
+            pluginViewField.setFilter(gson.fromJson(gson.toJson(field.getFilter()), new TypeToken<List<PluginChartCustomFilterItem>>() {
+            }.getType()));
             pluginViewField.setTypeField(entry.getKey());
             return pluginViewField;
         })).collect(Collectors.toList());

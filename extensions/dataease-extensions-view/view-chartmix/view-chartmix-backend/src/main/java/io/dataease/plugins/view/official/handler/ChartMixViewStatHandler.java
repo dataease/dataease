@@ -45,7 +45,6 @@ public class ChartMixViewStatHandler implements PluginViewStatHandler {
         List<PluginViewSQL> xFields = fieldSQLMap.getOrDefault("xAxis", new ArrayList<>()).stream().filter(singleField -> ObjectUtils.isNotEmpty(singleField.getField())).map(PluginSingleField::getField).collect(Collectors.toList());
         List<PluginViewSQL> xOrders = fieldSQLMap.getOrDefault("xAxis", new ArrayList<>()).stream().filter(singleField -> ObjectUtils.isNotEmpty(singleField.getSort())).map(PluginSingleField::getSort).collect(Collectors.toList());
 
-        System.out.println("11111111 orders:"+new Gson().toJson(xOrders));
         // List<String> xWheres = fieldSQLMap.get("xAxis").stream().map(singleField -> singleField.getWhere()).collect(Collectors.toList());
 
         List<PluginViewSQL> yFields = fieldSQLMap.getOrDefault("yAxis", new ArrayList<>()).stream().filter(singleField -> ObjectUtils.isNotEmpty(singleField.getField())).map(PluginSingleField::getField).collect(Collectors.toList());
@@ -79,7 +78,6 @@ public class ChartMixViewStatHandler implements PluginViewStatHandler {
         orders.addAll(xOrders);
         orders.addAll(yOrders);
 
-        System.out.println("11111111 orders: " + new Gson().toJson(orders));
 
         List<String> aggWheres = new ArrayList<>();
         aggWheres.addAll(yWheres.stream().filter(ObjectUtils::isNotEmpty).collect(Collectors.toList()));
