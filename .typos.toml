@@ -9,5 +9,21 @@ keynode = "keynode"
 SCHEM = "SCHEM"
 
 [files]
-extend-exclude = ["public/", "amap-wx/", "m-icon/", "uni-card/", "uni-col/", "uni-link/", "uni-list/", "uni-list-item/", "uni-row/", "migration/", "mapFiles/", "frontend/src/views/chart/components/table/TableNormal.vue"]
+extend-exclude = [
+    "public/",
+    "amap-wx/",
+    "m-icon/",
+    "uni-card/",
+    "uni-col/",
+    "uni-link/",
+    "uni-list/",
+    "uni-list-item/",
+    "uni-row/",
+    "migration/",
+    "mapFiles/",
+    "core/frontend/src/views/chart/components/table/TableNormal.vue",
+    "core/backend/src/main/java/io/dataease/ext/ExtSysUserMapper.xml",
+    "core/backend/src/main/java/io/dataease/ext/AuthMapper.xml",
+    "installer/dataease/templates/be.conf"
+]
 
