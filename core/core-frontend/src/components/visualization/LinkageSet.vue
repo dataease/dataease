@@ -302,11 +302,7 @@ const saveLinkageSetting = () => {
 
     if (subCheckCount > 0) {
       ElMessage.error(
-        t('visualization.datalist') +
-          '【' +
-          linkageInfo.targetViewName +
-          '】' +
-          t('visualization.exit_un_march_linkage_field')
+        '【' + linkageInfo.targetViewName + '】-' + t('visualization.exit_un_march_linkage_field')
       )
       return
     }

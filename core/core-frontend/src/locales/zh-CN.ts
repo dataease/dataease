@@ -2004,7 +2004,7 @@ export default {
     switch_picture: '更换图片',
     select_field: '选择视图字段',
     remove_all_linkage: '清除所有联动',
-    exit_un_march_linkage_field: '存在未匹配联动关系的字段',
+    exit_un_march_linkage_field: '关联字段不能为空',
     details: '详情',
     setting: '设置',
     no_drill_field: '缺少关联字段',
