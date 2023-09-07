@@ -314,7 +314,8 @@ public class PanelAppTemplateService {
         for (ChartViewWithBLOBs chartView : chartViewsInfo) {
             String oldViewId = chartView.getId();
             // 替换datasetId
-            chartView.setTableId(datasetsRealMap.get(chartView.getTableId()));
+            String newTableId = datasetsRealMap.get(chartView.getTableId());
+            chartView.setTableId(StringUtils.isEmpty(newTableId) ? " " : newTableId);
             datasetsRealMap.forEach((k, v) -> {
                 chartView.setXAxis(chartView.getXAxis().replaceAll(k, v));
                 chartView.setXAxisExt(chartView.getXAxisExt().replaceAll(k, v));
@@ -423,12 +424,12 @@ public class PanelAppTemplateService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public Map<String,String> applyLinkJumps(List<PanelLinkJump> linkJumps, Map<String, String> chartViewsRealMap, String newPanelId) {
-        Map<String,String> linkJumpIdMap = new HashMap<>();
-        if(!CollectionUtils.isEmpty(linkJumps)){
-            for(PanelLinkJump linkJump :linkJumps){
+    public Map<String, String> applyLinkJumps(List<PanelLinkJump> linkJumps, Map<String, String> chartViewsRealMap, String newPanelId) {
+        Map<String, String> linkJumpIdMap = new HashMap<>();
+        if (!CollectionUtils.isEmpty(linkJumps)) {
+            for (PanelLinkJump linkJump : linkJumps) {
                 String newLinkJumpId = UUIDUtil.getUUIDAsString();
-                linkJumpIdMap.put(linkJump.getId(),newLinkJumpId);
+                linkJumpIdMap.put(linkJump.getId(), newLinkJumpId);
                 linkJump.setId(newLinkJumpId);
                 linkJump.setSourcePanelId(newPanelId);
                 linkJump.setSourceViewId(chartViewsRealMap.get(linkJump.getSourceViewId()));
@@ -440,8 +441,8 @@ public class PanelAppTemplateService {
 
     @Transactional(rollbackFor = Exception.class)
     public void applyLinkJumpInfos(List<PanelLinkJumpInfo> linkJumpInfos, Map<String, String> linkJumpIdMap, Map<String, String> datasetFieldsRealMap) {
-        if(!CollectionUtils.isEmpty(linkJumpInfos)){
-            for(PanelLinkJumpInfo linkJumpInfo :linkJumpInfos){
+        if (!CollectionUtils.isEmpty(linkJumpInfos)) {
+            for (PanelLinkJumpInfo linkJumpInfo : linkJumpInfos) {
                 String newLinkJumpInfoId = UUIDUtil.getUUIDAsString();
                 linkJumpInfo.setId(newLinkJumpInfoId);
                 linkJumpInfo.setLinkJumpId(linkJumpIdMap.get(linkJumpInfo.getLinkJumpId()));
@@ -455,12 +456,12 @@ public class PanelAppTemplateService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public Map<String,String> applyLinkages(List<PanelViewLinkage> linkages, Map<String, String> chartViewsRealMap, String newPanelId) {
-        Map<String,String> linkageIdMap = new HashMap<>();
-        if(!CollectionUtils.isEmpty(linkages)){
-            for(PanelViewLinkage linkage :linkages){
+    public Map<String, String> applyLinkages(List<PanelViewLinkage> linkages, Map<String, String> chartViewsRealMap, String newPanelId) {
+        Map<String, String> linkageIdMap = new HashMap<>();
+        if (!CollectionUtils.isEmpty(linkages)) {
+            for (PanelViewLinkage linkage : linkages) {
                 String newId = UUIDUtil.getUUIDAsString();
-                linkageIdMap.put(linkage.getId(),newId);
+                linkageIdMap.put(linkage.getId(), newId);
                 linkage.setId(newId);
                 linkage.setPanelId(newPanelId);
                 linkage.setSourceViewId(chartViewsRealMap.get(linkage.getSourceViewId()));
@@ -473,8 +474,8 @@ public class PanelAppTemplateService {
 
     @Transactional(rollbackFor = Exception.class)
     public void applyLinkageFields(List<PanelViewLinkageField> linkageFields, Map<String, String> linkageIdMap, Map<String, String> datasetFieldsRealMap) {
-        if(!CollectionUtils.isEmpty(linkageFields)){
-            for(PanelViewLinkageField linkageField :linkageFields){
+        if (!CollectionUtils.isEmpty(linkageFields)) {
+            for (PanelViewLinkageField linkageField : linkageFields) {
                 String newId = UUIDUtil.getUUIDAsString();
                 linkageField.setId(newId);
                 linkageField.setLinkageId(linkageIdMap.get(linkageField.getLinkageId()));
