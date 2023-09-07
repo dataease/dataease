@@ -368,6 +368,7 @@
       <Preview
         v-if="previewVisible"
         :in-screen="!previewVisible"
+        :class="previewVisible && 'fullscreen-visual-selects'"
         :panel-info="panelInfo"
         :show-type="canvasStyleData.selfAdaption?'full':'width'"
         :canvas-style-data="canvasStyleData"
