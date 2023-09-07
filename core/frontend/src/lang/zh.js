@@ -1487,6 +1487,8 @@ export default {
     label_content: '标签展示',
     percent: '占比',
     table_index_desc: '表头名称',
+    table_row_tooltip: '行头提示',
+    table_col_tooltip: '列头提示',
     total_sort: '总计排序',
     total_sort_none: '无',
     total_sort_asc: '升序',

@@ -593,9 +593,11 @@ export function getXAxis(chart) {
             stroke: axisCfg.lineStyle.color
           }
         } : null
+        const rotate = parseInt(a.axisLabel.rotate)
         const label = a.axisLabel.show ? {
-          rotate: parseInt(a.axisLabel.rotate) * Math.PI / 180,
+          rotate: rotate * Math.PI / 180,
           style: {
+            textAlign: rotate > 20 ? 'start' : rotate < -20 ? 'end' : 'center',
             fill: a.axisLabel.color,
             fontSize: parseInt(a.axisLabel.fontSize)
           },
