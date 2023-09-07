@@ -936,6 +936,10 @@ export default {
     left: 0 !important;
     top: inherit !important;
   }
+
+  .track-menu {
+    left: inherit !important;
+  }
 }
 </style>
 
