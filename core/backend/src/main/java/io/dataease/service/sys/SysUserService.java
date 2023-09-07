@@ -3,16 +3,16 @@ package io.dataease.service.sys;
 import io.dataease.auth.api.dto.CurrentUserDto;
 import io.dataease.auth.service.AuthUserService;
 import io.dataease.auth.service.ExtAuthService;
-import io.dataease.commons.exception.DEException;
-import io.dataease.controller.sys.request.*;
-import io.dataease.ext.ExtSysUserMapper;
-import io.dataease.ext.query.GridExample;
 import io.dataease.commons.constants.AuthConstants;
+import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.CodingUtil;
+import io.dataease.controller.sys.request.*;
 import io.dataease.controller.sys.response.SysUserGridResponse;
 import io.dataease.controller.sys.response.SysUserRole;
+import io.dataease.ext.ExtSysUserMapper;
+import io.dataease.ext.query.GridExample;
 import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.*;
 import io.dataease.plugins.common.base.mapper.SysUserAssistMapper;
@@ -23,7 +23,6 @@ import io.dataease.plugins.xpack.dingtalk.dto.response.DingUserEntity;
 import io.dataease.plugins.xpack.lark.dto.entity.LarkUserInfo;
 import io.dataease.plugins.xpack.larksuite.dto.entity.UserData;
 import io.dataease.plugins.xpack.oidc.dto.SSOUserInfo;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -33,7 +32,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -605,4 +603,7 @@ public class SysUserService {
         sysUserMapper.updateByPrimaryKeySelective(sysUser);
     }
 
+    public String adminEmail() {
+        return extSysUserMapper.queryAdminEmail();
+    }
 }
