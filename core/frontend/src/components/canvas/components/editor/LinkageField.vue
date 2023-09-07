@@ -120,7 +120,8 @@
         icon="el-icon-plus"
         round
         @click="addLinkageField(null,null)"
-      >追加联动依赖字段</el-button>
+      >追加联动依赖字段
+      </el-button>
     </el-row>
 
     <!--    <el-button slot="reference">T</el-button>-->
@@ -132,8 +133,9 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
-import { checkSameDataSet } from '@/api/chart/chart'
+import {mapState} from 'vuex'
+import {checkSameDataSet} from '@/api/chart/chart'
+
 export default {
 
   props: {
@@ -172,18 +174,24 @@ export default {
     },
     ...mapState([
       'targetLinkageInfo',
-      'curLinkageView'
+      'curLinkageView',
+      'panelViewDetailsInfo'
     ])
   },
   mounted() {
     const _this = this
     // 初始化映射关系 如果当前是相同的数据集且没有关联关系，则自动补充映射关系
     checkSameDataSet(this.curLinkageView.propValue.viewId, this.element.propValue.viewId).then(res => {
+      const chartDetails = JSON.parse(this.panelViewDetailsInfo[this.curLinkageView.propValue.viewId])
+      const curCheckAllAxisStr = chartDetails.xaxis + chartDetails.xaxisExt + chartDetails.yaxis + chartDetails.yaxisExt
+      const targetChartDetails = JSON.parse(this.panelViewDetailsInfo[this.element.propValue.viewId])
+      const targetCheckAllAxisStr = targetChartDetails.xaxis + targetChartDetails.xaxisExt + targetChartDetails.yaxis + targetChartDetails.yaxisExt
+
       if (res.data === 'YES' && this.linkageInfo.linkageFields.length === 0) {
         this.sourceLinkageInfo.targetViewFields.forEach(item => {
-          _this.$nextTick(() => {
+          if (curCheckAllAxisStr.includes(item.id)&&targetCheckAllAxisStr.includes(item.id)) {
             this.addLinkageField(item.id, item.id)
-          })
+          }
         })
       }
     })
@@ -213,46 +221,48 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .slot-class{
-    color: white;
-  }
+.slot-class {
+  color: white;
+}
 
-  .bottom {
-    margin-top: 20px;
-    text-align: center;
+.bottom {
+  margin-top: 20px;
+  text-align: center;
 
-  }
-  .ellip{
-    /*width: 100%;*/
-    margin-left: 10px;
-    margin-right: 10px;
-    overflow: hidden;/*超出部分隐藏*/
-    white-space: nowrap;/*不换行*/
-    text-overflow:ellipsis;/*超出部分文字以...显示*/
-    background-color: #f7f8fa;
-    color: #3d4d66;
-    font-size: 12px;
-    line-height: 24px;
-    height: 24px;
-    border-radius: 3px;
-  }
+}
 
-  .select-filed{
-    /*width: 100%;*/
-    margin-left: 10px;
-    margin-right: 10px;
-    overflow: hidden;/*超出部分隐藏*/
-    white-space: nowrap;/*不换行*/
-    text-overflow:ellipsis;/*超出部分文字以...显示*/
-    color: #3d4d66;
-    font-size: 12px;
-    line-height: 35px;
-    height: 35px;
-    border-radius: 3px;
-  }
-  ::v-deep .el-popover{
-    height: 200px;
-    overflow: auto;
-  }
+.ellip {
+  /*width: 100%;*/
+  margin-left: 10px;
+  margin-right: 10px;
+  overflow: hidden; /*超出部分隐藏*/
+  white-space: nowrap; /*不换行*/
+  text-overflow: ellipsis; /*超出部分文字以...显示*/
+  background-color: #f7f8fa;
+  color: #3d4d66;
+  font-size: 12px;
+  line-height: 24px;
+  height: 24px;
+  border-radius: 3px;
+}
+
+.select-filed {
+  /*width: 100%;*/
+  margin-left: 10px;
+  margin-right: 10px;
+  overflow: hidden; /*超出部分隐藏*/
+  white-space: nowrap; /*不换行*/
+  text-overflow: ellipsis; /*超出部分文字以...显示*/
+  color: #3d4d66;
+  font-size: 12px;
+  line-height: 35px;
+  height: 35px;
+  border-radius: 3px;
+}
+
+::v-deep .el-popover {
+  height: 200px;
+  overflow: auto;
+}
 
 </style>
