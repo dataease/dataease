@@ -669,7 +669,7 @@ export default {
     input_phone: 'Please enter the phone number',
     input_roles: 'Please select role',
     select_users: 'Please select user',
-    user_name_pattern_error: 'IDs can only contain alphanumeric and ._- and start with a letter!',
+    user_name_pattern_error: 'IDs can only contain alphanumeric and ._- and start with a letter or number!',
     special_characters_are_not_supported: 'Special characters are not supported',
     mobile_number_format_is_incorrect: 'Incorrect format of mobile phone number',
     email_format_is_incorrect: 'The mailbox format is incorrect',
@@ -1466,6 +1466,7 @@ export default {
     dimension_text_style: 'Name Style',
     dimension_letter_space: 'Name Letter Space',
     font_family: 'Font Family',
+    font_family_tip: 'The font will only take effect if it is installed on the operating system',
     letter_space: 'Letter Space',
     font_shadow: 'Font Shadow',
     chart_area: 'Area',
@@ -2412,6 +2413,7 @@ export default {
     themeDark: 'Dark',
     themeCustom: 'Custom',
     openHomePage: 'Show Home Page',
+    auto_identify_mobile_devices: 'Automatically identify mobile devices',
     openMarketPage: 'Show Market Page',
     mobileBG: 'Mobile Login page BG',
     helpLink: 'Help Document Link',
@@ -2853,7 +2855,8 @@ export default {
     geo_json: 'Geo Json',
     fileplaceholder: 'Please upload the JSON format coordinate file',
     delete_confirm: 'And child nodes will be deleted. Confirm to execute ?',
-    cur_node: 'Current node'
+    cur_node: 'Current node',
+    prohibit_prompts: '000 and 156 are the global village and China area code prefixes respectively. Removal is prohibited. Please use other code prefixes!'
   },
   map_mapping: {
     map: 'Map',

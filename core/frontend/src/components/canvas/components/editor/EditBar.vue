@@ -575,7 +575,7 @@ export default {
 .bar-main {
   position: absolute;
   float: right;
-  z-index: 2;
+  z-index: 10;
   border-radius: 2px;
   padding-left: 3px;
   padding-right: 0px;

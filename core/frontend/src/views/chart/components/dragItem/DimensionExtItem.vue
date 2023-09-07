@@ -298,7 +298,7 @@ export default {
     },
     getDateExtStatus() {
       if (this.chart) {
-        this.showDateExt = this.showDateExt = this.chart.datasourceType === 'mysql' ||
+        this.showDateExt = this.chart.datasourceType === 'mysql' ||
           this.chart.datasourceType === 'ds_doris' ||
           this.chart.datasourceType === 'StarRocks' ||
           this.chart.datasetMode === 1

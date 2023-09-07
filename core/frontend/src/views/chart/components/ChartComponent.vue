@@ -65,6 +65,11 @@ export default {
     MapController
   },
   props: {
+    inScreen: {
+      type: Boolean,
+      required: false,
+      default: true
+    },
     active: {
       type: Boolean,
       required: false,
@@ -292,6 +297,7 @@ export default {
           this.myChart = this.$echarts.init(document.getElementById(this.chartId))
         }
         this.drawEcharts()
+        this.myChart.off('click')
         this.myChart.on('click', function(param) {
           that.pointParam = param
           if (that.linkageActiveParam) {
@@ -408,7 +414,7 @@ export default {
           chart_option.legend['pageIconInactiveColor'] = '#8c8c8c'
         }
       }
-      if (chart_option.tooltip) {
+      if (chart_option.tooltip && this.inScreen) {
         chart_option.tooltip.appendToBody = true
       }
       this.myEcharts(chart_option)
@@ -493,12 +499,6 @@ export default {
     trackClick(trackAction) {
       const param = this.pointParam
       if (!param || !param.data || !param.data.dimensionList) {
-        if (this.chart.type === 'map') {
-          const zoom = this.myChart.getOption().geo[0].zoom
-          if (zoom <= 1) {
-            this.$warning(this.$t('panel.no_drill_field'))
-          }
-        }
         return
       }
       const quotaList = this.pointParam.data.quotaList

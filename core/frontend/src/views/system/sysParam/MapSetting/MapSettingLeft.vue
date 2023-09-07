@@ -100,7 +100,7 @@ export default {
         label: 'name',
         value: 'id'
       },
-      expandedKeys: []
+      expandedKeys: ['000000000']
     }
   },
   watch: {

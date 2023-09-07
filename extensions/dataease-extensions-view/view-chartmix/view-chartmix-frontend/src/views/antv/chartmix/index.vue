@@ -36,7 +36,13 @@ import {Mix} from '@antv/g2plot'
 import {uuid, hexColorToRGBA} from '@/utils/chartmix'
 import ViewTrackBar from '@/components/views/ViewTrackBar'
 import {getRemark} from "@/components/views/utils";
-import {DEFAULT_TITLE_STYLE, DEFAULT_XAXIS_STYLE, DEFAULT_YAXIS_STYLE, transAxisPosition, getLineDash} from '@/utils/map';
+import {
+  DEFAULT_TITLE_STYLE,
+  DEFAULT_XAXIS_STYLE,
+  DEFAULT_YAXIS_STYLE,
+  transAxisPosition,
+  getLineDash
+} from '@/utils/map';
 import ChartTitleUpdate from '@/components/views/ChartTitleUpdate';
 import _ from 'lodash';
 import {clear} from 'size-sensor'
@@ -134,6 +140,12 @@ export default {
       },
       linkageActiveParam: null,
       linkageActiveHistory: false,
+      CHART_CONT_FAMILY_MAP: {
+        'Microsoft YaHei': 'Microsoft YaHei',
+        'SimSun': 'SimSun, "Songti SC", STSong',
+        'SimHei': 'SimHei, Helvetica',
+        'KaiTi': 'KaiTi, "Kaiti SC", STKaiti'
+      }
     }
   },
 
@@ -242,29 +254,12 @@ export default {
           this.titleClass.fontWeight = customStyle.text.isBolder ? 'bold' : 'normal'
           this.titleClass.fontSize = customStyle.text.isBolder ? 'bold' : 'normal'
 
-          this.titleClass.fontFamily = customStyle.text.fontFamily ? customStyle.text.fontFamily : 'Microsoft YaHei'
+          this.titleClass.fontFamily = customStyle.text.fontFamily ? this.CHART_CONT_FAMILY_MAP[customStyle.text.fontFamily] : 'Microsoft YaHei'
           this.titleClass.letterSpacing = (customStyle.text.letterSpace ? customStyle.text.letterSpace : '0') + 'px'
           this.titleClass.textShadow = customStyle.text.fontShadow ? '2px 2px 4px' : 'none'
         }
         if (customStyle.background) {
           this.titleClass.background = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
-          this.borderRadius = (customStyle.background.borderRadius || 0) + 'px'
-        }
-
-        if (customStyle.text) {
-          this.title_show = customStyle.text.show
-          this.title_class.fontSize = customStyle.text.fontSize + 'px'
-          this.title_class.color = customStyle.text.color
-          this.title_class.textAlign = customStyle.text.hPosition
-          this.title_class.fontStyle = customStyle.text.isItalic ? 'italic' : 'normal'
-          this.title_class.fontWeight = customStyle.text.isBolder ? 'bold' : 'normal'
-
-          this.title_class.fontFamily = customStyle.text.fontFamily ? customStyle.text.fontFamily : DEFAULT_TITLE_STYLE.fontFamily
-          this.title_class.letterSpacing = (customStyle.text.letterSpace ? customStyle.text.letterSpace : DEFAULT_TITLE_STYLE.letterSpace) + 'px'
-          this.title_class.textShadow = customStyle.text.fontShadow ? '2px 2px 4px' : 'none'
-        }
-        if (customStyle.background) {
-          this.title_class.background = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
           this.borderRadius = (customStyle.background.borderRadius || 0) + 'px'
         }
 
@@ -294,6 +289,7 @@ export default {
       let customAttr = undefined;
       let colors = undefined;
       let labelSetting = undefined;
+      let labelPosition = 'middle';
       if (this.chart.customAttr) {
         customAttr = JSON.parse(this.chart.customAttr);
         if (customAttr) {
@@ -302,15 +298,12 @@ export default {
           }
           if (customAttr.label) {
             labelSetting = customAttr.label.show ? {
-              callback: function (x) {
-                return {
-                  style: {
-                    fill: customAttr.label.color,
-                    fontSize: parseInt(customAttr.label.fontSize),
-                  },
-                };
+              style: {
+                fill: customAttr.label.color,
+                fontSize: parseInt(customAttr.label.fontSize),
               },
             } : false
+            labelPosition = customAttr.label.position;
           }
         }
       }
@@ -330,8 +323,16 @@ export default {
 
         names.push(t.name);
 
+        const _chartType = this.getChartType(yaxisList[_index].chartType);
+
+        if (_chartType === "column") {
+          _labelSetting.position = labelPosition;
+        } else {
+          _labelSetting.position = undefined;
+        }
+
         return {
-          type: this.getChartType(yaxisList[_index].chartType),
+          type: _chartType,
           name: t.name,
           options: {
             data: _.map(t.data, (v) => {
@@ -374,8 +375,17 @@ export default {
 
         names.push(t.name);
 
+
+        const _chartType = this.getChartType(yaxisExtList[_index].chartType);
+
+        if (_chartType === "column") {
+          _labelSetting.position = labelPosition;
+        } else {
+          _labelSetting.position = undefined;
+        }
+
         return {
-          type: this.getChartType(yaxisExtList[_index].chartType),
+          type: _chartType,
           name: t.name,
           options: {
             data: _.map(t.data, (v) => {
@@ -444,7 +454,6 @@ export default {
                   item.value = valueFormatter(item.data.value, yaxisExtList[item.data.i].formatterCfg)
                 }
               })
-              console.log(originalItems)
               return _.filter(originalItems, (item) => {
                 const v = item.data.key;
                 if (item.title === v && item.title === item.value && item.name === "key" || !names.includes(item.name)) {

@@ -669,7 +669,7 @@ export default {
     input_roles: '請選擇角色',
     select_users: '請選擇用戶',
     select_gender: '請選擇性別',
-    user_name_pattern_error: 'ID只能包含字母数字以及._-并以字母开头！',
+    user_name_pattern_error: 'ID只能包含字母數字以及._-並以字母或數字開頭！',
     special_characters_are_not_supported: '不支持特殊字符',
     mobile_number_format_is_incorrect: '手機號碼格式不正確',
     email_format_is_incorrect: '郵箱格式不正確',
@@ -1465,6 +1465,7 @@ export default {
     dimension_text_style: '名稱樣式',
     dimension_letter_space: '名稱字間距',
     font_family: '字體',
+    font_family_tip: '只有操作系統上已安裝該字體才能生效',
     letter_space: '字間距',
     font_shadow: '字體陰影',
     chart_area: '面積圖',
@@ -2406,6 +2407,7 @@ export default {
     themeDark: '深色',
     themeCustom: '自定義',
     openHomePage: '顯示首頁',
+    auto_identify_mobile_devices: '自動識別移動設備',
     openMarketPage: '顯示模板市場',
     mobileBG: '移動端登錄頁背景',
     helpLink: '幫助文檔鏈接',
@@ -2847,7 +2849,8 @@ export default {
     geo_json: '坐標文件',
     fileplaceholder: '請上傳json格式坐標文件',
     delete_confirm: '及子節點都會被刪除，確認執行？',
-    cur_node: '當前節點'
+    cur_node: '當前節點',
+    prohibit_prompts: '000、156分別是地球村和中華人民共和國區域代碼前綴，禁止移除，請使用其他代碼前綴！'
   },
   map_mapping: {
     map: '圖形',

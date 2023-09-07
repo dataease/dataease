@@ -1066,12 +1066,12 @@ public class MysqlQueryProvider extends QueryProvider {
                     String format = transDateFormat(request.getDateStyle(), request.getDatePattern());
                     if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5 || field.getDeExtractType() == 1) {
                         String date;
-                        if (field.getType().equalsIgnoreCase("YEAR")) {
+                        if (field.getType().equalsIgnoreCase("YEAR") || StringUtils.equalsIgnoreCase(field.getDateFormat(), "%Y")) {
                             date = String.format(MySQLConstants.DATE_FORMAT, "CONCAT(" + originName + ",'-01-01')", StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : MysqlConstants.DEFAULT_DATE_FORMAT);
                         } else {
                             date = String.format(MySQLConstants.DATE_FORMAT, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : MysqlConstants.DEFAULT_DATE_FORMAT);
                         }
-                        if (request.getOperator().equals("between")) {
+                        if (request.getOperator().equals("between") && request.getDatasetTableField().getDeExtractType() != 1) {
                             whereName = String.format(MySQLConstants.UNIX_TIMESTAMP, date) + "*1000";
                         } else {
                             if (StringUtils.equalsIgnoreCase(request.getDateStyle(), "y_Q")) {

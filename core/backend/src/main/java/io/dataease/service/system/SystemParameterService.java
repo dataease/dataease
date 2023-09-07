@@ -62,9 +62,11 @@ public class SystemParameterService {
         List<SystemParameter> homePageList = this.getParamList("ui.openHomePage");
         List<SystemParameter> marketPageList = this.getParamList("ui.openMarketPage");
         List<SystemParameter> loginLimitList = this.getParamList("loginlimit");
+        List<SystemParameter> autoMobileList = this.getParamList("ui.autoMobile");
         paramList.addAll(homePageList);
         paramList.addAll(marketPageList);
         paramList.addAll(loginLimitList);
+        paramList.addAll(autoMobileList);
         BasicInfo result = new BasicInfo();
         result.setOpenHomePage("true");
         Map<String, LoginLimitXpackService> beansOfType = SpringContextUtil.getApplicationContext().getBeansOfType((LoginLimitXpackService.class));
@@ -91,6 +93,10 @@ public class SystemParameterService {
                 if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.OPEN_MARKET_PAGE.getValue())) {
                     boolean open = StringUtils.equals("true", param.getParamValue());
                     result.setOpenMarketPage(open ? "true" : "false");
+                }
+                if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.AUTO_MOBILE.getValue())) {
+                    boolean close = StringUtils.equals("false", param.getParamValue());
+                    result.setAutoMobile(close ? "false" : "true");
                 }
                 if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.TEMPLATE_MARKET_ULR.getValue())) {
                     result.setTemplateMarketUlr(param.getParamValue());

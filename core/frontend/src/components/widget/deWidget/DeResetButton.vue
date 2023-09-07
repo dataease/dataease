@@ -27,6 +27,10 @@ export default {
       type: Boolean,
       default: true
     },
+    canvasStyleData:{
+      type: Object,
+      default: {}
+    },
     size: String
   },
   data() {
@@ -44,11 +48,7 @@ export default {
         }
       }
       return false
-    },
-    ...mapState([
-      'canvasStyleData'
-    ])
-
+    }
   },
   created() {
   },

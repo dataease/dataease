@@ -107,7 +107,13 @@
           content: ''
         },
         buttonTextColor: null,
-        loading: true
+        loading: true,
+        CHART_CONT_FAMILY_MAP: {
+          'Microsoft YaHei': 'Microsoft YaHei',
+          'SimSun': 'SimSun, "Songti SC", STSong',
+          'SimHei': 'SimHei, Helvetica',
+          'KaiTi': 'KaiTi, "Kaiti SC", STKaiti'
+        }
       }
     },
 
@@ -175,7 +181,7 @@
         }
       }
 
-      
+
       this.myChart.destroy()
       this.pointLayer.layerPickService.layer.textureService.destroy()
       this.pointLayer.layerPickService.layer.textureService.rendererService.destroy()
@@ -200,7 +206,7 @@
       if (this.textLayer) {
         this.textLayer.configService.clean() // GlobalConfigService
       }
-      
+
       if (this.pointLayer) {
         for (const key in this.pointLayer) {
           this.pointLayer[key] = null
@@ -574,7 +580,7 @@
             this.titleClass.fontStyle = customStyle.text.isItalic ? 'italic' : 'normal'
             this.titleClass.fontWeight = customStyle.text.isBolder ? 'bold' : 'normal'
 
-            this.titleClass.fontFamily = customStyle.text.fontFamily ? customStyle.text.fontFamily : 'Microsoft YaHei'
+            this.titleClass.fontFamily = customStyle.text.fontFamily ? this.CHART_CONT_FAMILY_MAP[customStyle.text.fontFamily] : 'Microsoft YaHei'
             this.titleClass.letterSpacing = (customStyle.text.letterSpace ? customStyle.text.letterSpace : '0') + 'px'
             this.titleClass.textShadow = customStyle.text.fontShadow ? '2px 2px 4px' : 'none'
           }

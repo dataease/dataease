@@ -50,16 +50,14 @@
         class="tabs-container"
         :class="[activeName !== 'eight' ? 'is-center' : 'pad-center']"
       >
-        <div class="min-w600">
+        <div :class="activeName === 'ten' ? 'max-w600' : 'min-w600'">
           <basic-setting
             v-if="activeName === 'zero'"
             :is-plugin-loaded="isPluginLoaded"
           />
           <email-setting v-if="activeName === 'first'" />
-          <map-setting
-            v-if="activeName === 'ten'"
-            ref="mapSetting"
-          />
+          <map-setting v-if="activeName === 'ten'" />
+
           <simple-mode v-if="activeName === 'six'" />
           <cluster-mode v-if="activeName === 'seven'" />
           <kettle-setting v-if="activeName === 'eight'" />
@@ -117,6 +115,14 @@ export default {
 
     .min-w600 {
       min-width: 600px;
+      height: 100%;
+      & > :nth-child(1) {
+        box-sizing: border-box;
+        padding-bottom: 20px;
+      }
+    }
+    .max-w600 {
+      width: 100%;
       height: 100%;
       & > :nth-child(1) {
         box-sizing: border-box;

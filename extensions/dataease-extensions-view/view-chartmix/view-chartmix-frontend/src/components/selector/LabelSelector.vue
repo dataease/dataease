@@ -16,6 +16,34 @@
             <el-color-picker v-model="labelForm.color" class="color-picker-style" :predefine="predefineColors"
                              @change="changeLabelAttr"/>
           </el-form-item>
+          <el-form-item
+            class="form-item"
+          >
+            <template #label>
+              {{ $t('chart.label_position') }}
+              <el-tooltip
+                effect="dark"
+                content="仅对柱状图生效"
+              >
+                <i
+                  class="el-icon-info"
+                  style="cursor: pointer;"
+                />
+              </el-tooltip>
+            </template>
+            <el-select
+              v-model="labelForm.position"
+              :placeholder="$t('chart.label_position')"
+              @change="changeLabelAttr"
+            >
+              <el-option
+                v-for="option in labelPositionV"
+                :key="option.value"
+                :label="option.name"
+                :value="option.value"
+              />
+            </el-select>
+          </el-form-item>
           <!--          <el-form-item :label="$t('chart.label')" class="form-item">
                       <el-select v-model="values" :placeholder="$t('commons.please_select')" multiple collapse-tags
                                  @change="changeFields">
@@ -125,7 +153,12 @@ export default {
       ],
       predefineColors: COLOR_PANEL,
       values: null,
-      busiType: 'labelAxis'
+      busiType: 'labelAxis',
+      labelPositionV: [
+        {name: this.$t('chart.text_pos_top'), value: 'top'},
+        {name: this.$t('chart.center'), value: 'middle'},
+        {name: this.$t('chart.text_pos_bottom'), value: 'bottom'}
+      ],
     }
   },
   watch: {

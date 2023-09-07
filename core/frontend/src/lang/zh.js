@@ -668,7 +668,7 @@ export default {
     input_roles: '请选择角色',
     select_users: '请选择用户',
     select_gender: '请选择性别',
-    user_name_pattern_error: 'ID只能包含字母数字以及._-并以字母开头！',
+    user_name_pattern_error: 'ID只能包含字母数字以及._-并以字母或数字开头！',
     special_characters_are_not_supported: '不支持特殊字符',
     mobile_number_format_is_incorrect: '手机号码格式不正确',
     email_format_is_incorrect: '邮箱格式不正确',
@@ -1464,6 +1464,7 @@ export default {
     dimension_text_style: '名称样式',
     dimension_letter_space: '名称字间距',
     font_family: '字体',
+    font_family_tip: '只有操作系统上已安装该字体才能生效',
     letter_space: '字间距',
     font_shadow: '字体阴影',
     chart_area: '面积图',
@@ -2406,6 +2407,7 @@ export default {
     themeDark: '深色',
     themeCustom: '自定义',
     openHomePage: '显示首页',
+    auto_identify_mobile_devices: '自动识别移动设备',
     openMarketPage: '显示模板市场',
     mobileBG: '移动端登录页背景',
     helpLink: '帮助文档链接',
@@ -2847,7 +2849,8 @@ export default {
     geo_json: '坐标文件',
     fileplaceholder: '请上传json格式坐标文件',
     delete_confirm: '及子节点都会被删除，确认执行？',
-    cur_node: '当前节点'
+    cur_node: '当前节点',
+    prohibit_prompts: '000、156分别是地球村和中华人民共和国区域代码前缀，禁止移除，请使用其他代码前缀！'
   },
   map_mapping: {
     map: '图形',

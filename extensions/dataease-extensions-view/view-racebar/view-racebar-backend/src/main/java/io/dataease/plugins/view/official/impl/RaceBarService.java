@@ -1,11 +1,10 @@
 package io.dataease.plugins.view.official.impl;
 
-import com.google.gson.Gson;
 import io.dataease.plugins.common.dto.StaticResource;
 import io.dataease.plugins.view.entity.PluginViewField;
 import io.dataease.plugins.view.entity.PluginViewParam;
 import io.dataease.plugins.view.entity.PluginViewType;
-import io.dataease.plugins.view.official.handler.DefaultViewStatHandler;
+import io.dataease.plugins.view.official.handler.RaceBarViewStatHandler;
 import io.dataease.plugins.view.service.ViewPluginService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -107,7 +106,7 @@ public class RaceBarService extends ViewPluginService {
         if (CollectionUtils.isEmpty(xAxis) || CollectionUtils.isEmpty(yAxis) || xAxis.size() < 2) {
             return null;
         }
-        String sql = new DefaultViewStatHandler().build(param, this);
+        String sql = new RaceBarViewStatHandler().build(param, this);
         return sql;
 
     }

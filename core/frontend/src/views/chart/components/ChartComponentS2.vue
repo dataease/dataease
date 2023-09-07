@@ -97,7 +97,7 @@ import ViewTrackBar from '@/components/canvas/components/editor/ViewTrackBar'
 import { getRemark, hexColorToRGBA } from '@/views/chart/chart/util'
 import { baseTableInfo, baseTableNormal, baseTablePivot } from '@/views/chart/chart/table/table-info'
 import TitleRemark from '@/views/chart/view/TitleRemark'
-import { DEFAULT_TITLE_STYLE, NOT_SUPPORT_PAGE_DATASET } from '@/views/chart/chart/chart'
+import { CHART_CONT_FAMILY_MAP, DEFAULT_TITLE_STYLE, NOT_SUPPORT_PAGE_DATASET } from '@/views/chart/chart/chart'
 import ChartTitleUpdate from './ChartTitleUpdate.vue'
 import { mapState } from 'vuex'
 import DePagination from '@/components/deCustomCm/pagination.js'
@@ -431,6 +431,7 @@ export default {
       }
       switch (trackAction) {
         case 'drill':
+          this.currentPage.page = 1
           this.$emit('onChartClick', this.pointParam)
           break
         case 'linkage':
@@ -459,7 +460,7 @@ export default {
             this.$refs.title.style.fontSize = customStyle.text.fontSize + 'px'
           }
 
-          this.title_class.fontFamily = customStyle.text.fontFamily ? customStyle.text.fontFamily : DEFAULT_TITLE_STYLE.fontFamily
+          this.title_class.fontFamily = customStyle.text.fontFamily ? CHART_CONT_FAMILY_MAP[customStyle.text.fontFamily] : DEFAULT_TITLE_STYLE.fontFamily
           this.title_class.letterSpacing = (customStyle.text.letterSpace ? customStyle.text.letterSpace : DEFAULT_TITLE_STYLE.letterSpace) + 'px'
           this.title_class.textShadow = customStyle.text.fontShadow ? '2px 2px 4px' : 'none'
           // 表格总计与分页颜色，取标题颜色

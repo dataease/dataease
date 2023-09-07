@@ -102,7 +102,7 @@ export default {
             ...style
           }
         } else if (this.canvasStyleData.panel.backgroundType === 'color') {
-          const colorRGBA = hexColorToRGBA(this.canvasStyleData.panel.color, this.canvasStyleData.panel.alpha||100)
+          const colorRGBA = hexColorToRGBA(this.canvasStyleData.panel.color, this.canvasStyleData.panel.alpha === undefined ? 100 : this.canvasStyleData.panel.alpha)
           style = {
             background: colorRGBA,
             ...style

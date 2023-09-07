@@ -116,7 +116,7 @@ public interface ParamConstants {
         DS_CHECK_INTERVAL_TYPE("basic.dsCheckIntervalType"),
         DEFAULT_LOGIN_TYPE("basic.loginType"),
         OPEN_HOME_PAGE("ui.openHomePage"),
-
+        AUTO_MOBILE("ui.autoMobile"),
         OPEN_MARKET_PAGE("ui.openMarketPage"),
         TEMPLATE_MARKET_ULR("basic.templateMarketUlr"),
 
