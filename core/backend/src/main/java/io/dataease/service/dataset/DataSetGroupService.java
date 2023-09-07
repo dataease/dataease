@@ -152,9 +152,6 @@ public class DataSetGroupService {
         if (StringUtils.isNotEmpty(datasetGroup.getId())) {
             criteria.andIdNotEqualTo(datasetGroup.getId());
         }
-        if (ObjectUtils.isNotEmpty(datasetGroup.getLevel())) {
-            criteria.andLevelEqualTo(datasetGroup.getLevel());
-        }
         List<DatasetGroup> list = datasetGroupMapper.selectByExample(datasetGroupExample);
         if (list.size() > 0) {
             throw new RuntimeException(Translator.get("I18N_DATASET_GROUP_EXIST"));
