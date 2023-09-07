@@ -26,6 +26,7 @@ import {
 import type { TabPaneName } from 'element-plus-secondary'
 import { timestampFormatDate } from './form/util'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
+import { XpackComponent } from '@/components/plugin'
 const interactiveStore = interactiveStoreWithOut()
 interface Field {
   fieldShortName: string
@@ -76,6 +77,11 @@ const resourceOptFinish = param => {
     resourceCreate(param.pid, param.name)
   }
 }
+
+const tablePaneList = ref([
+  { title: t('chart.data_preview'), name: 'dataPreview' },
+  { title: '结构预览', name: 'structPreview' }
+])
 
 const resourceCreate = (pid, name) => {
   // 新建基础信息
@@ -256,6 +262,16 @@ const handleNodeClick = (data: BusiTreeNode) => {
     dataPreview = []
     activeName.value = 'dataPreview'
     handleClick(activeName.value)
+    if (nodeInfo.weight >= 7) {
+      tablePaneList.value.push({
+        title: t('dataset.row_permissions'),
+        name: 'row'
+      })
+      tablePaneList.value.push({
+        title: t('dataset.column_permissions'),
+        name: 'column'
+      })
+    }
   })
 }
 
@@ -539,18 +555,12 @@ const filterNode = (value: string, data: BusiTreeNode) => {
           </div>
           <div class="tab-border">
             <el-tabs v-model="activeName" @tab-change="handleClick">
-              <el-tab-pane :label="t('chart.data_preview')" name="dataPreview"></el-tab-pane>
-              <el-tab-pane label="结构预览" name="structPreview"></el-tab-pane>
               <el-tab-pane
-                v-if="nodeInfo.weight >= 7"
-                :label="t('dataset.row_permissions')"
-                name="row"
-              ></el-tab-pane>
-              <el-tab-pane
-                v-if="nodeInfo.weight >= 7"
-                :label="t('dataset.column_permissions')"
-                name="column"
-              ></el-tab-pane>
+                v-for="item in tablePaneList"
+                :key="item.name"
+                :label="item.title"
+                :name="item.name"
+              />
             </el-tabs>
           </div>
         </div>
@@ -579,11 +589,16 @@ const filterNode = (value: string, data: BusiTreeNode) => {
           </template>
           <template v-if="['row', 'column'].includes(activeName)">
             <div class="table-row-column">
-              <row-permissions
+              <XpackComponent
+                :active-name="activeName"
                 :dataset-id="nodeInfo.id"
-                v-if="activeName === 'row'"
-              ></row-permissions>
-              <column-permissions :dataset-id="nodeInfo.id" v-else></column-permissions>
+                jsname="ZGF0YXNldC1yb3ctcGVybWlzc2lvbnM="
+              />
+              <XpackComponent
+                :active-name="activeName"
+                :dataset-id="nodeInfo.id"
+                jsname="ZGF0YXNldC1jb2x1bW4tcGVybWlzc2lvbnM="
+              />
             </div>
           </template>
         </div>
