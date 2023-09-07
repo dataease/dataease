@@ -17,6 +17,17 @@
             <el-color-picker v-model="tooltipForm.textStyle.color" class="color-picker-style"
                              :predefine="predefineColors" @change="changeTooltipAttr"/>
           </el-form-item>
+          <el-form-item
+            :label="$t('chart.background')"
+            class="form-item"
+          >
+            <el-color-picker
+              v-model="tooltipForm.backgroundColor"
+              class="color-picker-style"
+              :predefine="predefineColors"
+              @change="changeTooltipAttr"
+            />
+          </el-form-item>
           <!--          <el-form-item class="form-item">
                       <span slot="label">
                         <span class="span-box">
@@ -40,7 +51,7 @@
 </template>
 
 <script>
-import {COLOR_PANEL, DEFAULT_TOOLTIP} from '@/utils/map'
+import {COLOR_PANEL, DEFAULT_TOOLTIP} from '../../utils/map'
 
 export default {
   name: 'TooltipSelector',
@@ -124,6 +135,10 @@ export default {
 }
 
 .form-item >>> .el-form-item__label {
+  font-size: 12px;
+}
+
+.form-item ::v-deep .el-form-item__label {
   font-size: 12px;
 }
 

@@ -49,20 +49,14 @@ public class RaceBarViewStatHandler implements PluginViewStatHandler {
         }
 
 
-        List<PluginViewSQL> xFields = fieldSQLMap.getOrDefault("xAxis", new ArrayList<>()).stream().filter(singleField -> ObjectUtils.isNotEmpty(singleField.getField())).map(PluginSingleField::getField).collect(Collectors.toList());
+        List<PluginViewSQL> xFields = fieldSQLMap.get("xAxis").stream().filter(singleField -> ObjectUtils.isNotEmpty(singleField.getField())).map(singleField -> singleField.getField()).collect(Collectors.toList());
+        List<PluginViewSQL> xOrders = fieldSQLMap.get("xAxis").stream().filter(singleField -> ObjectUtils.isNotEmpty(singleField.getSort())).map(singleField -> singleField.getSort()).collect(Collectors.toList());
 
         // List<String> xWheres = fieldSQLMap.get("xAxis").stream().map(singleField -> singleField.getWhere()).collect(Collectors.toList());
 
         List<PluginViewSQL> yFields = fieldSQLMap.getOrDefault("yAxis", new ArrayList<>()).stream().filter(singleField -> ObjectUtils.isNotEmpty(singleField.getField())).map(PluginSingleField::getField).collect(Collectors.toList());
-        List<String> yWheres = fieldSQLMap.getOrDefault("yAxis", new ArrayList<>()).stream().filter(singleField -> ObjectUtils.isNotEmpty(singleField.getWhere())).map(PluginSingleField::getWhere).collect(Collectors.toList());
+        List<String> yWheres = fieldSQLMap.get("yAxis").stream().filter(singleField -> ObjectUtils.isNotEmpty(singleField.getWhere())).map(singleField -> singleField.getWhere()).collect(Collectors.toList());
 
-        /*List<PluginViewSQL> yExtFields = fieldSQLMap.getOrDefault("yAxisExt", new ArrayList<>()).stream().filter(singleField -> ObjectUtils.isNotEmpty(singleField.getField())).map(PluginSingleField::getField).collect(Collectors.toList());
-        List<PluginViewSQL> yExtOrders = fieldSQLMap.getOrDefault("yAxisExt", new ArrayList<>()).stream().filter(singleField -> ObjectUtils.isNotEmpty(singleField.getSort())).map(PluginSingleField::getSort).collect(Collectors.toList());
-        List<String> yExtWheres = fieldSQLMap.getOrDefault("yAxisExt", new ArrayList<>()).stream().filter(singleField -> ObjectUtils.isNotEmpty(singleField.getWhere())).map(PluginSingleField::getWhere).collect(Collectors.toList());
-
-        yFields.addAll(yExtFields);
-        yOrders.addAll(yExtOrders);
-        yWheres.addAll(yExtWheres);*/
 
         // 处理视图中字段过滤
         String customWheres = baseService.customWhere(dsType, pluginViewParam.getPluginChartFieldCustomFilters(), tableObj);
@@ -75,8 +69,14 @@ public class RaceBarViewStatHandler implements PluginViewStatHandler {
         if (customWheres != null) wheres.add(customWheres);
         if (panelWheres != null) wheres.add(panelWheres);
         if (permissionWhere != null) wheres.add(permissionWhere);
+
         List<PluginViewSQL> groups = new ArrayList<>();
         groups.addAll(xFields);
+
+
+        List<PluginViewSQL> orders = new ArrayList<>();
+        orders.addAll(xOrders);
+
 
         // 外层再次套sql
         List<String> aggWheres = new ArrayList<>();
@@ -99,7 +99,9 @@ public class RaceBarViewStatHandler implements PluginViewStatHandler {
                 .tableAlias(String.format(table_alias_prefix, 1))
                 .build();
         if (CollectionUtils.isNotEmpty(aggWheres)) st.add("filters", aggWheres);
+        if (CollectionUtils.isNotEmpty(orders)) st.add("orders", orders);
         if (ObjectUtils.isNotEmpty(tableSQL)) st.add("table", tableSQL);
+
         return baseService.sqlLimit(dsType, st.render(), pluginViewParam.getPluginViewLimit());
     }
 
