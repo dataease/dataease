@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, reactive, nextTick, computed, shallowRef, toRefs } from 'vue'
+import { ref, reactive, nextTick, computed, shallowRef, toRefs, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -223,6 +223,10 @@ const validate = () => {
       return true
     }
 
+    if ([1, 7].includes(+ele.displayType)) {
+      return false
+    }
+
     if (ele.optionValueSource === 1 && !ele.field.id) {
       ElMessage.error('请选择数据集的选项值字段')
       return true
@@ -403,16 +407,26 @@ const getOptions = (id, component) => {
   })
 }
 
-const showWarning = computed(() => {
-  const { optionValueSource, checkedFieldsMap, checkedFields, field, valueSource } =
+const showError = computed(() => {
+  if (!curComponent.value) return false
+  const { optionValueSource, checkedFieldsMap, checkedFields, field, valueSource, displayType } =
     curComponent.value
   const arr = checkedFields.filter(ele => !!checkedFieldsMap[ele])
-  console.log(checkedFields, arr)
   if (!checkedFields.length || !arr.length) {
     return true
   }
+  if ([1, 7].includes(+displayType)) {
+    return false
+  }
   return (optionValueSource === 1 && !field.id) || (optionValueSource === 2 && !valueSource.length)
 })
+
+watch(
+  () => showError.value,
+  val => {
+    curComponent.value.showError = val
+  }
+)
 
 const setRenameInput = val => {
   renameInput.value.push(val)
@@ -508,10 +522,7 @@ defineExpose({
                 <Icon name="icon_drag_outlined"></Icon>
               </el-icon>
               <div class="label flex-align-center icon" :title="element.name">
-                <el-icon
-                  v-if="showWarning && element.id === curComponent.id"
-                  style="font-size: 16px; color: #f54a45"
-                >
+                <el-icon v-if="element.showError" style="font-size: 16px; color: #f54a45">
                   <icon name="icon_warning_filled"></icon>
                 </el-icon>
                 {{ element.name }}
