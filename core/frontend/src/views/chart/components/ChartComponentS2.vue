@@ -431,6 +431,7 @@ export default {
       }
       switch (trackAction) {
         case 'drill':
+          this.currentPage.page = 1
           this.$emit('onChartClick', this.pointParam)
           break
         case 'linkage':
