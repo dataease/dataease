@@ -2,12 +2,20 @@
   <de-container
     v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
     class="de-earth"
-    style="height: calc(100vh - 150px);"
+    style="height: calc(100vh - 200px);"
   >
-
+    <div class="de-map-tips">
+      <el-alert
+        :title="$t('map_setting.prohibit_prompts')"
+        type="warning"
+        description=""
+        :closable="false"
+        show-icon
+      />
+    </div>
     <de-aside-container
       type="mapset"
-      style="height: 100%;"
+      class="map-setting-aside"
     >
       <map-setting-left
         ref="map_setting_tree"
@@ -18,7 +26,9 @@
       />
     </de-aside-container>
 
-    <de-main-container style="height: 100%;">
+    <de-main-container
+      class="map-setting-main"
+    >
       <map-setting-right
         ref="map_setting_form"
         :tree-data="treeData"
@@ -83,5 +93,17 @@ export default {
   padding: 24px;
   width: 100%;
   overflow: auto;
+  .de-map-tips {
+    position: absolute;
+    width: calc(100% - 135px);
+  }
+  .map-setting-aside {
+    top: 50px;
+    height: calc(100% - 40px) !important;
+  }
+  .map-setting-main {
+    margin-top: 50px;
+    height: calc(100% - 50px);
+  }
 }
 </style>

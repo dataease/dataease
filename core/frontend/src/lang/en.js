@@ -2855,7 +2855,8 @@ export default {
     geo_json: 'Geo Json',
     fileplaceholder: 'Please upload the JSON format coordinate file',
     delete_confirm: 'And child nodes will be deleted. Confirm to execute ?',
-    cur_node: 'Current node'
+    cur_node: 'Current node',
+    prohibit_prompts: '000 and 156 are the global village and China area code prefixes respectively. Removal is prohibited. Please use other code prefixes!'
   },
   map_mapping: {
     map: 'Map',

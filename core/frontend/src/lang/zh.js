@@ -2849,7 +2849,8 @@ export default {
     geo_json: '坐标文件',
     fileplaceholder: '请上传json格式坐标文件',
     delete_confirm: '及子节点都会被删除，确认执行？',
-    cur_node: '当前节点'
+    cur_node: '当前节点',
+    prohibit_prompts: '000、156分别是地球村和中华人民共和国区域代码前缀，禁止移除，请使用其他代码前缀！'
   },
   map_mapping: {
     map: '图形',
