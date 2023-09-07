@@ -1,4 +1,4 @@
-import { TableSheet, S2Event, PivotSheet, DataCell, EXTRA_FIELD, TOTAL_VALUE } from '@antv/s2'
+import { TableSheet, S2Event, PivotSheet, DataCell, EXTRA_FIELD, TOTAL_VALUE, BaseEvent } from '@antv/s2'
 import { getCustomTheme, getSize } from '@/views/chart/chart/common/common_table'
 import { DEFAULT_COLOR_CASE, DEFAULT_TOTAL } from '@/views/chart/chart/chart'
 import { formatterItem, valueFormatter } from '@/views/chart/chart/formatter'
@@ -7,7 +7,7 @@ export function baseTableInfo(s2, container, chart, action, tableData, pageInfo)
   const containerDom = document.getElementById(container)
 
   // fields
-  const fields = chart.data.fields
+  let fields = chart.data.fields
   if (!fields || fields.length === 0) {
     if (s2) {
       s2.destroy()
@@ -17,8 +17,17 @@ export function baseTableInfo(s2, container, chart, action, tableData, pageInfo)
 
   const columns = []
   const meta = []
-
-  // add drill list
+  // 记录下钻起始字段的index
+  let xAxis = []
+  try {
+    xAxis = JSON.parse(chart.xaxis)
+  } catch (err) {
+    xAxis = JSON.parse(JSON.stringify(chart.xaxis))
+  }
+  const nameMap = xAxis.reduce((pre, next) => {
+    pre[next.dataeaseName] = next
+    return pre
+  }, {})
   if (chart.drill) {
     let drillFields = []
     try {
@@ -26,107 +35,44 @@ export function baseTableInfo(s2, container, chart, action, tableData, pageInfo)
     } catch (err) {
       drillFields = JSON.parse(JSON.stringify(chart.drillFields))
     }
-
-    const drillField = drillFields[chart.drillFilters.length]
-
-    const drillFilters = JSON.parse(JSON.stringify(chart.drillFilters))
-    const drillExp = drillFilters[drillFilters.length - 1].datasetTableField
-
-    // 记录下钻起始字段的index
-    let xAxis = []
-    try {
-      xAxis = JSON.parse(chart.xaxis)
-    } catch (err) {
-      xAxis = JSON.parse(JSON.stringify(chart.xaxis))
-    }
-    let index = 0
-    for (let i = 0; i < xAxis.length; i++) {
-      if (xAxis[i].id === drillFilters[0].fieldId) {
-        index = i
-        break
-      }
-    }
-
-    // 移除所有下钻字段
-    const removeField = []
-    for (let i = 0; i < chart.drillFilters.length; i++) {
-      const ele = chart.drillFilters[i].datasetTableField
-      removeField.push(ele.dataeaseName)
-    }
-
-    // build field
-    fields.forEach(ele => {
-      if (removeField.indexOf(ele.dataeaseName) < 0) {
-        // 用下钻字段替换当前字段
-        if (drillExp.dataeaseName === ele.dataeaseName) {
-          columns.push(drillField.dataeaseName)
-          meta.push({
-            field: drillField.dataeaseName,
-            name: drillField.name
-          })
-        } else {
-          const f = getCurrentField(chart.xaxis, ele)
-          columns.push(ele.dataeaseName)
-          meta.push({
-            field: ele.dataeaseName,
-            name: ele.name,
-            formatter: function(value) {
-              if (!f) {
-                return value
-              }
-              if (value === null || value === undefined) {
-                return value
-              }
-              if (f.groupType === 'd') {
-                return value
-              } else {
-                if (f.formatterCfg) {
-                  const v = valueFormatter(value, f.formatterCfg)
-                  return v.includes('NaN') ? value : v
-                } else {
-                  const v = valueFormatter(value, formatterItem)
-                  return v.includes('NaN') ? value : v
-                }
-              }
-            }
-          })
-        }
-      }
-    })
-
-    // 修正下钻字段的index，获取下钻位置元素添加到index位置，并删除
-    const ele = columns[columns.length - 1]
-    columns.splice(index, 0, ele)
-    columns.splice(columns.length - 1, 1)
-  } else {
-    fields.forEach(ele => {
-      const f = getCurrentField(chart.xaxis, ele)
-      columns.push(ele.dataeaseName)
-      meta.push({
-        field: ele.dataeaseName,
-        name: ele.name,
-        formatter: function(value) {
-          if (!f) {
-            return value
-          }
-          if (value === null || value === undefined) {
-            return value
-          }
-          if (f.groupType === 'd') {
-            return value
-          } else {
-            if (f.formatterCfg) {
-              const v = valueFormatter(value, f.formatterCfg)
-              return v.includes('NaN') ? value : v
-            } else {
-              const v = valueFormatter(value, formatterItem)
-              return v.includes('NaN') ? value : v
-            }
-          }
-        }
-      })
-    })
+    // 总下钻过滤字段
+    const drillFilters = JSON.parse(JSON.stringify(chart.drillFilters)).map(i => i.fieldId)
+    // 当前下钻字段
+    const curDrillField = drillFields[chart.drillFilters.length]
+    drillFilters.push(curDrillField.id)
+    // 下钻入口字段的下标
+    const drillEnterFieldIndex = xAxis.findIndex(item => item.id === drillFilters[0])
+    // 移除所有下钻字段，调整当前下钻字段到下钻入口位置
+    fields = fields.filter(item => !drillFilters.includes(item.id))
+    fields.splice(drillEnterFieldIndex, 0, curDrillField)
   }
+  fields.forEach(ele => {
+    const f = nameMap[ele.dataeaseName]
+    columns.push(ele.dataeaseName)
+    meta.push({
+      field: ele.dataeaseName,
+      name: ele.name,
+      formatter: function(value) {
+        if (!f) {
+          return value
+        }
+        if (value === null || value === undefined) {
+          return value
+        }
+        if (f.groupType === 'd') {
+          return value
+        } else {
+          if (f.formatterCfg) {
+            const v = valueFormatter(value, f.formatterCfg)
+            return v.includes('NaN') ? value : v
+          } else {
+            const v = valueFormatter(value, formatterItem)
+            return v.includes('NaN') ? value : v
+          }
+        }
+      }
+    })
+  })
   // 空值处理
   const newData = handleTableEmptyStrategy(tableData, chart)
   // data config
@@ -174,6 +120,11 @@ export function baseTableInfo(s2, container, chart, action, tableData, pageInfo)
 
   // click
   s2.on(S2Event.DATA_CELL_CLICK, action)
+  // hover
+  const size = customAttr.size
+  if (size.tableColTooltip?.show) {
+    s2.on(S2Event.COL_CELL_HOVER, event => showTooltip(s2, event))
+  }
 
   // theme
   const customTheme = getCustomTheme(chart)
@@ -342,7 +293,11 @@ export function baseTableNormal(s2, container, chart, action, tableData) {
 
   // click
   s2.on(S2Event.DATA_CELL_CLICK, action)
-
+  // hover
+  const size = customAttr.size
+  if (size.tableColTooltip?.show) {
+    s2.on(S2Event.COL_CELL_HOVER, event => showTooltip(s2, event))
+  }
   // theme
   const customTheme = getCustomTheme(chart)
   s2.setThemeCfg({ theme: customTheme })
@@ -455,8 +410,8 @@ export function baseTablePivot(s2, container, chart, action, headerAction, table
   // total config
   let totalCfg = {}
   const chartObj = JSON.parse(JSON.stringify(chart))
+  let customAttr
   if (chartObj.customAttr) {
-    let customAttr = null
     if (Object.prototype.toString.call(chartObj.customAttr) === '[object Object]') {
       customAttr = JSON.parse(JSON.stringify(chartObj.customAttr))
     } else {
@@ -528,7 +483,14 @@ export function baseTablePivot(s2, container, chart, action, headerAction, table
   s2.on(S2Event.DATA_CELL_CLICK, action)
   s2.on(S2Event.ROW_CELL_CLICK, headerAction)
   s2.on(S2Event.COL_CELL_CLICK, headerAction)
-
+  // hover
+  const size = customAttr?.size
+  if (size?.tableRowTooltip?.show) {
+    s2.on(S2Event.ROW_CELL_HOVER, event => showTooltip(s2, event))
+  }
+  if (size?.tableColTooltip?.show) {
+    s2.on(S2Event.COL_CELL_HOVER, event => showTooltip(s2, event))
+  }
   // theme
   const customTheme = getCustomTheme(chart)
   s2.setThemeCfg({ theme: customTheme })
@@ -739,4 +701,18 @@ function mappingColor(value, defaultColor, field, type) {
     }
   }
   return color
+}
+
+function showTooltip(s2Instance, event) {
+  const cell = s2Instance.getCell(event.target)
+  const meta = cell.getMeta()
+  const content = meta.value
+
+  s2Instance.showTooltip({
+    position: {
+      x: event.clientX,
+      y: event.clientY
+    },
+    content
+  })
 }

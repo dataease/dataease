@@ -1488,6 +1488,8 @@ export default {
     label_content: 'Label Content',
     percent: 'Percent',
     table_index_desc: 'Index Header Name',
+    table_row_tooltip: 'Row Tooltip',
+    table_col_tooltip: 'Column Tooltip',
     total_sort: 'Total Sort',
     total_sort_none: 'None',
     total_sort_asc: 'ASC',

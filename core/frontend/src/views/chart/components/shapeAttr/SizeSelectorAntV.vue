@@ -384,6 +384,28 @@
             @blur="changeBarSizeCase('indexLabel')"
           />
         </el-form-item>
+        <el-form-item
+          v-show="showProperty('tableRowTooltip')"
+          label-width="100px"
+          :label="$t('chart.table_row_tooltip')"
+          class="form-item"
+        >
+          <el-checkbox
+            v-model="sizeForm.tableRowTooltip.show"
+            @change="changeBarSizeCase('tableRowTooltip')"
+          />
+        </el-form-item>
+        <el-form-item
+          v-show="showProperty('tableColTooltip')"
+          label-width="100px"
+          :label="$t('chart.table_col_tooltip')"
+          class="form-item"
+        >
+          <el-checkbox
+            v-model="sizeForm.tableColTooltip.show"
+            @change="changeBarSizeCase('tableColTooltip')"
+          />
+        </el-form-item>
 
         <!--chart-mix-start-->
         <span v-show="showProperty('mix')">
@@ -1565,6 +1587,8 @@ export default {
 
           this.sizeForm.tableHeaderAlign = this.sizeForm.tableHeaderAlign ? this.sizeForm.tableHeaderAlign : DEFAULT_SIZE.tableHeaderAlign
           this.sizeForm.tableItemAlign = this.sizeForm.tableItemAlign ? this.sizeForm.tableItemAlign : DEFAULT_SIZE.tableItemAlign
+          this.sizeForm.tableRowTooltip = this.sizeForm.tableRowTooltip ?? DEFAULT_SIZE.tableRowTooltip
+          this.sizeForm.tableColTooltip = this.sizeForm.tableColTooltip ?? DEFAULT_SIZE.tableColTooltip
 
           this.sizeForm.showIndex = this.sizeForm.showIndex ? this.sizeForm.showIndex : DEFAULT_SIZE.showIndex
           if (this.sizeForm.indexLabel === null || this.sizeForm.indexLabel === undefined) {
