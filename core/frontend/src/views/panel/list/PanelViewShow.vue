@@ -932,6 +932,10 @@ export default {
     top: inherit !important;
     left: inherit !important;
   }
+  .el-tree-select-popper {
+    left: 0 !important;
+    top: inherit !important;
+  }
 }
 </style>
 
