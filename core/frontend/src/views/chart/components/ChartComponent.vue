@@ -494,12 +494,6 @@ export default {
     trackClick(trackAction) {
       const param = this.pointParam
       if (!param || !param.data || !param.data.dimensionList) {
-        if (this.chart.type === 'map') {
-          const zoom = this.myChart.getOption().geo[0].zoom
-          if (zoom <= 1) {
-            this.$warning(this.$t('panel.no_drill_field'))
-          }
-        }
         return
       }
       const quotaList = this.pointParam.data.quotaList
