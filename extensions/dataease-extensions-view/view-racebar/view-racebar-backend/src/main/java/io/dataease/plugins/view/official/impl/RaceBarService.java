@@ -40,9 +40,9 @@ public class RaceBarService extends ViewPluginService {
     private static final Map<String, String[]> VIEW_STYLE_PROPERTY_INNER = new HashMap<>();
 
     static {
-        VIEW_STYLE_PROPERTY_INNER.put("color-selector", new String[]{"value", "alpha"});
-        VIEW_STYLE_PROPERTY_INNER.put("label-selector", new String[]{"show", "fontSize", "color", "position", "formatter"});
-        VIEW_STYLE_PROPERTY_INNER.put("tooltip-selector", new String[]{"show", "textStyle", "formatter"});
+        VIEW_STYLE_PROPERTY_INNER.put("color-selector", new String[]{"value"});
+        VIEW_STYLE_PROPERTY_INNER.put("label-selector", new String[]{"show", "fontSize", "color", "position"});
+        VIEW_STYLE_PROPERTY_INNER.put("tooltip-selector", new String[]{"show", "textStyle", });
         VIEW_STYLE_PROPERTY_INNER.put("title-selector", new String[]{"show", "title", "fontSize", "color", "hPosition", "vPosition", "isItalic", "isBolder"});
     }
 
