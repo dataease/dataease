@@ -669,7 +669,7 @@ export default {
     input_phone: 'Please enter the phone number',
     input_roles: 'Please select role',
     select_users: 'Please select user',
-    user_name_pattern_error: 'IDs can only contain alphanumeric and ._- and start with a letter!',
+    user_name_pattern_error: 'IDs can only contain alphanumeric and ._- and start with a letter or number!',
     special_characters_are_not_supported: 'Special characters are not supported',
     mobile_number_format_is_incorrect: 'Incorrect format of mobile phone number',
     email_format_is_incorrect: 'The mailbox format is incorrect',
