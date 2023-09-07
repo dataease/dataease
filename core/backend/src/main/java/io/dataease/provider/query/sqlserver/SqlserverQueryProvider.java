@@ -1149,7 +1149,7 @@ public class SqlserverQueryProvider extends QueryProvider {
             String whereValue = "";
 
             if (StringUtils.containsIgnoreCase(request.getOperator(), "in")) {
-                if(request.getDatasetTableField().getType().equalsIgnoreCase("NVARCHAR")) {
+                if(request.getDatasetTableField() != null && request.getDatasetTableField().getType().equalsIgnoreCase("NVARCHAR")) {
                     whereValue = "(" + value.stream().map(str -> {
                         return "N" + "'" + str + "'";
                     }).collect(Collectors.joining(",")) + ")";
@@ -1171,7 +1171,7 @@ public class SqlserverQueryProvider extends QueryProvider {
                 }
             } else {
 
-                if(request.getDatasetTableField().getType().equalsIgnoreCase("NVARCHAR")){
+                if(request.getDatasetTableField() != null && request.getDatasetTableField().getType().equalsIgnoreCase("NVARCHAR")){
                     whereValue = String.format(SqlServerSQLConstants.WHERE_VALUE_VALUE_CH, value.get(0));
                 }else {
                     whereValue = String.format(SqlServerSQLConstants.WHERE_VALUE_VALUE, value.get(0));
