@@ -2849,7 +2849,8 @@ export default {
     geo_json: '坐標文件',
     fileplaceholder: '請上傳json格式坐標文件',
     delete_confirm: '及子節點都會被刪除，確認執行？',
-    cur_node: '當前節點'
+    cur_node: '當前節點',
+    prohibit_prompts: '000、156分別是地球村和中華人民共和國區域代碼前綴，禁止移除，請使用其他代碼前綴！'
   },
   map_mapping: {
     map: '圖形',
