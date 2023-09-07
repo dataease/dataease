@@ -31,11 +31,9 @@ import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
 
 import javax.annotation.Resource;
-import java.text.Format;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -1413,6 +1411,11 @@ public class CKQueryProvider extends QueryProvider {
         } else {
             return sql;
         }
+    }
+
+    @Override
+    public String sqlForPreview(String table, Datasource ds) {
+        return "SELECT * FROM " +  String.format(CKConstants.KEYWORD_TABLE, table);
     }
 
     public List<Dateformat> dateformat() {
