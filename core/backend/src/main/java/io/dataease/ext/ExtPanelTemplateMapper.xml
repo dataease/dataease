@@ -9,10 +9,10 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-    panel_template.id, panel_template.`name`, panel_template.pid, panel_template.`level`, panel_template.node_type, panel_template.create_by, panel_template.create_time, panel_template.template_type
+    panel_template.id, panel_template.`name`, panel_template.pid, panel_template.`level`, panel_template.node_type, panel_template.create_by, panel_template.create_time, panel_template.template_type, panel_template.snapshot
   </sql>
     <sql id="Blob_Column_List">
-    panel_template.snapshot, panel_template.template_style, panel_template.template_data, panel_template.dynamic_data
+     panel_template.template_style, panel_template.template_data, panel_template.dynamic_data
   </sql>
 
     <select id="panelTemplate" resultMap="BaseResultMapDTO">
