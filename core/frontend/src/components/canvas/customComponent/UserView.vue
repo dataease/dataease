@@ -67,6 +67,7 @@
       :scale="scale"
       :theme-style="element.commonBackground"
       :active="active"
+      :in-screen="inScreen"
       @onChartClick="chartClick"
       @onJumpClick="jumpClick"
     />
