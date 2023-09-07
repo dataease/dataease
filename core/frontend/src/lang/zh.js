@@ -668,7 +668,7 @@ export default {
     input_roles: '请选择角色',
     select_users: '请选择用户',
     select_gender: '请选择性别',
-    user_name_pattern_error: 'ID只能包含字母数字以及._-并以字母开头！',
+    user_name_pattern_error: 'ID只能包含字母数字以及._-并以字母或数字开头！',
     special_characters_are_not_supported: '不支持特殊字符',
     mobile_number_format_is_incorrect: '手机号码格式不正确',
     email_format_is_incorrect: '邮箱格式不正确',
