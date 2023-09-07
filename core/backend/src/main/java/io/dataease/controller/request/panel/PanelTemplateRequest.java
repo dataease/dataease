@@ -14,7 +14,7 @@ public class PanelTemplateRequest extends PanelTemplateWithBLOBs {
     @ApiModelProperty("排序")
     private String sort;
     @ApiModelProperty("详细信息")
-    private String withBlobs="Y";
+    private String withBlobs="N";
     @ApiModelProperty("操作类型")
     private String optType;
     @ApiModelProperty("静态文件")

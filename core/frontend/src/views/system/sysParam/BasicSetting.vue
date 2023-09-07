@@ -366,6 +366,7 @@ export default {
           this.originLoginType = this.formInline.loginType
         }
         this.formInline.open = (this.formInline.open && this.formInline.open === 'true')
+        this.formInline.lockedEmail = this.formInline?.lockedEmail === 'true'
         this.formInline.scanCreateUser = (this.formInline.scanCreateUser && this.formInline.scanCreateUser === 'true')
 
         this.$nextTick(() => {
@@ -454,6 +455,12 @@ export default {
           paramValue: this.formInline.open,
           type: 'text',
           sort: 3
+        },
+        {
+          paramKey: 'loginlimit.lockedEmail',
+          paramValue: this.formInline.lockedEmail,
+          type: 'text',
+          sort: 4
         },
         {
           paramKey: 'loginlimit.scanCreateUser',

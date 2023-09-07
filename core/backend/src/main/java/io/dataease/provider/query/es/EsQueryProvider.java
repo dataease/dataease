@@ -1174,6 +1174,8 @@ public class EsQueryProvider extends QueryProvider {
                 return "yyyy" + split + "MM" + split + "dd";
             case "H_m_s":
                 return "HH:mm:ss";
+            case "y_M_d_H":
+                return "yyyy" + split + "MM" + split + "dd" + " HH";
             case "y_M_d_H_m":
                 return "yyyy" + split + "MM" + split + "dd" + " HH:mm";
             case "y_M_d_H_m_s":
@@ -1329,7 +1331,7 @@ public class EsQueryProvider extends QueryProvider {
     }
 
     public String getResultCount(boolean isTable, String sql, List<ChartViewFieldDTO> xAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view) {
-      return null;
+        return null;
     }
 
     @Override

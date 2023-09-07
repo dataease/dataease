@@ -2,25 +2,27 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="io.dataease.ext.ExtSysUserMapper">
 
-    <resultMap id="sysUserDept" type="io.dataease.controller.sys.response.SysUserDept" >
+    <resultMap id="sysUserDept" type="io.dataease.controller.sys.response.SysUserDept">
         <id column="dept_id" property="deptId"></id>
         <result column="pid" property="pid"></result>
         <result column="dept_name" property="deptName"></result>
     </resultMap>
 
-    <resultMap id="sysUserRole" type="io.dataease.controller.sys.response.SysUserRole" >
+    <resultMap id="sysUserRole" type="io.dataease.controller.sys.response.SysUserRole">
         <result column="role_id" property="roleId"></result>
         <result column="role_name" property="roleName"></result>
     </resultMap>
 
-    <resultMap id="BaseResultMap" type="io.dataease.controller.sys.response.SysUserGridResponse" extends="io.dataease.plugins.common.base.mapper.SysUserMapper.BaseResultMap">
+    <resultMap id="BaseResultMap" type="io.dataease.controller.sys.response.SysUserGridResponse"
+               extends="io.dataease.plugins.common.base.mapper.SysUserMapper.BaseResultMap">
         <result property="id" column="id"></result>
         <association property="dept" javaType="io.dataease.controller.sys.response.SysUserDept">
             <id column="dept_id" property="deptId"/>
-            <result column="pid" property="pid" />
-            <result column="dept_name" property="deptName" />
+            <result column="pid" property="pid"/>
+            <result column="dept_name" property="deptName"/>
         </association>
-        <association property="dept" column="dept_id" javaType="io.dataease.controller.sys.response.SysUserDept" resultMap="sysUserDept"/>
+        <association property="dept" column="dept_id" javaType="io.dataease.controller.sys.response.SysUserDept"
+                     resultMap="sysUserDept"/>
 
         <collection property="roles"
                     javaType="java.util.ArrayList"
@@ -31,8 +33,6 @@
     </resultMap>
 
 
-
-
     <select id="query" parameterType="io.dataease.ext.query.GridExample" resultMap="BaseResultMap">
         SELECT DISTINCT
         u.*,
@@ -41,20 +41,20 @@
         d.NAME AS dept_name
         FROM
         (
-            select * from sys_user
-            <if test="extendCondition != null">
-                where
-                    nick_name like concat('%', #{extendCondition} , '%')
-                    or
-                    email like concat('%', #{extendCondition} , '%')
-            </if>
+        select * from sys_user
+        <if test="extendCondition != null">
+            where
+            nick_name like concat('%', #{extendCondition} , '%')
+            or
+            email like concat('%', #{extendCondition} , '%')
+        </if>
         ) u
         LEFT JOIN sys_dept d ON d.dept_id = u.dept_id
         LEFT JOIN sys_users_roles sur ON sur.user_id = u.user_id
         LEFT JOIN sys_role r ON r.role_id = sur.role_id
 
         <if test="_parameter != null">
-            <include refid="io.dataease.ext.query.GridSql.gridCondition" />
+            <include refid="io.dataease.ext.query.GridSql.gridCondition"/>
         </if>
         <if test="orderByClause != null">
             order by ${orderByClause}
@@ -67,11 +67,19 @@
     <select id="queryRole" resultMap="sysUserRole">
         select r.role_id, r.name as role_name
         from sys_users_roles sur
-        left join sys_role r on r.role_id = sur.role_id
+                 left join sys_role r on r.role_id = sur.role_id
         where sur.user_id = #{user_id}
     </select>
 
     <select id="ldapUserNames" resultType="java.lang.String" parameterType="java.lang.Integer">
-        select username from sys_user u where u.from = #{from}
+        select username
+        from sys_user u
+        where u.from = #{from}
+    </select>
+
+    <select id="queryAdminEmail" resultType="String">
+        select email
+        from sys_user
+        where user_id = 1
     </select>
 </mapper>
