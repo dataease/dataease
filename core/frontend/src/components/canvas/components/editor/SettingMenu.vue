@@ -5,7 +5,7 @@
         trigger="click"
         @mouseup="handleMouseUp"
       >
-        <slot name="icon"/>
+        <slot name="icon" />
         <el-dropdown-menu v-if="curComponent">
           <el-dropdown-item
             v-if="editFilter.includes(curComponent.type)"
@@ -17,8 +17,7 @@
             v-if="curComponent.type != 'custom-button'"
             icon="el-icon-document-copy"
             @click.native="copy"
-          ><span>{{ $t('panel.copy') }}&nbsp(<span v-show="systemOS==='Mac'"><i class="icon iconfont icon-command"
-          />+ D</span> <span v-show="systemOS!=='Mac'">Control + D</span>)</span>
+          ><span>{{ $t('panel.copy') }}&nbsp;(<span v-show="systemOS==='Mac'"><i class="icon iconfont icon-command" />+ D</span> <span v-show="systemOS!=='Mac'">Control + D</span>)</span>
           </el-dropdown-item>
           <el-dropdown-item
             icon="el-icon-delete"
@@ -34,7 +33,7 @@
           <el-dropdown-item v-if="!curComponent.auxiliaryMatrix">
             <el-dropdown placement="right-start">
               <span class="el-icon-copy-document">
-                {{ $t('panel.level') }} <i class="el-icon-arrow-right el-icon--right"/>
+                {{ $t('panel.level') }} <i class="el-icon-arrow-right el-icon--right" />
               </span>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item
@@ -93,13 +92,13 @@
           <el-dropdown-item
             v-if="curComponent.type != 'custom-button'"
             @click.native="hyperlinksSet"
-          ><i class="icon iconfont icon-chaolianjie1"/>{{ $t('panel.hyperlinks') }}
+          ><i class="icon iconfont icon-chaolianjie1" />{{ $t('panel.hyperlinks') }}
           </el-dropdown-item>
           <el-dropdown-item
             v-if="curComponent.type !== 'view' && !curComponent.auxiliaryMatrix"
             @click.native="positionAdjust"
           >
-            <i class="el-icon-map-location"/>
+            <i class="el-icon-map-location" />
             {{ $t('panel.position_adjust') }}
           </el-dropdown-item>
         </el-dropdown-menu>
@@ -180,7 +179,7 @@ import TabCarouselDialog from '@/components/canvas/components/editor/TabCarousel
 import CustomTabsSort from '@/components/widget/deWidget/CustomTabsSort'
 
 export default {
-  components: { CustomTabsSort, HyperlinksDialog,TabCarouselDialog },
+  components: { CustomTabsSort, HyperlinksDialog, TabCarouselDialog },
   data() {
     return {
       tabCarouselVisible: false,
@@ -193,7 +192,8 @@ export default {
         'text',
         'label',
         'flow-map',
-        'bidirectional-bar'
+        'bidirectional-bar',
+        'race-bar'
       ],
       linkageExcludeViewType: [
         'richTextView',
@@ -202,7 +202,8 @@ export default {
         'text',
         'label',
         'flow-map',
-        'bidirectional-bar'
+        'bidirectional-bar',
+        'race-bar'
       ],
       copyData: null,
       hyperlinksSetVisible: false,
