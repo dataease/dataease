@@ -282,6 +282,7 @@ onBeforeMount(() => {
     multiple
     show-checked
     clearable
+    radio
     :style="selectStyle"
     collapse-tags
     :options="options"
@@ -296,6 +297,7 @@ onBeforeMount(() => {
     clearable
     :style="selectStyle"
     filterable
+    radio
     @visible-change="visibleChange"
     :popper-class="
       visible ? 'load-select filter-select-popper_class' : 'filter-select-popper_class'
