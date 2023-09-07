@@ -1181,6 +1181,8 @@ public class PgQueryProvider extends QueryProvider {
                 return "YYYY" + split + "MM" + split + "DD";
             case "H_m_s":
                 return "HH24:MI:SS";
+            case "y_M_d_H":
+                return "YYYY" + split + "MM" + split + "DD" + " HH24";
             case "y_M_d_H_m":
                 return "YYYY" + split + "MM" + split + "DD" + " HH24:MI";
             case "y_M_d_H_m_s":

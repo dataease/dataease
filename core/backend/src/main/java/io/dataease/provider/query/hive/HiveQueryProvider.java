@@ -1147,6 +1147,8 @@ public class HiveQueryProvider extends QueryProvider {
                 return "yyyy" + split + "MM" + split + "dd";
             case "H_m_s":
                 return "HH:mm:ss";
+            case "y_M_d_H":
+                return "yyyy" + split + "MM" + split + "dd" + " HH";
             case "y_M_d_H_m":
                 return "yyyy" + split + "MM" + split + "dd" + " HH:mm";
             case "y_M_d_H_m_s":

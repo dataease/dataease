@@ -1190,6 +1190,7 @@ export default {
     y_W: '年周',
     y_M_d: '年月日',
     H_m_s: '时分秒',
+    y_M_d_H: '年月日时',
     y_M_d_H_m: '年月日时分',
     y_M_d_H_m_s: '年月日时分秒',
     date_sub: 'yyyy-MM-dd',
