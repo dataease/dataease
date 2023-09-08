@@ -604,12 +604,21 @@ public class ChartViewService {
         List<ChartViewFieldDTO> viewFields = gson.fromJson(view.getViewFields(), tokenType);
         final Map<String, List<ChartViewFieldDTO>> extFieldsMap = new LinkedHashMap<>();
         if (CollectionUtils.isNotEmpty(viewFields)) {
-            viewFields.forEach(field -> {
+            String[] busiFlagArray = new String[] {"daxis", "locationXaxis", "locationYaxis"};
+            Map<String, Boolean> flagMap = new HashMap<>();
+            for (String s : busiFlagArray) {
+                flagMap.put(s, false);
+            }
+            for (ChartViewFieldDTO field : viewFields) {
+                flagMap.put(field.getBusiType(), true);
                 String busiType = field.getBusiType();
                 List<ChartViewFieldDTO> list = extFieldsMap.containsKey(busiType) ? extFieldsMap.get(busiType) : new ArrayList<>();
                 list.add(field);
                 extFieldsMap.put(field.getBusiType(), list);
-            });
+            }
+            if (flagMap.get("daxis") && (!flagMap.get("locationXaxis") || !flagMap.get("locationYaxis"))) {
+                viewFields = viewFields.stream().filter(field -> !StringUtils.equals("daxis", field.getBusiType())).collect(Collectors.toList());
+            }
         }
 
         List<ChartViewFieldDTO> xAxisBase = gson.fromJson(view.getXAxis(), tokenType);
