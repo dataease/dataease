@@ -33,20 +33,20 @@
 
 <script>
 import {Mix} from '@antv/g2plot'
-import {uuid, hexColorToRGBA} from '@/utils/chartmix'
-import ViewTrackBar from '@/components/views/ViewTrackBar'
-import {getRemark} from "@/components/views/utils";
+import {uuid, hexColorToRGBA} from '../../../utils/chartmix'
+import ViewTrackBar from '../../../components/views/ViewTrackBar'
+import {getRemark} from "../../../components/views/utils";
 import {
   DEFAULT_TITLE_STYLE,
   DEFAULT_XAXIS_STYLE,
   DEFAULT_YAXIS_STYLE,
   transAxisPosition,
   getLineDash
-} from '@/utils/map';
-import ChartTitleUpdate from '@/components/views/ChartTitleUpdate';
+} from '../../../utils/map';
+import ChartTitleUpdate from '../../../components/views/ChartTitleUpdate';
 import _ from 'lodash';
 import {clear} from 'size-sensor'
-import {valueFormatter} from '@/utils/formatter'
+import {valueFormatter} from '../../../utils/formatter'
 
 export default {
   name: 'ChartComponent',
@@ -325,10 +325,12 @@ export default {
 
         const _chartType = this.getChartType(yaxisList[_index].chartType);
 
-        if (_chartType === "column") {
-          _labelSetting.position = labelPosition;
-        } else {
-          _labelSetting.position = undefined;
+        if (_labelSetting) {
+          if (_chartType === "column") {
+            _labelSetting.position = labelPosition;
+          } else {
+            _labelSetting.position = undefined;
+          }
         }
 
         return {
@@ -378,10 +380,12 @@ export default {
 
         const _chartType = this.getChartType(yaxisExtList[_index].chartType);
 
-        if (_chartType === "column") {
-          _labelSetting.position = labelPosition;
-        } else {
-          _labelSetting.position = undefined;
+        if (_labelSetting) {
+          if (_chartType === "column") {
+            _labelSetting.position = labelPosition;
+          } else {
+            _labelSetting.position = undefined;
+          }
         }
 
         return {
