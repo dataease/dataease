@@ -22,10 +22,18 @@ import {
 } from '@/api/dataset'
 import type { Table } from '@/api/dataset'
 import DatasetUnion from './DatasetUnion.vue'
-import { cloneDeep } from 'lodash-es'
+import { cloneDeep, debounce } from 'lodash-es'
+import { useDraggable } from '@vueuse/core'
+
 interface DragEvent extends MouseEvent {
   dataTransfer: DataTransfer
 }
+export interface Position {
+  x: number
+  y: number
+}
+
+export type PointerType = 'mouse' | 'touch' | 'pen'
 
 export interface DataSource {
   id: string
@@ -95,13 +103,52 @@ const defaultProps = {
   children: 'children',
   label: 'label'
 }
+const dragHeight = ref(260)
+
+const previewHeight = ref(0)
+const calcEle = () => {
+  previewHeight.value = (document.querySelector('.table-preview') as HTMLDivElement).offsetHeight
+}
+
+const getDragHeight = debounce(calcEle, 1000)
+
+watch(
+  () => dragHeight.value,
+  () => {
+    getDragHeight()
+  },
+  { immediate: true }
+)
+
+const fieldDHeight = computed(() => {
+  const h = y.value - dragHeight.value - 102
+  if (h < 53) {
+    return 53
+  }
+  return h > previewHeight.value - 50 ? previewHeight.value - 50 : h
+})
+
+const dragVerticalTop = computed(() => {
+  const h = y.value - dragHeight.value - 106
+  if (h < 50) {
+    return 50
+  }
+  return h > previewHeight.value - 53 ? previewHeight.value - 53 : h
+})
 
 let tableList = []
 
-const dragHeight = ref(260)
-
 const getDsName = (id: string) => {
   return (state.dataSourceList.find(ele => ele.id === id) || {}).name
+}
+
+const pushDataset = () => {
+  push({
+    name: 'dataset',
+    params: {
+      id: nodeInfo.id
+    }
+  })
 }
 
 const backToMain = () => {
@@ -115,10 +162,10 @@ const backToMain = () => {
       autofocus: false,
       showClose: false
     }).then(() => {
-      push('/data/dataset')
+      pushDataset()
     })
   } else {
-    push('/data/dataset')
+    pushDataset()
   }
 }
 
@@ -358,6 +405,14 @@ const initEdite = () => {
     })
 }
 
+const el = ref<HTMLElement | null>(null)
+const elDrag = ref<HTMLElement | null>(null)
+
+const { y, isDragging } = useDraggable(el, {
+  initialValue: { x: 0, y: 567 },
+  draggingElement: elDrag
+})
+
 initEdite()
 
 const joinEditor = (arr: []) => {
@@ -470,6 +525,11 @@ const updateAllfields = () => {
   dfsFields(arr, datasetDrag.value.nodeList)
   allfields.value = diffArr(arr, allfields.value)
   fieldUnion.value?.clearState()
+  if (!previewHeight.value) {
+    nextTick(() => {
+      calcEle()
+    })
+  }
 }
 
 const notConfirmEditUnion = () => {
@@ -817,9 +877,15 @@ const treeProps = {
           <el-tabs class="padding-24" v-model="tabActive">
             <el-tab-pane :label="t('chart.data_preview')" name="preview" />
           </el-tabs>
-          <div v-show="!!allfields.length" class="table-preview">
+          <div ref="elDrag" v-show="!!allfields.length" class="table-preview">
             <div class="preview-field">
-              <div class="field-d">
+              <div
+                class="field-d"
+                :style="{
+                  height: fieldDHeight + 'px'
+                }"
+                :class="isDragging && 'user-select'"
+              >
                 <div :class="['title', { expanded: expandedD }]" @click="expandedD = !expandedD">
                   <ElIcon class="expand">
                     <Icon name="icon_expand-right_filled"></Icon>
@@ -849,8 +915,20 @@ const treeProps = {
                     </span>
                   </template>
                 </el-tree>
+                <div
+                  ref="el"
+                  :style="{
+                    top: dragVerticalTop + 'px'
+                  }"
+                  :class="['drag-vertical', isDragging && 'is-hovering']"
+                ></div>
               </div>
-              <div class="field-q">
+              <div
+                class="field-q"
+                :style="{
+                  height: `calc(100% - ${fieldDHeight}px)`
+                }"
+              >
                 <div :class="['title', { expanded: expandedQ }]" @click="expandedQ = !expandedQ">
                   <ElIcon class="expand">
                     <Icon name="icon_expand-right_filled"></Icon>
@@ -1169,6 +1247,19 @@ const treeProps = {
             width: 260px;
             height: 100%;
             border-right: 1px solid rgba(31, 35, 41, 0.15);
+            position: relative;
+
+            .drag-vertical {
+              width: 100%;
+              height: 3px;
+              position: absolute;
+              left: 0;
+              cursor: row-resize;
+
+              &.is-hovering {
+                background: #3370ff;
+              }
+            }
 
             :deep(.ed-tree-node__content) {
               border-radius: 4px;
@@ -1238,11 +1329,14 @@ const treeProps = {
                   }
                 }
               }
-              height: 50%;
               overflow-y: auto;
+              &.user-select {
+                user-select: none;
+              }
             }
 
             .field-d {
+              max-height: calc(100% - 50px);
               border-bottom: 1px solid rgba(31, 35, 41, 0.15);
             }
           }

@@ -77,7 +77,7 @@
           </el-col>
           <el-col :span="16" class="preview-show">
             <el-row class="content-head">配置视图间的字段关联关系</el-row>
-            <el-row v-if="state.linkageInfo">
+            <el-row v-if="state.linkageInfo && state.linkageInfo.linkageActive">
               <el-row style="margin-top: 5px">
                 <el-row class="inner-content">
                   <el-col :span="11"> 当前视图源字段 </el-col>
