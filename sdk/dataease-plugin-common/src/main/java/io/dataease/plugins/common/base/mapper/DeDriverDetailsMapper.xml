@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.dataease.plugins.common.base.mapper.DeDriverDetailsMapper">
+  <resultMap id="BaseResultMap" type="io.dataease.plugins.common.base.domain.DeDriverDetails">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="de_driver_id" jdbcType="VARCHAR" property="deDriverId" />
+    <result column="file_name" jdbcType="VARCHAR" property="fileName" />
+    <result column="version" jdbcType="VARCHAR" property="version" />
+    <result column="driver_class" jdbcType="VARCHAR" property="driverClass" />
+    <result column="trans_name" jdbcType="VARCHAR" property="transName" />
+    <result column="is_trans_name" jdbcType="BIT" property="isTransName" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, de_driver_id, file_name, version, driver_class, trans_name, is_trans_name
+  </sql>
+  <select id="selectByExample" parameterType="io.dataease.plugins.common.base.domain.DeDriverDetailsExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from de_driver_details
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from de_driver_details
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from de_driver_details
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="io.dataease.plugins.common.base.domain.DeDriverDetailsExample">
+    delete from de_driver_details
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="io.dataease.plugins.common.base.domain.DeDriverDetails">
+    insert into de_driver_details (id, de_driver_id, file_name, 
+      version, driver_class, trans_name, 
+      is_trans_name)
+    values (#{id,jdbcType=VARCHAR}, #{deDriverId,jdbcType=VARCHAR}, #{fileName,jdbcType=VARCHAR}, 
+      #{version,jdbcType=VARCHAR}, #{driverClass,jdbcType=VARCHAR}, #{transName,jdbcType=VARCHAR}, 
+      #{isTransName,jdbcType=BIT})
+  </insert>
+  <insert id="insertSelective" parameterType="io.dataease.plugins.common.base.domain.DeDriverDetails">
+    insert into de_driver_details
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="deDriverId != null">
+        de_driver_id,
+      </if>
+      <if test="fileName != null">
+        file_name,
+      </if>
+      <if test="version != null">
+        version,
+      </if>
+      <if test="driverClass != null">
+        driver_class,
+      </if>
+      <if test="transName != null">
+        trans_name,
+      </if>
+      <if test="isTransName != null">
+        is_trans_name,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="deDriverId != null">
+        #{deDriverId,jdbcType=VARCHAR},
+      </if>
+      <if test="fileName != null">
+        #{fileName,jdbcType=VARCHAR},
+      </if>
+      <if test="version != null">
+        #{version,jdbcType=VARCHAR},
+      </if>
+      <if test="driverClass != null">
+        #{driverClass,jdbcType=VARCHAR},
+      </if>
+      <if test="transName != null">
+        #{transName,jdbcType=VARCHAR},
+      </if>
+      <if test="isTransName != null">
+        #{isTransName,jdbcType=BIT},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="io.dataease.plugins.common.base.domain.DeDriverDetailsExample" resultType="java.lang.Long">
+    select count(*) from de_driver_details
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update de_driver_details
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=VARCHAR},
+      </if>
+      <if test="record.deDriverId != null">
+        de_driver_id = #{record.deDriverId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.fileName != null">
+        file_name = #{record.fileName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.version != null">
+        version = #{record.version,jdbcType=VARCHAR},
+      </if>
+      <if test="record.driverClass != null">
+        driver_class = #{record.driverClass,jdbcType=VARCHAR},
+      </if>
+      <if test="record.transName != null">
+        trans_name = #{record.transName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.isTransName != null">
+        is_trans_name = #{record.isTransName,jdbcType=BIT},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update de_driver_details
+    set id = #{record.id,jdbcType=VARCHAR},
+      de_driver_id = #{record.deDriverId,jdbcType=VARCHAR},
+      file_name = #{record.fileName,jdbcType=VARCHAR},
+      version = #{record.version,jdbcType=VARCHAR},
+      driver_class = #{record.driverClass,jdbcType=VARCHAR},
+      trans_name = #{record.transName,jdbcType=VARCHAR},
+      is_trans_name = #{record.isTransName,jdbcType=BIT}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="io.dataease.plugins.common.base.domain.DeDriverDetails">
+    update de_driver_details
+    <set>
+      <if test="deDriverId != null">
+        de_driver_id = #{deDriverId,jdbcType=VARCHAR},
+      </if>
+      <if test="fileName != null">
+        file_name = #{fileName,jdbcType=VARCHAR},
+      </if>
+      <if test="version != null">
+        version = #{version,jdbcType=VARCHAR},
+      </if>
+      <if test="driverClass != null">
+        driver_class = #{driverClass,jdbcType=VARCHAR},
+      </if>
+      <if test="transName != null">
+        trans_name = #{transName,jdbcType=VARCHAR},
+      </if>
+      <if test="isTransName != null">
+        is_trans_name = #{isTransName,jdbcType=BIT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="io.dataease.plugins.common.base.domain.DeDriverDetails">
+    update de_driver_details
+    set de_driver_id = #{deDriverId,jdbcType=VARCHAR},
+      file_name = #{fileName,jdbcType=VARCHAR},
+      version = #{version,jdbcType=VARCHAR},
+      driver_class = #{driverClass,jdbcType=VARCHAR},
+      trans_name = #{transName,jdbcType=VARCHAR},
+      is_trans_name = #{isTransName,jdbcType=BIT}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>
