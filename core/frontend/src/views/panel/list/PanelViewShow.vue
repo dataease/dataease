@@ -937,7 +937,8 @@ export default {
     top: inherit !important;
   }
 
-  .track-menu {
+  .track-menu,
+  .coustom-date-picker {
     left: inherit !important;
   }
 }
