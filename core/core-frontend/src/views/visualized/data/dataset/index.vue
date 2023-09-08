@@ -1,21 +1,19 @@
 <script lang="tsx" setup>
 import { useI18n } from '@/hooks/web/useI18n'
-import { ref, reactive, shallowRef, computed, watch, nextTick } from 'vue'
+import { ref, reactive, shallowRef, computed, watch, nextTick, onBeforeMount } from 'vue'
 import { ElIcon, ElMessageBox, ElMessage, type ElMessageBoxOptions } from 'element-plus-secondary'
 import { HandleMore } from '@/components/handle-more'
 import { Icon } from '@/components/icon-custom'
 import { useMoveLine } from '@/hooks/web/useMoveLine'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import CreatDsGroup from './form/CreatDsGroup.vue'
 import type { BusiTreeNode, BusiTreeRequest } from '@/models/tree/TreeNode'
 import { delDatasetTree, getDatasetPreview, barInfoApi } from '@/api/dataset'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import DeResourceGroupOpt from '@/views/common/DeResourceGroupOpt.vue'
 import DatasetDetail from './DatasetDetail.vue'
-import RowPermissions from './RowPermissions.vue'
 import { guid } from '@/views/visualized/data/dataset/form/util'
 import { save } from '@/api/visualization/dataVisualization'
-import ColumnPermissions from './ColumnPermissions.vue'
 import { cloneDeep } from 'lodash-es'
 import { fieldType } from '@/utils/attr'
 
@@ -48,6 +46,7 @@ interface Node {
 const rootManage = ref(false)
 const nickName = ref('')
 const router = useRouter()
+const route = useRoute()
 const { t } = useI18n()
 const state = reactive({
   datasetTree: [] as BusiTreeNode[]
@@ -77,11 +76,6 @@ const resourceOptFinish = param => {
     resourceCreate(param.pid, param.name)
   }
 }
-
-const tablePaneList = ref([
-  { title: t('chart.data_preview'), name: 'dataPreview' },
-  { title: '结构预览', name: 'structPreview' }
-])
 
 const resourceCreate = (pid, name) => {
   // 新建基础信息
@@ -230,7 +224,10 @@ const dfsDatasetTree = (ds, id) => {
   })
 }
 
-getData()
+onBeforeMount(() => {
+  nodeInfo.id = (route.params.id as string) || ''
+  getData()
+})
 
 const columns = shallowRef([])
 const tableData = shallowRef([])
@@ -249,16 +246,6 @@ const handleNodeClick = (data: BusiTreeNode) => {
     dataPreview = []
     activeName.value = 'dataPreview'
     handleClick(activeName.value)
-    if (nodeInfo.weight >= 7) {
-      tablePaneList.value.push({
-        title: t('dataset.row_permissions'),
-        name: 'row'
-      })
-      tablePaneList.value.push({
-        title: t('dataset.column_permissions'),
-        name: 'column'
-      })
-    }
   })
 }
 
@@ -542,12 +529,18 @@ const filterNode = (value: string, data: BusiTreeNode) => {
           </div>
           <div class="tab-border">
             <el-tabs v-model="activeName" @tab-change="handleClick">
+              <el-tab-pane :label="t('chart.data_preview')" name="dataPreview"></el-tab-pane>
+              <el-tab-pane label="结构预览" name="structPreview"></el-tab-pane>
               <el-tab-pane
-                v-for="item in tablePaneList"
-                :key="item.name"
-                :label="item.title"
-                :name="item.name"
-              />
+                v-if="nodeInfo.weight >= 7"
+                :label="t('dataset.row_permissions')"
+                name="row"
+              ></el-tab-pane>
+              <el-tab-pane
+                v-if="nodeInfo.weight >= 7"
+                :label="t('dataset.column_permissions')"
+                name="column"
+              ></el-tab-pane>
             </el-tabs>
           </div>
         </div>

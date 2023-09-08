@@ -226,8 +226,6 @@ const onBackgroundChange = val => {
 :deep(.ed-radio__input.is-checked) {
   .ed-radio__inner {
     padding: 4px;
-    background-color: green;
-    background-clip: content-box;
   }
 }
 
