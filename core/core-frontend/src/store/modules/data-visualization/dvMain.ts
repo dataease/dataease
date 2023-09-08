@@ -256,7 +256,9 @@ export const dvMainStore = defineStore('dataVisualization', {
             const newComponentId = idMap[oldComponentId]
             _this.canvasViewInfo[newComponentId] = {
               ...deepCopy(canvasViewInfoPre[oldComponentId]),
-              id: newComponentId
+              id: newComponentId,
+              linkageActive: false,
+              jumpActive: false
             }
           }
         })
