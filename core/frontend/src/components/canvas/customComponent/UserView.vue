@@ -35,6 +35,7 @@
       :obj="{active, chart, trackMenu, searchCount, terminalType: scaleCoefficientType}"
       :chart="chart"
       :track-menu="trackMenu"
+      :in-screen="inScreen"
       :search-count="searchCount"
       :terminal-type="scaleCoefficientType"
       :scale="scale"
