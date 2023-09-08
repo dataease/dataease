@@ -398,6 +398,8 @@ export default {
         this.myChart.on('finished', () => {
           this.loading = false
         })
+
+        this.currentIndex = 0;
       })
     },
     loadThemeStyle() {
