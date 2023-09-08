@@ -196,21 +196,6 @@ const dtLoading = ref(false)
 const getData = () => {
   dtLoading.value = true
   const request = { busiFlag: 'dataset' } as BusiTreeRequest
-  /* await interactiveStore.setInteractive(request)
-  const interactiveData = interactiveStore.getDataset
-  const nodeData = interactiveData.treeNodes
-  rootManage.value = interactiveData.rootManage
-  if (nodeData.length && nodeData[0]['id'] === '0' && nodeData[0]['name'] === 'root') {
-    state.datasetTree = nodeData[0]['children'] || []
-  } else {
-    state.datasetTree = nodeData
-  }
-  dtLoading.value = false
-  const id = nodeInfo.id
-  if (!!id) {
-    Object.assign(nodeInfo, cloneDeep(defaultNode))
-    dfsDatasetTree(state.datasetTree, id)
-  } */
   interactiveStore
     .setInteractive(request)
     .then(res => {

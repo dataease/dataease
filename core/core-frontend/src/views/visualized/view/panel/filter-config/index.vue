@@ -84,7 +84,6 @@ const multipleChange = (val: boolean) => {
 }
 
 const handleTabClick = () => {
-  console.log('handleTabClick')
 }
 </script>
 

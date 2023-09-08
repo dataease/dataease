@@ -99,8 +99,6 @@ const setBoard = () => {
   height: 70px;
   width: 110px;
   margin: 0 auto;
-  /*box-shadow: 0 0 2px 0 rgba(31, 31, 31, 0.15), 0 1px 2px 0 rgba(31, 31, 31, 0.15);*/
-  /*border: solid px #fff;*/
   box-sizing: border-box;
   border-radius: 3px;
 }

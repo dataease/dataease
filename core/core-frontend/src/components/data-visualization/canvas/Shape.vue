@@ -604,7 +604,6 @@ const settingAttribute = () => {
 }
 
 const tabMoveInCheck = async () => {
-  // console.log('tabMoveInCheck1')
   const curNode = document.querySelector('#' + domId.value)
   const width = curNode.offsetWidth
   const height = curNode.offsetHeight
@@ -613,7 +612,6 @@ const tabMoveInCheck = async () => {
   // tab 移入检测开启 tab组件不能相互移入另一个tab组件
   if (isTabMoveCheck.value && !state.ignoreTabMoveComponent.includes(element.value.component)) {
     const nodes = Array.from(parentNode.value.childNodes) // 获取当前父节点下所有子节点
-    // console.log('tabMoveInCheck2-nodes=' + nodes.length)
     for (const item of nodes) {
       if (
         item.className !== undefined &&
@@ -649,7 +647,6 @@ const tabMoveInCheck = async () => {
           dvMainStore.setTabCollisionActiveId(componentId)
         } else if (tabCollisionActiveId.value === componentId) {
           dvMainStore.setTabCollisionActiveId(null)
-          console.log('not=collisionActive=====')
         }
 
         // 移入有效区域检查
@@ -671,7 +668,6 @@ const tabMoveInCheck = async () => {
           console.log('MoveInActive=====')
           dvMainStore.setTabMoveInActiveId(componentId)
         } else if (tabMoveInActiveId.value === componentId) {
-          console.log('not=MoveInActive=====')
           dvMainStore.setTabMoveInActiveId(null)
         }
       }
@@ -691,11 +687,9 @@ onMounted(() => {
   }
   eventBus.on('runAnimation', () => {
     if (element.value == curComponent.value) {
-      // runAnimation(this.$el, curComponent.value.animations)
     }
   })
   eventBus.on('stopAnimation', () => {
-    // this.$el.classList.remove('animated', 'infinite')
   })
   settingAttribute()
 })
@@ -711,7 +705,6 @@ onMounted(() => {
   height: 100%;
   position: relative;
   background-size: 100% 100% !important;
-  //overflow: hidden;
 }
 
 .shape-edit {

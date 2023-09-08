@@ -267,7 +267,6 @@ const chartResize = () => {
 
 const calcData = (view: Chart, callback) => {
   if (view.tableId) {
-    // console.log('richText-calcData')
     const v = JSON.parse(JSON.stringify(view))
     getData(v)
       .then(res => {
@@ -347,20 +346,6 @@ const initCurFields = chartDetails => {
 
 const rowDataFormat = (rowData, yDataeaseNames, yDataeaseNamesCfg) => {
   for (const key in rowData) {
-    // if (yDataeaseNames.includes(key)) {
-    //   const formatterCfg = yDataeaseNamesCfg[key]
-    //   const value = rowData[key]
-    //   if (value === null || value === undefined) {
-    //     rowData[key] = '-'
-    //   }
-    //   if (formatterCfg) {
-    //     const v = valueFormatter(value, formatterCfg)
-    //     rowData[key] = v && v.includes('NaN') ? value : v
-    //   } else {
-    //     const v = valueFormatter(value, formatterItem)
-    //     rowData[key] = v && v.includes('NaN') ? value : v
-    //   }
-    // }
   }
 }
 

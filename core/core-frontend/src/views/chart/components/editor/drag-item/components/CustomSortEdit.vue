@@ -111,7 +111,6 @@ init()
   border: solid 1px #eee;
   text-align: left;
   color: #606266;
-  /*background-color: rgba(35,46,64,.05);*/
   background-color: white;
   display: flex;
   align-items: center;

@@ -55,12 +55,6 @@ const state = reactive({
       command: 'edit',
       svgName: 'dv-edit'
     },
-    /* {
-      label: '分享',
-      command: 'share',
-      svgName: 'dv-share',
-      disabled: true
-    }, */
     {
       label: '复制',
       command: 'copy',
@@ -169,7 +163,6 @@ const afterTreeInit = () => {
     expandedArray.value = getDefaultExpandedKeys()
     returnMounted.value = false
   }
-  console.log('expandedArray=' + JSON.stringify(expandedArray.value))
   nextTick(() => {
     resourceListTree.value.setCurrentKey(selectedNodeKey.value)
     nextTick(() => {
@@ -427,12 +420,10 @@ onMounted(() => {
   padding: 0 8px;
 }
 .father .child {
-  /*display: none;*/
   visibility: hidden;
 }
 
 .father:hover .child {
-  /*display: inline;*/
   visibility: visible;
 }
 

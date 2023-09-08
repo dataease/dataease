@@ -12,7 +12,6 @@
 import { computed, toRefs } from 'vue'
 
 const props = defineProps({
-  // eslint-disable-next-line vue/require-default-prop
   positionBox: {
     type: Array
   },

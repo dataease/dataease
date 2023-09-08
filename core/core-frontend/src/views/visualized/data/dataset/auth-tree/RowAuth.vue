@@ -181,11 +181,9 @@ const calculateDepth = obj => {
       path += `M${24 + depth * 68} ${path1} L${24 + depth * 68} ${path2} L${
         68 + depth * 68
       } ${path2}`
-      // path += a;
       path += calculateDepth(item)
     }
     if (!item.child?.length) {
-      // console.log(123, y, sibingLg, lg === 1 && index === 0 , item.z);
       if (sibingLg >= y) {
         path += `M${24 + depth * 68} ${y * 40} L${24 + depth * 68} ${
           (sibingLg + 1) * 41.4 - 20.69921875

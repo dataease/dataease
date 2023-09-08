@@ -193,8 +193,6 @@ const initOptions = item => {
 }
 const initFields = () => {
   // 暂时支持指标
-  console.log(props.chart)
-  console.log(Object.prototype.toString.call(props.chart.xAxis))
   if (props.chart.type === 'table-info') {
     if (Object.prototype.toString.call(props.chart.xAxis) === '[object Array]') {
       state.fields = JSON.parse(JSON.stringify(props.chart.xAxis))

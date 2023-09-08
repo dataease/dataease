@@ -160,7 +160,6 @@ const onTextChange = val => {
 }
 const themeAttrChange = (custom, property, value) => {
   if (canvasAttrInit) {
-    // console.log('custom=' + custom + ';property=' + property + ';value=' + JSON.stringify(value))
     Object.keys(canvasViewInfo.value).forEach(function (viewId) {
       const viewInfo = canvasViewInfo.value[viewId]
       if (custom === 'customAttr') {

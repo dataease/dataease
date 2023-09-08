@@ -79,7 +79,6 @@ const showQr = () => {
 
 const activeName = ref('simple')
 const handleClick = tab => {
-  console.log('tab', tab)
 }
 
 const changeLoginType = val => {
@@ -427,11 +426,9 @@ onMounted(() => {
   .login-logo {
     text-align: center;
     img {
-      /*width: 240px;*/
       width: auto;
       max-height: 52px;
       @media only screen and (max-width: 1280px) {
-        /*width: 200px;*/
         width: auto;
         max-height: 52px;
       }
@@ -605,15 +602,10 @@ onMounted(() => {
   }
 
   .login-image {
-    /* background: url(../../assets/login-desc-de.png) no-repeat; */
     background: url(../../assets/login-desc-de.png);
-    // background-size: cover;
     background-size: 100% 100%;
     width: 100%;
     height: 100%;
-    /* @media only screen and (max-width: 1280px) {
-      height: 380px;
-    } */
   }
   .login-image-de {
     background-size: cover;

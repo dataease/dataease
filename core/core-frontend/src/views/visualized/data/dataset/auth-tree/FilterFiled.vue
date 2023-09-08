@@ -923,7 +923,6 @@ const emits = defineEmits(['update:item', 'del'])
       width: 100%;
       font-size: 12px;
       line-height: 35px;
-      // overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
 
@@ -937,7 +936,6 @@ const emits = defineEmits(['update:item', 'del'])
         cursor: pointer;
         line-height: 25px;
         padding: 0 5px;
-        // overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
         background: rgba(70, 140, 255, 0.1);

@@ -77,9 +77,6 @@ const del = (index, child) => {
   child.splice(index, 1)
 }
 
-// defineExpose({
-//   initList
-// })
 </script>
 
 <template>

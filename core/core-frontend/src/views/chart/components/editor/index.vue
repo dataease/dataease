@@ -239,10 +239,6 @@ const reset = () => {
 }
 
 const dimensionItemChange = item => {
-  // this.calcData(true)
-  // console.log(item)
-  // console.log(view.value.xaxis)
-  // calcData(view.value)
 }
 const dimensionItemRemove = item => {
   if (item.removeType === 'dimension') {
@@ -252,14 +248,9 @@ const dimensionItemRemove = item => {
   } else if (item.removeType === 'dimensionStack') {
     view.value.extStack.splice(item.index, 1)
   }
-  // calcData(view.value)
 }
 
 const quotaItemChange = item => {
-  // this.calcData(true)
-  // console.log(item)
-  // console.log(view.value.xaxis)
-  // calcData(view.value)
 }
 const quotaItemRemove = item => {
   if (item.removeType === 'quota') {

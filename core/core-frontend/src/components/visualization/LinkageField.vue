@@ -206,7 +206,6 @@ onMounted(() => {
   text-align: center;
 }
 .ellipsis-area {
-  /*width: 100%;*/
   margin-left: 10px;
   margin-right: 10px;
   overflow: hidden; /*超出部分隐藏*/
@@ -221,7 +220,6 @@ onMounted(() => {
 }
 
 .select-filed {
-  /*width: 100%;*/
   margin-left: 10px;
   margin-right: 10px;
   overflow: hidden; /*超出部分隐藏*/
