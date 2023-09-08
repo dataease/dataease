@@ -9,12 +9,12 @@
       v-if="chart.type && antVRenderStatus"
       v-show="title_show"
       ref="title"
-      :style="title_class"
+      :style="titleClass"
       style="cursor: default;display: block;"
     >
           <div style="padding:4px 4px 0;margin: 0;">
             <chart-title-update
-              :title-class="title_class"
+              :title-class="titleClass"
               :chart-info="chartInfo"
               :bus="bus"
               :axios-request="axiosRequest"
@@ -127,16 +127,6 @@ export default {
         fontStyle: 'normal',
         fontWeight: 'normal',
         background: hexColorToRGBA('#ffffff', 0)
-      },
-      title_class: {
-        margin: '0 0',
-        width: '100%',
-        fontSize: '18px',
-        color: '#303133',
-        textAlign: 'left',
-        fontStyle: 'normal',
-        fontWeight: 'normal',
-        background: ''
       },
       linkageActiveParam: null,
       linkageActiveHistory: false,
