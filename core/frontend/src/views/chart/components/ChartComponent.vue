@@ -189,13 +189,19 @@ export default {
   },
   mounted() {
     bus.$on('change-series-id', this.changeSeriesId)
-    document.getElementById(this.chartId).addEventListener('mouseover', this.bodyMouseover)
-    document.getElementById(this.chartId).addEventListener('mouseout', this.bodyMouseout)
+    const dom = document.getElementById(this.chartId)
+    if (dom) {
+      dom.addEventListener('mouseover', this.bodyMouseover)
+      dom.addEventListener('mouseout', this.bodyMouseout)
+    }
     this.preDraw()
   },
   beforeDestroy() {
-    document.getElementById(this.chartId).removeEventListener('mouseover', this.bodyMouseover)
-    document.getElementById(this.chartId).removeEventListener('mouseout', this.bodyMouseout)
+    const dom = document.getElementById(this.chartId)
+    if (dom) {
+      dom.removeEventListener('mouseover', this.bodyMouseover)
+      dom.removeEventListener('mouseout', this.bodyMouseout)
+    }
     bus.$off('change-series-id', this.changeSeriesId)
     window.removeEventListener('resize', this.myChart.resize)
     this.myChart.dispose()
