@@ -76,6 +76,11 @@ export default {
         return ['drill']
       }
     },
+    inScreen: {
+      type: Boolean,
+      required: false,
+      default: true
+    },
     searchCount: {
       type: Number,
       required: false,
@@ -594,7 +599,7 @@ export default {
           chart_option.legend['pageIconInactiveColor'] = '#8c8c8c'
         }
       }
-      if (chart_option.tooltip) {
+      if (chart_option.tooltip && this.inScreen) {
         chart_option.tooltip.appendToBody = true
       }
 
