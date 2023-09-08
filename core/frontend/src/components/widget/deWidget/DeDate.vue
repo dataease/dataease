@@ -60,7 +60,8 @@ export default {
       values: null,
       onFocus: false,
       show: true,
-      timer: null
+      outTimer: null,
+      innerTimer: null
     }
   },
   computed: {
@@ -134,12 +135,7 @@ export default {
 
   },
   watch: {
-    canvasStyleData: {
-      handler(newVal, oldVla) {
-        this.canvasStyleDataInit()
-      },
-      deep: true
-    },
+
     'viewIds': function(value, old) {
       if (typeof value === 'undefined' || value === old) return
       this.setCondition()
@@ -174,7 +170,9 @@ export default {
   },
   created() {
     this.loadInit()
-    this.canvasStyleDataInit()
+    this.$nextTick(() => {
+      this.dynamicRefresh()
+    })
   },
   mounted() {
     bus.$on('onScroll', this.onScroll)
@@ -183,18 +181,14 @@ export default {
     }
   },
   beforeDestroy() {
-    this.timer && clearInterval(this.timer)
+    this.clearTime()
     bus.$off('onScroll', this.onScroll)
     bus.$off('reset-default-value', this.resetDefaultValue)
   },
   methods: {
     loadInit() {
-      if (this.element.options.attrs.default && this.element.options.attrs.default.isDynamic) {
-        if (this.element.options.attrs.default) {
-          const widget = ApplicationContext.getService(this.element.serviceName)
-          this.values = widget.dynamicDateFormNow(this.element)
-          this.dateChange(this.values)
-        }
+      this.clearTime()
+      if (this.refreshHandler()) {
         return
       }
       if (this.element.options.value) {
@@ -202,22 +196,42 @@ export default {
         this.dateChange(this.values)
       }
     },
-    canvasStyleDataInit() {
-      if (this.inDraw && this.canvasStyleData.refreshViewEnable && this.element.options.attrs.default && this.element.options.attrs.default.isDynamic) {
-        this.searchCount = 0
-        this.timer && clearInterval(this.timer)
-        let refreshTime = 300000
-        if (this.canvasStyleData.refreshTime && this.canvasStyleData.refreshTime > 0) {
-          if (this.canvasStyleData.refreshUnit === 'second') {
-            refreshTime = this.canvasStyleData.refreshTime * 1000
-          } else {
-            refreshTime = this.canvasStyleData.refreshTime * 60000
+    refreshHandler() {
+      if (this.element.options.attrs.default?.isDynamic) {
+        const widget = ApplicationContext.getService(this.element.serviceName)
+        this.values = widget.dynamicDateFormNow(this.element)
+        this.dateChange(this.values)
+        return true
+      }
+      return false
+    },
+    clearTime() {
+      if (this.outTimer) {
+        clearTimeout(this.outTimer)
+        this.outTimer = null
+      }
+      if (this.innerTimer) {
+        clearInterval(this.innerTimer)
+        this.innerTimer = null
+      }
+    },
+    dynamicRefresh() {
+      if (this.inDraw && this.element.options.attrs.default?.isDynamic) {
+        const nowDate = new Date()
+        const nowTime = nowDate.getTime()
+        const tomorrow = new Date(`${nowDate.getFullYear()}-${nowDate.getMonth() + 1}-${nowDate.getDate() + 1} 00:00:01`)
+        const tomorrowTime = tomorrow.getTime()
+        this.clearTime()
+        this.outTimer = setTimeout(() => {
+          if (this.inDraw) {
+            this.refreshHandler()
           }
-        }
-        this.timer = setInterval(() => {
-          this.loadInit()
-          this.searchCount++
-        }, refreshTime)
+          this.innerTimer = setInterval(() => {
+            if (this.inDraw) {
+              this.refreshHandler()
+            }
+          }, 24 * 3600 * 1000)
+        }, tomorrowTime - nowTime)
       }
     },
     clearHandler() {
