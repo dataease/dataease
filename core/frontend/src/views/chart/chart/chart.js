@@ -86,6 +86,12 @@ export const DEFAULT_SIZE = {
   tableHeaderAlign: 'left',
   tableItemAlign: 'right',
   tableAutoBreakLine: false,
+  tableRowTooltip: {
+    show: false
+  },
+  tableColTooltip: {
+    show: false
+  },
   gaugeMinType: 'fix', // fix or dynamic
   gaugeMinField: {
     id: '',
