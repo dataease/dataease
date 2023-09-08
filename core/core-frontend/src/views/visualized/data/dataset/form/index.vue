@@ -104,6 +104,15 @@ const getDsName = (id: string) => {
   return (state.dataSourceList.find(ele => ele.id === id) || {}).name
 }
 
+const pushDataset = () => {
+  push({
+    name: 'dataset',
+    params: {
+      id: nodeInfo.id
+    }
+  })
+}
+
 const backToMain = () => {
   if (!nodeInfo.id) {
     ElMessageBox.confirm('数据集未保存,确认退出吗?', {
@@ -115,10 +124,10 @@ const backToMain = () => {
       autofocus: false,
       showClose: false
     }).then(() => {
-      push('/data/dataset')
+      pushDataset()
     })
   } else {
-    push('/data/dataset')
+    pushDataset()
   }
 }
 
@@ -357,6 +366,8 @@ const initEdite = () => {
       loading.value = false
     })
 }
+
+const isHovering = ref(false)
 
 initEdite()
 
@@ -849,6 +860,7 @@ const treeProps = {
                     </span>
                   </template>
                 </el-tree>
+                <div :class="['drag-vertical', isHovering && 'is-hovering']"></div>
               </div>
               <div class="field-q">
                 <div :class="['title', { expanded: expandedQ }]" @click="expandedQ = !expandedQ">
@@ -1169,6 +1181,20 @@ const treeProps = {
             width: 260px;
             height: 100%;
             border-right: 1px solid rgba(31, 35, 41, 0.15);
+            position: relative;
+
+            .drag-vertical {
+              width: 100%;
+              height: 1px;
+              position: absolute;
+              bottom: 0;
+              left: 0;
+              cursor: row-resize;
+
+              &.is-hovering {
+                background: #3370ff;
+              }
+            }
 
             :deep(.ed-tree-node__content) {
               border-radius: 4px;

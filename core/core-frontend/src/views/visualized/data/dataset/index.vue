@@ -1,11 +1,11 @@
 <script lang="tsx" setup>
 import { useI18n } from '@/hooks/web/useI18n'
-import { ref, reactive, shallowRef, computed, watch, nextTick } from 'vue'
+import { ref, reactive, shallowRef, computed, watch, nextTick, onBeforeMount } from 'vue'
 import { ElIcon, ElMessageBox, ElMessage, type ElMessageBoxOptions } from 'element-plus-secondary'
 import { HandleMore } from '@/components/handle-more'
 import { Icon } from '@/components/icon-custom'
 import { useMoveLine } from '@/hooks/web/useMoveLine'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import CreatDsGroup from './form/CreatDsGroup.vue'
 import type { BusiTreeNode, BusiTreeRequest } from '@/models/tree/TreeNode'
 import { delDatasetTree, getDatasetPreview, barInfoApi } from '@/api/dataset'
@@ -48,6 +48,7 @@ interface Node {
 const rootManage = ref(false)
 const nickName = ref('')
 const router = useRouter()
+const route = useRoute()
 const { t } = useI18n()
 const state = reactive({
   datasetTree: [] as BusiTreeNode[]
@@ -245,7 +246,10 @@ const dfsDatasetTree = (ds, id) => {
   })
 }
 
-getData()
+onBeforeMount(() => {
+  nodeInfo.id = (route.params.id as string) || ''
+  getData()
+})
 
 const columns = shallowRef([])
 const tableData = shallowRef([])
