@@ -353,7 +353,8 @@ export default {
         show: 0
       },
       view: {},
-      cancelTime: null
+      cancelTime: null,
+      isDestroy:false
     }
   },
 
@@ -577,6 +578,7 @@ export default {
     bus.$off('onThemeAttrChange', this.optFromBatchSingleProp)
     bus.$off('clear_panel_linkage', this.clearPanelLinkage)
     bus.$off('tab-canvas-change', this.tabSwitch)
+    this.isDestroy = true
   },
   created() {
     this.refId = uuid.v1
@@ -805,7 +807,9 @@ export default {
             if (this.chart.type.includes('table')) {
               this.$store.commit('setLastViewRequestInfo', { viewId: id, requestInfo: requestInfo })
             }
-            this.buildInnerRefreshTimer(this.chart.refreshViewEnable, this.chart.refreshUnit, this.chart.refreshTime)
+            if(!this.isDestroy){
+              this.buildInnerRefreshTimer(this.chart.refreshViewEnable, this.chart.refreshUnit, this.chart.refreshTime)
+            }
             this.$emit('fill-chart-2-parent', this.chart)
             this.getDataOnly(response.data, dataBroadcast)
             this.chart['position'] = this.inTab ? 'tab' : 'panel'
