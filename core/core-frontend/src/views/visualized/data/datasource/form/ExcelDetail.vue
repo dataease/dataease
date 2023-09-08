@@ -111,7 +111,7 @@ const generateColumns = (arr: Field[]) =>
     title: ele.name,
     width: 150,
     headerCellRenderer: ({ column }) => (
-      <div style={{ width: '100%', display: 'flex', alignItems: 'center' }}>
+      <div class="flex-align-center">
         <ElDropdown
           placement="bottom-start"
           trigger="click"
@@ -121,12 +121,17 @@ const generateColumns = (arr: Field[]) =>
           {{
             default: () => {
               return (
-                <ElIcon style={{ marginRight: '6px' }}>
-                  <Icon
-                    name={`field_${fieldType[column.fieldType]}`}
-                    className={`field-icon-${fieldType[column.fieldType]}`}
-                  ></Icon>
-                </ElIcon>
+                <div class="flex-align-center dropdown-icon">
+                  <ElIcon style={{ marginRight: '2px' }}>
+                    <Icon
+                      name={`field_${fieldType[column.fieldType]}`}
+                      className={`field-icon-${fieldType[column.fieldType]}`}
+                    ></Icon>
+                  </ElIcon>
+                  <ElIcon class="down-outlined" style={{ marginRight: '4px' }}>
+                    <Icon name="icon_down_outlined"></Icon>
+                  </ElIcon>
+                </div>
               )
             },
             dropdown: () => {
@@ -150,7 +155,9 @@ const generateColumns = (arr: Field[]) =>
             }
           }}
         </ElDropdown>
-        {column.title}
+        <span class="ellipsis" title={column.title} style={{ width: '100px' }}>
+          {column.title}
+        </span>
       </div>
     )
   }))
@@ -572,6 +579,18 @@ defineExpose({
     width: 800px;
     padding-top: 16px;
     height: calc(100vh - 280px);
+
+    .dropdown-icon {
+      .down-outlined {
+        transform: rotate(180deg);
+      }
+      &[aria-expanded='true'] {
+        .down-outlined {
+          transform: rotate(0);
+        }
+      }
+      cursor: pointer;
+    }
 
     .error-status {
       margin-top: 32px;

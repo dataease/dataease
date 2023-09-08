@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { propTypes } from '@/utils/propTypes'
 import { ElTreeSelect, ElPopover, ElIcon } from 'element-plus-secondary'
-import { computed, reactive, ref } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import { Icon } from '@/components/icon-custom'
 
 const props = defineProps({
@@ -57,6 +57,7 @@ const checkChange = () => {
     state.activeStatus.map(item => item.value)
   )
 } */
+
 const treeChange = () => {
   const nodes = state.currentStatus.map(id => {
     return filterTree.value?.getNode(id).data
@@ -67,6 +68,14 @@ const treeChange = () => {
     state.activeStatus.map(item => item.value)
   )
 }
+
+watch(
+  () => state.currentStatus,
+  () => {
+    treeChange()
+  },
+  { deep: true, immediate: true }
+)
 
 const optionListNotSelect = computed(() => {
   return [...props.optionList]
@@ -114,7 +123,6 @@ defineExpose({
             :placeholder="$t('common.please_select') + $t('user.role')"
             show-checkbox
             check-on-click-node
-            @change="treeChange"
           />
           <template #reference>
             <span ref="more" class="more">

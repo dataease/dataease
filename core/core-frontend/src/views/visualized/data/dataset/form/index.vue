@@ -292,14 +292,16 @@ const generateColumns = (arr: Field[]) =>
     title: ele.name,
     width: 150,
     headerCellRenderer: ({ column }) => (
-      <div style={{ width: '100%', display: 'flex', alignItems: 'center' }}>
+      <div class="flex-align-center">
         <ElIcon>
           <Icon
             name={`field_${fieldType[column.deType]}`}
             className={`field-icon-${fieldType[column.deType]}`}
           ></Icon>
         </ElIcon>
-        {column.title}
+        <span class="ellipsis" title={column.title} style={{ width: '120px' }}>
+          {column.title}
+        </span>
       </div>
     )
   }))
