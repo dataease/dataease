@@ -19,10 +19,7 @@ import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
 import io.dataease.controller.response.ExistLdapUser;
 import io.dataease.controller.sys.base.BaseGridRequest;
-import io.dataease.controller.sys.request.KeyGridRequest;
-import io.dataease.controller.sys.request.SysUserCreateRequest;
-import io.dataease.controller.sys.request.SysUserPwdRequest;
-import io.dataease.controller.sys.request.SysUserStateRequest;
+import io.dataease.controller.sys.request.*;
 import io.dataease.controller.sys.response.AuthBindDTO;
 import io.dataease.controller.sys.response.RoleUserItem;
 import io.dataease.controller.sys.response.SysUserGridResponse;
@@ -81,7 +78,7 @@ public class SysUserController {
     })
     @SqlInjectValidator(value = {"create_time", "u.enabled", "nick_name", "u.dept_id"})
     public Pager<List<SysUserGridResponse>> userGrid(@PathVariable int goPage, @PathVariable int pageSize,
-                                                     @RequestBody KeyGridRequest request) {
+                                                     @RequestBody UserGridRequest request) {
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
         List<SysUserGridResponse> users = sysUserService.query(request);
         users.forEach(user -> {
@@ -95,9 +92,8 @@ public class SysUserController {
     @ApiIgnore
     @PostMapping("/userLists")
     @SqlInjectValidator({"nick_name", "create_time"})
-    public List<SysUserGridResponse> userLists(@RequestBody BaseGridRequest request) {
-        KeyGridRequest keyGridRequest = BeanUtils.copyBean(new KeyGridRequest(), request);
-        List<SysUserGridResponse> users = sysUserService.query(keyGridRequest);
+    public List<SysUserGridResponse> userLists(@RequestBody UserGridRequest request) {
+        List<SysUserGridResponse> users = sysUserService.query(request);
         if (CollectionUtils.isEmpty(users)) return users;
         users.forEach(user -> {
             user.setPassword(null);
@@ -113,7 +109,7 @@ public class SysUserController {
             @ApiImplicitParam(name = "request", value = "查询条件", required = true)
     })
     @SqlInjectValidator(value = {"create_time", "u.enabled", "nick_name", "u.dept_id"})
-    public Pager<List<SysUserGridResponse>> userGrids(@PathVariable String datasetId, @RequestBody KeyGridRequest request) {
+    public Pager<List<SysUserGridResponse>> userGrids(@PathVariable String datasetId, @RequestBody UserGridRequest request) {
         return userGrid(0, 0, request);
     }
 

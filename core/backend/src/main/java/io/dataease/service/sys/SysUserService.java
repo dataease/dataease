@@ -65,11 +65,9 @@ public class SysUserService {
     private AuthUserService authUserService;
 
 
-    public List<SysUserGridResponse> query(KeyGridRequest request) {
-        String keyWord = request.getKeyWord();
-        GridExample gridExample = request.convertExample();
-        gridExample.setExtendCondition(keyWord);
-        List<SysUserGridResponse> lists = extSysUserMapper.query(gridExample);
+    public List<SysUserGridResponse> query(UserGridRequest request) {
+
+        List<SysUserGridResponse> lists = extSysUserMapper.query(request);
         lists.forEach(item -> {
             List<SysUserRole> roles = item.getRoles();
             List<Long> roleIds = roles.stream().filter(ObjectUtils::isNotEmpty).map(SysUserRole::getRoleId).collect(Collectors.toList());
