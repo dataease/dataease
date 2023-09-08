@@ -242,7 +242,6 @@ export default {
           this.titleClass.textAlign = customStyle.text.hPosition
           this.titleClass.fontStyle = customStyle.text.isItalic ? 'italic' : 'normal'
           this.titleClass.fontWeight = customStyle.text.isBolder ? 'bold' : 'normal'
-          this.titleClass.fontSize = customStyle.text.isBolder ? 'bold' : 'normal'
 
           this.titleClass.fontFamily = customStyle.text.fontFamily ? this.CHART_CONT_FAMILY_MAP[customStyle.text.fontFamily] : 'Microsoft YaHei'
           this.titleClass.letterSpacing = (customStyle.text.letterSpace ? customStyle.text.letterSpace : '0') + 'px'
