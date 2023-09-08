@@ -277,6 +277,60 @@ public class EmailService {
         });
     }
 
+    private JavaMailSenderImpl buildSender() {
+        MailInfo mailInfo = proxy().mailInfo();
+        checkMailInfo(mailInfo);
+        JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
+        javaMailSender.setDefaultEncoding("UTF-8");
+        javaMailSender.setHost(mailInfo.getHost());
+        javaMailSender.setPort(Integer.parseInt(mailInfo.getPort()));
+        javaMailSender.setUsername(mailInfo.getAccount());
+        javaMailSender.setPassword(mailInfo.getPassword());
+        Properties props = new Properties();
+        if (BooleanUtils.toBoolean(mailInfo.getSsl())) {
+            props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+        }
+        if (BooleanUtils.toBoolean(mailInfo.getTls())) {
+            props.put("mail.smtp.starttls.enable", "true");
+        }
+        props.put("mail.smtp.timeout", "30000");
+        props.put("mail.smtp.connectiontimeout", "10000");
+        javaMailSender.setJavaMailProperties(props);
+        return javaMailSender;
+    }
+
+    private void testSendEmail(String recipients, JavaMailSenderImpl javaMailSender, boolean isAdmin) {
+        if (!StringUtils.isBlank(recipients)) {
+            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper;
+            try {
+                helper = new MimeMessageHelper(mimeMessage, true);
+                helper.setFrom(javaMailSender.getUsername());
+                helper.setSubject("DataEase测试邮件 ");
+                helper.setText("这是一封测试邮件，邮件发送成功", true);
+                helper.setTo(recipients);
+                javaMailSender.send(mimeMessage);
+            } catch (Exception e) {
+                LogUtil.error(e.getMessage(), e);
+                String key = "connection_failed";
+                if (isAdmin) key = "connection_failed_admin";
+                DEException.throwException(Translator.get(key));
+            }
+        }
+    }
+
+    public void testConnection(String email) {
+        JavaMailSenderImpl javaMailSender = null;
+        try {
+            javaMailSender = buildSender();
+            javaMailSender.testConnection();
+        } catch (MessagingException e) {
+            LogUtil.error(e.getMessage(), e);
+            DEException.throwException(Translator.get("connection_failed"));
+        }
+        testSendEmail(email, javaMailSender, true);
+    }
+
     public void testConnection(HashMap<String, String> hashMap) {
         JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
         javaMailSender.setDefaultEncoding("UTF-8");
@@ -301,21 +355,6 @@ public class EmailService {
             LogUtil.error(e.getMessage(), e);
             DEException.throwException(Translator.get("connection_failed"));
         }
-        if (!StringUtils.isBlank(recipients)) {
-            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-            MimeMessageHelper helper;
-            try {
-                helper = new MimeMessageHelper(mimeMessage, true);
-                helper.setFrom(javaMailSender.getUsername());
-                helper.setSubject("DataEase测试邮件 ");
-                helper.setText("这是一封测试邮件，邮件发送成功", true);
-                helper.setTo(recipients);
-                javaMailSender.send(mimeMessage);
-            } catch (Exception e) {
-                LogUtil.error(e.getMessage(), e);
-                DEException.throwException(Translator.get("connection_failed"));
-            }
-        }
-
+        testSendEmail(recipients, javaMailSender, false);
     }
 }

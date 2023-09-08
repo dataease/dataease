@@ -65,6 +65,11 @@ export default {
     MapController
   },
   props: {
+    inScreen: {
+      type: Boolean,
+      required: false,
+      default: true
+    },
     active: {
       type: Boolean,
       required: false,
@@ -184,13 +189,19 @@ export default {
   },
   mounted() {
     bus.$on('change-series-id', this.changeSeriesId)
-    document.getElementById(this.chartId).addEventListener('mouseover', this.bodyMouseover)
-    document.getElementById(this.chartId).addEventListener('mouseout', this.bodyMouseout)
+    const dom = document.getElementById(this.chartId)
+    if (dom) {
+      dom.addEventListener('mouseover', this.bodyMouseover)
+      dom.addEventListener('mouseout', this.bodyMouseout)
+    }
     this.preDraw()
   },
   beforeDestroy() {
-    document.getElementById(this.chartId).removeEventListener('mouseover', this.bodyMouseover)
-    document.getElementById(this.chartId).removeEventListener('mouseout', this.bodyMouseout)
+    const dom = document.getElementById(this.chartId)
+    if (dom) {
+      dom.removeEventListener('mouseover', this.bodyMouseover)
+      dom.removeEventListener('mouseout', this.bodyMouseout)
+    }
     bus.$off('change-series-id', this.changeSeriesId)
     window.removeEventListener('resize', this.myChart.resize)
     this.myChart.dispose()
@@ -292,6 +303,7 @@ export default {
           this.myChart = this.$echarts.init(document.getElementById(this.chartId))
         }
         this.drawEcharts()
+        this.myChart.off('click')
         this.myChart.on('click', function(param) {
           that.pointParam = param
           if (that.linkageActiveParam) {
@@ -408,7 +420,7 @@ export default {
           chart_option.legend['pageIconInactiveColor'] = '#8c8c8c'
         }
       }
-      if (chart_option.tooltip) {
+      if (chart_option.tooltip && this.inScreen) {
         chart_option.tooltip.appendToBody = true
       }
       this.myEcharts(chart_option)
@@ -493,12 +505,6 @@ export default {
     trackClick(trackAction) {
       const param = this.pointParam
       if (!param || !param.data || !param.data.dimensionList) {
-        if (this.chart.type === 'map') {
-          const zoom = this.myChart.getOption().geo[0].zoom
-          if (zoom <= 1) {
-            this.$warning(this.$t('panel.no_drill_field'))
-          }
-        }
         return
       }
       const quotaList = this.pointParam.data.quotaList

@@ -116,7 +116,7 @@ public interface ParamConstants {
         DS_CHECK_INTERVAL_TYPE("basic.dsCheckIntervalType"),
         DEFAULT_LOGIN_TYPE("basic.loginType"),
         OPEN_HOME_PAGE("ui.openHomePage"),
-
+        AUTO_MOBILE("ui.autoMobile"),
         OPEN_MARKET_PAGE("ui.openMarketPage"),
         TEMPLATE_MARKET_ULR("basic.templateMarketUlr"),
 
@@ -125,6 +125,7 @@ public interface ParamConstants {
         LOGIN_LIMIT_RELIEVETIMES("loginlimit.relieveTimes"),
 
         LOGIN_LIMIT_OPEN("loginlimit.open"),
+        LOCKED_EMAIL("loginlimit.lockedEmail"),
 
         SCAN_CREATE_USER("loginlimit.scanCreateUser"),
 

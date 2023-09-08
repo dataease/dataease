@@ -1064,16 +1064,16 @@ public class MysqlQueryProvider extends QueryProvider {
                     String format = transDateFormat(request.getDateStyle(), request.getDatePattern());
                     if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5 || field.getDeExtractType() == 1) {
                         String date = String.format(MySQLConstants.STR_TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : MysqlConstants.DEFAULT_DATE_FORMAT);
-                        if(request.getOperator().equals("between")){
+                        if (request.getOperator().equals("between")) {
                             whereName = date;
-                        }else {
+                        } else {
                             whereName = String.format(MySQLConstants.DATE_FORMAT, date, format);
                         }
                     }
                     if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
-                        if(request.getOperator().equals("between")){
+                        if (request.getOperator().equals("between")) {
                             whereName = originName;
-                        }else {
+                        } else {
                             String cast = String.format(MySQLConstants.CAST, originName, MySQLConstants.DEFAULT_INT_FORMAT) + "/1000";
                             whereName = String.format(DorisConstants.FROM_UNIXTIME, cast, format);
                         }
@@ -1166,6 +1166,8 @@ public class MysqlQueryProvider extends QueryProvider {
                 return "%Y" + split + "%m" + split + "%d";
             case "H_m_s":
                 return "%H:%i:%S";
+            case "y_M_d_H":
+                return "%Y" + split + "%m" + split + "%d" + " %H";
             case "y_M_d_H_m":
                 return "%Y" + split + "%m" + split + "%d" + " %H:%i";
             case "y_M_d_H_m_s":

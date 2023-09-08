@@ -9,18 +9,18 @@
                  @add="addXaxis" @update="calcData(true)">
         <transition-group class="draggable-group">
           <dimension-item v-for="(item,index) in view.xaxis" :key="index"
-                                 :param="param"
-                                 :index="0"
-                                 :item="item"
-                                 :dimension-data="dimension"
-                                 :quota-data="quotaData"
-                                 :chart="chart"
-                                 @onDimensionItemChange="dimensionItemChange"
-                                 @onDimensionItemRemove="dimensionItemRemove"
-                                 @editItemFilter="showDimensionEditFilter"
-                                 @onNameEdit="showRename"
-                                 dimension-name="dimension"
-                                 :bus="bus"
+                          :param="param"
+                          :index="0"
+                          :item="item"
+                          :dimension-data="dimension"
+                          :quota-data="quotaData"
+                          :chart="chart"
+                          @onDimensionItemChange="dimensionItemChange"
+                          @onDimensionItemRemove="dimensionItemRemove"
+                          @editItemFilter="showDimensionEditFilter"
+                          @onNameEdit="showRename"
+                          dimension-name="dimension"
+                          :bus="bus"
           />
         </transition-group>
       </draggable>
@@ -97,7 +97,7 @@
                  @add="addCustomFilter" @update="calcData(true)">
         <transition-group class="draggable-group">
           <filter-item v-for="(item,index) in view.customFilter" :key="item.id" :param="param" :index="index"
-                       :item="item" :dimension-data="dimension" :quota-data="quota"
+                       :item="item" :dimension-data="dimension" :quota-data="quota" :bus="bus"
                        @onFilterItemRemove="filterItemRemove"
                        @editItemFilter="showEditFilter"/>
         </transition-group>
@@ -111,10 +111,10 @@
 </template>
 
 <script>
-import DimensionItem from '@/components/views/DimensionItem'
-import DimensionExtItem from '@/components/views/DimensionExtItem'
-import QuotaItem from '@/components/views/QuotaItem'
-import FilterItem from '@/components/views/FilterItem'
+import DimensionItem from '../../../components/views/DimensionItem'
+import DimensionExtItem from '../../../components/views/DimensionExtItem'
+import QuotaItem from '../../../components/views/QuotaItem'
+import FilterItem from '../../../components/views/FilterItem'
 import messages from '@/de-base/lang/messages'
 
 export default {
@@ -176,11 +176,41 @@ export default {
     quotaData() {
       return this.obj.quotaData
     },
+    listenLists() {
+      if (!this.view) return [0, 0, 0];
+      return [
+        this.view.xaxis ? this.view.xaxis.length : 0,
+        this.view.xaxisExt ? this.view.xaxisExt.length : 0,
+        this.view.yaxis ? this.view.yaxis.length : 0
+      ]
+    }
   },
   created() {
     this.$emit('on-add-languages', messages)
   },
-  watch: {},
+  mounted() {
+  },
+  watch: {
+    listenLists: function (val) {
+      if (this.listenLists[0] <= 1 && this.listenLists[1] <= 1 && this.listenLists[2] <= 1) {
+        return;
+      }
+      if (this.view.xaxis.length > 1) {
+        this.dragCheckType(this.view.xaxis, 'd')
+        this.view.xaxis = [this.view.xaxis[0]]
+      }
+      if (this.view.xaxisExt.length > 1) {
+        this.dragCheckType(this.view.xaxisExt, 'd')
+        this.view.xaxisExt = [this.view.xaxisExt[0]]
+      }
+      if (this.view.yaxis.length > 1) {
+        this.dragCheckType(this.view.yaxis, 'q')
+        this.view.yaxis = [this.view.yaxis[0]]
+      }
+      this.calcData(true)
+    },
+
+  },
   methods: {
     executeAxios(url, type, data, callBack) {
       const param = {
@@ -210,37 +240,39 @@ export default {
     },
 
     addXaxis(e) {
+      if (this.view.type !== 'table-info') {
+        this.dragCheckType(this.view.xaxis, 'd')
+      }
       this.dragMoveDuplicate(this.view.xaxis, e)
       if (this.view.xaxis.length > 1) {
-        this.view.xaxis = [this.view.xaxis[0]]
+        //this.view.xaxis = [this.view.xaxis[0]]
+      } else {
+        this.calcData(true)
       }
-      this.calcData(true)
     },
     addXaxisExt(e) {
+      if (this.view.type !== 'table-info') {
+        this.dragCheckType(this.view.xaxisExt, 'd')
+      }
       this.dragMoveDuplicate(this.view.xaxisExt, e)
       if (this.view.xaxisExt.length > 1) {
-        this.view.xaxisExt = [this.view.xaxisExt[0]]
+        //this.view.xaxisExt = [this.view.xaxisExt[0]]
+      } else {
+        this.calcData(true)
       }
-      this.calcData(true)
     },
     addYaxis(e) {
       this.dragCheckType(this.view.yaxis, 'q')
       this.dragMoveDuplicate(this.view.yaxis, e)
-      if ( this.view.yaxis.length > 1) {
-        this.view.yaxis = [this.view.yaxis[0]]
+      if (this.view.yaxis.length > 1) {
+        //this.view.yaxis = [this.view.yaxis[0]]
+      } else {
+        this.calcData(true)
       }
-      this.calcData(true)
     },
-    addYaxisExt(e) {
-      this.dragCheckType(this.view.yaxisExt, 'q')
-      this.dragMoveDuplicate(this.view.yaxisExt, e)
-      /*if (equalsAny(this.view.type, 'map', 'bidirectional-bar') && this.view.yaxisExt.length > 1) {
-        this.view.yaxisExt = [this.view.yaxisExt[0]]
-      }*/
-      this.calcData(true)
-    },
+
     calcData(cache) {
-      console.log(cache)
+      //console.log(cache)
       //this.view.xaxis = [...this.source, ...this.target]
 
       this.$emit('plugin-call-back', {

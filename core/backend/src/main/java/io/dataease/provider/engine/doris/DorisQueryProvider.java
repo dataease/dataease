@@ -1077,8 +1077,11 @@ public class DorisQueryProvider extends QueryProvider {
                     String format = transDateFormat(request.getDateStyle(), request.getDatePattern());
                     if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5 || field.getDeExtractType() == 1) {
                         String date = String.format(MySQLConstants.STR_TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : MysqlConstants.DEFAULT_DATE_FORMAT);
-                        if (request.getOperator().equals("between")) {
-                            whereName = date;
+                        if (field.getType().equalsIgnoreCase("YEAR") || StringUtils.equalsIgnoreCase(field.getDateFormat(), "%Y")) {
+                            date = String.format(MySQLConstants.DATE_FORMAT, "CONCAT(" + date + ",'-01-01')", "%Y-01-01");
+                        }
+                        if (request.getOperator().equals("between") && request.getDatasetTableField().getDeExtractType() != 1) {
+                            whereName = String.format(MySQLConstants.UNIX_TIMESTAMP, date) + "*1000";
                         } else {
                             whereName = String.format(MySQLConstants.DATE_FORMAT, date, format);
                         }
@@ -1126,10 +1129,14 @@ public class DorisQueryProvider extends QueryProvider {
                 whereName = "upper(" + whereName + ")";
             } else if (StringUtils.containsIgnoreCase(request.getOperator(), "between")) {
                 if (request.getDatasetTableField().getDeType() == 1) {
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-                    String startTime = simpleDateFormat.format(new Date(Long.parseLong(value.get(0))));
-                    String endTime = simpleDateFormat.format(new Date(Long.parseLong(value.get(1))));
-                    whereValue = String.format(DorisConstants.WHERE_BETWEEN, startTime, endTime);
+                    if (request.getDatasetTableField().getDeExtractType() == 1) {
+                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+                        String startTime = simpleDateFormat.format(new Date(Long.parseLong(value.get(0))));
+                        String endTime = simpleDateFormat.format(new Date(Long.parseLong(value.get(1))));
+                        whereValue = String.format(DorisConstants.WHERE_BETWEEN, startTime, endTime);
+                    } else {
+                        whereValue = String.format(DorisConstants.WHERE_BETWEEN, value.get(0), value.get(1));
+                    }
                 } else {
                     whereValue = String.format(DorisConstants.WHERE_BETWEEN, value.get(0), value.get(1));
                 }
@@ -1179,6 +1186,8 @@ public class DorisQueryProvider extends QueryProvider {
                 return "%Y" + split + "%m" + split + "%d";
             case "H_m_s":
                 return "%H:%i:%S";
+            case "y_M_d_H":
+                return "%Y" + split + "%m" + split + "%d" + " %H";
             case "y_M_d_H_m":
                 return "%Y" + split + "%m" + split + "%d" + " %H:%i";
             case "y_M_d_H_m_s":
@@ -1211,8 +1220,8 @@ public class DorisQueryProvider extends QueryProvider {
                 if (x.getDeExtractType() == 0) {
                     if (StringUtils.equalsIgnoreCase(x.getDateStyle(), "y_Q")) {
                         fieldName = String.format(format,
-                                String.format(DorisConstants.DATE_FORMAT, String.format(DorisConstants.STR_TO_DATE, originField, DorisConstants.DEFAULT_DATE_FORMAT), "%Y"),
-                                String.format(DorisConstants.QUARTER, String.format(DorisConstants.STR_TO_DATE, originField, DorisConstants.DEFAULT_DATE_FORMAT)));
+                                String.format(DorisConstants.DATE_FORMAT, String.format(DorisConstants.STR_TO_DATE, originField, StringUtils.isNotEmpty(x.getDateFormat()) ? x.getDateFormat() : DorisConstants.DEFAULT_DATE_FORMAT), "%Y"),
+                                String.format(DorisConstants.QUARTER, String.format(DorisConstants.STR_TO_DATE, originField, StringUtils.isNotEmpty(x.getDateFormat()) ? x.getDateFormat() : DorisConstants.DEFAULT_DATE_FORMAT)));
                     } else {
                         fieldName = String.format(DorisConstants.DATE_FORMAT, String.format(DorisConstants.STR_TO_DATE, originField, StringUtils.isNotEmpty(x.getDateFormat()) ? x.getDateFormat() : DorisConstants.DEFAULT_DATE_FORMAT), format);
                     }

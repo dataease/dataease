@@ -134,7 +134,15 @@
               </span>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item :command="beforeDateStyle('y')">{{ $t('chart.y') }}</el-dropdown-item>
+                <el-dropdown-item
+                  v-if="showDateExt"
+                  :command="beforeDateStyle('y_Q')"
+                >{{ $t('chart.y_Q') }}</el-dropdown-item>
                 <el-dropdown-item :command="beforeDateStyle('y_M')">{{ $t('chart.y_M') }}</el-dropdown-item>
+                <el-dropdown-item
+                  v-if="showDateExt"
+                  :command="beforeDateStyle('y_W')"
+                >{{ $t('chart.y_W') }}</el-dropdown-item>
                 <el-dropdown-item :command="beforeDateStyle('y_M_d')">{{ $t('chart.y_M_d') }}</el-dropdown-item>
                 <el-dropdown-item :command="beforeDateStyle('H_m_s')">{{ $t('chart.H_m_s') }}</el-dropdown-item>
                 <el-dropdown-item :command="beforeDateStyle('y_M_d_H_m')">{{ $t('chart.y_M_d_H_m') }}</el-dropdown-item>
@@ -223,6 +231,10 @@ export default {
       type: Object,
       required: true
     },
+    chart: {
+      type: Object,
+      required: true
+    },
     index: {
       type: Number,
       required: true
@@ -243,6 +255,14 @@ export default {
   data() {
     return {
       tagType: 'success'
+    }
+  },
+  computed: {
+    showDateExt() {
+      return this.chart.datasourceType === 'mysql' ||
+        this.chart.datasourceType === 'ds_doris' ||
+        this.chart.datasourceType === 'StarRocks' ||
+        this.chart.datasetMode === 1
     }
   },
   watch: {

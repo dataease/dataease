@@ -235,6 +235,7 @@
         </deBtn>
         <deBtn
           type="primary"
+          v-loading="exportDatasetLoading"
           @click="exportDatasetRequest"
         >{{ $t('dataset.confirm') }}
         </deBtn>
@@ -282,6 +283,7 @@ export default {
         name: ''
       },
       fields: [],
+      exportDatasetLoading: false,
       filedList: [],
       data: [],
       syncStatus: '',
@@ -490,6 +492,7 @@ export default {
               return
             }
             this.table.expressionTree = JSON.stringify({ items, logic })
+            this.exportDatasetLoading = true
             exportDataset(this.table).then((res) => {
               const blob = new Blob([res], { type: 'application/vnd.ms-excel' })
               const link = document.createElement('a')
@@ -499,6 +502,8 @@ export default {
               document.body.appendChild(link)
               link.click()
               document.body.removeChild(link)
+            }).finally(() => {
+              this.exportDatasetLoading = false
             })
           }
         } else {

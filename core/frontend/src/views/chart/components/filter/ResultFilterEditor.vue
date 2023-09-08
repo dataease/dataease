@@ -275,6 +275,11 @@ export default {
       this.logic = this.item.logic
       this.filterType = this.item.filterType
       this.enumCheckField = this.item.enumCheckField
+
+      // init enum option
+      if (this.item.filterType === 'enum' && this.needRequestEnum) {
+        this.initEnumOptions()
+      }
     },
     initEnumOptions() {
       // 查找枚举值

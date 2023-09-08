@@ -31,11 +31,9 @@ import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
 
 import javax.annotation.Resource;
-import java.text.Format;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -822,9 +820,9 @@ public class CKQueryProvider extends QueryProvider {
     }
 
     public String getTotalCount(boolean isTable, String sql, Datasource ds) {
-        if(isTable){
+        if (isTable) {
             return "SELECT COUNT(*) from " + String.format(CKConstants.KEYWORD_TABLE, sql);
-        }else {
+        } else {
             return "SELECT COUNT(*) from ( " + sqlFix(sql) + " ) DE_COUNT_TEMP";
         }
     }
@@ -1253,6 +1251,8 @@ public class CKQueryProvider extends QueryProvider {
                 return "%Y" + split + "%m" + split + "%d";
             case "H_m_s":
                 return "%H:%M:%S";
+            case "y_M_d_H":
+                return "%Y" + split + "%m" + split + "%d" + " %H";
             case "y_M_d_H_m":
                 return "%Y" + split + "%m" + split + "%d" + " %H:%M";
             case "y_M_d_H_m_s":
@@ -1413,6 +1413,11 @@ public class CKQueryProvider extends QueryProvider {
         } else {
             return sql;
         }
+    }
+
+    @Override
+    public String sqlForPreview(String table, Datasource ds) {
+        return "SELECT * FROM " +  String.format(CKConstants.KEYWORD_TABLE, table);
     }
 
     public List<Dateformat> dateformat() {

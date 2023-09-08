@@ -8,19 +8,19 @@
       <draggable v-model="view.xaxis" group="drag" animation="300" :move="onMove" class="drag-block-style"
                  @add="addXaxis" @update="calcData(true)">
         <transition-group class="draggable-group">
-          <sankey-dimension-item v-for="(item,index) in view.xaxis" :key="index"
-                                 :param="param"
-                                 :index="0"
-                                 :item="item"
-                                 :dimension-data="dimension"
-                                 :quota-data="quotaData"
-                                 :chart="chart"
-                                 @onDimensionItemChange="dimensionItemChange"
-                                 @onDimensionItemRemove="dimensionItemRemove"
-                                 @editItemFilter="showDimensionEditFilter"
-                                 @onNameEdit="showRename"
-                                 dimension-name="dimension"
-                                 :bus="bus"
+          <dimension-item v-for="(item,index) in view.xaxis" :key="index"
+                          :param="param"
+                          :index="0"
+                          :item="item"
+                          :dimension-data="dimension"
+                          :quota-data="quotaData"
+                          :chart="chart"
+                          @onDimensionItemChange="dimensionItemChange"
+                          @onDimensionItemRemove="dimensionItemRemove"
+                          @editItemFilter="showDimensionEditFilter"
+                          @onNameEdit="showRename"
+                          dimension-name="dimension"
+                          :bus="bus"
           />
         </transition-group>
       </draggable>
@@ -84,7 +84,7 @@
                  @add="addCustomFilter" @update="calcData(true)">
         <transition-group class="draggable-group">
           <filter-item v-for="(item,index) in view.customFilter" :key="item.id" :param="param" :index="index"
-                       :item="item" :dimension-data="dimension" :quota-data="quota"
+                       :item="item" :dimension-data="dimension" :quota-data="quota" :bus="bus"
                        @onFilterItemRemove="filterItemRemove"
                        @editItemFilter="showEditFilter"/>
         </transition-group>
@@ -98,10 +98,10 @@
 </template>
 
 <script>
-import SankeyDimensionItem from '@/components/views/SankeyDimensionItem'
-import QuotaItem from '@/components/views/QuotaItem'
-import QuotaExtItem from '@/components/views/QuotaExtItem'
-import FilterItem from '@/components/views/FilterItem'
+import DimensionItem from '../../../components/views/DimensionItem'
+import QuotaItem from '../../../components/views/QuotaItem'
+import QuotaExtItem from '../../../components/views/QuotaExtItem'
+import FilterItem from '../../../components/views/FilterItem'
 import messages from '@/de-base/lang/messages'
 
 export default {
@@ -118,7 +118,7 @@ export default {
     },
   },
   components: {
-    SankeyDimensionItem,
+    DimensionItem,
     QuotaItem,
     QuotaExtItem,
     FilterItem
@@ -197,7 +197,9 @@ export default {
     },
 
     addXaxis(e) {
-
+      if (this.view.type !== 'table-info') {
+        this.dragCheckType(this.view.xaxis, 'd')
+      }
       this.dragMoveDuplicate(this.view.xaxis, e)
       /*if (this.view.xaxis.length > 1) {
         this.view.xaxis = [this.view.xaxis[0]]

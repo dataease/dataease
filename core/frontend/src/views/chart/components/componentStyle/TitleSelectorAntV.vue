@@ -51,6 +51,20 @@
                 :value="option.value"
               />
             </el-select>
+            <el-tooltip
+              class="item"
+              effect="dark"
+              placement="bottom"
+            >
+              <div
+                slot="content"
+                v-html="$t('chart.font_family_tip')"
+              />
+              <i
+                class="el-icon-info"
+                style="cursor: pointer;color: #606266;margin-left: 4px;"
+              />
+            </el-tooltip>
           </el-form-item>
           <el-form-item
             v-show="showProperty('fontSize')"

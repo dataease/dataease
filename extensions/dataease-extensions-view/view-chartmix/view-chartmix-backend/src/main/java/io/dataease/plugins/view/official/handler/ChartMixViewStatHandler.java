@@ -1,5 +1,6 @@
 package io.dataease.plugins.view.official.handler;
 
+import com.google.gson.Gson;
 import io.dataease.plugins.common.constants.datasource.SQLConstants;
 import io.dataease.plugins.common.request.permission.DataSetRowPermissionsTreeDTO;
 import io.dataease.plugins.common.util.ConstantsUtil;
@@ -19,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class DefaultViewStatHandler implements PluginViewStatHandler {
+public class ChartMixViewStatHandler implements PluginViewStatHandler {
 
     @Override
     public String build(PluginViewParam pluginViewParam, ViewPluginService viewPluginService) {
@@ -43,6 +44,7 @@ public class DefaultViewStatHandler implements PluginViewStatHandler {
 
         List<PluginViewSQL> xFields = fieldSQLMap.getOrDefault("xAxis", new ArrayList<>()).stream().filter(singleField -> ObjectUtils.isNotEmpty(singleField.getField())).map(PluginSingleField::getField).collect(Collectors.toList());
         List<PluginViewSQL> xOrders = fieldSQLMap.getOrDefault("xAxis", new ArrayList<>()).stream().filter(singleField -> ObjectUtils.isNotEmpty(singleField.getSort())).map(PluginSingleField::getSort).collect(Collectors.toList());
+
         // List<String> xWheres = fieldSQLMap.get("xAxis").stream().map(singleField -> singleField.getWhere()).collect(Collectors.toList());
 
         List<PluginViewSQL> yFields = fieldSQLMap.getOrDefault("yAxis", new ArrayList<>()).stream().filter(singleField -> ObjectUtils.isNotEmpty(singleField.getField())).map(PluginSingleField::getField).collect(Collectors.toList());
@@ -75,6 +77,8 @@ public class DefaultViewStatHandler implements PluginViewStatHandler {
         List<PluginViewSQL> orders = new ArrayList<>();
         orders.addAll(xOrders);
         orders.addAll(yOrders);
+
+
         List<String> aggWheres = new ArrayList<>();
         aggWheres.addAll(yWheres.stream().filter(ObjectUtils::isNotEmpty).collect(Collectors.toList()));
 

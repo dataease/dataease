@@ -4,7 +4,7 @@ import Stomp from 'stompjs'
 import store from '@/store'
 class DeWebsocket {
   constructor() {
-    this.ws_url = '/websocket'
+    this.ws_url = `${process.env.VUE_APP_BASE_API}websocket`
     this.client = null
     this.channels = [
       {

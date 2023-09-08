@@ -109,15 +109,6 @@ service.interceptors.response.use(response => {
   config.loading && tryHideLoading(store.getters.currentPath)
 
   let msg = ''
-  if (error?.response?.config?.url === 'dataset/table/exportDataset') {
-    checkAuth(error.response)
-    var reader = new FileReader()
-    reader.readAsText(error.response.data, 'utf-8')
-    reader.onload = () => {
-      $error((JSON.parse(reader.result) || {}).message)
-    }
-    return Promise.reject()
-  }
 
   if (error.response) {
     checkAuth(error.response)

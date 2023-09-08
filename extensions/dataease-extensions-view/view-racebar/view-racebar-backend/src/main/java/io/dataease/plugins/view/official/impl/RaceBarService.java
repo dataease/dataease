@@ -1,11 +1,10 @@
 package io.dataease.plugins.view.official.impl;
 
-import com.google.gson.Gson;
 import io.dataease.plugins.common.dto.StaticResource;
 import io.dataease.plugins.view.entity.PluginViewField;
 import io.dataease.plugins.view.entity.PluginViewParam;
 import io.dataease.plugins.view.entity.PluginViewType;
-import io.dataease.plugins.view.official.handler.DefaultViewStatHandler;
+import io.dataease.plugins.view.official.handler.RaceBarViewStatHandler;
 import io.dataease.plugins.view.service.ViewPluginService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -41,9 +40,9 @@ public class RaceBarService extends ViewPluginService {
     private static final Map<String, String[]> VIEW_STYLE_PROPERTY_INNER = new HashMap<>();
 
     static {
-        VIEW_STYLE_PROPERTY_INNER.put("color-selector", new String[]{"value", "alpha"});
-        VIEW_STYLE_PROPERTY_INNER.put("label-selector", new String[]{"show", "fontSize", "color", "position", "formatter"});
-        VIEW_STYLE_PROPERTY_INNER.put("tooltip-selector", new String[]{"show", "textStyle", "formatter"});
+        VIEW_STYLE_PROPERTY_INNER.put("color-selector", new String[]{"value"});
+        VIEW_STYLE_PROPERTY_INNER.put("label-selector", new String[]{"show", "fontSize", "color", "position"});
+        VIEW_STYLE_PROPERTY_INNER.put("tooltip-selector", new String[]{"show", "textStyle",});
         VIEW_STYLE_PROPERTY_INNER.put("title-selector", new String[]{"show", "title", "fontSize", "color", "hPosition", "vPosition", "isItalic", "isBolder"});
     }
 
@@ -107,7 +106,8 @@ public class RaceBarService extends ViewPluginService {
         if (CollectionUtils.isEmpty(xAxis) || CollectionUtils.isEmpty(yAxis) || xAxis.size() < 2) {
             return null;
         }
-        String sql = new DefaultViewStatHandler().build(param, this);
+        String sql = new RaceBarViewStatHandler().build(param, this);
+
         return sql;
 
     }
@@ -144,12 +144,23 @@ public class RaceBarService extends ViewPluginService {
         map.put("encode", encode);
 
         Set<Object> xs = new HashSet<>();
+        Set<String> keySet = new HashSet<>();
+        List<String> keyList = new ArrayList<>();
+
         data.forEach(ss -> {
             xs.add(ss[encode.get("y")]);
+
+            String key = StringUtils.defaultString(ss[(Integer) map.get("extIndex")], StringUtils.EMPTY);
+            if (!keySet.contains(key)) {
+                keySet.add(key);
+                keyList.add(key);
+            }
+
         });
 
+
         Map<String, List<String[]>> groupData = data.stream().collect(Collectors.toMap(
-                k -> k[(Integer) map.get("extIndex")],
+                k -> StringUtils.defaultString(k[(Integer) map.get("extIndex")], StringUtils.EMPTY),
                 v -> {
                     List<String[]> list = new ArrayList<>();
                     list.add(v);
@@ -161,24 +172,13 @@ public class RaceBarService extends ViewPluginService {
                 })
         );
 
-        for (String key : groupData.keySet()) {
-            String finalType = type;
-            groupData.put(key, groupData.get(key).stream().sorted((o1, o2) -> {
-                if (StringUtils.equals(finalType, "LONG")) {
-                    return Long.valueOf(o2[encode.get("x")]).compareTo(Long.valueOf(o1[encode.get("x")]));
-                } else if (StringUtils.equals(finalType, "DOUBLE")) {
-                    return Double.valueOf(o2[encode.get("x")]).compareTo(Double.valueOf(o1[encode.get("x")]));
-                }
-                return o2[encode.get("x")].compareTo(o1[encode.get("x")]);
-            }).collect(Collectors.toList()));
-
-        }
 
         map.put("groupData", groupData);
 
-        map.put("extXs", new ArrayList<>(groupData.keySet()).stream().sorted().collect(Collectors.toList()));
+        map.put("extXs", keyList);
 
-        map.put("xs", new ArrayList<>(xs).stream().sorted().collect(Collectors.toList()));
+        map.put("xs", xs);
+
 
         return map;
     }

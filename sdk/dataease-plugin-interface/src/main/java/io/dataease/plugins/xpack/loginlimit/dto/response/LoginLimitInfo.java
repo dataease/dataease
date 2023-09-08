@@ -14,4 +14,6 @@ public class LoginLimitInfo {
     private String scanCreateUser;
 
     private String multiLogin;
+
+    private String lockedEmail = "false";
 }

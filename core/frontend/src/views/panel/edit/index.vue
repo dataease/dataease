@@ -368,6 +368,7 @@
       <Preview
         v-if="previewVisible"
         :in-screen="!previewVisible"
+        :class="previewVisible && 'fullscreen-visual-selects'"
         :panel-info="panelInfo"
         :show-type="canvasStyleData.selfAdaption?'full':'width'"
         :canvas-style-data="canvasStyleData"
@@ -723,7 +724,7 @@ export default {
             background: `url(${imgUrlTrans(styleInfo.imageUrl)}) no-repeat`
           }
         } else if (styleInfo.backgroundType === 'color') {
-          const colorRGBA = hexColorToRGBA(styleInfo.color, styleInfo.alpha||100)
+          const colorRGBA = hexColorToRGBA(styleInfo.color, styleInfo.alpha === undefined ? 100 : styleInfo.alpha)
           style = {
             background: colorRGBA
           }
@@ -747,7 +748,7 @@ export default {
             ...style
           }
         } else if (this.canvasStyleData.panel.backgroundType === 'color') {
-          const colorRGBA = hexColorToRGBA(this.canvasStyleData.panel.color, this.canvasStyleData.panel.alpha||100)
+          const colorRGBA = hexColorToRGBA(this.canvasStyleData.panel.color, this.canvasStyleData.panel.alpha === undefined ? 100 : this.canvasStyleData.panel.alpha)
           style = {
             background: colorRGBA,
             ...style

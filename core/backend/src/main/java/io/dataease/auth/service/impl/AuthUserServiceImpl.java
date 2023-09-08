@@ -3,13 +3,13 @@ package io.dataease.auth.service.impl;
 import io.dataease.auth.api.dto.CurrentRoleDto;
 import io.dataease.auth.entity.AccountLockStatus;
 import io.dataease.auth.entity.SysUserEntity;
-import io.dataease.commons.constants.ParamConstants;
-import io.dataease.commons.utils.CodingUtil;
-import io.dataease.exception.DataEaseException;
-import io.dataease.ext.*;
 import io.dataease.auth.service.AuthUserService;
 import io.dataease.commons.constants.AuthConstants;
+import io.dataease.commons.constants.ParamConstants;
+import io.dataease.commons.utils.CodingUtil;
 import io.dataease.commons.utils.LogUtil;
+import io.dataease.exception.DataEaseException;
+import io.dataease.ext.AuthMapper;
 import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.SysLoginLimit;
 import io.dataease.plugins.common.base.domain.SysLoginLimitExample;
@@ -27,8 +27,9 @@ import io.dataease.plugins.xpack.ldap.service.LdapXpackService;
 import io.dataease.plugins.xpack.loginlimit.dto.response.LoginLimitInfo;
 import io.dataease.plugins.xpack.loginlimit.service.LoginLimitXpackService;
 import io.dataease.plugins.xpack.oidc.service.OidcXpackService;
-
 import io.dataease.plugins.xpack.wecom.service.WecomXpackService;
+import io.dataease.service.sys.SysUserService;
+import io.dataease.service.system.EmailService;
 import io.dataease.service.system.SystemParameterService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -36,6 +37,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -44,6 +46,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static io.dataease.commons.constants.ParamConstants.BASIC.LOCKED_EMAIL;
 
 @Service
 public class AuthUserServiceImpl implements AuthUserService {
@@ -61,6 +65,14 @@ public class AuthUserServiceImpl implements AuthUserService {
 
     @Resource
     private SystemParameterService systemParameterService;
+
+    @Resource
+    private EmailService emailService;
+
+    @Lazy
+    @Resource
+    private SysUserService sysUserService;
+
 
     /**
      * 此处需被F2CRealm登录认证调用 也就是说每次请求都会被调用 所以最好加上缓存
@@ -285,8 +297,28 @@ public class AuthUserServiceImpl implements AuthUserService {
         sysLoginLimit.setLoginType(logintype);
         sysLoginLimit.setRecordTime(now);
         sysLoginLimitMapper.insert(sysLoginLimit);
-        return lockStatus(username, logintype);
+        AccountLockStatus accountLockStatus = lockStatus(username, logintype);
+        if (ObjectUtils.isNotEmpty(accountLockStatus) && accountLockStatus.getLocked()) {
+            sendLockedEmail(username);
+        }
+        return accountLockStatus;
 
+    }
+
+    public void sendLockedEmail(String username) {
+        String value = systemParameterService.getValue(LOCKED_EMAIL.getValue());
+        if (StringUtils.isNotBlank(value) && StringUtils.equals("true", value)) {
+            String email = sysUserService.adminEmail();
+            if (StringUtils.isBlank(email)) return;
+            String format = "账号【%s】登录失败次数过多，已被锁定！";
+            String content = String.format(format, username);
+            try {
+                emailService.send(email, "账号锁定通知", content);
+            } catch (Exception e) {
+                LogUtil.error(e.getMessage(), e);
+                systemParameterService.disabledLockedEmail();
+            }
+        }
     }
 
     @Override

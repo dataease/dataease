@@ -35,6 +35,7 @@
       :obj="{active, chart, trackMenu, searchCount, terminalType: scaleCoefficientType}"
       :chart="chart"
       :track-menu="trackMenu"
+      :in-screen="inScreen"
       :search-count="searchCount"
       :terminal-type="scaleCoefficientType"
       :scale="scale"
@@ -67,6 +68,7 @@
       :scale="scale"
       :theme-style="element.commonBackground"
       :active="active"
+      :in-screen="inScreen"
       @onChartClick="chartClick"
       @onJumpClick="jumpClick"
     />
@@ -360,7 +362,7 @@ export default {
   computed: {
     // 首次加载且非编辑状态新复制的视图，使用外部filter
     initLoad() {
-      return !(this.isEdit && this.currentCanvasNewId.includes(this.element.id)) && this.isFirstLoad && this.canvasId === 'canvas-main'
+      return !(this.isEdit && this.currentCanvasNewId.includes(this.element.id)) && this.isFirstLoad
     },
     scaleCoefficient() {
       if (this.terminal === 'pc' && !this.mobileLayoutStatus) {

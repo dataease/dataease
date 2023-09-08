@@ -87,6 +87,7 @@ export const DEFAULT_SLIDER = {
 export const DEFAULT_Graphic = {
   show: true,
   fontSize: '60',
+  marginModel: 'absolute',
   color: '#000000',
   alpha: 25,
   bottom: 90,
@@ -842,7 +843,7 @@ const hexToRgba = (hex, opacity) => {
 }
 
 export const getMarginUnit = marginForm => {
-  if (!marginForm.marginModel || marginForm.marginModel === 'auto') return null
+  if (!marginForm || !marginForm.marginModel || marginForm.marginModel === 'auto') return null
   if (marginForm.marginModel === 'absolute') return 'px'
   if (marginForm.marginModel === 'relative') return '%'
   return null

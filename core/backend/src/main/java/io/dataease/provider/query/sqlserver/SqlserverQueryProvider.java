@@ -1149,7 +1149,7 @@ public class SqlserverQueryProvider extends QueryProvider {
             String whereValue = "";
 
             if (StringUtils.containsIgnoreCase(request.getOperator(), "in")) {
-                if(request.getDatasetTableField().getType().equalsIgnoreCase("NVARCHAR")) {
+                if(request.getDatasetTableField() != null && request.getDatasetTableField().getType().equalsIgnoreCase("NVARCHAR")) {
                     whereValue = "(" + value.stream().map(str -> {
                         return "N" + "'" + str + "'";
                     }).collect(Collectors.joining(",")) + ")";
@@ -1171,7 +1171,7 @@ public class SqlserverQueryProvider extends QueryProvider {
                 }
             } else {
 
-                if(request.getDatasetTableField().getType().equalsIgnoreCase("NVARCHAR")){
+                if(request.getDatasetTableField() != null && request.getDatasetTableField().getType().equalsIgnoreCase("NVARCHAR")){
                     whereValue = String.format(SqlServerSQLConstants.WHERE_VALUE_VALUE_CH, value.get(0));
                 }else {
                     whereValue = String.format(SqlServerSQLConstants.WHERE_VALUE_VALUE, value.get(0));
@@ -1227,6 +1227,12 @@ public class SqlserverQueryProvider extends QueryProvider {
                 }
             case "H_m_s":
                 return "CONVERT(varchar(100), " + originField + ", 8)";
+            case "y_M_d_H":
+                if (split.equalsIgnoreCase("-")) {
+                    return "substring( convert(varchar," + originField + ",120),1,13)";
+                } else {
+                    return "replace(" + "substring( convert(varchar," + originField + ",120),1,13), '-','/')";
+                }
             case "y_M_d_H_m":
                 if (split.equalsIgnoreCase("-")) {
                     return "substring( convert(varchar," + originField + ",120),1,16)";
