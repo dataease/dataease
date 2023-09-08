@@ -105,9 +105,9 @@
 </template>
 
 <script>
-import SankeyDimensionItem from '@/components/views/SankeyDimensionItem'
-import SankeyQuotaItem from '@/components/views/SankeyQuotaItem'
-import FilterItem from '@/components/views/FilterItem'
+import SankeyDimensionItem from '../../../components/views/SankeyDimensionItem'
+import SankeyQuotaItem from '../../../components/views/SankeyQuotaItem'
+import FilterItem from '../../../components/views/FilterItem'
 import messages from '@/de-base/lang/messages'
 
 export default {

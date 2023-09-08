@@ -33,11 +33,11 @@
 
 <script>
 import {Sankey} from '@antv/g2plot'
-import {uuid, hexColorToRGBA} from '@/utils/sankey'
-import ViewTrackBar from '@/components/views/ViewTrackBar'
-import {getRemark} from "@/components/views/utils";
-import {DEFAULT_TITLE_STYLE} from '@/utils/map';
-import ChartTitleUpdate from '@/components/views/ChartTitleUpdate';
+import {uuid, hexColorToRGBA} from '../../../utils/sankey'
+import ViewTrackBar from '../../../components/views/ViewTrackBar'
+import {getRemark} from "../../../components/views/utils";
+import {DEFAULT_TITLE_STYLE} from '../../../utils/map';
+import ChartTitleUpdate from '../../../components/views/ChartTitleUpdate';
 import _ from 'lodash';
 import {clear} from 'size-sensor'
 
