@@ -150,7 +150,7 @@ public class RaceBarService extends ViewPluginService {
         data.forEach(ss -> {
             xs.add(ss[encode.get("y")]);
 
-            String key = ss[(Integer) map.get("extIndex")];
+            String key = StringUtils.defaultString(ss[(Integer) map.get("extIndex")], StringUtils.EMPTY);
             if (!keySet.contains(key)) {
                 keySet.add(key);
                 keyList.add(key);
@@ -160,7 +160,7 @@ public class RaceBarService extends ViewPluginService {
 
 
         Map<String, List<String[]>> groupData = data.stream().collect(Collectors.toMap(
-                k -> k[(Integer) map.get("extIndex")],
+                k -> StringUtils.defaultString(k[(Integer) map.get("extIndex")], StringUtils.EMPTY),
                 v -> {
                     List<String[]> list = new ArrayList<>();
                     list.add(v);
@@ -178,6 +178,7 @@ public class RaceBarService extends ViewPluginService {
         map.put("extXs", keyList);
 
         map.put("xs", xs);
+
 
         return map;
     }
