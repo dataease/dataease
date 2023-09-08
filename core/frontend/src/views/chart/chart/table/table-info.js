@@ -705,8 +705,7 @@ function mappingColor(value, defaultColor, field, type) {
 
 function showTooltip(s2Instance, event) {
   const cell = s2Instance.getCell(event.target)
-  const meta = cell.getMeta()
-  const content = meta.value
+  const content = cell.actualText
 
   s2Instance.showTooltip({
     position: {
