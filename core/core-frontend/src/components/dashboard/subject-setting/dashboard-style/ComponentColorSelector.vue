@@ -116,30 +116,6 @@
             @change="changeColorCase('alpha')"
           />
         </el-form-item>
-        <el-divider></el-divider>
-        <el-row class="color-type-text">
-          {{ t('visualization.card_color_matching') }}
-        </el-row>
-        <el-form-item :label="t('chart.quota_color')" class="form-item">
-          <el-color-picker
-            v-model="colorForm.misc.valueFontColor"
-            class="color-picker-style"
-            size="small"
-            :predefine="predefineColors"
-            is-custom
-            @change="changeColorCase('quotaColor')"
-          />
-        </el-form-item>
-        <el-form-item :label="t('chart.dimension_color')" class="form-item">
-          <el-color-picker
-            v-model="colorForm.misc.nameFontColor"
-            class="color-picker-style"
-            size="small"
-            :predefine="predefineColors"
-            is-custom
-            @change="changeColorCase('dimensionColor')"
-          />
-        </el-form-item>
       </div>
       <el-divider></el-divider>
       <el-row class="color-type-text">

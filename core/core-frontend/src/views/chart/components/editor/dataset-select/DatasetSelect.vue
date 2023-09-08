@@ -7,6 +7,7 @@ import { Field, getFieldByDQ } from '@/api/chart'
 import _ from 'lodash'
 import { useRouter } from 'vue-router'
 import { getDatasetTree } from '@/api/dataset'
+import { ElFormItem, FormInstance } from 'element-plus-secondary'
 
 const { resolve } = useRouter()
 
@@ -37,6 +38,7 @@ const initDataset = () => {
     })
     .finally(() => {
       loadingDatasetTree.value = false
+      formRef.value.validate()
     })
 }
 
@@ -68,6 +70,8 @@ const dsSelectProps = {
 }
 
 const { t } = useI18n()
+
+const formRef = ref<FormInstance>()
 
 const searchStr = ref<string>()
 
@@ -103,9 +107,38 @@ const selectedNode = computed(() => {
   return _.find(flattedTree.value, node => node.id === _modelValue.value)
 })
 
+const exist = computed(() => {
+  if (_modelValue.value) {
+    if (selectedNode.value === undefined) {
+      return false
+    }
+  }
+  return true
+})
+
 const selectedNodeName = computed(() => {
+  if (!exist.value) {
+    return '数据集不存在'
+  }
   return selectedNode.value?.name
 })
+
+const form = computed(() => {
+  return { name: selectedNodeName.value }
+})
+
+const rules = ref([
+  {
+    validator: (rule: any, value: any, callback: any) => {
+      if (!exist.value) {
+        callback(new Error())
+      } else {
+        callback()
+      }
+    },
+    trigger: ['change', 'blur']
+  }
+])
 
 function flatTree(tree: Tree[]) {
   let result = _.cloneDeep(tree)
@@ -191,13 +224,22 @@ onMounted(() => {
       :effect="themes"
     >
       <template #reference>
-        <el-input :effect="themes" v-model="selectedNodeName" readonly placeholder="请选择数据集">
-          <template #suffix>
-            <el-icon class="input-arrow-icon" :class="{ reverse: _popoverShow }">
-              <ArrowDown />
-            </el-icon>
-          </template>
-        </el-input>
+        <el-form ref="formRef" :model="form">
+          <el-form-item prop="name" :rules="rules">
+            <el-input
+              :effect="themes"
+              v-model="selectedNodeName"
+              readonly
+              placeholder="请选择数据集"
+            >
+              <template #suffix>
+                <el-icon class="input-arrow-icon" :class="{ reverse: _popoverShow }">
+                  <ArrowDown />
+                </el-icon>
+              </template>
+            </el-input>
+          </el-form-item>
+        </el-form>
       </template>
       <template #default>
         <el-container>
@@ -286,6 +328,14 @@ onMounted(() => {
     font-size: 12px;
   }
 }
+:deep(.ed-form-item) {
+  margin-bottom: 0;
+}
+:deep(.ed-form-item.is-error .ed-input__wrapper) {
+  input {
+    color: var(--ed-color-danger);
+  }
+}
 </style>
 
 <style lang="less">
@@ -328,6 +378,7 @@ onMounted(() => {
           font-size: 12px;
           font-weight: 400;
           cursor: pointer;
+          min-width: 30px;
           min-width: 30px;
         }
 
