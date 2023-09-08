@@ -1220,8 +1220,8 @@ public class DorisQueryProvider extends QueryProvider {
                 if (x.getDeExtractType() == 0) {
                     if (StringUtils.equalsIgnoreCase(x.getDateStyle(), "y_Q")) {
                         fieldName = String.format(format,
-                                String.format(DorisConstants.DATE_FORMAT, String.format(DorisConstants.STR_TO_DATE, originField, DorisConstants.DEFAULT_DATE_FORMAT), "%Y"),
-                                String.format(DorisConstants.QUARTER, String.format(DorisConstants.STR_TO_DATE, originField, DorisConstants.DEFAULT_DATE_FORMAT)));
+                                String.format(DorisConstants.DATE_FORMAT, String.format(DorisConstants.STR_TO_DATE, originField, StringUtils.isNotEmpty(x.getDateFormat()) ? x.getDateFormat() : DorisConstants.DEFAULT_DATE_FORMAT), "%Y"),
+                                String.format(DorisConstants.QUARTER, String.format(DorisConstants.STR_TO_DATE, originField, StringUtils.isNotEmpty(x.getDateFormat()) ? x.getDateFormat() : DorisConstants.DEFAULT_DATE_FORMAT)));
                     } else {
                         fieldName = String.format(DorisConstants.DATE_FORMAT, String.format(DorisConstants.STR_TO_DATE, originField, StringUtils.isNotEmpty(x.getDateFormat()) ? x.getDateFormat() : DorisConstants.DEFAULT_DATE_FORMAT), format);
                     }
