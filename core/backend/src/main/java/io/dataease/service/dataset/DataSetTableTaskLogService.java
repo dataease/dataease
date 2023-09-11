@@ -3,6 +3,7 @@ package io.dataease.service.dataset;
 import cn.hutool.core.date.DateUtil;
 import io.dataease.commons.constants.SysLogConstants;
 import io.dataease.commons.utils.ServletUtils;
+import io.dataease.controller.dataset.request.DataSetTaskInstanceGridRequest;
 import io.dataease.exception.DataEaseException;
 import io.dataease.ext.ExtDataSetTaskMapper;
 import io.dataease.ext.query.GridExample;
@@ -70,7 +71,7 @@ public class DataSetTableTaskLogService {
         datasetTableTaskLogMapper.deleteByPrimaryKey(id);
     }
 
-    public void exportExcel(BaseGridRequest request) throws Exception {
+    public void exportExcel(DataSetTaskInstanceGridRequest request) throws Exception {
         HttpServletResponse response = ServletUtils.response();
         OutputStream outputStream = response.getOutputStream();
         try {
@@ -137,38 +138,12 @@ public class DataSetTableTaskLogService {
     }
 
 
-    public List<DataSetTaskLogDTO> listTaskLog(BaseGridRequest request, String type) {
-        List<ConditionEntity> conditionEntities = request.getConditions();
+    public List<DataSetTaskLogDTO> listTaskLog(DataSetTaskInstanceGridRequest request, String type) {
         if(!type.equalsIgnoreCase("excel")){
-            ConditionEntity entity = new ConditionEntity();
-            entity.setField("task_id");
-            entity.setOperator("not in");
-            List<String>status = new ArrayList<>();status.add("初始导入");status.add("替换");status.add("追加");
-            entity.setValue(status);
-            if(CollectionUtils.isEmpty(conditionEntities)){
-                conditionEntities = new ArrayList<>();
-            }
-            conditionEntities.add(entity);
+            request.setExcludedIdList(List.of("初始导入", "替换", "追加"));
         }
-
-        ConditionEntity entity2 = new ConditionEntity();
-        entity2.setField("1");
-        entity2.setOperator("eq");
-        entity2.setValue("1");
-        conditionEntities.add(entity2);
-        conditionEntities = conditionEntities.stream().map(conditionEntity -> {
-            if(conditionEntity.getField().equals("dataset_table_task.last_exec_status")){
-                conditionEntity.setField("dataset_table_task_log.status");
-            }
-            return conditionEntity;
-        }).collect(Collectors.toList());
-        request.setConditions(conditionEntities);
-
-        GridExample gridExample = request.convertExample();
-        gridExample.setExtendCondition(AuthUtils.getUser().getUserId().toString());
-
         if(AuthUtils.getUser().getIsAdmin()){
-            List<DataSetTaskLogDTO> dataSetTaskLogDTOS = extDataSetTaskMapper.listTaskLog(gridExample);
+            List<DataSetTaskLogDTO> dataSetTaskLogDTOS = extDataSetTaskMapper.listTaskLog(request);
             dataSetTaskLogDTOS.forEach(dataSetTaskLogDTO -> {
                 if(StringUtils.isEmpty(dataSetTaskLogDTO.getName())){
                     dataSetTaskLogDTO.setName(dataSetTaskLogDTO.getTaskId());
@@ -176,7 +151,7 @@ public class DataSetTableTaskLogService {
             });
             return dataSetTaskLogDTOS;
         }else {
-            List<DataSetTaskLogDTO> dataSetTaskLogDTOS = extDataSetTaskMapper.listUserTaskLog(gridExample);
+            List<DataSetTaskLogDTO> dataSetTaskLogDTOS = extDataSetTaskMapper.listUserTaskLog(request);
             dataSetTaskLogDTOS.forEach(dataSetTaskLogDTO -> {
                 if(StringUtils.isEmpty(dataSetTaskLogDTO.getName())){
                     dataSetTaskLogDTO.setName(dataSetTaskLogDTO.getTaskId());

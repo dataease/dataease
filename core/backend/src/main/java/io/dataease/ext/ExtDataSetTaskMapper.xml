@@ -21,15 +21,32 @@
         FROM dataset_table_task_log
         LEFT JOIN dataset_table_task ON dataset_table_task_log.task_id = dataset_table_task.id
         LEFT JOIN dataset_table ON dataset_table_task_log.table_id = dataset_table.id
-        <if test="_parameter != null">
-            <include refid="io.dataease.ext.query.GridSql.gridCondition"/>
+
+        where 1=1
+        <if test="id != null">
+            and dataset_table_task.id = #{id}
         </if>
-        <if test="orderByClause != null">
-            order by ${orderByClause}
+        <if test="lastExecStatus != null and lastExecStatus.size() > 0">
+            and dataset_table_task_log.status in
+            <foreach collection="lastExecStatus" open="(" close=")" separator="," item="status">
+                #{status}
+            </foreach>
         </if>
-        <if test="orderByClause == null">
-            ORDER BY dataset_table_task_log.create_time desc
+        <if test="tableId != null and tableId.size() > 0">
+            and dataset_table.id in
+            <foreach collection="tableId" open="(" close=")" separator="," item="tid">
+                #{tid}
+            </foreach>
         </if>
+        <if test="lastExecTime != null and lastExecTime.length > 1">
+        and (dataset_table_task.last_exec_time between #{lastExecTime.[0]} and #{lastExecTime.[1]})
+        </if>
+
+        <if test="keyword != null">
+            and dataset_table_task.name like concat('%', #{keyword}, '%')
+        </if>
+
+        ORDER BY dataset_table_task_log.create_time desc
     </select>
 
     <select id="listUserTaskLog" resultMap="BaseResult"
@@ -38,82 +55,132 @@
         FROM dataset_table_task_log
         LEFT JOIN dataset_table_task ON dataset_table_task_log.task_id = dataset_table_task.id
         LEFT JOIN dataset_table ON dataset_table_task_log.table_id = dataset_table.id
-        <if test="_parameter != null">
-            <include refid="io.dataease.ext.query.GridSql.taskListGridCondition"/>
+        where 1=1
+        <if test="id != null">
+            and dataset_table_task.id = #{id}
         </if>
-        <if test="orderByClause != null">
-            order by ${orderByClause}
+        <if test="lastExecStatus != null and lastExecStatus.size() > 0">
+            and dataset_table_task_log.status in
+            <foreach collection="lastExecStatus" open="(" close=")" separator="," item="status">
+                #{status}
+            </foreach>
         </if>
-        <if test="orderByClause == null">
-            ORDER BY dataset_table_task_log.create_time desc
+        <if test="tableId != null and tableId.size() > 0">
+            and dataset_table.id in
+            <foreach collection="tableId" open="(" close=")" separator="," item="tid">
+                #{tid}
+            </foreach>
         </if>
+        <if test="lastExecTime != null and lastExecTime.length > 1">
+            and (dataset_table_task.last_exec_time between #{lastExecTime.[0]} and #{lastExecTime.[1]})
+        </if>
+
+        <if test="keyword != null">
+            and dataset_table_task.name like concat('%', #{keyword}, '%')
+        </if>
+
+        ORDER BY dataset_table_task_log.create_time desc
     </select>
 
-    <select id="taskList" resultMap="TaskResult" parameterType="io.dataease.ext.query.GridExample">
+    <select id="taskList" resultMap="TaskResult" parameterType="io.dataease.controller.dataset.request.DatasetTaskGridRequest">
         SELECT dataset_table.name as table_name, 'grant,manage,use' as `privileges`,dataset_table_task.* ,
         qrtz_triggers.NEXT_FIRE_TIME
         FROM dataset_table_task
         left join dataset_table on dataset_table.id=dataset_table_task.table_id
         left join qrtz_triggers on dataset_table_task.id=qrtz_triggers.TRIGGER_NAME
-        <if test="_parameter != null">
-            <include refid="io.dataease.ext.query.GridSql.gridCondition"/>
+        where 1=1
+        <if test="rate != null and rate.size() > 0">
+            and dataset_table_task.rate in
+            <foreach collection="rate" open="(" close=")" item="rateItem" separator=",">
+                #{rateItem}
+            </foreach>
         </if>
-        <if test="orderByClause != null">
-            order by ${orderByClause}
+        <if test="status != null and status.size() > 0">
+            and dataset_table_task.status in
+            <foreach collection="status" open="(" close=")" item="statusItem" separator=",">
+                #{statusItem}
+            </foreach>
         </if>
-        <if test="orderByClause == null">
-            order by dataset_table_task.create_time desc
+        <if test="lastExecStatus != null and lastExecStatus.size() > 0" >
+            and dataset_table_task.last_exec_status in
+            <foreach collection="lastExecStatus" open="(" close=")" item="lastExecStatusItem" separator=",">
+                #{lastExecStatusItem}
+            </foreach>
         </if>
+        <if test="tableId != null and tableId.size() > 0">
+            and dataset_table.id in
+            <foreach collection="tableId" open="(" close=")" separator="," item="tid">
+                #{tid}
+            </foreach>
+        </if>
+        <if test="id != null">
+            and dataset_table_task.id = #{id}
+        </if>
+        <if test="lastExecTime != null and lastExecTime.length > 1">
+            and (dataset_table_task.last_exec_time between #{lastExecTime.[0]} and #{lastExecTime.[1]})
+        </if>
+        <if test="keyword != null">
+            and dataset_table_task.name like concat('%', #{keyword}, '%')
+        </if>
+        order by dataset_table_task.create_time desc
     </select>
 
-    <select id="userTaskList" resultMap="TaskResult" parameterType="io.dataease.ext.query.GridExample">
+    <select id="userTaskList" resultMap="TaskResult" parameterType="io.dataease.controller.dataset.request.DatasetTaskGridRequest">
         SELECT dataset_table.name as table_name, get_auths(dataset_table_task.table_id,'dataset', #{extendCondition}) as
         `privileges`,dataset_table_task.* , qrtz_triggers.NEXT_FIRE_TIME
         FROM dataset_table_task
         left join dataset_table on dataset_table.id=dataset_table_task.table_id
         left join qrtz_triggers on dataset_table_task.id=qrtz_triggers.TRIGGER_NAME
-        <if test="_parameter != null">
-            <include refid="io.dataease.ext.query.GridSql.taskListGridCondition"/>
+
+        where 1=1
+        <if test="rate != null and rate.size() > 0">
+            and dataset_table_task.rate in
+            <foreach collection="rate" open="(" close=")" item="rateItem" separator=",">
+                #{rateItem}
+            </foreach>
         </if>
-        <if test="orderByClause != null">
-            order by ${orderByClause}
+        <if test="status != null and status.size() > 0">
+            and dataset_table_task.status in
+            <foreach collection="status" open="(" close=")" item="statusItem" separator=",">
+                #{statusItem}
+            </foreach>
         </if>
-        <if test="orderByClause == null">
-            order by dataset_table_task.create_time desc
+        <if test="lastExecStatus != null and lastExecStatus.size() > 0">
+            and dataset_table_task.last_exec_status in
+            <foreach collection="lastExecStatus" open="(" close=")" item="lastExecStatusItem" separator=",">
+                #{lastExecStatusItem}
+            </foreach>
         </if>
+        <if test="id != null">
+            and dataset_table_task.id = #{id}
+        </if>
+        <if test="tableId != null and tableId.size() > 0">
+            and dataset_table.id in
+            <foreach collection="tableId" open="(" close=")" separator="," item="tid">
+                #{tid}
+            </foreach>
+        </if>
+        <if test="lastExecTime != null and lastExecTime.length > 1">
+            and (dataset_table_task.last_exec_time between #{lastExecTime.[0]} and #{lastExecTime.[1]})
+        </if>
+        <if test="keyword != null">
+            and dataset_table_task.name like concat('%', #{keyword}, '%')
+        </if>
+        order by dataset_table_task.create_time desc
     </select>
 
-    <select id="userTaskList_COUNT" resultType="LONG">
-        SELECT count(0)
-        FROM dataset_table_task
-        left join dataset_table on dataset_table.id=dataset_table_task.table_id
-        left join qrtz_triggers on dataset_table_task.id=qrtz_triggers.TRIGGER_NAME
-        <if test="_parameter != null">
-            <include refid="io.dataease.ext.query.GridSql.taskListGridCondition"/>
-        </if>
-        <if test="orderByClause != null">
-            order by ${orderByClause}
-        </if>
-        <if test="orderByClause == null">
-            order by dataset_table_task.create_time desc
-        </if>
-    </select>
 
-    <select id="taskWithTriggers" resultMap="TaskResult" parameterType="io.dataease.ext.query.GridExample">
+
+    <select id="taskWithTriggers" resultMap="TaskResult" parameterType="io.dataease.controller.dataset.request.DatasetTaskGridRequest">
         SELECT dataset_table.name as table_name, get_auths(dataset_table_task.table_id,'dataset', #{extendCondition}) as
         `privileges`,dataset_table_task.* , qrtz_triggers.NEXT_FIRE_TIME
         FROM dataset_table_task
         left join dataset_table on dataset_table.id=dataset_table_task.table_id
         left join qrtz_triggers on dataset_table_task.id=qrtz_triggers.TRIGGER_NAME
-        <if test="_parameter != null">
-            <include refid="io.dataease.ext.query.GridSql.gridCondition"/>
+        <if test="id != null">
+            and dataset_table_task.id = #{id}
         </if>
-        <if test="orderByClause != null">
-            order by ${orderByClause}
-        </if>
-        <if test="orderByClause == null">
-            order by dataset_table_task.create_time desc
-        </if>
+        order by dataset_table_task.create_time desc
     </select>
 
     <select id="findByPanelId" resultMap="TaskResult">
