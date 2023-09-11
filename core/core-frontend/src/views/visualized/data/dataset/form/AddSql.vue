@@ -287,6 +287,7 @@ const dsChange = (val: string) => {
 }
 
 const listSqlLog = (value?: string) => {
+  console.log(value)
 }
 const copyInfo = async (value: string) => {
   try {

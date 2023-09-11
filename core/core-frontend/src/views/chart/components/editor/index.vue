@@ -239,6 +239,7 @@ const reset = () => {
 }
 
 const dimensionItemChange = item => {
+  console.log(item)
 }
 const dimensionItemRemove = item => {
   if (item.removeType === 'dimension') {
@@ -251,6 +252,7 @@ const dimensionItemRemove = item => {
 }
 
 const quotaItemChange = item => {
+  console.log(item)
 }
 const quotaItemRemove = item => {
   if (item.removeType === 'quota') {

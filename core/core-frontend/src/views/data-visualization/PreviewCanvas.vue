@@ -32,6 +32,7 @@ const loadCanvasDataAsync = async (dvId, jumpInfoParam) => {
         dvMainStore.setNowTargetPanelJumpInfo(rsp.data)
       })
     } catch (e) {
+      console.log(e)
     }
   }
 

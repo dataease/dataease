@@ -76,7 +76,6 @@ const add = (type, child, logic) => {
 const del = (index, child) => {
   child.splice(index, 1)
 }
-
 </script>
 
 <template>

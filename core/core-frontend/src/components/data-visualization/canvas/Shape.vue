@@ -690,6 +690,7 @@ onMounted(() => {
     }
   })
   eventBus.on('stopAnimation', () => {
+    console.log('stopAnimation')
   })
   settingAttribute()
 })

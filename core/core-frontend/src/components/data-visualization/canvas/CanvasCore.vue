@@ -527,6 +527,7 @@ function addItemToPositionBox(item) {
           pb[j][i].el = item
         }
       } catch (e) {
+        console.log(e)
       }
     }
   }
@@ -562,6 +563,7 @@ function removeItemFromPositionBox(item) {
           pb[j][i].el = false
         }
       } catch (e) {
+        console.log(e)
       }
     }
   }

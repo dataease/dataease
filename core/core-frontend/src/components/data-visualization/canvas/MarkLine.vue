@@ -157,6 +157,7 @@ const showLine = (isDownward, isRightward) => {
         chooseTheTrueLine(needToShow, isDownward, isRightward)
       }
     } catch (e) {
+      console.log(e)
     }
   })
 }

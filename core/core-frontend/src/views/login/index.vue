@@ -79,6 +79,7 @@ const showQr = () => {
 
 const activeName = ref('simple')
 const handleClick = tab => {
+  console.log(tab)
 }
 
 const changeLoginType = val => {
