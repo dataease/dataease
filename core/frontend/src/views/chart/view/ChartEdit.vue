@@ -1735,7 +1735,6 @@ import QuotaFilterEditor from '../components/filter/QuotaFilterEditor'
 import DimensionFilterEditor from '../components/filter/DimensionFilterEditor'
 import TableNormal from '../components/table/TableNormal'
 import LabelNormal from '../components/normal/LabelNormal'
-// import html2canvas from 'html2canvasde'
 import TableSelector from './TableSelector'
 import FieldEdit from '../../dataset/data/FieldEdit'
 import { areaMapping } from '@/api/map/map'
@@ -2021,7 +2020,7 @@ export default {
     },
     'param': function(val) {
       if (this.param.optType === 'new') {
-        //
+        // Do Nothing
       } else if (this.param.id !== this.preChartId && this.editStatus) {
         this.preChartId = this.param.id
         this.chartInit()
@@ -2036,9 +2035,6 @@ export default {
       }
       this.$emit('typeChange', newVal)
     },
-    // 'view.type': function(newVal, oldVal) {
-    //   this.view.isPlugin = this.$refs['cu-chart-type'] && this.$refs['cu-chart-type'].currentIsPlugin(newVal)
-    // },
     watchChartTypeChangeObj(newVal, oldVal) {
       if (newVal.type === oldVal.type && newVal.render === oldVal.render) {
         return
@@ -2138,9 +2134,6 @@ export default {
       this.resetDrill()
       this.initFromPanel()
       this.getChart(this.param.id)
-      // if (this.componentViewsData[this.param.id]) {
-      //   this.chart = this.componentViewsData[this.param.id]
-      // }
     },
     bindPluginEvent() {
       bus.$on('show-dimension-edit-filter', this.showDimensionEditFilter)
@@ -2271,9 +2264,6 @@ export default {
         view.xaxis = [view.xaxis[0]]
       }
       view.xaxis.forEach(function(ele) {
-        // if (!ele.summary || ele.summary === '') {
-        //   ele.summary = 'sum'
-        // }
         if (!ele.dateStyle || ele.dateStyle === '') {
           ele.dateStyle = 'y_M_d'
         }
@@ -2450,7 +2440,6 @@ export default {
       const view = this.buildParam(true, 'chart', false, switchType, switchRender)
       if (!view) return
       viewEditSave(this.panelInfo.id, view).then(() => {
-        // this.getData(this.param.id)
         this.getChart(this.param.id)
         bus.$emit('view-in-cache', {
           type: 'propChange',
@@ -2477,7 +2466,6 @@ export default {
       view.senior = JSON.stringify(this.view.senior)
       view.title = this.view.title
       view.stylePriority = this.view.stylePriority
-      // view.data = this.data
       this.chart = view
 
       // 保存到缓存表
@@ -2529,7 +2517,6 @@ export default {
       }
     },
     getData(id) {
-      // this.hasEdit = true
       if (id) {
         ajaxGetDataOnly(id, this.panelInfo.id, {
           filter: [],
@@ -2909,12 +2896,7 @@ export default {
     },
     closeRename() {
       this.renameItem = false
-      this.resetRename()
     },
-    resetRename() {
-      // this.itemForm = {}
-    },
-
     showQuotaEditCompare(item) {
       this.quotaItemCompare = JSON.parse(JSON.stringify(item))
       this.showEditQuotaCompare = true
@@ -3122,14 +3104,8 @@ export default {
     },
 
     initAreas() {
-      //   let mapping
-      //   if ((mapping = localStorage.getItem('areaMapping')) !== null) {
-      //     this.places = JSON.parse(mapping)
-      //     return
-      //   }
       Object.keys(this.places).length === 0 && areaMapping().then(res => {
         this.places = res.data
-        // localStorage.setItem('areaMapping', JSON.stringify(res.data))
       })
     },
 
@@ -3197,16 +3173,13 @@ export default {
 
     chartClick(param) {
       if (this.drillClickDimensionList.length < this.view.drillFields.length - 1) {
-        // const isSwitch = (this.chart.type === 'map' && this.sendToChildren(param))
         if (this.chart.type === 'map' || this.chart.type === 'buddle-map') {
           if (this.sendToChildren(param)) {
             this.drillClickDimensionList.push({ dimensionList: param.data.dimensionList })
-            // this.getData(this.param.id)
             this.calcData(true, 'chart', false, false)
           }
         } else {
           this.drillClickDimensionList.push({ dimensionList: param.data.dimensionList })
-          // this.getData(this.param.id)
           this.calcData(true, 'chart', false, false)
         }
       } else if (this.view.drillFields.length > 0) {
@@ -3234,7 +3207,6 @@ export default {
         } else {
           current && current.registerDynamicMap && current.registerDynamicMap(null)
         }
-        // this.$refs.dynamicChart && this.$refs.dynamicChart.registerDynamicMap && this.$refs.dynamicChart.registerDynamicMap(null)
       }
     },
     drillJump(index) {
@@ -3243,8 +3215,6 @@ export default {
       if (this.chart.type === 'map' || this.chart.type === 'buddle-map') {
         this.backToParent(index, length)
       }
-
-      // this.getData(this.param.id)
       this.calcData(true, 'chart', false, false)
     },
     // 回到父级地图
@@ -3260,7 +3230,6 @@ export default {
       }
 
       this.currentAcreaNode = tempNode
-      // this.$refs.dynamicChart && this.$refs.dynamicChart.registerDynamicMap && this.$refs.dynamicChart.registerDynamicMap(this.currentAcreaNode.code)
       const current = this.$refs.dynamicChart
       if (this.view.isPlugin) {
         current && current.callPluginInner && this.setDetailMapCode(this.currentAcreaNode.code) && current.callPluginInner({
@@ -3286,14 +3255,11 @@ export default {
       if (this.currentAcreaNode) {
         aCode = this.currentAcreaNode.code
       }
-      //   const aCode = this.currentAcreaNode ? this.currentAcreaNode.code : null
       const currentNode = this.findEntityByCode(aCode || this.view.customAttr.areaCode, this.places)
       if (currentNode && currentNode.children && currentNode.children.length > 0) {
         const nextNode = currentNode.children.find(item => item.name === name)
         if (!nextNode || !nextNode.code) return null
-        // this.view.customAttr.areaCode = nextNode.code
         this.currentAcreaNode = nextNode
-        // this.$refs.dynamicChart && this.$refs.dynamicChart.registerDynamicMap && this.$refs.dynamicChart.registerDynamicMap(nextNode.code)
         const current = this.$refs.dynamicChart
         if (this.view.isPlugin) {
           nextNode && current && current.callPluginInner && this.setDetailMapCode(nextNode.code) && current.callPluginInner({
@@ -3344,12 +3310,10 @@ export default {
       this.$store.commit('recordViewEdit', { viewId: this.param.id, hasEdit: status })
     },
     changeChartRender() {
-      // this.setChartDefaultOptions()
-      // this.calcData(true, 'chart', true, false, true)
+      // Do Nothing
     },
     changeChartType() {
-      // this.setChartDefaultOptions()
-      // this.calcData(true, 'chart', true, true)
+      // Do Nothing
     },
 
     setChartDefaultOptions() {
