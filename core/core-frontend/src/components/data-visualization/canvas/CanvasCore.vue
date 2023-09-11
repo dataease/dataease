@@ -1600,20 +1600,8 @@ defineExpose({
       />
 
       <component
-        :is="findComponent(item.component)"
-        v-else-if="item.component != 'VText'"
-        :id="'component' + item.id"
-        class="component"
-        :is-edit="true"
-        :style="getComponentStyle(item.style)"
-        :prop-value="item.propValue"
-        :element="item"
-        :request="item.request"
-      />
-
-      <component
-        :is="findComponent(item.component)"
         v-else
+        :is="findComponent(item.component)"
         :id="'component' + item.id"
         class="component"
         :is-edit="true"
@@ -1621,7 +1609,9 @@ defineExpose({
         :prop-value="item.propValue"
         :element="item"
         :request="item.request"
-        @input="handleInput"
+        :canvas-style-data="canvasStyleData"
+        :canvas-view-info="canvasViewInfo"
+        :dv-info="dvInfo"
       />
     </Shape>
     <!-- 右击菜单 -->
