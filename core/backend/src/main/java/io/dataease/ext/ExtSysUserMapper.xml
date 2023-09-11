@@ -73,6 +73,18 @@
             </foreach>
         </if>
 
+        <choose>
+            <when test="orders!=null and orders.size > 0">
+                order by
+                <foreach collection="orders" item="item" open='' separator=',' close=''>
+                    ${item}
+                </foreach>
+            </when>
+            <otherwise>
+                order by u.update_time desc
+            </otherwise>
+        </choose>
+
 
     </select>
 

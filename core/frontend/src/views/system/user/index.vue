@@ -572,11 +572,8 @@ export default {
       })
     },
     search() {
-      /* const param = {
-        orders: formatOrders(this.orderConditions),
-        conditions: [...this.cacheCondition]
-      } */
       const param = buildParam(this.cacheCondition, this.nickName)
+      param.orders = formatOrders(this.orderConditions)
 
       const { currentPage, pageSize } = this.paginationConfig
       userLists(currentPage, pageSize, param).then((response) => {
