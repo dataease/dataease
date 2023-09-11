@@ -1,7 +1,6 @@
 <script lang="tsx" setup>
 import { reactive, ref, toRefs } from 'vue'
 import { CHART_TYPE_CONFIGS } from '@/views/chart/components/editor/util/chart'
-import { ElCol, ElRow } from 'element-plus-secondary'
 import Icon from '@/components/icon-custom/src/Icon.vue'
 
 const props = defineProps({
@@ -70,7 +69,7 @@ const groupActiveChange = category => {
         </li>
       </ul>
     </div>
-    <div id="userViewGroup" class="group-right">
+    <el-scrollbar id="userViewGroup" class="group-right" height="392px">
       <el-row
         :id="chartGroupInfo.category + '-edit'"
         v-for="chartGroupInfo in state.chartGroupList"
@@ -99,7 +98,7 @@ const groupActiveChange = category => {
           </el-col>
         </el-row>
       </el-row>
-    </div>
+    </el-scrollbar>
   </el-row>
 </template>
 
@@ -161,11 +160,9 @@ const groupActiveChange = category => {
     }
   }
   .group-right {
-    max-height: 400px;
-    overflow-y: auto;
     border-left: 1px solid @side-outline-border-color;
     flex: 1;
-    padding: 4px 0px 0 12px;
+    padding: 4px 0 4px 12px;
   }
 }
 .custom_img {
