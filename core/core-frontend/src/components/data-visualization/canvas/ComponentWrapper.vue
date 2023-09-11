@@ -9,6 +9,18 @@ import { imgUrlTrans } from '@/utils/imgUtils'
 import ComponentEditBar from '@/components/visualization/ComponentEditBar.vue'
 
 const props = defineProps({
+  canvasStyleData: {
+    type: Object,
+    required: true
+  },
+  canvasViewInfo: {
+    type: Object,
+    required: true
+  },
+  dvInfo: {
+    type: Object,
+    required: true
+  },
   config: {
     type: Object,
     required: true,
@@ -51,7 +63,8 @@ const props = defineProps({
     default: 0
   }
 })
-const { config, showPosition, index, searchCount } = toRefs(props)
+const { config, showPosition, index, canvasStyleData, canvasViewInfo, dvInfo, searchCount } =
+  toRefs(props)
 let currentInstance
 const component = ref(null)
 const emits = defineEmits(['userViewEnlargeOpen'])
@@ -146,6 +159,9 @@ const commonBackgroundSvgInner = computed(() => {
         :view="viewInfo"
         ref="component"
         class="component"
+        :canvas-style-data="canvasStyleData"
+        :dv-info="dvInfo"
+        :canvas-view-info="canvasViewInfo"
         :style="getComponentStyleDefault(config?.style)"
         :prop-value="config?.propValue"
         :element="config"

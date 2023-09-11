@@ -44,8 +44,8 @@ const anchorPosition = anchor => {
   })
 }
 
-const newComponent = innerType => {
-  emit('onTypeChange', innerType)
+const newComponent = (render, innerType) => {
+  emit('onTypeChange', render, innerType)
 }
 
 const groupActiveChange = category => {
@@ -84,7 +84,7 @@ const groupActiveChange = category => {
             :key="chartInfo.title"
           >
             <div
-              v-on:click="newComponent(chartInfo.value)"
+              v-on:click="newComponent(chartInfo.render, chartInfo.value)"
               class="item-top"
               :class="props.type === chartInfo.value ? 'item-active' : ''"
               :data-id="'UserView&' + chartInfo.value"

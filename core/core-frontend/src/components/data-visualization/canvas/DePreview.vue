@@ -187,6 +187,9 @@ defineExpose({
     <ComponentWrapper
       v-for="(item, index) in componentData"
       :canvas-id="canvasId"
+      :canvas-style-data="canvasStyleData"
+      :dv-info="dvInfo"
+      :canvas-view-info="canvasViewInfo"
       :view-info="canvasViewInfo[item.id]"
       :key="index"
       :config="item"
