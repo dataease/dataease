@@ -363,6 +363,17 @@ onMounted(() => {
       })
     }
   })
+  useEmitt({
+    name: 'tabCanvasChange-' + element.value.canvasId,
+    callback: function () {
+      if (!state.initReady && !view.value.type.includes('table')) {
+        return
+      }
+      setTimeout(function () {
+        chartComponent?.value?.renderChart(view.value)
+      }, 200)
+    }
+  })
 })
 
 // 1.开启仪表板刷新 2.首次加载（searchCount =0 ）3.正在请求数据 则显示加载状态

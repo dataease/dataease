@@ -11,6 +11,7 @@
     >
       <el-tab-pane
         class="el-tab-pane-custom"
+        :lazy="true"
         :key="tabItem.name"
         v-for="tabItem in element.propValue"
         :label="tabItem.title"
@@ -105,6 +106,7 @@ import { canvasChangeAdaptor, findComponentIndexById } from '@/utils/canvasUtils
 import DeCustomTab from '@/custom-component/de-tabs/DeCustomTab.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
+import { useEmitt } from '@/hooks/web/useEmitt'
 const dvMainStore = dvMainStoreWithOut()
 const { curComponent, tabMoveInActiveId, bashMatrixInfo } = storeToRefs(dvMainStore)
 const tabCanvas = ref(null)
@@ -364,6 +366,20 @@ watch(
   },
   { deep: true }
 )
+
+watch(
+  () => editableTabsValue.value,
+  () => {
+    nextTick(() => {
+      useEmitt().emitter.emit('tabCanvasChange-' + activeCanvasId.value)
+    })
+  },
+  { deep: true }
+)
+
+const activeCanvasId = computed(() => {
+  return element.value.id + '--' + editableTabsValue.value
+})
 
 onMounted(() => {
   if (element.value.propValue.length > 0) {

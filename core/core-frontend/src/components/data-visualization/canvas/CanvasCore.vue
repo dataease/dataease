@@ -1261,6 +1261,7 @@ const forceComputed = () => {
   // 在一些情况下无法触发重新计算导致位置偏移 cellHeight 属性是在监控中的，这里进行强制计算
   cellHeight.value = cellHeight.value + 0.001
   nextTick(function () {
+    console.log('forceComputed')
     cellHeight.value = cellHeight.value - 0.001
   })
 }
