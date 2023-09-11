@@ -61,6 +61,7 @@ const groupActiveChange = category => {
           class="li-custom"
           :class="{ 'li-custom-active': state.curCategory === chartGroupInfo.category }"
           v-for="chartGroupInfo in state.chartGroupList"
+          v-show="chartGroupInfo.display !== 'hidden'"
           :key="chartGroupInfo.category"
           @click="groupActiveChange(chartGroupInfo.category)"
         >
@@ -72,6 +73,7 @@ const groupActiveChange = category => {
       <el-row
         :id="chartGroupInfo.category + '-edit'"
         v-for="chartGroupInfo in state.chartGroupList"
+        v-show="chartGroupInfo.display !== 'hidden'"
         :key="chartGroupInfo.title"
       >
         <el-row class="group-title">{{ chartGroupInfo.title }}</el-row>

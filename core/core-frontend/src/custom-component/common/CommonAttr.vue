@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, toRefs } from 'vue'
+import { computed, ref, toRefs, PropType } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { styleData, selectKey, optionMap, positionData, horizontalPosition } from '@/utils/attr'
@@ -11,7 +11,7 @@ const { t } = useI18n()
 
 const props = defineProps({
   themes: {
-    type: String,
+    type: String as PropType<'light' | 'dark'>,
     default: 'dark'
   }
 })
@@ -56,13 +56,13 @@ const onBackgroundChange = val => {
 </script>
 
 <template>
-  <div class="v-common-attr" :class="{ 'attr-dark': themes === 'dark' }">
+  <div class="v-common-attr">
     <el-collapse v-model="activeName" @change="onChange()">
-      <el-collapse-item title="位置" name="position" v-if="!dashboardActive">
-        <component-position :themes="themes" style="padding-top: 10px"></component-position>
+      <el-collapse-item :effect="themes" title="位置" name="position" v-if="!dashboardActive">
+        <component-position :themes="themes"></component-position>
       </el-collapse-item>
 
-      <el-collapse-item title="背景" name="background">
+      <el-collapse-item :effect="themes" title="背景" name="background">
         <background-overall-common
           v-if="curComponent"
           :themes="themes"
@@ -72,7 +72,7 @@ const onBackgroundChange = val => {
         ></background-overall-common>
       </el-collapse-item>
 
-      <el-collapse-item title="样式" name="style" class="common-style-area">
+      <el-collapse-item :effect="themes" title="样式" name="style" class="common-style-area">
         <div class="common-style-inner">
           <div
             v-for="({ key, label, min, max, step }, index) in styleKeys"
@@ -110,7 +110,7 @@ const onBackgroundChange = val => {
               <el-select
                 v-else-if="selectKey.includes(key)"
                 size="small"
-                :themes="themes"
+                :effect="themes"
                 v-model="curComponent.style[key]"
               >
                 <el-option
@@ -125,7 +125,7 @@ const onBackgroundChange = val => {
                 :min="min"
                 :max="max"
                 :step="step"
-                :themes="themes"
+                :effect="themes"
                 v-model="curComponent.style[key]"
               ></de-input-num>
             </div>
@@ -144,40 +144,8 @@ const onBackgroundChange = val => {
   }
 }
 
-:deep(.ed-collapse-item__content) {
-  border-top: 0 !important;
-}
-
-.attr-dark :deep(.ed-collapse-item__header) {
-  background-color: @side-area-background !important;
-  color: #ffffff;
-  padding-left: 5px;
-  border-bottom: 1px solid rgba(85, 85, 85, 1);
-  height: 38px !important;
-}
-.attr-dark :deep(.ed-collapse-item__content) {
-  background-color: @side-content-background;
-  color: #ffffff;
-  padding-left: 5px;
-}
-
-.attr-dark :deep(.ed-collapse-item__wrap) {
-  background-color: @side-content-background;
-  border-bottom: 1px solid rgba(85, 85, 85, 1);
-  padding-bottom: 10px;
-}
 :deep(.ed-collapse) {
   width: 100%;
-}
-
-.attr-dark :deep(.ed-input__wrapper) {
-  background-color: rgba(37, 45, 54, 1);
-}
-.attr-dark :deep(.ed-input__inner) {
-  color: #ffffff;
-}
-.attr-dark :deep(.ed-form-item__label) {
-  color: #ffffff;
 }
 
 .attr-custom-icon-main {

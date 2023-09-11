@@ -524,7 +524,8 @@ const onChangeMiscStyleForm = val => {
 
 const onTextChange = val => {
   view.value.customStyle.text = val
-  renderChart(view.value)
+  useEmitt().emitter.emit('updateTitle-' + view.value.id)
+  snapshotStore.recordSnapshotCache('renderChart', view.value.id)
 }
 
 const onLegendChange = val => {

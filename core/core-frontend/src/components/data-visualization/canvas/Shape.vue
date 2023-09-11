@@ -308,6 +308,8 @@ const getCursor = () => {
 const handleMouseDownOnShape = e => {
   dvMainStore.setCurComponent({ component: element.value, index: index.value })
   if (element.value['editing']) {
+    // e.preventDefault()
+    e.stopPropagation()
     return
   }
   dashboardActive.value && emit('onStartMove', e)

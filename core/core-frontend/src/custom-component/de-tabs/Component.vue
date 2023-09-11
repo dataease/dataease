@@ -11,8 +11,9 @@
     >
       <el-tab-pane
         class="el-tab-pane-custom"
+        :lazy="true"
         :key="tabItem.name"
-        v-for="tabItem in element.propValue"
+        v-for="(tabItem, index) in element.propValue"
         :label="tabItem.title"
         :name="tabItem.name"
       >
@@ -45,7 +46,7 @@
         </template>
         <de-canvas
           v-if="isEdit"
-          ref="tabCanvas"
+          :ref="'tabCanvas_' + index"
           :component-data="tabItem.componentData"
           :canvas-style-data="canvasStyleData"
           :canvas-view-info="canvasViewInfo"
@@ -95,7 +96,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onMounted, reactive, ref, toRefs, watch } from 'vue'
+import {
+  computed,
+  getCurrentInstance,
+  nextTick,
+  onMounted,
+  reactive,
+  ref,
+  toRefs,
+  watch
+} from 'vue'
 import DeCanvas from '@/views/canvas/DeCanvas.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
@@ -105,6 +115,7 @@ import { canvasChangeAdaptor, findComponentIndexById } from '@/utils/canvasUtils
 import DeCustomTab from '@/custom-component/de-tabs/DeCustomTab.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
+import { useEmitt } from '@/hooks/web/useEmitt'
 const dvMainStore = dvMainStoreWithOut()
 const { curComponent, tabMoveInActiveId, bashMatrixInfo } = storeToRefs(dvMainStore)
 const tabCanvas = ref(null)
@@ -155,6 +166,7 @@ const editableTabsValue = ref(null)
 
 // 无边框
 const noBorderColor = ref('none')
+let currentInstance
 
 const beforeHandleCommand = (item, param) => {
   return {
@@ -242,7 +254,8 @@ const componentMoveIn = component => {
       eventBus.emit('removeMatrixItem-canvas-main', curIndex)
       dvMainStore.setCurComponent({ component: null, index: null })
       component.canvasId = element.value.id + '--' + tabItem.name
-      const matrixBase = tabCanvas.value[index].getBaseMatrixSize() //矩阵基础大小
+      const refInstance = currentInstance.refs['tabCanvas_' + index][0]
+      const matrixBase = refInstance.getBaseMatrixSize() //矩阵基础大小
       canvasChangeAdaptor(component, matrixBase)
       tabItem.componentData.push(component)
       nextTick(() => {
@@ -250,7 +263,7 @@ const componentMoveIn = component => {
         component.y = 1
         component.style.left = 0
         component.style.top = 0
-        tabCanvas.value[index].addItemBox(component) //在适当的时候初始化布局组件
+        refInstance.addItemBox(component) //在适当的时候初始化布局组件
       })
     }
   })
@@ -365,6 +378,20 @@ watch(
   { deep: true }
 )
 
+watch(
+  () => editableTabsValue.value,
+  () => {
+    nextTick(() => {
+      useEmitt().emitter.emit('tabCanvasChange-' + activeCanvasId.value)
+    })
+  },
+  { deep: true }
+)
+
+const activeCanvasId = computed(() => {
+  return element.value.id + '--' + editableTabsValue.value
+})
+
 onMounted(() => {
   if (element.value.propValue.length > 0) {
     editableTabsValue.value = element.value.propValue[0].name
@@ -372,6 +399,7 @@ onMounted(() => {
   calcTabLength()
   eventBus.on('onTabMoveIn-' + element.value.id, componentMoveIn)
   eventBus.on('onTabMoveOut-' + element.value.id, componentMoveOut)
+  currentInstance = getCurrentInstance()
 })
 </script>
 <style lang="less" scoped>

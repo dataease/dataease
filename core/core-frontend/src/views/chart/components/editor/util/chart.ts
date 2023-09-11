@@ -922,6 +922,7 @@ export const CHART_TYPE_CONFIGS = [
   {
     category: 'quota',
     title: t('chart.chart_type_quota'),
+    display: 'show',
     details: [
       {
         render: 'antv',
@@ -942,6 +943,7 @@ export const CHART_TYPE_CONFIGS = [
   {
     category: 'table',
     title: t('chart.chart_type_table'),
+    display: 'show',
     details: [
       {
         render: 'antv',
@@ -962,6 +964,7 @@ export const CHART_TYPE_CONFIGS = [
   {
     category: 'trend',
     title: t('chart.chart_type_trend'),
+    display: 'show',
     details: [
       {
         render: 'antv',
@@ -989,6 +992,7 @@ export const CHART_TYPE_CONFIGS = [
   {
     category: 'compare',
     title: t('chart.chart_type_compare'),
+    display: 'show',
     details: [
       {
         render: 'antv',
@@ -1058,6 +1062,7 @@ export const CHART_TYPE_CONFIGS = [
   {
     category: 'distribute',
     title: t('chart.chart_type_distribute'),
+    display: 'show',
     details: [
       {
         render: 'antv',
@@ -1113,6 +1118,7 @@ export const CHART_TYPE_CONFIGS = [
   {
     category: 'map',
     title: t('chart.chart_type_space'),
+    display: 'show',
     details: [
       {
         render: 'antv',
@@ -1126,6 +1132,7 @@ export const CHART_TYPE_CONFIGS = [
   {
     category: 'relation',
     title: t('chart.chart_type_relation'),
+    display: 'show',
     details: [
       {
         render: 'antv',
@@ -1140,6 +1147,20 @@ export const CHART_TYPE_CONFIGS = [
         value: 'funnel',
         title: t('chart.chart_funnel'),
         icon: 'funnel'
+      }
+    ]
+  },
+  {
+    category: 'other',
+    title: '富文本',
+    display: 'hidden',
+    details: [
+      {
+        render: 'custom',
+        category: 'quota',
+        value: 'rich-text',
+        title: '富文本',
+        icon: 'rich-text'
       }
     ]
   }

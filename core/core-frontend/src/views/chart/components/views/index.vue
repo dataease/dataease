@@ -92,7 +92,10 @@ const state = reactive({
     textAlign: 'left',
     fontStyle: 'normal',
     fontWeight: 'normal',
-    background: ''
+    background: '',
+    fontFamily: '',
+    textShadow: 'none',
+    letterSpacing: '0px'
   },
   drillFilters: [],
   drillClickDimensionList: []
@@ -361,6 +364,23 @@ onMounted(() => {
       nextTick(() => {
         drillJump(val)
       })
+    }
+  })
+  useEmitt({
+    name: 'tabCanvasChange-' + element.value.canvasId,
+    callback: function () {
+      if (!state.initReady && !view.value.type.includes('table')) {
+        return
+      }
+      setTimeout(function () {
+        chartComponent?.value?.renderChart(view.value)
+      }, 200)
+    }
+  })
+  useEmitt({
+    name: 'updateTitle-' + view.value.id,
+    callback: () => {
+      initTitle()
     }
   })
 })

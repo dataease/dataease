@@ -1261,6 +1261,7 @@ const forceComputed = () => {
   // 在一些情况下无法触发重新计算导致位置偏移 cellHeight 属性是在监控中的，这里进行强制计算
   cellHeight.value = cellHeight.value + 0.001
   nextTick(function () {
+    console.log('forceComputed')
     cellHeight.value = cellHeight.value - 0.001
   })
 }
@@ -1600,20 +1601,8 @@ defineExpose({
       />
 
       <component
-        :is="findComponent(item.component)"
-        v-else-if="item.component != 'VText'"
-        :id="'component' + item.id"
-        class="component"
-        :is-edit="true"
-        :style="getComponentStyle(item.style)"
-        :prop-value="item.propValue"
-        :element="item"
-        :request="item.request"
-      />
-
-      <component
-        :is="findComponent(item.component)"
         v-else
+        :is="findComponent(item.component)"
         :id="'component' + item.id"
         class="component"
         :is-edit="true"
@@ -1621,7 +1610,9 @@ defineExpose({
         :prop-value="item.propValue"
         :element="item"
         :request="item.request"
-        @input="handleInput"
+        :canvas-style-data="canvasStyleData"
+        :canvas-view-info="canvasViewInfo"
+        :dv-info="dvInfo"
       />
     </Shape>
     <!-- 右击菜单 -->
