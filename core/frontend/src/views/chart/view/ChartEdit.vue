@@ -1324,8 +1324,8 @@
         ref="itemForm"
         label-width="80px"
         :model="itemForm"
-        @submit.native.prevent
         :rules="itemFormRules"
+        @submit.native.prevent
       >
         <el-form-item
           :label="$t('dataset.field_origin_name')"
@@ -1997,6 +1997,10 @@ export default {
         !equalsAny(this.view.type, 'liquid', 'bidirectional-bar',
           'word-cloud', 'table-pivot', 'label', 'richTextView', 'flow-map')
     },
+    watchChartTypeChangeObj() {
+      const { type, render } = this.view
+      return { type, render }
+    },
     ...mapState([
       'curComponent',
       'panelViewEditInfo',
@@ -2032,8 +2036,17 @@ export default {
       }
       this.$emit('typeChange', newVal)
     },
-    'view.type': function(newVal, oldVal) {
-      this.view.isPlugin = this.$refs['cu-chart-type'] && this.$refs['cu-chart-type'].currentIsPlugin(newVal)
+    // 'view.type': function(newVal, oldVal) {
+    //   this.view.isPlugin = this.$refs['cu-chart-type'] && this.$refs['cu-chart-type'].currentIsPlugin(newVal)
+    // },
+    watchChartTypeChangeObj(newVal, oldVal) {
+      if (newVal.type === oldVal.type && newVal.render === oldVal.render) {
+        return
+      }
+      this.view.isPlugin = this.$refs['cu-chart-type'] && this.$refs['cu-chart-type'].currentIsPlugin(newVal.type, newVal.render)
+
+      this.setChartDefaultOptions()
+      this.calcData(true, 'chart', true, newVal.type !== oldVal.type, newVal.render !== oldVal.render)
     }
   },
   created() {
@@ -2418,6 +2431,7 @@ export default {
       view.extBubble = JSON.stringify(view.extBubble)
       view.senior = JSON.stringify(view.senior)
       delete view.data
+
       return view
     },
     refreshAttrChange() {
@@ -3330,12 +3344,12 @@ export default {
       this.$store.commit('recordViewEdit', { viewId: this.param.id, hasEdit: status })
     },
     changeChartRender() {
-      this.setChartDefaultOptions()
-      this.calcData(true, 'chart', true, false, true)
+      // this.setChartDefaultOptions()
+      // this.calcData(true, 'chart', true, false, true)
     },
     changeChartType() {
-      this.setChartDefaultOptions()
-      this.calcData(true, 'chart', true, true)
+      // this.setChartDefaultOptions()
+      // this.calcData(true, 'chart', true, true)
     },
 
     setChartDefaultOptions() {
