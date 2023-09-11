@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.dataease.plugins.common.base.mapper.DatasetTableMapper">
+  <resultMap id="BaseResultMap" type="io.dataease.plugins.common.base.domain.DatasetTable">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="scene_id" jdbcType="VARCHAR" property="sceneId" />
+    <result column="data_source_id" jdbcType="VARCHAR" property="dataSourceId" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="mode" jdbcType="INTEGER" property="mode" />
+    <result column="info" jdbcType="VARCHAR" property="info" />
+    <result column="create_by" jdbcType="VARCHAR" property="createBy" />
+    <result column="create_time" jdbcType="BIGINT" property="createTime" />
+    <result column="qrtz_instance" jdbcType="VARCHAR" property="qrtzInstance" />
+    <result column="sync_status" jdbcType="VARCHAR" property="syncStatus" />
+    <result column="last_update_time" jdbcType="BIGINT" property="lastUpdateTime" />
+    <result column="sql_variable_details" jdbcType="VARCHAR" property="sqlVariableDetails" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, `name`, scene_id, data_source_id, `type`, `mode`, info, create_by, create_time, 
+    qrtz_instance, sync_status, last_update_time, sql_variable_details
+  </sql>
+  <select id="selectByExample" parameterType="io.dataease.plugins.common.base.domain.DatasetTableExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from dataset_table
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from dataset_table
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from dataset_table
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="io.dataease.plugins.common.base.domain.DatasetTableExample">
+    delete from dataset_table
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="io.dataease.plugins.common.base.domain.DatasetTable">
+    insert into dataset_table (id, `name`, scene_id, 
+      data_source_id, `type`, `mode`, 
+      info, create_by, create_time, 
+      qrtz_instance, sync_status, last_update_time, 
+      sql_variable_details)
+    values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{sceneId,jdbcType=VARCHAR}, 
+      #{dataSourceId,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, #{mode,jdbcType=INTEGER}, 
+      #{info,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=BIGINT}, 
+      #{qrtzInstance,jdbcType=VARCHAR}, #{syncStatus,jdbcType=VARCHAR}, #{lastUpdateTime,jdbcType=BIGINT}, 
+      #{sqlVariableDetails,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="io.dataease.plugins.common.base.domain.DatasetTable">
+    insert into dataset_table
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="name != null">
+        `name`,
+      </if>
+      <if test="sceneId != null">
+        scene_id,
+      </if>
+      <if test="dataSourceId != null">
+        data_source_id,
+      </if>
+      <if test="type != null">
+        `type`,
+      </if>
+      <if test="mode != null">
+        `mode`,
+      </if>
+      <if test="info != null">
+        info,
+      </if>
+      <if test="createBy != null">
+        create_by,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="qrtzInstance != null">
+        qrtz_instance,
+      </if>
+      <if test="syncStatus != null">
+        sync_status,
+      </if>
+      <if test="lastUpdateTime != null">
+        last_update_time,
+      </if>
+      <if test="sqlVariableDetails != null">
+        sql_variable_details,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="sceneId != null">
+        #{sceneId,jdbcType=VARCHAR},
+      </if>
+      <if test="dataSourceId != null">
+        #{dataSourceId,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="mode != null">
+        #{mode,jdbcType=INTEGER},
+      </if>
+      <if test="info != null">
+        #{info,jdbcType=VARCHAR},
+      </if>
+      <if test="createBy != null">
+        #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=BIGINT},
+      </if>
+      <if test="qrtzInstance != null">
+        #{qrtzInstance,jdbcType=VARCHAR},
+      </if>
+      <if test="syncStatus != null">
+        #{syncStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="lastUpdateTime != null">
+        #{lastUpdateTime,jdbcType=BIGINT},
+      </if>
+      <if test="sqlVariableDetails != null">
+        #{sqlVariableDetails,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="io.dataease.plugins.common.base.domain.DatasetTableExample" resultType="java.lang.Long">
+    select count(*) from dataset_table
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update dataset_table
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=VARCHAR},
+      </if>
+      <if test="record.name != null">
+        `name` = #{record.name,jdbcType=VARCHAR},
+      </if>
+      <if test="record.sceneId != null">
+        scene_id = #{record.sceneId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.dataSourceId != null">
+        data_source_id = #{record.dataSourceId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.type != null">
+        `type` = #{record.type,jdbcType=VARCHAR},
+      </if>
+      <if test="record.mode != null">
+        `mode` = #{record.mode,jdbcType=INTEGER},
+      </if>
+      <if test="record.info != null">
+        info = #{record.info,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createBy != null">
+        create_by = #{record.createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createTime != null">
+        create_time = #{record.createTime,jdbcType=BIGINT},
+      </if>
+      <if test="record.qrtzInstance != null">
+        qrtz_instance = #{record.qrtzInstance,jdbcType=VARCHAR},
+      </if>
+      <if test="record.syncStatus != null">
+        sync_status = #{record.syncStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="record.lastUpdateTime != null">
+        last_update_time = #{record.lastUpdateTime,jdbcType=BIGINT},
+      </if>
+      <if test="record.sqlVariableDetails != null">
+        sql_variable_details = #{record.sqlVariableDetails,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update dataset_table
+    set id = #{record.id,jdbcType=VARCHAR},
+      `name` = #{record.name,jdbcType=VARCHAR},
+      scene_id = #{record.sceneId,jdbcType=VARCHAR},
+      data_source_id = #{record.dataSourceId,jdbcType=VARCHAR},
+      `type` = #{record.type,jdbcType=VARCHAR},
+      `mode` = #{record.mode,jdbcType=INTEGER},
+      info = #{record.info,jdbcType=VARCHAR},
+      create_by = #{record.createBy,jdbcType=VARCHAR},
+      create_time = #{record.createTime,jdbcType=BIGINT},
+      qrtz_instance = #{record.qrtzInstance,jdbcType=VARCHAR},
+      sync_status = #{record.syncStatus,jdbcType=VARCHAR},
+      last_update_time = #{record.lastUpdateTime,jdbcType=BIGINT},
+      sql_variable_details = #{record.sqlVariableDetails,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="io.dataease.plugins.common.base.domain.DatasetTable">
+    update dataset_table
+    <set>
+      <if test="name != null">
+        `name` = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="sceneId != null">
+        scene_id = #{sceneId,jdbcType=VARCHAR},
+      </if>
+      <if test="dataSourceId != null">
+        data_source_id = #{dataSourceId,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        `type` = #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="mode != null">
+        `mode` = #{mode,jdbcType=INTEGER},
+      </if>
+      <if test="info != null">
+        info = #{info,jdbcType=VARCHAR},
+      </if>
+      <if test="createBy != null">
+        create_by = #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=BIGINT},
+      </if>
+      <if test="qrtzInstance != null">
+        qrtz_instance = #{qrtzInstance,jdbcType=VARCHAR},
+      </if>
+      <if test="syncStatus != null">
+        sync_status = #{syncStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="lastUpdateTime != null">
+        last_update_time = #{lastUpdateTime,jdbcType=BIGINT},
+      </if>
+      <if test="sqlVariableDetails != null">
+        sql_variable_details = #{sqlVariableDetails,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="io.dataease.plugins.common.base.domain.DatasetTable">
+    update dataset_table
+    set `name` = #{name,jdbcType=VARCHAR},
+      scene_id = #{sceneId,jdbcType=VARCHAR},
+      data_source_id = #{dataSourceId,jdbcType=VARCHAR},
+      `type` = #{type,jdbcType=VARCHAR},
+      `mode` = #{mode,jdbcType=INTEGER},
+      info = #{info,jdbcType=VARCHAR},
+      create_by = #{createBy,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=BIGINT},
+      qrtz_instance = #{qrtzInstance,jdbcType=VARCHAR},
+      sync_status = #{syncStatus,jdbcType=VARCHAR},
+      last_update_time = #{lastUpdateTime,jdbcType=BIGINT},
+      sql_variable_details = #{sqlVariableDetails,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

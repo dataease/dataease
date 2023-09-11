@@ -1,0 +1,21 @@
+version: '2.1'
+services:
+
+  mysql:
+    image: registry.cn-qingdao.aliyuncs.com/dataease/mysql:5.7.43
+    container_name: mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost", "-u${DE_MYSQL_USER}", "-p${DE_MYSQL_PASSWORD}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    env_file:
+      - ${DE_BASE}/dataease/conf/mysql.env
+    ports:
+      - ${DE_MYSQL_PORT}:3306
+    volumes:
+      - ${DE_BASE}/dataease/conf/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ${DE_BASE}/dataease/bin/mysql:/docker-entrypoint-initdb.d/
+      - ${DE_BASE}/dataease/data/mysql:/var/lib/mysql
+    networks:
+      - dataease-network

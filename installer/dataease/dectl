@@ -1,0 +1,317 @@
+#!/bin/bash
+action=$1
+target=$2
+args=$@
+
+DE_BASE=/opt
+
+source ${DE_BASE}/dataease/.env
+
+export COMPOSE_HTTP_TIMEOUT=180
+
+compose_files="-f docker-compose.yml"
+
+compose_cmd="docker-compose"
+
+docker-compose version >/dev/null 2>&1
+if [ $? -ne 0 ]; then
+   docker compose version >/dev/null 2>&1
+   if [ $? -ne 0 ]; then
+      compose_cmd="docker compose"
+   fi
+fi
+
+
+if [ "${DE_ENGINE_MODE}" = "local" ]; then
+   if [[ ! ${DE_EXTERNAL_KETTLE} ]] || [ ${DE_EXTERNAL_KETTLE} = "false" ]; then
+     compose_files="${compose_files} -f docker-compose-kettle.yml"
+   fi
+
+   if [[ ! ${DE_EXTERNAL_DORIS} ]] || [ ${DE_EXTERNAL_DORIS} = "false" ]; then
+     compose_files="${compose_files} -f docker-compose-doris.yml"
+   fi
+fi
+
+if [[ ! ${DE_EXTERNAL_MYSQL} ]] || [ ${DE_EXTERNAL_MYSQL} = "false" ]; then
+  compose_files="${compose_files} -f docker-compose-mysql.yml"
+fi
+
+function usage() {
+   echo "DATAEASE 控制脚本"
+   echo
+   echo "Usage: "
+   echo "  ./dectl [COMMAND] [ARGS...]"
+   echo "  ./dectl --help"
+   echo
+   echo "Commands: "
+   echo "  status       查看 DATAEASE 服务运行状态"
+   echo "  start        启动 DATAEASE 服务"
+   echo "  stop         停止 DATAEASE 服务"
+   echo "  restart      重启 DATAEASE 服务"
+   echo "  reload       重新加载 DATAEASE 服务"
+   echo "  uninstall    卸载 DATAEASE 服务"
+   echo "  upgrade      升级 DATAEASE 服务"
+   echo "  version      查看 DATAEASE 版本信息"
+   echo "  clear-images 清理 DATAEASE 旧版本的相关镜像"
+   echo "  clear-logs   清理 DATAEASE 历史日志以及 Doris 临时日志"
+}
+function _healthcheck() {
+   echo
+   for b in {1..30}
+   do
+      sleep 3
+      http_code=$(curl -sILw "%{http_code}\n" http://localhost:${DE_PORT} -o /dev/null)
+      if [[ $http_code == 000 ]];then
+         echo "DataEase 服务状态 : 正在启动"
+      elif [[ $http_code == 200 ]];then
+         echo "DataEase 服务状态 : 正常运行"
+         break;
+      else
+         echo -e "DataEase 服务状态 : \033[31m无法访问\033[0m"
+         exit 1
+      fi
+   done
+   echo
+}
+function status() {
+   echo
+   echo "DataEase 容器运行状态"
+   cd ${DE_BASE}/dataease; ${compose_cmd} ${compose_files} ps
+   
+   echo
+   docker_root_dir=$(docker info | grep "Docker Root Dir"  | awk -F': ' '{print $2}')
+   echo "Docker 目录及文件大小 : " 
+   du -sh $docker_root_dir
+   echo
+   echo "Docker 目录所在磁盘使用情况 : " 
+   df -H $docker_root_dir
+
+   echo
+   echo "日志文件大小 : "
+   du -Sh ${DE_BASE}/dataease/logs/
+
+   echo
+   echo "DataEase 运行目录及文件大小 : " 
+   du -sh ${DE_BASE}
+   echo
+   echo "DataEase 运行目录使用情况 : " 
+   df -H ${DE_BASE}
+   
+   echo
+   read available_disk percent_disk<<< $(df -H --output=avail,pcent ${DE_BASE} | tail -1)
+   available_disk=${available_disk%?}
+   percent_disk=${percent_disk%?}
+      if [[ $available_disk < 2.0 ]] && [[ $percent_disk > 85 ]];then
+      echo -e "\033[31m[警告] DataEase 运行目录所在磁盘剩余空间不足 2G 且磁盘使用率超过 85%，Apache Doris 可能无法正常启动!\033[0m"
+   fi
+
+   _healthcheck
+}
+function start() {
+   echo
+   cd ${DE_BASE}/dataease; ${compose_cmd} ${compose_files} start ${target}
+   _healthcheck
+}
+function stop() {
+   echo
+   cd ${DE_BASE}/dataease; ${compose_cmd} ${compose_files} stop ${target}
+}
+function restart() {
+   echo
+   cd ${DE_BASE}/dataease; ${compose_cmd} ${compose_files} restart ${target}
+   _healthcheck
+}
+function reload() {
+   echo
+   cd ${DE_BASE}/dataease; ${compose_cmd} ${compose_files} up -d
+   _healthcheck
+}
+function uninstall() {
+   echo
+   cd ${DE_BASE}/dataease; ${compose_cmd} ${compose_files} down -v ${target}
+}
+function version() {
+   echo
+   de_version=$(grep "^    image:.*/dataease:" ${DE_BASE}/dataease/docker-compose.yml | awk -F'dataease:' '{print $2}')
+   echo $de_version
+}
+function _clear_component_docker_images() {
+   component=$1
+   compose_file=${DE_BASE}/dataease/docker-compose-${component}.yml
+   if [ $1 = "dataease" ];then
+      compose_file=${DE_BASE}/dataease/docker-compose.yml
+   fi
+   component_image_defined=$(grep "^    image:.*/$component:" ${compose_file} | uniq)
+   component_version=$(echo ${component_image_defined} | awk -F"${component}:" '{print $2}' | uniq)
+   component_image=$(echo ${component_image_defined} | awk -F'image: ' '{print $2}' | awk -F':' '{print $1}')
+
+   if test -z $(docker images | grep "dataease" | grep "$component_image" | grep -v " $component_version "); then
+      echo "$component_image 不存在旧版本镜像"
+   else
+      echo "清理${component}镜像"
+      docker rmi $(docker images | grep "dataease" | grep "$component_image" | grep -v " $component_version " | awk -F' ' '{print $1":"$2}')
+      echo "清理完毕"
+   fi
+}
+function clear_images() {
+   echo
+   _clear_component_docker_images 'dataease'
+   _clear_component_docker_images 'doris'
+   _clear_component_docker_images 'kettle'
+   _clear_component_docker_images 'mysql'
+   if test ! -z "$(docker images -f dangling=true -q)"; then
+      echo "清理虚悬镜像"
+      docker rmi $(docker images -f dangling=true -q)
+      echo "清理完毕"
+   fi
+}
+function clear_logs() {
+   echo "开始清理 DataEase 历史日志"
+   rm -rf ${DE_BASE}/dataease/logs/dataease/history/*
+   echo "清理完毕"
+
+   echo "开始清理 Apache Doris FE 日志"
+   rm -rf ${DE_BASE}/dataease/logs/fe/fe.gc.log.*
+   echo "" > ${DE_BASE}/dataease/logs/fe/fe.out
+   echo "清理完毕"   
+
+   echo "开始清理 Apache Doris BE 日志"
+   echo "" > ${DE_BASE}/dataease/logs/be/be.INFO
+   echo "" > ${DE_BASE}/dataease/logs/be/be.WARNING
+   echo "" > ${DE_BASE}/dataease/logs/be/be.out
+   echo "清理完毕"
+}
+function upgrade() {
+   echo
+   git_urls=('gitee.com' 'github.com')
+   if [[ -x "$(command -v python)" ]];then
+      py_cmd='python'
+   elif [[ -x "$(command -v python3)" ]]; then
+      py_cmd='python3'
+   else
+      git_urls=('github.com')
+   fi
+
+   for git_url in ${git_urls[*]}
+   do
+      success="true"
+      for i in {1..3}
+      do
+         echo -ne "检测 ${git_url} ... ${i} "
+         curl -m 5 -kIs https://${git_url} >/dev/null
+         if [ $? != 0 ];then
+            echo "failed"
+            success="false"
+            break
+         else
+            echo "ok"
+         fi
+      done
+      if [[ ${success} == "true" ]];then
+         server_url=${git_url}
+         break
+      fi
+   done
+
+   if [[ "x${server_url}" == "x" ]];then
+      echo "没有找到稳定的下载服务器，请稍候重试"
+      exit 1
+   fi
+
+   if [[ "${server_url}" == "gitee.com" ]];then
+      owner='fit2cloud-feizhiyun'
+      repo='DataEase'
+      gitee_release_content=$(curl -s https://gitee.com/api/v5/repos/${owner}/${repo}/releases/latest)
+      # export LC_ALL="en_US.utf8"
+      latest_version=$($py_cmd -c "import json; obj=json.loads('$gitee_release_content', strict=False); print(obj['tag_name']);")
+   else
+      owner='dataease'
+      repo='dataease'
+      latest_version=$(curl -s https://api.github.com/repos/${owner}/${repo}/releases/latest | grep -e "\"tag_name\"" | sed -r 's/.*: "(.*)",/\1/')      
+   fi
+
+   current_version=$(grep "^    image:.*/dataease:" ${DE_BASE}/dataease/docker-compose.yml | awk -F'dataease:' '{print $2}')
+
+   if [ "${latest_version}" = "" ];then
+      echo "未获取到最新版本"
+      exit 1
+   elif [ "${latest_version}" = "${current_version}" ];then
+      echo "最新版本与当前版本一致,退出升级过程"
+      exit 0
+   else
+      echo -e "\e[32m 检测到最新版本为\e[1;33m${latest_version}\e[0;32m 即将执行在线升级...\e[0m"
+   fi
+   sleep 2s
+
+   echo "使用下载服务器 ${server_url}"
+   cd /tmp
+   download_url="https://${server_url}/${owner}/${repo}/releases/download/${latest_version}/dataease-${latest_version}-online.tar.gz"
+   curl -LOk -m 60 -o dataease-${latest_version}-online.tar.gz $download_url
+   if [ $? -ne 0 ]; then
+      echo -e "\e[31m升级失败:连接下载服务器超时！\n可手动下载升级包，然后执行\e[1;33m /bin/bash install.sh \e[0;31m离线升级，也可以重新执行一次 dectl upgrade 命令。\e[0m"
+      return 2
+   fi
+
+   if [ ! -f dataease-${latest_version}-online.tar.gz ];then
+      echo "下载在线安装包失败，请试试重新执行一次安装命令。"
+      exit 1
+   fi
+
+   tar zxvf dataease-${latest_version}-online.tar.gz
+   if [ $? != 0 ];then
+      echo "下载在线安装包失败，请试试重新执行一次安装命令。"
+      rm -f dataease-${latest_version}-online.tar.gz
+      exit 1
+   fi
+
+   cd dataease-${latest_version}-online
+   /bin/bash install.sh
+
+   cd ..
+   rm -rf /tmp/dataease-${latest_version}-online
+}
+
+function main() {
+    case "${action}" in
+      status)
+         status
+         ;;
+      start)
+         start
+         ;;
+      stop)
+         stop
+         ;;
+      restart)
+         restart
+         ;;
+      reload)
+         reload
+         ;;
+      uninstall)
+         uninstall
+         ;;
+      upgrade)
+         upgrade
+         ;;
+      version)
+         version
+         ;;
+      clear-images)
+         clear_images
+         ;;
+      clear-logs)
+         clear_logs
+         ;;
+      help)
+         usage
+         ;;
+      --help)
+         usage
+         ;;
+      *)
+         echo "不支持的参数，请使用 help 或 --help 参数获取帮助"
+         ;;
+    esac
+}
+main

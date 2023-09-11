@@ -1,0 +1,50 @@
+version: '2.1'
+services:
+
+  doris-fe:
+    image: registry.cn-qingdao.aliyuncs.com/dataease/doris:v1.2.4.1-0606
+    container_name: doris-fe
+    privileged: true
+    environment:
+      - DORIS_ROLE=fe-leader
+      - FE_SERVERS=fe1:${DE_DORIS_FE_IP}:9010
+      - FE_ID=1
+    volumes:
+      - ${DE_BASE}/dataease/data/fe:/opt/apache-doris/fe/doris-meta
+      - ${DE_BASE}/dataease/logs/fe:/opt/apache-doris/fe/log
+      - ${DE_BASE}/dataease/conf/fe.conf:/opt/apache-doris/fe/conf/fe.conf
+    networks:
+      dataease-network :
+        ipv4_address: ${DE_DORIS_FE_IP}
+    restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -sS 127.0.0.1:8030 || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  doris-be:
+    image: registry.cn-qingdao.aliyuncs.com/dataease/doris:v1.2.4.1-0606
+    container_name: doris-be
+    privileged: true
+    environment:
+      - DORIS_ROLE=be
+      - FE_SERVERS=fe1:${DE_DORIS_FE_IP}:9010
+      - BE_ADDR=${DE_DORIS_BE_IP}:9050
+    volumes:
+      - ${DE_BASE}/dataease/data/be:/opt/apache-doris/be/storage
+      - ${DE_BASE}/dataease/logs/be:/opt/apache-doris/be/log
+      - ${DE_BASE}/dataease/conf/be.conf:/opt/apache-doris/be/conf/be.conf
+      - ${DE_BASE}/dataease/bin/doris:/docker-entrypoint-initdb.d/
+    depends_on:
+      doris-fe:
+        condition: service_healthy
+    networks:
+      dataease-network :
+        ipv4_address: ${DE_DORIS_BE_IP}
+    restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -sS 127.0.0.1:8040 || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
