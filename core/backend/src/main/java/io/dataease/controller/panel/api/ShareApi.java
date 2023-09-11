@@ -31,8 +31,7 @@ public interface ShareApi {
 
     @ApiOperation("查询分享给我")
     @PostMapping("/treeList")
-    @SqlInjectValidator(value = {"s.create_time"})
-    List<PanelShareDto> treeList(BaseGridRequest request);
+    List<PanelShareDto> treeList();
 
     @ApiOperation("查询我分享的")
     @PostMapping("/shareOut")

@@ -338,7 +338,7 @@ public class ShareService {
         return extPanelShareMapper.queryOut(username);
     }
 
-    public List<PanelShareDto> queryTree(BaseGridRequest request) {
+    public List<PanelShareDto> queryTree() {
         CurrentUserDto user = AuthUtils.getUser();
         Long userId = user.getUserId();
         Long deptId = user.getDeptId();

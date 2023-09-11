@@ -1,7 +1,6 @@
 package io.dataease.controller.panel.server;
 
 import io.dataease.controller.panel.api.StoreApi;
-import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.dto.panel.PanelStoreDto;
 import io.dataease.service.panel.StoreService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +20,8 @@ public class StoreServer implements StoreApi {
     }
 
     @Override
-    public List<PanelStoreDto> list(BaseGridRequest request) {
-        return storeService.query(request);
+    public List<PanelStoreDto> list() {
+        return storeService.query();
     }
 
     @Override
