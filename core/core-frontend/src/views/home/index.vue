@@ -19,10 +19,10 @@ const getEyeDropper = async () => {
   if (!isSupported) return
   await open()
     .then(res => {
-      console.log('sRGBHex', sRGBHex, res)
+      console.log(res)
     })
     .catch(cancel => {
-      console.log('sRGBHex cancel', cancel)
+      console.log(cancel)
     })
 }
 console.log('EyeDropper' in window, 'EyeDropper')

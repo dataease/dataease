@@ -230,7 +230,6 @@ function removeTab(targetName: string) {
 }
 
 const componentMoveIn = component => {
-  console.log('componentMoveIn-' + JSON.stringify(component))
   element.value.propValue.forEach((tabItem, index) => {
     if (editableTabsValue.value === tabItem.name) {
       //获取主画布当前组件的index
@@ -279,17 +278,7 @@ const headClass = computed(() => {
 })
 
 const calcTabLength = () => {
-  // nextTick(() => {
-  //   if (element.value.propValue.length > 1) {
-  //     const containerDom = document.getElementById(
-  //       'tab-' + element.value.propValue[element.value.propValue.length - 1].name
-  //     )
-  //     tabsAreaScroll.value =
-  //       containerDom.parentNode.scrollWidth > containerDom.parentNode.parentNode.scrollWidth
-  //   } else {
-  //     tabsAreaScroll.value = false
-  //   }
-  // })
+  console.log('calcTabLength')
 }
 
 const titleStyle = itemName => {

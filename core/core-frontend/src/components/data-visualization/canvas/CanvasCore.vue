@@ -527,7 +527,7 @@ function addItemToPositionBox(item) {
           pb[j][i].el = item
         }
       } catch (e) {
-        console.log('addItemToPositionBox-error')
+        console.log(e)
       }
     }
   }
@@ -563,7 +563,7 @@ function removeItemFromPositionBox(item) {
           pb[j][i].el = false
         }
       } catch (e) {
-        console.log('removeItemFromPositionBox-warn')
+        console.log(e)
       }
     }
   }
@@ -968,7 +968,6 @@ const endItemMove = (e, item, index) => {
 }
 
 const startMove = (e, item, index) => {
-  // console.log('startMove...')
   // e.preventDefault();
   if (!infoBox.value) {
     infoBox.value = {}
@@ -1157,7 +1156,6 @@ const clearInfoBox = e => {
 }
 
 const endMove = e => {
-  // console.log('endMove....')
   return {}
 }
 
@@ -1337,7 +1335,6 @@ const onDragging = (e, item, index) => {
   let newY = Math.floor(item.style.top / cellHeight.value + 1)
   newX = newX > 0 ? newX : 1
   newY = newY > 0 ? newY : 1
-  // console.log('onDragging=newX=' + newX + ';newY=' + newY)
 
   debounce(
     (function (newX, oldX, newY, oldY) {
@@ -1375,9 +1372,6 @@ const onResizing = (e, item, index) => {
       ? Math.floor(height / cellHeight.value + 1)
       : Math.floor(height / cellHeight.value)
 
-  // console.log(
-  //   'nowSizeX=' + nowSizeX + ';p1=' + (width % cellWidth.value) + ';p2=' + (cellWidth.value / 4) * 3
-  // )
   const addSizeX = 1
   const addSizeY = 1
 
@@ -1390,9 +1384,6 @@ const onResizing = (e, item, index) => {
   let newY = Math.floor((item.style.top + 5) / cellHeight.value + 1)
   newX = newX > 0 ? newX : 1
   newY = newY > 0 ? newY : 1
-  // console.log(
-  //   'onResizing=nowSizeX=' + nowSizeX + ';nowSizeY=' + nowSizeY + 'newX=' + newX + ';newY=' + newY
-  // )
 
   // 调整大小
   debounce(

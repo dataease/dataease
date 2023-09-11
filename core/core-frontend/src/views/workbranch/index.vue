@@ -261,7 +261,6 @@ fillCardInfo()
             font-size: 12px;
             color: #2b5fd9;
             border-radius: 2px;
-            // background: rgba(51, 112, 255, 0.2);
           }
         }
         .id {

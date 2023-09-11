@@ -55,7 +55,6 @@ const { element, baseWidth, baseHeight, curGap } = toRefs(props)
 
 const shadowStyle = computed(() => {
   const { x, y, sizeX, sizeY } = element.value
-  // console.log('shadowStyle==x=' + x + '；y=' + y + ';sizeX=' + sizeX + ';sizeY=' + sizeY)
   return {
     padding: curGap.value + 'px',
     width: sizeX * baseWidth.value + 'px',

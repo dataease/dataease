@@ -3,7 +3,6 @@ import { PropType, ref } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import type { Field } from './UnionFieldList.vue'
 import { fieldType } from '@/utils/attr'
-// type UnionType = 'left' | 'right' | 'inner'
 const unionTypeFromParent = ref('left')
 const { t } = useI18n()
 const iconName = {

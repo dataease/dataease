@@ -14,13 +14,11 @@ import 'tinymce/models/dom' // 这里是个坑 一定要引入
 
 //在TinyMce.vue中接着引入相关插件
 import 'tinymce/icons/default/icons'
-// import "tinymce/plugins/image" // 插入上传图片插件
-// import "tinymce/plugins/media" // 插入视频插件
 import 'tinymce/plugins/table' // 插入表格插件
 import 'tinymce/plugins/lists' // 列表插件
 import 'tinymce/plugins/wordcount' // 字数统计插件
 import 'tinymce/plugins/code' // 源码
-// import "tinymce/plugins/fullscreen" //全屏
+
 
 //接下来定义编辑器所需要的插件数据
 import { reactive, ref } from 'vue'
@@ -73,7 +71,6 @@ const init = reactive({
   font_formats:
     'Arial=arial,helvetica,sans-serif; 宋体=SimSun; 微软雅黑=Microsoft Yahei; Impact=impact,chicago;', //字体
   fontsize_formats: '11px 12px 14px 16px 18px 24px 36px 48px 64px 72px', //文字大小
-  // paste_convert_word_fake_lists: false, // 插入word文档需要该属性
   paste_webkit_styles: 'all',
   paste_merge_formats: true,
   nonbreaking_force_tab: false,

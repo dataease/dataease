@@ -25,9 +25,6 @@ const elPopoverU = ref(null)
 const more = ref(null)
 const filterTree = ref(null)
 const statusChange = (value: string | number) => {
-  // const node = filterTree.value?.getNode(value)
-  // node.data.disabled = false
-
   state.activeStatus = state.activeStatus.filter(ele => ele?.value !== value)
   state.currentStatus = state.currentStatus.filter(val => val !== value)
   emits(
@@ -35,28 +32,6 @@ const statusChange = (value: string | number) => {
     state.activeStatus.map(item => item.value)
   )
 }
-/* const selectStatus = nodes => {
-  nodes.forEach(node => {
-    if (node?.value && !state.activeStatus.some(ele => ele.value === node.value)) {
-      node.disabled = true
-      state.activeStatus.push(node)
-    }
-  })
-  state.currentStatus = []
-  nextTick(() => {
-    elPopoverU.value?.hide()
-    more.value?.click()
-  })
-}
-
-const checkChange = () => {
-  const nodes = filterTree.value?.getCheckedNodes()
-  selectStatus(nodes)
-  emits(
-    'filter-change',
-    state.activeStatus.map(item => item.value)
-  )
-} */
 
 const treeChange = () => {
   const nodes = state.currentStatus.map(id => {

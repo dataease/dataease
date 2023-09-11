@@ -170,11 +170,7 @@ const initTitle = () => {
 }
 
 const drillJump = index => {
-  // const length = state.drillClickDimensionList.length
   state.drillClickDimensionList = state.drillClickDimensionList.slice(0, index)
-  // if (props.view.type === 'map' || props.view.type === 'buddle-map') {
-  //   this.backToParent(index, length)
-  // }
   view.value.chartExtRequest = filter()
   calcData(view.value)
 }
@@ -190,7 +186,6 @@ const chartClick = param => {
     state.drillClickDimensionList.push({ dimensionList: param.data.dimensionList })
     view.value.chartExtRequest = filter()
     calcData(view.value)
-    // this.getData(this.element.propValue.viewId)
   } else if (props.view.drillFields.length > 0) {
     ElMessage.error(t('chart.last_layer'))
   }
@@ -203,11 +198,9 @@ const filter = (firstLoad?: boolean) => {
     user: wsCache.get('user.uid'),
     filter,
     linkageFilters: element.value.linkageFilters,
-    // outerParamsFilters: this.element.outerParamsFilters,
     drill: state.drillClickDimensionList,
     resultCount: resultCount.value,
     resultMode: resultMode.value
-    // queryFrom: 'panel'
   }
 }
 
