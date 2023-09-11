@@ -18,7 +18,8 @@
         @mousedown="handleMouseDownOnShape"
       >
         <component-edit-bar
-          v-if="componentActiveFlag"
+          class="edit-bar"
+          :class="{ 'edit-bar-active': editBarShowFlag }"
           :index="index"
           :element="element"
           :show-position="showPosition"
@@ -575,7 +576,7 @@ const componentBackgroundStyle = computed(() => {
   return {}
 })
 
-const componentActiveFlag = computed(() => {
+const editBarShowFlag = computed(() => {
   return (
     ((active.value || batchOptStatus.value) && dashboardActive.value) || linkageSettingStatus.value
   )
@@ -708,12 +709,15 @@ onMounted(() => {
   height: 100%;
   position: relative;
   background-size: 100% 100% !important;
+  .edit-bar {
+    display: none;
+  }
 }
 
 .shape-edit {
   &:hover {
     cursor: move;
-    outline: 2px solid #3370ff !important;
+    outline: 1px solid rgba(51, 112, 255, 0.6);
   }
 }
 
@@ -724,7 +728,7 @@ onMounted(() => {
 }
 
 .active {
-  outline: 1px solid #3370ff;
+  outline: 1px solid rgba(51, 112, 255, 1) !important;
   user-select: none;
 }
 
@@ -783,5 +787,8 @@ onMounted(() => {
 
 .drag-on-tab-collision {
   z-index: 1000 !important;
+}
+.edit-bar-active {
+  display: inline-block !important;
 }
 </style>

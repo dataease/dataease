@@ -18,8 +18,8 @@ import { cloneDeep } from 'lodash-es'
 import { fieldType } from '@/utils/attr'
 
 import {
-  DEFAULT_CANVAS_STYLE_DATA_DARK,
-  DEFAULT_CANVAS_STYLE_DATA_LIGHT
+  DEFAULT_CANVAS_STYLE_DATA_LIGHT,
+  DEFAULT_CANVAS_STYLE_DATA_SCREEN_DARK
 } from '@/views/chart/components/editor/util/dataVisualiztion'
 import type { TabPaneName } from 'element-plus-secondary'
 import { timestampFormatDate } from './form/util'
@@ -91,7 +91,7 @@ const resourceCreate = (pid, name) => {
   const canvasStyleDataNew =
     curCanvasType.value === 'dashboard'
       ? DEFAULT_CANVAS_STYLE_DATA_LIGHT
-      : DEFAULT_CANVAS_STYLE_DATA_DARK
+      : DEFAULT_CANVAS_STYLE_DATA_SCREEN_DARK
   const canvasInfo = {
     canvasStyleData: JSON.stringify(canvasStyleDataNew),
     componentData: JSON.stringify([]),

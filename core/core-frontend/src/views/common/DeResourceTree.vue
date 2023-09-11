@@ -9,8 +9,8 @@ import { BusiTreeNode, BusiTreeRequest } from '@/models/tree/TreeNode'
 import { guid } from '@/views/visualized/data/dataset/form/util.js'
 import { save } from '@/api/visualization/dataVisualization'
 import {
-  DEFAULT_CANVAS_STYLE_DATA_DARK,
-  DEFAULT_CANVAS_STYLE_DATA_LIGHT
+  DEFAULT_CANVAS_STYLE_DATA_LIGHT,
+  DEFAULT_CANVAS_STYLE_DATA_SCREEN_DARK
 } from '@/views/chart/components/editor/util/dataVisualiztion'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
@@ -232,7 +232,7 @@ const resourceCreate = (pid, name) => {
   const canvasStyleDataNew =
     curCanvasType.value === 'dashboard'
       ? DEFAULT_CANVAS_STYLE_DATA_LIGHT
-      : DEFAULT_CANVAS_STYLE_DATA_DARK
+      : DEFAULT_CANVAS_STYLE_DATA_SCREEN_DARK
   const canvasInfo = {
     canvasStyleData: JSON.stringify(canvasStyleDataNew),
     componentData: JSON.stringify([]),

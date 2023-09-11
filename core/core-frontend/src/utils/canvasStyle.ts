@@ -390,23 +390,7 @@ export function adaptCurThemeCommonStyle(component) {
   if (component.component === 'UserView') {
     // 视图-Begin
     const curViewInfo = dvMainStore.canvasViewInfo[component.id]
-
-    // //标题-Begin
-    // const titleStyle = dvMainStore.canvasStyleData.component.chartTitle
-    // for (const key in titleStyle) {
-    //   curViewInfo.customStyle.text[key] = titleStyle[key]
-    // }
-    // //标题-End
-    //
-    // //配色-Begin
-    // const componentColorStyle = dvMainStore.canvasStyleData.component.chartColor
-    // for (const key in componentColorStyle) {
-    //   curViewInfo.customAttr.color[key] = componentColorStyle[key]
-    // }
-    // //配色-End
-
     adaptCurTheme(curViewInfo.customStyle, curViewInfo.customAttr)
-    console.log('1-2')
     useEmitt().emitter.emit('renderChart-' + component.id, curViewInfo)
     // 视图-Begin
   }

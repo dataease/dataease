@@ -10,7 +10,8 @@ import {
 } from '@/views/chart/components/editor/util/chart'
 import {
   COMMON_COMPONENT_BACKGROUND_DARK,
-  COMMON_COMPONENT_BACKGROUND_LIGHT
+  COMMON_COMPONENT_BACKGROUND_LIGHT,
+  COMMON_COMPONENT_BACKGROUND_SCREEN_DARK
 } from '@/custom-component/component-list'
 
 export const PANEL_CHART_INFO_LIGHT = {
@@ -27,6 +28,11 @@ export const PANEL_CHART_INFO_DARK = {
   chartCommonStyle: COMMON_COMPONENT_BACKGROUND_DARK,
   filterStyle: FILTER_COMMON_STYLE_DARK,
   tabStyle: TAB_COMMON_STYLE_DARK
+}
+
+export const PANEL_CHART_INFO_SCREEN_DARK = {
+  ...PANEL_CHART_INFO_DARK,
+  chartCommonStyle: COMMON_COMPONENT_BACKGROUND_SCREEN_DARK
 }
 
 export const MOBILE_SETTING_BASE = {
@@ -101,6 +107,12 @@ export const DEFAULT_CANVAS_STYLE_DATA_DARK = {
   backgroundColor: '#000',
   dashboard: DEFAULT_DASHBOARD_STYLE_DARK,
   component: PANEL_CHART_INFO_DARK
+}
+
+// 大屏基础暗色主题
+export const DEFAULT_CANVAS_STYLE_DATA_SCREEN_DARK = {
+  ...DEFAULT_CANVAS_STYLE_DATA_DARK,
+  component: PANEL_CHART_INFO_SCREEN_DARK
 }
 
 // 基础主题
