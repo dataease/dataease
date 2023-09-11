@@ -14,12 +14,13 @@ import io.dataease.commons.constants.ResourceAuthLevel;
 import io.dataease.commons.constants.SysLogConstants;
 import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.AuthUtils;
-import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
 import io.dataease.controller.response.ExistLdapUser;
-import io.dataease.controller.sys.base.BaseGridRequest;
-import io.dataease.controller.sys.request.*;
+import io.dataease.controller.sys.request.SysUserCreateRequest;
+import io.dataease.controller.sys.request.SysUserPwdRequest;
+import io.dataease.controller.sys.request.SysUserStateRequest;
+import io.dataease.controller.sys.request.UserGridRequest;
 import io.dataease.controller.sys.response.AuthBindDTO;
 import io.dataease.controller.sys.response.RoleUserItem;
 import io.dataease.controller.sys.response.SysUserGridResponse;
@@ -28,6 +29,7 @@ import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.SysRole;
 import io.dataease.plugins.common.base.domain.SysUser;
 import io.dataease.plugins.common.base.domain.SysUserAssist;
+import io.dataease.plugins.common.request.KeywordRequest;
 import io.dataease.service.sys.SysRoleService;
 import io.dataease.service.sys.SysUserService;
 import io.swagger.annotations.Api;
@@ -230,12 +232,11 @@ public class SysUserController {
             @ApiImplicitParam(paramType = "path", name = "pageSize", value = "页容量", required = true, dataType = "Integer"),
             @ApiImplicitParam(name = "request", value = "查询条件", required = true)
     })
-    @SqlInjectValidator({"create_time", "update_time"})
-    public Pager<List<SysRole>> roleGrid(@PathVariable int goPage, @PathVariable int pageSize,
-                                         @RequestBody BaseGridRequest request) {
+    @SqlInjectValidator({"create_time"})
+    public Pager<List<SysRole>> roleGrid(@PathVariable int goPage, @PathVariable int pageSize, @RequestBody KeywordRequest request) {
+
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
-        Pager<List<SysRole>> listPager = PageUtils.setPageInfo(page, sysRoleService.query(request));
-        return listPager;
+        return PageUtils.setPageInfo(page, sysRoleService.query(request));
     }
 
     @ApiOperation("已同步用户")

@@ -1,8 +1,8 @@
 package io.dataease.plugins.config;
 
 import io.dataease.commons.utils.LogUtil;
-import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.plugins.common.base.domain.MyPlugin;
+import io.dataease.plugins.common.request.KeywordRequest;
 import io.dataease.service.sys.PluginService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -37,11 +37,10 @@ public class PluginRunner implements ApplicationRunner {
     }
 
 
-
     @Override
     public void run(ApplicationArguments args) {
         // 执行加载插件逻辑
-        BaseGridRequest request = new BaseGridRequest();
+        KeywordRequest request = new KeywordRequest();
         List<MyPlugin> plugins = pluginService.query(request);
         if (CollectionUtils.isEmpty(plugins)) return;
         Map<Boolean, List<MyPlugin>> groupMap = plugins.stream().collect(Collectors.groupingBy(this::isDiscard));
