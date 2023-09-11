@@ -882,6 +882,13 @@ export const CHART_FONT_FAMILY = [
   { name: '楷体', value: 'KaiTi' }
 ]
 
+export const CHART_CONT_FAMILY_MAP = {
+  'Microsoft YaHei': 'Microsoft YaHei',
+  SimSun: 'SimSun, "Songti SC", STSong',
+  SimHei: 'SimHei, Helvetica',
+  KaiTi: 'KaiTi, "Kaiti SC", STKaiti'
+}
+
 export const CHART_FONT_LETTER_SPACE = [
   { name: '0px', value: 0 },
   { name: '1px', value: 1 },

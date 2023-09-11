@@ -17,7 +17,10 @@ import {
 } from 'vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { hexColorToRGBA } from '@/views/chart/components/js/util.js'
-import { DEFAULT_TITLE_STYLE } from '@/views/chart/components/editor/util/chart'
+import {
+  CHART_CONT_FAMILY_MAP,
+  DEFAULT_TITLE_STYLE
+} from '@/views/chart/components/editor/util/chart'
 import DrillPath from '@/views/chart/components/views/components/DrillPath.vue'
 import { ElMessage } from 'element-plus-secondary'
 import { useFilter } from '@/hooks/web/useFilter'
@@ -95,7 +98,8 @@ const state = reactive({
     background: '',
     fontFamily: '',
     textShadow: 'none',
-    letterSpacing: '0px'
+    letterSpacing: '0px',
+    fontSynthesis: 'style weight'
   },
   drillFilters: [],
   drillClickDimensionList: []
@@ -155,7 +159,7 @@ const initTitle = () => {
       state.title_class.fontWeight = customStyle.text.isBolder ? 'bold' : 'normal'
 
       state.title_class.fontFamily = customStyle.text.fontFamily
-        ? customStyle.text.fontFamily
+        ? CHART_CONT_FAMILY_MAP[customStyle.text.fontFamily]
         : DEFAULT_TITLE_STYLE.fontFamily
       state.title_class.letterSpacing =
         (customStyle.text.letterSpace
