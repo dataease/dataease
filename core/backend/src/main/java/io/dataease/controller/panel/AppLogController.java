@@ -7,7 +7,7 @@ import io.dataease.auth.annotation.SqlInjectValidator;
 import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
 import io.dataease.controller.handler.annotation.I18n;
-import io.dataease.controller.sys.request.KeyGridRequest;
+import io.dataease.controller.request.panel.AppLogGridRequest;
 import io.dataease.dto.appTemplateMarket.AppLogGridDTO;
 import io.dataease.service.panel.applog.AppLogService;
 import io.swagger.annotations.Api;
@@ -38,7 +38,7 @@ public class AppLogController {
     })
     @SqlInjectValidator(value = {"apply_time"})
     public Pager<List<AppLogGridDTO>> logGrid(@PathVariable int goPage, @PathVariable int pageSize,
-                                              @RequestBody KeyGridRequest request) {
+                                              @RequestBody AppLogGridRequest request) {
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
         return PageUtils.setPageInfo(page, appLogService.query(request));
     }

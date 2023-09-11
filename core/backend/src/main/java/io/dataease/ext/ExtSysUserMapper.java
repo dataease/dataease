@@ -1,7 +1,6 @@
 package io.dataease.ext;
 
 import io.dataease.controller.sys.request.UserGridRequest;
-import io.dataease.ext.query.GridExample;
 import io.dataease.controller.sys.response.SysUserGridResponse;
 
 import java.util.List;

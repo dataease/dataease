@@ -13,7 +13,6 @@ import io.dataease.controller.request.panel.PanelShareFineDto;
 import io.dataease.controller.request.panel.PanelShareRemoveRequest;
 import io.dataease.controller.request.panel.PanelShareRequest;
 import io.dataease.controller.request.panel.PanelShareSearchRequest;
-import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.dto.panel.PanelShareDto;
 import io.dataease.dto.panel.PanelShareOutDTO;
 import io.dataease.dto.panel.PanelSharePo;

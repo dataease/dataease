@@ -14,7 +14,7 @@
         <result column="panel_privileges" property="panelPrivileges"/>
         <result column="datasource_privileges" property="datasourcePrivileges"/>
     </resultMap>
-    <select id="query" parameterType="io.dataease.service.panel.applog.AppLogQueryParam" resultMap="BaseResultMapDTO">
+    <select id="query" parameterType="io.dataease.controller.request.panel.AppLogGridRequest" resultMap="BaseResultMapDTO">
         select
         logInfo.*,
         get_auths(logInfo.dataset_group_id,'dataset',#{userId}) as `dataset_privileges`,
@@ -53,27 +53,34 @@
         left join panel_app_template on panel_app_template_log.app_template_id = panel_app_template.id
         ) t
         where 1=1
-        <if test="extendCondition != null">
+        <if test="keyword != null">
             and
             (
-            t.app_name like concat('%', #{extendCondition} , '%')
+            t.app_name like concat('%', #{keyword} , '%')
             or
-            t.panel_name like concat('%', #{extendCondition} , '%')
+            t.panel_name like concat('%', #{keyword} , '%')
             or
-            t.dataset_group_name like concat('%', #{extendCondition} , '%')
+            t.dataset_group_name like concat('%', #{keyword} , '%')
             or
-            t.datasource_name like concat('%', #{extendCondition} , '%')
+            t.datasource_name like concat('%', #{keyword} , '%')
             )
         </if>
         ) logInfo
-        <if test="_parameter != null">
-            <include refid="io.dataease.ext.query.GridSql.gridCondition"/>
+        <if test="applyTime != null and applyTime.length > 1">
+            and (apply_time between #{applyTime.[0]} and #{applyTime.[1]}
         </if>
-        <if test="orderByClause != null">
-            order by ${orderByClause}
-        </if>
-        <if test="orderByClause == null">
-            order by apply_time desc
-        </if>
+
+        <choose>
+            <when test="orders!=null and orders.size > 0">
+                order by
+                <foreach collection="orders" item="item" open='' separator=',' close=''>
+                    ${item}
+                </foreach>
+            </when>
+            <otherwise>
+                order by apply_time desc
+            </otherwise>
+        </choose>
+
     </select>
 </mapper>

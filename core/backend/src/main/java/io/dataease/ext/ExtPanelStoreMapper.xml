@@ -10,7 +10,7 @@
     </resultMap>
 
 
-    <select id="query" parameterType="io.dataease.ext.query.GridExample" resultMap="panelStoreMap">
+    <select id="query" parameterType="java.lang.Long" resultMap="panelStoreMap">
         select s.store_id, s.panel_group_id, g.name, g.status
         from panel_store s
                  inner join panel_group g on g.id = s.panel_group_id

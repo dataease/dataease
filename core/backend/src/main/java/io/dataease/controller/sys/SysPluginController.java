@@ -6,7 +6,6 @@ import io.dataease.auth.annotation.SqlInjectValidator;
 import io.dataease.commons.utils.DeFileUtils;
 import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
-import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.plugins.common.base.domain.MyPlugin;
 import io.dataease.plugins.common.request.KeywordRequest;
 import io.dataease.service.sys.PluginService;

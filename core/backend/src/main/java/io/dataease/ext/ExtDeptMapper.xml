@@ -12,7 +12,7 @@
     </select>
 
 
-    <select id="nodesByExample" parameterType="io.dataease.ext.query.GridExample" resultMap="simpleNode">
+    <select id="nodesByExample" parameterType="io.dataease.plugins.xpack.dept.dto.request.XpackDeptGridRequest" resultMap="simpleNode">
         select dept_id as id, pid from sys_dept where 1=1
         <if test="pid != null">
             and pid = #{pid}

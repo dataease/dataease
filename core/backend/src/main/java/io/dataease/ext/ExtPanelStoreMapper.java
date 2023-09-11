@@ -1,6 +1,5 @@
 package io.dataease.ext;
 
-import io.dataease.ext.query.GridExample;
 import io.dataease.dto.panel.PanelStoreDto;
 import org.apache.ibatis.annotations.Param;
 
