@@ -622,7 +622,9 @@ export default {
           if (entry.isIntersecting) {
             this.inViewPort = true
             // 被观察的元素现在在视口中
+            if(this.chart&&this.chart.refreshViewEnable){
               this.getData(this.element.propValue.viewId, false)
+            }
           } else {
              // 被观察的元素不再在视口中
             this.inViewPort = false
@@ -841,7 +843,7 @@ export default {
         if (this.isFirstLoad) {
           this.element.filters = this.filters?.length ? JSON.parse(JSON.stringify(this.filters)) : []
         }
-    return  method(id, this.panelInfo.id, requestInfo).then(response => {
+        return method(id, this.panelInfo.id, requestInfo).then(response => {
           // 将视图传入echart组件
           if (response.success) {
             this.chart = response.data
