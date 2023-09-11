@@ -451,8 +451,9 @@ const onAreaChange = val => {
   renderChart(view.value)
 }
 
-const onTypeChange = val => {
-  view.value.type = val
+const onTypeChange = (render, type) => {
+  view.value.render = render
+  view.value.type = type
   // 处理配置项默认值，不同视图的同一配置项默认值不同
   const chartViewInstance = chartViewManager.getChartView(view.value.render, view.value.type)
   if (chartViewInstance) {

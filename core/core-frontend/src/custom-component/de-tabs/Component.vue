@@ -106,19 +106,23 @@ import DeCustomTab from '@/custom-component/de-tabs/DeCustomTab.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
 const dvMainStore = dvMainStoreWithOut()
-const {
-  curComponent,
-  componentData,
-  canvasStyleData,
-  canvasViewInfo,
-  bashMatrixInfo,
-  dvInfo,
-  tabMoveInActiveId
-} = storeToRefs(dvMainStore)
+const { curComponent, tabMoveInActiveId, bashMatrixInfo } = storeToRefs(dvMainStore)
 const tabCanvas = ref(null)
 const { t } = useI18n()
 
 const props = defineProps({
+  canvasStyleData: {
+    type: Object,
+    required: true
+  },
+  canvasViewInfo: {
+    type: Object,
+    required: true
+  },
+  dvInfo: {
+    type: Object,
+    required: true
+  },
   element: {
     type: Object,
     default() {
@@ -137,7 +141,7 @@ const props = defineProps({
     default: 'canvas'
   }
 })
-const { element, isEdit, showPosition } = toRefs(props)
+const { element, isEdit, showPosition, canvasStyleData, canvasViewInfo, dvInfo } = toRefs(props)
 
 const state = reactive({
   activeTabName: '',

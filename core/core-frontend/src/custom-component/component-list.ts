@@ -248,9 +248,9 @@ export function findNewComponentFromList(componentName, innerType, curOriginThem
 
   if (componentName === 'UserView') {
     const viewConfig = getViewConfig(innerType)
-    newComponent.name = viewConfig.title
-    newComponent.label = viewConfig.title
-    newComponent.render = viewConfig.render
+    newComponent.name = viewConfig?.title
+    newComponent.label = viewConfig?.title
+    newComponent.render = viewConfig?.render
   }
   return newComponent
 }
