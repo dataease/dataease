@@ -622,7 +622,7 @@ export default {
           if (entry.isIntersecting) {
             this.inViewPort = true
             // 被观察的元素现在在视口中
-            if(this.chart&&this.chart.refreshViewEnable){
+            if(this.editMode === 'preview'&&this.chart&&this.chart.refreshViewEnable){
               this.getData(this.element.propValue.viewId, false)
             }
           } else {
