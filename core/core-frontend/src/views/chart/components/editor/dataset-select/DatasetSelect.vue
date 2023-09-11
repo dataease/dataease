@@ -482,6 +482,7 @@ onMounted(() => {
 
       .tree-row-item {
         display: block;
+        overflow-x: hidden;
         text-overflow: ellipsis;
         word-break: break-all;
         white-space: nowrap;
@@ -489,6 +490,11 @@ onMounted(() => {
         font-style: normal;
         font-weight: 400;
         line-height: 20px;
+
+        &::-webkit-scrollbar {
+          display: none;
+        }
+
         .m-icon {
           margin-right: 4px;
           font-size: 16px;
