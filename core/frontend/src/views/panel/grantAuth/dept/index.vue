@@ -94,12 +94,7 @@ export default {
     searchWithKey(index) {
       this.timeMachine = setTimeout(() => {
         if (index === this.changeIndex) {
-          const condition = {
-            field: 'name',
-            operator: 'like',
-            value: this.keyWord
-          }
-          this.search(condition)
+          this.search()
         }
         this.destroyTimeMachine()
       }, 1500)
@@ -124,25 +119,25 @@ export default {
     },
 
     // 加载表格数据
-    search(condition) {
+    search() {
       this.treeData = []
       let param = {}
-      if (condition && condition.value) {
-        param = { conditions: [condition] }
+      if (this.keyWord) {
+        param = { keyword: this.keyWord }
       } else {
-        param = { conditions: [this.defaultCondition] }
+        param = { pid: 0 }
       }
       if (!this.sharesLoad) {
         this.queryShareNodeIds(() => {
           this.sharesLoad = true
-          this.loadTreeData(param, condition)
+          this.loadTreeData(param)
         })
       } else {
-        this.loadTreeData(param, condition)
+        this.loadTreeData(param)
       }
     },
 
-    loadTreeData(param, condition) {
+    loadTreeData(param) {
       loadTable(param).then(res => {
         let data = res.data
         data = data.map(obj => {
@@ -154,7 +149,7 @@ export default {
 
         this.setCheckExpandNodes(data)
         this.expandNodeIds = []
-        if (condition && condition.value) {
+        if (this.keyWord) {
           this.treeData = this.buildTree(data)
           this.$nextTick(() => {
             this.expandResult(this.treeData)
