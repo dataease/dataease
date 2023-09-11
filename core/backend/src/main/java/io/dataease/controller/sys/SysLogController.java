@@ -7,7 +7,7 @@ import io.dataease.auth.annotation.SqlInjectValidator;
 import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
 import io.dataease.controller.handler.annotation.I18n;
-import io.dataease.controller.sys.request.KeyGridRequest;
+import io.dataease.controller.sys.request.LogGridRequest;
 import io.dataease.dto.SysLogGridDTO;
 import io.dataease.dto.log.FolderItem;
 import io.dataease.service.sys.log.LogService;
@@ -39,8 +39,7 @@ public class SysLogController {
     })
     @SqlInjectValidator(value = {"time"})
     public Pager<List<SysLogGridDTO>> logGrid(@PathVariable int goPage, @PathVariable int pageSize,
-                                              @RequestBody KeyGridRequest request) {
-        request = logService.logRetentionProxy(request);
+                                              @RequestBody LogGridRequest request) {
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
         return PageUtils.setPageInfo(page, logService.query(request));
     }
@@ -54,7 +53,7 @@ public class SysLogController {
     @ApiOperation("导出操作日志")
     @PostMapping("/export")
     @ApiImplicitParam(name = "request", value = "查询条件", required = true)
-    public void export(@RequestBody KeyGridRequest request) throws Exception {
+    public void export(@RequestBody LogGridRequest request) throws Exception {
         logService.exportExcel(request);
     }
 }

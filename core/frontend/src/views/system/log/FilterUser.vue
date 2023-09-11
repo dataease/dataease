@@ -208,8 +208,8 @@ export default {
     },
     formatCondition() {
       const fildMap = {
-        optype: this.activeType,
-        'user_id': this.activeUser
+        optypeList: this.activeType,
+        userIdList: this.activeUser
       }
       const conditions = []
       Object.keys(fildMap).forEach((ele) => {
@@ -228,7 +228,7 @@ export default {
           max = +max + 24 * 3600 * 1000
         }
         conditions.push({
-          field: 'time',
+          field: 'timeList',
           operator: 'between',
           value: [+min, +max]
         })
