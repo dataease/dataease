@@ -199,7 +199,7 @@ eventBus.on('handleNew', handleNew)
       </dv-sidebar>
       <!-- 中间画布 -->
       <main class="center">
-        <div ref="canvasOut" class="content" :class="{ 'preview-content': previewStatus }">
+        <el-scrollbar ref="canvasOut" class="content" :class="{ 'preview-content': previewStatus }">
           <div
             :style="contentStyle"
             @drop="handleDrop"
@@ -216,7 +216,7 @@ eventBus.on('handleNew', handleNew)
               :canvas-id="state.canvasId"
             ></canvas-core>
           </div>
-        </div>
+        </el-scrollbar>
         <ComponentToolBar :class="{ 'preview-aside-x': previewStatus }"></ComponentToolBar>
       </main>
       <!-- 右侧侧组件列表 -->
