@@ -259,7 +259,7 @@ onMounted(() => {
             />
           </el-header>
           <el-main :class="{ dark: themes === 'dark' }">
-            <el-scrollbar max-height="250px" always>
+            <el-scrollbar max-height="244px" always>
               <div class="m-loading" v-if="loadingDatasetTree" v-loading="loadingDatasetTree"></div>
               <div class="empty-info" v-if="showEmptyInfo">暂无数据集</div>
               <!--          <div class="empty-info" v-if="showEmptySearchInfo">暂无相关数据</div>-->
@@ -482,7 +482,6 @@ onMounted(() => {
 
       .tree-row-item {
         display: block;
-        overflow-x: hidden;
         text-overflow: ellipsis;
         word-break: break-all;
         white-space: nowrap;
