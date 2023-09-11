@@ -92,7 +92,10 @@ const state = reactive({
     textAlign: 'left',
     fontStyle: 'normal',
     fontWeight: 'normal',
-    background: ''
+    background: '',
+    fontFamily: '',
+    textShadow: 'none',
+    letterSpacing: '0px'
   },
   drillFilters: [],
   drillClickDimensionList: []
@@ -372,6 +375,12 @@ onMounted(() => {
       setTimeout(function () {
         chartComponent?.value?.renderChart(view.value)
       }, 200)
+    }
+  })
+  useEmitt({
+    name: 'updateTitle-' + view.value.id,
+    callback: () => {
+      initTitle()
     }
   })
 })

@@ -1,9 +1,16 @@
 import { WritableStream } from 'htmlparser2/lib/WritableStream'
 import fs from 'node:fs'
+import pkg from '../package.json' assert { type: "json" };
+const suffix = `${pkg.version}-${pkg.name}`
 
 let htmlStr = ''
+const eleArr = []
 
 function produceTag(obj, name) {
+  eleArr.push({
+    name,
+    attributes: obj,
+  })
   let innerProperty = ''
   Object.entries(obj).forEach(([key, value]) => {
     if (['href', 'src'].includes(key)) {
@@ -75,8 +82,57 @@ htmlStream.pipe(parserStream).on('finish', () => {
 </script>
 
 </html>`
+  
+  const templateJs = `let head = document.createElement('head')
+  let suffix = \`${suffix}\`
+
+
+  const getPrefix = () => {
+    let prefix = ''
+    Array.from(document.querySelector('head').children).some(ele => {
+      if (['SCRIPT', 'LINK'].includes(ele.nodeName)) {
+        let url = ''
+        if (ele.nodeName === 'LINK') {
+          url = ele.href
+        } else if (ele.nodeName === 'SCRIPT') {
+          url = ele.src
+        }
+        if (url.includes(suffix)) {
+          prefix = new URL(url).origin
+          return true
+        }
+      }
+    })
+    return prefix
+  }
+
+  const eleArrStr = ${JSON.stringify(eleArr)}
+  const eleArr = eleArrStr
+  const preUrl = getPrefix()
+  
+  function produceTag(obj, name) {
+    let element = document.createElement(name)
+    Object.entries(obj).forEach(([key, value]) => {
+      if (['href', 'src'].includes(key)) {
+        element[key] = \`\${preUrl}\${value}\`
+      } else {
+        element.setAttribute(key, value || '')
+      }
+    })
+    element.setAttribute('crossorigin', '')
+    head.appendChild(element)
+  }
+  
+  eleArr.forEach((ele) => {
+    produceTag(ele.attributes, ele.name)
+  })
+  document.documentElement.insertBefore(head, document.querySelector('head'))`
 
   fs.writeFile('../dist/demo.html', template, err => {
     console.log('写入成功')
+  })
+
+  fs.writeFile(`../dist/js/div_import_${suffix}.js`, templateJs, err => {
+    console.log('写入成功templateJs')
   })
 })
