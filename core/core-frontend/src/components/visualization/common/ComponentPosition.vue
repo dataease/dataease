@@ -4,7 +4,7 @@
       v-for="({ key, label, min, max, step }, index) in positionKeys"
       :key="index"
       :title="label"
-      style="display: flex; float: left; margin-top: 10px"
+      style="display: flex; float: left; margin-bottom: 8px"
     >
       <div style="max-width: 25px; min-width: 19px; overflow: hidden; text-align: right">
         <span>{{ label }}</span>
@@ -15,7 +15,7 @@
           :min="min"
           :max="max"
           :step="step"
-          :themes="themes"
+          :effect="themes"
           v-model="curComponent.style[key]"
         ></de-input-num>
       </div>
@@ -24,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, toRefs } from 'vue'
+import { computed, toRefs, PropType } from 'vue'
 import { positionData } from '@/utils/attr'
 import { storeToRefs } from 'pinia'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
@@ -33,7 +33,7 @@ const dvMainStore = dvMainStoreWithOut()
 const { curComponent, dvInfo } = storeToRefs(dvMainStore)
 const props = defineProps({
   themes: {
-    type: String,
+    type: String as PropType<'light' | 'dark'>,
     default: 'dark'
   }
 })
@@ -52,8 +52,8 @@ const positionKeys = computed(() => {
 <style lang="less" scoped>
 .position-main {
   width: 100%;
-  height: 70px;
   min-width: 220px;
+  height: 64px;
   background-color: #292929 !important;
 }
 </style>
