@@ -1483,7 +1483,7 @@ const autoInsert = element => {
               </template>
             </el-input>
           </el-row>
-          <div style="height: calc(100% - 123px)">
+          <div style="height: calc(100% - 129px)">
             <div class="padding-lr field-height">
               <span>{{ t('chart.dimension') }}</span>
               <draggable
