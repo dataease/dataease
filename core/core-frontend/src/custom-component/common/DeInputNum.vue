@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineProps, toRefs } from 'vue'
+import { toRefs, PropType } from 'vue'
 
 const props = defineProps({
   value: Number,
@@ -8,7 +8,10 @@ const props = defineProps({
   max: Number,
   step: Number,
   disabled: Boolean,
-  themes: String
+  themes: {
+    type: String as PropType<'light' | 'dark'>,
+    default: 'light'
+  }
 })
 
 const { name, value, min, max, step, themes, disabled } = toRefs(props)
@@ -19,7 +22,7 @@ const { name, value, min, max, step, themes, disabled } = toRefs(props)
     class="de-input-number"
     :class="themes + '-custom-input-number'"
     v-model="value"
-    :themes="themes"
+    :effect="themes"
     :disabled="disabled"
     :min="min"
     :max="max"
