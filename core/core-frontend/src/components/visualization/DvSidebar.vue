@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import { ref, onMounted, computed, toRefs } from 'vue'
-import { ElAside, ElIcon, ElRow } from 'element-plus-secondary'
+import { ref, computed, toRefs } from 'vue'
+import { ElIcon } from 'element-plus-secondary'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 const dvMainStore = dvMainStoreWithOut()
@@ -66,7 +66,9 @@ const widthShow = computed(() => `${canvasCollapse.value[sideName.value] ? 36 : 
       </el-icon>
     </el-row>
     <div class="main-content" v-show="!canvasCollapse[sideName]">
-      <slot />
+      <el-scrollbar>
+        <slot />
+      </el-scrollbar>
     </div>
     <div class="collapse-title" v-show="canvasCollapse[sideName]">
       <span>{{ title }}</span>

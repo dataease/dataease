@@ -1,7 +1,6 @@
 <script setup lang="tsx">
 import { reactive, ref, toRefs } from 'vue'
 import eventBus from '@/utils/eventBus'
-import { ElCol, ElRow } from 'element-plus-secondary'
 import Icon from '@/components/icon-custom/src/Icon.vue'
 import { CANVAS_MATERIAL } from '@/custom-component/common/ComponentConfig'
 
@@ -70,7 +69,7 @@ const groupActiveChange = category => {
         </li>
       </ul>
     </div>
-    <div id="commonGroup" class="group-right">
+    <el-scrollbar id="commonGroup" class="group-right" height="392px">
       <el-row :id="groupInfo.category" v-for="groupInfo in state.groupList" :key="groupInfo.title">
         <el-col
           :class="'item' + groupInfo.span"
@@ -96,7 +95,7 @@ const groupActiveChange = category => {
           </div>
         </el-col>
       </el-row>
-    </div>
+    </el-scrollbar>
   </el-row>
 </template>
 
@@ -139,11 +138,9 @@ const groupActiveChange = category => {
     }
   }
   .group-right {
-    max-height: 400px;
-    overflow-y: auto;
     border-left: 1px solid @side-outline-border-color;
     flex: 1;
-    padding: 4px 0px 0 12px;
+    padding: 4px 0 4px 12px;
   }
 }
 
