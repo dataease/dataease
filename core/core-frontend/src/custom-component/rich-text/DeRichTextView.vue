@@ -3,6 +3,8 @@
     class="rich-main-class"
     :class="{ 'edit-model': canEdit }"
     :style="autoStyle"
+    @keydown.stop
+    @keyup.stop
     @dblclick="setEdit"
   >
     <Editor
