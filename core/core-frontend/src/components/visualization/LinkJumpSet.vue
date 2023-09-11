@@ -445,7 +445,7 @@ const dialogInit = viewItem => {
 const init = viewItem => {
   state.initState = false
   state.viewId = viewItem.id
-  const chartDetails = canvasViewInfo.value[state.viewId]
+  const chartDetails = canvasViewInfo.value[state.viewId] as ChartObj
   state.curJumpViewInfo = chartDetails
   let checkAllAxisStr =
     JSON.stringify(chartDetails.xAxis) +
@@ -456,7 +456,7 @@ const init = viewItem => {
   let checkJumpStr
   // 堆叠图的可选参数分两种情况 1.如果有堆叠项 则指标只有第一个可选 2.如果没有堆叠项泽所有指标都可以选
   if (chartDetails.type.indexOf('stack') > -1 && chartDetails.extStack.length > 2) {
-    const yAxisArray = chartDetails.yaxis
+    const yAxisArray = chartDetails.yAxis
     const yAxisNew = yAxisArray.length > 0 ? JSON.stringify(yAxisArray[0]) : '[]'
     checkAllAxisStr =
       JSON.stringify(chartDetails.xAxis) +
@@ -468,7 +468,7 @@ const init = viewItem => {
   } else if (chartDetails.type === 'table-pivot') {
     checkJumpStr = checkAllAxisStr
   } else if (chartDetails.type === 'table-info') {
-    checkJumpStr = chartDetails.xAxis + chartDetails.drillFields
+    checkJumpStr = JSON.stringify(chartDetails.xAxis) + JSON.stringify(chartDetails.drillFields)
   } else {
     checkJumpStr = checkAllAxisStr
   }
@@ -582,7 +582,7 @@ const nodeClick = (data, node?) => {
 
 const codeMirrorContentSet = content => {
   nextTick(() => {
-    outerContentEditor.value.editorInit(content)
+    outerContentEditor.value?.editorInit(content)
   })
 }
 
