@@ -7,6 +7,7 @@
       },
       'rect-shape'
     ]"
+    ref="wrap"
   >
     <EditBarView
       v-if="editBarViewShowFlag"
@@ -356,7 +357,9 @@ export default {
       },
       view: {},
       cancelTime: null,
-      isDestroy:false
+      isDestroy:false,
+      observer :null,
+      inViewPort:false,
     }
   },
 
@@ -572,6 +575,14 @@ export default {
   mounted() {
     bus.$on('tab-canvas-change', this.tabSwitch)
     this.bindPluginEvent()
+    this.$nextTick(()=>{
+      this.createObserver()
+      // 就算首次加载出发进入视口接口请求也会触发，重复请求取消
+      if (this.element && this.element.propValue && this.element.propValue.viewId) {
+        // 如果watch.filters 已经进行数据初始化时候，此处放弃数据初始化
+        this.getData(this.element.propValue.viewId, false)
+      }
+    })
   },
 
   beforeDestroy() {
@@ -593,17 +604,34 @@ export default {
     bus.$off('clear_panel_linkage', this.clearPanelLinkage)
     bus.$off('tab-canvas-change', this.tabSwitch)
     this.isDestroy = true
-  },
-  created() {
-    this.refId = uuid.v1
-    if (this.element && this.element.propValue && this.element.propValue.viewId) {
-      // 如果watch.filters 已经进行数据初始化时候，此处放弃数据初始化
-
-      this.getData(this.element.propValue.viewId, false)
+    if(this.$refs.wrap){
+      this.observer &&  this.observer.unobserve(this.$refs.wrap);
     }
+    this.observer&&this. observer.disconnect();
+    this.observer = null
+  },
+  async created() {
+    this.refId = uuid.v1
   },
   methods: {
     equalsAny,
+    createObserver(){
+      const el =this.$refs.wrap
+      this.observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            this.inViewPort = true
+            // 被观察的元素现在在视口中
+              this.getData(this.element.propValue.viewId, false)
+          } else {
+             // 被观察的元素不再在视口中
+            this.inViewPort = false
+            this.innerRefreshTimer && clearInterval(this.innerRefreshTimer)
+          }
+        });
+      });
+      this.observer.observe(el)
+    },
     tabSwitch(tabCanvasId) {
       if (this.charViewS2ShowFlag && tabCanvasId === this.canvasId && this.$refs[this.element.propValue.id]) {
         this.$refs[this.element.propValue.id].chartResize()
@@ -813,7 +841,7 @@ export default {
         if (this.isFirstLoad) {
           this.element.filters = this.filters?.length ? JSON.parse(JSON.stringify(this.filters)) : []
         }
-        method(id, this.panelInfo.id, requestInfo).then(response => {
+    return  method(id, this.panelInfo.id, requestInfo).then(response => {
           // 将视图传入echart组件
           if (response.success) {
             this.chart = response.data
@@ -821,7 +849,7 @@ export default {
             if (this.chart.type.includes('table')) {
               this.$store.commit('setLastViewRequestInfo', { viewId: id, requestInfo: requestInfo })
             }
-            if(!this.isDestroy){
+            if(!this.isDestroy && this.inViewPort){
               this.buildInnerRefreshTimer(this.chart.refreshViewEnable, this.chart.refreshUnit, this.chart.refreshTime)
             }
             this.$emit('fill-chart-2-parent', this.chart)
