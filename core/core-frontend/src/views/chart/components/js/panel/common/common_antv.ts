@@ -313,12 +313,15 @@ export function getXAxis(chart: Chart) {
               }
             }
           : null
+        const rotate = a.axisLabel.rotate
         const label = a.axisLabel.show
           ? {
-              rotate: (a.axisLabel.rotate * Math.PI) / 180,
+              autoHide: false,
+              rotate: (rotate * Math.PI) / 180,
               style: {
                 fill: a.axisLabel.color,
-                fontSize: a.axisLabel.fontSize
+                fontSize: a.axisLabel.fontSize,
+                textAlign: rotate > 20 ? 'start' : rotate < -20 ? 'end' : 'center'
               }
             }
           : null
