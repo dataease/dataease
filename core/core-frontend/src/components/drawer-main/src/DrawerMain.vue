@@ -70,12 +70,6 @@ const filterChange = (value, field, operator) => {
       state.conditions.splice(len, 1)
     }
   }
-  /* state.conditions.forEach(condition => {
-    if (condition.field === field) {
-      exits = true
-      condition['value'] = value
-    }
-  }) */
   if (!exits && value?.length) {
     state.conditions.push({ field, value, operator })
   }

@@ -239,10 +239,7 @@ const reset = () => {
 }
 
 const dimensionItemChange = item => {
-  // this.calcData(true)
-  // console.log(item)
-  // console.log(view.value.xaxis)
-  // calcData(view.value)
+  console.log(item)
 }
 const dimensionItemRemove = item => {
   if (item.removeType === 'dimension') {
@@ -252,14 +249,10 @@ const dimensionItemRemove = item => {
   } else if (item.removeType === 'dimensionStack') {
     view.value.extStack.splice(item.index, 1)
   }
-  // calcData(view.value)
 }
 
 const quotaItemChange = item => {
-  // this.calcData(true)
-  // console.log(item)
-  // console.log(view.value.xaxis)
-  // calcData(view.value)
+  console.log(item)
 }
 const quotaItemRemove = item => {
   if (item.removeType === 'quota') {
@@ -1490,7 +1483,7 @@ const autoInsert = element => {
               </template>
             </el-input>
           </el-row>
-          <div style="height: calc(100% - 123px)">
+          <div style="height: calc(100% - 129px)">
             <div class="padding-lr field-height">
               <span>{{ t('chart.dimension') }}</span>
               <draggable

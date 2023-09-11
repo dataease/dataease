@@ -259,7 +259,7 @@ onMounted(() => {
             />
           </el-header>
           <el-main :class="{ dark: themes === 'dark' }">
-            <el-scrollbar max-height="250px" always>
+            <el-scrollbar max-height="244px" always>
               <div class="m-loading" v-if="loadingDatasetTree" v-loading="loadingDatasetTree"></div>
               <div class="empty-info" v-if="showEmptyInfo">暂无数据集</div>
               <!--          <div class="empty-info" v-if="showEmptySearchInfo">暂无相关数据</div>-->
@@ -490,6 +490,11 @@ onMounted(() => {
         font-style: normal;
         font-weight: 400;
         line-height: 20px;
+
+        &::-webkit-scrollbar {
+          display: none;
+        }
+
         .m-icon {
           margin-right: 4px;
           font-size: 16px;

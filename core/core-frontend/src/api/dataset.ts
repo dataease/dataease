@@ -36,6 +36,7 @@ export interface DatasetDetail {
 export interface FieldData {
   allFields: Array<{}>
   data: Fields
+  total?: number
 }
 
 export interface Dataset {

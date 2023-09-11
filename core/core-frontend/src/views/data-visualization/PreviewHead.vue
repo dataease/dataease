@@ -38,7 +38,6 @@ const executeStore = () => {
   storeApi(param).then(() => {
     storeQuery()
   })
-  console.log(dvInfo.value)
 }
 const storeQuery = () => {
   if (!dvInfo?.value?.id) return

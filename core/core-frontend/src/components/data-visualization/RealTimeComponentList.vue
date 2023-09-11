@@ -49,7 +49,7 @@ const setCurComponent = index => {
 }
 
 const toggleComponentList = () => {
-  console.log(111)
+  console.log('toggleComponentList')
 }
 
 let nameEdit = ref(false)
@@ -77,7 +77,7 @@ const closeEditComponentName = () => {
 }
 
 const toggleComponentVisible = () => {
-  console.log(111)
+  console.log('toggleComponentVisible')
 }
 
 const lock = () => {

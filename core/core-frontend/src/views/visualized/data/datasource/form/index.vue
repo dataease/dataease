@@ -334,7 +334,6 @@ const saveDS = () => {
     request.configuration = Base64.encode(JSON.stringify(request.configuration))
   }
   const validate = detail.value.submitForm()
-  console.log(request)
   validate(val => {
     if (val) {
       if (editDs.value) {
