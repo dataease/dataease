@@ -1,7 +1,7 @@
 <script lang="tsx" setup>
 import { computed, reactive, ref, shallowRef, nextTick, watch } from 'vue'
 import type { TabPaneName, ElMessageBoxOptions } from 'element-plus-secondary'
-import { ElIcon, ElMessageBox, ElMessage, ElScrollbar } from 'element-plus-secondary'
+import { ElIcon, ElMessageBox, ElMessage, ElScrollbar, ElAside } from 'element-plus-secondary'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
 import { HandleMore } from '@/components/handle-more'
 import { Icon } from '@/components/icon-custom'
@@ -611,75 +611,84 @@ const defaultProps = {
 
 <template>
   <div class="datasource-manage" v-loading="dsLoading">
-    <div class="datasource-list datasource-height" ref="node" :style="{ width: width + 'px' }">
-      <div class="filter-datasource">
-        <div class="icon-methods">
-          <span class="title"> {{ t('datasource.datasource') }} </span>
-          <div v-if="rootManage" class="flex-align-center">
-            <el-tooltip effect="dark" content="新建文件夹" placement="top">
-              <el-button @click="() => handleDatasourceTree('folder')" text>
-                <template #icon>
-                  <Icon name="dv-new-folder"></Icon>
-                </template>
-              </el-button>
-            </el-tooltip>
-            <el-tooltip effect="dark" :content="t('datasource.create')" placement="top">
-              <el-button @click="() => createDatasource()" text>
-                <template #icon>
-                  <Icon name="icon_dataset_outlined"></Icon>
-                </template>
-              </el-button>
-            </el-tooltip>
+    <el-aside class="resource-area" ref="node" :style="{ width: width + 'px' }">
+      <div class="resource-tree">
+        <div class="tree-header">
+          <div class="icon-methods">
+            <span class="title"> {{ t('datasource.datasource') }} </span>
+            <div v-if="rootManage" class="flex-align-center">
+              <el-tooltip effect="dark" content="新建文件夹" placement="top">
+                <el-icon
+                  class="custom-icon btn"
+                  style="margin-right: 20px"
+                  @click="handleDatasourceTree('folder')"
+                >
+                  <Icon name="dv-new-folder" />
+                </el-icon>
+              </el-tooltip>
+              <el-tooltip effect="dark" :content="t('datasource.create')" placement="top">
+                <el-icon class="custom-icon btn" @click="createDatasource">
+                  <Icon name="icon_dataset_outlined" />
+                </el-icon>
+              </el-tooltip>
+            </div>
           </div>
-        </div>
 
-        <div class="search-input">
-          <el-input :placeholder="t('commons.search')" class="w100" v-model="dsName" clearable>
+          <el-input
+            :placeholder="t('commons.search')"
+            v-model="dsName"
+            clearable
+            class="search-bar"
+          >
             <template #prefix>
               <el-icon>
-                <Icon name="icon_search-outline_outlined"></Icon>
+                <Icon name="icon_search-outline_outlined" />
               </el-icon>
             </template>
           </el-input>
         </div>
+        <el-scrollbar class="custom-tree">
+          <el-tree
+            menu
+            v-if="dsListTreeShow"
+            ref="dsListTree"
+            node-key="id"
+            @node-expand="nodeExpand"
+            :filter-node-method="filterNode"
+            :default-expanded-keys="expandedKey"
+            :data="state.datasourceTree"
+            :props="defaultProps"
+            @node-click="handleNodeClick"
+          >
+            <template #default="{ node, data }">
+              <span class="custom-tree-node">
+                <el-icon :class="data.leaf && 'icon-border'" style="font-size: 18px">
+                  <Icon :name="getDsIconName(data)"></Icon>
+                </el-icon>
+                <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
+                <div class="icon-more" v-if="data.weight >= 7">
+                  <handle-more
+                    icon-size="24px"
+                    @handle-command="cmd => handleDatasourceTree(cmd, data)"
+                    :menu-list="datasetTypeList"
+                    icon-name="icon_add_outlined"
+                    placement="bottom-start"
+                    v-if="!data.leaf"
+                  ></handle-more>
+                  <handle-more
+                    @handle-command="
+                      cmd => operation(cmd, data, data.leaf ? 'datasource' : 'folder')
+                    "
+                    :menu-list="menuList"
+                  ></handle-more>
+                </div>
+              </span>
+            </template>
+          </el-tree>
+        </el-scrollbar>
       </div>
+    </el-aside>
 
-      <el-tree
-        menu
-        v-if="dsListTreeShow"
-        ref="dsListTree"
-        node-key="id"
-        @node-expand="nodeExpand"
-        :filter-node-method="filterNode"
-        :default-expanded-keys="expandedKey"
-        :data="state.datasourceTree"
-        :props="defaultProps"
-        @node-click="handleNodeClick"
-      >
-        <template #default="{ node, data }">
-          <span class="custom-tree-node">
-            <el-icon :class="data.leaf && 'icon-border'" style="font-size: 18px">
-              <Icon :name="getDsIconName(data)"></Icon>
-            </el-icon>
-            <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
-            <div class="icon-more" v-if="data.weight >= 7">
-              <handle-more
-                icon-size="24px"
-                @handle-command="cmd => handleDatasourceTree(cmd, data)"
-                :menu-list="datasetTypeList"
-                icon-name="icon_add_outlined"
-                placement="bottom-start"
-                v-if="!data.leaf"
-              ></handle-more>
-              <handle-more
-                @handle-command="cmd => operation(cmd, data, data.leaf ? 'datasource' : 'folder')"
-                :menu-list="menuList"
-              ></handle-more>
-            </div>
-          </span>
-        </template>
-      </el-tree>
-    </div>
     <div class="datasource-content">
       <template v-if="!state.datasourceTree.length">
         <empty-background description="暂无数据源" img-type="none">
@@ -1154,6 +1163,60 @@ const defaultProps = {
   width: 100%;
   height: 100%;
   background: #fff;
+
+  .resource-area {
+    position: relative;
+    height: 100%;
+    width: 279px;
+    padding: 0;
+    border-right: 1px solid #d7d7d7;
+    //transition: 0.5s;
+
+    .resource-tree {
+      padding: 16px 8px 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+
+      .tree-header {
+        padding: 0 8px;
+      }
+
+      .icon-methods {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        font-size: 20px;
+        font-weight: 500;
+        color: var(--TextPrimary, #1f2329);
+        padding-bottom: 10px;
+
+        .title {
+          margin-right: auto;
+          font-size: 16px;
+          font-style: normal;
+          font-weight: 500;
+          line-height: 24px;
+        }
+
+        .custom-icon {
+          &.btn {
+            color: #3370ff;
+          }
+
+          &:hover {
+            cursor: pointer;
+          }
+        }
+      }
+
+      .search-bar {
+        padding-bottom: 10px;
+      }
+    }
+  }
+
   .update-records {
     position: absolute;
     top: 19px;
@@ -1306,52 +1369,6 @@ const defaultProps = {
     overflow-y: auto;
   }
 
-  .filter-datasource {
-    position: sticky;
-    top: 0;
-    left: 16px;
-    padding: 0 8px;
-    z-index: 5;
-    background: white;
-    &::before {
-      content: '';
-      width: 100%;
-      height: 16px;
-      top: -16px;
-      position: absolute;
-      z-index: 5;
-      left: 0;
-      background: white;
-    }
-
-    .icon-methods {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      font-family: PingFang SC;
-      font-size: 20px;
-      font-weight: 500;
-      color: var(--TextPrimary, #1f2329);
-
-      .title {
-        margin-right: auto;
-      }
-      .ed-button.is-text {
-        line-height: 28px;
-        font-size: 20px;
-        height: 28px;
-        width: 28px;
-      }
-    }
-
-    .search-input {
-      margin: 16px 0 8px 0;
-      .ed-input {
-        width: 100%;
-      }
-    }
-  }
-
   .m24 {
     margin: 24px 0;
   }
@@ -1362,7 +1379,6 @@ const defaultProps = {
 
   .datasource-content {
     flex: 1;
-    border-left: 1px solid rgba(31, 35, 41, 0.15);
     position: relative;
 
     .datasource-info {
@@ -1434,15 +1450,17 @@ const defaultProps = {
     }
   }
 }
-</style>
 
-<style scoped lang="less">
+.custom-tree {
+  height: calc(100vh - 148px);
+}
+
 .custom-tree-node {
-  width: calc(100% - 30px);
+  flex: 1;
   display: flex;
   align-items: center;
-  padding-right: 4px;
   box-sizing: content-box;
+  padding-right: 4px;
 
   .label-tooltip {
     width: calc(100% - 66px);
@@ -1454,6 +1472,12 @@ const defaultProps = {
 
   .icon-more {
     margin-left: auto;
+    visibility: hidden;
+  }
+
+  &:hover .icon-more {
+    margin-left: auto;
+    visibility: visible;
   }
 }
 </style>

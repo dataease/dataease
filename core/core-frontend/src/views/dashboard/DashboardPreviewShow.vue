@@ -11,6 +11,7 @@ import { toPng } from 'html-to-image'
 import { initCanvasData, initCanvasDataPrepare } from '@/utils/canvasUtils'
 import { useRequestStoreWithOut } from '@/store/modules/request'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
+import { useMoveLine } from '@/hooks/web/useMoveLine'
 
 const dvMainStore = dvMainStoreWithOut()
 const previewCanvasContainer = ref(null)
@@ -28,6 +29,8 @@ const state = reactive({
   dvInfo: null,
   curPreviewGap: 0
 })
+
+const { width, node } = useMoveLine('DASHBOARD')
 
 const props = defineProps({
   showPosition: {
@@ -102,19 +105,28 @@ defineExpose({
 
 <template>
   <div class="dv-preview dv-teleport-query">
-    <el-aside class="resource-area" :class="{ 'close-side': !slideShow }">
+    <el-aside
+      class="resource-area"
+      :class="{ 'close-side': !slideShow }"
+      ref="node"
+      :style="{ width: width + 'px' }"
+    >
       <de-resource-tree
         v-show="slideShow"
         :cur-canvas-type="'dashboard'"
         :show-position="showPosition"
         @node-click="resourceNodeClick"
-      ></de-resource-tree>
+      />
     </el-aside>
     <el-container
       class="preview-area"
       v-loading="requestStore.loadingMap[permissionStore.currentPath]"
     >
-      <div @click="slideOpenChange" v-if="showPosition === 'preview'" class="flexible-button-area">
+      <div
+        @click="slideOpenChange"
+        v-if="showPosition === 'preview' && false"
+        class="flexible-button-area"
+      >
         <el-icon v-if="slideShow"><ArrowLeft /></el-icon>
         <el-icon v-else><ArrowRight /></el-icon>
       </div>
@@ -146,10 +158,6 @@ defineExpose({
 </template>
 
 <style lang="less">
-::-webkit-scrollbar {
-  width: 0px !important;
-  height: 0px !important;
-}
 .dv-preview {
   width: 100%;
   height: 100%;
@@ -159,10 +167,10 @@ defineExpose({
   .resource-area {
     position: relative;
     height: 100%;
-    width: 300px;
-    padding: 16px;
+    width: 279px;
+    padding: 0;
     border-right: 1px solid #d7d7d7;
-    transition: 0.5s;
+    //transition: 0.5s;
   }
   .preview-area {
     flex: 1;
@@ -171,8 +179,8 @@ defineExpose({
     overflow-x: hidden;
     overflow-y: auto;
     position: relative;
-    transition: 0.5s;
-    position: relative;
+    //transition: 0.5s;
+
     .content {
       display: flex;
       width: 100%;

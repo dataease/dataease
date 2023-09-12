@@ -1,7 +1,14 @@
 <script lang="tsx" setup>
 import { useI18n } from '@/hooks/web/useI18n'
 import { ref, reactive, shallowRef, computed, watch, nextTick, onBeforeMount } from 'vue'
-import { ElIcon, ElMessageBox, ElMessage, type ElMessageBoxOptions } from 'element-plus-secondary'
+import {
+  ElIcon,
+  ElMessageBox,
+  ElMessage,
+  type ElMessageBoxOptions,
+  ElAside,
+  ElScrollbar
+} from 'element-plus-secondary'
 import { HandleMore } from '@/components/handle-more'
 import { Icon } from '@/components/icon-custom'
 import { useMoveLine } from '@/hooks/web/useMoveLine'
@@ -400,83 +407,89 @@ const filterNode = (value: string, data: BusiTreeNode) => {
 
 <template>
   <div class="dataset-manage" v-loading="dtLoading">
-    <div class="dataset-list dataset-height" ref="node" :style="{ width: width + 'px' }">
-      <div class="filter-dataset">
-        <div class="icon-methods">
-          <span class="title"> {{ t('auth.dataset') }} </span>
-          <div v-if="rootManage" class="flex-align-center">
-            <el-tooltip
-              class="box-item"
-              effect="dark"
-              :content="t('deDataset.new_folder')"
-              placement="top"
-            >
-              <el-button @click="() => handleDatasetTree('folder')" text>
-                <template #icon>
-                  <Icon name="dv-new-folder"></Icon>
-                </template>
-              </el-button>
-            </el-tooltip>
-            <el-tooltip class="box-item" effect="dark" content="新建数据集" placement="top">
-              <el-button @click="() => createDataset()" text>
-                <template #icon>
-                  <Icon name="icon_dataset_outlined"></Icon>
-                </template>
-              </el-button>
-            </el-tooltip>
+    <el-aside class="resource-area" ref="node" :style="{ width: width + 'px' }">
+      <div class="resource-tree">
+        <div class="tree-header">
+          <div class="icon-methods">
+            <span class="title"> {{ t('auth.dataset') }} </span>
+            <div v-if="rootManage" class="flex-align-center">
+              <el-tooltip
+                class="box-item"
+                effect="dark"
+                :content="t('deDataset.new_folder')"
+                placement="top"
+              >
+                <el-icon
+                  class="custom-icon btn"
+                  style="margin-right: 20px"
+                  @click="handleDatasetTree('folder')"
+                >
+                  <Icon name="dv-new-folder" />
+                </el-icon>
+              </el-tooltip>
+              <el-tooltip class="box-item" effect="dark" content="新建数据集" placement="top">
+                <el-icon class="custom-icon btn" @click="createDataset">
+                  <Icon name="icon_dataset_outlined" />
+                </el-icon>
+              </el-tooltip>
+            </div>
           </div>
-        </div>
-        <div class="search-input">
-          <el-input :placeholder="t('commons.search')" v-model="nickName" clearable>
+          <el-input
+            :placeholder="t('commons.search')"
+            v-model="nickName"
+            clearable
+            class="search-bar"
+          >
             <template #prefix>
               <el-icon>
-                <Icon name="icon_search-outline_outlined"></Icon>
+                <Icon name="icon_search-outline_outlined" />
               </el-icon>
             </template>
           </el-input>
         </div>
-      </div>
 
-      <div class="data-tree">
-        <el-tree
-          menu
-          ref="datasetListTree"
-          node-key="id"
-          :data="state.datasetTree"
-          :filter-node-method="filterNode"
-          @node-expand="nodeExpand"
-          :default-expanded-keys="expandedKey"
-          :props="defaultProps"
-          @node-click="handleNodeClick"
-        >
-          <template #default="{ node, data }">
-            <span class="custom-tree-node">
-              <el-icon v-if="!data.leaf" style="font-size: 18px">
-                <Icon name="dv-folder"></Icon>
-              </el-icon>
-              <el-icon v-if="data.leaf" style="font-size: 18px">
-                <Icon name="icon_dataset"></Icon>
-              </el-icon>
-              <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
-              <div class="icon-more" v-if="data.weight >= 7">
-                <handle-more
-                  icon-size="24px"
-                  @handle-command="cmd => handleDatasetTree(cmd, data)"
-                  :menu-list="datasetTypeList"
-                  icon-name="icon_add_outlined"
-                  placement="bottom-start"
-                  v-if="!data.leaf"
-                ></handle-more>
-                <handle-more
-                  @handle-command="cmd => operation(cmd, data, data.leaf ? 'dataset' : 'folder')"
-                  :menu-list="menuList"
-                ></handle-more>
-              </div>
-            </span>
-          </template>
-        </el-tree>
+        <el-scrollbar class="custom-tree">
+          <el-tree
+            menu
+            ref="datasetListTree"
+            node-key="id"
+            :data="state.datasetTree"
+            :filter-node-method="filterNode"
+            @node-expand="nodeExpand"
+            :default-expanded-keys="expandedKey"
+            :props="defaultProps"
+            @node-click="handleNodeClick"
+          >
+            <template #default="{ node, data }">
+              <span class="custom-tree-node">
+                <el-icon v-if="!data.leaf" style="font-size: 18px">
+                  <Icon name="dv-folder"></Icon>
+                </el-icon>
+                <el-icon v-if="data.leaf" style="font-size: 18px">
+                  <Icon name="icon_dataset"></Icon>
+                </el-icon>
+                <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
+                <div class="icon-more" v-if="data.weight >= 7">
+                  <handle-more
+                    icon-size="24px"
+                    @handle-command="cmd => handleDatasetTree(cmd, data)"
+                    :menu-list="datasetTypeList"
+                    icon-name="icon_add_outlined"
+                    placement="bottom-start"
+                    v-if="!data.leaf"
+                  ></handle-more>
+                  <handle-more
+                    @handle-command="cmd => operation(cmd, data, data.leaf ? 'dataset' : 'folder')"
+                    :menu-list="menuList"
+                  ></handle-more>
+                </div>
+              </span>
+            </template>
+          </el-tree>
+        </el-scrollbar>
       </div>
-    </div>
+    </el-aside>
+
     <div class="dataset-content">
       <template v-if="!state.datasetTree.length">
         <empty-background description="暂无数据集" img-type="none">
@@ -604,6 +617,59 @@ const filterNode = (value: string, data: BusiTreeNode) => {
   height: 100%;
   background: #fff;
 
+  .resource-area {
+    position: relative;
+    height: 100%;
+    width: 279px;
+    padding: 0;
+    border-right: 1px solid #d7d7d7;
+    //transition: 0.5s;
+
+    .resource-tree {
+      padding: 16px 8px 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+
+      .tree-header {
+        padding: 0 8px;
+      }
+
+      .icon-methods {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        font-size: 20px;
+        font-weight: 500;
+        color: var(--TextPrimary, #1f2329);
+        padding-bottom: 10px;
+
+        .title {
+          margin-right: auto;
+          font-size: 16px;
+          font-style: normal;
+          font-weight: 500;
+          line-height: 24px;
+        }
+
+        .custom-icon {
+          &.btn {
+            color: #3370ff;
+          }
+
+          &:hover {
+            cursor: pointer;
+          }
+        }
+      }
+
+      .search-bar {
+        padding-bottom: 10px;
+      }
+    }
+  }
+
   .dataset-height,
   .dataset-content {
     height: calc(100vh - 56px);
@@ -620,55 +686,8 @@ const filterNode = (value: string, data: BusiTreeNode) => {
     padding: 16px 8px;
   }
 
-  .filter-dataset {
-    position: sticky;
-    top: 0;
-    left: 16px;
-    padding: 0 8px;
-    z-index: 5;
-    background: white;
-    &::before {
-      content: '';
-      width: 100%;
-      height: 16px;
-      top: -16px;
-      position: absolute;
-      z-index: 5;
-      left: 0;
-      background: white;
-    }
-
-    .icon-methods {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      font-family: PingFang SC;
-      font-size: 20px;
-      font-weight: 500;
-      color: var(--TextPrimary, #1f2329);
-
-      .title {
-        margin-right: auto;
-      }
-      .ed-button.is-text {
-        line-height: 28px;
-        font-size: 20px;
-        height: 28px;
-        width: 28px;
-      }
-    }
-
-    .search-input {
-      margin: 16px 0 8px 0;
-      .ed-input {
-        width: 100%;
-      }
-    }
-  }
-
   .dataset-content {
     flex: 1;
-    border-left: 1px solid rgba(31, 35, 41, 0.15);
     position: relative;
 
     .dataset-info {
@@ -743,12 +762,11 @@ const filterNode = (value: string, data: BusiTreeNode) => {
     }
   }
 }
-</style>
 
-<style lang="less">
-.ed-table-v2__header-cell {
-  background-color: #f5f6f7;
+.custom-tree {
+  height: calc(100vh - 148px);
 }
+
 .custom-tree-node {
   width: calc(100% - 30px);
   display: flex;
@@ -765,6 +783,18 @@ const filterNode = (value: string, data: BusiTreeNode) => {
   }
   .icon-more {
     margin-left: auto;
+    visibility: hidden;
   }
+
+  &:hover .icon-more {
+    margin-left: auto;
+    visibility: visible;
+  }
+}
+</style>
+
+<style lang="less">
+.ed-table-v2__header-cell {
+  background-color: #f5f6f7;
 }
 </style>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref, toRefs, watch, nextTick } from 'vue'
 import { deleteLogic } from '@/api/visualization/dataVisualization'
-import { ElIcon, ElMessage, ElMessageBox } from 'element-plus-secondary'
+import { ElIcon, ElMessage, ElMessageBox, ElScrollbar } from 'element-plus-secondary'
 import { Icon } from '@/components/icon-custom'
 import { HandleMore } from '@/components/handle-more'
 import DeResourceGroupOpt from '@/views/common/DeResourceGroupOpt.vue'
@@ -18,8 +18,10 @@ import DvHandleMore from '@/components/handle-more/src/DvHandleMore.vue'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
 const interactiveStore = interactiveStoreWithOut()
 import router from '@/router'
+import { useI18n } from '@/hooks/web/useI18n'
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo } = storeToRefs(dvMainStore)
+const { t } = useI18n()
 
 const props = defineProps({
   curCanvasType: {
@@ -290,110 +292,134 @@ onMounted(() => {
 
 <template>
   <div class="resource-tree">
-    <div class="icon-methods" v-show="showPosition === 'preview'">
-      <span class="title"> {{ resourceLabel }} </span>
-      <div v-if="rootManage" class="flex-align-center">
-        <el-tooltip content="新建文件夹" placement="top" effect="dark">
-          <el-icon
-            class="custom-icon"
-            style="margin-right: 20px"
-            @click="addOperation('newFolder', null, 'folder')"
-          >
-            <Icon name="dv-new-folder"></Icon>
-          </el-icon>
-        </el-tooltip>
-        <el-tooltip :content="newResourceLabel" placement="top" effect="dark">
-          <el-icon class="custom-icon" @click="addOperation('newLeaf', null, 'leaf', true)">
-            <Icon v-if="curCanvasType === 'dashboard'" name="dv-new"></Icon>
-            <Icon v-else name="dv-screen-new"></Icon>
-          </el-icon>
-        </el-tooltip>
+    <div class="tree-header">
+      <div class="icon-methods" v-show="showPosition === 'preview'">
+        <span class="title"> {{ resourceLabel }} </span>
+        <div v-if="rootManage" class="flex-align-center">
+          <el-tooltip content="新建文件夹" placement="top" effect="dark">
+            <el-icon
+              class="custom-icon btn"
+              style="margin-right: 20px"
+              @click="addOperation('newFolder', null, 'folder')"
+            >
+              <Icon name="dv-new-folder" />
+            </el-icon>
+          </el-tooltip>
+          <el-tooltip :content="newResourceLabel" placement="top" effect="dark">
+            <el-icon class="custom-icon btn" @click="addOperation('newLeaf', null, 'leaf', true)">
+              <Icon v-if="curCanvasType === 'dashboard'" name="dv-new"></Icon>
+              <Icon v-else name="dv-screen-new" />
+            </el-icon>
+          </el-tooltip>
+        </div>
       </div>
+      <el-input
+        :placeholder="t('commons.search')"
+        v-model="filterText"
+        clearable
+        class="search-bar"
+      >
+        <template #prefix>
+          <el-icon>
+            <Icon name="icon_search-outline_outlined"></Icon>
+          </el-icon>
+        </template>
+      </el-input>
     </div>
-    <el-input v-model="filterText" :placeholder="'搜索'" clearable class="search-bar">
-      <template #prefix>
-        <el-icon>
-          <Icon name="icon_search-outline_outlined"></Icon>
-        </el-icon>
-      </template>
-    </el-input>
-    <el-tree
-      menu
-      ref="resourceListTree"
-      class="custom-tree"
-      :default-expanded-keys="expandedArray"
-      :data="state.resourceTree"
-      :props="defaultProps"
-      node-key="id"
-      highlight-current
-      :expand-on-click-node="true"
-      :filter-node-method="filterNode"
-      @node-expand="nodeExpand"
-      @node-collapse="nodeCollapse"
-      @node-click="nodeClick"
-    >
-      <template #default="{ node, data }">
-        <span class="custom-tree-node">
-          <el-icon v-if="!data.leaf">
-            <Icon name="dv-folder"></Icon>
-          </el-icon>
-          <el-icon v-else-if="curCanvasType === 'dashboard'">
-            <Icon name="dv-dashboard-spine"></Icon>
-          </el-icon>
-          <el-icon v-else>
-            <Icon name="dv-screen-spine"></Icon>
-          </el-icon>
-          <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
-          <div class="icon-more" v-if="data.weight >= 7 && showPosition === 'preview'">
-            <span v-on:click.stop>
-              <el-icon v-if="data.leaf" class="hover-icon" @click="resourceEdit(data.id)">
-                <Icon name="edit-in"></Icon>
-              </el-icon>
-            </span>
-            <handle-more
-              @handle-command="
-                cmd => addOperation(cmd, data, cmd === 'newFolder' ? 'folder' : 'leaf')
-              "
-              :menu-list="state.resourceTypeList"
-              icon-name="icon_add_outlined"
-              placement="bottom-start"
-              v-if="!data.leaf"
-            ></handle-more>
-            <dv-handle-more
-              @handle-command="cmd => operation(cmd, data, data.leaf ? 'leaf' : 'folder')"
-              :node="data"
-              :any-manage="anyManage"
-              :menu-list="data.leaf ? state.menuList : state.folderMenuList"
-            ></dv-handle-more>
-          </div>
-        </span>
-      </template>
-    </el-tree>
-    <de-resource-group-opt
-      :cur-canvas-type="curCanvasType"
-      @finish="resourceOptFinish"
-      ref="resourceGroupOpt"
-    ></de-resource-group-opt>
+    <el-scrollbar class="custom-tree">
+      <el-tree
+        menu
+        ref="resourceListTree"
+        :default-expanded-keys="expandedArray"
+        :data="state.resourceTree"
+        :props="defaultProps"
+        node-key="id"
+        highlight-current
+        :expand-on-click-node="true"
+        :filter-node-method="filterNode"
+        @node-expand="nodeExpand"
+        @node-collapse="nodeCollapse"
+        @node-click="nodeClick"
+      >
+        <template #default="{ node, data }">
+          <span class="custom-tree-node">
+            <el-icon v-if="!data.leaf">
+              <Icon name="dv-folder"></Icon>
+            </el-icon>
+            <el-icon v-else-if="curCanvasType === 'dashboard'">
+              <Icon name="dv-dashboard-spine"></Icon>
+            </el-icon>
+            <el-icon v-else>
+              <Icon name="dv-screen-spine"></Icon>
+            </el-icon>
+            <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
+            <div class="icon-more" v-if="data.weight >= 7 && showPosition === 'preview'">
+              <span v-on:click.stop>
+                <el-icon v-if="data.leaf" class="hover-icon" @click="resourceEdit(data.id)">
+                  <Icon name="edit-in"></Icon>
+                </el-icon>
+              </span>
+              <handle-more
+                @handle-command="
+                  cmd => addOperation(cmd, data, cmd === 'newFolder' ? 'folder' : 'leaf')
+                "
+                :menu-list="state.resourceTypeList"
+                icon-name="icon_add_outlined"
+                placement="bottom-start"
+                v-if="!data.leaf"
+              ></handle-more>
+              <dv-handle-more
+                @handle-command="cmd => operation(cmd, data, data.leaf ? 'leaf' : 'folder')"
+                :node="data"
+                :any-manage="anyManage"
+                :menu-list="data.leaf ? state.menuList : state.folderMenuList"
+              ></dv-handle-more>
+            </div>
+          </span>
+        </template>
+      </el-tree>
+      <de-resource-group-opt
+        :cur-canvas-type="curCanvasType"
+        @finish="resourceOptFinish"
+        ref="resourceGroupOpt"
+      />
+    </el-scrollbar>
   </div>
 </template>
 <style lang="less" scoped>
 .resource-tree {
+  padding: 16px 8px 0;
   width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
+
+  .tree-header {
+    padding: 0 8px;
+  }
+
   .icon-methods {
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    font-family: PingFang SC;
     font-size: 20px;
     font-weight: 500;
     color: var(--TextPrimary, #1f2329);
     padding-bottom: 10px;
     .title {
-      font-size: 16px;
       margin-right: auto;
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 500;
+      line-height: 24px;
+    }
+    .custom-icon {
+      &.btn {
+        color: #3370ff;
+      }
+      &:hover {
+        cursor: pointer;
+      }
     }
   }
   .search-bar {
@@ -432,8 +458,7 @@ onMounted(() => {
 }
 
 .custom-tree {
-  height: calc(100vh - 180px);
-  overflow-y: auto;
+  height: calc(100vh - 148px);
 }
 
 .custom-tree-node {
@@ -442,7 +467,6 @@ onMounted(() => {
   align-items: center;
   box-sizing: content-box;
   padding-right: 4px;
-  overflow: hidden;
 
   .label-tooltip {
     width: calc(100% - 66px);
@@ -459,12 +483,6 @@ onMounted(() => {
   &:hover .icon-more {
     margin-left: auto;
     visibility: visible;
-  }
-}
-
-.custom-icon {
-  &:hover {
-    cursor: pointer;
   }
 }
 </style>
