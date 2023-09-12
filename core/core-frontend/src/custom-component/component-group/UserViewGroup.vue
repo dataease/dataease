@@ -4,6 +4,7 @@ import eventBus from '@/utils/eventBus'
 import { CHART_TYPE_CONFIGS } from '@/views/chart/components/editor/util/chart'
 import Icon from '@/components/icon-custom/src/Icon.vue'
 import { commonHandleDragEnd, commonHandleDragStart } from '@/utils/canvasUtils'
+import { ElScrollbar } from 'element-plus-secondary'
 
 const props = defineProps({
   propValue: {
@@ -31,17 +32,15 @@ const props = defineProps({
 const { propValue, element, dvModel } = toRefs(props)
 const currentPane = ref('common')
 
+const userViewGroup = ref<InstanceType<typeof ElScrollbar>>()
+
 const state = reactive({
   curCategory: 'quota',
   chartGroupList: CHART_TYPE_CONFIGS
 })
 
 const scrollTo = offsetTop => {
-  const parent = document.querySelector('#userViewGroup')
-  parent.scrollTo({
-    top: offsetTop,
-    behavior: 'smooth'
-  })
+  userViewGroup?.value!.setScrollTop(offsetTop)
 }
 
 const anchorPosition = anchor => {
@@ -83,7 +82,7 @@ const groupActiveChange = category => {
         </li>
       </ul>
     </div>
-    <el-scrollbar id="userViewGroup" class="group-right" height="392px">
+    <el-scrollbar ref="userViewGroup" class="group-right" height="392px">
       <el-row
         :id="chartGroupInfo.category"
         v-for="chartGroupInfo in state.chartGroupList"

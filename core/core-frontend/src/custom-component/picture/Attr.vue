@@ -9,9 +9,11 @@ import { ref, toRefs, watch, onMounted, onBeforeUnmount } from 'vue'
 import { beforeUploadCheck, uploadFileResult } from '@/api/staticResource'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import eventBus from '@/utils/eventBus'
+import { PropType } from 'vue/dist/vue'
+
 const props = defineProps({
   themes: {
-    type: String,
+    type: String as PropType<'light' | 'dark'>,
     default: 'dark'
   }
 })
@@ -96,7 +98,7 @@ onBeforeUnmount(() => {
       @change="reUpload"
     />
     <CommonAttr :themes="themes">
-      <el-collapse-item title="图片" name="picture">
+      <el-collapse-item :effect="themes" title="图片" name="picture">
         <el-row class="img-area">
           <el-col style="width: 130px !important">
             <el-upload
