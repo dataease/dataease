@@ -31,5 +31,12 @@ span {
   color: #757575;
   text-align: left;
   padding: 0 14px;
+
+  .drag-placeholder-style-span {
+    color: #8d9199;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+  }
 }
 </style>
