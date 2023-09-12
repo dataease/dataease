@@ -5,14 +5,14 @@ DROP TABLE IF EXISTS `core_datasource`;
 CREATE TABLE `core_datasource`
 (
     `id`            bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
-    `name`          varchar(255) NOT NULL COMMENT '名称',
+    `name`          varchar(255)    NOT NULL COMMENT '名称',
     `description`   varchar(255) DEFAULT NULL COMMENT '描述',
-    `type`          varchar(50)  NOT NULL COMMENT '类型',
+    `type`          varchar(50)     NOT NULL COMMENT '类型',
     `pid`           bigint       DEFAULT NULL COMMENT '父级ID',
     `edit_type`     varchar(50) COMMENT '更新方式：0：替换；1：追加',
-    `configuration` longtext     NOT NULL COMMENT '详细信息',
-    `create_time`   bigint       NOT NULL COMMENT '创建时间',
-    `update_time`   bigint       NOT NULL COMMENT '更新时间',
+    `configuration` longtext        NOT NULL COMMENT '详细信息',
+    `create_time`   bigint          NOT NULL COMMENT '创建时间',
+    `update_time`   bigint          NOT NULL COMMENT '更新时间',
     `create_by`     varchar(50)  DEFAULT NULL COMMENT '创建人ID',
     `status`        longtext COMMENT '状态',
     `qrtz_instance` longtext COMMENT '状态',
@@ -24,26 +24,26 @@ DROP TABLE IF EXISTS `core_driver`;
 CREATE TABLE `core_driver`
 (
     `id`           bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
-    `name`         varchar(50) NOT NULL COMMENT '名称',
-    `create_time`  bigint(13) NOT NULL COMMENT '创建时间',
+    `name`         varchar(50)     NOT NULL COMMENT '名称',
+    `create_time`  bigint(13)      NOT NULL COMMENT '创建时间',
     `type`         varchar(255) DEFAULT NULL COMMENT '数据源类型',
     `driver_class` varchar(255) DEFAULT NULL COMMENT '驱动类',
     `description`  varchar(255) DEFAULT NULL COMMENT '描述',
     PRIMARY KEY (`id`) USING BTREE
-) COMMENT='驱动';
+) COMMENT ='驱动';
 
 DROP TABLE IF EXISTS `core_driver_jar`;
 CREATE TABLE `core_driver_jar`
 (
     `id`            bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
-    `de_driver_id`  varchar(50) NOT NULL COMMENT '驱动主键',
+    `de_driver_id`  varchar(50)     NOT NULL COMMENT '驱动主键',
     `file_name`     varchar(255) DEFAULT NULL COMMENT '名称',
     `version`       varchar(255) DEFAULT NULL COMMENT '版本',
     `driver_class`  longtext COMMENT '驱动类',
     `trans_name`    varchar(255) DEFAULT NULL,
-    `is_trans_name` tinyint(1) DEFAULT NULL,
+    `is_trans_name` tinyint(1)   DEFAULT NULL,
     PRIMARY KEY (`id`) USING BTREE
-) COMMENT='驱动详情';
+) COMMENT ='驱动详情';
 
 
 --
@@ -55,15 +55,15 @@ CREATE TABLE `core_menu`
 (
     `id`        bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
     `pid`       bigint unsigned NOT NULL COMMENT '父ID',
-    `type`      int         DEFAULT NULL COMMENT '类型',
-    `name`      varchar(45) DEFAULT NULL COMMENT '名称',
-    `component` varchar(45) DEFAULT NULL COMMENT '组件',
-    `menu_sort` int         DEFAULT NULL COMMENT '排序',
-    `icon`      varchar(45) DEFAULT NULL COMMENT '图标',
-    `path`      varchar(45) DEFAULT NULL COMMENT '路径',
-    `hidden`    tinyint(1) NOT NULL DEFAULT '0' COMMENT '隐藏',
-    `in_layout` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否内部',
-    `auth`      tinyint(1) NOT NULL DEFAULT '0' COMMENT '参与授权',
+    `type`      int                      DEFAULT NULL COMMENT '类型',
+    `name`      varchar(45)              DEFAULT NULL COMMENT '名称',
+    `component` varchar(45)              DEFAULT NULL COMMENT '组件',
+    `menu_sort` int                      DEFAULT NULL COMMENT '排序',
+    `icon`      varchar(45)              DEFAULT NULL COMMENT '图标',
+    `path`      varchar(45)              DEFAULT NULL COMMENT '路径',
+    `hidden`    tinyint(1)      NOT NULL DEFAULT '0' COMMENT '隐藏',
+    `in_layout` tinyint(1)      NOT NULL DEFAULT '1' COMMENT '是否内部',
+    `auth`      tinyint(1)      NOT NULL DEFAULT '0' COMMENT '参与授权',
     PRIMARY KEY (`id`)
 );
 
@@ -72,7 +72,7 @@ CREATE TABLE `core_menu`
 --
 
 LOCK
-TABLES `core_menu` WRITE;
+    TABLES `core_menu` WRITE;
 INSERT INTO `core_menu`
 VALUES (1, 0, 2, 'workbranch', 'workbranch', 1, NULL, '/workbranch', 0, 1, 1),
        (2, 0, 2, 'panel', 'visualized/view/panel', 2, NULL, '/panel', 0, 1, 1),
@@ -81,10 +81,9 @@ VALUES (1, 0, 2, 'workbranch', 'workbranch', 1, NULL, '/workbranch', 0, 1, 1),
        (5, 4, 2, 'dataset', 'visualized/data/dataset', 1, NULL, '/dataset', 0, 1, 1),
        (6, 4, 2, 'datasource', 'visualized/data/datasource', 2, NULL, '/datasource', 0, 1, 1),
        (11, 0, 2, 'dataset-form', 'visualized/data/dataset/form', 7, NULL, '/dataset-form', 1, 0, 0),
-       (12, 0, 2, 'datasource-form', 'visualized/data/datasource/form', 7, NULL, '/ds-form', 1, 0, 0),
-       (13, 0, 2, 'about', 'about', 7, NULL, '/about', 1, 1, 0);
+       (12, 0, 2, 'datasource-form', 'visualized/data/datasource/form', 7, NULL, '/ds-form', 1, 0, 0);
 UNLOCK
-TABLES;
+    TABLES;
 
 DROP TABLE IF EXISTS `core_dataset_group`;
 CREATE TABLE `core_dataset_group`
@@ -92,7 +91,7 @@ CREATE TABLE `core_dataset_group`
     `id`               bigint      NOT NULL COMMENT 'ID',
     `name`             varchar(128)  DEFAULT NULL COMMENT '名称',
     `pid`              bigint        DEFAULT NULL COMMENT '父级ID',
-    `level`            int(10) DEFAULT '0' COMMENT '当前分组处于第几级',
+    `level`            int(10)       DEFAULT '0' COMMENT '当前分组处于第几级',
     `node_type`        varchar(50) NOT NULL COMMENT 'node类型：folder or dataset',
     `type`             varchar(50)   DEFAULT NULL COMMENT 'sql,union',
     `mode`             int           DEFAULT '0' COMMENT '连接模式：0-直连，1-同步(包括excel、api等数据存在de中的表)',
@@ -140,7 +139,7 @@ CREATE TABLE `core_dataset_table_field`
     `de_type`          int          NOT NULL COMMENT 'dataease字段类型：0-文本，1-时间，2-整型数值，3-浮点数值，4-布尔，5-地理位置，6-二进制',
     `de_extract_type`  int          NOT NULL COMMENT 'de记录的原始类型',
     `ext_field`        int          DEFAULT NULL COMMENT '是否扩展字段 0原始 1复制 2计算字段...',
-    `checked`          tinyint(1) DEFAULT NULL DEFAULT '1' COMMENT '是否选中',
+    `checked`          tinyint(1)   DEFAULT NULL DEFAULT '1' COMMENT '是否选中',
     `column_index`     int          DEFAULT NULL COMMENT '列位置',
     `last_sync_time`   bigint       DEFAULT NULL COMMENT '同步时间',
     `accuracy`         int          DEFAULT '0' COMMENT '精度',
@@ -185,7 +184,7 @@ CREATE TABLE `data_visualization_info`
     `update_by`             varchar(255) DEFAULT NULL COMMENT '更新人',
     `remark`                varchar(255) DEFAULT NULL COMMENT '备注',
     `source`                varchar(255) DEFAULT NULL COMMENT '数据来源',
-    `delete_flag`           tinyint(1) DEFAULT '0' COMMENT '删除标志',
+    `delete_flag`           tinyint(1)   DEFAULT '0' COMMENT '删除标志',
     `delete_time`           bigint       DEFAULT NULL COMMENT '删除时间',
     `delete_by`             varchar(255) DEFAULT NULL COMMENT '删除人',
     PRIMARY KEY (`id`)
@@ -196,18 +195,18 @@ DROP TABLE IF EXISTS `core_datasource_task`;
 CREATE TABLE `core_datasource_task`
 (
     `id`                bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
-    `ds_id`             bigint       NOT NULL COMMENT '数据源ID',
-    `name`              varchar(255) NOT NULL COMMENT '任务名称',
-    `update_type`       varchar(50)  NOT NULL COMMENT '更新方式',
-    `start_time`        bigint(13) DEFAULT NULL COMMENT '开始时间',
-    `sync_rate`         varchar(50)  NOT NULL COMMENT '执行频率：0 一次性 1 cron',
+    `ds_id`             bigint          NOT NULL COMMENT '数据源ID',
+    `name`              varchar(255)    NOT NULL COMMENT '任务名称',
+    `update_type`       varchar(50)     NOT NULL COMMENT '更新方式',
+    `start_time`        bigint(13)   DEFAULT NULL COMMENT '开始时间',
+    `sync_rate`         varchar(50)     NOT NULL COMMENT '执行频率：0 一次性 1 cron',
     `cron`              varchar(255) DEFAULT NULL COMMENT 'cron表达式',
-    `simple_cron_value` bigint(13) NOT NULL COMMENT '简单重复间隔',
-    `simple_cron_type`  varchar(50)  NOT NULL COMMENT '简单重复类型：分、时、天',
-    `end_limit`         varchar(50)  NOT NULL COMMENT '结束限制 0 无限制 1 设定结束时间',
-    `end_time`          bigint(13) DEFAULT NULL COMMENT '结束时间',
-    `create_time`       bigint(13) DEFAULT NULL COMMENT '创建时间',
-    `last_exec_time`    bigint(13) DEFAULT NULL COMMENT '上次执行时间',
+    `simple_cron_value` bigint(13)      NOT NULL COMMENT '简单重复间隔',
+    `simple_cron_type`  varchar(50)     NOT NULL COMMENT '简单重复类型：分、时、天',
+    `end_limit`         varchar(50)     NOT NULL COMMENT '结束限制 0 无限制 1 设定结束时间',
+    `end_time`          bigint(13)   DEFAULT NULL COMMENT '结束时间',
+    `create_time`       bigint(13)   DEFAULT NULL COMMENT '创建时间',
+    `last_exec_time`    bigint(13)   DEFAULT NULL COMMENT '上次执行时间',
     `last_exec_status`  varchar(50)  DEFAULT NULL COMMENT '上次执行结果',
     `extra_data`        longtext,
     `status`            varchar(50)  DEFAULT NULL COMMENT '任务状态',
@@ -218,17 +217,17 @@ DROP TABLE IF EXISTS `core_datasource_task_log`;
 CREATE TABLE `core_datasource_task_log`
 (
     `id`           bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
-    `ds_id`        bigint(13) NOT NULL COMMENT '数据源ID',
-    `task_id`      bigint(13) DEFAULT NULL COMMENT '任务ID',
-    `start_time`   bigint(13) DEFAULT NULL COMMENT '开始时间',
-    `end_time`     bigint(13) DEFAULT NULL COMMENT '结束时间',
-    `status`       varchar(50) NOT NULL COMMENT '执行状态',
+    `ds_id`        bigint(13)      NOT NULL COMMENT '数据源ID',
+    `task_id`      bigint(13)  DEFAULT NULL COMMENT '任务ID',
+    `start_time`   bigint(13)  DEFAULT NULL COMMENT '开始时间',
+    `end_time`     bigint(13)  DEFAULT NULL COMMENT '结束时间',
+    `status`       varchar(50)     NOT NULL COMMENT '执行状态',
     `info`         longtext COMMENT '错误信息',
-    `create_time`  bigint(13) DEFAULT NULL COMMENT '创建时间',
+    `create_time`  bigint(13)  DEFAULT NULL COMMENT '创建时间',
     `trigger_type` varchar(45) DEFAULT NULL,
     PRIMARY KEY (`id`),
-    KEY            `idx_dataset_table_task_log_ds_id` (`ds_id`),
-    KEY            `idx_dataset_table_task_log_task_id` (`task_id`)
+    KEY `idx_dataset_table_task_log_ds_id` (`ds_id`),
+    KEY `idx_dataset_table_task_log_task_id` (`task_id`)
 );
 
 DROP TABLE IF EXISTS `core_de_engine`;
@@ -237,10 +236,10 @@ CREATE TABLE `core_de_engine`
     `id`            bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
     `name`          varchar(50) DEFAULT NULL COMMENT '名称',
     `description`   varchar(50) DEFAULT NULL COMMENT '描述',
-    `type`          varchar(50) NOT NULL COMMENT '类型',
-    `configuration` longtext    NOT NULL COMMENT '详细信息',
-    `create_time`   bigint(13) DEFAULT NULL COMMENT 'Create timestamp',
-    `update_time`   bigint(13) DEFAULT NULL COMMENT 'Update timestamp',
+    `type`          varchar(50)     NOT NULL COMMENT '类型',
+    `configuration` longtext        NOT NULL COMMENT '详细信息',
+    `create_time`   bigint(13)  DEFAULT NULL COMMENT 'Create timestamp',
+    `update_time`   bigint(13)  DEFAULT NULL COMMENT 'Update timestamp',
     `create_by`     varchar(50) DEFAULT NULL COMMENT '创建人ID',
     `status`        varchar(45) DEFAULT NULL COMMENT '状态',
     PRIMARY KEY (`id`)
@@ -279,11 +278,11 @@ CREATE TABLE `core_chart_view`
     `is_plugin`           bit(1)        DEFAULT NULL COMMENT '是否插件',
     `data_from`           varchar(255)  DEFAULT 'dataset' COMMENT '数据来源 template 模板数据 dataset 数据集数据',
     `view_fields`         longtext COMMENT '视图字段集合',
-    `refresh_view_enable` tinyint(1) DEFAULT 0 COMMENT '是否开启刷新',
+    `refresh_view_enable` tinyint(1)    DEFAULT 0 COMMENT '是否开启刷新',
     `refresh_unit`        varchar(255)  DEFAULT 'minute' COMMENT '刷新时间单位',
     `refresh_time`        int           DEFAULT 5 COMMENT '刷新时间',
-    `linkage_active`      tinyint(1) DEFAULT 0 COMMENT '是否开启联动',
-    `jump_active`         tinyint(1) DEFAULT 0 COMMENT '是否开启跳转',
+    `linkage_active`      tinyint(1)    DEFAULT 0 COMMENT '是否开启联动',
+    `jump_active`         tinyint(1)    DEFAULT 0 COMMENT '是否开启跳转',
     `copy_from`           bigint        DEFAULT NULL COMMENT '复制来源',
     `copy_id`             bigint        DEFAULT NULL COMMENT '复制ID',
     PRIMARY KEY (`id`)
@@ -3743,7 +3742,7 @@ CREATE TABLE QRTZ_JOB_DETAILS
     IS_NONCONCURRENT  VARCHAR(1)   NOT NULL,
     IS_UPDATE_DATA    VARCHAR(1)   NOT NULL,
     REQUESTS_RECOVERY VARCHAR(1)   NOT NULL,
-    JOB_DATA          BLOB NULL,
+    JOB_DATA          BLOB         NULL,
     PRIMARY KEY (SCHED_NAME, JOB_NAME, JOB_GROUP)
 );
 
@@ -3755,16 +3754,16 @@ CREATE TABLE QRTZ_TRIGGERS
     JOB_NAME       VARCHAR(200) NOT NULL,
     JOB_GROUP      VARCHAR(200) NOT NULL,
     DESCRIPTION    VARCHAR(250) NULL,
-    NEXT_FIRE_TIME BIGINT(13) NULL,
-    PREV_FIRE_TIME BIGINT(13) NULL,
-    PRIORITY       INTEGER NULL,
+    NEXT_FIRE_TIME BIGINT(13)   NULL,
+    PREV_FIRE_TIME BIGINT(13)   NULL,
+    PRIORITY       INTEGER      NULL,
     TRIGGER_STATE  VARCHAR(16)  NOT NULL,
     TRIGGER_TYPE   VARCHAR(8)   NOT NULL,
-    START_TIME     BIGINT(13) NOT NULL,
-    END_TIME       BIGINT(13) NULL,
+    START_TIME     BIGINT(13)   NOT NULL,
+    END_TIME       BIGINT(13)   NULL,
     CALENDAR_NAME  VARCHAR(200) NULL,
-    MISFIRE_INSTR  SMALLINT(2) NULL,
-    JOB_DATA       BLOB NULL,
+    MISFIRE_INSTR  SMALLINT(2)  NULL,
+    JOB_DATA       BLOB         NULL,
     PRIMARY KEY (SCHED_NAME, TRIGGER_NAME, TRIGGER_GROUP),
     FOREIGN KEY (SCHED_NAME, JOB_NAME, JOB_GROUP)
         REFERENCES QRTZ_JOB_DETAILS (SCHED_NAME, JOB_NAME, JOB_GROUP)
@@ -3775,9 +3774,9 @@ CREATE TABLE QRTZ_SIMPLE_TRIGGERS
     SCHED_NAME      VARCHAR(120) NOT NULL,
     TRIGGER_NAME    VARCHAR(200) NOT NULL,
     TRIGGER_GROUP   VARCHAR(200) NOT NULL,
-    REPEAT_COUNT    BIGINT(7) NOT NULL,
-    REPEAT_INTERVAL BIGINT(12) NOT NULL,
-    TIMES_TRIGGERED BIGINT(10) NOT NULL,
+    REPEAT_COUNT    BIGINT(7)    NOT NULL,
+    REPEAT_INTERVAL BIGINT(12)   NOT NULL,
+    TIMES_TRIGGERED BIGINT(10)   NOT NULL,
     PRIMARY KEY (SCHED_NAME, TRIGGER_NAME, TRIGGER_GROUP),
     FOREIGN KEY (SCHED_NAME, TRIGGER_NAME, TRIGGER_GROUP)
         REFERENCES QRTZ_TRIGGERS (SCHED_NAME, TRIGGER_NAME, TRIGGER_GROUP)
@@ -3797,20 +3796,20 @@ CREATE TABLE QRTZ_CRON_TRIGGERS
 
 CREATE TABLE QRTZ_SIMPROP_TRIGGERS
 (
-    SCHED_NAME    VARCHAR(120) NOT NULL,
-    TRIGGER_NAME  VARCHAR(200) NOT NULL,
-    TRIGGER_GROUP VARCHAR(200) NOT NULL,
-    STR_PROP_1    VARCHAR(512) NULL,
-    STR_PROP_2    VARCHAR(512) NULL,
-    STR_PROP_3    VARCHAR(512) NULL,
-    INT_PROP_1    INT NULL,
-    INT_PROP_2    INT NULL,
-    LONG_PROP_1   BIGINT NULL,
-    LONG_PROP_2   BIGINT NULL,
+    SCHED_NAME    VARCHAR(120)   NOT NULL,
+    TRIGGER_NAME  VARCHAR(200)   NOT NULL,
+    TRIGGER_GROUP VARCHAR(200)   NOT NULL,
+    STR_PROP_1    VARCHAR(512)   NULL,
+    STR_PROP_2    VARCHAR(512)   NULL,
+    STR_PROP_3    VARCHAR(512)   NULL,
+    INT_PROP_1    INT            NULL,
+    INT_PROP_2    INT            NULL,
+    LONG_PROP_1   BIGINT         NULL,
+    LONG_PROP_2   BIGINT         NULL,
     DEC_PROP_1    NUMERIC(13, 4) NULL,
     DEC_PROP_2    NUMERIC(13, 4) NULL,
-    BOOL_PROP_1   VARCHAR(1) NULL,
-    BOOL_PROP_2   VARCHAR(1) NULL,
+    BOOL_PROP_1   VARCHAR(1)     NULL,
+    BOOL_PROP_2   VARCHAR(1)     NULL,
     PRIMARY KEY (SCHED_NAME, TRIGGER_NAME, TRIGGER_GROUP),
     FOREIGN KEY (SCHED_NAME, TRIGGER_NAME, TRIGGER_GROUP)
         REFERENCES QRTZ_TRIGGERS (SCHED_NAME, TRIGGER_NAME, TRIGGER_GROUP)
@@ -3821,7 +3820,7 @@ CREATE TABLE QRTZ_BLOB_TRIGGERS
     SCHED_NAME    VARCHAR(120) NOT NULL,
     TRIGGER_NAME  VARCHAR(200) NOT NULL,
     TRIGGER_GROUP VARCHAR(200) NOT NULL,
-    BLOB_DATA     BLOB NULL,
+    BLOB_DATA     BLOB         NULL,
     PRIMARY KEY (SCHED_NAME, TRIGGER_NAME, TRIGGER_GROUP),
     FOREIGN KEY (SCHED_NAME, TRIGGER_NAME, TRIGGER_GROUP)
         REFERENCES QRTZ_TRIGGERS (SCHED_NAME, TRIGGER_NAME, TRIGGER_GROUP)
@@ -3849,14 +3848,14 @@ CREATE TABLE QRTZ_FIRED_TRIGGERS
     TRIGGER_NAME      VARCHAR(200) NOT NULL,
     TRIGGER_GROUP     VARCHAR(200) NOT NULL,
     INSTANCE_NAME     VARCHAR(200) NOT NULL,
-    FIRED_TIME        BIGINT(13) NOT NULL,
-    SCHED_TIME        BIGINT(13) NOT NULL,
+    FIRED_TIME        BIGINT(13)   NOT NULL,
+    SCHED_TIME        BIGINT(13)   NOT NULL,
     PRIORITY          INTEGER      NOT NULL,
     STATE             VARCHAR(16)  NOT NULL,
     JOB_NAME          VARCHAR(200) NULL,
     JOB_GROUP         VARCHAR(200) NULL,
-    IS_NONCONCURRENT  VARCHAR(1) NULL,
-    REQUESTS_RECOVERY VARCHAR(1) NULL,
+    IS_NONCONCURRENT  VARCHAR(1)   NULL,
+    REQUESTS_RECOVERY VARCHAR(1)   NULL,
     PRIMARY KEY (SCHED_NAME, ENTRY_ID)
 );
 
@@ -3864,8 +3863,8 @@ CREATE TABLE QRTZ_SCHEDULER_STATE
 (
     SCHED_NAME        VARCHAR(120) NOT NULL,
     INSTANCE_NAME     VARCHAR(200) NOT NULL,
-    LAST_CHECKIN_TIME BIGINT(13) NOT NULL,
-    CHECKIN_INTERVAL  BIGINT(13) NOT NULL,
+    LAST_CHECKIN_TIME BIGINT(13)   NOT NULL,
+    CHECKIN_INTERVAL  BIGINT(13)   NOT NULL,
     PRIMARY KEY (SCHED_NAME, INSTANCE_NAME)
 );
 
@@ -3885,7 +3884,7 @@ CREATE TABLE `visualization_linkage`
     `target_view_id` varchar(50)   DEFAULT NULL COMMENT '联动视图id',
     `update_time`    bigint        DEFAULT NULL COMMENT '更新时间',
     `update_people`  varchar(255)  DEFAULT NULL COMMENT '更新人',
-    `linkage_active` tinyint(1) DEFAULT '0' COMMENT '是否启用关联',
+    `linkage_active` tinyint(1)    DEFAULT '0' COMMENT '是否启用关联',
     `ext1`           varchar(2000) DEFAULT NULL,
     `ext2`           varchar(2000) DEFAULT NULL,
     `copy_from`      varchar(255)  DEFAULT NULL,
@@ -3922,7 +3921,9 @@ CREATE TABLE `visualization_background`
     `base_url`       varchar(255) DEFAULT NULL,
     `url`            varchar(255) DEFAULT NULL,
     PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_0900_ai_ci;
 
 INSERT INTO `visualization_background` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`,
                                         `base_url`, `url`)
@@ -3971,7 +3972,9 @@ CREATE TABLE `visualization_background_image`
     `base_url`       varchar(255) DEFAULT NULL,
     `url`            varchar(255) DEFAULT NULL,
     PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_0900_ai_ci;
 
 -- ----------------------------
 -- Table structure for visualization_link_jump
@@ -3983,11 +3986,13 @@ CREATE TABLE `visualization_link_jump`
     `source_dv_id`   varchar(50) COLLATE utf8mb4_general_ci   DEFAULT NULL COMMENT '源仪表板ID',
     `source_view_id` varchar(50) COLLATE utf8mb4_general_ci   DEFAULT NULL COMMENT '源视图ID',
     `link_jump_info` varchar(4000) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '跳转信息',
-    `checked`        tinyint(1) DEFAULT NULL COMMENT '是否启用',
+    `checked`        tinyint(1)                               DEFAULT NULL COMMENT '是否启用',
     `copy_from`      varchar(255) COLLATE utf8mb4_general_ci  DEFAULT NULL,
     `copy_id`        varchar(255) COLLATE utf8mb4_general_ci  DEFAULT NULL,
     PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_general_ci;
 
 -- ----------------------------
 -- Table structure for visualization_link_jump_info
@@ -4002,12 +4007,14 @@ CREATE TABLE `visualization_link_jump_info`
     `target_dv_id`    varchar(255) COLLATE utf8mb4_general_ci  DEFAULT NULL COMMENT '关联仪表板ID',
     `source_field_id` varchar(255) COLLATE utf8mb4_general_ci  DEFAULT NULL COMMENT '字段ID',
     `content`         varchar(4000) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '内容 linkType = outer时使用',
-    `checked`         tinyint(1) DEFAULT NULL COMMENT '是否可用',
-    `attach_params`   tinyint(1) DEFAULT NULL COMMENT '是否附加点击参数',
+    `checked`         tinyint(1)                               DEFAULT NULL COMMENT '是否可用',
+    `attach_params`   tinyint(1)                               DEFAULT NULL COMMENT '是否附加点击参数',
     `copy_from`       varchar(255) COLLATE utf8mb4_general_ci  DEFAULT NULL,
     `copy_id`         varchar(255) COLLATE utf8mb4_general_ci  DEFAULT NULL,
     PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_general_ci;
 
 -- ----------------------------
 -- Table structure for visualization_link_jump_target_view_info
@@ -4023,7 +4030,9 @@ CREATE TABLE `visualization_link_jump_target_view_info`
     `copy_from`              varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
     `copy_id`                varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
     PRIMARY KEY (`target_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_general_ci;
 
 -- ----------------------------
 -- Table structure for visualization_subject
@@ -4035,7 +4044,7 @@ CREATE TABLE `visualization_subject`
     `name`        varchar(255)                                                          DEFAULT NULL COMMENT '主题名称',
     `type`        varchar(255)                                                          DEFAULT NULL COMMENT '主题类型 system 系统主题，self 自定义主题',
     `details`     longtext COMMENT '主题内容',
-    `delete_flag` tinyint(1) DEFAULT '0' COMMENT '删除标记',
+    `delete_flag` tinyint(1)                                                            DEFAULT '0' COMMENT '删除标记',
     `cover_url`   varchar(255)                                                          DEFAULT NULL COMMENT '封面信息',
     `create_num`  int                                                          NOT NULL DEFAULT '0',
     `create_time` bigint                                                                DEFAULT NULL COMMENT '创建时间',
@@ -4045,7 +4054,9 @@ CREATE TABLE `visualization_subject`
     `delete_time` bigint                                                                DEFAULT NULL COMMENT '删除时间',
     `delete_by`   bigint                                                                DEFAULT NULL COMMENT '删除人',
     PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_0900_ai_ci;
 
 
 commit;
@@ -4055,13 +4066,15 @@ CREATE TABLE `core_dataset_table_sql_log`
 (
     `id`         varchar(50) NOT NULL DEFAULT '' COMMENT 'ID',
     `table_id`   varchar(50) NOT NULL DEFAULT '' COMMENT '数据集SQL节点ID',
-    `start_time` bigint(13) DEFAULT NULL COMMENT '开始时间',
-    `end_time`   bigint(13) DEFAULT NULL COMMENT '结束时间',
-    `spend`      bigint(13) DEFAULT NULL COMMENT '耗时(毫秒)',
+    `start_time` bigint(13)           DEFAULT NULL COMMENT '开始时间',
+    `end_time`   bigint(13)           DEFAULT NULL COMMENT '结束时间',
+    `spend`      bigint(13)           DEFAULT NULL COMMENT '耗时(毫秒)',
     `sql`        longtext    NOT NULL COMMENT '详细信息',
     `status`     varchar(45)          DEFAULT NULL COMMENT '状态',
     PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE utf8mb4_0900_ai_ci;
 
 INSERT INTO `visualization_subject` (`id`,
                                      `name`,
@@ -4128,7 +4141,9 @@ CREATE TABLE `core_store`
     `resource_type` int    NOT NULL COMMENT '资源类型',
     `time`          bigint NOT NULL COMMENT '收藏时间',
     PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_general_ci;
 
 -- ----------------------------
 -- Table structure for xpack_share
@@ -4145,5 +4160,7 @@ CREATE TABLE `xpack_share`
     `resource_id` bigint      NOT NULL COMMENT '资源ID',
     `oid`         bigint      NOT NULL COMMENT '组织ID',
     PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_general_ci;
 
