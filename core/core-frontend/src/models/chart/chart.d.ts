@@ -38,6 +38,8 @@ declare interface Chart {
   tableId: number
   resultMode: string
   resultCount: number
+  linkageActive: boolean
+  jumpActive: boolean
 }
 declare type CustomAttr = DeepPartial<ChartAttr> | JSONString<DeepPartial<ChartAttr>>
 declare type CustomStyle = DeepPartial<ChartStyle> | JSONString<DeepPartial<ChartStyle>>
