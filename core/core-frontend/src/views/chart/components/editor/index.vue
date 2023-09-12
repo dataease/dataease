@@ -457,6 +457,7 @@ const onTypeChange = (render, type) => {
   if (chartViewInstance) {
     view.value = chartViewInstance.setupDefaultOptions(view.value) as unknown as ChartObj
   }
+  curComponent.value.innerType = type
   calcData(view.value, true)
 }
 

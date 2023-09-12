@@ -6,16 +6,38 @@
       :class="{
         active,
         'shape-lock': element['isLock'],
-        'shape-edit': isEditMode,
+        'shape-edit': isEditMode && !boardMoveActive,
         'linkage-setting': linkageActive,
         'drag-on-tab-collision': dragCollision
       }"
     >
+      <template v-if="boardMoveActive">
+        <div
+          v-show="!element.editing"
+          class="de-drag-area de-drag-top"
+          @mousedown="handleBoardMouseDownOnShape"
+        />
+        <div
+          v-show="!element.editing && element.component !== 'DeTabs'"
+          class="de-drag-area de-drag-right"
+          @mousedown="handleBoardMouseDownOnShape"
+        />
+        <div
+          v-show="!element.editing && element.component !== 'DeTabs'"
+          class="de-drag-area de-drag-bottom"
+          @mousedown="handleBoardMouseDownOnShape"
+        />
+        <div
+          v-show="!element.editing && element.component !== 'DeTabs'"
+          class="de-drag-area de-drag-left"
+          @mousedown="handleBoardMouseDownOnShape"
+        />
+      </template>
       <div
         class="shape-inner"
         :style="componentBackgroundStyle"
         @click="selectCurComponent"
-        @mousedown="handleMouseDownOnShape"
+        @mousedown="handleInnerMouseDownOnShape"
       >
         <component-edit-bar
           class="edit-bar"
@@ -210,6 +232,10 @@ const angleToCursor = [
   { start: 293, end: 338, cursor: 'w' }
 ]
 
+const boardMoveActive = computed(() => {
+  return ['map', 'table-info', 'table-normal'].includes(element.value.innerType)
+})
+
 const dashboardActive = computed(() => {
   return dvInfo.value.type === 'dashboard'
 })
@@ -306,8 +332,25 @@ const getCursor = () => {
   return result
 }
 
-const handleMouseDownOnShape = e => {
+const outerShapeMouseDown = () => {
   dvMainStore.setCurComponent({ component: element.value, index: index.value })
+}
+
+const handleBoardMouseDownOnShape = e => {
+  dvMainStore.setCurComponent({ component: element.value, index: index.value })
+  handleMouseDownOnShape(e)
+}
+
+const handleInnerMouseDownOnShape = e => {
+  dvMainStore.setCurComponent({ component: element.value, index: index.value })
+  // 边界区域拖拽 返回
+  if (boardMoveActive.value) {
+    return
+  }
+  handleMouseDownOnShape(e)
+}
+
+const handleMouseDownOnShape = e => {
   if (element.value['editing']) {
     // e.preventDefault()
     e.stopPropagation()
@@ -790,5 +833,42 @@ onMounted(() => {
 }
 .edit-bar-active {
   display: inline-block !important;
+}
+
+.de-drag-area {
+  position: absolute;
+  z-index: 10;
+}
+
+.de-drag-area:hover {
+  cursor: move;
+}
+
+.de-drag-top {
+  left: 1px;
+  top: 1px;
+  height: 12px;
+  width: calc(100% - 2px);
+}
+
+.de-drag-right {
+  right: 1px;
+  top: 1px;
+  width: 16px;
+  height: calc(100% - 30px);
+}
+
+.de-drag-bottom {
+  left: 1px;
+  bottom: 1px;
+  height: 12px;
+  width: calc(100% - 2px);
+}
+
+.de-drag-left {
+  left: 1px;
+  top: 1px;
+  width: 16px;
+  height: calc(100% - 2px);
 }
 </style>
