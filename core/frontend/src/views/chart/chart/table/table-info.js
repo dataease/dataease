@@ -334,6 +334,10 @@ export function baseTablePivot(s2, container, chart, action, headerAction, table
 
   const columns = []
   const meta = []
+  const fieldMap = fields.reduce((pre, next) => {
+    pre[next['dataeaseName']] = next['name']
+    return pre
+  }, {})
 
   // add drill list
   if (chart.drill) {
@@ -486,10 +490,10 @@ export function baseTablePivot(s2, container, chart, action, headerAction, table
   // hover
   const size = customAttr?.size
   if (size?.tableRowTooltip?.show) {
-    s2.on(S2Event.ROW_CELL_HOVER, event => showTooltip(s2, event))
+    s2.on(S2Event.ROW_CELL_HOVER, event => showTooltip(s2, event, fieldMap))
   }
   if (size?.tableColTooltip?.show) {
-    s2.on(S2Event.COL_CELL_HOVER, event => showTooltip(s2, event))
+    s2.on(S2Event.COL_CELL_HOVER, event => showTooltip(s2, event, fieldMap))
   }
   // theme
   const customTheme = getCustomTheme(chart)
@@ -703,10 +707,13 @@ function mappingColor(value, defaultColor, field, type) {
   return color
 }
 
-function showTooltip(s2Instance, event) {
+function showTooltip(s2Instance, event, fieldMap) {
   const cell = s2Instance.getCell(event.target)
-  const content = cell.actualText
-
+  const meta = cell.getMeta()
+  let content = meta.value
+  if (fieldMap?.[content]) {
+    content = fieldMap?.[content]
+  }
   s2Instance.showTooltip({
     position: {
       x: event.clientX,
