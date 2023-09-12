@@ -3,6 +3,7 @@ import { reactive, ref, toRefs } from 'vue'
 import eventBus from '@/utils/eventBus'
 import Icon from '@/components/icon-custom/src/Icon.vue'
 import { CANVAS_MATERIAL } from '@/custom-component/common/ComponentConfig'
+import { ElScrollbar } from 'element-plus-secondary'
 
 const props = defineProps({
   propValue: {
@@ -22,17 +23,15 @@ const props = defineProps({
 const { propValue, element } = toRefs(props)
 const currentPane = ref('common')
 
+const commonGroup = ref<InstanceType<typeof ElScrollbar>>()
+
 const state = reactive({
   curCategory: 'CanvasBoard',
   groupList: CANVAS_MATERIAL
 })
 
 const scrollTo = offsetTop => {
-  const parent = document.querySelector('#commonGroup')
-  parent.scrollTo({
-    top: offsetTop,
-    behavior: 'smooth'
-  })
+  commonGroup?.value!.setScrollTop(offsetTop)
 }
 
 const anchorPosition = anchor => {
@@ -69,7 +68,7 @@ const groupActiveChange = category => {
         </li>
       </ul>
     </div>
-    <el-scrollbar id="commonGroup" class="group-right" height="392px">
+    <el-scrollbar ref="commonGroup" class="group-right" height="392px">
       <el-row :id="groupInfo.category" v-for="groupInfo in state.groupList" :key="groupInfo.title">
         <el-col
           :class="'item' + groupInfo.span"
