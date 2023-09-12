@@ -8,6 +8,7 @@ import { useRequestStoreWithOut } from '@/store/modules/request'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import ShortcutTable from './ShortcutTable.vue'
 import { useUserStoreWithOut } from '@/store/modules/user'
+import { useRouter } from 'vue-router'
 const userStore = useUserStoreWithOut()
 const interactiveStore = interactiveStoreWithOut()
 const permissionStore = usePermissionStoreWithOut()
@@ -15,6 +16,8 @@ const requestStore = useRequestStoreWithOut()
 const { t } = useI18n()
 const busiDataMap = computed(() => interactiveStore.getData)
 const busiCountCardList = ref([])
+
+const router = useRouter()
 
 const quickCreationList = shallowRef([
   {
@@ -82,7 +85,10 @@ const createScreen = () => {
   console.error('please contact Jiahao Wang')
 }
 const createDataset = () => {
-  console.error('please contact junjie Xia')
+  let routeData = router.resolve({
+    path: '/dataset-form'
+  })
+  window.open(routeData.href, '_blank')
 }
 const createDatasource = () => {
   console.error('please contact Jinlong Tao')
