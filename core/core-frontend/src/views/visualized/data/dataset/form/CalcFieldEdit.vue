@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, reactive, onMounted, onBeforeUnmount, watch } from 'vue'
+import { ref, reactive, onMounted, onBeforeUnmount, watch, nextTick } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import CodeMirror from './CodeMirror.vue'
 import { getFunction } from '@/api/dataset'
@@ -94,7 +94,9 @@ const initEdit = (obj, dimensionData, quotaData) => {
   state.quotaData = quotaData
   quotaDataList = cloneDeep(quotaData)
   dimensionDataList = cloneDeep(dimensionData)
-  formField.value.clearValidate()
+  setTimeout(() => {
+    formField.value.clearValidate()
+  }, 100)
   if (!obj.originName) {
     mirror.value.dispatch({
       changes: {
