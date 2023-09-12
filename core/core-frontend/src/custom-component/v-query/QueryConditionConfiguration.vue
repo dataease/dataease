@@ -162,16 +162,31 @@ const handleCheckedFieldsChange = (value: string[]) => {
   setType()
 }
 
+const inputCom = ref()
+
 const setType = () => {
   if (curComponent.value.checkedFields?.length) {
     const [id] = curComponent.value.checkedFields
     const arr = fields.value.find(ele => ele.componentId === id)
     const checkId = curComponent.value.checkedFieldsMap?.[id]
     const field = (arr?.list || []).find(ele => checkId === ele.id)
-    if (field?.deType === 1 && curComponent.value.displayType === '7') return
-    field?.deType !== undefined &&
-      (curComponent.value.displayType = `${field?.deType === 3 ? 2 : field?.deType}`)
+
+    if (field?.deType !== undefined) {
+      let displayType = curComponent.value.displayType
+      if (!(field?.deType === 1 && curComponent.value.displayType === '7')) {
+        curComponent.value.displayType = `${field?.deType === 3 ? 2 : field?.deType}`
+      }
+      if (displayType !== curComponent.value.displayType) {
+        setTypeChange()
+      }
+    }
   }
+}
+
+const setTypeChange = () => {
+  nextTick(() => {
+    inputCom.value?.displayTypeChange()
+  })
 }
 
 const cancelClick = () => {
@@ -306,6 +321,7 @@ const init = (queryId: string) => {
   }
   renameInput.value = []
   handleCondition({ id: queryId })
+
   dialogVisible.value = true
   const datasetFieldIdList = datasetFieldList.value.map(ele => ele.tableId)
   for (const i in datasetMap) {
@@ -395,6 +411,10 @@ const handleCondition = item => {
     valueSource.value.push('')
     valueSource.value.push('')
   }
+
+  nextTick(() => {
+    curComponent.value.showError = showError.value
+  })
 }
 
 const getOptions = (id, component) => {
@@ -631,7 +651,7 @@ defineExpose({
           <div class="list-item">
             <div class="label">展示类型</div>
             <div class="value">
-              <el-select v-model="curComponent.displayType">
+              <el-select @change="setTypeChange" v-model="curComponent.displayType">
                 <el-option
                   :disabled="curComponent.displayType !== '0'"
                   label="文本下拉"
@@ -820,6 +840,7 @@ defineExpose({
               <component
                 :config="curComponent"
                 isConfig
+                ref="inputCom"
                 :is="filterTypeCom(curComponent.displayType)"
               ></component>
             </div>

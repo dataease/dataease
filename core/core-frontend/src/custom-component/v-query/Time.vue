@@ -100,14 +100,28 @@ watch(
   }
 )
 
+const displayTypeChange = () => {
+  if (!props.isConfig) return
+  selectValue.value = config.value.displayType === '7' ? [] : ''
+  multiple.value = config.value.displayType === '7'
+  config.value.defaultValue = multiple.value ? [] : ''
+  selectValue.value = multiple.value ? [] : ''
+}
 watch(
-  () => config.value.displayType,
+  () => config.value.selectValue,
   val => {
-    if (!props.isConfig) return
-    selectValue.value = val === '7' ? [] : ''
-    multiple.value = val === '7'
-    config.value.defaultValue = multiple.value ? [] : ''
-    selectValue.value = multiple.value ? [] : ''
+    if (props.isConfig) return
+    if (config.value.displayType === '7') {
+      selectValue.value = Array.isArray(val) ? [...val] : val
+    }
+    nextTick(() => {
+      multiple.value = config.value.displayType === '7'
+      if (!multiple.value) {
+        selectValue.value = Array.isArray(config.value.selectValue)
+          ? [...config.value.selectValue]
+          : config.value.selectValue
+      }
+    })
   }
 )
 
@@ -141,6 +155,10 @@ const selectStyle = computed(() => {
 
 onBeforeMount(() => {
   init()
+})
+
+defineExpose({
+  displayTypeChange
 })
 </script>
 
