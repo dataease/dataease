@@ -365,6 +365,7 @@ pre[class*="language-"] {
 
 .mce-content-body:not([dir=rtl])[data-mce-placeholder]:not(.mce-visualblocks)::before {
   left: 1px;
+  color:#a1b7cb;
 }
 
 .mce-content-body[dir=rtl][data-mce-placeholder]:not(.mce-visualblocks)::before {

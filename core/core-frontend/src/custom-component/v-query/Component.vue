@@ -351,6 +351,7 @@ const queryData = () => {
           </el-button>
           <el-button
             @click.stop="queryData"
+            style="margin-right: 7px"
             v-if="customStyle.btnList.includes('sure')"
             type="primary"
           >

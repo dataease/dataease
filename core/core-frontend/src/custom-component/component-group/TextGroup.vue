@@ -54,7 +54,7 @@ const newComponent = componentName => {
       :themes="themes"
       name="富文本"
       label="富文本"
-      drag-info="VText&VText"
+      drag-info="UserView&rich-text"
     ></drag-component>
   </div>
 </template>
