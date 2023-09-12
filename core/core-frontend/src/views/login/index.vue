@@ -99,7 +99,7 @@ const handleLogin = () => {
   if (!formRef.value) return
   formRef.value.validate((valid: boolean) => {
     if (valid) {
-      const name = state.loginForm.username
+      const name = state.loginForm.username.trim()
       const pwd = state.loginForm.password
       const param = { name: rsaEncryp(name), pwd: rsaEncryp(pwd) }
       duringLogin.value = true

@@ -28,6 +28,9 @@ public interface UserApi {
     UserFormVO queryById(@PathVariable("id") Long id);
 
 
+    @GetMapping("/personInfo")
+    UserFormVO personInfo();
+
     @DePermit("m:read")
     @PostMapping("/create")
     void create(@RequestBody UserCreator creator);

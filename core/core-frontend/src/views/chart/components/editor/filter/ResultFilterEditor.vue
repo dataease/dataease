@@ -397,4 +397,11 @@ span {
 .btn-delete {
   min-width: auto !important;
 }
+:deep(.ed-select .ed-select-tags-wrapper.has-prefix) {
+  display: flex !important;
+  align-items: center;
+}
+:deep(.ed-select__tags .ed-tag) {
+  margin: 0px 4px 0 0 !important;
+}
 </style>

@@ -7,7 +7,7 @@ import { validateApi, buildVersionApi, updateInfoApi } from '@/api/about'
 import { ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useEmitt } from '@/hooks/web/useEmitt'
-const dialogVisible = ref(true)
+const dialogVisible = ref(false)
 const { t } = useI18n()
 const userStore = useUserStoreWithOut()
 const license: F2CLicense = reactive({
@@ -115,7 +115,13 @@ const update = (licKey: string) => {
 </script>
 
 <template>
-  <el-dialog title="关于" width="840px" v-model="dialogVisible" class="about-dialog">
+  <el-dialog
+    :append-to-body="true"
+    title="关于"
+    width="840px"
+    v-model="dialogVisible"
+    class="about-dialog"
+  >
     <img width="792" height="180" :src="aboutBg" />
     <el-icon class="logo">
       <icon name="logo"></icon>

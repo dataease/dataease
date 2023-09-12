@@ -135,8 +135,9 @@ const showAll = ref(true)
 const dataset = ref()
 const loading = ref(false)
 const createDataset = ref(false)
+let tData = []
 const filterMethod = value => {
-  state.tData = [...state.tData].filter(item => item.name.includes(value))
+  state.tData = [...tData].filter(item => item.name.includes(value))
 }
 const resetForm = () => {
   dataset.value.clearValidate()
@@ -172,6 +173,7 @@ const createInit = (type, data: Tree, exec, name: string) => {
       if (state.tData.length && state.tData[0].name === 'root' && state.tData[0].id === '0') {
         state.tData[0].name = '数据集'
       }
+      tData = [...state.tData]
       if (exec) {
         pid.value = data.pid
         id.value = data.id

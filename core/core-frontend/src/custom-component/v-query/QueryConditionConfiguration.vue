@@ -185,6 +185,7 @@ const setType = () => {
 
 const setTypeChange = () => {
   nextTick(() => {
+    curComponent.value.field.id = ''
     inputCom.value?.displayTypeChange()
   })
 }
@@ -727,7 +728,9 @@ defineExpose({
                       </el-icon>
                     </template>
                     <el-option
-                      v-for="ele in curComponent.dataset.fields"
+                      v-for="ele in curComponent.dataset.fields.filter(
+                        ele => ele.deType === +curComponent.displayType
+                      )"
                       :key="ele.id"
                       :label="ele.name"
                       :value="ele.id"
