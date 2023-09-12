@@ -2,6 +2,7 @@
 import { reactive, ref, toRefs } from 'vue'
 import { CHART_TYPE_CONFIGS } from '@/views/chart/components/editor/util/chart'
 import Icon from '@/components/icon-custom/src/Icon.vue'
+import { ElScrollbar } from 'element-plus-secondary'
 
 const props = defineProps({
   propValue: {
@@ -31,16 +32,20 @@ const emit = defineEmits(['onTypeChange'])
 const { propValue, element, themes } = toRefs(props)
 const currentPane = ref('common')
 
+const userViewGroup = ref<InstanceType<typeof ElScrollbar>>()
+
 const state = reactive({
   curCategory: 'quota',
   chartGroupList: CHART_TYPE_CONFIGS
 })
 
+const scrollTo = offsetTop => {
+  userViewGroup?.value!.setScrollTop(offsetTop)
+}
+
 const anchorPosition = anchor => {
   const element = document.querySelector(anchor)
-  element.scrollIntoView({
-    behavior: 'smooth'
-  })
+  scrollTo(element.offsetTop)
 }
 
 const newComponent = (render, innerType) => {
@@ -69,7 +74,7 @@ const groupActiveChange = category => {
         </li>
       </ul>
     </div>
-    <el-scrollbar id="userViewGroup" class="group-right" height="392px">
+    <el-scrollbar ref="userViewGroup" class="group-right" height="392px">
       <el-row
         :id="chartGroupInfo.category + '-edit'"
         v-for="chartGroupInfo in state.chartGroupList"
