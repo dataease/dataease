@@ -298,7 +298,7 @@ export function getStyle(chart: Chart): Style {
     }
     if (basicStyle.tableColumnMode === 'adapt') {
       delete style.colCfg.width
-      style.layoutWidthType = 'compact'
+      style.layoutWidthType = 'adaptive'
     } else {
       delete style.layoutWidthType
       style.colCfg.width = basicStyle.tableColumnWidth

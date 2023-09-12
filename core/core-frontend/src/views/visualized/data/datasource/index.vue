@@ -861,7 +861,7 @@ const defaultProps = {
                   <BaseInfoItem :label="t('datasource.type')">{{ nodeInfo.type }}</BaseInfoItem>
                 </el-col>
               </el-row>
-              <el-row>
+              <el-row :gutter="24">
                 <el-col v-if="nodeInfo.type === 'Excel'" :span="12">
                   <BaseInfoItem label="文件">
                     <ExcelInfo :name="nodeInfo.fileName" :size="nodeInfo.size"></ExcelInfo>

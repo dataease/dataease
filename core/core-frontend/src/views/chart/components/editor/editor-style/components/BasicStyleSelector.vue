@@ -251,7 +251,6 @@ init()
         :effect="props.themes"
         v-model.number="state.basicStyleForm.tableColumnWidth"
         :min="10"
-        :max="500"
         controls-position="right"
         @change="changeBasicStyle()"
       />

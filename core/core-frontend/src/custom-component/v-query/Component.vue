@@ -162,6 +162,7 @@ const infoFormat = (obj: ComponentInfo) => {
   const base = {
     id: guid(),
     name,
+    showError: true,
     field: {
       id,
       type,
@@ -259,7 +260,7 @@ const resetData = () => {
 
 const clearData = () => {
   ;(list.value || []).reduce((pre, next) => {
-    next.selectValue = next.multiple ? [] : ''
+    next.selectValue = next.multiple || +next.displayType === 7 ? [] : undefined
     const keyList = Object.entries(next.checkedFieldsMap)
       .filter(ele => next.checkedFields.includes(ele[0]))
       .filter(ele => !!ele[1])

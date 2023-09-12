@@ -118,7 +118,7 @@ const handleNodeClick = (data: Node) => {
 
 watch(filterText, val => {
   if (activeStep.value === 1) {
-    dsTree.value.filter(val)
+    dsTree.value.filter(val.toLocaleLowerCase())
   }
 })
 
@@ -524,7 +524,7 @@ defineExpose({
         <div class="editor-content" :class="(activeStep === 0 || editDs) && 'type-title'">
           <ds-type-list
             v-show="activeStep === 0"
-            :filter-text="filterText"
+            :filter-text="filterText.toLocaleLowerCase()"
             @select-ds-type="selectDsType"
             :current-type="currentType"
             :latest-use-types="latestUseTypes"

@@ -85,14 +85,11 @@ const handleValueChange = () => {
   config.value.defaultValue = value
 }
 
-watch(
-  () => config.value.displayType,
-  () => {
-    if (!props.isConfig) return
-    config.value.defaultValue = config.value.multiple ? [] : ''
-    selectValue.value = config.value.multiple ? [] : ''
-  }
-)
+const displayTypeChange = () => {
+  if (!props.isConfig) return
+  config.value.defaultValue = config.value.multiple ? [] : ''
+  selectValue.value = config.value.multiple ? [] : ''
+}
 
 const handleFieldIdChange = (val: string[]) => {
   loading.value = true
@@ -106,9 +103,15 @@ const handleFieldIdChange = (val: string[]) => {
       })
     })
     .finally(() => {
-      selectValue.value = Array.isArray(selectValue.value)
-        ? [...selectValue.value]
-        : selectValue.value
+      if (config.value.defaultValueCheck) {
+        selectValue.value = Array.isArray(config.value.defaultValue)
+          ? [...config.value.defaultValue]
+          : config.value.defaultValue
+      } else {
+        selectValue.value = Array.isArray(selectValue.value)
+          ? [...selectValue.value]
+          : selectValue.value
+      }
       loading.value = false
     })
 }
@@ -264,6 +267,10 @@ const selectStyle = computed(() => {
 
 onBeforeMount(() => {
   init()
+})
+
+defineExpose({
+  displayTypeChange
 })
 </script>
 
