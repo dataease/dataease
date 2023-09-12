@@ -346,8 +346,13 @@ onMounted(() => {
           <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
           <div class="icon-more" v-if="data.weight >= 7 && showPosition === 'preview'">
             <span v-on:click.stop>
-              <el-icon v-if="data.leaf" class="hover-icon" @click="resourceEdit(data.id)">
-                <Icon name="edit-in"></Icon>
+              <el-icon
+                style="font-size: 16px"
+                v-if="data.leaf"
+                class="hover-icon"
+                @click="resourceEdit(data.id)"
+              >
+                <Icon name="icon_edit_outlined"></Icon>
               </el-icon>
             </span>
             <handle-more

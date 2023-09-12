@@ -765,6 +765,11 @@ const filterNode = (value: string, data: BusiTreeNode) => {
   }
   .icon-more {
     margin-left: auto;
+    visibility: hidden;
+  }
+
+  &:hover .icon-more {
+    visibility: visible;
   }
 }
 </style>

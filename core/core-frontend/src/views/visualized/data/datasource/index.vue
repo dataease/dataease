@@ -1454,6 +1454,11 @@ const defaultProps = {
 
   .icon-more {
     margin-left: auto;
+    visibility: hidden;
+  }
+
+  &:hover .icon-more {
+    visibility: visible;
   }
 }
 </style>

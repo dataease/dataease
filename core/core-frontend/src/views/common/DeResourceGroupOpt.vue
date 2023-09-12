@@ -259,9 +259,10 @@ const emits = defineEmits(['finish'])
 <template>
   <el-dialog
     v-loading="loading"
+    class="create-dialog"
     :title="dialogTitle"
     v-model="resourceDialogShow"
-    width="600px"
+    :width="cmd === 'move' ? '600px' : '420px'"
     :before-close="resetForm"
   >
     <el-form
