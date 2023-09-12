@@ -274,7 +274,7 @@ const emits = defineEmits(['finish'])
     :title="dialogTitle"
     v-model="createDataset"
     class="create-dialog"
-    width="420px"
+    :width="cmd === 'move' ? '600px' : '420px'"
     :before-close="resetForm"
   >
     <el-form

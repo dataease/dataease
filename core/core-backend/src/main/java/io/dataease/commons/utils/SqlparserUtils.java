@@ -157,7 +157,7 @@ public class SqlparserUtils {
         if (sqlVariableDetails.getOperator().equals("in")) {
             return "('" + String.join("','", sqlVariableDetails.getValue()) + "')";
         } else if (sqlVariableDetails.getOperator().equals("between")) {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(sqlVariableDetails.getType().size() > 1 ? (String)sqlVariableDetails.getType().get(1) : "YYYY");
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(sqlVariableDetails.getType().size() > 1 ? (String)sqlVariableDetails.getType().get(1).replace("DD", "dd") : "YYYY");
             return simpleDateFormat.format(new Date(Long.parseLong((String)sqlVariableDetails.getValue().get(0))));
         } else {
             return (String)sqlVariableDetails.getValue().get(0);

@@ -227,6 +227,8 @@ fillCardInfo()
     width: 360px;
     .main-color {
       background: #3370ff;
+      width: 32px;
+      height: 32px;
     }
     .user-info {
       padding: 24px 16px 16px 16px;

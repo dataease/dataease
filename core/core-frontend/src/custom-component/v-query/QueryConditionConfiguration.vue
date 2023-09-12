@@ -934,6 +934,7 @@ defineExpose({
         font-style: normal;
         font-weight: 500;
         line-height: 22px;
+        margin-bottom: 8px;
       }
 
       .select-all {
