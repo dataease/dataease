@@ -108,8 +108,9 @@ const resourceFormRules = ref()
 const resource = ref()
 const resourceDialogShow = ref(false)
 const dialogTitle = ref('')
+let tData = []
 const filterMethod = value => {
-  state.tData = [...state.tData].filter(item => item.name.includes(value))
+  state.tData = [...tData].filter(item => item.name.includes(value))
 }
 const resetForm = () => {
   resource.value.clearValidate()
@@ -160,6 +161,7 @@ const optInit = (type, data: BusiTreeNode, exec, parentSelect = false) => {
     if (state.tData.length && state.tData[0].name === 'root' && state.tData[0].id === '0') {
       state.tData[0].name = curCanvasType.value === 'dataV' ? '数据大屏' : '仪表板'
     }
+    tData = [...state.tData]
     if (['newLeaf', 'newFolder'].includes(exec)) {
       resourceForm.pid = data.id as string
       pid.value = data.id
