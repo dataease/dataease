@@ -22,7 +22,7 @@ export class Radar extends G2PlotChartView<RadarOptions, G2Radar> {
   ]
   propertyInner: EditorPropertyInner = {
     'basic-style-selector': ['colors', 'alpha', 'radarShape'],
-    'label-selector': ['fontSize', 'color', 'vPosition'],
+    'label-selector': ['fontSize', 'color'],
     'tooltip-selector': ['color', 'fontSize', 'backgroundColor'],
     'misc-style-selector': ['showName', 'color', 'fontSize', 'axisColor'],
     'title-selector': [
