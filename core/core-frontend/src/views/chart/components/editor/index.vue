@@ -1479,7 +1479,9 @@ const autoInsert = element => {
                 :themes="themes"
               />
               <el-icon
-                :style="{ color: '#a6a6a6', cursor: 'pointer', marginLeft: '6px' }"
+                class="field-search-icon-btn"
+                :class="{ dark: themes === 'dark' }"
+                style="margin-left: 6px"
                 @click="editDs"
                 v-if="curDatasetWeight >= 7"
               >
@@ -2299,15 +2301,14 @@ span {
     &.dark {
       color: #ebebeb;
     }
+  }
+  .field-search-icon-btn {
+    font-size: 16px;
+    color: #646a73;
+    cursor: pointer;
 
-    .field-search-icon-btn {
-      font-size: 16px;
-      color: #646a73;
-      cursor: pointer;
-
-      &.dark {
-        color: #a6a6a6;
-      }
+    &.dark {
+      color: #a6a6a6;
     }
   }
 
