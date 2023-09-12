@@ -5,7 +5,7 @@ const { t } = useI18n()
 
 const guid = () => {
   const snowflake = new SnowflakeId()
-  return snowflake.generate()
+  return snowflake.generate(Date.now())
 }
 
 const timestampFormatDate = (timestamp, showMs?: boolean) => {

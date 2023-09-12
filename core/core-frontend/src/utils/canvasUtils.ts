@@ -191,15 +191,15 @@ export function canvasChangeAdaptor(component, matrixBase, usePointShadow = fals
   )
   const componentWidth = targetDomComponent['offsetWidth']
   const componentHeight = targetDomComponent['offsetHeight']
-  component.sizeX = Math.floor(componentWidth / matrixBase.baseWidth) + 1
-  component.sizeY = Math.floor(componentHeight / matrixBase.baseHeight) + 1
+  component.sizeX = Math.round(componentWidth / matrixBase.baseWidth)
+  component.sizeY = Math.round(componentHeight / matrixBase.baseHeight)
   component.style.width = componentWidth
   component.style.height = componentHeight
   if (usePointShadow) {
     const componentLeft = targetDomComponent['offsetLeft']
     const componentTop = targetDomComponent['offsetTop']
-    component.x = Math.floor(componentLeft / matrixBase.baseWidth) + 1
-    component.y = Math.floor(componentTop / matrixBase.baseHeight) + 1
+    component.x = Math.round(componentLeft / matrixBase.baseWidth)
+    component.y = Math.round(componentTop / matrixBase.baseHeight)
     component.style.left = componentLeft
     component.style.height = componentTop
   }
