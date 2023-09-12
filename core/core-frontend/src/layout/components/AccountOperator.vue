@@ -7,12 +7,10 @@ import { logoutHandler } from '@/utils/logout'
 import { XpackComponent } from '@/components/plugin'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useEmitt } from '@/hooks/web/useEmitt'
-import router from '@/router'
+import AboutPage from '@/views/about/index.vue'
 const userStore = useUserStoreWithOut()
 const { t } = useI18n()
 const dropLinkList = ref([])
-
-// dropLinkList.value.push(aboutLink)
 
 const logout = async () => {
   await logoutApi()
@@ -24,11 +22,7 @@ const ucenterLoaded = items => {
 }
 
 const toAbout = () => {
-  if (router.currentRoute.value.fullPath === '/about/index') {
-    useEmitt().emitter.emit('open-about-dialog')
-  } else {
-    router.push('/about/index')
-  }
+  useEmitt().emitter.emit('open-about-dialog')
 }
 
 const name = computed(() => userStore.getName)
@@ -63,6 +57,7 @@ const name = computed(() => userStore.getName)
       </el-dropdown-menu>
     </template>
   </el-dropdown>
+  <AboutPage />
   <XpackComponent jsname="dWNlbnRlci1oYW5kbGVy" @loaded="ucenterLoaded" />
 </template>
 

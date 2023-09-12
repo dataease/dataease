@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, toRaw, toRefs } from 'vue'
+import { computed, onBeforeUnmount, onMounted, reactive, ref, shallowRef, toRaw, toRefs } from 'vue'
 import { getData } from '@/api/chart'
 import { ChartLibraryType } from '@/views/chart/components/js/panel/types'
 import { G2PlotChartView } from '@/views/chart/components/js/panel/types/impl/g2plot'
@@ -8,7 +8,7 @@ import chartViewManager from '@/views/chart/components/js/panel'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import ViewTrackBar from '@/components/visualization/ViewTrackBar.vue'
 import { storeToRefs } from 'pinia'
-import { getGeoJsonFile, parseJson } from '@/views/chart/components/js/util'
+import { parseJson } from '@/views/chart/components/js/util'
 import { debounce } from 'lodash-es'
 import ChartError from '@/views/chart/components/views/components/ChartError.vue'
 
@@ -50,6 +50,9 @@ const state = reactive({
   loading: false,
   data: { fields: [] } // 图表数据
 })
+let chartData = shallowRef<Partial<Chart['data']>>({
+  fields: []
+})
 
 const containerId = 'container-' + showPosition.value + '-' + view.value.id
 const viewTrack = ref(null)
@@ -65,7 +68,7 @@ const calcData = (view, callback) => {
           isError.value = true
           errMsg.value = res.msg
         } else {
-          state.data = res?.data
+          chartData.value = res?.data as Partial<Chart['data']>
           emit('onDrillFilters', res?.drillFilters)
           if (!res?.drillFilters?.length) {
             dynamicAreaId.value = ''
@@ -84,7 +87,7 @@ const renderChart = async view => {
     return
   }
   // view 为引用对象 需要存库 view.data 直接赋值会导致保存不必要的数据
-  const chart = toRaw({ ...view, data: toRaw(state.data) })
+  const chart = toRaw({ ...view, data: chartData.value })
   const chartView = chartViewManager.getChartView(view.render, view.type)
   switch (chartView.library) {
     case ChartLibraryType.L7_PLOT:
@@ -195,7 +198,7 @@ const trackMenu = computed(() => {
   const trackMenuInfo = []
   let linkageCount = 0
   let jumpCount = 0
-  state.data?.fields?.forEach(item => {
+  chartData.value?.fields?.forEach(item => {
     const sourceInfo = view.value.id + '#' + item.id
     if (nowPanelTrackInfo.value[sourceInfo]) {
       linkageCount++
@@ -204,8 +207,8 @@ const trackMenu = computed(() => {
       jumpCount++
     }
   })
-  jumpCount && trackMenuInfo.push('jump')
-  linkageCount && trackMenuInfo.push('linkage')
+  jumpCount && view.value?.jumpActive && trackMenuInfo.push('jump')
+  linkageCount && view.value?.linkageActive && trackMenuInfo.push('linkage')
   view.value.drillFields.length && trackMenuInfo.push('drill')
   return trackMenuInfo
 })

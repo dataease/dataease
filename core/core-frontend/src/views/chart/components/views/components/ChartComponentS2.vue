@@ -7,6 +7,7 @@ import {
   PropType,
   reactive,
   ref,
+  shallowRef,
   ShallowRef,
   toRaw,
   toRefs
@@ -66,6 +67,10 @@ const state = reactive({
   totalItems: 0,
   showPage: false
 })
+// 图表数据不用全响应式
+let chartData = shallowRef<Partial<Chart['data']>>({
+  fields: []
+})
 
 const containerId = 'container-' + showPosition.value + '-' + view.value.id
 const viewTrack = ref(null)
@@ -80,7 +85,7 @@ const calcData = (view: Chart, callback, resetPageInfo = true) => {
           isError.value = true
           errMsg.value = res.msg
         } else {
-          state.data = res?.data
+          chartData.value = res?.data as Partial<Chart['data']>
           state.totalItems = res?.totalItems
           emit('onDrillFilters', res?.drillFilters)
           renderChart(res as unknown as Chart, resetPageInfo)
@@ -98,7 +103,7 @@ const renderChart = (view: Chart, resetPageInfo: boolean) => {
     return
   }
   // view 为引用对象 需要存库 view.data 直接赋值会导致保存不必要的数据
-  const chart = { ...view, data: toRaw(state.data) } as ChartObj
+  const chart = { ...view, data: chartData.value } as ChartObj
   setupPage(chart, resetPageInfo)
   myChart?.destroy()
   const chartView = chartViewManager.getChartView(view.render, view.type) as S2ChartView<any>
@@ -204,7 +209,7 @@ const trackMenu = computed(() => {
   const trackMenuInfo = []
   let linkageCount = 0
   let jumpCount = 0
-  state.data?.fields?.forEach(item => {
+  chartData.value?.fields?.forEach(item => {
     const sourceInfo = view.value.id + '#' + item.id
     if (nowPanelTrackInfo.value[sourceInfo]) {
       linkageCount++
@@ -213,8 +218,8 @@ const trackMenu = computed(() => {
       jumpCount++
     }
   })
-  jumpCount && trackMenuInfo.push('jump')
-  linkageCount && trackMenuInfo.push('linkage')
+  jumpCount && view.value?.jumpActive && trackMenuInfo.push('jump')
+  linkageCount && view.value?.linkageActive && trackMenuInfo.push('linkage')
   view.value.drillFields.length && trackMenuInfo.push('drill')
   return trackMenuInfo
 })
