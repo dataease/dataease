@@ -1,5 +1,5 @@
 <template>
-  <div class="rich-main-class" :class="{ 'edit-model': canEdit }" @dblclick="setEdit">
+  <div class="rich-main-class dark-theme" :class="{ 'edit-model': canEdit,'dark-theme':themes==='dark' }" @dblclick="setEdit">
     <Editor
       v-if="editShow"
       :id="tinymceId"
@@ -31,7 +31,7 @@ import 'tinymce/plugins/contextmenu' // contextmenu
 import 'tinymce/plugins/directionality'
 import 'tinymce/plugins/nonbreaking'
 import 'tinymce/plugins/pagebreak'
-import { computed, nextTick, ref, toRefs, watch } from 'vue'
+import { computed, nextTick, PropType, ref, toRefs, watch } from 'vue'
 const props = defineProps({
   terminal: {
     type: String,
@@ -58,6 +58,10 @@ const props = defineProps({
   disabled: {
     type: Boolean,
     default: false
+  },
+  themes: {
+    type: String as PropType<EditorTheme>,
+    default: 'dark'
   }
 })
 
@@ -89,7 +93,7 @@ const init = ref({
     '微软雅黑=Microsoft YaHei;宋体=SimSun;黑体=SimHei;仿宋=FangSong;华文黑体=STHeiti;华文楷体=STKaiti;华文宋体=STSong;华文仿宋=STFangsong;Andale Mono=andale mono,times;Arial=arial,helvetica,sans-serif;Arial Black=arial black,avant garde;Book Antiqua=book antiqua,palatino;Comic Sans MS=comic sans ms,sans-serif;Courier New=courier new,courier;Georgia=georgia,palatino;Helvetica=helvetica;Impact=impact,chicago;Symbol=symbol;Tahoma=tahoma,arial,helvetica,sans-serif;Terminal=terminal,monaco;Times New Roman=times new roman,times;Trebuchet MS=trebuchet ms,geneva;Verdana=verdana,geneva;Webdings=webdings;Wingdings=wingdings',
   fontsize_formats: '12px 14px 16px 18px 20px 22px 24px 28px 32px 36px 48px 56px 72px', // 字体大小
   menubar: false,
-  placeholder: '双击输入文字',
+  placeholder: '双击锁定富文本',
   inline: true, // 开启内联模式
   branding: false
 })
@@ -145,6 +149,7 @@ const reShow = () => {
 }
 
 .rich-main-class {
+  color: #00feff;
   width: 100%;
   height: 100%;
   overflow-y: auto !important;
