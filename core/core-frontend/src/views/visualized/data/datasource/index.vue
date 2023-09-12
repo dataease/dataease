@@ -775,7 +775,7 @@ const defaultProps = {
                   <template #trigger>
                     <el-button type="primary">
                       <template #icon>
-                        <Icon name="icon_edit_outlined"></Icon>
+                        <Icon name="icon_new-item_outlined"></Icon>
                       </template>
                       追加数据
                     </el-button>

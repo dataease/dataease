@@ -13,11 +13,18 @@ public class Db2 extends DatasourceConfiguration {
 
     public String getJdbc() {
         if(StringUtils.isEmpty(extraParams.trim())){
-            return "jdbc:db2://HOSTNAME:PORT/DATABASE:currentSchema=SCHEMA;"
-                    .replace("HOSTNAME", getHost().trim())
-                    .replace("PORT", getPort().toString().trim())
-                    .replace("DATABASE", getDataBase().trim())
-                    .replace("SCHEMA",getSchema().trim());
+            if (StringUtils.isEmpty(getSchema())) {
+                return "jdbc:db2://HOSTNAME:PORT/DATABASE"
+                        .replace("HOSTNAME", getHost().trim())
+                        .replace("PORT", getPort().toString().trim())
+                        .replace("DATABASE", getDataBase().trim());
+            } else {
+                return "jdbc:db2://HOSTNAME:PORT/DATABASE:currentSchema=SCHEMA;"
+                        .replace("HOSTNAME", getHost().trim())
+                        .replace("PORT", getPort().toString().trim())
+                        .replace("DATABASE", getDataBase().trim())
+                        .replace("SCHEMA",getSchema().trim());
+            }
         }else {
             return "jdbc:db2://HOSTNAME:PORT/DATABASE:EXTRA_PARAMS"
                     .replace("HOSTNAME", getHost().trim())
