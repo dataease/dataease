@@ -50,6 +50,10 @@ export const dvMainStore = defineStore('dataVisualization', {
       },
       // 视图信息
       canvasViewInfo: {},
+      // 视图展示数据信息
+      canvasViewDataInfo: {},
+      // 视图最新请求信息
+      lastViewRequestInfo: {},
       // 仪表板基础矩阵信息
       bashMatrixInfo: {
         baseWidth: 0,
@@ -137,7 +141,6 @@ export const dvMainStore = defineStore('dataVisualization', {
       previewVisible: false,
       previewComponentData: [],
       currentCanvasNewId: [],
-      lastViewRequestInfo: {},
       // 初始状态下当前默认的系统色 dvInfo.type ==== 'dashboard'?'light':'dark'
       curOriginThemes: 'light',
       // 基础网格信息
@@ -638,6 +641,21 @@ export const dvMainStore = defineStore('dataVisualization', {
         selfWatermarkStatus: null,
         type: null
       }
+    },
+    setViewDataDetails(viewId, dataInfo) {
+      this.canvasViewDataInfo[viewId] = dataInfo
+    },
+    getViewDataDetails(viewId) {
+      return this.canvasViewDataInfo[viewId]
+    },
+    setLastViewRequestInfo(viewId, viewRequestInfo) {
+      this.lastViewRequestInfo[viewId] = viewRequestInfo.requestInfo
+    },
+    getLastViewRequestInfo(viewId) {
+      return this.lastViewRequestInfo[viewId]
+    },
+    getViewDetails(viewId) {
+      return this.canvasViewInfo[viewId]
     }
   }
 })

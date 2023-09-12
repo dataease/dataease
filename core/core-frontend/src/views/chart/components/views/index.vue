@@ -293,6 +293,7 @@ const queryData = (firstLoad = false) => {
 const calcData = params => {
   loading.value = true
   nextTick(() => {
+    dvMainStore.setLastViewRequestInfo(params.id, params.chartExtRequest)
     chartComponent?.value?.calcData?.(params, () => {
       loading.value = false
     })

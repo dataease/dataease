@@ -87,6 +87,7 @@ const calcData = (view: Chart, callback, resetPageInfo = true) => {
         } else {
           chartData.value = res?.data as Partial<Chart['data']>
           state.totalItems = res?.totalItems
+          dvMainStore.setViewDataDetails(view.id, chartData.value)
           emit('onDrillFilters', res?.drillFilters)
           renderChart(res as unknown as Chart, resetPageInfo)
         }
@@ -98,15 +99,22 @@ const calcData = (view: Chart, callback, resetPageInfo = true) => {
 }
 // 图表对象不用响应式
 let myChart = null
-const renderChart = (view: Chart, resetPageInfo: boolean) => {
-  if (!view) {
+const renderChartFromDialog = (viewInfo: Chart, chartDataInfo) => {
+  chartData.value = chartDataInfo
+  renderChart(viewInfo, false)
+}
+const renderChart = (viewInfo: Chart, resetPageInfo: boolean) => {
+  if (!viewInfo) {
     return
   }
   // view 为引用对象 需要存库 view.data 直接赋值会导致保存不必要的数据
-  const chart = { ...view, data: chartData.value } as ChartObj
+  const chart = { ...viewInfo, data: chartData.value } as ChartObj
   setupPage(chart, resetPageInfo)
   myChart?.destroy()
-  const chartView = chartViewManager.getChartView(view.render, view.type) as S2ChartView<any>
+  const chartView = chartViewManager.getChartView(
+    viewInfo.render,
+    viewInfo.type
+  ) as S2ChartView<any>
   myChart = chartView.drawChart({
     container: containerId,
     chart: toRaw(chart),
@@ -226,7 +234,8 @@ const trackMenu = computed(() => {
 
 defineExpose({
   calcData,
-  renderChart
+  renderChart,
+  renderChartFromDialog
 })
 
 let timer

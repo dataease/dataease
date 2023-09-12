@@ -253,8 +253,8 @@ const handleRotate = () => {
   //doNothing
 }
 
-const userViewEnlargeOpen = () => {
-  emit('userViewEnlargeOpen')
+const userViewEnlargeOpen = opt => {
+  emit('userViewEnlargeOpen', opt)
 }
 
 const getPointStyle = point => {
