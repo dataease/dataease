@@ -20,7 +20,6 @@ import io.dataease.commons.utils.Pager;
 import io.dataease.controller.sys.response.DeptNodeResponse;
 import io.dataease.dto.SysLogDTO;
 import io.dataease.listener.util.CacheUtils;
-import io.dataease.plugins.common.entity.XpackGridRequest;
 import io.dataease.plugins.config.SpringContextUtil;
 import io.dataease.plugins.xpack.dept.dto.request.*;
 import io.dataease.plugins.xpack.dept.dto.response.DeptUserItemDTO;
@@ -33,7 +32,6 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
