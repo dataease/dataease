@@ -2131,13 +2131,13 @@ span {
 
     :deep(.ed-scrollbar) {
       &.has-footer {
-        height: calc(100% - 80px);
+        height: calc(100% - 81px);
       }
     }
 
     :deep(.ed-footer) {
       padding: 0;
-      height: 80px;
+      height: 81px;
     }
   }
 
