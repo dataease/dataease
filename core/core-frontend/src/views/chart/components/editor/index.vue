@@ -897,440 +897,440 @@ const autoInsert = element => {
             >
               <el-tab-pane name="data" :label="t('chart.chart_data')" class="padding-tab">
                 <el-container direction="vertical">
-                  <el-scrollbar class="has-footer">
-                    <div class="drag_main_area attr-style theme-border-class">
-                      <el-row style="height: 100%">
-                        <div style="height: calc(100% - 80px); overflow: auto">
-                          <el-row
-                            v-if="props.themes !== 'dark' && view.type !== 'rich-text'"
-                            class="drag-data padding-lr"
+                  <el-scrollbar class="has-footer drag_main_area attr-style theme-border-class">
+                    <el-row
+                      v-if="props.themes !== 'dark' && view.type !== 'rich-text'"
+                      class="drag-data padding-lr"
+                    >
+                      <span class="data-area-label">{{ t('chart.switch_chart') }}</span>
+                      <el-popover
+                        offset="4"
+                        placement="bottom-end"
+                        width="434"
+                        trigger="click"
+                        :append-to-body="true"
+                        :popper-class="'chart-type-style-' + themes"
+                        :persistent="false"
+                      >
+                        <template #reference>
+                          <el-select
+                            popper-class="chart-type-hide-options"
+                            class="chart-type-select"
+                            v-model="state.useless"
+                            size="small"
                           >
-                            <span class="data-area-label">{{ t('chart.switch_chart') }}</span>
+                            <template #prefix>
+                              <Icon
+                                class-name="chart-type-select-icon"
+                                :name="state.chartTypeOptions[0].icon"
+                              />
+                            </template>
+                            <template #default>
+                              <el-option
+                                v-for="item in state.chartTypeOptions"
+                                :key="item.value"
+                                :label="item.title"
+                                :value="item.value"
+                              />
+                            </template>
+                          </el-select>
+                        </template>
+                        <template #default>
+                          <chart-type
+                            :themes="themes"
+                            :type="view.type"
+                            @onTypeChange="onTypeChange"
+                          />
+                        </template>
+                      </el-popover>
+                    </el-row>
+                    <!--area-->
+                    <el-row class="padding-lr drag-data" v-show="showAxis('area')">
+                      <span class="data-area-label">
+                        {{ t('chart.area') }}
+                      </span>
+                      <div class="area-tree-select">
+                        <el-tree-select
+                          v-model="state.areaId"
+                          :effect="themes"
+                          :data="state.worldTree"
+                          :props="treeProps"
+                          :filterNodeMethod="filterNode"
+                          :current-node-key="state.areaId"
+                          @node-click="onAreaChange"
+                          empty-text="请选择区域"
+                          node-key="id"
+                          check-strictly
+                          filterable
+                          :teleported="false"
+                        />
+                      </div>
+                    </el-row>
+
+                    <!--xAxis-->
+                    <el-row class="padding-lr drag-data" v-if="showAxis('xAxis')">
+                      <span class="data-area-label">
+                        {{ chartViewInstance.axisConfig.xAxis.name }}
+                      </span>
+                      <draggable
+                        :list="view.xAxis"
+                        :move="onMove"
+                        item-key="id"
+                        group="drag"
+                        animation="300"
+                        class="drag-block-style"
+                        :class="{ dark: themes === 'dark' }"
+                        @add="addXaxis"
+                      >
+                        <template #item="{ element, index }">
+                          <dimension-item
+                            :dimension-data="state.dimension"
+                            :quota-data="state.quota"
+                            :chart="view"
+                            :item="element"
+                            :index="index"
+                            :themes="props.themes"
+                            type="dimension"
+                            @onDimensionItemChange="dimensionItemChange"
+                            @onDimensionItemRemove="dimensionItemRemove"
+                            @onNameEdit="showRename"
+                            @onCustomSort="onCustomSort"
+                          />
+                        </template>
+                      </draggable>
+                      <drag-placeholder :drag-list="view.xAxis" />
+                    </el-row>
+
+                    <!--xAxisExt-->
+                    <el-row class="padding-lr drag-data" v-if="showAxis('xAxisExt')">
+                      <span class="data-area-label">
+                        {{ chartViewInstance.axisConfig.xAxisExt.name }}
+                      </span>
+                      <draggable
+                        :list="view.xAxisExt"
+                        :move="onMove"
+                        item-key="id"
+                        group="drag"
+                        animation="300"
+                        class="drag-block-style"
+                        :class="{ dark: themes === 'dark' }"
+                        @add="addXaxisExt"
+                      >
+                        <template #item="{ element, index }">
+                          <dimension-item
+                            :dimension-data="state.dimension"
+                            :quota-data="state.quota"
+                            :chart="view"
+                            :item="element"
+                            :index="index"
+                            :themes="props.themes"
+                            type="dimensionExt"
+                            @onDimensionItemChange="dimensionItemChange"
+                            @onDimensionItemRemove="dimensionItemRemove"
+                            @onNameEdit="showRename"
+                            @onCustomSort="onExtCustomSort"
+                          />
+                        </template>
+                      </draggable>
+                      <drag-placeholder :drag-list="view.xAxisExt" />
+                    </el-row>
+
+                    <!--extStack-->
+                    <el-row class="padding-lr drag-data" v-if="showAxis('extStack')">
+                      <span class="data-area-label">
+                        {{ chartViewInstance.axisConfig.extStack.name }}
+                      </span>
+                      <draggable
+                        :list="view.extStack"
+                        :move="onMove"
+                        item-key="id"
+                        group="drag"
+                        animation="300"
+                        class="drag-block-style"
+                        :class="{ dark: themes === 'dark' }"
+                        @add="addExtStack"
+                      >
+                        <template #item="{ element, index }">
+                          <dimension-item
+                            :dimension-data="state.dimension"
+                            :quota-data="state.quota"
+                            :chart="view"
+                            :item="element"
+                            :index="index"
+                            :themes="props.themes"
+                            type="dimensionStack"
+                            @onDimensionItemChange="dimensionItemChange"
+                            @onDimensionItemRemove="dimensionItemRemove"
+                            @onNameEdit="showRename"
+                            @onCustomSort="onStackCustomSort"
+                          />
+                        </template>
+                      </draggable>
+                      <drag-placeholder :drag-list="view.extStack" />
+                    </el-row>
+
+                    <!--yAxis-->
+                    <el-row class="padding-lr drag-data" v-if="showAxis('yAxis')">
+                      <span class="data-area-label">
+                        {{ chartViewInstance.axisConfig.yAxis.name }}
+                      </span>
+                      <draggable
+                        :list="view.yAxis"
+                        :move="onMove"
+                        item-key="id"
+                        group="drag"
+                        animation="300"
+                        class="drag-block-style"
+                        :class="{ dark: themes === 'dark' }"
+                        @add="addYaxis"
+                      >
+                        <template #item="{ element, index }">
+                          <quota-item
+                            :dimension-data="state.dimension"
+                            :quota-data="state.quota"
+                            :chart="view"
+                            :item="element"
+                            :index="index"
+                            type="quota"
+                            :themes="props.themes"
+                            @onQuotaItemChange="quotaItemChange"
+                            @onQuotaItemRemove="quotaItemRemove"
+                            @onNameEdit="showRename"
+                            @editItemFilter="showQuotaEditFilter"
+                            @editItemCompare="showQuotaEditCompare"
+                            @valueFormatter="valueFormatter"
+                          />
+                        </template>
+                      </draggable>
+                      <drag-placeholder :drag-list="view.yAxis" />
+                    </el-row>
+                    <!-- extBubble -->
+                    <el-row class="padding-lr drag-data" v-if="showAxis('extBubble')">
+                      <span class="data-area-label">
+                        {{ chartViewInstance.axisConfig.extBubble.name }}
+                      </span>
+                      <draggable
+                        :list="view.extBubble"
+                        :move="onMove"
+                        item-key="id"
+                        group="drag"
+                        animation="300"
+                        class="drag-block-style"
+                        :class="{ dark: themes === 'dark' }"
+                        @add="addExtBubble"
+                      >
+                        <template #item="{ element, index }">
+                          <quota-item
+                            :dimension-data="state.dimension"
+                            :quota-data="state.quota"
+                            :chart="view"
+                            :item="element"
+                            :index="index"
+                            type="extBubble"
+                            :themes="props.themes"
+                            @onQuotaItemChange="quotaItemChange"
+                            @onQuotaItemRemove="quotaItemRemove"
+                            @onNameEdit="showRename"
+                            @editItemFilter="showQuotaEditFilter"
+                            @editItemCompare="showQuotaEditCompare"
+                            @valueFormatter="valueFormatter"
+                          />
+                        </template>
+                      </draggable>
+                      <drag-placeholder :drag-list="view.extBubble" />
+                    </el-row>
+
+                    <!--drill-->
+                    <el-row class="padding-lr drag-data" v-if="showAxis('drill')">
+                      <span class="data-area-label">
+                        <span>{{ t('chart.drill') }}</span>
+                        /
+                        <span>{{ t('chart.dimension') }}</span>
+                        <el-tooltip class="item" :effect="themes" placement="bottom">
+                          <template #content>
+                            <div>
+                              {{ t('chart.drill_dimension_tip') }}
+                            </div>
+                          </template>
+                          <i
+                            class="el-icon-info"
+                            :style="{ cursor: 'pointer', color: '#606266' }"
+                          />
+                        </el-tooltip>
+                      </span>
+                      <draggable
+                        :list="view.drillFields"
+                        item-key="id"
+                        group="drag"
+                        animation="300"
+                        :move="onMove"
+                        class="drag-block-style"
+                        :class="{ dark: themes === 'dark' }"
+                        @add="addDrill"
+                        @update="calcData(view, true)"
+                      >
+                        <template #item="{ element, index }">
+                          <drill-item
+                            :key="element.id"
+                            :index="index"
+                            :item="element"
+                            :dimension-data="state.dimension"
+                            :quota-data="state.quota"
+                            :themes="props.themes"
+                            @onDimensionItemChange="drillItemChange"
+                            @onDimensionItemRemove="drillItemRemove"
+                          />
+                        </template>
+                      </draggable>
+                      <drag-placeholder :drag-list="view.drillFields" />
+                    </el-row>
+
+                    <!--filter-->
+                    <el-row class="padding-lr drag-data no-top-border no-top-padding">
+                      <span>{{ t('chart.result_filter') }}</span>
+                      <draggable
+                        :list="view.customFilter"
+                        :move="onMove"
+                        item-key="id"
+                        group="drag"
+                        animation="300"
+                        class="drag-block-style"
+                        :class="{ dark: themes === 'dark' }"
+                        @add="addCustomFilter"
+                      >
+                        <template #item="{ element, index }">
+                          <filter-item
+                            :dimension-data="state.dimension"
+                            :quota-data="state.quota"
+                            :item="element"
+                            :index="index"
+                            :themes="props.themes"
+                            @onFilterItemRemove="filterItemRemove"
+                            @editItemFilter="showEditFilter"
+                          />
+                        </template>
+                      </draggable>
+                      <drag-placeholder :drag-list="view.customFilter" />
+                    </el-row>
+
+                    <!--extLabel等-->
+                    <el-collapse
+                      v-if="showAxis('extLabel') || showAxis('extTooltip')"
+                      v-model="state.extData"
+                      class="style-collapse data-tab-collapse"
+                    >
+                      <el-collapse-item
+                        :effect="themes"
+                        name="extLabel"
+                        :title="t('chart.more_settings')"
+                      >
+                        <!--extLabel-->
+                        <el-row
+                          class="padding-lr drag-data no-top-border"
+                          v-if="showAxis('extLabel')"
+                        >
+                          <span class="data-area-label">
+                            <span>{{ t('chart.label') }}</span>
                             <el-popover
-                              offset="4"
-                              placement="bottom-end"
-                              width="434"
+                              :effect="props.themes"
+                              placement="left-start"
+                              :width="400"
                               trigger="click"
-                              :append-to-body="true"
-                              :popper-class="'chart-type-style-' + themes"
-                              :persistent="false"
                             >
                               <template #reference>
-                                <el-select
-                                  popper-class="chart-type-hide-options"
-                                  class="chart-type-select"
-                                  v-model="state.useless"
+                                <el-icon class="icon-setting label-icon"><Setting /></el-icon>
+                              </template>
+                              <div @keydown.stop @keyup.stop>
+                                <el-checkbox
+                                  v-model="view.customAttr.label.show"
+                                  :label="t('commons.show')"
                                   size="small"
-                                >
-                                  <template #prefix>
-                                    <Icon
-                                      class-name="chart-type-select-icon"
-                                      :name="state.chartTypeOptions[0].icon"
-                                    />
-                                  </template>
-                                  <template #default>
-                                    <el-option
-                                      v-for="item in state.chartTypeOptions"
-                                      :key="item.value"
-                                      :label="item.title"
-                                      :value="item.value"
-                                    />
-                                  </template>
-                                </el-select>
-                              </template>
-                              <template #default>
-                                <chart-type
-                                  :themes="themes"
-                                  :type="view.type"
-                                  @onTypeChange="onTypeChange"
+                                  @change="dynamicLabelShow"
                                 />
-                              </template>
+                                <label-selector
+                                  :property-inner="
+                                    chartViewInstance.propertyInner['label-selector']
+                                  "
+                                  :themes="props.themes"
+                                  class="attr-selector"
+                                  :chart="view"
+                                  @onLabelChange="onLabelChange"
+                                />
+                              </div>
                             </el-popover>
-                          </el-row>
-                          <!--area-->
-                          <el-row class="padding-lr drag-data" v-show="showAxis('area')">
-                            <span class="data-area-label">
-                              {{ t('chart.area') }}
-                            </span>
-                            <div class="area-tree-select">
-                              <el-tree-select
-                                v-model="state.areaId"
-                                :effect="themes"
-                                :data="state.worldTree"
-                                :props="treeProps"
-                                :filterNodeMethod="filterNode"
-                                :current-node-key="state.areaId"
-                                @node-click="onAreaChange"
-                                empty-text="请选择区域"
-                                node-key="id"
-                                check-strictly
-                                filterable
-                                :teleported="false"
-                              />
-                            </div>
-                          </el-row>
-
-                          <!--xAxis-->
-                          <el-row class="padding-lr drag-data" v-if="showAxis('xAxis')">
-                            <span class="data-area-label">
-                              {{ chartViewInstance.axisConfig.xAxis.name }}
-                            </span>
-                            <draggable
-                              :list="view.xAxis"
-                              :move="onMove"
-                              item-key="id"
-                              group="drag"
-                              animation="300"
-                              class="drag-block-style"
-                              :class="{ dark: themes === 'dark' }"
-                              @add="addXaxis"
-                            >
-                              <template #item="{ element, index }">
-                                <dimension-item
-                                  :dimension-data="state.dimension"
-                                  :quota-data="state.quota"
-                                  :chart="view"
-                                  :item="element"
-                                  :index="index"
-                                  :themes="props.themes"
-                                  type="dimension"
-                                  @onDimensionItemChange="dimensionItemChange"
-                                  @onDimensionItemRemove="dimensionItemRemove"
-                                  @onNameEdit="showRename"
-                                  @onCustomSort="onCustomSort"
-                                />
-                              </template>
-                            </draggable>
-                            <drag-placeholder :drag-list="view.xAxis" />
-                          </el-row>
-
-                          <!--xAxisExt-->
-                          <el-row class="padding-lr drag-data" v-if="showAxis('xAxisExt')">
-                            <span class="data-area-label">
-                              {{ chartViewInstance.axisConfig.xAxisExt.name }}
-                            </span>
-                            <draggable
-                              :list="view.xAxisExt"
-                              :move="onMove"
-                              item-key="id"
-                              group="drag"
-                              animation="300"
-                              class="drag-block-style"
-                              :class="{ dark: themes === 'dark' }"
-                              @add="addXaxisExt"
-                            >
-                              <template #item="{ element, index }">
-                                <dimension-item
-                                  :dimension-data="state.dimension"
-                                  :quota-data="state.quota"
-                                  :chart="view"
-                                  :item="element"
-                                  :index="index"
-                                  :themes="props.themes"
-                                  type="dimensionExt"
-                                  @onDimensionItemChange="dimensionItemChange"
-                                  @onDimensionItemRemove="dimensionItemRemove"
-                                  @onNameEdit="showRename"
-                                  @onCustomSort="onExtCustomSort"
-                                />
-                              </template>
-                            </draggable>
-                            <drag-placeholder :drag-list="view.xAxisExt" />
-                          </el-row>
-
-                          <!--extStack-->
-                          <el-row class="padding-lr drag-data" v-if="showAxis('extStack')">
-                            <span class="data-area-label">
-                              {{ chartViewInstance.axisConfig.extStack.name }}
-                            </span>
-                            <draggable
-                              :list="view.extStack"
-                              :move="onMove"
-                              item-key="id"
-                              group="drag"
-                              animation="300"
-                              class="drag-block-style"
-                              :class="{ dark: themes === 'dark' }"
-                              @add="addExtStack"
-                            >
-                              <template #item="{ element, index }">
-                                <dimension-item
-                                  :dimension-data="state.dimension"
-                                  :quota-data="state.quota"
-                                  :chart="view"
-                                  :item="element"
-                                  :index="index"
-                                  :themes="props.themes"
-                                  type="dimensionStack"
-                                  @onDimensionItemChange="dimensionItemChange"
-                                  @onDimensionItemRemove="dimensionItemRemove"
-                                  @onNameEdit="showRename"
-                                  @onCustomSort="onStackCustomSort"
-                                />
-                              </template>
-                            </draggable>
-                            <drag-placeholder :drag-list="view.extStack" />
-                          </el-row>
-
-                          <!--yAxis-->
-                          <el-row class="padding-lr drag-data" v-if="showAxis('yAxis')">
-                            <span class="data-area-label">
-                              {{ chartViewInstance.axisConfig.yAxis.name }}
-                            </span>
-                            <draggable
-                              :list="view.yAxis"
-                              :move="onMove"
-                              item-key="id"
-                              group="drag"
-                              animation="300"
-                              class="drag-block-style"
-                              :class="{ dark: themes === 'dark' }"
-                              @add="addYaxis"
-                            >
-                              <template #item="{ element, index }">
-                                <quota-item
-                                  :dimension-data="state.dimension"
-                                  :quota-data="state.quota"
-                                  :chart="view"
-                                  :item="element"
-                                  :index="index"
-                                  type="quota"
-                                  :themes="props.themes"
-                                  @onQuotaItemChange="quotaItemChange"
-                                  @onQuotaItemRemove="quotaItemRemove"
-                                  @onNameEdit="showRename"
-                                  @editItemFilter="showQuotaEditFilter"
-                                  @editItemCompare="showQuotaEditCompare"
-                                  @valueFormatter="valueFormatter"
-                                />
-                              </template>
-                            </draggable>
-                            <drag-placeholder :drag-list="view.yAxis" />
-                          </el-row>
-                          <!-- extBubble -->
-                          <el-row class="padding-lr drag-data" v-if="showAxis('extBubble')">
-                            <span class="data-area-label">
-                              {{ chartViewInstance.axisConfig.extBubble.name }}
-                            </span>
-                            <draggable
-                              :list="view.extBubble"
-                              :move="onMove"
-                              item-key="id"
-                              group="drag"
-                              animation="300"
-                              class="drag-block-style"
-                              :class="{ dark: themes === 'dark' }"
-                              @add="addExtBubble"
-                            >
-                              <template #item="{ element, index }">
-                                <quota-item
-                                  :dimension-data="state.dimension"
-                                  :quota-data="state.quota"
-                                  :chart="view"
-                                  :item="element"
-                                  :index="index"
-                                  type="extBubble"
-                                  :themes="props.themes"
-                                  @onQuotaItemChange="quotaItemChange"
-                                  @onQuotaItemRemove="quotaItemRemove"
-                                  @onNameEdit="showRename"
-                                  @editItemFilter="showQuotaEditFilter"
-                                  @editItemCompare="showQuotaEditCompare"
-                                  @valueFormatter="valueFormatter"
-                                />
-                              </template>
-                            </draggable>
-                            <drag-placeholder :drag-list="view.extBubble" />
-                          </el-row>
-
-                          <!--drill-->
-                          <el-row class="padding-lr drag-data" v-if="showAxis('drill')">
-                            <span class="data-area-label">
-                              <span>{{ t('chart.drill') }}</span>
-                              /
-                              <span>{{ t('chart.dimension') }}</span>
-                              <el-tooltip class="item" :effect="themes" placement="bottom">
-                                <template #content>
-                                  <div>
-                                    {{ t('chart.drill_dimension_tip') }}
-                                  </div>
-                                </template>
-                                <i
-                                  class="el-icon-info"
-                                  :style="{ cursor: 'pointer', color: '#606266' }"
-                                />
-                              </el-tooltip>
-                            </span>
-                            <draggable
-                              :list="view.drillFields"
-                              item-key="id"
-                              group="drag"
-                              animation="300"
-                              :move="onMove"
-                              class="drag-block-style"
-                              :class="{ dark: themes === 'dark' }"
-                              @add="addDrill"
-                              @update="calcData(view, true)"
-                            >
-                              <template #item="{ element, index }">
-                                <drill-item
-                                  :key="element.id"
-                                  :index="index"
-                                  :item="element"
-                                  :dimension-data="state.dimension"
-                                  :quota-data="state.quota"
-                                  :themes="props.themes"
-                                  @onDimensionItemChange="drillItemChange"
-                                  @onDimensionItemRemove="drillItemRemove"
-                                />
-                              </template>
-                            </draggable>
-                            <drag-placeholder :drag-list="view.drillFields" />
-                          </el-row>
-
-                          <!--filter-->
-                          <el-row class="padding-lr drag-data">
-                            <span>{{ t('chart.result_filter') }}</span>
-                            <draggable
-                              :list="view.customFilter"
-                              :move="onMove"
-                              item-key="id"
-                              group="drag"
-                              animation="300"
-                              class="drag-block-style"
-                              :class="{ dark: themes === 'dark' }"
-                              @add="addCustomFilter"
-                            >
-                              <template #item="{ element, index }">
-                                <filter-item
-                                  :dimension-data="state.dimension"
-                                  :quota-data="state.quota"
-                                  :item="element"
-                                  :index="index"
-                                  :themes="props.themes"
-                                  @onFilterItemRemove="filterItemRemove"
-                                  @editItemFilter="showEditFilter"
-                                />
-                              </template>
-                            </draggable>
-                            <drag-placeholder :drag-list="view.customFilter" />
-                          </el-row>
-
-                          <!--extLabel等-->
-                          <el-collapse
-                            v-if="showAxis('extLabel') || showAxis('extTooltip')"
-                            v-model="state.extData"
-                            class="style-collapse"
+                          </span>
+                          <draggable
+                            :list="view.extLabel"
+                            :move="onMove"
+                            item-key="id"
+                            group="drag"
+                            animation="300"
+                            class="drag-block-style"
+                            :class="{ dark: themes === 'dark' }"
+                            @add="addExtLabel"
                           >
-                            <el-collapse-item
-                              :effect="themes"
-                              name="extLabel"
-                              :title="t('chart.more_settings')"
-                            >
-                              <!--extLabel-->
-                              <el-row class="padding-lr drag-data" v-if="showAxis('extLabel')">
-                                <span class="data-area-label">
-                                  <span>{{ t('chart.label') }}</span>
-                                  <el-popover
-                                    :effect="props.themes"
-                                    placement="left-start"
-                                    :width="400"
-                                    trigger="click"
-                                  >
-                                    <template #reference>
-                                      <el-icon class="icon-setting label-icon"><Setting /></el-icon>
-                                    </template>
-                                    <div @keydown.stop @keyup.stop>
-                                      <el-checkbox
-                                        v-model="view.customAttr.label.show"
-                                        :label="t('commons.show')"
-                                        size="small"
-                                        @change="dynamicLabelShow"
-                                      />
-                                      <label-selector
-                                        :property-inner="
-                                          chartViewInstance.propertyInner['label-selector']
-                                        "
-                                        :themes="props.themes"
-                                        class="attr-selector"
-                                        :chart="view"
-                                        @onLabelChange="onLabelChange"
-                                      />
-                                    </div>
-                                  </el-popover>
-                                </span>
-                                <draggable
-                                  :list="view.extLabel"
-                                  :move="onMove"
-                                  item-key="id"
-                                  group="drag"
-                                  animation="300"
-                                  class="drag-block-style"
-                                  :class="{ dark: themes === 'dark' }"
-                                  @add="addExtLabel"
-                                >
-                                  <template #item="{ element, index }">
-                                    <quota-item
-                                      :dimension-data="state.dimension"
-                                      :quota-data="state.quota"
-                                      :chart="view"
-                                      :item="element"
-                                      :index="index"
-                                      type="extLabel"
-                                      :themes="props.themes"
-                                      @onQuotaItemChange="quotaItemChange"
-                                      @onQuotaItemRemove="quotaItemRemove"
-                                      @onNameEdit="showRename"
-                                      @editItemFilter="showQuotaEditFilter"
-                                      @editItemCompare="showQuotaEditCompare"
-                                      @valueFormatter="valueFormatter"
-                                      @click="autoInsert(element)"
-                                    />
-                                  </template>
-                                </draggable>
-                                <drag-placeholder :drag-list="view.extLabel" />
-                              </el-row>
+                            <template #item="{ element, index }">
+                              <quota-item
+                                :dimension-data="state.dimension"
+                                :quota-data="state.quota"
+                                :chart="view"
+                                :item="element"
+                                :index="index"
+                                type="extLabel"
+                                :themes="props.themes"
+                                @onQuotaItemChange="quotaItemChange"
+                                @onQuotaItemRemove="quotaItemRemove"
+                                @onNameEdit="showRename"
+                                @editItemFilter="showQuotaEditFilter"
+                                @editItemCompare="showQuotaEditCompare"
+                                @valueFormatter="valueFormatter"
+                                @click="autoInsert(element)"
+                              />
+                            </template>
+                          </draggable>
+                          <drag-placeholder :drag-list="view.extLabel" />
+                        </el-row>
 
-                              <!--extTooltip-->
-                              <el-row class="padding-lr drag-data" v-if="showAxis('extTooltip')">
-                                <span class="data-area-label">
-                                  <span>{{ t('chart.tooltip') }}</span>
-                                </span>
-                                <draggable
-                                  :list="view.extTooltip"
-                                  :move="onMove"
-                                  item-key="id"
-                                  group="drag"
-                                  animation="300"
-                                  class="drag-block-style"
-                                  :class="{ dark: themes === 'dark' }"
-                                  @add="addExtTooltip"
-                                >
-                                  <template #item="{ element, index }">
-                                    <quota-item
-                                      :dimension-data="state.dimension"
-                                      :quota-data="state.quota"
-                                      :chart="view"
-                                      :item="element"
-                                      :index="index"
-                                      type="extTooltip"
-                                      :themes="props.themes"
-                                      @onQuotaItemChange="quotaItemChange"
-                                      @onQuotaItemRemove="quotaItemRemove"
-                                      @onNameEdit="showRename"
-                                      @editItemFilter="showQuotaEditFilter"
-                                      @editItemCompare="showQuotaEditCompare"
-                                      @valueFormatter="valueFormatter"
-                                    />
-                                  </template>
-                                </draggable>
-                                <drag-placeholder :drag-list="view.extTooltip" />
-                              </el-row>
-                            </el-collapse-item>
-                          </el-collapse>
-                        </div>
-                      </el-row>
-                    </div>
+                        <!--extTooltip-->
+                        <el-row
+                          class="padding-lr drag-data no-top-border no-top-padding"
+                          v-if="showAxis('extTooltip')"
+                        >
+                          <span class="data-area-label">
+                            <span>{{ t('chart.tooltip') }}</span>
+                          </span>
+                          <draggable
+                            :list="view.extTooltip"
+                            :move="onMove"
+                            item-key="id"
+                            group="drag"
+                            animation="300"
+                            class="drag-block-style"
+                            :class="{ dark: themes === 'dark' }"
+                            @add="addExtTooltip"
+                          >
+                            <template #item="{ element, index }">
+                              <quota-item
+                                :dimension-data="state.dimension"
+                                :quota-data="state.quota"
+                                :chart="view"
+                                :item="element"
+                                :index="index"
+                                type="extTooltip"
+                                :themes="props.themes"
+                                @onQuotaItemChange="quotaItemChange"
+                                @onQuotaItemRemove="quotaItemRemove"
+                                @onNameEdit="showRename"
+                                @editItemFilter="showQuotaEditFilter"
+                                @editItemCompare="showQuotaEditCompare"
+                                @valueFormatter="valueFormatter"
+                              />
+                            </template>
+                          </draggable>
+                          <drag-placeholder :drag-list="view.extTooltip" />
+                        </el-row>
+                      </el-collapse-item>
+                    </el-collapse>
                   </el-scrollbar>
                   <el-footer>
                     <el-row class="result-style" :class="'result-style-' + themes">
@@ -1931,6 +1931,17 @@ span {
   transition: 0.5s;
   .padding-lr {
     padding: 0 8px;
+
+    &.no-top-border {
+      border-top: none !important;
+    }
+    &.no-top-padding {
+      padding-top: 0 !important;
+
+      :deep(.drag-placeholder-style) {
+        top: calc(50% - 5px);
+      }
+    }
   }
   .view-title-name {
     display: -moz-inline-box;
@@ -2114,13 +2125,13 @@ span {
 
     :deep(.ed-scrollbar) {
       &.has-footer {
-        height: calc(100% - 80px);
+        height: calc(100% - 81px);
       }
     }
 
     :deep(.ed-footer) {
       padding: 0;
-      height: 80px;
+      height: 81px;
     }
   }
 
@@ -2189,10 +2200,16 @@ span {
   .drag-data {
     padding-top: 8px;
     padding-bottom: 16px;
-  }
 
-  .drag-data:nth-child(n + 2) {
-    border-top: 1px solid @side-outline-border-color;
+    &.no-top-border {
+      border-top: none !important;
+    }
+    &.no-top-padding {
+      padding-top: 0 !important;
+    }
+    &:nth-child(n + 2) {
+      border-top: 1px solid @side-outline-border-color;
+    }
   }
 
   .editor-title {
@@ -2349,7 +2366,7 @@ span {
 .drag_main_area {
   border-top: 1px solid @side-outline-border-color;
   overflow: auto;
-  height: 100%;
+  height: calc(100% - 1px);
 }
 
 .collapse-title {
@@ -2428,6 +2445,27 @@ span {
   :deep(.ed-collapse-item__content) {
     padding-left: 0 !important;
     padding-bottom: 10px !important;
+  }
+
+  &.data-tab-collapse {
+    border-bottom: none;
+    border-top: 1px solid var(--ed-collapse-border-color);
+
+    :deep(.ed-collapse-item.ed-collapse--dark .ed-collapse-item__wrap) {
+      background-color: #1a1a1a;
+    }
+
+    :deep(.ed-collapse-item__wrap) {
+      border-top: none !important;
+    }
+    :deep(.ed-collapse-item__content) {
+      padding: 0 !important;
+      border-top: none !important;
+    }
+    :deep(.ed-collapse-item__header) {
+      background-color: transparent;
+      border-bottom: none !important;
+    }
   }
 }
 .field-setting {
