@@ -263,15 +263,17 @@ public class DataSetTableTaskService {
     }
 
     public List<DataSetTaskDTO> taskList4User(DatasetTaskGridRequest request) {
-
+        request.setUserId(null);
         if (AuthUtils.getUser().getIsAdmin()) {
             return extDataSetTaskMapper.taskList(request);
         } else {
+            request.setUserId(AuthUtils.getUser().getUserId());
             return extDataSetTaskMapper.userTaskList(request);
         }
     }
 
     public List<DataSetTaskDTO> taskWithTriggers(DatasetTaskGridRequest request) {
+        request.setUserId(AuthUtils.getUser().getUserId());
         return extDataSetTaskMapper.taskWithTriggers(request);
     }
 

@@ -70,6 +70,7 @@ public class XEmailTaskServer {
                 userIdList = new ArrayList<>();
             }
             userIdList.add(user.getUserId());
+            request.setUserIdList(userIdList);
         }
 
         List<XpackTaskGridDTO> tasks = emailXpackService.taskGrid(request);
@@ -95,8 +96,7 @@ public class XEmailTaskServer {
             });
         }
 
-        Pager<List<XpackTaskGridDTO>> listPager = PageUtils.setPageInfo(page, tasks);
-        return listPager;
+        return PageUtils.setPageInfo(page, tasks);
     }
 
     @RequiresPermissions("task-email:edit")
@@ -105,7 +105,7 @@ public class XEmailTaskServer {
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
         XpackTaskEntity xpackTaskEntity = emailXpackService.taskDetail(taskId);
         GlobalTaskEntity globalTaskEntity = BeanUtils.copyBean(new GlobalTaskEntity(), xpackTaskEntity);
-        Boolean invalid = false;
+        boolean invalid = false;
         if (CronUtils.taskExpire(globalTaskEntity.getEndTime())) {
             globalTaskEntity.setEndTime(null);
             invalid = true;
@@ -324,8 +324,7 @@ public class XEmailTaskServer {
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
         List<XpackTaskInstanceDTO> instances = emailXpackService.taskInstanceGrid(request);
-        Pager<List<XpackTaskInstanceDTO>> listPager = PageUtils.setPageInfo(page, instances);
-        return listPager;
+        return PageUtils.setPageInfo(page, instances);
     }
 
     @PostMapping("/execInfo/{instanceId}")

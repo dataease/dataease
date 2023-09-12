@@ -19,4 +19,6 @@ public class DatasetTaskGridRequest extends KeywordRequest {
     private Long[] lastExecTime;
 
     private String id;
+
+    private Long userId;
 }

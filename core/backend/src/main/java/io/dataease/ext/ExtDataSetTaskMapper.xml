@@ -126,7 +126,7 @@
     </select>
 
     <select id="userTaskList" resultMap="TaskResult" parameterType="io.dataease.controller.dataset.request.DatasetTaskGridRequest">
-        SELECT dataset_table.name as table_name, get_auths(dataset_table_task.table_id,'dataset', #{extendCondition}) as
+        SELECT dataset_table.name as table_name, get_auths(dataset_table_task.table_id,'dataset', #{userId}) as
         `privileges`,dataset_table_task.* , qrtz_triggers.NEXT_FIRE_TIME
         FROM dataset_table_task
         left join dataset_table on dataset_table.id=dataset_table_task.table_id
@@ -172,7 +172,7 @@
 
 
     <select id="taskWithTriggers" resultMap="TaskResult" parameterType="io.dataease.controller.dataset.request.DatasetTaskGridRequest">
-        SELECT dataset_table.name as table_name, get_auths(dataset_table_task.table_id,'dataset', #{extendCondition}) as
+        SELECT dataset_table.name as table_name, get_auths(dataset_table_task.table_id,'dataset', #{userId}) as
         `privileges`,dataset_table_task.* , qrtz_triggers.NEXT_FIRE_TIME
         FROM dataset_table_task
         left join dataset_table on dataset_table.id=dataset_table_task.table_id
