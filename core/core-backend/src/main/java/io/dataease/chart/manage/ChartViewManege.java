@@ -186,10 +186,8 @@ public class ChartViewManege {
             ChartViewFieldDTO dto = new ChartViewFieldDTO();
             if (ele == null) return null;
             BeanUtils.copyBean(dto, ele);
-            if (StringUtils.equalsIgnoreCase("d", dto.getGroupType())) {
-                dto.setDateStyle("y_M_d");
-                dto.setDatePattern("date_sub");
-            }
+            dto.setDateStyle("y_M_d");
+            dto.setDatePattern("date_sub");
             if (StringUtils.equalsIgnoreCase("q", dto.getGroupType())) {
                 dto.setChartType("bar");
 
