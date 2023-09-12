@@ -222,11 +222,13 @@ onMounted(() => {
       @show="onPopoverShow"
       @hide="onPopoverHide"
       :effect="themes"
+      offset="4"
     >
       <template #reference>
         <el-form ref="formRef" :model="form">
           <el-form-item prop="name" :rules="rules">
             <el-input
+              size="middle"
               :effect="themes"
               v-model="selectedNodeName"
               readonly
@@ -251,6 +253,7 @@ onMounted(() => {
               </el-button>
             </div>
             <el-input
+              size="middle"
               :effect="themes"
               v-model="searchStr"
               :placeholder="t('dataset.search')"
@@ -259,7 +262,7 @@ onMounted(() => {
             />
           </el-header>
           <el-main :class="{ dark: themes === 'dark' }">
-            <el-scrollbar max-height="244px" always>
+            <el-scrollbar max-height="252px" always>
               <div class="m-loading" v-if="loadingDatasetTree" v-loading="loadingDatasetTree"></div>
               <div class="empty-info" v-if="showEmptyInfo">暂无数据集</div>
               <!--          <div class="empty-info" v-if="showEmptySearchInfo">暂无相关数据</div>-->
@@ -409,8 +412,7 @@ onMounted(() => {
     }
 
     .ed-main {
-      --ed-main-padding: 0 11px 0;
-      margin-top: 8px;
+      --ed-main-padding: 0;
       overflow-x: hidden;
 
       .empty-info {
