@@ -9,12 +9,12 @@
       v-if="chart.type && antVRenderStatus"
       v-show="title_show"
       ref="title"
-      :style="title_class"
+      :style="titleClass"
       style="cursor: default;display: block;"
     >
           <div style="padding:4px 4px 0;margin: 0;">
             <chart-title-update
-              :title-class="title_class"
+              :title-class="titleClass"
               :chart-info="chartInfo"
               :bus="bus"
               :axios-request="axiosRequest"
@@ -33,20 +33,20 @@
 
 <script>
 import {Mix} from '@antv/g2plot'
-import {uuid, hexColorToRGBA} from '@/utils/chartmix'
-import ViewTrackBar from '@/components/views/ViewTrackBar'
-import {getRemark} from "@/components/views/utils";
+import {uuid, hexColorToRGBA} from '../../../utils/chartmix'
+import ViewTrackBar from '../../../components/views/ViewTrackBar'
+import {getRemark} from "../../../components/views/utils";
 import {
   DEFAULT_TITLE_STYLE,
   DEFAULT_XAXIS_STYLE,
   DEFAULT_YAXIS_STYLE,
   transAxisPosition,
   getLineDash
-} from '@/utils/map';
-import ChartTitleUpdate from '@/components/views/ChartTitleUpdate';
+} from '../../../utils/map';
+import ChartTitleUpdate from '../../../components/views/ChartTitleUpdate';
 import _ from 'lodash';
 import {clear} from 'size-sensor'
-import {valueFormatter} from '@/utils/formatter'
+import {valueFormatter} from '../../../utils/formatter'
 
 export default {
   name: 'ChartComponent',
@@ -127,16 +127,6 @@ export default {
         fontStyle: 'normal',
         fontWeight: 'normal',
         background: hexColorToRGBA('#ffffff', 0)
-      },
-      title_class: {
-        margin: '0 0',
-        width: '100%',
-        fontSize: '18px',
-        color: '#303133',
-        textAlign: 'left',
-        fontStyle: 'normal',
-        fontWeight: 'normal',
-        background: ''
       },
       linkageActiveParam: null,
       linkageActiveHistory: false,
@@ -252,7 +242,6 @@ export default {
           this.titleClass.textAlign = customStyle.text.hPosition
           this.titleClass.fontStyle = customStyle.text.isItalic ? 'italic' : 'normal'
           this.titleClass.fontWeight = customStyle.text.isBolder ? 'bold' : 'normal'
-          this.titleClass.fontSize = customStyle.text.isBolder ? 'bold' : 'normal'
 
           this.titleClass.fontFamily = customStyle.text.fontFamily ? this.CHART_CONT_FAMILY_MAP[customStyle.text.fontFamily] : 'Microsoft YaHei'
           this.titleClass.letterSpacing = (customStyle.text.letterSpace ? customStyle.text.letterSpace : '0') + 'px'
@@ -325,10 +314,12 @@ export default {
 
         const _chartType = this.getChartType(yaxisList[_index].chartType);
 
-        if (_chartType === "column") {
-          _labelSetting.position = labelPosition;
-        } else {
-          _labelSetting.position = undefined;
+        if (_labelSetting) {
+          if (_chartType === "column") {
+            _labelSetting.position = labelPosition;
+          } else {
+            _labelSetting.position = undefined;
+          }
         }
 
         return {
@@ -378,10 +369,12 @@ export default {
 
         const _chartType = this.getChartType(yaxisExtList[_index].chartType);
 
-        if (_chartType === "column") {
-          _labelSetting.position = labelPosition;
-        } else {
-          _labelSetting.position = undefined;
+        if (_labelSetting) {
+          if (_chartType === "column") {
+            _labelSetting.position = labelPosition;
+          } else {
+            _labelSetting.position = undefined;
+          }
         }
 
         return {

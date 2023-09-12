@@ -34,6 +34,7 @@
           {{ $t('commons.confirm') }}
         </el-button>
         <el-button
+          style="margin-right: 24px"
           size="mini"
           @click="editCancel"
         >

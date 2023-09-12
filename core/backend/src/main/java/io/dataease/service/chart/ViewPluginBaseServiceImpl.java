@@ -2,6 +2,7 @@ package io.dataease.service.chart;
 
 import cn.hutool.core.util.ReflectUtil;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import io.dataease.commons.model.PluginViewSetImpl;
 import io.dataease.commons.utils.TableUtils;
 import io.dataease.controller.request.chart.ChartExtRequest;
@@ -14,6 +15,7 @@ import io.dataease.plugins.common.constants.DatasetType;
 import io.dataease.plugins.common.constants.datasource.SQLConstants;
 import io.dataease.plugins.common.dto.chart.ChartFieldCustomFilterDTO;
 import io.dataease.plugins.common.dto.chart.ChartViewFieldDTO;
+import io.dataease.plugins.common.dto.chart.ChartViewFieldFilterDTO;
 import io.dataease.plugins.common.dto.sqlObj.SQLObj;
 import io.dataease.plugins.common.request.chart.ChartExtFilterRequest;
 import io.dataease.plugins.common.request.permission.DataSetRowPermissionsTreeDTO;
@@ -247,6 +249,9 @@ public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
             methodName = "getYWheres";
         }
         ChartViewFieldDTO chartViewFieldDTO = BeanUtils.copyBean(new ChartViewFieldDTO(), field);
+        chartViewFieldDTO.setFilter(gson.fromJson(gson.toJson(field.getFilter()), new TypeToken<List<ChartViewFieldFilterDTO>>() {
+        }.getType()));
+
         Object execResult;
         if ((execResult = execProviderMethod(queryProvider, methodName, chartViewFieldDTO, originField, fieldAlias)) != null) {
             String where = (String) execResult;

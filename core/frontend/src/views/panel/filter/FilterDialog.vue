@@ -798,7 +798,7 @@ export default {
     async loadField(tableId, init) {
       const res = await fieldListWithPermission(tableId)
       let data = res.data || []
-      if (init && !this.checkSuperior(data, this.anotherTableInfo(tableId))) {
+      if (init && (!data.length || !this.checkSuperior(data, this.anotherTableInfo(tableId)))) {
         this.backToLink()
       }
       if (this.widget && this.widget.filterFieldMethod) {
