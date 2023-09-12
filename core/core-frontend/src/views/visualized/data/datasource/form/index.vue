@@ -606,6 +606,7 @@ defineExpose({
   }
 
   .ed-drawer__header {
+    border-color: rgba(31, 35, 41, 0.15);
     justify-content: space-between;
   }
 
@@ -697,7 +698,7 @@ defineExpose({
       width: 279px;
       height: calc(100% - 64px);
       padding: 16px 7px;
-      border-right: 1px solid #3370ff1a;
+      border-right: 1px solid rgba(31, 35, 41, 0.15);
       float: left;
       overflow-y: auto;
 
@@ -734,6 +735,7 @@ defineExpose({
       .ed-divider--horizontal {
         margin: 4px 0 4px 16px;
         width: calc(100% - 34px);
+        border-color: rgba(31, 35, 41, 0.15);
       }
 
       .m24 {
