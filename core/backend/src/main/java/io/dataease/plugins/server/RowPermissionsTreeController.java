@@ -12,6 +12,8 @@ import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.request.permission.DataSetRowPermissionsTreeDTO;
 import io.dataease.plugins.common.request.permission.DatasetRowPermissionsTreeRequest;
 import io.dataease.plugins.config.SpringContextUtil;
+import io.dataease.plugins.xpack.auth.dto.request.DataSetRowPermissionsDTO;
+import io.dataease.plugins.xpack.auth.service.RowPermissionService;
 import io.dataease.plugins.xpack.auth.service.RowPermissionTreeService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -21,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-//@ApiIgnore
+
 @Api(tags = "xpack：行权限")
 @RestController
 @RequestMapping("plugin/dataset/rowPermissionsTree")
@@ -85,4 +87,13 @@ public class RowPermissionsTreeController {
         Pager<List<DataSetRowPermissionsTreeDTO>> setPageInfo = PageUtils.setPageInfo(page, list);
         return setPageInfo;
     }
+
+    @DePermission(type = DePermissionType.DATASET, value = "datasetId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
+    @ApiOperation("有权限的对象")
+    @PostMapping("/authObjs")
+    public List<Object> authObjs(@RequestBody DataSetRowPermissionsDTO request) {
+        RowPermissionService rowPermissionService = SpringContextUtil.getBean(RowPermissionService.class);
+        return (List<Object>) rowPermissionService.authObjs(request);
+    }
+
 }
