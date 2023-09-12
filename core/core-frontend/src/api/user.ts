@@ -28,6 +28,8 @@ export const userDelApi = uid => request.post({ url: `/user/delete/${uid}` })
 
 export const queryFormApi = uid => request.get({ url: `/user/queryById/${uid}` })
 
+export const personInfoApi = () => request.get({ url: `/user/personInfo` })
+
 export const roleCreateApi = data => request.post({ url: '/role/create', data })
 
 export const roleEditApi = data => request.post({ url: '/role/edit', data })
