@@ -1456,7 +1456,7 @@ const defaultProps = {
 }
 
 .custom-tree-node {
-  flex: 1;
+  width: calc(100% - 30px);
   display: flex;
   align-items: center;
   box-sizing: content-box;
