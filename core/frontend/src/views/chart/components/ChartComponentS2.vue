@@ -614,3 +614,8 @@ export default {
   background: transparent !important;
 }
 </style>
+<style>
+.antv-s2-tooltip-container {
+    padding: 4px 2px;
+}
+</style>

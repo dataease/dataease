@@ -59,10 +59,10 @@
 </template>
 
 <script>
-  import ColorSelector from '@/components/selector/ColorSelector'
-  import TitleSelector from '@/components/selector/TitleSelector'
-  import TooltipSelectorAntV from '@/components/selector/TooltipSelectorAntV'
-  import LabelSelector from '@/components/selector/LabelSelector.vue'
+  import ColorSelector from '../../../components/selector/ColorSelector'
+  import TitleSelector from '../../../components/selector/TitleSelector'
+  import TooltipSelectorAntV from '../../../components/selector/TooltipSelectorAntV'
+  import LabelSelector from '../../../components/selector/LabelSelector.vue'
   import messages from '@/de-base/lang/messages'
   export default {
     components: {

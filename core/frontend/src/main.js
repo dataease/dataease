@@ -40,6 +40,7 @@ import VueFriendlyIframe from 'vue-friendly-iframe'
 import vueToPdf from 'vue-to-pdf'
 import VueVideoPlayer from 'vue-video-player'
 import 'video.js/dist/video-js.css'
+import '@antv/s2/dist/style.min.css'
 // 控制标签宽高成比例的指令
 import proportion from 'vue-proportion-directive'
 

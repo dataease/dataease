@@ -98,10 +98,10 @@
 </template>
 
 <script>
-import DimensionItem from '@/components/views/DimensionItem'
-import QuotaItem from '@/components/views/QuotaItem'
-import QuotaExtItem from '@/components/views/QuotaExtItem'
-import FilterItem from '@/components/views/FilterItem'
+import DimensionItem from '../../../components/views/DimensionItem'
+import QuotaItem from '../../../components/views/QuotaItem'
+import QuotaExtItem from '../../../components/views/QuotaExtItem'
+import FilterItem from '../../../components/views/FilterItem'
 import messages from '@/de-base/lang/messages'
 
 export default {

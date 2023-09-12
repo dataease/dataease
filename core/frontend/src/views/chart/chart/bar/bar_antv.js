@@ -45,6 +45,16 @@ export function baseBarOptionAntV(plot, container, chart, action, isGroup, isSta
     yAxis: yAxis,
     slider: slider,
     annotations: analyse,
+    brush: {
+      enabled: true,
+      isStartEnable: (context) => {
+        // 按住 shift 键，才能开启交互
+        if (context.event.gEvent.originalEvent?.shiftKey) {
+          return true
+        }
+        return false
+      }
+    },
     interactions: [
       {
         type: 'legend-active', cfg: {
@@ -162,6 +172,16 @@ export function hBaseBarOptionAntV(plot, container, chart, action, isGroup, isSt
     yAxis: yAxis,
     slider: slider,
     annotations: analyse,
+    brush: {
+      enabled: true,
+      isStartEnable: (context) => {
+        // 按住 shift 键，才能开启交互
+        if (context.event.gEvent.originalEvent?.shiftKey) {
+          return true
+        }
+        return false
+      }
+    },
     interactions: [
       {
         type: 'legend-active', cfg: {
