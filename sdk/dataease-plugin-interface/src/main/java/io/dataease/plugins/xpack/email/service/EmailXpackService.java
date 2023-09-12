@@ -1,11 +1,10 @@
 package io.dataease.plugins.xpack.email.service;
 
-import java.util.List;
-
 import io.dataease.plugins.common.entity.GlobalTaskEntity;
 import io.dataease.plugins.common.entity.GlobalTaskInstance;
-import io.dataease.plugins.common.entity.XpackGridRequest;
 import io.dataease.plugins.common.service.PluginMenuService;
+import io.dataease.plugins.xpack.email.dto.request.XpackEmailInstanceGridRequest;
+import io.dataease.plugins.xpack.email.dto.request.XpackEmailTaskGridRequest;
 import io.dataease.plugins.xpack.email.dto.request.XpackEmailTaskRequest;
 import io.dataease.plugins.xpack.email.dto.request.XpackPixelEntity;
 import io.dataease.plugins.xpack.email.dto.response.XpackEmailTemplateDTO;
@@ -13,15 +12,17 @@ import io.dataease.plugins.xpack.email.dto.response.XpackTaskEntity;
 import io.dataease.plugins.xpack.email.dto.response.XpackTaskGridDTO;
 import io.dataease.plugins.xpack.email.dto.response.XpackTaskInstanceDTO;
 
+import java.util.List;
+
 public abstract class EmailXpackService extends PluginMenuService {
 
     public abstract int save(XpackEmailTaskRequest request) throws Exception;
 
-    public abstract List<XpackTaskGridDTO> taskGrid(XpackGridRequest request);
+    public abstract List<XpackTaskGridDTO> taskGrid(XpackEmailTaskGridRequest request);
 
     public abstract Boolean status(GlobalTaskEntity taskEntity);
 
-    public abstract List<XpackTaskInstanceDTO> taskInstanceGrid(XpackGridRequest request);
+    public abstract List<XpackTaskInstanceDTO> taskInstanceGrid(XpackEmailInstanceGridRequest request);
 
     public abstract void delete(Long taskId) throws Exception;
 
@@ -51,7 +52,6 @@ public abstract class EmailXpackService extends PluginMenuService {
 
     public abstract void batchDel(List<Long> taskIds);
 
-    public abstract void export(XpackGridRequest request);
 
     public abstract Boolean status(Long taskId);
 

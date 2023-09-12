@@ -2,7 +2,6 @@ package io.dataease.service.sys.log;
 
 
 import cn.hutool.core.date.DateUtil;
-
 import com.google.gson.Gson;
 import io.dataease.auth.api.dto.CurrentUserDto;
 import io.dataease.commons.constants.ParamConstants;
@@ -11,14 +10,12 @@ import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.IPUtils;
 import io.dataease.commons.utils.ServletUtils;
-import io.dataease.controller.sys.base.ConditionEntity;
-import io.dataease.controller.sys.request.KeyGridRequest;
+import io.dataease.controller.sys.request.LogGridRequest;
 import io.dataease.dto.SysLogDTO;
 import io.dataease.dto.SysLogGridDTO;
 import io.dataease.dto.log.FolderItem;
 import io.dataease.exception.DataEaseException;
 import io.dataease.ext.ExtSysLogMapper;
-import io.dataease.ext.query.GridExample;
 import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.SysLogExample;
 import io.dataease.plugins.common.base.domain.SysLogWithBLOBs;
@@ -35,7 +32,10 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.OutputStream;
 import java.net.URLEncoder;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -95,100 +95,10 @@ public class LogService {
     }
 
 
-    public KeyGridRequest logRetentionProxy(KeyGridRequest request) {
-        String value = systemParameterService.getValue(ParamConstants.BASIC.LOG_TIME_OUT.getValue());
-        value = StringUtils.isBlank(value) ? LOG_RETENTION : value;
-        int logRetention = Integer.parseInt(value);
-        Calendar instance = Calendar.getInstance();
+    public List<SysLogGridDTO> query(LogGridRequest request) {
 
-        Calendar startInstance = (Calendar) instance.clone();
-        startInstance.add(Calendar.DATE, -logRetention);
-        startInstance.set(Calendar.HOUR_OF_DAY, 0);
-        startInstance.set(Calendar.MINUTE, 0);
-        startInstance.set(Calendar.SECOND, 0);
-        long startTime = startInstance.getTimeInMillis();
-
-        Calendar endInstance = (Calendar) instance.clone();
-        endInstance.add(Calendar.DATE, 1);
-        endInstance.set(Calendar.HOUR_OF_DAY, 0);
-        endInstance.set(Calendar.MINUTE, 0);
-        endInstance.set(Calendar.SECOND, 0);
-        long endTime = endInstance.getTimeInMillis();
-
-
-        List<ConditionEntity> conditions = request.getConditions();
-        if (CollectionUtils.isNotEmpty(conditions) && conditions.stream().anyMatch(condition -> StringUtils.equals("time", condition.getField()))) {
-            conditions.forEach(condition -> {
-                if (StringUtils.equals("time", condition.getField()) && startTime > ((List<Long>) condition.getValue()).get(0)) {
-                    ((List<Long>) condition.getValue()).set(0, startTime);
-                }
-            });
-        } else {
-            ConditionEntity conditionEntity = new ConditionEntity();
-            conditionEntity.setField("time");
-            conditionEntity.setOperator("between");
-            List<Long> times = new ArrayList<>();
-            times.add(startTime);
-            times.add(endTime);
-            conditionEntity.setValue(times);
-            conditions.add(conditionEntity);
-        }
-        return request;
-    }
-
-
-    public List<SysLogGridDTO> query(KeyGridRequest request) {
-
-
-        request = detailRequest(request);
-        String keyWord = request.getKeyWord();
-        List<String> ids = null;
-        GridExample gridExample = request.convertExample();
-        gridExample.setExtendCondition(keyWord);
-
-        LogQueryParam logQueryParam = gson.fromJson(gson.toJson(gridExample), LogQueryParam.class);
-        if (StringUtils.isNotBlank(keyWord)) {
-            List<FolderItem> types = types();
-            ids = types.stream().filter(item -> item.getName().toLowerCase().contains(keyWord.toLowerCase())).map(FolderItem::getId).collect(Collectors.toList());
-            if (CollectionUtils.isNotEmpty(ids))
-                logQueryParam.setUnionIds(ids);
-        }
-        List<SysLogWithBLOBs> voLogs = extSysLogMapper.query(logQueryParam);
-        List<SysLogGridDTO> dtos = voLogs.stream().map(this::convertDTO).collect(Collectors.toList());
-        return dtos;
-    }
-
-    private KeyGridRequest detailRequest(KeyGridRequest request) {
-        List<ConditionEntity> conditions = request.getConditions();
-        if (CollectionUtils.isNotEmpty(conditions)) {
-
-            ConditionEntity uninCondition = null;
-            int matchIndex = -1;
-            for (int i = 0; i < conditions.size(); i++) {
-                ConditionEntity conditionEntity = conditions.get(i);
-                String field = conditionEntity.getField();
-                Object value = conditionEntity.getValue();
-
-                if (StringUtils.isNotBlank(field) && StringUtils.equals("optype", field) && ObjectUtils.isNotEmpty(value)) {
-                    matchIndex = i;
-                    uninCondition = new ConditionEntity();
-
-                    List<String> values = (List<String>) value;
-                    uninCondition.setField("concat(operate_type, '-de-', source_type)");
-
-                    List<String> uninValue = values.stream().map(v -> v.replace("-", "-de-")).collect(Collectors.toList());
-
-                    uninCondition.setValue(uninValue);
-                    uninCondition.setOperator(conditionEntity.getOperator());
-                }
-            }
-            if (matchIndex >= 0) {
-                conditions.remove(matchIndex);
-
-                if (ObjectUtils.isNotEmpty(uninCondition)) conditions.add(uninCondition);
-            }
-        }
-        return request;
+        List<SysLogWithBLOBs> voLogs = extSysLogMapper.query(request);
+        return voLogs.stream().map(this::convertDTO).collect(Collectors.toList());
     }
 
 
@@ -350,24 +260,12 @@ public class LogService {
     }
 
 
-    public void exportExcel(KeyGridRequest request) throws Exception {
-        request = logRetentionProxy(request);
-        request = detailRequest(request);
-        String keyWord = request.getKeyWord();
-        List<String> ids = null;
+    public void exportExcel(LogGridRequest request) throws Exception {
+
         HttpServletResponse response = ServletUtils.response();
         OutputStream outputStream = response.getOutputStream();
         try {
-            GridExample gridExample = request.convertExample();
-            gridExample.setExtendCondition(keyWord);
-            LogQueryParam logQueryParam = gson.fromJson(gson.toJson(gridExample), LogQueryParam.class);
-            if (StringUtils.isNotBlank(keyWord)) {
-                List<FolderItem> types = types();
-                ids = types.stream().filter(item -> item.getName().toLowerCase().contains(keyWord.toLowerCase())).map(FolderItem::getId).collect(Collectors.toList());
-                if (CollectionUtils.isNotEmpty(ids))
-                    logQueryParam.setUnionIds(ids);
-            }
-            List<SysLogWithBLOBs> lists = extSysLogMapper.query(logQueryParam);
+            List<SysLogWithBLOBs> lists = extSysLogMapper.query(request);
             List<String[]> details = lists.stream().map(item -> {
                 String operateTypeName = SysLogConstants.operateTypeName(item.getOperateType());
                 String sourceTypeName = SysLogConstants.sourceTypeName(item.getSourceType());

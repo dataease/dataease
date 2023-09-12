@@ -3,20 +3,19 @@ package io.dataease.service.sys;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.ZipUtil;
 import com.google.gson.Gson;
-import io.dataease.commons.utils.IPUtils;
-import io.dataease.dto.MyPluginDTO;
-import io.dataease.ext.ExtSysPluginMapper;
-import io.dataease.ext.query.GridExample;
 import io.dataease.commons.constants.AuthConstants;
 import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.CodingUtil;
 import io.dataease.commons.utils.DeFileUtils;
+import io.dataease.commons.utils.IPUtils;
 import io.dataease.commons.utils.LogUtil;
-import io.dataease.controller.sys.base.BaseGridRequest;
+import io.dataease.dto.MyPluginDTO;
+import io.dataease.ext.ExtSysPluginMapper;
 import io.dataease.i18n.Translator;
 import io.dataease.listener.util.CacheUtils;
 import io.dataease.plugins.common.base.domain.MyPlugin;
 import io.dataease.plugins.common.base.mapper.MyPluginMapper;
+import io.dataease.plugins.common.request.KeywordRequest;
 import io.dataease.plugins.config.LoadjarUtil;
 import io.dataease.plugins.entity.PluginOperate;
 import io.dataease.service.datasource.DatasourceService;
@@ -65,9 +64,8 @@ public class PluginService {
     private String version;
 
 
-    public List<MyPlugin> query(BaseGridRequest request) {
-        GridExample gridExample = request.convertExample();
-        return extSysPluginMapper.query(gridExample);
+    public List<MyPlugin> query(KeywordRequest request) {
+        return extSysPluginMapper.query(request);
     }
 
     /**
@@ -207,11 +205,9 @@ public class PluginService {
      * @return
      */
     public boolean pluginExist(MyPlugin myPlugin) {
-        GridExample gridExample = new GridExample();
-        List<MyPlugin> plugins = extSysPluginMapper.query(gridExample);
-        return plugins.stream().anyMatch(plugin -> {
-            return StringUtils.equals(myPlugin.getName(), plugin.getName()) || StringUtils.equals(myPlugin.getModuleName(), plugin.getModuleName());
-        });
+        KeywordRequest request = new KeywordRequest();
+        List<MyPlugin> plugins = extSysPluginMapper.query(request);
+        return plugins.stream().anyMatch(plugin -> StringUtils.equals(myPlugin.getName(), plugin.getName()) || StringUtils.equals(myPlugin.getModuleName(), plugin.getModuleName()));
     }
 
     /**

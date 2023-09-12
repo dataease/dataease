@@ -28,7 +28,6 @@
 
 <script>
 import { roleGrid } from '@/api/system/user'
-import { formatCondition } from '@/utils/index'
 import { loadShares } from '@/api/panel/share'
 export default {
   name: 'GrantRole',
@@ -70,9 +69,8 @@ export default {
       this.columnLabel = this.defaultHeadName
     },
 
-    search(condition) {
-      const temp = formatCondition(condition)
-      const param = temp || {}
+    search() {
+      const param = {}
       roleGrid(1, 0, param).then(response => {
         const data = response.data
         this.data = data.listObject

@@ -315,7 +315,7 @@ export default {
         'dataset_table_task.rate': this.active.rate,
         'dataset_table_task.status': this.active.status,
         'dataset_table_task.last_exec_status': this.active.execStatus,
-        'dataset_table.id': this.activeDataset
+        'dataset_table.tableId': this.activeDataset
       }
       const conditions = []
       Object.keys(fildMap).forEach((ele) => {

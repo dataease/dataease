@@ -2,15 +2,12 @@ package io.dataease.controller.panel.api;
 
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.auth.annotation.DePermission;
-import io.dataease.auth.annotation.SqlInjectValidator;
 import io.dataease.commons.constants.DePermissionType;
-import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.dto.panel.PanelStoreDto;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
@@ -32,8 +29,7 @@ public interface StoreApi {
 
     @ApiOperation("查询收藏")
     @PostMapping("/list")
-    @SqlInjectValidator(value = {"s.create_time"})
-    List<PanelStoreDto> list(@RequestBody BaseGridRequest request);
+    List<PanelStoreDto> list();
 
 
     @ApiOperation("移除收藏")

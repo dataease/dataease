@@ -1,12 +1,12 @@
 package io.dataease.ext;
 
-import io.dataease.ext.query.GridExample;
+import io.dataease.controller.sys.request.UserGridRequest;
 import io.dataease.controller.sys.response.SysUserGridResponse;
 
 import java.util.List;
 
 public interface ExtSysUserMapper {
-    List<SysUserGridResponse> query(GridExample example);
+    List<SysUserGridResponse> query(UserGridRequest request);
 
     List<String> ldapUserNames(Integer from);
 

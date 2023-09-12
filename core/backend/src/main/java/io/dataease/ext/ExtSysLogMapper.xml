@@ -3,51 +3,59 @@
 <mapper namespace="io.dataease.ext.ExtSysLogMapper">
 
 
-
-
-
-
-    <select id="query" parameterType="io.dataease.service.sys.log.LogQueryParam" resultMap="io.dataease.plugins.common.base.mapper.SysLogMapper.ResultMapWithBLOBs">
+    <select id="query" parameterType="io.dataease.controller.sys.request.LogGridRequest"
+            resultMap="io.dataease.plugins.common.base.mapper.SysLogMapper.ResultMapWithBLOBs">
         select * from
-             (select * from sys_log where 1 = 1
-                <if test="extendCondition != null">
-                    and
-                    (
-                        nick_name like concat('%', #{extendCondition} , '%')
-                        or
-                        source_name like concat('%', #{extendCondition} , '%')
-                        or
-                        position like concat('%', #{extendCondition} , '%')
-                        <if test="unionIds != null">
-                        or
-                            concat(operate_type, '-', source_type) in
-                            <foreach collection="unionIds" item="id" index="index" open="(" separator="," close=")">
-                                #{id}
-                            </foreach>
-                        </if>
-                    )
-                </if>
-            ) t
+        (select * from sys_log where 1 = 1
+        <if test="keyword != null">
+            and
+            (
+            nick_name like concat('%', #{keyword} , '%')
+            or
+            source_name like concat('%', #{keyword} , '%')
+            or
+            position like concat('%', #{keyword} , '%')
+            )
+        </if>
+        ) t
+        where 1 = 1
+        <if test="optypeList != null and optypeList.size() > 0">
+            and concat(operate_type, '-', source_type) in
+            <foreach collection="optypeList" item="operate" open='(' separator=',' close=')'>
+                #{operate}
+            </foreach>
+        </if>
+        <if test="userIdList != null and userIdList.size() > 0">
+            and user_id in
+            <foreach collection="userIdList" item="userId" open='(' separator=',' close=')'>
+                #{userId}
+            </foreach>
+        </if>
+        <if test="timeList != null and timeList.length > 1">
+            and (time between #{timeList.[0]} and #{timeList.[1]})
+        </if>
 
-        <if test="_parameter != null">
-            <include refid="io.dataease.ext.query.GridSql.gridCondition" />
-        </if>
-        <if test="orderByClause != null">
-            order by ${orderByClause}
-        </if>
-        <if test="orderByClause == null">
-            order by time desc
-        </if>
+        <choose>
+            <when test="orders!=null and orders.size > 0">
+                order by
+                <foreach collection="orders" item="item" open='' separator=',' close=''>
+                    ${item}
+                </foreach>
+            </when>
+            <otherwise>
+                order by time desc
+            </otherwise>
+        </choose>
     </select>
 
 
-    <select id="idAndName" resultType="io.dataease.dto.log.FolderItem" >
+    <select id="idAndName" resultType="io.dataease.dto.log.FolderItem">
         select
         <if test="type == 1">
             id, name
             from datasource
             <where>
-                id in 
+                id in
                 <foreach collection="ids" item="id" index="index" open="(" separator="," close=")">
                     #{id}
                 </foreach>
@@ -57,23 +65,23 @@
         <if test="type == 2">
             id, name
             from (
-                select id, name from dataset_group
-                <where>
-                    id in
-                    <foreach collection="ids" item="id" index="index" open="(" separator="," close=")">
-                        #{id}
-                    </foreach>
-                </where>
+            select id, name from dataset_group
+            <where>
+                id in
+                <foreach collection="ids" item="id" index="index" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </where>
 
-                union all
+            union all
 
-                select id, name from dataset_table
-                <where>
-                    id in
-                    <foreach collection="ids" item="id" index="index" open="(" separator="," close=")">
-                        #{id}
-                    </foreach>
-                </where>
+            select id, name from dataset_table
+            <where>
+                id in
+                <foreach collection="ids" item="id" index="index" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </where>
 
             ) dataset
 
@@ -175,9 +183,9 @@
         <if test="type == 11">
             menu_id as id ,title as name
             from (
-                select menu_id, title from sys_menu
-                  union all
-                select menu_id, title from plugin_sys_menu
+            select menu_id, title from sys_menu
+            union all
+            select menu_id, title from plugin_sys_menu
             ) plugin_union
             <where>
                 menu_id in

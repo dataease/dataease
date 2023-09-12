@@ -179,7 +179,7 @@ import GridTable from '@/components/gridTable/index.vue'
 import filterUser from './FilterUserRecord.vue'
 import _ from 'lodash'
 import keyEnter from '@/components/msgCfm/keyEnter.js'
-
+import { buildParam } from '@/utils/GridConditionUtil'
 export default {
   name: 'TaskRecord',
   components: { GridTable, filterUser },
@@ -258,23 +258,10 @@ export default {
     },
     exportData() {
       const { taskId, name } = this.transCondition
-      const param = {
-        orders: formatOrders(this.orderConditions),
-        conditions: [...this.cacheCondition]
-      }
-      if (this.nickName) {
-        param.conditions.push({
-          field: `dataset_table_task.name`,
-          operator: 'like',
-          value: this.nickName
-        })
-      }
+      const param = buildParam(this.cacheCondition, this.nickName)
+      param.orders = formatOrders(this.orderConditions)
       if (taskId && this.nickName === name) {
-        param.conditions.push({
-          operator: 'eq',
-          value: taskId,
-          field: 'dataset_table_task.id'
-        })
+        param.id = taskId
       }
       exportExcel(param).then((res) => {
         const blob = new Blob([res], { type: 'application/vnd.ms-excel' })
@@ -368,23 +355,10 @@ export default {
         this.lastRequestComplete = false
       }
       const { taskId, name } = this.transCondition
-      const param = {
-        orders: formatOrders(this.orderConditions),
-        conditions: [...this.cacheCondition]
-      }
-      if (this.nickName) {
-        param.conditions.push({
-          field: `dataset_table_task.name`,
-          operator: 'like',
-          value: this.nickName
-        })
-      }
+      const param = buildParam(this.cacheCondition, this.nickName)
+      param.orders = formatOrders(this.orderConditions)
       if (taskId && this.nickName === name) {
-        param.conditions.push({
-          operator: 'eq',
-          value: taskId,
-          field: 'dataset_table_task.id'
-        })
+        param.id = taskId
       }
       post(
         '/dataset/taskLog/list/notexcel/' +
@@ -405,23 +379,10 @@ export default {
     },
     search(condition, showLoading = true) {
       const { taskId, name } = this.transCondition
-      const param = {
-        orders: formatOrders(this.orderConditions),
-        conditions: [...this.cacheCondition]
-      }
-      if (this.nickName) {
-        param.conditions.push({
-          field: `dataset_table_task.name`,
-          operator: 'like',
-          value: this.nickName
-        })
-      }
+      const param = buildParam(this.cacheCondition, this.nickName)
+      param.orders = formatOrders(this.orderConditions)
       if (taskId && this.nickName === name) {
-        param.conditions.push({
-          operator: 'eq',
-          value: taskId,
-          field: 'dataset_table_task.id'
-        })
+        param.id = taskId
       }
       post(
         '/dataset/taskLog/list/notexcel/' +

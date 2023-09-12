@@ -14,8 +14,6 @@ import io.dataease.commons.utils.*;
 import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.entity.GlobalTaskEntity;
 import io.dataease.plugins.common.entity.GlobalTaskInstance;
-import io.dataease.plugins.common.entity.XpackConditionEntity;
-import io.dataease.plugins.common.entity.XpackGridRequest;
 import io.dataease.plugins.config.SpringContextUtil;
 import io.dataease.plugins.xpack.email.dto.request.*;
 import io.dataease.plugins.xpack.email.dto.response.XpackTaskEntity;
@@ -62,19 +60,17 @@ public class XEmailTaskServer {
     @PostMapping("/queryTasks/{goPage}/{pageSize}")
     @SqlInjectValidator(value = {"create_time"})
     public Pager<List<XpackTaskGridDTO>> queryTask(@PathVariable int goPage, @PathVariable int pageSize,
-                                                   @RequestBody XpackGridRequest request) {
+                                                   @RequestBody XpackEmailTaskGridRequest request) {
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
         CurrentUserDto user = AuthUtils.getUser();
         if (!user.getIsAdmin()) {
-            Long userId = user.getUserId();
-            XpackConditionEntity condition = new XpackConditionEntity();
-            condition.setField("u.user_id");
-            condition.setOperator("eq");
-            condition.setValue(userId);
-            List<XpackConditionEntity> conditions = CollectionUtils.isEmpty(request.getConditions()) ? new ArrayList<>() : request.getConditions();
-            conditions.add(condition);
-            request.setConditions(conditions);
+            List<Long> userIdList = request.getUserIdList();
+            if (userIdList == null) {
+                userIdList = new ArrayList<>();
+            }
+            userIdList.add(user.getUserId());
+            request.setUserIdList(userIdList);
         }
 
         List<XpackTaskGridDTO> tasks = emailXpackService.taskGrid(request);
@@ -100,8 +96,7 @@ public class XEmailTaskServer {
             });
         }
 
-        Pager<List<XpackTaskGridDTO>> listPager = PageUtils.setPageInfo(page, tasks);
-        return listPager;
+        return PageUtils.setPageInfo(page, tasks);
     }
 
     @RequiresPermissions("task-email:edit")
@@ -110,7 +105,7 @@ public class XEmailTaskServer {
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
         XpackTaskEntity xpackTaskEntity = emailXpackService.taskDetail(taskId);
         GlobalTaskEntity globalTaskEntity = BeanUtils.copyBean(new GlobalTaskEntity(), xpackTaskEntity);
-        Boolean invalid = false;
+        boolean invalid = false;
         if (CronUtils.taskExpire(globalTaskEntity.getEndTime())) {
             globalTaskEntity.setEndTime(null);
             invalid = true;
@@ -325,12 +320,11 @@ public class XEmailTaskServer {
 
     @PostMapping("/queryInstancies/{goPage}/{pageSize}")
     public Pager<List<XpackTaskInstanceDTO>> instancesGrid(@PathVariable int goPage, @PathVariable int pageSize,
-                                                           @RequestBody XpackGridRequest request) {
+                                                           @RequestBody XpackEmailInstanceGridRequest request) {
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
         List<XpackTaskInstanceDTO> instances = emailXpackService.taskInstanceGrid(request);
-        Pager<List<XpackTaskInstanceDTO>> listPager = PageUtils.setPageInfo(page, instances);
-        return listPager;
+        return PageUtils.setPageInfo(page, instances);
     }
 
     @PostMapping("/execInfo/{instanceId}")
@@ -342,7 +336,7 @@ public class XEmailTaskServer {
 
     @RequiresPermissions("task-email:read")
     @PostMapping("/export")
-    public void export(@RequestBody XpackGridRequest request) throws Exception {
+    public void export(@RequestBody XpackEmailInstanceGridRequest request) throws Exception {
         Pager<List<XpackTaskInstanceDTO>> listPager = instancesGrid(0, 0, request);
         List<XpackTaskInstanceDTO> instanceDTOS = listPager.getListObject();
         ExcelSheetModel excelSheetModel = excelSheetModel(instanceDTOS);

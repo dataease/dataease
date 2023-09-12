@@ -3,18 +3,13 @@
 <mapper namespace="io.dataease.ext.ExtSysPluginMapper">
 
 
-    <select id="query" parameterType="io.dataease.ext.query.GridExample" resultMap="io.dataease.plugins.common.base.mapper.MyPluginMapper.BaseResultMap">
+    <select id="query" parameterType="io.dataease.plugins.common.request.KeywordRequest" resultMap="io.dataease.plugins.common.base.mapper.MyPluginMapper.BaseResultMap">
         select *
         from my_plugin
-        <if test="_parameter != null">
-            <include refid="io.dataease.ext.query.GridSql.gridCondition" />
+        <if test="keyword != null">
+            where name like concat('%', #{keyword} , '%')
         </if>
-        <if test="orderByClause != null">
-            order by ${orderByClause}
-        </if>
-        <if test="orderByClause == null">
-            order by install_time desc
-        </if>
+        order by install_time desc
 
     </select>
 

@@ -1,23 +1,25 @@
 package io.dataease.service.sys;
 
-import io.dataease.ext.*;
-import io.dataease.ext.query.GridExample;
 import io.dataease.commons.utils.BeanUtils;
-import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.controller.sys.request.DeptCreateRequest;
 import io.dataease.controller.sys.request.DeptDeleteRequest;
 import io.dataease.controller.sys.request.DeptStatusRequest;
 import io.dataease.controller.sys.request.SimpleTreeNode;
 import io.dataease.controller.sys.response.DeptTreeNode;
+import io.dataease.ext.ExtDeptMapper;
 import io.dataease.plugins.common.base.domain.SysDept;
 import io.dataease.plugins.common.base.domain.SysDeptExample;
 import io.dataease.plugins.common.base.mapper.SysDeptMapper;
+import io.dataease.plugins.xpack.dept.dto.request.XpackDeptGridRequest;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,12 +33,12 @@ public class DeptService {
     @Autowired(required = false)
     private ExtDeptMapper extDeptMapper;
 
-    public List<SysDept> nodesByPid(Long pid){
+    public List<SysDept> nodesByPid(Long pid) {
         SysDeptExample example = new SysDeptExample();
         SysDeptExample.Criteria criteria = example.createCriteria();
-        if (ObjectUtils.isEmpty(pid)){
+        if (ObjectUtils.isEmpty(pid)) {
             criteria.andPidEqualTo(0L);
-        }else {
+        } else {
             criteria.andPidEqualTo(pid);
         }
         example.setOrderByClause("dept_sort");
@@ -44,10 +46,10 @@ public class DeptService {
     }
 
     @Transactional
-    public boolean add(DeptCreateRequest deptCreateRequest){
+    public boolean add(DeptCreateRequest deptCreateRequest) {
         SysDept sysDept = BeanUtils.copyBean(new SysDept(), deptCreateRequest);
 
-        if (deptCreateRequest.isTop()){
+        if (deptCreateRequest.isTop()) {
             sysDept.setPid(DEPT_ROOT_PID);
         }
         long now = System.currentTimeMillis();
@@ -59,24 +61,24 @@ public class DeptService {
         try {
             int insert = sysDeptMapper.insert(sysDept);
             Long pid;
-            if (!(pid = sysDept.getPid()).equals(DEPT_ROOT_PID)){
+            if (!(pid = sysDept.getPid()).equals(DEPT_ROOT_PID)) {
                 //这里需要更新上级节点SubCount
                 extDeptMapper.incrementalSubcount(pid);
             }
-            if (insert == 1){
+            if (insert == 1) {
                 return true;
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return false;
     }
 
     @Transactional
-    public int batchDelete(List<DeptDeleteRequest> requests){
+    public int batchDelete(List<DeptDeleteRequest> requests) {
         List<Long> ids = requests.stream().map(request -> {
             Long pid = request.getPid();
-            if (!pid.equals(DEPT_ROOT_PID)){
+            if (!pid.equals(DEPT_ROOT_PID)) {
                 extDeptMapper.decreasingSubcount(pid);
             }
             return request.getDeptId();
@@ -85,9 +87,9 @@ public class DeptService {
     }
 
     @Transactional
-    public int update(DeptCreateRequest deptCreateRequest){
+    public int update(DeptCreateRequest deptCreateRequest) {
         SysDept sysDept = BeanUtils.copyBean(new SysDept(), deptCreateRequest);
-        if (deptCreateRequest.isTop()){
+        if (deptCreateRequest.isTop()) {
             sysDept.setPid(DEPT_ROOT_PID);
         }
         sysDept.setUpdateTime(System.currentTimeMillis());
@@ -97,34 +99,34 @@ public class DeptService {
         //如果PID发生了改变
         //判断oldPid是否是跟节点PID ？ nothing : parent.subcount-1
         //判断newPid是否是跟节点PID ？ nothing : parent.subcount+1
-        if (!sysDept.getPid().equals(dept_old.getPid())){
+        if (!sysDept.getPid().equals(dept_old.getPid())) {
             Long oldPid = dept_old.getPid();
-            if (!oldPid.equals(DEPT_ROOT_PID)){
+            if (!oldPid.equals(DEPT_ROOT_PID)) {
                 extDeptMapper.decreasingSubcount(oldPid);
             }
-            if (!sysDept.getPid().equals(DEPT_ROOT_PID)){
+            if (!sysDept.getPid().equals(DEPT_ROOT_PID)) {
                 extDeptMapper.incrementalSubcount(sysDept.getPid());
             }
         }
         return sysDeptMapper.updateByPrimaryKeySelective(sysDept);
     }
 
-    public int updateStatus(DeptStatusRequest request){
+    public int updateStatus(DeptStatusRequest request) {
         Long deptId = request.getDeptId();
         SysDept sysDept = new SysDept();
         sysDept.setDeptId(deptId);
         return sysDeptMapper.updateByPrimaryKeySelective(sysDept);
     }
 
-    public List<SysDept> nodesTreeByCondition(BaseGridRequest request){
+    public List<SysDept> nodesTreeByCondition(XpackDeptGridRequest request) {
         List<SimpleTreeNode> allNodes = allNodes();
         List<SimpleTreeNode> targetNodes = nodeByCondition(request);
-        if(CollectionUtils.isEmpty(targetNodes)){
+        if (CollectionUtils.isEmpty(targetNodes)) {
             return new ArrayList<>();
         }
         List<Long> ids = upTree(allNodes, targetNodes);
         SysDeptExample example = new SysDeptExample();
-        if (CollectionUtils.isNotEmpty(ids)){
+        if (CollectionUtils.isNotEmpty(ids)) {
             SysDeptExample.Criteria criteria = example.createCriteria();
             criteria.andDeptIdIn(ids);
         }
@@ -132,14 +134,15 @@ public class DeptService {
         return sysDeptMapper.selectByExample(example);
     }
 
-    public List<DeptTreeNode> searchTree(Long deptId){
+    public List<DeptTreeNode> searchTree(Long deptId) {
         List<SysDept> roots = nodesByPid(0L);
         if (deptId.equals(DEPT_ROOT_PID)) return roots.stream().map(this::format).collect(Collectors.toList());
         SysDept sysDept = sysDeptMapper.selectByPrimaryKey(deptId);
-        if (roots.stream().anyMatch(node -> node.getDeptId().equals(deptId))) return roots.stream().map(this::format).collect(Collectors.toList());
+        if (roots.stream().anyMatch(node -> node.getDeptId().equals(deptId)))
+            return roots.stream().map(this::format).collect(Collectors.toList());
         SysDept current = sysDept;
         DeptTreeNode currentNode = format(sysDept);
-        while (!current.getPid().equals(DEPT_ROOT_PID)){
+        while (!current.getPid().equals(DEPT_ROOT_PID)) {
             SysDept parent = sysDeptMapper.selectByPrimaryKey(current.getPid()); //pid上有索引 所以效率不会太差
             DeptTreeNode parentNode = format(parent);
             parentNode.setChildren(currentNode.toList());
@@ -151,7 +154,7 @@ public class DeptService {
         return roots.stream().map(node -> node.getDeptId().equals(targetRootNode.getId()) ? targetRootNode : format(node)).collect(Collectors.toList());
     }
 
-    private DeptTreeNode format(SysDept sysDept){
+    private DeptTreeNode format(SysDept sysDept) {
         DeptTreeNode deptTreeNode = new DeptTreeNode();
         deptTreeNode.setId(sysDept.getDeptId());
         deptTreeNode.setLabel(sysDept.getName());
@@ -159,22 +162,23 @@ public class DeptService {
         return deptTreeNode;
     }
 
-    private List<SimpleTreeNode> allNodes(){
+    private List<SimpleTreeNode> allNodes() {
         return extDeptMapper.allNodes();
     }
 
-    private List<SimpleTreeNode> nodeByCondition(BaseGridRequest request){
-        GridExample gridExample = request.convertExample();
-        return extDeptMapper.nodesByExample(gridExample);
+    private List<SimpleTreeNode> nodeByCondition(XpackDeptGridRequest request) {
+
+        return extDeptMapper.nodesByExample(request);
     }
 
     /**
      * 找出目标节点所在路径上的所有节点 向上找
-     * @param allNodes 所有节点
+     *
+     * @param allNodes    所有节点
      * @param targetNodes 目标节点
      * @return
      */
-    private List<Long> upTree(List<SimpleTreeNode> allNodes, List<SimpleTreeNode> targetNodes){
+    private List<Long> upTree(List<SimpleTreeNode> allNodes, List<SimpleTreeNode> targetNodes) {
         final Map<Long, SimpleTreeNode> map = allNodes.stream().collect(Collectors.toMap(SimpleTreeNode::getId, node -> node));
         return targetNodes.parallelStream().flatMap(targetNode -> {
             //向上逐级找爹
