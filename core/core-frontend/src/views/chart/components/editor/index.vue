@@ -1189,7 +1189,7 @@ const autoInsert = element => {
                           </el-row>
 
                           <!--filter-->
-                          <el-row class="padding-lr drag-data">
+                          <el-row class="padding-lr drag-data no-top-border no-top-padding">
                             <span>{{ t('chart.result_filter') }}</span>
                             <draggable
                               :list="view.customFilter"
@@ -1220,7 +1220,7 @@ const autoInsert = element => {
                           <el-collapse
                             v-if="showAxis('extLabel') || showAxis('extTooltip')"
                             v-model="state.extData"
-                            class="style-collapse"
+                            class="style-collapse data-tab-collapse"
                           >
                             <el-collapse-item
                               :effect="themes"
@@ -1228,7 +1228,10 @@ const autoInsert = element => {
                               :title="t('chart.more_settings')"
                             >
                               <!--extLabel-->
-                              <el-row class="padding-lr drag-data" v-if="showAxis('extLabel')">
+                              <el-row
+                                class="padding-lr drag-data no-top-border"
+                                v-if="showAxis('extLabel')"
+                              >
                                 <span class="data-area-label">
                                   <span>{{ t('chart.label') }}</span>
                                   <el-popover
@@ -1292,7 +1295,10 @@ const autoInsert = element => {
                               </el-row>
 
                               <!--extTooltip-->
-                              <el-row class="padding-lr drag-data" v-if="showAxis('extTooltip')">
+                              <el-row
+                                class="padding-lr drag-data no-top-border no-top-padding"
+                                v-if="showAxis('extTooltip')"
+                              >
                                 <span class="data-area-label">
                                   <span>{{ t('chart.tooltip') }}</span>
                                 </span>
@@ -1931,6 +1937,17 @@ span {
   transition: 0.5s;
   .padding-lr {
     padding: 0 8px;
+
+    &.no-top-border {
+      border-top: none !important;
+    }
+    &.no-top-padding {
+      padding-top: 0 !important;
+
+      :deep(.drag-placeholder-style) {
+        top: calc(50% - 5px);
+      }
+    }
   }
   .view-title-name {
     display: -moz-inline-box;
@@ -2189,10 +2206,16 @@ span {
   .drag-data {
     padding-top: 8px;
     padding-bottom: 16px;
-  }
 
-  .drag-data:nth-child(n + 2) {
-    border-top: 1px solid @side-outline-border-color;
+    &.no-top-border {
+      border-top: none !important;
+    }
+    &.no-top-padding {
+      padding-top: 0 !important;
+    }
+    &:nth-child(n + 2) {
+      border-top: 1px solid @side-outline-border-color;
+    }
   }
 
   .editor-title {
@@ -2428,6 +2451,27 @@ span {
   :deep(.ed-collapse-item__content) {
     padding-left: 0 !important;
     padding-bottom: 10px !important;
+  }
+
+  &.data-tab-collapse {
+    border-bottom: none;
+    border-top: 1px solid var(--ed-collapse-border-color);
+
+    :deep(.ed-collapse-item.ed-collapse--dark .ed-collapse-item__wrap) {
+      background-color: #1a1a1a;
+    }
+
+    :deep(.ed-collapse-item__wrap) {
+      border-top: none !important;
+    }
+    :deep(.ed-collapse-item__content) {
+      padding: 0 !important;
+      border-top: none !important;
+    }
+    :deep(.ed-collapse-item__header) {
+      background-color: transparent;
+      border-bottom: none !important;
+    }
   }
 }
 .field-setting {
