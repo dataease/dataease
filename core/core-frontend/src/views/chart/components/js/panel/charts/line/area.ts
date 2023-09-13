@@ -24,7 +24,9 @@ import {
 import { IntervalGeometryLabelPosition } from '@antv/g2/lib/interface'
 import { Label } from '@antv/g2plot/lib/types/label'
 import { Datum } from '@antv/g2plot/esm/types/common'
+import { useI18n } from '@/hooks/web/useI18n'
 
+const { t } = useI18n()
 const DEFAULT_DATA = []
 export class Area extends G2PlotChartView<AreaOptions, G2Area> {
   properties = LINE_EDITOR_PROPERTY
@@ -33,6 +35,13 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
     'basic-style-selector': [...LINE_EDITOR_PROPERTY_INNER['basic-style-selector'], 'gradient']
   }
   axis: AxisType[] = [...LINE_AXIS_TYPE]
+  axisConfig = {
+    ...this['axisConfig'],
+    yAxis: {
+      name: `${t('chart.drag_block_value_axis')} / ${t('chart.quota')}`,
+      type: 'q'
+    }
+  }
   baseOptions: AreaOptions = {
     data: [],
     xField: 'field',
