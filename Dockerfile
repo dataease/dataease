@@ -4,11 +4,11 @@ ARG IMAGE_TAG
 
 RUN mkdir -p /opt/apps /opt/dataease/data/feature/full /opt/dataease/drivers /opt/dataease/plugins/default
 
-ADD core/mapFiles/* /opt/dataease/data/feature/full/
+ADD core/mapFiles/full/ /opt/dataease/data/feature/full/
 
 ADD core/drivers/* /opt/dataease/drivers/
 
-ADD plugins/default/* /opt/dataease/plugins/default/
+ADD plugins/default/ /opt/dataease/plugins/default/
 
 ADD core/backend/target/backend-$IMAGE_TAG.jar /opt/apps
 
