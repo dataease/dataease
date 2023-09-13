@@ -117,7 +117,7 @@ const initForm = type => {
       simpleCronType: 'hour',
       startTime: '',
       endTime: '',
-      endLimit: '',
+      endLimit: '0',
       cron: '0 0 0/1 *  * ? *'
     }
   }
@@ -229,6 +229,7 @@ const setItemRef = (ele: ComponentPublicInstance | null | Element) => {
 
 const copyItem = (item?: ApiConfiguration) => {
   var newItem = JSON.parse(JSON.stringify(item))
+  newItem.deTableName = ''
   newItem.serialNumber =
     form.value.apiConfiguration[form.value.apiConfiguration.length - 1].serialNumber + 1
   var reg = new RegExp(item.name + '_copy_' + '([0-9]*)', 'gim')
@@ -277,7 +278,12 @@ const cancelItem = (index: number) => {
   state.itemRef[index].hide()
 }
 const submitForm = () => {
+  dsForm.value.clearValidate()
   return dsForm.value.validate
+}
+
+const clearForm = () => {
+  return dsForm.value.clearValidate()
 }
 
 const resetForm = () => {
@@ -369,7 +375,8 @@ const validatorSchema = () => {
 defineExpose({
   submitForm,
   resetForm,
-  initForm
+  initForm,
+  clearForm
 })
 </script>
 

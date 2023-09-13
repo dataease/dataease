@@ -56,6 +56,9 @@ function transDecimal(value, formatter) {
 
 function transSeparatorAndSuffix(value, formatter) {
   let str = value + ''
+  if (str.match(/^(\d)(\.\d)?e-(\d)/)) {
+    str = value.toFixed(18).replace(/\.?0+$/, '')
+  }
   if (formatter.thousandSeparator) {
     const thousandsReg = /(\d)(?=(\d{3})+$)/g
     const numArr = str.split('.')

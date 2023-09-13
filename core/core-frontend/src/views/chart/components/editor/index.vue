@@ -39,7 +39,7 @@ import DatasetSelect from '@/views/chart/components/editor/dataset-select/Datase
 
 const snapshotStore = snapshotStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
-const { canvasCollapse, curComponent } = storeToRefs(dvMainStore)
+const { canvasCollapse, curComponent, componentData } = storeToRefs(dvMainStore)
 const router = useRouter()
 
 const { t } = useI18n()
@@ -93,7 +93,9 @@ const state = reactive({
   renameItem: false,
   itemForm: {
     name: '',
-    chartShowName: ''
+    chartShowName: '',
+    index: 0,
+    renameType: ''
   },
   quotaFilterEdit: false,
   quotaItem: {},
@@ -200,6 +202,21 @@ const getFields = (id, chartId) => {
     state.quotaData = []
   }
 }
+
+const queryList = computed(() => {
+  let arr = []
+  componentData.value.forEach(com => {
+    if (com.innerType === 'VQuery') {
+      arr.push(com)
+    }
+    if ('DeTabs' === com.innerType) {
+      com.propValue.forEach(itx => {
+        arr = [...itx.componentData.filter(item => item.innerType === 'VQuery'), ...arr]
+      })
+    }
+  })
+  return arr
+})
 
 const quotaData = computed(() => {
   if (view.value?.type === 'table-info') {
@@ -432,13 +449,18 @@ const moveToQuota = e => {
   dragMoveDuplicate(state.quotaData, e, 'ds')
 }
 
-const calcData = (view, resetDrill = false) => {
+const calcData = (view, resetDrill = false, updateQuery = '') => {
   if (resetDrill) {
     useEmitt().emitter.emit('resetDrill-' + view.id, 0)
   } else {
     useEmitt().emitter.emit('calcData-' + view.id, view)
   }
   snapshotStore.recordSnapshotCache('calcData', view.id)
+  if (updateQuery === 'updateQuery') {
+    queryList.value.forEach(ele => {
+      useEmitt().emitter.emit(`updateQueryCriteria${ele.id}`)
+    })
+  }
 }
 
 const renderChart = view => {
@@ -582,18 +604,34 @@ const saveRename = ref => {
   if (!ref) return
   ref.validate(valid => {
     if (valid) {
-      if (state.itemForm.renameType === 'quota') {
-        view.value.yAxis[state.itemForm.index].chartShowName = state.itemForm.chartShowName
-      } else if (state.itemForm.renameType === 'dimension') {
-        view.value.xAxis[state.itemForm.index].chartShowName = state.itemForm.chartShowName
-      } else if (state.itemForm.renameType === 'quotaExt') {
-        view.value.yAxisExt[state.itemForm.index].chartShowName = state.itemForm.chartShowName
-      } else if (state.itemForm.renameType === 'dimensionExt') {
-        view.value.xAxisExt[state.itemForm.index].chartShowName = state.itemForm.chartShowName
-      } else if (state.itemForm.renameType === 'extLabel') {
-        view.value.extLabel[state.itemForm.index].chartShowName = state.itemForm.chartShowName
-      } else if (state.itemForm.renameType === 'extTooltip') {
-        view.value.extTooltip[state.itemForm.index].chartShowName = state.itemForm.chartShowName
+      const { renameType, index, chartShowName } = state.itemForm
+      switch (renameType) {
+        case 'quota':
+          view.value.yAxis[index].chartShowName = chartShowName
+          break
+        case 'dimension':
+          view.value.xAxis[index].chartShowName = chartShowName
+          break
+        case 'quotaExt':
+          view.value.yAxisExt[index].chartShowName = chartShowName
+          break
+        case 'dimensionExt':
+          view.value.xAxisExt[index].chartShowName = chartShowName
+          break
+        case 'dimensionStack':
+          view.value.extStack[index].chartShowName = chartShowName
+          break
+        case 'extBubble':
+          view.value.extBubble[index].chartShowName = chartShowName
+          break
+        case 'extLabel':
+          view.value.extLabel[index].chartShowName = chartShowName
+          break
+        case 'extTooltip':
+          view.value.extTooltip[index].chartShowName = chartShowName
+          break
+        default:
+          break
       }
       closeRename()
     } else {
@@ -1374,7 +1412,7 @@ const autoInsert = element => {
                       <el-button
                         type="primary"
                         class="result-style-button"
-                        @click="calcData(view, true)"
+                        @click="calcData(view, true, 'updateQuery')"
                       >
                         <span style="font-size: 12px">
                           {{ t('chart.update_chart_data') }}

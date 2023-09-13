@@ -2,7 +2,7 @@
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import eventBus from '@/utils/eventBus'
 import { $, deepCopy } from '@/utils/utils'
-import { nextTick, reactive, ref } from 'vue'
+import { nextTick, reactive, ref, computed } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import { lockStoreWithOut } from '@/store/modules/data-visualization/lock'
@@ -122,8 +122,27 @@ const edit = () => {
   dvMainStore.setEditMode('edit')
 }
 
+const queryList = computed(() => {
+  let arr = []
+  componentData.value.forEach(com => {
+    if (com.innerType === 'VQuery') {
+      arr.push(com)
+    }
+    if ('DeTabs' === com.innerType) {
+      com.propValue.forEach(itx => {
+        arr = [...itx.componentData.filter(item => item.innerType === 'VQuery'), ...arr]
+      })
+    }
+  })
+  return arr
+})
+
 const saveCanvas = () => {
   dvMainStore.matrixSizeAdaptor()
+  queryList.value.forEach(ele => {
+    useEmitt().emitter.emit(`updateQueryCriteria${ele.id}`)
+  })
+
   canvasSave(() => {
     snapshotStore.resetStyleChangeTimes()
     ElMessage.success('保存成功')

@@ -116,7 +116,7 @@ public class DatasourceSyncManage {
     }
 
 
-    public void extractData(Long datasourceId, Long taskId, String type, JobExecutionContext context) {
+    public void extractData(Long datasourceId, Long taskId, JobExecutionContext context) {
         CoreDatasource coreDatasource = datasourceMapper.selectById(datasourceId);
         if (coreDatasource == null) {
             LogUtil.error("Can not find datasource: " + datasourceId);
@@ -138,7 +138,7 @@ public class DatasourceSyncManage {
             return;
         }
         CoreDatasourceTaskLog datasetTableTaskLog = datasourceTaskServer.initTaskLog(datasourceId, taskId, startTime, coreDatasource.getName());
-        DatasourceServer.UpdateType updateType = DatasourceServer.UpdateType.valueOf(type);
+        DatasourceServer.UpdateType updateType = DatasourceServer.UpdateType.valueOf(coreDatasourceTask.getUpdateType());
         if (context != null) {
             UpdateWrapper<CoreDatasource> updateWrapper = new UpdateWrapper<>();
             updateWrapper.eq("id", datasourceId);

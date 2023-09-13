@@ -4,7 +4,6 @@ import io.dataease.api.dataset.union.model.SQLObj;
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.constant.SQLConstants;
-import io.dataease.engine.trans.Field2SQLObj;
 import io.dataease.exception.DEException;
 import io.dataease.i18n.Translator;
 import org.apache.commons.lang3.ObjectUtils;
@@ -57,7 +56,7 @@ public class Utils {
                     // 计算字段允许二次引用，这里递归查询完整引用链
                     if (Objects.equals(ele.getExtField(), ExtFieldConstant.EXT_NORMAL)) {
                         originField = originField.replaceAll("\\[" + ele.getId() + "]",
-                                String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), Field2SQLObj.getXFields(ele, ele.getDataeaseName(), null).getFieldName()));
+                                String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), ele.getDataeaseName()));
                     } else {
                         originField = originField.replaceAll("\\[" + ele.getId() + "]", ele.getOriginName());
                         originField = buildCalcField(originField, tableObj, originFields, i);
