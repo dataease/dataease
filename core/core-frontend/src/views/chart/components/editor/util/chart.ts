@@ -1205,7 +1205,7 @@ export const DEFAULT_BASIC_STYLE: ChartBasicStyle = {
   barGap: 0.4,
   lineType: 'solid',
   scatterSymbol: 'circle',
-  scatterSymbolSize: 15,
+  scatterSymbolSize: 8,
   radarShape: 'polygon',
   mapStyle: 'normal',
   areaBorderColor: '#EBEEF5',

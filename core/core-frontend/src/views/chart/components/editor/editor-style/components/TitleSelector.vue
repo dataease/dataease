@@ -114,6 +114,7 @@ init()
             :effect="props.themes"
             v-model="chart.title"
             size="small"
+            maxlength="100"
             :placeholder="t('chart.title')"
             clearable
             @blur="changeTitleStyle('title')"
