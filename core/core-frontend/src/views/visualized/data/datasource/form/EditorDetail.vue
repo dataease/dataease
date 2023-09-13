@@ -278,7 +278,12 @@ const cancelItem = (index: number) => {
   state.itemRef[index].hide()
 }
 const submitForm = () => {
+  dsForm.value.clearValidate()
   return dsForm.value.validate
+}
+
+const clearForm = () => {
+  return dsForm.value.clearValidate()
 }
 
 const resetForm = () => {
@@ -370,7 +375,8 @@ const validatorSchema = () => {
 defineExpose({
   submitForm,
   resetForm,
-  initForm
+  initForm,
+  clearForm
 })
 </script>
 
