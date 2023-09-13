@@ -167,7 +167,7 @@ const componentTypeBarShow = {
     'linkageSetting',
     'linkJumpSetting'
   ],
-  default: ['setting', 'multiplexing']
+  default: ['setting', 'delete', 'copy', 'multiplexing']
 }
 
 const barShowCheck = barName => {
