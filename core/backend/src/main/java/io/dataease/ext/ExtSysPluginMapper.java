@@ -8,4 +8,6 @@ import java.util.List;
 public interface ExtSysPluginMapper {
 
     List<MyPlugin> query(KeywordRequest request);
+
+    int updateVersion(String version);
 }

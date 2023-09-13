@@ -40,6 +40,7 @@ public class PluginRunner implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
         // 执行加载插件逻辑
+        pluginService.systemUpgrade();
         KeywordRequest request = new KeywordRequest();
         List<MyPlugin> plugins = pluginService.query(request);
         if (CollectionUtils.isEmpty(plugins)) return;

@@ -13,7 +13,9 @@
 
     </select>
 
-
+    <update id="updateVersion" parameterType="java.lang.String">
+        update my_plugin set version = #{version} where store = 'default'
+    </update>
 
 
 

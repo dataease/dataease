@@ -68,6 +68,10 @@ public class PluginService {
         return extSysPluginMapper.query(request);
     }
 
+    public void systemUpgrade() {
+        extSysPluginMapper.updateVersion(version);
+    }
+
     /**
      * 从本地安装处插件
      *
