@@ -7,7 +7,7 @@
         'bar-main-background': mainBackgroundShow
       }
     ]"
-    @click.stop
+    @mousedown="fieldsAreaDown"
   >
     <template v-if="element.component === 'VQuery' && showPosition === 'canvas'">
       <span title="添加查询条件">
@@ -25,8 +25,13 @@
       :title="t('visualization.enlarge')"
       v-if="element.innerType !== 'rich-text' && barShowCheck('enlarge')"
     >
-      <el-icon class="bar-base-icon" @click="userViewEnlargeOpen">
+      <el-icon class="bar-base-icon" @click="userViewEnlargeOpen($event, 'enlarge')">
         <Icon name="dv-bar-enlarge"></Icon
+      ></el-icon>
+    </span>
+    <span :title="'明细'" v-if="element.innerType !== 'rich-text' && barShowCheck('details')">
+      <el-icon class="bar-base-icon" @click="userViewEnlargeOpen($event, 'details')">
+        <Icon name="dv-details"></Icon
       ></el-icon>
     </span>
     <div v-if="barShowCheck('multiplexing')" class="bar-checkbox-area">
@@ -48,14 +53,47 @@
       <el-checkbox size="medium" @change="batchOptChange" />
     </div>
 
-    <el-dropdown trigger="click" v-if="barShowCheck('setting')">
+    <el-dropdown trigger="click" placement="right-start" v-if="barShowCheck('setting')">
       <el-icon :title="t('visualization.setting')" class="bar-base-icon">
         <icon name="icon_more_outlined"></icon>
       </el-icon>
       <template #dropdown>
-        <el-dropdown-menu style="width: 100px">
-          <el-dropdown-item icon="Delete" @click="deleteComponent">删除</el-dropdown-item>
-          <el-dropdown-item icon="DocumentCopy" @click="copyComponent">复制</el-dropdown-item>
+        <el-dropdown-menu style="width: 160px">
+          <el-dropdown-item @click="copyComponent" v-if="barShowCheck('copy')"
+            >复制</el-dropdown-item
+          >
+          <template v-if="element.innerType !== 'rich-text' && barShowCheck('enlarge')">
+            <el-dropdown-item
+              :divided="showPosition === 'canvas'"
+              @click="userViewEnlargeOpen($event, 'enlarge')"
+              >放大</el-dropdown-item
+            >
+            <el-dropdown-item
+              @click="userViewEnlargeOpen($event, 'details')"
+              v-if="element.innerType !== 'rich-text' && barShowCheck('details')"
+              >查看数据</el-dropdown-item
+            >
+            <el-dropdown-item
+              style="padding-right: 8px"
+              v-if="element.innerType !== 'rich-text' && barShowCheck('download')"
+            >
+              <el-dropdown style="width: 100%" trigger="hover" placement="right-start">
+                <div style="width: 100%">
+                  导出为
+                  <el-icon style="float: right"><ArrowRight /></el-icon>
+                </div>
+                <template #dropdown>
+                  <el-dropdown-menu style="width: 120px">
+                    <el-dropdown-item @click="exportAsExcel">Excel</el-dropdown-item>
+                    <el-dropdown-item @click="exportAsImage">图片</el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </el-dropdown-item>
+          </template>
+          <el-dropdown-item divided @click="deleteComponent" v-if="barShowCheck('delete')"
+            >删除</el-dropdown-item
+          >
         </el-dropdown-menu>
       </template>
     </el-dropdown>
@@ -80,6 +118,8 @@ import { useEmitt } from '@/hooks/web/useEmitt'
 import LinkageField from '@/components/visualization/LinkageField.vue'
 import { getViewLinkageGather } from '@/api/visualization/linkage'
 import { copyStoreWithOut } from '@/store/modules/data-visualization/copy'
+import { exportExcelDownload } from '@/views/chart/components/js/util'
+import FieldsList from '@/custom-component/rich-text/FieldsList.vue'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const copyStore = copyStoreWithOut()
@@ -95,8 +135,18 @@ const { t } = useI18n()
 const { emitter } = useEmitt()
 // bar所在位置可以显示的功能按钮
 const positionBarShow = {
-  canvas: ['enlarge', 'setting', 'unLinkage', 'linkageSetting', 'linkJumpSetting'],
-  preview: ['enlarge', 'unLinkage'],
+  canvas: [
+    'enlarge',
+    'details',
+    'setting',
+    'copy',
+    'delete',
+    'download',
+    'unLinkage',
+    'linkageSetting',
+    'linkJumpSetting'
+  ],
+  preview: ['enlarge', 'details', 'download', 'unLinkage'],
   multiplexing: ['multiplexing'],
   batchOpt: ['batchOpt'],
   linkage: ['linkage']
@@ -106,7 +156,11 @@ const positionBarShow = {
 const componentTypeBarShow = {
   UserView: [
     'enlarge',
+    'details',
     'setting',
+    'copy',
+    'download',
+    'delete',
     'multiplexing',
     'batchOpt',
     'linkage',
@@ -114,7 +168,7 @@ const componentTypeBarShow = {
     'linkageSetting',
     'linkJumpSetting'
   ],
-  default: ['setting', 'multiplexing']
+  default: ['setting', 'delete', 'copy', 'multiplexing']
 }
 
 const barShowCheck = barName => {
@@ -211,11 +265,24 @@ const showEditPosition = computed(() => {
     } else {
       return 'bar-main-right'
     }
+  } else if (showPosition.value === 'canvasDataV') {
+    return 'bar-main-right'
   } else {
     return 'bar-main-preview-right-inner'
   }
 })
 
+const exportAsExcel = () => {
+  const viewDataInfo = dvMainStore.getViewDataDetails(element.value.id)
+  const chartExtRequest = dvMainStore.getLastViewRequestInfo(element.value.id)
+  const viewInfo = dvMainStore.getViewDetails(element.value.id)
+  const chart = { ...viewInfo, chartExtRequest, data: viewDataInfo }
+  exportExcelDownload(chart)
+}
+const exportAsImage = () => {
+  // do export
+  useEmitt().emitter.emit('componentImageDownload-' + element.value.id)
+}
 const deleteComponent = () => {
   eventBus.emit('removeMatrixItem-' + canvasId.value, index.value)
   dvMainStore.setCurComponent({ component: null, index: null })
@@ -226,10 +293,10 @@ const copyComponent = () => {
   copyStore.paste(false)
 }
 
-const userViewEnlargeOpen = e => {
+const userViewEnlargeOpen = (e, opt) => {
   e.preventDefault()
   e.stopPropagation()
-  emits('userViewEnlargeOpen')
+  emits('userViewEnlargeOpen', opt)
 }
 
 // 复用-Begin
@@ -316,12 +383,13 @@ const linkJumpSetOpen = () => {
 
 const fieldsAreaDown = e => {
   // ignore
+  e.stopPropagation()
   e.preventDefault()
 }
 
 const selectFieldShow = computed(() => {
   return (
-    showPosition.value === 'canvas' &&
+    ['canvasDataV', 'canvas'].includes(showPosition.value) &&
     curComponent.value?.innerType === 'rich-text' &&
     curComponent.value.editing
   )
@@ -403,5 +471,9 @@ onBeforeUnmount(() => {
   :deep(.ed-checkbox) {
     height: 22px;
   }
+}
+
+.more-menu {
+  width: 160px;
 }
 </style>

@@ -6,16 +6,35 @@
     width="70vw"
     trigger="click"
   >
-    <el-button icon="Picture" size="small" class="export-button" @click="downloadViewImage">{{
-      t('chart.export_img')
-    }}</el-button>
-    <div class="enlarge-outer" ref="viewContainer">
+    <el-button
+      v-if="optType === 'enlarge'"
+      icon="Picture"
+      size="small"
+      class="export-button"
+      @click="downloadViewImage"
+      >{{ t('chart.export_img') }}</el-button
+    >
+    <el-button
+      v-if="optType === 'details'"
+      icon="Tickets"
+      size="small"
+      class="export-button"
+      @click="downloadViewDetails"
+      >导出明细</el-button
+    >
+    <div class="enlarge-outer" ref="viewContainer" v-if="dialogShow">
       <component-wrapper
-        v-if="dialogShow"
+        v-if="optType === 'enlarge'"
         class="enlarge-wrapper"
         :view-info="viewInfo"
         :config="config"
         show-position="viewDialog"
+      />
+      <chart-component-s2
+        v-if="optType === 'details'"
+        :view="viewInfo"
+        show-position="viewDialog"
+        ref="chartComponentDetails"
       />
     </div>
   </el-dialog>
@@ -23,24 +42,55 @@
 
 <script setup lang="ts">
 import ComponentWrapper from '@/components/data-visualization/canvas/ComponentWrapper.vue'
-import { ref } from 'vue'
+import { nextTick, ref } from 'vue'
 import { toPng } from 'html-to-image'
 import { useI18n } from '@/hooks/web/useI18n'
+import { deepCopy } from '@/utils/utils'
+import ChartComponentS2 from '@/views/chart/components/views/components/ChartComponentS2.vue'
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { VIEW_DETAILS_BASH_STYLE } from '@/views/chart/components/editor/util/dataVisualiztion'
+import { innerExportDetails } from '@/api/chart'
+import { exportExcelDownload } from '@/views/chart/components/js/util'
+const dvMainStore = dvMainStoreWithOut()
 const dialogShow = ref(false)
-const viewInfo = ref(null)
+let viewInfo = ref(null)
 const config = ref(null)
 const canvasStyleData = ref(null)
 const viewContainer = ref(null)
 const { t } = useI18n()
+const optType = ref(null)
+const chartComponentDetails = ref(null)
 
-const dialogInit = (canvasStyle, view, item) => {
+const dialogInit = (canvasStyle, view, item, opt) => {
+  optType.value = opt
   dialogShow.value = true
-  viewInfo.value = view
-  config.value = item
+  viewInfo.value = deepCopy(view)
+  config.value = deepCopy(item)
   canvasStyleData.value = canvasStyle
+  if (opt === 'details') {
+    dataDetailsOpt()
+  }
 }
+
+const dataDetailsOpt = () => {
+  nextTick(() => {
+    const viewDataInfo = dvMainStore.getViewDataDetails(viewInfo.value.id)
+    chartComponentDetails.value.renderChartFromDialog(
+      JSON.parse(VIEW_DETAILS_BASH_STYLE),
+      viewDataInfo
+    )
+  })
+}
+
 const downloadViewImage = () => {
   htmlToImage()
+}
+
+const downloadViewDetails = () => {
+  const viewDataInfo = dvMainStore.getViewDataDetails(viewInfo.value.id)
+  const chartExtRequest = dvMainStore.getLastViewRequestInfo(viewInfo.value.id)
+  const chart = { ...viewInfo.value, chartExtRequest, data: viewDataInfo }
+  exportExcelDownload(chart)
 }
 const htmlToImage = () => {
   toPng(viewContainer.value)

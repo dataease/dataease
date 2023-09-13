@@ -79,10 +79,7 @@
     >
       <el-input
         v-model="state.textarea"
-        type="textarea"
-        :rows="2"
         maxlength="10"
-        show-word-limit
         :placeholder="$t('dataset.input_content')"
       />
       <template #footer>

@@ -85,7 +85,7 @@ public class ApiUtils {
                     tableFields = getTableFields(apiDefinition);
                 }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
         return tableFields;
@@ -137,13 +137,13 @@ public class ApiUtils {
             httpClientConfig.addHeader("Authorization", authValue);
         }
 
-        List<String>  params = new ArrayList<>();
+        List<String> params = new ArrayList<>();
         for (Map<String, String> argument : apiDefinition.getRequest().getArguments()) {
-            if(StringUtils.isNotEmpty(argument.get("name")) && StringUtils.isNotEmpty(argument.get("value"))){
+            if (StringUtils.isNotEmpty(argument.get("name")) && StringUtils.isNotEmpty(argument.get("value"))) {
                 params.add(argument.get("name") + "=" + URLEncoder.encode(argument.get("value")));
             }
         }
-        if(org.apache.commons.collections4.CollectionUtils.isNotEmpty(params)){
+        if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(params)) {
             apiDefinition.setUrl(apiDefinition.getUrl() + "?" + StringUtils.join(params, "&"));
         }
 
@@ -197,7 +197,26 @@ public class ApiUtils {
             DEException.throwException("该请求返回数据为空");
         }
         List<Map<String, Object>> fields = new ArrayList<>();
-        if (apiDefinition.isUseJsonPath()) {
+        if (apiDefinition.isShowApiStructure() || !apiDefinition.isUseJsonPath()) {
+            String rootPath;
+            if (response.startsWith("[")) {
+                rootPath = "$[*]";
+                JsonNode jsonArray = null;
+                try {
+                    jsonArray = objectMapper.readTree(response);
+                } catch (Exception e) {
+                    DEException.throwException(e);
+                }
+                for (Object o : jsonArray) {
+                    handleStr(apiDefinition, o.toString(), fields, rootPath);
+                }
+            } else {
+                rootPath = "$";
+                handleStr(apiDefinition, response, fields, rootPath);
+            }
+            apiDefinition.setJsonFields(fields);
+            return apiDefinition;
+        } else {
             List<LinkedHashMap> currentData = new ArrayList<>();
             Object object = JsonPath.read(response, apiDefinition.getJsonPath());
             try {
@@ -249,25 +268,6 @@ public class ApiUtils {
             }
             apiDefinition.setJsonFields(fields);
             return apiDefinition;
-        } else {
-            String rootPath;
-            if (response.startsWith("[")) {
-                rootPath = "$[*]";
-                JsonNode jsonArray = null;
-                try {
-                    jsonArray = objectMapper.readTree(response);
-                } catch (Exception e) {
-                    DEException.throwException(e);
-                }
-                for (Object o : jsonArray) {
-                    handleStr(apiDefinition, o.toString(), fields, rootPath);
-                }
-            } else {
-                rootPath = "$";
-                handleStr(apiDefinition, response, fields, rootPath);
-            }
-            apiDefinition.setJsonFields(fields);
-            return apiDefinition;
         }
     }
 
@@ -297,7 +297,7 @@ public class ApiUtils {
             while (fieldNames.hasNext()) {
                 String fieldName = fieldNames.next();
                 String value = jsonNode.get(fieldName).toString();
-                if (StringUtils.isNotEmpty(value) && !value.startsWith("[") && !value.startsWith("{")){
+                if (StringUtils.isNotEmpty(value) && !value.startsWith("[") && !value.startsWith("{")) {
                     value = jsonNode.get(fieldName).asText();
                 }
                 if (StringUtils.isNotEmpty(value) && value.startsWith("[")) {
@@ -306,7 +306,7 @@ public class ApiUtils {
                         JsonNode jsonArray = objectMapper.readTree(value);
                         List<Map<String, Object>> childrenField = new ArrayList<>();
                         for (JsonNode node : jsonArray) {
-                            if (StringUtils.isNotEmpty(node.toString()) && !node.toString().startsWith("[") && !node.toString().startsWith("{")){
+                            if (StringUtils.isNotEmpty(node.toString()) && !node.toString().startsWith("[") && !node.toString().startsWith("{")) {
                                 throw new Exception(node + "is not json type");
                             }
                         }

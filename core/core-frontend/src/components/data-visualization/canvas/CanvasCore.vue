@@ -1473,8 +1473,13 @@ const getMoveItem = () => {
   return infoBox.value.moveItem
 }
 
-const userViewEnlargeOpen = item => {
-  userViewEnlargeRef.value.dialogInit(canvasStyleData.value, canvasViewInfo.value[item.id], item)
+const userViewEnlargeOpen = (opt, item) => {
+  userViewEnlargeRef.value.dialogInit(
+    canvasStyleData.value,
+    canvasViewInfo.value[item.id],
+    item,
+    opt
+  )
 }
 
 const initSnapshotTimer = () => {
@@ -1580,7 +1585,7 @@ defineExpose({
       @onMouseUp="onMouseUp($event, item, index)"
       @onDragging="onDragging($event, item, index)"
       @onResizing="onResizing($event, item, index)"
-      @userViewEnlargeOpen="userViewEnlargeOpen(item)"
+      @userViewEnlargeOpen="userViewEnlargeOpen($event, item)"
       @linkJumpSetOpen="linkJumpSetOpen(item)"
       @linkageSetOpen="linkageSetOpen(item)"
     >

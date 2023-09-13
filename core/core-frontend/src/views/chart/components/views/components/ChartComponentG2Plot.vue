@@ -73,6 +73,7 @@ const calcData = (view, callback) => {
           if (!res?.drillFilters?.length) {
             dynamicAreaId.value = ''
           }
+          dvMainStore.setViewDataDetails(view.id, chartData.value)
           renderChart(res)
         }
       })

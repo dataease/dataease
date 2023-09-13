@@ -153,6 +153,7 @@ const createInit = (type, data: Tree, exec, name: string) => {
   datasetForm.pid = ''
   datasetForm.name = ''
   nodeType.value = type
+  filterText.value = ''
   placeholder.value = type === 'folder' ? '请输入文件夹名称' : '请输入数据集名称'
   dsType = data.type
   if (type === 'datasource') {
@@ -275,7 +276,7 @@ const emits = defineEmits(['finish', 'handleShowFinishPage'])
     v-loading="loading"
     :title="dialogTitle"
     v-model="createDataset"
-    width="420px"
+    :width="cmd === 'move' ? '600px' : '420px'"
     class="create-dialog"
     :before-close="resetForm"
   >

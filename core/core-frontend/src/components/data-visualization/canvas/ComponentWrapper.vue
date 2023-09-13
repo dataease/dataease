@@ -144,7 +144,7 @@ const commonBackgroundSvgInner = computed(() => {
         :index="index"
         :element="config"
         :show-position="showPosition"
-        @userViewEnlargeOpen="() => emits('userViewEnlargeOpen')"
+        @userViewEnlargeOpen="opt => emits('userViewEnlargeOpen', opt)"
       ></component-edit-bar>
       <!--边框背景-->
       <Icon

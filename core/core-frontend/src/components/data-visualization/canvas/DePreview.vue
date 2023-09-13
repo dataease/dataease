@@ -168,8 +168,13 @@ onBeforeUnmount(() => {
   clearInterval(refreshTimer.value)
 })
 
-const userViewEnlargeOpen = item => {
-  userViewEnlargeRef.value.dialogInit(canvasStyleData.value, canvasViewInfo.value[item.id], item)
+const userViewEnlargeOpen = (opt, item) => {
+  userViewEnlargeRef.value.dialogInit(
+    canvasStyleData.value,
+    canvasViewInfo.value[item.id],
+    item,
+    opt
+  )
 }
 
 defineExpose({
@@ -196,7 +201,7 @@ defineExpose({
       :style="getShapeItemShowStyle(item)"
       :show-position="showPosition"
       :search-count="searchCount"
-      @userViewEnlargeOpen="userViewEnlargeOpen(item)"
+      @userViewEnlargeOpen="userViewEnlargeOpen($event, item)"
     />
     <user-view-enlarge ref="userViewEnlargeRef"></user-view-enlarge>
   </div>

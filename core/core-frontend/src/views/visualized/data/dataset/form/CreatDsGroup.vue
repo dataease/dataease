@@ -152,13 +152,22 @@ const dfs = (arr: Tree[]) => {
     }
   })
 }
-
+const formatRootMiss = (id: string | number, treeData: Tree[]) => {
+  if (!treeData?.length) {
+    return ''
+  }
+  if (id === '0' && treeData[0].id !== '0') {
+    return treeData[0].id
+  }
+  return id
+}
 const createInit = (type, data: Tree, exec, name: string) => {
   pid.value = ''
   id.value = ''
   cmd.value = ''
   datasetForm.pid = ''
   datasetForm.name = ''
+  filterText.value = ''
   nodeType.value = type
   placeholder.value = type === 'folder' ? '请输入文件夹名称' : '请输入数据集名称'
   if (type === 'dataset') {
@@ -173,6 +182,7 @@ const createInit = (type, data: Tree, exec, name: string) => {
       if (state.tData.length && state.tData[0].name === 'root' && state.tData[0].id === '0') {
         state.tData[0].name = '数据集'
       }
+      data.id = formatRootMiss(data.id, state.tData)
       tData = [...state.tData]
       if (exec) {
         pid.value = data.pid
@@ -274,7 +284,7 @@ const emits = defineEmits(['finish'])
     :title="dialogTitle"
     v-model="createDataset"
     class="create-dialog"
-    width="420px"
+    :width="cmd === 'move' ? '600px' : '420px'"
     :before-close="resetForm"
   >
     <el-form
@@ -372,6 +382,7 @@ const emits = defineEmits(['finish'])
   overflow-y: auto;
   .custom-tree-node {
     display: flex;
+    align-items: center;
     .node-text {
       margin-left: 8.75px;
       width: 120px;

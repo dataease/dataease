@@ -43,6 +43,16 @@ export const getData = async (data): Promise<IResponse> => {
   })
 }
 
+export const innerExportDetails = async (data): Promise<IResponse> => {
+  return request.post({
+    url: '/chartData/innerExportDetails',
+    method: 'post',
+    data: data,
+    loading: true,
+    responseType: 'blob'
+  })
+}
+
 // 通过视图id获取数据
 export const getChart = async (id): Promise<IResponse> => {
   return request.post({ url: `/chart/getChart/${id}`, data: {} }).then(res => {

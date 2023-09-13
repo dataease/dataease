@@ -46,15 +46,13 @@ const checkUsername = (_rule: any, value: any, callback: any) => {
   if (!value) {
     return callback(new Error(t('common.required')))
   }
-  setTimeout(() => {
-    const pattern = '^[a-zA-Z0-9][a-zA-Z0-9\@._-]*$'
-    const reg = new RegExp(pattern)
-    if (!reg.test(value)) {
-      callback(new Error(t('login.username_format')))
-    } else {
-      callback()
-    }
-  }, 1000)
+  const pattern = '^[a-zA-Z0-9][a-zA-Z0-9\@._-]*$'
+  const reg = new RegExp(pattern)
+  if (!reg.test(value)) {
+    callback(new Error(t('login.username_format')))
+  } else {
+    callback()
+  }
 }
 
 const rules = reactive<FormRules>({

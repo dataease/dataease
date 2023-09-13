@@ -7,6 +7,7 @@ import { getGeoJson } from '@/api/map'
 import { toRaw } from 'vue'
 import { Options } from '@antv/g2plot/esm'
 import { PickOptions } from '@antv/g2plot/esm/core/plot'
+import { innerExportDetails } from '@/api/chart'
 
 // 同时支持将hex和rgb，转换成rgba
 export function hexColorToRGBA(hex, alpha) {
@@ -422,4 +423,62 @@ export const getGeoJsonFile = async (areaId: string): Promise<FeatureCollection>
     mapStore.setMap({ id: areaId, geoJson })
   }
   return toRaw(geoJson)
+}
+
+export const exportExcelDownload = chart => {
+  const fields = JSON.parse(JSON.stringify(chart.data.fields))
+  const tableRow = JSON.parse(JSON.stringify(chart.data.tableRow))
+  const excelHeader = fields.map(item => item.name)
+  const excelTypes = fields.map(item => item.deType)
+  const excelHeaderKeys = fields.map(item => item.dataeaseName)
+  let excelData = tableRow.map(item => excelHeaderKeys.map(i => item[i]))
+  const excelName = chart.title
+  let detailFields = []
+  if (chart.data.detailFields?.length) {
+    detailFields = chart.data.detailFields.map(item => {
+      return {
+        name: item.name,
+        deType: item.deType,
+        dataeaseName: item.dataeaseName
+      }
+    })
+    excelData = tableRow.map(item => {
+      return excelHeaderKeys.map(i => {
+        if (i === 'detail' && !item[i] && Array.isArray(item['details'])) {
+          const arr = item['details']
+          if (arr?.length) {
+            return arr.map(ele => detailFields.map(field => ele[field.dataeaseName]))
+          }
+          return null
+        }
+        return item[i]
+      })
+    })
+  }
+  const request = {
+    proxy: null,
+    viewId: chart.id,
+    viewName: excelName,
+    header: excelHeader,
+    details: excelData,
+    excelTypes: excelTypes,
+    excelHeaderKeys: excelHeaderKeys,
+    viewInfo: chart,
+    detailFields
+  }
+  const method = innerExportDetails
+  method(request)
+    .then(res => {
+      const blob = new Blob([res.data], { type: 'application/vnd.ms-excel' })
+      const link = document.createElement('a')
+      link.style.display = 'none'
+      link.href = URL.createObjectURL(blob)
+      link.download = excelName + '.xlsx' // 下载的文件名
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+    })
+    .catch(() => {
+      console.error('Excel download error')
+    })
 }

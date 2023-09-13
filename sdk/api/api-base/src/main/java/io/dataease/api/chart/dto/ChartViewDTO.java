@@ -29,5 +29,6 @@ public class ChartViewDTO extends ChartViewBaseDTO {
     private String datasourceType;
 
     private ChartExtRequest chartExtRequest;
+    private Boolean isExcelExport = false;
     private boolean cache;
 }

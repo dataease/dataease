@@ -139,16 +139,24 @@ const getDialogTitle = exec => {
     rename: '重命名'
   }[exec]
 }
+const placeholder = ref('')
 
 const optInit = (type, data: BusiTreeNode, exec, parentSelect = false) => {
   showParentSelected.value = parentSelect
   nodeType.value = type
   const optSource = data.leaf || type === 'leaf' ? sourceLabel.value : '文件夹'
+  placeholder.value =
+    data.leaf || type === 'leaf'
+      ? props.curCanvasType === 'dataV'
+        ? '请输入数据大屏名称'
+        : '请输入仪表板名称'
+      : '请输入文件夹名称'
+  filterText.value = ''
   dialogTitle.value = getDialogTitle(exec) + ('rename' === exec ? optSource : '')
   resourceFormNameLabel.value = (exec === 'move' ? '' : optSource) + '名称'
   const request = { busiFlag: curCanvasType.value, leaf: false, weight: 3 }
   if (['newLeaf', 'newFolder'].includes(exec)) {
-    resourceForm.name = getDialogTitle(exec)
+    resourceForm.name = ''
   } else if ('copy' === exec) {
     resourceForm.name = data.name + '-copy'
   } else {
@@ -259,9 +267,10 @@ const emits = defineEmits(['finish'])
 <template>
   <el-dialog
     v-loading="loading"
+    class="create-dialog"
     :title="dialogTitle"
     v-model="resourceDialogShow"
-    width="600px"
+    :width="cmd === 'move' ? '600px' : '420px'"
     :before-close="resetForm"
   >
     <el-form
@@ -272,7 +281,7 @@ const emits = defineEmits(['finish'])
       :rules="resourceFormRules"
     >
       <el-form-item v-if="showName" :label="resourceFormNameLabel" prop="name">
-        <el-input v-model="resourceForm.name" />
+        <el-input :placeholder="placeholder" v-model="resourceForm.name" />
       </el-form-item>
       <el-form-item v-if="showPid" :label="'所属文件夹'" prop="pid">
         <el-tree-select

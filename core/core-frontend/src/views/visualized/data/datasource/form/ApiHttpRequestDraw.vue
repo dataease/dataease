@@ -132,14 +132,9 @@ const initApiItem = (val: ApiItem) => {
 const showApiData = () => {
   apiItemBasicInfo.value.validate(valid => {
     if (valid) {
-      if (apiItem.useJsonPath && !apiItem.jsonPath) {
-        ElMessage.error(t('datasource.please_input_dataPath'))
-        return
-      }
-      apiItem.showApiStructure = true
       const data = Base64.encode(JSON.stringify(apiItem))
       loading.value = true
-      checkApiItem({ data: data }).then(response => {
+      checkApiItem({ data: data, type: 'apiStructure' }).then(response => {
         originFieldItem.jsonFields = response.data.jsonFields
       })
       loading.value = false
