@@ -195,6 +195,17 @@
             </where>
         </if>
 
+        <if test="type == 12">
+            id, access_key as name
+            from user_key
+            <where>
+                id in
+                <foreach collection="ids" item="id" index="index" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </where>
+        </if>
+
     </select>
 
 

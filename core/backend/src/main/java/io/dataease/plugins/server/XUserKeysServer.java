@@ -1,5 +1,7 @@
 package io.dataease.plugins.server;
 
+import io.dataease.auth.annotation.DeLog;
+import io.dataease.commons.constants.SysLogConstants;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.plugins.config.SpringContextUtil;
 import io.dataease.plugins.xpack.ukey.dto.request.XpackUkeyDto;
@@ -18,7 +20,6 @@ public class XUserKeysServer {
 
     @PostMapping("info")
     public List<XpackUkeyDto> getUserKeysInfo() {
-
         UkeyXpackService ukeyXpackService = SpringContextUtil.getBean(UkeyXpackService.class);
         Long userId = AuthUtils.getUser().getUserId();
         return ukeyXpackService.getUserKeysInfo(userId);
@@ -29,19 +30,33 @@ public class XUserKeysServer {
         return null;
     }
 
+    @DeLog(
+            operatetype = SysLogConstants.OPERATE_TYPE.CREATE,
+            sourcetype = SysLogConstants.SOURCE_TYPE.APIKEY,
+            value = "id"
+    )
     @PostMapping("generate")
-    public void generateUserKey() {
+    public void generateUserKey(@RequestBody XpackUkeyDto ukeyDto) {
         UkeyXpackService ukeyXpackService = SpringContextUtil.getBean(UkeyXpackService.class);
         Long userId = AuthUtils.getUser().getUserId();
-        ukeyXpackService.generateUserKey(userId);
+        XpackUkeyDto xpackUkeyDto = ukeyXpackService.generateUserKey(userId);
+        ukeyDto.setId(xpackUkeyDto.getId());
     }
 
+    @DeLog(
+            operatetype = SysLogConstants.OPERATE_TYPE.DELETE,
+            sourcetype = SysLogConstants.SOURCE_TYPE.APIKEY
+    )
     @PostMapping("delete/{id}")
     public void deleteUserKey(@PathVariable Long id) {
         UkeyXpackService ukeyXpackService = SpringContextUtil.getBean(UkeyXpackService.class);
         ukeyXpackService.deleteUserKey(id);
     }
 
+    @DeLog(
+            operatetype = SysLogConstants.OPERATE_TYPE.MODIFY,
+            sourcetype = SysLogConstants.SOURCE_TYPE.APIKEY
+    )
     @PostMapping("changeStatus/{id}")
     public void changeStatus(@PathVariable Long id) {
         UkeyXpackService ukeyXpackService = SpringContextUtil.getBean(UkeyXpackService.class);

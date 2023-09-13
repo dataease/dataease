@@ -32,36 +32,34 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.OutputStream;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class LogService {
 
     private static final String LOG_RETENTION = "30";
-    private Gson gson = new Gson();
+    private final Gson gson = new Gson();
 
     // 仪表板的额外操作 分享以及公共链接
-    private static Integer[] panel_ext_ope = {4, 5, 8, 9, 10};
+    private static final Integer[] panel_ext_ope = {4, 5, 8, 9, 10};
 
-    private static Integer[] link_ext_ope = {13, 14};
+    private static final Integer[] link_ext_ope = {13, 14};
 
     // 驱动文件操作 上传， 删除
-    private static Integer[] driver_file_ope = {11, 3};
+    private static final Integer[] driver_file_ope = {11, 3};
 
-    private static Integer[] COMMON_SOURCE = {1, 2, 3, 6, 7, 8, 9};
+    private static final Integer[] COMMON_SOURCE = {1, 2, 3, 6, 7, 8, 9, 12};
 
     // 增 改 删  针对公共资源的操作
-    private static Integer[] COMMON_SOURCE_OPERATE = {1, 2, 3};
+    private static final Integer[] COMMON_SOURCE_OPERATE = {1, 2, 3};
 
     // 授权相关操作
-    private static Integer[] AUTH_OPERATE = {6, 7};
+    private static final Integer[] AUTH_OPERATE = {6, 7};
 
     // 授权相关资源 数据源 仪表板 数据集 菜单
-    private static Integer[] AUTH_SOURCE = {1, 2, 3, 11};
+    private static final Integer[] AUTH_SOURCE = {1, 2, 3, 11};
 
 
     @Resource
@@ -108,14 +106,12 @@ public class LogService {
         List<FolderItem> results = new ArrayList<>();
 
 
-        for (int i = 0; i < COMMON_SOURCE.length; i++) {
+        for (Integer sourceVal : COMMON_SOURCE) {
 
-            Integer sourceVal = COMMON_SOURCE[i];
             String sourceTypeName = SysLogConstants.sourceTypeName(sourceVal);
 
-            for (int j = 0; j < COMMON_SOURCE_OPERATE.length; j++) {
+            for (Integer operateVal : COMMON_SOURCE_OPERATE) {
 
-                Integer operateVal = COMMON_SOURCE_OPERATE[j];
                 String operateTypeName = SysLogConstants.operateTypeName(operateVal);
                 FolderItem folderItem = new FolderItem();
                 folderItem.setId(operateVal + "-" + sourceVal);
@@ -125,23 +121,21 @@ public class LogService {
         }
 
 
-        for (int i = 0; i < driver_file_ope.length; i++) {
+        for (Integer integer : driver_file_ope) {
             SysLogConstants.SOURCE_TYPE sourceType = SysLogConstants.SOURCE_TYPE.DRIVER_FILE;
             FolderItem folderItem = new FolderItem();
-            folderItem.setId(driver_file_ope[i] + "-" + sourceType.getValue());
-            String operateTypeName = SysLogConstants.operateTypeName(driver_file_ope[i]);
+            folderItem.setId(integer + "-" + sourceType.getValue());
+            String operateTypeName = SysLogConstants.operateTypeName(integer);
             String sourceTypeName = sourceType.getName();
             folderItem.setName(Translator.get(operateTypeName) + Translator.get(sourceTypeName));
             results.add(folderItem);
         }
 
-        for (int i = 0; i < AUTH_SOURCE.length; i++) {
-            Integer sourceVal = AUTH_SOURCE[i];
+        for (Integer sourceVal : AUTH_SOURCE) {
             String sourceTypeName = SysLogConstants.sourceTypeName(sourceVal);
 
-            for (int j = 0; j < AUTH_OPERATE.length; j++) {
+            for (Integer operateVal : AUTH_OPERATE) {
 
-                Integer operateVal = AUTH_OPERATE[j];
                 String operateTypeName = SysLogConstants.operateTypeName(operateVal);
                 FolderItem folderItem = new FolderItem();
                 folderItem.setId(operateVal + "-" + sourceVal);
@@ -150,21 +144,21 @@ public class LogService {
             }
         }
 
-        for (int i = 0; i < panel_ext_ope.length; i++) {
+        for (Integer integer : panel_ext_ope) {
             SysLogConstants.SOURCE_TYPE sourceType = SysLogConstants.SOURCE_TYPE.PANEL;
             FolderItem folderItem = new FolderItem();
-            folderItem.setId(panel_ext_ope[i] + "-" + sourceType.getValue());
-            String operateTypeName = SysLogConstants.operateTypeName(panel_ext_ope[i]);
+            folderItem.setId(integer + "-" + sourceType.getValue());
+            String operateTypeName = SysLogConstants.operateTypeName(integer);
             String sourceTypeName = sourceType.getName();
             folderItem.setName(Translator.get(operateTypeName) + Translator.get(sourceTypeName));
             results.add(folderItem);
         }
 
-        for (int i = 0; i < link_ext_ope.length; i++) {
+        for (Integer integer : link_ext_ope) {
             SysLogConstants.SOURCE_TYPE sourceType = SysLogConstants.SOURCE_TYPE.LINK;
             FolderItem folderItem = new FolderItem();
-            folderItem.setId(link_ext_ope[i] + "-" + sourceType.getValue());
-            String operateTypeName = SysLogConstants.operateTypeName(link_ext_ope[i]);
+            folderItem.setId(integer + "-" + sourceType.getValue());
+            String operateTypeName = SysLogConstants.operateTypeName(integer);
             String sourceTypeName = sourceType.getName();
             folderItem.setName(Translator.get(operateTypeName) + Translator.get(sourceTypeName));
             results.add(folderItem);
@@ -194,13 +188,10 @@ public class LogService {
 
     private List<FolderItem> typesByArr(Integer[] opTypes, Integer[] sourceTypes) {
         List<FolderItem> results = new ArrayList<>();
-        for (int i = 0; i < sourceTypes.length; i++) {
-            Integer sourceVal = sourceTypes[i];
+        for (Integer sourceVal : sourceTypes) {
             String sourceTypeName = SysLogConstants.sourceTypeName(sourceVal);
 
-            for (int j = 0; j < opTypes.length; j++) {
-
-                Integer operateVal = opTypes[j];
+            for (Integer operateVal : opTypes) {
 
                 String operateTypeName = SysLogConstants.operateTypeName(operateVal);
                 FolderItem folderItem = new FolderItem();
@@ -249,7 +240,7 @@ public class LogService {
             sysLogWithBLOBs.setUserId(user.getUserId());
             sysLogWithBLOBs.setLoginName(user.getUsername());
             sysLogWithBLOBs.setNickName(user.getNickName());
-        } else if (sysLogDTO.getOperateType() == SysLogConstants.OPERATE_TYPE.LOGIN.getValue()) {
+        } else if (Objects.equals(sysLogDTO.getOperateType(), SysLogConstants.OPERATE_TYPE.LOGIN.getValue())) {
             sysLogWithBLOBs.setUserId(Long.parseLong(sysLogDTO.getSourceId()));
             sysLogWithBLOBs.setLoginName(sysLogDTO.getSourceName());
             sysLogWithBLOBs.setNickName(sysLogDTO.getSourceName());
@@ -320,7 +311,7 @@ public class LogService {
             response.setContentType("application/vnd.ms-excel");
             //文件名称
             String fileName = "DataEase操作日志";
-            String encodeFileName = URLEncoder.encode(fileName, "UTF-8");
+            String encodeFileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8);
             response.setHeader("Content-disposition", "attachment;filename=" + encodeFileName + ".xlsx");
             wb.write(outputStream);
             outputStream.flush();
