@@ -20,6 +20,7 @@ declare module '@vue/runtime-core' {
     CanvasOptBar: typeof import('./src/components/visualization/CanvasOptBar.vue')['default']
     CollapseSwitchItem: typeof import('./src/components/collapse-switch-item/src/CollapseSwitchItem.vue')['default']
     ColorButton: typeof import('./src/components/assist-button/ColorButton.vue')['default']
+    ColorScheme: typeof import('./src/components/color-scheme/src/ColorScheme.vue')['default']
     ColumnList: typeof import('./src/components/column-list/src/ColumnList.vue')['default']
     ComponentBar: typeof import('./src/components/visualization/ComponentBar.vue')['default']
     ComponentButton: typeof import('./src/components/visualization/ComponentButton.vue')['default']
