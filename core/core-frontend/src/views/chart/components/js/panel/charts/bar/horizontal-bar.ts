@@ -22,13 +22,22 @@ import {
   BAR_EDITOR_PROPERTY_INNER
 } from '@/views/chart/components/js/panel/charts/bar/common'
 import { Datum } from '@antv/g2plot/esm/types/common'
+import { useI18n } from '@/hooks/web/useI18n'
 
+const { t } = useI18n()
 const DEFAULT_DATA = []
 
 /**
  * 条形图
  */
 export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
+  axisConfig = {
+    ...this['axisConfig'],
+    yAxis: {
+      name: `${t('chart.drag_block_value_axis')} / ${t('chart.quota')}`,
+      type: 'q'
+    }
+  }
   properties = BAR_EDITOR_PROPERTY
   propertyInner = {
     ...BAR_EDITOR_PROPERTY_INNER,
@@ -42,6 +51,7 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
     xField: 'value',
     yField: 'field',
     seriesField: 'category',
+    isGroup: true,
     interactions: [
       {
         type: 'legend-active',
@@ -290,6 +300,7 @@ export class HorizontalStackBar extends HorizontalBar {
     super(name)
     this.baseOptions = {
       ...this.baseOptions,
+      isGroup: false,
       isStack: true
     }
     this.axis = [...this.axis, 'extStack']

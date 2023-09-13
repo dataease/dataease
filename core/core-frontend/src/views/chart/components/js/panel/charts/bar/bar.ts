@@ -18,7 +18,9 @@ import {
 } from '@/views/chart/components/js/panel/charts/bar/common'
 import { getPadding, setGradientColor } from '@/views/chart/components/js/panel/common/common_antv'
 import { flow as flowLeft } from 'lodash-es'
+import { useI18n } from '@/hooks/web/useI18n'
 
+const { t } = useI18n()
 const DEFAULT_DATA: any[] = []
 
 /**
@@ -80,6 +82,13 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
   }
 
   axis: AxisType[] = [...BAR_AXIS_TYPE]
+  axisConfig = {
+    ...this['axisConfig'],
+    yAxis: {
+      name: `${t('chart.drag_block_value_axis')} / ${t('chart.quota')}`,
+      type: 'q'
+    }
+  }
 
   drawChart(drawOptions: G2PlotDrawOptions<Column>): Column {
     const { chart, container, action } = drawOptions
@@ -281,6 +290,14 @@ export class StackBar extends Bar {
  * 分组柱状图
  */
 export class GroupBar extends Bar {
+  axisConfig = {
+    ...this['axisConfig'],
+    yAxis: {
+      name: `${t('chart.drag_block_value_axis')} / ${t('chart.quota')}`,
+      type: 'q',
+      limit: 1
+    }
+  }
   protected configLabel(chart: Chart, options: ColumnOptions): ColumnOptions {
     const baseOptions = super.configLabel(chart, options)
     if (baseOptions.label) {
@@ -350,6 +367,14 @@ export class GroupBar extends Bar {
  * 分组堆叠柱状图
  */
 export class GroupStackBar extends Bar {
+  axisConfig = {
+    ...this['axisConfig'],
+    yAxis: {
+      name: `${t('chart.drag_block_value_axis')} / ${t('chart.quota')}`,
+      type: 'q',
+      limit: 1
+    }
+  }
   protected configTheme(chart: Chart, options: ColumnOptions): ColumnOptions {
     const baseOptions = super.configTheme(chart, options)
     const baseTheme = baseOptions.theme as object

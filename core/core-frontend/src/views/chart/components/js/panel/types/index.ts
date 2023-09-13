@@ -86,7 +86,8 @@ export abstract class AntVAbstractChartView extends AbstractChartView {
     },
     yAxis: {
       name: `${t('chart.drag_block_value_axis')} / ${t('chart.quota')}`,
-      type: 'q'
+      type: 'q',
+      limit: 1
     }
   }
   protected constructor(library: ChartLibraryType, name: string, defaultData?: any[]) {
