@@ -39,7 +39,7 @@ import DatasetSelect from '@/views/chart/components/editor/dataset-select/Datase
 
 const snapshotStore = snapshotStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
-const { canvasCollapse, curComponent } = storeToRefs(dvMainStore)
+const { canvasCollapse, curComponent, componentData } = storeToRefs(dvMainStore)
 const router = useRouter()
 
 const { t } = useI18n()
@@ -200,6 +200,21 @@ const getFields = (id, chartId) => {
     state.quotaData = []
   }
 }
+
+const queryList = computed(() => {
+  let arr = []
+  componentData.value.forEach(com => {
+    if (com.innerType === 'VQuery') {
+      arr.push(com)
+    }
+    if ('DeTabs' === com.innerType) {
+      com.propValue.forEach(itx => {
+        arr = [...itx.componentData.filter(item => item.innerType === 'VQuery'), ...arr]
+      })
+    }
+  })
+  return arr
+})
 
 const quotaData = computed(() => {
   if (view.value?.type === 'table-info') {
@@ -432,13 +447,18 @@ const moveToQuota = e => {
   dragMoveDuplicate(state.quotaData, e, 'ds')
 }
 
-const calcData = (view, resetDrill = false) => {
+const calcData = (view, resetDrill = false, updateQuery = '') => {
   if (resetDrill) {
     useEmitt().emitter.emit('resetDrill-' + view.id, 0)
   } else {
     useEmitt().emitter.emit('calcData-' + view.id, view)
   }
   snapshotStore.recordSnapshotCache('calcData', view.id)
+  if (updateQuery === 'updateQuery') {
+    queryList.value.forEach(ele => {
+      useEmitt().emitter.emit(`updateQueryCriteria${ele.id}`)
+    })
+  }
 }
 
 const renderChart = view => {
@@ -1374,7 +1394,7 @@ const autoInsert = element => {
                       <el-button
                         type="primary"
                         class="result-style-button"
-                        @click="calcData(view, true)"
+                        @click="calcData(view, true, 'updateQuery')"
                       >
                         <span style="font-size: 12px">
                           {{ t('chart.update_chart_data') }}

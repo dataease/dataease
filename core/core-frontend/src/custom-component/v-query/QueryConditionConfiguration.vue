@@ -543,7 +543,10 @@ defineExpose({
                 <Icon name="icon_drag_outlined"></Icon>
               </el-icon>
               <div class="label flex-align-center icon" :title="element.name">
-                <el-icon v-if="element.showError" style="font-size: 16px; color: #f54a45">
+                <el-icon
+                  v-if="!element.auto && element.showError"
+                  style="font-size: 16px; color: #f54a45"
+                >
                   <icon name="icon_warning_filled"></icon>
                 </el-icon>
                 {{ element.name }}
@@ -577,8 +580,15 @@ defineExpose({
           </template>
         </draggable>
       </div>
-      <div class="chart-field">
-        <div class="title">选择关联图表及字段</div>
+      <div class="chart-field" :class="curComponent.auto && 'hidden'">
+        <div class="mask" v-if="curComponent.auto"></div>
+        <div class="title flex-align-center">
+          选择关联图表及字段 &nbsp; &nbsp;&nbsp; &nbsp;
+          <el-radio-group v-model="curComponent.auto" class="ml-4">
+            <el-radio :disabled="!curComponent.auto" :label="true">自动</el-radio>
+            <el-radio :label="false">自定义</el-radio>
+          </el-radio-group>
+        </div>
         <div class="select-all">
           <el-checkbox
             v-model="checkAll"
@@ -647,6 +657,7 @@ defineExpose({
         </div>
       </div>
       <div class="condition-configuration">
+        <div class="mask" v-if="curComponent.auto"></div>
         <div class="title">查询条件配置</div>
         <div v-show="showConfiguration && !showTypeError" class="configuration-list">
           <div class="list-item">
@@ -921,13 +932,33 @@ defineExpose({
         }
       }
     }
+    .hidden {
+      overflow-y: hidden;
+    }
+
+    .mask {
+      position: absolute;
+      top: 45px;
+      left: 0;
+      width: 100%;
+      z-index: 5;
+      background: #90939887;
+      height: calc(100% - 45px);
+    }
 
     .chart-field {
       border-right: 1px solid #dee0e3;
       height: 100%;
       padding: 16px;
       width: 474px;
+      position: relative;
       overflow-y: auto;
+
+      .flex-align-center {
+        position: sticky;
+        top: 0;
+      }
+
       .title {
         font-family: PingFang SC;
         font-size: 14px;
@@ -978,6 +1009,11 @@ defineExpose({
     .condition-configuration {
       padding: 16px;
       width: 467px;
+      position: relative;
+      .mask {
+        left: -1px;
+        width: calc(100% + 2px);
+      }
 
       .config-flag {
         color: #646a73;
