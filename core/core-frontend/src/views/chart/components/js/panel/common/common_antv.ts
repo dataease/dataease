@@ -316,7 +316,6 @@ export function getXAxis(chart: Chart) {
         const rotate = a.axisLabel.rotate
         const label = a.axisLabel.show
           ? {
-              autoHide: false,
               rotate: (rotate * Math.PI) / 180,
               style: {
                 fill: a.axisLabel.color,
