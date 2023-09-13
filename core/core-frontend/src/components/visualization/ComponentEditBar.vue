@@ -59,15 +59,24 @@
       </el-icon>
       <template #dropdown>
         <el-dropdown-menu style="width: 160px">
-          <el-dropdown-item @click="copyComponent">复制</el-dropdown-item>
+          <el-dropdown-item @click="copyComponent" v-if="barShowCheck('copy')"
+            >复制</el-dropdown-item
+          >
           <template v-if="element.innerType !== 'rich-text' && barShowCheck('enlarge')">
-            <el-dropdown-item divided @click="userViewEnlargeOpen($event, 'enlarge')"
+            <el-dropdown-item
+              :divided="showPosition === 'canvas'"
+              @click="userViewEnlargeOpen($event, 'enlarge')"
               >放大</el-dropdown-item
             >
-            <el-dropdown-item @click="userViewEnlargeOpen($event, 'details')"
+            <el-dropdown-item
+              @click="userViewEnlargeOpen($event, 'details')"
+              v-if="element.innerType !== 'rich-text' && barShowCheck('details')"
               >查看数据</el-dropdown-item
             >
-            <el-dropdown-item style="padding-right: 8px" @click="deleteComponent">
+            <el-dropdown-item
+              style="padding-right: 8px"
+              v-if="element.innerType !== 'rich-text' && barShowCheck('download')"
+            >
               <el-dropdown style="width: 100%" trigger="hover" placement="right-start">
                 <div style="width: 100%">
                   导出为
@@ -82,7 +91,9 @@
               </el-dropdown>
             </el-dropdown-item>
           </template>
-          <el-dropdown-item divided @click="deleteComponent">删除</el-dropdown-item>
+          <el-dropdown-item divided @click="deleteComponent" v-if="barShowCheck('delete')"
+            >删除</el-dropdown-item
+          >
         </el-dropdown-menu>
       </template>
     </el-dropdown>
@@ -123,8 +134,18 @@ const { t } = useI18n()
 const { emitter } = useEmitt()
 // bar所在位置可以显示的功能按钮
 const positionBarShow = {
-  canvas: ['enlarge', 'details', 'setting', 'unLinkage', 'linkageSetting', 'linkJumpSetting'],
-  preview: ['enlarge', 'details', 'unLinkage'],
+  canvas: [
+    'enlarge',
+    'details',
+    'setting',
+    'copy',
+    'delete',
+    'download',
+    'unLinkage',
+    'linkageSetting',
+    'linkJumpSetting'
+  ],
+  preview: ['enlarge', 'details', 'download', 'unLinkage'],
   multiplexing: ['multiplexing'],
   batchOpt: ['batchOpt'],
   linkage: ['linkage']
@@ -136,6 +157,9 @@ const componentTypeBarShow = {
     'enlarge',
     'details',
     'setting',
+    'copy',
+    'download',
+    'delete',
     'multiplexing',
     'batchOpt',
     'linkage',
@@ -143,7 +167,7 @@ const componentTypeBarShow = {
     'linkageSetting',
     'linkJumpSetting'
   ],
-  default: ['setting', 'multiplexing']
+  default: ['setting', 'delete', 'copy', 'multiplexing']
 }
 
 const barShowCheck = barName => {
@@ -254,6 +278,7 @@ const exportAsExcel = () => {
 }
 const exportAsImage = () => {
   // do export
+  useEmitt().emitter.emit('componentImageDownload-' + element.value.id)
 }
 const deleteComponent = () => {
   eventBus.emit('removeMatrixItem-' + canvasId.value, index.value)

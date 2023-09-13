@@ -90,7 +90,7 @@ init()
 </script>
 
 <template>
-  <div style="width: 100%">
+  <div @keydown.stop @keyup.stop style="width: 100%">
     <el-col>
       <el-form ref="functionForm" :model="state.functionForm" label-width="80px" size="small">
         <div v-show="showProperty('slider')">

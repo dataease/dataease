@@ -16,7 +16,7 @@
     >
     <el-button
       v-if="optType === 'details'"
-      icon="Picture"
+      icon="Tickets"
       size="small"
       class="export-button"
       @click="downloadViewDetails"

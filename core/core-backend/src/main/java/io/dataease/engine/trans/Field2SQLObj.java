@@ -53,7 +53,7 @@ public class Field2SQLObj {
         meta.setXFields(xFields);
     }
 
-    private static SQLObj getXFields(DatasetTableFieldDTO f, String originField, String fieldAlias) {
+    public static SQLObj getXFields(DatasetTableFieldDTO f, String originField, String fieldAlias) {
         String fieldName = "";
         if (originField != null) {
             // 处理横轴字段

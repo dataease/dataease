@@ -33,23 +33,24 @@
           @mousedown="handleBoardMouseDownOnShape"
         />
       </template>
+      <component-edit-bar
+        class="edit-bar"
+        :class="{ 'edit-bar-active': editBarShowFlag }"
+        :index="index"
+        :element="element"
+        :show-position="showPosition"
+        :canvas-id="canvasId"
+        @userViewEnlargeOpen="userViewEnlargeOpen"
+        @linkJumpSetOpen="linkJumpSetOpen"
+        @linkageSetOpen="linkageSetOpen"
+      ></component-edit-bar>
       <div
         class="shape-inner"
+        ref="componentInnerRef"
         :style="componentBackgroundStyle"
         @click="selectCurComponent"
         @mousedown="handleInnerMouseDownOnShape"
       >
-        <component-edit-bar
-          class="edit-bar"
-          :class="{ 'edit-bar-active': editBarShowFlag }"
-          :index="index"
-          :element="element"
-          :show-position="showPosition"
-          :canvas-id="canvasId"
-          @userViewEnlargeOpen="userViewEnlargeOpen"
-          @linkJumpSetOpen="linkJumpSetOpen"
-          @linkageSetOpen="linkageSetOpen"
-        ></component-edit-bar>
         <Icon v-show="element['isLock']" class="iconfont icon-suo" name="dv-lock"></Icon>
         <!--边框背景-->
         <Icon
@@ -86,12 +87,15 @@ import { hexColorToRGBA } from '@/views/chart/components/js/util'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import Icon from '@/components/icon-custom/src/Icon.vue'
 import ComponentEditBar from '@/components/visualization/ComponentEditBar.vue'
+import { useEmitt } from '@/hooks/web/useEmitt'
+import { toPng } from 'html-to-image'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
 const composeStore = composeStoreWithOut()
 const parentNode = ref(null)
 const shapeInnerRef = ref(null)
+const componentInnerRef = ref(null)
 
 const {
   curComponent,
@@ -725,6 +729,19 @@ const dragCollision = computed(() => {
   return active.value && Boolean(tabCollisionActiveId.value)
 })
 
+const htmlToImage = () => {
+  toPng(componentInnerRef.value)
+    .then(dataUrl => {
+      const a = document.createElement('a')
+      a.setAttribute('download', '视图')
+      a.href = dataUrl
+      a.click()
+    })
+    .catch(error => {
+      console.error('oops, something went wrong!', error)
+    })
+}
+
 onMounted(() => {
   parentNode.value = document.querySelector('#editor-' + canvasId.value)
   // 用于 Group 组件
@@ -739,6 +756,12 @@ onMounted(() => {
     console.log('stopAnimation')
   })
   settingAttribute()
+  useEmitt({
+    name: 'componentImageDownload-' + element.value.id,
+    callback: () => {
+      htmlToImage()
+    }
+  })
 })
 </script>
 
@@ -752,9 +775,6 @@ onMounted(() => {
   height: 100%;
   position: relative;
   background-size: 100% 100% !important;
-  .edit-bar {
-    display: none;
-  }
 }
 
 .shape-edit {
@@ -822,6 +842,9 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   position: relative;
+  .edit-bar {
+    display: none;
+  }
 }
 
 .linkage-setting {
