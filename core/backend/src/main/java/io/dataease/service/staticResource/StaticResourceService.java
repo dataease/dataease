@@ -24,6 +24,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Author: wangjiahao
@@ -65,9 +67,12 @@ public class StaticResourceService {
             LogUtil.error(e.getMessage(), e);
             return false;
         }
-        if (image == null || image.getWidth() <= 0 || image.getHeight() <= 0) {
+        Pattern pattern = Pattern.compile("\\.(png|PNG|jpg|JPG|jpeg|JPEG|gif|GIF)$");
+        Matcher matcher = pattern.matcher(file.getOriginalFilename());
+        if (image == null || image.getWidth() <= 0 || image.getHeight() <= 0 || !matcher.find()) {
             return false;
         }
+
         return true;
     }
 
