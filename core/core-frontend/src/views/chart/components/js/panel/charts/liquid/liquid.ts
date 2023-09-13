@@ -120,28 +120,6 @@ export class Liquid extends G2PlotChartView<LiquidOptions, G2Liquid> {
         }
       }
     }
-    let labelContent
-    if (customAttr.label) {
-      const label = customAttr.label
-      const labelFormatter = label.gaugeLabelFormatter ?? DEFAULT_LABEL.gaugeLabelFormatter
-      if (label.show) {
-        labelContent = {
-          style: () => ({
-            fontSize: label.fontSize,
-            color: label.color
-          }),
-          formatter: function (v) {
-            const value = v.percent
-            return valueFormatter(value, labelFormatter)
-          }
-        }
-      } else {
-        labelContent = false
-      }
-    }
-    const statistic = {
-      content: labelContent
-    }
     const label = customAttr.label
     const labelFormatter = label.gaugeLabelFormatter
     return {
@@ -149,7 +127,7 @@ export class Liquid extends G2PlotChartView<LiquidOptions, G2Liquid> {
       statistic: {
         content: {
           style: {
-            fontSize: label.fontSize.toString(),
+            fontSize: label.fontSize.toString() + 'px',
             color: label.color
           },
           formatter: function (v) {

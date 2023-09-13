@@ -93,7 +93,9 @@ const state = reactive({
   renameItem: false,
   itemForm: {
     name: '',
-    chartShowName: ''
+    chartShowName: '',
+    index: 0,
+    renameType: ''
   },
   quotaFilterEdit: false,
   quotaItem: {},
@@ -602,18 +604,34 @@ const saveRename = ref => {
   if (!ref) return
   ref.validate(valid => {
     if (valid) {
-      if (state.itemForm.renameType === 'quota') {
-        view.value.yAxis[state.itemForm.index].chartShowName = state.itemForm.chartShowName
-      } else if (state.itemForm.renameType === 'dimension') {
-        view.value.xAxis[state.itemForm.index].chartShowName = state.itemForm.chartShowName
-      } else if (state.itemForm.renameType === 'quotaExt') {
-        view.value.yAxisExt[state.itemForm.index].chartShowName = state.itemForm.chartShowName
-      } else if (state.itemForm.renameType === 'dimensionExt') {
-        view.value.xAxisExt[state.itemForm.index].chartShowName = state.itemForm.chartShowName
-      } else if (state.itemForm.renameType === 'extLabel') {
-        view.value.extLabel[state.itemForm.index].chartShowName = state.itemForm.chartShowName
-      } else if (state.itemForm.renameType === 'extTooltip') {
-        view.value.extTooltip[state.itemForm.index].chartShowName = state.itemForm.chartShowName
+      const { renameType, index, chartShowName } = state.itemForm
+      switch (renameType) {
+        case 'quota':
+          view.value.yAxis[index].chartShowName = chartShowName
+          break
+        case 'dimension':
+          view.value.xAxis[index].chartShowName = chartShowName
+          break
+        case 'quotaExt':
+          view.value.yAxisExt[index].chartShowName = chartShowName
+          break
+        case 'dimensionExt':
+          view.value.xAxisExt[index].chartShowName = chartShowName
+          break
+        case 'dimensionStack':
+          view.value.extStack[index].chartShowName = chartShowName
+          break
+        case 'extBubble':
+          view.value.extBubble[index].chartShowName = chartShowName
+          break
+        case 'extLabel':
+          view.value.extLabel[index].chartShowName = chartShowName
+          break
+        case 'extTooltip':
+          view.value.extTooltip[index].chartShowName = chartShowName
+          break
+        default:
+          break
       }
       closeRename()
     } else {

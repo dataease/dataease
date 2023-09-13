@@ -394,6 +394,19 @@ export class HorizontalPercentageStackBar extends HorizontalStackBar {
       tooltip
     }
   }
+  protected setupOptions(chart: Chart, options: BarOptions): BarOptions {
+    return flow(
+      this.configTheme,
+      this.configBasicStyle,
+      this.configLabel,
+      this.configTooltip,
+      this.configLegend,
+      this.configXAxis,
+      this.configYAxis,
+      this.configSlider,
+      this.configEmptyDataStrategy
+    )(chart, options)
+  }
 
   constructor() {
     super('percentage-bar-stack-horizontal')
@@ -401,5 +414,6 @@ export class HorizontalPercentageStackBar extends HorizontalStackBar {
       ...this.baseOptions,
       isPercent: true
     }
+    this.properties = this.properties.filter(item => item !== 'assist-line')
   }
 }

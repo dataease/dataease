@@ -463,6 +463,7 @@ const handleNodeClick = data => {
     })
     activeTab.value = ''
     activeName.value = 'config'
+    nickName.value = ''
     handleCurrentChange(1)
     handleClick(activeName.value)
   })
