@@ -1363,7 +1363,8 @@ const autoInsert = element => {
                                 v-model="view.resultCount"
                                 class="result-count"
                                 size="small"
-                                :value-on-clear="100"
+                                :value-on-clear="1000"
+                                :disabled="view.resultMode === 'all'"
                               />
                             </el-radio>
                           </el-radio-group>

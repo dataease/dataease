@@ -1226,7 +1226,7 @@ export const BASE_VIEW_CONFIG = {
   tableId: '', // 数据集id
   type: 'bar',
   render: 'antv',
-  resultCount: 100,
+  resultCount: 1000,
   resultMode: 'all',
   refreshViewEnable: false,
   refreshTime: 5,
