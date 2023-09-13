@@ -23,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.sql.*;
 import java.util.*;
 
@@ -285,6 +286,10 @@ public class JdbcProvider extends DefaultJdbcProvider {
                         break;
                     case Types.BOOLEAN:
                         row[j] = rs.getBoolean(j + 1) ? "1" : "0";
+                        break;
+                    case Types.NUMERIC:
+                        BigDecimal bigDecimal = rs.getBigDecimal(j + 1);
+                        row[j] = bigDecimal == null ? null: bigDecimal.toString();
                         break;
                     default:
                         if (metaData.getColumnTypeName(j + 1).toLowerCase().equalsIgnoreCase("blob")) {
