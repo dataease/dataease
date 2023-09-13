@@ -15,7 +15,7 @@
 
 <script setup lang="ts">
 import { toRefs } from 'vue'
-import eventBus from '@/utils/eventBus'
+import { useEmitt } from '@/hooks/web/useEmitt'
 
 const props = defineProps({
   fields: {
@@ -31,7 +31,7 @@ const props = defineProps({
 const { fields, element } = toRefs(props)
 
 const fieldSelect = field => {
-  eventBus.emit('fieldSelect-' + element.value.id, field)
+  useEmitt().emitter.emit('fieldSelect-' + element.value.id, field)
 }
 
 const fieldsAreaDown = e => {

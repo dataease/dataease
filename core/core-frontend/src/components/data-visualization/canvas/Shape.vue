@@ -144,7 +144,7 @@ const showPosition = computed(() => {
   } else if (batchOptStatus.value) {
     position = 'batchOpt'
   } else if (isEditMode.value) {
-    position = 'canvas'
+    position = dvInfo.value.type === 'dashboard' ? 'canvas' : 'canvasDataV'
   } else {
     position = 'preview'
   }
@@ -625,7 +625,9 @@ const componentBackgroundStyle = computed(() => {
 
 const editBarShowFlag = computed(() => {
   return (
-    ((active.value || batchOptStatus.value) && dashboardActive.value) || linkageSettingStatus.value
+    ((active.value || batchOptStatus.value) &&
+      ['canvas', 'canvasDataV'].includes(showPosition.value)) ||
+    linkageSettingStatus.value
   )
 })
 
