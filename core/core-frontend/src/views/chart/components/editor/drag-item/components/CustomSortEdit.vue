@@ -89,7 +89,9 @@ init()
     >
       <template #item="{ element }">
         <span :key="element.value" class="item-dimension" :title="element.value">
-          <Icon name="icon_drag_outlined" class="item-icon" @click="removeItem"></Icon>
+          <el-icon class="item-icon">
+            <Icon name="icon_drag_outlined" @click="removeItem" />
+          </el-icon>
           <span class="item-span">
             {{ element.value }}
           </span>
@@ -107,7 +109,8 @@ init()
 .item-dimension {
   padding: 2px;
   margin: 2px;
-  border: solid 1px #eee;
+  border: 1px solid #dee0e3;
+  border-radius: 4px;
   text-align: left;
   color: #606266;
   background-color: white;
@@ -117,10 +120,9 @@ init()
 }
 
 .item-icon {
-  cursor: move;
-  margin: 0 2px;
-  width: 20px;
-  height: 20px;
+  font-size: 16px;
+  margin: 0 4px;
+  color: #646a73;
 }
 
 .item-span {
