@@ -167,6 +167,7 @@ const createInit = (type, data: Tree, exec, name: string) => {
   cmd.value = ''
   datasetForm.pid = ''
   datasetForm.name = ''
+  filterText.value = ''
   nodeType.value = type
   placeholder.value = type === 'folder' ? '请输入文件夹名称' : '请输入数据集名称'
   if (type === 'dataset') {
@@ -381,6 +382,7 @@ const emits = defineEmits(['finish'])
   overflow-y: auto;
   .custom-tree-node {
     display: flex;
+    align-items: center;
     .node-text {
       margin-left: 8.75px;
       width: 120px;

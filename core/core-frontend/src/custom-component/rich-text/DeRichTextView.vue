@@ -7,8 +7,9 @@
     @keyup.stop
     @dblclick="setEdit"
   >
+    <chart-error v-if="isError" :err-msg="errMsg" />
     <Editor
-      v-if="editShow"
+      v-if="editShow && !isError"
       :id="tinymceId"
       v-model="myValue"
       style="width: 100%; height: 100%"
@@ -45,12 +46,14 @@ import { guid } from '@/views/visualized/data/dataset/form/util'
 import { getData } from '@/api/chart'
 import { storeToRefs } from 'pinia'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import ChartError from '@/views/chart/components/views/components/ChartError.vue'
+import { useEmitt } from '@/hooks/web/useEmitt'
 const snapshotStore = snapshotStoreWithOut()
 const errMsg = ref('')
 const curFields = ref([])
 const dvMainStore = dvMainStoreWithOut()
 const { canvasViewInfo } = storeToRefs(dvMainStore)
-
+const isError = ref(false)
 const props = defineProps({
   scale: {
     type: Number,
@@ -174,7 +177,12 @@ const changeRightDrawOpen = param => {
 }
 
 const viewInit = () => {
-  eventBus.on('fieldSelect-' + element.value.id, fieldSelect)
+  useEmitt({
+    name: 'fieldSelect-' + element.value.id,
+    callback: function (val) {
+      fieldSelect(val)
+    }
+  })
   tinymce.init({})
   myValue.value = assignment(element.value.propValue.textValue)
 }
@@ -248,7 +256,7 @@ const resetSelect = (node?) => {
   }
 }
 const setEdit = () => {
-  if (editStatus.value && canEdit.value === false) {
+  if (editStatus.value && canEdit.value === false && !isError.value) {
     canEdit.value = true
     element.value['editing'] = true
     myValue.value = element.value.propValue.textValue
@@ -268,11 +276,13 @@ const chartResize = () => {
 }
 
 const calcData = (view: Chart, callback) => {
+  isError.value = false
   if (view.tableId) {
     const v = JSON.parse(JSON.stringify(view))
     getData(v)
       .then(res => {
         if (res.code && res.code !== 0) {
+          isError.value = true
           errMsg.value = res.msg
         } else {
           state.data = res?.data

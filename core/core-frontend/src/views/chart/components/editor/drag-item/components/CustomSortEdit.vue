@@ -76,7 +76,7 @@ init()
 </script>
 
 <template>
-  <div>
+  <el-scrollbar height="100%" max-height="599px">
     <draggable
       v-loading="loading"
       :list="state.sortList"
@@ -96,13 +96,12 @@ init()
         </span>
       </template>
     </draggable>
-  </div>
+  </el-scrollbar>
 </template>
 
 <style lang="less" scoped>
 .drag-list {
-  overflow: auto;
-  height: 50vh;
+  height: 100%;
 }
 
 .item-dimension {
@@ -114,6 +113,7 @@ init()
   background-color: white;
   display: flex;
   align-items: center;
+  cursor: move;
 }
 
 .item-icon {
@@ -143,15 +143,11 @@ init()
 }
 
 .item-dimension:hover {
-  color: #1890ff;
-  background: #e8f4ff;
-  border-color: #a3d3ff;
-  cursor: pointer;
+  box-shadow: 0px 4px 8px 0px rgba(31, 35, 41, 0.1);
 }
 
 .blackTheme .item-dimension:hover {
   color: var(--Main);
   background: var(--ContentBG);
-  cursor: pointer;
 }
 </style>
