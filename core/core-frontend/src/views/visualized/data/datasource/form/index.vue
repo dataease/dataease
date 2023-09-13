@@ -384,7 +384,6 @@ const init = (nodeInfo: Form | Param, id?: string, res?: object) => {
     Object.assign(form, cloneDeep(defaultForm))
     pid.value = id || '0'
   }
-
   activeStep.value = Number(editDs.value)
   activeApiStep.value = activeStep.value
 
@@ -399,6 +398,7 @@ const init = (nodeInfo: Form | Param, id?: string, res?: object) => {
           excel.value.appendReplaceExcel(res)
         })
       }
+      detail.value.clearForm()
     })
   }
 }

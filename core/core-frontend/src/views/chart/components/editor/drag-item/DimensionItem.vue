@@ -286,7 +286,7 @@ getItemTagType()
                       class="sub-menu-content"
                       :class="'custom_sort' === item.sort ? 'content-active' : ''"
                     >
-                      {{ t('chart.custom_sort') }}...
+                      {{ t('chart.custom_sort') }}{{ t('chart.sort') }}
                       <el-icon class="sub-menu-content--icon">
                         <Icon name="icon_done_outlined" v-if="'custom_sort' === item.sort" />
                       </el-icon>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { PropType, reactive, watch } from 'vue'
+import { ColorScheme } from '@/components/color-scheme'
 import {
   ElCheckbox,
   ElForm,
@@ -202,6 +203,7 @@ init()
           </div>
         </div>
       </el-popover>
+      <ColorScheme></ColorScheme>
     </el-form-item>
     <el-form-item
       :label="t('chart.gradient')"

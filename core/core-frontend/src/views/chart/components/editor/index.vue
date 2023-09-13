@@ -39,7 +39,7 @@ import DatasetSelect from '@/views/chart/components/editor/dataset-select/Datase
 
 const snapshotStore = snapshotStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
-const { canvasCollapse, curComponent } = storeToRefs(dvMainStore)
+const { canvasCollapse, curComponent, componentData } = storeToRefs(dvMainStore)
 const router = useRouter()
 
 const { t } = useI18n()
@@ -93,7 +93,9 @@ const state = reactive({
   renameItem: false,
   itemForm: {
     name: '',
-    chartShowName: ''
+    chartShowName: '',
+    index: 0,
+    renameType: ''
   },
   quotaFilterEdit: false,
   quotaItem: {},
@@ -152,18 +154,22 @@ const chartViewInstance = computed(() => {
 })
 const showAxis = (axis: AxisType) => chartViewInstance.value?.axis?.includes(axis)
 watch(
-  () => view.value.type,
+  () => view.value,
   newVal => {
-    if (showAxis('area') && !state.worldTree?.length) {
-      getWorldTree().then(res => {
-        state.worldTree = [res.data]
+    if (showAxis('area')) {
+      if (!state.worldTree?.length) {
+        getWorldTree().then(res => {
+          state.worldTree = [res.data]
+          state.areaId = view.value?.customAttr?.map?.id
+        })
+      } else {
         state.areaId = view.value?.customAttr?.map?.id
-      })
+      }
     }
-    state.chartTypeOptions = [getViewConfig(newVal)]
-    state.useless = newVal
+    state.chartTypeOptions = [getViewConfig(newVal.type)]
+    state.useless = newVal.type
   },
-  { immediate: true }
+  { immediate: true, deep: false }
 )
 const treeProps = {
   label: 'name',
@@ -198,6 +204,21 @@ const getFields = (id, chartId) => {
     state.quotaData = []
   }
 }
+
+const queryList = computed(() => {
+  let arr = []
+  componentData.value.forEach(com => {
+    if (com.innerType === 'VQuery') {
+      arr.push(com)
+    }
+    if ('DeTabs' === com.innerType) {
+      com.propValue.forEach(itx => {
+        arr = [...itx.componentData.filter(item => item.innerType === 'VQuery'), ...arr]
+      })
+    }
+  })
+  return arr
+})
 
 const quotaData = computed(() => {
   if (view.value?.type === 'table-info') {
@@ -430,13 +451,18 @@ const moveToQuota = e => {
   dragMoveDuplicate(state.quotaData, e, 'ds')
 }
 
-const calcData = (view, resetDrill = false) => {
+const calcData = (view, resetDrill = false, updateQuery = '') => {
   if (resetDrill) {
     useEmitt().emitter.emit('resetDrill-' + view.id, 0)
   } else {
     useEmitt().emitter.emit('calcData-' + view.id, view)
   }
   snapshotStore.recordSnapshotCache('calcData', view.id)
+  if (updateQuery === 'updateQuery') {
+    queryList.value.forEach(ele => {
+      useEmitt().emitter.emit(`updateQueryCriteria${ele.id}`)
+    })
+  }
 }
 
 const renderChart = view => {
@@ -458,6 +484,8 @@ const onTypeChange = (render, type) => {
     view.value = chartViewInstance.setupDefaultOptions(view.value) as unknown as ChartObj
   }
   curComponent.value.innerType = type
+  state.chartTypeOptions = [getViewConfig(type)]
+  state.useless = type
   calcData(view.value, true)
 }
 
@@ -578,18 +606,34 @@ const saveRename = ref => {
   if (!ref) return
   ref.validate(valid => {
     if (valid) {
-      if (state.itemForm.renameType === 'quota') {
-        view.value.yAxis[state.itemForm.index].chartShowName = state.itemForm.chartShowName
-      } else if (state.itemForm.renameType === 'dimension') {
-        view.value.xAxis[state.itemForm.index].chartShowName = state.itemForm.chartShowName
-      } else if (state.itemForm.renameType === 'quotaExt') {
-        view.value.yAxisExt[state.itemForm.index].chartShowName = state.itemForm.chartShowName
-      } else if (state.itemForm.renameType === 'dimensionExt') {
-        view.value.xAxisExt[state.itemForm.index].chartShowName = state.itemForm.chartShowName
-      } else if (state.itemForm.renameType === 'extLabel') {
-        view.value.extLabel[state.itemForm.index].chartShowName = state.itemForm.chartShowName
-      } else if (state.itemForm.renameType === 'extTooltip') {
-        view.value.extTooltip[state.itemForm.index].chartShowName = state.itemForm.chartShowName
+      const { renameType, index, chartShowName } = state.itemForm
+      switch (renameType) {
+        case 'quota':
+          view.value.yAxis[index].chartShowName = chartShowName
+          break
+        case 'dimension':
+          view.value.xAxis[index].chartShowName = chartShowName
+          break
+        case 'quotaExt':
+          view.value.yAxisExt[index].chartShowName = chartShowName
+          break
+        case 'dimensionExt':
+          view.value.xAxisExt[index].chartShowName = chartShowName
+          break
+        case 'dimensionStack':
+          view.value.extStack[index].chartShowName = chartShowName
+          break
+        case 'extBubble':
+          view.value.extBubble[index].chartShowName = chartShowName
+          break
+        case 'extLabel':
+          view.value.extLabel[index].chartShowName = chartShowName
+          break
+        case 'extTooltip':
+          view.value.extTooltip[index].chartShowName = chartShowName
+          break
+        default:
+          break
       }
       closeRename()
     } else {
@@ -1359,7 +1403,8 @@ const autoInsert = element => {
                                 v-model="view.resultCount"
                                 class="result-count"
                                 size="small"
-                                :value-on-clear="100"
+                                :value-on-clear="1000"
+                                :disabled="view.resultMode === 'all'"
                               />
                             </el-radio>
                           </el-radio-group>
@@ -1369,7 +1414,7 @@ const autoInsert = element => {
                       <el-button
                         type="primary"
                         class="result-style-button"
-                        @click="calcData(view, true)"
+                        @click="calcData(view, true, 'updateQuery')"
                       >
                         <span style="font-size: 12px">
                           {{ t('chart.update_chart_data') }}
@@ -1775,11 +1820,11 @@ const autoInsert = element => {
     <el-dialog
       v-model="state.showCustomSort"
       v-if="state.showCustomSort"
-      :title="t('chart.custom_sort')"
+      :title="t('chart.custom_sort') + t('chart.sort')"
       :visible="state.showCustomSort"
       :close-on-click-modal="false"
-      width="500px"
-      class="dialog-css"
+      width="372px"
+      class="dialog-css custom_sort_dialog"
     >
       <custom-sort-edit
         :chart="view"
@@ -2530,5 +2575,22 @@ span {
 }
 .chart-type-hide-options {
   display: none;
+}
+
+.custom_sort_dialog {
+  max-height: calc(100vh - 120px);
+  min-height: 336px;
+
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  .ed-dialog__body {
+    flex: 1;
+  }
 }
 </style>

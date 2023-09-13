@@ -76,7 +76,7 @@ init()
 </script>
 
 <template>
-  <div>
+  <el-scrollbar height="100%" max-height="599px">
     <draggable
       v-loading="loading"
       :list="state.sortList"
@@ -89,38 +89,40 @@ init()
     >
       <template #item="{ element }">
         <span :key="element.value" class="item-dimension" :title="element.value">
-          <Icon name="icon_drag_outlined" class="item-icon" @click="removeItem"></Icon>
+          <el-icon class="item-icon">
+            <Icon name="icon_drag_outlined" @click="removeItem" />
+          </el-icon>
           <span class="item-span">
             {{ element.value }}
           </span>
         </span>
       </template>
     </draggable>
-  </div>
+  </el-scrollbar>
 </template>
 
 <style lang="less" scoped>
 .drag-list {
-  overflow: auto;
-  height: 50vh;
+  height: 100%;
 }
 
 .item-dimension {
   padding: 2px;
   margin: 2px;
-  border: solid 1px #eee;
+  border: 1px solid #dee0e3;
+  border-radius: 4px;
   text-align: left;
   color: #606266;
   background-color: white;
   display: flex;
   align-items: center;
+  cursor: move;
 }
 
 .item-icon {
-  cursor: move;
-  margin: 0 2px;
-  width: 20px;
-  height: 20px;
+  font-size: 16px;
+  margin: 0 4px;
+  color: #646a73;
 }
 
 .item-span {
@@ -143,15 +145,11 @@ init()
 }
 
 .item-dimension:hover {
-  color: #1890ff;
-  background: #e8f4ff;
-  border-color: #a3d3ff;
-  cursor: pointer;
+  box-shadow: 0px 4px 8px 0px rgba(31, 35, 41, 0.1);
 }
 
 .blackTheme .item-dimension:hover {
   color: var(--Main);
   background: var(--ContentBG);
-  cursor: pointer;
 }
 </style>

@@ -17,7 +17,7 @@ public class ExtractDataJob extends DeScheduleJob{
 
     @Override
     void businessExecute(JobExecutionContext context) {
-        datasourceSyncManage.extractData(datasetTableId, taskId, updateType, context);
+        datasourceSyncManage.extractData(datasetTableId, taskId, context);
     }
 
 }

@@ -210,12 +210,15 @@ const groupActiveChange = category => {
     background: #1a1a1a;
     border-radius: 4px;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     &:hover {
       border: 1px solid #3370ff;
     }
     .item-top-icon {
-      width: 86px;
-      height: 62px;
+      width: 80px;
+      height: 56px;
       color: @canvas-main-font-color;
     }
   }

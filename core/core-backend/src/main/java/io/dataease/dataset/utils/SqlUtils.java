@@ -86,6 +86,13 @@ public class SqlUtils {
             if (operandList.size() > 0) {
                 addTableSchema(operandList.get(0), fromOrJoin, schema, config);
             }
+        } else if (sqlNode.getKind() == IN) {
+            SqlBasicCall where = (SqlBasicCall) sqlNode;
+            if (where.getOperandList().size() >= 2) {
+                for (int i = 0; i < where.getOperandList().size(); i++) {
+                    addTableSchema(where.getOperandList().get(i), fromOrJoin, schema, config);
+                }
+            }
         }
     }
 }

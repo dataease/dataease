@@ -246,7 +246,7 @@ const getSQLPreview = () => {
 
 let tableList = []
 watch(searchTable, val => {
-  state.tableData = tableList.filter(ele => ele.name.includes(val))
+  state.tableData = tableList.filter(ele => ele.tableName.includes(val))
 })
 
 const getIconName = (type: string) => {
@@ -450,20 +450,20 @@ const mousedownDrag = () => {
         </div>
       </div>
       <div v-else class="table-checkbox-list">
-        <template v-for="ele in state.tableData" :key="ele.name">
+        <template v-for="ele in state.tableData" :key="ele.tableName">
           <div
-            :class="[{ active: activeName === ele.name }]"
+            :class="[{ active: activeName === ele.tableName }]"
             class="list-item_primary"
-            :title="ele.name"
+            :title="ele.tableName"
             @click="setActiveName(ele)"
           >
             <el-icon class="icon-color">
               <Icon name="icon_form_outlined"></Icon>
             </el-icon>
-            <span class="label">{{ ele.name }}</span>
+            <span class="label">{{ ele.tableName }}</span>
             <span class="name-copy">
               <el-tooltip effect="dark" :content="t('common.copy')" placement="top">
-                <el-icon class="hover-icon" @click="copyInfo(ele.name)">
+                <el-icon class="hover-icon" @click="copyInfo(ele.tableName)">
                   <Icon name="icon_copy_outlined"></Icon>
                 </el-icon>
               </el-tooltip>

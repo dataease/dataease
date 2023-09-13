@@ -316,7 +316,6 @@ export function getXAxis(chart: Chart) {
         const rotate = a.axisLabel.rotate
         const label = a.axisLabel.show
           ? {
-              autoHide: false,
               rotate: (rotate * Math.PI) / 180,
               style: {
                 fill: a.axisLabel.color,
@@ -460,16 +459,12 @@ export function getAnalyse(chart: Chart) {
     }
 
     const fixedLines = senior.assistLine.filter(ele => ele.field === '0')
-    const dynamicLineArr = senior.assistLine.filter(ele => ele.field === '1')
-    const l = chart.data.dynamicAssistLines
-    const dynamicLines = []
-    for (let i = 0; i < l.length; i++) {
-      for (let j = 0; j < dynamicLineArr.length; j++) {
-        if (l[i].fieldId === dynamicLineArr[j].fieldId) {
-          dynamicLines.push(l[i])
-        }
-      }
-    }
+    const dynamicLineFields = senior.assistLine
+      .filter(ele => ele.field === '1')
+      .map(item => item.fieldId)
+    const dynamicLines = chart.data.dynamicAssistLines?.filter(item =>
+      dynamicLineFields?.includes(item.fieldId)
+    )
     const lines = fixedLines.concat(dynamicLines)
 
     lines.forEach(ele => {
@@ -516,7 +511,12 @@ export function getAnalyseHorizontal(chart: Chart) {
     }
 
     const fixedLines = senior.assistLine.filter(ele => ele.field === '0')
-    const dynamicLines = chart.data.dynamicAssistLines
+    const dynamicLineFields = senior.assistLine
+      .filter(ele => ele.field === '1')
+      .map(item => item.fieldId)
+    const dynamicLines = chart.data.dynamicAssistLines?.filter(item =>
+      dynamicLineFields?.includes(item.fieldId)
+    )
     const lines = fixedLines.concat(dynamicLines)
 
     lines.forEach(ele => {
@@ -611,7 +611,25 @@ export function configL7Style(chart: Chart): AreaOptions['style'] {
 export function configL7Tooltip(chart: Chart): TooltipOptions {
   const customAttr = parseJson(chart.customAttr)
   const tooltip = customAttr.tooltip
+  const { xAxis, yAxis } = chart
   return {
+    items: [
+      {
+        field: 'name',
+        alias: xAxis?.[0]?.chartShowName ?? xAxis?.[0]?.name
+      },
+      {
+        field: 'value',
+        alias: yAxis?.[0]?.chartShowName ?? yAxis?.[0]?.name,
+        customValue: value => {
+          let formatterCfg = formatterItem
+          if (yAxis?.[0].formatterCfg) {
+            formatterCfg = yAxis?.[0].formatterCfg
+          }
+          return valueFormatter(value, formatterCfg)
+        }
+      }
+    ],
     showComponent: tooltip.show,
     domStyles: {
       'l7plot-tooltip': {

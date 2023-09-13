@@ -8,6 +8,7 @@ import { storeToRefs } from 'pinia'
 import { useI18n } from '@/hooks/web/useI18n'
 import { guid } from '@/views/visualized/data/dataset/form/util.js'
 // import { cloneDeep } from 'lodash-es'
+import { comInfo } from './com-info'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import Select from './Select.vue'
 import Time from './Time.vue'
@@ -55,6 +56,8 @@ const customStyle = reactive({ ...defaultStyle })
 const curComponentView = computed(() => {
   return (canvasViewInfo.value[element.value.id] || {}).customStyle
 })
+
+const { datasetFieldList } = comInfo(element.value.id)
 
 const filterTypeCom = (displayType: string) => {
   return ['1', '7'].includes(displayType) ? Time : Select
@@ -145,12 +148,36 @@ const { emitter } = useEmitt()
 onBeforeUnmount(() => {
   emitter.off(`addQueryCriteria${element.value.id}`)
   emitter.off(`editQueryCriteria${element.value.id}`)
+  emitter.off(`updateQueryCriteria${element.value.id}`)
   eventBus.off('componentClick', onComponentClick)
 })
+
+const updateQueryCriteria = () => {
+  Array.isArray(element.value.propValue) &&
+    element.value.propValue.forEach(ele => {
+      if (ele.auto) {
+        const componentInfo = {
+          datasetId: ele.dataset.id,
+          id: ele.field.id
+        }
+        const checkedFields = []
+        const checkedFieldsMap = {}
+        datasetFieldList.value.forEach(ele => {
+          if (ele.tableId === componentInfo.datasetId) {
+            checkedFields.push(ele.id)
+            checkedFieldsMap[ele.id] = componentInfo.id
+          }
+        })
+        ele.checkedFields = checkedFields
+        ele.checkedFieldsMap = checkedFieldsMap
+      }
+    })
+}
 
 onMounted(() => {
   emitter.on(`addQueryCriteria${element.value.id}`, addCriteriaConfigOut)
   emitter.on(`editQueryCriteria${element.value.id}`, editQueryCriteria)
+  emitter.on(`updateQueryCriteria${element.value.id}`, updateQueryCriteria)
 })
 
 const dragover = () => {
@@ -169,6 +196,7 @@ const infoFormat = (obj: ComponentInfo) => {
       name,
       deType
     },
+    auto: false,
     operator: deType === 1 ? 'between' : 'eq',
     defaultValue: '',
     selectValue: '',
@@ -195,7 +223,23 @@ const infoFormat = (obj: ComponentInfo) => {
 const drop = e => {
   const componentInfo: ComponentInfo = JSON.parse(e.dataTransfer.getData('dimension') || '{}')
   if (!componentInfo.id) return
-  addCriteriaConfigOut()
+  const checkedFields = []
+  const checkedFieldsMap = {}
+  datasetFieldList.value.forEach(ele => {
+    if (ele.tableId === componentInfo.datasetId) {
+      checkedFields.push(ele.id)
+      checkedFieldsMap[ele.id] = componentInfo.id
+    }
+  })
+  list.value.push({
+    ...infoFormat(componentInfo),
+    auto: true,
+    optionValueSource: 1,
+    checkedFields,
+    checkedFieldsMap,
+    displayType: `${componentInfo.deType}`
+  })
+  element.value.propValue = [...list.value]
 }
 
 const editeQueryConfig = (queryId: string) => {

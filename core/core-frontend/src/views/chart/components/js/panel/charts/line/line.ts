@@ -20,7 +20,9 @@ import {
 import { Label } from '@antv/g2plot/lib/types/label'
 import { IntervalGeometryLabelPosition } from '@antv/g2/lib/interface'
 import { Datum } from '@antv/g2plot/esm/types/common'
+import { useI18n } from '@/hooks/web/useI18n'
 
+const { t } = useI18n()
 const DEFAULT_DATA = []
 /**
  * 折线图
@@ -29,7 +31,13 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
   properties = LINE_EDITOR_PROPERTY
   propertyInner = LINE_EDITOR_PROPERTY_INNER
   axis: AxisType[] = [...LINE_AXIS_TYPE, 'xAxisExt']
-
+  axisConfig = {
+    ...this['axisConfig'],
+    yAxis: {
+      name: `${t('chart.drag_block_value_axis')} / ${t('chart.quota')}`,
+      type: 'q'
+    }
+  }
   drawChart(drawOptions: G2PlotDrawOptions<G2Line>): G2Line {
     const { chart, action, container } = drawOptions
     if (!chart.data.data?.length) {
