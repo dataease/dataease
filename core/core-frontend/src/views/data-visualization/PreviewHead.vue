@@ -21,8 +21,8 @@ const reload = () => {
   emit('reload', dvInfo.value.id)
 }
 
-const download = () => {
-  emit('download')
+const download = type => {
+  emit('download', type)
 }
 
 const dvEdit = () => {
@@ -97,7 +97,7 @@ watch(
             <el-dropdown
               style="width: 100%"
               trigger="hover"
-              placement="right-start"
+              placement="left-start"
               v-if="dvInfo.weight > 3"
             >
               <div style="margin-left: 15px">
@@ -107,13 +107,10 @@ watch(
               </div>
               <template #dropdown>
                 <el-dropdown-menu>
-                  <el-dropdown-item disabled icon="CopyDocument">{{
-                    t('visualization.export_to_panel')
-                  }}</el-dropdown-item>
-                  <el-dropdown-item disabled icon="Notebook">{{
+                  <el-dropdown-item @click="download('pdf')" icon="Notebook">{{
                     t('visualization.export_to_pdf')
                   }}</el-dropdown-item>
-                  <el-dropdown-item icon="Picture" @click="download()">{{
+                  <el-dropdown-item icon="Picture" @click="download('img')">{{
                     t('visualization.export_to_img')
                   }}</el-dropdown-item>
                 </el-dropdown-menu>

@@ -11,7 +11,7 @@ import UserViewEnlarge from '@/components/visualization/UserViewEnlarge.vue'
 import CanvasOptBar from '@/components/visualization/CanvasOptBar.vue'
 import { isMainCanvas } from '@/utils/canvasUtils'
 const dvMainStore = dvMainStoreWithOut()
-const { pcMatrixCount } = storeToRefs(dvMainStore)
+const { pcMatrixCount, curComponent } = storeToRefs(dvMainStore)
 
 const props = defineProps({
   canvasStyleData: {
@@ -43,6 +43,10 @@ const props = defineProps({
   previewActive: {
     type: Boolean,
     default: true
+  },
+  downloadStatus: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -53,7 +57,8 @@ const {
   canvasId,
   canvasViewInfo,
   showPosition,
-  previewActive
+  previewActive,
+  downloadStatus
 } = toRefs(props)
 const domId = 'preview-' + canvasId.value
 const scaleWidth = ref(100)
@@ -75,13 +80,28 @@ const canvasStyle = computed(() => {
     return {
       ...getCanvasStyle(canvasStyleData.value),
       height: dashboardActive.value
-        ? '100%'
+        ? downloadStatus.value
+          ? getDownloadStatusMainHeight()
+          : '100%'
         : changeStyleWithScale(canvasStyleData.value?.height, scaleWidth.value) + 'px'
     }
   } else {
     return {}
   }
 })
+
+const getDownloadStatusMainHeight = () => {
+  const children = previewCanvas.value.childNodes
+  let maxHeight = 0
+
+  children.forEach(child => {
+    const height = (child.offsetHeight || 0) + (child.offsetTop || 0)
+    if (height > maxHeight) {
+      maxHeight = height
+    }
+  })
+  return `${maxHeight}px!important`
+}
 
 const forceRender = () => {
   cellWidth.value = cellWidth.value + 0.01
@@ -100,6 +120,9 @@ watch(
 )
 
 const restore = () => {
+  if (downloadStatus.value) {
+    return
+  }
   nextTick(() => {
     if (previewCanvas.value) {
       //div容器获取tableBox.value.clientWidth
@@ -176,14 +199,22 @@ const userViewEnlargeOpen = (opt, item) => {
     opt
   )
 }
-
+const handleMouseDown = e => {
+  dvMainStore.setCurComponent({ component: null, index: null })
+}
 defineExpose({
   restore
 })
 </script>
 
 <template>
-  <div :id="domId" class="canvas-container" :style="canvasStyle" ref="previewCanvas">
+  <div
+    :id="domId"
+    class="canvas-container"
+    :style="canvasStyle"
+    ref="previewCanvas"
+    @mousedown="handleMouseDown"
+  >
     <canvas-opt-bar
       :canvas-id="canvasId"
       :canvas-style-data="canvasStyleData"
@@ -191,6 +222,7 @@ defineExpose({
     ></canvas-opt-bar>
     <ComponentWrapper
       v-for="(item, index) in componentData"
+      :active="item.id === (curComponent || {})['id']"
       :canvas-id="canvasId"
       :canvas-style-data="canvasStyleData"
       :dv-info="dvInfo"
