@@ -140,6 +140,8 @@ const nodeClick = (data: BusiTreeNode) => {
   selectedNodeKey.value = data.id
   if (data.leaf) {
     emit('nodeClick', data)
+  } else {
+    resourceListTree.value.setCurrentKey(null)
   }
 }
 
@@ -343,13 +345,13 @@ onMounted(() => {
       >
         <template #default="{ node, data }">
           <span class="custom-tree-node">
-            <el-icon v-if="!data.leaf">
+            <el-icon style="font-size: 18px" v-if="!data.leaf">
               <Icon name="dv-folder"></Icon>
             </el-icon>
-            <el-icon v-else-if="curCanvasType === 'dashboard'">
+            <el-icon style="font-size: 18px" v-else-if="curCanvasType === 'dashboard'">
               <Icon name="dv-dashboard-spine"></Icon>
             </el-icon>
-            <el-icon v-else>
+            <el-icon style="font-size: 18px" v-else>
               <Icon name="dv-screen-spine"></Icon>
             </el-icon>
             <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
