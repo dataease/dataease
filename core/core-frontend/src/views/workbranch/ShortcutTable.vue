@@ -200,9 +200,6 @@ const setLoading = (val: boolean) => {
                 <template #content>{{ scope.row.name }}</template>
                 <span class="ellipsis" style="max-width: 250px">{{ scope.row.name }}</span>
               </el-tooltip>
-              <el-icon v-if="activeName === 'store'" class="name-star">
-                <Icon name="visual-star" />
-              </el-icon>
             </div>
           </template>
         </el-table-column>
