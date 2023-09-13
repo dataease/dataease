@@ -15,7 +15,7 @@ public class Db2Configuration extends JdbcConfiguration {
     public String getJdbc() {
         if(StringUtils.isEmpty(extraParams.trim())){
             if (StringUtils.isEmpty(getSchema())) {
-                return "jdbc:db2://HOSTNAME:PORT/DATABASE:currentSchema=SCHEMA;"
+                return "jdbc:db2://HOSTNAME:PORT/DATABASE"
                         .replace("HOSTNAME", getHost().trim())
                         .replace("PORT", getPort().toString().trim())
                         .replace("DATABASE", getDataBase().trim());
