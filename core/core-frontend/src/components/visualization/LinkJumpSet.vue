@@ -16,7 +16,7 @@
             <Icon class-name="view-type-icon" :name="state.curJumpViewInfo.type" />
             {{ state.curJumpViewInfo.title }}</span
           >
-          <span class="top-area-text">所用数据集：</span>
+          <span class="top-area-text margin-left">所用数据集：</span>
           <span class="top-area-value">
             <Icon
               style="vertical-align: -0.2em"
@@ -32,8 +32,9 @@
           <el-col :span="8" style="height: 100%; overflow-y: auto">
             <el-row class="tree-head">
               <span class="head-text">选择字段</span>
-              <span class="head-filter"
-                >仅看已选 <el-switch size="small" v-model="state.showSelected" />
+              <span class="head-filter">
+                仅看已选
+                <el-switch size="small" v-model="state.showSelected" />
               </span>
             </el-row>
             <el-tree
@@ -64,7 +65,7 @@
                         <Icon
                           :name="`field_${fieldType[data.sourceDeType]}`"
                           :className="`field-icon-${fieldType[data.sourceDeType]}`"
-                        ></Icon>
+                        />
                       </el-icon>
                       {{ data.sourceFieldName }}
                     </span>
@@ -74,267 +75,289 @@
             </el-tree>
           </el-col>
           <el-col :span="16" class="preview-show">
-            <el-row v-if="state.linkJumpInfo">
-              <el-row class="content-head">
-                <div class="content-head-text">{{ t('visualization.link_type') }}</div>
-                <div>
-                  <el-radio-group
-                    v-model="state.linkJumpInfo.linkType"
-                    size="mini"
-                    @change="linkTypeChangeOpt"
-                  >
+            <el-container class="settings-container">
+              <el-header class="settings-header">
+                <el-form-item class="radio-group-box">
+                  <template #label>
+                    <span class="title">{{ t('visualization.link_type') }}</span>
+                  </template>
+                  <el-radio-group v-if="state.linkJumpInfo" v-model="state.linkJumpInfo.linkType">
                     <el-radio label="outer">{{ t('visualization.link_outer') }}</el-radio>
                     <el-radio label="inner">{{ t('visualization.link_panel') }}</el-radio>
                   </el-radio-group>
-                </div>
-              </el-row>
-              <el-row class="content-head">
-                <div class="content-head-text">{{ t('visualization.open_model') }}</div>
-                <div>
-                  <el-radio-group v-model="state.linkJumpInfo.jumpType" size="mini">
+                  <el-radio-group v-if="!state.linkJumpInfo" disabled>
+                    <el-radio label="outer">{{ t('visualization.link_outer') }}</el-radio>
+                    <el-radio label="inner">{{ t('visualization.link_panel') }}</el-radio>
+                  </el-radio-group>
+                </el-form-item>
+                <el-form-item class="radio-group-box">
+                  <template #label>
+                    <span class="title">{{ t('visualization.open_model') }}</span>
+                  </template>
+                  <el-radio-group v-if="state.linkJumpInfo" v-model="state.linkJumpInfo.jumpType">
                     <el-radio label="_self">{{ t('visualization.now_window') }}</el-radio>
                     <el-radio label="_blank">{{ t('visualization.new_window') }}</el-radio>
                   </el-radio-group>
-                </div>
-              </el-row>
-              <el-row
-                v-if="state.linkJumpInfo.linkType === 'inner'"
-                style="margin-top: 5px"
-                class="top_border"
-              >
-                <el-row class="inner-content">
-                  <el-col :span="11">当前仪表板</el-col>
-                  <el-col :span="2"></el-col>
-                  <el-col :span="11">目标仪表板</el-col>
-                </el-row>
-                <el-row style="width: 100%; padding: 0 16px">
-                  <el-col :span="11">
-                    <el-select style="width: 100%" v-model="dvInfo.name" disabled>
-                      <el-option :key="dvInfo.name" :label="dvInfo.name" :value="dvInfo.name">
-                      </el-option>
-                    </el-select>
-                  </el-col>
-                  <el-col :span="2" class="link-icon-area">
-                    <Icon style="width: 20px; height: 20px" name="dv-link-target"></Icon>
-                  </el-col>
-                  <el-col :span="11">
-                    <el-tree-select
-                      v-model="state.linkJumpInfo.targetDvId"
-                      :data="state.panelList"
-                      :props="state.dvSelectProps"
-                      :render-after-expand="false"
-                      filterable
-                      @node-click="dvNodeClick"
-                      class="dv-selector"
-                    >
-                      <template #default="{ node, data }">
-                        <el-icon v-if="data.leaf">
-                          <Icon name="dv-dashboard-spine"></Icon>
-                        </el-icon>
-                        <el-icon v-else>
-                          <Icon name="dv-folder"></Icon>
-                        </el-icon>
-                        <span :title="node.label">{{ node.label }}</span>
-                      </template>
-                    </el-tree-select>
-                  </el-col>
-                </el-row>
-                <el-row class="inner-content">
-                  <el-col :span="7"> 源字段 </el-col>
-                  <el-col :span="2"></el-col>
-                  <el-col :span="7">
-                    {{ t('visualization.link_view_field') }}
-                  </el-col>
-                  <el-col :span="8"> </el-col>
-                </el-row>
-                <el-row style="display: inline-block; max-height: 225px; overflow-y: auto">
-                  <el-row
-                    style="padding: 0 16px 8px"
-                    v-for="(targetViewInfo, index) in state.linkJumpInfo.targetViewInfoList"
-                    :key="index"
-                  >
-                    <el-col :span="7">
-                      <div class="select-filed">
-                        <el-select
-                          v-model="targetViewInfo.sourceFieldActiveId"
-                          :placeholder="'请选择字段'"
-                          style="width: 100%"
-                        >
-                          <el-option
-                            v-for="curViewField in state.linkJumpCurViewFieldArray"
-                            :key="curViewField.id"
-                            :label="curViewField.name"
-                            :value="curViewField.id"
+                  <el-radio-group v-if="!state.linkJumpInfo" disabled>
+                    <el-radio label="_self">{{ t('visualization.now_window') }}</el-radio>
+                    <el-radio label="_blank">{{ t('visualization.new_window') }}</el-radio>
+                  </el-radio-group>
+                </el-form-item>
+              </el-header>
+
+              <el-main class="settings-main">
+                <template v-if="state.linkJumpInfo">
+                  <template v-if="state.linkJumpInfo.linkType === 'inner'">
+                    <el-form label-position="top" class="main-form">
+                      <el-row :gutter="8">
+                        <el-col :span="11">
+                          <el-form-item>
+                            <template #label> 当前仪表板 </template>
+                            <el-select style="width: 100%" v-model="dvInfo.name" disabled>
+                              <el-option
+                                :key="dvInfo.name"
+                                :label="dvInfo.name"
+                                :value="dvInfo.name"
+                              >
+                              </el-option>
+                            </el-select>
+                          </el-form-item>
+                        </el-col>
+                        <el-col :span="2" class="icon-center">
+                          <Icon style="width: 20px; height: 20px" name="dv-link-target" />
+                        </el-col>
+                        <el-col :span="11">
+                          <el-form-item>
+                            <template #label> 目标仪表板 </template>
+                            <el-tree-select
+                              v-model="state.linkJumpInfo.targetDvId"
+                              :data="state.panelList"
+                              :props="state.dvSelectProps"
+                              :render-after-expand="false"
+                              filterable
+                              @node-click="dvNodeClick"
+                              class="dv-selector"
+                            >
+                              <template #default="{ node, data }">
+                                <el-icon v-if="data.leaf">
+                                  <Icon name="dv-dashboard-spine"></Icon>
+                                </el-icon>
+                                <el-icon v-else>
+                                  <Icon name="dv-folder"></Icon>
+                                </el-icon>
+                                <span :title="node.label">{{ node.label }}</span>
+                              </template>
+                            </el-tree-select>
+                          </el-form-item>
+                        </el-col>
+                      </el-row>
+
+                      <el-row :gutter="8">
+                        <el-col :span="7"> 源字段 </el-col>
+                        <el-col :span="2"></el-col>
+                        <el-col :span="7">
+                          {{ t('visualization.link_view_field') }}
+                        </el-col>
+                        <el-col :span="8"></el-col>
+                      </el-row>
+
+                      <div class="main-scrollbar-container">
+                        <el-scrollbar height="fit-content" max-height="208px">
+                          <el-row
+                            :gutter="8"
+                            style="margin-bottom: 6px"
+                            v-for="(targetViewInfo, index) in state.linkJumpInfo.targetViewInfoList"
+                            :key="index"
                           >
-                            <span style="float: left; font-size: 12px">{{
-                              curViewField.name
-                            }}</span>
-                          </el-option>
-                        </el-select>
+                            <el-col :span="8">
+                              <el-select
+                                v-model="targetViewInfo.sourceFieldActiveId"
+                                :placeholder="'请选择字段'"
+                                style="width: 100%"
+                              >
+                                <el-option
+                                  v-for="curViewField in state.linkJumpCurViewFieldArray"
+                                  :key="curViewField.id"
+                                  :label="curViewField.name"
+                                  :value="curViewField.id"
+                                >
+                                  <span style="float: left; font-size: 12px">
+                                    {{ curViewField.name }}
+                                  </span>
+                                </el-option>
+                              </el-select>
+                            </el-col>
+                            <el-col :span="1" class="icon-center">
+                              <Icon style="width: 20px; height: 20px" name="dv-link-target" />
+                            </el-col>
+                            <el-col :span="7">
+                              <el-select
+                                v-model="targetViewInfo.targetViewId"
+                                :disabled="!targetViewInfo.sourceFieldActiveId"
+                                :placeholder="'请选择视图'"
+                                style="width: 100%"
+                                size="mini"
+                                @change="viewInfoOnChange(targetViewInfo)"
+                              >
+                                <el-option
+                                  v-for="item in state.currentLinkPanelViewArray"
+                                  :key="item.id"
+                                  :label="item.title"
+                                  :value="item.id"
+                                >
+                                  <span style="float: left">
+                                    <svg-icon
+                                      :icon-class="item.type"
+                                      style="width: 14px; height: 14px"
+                                    />
+                                  </span>
+                                  <span style="float: left; font-size: 12px">{{ item.title }}</span>
+                                </el-option>
+                              </el-select>
+                            </el-col>
+                            <el-col :span="7">
+                              <el-select
+                                v-model="targetViewInfo.targetFieldId"
+                                :placeholder="'请选择字段'"
+                                :disabled="!targetViewInfo.sourceFieldActiveId"
+                                style="width: 100%"
+                                size="mini"
+                              >
+                                <el-option
+                                  v-for="viewField in state.viewIdFieldArrayMap[
+                                    targetViewInfo.targetViewId
+                                  ]"
+                                  :key="viewField.id"
+                                  :label="viewField.name"
+                                  :value="viewField.id"
+                                >
+                                  <span style="float: left">
+                                    <svg-icon
+                                      v-if="viewField.deType === 0"
+                                      icon-class="field_text"
+                                      class="field-icon-text"
+                                    />
+                                    <svg-icon
+                                      v-if="viewField.deType === 1"
+                                      icon-class="field_time"
+                                      class="field-icon-time"
+                                    />
+                                    <svg-icon
+                                      v-if="viewField.deType === 2 || viewField.deType === 3"
+                                      icon-class="field_value"
+                                      class="field-icon-value"
+                                    />
+                                    <svg-icon
+                                      v-if="viewField.deType === 5"
+                                      icon-class="field_location"
+                                      class="field-icon-location"
+                                    />
+                                  </span>
+                                  <span style="float: left; font-size: 12px">
+                                    {{ viewField.name }}
+                                  </span>
+                                </el-option>
+                              </el-select>
+                            </el-col>
+                            <el-col :span="1">
+                              <el-icon
+                                style="margin-top: 10px; cursor: pointer"
+                                @click="deleteLinkJumpField(index)"
+                              >
+                                <Delete />
+                              </el-icon>
+                            </el-col>
+                          </el-row>
+                        </el-scrollbar>
+                        <el-button
+                          style="margin-top: 8px"
+                          :disabled="!state.linkJumpInfo.targetDvId"
+                          type="primary"
+                          icon="Plus"
+                          text
+                          @click="addLinkJumpField"
+                        >
+                          {{ t('visualization.add_jump_field') }}
+                        </el-button>
                       </div>
-                    </el-col>
-                    <el-col :span="2" class="link-icon-area">
-                      <Icon style="width: 20px; height: 20px" name="dv-link-target"></Icon>
-                    </el-col>
-                    <el-col :span="7">
-                      <div class="select-filed">
-                        <el-select
-                          v-model="targetViewInfo.targetViewId"
-                          :disabled="!targetViewInfo.sourceFieldActiveId"
-                          :placeholder="'请选择视图'"
-                          style="width: 100%"
-                          size="mini"
-                          @change="viewInfoOnChange(targetViewInfo)"
-                        >
-                          <el-option
-                            v-for="item in state.currentLinkPanelViewArray"
-                            :key="item.id"
-                            :label="item.title"
-                            :value="item.id"
-                          >
-                            <span style="float: left">
-                              <svg-icon :icon-class="item.type" style="width: 14px; height: 14px" />
+                    </el-form>
+                  </template>
+
+                  <template v-if="outerContentShow">
+                    <el-row :gutter="8" class="main-form">
+                      <el-col :span="16" style="height: 100%">
+                        <div class="url-text">
+                          {{ t('visualization.target_url') }}
+                          <el-tooltip class="item" effect="dark" placement="bottom">
+                            <template #content>
+                              {{ $t('visualization.target_url_tips') }}
+                            </template>
+                            <el-icon>
+                              <Icon name="icon_info_outlined" />
+                            </el-icon>
+                          </el-tooltip>
+                        </div>
+                        <div class="outer-content-mirror">
+                          <jump-set-outer-content-editor
+                            ref="outerContentEditor"
+                            :link-jump-info="state.linkJumpInfo"
+                            :link-jump-info-array="state.linkJumpInfoArray"
+                          />
+                        </div>
+                      </el-col>
+                      <el-col :span="8" style="height: 100%">
+                        <div class="url-text">
+                          {{ t('visualization.select_world') }}
+                          <el-tooltip class="item" effect="dark" placement="bottom">
+                            <template #content>
+                              <span v-html="$t('chart.reference_field_tip')"></span>
+                            </template>
+                            <el-icon>
+                              <Icon name="icon_info_outlined" />
+                            </el-icon>
+                          </el-tooltip>
+                        </div>
+                        <div class="outer-content-right">
+                          <el-input
+                            v-model="state.searchField"
+                            :placeholder="t('dataset.search')"
+                            :prefix-icon="Search"
+                            clearable
+                          />
+                          <el-scrollbar style="margin-top: 8px" height="250px">
+                            <span
+                              v-for="item in state.linkJumpInfoArray.filter(
+                                item =>
+                                  !state.searchField ||
+                                  item.sourceFieldName.indexOf(state.searchField) > -1
+                              )"
+                              :key="item.sourceFieldId"
+                              class="item-dimension"
+                              :title="item.sourceFieldName"
+                              @click="insertFieldToCodeMirror('[' + item.sourceFieldName + ']')"
+                            >
+                              <el-icon>
+                                <Icon
+                                  :name="`field_${fieldType[item.sourceDeType]}`"
+                                  :className="`field-icon-${fieldType[item.sourceDeType]}`"
+                                />
+                              </el-icon>
+                              {{ item.sourceFieldName }}
                             </span>
-                            <span style="float: left; font-size: 12px">{{ item.title }}</span>
-                          </el-option>
-                        </el-select>
-                      </div>
-                    </el-col>
-                    <el-col :span="7">
-                      <div class="select-filed">
-                        <el-select
-                          v-model="targetViewInfo.targetFieldId"
-                          :placeholder="'请选择字段'"
-                          :disabled="!targetViewInfo.sourceFieldActiveId"
-                          style="width: 100%"
-                          size="mini"
-                        >
-                          <el-option
-                            v-for="viewField in state.viewIdFieldArrayMap[
-                              targetViewInfo.targetViewId
-                            ]"
-                            :key="viewField.id"
-                            :label="viewField.name"
-                            :value="viewField.id"
-                          >
-                            <span style="float: left">
-                              <svg-icon
-                                v-if="viewField.deType === 0"
-                                icon-class="field_text"
-                                class="field-icon-text"
-                              />
-                              <svg-icon
-                                v-if="viewField.deType === 1"
-                                icon-class="field_time"
-                                class="field-icon-time"
-                              />
-                              <svg-icon
-                                v-if="viewField.deType === 2 || viewField.deType === 3"
-                                icon-class="field_value"
-                                class="field-icon-value"
-                              />
-                              <svg-icon
-                                v-if="viewField.deType === 5"
-                                icon-class="field_location"
-                                class="field-icon-location"
-                              />
-                            </span>
-                            <span style="float: left; font-size: 12px">{{ viewField.name }}</span>
-                          </el-option>
-                        </el-select>
-                      </div>
-                    </el-col>
-                    <el-col :span="1">
-                      <el-icon
-                        style="margin-top: 10px; cursor: pointer"
-                        @click="deleteLinkJumpField(index)"
-                      >
-                        <Delete />
-                      </el-icon>
-                    </el-col>
-                  </el-row>
-                </el-row>
-                <el-row style="width: 100%; padding-left: 16px">
-                  <el-button
-                    :disabled="!state.linkJumpInfo.targetDvId"
-                    type="primary"
-                    size="mini"
-                    icon="Plus"
-                    text
-                    @click="addLinkJumpField"
-                    >{{ t('visualization.add_jump_field') }}
-                  </el-button>
-                </el-row>
-              </el-row>
-              <el-row v-if="outerContentShow" style="padding: 14px; border-top: 1px solid #e6e6e6">
-                <el-row class="url-text">
-                  {{ t('visualization.target_url') }}
-                  <el-tooltip class="item" effect="dark" placement="bottom">
-                    <template #content>
-                      {{ $t('visualization.target_url_tips') }}
-                    </template>
-                    <el-icon>
-                      <Icon name="icon_info_outlined"></Icon>
-                    </el-icon>
-                  </el-tooltip>
-                </el-row>
-                <el-row class="outer-content">
-                  <el-col :span="16" class="outer-content-mirror">
-                    <el-row style="width: 100%; height: 100%">
-                      <jump-set-outer-content-editor
-                        ref="outerContentEditor"
-                        :link-jump-info="state.linkJumpInfo"
-                        :link-jump-info-array="state.linkJumpInfoArray"
-                      ></jump-set-outer-content-editor>
+                          </el-scrollbar>
+                        </div>
+                      </el-col>
                     </el-row>
-                  </el-col>
-                  <el-col :span="8" style="height: 100%">
-                    <el-col :span="24" style="height: 100%" class="padding-lr">
-                      <span>
-                        {{ t('visualization.select_world') }}
-                        <el-tooltip class="item" effect="dark" placement="bottom">
-                          <template #content>
-                            <div v-html="t('chart.reference_field_tip')" />
-                          </template>
-                          <i class="el-icon-info" style="cursor: pointer" />
-                        </el-tooltip>
-                      </span>
-                      <el-input
-                        v-model="state.searchField"
-                        size="mini"
-                        :placeholder="t('dataset.search')"
-                        prefix-icon="el-icon-search"
-                        clearable
-                      />
-                      <div class="field-height">
-                        <span
-                          v-for="item in state.linkJumpInfoArray.filter(
-                            item =>
-                              !state.searchField ||
-                              item.sourceFieldName.indexOf(state.searchField) > -1
-                          )"
-                          :key="item.sourceFieldId"
-                          class="item-dimension"
-                          :title="item.sourceFieldName"
-                          @click="insertFieldToCodeMirror('[' + item.sourceFieldName + ']')"
-                        >
-                          <el-icon>
-                            <Icon
-                              :name="`field_${fieldType[item.sourceDeType]}`"
-                              :className="`field-icon-${fieldType[item.sourceDeType]}`"
-                            ></Icon>
-                          </el-icon>
-                          {{ item.sourceFieldName }}
-                        </span>
-                      </div>
-                    </el-col>
-                  </el-col>
-                </el-row>
-              </el-row>
-            </el-row>
-            <el-row v-else style="height: 100%" class="custom-position">
-              {{ t('visualization.select_dimension') }}
-            </el-row>
+                  </template>
+                </template>
+                <div v-else class="empty">
+                  <el-empty
+                    :description="t('visualization.select_dimension_hint')"
+                    :image-size="125"
+                  />
+                </div>
+              </el-main>
+            </el-container>
           </el-col>
         </el-row>
       </el-row>
@@ -360,13 +383,13 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { fieldType } from '@/utils/attr'
 import { storeToRefs } from 'pinia'
 import { queryTreeApi } from '@/api/visualization/dataVisualization'
-import { ElMessage } from 'element-plus-secondary'
+import { ElContainer, ElFormItem, ElHeader, ElMessage, ElScrollbar } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { getDatasetDetails, listFieldByDatasetGroup } from '@/api/dataset'
 import { BusiTreeRequest } from '@/models/tree/TreeNode'
 import { CalcFieldType } from '@/views/visualized/data/dataset/form/CalcFieldEdit.vue'
 import JumpSetOuterContentEditor from '@/components/visualization/JumpSetOuterContentEditor.vue'
-import { getPanelAllLinkageInfo, saveLinkage } from '@/api/visualization/linkage'
+import { Search } from '@element-plus/icons-vue'
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo, canvasViewInfo } = storeToRefs(dvMainStore)
 const linkJumpInfoTree = ref(null)
@@ -415,7 +438,7 @@ const state = reactive({
   linkJumpInfo: null,
   currentFiledTreeNode: null,
   defaultLinkJumpInfo: {
-    linkType: 'inner',
+    linkType: 'outer',
     jumpType: '_self',
     targetViewInfoList: []
   },
@@ -437,6 +460,7 @@ const emits = defineEmits(['closeJumpSetDialog'])
 const outerContentEditor = ref(null)
 
 const dialogInit = viewItem => {
+  console.log(viewItem)
   dialogShow.value = true
   state.initState = false
   init(viewItem)
@@ -563,7 +587,7 @@ const save = () => {
 const nodeClick = (data, node?) => {
   state.linkJumpInfo = state.mapJumpInfoArray[data.sourceFieldId]
   if (!state.linkJumpInfo.linkType) {
-    state.linkJumpInfo.linkType = 'inner'
+    state.linkJumpInfo.linkType = 'outer'
   }
   if (!state.linkJumpInfo.jumpType) {
     state.linkJumpInfo.jumpType = '_blank'
@@ -919,6 +943,69 @@ span {
   font-weight: 400;
   font-size: 14px;
   color: #646a73;
+
+  &.margin-left {
+    margin-left: 24px;
+  }
+}
+.settings-container {
+  height: 100%;
+
+  .settings-header {
+    height: 92px;
+    border-bottom: 1px solid #e6e6e6;
+
+    .radio-group-box {
+      margin-top: 8px;
+      margin-bottom: 8px;
+
+      .title {
+        color: #646a73;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+      }
+
+      :deep(.ed-radio__label) {
+        color: #1f2329;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+      }
+    }
+  }
+
+  .settings-main {
+    padding: 16px;
+    .empty {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+    }
+    .main-form {
+      height: 100%;
+      width: 100%;
+
+      .icon-center {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .main-scrollbar-container {
+        height: calc(100% - 132px);
+
+        :deep(.ed-scrollbar) {
+          height: fit-content;
+          max-height: 208px;
+        }
+      }
+    }
+  }
 }
 
 .top-area-value {
@@ -994,13 +1081,26 @@ span {
 .outer-content-mirror {
   border: 1px solid #bbbfc4;
   border-radius: 4px;
-  height: 100%;
+  height: calc(100% - 30px);
+  width: 100%;
   overflow: hidden;
 }
 .url-text {
   width: 100%;
-  line-height: 14px;
+  line-height: 22px;
   margin-bottom: 8px;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  color: #1f2329;
+}
+
+.outer-content-right {
+  border: 1px solid #bbbfc4;
+  border-radius: 4px;
+  height: calc(100% - 30px);
+  width: 100%;
+  padding: 12px;
 }
 
 .tree-select-field {
