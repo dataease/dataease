@@ -531,6 +531,19 @@ export class PercentageStackBar extends GroupStackBar {
       tooltip
     }
   }
+  protected setupOptions(chart: Chart, options: ColumnOptions): ColumnOptions {
+    return flow(
+      this.configTheme,
+      this.configBasicStyle,
+      this.configLabel,
+      this.configTooltip,
+      this.configLegend,
+      this.configXAxis,
+      this.configYAxis,
+      this.configSlider,
+      this.configEmptyDataStrategy
+    )(chart, options)
+  }
   constructor() {
     super('percentage-bar-stack')
     this.baseOptions = {
@@ -540,6 +553,7 @@ export class PercentageStackBar extends GroupStackBar {
       isGroup: false,
       groupField: undefined
     }
+    this.properties = this.properties.filter(item => item !== 'assist-line')
     this.axis = [...BAR_AXIS_TYPE, 'extStack']
   }
 }
