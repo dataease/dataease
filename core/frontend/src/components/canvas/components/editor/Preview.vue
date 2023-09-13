@@ -368,7 +368,13 @@ export default {
     },
     // 此处单独计算componentData的值 不放入全局mapState中
     componentDataInfo() {
-      return this.componentDataShow || []
+      // 处理图片src
+      return (this.componentDataShow || []).map(item => {
+        if (item.component === 'Picture') {
+          item.propValue = imgUrlTrans(item.propValue)
+        }
+        return item
+      })
     },
     ...mapState([
       'isClickComponent'
