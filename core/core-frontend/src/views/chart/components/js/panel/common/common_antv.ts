@@ -611,7 +611,25 @@ export function configL7Style(chart: Chart): AreaOptions['style'] {
 export function configL7Tooltip(chart: Chart): TooltipOptions {
   const customAttr = parseJson(chart.customAttr)
   const tooltip = customAttr.tooltip
+  const { xAxis, yAxis } = chart
   return {
+    items: [
+      {
+        field: 'name',
+        alias: xAxis?.[0]?.chartShowName ?? xAxis?.[0]?.name
+      },
+      {
+        field: 'value',
+        alias: yAxis?.[0]?.chartShowName ?? yAxis?.[0]?.name,
+        customValue: value => {
+          let formatterCfg = formatterItem
+          if (yAxis?.[0].formatterCfg) {
+            formatterCfg = yAxis?.[0].formatterCfg
+          }
+          return valueFormatter(value, formatterCfg)
+        }
+      }
+    ],
     showComponent: tooltip.show,
     domStyles: {
       'l7plot-tooltip': {

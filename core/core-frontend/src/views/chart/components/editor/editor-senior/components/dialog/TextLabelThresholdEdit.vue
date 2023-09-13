@@ -93,7 +93,7 @@ init()
         <Icon name="icon_add_outlined"></Icon>
       </template>
     </el-button>
-    <div style="max-height: 50vh; overflow-y: auto">
+    <div @keydown.stop @keyup.stop style="max-height: 50vh; overflow-y: auto">
       <el-row v-for="(item, index) in state.thresholdArr" :key="index" class="line-item">
         <el-col :span="6">
           <el-select v-model="item.term" @change="changeThreshold">

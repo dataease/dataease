@@ -7,7 +7,7 @@
         'bar-main-background': mainBackgroundShow
       }
     ]"
-    @click.stop
+    @mousedown="fieldsAreaDown"
   >
     <template v-if="element.component === 'VQuery' && showPosition === 'canvas'">
       <span title="添加查询条件">
@@ -119,6 +119,7 @@ import LinkageField from '@/components/visualization/LinkageField.vue'
 import { getViewLinkageGather } from '@/api/visualization/linkage'
 import { copyStoreWithOut } from '@/store/modules/data-visualization/copy'
 import { exportExcelDownload } from '@/views/chart/components/js/util'
+import FieldsList from '@/custom-component/rich-text/FieldsList.vue'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const copyStore = copyStoreWithOut()
@@ -167,7 +168,7 @@ const componentTypeBarShow = {
     'linkageSetting',
     'linkJumpSetting'
   ],
-  default: ['setting', 'multiplexing']
+  default: ['setting', 'delete', 'copy', 'multiplexing']
 }
 
 const barShowCheck = barName => {
@@ -264,6 +265,8 @@ const showEditPosition = computed(() => {
     } else {
       return 'bar-main-right'
     }
+  } else if (showPosition.value === 'canvasDataV') {
+    return 'bar-main-right'
   } else {
     return 'bar-main-preview-right-inner'
   }
@@ -380,12 +383,13 @@ const linkJumpSetOpen = () => {
 
 const fieldsAreaDown = e => {
   // ignore
+  e.stopPropagation()
   e.preventDefault()
 }
 
 const selectFieldShow = computed(() => {
   return (
-    showPosition.value === 'canvas' &&
+    ['canvasDataV', 'canvas'].includes(showPosition.value) &&
     curComponent.value?.innerType === 'rich-text' &&
     curComponent.value.editing
   )

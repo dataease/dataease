@@ -152,18 +152,20 @@ const chartViewInstance = computed(() => {
 })
 const showAxis = (axis: AxisType) => chartViewInstance.value?.axis?.includes(axis)
 watch(
-  () => view.value.type,
+  () => view.value,
   newVal => {
-    if (showAxis('area') && !state.worldTree?.length) {
-      getWorldTree().then(res => {
-        state.worldTree = [res.data]
-        state.areaId = view.value?.customAttr?.map?.id
-      })
+    if (showAxis('area')) {
+      if (!state.worldTree?.length) {
+        getWorldTree().then(res => {
+          state.worldTree = [res.data]
+        })
+      }
+      state.areaId = view.value?.customAttr?.map?.id
     }
-    state.chartTypeOptions = [getViewConfig(newVal)]
-    state.useless = newVal
+    state.chartTypeOptions = [getViewConfig(newVal.type)]
+    state.useless = newVal.type
   },
-  { immediate: true }
+  { immediate: true, deep: false }
 )
 const treeProps = {
   label: 'name',
@@ -458,6 +460,8 @@ const onTypeChange = (render, type) => {
     view.value = chartViewInstance.setupDefaultOptions(view.value) as unknown as ChartObj
   }
   curComponent.value.innerType = type
+  state.chartTypeOptions = [getViewConfig(type)]
+  state.useless = type
   calcData(view.value, true)
 }
 
@@ -1359,7 +1363,8 @@ const autoInsert = element => {
                                 v-model="view.resultCount"
                                 class="result-count"
                                 size="small"
-                                :value-on-clear="100"
+                                :value-on-clear="1000"
+                                :disabled="view.resultMode === 'all'"
                               />
                             </el-radio>
                           </el-radio-group>

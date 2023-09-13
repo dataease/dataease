@@ -8,7 +8,7 @@
     top="10vh"
     trigger="click"
   >
-    <el-row v-if="state.initState" style="height: 550px">
+    <div @keydown.stop @keyup.stop v-if="state.initState" style="height: 550px">
       <el-row style="flex-direction: row">
         <div class="top-area">
           <span class="top-area-text">已选图表：</span>
@@ -344,7 +344,7 @@
           >{{ t('dataset.confirm') }}
         </el-button>
       </el-row>
-    </el-row>
+    </div>
   </el-dialog>
 </template>
 
