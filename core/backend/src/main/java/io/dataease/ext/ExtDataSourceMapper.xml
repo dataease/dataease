@@ -18,52 +18,7 @@
         </collection>
     </resultMap>
 
-    <select id="query" parameterType="io.dataease.ext.query.GridExample" resultMap="BaseResultMapDTO">
-        select datasource.*,
-        authInfo.privileges as `privileges`
-        from (select GET_V_AUTH_MODEL_ID_P_USE (#{extendCondition}, 'link') cids) t,datasource
-        left join (
-        SELECT
-        auth_source,
-        group_concat( DISTINCT sys_auth_detail.privilege_extend ) as `privileges`
-        FROM
-        (
-        `sys_auth`
-        LEFT JOIN `sys_auth_detail` ON ((
-        `sys_auth`.`id` = `sys_auth_detail`.`auth_id`
-        )))
-        WHERE
-        sys_auth_detail.privilege_value = 1
-        AND sys_auth.auth_source_type = 'link'
-        AND (
-        (
-        sys_auth.auth_target_type = 'dept'
-        AND sys_auth.auth_target IN ( SELECT dept_id FROM sys_user WHERE user_id = #{extendCondition} )
-        )
-        OR (
-        sys_auth.auth_target_type = 'user'
-        AND sys_auth.auth_target = #{extendCondition}
-        )
-        OR (
-        sys_auth.auth_target_type = 'role'
-        AND sys_auth.auth_target IN ( SELECT role_id FROM sys_users_roles WHERE user_id = #{extendCondition} )
-        )
-        )
-        GROUP BY
-        `sys_auth`.`auth_source`
-        ) authInfo
-        on datasource.id = authInfo.auth_source
-        <if test="_parameter != null">
-            <include refid="io.dataease.ext.query.GridSql.gridCondition"/>
-        </if>
-        and FIND_IN_SET(datasource.id,cids)
-        <if test="orderByClause != null">
-            order by ${orderByClause}
-        </if>
-        <if test="orderByClause == null">
-            order by update_time desc
-        </if>
-    </select>
+
 
     <select id="queryUnion" resultMap="BaseResultMapDTO">
         select datasource.*,

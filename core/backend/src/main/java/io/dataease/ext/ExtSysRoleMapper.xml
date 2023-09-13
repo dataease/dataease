@@ -9,18 +9,22 @@
         <result property="name" column="name"/>
     </resultMap>
 
-    <select id="query" parameterType="io.dataease.ext.query.GridExample" resultMap="io.dataease.plugins.common.base.mapper.SysRoleMapper.BaseResultMap">
-        select r.*
-        from sys_role r
-        <if test="_parameter != null">
-            <include refid="io.dataease.ext.query.GridSql.gridCondition" />
+    <select id="query" parameterType="io.dataease.plugins.common.request.KeywordRequest" resultMap="io.dataease.plugins.common.base.mapper.SysRoleMapper.BaseResultMap">
+        select r.* from sys_role r
+        <if test="keyword != null">
+            where name like concat('%', #{keyword} , '%')
         </if>
-        <if test="orderByClause != null">
-            order by ${orderByClause}
-        </if>
-        <if test="orderByClause == null">
-            order by r.update_time desc
-        </if>
+        <choose>
+            <when test="orders!=null and orders.size > 0">
+                order by
+                <foreach collection="orders" item="item" open='' separator=',' close=''>
+                    ${item}
+                </foreach>
+            </when>
+            <otherwise>
+                order by create_time desc
+            </otherwise>
+        </choose>
 
     </select>
 

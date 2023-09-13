@@ -8,8 +8,8 @@ import io.dataease.commons.constants.DePermissionType;
 import io.dataease.commons.constants.ResourceAuthLevel;
 import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
+import io.dataease.controller.dataset.request.DatasetTaskGridRequest;
 import io.dataease.controller.request.dataset.DataSetTaskRequest;
-import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.dto.dataset.DataSetTaskDTO;
 import io.dataease.plugins.common.base.domain.DatasetTableTask;
 import io.dataease.service.dataset.DataSetTableTaskLogService;
@@ -77,7 +77,7 @@ public class DataSetTableTaskController {
 
     @ApiOperation("分页查询")
     @PostMapping("/pageList/{goPage}/{pageSize}")
-    public Pager<List<DataSetTaskDTO>> taskList(@PathVariable int goPage, @PathVariable int pageSize, @RequestBody BaseGridRequest request) {
+    public Pager<List<DataSetTaskDTO>> taskList(@PathVariable int goPage, @PathVariable int pageSize, @RequestBody DatasetTaskGridRequest request) {
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
 
         Pager<List<DataSetTaskDTO>> listPager = PageUtils.setPageInfo(page, dataSetTableTaskService.taskList4User(request));

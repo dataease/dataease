@@ -322,9 +322,9 @@ export default {
     },
     formatCondition() {
       const fildMap = {
-        'r.role_id': this.activeRole,
-        'd.dept_id': this.activeDept,
-        'u.enabled': this.activeStatus
+        'r.role_id_list': this.activeRole,
+        'd.dept_id_list': this.activeDept,
+        'u.enabled_list': this.activeStatus
       }
       const conditions = []
       Object.keys(fildMap).forEach((ele) => {

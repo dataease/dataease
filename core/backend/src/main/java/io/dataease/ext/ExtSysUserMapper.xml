@@ -33,7 +33,7 @@
     </resultMap>
 
 
-    <select id="query" parameterType="io.dataease.ext.query.GridExample" resultMap="BaseResultMap">
+    <select id="query" parameterType="io.dataease.controller.sys.request.UserGridRequest" resultMap="BaseResultMap">
         SELECT DISTINCT
         u.*,
         u.user_id AS id,
@@ -42,26 +42,50 @@
         FROM
         (
         select * from sys_user
-        <if test="extendCondition != null">
+        <if test="keyword != null">
             where
-            nick_name like concat('%', #{extendCondition} , '%')
+            nick_name like concat('%', #{keyword} , '%')
             or
-            email like concat('%', #{extendCondition} , '%')
+            email like concat('%', #{keyword} , '%')
         </if>
         ) u
         LEFT JOIN sys_dept d ON d.dept_id = u.dept_id
         LEFT JOIN sys_users_roles sur ON sur.user_id = u.user_id
         LEFT JOIN sys_role r ON r.role_id = sur.role_id
+        where 1 = 1
 
-        <if test="_parameter != null">
-            <include refid="io.dataease.ext.query.GridSql.gridCondition"/>
+        <if test="roleIdList != null and roleIdList.size() > 0">
+            and r.role_id in
+            <foreach collection="roleIdList" item="roleId" open='(' separator=',' close=')'>
+                #{roleId}
+            </foreach>
         </if>
-        <if test="orderByClause != null">
-            order by ${orderByClause}
+        <if test="deptIdList != null and deptIdList.size() > 0">
+            and d.dept_id in
+            <foreach collection="deptIdList" item="deptId" open='(' separator=',' close=')'>
+                #{deptId}
+            </foreach>
         </if>
-        <if test="orderByClause == null">
-            order by u.update_time desc
+        <if test="enabledList != null and enabledList.size() > 0">
+            and u.enabled in
+            <foreach collection="enabledList" item="en" open='(' separator=',' close=')'>
+                #{en}
+            </foreach>
         </if>
+
+        <choose>
+            <when test="orders!=null and orders.size > 0">
+                order by
+                <foreach collection="orders" item="item" open='' separator=',' close=''>
+                    ${item}
+                </foreach>
+            </when>
+            <otherwise>
+                order by u.update_time desc
+            </otherwise>
+        </choose>
+
+
     </select>
 
     <select id="queryRole" resultMap="sysUserRole">

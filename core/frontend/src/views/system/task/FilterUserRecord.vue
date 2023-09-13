@@ -308,7 +308,7 @@ export default {
     formatCondition() {
       const fildMap = {
         'dataset_table_task.last_exec_status': this.active.execStatus,
-        'dataset_table.id': this.activeDataset
+        'dataset_table.tableId': this.activeDataset
       }
       const conditions = []
       Object.keys(fildMap).forEach((ele) => {

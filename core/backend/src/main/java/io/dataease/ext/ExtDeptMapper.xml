@@ -12,9 +12,14 @@
     </select>
 
 
-    <select id="nodesByExample" parameterType="io.dataease.ext.query.GridExample" resultMap="simpleNode">
-        select dept_id as id, pid from sys_dept
-        <include refid="io.dataease.ext.query.GridSql.gridCondition" />
+    <select id="nodesByExample" parameterType="io.dataease.plugins.xpack.dept.dto.request.XpackDeptGridRequest" resultMap="simpleNode">
+        select dept_id as id, pid from sys_dept where 1=1
+        <if test="pid != null">
+            and pid = #{pid}
+        </if>
+        <if test="keyword != null">
+            and name like concat('%', #{keyword}, '%')
+        </if>
     </select>
 
 

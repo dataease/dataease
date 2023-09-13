@@ -3,10 +3,10 @@ package io.dataease.controller.sys;
 import io.dataease.auth.annotation.SqlInjectValidator;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.controller.ResultHolder;
-import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.controller.sys.response.DeptNodeResponse;
 import io.dataease.controller.sys.response.DeptTreeNode;
 import io.dataease.plugins.common.base.domain.SysDept;
+import io.dataease.plugins.xpack.dept.dto.request.XpackDeptGridRequest;
 import io.dataease.service.sys.DeptService;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +42,7 @@ public class SysDeptController extends ResultHolder {
 
     @PostMapping("/search")
     @SqlInjectValidator({"name"})
-    public List<DeptNodeResponse> search(@RequestBody BaseGridRequest request){
+    public List<DeptNodeResponse> search(@RequestBody XpackDeptGridRequest request){
         List<SysDept> nodes = deptService.nodesTreeByCondition(request);
         List<DeptNodeResponse> nodeResponses = nodes.stream().map(node -> {
             DeptNodeResponse deptNodeResponse = BeanUtils.copyBean(new DeptNodeResponse(), node);
