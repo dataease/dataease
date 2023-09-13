@@ -184,8 +184,8 @@ const executeVersionHandler = (response: AxiosResponse) => {
   }
   if (executeVersion && executeVersion !== cacheVal) {
     wsCache.set(key, executeVersion)
-    ElMessageBox.confirm('升级提示', {
-      confirmButtonType: 'danger',
+    ElMessageBox.confirm('系统有升级，请点击刷新页面', {
+      confirmButtonType: 'primary',
       type: 'warning',
       confirmButtonText: '刷新',
       cancelButtonText: '取消',
