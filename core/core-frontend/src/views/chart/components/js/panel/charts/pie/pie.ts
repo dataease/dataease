@@ -186,7 +186,7 @@ export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
     const customAttr = parseJson(chart.customAttr)
     return {
       ...options,
-      radius: customAttr.basicStyle.radius
+      radius: customAttr.basicStyle.radius / 100
     }
   }
   setupDefaultOptions(chart: ChartObj): ChartObj {
