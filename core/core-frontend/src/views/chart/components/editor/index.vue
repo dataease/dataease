@@ -160,9 +160,11 @@ watch(
       if (!state.worldTree?.length) {
         getWorldTree().then(res => {
           state.worldTree = [res.data]
+          state.areaId = view.value?.customAttr?.map?.id
         })
+      } else {
+        state.areaId = view.value?.customAttr?.map?.id
       }
-      state.areaId = view.value?.customAttr?.map?.id
     }
     state.chartTypeOptions = [getViewConfig(newVal.type)]
     state.useless = newVal.type
