@@ -47,6 +47,7 @@ import { getData } from '@/api/chart'
 import { storeToRefs } from 'pinia'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import ChartError from '@/views/chart/components/views/components/ChartError.vue'
+import { useEmitt } from '@/hooks/web/useEmitt'
 const snapshotStore = snapshotStoreWithOut()
 const errMsg = ref('')
 const curFields = ref([])
@@ -176,7 +177,12 @@ const changeRightDrawOpen = param => {
 }
 
 const viewInit = () => {
-  eventBus.on('fieldSelect-' + element.value.id, fieldSelect)
+  useEmitt({
+    name: 'fieldSelect-' + element.value.id,
+    callback: function (val) {
+      fieldSelect(val)
+    }
+  })
   tinymce.init({})
   myValue.value = assignment(element.value.propValue.textValue)
 }
