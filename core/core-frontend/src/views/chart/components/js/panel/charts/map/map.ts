@@ -104,9 +104,7 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       state: {
         active: { stroke: 'green', lineWidth: 1 }
       },
-      tooltip: {
-        items: ['name', 'value']
-      },
+      tooltip: {},
       zoom: {
         position: 'bottomright'
       },

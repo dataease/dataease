@@ -82,6 +82,7 @@ declare interface Axis {
   name: string
   dataeaseName: string
   formatterCfg: BaseFormatter
+  chartShowName: string
 }
 declare interface ChartViewField {
   name: string
