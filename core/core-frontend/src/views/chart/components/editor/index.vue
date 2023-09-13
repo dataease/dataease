@@ -1775,11 +1775,11 @@ const autoInsert = element => {
     <el-dialog
       v-model="state.showCustomSort"
       v-if="state.showCustomSort"
-      :title="t('chart.custom_sort')"
+      :title="t('chart.custom_sort') + t('chart.sort')"
       :visible="state.showCustomSort"
       :close-on-click-modal="false"
-      width="500px"
-      class="dialog-css"
+      width="372px"
+      class="dialog-css custom_sort_dialog"
     >
       <custom-sort-edit
         :chart="view"
@@ -2530,5 +2530,22 @@ span {
 }
 .chart-type-hide-options {
   display: none;
+}
+
+.custom_sort_dialog {
+  max-height: calc(100vh - 120px);
+  min-height: 336px;
+
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  .ed-dialog__body {
+    flex: 1;
+  }
 }
 </style>
