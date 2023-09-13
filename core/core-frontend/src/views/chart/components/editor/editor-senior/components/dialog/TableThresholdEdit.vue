@@ -264,7 +264,7 @@ init()
         <Icon name="icon_add_outlined"></Icon>
       </template>
     </el-button>
-    <div style="max-height: 50vh; overflow-y: auto">
+    <div @keydown.stop @keyup.stop style="max-height: 50vh; overflow-y: auto">
       <div
         v-for="(fieldItem, fieldIndex) in state.thresholdArr"
         :key="fieldIndex"

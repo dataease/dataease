@@ -56,7 +56,7 @@ init()
 </script>
 
 <template>
-  <div :style="{ width: '100%', display: 'block' }">
+  <div :style="{ width: '100%', display: 'block' }" @keydown.stop @keyup.stop>
     <el-row class="scroll-style">
       <el-form ref="scrollForm" :model="state.scrollForm" label-width="80px">
         <el-form-item :label="t('chart.scroll')" class="form-item">

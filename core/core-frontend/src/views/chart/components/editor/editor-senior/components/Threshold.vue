@@ -216,8 +216,9 @@ init()
 </script>
 
 <template>
-  <div style="width: 100%">
+  <div @keydown.stop @keyup.stop style="width: 100%">
     <!--仪表盘-->
+    <span>------</span>
     <el-col v-show="showProperty('gaugeThreshold')">
       <el-form ref="thresholdForm" :model="state.thresholdForm" label-width="80px">
         <el-form-item
