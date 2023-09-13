@@ -775,9 +775,6 @@ onMounted(() => {
   height: 100%;
   position: relative;
   background-size: 100% 100% !important;
-  .edit-bar {
-    display: none;
-  }
 }
 
 .shape-edit {
@@ -845,6 +842,9 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   position: relative;
+  .edit-bar {
+    display: none;
+  }
 }
 
 .linkage-setting {
