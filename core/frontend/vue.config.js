@@ -17,7 +17,7 @@ const name = defaultSettings.title || 'vue Admin Template' // page title
 const port = process.env.port || process.env.npm_config_port || 9528 // dev port
 const parallel = process.env.NODE_ENV === 'development'
 module.exports = {
-  productionSourceMap: true,
+  productionSourceMap: false,
   parallel,
   // 使用mock-server
   devServer: {

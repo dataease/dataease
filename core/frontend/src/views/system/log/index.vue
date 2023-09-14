@@ -146,6 +146,7 @@ import GridTable from '@/components/gridTable/index.vue'
 import filterUser from './FilterUser'
 import _ from 'lodash'
 import keyEnter from '@/components/msgCfm/keyEnter.js'
+import { buildParam } from '@/utils/GridConditionUtil'
 import {
   addOrder,
   formatOrders
@@ -197,13 +198,8 @@ export default {
         })
     },
     exportData() {
-      const param = {
-        orders: formatOrders(this.orderConditions),
-        conditions: [...this.cacheCondition]
-      }
-      if (this.nickName) {
-        param.keyWord = this.nickName
-      }
+      const param = buildParam(this.cacheCondition, this.nickName)
+      param.orders = formatOrders(this.orderConditions)
 
       exportExcel(param).then((res) => {
         const blob = new Blob([res], { type: 'application/vnd.ms-excel' })
@@ -289,13 +285,9 @@ export default {
       this.$refs.filterUser.init()
     },
     search() {
-      const param = {
-        orders: formatOrders(this.orderConditions),
-        conditions: [...this.cacheCondition]
-      }
-      if (this.nickName) {
-        param.keyWord = this.nickName
-      }
+      const param = buildParam(this.cacheCondition, this.nickName)
+      param.orders = formatOrders(this.orderConditions)
+
       const { currentPage, pageSize } = this.paginationConfig
       logGrid(currentPage, pageSize, param).then((response) => {
         this.data = response.data.listObject

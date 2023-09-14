@@ -20,7 +20,6 @@ import io.dataease.commons.utils.Pager;
 import io.dataease.controller.sys.response.DeptNodeResponse;
 import io.dataease.dto.SysLogDTO;
 import io.dataease.listener.util.CacheUtils;
-import io.dataease.plugins.common.entity.XpackGridRequest;
 import io.dataease.plugins.config.SpringContextUtil;
 import io.dataease.plugins.xpack.dept.dto.request.*;
 import io.dataease.plugins.xpack.dept.dto.response.DeptUserItemDTO;
@@ -33,7 +32,6 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -64,17 +62,16 @@ public class XDeptServer {
 
     @ApiOperation("搜索组织树")
     @PostMapping("/search")
-    public List<DeptNodeResponse> search(@RequestBody XpackGridRequest request){
+    public List<DeptNodeResponse> search(@RequestBody XpackDeptGridRequest request){
         DeptXpackService deptService = SpringContextUtil.getBean(DeptXpackService.class);
         List<XpackSysDept> nodes = deptService.nodesTreeByCondition(request);
-        List<DeptNodeResponse> nodeResponses = nodes.stream().map(node -> {
+        return nodes.stream().map(node -> {
             DeptNodeResponse deptNodeResponse = BeanUtils.copyBean(new DeptNodeResponse(), node);
             deptNodeResponse.setHasChildren(node.getSubCount() > 0);
             deptNodeResponse.setLeaf(node.getSubCount() == 0);
             deptNodeResponse.setTop(node.getPid() == 0L);
             return deptNodeResponse;
         }).collect(Collectors.toList());
-        return nodeResponses;
     }
 
     @ApiIgnore

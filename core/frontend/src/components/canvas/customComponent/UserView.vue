@@ -433,7 +433,7 @@ export default {
       const trackMenuInfo = []
       let linkageCount = 0
       let jumpCount = 0
-      if(this.drillFilters.length && !this.chart.type.includes('table')){
+      if (this.drillFilters.length && !this.chart.type.includes('table')) {
         const checkItem = this.drillFields[this.drillFilters.length]
         const sourceInfo = this.chart.id + '#' + checkItem.id
         if (this.nowPanelTrackInfo[sourceInfo]) {
@@ -442,7 +442,7 @@ export default {
         if (this.nowPanelJumpInfo[sourceInfo]) {
           jumpCount++
         }
-      }else{
+      } else {
         this.chart.data && this.chart.data.fields && this.chart.data.fields.forEach(item => {
           const sourceInfo = this.chart.id + '#' + item.id
           if (this.nowPanelTrackInfo[sourceInfo]) {
@@ -634,7 +634,7 @@ export default {
     },
     exportViewImg() {
       this.imageDownloading = true
-      this.$refs['userViewDialog'].exportViewImg(()=>{
+      this.$refs['userViewDialog'].exportViewImg(() => {
         this.imageDownloading = false
       })
     },

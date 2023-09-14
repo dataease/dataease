@@ -19,13 +19,12 @@ import io.dataease.commons.constants.*;
 import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.*;
 import io.dataease.controller.ResultHolder;
+import io.dataease.controller.dataset.request.DataSetTaskInstanceGridRequest;
 import io.dataease.controller.request.dataset.DataSetExportRequest;
 import io.dataease.controller.request.dataset.DataSetGroupRequest;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.controller.request.dataset.DataSetTaskRequest;
 import io.dataease.controller.response.DataSetDetail;
-import io.dataease.controller.sys.base.BaseGridRequest;
-import io.dataease.controller.sys.base.ConditionEntity;
 import io.dataease.dto.SysLogDTO;
 import io.dataease.dto.dataset.*;
 import io.dataease.dto.dataset.union.UnionDTO;
@@ -794,14 +793,9 @@ public class DataSetTableService {
                 logger.error(e.getMessage());
                 DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
             }
-            BaseGridRequest request = new BaseGridRequest();
-            ConditionEntity entity2 = new ConditionEntity();
-            entity2.setField("dataset_table_task_log.table_id");
-            entity2.setOperator("eq");
-            entity2.setValue(dataSetTableRequest.getId());
-            List<ConditionEntity> conditionEntities = new ArrayList<>();
-            conditionEntities.add(entity2);
-            request.setConditions(conditionEntities);
+            DataSetTaskInstanceGridRequest request = new DataSetTaskInstanceGridRequest();
+            request.setTableId(List.of(dataSetTableRequest.getId()));
+
             List<DataSetTaskLogDTO> dataSetTaskLogDTOS = dataSetTableTaskLogService.listTaskLog(request, "excel");
             if (CollectionUtils.isNotEmpty(dataSetTaskLogDTOS)) {
                 dataSetTaskLogDTOS.get(0).getStatus().equalsIgnoreCase(JobStatus.Underway.name());
@@ -2445,7 +2439,8 @@ public class DataSetTableService {
                 fields.add(tableFiled);
             }
             String json = JSON.toJSONString(noModelDataListener.getData());
-            List<List<String>> data = JSON.parseObject(json, new TypeReference< List<List<String>>>(){});
+            List<List<String>> data = JSON.parseObject(json, new TypeReference<List<List<String>>>() {
+            });
             data = (isPreview && noModelDataListener.getData().size() > 1000 ? new ArrayList<>(data.subList(0, 1000)) : data);
             if (isPreview) {
                 for (List<String> datum : data) {
@@ -3103,51 +3098,52 @@ public class DataSetTableService {
 
     }
 
-@Data
-public class NoModelDataListener extends AnalysisEventListener<Map<Integer, String>> {
-    private List<List<String>> data = new ArrayList<>();
-    private List<String> header = new ArrayList<>();
+    @Data
+    public class NoModelDataListener extends AnalysisEventListener<Map<Integer, String>> {
+        private List<List<String>> data = new ArrayList<>();
+        private List<String> header = new ArrayList<>();
 
 
-    @Override
-    public void invokeHead(Map<Integer, CellData> headMap, AnalysisContext context) {
-        super.invokeHead(headMap, context);
-        for (Integer key : headMap.keySet()) {
-            CellData cellData = headMap.get(key);
-            String value = cellData.getStringValue();
-            if (StringUtils.isEmpty(value)) {
-                value = "none_" + key;
-            }
-            header.add(value);
-        }
-    }
-
-    @Override
-    public void invoke(Map<Integer, String> dataMap, AnalysisContext context) {
-        List<String> line = new ArrayList<>();
-        for (Integer key : dataMap.keySet()) {
-            String value = dataMap.get(key);
-            if (StringUtils.isEmpty(value)) {
-                value = "";
-            }
-            line.add(value);
-        };
-        int size = line.size();
-        if(size < header.size()){
-            for (int i = 0; i < header.size() - size; i++) {
-                line.add("");
+        @Override
+        public void invokeHead(Map<Integer, CellData> headMap, AnalysisContext context) {
+            super.invokeHead(headMap, context);
+            for (Integer key : headMap.keySet()) {
+                CellData cellData = headMap.get(key);
+                String value = cellData.getStringValue();
+                if (StringUtils.isEmpty(value)) {
+                    value = "none_" + key;
+                }
+                header.add(value);
             }
         }
-        data.add(line);
-    }
 
-    @Override
-    public void doAfterAllAnalysed(AnalysisContext analysisContext) {
-    }
+        @Override
+        public void invoke(Map<Integer, String> dataMap, AnalysisContext context) {
+            List<String> line = new ArrayList<>();
+            for (Integer key : dataMap.keySet()) {
+                String value = dataMap.get(key);
+                if (StringUtils.isEmpty(value)) {
+                    value = "";
+                }
+                line.add(value);
+            }
+            ;
+            int size = line.size();
+            if (size < header.size()) {
+                for (int i = 0; i < header.size() - size; i++) {
+                    line.add("");
+                }
+            }
+            data.add(line);
+        }
 
-    public void clear() {
-        data.clear();
-        header.clear();
+        @Override
+        public void doAfterAllAnalysed(AnalysisContext analysisContext) {
+        }
+
+        public void clear() {
+            data.clear();
+            header.clear();
+        }
     }
-}
 }

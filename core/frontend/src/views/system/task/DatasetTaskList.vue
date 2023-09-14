@@ -350,7 +350,7 @@ import filterUser from './FilterUser.vue'
 import msgCfm from '@/components/msgCfm/index'
 import _ from 'lodash'
 import keyEnter from '@/components/msgCfm/keyEnter.js'
-
+import { buildParam } from '@/utils/GridConditionUtil'
 export default {
   name: 'DatasetTaskList',
   components: { GridTable, filterUser },
@@ -502,23 +502,12 @@ export default {
     },
     search(showLoading = true) {
       const { taskId, name } = this.transCondition
-      const param = {
-        orders: formatOrders(this.orderConditions),
-        conditions: [...this.cacheCondition]
-      }
-      if (this.nickName) {
-        param.conditions.push({
-          field: `dataset_table_task.name`,
-          operator: 'like',
-          value: this.nickName
-        })
-      }
+
+      const param = buildParam(this.cacheCondition, this.nickName)
+      param.orders = formatOrders(this.orderConditions)
+
       if (taskId && this.nickName === name) {
-        param.conditions.push({
-          operator: 'eq',
-          value: taskId,
-          field: 'dataset_table_task.id'
-        })
+        param['id'] = taskId
       }
       const { currentPage, pageSize } = this.paginationConfig
       datasetTaskList(currentPage, pageSize, param, showLoading).then(

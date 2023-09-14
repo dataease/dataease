@@ -258,15 +258,6 @@ export function datasetTaskList(page, size, data, loading) {
   })
 }
 
-export function datasetRowPermissionsList(datasetId, page, size, data, loading) {
-  return request({
-    url: 'plugin/dataset/rowPermissions/pageList/' + datasetId + '/' + page + '/' + size,
-    method: 'post',
-    data,
-    loading: loading
-  })
-}
-
 export function checkCustomDs() {
   return request({
     url: '/system/checkCustomDs',

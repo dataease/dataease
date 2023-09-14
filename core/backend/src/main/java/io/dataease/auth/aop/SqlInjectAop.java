@@ -3,7 +3,7 @@ package io.dataease.auth.aop;
 import cn.hutool.core.util.ArrayUtil;
 import io.dataease.auth.annotation.SqlInjectValidator;
 import io.dataease.commons.exception.DEException;
-import io.dataease.controller.sys.base.BaseGridRequest;
+import io.dataease.plugins.common.request.KeywordRequest;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -35,10 +35,10 @@ public class SqlInjectAop {
             if (args == null || args.length == 0) {
                 return point.proceed();
             }
-            BaseGridRequest request = null;
+            KeywordRequest request = null;
             for (int i = 0; i < args.length; i++) {
-                if (args[i] instanceof BaseGridRequest) {
-                    request = (BaseGridRequest) args[i];
+                if (args[i] instanceof KeywordRequest) {
+                    request = (KeywordRequest) args[i];
                     break;
                 }
             }

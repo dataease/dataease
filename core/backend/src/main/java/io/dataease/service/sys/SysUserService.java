@@ -12,7 +12,6 @@ import io.dataease.controller.sys.request.*;
 import io.dataease.controller.sys.response.SysUserGridResponse;
 import io.dataease.controller.sys.response.SysUserRole;
 import io.dataease.ext.ExtSysUserMapper;
-import io.dataease.ext.query.GridExample;
 import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.*;
 import io.dataease.plugins.common.base.mapper.SysUserAssistMapper;
@@ -65,12 +64,11 @@ public class SysUserService {
     private AuthUserService authUserService;
 
 
-    public List<SysUserGridResponse> query(KeyGridRequest request) {
-        String keyWord = request.getKeyWord();
-        GridExample gridExample = request.convertExample();
-        gridExample.setExtendCondition(keyWord);
-        List<SysUserGridResponse> lists = extSysUserMapper.query(gridExample);
+    public List<SysUserGridResponse> query(UserGridRequest request) {
+
+        List<SysUserGridResponse> lists = extSysUserMapper.query(request);
         lists.forEach(item -> {
+            item.setPassword("");
             List<SysUserRole> roles = item.getRoles();
             List<Long> roleIds = roles.stream().filter(ObjectUtils::isNotEmpty).map(SysUserRole::getRoleId).collect(Collectors.toList());
             item.setRoleIds(roleIds);

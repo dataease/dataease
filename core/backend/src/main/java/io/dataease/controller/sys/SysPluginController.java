@@ -6,8 +6,8 @@ import io.dataease.auth.annotation.SqlInjectValidator;
 import io.dataease.commons.utils.DeFileUtils;
 import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
-import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.plugins.common.base.domain.MyPlugin;
+import io.dataease.plugins.common.request.KeywordRequest;
 import io.dataease.service.sys.PluginService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -33,7 +33,7 @@ public class SysPluginController {
     @PostMapping("/pluginGrid/{goPage}/{pageSize}")
     @RequiresPermissions("plugin:read")
     @SqlInjectValidator(value = {"install_time"})
-    public Pager<List<MyPlugin>> pluginGrid(@PathVariable int goPage, @PathVariable int pageSize, @RequestBody BaseGridRequest request) {
+    public Pager<List<MyPlugin>> pluginGrid(@PathVariable int goPage, @PathVariable int pageSize, @RequestBody KeywordRequest request) {
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
         return PageUtils.setPageInfo(page, pluginService.query(request));
     }

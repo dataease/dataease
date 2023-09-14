@@ -69,7 +69,8 @@ public class SysLogConstants {
         ROLE(8, "SOURCE_TYPE_ROLE"),
         DRIVER(9, "SOURCE_TYPE_DRIVER"),
         DRIVER_FILE(10, "SOURCE_TYPE_DRIVER_FILE"),
-        MENU(11, "SOURCE_TYPE_MENU");
+        MENU(11, "SOURCE_TYPE_MENU"),
+        APIKEY(12, "SOURCE_TYPE_APIKEY");
         private Integer value;
         private String name;
 

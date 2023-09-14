@@ -4,7 +4,6 @@ package io.dataease.auth.aop;
 import io.dataease.auth.annotation.DeLog;
 import io.dataease.commons.constants.SysLogConstants;
 import io.dataease.commons.utils.AopUtils;
-import io.dataease.commons.utils.DeLogUtils;
 import io.dataease.controller.ResultHolder;
 import io.dataease.dto.SysLogDTO;
 import io.dataease.dto.log.FolderItem;
@@ -37,7 +36,7 @@ public class DeLogAnnotationHandler {
     @Resource
     private LogService logService;
 
-    private static List<Integer> before = new ArrayList<>();
+    private static final List<Integer> before = new ArrayList<>();
 
     @PostConstruct
     public void init() {
@@ -46,7 +45,7 @@ public class DeLogAnnotationHandler {
         before.add(SysLogConstants.OPERATE_TYPE.UNAUTHORIZE.getValue());
     }
 
-    private SysLogDTO exec(JoinPoint point, DeLog deLog) throws Exception{
+    private SysLogDTO exec(JoinPoint point, DeLog deLog) throws Exception {
 
         Object[] args = point.getArgs();
         if (ArrayUtils.isEmpty(args)) return null;
@@ -73,7 +72,7 @@ public class DeLogAnnotationHandler {
 
         // 填充资源位置信息
         int positionIndex = deLog.positionIndex();
-        if (positionIndex > -1 && args.length > positionIndex){
+        if (positionIndex > -1 && args.length > positionIndex) {
             String positionKey = deLog.positionKey();
             Object positionArg = args[positionIndex];
             Object bottomPositionValue = AopUtils.getParamValue(positionArg, positionKey, 0);
@@ -83,7 +82,7 @@ public class DeLogAnnotationHandler {
                     List<FolderItem> items = new ArrayList<>();
                     items.add(folderItem);
                     sysLogDTO.setPositions(items);
-                }else {
+                } else {
                     List<FolderItem> parentsAndSelf = logManager.parentsAndSelf(bottomPositionValue.toString(), sourcetype);
                     sysLogDTO.setPositions(parentsAndSelf);
                 }
@@ -92,7 +91,7 @@ public class DeLogAnnotationHandler {
         }
         // 填充资源目标位置信息
         int targetIndex = deLog.targetIndex();
-        if (targetIndex > -1 && args.length > targetIndex){
+        if (targetIndex > -1 && args.length > targetIndex) {
             String targetKey = deLog.targetKey();
             Object targetArg = args[targetIndex];
             SysLogConstants.SOURCE_TYPE targetType = deLog.targetType();
@@ -110,11 +109,11 @@ public class DeLogAnnotationHandler {
         SysLogDTO logDTO = null;
         Object result = null;
         DeLog log = getLog(point);
-        if(before.contains(log.operatetype().getValue())) {
+        if (before.contains(log.operatetype().getValue())) {
             // 前置处理 比如删除操作 需要在数据删除之前查询
             logDTO = exec(point, log);
             result = point.proceed(point.getArgs());
-        }else {
+        } else {
             // 后置处理 比如保存操作 需要在保存之后才有主键
             result = point.proceed(point.getArgs());
             logDTO = exec(point, log);
@@ -128,15 +127,9 @@ public class DeLogAnnotationHandler {
     }
 
 
-
     private DeLog getLog(JoinPoint point) {
         MethodSignature ms = (MethodSignature) point.getSignature();
         Method method = ms.getMethod();
-        DeLog deLog = method.getAnnotation(DeLog.class);
-        return deLog;
+        return method.getAnnotation(DeLog.class);
     }
-
-
-
-
 }

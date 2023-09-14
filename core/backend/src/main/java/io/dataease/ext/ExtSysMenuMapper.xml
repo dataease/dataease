@@ -14,11 +14,7 @@
     </select>
 
 
-    <select id="nodesByExample" parameterType="io.dataease.ext.query.GridExample" resultMap="simpleNode">
-        select menu_id as id, pid from sys_menu
-        <include refid="io.dataease.ext.query.GridSql.gridCondition" />
-        and hidden != 1
-    </select>
+
 
 
     <select id="querySysMenu" resultMap="ExtBaseResultMap">

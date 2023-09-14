@@ -866,7 +866,7 @@ export default {
       }
     },
     listTaskLog(loading = true) {
-      const params = { 'conditions': [{ 'field': 'dataset_table_task_log.table_id', 'operator': 'eq', 'value': this.table.id }], 'orders': [] }
+      const params = { 'tableId': [this.table.id], 'orders': [] }
       post('/dataset/taskLog/listForDataset/' + this.table.type + '/' + this.page.currentPage + '/' + this.page.pageSize, params, loading).then(response => {
         this.taskLogData = response.data.listObject
         this.page.total = response.data.itemCount

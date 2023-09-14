@@ -219,13 +219,7 @@ export default {
     search() {
       const param = {}
       if (this.name) {
-        param.conditions = [
-          {
-            field: 'name',
-            operator: 'like',
-            value: this.name
-          }
-        ]
+        param.keyword = this.name
       }
       pluginLists(0, 0, param).then((response) => {
         this.data = response.data.listObject.filter(item => item.pluginId > 1)

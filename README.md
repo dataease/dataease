@@ -53,15 +53,11 @@ DataEase 是开源的数据可视化分析工具，帮助用户快速分析数�
   <img src="https://dataease.io/images/dataSource/kylin.jpg" alt="Kylin" border="0" width="180" height="107"/>
 </p>
 
-> 更多数据源支持持续增加中...
-
 ## DataEase 模板市场
 
 -   [模板市场](https://dataease.io/templates/)
 
 ![模板市场](https://dataease.io/images/templates/templates.gif)
-
-> 更多优质模板持续增加中...
 
 ## 快速开始
 
@@ -97,7 +93,7 @@ curl -sSL https://dataease.oss-cn-hangzhou.aliyuncs.com/quick_start.sh | bash
 -   图库：[Apache ECharts](https://github.com/apache/echarts)、[AntV](https://antv.vision/zh)
 -   后端：[Spring Boot](https://spring.io/projects/spring-boot)
 -   中间件：[MySQL](https://www.mysql.com/)
--   数据处理：[Kettle](https://github.com/pentaho/pentaho-kettle)、[Apache Doris](https://github.com/apache/incubator-doris/)
+-   数据处理：[Kettle](https://github.com/pentaho/pentaho-kettle)、[Apache Doris](https://github.com/apache/doris/)
 -   基础设施：[Docker](https://www.docker.com/)
 
 ## Star History
@@ -107,7 +103,6 @@ curl -sSL https://dataease.oss-cn-hangzhou.aliyuncs.com/quick_start.sh | bash
 ## FOSSA Status
 
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fdataease%2Fdataease.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fdataease%2Fdataease?ref=badge_large)
-
 
 ## License
 

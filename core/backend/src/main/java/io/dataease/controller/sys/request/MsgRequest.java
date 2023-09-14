@@ -1,6 +1,6 @@
 package io.dataease.controller.sys.request;
 
-import io.dataease.controller.sys.base.BaseGridRequest;
+import io.dataease.plugins.common.request.KeywordRequest;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 @Data
 @ApiModel("消息条件")
-public class MsgRequest extends BaseGridRequest implements Serializable {
+public class MsgRequest extends KeywordRequest implements Serializable {
 
     private static final long serialVersionUID = 1920091635946508658L;
 

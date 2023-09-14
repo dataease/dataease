@@ -1,12 +1,9 @@
 package io.dataease.service.panel.applog;
 
-import com.google.gson.Gson;
 import io.dataease.commons.utils.AuthUtils;
-import io.dataease.controller.sys.request.KeyGridRequest;
-import io.dataease.dto.SysLogDTO;
+import io.dataease.controller.request.panel.AppLogGridRequest;
 import io.dataease.dto.appTemplateMarket.AppLogGridDTO;
 import io.dataease.ext.ExtAppLogMapper;
-import io.dataease.ext.query.GridExample;
 import io.dataease.plugins.common.base.mapper.PanelAppTemplateLogMapper;
 import io.dataease.service.dataset.DataSetGroupService;
 import io.dataease.service.datasource.DatasourceService;
@@ -21,7 +18,6 @@ import java.util.List;
 @Service
 public class AppLogService {
 
-    private Gson gson = new Gson();
     @Resource
     private PanelAppTemplateLogMapper appLogMapper;
     @Resource
@@ -34,17 +30,9 @@ public class AppLogService {
     private DatasourceService datasourceService;
 
 
-    public List<AppLogGridDTO> query(KeyGridRequest request) {
-        GridExample gridExample = request.convertExample();
-        gridExample.setExtendCondition(request.getKeyWord());
-        AppLogQueryParam logQueryParam = gson.fromJson(gson.toJson(gridExample), AppLogQueryParam.class);
-        logQueryParam.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
-        List<AppLogGridDTO> voLogs = extAppLogMapper.query(logQueryParam);
-        return voLogs;
-    }
-
-    public void saveLog(SysLogDTO sysLogDTO) {
-
+    public List<AppLogGridDTO> query(AppLogGridRequest request) {
+        request.setUserId(AuthUtils.getUser().getUserId());
+        return extAppLogMapper.query(request);
     }
 
 

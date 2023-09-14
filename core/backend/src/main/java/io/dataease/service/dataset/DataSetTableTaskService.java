@@ -1,17 +1,15 @@
 package io.dataease.service.dataset;
 
-import io.dataease.ext.ExtDataSetTaskMapper;
-import io.dataease.ext.query.GridExample;
 import io.dataease.commons.constants.JobStatus;
 import io.dataease.commons.constants.ScheduleType;
 import io.dataease.commons.constants.TaskStatus;
 import io.dataease.commons.constants.TriggerType;
 import io.dataease.commons.utils.AuthUtils;
+import io.dataease.controller.dataset.request.DatasetTaskGridRequest;
 import io.dataease.controller.request.dataset.DataSetTaskRequest;
-import io.dataease.controller.sys.base.BaseGridRequest;
-import io.dataease.controller.sys.base.ConditionEntity;
 import io.dataease.dto.dataset.DataSetTaskDTO;
 import io.dataease.exception.DataEaseException;
+import io.dataease.ext.ExtDataSetTaskMapper;
 import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.*;
 import io.dataease.plugins.common.base.mapper.DatasetTableMapper;
@@ -24,10 +22,10 @@ import org.quartz.CronExpression;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * @Author gin
@@ -152,7 +150,7 @@ public class DataSetTableTaskService {
 
     @Transactional
     public void batchDelete(List<String> ids) {
-        if (CollectionUtils.isNotEmpty(ids)){
+        if (CollectionUtils.isNotEmpty(ids)) {
             for (int i = 0; i < ids.size(); i++) {
                 String id = ids.get(i);
                 DatasetTableTask datasetTableTask = datasetTableTaskMapper.selectByPrimaryKey(id);
@@ -195,12 +193,9 @@ public class DataSetTableTaskService {
 
     public void checkTaskIsStopped(final DatasetTableTask datasetTableTask) {
         if (StringUtils.isNotEmpty(datasetTableTask.getEnd()) && datasetTableTask.getEnd().equalsIgnoreCase("1")) {
-            BaseGridRequest request = new BaseGridRequest();
-            ConditionEntity conditionEntity = new ConditionEntity();
-            conditionEntity.setField("dataset_table_task.id");
-            conditionEntity.setOperator("eq");
-            conditionEntity.setValue(datasetTableTask.getId());
-            request.setConditions(Collections.singletonList(conditionEntity));
+            DatasetTaskGridRequest request = new DatasetTaskGridRequest();
+            request.setId(datasetTableTask.getId());
+
             List<DataSetTaskDTO> dataSetTaskDTOS = taskWithTriggers(request);
             if (CollectionUtils.isEmpty(dataSetTaskDTOS)) {
                 return;
@@ -231,12 +226,8 @@ public class DataSetTableTaskService {
         } else {
             recore.setLastExecStatus(lastExecStatus.name());
             if (StringUtils.isNotEmpty(datasetTableTask.getEnd()) && datasetTableTask.getEnd().equalsIgnoreCase("1")) {
-                BaseGridRequest request = new BaseGridRequest();
-                ConditionEntity conditionEntity = new ConditionEntity();
-                conditionEntity.setField("dataset_table_task.id");
-                conditionEntity.setOperator("eq");
-                conditionEntity.setValue(datasetTableTask.getId());
-                request.setConditions(Collections.singletonList(conditionEntity));
+                DatasetTaskGridRequest request = new DatasetTaskGridRequest();
+                request.setId(datasetTableTask.getId());
                 List<DataSetTaskDTO> dataSetTaskDTOS = taskWithTriggers(request);
                 if (CollectionUtils.isEmpty(dataSetTaskDTOS)) {
                     return;
@@ -264,40 +255,26 @@ public class DataSetTableTaskService {
     }
 
     public List<DataSetTaskDTO> list(DatasetTableTask datasetTableTask) {
-        BaseGridRequest request = new BaseGridRequest();
-        List<ConditionEntity> conditionEntities = new ArrayList<>();
-        if(datasetTableTask != null && StringUtils.isNotEmpty(datasetTableTask.getTableId())){
-            ConditionEntity entity = new ConditionEntity();
-            entity.setField("table_id");
-            entity.setOperator("eq");
-            entity.setValue(datasetTableTask.getTableId());
-            conditionEntities.add(entity);
+        DatasetTaskGridRequest request = new DatasetTaskGridRequest();
+        if (datasetTableTask != null && StringUtils.isNotEmpty(datasetTableTask.getTableId())) {
+            request.setTableId(List.of(datasetTableTask.getTableId()));
         }
-        request.setConditions(conditionEntities);
-        GridExample gridExample = request.convertExample();
-        return extDataSetTaskMapper.taskList(gridExample);
+        return extDataSetTaskMapper.taskList(request);
     }
 
-    public List<DataSetTaskDTO> taskList4User(BaseGridRequest request) {
-        List<ConditionEntity> conditionEntities = request.getConditions() == null ? new ArrayList<>() : new ArrayList(request.getConditions());
-        ConditionEntity entity = new ConditionEntity();
-        entity.setField("1");
-        entity.setOperator("eq");
-        entity.setValue("1");
-        conditionEntities.add(entity);
-        request.setConditions(conditionEntities);
-        GridExample gridExample = request.convertExample();
-        gridExample.setExtendCondition(AuthUtils.getUser().getUserId().toString());
+    public List<DataSetTaskDTO> taskList4User(DatasetTaskGridRequest request) {
+        request.setUserId(null);
         if (AuthUtils.getUser().getIsAdmin()) {
-            return extDataSetTaskMapper.taskList(gridExample);
+            return extDataSetTaskMapper.taskList(request);
         } else {
-            return extDataSetTaskMapper.userTaskList(gridExample);
+            request.setUserId(AuthUtils.getUser().getUserId());
+            return extDataSetTaskMapper.userTaskList(request);
         }
     }
 
-    public List<DataSetTaskDTO> taskWithTriggers(BaseGridRequest request) {
-        GridExample gridExample = request.convertExample();
-        return extDataSetTaskMapper.taskWithTriggers(gridExample);
+    public List<DataSetTaskDTO> taskWithTriggers(DatasetTaskGridRequest request) {
+        request.setUserId(AuthUtils.getUser().getUserId());
+        return extDataSetTaskMapper.taskWithTriggers(request);
     }
 
     private void checkName(DataSetTaskRequest dataSetTaskRequest) {
@@ -335,7 +312,7 @@ public class DataSetTableTaskService {
 
     public void execTask(DatasetTableTask datasetTableTask) throws Exception {
         execNow(datasetTableTask);
-        if(datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.toString())){
+        if (datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.toString())) {
             scheduleService.addSchedule(datasetTableTask);
         }
         if (!datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.toString())) {
@@ -344,16 +321,9 @@ public class DataSetTableTaskService {
     }
 
     public DataSetTaskDTO detail(String id) {
-        BaseGridRequest request = new BaseGridRequest();
-        List<ConditionEntity> conditionEntities = request.getConditions() == null ? new ArrayList<>() : new ArrayList(request.getConditions());
-        ConditionEntity entity = new ConditionEntity();
-        entity.setField("dataset_table_task.id");
-        entity.setOperator("eq");
-        entity.setValue(id);
-        conditionEntities.add(entity);
-        request.setConditions(conditionEntities);
-        GridExample gridExample = request.convertExample();
-        List<DataSetTaskDTO> dataSetTaskDTOS = extDataSetTaskMapper.taskList(gridExample);
+        DatasetTaskGridRequest request = new DatasetTaskGridRequest();
+        request.setId(id);
+        List<DataSetTaskDTO> dataSetTaskDTOS = extDataSetTaskMapper.taskList(request);
         if (CollectionUtils.isNotEmpty(dataSetTaskDTOS)) {
             return dataSetTaskDTOS.get(0);
         }
