@@ -39,6 +39,9 @@ public interface UserApi {
     @PostMapping("/edit")
     void edit(@RequestBody UserEditor editor);
 
+    @PostMapping("/personEdit")
+    void personEdit(@RequestBody UserEditor editor);
+
     @DePermit({"m:read", "#p0 + ':manage'"})
     @PostMapping("/delete/{id}")
     void delete(@PathVariable("id") Long id);

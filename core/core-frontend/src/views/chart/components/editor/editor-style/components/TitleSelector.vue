@@ -221,7 +221,7 @@ init()
             </div>
           </el-tooltip>
 
-          <el-divider direction="vertical" />
+          <div class="m-divider"></div>
 
           <el-tooltip effect="dark" placement="top">
             <template #content>
@@ -329,5 +329,10 @@ init()
   &:hover {
     background-color: rgba(31, 35, 41, 0.1);
   }
+}
+.m-divider {
+  width: 1px;
+  height: 18px;
+  background: rgba(31, 35, 41, 0.15);
 }
 </style>

@@ -1,97 +1,134 @@
 <template>
-  <el-row class="custom-row">
-    <el-row><span class="custom-item-text">标题水平位置</span> </el-row>
-    <el-row style="margin-top: 8px">
-      <div>
-        <el-radio-group v-model="filterForm.horizontal" @change="themeChange('horizontal')">
-          <el-radio label="left" :title="t('chart.text_pos_left')"
-            ><Icon class-name="bash-icon" name="filter-h-left"
-          /></el-radio>
-          <el-radio
-            :disabled="filterForm.vertical === 'center'"
-            label="center"
-            :title="t('chart.text_pos_center')"
-            ><Icon class-name="bash-icon" name="filter-h-center"
-          /></el-radio>
-          <el-radio label="right" :title="t('chart.text_pos_right')"
-            ><Icon class-name="bash-icon" name="filter-h-right"
-          /></el-radio>
-        </el-radio-group>
+  <div style="width: 100%; padding-bottom: 8px">
+    <el-form size="small" style="width: 100%; padding-bottom: 8px">
+      <div style="width: 100%; padding: 16px 8px 0">
+        <el-row :gutter="8">
+          <el-col :span="12">
+            <el-form-item label="标题水平位置" class="form-item">
+              <el-radio-group v-model="filterForm.horizontal" @change="themeChange('horizontal')">
+                <el-radio label="left">
+                  <el-tooltip effect="dark" placement="top">
+                    <template #content>
+                      {{ t('chart.text_pos_left') }}
+                    </template>
+                    <el-icon class="bash-icon">
+                      <Icon name="icon_left-align_outlined" />
+                    </el-icon>
+                  </el-tooltip>
+                </el-radio>
+                <el-radio :disabled="filterForm.vertical === 'center'" label="center">
+                  <el-tooltip effect="dark" placement="top">
+                    <template #content>
+                      {{ t('chart.text_pos_center') }}
+                    </template>
+                    <el-icon class="bash-icon">
+                      <Icon name="icon_horizontal-align_outlined" />
+                    </el-icon>
+                  </el-tooltip>
+                </el-radio>
+                <el-radio label="right">
+                  <el-tooltip effect="dark" placement="top">
+                    <template #content>
+                      {{ t('chart.text_pos_right') }}
+                    </template>
+                    <el-icon class="bash-icon">
+                      <Icon name="icon_right-align_outlined" />
+                    </el-icon>
+                  </el-tooltip>
+                </el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="标题显示位置" class="form-item">
+              <el-radio-group v-model="filterForm.vertical" @change="themeChange('vertical')">
+                <el-radio label="top">
+                  <el-tooltip effect="dark" placement="top">
+                    <template #content>
+                      {{ t('chart.text_pos_top') }}
+                    </template>
+                    <el-icon class="bash-icon">
+                      <Icon name="icon_title-top-align_outlined" />
+                    </el-icon>
+                  </el-tooltip>
+                </el-radio>
+                <el-radio :disabled="filterForm.horizontal === 'center'" label="center">
+                  <el-tooltip effect="dark" placement="top">
+                    <template #content>
+                      {{ t('chart.text_pos_center') }}
+                    </template>
+                    <el-icon class="bash-icon">
+                      <Icon name="icon_title-left-align_outlined" />
+                    </el-icon>
+                  </el-tooltip>
+                </el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="标题颜色" class="form-item">
+              <el-color-picker
+                v-model="filterForm.color"
+                class="color-picker-style"
+                size="small"
+                is-custom
+                :predefine="state.predefineColors"
+                @change="themeChange('color')"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-divider class="m-divider"></el-divider>
       </div>
-    </el-row>
-    <el-row style="margin-top: 16px"><span class="custom-item-text">标题显示位置</span> </el-row>
-    <el-row style="margin-top: 8px">
-      <div>
-        <el-radio-group v-model="filterForm.vertical" @change="themeChange('vertical')">
-          <el-radio label="top" :title="t('chart.text_pos_top')"
-            ><Icon class-name="bash-icon" name="filter-top"
-          /></el-radio>
-          <el-radio
-            :disabled="filterForm.horizontal === 'center'"
-            label="center"
-            :title="t('chart.text_pos_center')"
-            ><Icon class-name="bash-icon" name="filter-center"
-          /></el-radio>
-        </el-radio-group>
-      </div>
-    </el-row>
-    <el-row style="margin-top: 16px"><span class="custom-item-text">标题颜色</span> </el-row>
-    <el-row style="margin-top: 8px">
-      <div>
-        <el-color-picker
-          v-model="filterForm.color"
-          class="color-picker-style"
-          size="small"
-          :predefine="state.predefineColors"
-          @change="themeChange('color')"
-        />
-      </div>
-    </el-row>
-    <el-divider></el-divider>
-    <el-row class="inner-type-text">输入框样式</el-row>
-    <el-row style="margin-top: 16px"
-      ><span class="custom-item-text">{{ t('visualization.board') }}</span>
-    </el-row>
-    <el-row style="margin-top: 8px">
-      <div>
-        <el-color-picker
-          v-model="filterForm.brColor"
-          class="color-picker-style"
-          size="small"
-          :predefine="state.predefineColors"
-          @change="themeChange('brColor')"
-        />
-      </div>
-    </el-row>
-    <el-row style="margin-top: 16px"
-      ><span class="custom-item-text">{{ t('visualization.text') }}</span>
-    </el-row>
-    <el-row style="margin-top: 8px">
-      <div>
-        <el-color-picker
-          v-model="filterForm.wordColor"
-          class="color-picker-style"
-          size="small"
-          :predefine="state.predefineColors"
-          @change="themeChange('wordColor')"
-        />
-      </div>
-    </el-row>
-    <el-row style="margin-top: 16px"
-      ><span class="custom-item-text">{{ t('visualization.board_background') }}</span>
-    </el-row>
-    <el-row style="margin-top: 8px">
-      <div>
-        <el-color-picker
-          v-model="filterForm.innerBgColor"
-          class="color-picker-style"
-          size="small"
-          :predefine="state.predefineColors"
-          @change="themeChange('innerBgColor')"
-        />
-      </div>
-    </el-row>
-  </el-row>
+
+      <el-collapse-item
+        title="输入框样式"
+        name="input_style_filter_selector"
+        class="inner-collapse"
+      >
+        <div style="padding: 0 8px 8px">
+          <el-row :gutter="8">
+            <el-col :span="12">
+              <el-form-item :label="t('visualization.board')" class="form-item">
+                <el-color-picker
+                  v-model="filterForm.brColor"
+                  class="color-picker-style"
+                  size="small"
+                  is-custom
+                  :predefine="state.predefineColors"
+                  @change="themeChange('brColor')"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item :label="t('visualization.text')" class="form-item">
+                <el-color-picker
+                  v-model="filterForm.wordColor"
+                  class="color-picker-style"
+                  size="small"
+                  is-custom
+                  :predefine="state.predefineColors"
+                  @change="themeChange('wordColor')"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item :label="t('visualization.board_background')" class="form-item">
+                <el-color-picker
+                  v-model="filterForm.innerBgColor"
+                  class="color-picker-style"
+                  size="small"
+                  is-custom
+                  :predefine="state.predefineColors"
+                  @change="themeChange('innerBgColor')"
+                />
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </div>
+      </el-collapse-item>
+    </el-form>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -102,6 +139,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { adaptCurThemeFilterStyleAll } from '@/utils/canvasStyle'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import eventBus from '@/utils/eventBus'
+import { ElIcon } from 'element-plus-secondary'
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
@@ -182,5 +220,35 @@ onMounted(() => {
   font-weight: 500;
   font-size: 12px;
   margin-bottom: 8px;
+}
+
+.bash-icon {
+  font-size: 16px;
+}
+:deep(.ed-radio.is-checked .ed-radio__label .bash-icon) {
+  background: rgba(51, 112, 255, 0.1);
+  color: #3370ff;
+}
+.m-divider {
+  border-color: rgba(31, 35, 41, 0.15);
+  margin: 16px 0 8px;
+}
+.inner-collapse {
+  :deep(.ed-collapse-item__header) {
+    background-color: transparent !important;
+  }
+  :deep(.ed-collapse-item__header) {
+    border: none;
+  }
+  :deep(.ed-collapse-item__wrap) {
+    border: none;
+  }
+}
+.ed-form-item {
+  flex-direction: column;
+  margin-bottom: 8px;
+}
+:deep(.ed-form-item__label) {
+  color: #646a73;
 }
 </style>

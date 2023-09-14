@@ -1,5 +1,5 @@
 import request from '@/config/axios'
-import type { Node } from '@/views/visualized/data/datasource/index.vue'
+
 export interface DatasetOrFolder {
   name: string
   id?: number | string
@@ -13,12 +13,6 @@ interface Fields {
   fields: Array<{}>
   data: Array<{}>
 }
-
-type IrNode = Omit<Node, 'configuration' | 'apiConfigurationStr'> & {
-  configuration: string
-  apiConfigurationStr: string
-}
-
 export interface FieldData {
   allFields: Array<{}>
   data: Fields
@@ -103,30 +97,6 @@ export const getDatasetTree = async (data = {}): Promise<IResponse> => {
 export const deleteById = (id: number) => request.get({ url: '/datasource/delete/' + id })
 
 export const getById = (id: number) => request.get({ url: '/datasource/get/' + id })
-
-export const getPreviewData = async (data): Promise<IResponse> => {
-  return request.post({ url: '/datasetData/previewData', data }).then(res => {
-    return res?.data
-  })
-}
-
-export const getDatasetPreview = async (id): Promise<FieldData> => {
-  return request.post({ url: `/datasetTree/get/${id}`, data: {} }).then(res => {
-    return res?.data
-  })
-}
-
-export const getDatasetDetails = async (id): Promise<Dataset> => {
-  return request.post({ url: `/datasetTree/details/${id}`, data: {} }).then(res => {
-    return res?.data
-  })
-}
-
-export const tableUpdate = async (data): Promise<IResponse> => {
-  return request.post({ url: '/dataset/table/update', data }).then(res => {
-    return res?.data
-  })
-}
 
 export const uploadFile = async (data): Promise<IResponse> => {
   return request

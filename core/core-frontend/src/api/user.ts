@@ -22,6 +22,8 @@ export const userCreateApi = data => request.post({ url: '/user/create', data })
 
 export const userEditApi = data => request.post({ url: '/user/edit', data })
 
+export const personEditApi = data => request.post({ url: '/user/personEdit', data })
+
 export const roleOptionForUserApi = data => request.post({ url: '/role/user/option', data })
 
 export const userDelApi = uid => request.post({ url: `/user/delete/${uid}` })
