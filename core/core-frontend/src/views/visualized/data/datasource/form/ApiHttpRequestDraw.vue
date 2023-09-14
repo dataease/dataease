@@ -54,7 +54,7 @@ const originFieldItem = reactive({
   fields: []
 })
 
-let apiItemList = reactive<ApiConfiguration>([])
+let apiItemList = reactive<ApiConfiguration[]>([])
 
 let apiItem = reactive<ApiItem>({
   status: '',
@@ -194,7 +194,10 @@ const next = () => {
         return
       }
       for (let i = 0; i < apiItemList.length; i++) {
-        if (apiItemList[i].name === apiItem.name) {
+        if (
+          apiItemList[i].name === apiItem.name &&
+          apiItem.serialNumber !== apiItemList[i].serialNumber
+        ) {
           ElMessage.error(t('datasource.has_repeat_name'))
           return
         }
