@@ -376,6 +376,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.de-ul {
+  max-height: 350px;
+  overflow-y: auto;
+}
 .de-ul li {
   margin: 5px 2px;
   cursor: pointer;
