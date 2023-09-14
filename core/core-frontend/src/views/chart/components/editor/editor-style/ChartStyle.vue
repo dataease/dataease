@@ -402,13 +402,6 @@ span {
 }
 
 .de-collapse-style {
-  :deep(.ed-collapse-item__header) {
-    height: 34px !important;
-    line-height: 34px !important;
-    padding: 0 0 0 6px !important;
-    font-size: 12px !important;
-    font-weight: 400 !important;
-  }
   :deep(.ed-form-item) {
     display: block;
     margin-bottom: 16px;

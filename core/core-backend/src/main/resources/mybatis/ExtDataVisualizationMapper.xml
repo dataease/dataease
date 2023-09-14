@@ -173,4 +173,63 @@
             data_visualization_info where data_visualization_info.delete_flag = 0 and  data_visualization_info.id = #{dvId}
     </select>
 
+    <select id="findRecent" resultType="io.dataease.api.visualization.vo.VisualizationResourceVO">
+        SELECT
+        *
+        FROM
+        (
+        SELECT
+        core_dataset_group.id,
+        core_dataset_group.NAME,
+        'dataset' AS type,
+        core_dataset_group.create_by AS creator,
+        core_dataset_group.update_by AS lastEditor,
+        core_dataset_group.last_update_time AS lastEditTime
+        FROM
+        core_dataset_group
+        WHERE
+        core_dataset_group.node_type = 'dataset' UNION ALL
+        SELECT
+        core_datasource.id,
+        core_datasource.NAME,
+        'datasource' AS type,
+        core_datasource.create_by AS creator,
+        1 AS lastEditor,
+        core_datasource.update_time AS lastEditTime
+        FROM
+        core_datasource
+        WHERE
+        core_datasource.type &lt;&gt; 'folder' UNION ALL
+        SELECT
+        data_visualization_info.id,
+        data_visualization_info.NAME,
+        (
+        CASE
+        data_visualization_info.type
+        WHEN 'dataV' THEN
+        'screen' ELSE 'panel'
+        END
+        ) AS type,
+        data_visualization_info.create_by AS creator,
+        data_visualization_info.update_by AS lastEditor,
+        data_visualization_info.update_time AS lastEditTime
+        FROM
+        data_visualization_info
+        WHERE
+        data_visualization_info.delete_flag = 0
+        AND node_type = 'leaf'
+        ) dvResource
+        <where>
+            dvResource.lastEditor =  #{uid}
+            <if test="type != null and type != ''">
+                and dvResource.type = #{type}
+            </if>
+
+            <if test="keyword != null and keyword != ''">
+                and dvResource.name like concat('%', #{keyword}, '%')
+            </if>
+        </where>
+        order by dvResource.lastEditTime asc LIMIT #{pageNum},#{pageCount}
+    </select>
+
 </mapper>

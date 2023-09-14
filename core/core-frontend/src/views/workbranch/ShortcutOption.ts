@@ -35,9 +35,9 @@ class ShortcutOption {
         dataCache: [],
         columnList: [
           { field: 'type', label: t('datasource.type') },
-          { field: 'createBy', label: t('visualization.create_by') },
-          { field: 'updateBy', label: '最近编辑人' },
-          { field: 'updateTime', label: '最近编辑时间', type: 'time' }
+          { field: 'creator', label: t('visualization.create_by') },
+          { field: 'lastEditor', label: '最近编辑人' },
+          { field: 'lastEditTime', label: '最近编辑时间', type: 'time' }
         ]
       },
       store: {

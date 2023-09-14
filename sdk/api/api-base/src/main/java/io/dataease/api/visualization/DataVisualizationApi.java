@@ -3,7 +3,9 @@ package io.dataease.api.visualization;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.dataease.api.visualization.request.DataVisualizationBaseRequest;
+import io.dataease.api.visualization.request.VisualizationWorkbranchQueryRequest;
 import io.dataease.api.visualization.vo.DataVisualizationVO;
+import io.dataease.api.visualization.vo.VisualizationResourceVO;
 import io.dataease.auth.DeApiPath;
 import io.dataease.auth.DePermit;
 import io.dataease.model.BusiNodeRequest;
@@ -48,7 +50,7 @@ public interface DataVisualizationApi {
     void nameCheck(@RequestBody DataVisualizationBaseRequest request);
 
     @PostMapping("/findRecent")
-    List<DataVisualizationVO> findRecent(@RequestBody DataVisualizationBaseRequest request);
+    List<VisualizationResourceVO> findRecent(@RequestBody VisualizationWorkbranchQueryRequest request);
 
     @PostMapping("/copy")
     @JsonSerialize(using = ToStringSerializer.class)
