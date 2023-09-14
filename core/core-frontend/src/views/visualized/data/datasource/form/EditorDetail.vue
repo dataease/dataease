@@ -265,7 +265,7 @@ const addApiItem = item => {
         : 0
   }
   nextTick(() => {
-    editApiItem.value.initApiItem(apiItem)
+    editApiItem.value.initApiItem(apiItem, form.value.apiConfiguration)
   })
 }
 const showPriority = ref(false)

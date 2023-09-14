@@ -5,9 +5,9 @@
       :model="colorForm"
       label-width="80px"
       size="small"
-      style="width: 100%"
+      style="width: 100%; padding-bottom: 8px"
     >
-      <div>
+      <div style="padding: 16px 8px 0">
         <el-form-item :label="t('chart.color_case')" class="form-item">
           <el-popover placement="bottom" width="400" trigger="click" :persistent="false">
             <template #reference>
@@ -116,75 +116,92 @@
             @change="changeColorCase('alpha')"
           />
         </el-form-item>
+
+        <el-divider class="m-divider"></el-divider>
       </div>
-      <el-divider></el-divider>
-      <el-row class="color-type-text">
-        {{ t('visualization.table_color_matching') }}
-      </el-row>
-      <div>
-        <el-form-item :label="t('chart.table_header_bg')" class="form-item">
-          <el-color-picker
-            v-model="colorForm.tableHeader.tableHeaderBgColor"
-            class="color-picker-style"
-            size="small"
-            :predefine="predefineColors"
-            is-custom
-            @change="changeColorCase('tableHeaderBgColor')"
-          />
-        </el-form-item>
-        <el-form-item :label="t('chart.table_item_bg')" class="form-item">
-          <el-color-picker
-            v-model="colorForm.tableCell.tableItemBgColor"
-            class="color-picker-style"
-            size="small"
-            :predefine="predefineColors"
-            is-custom
-            @change="changeColorCase('tableItemBgColor')"
-          />
-        </el-form-item>
-        <el-form-item :label="t('chart.table_header_font_color')" class="form-item">
-          <el-color-picker
-            v-model="colorForm.tableHeader.tableHeaderFontColor"
-            class="color-picker-style"
-            size="small"
-            :predefine="predefineColors"
-            is-custom
-            @change="changeColorCase('tableHeaderFontColor')"
-          />
-        </el-form-item>
-        <el-form-item :label="t('chart.table_item_font_color')" class="form-item">
-          <el-color-picker
-            v-model="colorForm.tableCell.tableFontColor"
-            class="color-picker-style"
-            size="small"
-            :predefine="predefineColors"
-            is-custom
-            @change="changeColorCase('tableFontColor')"
-          />
-        </el-form-item>
-        <el-form-item :label="t('chart.table_border_color')" class="form-item">
-          <el-color-picker
-            v-model="colorForm.basicStyle.tableBorderColor"
-            class="color-picker-style"
-            size="small"
-            :predefine="predefineColors"
-            is-custom
-            @change="changeColorCase('tableBorderColor')"
-          />
-        </el-form-item>
-        <el-form-item :label="t('chart.table_scroll_bar_color')" class="form-item">
-          <el-color-picker
-            v-model="colorForm.basicStyle.tableScrollBarColor"
-            class="color-picker-style"
-            size="small"
-            :predefine="predefineColors"
-            color-format="rgb"
-            show-alpha
-            is-custom
-            @change="changeColorCase('tableScrollBarColor')"
-          />
-        </el-form-item>
-      </div>
+
+      <el-collapse-item
+        :title="t('visualization.table_color_matching')"
+        name="table_color_matching"
+        class="inner-collapse"
+      >
+        <div style="padding: 0 8px 8px">
+          <el-row :gutter="8">
+            <el-col :span="12">
+              <el-form-item :label="t('chart.table_header_bg')" class="form-item">
+                <el-color-picker
+                  v-model="colorForm.tableHeader.tableHeaderBgColor"
+                  size="small"
+                  :predefine="predefineColors"
+                  is-custom
+                  @change="changeColorCase('tableHeaderBgColor')"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item :label="t('chart.table_item_bg')" class="form-item">
+                <el-color-picker
+                  v-model="colorForm.tableCell.tableItemBgColor"
+                  size="small"
+                  :predefine="predefineColors"
+                  is-custom
+                  @change="changeColorCase('tableItemBgColor')"
+                />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="8">
+            <el-col :span="12">
+              <el-form-item :label="t('chart.table_header_font_color')" class="form-item">
+                <el-color-picker
+                  v-model="colorForm.tableHeader.tableHeaderFontColor"
+                  size="small"
+                  :predefine="predefineColors"
+                  is-custom
+                  @change="changeColorCase('tableHeaderFontColor')"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item :label="t('chart.table_item_font_color')" class="form-item">
+                <el-color-picker
+                  v-model="colorForm.tableCell.tableFontColor"
+                  size="small"
+                  :predefine="predefineColors"
+                  is-custom
+                  @change="changeColorCase('tableFontColor')"
+                />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="8">
+            <el-col :span="12">
+              <el-form-item :label="t('chart.table_border_color')" class="form-item">
+                <el-color-picker
+                  v-model="colorForm.basicStyle.tableBorderColor"
+                  size="small"
+                  :predefine="predefineColors"
+                  is-custom
+                  @change="changeColorCase('tableBorderColor')"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item :label="t('chart.table_scroll_bar_color')" class="form-item">
+                <el-color-picker
+                  v-model="colorForm.basicStyle.tableScrollBarColor"
+                  size="small"
+                  :predefine="predefineColors"
+                  color-format="rgb"
+                  show-alpha
+                  is-custom
+                  @change="changeColorCase('tableScrollBarColor')"
+                />
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </div>
+      </el-collapse-item>
     </el-form>
   </el-row>
 </template>
@@ -276,6 +293,9 @@ onMounted(() => {
 .color-picker-style {
   cursor: pointer;
   z-index: 1003;
+}
+.fill-width {
+  width: 100%;
 }
 
 .color-label {
@@ -383,5 +403,20 @@ span {
 }
 .ed-divider--horizontal {
   margin: 16px 0;
+}
+.m-divider {
+  border-color: rgba(31, 35, 41, 0.15);
+  margin: 16px 0 8px;
+}
+.inner-collapse {
+  :deep(.ed-collapse-item__header) {
+    background-color: transparent !important;
+  }
+  :deep(.ed-collapse-item__header) {
+    border: none;
+  }
+  :deep(.ed-collapse-item__wrap) {
+    border: none;
+  }
 }
 </style>

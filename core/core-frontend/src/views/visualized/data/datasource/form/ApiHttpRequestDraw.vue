@@ -11,6 +11,7 @@ import EmptyBackground from '@/components/empty-background/src/EmptyBackground.v
 import { checkApiItem } from '@/api/datasource'
 import { cloneDeep } from 'lodash-es'
 import { fieldType } from '@/utils/attr'
+import { ApiConfiguration } from '@/views/visualized/data/datasource/form/index.vue'
 
 export interface Field {
   name: string
@@ -52,6 +53,8 @@ const originFieldItem = reactive({
   jsonFields: [],
   fields: []
 })
+
+let apiItemList = reactive<ApiConfiguration>([])
 
 let apiItem = reactive<ApiItem>({
   status: '',
@@ -120,7 +123,8 @@ const rule = reactive<FormRules>({
   ]
 })
 
-const initApiItem = (val: ApiItem) => {
+const initApiItem = (val: ApiItem, apiList) => {
+  apiItemList = apiList
   Object.assign(apiItem, val)
   edit_api_item.value = true
   active.value = 0
@@ -188,6 +192,12 @@ const next = () => {
       if (apiItem.useJsonPath && !apiItem.jsonPath) {
         ElMessage.error(t('datasource.please_input_dataPath'))
         return
+      }
+      for (let i = 0; i < apiItemList.length; i++) {
+        if (apiItemList[i].name === apiItem.name) {
+          ElMessage.error(t('datasource.has_repeat_name'))
+          return
+        }
       }
       checkApiItem({ data: Base64.encode(JSON.stringify(apiItem)) }).then(response => {
         apiItem.jsonFields = response.data.jsonFields
