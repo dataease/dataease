@@ -1039,6 +1039,7 @@ const autoInsert = element => {
                             @onDimensionItemRemove="dimensionItemRemove"
                             @onNameEdit="showRename"
                             @onCustomSort="onCustomSort"
+                            @valueFormatter="valueFormatter"
                           />
                         </template>
                       </draggable>

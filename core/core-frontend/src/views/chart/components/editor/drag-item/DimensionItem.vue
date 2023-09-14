@@ -1,6 +1,6 @@
 <script lang="tsx" setup>
 import { useI18n } from '@/hooks/web/useI18n'
-import { reactive, ref, toRefs, watch } from 'vue'
+import { computed, reactive, ref, toRefs, watch } from 'vue'
 import { formatterItem } from '../util/formatter'
 import { getItemType } from '@/views/chart/components/editor/drag-item/utils'
 import { Delete, Edit } from '@element-plus/icons-vue'
@@ -56,10 +56,15 @@ const emit = defineEmits([
   'onDimensionItemRemove',
   'onCustomSort',
   'onDimensionItemChange',
-  'onNameEdit'
+  'onNameEdit',
+  'valueFormatter'
 ])
 
 const { item } = toRefs(props)
+
+const showValueFormatter = computed(() => {
+  return props.chart.type === 'table-info'
+})
 
 watch(
   [() => props.dimensionData, () => props.item],
@@ -84,7 +89,7 @@ const clickItem = param => {
       // editFilter()
       break
     case 'formatter':
-      // valueFormatter()
+      valueFormatter()
       break
     default:
       break
@@ -155,6 +160,12 @@ const removeItem = () => {
 
 const getItemTagType = () => {
   tagType.value = getItemType(props.dimensionData, props.quotaData, props.item)
+}
+
+const valueFormatter = () => {
+  item.value.index = props.index
+  item.value.formatterType = props.type
+  emit('valueFormatter', item.value)
 }
 
 getItemTagType()
@@ -492,6 +503,15 @@ getItemTagType()
             :command="beforeClickItem('rename')"
           >
             <span>{{ t('chart.show_name_set') }}</span>
+          </el-dropdown-item>
+          <el-dropdown-item
+            class="menu-item-padding"
+            v-show="showValueFormatter"
+            :divided="chart.type !== 'table-info'"
+            :command="beforeClickItem('formatter')"
+          >
+            <el-icon size="14px" />
+            <span>{{ t('chart.value_formatter') }}...</span>
           </el-dropdown-item>
           <el-dropdown-item
             class="menu-item-padding"

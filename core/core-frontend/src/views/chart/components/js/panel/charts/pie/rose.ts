@@ -84,7 +84,7 @@ export class Rose extends G2PlotChartView<RoseOptions, G2Rose> {
     const { basicStyle } = parseJson(chart.customAttr)
     return {
       ...options,
-      radius: basicStyle.radius
+      radius: basicStyle.radius / 100
     }
   }
 
