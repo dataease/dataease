@@ -234,6 +234,7 @@ const multipleChange = (val: boolean, isMultipleChange = false) => {
 
 const validate = () => {
   return conditions.value.some(ele => {
+    if (ele.auto) return false
     if (!ele.checkedFields?.length || ele.checkedFields.some(itx => !ele.checkedFieldsMap[itx])) {
       ElMessage.error('请先勾选需要联动的图表及字段')
       return true
