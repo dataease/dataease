@@ -154,7 +154,7 @@ const chartViewInstance = computed(() => {
 })
 const showAxis = (axis: AxisType) => chartViewInstance.value?.axis?.includes(axis)
 watch(
-  () => view.value,
+  () => [view.value.type, view.value],
   newVal => {
     if (showAxis('area')) {
       if (!state.worldTree?.length) {
@@ -166,8 +166,8 @@ watch(
         state.areaId = view.value?.customAttr?.map?.id
       }
     }
-    state.chartTypeOptions = [getViewConfig(newVal.type)]
-    state.useless = newVal.type
+    state.chartTypeOptions = [getViewConfig(newVal[0])]
+    state.useless = newVal[0]
   },
   { immediate: true, deep: false }
 )
@@ -484,8 +484,6 @@ const onTypeChange = (render, type) => {
     view.value = chartViewInstance.setupDefaultOptions(view.value) as unknown as ChartObj
   }
   curComponent.value.innerType = type
-  state.chartTypeOptions = [getViewConfig(type)]
-  state.useless = type
   calcData(view.value, true)
 }
 

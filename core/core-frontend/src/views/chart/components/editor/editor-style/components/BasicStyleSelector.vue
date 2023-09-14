@@ -203,7 +203,6 @@ init()
           </div>
         </div>
       </el-popover>
-      <ColorScheme></ColorScheme>
     </el-form-item>
     <el-form-item
       :label="t('chart.gradient')"
