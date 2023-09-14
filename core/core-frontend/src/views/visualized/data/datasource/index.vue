@@ -1,5 +1,6 @@
 <script lang="tsx" setup>
 import { computed, reactive, ref, shallowRef, nextTick, watch } from 'vue'
+import { dsTypes } from '@/views/visualized/data/datasource/form/option'
 import type { TabPaneName, ElMessageBoxOptions } from 'element-plus-secondary'
 import { ElIcon, ElMessageBox, ElMessage, ElScrollbar, ElAside } from 'element-plus-secondary'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
@@ -125,6 +126,11 @@ const menuList = [
     command: 'delete'
   }
 ]
+
+const typeMap = dsTypes.reduce((pre, next) => {
+  pre[next.type] = next.name
+  return pre
+}, {})
 
 const datasetTypeList = [
   {
@@ -863,12 +869,14 @@ const defaultProps = {
             <template v-if="slotProps.active">
               <el-row :gutter="24">
                 <el-col :span="12">
-                  <BaseInfoItem :label="t('common.name') + t('auth.datasource')">{{
+                  <BaseInfoItem :label="t('auth.datasource') + t('common.name')">{{
                     nodeInfo.name
                   }}</BaseInfoItem>
                 </el-col>
                 <el-col :span="12">
-                  <BaseInfoItem :label="t('datasource.type')">{{ nodeInfo.type }}</BaseInfoItem>
+                  <BaseInfoItem :label="t('datasource.type')">{{
+                    typeMap[nodeInfo.type]
+                  }}</BaseInfoItem>
                 </el-col>
               </el-row>
               <el-row :gutter="24">
