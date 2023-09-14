@@ -207,85 +207,68 @@ onMounted(() => {
     <el-row v-if="state.collapseShow">
       <el-collapse v-model="canvasAttrActiveNames">
         <el-collapse-item title="仪表板风格" name="style">
-          <el-row class="item-show">
-            <slider></slider>
-          </el-row>
+          <slider />
         </el-collapse-item>
         <el-collapse-item title="整体配置" name="overallSetting">
-          <el-row class="item-show">
-            <overall-setting @onThemeColorChange="themeColorChange"></overall-setting>
-          </el-row>
+          <overall-setting @onThemeColorChange="themeColorChange" />
         </el-collapse-item>
 
         <el-collapse-item title="仪表板背景" name="background">
-          <el-row class="item-show custom-row">
-            <el-row>
-              <el-radio-group v-model="canvasStyleData.backgroundType">
-                <el-radio label="backgroundColor">填充</el-radio>
-                <el-radio label="background">图片</el-radio>
-              </el-radio-group>
-            </el-row>
-            <el-row
-              v-show="canvasStyleData.backgroundType === 'backgroundColor'"
-              class="margin-top8"
+          <el-row>
+            <el-radio-group v-model="canvasStyleData.backgroundType">
+              <el-radio label="backgroundColor">填充</el-radio>
+              <el-radio label="background">图片</el-radio>
+            </el-radio-group>
+          </el-row>
+          <el-row v-if="canvasStyleData.backgroundType === 'backgroundColor'" class="margin-top8">
+            <el-color-picker v-model="canvasStyleData.backgroundColor" show-alpha is-custom />
+          </el-row>
+          <el-row v-if="canvasStyleData.backgroundType === 'background'" class="img-area">
+            <el-col style="width: 130px !important">
+              <el-upload
+                action=""
+                accept=".jpeg,.jpg,.png,.gif,.svg"
+                class="avatar-uploader"
+                list-type="picture-card"
+                :class="{ disabled: uploadDisabled }"
+                :on-preview="handlePictureCardPreview"
+                :on-remove="handleRemove"
+                :http-request="upload"
+                :before-upload="beforeUploadCheck"
+                :file-list="fileList"
+              >
+                <el-icon><Plus /></el-icon>
+              </el-upload>
+              <el-dialog
+                top="25vh"
+                width="600px"
+                :append-to-body="true"
+                :destroy-on-close="true"
+                v-model="dialogVisible"
+              >
+                <img width="550" :src="dialogImageUrl" />
+              </el-dialog>
+            </el-col>
+          </el-row>
+          <el-row v-show="canvasStyleData.backgroundType === 'background'">
+            <span v-show="!canvasStyleData.background" class="image-hint"
+              >当前支持.jpeg,.jpg,.png,.gif文件,大小不要超过15M</span
             >
-              <el-color-picker
-                v-model="canvasStyleData.backgroundColor"
-                show-alpha
-                is-custom
-              ></el-color-picker>
-            </el-row>
-            <el-row v-show="canvasStyleData.backgroundType === 'background'" class="img-area">
-              <el-col style="width: 130px !important">
-                <el-upload
-                  action=""
-                  accept=".jpeg,.jpg,.png,.gif,.svg"
-                  class="avatar-uploader"
-                  list-type="picture-card"
-                  :class="{ disabled: uploadDisabled }"
-                  :on-preview="handlePictureCardPreview"
-                  :on-remove="handleRemove"
-                  :http-request="upload"
-                  :before-upload="beforeUploadCheck"
-                  :file-list="fileList"
-                >
-                  <el-icon><Plus /></el-icon>
-                </el-upload>
-                <el-dialog
-                  top="25vh"
-                  width="600px"
-                  :append-to-body="true"
-                  :destroy-on-close="true"
-                  v-model="dialogVisible"
-                >
-                  <img width="550" :src="dialogImageUrl" />
-                </el-dialog>
-              </el-col>
-            </el-row>
-            <el-row v-show="canvasStyleData.backgroundType === 'background'">
-              <span v-show="!canvasStyleData.background" class="image-hint"
-                >当前支持.jpeg,.jpg,.png,.gif文件,大小不要超过15M</span
-              >
-              <span v-show="canvasStyleData.background" class="re-update-span" @click="goFile"
-                >重新上传</span
-              >
-            </el-row>
+            <span v-show="canvasStyleData.background" class="re-update-span" @click="goFile"
+              >重新上传</span
+            >
           </el-row>
         </el-collapse-item>
         <el-collapse-item :title="t('visualization.view_style')" name="componentStyle">
           <background-overall-common
             :common-background-pop="canvasStyleData.component.chartCommonStyle"
             component-position="'dashboard'"
-            class="item-show"
             themes="light"
             @onBackgroundChange="componentBackgroundChange"
-          ></background-overall-common>
+          />
         </el-collapse-item>
-        <el-collapse-item :title="'视图配色'" name="graphical">
-          <component-color-selector
-            class="item-show"
-            @onColorChange="onColorChange"
-          ></component-color-selector>
+        <el-collapse-item :title="'视图配色'" name="graphical" class="no-padding">
+          <component-color-selector @onColorChange="onColorChange" />
         </el-collapse-item>
         <el-collapse-item name="viewTitle">
           <template #title>
@@ -296,10 +279,14 @@ onMounted(() => {
               @click.stop.prevent="onTextChange(canvasStyleData.component.chartTitle)"
             />
           </template>
-          <view-simple-title class="item-show" @onTextChange="onTextChange"></view-simple-title>
+          <view-simple-title @onTextChange="onTextChange" />
         </el-collapse-item>
-        <el-collapse-item :title="t('visualization.filter_component')" name="filterComponent">
-          <filter-style-simple-selector class="item-show"></filter-style-simple-selector>
+        <el-collapse-item
+          :title="t('visualization.filter_component')"
+          name="filterComponent"
+          class="no-padding no-border-bottom"
+        >
+          <filter-style-simple-selector />
         </el-collapse-item>
       </el-collapse>
       <input
@@ -342,6 +329,37 @@ onMounted(() => {
   display: none;
 }
 
+:deep(.ed-radio__label) {
+  color: #1f2329;
+  font-size: 12px !important;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 20px;
+}
+
+:deep(.ed-radio__input.is-checked + .ed-radio__label) {
+  color: #1f2329 !important;
+}
+
+:deep(.ed-radio__input.is-disabled + span.ed-radio__label) {
+  color: var(--ed-text-color-placeholder) !important;
+}
+
+:deep(.ed-collapse-item.ed-collapse--light .ed-collapse-item__content) {
+  border: none;
+}
+
+.no-padding {
+  :deep(.ed-collapse-item__content) {
+    padding: 0;
+  }
+}
+.no-border-bottom {
+  :deep(.ed-collapse-item__wrap) {
+    border-bottom: none;
+  }
+}
+
 .avatar-uploader :deep(.ed-upload) {
   width: 120px;
   height: 80px;
@@ -353,7 +371,19 @@ onMounted(() => {
   height: 80px !important;
 }
 .avatar-uploader :deep(.ed-upload--picture-card) {
-  background: rgba(0, 0, 0, 0);
+  background: #eff0f1;
+  border: 1px dashed #dee0e3;
+  border-radius: 4px;
+
+  .ed-icon {
+    color: #1f2329;
+  }
+
+  &:hover {
+    .ed-icon {
+      color: #3370ff;
+    }
+  }
 }
 .img-area {
   width: 120px;
@@ -412,14 +442,13 @@ onMounted(() => {
 }
 
 :deep(.ed-collapse-item__header) {
-  background-color: #f5f6f7 !important;
-  padding-left: 5px;
-  height: 38px !important;
+  height: 36px !important;
+  line-height: 36px !important;
+  font-size: 12px !important;
+  padding: 0 !important;
+  font-weight: 500 !important;
 }
 
-:deep(.ed-radio__label) {
-  font-size: 12px !important;
-}
 :deep(.ed-checkbox__label) {
   font-size: 12px !important;
 }
@@ -434,5 +463,9 @@ onMounted(() => {
 }
 .margin-top8 {
   margin-top: 8px !important;
+}
+
+:deep(.ed-collapse-item__arrow) {
+  margin: 0 6px 0 8px;
 }
 </style>

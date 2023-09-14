@@ -7,8 +7,18 @@ import findComponent from '@/utils/components'
 import { hexColorToRGBA } from '@/views/chart/components/js/util'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import ComponentEditBar from '@/components/visualization/ComponentEditBar.vue'
+import { useEmitt } from '@/hooks/web/useEmitt'
+import { toPng } from 'html-to-image'
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+const dvMainStore = dvMainStoreWithOut()
+
+const componentWrapperInnerRef = ref(null)
 
 const props = defineProps({
+  active: {
+    type: Boolean,
+    default: false
+  },
   canvasStyleData: {
     type: Object,
     required: true
@@ -69,9 +79,32 @@ let currentInstance
 const component = ref(null)
 const emits = defineEmits(['userViewEnlargeOpen'])
 
+const htmlToImage = () => {
+  toPng(componentWrapperInnerRef.value)
+    .then(dataUrl => {
+      const a = document.createElement('a')
+      a.setAttribute('download', '视图')
+      a.href = dataUrl
+      a.click()
+    })
+    .catch(error => {
+      console.error('oops, something went wrong!', error)
+    })
+}
+
+const handleInnerMouseDown = e => {
+  // do setCurComponent
+}
+
 onMounted(() => {
   runAnimation(component.value.$el, config.value.animations.type)
   currentInstance = getCurrentInstance()
+  useEmitt({
+    name: 'componentImageDownload-' + config.value.id,
+    callback: () => {
+      htmlToImage()
+    }
+  })
 })
 
 const onClick = () => {
@@ -136,16 +169,23 @@ const commonBackgroundSvgInner = computed(() => {
 </script>
 
 <template>
-  <div class="wrapper-outer" @click="onClick" @mouseenter="onMouseEnter">
-    <div class="wrapper-inner" :class="showPosition" :style="componentBackgroundStyle">
-      <component-edit-bar
-        class="wrapper-edit-bar"
-        :canvas-id="canvasId"
-        :index="index"
-        :element="config"
-        :show-position="showPosition"
-        @userViewEnlargeOpen="opt => emits('userViewEnlargeOpen', opt)"
-      ></component-edit-bar>
+  <div
+    class="wrapper-outer"
+    :class="showPosition"
+    @click="onClick"
+    @mousedown="handleInnerMouseDown"
+    @mouseenter="onMouseEnter"
+  >
+    <component-edit-bar
+      class="wrapper-edit-bar"
+      :class="{ 'wrapper-edit-bar-active': active }"
+      :canvas-id="canvasId"
+      :index="index"
+      :element="config"
+      :show-position="showPosition"
+      @userViewEnlargeOpen="opt => emits('userViewEnlargeOpen', opt)"
+    ></component-edit-bar>
+    <div class="wrapper-inner" ref="componentWrapperInnerRef" :style="componentBackgroundStyle">
       <!--边框背景-->
       <Icon
         v-if="svgInnerEnable"
@@ -176,9 +216,7 @@ const commonBackgroundSvgInner = computed(() => {
 
 <style lang="less" scoped>
 .wrapper-outer {
-  z-index: 5;
   position: absolute;
-  overflow: hidden;
 }
 .wrapper-inner {
   width: 100%;
@@ -187,6 +225,9 @@ const commonBackgroundSvgInner = computed(() => {
   background-size: 100% 100% !important;
 }
 
+.wrapper-edit-bar-active {
+  display: inherit !important;
+}
 .preview {
   .wrapper-edit-bar {
     display: none;

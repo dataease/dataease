@@ -89,7 +89,6 @@
             <properties>
                 <profiles.active>standalone</profiles.active>
             </properties>
-
             <build>
                 <plugins>
                     <plugin>

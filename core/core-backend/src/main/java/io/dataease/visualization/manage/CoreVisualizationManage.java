@@ -3,6 +3,8 @@ package io.dataease.visualization.manage;
 import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.api.visualization.request.DataVisualizationBaseRequest;
+import io.dataease.api.visualization.request.VisualizationWorkbranchQueryRequest;
+import io.dataease.api.visualization.vo.VisualizationResourceVO;
 import io.dataease.commons.constants.DataVisualizationConstants;
 import io.dataease.exception.DEException;
 import io.dataease.license.config.XpackInteract;
@@ -15,6 +17,7 @@ import io.dataease.utils.TreeUtils;
 import io.dataease.visualization.dao.auto.entity.DataVisualizationInfo;
 import io.dataease.visualization.dao.auto.mapper.DataVisualizationInfoMapper;
 import io.dataease.visualization.dao.ext.mapper.CoreVisualiationExtMapper;
+import io.dataease.visualization.dao.ext.mapper.ExtDataVisualizationMapper;
 import io.dataease.visualization.dao.ext.po.VisualizationNodePO;
 import io.dataease.visualization.dto.VisualizationNodeBO;
 import jakarta.annotation.Resource;
@@ -22,6 +25,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.*;
 
@@ -35,6 +39,9 @@ public class CoreVisualizationManage {
 
     @Resource
     private DataVisualizationInfoMapper mapper;
+
+    @Resource
+    private ExtDataVisualizationMapper extDataVisualizationMapper;
 
     @XpackInteract(value = "visualizationResourceTree", replace = true)
     public List<BusiNodeVO> tree(BusiNodeRequest request) {
@@ -112,5 +119,10 @@ public class CoreVisualizationManage {
 
     private VisualizationNodeBO convert(VisualizationNodePO po) {
         return new VisualizationNodeBO(po.getId(), po.getName(), StringUtils.equals(po.getNodeType(), "leaf"), 3, po.getPid(), 0);
+    }
+
+    public List<VisualizationResourceVO> findRecent(Long pageNum,Long pageCount,VisualizationWorkbranchQueryRequest request){
+        Long uid = AuthUtils.getUser().getUserId();
+        return extDataVisualizationMapper.findRecent(pageNum,pageCount,uid,request.getType(),request.getKeyword());
     }
 }

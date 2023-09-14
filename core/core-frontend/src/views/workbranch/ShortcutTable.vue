@@ -153,7 +153,7 @@ const setLoading = (val: boolean) => {
         >
           <el-button secondary>
             {{ t(`auth.${activeCommand}`) }}
-            <el-icon style="margin-left: 4px; font-size: 16px">
+            <el-icon style="margin-left: 4px; font-size: 16px; color: #646a73">
               <arrow-up v-if="userAddPopper" />
               <arrow-down v-else />
             </el-icon>

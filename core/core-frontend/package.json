@@ -31,6 +31,7 @@
     "html-to-image": "^1.11.11",
     "js-base64": "^3.7.5",
     "jsencrypt": "^3.3.2",
+    "jspdf": "^2.5.1",
     "lodash": "^4.17.21",
     "lodash-es": "^4.17.21",
     "mathjs": "^11.6.0",

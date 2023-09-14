@@ -12,6 +12,7 @@ import { initCanvasData } from '@/utils/canvasUtils'
 import { useRequestStoreWithOut } from '@/store/modules/request'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import { useMoveLine } from '@/hooks/web/useMoveLine'
+import JsPDF from 'jspdf'
 
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo } = storeToRefs(dvMainStore)
@@ -21,7 +22,7 @@ const slideShow = ref(true)
 const requestStore = useRequestStoreWithOut()
 const permissionStore = usePermissionStoreWithOut()
 const dataInitState = ref(true)
-
+const downloadStatus = ref(false)
 const { width, node } = useMoveLine('DASHBOARD')
 
 const props = defineProps({
@@ -58,17 +59,33 @@ const loadCanvasData = (dvId, weight?) => {
   )
 }
 
-const htmlToImage = () => {
-  toPng(previewCanvasContainer.value.querySelector('.canvas-container'))
-    .then(dataUrl => {
-      const a = document.createElement('a')
-      a.setAttribute('download', dvInfo.value.name)
-      a.href = dataUrl
-      a.click()
-    })
-    .catch(error => {
-      console.error('oops, something went wrong!', error)
-    })
+const download = type => {
+  downloadStatus.value = true
+  nextTick(() => {
+    const vueDom = previewCanvasContainer.value.querySelector('.canvas-container')
+    toPng(vueDom)
+      .then(dataUrl => {
+        if (type === 'img') {
+          const a = document.createElement('a')
+          a.setAttribute('download', dvInfo.value.name)
+          a.href = dataUrl
+          a.click()
+        } else {
+          const contentWidth = vueDom.offsetWidth
+          const contentHeight = vueDom.offsetHeight
+          const lp = contentWidth > contentHeight ? 'l' : 'p'
+          const PDF = new JsPDF(lp, 'pt', [contentWidth, contentHeight])
+          PDF.addImage(dataUrl, 'PNG', 0, 0, contentWidth, contentHeight)
+          PDF.save(dvInfo.value.name + '.pdf')
+        }
+      })
+      .catch(error => {
+        console.error('oops, something went wrong!', error)
+      })
+      .finally(() => {
+        downloadStatus.value = false
+      })
+  })
 }
 
 const slideOpenChange = () => {
@@ -119,7 +136,7 @@ const state = reactive({
         <preview-head
           v-show="showPosition === 'preview'"
           @reload="reload"
-          @download="htmlToImage"
+          @download="download"
         ></preview-head>
         <div ref="previewCanvasContainer" class="content">
           <div class="content-inner">
@@ -132,6 +149,7 @@ const state = reactive({
               :dv-info="state.dvInfo"
               :cur-gap="state.curPreviewGap"
               :show-position="showPosition"
+              :download-status="downloadStatus"
             ></de-preview>
           </div>
         </div>

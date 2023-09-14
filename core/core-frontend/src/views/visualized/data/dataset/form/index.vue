@@ -80,6 +80,61 @@ const currentField = ref({
   name: ''
 })
 
+const fieldTypes = index => {
+  return [
+    t('dataset.text'),
+    t('dataset.time'),
+    t('dataset.value'),
+    t('dataset.value') + '(' + t('dataset.float') + ')',
+    t('dataset.value'),
+    t('dataset.location')
+  ][index]
+}
+
+const fieldOptions = [
+  { label: t('dataset.text'), value: 0 },
+  {
+    label: t('dataset.time'),
+    value: 1,
+    children: [
+      {
+        value: 'yyyy-MM-dd',
+        label: 'yyyy-MM-dd'
+      },
+      {
+        value: 'yyyy/MM/dd',
+        label: 'yyyy/MM/dd'
+      },
+      {
+        value: 'yyyyMMdd',
+        label: 'yyyyMMdd'
+      },
+      {
+        value: 'yyyy-MM-dd HH:mm:ss',
+        label: 'yyyy-MM-dd HH:mm:ss'
+      },
+      {
+        value: 'yyyy/MM/dd HH:mm:ss',
+        label: 'yyyy/MM/dd HH:mm:ss'
+      },
+      {
+        value: 'yyyyMMdd HH:mm:ss',
+        label: 'yyyyMMdd HH:mm:ss'
+      },
+      {
+        value: 'custom',
+        label: t('dataset.custom')
+      }
+    ]
+  },
+  { label: t('dataset.location'), value: 5 },
+  { label: t('dataset.value'), value: 2 },
+  {
+    label: t('dataset.value') + '(' + t('dataset.float') + ')',
+    value: 3
+  }
+]
+
 const ruleFormRef = ref<FormInstance>()
 
 const rules = {
@@ -448,8 +503,26 @@ const state = reactive({
   editArr: [],
   nodeList: [],
   dataSourceList: [],
-  tableData: []
+  tableData: [],
+  fieldCollapse: ['dimension', 'quota']
 })
+
+const getIconName = (type: number) => {
+  if (type === 1) {
+    return 'time'
+  }
+
+  if (type === 0) {
+    return 'text'
+  }
+
+  if ([2, 3, 4].includes(type)) {
+    return 'value'
+  }
+  if (type === 5) {
+    return 'location'
+  }
+}
 
 const allfields = ref([])
 
@@ -876,8 +949,14 @@ const treeProps = {
           </div>
           <el-tabs class="padding-24" v-model="tabActive">
             <el-tab-pane :label="t('chart.data_preview')" name="preview" />
+            <el-tab-pane :label="t('dataset.batch_manage')" name="manage" />
           </el-tabs>
-          <div ref="elDrag" v-show="!!allfields.length" class="table-preview">
+          <div
+            v-if="tabActive === 'preview'"
+            ref="elDrag"
+            v-show="!!allfields.length"
+            class="table-preview"
+          >
             <div class="preview-field">
               <div
                 class="field-d"
@@ -977,6 +1056,316 @@ const treeProps = {
                   </el-table-v2>
                 </template>
               </el-auto-resizer>
+            </div>
+          </div>
+          <div v-else class="batch-area">
+            <div class="manage-container">
+              <el-collapse v-model="state.fieldCollapse" class="style-collapse">
+                <el-collapse-item
+                  name="dimension"
+                  :title="t('chart.dimension')"
+                  class="dimension-manage-header manage-header"
+                >
+                  <el-table :data="dimensions" style="width: 100%">
+                    <el-table-column type="selection" width="40" />
+                    <el-table-column prop="name" :label="t('dataset.field_name')" width="264">
+                      <template #default="scope">
+                        <div class="column-style">
+                          <el-input
+                            v-model="scope.row.name"
+                            :placeholder="t('commons.input_content')"
+                          />
+                        </div>
+                      </template>
+                    </el-table-column>
+
+                    <el-table-column
+                      prop="originName"
+                      :label="t('dataset.origin_name')"
+                      width="240"
+                    >
+                      <template #default="scope">
+                        <div class="column-style">
+                          <span v-if="scope.row.extField === 0">{{ scope.row.originName }}</span>
+                          <span v-else>{{ t('dataset.calc_field') }}</span>
+                        </div>
+                      </template>
+                    </el-table-column>
+
+                    <el-table-column prop="deType" :label="t('dataset.field_type')" width="200">
+                      <template #default="scope">
+                        <el-cascader
+                          class="select-type"
+                          popper-class="cascader-panel"
+                          v-model="scope.row.deType"
+                          :options="fieldOptions"
+                        >
+                          <template v-slot="{ data }">
+                            <el-icon>
+                              <Icon
+                                :className="`field-icon-${getIconName(data.value)}`"
+                                :name="`field_${getIconName(data.value)}`"
+                              ></Icon>
+                            </el-icon>
+                            <span>{{ data.label }}</span>
+                          </template>
+                        </el-cascader>
+                        <span class="select-svg-icon">
+                          <el-icon>
+                            <Icon
+                              :className="`field-icon-${getIconName(scope.row.deType[0])}`"
+                              :name="`field_${getIconName(scope.row.deType[0])}`"
+                            ></Icon>
+                          </el-icon>
+                        </span>
+                      </template>
+                    </el-table-column>
+
+                    <el-table-column
+                      prop="deExtraType"
+                      :label="t('dataset.origin_type')"
+                      width="168"
+                    >
+                      <template #default="scope">
+                        <div class="column-style">
+                          <span v-if="scope.row.extField === 0">
+                            <el-icon>
+                              <Icon
+                                :className="`field-icon-${getIconName(scope.row.deExtractType)}`"
+                                :name="`field_${getIconName(scope.row.deExtractType)}`"
+                              ></Icon>
+                            </el-icon>
+                            {{ fieldTypes(scope.row.deExtractType) }}
+                          </span>
+                          <span v-else>{{ t('dataset.calc_field') }}</span>
+                        </div>
+                      </template>
+                    </el-table-column>
+
+                    <el-table-column :label="t('chart.dimension')" width="110">
+                      <template #default="scope">
+                        <el-tooltip effect="dark" content="转换为指标" placement="top">
+                          <template #default>
+                            <el-button text @click="handleFieldMore(scope.row, 'translate')">
+                              <template #icon>
+                                <Icon name="icon_switch_outlined"></Icon>
+                              </template>
+                            </el-button>
+                          </template>
+                        </el-tooltip>
+                      </template>
+                    </el-table-column>
+
+                    <el-table-column :label="t('dataset.operator')">
+                      <template #default="scope">
+                        <el-tooltip effect="dark" :content="t('dataset.copy')" placement="top">
+                          <template #default>
+                            <el-button text @click="handleFieldMore(scope.row, 'copy')">
+                              <template #icon>
+                                <Icon name="icon_copy_outlined"></Icon>
+                              </template>
+                            </el-button>
+                          </template>
+                        </el-tooltip>
+
+                        <el-tooltip effect="dark" :content="t('dataset.delete')" placement="top">
+                          <template #default>
+                            <el-button text @click="handleFieldMore(scope.row, 'delete')">
+                              <template #icon>
+                                <Icon name="icon_delete-trash_outlined"></Icon>
+                              </template>
+                            </el-button>
+                          </template>
+                        </el-tooltip>
+
+                        <el-tooltip effect="dark" :content="t('dataset.edit')" placement="top">
+                          <template #default>
+                            <el-button
+                              v-if="scope.row.extField === 2"
+                              text
+                              @click="handleFieldMore(scope.row, 'editor')"
+                            >
+                              <template #icon>
+                                <Icon name="icon_edit_outlined"></Icon>
+                              </template>
+                            </el-button>
+                          </template>
+                        </el-tooltip>
+                      </template>
+                    </el-table-column>
+                  </el-table>
+                </el-collapse-item>
+                <el-collapse-item
+                  name="quota"
+                  :title="t('chart.quota')"
+                  class="quota-manage-header manage-header"
+                >
+                  <el-table :data="quota" style="width: 100%">
+                    <el-table-column type="selection" width="40" />
+                    <el-table-column prop="name" :label="t('dataset.field_name')" width="264">
+                      <template #default="scope">
+                        <div class="column-style">
+                          <el-input
+                            v-model="scope.row.name"
+                            :placeholder="t('commons.input_content')"
+                          />
+                        </div>
+                      </template>
+                    </el-table-column>
+
+                    <el-table-column
+                      prop="originName"
+                      :label="t('dataset.origin_name')"
+                      width="240"
+                    >
+                      <template #default="scope">
+                        <div class="column-style">
+                          <span v-if="scope.row.extField === 0">{{ scope.row.originName }}</span>
+                          <span v-else>{{ t('dataset.calc_field') }}</span>
+                        </div>
+                      </template>
+                    </el-table-column>
+
+                    <el-table-column prop="deType" :label="t('dataset.field_type')" width="200">
+                      <template #default="scope">
+                        <el-cascader
+                          class="select-type"
+                          popper-class="cascader-panel"
+                          v-model="scope.row.deType"
+                          :options="fieldOptions"
+                        >
+                          <template v-slot="{ data }">
+                            <el-icon>
+                              <Icon
+                                :className="`field-icon-${getIconName(data.value)}`"
+                                :name="`field_${getIconName(data.value)}`"
+                              ></Icon>
+                            </el-icon>
+                            <span>{{ data.label }}</span>
+                          </template>
+                        </el-cascader>
+                        <span class="select-svg-icon">
+                          <el-icon>
+                            <Icon
+                              :className="`field-icon-${getIconName(scope.row.deType[0])}`"
+                              :name="`field_${getIconName(scope.row.deType[0])}`"
+                            ></Icon>
+                          </el-icon>
+                        </span>
+                      </template>
+                    </el-table-column>
+
+                    <el-table-column
+                      prop="deExtraType"
+                      :label="t('dataset.origin_type')"
+                      width="168"
+                    >
+                      <template #default="scope">
+                        <div class="column-style">
+                          <span v-if="scope.row.extField === 0">
+                            <el-icon>
+                              <Icon
+                                :className="`field-icon-${getIconName(scope.row.deExtractType)}`"
+                                :name="`field_${getIconName(scope.row.deExtractType)}`"
+                              ></Icon>
+                            </el-icon>
+                            {{ fieldTypes(scope.row.deExtractType) }}
+                          </span>
+                          <span v-else>{{ t('dataset.calc_field') }}</span>
+                        </div>
+                      </template>
+                    </el-table-column>
+
+                    <el-table-column :label="t('chart.quota')" width="110">
+                      <template #default="scope">
+                        <el-tooltip effect="dark" content="转换为维度" placement="top">
+                          <template #default>
+                            <el-button text @click="handleFieldMore(scope.row, 'translate')">
+                              <template #icon>
+                                <Icon name="icon_switch_outlined"></Icon>
+                              </template>
+                            </el-button>
+                          </template>
+                        </el-tooltip>
+                      </template>
+                    </el-table-column>
+
+                    <el-table-column :label="t('dataset.operator')">
+                      <template #default="scope">
+                        <el-tooltip effect="dark" :content="t('dataset.copy')" placement="top">
+                          <template #default>
+                            <el-button text @click="handleFieldMore(scope.row, 'copy')">
+                              <template #icon>
+                                <Icon name="icon_copy_outlined"></Icon>
+                              </template>
+                            </el-button>
+                          </template>
+                        </el-tooltip>
+
+                        <el-tooltip effect="dark" :content="t('dataset.delete')" placement="top">
+                          <template #default>
+                            <el-button text @click="handleFieldMore(scope.row, 'delete')">
+                              <template #icon>
+                                <Icon name="icon_delete-trash_outlined"></Icon>
+                              </template>
+                            </el-button>
+                          </template>
+                        </el-tooltip>
+
+                        <el-tooltip effect="dark" :content="t('dataset.edit')" placement="top">
+                          <template #default>
+                            <el-button
+                              v-if="scope.row.extField === 2"
+                              text
+                              @click="handleFieldMore(scope.row, 'editor')"
+                            >
+                              <template #icon>
+                                <Icon name="icon_edit_outlined"></Icon>
+                              </template>
+                            </el-button>
+                          </template>
+                        </el-tooltip>
+                      </template>
+                    </el-table-column>
+                  </el-table>
+                </el-collapse-item>
+              </el-collapse>
+            </div>
+            <div class="batch-operate">
+              <span style="margin-left: 24px">
+                已选择
+                <span>2</span>
+                条
+              </span>
+              <el-button text style="margin-left: 16px">{{ t('commons.clear') }}</el-button>
+
+              <span style="margin-left: 400px">
+                <el-cascader
+                  class="select-type"
+                  popper-class="cascader-panel"
+                  :options="fieldOptions"
+                >
+                  <template v-slot="{ data }">
+                    <el-icon>
+                      <Icon
+                        :className="`field-icon-${getIconName(data.value)}`"
+                        :name="`field_${getIconName(data.value)}`"
+                      ></Icon>
+                    </el-icon>
+                    <span>{{ data.label }}</span>
+                  </template>
+                </el-cascader>
+                <span class="select-svg-icon">
+                  <!--                  <el-icon>-->
+                  <!--                    <Icon-->
+                  <!--                      :className="`field-icon-${getIconName(scope.row.deType[0])}`"-->
+                  <!--                      :name="`field_${getIconName(scope.row.deType[0])}`"-->
+                  <!--                    ></Icon>-->
+                  <!--                  </el-icon>-->
+                </span>
+              </span>
+
+              <el-button plain type="primary" style="margin-left: 200px"> 转换为指标 </el-button>
             </div>
           </div>
         </div>
@@ -1360,6 +1749,103 @@ const treeProps = {
 
 .father:hover .child {
   visibility: visible;
+}
+
+.manage-container {
+  padding: 12px 24px 0;
+  flex: 1;
+  overflow: auto;
+}
+
+.style-collapse {
+  :deep(.ed-collapse-item__header),
+  :deep(.ed-collapse-item__wrap) {
+    border-bottom: none !important;
+  }
+  :deep(.ed-collapse-item__content) {
+    padding: 0 !important;
+  }
+
+  &.data-tab-collapse {
+    border-bottom: none;
+    border-top: 1px solid var(--ed-collapse-border-color);
+
+    :deep(.ed-collapse-item.ed-collapse--dark .ed-collapse-item__wrap) {
+      background-color: #1a1a1a;
+    }
+
+    :deep(.ed-collapse-item__wrap) {
+      border-top: none !important;
+    }
+    :deep(.ed-collapse-item__content) {
+      padding: 0 !important;
+      border-top: none !important;
+    }
+    :deep(.ed-collapse-item__header) {
+      background-color: transparent;
+      border-bottom: none !important;
+    }
+  }
+}
+
+.column-style {
+  display: flex;
+  align-items: center;
+}
+
+.select-type {
+  .ed-input__wrapper {
+    padding-left: 32px !important;
+  }
+}
+
+.select-svg-icon {
+  position: absolute;
+  left: 24px;
+  top: 15px;
+}
+
+.cascader-panel {
+  .ed-cascader-node__label {
+    display: flex;
+    align-items: center;
+    .ed-icon {
+      margin-right: 5px;
+    }
+  }
+}
+
+.batch-operate {
+  width: 100%;
+  height: 64px;
+  border-top: 1px solid #dededf;
+  display: flex;
+  align-items: center;
+}
+
+.batch-area {
+  display: flex;
+  flex-direction: column;
+  height: calc(100% - 55px);
+}
+
+.dimension-manage-header {
+  :deep(.ed-collapse-item__header) {
+    background: #ebf1ff;
+  }
+}
+.quota-manage-header {
+  :deep(.ed-collapse-item__header) {
+    background: #e6f7f5;
+  }
+}
+.manage-header {
+  :deep(.ed-collapse-item__header) {
+    height: 30px;
+  }
+  :deep(.ed-table th.ed-table__cell) {
+    background: #f5f6f7;
+  }
 }
 </style>
 

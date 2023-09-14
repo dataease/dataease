@@ -98,6 +98,22 @@
       </template>
     </el-dropdown>
 
+    <el-dropdown
+      trigger="click"
+      placement="right-start"
+      v-if="element.innerType !== 'rich-text' && barShowCheck('previewDownload')"
+    >
+      <el-icon @click="downloadClick" :title="'导出'" class="bar-base-icon">
+        <icon name="dv-preview-download"></icon>
+      </el-icon>
+      <template #dropdown>
+        <el-dropdown-menu style="width: 160px">
+          <el-dropdown-item @click="exportAsExcel">导出为Excel</el-dropdown-item>
+          <el-dropdown-item @click="exportAsImage">导出为图片</el-dropdown-item>
+        </el-dropdown-menu>
+      </template>
+    </el-dropdown>
+
     <el-popover v-if="selectFieldShow" width="200" trigger="click" @mousedown="fieldsAreaDown">
       <template #reference>
         <el-icon class="bar-base-icon"> <Icon name="database"></Icon></el-icon>
@@ -146,7 +162,7 @@ const positionBarShow = {
     'linkageSetting',
     'linkJumpSetting'
   ],
-  preview: ['enlarge', 'details', 'download', 'unLinkage'],
+  preview: ['enlarge', 'details', 'download', 'unLinkage', 'previewDownload'],
   multiplexing: ['multiplexing'],
   batchOpt: ['batchOpt'],
   linkage: ['linkage']
@@ -160,6 +176,7 @@ const componentTypeBarShow = {
     'setting',
     'copy',
     'download',
+    'previewDownload',
     'delete',
     'multiplexing',
     'batchOpt',
@@ -246,6 +263,10 @@ const state = reactive({
   batchOptCheckModel: false
 })
 
+const downloadClick = () => {
+  dvMainStore.setCurComponent({ component: element.value, index: index.value })
+}
+
 const addQueryCriteria = () => {
   emitter.emit(`addQueryCriteria${element.value.id}`)
 }
@@ -255,7 +276,7 @@ const editQueryCriteria = () => {
 }
 
 const showEditPosition = computed(() => {
-  if (showPosition.value === 'canvas') {
+  if (showPosition.value === 'canvasDataV') {
     const baseLeft = element.value.x - 1
     const baseRight = pcMatrixCount.value.x - (element.value.x + element.value.sizeX - 1)
     if (baseLeft === 0 && baseRight === 0) {
@@ -265,6 +286,8 @@ const showEditPosition = computed(() => {
     } else {
       return 'bar-main-right'
     }
+  } else if (showPosition.value === 'preview') {
+    return 'bar-main-right-inner'
   } else if (showPosition.value === 'canvasDataV') {
     return 'bar-main-right'
   } else {
