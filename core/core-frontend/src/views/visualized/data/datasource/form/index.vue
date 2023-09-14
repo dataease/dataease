@@ -163,6 +163,12 @@ getLatestUseTypes()
 
 const activeApiStep = ref(0)
 
+const setNextStep = () => {
+  activeApiStep.value = activeStep.value + 1
+  if (currentDsType.value === 'API' && activeStep.value === 1) return
+  activeStep.value = activeStep.value + 1
+}
+
 const next = () => {
   if (currentDsType.value === '') {
     ElMessage.error(t('datasource.select_type'))
@@ -178,10 +184,17 @@ const next = () => {
     return
   }
 
-  activeApiStep.value = activeStep.value + 1
+  if (currentDsType.value === 'API' && activeStep.value !== 2) {
+    const validateFrom = detail.value.submitForm()
+    validateFrom(val => {
+      if (val) {
+        setNextStep()
+      }
+    })
+    return
+  }
 
-  if (currentDsType.value === 'API' && activeStep.value === 1) return
-  activeStep.value = activeStep.value + 1
+  setNextStep()
 }
 
 const complete = (params, successCb, finallyCb) => {
