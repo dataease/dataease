@@ -38,6 +38,8 @@ public class ExcelUtils {
     private static String path = "/opt/dataease/data/excel/";
     private static ObjectMapper objectMapper = new ObjectMapper();
 
+    private static  TypeReference<List<TableField>> TableFieldListTypeReference = new TypeReference<List<TableField>>() {
+    };
     public static List<DatasetTableDTO> getTables(DatasourceRequest datasourceRequest) throws DEException {
         List<DatasetTableDTO> tableDescs = new ArrayList<>();
         try {
@@ -87,12 +89,13 @@ public class ExcelUtils {
             JsonNode rootNode = objectMapper.readTree(datasourceRequest.getDatasource().getConfiguration());
             for (int i = 0; i < rootNode.size(); i++) {
                 if (rootNode.get(i).get("deTableName").asText().equalsIgnoreCase(datasourceRequest.getTable())) {
+                    List<TableField> tableFields = JsonUtil.parseList(rootNode.get(i).get("fields").toString(), TableFieldListTypeReference);
                     String suffix = rootNode.get(i).get("path").asText().substring(rootNode.get(i).get("path").asText().lastIndexOf(".") + 1);
                     InputStream inputStream = new FileInputStream(rootNode.get(i).get("path").asText());
                     if (StringUtils.equalsIgnoreCase(suffix, "csv")) {
                         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
                         reader.readLine();//去掉表头
-                        dataList = csvData(reader, false);
+                        dataList = csvData(reader, false, tableFields.size());
                     } else {
                         dataList = fetchExcelDataList(rootNode.get(i).get("tableName").asText(), inputStream);
                     }
@@ -241,22 +244,22 @@ public class ExcelUtils {
         return filePath;
     }
 
-    private static boolean isEmpty(List<String> cells){
-        if(CollectionUtils.isEmpty(cells)){
+    private static boolean isEmpty(List<String> cells) {
+        if (CollectionUtils.isEmpty(cells)) {
             return true;
         }
         boolean isEmpty = true;
         for (int i = 0; i < cells.size(); i++) {
-            if(isEmpty &&  StringUtils.isEmpty(cells.get(i))){
+            if (isEmpty && StringUtils.isEmpty(cells.get(i))) {
                 isEmpty = true;
-            }else {
+            } else {
                 isEmpty = false;
             }
         }
         return isEmpty;
     }
 
-    public static List<String[]> csvData(BufferedReader reader, boolean isPreview) throws DEException {
+    public static List<String[]> csvData(BufferedReader reader, boolean isPreview, int size) throws DEException {
         List<String[]> data = new ArrayList<>();
         try {
             int num = 1;
@@ -277,7 +280,10 @@ public class ExcelUtils {
                     str = str.replaceAll("(?sm)(\"(\"))", "$2");
                     cells.add(str);
                 }
-                if(!isEmpty(cells)){
+                if (!isEmpty(cells)) {
+                    if(cells.size() > size){
+                        cells = cells.subList(0, size);
+                    }
                     data.add(cells.toArray(new String[]{}));
                     num++;
                 }
@@ -316,14 +322,17 @@ public class ExcelUtils {
             tableFiled.setFieldType(cellType(value));
         } else {
             String type = cellType(value);
-            if (type.equalsIgnoreCase("TEXT")) {
+            if(tableFiled.getFieldType() == null){
                 tableFiled.setFieldType(type);
-            }
-            if (type.equalsIgnoreCase("DOUBLE") && tableFiled.getFieldType().equalsIgnoreCase("LONG")) {
-                tableFiled.setFieldType(type);
+            }else {
+                if (type.equalsIgnoreCase("TEXT")) {
+                    tableFiled.setFieldType(type);
+                }
+                if (type.equalsIgnoreCase("DOUBLE") && tableFiled.getFieldType().equalsIgnoreCase("LONG")) {
+                    tableFiled.setFieldType(type);
+                }
             }
         }
-
 
     }
 
@@ -340,7 +349,7 @@ public class ExcelUtils {
                 ReadCellData<?> cellData = headMap.get(key);
                 String value = cellData.getStringValue();
                 if (StringUtils.isEmpty(value)) {
-                    value = "none_" + key;
+                    DEException.throwException("首行行中不允许有空单元格！");
                 }
                 headerKey.add(key);
                 header.add(value);
@@ -395,7 +404,7 @@ public class ExcelUtils {
                 }
                 for (String s : noModelDataListener.getHeader()) {
                     TableField tableFiled = new TableField();
-                    tableFiled.setFieldType("TEXT");
+                    tableFiled.setFieldType(null);
                     tableFiled.setName(s);
                     tableFiled.setOriginName(s);
                     fields.add(tableFiled);
@@ -413,6 +422,13 @@ public class ExcelUtils {
                         }
                     }
                 }
+
+                for (int i = 0; i < fields.size(); i++) {
+                    if (StringUtils.isEmpty(fields.get(i).getFieldType())) {
+                        fields.get(i).setFieldType("TEXT");
+                    }
+                }
+
                 ExcelSheetData excelSheetData = new ExcelSheetData();
                 excelSheetData.setFields(fields);
                 excelSheetData.setData(data);
@@ -428,14 +444,33 @@ public class ExcelUtils {
             String s = reader.readLine();// first line
             String[] split = s.split(",");
             for (int i = 0; i < split.length; i++) {
-                String filedName = StringUtils.isEmpty(split[i]) ? "none_" + i : split[i];
+                String filedName = split[i];
+                if(StringUtils.isEmpty(filedName)){
+                    DEException.throwException("首行行中不允许有空单元格！");
+                }
                 TableField tableFiled = new TableField();
                 tableFiled.setName(filedName);
                 tableFiled.setOriginName(filedName);
-                tableFiled.setFieldType("TEXT");
+                tableFiled.setFieldType(null);
                 fields.add(tableFiled);
             }
-            List<String[]> data = csvData(reader, isPreview);
+
+            List<String[]> data = csvData(reader, isPreview, fields.size());
+            if (isPreview) {
+                for (int i = 0; i < data.size(); i++) {
+                    for (int j = 0; j < data.get(i).length; j++) {
+                        if (j < fields.size()) {
+                            cellType(data.get(i)[j], i, fields.get(j));
+                        }
+                    }
+                }
+            }
+            for (int i = 0; i < fields.size(); i++) {
+                if (StringUtils.isEmpty(fields.get(i).getFieldType())) {
+                    fields.get(i).setFieldType("TEXT");
+                }
+            }
+
             ExcelSheetData excelSheetData = new ExcelSheetData();
             String[] fieldArray = fields.stream().map(TableField::getName).toArray(String[]::new);
             excelSheetData.setFields(fields);
