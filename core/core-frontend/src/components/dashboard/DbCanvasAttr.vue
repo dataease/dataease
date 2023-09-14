@@ -442,9 +442,11 @@ onMounted(() => {
 }
 
 :deep(.ed-collapse-item__header) {
-  background-color: #f5f6f7 !important;
-  padding-left: 5px;
-  height: 38px !important;
+  height: 36px !important;
+  line-height: 36px !important;
+  font-size: 12px !important;
+  padding: 0 !important;
+  font-weight: 500 !important;
 }
 
 :deep(.ed-checkbox__label) {
@@ -464,6 +466,6 @@ onMounted(() => {
 }
 
 :deep(.ed-collapse-item__arrow) {
-  margin: 0 6px 0 0;
+  margin: 0 6px 0 8px;
 }
 </style>
