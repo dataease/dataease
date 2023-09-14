@@ -1340,7 +1340,10 @@ export default {
       tip6: '使用数据集对应数据库类型所支持的函数，语法同对应数据库',
       tip7: '如日期格式化：MySQL使用DATE_FORMAT(date,format)；Oracle使用TO_DATE(X,[,fmt])',
       tip8: '非直连模式数据集，使用Doris数据库函数，可参考Doris官网'
-    }
+    },
+    batch_manage: '批量管理',
+    origin_name: '物理字段名',
+    origin_type: '物理字段类型'
   },
   deDataset: {
     search_by_name: '通过名称搜索',
