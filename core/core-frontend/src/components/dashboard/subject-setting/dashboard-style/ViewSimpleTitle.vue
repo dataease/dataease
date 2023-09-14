@@ -2,7 +2,7 @@
   <el-row class="custom-row">
     <el-row><span class="custom-item-text">文本</span> </el-row>
     <el-row style="margin-top: 8px">
-      <div style="padding-top: 4px; margin-right: 8px">
+      <el-space wrap>
         <el-color-picker
           :title="t('chart.text_color')"
           v-model="titleForm.color"
@@ -11,8 +11,7 @@
           :predefine="state.predefineColors"
           @change="changeTitleStyle('color')"
         />
-      </div>
-      <div style="padding-top: 4px">
+
         <el-select
           style="width: 56px"
           :title="t('chart.text_fontsize')"
@@ -22,82 +21,165 @@
           @change="changeTitleStyle('fontSize')"
         >
           <el-option
-            v-for="option in state.fontSize"
+            v-for="option in fontSizeList"
             :key="option.value"
             :label="option.name"
             :value="option.value"
           />
         </el-select>
-      </div>
-      <div>
-        <el-checkbox v-model="titleForm.isBolder" :title="t('chart.bolder')"
-          ><Icon class-name="bash-icon" name="title-bold"
-        /></el-checkbox>
-      </div>
-      <div>
-        <el-checkbox v-model="titleForm.isItalic" :title="t('chart.italic')"
-          ><Icon class-name="bash-icon" name="title-italic"
-        /></el-checkbox>
-      </div>
-      <div class="custom-divider"></div>
-      <div>
-        <el-radio-group v-model="titleForm.hPosition" @change="changeTitleStyle('hPosition')">
-          <el-radio label="left" :title="t('chart.text_pos_left')"
-            ><Icon class-name="bash-icon" name="title-left"
-          /></el-radio>
-          <el-radio label="center" :title="t('chart.text_pos_center')"
-            ><Icon class-name="bash-icon" name="title-center"
-          /></el-radio>
-          <el-radio label="right" :title="t('chart.text_pos_right')"
-            ><Icon class-name="bash-icon" name="title-right"
-          /></el-radio>
-        </el-radio-group>
-      </div>
-      <div class="custom-divider"></div>
-      <div>
-        <el-radio-group
-          v-model="titleForm.vPosition"
-          size="mini"
-          @change="changeTitleStyle('vPosition')"
-        >
-          <el-radio label="top" :title="t('chart.text_pos_top')"
-            ><Icon class-name="bash-icon" name="title-v-top"
-          /></el-radio>
-          <el-radio label="center" :title="t('chart.text_pos_center')"
-            ><Icon class-name="bash-icon" name="title-v-center"
-          /></el-radio>
-          <el-radio label="bottom" :title="t('chart.text_pos_bottom')"
-            ><Icon class-name="bash-icon" name="title-v-bottom"
-          /></el-radio>
-        </el-radio-group>
-      </div>
+
+        <el-tooltip effect="dark" placement="top">
+          <template #content>
+            {{ t('chart.bolder') }}
+          </template>
+          <div
+            class="icon-btn"
+            :class="{ dark: themes === 'dark', active: titleForm.isBolder }"
+            @click="checkBold"
+          >
+            <el-icon>
+              <Icon name="icon_bold_outlined" />
+            </el-icon>
+          </div>
+        </el-tooltip>
+
+        <el-tooltip effect="dark" placement="top">
+          <template #content>
+            {{ t('chart.italic') }}
+          </template>
+          <div
+            class="icon-btn"
+            :class="{ dark: themes === 'dark', active: titleForm.isItalic }"
+            @click="checkItalic"
+          >
+            <el-icon>
+              <Icon name="icon_italic_outlined" />
+            </el-icon>
+          </div>
+        </el-tooltip>
+
+        <div class="m-divider"></div>
+
+        <el-tooltip effect="dark" placement="top">
+          <template #content>
+            {{ t('chart.text_pos_left') }}
+          </template>
+          <div
+            class="icon-btn"
+            :class="{ dark: themes === 'dark', active: titleForm.hPosition === 'left' }"
+            @click="setPosition('left')"
+          >
+            <el-icon>
+              <Icon name="icon_left-alignment_outlined" />
+            </el-icon>
+          </div>
+        </el-tooltip>
+        <el-tooltip effect="dark" placement="top">
+          <template #content>
+            {{ t('chart.text_pos_center') }}
+          </template>
+          <div
+            class="icon-btn"
+            :class="{ dark: themes === 'dark', active: titleForm.hPosition === 'center' }"
+            @click="setPosition('center')"
+          >
+            <el-icon>
+              <Icon name="icon_center-alignment_outlined" />
+            </el-icon>
+          </div>
+        </el-tooltip>
+        <el-tooltip effect="dark" placement="top">
+          <template #content>
+            {{ t('chart.text_pos_right') }}
+          </template>
+          <div
+            class="icon-btn"
+            :class="{ dark: themes === 'dark', active: titleForm.hPosition === 'right' }"
+            @click="setPosition('right')"
+          >
+            <el-icon>
+              <Icon name="icon_right-alignment_outlined" />
+            </el-icon>
+          </div>
+        </el-tooltip>
+
+        <div class="m-divider"></div>
+
+        <el-tooltip effect="dark" placement="top">
+          <template #content>
+            {{ t('chart.text_pos_top') }}
+          </template>
+          <div
+            class="icon-btn"
+            :class="{ dark: themes === 'dark', active: titleForm.vPosition === 'top' }"
+            @click="setVPosition('top')"
+          >
+            <el-icon>
+              <Icon name="icon_top-align_outlined" />
+            </el-icon>
+          </div>
+        </el-tooltip>
+
+        <el-tooltip effect="dark" placement="top">
+          <template #content>
+            {{ t('chart.text_pos_center') }}
+          </template>
+          <div
+            class="icon-btn"
+            :class="{
+              dark: themes === 'dark',
+              active: titleForm.vPosition === 'center'
+            }"
+            @click="setVPosition('center')"
+          >
+            <el-icon>
+              <Icon name="icon_vertical-align_outlined" />
+            </el-icon>
+          </div>
+        </el-tooltip>
+
+        <el-tooltip effect="dark" placement="top">
+          <template #content>
+            {{ t('chart.text_pos_bottom') }}
+          </template>
+          <div
+            class="icon-btn"
+            :class="{
+              dark: themes === 'dark',
+              active: titleForm.vPosition === 'bottom'
+            }"
+            @click="setVPosition('bottom')"
+          >
+            <el-icon>
+              <Icon name="icon_bottom-align_outlined" />
+            </el-icon>
+          </div>
+        </el-tooltip>
+      </el-space>
     </el-row>
   </el-row>
 </template>
 
 <script lang="ts" setup>
-import { computed, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import { COLOR_PANEL } from '@/views/chart/components/editor/util/chart'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { useI18n } from '@/hooks/web/useI18n'
 import Icon from '@/components/icon-custom/src/Icon.vue'
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
+
 const emits = defineEmits(['onTextChange'])
-const titleFormRef = ref(null)
-const titleForm = computed(() => dvMainStore.canvasStyleData.component.chartTitle)
+
+const titleForm = computed<any>(() => dvMainStore.canvasStyleData.component.chartTitle)
 const state = reactive({
-  titleForm: {},
   fontSize: [],
   isSetting: false,
   predefineColors: COLOR_PANEL
 })
+const themes = ref('light')
 
-const initForm = () => {
-  // do
-}
-
-const init = () => {
+const fontSizeList = computed(() => {
   const arr = []
   for (let i = 10; i <= 60; i = i + 2) {
     arr.push({
@@ -105,13 +187,32 @@ const init = () => {
       value: i + ''
     })
   }
-  state.fontSize = arr
-}
+  return arr
+})
+
 const changeTitleStyle = modifyName => {
   titleForm.value['modifyName'] = modifyName
   emits('onTextChange', titleForm.value)
 }
-init()
+
+function checkBold() {
+  titleForm.value.isBolder = !titleForm.value.isBolder
+  changeTitleStyle('isBolder')
+}
+function checkItalic() {
+  titleForm.value.isItalic = !titleForm.value.isItalic
+  changeTitleStyle('isItalic')
+}
+
+function setPosition(p: 'left' | 'center' | 'right') {
+  titleForm.value.hPosition = p
+  changeTitleStyle('hPosition')
+}
+
+function setVPosition(p: 'top' | 'center' | 'bottom') {
+  titleForm.value.vPosition = p
+  changeTitleStyle('vPosition')
+}
 </script>
 
 <style scoped lang="less">
@@ -174,5 +275,43 @@ init()
   height: 20px;
   width: 1px;
   background-color: rgba(31, 35, 41, 0.15);
+}
+
+.icon-btn {
+  font-size: 16px;
+  width: 24px;
+  height: 24px;
+  text-align: center;
+  border-radius: 4px;
+  padding-top: 1px;
+
+  color: #1f2329;
+
+  cursor: pointer;
+
+  &.dark {
+    color: #a6a6a6;
+    &.active {
+      color: #3370ff;
+      background-color: rgba(51, 112, 255, 0.1);
+    }
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+  }
+
+  &.active {
+    color: #3370ff;
+    background-color: rgba(51, 112, 255, 0.1);
+  }
+
+  &:hover {
+    background-color: rgba(31, 35, 41, 0.1);
+  }
+}
+.m-divider {
+  width: 1px;
+  height: 18px;
+  background: rgba(31, 35, 41, 0.15);
 }
 </style>
