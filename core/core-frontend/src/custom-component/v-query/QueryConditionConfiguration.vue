@@ -584,10 +584,26 @@ defineExpose({
       <div class="chart-field" :class="curComponent.auto && 'hidden'">
         <div class="mask" v-if="curComponent.auto"></div>
         <div class="title flex-align-center">
-          选择关联图表及字段 &nbsp; &nbsp;&nbsp; &nbsp;
+          选择关联图表及字段
           <el-radio-group v-model="curComponent.auto" class="ml-4">
-            <el-radio :disabled="!curComponent.auto" :label="true">自动</el-radio>
-            <el-radio :label="false">自定义</el-radio>
+            <el-radio :disabled="!curComponent.auto" :label="true">
+              <div class="flex-align-center">
+                自动
+                <el-tooltip effect="dark" placement="top">
+                  <template #content>
+                    <div>
+                      注意:自动模式支持同数据集自动关联字段，可切换到
+                      <br />
+                      自定义模式。切换到自定义模式后无法再切换为自动！
+                    </div>
+                  </template>
+                  <el-icon style="margin-left: 4px; color: #646a73">
+                    <icon name="icon_info_outlined"></icon>
+                  </el-icon>
+                </el-tooltip>
+              </div>
+            </el-radio>
+            <el-radio :label="false">{{ t('commons.custom') }}</el-radio>
           </el-radio-group>
         </div>
         <div class="select-all">
@@ -943,7 +959,7 @@ defineExpose({
       left: 0;
       width: 100%;
       z-index: 5;
-      background: #90939887;
+      background: rgba(255, 255, 255, 0.6);
       height: calc(100% - 45px);
     }
 
@@ -958,6 +974,10 @@ defineExpose({
       .flex-align-center {
         position: sticky;
         top: 0;
+        justify-content: space-between;
+        .ed-radio {
+          height: 20px;
+        }
       }
 
       .title {

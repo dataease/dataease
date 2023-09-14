@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onBeforeMount, reactive, watch, PropType, toRefs } from 'vue'
+import { PropType, toRefs } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 
 export interface AuthConfig {
@@ -15,39 +15,15 @@ const props = defineProps({
   }
 })
 const { t } = useI18n()
-onBeforeMount(() => {
-  initData()
-})
 
 const { request } = toRefs(props)
 
-watch(
-  () => request.value,
-  () => {
-    initData()
-  }
-)
-const authConfig = reactive<AuthConfig>({
-  verification: '',
-  username: '',
-  password: ''
-})
-
 const options = [{ name: 'No Auth' }, { name: 'Basic Auth' }]
 const change = () => {
-  if (!request.value.authManager) {
-    request.value.authManager = authConfig
-    return
-  }
-  const { username, password, verification } = authConfig
+  const { username, password, verification } = request.value.authManager
   const isBasic = verification === 'Basic Auth'
   request.value.authManager.username = isBasic ? username : ''
   request.value.authManager.password = isBasic ? password : ''
-}
-const initData = () => {
-  if (request.value.authManager) {
-    Object.assign(authConfig, request.value.authManager)
-  }
 }
 </script>
 
@@ -55,7 +31,7 @@ const initData = () => {
   <el-form label-position="top">
     <el-form-item class="api-auth-config" :label="t('datasource.verification_method')">
       <el-select
-        v-model="authConfig.verification"
+        v-model="request.authManager.verification"
         @change="change"
         :placeholder="t('datasource.verification_method')"
       >
@@ -65,11 +41,11 @@ const initData = () => {
     <el-row :gutter="16">
       <el-col :span="12">
         <el-form-item
-          v-if="authConfig.verification === 'Basic Auth'"
+          v-if="request.authManager.verification === 'Basic Auth'"
           :label="t('datasource.username')"
         >
           <el-input
-            v-model="authConfig.username"
+            v-model="request.authManager.username"
             :placeholder="t('datasource.username')"
             class="ms-http-input"
           />
@@ -77,11 +53,11 @@ const initData = () => {
       </el-col>
       <el-col :span="12">
         <el-form-item
-          v-if="authConfig.verification === 'Basic Auth'"
+          v-if="request.authManager.verification === 'Basic Auth'"
           :label="t('datasource.password')"
         >
           <el-input
-            v-model="authConfig.password"
+            v-model="request.authManager.password"
             type="password"
             :placeholder="t('datasource.password')"
           />

@@ -2006,8 +2006,10 @@ span {
 
   .view-panel-row {
     :deep(.ed-collapse-item__header) {
-      padding: 0 !important;
+      height: 36px !important;
+      line-height: 36px !important;
       font-size: 12px !important;
+      padding: 0 !important;
       font-weight: 500 !important;
 
       &.is-active {
@@ -2015,6 +2017,8 @@ span {
       }
 
       .ed-collapse-item__arrow {
+        margin: 0 6px 0 8px;
+
         &.is-active {
           color: #646a73;
         }

@@ -106,9 +106,10 @@ const rules = {
       trigger: 'change'
     },
     {
-      max: 50,
-      message: t('commons.char_can_not_more_50'),
-      trigger: 'change'
+      min: 2,
+      max: 25,
+      message: t('datasource.input_limit_2_25', [2, 25]),
+      trigger: 'blur'
     }
   ],
   pid: [
