@@ -163,11 +163,33 @@ export default {
     quotaData() {
       return this.obj.quotaData
     },
+    listenLists() {
+      if (!this.view) return [0, 0];
+      return [
+        this.view.yaxis ? this.view.yaxis.length : 0,
+        this.view.yaxisExt ? this.view.yaxisExt.length : 0
+      ]
+    }
   },
   created() {
     this.$emit('on-add-languages', messages)
   },
-  watch: {},
+  watch: {
+    listenLists: function (val) {
+      if (this.listenLists[0] <= 1 && this.listenLists[1] <= 1) {
+        return;
+      }
+      if (this.view.yaxis.length > 1) {
+        this.dragCheckType(this.view.yaxis, 'q')
+        this.view.yaxis = [this.view.yaxis[0]]
+      }
+      if (this.view.yaxisExt.length > 1) {
+        this.dragCheckType(this.view.yaxisExt, 'q')
+        this.view.yaxisExt = [this.view.yaxisExt[0]]
+      }
+      this.calcData(true)
+    },
+  },
   methods: {
     executeAxios(url, type, data, callBack) {
       const param = {
@@ -212,7 +234,9 @@ export default {
       /*if ( this.view.yaxis.length > 1) {
         this.view.yaxis = [this.view.yaxis[0]]
       }*/
-      this.calcData(true)
+      if (this.view.yaxis.length <= 1) {
+        this.calcData(true)
+      }
     },
     addYaxisExt(e) {
       this.dragCheckType(this.view.yaxisExt, 'q')
@@ -220,7 +244,9 @@ export default {
       /*if (equalsAny(this.view.type, 'map', 'bidirectional-bar') && this.view.yaxisExt.length > 1) {
         this.view.yaxisExt = [this.view.yaxisExt[0]]
       }*/
-      this.calcData(true)
+      if (this.view.yaxisExt.length <= 1) {
+        this.calcData(true)
+      }
     },
     calcData(cache) {
       console.log(cache)
