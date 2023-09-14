@@ -4,7 +4,9 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.api.chart.dto.ChartViewDTO;
 import io.dataease.api.visualization.DataVisualizationApi;
 import io.dataease.api.visualization.request.DataVisualizationBaseRequest;
+import io.dataease.api.visualization.request.VisualizationWorkbranchQueryRequest;
 import io.dataease.api.visualization.vo.DataVisualizationVO;
+import io.dataease.api.visualization.vo.VisualizationResourceVO;
 import io.dataease.chart.dao.auto.entity.CoreChartView;
 import io.dataease.chart.dao.auto.mapper.CoreChartViewMapper;
 import io.dataease.chart.manage.ChartViewManege;
@@ -24,6 +26,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -176,21 +179,8 @@ public class DataVisualizationServer implements DataVisualizationApi {
     }
 
     @Override
-    public List<DataVisualizationVO> findRecent(DataVisualizationBaseRequest request) {
-        QueryWrapper<DataVisualizationInfo> wrapper = new QueryWrapper<>();
-        wrapper.eq("delete_flag", 0);
-        wrapper.eq("node_type", "leaf");
-        wrapper.like(StringUtils.isNotEmpty(request.getName()), "name", request.getName());
-        wrapper.eq(StringUtils.isNotEmpty(request.getType()), "type", request.getType());
-        List<DataVisualizationInfo> result = visualizationInfoMapper.selectList(wrapper);
-        List<DataVisualizationVO> returnResult = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(result)) {
-            result.forEach(dataVisualizationInfo -> {
-                DataVisualizationVO dataVisualizationVO = new DataVisualizationVO();
-                returnResult.add(BeanUtils.copyBean(dataVisualizationVO, dataVisualizationInfo));
-            });
-        }
-        return returnResult;
+    public List<VisualizationResourceVO> findRecent(@RequestBody VisualizationWorkbranchQueryRequest request) {
+        return coreVisualizationManage.findRecent(1L,20L,request);
     }
 
     @Override
