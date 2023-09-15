@@ -69,7 +69,7 @@ public class SqlUtils {
             SqlBasicCall where = (SqlBasicCall) sqlKind.getWhere();
             if (where != null && where.getOperandList().size() >= 2) {
                 for (int i = 0; i < where.getOperandList().size(); i++) {
-                    addTableSchema(where.getOperandList().get(i), fromOrJoin, schema, config);
+                    addTableSchema(where.getOperandList().get(i), false, schema, config);
                 }
             }
         } else if (sqlNode.getKind() == UNION) {
