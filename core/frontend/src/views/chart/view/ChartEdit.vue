@@ -2040,9 +2040,6 @@ export default {
         return
       }
       this.view.isPlugin = this.$refs['cu-chart-type'] && this.$refs['cu-chart-type'].currentIsPlugin(newVal.type, newVal.render)
-
-      this.setChartDefaultOptions()
-      this.calcData(true, 'chart', true, newVal.type !== oldVal.type, newVal.render !== oldVal.render)
     }
   },
   created() {
@@ -3310,10 +3307,12 @@ export default {
       this.$store.commit('recordViewEdit', { viewId: this.param.id, hasEdit: status })
     },
     changeChartRender() {
-      // Do Nothing
+      this.setChartDefaultOptions()
+      this.calcData(true, 'chart', true, false, true)
     },
     changeChartType() {
-      // Do Nothing
+      this.setChartDefaultOptions()
+      this.calcData(true, 'chart', true, true)
     },
 
     setChartDefaultOptions() {
