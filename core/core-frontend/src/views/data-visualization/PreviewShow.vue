@@ -2,7 +2,7 @@
 import { ElAside, ElContainer } from 'element-plus-secondary'
 import DeResourceTree from '@/views/common/DeResourceTree.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { nextTick, reactive, ref } from 'vue'
+import { nextTick, onBeforeMount, reactive, ref } from 'vue'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
 import PreviewHead from '@/views/data-visualization/PreviewHead.vue'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
@@ -106,6 +106,10 @@ const state = reactive({
   canvasViewInfoPreview: null,
   dvInfo: null,
   curPreviewGap: 0
+})
+
+onBeforeMount(() => {
+  dvMainStore.canvasDataInit()
 })
 </script>
 

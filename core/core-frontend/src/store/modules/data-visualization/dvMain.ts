@@ -9,7 +9,6 @@ import {
 } from '@/views/chart/components/editor/util/dataVisualiztion'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import chartViewManager from '@/views/chart/components/js/panel'
-import { guid } from '@/views/visualized/data/dataset/form/util'
 
 export const dvMainStore = defineStore('dataVisualization', {
   state: () => {
@@ -685,6 +684,19 @@ export const dvMainStore = defineStore('dataVisualization', {
       this.canvasStyleData = deepCopy(canvasStyleDataNew)
       this.componentData = []
       this.canvasViewInfo = {}
+    },
+    canvasDataInit() {
+      this.canvasViewInfo = {}
+      this.componentData = []
+      this.dvInfo = {
+        id: null,
+        name: null,
+        pid: null,
+        status: null,
+        selfWatermarkStatus: null,
+        type: null
+      }
+      this.canvasStyleData = { ...deepCopy(DEFAULT_CANVAS_STYLE_DATA_DARK), backgroundColor: null }
     }
   }
 })
