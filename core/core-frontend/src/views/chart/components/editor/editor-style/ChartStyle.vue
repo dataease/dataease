@@ -156,16 +156,16 @@ watch(
             :title="'位置'"
             v-if="dvInfo.type !== 'dashboard'"
           >
-            <component-position></component-position>
+            <component-position />
           </el-collapse-item>
-          <el-collapse-item :effect="themes" name="background" :title="'背景'">
+          <el-collapse-item :effect="themes" name="background" title="背景">
             <background-overall-common
               v-if="curComponent"
               :common-background-pop="curComponent.commonBackground"
               :themes="themes"
               @onBackgroundChange="onBackgroundChange"
               component-position="component"
-            ></background-overall-common>
+            />
           </el-collapse-item>
           <el-collapse-item
             :effect="themes"

@@ -1,67 +1,70 @@
 <template>
-  <el-row>
-    <el-row style="width: 100%" :class="themes">
-      <el-col :span="12" style="padding-right: 4px">
-        <el-row class="custom-item-text-row"
-          ><span class="custom-item-text bl">{{ t('visualization.inner_padding') }}</span>
-        </el-row>
-        <el-row class="function-area">
+  <div style="width: 100%">
+    <el-row :gutter="8">
+      <el-col :span="12">
+        <el-form-item
+          :label="t('visualization.inner_padding')"
+          class="form-item"
+          :class="'form-item-' + themes"
+        >
           <el-input-number
             :effect="themes"
             controls-position="right"
             :min="0"
             :max="100"
-            size="small"
             v-model="state.commonBackground.innerPadding"
             @change="onBackgroundChange"
-          ></el-input-number>
-        </el-row>
+          />
+        </el-form-item>
       </el-col>
-      <el-col :span="12" style="padding-left: 4px">
-        <el-row class="custom-item-text-row"
-          ><span class="custom-item-text bl">{{ t('visualization.board_radio') }}</span>
-        </el-row>
-        <el-row class="function-area">
+      <el-col :span="12">
+        <el-form-item
+          :label="t('visualization.board_radio')"
+          class="form-item"
+          :class="'form-item-' + themes"
+        >
           <el-input-number
             :effect="themes"
             controls-position="right"
             :min="0"
             :max="100"
-            size="small"
             v-model="state.commonBackground.borderRadius"
             @change="onBackgroundChange"
-          ></el-input-number>
-        </el-row>
+          />
+        </el-form-item>
       </el-col>
     </el-row>
-    <el-row style="width: 100%" class="margin-top16">
-      <el-col :span="12" style="padding-right: 4px">
-        <el-row class="custom-item-text-row">
-          <el-checkbox
-            :effect="themes"
-            v-model="state.commonBackground.backgroundColorSelect"
-            @change="onBackgroundChange"
-          >
-            {{ $t('chart.color') }}
-          </el-checkbox>
-        </el-row>
-        <el-row class="function-area" style="margin-left: 20px">
+
+    <el-form-item class="form-item no-margin-bottom" :class="'form-item-' + themes">
+      <el-checkbox
+        :effect="themes"
+        v-model="state.commonBackground.backgroundColorSelect"
+        @change="onBackgroundChange"
+      >
+        {{ $t('chart.color') }}
+      </el-checkbox>
+    </el-form-item>
+
+    <div class="indented-container">
+      <div class="indented-item">
+        <el-form-item class="form-item" :class="'form-item-' + themes">
           <el-color-picker
             v-model="state.commonBackground.backgroundColor"
             :effect="themes"
             :disabled="!state.commonBackground.backgroundColorSelect"
+            is-custom
+            :trigger-width="108"
             size="small"
             class="color-picker-style"
             :predefine="state.predefineColors"
             @change="onBackgroundChange"
           />
-        </el-row>
-      </el-col>
-      <el-col :span="12" style="padding-left: 4px">
-        <el-row class="custom-item-text-row"
-          ><span class="custom-item-text bl">{{ $t('chart.not_alpha') }}</span>
-        </el-row>
-        <el-row class="function-area">
+        </el-form-item>
+        <el-form-item
+          class="form-item fill"
+          style="padding-left: 8px"
+          :class="'form-item-' + themes"
+        >
           <el-input-number
             controls-position="right"
             :effect="themes"
@@ -69,24 +72,25 @@
             v-model="state.commonBackground.alpha"
             :min="0"
             :max="100"
-            size="small"
             @change="onBackgroundChange"
-          ></el-input-number>
-        </el-row>
-      </el-col>
-    </el-row>
+          />
+        </el-form-item>
+      </div>
+    </div>
 
-    <el-row style="width: 100%" class="custom-row margin-top16">
-      <el-row class="custom-item-text-row">
-        <el-checkbox
-          :effect="themes"
-          v-model="state.commonBackground.backgroundImageEnable"
-          @change="onBackgroundChange"
-          >{{ t('visualization.background') }}
-        </el-checkbox>
-      </el-row>
-      <el-row class="function-area custom-row" style="margin-left: 20px">
-        <el-row>
+    <el-form-item class="form-item no-margin-bottom" :class="'form-item-' + themes">
+      <el-checkbox
+        :effect="themes"
+        v-model="state.commonBackground.backgroundImageEnable"
+        @change="onBackgroundChange"
+      >
+        {{ t('visualization.background') }}
+      </el-checkbox>
+    </el-form-item>
+
+    <div class="indented-container">
+      <div class="indented-item">
+        <el-form-item class="form-item margin-bottom-8" :class="'form-item-' + themes">
           <el-radio-group
             :effect="themes"
             :disabled="!state.commonBackground.backgroundImageEnable"
@@ -96,83 +100,89 @@
             <el-radio :effect="themes" label="outerImage">{{ t('visualization.photo') }}</el-radio>
             <el-radio :effect="themes" label="innerImage">{{ t('visualization.board') }}</el-radio>
           </el-radio-group>
-        </el-row>
-        <el-row>
-          <el-row
-            v-show="state.commonBackground.backgroundType === 'innerImage'"
+        </el-form-item>
+      </div>
+      <div class="indented-item" v-if="state.commonBackground.backgroundType === 'innerImage'">
+        <el-form-item class="form-item" :class="'form-item-' + themes">
+          <el-color-picker
+            v-model="state.commonBackground.innerImageColor"
+            :disabled="!state.commonBackground.backgroundImageEnable"
+            :effect="themes"
+            :title="t('visualization.border_color_setting')"
+            style="position: absolute; top: -3px; left: 60px"
+            is-custom
+            size="small"
+            class="color-picker-style"
+            :predefine="state.predefineColors"
+            @change="onBackgroundChange"
+          />
+        </el-form-item>
+        <el-form-item
+          class="form-item fill"
+          style="padding-left: 8px"
+          :class="'form-item-' + themes"
+        >
+          <el-select
             style="width: 100%"
-            class="margin-top8"
+            v-model="state.commonBackground.innerImage"
+            :effect="themes"
+            :disabled="!state.commonBackground.backgroundImageEnable"
+            placeholder="选择边框..."
+            @change="onBackgroundChange"
           >
-            <el-color-picker
-              v-model="state.commonBackground.innerImageColor"
-              :disabled="!state.commonBackground.backgroundImageEnable"
-              :effect="themes"
-              :title="t('visualization.border_color_setting')"
-              style="position: absolute; top: -3px; left: 60px"
-              size="small"
-              class="color-picker-style"
-              :predefine="state.predefineColors"
-              @change="onBackgroundChange"
-            />
-            <el-select
-              v-model="state.commonBackground.innerImage"
-              :effect="themes"
-              :disabled="!state.commonBackground.backgroundImageEnable"
-              placeholder="选择边框..."
-              style="width: 155px; margin-left: 8px"
-              size="small"
-              @change="onBackgroundChange"
+            <el-option
+              v-for="(item, index) in state.BackgroundShowMap['default']"
+              :key="index"
+              :label="item.name"
+              :value="item.url"
             >
-              <el-option
-                v-for="(item, index) in state.BackgroundShowMap['default']"
-                :key="index"
-                :label="item.name"
-                :value="item.url"
-              >
-                <Icon
-                  style="width: 120px; height: 70px"
-                  :style="{ color: state.commonBackground.innerImageColor }"
-                  class-name="svg-background"
-                  :name="mainIconClass(item)"
-                />
-              </el-option>
-            </el-select>
-          </el-row>
-          <el-col
-            v-show="state.commonBackground.backgroundType === 'outerImage'"
-            style="width: 130px !important; height: 80px; overflow: hidden; text-align: left"
-            class="margin-top8"
+              <Icon
+                style="width: 120px; height: 70px"
+                :style="{ color: state.commonBackground.innerImageColor }"
+                class-name="svg-background"
+                :name="mainIconClass(item)"
+              />
+            </el-option>
+          </el-select>
+        </el-form-item>
+      </div>
+      <div
+        class="indented-item"
+        v-if="state.commonBackground.backgroundType === 'outerImage'"
+        :class="{
+          disabled: !state.commonBackground.backgroundImageEnable || state.uploadDisabled
+        }"
+      >
+        <div class="avatar-uploader-container">
+          <el-upload
+            action=""
+            :effect="themes"
+            accept=".jpeg,.jpg,.png,.gif,.svg"
+            class="avatar-uploader"
+            list-type="picture-card"
+            :on-preview="handlePictureCardPreview"
+            :on-remove="handleRemove"
+            :before-upload="beforeUploadCheck"
+            :http-request="upload"
+            :file-list="state.fileList"
+            :disabled="!state.commonBackground.backgroundImageEnable"
           >
-            <el-upload
-              action=""
-              :effect="themes"
-              accept=".jpeg,.jpg,.png,.gif,.svg"
-              class="avatar-uploader"
-              list-type="picture-card"
-              :class="{ disabled: state.uploadDisabled }"
-              :on-preview="handlePictureCardPreview"
-              :on-remove="handleRemove"
-              :before-upload="beforeUploadCheck"
-              :http-request="upload"
-              :file-list="state.fileList"
-              :disabled="!state.commonBackground.backgroundImageEnable"
-            >
-              <el-icon><Plus /></el-icon>
-            </el-upload>
-            <el-dialog
-              top="25vh"
-              width="600px"
-              :append-to-body="true"
-              :destroy-on-close="true"
-              v-model="state.dialogVisible"
-            >
-              <img width="550" :src="state.dialogImageUrl" />
-            </el-dialog>
-          </el-col>
-        </el-row>
-      </el-row>
-    </el-row>
-  </el-row>
+            <el-icon><Plus /></el-icon>
+          </el-upload>
+          <span class="hint">支持JPG、PNG、GIF</span>
+        </div>
+        <el-dialog
+          top="25vh"
+          width="600px"
+          :append-to-body="true"
+          :destroy-on-close="true"
+          v-model="state.dialogVisible"
+        >
+          <img width="550" :src="state.dialogImageUrl" />
+        </el-dialog>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -180,7 +190,6 @@ import { queryVisualizationBackground } from '@/api/visualization/visualizationB
 import { COLOR_PANEL } from '@/views/chart/components/editor/util/chart'
 import { computed, onMounted, reactive, toRefs, watch } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { storeToRefs } from 'pinia'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { beforeUploadCheck, uploadFileResult } from '@/api/staticResource'
@@ -281,54 +290,48 @@ watch(
 </script>
 
 <style scoped lang="less">
-.tips-area {
-  color: #909399;
-  font-size: 8px;
-  margin-left: 10px;
-  line-height: 40px;
-}
-.ed-card-template {
-  width: 100%;
-  height: 100%;
-}
+.avatar-uploader-container {
+  margin-bottom: 16px;
 
-.main-col {
-  background-size: 100% 100% !important;
-  padding-left: 10px;
-  margin-top: 10px;
-  height: 230px;
-  overflow-y: auto;
-  flex-direction: row;
+  .hint {
+    color: #8f959e;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
+  }
 }
-
-.root-class {
-  margin: 15px 0px 5px;
-  text-align: center;
-}
-
 .avatar-uploader {
-  width: 120px;
-}
-
-.avatar-uploader :deep(.ed-upload) {
-  width: 120px;
   height: 80px;
-  line-height: 90px;
+  overflow: hidden;
 }
+.avatar-uploader {
+  :deep(.ed-upload) {
+    width: 120px;
+    height: 80px;
+    line-height: 90px;
+  }
 
-.avatar-uploader :deep(.ed-upload-list) li {
-  width: 120px !important;
-  height: 80px !important;
-}
-:deep(.ed-upload--picture-card) {
-  background: none;
-}
-:deep(.ed-upload-list__item) {
-  background: none;
-}
+  :deep(.ed-upload-list li) {
+    width: 120px !important;
+    height: 80px !important;
+  }
 
-.disabled :deep(.ed-upload--picture-card) {
-  display: none;
+  :deep(.ed-upload--picture-card) {
+    background: #eff0f1;
+    border: 1px dashed #dee0e3;
+    border-radius: 4px;
+
+    .ed-icon {
+      color: #1f2329;
+    }
+
+    &:hover {
+      .ed-icon {
+        color: #3370ff;
+      }
+    }
+  }
 }
 
 .shape-item {
@@ -340,121 +343,74 @@ watch(
   align-items: center;
 }
 
-.form-item-slider :deep(.ed-form-item__label) {
-  font-size: 12px;
-  line-height: 38px;
-}
-
-.form-item :deep(.ed-form-item__label) {
-  font-size: 12px;
-}
-
-span {
-  font-size: 12px;
-}
-
-.ed-form-item {
-  margin-bottom: 6px;
-}
-
-.main-content {
-}
-
-.params-title {
-  font-weight: 400 !important;
-  font-size: 14px !important;
-  color: #1f2329 !important;
-  line-height: 40px;
-}
-
-.params-title-small {
-  font-size: 12px !important;
-  color: #1f2329 !important;
-  line-height: 40px;
-}
-
-.border-area {
-  flex-direction: row;
-}
-
-.bl {
-  justify-content: flex-start;
-  display: flex;
-}
-
-.br {
-  flex: 1;
-  justify-content: flex-end;
-  display: flex;
-}
-
-.function-area {
-  margin-top: 8px;
-  :deep(.ed-radio__input) {
-    display: inline-flex;
-  }
-  :deep(.ed-radio) {
-    margin-right: 32px;
-  }
-}
-
-.margin-top16 {
-  margin-top: 16px !important;
-}
-
-.margin-top8 {
-  margin-top: 8px !important;
-}
-.custom-item-text-row {
-  display: flex;
-  font-size: 12px;
-}
-
 .ed-select-dropdown__item {
   height: 80px !important;
   text-align: center;
   padding: 5px 15px;
 }
 
-.ed-radio {
-  font-weight: 400;
-  height: 20px;
-}
-.ed-checkbox {
-  font-weight: 400;
-  height: 20px;
-}
-
-.custom-item-text-row {
-  display: flex;
-}
-
-.custom-item-text {
-  font-size: 12px !important;
-  font-weight: 400 !important;
-  line-height: 20px;
-  color: #646a73 !important;
-}
-
-:deep(.ed-input-number) {
+.indented-container {
   width: 100%;
-}
+  padding-left: 22px;
 
-:deep(.ed-input__inner) {
-  text-align: left;
-}
+  .indented-item {
+    width: 100%;
+    display: flex;
 
-:deep(.ed-checkbox--dark) {
-  color: #646a73 !important;
-  font-weight: 400 !important;
-}
-:deep(.ed-radio--dark .ed-radio__label) {
-  color: #646a73 !important;
-  font-size: 12px !important;
-  font-weight: 400 !important;
-}
+    .fill {
+      flex: 1;
+    }
 
-:deep(.ed-checkbox__label) {
-  font-size: 12px !important;
+    &.disabled {
+      cursor: not-allowed;
+      color: #8f959e;
+
+      :deep(.avatar-uploader) {
+        pointer-events: none;
+      }
+
+      :deep(.ed-upload--picture-card) {
+        cursor: not-allowed;
+
+        .ed-icon {
+          color: #8f959e;
+        }
+      }
+
+      &:hover {
+        .ed-icon {
+          color: #8f959e;
+        }
+      }
+    }
+  }
+}
+.form-item {
+  &.margin-bottom-8 {
+    margin-bottom: 8px !important;
+  }
+  &.no-margin-bottom {
+    margin-bottom: 0 !important;
+  }
+  :deep(.ed-input) {
+    --ed-input-height: 28px;
+  }
+  :deep(.ed-input-number) {
+    width: 100%;
+  }
+  :deep(.ed-radio) {
+    height: 20px;
+    .ed-radio__label {
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 20px;
+    }
+  }
+  :deep(.ed-select) {
+    .ed-input__inner {
+      height: 26px !important;
+    }
+  }
 }
 </style>

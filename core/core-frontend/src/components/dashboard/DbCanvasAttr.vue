@@ -360,28 +360,31 @@ onMounted(() => {
   }
 }
 
-.avatar-uploader :deep(.ed-upload) {
-  width: 120px;
-  height: 80px;
-  line-height: 90px;
-}
-
-.avatar-uploader :deep(.ed-upload-list li) {
-  width: 120px !important;
-  height: 80px !important;
-}
-.avatar-uploader :deep(.ed-upload--picture-card) {
-  background: #eff0f1;
-  border: 1px dashed #dee0e3;
-  border-radius: 4px;
-
-  .ed-icon {
-    color: #1f2329;
+.avatar-uploader {
+  :deep(.ed-upload) {
+    width: 120px;
+    height: 80px;
+    line-height: 90px;
   }
 
-  &:hover {
+  :deep(.ed-upload-list li) {
+    width: 120px !important;
+    height: 80px !important;
+  }
+
+  :deep(.ed-upload--picture-card) {
+    background: #eff0f1;
+    border: 1px dashed #dee0e3;
+    border-radius: 4px;
+
     .ed-icon {
-      color: #3370ff;
+      color: #1f2329;
+    }
+
+    &:hover {
+      .ed-icon {
+        color: #3370ff;
+      }
     }
   }
 }
