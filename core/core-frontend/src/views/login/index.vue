@@ -54,7 +54,16 @@ const checkUsername = (_rule: any, value: any, callback: any) => {
     callback()
   }
 }
-
+const validatePwd = (_, value, callback) => {
+  const pattern = '^[a-zA-Z0-9][a-zA-Z0-9\._-]*$'
+  const regep = new RegExp(pattern)
+  if (!regep.test(value)) {
+    const msg = t('user.user_name_pattern_error')
+    callback(new Error(msg))
+  } else {
+    callback()
+  }
+}
 const rules = reactive<FormRules>({
   username: [
     { validator: checkUsername, trigger: 'blur' },
@@ -67,7 +76,8 @@ const rules = reactive<FormRules>({
   ],
   password: [
     { required: true, message: t('common.required'), trigger: 'blur' },
-    { min: 5, max: 15, message: t('login.pwd_format'), trigger: 'blur' }
+    { min: 5, max: 15, message: t('login.pwd_format'), trigger: 'blur' },
+    { required: true, validator: validatePwd, trigger: 'blur' }
   ]
 })
 

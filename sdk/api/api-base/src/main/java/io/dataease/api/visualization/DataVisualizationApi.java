@@ -7,20 +7,19 @@ import io.dataease.api.visualization.request.VisualizationWorkbranchQueryRequest
 import io.dataease.api.visualization.vo.DataVisualizationVO;
 import io.dataease.api.visualization.vo.VisualizationResourceVO;
 import io.dataease.auth.DeApiPath;
-import io.dataease.auth.DePermit;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static io.dataease.constant.AuthResourceEnum.DATASET;
 import static io.dataease.constant.AuthResourceEnum.PANEL;
 
 @DeApiPath(value = "/dataVisualization", rt = PANEL)
 public interface DataVisualizationApi {
     /**
      * 查询数据可视化大屏
+     *
      * @return
      */
     @GetMapping("/findById/{dvId}")
@@ -38,7 +37,6 @@ public interface DataVisualizationApi {
     @DeleteMapping("/deleteLogic/{dvId}")
     void deleteLogic(@PathVariable("dvId") Long dvId);
 
-    @DePermit(value = {"m:read"}, busiFlag = "#p0.busiFlag")
     @PostMapping("/tree")
     List<BusiNodeVO> tree(@RequestBody BusiNodeRequest request);
 

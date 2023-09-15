@@ -222,6 +222,7 @@ defineExpose({
     ></canvas-opt-bar>
     <ComponentWrapper
       v-for="(item, index) in componentData"
+      v-show="item.isShow"
       :active="item.id === (curComponent || {})['id']"
       :canvas-id="canvasId"
       :canvas-style-data="canvasStyleData"

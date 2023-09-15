@@ -313,7 +313,7 @@ onMounted(() => {
         @node-click="nodeClick"
       >
         <template #default="{ node, data }">
-          <span class="custom-tree-node">
+          <span :title="node.label" class="custom-tree-node">
             <el-icon style="font-size: 18px" v-if="!data.leaf">
               <Icon name="dv-folder"></Icon>
             </el-icon>
@@ -323,7 +323,7 @@ onMounted(() => {
             <el-icon style="font-size: 18px" v-else>
               <Icon name="dv-screen-spine"></Icon>
             </el-icon>
-            <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
+            <span class="label-tooltip">{{ node.label }}</span>
             <div class="icon-more" v-if="data.weight >= 7 && showPosition === 'preview'">
               <span v-on:click.stop>
                 <el-icon v-if="data.leaf" class="hover-icon" @click="resourceEdit(data.id)">

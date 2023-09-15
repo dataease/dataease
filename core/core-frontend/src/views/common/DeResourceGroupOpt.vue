@@ -158,8 +158,8 @@ const optInit = (type, data: BusiTreeNode, exec, parentSelect = false) => {
   dialogTitle.value = getDialogTitle(exec) + ('rename' === exec ? optSource : '')
   resourceFormNameLabel.value = (exec === 'move' ? '' : optSource) + '名称'
   const request = { busiFlag: curCanvasType.value, leaf: false, weight: 3 }
-  if (['newLeaf', 'newFolder', 'newLeafAfter'].includes(exec)) {
-    resourceForm.name = data.name ? data.name : ''
+  if (['newFolder'].includes(exec)) {
+    resourceForm.name = ''
   } else if ('copy' === exec) {
     resourceForm.name = data.name + '-copy'
   } else {

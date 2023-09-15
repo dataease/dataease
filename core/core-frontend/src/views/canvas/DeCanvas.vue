@@ -116,6 +116,7 @@ const handleMouseDown = e => {
     e.stopPropagation()
     dvMainStore.setClickComponentStatus(false)
     dvMainStore.setInEditorStatus(true)
+    dvMainStore.setCurComponent({ component: null, index: null })
   }
 }
 
