@@ -1389,7 +1389,12 @@ const treeProps = {
     </el-drawer>
   </div>
   <creat-ds-group @finish="finish" ref="creatDsFolder"></creat-ds-group>
-  <el-dialog v-model="editCalcField" width="1000px" :title="t('dataset.add_calc_field')">
+  <el-dialog
+    custom-class="calc-field-edit-dialog"
+    v-model="editCalcField"
+    width="1000px"
+    :title="t('dataset.add_calc_field')"
+  >
     <calc-field-edit ref="calcEdit" />
     <template #footer>
       <el-button secondary @click="closeEditCalc()">{{ t('dataset.cancel') }} </el-button>
@@ -1864,6 +1869,12 @@ const treeProps = {
 .tree-select-ds_popper {
   .ed-tree-node.is-current > .ed-tree-node__content:not(.is-menu):after {
     display: none !important;
+  }
+}
+.calc-field-edit-dialog {
+  .ed-dialog__footer {
+    padding-top: 24px;
+    border: 1px solid rgba(31, 35, 41, 0.15);
   }
 }
 </style>
