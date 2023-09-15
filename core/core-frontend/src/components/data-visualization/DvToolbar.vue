@@ -57,6 +57,11 @@ const closeEditCanvasName = () => {
   if (inputName.value.trim() === dvInfo.value.name) {
     return
   }
+  if (inputName.value.trim().length > 50) {
+    ElMessage.warning('名称字段长度不能超过50个字符')
+    editCanvasName()
+    return
+  }
   dvInfo.value.name = inputName.value
   inputName.value = ''
 }
@@ -282,7 +287,7 @@ eventBus.on('clearCanvas', clearCanvas)
       </div>
     </div>
     <Teleport v-if="nameEdit" :to="'#dv-canvas-name'">
-      <input ref="nameInput" v-model="inputName" @blur="closeEditCanvasName" />
+      <input ref="nameInput" maxlength="50" v-model="inputName" @blur="closeEditCanvasName" />
     </Teleport>
     <!-- 预览 -->
     <Preview v-if="isShowPreview" :is-screenshot="isScreenshot" @close="handlePreviewChange" />
