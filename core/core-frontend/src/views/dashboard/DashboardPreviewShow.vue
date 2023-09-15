@@ -2,7 +2,7 @@
 import { ElAside, ElContainer } from 'element-plus-secondary'
 import DeResourceTree from '@/views/common/DeResourceTree.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { reactive, nextTick, ref, toRefs } from 'vue'
+import { reactive, nextTick, ref, toRefs, onBeforeMount } from 'vue'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
 import PreviewHead from '@/views/data-visualization/PreviewHead.vue'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
@@ -127,6 +127,10 @@ const reload = id => {
 const resourceNodeClick = data => {
   loadCanvasData(data.id, data.weight)
 }
+
+onBeforeMount(() => {
+  dvMainStore.canvasDataInit()
+})
 
 defineExpose({
   getPreviewStateInfo
