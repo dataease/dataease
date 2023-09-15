@@ -207,7 +207,7 @@ initFunction()
 
 <template>
   <div @keydown.stop @keyup.stop class="calcu-field">
-    <div class="calcu-cont" style="height: 544px">
+    <div class="calcu-cont">
       <div style="flex: 1">
         <div style="max-width: 488px">
           <el-form
@@ -285,9 +285,10 @@ initFunction()
               </el-form-item>
             </el-form>
           </div>
-          <span class="mb8">
-            {{ t('dataset.field_exp') }}
-            <el-tooltip class="item" effect="dark" placement="bottom">
+          <div class="mb8 field-exp">
+            <span>{{ t('dataset.field_exp') }}</span>
+            <span>*</span>
+            <el-tooltip class="item" effect="dark" placement="top">
               <template #content>
                 {{ t('dataset.calc_tips.tip1') }}
                 <br />
@@ -297,11 +298,12 @@ initFunction()
                 <Icon name="icon_info_outlined"></Icon>
               </el-icon>
             </el-tooltip>
-          </span>
+          </div>
           <code-mirror
             :quotaMap="state.quotaData.map(ele => ele.name)"
             :dimensionMap="state.dimensionData.map(ele => ele.name)"
             ref="myCm"
+            height="318px"
             dom-id="calcField"
           ></code-mirror>
         </div>
@@ -322,59 +324,56 @@ initFunction()
             </el-icon>
           </el-tooltip>
         </span>
-        <el-input
-          v-model="searchField"
-          :placeholder="t('dataset.edit_search')"
-          style="margin-bottom: 12px"
-          clearable
-        >
-          <template #prefix>
-            <el-icon>
-              <Icon name="icon_search-outline_outlined"></Icon>
-            </el-icon>
-          </template>
-        </el-input>
-        <div class="field-height">
-          <span>{{ t('chart.dimension') }}</span>
-          <div v-if="state.dimensionData.length" class="field-list">
-            <span
-              v-for="item in state.dimensionData"
-              :key="item.id"
-              class="item-dimension"
-              :title="item.name"
-              @click="insertFieldToCodeMirror('[' + item.name + ']')"
-            >
+        <div class="padding-lr-content">
+          <el-input v-model="searchField" :placeholder="t('dataset.edit_search')" clearable>
+            <template #prefix>
               <el-icon>
-                <Icon
-                  :name="`field_${fieldType[item.deType]}`"
-                  :className="`field-icon-${fieldType[item.deType]}`"
-                ></Icon>
+                <Icon name="icon_search-outline_outlined"></Icon>
               </el-icon>
-              {{ item.name }}
-            </span>
+            </template>
+          </el-input>
+          <div class="field-height">
+            <span>{{ t('chart.dimension') }}</span>
+            <div v-if="state.dimensionData.length" class="field-list">
+              <span
+                v-for="item in state.dimensionData"
+                :key="item.id"
+                class="item-dimension flex-align-center ellipsis"
+                :title="item.name"
+                @click="insertFieldToCodeMirror('[' + item.name + ']')"
+              >
+                <el-icon>
+                  <Icon
+                    :name="`field_${fieldType[item.deType]}`"
+                    :className="`field-icon-${fieldType[item.deType]}`"
+                  ></Icon>
+                </el-icon>
+                {{ item.name }}
+              </span>
+            </div>
+            <div v-else class="class-na">{{ t('dataset.na') }}</div>
           </div>
-          <div v-else class="class-na">{{ t('dataset.na') }}</div>
-        </div>
-        <div class="field-height">
-          <span>{{ t('chart.quota') }}</span>
-          <div v-if="state.quotaData.length" class="field-list">
-            <span
-              v-for="item in state.quotaData"
-              :key="item.id"
-              class="item-quota"
-              :title="item.name"
-              @click="insertFieldToCodeMirror('[' + item.name + ']')"
-            >
-              <el-icon>
-                <Icon
-                  :name="`field_${fieldType[item.deType]}`"
-                  :className="`field-icon-${fieldType[item.deType]}`"
-                ></Icon>
-              </el-icon>
-              {{ item.name }}
-            </span>
+          <div class="field-height">
+            <span>{{ t('chart.quota') }}</span>
+            <div v-if="state.quotaData.length" class="field-list">
+              <span
+                v-for="item in state.quotaData"
+                :key="item.id"
+                class="item-quota flex-align-center ellipsis"
+                :title="item.name"
+                @click="insertFieldToCodeMirror('[' + item.name + ']')"
+              >
+                <el-icon>
+                  <Icon
+                    :name="`field_${fieldType[item.deType]}`"
+                    :className="`field-icon-${fieldType[item.deType]}`"
+                  ></Icon>
+                </el-icon>
+                {{ item.name }}
+              </span>
+            </div>
+            <div v-else class="class-na">{{ t('dataset.na') }}</div>
           </div>
-          <div v-else class="class-na">{{ t('dataset.na') }}</div>
         </div>
       </div>
       <div class="padding-lr">
@@ -394,41 +393,45 @@ initFunction()
             </el-icon>
           </el-tooltip>
         </span>
-        <el-input
-          v-model="searchFunction"
-          style="margin-bottom: 12px"
-          :placeholder="t('dataset.edit_search')"
-          clearable
-        >
-          <template #prefix>
-            <el-icon>
-              <Icon name="icon_search-outline_outlined"></Icon>
-            </el-icon>
-          </template>
-        </el-input>
-        <el-row class="function-height">
-          <div v-if="state.functionData.length" style="width: 100%">
-            <el-popover
-              v-for="(item, index) in state.functionData"
-              :key="index"
-              class="function-pop"
-              placement="right"
-              width="200"
-              trigger="hover"
-              :open-delay="500"
-            >
-              <template #reference>
-                <span class="function-style" @click="insertParamToCodeMirror(item.func)">{{
-                  item.func
-                }}</span>
-              </template>
-              <p class="pop-title">{{ item.name }}</p>
-              <p class="pop-info">{{ item.func }}</p>
-              <p class="pop-info">{{ item.desc }}</p>
-            </el-popover>
-          </div>
-          <div v-else class="class-na">{{ t('chart.no_function') }}</div>
-        </el-row>
+        <div class="padding-lr-content">
+          <el-input
+            v-model="searchFunction"
+            style="margin-bottom: 8px"
+            :placeholder="t('dataset.edit_search')"
+            clearable
+          >
+            <template #prefix>
+              <el-icon>
+                <Icon name="icon_search-outline_outlined"></Icon>
+              </el-icon>
+            </template>
+          </el-input>
+          <el-row class="function-height">
+            <div v-if="state.functionData.length" style="width: 100%">
+              <el-popover
+                v-for="(item, index) in state.functionData"
+                :key="index"
+                class="function-pop"
+                placement="right"
+                width="200"
+                trigger="hover"
+                :open-delay="500"
+              >
+                <template #reference>
+                  <span
+                    class="function-style flex-align-center"
+                    @click="insertParamToCodeMirror(item.func)"
+                    >{{ item.func }}</span
+                  >
+                </template>
+                <p class="pop-title">{{ item.name }}</p>
+                <p class="pop-info">{{ item.func }}</p>
+                <p class="pop-info">{{ item.desc }}</p>
+              </el-popover>
+            </div>
+            <div v-else class="class-na">{{ t('chart.no_function') }}</div>
+          </el-row>
+        </div>
       </div>
     </div>
   </div>
@@ -442,7 +445,6 @@ initFunction()
     box-sizing: border-box;
     display: flex;
     justify-content: space-between;
-    height: 544px;
   }
 
   .mr12 {
@@ -451,6 +453,11 @@ initFunction()
 
   .mr0 {
     margin-right: 0;
+
+    :deep(.ed-select__prefix--light) {
+      padding: 0;
+      border: none;
+    }
   }
 
   .btn-select {
@@ -466,6 +473,10 @@ initFunction()
     .is-active {
       background: rgba(51, 112, 255, 0.1);
     }
+
+    .ed-button:not(.is-active) {
+      color: #1f2329;
+    }
     .ed-button.is-text {
       height: 24px;
       width: 44px;
@@ -480,60 +491,61 @@ initFunction()
     margin-bottom: 8px;
     display: inline-flex;
     align-items: center;
+    color: #1f2329;
 
-    i {
+    &.field-exp {
+      & > :nth-child(2) {
+        margin: 0 -0.67px 0 2px;
+        color: #f54a45;
+        font-family: PingFang SC;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 22px;
+      }
+    }
+
+    .ed-icon {
+      color: #646a73;
       margin-left: 4.67px;
     }
   }
 }
 .padding-lr {
-  height: 500px;
-  border: 1px solid var(--deCardStrokeColor, #dee0e3);
-  border-radius: 4px;
-  padding: 12px;
-  box-sizing: border-box;
   margin-left: 12px;
   width: 214px;
   overflow-y: hidden;
+  .padding-lr-content {
+    padding: 12px;
+    border: 1px solid var(--deCardStrokeColor, #dee0e3);
+    box-sizing: border-box;
+    height: 500px;
+    border-radius: 4px;
+  }
 }
 .field-height {
   height: calc(50% - 41px);
-  margin-top: 4px;
+  margin-top: 12px;
   overflow-y: auto;
+  & > :nth-child(1) {
+    color: #1f2329;
+  }
 }
-.item-dimension {
-  padding: 3px 8px;
-  margin: 2px 2px 0 2px;
-  border: solid 1px #eee;
-  text-align: left;
-  color: #606266;
-  /*background-color: rgba(35,46,64,.05);*/
+.item-dimension,
+.item-quota {
+  padding: 1px 8px;
+  border: solid 1px #dee0e3;
   background-color: white;
-  display: flex;
-  align-items: center;
+  color: #1f2329;
+
   .ed-icon {
-    font-size: 14px;
-    margin-right: 5.25px;
+    font-size: 16px;
+    margin-right: 4px;
   }
+  height: 28px;
+  margin-top: 4px;
   word-break: break-all;
-  border-radius: 2px;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  i {
-    color: #04b49c;
-  }
-}
-
-.blackTheme .item-dimension {
-  border: solid 1px;
-  border-color: #495865;
-  color: #f2f6fc;
-  background-color: var(--MainBG);
-}
-
-.item-dimension + .item-dimension {
-  margin-top: 2px;
+  border-radius: 4px;
 }
 
 .item-dimension:hover {
@@ -542,43 +554,10 @@ initFunction()
   cursor: pointer;
 }
 
-.blackTheme .item-dimension:hover {
-  background: var(--ContentBG);
-}
-
 .item-quota {
-  padding: 3px 8px;
-  margin: 2px 2px 0 2px;
-  border: solid 1px #eee;
-  text-align: left;
-  color: #606266;
-  background-color: white;
-  display: flex;
-  align-items: center;
   .ed-icon {
-    font-size: 14px;
-    margin-right: 5.25px;
-  }
-  border-radius: 2px;
-  word-break: break-all;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-
-  i {
     color: #04b49c;
   }
-}
-
-.blackTheme .item-quota {
-  border: solid 1px;
-  border-color: #495865;
-  color: #f2f6fc;
-  background-color: var(--MainBG);
-}
-
-.item-quota + .item-quota {
-  margin-top: 2px;
 }
 
 .item-quota:hover {
@@ -587,37 +566,26 @@ initFunction()
   cursor: pointer;
 }
 
-.blackTheme .item-quota:hover {
-  background: var(--ContentBG);
-}
 .function-style {
-  color: var(--deTextPrimary, #1f2329);
-  display: block;
-  padding: 3px 8px;
-  cursor: pointer;
-  margin: 4px 0;
-  word-break: break-word;
-  border-radius: 2px;
-  border: solid 1px #eee;
+  height: 28px;
+  padding: 0px 8px;
+  margin-bottom: 4px;
+  border-radius: 4px;
+  color: #1f2329;
+  &:hover {
+    background: rgba(31, 35, 41, 0.1);
+  }
 }
 
-.blackTheme .function-style {
-  border: solid 1px;
-  border-color: #495865;
-  color: #f2f6fc;
-  background-color: var(--MainBG);
-}
 .function-style:hover {
   border-color: var(--primary, #3370ff);
   cursor: pointer;
 }
-.blackTheme .function-style:hover {
-  background: var(--ContentBG);
-}
 .function-height {
   height: calc(100% - 81px);
   overflow: auto;
-  margin-top: 4px;
+  width: calc(100% + 16px);
+  margin-left: -8px;
 }
 .function-pop :deep(.ed-popover) {
   padding: 6px !important;
@@ -647,6 +615,7 @@ initFunction()
     border: 1px solid #bbbfc4;
     border-radius: 4px;
     overflow-y: auto;
+    background: #fff;
   }
 
   .cm-focused {

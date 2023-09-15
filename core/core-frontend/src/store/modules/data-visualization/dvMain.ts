@@ -2,9 +2,14 @@ import { defineStore } from 'pinia'
 import { store } from '../../index'
 import { deepCopy } from '@/utils/utils'
 import { BASE_VIEW_CONFIG } from '@/views/chart/components/editor/util/chart'
-import { DEFAULT_CANVAS_STYLE_DATA_DARK } from '@/views/chart/components/editor/util/dataVisualiztion'
+import {
+  DEFAULT_CANVAS_STYLE_DATA_DARK,
+  DEFAULT_CANVAS_STYLE_DATA_LIGHT,
+  DEFAULT_CANVAS_STYLE_DATA_SCREEN_DARK
+} from '@/views/chart/components/editor/util/dataVisualiztion'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import chartViewManager from '@/views/chart/components/js/panel'
+import { guid } from '@/views/visualized/data/dataset/form/util'
 
 export const dvMainStore = defineStore('dataVisualization', {
   state: () => {
@@ -656,6 +661,30 @@ export const dvMainStore = defineStore('dataVisualization', {
     },
     getViewDetails(viewId) {
       return this.canvasViewInfo[viewId]
+    },
+    updateDvInfoId(newId) {
+      if (this.dvInfo) {
+        this.dvInfo.id = newId
+      }
+    },
+    createInit(dvType) {
+      const optName = dvType === 'dashboard' ? '新建仪表板' : '新建数据大屏'
+      this.dvInfo = {
+        id: null,
+        name: optName,
+        pid: -1,
+        type: dvType,
+        status: 1,
+        selfWatermarkStatus: 0
+      }
+      const canvasStyleDataNew =
+        dvType === 'dashboard'
+          ? DEFAULT_CANVAS_STYLE_DATA_LIGHT
+          : DEFAULT_CANVAS_STYLE_DATA_SCREEN_DARK
+
+      this.canvasStyleData = deepCopy(canvasStyleDataNew)
+      this.componentData = []
+      this.canvasViewInfo = {}
     }
   }
 })

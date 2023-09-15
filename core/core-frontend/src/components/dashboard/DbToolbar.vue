@@ -9,7 +9,6 @@ import { lockStoreWithOut } from '@/store/modules/data-visualization/lock'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { storeToRefs } from 'pinia'
 import Icon from '../icon-custom/src/Icon.vue'
-import { update, save } from '@/api/visualization/dataVisualization'
 import ComponentGroup from '@/components/visualization/ComponentGroup.vue'
 import UserViewGroup from '@/custom-component/component-group/UserViewGroup.vue'
 import QueryGroup from '@/custom-component/component-group/QueryGroup.vue'
@@ -24,6 +23,7 @@ import { canvasSave } from '@/utils/canvasUtils'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { copyStoreWithOut } from '@/store/modules/data-visualization/copy'
 import TabsGroup from '@/custom-component/component-group/TabsGroup.vue'
+import DeResourceGroupOpt from '@/views/common/DeResourceGroupOpt.vue'
 const { t } = useI18n()
 const isShowPreview = ref(false)
 const isScreenshot = ref(false)
@@ -59,6 +59,7 @@ const state = reactive({
   preBatchComponentData: [],
   preBatchCanvasViewInfo: {}
 })
+const resourceGroupOpt = ref(null)
 
 const editCanvasName = () => {
   nameEdit.value = true
@@ -112,6 +113,10 @@ const previewInner = () => {
 }
 
 const previewOuter = () => {
+  if (!dvInfo.value.id) {
+    ElMessage.warning('请先保存当前页面')
+    return
+  }
   canvasSave(() => {
     const url = '#/preview?dvId=' + dvInfo.value.id
     window.open(url, '_blank')
@@ -137,7 +142,24 @@ const queryList = computed(() => {
   return arr
 })
 
-const saveCanvas = () => {
+const resourceOptFinish = param => {
+  if (param && param.opt === 'newLeaf') {
+    dvInfo.value.pid = param.pid
+    dvInfo.value.name = param.name
+    saveCanvasWithCheck()
+  }
+}
+
+const saveCanvasWithCheck = () => {
+  if (dvInfo.value.pid === -1) {
+    const params = { name: dvInfo.value.name, leaf: true }
+    resourceGroupOpt.value.optInit('leaf', params, 'newLeaf', true)
+    return
+  }
+  saveResource()
+}
+
+const saveResource = () => {
   dvMainStore.matrixSizeAdaptor()
   queryList.value.forEach(ele => {
     useEmitt().emitter.emit(`updateQueryCriteria${ele.id}`)
@@ -161,7 +183,10 @@ const handlePreviewChange = () => {
 }
 
 const backToMain = () => {
-  const url = '#/panel/index?dvId=' + dvInfo.value.id
+  let url = '#/panel/index'
+  if (dvInfo.value.id) {
+    url = url + '?dvId=' + dvInfo.value.id
+  }
   if (styleChangeTimes.value > 0) {
     ElMessageBox.confirm('当前的更改尚未保存，确定退出吗？', {
       confirmButtonType: 'danger',
@@ -181,7 +206,7 @@ const multiplexingCanvasOpen = () => {
 }
 
 eventBus.on('preview', previewInner)
-eventBus.on('save', saveCanvas)
+eventBus.on('save', saveCanvasWithCheck)
 eventBus.on('clearCanvas', clearCanvas)
 
 const openDataBoardSetting = () => {
@@ -385,7 +410,7 @@ const saveLinkageSetting = () => {
         <el-button
           v-show="editMode === 'edit'"
           :disabled="styleChangeTimes < 1"
-          @click="saveCanvas()"
+          @click="saveCanvasWithCheck()"
           style="float: right; margin-right: 12px"
           type="primary"
           >保存</el-button
@@ -449,6 +474,11 @@ const saveLinkageSetting = () => {
       >编辑</el-button
     >
     <multiplexing-canvas ref="multiplexingRef"></multiplexing-canvas>
+    <de-resource-group-opt
+      @finish="resourceOptFinish"
+      cur-canvas-type="dashboard"
+      ref="resourceGroupOpt"
+    />
   </div>
 </template>
 

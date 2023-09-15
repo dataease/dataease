@@ -5,14 +5,16 @@ import componentList, {
 } from '@/custom-component/component-list'
 import eventBus from '@/utils/eventBus'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { findById, save } from '@/api/visualization/dataVisualization'
+import { findById, saveCanvas, updateCanvas } from '@/api/visualization/dataVisualization'
 import { storeToRefs } from 'pinia'
 import { getPanelAllLinkageInfo } from '@/api/visualization/linkage'
 import { queryVisualizationJumpInfo } from '@/api/visualization/linkJump'
 import { getViewConfig } from '@/views/chart/components/editor/util/chart'
+import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 const dvMainStore = dvMainStoreWithOut()
 const { curBatchOptComponents, dvInfo, canvasStyleData, componentData, canvasViewInfo } =
   storeToRefs(dvMainStore)
+const snapshotStore = snapshotStoreWithOut()
 
 export function chartTransStr2Object(targetIn, copy) {
   const target = copy === 'Y' ? deepCopy(targetIn) : targetIn
@@ -133,7 +135,12 @@ export function canvasSave(callBack) {
     canvasViewInfo: canvasViewInfo.value,
     ...dvInfo.value
   }
-  save(canvasInfo).then(res => {
+  const method = dvInfo.value.id ? updateCanvas : saveCanvas
+  method(canvasInfo).then(res => {
+    if (res && res.data) {
+      dvMainStore.updateDvInfoId(res.data)
+    }
+    snapshotStore.resetStyleChangeTimes()
     callBack(res)
   })
 }
