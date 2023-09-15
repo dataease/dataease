@@ -24,7 +24,16 @@ const showNolic = () => {
 }
 
 const importPlugin = (path: string) => {
-  import(`../../../../../../de-xpack/xpack-frontend/src/${path}/index.vue`)
+  const pathArray = path.split('/')
+  let promise = null
+  if (pathArray.length === 1) {
+    promise = import(`../../../../../../de-xpack/xpack-frontend/src/${pathArray[0]}/index.vue`)
+  } else if (pathArray.length === 2) {
+    promise = import(
+      `../../../../../../de-xpack/xpack-frontend/src/${pathArray[0]}/${pathArray[1]}/index.vue`
+    )
+  }
+  promise
     .then((res: any) => {
       plugin.value = res.default
     })
