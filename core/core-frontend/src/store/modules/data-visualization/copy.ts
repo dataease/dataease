@@ -145,7 +145,7 @@ export const copyStore = defineStore('copy', {
 
 function deepCopyHelper(data, idMap) {
   const result = deepCopy(data)
-  const newComponentId = generateID({ seq: 1 })
+  const newComponentId = generateID()
   idMap[data.id] = newComponentId
   result.id = newComponentId
   if (result.component === 'Group') {

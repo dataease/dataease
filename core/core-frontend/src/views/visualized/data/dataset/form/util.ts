@@ -1,10 +1,10 @@
 import { useI18n } from '@/hooks/web/useI18n'
 import SnowflakeId from 'snowflake-id'
+const snowflake = new SnowflakeId()
 
 const { t } = useI18n()
 
-const guid = (options?) => {
-  const snowflake = new SnowflakeId(options)
+const guid = () => {
   return snowflake.generate()
 }
 
