@@ -84,7 +84,10 @@ function onPopoverHide() {
 </script>
 
 <template>
-  <div style="width: 100%; margin-bottom: 16px">
+  <div
+    style="width: 100%"
+    :style="{ 'margin-bottom': customColorExtendSettingOpened ? '16px' : '8px' }"
+  >
     <el-row>
       <el-form-item
         :label="t('chart.color_case')"
