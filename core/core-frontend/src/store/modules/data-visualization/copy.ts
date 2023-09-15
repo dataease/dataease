@@ -103,9 +103,6 @@ export const copyStore = defineStore('copy', {
           eventBus.emit('addDashboardItem-' + newComponent.canvasId, newComponent)
         }
       })
-      if (this.isCut) {
-        this.copyData = null
-      }
     },
     cut() {
       if (curComponent.value) {
@@ -148,10 +145,9 @@ export const copyStore = defineStore('copy', {
 
 function deepCopyHelper(data, idMap) {
   const result = deepCopy(data)
-  const newComponentId = generateID()
+  const newComponentId = generateID({ seq: 1 })
   idMap[data.id] = newComponentId
   result.id = newComponentId
-  console.log('newComponentId=' + newComponentId)
   if (result.component === 'Group') {
     result.propValue.forEach((component, i) => {
       result.propValue[i] = deepCopyHelper(component, idMap)

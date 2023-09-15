@@ -3,9 +3,9 @@ import SnowflakeId from 'snowflake-id'
 
 const { t } = useI18n()
 
-const guid = () => {
-  const snowflake = new SnowflakeId()
-  return snowflake.generate(Date.now())
+const guid = (options?) => {
+  const snowflake = new SnowflakeId(options)
+  return snowflake.generate()
 }
 
 const timestampFormatDate = (timestamp, showMs?: boolean) => {
