@@ -177,6 +177,7 @@ const commonBackgroundSvgInner = computed(() => {
     @mouseenter="onMouseEnter"
   >
     <component-edit-bar
+      v-if="!showPosition.includes('canvas')"
       class="wrapper-edit-bar"
       :class="{ 'wrapper-edit-bar-active': active }"
       :canvas-id="canvasId"
@@ -244,6 +245,9 @@ const commonBackgroundSvgInner = computed(() => {
 }
 
 .component {
+  width: 100% !important;
+  height: 100% !important;
+  overflow: hidden;
 }
 
 .svg-background {

@@ -87,7 +87,7 @@ public class MysqlEngineProvider extends EngineProvider {
     public String replaceTable(String name) {
         String replaceTableSql = "rename table `FROM_TABLE` to `FROM_TABLE_tmp`, `TO_TABLE` to `FROM_TABLE`, `FROM_TABLE_tmp` to `TO_TABLE`"
                 .replace("FROM_TABLE", name).replace("TO_TABLE", TableUtils.tmpName(name));
-        String dropTableSql = "DROP TABLE IF EXISTS " + TableUtils.tmpName(name);
+        String dropTableSql = "DROP TABLE IF EXISTS `TABLE_NAME`".replace("TABLE_NAME", TableUtils.tmpName(name));
         return replaceTableSql + ";" + dropTableSql;
     }
 

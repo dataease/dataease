@@ -1,11 +1,11 @@
 import { useI18n } from '@/hooks/web/useI18n'
 import SnowflakeId from 'snowflake-id'
+const snowflake = new SnowflakeId()
 
 const { t } = useI18n()
 
 const guid = () => {
-  const snowflake = new SnowflakeId()
-  return snowflake.generate(Date.now())
+  return snowflake.generate()
 }
 
 const timestampFormatDate = (timestamp, showMs?: boolean) => {

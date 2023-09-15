@@ -77,7 +77,8 @@ const currentField = ref({
   dateFormat: '',
   id: '',
   dateFormatType: '',
-  name: ''
+  name: '',
+  idArr: []
 })
 
 const fieldTypes = index => {
@@ -123,9 +124,23 @@ const fieldOptions = [
       },
       {
         value: 'custom',
-        label: t('dataset.custom')
+        label: t('visualization.custom')
       }
     ]
+  },
+  { label: t('dataset.location'), value: 5 },
+  { label: t('dataset.value'), value: 2 },
+  {
+    label: t('dataset.value') + '(' + t('dataset.float') + ')',
+    value: 3
+  }
+]
+
+const fieldOptionsText = [
+  { label: t('dataset.text'), value: 0 },
+  {
+    label: t('dataset.time'),
+    value: 1
   },
   { label: t('dataset.location'), value: 5 },
   { label: t('dataset.value'), value: 2 },
@@ -225,30 +240,55 @@ const backToMain = () => {
 }
 
 const closeCustomTime = () => {
-  dimensions.value.concat(quota.value).some(ele => {
-    if (ele.id === currentField.value.id) {
-      delete currentField.value.name
-      Object.assign(ele, currentField.value)
-      return true
-    }
-    return false
-  })
+  if (!!currentField.value.idArr.length) {
+    const { idArr } = currentField.value
+    allfields.value.forEach(ele => {
+      if (idArr.includes(ele.id)) {
+        Object.assign(ele, { deTypeArr: [1, 'custom'] })
+      }
+    })
+    delete currentField.value.name
+    recoverSelection()
+  } else {
+    dimensions.value.concat(quota.value).some(ele => {
+      if (ele.id === currentField.value.id) {
+        delete currentField.value.name
+        Object.assign(ele, currentField.value)
+        return true
+      }
+      return false
+    })
+  }
+  currentField.value.idArr = []
+  currentField.value.id = ''
   updateCustomTime.value = false
 }
 
 const confirmCustomTime = () => {
-  ruleFormRef.value.validate(valid => {
-    if (valid) {
-      dimensions.value.concat(quota.value).some(ele => {
-        if (ele.id === currentField.value.id) {
-          ele.dateFormat = currentField.value.name
-          return true
-        }
-        return false
-      })
-      updateCustomTime.value = false
-    }
-  })
+  if (!!currentField.value.idArr.length) {
+    const { name, idArr } = currentField.value
+    allfields.value.forEach(ele => {
+      if (idArr.includes(ele.id)) {
+        Object.assign(ele, { dateFormat: name, deTypeArr: [1, 'custom'] })
+      }
+    })
+    delete currentField.value.name
+    recoverSelection()
+  } else {
+    ruleFormRef.value.validate(valid => {
+      if (valid) {
+        dimensions.value.concat(quota.value).some(ele => {
+          if (ele.id === currentField.value.id) {
+            ele.dateFormat = currentField.value.name
+            return true
+          }
+          return false
+        })
+        updateCustomTime.value = false
+      }
+    })
+  }
+  updateCustomTime.value = false
 }
 
 watch(searchTable, val => {
@@ -274,6 +314,10 @@ const editeSave = () => {
 }
 
 const handleFieldMore = (ele, type) => {
+  if (tabActive.value === 'manage') {
+    dimensionsSelection.value = dimensionsTable.value.getSelectionRows().map(ele => ele.id)
+    quotaSelection.value = quotaTable.value.getSelectionRows().map(ele => ele.id)
+  }
   const arr = ['text', 'time', 'value', 'float', 'value', 'location']
   if (arr.includes(type as string)) {
     ele.deType = arr.indexOf(type)
@@ -308,11 +352,25 @@ const handleFieldMore = (ele, type) => {
     default:
       break
   }
+
+  if (tabActive.value === 'manage') {
+    recoverSelection()
+  }
 }
 
 const dqTrans = id => {
   const obj = allfields.value.find(ele => ele.id === id)
   obj.groupType = obj.groupType === 'd' ? 'q' : 'd'
+}
+
+const dqTransArr = groupType => {
+  const idArr = fieldSelection.value.map(ele => ele.id)
+  allfields.value.forEach(ele => {
+    if (idArr.includes(ele.id)) {
+      ele.groupType = groupType
+    }
+  })
+  recoverSelection()
 }
 
 const copyField = item => {
@@ -489,6 +547,18 @@ const dimensions = computed(() => {
   return allfields.value.filter(ele => ele.groupType === 'd')
 })
 
+const tabChange = val => {
+  if (val === 'preview') return
+  allfields.value.forEach(ele => {
+    if (!Array.isArray(ele.deTypeArr)) {
+      ele.deTypeArr =
+        ele.deType === 1 && ele.deExtractType === 0
+          ? [ele.deType, ele.dateFormatType]
+          : [ele.deType]
+    }
+  })
+}
+
 const addComplete = () => {
   state.nodeNameList = [...datasetDrag.value.nodeNameList]
   if (!state.nodeNameList) {
@@ -588,6 +658,7 @@ const confirmEditUnion = () => {
   const arr = []
   dfsFields(arr, datasetDrag.value.nodeList)
   allfields.value = diffArr(arr, allfields.value)
+  tabChange('manage')
   fieldUnion.value.clearState()
   editUnion.value = false
   addComplete()
@@ -597,6 +668,7 @@ const updateAllfields = () => {
   const arr = []
   dfsFields(arr, datasetDrag.value.nodeList)
   allfields.value = diffArr(arr, allfields.value)
+  tabChange('manage')
   fieldUnion.value?.clearState()
   if (!previewHeight.value) {
     nextTick(() => {
@@ -737,6 +809,82 @@ const dfsNodeList = (arr, list) => {
       }
     })
   })
+}
+
+const quotaTable = ref()
+const dimensionsTable = ref()
+
+const dimensionsSelection = ref([])
+const quotaSelection = ref([])
+
+const deTypeSelection = ref([])
+const fieldSelection = ref([])
+
+const showCascaderBatch = computed(() => {
+  return !!deTypeSelection.value.length && Array.from(new Set(deTypeSelection.value)).length === 1
+})
+
+const clearSelection = () => {
+  dimensionsTable.value.clearSelection()
+  quotaTable.value.clearSelection()
+}
+
+const setDeTypeSelection = () => {
+  fieldSelection.value = [
+    ...dimensionsTable.value.getSelectionRows(),
+    ...quotaTable.value.getSelectionRows()
+  ]
+  deTypeSelection.value = fieldSelection.value.map(ele => ele.deExtractType)
+}
+
+const deTypeArr = ref([])
+const cascaderChangeArr = val => {
+  const [deType, dateFormat] = val
+  dimensionsSelection.value = dimensionsTable.value.getSelectionRows().map(ele => ele.id)
+  quotaSelection.value = quotaTable.value.getSelectionRows().map(ele => ele.id)
+  const arr = [...quotaSelection.value, ...dimensionsSelection.value]
+  allfields.value.forEach(ele => {
+    if (arr.includes(ele.id)) {
+      ele.deType = deType
+      ele.dateFormat = deType === 1 ? dateFormat : ''
+      ele.dateFormatType = deType === 1 ? dateFormat : ''
+      ele.deTypeArr = deType === 1 ? [deType, dateFormat] : [deType]
+    }
+  })
+  if (dateFormat === 'custom') {
+    currentField.value.id = ''
+    currentField.value.idArr = [...arr]
+    currentField.value.dateFormat = ''
+    currentField.value.dateFormatType = dateFormat
+    updateCustomTime.value = true
+  }
+  recoverSelection()
+}
+
+const recoverSelection = () => {
+  nextTick(() => {
+    quota.value.forEach(ele => {
+      if (quotaSelection.value.includes(ele.id)) {
+        quotaTable.value.toggleRowSelection(ele, true)
+      }
+    })
+    dimensions.value.forEach(ele => {
+      if (dimensionsSelection.value.includes(ele.id)) {
+        dimensionsTable.value.toggleRowSelection(ele, true)
+      }
+    })
+  })
+}
+
+const cascaderChange = (row, val) => {
+  const [deType, dateFormat] = val
+  row.deType = deType
+  row.dateFormat = deType === 1 ? dateFormat : ''
+  row.dateFormatType = deType === 1 ? dateFormat : ''
+  if (dateFormat === 'custom') {
+    currentField.value.id = row.id
+    updateCustomTime.value = true
+  }
 }
 
 const dfsUnion = (arr, list) => {
@@ -947,14 +1095,13 @@ const treeProps = {
               </el-button>
             </div>
           </div>
-          <el-tabs class="padding-24" v-model="tabActive">
+          <el-tabs class="padding-24" v-model="tabActive" @tab-change="tabChange">
             <el-tab-pane :label="t('chart.data_preview')" name="preview" />
             <el-tab-pane :label="t('dataset.batch_manage')" name="manage" />
           </el-tabs>
           <div
-            v-if="tabActive === 'preview'"
             ref="elDrag"
-            v-show="!!allfields.length"
+            v-show="tabActive === 'preview' && !!allfields.length"
             class="table-preview"
           >
             <div class="preview-field">
@@ -1058,7 +1205,7 @@ const treeProps = {
               </el-auto-resizer>
             </div>
           </div>
-          <div v-else class="batch-area">
+          <div v-show="tabActive !== 'preview' && !!allfields.length" class="batch-area">
             <div class="manage-container">
               <el-collapse v-model="state.fieldCollapse" class="style-collapse">
                 <el-collapse-item
@@ -1066,7 +1213,12 @@ const treeProps = {
                   :title="t('chart.dimension')"
                   class="dimension-manage-header manage-header"
                 >
-                  <el-table :data="dimensions" style="width: 100%">
+                  <el-table
+                    @selection-change="setDeTypeSelection"
+                    ref="dimensionsTable"
+                    :data="dimensions"
+                    style="width: 100%"
+                  >
                     <el-table-column type="selection" width="40" />
                     <el-table-column prop="name" :label="t('dataset.field_name')" width="264">
                       <template #default="scope">
@@ -1097,8 +1249,9 @@ const treeProps = {
                         <el-cascader
                           class="select-type"
                           popper-class="cascader-panel"
-                          v-model="scope.row.deType"
-                          :options="fieldOptions"
+                          v-model="scope.row.deTypeArr"
+                          @change="val => cascaderChange(scope.row, val)"
+                          :options="scope.row.deExtractType === 0 ? fieldOptions : fieldOptionsText"
                         >
                           <template v-slot="{ data }">
                             <el-icon>
@@ -1113,8 +1266,8 @@ const treeProps = {
                         <span class="select-svg-icon">
                           <el-icon>
                             <Icon
-                              :className="`field-icon-${getIconName(scope.row.deType[0])}`"
-                              :name="`field_${getIconName(scope.row.deType[0])}`"
+                              :className="`field-icon-${getIconName(scope.row.deType)}`"
+                              :name="`field_${getIconName(scope.row.deType)}`"
                             ></Icon>
                           </el-icon>
                         </span>
@@ -1128,7 +1281,7 @@ const treeProps = {
                     >
                       <template #default="scope">
                         <div class="column-style">
-                          <span v-if="scope.row.extField === 0">
+                          <span class="flex-align-center" v-if="scope.row.extField === 0">
                             <el-icon>
                               <Icon
                                 :className="`field-icon-${getIconName(scope.row.deExtractType)}`"
@@ -1200,7 +1353,12 @@ const treeProps = {
                   :title="t('chart.quota')"
                   class="quota-manage-header manage-header"
                 >
-                  <el-table :data="quota" style="width: 100%">
+                  <el-table
+                    @selection-change="setDeTypeSelection"
+                    ref="quotaTable"
+                    :data="quota"
+                    style="width: 100%"
+                  >
                     <el-table-column type="selection" width="40" />
                     <el-table-column prop="name" :label="t('dataset.field_name')" width="264">
                       <template #default="scope">
@@ -1231,8 +1389,9 @@ const treeProps = {
                         <el-cascader
                           class="select-type"
                           popper-class="cascader-panel"
-                          v-model="scope.row.deType"
-                          :options="fieldOptions"
+                          v-model="scope.row.deTypeArr"
+                          @change="val => cascaderChange(scope.row, val)"
+                          :options="scope.row.deExtractType === 0 ? fieldOptions : fieldOptionsText"
                         >
                           <template v-slot="{ data }">
                             <el-icon>
@@ -1247,8 +1406,8 @@ const treeProps = {
                         <span class="select-svg-icon">
                           <el-icon>
                             <Icon
-                              :className="`field-icon-${getIconName(scope.row.deType[0])}`"
-                              :name="`field_${getIconName(scope.row.deType[0])}`"
+                              :className="`field-icon-${getIconName(scope.row.deType)}`"
+                              :name="`field_${getIconName(scope.row.deType)}`"
                             ></Icon>
                           </el-icon>
                         </span>
@@ -1331,19 +1490,24 @@ const treeProps = {
                 </el-collapse-item>
               </el-collapse>
             </div>
-            <div class="batch-operate">
-              <span style="margin-left: 24px">
+            <div class="batch-operate flex-align-center" v-if="!!deTypeSelection.length">
+              <div class="flex-align-center">
                 已选择
-                <span>2</span>
+                <span class="num">{{ deTypeSelection.length }}</span>
                 条
-              </span>
-              <el-button text style="margin-left: 16px">{{ t('commons.clear') }}</el-button>
-
-              <span style="margin-left: 400px">
+                <el-button @click="clearSelection" text style="margin-left: 16px">{{
+                  t('commons.clear')
+                }}</el-button>
+              </div>
+              <div class="cascader-batch" v-if="showCascaderBatch">
                 <el-cascader
                   class="select-type"
+                  v-model="deTypeArr"
+                  @change="cascaderChangeArr"
                   popper-class="cascader-panel"
-                  :options="fieldOptions"
+                  :options="
+                    deTypeSelection.every(ele => ele === 0) ? fieldOptions : fieldOptionsText
+                  "
                 >
                   <template v-slot="{ data }">
                     <el-icon>
@@ -1356,16 +1520,30 @@ const treeProps = {
                   </template>
                 </el-cascader>
                 <span class="select-svg-icon">
-                  <!--                  <el-icon>-->
-                  <!--                    <Icon-->
-                  <!--                      :className="`field-icon-${getIconName(scope.row.deType[0])}`"-->
-                  <!--                      :name="`field_${getIconName(scope.row.deType[0])}`"-->
-                  <!--                    ></Icon>-->
-                  <!--                  </el-icon>-->
+                  <el-icon>
+                    <Icon
+                      :className="`field-icon-${getIconName(deTypeArr[0])}`"
+                      :name="`field_${getIconName(deTypeArr[0])}`"
+                    ></Icon>
+                  </el-icon>
                 </span>
-              </span>
-
-              <el-button plain type="primary" style="margin-left: 200px"> 转换为指标 </el-button>
+              </div>
+              <el-button
+                @click="dqTransArr('q')"
+                v-if="fieldSelection.every(ele => ele.groupType === 'd')"
+                plain
+                style="margin-left: 200px"
+              >
+                转换为指标
+              </el-button>
+              <el-button
+                @click="dqTransArr('d')"
+                v-else-if="fieldSelection.every(ele => ele.groupType === 'q')"
+                plain
+                style="margin-left: 200px"
+              >
+                转换为维度
+              </el-button>
             </div>
           </div>
         </div>
@@ -1798,12 +1976,6 @@ const treeProps = {
   align-items: center;
 }
 
-.select-type {
-  .ed-input__wrapper {
-    padding-left: 32px !important;
-  }
-}
-
 .select-svg-icon {
   position: absolute;
   left: 24px;
@@ -1823,9 +1995,29 @@ const treeProps = {
 .batch-operate {
   width: 100%;
   height: 64px;
-  border-top: 1px solid #dededf;
-  display: flex;
-  align-items: center;
+  padding: 0 24px;
+  box-shadow: 0px -2px 4px rgba(31, 35, 41, 0.08);
+
+  .select-svg-icon {
+    top: 8px;
+    left: 11px;
+  }
+
+  .flex-align-center {
+    white-space: nowrap;
+    .num {
+      margin: 0 4px;
+    }
+    .is-text {
+      margin-left: 16px;
+    }
+  }
+
+  .cascader-batch {
+    position: relative;
+    margin-left: 30%;
+    width: 176px;
+  }
 }
 
 .batch-area {
@@ -1855,6 +2047,11 @@ const treeProps = {
 </style>
 
 <style lang="less">
+.select-type {
+  .ed-input__wrapper {
+    padding-left: 32px;
+  }
+}
 .green-color {
   color: #04b49c;
 }

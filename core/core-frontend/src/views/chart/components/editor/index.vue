@@ -1431,7 +1431,7 @@ const autoInsert = element => {
                 style="width: 100%"
               >
                 <el-container direction="vertical">
-                  <el-scrollbar>
+                  <el-scrollbar class="drag_main_area">
                     <chart-style
                       v-if="chartStyleShow"
                       :properties="chartViewInstance.properties"
@@ -1466,7 +1466,7 @@ const autoInsert = element => {
                 style="width: 100%"
               >
                 <el-container direction="vertical">
-                  <el-scrollbar>
+                  <el-scrollbar class="drag_main_area">
                     <senior
                       :chart="view"
                       :quota-data="view.yAxis"
