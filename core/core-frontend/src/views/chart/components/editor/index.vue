@@ -912,10 +912,10 @@ const autoInsert = element => {
           <Fold class="collapse-icon" v-if="canvasCollapse.chartAreaCollapse" />
           <Expand class="collapse-icon" v-else />
         </el-icon>
-        <div class="collapse-title" v-show="canvasCollapse.chartAreaCollapse">
+        <div class="collapse-title" v-if="canvasCollapse.chartAreaCollapse">
           <span style="font-size: 14px">{{ view.title }}</span>
         </div>
-        <div v-show="!canvasCollapse.chartAreaCollapse" style="width: 240px" class="view-panel-row">
+        <div v-if="!canvasCollapse.chartAreaCollapse" style="width: 240px" class="view-panel-row">
           <el-row class="editor-title">
             <span style="font-size: 14px">{{ view.title }}</span>
           </el-row>
@@ -987,7 +987,7 @@ const autoInsert = element => {
                       </el-popover>
                     </el-row>
                     <!--area-->
-                    <el-row class="padding-lr drag-data" v-show="showAxis('area')">
+                    <el-row class="padding-lr drag-data" v-if="showAxis('area')">
                       <span class="data-area-label">
                         {{ t('chart.area') }}
                       </span>
@@ -1378,10 +1378,10 @@ const autoInsert = element => {
                   <el-footer>
                     <el-row class="result-style" :class="'result-style-' + themes">
                       <div class="result-style-input">
-                        <span v-show="view.type !== 'richTextView'">
+                        <span v-if="view.type !== 'richTextView'">
                           {{ t('chart.result_count') }}
                         </span>
-                        <span v-show="view.type !== 'richTextView'">
+                        <span v-if="view.type !== 'richTextView'">
                           <el-radio-group
                             :effect="themes"
                             v-model="view.resultMode"
@@ -1501,12 +1501,12 @@ const autoInsert = element => {
           <Fold class="collapse-icon" v-if="canvasCollapse.datasetAreaCollapse" />
           <Expand class="collapse-icon" v-else />
         </el-icon>
-        <div class="collapse-title" v-show="canvasCollapse.datasetAreaCollapse">
+        <div class="collapse-title" v-if="canvasCollapse.datasetAreaCollapse">
           <span style="font-size: 14px">数据集</span>
         </div>
         <el-container
           direction="vertical"
-          v-show="!canvasCollapse.datasetAreaCollapse"
+          v-if="!canvasCollapse.datasetAreaCollapse"
           class="dataset-area view-panel-row"
         >
           <el-header class="editor-title">
@@ -1883,7 +1883,8 @@ const autoInsert = element => {
     border-left: 1px solid @side-outline-border-color-light !important;
   }
   :deep(input) {
-    font-size: 12px !important;
+    font-size: 12px;
+    font-weight: 400;
   }
   :deep(.field-height) {
     border-top: 1px solid @side-outline-border-color-light !important;
@@ -2025,7 +2026,8 @@ span {
     }
 
     :deep(.ed-collapse-item__content) {
-      padding: 16px 8px 0 !important;
+      padding: 16px 8px 0;
+      border: none;
     }
 
     :deep(.style-dark) {
@@ -2258,6 +2260,9 @@ span {
     &:nth-child(n + 2) {
       border-top: 1px solid @side-outline-border-color;
     }
+    &:first-child {
+      border-top: none !important;
+    }
   }
 
   .editor-title {
@@ -2438,6 +2443,26 @@ span {
 }
 :deep(.ed-form-item__label) {
   color: @canvas-main-font-color;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+}
+:deep(.form-item-dark) {
+  .ed-form-item__label {
+    color: @canvas-main-font-color-dark;
+  }
+}
+:deep(.ed-checkbox__label) {
+  color: #1f2329;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 20px;
+}
+:deep(.ed-checkbox--dark) {
+  .ed-checkbox__label {
+    color: @dv-canvas-main-font-color;
+  }
 }
 :deep(.ed-checkbox) {
   color: @canvas-main-font-color;

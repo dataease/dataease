@@ -6,12 +6,6 @@ import { Icon } from '@/components/icon-custom'
 import { HandleMore } from '@/components/handle-more'
 import DeResourceGroupOpt from '@/views/common/DeResourceGroupOpt.vue'
 import { BusiTreeNode, BusiTreeRequest } from '@/models/tree/TreeNode'
-import { guid } from '@/views/visualized/data/dataset/form/util.js'
-import { save } from '@/api/visualization/dataVisualization'
-import {
-  DEFAULT_CANVAS_STYLE_DATA_LIGHT,
-  DEFAULT_CANVAS_STYLE_DATA_SCREEN_DARK
-} from '@/views/chart/components/editor/util/dataVisualiztion'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import DvHandleMore from '@/components/handle-more/src/DvHandleMore.vue'
@@ -214,7 +208,14 @@ const addOperation = (
   nodeType?: string,
   parentSelect?: boolean
 ) => {
-  resourceGroupOpt.value.optInit(nodeType, data || {}, cmd, parentSelect)
+  // 新建子节点的操作流程为先进行创建 后面选择所在目录
+  if (cmd === 'newLeaf') {
+    const baseUrl =
+      curCanvasType.value === 'dataV' ? '#/dvCanvas?opt=create' : '#/dashboard?opt=create'
+    window.open(baseUrl, '_blank')
+  } else {
+    resourceGroupOpt.value.optInit(nodeType, data || {}, cmd, parentSelect)
+  }
 }
 
 const resourceEdit = resourceId => {
@@ -222,40 +223,8 @@ const resourceEdit = resourceId => {
   window.open(baseUrl + resourceId, '_blank')
 }
 
-const resourceCreate = (pid, name) => {
-  // 新建基础信息
-  const newResourceId = guid()
-  const bashResourceInfo = {
-    id: newResourceId,
-    name: name,
-    pid: pid,
-    type: curCanvasType.value,
-    status: 1,
-    selfWatermarkStatus: 0
-  }
-  const canvasStyleDataNew =
-    curCanvasType.value === 'dashboard'
-      ? DEFAULT_CANVAS_STYLE_DATA_LIGHT
-      : DEFAULT_CANVAS_STYLE_DATA_SCREEN_DARK
-  const canvasInfo = {
-    canvasStyleData: JSON.stringify(canvasStyleDataNew),
-    componentData: JSON.stringify([]),
-    canvasViewInfo: {},
-    ...bashResourceInfo
-  }
-  save(canvasInfo).then(() => {
-    const baseUrl = curCanvasType.value === 'dataV' ? '#/dvCanvas?dvId=' : '#/dashboard?resourceId='
-    window.open(baseUrl + newResourceId, '_blank')
-    getTree()
-  })
-}
-
-const resourceOptFinish = param => {
-  if (param && param.opt === 'newLeaf') {
-    resourceCreate(param.pid, param.name)
-  } else {
-    getTree()
-  }
+const resourceOptFinish = () => {
+  getTree()
 }
 
 const getParentKeys = (tree, targetKey, parentKeys = []) => {

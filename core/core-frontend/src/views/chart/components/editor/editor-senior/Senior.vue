@@ -13,7 +13,10 @@ import { updateJumpSetActive } from '@/api/visualization/linkJump'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { updateLinkageActive } from '@/api/visualization/linkage'
 import { includesAny } from '../util/StringUtils'
+import { ElMessage } from 'element-plus-secondary'
+import { storeToRefs } from 'pinia'
 const dvMainStore = dvMainStoreWithOut()
+const { dvInfo } = storeToRefs(dvMainStore)
 
 const { t } = useI18n()
 const linkJumpRef = ref(null)
@@ -83,12 +86,20 @@ const showProperties = (prop: EditorProperty) => {
 }
 
 const linkJumpSetOpen = () => {
+  if (!dvInfo.value.id) {
+    ElMessage.warning('请先保存当前页面')
+    return
+  }
   //跳转设置需要先触发保存
   canvasSave(() => {
     linkJumpRef.value.dialogInit({ id: chart.value.id })
   })
 }
 const linkageSetOpen = () => {
+  if (!dvInfo.value.id) {
+    ElMessage.warning('请先保存当前页面')
+    return
+  }
   //跳转设置需要先触发保存
   canvasSave(() => {
     linkageRef.value.dialogInit({ id: chart.value.id })

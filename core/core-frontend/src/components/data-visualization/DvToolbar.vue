@@ -16,12 +16,14 @@ import { lockStoreWithOut } from '@/store/modules/data-visualization/lock'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { storeToRefs } from 'pinia'
 import Icon from '../icon-custom/src/Icon.vue'
-import { update, save, deleteLogic } from '@/api/visualization/dataVisualization'
+import { saveCanvas, updateCanvas } from '@/api/visualization/dataVisualization'
 import ComponentGroup from '@/components/visualization/ComponentGroup.vue'
 import UserViewGroup from '@/custom-component/component-group/UserViewGroup.vue'
 import MediaGroup from '@/custom-component/component-group/MediaGroup.vue'
 import TextGroup from '@/custom-component/component-group/TextGroup.vue'
 import CommonGroup from '@/custom-component/component-group/CommonGroup.vue'
+import DeResourceGroupOpt from '@/views/common/DeResourceGroupOpt.vue'
+import { canvasSave } from '@/utils/canvasUtils'
 
 const isShowPreview = ref(false)
 const isScreenshot = ref(false)
@@ -34,6 +36,7 @@ const composeStore = composeStoreWithOut()
 const lockStore = lockStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const { styleChangeTimes, snapshotIndex } = storeToRefs(snapshotStore)
+const resourceGroupOpt = ref(null)
 const {
   curComponent,
   canvasStyleData,
@@ -153,15 +156,25 @@ const edit = () => {
   dvMainStore.setEditMode('edit')
 }
 
-const saveCanvas = () => {
-  const canvasInfo = {
-    canvasStyleData: JSON.stringify(canvasStyleData.value),
-    componentData: JSON.stringify(componentData.value),
-    canvasViewInfo: canvasViewInfo.value,
-    ...dvInfo.value
+const resourceOptFinish = param => {
+  if (param && param.opt === 'newLeaf') {
+    dvInfo.value.pid = param.pid
+    dvInfo.value.name = param.name
+    saveCanvasWithCheck()
   }
-  save(canvasInfo).then(res => {
-    snapshotStore.resetStyleChangeTimes()
+}
+
+const saveCanvasWithCheck = () => {
+  if (dvInfo.value.pid === -1) {
+    const params = { name: dvInfo.value.name, leaf: true }
+    resourceGroupOpt.value.optInit('leaf', params, 'newLeaf', true)
+    return
+  }
+  saveResource()
+}
+
+const saveResource = () => {
+  canvasSave(() => {
     ElMessage.success('保存成功')
   })
 }
@@ -186,7 +199,10 @@ const editCanvasName = () => {
 }
 
 const backToMain = () => {
-  const url = '#/screen/index?dvId=' + dvInfo.value.id
+  let url = '#/screen/index'
+  if (dvInfo.value.id) {
+    url = url + '?dvId=' + dvInfo.value.id
+  }
   if (styleChangeTimes.value > 0) {
     ElMessageBox.confirm('当前的更改尚未保存，确定退出吗？', {
       confirmButtonType: 'danger',
@@ -202,7 +218,7 @@ const backToMain = () => {
 }
 
 eventBus.on('preview', preview)
-eventBus.on('save', saveCanvas)
+eventBus.on('save', saveCanvasWithCheck)
 eventBus.on('clearCanvas', clearCanvas)
 </script>
 
@@ -257,7 +273,7 @@ eventBus.on('clearCanvas', clearCanvas)
           >预览</el-button
         >
         <el-button
-          @click="saveCanvas()"
+          @click="saveCanvasWithCheck()"
           :disabled="styleChangeTimes < 1"
           style="float: right; margin-right: 12px"
           type="primary"
@@ -278,6 +294,11 @@ eventBus.on('clearCanvas', clearCanvas)
       type="primary"
       >编辑</el-button
     >
+    <de-resource-group-opt
+      @finish="resourceOptFinish"
+      cur-canvas-type="dataV"
+      ref="resourceGroupOpt"
+    />
   </div>
 </template>
 
