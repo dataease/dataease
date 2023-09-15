@@ -79,10 +79,13 @@ const quickCreate = (flag: number, hasAuth: boolean) => {
   }
 }
 const createPanel = () => {
-  console.error('please contact Jiahao Wang')
+  const baseUrl = '#/dashboard?opt=create'
+  window.open(baseUrl, '_blank')
 }
+
 const createScreen = () => {
-  console.error('please contact Jiahao Wang')
+  const baseUrl = '#/dvCanvas?opt=create'
+  window.open(baseUrl, '_blank')
 }
 const createDataset = () => {
   let routeData = router.resolve({

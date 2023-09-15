@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref, toRefs } from 'vue'
+import { computed, nextTick, onMounted, reactive, ref, toRefs } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
@@ -50,10 +50,16 @@ const viewEditorShow = computed(() => {
 // 全局监听按键事件
 onMounted(() => {
   initDataset()
-  const { resourceId, pid } = window.DataEaseBi || router.currentRoute.value.query
+  const { resourceId, opt } = window.DataEaseBi || router.currentRoute.value.query
   if (resourceId) {
     dataInitState.value = false
     initCanvasData(resourceId, function () {
+      dataInitState.value = true
+    })
+  } else if (opt && opt === 'create') {
+    dataInitState.value = false
+    dvMainStore.createInit('dashboard')
+    nextTick(() => {
       dataInitState.value = true
     })
   } else {

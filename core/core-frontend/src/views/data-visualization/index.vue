@@ -157,7 +157,7 @@ watch(
 
 onMounted(() => {
   initDataset()
-  const { dvId, pid } = window.DataEaseBi || router.currentRoute.value.query
+  const { dvId, opt } = window.DataEaseBi || router.currentRoute.value.query
   if (dvId) {
     state.canvasInitStatus = false
     initCanvasData(dvId, function () {
@@ -167,6 +167,14 @@ onMounted(() => {
         dvMainStore.setDataPrepareState(true)
         snapshotStore.recordSnapshot('dv-init')
       })
+    })
+  } else if (opt && opt === 'create') {
+    state.canvasInitStatus = false
+    dvMainStore.createInit('dataV')
+    nextTick(() => {
+      state.canvasInitStatus = true
+      dvMainStore.setDataPrepareState(true)
+      snapshotStore.recordSnapshot('dv-init')
     })
   } else {
     ElMessage.error('未获取资源ID')

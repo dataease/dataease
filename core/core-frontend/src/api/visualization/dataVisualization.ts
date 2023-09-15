@@ -24,16 +24,15 @@ export const queryTreeApi = async (data: BusiTreeRequest): Promise<IResponse> =>
   })
 }
 
-export const save = data => request.post({ url: '/dataVisualization/save', data })
+export const saveCanvas = data => request.post({ url: '/dataVisualization/saveCanvas', data })
 
-export const savaOrUpdateBase = data =>
-  request.post({ url: '/dataVisualization/savaOrUpdateBase', data })
+export const updateBase = data => request.post({ url: '/dataVisualization/updateBase', data })
+
+export const updateCanvas = data => request.post({ url: '/dataVisualization/updateCanvas', data })
 
 export const moveResource = data => request.post({ url: '/dataVisualization/move', data })
 
 export const copyResource = data => request.post({ url: '/dataVisualization/copy', data })
-
-export const update = data => request.post({ url: '/dataVisualization/update', data })
 
 export const deleteLogic = dvId => request.delete({ url: '/dataVisualization/deleteLogic/' + dvId })
 

@@ -276,7 +276,7 @@ const editQueryCriteria = () => {
 }
 
 const showEditPosition = computed(() => {
-  if (showPosition.value === 'canvasDataV') {
+  if (showPosition.value === 'canvas') {
     const baseLeft = element.value.x - 1
     const baseRight = pcMatrixCount.value.x - (element.value.x + element.value.sizeX - 1)
     if (baseLeft === 0 && baseRight === 0) {
