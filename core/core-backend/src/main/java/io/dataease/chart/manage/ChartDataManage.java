@@ -39,6 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -1317,5 +1318,20 @@ public class ChartDataManage {
         allFields.addAll(dimensionList);
         allFields.addAll(quotaList);
         return allFields.stream().filter(ele -> ele.getId() != -1L).collect(Collectors.toList());
+    }
+
+    public void saveChartViewFromVisualization(String checkData,Long sceneId,Map<Long, ChartViewDTO> chartViewsInfo ){
+        if (!CollectionUtils.isEmpty(chartViewsInfo)) {
+            chartViewsInfo.forEach((key, chartViewDTO) -> {
+                if (checkData.indexOf(chartViewDTO.getId() + "") > -1) {
+                    try {
+                        chartViewDTO.setSceneId(sceneId);
+                        chartViewManege.save(chartViewDTO);
+                    } catch (Exception e) {
+                        DEException.throwException(e);
+                    }
+                }
+            });
+        }
     }
 }

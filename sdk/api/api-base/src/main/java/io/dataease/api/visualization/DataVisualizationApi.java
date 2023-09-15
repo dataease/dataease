@@ -21,17 +21,19 @@ import static io.dataease.constant.AuthResourceEnum.PANEL;
 public interface DataVisualizationApi {
     /**
      * 查询数据可视化大屏
-     *
      * @return
      */
     @GetMapping("/findById/{dvId}")
     DataVisualizationVO findById(@PathVariable("dvId") Long dvId);
 
-    @PostMapping("/save")
-    void save(@RequestBody DataVisualizationBaseRequest request);
+    @PostMapping("/saveCanvas")
+    String saveCanvas(@RequestBody DataVisualizationBaseRequest request);
 
-    @PostMapping("/update")
-    void update(@RequestBody DataVisualizationBaseRequest request);
+    @PostMapping("/updateCanvas")
+    void updateCanvas(@RequestBody DataVisualizationBaseRequest request);
+
+    @PostMapping("/updateBase")
+    void updateBase(@RequestBody DataVisualizationBaseRequest request);
 
     @DeleteMapping("/deleteLogic/{dvId}")
     void deleteLogic(@PathVariable("dvId") Long dvId);
@@ -39,9 +41,6 @@ public interface DataVisualizationApi {
     @DePermit(value = {"m:read"}, busiFlag = "#p0.busiFlag")
     @PostMapping("/tree")
     List<BusiNodeVO> tree(@RequestBody BusiNodeRequest request);
-
-    @PostMapping("/savaOrUpdateBase")
-    void savaOrUpdateBase(@RequestBody DataVisualizationBaseRequest request);
 
     @PostMapping("/move")
     void move(@RequestBody DataVisualizationBaseRequest request);

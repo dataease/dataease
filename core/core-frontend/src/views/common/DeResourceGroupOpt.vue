@@ -8,7 +8,8 @@ import {
   moveResource,
   queryTreeApi,
   ResourceOrFolder,
-  savaOrUpdateBase
+  updateBase,
+  saveCanvas
 } from '@/api/visualization/dataVisualization'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { ElMessage } from 'element-plus-secondary'
@@ -46,7 +47,8 @@ const sourceLabel = computed(() => (curCanvasType.value === 'dataV' ? '数据大
 
 const methodMap = {
   move: moveResource,
-  copy: copyResource
+  copy: copyResource,
+  newFolder: saveCanvas
 }
 
 const filterNode = (value: string, data: BusiTreeNode) => {
@@ -73,11 +75,11 @@ const nameValidator = (_, value, callback) => {
 }
 
 const showPid = computed(() => {
-  return ['newLeaf', 'copy'].includes(cmd.value) && showParentSelected.value
+  return ['newLeaf', 'copy', 'newLeafAfter'].includes(cmd.value) && showParentSelected.value
 })
 
 const showName = computed(() => {
-  return cmd.value !== 'move'
+  return !['newLeafAfter', 'move'].includes(cmd.value)
 })
 
 const rules = {
@@ -136,7 +138,8 @@ const getDialogTitle = exec => {
     newLeaf: props.curCanvasType === 'dataV' ? '新建数据大屏' : '新建仪表板',
     move: '移动到',
     copy: '复制' + sourceLabel.value,
-    rename: '重命名'
+    rename: '重命名',
+    newLeafAfter: '所属文件夹'
   }[exec]
 }
 const placeholder = ref('')
@@ -155,8 +158,8 @@ const optInit = (type, data: BusiTreeNode, exec, parentSelect = false) => {
   dialogTitle.value = getDialogTitle(exec) + ('rename' === exec ? optSource : '')
   resourceFormNameLabel.value = (exec === 'move' ? '' : optSource) + '名称'
   const request = { busiFlag: curCanvasType.value, leaf: false, weight: 3 }
-  if (['newLeaf', 'newFolder'].includes(exec)) {
-    resourceForm.name = ''
+  if (['newLeaf', 'newFolder', 'newLeafAfter'].includes(exec)) {
+    resourceForm.name = data.name ? data.name : ''
   } else if ('copy' === exec) {
     resourceForm.name = data.name + '-copy'
   } else {
@@ -223,7 +226,7 @@ const saveResource = () => {
           params.pid = resourceForm.pid || pid.value || '0'
           break
       }
-      if (['newLeaf', 'newFolder', 'rename', 'move', 'copy'].includes(cmd.value)) {
+      if (['newLeaf', 'newLeafAfter', 'newFolder', 'rename', 'move', 'copy'].includes(cmd.value)) {
         await dvNameCheck({ opt: cmd.value, ...params })
       }
       if (cmd.value === 'newLeaf') {
@@ -235,7 +238,7 @@ const saveResource = () => {
           return
         }
         loading.value = true
-        const method = methodMap[cmd.value] ? methodMap[cmd.value] : savaOrUpdateBase
+        const method = methodMap[cmd.value] ? methodMap[cmd.value] : updateBase
         method(params)
           .then(data => {
             resourceDialogShow.value = false

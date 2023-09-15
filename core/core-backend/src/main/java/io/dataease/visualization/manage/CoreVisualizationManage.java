@@ -46,7 +46,7 @@ public class CoreVisualizationManage {
     @XpackInteract(value = "visualizationResourceTree", replace = true)
     public List<BusiNodeVO> tree(BusiNodeRequest request) {
         List<VisualizationNodeBO> nodes = new ArrayList<>();
-        if (ObjectUtils.isEmpty(request.getLeaf()) || !request.getLeaf()){
+        if (ObjectUtils.isEmpty(request.getLeaf()) || !request.getLeaf()) {
             nodes.add(rootNode());
         }
         QueryWrapper<Object> queryWrapper = new QueryWrapper<>();
@@ -84,22 +84,29 @@ public class CoreVisualizationManage {
 
     @XpackInteract(value = "visualizationResourceTree", before = false)
     public void move(DataVisualizationBaseRequest request) {
-        DataVisualizationInfo visualizationInfo = new DataVisualizationInfo();
-        BeanUtils.copyBean(visualizationInfo, request);
-        if (ObjectUtils.isEmpty(visualizationInfo.getId())) {
-            DEException.throwException("resource not exist");
+        if(!request.getMoveFromUpdate()){
+            DataVisualizationInfo visualizationInfo = new DataVisualizationInfo();
+            BeanUtils.copyBean(visualizationInfo, request);
+            if (ObjectUtils.isEmpty(visualizationInfo.getId())) {
+                DEException.throwException("resource not exist");
+            }
+            visualizationInfo.setUpdateTime(System.currentTimeMillis());
+            mapper.updateById(visualizationInfo);
         }
-        visualizationInfo.setUpdateTime(System.currentTimeMillis());
-        mapper.updateById(visualizationInfo);
     }
 
     @XpackInteract(value = "visualizationResourceTree", before = false)
-    public void innerSave(DataVisualizationInfo visualizationInfo) {
+    public Long innerSave(DataVisualizationInfo visualizationInfo) {
+        Long id = IDUtils.snowID();
+        visualizationInfo.setId(id);
         visualizationInfo.setDeleteFlag(DataVisualizationConstants.DELETE_FLAG.AVAILABLE);
         visualizationInfo.setCreateBy(AuthUtils.getUser().getUserId().toString());
+        visualizationInfo.setUpdateBy(AuthUtils.getUser().getUserId().toString());
         visualizationInfo.setCreateTime(System.currentTimeMillis());
+        visualizationInfo.setUpdateTime(System.currentTimeMillis());
         visualizationInfo.setOrgId(AuthUtils.getUser().getDefaultOid());
         mapper.insert(visualizationInfo);
+        return id;
     }
 
     @XpackInteract(value = "visualizationResourceTree", before = false)
@@ -121,8 +128,8 @@ public class CoreVisualizationManage {
         return new VisualizationNodeBO(po.getId(), po.getName(), StringUtils.equals(po.getNodeType(), "leaf"), 3, po.getPid(), 0);
     }
 
-    public List<VisualizationResourceVO> findRecent(Long pageNum,Long pageCount,VisualizationWorkbranchQueryRequest request){
+    public List<VisualizationResourceVO> findRecent(Long pageNum, Long pageCount, VisualizationWorkbranchQueryRequest request) {
         Long uid = AuthUtils.getUser().getUserId();
-        return extDataVisualizationMapper.findRecent(pageNum,pageCount,uid,request.getType(),request.getKeyword());
+        return extDataVisualizationMapper.findRecent(pageNum, pageCount, uid, request.getType(), request.getKeyword());
     }
 }

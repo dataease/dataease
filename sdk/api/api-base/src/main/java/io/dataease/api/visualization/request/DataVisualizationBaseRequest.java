@@ -8,4 +8,6 @@ public class DataVisualizationBaseRequest extends DataVisualizationVO {
 
     private String opt;
 
+    private Boolean moveFromUpdate = false;
+
 }
