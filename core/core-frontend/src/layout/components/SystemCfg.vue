@@ -1,8 +1,10 @@
 <script lang="ts" setup>
 import { useRouter } from 'vue-router'
-const { push } = useRouter()
+const { push, resolve } = useRouter()
 const redirectUser = () => {
-  push('/system/user')
+  const sysMenu = resolve('/system')
+  const kidPath = sysMenu.matched[0].children[0].path
+  push(`${sysMenu.path}/${kidPath}`)
 }
 </script>
 

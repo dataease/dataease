@@ -770,6 +770,7 @@ onMounted(() => {
 <style lang="less" scoped>
 .shape {
   position: absolute;
+  transform: translate(0);
 }
 
 .shape-inner {
