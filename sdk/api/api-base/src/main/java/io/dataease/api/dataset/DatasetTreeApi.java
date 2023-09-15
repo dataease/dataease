@@ -28,11 +28,11 @@ public interface DatasetTreeApi {
      * @return
      * @throws Exception
      */
-    @DePermit({"m:read", "#p0.id+':manage'"})
+    @DePermit({"#p0.id+':manage'"})
     @PostMapping("save")
     DatasetNodeDTO save(@RequestBody DatasetGroupInfoDTO dto) throws Exception;
 
-    @DePermit({"m:read", "#p0.id+':manage'"})
+    @DePermit({"#p0.id+':manage'"})
     @PostMapping("rename")
     DatasetNodeDTO rename(@RequestBody DatasetGroupInfoDTO dto) throws Exception;
 
@@ -43,23 +43,21 @@ public interface DatasetTreeApi {
      * @return
      * @throws Exception
      */
-    @DePermit({"m:read", "#p0.pid+':manage'"})
+    @DePermit({"#p0.pid+':manage'"})
     @PostMapping("create")
     DatasetNodeDTO create(@RequestBody DatasetGroupInfoDTO dto) throws Exception;
 
-    @DePermit({"m:read", "#p0.id+':manage'", "#p0.pid+':manage'"})
+    @DePermit({"#p0.id+':manage'", "#p0.pid+':manage'"})
     @PostMapping("move")
     DatasetNodeDTO move(@RequestBody DatasetGroupInfoDTO dto) throws Exception;
 
-    @DePermit({"m:read", "#p0+':manage'"})
+    @DePermit({"#p0+':manage'"})
     @PostMapping("delete/{id}")
     void delete(@PathVariable("id") Long id);
 
-    @DePermit({"m:read"})
     @PostMapping("tree")
     List<BusiNodeVO> tree(@RequestBody BusiNodeRequest request);
 
-    @DePermit({"m:read"})
     @GetMapping("/barInfo/{id}")
     DataSetBarVO barInfo(@PathVariable("id") Long id);
 

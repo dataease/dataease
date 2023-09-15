@@ -8,7 +8,6 @@ import io.dataease.auth.DePermit;
 import io.dataease.exception.DEException;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
-import io.dataease.request.BaseGridRequest;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,11 +25,9 @@ public interface DatasourceApi {
      * @param keyWord 过滤关键字
      * @return
      */
-    @DePermit("m:read")
     @GetMapping("/query/{keyWord}")
     List<DatasourceDTO> query(@PathVariable("keyWord") String keyWord);
 
-    @DePermit("m:read")
     @PostMapping("/save")
     DatasourceDTO save(@RequestBody DatasourceDTO dataSourceDTO) throws DEException;
 
@@ -43,30 +40,29 @@ public interface DatasourceApi {
     @PostMapping("/getSchema")
     List<String> getSchema(@RequestBody DatasourceDTO dataSourceDTO) throws DEException;
 
-    @DePermit({"m:read", "#p0+':manage'"})
+    @DePermit({"#p0+':manage'"})
     @GetMapping("/validate/{datasourceId}")
     DatasourceDTO validate(@PathVariable("datasourceId") Long datasourceId) throws DEException;
 
-    @DePermit({"m:read", "#p0+':manage'"})
+    @DePermit({"#p0+':manage'"})
     @GetMapping("/delete/{datasourceId}")
     void delete(@PathVariable("datasourceId") Long datasourceId) throws DEException;
 
-    @DePermit({"m:read", "#p0+':read'"})
+    @DePermit({"#p0+':read'"})
     @GetMapping("/get/{datasourceId}")
     DatasourceDTO get(@PathVariable("datasourceId") Long datasourceId) throws DEException;
 
     @PostMapping("/getTableField")
-    List<TableField> getTableField(@RequestBody  Map<String,String> req) throws DEException;
+    List<TableField> getTableField(@RequestBody Map<String, String> req) throws DEException;
 
 
-    @DePermit("m:read")
     @PostMapping("tree")
     List<BusiNodeVO> tree(@RequestBody BusiNodeRequest request) throws DEException;
 
 
-    @DePermit({"m:read", "#p0.datasourceId+':read'"})
+    @DePermit({"#p0.datasourceId+':read'"})
     @PostMapping("getTables")
-    List<DatasetTableDTO> getTables(@RequestBody  DatasetTableDTO datasetTableDTO) throws DEException;
+    List<DatasetTableDTO> getTables(@RequestBody DatasetTableDTO datasetTableDTO) throws DEException;
 
     @PostMapping("/checkApiDatasource")
     ApiDefinition checkApiDatasource(@RequestBody Map<String, String> data) throws DEException;

@@ -19,6 +19,11 @@ const props = defineProps({
         propValue: null
       }
     }
+  },
+  showPosition: {
+    type: String,
+    required: false,
+    default: 'canvas'
   }
 })
 
@@ -35,6 +40,7 @@ const { propValue, element } = toRefs(props)
         :key="index"
         :config="item"
         :style="item.groupStyle"
+        :show-position="showPosition"
       />
     </div>
   </div>
