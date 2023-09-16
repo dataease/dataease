@@ -1,20 +1,9 @@
 <script setup lang="ts">
-import { PropType, reactive, watch } from 'vue'
-import { ColorScheme } from '@/components/color-scheme'
-import {
-  ElCheckbox,
-  ElForm,
-  ElFormItem,
-  ElInputNumber,
-  ElOption,
-  ElSelect
-} from 'element-plus-secondary'
-import {
-  COLOR_CASES,
-  COLOR_PANEL,
-  DEFAULT_BASIC_STYLE
-} from '@/views/chart/components/editor/util/chart'
+import { onMounted, PropType, reactive, watch } from 'vue'
+import { COLOR_PANEL, DEFAULT_BASIC_STYLE } from '@/views/chart/components/editor/util/chart'
 import { useI18n } from '@/hooks/web/useI18n'
+import CustomColorStyleSelect from '@/views/chart/components/editor/editor-style/components/CustomColorStyleSelect.vue'
+import { ElFormItem, ElInputNumber } from 'element-plus-secondary'
 
 const { t } = useI18n()
 const props = defineProps({
@@ -31,7 +20,6 @@ const props = defineProps({
   }
 })
 const showProperty = prop => props.propertyInner?.includes(prop)
-const colorCases = COLOR_CASES
 const predefineColors = COLOR_PANEL
 const state = reactive({
   basicStyleForm: JSON.parse(JSON.stringify(DEFAULT_BASIC_STYLE)) as ChartBasicStyle,
@@ -56,27 +44,6 @@ const init = () => {
     state.customColor = state.basicStyleForm.colors[0]
     state.colorIndex = 0
   }
-}
-const changeColorOption = () => {
-  const items = colorCases.filter(ele => {
-    return ele.value === state.basicStyleForm.colorScheme
-  })
-  state.basicStyleForm.colors = [...items[0].colors]
-
-  state.customColor = state.basicStyleForm.colors[0]
-  state.colorIndex = 0
-
-  changeBasicStyle()
-}
-const resetCustomColor = () => {
-  changeColorOption()
-}
-const switchColor = index => {
-  state.colorIndex = index
-}
-const switchColorCase = () => {
-  state.basicStyleForm.colors[state.colorIndex] = state.customColor
-  changeBasicStyle()
 }
 
 const pageSizeOptions = [
@@ -107,130 +74,67 @@ const mapStyleOptions = [
   { name: t('chart.map_style_blue'), value: 'blue' },
   { name: t('chart.map_style_wine'), value: 'wine' }
 ]
-init()
+
+onMounted(() => {
+  init()
+})
 </script>
 <template>
-  <el-form :model="state.basicStyleForm" label-width="80px" size="small">
-    <el-form-item :label="t('chart.color_case')" class="form-item" v-show="showProperty('colors')">
-      <el-popover placement="bottom" width="400" trigger="click" :persistent="false">
-        <template #reference>
-          <div :style="{ cursor: 'pointer', marginTop: '2px', width: '180px' }">
-            <span
-              v-for="(c, index) in state.basicStyleForm.colors"
-              :key="index"
-              :style="{
-                width: '20px',
-                height: '20px',
-                display: 'inline-block',
-                backgroundColor: c
-              }"
-            />
-          </div>
-        </template>
-
-        <div style="padding: 6px 10px">
-          <div>
-            <span class="color-label">{{ t('chart.system_case') }}</span>
-            <el-select
-              v-model="state.basicStyleForm.colorScheme"
-              :placeholder="t('chart.pls_slc_color_case')"
-              size="small"
-              @change="changeColorOption()"
-            >
-              <el-option
-                v-for="option in colorCases"
-                :key="option.value"
-                :label="option.name"
-                :value="option.value"
-                style="display: flex; align-items: center"
-              >
-                <div style="float: left">
-                  <span
-                    v-for="(c, index) in option.colors"
-                    :key="index"
-                    :style="{
-                      width: '20px',
-                      height: '20px',
-                      float: 'left',
-                      backgroundColor: c
-                    }"
-                  />
-                </div>
-                <span style="margin-left: 4px">{{ option.name }}</span>
-              </el-option>
-            </el-select>
-            <el-button size="small" type="text" style="margin-left: 2px" @click="resetCustomColor"
-              >{{ t('chart.reset') }}
-            </el-button>
-          </div>
-          <!--自定义配色方案-->
-          <div>
-            <div style="display: flex; align-items: center; margin-top: 10px">
-              <span class="color-label">{{ t('chart.custom_case') }}</span>
-              <span>
-                <el-radio-group v-model="state.customColor" class="color-type">
-                  <el-radio
-                    v-for="(c, index) in state.basicStyleForm.colors"
-                    :key="index"
-                    :label="c"
-                    style="padding: 2px"
-                    @click="switchColor(index)"
-                  >
-                    <span
-                      :style="{
-                        width: '20px',
-                        height: '20px',
-                        display: 'inline-block',
-                        'border-radius': '3px',
-                        backgroundColor: c
-                      }"
-                    />
-                  </el-radio>
-                </el-radio-group>
-              </span>
-            </div>
-            <div style="display: flex; align-items: center; margin-top: 10px">
-              <span class="color-label" />
-              <span>
-                <el-color-picker
-                  v-model="state.customColor"
-                  class="color-picker-style"
-                  :predefine="predefineColors"
-                  @change="switchColorCase"
-                />
-              </span>
-            </div>
-          </div>
-        </div>
-      </el-popover>
-    </el-form-item>
-    <el-form-item
-      :label="t('chart.gradient')"
-      class="form-item form-item-slider"
-      v-show="showProperty('gradient')"
-    >
-      <el-checkbox v-model="state.basicStyleForm.gradient" @change="changeBasicStyle()" />
-    </el-form-item>
-    <el-form-item
-      :label="t('chart.not_alpha')"
-      class="form-item form-item-slider"
-      v-show="showProperty('alpha')"
-    >
-      <el-input-number
-        :effect="props.themes"
-        v-model="state.basicStyleForm.alpha"
-        :min="0"
-        :max="100"
-        size="small"
-        controls-position="right"
-        @change="changeBasicStyle()"
+  <div style="width: 100%">
+    <template v-if="showProperty('colors')">
+      <custom-color-style-select
+        v-model="state"
+        :themes="themes"
+        @change-basic-style="changeBasicStyle"
       />
+    </template>
+
+    <el-form-item class="form-item" :class="'form-item-' + themes" v-if="showProperty('gradient')">
+      <el-checkbox
+        :effect="themes"
+        v-model="state.basicStyleForm.gradient"
+        @change="changeBasicStyle()"
+      >
+        {{ $t('chart.gradient') }}{{ $t('chart.color') }}
+      </el-checkbox>
     </el-form-item>
+
+    <div class="alpha-setting" v-if="showProperty('alpha')">
+      <label class="alpha-label" :class="{ dark: 'dark' === themes }">{{
+        t('chart.not_alpha')
+      }}</label>
+      <el-row style="flex: 1" gutter="8">
+        <el-col :span="13">
+          <el-form-item class="form-item alpha-slider" :class="'form-item-' + themes">
+            <el-slider :effect="props.themes" v-model="state.basicStyleForm.alpha" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="11">
+          <el-form-item class="form-item" :class="'form-item-' + themes">
+            <el-input
+              type="number"
+              :effect="props.themes"
+              v-model="state.basicStyleForm.alpha"
+              :min="0"
+              :max="100"
+              style="width: 100%"
+              class="alpha-input-number"
+              :controls="false"
+              @change="changeBasicStyle()"
+            >
+              <template #suffix> % </template>
+            </el-input>
+          </el-form-item>
+        </el-col>
+      </el-row>
+    </div>
+
     <!--table start-->
     <el-form-item
       :label="t('chart.table_column_width_config')"
       class="form-item"
-      v-show="showProperty('tableColumnMode')"
+      :class="'form-item-' + themes"
+      v-if="showProperty('tableColumnMode')"
     >
       <el-radio-group v-model="state.basicStyleForm.tableColumnMode" @change="changeBasicStyle()">
         <el-radio label="adapt" :effect="props.themes">
@@ -245,8 +149,9 @@ init()
       </el-tooltip>
     </el-form-item>
     <el-form-item
-      v-show="showProperty('tableColumnMode') && state.basicStyleForm.tableColumnMode === 'custom'"
+      v-if="showProperty('tableColumnMode') && state.basicStyleForm.tableColumnMode === 'custom'"
       class="form-item form-item-slider"
+      :class="'form-item-' + themes"
     >
       <el-input-number
         :effect="props.themes"
@@ -259,7 +164,8 @@ init()
     <el-form-item
       :label="t('chart.table_border_color')"
       class="form-item"
-      v-show="showProperty('tableBorderColor')"
+      :class="'form-item-' + themes"
+      v-if="showProperty('tableBorderColor')"
     >
       <el-color-picker
         :persistent="false"
@@ -272,7 +178,8 @@ init()
     <el-form-item
       :label="t('chart.table_scroll_bar_color')"
       class="form-item"
-      v-show="showProperty('tableScrollBarColor')"
+      :class="'form-item-' + themes"
+      v-if="showProperty('tableScrollBarColor')"
     >
       <el-color-picker
         :persistent="false"
@@ -287,7 +194,8 @@ init()
     <el-form-item
       :label="t('chart.table_page_mode')"
       class="form-item"
-      v-show="showProperty('tablePageMode')"
+      :class="'form-item-' + themes"
+      v-if="showProperty('tablePageMode')"
     >
       <el-select
         :effect="props.themes"
@@ -300,9 +208,10 @@ init()
       </el-select>
     </el-form-item>
     <el-form-item
-      v-show="showProperty('tablePageMode') && state.basicStyleForm.tablePageMode === 'page'"
+      v-if="showProperty('tablePageMode') && state.basicStyleForm.tablePageMode === 'page'"
       :label="t('chart.table_page_size')"
       class="form-item"
+      :class="'form-item-' + themes"
     >
       <el-select
         :effect="props.themes"
@@ -323,7 +232,8 @@ init()
     <el-form-item
       :label="t('chart.chart_style')"
       class="form-item"
-      v-show="showProperty('gaugeStyle')"
+      :class="'form-item-' + themes"
+      v-if="showProperty('gaugeStyle')"
     >
       <el-select
         :effect="props.themes"
@@ -343,14 +253,15 @@ init()
     <el-checkbox
       v-model="state.basicStyleForm.barDefault"
       @change="changeBasicStyle()"
-      v-show="showProperty('barDefault')"
+      v-if="showProperty('barDefault')"
     >
       {{ t('chart.adapt') }}
     </el-checkbox>
     <el-form-item
-      v-show="showProperty('barDefault') && !state.basicStyleForm.barDefault"
+      v-if="showProperty('barDefault') && !state.basicStyleForm.barDefault"
       :label="t('chart.bar_gap')"
       class="form-item form-item-slider"
+      :class="'form-item-' + themes"
     >
       <el-input-number
         :effect="props.themes"
@@ -368,14 +279,14 @@ init()
     <el-form-item
       :label="t('chart.line_width')"
       class="form-item form-item-slider"
-      v-show="showProperty('lineWidth')"
+      :class="'form-item-' + themes"
+      v-if="showProperty('lineWidth')"
     >
       <el-input-number
         :effect="props.themes"
         v-model="state.basicStyleForm.lineWidth"
         :min="0"
         :max="10"
-        size="small"
         controls-position="right"
         @change="changeBasicStyle()"
       />
@@ -383,7 +294,8 @@ init()
     <el-form-item
       :label="t('chart.line_symbol')"
       class="form-item"
-      v-show="showProperty('lineSymbol')"
+      :class="'form-item-' + themes"
+      v-if="showProperty('lineSymbol')"
     >
       <el-select
         :effect="props.themes"
@@ -402,14 +314,14 @@ init()
     <el-form-item
       :label="t('chart.line_symbol_size')"
       class="form-item form-item-slider"
-      v-show="showProperty('lineSymbolSize')"
+      :class="'form-item-' + themes"
+      v-if="showProperty('lineSymbolSize')"
     >
       <el-input-number
         :effect="props.themes"
         v-model="state.basicStyleForm.lineSymbolSize"
         :min="0"
         :max="20"
-        size="small"
         controls-position="right"
         @change="changeBasicStyle()"
       />
@@ -417,16 +329,20 @@ init()
     <el-checkbox
       v-model="state.basicStyleForm.lineSmooth"
       @change="changeBasicStyle()"
-      v-show="showProperty('lineSmooth')"
+      v-if="showProperty('lineSmooth')"
     >
       {{ t('chart.line_smooth') }}
     </el-checkbox>
     <!--line area end-->
     <!--radar begin-->
-    <el-form-item :label="t('chart.shape')" class="form-item" v-show="showProperty('radarShape')">
+    <el-form-item
+      :label="t('chart.shape')"
+      class="form-item"
+      :class="'form-item-' + themes"
+      v-if="showProperty('radarShape')"
+    >
       <el-radio-group
         v-model="state.basicStyleForm.radarShape"
-        size="small"
         @change="changeBasicStyle('radarShape')"
       >
         <el-radio :effect="themes" label="polygon">{{ t('chart.polygon') }}</el-radio>
@@ -435,7 +351,12 @@ init()
     </el-form-item>
     <!--radar end-->
     <!--flow map begin-->
-    <el-form-item :label="t('chart.map_style')" class="form-item" v-show="showProperty('mapStyle')">
+    <el-form-item
+      :label="t('chart.map_style')"
+      class="form-item"
+      :class="'form-item-' + themes"
+      v-if="showProperty('mapStyle')"
+    >
       <el-select
         :effect="props.themes"
         v-model="state.basicStyleForm.mapStyle"
@@ -454,7 +375,8 @@ init()
     <el-form-item
       :label="t('chart.bubble_symbol')"
       class="form-item"
-      v-show="showProperty('scatterSymbol')"
+      :class="'form-item-' + themes"
+      v-if="showProperty('scatterSymbol')"
     >
       <el-select
         :effect="props.themes"
@@ -473,7 +395,8 @@ init()
     <el-form-item
       :label="t('chart.bubble_size')"
       class="form-item form-item-slider"
-      v-show="showProperty('scatterSymbolSize')"
+      :class="'form-item-' + themes"
+      v-if="showProperty('scatterSymbolSize')"
     >
       <el-input-number
         :effect="props.themes"
@@ -489,7 +412,8 @@ init()
     <el-form-item
       :label="t('chart.area_border_color')"
       class="form-item"
-      v-show="showProperty('areaBorderColor')"
+      :class="'form-item-' + themes"
+      v-if="showProperty('areaBorderColor')"
     >
       <el-color-picker
         :persistent="false"
@@ -502,7 +426,8 @@ init()
     <el-form-item
       :label="t('chart.area_base_color')"
       class="form-item"
-      v-show="showProperty('areaBaseColor')"
+      :class="'form-item-' + themes"
+      v-if="showProperty('areaBaseColor')"
     >
       <el-color-picker
         :persistent="false"
@@ -515,7 +440,8 @@ init()
     <el-form-item
       :label="t('chart.suspension')"
       class="form-item"
-      v-show="showProperty('suspension')"
+      :class="'form-item-' + themes"
+      v-if="showProperty('suspension')"
     >
       <el-checkbox
         v-model="state.basicStyleForm.suspension"
@@ -528,7 +454,8 @@ init()
     <el-form-item
       :label="t('chart.bubble_symbol')"
       class="form-item"
-      v-show="showProperty('mapSymbol')"
+      :class="'form-item-' + themes"
+      v-if="showProperty('mapSymbol')"
     >
       <el-select
         :effect="props.themes"
@@ -547,7 +474,8 @@ init()
     <el-form-item
       :label="t('chart.bubble_size')"
       class="form-item form-item-slider"
-      v-show="showProperty('mapSymbolSize')"
+      :class="'form-item-' + themes"
+      v-if="showProperty('mapSymbolSize')"
     >
       <el-input-number
         :effect="props.themes"
@@ -561,7 +489,8 @@ init()
     <el-form-item
       :label="t('chart.not_alpha')"
       class="form-item form-item-slider"
-      v-show="showProperty('mapSymbolOpacity')"
+      :class="'form-item-' + themes"
+      v-if="showProperty('mapSymbolOpacity')"
     >
       <el-input-number
         :effect="props.themes"
@@ -573,9 +502,10 @@ init()
       />
     </el-form-item>
     <el-form-item
-      v-show="showProperty('mapSymbol') && state.basicStyleForm.mapSymbol !== 'marker'"
+      v-if="showProperty('mapSymbol') && state.basicStyleForm.mapSymbol !== 'marker'"
       :label="t('visualization.border_color')"
       class="form-item form-item-slider"
+      :class="'form-item-' + themes"
     >
       <el-input-number
         :effect="props.themes"
@@ -590,7 +520,8 @@ init()
     <el-form-item
       :label="t('chart.pie_inner_radius_percent')"
       class="form-item"
-      v-show="showProperty('innerRadius')"
+      :class="'form-item-' + themes"
+      v-if="showProperty('innerRadius')"
     >
       <el-slider
         v-model="state.basicStyleForm.innerRadius"
@@ -603,7 +534,8 @@ init()
     <el-form-item
       :label="t('chart.pie_outer_radius')"
       class="form-item form-item-slider"
-      v-show="showProperty('radius')"
+      :class="'form-item-' + themes"
+      v-if="showProperty('radius')"
     >
       <el-slider
         v-model="state.basicStyleForm.radius"
@@ -614,16 +546,13 @@ init()
       />
     </el-form-item>
     <!-- pie/rose end -->
-  </el-form>
+  </div>
 </template>
 <style scoped lang="less">
-.form-item-slider :deep(.ed-form-item__label) {
-  font-size: 12px;
-  line-height: 38px;
-}
-
-.form-item :deep(.ed-form-item__label) {
-  font-size: 12px;
+.form-item {
+  :deep(.ed-input) {
+    --ed-input-height: 28px;
+  }
 }
 
 .color-picker-style {
@@ -665,5 +594,43 @@ init()
   overflow-y: auto;
   padding: 4px 12px;
   border: 1px solid #e6e6e6;
+}
+.alpha-setting {
+  display: flex;
+  width: 100%;
+
+  .alpha-slider {
+    padding: 0 8px;
+    :deep(.ed-slider__button-wrapper) {
+      --ed-slider-button-wrapper-size: 36px;
+      --ed-slider-button-size: 16px;
+    }
+  }
+
+  .alpha-label {
+    padding-right: 8px;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    height: 32px;
+    line-height: 32px;
+    display: inline-flex;
+    align-items: flex-start;
+
+    &.dark {
+      color: #a6a6a6;
+    }
+  }
+  .alpha-input-number {
+    :deep(input) {
+      -webkit-appearance: none;
+      -moz-appearance: textfield;
+
+      &::-webkit-inner-spin-button,
+      &::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+      }
+    }
+  }
 }
 </style>

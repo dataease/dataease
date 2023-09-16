@@ -265,13 +265,6 @@ const linkageActiveChange = () => {
 </template>
 
 <style lang="less" scoped>
-.senior-light {
-  border-top: 1px solid @side-outline-border-color-light;
-}
-
-.senior-dark {
-  border-top: 1px solid @side-outline-border-color;
-}
 .ed-row {
   display: block;
 }
@@ -316,5 +309,12 @@ span {
   overflow: auto;
   border-right: 1px solid #e6e6e6;
   height: 100%;
+}
+:deep(.ed-collapse-item) {
+  &:first-child {
+    .ed-collapse-item__header {
+      border-top: none;
+    }
+  }
 }
 </style>
