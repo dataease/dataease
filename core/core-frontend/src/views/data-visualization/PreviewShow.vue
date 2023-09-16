@@ -200,6 +200,8 @@ onBeforeMount(() => {
         display: flex;
         overflow-y: auto;
         align-items: center;
+        flex-direction: column;
+        justify-content: center; /* 上下居中 */
       }
     }
   }
