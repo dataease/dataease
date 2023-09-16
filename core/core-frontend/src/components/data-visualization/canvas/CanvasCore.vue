@@ -456,9 +456,7 @@ const editStyle = computed(() => {
     }
   } else {
     return {
-      ...getCanvasStyle(canvasStyleData.value),
-      width: changeStyleWithScale(canvasStyleData.value['width']) + 'px',
-      height: changeStyleWithScale(canvasStyleData.value['height']) + 'px'
+      ...getCanvasStyle(canvasStyleData.value, ['scale'])
     }
   }
 })
