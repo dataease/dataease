@@ -115,11 +115,11 @@ const filterMethod = value => {
   state.tData = [...tData].filter(item => item.name.includes(value))
 }
 const resetForm = () => {
-  resource.value.clearValidate()
   dialogTitle.value = null
   resourceFormNameLabel.value = ''
-  resourceForm.name = ''
+  resourceForm.name = '新建'
   resourceForm.pid = ''
+  resource.value.clearValidate()
   resourceDialogShow.value = false
 }
 
@@ -252,7 +252,6 @@ const saveResource = () => {
           })
           .finally(() => {
             loading.value = false
-            resetForm()
           })
       }
     }

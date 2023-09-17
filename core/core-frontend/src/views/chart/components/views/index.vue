@@ -292,11 +292,9 @@ const queryData = (firstLoad = false) => {
 
 const calcData = params => {
   loading.value = true
-  nextTick(() => {
-    dvMainStore.setLastViewRequestInfo(params.id, params.chartExtRequest)
-    chartComponent?.value?.calcData?.(params, () => {
-      loading.value = false
-    })
+  dvMainStore.setLastViewRequestInfo(params.id, params.chartExtRequest)
+  chartComponent?.value?.calcData?.(params, () => {
+    loading.value = false
   })
 }
 
@@ -398,7 +396,7 @@ initTitle()
 </script>
 
 <template>
-  <div class="chart-area">
+  <div class="chart-area" v-loading="loadingFlag">
     <p v-if="titleShow" :style="state.title_class">{{ view.title }}</p>
     <!--这里去渲染不同图库的视图-->
     <div style="flex: 1; overflow: hidden">
