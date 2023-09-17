@@ -87,13 +87,16 @@ const onBackgroundChange = val => {
             </div>
             <div style="width: 85px">
               <el-color-picker
+                class="custom-color"
                 v-if="isIncludesColor(key)"
                 v-model="curComponent.style[key]"
                 :themes="themes"
                 size="small"
                 show-alpha
+                is-custom
               ></el-color-picker>
               <el-radio-group
+                class="custom-radio"
                 v-else-if="horizontalPosition.includes(key)"
                 v-model="curComponent.style[key]"
               >
@@ -171,14 +174,14 @@ const onBackgroundChange = val => {
   margin-left: -12px;
 }
 
-:deep(.ed-radio) {
+.custom-radio :deep(.ed-radio) {
   margin-right: 0;
   .ed-radio__label {
     padding: 0 4px 0 0;
   }
 }
 
-:deep(.ed-radio.is-checked) {
+.custom-radio :deep(.ed-radio.is-checked) {
   .ed-radio__label {
     .bash-icon {
       background: rgba(51, 112, 255, 0.1);
@@ -187,11 +190,11 @@ const onBackgroundChange = val => {
   }
 }
 
-:deep(.ed-radio__input) {
+.custom-radio :deep(.ed-radio__input) {
   display: none;
 }
 
-:deep(.ed-radio__input.is-checked) {
+.custom-radio :deep(.ed-radio__input.is-checked) {
   .ed-radio__inner {
     padding: 4px;
   }
@@ -200,5 +203,14 @@ const onBackgroundChange = val => {
 .bash-icon {
   width: 24px;
   height: 24px;
+}
+
+.custom-color {
+  margin-left: 4px;
+}
+
+:deep(.ed-color-picker.is-custom .ed-color-picker__mask) {
+  height: 26px;
+  width: 48px;
 }
 </style>

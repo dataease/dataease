@@ -76,8 +76,9 @@ const dashboardActive = computed(() => {
 })
 
 const canvasStyle = computed(() => {
+  let style = {}
   if (canvasStyleData.value && canvasStyleData.value.width && isMainCanvas(canvasId.value)) {
-    return {
+    style = {
       ...getCanvasStyle(canvasStyleData.value),
       height: dashboardActive.value
         ? downloadStatus.value
@@ -85,12 +86,15 @@ const canvasStyle = computed(() => {
           : '100%'
         : changeStyleWithScale(canvasStyleData.value?.height, scaleWidth.value) + 'px'
     }
-  } else {
-    return {}
   }
+  if (!dashboardActive.value) {
+    style['overflow-y'] = 'hidden'
+  }
+  return style
 })
 
 const getDownloadStatusMainHeight = () => {
+  console.log('getDownloadStatusMainHeight')
   const children = previewCanvas.value.childNodes
   let maxHeight = 0
 

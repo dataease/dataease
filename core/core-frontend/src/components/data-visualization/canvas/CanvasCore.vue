@@ -182,6 +182,10 @@ const showComponentData = computed(() => {
 })
 const { emitter } = useEmitt()
 
+const curScale = computed(() => {
+  return canvasStyleData.value.scale
+})
+
 const pointShadowShow = computed(() => {
   return (
     canvasId.value === 'canvas-main' &&
@@ -1596,6 +1600,8 @@ defineExpose({
         class="component"
         :id="'component' + item.id"
         :active="item.id === (curComponent || {})['id']"
+        :dv-type="dvInfo.type"
+        :scale="curScale"
         :style="getComponentStyle(item.style)"
         :prop-value="item.propValue"
         :is-edit="true"
