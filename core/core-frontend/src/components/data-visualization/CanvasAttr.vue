@@ -185,9 +185,7 @@ onMounted(() => {
             </el-col>
           </el-row>
           <el-row v-show="canvasStyleData.backgroundType === 'background'">
-            <span v-show="!canvasStyleData.background" class="image-hint"
-              >当前支持.jpeg,.jpg,.png,.gif文件,大小不要超过15M</span
-            >
+            <span v-show="!canvasStyleData.background" class="image-hint">支持JPG、PNG、GIF</span>
             <span v-show="canvasStyleData.background" class="re-update-span" @click="goFile"
               >重新上传</span
             >

@@ -414,7 +414,8 @@ const selectFieldShow = computed(() => {
   return (
     ['canvasDataV', 'canvas'].includes(showPosition.value) &&
     curComponent.value?.innerType === 'rich-text' &&
-    curComponent.value.editing
+    curComponent.value.editing &&
+    state.curFields.length > 0
   )
 })
 

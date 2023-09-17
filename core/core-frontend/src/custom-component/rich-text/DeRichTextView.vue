@@ -12,7 +12,7 @@
       v-if="editShow && !isError"
       :id="tinymceId"
       v-model="myValue"
-      style="width: 100%; height: 100%"
+      style="width: 100%; height: 100%; padding: 5px"
       :init="init"
       :disabled="!canEdit"
       @onClick="onClick"
@@ -406,6 +406,7 @@ defineExpose({
 }
 
 :deep(li) {
+  margin-left: 20px;
   display: list-item !important;
   text-align: -webkit-match-parent !important;
 }
@@ -426,9 +427,7 @@ defineExpose({
 .mceNonEditable {
   background: rgba(51, 112, 255, 0.04);
 }
-</style>
 
-<style lang="less">
 .tox-tinymce-inline {
   left: var(--drawLeft);
   right: var(--drawRight);
