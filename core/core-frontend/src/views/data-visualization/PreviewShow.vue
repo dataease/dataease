@@ -143,18 +143,20 @@ onBeforeMount(() => {
           @download="download"
         ></preview-head>
         <div ref="previewCanvasContainer" class="content">
-          <div class="content-inner">
-            <de-preview
-              ref="dvPreview"
-              v-if="state.canvasStylePreview && dataInitState"
-              :component-data="state.canvasDataPreview"
-              :canvas-style-data="state.canvasStylePreview"
-              :canvas-view-info="state.canvasViewInfoPreview"
-              :dv-info="state.dvInfo"
-              :cur-gap="state.curPreviewGap"
-              :show-position="showPosition"
-              :download-status="downloadStatus"
-            ></de-preview>
+          <div class="content-outer">
+            <div class="content-inner">
+              <de-preview
+                ref="dvPreview"
+                v-if="state.canvasStylePreview && dataInitState"
+                :component-data="state.canvasDataPreview"
+                :canvas-style-data="state.canvasStylePreview"
+                :canvas-view-info="state.canvasViewInfoPreview"
+                :dv-info="state.dvInfo"
+                :cur-gap="state.curPreviewGap"
+                :show-position="showPosition"
+                :download-status="downloadStatus"
+              ></de-preview>
+            </div>
           </div>
         </div>
       </template>
@@ -194,7 +196,7 @@ onBeforeMount(() => {
       overflow-x: hidden;
       overflow-y: auto;
       align-items: center;
-      .content-inner {
+      .content-outer {
         width: 100%;
         height: calc(100vh - 95px);
         display: flex;
@@ -202,6 +204,12 @@ onBeforeMount(() => {
         align-items: center;
         flex-direction: column;
         justify-content: center; /* 上下居中 */
+        .content-inner {
+          width: 100%;
+          height: auto;
+          overflow-x: hidden;
+          overflow-y: auto;
+        }
       }
     }
   }

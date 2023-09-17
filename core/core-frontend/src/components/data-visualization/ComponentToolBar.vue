@@ -1,29 +1,32 @@
 <script setup lang="ts">
-import ComponentGroup from '../visualization/ComponentGroup.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import changeComponentsSizeWithScale from '../../utils/changeComponentsSizeWithScale'
-import UserViewGroup from '../../custom-component/component-group/UserViewGroup.vue'
-import TextGroup from '@/custom-component/component-group/TextGroup.vue'
-import MediaGroup from '@/custom-component/component-group/MediaGroup.vue'
+import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 const dvMainStore = dvMainStoreWithOut()
 const { canvasStyleData } = storeToRefs(dvMainStore)
-let scale = ref(canvasStyleData.value.scale)
+const snapshotStore = snapshotStoreWithOut()
+
 let timer = null
 
 const handleScaleChange = () => {
+  snapshotStore.recordSnapshotCache()
   // 画布比例设一个最小值，不能为 0
-  scale.value = ~~scale.value || 10
-  changeComponentsSizeWithScale(scale.value)
+  canvasStyleData.value.scale = ~~canvasStyleData.value.scale || 10
+  changeComponentsSizeWithScale(canvasStyleData.value.scale)
 }
+
+onMounted(() => {
+  handleScaleChange()
+})
 </script>
 <template>
   <el-row class="custom-main">
     <div style="display: flex; padding-top: 10px; margin-left: 50px">
       <el-slider
         style="width: 300px"
-        v-model="scale"
+        v-model="canvasStyleData.scale"
         @change="handleScaleChange()"
         show-input
         size="small"
