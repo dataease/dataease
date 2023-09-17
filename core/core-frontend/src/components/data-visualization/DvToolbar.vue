@@ -6,6 +6,9 @@ import Preview from '@/components/data-visualization/canvas/Preview.vue'
 import { commonStyle, commonAttr } from '@/custom-component/component-list'
 import eventBus from '@/utils/eventBus'
 import { $ } from '@/utils/utils'
+import changeComponentsSizeWithScale, {
+  changeComponentSizeWithScale
+} from '@/utils/changeComponentsSizeWithScale'
 import { ref, nextTick } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
@@ -13,6 +16,7 @@ import { lockStoreWithOut } from '@/store/modules/data-visualization/lock'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { storeToRefs } from 'pinia'
 import Icon from '../icon-custom/src/Icon.vue'
+import { saveCanvas, updateCanvas } from '@/api/visualization/dataVisualization'
 import ComponentGroup from '@/components/visualization/ComponentGroup.vue'
 import UserViewGroup from '@/custom-component/component-group/UserViewGroup.vue'
 import MediaGroup from '@/custom-component/component-group/MediaGroup.vue'
@@ -60,6 +64,16 @@ const closeEditCanvasName = () => {
   }
   dvInfo.value.name = inputName.value
   inputName.value = ''
+}
+
+const handleScaleChange = () => {
+  clearTimeout(timer)
+  timer = setTimeout(() => {
+    // 画布比例设一个最小值，不能为 0
+    // eslint-disable-next-line no-bitwise
+    scale.value = ~~scale.value || 1
+    changeComponentsSizeWithScale(scale.value)
+  }, 1000)
 }
 
 const lock = () => {

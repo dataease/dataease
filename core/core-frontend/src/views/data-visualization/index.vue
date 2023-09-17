@@ -51,9 +51,9 @@ const contentStyle = computed(() => {
     }
   } else {
     return {
-      width: width + 'px',
-      height: height + 'px',
-      transform: `scale(${scale / 100})`
+      width: width * 1.5 + 'px',
+      height: (height * 2 * scale) / 100 + 'px',
+      paddingTop: (height * scale) / 200 + 'px'
     }
   }
 })
@@ -66,7 +66,7 @@ const handleNew = newComponentInfo => {
     component.style.top = 0
     component.style.left = 0
     component.id = guid()
-    // changeComponentSizeWithScale(component)
+    changeComponentSizeWithScale(component)
     dvMainStore.addComponent({ component: component, index: undefined })
     adaptCurThemeCommonStyle(component)
     snapshotStore.recordSnapshot()
@@ -83,7 +83,7 @@ const handleDrop = e => {
     component.style.top = e.clientY - rectInfo.y
     component.style.left = e.clientX - rectInfo.x
     component.id = guid()
-    // changeComponentSizeWithScale(component)
+    changeComponentSizeWithScale(component)
     dvMainStore.addComponent({ component: component, index: 0 })
     adaptCurThemeCommonStyle(component)
     snapshotStore.recordSnapshot('dv-handleDrop')
