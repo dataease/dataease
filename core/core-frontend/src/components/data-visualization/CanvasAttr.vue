@@ -150,7 +150,12 @@ onMounted(() => {
             </el-radio-group>
           </el-row>
           <el-row v-show="canvasStyleData.backgroundType === 'backgroundColor'">
-            <el-color-picker v-model="canvasStyleData.backgroundColor" show-alpha></el-color-picker>
+            <el-color-picker
+              v-model="canvasStyleData.backgroundColor"
+              is-custom
+              size="small"
+              show-alpha
+            ></el-color-picker>
           </el-row>
           <el-row v-show="canvasStyleData.backgroundType === 'background'" class="img-area">
             <el-col style="width: 130px !important">
