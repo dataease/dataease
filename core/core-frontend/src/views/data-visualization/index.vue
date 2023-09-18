@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import RealTimeComponentList from '@/components/data-visualization/RealTimeComponentList.vue'
 import CanvasAttr from '@/components/data-visualization/CanvasAttr.vue'
-import { changeComponentSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
+import { changeSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
 import { computed, watch, onMounted, reactive, ref, nextTick } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
@@ -66,7 +66,7 @@ const handleNew = newComponentInfo => {
     component.style.top = 0
     component.style.left = 0
     component.id = guid()
-    changeComponentSizeWithScale(component)
+    changeSizeWithScale(component)
     dvMainStore.addComponent({ component: component, index: undefined })
     adaptCurThemeCommonStyle(component)
     snapshotStore.recordSnapshot()
@@ -83,7 +83,7 @@ const handleDrop = e => {
     component.style.top = e.clientY - rectInfo.y
     component.style.left = e.clientX - rectInfo.x
     component.id = guid()
-    changeComponentSizeWithScale(component)
+    changeSizeWithScale(component)
     dvMainStore.addComponent({ component: component, index: 0 })
     adaptCurThemeCommonStyle(component)
     snapshotStore.recordSnapshot('dv-handleDrop')
