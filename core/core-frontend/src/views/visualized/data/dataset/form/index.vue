@@ -848,7 +848,7 @@ const cascaderChangeArr = val => {
       ele.deType = deType
       ele.dateFormat = deType === 1 ? dateFormat : ''
       ele.dateFormatType = deType === 1 ? dateFormat : ''
-      ele.deTypeArr = deType === 1 ? [deType, dateFormat] : [deType]
+      ele.deTypeArr = deType === 1 && ele.deExtractType === 0 ? [deType, dateFormat] : [deType]
     }
   })
   if (dateFormat === 'custom') {
@@ -1132,9 +1132,7 @@ const treeProps = {
                         <field-more
                           :extField="data.extField"
                           trans-type="转换为指标"
-                          :show-time="
-                            (data.deType === 1 && data.deExtractType === 0) || data.deType === 0
-                          "
+                          :show-time="data.deExtractType === 0"
                           @handle-command="type => handleFieldMore(data, type)"
                         ></field-more>
                       </div>
@@ -1175,9 +1173,7 @@ const treeProps = {
                         <field-more
                           trans-type="转换为维度"
                           typeColor="green-color"
-                          :show-time="
-                            (data.deType === 1 && data.deExtractType === 0) || data.deType === 0
-                          "
+                          :show-time="data.deExtractType === 0"
                           :extField="data.extField"
                           @handle-command="type => handleFieldMore(data, type)"
                         ></field-more>
@@ -1295,7 +1291,7 @@ const treeProps = {
                       </template>
                     </el-table-column>
 
-                    <el-table-column :label="t('chart.dimension')" width="110">
+                    <el-table-column fixed="right" :label="t('chart.dimension')">
                       <template #default="scope">
                         <el-tooltip effect="dark" content="转换为指标" placement="top">
                           <template #default>
@@ -1309,7 +1305,7 @@ const treeProps = {
                       </template>
                     </el-table-column>
 
-                    <el-table-column :label="t('dataset.operator')">
+                    <el-table-column fixed="right" width="168" :label="t('dataset.operator')">
                       <template #default="scope">
                         <el-tooltip effect="dark" :content="t('dataset.copy')" placement="top">
                           <template #default>
@@ -1435,7 +1431,7 @@ const treeProps = {
                       </template>
                     </el-table-column>
 
-                    <el-table-column :label="t('chart.quota')" width="110">
+                    <el-table-column fixed="right" :label="t('chart.quota')">
                       <template #default="scope">
                         <el-tooltip effect="dark" content="转换为维度" placement="top">
                           <template #default>
@@ -1449,7 +1445,7 @@ const treeProps = {
                       </template>
                     </el-table-column>
 
-                    <el-table-column :label="t('dataset.operator')">
+                    <el-table-column fixed="right" width="168" :label="t('dataset.operator')">
                       <template #default="scope">
                         <el-tooltip effect="dark" :content="t('dataset.copy')" placement="top">
                           <template #default>
