@@ -84,8 +84,8 @@ public class Dimension2SQLObj {
                 if (Objects.equals(x.getDeExtractType(), DeTypeConstants.DE_STRING) || Objects.equals(x.getDeExtractType(), DeTypeConstants.DE_LOCATION)) {
                     if (StringUtils.equalsIgnoreCase(x.getDateStyle(), "y_Q")) {
                         fieldName = String.format(format,
-                                String.format(SQLConstants.DATE_FORMAT, String.format(SQLConstants.STR_TO_DATE, originField, SQLConstants.DEFAULT_DATE_FORMAT), "yyyy"),
-                                String.format(SQLConstants.QUARTER, String.format(SQLConstants.STR_TO_DATE, originField, SQLConstants.DEFAULT_DATE_FORMAT)));
+                                String.format(SQLConstants.DE_DATE_FORMAT, String.format(SQLConstants.DE_STR_TO_DATE, originField, SQLConstants.DEFAULT_DATE_FORMAT), "yyyy"),
+                                String.format(SQLConstants.QUARTER, String.format(SQLConstants.DE_STR_TO_DATE, originField, SQLConstants.DEFAULT_DATE_FORMAT)));
                     } else {
                         fieldName = String.format(SQLConstants.CAST_DATE_FORMAT, originField, StringUtils.isEmpty(x.getDateFormat()) ? SQLConstants.DEFAULT_DATE_FORMAT : x.getDateFormat(), format);
                     }

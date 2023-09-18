@@ -91,7 +91,7 @@ public class WhereTree2Str {
         }
         if (field.getDeType() == 1) {
             if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                whereName = String.format(SQLConstants.STR_TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : SQLConstants.DEFAULT_DATE_FORMAT);
+                whereName = String.format(SQLConstants.DE_STR_TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : SQLConstants.DEFAULT_DATE_FORMAT);
             }
             if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                 String cast = String.format(SQLConstants.CAST, originName, SQLConstants.DEFAULT_INT_FORMAT);
@@ -127,7 +127,7 @@ public class WhereTree2Str {
             if (field.getDeType() == 1) {
                 // 规定几种日期格式，一一匹配，匹配到就是该格式
                 String f = ScalarFunctions.get_date_format(item.getValue());
-                whereName = String.format(SQLConstants.DATE_FORMAT_REAL, whereName, f);
+                whereName = String.format(SQLConstants.DE_DATE_FORMAT, whereName, f);
                 whereName = String.format(SQLConstants.UNIX_TIMESTAMP, whereName);
             }
 
