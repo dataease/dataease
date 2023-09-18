@@ -513,7 +513,6 @@ const initEdite = () => {
       datasetDrag.value.initState(arr)
     })
     .finally(() => {
-      showTable.value = true
       loading.value = false
     })
 }
@@ -538,7 +537,6 @@ const joinEditor = (arr: []) => {
 
 const columns = shallowRef([])
 const tableData = shallowRef([])
-const showTable = ref(false)
 const quota = computed(() => {
   return allfields.value.filter(ele => ele.groupType === 'q')
 })
@@ -761,17 +759,19 @@ const datasetSave = () => {
   )
 }
 
+const datasetPreviewLoading = ref(false)
+
 const datasetPreview = () => {
   const arr = []
-  showTable.value = false
   dfsNodeList(arr, datasetDrag.value.nodeList)
+  datasetPreviewLoading.value = true
   getPreviewData({ union: arr, allFields: allfields.value })
     .then(res => {
       columns.value = generateColumns((res.data.fields as Field[]) || [])
       tableData.value = (res.data.data as Array<{}>) || []
     })
     .finally(() => {
-      showTable.value = true
+      datasetPreviewLoading.value = false
     })
 }
 
@@ -1083,6 +1083,7 @@ const treeProps = {
               <el-button
                 style="min-width: 70px"
                 :disabled="!allfields.length"
+                v-loading="datasetPreviewLoading"
                 @click="datasetPreview"
                 secondary
               >
