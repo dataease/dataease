@@ -200,7 +200,7 @@ const backToMain = () => {
   }
   if (styleChangeTimes.value > 0) {
     ElMessageBox.confirm('当前的更改尚未保存，确定退出吗？', {
-      confirmButtonType: 'danger',
+      confirmButtonType: 'primary',
       type: 'warning',
       autofocus: false,
       showClose: false
