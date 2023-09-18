@@ -186,6 +186,11 @@ const setFlag = () => {
 let sql = ''
 
 const save = (cb?: () => void) => {
+  if (!sqlNode.value.tableName.trim()) {
+    ElMessage.error('SQL名字不能为空')
+    return
+  }
+
   parseVariable()
   sql = codeCom.value.state.doc.toString()
   if (!sql.trim()) {

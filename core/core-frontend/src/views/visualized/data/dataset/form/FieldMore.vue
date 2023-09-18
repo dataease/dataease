@@ -10,7 +10,7 @@ export interface Menu {
   divided?: boolean
 }
 
-defineProps({
+const props = defineProps({
   extField: {
     type: Number,
     default: 0
@@ -29,17 +29,18 @@ defineProps({
   }
 })
 const handleCommand = (command: string | number | object) => {
-  if ('time' === command) {
+  if ('time' === command && props.showTime) {
     translate.value.handleOpen()
     return
   }
 
   if (typeof command === 'object') return
+
   if ('custom' === command) {
     replaceType.value.handleClose()
     translate.value.handleClose()
   }
-  if (['text', 'location', 'value', 'float'].includes(command as string)) {
+  if (['text', 'location', 'value', 'float', 'time'].includes(command as string)) {
     replaceType.value.handleClose()
     setTimeout(() => {
       emit('handleCommand', command)

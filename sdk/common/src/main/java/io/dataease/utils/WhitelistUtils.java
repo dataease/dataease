@@ -31,7 +31,7 @@ public class WhitelistUtils {
                 || StringUtils.startsWithAny(requestURI, "/login/platformLogin/")
                 || StringUtils.startsWithAny(requestURI, "/static-resource/")
                 || StringUtils.startsWithAny(requestURI, "/share/proxyInfo")
-                || StringUtils.startsWithAny(requestURI, "/xpackComponent/content/bGluaw==")
+                || StringUtils.startsWithAny(requestURI, "/xpackComponent/content/")
                 || StringUtils.startsWithAny(requestURI, "/map/");
     }
 }
