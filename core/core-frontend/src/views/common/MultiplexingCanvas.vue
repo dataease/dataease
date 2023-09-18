@@ -53,7 +53,9 @@ import DashboardPreviewShow from '@/views/dashboard/DashboardPreviewShow.vue'
 import { copyStoreWithOut } from '@/store/modules/data-visualization/copy'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
+import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 const dvMainStore = dvMainStoreWithOut()
+const snapshotStore = snapshotStoreWithOut()
 const dialogShow = ref(false)
 const copyStore = copyStoreWithOut()
 const multiplexingPreviewShowRef = ref(null)
@@ -78,6 +80,7 @@ const saveMultiplexing = () => {
   const canvasViewInfoPreview = previewStateInfo.canvasViewInfoPreview
   nextTick(() => {
     copyStore.copyMultiplexingComponents(canvasViewInfoPreview)
+    snapshotStore.recordSnapshotCache()
   })
 }
 

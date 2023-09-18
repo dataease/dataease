@@ -46,7 +46,7 @@ public class CustomWhere2Str {
                 if (field.getDeType() == 1) {
                     if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
                         // 此处获取标准格式的日期
-                        whereName = String.format(SQLConstants.STR_TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : SQLConstants.DEFAULT_DATE_FORMAT);
+                        whereName = String.format(SQLConstants.DE_STR_TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : SQLConstants.DEFAULT_DATE_FORMAT);
                     }
                     if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                         String cast = String.format(SQLConstants.CAST, originName, SQLConstants.DEFAULT_INT_FORMAT);
@@ -86,9 +86,15 @@ public class CustomWhere2Str {
                         String whereNameReal;
                         if (field.getDeType() == 1) {
                             // 规定几种日期格式，一一匹配，匹配到就是该格式
-                            String f = ScalarFunctions.get_date_format(filterItemDTO.getValue());
-                            String n = String.format(SQLConstants.DATE_FORMAT_REAL, whereName, f);
-                            whereNameReal = String.format(SQLConstants.UNIX_TIMESTAMP, n);
+                            if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
+                                String f = ScalarFunctions.get_date_format(filterItemDTO.getValue());
+                                String n = String.format(SQLConstants.DE_CAST_DATE_FORMAT, whereName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : SQLConstants.DEFAULT_DATE_FORMAT, f);
+                                whereNameReal = String.format(SQLConstants.UNIX_TIMESTAMP, n);
+                            } else {
+                                String f = ScalarFunctions.get_date_format(filterItemDTO.getValue());
+                                String n = String.format(SQLConstants.DE_DATE_FORMAT, whereName, f);
+                                whereNameReal = String.format(SQLConstants.UNIX_TIMESTAMP, n);
+                            }
                         } else {
                             whereNameReal = whereName;
                         }

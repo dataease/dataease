@@ -22,7 +22,6 @@ const requestStore = useRequestStoreWithOut()
 const permissionStore = usePermissionStoreWithOut()
 const dataInitState = ref(true)
 const downloadStatus = ref(false)
-const { dvInfo } = storeToRefs(dvMainStore)
 const state = reactive({
   canvasDataPreview: null,
   canvasStylePreview: null,
@@ -78,7 +77,7 @@ const download = type => {
       .then(dataUrl => {
         if (type === 'img') {
           const a = document.createElement('a')
-          a.setAttribute('download', dvInfo.value.name)
+          a.setAttribute('download', state.dvInfo.name)
           a.href = dataUrl
           a.click()
         } else {
@@ -87,7 +86,7 @@ const download = type => {
           const lp = contentWidth > contentHeight ? 'l' : 'p'
           const PDF = new JsPDF(lp, 'pt', [contentWidth, contentHeight])
           PDF.addImage(dataUrl, 'PNG', 0, 0, contentWidth, contentHeight)
-          PDF.save(dvInfo.value.name + '.pdf')
+          PDF.save(state.dvInfo.name + '.pdf')
         }
       })
       .catch(error => {
@@ -129,7 +128,9 @@ const resourceNodeClick = data => {
 }
 
 onBeforeMount(() => {
-  dvMainStore.canvasDataInit()
+  if (showPosition.value === 'preview') {
+    dvMainStore.canvasDataInit()
+  }
 })
 
 defineExpose({
@@ -165,7 +166,7 @@ defineExpose({
         <el-icon v-else><ArrowRight /></el-icon>
       </div>
       <!--从store中判断当前是否有点击仪表板 复用时也符合-->
-      <template v-if="dvInfo.name">
+      <template v-if="state.dvInfo?.name">
         <preview-head
           v-if="showPosition === 'preview'"
           @reload="reload"

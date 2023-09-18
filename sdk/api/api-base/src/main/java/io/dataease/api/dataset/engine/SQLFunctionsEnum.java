@@ -5,12 +5,10 @@ package io.dataease.api.dataset.engine;
  */
 public enum SQLFunctionsEnum {
     SUBSTRING("SUBSTRING", "SUBSTRING(s,n,len)", 0, "获取从字符串s中的第n个位置开始长度为len的字符串", false),
-    /* 时间函数后续重新定义规则
-    DATE_FORMAT("DATE_FORMAT", "DATE_FORMAT(date,format)", 1, "将date以format格式返回（例：yyyy-MM-dd HH:mm:ss.SSS）", true),
-    STR_TO_DATE("STR_TO_DATE", "STR_TO_DATE(date,format)", 1, "将date以format格式返回（例：yyyy-MM-dd HH:mm:ss.SSS）", true),
+    DE_DATE_FORMAT("DE_DATE_FORMAT", "DE_DATE_FORMAT(date,format)", 1, "将date以format格式返回（例：yyyy-MM-dd HH:mm:ss.SSS）", true),
+    DE_STR_TO_DATE("DE_STR_TO_DATE", "DE_STR_TO_DATE(date,format)", 1, "将date以format格式返回（例：yyyy-MM-dd HH:mm:ss.SSS）", true),
     UNIX_TIMESTAMP("UNIX_TIMESTAMP", "UNIX_TIMESTAMP(date)", 1, "将标准格式date以13位时间戳返回", true),
     FROM_UNIXTIME("FROM_UNIXTIME", "FROM_UNIXTIME(timestamp,format)", 1, "将timestamp转换成format格式返回", true),
-     */
     ABS("ABS", "ABS(x)", 2, "返回x的绝对值", false),
     CEIL("CEIL", "CEIL(x)", 2, "返回不小于x的最小整数", false),
     FLOOR("FLOOR", "FLOOR(x)", 2, "返回不大于x的最大整数", false),

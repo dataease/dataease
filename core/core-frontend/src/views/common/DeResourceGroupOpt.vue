@@ -283,11 +283,18 @@ const emits = defineEmits(['finish'])
       :rules="resourceFormRules"
     >
       <el-form-item v-if="showName" :label="resourceFormNameLabel" prop="name">
-        <el-input :placeholder="placeholder" v-model="resourceForm.name" />
+        <el-input
+          @keydown.stop
+          @keyup.stop
+          :placeholder="placeholder"
+          v-model="resourceForm.name"
+        />
       </el-form-item>
       <el-form-item v-if="showPid" :label="'所属文件夹'" prop="pid">
         <el-tree-select
           style="width: 100%"
+          @keydown.stop
+          @keyup.stop
           v-model="resourceForm.pid"
           :data="state.tData"
           :props="propsTree"

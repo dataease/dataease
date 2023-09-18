@@ -139,9 +139,7 @@ const contentDisplay = ref(true)
 
 const showPosition = computed(() => {
   let position
-  if (linkageSettingStatus.value) {
-    position = 'linkage'
-  } else if (batchOptStatus.value) {
+  if (batchOptStatus.value) {
     position = 'batchOpt'
   } else if (isEditMode.value) {
     position = dvInfo.value.type === 'dashboard' ? 'canvas' : 'canvasDataV'
@@ -626,7 +624,7 @@ const componentBackgroundStyle = computed(() => {
 const editBarShowFlag = computed(() => {
   return (
     ((active.value || batchOptStatus.value) &&
-      ['canvas', 'canvasDataV'].includes(showPosition.value)) ||
+      ['canvas', 'canvasDataV', 'batchOpt'].includes(showPosition.value)) ||
     linkageSettingStatus.value
   )
 })
@@ -770,7 +768,7 @@ onMounted(() => {
 <style lang="less" scoped>
 .shape {
   position: absolute;
-  transform: translate(0);
+  //transform: translate(0);
 }
 
 .shape-inner {

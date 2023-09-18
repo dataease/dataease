@@ -30,7 +30,7 @@ public class ScalarFunctions {
         }
     }
 
-    public static String date_format_real(String date, String format) {
+    public static String de_date_format(String date, String format) {
         try {
             if (StringUtils.isEmpty(date)) {
                 return null;
@@ -57,12 +57,40 @@ public class ScalarFunctions {
         }
     }
 
+    public static String de_str_to_date(String date, String format) {
+        try {
+            if (StringUtils.isEmpty(date)) {
+                return null;
+            }
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
+            Date parse = simpleDateFormat.parse(date);
+            return simpleDateFormat.format(parse);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     public static String cast_date_format(String date, String sourceFormat, String targetFormat) {
         try {
             if (StringUtils.isEmpty(date)) {
                 return null;
             }
             sourceFormat = get_date_format(date);
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(sourceFormat);
+            Date parse = simpleDateFormat.parse(date);
+
+            SimpleDateFormat s = new SimpleDateFormat(targetFormat);
+            return s.format(parse);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static String de_cast_date_format(String date, String sourceFormat, String targetFormat) {
+        try {
+            if (StringUtils.isEmpty(date)) {
+                return null;
+            }
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(sourceFormat);
             Date parse = simpleDateFormat.parse(date);
 
