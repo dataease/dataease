@@ -25,7 +25,7 @@
     "crypto-js": "^4.1.1",
     "dayjs": "^1.11.9",
     "deepmerge": "^4.3.1",
-    "element-plus-secondary": "^0.3.1",
+    "element-plus-secondary": "^0.3.2",
     "element-resize-detector": "^1.2.4",
     "highcharts": "^10.3.3",
     "html-to-image": "^1.11.11",
