@@ -177,6 +177,15 @@ const userViewEnlargeRef = ref(null)
 const linkJumpRef = ref(null)
 const linkageRef = ref(null)
 const mainDomId = ref('editor-' + canvasId.value)
+
+const dragInfoShow = computed(() => {
+  return (
+    dvInfo.value.type === 'dashboard' &&
+    componentData.value.length === 0 &&
+    canvasId.value === 'canvas-main'
+  )
+})
+
 const showComponentData = computed(() => {
   return componentData.value.filter(component => component.isShow)
 })
@@ -1555,7 +1564,7 @@ defineExpose({
     @contextmenu="handleContextMenu"
     @mousedown="handleMouseDown"
   >
-    <drag-info v-if="componentData.length === 0 && canvasId === 'canvas-main'"></drag-info>
+    <drag-info v-if="dragInfoShow"></drag-info>
     <canvas-opt-bar
       :canvas-style-data="canvasStyleData"
       :component-data="componentData"
