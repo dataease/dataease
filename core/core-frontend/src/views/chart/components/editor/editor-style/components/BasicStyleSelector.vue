@@ -106,7 +106,11 @@ onMounted(() => {
       <el-row style="flex: 1" gutter="8">
         <el-col :span="13">
           <el-form-item class="form-item alpha-slider" :class="'form-item-' + themes">
-            <el-slider :effect="props.themes" v-model="state.basicStyleForm.alpha" />
+            <el-slider
+              :effect="props.themes"
+              v-model="state.basicStyleForm.alpha"
+              @change="changeBasicStyle()"
+            />
           </el-form-item>
         </el-col>
         <el-col :span="11">
