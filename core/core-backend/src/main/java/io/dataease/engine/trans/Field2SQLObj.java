@@ -69,8 +69,8 @@ public class Field2SQLObj {
                 } else if (Objects.equals(f.getDeType(), DeTypeConstants.DE_FLOAT)) {
                     fieldName = String.format(SQLConstants.CAST, originField, SQLConstants.DEFAULT_FLOAT_FORMAT);
                 } else if (Objects.equals(f.getDeType(), DeTypeConstants.DE_TIME)) {
-                    fieldName = StringUtils.isEmpty(f.getDateFormat()) ? String.format(SQLConstants.STR_TO_DATE, originField, SQLConstants.DEFAULT_DATE_FORMAT) :
-                            String.format(SQLConstants.STR_TO_DATE, originField, f.getDateFormat());
+                    fieldName = StringUtils.isEmpty(f.getDateFormat()) ? String.format(SQLConstants.DE_STR_TO_DATE, originField, SQLConstants.DEFAULT_DATE_FORMAT) :
+                            String.format(SQLConstants.DE_STR_TO_DATE, originField, f.getDateFormat());
                 } else {
                     fieldName = originField;
                 }
