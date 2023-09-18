@@ -572,11 +572,11 @@ const dragover_handler = ev => {
       state.visualNodeParent.children.splice(shadowIndex, 1)
     }
   }
+  state.visualNode = null
 
   if (Math.max(...maxArr)) {
     const { tableName, isShadow = false } = possibleNodeAreaList.value[maxIndex]
     const [b, r] = maxArr
-
     if (!isShadow) {
       dfsNodeShadow(state.nodeList, tableName, b >= r ? 'b' : 'r', state.nodeList[0])
     }
@@ -665,6 +665,7 @@ const drop_handler = ev => {
     editSqlField.value = true
     return
   }
+
   nextTick(() => {
     Object.assign(state.visualNode, {
       tableName,
@@ -742,13 +743,20 @@ const notConfirm = () => {
   confirm()
 }
 
+const dragEndClear = () => {
+  if (!state.visualNode.tableName) {
+    confirm()
+  }
+}
+
 defineExpose({
   nodeNameList,
   nodeList: state.nodeList,
   setStateBack,
   notConfirm,
   dfsNodeFieldBack,
-  initState
+  initState,
+  dragEndClear
 })
 
 const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields'])

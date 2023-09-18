@@ -877,6 +877,11 @@ const recoverSelection = () => {
   })
 }
 
+const dragEnd = () => {
+  maskShow.value = false
+  datasetDrag.value.dragEndClear()
+}
+
 const cascaderChange = (row, val) => {
   const [deType, dateFormat] = val
   row.deType = deType
@@ -1026,7 +1031,7 @@ const treeProps = {
             class="list-item_primary"
             v-if="dataSource"
             @dragstart="$event => dragstart($event, sqlNode)"
-            @dragend="maskShow = false"
+            @dragend="dragEnd"
             :draggable="true"
             @click="setActiveName(sqlNode)"
           >
