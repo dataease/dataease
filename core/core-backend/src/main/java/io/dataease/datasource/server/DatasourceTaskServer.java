@@ -74,7 +74,9 @@ public class DatasourceTaskServer {
     }
 
     public void update(CoreDatasourceTask coreDatasourceTask) {
-        datasourceTaskMapper.updateById(coreDatasourceTask);
+        UpdateWrapper<CoreDatasourceTask> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", coreDatasourceTask.getId());
+        datasourceTaskMapper.update(coreDatasourceTask, updateWrapper);
     }
 
     public void checkTaskIsStopped(CoreDatasourceTask coreDatasourceTask) {
