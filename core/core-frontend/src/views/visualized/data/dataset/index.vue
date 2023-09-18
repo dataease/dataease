@@ -63,10 +63,8 @@ const resourceGroupOpt = ref()
 const curCanvasType = ref('')
 
 const createPanel = path => {
-  curCanvasType.value = path
-  nextTick(() => {
-    addOperation('newLeaf', null, 'leaf', true)
-  })
+  const baseUrl = `#/${path}?opt=create`
+  window.open(baseUrl, '_blank')
 }
 
 const addOperation = (
@@ -528,7 +526,7 @@ const filterNode = (value: string, data: BusiTreeNode) => {
                 </template>
                 {{ t('visualization.panelAdd') }}
               </el-button>
-              <el-button secondary @click="createPanel('dataV')" v-permission="['screen']">
+              <el-button secondary @click="createPanel('dvCanvas')" v-permission="['screen']">
                 <template #icon> <Icon name="icon_operation-analysis_outlined"></Icon> </template
                 >新建数据大屏
               </el-button>
