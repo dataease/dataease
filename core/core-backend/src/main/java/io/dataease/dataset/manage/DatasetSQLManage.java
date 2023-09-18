@@ -120,15 +120,21 @@ public class DatasetSQLManage {
 
             String[] array = fields.stream()
                     .map(f -> {
-                        f.setFieldShortName(TableUtils.fieldNameShort(table.getTableAlias() + "_" + f.getOriginName()));
+                        String alias;
+                        if (StringUtils.isEmpty(f.getDataeaseName())) {
+                            alias = TableUtils.fieldNameShort(table.getTableAlias() + "_" + f.getOriginName());
+                        } else {
+                            alias = f.getDataeaseName();
+                        }
+
+                        f.setFieldShortName(TableUtils.fieldNameShort(alias));
                         f.setDataeaseName(f.getFieldShortName());
                         f.setDatasetTableId(datasetTable.getId());
                         String prefix = "";
                         if (Objects.equals(f.getExtField(), ExtFieldConstant.EXT_NORMAL)) {
                             prefix = "`";
                         }
-                        return table.getTableAlias() + "." + prefix + f.getOriginName() + prefix + " AS "
-                                + TableUtils.fieldNameShort(table.getTableAlias() + "_" + f.getOriginName());
+                        return table.getTableAlias() + "." + prefix + f.getOriginName() + prefix + " AS " + alias;
                     })
                     .toArray(String[]::new);
             checkedInfo.put(table.getTableAlias(), array);
