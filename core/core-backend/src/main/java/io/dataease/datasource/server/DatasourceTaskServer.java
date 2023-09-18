@@ -81,34 +81,28 @@ public class DatasourceTaskServer {
 
     public void checkTaskIsStopped(CoreDatasourceTask coreDatasourceTask) {
         if (coreDatasourceTask.getEndLimit() != null && StringUtils.equalsIgnoreCase(coreDatasourceTask.getEndLimit(), "1")) {  // 结束限制 0 无限制 1 设定结束时间'
-            BaseGridRequest request = new BaseGridRequest();
-            ConditionEntity conditionEntity = new ConditionEntity();
-            conditionEntity.setField("dataset_table_task.id");
-            conditionEntity.setOperator("eq");
-            conditionEntity.setValue(coreDatasourceTask.getId());
-            request.setConditions(Collections.singletonList(conditionEntity));
-            List<CoreDatasourceTaskDTO> dataSetTaskDTOS = taskWithTriggers(request);
+            List<CoreDatasourceTaskDTO> dataSetTaskDTOS = taskWithTriggers(coreDatasourceTask.getId());
             if (CollectionUtils.isEmpty(dataSetTaskDTOS)) {
                 return;
             }
-
             UpdateWrapper<CoreDatasourceTask> updateWrapper = new UpdateWrapper<>();
             updateWrapper.eq("id", coreDatasourceTask.getId());
             CoreDatasourceTask datasourceTask = new CoreDatasourceTask();
             if (dataSetTaskDTOS.get(0).getNextExecTime() == null || dataSetTaskDTOS.get(0).getNextExecTime() <= 0) {
                 datasourceTask.setStatus(TaskStatus.Stopped.name());
+                datasourceTaskMapper.update(datasourceTask, updateWrapper);
             }
-            if (dataSetTaskDTOS.get(0).getNextExecTime() > coreDatasourceTask.getEndTime()) {
+            if (dataSetTaskDTOS.get(0).getNextExecTime() != null && dataSetTaskDTOS.get(0).getNextExecTime() > coreDatasourceTask.getEndTime()) {
                 datasourceTask.setStatus(TaskStatus.Stopped.name());
-
+                datasourceTaskMapper.update(datasourceTask, updateWrapper);
             }
-            datasourceTaskMapper.update(datasourceTask, updateWrapper);
         }
     }
 
-    public List<CoreDatasourceTaskDTO> taskWithTriggers(BaseGridRequest request) {
-        GridExample gridExample = request.convertExample();
-        return extDatasourceTaskMapper.taskWithTriggers(gridExample);
+    public List<CoreDatasourceTaskDTO> taskWithTriggers(Long taskId) {
+        QueryWrapper<CoreDatasourceTaskDTO> wrapper = new QueryWrapper<>();
+        wrapper.eq("core_datasource_task.id", taskId);
+        return extDatasourceTaskMapper.taskWithTriggers(wrapper);
     }
 
     public synchronized boolean existUnderExecutionTask(Long datasourceId, Long taskId, Long startTime) {
@@ -153,13 +147,7 @@ public class DatasourceTaskServer {
             record.setStatus(TaskStatus.Stopped.name());
         } else {
             if (coreDatasourceTask.getEndLimit() != null && StringUtils.equalsIgnoreCase(coreDatasourceTask.getEndLimit(), "1")) {
-                BaseGridRequest request = new BaseGridRequest();
-                ConditionEntity conditionEntity = new ConditionEntity();
-                conditionEntity.setField("core_datasource_task.id");
-                conditionEntity.setOperator("eq");
-                conditionEntity.setValue(coreDatasourceTask.getId());
-                request.setConditions(Collections.singletonList(conditionEntity));
-                List<CoreDatasourceTaskDTO> dataSetTaskDTOS = taskWithTriggers(request);
+                List<CoreDatasourceTaskDTO> dataSetTaskDTOS = taskWithTriggers(coreDatasourceTask.getId());
                 if (CollectionUtils.isEmpty(dataSetTaskDTOS)) {
                     return;
                 }
