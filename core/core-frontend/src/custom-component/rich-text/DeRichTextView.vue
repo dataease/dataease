@@ -14,7 +14,7 @@
       v-model="myValue"
       style="width: 100%; height: 100%; padding: 5px"
       :init="init"
-      :disabled="!canEdit"
+      :disabled="!canEdit || disabled"
       @onClick="onClick"
     />
   </div>

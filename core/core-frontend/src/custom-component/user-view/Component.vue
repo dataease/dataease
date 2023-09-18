@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, toRefs } from 'vue'
+import { computed, toRefs, watch } from 'vue'
 import Chart from '@/views/chart/components/views/index.vue'
 
 const props = defineProps({
@@ -53,7 +53,14 @@ const props = defineProps({
 
 const { propValue, element, view, active, searchCount, scale } = toRefs(props)
 
+watch(
+  () => scale.value,
+  () => {
+    console.log('scale.value=' + scale.value)
+  }
+)
 const autoStyle = computed(() => {
+  console.log('s3=' + scale.value)
   const curScale = scale.value / 100
   return {
     position: 'absolute',

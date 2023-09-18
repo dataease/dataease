@@ -404,6 +404,7 @@ initTitle()
         v-if="showChartView(ChartLibraryType.RICH_TEXT)"
         ref="chartComponent"
         :element="element"
+        :disabled="!['canvas', 'canvasDataV'].includes(showPosition)"
         :active="active"
       />
       <chart-component-g2-plot
