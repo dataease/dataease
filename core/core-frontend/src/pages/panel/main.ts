@@ -11,6 +11,8 @@ const formatterUrl = <T extends Node>(node: T, prefix: string) => {
     } else if (node instanceof HTMLScriptElement) {
       url = node.src
     }
+
+    console.log('currentUrlprefix', url, suffix)
     if (url.includes(suffix)) {
       const currentUrlprefix = new URL(url).origin
       const newUrl = url.replace(currentUrlprefix, prefix)
@@ -44,7 +46,9 @@ const getPrefix = (): string => {
 }
 
 document.querySelector('head').appendChild = <T extends Node>(node: T) => {
+  console.log('node, getPrefix()1', node, getPrefix())
   const newNode = formatterUrl(node, getPrefix())
+  console.log('node, getPrefix()2', node, getPrefix(), newNode)
   cb(newNode)
   return newNode
 }

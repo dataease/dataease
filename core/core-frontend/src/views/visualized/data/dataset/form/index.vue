@@ -828,16 +828,17 @@ const clearSelection = () => {
   dimensionsTable.value.clearSelection()
   quotaTable.value.clearSelection()
 }
+const deTypeArr = ref([])
 
 const setDeTypeSelection = () => {
   fieldSelection.value = [
     ...dimensionsTable.value.getSelectionRows(),
     ...quotaTable.value.getSelectionRows()
   ]
+  deTypeArr.value = []
   deTypeSelection.value = fieldSelection.value.map(ele => ele.deExtractType)
 }
 
-const deTypeArr = ref([])
 const cascaderChangeArr = val => {
   const [deType, dateFormat] = val
   dimensionsSelection.value = dimensionsTable.value.getSelectionRows().map(ele => ele.id)
@@ -874,6 +875,11 @@ const recoverSelection = () => {
       }
     })
   })
+}
+
+const dragEnd = () => {
+  maskShow.value = false
+  datasetDrag.value.dragEndClear()
 }
 
 const cascaderChange = (row, val) => {
@@ -1025,7 +1031,7 @@ const treeProps = {
             class="list-item_primary"
             v-if="dataSource"
             @dragstart="$event => dragstart($event, sqlNode)"
-            @dragend="maskShow = false"
+            @dragend="dragEnd"
             :draggable="true"
             @click="setActiveName(sqlNode)"
           >
@@ -1236,7 +1242,7 @@ const treeProps = {
                       <template #default="scope">
                         <div class="column-style">
                           <span v-if="scope.row.extField === 0">{{ scope.row.originName }}</span>
-                          <span v-else>{{ t('dataset.calc_field') }}</span>
+                          <span style="color: #8d9199" v-else>{{ t('dataset.calc_field') }}</span>
                         </div>
                       </template>
                     </el-table-column>
@@ -1253,7 +1259,7 @@ const treeProps = {
                           <template v-slot="{ data }">
                             <el-icon>
                               <Icon
-                                :className="`field-icon-${getIconName(data.value)}`"
+                                className="primary-color"
                                 :name="`field_${getIconName(data.value)}`"
                               ></Icon>
                             </el-icon>
@@ -1263,7 +1269,7 @@ const treeProps = {
                         <span class="select-svg-icon">
                           <el-icon>
                             <Icon
-                              :className="`field-icon-${getIconName(scope.row.deType)}`"
+                              className="primary-color"
                               :name="`field_${getIconName(scope.row.deType)}`"
                             ></Icon>
                           </el-icon>
@@ -1281,13 +1287,13 @@ const treeProps = {
                           <span class="flex-align-center" v-if="scope.row.extField === 0">
                             <el-icon>
                               <Icon
-                                :className="`field-icon-${getIconName(scope.row.deExtractType)}`"
+                                className="primary-color"
                                 :name="`field_${getIconName(scope.row.deExtractType)}`"
                               ></Icon>
                             </el-icon>
                             {{ fieldTypes(scope.row.deExtractType) }}
                           </span>
-                          <span v-else>{{ t('dataset.calc_field') }}</span>
+                          <span v-else style="color: #8d9199">{{ t('dataset.calc_field') }}</span>
                         </div>
                       </template>
                     </el-table-column>
@@ -1376,7 +1382,7 @@ const treeProps = {
                       <template #default="scope">
                         <div class="column-style">
                           <span v-if="scope.row.extField === 0">{{ scope.row.originName }}</span>
-                          <span v-else>{{ t('dataset.calc_field') }}</span>
+                          <span v-else style="color: #8d9199">{{ t('dataset.calc_field') }}</span>
                         </div>
                       </template>
                     </el-table-column>
@@ -1393,7 +1399,7 @@ const treeProps = {
                           <template v-slot="{ data }">
                             <el-icon>
                               <Icon
-                                :className="`field-icon-${getIconName(data.value)}`"
+                                className="green-color"
                                 :name="`field_${getIconName(data.value)}`"
                               ></Icon>
                             </el-icon>
@@ -1403,7 +1409,7 @@ const treeProps = {
                         <span class="select-svg-icon">
                           <el-icon>
                             <Icon
-                              :className="`field-icon-${getIconName(scope.row.deType)}`"
+                              className="green-color"
                               :name="`field_${getIconName(scope.row.deType)}`"
                             ></Icon>
                           </el-icon>
@@ -1421,13 +1427,13 @@ const treeProps = {
                           <span v-if="scope.row.extField === 0">
                             <el-icon>
                               <Icon
-                                :className="`field-icon-${getIconName(scope.row.deExtractType)}`"
+                                className="green-color"
                                 :name="`field_${getIconName(scope.row.deExtractType)}`"
                               ></Icon>
                             </el-icon>
                             {{ fieldTypes(scope.row.deExtractType) }}
                           </span>
-                          <span v-else>{{ t('dataset.calc_field') }}</span>
+                          <span v-else style="color: #8d9199">{{ t('dataset.calc_field') }}</span>
                         </div>
                       </template>
                     </el-table-column>
@@ -1509,7 +1515,7 @@ const treeProps = {
                   <template v-slot="{ data }">
                     <el-icon>
                       <Icon
-                        :className="`field-icon-${getIconName(data.value)}`"
+                        className="primary-color"
                         :name="`field_${getIconName(data.value)}`"
                       ></Icon>
                     </el-icon>

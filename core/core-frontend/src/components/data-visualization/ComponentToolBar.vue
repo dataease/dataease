@@ -2,19 +2,20 @@
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { ref, onMounted } from 'vue'
-import changeComponentsSizeWithScale from '../../utils/changeComponentsSizeWithScale'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
+import { changeSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
 const dvMainStore = dvMainStoreWithOut()
 const { canvasStyleData } = storeToRefs(dvMainStore)
 const snapshotStore = snapshotStoreWithOut()
+let scale = ref(canvasStyleData.value.scale)
 
 let timer = null
 
 const handleScaleChange = () => {
   snapshotStore.recordSnapshotCache()
   // 画布比例设一个最小值，不能为 0
-  canvasStyleData.value.scale = ~~canvasStyleData.value.scale || 10
-  changeComponentsSizeWithScale(canvasStyleData.value.scale)
+  scale.value = ~~scale.value || 10
+  changeSizeWithScale(scale.value)
 }
 
 onMounted(() => {
@@ -26,7 +27,7 @@ onMounted(() => {
     <div style="display: flex; padding-top: 10px; margin-left: 50px">
       <el-slider
         style="width: 300px"
-        v-model="canvasStyleData.scale"
+        v-model="scale"
         @change="handleScaleChange()"
         show-input
         size="small"

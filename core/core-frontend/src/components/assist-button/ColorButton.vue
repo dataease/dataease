@@ -55,14 +55,14 @@ const colorButtonClick = () => {
     padding-left: 4px;
     padding-top: 4px;
     border-width: 2px;
-    border-color: #dee0e3;
+    border-color: #3370ff99;
   }
 }
 .color-button-active {
   padding-left: 4px;
   padding-top: 4px;
   border-width: 2px;
-  border-color: #3370ff !important;
+  border-color: #3370ff;
 }
 
 .color-button-inner {

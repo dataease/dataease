@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import RealTimeComponentList from '@/components/data-visualization/RealTimeComponentList.vue'
 import CanvasAttr from '@/components/data-visualization/CanvasAttr.vue'
-import { changeComponentSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
 import { computed, watch, onMounted, reactive, ref, nextTick } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
@@ -23,6 +22,7 @@ import { ElMessage } from 'element-plus-secondary'
 import CanvasCore from '@/components/data-visualization/canvas/CanvasCore.vue'
 import { listenGlobalKeyDown } from '@/utils/DeShortcutKey'
 import { adaptCurThemeCommonStyle } from '@/utils/canvasStyle'
+import { changeComponentSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
 
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
