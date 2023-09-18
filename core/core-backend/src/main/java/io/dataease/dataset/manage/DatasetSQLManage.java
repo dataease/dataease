@@ -127,7 +127,7 @@ public class DatasetSQLManage {
                             alias = f.getDataeaseName();
                         }
 
-                        f.setFieldShortName(TableUtils.fieldNameShort(alias));
+                        f.setFieldShortName(alias);
                         f.setDataeaseName(f.getFieldShortName());
                         f.setDatasetTableId(datasetTable.getId());
                         String prefix = "";
