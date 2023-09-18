@@ -4164,3 +4164,21 @@ CREATE TABLE `xpack_share`
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_general_ci;
 
+-- ----------------------------
+-- Table structure for xpack_setting_authentication
+-- ----------------------------
+DROP TABLE IF EXISTS `xpack_setting_authentication`;
+CREATE TABLE `xpack_setting_authentication`
+(
+    `id`             bigint       NOT NULL COMMENT '主键',
+    `name`           varchar(100) NOT NULL COMMENT '名称',
+    `type`           varchar(10)  NOT NULL COMMENT '类型',
+    `enable`         tinyint(1)   NOT NULL COMMENT '是否启用',
+    `sync_time`      bigint       NOT NULL COMMENT '同步时间',
+    `relational_ids` varchar(255) DEFAULT NULL COMMENT '相关的ID',
+    PRIMARY KEY (`id`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_general_ci;
+
+
