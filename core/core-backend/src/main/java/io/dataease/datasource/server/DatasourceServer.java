@@ -160,7 +160,7 @@ public class DatasourceServer implements DatasourceApi {
                 List<TableField> tableFields = ExcelUtils.getTableFields(datasourceRequest);
                 try {
                     datasourceSyncManage.createEngineTable(datasourceRequest.getTable(), tableFields);
-                }catch (Exception e){
+                } catch (Exception e) {
                     DEException.throwException("Failed to create table " + datasourceRequest.getTable());
                 }
             }
@@ -170,7 +170,7 @@ public class DatasourceServer implements DatasourceApi {
             BeanUtils.copyBean(coreDatasourceTask, dataSourceDTO.getSyncSetting());
             coreDatasourceTask.setName(coreDatasource.getName() + "-task");
             coreDatasourceTask.setDsId(coreDatasource.getId());
-            if(coreDatasourceTask.getStartTime() == null){
+            if (coreDatasourceTask.getStartTime() == null) {
                 coreDatasourceTask.setStartTime(System.currentTimeMillis() - 20 * 1000);
             }
             if (StringUtils.equalsIgnoreCase(coreDatasourceTask.getSyncRate(), DatasourceTaskServer.ScheduleType.RIGHTNOW.toString())) {
@@ -188,11 +188,11 @@ public class DatasourceServer implements DatasourceApi {
                 List<TableField> tableFields = ApiUtils.getTableFields(datasourceRequest);
                 try {
                     datasourceSyncManage.createEngineTable(datasourceRequest.getTable(), tableFields);
-                }catch (Exception e){
-                    DEException.throwException("Failed to create table " + datasourceRequest.getTable()+ ": " + e.getMessage());
+                } catch (Exception e) {
+                    DEException.throwException("Failed to create table " + datasourceRequest.getTable() + ": " + e.getMessage());
                 }
             }
-        }else {
+        } else {
             calciteProvider.update(dataSourceDTO);
         }
         return dataSourceDTO;
@@ -264,7 +264,7 @@ public class DatasourceServer implements DatasourceApi {
             for (String deleteTable : toDeleteTables) {
                 try {
                     datasourceSyncManage.dropEngineTable(deleteTable);
-                }catch (Exception e){
+                } catch (Exception e) {
                     DEException.throwException("Failed to drop table " + deleteTable);
                 }
             }
@@ -272,7 +272,7 @@ public class DatasourceServer implements DatasourceApi {
                 datasourceRequest.setTable(toCreateTable);
                 try {
                     datasourceSyncManage.createEngineTable(toCreateTable, ApiUtils.getTableFields(datasourceRequest));
-                }catch (Exception e){
+                } catch (Exception e) {
                     DEException.throwException("Failed to create table " + toCreateTable);
                 }
             }
@@ -287,7 +287,7 @@ public class DatasourceServer implements DatasourceApi {
                 for (String deleteTable : toDeleteTables) {
                     try {
                         datasourceSyncManage.dropEngineTable(deleteTable);
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         DEException.throwException("Failed to drop table " + deleteTable);
                     }
                 }
@@ -295,7 +295,7 @@ public class DatasourceServer implements DatasourceApi {
                     datasourceRequest.setTable(toCreateTable);
                     try {
                         datasourceSyncManage.createEngineTable(toCreateTable, ExcelUtils.getTableFields(datasourceRequest));
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         DEException.throwException("Failed to create table " + toCreateTable);
                     }
                 }
@@ -388,7 +388,7 @@ public class DatasourceServer implements DatasourceApi {
             datasourceDTO.setSyncSetting(taskDTO);
 
             CoreDatasourceTaskLog coreDatasourceTaskLog = datasourceTaskServer.lastSyncLog(datasourceDTO.getId());
-            if(coreDatasourceTaskLog!=null){
+            if (coreDatasourceTaskLog != null) {
                 datasourceDTO.setLastSyncTime(coreDatasourceTaskLog.getStartTime());
             }
 
@@ -424,7 +424,7 @@ public class DatasourceServer implements DatasourceApi {
             QueryWrapper<CoreDatasetTable> wrapper = new QueryWrapper<>();
             wrapper.eq("datasource_id", coreDatasource.getId());
             List<CoreDatasetTable> coreDatasetTables = coreDatasetTableMapper.selectList(wrapper);
-            if(!CollectionUtils.isEmpty(coreDatasetTables)){
+            if (!CollectionUtils.isEmpty(coreDatasetTables)) {
                 HashSet<Long> set = new HashSet<>(coreDatasetTables.stream().map(CoreDatasetTable::getDatasetGroupId).collect(Collectors.toList()));
                 DEException.throwException(set.size() + " 个数据集正在使用，不能删除!");
             }
@@ -437,7 +437,7 @@ public class DatasourceServer implements DatasourceApi {
                 datasourceRequest.setTable(table.getTableName());
                 try {
                     datasourceSyncManage.dropEngineTable(datasourceRequest.getTable());
-                }catch (Exception e){
+                } catch (Exception e) {
                     DEException.throwException("Failed to drop table " + datasourceRequest.getTable());
                 }
             }
@@ -450,7 +450,7 @@ public class DatasourceServer implements DatasourceApi {
                 datasourceRequest.setTable(api.getTableName());
                 try {
                     datasourceSyncManage.dropEngineTable(datasourceRequest.getTable());
-                }catch (Exception e){
+                } catch (Exception e) {
                     DEException.throwException("Failed to drop table " + datasourceRequest.getTable());
                 }
 
@@ -547,7 +547,7 @@ public class DatasourceServer implements DatasourceApi {
                         datasourceRequest.setTable(datasetTableDTO.getTableName());
                         List<String> oldFieldNames = ExcelUtils.getTableFields(datasourceRequest).stream().map(TableField::getName).collect(Collectors.toList());
                         Collections.sort(oldFieldNames);
-                        if(fieldNames.equals(oldFieldNames)){
+                        if (fieldNames.equals(oldFieldNames)) {
                             sheet.setDeTableName(datasetTableDTO.getTableName());
                             excelSheetDataList.add(sheet);
                         }
@@ -572,13 +572,21 @@ public class DatasourceServer implements DatasourceApi {
         return excelFileData;
     }
 
-    public ApiDefinition checkApiDatasource(@RequestBody Map<String, String> request) throws DEException {
+    public ApiDefinition checkApiDatasource(Map<String, String> request) throws DEException {
         ApiDefinition apiDefinition = JsonUtil.parseObject(new String(java.util.Base64.getDecoder().decode(request.get("data"))), ApiDefinition.class);
         String response = ApiUtils.execHttpRequest(apiDefinition, 10);
-        if(request.keySet().contains("type") && request.get("type").equals("apiStructure")){
+        if (request.keySet().contains("type") && request.get("type").equals("apiStructure")) {
             apiDefinition.setShowApiStructure(true);
         }
-        return ApiUtils.checkApiDefinition(apiDefinition, response);
+        ApiUtils.checkApiDefinition(apiDefinition, response);
+        if (apiDefinition.getRequest().getAuthManager() != null
+                && StringUtils.isNotBlank(apiDefinition.getRequest().getAuthManager().getUsername())
+                && StringUtils.isNotBlank(apiDefinition.getRequest().getAuthManager().getPassword())
+                && apiDefinition.getRequest().getAuthManager().getVerification().equals("Basic Auth")) {
+            apiDefinition.getRequest().getAuthManager().setUsername(new String(Base64.getEncoder().encode(apiDefinition.getRequest().getAuthManager().getUsername().getBytes())));
+            apiDefinition.getRequest().getAuthManager().setPassword(new String(Base64.getEncoder().encode(apiDefinition.getRequest().getAuthManager().getPassword().getBytes())));
+        }
+        return apiDefinition;
     }
 
     private void preCheckDs(DatasourceDTO datasource) throws DEException {
