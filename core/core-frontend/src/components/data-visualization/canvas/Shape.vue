@@ -345,8 +345,10 @@ const handleBoardMouseDownOnShape = e => {
 
 const handleInnerMouseDownOnShape = e => {
   dvMainStore.setCurComponent({ component: element.value, index: index.value })
+  console.log('handleInnerMouseDownOnShape==')
   // 边界区域拖拽 返回
   if (boardMoveActive.value) {
+    e.stopPropagation()
     return
   }
   handleMouseDownOnShape(e)

@@ -97,8 +97,10 @@ public class CoreVisualizationManage {
 
     @XpackInteract(value = "visualizationResourceTree", before = false)
     public Long innerSave(DataVisualizationInfo visualizationInfo) {
-        Long id = IDUtils.snowID();
-        visualizationInfo.setId(id);
+        if(visualizationInfo.getId() == null){
+            Long id = IDUtils.snowID();
+            visualizationInfo.setId(id);
+        }
         visualizationInfo.setDeleteFlag(DataVisualizationConstants.DELETE_FLAG.AVAILABLE);
         visualizationInfo.setCreateBy(AuthUtils.getUser().getUserId().toString());
         visualizationInfo.setUpdateBy(AuthUtils.getUser().getUserId().toString());
@@ -106,7 +108,7 @@ public class CoreVisualizationManage {
         visualizationInfo.setUpdateTime(System.currentTimeMillis());
         visualizationInfo.setOrgId(AuthUtils.getUser().getDefaultOid());
         mapper.insert(visualizationInfo);
-        return id;
+        return visualizationInfo.getId();
     }
 
     @XpackInteract(value = "visualizationResourceTree", before = false)

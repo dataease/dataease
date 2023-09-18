@@ -133,6 +133,7 @@ const restore = () => {
       let canvasWidth = previewCanvas.value.clientWidth
       let canvasHeight = previewCanvas.value.clientHeight
       scaleWidth.value = Math.floor((canvasWidth * 100) / canvasStyleData.value.width)
+      console.log('scaleWidth=' + scaleWidth.value)
       if (dashboardActive.value) {
         cellWidth.value = canvasWidth / pcMatrixCount.value.x
         cellHeight.value = canvasHeight / pcMatrixCount.value.y
@@ -238,6 +239,7 @@ defineExpose({
       :style="getShapeItemShowStyle(item)"
       :show-position="showPosition"
       :search-count="searchCount"
+      :scale="scaleWidth"
       @userViewEnlargeOpen="userViewEnlargeOpen($event, item)"
     />
     <user-view-enlarge ref="userViewEnlargeRef"></user-view-enlarge>

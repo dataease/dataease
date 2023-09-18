@@ -2,7 +2,7 @@
 import { getStyle, getSVGStyle } from '@/utils/style'
 import runAnimation from '@/utils/runAnimation'
 import eventBus from '@/utils/eventBus'
-import { ref, onMounted, toRefs, getCurrentInstance, computed } from 'vue'
+import { ref, onMounted, toRefs, getCurrentInstance, computed, watch } from 'vue'
 import findComponent from '@/utils/components'
 import { hexColorToRGBA } from '@/views/chart/components/js/util'
 import { imgUrlTrans } from '@/utils/imgUtils'
@@ -71,13 +71,25 @@ const props = defineProps({
     type: Number,
     required: false,
     default: 0
+  },
+  scale: {
+    type: Number,
+    required: false,
+    default: 100
   }
 })
-const { config, showPosition, index, canvasStyleData, canvasViewInfo, dvInfo, searchCount } =
+const { config, showPosition, index, canvasStyleData, canvasViewInfo, dvInfo, searchCount, scale } =
   toRefs(props)
 let currentInstance
 const component = ref(null)
 const emits = defineEmits(['userViewEnlargeOpen'])
+
+watch(
+  () => scale.value,
+  () => {
+    console.log('scale2.value=' + scale.value)
+  }
+)
 
 const htmlToImage = () => {
   toPng(componentWrapperInnerRef.value)
@@ -202,6 +214,7 @@ const commonBackgroundSvgInner = computed(() => {
         class="component"
         :canvas-style-data="canvasStyleData"
         :dv-info="dvInfo"
+        :dv-type="dvInfo.type"
         :canvas-view-info="canvasViewInfo"
         :style="getComponentStyleDefault(config?.style)"
         :prop-value="config?.propValue"
@@ -210,6 +223,7 @@ const commonBackgroundSvgInner = computed(() => {
         :linkage="config?.linkage"
         :show-position="showPosition"
         :search-count="searchCount"
+        :scale="scale"
       />
     </div>
   </div>
