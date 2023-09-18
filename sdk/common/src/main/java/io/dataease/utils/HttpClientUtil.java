@@ -8,6 +8,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.EntityBuilder;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
@@ -93,6 +94,35 @@ public class HttpClientUtil {
             HttpResponse response = httpClient.execute(httpGet);
             return getResponseStr(response, config);
         } catch (Exception e) {
+            logger.error("HttpClient查询失败", e);
+            throw new DEException(SYSTEM_INNER_ERROR.code(), "HttpClient查询失败: " + e.getMessage());
+        } finally {
+            try {
+                httpClient.close();
+            } catch (Exception e) {
+                logger.error("HttpClient关闭连接失败", e);
+            }
+        }
+    }
+
+    public static String patch(String url, String json, HttpClientConfig config) {
+        CloseableHttpClient httpClient = buildHttpClient(url);
+        HttpPatch httpPatch = new HttpPatch(url);
+        config = config == null ? new HttpClientConfig() : config;
+        try {
+            httpPatch.setConfig(config.buildRequestConfig());
+            Map<String, String> header = config.getHeader();
+            for (String key : header.keySet()) {
+                httpPatch.addHeader(key, header.get(key));
+            }
+            EntityBuilder entityBuilder = EntityBuilder.create();
+            entityBuilder.setText(json);
+            entityBuilder.setContentType(ContentType.APPLICATION_JSON);
+            HttpEntity requestEntity = entityBuilder.build();
+            httpPatch.setEntity(requestEntity);
+            HttpResponse response = httpClient.execute(httpPatch);
+            return getResponseStr(response, config);
+        }catch (Exception e) {
             logger.error("HttpClient查询失败", e);
             throw new DEException(SYSTEM_INNER_ERROR.code(), "HttpClient查询失败: " + e.getMessage());
         } finally {
