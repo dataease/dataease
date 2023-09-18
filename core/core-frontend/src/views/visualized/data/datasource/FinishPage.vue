@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, onUnmounted } from 'vue'
+import { ref } from 'vue'
 import { propTypes } from '@/utils/propTypes'
 import { useCache } from '@/hooks/web/useCache'
 
@@ -51,7 +51,7 @@ const handleChange = (val: boolean) => {
             <Icon name="icon_dataset"></Icon>
           </el-icon>
           <div class="info">
-            <p class="name">{{ name || '-' }}</p>
+            <p class="name">{{ $t('auth.dataset') }}</p>
             <p class="size">为下一步的仪表板或大屏做准备</p>
           </div>
           <el-button class="create" secondary :disabled="disabled" @click="createDataset">
