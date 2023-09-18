@@ -1,6 +1,7 @@
 package io.dataease.api.xpack.settings;
 
 import io.dataease.api.xpack.settings.request.XpackAuthenticationEditor;
+import io.dataease.api.xpack.settings.vo.XpackAuthenticationStatusVO;
 import io.dataease.api.xpack.settings.vo.XpackAuthenticationVO;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,4 +19,7 @@ public interface XpackAuthenticationApi {
 
     @PostMapping("/update")
     void update(@RequestBody XpackAuthenticationEditor editor);
+
+    @GetMapping("/status")
+    List<XpackAuthenticationStatusVO> status();
 }

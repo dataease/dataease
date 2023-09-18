@@ -192,7 +192,6 @@ onMounted(() => {
                 class="default-login-tabs"
                 :active-name="activeName"
                 jsname="L2NvbXBvbmVudC9sb2dpbi9MZGFw"
-                @loaded="xpackLoaded"
               />
 
               <template v-if="activeName === 'simple'">
@@ -241,7 +240,7 @@ onMounted(() => {
                 </div>
               </template>
 
-              <XpackComponent jsname="L2NvbXBvbmVudC9sb2dpbi9IYW5kbGVy" />
+              <XpackComponent jsname="L2NvbXBvbmVudC9sb2dpbi9IYW5kbGVy" @loaded="xpackLoaded" />
             </div>
 
             <div class="login-msg">

@@ -18,6 +18,7 @@ public class WhitelistUtils {
             "/swagger-resources",
             "/doc.html",
             "/panel.html",
+            "/setting/authentication/status",
             "/");
 
     public static boolean match(String requestURI) {
