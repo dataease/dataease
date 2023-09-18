@@ -115,7 +115,7 @@ onMounted(() => {
 .subject-template:hover {
   color: deepskyblue;
   cursor: pointer;
-  border: dashed 1px #4b8fdf;
+  border-color: rgba(51, 112, 255, 0.6);
 }
 
 .demonstration {
@@ -180,7 +180,10 @@ onMounted(() => {
 }
 
 .background-selected {
-  border: solid 1px #4b8fdf !important;
+  border: solid 1px #3370ff !important;
+  .title-area {
+    background: rgba(51, 112, 255, 0.1);
+  }
 }
 
 .delete-icon {
