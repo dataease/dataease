@@ -9,17 +9,18 @@ import { ElContainer } from 'element-plus-secondary'
 import { useRoute } from 'vue-router'
 const route = useRoute()
 const systemMenu = computed(() => route.path.includes('system'))
+const settingMenu = computed(() => route.path.includes('sys-setting'))
 </script>
 
 <template>
   <div class="common-layout">
-    <HeaderSystem v-if="systemMenu"></HeaderSystem>
+    <HeaderSystem v-if="settingMenu"></HeaderSystem>
     <Header v-else></Header>
     <el-container class="layout-container">
-      <Sidebar v-if="systemMenu" class="layout-sidebar">
+      <Sidebar v-if="systemMenu || settingMenu" class="layout-sidebar">
         <Menu style="height: 100%"></Menu>
       </Sidebar>
-      <Main class="layout-main" :class="{ 'with-sider': systemMenu }"></Main>
+      <Main class="layout-main" :class="{ 'with-sider': systemMenu || settingMenu }"></Main>
     </el-container>
   </div>
 </template>

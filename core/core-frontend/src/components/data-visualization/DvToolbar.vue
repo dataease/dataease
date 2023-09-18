@@ -2,7 +2,6 @@
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { generateID } from '@/utils/generateID'
 import toast from '@/utils/toast'
-import Preview from '@/components/data-visualization/canvas/Preview.vue'
 import { commonStyle, commonAttr } from '@/custom-component/component-list'
 import eventBus from '@/utils/eventBus'
 import { $ } from '@/utils/utils'
@@ -16,7 +15,6 @@ import { lockStoreWithOut } from '@/store/modules/data-visualization/lock'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { storeToRefs } from 'pinia'
 import Icon from '../icon-custom/src/Icon.vue'
-import { saveCanvas, updateCanvas } from '@/api/visualization/dataVisualization'
 import ComponentGroup from '@/components/visualization/ComponentGroup.vue'
 import UserViewGroup from '@/custom-component/component-group/UserViewGroup.vue'
 import MediaGroup from '@/custom-component/component-group/MediaGroup.vue'
@@ -24,9 +22,6 @@ import TextGroup from '@/custom-component/component-group/TextGroup.vue'
 import CommonGroup from '@/custom-component/component-group/CommonGroup.vue'
 import DeResourceGroupOpt from '@/views/common/DeResourceGroupOpt.vue'
 import { canvasSave } from '@/utils/canvasUtils'
-
-const isShowPreview = ref(false)
-const isScreenshot = ref(false)
 let timer = null
 let nameEdit = ref(false)
 let inputName = ref('')
@@ -190,11 +185,6 @@ const clearCanvas = () => {
   snapshotStore.recordSnapshot('dv-clearCanvas')
 }
 
-const handlePreviewChange = () => {
-  isShowPreview.value = false
-  dvMainStore.setEditMode('edit')
-}
-
 const editCanvasName = () => {
   nameEdit.value = true
   inputName.value = dvInfo.value.name
@@ -289,8 +279,6 @@ eventBus.on('clearCanvas', clearCanvas)
     <Teleport v-if="nameEdit" :to="'#dv-canvas-name'">
       <input ref="nameInput" maxlength="50" v-model="inputName" @blur="closeEditCanvasName" />
     </Teleport>
-    <!-- 预览 -->
-    <Preview v-if="isShowPreview" :is-screenshot="isScreenshot" @close="handlePreviewChange" />
     <el-button
       v-show="editMode === 'preview'"
       icon="EditPen"

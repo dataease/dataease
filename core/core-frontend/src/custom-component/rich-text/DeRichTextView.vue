@@ -12,7 +12,7 @@
       v-if="editShow && !isError"
       :id="tinymceId"
       v-model="myValue"
-      style="width: 100%; height: 100%"
+      style="width: 100%; height: 100%; padding: 5px"
       :init="init"
       :disabled="!canEdit"
       @onClick="onClick"
@@ -279,25 +279,22 @@ const calcData = (view: Chart, callback) => {
   isError.value = false
   if (view.tableId) {
     const v = JSON.parse(JSON.stringify(view))
-    getData(v)
-      .then(res => {
-        if (res.code && res.code !== 0) {
-          isError.value = true
-          errMsg.value = res.msg
-        } else {
-          state.data = res?.data
-          state.totalItems = res?.totalItems
-          const curViewInfo = canvasViewInfo.value[element.value.id]
-          curViewInfo['curFields'] = res.data.fields
-          initCurFields(res)
-        }
+    getData(v).then(res => {
+      if (res.code && res.code !== 0) {
+        isError.value = true
+        errMsg.value = res.msg
+      } else {
+        state.data = res?.data
+        state.totalItems = res?.totalItems
+        const curViewInfo = canvasViewInfo.value[element.value.id]
+        curViewInfo['curFields'] = res.data.fields
+        initCurFields(res)
+      }
+      callback?.()
+      nextTick(() => {
+        initReady.value = true
       })
-      .finally(() => {
-        nextTick(() => {
-          initReady.value = true
-        })
-        callback?.()
-      })
+    })
   } else {
     nextTick(() => {
       initReady.value = true
@@ -409,6 +406,7 @@ defineExpose({
 }
 
 :deep(li) {
+  margin-left: 20px;
   display: list-item !important;
   text-align: -webkit-match-parent !important;
 }
@@ -429,9 +427,7 @@ defineExpose({
 .mceNonEditable {
   background: rgba(51, 112, 255, 0.04);
 }
-</style>
 
-<style lang="less">
 .tox-tinymce-inline {
   left: var(--drawLeft);
   right: var(--drawRight);

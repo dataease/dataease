@@ -366,14 +366,6 @@ watch(
 </template>
 
 <style lang="less" scoped>
-.style-light {
-  border-top: 1px solid @side-outline-border-color-light;
-}
-
-.style-dark {
-  border-top: 1px solid @side-outline-border-color;
-}
-
 .ed-row {
   display: block;
 }
@@ -412,6 +404,13 @@ span {
   :deep(.ed-checkbox__inner) {
     width: 14px;
     height: 14px;
+  }
+}
+:deep(.ed-collapse-item) {
+  &:first-child {
+    .ed-collapse-item__header {
+      border-top: none;
+    }
   }
 }
 </style>

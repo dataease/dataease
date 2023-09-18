@@ -26,6 +26,7 @@ const toAbout = () => {
 }
 
 const name = computed(() => userStore.getName)
+const uid = computed(() => userStore.getUid)
 </script>
 
 <template>
@@ -59,6 +60,11 @@ const name = computed(() => userStore.getName)
   </el-dropdown>
   <AboutPage />
   <XpackComponent jsname="dWNlbnRlci1oYW5kbGVy" @loaded="ucenterLoaded" />
+  <XpackComponent
+    v-if="uid === '1'"
+    jsname="c2V0dGluZy9zZXR0aW5nLWhhbmRsZXI="
+    @loaded="ucenterLoaded"
+  />
 </template>
 
 <style lang="less">

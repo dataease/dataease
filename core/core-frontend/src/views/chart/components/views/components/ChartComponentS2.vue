@@ -91,8 +91,11 @@ const calcData = (view: Chart, callback, resetPageInfo = true) => {
           emit('onDrillFilters', res?.drillFilters)
           renderChart(res as unknown as Chart, resetPageInfo)
         }
+        callback?.()
       })
-      .finally(callback?.())
+      .catch(() => {
+        callback?.()
+      })
   } else {
     callback?.()
   }

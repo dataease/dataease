@@ -76,8 +76,11 @@ const calcData = (view, callback) => {
           dvMainStore.setViewDataDetails(view.id, chartData.value)
           renderChart(res)
         }
+        callback?.()
       })
-      .finally(callback?.())
+      .catch(() => {
+        callback?.()
+      })
   } else {
     callback?.()
   }
