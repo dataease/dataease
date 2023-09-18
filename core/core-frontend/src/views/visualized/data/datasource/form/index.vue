@@ -384,6 +384,7 @@ const pid = ref('0')
 
 const init = (nodeInfo: Form | Param, id?: string, res?: object) => {
   editDs.value = !!nodeInfo
+  showFinishPage.value = false
 
   if (!!nodeInfo) {
     if (nodeInfo.type == 'Excel') {
