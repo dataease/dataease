@@ -7,7 +7,12 @@ const dvMainStore = dvMainStoreWithOut()
 const { componentData, curComponentIndex, canvasStyleData } = storeToRefs(dvMainStore)
 
 const needToChangeAttrs = ['top', 'left', 'width', 'height', 'fontSize']
-export default function changeComponentsSizeWithScale(scale) {
+
+export function changeSizeWithScale(scale) {
+  return changeComponentsSizeWithScale(scale)
+}
+
+export function changeComponentsSizeWithScale(scale) {
   const componentDataCopy = deepCopy(componentData.value)
   componentDataCopy.forEach(component => {
     Object.keys(component.style).forEach(key => {
