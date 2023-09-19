@@ -100,10 +100,10 @@ const myValue = ref('')
 const init = ref({
   selector: '#' + tinymceId,
   toolbar_items_size: 'small',
-  language_url: '/tinymce/langs/zh_CN.js', // 汉化路径是自定义的，一般放在public或static里面
+  language_url: '/tinymce-dataease-private/langs/zh_CN.js', // 汉化路径是自定义的，一般放在public或static里面
   language: 'zh_CN',
-  skin_url: '/tinymce/skins/ui/oxide', // 皮肤
-  content_css: '/tinymce/skins/content/default/content.css',
+  skin_url: '/tinymce-dataease-private/skins/ui/oxide', // 皮肤
+  content_css: '/tinymce-dataease-private/skins/content/default/content.css',
   plugins:
     'advlist autolink link image lists charmap  media wordcount table contextmenu directionality pagebreak', // 插件
   // 工具栏
