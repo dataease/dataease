@@ -11,6 +11,7 @@ import { rsaEncryp } from '@/utils/encryption'
 import router from '@/router'
 import { ElMessage } from 'element-plus-secondary'
 import { XpackComponent } from '@/components/plugin'
+import { logoutHandler } from '@/utils/logout'
 
 const { wsCache } = useCache()
 const appStore = useAppStoreWithOut()
@@ -122,14 +123,13 @@ onMounted(() => {
     loginErrorMsg.value = localStorage.getItem('DE-GATEWAY-FLAG')
     ElMessage.error(loginErrorMsg.value)
     localStorage.removeItem('DE-GATEWAY-FLAG')
+    logoutHandler(true)
   }
   if (!wsCache.get(appStore.getDekey)) {
     queryDekey().then(res => {
       wsCache.set(appStore.getDekey, res.data)
     })
   }
-  /* setLoginForm(state)
-  callback() */
 })
 </script>
 
