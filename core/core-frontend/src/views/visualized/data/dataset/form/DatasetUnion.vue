@@ -13,6 +13,7 @@ import type { Field } from './UnionFieldList.vue'
 import type { SqlNode } from './AddSql.vue'
 import { cloneDeep } from 'lodash-es'
 import type { Table } from '@/api/dataset'
+import { id } from 'element-plus-secondary/es/locale'
 const state = reactive({
   nodeList: [],
   pathList: [],
@@ -359,7 +360,7 @@ const leafNode = (arr, leafList) => {
     if (ele.children?.length) {
       leafNode(ele.children, leafList)
     }
-    if (ele.x || ele.y) {
+    if (!!ele.x || (!!ele.y && !!ele.x)) {
       leafList.push({
         ...ele,
         isShadow: ele.isShadow,
@@ -447,9 +448,9 @@ const dfsNode = (arr, nodeListLocation, x = 0, y = 0) => {
   })
 }
 
-const dfsNodeShadow = (arr, tableName, position, parent) => {
+const dfsNodeShadow = (arr, { tableName, id }, position, parent) => {
   return arr.some((ele, index) => {
-    if (ele.tableName === tableName) {
+    if (ele.tableName === tableName && id === ele.id) {
       const flag = tableName + '_&&' + position
       if (ele.isShadow && state.visualNode.flag === flag) return true
       state.visualNode = {
@@ -468,7 +469,7 @@ const dfsNodeShadow = (arr, tableName, position, parent) => {
       return true
     }
     if (ele.children?.length) {
-      return dfsNodeShadow(ele.children, tableName, position, ele)
+      return dfsNodeShadow(ele.children, { tableName, id }, position, ele)
     }
     return false
   })
@@ -575,10 +576,10 @@ const dragover_handler = ev => {
   state.visualNode = null
 
   if (Math.max(...maxArr)) {
-    const { tableName, isShadow = false } = possibleNodeAreaList.value[maxIndex]
+    const { tableName, isShadow = false, id } = possibleNodeAreaList.value[maxIndex]
     const [b, r] = maxArr
     if (!isShadow) {
-      dfsNodeShadow(state.nodeList, tableName, b >= r ? 'b' : 'r', state.nodeList[0])
+      dfsNodeShadow(state.nodeList, { tableName, id }, b >= r ? 'b' : 'r', state.nodeList[0])
     }
   }
 }
