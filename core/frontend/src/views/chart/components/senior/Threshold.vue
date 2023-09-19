@@ -212,7 +212,7 @@
               :key="index"
               class="line-style"
             >
-              <el-col :span="6">
+              <el-col :span="4">
                 <span
                   v-if="item.term === 'eq'"
                   :title="$t('chart.filter_eq')"
@@ -266,7 +266,22 @@
                   :title="$t('chart.filter_not_empty')"
                 >{{ $t('chart.filter_not_empty') }}</span>
               </el-col>
-              <el-col :span="10">
+
+              <el-col :span="4" v-if="!item.term.includes('null') && !item.term.includes('empty')">
+                  <span
+                          v-if="item.field === '0'"
+                          :title="$t('chart.field_fixed')"
+                  >{{ $t('chart.field_fixed') }}</span>
+                  <span
+                          v-if="item.field === '1'"
+                          :title="$t('chart.field_dynamic')"
+                  >{{ $t('chart.field_dynamic') }}</span>
+              </el-col>
+              <el-col :span="4" v-if="item.term.includes('null') || item.term.includes('empty')">
+                  &nbsp;
+              </el-col>
+
+              <el-col :span="10" v-if="item.field === '0'">
                 <span
                   v-if="!item.term.includes('null') && !item.term.includes('empty') && item.term !== 'between'"
                   :title="item.value"
@@ -276,13 +291,27 @@
                 </span>
                 <span v-else>&nbsp;</span>
               </el-col>
-              <el-col :span="4">
+
+              <el-col :span="10" v-if="item.field === '1'">
+                <span v-if="!item.term.includes('null') && !item.term.includes('empty') && item.term !== 'between'"
+                      :title="item.targetField.curField.name + '(' + $t('chart.' + item.targetField.summary) + ')'">{{ item.targetField.curField.name + '(' + $t('chart.' + item.targetField.summary) + ')' }}</span>
+
+
+                <span v-else-if="!item.term.includes('null') && !item.term.includes('empty') && item.term === 'between'"
+                      :title="item.minField.curField.name + '(' + $t('chart.' + item.minField.summary) + ')' + ' ≤' + $t('chart.drag_block_label_value') + '≤ ' + item.maxField.curField.name + '(' + $t('chart.' + item.maxField.summary) + ')'">
+                    {{ item.minField.curField.name + '(' + $t('chart.' + item.minField.summary) + ')' + ' ≤' + $t('chart.drag_block_label_value') + '≤ ' + item.maxField.curField.name + '(' + $t('chart.' + item.maxField.summary) + ')' }}
+                </span>
+
+                <span v-else>&nbsp;</span>
+              </el-col>
+
+              <el-col :span="2">
                 <span
                   :title="$t('chart.textColor')"
                   :style="{width:'14px', height:'14px', backgroundColor: item.color, border: 'solid 1px #e1e4e8'}"
                 />
               </el-col>
-              <el-col :span="4">
+              <el-col :span="2">
                 <span
                   :title="$t('chart.backgroundColor')"
                   :style="{width:'14px', height:'14px', backgroundColor: item.backgroundColor, border: 'solid 1px #e1e4e8'}"
@@ -363,7 +392,7 @@
       :title="$t('chart.threshold')"
       :visible="editTableThresholdDialog"
       :show-close="false"
-      width="800px"
+      width="1050px"
       class="dialog-css"
       append-to-body
     >
@@ -593,6 +622,10 @@ export default {
     closeTableThreshold() {
       this.editTableThresholdDialog = false
     },
+    fieldValid(field) {
+      // 检查字段和聚合方式是否不为空
+      return field && field.fieldId && field.summary;
+    },
     changeTableThreshold() {
       // check line config
       for (let i = 0; i < this.tableThresholdArr.length; i++) {
@@ -624,7 +657,7 @@ export default {
             return
           }
           if (ele.term === 'between') {
-            if (!ele.term.includes('null') && !ele.term.includes('empty') && (!ele.min || !ele.max)) {
+            if (!ele.term.includes('null') && !ele.term.includes('empty') && ((ele.field === '0' && (!ele.min || !ele.max)) || (ele.field === '1' && (!this.fieldValid(ele.minField) || !this.fieldValid(ele.maxField))))) {
               this.$message({
                 message: this.$t('chart.value_can_not_empty'),
                 type: 'error',
@@ -641,7 +674,7 @@ export default {
               return
             }
           } else {
-            if (!ele.term.includes('null') && !ele.term.includes('empty') && !ele.value) {
+            if (!ele.term.includes('null') && !ele.term.includes('empty') && ((ele.field === '0' && !ele.value) || (ele.field === '1' && !this.fieldValid(ele.targetField)))) {
               this.$message({
                 message: this.$t('chart.value_can_not_empty'),
                 type: 'error',
@@ -649,7 +682,7 @@ export default {
               })
               return
             }
-            if ((field.field.deType === 2 || field.field.deType === 3 || field.field.deType === 4) && parseFloat(ele.value).toString() === 'NaN') {
+            if (ele.field === '0' && (field.field.deType === 2 || field.field.deType === 3 || field.field.deType === 4) && parseFloat(ele.value).toString() === 'NaN') {
               this.$message({
                 message: this.$t('chart.value_error'),
                 type: 'error',
