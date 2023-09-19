@@ -2441,6 +2441,12 @@ span {
 :deep(.ed-collapse) {
   width: 100%;
 }
+:deep(.ed-form-item) {
+  .ed-input__inner {
+    font-size: 12px;
+    font-weight: 400;
+  }
+}
 :deep(.ed-form-item__label) {
   color: @canvas-main-font-color;
   font-size: 12px;
