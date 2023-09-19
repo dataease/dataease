@@ -102,10 +102,10 @@ watch(
 
 const displayTypeChange = () => {
   if (!props.isConfig) return
-  selectValue.value = config.value.displayType === '7' ? [] : ''
+  selectValue.value = config.value.displayType === '7' ? [] : undefined
   multiple.value = config.value.displayType === '7'
-  config.value.defaultValue = multiple.value ? [] : ''
-  selectValue.value = multiple.value ? [] : ''
+  config.value.defaultValue = multiple.value ? [] : undefined
+  selectValue.value = multiple.value ? [] : undefined
 }
 watch(
   () => config.value.selectValue,
@@ -143,8 +143,8 @@ const init = () => {
     config.value.selectValue = Array.isArray(defaultValue) ? [...defaultValue] : defaultValue
     selectValue.value = Array.isArray(defaultValue) ? [...defaultValue] : defaultValue
   } else {
-    config.value.selectValue = plus ? [] : ''
-    selectValue.value = plus ? [] : ''
+    config.value.selectValue = plus ? [] : undefined
+    selectValue.value = plus ? [] : undefined
   }
   multiple.value = config.value.displayType === '7'
 }
