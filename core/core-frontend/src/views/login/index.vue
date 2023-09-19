@@ -48,7 +48,7 @@ const checkUsername = (_rule: any, value: any, callback: any) => {
   }
 }
 const validatePwd = (_, value, callback) => {
-  const pattern = '^[a-zA-Z0-9][a-zA-Z0-9\._-]*$'
+  const pattern = '^[a-zA-Z0-9][a-zA-Z0-9\@._-]*$'
   const regep = new RegExp(pattern)
   if (!regep.test(value)) {
     const msg = t('user.user_name_pattern_error')
