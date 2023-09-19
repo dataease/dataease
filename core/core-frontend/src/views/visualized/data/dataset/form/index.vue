@@ -879,7 +879,6 @@ const recoverSelection = () => {
 
 const dragEnd = () => {
   maskShow.value = false
-  datasetDrag.value.dragEndClear()
 }
 
 const cascaderChange = (row, val) => {
