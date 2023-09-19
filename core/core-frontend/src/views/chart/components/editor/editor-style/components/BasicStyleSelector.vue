@@ -99,10 +99,148 @@ onMounted(() => {
       </el-checkbox>
     </el-form-item>
 
+    <!--map start-->
+    <el-row :gutter="8">
+      <el-col :span="12" v-if="showProperty('areaBorderColor')">
+        <el-form-item
+          :label="t('chart.area_border_color')"
+          class="form-item"
+          :class="'form-item-' + themes"
+        >
+          <el-color-picker
+            :persistent="false"
+            v-model="state.basicStyleForm.areaBorderColor"
+            is-custom
+            :trigger-width="108"
+            class="color-picker-style"
+            :predefine="predefineColors"
+            @change="changeBasicStyle('areaBorderColor')"
+          />
+        </el-form-item>
+      </el-col>
+      <el-col :span="12" v-if="showProperty('areaBaseColor')">
+        <el-form-item
+          :label="t('chart.area_base_color')"
+          class="form-item"
+          :class="'form-item-' + themes"
+        >
+          <el-color-picker
+            :persistent="false"
+            v-model="state.basicStyleForm.areaBaseColor"
+            is-custom
+            :trigger-width="108"
+            class="color-picker-style"
+            :predefine="predefineColors"
+            @change="changeBasicStyle('areaBaseColor')"
+          />
+        </el-form-item>
+      </el-col>
+    </el-row>
+    <el-form-item
+      class="form-item"
+      :class="'form-item-' + themes"
+      v-if="showProperty('suspension')"
+    >
+      <el-checkbox
+        v-model="state.basicStyleForm.suspension"
+        :predefine="predefineColors"
+        @change="changeBasicStyle('suspension')"
+      >
+        {{ t('chart.suspension') }}
+      </el-checkbox>
+    </el-form-item>
+
+    <!--map end-->
+
+    <!--table start-->
+    <el-row :gutter="8">
+      <el-col :span="12" v-if="showProperty('tableBorderColor')">
+        <el-form-item
+          :label="t('chart.table_border_color')"
+          class="form-item"
+          :class="'form-item-' + themes"
+        >
+          <el-color-picker
+            :persistent="false"
+            v-model="state.basicStyleForm.tableBorderColor"
+            is-custom
+            :trigger-width="108"
+            color-format="hex"
+            :predefine="predefineColors"
+            @change="changeBasicStyle()"
+          />
+        </el-form-item>
+      </el-col>
+      <el-col :span="12" v-if="showProperty('tableScrollBarColor')">
+        <el-form-item
+          :label="t('chart.table_scroll_bar_color')"
+          class="form-item"
+          :class="'form-item-' + themes"
+        >
+          <el-color-picker
+            :persistent="false"
+            v-model="state.basicStyleForm.tableScrollBarColor"
+            class="color-picker-style"
+            :predefine="predefineColors"
+            is-custom
+            :trigger-width="108"
+            color-format="rgb"
+            show-alpha
+            @change="changeBasicStyle()"
+          />
+        </el-form-item>
+      </el-col>
+    </el-row>
+
+    <el-row :gutter="8">
+      <el-col :span="12" v-if="showProperty('tablePageMode')">
+        <el-form-item
+          :label="t('chart.table_page_mode')"
+          class="form-item"
+          :class="'form-item-' + themes"
+        >
+          <el-select
+            :effect="props.themes"
+            v-model="state.basicStyleForm.tablePageMode"
+            :placeholder="t('chart.table_page_mode')"
+            @change="changeBasicStyle('tablePageMode', true)"
+          >
+            <el-option :label="t('chart.page_mode_page')" value="page" />
+            <el-option :label="t('chart.page_mode_pull')" value="pull" />
+          </el-select>
+        </el-form-item>
+      </el-col>
+      <el-col
+        :span="12"
+        v-if="showProperty('tablePageMode') && state.basicStyleForm.tablePageMode === 'page'"
+      >
+        <el-form-item
+          :label="t('chart.table_page_size')"
+          class="form-item"
+          :class="'form-item-' + themes"
+        >
+          <el-select
+            :effect="props.themes"
+            v-model="state.basicStyleForm.tablePageSize"
+            :placeholder="t('chart.table_page_size')"
+            @change="changeBasicStyle('tablePageSize', true)"
+          >
+            <el-option
+              v-for="item in pageSizeOptions"
+              :key="item.value"
+              :label="item.name"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
+      </el-col>
+    </el-row>
+    <!--table end-->
+
     <div class="alpha-setting" v-if="showProperty('alpha')">
-      <label class="alpha-label" :class="{ dark: 'dark' === themes }">{{
-        t('chart.not_alpha')
-      }}</label>
+      <label class="alpha-label" :class="{ dark: 'dark' === themes }">
+        {{ t('chart.not_alpha') }}
+      </label>
       <el-row style="flex: 1" gutter="8">
         <el-col :span="13">
           <el-form-item class="form-item alpha-slider" :class="'form-item-' + themes">
@@ -133,7 +271,7 @@ onMounted(() => {
       </el-row>
     </div>
 
-    <!--table start-->
+    <!--table2 start-->
     <el-form-item
       :label="t('chart.table_column_width_config')"
       class="form-item"
@@ -146,11 +284,11 @@ onMounted(() => {
         </el-radio>
         <el-radio label="custom" :effect="props.themes">
           {{ t('chart.table_column_custom') }}
+          <el-tooltip placement="bottom" :content="t('chart.table_column_width_tip')" raw-content>
+            <el-icon><InfoFilled /></el-icon>
+          </el-tooltip>
         </el-radio>
       </el-radio-group>
-      <el-tooltip placement="bottom" :content="t('chart.table_column_width_tip')" raw-content>
-        <el-icon><InfoFilled /></el-icon>
-      </el-tooltip>
     </el-form-item>
     <el-form-item
       v-if="showProperty('tableColumnMode') && state.basicStyleForm.tableColumnMode === 'custom'"
@@ -165,73 +303,7 @@ onMounted(() => {
         @change="changeBasicStyle()"
       />
     </el-form-item>
-    <el-form-item
-      :label="t('chart.table_border_color')"
-      class="form-item"
-      :class="'form-item-' + themes"
-      v-if="showProperty('tableBorderColor')"
-    >
-      <el-color-picker
-        :persistent="false"
-        v-model="state.basicStyleForm.tableBorderColor"
-        color-format="hex"
-        :predefine="predefineColors"
-        @change="changeBasicStyle()"
-      />
-    </el-form-item>
-    <el-form-item
-      :label="t('chart.table_scroll_bar_color')"
-      class="form-item"
-      :class="'form-item-' + themes"
-      v-if="showProperty('tableScrollBarColor')"
-    >
-      <el-color-picker
-        :persistent="false"
-        v-model="state.basicStyleForm.tableScrollBarColor"
-        class="color-picker-style"
-        :predefine="predefineColors"
-        color-format="rgb"
-        show-alpha
-        @change="changeBasicStyle()"
-      />
-    </el-form-item>
-    <el-form-item
-      :label="t('chart.table_page_mode')"
-      class="form-item"
-      :class="'form-item-' + themes"
-      v-if="showProperty('tablePageMode')"
-    >
-      <el-select
-        :effect="props.themes"
-        v-model="state.basicStyleForm.tablePageMode"
-        :placeholder="t('chart.table_page_mode')"
-        @change="changeBasicStyle('tablePageMode', true)"
-      >
-        <el-option :label="t('chart.page_mode_page')" value="page" />
-        <el-option :label="t('chart.page_mode_pull')" value="pull" />
-      </el-select>
-    </el-form-item>
-    <el-form-item
-      v-if="showProperty('tablePageMode') && state.basicStyleForm.tablePageMode === 'page'"
-      :label="t('chart.table_page_size')"
-      class="form-item"
-      :class="'form-item-' + themes"
-    >
-      <el-select
-        :effect="props.themes"
-        v-model="state.basicStyleForm.tablePageSize"
-        :placeholder="t('chart.table_page_size')"
-        @change="changeBasicStyle('tablePageSize', true)"
-      >
-        <el-option
-          v-for="item in pageSizeOptions"
-          :key="item.value"
-          :label="item.name"
-          :value="item.value"
-        />
-      </el-select>
-    </el-form-item>
-    <!--table end-->
+    <!--table2 end-->
     <!--gauge start-->
     <el-form-item
       :label="t('chart.chart_style')"
@@ -280,56 +352,66 @@ onMounted(() => {
     </el-form-item>
     <!--bar end-->
     <!--line area start-->
-    <el-form-item
-      :label="t('chart.line_width')"
-      class="form-item form-item-slider"
-      :class="'form-item-' + themes"
-      v-if="showProperty('lineWidth')"
-    >
-      <el-input-number
-        :effect="props.themes"
-        v-model="state.basicStyleForm.lineWidth"
-        :min="0"
-        :max="10"
-        controls-position="right"
-        @change="changeBasicStyle()"
-      />
-    </el-form-item>
-    <el-form-item
-      :label="t('chart.line_symbol')"
-      class="form-item"
-      :class="'form-item-' + themes"
-      v-if="showProperty('lineSymbol')"
-    >
-      <el-select
-        :effect="props.themes"
-        v-model="state.basicStyleForm.lineSymbol"
-        :placeholder="t('chart.line_symbol')"
-        @change="changeBasicStyle()"
-      >
-        <el-option
-          v-for="item in symbolOptions"
-          :key="item.value"
-          :label="item.name"
-          :value="item.value"
-        />
-      </el-select>
-    </el-form-item>
-    <el-form-item
-      :label="t('chart.line_symbol_size')"
-      class="form-item form-item-slider"
-      :class="'form-item-' + themes"
-      v-if="showProperty('lineSymbolSize')"
-    >
-      <el-input-number
-        :effect="props.themes"
-        v-model="state.basicStyleForm.lineSymbolSize"
-        :min="0"
-        :max="20"
-        controls-position="right"
-        @change="changeBasicStyle()"
-      />
-    </el-form-item>
+    <el-row :gutter="8">
+      <el-col :span="12">
+        <el-form-item
+          :label="t('chart.line_width')"
+          class="form-item form-item-slider"
+          :class="'form-item-' + themes"
+          v-if="showProperty('lineWidth')"
+        >
+          <el-input-number
+            :effect="props.themes"
+            v-model="state.basicStyleForm.lineWidth"
+            :min="0"
+            :max="10"
+            controls-position="right"
+            @change="changeBasicStyle()"
+          />
+        </el-form-item>
+      </el-col>
+    </el-row>
+    <el-row :gutter="8">
+      <el-col :span="12">
+        <el-form-item
+          :label="t('chart.line_symbol')"
+          class="form-item"
+          :class="'form-item-' + themes"
+          v-if="showProperty('lineSymbol')"
+        >
+          <el-select
+            :effect="props.themes"
+            v-model="state.basicStyleForm.lineSymbol"
+            :placeholder="t('chart.line_symbol')"
+            @change="changeBasicStyle()"
+          >
+            <el-option
+              v-for="item in symbolOptions"
+              :key="item.value"
+              :label="item.name"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
+      </el-col>
+      <el-col :span="12">
+        <el-form-item
+          :label="t('chart.line_symbol_size')"
+          class="form-item form-item-slider"
+          :class="'form-item-' + themes"
+          v-if="showProperty('lineSymbolSize')"
+        >
+          <el-input-number
+            :effect="props.themes"
+            v-model="state.basicStyleForm.lineSymbolSize"
+            :min="0"
+            :max="20"
+            controls-position="right"
+            @change="changeBasicStyle()"
+          />
+        </el-form-item>
+      </el-col>
+    </el-row>
     <el-checkbox
       v-model="state.basicStyleForm.lineSmooth"
       @change="changeBasicStyle()"
@@ -412,48 +494,7 @@ onMounted(() => {
       />
     </el-form-item>
     <!--scatter end-->
-    <!--map start-->
-    <el-form-item
-      :label="t('chart.area_border_color')"
-      class="form-item"
-      :class="'form-item-' + themes"
-      v-if="showProperty('areaBorderColor')"
-    >
-      <el-color-picker
-        :persistent="false"
-        v-model="state.basicStyleForm.areaBorderColor"
-        class="color-picker-style"
-        :predefine="predefineColors"
-        @change="changeBasicStyle('areaBorderColor')"
-      />
-    </el-form-item>
-    <el-form-item
-      :label="t('chart.area_base_color')"
-      class="form-item"
-      :class="'form-item-' + themes"
-      v-if="showProperty('areaBaseColor')"
-    >
-      <el-color-picker
-        :persistent="false"
-        v-model="state.basicStyleForm.areaBaseColor"
-        class="color-picker-style"
-        :predefine="predefineColors"
-        @change="changeBasicStyle('areaBaseColor')"
-      />
-    </el-form-item>
-    <el-form-item
-      :label="t('chart.suspension')"
-      class="form-item"
-      :class="'form-item-' + themes"
-      v-if="showProperty('suspension')"
-    >
-      <el-checkbox
-        v-model="state.basicStyleForm.suspension"
-        :predefine="predefineColors"
-        @change="changeBasicStyle('suspension')"
-      />
-    </el-form-item>
-    <!--map end-->
+
     <!--symbol map start-->
     <el-form-item
       :label="t('chart.bubble_symbol')"
@@ -557,6 +598,24 @@ onMounted(() => {
   :deep(.ed-input) {
     --ed-input-height: 28px;
   }
+  :deep(.ed-input-number) {
+    width: 100%;
+    .ed-input__inner {
+      text-align: start;
+    }
+  }
+  :deep(.ed-select) {
+    width: 100%;
+  }
+  :deep(.ed-radio) {
+    height: 20px;
+    .ed-radio__label {
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 20px;
+    }
+  }
 }
 
 .color-picker-style {
@@ -564,41 +623,6 @@ onMounted(() => {
   z-index: 1003;
 }
 
-.color-label {
-  display: inline-block;
-  width: 60px;
-}
-
-.color-type {
-  &:deep(.ed-radio__input) {
-    display: none;
-  }
-  .ed-radio {
-    margin: 0 2px 0 0 !important;
-    border: 1px solid transparent;
-    border-radius: 5px;
-  }
-
-  .ed-radio.ed-radio--small {
-    height: 26px;
-  }
-
-  .ed-radio :deep(.ed-radio__label) {
-    padding-left: 0;
-    height: 20px;
-  }
-
-  .ed-radio.is-checked {
-    border: 1px solid #0a7be0;
-  }
-}
-
-.custom-color-style {
-  height: 300px;
-  overflow-y: auto;
-  padding: 4px 12px;
-  border: 1px solid #e6e6e6;
-}
 .alpha-setting {
   display: flex;
   width: 100%;
