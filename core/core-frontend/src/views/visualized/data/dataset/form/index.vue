@@ -1310,7 +1310,9 @@ const treeProps = {
                     <el-table-column prop="deType" :label="t('dataset.field_type')" width="200">
                       <template #default="scope">
                         <el-cascader
-                          class="select-type"
+                          :class="
+                            !!scope.row.deTypeArr && !!scope.row.deTypeArr.length && 'select-type'
+                          "
                           popper-class="cascader-panel"
                           v-model="scope.row.deTypeArr"
                           @change="val => cascaderChange(scope.row, val)"
@@ -1344,7 +1346,7 @@ const treeProps = {
                     >
                       <template #default="scope">
                         <div class="column-style">
-                          <span class="flex-align-center" v-if="scope.row.extField === 0">
+                          <span class="flex-align-center icon" v-if="scope.row.extField === 0">
                             <el-icon>
                               <Icon
                                 className="primary-color"
@@ -1450,7 +1452,9 @@ const treeProps = {
                     <el-table-column prop="deType" :label="t('dataset.field_type')" width="200">
                       <template #default="scope">
                         <el-cascader
-                          class="select-type"
+                          :class="
+                            !!scope.row.deTypeArr && !!scope.row.deTypeArr.length && 'select-type'
+                          "
                           popper-class="cascader-panel"
                           v-model="scope.row.deTypeArr"
                           @change="val => cascaderChange(scope.row, val)"
@@ -1484,7 +1488,7 @@ const treeProps = {
                     >
                       <template #default="scope">
                         <div class="column-style">
-                          <span v-if="scope.row.extField === 0">
+                          <span class="flex-align-center icon" v-if="scope.row.extField === 0">
                             <el-icon>
                               <Icon
                                 className="green-color"
@@ -1564,7 +1568,7 @@ const treeProps = {
               </div>
               <div class="cascader-batch" v-if="showCascaderBatch">
                 <el-cascader
-                  class="select-type"
+                  :class="!!deTypeArr.length && 'select-type'"
                   v-model="deTypeArr"
                   @change="cascaderChangeArr"
                   popper-class="cascader-panel"
@@ -1642,7 +1646,7 @@ const treeProps = {
       <el-button type="primary" @click="confirmEditCalc()">{{ t('dataset.confirm') }} </el-button>
     </template>
   </el-dialog>
-  <el-dialog v-model="updateCustomTime" width="1000px">
+  <el-dialog class="create-dialog" title="格式编辑" v-model="updateCustomTime" width="1000px">
     <el-form ref="ruleFormRef" :rules="rules" :model="currentField" label-width="120px">
       <el-form-item prop="name" label="自定义时间格式">
         <el-input v-model="currentField.name" />

@@ -2446,6 +2446,49 @@ span {
     font-size: 12px;
     font-weight: 400;
   }
+  .ed-input {
+    --ed-input-height: 28px;
+  }
+  .ed-input-number {
+    width: 100%;
+
+    .ed-input-number__decrease {
+      --ed-input-number-controls-height: 13px;
+    }
+    .ed-input-number__increase {
+      --ed-input-number-controls-height: 13px;
+    }
+
+    .ed-input__inner {
+      text-align: start;
+    }
+  }
+  .ed-select {
+    width: 100%;
+    .ed-input__inner {
+      height: 26px !important;
+    }
+  }
+  .ed-checkbox {
+    .ed-checkbox__label {
+      font-size: 12px;
+    }
+  }
+  .ed-color-picker {
+    .ed-color-picker__mask {
+      height: 26px;
+      width: calc(100% - 2px) !important;
+    }
+  }
+  .ed-radio {
+    height: 20px;
+    .ed-radio__label {
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 20px;
+    }
+  }
 }
 :deep(.ed-form-item__label) {
   color: @canvas-main-font-color;

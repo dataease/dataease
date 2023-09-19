@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import { PropType, reactive, watch } from 'vue'
+import { computed, onMounted, PropType, reactive, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL, DEFAULT_TABLE_HEADER } from '@/views/chart/components/editor/util/chart'
-import { ElColorPicker, ElFormItem, ElSelect, ElSlider } from 'element-plus-secondary'
+import { ElSpace } from 'element-plus-secondary'
 
 const { t } = useI18n()
 
@@ -30,7 +30,7 @@ watch(
 
 const predefineColors = COLOR_PANEL
 
-const initFontSize = () => {
+const fontSizeList = computed(() => {
   const arr = []
   for (let i = 10; i <= 40; i = i + 2) {
     arr.push({
@@ -38,12 +38,11 @@ const initFontSize = () => {
       value: i
     })
   }
-  state.fontSize = arr
-}
+  return arr
+})
 
 const state = reactive({
-  tableHeaderForm: JSON.parse(JSON.stringify(DEFAULT_TABLE_HEADER)),
-  fontSize: []
+  tableHeaderForm: JSON.parse(JSON.stringify(DEFAULT_TABLE_HEADER))
 })
 
 const emit = defineEmits(['onTableHeaderChange'])
@@ -61,167 +60,209 @@ const init = () => {
   }
 }
 const showProperty = prop => props.propertyInner?.includes(prop)
-initFontSize()
-init()
+
+function setPosition(p: 'left' | 'center' | 'right') {
+  state.tableHeaderForm.tableHeaderAlign = p
+  changeTableHeader('tableHeaderAlign')
+}
+
+onMounted(() => {
+  init()
+})
 </script>
 
 <template>
-  <div style="width: 100%">
-    <el-col>
-      <el-form
-        ref="tableHeaderForm"
-        :model="state.tableHeaderForm"
-        size="small"
-        label-position="top"
+  <el-form ref="tableHeaderForm" :model="state.tableHeaderForm" label-position="top">
+    <el-form-item
+      :label="t('chart.backgroundColor')"
+      class="form-item"
+      :class="'form-item-' + themes"
+      v-if="showProperty('tableHeaderBgColor')"
+    >
+      <el-color-picker
+        :effect="themes"
+        v-model="state.tableHeaderForm.tableHeaderBgColor"
+        is-custom
+        :trigger-width="108"
+        :predefine="predefineColors"
+        @change="changeTableHeader('tableHeaderBgColor')"
+      />
+    </el-form-item>
+
+    <el-space>
+      <el-form-item
+        class="form-item"
+        :class="'form-item-' + themes"
+        v-if="showProperty('tableHeaderFontColor')"
+        :label="t('chart.text')"
       >
-        <el-form-item
-          :label="t('chart.backgroundColor')"
-          class="form-item"
-          v-if="showProperty('tableHeaderBgColor')"
+        <el-color-picker
+          :effect="themes"
+          v-model="state.tableHeaderForm.tableHeaderFontColor"
+          is-custom
+          :predefine="predefineColors"
+          @change="changeTableHeader('tableHeaderFontColor')"
+        />
+      </el-form-item>
+      <el-form-item
+        class="form-item"
+        :class="'form-item-' + themes"
+        v-if="showProperty('tableTitleFontSize')"
+      >
+        <template #label>&nbsp;</template>
+        <el-select
+          style="width: 58px"
+          :effect="themes"
+          v-model="state.tableHeaderForm.tableTitleFontSize"
+          @change="changeTableHeader('tableTitleFontSize')"
         >
-          <el-color-picker
-            v-model="state.tableHeaderForm.tableHeaderBgColor"
-            :predefine="predefineColors"
-            @change="changeTableHeader('tableHeaderBgColor')"
-            is-custom
+          <el-option
+            v-for="option in fontSizeList"
+            :key="option.value"
+            :label="option.name"
+            :value="option.value"
           />
-        </el-form-item>
+        </el-select>
+      </el-form-item>
 
-        <div class="custom-form-item-label">{{ t('chart.text') }}</div>
-        <div style="display: flex">
-          <el-form-item
-            class="form-item"
-            v-if="showProperty('tableHeaderFontColor')"
-            style="padding-right: 4px"
-          >
-            <el-color-picker
-              v-model="state.tableHeaderForm.tableHeaderFontColor"
-              :predefine="predefineColors"
-              @change="changeTableHeader('tableHeaderFontColor')"
-              is-custom
-            />
-          </el-form-item>
-          <el-form-item
-            class="form-item"
-            v-if="showProperty('tableTitleFontSize')"
-            style="padding-left: 4px"
-          >
-            <el-select
-              style="width: 108px"
-              :effect="props.themes"
-              v-model="state.tableHeaderForm.tableTitleFontSize"
-              @change="changeTableHeader('tableTitleFontSize')"
+      <el-form-item
+        class="form-item"
+        :class="'form-item-' + themes"
+        v-if="showProperty('tableHeaderAlign')"
+      >
+        <template #label>&nbsp;</template>
+        <el-space>
+          <el-tooltip effect="dark" placement="top">
+            <template #content>
+              {{ t('chart.text_pos_left') }}
+            </template>
+            <div
+              class="icon-btn"
+              :class="{
+                dark: themes === 'dark',
+                active: state.tableHeaderForm.tableHeaderAlign === 'left'
+              }"
+              @click="setPosition('left')"
             >
-              <el-option
-                v-for="option in state.fontSize"
-                :key="option.value"
-                :label="option.name"
-                :value="option.value"
-              />
-            </el-select>
-          </el-form-item>
-        </div>
+              <el-icon>
+                <Icon name="icon_left-alignment_outlined" />
+              </el-icon>
+            </div>
+          </el-tooltip>
+          <el-tooltip effect="dark" placement="top">
+            <template #content>
+              {{ t('chart.text_pos_center') }}
+            </template>
+            <div
+              class="icon-btn"
+              :class="{
+                dark: themes === 'dark',
+                active: state.tableHeaderForm.tableHeaderAlign === 'center'
+              }"
+              @click="setPosition('center')"
+            >
+              <el-icon>
+                <Icon name="icon_center-alignment_outlined" />
+              </el-icon>
+            </div>
+          </el-tooltip>
+          <el-tooltip effect="dark" placement="top">
+            <template #content>
+              {{ t('chart.text_pos_right') }}
+            </template>
+            <div
+              class="icon-btn"
+              :class="{
+                dark: themes === 'dark',
+                active: state.tableHeaderForm.tableHeaderAlign === 'right'
+              }"
+              @click="setPosition('right')"
+            >
+              <el-icon>
+                <Icon name="icon_right-alignment_outlined" />
+              </el-icon>
+            </div>
+          </el-tooltip>
+        </el-space>
+      </el-form-item>
+    </el-space>
 
+    <el-row :gutter="8">
+      <el-col :span="12">
         <el-form-item
           :label="t('visualization.lineHeight')"
           class="form-item"
+          :class="'form-item-' + themes"
           v-if="showProperty('tableTitleHeight')"
         >
-          <el-slider
+          <el-input-number
+            :effect="themes"
+            controls-position="right"
             v-model="state.tableHeaderForm.tableTitleHeight"
             :min="20"
             :max="100"
             @change="changeTableHeader('tableTitleHeight')"
           />
         </el-form-item>
-        <el-form-item
-          :label="t('chart.align')"
-          class="form-item"
-          v-if="showProperty('tableHeaderAlign')"
-        >
-          <el-select
-            style="width: 100%"
-            :effect="props.themes"
-            v-model="state.tableHeaderForm.tableHeaderAlign"
-            @change="changeTableHeader('tableHeaderAlign')"
-          >
-            <el-option value="left" :label="t('chart.table_align_left')" />
-            <el-option value="center" :label="t('chart.table_align_center')" />
-            <el-option value="right" :label="t('chart.table_align_right')" />
-          </el-select>
-        </el-form-item>
-        <el-form-item class="form-item" v-if="showProperty('showIndex')">
-          <el-checkbox
-            v-model="state.tableHeaderForm.showIndex"
-            @change="changeTableHeader('showIndex')"
-          >
-            {{ t('chart.table_show_index') }}
-          </el-checkbox>
-        </el-form-item>
-        <el-form-item
-          :label="t('chart.table_index_desc')"
-          class="form-item"
-          v-if="showProperty('showIndex') && state.tableHeaderForm.showIndex"
-        >
-          <el-input
-            v-model="state.tableHeaderForm.indexLabel"
-            @blur="changeTableHeader('indexLabel')"
-          />
-        </el-form-item>
-      </el-form>
-    </el-col>
-  </div>
+      </el-col>
+    </el-row>
+
+    <el-form-item class="form-item" :class="'form-item-' + themes" v-if="showProperty('showIndex')">
+      <el-checkbox
+        :effect="themes"
+        v-model="state.tableHeaderForm.showIndex"
+        @change="changeTableHeader('showIndex')"
+      >
+        {{ t('chart.table_show_index') }}
+      </el-checkbox>
+    </el-form-item>
+    <el-form-item
+      :label="t('chart.table_index_desc')"
+      class="form-item"
+      :class="'form-item-' + themes"
+      v-if="showProperty('showIndex') && state.tableHeaderForm.showIndex"
+    >
+      <el-input
+        :effect="themes"
+        v-model="state.tableHeaderForm.indexLabel"
+        @blur="changeTableHeader('indexLabel')"
+      />
+    </el-form-item>
+  </el-form>
 </template>
 
 <style lang="less" scoped>
-:deep(.ed-color-picker.is-custom .ed-color-picker__trigger) {
+.icon-btn {
+  font-size: 16px;
+  line-height: 16px;
+  width: 24px;
   height: 24px;
-}
-.custom-form-item-label {
-  margin-bottom: 4px;
-  line-height: 20px;
-  color: #a6a6a6;
-  font-size: 12px;
-  padding: 2px 12px 0 0;
-}
-.form-item-checkbox {
-  margin-bottom: 10px !important;
-}
+  text-align: center;
+  border-radius: 4px;
+  padding-top: 4px;
 
-.form-item-slider :deep(.ed-form-item__label) {
-  font-size: 12px;
-  line-height: 38px;
-}
+  color: #1f2329;
 
-.form-item :deep(.ed-form-item__label) {
-  font-size: 12px;
-}
-
-.color-picker-style {
   cursor: pointer;
-  z-index: 1003;
-}
 
-.color-label {
-  display: inline-block;
-  width: 60px;
-}
-
-.color-type {
-  &:deep(.ed-radio__input) {
-    display: none;
+  &.dark {
+    color: #a6a6a6;
+    &.active {
+      color: #3370ff;
+      background-color: rgba(51, 112, 255, 0.1);
+    }
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
   }
-  .ed-radio {
-    margin: 0 2px 0 0 !important;
-    border: 1px solid transparent;
+
+  &.active {
+    color: #3370ff;
+    background-color: rgba(51, 112, 255, 0.1);
   }
-}
 
-.ed-radio :deep(.ed-radio__label) {
-  padding-left: 0;
-}
-
-.ed-radio.is-checked {
-  border: 1px solid #0a7be0;
+  &:hover {
+    background-color: rgba(31, 35, 41, 0.1);
+  }
 }
 </style>
