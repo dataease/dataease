@@ -1,5 +1,6 @@
 <template>
   <el-dialog
+    v-loading="state.loading"
     ref="enlargeDialog"
     :append-to-body="true"
     :title="t('visualization.linkage_setting')"
@@ -27,7 +28,7 @@
           >
         </div>
       </el-row>
-      <el-row v-loading="state.loading">
+      <el-row>
         <el-row class="preview">
           <el-col :span="8" style="height: 100%; overflow-y: auto">
             <el-row class="tree-head">
@@ -213,6 +214,7 @@ const dialogShow = ref(false)
 const searchField = ref('')
 
 const state = reactive({
+  loading: false,
   sourceLinkageInfo: {},
   curLinkageTargetViewsInfo: [],
   showSelected: false,
@@ -220,7 +222,6 @@ const state = reactive({
   curDatasetInfo: {},
   initState: false,
   viewId: null,
-  loading: false,
   treeProp: {
     id: 'targetViewId',
     label: 'targetViewName',
@@ -316,19 +317,25 @@ const saveLinkageSetting = () => {
     sourceViewId: state.viewId,
     linkageInfo: state.curLinkageTargetViewsInfo
   }
-  saveLinkage(request).then(rsp => {
-    ElMessage.success('保存成功')
-    // 刷新联动信息
-    getPanelAllLinkageInfo(dvInfo.value.id).then(rsp => {
-      dvMainStore.setNowPanelTrackInfo(rsp.data)
+  state.loading = true
+  saveLinkage(request)
+    .then(rsp => {
+      ElMessage.success('保存成功')
+      // 刷新联动信息
+      getPanelAllLinkageInfo(dvInfo.value.id).then(rsp => {
+        dvMainStore.setNowPanelTrackInfo(rsp.data)
+      })
+      cancelLinkageSetting()
+      // 刷新跳转信息
+      queryVisualizationJumpInfo(dvInfo.value.id).then(rsp => {
+        dvMainStore.setNowPanelJumpInfo(rsp.data)
+        cancel()
+      })
+      state.loading = false
     })
-    cancelLinkageSetting()
-    // 刷新跳转信息
-    queryVisualizationJumpInfo(dvInfo.value.id).then(rsp => {
-      dvMainStore.setNowPanelJumpInfo(rsp.data)
-      cancel()
+    .catch(() => {
+      state.loading = false
     })
-  })
 }
 
 const cancelLinkageSetting = () => {

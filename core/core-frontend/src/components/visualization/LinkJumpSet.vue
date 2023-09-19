@@ -1,5 +1,6 @@
 <template>
   <el-dialog
+    v-loading="state.loading"
     ref="enlargeDialog"
     :append-to-body="true"
     :title="t('visualization.jump_set')"
@@ -398,6 +399,7 @@ const dialogShow = ref(false)
 const searchField = ref('')
 
 const state = reactive({
+  loading: false,
   showSelected: false,
   curJumpViewInfo: {},
   curDatasetInfo: {},
@@ -549,7 +551,7 @@ const save = () => {
   state.linkJump.linkJumpInfoArray.forEach(linkJumpInfo => {
     let subCheckCount = 0
     if (linkJumpInfo.linkType === 'inner') {
-      if (linkJumpInfo.targetDvId) {
+      if (!linkJumpInfo.targetDvId) {
         subCheckCount++
         subCheckCountAll++
       }
@@ -574,15 +576,20 @@ const save = () => {
   if (subCheckCountAll) {
     return
   }
-
-  updateJumpSet(state.linkJump).then(rsp => {
-    ElMessage.success('保存成功')
-    // 刷新跳转信息
-    queryVisualizationJumpInfo(dvInfo.value.id).then(rsp => {
-      dvMainStore.setNowPanelJumpInfo(rsp.data)
-      cancel()
+  state.loading = true
+  updateJumpSet(state.linkJump)
+    .then(rsp => {
+      ElMessage.success('保存成功')
+      // 刷新跳转信息
+      queryVisualizationJumpInfo(dvInfo.value.id).then(rsp => {
+        dvMainStore.setNowPanelJumpInfo(rsp.data)
+        cancel()
+      })
+      state.loading = false
     })
-  })
+    .catch(() => {
+      state.loading = false
+    })
 }
 const nodeClick = (data, node?) => {
   state.linkJumpInfo = state.mapJumpInfoArray[data.sourceFieldId]
