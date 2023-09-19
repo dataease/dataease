@@ -91,6 +91,7 @@ export default {
     modify_cur_pwd: '修改当前用户密码后需要重新登录',
     switch_success: '切换成功',
     user_name_pattern_error: '只允许数字字母以及._-且必须数字或字母开头',
+    pwd_pattern_error: '6-20位且至少一位大写字母、小写字母、数字、特殊字符',
     special_characters_are_not_supported: '不允许特殊字符',
     phone_format: '请填写正确格式手机号',
     email_format_is_incorrect: '请填写正确格式邮箱'
