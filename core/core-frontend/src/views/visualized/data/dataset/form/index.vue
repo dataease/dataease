@@ -973,6 +973,20 @@ const finish = res => {
   }
 }
 
+const errorTips = ref('')
+
+const handleDatasetName = () => {
+  errorTips.value = ''
+  if (!datasetName.value.trim()) {
+    errorTips.value = t('commons.input_content')
+  }
+
+  if (datasetName.value.trim().length < 2) {
+    errorTips.value = t('datasource.input_limit_2_25', [2, 25])
+  }
+  showInput.value = !!errorTips.value
+}
+
 const treeProps = {
   children: 'children',
   label: 'name'
@@ -987,7 +1001,13 @@ const treeProps = {
           <Icon name="icon_left_outlined"></Icon>
         </el-icon>
         <template v-if="showInput">
-          <el-input ref="editerName" v-model="datasetName" @blur="showInput = false" />
+          <el-input
+            maxlength="25"
+            ref="editerName"
+            v-model="datasetName"
+            @blur="handleDatasetName"
+          />
+          <div class="ed-form-item__error" v-if="errorTips">{{ errorTips }}</div>
         </template>
         <template v-else>
           <span @click="handleClick" class="dataset-name ellipsis" style="margin: 0 5px">{{
@@ -996,7 +1016,7 @@ const treeProps = {
         </template>
       </span>
       <span class="oprate">
-        <el-button type="primary" @click="datasetSave">保存</el-button>
+        <el-button :disabled="showInput" type="primary" @click="datasetSave">保存</el-button>
       </span>
     </div>
     <div class="container dataset-db" @mouseup="mouseupDrag">
@@ -1681,6 +1701,11 @@ const treeProps = {
       align-items: center;
       width: 50%;
       position: relative;
+
+      .ed-form-item__error {
+        top: 19px !important;
+        left: 16px !important;
+      }
       .dataset-name {
         cursor: pointer;
         width: 294px;
