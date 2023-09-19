@@ -94,7 +94,8 @@ const createDataset = () => {
   window.open(routeData.href, '_blank')
 }
 const createDatasource = () => {
-  console.error('please contact Jinlong Tao')
+  const baseUrl = '#/data/datasource?opt=create'
+  window.open(baseUrl, '_blank')
 }
 fillCardInfo()
 </script>

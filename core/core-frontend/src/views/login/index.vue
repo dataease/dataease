@@ -48,7 +48,7 @@ const checkUsername = (_rule: any, value: any, callback: any) => {
   }
 }
 const validatePwd = (_, value, callback) => {
-  const pattern = '^[a-zA-Z0-9][a-zA-Z0-9\._-]*$'
+  const pattern = '^[a-zA-Z0-9][a-zA-Z0-9\@._-]*$'
   const regep = new RegExp(pattern)
   if (!regep.test(value)) {
     const msg = t('user.user_name_pattern_error')
@@ -192,7 +192,6 @@ onMounted(() => {
                 class="default-login-tabs"
                 :active-name="activeName"
                 jsname="L2NvbXBvbmVudC9sb2dpbi9MZGFw"
-                @loaded="xpackLoaded"
               />
 
               <template v-if="activeName === 'simple'">
@@ -241,7 +240,7 @@ onMounted(() => {
                 </div>
               </template>
 
-              <XpackComponent jsname="L2NvbXBvbmVudC9sb2dpbi9IYW5kbGVy" />
+              <XpackComponent jsname="L2NvbXBvbmVudC9sb2dpbi9IYW5kbGVy" @loaded="xpackLoaded" />
             </div>
 
             <div class="login-msg">

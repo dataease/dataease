@@ -12,3 +12,6 @@ spring:
     password: ${DE_MYSQL_PASSWORD}
 dataease:
   origin-list: localhost:8080,localhost:8100,localhost:9080
+  apisix-api:
+    domain: http://apisix:9180
+    key: edd1c9f034335f136f87ad84b625c8f1

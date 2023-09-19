@@ -1,5 +1,5 @@
 <script lang="tsx" setup>
-import { computed, reactive, ref, shallowRef, nextTick, watch } from 'vue'
+import { computed, reactive, ref, shallowRef, nextTick, watch, onMounted } from 'vue'
 import { dsTypes } from '@/views/visualized/data/datasource/form/option'
 import type { TabPaneName, ElMessageBoxOptions } from 'element-plus-secondary'
 import { ElIcon, ElMessageBox, ElMessage, ElScrollbar, ElAside } from 'element-plus-secondary'
@@ -614,6 +614,12 @@ const defaultProps = {
   children: 'children',
   label: 'name'
 }
+onMounted(() => {
+  const { opt } = router.currentRoute.value.query
+  if (opt && opt === 'create') {
+    datasourceEditor.value.init(null, null)
+  }
+})
 </script>
 
 <template>

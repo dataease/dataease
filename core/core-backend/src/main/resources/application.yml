@@ -53,6 +53,9 @@ quartz:
 dataease:
   version: '@project.version@'
   origin-list: localhost:8081,127.0.0.1:8081,https://de2.fit2cloud.com,http://localhost:8080
+  apisix-api:
+    domain: http://192.168.0.121:9180
+    key: edd1c9f034335f136f87ad84b625c8f1
 
 knife4j:
   enable: true
