@@ -1,8 +1,11 @@
 <script lang="tsx" setup>
-import { reactive, watch } from 'vue'
+import { PropType, reactive, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL, DEFAULT_TOOLTIP } from '@/views/chart/components/editor/util/chart'
 import { ElSpace } from 'element-plus-secondary'
+import cloneDeep from 'lodash-es/cloneDeep'
+import defaultsDeep from 'lodash-es/defaultsDeep'
+import { formatterType, unitList } from '../../../js/formatter'
 
 const { t } = useI18n()
 
@@ -12,7 +15,7 @@ const props = defineProps({
     required: true
   },
   themes: {
-    type: String,
+    type: String as PropType<EditorTheme>,
     default: 'dark'
   },
   propertyInner: {
@@ -25,11 +28,11 @@ const predefineColors = COLOR_PANEL
 const emit = defineEmits(['onTooltipChange'])
 
 watch(
-  () => props.chart.customAttr.tooltip,
+  () => props.chart,
   () => {
     init()
   },
-  { deep: true }
+  { deep: false }
 )
 
 const state = reactive({
@@ -62,7 +65,7 @@ const init = () => {
       customAttr = JSON.parse(chart.customAttr)
     }
     if (customAttr.tooltip) {
-      state.tooltipForm = customAttr.tooltip
+      state.tooltipForm = defaultsDeep(customAttr.tooltip, cloneDeep(DEFAULT_TOOLTIP))
     }
   }
 }
@@ -134,6 +137,82 @@ init()
         </el-select>
       </el-form-item>
     </el-space>
+    <template v-if="showProperty('tooltipFormatter')">
+      <el-form-item :label="t('chart.value_formatter_type')" class="form-item">
+        <el-select
+          style="width: 100%"
+          :effect="props.themes"
+          v-model="state.tooltipForm.tooltipFormatter.type"
+          @change="changeTooltipAttr('tooltipFormatter')"
+        >
+          <el-option
+            v-for="type in formatterType"
+            :key="type.value"
+            :label="t('chart.' + type.name)"
+            :value="type.value"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item
+        v-if="state.tooltipForm.tooltipFormatter.type !== 'auto'"
+        :label="t('chart.value_formatter_decimal_count')"
+        class="form-item"
+      >
+        <el-input-number
+          style="width: 100%"
+          :effect="props.themes"
+          v-model="state.tooltipForm.tooltipFormatter.decimalCount"
+          :precision="0"
+          :min="0"
+          :max="10"
+          size="small"
+          @change="changeTooltipAttr('tooltipFormatter')"
+        />
+      </el-form-item>
+
+      <el-row :gutter="8">
+        <el-col :span="12">
+          <el-form-item :label="t('chart.value_formatter_unit')" class="form-item">
+            <el-select
+              :disabled="state.tooltipForm.tooltipFormatter.type == 'percent'"
+              :effect="props.themes"
+              v-model="state.tooltipForm.tooltipFormatter.unit"
+              :placeholder="t('chart.pls_select_field')"
+              size="small"
+              @change="changeTooltipAttr('tooltipFormatter')"
+            >
+              <el-option
+                v-for="item in unitList"
+                :key="item.value"
+                :label="t('chart.' + item.name)"
+                :value="item.value"
+              />
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item :label="t('chart.value_formatter_suffix')">
+            <el-input
+              :effect="props.themes"
+              v-model="state.tooltipForm.tooltipFormatter.suffix"
+              size="small"
+              clearable
+              :placeholder="t('commons.input_content')"
+              @change="changeTooltipAttr('tooltipFormatter')"
+            />
+          </el-form-item>
+        </el-col>
+      </el-row>
+
+      <el-form-item class="form-item">
+        <el-checkbox
+          :effect="props.themes"
+          v-model="state.tooltipForm.tooltipFormatter.thousandSeparator"
+          @change="changeTooltipAttr('tooltipFormatter')"
+          :label="t('chart.value_formatter_thousand_separator')"
+        />
+      </el-form-item>
+    </template>
   </el-form>
 </template>
 

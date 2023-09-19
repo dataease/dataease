@@ -16,8 +16,8 @@ export const BAR_EDITOR_PROPERTY: EditorProperty[] = [
 export const BAR_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
   'background-overall-component': ['all'],
   'basic-style-selector': ['colors', 'alpha', 'gradient'],
-  'label-selector': ['fontSize', 'color'],
-  'tooltip-selector': ['fontSize', 'color', 'backgroundColor'],
+  'label-selector': ['fontSize', 'color', 'labelFormatter'],
+  'tooltip-selector': ['fontSize', 'color', 'tooltipFormatter'],
   'x-axis-selector': [
     'name',
     'color',

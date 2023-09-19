@@ -187,7 +187,7 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
   }
 
   setupDefaultOptions(chart: ChartObj): ChartObj {
-    return flowLeft(this.setupVerticalAxis, this.setupVerticalAxis)(chart)
+    return flowLeft(this.setupVerticalAxis, this.setupVerticalLabel)(chart)
   }
 
   constructor(name = 'bar', defaultData = DEFAULT_DATA) {
@@ -199,34 +199,20 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
  * 堆叠柱状图
  */
 export class StackBar extends Bar {
+  propertyInner = {
+    ...this['propertyInner'],
+    'label-selector': [...BAR_EDITOR_PROPERTY_INNER['label-selector'], 'vPosition']
+  }
   protected configLabel(chart: Chart, options: ColumnOptions): ColumnOptions {
     const baseOptions = super.configLabel(chart, options)
     if (!baseOptions.label) {
       return baseOptions
     }
-    const { extStack, xAxisExt, yAxis } = chart
+    const { label: labelAttr } = parseJson(chart.customAttr)
     const label = {
       ...baseOptions.label,
       formatter: function (param: Datum) {
-        const res = param.value
-        let f
-        if (extStack?.length > 0 || xAxisExt?.length > 0) {
-          f = yAxis[0]
-        } else {
-          for (let i = 0; i < yAxis.length; i++) {
-            if (yAxis[i].name === param.category) {
-              f = yAxis[i]
-              break
-            }
-          }
-        }
-        if (!f) {
-          return res
-        }
-        if (!f.formatterCfg) {
-          f.formatterCfg = formatterItem
-        }
-        return valueFormatter(param.value, f.formatterCfg)
+        return valueFormatter(param.value, labelAttr.labelFormatter)
       }
     }
     return {
@@ -243,29 +229,10 @@ export class StackBar extends Bar {
         tooltip: false
       }
     }
-    const { extStack, yAxis } = chart
     const tooltip = {
       formatter: (param: Datum) => {
-        let res = param.value
-        let f
         const obj = { name: param.category, value: param.value }
-        if (extStack?.length > 0) {
-          f = yAxis[0]
-        } else {
-          for (let i = 0; i < yAxis.length; i++) {
-            if (yAxis[i].name === param.category) {
-              f = yAxis[i]
-              break
-            }
-          }
-        }
-        if (!f) {
-          return res
-        }
-        if (!f.formatterCfg) {
-          f.formatterCfg = formatterItem
-        }
-        res = valueFormatter(param.value, f.formatterCfg)
+        const res = valueFormatter(param.value, tooltipAttr.tooltipFormatter)
         obj.value = res ?? ''
         return obj
       }
@@ -289,92 +256,31 @@ export class StackBar extends Bar {
 /**
  * 分组柱状图
  */
-export class GroupBar extends Bar {
+export class GroupBar extends StackBar {
   axisConfig = {
     ...this['axisConfig'],
     yAxis: {
       name: `${t('chart.drag_block_value_axis')} / ${t('chart.quota')}`,
       type: 'q',
       limit: 1
-    }
-  }
-  protected configLabel(chart: Chart, options: ColumnOptions): ColumnOptions {
-    const baseOptions = super.configLabel(chart, options)
-    if (baseOptions.label) {
-      const yAxis = chart.yAxis
-      const label = {
-        ...baseOptions.label,
-        formatter: function (param: Datum) {
-          const f = yAxis[0]
-          let res = param.value
-          if (f.formatterCfg) {
-            res = valueFormatter(param.value, f.formatterCfg)
-          } else {
-            res = valueFormatter(param.value, formatterItem)
-          }
-          return res
-        }
-      }
-      return {
-        ...baseOptions,
-        label
-      }
-    }
-    return options
-  }
-
-  protected configTooltip(chart: Chart, options: ColumnOptions): ColumnOptions {
-    const tooltipAttr = parseJson(chart.customAttr).tooltip
-    if (!tooltipAttr.show) {
-      return {
-        ...options,
-        tooltip: false
-      }
-    }
-    const yAxis = chart.yAxis
-    const tooltip = {
-      formatter: (param: Datum) => {
-        let res = param.value
-        const obj = { name: param.category, value: param.value }
-        for (let i = 0; i < yAxis.length; i++) {
-          const f = yAxis[i]
-          if (f.formatterCfg) {
-            res = valueFormatter(param.value, f.formatterCfg)
-          } else {
-            res = valueFormatter(param.value, formatterItem)
-          }
-        }
-        obj.value = res ?? ''
-        return obj
-      }
-    }
-    return {
-      ...options,
-      tooltip
     }
   }
 
   constructor(name = 'bar-group') {
     super(name)
     this.baseOptions = {
-      ...this.baseOptions
+      ...this.baseOptions,
+      isGroup: true,
+      isStack: false
     }
-    this.axis = [...this.axis, 'xAxisExt']
+    this.axis = [...BAR_AXIS_TYPE, 'xAxisExt']
   }
 }
 
 /**
  * 分组堆叠柱状图
  */
-export class GroupStackBar extends Bar {
-  axisConfig = {
-    ...this['axisConfig'],
-    yAxis: {
-      name: `${t('chart.drag_block_value_axis')} / ${t('chart.quota')}`,
-      type: 'q',
-      limit: 1
-    }
-  }
+export class GroupStackBar extends StackBar {
   protected configTheme(chart: Chart, options: ColumnOptions): ColumnOptions {
     const baseOptions = super.configTheme(chart, options)
     const baseTheme = baseOptions.theme as object
@@ -390,31 +296,6 @@ export class GroupStackBar extends Bar {
     }
   }
 
-  protected configLabel(chart: Chart, options: ColumnOptions): ColumnOptions {
-    const baseOptions = super.configLabel(chart, options)
-    if (baseOptions.label) {
-      const yAxis = chart.yAxis
-      const label = {
-        ...baseOptions.label,
-        formatter: function (param: Datum) {
-          const f = yAxis[0]
-          let res = param.value
-          if (f.formatterCfg) {
-            res = valueFormatter(param.value, f.formatterCfg)
-          } else {
-            res = valueFormatter(param.value, formatterItem)
-          }
-          return res
-        }
-      }
-      return {
-        ...baseOptions,
-        label
-      }
-    }
-    return options
-  }
-
   protected configTooltip(chart: Chart, options: ColumnOptions): ColumnOptions {
     const tooltipAttr = parseJson(chart.customAttr).tooltip
     if (!tooltipAttr.show) {
@@ -423,21 +304,11 @@ export class GroupStackBar extends Bar {
         tooltip: false
       }
     }
-    const yAxis = chart.yAxis
     const tooltip = {
       fields: [],
       formatter: (param: Datum) => {
-        let res = param.value
         const obj = { name: `${param.category} - ${param.group}`, value: param.value }
-        for (let i = 0; i < yAxis.length; i++) {
-          const f = yAxis[i]
-          if (f.formatterCfg) {
-            res = valueFormatter(param.value, f.formatterCfg)
-          } else {
-            res = valueFormatter(param.value, formatterItem)
-          }
-        }
-        obj.value = res ?? ''
+        obj.value = valueFormatter(param.value, tooltipAttr.tooltipFormatter)
         return obj
       }
     }
@@ -450,11 +321,10 @@ export class GroupStackBar extends Bar {
     super(name)
     this.baseOptions = {
       ...this.baseOptions,
-      isStack: true,
       isGroup: true,
       groupField: 'group'
     }
-    this.axis = [...this.axis, 'xAxisExt', 'extStack']
+    this.axis = [...this.axis, 'extStack']
   }
 }
 
@@ -462,41 +332,25 @@ export class GroupStackBar extends Bar {
  * 百分比堆叠柱状图
  */
 export class PercentageStackBar extends GroupStackBar {
+  propertyInner = {
+    ...this['propertyInner'],
+    'label-selector': ['color', 'fontSize', 'vPosition', 'reserveDecimalCount'],
+    'tooltip-selector': ['color', 'fontSize']
+  }
   protected configLabel(chart: Chart, options: ColumnOptions): ColumnOptions {
     const baseOptions = super.configLabel(chart, options)
     if (!baseOptions.label) {
       return baseOptions
     }
-    const { extStack, xAxisExt, yAxis, customAttr } = chart
+    const { customAttr } = chart
     const l = parseJson(customAttr).label
     const label = {
       ...baseOptions.label,
       formatter: function (param: Datum) {
-        let f
-        const res = param.value
-        if (extStack?.length > 0 || xAxisExt?.length > 0) {
-          f = yAxis[0]
-        } else {
-          for (let i = 0; i < yAxis.length; i++) {
-            if (yAxis[i].name === param.category) {
-              f = yAxis[i]
-              break
-            }
-          }
-        }
-        if (!f) {
-          return res
-        }
-        if (!f.formatterCfg) {
-          f.formatterCfg = formatterItem
-        }
         if (!param.value) {
-          return
+          return '0%'
         }
-        f.formatterCfg.type = 'percent'
-        f.formatterCfg.decimalCount = l.reserveDecimalCount
-        f.formatterCfg.thousandSeparator = false
-        return valueFormatter(param.value, f.formatterCfg)
+        return (Math.round(param.value * 10000) / 100).toFixed(l.reserveDecimalCount) + '%'
       }
     }
     return {
@@ -515,39 +369,12 @@ export class PercentageStackBar extends GroupStackBar {
         }
       }
     }
-    const { extStack, yAxis, customAttr } = chart
+    const { customAttr } = chart
     const l = parseJson(customAttr).label
     const tooltip = {
       formatter: (param: Datum) => {
-        let f
-        let res = param.value
         const obj = { name: param.category, value: param.value }
-        if (extStack?.length > 0) {
-          f = yAxis[0]
-        } else {
-          for (let i = 0; i < yAxis.length; i++) {
-            if (yAxis[i].name === param.category) {
-              f = yAxis[i]
-              break
-            }
-          }
-        }
-        if (!f) {
-          return res
-        }
-        if (!f.formatterCfg) {
-          f.formatterCfg = formatterItem
-        }
-        if (!param.value) {
-          obj.value = 0
-          return obj
-        }
-        // 保留小数位数和标签保持一致，这边拿一下标签的配置
-        f.formatterCfg.type = 'percent'
-        f.formatterCfg.decimalCount = l.reserveDecimalCount
-        f.formatterCfg.thousandSeparator = false
-        res = valueFormatter(param.value, f.formatterCfg)
-        obj.value = res ?? ''
+        obj.value = (Math.round(param.value * 10000) / 100).toFixed(l.reserveDecimalCount) + '%'
         return obj
       }
     }

@@ -2,7 +2,7 @@ import { RadarOptions, Radar as G2Radar } from '@antv/g2plot/esm/plots/radar'
 import { G2PlotChartView, G2PlotDrawOptions } from '../../types/impl/g2plot'
 import { flow, parseJson } from '../../../util'
 import { getPadding } from '../../common/common_antv'
-import { singleDimensionTooltipFormatter } from '../../../formatter'
+import { singleDimensionTooltipFormatter, valueFormatter } from '../../../formatter'
 import { Datum } from '@antv/g2plot/esm/types/common'
 import { useI18n } from '@/hooks/web/useI18n'
 
@@ -22,8 +22,8 @@ export class Radar extends G2PlotChartView<RadarOptions, G2Radar> {
   ]
   propertyInner: EditorPropertyInner = {
     'basic-style-selector': ['colors', 'alpha', 'radarShape'],
-    'label-selector': ['fontSize', 'color'],
-    'tooltip-selector': ['color', 'fontSize', 'backgroundColor'],
+    'label-selector': ['fontSize', 'color', 'labelFormatter'],
+    'tooltip-selector': ['color', 'fontSize', 'backgroundColor', 'tooltipFormatter'],
     'misc-style-selector': ['showName', 'color', 'fontSize', 'axisColor'],
     'title-selector': [
       'show',
@@ -48,8 +48,7 @@ export class Radar extends G2PlotChartView<RadarOptions, G2Radar> {
     },
     yAxis: {
       name: `${t('chart.drag_block_radar_length')} / ${t('chart.quota')}`,
-      type: 'q',
-      limit: 1
+      type: 'q'
     }
   }
 
@@ -129,7 +128,9 @@ export class Radar extends G2PlotChartView<RadarOptions, G2Radar> {
     }
     const tooltip = {
       formatter: function (param: Datum) {
-        return singleDimensionTooltipFormatter(param, chart)
+        const obj = { name: param.category, value: param.value }
+        obj.value = valueFormatter(param.value, tooltipAttr.tooltipFormatter)
+        return obj
       }
     }
     return { ...options, tooltip }

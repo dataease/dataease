@@ -224,29 +224,11 @@ export class HorizontalStackBar extends HorizontalBar {
     if (!baseOptions.label) {
       return baseOptions
     }
-    const { extStack, xAxisExt, yAxis } = chart
+    const { label: labelAttr } = parseJson(chart.customAttr)
     const label = {
       ...baseOptions.label,
       formatter: function (param: Datum) {
-        const res = param.value
-        let f
-        if (extStack?.length > 0 || xAxisExt?.length > 0) {
-          f = yAxis[0]
-        } else {
-          for (let i = 0; i < yAxis.length; i++) {
-            if (yAxis[i].name === param.category) {
-              f = yAxis[i]
-              break
-            }
-          }
-        }
-        if (!f) {
-          return res
-        }
-        if (!f.formatterCfg) {
-          f.formatterCfg = formatterItem
-        }
-        return valueFormatter(param.value, f.formatterCfg)
+        return valueFormatter(param.value, labelAttr.labelFormatter)
       }
     }
     return {
@@ -263,29 +245,10 @@ export class HorizontalStackBar extends HorizontalBar {
         tooltip: false
       }
     }
-    const { extStack, yAxis } = chart
     const tooltip = {
       formatter: (param: Datum) => {
-        let res = param.value
-        let f
         const obj = { name: param.category, value: param.value }
-        if (extStack?.length > 0) {
-          f = yAxis[0]
-        } else {
-          for (let i = 0; i < yAxis.length; i++) {
-            if (yAxis[i].name === param.category) {
-              f = yAxis[i]
-              break
-            }
-          }
-        }
-        if (!f) {
-          return res
-        }
-        if (!f.formatterCfg) {
-          f.formatterCfg = formatterItem
-        }
-        res = valueFormatter(param.value, f.formatterCfg)
+        const res = valueFormatter(param.value, tooltipAttr.tooltipFormatter)
         obj.value = res ?? ''
         return obj
       }
@@ -311,41 +274,25 @@ export class HorizontalStackBar extends HorizontalBar {
  * 百分比堆叠条形图
  */
 export class HorizontalPercentageStackBar extends HorizontalStackBar {
+  propertyInner = {
+    ...this['propertyInner'],
+    'label-selector': ['color', 'fontSize', 'hPosition', 'reserveDecimalCount'],
+    'tooltip-selector': ['color', 'fontSize']
+  }
   protected configLabel(chart: Chart, options: BarOptions): BarOptions {
     const baseOptions = super.configLabel(chart, options)
     if (!baseOptions.label) {
       return baseOptions
     }
-    const { extStack, xAxisExt, yAxis, customAttr } = chart
+    const { customAttr } = chart
     const l = parseJson(customAttr).label
     const label = {
       ...baseOptions.label,
       formatter: function (param: Datum) {
-        let f
-        const res = param.value
-        if (extStack?.length > 0 || xAxisExt?.length > 0) {
-          f = yAxis[0]
-        } else {
-          for (let i = 0; i < yAxis.length; i++) {
-            if (yAxis[i].name === param.category) {
-              f = yAxis[i]
-              break
-            }
-          }
-        }
-        if (!f) {
-          return res
-        }
-        if (!f.formatterCfg) {
-          f.formatterCfg = formatterItem
-        }
         if (!param.value) {
-          return
+          return '0%'
         }
-        f.formatterCfg.type = 'percent'
-        f.formatterCfg.decimalCount = l.reserveDecimalCount
-        f.formatterCfg.thousandSeparator = false
-        return valueFormatter(param.value, f.formatterCfg)
+        return (Math.round(param.value * 10000) / 100).toFixed(l.reserveDecimalCount) + '%'
       }
     }
     return {
@@ -364,39 +311,12 @@ export class HorizontalPercentageStackBar extends HorizontalStackBar {
         }
       }
     }
-    const { extStack, yAxis, customAttr } = chart
+    const { customAttr } = chart
     const l = parseJson(customAttr).label
     const tooltip = {
       formatter: (param: Datum) => {
-        let f
-        let res = param.value
         const obj = { name: param.category, value: param.value }
-        if (extStack?.length > 0) {
-          f = yAxis[0]
-        } else {
-          for (let i = 0; i < yAxis.length; i++) {
-            if (yAxis[i].name === param.category) {
-              f = yAxis[i]
-              break
-            }
-          }
-        }
-        if (!f) {
-          return res
-        }
-        if (!f.formatterCfg) {
-          f.formatterCfg = formatterItem
-        }
-        if (!param.value) {
-          obj.value = 0
-          return obj
-        }
-        // 保留小数位数和标签保持一致，这边拿一下标签的配置
-        f.formatterCfg.type = 'percent'
-        f.formatterCfg.decimalCount = l.reserveDecimalCount
-        f.formatterCfg.thousandSeparator = false
-        res = valueFormatter(param.value, f.formatterCfg)
-        obj.value = res ?? ''
+        obj.value = (Math.round(param.value * 10000) / 100).toFixed(l.reserveDecimalCount) + '%'
         return obj
       }
     }
