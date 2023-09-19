@@ -49,7 +49,7 @@ const checkUsername = (_rule: any, value: any, callback: any) => {
 }
 const validatePwd = (_, value, callback) => {
   const pattern =
-    /^.*(?=.{8,20})(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[~!@#$%^&*()_+\-\={}|":<>?`[\];',.\/])[a-zA-Z0-9~!@#$%^&*()_+\-\={}|":<>?`[\];',.\/]*$/
+    /^.*(?=.{6,20})(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[~!@#$%^&*()_+\-\={}|":<>?`[\];',.\/])[a-zA-Z0-9~!@#$%^&*()_+\-\={}|":<>?`[\];',.\/]*$/
   const regep = new RegExp(pattern)
   if (!regep.test(value)) {
     const msg = t('user.pwd_pattern_error')
