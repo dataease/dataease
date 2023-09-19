@@ -400,10 +400,6 @@ span {
   :deep(.ed-form-item__label) {
     justify-content: flex-start;
   }
-  :deep(.ed-checkbox__inner) {
-    width: 14px;
-    height: 14px;
-  }
 }
 :deep(.ed-collapse-item) {
   &:first-child {

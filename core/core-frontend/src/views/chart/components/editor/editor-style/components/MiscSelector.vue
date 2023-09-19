@@ -587,12 +587,14 @@ init()
           </el-form-item>
           <el-form-item :label="t('chart.quota_text_style')" class="form-item">
             <el-checkbox
+              size="small"
               :effect="props.themes"
               v-model="state.miscForm.quotaFontIsItalic"
               @change="changeMisc('quotaFontIsItalic')"
               >{{ t('chart.italic') }}</el-checkbox
             >
             <el-checkbox
+              size="small"
               :effect="props.themes"
               v-model="state.miscForm.quotaFontIsBolder"
               @change="changeMisc('quotaFontIsBolder')"
@@ -616,6 +618,7 @@ init()
           </el-form-item>
           <el-form-item :label="t('chart.font_shadow')" class="form-item">
             <el-checkbox
+              size="small"
               :effect="props.themes"
               v-model="state.miscForm.quotaFontShadow"
               @change="changeMisc('quotaFontShadow')"
@@ -625,6 +628,7 @@ init()
           <el-divider />
           <el-form-item :label="t('chart.dimension_show')" class="form-item">
             <el-checkbox
+              size="small"
               :effect="props.themes"
               v-model="state.miscForm.dimensionShow"
               @change="changeMisc('dimensionShow')"
@@ -664,12 +668,14 @@ init()
             </el-form-item>
             <el-form-item :label="t('chart.dimension_text_style')" class="form-item">
               <el-checkbox
+                size="small"
                 :effect="props.themes"
                 v-model="state.miscForm.dimensionFontIsItalic"
                 @change="changeMisc('dimensionFontIsItalic')"
                 >{{ t('chart.italic') }}</el-checkbox
               >
               <el-checkbox
+                size="small"
                 :effect="props.themes"
                 v-model="state.miscForm.dimensionFontIsBolder"
                 @change="changeMisc('dimensionFontIsBolder')"
@@ -693,6 +699,7 @@ init()
             </el-form-item>
             <el-form-item :label="t('chart.font_shadow')" class="form-item">
               <el-checkbox
+                size="small"
                 :effect="props.themes"
                 v-model="state.miscForm.dimensionFontShadow"
                 @change="changeMisc('dimensionFontShadow')"

@@ -95,9 +95,12 @@ init()
       <el-form ref="functionForm" :model="state.functionForm" label-width="80px" size="small">
         <div v-show="showProperty('slider')">
           <el-form-item :label="t('chart.slider')" class="form-item">
-            <el-checkbox v-model="state.functionForm.sliderShow" @change="changeFunctionCfg">{{
-              t('chart.show')
-            }}</el-checkbox>
+            <el-checkbox
+              size="small"
+              v-model="state.functionForm.sliderShow"
+              @change="changeFunctionCfg"
+              >{{ t('chart.show') }}</el-checkbox
+            >
           </el-form-item>
           <div v-show="state.functionForm.sliderShow">
             <el-form-item

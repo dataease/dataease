@@ -222,6 +222,7 @@ onMounted(() => {
 
     <el-form-item class="form-item" :class="'form-item-' + themes" v-if="showProperty('showIndex')">
       <el-checkbox
+        size="small"
         :effect="themes"
         v-model="state.tableHeaderForm.showIndex"
         @change="changeTableHeader('showIndex')"

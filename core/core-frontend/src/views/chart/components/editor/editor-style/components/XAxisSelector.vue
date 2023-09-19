@@ -180,6 +180,7 @@ init()
 
             <el-form-item>
               <el-checkbox
+                size="small"
                 :effect="props.themes"
                 v-model="state.axisForm.axisValue.auto"
                 @change="changeAxisStyle('axisValue')"
@@ -238,6 +239,7 @@ init()
         <el-divider />
         <el-form-item v-if="showProperty('axisLine')">
           <el-checkbox
+            size="small"
             :effect="props.themes"
             v-model="state.axisForm.axisLine.show"
             @change="changeAxisStyle('axisLine')"
@@ -247,6 +249,7 @@ init()
         </el-form-item>
         <el-form-item class="form-item-checkbox" v-if="showProperty('splitLine')">
           <el-checkbox
+            size="small"
             :effect="props.themes"
             v-model="state.axisForm.splitLine.show"
             @change="changeAxisStyle('splitLine')"
@@ -285,6 +288,7 @@ init()
         <el-divider />
         <el-form-item class="form-item-checkbox" v-if="showProperty('axisLabel')">
           <el-checkbox
+            size="small"
             :effect="props.themes"
             v-model="state.axisForm.axisLabel.show"
             @change="changeAxisStyle('axisLabel')"
@@ -412,6 +416,7 @@ init()
 
               <el-form-item>
                 <el-checkbox
+                  size="small"
                   :effect="props.themes"
                   v-model="state.axisForm.axisLabelFormatter.thousandSeparator"
                   @change="changeAxisStyle('axisLabelFormatter')"

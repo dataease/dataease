@@ -358,7 +358,7 @@ export default {
     body_x_www_from_urlencoded: 'x-www-form-urlencoded',
     body_json: 'json',
     body_xml: 'xml',
-    body_raw: 'row',
+    body_raw: 'raw',
     request_body: '请求体',
     auth_config: '认证配置',
     auth_config_info: '请求需要进行权限校验',

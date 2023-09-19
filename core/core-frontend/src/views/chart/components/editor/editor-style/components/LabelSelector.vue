@@ -260,6 +260,7 @@ init()
 
           <el-form-item class="form-item">
             <el-checkbox
+              size="small"
               :effect="props.themes"
               v-model="state.labelForm.gaugeLabelFormatter.thousandSeparator"
               @change="changeLabelAttr('gaugeLabelFormatter')"

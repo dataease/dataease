@@ -91,6 +91,7 @@ onMounted(() => {
 
     <el-form-item class="form-item" :class="'form-item-' + themes" v-if="showProperty('gradient')">
       <el-checkbox
+        size="small"
         :effect="themes"
         v-model="state.basicStyleForm.gradient"
         @change="changeBasicStyle()"
@@ -142,6 +143,7 @@ onMounted(() => {
       v-if="showProperty('suspension')"
     >
       <el-checkbox
+        size="small"
         :effect="themes"
         v-model="state.basicStyleForm.suspension"
         :predefine="predefineColors"
@@ -332,6 +334,7 @@ onMounted(() => {
       :class="'form-item-' + themes"
     >
       <el-checkbox
+        size="small"
         :effect="themes"
         v-model="state.basicStyleForm.barDefault"
         @change="changeBasicStyle()"
@@ -424,6 +427,7 @@ onMounted(() => {
       v-if="showProperty('lineSmooth')"
     >
       <el-checkbox
+        size="small"
         :effect="themes"
         v-model="state.basicStyleForm.lineSmooth"
         @change="changeBasicStyle()"

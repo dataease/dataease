@@ -77,9 +77,12 @@ init()
     <el-col>
       <el-form ref="miscForm" :model="state.miscForm" label-width="80px" size="small">
         <el-form-item v-show="showProperty('showName')" :label="t('chart.name')" class="form-item">
-          <el-checkbox v-model="state.miscForm.showName" @change="changeMiscStyle('showName')">{{
-            t('chart.show')
-          }}</el-checkbox>
+          <el-checkbox
+            size="small"
+            v-model="state.miscForm.showName"
+            @change="changeMiscStyle('showName')"
+            >{{ t('chart.show') }}</el-checkbox
+          >
         </el-form-item>
         <el-form-item v-show="showProperty('color')" :label="t('chart.color')" class="form-item">
           <el-color-picker
