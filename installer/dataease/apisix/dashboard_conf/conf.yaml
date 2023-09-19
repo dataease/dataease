@@ -46,7 +46,7 @@ conf:
                          # log example: 2020-12-09T16:38:09.039+0800  INFO  filter/logging.go:46  /apisix/admin/routes/r1 {"status": 401, "host": "127.0.0.1:9000", "query": "asdfsafd=adf&a=a", "requestId": "3d50ecb8-758c-46d1-af5b-cd9d1c820156", "latency": 0, "remoteIP": "127.0.0.1", "method": "PUT", "errs": []}
   security:
       # access_control_allow_origin: "http://httpbin.org"
-      # access_control_allow_credentials: true          # support using custom cors configration
+      # access_control_allow_credentials: true          # support using custom cors configuration
       # access_control_allow_headers: "Authorization"
       # access_control-allow_methods: "*"
       # x_frame_options: "deny"

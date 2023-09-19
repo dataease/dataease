@@ -41,7 +41,6 @@ function usage() {
    echo "  stop         停止 DATAEASE 服务"
    echo "  restart      重启 DATAEASE 服务"
    echo "  reload       重新加载 DATAEASE 服务"
-   echo "  uninstall    卸载 DATAEASE 服务"
    echo "  upgrade      升级 DATAEASE 服务"
    echo "  clear-images 清理 DATAEASE 旧版本的相关镜像"
    echo "  version      查看 DATAEASE 版本"
@@ -59,6 +58,7 @@ function _prepare_apisix() {
       cd $DE_RUNNING_BASE || exit
       env | grep DE_ >.env
       sed -i -e "s/DE_APISIX_KEY/${DE_APISIX_KEY}/g" $DE_RUNNING_BASE/apisix/apisix_conf/config.yaml
+      sed -i -e "s/key:.*/key: ${DE_APISIX_KEY}/g" $DE_RUNNING_BASE/conf/application.yml
    fi
    compose_files="${compose_files} -f docker-compose-apisix.yml"
 }
@@ -117,7 +117,6 @@ function start() {
    cd ${DE_RUNNING_BASE} || exit; ${compose_cmd} ${compose_files} up -d
    _healthcheck
    if [ $? -eq 0 ] && [[ $need_init_apisix = true ]]; then
-      echo "start need_init_apisix : $need_init_apisix"
       _init_apisix
    fi
 }
@@ -132,9 +131,6 @@ function restart() {
 }
 function reload() {
    start
-}
-function uninstall() {
-   stop
 }
 function version() {
    echo
@@ -190,9 +186,6 @@ function main() {
          ;;
       reload)
          reload
-         ;;
-      uninstall)
-         uninstall
          ;;
       upgrade)
          upgrade
