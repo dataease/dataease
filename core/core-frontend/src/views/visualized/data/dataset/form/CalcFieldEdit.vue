@@ -457,6 +457,7 @@ initFunction()
     :deep(.ed-select__prefix--light) {
       padding: 0;
       border: none;
+      margin: 0;
     }
   }
 

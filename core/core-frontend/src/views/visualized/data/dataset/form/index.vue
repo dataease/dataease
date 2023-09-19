@@ -1310,7 +1310,9 @@ const treeProps = {
                     <el-table-column prop="deType" :label="t('dataset.field_type')" width="200">
                       <template #default="scope">
                         <el-cascader
-                          :class="!!scope.row.deTypeArr.length && 'select-type'"
+                          :class="
+                            !!scope.row.deTypeArr && !!scope.row.deTypeArr.length && 'select-type'
+                          "
                           popper-class="cascader-panel"
                           v-model="scope.row.deTypeArr"
                           @change="val => cascaderChange(scope.row, val)"
@@ -1450,7 +1452,9 @@ const treeProps = {
                     <el-table-column prop="deType" :label="t('dataset.field_type')" width="200">
                       <template #default="scope">
                         <el-cascader
-                          :class="!!scope.row.deTypeArr.length && 'select-type'"
+                          :class="
+                            !!scope.row.deTypeArr && !!scope.row.deTypeArr.length && 'select-type'
+                          "
                           popper-class="cascader-panel"
                           v-model="scope.row.deTypeArr"
                           @change="val => cascaderChange(scope.row, val)"
