@@ -142,6 +142,7 @@ onMounted(() => {
       v-if="showProperty('suspension')"
     >
       <el-checkbox
+        :effect="themes"
         v-model="state.basicStyleForm.suspension"
         :predefine="predefineColors"
         @change="changeBasicStyle('suspension')"
@@ -200,7 +201,7 @@ onMounted(() => {
           :class="'form-item-' + themes"
         >
           <el-select
-            :effect="props.themes"
+            :effect="themes"
             v-model="state.basicStyleForm.tablePageMode"
             :placeholder="t('chart.table_page_mode')"
             @change="changeBasicStyle('tablePageMode', true)"
@@ -220,7 +221,7 @@ onMounted(() => {
           :class="'form-item-' + themes"
         >
           <el-select
-            :effect="props.themes"
+            :effect="themes"
             v-model="state.basicStyleForm.tablePageSize"
             :placeholder="t('chart.table_page_size')"
             @change="changeBasicStyle('tablePageSize', true)"
@@ -245,7 +246,7 @@ onMounted(() => {
         <el-col :span="13">
           <el-form-item class="form-item alpha-slider" :class="'form-item-' + themes">
             <el-slider
-              :effect="props.themes"
+              :effect="themes"
               v-model="state.basicStyleForm.alpha"
               @change="changeBasicStyle()"
             />
@@ -255,7 +256,7 @@ onMounted(() => {
           <el-form-item class="form-item" :class="'form-item-' + themes">
             <el-input
               type="number"
-              :effect="props.themes"
+              :effect="themes"
               v-model="state.basicStyleForm.alpha"
               :min="0"
               :max="100"
@@ -279,10 +280,10 @@ onMounted(() => {
       v-if="showProperty('tableColumnMode')"
     >
       <el-radio-group v-model="state.basicStyleForm.tableColumnMode" @change="changeBasicStyle()">
-        <el-radio label="adapt" :effect="props.themes">
+        <el-radio label="adapt" :effect="themes">
           {{ t('chart.table_column_adapt') }}
         </el-radio>
-        <el-radio label="custom" :effect="props.themes">
+        <el-radio label="custom" :effect="themes">
           {{ t('chart.table_column_custom') }}
           <el-tooltip placement="bottom" :content="t('chart.table_column_width_tip')" raw-content>
             <el-icon><InfoFilled /></el-icon>
@@ -296,7 +297,7 @@ onMounted(() => {
       :class="'form-item-' + themes"
     >
       <el-input-number
-        :effect="props.themes"
+        :effect="themes"
         v-model.number="state.basicStyleForm.tableColumnWidth"
         :min="10"
         controls-position="right"
@@ -312,7 +313,7 @@ onMounted(() => {
       v-if="showProperty('gaugeStyle')"
     >
       <el-select
-        :effect="props.themes"
+        :effect="themes"
         v-model="state.basicStyleForm.gaugeStyle"
         @change="changeBasicStyle()"
       >
@@ -326,13 +327,19 @@ onMounted(() => {
     </el-form-item>
     <!--gauge end-->
     <!--bar start-->
-    <el-checkbox
-      v-model="state.basicStyleForm.barDefault"
-      @change="changeBasicStyle()"
+    <el-form-item
       v-if="showProperty('barDefault')"
+      class="form-item form-item-slider"
+      :class="'form-item-' + themes"
     >
-      {{ t('chart.adapt') }}
-    </el-checkbox>
+      <el-checkbox
+        :effect="themes"
+        v-model="state.basicStyleForm.barDefault"
+        @change="changeBasicStyle()"
+      >
+        {{ t('chart.adapt') }}
+      </el-checkbox>
+    </el-form-item>
     <el-form-item
       v-if="showProperty('barDefault') && !state.basicStyleForm.barDefault"
       :label="t('chart.bar_gap')"
@@ -340,7 +347,7 @@ onMounted(() => {
       :class="'form-item-' + themes"
     >
       <el-input-number
-        :effect="props.themes"
+        :effect="themes"
         v-model="state.basicStyleForm.barGap"
         controls-position="right"
         :show-input-controls="false"
@@ -361,7 +368,7 @@ onMounted(() => {
           v-if="showProperty('lineWidth')"
         >
           <el-input-number
-            :effect="props.themes"
+            :effect="themes"
             v-model="state.basicStyleForm.lineWidth"
             :min="0"
             :max="10"
@@ -380,7 +387,7 @@ onMounted(() => {
           v-if="showProperty('lineSymbol')"
         >
           <el-select
-            :effect="props.themes"
+            :effect="themes"
             v-model="state.basicStyleForm.lineSymbol"
             :placeholder="t('chart.line_symbol')"
             @change="changeBasicStyle()"
@@ -402,7 +409,7 @@ onMounted(() => {
           v-if="showProperty('lineSymbolSize')"
         >
           <el-input-number
-            :effect="props.themes"
+            :effect="themes"
             v-model="state.basicStyleForm.lineSymbolSize"
             :min="0"
             :max="20"
@@ -412,13 +419,19 @@ onMounted(() => {
         </el-form-item>
       </el-col>
     </el-row>
-    <el-checkbox
-      v-model="state.basicStyleForm.lineSmooth"
-      @change="changeBasicStyle()"
+    <el-form-item
+      class="form-item"
+      :class="'form-item-' + themes"
       v-if="showProperty('lineSmooth')"
     >
-      {{ t('chart.line_smooth') }}
-    </el-checkbox>
+      <el-checkbox
+        :effect="themes"
+        v-model="state.basicStyleForm.lineSmooth"
+        @change="changeBasicStyle()"
+      >
+        {{ t('chart.line_smooth') }}
+      </el-checkbox>
+    </el-form-item>
     <!--line area end-->
     <!--radar begin-->
     <el-form-item
@@ -444,7 +457,7 @@ onMounted(() => {
       v-if="showProperty('mapStyle')"
     >
       <el-select
-        :effect="props.themes"
+        :effect="themes"
         v-model="state.basicStyleForm.mapStyle"
         @change="changeBasicStyle('mapStyle')"
       >
@@ -465,7 +478,7 @@ onMounted(() => {
       v-if="showProperty('scatterSymbol')"
     >
       <el-select
-        :effect="props.themes"
+        :effect="themes"
         v-model="state.basicStyleForm.scatterSymbol"
         :placeholder="t('chart.line_symbol')"
         @change="changeBasicStyle('scatterSymbol')"
@@ -485,7 +498,7 @@ onMounted(() => {
       v-if="showProperty('scatterSymbolSize')"
     >
       <el-input-number
-        :effect="props.themes"
+        :effect="themes"
         v-model="state.basicStyleForm.scatterSymbolSize"
         controls-position="right"
         :min="1"
@@ -503,7 +516,7 @@ onMounted(() => {
       v-if="showProperty('mapSymbol')"
     >
       <el-select
-        :effect="props.themes"
+        :effect="themes"
         v-model="state.basicStyleForm.mapSymbol"
         :placeholder="t('chart.line_symbol')"
         @change="changeBasicStyle"
@@ -523,7 +536,7 @@ onMounted(() => {
       v-if="showProperty('mapSymbolSize')"
     >
       <el-input-number
-        :effect="props.themes"
+        :effect="themes"
         controls-position="right"
         v-model="state.basicStyleForm.mapSymbolSize"
         :min="1"
@@ -538,7 +551,7 @@ onMounted(() => {
       v-if="showProperty('mapSymbolOpacity')"
     >
       <el-input-number
-        :effect="props.themes"
+        :effect="themes"
         controls-position="right"
         v-model="state.basicStyleForm.mapSymbolOpacity"
         :min="1"
@@ -553,7 +566,7 @@ onMounted(() => {
       :class="'form-item-' + themes"
     >
       <el-input-number
-        :effect="props.themes"
+        :effect="themes"
         controls-position="right"
         v-model="state.basicStyleForm.mapSymbolStrokeWidth"
         :min="0"
