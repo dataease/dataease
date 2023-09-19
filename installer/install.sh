@@ -231,7 +231,7 @@ fi
 http_code=$(curl -sILw "%{http_code}\n" http://localhost:${DE_PORT} -o /dev/null)
 if [[ $http_code == 200 ]];then
    log "停止服务进行升级..."
-   dectl uninstall
+   dectl stop
 fi
 
 log "启动服务"
