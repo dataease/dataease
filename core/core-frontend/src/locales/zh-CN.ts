@@ -70,7 +70,7 @@ export default {
   user: {
     change_password: '修改密码',
     select_users: '请选择用户',
-    account: '帐号',
+    account: '账号',
     name: '姓名',
     role: '角色',
     state: '状态',
@@ -79,7 +79,7 @@ export default {
     add_title: '添加用户',
     edit_title: '编辑用户',
     user_id: '用户',
-    user_id_empty: '请输入精准用户ID/帐号',
+    user_id_empty: '请输入精准用户ID/账号',
     search_placeholder: '搜索姓名、账号、邮箱',
     batch_del: '批量删除',
     selection_info: '已选 {0} 项',

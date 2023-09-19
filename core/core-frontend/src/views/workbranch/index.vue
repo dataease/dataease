@@ -206,7 +206,7 @@ fillCardInfo()
           </div>
         </template>
       </div>
-      <shortcut-table />
+      <shortcut-table :expand="expandFold === 'expand'" />
     </div>
   </div>
 </template>
