@@ -2469,6 +2469,17 @@ span {
       height: 26px !important;
     }
   }
+  .ed-checkbox {
+    .ed-checkbox__label {
+      font-size: 12px;
+    }
+  }
+  .ed-color-picker {
+    .ed-color-picker__mask {
+      height: 26px;
+      width: calc(100% - 2px) !important;
+    }
+  }
   .ed-radio {
     height: 20px;
     .ed-radio__label {

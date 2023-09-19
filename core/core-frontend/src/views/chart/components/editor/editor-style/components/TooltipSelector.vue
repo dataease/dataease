@@ -2,6 +2,7 @@
 import { reactive, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL, DEFAULT_TOOLTIP } from '@/views/chart/components/editor/util/chart'
+import { ElSpace } from 'element-plus-secondary'
 
 const { t } = useI18n()
 
@@ -73,76 +74,67 @@ init()
 </script>
 
 <template>
-  <div style="width: 100%">
-    <el-col>
-      <el-form
-        ref="tooltipForm"
-        :disabled="!state.tooltipForm.show"
-        :model="state.tooltipForm"
-        size="small"
-        label-position="top"
+  <el-form
+    ref="tooltipForm"
+    :disabled="!state.tooltipForm.show"
+    :model="state.tooltipForm"
+    label-position="top"
+  >
+    <el-form-item
+      :label="t('chart.background') + t('chart.color')"
+      class="form-item"
+      :class="'form-item-' + themes"
+    >
+      <el-color-picker
+        :effect="themes"
+        v-model="state.tooltipForm.backgroundColor"
+        class="color-picker-style"
+        :predefine="predefineColors"
+        @change="changeTooltipAttr('backgroundColor')"
+        is-custom
+        :trigger-width="108"
+      />
+    </el-form-item>
+    <el-space>
+      <el-form-item
+        class="form-item"
+        :class="'form-item-' + themes"
+        v-show="showProperty('color')"
+        :label="t('chart.text')"
       >
-        <div class="custom-form-item-label">{{ t('chart.text') }}</div>
-        <div style="display: flex">
-          <el-form-item class="form-item" v-show="showProperty('color')" style="padding-right: 4px">
-            <el-color-picker
-              v-model="state.tooltipForm.color"
-              class="color-picker-style"
-              :predefine="predefineColors"
-              @change="changeTooltipAttr('textStyle')"
-              is-custom
-            />
-          </el-form-item>
+        <el-color-picker
+          :effect="themes"
+          v-model="state.tooltipForm.color"
+          class="color-picker-style"
+          :predefine="predefineColors"
+          @change="changeTooltipAttr('textStyle')"
+          is-custom
+        />
+      </el-form-item>
 
-          <el-form-item
-            class="form-item"
-            v-show="showProperty('fontSize')"
-            style="padding-left: 4px"
-          >
-            <el-select
-              style="width: 108px"
-              :effect="props.themes"
-              v-model.number="state.tooltipForm.fontSize"
-              :placeholder="t('chart.text_fontsize')"
-              size="small"
-              @change="changeTooltipAttr('textStyle')"
-            >
-              <el-option
-                v-for="option in state.fontSize"
-                :key="option.value"
-                :label="option.name"
-                :value="option.value"
-              />
-            </el-select>
-          </el-form-item>
-        </div>
-
-        <el-form-item :label="t('chart.background')" class="form-item">
-          <el-color-picker
-            v-model="state.tooltipForm.backgroundColor"
-            class="color-picker-style"
-            :predefine="predefineColors"
-            @change="changeTooltipAttr('backgroundColor')"
-            is-custom
+      <el-form-item
+        class="form-item"
+        :class="'form-item-' + themes"
+        v-show="showProperty('fontSize')"
+      >
+        <template #label>&nbsp;</template>
+        <el-select
+          style="width: 108px"
+          :effect="themes"
+          v-model.number="state.tooltipForm.fontSize"
+          :placeholder="t('chart.text_fontsize')"
+          @change="changeTooltipAttr('textStyle')"
+        >
+          <el-option
+            v-for="option in state.fontSize"
+            :key="option.value"
+            :label="option.name"
+            :value="option.value"
           />
-        </el-form-item>
-      </el-form>
-    </el-col>
-  </div>
+        </el-select>
+      </el-form-item>
+    </el-space>
+  </el-form>
 </template>
 
-<style lang="less" scoped>
-:deep(.ed-color-picker.is-custom .ed-color-picker__trigger) {
-  height: 24px;
-}
-.custom-form-item-label {
-  margin-bottom: 4px;
-  line-height: 20px;
-  color: #a6a6a6;
-  font-size: 12px;
-  padding: 2px 12px 0 0;
-}
-.form-item-checkbox {
-  margin-bottom: 10px !important;
-}
-</style>
+<style lang="less" scoped></style>

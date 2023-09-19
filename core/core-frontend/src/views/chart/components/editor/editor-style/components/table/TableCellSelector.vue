@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import { PropType, reactive, watch } from 'vue'
+import { computed, onMounted, PropType, reactive, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL, DEFAULT_TABLE_CELL } from '@/views/chart/components/editor/util/chart'
-import { ElColorPicker, ElFormItem, ElSelect, ElSlider } from 'element-plus-secondary'
+import { ElSpace } from 'element-plus-secondary'
 
 const { t } = useI18n()
 
@@ -30,7 +30,7 @@ watch(
 
 const predefineColors = COLOR_PANEL
 
-const initFontSize = () => {
+const fontSizeList = computed(() => {
   const arr = []
   for (let i = 10; i <= 40; i = i + 2) {
     arr.push({
@@ -38,12 +38,11 @@ const initFontSize = () => {
       value: i
     })
   }
-  state.fontSize = arr
-}
+  return arr
+})
 
 const state = reactive({
-  tableCellForm: JSON.parse(JSON.stringify(DEFAULT_TABLE_CELL)),
-  fontSize: []
+  tableCellForm: JSON.parse(JSON.stringify(DEFAULT_TABLE_CELL))
 })
 
 const emit = defineEmits(['onTableCellChange'])
@@ -61,143 +60,186 @@ const init = () => {
   }
 }
 const showProperty = prop => props.propertyInner?.includes(prop)
-initFontSize()
-init()
+
+function setPosition(p: 'left' | 'center' | 'right') {
+  state.tableCellForm.tableItemAlign = p
+  changeTableCell('tableHeaderAlign')
+}
+
+onMounted(() => {
+  init()
+})
 </script>
 
 <template>
-  <div style="width: 100%">
-    <el-col>
-      <el-form ref="tableCellForm" :model="state.tableCellForm" size="small" label-position="top">
-        <el-form-item
-          :label="t('chart.backgroundColor')"
-          class="form-item"
-          v-if="showProperty('tableItemBgColor')"
+  <el-form ref="tableCellForm" :model="state.tableCellForm" label-position="top">
+    <el-form-item
+      :label="t('chart.backgroundColor')"
+      class="form-item"
+      :class="'form-item-' + themes"
+      v-if="showProperty('tableItemBgColor')"
+    >
+      <el-color-picker
+        :effect="themes"
+        is-custom
+        :trigger-width="108"
+        v-model="state.tableCellForm.tableItemBgColor"
+        :predefine="predefineColors"
+        @change="changeTableCell('tableItemBgColor')"
+      />
+    </el-form-item>
+    <el-space>
+      <el-form-item
+        class="form-item"
+        :class="'form-item-' + themes"
+        v-if="showProperty('tableFontColor')"
+        :label="t('chart.text')"
+      >
+        <el-color-picker
+          :effect="themes"
+          is-custom
+          v-model="state.tableCellForm.tableFontColor"
+          :predefine="predefineColors"
+          @change="changeTableCell('tableFontColor')"
+        />
+      </el-form-item>
+      <el-form-item
+        class="form-item"
+        :class="'form-item-' + themes"
+        v-if="showProperty('tableItemFontSize')"
+      >
+        <template #label>&nbsp;</template>
+        <el-select
+          style="width: 58px"
+          :effect="themes"
+          v-model="state.tableCellForm.tableItemFontSize"
+          @change="changeTableCell('tableItemFontSize')"
         >
-          <el-color-picker
-            v-model="state.tableCellForm.tableItemBgColor"
-            :predefine="predefineColors"
-            @change="changeTableCell('tableItemBgColor')"
-            is-custom
+          <el-option
+            v-for="option in fontSizeList"
+            :key="option.value"
+            :label="option.name"
+            :value="option.value"
           />
-        </el-form-item>
-        <div class="custom-form-item-label">{{ t('chart.text') }}</div>
-        <div style="display: flex">
-          <el-form-item
-            class="form-item"
-            v-if="showProperty('tableFontColor')"
-            style="padding-right: 4px"
-          >
-            <el-color-picker
-              v-model="state.tableCellForm.tableFontColor"
-              :predefine="predefineColors"
-              @change="changeTableCell('tableFontColor')"
-              is-custom
-            />
-          </el-form-item>
-          <el-form-item
-            class="form-item"
-            v-if="showProperty('tableItemFontSize')"
-            style="padding-left: 4px"
-          >
-            <el-select
-              style="width: 108px"
-              :effect="props.themes"
-              v-model="state.tableCellForm.tableItemFontSize"
-              @change="changeTableCell('tableItemFontSize')"
+        </el-select>
+      </el-form-item>
+      <el-form-item
+        class="form-item"
+        :class="'form-item-' + themes"
+        v-if="showProperty('tableItemAlign')"
+      >
+        <template #label>&nbsp;</template>
+        <el-space>
+          <el-tooltip effect="dark" placement="top">
+            <template #content>
+              {{ t('chart.text_pos_left') }}
+            </template>
+            <div
+              class="icon-btn"
+              :class="{
+                dark: themes === 'dark',
+                active: state.tableCellForm.tableItemAlign === 'left'
+              }"
+              @click="setPosition('left')"
             >
-              <el-option
-                v-for="option in state.fontSize"
-                :key="option.value"
-                :label="option.name"
-                :value="option.value"
-              />
-            </el-select>
-          </el-form-item>
-        </div>
+              <el-icon>
+                <Icon name="icon_left-alignment_outlined" />
+              </el-icon>
+            </div>
+          </el-tooltip>
+          <el-tooltip effect="dark" placement="top">
+            <template #content>
+              {{ t('chart.text_pos_center') }}
+            </template>
+            <div
+              class="icon-btn"
+              :class="{
+                dark: themes === 'dark',
+                active: state.tableCellForm.tableItemAlign === 'center'
+              }"
+              @click="setPosition('center')"
+            >
+              <el-icon>
+                <Icon name="icon_center-alignment_outlined" />
+              </el-icon>
+            </div>
+          </el-tooltip>
+          <el-tooltip effect="dark" placement="top">
+            <template #content>
+              {{ t('chart.text_pos_right') }}
+            </template>
+            <div
+              class="icon-btn"
+              :class="{
+                dark: themes === 'dark',
+                active: state.tableCellForm.tableItemAlign === 'right'
+              }"
+              @click="setPosition('right')"
+            >
+              <el-icon>
+                <Icon name="icon_right-alignment_outlined" />
+              </el-icon>
+            </div>
+          </el-tooltip>
+        </el-space>
+      </el-form-item>
+    </el-space>
 
-        <el-form-item
-          :label="t('chart.align')"
-          class="form-item"
-          v-if="showProperty('tableItemAlign')"
-        >
-          <el-select
-            style="width: 100%"
-            v-model="state.tableCellForm.tableItemAlign"
-            :effect="props.themes"
-            @change="changeTableCell('tableHeaderAlign')"
-          >
-            <el-option value="left" :label="t('chart.table_align_left')" />
-            <el-option value="center" :label="t('chart.table_align_center')" />
-            <el-option value="right" :label="t('chart.table_align_right')" />
-          </el-select>
-        </el-form-item>
+    <el-row :gutter="8">
+      <el-col :span="12">
         <el-form-item
           :label="t('visualization.lineHeight')"
           class="form-item"
+          :class="'form-item-' + themes"
           v-if="showProperty('tableItemHeight')"
         >
-          <el-slider
+          <el-input-number
+            :effect="themes"
+            controls-position="right"
             v-model="state.tableCellForm.tableItemHeight"
             :min="20"
             :max="100"
             @change="changeTableCell('tableItemHeight')"
           />
         </el-form-item>
-      </el-form>
-    </el-col>
-  </div>
+      </el-col>
+    </el-row>
+  </el-form>
 </template>
 
 <style lang="less" scoped>
-:deep(.ed-color-picker.is-custom .ed-color-picker__trigger) {
+.icon-btn {
+  font-size: 16px;
+  line-height: 16px;
+  width: 24px;
   height: 24px;
-}
-.custom-form-item-label {
-  margin-bottom: 4px;
-  line-height: 20px;
-  color: #a6a6a6;
-  font-size: 12px;
-  padding: 2px 12px 0 0;
-}
-.form-item-checkbox {
-  margin-bottom: 10px !important;
-}
+  text-align: center;
+  vertical-align: middle;
+  border-radius: 4px;
+  padding-top: 4px;
 
-.form-item-slider :deep(.ed-form-item__label) {
-  font-size: 12px;
-  line-height: 38px;
-}
+  color: #1f2329;
 
-.form-item :deep(.ed-form-item__label) {
-  font-size: 12px;
-}
-
-.color-picker-style {
   cursor: pointer;
-  z-index: 1003;
-}
 
-.color-label {
-  display: inline-block;
-  width: 60px;
-}
-
-.color-type {
-  &:deep(.ed-radio__input) {
-    display: none;
+  &.dark {
+    color: #a6a6a6;
+    &.active {
+      color: #3370ff;
+      background-color: rgba(51, 112, 255, 0.1);
+    }
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
   }
-  .ed-radio {
-    margin: 0 2px 0 0 !important;
-    border: 1px solid transparent;
+
+  &.active {
+    color: #3370ff;
+    background-color: rgba(51, 112, 255, 0.1);
   }
-}
 
-.ed-radio :deep(.ed-radio__label) {
-  padding-left: 0;
-}
-
-.ed-radio.is-checked {
-  border: 1px solid #0a7be0;
+  &:hover {
+    background-color: rgba(31, 35, 41, 0.1);
+  }
 }
 </style>

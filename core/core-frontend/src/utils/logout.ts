@@ -8,7 +8,7 @@ const permissionStore = usePermissionStoreWithOut()
 const userStore = useUserStoreWithOut()
 const interactiveStore = interactiveStoreWithOut()
 
-export const logoutHandler = () => {
+export const logoutHandler = (justClean?: boolean) => {
   userStore.clear()
   userStore.$reset()
   permissionStore.clear()
@@ -21,7 +21,7 @@ export const logoutHandler = () => {
   if (router.currentRoute.value.fullPath) {
     queryRedirectPath = router.currentRoute.value.fullPath as string
   }
-  router.push(`/login?redirect=${queryRedirectPath}`)
+  router.push(justClean ? queryRedirectPath : `/login?redirect=${queryRedirectPath}`)
 }
 
 const removeCache = () => {

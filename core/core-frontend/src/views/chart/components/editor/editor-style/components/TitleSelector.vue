@@ -100,202 +100,235 @@ init()
 </script>
 
 <template>
-  <div style="width: 100%">
-    <el-col>
-      <el-form
-        ref="titleForm"
-        :disabled="!state.titleForm.show"
-        :model="state.titleForm"
+  <el-form
+    ref="titleForm"
+    :disabled="!state.titleForm.show"
+    :model="state.titleForm"
+    label-position="top"
+  >
+    <el-form-item
+      :label="t('chart.title')"
+      class="form-item"
+      :class="'form-item-' + themes"
+      v-if="!batchOptStatus"
+    >
+      <el-input
+        :effect="themes"
+        v-model="chart.title"
         size="small"
-        label-position="top"
+        maxlength="100"
+        :placeholder="t('chart.title')"
+        clearable
+        @blur="changeTitleStyle('title')"
+      />
+    </el-form-item>
+
+    <el-form-item
+      class="form-item"
+      :class="'form-item-' + themes"
+      :effect="themes"
+      :label="t('chart.text')"
+    >
+      <el-select
+        :effect="themes"
+        v-model="state.titleForm.fontFamily"
+        :placeholder="t('chart.font_family')"
+        @change="changeTitleStyle('fontFamily')"
       >
-        <el-form-item :label="t('chart.title')" class="form-item" v-if="!batchOptStatus">
-          <el-input
-            :effect="props.themes"
-            v-model="chart.title"
-            size="small"
-            maxlength="100"
-            :placeholder="t('chart.title')"
-            clearable
-            @blur="changeTitleStyle('title')"
+        <el-option
+          v-for="option in fontFamily"
+          :key="option.value"
+          :label="option.name"
+          :value="option.value"
+        />
+      </el-select>
+    </el-form-item>
+
+    <div style="display: flex">
+      <el-form-item class="form-item" :class="'form-item-' + themes" style="padding-right: 4px">
+        <el-color-picker
+          :effect="themes"
+          v-model="state.titleForm.color"
+          class="color-picker-style"
+          :predefine="predefineColors"
+          @change="changeTitleStyle('color')"
+          is-custom
+        />
+      </el-form-item>
+      <el-form-item class="form-item" :class="'form-item-' + themes" style="padding: 0 4px">
+        <el-select
+          style="width: 56px"
+          :effect="themes"
+          v-model="state.titleForm.fontSize"
+          :placeholder="t('chart.text_fontsize')"
+          size="small"
+          @change="changeTitleStyle('fontSize')"
+        >
+          <el-option
+            v-for="option in state.fontSize"
+            :key="option.value"
+            :label="option.name"
+            :value="option.value"
           />
-        </el-form-item>
+        </el-select>
+      </el-form-item>
 
-        <div class="custom-form-item-label">{{ t('chart.text') }}</div>
+      <el-form-item class="form-item" :class="'form-item-' + themes" style="padding-left: 4px">
+        <el-select
+          :effect="themes"
+          v-model="state.titleForm.letterSpace"
+          :placeholder="t('chart.quota_letter_space')"
+          @change="changeTitleStyle('letterSpace')"
+        >
+          <template #prefix>
+            <el-icon>
+              <Icon name="icon_letter-spacing_outlined" />
+            </el-icon>
+          </template>
+          <el-option
+            v-for="option in fontLetterSpace"
+            :key="option.value"
+            :label="option.name"
+            :value="option.value"
+          />
+        </el-select>
+      </el-form-item>
+    </div>
 
-        <el-form-item class="form-item">
-          <el-select
-            style="width: 100%"
-            :effect="props.themes"
-            v-model="state.titleForm.fontFamily"
-            :placeholder="t('chart.font_family')"
-            @change="changeTitleStyle('fontFamily')"
-          >
-            <el-option
-              v-for="option in fontFamily"
-              :key="option.value"
-              :label="option.name"
-              :value="option.value"
-            />
-          </el-select>
-        </el-form-item>
-
-        <div style="display: flex">
-          <el-form-item class="form-item" style="padding-right: 4px">
-            <el-color-picker
-              v-model="state.titleForm.color"
-              class="color-picker-style"
-              :predefine="predefineColors"
-              @change="changeTitleStyle('color')"
-              is-custom
-            />
-          </el-form-item>
-          <el-form-item class="form-item" style="padding: 0 4px">
-            <el-select
-              style="width: 56px"
-              :effect="props.themes"
-              v-model="state.titleForm.fontSize"
-              :placeholder="t('chart.text_fontsize')"
-              size="small"
-              @change="changeTitleStyle('fontSize')"
-            >
-              <el-option
-                v-for="option in state.fontSize"
-                :key="option.value"
-                :label="option.name"
-                :value="option.value"
-              />
-            </el-select>
-          </el-form-item>
-
-          <el-form-item class="form-item" style="padding-left: 4px">
-            <el-select
-              :effect="props.themes"
-              v-model="state.titleForm.letterSpace"
-              :placeholder="t('chart.quota_letter_space')"
-              @change="changeTitleStyle('letterSpace')"
-            >
-              <template #prefix>
-                <el-icon>
-                  <Icon name="icon_letter-spacing_outlined" />
-                </el-icon>
-              </template>
-              <el-option
-                v-for="option in fontLetterSpace"
-                :key="option.value"
-                :label="option.name"
-                :value="option.value"
-              />
-            </el-select>
-          </el-form-item>
+    <el-space wrap style="margin-bottom: 16px">
+      <el-tooltip effect="dark" placement="top">
+        <template #content>
+          {{ t('chart.bolder') }}
+        </template>
+        <div
+          class="icon-btn"
+          :class="{ dark: themes === 'dark', active: state.titleForm.isBolder }"
+          @click="checkBold"
+        >
+          <el-icon>
+            <Icon name="icon_bold_outlined" />
+          </el-icon>
         </div>
+      </el-tooltip>
 
-        <el-space wrap style="margin-bottom: 16px">
-          <el-tooltip effect="dark" placement="top">
-            <template #content>
-              {{ t('chart.bolder') }}
-            </template>
-            <div
-              class="icon-btn"
-              :class="{ dark: themes === 'dark', active: state.titleForm.isBolder }"
-              @click="checkBold"
-            >
-              <el-icon>
-                <Icon name="icon_bold_outlined" />
-              </el-icon>
-            </div>
-          </el-tooltip>
+      <el-tooltip effect="dark" placement="top">
+        <template #content>
+          {{ t('chart.italic') }}
+        </template>
+        <div
+          class="icon-btn"
+          :class="{ dark: themes === 'dark', active: state.titleForm.isItalic }"
+          @click="checkItalic"
+        >
+          <el-icon>
+            <Icon name="icon_italic_outlined" />
+          </el-icon>
+        </div>
+      </el-tooltip>
 
-          <el-tooltip effect="dark" placement="top">
-            <template #content>
-              {{ t('chart.italic') }}
-            </template>
-            <div
-              class="icon-btn"
-              :class="{ dark: themes === 'dark', active: state.titleForm.isItalic }"
-              @click="checkItalic"
-            >
-              <el-icon>
-                <Icon name="icon_italic_outlined" />
-              </el-icon>
-            </div>
-          </el-tooltip>
+      <div class="m-divider"></div>
 
-          <div class="m-divider"></div>
+      <el-tooltip effect="dark" placement="top">
+        <template #content>
+          {{ t('chart.text_pos_left') }}
+        </template>
+        <div
+          class="icon-btn"
+          :class="{ dark: themes === 'dark', active: state.titleForm.hPosition === 'left' }"
+          @click="setPosition('left')"
+        >
+          <el-icon>
+            <Icon name="icon_left-alignment_outlined" />
+          </el-icon>
+        </div>
+      </el-tooltip>
+      <el-tooltip effect="dark" placement="top">
+        <template #content>
+          {{ t('chart.text_pos_center') }}
+        </template>
+        <div
+          class="icon-btn"
+          :class="{ dark: themes === 'dark', active: state.titleForm.hPosition === 'center' }"
+          @click="setPosition('center')"
+        >
+          <el-icon>
+            <Icon name="icon_center-alignment_outlined" />
+          </el-icon>
+        </div>
+      </el-tooltip>
+      <el-tooltip effect="dark" placement="top">
+        <template #content>
+          {{ t('chart.text_pos_right') }}
+        </template>
+        <div
+          class="icon-btn"
+          :class="{ dark: themes === 'dark', active: state.titleForm.hPosition === 'right' }"
+          @click="setPosition('right')"
+        >
+          <el-icon>
+            <Icon name="icon_right-alignment_outlined" />
+          </el-icon>
+        </div>
+      </el-tooltip>
 
-          <el-tooltip effect="dark" placement="top">
-            <template #content>
-              {{ t('chart.text_pos_left') }}
-            </template>
-            <div
-              class="icon-btn"
-              :class="{ dark: themes === 'dark', active: state.titleForm.hPosition === 'left' }"
-              @click="setPosition('left')"
-            >
-              <el-icon>
-                <Icon name="icon_left-alignment_outlined" />
-              </el-icon>
-            </div>
-          </el-tooltip>
-          <el-tooltip effect="dark" placement="top">
-            <template #content>
-              {{ t('chart.text_pos_center') }}
-            </template>
-            <div
-              class="icon-btn"
-              :class="{ dark: themes === 'dark', active: state.titleForm.hPosition === 'center' }"
-              @click="setPosition('center')"
-            >
-              <el-icon>
-                <Icon name="icon_center-alignment_outlined" />
-              </el-icon>
-            </div>
-          </el-tooltip>
-          <el-tooltip effect="dark" placement="top">
-            <template #content>
-              {{ t('chart.text_pos_right') }}
-            </template>
-            <div
-              class="icon-btn"
-              :class="{ dark: themes === 'dark', active: state.titleForm.hPosition === 'right' }"
-              @click="setPosition('right')"
-            >
-              <el-icon>
-                <Icon name="icon_right-alignment_outlined" />
-              </el-icon>
-            </div>
-          </el-tooltip>
-        </el-space>
+      <el-tooltip effect="dark" placement="top">
+        <template #content>
+          {{ t('chart.text_pos_left') }}
+        </template>
+        <div
+          class="icon-btn"
+          :class="{ dark: themes === 'dark', active: state.titleForm.hPosition === 'left' }"
+          @click="setPosition('left')"
+        >
+          <el-icon>
+            <Icon name="icon_left-alignment_outlined" />
+          </el-icon>
+        </div>
+      </el-tooltip>
+      <el-tooltip effect="dark" placement="top">
+        <template #content>
+          {{ t('chart.text_pos_center') }}
+        </template>
+        <div
+          class="icon-btn"
+          :class="{ dark: themes === 'dark', active: state.titleForm.hPosition === 'center' }"
+          @click="setPosition('center')"
+        >
+          <el-icon>
+            <Icon name="icon_center-alignment_outlined" />
+          </el-icon>
+        </div>
+      </el-tooltip>
+      <el-tooltip effect="dark" placement="top">
+        <template #content>
+          {{ t('chart.text_pos_right') }}
+        </template>
+        <div
+          class="icon-btn"
+          :class="{ dark: themes === 'dark', active: state.titleForm.hPosition === 'right' }"
+          @click="setPosition('right')"
+        >
+          <el-icon>
+            <Icon name="icon_right-alignment_outlined" />
+          </el-icon>
+        </div>
+      </el-tooltip>
+    </el-space>
 
-        <el-form-item class="form-item">
-          <el-checkbox
-            size="small"
-            :effect="props.themes"
-            v-model="state.titleForm.fontShadow"
-            @change="changeTitleStyle('fontShadow')"
-          >
-            {{ t('chart.font_shadow') }}
-          </el-checkbox>
-        </el-form-item>
-      </el-form>
-    </el-col>
-  </div>
+    <el-form-item class="form-item" :class="'form-item-' + themes">
+      <el-checkbox
+        size="small"
+        :effect="themes"
+        v-model="state.titleForm.fontShadow"
+        @change="changeTitleStyle('fontShadow')"
+      >
+        {{ t('chart.font_shadow') }}
+      </el-checkbox>
+    </el-form-item>
+  </el-form>
 </template>
 
 <style lang="less" scoped>
-:deep(.ed-color-picker.is-custom .ed-color-picker__trigger) {
-  height: 24px;
-}
-.custom-form-item-label {
-  margin-bottom: 4px;
-  line-height: 20px;
-  color: #a6a6a6;
-  font-size: 12px;
-  padding: 2px 12px 0 0;
-}
-.form-item-checkbox {
-  margin-bottom: 10px !important;
-}
 :deep(.ed-input .ed-select__prefix--light) {
   padding-right: 6px;
 }
@@ -305,7 +338,6 @@ init()
   height: 24px;
   text-align: center;
   border-radius: 4px;
-  padding-top: 1px;
 
   color: #1f2329;
 
