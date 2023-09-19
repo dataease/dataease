@@ -1,14 +1,8 @@
 <script lang="ts" setup>
-import { onMounted, PropType, reactive, watch } from 'vue'
+import { computed, onMounted, PropType, reactive, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL, DEFAULT_TABLE_HEADER } from '@/views/chart/components/editor/util/chart'
-import {
-  ElColorPicker,
-  ElFormItem,
-  ElInputNumber,
-  ElSelect,
-  ElSlider
-} from 'element-plus-secondary'
+import { ElSpace } from 'element-plus-secondary'
 
 const { t } = useI18n()
 
@@ -36,7 +30,7 @@ watch(
 
 const predefineColors = COLOR_PANEL
 
-const initFontSize = () => {
+const fontSizeList = computed(() => {
   const arr = []
   for (let i = 10; i <= 40; i = i + 2) {
     arr.push({
@@ -44,12 +38,11 @@ const initFontSize = () => {
       value: i
     })
   }
-  state.fontSize = arr
-}
+  return arr
+})
 
 const state = reactive({
-  tableHeaderForm: JSON.parse(JSON.stringify(DEFAULT_TABLE_HEADER)),
-  fontSize: []
+  tableHeaderForm: JSON.parse(JSON.stringify(DEFAULT_TABLE_HEADER))
 })
 
 const emit = defineEmits(['onTableHeaderChange'])
@@ -74,13 +67,12 @@ function setPosition(p: 'left' | 'center' | 'right') {
 }
 
 onMounted(() => {
-  initFontSize()
   init()
 })
 </script>
 
 <template>
-  <el-form ref="tableHeaderForm" :model="state.tableHeaderForm" size="small" label-position="top">
+  <el-form ref="tableHeaderForm" :model="state.tableHeaderForm" label-position="top">
     <el-form-item
       :label="t('chart.backgroundColor')"
       class="form-item"
@@ -97,108 +89,103 @@ onMounted(() => {
       />
     </el-form-item>
 
-    <el-row :gutter="8">
-      <el-col :span="6">
-        <el-form-item
-          class="form-item"
-          :class="'form-item-' + themes"
-          v-if="showProperty('tableHeaderFontColor')"
-          :label="t('chart.text')"
+    <el-space>
+      <el-form-item
+        class="form-item"
+        :class="'form-item-' + themes"
+        v-if="showProperty('tableHeaderFontColor')"
+        :label="t('chart.text')"
+      >
+        <el-color-picker
+          :effect="themes"
+          v-model="state.tableHeaderForm.tableHeaderFontColor"
+          is-custom
+          :predefine="predefineColors"
+          @change="changeTableHeader('tableHeaderFontColor')"
+        />
+      </el-form-item>
+      <el-form-item
+        class="form-item"
+        :class="'form-item-' + themes"
+        v-if="showProperty('tableTitleFontSize')"
+      >
+        <template #label>&nbsp;</template>
+        <el-select
+          style="width: 58px"
+          :effect="themes"
+          v-model="state.tableHeaderForm.tableTitleFontSize"
+          @change="changeTableHeader('tableTitleFontSize')"
         >
-          <el-color-picker
-            :effect="themes"
-            v-model="state.tableHeaderForm.tableHeaderFontColor"
-            is-custom
-            :trigger-width="50"
-            :predefine="predefineColors"
-            @change="changeTableHeader('tableHeaderFontColor')"
+          <el-option
+            v-for="option in fontSizeList"
+            :key="option.value"
+            :label="option.name"
+            :value="option.value"
           />
-        </el-form-item>
-      </el-col>
-      <el-col :span="6">
-        <el-form-item
-          class="form-item"
-          :class="'form-item-' + themes"
-          v-if="showProperty('tableTitleFontSize')"
-        >
-          <template #label>&nbsp;</template>
-          <el-select
-            :effect="themes"
-            v-model="state.tableHeaderForm.tableTitleFontSize"
-            @change="changeTableHeader('tableTitleFontSize')"
-          >
-            <el-option
-              v-for="option in state.fontSize"
-              :key="option.value"
-              :label="option.name"
-              :value="option.value"
-            />
-          </el-select>
-        </el-form-item>
-      </el-col>
-      <el-col :span="12">
-        <el-form-item
-          class="form-item"
-          :class="'form-item-' + themes"
-          v-if="showProperty('tableHeaderAlign')"
-        >
-          <template #label>&nbsp;</template>
-          <el-space wrap style="margin-top: 2px">
-            <el-tooltip effect="dark" placement="top">
-              <template #content>
-                {{ t('chart.text_pos_left') }}
-              </template>
-              <div
-                class="icon-btn"
-                :class="{
-                  dark: themes === 'dark',
-                  active: state.tableHeaderForm.tableHeaderAlign === 'left'
-                }"
-                @click="setPosition('left')"
-              >
-                <el-icon>
-                  <Icon name="icon_left-alignment_outlined" />
-                </el-icon>
-              </div>
-            </el-tooltip>
-            <el-tooltip effect="dark" placement="top">
-              <template #content>
-                {{ t('chart.text_pos_center') }}
-              </template>
-              <div
-                class="icon-btn"
-                :class="{
-                  dark: themes === 'dark',
-                  active: state.tableHeaderForm.tableHeaderAlign === 'center'
-                }"
-                @click="setPosition('center')"
-              >
-                <el-icon>
-                  <Icon name="icon_center-alignment_outlined" />
-                </el-icon>
-              </div>
-            </el-tooltip>
-            <el-tooltip effect="dark" placement="top">
-              <template #content>
-                {{ t('chart.text_pos_right') }}
-              </template>
-              <div
-                class="icon-btn"
-                :class="{
-                  dark: themes === 'dark',
-                  active: state.tableHeaderForm.tableHeaderAlign === 'right'
-                }"
-                @click="setPosition('right')"
-              >
-                <el-icon>
-                  <Icon name="icon_right-alignment_outlined" />
-                </el-icon>
-              </div>
-            </el-tooltip>
-          </el-space>
-        </el-form-item>
-      </el-col>
-    </el-row>
+        </el-select>
+      </el-form-item>
+
+      <el-form-item
+        class="form-item"
+        :class="'form-item-' + themes"
+        v-if="showProperty('tableHeaderAlign')"
+      >
+        <template #label>&nbsp;</template>
+        <el-space>
+          <el-tooltip effect="dark" placement="top">
+            <template #content>
+              {{ t('chart.text_pos_left') }}
+            </template>
+            <div
+              class="icon-btn"
+              :class="{
+                dark: themes === 'dark',
+                active: state.tableHeaderForm.tableHeaderAlign === 'left'
+              }"
+              @click="setPosition('left')"
+            >
+              <el-icon>
+                <Icon name="icon_left-alignment_outlined" />
+              </el-icon>
+            </div>
+          </el-tooltip>
+          <el-tooltip effect="dark" placement="top">
+            <template #content>
+              {{ t('chart.text_pos_center') }}
+            </template>
+            <div
+              class="icon-btn"
+              :class="{
+                dark: themes === 'dark',
+                active: state.tableHeaderForm.tableHeaderAlign === 'center'
+              }"
+              @click="setPosition('center')"
+            >
+              <el-icon>
+                <Icon name="icon_center-alignment_outlined" />
+              </el-icon>
+            </div>
+          </el-tooltip>
+          <el-tooltip effect="dark" placement="top">
+            <template #content>
+              {{ t('chart.text_pos_right') }}
+            </template>
+            <div
+              class="icon-btn"
+              :class="{
+                dark: themes === 'dark',
+                active: state.tableHeaderForm.tableHeaderAlign === 'right'
+              }"
+              @click="setPosition('right')"
+            >
+              <el-icon>
+                <Icon name="icon_right-alignment_outlined" />
+              </el-icon>
+            </div>
+          </el-tooltip>
+        </el-space>
+      </el-form-item>
+    </el-space>
 
     <el-row :gutter="8">
       <el-col :span="12">
@@ -247,11 +234,12 @@ onMounted(() => {
 <style lang="less" scoped>
 .icon-btn {
   font-size: 16px;
+  line-height: 16px;
   width: 24px;
   height: 24px;
   text-align: center;
   border-radius: 4px;
-  padding-top: 2px;
+  padding-top: 4px;
 
   color: #1f2329;
 
