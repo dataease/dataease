@@ -186,7 +186,6 @@ public class CalciteProvider {
             try {
                 if (resultSet != null) resultSet.close();
                 if (statement != null) statement.close();
-                free(connection);
             } catch (Exception e) {
             }
         }
@@ -263,6 +262,12 @@ public class CalciteProvider {
                     DatasourceConfiguration configuration = null;
                     DatasourceType datasourceType = DatasourceType.valueOf(ds.getType());
                     try {
+                        if(rootSchema.getSubSchema(ds.getSchemaAlias()) != null){
+                            JdbcSchema jdbcSchema = rootSchema.getSubSchema(ds.getSchemaAlias()).unwrap(JdbcSchema.class);
+                            BasicDataSource basicDataSource = (BasicDataSource) jdbcSchema.getDataSource();
+                            basicDataSource.close();
+                            //TODO rootSchema.remove(subSchema)
+                        }
                         switch (datasourceType) {
                             case mysql:
                             case mongo:
@@ -275,6 +280,9 @@ public class CalciteProvider {
                                 dataSource.setUsername(configuration.getUsername());
                                 dataSource.setPassword(configuration.getPassword());
                                 dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
+                                dataSource.setInitialSize(configuration.getInitialPoolSize());
+                                dataSource.setMaxTotal(configuration.getMaxPoolSize());
+                                dataSource.setMinIdle(configuration.getMinPoolSize());
                                 schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getDataBase());
                                 rootSchema.add(ds.getSchemaAlias(), schema);
                                 break;
@@ -283,6 +291,9 @@ public class CalciteProvider {
                                 dataSource.setUrl(configuration.getJdbc());
                                 dataSource.setUsername(configuration.getUsername());
                                 dataSource.setPassword(configuration.getPassword());
+                                dataSource.setInitialSize(configuration.getInitialPoolSize());
+                                dataSource.setMaxTotal(configuration.getMaxPoolSize());
+                                dataSource.setMinIdle(configuration.getMinPoolSize());
                                 dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
                                 schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getDataBase());
                                 rootSchema.add(ds.getSchemaAlias(), schema);
@@ -292,6 +303,9 @@ public class CalciteProvider {
                                 dataSource.setUrl(configuration.getJdbc());
                                 dataSource.setUsername(configuration.getUsername());
                                 dataSource.setPassword(configuration.getPassword());
+                                dataSource.setInitialSize(configuration.getInitialPoolSize());
+                                dataSource.setMaxTotal(configuration.getMaxPoolSize());
+                                dataSource.setMinIdle(configuration.getMinPoolSize());
                                 dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
                                 schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getSchema());
                                 rootSchema.add(ds.getSchemaAlias(), schema);
@@ -301,6 +315,9 @@ public class CalciteProvider {
                                 dataSource.setUrl(configuration.getJdbc());
                                 dataSource.setUsername(configuration.getUsername());
                                 dataSource.setPassword(configuration.getPassword());
+                                dataSource.setInitialSize(configuration.getInitialPoolSize());
+                                dataSource.setMaxTotal(configuration.getMaxPoolSize());
+                                dataSource.setMinIdle(configuration.getMinPoolSize());
                                 dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
                                 schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getSchema());
                                 rootSchema.add(ds.getSchemaAlias(), schema);
@@ -310,6 +327,9 @@ public class CalciteProvider {
                                 dataSource.setUrl(configuration.getJdbc());
                                 dataSource.setUsername(configuration.getUsername());
                                 dataSource.setPassword(configuration.getPassword());
+                                dataSource.setInitialSize(configuration.getInitialPoolSize());
+                                dataSource.setMaxTotal(configuration.getMaxPoolSize());
+                                dataSource.setMinIdle(configuration.getMinPoolSize());
                                 dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
                                 schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getSchema());
                                 rootSchema.add(ds.getSchemaAlias(), schema);
@@ -319,6 +339,9 @@ public class CalciteProvider {
                                 dataSource.setUrl(configuration.getJdbc());
                                 dataSource.setUsername(configuration.getUsername());
                                 dataSource.setPassword(configuration.getPassword());
+                                dataSource.setInitialSize(configuration.getInitialPoolSize());
+                                dataSource.setMaxTotal(configuration.getMaxPoolSize());
+                                dataSource.setMinIdle(configuration.getMinPoolSize());
                                 dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
                                 schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getDataBase());
                                 rootSchema.add(ds.getSchemaAlias(), schema);
@@ -328,6 +351,9 @@ public class CalciteProvider {
                                 dataSource.setUrl(configuration.getJdbc());
                                 dataSource.setUsername(configuration.getUsername());
                                 dataSource.setPassword(configuration.getPassword());
+                                dataSource.setInitialSize(configuration.getInitialPoolSize());
+                                dataSource.setMaxTotal(configuration.getMaxPoolSize());
+                                dataSource.setMinIdle(configuration.getMinPoolSize());
                                 dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
                                 schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getSchema());
                                 rootSchema.add(ds.getSchemaAlias(), schema);
@@ -337,6 +363,9 @@ public class CalciteProvider {
                                 dataSource.setUrl(configuration.getJdbc());
                                 dataSource.setUsername(configuration.getUsername());
                                 dataSource.setPassword(configuration.getPassword());
+                                dataSource.setInitialSize(configuration.getInitialPoolSize());
+                                dataSource.setMaxTotal(configuration.getMaxPoolSize());
+                                dataSource.setMinIdle(configuration.getMinPoolSize());
                                 dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
                                 schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getSchema());
                                 rootSchema.add(ds.getSchemaAlias(), schema);
@@ -346,6 +375,9 @@ public class CalciteProvider {
                                 dataSource.setUrl(configuration.getJdbc());
                                 dataSource.setUsername(configuration.getUsername());
                                 dataSource.setPassword(configuration.getPassword());
+                                dataSource.setInitialSize(configuration.getInitialPoolSize());
+                                dataSource.setMaxTotal(configuration.getMaxPoolSize());
+                                dataSource.setMinIdle(configuration.getMinPoolSize());
                                 dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
                                 schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getDataBase());
                                 rootSchema.add(ds.getSchemaAlias(), schema);
@@ -355,6 +387,9 @@ public class CalciteProvider {
                                 dataSource.setUrl(configuration.getJdbc());
                                 dataSource.setUsername(configuration.getUsername());
                                 dataSource.setPassword(configuration.getPassword());
+                                dataSource.setInitialSize(configuration.getInitialPoolSize());
+                                dataSource.setMaxTotal(configuration.getMaxPoolSize());
+                                dataSource.setMinIdle(configuration.getMinPoolSize());
                                 dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
                                 schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getDataBase());
                                 rootSchema.add(ds.getSchemaAlias(), schema);
@@ -613,12 +648,11 @@ public class CalciteProvider {
     }
 
 
-    private Connection[] connections;
-    private AtomicIntegerArray states;
+    private Connection connection = null;
 
     public static int capacity = 10;
 
-    public void initConnectionPool(int capacity) {
+    public void initConnectionPool() {
         LogUtil.info("Begin to init datasource pool...");
         QueryWrapper<CoreDatasource> datasourceQueryWrapper = new QueryWrapper();
         List<CoreDatasource> coreDatasources = coreDatasourceMapper.selectList(datasourceQueryWrapper).stream().filter(coreDatasource -> !Arrays.asList("folder", "API", "Excel").contains(coreDatasource.getType())).collect(Collectors.toList());
@@ -631,23 +665,17 @@ public class CalciteProvider {
             dsMap.put(datasourceSchemaDTO.getId(), datasourceSchemaDTO);
         }
         LogUtil.info("dsMap size..." + dsMap.keySet().size());
-        connections = new Connection[capacity];
-        states = new AtomicIntegerArray(new int[capacity]);
-        this.capacity = capacity;
-        for (int i = 0; i < capacity; i++) {
-            try {
-                int finalI = i;
-                commonThreadPool.addTask(() -> {
-                    try {
-                        connections[finalI] = initConnection(dsMap);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                });
+        try {
+            commonThreadPool.addTask(() -> {
+                try {
+                    connection = initConnection(dsMap);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
 
-            } catch (Exception e) {
+        } catch (Exception e) {
 
-            }
         }
     }
 
@@ -655,71 +683,44 @@ public class CalciteProvider {
         DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
         BeanUtils.copyBean(datasourceSchemaDTO, datasourceDTO);
         datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId()));
-
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDsList(Map.of(datasourceSchemaDTO.getId(), datasourceSchemaDTO));
-
-        for (int i = 0; i < connections.length; i++) {
-            try {
-                Connection connection = connections[i];
-                CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
-                SchemaPlus rootSchema = buildSchema(datasourceRequest, calciteConnection);
-                addCustomFunctions(rootSchema);
-            } catch (Exception e) {
-                DEException.throwException(e);
-            }
-
+        try {
+            CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
+            SchemaPlus rootSchema = buildSchema(datasourceRequest, calciteConnection);
+            addCustomFunctions(rootSchema);
+        } catch (Exception e) {
+            DEException.throwException(e);
         }
     }
+
+    public void delete(CoreDatasource datasource) throws DEException {
+        DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
+        BeanUtils.copyBean(datasourceSchemaDTO, datasource);
+        datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId()));
+        try {
+            CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
+            SchemaPlus rootSchema = calciteConnection.getRootSchema();
+            if(rootSchema.getSubSchema(datasourceSchemaDTO.getSchemaAlias()) != null){
+                JdbcSchema jdbcSchema = rootSchema.getSubSchema(datasourceSchemaDTO.getSchemaAlias()).unwrap(JdbcSchema.class);
+                BasicDataSource basicDataSource = (BasicDataSource) jdbcSchema.getDataSource();
+                basicDataSource.close();
+                //TODO rootSchema.remove(subSchema)
+            }
+        } catch (Exception e) {
+            DEException.throwException(e);
+        }
+    }
+
 
     public Connection take() {
         // 为了避免出现线程安全问题，这里使用 synchronized 锁，也可以使用 cas
-        while (true) {
-            for (int i = 0; i < connections.length; i++) {
-                if (states.get(i) == 0) {
-                    Connection connection = connections[i];
-                    if (states.compareAndSet(i, 0, 1)) {
-                        return connection;
-                    }
-                }
-            }
-
-            /**
-             *  整个容器都遍历完了，还是没有找到空闲的 Connection 连接对象
-             *  这里有很多的做法：
-             *    1.可以一直死等，等待有 Connection 连接对象被归还，然后被唤醒。再重新遍历容器，寻找空闲的 Connection 连接对象
-             *    2.也可以有超时时间的等待，不是一直死等
-             */
-            synchronized (this) {
-                try {
-                    this.wait(1000 * 1);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
+        if(connection == null){
+            DEException.throwException("初始化连接池失败!");
         }
+        return connection;
     }
 
-    // 归还 Connection 连接对象
-    public void free(Connection connection) {
-        for (int i = 0; i < connections.length; i++) {
-            if (connection == connections[i]) {
-                // 将这个连接的对象设置为空闲，这样别的线程就可以拿到了
 
-                // 这里直接 set 就行了，不用使用 cas 了。
-                // 因为只会有一个线程拿到这个 Connection 连接对象，所以不会有线程安全的问题
-                states.set(i, 0);
-                // 记得唤醒其他正在等待 Connection 连接对象的线程
-                /**
-                 * 调用wait()，notify()和notifyAll()的线程在调用这些方法前必须"拥有"对象的锁。
-                 * 当前的线程不是此对象锁的所有者，却调用该对象的notify()，notify()，wait()方法时抛出 IllegalMonitorStateException 异常。
-                 */
-                synchronized (this) {
-                    this.notifyAll();
-                }
-                break;
-            }
-        }
-    }
 
 }
