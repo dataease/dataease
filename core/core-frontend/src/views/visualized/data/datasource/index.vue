@@ -719,7 +719,7 @@ onMounted(() => {
             <el-icon class="icon-border">
               <Icon :name="`${nodeInfo.type}-ds`"></Icon>
             </el-icon>
-            <span class="name">
+            <span :title="nodeInfo.name" class="name ellipsis">
               {{ nodeInfo.name }}
             </span>
             <el-divider direction="vertical" />
@@ -1418,6 +1418,7 @@ onMounted(() => {
 
         .name {
           margin-left: 8px;
+          max-width: 200px;
         }
 
         .create-user {

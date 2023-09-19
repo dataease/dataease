@@ -397,6 +397,9 @@ watch(
   }
   :deep(.ed-input-number) {
     width: 100%;
+    .ed-input__inner {
+      text-align: start;
+    }
   }
   :deep(.ed-radio) {
     height: 20px;

@@ -502,7 +502,7 @@ const filterNode = (value: string, data: BusiTreeNode) => {
       <template v-else-if="!!nodeInfo.id">
         <div class="dataset-info">
           <div class="info-method">
-            {{ nodeInfo.name }}
+            <span :title="nodeInfo.name" class="dataset-name ellipsis">{{ nodeInfo.name }}</span>
             <el-divider direction="vertical" />
             <span class="create-user">
               {{ t('visualization.create_by') }}:{{ nodeInfo.creator }}
@@ -701,6 +701,10 @@ const filterNode = (value: string, data: BusiTreeNode) => {
         font-family: PingFang SC;
         font-size: 16px;
         font-weight: 500;
+
+        .dataset-name {
+          max-width: 200px;
+        }
 
         .create-user {
           font-size: 14px;

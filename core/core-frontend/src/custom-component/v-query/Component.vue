@@ -548,7 +548,7 @@ const queryData = () => {
     z-index: 0;
   }
 
-  &.horizontal {
+  &.vertical {
     .query-fields-container {
       .query-field {
         padding-top: 30px;
@@ -573,7 +573,7 @@ const queryData = () => {
     }
   }
 
-  &.vertical {
+  &.horizontal {
     line-height: 1.5;
     color: rgba(0, 0, 0, 0.87);
     align-items: center;

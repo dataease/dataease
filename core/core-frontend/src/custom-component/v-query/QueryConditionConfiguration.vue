@@ -912,6 +912,7 @@ defineExpose({
       background: #f5f6f7;
       border-right: 1px solid #dee0e3;
       width: 208px;
+      overflow-y: auto;
 
       .title {
         padding: 16px;
