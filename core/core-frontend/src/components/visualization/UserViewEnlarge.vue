@@ -28,6 +28,7 @@
         class="enlarge-wrapper"
         :view-info="viewInfo"
         :config="config"
+        :dv-info="dvInfo"
         show-position="viewDialog"
       />
       <chart-component-s2
@@ -51,6 +52,7 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { VIEW_DETAILS_BASH_STYLE } from '@/views/chart/components/editor/util/dataVisualiztion'
 import { innerExportDetails } from '@/api/chart'
 import { exportExcelDownload } from '@/views/chart/components/js/util'
+import { storeToRefs } from 'pinia'
 const dvMainStore = dvMainStoreWithOut()
 const dialogShow = ref(false)
 let viewInfo = ref(null)
@@ -60,6 +62,7 @@ const viewContainer = ref(null)
 const { t } = useI18n()
 const optType = ref(null)
 const chartComponentDetails = ref(null)
+const { dvInfo } = storeToRefs(dvMainStore)
 
 const dialogInit = (canvasStyle, view, item, opt) => {
   optType.value = opt

@@ -107,7 +107,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
     }
 
     /**
-     * @Discription: 更新基础信息；
+     * @Description: 更新基础信息；
      * 为什么单独接口：1.基础信息更新频繁数据且数据载量较小；2.防止出现更新过多信息的情况，造成视图的误删等操作
      */
     @Override
@@ -121,7 +121,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
     }
 
     /**
-     * @Discription: 逻辑删除可视化信息；将delete_flag 置为0
+     * @Description: 逻辑删除可视化信息；将delete_flag 置为0
      */
     @Transactional
     @Override
@@ -147,7 +147,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
     }
 
     /**
-     * @Discription: 复制仪表板
+     * @Description: 复制仪表板
      * 复制步骤 1.复制基础可视化数据；2.复制视图数据；3.附加数据（包括联动信息，跳转信息，外部参数信息等仪表板附加信息）
      */
     @Transactional

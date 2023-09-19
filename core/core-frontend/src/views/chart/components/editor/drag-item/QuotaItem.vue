@@ -307,7 +307,9 @@ getItemTagType()
         >
           <span class="item-span-style">
             <span class="item-name">{{ item.chartShowName ? item.chartShowName : item.name }}</span>
-            <span class="item-right-summary">({{ t('chart.' + item.summary) }})</span>
+            <span v-if="item.summary !== ''" class="item-right-summary">
+              ({{ t('chart.' + item.summary) }})
+            </span>
           </span>
         </el-tooltip>
         <span
