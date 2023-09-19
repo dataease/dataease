@@ -61,12 +61,4 @@ const positionKeysGroup = computed(() => {
 :deep(.ed-form-item) {
   display: flex !important;
 }
-.form-item {
-  :deep(.ed-input-number) {
-    width: 100%;
-    .ed-input__inner {
-      text-align: start;
-    }
-  }
-}
 </style>
