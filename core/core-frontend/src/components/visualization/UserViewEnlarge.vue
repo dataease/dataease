@@ -117,7 +117,8 @@ defineExpose({
 .export-button {
   position: absolute;
   right: 60px;
-  top: 18px;
+  top: 26px;
+  z-index: 2;
 }
 .enlarge-outer {
   position: relative;

@@ -130,6 +130,9 @@ const groupActiveChange = category => {
   :deep(.ul-custom) {
     color: @chart-change-font-color-light!important;
   }
+  :deep(.li-custom) {
+    color: #646a73 !important;
+  }
   :deep(.item-bottom) {
     color: @chart-change-font-color-light!important;
   }
@@ -154,7 +157,7 @@ const groupActiveChange = category => {
       .li-custom {
         margin-top: 1px;
         font-weight: 400;
-        font-size: 14px;
+        font-size: 12px;
         line-height: 32px;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -162,6 +165,7 @@ const groupActiveChange = category => {
         list-style-type: none;
         list-style-position: inside;
         border-radius: 4px;
+        color: #a6a6a6;
         padding-left: 8px;
         &:hover {
           background: rgba(31, 35, 41, 0.1);
@@ -228,6 +232,7 @@ const groupActiveChange = category => {
     color: #a6a6a6;
     font-size: 12px;
     text-align: center;
+    margin-top: 4px;
   }
 }
 
@@ -236,6 +241,7 @@ const groupActiveChange = category => {
   font-weight: 400;
   font-size: 12px;
   line-height: 20px;
-  color: @canvas-main-font-color;
+  color: #ebebeb;
+  margin-bottom: 4px;
 }
 </style>

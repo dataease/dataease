@@ -151,7 +151,7 @@ const setLoading = (val: boolean) => {
           @command="handleCommand"
           trigger="click"
         >
-          <el-button secondary>
+          <el-button secondary class="type-button">
             {{ t(`auth.${activeCommand}`) }}
             <el-icon style="margin-left: 4px; font-size: 16px; color: #646a73">
               <arrow-up v-if="userAddPopper" />
@@ -253,6 +253,17 @@ const setLoading = (val: boolean) => {
   border-radius: 4px;
   height: calc(100% - 280px);
   margin-top: 16px;
+
+  .type-button {
+    background-color: #fff;
+
+    &:hover,
+    &:active,
+    &:focus {
+      border-color: #3370ff;
+      background-color: #fff;
+    }
+  }
 
   .dashboard-type-tabs {
     margin-bottom: 16px;

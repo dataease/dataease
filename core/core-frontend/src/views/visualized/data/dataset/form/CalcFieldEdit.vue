@@ -457,6 +457,7 @@ initFunction()
     :deep(.ed-select__prefix--light) {
       padding: 0;
       border: none;
+      margin: 0;
     }
   }
 
@@ -567,7 +568,7 @@ initFunction()
 }
 
 .function-style {
-  height: 28px;
+  min-height: 28px;
   padding: 0px 8px;
   margin-bottom: 4px;
   border-radius: 4px;

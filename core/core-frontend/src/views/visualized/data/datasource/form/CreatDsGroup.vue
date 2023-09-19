@@ -334,7 +334,7 @@ const emits = defineEmits(['finish', 'handleShowFinishPage'])
           >
             <template #default="{ data }">
               <span class="custom-tree-node">
-                <el-icon>
+                <el-icon style="font-size: 18px">
                   <Icon name="dv-folder"></Icon>
                 </el-icon>
                 <span class="node-text" :title="data.name">{{ data.name }}</span>

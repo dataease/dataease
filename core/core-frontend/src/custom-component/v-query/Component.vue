@@ -198,8 +198,8 @@ const infoFormat = (obj: ComponentInfo) => {
     },
     auto: false,
     operator: deType === 1 ? 'between' : 'eq',
-    defaultValue: '',
-    selectValue: '',
+    defaultValue: undefined,
+    selectValue: undefined,
     optionValueSource: 0,
     valueSource: [],
     dataset: {
