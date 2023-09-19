@@ -156,7 +156,7 @@ const emit = defineEmits(['handleCommand'])
             </template>
           </el-dropdown>
         </el-dropdown-item>
-        <el-dropdown-item v-if="extField === 2" command="editor">
+        <el-dropdown-item command="editor">
           <el-icon>
             <Icon name="icon_edit_outlined"></Icon>
           </el-icon>
