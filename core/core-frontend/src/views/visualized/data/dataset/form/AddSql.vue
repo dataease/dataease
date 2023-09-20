@@ -341,7 +341,7 @@ const saveVariable = () => {
   showVariableMgm.value = false
   ElMessage.success('参数设置成功')
 }
-const fieldMap = ['text', 'time', 'value', 'value', 'location']
+const fieldMap = ['text', 'time', 'value', 'value', 'value', 'location']
 
 const mousedownDrag = () => {
   document.querySelector('.sql-eidtor').addEventListener('mousemove', calculateHeight)
