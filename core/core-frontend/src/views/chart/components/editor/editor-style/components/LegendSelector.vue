@@ -52,15 +52,6 @@ const changeLegendStyle = prop => {
   emit('onLegendChange', state.legendForm)
 }
 
-function setHPosition(p: 'left' | 'center' | 'right') {
-  state.legendForm.hPosition = p
-  changeLegendStyle('hPosition')
-}
-function setVPosition(p: 'top' | 'center' | 'bottom') {
-  state.legendForm.vPosition = p
-  changeLegendStyle('vPosition')
-}
-
 const init = () => {
   const chart = JSON.parse(JSON.stringify(props.chart))
   if (chart.customStyle) {

@@ -9,7 +9,6 @@ import {
 } from '@/views/chart/components/editor/util/chart'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
-import { ElCheckbox } from 'element-plus-secondary'
 const dvMainStore = dvMainStoreWithOut()
 const { batchOptStatus } = storeToRefs(dvMainStore)
 
@@ -78,20 +77,6 @@ const init = () => {
       state.titleForm = customStyle.text
     }
   }
-}
-
-function checkBold() {
-  state.titleForm.isBolder = !state.titleForm.isBolder
-  changeTitleStyle('isBolder')
-}
-function checkItalic() {
-  state.titleForm.isItalic = !state.titleForm.isItalic
-  changeTitleStyle('isItalic')
-}
-
-function setPosition(p: 'left' | 'center' | 'right') {
-  state.titleForm.hPosition = p
-  changeTitleStyle('hPosition')
 }
 
 const showProperty = prop => props.propertyInner?.includes(prop)

@@ -61,11 +61,6 @@ const init = () => {
 }
 const showProperty = prop => props.propertyInner?.includes(prop)
 
-function setPosition(p: 'left' | 'center' | 'right') {
-  state.tableCellForm.tableItemAlign = p
-  changeTableCell('tableHeaderAlign')
-}
-
 onMounted(() => {
   init()
 })
@@ -129,59 +124,67 @@ onMounted(() => {
         v-if="showProperty('tableItemAlign')"
       >
         <template #label>&nbsp;</template>
-        <el-space>
-          <el-tooltip effect="dark" placement="top">
-            <template #content>
-              {{ t('chart.text_pos_left') }}
-            </template>
-            <div
-              class="icon-btn"
-              :class="{
-                dark: themes === 'dark',
-                active: state.tableCellForm.tableItemAlign === 'left'
-              }"
-              @click="setPosition('left')"
-            >
-              <el-icon>
-                <Icon name="icon_left-alignment_outlined" />
-              </el-icon>
-            </div>
-          </el-tooltip>
-          <el-tooltip effect="dark" placement="top">
-            <template #content>
-              {{ t('chart.text_pos_center') }}
-            </template>
-            <div
-              class="icon-btn"
-              :class="{
-                dark: themes === 'dark',
-                active: state.tableCellForm.tableItemAlign === 'center'
-              }"
-              @click="setPosition('center')"
-            >
-              <el-icon>
-                <Icon name="icon_center-alignment_outlined" />
-              </el-icon>
-            </div>
-          </el-tooltip>
-          <el-tooltip effect="dark" placement="top">
-            <template #content>
-              {{ t('chart.text_pos_right') }}
-            </template>
-            <div
-              class="icon-btn"
-              :class="{
-                dark: themes === 'dark',
-                active: state.tableCellForm.tableItemAlign === 'right'
-              }"
-              @click="setPosition('right')"
-            >
-              <el-icon>
-                <Icon name="icon_right-alignment_outlined" />
-              </el-icon>
-            </div>
-          </el-tooltip>
-        </el-space>
+
+        <el-radio-group
+          class="icon-radio-group"
+          v-model="state.tableCellForm.tableItemAlign"
+          @change="changeTableCell('tableHeaderAlign')"
+        >
+          <el-radio label="left">
+            <el-tooltip effect="dark" placement="top">
+              <template #content>
+                {{ t('chart.text_pos_left') }}
+              </template>
+              <div
+                class="icon-btn"
+                :class="{
+                  dark: themes === 'dark',
+                  active: state.tableCellForm.tableItemAlign === 'left'
+                }"
+              >
+                <el-icon>
+                  <Icon name="icon_left-alignment_outlined" />
+                </el-icon>
+              </div>
+            </el-tooltip>
+          </el-radio>
+          <el-radio label="center">
+            <el-tooltip effect="dark" placement="top">
+              <template #content>
+                {{ t('chart.text_pos_center') }}
+              </template>
+              <div
+                class="icon-btn"
+                :class="{
+                  dark: themes === 'dark',
+                  active: state.tableCellForm.tableItemAlign === 'center'
+                }"
+              >
+                <el-icon>
+                  <Icon name="icon_center-alignment_outlined" />
+                </el-icon>
+              </div>
+            </el-tooltip>
+          </el-radio>
+          <el-radio label="right">
+            <el-tooltip effect="dark" placement="top">
+              <template #content>
+                {{ t('chart.text_pos_right') }}
+              </template>
+              <div
+                class="icon-btn"
+                :class="{
+                  dark: themes === 'dark',
+                  active: state.tableCellForm.tableItemAlign === 'right'
+                }"
+              >
+                <el-icon>
+                  <Icon name="icon_right-alignment_outlined" />
+                </el-icon>
+              </div>
+            </el-tooltip>
+          </el-radio>
+        </el-radio-group>
       </el-form-item>
     </el-space>
 
@@ -240,6 +243,21 @@ onMounted(() => {
 
   &:hover {
     background-color: rgba(31, 35, 41, 0.1);
+  }
+}
+.icon-radio-group {
+  :deep(.ed-radio) {
+    margin-right: 8px;
+
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+  :deep(.ed-radio__input) {
+    display: none;
+  }
+  :deep(.ed-radio__label) {
+    padding: 0;
   }
 }
 </style>

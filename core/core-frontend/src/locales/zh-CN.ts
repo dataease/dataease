@@ -556,6 +556,7 @@ export default {
     text_color: '字体颜色',
     text_h_position: '水平位置',
     text_v_position: '垂直位置',
+    text_position: '位置',
     text_pos_left: '左',
     text_pos_center: '中',
     text_pos_right: '右',
