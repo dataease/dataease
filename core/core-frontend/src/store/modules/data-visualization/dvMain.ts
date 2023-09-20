@@ -52,11 +52,11 @@ export const dvMainStore = defineStore('dataVisualization', {
         selfWatermarkStatus: null,
         type: null
       },
-      // 视图信息
+      // 图表信息
       canvasViewInfo: {},
-      // 视图展示数据信息
+      // 图表展示数据信息
       canvasViewDataInfo: {},
-      // 视图最新请求信息
+      // 图表最新请求信息
       lastViewRequestInfo: {},
       // 仪表板基础矩阵信息
       bashMatrixInfo: {
@@ -110,9 +110,9 @@ export const dvMainStore = defineStore('dataVisualization', {
       scrollAutoMove: 0,
       // 系统管理菜单是否收缩
       isCollapse: false,
-      // 视图是否编辑记录
+      // 图表是否编辑记录
       panelViewEditInfo: {},
-      // 仪表板视图明细
+      // 仪表板图表明细
       panelViewDetailsInfo: {},
       // panel edit batch operation status
       batchOptStatus: false,
@@ -256,7 +256,7 @@ export const dvMainStore = defineStore('dataVisualization', {
       }
       // eslint-disable-next-line @typescript-eslint/no-this-alias
       const _this = this
-      //组件组内部可能还有多个视图
+      //组件组内部可能还有多个图表
       if (idMap) {
         Object.keys(idMap).forEach(function (oldComponentId) {
           if (canvasViewInfoPre[oldComponentId]) {
@@ -284,7 +284,7 @@ export const dvMainStore = defineStore('dataVisualization', {
         componentData.push(component)
         this.setCurComponent({ component: component, index: componentData.length - 1 })
       }
-      //如果当前的组件是UserView 视图，则想canvasView中增加一项 UserView ID 和componentID保持一致
+      //如果当前的组件是UserView 图表，则想canvasView中增加一项 UserView ID 和componentID保持一致
       if (component.component === 'UserView') {
         let newView = {
           ...JSON.parse(JSON.stringify(BASE_VIEW_CONFIG)),
@@ -292,7 +292,7 @@ export const dvMainStore = defineStore('dataVisualization', {
           type: component.innerType,
           render: component.render
         } as unknown as ChartObj
-        // 处理配置项默认值，不同视图的同一配置项默认值不同
+        // 处理配置项默认值，不同图表的同一配置项默认值不同
         const chartViewInstance = chartViewManager.getChartView(newView.render, newView.type)
         if (chartViewInstance) {
           newView = chartViewInstance.setupDefaultOptions(newView)
@@ -475,7 +475,7 @@ export const dvMainStore = defineStore('dataVisualization', {
     },
     setChangeProperties(propertyInfo) {
       this.changeProperties[propertyInfo.custom][propertyInfo.property] = propertyInfo.value
-      // 修改对应视图的参数
+      // 修改对应图表的参数
       this.curBatchOptComponents.forEach(viewId => {
         const viewInfo = this.canvasViewInfo[viewId]
         viewInfo[propertyInfo.custom][propertyInfo.property] = propertyInfo.value
@@ -570,7 +570,7 @@ export const dvMainStore = defineStore('dataVisualization', {
         const element = this.componentData[index]
         if (!element.component || element.component !== 'UserView') continue
         const currentFilters = element.linkageFilters || [] // 当前联动filter
-        // 联动的视图情况历史条件
+        // 联动的图表情况历史条件
         // const currentFilters = []
 
         const checkQDList = [...data.dimensionList, ...data.quotaList]
@@ -580,10 +580,10 @@ export const dvMainStore = defineStore('dataVisualization', {
           const targetInfoList = trackInfo[sourceInfo] || []
           targetInfoList.forEach(targetInfo => {
             const targetInfoArray = targetInfo.split('#')
-            const targetViewId = targetInfoArray[0] // 目标视图
+            const targetViewId = targetInfoArray[0] // 目标图表
             if (element.id === targetViewId) {
-              // 如果目标视图 和 当前循环组件id相等 则进行条件增减
-              const targetFieldId = targetInfoArray[1] // 目标视图列ID
+              // 如果目标图表 和 当前循环组件id相等 则进行条件增减
+              const targetFieldId = targetInfoArray[1] // 目标图表列ID
               const condition = {
                 fieldId: targetFieldId,
                 operator: 'eq',

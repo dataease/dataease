@@ -60,7 +60,7 @@ init()
     <el-row class="scroll-style">
       <el-form ref="scrollForm" :model="state.scrollForm" label-width="80px">
         <el-form-item :label="t('chart.scroll')" class="form-item">
-          <el-checkbox v-model="state.scrollForm.open" @change="changeScrollCfg">{{
+          <el-checkbox size="small" v-model="state.scrollForm.open" @change="changeScrollCfg">{{
             t('chart.open')
           }}</el-checkbox>
         </el-form-item>

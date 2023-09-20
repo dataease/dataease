@@ -124,8 +124,8 @@ const list = [
   },
   {
     component: 'UserView',
-    name: '视图',
-    label: '视图',
+    name: '图表',
+    label: '图表',
     propValue: { textValue: '' },
     icon: 'bar',
     innerType: 'bar',

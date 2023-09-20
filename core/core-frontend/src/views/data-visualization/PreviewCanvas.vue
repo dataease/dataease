@@ -19,7 +19,7 @@ const loadCanvasDataAsync = async (dvId, jumpInfoParam) => {
   let jumpParam
   // 获取外部跳转参数
   if (jumpInfoParam) {
-    jumpParam = JSON.parse(Base64.decode(decodeURI(jumpInfoParam)))
+    jumpParam = JSON.parse(Base64.decode(decodeURIComponent(jumpInfoParam)))
     const jumpRequestParam = {
       sourceDvId: jumpParam.sourceDvId,
       sourceViewId: jumpParam.sourceViewId,

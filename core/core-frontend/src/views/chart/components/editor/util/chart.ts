@@ -1,20 +1,21 @@
 import { useI18n } from '@/hooks/web/useI18n'
 import { deepCopy } from '@/utils/utils'
+import { formatterItem } from './formatter'
 const { t } = useI18n()
 
 export const DEFAULT_COLOR_CASE: DeepPartial<ChartAttr> = {
   basicStyle: {
     colorScheme: 'default',
     colors: [
-      '#5470c6',
-      '#91cc75',
-      '#fac858',
-      '#ee6666',
-      '#73c0de',
-      '#3ba272',
-      '#fc8452',
-      '#9a60b4',
-      '#ea7ccc'
+      '#1E90FF',
+      '#90EE90',
+      '#00CED1',
+      '#E2BD84',
+      '#7A90E0',
+      '#3BA272',
+      '#2BE7FF',
+      '#0A8ADA',
+      '#FFD700'
     ],
     alpha: 100,
     gradient: false,
@@ -46,15 +47,15 @@ export const DEFAULT_COLOR_CASE_LIGHT: DeepPartial<ChartAttr> = {
   basicStyle: {
     colorScheme: 'default',
     colors: [
-      '#5470c6',
-      '#91cc75',
-      '#fac858',
-      '#ee6666',
-      '#73c0de',
-      '#3ba272',
-      '#fc8452',
-      '#9a60b4',
-      '#ea7ccc'
+      '#1E90FF',
+      '#90EE90',
+      '#00CED1',
+      '#E2BD84',
+      '#7A90E0',
+      '#3BA272',
+      '#2BE7FF',
+      '#0A8ADA',
+      '#FFD700'
     ],
     alpha: 100,
     gradient: false,
@@ -253,18 +254,15 @@ export const DEFAULT_LABEL: ChartLabelAttr = {
   labelLine: {
     show: true
   },
-  gaugeLabelFormatter: {
-    type: 'value',
-    unit: 1,
-    suffix: '',
-    decimalCount: 2,
-    thousandSeparator: true
-  },
+  labelFormatter: formatterItem,
   reserveDecimalCount: 2,
-  labelContent: ['dimension', 'proportion'],
   labelShadow: false,
   labelBgColor: '',
-  labelShadowColor: ''
+  labelShadowColor: '',
+  quotaLabelFormatter: formatterItem,
+  showDimension: true,
+  showQuota: false,
+  showProportion: true
 }
 export const DEFAULT_TOOLTIP: ChartTooltipAttr = {
   show: true,
@@ -272,7 +270,7 @@ export const DEFAULT_TOOLTIP: ChartTooltipAttr = {
   confine: true,
   fontSize: 10,
   color: '#909399',
-  formatter: '',
+  tooltipFormatter: formatterItem,
   backgroundColor: '#ffffff'
 }
 export const DEFAULT_TABLE_TOTAL: ChartTableTotalAttr = {
@@ -614,16 +612,15 @@ export const DEFAULT_SCROLL: ScrollCfg = {
 }
 
 export const COLOR_PANEL = [
-  '#ff4500',
-  '#ff8c00',
-  '#ffd700',
-  '#90ee90',
-  '#00ced1',
-  '#1e90ff',
-  '#c71585',
-  '#999999',
-  '#000000',
-  '#FFFFFF'
+  '#1E90FF',
+  '#90EE90',
+  '#00CED1',
+  '#E2BD84',
+  '#7A90E0',
+  '#3BA272',
+  '#2BE7FF',
+  '#0A8ADA',
+  '#FFD700'
 ]
 
 export const COLOR_CASES = [
@@ -631,15 +628,15 @@ export const COLOR_CASES = [
     name: t('chart.color_default'),
     value: 'default',
     colors: [
-      '#5470c6',
-      '#91cc75',
-      '#fac858',
-      '#ee6666',
-      '#73c0de',
-      '#3ba272',
-      '#fc8452',
-      '#9a60b4',
-      '#ea7ccc'
+      '#1E90FF',
+      '#90EE90',
+      '#00CED1',
+      '#E2BD84',
+      '#7A90E0',
+      '#3BA272',
+      '#2BE7FF',
+      '#0A8ADA',
+      '#FFD700'
     ]
   },
   {
@@ -1216,7 +1213,7 @@ export const DEFAULT_BASIC_STYLE: ChartBasicStyle = {
   mapSymbol: 'circle',
   mapSymbolSize: 20,
   radius: 100,
-  innerRadius: 40
+  innerRadius: 60
 }
 
 export const BASE_VIEW_CONFIG = {

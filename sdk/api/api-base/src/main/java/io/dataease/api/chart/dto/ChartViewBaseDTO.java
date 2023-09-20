@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 视图base dto，与core_table_view一致
+ * 图表base dto，与core_table_view一致
  *
  * @author fit2cloud
  * @since 2023-04-23
@@ -49,7 +49,7 @@ public class ChartViewBaseDTO implements Serializable {
     private String type;
 
     /**
-     * 视图渲染方式
+     * 图表渲染方式
      */
     private String render;
 
@@ -153,12 +153,12 @@ public class ChartViewBaseDTO implements Serializable {
     private String snapshot;
 
     /**
-     * 样式优先级 panel 仪表板 view 视图
+     * 样式优先级 panel 仪表板 view 图表
      */
     private String stylePriority;
 
     /**
-     * 视图类型 public 公共 历史可复用的视图，private 私有 专属某个仪表板
+     * 图表类型 public 公共 历史可复用的视图，private 私有 专属某个仪表板
      */
     private String chartType;
 

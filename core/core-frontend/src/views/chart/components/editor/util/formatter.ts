@@ -1,4 +1,4 @@
-export const formatterItem = {
+export const formatterItem: BaseFormatter = {
   type: 'auto', // auto,value,percent
   unit: 1, // 换算单位
   suffix: '', // 单位后缀

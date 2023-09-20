@@ -95,7 +95,7 @@ const htmlToImage = () => {
   toPng(componentWrapperInnerRef.value)
     .then(dataUrl => {
       const a = document.createElement('a')
-      a.setAttribute('download', '视图')
+      a.setAttribute('download', '图表')
       a.href = dataUrl
       a.click()
     })
@@ -206,25 +206,26 @@ const commonBackgroundSvgInner = computed(() => {
         class-name="svg-background"
         :name="commonBackgroundSvgInner"
       ></Icon>
-
-      <component
-        :is="findComponent(config['component'])"
-        :view="viewInfo"
-        ref="component"
-        class="component"
-        :canvas-style-data="canvasStyleData"
-        :dv-info="dvInfo"
-        :dv-type="dvInfo.type"
-        :canvas-view-info="canvasViewInfo"
-        :style="getComponentStyleDefault(config?.style)"
-        :prop-value="config?.propValue"
-        :element="config"
-        :request="config?.request"
-        :linkage="config?.linkage"
-        :show-position="showPosition"
-        :search-count="searchCount"
-        :scale="scale"
-      />
+      <div class="wrapper-inner-adaptor">
+        <component
+          :is="findComponent(config['component'])"
+          :view="viewInfo"
+          ref="component"
+          class="component"
+          :canvas-style-data="canvasStyleData"
+          :dv-info="dvInfo"
+          :dv-type="dvInfo.type"
+          :canvas-view-info="canvasViewInfo"
+          :style="getComponentStyleDefault(config?.style)"
+          :prop-value="config?.propValue"
+          :element="config"
+          :request="config?.request"
+          :linkage="config?.linkage"
+          :show-position="showPosition"
+          :search-count="searchCount"
+          :scale="scale"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -238,6 +239,11 @@ const commonBackgroundSvgInner = computed(() => {
   height: 100%;
   position: relative;
   background-size: 100% 100% !important;
+  .wrapper-inner-adaptor {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
 }
 
 .wrapper-edit-bar-active {

@@ -39,6 +39,7 @@
       <el-col :span="12" style="padding-right: 4px">
         <el-row class="custom-item-text-row">
           <el-checkbox
+            size="small"
             v-model="state.commonBackground.backgroundColorSelect"
             @change="themeChange('backgroundColorSelect')"
           >
@@ -78,7 +79,10 @@
 
     <el-row style="width: 100%" class="custom-row margin-top16">
       <el-row class="custom-item-text-row">
-        <el-checkbox v-model="state.commonBackground.enable" @change="themeChange('enable')"
+        <el-checkbox
+          size="small"
+          v-model="state.commonBackground.enable"
+          @change="themeChange('enable')"
           >{{ t('visualization.background') }}
         </el-checkbox>
       </el-row>

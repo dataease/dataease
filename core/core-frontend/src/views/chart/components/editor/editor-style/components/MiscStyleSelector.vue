@@ -1,23 +1,18 @@
 <script lang="tsx" setup>
-import { PropType, reactive, watch } from 'vue'
+import { computed, onMounted, reactive, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL, DEFAULT_MISC_STYLE } from '@/views/chart/components/editor/util/chart'
 
 const { t } = useI18n()
 
-const props = defineProps({
-  chart: {
-    type: Object,
-    required: true
-  },
-  themes: {
-    type: String as PropType<EditorTheme>,
-    default: 'dark'
-  },
-  propertyInner: {
-    type: Array<string>
-  }
-})
+const props = withDefaults(
+  defineProps<{
+    chart: any
+    themes?: EditorTheme
+    propertyInner: Array<string>
+  }>(),
+  { themes: 'dark' }
+)
 
 const predefineColors = COLOR_PANEL
 
@@ -36,7 +31,7 @@ watch(
   { deep: true }
 )
 
-const initFontSize = () => {
+const fontSizeList = computed(() => {
   const arr = []
   for (let i = 10; i <= 40; i = i + 2) {
     arr.push({
@@ -44,8 +39,8 @@ const initFontSize = () => {
       value: i
     })
   }
-  state.fontSize = arr
-}
+  return arr
+})
 
 const changeMiscStyle = prop => {
   emit('onChangeMiscStyleForm', state.miscForm)
@@ -68,63 +63,74 @@ const init = () => {
 
 const showProperty = prop => props.propertyInner?.includes(prop)
 
-initFontSize()
-init()
+onMounted(() => {
+  init()
+})
 </script>
 
 <template>
-  <div style="width: 100%">
-    <el-col>
-      <el-form ref="miscForm" :model="state.miscForm" label-width="80px" size="small">
-        <el-form-item v-show="showProperty('showName')" :label="t('chart.name')" class="form-item">
-          <el-checkbox v-model="state.miscForm.showName" @change="changeMiscStyle('showName')">{{
-            t('chart.show')
-          }}</el-checkbox>
-        </el-form-item>
-        <el-form-item v-show="showProperty('color')" :label="t('chart.color')" class="form-item">
-          <el-color-picker
-            v-model="state.miscForm.color"
-            class="color-picker-style"
-            :predefine="predefineColors"
-            :effect="props.themes"
-            @change="changeMiscStyle('color')"
-          />
-        </el-form-item>
-        <el-form-item
-          v-show="showProperty('fontSize')"
-          :label="t('chart.text_fontsize')"
-          class="form-item form-item-slider"
-        >
-          <el-select
-            v-model="state.miscForm.fontSize"
-            :placeholder="t('chart.text_fontsize')"
-            :effect="props.themes"
-            @change="changeMiscStyle('fontSize')"
-          >
-            <el-option
-              v-for="option in state.fontSize"
-              :key="option.value"
-              :label="option.name"
-              :value="option.value"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item
-          v-show="showProperty('axisColor')"
-          :label="t('chart.axis_color')"
-          class="form-item"
-        >
-          <el-color-picker
-            v-model="state.miscForm.axisColor"
-            class="color-picker-style"
-            :predefine="predefineColors"
-            :effect="props.themes"
-            @change="changeMiscStyle('axisColor')"
-          />
-        </el-form-item>
-      </el-form>
-    </el-col>
-  </div>
+  <el-form ref="miscForm" :model="state.miscForm" label-width="80px" size="small">
+    <el-form-item v-if="showProperty('showName')" class="form-item" :class="'form-item-' + themes">
+      <el-checkbox
+        size="small"
+        :effect="themes"
+        v-model="state.miscForm.showName"
+        @change="changeMiscStyle('showName')"
+      >
+        {{ t('chart.show') }} {{ t('chart.name') }}
+      </el-checkbox>
+    </el-form-item>
+    <el-form-item
+      v-if="showProperty('color')"
+      :label="t('chart.color')"
+      class="form-item"
+      :class="'form-item-' + themes"
+    >
+      <el-color-picker
+        v-model="state.miscForm.color"
+        class="color-picker-style"
+        :predefine="predefineColors"
+        is-custom
+        :effect="themes"
+        @change="changeMiscStyle('color')"
+      />
+    </el-form-item>
+    <el-form-item
+      v-if="showProperty('axisColor')"
+      :label="t('chart.axis_color')"
+      class="form-item"
+      :class="'form-item-' + themes"
+    >
+      <el-color-picker
+        v-model="state.miscForm.axisColor"
+        class="color-picker-style"
+        :predefine="predefineColors"
+        is-custom
+        :effect="themes"
+        @change="changeMiscStyle('axisColor')"
+      />
+    </el-form-item>
+    <el-form-item
+      v-if="showProperty('fontSize')"
+      :label="t('chart.text_fontsize')"
+      class="form-item form-item-slider"
+    >
+      <el-select
+        style="width: 108px"
+        v-model="state.miscForm.fontSize"
+        :placeholder="t('chart.text_fontsize')"
+        :effect="themes"
+        @change="changeMiscStyle('fontSize')"
+      >
+        <el-option
+          v-for="option in fontSizeList"
+          :key="option.value"
+          :label="option.name"
+          :value="option.value"
+        />
+      </el-select>
+    </el-form-item>
+  </el-form>
 </template>
 
 <style lang="less" scoped></style>

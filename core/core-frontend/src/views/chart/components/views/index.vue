@@ -266,7 +266,7 @@ const jumpClick = param => {
             '#/preview?dvId=' +
             jumpInfo.targetDvId +
             '&jumpInfoParam=' +
-            encodeURI(Base64.encode(JSON.stringify(param)))
+            encodeURIComponent(Base64.encode(JSON.stringify(param)))
           windowsJump(url, jumpInfo.jumpType)
         }
       } else {
@@ -308,10 +308,12 @@ const showChartView = (...libs: ChartLibraryType[]) => {
 }
 
 onBeforeMount(() => {
-  useEmitt({
-    name: `query-data-${view.value.id}`,
-    callback: queryData
-  })
+  if (!showPosition.value.includes('viewDialog')) {
+    useEmitt({
+      name: `query-data-${view.value.id}`,
+      callback: queryData
+    })
+  }
 })
 
 onMounted(() => {

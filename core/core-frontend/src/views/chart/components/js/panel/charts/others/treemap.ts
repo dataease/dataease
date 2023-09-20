@@ -6,6 +6,7 @@ import { formatterItem, singleDimensionTooltipFormatter, valueFormatter } from '
 import { Label } from '@antv/g2plot/lib/types/label'
 import { Datum } from '@antv/g2plot/esm/types/common'
 import { useI18n } from '@/hooks/web/useI18n'
+import { add } from 'mathjs'
 
 const { t } = useI18n()
 
@@ -26,9 +27,16 @@ export class Treemap extends G2PlotChartView<TreemapOptions, G2Treemap> {
   propertyInner: EditorPropertyInner = {
     'background-overall-component': ['all'],
     'basic-style-selector': ['colors', 'alpha'],
-    'label-selector': ['fontSize', 'color'],
+    'label-selector': [
+      'fontSize',
+      'color',
+      'rPosition',
+      'showDimension',
+      'showQuota',
+      'showProportion'
+    ],
     'legend-selector': ['icon', 'orient', 'fontSize', 'color', 'hPosition', 'vPosition'],
-    'tooltip-selector': ['fontSize', 'color', 'backgroundColor'],
+    'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'tooltipFormatter'],
     'title-selector': [
       'title',
       'fontSize',
@@ -56,7 +64,7 @@ export class Treemap extends G2PlotChartView<TreemapOptions, G2Treemap> {
 
   public drawChart(drawOptions: G2PlotDrawOptions<G2Treemap>): G2Treemap {
     const { chart, container, action } = drawOptions
-    if (!chart.data?.data) {
+    if (!chart.data?.data?.length) {
       return
     }
     const data = chart.data.data
@@ -106,20 +114,29 @@ export class Treemap extends G2PlotChartView<TreemapOptions, G2Treemap> {
     return newChart
   }
   protected configTooltip(chart: Chart, options: TreemapOptions): TreemapOptions {
-    const customAttr: DeepPartial<ChartAttr> = parseJson(chart.customAttr)
-    const tooltipAttr = customAttr.tooltip
-    if (!tooltipAttr.show) {
+    const { tooltip, label } = parseJson(chart.customAttr)
+    if (!tooltip.show) {
       return {
         ...options,
         tooltip: false
       }
     }
-    const tooltip = {
-      formatter: function (param: Datum) {
-        return singleDimensionTooltipFormatter(param, chart, 'name')
+    const reserveDecimalCount = label.reserveDecimalCount
+    return {
+      ...options,
+      tooltip: {
+        formatter: function (param: Datum) {
+          const obj = { name: param.name, value: param.value }
+          const res = valueFormatter(param.value, tooltip.tooltipFormatter)
+          // sync with label
+          const percent = (Math.round((param.value / param.path[1].value) * 10000) / 100).toFixed(
+            reserveDecimalCount
+          )
+          obj.value = `${res ?? ''} (${percent}%)`
+          return obj
+        }
       }
     }
-    return { ...options, tooltip }
   }
   protected configLabel(chart: Chart, options: TreemapOptions): TreemapOptions {
     const customAttr: DeepPartial<ChartAttr> = parseJson(chart.customAttr)
@@ -136,19 +153,21 @@ export class Treemap extends G2PlotChartView<TreemapOptions, G2Treemap> {
         fontSize: labelAttr.fontSize
       },
       formatter: function (param: Datum) {
-        const yAxis = chart.yAxis
         let res = param.value
-        for (let i = 0; i < yAxis.length; i++) {
-          const f = yAxis[i]
-          if (f.name === param.category) {
-            let formatterCfg = formatterItem
-            if (f.formatterCfg) {
-              formatterCfg = f.formatterCfg
-            }
-            res = valueFormatter(param.value, formatterCfg)
-            break
-          }
+        const contentItems = []
+        if (labelAttr.showDimension) {
+          contentItems.push(param.field)
         }
+        if (labelAttr.showQuota) {
+          contentItems.push(valueFormatter(param.value, labelAttr.quotaLabelFormatter))
+        }
+        if (labelAttr.showProportion) {
+          const percentage = `${(((param.value / param.parent.value) * 10000) / 100).toFixed(
+            labelAttr.reserveDecimalCount
+          )}%`
+          contentItems.push(percentage)
+        }
+        res = contentItems.join('\n')
         return res
       }
     }

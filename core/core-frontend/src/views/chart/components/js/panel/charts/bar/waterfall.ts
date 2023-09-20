@@ -1,7 +1,7 @@
 import { WaterfallOptions, Waterfall as G2Waterfall } from '@antv/g2plot/esm/plots/waterfall'
 import { G2PlotChartView, G2PlotDrawOptions } from '../../types/impl/g2plot'
 import { flow, hexColorToRGBA, parseJson } from '../../../util'
-import { formatterItem, valueFormatter } from '../../../formatter'
+import { valueFormatter } from '../../../formatter'
 import { getPadding, setGradientColor } from '../../common/common_antv'
 import { flow as flowLeft } from 'lodash-es'
 
@@ -9,6 +9,57 @@ import { flow as flowLeft } from 'lodash-es'
  * 瀑布图
  */
 export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
+  properties: EditorProperty[] = [
+    'background-overall-component',
+    'basic-style-selector',
+    'label-selector',
+    'tooltip-selector',
+    'title-selector',
+    'legend-selector',
+    'x-axis-selector',
+    'y-axis-selector'
+  ]
+  propertyInner: EditorPropertyInner = {
+    'background-overall-component': ['all'],
+    'basic-style-selector': ['colors', 'alpha', 'gradient'],
+    'label-selector': ['fontSize', 'color', 'vPosition', 'labelFormatter'],
+    'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'tooltipFormatter'],
+    'title-selector': [
+      'title',
+      'fontSize',
+      'color',
+      'hPosition',
+      'isItalic',
+      'isBolder',
+      'remarkShow',
+      'fontFamily',
+      'letterSpace',
+      'fontShadow'
+    ],
+    'legend-selector': ['icon', 'orient', 'fontSize', 'color', 'hPosition', 'vPosition'],
+    'x-axis-selector': [
+      'vPosition',
+      'name',
+      'color',
+      'fontSize',
+      'axisLine',
+      'splitLine',
+      'axisForm',
+      'axisLabel'
+    ],
+    'y-axis-selector': [
+      'vPosition',
+      'name',
+      'color',
+      'fontSize',
+      'axisValue',
+      'splitLine',
+      'axisForm',
+      'axisLabel',
+      'axisLabelFormatter'
+    ]
+  }
+  axis: AxisType[] = ['xAxis', 'yAxis', 'filter', 'drill', 'extLabel', 'extTooltip']
   public drawChart(drawOptions: G2PlotDrawOptions<G2Waterfall>): G2Waterfall {
     const { chart, container, action } = drawOptions
     if (!chart.data?.data) {
@@ -51,16 +102,11 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
       }
     }
     const f = yAxis[0]
+    const yAxisStyle = parseJson(chart.customStyle).yAxis
     meta.value = {
       alias: f.name,
       formatter: (value: number) => {
-        let res
-        if (f.formatterCfg) {
-          res = valueFormatter(value, f.formatterCfg)
-        } else {
-          res = valueFormatter(value, formatterItem)
-        }
-        return res
+        return valueFormatter(value, yAxisStyle.axisLabelFormatter)
       }
     }
     return {
@@ -140,6 +186,32 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
     return tmpOptions
   }
 
+  protected configTooltip(chart: Chart, options: WaterfallOptions): WaterfallOptions {
+    const tooltipAttr = parseJson(chart.customAttr).tooltip
+    if (!tooltipAttr.show) {
+      return {
+        ...options,
+        tooltip: {
+          showContent: false
+        }
+      }
+    }
+    const { customAttr } = chart
+    const t = parseJson(customAttr).tooltip
+    const tooltip = {
+      showTitle: false,
+      formatter: (name, value) => {
+        const obj = { name, value }
+        obj.value = valueFormatter(value, t.tooltipFormatter)
+        return obj
+      }
+    } as any
+    return {
+      ...options,
+      tooltip
+    }
+  }
+
   protected setupOptions(chart: Chart, options: WaterfallOptions): WaterfallOptions {
     return flow(
       this.configTheme,
@@ -151,56 +223,6 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
       this.configMeta
     )(chart, options)
   }
-  properties: EditorProperty[] = [
-    'background-overall-component',
-    'basic-style-selector',
-    'label-selector',
-    'tooltip-selector',
-    'title-selector',
-    'legend-selector',
-    'x-axis-selector',
-    'y-axis-selector'
-  ]
-  propertyInner: EditorPropertyInner = {
-    'background-overall-component': ['all'],
-    'basic-style-selector': ['colors', 'alpha', 'gradient'],
-    'label-selector': ['fontSize', 'color', 'vPosition'],
-    'tooltip-selector': ['fontSize', 'color', 'backgroundColor'],
-    'title-selector': [
-      'title',
-      'fontSize',
-      'color',
-      'hPosition',
-      'isItalic',
-      'isBolder',
-      'remarkShow',
-      'fontFamily',
-      'letterSpace',
-      'fontShadow'
-    ],
-    'legend-selector': ['icon', 'orient', 'fontSize', 'color', 'hPosition', 'vPosition'],
-    'x-axis-selector': [
-      'vPosition',
-      'name',
-      'color',
-      'fontSize',
-      'axisLine',
-      'splitLine',
-      'axisForm',
-      'axisLabel'
-    ],
-    'y-axis-selector': [
-      'vPosition',
-      'name',
-      'color',
-      'fontSize',
-      'axisValue',
-      'splitLine',
-      'axisForm',
-      'axisLabel'
-    ]
-  }
-  axis: AxisType[] = ['xAxis', 'yAxis', 'filter', 'drill', 'extLabel', 'extTooltip']
 
   setupDefaultOptions(chart: ChartObj): ChartObj {
     return flowLeft(this.setupVerticalAxis, this.setupVerticalAxis)(chart)

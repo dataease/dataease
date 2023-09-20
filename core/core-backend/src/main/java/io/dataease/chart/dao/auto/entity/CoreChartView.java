@@ -42,7 +42,7 @@ public class CoreChartView implements Serializable {
     private String type;
 
     /**
-     * 视图渲染方式
+     * 图表渲染方式
      */
     private String render;
 
@@ -142,12 +142,12 @@ public class CoreChartView implements Serializable {
     private String snapshot;
 
     /**
-     * 样式优先级 panel 仪表板 view 视图
+     * 样式优先级 panel 仪表板 view 图表
      */
     private String stylePriority;
 
     /**
-     * 视图类型 public 公共 历史可复用的视图，private 私有 专属某个仪表板
+     * 图表类型 public 公共 历史可复用的图表，private 私有 专属某个仪表板
      */
     private String chartType;
 
@@ -162,7 +162,7 @@ public class CoreChartView implements Serializable {
     private String dataFrom;
 
     /**
-     * 视图字段集合
+     * 图表字段集合
      */
     private String viewFields;
 

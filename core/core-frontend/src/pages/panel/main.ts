@@ -46,9 +46,7 @@ const getPrefix = (): string => {
 }
 
 document.querySelector('head').appendChild = <T extends Node>(node: T) => {
-  console.log('node, getPrefix()1', node, getPrefix())
   const newNode = formatterUrl(node, getPrefix())
-  console.log('node, getPrefix()2', node, getPrefix(), newNode)
   cb(newNode)
   return newNode
 }

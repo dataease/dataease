@@ -26,8 +26,8 @@ export class Funnel extends G2PlotChartView<FunnelOptions, G2Funnel> {
   propertyInner: EditorPropertyInner = {
     'background-overall-component': ['all'],
     'basic-style-selector': ['colors', 'alpha'],
-    'label-selector': ['show', 'fontSize', 'color', 'hPosition'],
-    'tooltip-selector': ['color', 'fontSize', 'backgroundColor'],
+    'label-selector': ['fontSize', 'color', 'hPosition', 'labelFormatter'],
+    'tooltip-selector': ['color', 'fontSize', 'backgroundColor', 'tooltipFormatter'],
     'title-selector': [
       'show',
       'title',
@@ -105,34 +105,6 @@ export class Funnel extends G2PlotChartView<FunnelOptions, G2Funnel> {
     const newChart = new G2Funnel(container, options)
     newChart.on('interval:click', action)
     return newChart
-  }
-
-  protected configTooltip(chart: Chart, options: FunnelOptions): FunnelOptions {
-    const customAttr: DeepPartial<ChartAttr> = parseJson(chart.customAttr)
-    if (!customAttr.tooltip.show) {
-      return {
-        ...options,
-        tooltip: false
-      }
-    }
-    const yAxis = chart.yAxis
-    const tooltip: Tooltip = {
-      formatter: function (param: Datum) {
-        const obj = { name: param.field, value: param.value }
-        let res = param.value
-        for (let i = 0; i < yAxis.length; i++) {
-          const f = yAxis[i]
-          if (f.formatterCfg) {
-            res = valueFormatter(param.value, f.formatterCfg)
-          } else {
-            res = valueFormatter(param.value, formatterItem)
-          }
-        }
-        obj.value = res ?? ''
-        return obj
-      }
-    }
-    return { ...options, tooltip }
   }
 
   protected setupOptions(chart: Chart, options: FunnelOptions): FunnelOptions {

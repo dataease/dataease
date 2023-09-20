@@ -1,10 +1,10 @@
-<script lang="tsx" setup>
-import { PropType, reactive, watch } from 'vue'
+<script lang="ts" setup>
+import { computed, onMounted, PropType, reactive, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL, DEFAULT_LABEL } from '@/views/chart/components/editor/util/chart'
-import { formatterType } from '../../util/formatter'
-import { unitList } from '../../../js/formatter'
 import { ElSpace } from 'element-plus-secondary'
+import { formatterType, unitList } from '../../../js/formatter'
+import { defaultsDeep, cloneDeep } from 'lodash-es'
 
 const { t } = useI18n()
 
@@ -30,8 +30,6 @@ watch(
   { deep: true }
 )
 
-const predefineColors = COLOR_PANEL
-
 const labelPositionR = [
   { name: t('chart.inside'), value: 'inner' },
   { name: t('chart.outside'), value: 'outer' }
@@ -46,9 +44,8 @@ const labelPositionV = [
   { name: t('chart.center'), value: 'middle' },
   { name: t('chart.text_pos_bottom'), value: 'bottom' }
 ]
-const typeList = formatterType
 
-const initFontSize = () => {
+const fontSizeList = computed(() => {
   const arr = []
   for (let i = 10; i <= 40; i = i + 2) {
     arr.push({
@@ -56,12 +53,11 @@ const initFontSize = () => {
       value: i
     })
   }
-  state.fontSize = arr
-}
+  return arr
+})
 
 const state = reactive({
-  labelForm: JSON.parse(JSON.stringify(DEFAULT_LABEL)),
-  fontSize: []
+  labelForm: JSON.parse(JSON.stringify(DEFAULT_LABEL))
 })
 
 const emit = defineEmits(['onLabelChange'])
@@ -80,13 +76,15 @@ const init = () => {
       customAttr = JSON.parse(chart.customAttr)
     }
     if (customAttr.label) {
-      state.labelForm = customAttr.label
+      state.labelForm = defaultsDeep(customAttr.label, cloneDeep(DEFAULT_LABEL))
     }
   }
 }
 const showProperty = prop => props.propertyInner?.includes(prop)
-initFontSize()
-init()
+
+onMounted(() => {
+  init()
+})
 </script>
 
 <template>
@@ -106,7 +104,7 @@ init()
         <el-color-picker
           v-model="state.labelForm.color"
           class="color-picker-style"
-          :predefine="predefineColors"
+          :predefine="COLOR_PANEL"
           @change="changeLabelAttr('color')"
           is-custom
         />
@@ -125,7 +123,7 @@ init()
           @change="changeLabelAttr('fontSize')"
         >
           <el-option
-            v-for="option in state.fontSize"
+            v-for="option in fontSizeList"
             :key="option.value"
             :label="option.name"
             :value="option.value"
@@ -195,7 +193,7 @@ init()
       </el-select>
     </el-form-item>
 
-    <template v-if="showProperty('gaugeLabelFormatter')">
+    <template v-if="showProperty('labelFormatter')">
       <el-form-item
         :label="$t('chart.value_formatter_type')"
         class="form-item"
@@ -203,11 +201,11 @@ init()
       >
         <el-select
           :effect="themes"
-          v-model="state.labelForm.gaugeLabelFormatter.type"
-          @change="changeLabelAttr('gaugeLabelFormatter')"
+          v-model="state.labelForm.labelFormatter.type"
+          @change="changeLabelAttr('labelFormatter')"
         >
           <el-option
-            v-for="type in typeList"
+            v-for="type in formatterType"
             :key="type.value"
             :label="$t('chart.' + type.name)"
             :value="type.value"
@@ -215,34 +213,34 @@ init()
         </el-select>
       </el-form-item>
       <el-form-item
-        v-if="state.labelForm.gaugeLabelFormatter.type !== 'auto'"
+        v-if="state.labelForm.labelFormatter.type !== 'auto'"
         :label="$t('chart.value_formatter_decimal_count')"
         class="form-item"
         :class="'form-item-' + themes"
       >
         <el-input-number
           :effect="themes"
-          v-model="state.labelForm.gaugeLabelFormatter.decimalCount"
+          v-model="state.labelForm.labelFormatter.decimalCount"
           :precision="0"
           :min="0"
           :max="10"
-          @change="changeLabelAttr('gaugeLabelFormatter')"
+          @change="changeLabelAttr('labelFormatter')"
         />
       </el-form-item>
 
       <el-row :gutter="8">
         <el-col :span="12">
           <el-form-item
-            v-if="state.labelForm.gaugeLabelFormatter.type !== 'percent'"
             :label="$t('chart.value_formatter_unit')"
             class="form-item"
             :class="'form-item-' + themes"
           >
             <el-select
+              :disabled="state.labelForm.labelFormatter.type === 'percent'"
               :effect="themes"
-              v-model="state.labelForm.gaugeLabelFormatter.unit"
+              v-model="state.labelForm.labelFormatter.unit"
               :placeholder="$t('chart.pls_select_field')"
-              @change="changeLabelAttr('gaugeLabelFormatter')"
+              @change="changeLabelAttr('labelFormatter')"
             >
               <el-option
                 v-for="item in unitList"
@@ -261,10 +259,10 @@ init()
           >
             <el-input
               :effect="themes"
-              v-model="state.labelForm.gaugeLabelFormatter.suffix"
+              v-model="state.labelForm.labelFormatter.suffix"
               clearable
               :placeholder="$t('commons.input_content')"
-              @change="changeLabelAttr('gaugeLabelFormatter')"
+              @change="changeLabelAttr('labelFormatter')"
             />
           </el-form-item>
         </el-col>
@@ -272,13 +270,166 @@ init()
 
       <el-form-item class="form-item" :class="'form-item-' + themes">
         <el-checkbox
+          size="small"
           :effect="themes"
-          v-model="state.labelForm.gaugeLabelFormatter.thousandSeparator"
-          @change="changeLabelAttr('gaugeLabelFormatter')"
+          v-model="state.labelForm.labelFormatter.thousandSeparator"
+          @change="changeLabelAttr('labelFormatter')"
           :label="t('chart.value_formatter_thousand_separator')"
         />
       </el-form-item>
     </template>
+
+    <el-form-item
+      class="form-item"
+      :class="'form-item-' + themes"
+      v-if="showProperty('showDimension')"
+    >
+      <el-checkbox
+        @change="changeLabelAttr('showDimension')"
+        v-model="state.labelForm.showDimension"
+        label="dimension"
+        >{{ t('chart.dimension') }}</el-checkbox
+      >
+    </el-form-item>
+    <el-form-item class="form-item" :class="'form-item-' + themes" v-if="showProperty('showQuota')">
+      <el-checkbox
+        @change="changeLabelAttr('showQuota')"
+        v-model="state.labelForm.showQuota"
+        label="quota"
+        >{{ t('chart.quota') }}</el-checkbox
+      >
+    </el-form-item>
+    <template v-if="showProperty('showQuota') && state.labelForm.showQuota">
+      <el-form-item
+        :label="t('chart.value_formatter_type')"
+        class="form-item"
+        :class="'form-item-' + themes"
+      >
+        <el-select
+          style="width: 100%"
+          :effect="props.themes"
+          v-model="state.labelForm.quotaLabelFormatter.type"
+          @change="changeLabelAttr('quotaLabelFormatter')"
+        >
+          <el-option
+            v-for="type in formatterType"
+            :key="type.value"
+            :label="t('chart.' + type.name)"
+            :value="type.value"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item
+        v-if="state.labelForm.quotaLabelFormatter.type !== 'auto'"
+        :label="t('chart.value_formatter_decimal_count')"
+        class="form-item"
+        :class="'form-item-' + themes"
+      >
+        <el-input-number
+          style="width: 100%"
+          :effect="props.themes"
+          v-model="state.labelForm.quotaLabelFormatter.decimalCount"
+          :precision="0"
+          :min="0"
+          :max="10"
+          size="small"
+          @change="changeLabelAttr('quotaLabelFormatter')"
+        />
+      </el-form-item>
+
+      <el-row :gutter="8">
+        <el-col :span="12">
+          <el-form-item
+            :label="t('chart.value_formatter_unit')"
+            class="form-item"
+            :class="'form-item-' + themes"
+          >
+            <el-select
+              :disabled="state.labelForm.quotaLabelFormatter.type == 'percent'"
+              :effect="props.themes"
+              v-model="state.labelForm.quotaLabelFormatter.unit"
+              :placeholder="t('chart.pls_select_field')"
+              size="small"
+              @change="changeLabelAttr('quotaLabelFormatter')"
+            >
+              <el-option
+                v-for="item in unitList"
+                :key="item.value"
+                :label="t('chart.' + item.name)"
+                :value="item.value"
+              />
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item
+            :label="t('chart.value_formatter_suffix')"
+            class="form-item"
+            :class="'form-item-' + themes"
+          >
+            <el-input
+              :effect="props.themes"
+              v-model="state.labelForm.quotaLabelFormatter.suffix"
+              size="small"
+              clearable
+              :placeholder="t('commons.input_content')"
+              @change="changeLabelAttr('quotaLabelFormatter')"
+            />
+          </el-form-item>
+        </el-col>
+      </el-row>
+
+      <el-form-item class="form-item" :class="'form-item-' + themes">
+        <el-checkbox
+          :effect="props.themes"
+          v-model="state.labelForm.quotaLabelFormatter.thousandSeparator"
+          @change="changeLabelAttr('quotaLabelFormatter')"
+          :label="t('chart.value_formatter_thousand_separator')"
+        />
+      </el-form-item>
+    </template>
+    <el-form-item
+      class="form-item"
+      :class="'form-item-' + themes"
+      v-if="showProperty('showProportion')"
+    >
+      <el-checkbox
+        @change="changeLabelAttr('showProportion')"
+        v-model="state.labelForm.showProportion"
+        label="proportion"
+        >{{ t('chart.proportion') }}</el-checkbox
+      >
+    </el-form-item>
+    <el-form-item
+      v-if="showProperty('showProportion') && state.labelForm.showProportion"
+      :label="t('chart.label_reserve_decimal_count')"
+      class="form-item"
+      :class="'form-item-' + themes"
+    >
+      <el-select
+        v-model="state.labelForm.reserveDecimalCount"
+        @change="changeLabelAttr('reserveDecimalCount')"
+      >
+        <el-option :label="t('chart.reserve_zero')" :value="0" />
+        <el-option :label="t('chart.reserve_one')" :value="1" />
+        <el-option :label="t('chart.reserve_two')" :value="2" />
+      </el-select>
+    </el-form-item>
+    <el-form-item
+      v-if="showProperty('reserveDecimalCount')"
+      :label="t('chart.label_reserve_decimal_count')"
+      class="form-item"
+      :class="'form-item-' + themes"
+    >
+      <el-select
+        v-model="state.labelForm.reserveDecimalCount"
+        @change="changeLabelAttr('reserveDecimalCount')"
+      >
+        <el-option :label="t('chart.reserve_zero')" :value="0" />
+        <el-option :label="t('chart.reserve_one')" :value="1" />
+        <el-option :label="t('chart.reserve_two')" :value="2" />
+      </el-select>
+    </el-form-item>
   </el-form>
 </template>
 

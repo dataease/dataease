@@ -39,9 +39,5 @@ const { themes } = toRefs(props)
   :deep(.ed-form-item__label) {
     justify-content: flex-start;
   }
-  :deep(.ed-checkbox__inner) {
-    width: 14px;
-    height: 14px;
-  }
 }
 </style>

@@ -1,6 +1,6 @@
 <script lang="tsx" setup>
 import { Icon } from '@/components/icon-custom'
-import { ElIcon, ElDropdown, ElDropdownItem, ElDropdownMenu } from 'element-plus-secondary'
+import { ElIcon } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ref, shallowRef, reactive, computed, toRefs } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
@@ -58,15 +58,6 @@ const { emitter } = useEmitt()
 
 const loading = ref(false)
 const columns = shallowRef([])
-const fieldOptions = [
-  { label: t('dataset.text'), value: 'TEXT' },
-  { label: t('dataset.time'), value: 'DATETIME' },
-  { label: t('dataset.value'), value: 'LONG' },
-  {
-    label: t('dataset.value') + '(' + t('dataset.float') + ')',
-    value: 'DOUBLE'
-  }
-]
 
 const defaultSheetObj = {
   tableName: ' ',
@@ -111,50 +102,13 @@ const generateColumns = (arr: Field[]) =>
     title: ele.name,
     width: 150,
     headerCellRenderer: ({ column }) => (
-      <div class="flex-align-center">
-        <ElDropdown
-          placement="bottom-start"
-          trigger="click"
-          key={column.fieldName}
-          onCommand={type => handleCommand(type, column)}
-        >
-          {{
-            default: () => {
-              return (
-                <div class="flex-align-center dropdown-icon">
-                  <ElIcon style={{ marginRight: '2px' }}>
-                    <Icon
-                      name={`field_${fieldType[column.fieldType]}`}
-                      className={`field-icon-${fieldType[column.fieldType]}`}
-                    ></Icon>
-                  </ElIcon>
-                  <ElIcon class="down-outlined" style={{ marginRight: '4px' }}>
-                    <Icon name="icon_down_outlined"></Icon>
-                  </ElIcon>
-                </div>
-              )
-            },
-            dropdown: () => {
-              return (
-                <ElDropdownMenu>
-                  {fieldOptions.map(ele => {
-                    return (
-                      <ElDropdownItem key={ele.value} command={ele.value}>
-                        <ElIcon>
-                          <Icon
-                            name={`field_${fieldType[ele.value]}`}
-                            className={`field-icon-${fieldType[ele.value]}`}
-                          ></Icon>
-                        </ElIcon>
-                        <span>{ele.label}</span>
-                      </ElDropdownItem>
-                    )
-                  })}
-                </ElDropdownMenu>
-              )
-            }
-          }}
-        </ElDropdown>
+      <div class="flex-align-center icon">
+        <ElIcon>
+          <Icon
+            name={`field_${fieldType[column.fieldType]}`}
+            className={`field-icon-${fieldType[column.fieldType]}`}
+          ></Icon>
+        </ElIcon>
         <span class="ellipsis" title={column.title} style={{ width: '100px' }}>
           {column.title}
         </span>
@@ -166,33 +120,6 @@ const handleNodeClick = data => {
   if (data.sheet) {
     Object.assign(sheetObj, data)
     columns.value = generateColumns(data.fields)
-  }
-}
-const handleCommand = (type, field) => {
-  sheetObj.fields.some(ele => {
-    if (ele.fieldName === field.dataKey) {
-      ele.fieldType = type
-      return true
-    }
-  })
-  columns.value.some(ele => {
-    if (ele.dataKey === field.dataKey) {
-      ele.fieldType = type
-      return true
-    }
-  })
-  changeDatasetName()
-}
-
-const changeDatasetName = () => {
-  for (let i = 0; i < state.excelData.length; i++) {
-    if (state.excelData[i].excelId === sheetObj.sheetExcelId) {
-      for (let j = 0; j < state.excelData[i].sheets.length; j++) {
-        if (state.excelData[i].sheets[j].excelId === sheetObj.sheetId) {
-          state.excelData[i].sheets[j] = sheetObj
-        }
-      }
-    }
   }
 }
 

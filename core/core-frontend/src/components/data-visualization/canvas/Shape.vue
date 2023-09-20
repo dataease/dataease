@@ -59,7 +59,9 @@
           class-name="svg-background"
           :name="commonBackgroundSvgInner"
         ></Icon>
-        <slot></slot>
+        <div class="component-slot">
+          <slot></slot>
+        </div>
       </div>
       <div
         v-for="item in isActive() ? getPointList() : []"
@@ -735,7 +737,7 @@ const htmlToImage = () => {
   toPng(componentInnerRef.value)
     .then(dataUrl => {
       const a = document.createElement('a')
-      a.setAttribute('download', '视图')
+      a.setAttribute('download', '图表')
       a.href = dataUrl
       a.click()
     })
@@ -880,20 +882,26 @@ onMounted(() => {
   right: 1px;
   top: 1px;
   width: 16px;
-  height: calc(100% - 30px);
+  height: calc(100% - 50px);
 }
 
 .de-drag-bottom {
-  left: 1px;
+  left: 100px;
   bottom: 1px;
   height: 12px;
-  width: calc(100% - 2px);
+  width: calc(100% - 102px);
 }
 
 .de-drag-left {
   left: 1px;
   top: 1px;
   width: 16px;
-  height: calc(100% - 2px);
+  height: calc(100% - 40px);
+}
+
+.component-slot {
+  width: 100%;
+  height: 100%;
+  position: relative;
 }
 </style>

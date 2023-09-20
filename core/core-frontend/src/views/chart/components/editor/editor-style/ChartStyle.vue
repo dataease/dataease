@@ -276,7 +276,7 @@ watch(
             :effect="themes"
             v-if="showProperties('misc-style-selector')"
             name="size"
-            title="杂项设置"
+            title="大小"
           >
             <misc-style-selector
               :property-inner="propertyInnerAll['misc-style-selector']"
@@ -399,10 +399,6 @@ span {
   }
   :deep(.ed-form-item__label) {
     justify-content: flex-start;
-  }
-  :deep(.ed-checkbox__inner) {
-    width: 14px;
-    height: 14px;
   }
 }
 :deep(.ed-collapse-item) {

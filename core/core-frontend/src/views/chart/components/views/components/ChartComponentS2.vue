@@ -20,6 +20,8 @@ import { storeToRefs } from 'pinia'
 import { S2ChartView } from '@/views/chart/components/js/panel/types/impl/s2'
 import { ElPagination } from 'element-plus-secondary'
 import ChartError from '@/views/chart/components/views/components/ChartError.vue'
+import { defaultsDeep, cloneDeep } from 'lodash-es'
+import { BASE_VIEW_CONFIG } from '../../editor/util/chart'
 
 const dvMainStore = dvMainStoreWithOut()
 const { nowPanelTrackInfo, nowPanelJumpInfo } = storeToRefs(dvMainStore)
@@ -106,18 +108,18 @@ const renderChartFromDialog = (viewInfo: Chart, chartDataInfo) => {
   chartData.value = chartDataInfo
   renderChart(viewInfo, false)
 }
-const renderChart = (viewInfo: Chart, resetPageInfo: boolean) => {
-  if (!viewInfo) {
+const renderChart = (view: Chart, resetPageInfo: boolean) => {
+  if (!view) {
     return
   }
   // view 为引用对象 需要存库 view.data 直接赋值会导致保存不必要的数据
-  const chart = { ...viewInfo, data: chartData.value } as ChartObj
+  const chart = {
+    ...defaultsDeep(view, cloneDeep(BASE_VIEW_CONFIG)),
+    data: chartData.value
+  } as ChartObj
   setupPage(chart, resetPageInfo)
   myChart?.destroy()
-  const chartView = chartViewManager.getChartView(
-    viewInfo.render,
-    viewInfo.type
-  ) as S2ChartView<any>
+  const chartView = chartViewManager.getChartView(view.render, view.type) as S2ChartView<any>
   myChart = chartView.drawChart({
     container: containerId,
     chart: toRaw(chart),

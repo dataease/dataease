@@ -194,7 +194,7 @@ public class PermissionManage {
                     expressionTree = expressionTree.replaceAll("\\$\\{sysParams\\.userEmail}", userEntity.getEmail());
                 }
                 record.setExpressionTree(expressionTree);
-                DatasetRowPermissionsTreeObj tree = JsonUtil.parse(expressionTree, DatasetRowPermissionsTreeObj.class);
+                DatasetRowPermissionsTreeObj tree = JsonUtil.parseObject(expressionTree, DatasetRowPermissionsTreeObj.class);
                 record.setTree(tree);
             }
             result.add(record);

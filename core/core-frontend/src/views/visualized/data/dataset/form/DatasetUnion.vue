@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { reactive, computed, ref, nextTick, onMounted } from 'vue'
+import { reactive, computed, ref, nextTick } from 'vue'
 import AddSql from './AddSql.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import zeroNodeImg from '@/assets/img/drag.png'
@@ -13,7 +13,6 @@ import type { Field } from './UnionFieldList.vue'
 import type { SqlNode } from './AddSql.vue'
 import { cloneDeep } from 'lodash-es'
 import type { Table } from '@/api/dataset'
-import { id } from 'element-plus-secondary/es/locale'
 const state = reactive({
   nodeList: [],
   pathList: [],
