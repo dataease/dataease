@@ -1,25 +1,17 @@
 <template>
-  <el-row>
-    <el-col class="info-item">
-      <p class="info-title">{{ t('visualization.create_by') }}</p>
-      <p class="info-content">{{ dvInfo.creatorName }}</p>
-    </el-col>
-    <el-col class="info-item">
-      <p class="info-title">{{ t('visualization.create_time') }}</p>
-      <p class="info-content">{{ timestampFormatDate(dvInfo.createTime) }}</p>
-    </el-col>
-    <el-col class="info-item">
-      <p class="info-title">{{ t('visualization.update_by') }}</p>
-      <p class="info-content">{{ dvInfo.updateName || 'N/A' }}</p>
-    </el-col>
-    <el-col class="info-item">
-      <p class="info-title">{{ t('visualization.update_time') }}</p>
-      <p v-if="dvInfo.updateTime" class="info-content">
-        {{ timestampFormatDate(dvInfo.updateTime) }}
-      </p>
-      <p v-if="!dvInfo.updateTime" class="info-content">N/A</p>
-    </el-col>
-  </el-row>
+  <div class="info-card">
+    <div class="info-title">{{ t('visualization.create_by') }}</div>
+    <div class="info-content">{{ dvInfo.creatorName }}</div>
+    <div class="info-title">{{ t('visualization.create_time') }}</div>
+    <div class="info-content">{{ timestampFormatDate(dvInfo.createTime) }}</div>
+    <div class="info-title">{{ t('visualization.update_by') }}</div>
+    <div class="info-content">{{ dvInfo.updateName || 'N/A' }}</div>
+    <div class="info-title">{{ t('visualization.update_time') }}</div>
+    <div v-if="dvInfo.updateTime" class="info-content">
+      {{ timestampFormatDate(dvInfo.updateTime) }}
+    </div>
+    <div v-if="!dvInfo.updateTime" class="info-content">N/A</div>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -40,20 +32,26 @@ const timestampFormatDate = value => {
 </script>
 
 <style lang="less" scoped>
-.info-tab :deep(.el-tabs__item) {
+.info-card {
+  font-family: 'PingFang SC';
+  font-style: normal;
+  padding-left: 4px;
   font-weight: 400;
-  font-size: 12px;
-}
-.info-item {
-  margin: 6px 0;
-}
-.info-title {
-  margin: 0 !important;
-  font-weight: 600;
-  font-size: 12px;
-}
-.info-content {
-  margin: 0 !important;
-  font-size: 12px;
+  line-height: 22px;
+
+  .info-title {
+    color: #646a73;
+    font-size: 14px;
+    margin-bottom: 4px;
+  }
+  .info-content {
+    color: #1f2329;
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+
+  :last-child {
+    margin-bottom: 0;
+  }
 }
 </style>
