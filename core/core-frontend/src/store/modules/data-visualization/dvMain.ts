@@ -566,53 +566,75 @@ export const dvMainStore = defineStore('dataVisualization', {
         trackInfo = this.nowPanelJumpInfoTargetPanel
       }
       const preActiveComponentIds = []
-      for (let index = 0; index < this.componentData.length; index++) {
-        const element = this.componentData[index]
-        if (!element.component || element.component !== 'UserView') continue
-        const currentFilters = element.linkageFilters || [] // 当前联动filter
-        // 联动的图表情况历史条件
-        // const currentFilters = []
-
-        const checkQDList = [...data.dimensionList, ...data.quotaList]
-        checkQDList.forEach(QDItem => {
-          const sourceInfo = viewId + '#' + QDItem.id
-          // 获取所有目标联动信息
-          const targetInfoList = trackInfo[sourceInfo] || []
-          targetInfoList.forEach(targetInfo => {
-            const targetInfoArray = targetInfo.split('#')
-            const targetViewId = targetInfoArray[0] // 目标图表
-            if (element.id === targetViewId) {
-              // 如果目标图表 和 当前循环组件id相等 则进行条件增减
-              const targetFieldId = targetInfoArray[1] // 目标图表列ID
-              const condition = {
-                fieldId: targetFieldId,
-                operator: 'eq',
-                value: [QDItem.value],
-                viewIds: [targetViewId],
-                sourceViewId: viewId
-              }
-              let j = currentFilters.length
-              while (j--) {
-                const filter = currentFilters[j]
-                // 兼容性准备 viewIds 只会存放一个值
-                if (targetFieldId === filter.fieldId && filter.viewIds.includes(targetViewId)) {
-                  currentFilters.splice(j, 1)
-                }
-              }
-              // 不存在该条件 且 条件有效 直接保存该条件
-              // !filterExist && vValid && currentFilters.push(condition)
-              currentFilters.push(condition)
-              preActiveComponentIds.includes(element.id) || preActiveComponentIds.push(element.id)
-            }
+      const checkQDList = [...data.dimensionList, ...data.quotaList]
+      for (let indexOuter = 0; indexOuter < this.componentData.length; indexOuter++) {
+        const element = this.componentData[indexOuter]
+        if (element.componentData === 'UserView' && element.innerType != 'VQuery') {
+          this.trackFilterCursor(element, checkQDList, trackInfo, preActiveComponentIds, viewId)
+          this.componentData[indexOuter] = element
+        } else if (element.component === 'Group') {
+          element.propValue.forEach((groupItem, index) => {
+            this.trackFilterCursor(groupItem, checkQDList, trackInfo, preActiveComponentIds, viewId)
+            element.propValue[index] = groupItem
           })
-        })
-        element.linkageFilters = currentFilters
-        this.componentData[index] = element
+        } else if (element.component === 'DeTabs') {
+          element.propValue.forEach(tabItem => {
+            tabItem.componentData.forEach((tabComponent, index) => {
+              this.trackFilterCursor(
+                tabComponent,
+                checkQDList,
+                trackInfo,
+                preActiveComponentIds,
+                viewId
+              )
+              tabItem.componentData[index] = tabComponent
+            })
+          })
+        }
       }
       preActiveComponentIds.forEach(viewId => {
         useEmitt().emitter.emit('query-data-' + viewId)
       })
     },
+    trackFilterCursor(element, checkQDList, trackInfo, preActiveComponentIds, viewId) {
+      const currentFilters = element.linkageFilters || [] // 当前联动filter
+      // 联动的图表情况历史条件
+      // const currentFilters = []
+      checkQDList.forEach(QDItem => {
+        const sourceInfo = viewId + '#' + QDItem.id
+        // 获取所有目标联动信息
+        const targetInfoList = trackInfo[sourceInfo] || []
+        targetInfoList.forEach(targetInfo => {
+          const targetInfoArray = targetInfo.split('#')
+          const targetViewId = targetInfoArray[0] // 目标图表
+          if (element.id === targetViewId) {
+            // 如果目标图表 和 当前循环组件id相等 则进行条件增减
+            const targetFieldId = targetInfoArray[1] // 目标图表列ID
+            const condition = {
+              fieldId: targetFieldId,
+              operator: 'eq',
+              value: [QDItem.value],
+              viewIds: [targetViewId],
+              sourceViewId: viewId
+            }
+            let j = currentFilters.length
+            while (j--) {
+              const filter = currentFilters[j]
+              // 兼容性准备 viewIds 只会存放一个值
+              if (targetFieldId === filter.fieldId && filter.viewIds.includes(targetViewId)) {
+                currentFilters.splice(j, 1)
+              }
+            }
+            // 不存在该条件 且 条件有效 直接保存该条件
+            // !filterExist && vValid && currentFilters.push(condition)
+            currentFilters.push(condition)
+            preActiveComponentIds.includes(element.id) || preActiveComponentIds.push(element.id)
+          }
+        })
+      })
+      element.linkageFilters = currentFilters
+    },
+
     clearPanelLinkageInfo() {
       this.componentData.forEach(item => {
         if (item.linkageFilters && item.linkageFilters.length > 0) {
