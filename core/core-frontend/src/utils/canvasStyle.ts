@@ -388,11 +388,11 @@ export function adaptCurThemeCommonStyle(component) {
   }
   // 通用样式-End
   if (component.component === 'UserView') {
-    // 视图-Begin
+    // 图表-Begin
     const curViewInfo = dvMainStore.canvasViewInfo[component.id]
     adaptCurTheme(curViewInfo.customStyle, curViewInfo.customAttr)
     useEmitt().emitter.emit('renderChart-' + component.id, curViewInfo)
-    // 视图-Begin
+    // 图表-Begin
   }
   return component
 }

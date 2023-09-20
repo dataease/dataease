@@ -51,30 +51,26 @@ const props = defineProps({
   }
 })
 
-const { propValue, element, view, active, searchCount, scale } = toRefs(props)
-
-watch(
-  () => scale.value,
-  () => {
-    console.log('scale.value=' + scale.value)
-  }
-)
+const { propValue, element, view, active, searchCount, scale, dvType } = toRefs(props)
 const autoStyle = computed(() => {
-  console.log('s3=' + scale.value)
-  const curScale = scale.value / 100
-  return {
-    position: 'absolute',
-    height: 100 / curScale + '%!important',
-    width: 100 / curScale + '%!important',
-    left: 50 * (1 - 1 / curScale) + '%', // 放大余量 除以 2
-    top: 50 * (1 - 1 / curScale) + '%', // 放大余量 除以 2
-    transform: 'scale(' + curScale + ')'
+  if (element.value.innerType === 'richText') {
+    const curScale = scale.value / 100
+    return {
+      position: 'absolute',
+      height: 100 / curScale + '%!important',
+      width: 100 / curScale + '%!important',
+      left: 50 * (1 - 1 / curScale) + '%', // 放大余量 除以 2
+      top: 50 * (1 - 1 / curScale) + '%', // 放大余量 除以 2
+      transform: 'scale(' + curScale + ')'
+    }
+  } else {
+    return {}
   }
 })
 </script>
 
 <template>
-  <div class="bash-shape" :style="dvType === 'dataV' ? autoStyle : ''">
+  <div class="bash-shape" :style="autoStyle">
     <chart
       :active="active"
       :view="view"
