@@ -169,55 +169,60 @@ onMounted(() => {
       :class="'form-item-' + themes"
       v-if="showProperty('hPosition')"
     >
-      <el-space wrap>
-        <el-tooltip effect="dark" placement="top">
-          <template #content>
-            {{ t('chart.text_pos_left') }}
-          </template>
-          <div
-            class="icon-btn"
-            :class="{ dark: themes === 'dark', active: state.legendForm.hPosition === 'left' }"
-            @click="setHPosition('left')"
-          >
-            <el-icon>
-              <Icon name="icon_left-align_outlined" />
-            </el-icon>
-          </div>
-        </el-tooltip>
-
-        <el-tooltip effect="dark" placement="top" v-if="state.legendForm.vPosition !== 'center'">
-          <template #content>
-            {{ t('chart.text_pos_center') }}
-          </template>
-          <div
-            class="icon-btn"
-            :class="{
-              dark: themes === 'dark',
-              active: state.legendForm.hPosition === 'center'
-            }"
-            @click="setHPosition('center')"
-          >
-            <el-icon>
-              <Icon name="icon_horizontal-align_outlined" />
-            </el-icon>
-          </div>
-        </el-tooltip>
-
-        <el-tooltip effect="dark" placement="top">
-          <template #content>
-            {{ t('chart.text_pos_right') }}
-          </template>
-          <div
-            class="icon-btn"
-            :class="{ dark: themes === 'dark', active: state.legendForm.hPosition === 'right' }"
-            @click="setHPosition('right')"
-          >
-            <el-icon>
-              <Icon name="icon_right-align_outlined" />
-            </el-icon>
-          </div>
-        </el-tooltip>
-      </el-space>
+      <el-radio-group
+        class="icon-radio-group"
+        v-model="state.legendForm.hPosition"
+        @change="changeLegendStyle('hPosition')"
+      >
+        <el-radio label="left">
+          <el-tooltip effect="dark" placement="top">
+            <template #content>
+              {{ t('chart.text_pos_left') }}
+            </template>
+            <div
+              class="icon-btn"
+              :class="{ dark: themes === 'dark', active: state.legendForm.hPosition === 'left' }"
+            >
+              <el-icon>
+                <Icon name="icon_left-align_outlined" />
+              </el-icon>
+            </div>
+          </el-tooltip>
+        </el-radio>
+        <el-radio label="center" :disabled="state.legendForm.vPosition === 'center'">
+          <el-tooltip effect="dark" placement="top">
+            <template #content>
+              {{ t('chart.text_pos_center') }}
+            </template>
+            <div
+              class="icon-btn"
+              :class="{
+                dark: themes === 'dark',
+                active: state.legendForm.hPosition === 'center'
+              }"
+            >
+              <el-icon>
+                <Icon name="icon_horizontal-align_outlined" />
+              </el-icon>
+            </div>
+          </el-tooltip>
+        </el-radio>
+        <el-radio label="right">
+          <el-tooltip effect="dark" placement="top">
+            <template #content>
+              {{ t('chart.text_pos_right') }}
+            </template>
+            <div
+              class="icon-btn"
+              :class="{ dark: themes === 'dark', active: state.legendForm.hPosition === 'right' }"
+            >
+              <el-icon>
+                <Icon name="icon_right-align_outlined" />
+              </el-icon>
+            </div>
+          </el-tooltip>
+        </el-radio>
+      </el-radio-group>
     </el-form-item>
 
     <el-form-item
@@ -226,58 +231,63 @@ onMounted(() => {
       :class="'form-item-' + themes"
       v-if="showProperty('vPosition')"
     >
-      <el-space wrap>
-        <el-tooltip effect="dark" placement="top">
-          <template #content>
-            {{ t('chart.text_pos_top') }}
-          </template>
-          <div
-            class="icon-btn"
-            :class="{ dark: themes === 'dark', active: state.legendForm.vPosition === 'top' }"
-            @click="setVPosition('top')"
-          >
-            <el-icon>
-              <Icon name="icon_top-align_outlined" />
-            </el-icon>
-          </div>
-        </el-tooltip>
-
-        <el-tooltip effect="dark" placement="top" v-if="state.legendForm.hPosition !== 'center'">
-          <template #content>
-            {{ t('chart.text_pos_center') }}
-          </template>
-          <div
-            class="icon-btn"
-            :class="{
-              dark: themes === 'dark',
-              active: state.legendForm.vPosition === 'center'
-            }"
-            @click="setVPosition('center')"
-          >
-            <el-icon>
-              <Icon name="icon_vertical-align_outlined" />
-            </el-icon>
-          </div>
-        </el-tooltip>
-
-        <el-tooltip effect="dark" placement="top">
-          <template #content>
-            {{ t('chart.text_pos_bottom') }}
-          </template>
-          <div
-            class="icon-btn"
-            :class="{
-              dark: themes === 'dark',
-              active: state.legendForm.vPosition === 'bottom'
-            }"
-            @click="setVPosition('bottom')"
-          >
-            <el-icon>
-              <Icon name="icon_bottom-align_outlined" />
-            </el-icon>
-          </div>
-        </el-tooltip>
-      </el-space>
+      <el-radio-group
+        class="icon-radio-group"
+        v-model="state.legendForm.vPosition"
+        @change="changeLegendStyle('vPosition')"
+      >
+        <el-radio label="top">
+          <el-tooltip effect="dark" placement="top">
+            <template #content>
+              {{ t('chart.text_pos_top') }}
+            </template>
+            <div
+              class="icon-btn"
+              :class="{ dark: themes === 'dark', active: state.legendForm.vPosition === 'top' }"
+            >
+              <el-icon>
+                <Icon name="icon_top-align_outlined" />
+              </el-icon>
+            </div>
+          </el-tooltip>
+        </el-radio>
+        <el-radio label="center" :disabled="state.legendForm.hPosition === 'center'">
+          <el-tooltip effect="dark" placement="top">
+            <template #content>
+              {{ t('chart.text_pos_center') }}
+            </template>
+            <div
+              class="icon-btn"
+              :class="{
+                dark: themes === 'dark',
+                active: state.legendForm.vPosition === 'center'
+              }"
+            >
+              <el-icon>
+                <Icon name="icon_vertical-align_outlined" />
+              </el-icon>
+            </div>
+          </el-tooltip>
+        </el-radio>
+        <el-radio label="bottom">
+          <el-tooltip effect="dark" placement="top">
+            <template #content>
+              {{ t('chart.text_pos_bottom') }}
+            </template>
+            <div
+              class="icon-btn"
+              :class="{
+                dark: themes === 'dark',
+                active: state.legendForm.vPosition === 'bottom'
+              }"
+            >
+              <el-icon>
+                <Icon name="icon_bottom-align_outlined" />
+              </el-icon>
+            </div>
+          </el-tooltip>
+        </el-radio>
+      </el-radio-group>
     </el-form-item>
   </el-form>
 </template>
@@ -314,6 +324,45 @@ onMounted(() => {
 
   &:hover {
     background-color: rgba(31, 35, 41, 0.1);
+  }
+}
+
+.is-disabled {
+  .icon-btn {
+    color: #8f959e;
+    cursor: not-allowed;
+
+    &:hover {
+      background-color: inherit;
+    }
+
+    &.active {
+      background-color: #f5f7fa;
+      &:hover {
+        background-color: #f5f7fa;
+      }
+    }
+    &.dark {
+      color: #5f5f5f;
+      &.active {
+        background-color: #373737;
+        &:hover {
+          background-color: #373737;
+        }
+      }
+    }
+  }
+}
+
+.icon-radio-group {
+  :deep(.ed-radio) {
+    margin-right: 8px;
+  }
+  :deep(.ed-radio__input) {
+    display: none;
+  }
+  :deep(.ed-radio__label) {
+    padding: 0;
   }
 }
 </style>
