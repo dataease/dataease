@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { reactive, toRefs, watch } from 'vue'
+import { PropType, reactive, toRefs, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import {
   COLOR_PANEL,
@@ -20,7 +20,7 @@ const props = defineProps({
     required: true
   },
   themes: {
-    type: String,
+    type: String as PropType<EditorTheme>,
     default: 'dark'
   },
   propertyInner: {
@@ -40,11 +40,11 @@ const state = reactive({
 })
 
 watch(
-  () => props.chart.customStyle.text,
+  () => props.chart,
   () => {
     init()
   },
-  { deep: true }
+  { deep: false }
 )
 
 const { chart } = toRefs(props)
@@ -227,49 +227,6 @@ init()
       </el-tooltip>
 
       <div class="m-divider"></div>
-
-      <el-tooltip effect="dark" placement="top">
-        <template #content>
-          {{ t('chart.text_pos_left') }}
-        </template>
-        <div
-          class="icon-btn"
-          :class="{ dark: themes === 'dark', active: state.titleForm.hPosition === 'left' }"
-          @click="setPosition('left')"
-        >
-          <el-icon>
-            <Icon name="icon_left-alignment_outlined" />
-          </el-icon>
-        </div>
-      </el-tooltip>
-      <el-tooltip effect="dark" placement="top">
-        <template #content>
-          {{ t('chart.text_pos_center') }}
-        </template>
-        <div
-          class="icon-btn"
-          :class="{ dark: themes === 'dark', active: state.titleForm.hPosition === 'center' }"
-          @click="setPosition('center')"
-        >
-          <el-icon>
-            <Icon name="icon_center-alignment_outlined" />
-          </el-icon>
-        </div>
-      </el-tooltip>
-      <el-tooltip effect="dark" placement="top">
-        <template #content>
-          {{ t('chart.text_pos_right') }}
-        </template>
-        <div
-          class="icon-btn"
-          :class="{ dark: themes === 'dark', active: state.titleForm.hPosition === 'right' }"
-          @click="setPosition('right')"
-        >
-          <el-icon>
-            <Icon name="icon_right-alignment_outlined" />
-          </el-icon>
-        </div>
-      </el-tooltip>
 
       <el-tooltip effect="dark" placement="top">
         <template #content>
