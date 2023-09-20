@@ -163,11 +163,15 @@ const addDataset = () => {
   window.open(href, '_blank')
 }
 
+const datasetSelectorPopover = ref()
+
 const dsClick = (data: Tree) => {
   if (data.leaf) {
     //选中赋值
     _modelValue.value = data.id
     getFields(data.id, props.viewId)
+    //关闭弹窗
+    datasetSelectorPopover.value?.hide()
   }
 }
 const getFields = (id, chartId) => {
@@ -214,6 +218,7 @@ onMounted(() => {
 <template>
   <div>
     <el-popover
+      ref="datasetSelectorPopover"
       trigger="click"
       placement="bottom-start"
       :width="320"

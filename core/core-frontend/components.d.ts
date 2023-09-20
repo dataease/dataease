@@ -83,6 +83,7 @@ declare module '@vue/runtime-core' {
     ElInputNumber: typeof import('element-plus-secondary/es')['ElInputNumber']
     ElLink: typeof import('element-plus-secondary/es')['ElLink']
     ElMain: typeof import('element-plus-secondary/es')['ElMain']
+    ElMenuItem: typeof import('element-plus-secondary/es')['ElMenuItem']
     ElOption: typeof import('element-plus-secondary/es')['ElOption']
     ElOptionGroup: typeof import('element-plus-secondary/es')['ElOptionGroup']
     ElPopover: typeof import('element-plus-secondary/es')['ElPopover']
