@@ -20,7 +20,7 @@ const valueOptions = valueEnum.map(formatEnum)
 const sysParams = ['eq', 'not_eq', 'like', 'not like', 'in', 'not in']
 const textOptionsForSysParams = sysParams.map(formatEnum)
 
-const sysParamsEnum = ['userId', 'userName', 'userEmail', 'userSource', 'dept']
+const sysParamsEnum = ['userId', 'userName', 'userEmail']
 
 const sysParamsIlns = sysParamsEnum.map(_ => {
   return { value: `\${sysParams.${_}}`, label: `auth.sysParams_type.${toLine(_)}` }

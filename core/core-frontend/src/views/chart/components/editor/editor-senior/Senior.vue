@@ -36,7 +36,7 @@ const emit = defineEmits([
 
 const props = defineProps({
   chart: {
-    type: Object,
+    type: Object as PropType<ChartObj>,
     required: true
   },
   quotaData: {
@@ -177,7 +177,8 @@ const linkageActiveChange = () => {
             />
           </el-collapse-item>
 
-          <el-collapse-item
+          <collapse-switch-item
+            v-model="chart.senior.scrollCfg.open"
             :effect="themes"
             v-if="showProperties('scroll-cfg')"
             name="scroll"
@@ -189,7 +190,7 @@ const linkageActiveChange = () => {
               :property-inner="propertyInnerAll['scroll-cfg']"
               @onScrollCfgChange="onScrollCfgChange"
             />
-          </el-collapse-item>
+          </collapse-switch-item>
 
           <el-collapse-item
             :effect="themes"
