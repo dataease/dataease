@@ -148,8 +148,15 @@ const openPopover = () => {
   height: 12px;
 }
 .top-info-container {
+  height: 32px;
   display: flex;
   align-items: center;
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+  &:hover {
+    background-color: #1e2738;
+  }
   .main-color {
     background: #3370ff;
     width: 24px;
@@ -160,8 +167,9 @@ const openPopover = () => {
     font-size: 14px;
     color: rgba(255, 255, 255, 0.8);
   }
-
-  cursor: pointer;
+  .ed-icon {
+    margin: 0 5px;
+  }
 }
 .uinfo-container {
   width: 100%;
