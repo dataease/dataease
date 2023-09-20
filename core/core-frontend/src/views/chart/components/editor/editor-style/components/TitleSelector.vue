@@ -9,6 +9,7 @@ import {
 } from '@/views/chart/components/editor/util/chart'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
+import { ElCheckbox } from 'element-plus-secondary'
 const dvMainStore = dvMainStoreWithOut()
 const { batchOptStatus } = storeToRefs(dvMainStore)
 
@@ -40,11 +41,11 @@ const state = reactive({
 })
 
 watch(
-  () => props.chart,
+  () => props.chart.customStyle.text,
   () => {
     init()
   },
-  { deep: false }
+  { deep: true }
 )
 
 const { chart } = toRefs(props)
@@ -196,81 +197,106 @@ onMounted(() => {
       </el-form-item>
     </div>
 
-    <el-space wrap style="margin-bottom: 16px">
-      <el-tooltip effect="dark" placement="top">
-        <template #content>
-          {{ t('chart.bolder') }}
-        </template>
-        <div
-          class="icon-btn"
-          :class="{ dark: themes === 'dark', active: state.titleForm.isBolder }"
-          @click="checkBold"
+    <el-space>
+      <el-form-item class="form-item" :class="'form-item-' + themes">
+        <el-checkbox
+          class="icon-checkbox"
+          v-model="state.titleForm.isBolder"
+          @change="changeTitleStyle('isBolder')"
         >
-          <el-icon>
-            <Icon name="icon_bold_outlined" />
-          </el-icon>
-        </div>
-      </el-tooltip>
+          <el-tooltip effect="dark" placement="top">
+            <template #content>
+              {{ t('chart.bolder') }}
+            </template>
+            <div
+              class="icon-btn"
+              :class="{ dark: themes === 'dark', active: state.titleForm.isBolder }"
+            >
+              <el-icon>
+                <Icon name="icon_bold_outlined" />
+              </el-icon>
+            </div>
+          </el-tooltip>
+        </el-checkbox>
+      </el-form-item>
 
-      <el-tooltip effect="dark" placement="top">
-        <template #content>
-          {{ t('chart.italic') }}
-        </template>
-        <div
-          class="icon-btn"
-          :class="{ dark: themes === 'dark', active: state.titleForm.isItalic }"
-          @click="checkItalic"
+      <el-form-item class="form-item" :class="'form-item-' + themes">
+        <el-checkbox
+          class="icon-checkbox"
+          v-model="state.titleForm.isItalic"
+          @change="changeTitleStyle('isItalic')"
         >
-          <el-icon>
-            <Icon name="icon_italic_outlined" />
-          </el-icon>
-        </div>
-      </el-tooltip>
+          <el-tooltip effect="dark" placement="top">
+            <template #content>
+              {{ t('chart.italic') }}
+            </template>
+            <div
+              class="icon-btn"
+              :class="{ dark: themes === 'dark', active: state.titleForm.isItalic }"
+            >
+              <el-icon>
+                <Icon name="icon_italic_outlined" />
+              </el-icon>
+            </div>
+          </el-tooltip>
+        </el-checkbox>
+      </el-form-item>
 
-      <div class="m-divider"></div>
+      <div class="position-divider" :class="'position-divider--' + themes"></div>
 
-      <el-tooltip effect="dark" placement="top">
-        <template #content>
-          {{ t('chart.text_pos_left') }}
-        </template>
-        <div
-          class="icon-btn"
-          :class="{ dark: themes === 'dark', active: state.titleForm.hPosition === 'left' }"
-          @click="setPosition('left')"
+      <el-form-item class="form-item" :class="'form-item-' + themes">
+        <el-radio-group
+          class="icon-radio-group"
+          v-model="state.titleForm.hPosition"
+          @change="changeTitleStyle('hPosition')"
         >
-          <el-icon>
-            <Icon name="icon_left-alignment_outlined" />
-          </el-icon>
-        </div>
-      </el-tooltip>
-      <el-tooltip effect="dark" placement="top">
-        <template #content>
-          {{ t('chart.text_pos_center') }}
-        </template>
-        <div
-          class="icon-btn"
-          :class="{ dark: themes === 'dark', active: state.titleForm.hPosition === 'center' }"
-          @click="setPosition('center')"
-        >
-          <el-icon>
-            <Icon name="icon_center-alignment_outlined" />
-          </el-icon>
-        </div>
-      </el-tooltip>
-      <el-tooltip effect="dark" placement="top">
-        <template #content>
-          {{ t('chart.text_pos_right') }}
-        </template>
-        <div
-          class="icon-btn"
-          :class="{ dark: themes === 'dark', active: state.titleForm.hPosition === 'right' }"
-          @click="setPosition('right')"
-        >
-          <el-icon>
-            <Icon name="icon_right-alignment_outlined" />
-          </el-icon>
-        </div>
-      </el-tooltip>
+          <el-radio label="left">
+            <el-tooltip effect="dark" placement="top">
+              <template #content>
+                {{ t('chart.text_pos_left') }}
+              </template>
+              <div
+                class="icon-btn"
+                :class="{ dark: themes === 'dark', active: state.titleForm.hPosition === 'left' }"
+              >
+                <el-icon>
+                  <Icon name="icon_left-alignment_outlined" />
+                </el-icon>
+              </div>
+            </el-tooltip>
+          </el-radio>
+          <el-radio label="center">
+            <el-tooltip effect="dark" placement="top">
+              <template #content>
+                {{ t('chart.text_pos_center') }}
+              </template>
+              <div
+                class="icon-btn"
+                :class="{ dark: themes === 'dark', active: state.titleForm.hPosition === 'center' }"
+              >
+                <el-icon>
+                  <Icon name="icon_center-alignment_outlined" />
+                </el-icon>
+              </div>
+            </el-tooltip>
+          </el-radio>
+          <el-radio label="right">
+            <el-tooltip effect="dark" placement="top">
+              <template #content>
+                {{ t('chart.text_pos_right') }}
+              </template>
+              <div
+                class="icon-btn"
+                :class="{ dark: themes === 'dark', active: state.titleForm.hPosition === 'right' }"
+              >
+                <el-icon>
+                  <Icon name="icon_right-alignment_outlined" />
+                </el-icon>
+              </div>
+            </el-tooltip>
+          </el-radio>
+        </el-radio-group>
+      </el-form-item>
     </el-space>
 
     <el-form-item class="form-item" :class="'form-item-' + themes">
@@ -292,10 +318,12 @@ onMounted(() => {
 }
 .icon-btn {
   font-size: 16px;
+  line-height: 16px;
   width: 24px;
   height: 24px;
   text-align: center;
   border-radius: 4px;
+  padding-top: 4px;
 
   color: #1f2329;
 
@@ -321,9 +349,66 @@ onMounted(() => {
     background-color: rgba(31, 35, 41, 0.1);
   }
 }
-.m-divider {
+
+.is-disabled {
+  .icon-btn {
+    color: #8f959e;
+    cursor: not-allowed;
+
+    &:hover {
+      background-color: inherit;
+    }
+
+    &.active {
+      background-color: #f5f7fa;
+      &:hover {
+        background-color: #f5f7fa;
+      }
+    }
+    &.dark {
+      color: #5f5f5f;
+      &.active {
+        background-color: #373737;
+        &:hover {
+          background-color: #373737;
+        }
+      }
+    }
+  }
+}
+
+.icon-checkbox {
+  :deep(.ed-checkbox__input) {
+    display: none;
+  }
+  :deep(.ed-checkbox__label) {
+    padding: 0;
+  }
+}
+
+.icon-radio-group {
+  :deep(.ed-radio) {
+    margin-right: 8px;
+
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+  :deep(.ed-radio__input) {
+    display: none;
+  }
+  :deep(.ed-radio__label) {
+    padding: 0;
+  }
+}
+.position-divider {
   width: 1px;
   height: 18px;
+  margin-bottom: 16px;
   background: rgba(31, 35, 41, 0.15);
+
+  &.position-divider--dark {
+    background: rgba(235, 235, 235, 0.15);
+  }
 }
 </style>
