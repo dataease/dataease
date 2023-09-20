@@ -36,7 +36,7 @@
     </span>
     <div v-if="barShowCheck('multiplexing')" class="bar-checkbox-area">
       <el-checkbox
-        size="medium"
+        size="small"
         v-model="state.multiplexingCheckModel"
         @change="multiplexingCheck"
       />
@@ -50,7 +50,7 @@
       ></el-icon>
     </span>
     <div v-if="barShowCheck('batchOpt')" class="bar-checkbox-area">
-      <el-checkbox size="medium" @change="batchOptChange" />
+      <el-checkbox size="small" @change="batchOptChange" />
     </div>
 
     <el-dropdown trigger="click" placement="right-start" v-if="barShowCheck('setting')">
@@ -492,9 +492,6 @@ onBeforeUnmount(() => {
 .bar-checkbox-area {
   padding: 0 3px;
   height: 22px;
-  :deep(.ed-checkbox) {
-    height: 22px;
-  }
 }
 
 .more-menu {
