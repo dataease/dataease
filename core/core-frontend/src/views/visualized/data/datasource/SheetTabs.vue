@@ -161,15 +161,21 @@ const nextClick = () => {
     }
 
     &::after {
-      right: -0.5px;
+      right: 0;
     }
     &::before {
-      left: -0.5px;
+      left: 0;
     }
 
     & + .active {
-      &::after {
-        display: none;
+      ::before {
+        content: '';
+        left: -3px;
+        height: 30px;
+        width: 2px;
+        position: absolute;
+        top: 0;
+        background: #fff;
       }
     }
   }

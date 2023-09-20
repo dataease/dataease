@@ -32,6 +32,7 @@
             <groupId>org.apache.calcite</groupId>
             <artifactId>calcite-core</artifactId>
             <version>${calcite-core.version}</version>
+            <classifier>de</classifier>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -277,4 +278,12 @@
         </plugins>
     </build>
 
+    <repositories>
+        <repository>
+            <id>fit2cloud-public</id>
+            <name>Fit2cloud Public</name>
+            <url>https://repository.fit2cloud.com/repository/fit2cloud-public/</url>
+        </repository>
+
+    </repositories>
 </project>
