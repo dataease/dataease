@@ -204,7 +204,7 @@ init()
           @change="changeLabelAttr('labelFormatter')"
         >
           <el-option
-            v-for="type in unitList"
+            v-for="type in formatterType"
             :key="type.value"
             :label="$t('chart.' + type.name)"
             :value="type.value"
