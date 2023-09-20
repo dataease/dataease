@@ -125,7 +125,7 @@
           :class="'form-item-' + themes"
         >
           <el-select
-            style="width: 100%"
+            style="width: 108px"
             v-model="state.commonBackground.innerImage"
             :effect="themes"
             :disabled="!state.commonBackground.backgroundImageEnable"
