@@ -9,8 +9,9 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import ViewTrackBar from '@/components/visualization/ViewTrackBar.vue'
 import { storeToRefs } from 'pinia'
 import { parseJson } from '@/views/chart/components/js/util'
-import { debounce } from 'lodash-es'
+import { defaultsDeep, debounce, cloneDeep } from 'lodash-es'
 import ChartError from '@/views/chart/components/views/components/ChartError.vue'
+import { BASE_VIEW_CONFIG } from '../../editor/util/chart'
 
 const dvMainStore = dvMainStoreWithOut()
 const { nowPanelTrackInfo, nowPanelJumpInfo } = storeToRefs(dvMainStore)
@@ -91,7 +92,8 @@ const renderChart = async view => {
     return
   }
   // view 为引用对象 需要存库 view.data 直接赋值会导致保存不必要的数据
-  const chart = toRaw({ ...view, data: chartData.value })
+  // 与默认视图对象合并，方便增加配置项
+  const chart = { ...defaultsDeep(view, cloneDeep(BASE_VIEW_CONFIG)), data: chartData.value }
   const chartView = chartViewManager.getChartView(view.render, view.type)
   switch (chartView.library) {
     case ChartLibraryType.L7_PLOT:

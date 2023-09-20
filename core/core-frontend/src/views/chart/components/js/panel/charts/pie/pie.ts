@@ -3,9 +3,9 @@ import {
   G2PlotDrawOptions
 } from '@/views/chart/components/js/panel/types/impl/g2plot'
 import { Pie as G2Pie, PieOptions } from '@antv/g2plot/esm/plots/pie'
-import { flow, parseJson } from '@/views/chart/components/js/util'
+import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
 import { getPadding } from '@/views/chart/components/js/panel/common/common_antv'
-import { formatterItem, valueFormatter } from '@/views/chart/components/js/formatter'
+import { valueFormatter } from '@/views/chart/components/js/formatter'
 import {
   PIE_AXIS_CONFIG,
   PIE_AXIS_TYPE,
@@ -13,6 +13,7 @@ import {
   PIE_EDITOR_PROPERTY_INNER
 } from '@/views/chart/components/js/panel/charts/pie/common'
 import { Datum } from '@antv/g2plot/esm/types/common'
+import { add } from 'mathjs'
 
 const DEFAULT_DATA = []
 export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
@@ -23,14 +24,16 @@ export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
 
   drawChart(drawOptions: G2PlotDrawOptions<G2Pie>): G2Pie {
     const { chart, container, action } = drawOptions
-    if (!chart.data) {
+    if (!chart.data?.data?.length) {
       return
     }
     // data
     const data = chart.data.data
     // custom color
     const customAttr = parseJson(chart.customAttr)
-    const color = customAttr.basicStyle.colors
+    const color = customAttr.basicStyle.colors.map(i =>
+      hexColorToRGBA(i, customAttr.basicStyle.alpha)
+    )
     // options
     const initOptions: PieOptions = {
       data: data,
@@ -107,7 +110,6 @@ export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
         label: false
       }
     }
-    const yAxis = chart.yAxis
     const label = {
       type: labelAttr.position === 'outer' ? 'spider' : labelAttr.position,
       autoRotate: false,
@@ -117,35 +119,24 @@ export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
       },
       formatter: (param: Datum) => {
         let res = param.value
-        for (let i = 0; i < yAxis.length; i++) {
-          const f = yAxis[i]
-          if (f.name === param.category) {
-            let formatterCfg = formatterItem
-            if (f.formatterCfg) {
-              formatterCfg = f.formatterCfg
-            }
-            const labelContent = labelAttr.labelContent ?? ['quota']
-            const contentItems = []
-            if (labelContent.includes('dimension')) {
-              contentItems.push(param.field)
-            }
-            if (labelContent.includes('quota')) {
-              contentItems.push(valueFormatter(param.value, formatterCfg))
-            }
-            if (labelContent.includes('proportion')) {
-              const percentage = `${(Math.round(param.percent * 10000) / 100).toFixed(
-                labelAttr.reserveDecimalCount
-              )}%`
-              if (labelContent.length === 3) {
-                contentItems.push(`(${percentage})`)
-              } else {
-                contentItems.push(percentage)
-              }
-            }
-            res = contentItems.join(' ')
-            break
+        const contentItems = []
+        if (labelAttr.showDimension) {
+          contentItems.push(param.field)
+        }
+        if (labelAttr.showQuota) {
+          contentItems.push(valueFormatter(param.value, labelAttr.quotaLabelFormatter))
+        }
+        if (labelAttr.showProportion) {
+          const percentage = `${(Math.round(param.percent * 10000) / 100).toFixed(
+            labelAttr.reserveDecimalCount
+          )}%`
+          if (labelAttr.showDimension && labelAttr.showQuota) {
+            contentItems.push(`(${percentage})`)
+          } else {
+            contentItems.push(percentage)
           }
         }
+        res = contentItems.join(' ')
         return res
       }
     }
@@ -153,33 +144,31 @@ export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
   }
 
   protected configTooltip(chart: Chart, options: PieOptions): PieOptions {
-    let tooltip
-    const customAttr: DeepPartial<ChartAttr> = parseJson(chart.customAttr)
-    if (customAttr.tooltip) {
-      const tooltipAttr = customAttr.tooltip
-      if (tooltipAttr.show) {
-        tooltip = {
-          formatter: function (param: Datum) {
-            let res
-            const obj = { name: param.field, value: param.value }
-            const yAxis = chart.yAxis
-            for (let i = 0; i < yAxis.length; i++) {
-              const f = yAxis[i]
-              if (f.formatterCfg) {
-                res = valueFormatter(param.value, f.formatterCfg)
-              } else {
-                res = valueFormatter(param.value, formatterItem)
-              }
-            }
-            obj.value = res ?? ''
-            return obj
-          }
-        }
-      } else {
-        tooltip = false
+    const { tooltip, label } = parseJson(chart.customAttr)
+    if (!tooltip.show) {
+      return {
+        ...options,
+        tooltip: false
       }
     }
-    return { ...options, tooltip }
+    const reserveDecimalCount = label.reserveDecimalCount
+    // trick, cal total, maybe use scale of chart in plot instance
+    const total = options.data?.reduce((pre, next) => add(pre, next.value ?? 0), 0)
+    return {
+      ...options,
+      tooltip: {
+        formatter: function (param: Datum) {
+          const obj = { name: param.field, value: param.value }
+          const res = valueFormatter(param.value, tooltip.tooltipFormatter)
+          // sync with label
+          const percent = (Math.round((param.value / total) * 10000) / 100).toFixed(
+            reserveDecimalCount
+          )
+          obj.value = `${res ?? ''} (${percent}%)`
+          return obj
+        }
+      }
+    }
   }
 
   protected configBasicStyle(chart: Chart, options: PieOptions): PieOptions {

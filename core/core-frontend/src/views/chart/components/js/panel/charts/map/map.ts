@@ -40,8 +40,16 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       'letterSpace',
       'fontShadow'
     ],
-    'label-selector': ['color', 'fontSize', 'labelBgColor', 'labelShadow', 'labelShadowColor'],
-    'tooltip-selector': ['color', 'fontSize', 'backgroundColor', 'formatter'],
+    'label-selector': [
+      'color',
+      'fontSize',
+      'labelBgColor',
+      'labelShadow',
+      'labelShadowColor',
+      'showDimension',
+      'showQuota'
+    ],
+    'tooltip-selector': ['color', 'fontSize', 'backgroundColor', 'tooltipFormatter'],
     'function-cfg': ['emptyDataStrategy']
   }
   axis: AxisType[] = ['xAxis', 'yAxis', 'area', 'drill', 'filter', 'extLabel', 'extTooltip']
@@ -99,7 +107,11 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
         lineOpacity: 1
       },
       label: {
-        field: 'name'
+        field: '_DE_LABEL_',
+        style: {
+          textAllowOverlap: true,
+          textAnchor: 'center'
+        }
       },
       state: {
         active: { stroke: 'green', lineWidth: 1 }
@@ -164,11 +176,23 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       obj[value['field']] = value.value
       return obj
     }, {})
+    const labelAttr = customAttr.label
     let validArea = 0
     geoJson.features.forEach(item => {
       const name = item.properties['name']
       if (areaMap[name]) {
         validArea += 1
+      }
+      // trick, maybe move to configLabel, here for perf
+      if (labelAttr.show) {
+        const content = []
+        if (labelAttr.showDimension) {
+          content.push(name)
+        }
+        if (labelAttr.showQuota) {
+          areaMap[name] && content.push(areaMap[name])
+        }
+        item.properties['_DE_LABEL_'] = content.join('\n\n')
       }
     })
     let colors = customAttr.basicStyle.colors

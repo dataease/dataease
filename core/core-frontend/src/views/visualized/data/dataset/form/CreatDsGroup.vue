@@ -3,7 +3,6 @@ import { ref, reactive, computed, watch, nextTick } from 'vue'
 import { ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import {
-  saveDatasetTree,
   getDatasetTree,
   moveDatasetTree,
   createDatasetTree,
@@ -328,17 +327,6 @@ const emits = defineEmits(['finish'])
           </template>
         </el-input>
         <div class="tree-content">
-          <!-- <div
-            :class="activeAll && 'active'"
-            @click="activeAll = !activeAll"
-            v-if="showAll"
-            class="list-item_primary"
-          >
-            <el-icon>
-              <Icon name="dv-folder"></Icon>
-            </el-icon>
-            <span class="label"> 全部文件夹 </span>
-          </div> -->
           <el-tree
             ref="treeRef"
             :filter-node-method="filterNode"
@@ -352,7 +340,7 @@ const emits = defineEmits(['finish'])
           >
             <template #default="{ data }">
               <span class="custom-tree-node">
-                <el-icon>
+                <el-icon style="font-size: 18px">
                   <Icon name="dv-folder"></Icon>
                 </el-icon>
                 <span class="node-text" :title="data.name">{{ data.name }}</span>

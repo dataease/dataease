@@ -37,6 +37,7 @@
 
     <el-form-item class="form-item no-margin-bottom" :class="'form-item-' + themes">
       <el-checkbox
+        size="small"
         :effect="themes"
         v-model="state.commonBackground.backgroundColorSelect"
         @change="onBackgroundChange"
@@ -80,6 +81,7 @@
 
     <el-form-item class="form-item no-margin-bottom" :class="'form-item-' + themes">
       <el-checkbox
+        size="small"
         :effect="themes"
         v-model="state.commonBackground.backgroundImageEnable"
         @change="onBackgroundChange"
@@ -391,29 +393,6 @@ watch(
   }
   &.no-margin-bottom {
     margin-bottom: 0 !important;
-  }
-  :deep(.ed-input) {
-    --ed-input-height: 28px;
-  }
-  :deep(.ed-input-number) {
-    width: 100%;
-    .ed-input__inner {
-      text-align: start;
-    }
-  }
-  :deep(.ed-radio) {
-    height: 20px;
-    .ed-radio__label {
-      font-size: 12px;
-      font-style: normal;
-      font-weight: 400;
-      line-height: 20px;
-    }
-  }
-  :deep(.ed-select) {
-    .ed-input__inner {
-      height: 26px !important;
-    }
   }
 }
 </style>

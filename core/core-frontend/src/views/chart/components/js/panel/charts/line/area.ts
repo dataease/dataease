@@ -21,7 +21,6 @@ import {
   LINE_EDITOR_PROPERTY,
   LINE_EDITOR_PROPERTY_INNER
 } from '@/views/chart/components/js/panel/charts/line/common'
-import { IntervalGeometryLabelPosition } from '@antv/g2/lib/interface'
 import { Label } from '@antv/g2plot/lib/types/label'
 import { Datum } from '@antv/g2plot/esm/types/common'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -233,6 +232,11 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
  * 堆叠面积图
  */
 export class StackArea extends Area {
+  propertyInner = {
+    ...this['propertyInner'],
+    'label-selector': ['fontSize', 'color', 'labelFormatter'],
+    'tooltip-selector': ['fontSize', 'color', 'tooltipFormatter']
+  }
   protected configLabel(chart: Chart, options: AreaOptions): AreaOptions {
     const customAttr = parseJson(chart.customAttr)
     const labelAttr = customAttr.label
@@ -242,34 +246,15 @@ export class StackArea extends Area {
         label: false
       }
     }
-    const { xAxisExt, yAxis } = chart
     const label: Label = {
-      position: labelAttr.position as IntervalGeometryLabelPosition,
+      position: labelAttr.position as any,
       offsetY: -8,
       style: {
         fill: labelAttr.color,
         fontSize: labelAttr.fontSize
       },
       formatter: function (param: Datum) {
-        let res = param.value
-        let f
-        if (xAxisExt?.length > 0) {
-          f = yAxis[0]
-        } else {
-          for (let i = 0; i < yAxis.length; i++) {
-            if (yAxis[i].name === param.category) {
-              f = yAxis[i]
-              break
-            }
-          }
-        }
-        if (!f) {
-          return res
-        }
-        if (!f.formatterCfg) {
-          f.formatterCfg = formatterItem
-        }
-        res = valueFormatter(param.value, f.formatterCfg)
+        const res = valueFormatter(param.value, labelAttr.labelFormatter)
         return res
       }
     }
@@ -287,22 +272,10 @@ export class StackArea extends Area {
     }
     const tooltip = {
       formatter: function (param: Datum) {
-        let res
-        const obj = { name: param.category, value: param.value }
-        const xAxisExt = chart.xAxisExt
-        const yAxis = chart.yAxis
-        for (let i = 0; i < yAxis.length; i++) {
-          const f = yAxis[i]
-          if (f.name === param.category || (yAxis.length && xAxisExt.length)) {
-            if (f.formatterCfg) {
-              res = valueFormatter(param.value, f.formatterCfg)
-            } else {
-              res = valueFormatter(param.value, formatterItem)
-            }
-            break
-          }
+        const obj = {
+          name: param.category,
+          value: valueFormatter(param.value, tooltipAttr.tooltipFormatter)
         }
-        obj.value = res ?? ''
         return obj
       }
     }

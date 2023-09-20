@@ -290,10 +290,6 @@ span {
   :deep(.ed-form-item__label) {
     justify-content: flex-start;
   }
-  :deep(.ed-checkbox__inner) {
-    width: 14px;
-    height: 14px;
-  }
 }
 .prop {
   border-bottom: 1px solid @side-outline-border-color;

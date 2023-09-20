@@ -522,15 +522,27 @@ declare interface ChartLabelAttr {
   /**
    * 标签格式化设置
    */
-  gaugeLabelFormatter: BaseFormatter
+  labelFormatter: BaseFormatter
   /**
    * 标签保留小数位数
    */
   reserveDecimalCount: number
   /**
-   * 标签内容
+   * 显示维度
    */
-  labelContent: string[]
+  showDimension: boolean
+  /**
+   * 显示指标
+   */
+  showQuota: boolean
+  /**
+   * 显示占比
+   */
+  showProportion: boolean
+  /**
+   * 指标格式化设置
+   */
+  quotaLabelFormatter: BaseFormatter
   /**
    * 标签阴影
    */
@@ -563,9 +575,9 @@ declare interface ChartTooltipAttr {
    */
   fontSize: number
   /**
-   * 字体格式化
+   * 格式化
    */
-  formatter: string
+  tooltipFormatter: BaseFormatter
   /**
    * 背景颜色
    */

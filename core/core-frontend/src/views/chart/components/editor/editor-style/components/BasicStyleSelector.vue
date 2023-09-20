@@ -91,6 +91,7 @@ onMounted(() => {
 
     <el-form-item class="form-item" :class="'form-item-' + themes" v-if="showProperty('gradient')">
       <el-checkbox
+        size="small"
         :effect="themes"
         v-model="state.basicStyleForm.gradient"
         @change="changeBasicStyle()"
@@ -142,6 +143,7 @@ onMounted(() => {
       v-if="showProperty('suspension')"
     >
       <el-checkbox
+        size="small"
         :effect="themes"
         v-model="state.basicStyleForm.suspension"
         :predefine="predefineColors"
@@ -260,7 +262,6 @@ onMounted(() => {
               v-model="state.basicStyleForm.alpha"
               :min="0"
               :max="100"
-              style="width: 100%"
               class="alpha-input-number"
               :controls="false"
               @change="changeBasicStyle()"
@@ -333,6 +334,7 @@ onMounted(() => {
       :class="'form-item-' + themes"
     >
       <el-checkbox
+        size="small"
         :effect="themes"
         v-model="state.basicStyleForm.barDefault"
         @change="changeBasicStyle()"
@@ -425,6 +427,7 @@ onMounted(() => {
       v-if="showProperty('lineSmooth')"
     >
       <el-checkbox
+        size="small"
         :effect="themes"
         v-model="state.basicStyleForm.lineSmooth"
         @change="changeBasicStyle()"
@@ -441,6 +444,7 @@ onMounted(() => {
       v-if="showProperty('radarShape')"
     >
       <el-radio-group
+        :effect="themes"
         v-model="state.basicStyleForm.radarShape"
         @change="changeBasicStyle('radarShape')"
       >
@@ -582,6 +586,7 @@ onMounted(() => {
       v-if="showProperty('innerRadius')"
     >
       <el-slider
+        :effect="themes"
         v-model="state.basicStyleForm.innerRadius"
         :min="1"
         :max="100"
@@ -596,6 +601,7 @@ onMounted(() => {
       v-if="showProperty('radius')"
     >
       <el-slider
+        :effect="themes"
         v-model="state.basicStyleForm.radius"
         :min="1"
         :max="100"
@@ -608,27 +614,6 @@ onMounted(() => {
 </template>
 <style scoped lang="less">
 .form-item {
-  :deep(.ed-input) {
-    --ed-input-height: 28px;
-  }
-  :deep(.ed-input-number) {
-    width: 100%;
-    .ed-input__inner {
-      text-align: start;
-    }
-  }
-  :deep(.ed-select) {
-    width: 100%;
-  }
-  :deep(.ed-radio) {
-    height: 20px;
-    .ed-radio__label {
-      font-size: 12px;
-      font-style: normal;
-      font-weight: 400;
-      line-height: 20px;
-    }
-  }
 }
 
 .color-picker-style {

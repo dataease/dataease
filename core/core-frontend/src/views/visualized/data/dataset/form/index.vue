@@ -151,9 +151,14 @@ const fieldOptionsText = [
 ]
 
 const ruleFormRef = ref<FormInstance>()
+const ruleFormFieldRef = ref<FormInstance>()
 
 const rules = {
   name: [{ required: true, message: '自定义时间格式不能为空', trigger: 'blur' }]
+}
+
+const fieldRules = {
+  name: [{ required: true, message: t('dataset.input_edit_name'), trigger: 'blur' }]
 }
 
 const sqlNode = reactive<Table>({
@@ -413,10 +418,46 @@ const addCalcField = groupType => {
   })
 }
 
+const editNormalField = ref(false)
+const currentNormalField = ref({
+  id: '',
+  name: ''
+})
+
 const editField = item => {
-  editCalcField.value = true
-  nextTick(() => {
-    calcEdit.value.initEdit(item, dimensions.value, quota.value)
+  if (item.extField === 2) {
+    editCalcField.value = true
+    nextTick(() => {
+      calcEdit.value.initEdit(item, dimensions.value, quota.value)
+    })
+    return
+  }
+  const { id, name } = item
+  currentNormalField.value = {
+    id,
+    name
+  }
+  editNormalField.value = true
+}
+
+const closeNormalField = () => {
+  currentNormalField.value.id = ''
+  currentNormalField.value.name = ''
+  editNormalField.value = false
+}
+
+const confirmNormalField = () => {
+  ruleFormFieldRef.value.validate(val => {
+    if (val) {
+      allfields.value.some(ele => {
+        if (ele.id === currentNormalField.value.id) {
+          ele.name = currentNormalField.value.name
+          return true
+        }
+        return false
+      })
+      closeNormalField()
+    }
   })
 }
 
@@ -932,6 +973,20 @@ const finish = res => {
   }
 }
 
+const errorTips = ref('')
+
+const handleDatasetName = () => {
+  errorTips.value = ''
+  if (!datasetName.value.trim()) {
+    errorTips.value = t('commons.input_content')
+  }
+
+  if (datasetName.value.trim().length < 2) {
+    errorTips.value = t('datasource.input_limit_2_25', [2, 25])
+  }
+  showInput.value = !!errorTips.value
+}
+
 const treeProps = {
   children: 'children',
   label: 'name'
@@ -946,7 +1001,13 @@ const treeProps = {
           <Icon name="icon_left_outlined"></Icon>
         </el-icon>
         <template v-if="showInput">
-          <el-input ref="editerName" v-model="datasetName" @blur="showInput = false" />
+          <el-input
+            maxlength="25"
+            ref="editerName"
+            v-model="datasetName"
+            @blur="handleDatasetName"
+          />
+          <div class="ed-form-item__error" v-if="errorTips">{{ errorTips }}</div>
         </template>
         <template v-else>
           <span @click="handleClick" class="dataset-name ellipsis" style="margin: 0 5px">{{
@@ -955,7 +1016,7 @@ const treeProps = {
         </template>
       </span>
       <span class="oprate">
-        <el-button type="primary" @click="datasetSave">保存</el-button>
+        <el-button :disabled="showInput" type="primary" @click="datasetSave">保存</el-button>
       </span>
     </div>
     <div class="container dataset-db" @mouseup="mouseupDrag">
@@ -1249,7 +1310,9 @@ const treeProps = {
                     <el-table-column prop="deType" :label="t('dataset.field_type')" width="200">
                       <template #default="scope">
                         <el-cascader
-                          class="select-type"
+                          :class="
+                            !!scope.row.deTypeArr && !!scope.row.deTypeArr.length && 'select-type'
+                          "
                           popper-class="cascader-panel"
                           v-model="scope.row.deTypeArr"
                           @change="val => cascaderChange(scope.row, val)"
@@ -1283,7 +1346,7 @@ const treeProps = {
                     >
                       <template #default="scope">
                         <div class="column-style">
-                          <span class="flex-align-center" v-if="scope.row.extField === 0">
+                          <span class="flex-align-center icon" v-if="scope.row.extField === 0">
                             <el-icon>
                               <Icon
                                 className="primary-color"
@@ -1389,7 +1452,9 @@ const treeProps = {
                     <el-table-column prop="deType" :label="t('dataset.field_type')" width="200">
                       <template #default="scope">
                         <el-cascader
-                          class="select-type"
+                          :class="
+                            !!scope.row.deTypeArr && !!scope.row.deTypeArr.length && 'select-type'
+                          "
                           popper-class="cascader-panel"
                           v-model="scope.row.deTypeArr"
                           @change="val => cascaderChange(scope.row, val)"
@@ -1423,7 +1488,7 @@ const treeProps = {
                     >
                       <template #default="scope">
                         <div class="column-style">
-                          <span v-if="scope.row.extField === 0">
+                          <span class="flex-align-center icon" v-if="scope.row.extField === 0">
                             <el-icon>
                               <Icon
                                 className="green-color"
@@ -1503,7 +1568,7 @@ const treeProps = {
               </div>
               <div class="cascader-batch" v-if="showCascaderBatch">
                 <el-cascader
-                  class="select-type"
+                  :class="!!deTypeArr.length && 'select-type'"
                   v-model="deTypeArr"
                   @change="cascaderChangeArr"
                   popper-class="cascader-panel"
@@ -1581,7 +1646,7 @@ const treeProps = {
       <el-button type="primary" @click="confirmEditCalc()">{{ t('dataset.confirm') }} </el-button>
     </template>
   </el-dialog>
-  <el-dialog v-model="updateCustomTime" width="1000px">
+  <el-dialog class="create-dialog" title="格式编辑" v-model="updateCustomTime" width="1000px">
     <el-form ref="ruleFormRef" :rules="rules" :model="currentField" label-width="120px">
       <el-form-item prop="name" label="自定义时间格式">
         <el-input v-model="currentField.name" />
@@ -1590,6 +1655,30 @@ const treeProps = {
     <template #footer>
       <el-button secondary @click="closeCustomTime()">{{ t('dataset.cancel') }} </el-button>
       <el-button type="primary" @click="confirmCustomTime()">{{ t('dataset.confirm') }} </el-button>
+    </template>
+  </el-dialog>
+  <el-dialog
+    class="create-dialog"
+    :title="t('dataset.field_edit')"
+    v-model="editNormalField"
+    width="420px"
+  >
+    <el-form
+      ref="ruleFormFieldRef"
+      :rules="fieldRules"
+      :model="currentNormalField"
+      label-position="top"
+      label-width="120px"
+    >
+      <el-form-item prop="name" :label="t('dataset.field_name')">
+        <el-input v-model="currentNormalField.name" />
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <el-button secondary @click="closeNormalField()">{{ t('dataset.cancel') }} </el-button>
+      <el-button type="primary" @click="confirmNormalField()"
+        >{{ t('dataset.confirm') }}
+      </el-button>
     </template>
   </el-dialog>
 </template>
@@ -1616,6 +1705,11 @@ const treeProps = {
       align-items: center;
       width: 50%;
       position: relative;
+
+      .ed-form-item__error {
+        top: 19px !important;
+        left: 16px !important;
+      }
       .dataset-name {
         cursor: pointer;
         width: 294px;

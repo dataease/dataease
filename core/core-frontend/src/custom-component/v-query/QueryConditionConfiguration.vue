@@ -206,17 +206,17 @@ const handleDatasetChange = () => {
 }
 
 const handleValueSourceChange = () => {
-  curComponent.value.defaultValue = ''
+  curComponent.value.defaultValue = undefined
   multipleChange(curComponent.value.multiple)
 }
 
 const multipleChange = (val: boolean, isMultipleChange = false) => {
   if (isMultipleChange) {
-    curComponent.value.defaultValue = val ? [] : ''
+    curComponent.value.defaultValue = val ? [] : undefined
   }
   const { defaultValue } = curComponent.value
   if (Array.isArray(defaultValue)) {
-    curComponent.value.selectValue = val ? defaultValue : ''
+    curComponent.value.selectValue = val ? defaultValue : undefined
   } else {
     curComponent.value.selectValue = val
       ? defaultValue !== undefined

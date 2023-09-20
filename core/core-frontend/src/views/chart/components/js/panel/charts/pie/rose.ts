@@ -14,6 +14,7 @@ import { parseJson, flow } from '@/views/chart/components/js/util'
 import { Label } from '@antv/g2plot/lib/types/label'
 import { formatterItem, valueFormatter } from '@/views/chart/components/js/formatter'
 import { Datum } from '@antv/g2plot/esm/types/common'
+import { add } from 'mathjs'
 
 export class Rose extends G2PlotChartView<RoseOptions, G2Rose> {
   axis: AxisType[] = PIE_AXIS_TYPE
@@ -89,42 +90,77 @@ export class Rose extends G2PlotChartView<RoseOptions, G2Rose> {
   }
 
   protected configLabel(chart: Chart, options: RoseOptions): RoseOptions {
-    const { label } = parseJson(chart.customAttr)
-    if (!label.show) {
+    const { label: labelAttr } = parseJson(chart.customAttr)
+    if (!labelAttr.show) {
       return {
         ...options,
         label: false
       }
     }
-    const yAxis = chart.yAxis
+    const total = options.data?.reduce((pre, next) => add(pre, next.value ?? 0), 0)
     const labelOptions: Label = {
       autoRotate: true,
       style: {
-        fill: label.color,
-        fontSize: label.fontSize
+        fill: labelAttr.color,
+        fontSize: labelAttr.fontSize
       },
       formatter: (param: Datum) => {
         let res = param.value
-        for (let i = 0; i < yAxis.length; i++) {
-          const field = yAxis[i]
-          if (field.name === param.category) {
-            let formatterCfg = formatterItem
-            if (field.formatterCfg) {
-              formatterCfg = field.formatterCfg
-            }
-            const quotaValue = valueFormatter(param.value, formatterCfg)
-            res = `${param.value} ${quotaValue}`
+        const contentItems = []
+        if (labelAttr.showDimension) {
+          contentItems.push(param.field)
+        }
+        if (labelAttr.showQuota) {
+          contentItems.push(valueFormatter(param.value, labelAttr.quotaLabelFormatter))
+        }
+        if (labelAttr.showProportion) {
+          const percentage = `${(Math.round((param.value / total) * 10000) / 100).toFixed(
+            labelAttr.reserveDecimalCount
+          )}%`
+          if (labelAttr.showDimension && labelAttr.showQuota) {
+            contentItems.push(`(${percentage})`)
+          } else {
+            contentItems.push(percentage)
           }
         }
+        res = contentItems.join('\n')
         return res
       }
     }
-    if (label.position === 'inner') {
+    if (labelAttr.position === 'inner') {
       labelOptions.offsetY = -10
     }
     return {
       ...options,
       label: labelOptions
+    }
+  }
+
+  protected configTooltip(chart: Chart, options: RoseOptions): RoseOptions {
+    const { tooltip, label } = parseJson(chart.customAttr)
+    if (!tooltip.show) {
+      return {
+        ...options,
+        tooltip: false
+      }
+    }
+    const reserveDecimalCount = label.reserveDecimalCount
+    // trick, cal total, maybe use scale of chart in plot instance
+    const total = options.data?.reduce((pre, next) => add(pre, next.value ?? 0), 0)
+    return {
+      ...options,
+      tooltip: {
+        formatter: function (param: Datum) {
+          const obj = { name: param.field, value: param.value }
+          const res = valueFormatter(param.value, tooltip.tooltipFormatter)
+          // sync with label
+          const percent = (Math.round((param.value / total) * 10000) / 100).toFixed(
+            reserveDecimalCount
+          )
+          obj.value = `${res ?? ''} (${percent}%)`
+          return obj
+        }
+      }
     }
   }
 

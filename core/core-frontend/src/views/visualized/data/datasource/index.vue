@@ -719,7 +719,7 @@ onMounted(() => {
             <el-icon class="icon-border">
               <Icon :name="`${nodeInfo.type}-ds`"></Icon>
             </el-icon>
-            <span class="name">
+            <span :title="nodeInfo.name" class="name ellipsis">
               {{ nodeInfo.name }}
             </span>
             <el-divider direction="vertical" />
@@ -932,6 +932,46 @@ onMounted(() => {
                     }}</BaseInfoItem>
                   </el-col>
                 </el-row>
+                <span
+                  v-if="!['es', 'api', 'mongo'].includes(nodeInfo.type.toLowerCase())"
+                  class="de-expand"
+                  @click="showPriority = !showPriority"
+                  >{{ t('datasource.priority') }}
+                  <el-icon>
+                    <Icon
+                      :name="showPriority ? 'icon_down_outlined' : 'icon_down_outlined-1'"
+                    ></Icon>
+                  </el-icon>
+                </span>
+                <template v-if="showPriority">
+                  <el-row :gutter="24">
+                    <el-col :span="12">
+                      <BaseInfoItem :label="t('datasource.initial_pool_size')">{{
+                        nodeInfo.configuration.initialPoolSize || 5
+                      }}</BaseInfoItem>
+                    </el-col>
+                    <el-col :span="12">
+                      <BaseInfoItem :label="t('datasource.min_pool_size')">{{
+                        nodeInfo.configuration.minPoolSize || 5
+                      }}</BaseInfoItem>
+                    </el-col>
+                  </el-row>
+                  <el-row :gutter="24">
+                    <el-col :span="12">
+                      <BaseInfoItem :label="t('datasource.max_pool_size')">{{
+                        nodeInfo.configuration.maxPoolSize || 5
+                      }}</BaseInfoItem>
+                    </el-col>
+                    <el-col :span="12">
+                      <BaseInfoItem
+                        :value="nodeInfo.configuration.queryTimeout"
+                        :label="t('datasource.query_timeout')"
+                        >{{ nodeInfo.configuration.queryTimeout || '30'
+                        }}{{ t('common.second') }}</BaseInfoItem
+                      >
+                    </el-col>
+                  </el-row>
+                </template>
               </template>
             </template>
           </BaseInfoContent>
@@ -1418,6 +1458,7 @@ onMounted(() => {
 
         .name {
           margin-left: 8px;
+          max-width: 200px;
         }
 
         .create-user {

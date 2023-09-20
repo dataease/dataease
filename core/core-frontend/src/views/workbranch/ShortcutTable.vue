@@ -11,6 +11,13 @@ import { interactiveStoreWithOut } from '@/store/modules/interactive'
 const { resolve } = useRouter()
 const { t } = useI18n()
 const interactiveStore = interactiveStoreWithOut()
+
+defineProps({
+  expand: {
+    type: Boolean,
+    default: false
+  }
+})
 const panelKeyword = ref()
 const activeName = ref('recent')
 const userAddPopper = ref(false)
@@ -121,7 +128,12 @@ const setLoading = (val: boolean) => {
 </script>
 
 <template>
-  <div class="dashboard-type" v-if="busiAuthList.length" v-loading="loading">
+  <div
+    class="dashboard-type"
+    :class="expand && 'expand'"
+    v-if="busiAuthList.length"
+    v-loading="loading"
+  >
     <el-tabs v-model="activeName" class="dashboard-type-tabs" @tab-click="handleClick">
       <el-tab-pane
         v-for="item in tablePaneList"
@@ -151,7 +163,7 @@ const setLoading = (val: boolean) => {
           @command="handleCommand"
           trigger="click"
         >
-          <el-button secondary>
+          <el-button secondary class="type-button">
             {{ t(`auth.${activeCommand}`) }}
             <el-icon style="margin-left: 4px; font-size: 16px; color: #646a73">
               <arrow-up v-if="userAddPopper" />
@@ -253,6 +265,21 @@ const setLoading = (val: boolean) => {
   border-radius: 4px;
   height: calc(100% - 280px);
   margin-top: 16px;
+
+  &.expand {
+    height: calc(100% - 89px);
+  }
+
+  .type-button {
+    background-color: #fff;
+
+    &:hover,
+    &:active,
+    &:focus {
+      border-color: #3370ff;
+      background-color: #fff;
+    }
+  }
 
   .dashboard-type-tabs {
     margin-bottom: 16px;

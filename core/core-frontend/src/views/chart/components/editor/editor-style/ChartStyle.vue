@@ -156,11 +156,10 @@ watch(
             :title="'位置'"
             v-if="dvInfo.type !== 'dashboard'"
           >
-            <component-position />
+            <component-position :themes="themes" />
           </el-collapse-item>
-          <el-collapse-item :effect="themes" name="background" title="背景">
+          <el-collapse-item :effect="themes" name="background" title="背景" v-if="curComponent">
             <background-overall-common
-              v-if="curComponent"
               :common-background-pop="curComponent.commonBackground"
               :themes="themes"
               @onBackgroundChange="onBackgroundChange"
@@ -400,10 +399,6 @@ span {
   }
   :deep(.ed-form-item__label) {
     justify-content: flex-start;
-  }
-  :deep(.ed-checkbox__inner) {
-    width: 14px;
-    height: 14px;
   }
 }
 :deep(.ed-collapse-item) {

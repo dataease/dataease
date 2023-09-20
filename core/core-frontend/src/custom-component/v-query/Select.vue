@@ -87,8 +87,8 @@ const handleValueChange = () => {
 
 const displayTypeChange = () => {
   if (!props.isConfig) return
-  config.value.defaultValue = config.value.multiple ? [] : ''
-  selectValue.value = config.value.multiple ? [] : ''
+  config.value.defaultValue = config.value.multiple ? [] : undefined
+  selectValue.value = config.value.multiple ? [] : undefined
 }
 
 const handleFieldIdChange = (val: string[]) => {
@@ -171,7 +171,7 @@ watch(
       multiple.value = val
       if (!val) {
         nextTick(() => {
-          selectValue.value = ''
+          selectValue.value = undefined
         })
       }
     })
@@ -252,8 +252,8 @@ const init = () => {
     config.value.selectValue = Array.isArray(defaultValue) ? [...defaultValue] : defaultValue
     selectValue.value = Array.isArray(defaultValue) ? [...defaultValue] : defaultValue
   } else {
-    config.value.selectValue = plus ? [] : ''
-    selectValue.value = plus ? [] : ''
+    config.value.selectValue = plus ? [] : undefined
+    selectValue.value = plus ? [] : undefined
   }
   nextTick(() => {
     multiple.value = config.value.multiple

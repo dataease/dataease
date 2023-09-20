@@ -458,8 +458,11 @@ public class DatasourceServer implements DatasourceApi {
             datasourceTaskServer.deleteByDSId(datasourceId);
         }
 
-
         datasourceMapper.deleteById(datasourceId);
+        if(!Arrays.asList("API", "Excel", "folder").contains(coreDatasource.getType())){
+            calciteProvider.delete(coreDatasource);
+        }
+
         if (coreDatasource.getType().equals(DatasourceConfiguration.DatasourceType.folder.name())) {
             QueryWrapper<CoreDatasource> wrapper = new QueryWrapper<>();
             wrapper.eq("pid", datasourceId);

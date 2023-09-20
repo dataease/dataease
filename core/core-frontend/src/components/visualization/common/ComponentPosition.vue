@@ -1,59 +1,64 @@
 <template>
-  <div class="position-main">
-    <div
-      v-for="({ key, label, min, max, step }, index) in positionKeys"
-      :key="index"
-      :title="label"
-      style="display: flex; float: left; margin-bottom: 8px"
-    >
-      <div style="max-width: 25px; min-width: 19px; overflow: hidden; text-align: right">
-        <span>{{ label }}</span>
-      </div>
-      <div style="width: 85px">
-        <de-input-num
-          :disabled="curComponent['isLock']"
-          :min="min"
-          :max="max"
-          :step="step"
-          :effect="themes"
-          v-model="curComponent.style[key]"
-        ></de-input-num>
-      </div>
-    </div>
-  </div>
+  <el-form label-position="left" :label-width="14">
+    <el-row :gutter="8" v-for="(x, i) in positionKeysGroup" :key="i">
+      <el-col :span="12" v-for="({ key, label, min, max, step }, j) in x" :key="j">
+        <el-form-item class="form-item" :class="'form-item-' + themes" :label="label">
+          <el-input-number
+            :effect="themes"
+            :disabled="curComponent['isLock']"
+            :min="min"
+            :max="max"
+            :step="step"
+            v-model="curComponent.style[key]"
+            controls-position="right"
+          />
+        </el-form-item>
+      </el-col>
+    </el-row>
+  </el-form>
 </template>
 
 <script setup lang="ts">
-import { computed, toRefs, PropType } from 'vue'
+import { computed } from 'vue'
 import { positionData } from '@/utils/attr'
 import { storeToRefs } from 'pinia'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import DeInputNum from '@/custom-component/common/DeInputNum.vue'
-const dvMainStore = dvMainStoreWithOut()
-const { curComponent, dvInfo } = storeToRefs(dvMainStore)
-const props = defineProps({
-  themes: {
-    type: String as PropType<'light' | 'dark'>,
-    default: 'dark'
-  }
-})
+import _ from 'lodash'
 
-const { themes } = toRefs(props)
+const dvMainStore = dvMainStoreWithOut()
+const { curComponent } = storeToRefs(dvMainStore)
+
+const props = withDefaults(
+  defineProps<{
+    themes: EditorTheme
+  }>(),
+  { themes: 'dark' }
+)
+
 const positionKeys = computed(() => {
   if (curComponent.value) {
     const curComponentStyleKeys = Object.keys(curComponent.value.style)
     return positionData.filter(item => curComponentStyleKeys.includes(item.key))
   } else {
-    return null
+    return []
   }
+})
+
+const positionKeysGroup = computed(() => {
+  const _list = []
+  _.forEach(positionKeys.value, (x, i) => {
+    const index = i % 2
+    if (_list[index] === undefined) {
+      _list[index] = []
+    }
+    _list[index].push(x)
+  })
+  return _list
 })
 </script>
 
 <style lang="less" scoped>
-.position-main {
-  width: 100%;
-  min-width: 220px;
-  height: 64px;
-  background-color: #292929 !important;
+:deep(.ed-form-item) {
+  display: flex !important;
 }
 </style>

@@ -11,6 +11,7 @@ import { rsaEncryp } from '@/utils/encryption'
 import router from '@/router'
 import { ElMessage } from 'element-plus-secondary'
 import { XpackComponent } from '@/components/plugin'
+import { logoutHandler } from '@/utils/logout'
 
 const { wsCache } = useCache()
 const appStore = useAppStoreWithOut()
@@ -48,10 +49,11 @@ const checkUsername = (_rule: any, value: any, callback: any) => {
   }
 }
 const validatePwd = (_, value, callback) => {
-  const pattern = '^[a-zA-Z0-9][a-zA-Z0-9\@._-]*$'
+  const pattern =
+    /^.*(?=.{6,20})(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[~!@#$%^&*()_+\-\={}|":<>?`[\];',.\/])[a-zA-Z0-9~!@#$%^&*()_+\-\={}|":<>?`[\];',.\/]*$/
   const regep = new RegExp(pattern)
   if (!regep.test(value)) {
-    const msg = t('user.user_name_pattern_error')
+    const msg = t('user.pwd_pattern_error')
     callback(new Error(msg))
   } else {
     callback()
@@ -69,7 +71,6 @@ const rules = reactive<FormRules>({
   ],
   password: [
     { required: true, message: t('common.required'), trigger: 'blur' },
-    { min: 5, max: 15, message: t('login.pwd_format'), trigger: 'blur' },
     { required: true, validator: validatePwd, trigger: 'blur' }
   ]
 })
@@ -122,14 +123,13 @@ onMounted(() => {
     loginErrorMsg.value = localStorage.getItem('DE-GATEWAY-FLAG')
     ElMessage.error(loginErrorMsg.value)
     localStorage.removeItem('DE-GATEWAY-FLAG')
+    logoutHandler(true)
   }
   if (!wsCache.get(appStore.getDekey)) {
     queryDekey().then(res => {
       wsCache.set(appStore.getDekey, res.data)
     })
   }
-  /* setLoginForm(state)
-  callback() */
 })
 </script>
 

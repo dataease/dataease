@@ -29,7 +29,7 @@ export class Gauge extends G2PlotChartView<GaugeOptions, G2Gauge> {
   propertyInner: EditorPropertyInner = {
     'background-overall-component': ['all'],
     'basic-style-selector': ['colors', 'alpha', 'gaugeStyle', 'gradient'],
-    'label-selector': ['fontSize', 'color', 'gaugeLabelFormatter'],
+    'label-selector': ['fontSize', 'color', 'labelFormatter'],
     'title-selector': [
       'title',
       'fontSize',
@@ -220,7 +220,7 @@ export class Gauge extends G2PlotChartView<GaugeOptions, G2Gauge> {
     let labelContent
     if (customAttr.label) {
       const label = customAttr.label
-      const labelFormatter = label.gaugeLabelFormatter ?? DEFAULT_LABEL.gaugeLabelFormatter
+      const labelFormatter = label.labelFormatter ?? DEFAULT_LABEL.labelFormatter
       if (label.show) {
         labelContent = {
           style: () => ({

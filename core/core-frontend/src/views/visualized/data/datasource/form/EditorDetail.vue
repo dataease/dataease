@@ -103,7 +103,11 @@ const initForm = type => {
       password: '',
       host: '',
       authMethod: '',
-      port: ''
+      port: '',
+      initialPoolSize: 5,
+      minPoolSize: 5,
+      maxPoolSize: 5,
+      queryTimeout: 30
     }
     schemas.value = []
     rule.value = cloneDeep(defaultRule)
@@ -638,6 +642,79 @@ defineExpose({
               <el-option v-for="item in schemas" :key="item" :label="item" :value="item" />
             </el-select>
           </el-form-item>
+          <span
+            v-if="!['es', 'api', 'mongo'].includes(form.type)"
+            class="de-expand"
+            @click="showPriority = !showPriority"
+            >{{ t('datasource.priority') }}
+            <el-icon>
+              <Icon :name="showPriority ? 'icon_down_outlined' : 'icon_down_outlined-1'"></Icon>
+            </el-icon>
+          </span>
+          <template v-if="showPriority">
+            <el-row :gutter="24">
+              <el-col :span="12">
+                <el-form-item
+                  :label="t('datasource.initial_pool_size')"
+                  prop="configuration.initialPoolSize"
+                >
+                  <el-input-number
+                    v-model="form.configuration.initialPoolSize"
+                    controls-position="right"
+                    autocomplete="off"
+                    type="number"
+                    :min="0"
+                  />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item
+                  :label="t('datasource.min_pool_size')"
+                  prop="configuration.minPoolSize"
+                >
+                  <el-input-number
+                    v-model="form.configuration.minPoolSize"
+                    controls-position="right"
+                    autocomplete="off"
+                    type="number"
+                    :min="0"
+                  />
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="24">
+              <el-col :span="12">
+                <el-form-item
+                  :label="t('datasource.max_pool_size')"
+                  prop="configuration.maxPoolSize"
+                >
+                  <el-input-number
+                    v-model="form.configuration.maxPoolSize"
+                    controls-position="right"
+                    autocomplete="off"
+                    type="number"
+                    :min="0"
+                  />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item
+                  :label="t('datasource.query_timeout')"
+                  prop="configuration.queryTimeout"
+                >
+                  <el-input
+                    v-model="form.configuration.queryTimeout"
+                    autocomplete="off"
+                    class="input-with-append"
+                    type="number"
+                    :min="0"
+                  >
+                    <template v-slot:append>{{ t('cron.second') }}</template>
+                  </el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+          </template>
         </template>
         <!--        API update setting -->
         <el-form-item

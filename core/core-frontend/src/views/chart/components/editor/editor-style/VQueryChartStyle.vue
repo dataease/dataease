@@ -31,7 +31,7 @@ const { chart } = toRefs(props)
             name="component"
             :title="t('visualization.module')"
           >
-            <el-checkbox v-model="chart.customStyle.component.titleShow">{{
+            <el-checkbox size="small" v-model="chart.customStyle.component.titleShow">{{
               t('chart.show') + t('chart.title')
             }}</el-checkbox>
             <div class="query-collapse-item">
@@ -40,7 +40,7 @@ const { chart } = toRefs(props)
                 v-model.lazy="chart.customStyle.component.title"
               />
             </div>
-            <el-checkbox v-model="chart.customStyle.component.borderShow">{{
+            <el-checkbox size="small" v-model="chart.customStyle.component.borderShow">{{
               t('visualization.board')
             }}</el-checkbox>
             <div class="query-collapse-item">
@@ -51,7 +51,7 @@ const { chart } = toRefs(props)
                 :predefine="predefineColors"
               />
             </div>
-            <el-checkbox v-model="chart.customStyle.component.bgColorShow">{{
+            <el-checkbox size="small" v-model="chart.customStyle.component.bgColorShow">{{
               t('chart.custom_case') + t('chart.backgroundColor')
             }}</el-checkbox>
             <div class="query-collapse-item">
@@ -66,11 +66,13 @@ const { chart } = toRefs(props)
             <span> 展示按钮 </span>
             <div class="query-collapse-item query-component">
               <el-checkbox-group v-model="chart.customStyle.component.btnList">
-                <el-checkbox disabled label="sure">
+                <el-checkbox size="small" disabled label="sure">
                   {{ t('commons.adv_search.search') }}</el-checkbox
                 >
-                <el-checkbox label="clear"> {{ t('commons.clear') }}</el-checkbox>
-                <el-checkbox label="reset">{{ t('commons.adv_search.reset') }}</el-checkbox>
+                <el-checkbox size="small" label="clear"> {{ t('commons.clear') }}</el-checkbox>
+                <el-checkbox size="small" label="reset">{{
+                  t('commons.adv_search.reset')
+                }}</el-checkbox>
               </el-checkbox-group>
             </div>
             <span>

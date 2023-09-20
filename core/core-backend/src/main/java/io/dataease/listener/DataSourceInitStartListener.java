@@ -36,7 +36,7 @@ public class DataSourceInitStartListener implements ApplicationListener<Applicat
         try {
             engineServer.initSimpleEngine();
             datasourceServer.updateDemoDs();
-            calciteProvider.initConnectionPool(CalciteProvider.capacity);
+            calciteProvider.initConnectionPool();
         }catch (Exception e){
             e.printStackTrace();
         }

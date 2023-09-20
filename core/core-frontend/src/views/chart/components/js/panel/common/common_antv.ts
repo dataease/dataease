@@ -4,7 +4,6 @@ import {
   DEFAULT_YAXIS_STYLE
 } from '@/views/chart/components/editor/util/chart'
 import { valueFormatter } from '@/views/chart/components/editor/util/formatter'
-import { formatterItem } from '@/views/chart/components/js/formatter'
 import { AreaOptions, LabelOptions } from '@antv/l7plot'
 import { TooltipOptions } from '@antv/l7plot/dist/lib/types/tooltip'
 import { FeatureCollection } from '@antv/l7plot/dist/esm/plots/choropleth/types'
@@ -138,20 +137,7 @@ export function getLabel(chart: Chart) {
             fontSize: l.fontSize
           },
           formatter: function (param: Datum) {
-            const yAxis = chart.yAxis
-            let res = param.value
-            for (let i = 0; i < yAxis.length; i++) {
-              const f = yAxis[i]
-              if (f.name === param.category) {
-                let formatterCfg = formatterItem
-                if (f.formatterCfg) {
-                  formatterCfg = f.formatterCfg
-                }
-                res = valueFormatter(param.value, formatterCfg)
-                break
-              }
-            }
-            return res
+            return valueFormatter(param.value, l.labelFormatter)
           }
         }
       } else {
@@ -173,7 +159,8 @@ export function getTooltip(chart: Chart) {
       if (t.show) {
         tooltip = {
           formatter: function (param: Datum) {
-            return { value: param.value ?? '' }
+            const value = valueFormatter(param.value, t.tooltipFormatter)
+            return { name: param.field, value }
           }
         }
       } else {
@@ -622,11 +609,7 @@ export function configL7Tooltip(chart: Chart): TooltipOptions {
         field: 'value',
         alias: yAxis?.[0]?.chartShowName ?? yAxis?.[0]?.name,
         customValue: value => {
-          let formatterCfg = formatterItem
-          if (yAxis?.[0].formatterCfg) {
-            formatterCfg = yAxis?.[0].formatterCfg
-          }
-          return valueFormatter(value, formatterCfg)
+          return valueFormatter(value, tooltip.tooltipFormatter)
         }
       }
     ],
