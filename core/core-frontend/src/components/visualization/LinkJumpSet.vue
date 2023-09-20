@@ -140,13 +140,15 @@
                               class="dv-selector"
                             >
                               <template #default="{ node, data }">
-                                <el-icon v-if="data.leaf">
+                                <el-icon style="display: inline-block" v-if="data.leaf">
                                   <Icon name="dv-dashboard-spine"></Icon>
                                 </el-icon>
-                                <el-icon v-else>
+                                <el-icon style="display: inline-block" v-else>
                                   <Icon name="dv-folder"></Icon>
                                 </el-icon>
-                                <span :title="node.label">{{ node.label }}</span>
+                                <span style="margin-left: 4px" :title="node.label">{{
+                                  node.label
+                                }}</span>
                               </template>
                             </el-tree-select>
                           </el-form-item>
