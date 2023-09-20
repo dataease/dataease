@@ -389,37 +389,8 @@ const convertConfig = array => {
   }
 }
 
-const updateRecordsTime = ref(new Date()['format']())
-
 listDs()
 
-const buildTree = array => {
-  const types = {}
-  const dsType = []
-  for (let index = 0; index < array.length; index++) {
-    const element = array[index]
-    if (!(element.type in types)) {
-      types[element.type] = []
-      dsType.push({
-        type: element.type,
-        databaseClassification: element.catalog,
-        name: element.typeAlias
-      })
-    }
-    types[element.type].push(element)
-  }
-  const dsTypeMap = dsType.reduce((pre, next, index) => {
-    pre[next.type] = index
-    return pre
-  }, {})
-  array.forEach(ele => {
-    const index = dsTypeMap[ele.type]
-    if (index !== undefined) {
-      dsType[index].children = [...(dsType[index]?.children || []), ele]
-    }
-  })
-  state.datasourceTree = dsType
-}
 const creatDsFolder = ref()
 
 const tableData = shallowRef([])
@@ -429,7 +400,7 @@ const handleNodeClick = data => {
     dsListTree.value.setCurrentKey(null)
     return
   }
-  getById(data.id).then(res => {
+  return getById(data.id).then(res => {
     let {
       name,
       createBy,
@@ -518,6 +489,11 @@ const editDatasource = (editType?: number) => {
   if (nodeInfo.type === 'Excel') {
     nodeInfo.editType = editType
   }
+  datasourceEditor.value.init(nodeInfo)
+}
+
+const handleEdit = async data => {
+  await handleNodeClick(data)
   datasourceEditor.value.init(nodeInfo)
 }
 
@@ -678,7 +654,12 @@ onMounted(() => {
                 <el-icon :class="data.leaf && 'icon-border'" style="font-size: 18px">
                   <Icon :name="getDsIconName(data)"></Icon>
                 </el-icon>
-                <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
+                <span
+                  :title="node.label"
+                  class="label-tooltip ellipsis"
+                  :class="data.type === 'Excel' && 'excel'"
+                  >{{ node.label }}</span
+                >
                 <div class="icon-more" v-if="data.weight >= 7">
                   <handle-more
                     icon-size="24px"
@@ -688,6 +669,13 @@ onMounted(() => {
                     placement="bottom-start"
                     v-if="!data.leaf"
                   ></handle-more>
+                  <el-icon
+                    class="hover-icon"
+                    @click.stop="handleEdit(data)"
+                    v-else-if="data.type !== 'Excel'"
+                  >
+                    <icon name="icon_edit_outlined"></icon>
+                  </el-icon>
                   <handle-more
                     @handle-command="
                       cmd => operation(cmd, data, data.leaf ? 'datasource' : 'folder')
@@ -1519,21 +1507,27 @@ onMounted(() => {
   padding-right: 4px;
 
   .label-tooltip {
-    width: calc(100% - 66px);
+    width: 100%;
     margin-left: 8.75px;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
   }
 
   .icon-more {
     margin-left: auto;
-    visibility: hidden;
+    display: none;
   }
 
-  &:hover .icon-more {
-    margin-left: auto;
-    visibility: visible;
+  &:hover {
+    .label-tooltip {
+      width: calc(100% - 78px);
+
+      &.excel {
+        width: calc(100% - 54px);
+      }
+    }
+
+    .icon-more {
+      display: inline-flex;
+    }
   }
 }
 </style>
