@@ -1,5 +1,5 @@
 <template>
-  <div class="batch-opt-main">
+  <div class="batch-opt-main view-panel-row">
     <chart-style
       v-if="mixProperties && batchOptChartInfo"
       class="chart-style-main"
@@ -160,5 +160,121 @@ const batchOptChange = (custom, property, value) => {
   font-size: 14px;
   font-weight: bold;
   color: #9ea6b2;
+}
+
+:deep(.ed-form-item) {
+  .ed-input__inner {
+    font-size: 12px;
+    font-weight: 400;
+  }
+  .ed-input {
+    --ed-input-height: 28px;
+  }
+  .ed-input-number {
+    width: 100%;
+
+    .ed-input-number__decrease {
+      --ed-input-number-controls-height: 13px;
+    }
+    .ed-input-number__increase {
+      --ed-input-number-controls-height: 13px;
+    }
+
+    .ed-input__inner {
+      text-align: start;
+    }
+  }
+  .ed-select {
+    width: 100%;
+    .ed-input__inner {
+      height: 26px !important;
+    }
+  }
+  .ed-checkbox {
+    .ed-checkbox__label {
+      font-size: 12px;
+    }
+  }
+  .ed-color-picker {
+    .ed-color-picker__mask {
+      height: 26px;
+      width: calc(100% - 2px) !important;
+    }
+  }
+  .ed-radio {
+    height: 20px;
+    .ed-radio__label {
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 20px;
+    }
+  }
+}
+:deep(.ed-form-item__label) {
+  color: @canvas-main-font-color;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+}
+:deep(.form-item-dark) {
+  .ed-form-item__label {
+    color: @canvas-main-font-color-dark;
+  }
+}
+
+.view-panel-row {
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 100%;
+
+  :deep(.ed-collapse-item__header) {
+    height: 36px !important;
+    line-height: 36px !important;
+    font-size: 12px !important;
+    padding: 0 !important;
+    font-weight: 500 !important;
+
+    &.is-active {
+      color: #1f2329;
+    }
+
+    .ed-collapse-item__arrow {
+      margin: 0 6px 0 8px;
+
+      &.is-active {
+        color: #646a73;
+      }
+    }
+  }
+
+  :deep(.ed-collapse-item__content) {
+    padding: 16px 8px 0;
+    border: none;
+  }
+
+  :deep(.style-dark) {
+    .ed-collapse-item__header {
+      &.is-active {
+        color: #fff;
+      }
+
+      .ed-collapse-item__arrow {
+        &.is-active {
+          color: #a6a6a6;
+        }
+      }
+    }
+  }
+  :deep(.ed-collapse-item.ed-collapse--dark .ed-collapse-item__header) {
+    &.is-active {
+      color: #fff;
+    }
+    .ed-collapse-item__arrow {
+      &.is-active {
+        color: #a6a6a6;
+      }
+    }
+  }
 }
 </style>
