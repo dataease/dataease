@@ -231,12 +231,12 @@ onMounted(() => {
       <el-row :gutter="8">
         <el-col :span="12">
           <el-form-item
-            v-if="state.labelForm.labelFormatter.type !== 'percent'"
             :label="$t('chart.value_formatter_unit')"
             class="form-item"
             :class="'form-item-' + themes"
           >
             <el-select
+              :disabled="state.labelForm.labelFormatter.type === 'percent'"
               :effect="themes"
               v-model="state.labelForm.labelFormatter.unit"
               :placeholder="$t('chart.pls_select_field')"
