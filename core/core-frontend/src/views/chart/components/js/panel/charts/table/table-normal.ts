@@ -102,7 +102,7 @@ export class TableNormal extends S2ChartView<TableSheet> {
     }
     // 开启序号之后，第一列就是序号列，修改 label 即可
     if (s2Options.showSeriesNumber) {
-      s2Options.colCell = (node, spreadsheet, headerConfig) => {
+      s2Options.colCell = node => {
         if (node.colIndex === 0) {
           if (!customAttr.tableHeader.indexLabel) {
             node.label = ' '
@@ -110,7 +110,7 @@ export class TableNormal extends S2ChartView<TableSheet> {
             node.label = customAttr.tableHeader.indexLabel
           }
         }
-        return new ColCell(node, spreadsheet, headerConfig)
+        return node.belongsCell
       }
     }
 
