@@ -63,7 +63,6 @@ public class VisualizationSubjectService implements VisualizationSubjectApi {
     public synchronized void update(VisualizationSubjectRequest request) {
         if (StringUtils.isEmpty(request.getId())) {
             QueryWrapper<VisualizationSubject> wrapper = new QueryWrapper<>();
-            wrapper.eq("type", "self");
             wrapper.eq("name", request.getName());
             List<VisualizationSubject> subjectAll =subjectMapper.selectList(wrapper);
             if (CollectionUtils.isEmpty(subjectAll)) {
