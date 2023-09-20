@@ -98,28 +98,6 @@ const showName = computed(() => {
   return cmd.value !== 'move'
 })
 
-const rules = {
-  name: [
-    {
-      required: true,
-      message: t('commons.input_content'),
-      trigger: 'change'
-    },
-    {
-      min: 2,
-      max: 25,
-      message: t('datasource.input_limit_2_25', [2, 25]),
-      trigger: 'blur'
-    }
-  ],
-  pid: [
-    {
-      required: true,
-      message: t('common.please_select'),
-      trigger: 'blur'
-    }
-  ]
-}
 const placeholder = ref('')
 const datasetFormRules = ref()
 const activeAll = ref(false)
@@ -155,7 +133,7 @@ const createInit = (type, data: Tree, exec, name: string) => {
   datasetForm.name = ''
   nodeType.value = type
   filterText.value = ''
-  placeholder.value = type === 'folder' ? '请输入文件夹名称' : '请输入数据集名称'
+  placeholder.value = type === 'folder' ? '请输入文件夹名称' : '请输入数据源名称'
   dsType = data.type
   if (type === 'datasource') {
     request = data.request
@@ -185,7 +163,28 @@ const createInit = (type, data: Tree, exec, name: string) => {
   cmd.value = data.id ? exec : ''
   name && (datasetForm.name = name)
   createDataset.value = true
-  datasetFormRules.value = rules
+  datasetFormRules.value = {
+    name: [
+      {
+        required: true,
+        message: placeholder.value,
+        trigger: 'change'
+      },
+      {
+        min: 2,
+        max: 25,
+        message: t('datasource.input_limit_2_25', [2, 25]),
+        trigger: 'blur'
+      }
+    ],
+    pid: [
+      {
+        required: true,
+        message: t('common.please_select'),
+        trigger: 'blur'
+      }
+    ]
+  }
 }
 
 const editeInit = (param: Tree) => {

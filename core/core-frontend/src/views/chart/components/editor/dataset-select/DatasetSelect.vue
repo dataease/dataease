@@ -300,6 +300,7 @@ onMounted(() => {
                     </div>
                     <el-tooltip
                       effect="dark"
+                      :show-after="1000"
                       :content="node.label"
                       placement="top"
                       :enterable="false"
