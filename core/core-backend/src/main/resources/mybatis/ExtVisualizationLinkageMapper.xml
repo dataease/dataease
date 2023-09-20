@@ -91,7 +91,7 @@
             visualization_linkage_field pvlf
         WHERE
             pvl.id = pvlf.linkage_id
-            AND pvl.source_view_id = #{dvId}
+            AND pvl.source_view_id = #{sourceViewId}
             AND pvl.dv_id = #{dvId}
     </delete>
 
