@@ -185,6 +185,7 @@ onMounted(() => {
     <el-space>
       <el-form-item class="form-item" :class="'form-item-' + themes">
         <el-checkbox
+          :effect="themes"
           class="icon-checkbox"
           v-model="state.titleForm.isBolder"
           @change="changeTitleStyle('isBolder')"
@@ -207,6 +208,7 @@ onMounted(() => {
 
       <el-form-item class="form-item" :class="'form-item-' + themes">
         <el-checkbox
+          :effect="themes"
           class="icon-checkbox"
           v-model="state.titleForm.isItalic"
           @change="changeTitleStyle('isItalic')"
@@ -231,11 +233,12 @@ onMounted(() => {
 
       <el-form-item class="form-item" :class="'form-item-' + themes">
         <el-radio-group
+          :effect="themes"
           class="icon-radio-group"
           v-model="state.titleForm.hPosition"
           @change="changeTitleStyle('hPosition')"
         >
-          <el-radio label="left">
+          <el-radio :effect="themes" label="left">
             <el-tooltip effect="dark" placement="top">
               <template #content>
                 {{ t('chart.text_pos_left') }}
@@ -250,7 +253,7 @@ onMounted(() => {
               </div>
             </el-tooltip>
           </el-radio>
-          <el-radio label="center">
+          <el-radio :effect="themes" label="center">
             <el-tooltip effect="dark" placement="top">
               <template #content>
                 {{ t('chart.text_pos_center') }}
@@ -265,7 +268,7 @@ onMounted(() => {
               </div>
             </el-tooltip>
           </el-radio>
-          <el-radio label="right">
+          <el-radio :effect="themes" label="right">
             <el-tooltip effect="dark" placement="top">
               <template #content>
                 {{ t('chart.text_pos_right') }}
