@@ -211,3 +211,21 @@ export function canvasChangeAdaptor(component, matrixBase, usePointShadow = fals
     component.style.height = componentTop
   }
 }
+
+export function findAllViewsId(componentData, idArray) {
+  componentData.forEach(item => {
+    if (item.component === 'UserView' && item.innerType != 'VQuery') {
+      idArray.push(item.id)
+    } else if (item.component === 'Group') {
+      item.propValue.forEach(groupItem => {
+        idArray.push(groupItem.id)
+      })
+    } else if (item.component === 'DeTabs') {
+      item.propValue.forEach(tabItem => {
+        tabItem.componentData.forEach(tabComponent => {
+          idArray.push(tabComponent.id)
+        })
+      })
+    }
+  })
+}
