@@ -239,7 +239,7 @@ const dialogInit = viewItem => {
 const linkageSetting = curViewId => {
   // sourceViewId 也加入查询
   const targetViewIds = componentData.value
-    .filter(item => item.component === 'UserView')
+    .filter(item => item.component === 'UserView' && item.innerType != 'VQuery')
     .map(item => item.id)
 
   // 获取当前仪表板当前视图联动信息

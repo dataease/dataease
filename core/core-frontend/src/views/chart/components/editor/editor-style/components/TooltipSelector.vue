@@ -1,5 +1,5 @@
 <script lang="tsx" setup>
-import { PropType, reactive, watch } from 'vue'
+import { PropType, computed, onMounted, reactive, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL, DEFAULT_TOOLTIP } from '@/views/chart/components/editor/util/chart'
 import { ElSpace } from 'element-plus-secondary'
@@ -36,11 +36,10 @@ watch(
 )
 
 const state = reactive({
-  tooltipForm: JSON.parse(JSON.stringify(DEFAULT_TOOLTIP)),
-  fontSize: []
+  tooltipForm: JSON.parse(JSON.stringify(DEFAULT_TOOLTIP))
 })
 
-const initFontSize = () => {
+const fontSizeList = computed(() => {
   const arr = []
   for (let i = 10; i <= 40; i = i + 2) {
     arr.push({
@@ -48,8 +47,8 @@ const initFontSize = () => {
       value: i
     })
   }
-  state.fontSize = arr
-}
+  return arr
+})
 
 const changeTooltipAttr = val => {
   emit('onTooltipChange', state.tooltipForm)
@@ -72,8 +71,9 @@ const init = () => {
 
 const showProperty = prop => props.propertyInner?.includes(prop)
 
-initFontSize()
-init()
+onMounted(() => {
+  init()
+})
 </script>
 
 <template>
@@ -129,7 +129,7 @@ init()
           @change="changeTooltipAttr('textStyle')"
         >
           <el-option
-            v-for="option in state.fontSize"
+            v-for="option in fontSizeList"
             :key="option.value"
             :label="option.name"
             :value="option.value"
@@ -138,7 +138,11 @@ init()
       </el-form-item>
     </el-space>
     <template v-if="showProperty('tooltipFormatter')">
-      <el-form-item :label="t('chart.value_formatter_type')" class="form-item">
+      <el-form-item
+        :label="t('chart.value_formatter_type')"
+        class="form-item"
+        :class="'form-item-' + themes"
+      >
         <el-select
           style="width: 100%"
           :effect="props.themes"
@@ -157,6 +161,7 @@ init()
         v-if="state.tooltipForm.tooltipFormatter.type !== 'auto'"
         :label="t('chart.value_formatter_decimal_count')"
         class="form-item"
+        :class="'form-item-' + themes"
       >
         <el-input-number
           style="width: 100%"
@@ -172,7 +177,11 @@ init()
 
       <el-row :gutter="8">
         <el-col :span="12">
-          <el-form-item :label="t('chart.value_formatter_unit')" class="form-item">
+          <el-form-item
+            :label="t('chart.value_formatter_unit')"
+            class="form-item"
+            :class="'form-item-' + themes"
+          >
             <el-select
               :disabled="state.tooltipForm.tooltipFormatter.type == 'percent'"
               :effect="props.themes"
@@ -191,7 +200,11 @@ init()
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item :label="t('chart.value_formatter_suffix')">
+          <el-form-item
+            :label="t('chart.value_formatter_suffix')"
+            class="form-item"
+            :class="'form-item-' + themes"
+          >
             <el-input
               :effect="props.themes"
               v-model="state.tooltipForm.tooltipFormatter.suffix"
@@ -204,7 +217,7 @@ init()
         </el-col>
       </el-row>
 
-      <el-form-item class="form-item">
+      <el-form-item class="form-item" :class="'form-item-' + themes">
         <el-checkbox
           :effect="props.themes"
           v-model="state.tooltipForm.tooltipFormatter.thousandSeparator"
