@@ -18,47 +18,46 @@ const handleSetLanguage = lang => {
     }
   })
 }
+const options = [
+  { value: 'zh-CN', name: '简体中文' },
+  { value: 'tw', name: '繁體中文' },
+  { value: 'en', name: 'English' }
+]
 onMounted(() => {
   language.value = userStore.getLanguage
 })
 </script>
 <template>
-  <el-dropdown
-    style="display: flex; align-items: center"
-    trigger="click"
-    class="international"
-    @command="handleSetLanguage"
-  >
-    <el-icon>
-      <Icon name="language" />
-    </el-icon>
-    <template #dropdown>
-      <el-dropdown-menu>
-        <el-dropdown-item :disabled="language === 'zh-CN'" command="zh-CN"
-          >简体中文</el-dropdown-item
-        >
-        <el-dropdown-item :disabled="language === 'tw'" command="tw"> 繁體中文 </el-dropdown-item>
-        <el-dropdown-item :disabled="language === 'en'" command="en"> English </el-dropdown-item>
-      </el-dropdown-menu>
-    </template>
-  </el-dropdown>
+  <div class="language-container">
+    <div
+      v-for="item in options"
+      :key="item.value"
+      class="language-item"
+      :class="{ active: language === item.value }"
+      @click="handleSetLanguage(item.value)"
+    >
+      <span>{{ item.name }}</span>
+      <el-icon v-if="language === item.value">
+        <Icon name="icon_done_outlined"></Icon>
+      </el-icon>
+    </div>
+  </div>
 </template>
 
-<style lang="less">
-.right-menu-item {
-  display: inline-block;
-  padding: 10px 8px;
-  height: 100%;
-
-  vertical-align: text-bottom;
-
-  &.hover-effect {
+<style lang="less" scoped>
+.language-item {
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  &:hover {
     cursor: pointer;
-    transition: background 0.3s;
-
-    &:hover {
-      background-color: rgba(0, 0, 0, 0.025);
-    }
+    background-color: #f2f2f2;
+    color: var(--ed-color-primary);
   }
+}
+.active {
+  color: var(--ed-color-primary) !important;
 }
 </style>

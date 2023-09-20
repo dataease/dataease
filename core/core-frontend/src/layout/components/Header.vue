@@ -8,7 +8,6 @@ import { Icon } from '@/components/icon-custom'
 import { ElHeader, ElMenu } from 'element-plus-secondary'
 import SystemCfg from './SystemCfg.vue'
 import { useRouter, useRoute } from 'vue-router'
-import LangSelector from '@/layout/components/LangSelector.vue'
 import TopDoc from '@/layout/components/TopDoc.vue'
 import AccountOperator from '@/layout/components/AccountOperator.vue'
 import { isDesktop } from '@/utils/ModelUtil'
@@ -57,7 +56,6 @@ onMounted(() => {
     </el-menu>
     <div class="operate-setting" v-if="!desktop">
       <XpackComponent jsname="c3dpdGNoZXI=" />
-      <LangSelector />
       <TopDoc />
       <SystemCfg v-if="showSystem" />
       <AccountOperator />
