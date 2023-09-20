@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { PropType, reactive, toRefs, watch } from 'vue'
+import { PropType, computed, onMounted, reactive, toRefs, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import {
   COLOR_PANEL,
@@ -49,16 +49,16 @@ watch(
 
 const { chart } = toRefs(props)
 
-const initFontSize = () => {
+const fontSizeList = computed(() => {
   const arr = []
-  for (let i = 12; i <= 40; i = i + 2) {
+  for (let i = 10; i <= 40; i = i + 2) {
     arr.push({
       name: i + '',
       value: i
     })
   }
-  state.fontSize = arr
-}
+  return arr
+})
 
 const changeTitleStyle = s => {
   emit('onTextChange', state.titleForm)
@@ -95,8 +95,9 @@ function setPosition(p: 'left' | 'center' | 'right') {
 
 const showProperty = prop => props.propertyInner?.includes(prop)
 
-initFontSize()
-init()
+onMounted(() => {
+  init()
+})
 </script>
 
 <template>
@@ -165,7 +166,7 @@ init()
           @change="changeTitleStyle('fontSize')"
         >
           <el-option
-            v-for="option in state.fontSize"
+            v-for="option in fontSizeList"
             :key="option.value"
             :label="option.name"
             :value="option.value"

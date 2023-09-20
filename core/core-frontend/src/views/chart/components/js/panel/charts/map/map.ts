@@ -3,7 +3,7 @@ import {
   L7PlotDrawOptions
 } from '@/views/chart/components/js/panel/types/impl/l7plot'
 import { Choropleth, ChoroplethOptions } from '@antv/l7plot/dist/esm/plots/choropleth'
-import { flow, getGeoJsonFile, parseJson } from '@/views/chart/components/js/util'
+import { flow, getGeoJsonFile, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
 import { handleGeoJson } from '@/views/chart/components/js/panel/common/common_antv'
 import { FeatureCollection } from '@antv/l7plot/dist/esm/plots/choropleth/types'
 import { cloneDeep } from 'lodash-es'
@@ -148,19 +148,19 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
   ): ChoroplethOptions {
     const { areaId }: L7PlotDrawOptions<any> = extra[0]
     const geoJson: FeatureCollection = extra[1]
-    const customAttr = parseJson(chart.customAttr)
+    const { basicStyle, label } = parseJson(chart.customAttr)
     const senior = parseJson(chart.senior)
     const curAreaNameMapping = senior.areaMapping?.[areaId]
     handleGeoJson(geoJson, curAreaNameMapping)
     options.color = {
       field: 'value',
-      value: [customAttr.basicStyle.colors[0]],
+      value: [basicStyle.colors[0]],
       scale: {
         type: 'quantize',
-        unknown: customAttr.basicStyle.areaBaseColor
+        unknown: basicStyle.areaBaseColor
       }
     }
-    const suspension = customAttr.basicStyle.suspension
+    const suspension = basicStyle.suspension
     if (!suspension) {
       options = {
         ...options,
@@ -176,7 +176,6 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       obj[value['field']] = value.value
       return obj
     }, {})
-    const labelAttr = customAttr.label
     let validArea = 0
     geoJson.features.forEach(item => {
       const name = item.properties['name']
@@ -184,18 +183,18 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
         validArea += 1
       }
       // trick, maybe move to configLabel, here for perf
-      if (labelAttr.show) {
+      if (label.show) {
         const content = []
-        if (labelAttr.showDimension) {
+        if (label.showDimension) {
           content.push(name)
         }
-        if (labelAttr.showQuota) {
+        if (label.showQuota) {
           areaMap[name] && content.push(areaMap[name])
         }
         item.properties['_DE_LABEL_'] = content.join('\n\n')
       }
     })
-    let colors = customAttr.basicStyle.colors
+    let colors = basicStyle.colors.map(item => hexColorToRGBA(item, basicStyle.alpha))
     if (validArea < colors.length) {
       colors = colors.slice(0, validArea)
     }
