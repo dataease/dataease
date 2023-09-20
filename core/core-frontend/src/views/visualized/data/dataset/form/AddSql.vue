@@ -75,15 +75,6 @@ const setActiveName = ({ name, enableCheck }) => {
   if (!enableCheck) return
   activeName.value = name
 }
-const handleSizeChange = pageSize => {
-  paginationConfig.currentPage = 1
-  paginationConfig.pageSize = pageSize
-  listSqlLog()
-}
-const handleCurrentChange = currentPage => {
-  paginationConfig.currentPage = currentPage
-  listSqlLog()
-}
 
 const referenceSetting = () => {
   showVariableMgm.value = true
@@ -212,6 +203,7 @@ const save = (cb?: () => void) => {
 }
 
 const close = () => {
+  searchTable.value = ''
   state.plxTableData = []
   state.fields = []
   if (codeCom.value) {
@@ -291,9 +283,6 @@ const dsChange = (val: string) => {
     })
 }
 
-const listSqlLog = (value?: string) => {
-  console.log(value)
-}
 const copyInfo = async (value: string) => {
   try {
     await toClipboard(value)
@@ -492,7 +481,7 @@ const mousedownDrag = () => {
                       {{ ele.name }}
                     </div>
                     <el-icon
-                      style="color: #3370ff"
+                      style="color: #3370ff !important"
                       class="hover-icon"
                       @click.stop="copyInfo(ele.name)"
                     >
@@ -502,7 +491,6 @@ const mousedownDrag = () => {
                       <el-icon>
                         <Icon name="icon_text-box_outlined"></Icon>
                       </el-icon>
-                      &nbsp;
                       {{ gridData.length }}
                     </div>
                   </div>
@@ -515,19 +503,21 @@ const mousedownDrag = () => {
                     >
                       <el-table-column label="物理字段名">
                         <template #default="scope">
-                          <el-icon>
-                            <Icon
-                              :className="`field-icon-${fieldType[scope.row.deType]}`"
-                              :name="`field_${fieldType[scope.row.deType]}`"
-                            ></Icon>
-                          </el-icon>
-                          {{ scope.row.originName }}
+                          <div class="flex-align-center icon">
+                            <el-icon>
+                              <Icon
+                                :className="`field-icon-${fieldType[scope.row.deType]}`"
+                                :name="`field_${fieldType[scope.row.deType]}`"
+                              ></Icon>
+                            </el-icon>
+                            {{ scope.row.originName }}
+                          </div>
                         </template>
                       </el-table-column>
                       <el-table-column :label="t('common.operate')">
                         <template #default="scope">
                           <el-icon
-                            style="color: #3370ff"
+                            style="color: #3370ff !important"
                             class="hover-icon"
                             @click.stop="copyInfo(scope.row.originName)"
                           >
@@ -606,8 +596,6 @@ const mousedownDrag = () => {
             :show-pagination="!!state.param.tableId"
             :columns="[]"
             :pagination="paginationConfig"
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
           >
             <el-table-column
               key="startTimeTable"
@@ -660,14 +648,14 @@ const mousedownDrag = () => {
     direction="rtl"
   >
     <div class="content">
-      <el-icon>
-        <Icon name="icon_info_outlined"></Icon>
+      <el-icon style="font-size: 16px">
+        <Icon name="icon_info_colorful"></Icon>
       </el-icon>
       {{ t('dataset.sql_variable_limit_1') }}<br />
       {{ t('dataset.sql_variable_limit_2') }}<br />
     </div>
-    <el-table :data="state.variablesTmp">
-      <el-table-column prop="variableName" :label="t('visualization.param_name')" />
+    <el-table header-cell-class-name="header-cell" :data="state.variablesTmp">
+      <el-table-column width="220" prop="variableName" :label="t('visualization.param_name')" />
       <el-table-column width="200" :label="t('deDataset.parameter_type')">
         <template #default="scope">
           <el-cascader
@@ -786,6 +774,9 @@ const mousedownDrag = () => {
           </div>
         </template>
       </el-table-column>
+      <template #empty>
+        <empty-background description="暂无数据" img-type="noneWhite" />
+      </template>
     </el-table>
     <template #footer>
       <el-button secondary @click="showVariableMgm = false">{{ t('dataset.cancel') }} </el-button>
@@ -899,8 +890,14 @@ const mousedownDrag = () => {
       padding: 0 8px;
 
       .list-item_primary {
+        padding-right: 4px;
         .label {
-          width: 60%;
+          width: calc(100% - 4px);
+        }
+        &:hover {
+          .label {
+            width: calc(100% - 74px);
+          }
         }
       }
 
@@ -912,10 +909,7 @@ const mousedownDrag = () => {
       .name-copy {
         display: none;
         line-height: 24px;
-        margin-left: auto;
-        .ed-icon + .ed-icon {
-          margin-left: -4px;
-        }
+        margin-left: 4px;
       }
 
       .list-item_primary:hover {
@@ -945,13 +939,21 @@ const mousedownDrag = () => {
         .drag {
           position: absolute;
           top: 4px;
-          left: 50%;
-          transform: translateX(-50%);
+          left: 0;
           height: 7px;
-          width: 100px;
-          border-radius: 3.5px;
-          background: rgba(31, 35, 41, 0.1);
+          width: 100%;
           cursor: row-resize;
+          &::after {
+            content: '';
+            height: 7px;
+            width: 100px;
+            border-radius: 3.5px;
+            position: absolute;
+            left: 50%;
+            top: 0;
+            transform: translateX(-50%);
+            background: rgba(31, 35, 41, 0.1);
+          }
         }
       }
 
@@ -1090,6 +1092,10 @@ const mousedownDrag = () => {
         font-style: normal;
         font-weight: 400;
         line-height: 22px;
+        .ed-icon {
+          margin-right: 4px;
+          font-size: 16px;
+        }
       }
     }
 
@@ -1118,6 +1124,12 @@ const mousedownDrag = () => {
   }
 }
 .sql-dataset-drawer {
+  .ed-empty__description {
+    margin-top: 8px;
+    p {
+      line-height: 22px;
+    }
+  }
   .de-group__prepend {
     width: 100%;
 
@@ -1164,10 +1176,10 @@ const mousedownDrag = () => {
     font-size: 14px;
     font-weight: 400;
 
-    i {
+    .ed-icon {
       position: absolute;
-      top: 12.6px;
-      left: 16.7px;
+      top: 10.6px;
+      left: 16px;
       font-size: 14px;
       color: var(--primary, #3370ff);
     }

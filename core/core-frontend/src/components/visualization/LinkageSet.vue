@@ -206,6 +206,7 @@ import {
   saveLinkage
 } from '@/api/visualization/linkage'
 import { getDatasetDetails } from '@/api/dataset'
+import { findAllViewsId } from '@/utils/canvasUtils'
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo, canvasViewInfo, componentData } = storeToRefs(dvMainStore)
 const linkageInfoTree = ref(null)
@@ -238,9 +239,8 @@ const dialogInit = viewItem => {
 
 const linkageSetting = curViewId => {
   // sourceViewId 也加入查询
-  const targetViewIds = componentData.value
-    .filter(item => item.component === 'UserView' && item.innerType != 'VQuery')
-    .map(item => item.id)
+  const targetViewIds = []
+  findAllViewsId(componentData.value, targetViewIds)
 
   // 获取当前仪表板当前视图联动信息
   const requestInfo = {

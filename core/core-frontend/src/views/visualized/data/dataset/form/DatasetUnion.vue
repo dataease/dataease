@@ -61,6 +61,16 @@ const nodeNameList = computed(() => {
   return arr
 })
 
+const dragMask = ref()
+
+const handleClickOutside = ev => {
+  if (ev.target === dragMask.value) {
+    activeNodeId.value = ''
+  }
+}
+
+const activeNodeId = ref('')
+
 let shadowWidth = 0
 let shadowHeight = 0
 
@@ -92,8 +102,6 @@ const initState = nodeList => {
     emits('addComplete')
   })
 }
-
-const activeNode = ref('')
 
 const editUnion = ref(false)
 
@@ -759,6 +767,11 @@ defineExpose({
   dragEndClear
 })
 
+const handleActiveNode = ele => {
+  activeNodeId.value = ele.id
+  handleCommand(ele, ele.type === 'sql' ? 'editerSql' : 'editerField')
+}
+
 const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields'])
 </script>
 
@@ -768,6 +781,8 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields'])
     @dragenter="$event => dragenter_handler($event)"
     @dragover="$event => dragover_handler($event)"
     class="drag-mask"
+    ref="dragMask"
+    @click="handleClickOutside"
     :style="{ height: dragHeight + 'px' }"
   >
     <svg
@@ -796,12 +811,13 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields'])
         height="32"
       >
         <div
-          @click="activeNode = ele.tableName"
+          @click="handleActiveNode(ele)"
           class="node-union"
+          ref="activeNode"
           :class="[
             {
               'shadow-node': ele.isShadow,
-              'active-node': activeNode === ele.tableName
+              'active-node': activeNodeId === ele.id
             }
           ]"
         >
@@ -812,7 +828,7 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields'])
           <span class="placeholder">拖拽表或自定义SQL至此处</span>
           <handle-more
             style="margin-left: auto"
-            v-if="activeNode === ele.tableName"
+            iconName="icon_more-vertical_outlined"
             :menuList="ele.type === 'sql' ? [...sqlMenu, ...menuList] : menuList"
             @handle-command="command => handleCommand(ele, command)"
           ></handle-more>
@@ -966,19 +982,30 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields'])
   font-size: 14px;
   font-weight: 400;
   color: #1f2329;
-  padding-left: 10.33px;
+  padding-left: 9px;
   display: flex;
   align-items: center;
   background: #fff;
   position: relative;
   cursor: pointer;
-  padding-right: 8px;
+  padding-right: 12px;
+
+  .hover-icon {
+    display: none;
+  }
+
+  &:hover {
+    border-color: #3370ff;
+    .hover-icon {
+      display: inline-flex;
+    }
+  }
 
   .placeholder {
     display: none;
   }
 
-  .ed-icon {
+  & > .ed-icon {
     font-size: 13.3px;
     margin-right: 9.33px;
   }
@@ -1012,6 +1039,9 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields'])
   justify-content: center;
   background: #fff;
   cursor: pointer;
+  &:hover {
+    border-color: #3370ff;
+  }
 }
 
 .shadow-node {

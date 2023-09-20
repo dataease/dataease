@@ -91,122 +91,114 @@ init()
 </script>
 
 <template>
-  <div style="width: 100%">
-    <el-col>
-      <el-form ref="colorForm" :model="state.colorForm" label-width="80px" size="small">
-        <div>
-          <el-form-item :label="t('chart.color_case')" class="form-item">
-            <el-popover placement="bottom" width="400" trigger="click">
-              <template #reference>
-                <div :style="{ cursor: 'pointer', marginTop: '2px', width: '180px' }">
-                  <span
-                    v-for="(c, index) in state.colorForm.colors"
-                    :key="index"
-                    :style="{
-                      width: '20px',
-                      height: '20px',
-                      display: 'inline-block',
-                      backgroundColor: c
-                    }"
-                  />
-                </div>
-              </template>
+  <el-form ref="colorForm" :model="state.colorForm" label-width="80px" size="small">
+    <div>
+      <el-form-item :label="t('chart.color_case')" class="form-item">
+        <el-popover placement="bottom" width="400" trigger="click">
+          <template #reference>
+            <div :style="{ cursor: 'pointer', marginTop: '2px', width: '180px' }">
+              <span
+                v-for="(c, index) in state.colorForm.colors"
+                :key="index"
+                :style="{
+                  width: '20px',
+                  height: '20px',
+                  display: 'inline-block',
+                  backgroundColor: c
+                }"
+              />
+            </div>
+          </template>
 
-              <div style="padding: 6px 10px">
-                <div>
-                  <span class="color-label">{{ t('chart.system_case') }}</span>
-                  <el-select
-                    v-model="state.colorForm.value"
-                    :placeholder="t('chart.pls_slc_color_case')"
-                    size="small"
-                    @change="changeColorOption('value')"
-                  >
-                    <el-option
-                      v-for="option in colorCases"
-                      :key="option.value"
-                      :label="option.name"
-                      :value="option.value"
-                      style="display: flex; align-items: center"
+          <div style="padding: 6px 10px">
+            <div>
+              <span class="color-label">{{ t('chart.system_case') }}</span>
+              <el-select
+                v-model="state.colorForm.value"
+                :placeholder="t('chart.pls_slc_color_case')"
+                size="small"
+                @change="changeColorOption('value')"
+              >
+                <el-option
+                  v-for="option in colorCases"
+                  :key="option.value"
+                  :label="option.name"
+                  :value="option.value"
+                  style="display: flex; align-items: center"
+                >
+                  <div style="float: left">
+                    <span
+                      v-for="(c, index) in option.colors"
+                      :key="index"
+                      :style="{
+                        width: '20px',
+                        height: '20px',
+                        float: 'left',
+                        backgroundColor: c
+                      }"
+                    />
+                  </div>
+                  <span style="margin-left: 4px">{{ option.name }}</span>
+                </el-option>
+              </el-select>
+              <el-button size="small" type="text" style="margin-left: 2px" @click="resetCustomColor"
+                >{{ t('chart.reset') }}
+              </el-button>
+            </div>
+            <!--自定义配色方案-->
+            <div>
+              <div style="display: flex; align-items: center; margin-top: 10px">
+                <span class="color-label">{{ t('chart.custom_case') }}</span>
+                <span>
+                  <el-radio-group v-model="state.customColor" class="color-type">
+                    <el-radio
+                      v-for="(c, index) in state.colorForm.colors"
+                      :key="index"
+                      :label="c"
+                      style="padding: 2px"
+                      @click="switchColor(index)"
                     >
-                      <div style="float: left">
-                        <span
-                          v-for="(c, index) in option.colors"
-                          :key="index"
-                          :style="{
-                            width: '20px',
-                            height: '20px',
-                            float: 'left',
-                            backgroundColor: c
-                          }"
-                        />
-                      </div>
-                      <span style="margin-left: 4px">{{ option.name }}</span>
-                    </el-option>
-                  </el-select>
-                  <el-button
-                    size="small"
-                    type="text"
-                    style="margin-left: 2px"
-                    @click="resetCustomColor"
-                    >{{ t('chart.reset') }}
-                  </el-button>
-                </div>
-                <!--自定义配色方案-->
-                <div>
-                  <div style="display: flex; align-items: center; margin-top: 10px">
-                    <span class="color-label">{{ t('chart.custom_case') }}</span>
-                    <span>
-                      <el-radio-group v-model="state.customColor" class="color-type">
-                        <el-radio
-                          v-for="(c, index) in state.colorForm.colors"
-                          :key="index"
-                          :label="c"
-                          style="padding: 2px"
-                          @click="switchColor(index)"
-                        >
-                          <span
-                            :style="{
-                              width: '20px',
-                              height: '20px',
-                              display: 'inline-block',
-                              backgroundColor: c
-                            }"
-                          />
-                        </el-radio>
-                      </el-radio-group>
-                    </span>
-                  </div>
-                  <div style="display: flex; align-items: center; margin-top: 10px">
-                    <span class="color-label" />
-                    <span>
-                      <el-color-picker
-                        v-model="state.customColor"
-                        class="color-picker-style"
-                        :predefine="predefineColors"
-                        @change="switchColorCase"
+                      <span
+                        :style="{
+                          width: '20px',
+                          height: '20px',
+                          display: 'inline-block',
+                          backgroundColor: c
+                        }"
                       />
-                    </span>
-                  </div>
-                </div>
+                    </el-radio>
+                  </el-radio-group>
+                </span>
               </div>
-            </el-popover>
-          </el-form-item>
-          <!--alpha-->
-          <el-form-item :label="t('chart.not_alpha')" class="form-item form-item-slider">
-            <el-input-number
-              :effect="props.themes"
-              v-model="state.colorForm.alpha"
-              :min="0"
-              :max="100"
-              size="small"
-              controls-position="right"
-              @change="changeColorCase('alpha')"
-            />
-          </el-form-item>
-        </div>
-      </el-form>
-    </el-col>
-  </div>
+              <div style="display: flex; align-items: center; margin-top: 10px">
+                <span class="color-label" />
+                <span>
+                  <el-color-picker
+                    v-model="state.customColor"
+                    class="color-picker-style"
+                    :predefine="predefineColors"
+                    @change="switchColorCase"
+                  />
+                </span>
+              </div>
+            </div>
+          </div>
+        </el-popover>
+      </el-form-item>
+      <!--alpha-->
+      <el-form-item :label="t('chart.not_alpha')" class="form-item form-item-slider">
+        <el-input-number
+          :effect="props.themes"
+          v-model="state.colorForm.alpha"
+          :min="0"
+          :max="100"
+          size="small"
+          controls-position="right"
+          @change="changeColorCase('alpha')"
+        />
+      </el-form-item>
+    </div>
+  </el-form>
 </template>
 
 <style lang="less" scoped>
