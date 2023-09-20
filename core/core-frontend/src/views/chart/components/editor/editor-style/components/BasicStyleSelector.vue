@@ -566,7 +566,6 @@ onMounted(() => {
     <el-form-item
       v-if="showProperty('mapSymbol') && state.basicStyleForm.mapSymbol !== 'marker'"
       :label="t('visualization.border_color')"
-      class="form-item form-item-slider"
       :class="'form-item-' + themes"
     >
       <el-input-number
@@ -581,41 +580,42 @@ onMounted(() => {
     <!-- pie/rose start -->
     <el-form-item
       :label="t('chart.pie_inner_radius_percent')"
-      class="form-item"
       :class="'form-item-' + themes"
       v-if="showProperty('innerRadius')"
     >
       <el-slider
+        class="input-slider"
         :effect="themes"
+        size="small"
         v-model="state.basicStyleForm.innerRadius"
         :min="1"
         :max="100"
         @change="changeBasicStyle()"
         show-input
+        :show-input-controls="false"
       />
     </el-form-item>
     <el-form-item
       :label="t('chart.pie_outer_radius')"
-      class="form-item form-item-slider"
       :class="'form-item-' + themes"
       v-if="showProperty('radius')"
     >
       <el-slider
+        class="input-slider"
         :effect="themes"
+        size="small"
         v-model="state.basicStyleForm.radius"
         :min="1"
         :max="100"
         @change="changeBasicStyle()"
         show-input
+        :show-input-controls="false"
       />
     </el-form-item>
     <!-- pie/rose end -->
   </div>
 </template>
 <style scoped lang="less">
-.form-item {
-}
-
 .color-picker-style {
   cursor: pointer;
   z-index: 1003;
@@ -657,6 +657,11 @@ onMounted(() => {
         -webkit-appearance: none;
       }
     }
+  }
+}
+.input-slider {
+  ::v-deep(.ed-input-number) {
+    width: unset !important;
   }
 }
 </style>
