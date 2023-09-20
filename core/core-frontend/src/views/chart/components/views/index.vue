@@ -266,7 +266,7 @@ const jumpClick = param => {
             '#/preview?dvId=' +
             jumpInfo.targetDvId +
             '&jumpInfoParam=' +
-            encodeURI(Base64.encode(JSON.stringify(param)))
+            encodeURIComponent(Base64.encode(JSON.stringify(param)))
           windowsJump(url, jumpInfo.jumpType)
         }
       } else {

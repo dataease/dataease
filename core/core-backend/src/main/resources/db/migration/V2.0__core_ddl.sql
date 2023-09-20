@@ -4076,58 +4076,14 @@ CREATE TABLE `core_dataset_table_sql_log`
   DEFAULT CHARSET = utf8mb4
   COLLATE utf8mb4_0900_ai_ci;
 
-INSERT INTO `visualization_subject` (`id`,
-                                     `name`,
-                                     `type`,
-                                     `details`,
-                                     `delete_flag`,
-                                     `cover_url`,
-                                     `create_num`,
-                                     `create_time`,
-                                     `create_by`,
-                                     `update_time`,
-                                     `update_by`,
-                                     `delete_time`,
-                                     `delete_by`)
-VALUES ('1689632620820885504',
-        '浅色主题',
-        'system',
-        '{\"width\":1920,\"height\":1080,\"refreshViewEnable\":false,\"refreshViewLoading\":true,\"refreshUnit\":\"minute\",\"refreshTime\":5,\"scale\":60,\"scaleWidth\":100,\"scaleHeight\":100,\"backgroundType\":\"backgroundColor\",\"background\":\"\",\"openCommonStyle\":true,\"opacity\":1,\"fontSize\":14,\"themeId\":\"7095398277276766208\",\"color\":\"#000000\",\"backgroundColor\":\"rgba(241, 243, 245, 1)\",\"dashboard\":{\"themeColor\":\"light\",\"gap\":\"yes\",\"gapSize\":5,\"resultMode\":\"all\",\"resultCount\":1000,\"mobileSetting\":{\"customSetting\":false,\"imageUrl\":null,\"backgroundType\":\"image\",\"color\":\"#000\"}},\"component\":{\"chartTitle\":{\"show\":true,\"fontSize\":\"18\",\"hPosition\":\"left\",\"vPosition\":\"top\",\"isItalic\":false,\"isBolder\":true,\"remarkShow\":false,\"remark\":\"\",\"fontFamily\":\"Microsoft YaHei\",\"letterSpace\":\"0\",\"fontShadow\":false,\"color\":\"#000000\",\"remarkBackgroundColor\":\"#ffffff\",\"modifyName\":\"color\"},\"chartColor\":{\"value\":\"default\",\"colors\":[\"#5470c6\",\"#91cc75\",\"#fac858\",\"#ee6666\",\"#73c0de\",\"#3ba272\",\"#fc8452\",\"#9a60b4\",\"#ea7ccc\"],\"alpha\":100,\"tableHeaderBgColor\":\"#6D9A49\",\"tableItemBgColor\":\"#FFFFFF\",\"tableHeaderFontColor\":\"#000000\",\"tableFontColor\":\"#000000\",\"tableStripe\":true,\"dimensionColor\":\"#000000\",\"quotaColor\":\"#5470c6\",\"tableBorderColor\":\"#E6E7E4\",\"seriesColors\":[],\"areaBorderColor\":\"#303133\",\"gradient\":false,\"areaBaseColor\":\"#FFFFFF\",\"tableScrollBarColor\":\"#00000024\",\"tableScrollBarHoverColor\":\"rgba(0, 0, 0, 0.4)\",\"mapStyle\":\"normal\",\"mapLineGradient\":false,\"mapLineSourceColor\":\"#146C94\",\"mapLineTargetColor\":\"#576CBC\",\"modifyName\":\"colors\"},\"chartCommonStyle\":{\"backgroundColorSelect\":true,\"alpha\":100,\"backgroundImageEnable\":false,\"backgroundType\":\"innerImage\",\"innerImage\":\"board/board_1.svg\",\"outerImage\":null,\"innerPadding\":0,\"borderRadius\":0,\"backgroundColor\":\"rgb(255, 255, 255)\",\"innerImageColor\":\"#1094E5\"},\"filterStyle\":{\"horizontal\":\"left\",\"vertical\":\"top\",\"color\":\"#000000\",\"brColor\":\"#4E4B4B\",\"wordColor\":\"#FFFFFF\",\"innerBgColor\":\"#131E42\"},\"tabStyle\":{\"headPosition\":\"left\",\"headFontColor\":\"#OOOOOO\",\"headFontActiveColor\":\"#OOOOOO\",\"headBorderColor\":\"#OOOOOO\",\"headBorderActiveColor\":\"#OOOOOO\"}}}',
-        0,
-        '/static-resource/inner-subject-light.png',
-        0,
-        1691674783316,
-        NULL,
-        1692057059517,
-        NULL,
-        NULL,
-        NULL);
-INSERT INTO `visualization_subject` (`id`,
-                                     `name`,
-                                     `type`,
-                                     `details`,
-                                     `delete_flag`,
-                                     `cover_url`,
-                                     `create_num`,
-                                     `create_time`,
-                                     `create_by`,
-                                     `update_time`,
-                                     `update_by`,
-                                     `delete_time`,
-                                     `delete_by`)
-VALUES ('1689632657248415744',
-        '深色主题',
-        'system',
-        '{\"width\":1920,\"height\":1080,\"refreshViewEnable\":false,\"refreshViewLoading\":true,\"refreshUnit\":\"minute\",\"refreshTime\":5,\"scale\":60,\"scaleWidth\":100,\"scaleHeight\":100,\"backgroundType\":\"backgroundColor\",\"background\":\"\",\"openCommonStyle\":true,\"opacity\":1,\"fontSize\":14,\"themeId\":\"7095398323158257664\",\"color\":\"#000000\",\"backgroundColor\":\"rgba(3, 11, 46, 1)\",\"dashboard\":{\"themeColor\":\"dark\",\"gap\":\"yes\",\"gapSize\":5,\"resultMode\":\"all\",\"resultCount\":1000,\"mobileSetting\":{\"customSetting\":false,\"imageUrl\":null,\"backgroundType\":\"image\",\"color\":\"#000\"}},\"component\":{\"chartTitle\":{\"show\":true,\"fontSize\":\"18\",\"hPosition\":\"left\",\"vPosition\":\"top\",\"isItalic\":false,\"isBolder\":true,\"remarkShow\":false,\"remark\":\"\",\"fontFamily\":\"Microsoft YaHei\",\"letterSpace\":\"0\",\"fontShadow\":false,\"color\":\"#FFFFFF\",\"remarkBackgroundColor\":\"#5A5C62\",\"modifyName\":\"color\"},\"chartColor\":{\"value\":\"default\",\"colors\":[\"#5470c6\",\"#91cc75\",\"#fac858\",\"#ee6666\",\"#73c0de\",\"#3ba272\",\"#fc8452\",\"#9a60b4\",\"#ea7ccc\"],\"alpha\":100,\"tableHeaderBgColor\":\"#5470C6\",\"tableItemBgColor\":\"#131E42\",\"tableFontColor\":\"#FFFFFF\",\"tableStripe\":true,\"dimensionColor\":\"#FFFFFF\",\"quotaColor\":\"#5470c6\",\"tableBorderColor\":\"#CCCCCC\",\"seriesColors\":[],\"areaBorderColor\":\"#EBEEF5\",\"areaBaseColor\":\"5470C6\",\"tableScrollBarColor\":\"#FFFFFF80\",\"tableScrollBarHoverColor\":\"rgba(255, 255, 255, 0.8)\",\"mapStyle\":\"darkblue\",\"mapLineGradient\":false,\"mapLineSourceColor\":\"#2F58CD\",\"mapLineTargetColor\":\"#3795BD\",\"modifyName\":\"colors\",\"tableHeaderFontColor\":\"rgb(0, 0, 0)\"},\"chartCommonStyle\":{\"backgroundColorSelect\":true,\"alpha\":100,\"backgroundImageEnable\":false,\"backgroundType\":\"innerImage\",\"innerImage\":\"board/board_1.svg\",\"outerImage\":null,\"innerPadding\":0,\"borderRadius\":0,\"backgroundColor\":\"rgb(19, 30, 66)\",\"innerImageColor\":\"#1094E5\"},\"filterStyle\":{\"horizontal\":\"left\",\"vertical\":\"top\",\"color\":\"#FFFFFF\",\"brColor\":\"#4E4B4B\",\"wordColor\":\"#FFFFFF\",\"innerBgColor\":\"#131E42\"},\"tabStyle\":{\"headPosition\":\"left\",\"headFontColor\":\"#FFFFFF\",\"headFontActiveColor\":\"#FFFFFF\",\"headBorderColor\":\"#131E42\",\"headBorderActiveColor\":\"#131E42\"}}}',
-        0,
-        '/static-resource/inner-subject-dark.png',
-        0,
-        1691674792001,
-        NULL,
-        1692057067797,
-        NULL,
-        NULL,
-        NULL);
+
+INSERT INTO `visualization_subject` ( `id`, `name`, `type`, `details`, `delete_flag`, `cover_url`, `create_num`, `create_time`, `create_by`, `update_time`, `update_by`, `delete_time`, `delete_by` )
+VALUES
+    ( '1704162625739354112', '浅色主题', 'system', '{\"width\":1920,\"height\":1080,\"refreshViewEnable\":false,\"refreshViewLoading\":true,\"refreshUnit\":\"minute\",\"refreshTime\":5,\"scale\":60,\"scaleWidth\":100,\"scaleHeight\":100,\"backgroundType\":\"backgroundColor\",\"background\":\"\",\"openCommonStyle\":true,\"opacity\":1,\"fontSize\":14,\"themeId\":\"7109928259176894464\",\"color\":\"#000000\",\"backgroundColor\":\"rgba(241, 243, 245, 1)\",\"dashboard\":{\"themeColor\":\"light\",\"gap\":\"yes\",\"gapSize\":5,\"resultMode\":\"all\",\"resultCount\":1000,\"mobileSetting\":{\"customSetting\":false,\"imageUrl\":null,\"backgroundType\":\"image\",\"color\":\"#000\"}},\"component\":{\"chartTitle\":{\"show\":false,\"fontSize\":\"18\",\"hPosition\":\"left\",\"vPosition\":\"top\",\"isItalic\":false,\"isBolder\":true,\"remarkShow\":false,\"remark\":\"\",\"fontFamily\":\"Microsoft YaHei\",\"letterSpace\":\"0\",\"fontShadow\":false,\"color\":\"#000000\",\"remarkBackgroundColor\":\"#ffffff\"},\"chartColor\":{\"basicStyle\":{\"colorScheme\":\"default\",\"colors\":[\"#5470c6\",\"#91cc75\",\"#fac858\",\"#ee6666\",\"#73c0de\",\"#3ba272\",\"#fc8452\",\"#9a60b4\",\"#ea7ccc\"],\"alpha\":100,\"gradient\":false,\"mapStyle\":\"normal\",\"areaBaseColor\":\"#FFFFFF\",\"areaBorderColor\":\"#303133\",\"gaugeStyle\":\"default\",\"tableBorderColor\":\"#E6E7E4\",\"tableScrollBarColor\":\"#00000024\"},\"misc\":{\"mapLineGradient\":false,\"mapLineSourceColor\":\"#146C94\",\"mapLineTargetColor\":\"#576CBC\",\"nameFontColor\":\"#000000\",\"valueFontColor\":\"#5470c6\"},\"tableHeader\":{\"tableHeaderBgColor\":\"#6D9A49\",\"tableHeaderFontColor\":\"#000000\"},\"tableCell\":{\"tableItemBgColor\":\"#FFFFFF\",\"tableFontColor\":\"#000000\"}},\"chartCommonStyle\":{\"backgroundColorSelect\":true,\"alpha\":100,\"backgroundImageEnable\":false,\"backgroundType\":\"innerImage\",\"innerImage\":\"board/board_1.svg\",\"outerImage\":null,\"innerPadding\":0,\"borderRadius\":0,\"backgroundColor\":\"#ffffff\",\"innerImageColor\":\"#1094E5\"},\"filterStyle\":{\"horizontal\":\"left\",\"vertical\":\"top\",\"color\":\"#000000\",\"brColor\":\"#4E4B4B\",\"wordColor\":\"#FFFFFF\",\"innerBgColor\":\"#131E42\"},\"tabStyle\":{\"headPosition\":\"left\",\"headFontColor\":\"#OOOOOO\",\"headFontActiveColor\":\"#OOOOOO\",\"headBorderColor\":\"#OOOOOO\",\"headBorderActiveColor\":\"#OOOOOO\"}}}', 0, '/static-resource/subject-light.png', 0, 1695139006443, NULL, NULL, NULL, NULL, NULL );
+INSERT INTO `visualization_subject` ( `id`, `name`, `type`, `details`, `delete_flag`, `cover_url`, `create_num`, `create_time`, `create_by`, `update_time`, `update_by`, `delete_time`, `delete_by` )
+VALUES
+    ( '1704162694479802368', '深色主题', 'system', '{\"width\":1920,\"height\":1080,\"refreshViewEnable\":false,\"refreshViewLoading\":true,\"refreshUnit\":\"minute\",\"refreshTime\":5,\"scale\":60,\"scaleWidth\":100,\"scaleHeight\":100,\"backgroundType\":\"backgroundColor\",\"background\":\"\",\"openCommonStyle\":true,\"opacity\":1,\"fontSize\":14,\"themeId\":\"7109928329548926976\",\"color\":\"#000000\",\"backgroundColor\":\"rgba(3, 11, 46, 1)\",\"dashboard\":{\"themeColor\":\"dark\",\"gap\":\"yes\",\"gapSize\":5,\"resultMode\":\"all\",\"resultCount\":1000,\"mobileSetting\":{\"customSetting\":false,\"imageUrl\":null,\"backgroundType\":\"image\",\"color\":\"#000\"}},\"component\":{\"chartTitle\":{\"show\":false,\"fontSize\":\"18\",\"hPosition\":\"left\",\"vPosition\":\"top\",\"isItalic\":false,\"isBolder\":true,\"remarkShow\":false,\"remark\":\"\",\"fontFamily\":\"Microsoft YaHei\",\"letterSpace\":\"0\",\"fontShadow\":false,\"color\":\"#FFFFFF\",\"remarkBackgroundColor\":\"#5A5C62\"},\"chartColor\":{\"basicStyle\":{\"colorScheme\":\"default\",\"colors\":[\"#5470c6\",\"#91cc75\",\"#fac858\",\"#ee6666\",\"#73c0de\",\"#3ba272\",\"#fc8452\",\"#9a60b4\",\"#ea7ccc\"],\"alpha\":100,\"gradient\":false,\"mapStyle\":\"darkblue\",\"areaBaseColor\":\"5470C6\",\"areaBorderColor\":\"#EBEEF5\",\"gaugeStyle\":\"default\",\"tableBorderColor\":\"#CCCCCC\",\"tableScrollBarColor\":\"#FFFFFF80\"},\"misc\":{\"mapLineGradient\":false,\"mapLineSourceColor\":\"#2F58CD\",\"mapLineTargetColor\":\"#3795BD\",\"nameFontColor\":\"#ffffff\",\"valueFontColor\":\"#5470c6\"},\"tableHeader\":{\"tableHeaderBgColor\":\"#5470C6\",\"tableHeaderFontColor\":\"#000000\"},\"tableCell\":{\"tableItemBgColor\":\"#131E42\",\"tableFontColor\":\"#FFFFFF\"}},\"chartCommonStyle\":{\"backgroundColorSelect\":true,\"alpha\":100,\"backgroundImageEnable\":false,\"backgroundType\":\"innerImage\",\"innerImage\":\"board/board_1.svg\",\"outerImage\":null,\"innerPadding\":0,\"borderRadius\":0,\"backgroundColor\":\"#131E42\",\"innerImageColor\":\"#1094E5\"},\"filterStyle\":{\"horizontal\":\"left\",\"vertical\":\"top\",\"color\":\"#FFFFFF\",\"brColor\":\"#4E4B4B\",\"wordColor\":\"#FFFFFF\",\"innerBgColor\":\"#131E42\"},\"tabStyle\":{\"headPosition\":\"left\",\"headFontColor\":\"#FFFFFF\",\"headFontActiveColor\":\"#FFFFFF\",\"headBorderColor\":\"#131E42\",\"headBorderActiveColor\":\"#131E42\"}}}', 0, '/static-resource/subject-dark.png', 0, 1695139022832, NULL, NULL, NULL, NULL, NULL );
+
 
 -- ----------------------------
 -- Table structure for core_store
