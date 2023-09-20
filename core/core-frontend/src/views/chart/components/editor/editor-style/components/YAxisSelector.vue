@@ -272,10 +272,9 @@ onMounted(() => {
       </el-checkbox>
     </el-form-item>
     <el-form-item
-      class="form-item"
+      class="form-item form-item-checkbox"
       :class="{
-        'form-item-dark': themes === 'dark',
-        'form-item-checkbox': state.axisForm.splitLine.show
+        'form-item-dark': themes === 'dark'
       }"
       v-if="showProperty('splitLine')"
     >
@@ -288,11 +287,11 @@ onMounted(() => {
         {{ t('chart.grid_show') }}
       </el-checkbox>
     </el-form-item>
-    <div style="display: flex" v-if="showProperty('splitLine') && state.axisForm.splitLine.show">
-      <div style="width: 22px"></div>
+    <div style="padding-left: 22px" v-if="showProperty('splitLine')">
       <div style="flex: 1; display: flex">
         <el-form-item class="form-item" :class="'form-item-' + themes" style="padding-right: 4px">
           <el-color-picker
+            :disabled="!state.axisForm.splitLine.show"
             v-model="state.axisForm.splitLine.lineStyle.color"
             :predefine="predefineColors"
             @change="changeAxisStyle('splitLine')"
@@ -301,6 +300,7 @@ onMounted(() => {
         </el-form-item>
         <el-form-item class="form-item" :class="'form-item-' + themes" style="padding-left: 4px">
           <el-input-number
+            :disabled="!state.axisForm.splitLine.show"
             style="width: 108px"
             :effect="props.themes"
             v-model="state.axisForm.splitLine.lineStyle.width"
@@ -315,10 +315,9 @@ onMounted(() => {
     </div>
     <el-divider class="m-divider" :class="'m-divider--' + themes" />
     <el-form-item
-      class="form-item"
+      class="form-item form-item-checkbox"
       :class="{
-        'form-item-dark': themes === 'dark',
-        'form-item-checkbox': state.axisForm.axisLabel.show
+        'form-item-dark': themes === 'dark'
       }"
       v-if="showProperty('axisLabel')"
     >
@@ -331,15 +330,17 @@ onMounted(() => {
         {{ t('chart.axis_label_show') }}
       </el-checkbox>
     </el-form-item>
-    <div style="display: flex" v-if="showProperty('axisLabel') && state.axisForm.axisLabel.show">
-      <div style="width: 22px"></div>
+    <div style="padding-left: 22px" v-if="showProperty('axisLabel')">
       <div style="flex: 1">
-        <label class="custom-form-item-label" :class="'custom-form-item-label--' + themes">
-          {{ t('chart.text') }}
-        </label>
         <div style="display: flex">
-          <el-form-item class="form-item" :class="'form-item-' + themes" style="padding-right: 4px">
+          <el-form-item
+            class="form-item"
+            :class="'form-item-' + themes"
+            style="padding-right: 4px"
+            :label="t('chart.text')"
+          >
             <el-color-picker
+              :disabled="!state.axisForm.axisLabel.show"
               v-model="state.axisForm.axisLabel.color"
               :predefine="predefineColors"
               @change="changeAxisStyle('axisLabel')"
@@ -347,7 +348,9 @@ onMounted(() => {
             />
           </el-form-item>
           <el-form-item class="form-item" :class="'form-item-' + themes" style="padding-left: 4px">
+            <template #label>&nbsp;</template>
             <el-select
+              :disabled="!state.axisForm.axisLabel.show"
               style="width: 108px"
               :effect="props.themes"
               v-model="state.axisForm.axisLabel.fontSize"
@@ -366,6 +369,7 @@ onMounted(() => {
 
         <el-form-item class="form-item" :class="'form-item-' + themes" :label="t('chart.rotate')">
           <el-input-number
+            :disabled="!state.axisForm.axisLabel.show"
             style="width: 100%"
             :effect="props.themes"
             v-model="state.axisForm.axisLabel.rotate"
@@ -378,50 +382,55 @@ onMounted(() => {
         </el-form-item>
 
         <template v-if="showProperty('axisLabelFormatter')">
-          <el-form-item
-            class="form-item"
-            :class="'form-item-' + themes"
-            :label="t('chart.value_formatter_type')"
-          >
-            <el-select
-              style="width: 100%"
-              :effect="props.themes"
-              v-model="state.axisForm.axisLabelFormatter.type"
-              @change="changeAxisStyle('axisLabelFormatter')"
-            >
-              <el-option
-                v-for="type in typeList"
-                :key="type.value"
-                :label="t('chart.' + type.name)"
-                :value="type.value"
-              />
-            </el-select>
-          </el-form-item>
-
-          <el-form-item
-            v-if="state.axisForm.axisLabelFormatter.type !== 'auto'"
-            :label="t('chart.value_formatter_decimal_count')"
-          >
-            <el-input-number
-              style="width: 100%"
-              :effect="props.themes"
-              v-model="state.axisForm.axisLabelFormatter.decimalCount"
-              :precision="0"
-              :min="0"
-              :max="10"
-              size="small"
-              controls-position="right"
-              @change="changeAxisStyle('axisLabelFormatter')"
-            />
-          </el-form-item>
+          <el-row :gutter="8">
+            <el-col :span="state.axisForm.axisLabelFormatter.type !== 'auto' ? 12 : 24">
+              <el-form-item
+                class="form-item"
+                :class="'form-item-' + themes"
+                :label="t('chart.value_formatter_type')"
+              >
+                <el-select
+                  :disabled="!state.axisForm.axisLabel.show"
+                  style="width: 100%"
+                  :effect="props.themes"
+                  v-model="state.axisForm.axisLabelFormatter.type"
+                  @change="changeAxisStyle('axisLabelFormatter')"
+                >
+                  <el-option
+                    v-for="type in typeList"
+                    :key="type.value"
+                    :label="t('chart.' + type.name)"
+                    :value="type.value"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12" v-if="state.axisForm.axisLabelFormatter.type !== 'auto'">
+              <el-form-item :label="t('chart.value_formatter_decimal_count')">
+                <el-input-number
+                  :disabled="!state.axisForm.axisLabel.show"
+                  style="width: 100%"
+                  :effect="props.themes"
+                  v-model="state.axisForm.axisLabelFormatter.decimalCount"
+                  :precision="0"
+                  :min="0"
+                  :max="10"
+                  size="small"
+                  controls-position="right"
+                  @change="changeAxisStyle('axisLabelFormatter')"
+                />
+              </el-form-item>
+            </el-col>
+          </el-row>
 
           <el-row :gutter="8">
             <el-col :span="12">
-              <el-form-item
-                v-if="state.axisForm.axisLabelFormatter.type !== 'percent'"
-                :label="t('chart.value_formatter_unit')"
-              >
+              <el-form-item :label="t('chart.value_formatter_unit')">
                 <el-select
+                  :disabled="
+                    !state.axisForm.axisLabel.show ||
+                    state.axisForm.axisLabelFormatter.type === 'percent'
+                  "
                   :effect="props.themes"
                   v-model="state.axisForm.axisLabelFormatter.unit"
                   :placeholder="t('chart.pls_select_field')"
@@ -444,6 +453,7 @@ onMounted(() => {
                 :label="t('chart.value_formatter_suffix')"
               >
                 <el-input
+                  :disabled="!state.axisForm.axisLabel.show"
                   :effect="props.themes"
                   v-model="state.axisForm.axisLabelFormatter.suffix"
                   size="small"
@@ -457,6 +467,7 @@ onMounted(() => {
 
           <el-form-item class="form-item" :class="'form-item-' + themes">
             <el-checkbox
+              :disabled="!state.axisForm.axisLabel.show"
               size="small"
               :effect="props.themes"
               v-model="state.axisForm.axisLabelFormatter.thousandSeparator"
