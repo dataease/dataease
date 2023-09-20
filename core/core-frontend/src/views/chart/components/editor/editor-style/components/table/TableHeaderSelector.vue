@@ -12,7 +12,7 @@ const props = defineProps({
     required: true
   },
   themes: {
-    type: String,
+    type: String as PropType<EditorTheme>,
     default: 'dark'
   },
   propertyInner: {
@@ -207,7 +207,12 @@ onMounted(() => {
       </el-col>
     </el-row>
 
-    <el-form-item class="form-item" :class="'form-item-' + themes" v-if="showProperty('showIndex')">
+    <el-form-item
+      :label="t('chart.table_show_index')"
+      class="form-item"
+      :class="'form-item-' + themes"
+      v-if="showProperty('showIndex')"
+    >
       <el-checkbox
         size="small"
         :effect="themes"

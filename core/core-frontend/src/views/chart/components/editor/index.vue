@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { PropType, reactive, ref, watch, toRefs, computed, nextTick } from 'vue'
+import { PropType, reactive, ref, watch, toRefs, computed, nextTick, onMounted } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Field, getFieldByDQ, saveChart } from '@/api/chart'
@@ -36,6 +36,7 @@ import LabelSelector from '@/views/chart/components/editor/editor-style/componen
 import { getWorldTree } from '@/api/map'
 import chartViewManager from '@/views/chart/components/js/panel'
 import DatasetSelect from '@/views/chart/components/editor/dataset-select/DatasetSelect.vue'
+import { useDraggable } from '@vueuse/core'
 
 const snapshotStore = snapshotStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
@@ -891,6 +892,44 @@ const autoInsert = element => {
     view.value.customAttr.label.formatter += myValue
   }
 }
+
+const el = ref<HTMLElement | null>(null)
+const elDrag = ref<HTMLElement | null>(null)
+const { y, isDragging } = useDraggable(el, {
+  initialValue: { x: 0, y: 0 },
+  draggingElement: elDrag
+})
+const previewHeight = ref(0)
+const calcEle = () => {
+  nextTick(() => {
+    previewHeight.value = (elDrag.value as HTMLDivElement).offsetHeight
+    y.value = previewHeight.value / 2 + 200
+  })
+}
+
+watch(
+  () => curComponent.value,
+  val => {
+    if (!val || !!previewHeight.value) return
+    calcEle()
+  }
+)
+
+const fieldDHeight = computed(() => {
+  const h = y.value - 200
+  if (h < 53) {
+    return 53
+  }
+  return h > previewHeight.value - 50 ? previewHeight.value - 50 : h
+})
+
+const dragVerticalTop = computed(() => {
+  const h = y.value - 200
+  if (h < 50) {
+    return 50
+  }
+  return h > previewHeight.value - 53 ? previewHeight.value - 53 : h
+})
 </script>
 
 <template>
@@ -1569,8 +1608,14 @@ const autoInsert = element => {
                 </template>
               </el-input>
             </el-row>
-            <div style="height: calc(100% - 137px); min-height: 120px">
-              <div class="padding-lr field-height first" :class="{ dark: themes === 'dark' }">
+            <div ref="elDrag" style="height: calc(100% - 137px); min-height: 120px">
+              <div
+                class="padding-lr field-height first"
+                :class="{ dark: themes === 'dark', 'user-select': isDragging }"
+                :style="{
+                  height: fieldDHeight + 'px'
+                }"
+              >
                 <label>{{ t('chart.dimension') }}</label>
                 <el-scrollbar class="drag-list">
                   <draggable
@@ -1632,6 +1677,13 @@ const autoInsert = element => {
                     </template>
                   </draggable>
                 </el-scrollbar>
+                <div
+                  ref="el"
+                  :style="{
+                    top: dragVerticalTop + 'px'
+                  }"
+                  :class="['drag-vertical', isDragging && 'is-hovering']"
+                ></div>
               </div>
               <div class="padding-lr field-height" :class="{ dark: themes === 'dark' }">
                 <label>{{ t('chart.quota') }}</label>
@@ -2107,6 +2159,19 @@ span {
 
     &.first {
       border-top: none !important;
+      position: relative;
+    }
+
+    .drag-vertical {
+      width: 100%;
+      height: 3px;
+      position: absolute;
+      left: 0;
+      cursor: row-resize;
+
+      &.is-hovering {
+        background: #3370ff;
+      }
     }
 
     &.dark {

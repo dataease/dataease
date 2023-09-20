@@ -579,36 +579,76 @@ onMounted(() => {
       />
     </el-form-item>
     <!-- pie/rose start -->
-    <el-form-item
-      :label="t('chart.pie_inner_radius_percent')"
-      class="form-item"
-      :class="'form-item-' + themes"
-      v-if="showProperty('innerRadius')"
-    >
-      <el-slider
-        :effect="themes"
-        v-model="state.basicStyleForm.innerRadius"
-        :min="1"
-        :max="100"
-        @change="changeBasicStyle()"
-        show-input
-      />
-    </el-form-item>
-    <el-form-item
-      :label="t('chart.pie_outer_radius')"
-      class="form-item form-item-slider"
-      :class="'form-item-' + themes"
-      v-if="showProperty('radius')"
-    >
-      <el-slider
-        :effect="themes"
-        v-model="state.basicStyleForm.radius"
-        :min="1"
-        :max="100"
-        @change="changeBasicStyle()"
-        show-input
-      />
-    </el-form-item>
+
+    <div class="alpha-setting" v-if="showProperty('innerRadius')">
+      <label class="alpha-label" :class="{ dark: 'dark' === themes }">
+        {{ t('chart.pie_inner_radius_percent') }}
+      </label>
+      <el-row style="flex: 1" gutter="8">
+        <el-col :span="13">
+          <el-form-item class="form-item alpha-slider" :class="'form-item-' + themes">
+            <el-slider
+              :effect="themes"
+              v-model="state.basicStyleForm.innerRadius"
+              :min="1"
+              :max="100"
+              @change="changeBasicStyle()"
+            />
+          </el-form-item>
+        </el-col>
+        <el-col :span="11">
+          <el-form-item class="form-item" :class="'form-item-' + themes">
+            <el-input
+              type="number"
+              :effect="themes"
+              v-model="state.basicStyleForm.innerRadius"
+              :min="1"
+              :max="100"
+              class="alpha-input-number"
+              :controls="false"
+              @change="changeBasicStyle()"
+            >
+              <template #suffix> % </template>
+            </el-input>
+          </el-form-item>
+        </el-col>
+      </el-row>
+    </div>
+
+    <div class="alpha-setting" v-if="showProperty('radius')">
+      <label class="alpha-label" :class="{ dark: 'dark' === themes }">
+        {{ t('chart.pie_outer_radius') }}
+      </label>
+      <el-row style="flex: 1" gutter="8">
+        <el-col :span="13">
+          <el-form-item class="form-item alpha-slider" :class="'form-item-' + themes">
+            <el-slider
+              :effect="themes"
+              v-model="state.basicStyleForm.radius"
+              :min="1"
+              :max="100"
+              @change="changeBasicStyle()"
+            />
+          </el-form-item>
+        </el-col>
+        <el-col :span="11">
+          <el-form-item class="form-item" :class="'form-item-' + themes">
+            <el-input
+              type="number"
+              :effect="themes"
+              v-model="state.basicStyleForm.radius"
+              :min="1"
+              :max="100"
+              class="alpha-input-number"
+              :controls="false"
+              @change="changeBasicStyle()"
+            >
+              <template #suffix> % </template>
+            </el-input>
+          </el-form-item>
+        </el-col>
+      </el-row>
+    </div>
     <!-- pie/rose end -->
   </div>
 </template>
@@ -642,6 +682,8 @@ onMounted(() => {
     line-height: 32px;
     display: inline-flex;
     align-items: flex-start;
+
+    min-width: 56px;
 
     &.dark {
       color: #a6a6a6;
