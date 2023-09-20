@@ -141,6 +141,7 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
 
     @Override
     public List<VisualizationViewTableVO> viewTableDetailList(String dvId) {
+
         return extVisualizationLinkJumpMapper.getViewTableDetails(dvId);
     }
 

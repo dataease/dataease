@@ -94,7 +94,7 @@
             AND core_dataset_table_field.id = visualization_link_jump_info.source_field_id
                  LEFT JOIN visualization_link_jump_target_view_info
                            ON visualization_link_jump_info.id = visualization_link_jump_target_view_info.link_jump_info_id
-        WHERE core_chart_view.id = #{source_view_id}
+        WHERE core_chart_view.id = #{source_view_id} and core_chart_view.type != 'VQuery'
         ORDER BY CONVERT(core_dataset_table_field.NAME using gbk)
     </select>
 
