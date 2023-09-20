@@ -534,10 +534,11 @@ defineExpose({
 
     .title-form_primary {
       margin: 16px 0;
+      margin-top: 32px;
     }
 
     .info-table {
-      height: 400px;
+      height: calc(100% - 315px);
     }
   }
 }

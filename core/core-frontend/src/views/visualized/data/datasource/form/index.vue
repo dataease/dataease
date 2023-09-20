@@ -106,6 +106,19 @@ const selectDsType = (type: string) => {
   activeStep.value = 1
   activeApiStep.value = 1
   detail.value.initForm(type)
+  nextTick(() => {
+    if (!dsTree.value) return
+    currentTypeList.value
+      .map(ele => ele.dbList)
+      .flat()
+      .some(ele => {
+        if (ele.type === currentDsType.value) {
+          dsTree.value.setCurrentNode(ele)
+          return true
+        }
+        return false
+      })
+  })
 }
 
 const handleDsNodeClick = data => {
@@ -517,6 +530,7 @@ defineExpose({
           v-if="activeStep > 0"
           ref="dsTree"
           :data="currentTypeList"
+          nodeKey="name"
           :props="defaultProps"
           :filter-node-method="filterNode"
           @node-click="handleDsNodeClick"

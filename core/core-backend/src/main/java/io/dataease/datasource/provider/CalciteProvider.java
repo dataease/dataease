@@ -266,7 +266,7 @@ public class CalciteProvider {
                             JdbcSchema jdbcSchema = rootSchema.getSubSchema(ds.getSchemaAlias()).unwrap(JdbcSchema.class);
                             BasicDataSource basicDataSource = (BasicDataSource) jdbcSchema.getDataSource();
                             basicDataSource.close();
-                            //TODO rootSchema.remove(subSchema)
+                            rootSchema.removeSubSchema(ds.getSchemaAlias());
                         }
                         switch (datasourceType) {
                             case mysql:
@@ -705,7 +705,7 @@ public class CalciteProvider {
                 JdbcSchema jdbcSchema = rootSchema.getSubSchema(datasourceSchemaDTO.getSchemaAlias()).unwrap(JdbcSchema.class);
                 BasicDataSource basicDataSource = (BasicDataSource) jdbcSchema.getDataSource();
                 basicDataSource.close();
-                //TODO rootSchema.remove(subSchema)
+                rootSchema.removeSubSchema(datasourceSchemaDTO.getSchemaAlias());
             }
         } catch (Exception e) {
             DEException.throwException(e);
