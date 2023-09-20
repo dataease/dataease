@@ -1875,13 +1875,21 @@ const treeProps = {
           .drag {
             position: absolute;
             top: 4px;
-            left: 50%;
-            transform: translateX(-50%);
+            left: 0;
             height: 7px;
-            width: 100px;
-            border-radius: 3.5px;
-            background: rgba(31, 35, 41, 0.1);
+            width: 100%;
             cursor: row-resize;
+            &::after {
+              content: '';
+              height: 7px;
+              width: 100px;
+              border-radius: 3.5px;
+              position: absolute;
+              left: 50%;
+              top: 0;
+              transform: translateX(-50%);
+              background: rgba(31, 35, 41, 0.1);
+            }
           }
         }
 
