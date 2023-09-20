@@ -1213,7 +1213,7 @@ export const DEFAULT_BASIC_STYLE: ChartBasicStyle = {
   mapSymbol: 'circle',
   mapSymbolSize: 20,
   radius: 100,
-  innerRadius: 40
+  innerRadius: 60
 }
 
 export const BASE_VIEW_CONFIG = {
