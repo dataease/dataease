@@ -124,7 +124,7 @@
             core_chart_view
                 LEFT JOIN core_dataset_table_field ON core_chart_view.table_id = core_dataset_table_field.dataset_group_id
         WHERE
-            core_chart_view.scene_id = #{dvId}
+            core_chart_view.scene_id = #{dvId} and core_chart_view.type != 'VQuery'
     </select>
 
     <select id="queryWithViewId" resultMap="BaseResultMapDTO">

@@ -20,9 +20,7 @@ const backToMain = () => {
         </el-icon>
         <span class="work">返回工作台</span>
       </span>
-      <el-icon class="avatar">
-        <icon name="default_avatar"></icon>
-      </el-icon>
+
       <AccountOperator />
     </div>
   </el-header>
