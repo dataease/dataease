@@ -332,7 +332,11 @@ public class DatasetSQLManage {
             BusiPerCheckDTO dto = new BusiPerCheckDTO();
             dto.setId(ds.getDatasourceId());
             dto.setAuthEnum(AuthEnum.READ);
-            interactiveAuthApi.checkAuth(dto);
+            try {
+                interactiveAuthApi.checkAuth(dto);
+            } catch (Exception e) {
+                DEException.throwException(Translator.get("i18n_no_datasource_permission"));
+            }
         }
 
         String schemaAlias;
