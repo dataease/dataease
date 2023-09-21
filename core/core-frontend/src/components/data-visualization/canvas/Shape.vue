@@ -347,7 +347,6 @@ const handleBoardMouseDownOnShape = e => {
 
 const handleInnerMouseDownOnShape = e => {
   dvMainStore.setCurComponent({ component: element.value, index: index.value })
-  console.log('handleInnerMouseDownOnShape==')
   // 边界区域拖拽 返回
   if (boardMoveActive.value) {
     e.stopPropagation()
@@ -719,7 +718,6 @@ const tabMoveInCheck = async () => {
         // 右下角靠近右下角区域
         const activeBrAndBr = activeT + activeH >= top + height && activeL + activeW >= left + width
         if (activeTfAndTf && activeBfAndBf && activeTrAndTr && activeBrAndBr) {
-          console.log('MoveInActive=====')
           dvMainStore.setTabMoveInActiveId(componentId)
         } else if (tabMoveInActiveId.value === componentId) {
           dvMainStore.setTabMoveInActiveId(null)

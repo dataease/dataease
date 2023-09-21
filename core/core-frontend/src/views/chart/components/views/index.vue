@@ -71,7 +71,7 @@ const props = defineProps({
   showPosition: {
     type: String,
     required: false,
-    default: 'canvas'
+    default: 'preview'
   },
   // 仪表板刷新计时器
   searchCount: {
@@ -415,6 +415,7 @@ initTitle()
         :element="element"
         :disabled="!['canvas', 'canvasDataV'].includes(showPosition)"
         :active="active"
+        :show-position="showPosition"
       />
       <chart-component-g2-plot
         :dynamic-area-id="dynamicAreaId"
