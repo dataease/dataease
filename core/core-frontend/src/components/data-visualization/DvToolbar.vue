@@ -161,16 +161,16 @@ eventBus.on('clearCanvas', clearCanvas)
           dvInfo.name
         }}</span>
         <div class="opt-area">
-          <el-icon class="opt-icon-undo" @click="undo()">
+          <el-tooltip effect="dark" :content="$t('visualization.undo')" placement="bottom">
+            <el-icon class="toolbar-hover-icon" @click="undo()">
+              <Icon
+                :class="{ 'toolbar-icon-disabled': snapshotIndex < 1 }"
+                name="icon_undo_outlined"
+              ></Icon>
+            </el-icon>
+          </el-tooltip>
+          <el-icon class="toolbar-hover-icon opt-icon-redo" @click="redo()">
             <Icon
-              class="toolbar-hover-icon"
-              :class="{ 'toolbar-icon-disabled': snapshotIndex < 1 }"
-              name="icon_undo_outlined"
-            ></Icon>
-          </el-icon>
-          <el-icon class="opt-icon-redo" @click="redo()">
-            <Icon
-              class="toolbar-hover-icon"
               :class="{
                 'toolbar-icon-disabled': snapshotIndex === snapshotStore.snapshotData.length - 1
               }"
@@ -290,12 +290,9 @@ eventBus.on('clearCanvas', clearCanvas)
       width: 300px;
       text-align: left;
       color: #a6a6a6;
-      .opt-icon-undo {
-        font-size: 22px;
-      }
+
       .opt-icon-redo {
         margin-left: 12px;
-        font-size: 22px;
       }
     }
   }

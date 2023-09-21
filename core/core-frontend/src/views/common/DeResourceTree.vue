@@ -359,14 +359,14 @@ onMounted(() => {
 </template>
 <style lang="less" scoped>
 .resource-tree {
-  padding: 16px 8px 0;
+  padding: 16px 0 0;
   width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
 
   .tree-header {
-    padding: 0 8px;
+    padding: 0 16px;
   }
 
   .icon-methods {
@@ -430,6 +430,7 @@ onMounted(() => {
 
 .custom-tree {
   height: calc(100vh - 148px);
+  padding: 0 8px;
 }
 
 .custom-tree-node {

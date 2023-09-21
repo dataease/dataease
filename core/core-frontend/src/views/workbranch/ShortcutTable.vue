@@ -29,14 +29,6 @@ const state = reactive({
 })
 const busiDataMap = computed(() => interactiveStore.getData)
 
-const handleVisibleChange = (val: boolean) => {
-  userAddPopper.value = val
-}
-
-const handleCommand = (command: string) => {
-  activeCommand.value = command
-  loadTableData()
-}
 const handleClick = (ele: TabsPaneContext) => {
   if (ele.paneName === 'recent' || ele.paneName === 'store') {
     loading.value = true
@@ -156,36 +148,19 @@ const setLoading = (val: boolean) => {
     <XpackComponent :active-name="activeName" jsname="c2hhcmU=" @set-loading="setLoading" />
     <el-row v-if="activeName === 'recent' || activeName === 'store'">
       <el-col :span="12">
-        <el-dropdown
-          placement="bottom-start"
-          @visible-change="handleVisibleChange"
+        <el-select
           popper-class="menu-panel-select_popper"
-          @command="handleCommand"
-          trigger="click"
+          class="select-type-list"
+          v-model="activeCommand"
+          @change="loadTableData"
         >
-          <el-button secondary class="type-button">
-            {{ t(`auth.${activeCommand}`) }}
-            <el-icon style="margin-left: 4px; font-size: 16px; color: #646a73">
-              <arrow-up v-if="userAddPopper" />
-              <arrow-down v-else />
-            </el-icon>
-          </el-button>
-          <template #dropdown>
-            <el-dropdown-menu>
-              <el-dropdown-item
-                :class="activeCommand === ele && 'active'"
-                v-for="ele in state.curTypeList"
-                :command="ele"
-                :key="ele"
-              >
-                {{ t(`auth.${ele}`) }}
-                <el-icon v-if="activeCommand === ele">
-                  <Icon name="icon_done_outlined"></Icon>
-                </el-icon>
-              </el-dropdown-item>
-            </el-dropdown-menu>
-          </template>
-        </el-dropdown>
+          <el-option
+            v-for="item in state.curTypeList"
+            :key="item"
+            :label="t(`auth.${item}`)"
+            :value="item"
+          />
+        </el-select>
       </el-col>
       <el-col class="search" :span="12">
         <el-input
@@ -266,6 +241,10 @@ const setLoading = (val: boolean) => {
   height: calc(100% - 280px);
   margin-top: 16px;
 
+  .select-type-list {
+    width: 104px;
+  }
+
   &.expand {
     height: calc(100% - 89px);
   }
@@ -311,6 +290,28 @@ const setLoading = (val: boolean) => {
     .name-star {
       font-size: 15px;
       padding-left: 5px;
+    }
+  }
+}
+</style>
+<style lang="less">
+.menu-panel-select_popper {
+  .ed-select-dropdown__item {
+    height: 32px;
+    line-height: 32px;
+    padding: 0 11px;
+    position: relative;
+    &.selected::after {
+      position: absolute;
+      content: '';
+      width: 7px;
+      height: 4px;
+      top: 13px;
+      right: 11px;
+      border: 1px solid #3370ff;
+      border-right: transparent;
+      border-top: transparent;
+      transform: rotate(314deg);
     }
   }
 }

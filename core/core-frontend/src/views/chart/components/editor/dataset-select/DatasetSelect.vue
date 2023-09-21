@@ -499,6 +499,8 @@ onMounted(() => {
         font-weight: 400;
         line-height: 20px;
 
+        padding-right: 11px;
+
         &::-webkit-scrollbar {
           display: none;
         }
