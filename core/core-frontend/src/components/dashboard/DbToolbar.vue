@@ -323,16 +323,16 @@ const saveLinkageSetting = () => {
       <div class="left-area" v-show="editMode === 'edit' && !batchOptStatus">
         <span id="canvas-name" class="name-area" @dblclick="editCanvasName">{{ dvInfo.name }}</span>
         <div class="opt-area">
-          <el-icon class="opt-icon-undo" @click="undo()">
+          <el-tooltip effect="dark" :content="$t('visualization.undo')" placement="bottom">
+            <el-icon class="toolbar-hover-icon" @click="undo()">
+              <Icon
+                :class="{ 'toolbar-icon-disabled': snapshotIndex < 1 }"
+                name="icon_undo_outlined"
+              ></Icon>
+            </el-icon>
+          </el-tooltip>
+          <el-icon class="toolbar-hover-icon opt-icon-redo" @click="redo()">
             <Icon
-              class="toolbar-hover-icon"
-              :class="{ 'toolbar-icon-disabled': snapshotIndex < 1 }"
-              name="icon_undo_outlined"
-            ></Icon>
-          </el-icon>
-          <el-icon class="opt-icon-redo" @click="redo()">
-            <Icon
-              class="toolbar-hover-icon"
               :class="{
                 'toolbar-icon-disabled': snapshotIndex === snapshotStore.snapshotData.length - 1
               }"
@@ -387,13 +387,18 @@ const saveLinkageSetting = () => {
           @custom-click="batchOptStatusChange(true)"
           icon-name="dv-batch"
         ></component-button>
-        <component-button
-          tips="仪表板配置"
-          @custom-click="openDataBoardSetting"
-          icon-name="dv-dashboard"
-        ></component-button>
+
+        <el-tooltip effect="dark" content="仪表板配置" placement="bottom">
+          <component-button
+            tips="仪表板配置"
+            @custom-click="openDataBoardSetting"
+            icon-name="dv-dashboard"
+          ></component-button>
+        </el-tooltip>
         <el-divider direction="vertical" />
-        <component-button tips="移动端布局" icon-name="dv_mobile_layout"></component-button>
+        <el-tooltip effect="dark" content="切换至移动端布局" placement="bottom">
+          <component-button tips="移动端布局" icon-name="dv_mobile_layout"></component-button>
+        </el-tooltip>
 
         <el-dropdown v-show="editMode === 'edit'" trigger="click">
           <el-button class="custom-normal-button" style="float: right; margin-right: 12px"
@@ -550,12 +555,9 @@ const saveLinkageSetting = () => {
       width: 300px;
       text-align: left;
       color: #a6a6a6;
-      .opt-icon-undo {
-        font-size: 18px;
-      }
+
       .opt-icon-redo {
         margin-left: 12px;
-        font-size: 18px;
       }
     }
   }
