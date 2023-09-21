@@ -30,7 +30,7 @@ export default {
   login: {
     welcome: '欢迎使用',
     btn: '登录',
-    username_format: '1-25位字母数字或者._-@且以字母或数字开头',
+    username_format: "1-25位字母数字或者._-{'@'}且以字母或数字开头",
     pwd_format: '密码长度在5-15'
   },
   component: {

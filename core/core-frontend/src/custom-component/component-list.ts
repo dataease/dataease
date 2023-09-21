@@ -33,7 +33,7 @@ export const COMMON_COMPONENT_BACKGROUND_DARK = {
 
 export const COMMON_COMPONENT_BACKGROUND_SCREEN_DARK = {
   ...COMMON_COMPONENT_BACKGROUND_BASE,
-  alpha: 35,
+  backgroundColorSelect: false,
   backgroundColor: '#131E42',
   innerImageColor: '#1094E5'
 }

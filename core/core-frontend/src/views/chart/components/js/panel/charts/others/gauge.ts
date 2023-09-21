@@ -10,7 +10,7 @@ import {
   DEFAULT_THRESHOLD,
   getScaleValue
 } from '@/views/chart/components/editor/util/chart'
-import { valueFormatter } from '@/views/chart/components/editor/util/formatter'
+import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { getPadding, setGradientColor } from '@/views/chart/components/js/panel/common/common_antv'
 import { useI18n } from '@/hooks/web/useI18n'
 

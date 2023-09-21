@@ -1,8 +1,7 @@
 <script lang="tsx" setup>
 import { useI18n } from '@/hooks/web/useI18n'
-import { defineProps, reactive, toRefs, watch } from 'vue'
-import { formatterType, unitType } from '@/views/chart/components/editor/util/formatter'
-import { valueFormatter } from '@/views/chart/components/js/formatter'
+import { defineProps, reactive, toRefs } from 'vue'
+import { formatterType, unitType, valueFormatter } from '@/views/chart/components/js/formatter'
 
 const { t } = useI18n()
 
@@ -55,10 +54,11 @@ getExampleValue()
       </el-form-item>
 
       <el-form-item
-        v-show="formatterItem.formatterCfg.type !== 'auto'"
+        v-if="formatterItem.formatterCfg.type !== 'auto'"
         :label="t('chart.value_formatter_decimal_count')"
       >
         <el-input-number
+          controls-position="right"
           v-model="formatterItem.formatterCfg.decimalCount"
           :min="0"
           :max="10"
@@ -67,7 +67,7 @@ getExampleValue()
       </el-form-item>
 
       <el-form-item
-        v-show="formatterItem.formatterCfg.type !== 'percent'"
+        v-if="formatterItem.formatterCfg.type !== 'percent'"
         :label="t('chart.value_formatter_unit')"
       >
         <el-select

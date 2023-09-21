@@ -1568,6 +1568,7 @@ defineExpose({
     <canvas-opt-bar
       :canvas-style-data="canvasStyleData"
       :component-data="componentData"
+      :canvas-id="canvasId"
     ></canvas-opt-bar>
     <!-- 网格线 -->
     <drag-shadow
@@ -1618,6 +1619,7 @@ defineExpose({
         :element="item"
         :request="item.request"
         @input="handleInput"
+        :dv-info="dvInfo"
       />
 
       <component

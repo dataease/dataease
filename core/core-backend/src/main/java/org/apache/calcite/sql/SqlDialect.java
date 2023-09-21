@@ -16,6 +16,9 @@
  */
 package org.apache.calcite.sql;
 
+import com.google.common.base.Preconditions;
+import com.google.common.base.Suppliers;
+import com.google.common.collect.ImmutableSet;
 import org.apache.calcite.avatica.util.Casing;
 import org.apache.calcite.avatica.util.Quoting;
 import org.apache.calcite.avatica.util.TimeUnit;
@@ -38,11 +41,8 @@ import org.apache.calcite.sql.type.AbstractSqlType;
 import org.apache.calcite.sql.type.SqlTypeUtil;
 import org.apache.calcite.sql.validate.SqlConformance;
 import org.apache.calcite.sql.validate.SqlConformanceEnum;
-
-import com.google.common.base.Preconditions;
-import com.google.common.base.Suppliers;
-import com.google.common.collect.ImmutableSet;
-
+import org.apache.calcite.util.format.FormatModel;
+import org.apache.calcite.util.format.FormatModels;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.qual.Pure;
 import org.slf4j.Logger;
@@ -57,9 +57,8 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import static org.apache.calcite.util.DateTimeStringUtils.getDateFormatter;
-
 import static java.util.Objects.requireNonNull;
+import static org.apache.calcite.util.DateTimeStringUtils.getDateFormatter;
 
 /**
  * <code>SqlDialect</code> encapsulates the differences between dialects of SQL.
@@ -478,8 +477,8 @@ public class SqlDialect {
         writer.sep((SqlKind.PLUS == sqlKind) ? "+" : "-");
         call.operand(1).unparse(writer, leftPrec, rightPrec);
         writer.endList(frame);
-        //Only two parameters are present normally
-        //Checking parameter count to prevent errors
+        // Only two parameters are present normally.
+        // Checking parameter count to prevent errors.
         if (call.getOperandList().size() > 2) {
             call.operand(2).unparse(writer, leftPrec, rightPrec);
         }
@@ -727,18 +726,18 @@ public class SqlDialect {
     /**
      * Returns whether the dialect supports GROUP BY literals.
      *
-     * <p>For instance, in {@link DatabaseProduct#REDSHIFT}, the following queries are illegal.</p>
-     * <pre>{@code
+     * <p>For instance, in {@link DatabaseProduct#REDSHIFT}, the following queries
+     * are illegal:
+     *
+     * <blockquote><pre>{@code
      * select avg(salary)
      * from emp
      * group by true
-     * }</pre>
      *
-     * <pre>{@code
      * select avg(salary)
      * from emp
      * group by 'a', DATE '2022-01-01'
-     * }</pre>
+     * }</pre></blockquote>
      */
     public boolean supportsGroupByLiteral() {
         return true;
@@ -867,9 +866,9 @@ public class SqlDialect {
 
     /**
      * Rewrite SINGLE_VALUE into expression based on database variants
-     * E.g. HSQLDB, MYSQL, ORACLE, etc
+     * E.g. HSQLDB, MYSQL, ORACLE, etc.
      */
-    public SqlNode rewriteSingleValueExpr(SqlNode aggCall) {
+    public SqlNode rewriteSingleValueExpr(SqlNode aggCall, RelDataType relDataType) {
         LOGGER.debug("SINGLE_VALUE rewrite not supported for {}", databaseProduct);
         return aggCall;
     }
@@ -1021,6 +1020,18 @@ public class SqlDialect {
             offset.unparse(writer, -1, -1);
             writer.endList(offsetFrame);
         }
+    }
+
+    /**
+     * Returns a description of the format string used by functions in this
+     * dialect.
+     *
+     * <p>Dialects may need to override this element mapping if they differ from
+     * <a href="https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/Format-Models.html">
+     * Oracle's format elements</a>. By default, this returns {@link FormatModels#DEFAULT}.
+     */
+    public FormatModel getFormatModel() {
+        return FormatModels.DEFAULT;
     }
 
     /**

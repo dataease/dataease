@@ -380,19 +380,35 @@ export function adaptCurThemeCommonStyle(component) {
   // 背景融合-End
   // 通用样式-Begin
   if (component.style.color) {
-    if (dvMainStore.canvasStyleData.component.themeColor === 'light') {
+    if (dvMainStore.canvasStyleData.dashboard.themeColor === 'light') {
       component.style.color = LIGHT_THEME_COLOR_MAIN
     } else {
       component.style.color = DARK_THEME_COLOR_MAIN
     }
   }
-  // 通用样式-End
   if (component.component === 'UserView') {
     // 图表-Begin
     const curViewInfo = dvMainStore.canvasViewInfo[component.id]
     adaptCurTheme(curViewInfo.customStyle, curViewInfo.customAttr)
     useEmitt().emitter.emit('renderChart-' + component.id, curViewInfo)
     // 图表-Begin
+  } else if (component.component === 'Group') {
+    component.propValue.forEach(groupItem => {
+      adaptCurThemeCommonStyle(groupItem)
+    })
+  } else if (component.component === 'DeTabs') {
+    if (dvMainStore.canvasStyleData.dashboard.themeColor === 'light') {
+      component.style.headFontColor = LIGHT_THEME_COLOR_MAIN
+      component.style.headFontActiveColor = LIGHT_THEME_COLOR_MAIN
+    } else {
+      component.style.headFontColor = DARK_THEME_COLOR_MAIN
+      component.style.headFontActiveColor = DARK_THEME_COLOR_MAIN
+    }
+    component.propValue.forEach(tabItem => {
+      tabItem.componentData.forEach(tabComponent => {
+        adaptCurThemeCommonStyle(tabComponent)
+      })
+    })
   }
   return component
 }

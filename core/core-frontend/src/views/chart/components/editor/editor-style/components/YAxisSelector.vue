@@ -2,7 +2,7 @@
 import { computed, onMounted, PropType, reactive, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL, DEFAULT_YAXIS_STYLE } from '@/views/chart/components/editor/util/chart'
-import { formatterType, unitType } from '@/views/chart/components/editor/util/formatter'
+import { formatterType, unitType } from '@/views/chart/components/js/formatter'
 import { ElMessage } from 'element-plus-secondary'
 
 const { t } = useI18n()
@@ -382,55 +382,59 @@ onMounted(() => {
         </el-form-item>
 
         <template v-if="showProperty('axisLabelFormatter')">
-          <el-row :gutter="8">
-            <el-col :span="state.axisForm.axisLabelFormatter.type !== 'auto' ? 12 : 24">
+          <el-form-item
+            class="form-item"
+            :class="'form-item-' + themes"
+            :label="t('chart.value_formatter_type')"
+          >
+            <el-select
+              :disabled="!state.axisForm.axisLabel.show"
+              style="width: 100%"
+              :effect="props.themes"
+              v-model="state.axisForm.axisLabelFormatter.type"
+              @change="changeAxisStyle('axisLabelFormatter')"
+            >
+              <el-option
+                v-for="type in typeList"
+                :key="type.value"
+                :label="t('chart.' + type.name)"
+                :value="type.value"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item
+            v-if="state.axisForm.axisLabelFormatter.type !== 'auto'"
+            :label="t('chart.value_formatter_decimal_count')"
+            class="form-item"
+            :class="'form-item-' + themes"
+          >
+            <el-input-number
+              :disabled="!state.axisForm.axisLabel.show"
+              style="width: 100%"
+              :effect="props.themes"
+              v-model="state.axisForm.axisLabelFormatter.decimalCount"
+              :precision="0"
+              :min="0"
+              :max="10"
+              size="small"
+              controls-position="right"
+              @change="changeAxisStyle('axisLabelFormatter')"
+            />
+          </el-form-item>
+
+          <el-row
+            :gutter="8"
+            v-if="
+              state.axisForm.axisLabel.show && state.axisForm.axisLabelFormatter.type !== 'percent'
+            "
+          >
+            <el-col :span="12">
               <el-form-item
                 class="form-item"
                 :class="'form-item-' + themes"
-                :label="t('chart.value_formatter_type')"
+                :label="t('chart.value_formatter_unit')"
               >
                 <el-select
-                  :disabled="!state.axisForm.axisLabel.show"
-                  style="width: 100%"
-                  :effect="props.themes"
-                  v-model="state.axisForm.axisLabelFormatter.type"
-                  @change="changeAxisStyle('axisLabelFormatter')"
-                >
-                  <el-option
-                    v-for="type in typeList"
-                    :key="type.value"
-                    :label="t('chart.' + type.name)"
-                    :value="type.value"
-                  />
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12" v-if="state.axisForm.axisLabelFormatter.type !== 'auto'">
-              <el-form-item :label="t('chart.value_formatter_decimal_count')">
-                <el-input-number
-                  :disabled="!state.axisForm.axisLabel.show"
-                  style="width: 100%"
-                  :effect="props.themes"
-                  v-model="state.axisForm.axisLabelFormatter.decimalCount"
-                  :precision="0"
-                  :min="0"
-                  :max="10"
-                  size="small"
-                  controls-position="right"
-                  @change="changeAxisStyle('axisLabelFormatter')"
-                />
-              </el-form-item>
-            </el-col>
-          </el-row>
-
-          <el-row :gutter="8">
-            <el-col :span="12">
-              <el-form-item :label="t('chart.value_formatter_unit')">
-                <el-select
-                  :disabled="
-                    !state.axisForm.axisLabel.show ||
-                    state.axisForm.axisLabelFormatter.type === 'percent'
-                  "
                   :effect="props.themes"
                   v-model="state.axisForm.axisLabelFormatter.unit"
                   :placeholder="t('chart.pls_select_field')"

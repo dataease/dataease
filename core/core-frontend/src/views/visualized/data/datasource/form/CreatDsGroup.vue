@@ -5,6 +5,7 @@ import { listDatasources, save } from '@/api/datasource'
 import { ElMessage } from 'element-plus-secondary'
 import type { DatasetOrFolder } from '@/api/dataset'
 import nothingTree from '@/assets/img/nothing-tree.png'
+import { useCache } from '@/hooks/web/useCache'
 
 export interface Tree {
   name: string
@@ -21,6 +22,7 @@ export interface Tree {
   request: any
 }
 const { t } = useI18n()
+const { wsCache } = useCache()
 
 const state = reactive({
   tData: []
@@ -204,6 +206,7 @@ const nodeClick = (data: Tree) => {
 }
 
 const successCb = () => {
+  wsCache.set('ds-new-success', true)
   datasource.value.resetFields()
   request = null
   datasetForm.pid = ''
@@ -248,6 +251,7 @@ const saveDataset = () => {
         save({ ...request, name: datasetForm.name, pid: params.pid })
           .then(res => {
             if (res !== undefined) {
+              wsCache.set('ds-new-success', true)
               emits('handleShowFinishPage', res)
               ElMessage.success('保存数据源成功')
               successCb()

@@ -53,7 +53,7 @@ export default {
   login: {
     welcome: '欢迎使用',
     btn: '登录',
-    username_format: '1-25位字母数字或者._-@且以字母或数字开头',
+    username_format: "1-25位字母数字或者._-:{'@'}且以字母或数字开头",
     pwd_format: '密码长度在5-15',
     default_login: '默认'
   },
@@ -232,7 +232,7 @@ export default {
     auth_alone: '单独授权',
     org_role_empty: '组织管理员已拥有所有资源的权限，无需再授权',
     user_role_empty: '该用户是组织管理员，已拥有所有资源的权限，无需再授权',
-    sysParams: '系统参数',
+    sysParams: '系统变量',
     set_rules: '设置规则',
     inner_role_tips: '系统内置角色，权限无法编辑'
   },
@@ -254,7 +254,7 @@ export default {
     ds_info: '录入数据源信息',
     sync_info: '数据同步设置',
     input_name: '请输入名称',
-    input_limit_2_25: '2-25字符',
+    input_limit_2_25: '{0}-{1}字符',
     input_limit_2_50: '2-50字符',
     data_source_configuration: '数据源配置',
     data_source_table: '数据源表',

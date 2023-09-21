@@ -50,7 +50,7 @@ const viewEditorShow = computed(() => {
 // 全局监听按键事件
 onMounted(() => {
   initDataset()
-  const { resourceId, opt } = window.DataEaseBi || router.currentRoute.value.query
+  const { resourceId, opt, pid } = window.DataEaseBi || router.currentRoute.value.query
   if (resourceId) {
     dataInitState.value = false
     initCanvasData(resourceId, function () {
@@ -61,6 +61,8 @@ onMounted(() => {
     dvMainStore.createInit('dashboard')
     nextTick(() => {
       dataInitState.value = true
+      // preOpt
+      canvasStyleData.value.component.chartTitle.color = '#000000'
     })
   } else {
     ElMessage.error('未获取资源ID')

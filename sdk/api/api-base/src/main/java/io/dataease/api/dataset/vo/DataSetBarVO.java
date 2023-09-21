@@ -2,10 +2,12 @@ package io.dataease.api.dataset.vo;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import io.dataease.api.ds.vo.DatasourceDTO;
 import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 public class DataSetBarVO implements Serializable {
@@ -30,4 +32,6 @@ public class DataSetBarVO implements Serializable {
     private String updateBy;
 
     private String updater;
+
+    private List<DatasourceDTO> datasourceDTOList;
 }

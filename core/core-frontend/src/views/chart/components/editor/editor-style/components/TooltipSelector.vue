@@ -5,7 +5,7 @@ import { COLOR_PANEL, DEFAULT_TOOLTIP } from '@/views/chart/components/editor/ut
 import { ElSpace } from 'element-plus-secondary'
 import cloneDeep from 'lodash-es/cloneDeep'
 import defaultsDeep from 'lodash-es/defaultsDeep'
-import { formatterType, unitList } from '../../../js/formatter'
+import { formatterType, unitType } from '../../../js/formatter'
 
 const { t } = useI18n()
 
@@ -138,50 +138,45 @@ onMounted(() => {
       </el-form-item>
     </el-space>
     <template v-if="showProperty('tooltipFormatter')">
-      <el-row :gutter="8">
-        <el-col :span="state.tooltipForm.tooltipFormatter.type !== 'auto' ? 12 : 24">
-          <el-form-item
-            :label="t('chart.value_formatter_type')"
-            class="form-item"
-            :class="'form-item-' + themes"
-          >
-            <el-select
-              style="width: 100%"
-              :effect="props.themes"
-              v-model="state.tooltipForm.tooltipFormatter.type"
-              @change="changeTooltipAttr('tooltipFormatter')"
-            >
-              <el-option
-                v-for="type in formatterType"
-                :key="type.value"
-                :label="t('chart.' + type.name)"
-                :value="type.value"
-              />
-            </el-select>
-          </el-form-item>
-        </el-col>
-        <el-col :span="12" v-if="state.tooltipForm.tooltipFormatter.type !== 'auto'">
-          <el-form-item
-            :label="t('chart.value_formatter_decimal_count')"
-            class="form-item"
-            :class="'form-item-' + themes"
-          >
-            <el-input-number
-              controls-position="right"
-              style="width: 100%"
-              :effect="props.themes"
-              v-model="state.tooltipForm.tooltipFormatter.decimalCount"
-              :precision="0"
-              :min="0"
-              :max="10"
-              size="small"
-              @change="changeTooltipAttr('tooltipFormatter')"
-            />
-          </el-form-item>
-        </el-col>
-      </el-row>
+      <el-form-item
+        :label="t('chart.value_formatter_type')"
+        class="form-item"
+        :class="'form-item-' + themes"
+      >
+        <el-select
+          style="width: 100%"
+          :effect="props.themes"
+          v-model="state.tooltipForm.tooltipFormatter.type"
+          @change="changeTooltipAttr('tooltipFormatter')"
+        >
+          <el-option
+            v-for="type in formatterType"
+            :key="type.value"
+            :label="t('chart.' + type.name)"
+            :value="type.value"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item
+        v-if="state.tooltipForm.tooltipFormatter.type !== 'auto'"
+        :label="t('chart.value_formatter_decimal_count')"
+        class="form-item"
+        :class="'form-item-' + themes"
+      >
+        <el-input-number
+          controls-position="right"
+          style="width: 100%"
+          :effect="props.themes"
+          v-model="state.tooltipForm.tooltipFormatter.decimalCount"
+          :precision="0"
+          :min="0"
+          :max="10"
+          size="small"
+          @change="changeTooltipAttr('tooltipFormatter')"
+        />
+      </el-form-item>
 
-      <el-row :gutter="8">
+      <el-row :gutter="8" v-if="state.tooltipForm.tooltipFormatter.type !== 'percent'">
         <el-col :span="12">
           <el-form-item
             :label="t('chart.value_formatter_unit')"
@@ -197,7 +192,7 @@ onMounted(() => {
               @change="changeTooltipAttr('tooltipFormatter')"
             >
               <el-option
-                v-for="item in unitList"
+                v-for="item in unitType"
                 :key="item.value"
                 :label="t('chart.' + item.name)"
                 :value="item.value"

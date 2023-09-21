@@ -2,11 +2,10 @@ import { TreemapOptions, Treemap as G2Treemap } from '@antv/g2plot/esm/plots/tre
 import { G2PlotChartView, G2PlotDrawOptions } from '../../types/impl/g2plot'
 import { flow, parseJson } from '../../../util'
 import { getPadding } from '../../common/common_antv'
-import { formatterItem, singleDimensionTooltipFormatter, valueFormatter } from '../../../formatter'
+import { valueFormatter } from '../../../formatter'
 import { Label } from '@antv/g2plot/lib/types/label'
 import { Datum } from '@antv/g2plot/esm/types/common'
 import { useI18n } from '@/hooks/web/useI18n'
-import { add } from 'mathjs'
 
 const { t } = useI18n()
 

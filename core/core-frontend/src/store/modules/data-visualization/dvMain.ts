@@ -637,9 +637,27 @@ export const dvMainStore = defineStore('dataVisualization', {
 
     clearPanelLinkageInfo() {
       this.componentData.forEach(item => {
-        if (item.linkageFilters && item.linkageFilters.length > 0) {
-          item.linkageFilters.splice(0, item.linkageFilters.length)
-          useEmitt().emitter.emit('query-data-' + item.id)
+        if (item.component === 'UserView') {
+          if (item.linkageFilters && item.linkageFilters.length > 0) {
+            item.linkageFilters.splice(0, item.linkageFilters.length)
+            useEmitt().emitter.emit('query-data-' + item.id)
+          }
+        } else if (item.component === 'Group') {
+          item.propValue.forEach(groupItem => {
+            if (groupItem.linkageFilters && groupItem.linkageFilters.length > 0) {
+              groupItem.linkageFilters.splice(0, groupItem.linkageFilters.length)
+              useEmitt().emitter.emit('query-data-' + groupItem.id)
+            }
+          })
+        } else if (item.component === 'DeTabs') {
+          item.propValue.forEach(tabItem => {
+            tabItem.componentData.forEach(tabComponent => {
+              if (tabComponent.linkageFilters && tabComponent.linkageFilters.length > 0) {
+                tabComponent.linkageFilters.splice(0, tabComponent.linkageFilters.length)
+                useEmitt().emitter.emit('query-data-' + tabComponent.id)
+              }
+            })
+          })
         }
       })
     },

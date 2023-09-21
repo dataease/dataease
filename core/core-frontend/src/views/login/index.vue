@@ -35,44 +35,28 @@ const state = reactive({
   uiInfo: {},
   footContent: ''
 })
-
-const checkUsername = (_rule: any, value: any, callback: any) => {
+const checkUsername = value => {
   if (!value) {
-    return callback(new Error(t('common.required')))
+    return true
   }
-  const pattern = '^[a-zA-Z0-9][a-zA-Z0-9\@._-]*$'
+  const pattern = /^[a-zA-Z0-9][a-zA-Z0-9\@._-]*$/
   const reg = new RegExp(pattern)
-  if (!reg.test(value)) {
-    callback(new Error(t('login.username_format')))
-  } else {
-    callback()
-  }
+  return reg.test(value)
 }
-const validatePwd = (_, value, callback) => {
+
+const validatePwd = value => {
+  if (!value) {
+    return true
+  }
   const pattern =
     /^.*(?=.{6,20})(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[~!@#$%^&*()_+\-\={}|":<>?`[\];',.\/])[a-zA-Z0-9~!@#$%^&*()_+\-\={}|":<>?`[\];',.\/]*$/
   const regep = new RegExp(pattern)
-  if (!regep.test(value)) {
-    const msg = t('user.pwd_pattern_error')
-    callback(new Error(msg))
-  } else {
-    callback()
-  }
+  return regep.test(value)
 }
+
 const rules = reactive<FormRules>({
-  username: [
-    { validator: checkUsername, trigger: 'blur' },
-    {
-      min: 1,
-      max: 25,
-      message: t('commons.input_limit', [1, 25]),
-      trigger: 'blur'
-    }
-  ],
-  password: [
-    { required: true, message: t('common.required'), trigger: 'blur' },
-    { required: true, validator: validatePwd, trigger: 'blur' }
-  ]
+  username: [{ required: true, message: t('common.required'), trigger: 'blur' }],
+  password: [{ required: true, message: t('common.required'), trigger: 'blur' }]
 })
 
 const activeName = ref('simple')
@@ -94,6 +78,10 @@ const handleLogin = () => {
   if (!formRef.value) return
   formRef.value.validate((valid: boolean) => {
     if (valid) {
+      if (!checkUsername(state.loginForm.username) || !validatePwd(state.loginForm.password)) {
+        ElMessage.error('用户名或密码错误')
+        return
+      }
       const name = state.loginForm.username.trim()
       const pwd = state.loginForm.password
       const param = { name: rsaEncryp(name), pwd: rsaEncryp(pwd) }
@@ -105,7 +93,7 @@ const handleLogin = () => {
           const queryRedirectPath = getCurLocation()
           router.push({ path: queryRedirectPath })
         })
-        .finally(() => {
+        .catch(() => {
           duringLogin.value = false
         })
     }
@@ -134,7 +122,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div v-show="contentShow" class="login-background">
+  <div v-show="contentShow" class="login-background" v-loading="duringLogin">
     <div class="login-container">
       <div class="login-image-content" v-loading="!axiosFinished">
         <div v-if="!loginImageUrl && axiosFinished" class="login-image" />
