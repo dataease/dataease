@@ -3,7 +3,7 @@ import { computed, onMounted, PropType, reactive, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL, DEFAULT_LABEL } from '@/views/chart/components/editor/util/chart'
 import { ElSpace } from 'element-plus-secondary'
-import { formatterType, unitList } from '../../../js/formatter'
+import { formatterType, unitType } from '../../../js/formatter'
 import { defaultsDeep, cloneDeep } from 'lodash-es'
 
 const { t } = useI18n()
@@ -245,7 +245,7 @@ onMounted(() => {
               @change="changeLabelAttr('labelFormatter')"
             >
               <el-option
-                v-for="item in unitList"
+                v-for="item in unitType"
                 :key="item.value"
                 :label="$t('chart.' + item.name)"
                 :value="item.value"
@@ -350,8 +350,8 @@ onMounted(() => {
           />
         </el-form-item>
 
-        <el-row :gutter="8">
-          <el-col :span="12" v-if="state.labelForm.quotaLabelFormatter.type !== 'percent'">
+        <el-row :gutter="8" v-if="state.labelForm.quotaLabelFormatter.type !== 'percent'">
+          <el-col :span="12">
             <el-form-item
               :label="t('chart.value_formatter_unit')"
               class="form-item"
