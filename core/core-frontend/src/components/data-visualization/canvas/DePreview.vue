@@ -94,7 +94,6 @@ const canvasStyle = computed(() => {
 })
 
 const getDownloadStatusMainHeight = () => {
-  console.log('getDownloadStatusMainHeight')
   const children = previewCanvas.value.childNodes
   let maxHeight = 0
 
@@ -133,7 +132,6 @@ const restore = () => {
       let canvasWidth = previewCanvas.value.clientWidth
       let canvasHeight = previewCanvas.value.clientHeight
       scaleWidth.value = Math.floor((canvasWidth * 100) / canvasStyleData.value.width)
-      console.log('scaleWidth=' + scaleWidth.value)
       if (dashboardActive.value) {
         cellWidth.value = canvasWidth / pcMatrixCount.value.x
         cellHeight.value = canvasHeight / pcMatrixCount.value.y

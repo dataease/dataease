@@ -3,7 +3,6 @@ import { computed } from 'vue'
 import { useLocaleStoreWithOut } from '@/store/modules/locale'
 const locale = useLocaleStoreWithOut()
 const getLocaleMap = computed(() => locale.getLocaleMap)
-console.log('getLocaleMaps', getLocaleMap)
 </script>
 
 <template>
