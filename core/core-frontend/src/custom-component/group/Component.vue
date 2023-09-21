@@ -24,10 +24,20 @@ const props = defineProps({
     type: String,
     required: false,
     default: 'canvas'
+  },
+  dvInfo: {
+    type: Object,
+    required: true
+  },
+  // 仪表板刷新计时器
+  searchCount: {
+    type: Number,
+    required: false,
+    default: 0
   }
 })
 
-const { propValue, element } = toRefs(props)
+const { propValue, element, dvInfo, searchCount } = toRefs(props)
 </script>
 
 <template>
@@ -39,8 +49,11 @@ const { propValue, element } = toRefs(props)
         :view-info="canvasViewInfo[item.id]"
         :key="index"
         :config="item"
+        :index="index"
+        :dv-info="dvInfo"
         :style="item.groupStyle"
         :show-position="showPosition"
+        :search-count="searchCount"
       />
     </div>
   </div>
