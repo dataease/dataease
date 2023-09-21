@@ -438,6 +438,14 @@ const drawTitle = computed(() => {
   return editDs.value ? t('datasource.modify') : '创建数据源'
 })
 
+const beforeClose = () => {
+  if (wsCache.get('ds-new-success')) {
+    emits('refresh')
+    wsCache.set('ds-new-success', false)
+  }
+  visible.value = false
+}
+
 defineExpose({
   init
 })
@@ -449,6 +457,7 @@ defineExpose({
     size="calc(100% - 100px)"
     modal-class="datasource-drawer-fullscreen"
     direction="btt"
+    :before-close="beforeClose"
     :show-close="false"
     v-model="visible"
   >
