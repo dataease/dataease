@@ -1,4 +1,4 @@
-<script lang="tsx" setup>
+<script lang="ts" setup>
 import { PropType, reactive, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ElMessage } from 'element-plus-secondary'
@@ -218,7 +218,6 @@ init()
 <template>
   <div @keydown.stop @keyup.stop style="width: 100%">
     <!--仪表盘-->
-    <span>------</span>
     <el-col v-show="showProperty('gaugeThreshold')">
       <el-form ref="thresholdForm" :model="state.thresholdForm" label-width="80px">
         <el-form-item

@@ -82,28 +82,6 @@ const showName = computed(() => {
   return !['newLeafAfter', 'move'].includes(cmd.value)
 })
 
-const rules = {
-  name: [
-    {
-      required: true,
-      message: t('commons.input_content'),
-      trigger: 'change'
-    },
-    {
-      max: 50,
-      message: t('commons.char_can_not_more_50'),
-      trigger: 'change'
-    },
-    { required: true, trigger: 'blur', validator: nameValidator }
-  ],
-  pid: [
-    {
-      required: true,
-      message: t('common.please_select'),
-      trigger: 'blur'
-    }
-  ]
-}
 let nameList = []
 const resourceFormRules = ref()
 
@@ -182,7 +160,28 @@ const optInit = (type, data: BusiTreeNode, exec, parentSelect = false) => {
   })
   cmd.value = exec
   resourceDialogShow.value = true
-  resourceFormRules.value = rules
+  resourceFormRules.value = {
+    name: [
+      {
+        required: true,
+        message: placeholder.value,
+        trigger: 'change'
+      },
+      {
+        max: 50,
+        message: t('commons.char_can_not_more_50'),
+        trigger: 'change'
+      },
+      { required: true, trigger: 'blur', validator: nameValidator }
+    ],
+    pid: [
+      {
+        required: true,
+        message: t('common.please_select'),
+        trigger: 'blur'
+      }
+    ]
+  }
 }
 
 const editeInit = (param: BusiTreeNode) => {

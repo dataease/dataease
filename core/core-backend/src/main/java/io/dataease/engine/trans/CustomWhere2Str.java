@@ -65,8 +65,11 @@ public class CustomWhere2Str {
                     if (field.getDeExtractType() == 1) {
                         whereName = String.format(SQLConstants.UNIX_TIMESTAMP, originName);
                     }
-                    if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
+                    if (field.getDeExtractType() == 2 || field.getDeExtractType() == 4) {
                         whereName = originName;
+                    }
+                    if (field.getDeExtractType() == 3) {
+                        whereName = String.format(SQLConstants.CAST, originName, SQLConstants.DEFAULT_FLOAT_FORMAT);
                     }
                 } else {
                     whereName = originName;

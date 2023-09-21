@@ -69,32 +69,59 @@ onMounted(() => {
 </script>
 
 <template>
-  <el-form ref="miscForm" :model="state.miscForm" label-width="80px" size="small">
-    <el-form-item v-if="showProperty('showName')" class="form-item" :class="'form-item-' + themes">
+  <el-form ref="miscForm" :model="state.miscForm">
+    <el-form-item
+      v-if="showProperty('showName')"
+      class="form-item form-item-checkbox"
+      :class="'form-item-' + themes"
+    >
       <el-checkbox
         size="small"
         :effect="themes"
         v-model="state.miscForm.showName"
         @change="changeMiscStyle('showName')"
       >
-        {{ t('chart.show') }} {{ t('chart.name') }}
+        {{ t('chart.show') }}{{ t('chart.name') }}
       </el-checkbox>
     </el-form-item>
-    <el-form-item
-      v-if="showProperty('color')"
-      :label="t('chart.color')"
-      class="form-item"
-      :class="'form-item-' + themes"
-    >
-      <el-color-picker
-        v-model="state.miscForm.color"
-        class="color-picker-style"
-        :predefine="predefineColors"
-        is-custom
-        :effect="themes"
-        @change="changeMiscStyle('color')"
-      />
-    </el-form-item>
+
+    <el-space>
+      <div style="width: 14px"></div>
+      <el-form-item
+        v-if="showProperty('color')"
+        :label="t('chart.text')"
+        class="form-item"
+        :class="'form-item-' + themes"
+      >
+        <el-color-picker
+          :disabled="!state.miscForm.showName"
+          v-model="state.miscForm.color"
+          class="color-picker-style"
+          :predefine="predefineColors"
+          is-custom
+          :effect="themes"
+          @change="changeMiscStyle('color')"
+        />
+      </el-form-item>
+      <el-form-item v-if="showProperty('fontSize')" class="form-item form-item-slider">
+        <template #label>&nbsp;</template>
+        <el-select
+          :disabled="!state.miscForm.showName"
+          style="width: 108px"
+          v-model="state.miscForm.fontSize"
+          :placeholder="t('chart.text_fontsize')"
+          :effect="themes"
+          @change="changeMiscStyle('fontSize')"
+        >
+          <el-option
+            v-for="option in fontSizeList"
+            :key="option.value"
+            :label="option.name"
+            :value="option.value"
+          />
+        </el-select>
+      </el-form-item>
+    </el-space>
     <el-form-item
       v-if="showProperty('axisColor')"
       :label="t('chart.axis_color')"
@@ -106,31 +133,16 @@ onMounted(() => {
         class="color-picker-style"
         :predefine="predefineColors"
         is-custom
+        :trigger-width="108"
         :effect="themes"
         @change="changeMiscStyle('axisColor')"
       />
     </el-form-item>
-    <el-form-item
-      v-if="showProperty('fontSize')"
-      :label="t('chart.text_fontsize')"
-      class="form-item form-item-slider"
-    >
-      <el-select
-        style="width: 108px"
-        v-model="state.miscForm.fontSize"
-        :placeholder="t('chart.text_fontsize')"
-        :effect="themes"
-        @change="changeMiscStyle('fontSize')"
-      >
-        <el-option
-          v-for="option in fontSizeList"
-          :key="option.value"
-          :label="option.name"
-          :value="option.value"
-        />
-      </el-select>
-    </el-form-item>
   </el-form>
 </template>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.form-item-checkbox {
+  margin-bottom: 0 !important;
+}
+</style>

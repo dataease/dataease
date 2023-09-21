@@ -93,7 +93,7 @@ export default {
   },
   auth: {
     user_dimension: '按用户配置',
-    resource_dimension: '按资源管理',
+    resource_dimension: '按资源配置',
     user: '用户',
     role: '角色',
     resource: '资源权限',

@@ -757,7 +757,9 @@ defineExpose({
                     </template>
                     <el-option
                       v-for="ele in curComponent.dataset.fields.filter(
-                        ele => ele.deType === +curComponent.displayType
+                        ele =>
+                          ele.deType === +curComponent.displayType ||
+                          (ele.deType === 3 && +curComponent.displayType === 2)
                       )"
                       :key="ele.id"
                       :label="ele.name"

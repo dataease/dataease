@@ -89,6 +89,7 @@ declare module '@vue/runtime-core' {
     ElPopover: typeof import('element-plus-secondary/es')['ElPopover']
     ElRadio: typeof import('element-plus-secondary/es')['ElRadio']
     ElRadioGroup: typeof import('element-plus-secondary/es')['ElRadioGroup']
+    ElRol: typeof import('element-plus-secondary/es')['ElRol']
     ElRow: typeof import('element-plus-secondary/es')['ElRow']
     ElScrollbar: typeof import('element-plus-secondary/es')['ElScrollbar']
     ElSelect: typeof import('element-plus-secondary/es')['ElSelect']

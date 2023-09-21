@@ -55,22 +55,21 @@ watch(
 </script>
 
 <template>
-  <div class="preview-head">
-    <div class="canvas-name">{{ dvInfo.name }}</div>
-    <div class="canvas-opt-icon">
-      <el-icon class="custom-icon" @click="executeStore">
-        <Star v-if="!favorited" />
-        <Icon v-else name="visual-star" />
-      </el-icon>
-    </div>
-    <el-divider style="margin-top: 15px" direction="vertical" />
-    <div class="create-area">
-      <span>创建人：{{ dvInfo.creatorName }}</span>
+  <div class="preview-head flex-align-center">
+    <div :title="dvInfo.name" class="canvas-name ellipsis">{{ dvInfo.name }}</div>
+    <el-icon
+      class="custom-icon"
+      @click="executeStore"
+      :style="{ color: favorited ? '#FFC60A' : '#646A73' }"
+    >
+      <icon :name="favorited ? 'visual-star' : 'icon_collection_outlined'"></icon>
+    </el-icon>
+    <el-divider style="margin: 0 16px" direction="vertical" />
+    <div class="create-area flex-align-center">
+      <span>创建人:{{ dvInfo.creatorName }}</span>
       <el-popover placement="right-start" width="400" trigger="click">
         <template #reference>
-          <div class="info-tips">
-            <el-icon><Icon name="dv-info"></Icon></el-icon>
-          </div>
+          <el-icon class="info-tips"><Icon name="dv-info"></Icon></el-icon>
         </template>
         <dv-detail-info></dv-detail-info>
       </el-popover>
@@ -127,35 +126,17 @@ watch(
 .preview-head {
   width: 100%;
   min-width: 300px;
-  height: 45px;
-  line-height: 45px;
-  display: flex;
-  padding: 0 24px 0 24px;
-  border-bottom: 1px solid #d7d7d7;
+  height: 56px;
+  padding: 16px 24px;
+  border-bottom: 1px solid rgba(31, 35, 41, 0.15);
   .canvas-name {
-    min-width: 100px;
     max-width: 200px;
     font-size: 16px;
     font-weight: 500;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
-  .canvas-opt-icon {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  .custom-icon {
+    cursor: pointer;
     margin-left: 8px;
-    .custom-icon {
-      color: #3a8ee6;
-      &:hover {
-        background-color: #ecf5ff;
-        cursor: pointer;
-      }
-    }
-    .with-light {
-      color: red;
-    }
   }
   .create-area {
     color: #646a73;
@@ -170,7 +151,7 @@ watch(
   }
 }
 .info-tips {
-  float: right;
-  margin: 2px 0 0 4px;
+  margin-left: 4px;
+  font-size: 16px;
 }
 </style>

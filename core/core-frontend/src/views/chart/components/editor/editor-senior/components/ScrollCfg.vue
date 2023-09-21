@@ -1,5 +1,5 @@
 <script lang="tsx" setup>
-import { reactive, watch } from 'vue'
+import { PropType, reactive, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { DEFAULT_SCROLL, DEFAULT_MISC } from '@/views/chart/components/editor/util/chart'
 
@@ -11,7 +11,7 @@ const props = defineProps({
     required: true
   },
   themes: {
-    type: String,
+    type: String as PropType<EditorTheme>,
     default: 'dark'
   },
   propertyInner: {
@@ -58,47 +58,45 @@ init()
 <template>
   <div :style="{ width: '100%', display: 'block' }" @keydown.stop @keyup.stop>
     <el-row class="scroll-style">
-      <el-form ref="scrollForm" :model="state.scrollForm" label-width="80px">
-        <el-form-item :label="t('chart.scroll')" class="form-item">
-          <el-checkbox size="small" v-model="state.scrollForm.open" @change="changeScrollCfg">{{
-            t('chart.open')
-          }}</el-checkbox>
+      <el-form
+        ref="scrollForm"
+        :model="state.scrollForm"
+        label-width="80px"
+        :disabled="!state.scrollForm.open"
+      >
+        <el-form-item v-show="!state.isAutoBreakLine" :label="t('chart.row')" class="form-item">
+          <el-input-number
+            :effect="props.themes"
+            size="small"
+            v-model.number="state.scrollForm.row"
+            :min="1"
+            :max="1000"
+            :precision="0"
+            @change="changeScrollCfg"
+          />
         </el-form-item>
-        <span v-show="state.scrollForm.open">
-          <el-form-item v-show="!state.isAutoBreakLine" :label="t('chart.row')" class="form-item">
-            <el-input-number
-              :effect="props.themes"
-              size="small"
-              v-model.number="state.scrollForm.row"
-              :min="1"
-              :max="1000"
-              :precision="0"
-              @change="changeScrollCfg"
-            />
-          </el-form-item>
-          <el-form-item v-show="state.isAutoBreakLine" :label="t('chart.step')" class="form-item">
-            <el-input-number
-              :effect="props.themes"
-              size="small"
-              v-model="state.scrollForm.step"
-              :min="1"
-              :max="10000"
-              :precision="0"
-              @change="changeScrollCfg"
-            />
-          </el-form-item>
-          <el-form-item :label="t('chart.interval') + '(ms)'" class="form-item">
-            <el-input-number
-              :effect="props.themes"
-              size="small"
-              v-model="state.scrollForm.interval"
-              :min="500"
-              :step="1000"
-              :precision="0"
-              @change="changeScrollCfg"
-            />
-          </el-form-item>
-        </span>
+        <el-form-item v-show="state.isAutoBreakLine" :label="t('chart.step')" class="form-item">
+          <el-input-number
+            :effect="props.themes"
+            size="small"
+            v-model="state.scrollForm.step"
+            :min="1"
+            :max="10000"
+            :precision="0"
+            @change="changeScrollCfg"
+          />
+        </el-form-item>
+        <el-form-item :label="t('chart.interval') + '(ms)'" class="form-item">
+          <el-input-number
+            :effect="props.themes"
+            size="small"
+            v-model="state.scrollForm.interval"
+            :min="500"
+            :step="1000"
+            :precision="0"
+            @change="changeScrollCfg"
+          />
+        </el-form-item>
       </el-form>
     </el-row>
   </div>

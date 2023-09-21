@@ -132,6 +132,9 @@ const groupActiveChange = category => {
   }
   :deep(.li-custom) {
     color: #646a73 !important;
+    &:hover {
+      background: rgba(31, 35, 41, 0.1) !important;
+    }
   }
   :deep(.item-bottom) {
     color: @chart-change-font-color-light!important;
@@ -168,7 +171,7 @@ const groupActiveChange = category => {
         color: #a6a6a6;
         padding-left: 8px;
         &:hover {
-          background: rgba(31, 35, 41, 0.1);
+          background: rgba(255, 255, 255, 0.1);
           cursor: pointer;
         }
       }
