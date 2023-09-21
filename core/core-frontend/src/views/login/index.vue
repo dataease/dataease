@@ -93,7 +93,7 @@ const handleLogin = () => {
           const queryRedirectPath = getCurLocation()
           router.push({ path: queryRedirectPath })
         })
-        .finally(() => {
+        .catch(() => {
           duringLogin.value = false
         })
     }
@@ -122,7 +122,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div v-show="contentShow" class="login-background">
+  <div v-show="contentShow" class="login-background" v-loading="duringLogin">
     <div class="login-container">
       <div class="login-image-content" v-loading="!axiosFinished">
         <div v-if="!loginImageUrl && axiosFinished" class="login-image" />
