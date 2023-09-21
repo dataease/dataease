@@ -124,6 +124,7 @@ onMounted(() => {
       >
         <template #label> &nbsp; </template>
         <el-select
+          style="width: 108px"
           :effect="themes"
           v-model="state.legendForm.fontSize"
           :placeholder="t('chart.text_fontsize')"
