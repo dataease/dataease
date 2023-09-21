@@ -1503,6 +1503,7 @@ const dragVerticalTop = computed(() => {
                         @dragstart="$event => startToMove($event, element)"
                         :draggable="true"
                         class="item-dimension father"
+                        :class="'item-dimension--' + themes"
                         :title="element.name"
                       >
                         <el-icon>
@@ -1573,6 +1574,7 @@ const dragVerticalTop = computed(() => {
                         @dragstart="$event => startToMove($event, element)"
                         :draggable="true"
                         class="item-dimension father"
+                        :class="'item-dimension--' + themes"
                         :title="element.name"
                       >
                         <el-icon>
@@ -2009,7 +2011,7 @@ span {
     }
 
     :deep(.ed-tabs__content) {
-      height: calc(100% - 34px);
+      height: calc(100% - 33px);
       overflow-y: auto;
       overflow-x: hidden;
     }
@@ -2063,7 +2065,7 @@ span {
 
   .item-dimension {
     padding: 4px 10px;
-    margin: 2px 2px 0 2px;
+    margin: 0 2px;
     text-align: left;
     color: #606266;
     display: block;
@@ -2072,7 +2074,43 @@ span {
     white-space: nowrap;
     text-overflow: ellipsis;
     position: relative;
+    border-radius: 4px;
+    border: 1px solid transparent;
+
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 20px;
+    vertical-align: middle;
+
+    height: 28px;
+
     cursor: pointer;
+
+    &:hover {
+      background: rgba(31, 35, 41, 0.1);
+    }
+
+    &.item-dimension--dark {
+      &:hover {
+        background: rgba(235, 235, 235, 0.1);
+      }
+    }
+  }
+
+  :deep(.sortable-chosen) {
+    border: 1px solid #3370ff;
+    background: #fff;
+
+    &:hover {
+      background: #fff;
+    }
+
+    &.item-dimension--dark {
+      background: #1a1a1a;
+      &:hover {
+        background: #1a1a1a;
+      }
+    }
   }
 
   .father .child {
