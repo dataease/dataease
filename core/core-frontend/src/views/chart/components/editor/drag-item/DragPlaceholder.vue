@@ -30,7 +30,7 @@ span {
   width: 100%;
   color: #757575;
   text-align: left;
-  padding: 0 14px;
+  padding: 0 16px;
 
   .drag-placeholder-style-span {
     color: #8d9199;
