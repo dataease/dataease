@@ -232,7 +232,7 @@ export default {
     auth_alone: '单独授权',
     org_role_empty: '组织管理员已拥有所有资源的权限，无需再授权',
     user_role_empty: '该用户是组织管理员，已拥有所有资源的权限，无需再授权',
-    sysParams: '系统参数',
+    sysParams: '系统变量',
     set_rules: '设置规则',
     inner_role_tips: '系统内置角色，权限无法编辑'
   },
