@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import eventBus from '@/utils/eventBus'
+import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import QueryConditionConfiguration from './QueryConditionConfiguration.vue'
 import type { ComponentInfo } from '@/api/chart'
 import { onBeforeUnmount, reactive, ref, toRefs, watch, computed, onMounted } from 'vue'
@@ -52,6 +53,7 @@ const defaultStyle = {
   title: ''
 }
 const customStyle = reactive({ ...defaultStyle })
+const snapshotStore = snapshotStoreWithOut()
 
 const curComponentView = computed(() => {
   return (canvasViewInfo.value[element.value.id] || {}).customStyle
@@ -240,6 +242,7 @@ const drop = e => {
     displayType: `${componentInfo.deType}`
   })
   element.value.propValue = [...list.value]
+  snapshotStore.recordSnapshotCache()
 }
 
 const editeQueryConfig = (queryId: string) => {
@@ -256,6 +259,7 @@ const addQueryCriteria = () => {
   }
   list.value.push(infoFormat(componentInfo))
   element.value.propValue = [...list.value]
+  snapshotStore.recordSnapshotCache()
   editeQueryConfig(list.value[list.value.length - 1].id)
 }
 
@@ -285,6 +289,7 @@ const addCriteriaConfigOut = () => {
 const delQueryConfig = index => {
   list.value.splice(index, 1)
   element.value.propValue = [...list.value]
+  snapshotStore.recordSnapshotCache()
 }
 
 const resetData = () => {
