@@ -14,7 +14,7 @@
       v-model="myValue"
       style="width: 100%; height: 100%; padding: 5px"
       :init="init"
-      :disabled="!canEdit || disabled"
+      :disabled="!canEdit"
       @onClick="onClick"
     />
   </div>
@@ -77,10 +77,15 @@ const props = defineProps({
   disabled: {
     type: Boolean,
     default: false
+  },
+  showPosition: {
+    type: String,
+    required: false,
+    default: 'preview'
   }
 })
 
-const { scale, element, editMode, active, disabled } = toRefs(props)
+const { scale, element, editMode, active, disabled, showPosition } = toRefs(props)
 
 const state = reactive({
   data: null,
@@ -230,6 +235,7 @@ const fieldSelect = field => {
   const attachValue = '<span id="attachValue">&nbsp;</span>'
   ed.insertContent(value)
   ed.insertContent(attachValue)
+  snapshotStore.resetStyleChangeTimes()
 }
 const onClick = e => {
   const node = tinymce.activeEditor.selection.getNode()
@@ -256,7 +262,12 @@ const resetSelect = (node?) => {
   }
 }
 const setEdit = () => {
-  if (editStatus.value && canEdit.value === false && !isError.value) {
+  if (
+    ['canvas', 'canvasDataV'].includes(showPosition.value) &&
+    editStatus.value &&
+    canEdit.value === false &&
+    !isError.value
+  ) {
     canEdit.value = true
     element.value['editing'] = true
     myValue.value = element.value.propValue.textValue

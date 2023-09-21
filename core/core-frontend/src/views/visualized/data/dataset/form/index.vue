@@ -389,6 +389,28 @@ const copyField = item => {
   allfields.value.push(param)
 }
 
+const delFieldById = arr => {
+  const delId = [...arr]
+  while (delId.length) {
+    const [targetId] = delId
+    delId.shift()
+    allfields.value = allfields.value.filter(ele => ele.id !== targetId)
+    const allfieldsId = allfields.value.map(ele => ele.id)
+    allfields.value = allfields.value.filter(ele => {
+      if (ele.extField !== 2) return true
+      const idMap = ele.originName.match(/\[(.+?)\]/g)
+      if (!idMap) return true
+      const result = idMap.every(itm => {
+        const id = itm.slice(1, -1)
+        return allfieldsId.includes(id)
+      })
+      if (result) return true
+      delId.push(ele.id)
+      return false
+    })
+  }
+}
+
 const deleteField = item => {
   ElMessageBox.confirm(t('dataset.confirm_delete'), {
     confirmButtonText: t('dataset.confirm'),
@@ -400,7 +422,7 @@ const deleteField = item => {
     showClose: false,
     callback: (action: Action) => {
       if (action === 'confirm') {
-        allfields.value = allfields.value.filter(ele => ele.id !== item.id)
+        delFieldById([item.id])
         datasetDrag.value.dfsNodeFieldBack(datasetDrag.value.nodeList, item)
         ElMessage({
           message: t('chart.delete_success'),
@@ -659,6 +681,12 @@ const dfsFields = (arr, list) => {
   })
 }
 
+const getDelIdArr = (newArr, oldArr) => {
+  const idMapNew = newArr.map(ele => ele.id)
+  const idMapOld = oldArr.filter(ele => ele.extField !== 2).map(ele => ele.id)
+  return idMapOld.filter(ele => !idMapNew.includes(ele))
+}
+
 const diffArr = (newArr, oldArr) => {
   const idMapNew = newArr.map(ele => ele.id)
   const idMapOld = oldArr.map(ele => ele.id)
@@ -676,6 +704,16 @@ const closeEditUnion = () => {
   editUnion.value = false
 }
 const fieldUnion = ref()
+
+const setFieldAll = () => {
+  const arr = []
+  dfsFields(arr, datasetDrag.value.nodeList)
+  const delIdArr = getDelIdArr(arr, allfields.value)
+  allfields.value = diffArr(arr, allfields.value)
+  delFieldById(delIdArr)
+  tabChange('manage')
+  fieldUnion.value?.clearState()
+}
 const confirmEditUnion = () => {
   const { node, parent } = fieldUnion.value
 
@@ -694,21 +732,13 @@ const confirmEditUnion = () => {
   const top = cloneDeep(node)
   const bottom = cloneDeep(parent)
   datasetDrag.value.setStateBack(top, bottom)
-  const arr = []
-  dfsFields(arr, datasetDrag.value.nodeList)
-  allfields.value = diffArr(arr, allfields.value)
-  tabChange('manage')
-  fieldUnion.value.clearState()
+  setFieldAll()
   editUnion.value = false
   addComplete()
 }
 
 const updateAllfields = () => {
-  const arr = []
-  dfsFields(arr, datasetDrag.value.nodeList)
-  allfields.value = diffArr(arr, allfields.value)
-  tabChange('manage')
-  fieldUnion.value?.clearState()
+  setFieldAll()
   if (!previewHeight.value) {
     nextTick(() => {
       calcEle()

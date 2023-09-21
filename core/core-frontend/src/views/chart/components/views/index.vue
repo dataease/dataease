@@ -35,6 +35,7 @@ import { storeToRefs } from 'pinia'
 import { checkAddHttp, setIdValueTrans } from '@/utils/canvasUtils'
 import { Base64 } from 'js-base64'
 import DeRichTextView from '@/custom-component/rich-text/DeRichTextView.vue'
+import ChartEmptyInfo from '@/views/chart/components/views/components/ChartEmptyInfo.vue'
 
 const { wsCache } = useCache()
 
@@ -70,7 +71,7 @@ const props = defineProps({
   showPosition: {
     type: String,
     required: false,
-    default: 'canvas'
+    default: 'preview'
   },
   // 仪表板刷新计时器
   searchCount: {
@@ -291,11 +292,13 @@ const queryData = (firstLoad = false) => {
 }
 
 const calcData = params => {
-  loading.value = true
   dvMainStore.setLastViewRequestInfo(params.id, params.chartExtRequest)
-  chartComponent?.value?.calcData?.(params, () => {
-    loading.value = false
-  })
+  if (chartComponent?.value) {
+    loading.value = true
+    chartComponent?.value?.calcData?.(params, () => {
+      loading.value = false
+    })
+  }
 }
 
 const showChartView = (...libs: ChartLibraryType[]) => {
@@ -394,6 +397,10 @@ onMounted(() => {
 const loadingFlag = computed(() => {
   return (canvasStyleData.value.refreshViewLoading || searchCount.value === 0) && loading.value
 })
+
+const chartAreaShow = computed(() => {
+  return view.value.tableId || view.value.type === 'rich-text'
+})
 initTitle()
 </script>
 
@@ -401,13 +408,14 @@ initTitle()
   <div class="chart-area" v-loading="loadingFlag">
     <p v-if="titleShow" :style="state.title_class">{{ view.title }}</p>
     <!--这里去渲染不同图库的视图-->
-    <div style="flex: 1; overflow: hidden">
+    <div v-if="chartAreaShow" style="flex: 1; overflow: hidden">
       <de-rich-text-view
         v-if="showChartView(ChartLibraryType.RICH_TEXT)"
         ref="chartComponent"
         :element="element"
         :disabled="!['canvas', 'canvasDataV'].includes(showPosition)"
         :active="active"
+        :show-position="showPosition"
       />
       <chart-component-g2-plot
         :dynamic-area-id="dynamicAreaId"
@@ -429,6 +437,11 @@ initTitle()
         @onJumpClick="jumpClick"
       />
     </div>
+    <chart-empty-info
+      v-if="!chartAreaShow"
+      :themes="canvasStyleData.dashboard.themeColor"
+      :view-icon="view.type"
+    ></chart-empty-info>
     <drill-path :drill-filters="state.drillFilters" @onDrillJump="drillJump" />
   </div>
 </template>

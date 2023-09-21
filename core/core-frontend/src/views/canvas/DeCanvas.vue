@@ -267,6 +267,10 @@ defineExpose({
   }
 }
 
+&::-webkit-scrollbar {
+  display: none;
+}
+
 .render-active {
   opacity: 1;
 }

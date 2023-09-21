@@ -56,7 +56,7 @@ export const snapshotStore = defineStore('snapshot', {
         } else if (type === 'renderChart') {
           this.cacheViewIdInfo.snapshotCacheViewRender.push(viewId)
         }
-        if (type) this.snapshotCacheTimes++
+        this.snapshotCacheTimes++
       }
     },
     undo() {
