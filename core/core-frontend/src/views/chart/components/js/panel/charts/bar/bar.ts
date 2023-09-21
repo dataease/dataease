@@ -7,7 +7,6 @@ import {
 import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
 import { Datum } from '@antv/g2plot'
 import {
-  formatterItem,
   singleDimensionTooltipFormatter,
   valueFormatter
 } from '@/views/chart/components/js/formatter'
@@ -22,7 +21,6 @@ import { useI18n } from '@/hooks/web/useI18n'
 
 const { t } = useI18n()
 const DEFAULT_DATA: any[] = []
-
 /**
  * 柱状图
  */
@@ -32,7 +30,8 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
     ...BAR_EDITOR_PROPERTY_INNER,
     'x-axis-selector': [...BAR_EDITOR_PROPERTY_INNER['x-axis-selector'], 'vPosition'],
     'y-axis-selector': [...BAR_EDITOR_PROPERTY_INNER['y-axis-selector'], 'vPosition'],
-    'label-selector': [...BAR_EDITOR_PROPERTY_INNER['label-selector'], 'vPosition']
+    'label-selector': ['vPosition', 'seriesLabelFormatter'],
+    'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'seriesTooltipFormatter']
   }
   protected baseOptions: ColumnOptions = {
     xField: 'field',
@@ -107,6 +106,56 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
     newChart.on('interval:click', action)
 
     return newChart
+  }
+
+  protected configLabel(chart: Chart, options: ColumnOptions): ColumnOptions {
+    const tmpOptions = super.configLabel(chart, options)
+    if (!tmpOptions.label) {
+      return {
+        ...tmpOptions,
+        label: false
+      }
+    }
+    const labelAttr = parseJson(chart.customAttr).label
+    const formatterMap = labelAttr.seriesLabelFormatter?.reduce((pre, next) => {
+      pre[next.id] = next
+      return pre
+    }, {})
+    const label = {
+      fields: [],
+      ...tmpOptions.label,
+      formatter: (data: Datum) => {
+        if (!labelAttr.seriesLabelFormatter?.length) {
+          return data.value
+        }
+        const labelCfg = formatterMap?.[data.quotaList[0].id] as SeriesFormatter
+        if (!labelCfg) {
+          return data.value
+        }
+        if (!labelCfg.show) {
+          return
+        }
+        const value = valueFormatter(data.value, labelCfg.formatterCfg)
+        const group = new G2PlotChartView.engine.Group({})
+        group.addShape({
+          type: 'text',
+          attrs: {
+            x: 0,
+            y: 0,
+            text: value,
+            textAlign: 'start',
+            textBaseline: 'top',
+            fontSize: labelCfg.fontSize,
+            fill: labelCfg.color
+          }
+        })
+        return group
+      }
+    }
+    return {
+      ...tmpOptions,
+      label
+    }
   }
 
   protected configTooltip(chart: Chart, options: ColumnOptions): ColumnOptions {

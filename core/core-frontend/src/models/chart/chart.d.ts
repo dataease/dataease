@@ -77,21 +77,55 @@ declare interface BaseFormatter {
   thousandSeparator: boolean
 }
 
-declare interface Axis {
-  id: string
-  name: string
-  dataeaseName: string
+/**
+ * 多系列格式化属性
+ */
+declare interface SeriesFormatter extends Axis {
+  /**
+   * 是否显示
+   */
+  show: boolean
+  /**
+   * 字体颜色
+   */
+  color: string
+  /**
+   * 字体大小
+   */
+  fontSize: number
+}
+
+declare interface Axis extends ChartViewField {
+  /**
+   * 格式化设置
+   */
   formatterCfg: BaseFormatter
-  chartShowName: string
+  /**
+   * 聚合方式
+   */
+  summary: string
 }
 declare interface ChartViewField {
+  /**
+   * 字段名称
+   */
   name: string
+  /**
+   * de名称
+   */
   dataeaseName: string
+  /**
+   * id
+   */
   id: string
   /**
    * 视图自定义字段名称
    */
   chartShowName: string
+  /**
+   * 字段类型
+   */
+  deType: number
 }
 
 declare interface Filter {

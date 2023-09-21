@@ -262,7 +262,8 @@ export const DEFAULT_LABEL: ChartLabelAttr = {
   quotaLabelFormatter: formatterItem,
   showDimension: true,
   showQuota: false,
-  showProportion: true
+  showProportion: true,
+  seriesLabelFormatter: []
 }
 export const DEFAULT_TOOLTIP: ChartTooltipAttr = {
   show: true,
@@ -271,7 +272,8 @@ export const DEFAULT_TOOLTIP: ChartTooltipAttr = {
   fontSize: 10,
   color: '#909399',
   tooltipFormatter: formatterItem,
-  backgroundColor: '#ffffff'
+  backgroundColor: '#ffffff',
+  seriesTooltipFormatter: []
 }
 export const DEFAULT_TABLE_TOTAL: ChartTableTotalAttr = {
   row: {

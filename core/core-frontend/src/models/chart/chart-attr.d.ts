@@ -555,6 +555,10 @@ declare interface ChartLabelAttr {
    * 标签阴影颜色
    */
   labelShadowColor: string
+  /**
+   * 多系列标签设置
+   */
+  seriesLabelFormatter: SeriesFormatter[]
 }
 /**
  * 提示设置
@@ -582,6 +586,10 @@ declare interface ChartTooltipAttr {
    * 背景颜色
    */
   backgroundColor: string
+  /**
+   * 多系列提示设置
+   */
+  seriesTooltipFormatter: SeriesFormatter[]
 }
 
 /**
