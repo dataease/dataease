@@ -1103,11 +1103,11 @@ public class ChartDataBuild {
                         break;
                     }
                     if (originStr.length() >= columnPermissionItem.getDesensitizationRule().getM() && originStr.length() >= columnPermissionItem.getDesensitizationRule().getN()) {
-                        desensitizationStr = "***" + StringUtils.substring(originStr, columnPermissionItem.getDesensitizationRule().getM() - 1, columnPermissionItem.getDesensitizationRule().getN()) + "***";
+                        desensitizationStr = StringUtils.substring(originStr, columnPermissionItem.getDesensitizationRule().getM() - 1, columnPermissionItem.getDesensitizationRule().getN()) + "***";
                         break;
                     }
                     if (originStr.length() >= columnPermissionItem.getDesensitizationRule().getM() && originStr.length() < columnPermissionItem.getDesensitizationRule().getN()) {
-                        desensitizationStr = "***" + StringUtils.substring(originStr, columnPermissionItem.getDesensitizationRule().getM() - 1, originStr.length());
+                        desensitizationStr = StringUtils.substring(originStr, columnPermissionItem.getDesensitizationRule().getM() - 1, originStr.length()) + "***";
                     }
                     break;
                 default:

@@ -107,28 +107,6 @@ const showName = computed(() => {
   return cmd.value !== 'move'
 })
 
-const rules = {
-  name: [
-    {
-      required: true,
-      message: t('commons.input_content'),
-      trigger: 'change'
-    },
-    {
-      min: 2,
-      max: 25,
-      message: t('datasource.input_limit_2_25', [2, 25]),
-      trigger: 'blur'
-    }
-  ],
-  pid: [
-    {
-      required: true,
-      message: t('common.please_select'),
-      trigger: 'blur'
-    }
-  ]
-}
 const datasetFormRules = ref()
 const activeAll = ref(false)
 const showAll = ref(true)
@@ -199,7 +177,28 @@ const createInit = (type, data: Tree, exec, name: string) => {
   }
   name && (datasetForm.name = name)
   createDataset.value = true
-  datasetFormRules.value = rules
+  datasetFormRules.value = {
+    name: [
+      {
+        required: true,
+        message: placeholder.value,
+        trigger: 'change'
+      },
+      {
+        min: 2,
+        max: 64,
+        message: t('datasource.input_limit_2_25', [2, 64]),
+        trigger: 'blur'
+      }
+    ],
+    pid: [
+      {
+        required: true,
+        message: t('common.please_select'),
+        trigger: 'blur'
+      }
+    ]
+  }
 }
 
 const editeInit = (param: Tree) => {

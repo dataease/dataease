@@ -1925,9 +1925,7 @@ span {
     overflow-y: auto;
     overflow-x: hidden;
     height: 100%;
-  }
 
-  .view-panel-row {
     :deep(.ed-collapse-item__header) {
       height: 36px !important;
       line-height: 36px !important;

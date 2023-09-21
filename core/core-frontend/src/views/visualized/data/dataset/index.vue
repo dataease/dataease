@@ -208,6 +208,7 @@ const getData = () => {
     })
     .finally(() => {
       dtLoading.value = false
+      console.log('nodeInfo.id2', nodeInfo.id)
       const id = nodeInfo.id
       if (!!id) {
         Object.assign(nodeInfo, cloneDeep(defaultNode))
@@ -230,6 +231,7 @@ const dfsDatasetTree = (ds, id) => {
 }
 
 onBeforeMount(() => {
+  console.log('route.params.id', route.params.id)
   nodeInfo.id = (route.params.id as string) || ''
   getData()
 })
@@ -259,6 +261,15 @@ const editorDataset = () => {
     path: '/dataset-form',
     query: {
       id: nodeInfo.id
+    }
+  })
+}
+
+const handleEdit = id => {
+  router.push({
+    path: '/dataset-form',
+    query: {
+      id
     }
   })
 }
@@ -466,7 +477,7 @@ const filterNode = (value: string, data: BusiTreeNode) => {
                 <el-icon v-if="data.leaf" style="font-size: 18px">
                   <Icon name="icon_dataset"></Icon>
                 </el-icon>
-                <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
+                <span :title="node.label" class="label-tooltip ellipsis">{{ node.label }}</span>
                 <div class="icon-more" v-if="data.weight >= 7">
                   <handle-more
                     icon-size="24px"
@@ -476,6 +487,9 @@ const filterNode = (value: string, data: BusiTreeNode) => {
                     placement="bottom-start"
                     v-if="!data.leaf"
                   ></handle-more>
+                  <el-icon class="hover-icon" @click.stop="handleEdit(data.id)" v-else>
+                    <icon name="icon_edit_outlined"></icon>
+                  </el-icon>
                   <handle-more
                     @handle-command="cmd => operation(cmd, data, data.leaf ? 'dataset' : 'folder')"
                     :menu-list="menuList"
@@ -777,20 +791,23 @@ const filterNode = (value: string, data: BusiTreeNode) => {
   padding-right: 4px;
 
   .label-tooltip {
-    width: calc(100% - 66px);
+    width: 100%;
     margin-left: 8.75px;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-  }
-  .icon-more {
-    margin-left: auto;
-    visibility: hidden;
   }
 
-  &:hover .icon-more {
+  .icon-more {
     margin-left: auto;
-    visibility: visible;
+    display: none;
+  }
+
+  &:hover {
+    .label-tooltip {
+      width: calc(100% - 78px);
+    }
+
+    .icon-more {
+      display: inline-flex;
+    }
   }
 }
 </style>

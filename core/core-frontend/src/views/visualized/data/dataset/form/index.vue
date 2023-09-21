@@ -982,7 +982,7 @@ const handleDatasetName = () => {
   }
 
   if (datasetName.value.trim().length < 2) {
-    errorTips.value = t('datasource.input_limit_2_25', [2, 25])
+    errorTips.value = t('datasource.input_limit_2_25', [2, 64])
   }
   showInput.value = !!errorTips.value
 }
@@ -1002,7 +1002,7 @@ const treeProps = {
         </el-icon>
         <template v-if="showInput">
           <el-input
-            maxlength="25"
+            maxlength="64"
             ref="editerName"
             v-model="datasetName"
             @blur="handleDatasetName"

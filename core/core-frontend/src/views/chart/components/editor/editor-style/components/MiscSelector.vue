@@ -294,7 +294,6 @@ onMounted(() => {
         :class="'form-item-' + themes"
       >
         <el-input-number
-          style="width: 108px"
           :effect="themes"
           v-model="state.miscForm.gaugeMin"
           size="small"
@@ -384,7 +383,6 @@ onMounted(() => {
         :class="'form-item-' + themes"
       >
         <el-input-number
-          style="width: 108px"
           :effect="themes"
           v-model="state.miscForm.gaugeMax"
           size="small"
@@ -523,7 +521,6 @@ onMounted(() => {
         :class="'form-item-' + themes"
       >
         <el-input-number
-          style="width: 108px"
           :effect="themes"
           v-model="state.miscForm.liquidMax"
           :min="1"

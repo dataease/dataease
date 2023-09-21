@@ -102,6 +102,7 @@ onMounted(() => {
         :label="t('chart.text')"
       >
         <el-color-picker
+          :effect="themes"
           v-model="state.labelForm.color"
           class="color-picker-style"
           :predefine="COLOR_PANEL"
@@ -291,6 +292,7 @@ onMounted(() => {
       v-if="showProperty('showDimension')"
     >
       <el-checkbox
+        :effect="themes"
         size="small"
         @change="changeLabelAttr('showDimension')"
         v-model="state.labelForm.showDimension"
@@ -302,6 +304,7 @@ onMounted(() => {
     <template v-if="showProperty('showQuota')">
       <el-form-item class="form-item form-item-checkbox" :class="'form-item-' + themes">
         <el-checkbox
+          :effect="themes"
           size="small"
           @change="changeLabelAttr('showQuota')"
           v-model="state.labelForm.showQuota"
@@ -322,7 +325,7 @@ onMounted(() => {
               <el-select
                 :disabled="!state.labelForm.showQuota"
                 style="width: 100%"
-                :effect="props.themes"
+                :effect="themes"
                 v-model="state.labelForm.quotaLabelFormatter.type"
                 @change="changeLabelAttr('quotaLabelFormatter')"
               >
@@ -345,7 +348,7 @@ onMounted(() => {
                 controls-position="right"
                 :disabled="!state.labelForm.showQuota"
                 style="width: 100%"
-                :effect="props.themes"
+                :effect="themes"
                 v-model="state.labelForm.quotaLabelFormatter.decimalCount"
                 :precision="0"
                 :min="0"
@@ -369,7 +372,7 @@ onMounted(() => {
                   !state.labelForm.showQuota ||
                   state.labelForm.quotaLabelFormatter.type == 'percent'
                 "
-                :effect="props.themes"
+                :effect="themes"
                 v-model="state.labelForm.quotaLabelFormatter.unit"
                 :placeholder="t('chart.pls_select_field')"
                 size="small"
@@ -392,7 +395,7 @@ onMounted(() => {
             >
               <el-input
                 :disabled="!state.labelForm.showQuota"
-                :effect="props.themes"
+                :effect="themes"
                 v-model="state.labelForm.quotaLabelFormatter.suffix"
                 size="small"
                 clearable
@@ -407,7 +410,7 @@ onMounted(() => {
           <el-checkbox
             :disabled="!state.labelForm.showQuota"
             size="small"
-            :effect="props.themes"
+            :effect="themes"
             v-model="state.labelForm.quotaLabelFormatter.thousandSeparator"
             @change="changeLabelAttr('quotaLabelFormatter')"
             :label="t('chart.value_formatter_thousand_separator')"
@@ -418,6 +421,7 @@ onMounted(() => {
     <template v-if="showProperty('showProportion')">
       <el-form-item class="form-item form-item-checkbox" :class="'form-item-' + themes">
         <el-checkbox
+          :effect="themes"
           size="small"
           @change="changeLabelAttr('showProportion')"
           v-model="state.labelForm.showProportion"
@@ -433,6 +437,7 @@ onMounted(() => {
           :class="'form-item-' + themes"
         >
           <el-select
+            :effect="themes"
             :disabled="!state.labelForm.showProportion"
             v-model="state.labelForm.reserveDecimalCount"
             @change="changeLabelAttr('reserveDecimalCount')"
@@ -451,6 +456,7 @@ onMounted(() => {
       :class="'form-item-' + themes"
     >
       <el-select
+        :effect="themes"
         v-model="state.labelForm.reserveDecimalCount"
         @change="changeLabelAttr('reserveDecimalCount')"
       >

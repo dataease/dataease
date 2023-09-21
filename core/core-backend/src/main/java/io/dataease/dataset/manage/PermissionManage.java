@@ -14,6 +14,7 @@ import io.dataease.utils.AuthUtils;
 import io.dataease.utils.CommonBeanFactory;
 import io.dataease.utils.JsonUtil;
 import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -30,16 +31,18 @@ public class PermissionManage {
 
     private RowPermissionsApi rowPermissionsApi = null;
     private ColumnPermissionsApi columnPermissionsApi = null;
+    @Resource
+    private DatasetTableFieldManage datasetTableFieldManage;
 
-    private RowPermissionsApi getRowPermissionsApi(){
-        if(rowPermissionsApi == null){
+    private RowPermissionsApi getRowPermissionsApi() {
+        if (rowPermissionsApi == null) {
             rowPermissionsApi = CommonBeanFactory.getApplicationContext().getBean(RowPermissionsApi.class);
         }
         return rowPermissionsApi;
     }
 
-    private ColumnPermissionsApi getColumnPermissionsApi(){
-        if(columnPermissionsApi == null){
+    private ColumnPermissionsApi getColumnPermissionsApi() {
+        if (columnPermissionsApi == null) {
             columnPermissionsApi = CommonBeanFactory.getApplicationContext().getBean(ColumnPermissionsApi.class);
         }
         return columnPermissionsApi;
@@ -118,7 +121,8 @@ public class PermissionManage {
                 dataSetColumnPermissionsDTO.setAuthTargetType("role");
                 List<DataSetColumnPermissionsDTO> roleColumnPermissionsDTOS = new ArrayList<>();
                 for (DataSetColumnPermissionsDTO columnPermissionsDTO : getColumnPermissionsApi().list(dataSetColumnPermissionsDTO)) {
-                    TypeReference<List<Long>> listTypeReference = new TypeReference<List<Long>>() {};
+                    TypeReference<List<Long>> listTypeReference = new TypeReference<List<Long>>() {
+                    };
                     List<Long> userIdList = JsonUtil.parseList(columnPermissionsDTO.getWhiteListUser(), listTypeReference);
                     if (CollectionUtils.isEmpty(userIdList) || !userIdList.contains(userId)) {
                         roleColumnPermissionsDTOS.add(columnPermissionsDTO);
@@ -187,11 +191,14 @@ public class PermissionManage {
             // 替换系统变量
             if (StringUtils.equalsIgnoreCase(record.getAuthTargetType(), "sysParams")) {
                 String expressionTree = record.getExpressionTree();
-                if (StringUtils.isNotEmpty(userEntity.getName())) {
-                    expressionTree = expressionTree.replaceAll("\\$\\{sysParams\\.userId}", userEntity.getName());
+                if (StringUtils.isNotEmpty(userEntity.getAccount())) {
+                    expressionTree = expressionTree.replaceAll("\\$\\{sysParams\\.userId}", userEntity.getAccount());
                 }
                 if (StringUtils.isNotEmpty(userEntity.getEmail())) {
                     expressionTree = expressionTree.replaceAll("\\$\\{sysParams\\.userEmail}", userEntity.getEmail());
+                }
+                if (StringUtils.isNotEmpty(userEntity.getName())) {
+                    expressionTree = expressionTree.replaceAll("\\$\\{sysParams\\.userName}", userEntity.getName());
                 }
                 record.setExpressionTree(expressionTree);
                 DatasetRowPermissionsTreeObj tree = JsonUtil.parseObject(expressionTree, DatasetRowPermissionsTreeObj.class);
@@ -213,6 +220,18 @@ public class PermissionManage {
     }
 
     public void getField(DatasetRowPermissionsTreeObj tree) {
-
+        if (ObjectUtils.isNotEmpty(tree)) {
+            if (ObjectUtils.isNotEmpty(tree.getItems())) {
+                for (DatasetRowPermissionsTreeItem item : tree.getItems()) {
+                    if (ObjectUtils.isNotEmpty(item)) {
+                        if (StringUtils.equalsIgnoreCase(item.getType(), "item") || ObjectUtils.isEmpty(item.getSubTree())) {
+                            item.setField(datasetTableFieldManage.selectById(item.getFieldId()));
+                        } else if (StringUtils.equalsIgnoreCase(item.getType(), "tree") || (ObjectUtils.isNotEmpty(item.getSubTree()) && StringUtils.isNotEmpty(item.getSubTree().getLogic()))) {
+                            getField(item.getSubTree());
+                        }
+                    }
+                }
+            }
+        }
     }
 }

@@ -280,18 +280,6 @@ span {
   width: 100%;
 }
 
-.de-collapse-style {
-  :deep(.ed-collapse-item__content) {
-    padding: 16px !important;
-  }
-  :deep(.ed-form-item) {
-    display: block;
-    margin-bottom: 16px;
-  }
-  :deep(.ed-form-item__label) {
-    justify-content: flex-start;
-  }
-}
 .prop {
   border-bottom: 1px solid @side-outline-border-color;
 }
@@ -306,12 +294,5 @@ span {
   overflow: auto;
   border-right: 1px solid #e6e6e6;
   height: 100%;
-}
-:deep(.ed-collapse-item) {
-  &:first-child {
-    .ed-collapse-item__header {
-      border-top: none;
-    }
-  }
 }
 </style>
