@@ -171,6 +171,13 @@ const handleRecordCurrentChange = currentPage => {
   getRecord()
 }
 
+let listScrollTop = 0
+const handleScroll = val => {
+  listScrollTop = val.scrollTop
+}
+
+const scrollbarRef = ref()
+
 const generateColumns = (arr: Field[]) =>
   arr.map(ele => ({
     key: ele.originName,
@@ -459,6 +466,9 @@ const updateTreeExpand = () => {
   dsListTreeShow.value = false
   nextTick(() => {
     dsListTreeShow.value = true
+    nextTick(() => {
+      scrollbarRef.value?.setScrollTop(listScrollTop)
+    })
   })
 }
 
@@ -636,7 +646,7 @@ onMounted(() => {
             </template>
           </el-input>
         </div>
-        <el-scrollbar class="custom-tree">
+        <el-scrollbar @scroll="handleScroll" ref="scrollbarRef" class="custom-tree">
           <el-tree
             menu
             v-if="dsListTreeShow"

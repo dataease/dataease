@@ -8,16 +8,20 @@ import io.dataease.api.dataset.dto.SqlVariableDetails;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.union.UnionDTO;
 import io.dataease.api.dataset.vo.DataSetBarVO;
+import io.dataease.api.ds.vo.DatasourceDTO;
 import io.dataease.api.permissions.user.api.UserApi;
 import io.dataease.api.permissions.user.vo.UserFormVO;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetGroup;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetTable;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupMapper;
+import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableMapper;
 import io.dataease.dataset.dao.ext.mapper.CoreDataSetExtMapper;
 import io.dataease.dataset.dao.ext.po.DataSetNodePO;
 import io.dataease.dataset.dto.DataSetNodeBO;
 import io.dataease.dataset.utils.FieldUtils;
 import io.dataease.dataset.utils.TableUtils;
+import io.dataease.datasource.dao.auto.entity.CoreDatasource;
+import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.exception.DEException;
@@ -58,6 +62,10 @@ public class DatasetGroupManage {
     private PermissionManage permissionManage;
     @Resource
     private CoreDataSetExtMapper coreDataSetExtMapper;
+    @Resource
+    private CoreDatasetTableMapper coreDatasetTableMapper;
+    @Resource
+    private CoreDatasourceMapper coreDatasourceMapper;
     @Autowired(required = false)
     private UserApi userApi;
 
@@ -223,7 +231,24 @@ public class DatasetGroupManage {
                 dataSetBarVO.setUpdater(userFormVOUpdateBy.getName());
             }
         }
+        dataSetBarVO.setDatasourceDTOList(getDatasource(id));
         return dataSetBarVO;
+    }
+
+    private List<DatasourceDTO> getDatasource(Long datasetId) {
+        QueryWrapper<CoreDatasetTable> wrapper = new QueryWrapper<>();
+        wrapper.eq("dataset_group_id", datasetId);
+        List<CoreDatasetTable> coreDatasetTables = coreDatasetTableMapper.selectList(wrapper);
+        Set<Long> ids = new LinkedHashSet();
+        coreDatasetTables.forEach(ele -> ids.add(ele.getDatasourceId()));
+
+        QueryWrapper<CoreDatasource> datasourceQueryWrapper = new QueryWrapper<>();
+        datasourceQueryWrapper.in("id", ids);
+        return coreDatasourceMapper.selectList(datasourceQueryWrapper).stream().map(ele -> {
+            DatasourceDTO dto = new DatasourceDTO();
+            BeanUtils.copyBean(dto, ele);
+            return dto;
+        }).collect(Collectors.toList());
     }
 
     private DataSetNodeBO rootNode() {
