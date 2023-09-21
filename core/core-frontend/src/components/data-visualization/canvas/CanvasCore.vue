@@ -1619,6 +1619,7 @@ defineExpose({
         :element="item"
         :request="item.request"
         @input="handleInput"
+        :dv-info="dvInfo"
       />
 
       <component

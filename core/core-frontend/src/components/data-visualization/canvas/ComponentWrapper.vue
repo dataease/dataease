@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { getStyle, getSVGStyle } from '@/utils/style'
-import runAnimation from '@/utils/runAnimation'
 import eventBus from '@/utils/eventBus'
 import { ref, onMounted, toRefs, getCurrentInstance, computed, watch } from 'vue'
 import findComponent from '@/utils/components'
@@ -109,7 +108,6 @@ const handleInnerMouseDown = e => {
 }
 
 onMounted(() => {
-  runAnimation(component.value.$el, config.value.animations.type)
   currentInstance = getCurrentInstance()
   useEmitt({
     name: 'componentImageDownload-' + config.value.id,
