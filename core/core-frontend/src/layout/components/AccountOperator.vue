@@ -142,10 +142,11 @@ const openPopover = () => {
   />
 </template>
 
-<style lang="less">
+<style lang="less" scoped>
 .el-icon-animate {
   width: 12px;
   height: 12px;
+  font-size: 14px !important;
 }
 .top-info-container {
   height: 32px;
