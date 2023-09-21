@@ -195,48 +195,43 @@ onMounted(() => {
     </el-form-item>
 
     <template v-if="showProperty('labelFormatter')">
-      <el-row :gutter="8">
-        <el-col :span="state.labelForm.labelFormatter.type !== 'auto' ? 12 : 24">
-          <el-form-item
-            :label="$t('chart.value_formatter_type')"
-            class="form-item"
-            :class="'form-item-' + themes"
-          >
-            <el-select
-              :effect="themes"
-              v-model="state.labelForm.labelFormatter.type"
-              @change="changeLabelAttr('labelFormatter')"
-            >
-              <el-option
-                v-for="type in formatterType"
-                :key="type.value"
-                :label="$t('chart.' + type.name)"
-                :value="type.value"
-              />
-            </el-select>
-          </el-form-item>
-        </el-col>
-        <el-col :span="12" v-if="state.labelForm.labelFormatter.type !== 'auto'">
-          <el-form-item
-            :label="$t('chart.value_formatter_decimal_count')"
-            class="form-item"
-            :class="'form-item-' + themes"
-          >
-            <el-input-number
-              controls-position="right"
-              :effect="themes"
-              v-model="state.labelForm.labelFormatter.decimalCount"
-              :precision="0"
-              :min="0"
-              :max="10"
-              @change="changeLabelAttr('labelFormatter')"
-            />
-          </el-form-item>
-        </el-col>
-      </el-row>
+      <el-form-item
+        :label="$t('chart.value_formatter_type')"
+        class="form-item"
+        :class="'form-item-' + themes"
+      >
+        <el-select
+          :effect="themes"
+          v-model="state.labelForm.labelFormatter.type"
+          @change="changeLabelAttr('labelFormatter')"
+        >
+          <el-option
+            v-for="type in formatterType"
+            :key="type.value"
+            :label="$t('chart.' + type.name)"
+            :value="type.value"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item
+        v-if="state.labelForm.labelFormatter.type !== 'auto'"
+        :label="$t('chart.value_formatter_decimal_count')"
+        class="form-item"
+        :class="'form-item-' + themes"
+      >
+        <el-input-number
+          controls-position="right"
+          :effect="themes"
+          v-model="state.labelForm.labelFormatter.decimalCount"
+          :precision="0"
+          :min="0"
+          :max="10"
+          @change="changeLabelAttr('labelFormatter')"
+        />
+      </el-form-item>
 
       <el-row :gutter="8">
-        <el-col :span="12">
+        <el-col :span="12" v-if="state.labelForm.labelFormatter.type !== 'percent'">
           <el-form-item
             :label="$t('chart.value_formatter_unit')"
             class="form-item"
@@ -315,53 +310,48 @@ onMounted(() => {
       </el-form-item>
 
       <div style="padding-left: 22px">
-        <el-row :gutter="8">
-          <el-col :span="state.labelForm.quotaLabelFormatter.type !== 'auto' ? 12 : 24">
-            <el-form-item
-              :label="t('chart.value_formatter_type')"
-              class="form-item"
-              :class="'form-item-' + themes"
-            >
-              <el-select
-                :disabled="!state.labelForm.showQuota"
-                style="width: 100%"
-                :effect="themes"
-                v-model="state.labelForm.quotaLabelFormatter.type"
-                @change="changeLabelAttr('quotaLabelFormatter')"
-              >
-                <el-option
-                  v-for="type in formatterType"
-                  :key="type.value"
-                  :label="t('chart.' + type.name)"
-                  :value="type.value"
-                />
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12" v-if="state.labelForm.quotaLabelFormatter.type !== 'auto'">
-            <el-form-item
-              :label="t('chart.value_formatter_decimal_count')"
-              class="form-item"
-              :class="'form-item-' + themes"
-            >
-              <el-input-number
-                controls-position="right"
-                :disabled="!state.labelForm.showQuota"
-                style="width: 100%"
-                :effect="themes"
-                v-model="state.labelForm.quotaLabelFormatter.decimalCount"
-                :precision="0"
-                :min="0"
-                :max="10"
-                size="small"
-                @change="changeLabelAttr('quotaLabelFormatter')"
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
+        <el-form-item
+          :label="t('chart.value_formatter_type')"
+          class="form-item"
+          :class="'form-item-' + themes"
+        >
+          <el-select
+            :disabled="!state.labelForm.showQuota"
+            style="width: 100%"
+            :effect="themes"
+            v-model="state.labelForm.quotaLabelFormatter.type"
+            @change="changeLabelAttr('quotaLabelFormatter')"
+          >
+            <el-option
+              v-for="type in formatterType"
+              :key="type.value"
+              :label="t('chart.' + type.name)"
+              :value="type.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item
+          v-if="state.labelForm.quotaLabelFormatter.type !== 'auto'"
+          :label="t('chart.value_formatter_decimal_count')"
+          class="form-item"
+          :class="'form-item-' + themes"
+        >
+          <el-input-number
+            controls-position="right"
+            :disabled="!state.labelForm.showQuota"
+            style="width: 100%"
+            :effect="themes"
+            v-model="state.labelForm.quotaLabelFormatter.decimalCount"
+            :precision="0"
+            :min="0"
+            :max="10"
+            size="small"
+            @change="changeLabelAttr('quotaLabelFormatter')"
+          />
+        </el-form-item>
 
         <el-row :gutter="8">
-          <el-col :span="12">
+          <el-col :span="12" v-if="state.labelForm.quotaLabelFormatter.type !== 'percent'">
             <el-form-item
               :label="t('chart.value_formatter_unit')"
               class="form-item"
@@ -370,7 +360,7 @@ onMounted(() => {
               <el-select
                 :disabled="
                   !state.labelForm.showQuota ||
-                  state.labelForm.quotaLabelFormatter.type == 'percent'
+                  state.labelForm.quotaLabelFormatter.type === 'percent'
                 "
                 :effect="themes"
                 v-model="state.labelForm.quotaLabelFormatter.unit"
