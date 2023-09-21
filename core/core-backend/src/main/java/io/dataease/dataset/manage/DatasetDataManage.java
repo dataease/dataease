@@ -434,7 +434,7 @@ public class DatasetDataManage {
             // 获取allFields
             List<DatasetTableFieldDTO> fields = Collections.singletonList(field);
             Map<String, ColumnPermissionItem> desensitizationList = new HashMap<>();
-            fields = permissionManage.filterColumnPermissions(fields,desensitizationList, datasetGroupInfoDTO.getId(), null);
+            fields = permissionManage.filterColumnPermissions(fields, desensitizationList, datasetGroupInfoDTO.getId(), null);
             if (ObjectUtils.isEmpty(fields)) {
                 DEException.throwException(Translator.get("i18n_no_column_permission"));
             }
@@ -468,9 +468,13 @@ public class DatasetDataManage {
             List<String> previewData = new ArrayList<>();
             if (ObjectUtils.isNotEmpty(dataList)) {
                 List<String> tmpData = dataList.stream().map(ele -> (ObjectUtils.isNotEmpty(ele) && ele.length > 0) ? ele[0] : null).collect(Collectors.toList());
-                if (desensitizationList.keySet().contains(field.getDataeaseName()) && !CollectionUtils.isEmpty(tmpData)) {
-                    for (int i = 0; i < tmpData.size(); i++) {
-                        previewData.add(ChartDataBuild.desensitizationValue(desensitizationList.get(field.getDataeaseName()), tmpData.get(i)));
+                if (!CollectionUtils.isEmpty(tmpData)) {
+                    if (desensitizationList.keySet().contains(field.getDataeaseName())) {
+                        for (int i = 0; i < tmpData.size(); i++) {
+                            previewData.add(ChartDataBuild.desensitizationValue(desensitizationList.get(field.getDataeaseName()), tmpData.get(i)));
+                        }
+                    } else {
+                        previewData = tmpData;
                     }
                 }
                 list.add(previewData);
