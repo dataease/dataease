@@ -1,8 +1,5 @@
 <script setup lang="ts">
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
-import { generateID } from '@/utils/generateID'
-import toast from '@/utils/toast'
-import { commonStyle, commonAttr } from '@/custom-component/component-list'
 import eventBus from '@/utils/eventBus'
 import { $ } from '@/utils/utils'
 import { ref, nextTick } from 'vue'
@@ -82,57 +79,6 @@ const undo = () => {
 
 const redo = () => {
   snapshotStore.redo()
-}
-
-const handleFileChange = e => {
-  const file = e.target.files[0]
-  if (!file.type.includes('image')) {
-    toast('只能插入图片')
-    return
-  }
-
-  const reader = new FileReader()
-  reader.onload = res => {
-    const fileResult = res.target.result
-    const img = new Image()
-    img.onload = () => {
-      const component = {
-        ...commonAttr,
-        id: generateID(),
-        component: 'Picture',
-        label: '图片',
-        icon: '',
-        propValue: {
-          url: fileResult,
-          flip: {
-            horizontal: false,
-            vertical: false
-          }
-        },
-        style: {
-          ...commonStyle,
-          top: 0,
-          left: 0,
-          width: img.width,
-          height: img.height
-        }
-      }
-
-      // 根据画面比例修改组件样式比例
-      changeComponentSizeWithScale(component)
-      dvMainStore.addComponent({ component: component, index: undefined })
-      snapshotStore.recordSnapshot('dv-handleFileChange')
-
-      $('#input').setAttribute('type', 'text')
-      $('#input').setAttribute('type', 'file')
-    }
-
-    if (typeof fileResult === 'string') {
-      img.src = fileResult
-    }
-  }
-
-  reader.readAsDataURL(file)
 }
 
 const preview = () => {
@@ -302,8 +248,9 @@ eventBus.on('clearCanvas', clearCanvas)
   height: @top-bar-height;
   white-space: nowrap;
   overflow-x: auto;
-  background: #050e21;
+  background: #1a1a1a;
   color: #ffffff;
+  box-shadow: 0px 2px 4px 0px rgba(31, 35, 41, 0.12);
   display: flex;
   transition: 0.5s;
   .back-icon {
