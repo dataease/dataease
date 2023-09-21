@@ -539,24 +539,3 @@ fillCardInfo()
   }
 }
 </style>
-<style lang="less">
-.menu-panel-select_popper {
-  margin-top: -10px !important;
-  .ed-popper__arrow {
-    display: none;
-  }
-
-  .ed-dropdown-menu__item {
-    padding: 5px 11px;
-    &.active {
-      color: #3370ff;
-
-      .ed-icon {
-        font-size: 16px;
-        margin-left: 20px;
-        margin-right: 0;
-      }
-    }
-  }
-}
-</style>

@@ -254,7 +254,7 @@ export default {
     ds_info: '录入数据源信息',
     sync_info: '数据同步设置',
     input_name: '请输入名称',
-    input_limit_2_25: '2-25字符',
+    input_limit_2_25: '{0}-{1}字符',
     input_limit_2_50: '2-50字符',
     data_source_configuration: '数据源配置',
     data_source_table: '数据源表',

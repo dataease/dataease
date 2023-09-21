@@ -171,6 +171,13 @@ const handleRecordCurrentChange = currentPage => {
   getRecord()
 }
 
+let listScrollTop = 0
+const handleScroll = val => {
+  listScrollTop = val.scrollTop
+}
+
+const scrollbarRef = ref()
+
 const generateColumns = (arr: Field[]) =>
   arr.map(ele => ({
     key: ele.originName,
@@ -459,6 +466,9 @@ const updateTreeExpand = () => {
   dsListTreeShow.value = false
   nextTick(() => {
     dsListTreeShow.value = true
+    nextTick(() => {
+      scrollbarRef.value?.setScrollTop(listScrollTop)
+    })
   })
 }
 
@@ -636,7 +646,7 @@ onMounted(() => {
             </template>
           </el-input>
         </div>
-        <el-scrollbar class="custom-tree">
+        <el-scrollbar @scroll="handleScroll" ref="scrollbarRef" class="custom-tree">
           <el-tree
             menu
             v-if="dsListTreeShow"
@@ -1216,14 +1226,14 @@ onMounted(() => {
     //transition: 0.5s;
 
     .resource-tree {
-      padding: 16px 8px 0;
+      padding: 16px 0 0;
       width: 100%;
       height: 100%;
       display: flex;
       flex-direction: column;
 
       .tree-header {
-        padding: 0 8px;
+        padding: 0 16px;
       }
 
       .icon-methods {
@@ -1497,6 +1507,7 @@ onMounted(() => {
 
 .custom-tree {
   height: calc(100vh - 148px);
+  padding: 0 8px;
 }
 
 .custom-tree-node {
