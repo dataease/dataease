@@ -1,5 +1,7 @@
 package io.dataease.api.visualization.request;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 
 /**
@@ -9,24 +11,25 @@ import lombok.Data;
 @Data
 public class VisualizationLinkJumpBaseRequest {
 
-    private String sourceDvId;
-
-    private String sourceViewId;
-
-    private String sourceFieldId;
-
-    private String targetDvId;
-
-    private String targetViewId;
-
-    private String linkJumpId;
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long sourceDvId;
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long sourceViewId;
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long sourceFieldId;
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long targetDvId;
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long targetViewId;
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long linkJumpId;
 
     private Boolean activeStatus;
 
     public VisualizationLinkJumpBaseRequest() {
     }
 
-    public VisualizationLinkJumpBaseRequest(String sourceDvId, String sourceViewId, String targetDvId, String targetViewId, String linkJumpId) {
+    public VisualizationLinkJumpBaseRequest(Long sourceDvId, Long sourceViewId, Long targetDvId, Long targetViewId, Long linkJumpId) {
         this.sourceDvId = sourceDvId;
         this.sourceViewId = sourceViewId;
         this.targetDvId = targetDvId;

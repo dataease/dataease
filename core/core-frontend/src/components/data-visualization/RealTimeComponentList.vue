@@ -48,10 +48,6 @@ const setCurComponent = index => {
   dvMainStore.setCurComponent({ component: componentData.value[index], index })
 }
 
-const toggleComponentList = () => {
-  console.log('toggleComponentList')
-}
-
 let nameEdit = ref(false)
 let editComponentId = ref('')
 let inputName = ref('')

@@ -1,8 +1,7 @@
 <script lang="tsx" setup>
 import { useI18n } from '@/hooks/web/useI18n'
-import { defineProps, reactive, toRefs, watch } from 'vue'
-import { formatterType, unitType } from '@/views/chart/components/editor/util/formatter'
-import { valueFormatter } from '@/views/chart/components/js/formatter'
+import { defineProps, reactive, toRefs } from 'vue'
+import { formatterType, unitType, valueFormatter } from '@/views/chart/components/js/formatter'
 
 const { t } = useI18n()
 

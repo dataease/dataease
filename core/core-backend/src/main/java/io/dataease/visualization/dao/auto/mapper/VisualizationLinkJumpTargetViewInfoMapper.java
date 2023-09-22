@@ -10,7 +10,7 @@ import org.apache.ibatis.annotations.Mapper;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-07-19
+ * @since 2023-09-22
  */
 @Mapper
 public interface VisualizationLinkJumpTargetViewInfoMapper extends BaseMapper<VisualizationLinkJumpTargetViewInfo> {

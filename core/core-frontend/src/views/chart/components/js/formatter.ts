@@ -9,7 +9,7 @@ export const formatterItem = {
 }
 
 // 单位list
-export const unitList = [
+export const unitType = [
   { name: 'unit_none', value: 1 },
   { name: 'unit_thousand', value: 1000 },
   { name: 'unit_ten_thousand', value: 10000 },
@@ -66,7 +66,7 @@ function transSeparatorAndSuffix(value, formatter) {
     str = numArr.join('.')
   }
   if (formatter.type === 'percent') {
-    str += '%'
+    return str + '%'
   } else {
     if (formatter.unit === 1000) {
       str += '千'

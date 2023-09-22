@@ -30,6 +30,7 @@ const dataInitState = ref(false)
 
 const state = reactive({
   datasetTree: [],
+  sourcePid: null,
   canvasId: 'canvas-main'
 })
 
@@ -51,6 +52,7 @@ const viewEditorShow = computed(() => {
 onMounted(() => {
   initDataset()
   const { resourceId, opt, pid } = window.DataEaseBi || router.currentRoute.value.query
+  state.sourcePid = pid
   if (resourceId) {
     dataInitState.value = false
     initCanvasData(resourceId, function () {

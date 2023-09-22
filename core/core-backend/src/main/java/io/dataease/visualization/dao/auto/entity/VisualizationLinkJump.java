@@ -9,24 +9,24 @@ import java.io.Serializable;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-07-18
+ * @since 2023-09-22
  */
 @TableName("visualization_link_jump")
 public class VisualizationLinkJump implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private String id;
+    private Long id;
 
     /**
      * 源仪表板ID
      */
-    private String sourceDvId;
+    private Long sourceDvId;
 
     /**
      * 源视图ID
      */
-    private String sourceViewId;
+    private Long sourceViewId;
 
     /**
      * 跳转信息
@@ -38,31 +38,31 @@ public class VisualizationLinkJump implements Serializable {
      */
     private Boolean checked;
 
-    private String copyFrom;
+    private Long copyFrom;
 
-    private String copyId;
+    private Long copyId;
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public String getSourceDvId() {
+    public Long getSourceDvId() {
         return sourceDvId;
     }
 
-    public void setSourceDvId(String sourceDvId) {
+    public void setSourceDvId(Long sourceDvId) {
         this.sourceDvId = sourceDvId;
     }
 
-    public String getSourceViewId() {
+    public Long getSourceViewId() {
         return sourceViewId;
     }
 
-    public void setSourceViewId(String sourceViewId) {
+    public void setSourceViewId(Long sourceViewId) {
         this.sourceViewId = sourceViewId;
     }
 
@@ -82,19 +82,19 @@ public class VisualizationLinkJump implements Serializable {
         this.checked = checked;
     }
 
-    public String getCopyFrom() {
+    public Long getCopyFrom() {
         return copyFrom;
     }
 
-    public void setCopyFrom(String copyFrom) {
+    public void setCopyFrom(Long copyFrom) {
         this.copyFrom = copyFrom;
     }
 
-    public String getCopyId() {
+    public Long getCopyId() {
         return copyId;
     }
 
-    public void setCopyId(String copyId) {
+    public void setCopyId(Long copyId) {
         this.copyId = copyId;
     }
 

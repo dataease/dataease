@@ -20,13 +20,13 @@ public interface VisualizationLinkJumpApi {
 
 
     @GetMapping("/getTableFieldWithViewId/{viewId}")
-    List<DatasetTableFieldDTO> getTableFieldWithViewId(@PathVariable String viewId);
+    List<DatasetTableFieldDTO> getTableFieldWithViewId(@PathVariable Long viewId);
 
     @GetMapping("/queryWithViewId/{dvId}/{viewId}")
-    VisualizationLinkJumpDTO queryWithViewId(@PathVariable String dvId, @PathVariable String viewId);
+    VisualizationLinkJumpDTO queryWithViewId(@PathVariable Long dvId, @PathVariable Long viewId);
 
     @GetMapping("/queryVisualizationJumpInfo/{dvId}")
-    VisualizationLinkJumpBaseResponse queryVisualizationJumpInfo(@PathVariable String dvId);
+    VisualizationLinkJumpBaseResponse queryVisualizationJumpInfo(@PathVariable Long dvId);
 
     @PostMapping("/updateJumpSet")
     void updateJumpSet(@RequestBody VisualizationLinkJumpDTO jumpDTO);
@@ -35,7 +35,7 @@ public interface VisualizationLinkJumpApi {
     VisualizationLinkJumpBaseResponse queryTargetVisualizationJumpInfo(@RequestBody VisualizationLinkJumpBaseRequest request);
 
     @GetMapping("/viewTableDetailList/{dvId}")
-    List<VisualizationViewTableVO> viewTableDetailList(@PathVariable String dvId);
+    List<VisualizationViewTableVO> viewTableDetailList(@PathVariable Long dvId);
 
     @PostMapping("/updateJumpSetActive")
     VisualizationLinkJumpBaseResponse updateJumpSetActive(@RequestBody VisualizationLinkJumpBaseRequest request);

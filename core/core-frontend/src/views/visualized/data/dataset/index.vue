@@ -208,7 +208,6 @@ const getData = () => {
     })
     .finally(() => {
       dtLoading.value = false
-      console.log('nodeInfo.id2', nodeInfo.id)
       const id = nodeInfo.id
       if (!!id) {
         Object.assign(nodeInfo, cloneDeep(defaultNode))
@@ -231,7 +230,6 @@ const dfsDatasetTree = (ds, id) => {
 }
 
 onBeforeMount(() => {
-  console.log('route.params.id', route.params.id)
   nodeInfo.id = (route.params.id as string) || ''
   getData()
 })

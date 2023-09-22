@@ -27,7 +27,7 @@ public interface VisualizationLinkageApi {
     BaseRspModel saveLinkage(@RequestBody VisualizationLinkageRequest request);
 
     @GetMapping("/getVisualizationAllLinkageInfo/{dvId}")
-    Map<String, List<String>> getVisualizationAllLinkageInfo(@PathVariable String dvId);
+    Map<String, List<String>> getVisualizationAllLinkageInfo(@PathVariable Long dvId);
 
     @PostMapping("/updateLinkageActive")
     Map updateLinkageActive(@RequestBody VisualizationLinkageRequest request);

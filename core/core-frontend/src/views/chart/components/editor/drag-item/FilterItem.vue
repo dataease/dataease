@@ -1,7 +1,7 @@
 <script lang="tsx" setup>
 import { useI18n } from '@/hooks/web/useI18n'
 import { reactive, ref, toRefs, watch } from 'vue'
-import { formatterItem } from '../util/formatter'
+import { formatterItem } from '@/views/chart/components/js/formatter'
 import { getItemType } from './utils'
 import { Delete, Edit, Filter } from '@element-plus/icons-vue'
 import { fieldType } from '@/utils/attr'

@@ -1,16 +1,18 @@
 <script lang="ts" setup>
-import { computed, onMounted, PropType, reactive, watch } from 'vue'
+import { computed, onMounted, PropType, reactive, ref, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL, DEFAULT_LABEL } from '@/views/chart/components/editor/util/chart'
 import { ElSpace } from 'element-plus-secondary'
-import { formatterType, unitList } from '../../../js/formatter'
+import { formatterType, unitType } from '../../../js/formatter'
 import { defaultsDeep, cloneDeep } from 'lodash-es'
+import { includesAny } from '../../util/StringUtils'
+import { fieldType } from '@/utils/attr'
 
 const { t } = useI18n()
 
 const props = defineProps({
   chart: {
-    type: Object,
+    type: Object as PropType<ChartObj>,
     required: true
   },
   themes: {
@@ -29,6 +31,55 @@ watch(
   },
   { deep: true }
 )
+watch(
+  () => props.chart.yAxis,
+  () => {
+    initSeriesLabel()
+  },
+  { deep: true }
+)
+// 初始化系列标签
+const initSeriesLabel = () => {
+  if (!showProperty('seriesLabelFormatter')) {
+    return
+  }
+  const formatter = state.labelForm.seriesLabelFormatter
+  const yAxis = props.chart.yAxis
+  const seriesAxisMap = formatter.reduce((pre, next) => {
+    pre[next.id] = next
+    return pre
+  }, {})
+  formatter.splice(0, formatter.length)
+  if (!yAxis.length) {
+    curSeriesFormatter.value = {}
+    return
+  }
+  const axisMap = yAxis.reduce((pre, next) => {
+    let tmp = {
+      ...next,
+      show: true,
+      color: DEFAULT_LABEL.color,
+      fontSize: DEFAULT_LABEL.fontSize
+    } as SeriesFormatter
+    if (seriesAxisMap[next.id]) {
+      tmp = {
+        ...tmp,
+        formatterCfg: seriesAxisMap[next.id].formatterCfg,
+        show: seriesAxisMap[next.id].show,
+        color: seriesAxisMap[next.id].color,
+        fontSize: seriesAxisMap[next.id].fontSize
+      }
+    }
+    formatter.push(tmp)
+    pre[next.id] = tmp
+    return pre
+  }, {})
+  if (!curSeriesFormatter.value || !axisMap[curSeriesFormatter.value.id]) {
+    curSeriesFormatter.value = axisMap[formatter[0].id]
+    return
+  }
+  curSeriesFormatter.value = axisMap[curSeriesFormatter.value.id]
+}
 
 const labelPositionR = [
   { name: t('chart.inside'), value: 'inner' },
@@ -65,6 +116,9 @@ const emit = defineEmits(['onLabelChange'])
 const changeLabelAttr = prop => {
   emit('onLabelChange', state.labelForm)
 }
+const curSeriesFormatter = ref<Partial<SeriesFormatter>>({
+  deType: 0
+})
 
 const init = () => {
   const chart = JSON.parse(JSON.stringify(props.chart))
@@ -77,11 +131,17 @@ const init = () => {
     }
     if (customAttr.label) {
       state.labelForm = defaultsDeep(customAttr.label, cloneDeep(DEFAULT_LABEL))
+      initSeriesLabel()
     }
   }
 }
-const showProperty = prop => props.propertyInner?.includes(prop)
-
+const showProperty = prop => {
+  return props.propertyInner?.includes(prop)
+}
+const showDivider = computed(() => {
+  const DIVIDER_PROPS = ['labelFormatter', 'showDimension', 'showQuota', 'showProportion']
+  return includesAny(props.propertyInner, ...DIVIDER_PROPS)
+})
 onMounted(() => {
   init()
 })
@@ -193,7 +253,7 @@ onMounted(() => {
         />
       </el-select>
     </el-form-item>
-
+    <el-divider v-show="showDivider" style="margin: 0 0 16px" />
     <template v-if="showProperty('labelFormatter')">
       <el-form-item
         :label="$t('chart.value_formatter_type')"
@@ -245,7 +305,7 @@ onMounted(() => {
               @change="changeLabelAttr('labelFormatter')"
             >
               <el-option
-                v-for="item in unitList"
+                v-for="item in unitType"
                 :key="item.value"
                 :label="$t('chart.' + item.name)"
                 :value="item.value"
@@ -350,8 +410,8 @@ onMounted(() => {
           />
         </el-form-item>
 
-        <el-row :gutter="8">
-          <el-col :span="12" v-if="state.labelForm.quotaLabelFormatter.type !== 'percent'">
+        <el-row :gutter="8" v-if="state.labelForm.quotaLabelFormatter.type !== 'percent'">
+          <el-col :span="12">
             <el-form-item
               :label="t('chart.value_formatter_unit')"
               class="form-item"
@@ -455,11 +515,211 @@ onMounted(() => {
         <el-option :label="t('chart.reserve_two')" :value="2" />
       </el-select>
     </el-form-item>
+    <div v-if="showProperty('seriesLabelFormatter')">
+      <el-form-item>
+        <el-select v-model="curSeriesFormatter" value-key="id" class="series-select">
+          <template #prefix>
+            <el-icon style="font-size: 14px">
+              <Icon
+                :className="`field-icon-${fieldType[curSeriesFormatter.deType]}`"
+                :name="`field_${fieldType[curSeriesFormatter.deType]}`"
+              />
+            </el-icon>
+          </template>
+          <el-option
+            class="series-select-option"
+            :key="item.id"
+            :value="item"
+            :label="`${item.chartShowName ?? item.name}${
+              item.summary !== '' ? '(' + t('chart.' + item.summary) + ')' : ''
+            }`"
+            v-for="item in state.labelForm.seriesLabelFormatter"
+          >
+            <el-icon style="margin-right: 8px">
+              <Icon
+                :className="`field-icon-${fieldType[item.deType]}`"
+                :name="`field_${fieldType[item.deType]}`"
+              />
+            </el-icon>
+            {{ item.chartShowName ?? item.name }}
+            {{ item.summary !== '' ? '(' + t('chart.' + item.summary) + ')' : '' }}
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <template v-if="curSeriesFormatter?.id">
+        <el-form-item class="form-item form-item-checkbox" :class="'form-item-' + themes">
+          <el-checkbox
+            size="small"
+            @change="changeLabelAttr('seriesLabelFormatter')"
+            v-model="curSeriesFormatter.show"
+            label="quota"
+          >
+            {{ t('chart.show') }}
+          </el-checkbox>
+        </el-form-item>
+
+        <div style="padding-left: 22px">
+          <el-row :gutter="8">
+            <el-col :span="8">
+              <el-form-item
+                class="form-item"
+                :class="'form-item-' + themes"
+                :label="t('chart.text')"
+              >
+                <el-color-picker
+                  :disabled="!curSeriesFormatter.show"
+                  style="width: 100%"
+                  :effect="themes"
+                  v-model="curSeriesFormatter.color"
+                  class="color-picker-style"
+                  :predefine="COLOR_PANEL"
+                  @change="changeLabelAttr('seriesLabelFormatter')"
+                  is-custom
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12" style="display: flex; align-items: end">
+              <el-form-item class="form-item" :class="'form-item-' + themes">
+                <el-select
+                  :disabled="!curSeriesFormatter.show"
+                  style="width: 100%"
+                  :effect="themes"
+                  v-model.number="curSeriesFormatter.fontSize"
+                  :placeholder="t('chart.text_fontsize')"
+                  @change="changeLabelAttr('fontSize')"
+                >
+                  <el-option
+                    v-for="option in fontSizeList"
+                    :key="option.value"
+                    :label="option.name"
+                    :value="option.value"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="8">
+            <el-col :span="curSeriesFormatter.formatterCfg.type !== 'auto' ? 12 : 24">
+              <el-form-item
+                :label="t('chart.value_formatter_type')"
+                class="form-item"
+                :class="'form-item-' + themes"
+              >
+                <el-select
+                  :disabled="!curSeriesFormatter.show"
+                  style="width: 100%"
+                  :effect="props.themes"
+                  v-model="curSeriesFormatter.formatterCfg.type"
+                  @change="changeLabelAttr('quotaLabelFormatter')"
+                >
+                  <el-option
+                    v-for="type in formatterType"
+                    :key="type.value"
+                    :label="t('chart.' + type.name)"
+                    :value="type.value"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12" v-if="curSeriesFormatter.formatterCfg.type !== 'auto'">
+              <el-form-item
+                :label="t('chart.value_formatter_decimal_count')"
+                class="form-item"
+                :class="'form-item-' + themes"
+              >
+                <el-input-number
+                  controls-position="right"
+                  :disabled="!curSeriesFormatter.show"
+                  style="width: 100%"
+                  :effect="props.themes"
+                  v-model="curSeriesFormatter.formatterCfg.decimalCount"
+                  :precision="0"
+                  :min="0"
+                  :max="10"
+                  size="small"
+                  @change="changeLabelAttr('quotaLabelFormatter')"
+                />
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-row :gutter="8">
+            <el-col :span="12">
+              <el-form-item
+                :label="t('chart.value_formatter_unit')"
+                class="form-item"
+                :class="'form-item-' + themes"
+              >
+                <el-select
+                  :disabled="
+                    !curSeriesFormatter.show || curSeriesFormatter.formatterCfg.type == 'percent'
+                  "
+                  :effect="props.themes"
+                  v-model="curSeriesFormatter.formatterCfg.unit"
+                  :placeholder="t('chart.pls_select_field')"
+                  size="small"
+                  @change="changeLabelAttr('quotaLabelFormatter')"
+                >
+                  <el-option
+                    v-for="item in unitList"
+                    :key="item.value"
+                    :label="t('chart.' + item.name)"
+                    :value="item.value"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item
+                :label="t('chart.value_formatter_suffix')"
+                class="form-item"
+                :class="'form-item-' + themes"
+              >
+                <el-input
+                  :disabled="!curSeriesFormatter.show"
+                  :effect="props.themes"
+                  v-model="curSeriesFormatter.formatterCfg.suffix"
+                  size="small"
+                  clearable
+                  :placeholder="t('commons.input_content')"
+                  @change="changeLabelAttr('quotaLabelFormatter')"
+                />
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-form-item class="form-item" :class="'form-item-' + themes">
+            <el-checkbox
+              :disabled="!curSeriesFormatter.show"
+              size="small"
+              :effect="props.themes"
+              v-model="curSeriesFormatter.formatterCfg.thousandSeparator"
+              @change="changeLabelAttr('quotaLabelFormatter')"
+              :label="t('chart.value_formatter_thousand_separator')"
+            />
+          </el-form-item>
+        </div>
+      </template>
+    </div>
   </el-form>
 </template>
 
 <style lang="less" scoped>
 .form-item-checkbox {
   margin-bottom: 8px !important;
+}
+.series-select {
+  ::v-deep(.ed-select__prefix--light) {
+    padding-right: unset;
+    border-right: unset;
+  }
+}
+</style>
+<style lang="less">
+.series-select-option {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  padding: 0 11px;
 }
 </style>

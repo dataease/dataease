@@ -572,7 +572,7 @@ export const dvMainStore = defineStore('dataVisualization', {
       const checkQDList = [...data.dimensionList, ...data.quotaList]
       for (let indexOuter = 0; indexOuter < this.componentData.length; indexOuter++) {
         const element = this.componentData[indexOuter]
-        if (element.componentData === 'UserView' && element.innerType != 'VQuery') {
+        if (element.component === 'UserView' && element.innerType != 'VQuery') {
           this.trackFilterCursor(element, checkQDList, trackInfo, preActiveComponentIds, viewId)
           this.componentData[indexOuter] = element
         } else if (element.component === 'Group') {
@@ -709,10 +709,10 @@ export const dvMainStore = defineStore('dataVisualization', {
         this.dvInfo.id = newId
       }
     },
-    createInit(dvType) {
+    createInit(dvType, resourceId?) {
       const optName = dvType === 'dashboard' ? '新建仪表板' : '新建数据大屏'
       this.dvInfo = {
-        id: null,
+        id: resourceId,
         name: optName,
         pid: -1,
         type: dvType,
