@@ -43,7 +43,8 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
     ...BAR_EDITOR_PROPERTY_INNER,
     'x-axis-selector': [...BAR_EDITOR_PROPERTY_INNER['y-axis-selector'], 'hPosition'],
     'y-axis-selector': [...BAR_EDITOR_PROPERTY_INNER['x-axis-selector'], 'hPosition'],
-    'label-selector': [...BAR_EDITOR_PROPERTY_INNER['label-selector'], 'hPosition']
+    'label-selector': ['fontSize', 'color', 'hPosition', 'seriesLabelFormatter'],
+    'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'seriesTooltipFormatter']
   }
   axis: AxisType[] = [...BAR_AXIS_TYPE]
   protected baseOptions: BarOptions = {
@@ -193,6 +194,53 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
       label.position = 'middle'
     }
     return chart
+  }
+
+  protected configLabel(chart: Chart, options: BarOptions): BarOptions {
+    const tmpOptions = super.configLabel(chart, options)
+    if (!tmpOptions.label) {
+      return {
+        ...tmpOptions,
+        label: false
+      }
+    }
+    const labelAttr = parseJson(chart.customAttr).label
+    const formatterMap = labelAttr.seriesLabelFormatter?.reduce((pre, next) => {
+      pre[next.id] = next
+      return pre
+    }, {})
+    const label = {
+      fields: [],
+      ...tmpOptions.label,
+      formatter: (data: Datum) => {
+        if (!labelAttr.seriesLabelFormatter?.length) {
+          return data.value
+        }
+        const labelCfg = formatterMap?.[data.quotaList[0].id] as SeriesFormatter
+        if (!labelCfg) {
+          return data.value
+        }
+        const value = valueFormatter(data.value, labelCfg.formatterCfg)
+        const group = new G2PlotChartView.engine.Group({})
+        group.addShape({
+          type: 'text',
+          attrs: {
+            x: 0,
+            y: 0,
+            text: value,
+            textAlign: 'start',
+            textBaseline: 'top',
+            fontSize: labelCfg.fontSize,
+            fill: labelCfg.color
+          }
+        })
+        return group
+      }
+    }
+    return {
+      ...tmpOptions,
+      label
+    }
   }
 
   protected setupOptions(chart: Chart, options: BarOptions): BarOptions {

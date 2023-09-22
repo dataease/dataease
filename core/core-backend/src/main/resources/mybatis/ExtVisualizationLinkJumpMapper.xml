@@ -3,26 +3,26 @@
 <mapper namespace="io.dataease.visualization.dao.ext.mapper.ExtVisualizationLinkJumpMapper">
     <resultMap id="LinkJumpBaseResultMap" type="io.dataease.api.visualization.vo.VisualizationLinkJumpVO">
         <id column="id" jdbcType="VARCHAR" property="id" />
-        <result column="source_dv_id" jdbcType="VARCHAR" property="sourceDvId" />
-        <result column="source_view_id" jdbcType="VARCHAR" property="sourceViewId" />
+        <result column="source_dv_id" jdbcType="BIGINT" property="sourceDvId" />
+        <result column="source_view_id" jdbcType="BIGINT" property="sourceViewId" />
         <result column="link_jump_info" jdbcType="VARCHAR" property="linkJumpInfo" />
         <result column="checked" jdbcType="BIT" property="checked" />
-        <result column="copy_from" jdbcType="VARCHAR" property="copyFrom" />
-        <result column="copy_id" jdbcType="VARCHAR" property="copyId" />
+        <result column="copy_from" jdbcType="BIGINT" property="copyFrom" />
+        <result column="copy_id" jdbcType="BIGINT" property="copyId" />
     </resultMap>
 
     <resultMap id="LinkJumpInfoBaseResultMap" type="io.dataease.api.visualization.vo.VisualizationLinkJumpInfoVO">
         <id column="id" jdbcType="VARCHAR" property="id" />
-        <result column="link_jump_id" jdbcType="VARCHAR" property="linkJumpId" />
+        <result column="link_jump_id" jdbcType="BIGINT" property="linkJumpId" />
         <result column="link_type" jdbcType="VARCHAR" property="linkType" />
         <result column="jump_type" jdbcType="VARCHAR" property="jumpType" />
-        <result column="target_dv_id" jdbcType="VARCHAR" property="targetDvId" />
-        <result column="source_field_id" jdbcType="VARCHAR" property="sourceFieldId" />
+        <result column="target_dv_id" jdbcType="BIGINT" property="targetDvId" />
+        <result column="source_field_id" jdbcType="BIGINT" property="sourceFieldId" />
         <result column="content" jdbcType="VARCHAR" property="content" />
         <result column="checked" jdbcType="BIT" property="checked" />
         <result column="attach_params" jdbcType="BIT" property="attachParams" />
-        <result column="copy_from" jdbcType="VARCHAR" property="copyFrom" />
-        <result column="copy_id" jdbcType="VARCHAR" property="copyId" />
+        <result column="copy_from" jdbcType="BIGINT" property="copyFrom" />
+        <result column="copy_id" jdbcType="BIGINT" property="copyId" />
     </resultMap>
     
     
@@ -36,25 +36,25 @@
 
     <resultMap id="LinkJumpInfoMap" type="io.dataease.api.visualization.dto.VisualizationLinkJumpInfoDTO"
                extends="LinkJumpInfoBaseResultMap">
-        <result column="source_field_id" jdbcType="VARCHAR" property="sourceFieldId"/>
+        <result column="source_field_id" jdbcType="BIGINT" property="sourceFieldId"/>
         <result column="source_de_type" jdbcType="INTEGER" property="sourceDeType"/>
         <result column="source_field_name" jdbcType="VARCHAR" property="sourceFieldName"/>
         <result column="publicJumpId" jdbcType="VARCHAR" property="publicJumpId"/>
         <collection property="targetViewInfoList"
                     ofType="io.dataease.api.visualization.vo.VisualizationLinkJumpTargetViewInfoVO">
-            <result column="target_view_id" jdbcType="VARCHAR" property="targetViewId"/>
-            <result column="target_field_id" jdbcType="VARCHAR" property="targetFieldId"/>
+            <result column="target_view_id" jdbcType="BIGINT" property="targetViewId"/>
+            <result column="target_field_id" jdbcType="BIGINT" property="targetFieldId"/>
             <result column="source_field_active_id" jdbcType="VARCHAR" property="sourceFieldActiveId"/>
         </collection>
     </resultMap>
     <resultMap id="ViewTableFieldDetailsMap" type="io.dataease.api.visualization.vo.VisualizationViewTableVO">
-        <result column="id" jdbcType="VARCHAR" property="id"/>
+        <result column="id" jdbcType="BIGINT" property="id"/>
         <result column="title" jdbcType="VARCHAR" property="title"/>
         <result column="type" jdbcType="VARCHAR" property="type"/>
-        <result column="dv_id" jdbcType="VARCHAR" property="dvId"/>
+        <result column="dv_id" jdbcType="BIGINT" property="dvId"/>
         <collection property="tableFields"
                     ofType="io.dataease.dto.dataset.DatasetTableFieldDTO">
-            <result column="field_id" jdbcType="VARCHAR" property="id"/>
+            <result column="field_id" jdbcType="BIGINT" property="id"/>
             <result column="origin_name" jdbcType="VARCHAR" property="originName"/>
             <result column="field_name" jdbcType="VARCHAR" property="name"/>
             <result column="field_type" jdbcType="VARCHAR" property="type"/>

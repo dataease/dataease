@@ -13,23 +13,23 @@ import java.util.List;
 @Mapper
 public interface ExtVisualizationLinkageMapper {
 
-    List<VisualizationLinkageDTO> getViewLinkageGather(@Param("dvId") String dvId, @Param("sourceViewId") String sourceViewId, @Param("targetViewIds") List<String> targetViewIds);
+    List<VisualizationLinkageDTO> getViewLinkageGather(@Param("dvId") Long dvId, @Param("sourceViewId") Long sourceViewId, @Param("targetViewIds") List<String> targetViewIds);
 
-    List<LinkageInfoDTO> getPanelAllLinkageInfo(@Param("dvId") String dvId);
+    List<LinkageInfoDTO> getPanelAllLinkageInfo(@Param("dvId") Long dvId);
 
-    List<DatasetTableFieldDTO> queryTableField(@Param("table_id") String tableId);
+    List<DatasetTableFieldDTO> queryTableField(@Param("table_id") Long tableId);
 
-    List<DatasetTableFieldDTO> queryTableFieldWithViewId(@Param("viewId") String viewId);
+    List<DatasetTableFieldDTO> queryTableFieldWithViewId(@Param("viewId") Long viewId);
 
-    void deleteViewLinkage(@Param("dvId") String dvId,@Param("sourceViewId") String sourceViewId);
+    void deleteViewLinkage(@Param("dvId") Long dvId,@Param("sourceViewId") Long sourceViewId);
 
-    void deleteViewLinkageField(@Param("dvId") String dvId,@Param("sourceViewId") String sourceViewId);
+    void deleteViewLinkageField(@Param("dvId") Long dvId,@Param("sourceViewId") Long sourceViewId);
 
-    void copyViewLinkage(@Param("copyId") String copyId);
+    void copyViewLinkage(@Param("copyId") Long copyId);
 
-    void copyViewLinkageField(@Param("copyId") String copyId);
+    void copyViewLinkageField(@Param("copyId") Long copyId);
 
-    List<VisualizationLinkage> findLinkageWithDvId(@Param("dvId") String dvId);
+    List<VisualizationLinkage> findLinkageWithDvId(@Param("dvId") Long dvId);
 
-    List<VisualizationLinkageField> findLinkageFieldWithDvId(@Param("dvId") String dvId);
+    List<VisualizationLinkageField> findLinkageFieldWithDvId(@Param("dvId") Long dvId);
 }

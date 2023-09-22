@@ -12,7 +12,6 @@ const formatterUrl = <T extends Node>(node: T, prefix: string) => {
       url = node.src
     }
 
-    console.log('currentUrlprefix', url, suffix)
     if (url.includes(suffix)) {
       const currentUrlprefix = new URL(url).origin
       const newUrl = url.replace(currentUrlprefix, prefix)

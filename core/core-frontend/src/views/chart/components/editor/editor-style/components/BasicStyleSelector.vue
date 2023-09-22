@@ -244,7 +244,7 @@ onMounted(() => {
       <label class="alpha-label" :class="{ dark: 'dark' === themes }">
         {{ t('chart.not_alpha') }}
       </label>
-      <el-row style="flex: 1" gutter="8">
+      <el-row style="flex: 1" :gutter="8">
         <el-col :span="13">
           <el-form-item class="form-item alpha-slider" :class="'form-item-' + themes">
             <el-slider
@@ -584,7 +584,7 @@ onMounted(() => {
       <label class="alpha-label" :class="{ dark: 'dark' === themes }">
         {{ t('chart.pie_inner_radius_percent') }}
       </label>
-      <el-row style="flex: 1" gutter="8">
+      <el-row style="flex: 1" :gutter="8">
         <el-col :span="13">
           <el-form-item class="form-item alpha-slider" :class="'form-item-' + themes">
             <el-slider
@@ -619,7 +619,7 @@ onMounted(() => {
       <label class="alpha-label" :class="{ dark: 'dark' === themes }">
         {{ t('chart.pie_outer_radius') }}
       </label>
-      <el-row style="flex: 1" gutter="8">
+      <el-row style="flex: 1" :gutter="8">
         <el-col :span="13">
           <el-form-item class="form-item alpha-slider" :class="'form-item-' + themes">
             <el-slider

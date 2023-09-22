@@ -9,6 +9,7 @@ import io.dataease.api.visualization.vo.VisualizationLinkageFieldVO;
 import io.dataease.chart.dao.auto.entity.CoreChartView;
 import io.dataease.chart.dao.auto.mapper.CoreChartViewMapper;
 import io.dataease.utils.BeanUtils;
+import io.dataease.utils.IDUtils;
 import io.dataease.visualization.dao.auto.entity.VisualizationLinkage;
 import io.dataease.visualization.dao.auto.entity.VisualizationLinkageField;
 import io.dataease.visualization.dao.auto.mapper.DataVisualizationInfoMapper;
@@ -52,24 +53,23 @@ public class VisualizationLinkageService implements VisualizationLinkageApi {
     public Map<String, VisualizationLinkageDTO> getViewLinkageGather(VisualizationLinkageRequest request) {
         if (CollectionUtils.isNotEmpty(request.getTargetViewIds())) {
             List<VisualizationLinkageDTO> linkageDTOList = extVisualizationLinkageMapper.getViewLinkageGather(request.getDvId(), request.getSourceViewId(), request.getTargetViewIds());
-            return linkageDTOList.stream().collect(Collectors.toMap(VisualizationLinkageDTO::getTargetViewId, PanelViewLinkageDTO -> PanelViewLinkageDTO));
+            return linkageDTOList.stream().collect(Collectors.toMap(targetViewId ->String.valueOf(targetViewId), PanelViewLinkageDTO -> PanelViewLinkageDTO));
         }
         return new HashMap<>();
     }
 
     @Override
     public List<VisualizationLinkageDTO> getViewLinkageGatherArray(VisualizationLinkageRequest request) {
-        List<VisualizationLinkageDTO> linkageDTOList = extVisualizationLinkageMapper.getViewLinkageGather(request.getDvId(), request.getSourceViewId(), request.getTargetViewIds());
-        return linkageDTOList;
+        return extVisualizationLinkageMapper.getViewLinkageGather(request.getDvId(), request.getSourceViewId(), request.getTargetViewIds());
     }
 
     @Override
     @Transactional
     public BaseRspModel saveLinkage(VisualizationLinkageRequest request) {
         Long updateTime = System.currentTimeMillis();
-        List<VisualizationLinkageDTO> linkageInfo =  request.getLinkageInfo();;
-        String sourceViewId = request.getSourceViewId();
-        String dvId = request.getDvId();
+        List<VisualizationLinkageDTO> linkageInfo =  request.getLinkageInfo();
+        Long sourceViewId = request.getSourceViewId();
+        Long dvId = request.getDvId();
 
         Assert.notNull(sourceViewId, "source View ID can not be null");
         Assert.notNull(dvId, "dvId can not be null");
@@ -85,7 +85,7 @@ public class VisualizationLinkageService implements VisualizationLinkageApi {
                 continue;
             }
             List<VisualizationLinkageFieldVO> linkageFields = linkageDTO.getLinkageFields();
-            String linkageId = UUID.randomUUID().toString();
+            Long linkageId = IDUtils.snowID();
             VisualizationLinkage linkage = new VisualizationLinkage();
             linkage.setId(linkageId);
             linkage.setDvId(dvId);
@@ -97,7 +97,7 @@ public class VisualizationLinkageService implements VisualizationLinkageApi {
             visualizationLinkageMapper.insert(linkage);
             if (CollectionUtils.isNotEmpty(linkageFields) && linkageDTO.getLinkageActive()) {
                 linkageFields.forEach(linkageField -> {
-                    linkageField.setId(UUID.randomUUID().toString());
+                    linkageField.setId(IDUtils.snowID());
                     linkageField.setLinkageId(linkageId);
                     linkageField.setUpdateTime(updateTime);
                     VisualizationLinkageField fieldInsert = new VisualizationLinkageField();
@@ -109,7 +109,7 @@ public class VisualizationLinkageService implements VisualizationLinkageApi {
     }
 
     @Override
-    public Map<String, List<String>> getVisualizationAllLinkageInfo(String dvId) {
+    public Map<String, List<String>> getVisualizationAllLinkageInfo(Long dvId) {
         List<LinkageInfoDTO> info = extVisualizationLinkageMapper.getPanelAllLinkageInfo(dvId);
         return Optional.ofNullable(info).orElse(new ArrayList<>()).stream().collect(Collectors.toMap(LinkageInfoDTO::getSourceInfo, LinkageInfoDTO::getTargetInfoList));
     }
@@ -117,7 +117,7 @@ public class VisualizationLinkageService implements VisualizationLinkageApi {
     @Override
     public Map updateLinkageActive(VisualizationLinkageRequest request) {
         CoreChartView coreChartView = new CoreChartView();
-        coreChartView.setId(Long.valueOf(request.getSourceViewId()));
+        coreChartView.setId(request.getSourceViewId());
         coreChartView.setLinkageActive(request.getActiveStatus());
         coreChartViewMapper.updateById(coreChartView);
         return getVisualizationAllLinkageInfo(request.getDvId());

@@ -37,7 +37,7 @@ const importProxy = (bytesArray: any[]) => {
       plugin.value = res.default
     })
     .catch(e => {
-      console.log(e)
+      console.error(e)
       showNolic()
     })
 }

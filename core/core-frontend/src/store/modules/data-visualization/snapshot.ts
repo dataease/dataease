@@ -44,7 +44,6 @@ export const snapshotStore = defineStore('snapshot', {
   actions: {
     //定时检查变动次数 存在变动次数则进行镜像处理
     snapshotCatchToStore() {
-      // console.log('snapshotCatchToStore-' + this.snapshotCacheTimes)
       if (this.snapshotCacheTimes) {
         this.recordSnapshot('snapshotCatchToStore')
       }
@@ -70,7 +69,6 @@ export const snapshotStore = defineStore('snapshot', {
     },
 
     redo() {
-      // console.log('redo')
       if (this.snapshotIndex < this.snapshotData.length - 1) {
         this.snapshotIndex++
         const snapshotInfo = deepCopy(this.snapshotData[this.snapshotIndex])
@@ -78,7 +76,6 @@ export const snapshotStore = defineStore('snapshot', {
       }
     },
     snapshotPublish(snapshotInfo) {
-      // console.log('snapshotPublish-' + JSON.stringify(snapshotInfo.canvasViewInfo))
       dvMainStore.setComponentData(snapshotInfo.componentData)
       dvMainStore.setCanvasStyle(snapshotInfo.canvasStyleData)
       dvMainStore.setCanvasViewInfo(snapshotInfo.canvasViewInfo)

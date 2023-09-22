@@ -1,5 +1,7 @@
 package io.dataease.api.visualization.vo;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 
 /**
@@ -9,18 +11,20 @@ import lombok.Data;
 @Data
 public class VisualizationLinkJumpVO {
     private static final long serialVersionUID = 1L;
-
-    private String id;
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long id;
 
     /**
      * 源仪表板ID
      */
-    private String sourceDvId;
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long sourceDvId;
 
     /**
      * 源视图ID
      */
-    private String sourceViewId;
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long sourceViewId;
 
     /**
      * 跳转信息
@@ -31,8 +35,8 @@ public class VisualizationLinkJumpVO {
      * 是否启用
      */
     private Boolean checked;
-
-    private String copyFrom;
-
-    private String copyId;
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long copyFrom;
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long copyId;
 }

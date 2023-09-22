@@ -12,6 +12,7 @@ import io.dataease.chart.dao.auto.entity.CoreChartView;
 import io.dataease.chart.dao.auto.mapper.CoreChartViewMapper;
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.utils.BeanUtils;
+import io.dataease.utils.IDUtils;
 import io.dataease.visualization.dao.auto.entity.DataVisualizationInfo;
 import io.dataease.visualization.dao.auto.entity.VisualizationLinkJump;
 import io.dataease.visualization.dao.auto.entity.VisualizationLinkJumpInfo;
@@ -62,28 +63,28 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
     private DataVisualizationInfoMapper dataVisualizationInfoMapper;
 
     @Override
-    public List<DatasetTableFieldDTO> getTableFieldWithViewId(String viewId) {
+    public List<DatasetTableFieldDTO> getTableFieldWithViewId(Long viewId) {
         return extVisualizationLinkageMapper.queryTableFieldWithViewId(viewId);
     }
 
-    public List<VisualizationLinkJumpDTO> queryWithDvId(String dvId) {
+    public List<VisualizationLinkJumpDTO> queryWithDvId(Long dvId) {
         return extVisualizationLinkJumpMapper.queryWithDvId(dvId);
     }
 
     //获取仪表板的跳转信息
     @Override
-    public VisualizationLinkJumpBaseResponse queryVisualizationJumpInfo(String dvId) {
+    public VisualizationLinkJumpBaseResponse queryVisualizationJumpInfo(Long dvId) {
         Map<String, VisualizationLinkJumpInfoDTO> resultBase = new HashMap<>();
         List<VisualizationLinkJumpDTO> resultLinkJumpList = extVisualizationLinkJumpMapper.queryWithDvId(dvId);
         Optional.ofNullable(resultLinkJumpList).orElse(new ArrayList<>()).forEach(resultLinkJump -> {
             if (resultLinkJump.getChecked()) {
-                String sourceViewId = resultLinkJump.getSourceViewId();
+                Long sourceViewId = resultLinkJump.getSourceViewId();
                 Optional.ofNullable(resultLinkJump.getLinkJumpInfoArray()).orElse(new ArrayList<>()).forEach(linkJumpInfo -> {
                     if (linkJumpInfo.getChecked()) {
                         String sourceJumpInfo = sourceViewId + "#" + linkJumpInfo.getSourceFieldId();
                         // 内部仪表板跳转 需要设置好仪表板ID
                         if ("inner".equals(linkJumpInfo.getLinkType())) {
-                            if (StringUtils.isNotEmpty(linkJumpInfo.getTargetDvId())) {
+                            if (linkJumpInfo.getTargetDvId() != null) {
                                 resultBase.put(sourceJumpInfo, linkJumpInfo);
                             }
                         } else {
@@ -98,15 +99,15 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
     }
 
     @Override
-    public VisualizationLinkJumpDTO queryWithViewId(String dvId, String viewId) {
+    public VisualizationLinkJumpDTO queryWithViewId(Long dvId, Long viewId) {
         return extVisualizationLinkJumpMapper.queryWithViewId(dvId, viewId);
     }
 
     @Transactional
     @Override
     public void updateJumpSet(VisualizationLinkJumpDTO jumpDTO) {
-        String dvId = jumpDTO.getSourceDvId();
-        String viewId = jumpDTO.getSourceViewId();
+        Long dvId = jumpDTO.getSourceDvId();
+        Long viewId = jumpDTO.getSourceViewId();
         Assert.notNull(dvId, "dvId cannot be null");
         Assert.notNull(viewId, "viewId cannot be null");
         //清理原有数据
@@ -115,20 +116,20 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
         extVisualizationLinkJumpMapper.deleteJump(dvId, viewId);
 
         // 插入新的数据
-        String linkJumpId = UUID.randomUUID().toString();
+        Long linkJumpId = IDUtils.snowID();
         jumpDTO.setId(linkJumpId);
         VisualizationLinkJump insertParam = new VisualizationLinkJump();
         BeanUtils.copyBean(insertParam, jumpDTO);
         visualizationLinkJumpMapper.insert(insertParam);
         Optional.ofNullable(jumpDTO.getLinkJumpInfoArray()).orElse(new ArrayList<>()).forEach(linkJumpInfo -> {
-            String linkJumpInfoId = UUID.randomUUID().toString();
+            Long linkJumpInfoId = IDUtils.snowID();
             linkJumpInfo.setId(linkJumpInfoId);
             linkJumpInfo.setLinkJumpId(linkJumpId);
             VisualizationLinkJumpInfo insertJumpInfoParam = new VisualizationLinkJumpInfo();
             BeanUtils.copyBean(insertJumpInfoParam, linkJumpInfo);
             visualizationLinkJumpInfoMapper.insert(insertJumpInfoParam);
             Optional.ofNullable(linkJumpInfo.getTargetViewInfoList()).orElse(new ArrayList<>()).forEach(targetViewInfo -> {
-                String targetViewInfoId = UUID.randomUUID().toString();
+                Long targetViewInfoId = IDUtils.snowID();
                 targetViewInfo.setTargetId(targetViewInfoId);
                 targetViewInfo.setLinkJumpInfoId(linkJumpInfoId);
                 VisualizationLinkJumpTargetViewInfo insertTargetViewInfoParam = new VisualizationLinkJumpTargetViewInfo();
@@ -145,7 +146,7 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
     }
 
     @Override
-    public List<VisualizationViewTableVO> viewTableDetailList(String dvId) {
+    public List<VisualizationViewTableVO> viewTableDetailList(Long dvId) {
         DataVisualizationInfo dvInfo = dataVisualizationInfoMapper.selectById(dvId);
         if (dvInfo != null) {
             List<VisualizationViewTableVO> result = extVisualizationLinkJumpMapper.getViewTableDetails(dvId);

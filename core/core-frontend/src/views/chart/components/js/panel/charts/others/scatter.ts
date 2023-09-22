@@ -28,8 +28,8 @@ export class Scatter extends G2PlotChartView<ScatterOptions, G2Scatter> {
   ]
   propertyInner: EditorPropertyInner = {
     'basic-style-selector': ['colors', 'alpha', 'scatterSymbol', 'scatterSymbolSize'],
-    'label-selector': ['fontSize', 'color'],
-    'tooltip-selector': ['fontSize', 'color', 'backgroundColor'],
+    'label-selector': ['seriesLabelFormatter'],
+    'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'seriesTooltipFormatter'],
     'x-axis-selector': [
       'vPosition',
       'name',
@@ -187,6 +187,56 @@ export class Scatter extends G2PlotChartView<ScatterOptions, G2Scatter> {
       return { ...tmpOptions, ...axis }
     }
     return tmpOptions
+  }
+
+  protected configLabel(chart: Chart, options: ScatterOptions): ScatterOptions {
+    const tmpOptions = super.configLabel(chart, options)
+    if (!tmpOptions.label) {
+      return {
+        ...tmpOptions,
+        label: false
+      }
+    }
+    const labelAttr = parseJson(chart.customAttr).label
+    const formatterMap = labelAttr.seriesLabelFormatter?.reduce((pre, next) => {
+      pre[next.id] = next
+      return pre
+    }, {})
+    const label = {
+      fields: [],
+      ...tmpOptions.label,
+      formatter: (data: Datum) => {
+        if (!labelAttr.seriesLabelFormatter?.length) {
+          return data.value
+        }
+        const labelCfg = formatterMap?.[data.quotaList[0].id] as SeriesFormatter
+        if (!labelCfg) {
+          return data.value
+        }
+        if (!labelCfg.show) {
+          return
+        }
+        const value = valueFormatter(data.value, labelCfg.formatterCfg)
+        const group = new G2PlotChartView.engine.Group({})
+        group.addShape({
+          type: 'text',
+          attrs: {
+            x: 0,
+            y: 0,
+            text: value,
+            textAlign: 'start',
+            textBaseline: 'top',
+            fontSize: labelCfg.fontSize,
+            fill: labelCfg.color
+          }
+        })
+        return group
+      }
+    }
+    return {
+      ...tmpOptions,
+      label
+    }
   }
 
   protected setupOptions(chart: Chart, options: ScatterOptions) {

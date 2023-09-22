@@ -3979,35 +3979,6 @@ ALTER TABLE QRTZ_TRIGGERS
                                                JOB_GROUP
                 );
 
-DROP TABLE IF EXISTS `visualization_linkage`;
-CREATE TABLE `visualization_linkage`
-(
-    `id`             varchar(50) NOT NULL,
-    `dv_id`          varchar(50)   DEFAULT NULL,
-    `source_view_id` varchar(50)   DEFAULT NULL COMMENT '源视图id',
-    `target_view_id` varchar(50)   DEFAULT NULL COMMENT '联动视图id',
-    `update_time`    bigint        DEFAULT NULL COMMENT '更新时间',
-    `update_people`  varchar(255)  DEFAULT NULL COMMENT '更新人',
-    `linkage_active` tinyint(1) DEFAULT '0' COMMENT '是否启用关联',
-    `ext1`           varchar(2000) DEFAULT NULL,
-    `ext2`           varchar(2000) DEFAULT NULL,
-    `copy_from`      varchar(255)  DEFAULT NULL,
-    `copy_id`        varchar(255)  DEFAULT NULL,
-    PRIMARY KEY (`id`)
-);
-DROP TABLE IF EXISTS `visualization_linkage_field`;
-CREATE TABLE `visualization_linkage_field`
-(
-    `id`           varchar(50) NOT NULL,
-    `linkage_id`   varchar(50)  DEFAULT NULL COMMENT '联动ID',
-    `source_field` varchar(255) DEFAULT NULL COMMENT '源视图字段',
-    `target_field` varchar(255) DEFAULT NULL COMMENT '目标视图字段',
-    `update_time`  bigint       DEFAULT NULL COMMENT '更新时间',
-    `copy_from`    varchar(255) DEFAULT NULL,
-    `copy_id`      varchar(255) DEFAULT NULL,
-    PRIMARY KEY (`id`)
-);
-
 
 -- ----------------------------
 -- Table structure for visualization_background
@@ -4075,59 +4046,6 @@ CREATE TABLE `visualization_background_image`
     `url`            varchar(255) DEFAULT NULL,
     PRIMARY KEY (`id`)
 );
-
--- ----------------------------
--- Table structure for visualization_link_jump
--- ----------------------------
-DROP TABLE IF EXISTS `visualization_link_jump`;
-CREATE TABLE `visualization_link_jump`
-(
-    `id`             varchar(50) NOT NULL,
-    `source_dv_id`   varchar(50)   DEFAULT NULL COMMENT '源仪表板ID',
-    `source_view_id` varchar(50)   DEFAULT NULL COMMENT '源视图ID',
-    `link_jump_info` varchar(4000) DEFAULT NULL COMMENT '跳转信息',
-    `checked`        tinyint(1) DEFAULT NULL COMMENT '是否启用',
-    `copy_from`      varchar(255)  DEFAULT NULL,
-    `copy_id`        varchar(255)  DEFAULT NULL,
-    PRIMARY KEY (`id`)
-);
-
--- ----------------------------
--- Table structure for visualization_link_jump_info
--- ----------------------------
-DROP TABLE IF EXISTS `visualization_link_jump_info`;
-CREATE TABLE `visualization_link_jump_info`
-(
-    `id`              varchar(50) NOT NULL,
-    `link_jump_id`    varchar(50)   DEFAULT NULL COMMENT 'link jump ID',
-    `link_type`       varchar(255)  DEFAULT NULL COMMENT '关联类型 inner 内部仪表板，outer 外部链接',
-    `jump_type`       varchar(255)  DEFAULT NULL COMMENT '跳转类型 _blank 新开页面 _self 当前窗口',
-    `target_dv_id`    varchar(255)  DEFAULT NULL COMMENT '关联仪表板ID',
-    `source_field_id` varchar(255)  DEFAULT NULL COMMENT '字段ID',
-    `content`         varchar(4000) DEFAULT NULL COMMENT '内容 linkType = outer时使用',
-    `checked`         tinyint(1) DEFAULT NULL COMMENT '是否可用',
-    `attach_params`   tinyint(1) DEFAULT NULL COMMENT '是否附加点击参数',
-    `copy_from`       varchar(255)  DEFAULT NULL,
-    `copy_id`         varchar(255)  DEFAULT NULL,
-    PRIMARY KEY (`id`)
-);
-
--- ----------------------------
--- Table structure for visualization_link_jump_target_view_info
--- ----------------------------
-DROP TABLE IF EXISTS `visualization_link_jump_target_view_info`;
-CREATE TABLE `visualization_link_jump_target_view_info`
-(
-    `target_id`              varchar(50) NOT NULL,
-    `link_jump_info_id`      varchar(50)  DEFAULT NULL,
-    `source_field_active_id` varchar(50)  DEFAULT NULL COMMENT '勾选字段设置的匹配字段，也可以不是勾选字段本身',
-    `target_view_id`         varchar(50)  DEFAULT NULL,
-    `target_field_id`        varchar(50)  DEFAULT NULL,
-    `copy_from`              varchar(255) DEFAULT NULL,
-    `copy_id`                varchar(255) DEFAULT NULL,
-    PRIMARY KEY (`target_id`)
-);
-
 -- ----------------------------
 -- Table structure for visualization_subject
 -- ----------------------------
@@ -4166,6 +4084,96 @@ CREATE TABLE `core_dataset_table_sql_log`
     `status`     varchar(45)          DEFAULT NULL COMMENT '状态',
     PRIMARY KEY (`id`)
 );
+
+SET NAMES utf8mb4;
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+-- Table structure for visualization_link_jump
+-- ----------------------------
+DROP TABLE IF EXISTS `visualization_link_jump`;
+CREATE TABLE `visualization_link_jump` (
+                                           `id` bigint NOT NULL,
+                                           `source_dv_id` bigint DEFAULT NULL COMMENT '源仪表板ID',
+                                           `source_view_id` bigint DEFAULT NULL COMMENT '源视图ID',
+                                           `link_jump_info` varchar(4000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '跳转信息',
+                                           `checked` tinyint(1) DEFAULT NULL COMMENT '是否启用',
+                                           `copy_from` bigint DEFAULT NULL,
+                                           `copy_id` bigint DEFAULT NULL,
+                                           PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- ----------------------------
+-- Table structure for visualization_link_jump_info
+-- ----------------------------
+DROP TABLE IF EXISTS `visualization_link_jump_info`;
+CREATE TABLE `visualization_link_jump_info` (
+                                                `id` bigint NOT NULL,
+                                                `link_jump_id` bigint DEFAULT NULL COMMENT 'link jump ID',
+                                                `link_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '关联类型 inner 内部仪表板，outer 外部链接',
+                                                `jump_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '跳转类型 _blank 新开页面 _self 当前窗口',
+                                                `target_dv_id` bigint DEFAULT NULL COMMENT '关联仪表板ID',
+                                                `source_field_id` bigint DEFAULT NULL COMMENT '字段ID',
+                                                `content` varchar(4000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '内容 linkType = outer时使用',
+                                                `checked` tinyint(1) DEFAULT NULL COMMENT '是否可用',
+                                                `attach_params` tinyint(1) DEFAULT NULL COMMENT '是否附加点击参数',
+                                                `copy_from` bigint DEFAULT NULL,
+                                                `copy_id` bigint DEFAULT NULL,
+                                                PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- ----------------------------
+-- Table structure for visualization_link_jump_target_view_info
+-- ----------------------------
+DROP TABLE IF EXISTS `visualization_link_jump_target_view_info`;
+CREATE TABLE `visualization_link_jump_target_view_info` (
+                                                            `target_id` bigint NOT NULL,
+                                                            `link_jump_info_id` bigint DEFAULT NULL,
+                                                            `source_field_active_id` bigint DEFAULT NULL COMMENT '勾选字段设置的匹配字段，也可以不是勾选字段本身',
+                                                            `target_view_id` bigint DEFAULT NULL,
+                                                            `target_field_id` bigint DEFAULT NULL,
+                                                            `copy_from` bigint DEFAULT NULL,
+                                                            `copy_id` bigint DEFAULT NULL,
+                                                            PRIMARY KEY (`target_id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- ----------------------------
+-- Table structure for visualization_linkage
+-- ----------------------------
+DROP TABLE IF EXISTS `visualization_linkage`;
+CREATE TABLE `visualization_linkage` (
+                                         `id` bigint NOT NULL,
+                                         `dv_id` bigint DEFAULT NULL,
+                                         `source_view_id` bigint DEFAULT NULL COMMENT '源视图id',
+                                         `target_view_id` bigint DEFAULT NULL COMMENT '联动视图id',
+                                         `update_time` bigint DEFAULT NULL COMMENT '更新时间',
+                                         `update_people` varchar(255) DEFAULT NULL COMMENT '更新人',
+                                         `linkage_active` tinyint(1) DEFAULT '0' COMMENT '是否启用关联',
+                                         `ext1` varchar(2000) DEFAULT NULL,
+                                         `ext2` varchar(2000) DEFAULT NULL,
+                                         `copy_from` bigint DEFAULT NULL,
+                                         `copy_id` bigint DEFAULT NULL,
+                                         PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- ----------------------------
+-- Table structure for visualization_linkage_field
+-- ----------------------------
+DROP TABLE IF EXISTS `visualization_linkage_field`;
+CREATE TABLE `visualization_linkage_field` (
+                                               `id` bigint NOT NULL,
+                                               `linkage_id` bigint DEFAULT NULL COMMENT '联动ID',
+                                               `source_field` bigint DEFAULT NULL COMMENT '源视图字段',
+                                               `target_field` bigint DEFAULT NULL COMMENT '目标视图字段',
+                                               `update_time` bigint DEFAULT NULL COMMENT '更新时间',
+                                               `copy_from` bigint DEFAULT NULL,
+                                               `copy_id` bigint DEFAULT NULL,
+                                               PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+SET FOREIGN_KEY_CHECKS = 1;
+
+
 
 INSERT INTO `visualization_subject` ( `id`, `name`, `type`, `details`, `delete_flag`, `cover_url`, `create_num`, `create_time`, `create_by`, `update_time`, `update_by`, `delete_time`, `delete_by` )
 VALUES

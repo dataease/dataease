@@ -3,26 +3,26 @@
 <mapper namespace="io.dataease.visualization.dao.ext.mapper.ExtVisualizationLinkageMapper">
 
     <resultMap id="TableFieldMap" type="io.dataease.dto.dataset.DatasetTableFieldDTO">
-        <result column="id" jdbcType="VARCHAR" property="id"/>
-        <result column="table_id" jdbcType="VARCHAR" property="datasetTableId"/>
+        <result column="id" jdbcType="BIGINT" property="id"/>
+        <result column="table_id" jdbcType="BIGINT" property="datasetTableId"/>
         <result column="origin_name" jdbcType="VARCHAR" property="originName"/>
         <result column="name" jdbcType="VARCHAR" property="name"/>
         <result column="de_type" jdbcType="INTEGER" property="deType"/>
     </resultMap>
 
     <resultMap id="LinkageGatherMap" type="io.dataease.api.visualization.dto.VisualizationLinkageDTO">
-        <result column="target_view_id" jdbcType="VARCHAR" property="targetViewId"/>
+        <result column="target_view_id" jdbcType="BIGINT" property="targetViewId"/>
         <result column="target_view_type" jdbcType="VARCHAR" property="targetViewType"/>
-        <result column="table_id" jdbcType="VARCHAR" property="tableId"/>
+        <result column="table_id" jdbcType="BIGINT" property="tableId"/>
         <result column="targetViewName" jdbcType="VARCHAR" property="targetViewName"/>
-        <result column="sourceViewId" jdbcType="VARCHAR" property="sourceViewId"/>
+        <result column="sourceViewId" jdbcType="BIGINT" property="sourceViewId"/>
         <result column="linkageActive" property="linkageActive"/>
         <collection property="targetViewFields" ofType="io.dataease.dto.dataset.DatasetTableFieldDTO" column="table_id"
                     select="queryTableField">
         </collection>
-        <collection property="linkageFields" ofType="io.dataease.visualization.dao.auto.entity.VisualizationLinkageField">
-            <result column="source_field" jdbcType="VARCHAR" property="sourceField"/>
-            <result column="target_field" jdbcType="VARCHAR" property="targetField"/>
+        <collection property="linkageFields" ofType="io.dataease.api.visualization.vo.VisualizationLinkageFieldVO">
+            <result column="source_field" jdbcType="BIGINT" property="sourceField"/>
+            <result column="target_field" jdbcType="BIGINT" property="targetField"/>
         </collection>
     </resultMap>
 

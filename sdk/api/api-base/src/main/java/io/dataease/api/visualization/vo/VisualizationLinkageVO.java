@@ -1,5 +1,7 @@
 package io.dataease.api.visualization.vo;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -8,24 +10,27 @@ import java.io.Serializable;
 public class VisualizationLinkageVO implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
-    private String id;
-
-    private String dvId;
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long id;
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long dvId;
 
     /**
      * 源视图id
      */
-    private String sourceViewId;
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long sourceViewId;
 
     /**
      * 联动视图id
      */
-    private String targetViewId;
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long targetViewId;
 
     /**
      * 更新时间
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long updateTime;
 
     /**
@@ -41,8 +46,8 @@ public class VisualizationLinkageVO implements Serializable {
     private String ext1;
 
     private String ext2;
-
-    private String copyFrom;
-
-    private String copyId;
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long copyFrom;
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long copyId;
 }

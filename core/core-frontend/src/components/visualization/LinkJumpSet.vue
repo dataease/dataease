@@ -464,7 +464,6 @@ const emits = defineEmits(['closeJumpSetDialog'])
 const outerContentEditor = ref(null)
 
 const dialogInit = viewItem => {
-  console.log(viewItem)
   dialogShow.value = true
   state.initState = false
   init(viewItem)

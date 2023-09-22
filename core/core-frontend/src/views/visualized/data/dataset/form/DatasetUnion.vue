@@ -990,15 +990,8 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields'])
   cursor: pointer;
   padding-right: 12px;
 
-  .hover-icon {
-    display: none;
-  }
-
   &:hover {
     border-color: #3370ff;
-    .hover-icon {
-      display: inline-flex;
-    }
   }
 
   .placeholder {
