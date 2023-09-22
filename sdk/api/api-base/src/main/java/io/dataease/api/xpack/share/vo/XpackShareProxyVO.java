@@ -25,4 +25,6 @@ public class XpackShareProxyVO implements Serializable {
     private boolean exp;
 
     private boolean pwdValid;
+
+    private String type;
 }
