@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { onMounted, reactive } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
 import router from '@/router'
 import { initCanvasData } from '@/utils/canvasUtils'
 import { queryTargetVisualizationJumpInfo } from '@/api/visualization/linkJump'
 import { Base64 } from 'js-base64'
 const dvMainStore = dvMainStoreWithOut()
+const type = ref('')
 const state = reactive({
   canvasDataPreview: null,
   canvasStylePreview: null,
@@ -15,7 +16,10 @@ const state = reactive({
   curPreviewGap: 0
 })
 
-const loadCanvasDataAsync = async (dvId, jumpInfoParam) => {
+const loadCanvasDataAsync = async (dvId, busiType: string, jumpInfoParam) => {
+  if (busiType) {
+    type.value = busiType
+  }
   let jumpParam
   // 获取外部跳转参数
   if (jumpInfoParam) {
@@ -58,9 +62,10 @@ const loadCanvasDataAsync = async (dvId, jumpInfoParam) => {
 }
 
 onMounted(() => {
-  const { dvId, jumpInfoParam } = router.currentRoute.value.query
+  const { dvId, busiType, jumpInfoParam } = router.currentRoute.value.query
+  type.value = busiType + ''
   if (dvId) {
-    loadCanvasDataAsync(dvId, jumpInfoParam)
+    loadCanvasDataAsync(dvId, '', jumpInfoParam)
     return
   }
 })
