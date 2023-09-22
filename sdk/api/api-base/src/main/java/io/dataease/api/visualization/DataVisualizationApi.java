@@ -7,6 +7,7 @@ import io.dataease.api.visualization.request.VisualizationWorkbranchQueryRequest
 import io.dataease.api.visualization.vo.DataVisualizationVO;
 import io.dataease.api.visualization.vo.VisualizationResourceVO;
 import io.dataease.auth.DeApiPath;
+import io.dataease.auth.DePermit;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import org.springframework.web.bind.annotation.*;
@@ -22,25 +23,31 @@ public interface DataVisualizationApi {
      *
      * @return
      */
-    @GetMapping("/findById/{dvId}")
-    DataVisualizationVO findById(@PathVariable("dvId") Long dvId);
+    @GetMapping("/findById/{dvId}/{busiFlag}")
+    @DePermit(value = {"#p0+':read'"}, busiFlag = "#p1")
+    DataVisualizationVO findById(@PathVariable("dvId") Long dvId,@PathVariable("busiFlag") String busiFlag);
 
     @PostMapping("/saveCanvas")
+    @DePermit(value = {"#p0.pid + ':manage'"}, busiFlag = "#p0.type")
     String saveCanvas(@RequestBody DataVisualizationBaseRequest request);
 
     @PostMapping("/updateCanvas")
+    @DePermit(value = {"#p0.id + ':manage'"}, busiFlag = "#p0.type")
     void updateCanvas(@RequestBody DataVisualizationBaseRequest request);
 
     @PostMapping("/updateBase")
+    @DePermit(value = {"#p0.id + ':manage'"}, busiFlag = "#p0.type")
     void updateBase(@RequestBody DataVisualizationBaseRequest request);
 
-    @DeleteMapping("/deleteLogic/{dvId}")
-    void deleteLogic(@PathVariable("dvId") Long dvId);
+    @DeleteMapping("/deleteLogic/{dvId}/{busiFlag}")
+    @DePermit(value = {"#p0+':manage'"}, busiFlag = "#p1")
+    void deleteLogic(@PathVariable("dvId") Long dvId,@PathVariable("busiFlag") String busiFlag);
 
     @PostMapping("/tree")
     List<BusiNodeVO> tree(@RequestBody BusiNodeRequest request);
 
     @PostMapping("/move")
+    @DePermit(value = {"#p0.id+':manage'", "#p0.pid+':manage'"}, busiFlag = "#p0.type")
     void move(@RequestBody DataVisualizationBaseRequest request);
 
     @PostMapping("/nameCheck")
@@ -51,6 +58,9 @@ public interface DataVisualizationApi {
 
     @PostMapping("/copy")
     @JsonSerialize(using = ToStringSerializer.class)
+    @DePermit(value = {"#p0.id+':manage'", "#p0.pid+':manage'"}, busiFlag = "#p0.type")
     String copy(@RequestBody DataVisualizationBaseRequest request);
 
+    @GetMapping("/findDvType/{dvId}")
+    String findDvType(@PathVariable("dvId")Long dvId);
 }

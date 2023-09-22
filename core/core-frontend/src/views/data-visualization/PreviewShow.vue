@@ -37,6 +37,7 @@ const loadCanvasData = (dvId, weight?) => {
   dataInitState.value = false
   initCanvasData(
     dvId,
+    'dataV',
     function ({
       canvasDataResult,
       canvasStyleResult,

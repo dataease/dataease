@@ -83,13 +83,6 @@ let currentInstance
 const component = ref(null)
 const emits = defineEmits(['userViewEnlargeOpen'])
 
-watch(
-  () => scale.value,
-  () => {
-    console.log('scale2.value=' + scale.value)
-  }
-)
-
 const htmlToImage = () => {
   toPng(componentWrapperInnerRef.value)
     .then(dataUrl => {

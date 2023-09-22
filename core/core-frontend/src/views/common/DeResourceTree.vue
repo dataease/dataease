@@ -187,7 +187,7 @@ const operation = (cmd: string, data: BusiTreeNode, nodeType: string) => {
         showClose: false
       }
     ).then(() => {
-      deleteLogic(data.id).then(() => {
+      deleteLogic(data.id, dvInfo.value.type).then(() => {
         ElMessage.success('删除成功')
         if (dvInfo.value && dvInfo.value.id === data.id) {
           dvMainStore.resetDvInfo()
