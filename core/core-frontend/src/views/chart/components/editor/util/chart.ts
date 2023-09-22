@@ -344,7 +344,7 @@ export const DEFAULT_TITLE_STYLE: ChartTextStyle = {
 }
 
 export const DEFAULT_TITLE_STYLE_BASE: ChartTextStyle = {
-  show: false,
+  show: true,
   fontSize: '18',
   hPosition: 'left',
   vPosition: 'top',
