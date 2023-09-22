@@ -32,7 +32,7 @@
         <el-row class="preview">
           <el-col :span="8" style="height: 100%; overflow-y: auto">
             <el-row class="tree-head">
-              <span class="head-text">选择视图</span>
+              <span class="head-text">选择图表</span>
               <span class="head-filter"
                 >仅看已选 <el-switch size="small" v-model="state.showSelected" />
               </span>
@@ -77,11 +77,11 @@
             </el-tree>
           </el-col>
           <el-col :span="16" class="preview-show">
-            <el-row class="content-head">配置视图间的字段关联关系</el-row>
+            <el-row class="content-head">配置图表间的字段关联关系</el-row>
             <el-row v-if="state.linkageInfo && state.linkageInfo.linkageActive">
               <el-row style="margin-top: 5px">
                 <el-row class="inner-content">
-                  <el-col :span="11"> 当前视图源字段 </el-col>
+                  <el-col :span="11"> 当前图表源字段 </el-col>
                   <el-col :span="2"></el-col>
                   <el-col :span="11">
                     {{ t('visualization.link_view_field') }}

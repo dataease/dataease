@@ -220,6 +220,9 @@ const trackClick = trackAction => {
 
 const trackMenu = computed(() => {
   const trackMenuInfo = []
+  if (showPosition.value === 'viewDialog') {
+    return trackMenuInfo
+  }
   let linkageCount = 0
   let jumpCount = 0
   chartData.value?.fields?.forEach(item => {
