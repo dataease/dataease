@@ -14,7 +14,7 @@ const lockStore = lockStoreWithOut()
 
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
-const layerStor e = layerStoreWithOut()
+const layerStore = layerStoreWithOut()
 
 const { componentData, curComponent, curComponentIndex, canvasViewInfo } = storeToRefs(dvMainStore)
 const getComponent = index => {
@@ -46,9 +46,6 @@ const downComponent = (number: number) => {
 }
 const setCurComponent = index => {
   dvMainStore.setCurComponent({ component: componentData.value[index], index })
-}
-
-const toggleComponentList = () => {
 }
 
 let nameEdit = ref(false)
