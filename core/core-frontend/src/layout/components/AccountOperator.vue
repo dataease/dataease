@@ -90,7 +90,7 @@ const openPopover = () => {
     <div class="uinfo-container">
       <div class="uinfo-header de-container">
         <span class="uinfo-name">{{ name }}</span>
-        <span class="uinfo-id">{{ uid }}</span>
+        <span class="uinfo-id">{{ `ID: ${uid}` }}</span>
       </div>
       <el-divider />
       <div class="uinfo-main">
