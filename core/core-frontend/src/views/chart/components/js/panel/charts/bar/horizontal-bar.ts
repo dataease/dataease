@@ -220,6 +220,9 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
         if (!labelCfg) {
           return data.value
         }
+        if (!labelCfg.show) {
+          return
+        }
         const value = valueFormatter(data.value, labelCfg.formatterCfg)
         const group = new G2PlotChartView.engine.Group({})
         group.addShape({

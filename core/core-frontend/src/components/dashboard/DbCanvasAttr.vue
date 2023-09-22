@@ -268,15 +268,7 @@ onMounted(() => {
         <el-collapse-item :title="'视图配色'" name="graphical" class="no-padding">
           <component-color-selector @onColorChange="onColorChange" />
         </el-collapse-item>
-        <el-collapse-item name="viewTitle">
-          <template #title>
-            {{ t('visualization.chart_title') }}
-            <el-switch
-              style="margin-right: 10px; margin-left: auto"
-              v-model="canvasStyleData.component.chartTitle.show"
-              @click.stop.prevent="onTextChange(canvasStyleData.component.chartTitle)"
-            />
-          </template>
+        <el-collapse-item :title="t('visualization.chart_title')" name="viewTitle">
           <view-simple-title @onTextChange="onTextChange" />
         </el-collapse-item>
         <el-collapse-item

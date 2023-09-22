@@ -1,15 +1,16 @@
 <template>
-  <div style="width: 100%">
+  <el-form label-position="top" style="width: 100%">
     <el-row :gutter="8">
       <el-col :span="12">
         <el-form-item
           :label="t('visualization.inner_padding')"
-          class="form-item"
+          class="form-item w100"
           :class="'form-item-' + themes"
         >
           <el-input-number
             :effect="themes"
             controls-position="right"
+            size="middle"
             :min="0"
             :max="100"
             v-model="state.commonBackground.innerPadding"
@@ -20,12 +21,13 @@
       <el-col :span="12">
         <el-form-item
           :label="t('visualization.board_radio')"
-          class="form-item"
+          class="form-item w100"
           :class="'form-item-' + themes"
         >
           <el-input-number
             :effect="themes"
             controls-position="right"
+            size="middle"
             :min="0"
             :max="100"
             v-model="state.commonBackground.borderRadius"
@@ -54,8 +56,7 @@
             :effect="themes"
             :disabled="!state.commonBackground.backgroundColorSelect"
             is-custom
-            :trigger-width="108"
-            size="small"
+            :trigger-width="197"
             class="color-picker-style"
             :predefine="state.predefineColors"
             @change="onBackgroundChange"
@@ -72,6 +73,7 @@
             :disabled="!state.commonBackground.backgroundColorSelect"
             v-model="state.commonBackground.alpha"
             :min="0"
+            size="middle"
             :max="100"
             @change="onBackgroundChange"
           />
@@ -113,7 +115,6 @@
             :title="t('visualization.border_color_setting')"
             style="position: absolute; top: -3px; left: 60px"
             is-custom
-            size="small"
             class="color-picker-style"
             :predefine="state.predefineColors"
             @change="onBackgroundChange"
@@ -127,6 +128,7 @@
           <el-select
             style="width: 108px"
             v-model="state.commonBackground.innerImage"
+            size="middle"
             :effect="themes"
             :disabled="!state.commonBackground.backgroundImageEnable"
             placeholder="选择边框..."
@@ -184,7 +186,7 @@
         </el-dialog>
       </div>
     </div>
-  </div>
+  </el-form>
 </template>
 
 <script setup lang="ts">
@@ -388,6 +390,21 @@ watch(
   }
 }
 .form-item {
+  margin-bottom: 16px;
+  :deep(.ed-form-item__label) {
+    color: #646a73;
+    font-family: PingFang SC;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
+  }
+
+  .w100 {
+    .ed-input-number {
+      width: 100%;
+    }
+  }
   &.margin-bottom-8 {
     margin-bottom: 8px !important;
   }
