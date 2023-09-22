@@ -5,7 +5,7 @@ import { COLOR_PANEL, DEFAULT_TOOLTIP } from '@/views/chart/components/editor/ut
 import { ElSpace } from 'element-plus-secondary'
 import cloneDeep from 'lodash-es/cloneDeep'
 import defaultsDeep from 'lodash-es/defaultsDeep'
-import { formatterType, unitList } from '../../../js/formatter'
+import { formatterType, unitType } from '../../../js/formatter'
 
 const { t } = useI18n()
 
@@ -176,8 +176,8 @@ onMounted(() => {
         />
       </el-form-item>
 
-      <el-row :gutter="8">
-        <el-col :span="12" v-if="state.tooltipForm.tooltipFormatter.type !== 'percent'">
+      <el-row :gutter="8" v-if="state.tooltipForm.tooltipFormatter.type !== 'percent'">
+        <el-col :span="12">
           <el-form-item
             :label="t('chart.value_formatter_unit')"
             class="form-item"
@@ -192,7 +192,7 @@ onMounted(() => {
               @change="changeTooltipAttr('tooltipFormatter')"
             >
               <el-option
-                v-for="item in unitList"
+                v-for="item in unitType"
                 :key="item.value"
                 :label="t('chart.' + item.name)"
                 :value="item.value"

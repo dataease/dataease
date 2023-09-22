@@ -1,76 +1,81 @@
 <template>
   <div style="width: 100%; padding-bottom: 8px">
-    <el-form size="small" style="width: 100%; padding-bottom: 8px">
+    <el-form label-position="top" style="width: 100%">
       <div style="width: 100%; padding: 16px 8px 0">
         <el-row :gutter="8">
           <el-col :span="12">
-            <el-form-item label="标题水平位置" class="form-item">
-              <el-radio-group v-model="filterForm.horizontal" @change="themeChange('horizontal')">
-                <el-radio label="left">
-                  <el-tooltip effect="dark" placement="top">
-                    <template #content>
-                      {{ t('chart.text_pos_left') }}
-                    </template>
-                    <el-icon class="bash-icon">
-                      <Icon name="icon_left-align_outlined" />
-                    </el-icon>
-                  </el-tooltip>
-                </el-radio>
-                <el-radio :disabled="filterForm.vertical === 'center'" label="center">
-                  <el-tooltip effect="dark" placement="top">
-                    <template #content>
-                      {{ t('chart.text_pos_center') }}
-                    </template>
-                    <el-icon class="bash-icon">
-                      <Icon name="icon_horizontal-align_outlined" />
-                    </el-icon>
-                  </el-tooltip>
-                </el-radio>
-                <el-radio label="right">
-                  <el-tooltip effect="dark" placement="top">
-                    <template #content>
-                      {{ t('chart.text_pos_right') }}
-                    </template>
-                    <el-icon class="bash-icon">
-                      <Icon name="icon_right-align_outlined" />
-                    </el-icon>
-                  </el-tooltip>
-                </el-radio>
-              </el-radio-group>
+            <el-form-item label="标题水平位置">
+              <el-tooltip effect="dark" placement="top">
+                <template #content>
+                  {{ t('chart.text_pos_left') }}
+                </template>
+                <el-icon
+                  :class="filterForm.horizontal === 'left' && 'active'"
+                  @click="handleHorizontalChange('left')"
+                  class="hover-icon"
+                >
+                  <Icon name="icon_left-align_outlined" />
+                </el-icon>
+              </el-tooltip>
+              <el-tooltip effect="dark" placement="top">
+                <template #content>
+                  {{ t('chart.text_pos_center') }}
+                </template>
+                <el-icon
+                  :class="filterForm.horizontal === 'center' && 'active'"
+                  @click="handleHorizontalChange('center')"
+                  class="hover-icon"
+                >
+                  <Icon name="icon_horizontal-align_outlined" />
+                </el-icon>
+              </el-tooltip>
+              <el-tooltip effect="dark" placement="top">
+                <template #content>
+                  {{ t('chart.text_pos_right') }}
+                </template>
+                <el-icon
+                  :class="filterForm.horizontal === 'right' && 'active'"
+                  @click="handleHorizontalChange('right')"
+                  class="hover-icon"
+                >
+                  <Icon name="icon_right-align_outlined" />
+                </el-icon>
+              </el-tooltip>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="标题显示位置" class="form-item">
-              <el-radio-group v-model="filterForm.vertical" @change="themeChange('vertical')">
-                <el-radio label="top">
-                  <el-tooltip effect="dark" placement="top">
-                    <template #content>
-                      {{ t('chart.text_pos_top') }}
-                    </template>
-                    <el-icon class="bash-icon">
-                      <Icon name="icon_title-top-align_outlined" />
-                    </el-icon>
-                  </el-tooltip>
-                </el-radio>
-                <el-radio :disabled="filterForm.horizontal === 'center'" label="center">
-                  <el-tooltip effect="dark" placement="top">
-                    <template #content>
-                      {{ t('chart.text_pos_center') }}
-                    </template>
-                    <el-icon class="bash-icon">
-                      <Icon name="icon_title-left-align_outlined" />
-                    </el-icon>
-                  </el-tooltip>
-                </el-radio>
-              </el-radio-group>
+            <el-form-item label="标题显示位置">
+              <el-tooltip effect="dark" placement="top">
+                <template #content>
+                  {{ t('chart.text_pos_top') }}
+                </template>
+                <el-icon
+                  :class="filterForm.vertical === 'top' && 'active'"
+                  @click="handleHorizontalChange('top', 'vertical')"
+                  class="hover-icon"
+                >
+                  <Icon name="icon_title-top-align_outlined" />
+                </el-icon>
+              </el-tooltip>
+              <el-tooltip effect="dark" placement="top">
+                <template #content>
+                  {{ t('chart.text_pos_center') }}
+                </template>
+                <el-icon
+                  :class="filterForm.vertical === 'center' && 'active'"
+                  @click="handleHorizontalChange('center', 'vertical')"
+                  class="hover-icon"
+                >
+                  <Icon name="icon_title-left-align_outlined" />
+                </el-icon>
+              </el-tooltip>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="标题颜色" class="form-item">
+            <el-form-item label="标题颜色">
               <el-color-picker
                 v-model="filterForm.color"
-                class="color-picker-style"
-                size="small"
+                :trigger-width="197"
                 is-custom
                 :predefine="state.predefineColors"
                 @change="themeChange('color')"
@@ -89,11 +94,10 @@
         <div style="padding: 0 8px 8px">
           <el-row :gutter="8">
             <el-col :span="12">
-              <el-form-item :label="t('visualization.board')" class="form-item">
+              <el-form-item :label="t('visualization.board')">
                 <el-color-picker
                   v-model="filterForm.brColor"
-                  class="color-picker-style"
-                  size="small"
+                  :trigger-width="197"
                   is-custom
                   :predefine="state.predefineColors"
                   @change="themeChange('brColor')"
@@ -101,11 +105,10 @@
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item :label="t('visualization.text')" class="form-item">
+              <el-form-item :label="t('visualization.text')">
                 <el-color-picker
                   v-model="filterForm.wordColor"
-                  class="color-picker-style"
-                  size="small"
+                  :trigger-width="197"
                   is-custom
                   :predefine="state.predefineColors"
                   @change="themeChange('wordColor')"
@@ -113,11 +116,10 @@
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item :label="t('visualization.board_background')" class="form-item">
+              <el-form-item :label="t('visualization.board_background')">
                 <el-color-picker
                   v-model="filterForm.innerBgColor"
-                  class="color-picker-style"
-                  size="small"
+                  :trigger-width="197"
                   is-custom
                   :predefine="state.predefineColors"
                   @change="themeChange('innerBgColor')"
@@ -160,74 +162,25 @@ const themeChange = styleKey => {
   snapshotStore.recordSnapshot('filterStyleSimpleSelector-themeChange')
 }
 
+const handleHorizontalChange = (type, horizontal = 'horizontal') => {
+  filterForm.value[horizontal] = type
+  themeChange(horizontal)
+}
+
 onMounted(() => {
   eventBus.on('onThemeColorChange', initForm)
 })
 </script>
 
 <style scoped lang="less">
-.custom-item-text {
-  font-size: 12px !important;
-  font-weight: 400 !important;
-  line-height: 20px;
-  color: #646a73 !important;
-}
-
-:deep(.ed-radio) {
-  margin-right: 0;
-  .ed-radio__label {
-    padding: 0 8px 0 0;
+.hover-icon {
+  &.active {
+    color: #3370ff !important;
+    background-color: rgba(51, 112, 255, 0.1);
   }
-}
-:deep(.ed-radio-group) {
-  padding-top: 2px;
-}
-
-:deep(.ed-radio.is-checked) {
-  .ed-radio__label {
-    .bash-icon {
-      background: rgba(51, 112, 255, 0.1);
-      border-radius: 4px;
-    }
+  & + & {
+    margin-left: 8px;
   }
-}
-
-:deep(.ed-radio__input) {
-  display: none;
-}
-
-:deep(.ed-radio__input.is-checked) {
-  .ed-radio__inner {
-    padding: 4px;
-    background-color: green;
-    background-clip: content-box;
-  }
-}
-
-.bash-icon {
-  width: 24px;
-  height: 24px;
-}
-
-.custom-divider {
-  margin: 5px 0 0 8px;
-  height: 20px;
-  width: 1px;
-  background-color: rgba(31, 35, 41, 0.15);
-}
-
-.inner-type-text {
-  font-weight: 500;
-  font-size: 12px;
-  margin-bottom: 8px;
-}
-
-.bash-icon {
-  font-size: 16px;
-}
-:deep(.ed-radio.is-checked .ed-radio__label .bash-icon) {
-  background: rgba(51, 112, 255, 0.1);
-  color: #3370ff;
 }
 .m-divider {
   border-color: rgba(31, 35, 41, 0.15);
@@ -245,8 +198,7 @@ onMounted(() => {
   }
 }
 .ed-form-item {
-  flex-direction: column;
-  margin-bottom: 8px;
+  margin-bottom: 16px;
 }
 :deep(.ed-form-item__label) {
   color: #646a73;

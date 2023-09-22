@@ -25,7 +25,6 @@ const getEyeDropper = async () => {
       console.log(cancel)
     })
 }
-console.log('EyeDropper' in window, 'EyeDropper')
 let Header = shallowRef(null)
 const btn = (type: string) => {
   import(`../../../../../xpack-sub/${type}.vue`).then((res: any) => {

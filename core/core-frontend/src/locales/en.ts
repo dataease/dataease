@@ -29,7 +29,7 @@ export default {
   login: {
     welcome: 'Welcome',
     btn: 'Login',
-    username_format: '1-25 alphanumeric or ._-@ and start with a letter or number',
+    username_format: "1-25 alphanumeric or ._-{'@'} and start with a letter or number",
     pwd_format: 'Length should be 5 to 15'
   },
   user: {

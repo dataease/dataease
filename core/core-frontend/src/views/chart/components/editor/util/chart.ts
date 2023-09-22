@@ -1,6 +1,6 @@
 import { useI18n } from '@/hooks/web/useI18n'
 import { deepCopy } from '@/utils/utils'
-import { formatterItem } from './formatter'
+import { formatterItem } from '@/views/chart/components/js/formatter'
 const { t } = useI18n()
 
 export const DEFAULT_COLOR_CASE: DeepPartial<ChartAttr> = {
@@ -262,7 +262,8 @@ export const DEFAULT_LABEL: ChartLabelAttr = {
   quotaLabelFormatter: formatterItem,
   showDimension: true,
   showQuota: false,
-  showProportion: true
+  showProportion: true,
+  seriesLabelFormatter: []
 }
 export const DEFAULT_TOOLTIP: ChartTooltipAttr = {
   show: true,
@@ -271,7 +272,8 @@ export const DEFAULT_TOOLTIP: ChartTooltipAttr = {
   fontSize: 10,
   color: '#909399',
   tooltipFormatter: formatterItem,
-  backgroundColor: '#ffffff'
+  backgroundColor: '#ffffff',
+  seriesTooltipFormatter: []
 }
 export const DEFAULT_TABLE_TOTAL: ChartTableTotalAttr = {
   row: {

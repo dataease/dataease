@@ -540,7 +540,7 @@ function addItemToPositionBox(item) {
           pb[j][i].el = item
         }
       } catch (e) {
-        console.log(e)
+        console.error(e)
       }
     }
   }
@@ -576,7 +576,7 @@ function removeItemFromPositionBox(item) {
           pb[j][i].el = false
         }
       } catch (e) {
-        console.log(e)
+        console.error(e)
       }
     }
   }
@@ -1274,7 +1274,6 @@ const forceComputed = () => {
   // 在一些情况下无法触发重新计算导致位置偏移 cellHeight 属性是在监控中的，这里进行强制计算
   cellHeight.value = cellHeight.value + 0.001
   nextTick(function () {
-    console.log('forceComputed')
     cellHeight.value = cellHeight.value - 0.001
   })
 }
@@ -1314,7 +1313,6 @@ const onStartResize = (e, item, index) => {
 const onStartMove = (e, item, index) => {
   // 移动时 换算矩阵和悬浮位置大小
   syncShapeItemStyle(item, cellWidth.value, cellHeight.value)
-  // console.log('onStartMove')
   if (!infoBox.value) {
     infoBox.value = {}
   }

@@ -29,7 +29,10 @@ const DEFAULT_DATA = []
  */
 export class Line extends G2PlotChartView<LineOptions, G2Line> {
   properties = LINE_EDITOR_PROPERTY
-  propertyInner = LINE_EDITOR_PROPERTY_INNER
+  propertyInner = {
+    ...LINE_EDITOR_PROPERTY_INNER,
+    'label-selector': ['seriesLabelFormatter']
+  }
   axis: AxisType[] = [...LINE_AXIS_TYPE, 'xAxisExt']
   axisConfig = {
     ...this['axisConfig'],
@@ -105,46 +108,54 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
   }
 
   protected configLabel(chart: Chart, options: LineOptions): LineOptions {
-    const customAttr = parseJson(chart.customAttr)
-    const labelAttr = customAttr.label
-    if (!labelAttr?.show) {
+    const tmpOptions = super.configLabel(chart, options)
+    if (!tmpOptions.label) {
       return {
-        ...options,
+        ...tmpOptions,
         label: false
       }
     }
-    const { xAxisExt, yAxis } = chart
-    const label: Label = {
-      position: labelAttr.position as IntervalGeometryLabelPosition,
+    const labelAttr = parseJson(chart.customAttr).label
+    const formatterMap = labelAttr.seriesLabelFormatter?.reduce((pre, next) => {
+      pre[next.id] = next
+      return pre
+    }, {})
+    const label = {
+      fields: [],
+      ...tmpOptions.label,
       offsetY: -8,
-      style: {
-        fill: labelAttr.color,
-        fontSize: labelAttr.fontSize
-      },
-      formatter: function (param: Datum) {
-        let res = param.value
-        let f
-        if (xAxisExt?.length > 0) {
-          f = yAxis[0]
-        } else {
-          for (let i = 0; i < yAxis.length; i++) {
-            if (yAxis[i].name === param.category) {
-              f = yAxis[i]
-              break
-            }
+      formatter: (data: Datum) => {
+        if (!labelAttr.seriesLabelFormatter?.length) {
+          return data.value
+        }
+        const labelCfg = formatterMap?.[data.quotaList[0].id] as SeriesFormatter
+        if (!labelCfg) {
+          return data.value
+        }
+        if (!labelCfg.show) {
+          return
+        }
+        const value = valueFormatter(data.value, labelCfg.formatterCfg)
+        const group = new G2PlotChartView.engine.Group({})
+        group.addShape({
+          type: 'text',
+          attrs: {
+            x: 0,
+            y: 0,
+            text: value,
+            textAlign: 'start',
+            textBaseline: 'top',
+            fontSize: labelCfg.fontSize,
+            fill: labelCfg.color
           }
-        }
-        if (!f) {
-          return res
-        }
-        if (!f.formatterCfg) {
-          f.formatterCfg = formatterItem
-        }
-        res = valueFormatter(param.value, f.formatterCfg)
-        return res
+        })
+        return group
       }
     }
-    return { ...options, label }
+    return {
+      ...tmpOptions,
+      label
+    }
   }
 
   protected configTooltip(chart: Chart, options: LineOptions): LineOptions {

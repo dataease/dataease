@@ -49,7 +49,6 @@ const setCurComponent = index => {
 }
 
 const toggleComponentList = () => {
-  console.log('toggleComponentList')
 }
 
 let nameEdit = ref(false)

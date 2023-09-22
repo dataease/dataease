@@ -31,7 +31,8 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
   properties = LINE_EDITOR_PROPERTY
   propertyInner = {
     ...LINE_EDITOR_PROPERTY_INNER,
-    'basic-style-selector': [...LINE_EDITOR_PROPERTY_INNER['basic-style-selector'], 'gradient']
+    'basic-style-selector': [...LINE_EDITOR_PROPERTY_INNER['basic-style-selector'], 'gradient'],
+    'label-selector': ['seriesLabelFormatter']
   }
   axis: AxisType[] = [...LINE_AXIS_TYPE]
   axisConfig = {
@@ -109,16 +110,53 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
   }
 
   protected configLabel(chart: Chart, options: AreaOptions): AreaOptions {
-    const baseptions = super.configLabel(chart, options)
-    if (!baseptions.label) {
-      return baseptions
+    const tmpOptions = super.configLabel(chart, options)
+    if (!tmpOptions.label) {
+      return {
+        ...tmpOptions,
+        label: false
+      }
     }
+    const labelAttr = parseJson(chart.customAttr).label
+    const formatterMap = labelAttr.seriesLabelFormatter?.reduce((pre, next) => {
+      pre[next.id] = next
+      return pre
+    }, {})
     const label = {
-      ...options.label,
-      offsetY: -8,
-      autoRotate: undefined
+      fields: [],
+      ...tmpOptions.label,
+      formatter: (data: Datum) => {
+        if (!labelAttr.seriesLabelFormatter?.length) {
+          return data.value
+        }
+        const labelCfg = formatterMap?.[data.quotaList[0].id] as SeriesFormatter
+        if (!labelCfg) {
+          return data.value
+        }
+        if (!labelCfg.show) {
+          return
+        }
+        const value = valueFormatter(data.value, labelCfg.formatterCfg)
+        const group = new G2PlotChartView.engine.Group({})
+        group.addShape({
+          type: 'text',
+          attrs: {
+            x: 0,
+            y: -4,
+            text: value,
+            textAlign: 'start',
+            textBaseline: 'top',
+            fontSize: labelCfg.fontSize,
+            fill: labelCfg.color
+          }
+        })
+        return group
+      }
     }
-    return { ...baseptions, label }
+    return {
+      ...tmpOptions,
+      label
+    }
   }
 
   protected configTooltip(chart: Chart, options: AreaOptions): AreaOptions {

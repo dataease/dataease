@@ -3,7 +3,7 @@ import {
   DEFAULT_XAXIS_STYLE,
   DEFAULT_YAXIS_STYLE
 } from '@/views/chart/components/editor/util/chart'
-import { valueFormatter } from '@/views/chart/components/editor/util/formatter'
+import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { AreaOptions, LabelOptions } from '@antv/l7plot'
 import { TooltipOptions } from '@antv/l7plot/dist/lib/types/tooltip'
 import { FeatureCollection } from '@antv/l7plot/dist/esm/plots/choropleth/types'
