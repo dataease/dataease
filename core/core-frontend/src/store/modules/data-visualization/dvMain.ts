@@ -309,13 +309,16 @@ export const dvMainStore = defineStore('dataVisualization', {
           customStyle: {
             component: {
               show: true,
+              color: '#1f2329',
               titleShow: false,
               borderShow: false,
+              text: '#1f2329',
               borderColor: '',
               title: '',
               borderWidth: 1,
               bgColorShow: false,
               bgColor: '',
+              titleLayout: 'left',
               layout: 'horizontal',
               btnList: ['sure']
             }

@@ -420,25 +420,25 @@ export function adaptCurThemeCommonStyleAll() {
   })
 }
 
+interface CanvasViewInfo {
+  type: string
+  customStyle: {
+    component: object
+  }
+}
+
 export function adaptCurThemeFilterStyleAll(styleKey) {
-  const componentData = dvMainStore.componentData
+  const componentData = Object.values(dvMainStore.canvasViewInfo) as CanvasViewInfo[]
   const filterStyle = dvMainStore.canvasStyleData.component.filterStyle
   componentData.forEach(item => {
-    if (isFilterComponent(item.component)) {
-      item.style[styleKey] = filterStyle[styleKey]
+    if (isFilterComponent(item.type)) {
+      item.customStyle.component[styleKey] = filterStyle[styleKey]
     }
   })
 }
 
 export function isFilterComponent(component) {
-  return [
-    'de-select',
-    'de-select-grid',
-    'de-date',
-    'de-input-search',
-    'de-number-range',
-    'de-select-tree'
-  ].includes(component)
+  return ['VQuery'].includes(component)
 }
 
 export function isTabComponent(component) {

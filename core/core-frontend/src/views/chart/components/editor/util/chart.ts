@@ -142,24 +142,24 @@ export const TAB_COMMON_STYLE_DARK = {
 }
 
 export const FILTER_COMMON_STYLE_BASE = {
-  horizontal: 'left',
-  vertical: 'top'
+  layout: 'horizontal',
+  titleLayout: 'left'
 }
 
 export const FILTER_COMMON_STYLE_LIGHT = {
   ...FILTER_COMMON_STYLE_BASE,
-  color: '#000000',
-  brColor: '',
-  wordColor: '',
-  innerBgColor: ''
+  color: '#1f2329',
+  borderColor: '#bbbfc4',
+  text: '#1f2329',
+  bgColor: '#ffffff'
 }
 
 export const FILTER_COMMON_STYLE_DARK = {
   ...FILTER_COMMON_STYLE_BASE,
   color: '#FFFFFF',
-  brColor: '#4E4B4B',
-  wordColor: '#FFFFFF',
-  innerBgColor: '#131E42'
+  borderColor: '',
+  text: '',
+  bgColor: ''
 }
 
 export const DEFAULT_TAB_COLOR_CASE_BASE = {
