@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed, nextTick } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { FormRules, FormInstance } from 'element-plus-secondary'
 import { Icon } from '@/components/icon-custom'
@@ -12,6 +12,8 @@ import router from '@/router'
 import { ElMessage } from 'element-plus-secondary'
 import { XpackComponent } from '@/components/plugin'
 import { logoutHandler } from '@/utils/logout'
+import DeImage from '@/assets/login-desc-de.png'
+import elementResizeDetectorMaker from 'element-resize-detector'
 
 const { wsCache } = useCache()
 const appStore = useAppStoreWithOut()
@@ -106,6 +108,12 @@ const xpackLoaded = info => {
   tablePaneList.value.push(info)
 }
 
+const loginContainer = ref()
+const loginContainerWidth = ref(0)
+const showLoginImage = computed<boolean>(() => {
+  return !(loginContainerWidth.value < 1040)
+})
+
 onMounted(() => {
   if (localStorage.getItem('DE-GATEWAY-FLAG')) {
     loginErrorMsg.value = localStorage.getItem('DE-GATEWAY-FLAG')
@@ -118,14 +126,25 @@ onMounted(() => {
       wsCache.set(appStore.getDekey, res.data)
     })
   }
+  const erd = elementResizeDetectorMaker()
+  erd.listenTo(loginContainer.value, element => {
+    nextTick(() => {
+      loginContainerWidth.value = loginContainer.value?.offsetWidth
+    })
+  })
 })
 </script>
 
 <template>
   <div v-show="contentShow" class="login-background" v-loading="duringLogin">
-    <div class="login-container">
-      <div class="login-image-content" v-loading="!axiosFinished">
-        <div v-if="!loginImageUrl && axiosFinished" class="login-image" />
+    <div class="login-container" ref="loginContainer">
+      <div class="login-image-content" v-loading="!axiosFinished" v-if="showLoginImage">
+        <el-image
+          v-if="!loginImageUrl && axiosFinished"
+          class="login-image"
+          fit="cover"
+          :src="DeImage"
+        />
         <div
           v-if="loginImageUrl && axiosFinished"
           class="login-image-de"
@@ -257,6 +276,8 @@ onMounted(() => {
   .login-image-content {
     height: 100%;
     width: 45%;
+    max-width: 640px;
+    min-width: 400px;
   }
 
   .login-form-content {
@@ -371,7 +392,8 @@ onMounted(() => {
   }
 
   .login-image {
-    background: url(../../assets/login-desc-de.png);
+    //object-fit: cover;
+    //background: url(../../assets/login-desc-de.png);
     background-size: 100% 100%;
     width: 100%;
     height: 100%;

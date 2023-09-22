@@ -79,6 +79,7 @@ declare module '@vue/runtime-core' {
     ElFormItem: typeof import('element-plus-secondary/es')['ElFormItem']
     ElHeader: typeof import('element-plus-secondary/es')['ElHeader']
     ElIcon: typeof import('element-plus-secondary/es')['ElIcon']
+    ElImage: typeof import('element-plus-secondary/es')['ElImage']
     ElInput: typeof import('element-plus-secondary/es')['ElInput']
     ElInputNumber: typeof import('element-plus-secondary/es')['ElInputNumber']
     ElLink: typeof import('element-plus-secondary/es')['ElLink']
