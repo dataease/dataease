@@ -11,31 +11,31 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 @Mapper
 public interface ExtVisualizationLinkJumpMapper {
-    List<VisualizationLinkJumpDTO> queryWithDvId(@Param("dvId") String dvId);
+    List<VisualizationLinkJumpDTO> queryWithDvId(@Param("dvId") Long dvId);
 
-    VisualizationLinkJumpDTO queryWithViewId(@Param("dvId") String dvId,@Param("viewId") String viewId);
+    VisualizationLinkJumpDTO queryWithViewId(@Param("dvId") Long dvId,@Param("viewId") Long viewId);
 
-    void deleteJumpTargetViewInfo(@Param("dvId") String dvId,@Param("viewId") String viewId);
+    void deleteJumpTargetViewInfo(@Param("dvId") Long dvId,@Param("viewId") Long viewId);
 
-    void deleteJumpInfo(@Param("dvId") String dvId,@Param("viewId") String viewId);
+    void deleteJumpInfo(@Param("dvId") Long dvId,@Param("viewId") Long viewId);
 
-    void deleteJump(@Param("dvId") String dvId,@Param("viewId") String viewId);
+    void deleteJump(@Param("dvId") Long dvId,@Param("viewId") Long viewId);
 
-    void deleteJumpTargetViewInfoWithVisualization(@Param("dvId") String dvId);
+    void deleteJumpTargetViewInfoWithVisualization(@Param("dvId") Long dvId);
 
-    void deleteJumpInfoWithVisualization(@Param("dvId") String dvId);
+    void deleteJumpInfoWithVisualization(@Param("dvId") Long dvId);
 
-    void deleteJumpWithVisualization(@Param("dvId") String dvId);
+    void deleteJumpWithVisualization(@Param("dvId") Long dvId);
 
     List<VisualizationLinkJumpDTO> getTargetVisualizationJumpInfo(@Param("request") VisualizationLinkJumpBaseRequest request);
 
-    void copyLinkJump(@Param("copyId")String copyId);
+    void copyLinkJump(@Param("copyId")Long copyId);
 
-    void copyLinkJumpInfo(@Param("copyId")String copyId);
+    void copyLinkJumpInfo(@Param("copyId")Long copyId);
 
-    void copyLinkJumpTarget(@Param("copyId")String copyId);
+    void copyLinkJumpTarget(@Param("copyId")Long copyId);
 
-    List<VisualizationLinkJumpVO> findLinkJumpWithDvId(@Param("dvId")String dvId);
-    List<VisualizationLinkJumpInfoVO> findLinkJumpInfoWithDvId(@Param("dvId")String dvId);
-    List<VisualizationViewTableVO> getViewTableDetails(@Param("dvId")String dvId);
+    List<VisualizationLinkJumpVO> findLinkJumpWithDvId(@Param("dvId")Long dvId);
+    List<VisualizationLinkJumpInfoVO> findLinkJumpInfoWithDvId(@Param("dvId")Long dvId);
+    List<VisualizationViewTableVO> getViewTableDetails(@Param("dvId")Long dvId);
 }

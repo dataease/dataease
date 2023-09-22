@@ -1,5 +1,7 @@
 package io.dataease.api.visualization.request;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.dataease.api.visualization.dto.VisualizationLinkageDTO;
 import io.dataease.api.visualization.vo.VisualizationLinkageVO;
 import lombok.Data;
@@ -19,9 +21,10 @@ public class VisualizationLinkageRequest extends VisualizationLinkageVO {
     /**
      * 仪表板 or 大屏ID
      * */
-    private String dvId;
-
-    private String sourceViewId;
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long dvId;
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long sourceViewId;
 
     private Boolean ActiveStatus;
 

@@ -1,5 +1,7 @@
 package io.dataease.api.visualization.vo;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 
 /**
@@ -8,12 +10,14 @@ import lombok.Data;
  */
 @Data
 public class VisualizationLinkJumpInfoVO {
-    private String id;
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long id;
 
     /**
      * link jump ID
      */
-    private String linkJumpId;
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long linkJumpId;
 
     /**
      * 关联类型 inner 内部仪表板，outer 外部链接
@@ -28,12 +32,14 @@ public class VisualizationLinkJumpInfoVO {
     /**
      * 关联仪表板ID
      */
-    private String targetDvId;
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long targetDvId;
 
     /**
      * 字段ID
      */
-    private String sourceFieldId;
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long sourceFieldId;
 
     /**
      * 内容 linkType = outer时使用
@@ -49,8 +55,8 @@ public class VisualizationLinkJumpInfoVO {
      * 是否附加点击参数
      */
     private Boolean attachParams;
-
-    private String copyFrom;
-
-    private String copyId;
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long copyFrom;
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long copyId;
 }

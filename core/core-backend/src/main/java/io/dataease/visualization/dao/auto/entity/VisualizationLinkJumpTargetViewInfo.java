@@ -9,83 +9,83 @@ import java.io.Serializable;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-07-19
+ * @since 2023-09-22
  */
 @TableName("visualization_link_jump_target_view_info")
 public class VisualizationLinkJumpTargetViewInfo implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private String targetId;
+    private Long targetId;
 
-    private String linkJumpInfoId;
+    private Long linkJumpInfoId;
 
     /**
      * 勾选字段设置的匹配字段，也可以不是勾选字段本身
      */
-    private String sourceFieldActiveId;
+    private Long sourceFieldActiveId;
 
-    private String targetViewId;
+    private Long targetViewId;
 
-    private String targetFieldId;
+    private Long targetFieldId;
 
-    private String copyFrom;
+    private Long copyFrom;
 
-    private String copyId;
+    private Long copyId;
 
-    public String getTargetId() {
+    public Long getTargetId() {
         return targetId;
     }
 
-    public void setTargetId(String targetId) {
+    public void setTargetId(Long targetId) {
         this.targetId = targetId;
     }
 
-    public String getLinkJumpInfoId() {
+    public Long getLinkJumpInfoId() {
         return linkJumpInfoId;
     }
 
-    public void setLinkJumpInfoId(String linkJumpInfoId) {
+    public void setLinkJumpInfoId(Long linkJumpInfoId) {
         this.linkJumpInfoId = linkJumpInfoId;
     }
 
-    public String getSourceFieldActiveId() {
+    public Long getSourceFieldActiveId() {
         return sourceFieldActiveId;
     }
 
-    public void setSourceFieldActiveId(String sourceFieldActiveId) {
+    public void setSourceFieldActiveId(Long sourceFieldActiveId) {
         this.sourceFieldActiveId = sourceFieldActiveId;
     }
 
-    public String getTargetViewId() {
+    public Long getTargetViewId() {
         return targetViewId;
     }
 
-    public void setTargetViewId(String targetViewId) {
+    public void setTargetViewId(Long targetViewId) {
         this.targetViewId = targetViewId;
     }
 
-    public String getTargetFieldId() {
+    public Long getTargetFieldId() {
         return targetFieldId;
     }
 
-    public void setTargetFieldId(String targetFieldId) {
+    public void setTargetFieldId(Long targetFieldId) {
         this.targetFieldId = targetFieldId;
     }
 
-    public String getCopyFrom() {
+    public Long getCopyFrom() {
         return copyFrom;
     }
 
-    public void setCopyFrom(String copyFrom) {
+    public void setCopyFrom(Long copyFrom) {
         this.copyFrom = copyFrom;
     }
 
-    public String getCopyId() {
+    public Long getCopyId() {
         return copyId;
     }
 
-    public void setCopyId(String copyId) {
+    public void setCopyId(Long copyId) {
         this.copyId = copyId;
     }
 

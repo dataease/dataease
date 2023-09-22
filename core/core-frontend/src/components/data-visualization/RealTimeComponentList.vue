@@ -14,7 +14,7 @@ const lockStore = lockStoreWithOut()
 
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
-const layerStore = layerStoreWithOut()
+const layerStor e = layerStoreWithOut()
 
 const { componentData, curComponent, curComponentIndex, canvasViewInfo } = storeToRefs(dvMainStore)
 const getComponent = index => {

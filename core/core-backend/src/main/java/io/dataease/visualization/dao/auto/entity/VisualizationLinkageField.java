@@ -9,68 +9,68 @@ import java.io.Serializable;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-07-13
+ * @since 2023-09-22
  */
 @TableName("visualization_linkage_field")
 public class VisualizationLinkageField implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private String id;
+    private Long id;
 
     /**
      * 联动ID
      */
-    private String linkageId;
+    private Long linkageId;
 
     /**
      * 源视图字段
      */
-    private String sourceField;
+    private Long sourceField;
 
     /**
      * 目标视图字段
      */
-    private String targetField;
+    private Long targetField;
 
     /**
      * 更新时间
      */
     private Long updateTime;
 
-    private String copyFrom;
+    private Long copyFrom;
 
-    private String copyId;
+    private Long copyId;
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public String getLinkageId() {
+    public Long getLinkageId() {
         return linkageId;
     }
 
-    public void setLinkageId(String linkageId) {
+    public void setLinkageId(Long linkageId) {
         this.linkageId = linkageId;
     }
 
-    public String getSourceField() {
+    public Long getSourceField() {
         return sourceField;
     }
 
-    public void setSourceField(String sourceField) {
+    public void setSourceField(Long sourceField) {
         this.sourceField = sourceField;
     }
 
-    public String getTargetField() {
+    public Long getTargetField() {
         return targetField;
     }
 
-    public void setTargetField(String targetField) {
+    public void setTargetField(Long targetField) {
         this.targetField = targetField;
     }
 
@@ -82,19 +82,19 @@ public class VisualizationLinkageField implements Serializable {
         this.updateTime = updateTime;
     }
 
-    public String getCopyFrom() {
+    public Long getCopyFrom() {
         return copyFrom;
     }
 
-    public void setCopyFrom(String copyFrom) {
+    public void setCopyFrom(Long copyFrom) {
         this.copyFrom = copyFrom;
     }
 
-    public String getCopyId() {
+    public Long getCopyId() {
         return copyId;
     }
 
-    public void setCopyId(String copyId) {
+    public void setCopyId(Long copyId) {
         this.copyId = copyId;
     }
 

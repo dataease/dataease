@@ -1,5 +1,7 @@
 package io.dataease.api.visualization.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.dataease.api.visualization.vo.VisualizationLinkageFieldVO;
 import io.dataease.api.visualization.vo.VisualizationLinkageVO;
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
@@ -36,6 +38,7 @@ public class VisualizationLinkageDTO extends VisualizationLinkageVO {
     /**
      * 表ID
      */
-    private String tableId;
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long tableId;
 
 }

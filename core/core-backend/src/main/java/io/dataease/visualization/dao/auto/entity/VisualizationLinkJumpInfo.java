@@ -9,19 +9,19 @@ import java.io.Serializable;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-07-18
+ * @since 2023-09-22
  */
 @TableName("visualization_link_jump_info")
 public class VisualizationLinkJumpInfo implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private String id;
+    private Long id;
 
     /**
      * link jump ID
      */
-    private String linkJumpId;
+    private Long linkJumpId;
 
     /**
      * 关联类型 inner 内部仪表板，outer 外部链接
@@ -36,12 +36,12 @@ public class VisualizationLinkJumpInfo implements Serializable {
     /**
      * 关联仪表板ID
      */
-    private String targetDvId;
+    private Long targetDvId;
 
     /**
      * 字段ID
      */
-    private String sourceFieldId;
+    private Long sourceFieldId;
 
     /**
      * 内容 linkType = outer时使用
@@ -58,23 +58,23 @@ public class VisualizationLinkJumpInfo implements Serializable {
      */
     private Boolean attachParams;
 
-    private String copyFrom;
+    private Long copyFrom;
 
-    private String copyId;
+    private Long copyId;
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public String getLinkJumpId() {
+    public Long getLinkJumpId() {
         return linkJumpId;
     }
 
-    public void setLinkJumpId(String linkJumpId) {
+    public void setLinkJumpId(Long linkJumpId) {
         this.linkJumpId = linkJumpId;
     }
 
@@ -94,19 +94,19 @@ public class VisualizationLinkJumpInfo implements Serializable {
         this.jumpType = jumpType;
     }
 
-    public String getTargetDvId() {
+    public Long getTargetDvId() {
         return targetDvId;
     }
 
-    public void setTargetDvId(String targetDvId) {
+    public void setTargetDvId(Long targetDvId) {
         this.targetDvId = targetDvId;
     }
 
-    public String getSourceFieldId() {
+    public Long getSourceFieldId() {
         return sourceFieldId;
     }
 
-    public void setSourceFieldId(String sourceFieldId) {
+    public void setSourceFieldId(Long sourceFieldId) {
         this.sourceFieldId = sourceFieldId;
     }
 
@@ -134,19 +134,19 @@ public class VisualizationLinkJumpInfo implements Serializable {
         this.attachParams = attachParams;
     }
 
-    public String getCopyFrom() {
+    public Long getCopyFrom() {
         return copyFrom;
     }
 
-    public void setCopyFrom(String copyFrom) {
+    public void setCopyFrom(Long copyFrom) {
         this.copyFrom = copyFrom;
     }
 
-    public String getCopyId() {
+    public Long getCopyId() {
         return copyId;
     }
 
-    public void setCopyId(String copyId) {
+    public void setCopyId(Long copyId) {
         this.copyId = copyId;
     }
 
