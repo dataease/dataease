@@ -77,8 +77,8 @@ export function commonHandleDragEnd(e, dvModel) {
   }
 }
 
-export function initCanvasDataPrepare(dvId, callBack) {
-  findById(dvId).then(res => {
+export function initCanvasDataPrepare(dvId, busiFlag, callBack) {
+  findById(dvId, busiFlag).then(res => {
     const canvasInfo = res.data
     const dvInfo = {
       id: canvasInfo.id,
@@ -103,9 +103,10 @@ export function initCanvasDataPrepare(dvId, callBack) {
   })
 }
 
-export function initCanvasData(dvId, callBack) {
+export function initCanvasData(dvId, busiFlag, callBack) {
   initCanvasDataPrepare(
     dvId,
+    busiFlag,
     function ({ canvasDataResult, canvasStyleResult, dvInfo, canvasViewInfoPreview }) {
       dvMainStore.setComponentData(canvasDataResult)
       dvMainStore.setCanvasStyle(canvasStyleResult)

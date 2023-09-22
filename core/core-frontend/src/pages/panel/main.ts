@@ -87,6 +87,7 @@ class DataEaseBi {
   token: string
   type: 'DashboardEditor' | 'VisualizationEditor' | 'ViewWrapper' | 'Dashboard'
   dvId: string
+  busiFlag: 'dashboard' | 'dataV'
   resourceId: string
   pid: string
   chartId: string
@@ -96,6 +97,7 @@ class DataEaseBi {
   create(type, options) {
     this.type = type
     this.token = options.token
+    this.busiFlag = options.busiFlag
     this.baseUrl = options.baseUrl
     this.dvId = options.dvId
     this.pid = options.pid

@@ -55,7 +55,7 @@ onMounted(() => {
   state.sourcePid = pid
   if (resourceId) {
     dataInitState.value = false
-    initCanvasData(resourceId, function () {
+    initCanvasData(resourceId, 'dashboard', function () {
       dataInitState.value = true
     })
   } else if (opt && opt === 'create') {

@@ -3,12 +3,20 @@ import eventBus from '@/utils/eventBus'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import QueryConditionConfiguration from './QueryConditionConfiguration.vue'
 import type { ComponentInfo } from '@/api/chart'
-import { onBeforeUnmount, reactive, ref, toRefs, watch, computed, onMounted } from 'vue'
-import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import {
+  onBeforeUnmount,
+  reactive,
+  ref,
+  toRefs,
+  watch,
+  computed,
+  onMounted,
+  CSSProperties
+} from 'vue'
 import { storeToRefs } from 'pinia'
 import { useI18n } from '@/hooks/web/useI18n'
 import { guid } from '@/views/visualized/data/dataset/form/util.js'
-// import { cloneDeep } from 'lodash-es'
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { comInfo } from './com-info'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import Select from './Select.vue'
@@ -49,6 +57,7 @@ const defaultStyle = {
   text: '',
   layout: 'horizontal',
   btnList: ['sure'],
+  titleLayout: 'left',
   titleShow: false,
   title: ''
 }
@@ -65,31 +74,39 @@ const filterTypeCom = (displayType: string) => {
   return ['1', '7'].includes(displayType) ? Time : Select
 }
 
+const setCustomStyle = val => {
+  const {
+    show,
+    borderShow,
+    borderColor,
+    bgColorShow,
+    btnList,
+    titleLayout,
+    text,
+    bgColor,
+    layout,
+    titleShow,
+    title
+  } = val
+  if (!show) {
+    Object.assign(customStyle, { ...defaultStyle })
+    return
+  }
+  customStyle.background = bgColorShow ? bgColor || '' : ''
+  customStyle.border = borderShow ? borderColor || '' : ''
+  customStyle.btnList = [...btnList]
+  customStyle.layout = layout
+  customStyle.titleShow = titleShow
+  customStyle.title = title
+  customStyle.text = text
+  customStyle.titleLayout = titleLayout
+}
+
 watch(
   () => view.value,
   val => {
     if (!val?.customStyle?.component) return
-    const {
-      show,
-      borderShow,
-      borderColor,
-      bgColorShow,
-      btnList,
-      bgColor,
-      layout,
-      titleShow,
-      title
-    } = val?.customStyle?.component
-    if (!show) {
-      Object.assign(customStyle, { ...defaultStyle })
-      return
-    }
-    customStyle.background = bgColorShow ? bgColor || '' : ''
-    customStyle.border = borderShow ? borderColor || '' : ''
-    customStyle.btnList = [...btnList]
-    customStyle.layout = layout
-    customStyle.titleShow = titleShow
-    customStyle.title = title
+    setCustomStyle(val?.customStyle?.component)
   },
   {
     deep: true,
@@ -100,28 +117,8 @@ watch(
 watch(
   () => curComponentView.value,
   val => {
-    if (!val) return
-    const {
-      show,
-      borderShow,
-      borderColor,
-      bgColorShow,
-      btnList,
-      bgColor,
-      layout,
-      titleShow,
-      title
-    } = val?.component
-    if (!show) {
-      Object.assign(customStyle, { ...defaultStyle })
-      return
-    }
-    customStyle.background = bgColorShow ? bgColor || '' : ''
-    customStyle.border = borderShow ? borderColor || '' : ''
-    customStyle.btnList = [...btnList]
-    customStyle.layout = layout
-    customStyle.titleShow = titleShow
-    customStyle.title = title
+    if (!val?.component) return
+    setCustomStyle(val?.component)
   },
   {
     deep: true,
@@ -341,11 +338,16 @@ const queryData = () => {
     emitter.emit(`query-data-${ele}`)
   })
 }
+const textAlign = computed(() => {
+  return { textAlign: customStyle.titleLayout || 'left' } as CSSProperties
+})
 </script>
 
 <template>
   <div class="v-query-container">
-    <p v-if="customStyle.titleShow" class="title">{{ customStyle.title }}</p>
+    <p v-if="customStyle.titleShow" class="title" :style="textAlign">
+      {{ customStyle.title }}
+    </p>
     <div
       :class="['v-query', customStyle.layout]"
       @dragover.prevent.stop="dragover"

@@ -160,7 +160,7 @@ onMounted(() => {
   const { dvId, opt } = window.DataEaseBi || router.currentRoute.value.query
   if (dvId) {
     state.canvasInitStatus = false
-    initCanvasData(dvId, function () {
+    initCanvasData(dvId, 'dataV', function () {
       state.canvasInitStatus = true
       // afterInit
       nextTick(() => {

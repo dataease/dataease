@@ -290,22 +290,26 @@ const calcData = (view: Chart, callback) => {
   isError.value = false
   if (view.tableId) {
     const v = JSON.parse(JSON.stringify(view))
-    getData(v).then(res => {
-      if (res.code && res.code !== 0) {
-        isError.value = true
-        errMsg.value = res.msg
-      } else {
-        state.data = res?.data
-        state.totalItems = res?.totalItems
-        const curViewInfo = canvasViewInfo.value[element.value.id]
-        curViewInfo['curFields'] = res.data.fields
-        initCurFields(res)
-      }
-      callback?.()
-      nextTick(() => {
-        initReady.value = true
+    getData(v)
+      .then(res => {
+        if (res.code && res.code !== 0) {
+          isError.value = true
+          errMsg.value = res.msg
+        } else {
+          state.data = res?.data
+          state.totalItems = res?.totalItems
+          const curViewInfo = canvasViewInfo.value[element.value.id]
+          curViewInfo['curFields'] = res.data.fields
+          initCurFields(res)
+        }
+        callback?.()
+        nextTick(() => {
+          initReady.value = true
+        })
       })
-    })
+      .catch(() => {
+        callback?.()
+      })
   } else {
     nextTick(() => {
       initReady.value = true

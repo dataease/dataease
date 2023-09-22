@@ -10,7 +10,7 @@
                   {{ t('chart.text_pos_left') }}
                 </template>
                 <el-icon
-                  :class="filterForm.horizontal === 'left' && 'active'"
+                  :class="filterStyle.titleLayout === 'left' ? 'active' : 'cbd'"
                   @click="handleHorizontalChange('left')"
                   class="hover-icon"
                 >
@@ -22,7 +22,7 @@
                   {{ t('chart.text_pos_center') }}
                 </template>
                 <el-icon
-                  :class="filterForm.horizontal === 'center' && 'active'"
+                  :class="filterStyle.titleLayout === 'center' && 'active'"
                   @click="handleHorizontalChange('center')"
                   class="hover-icon"
                 >
@@ -34,7 +34,7 @@
                   {{ t('chart.text_pos_right') }}
                 </template>
                 <el-icon
-                  :class="filterForm.horizontal === 'right' && 'active'"
+                  :class="filterStyle.titleLayout === 'right' && 'active'"
                   @click="handleHorizontalChange('right')"
                   class="hover-icon"
                 >
@@ -50,8 +50,8 @@
                   {{ t('chart.text_pos_top') }}
                 </template>
                 <el-icon
-                  :class="filterForm.vertical === 'top' && 'active'"
-                  @click="handleHorizontalChange('top', 'vertical')"
+                  :class="filterStyle.layout === 'vertical' && 'active'"
+                  @click="handleHorizontalChange('vertical', 'layout')"
                   class="hover-icon"
                 >
                   <Icon name="icon_title-top-align_outlined" />
@@ -62,8 +62,8 @@
                   {{ t('chart.text_pos_center') }}
                 </template>
                 <el-icon
-                  :class="filterForm.vertical === 'center' && 'active'"
-                  @click="handleHorizontalChange('center', 'vertical')"
+                  :class="filterStyle.layout === 'horizontal' && 'active'"
+                  @click="handleHorizontalChange('horizontal', 'layout')"
                   class="hover-icon"
                 >
                   <Icon name="icon_title-left-align_outlined" />
@@ -74,7 +74,7 @@
           <el-col :span="12">
             <el-form-item label="标题颜色">
               <el-color-picker
-                v-model="filterForm.color"
+                v-model="filterStyle.color"
                 :trigger-width="197"
                 is-custom
                 :predefine="state.predefineColors"
@@ -96,33 +96,33 @@
             <el-col :span="12">
               <el-form-item :label="t('visualization.board')">
                 <el-color-picker
-                  v-model="filterForm.brColor"
+                  v-model="filterStyle.borderColor"
                   :trigger-width="197"
                   is-custom
                   :predefine="state.predefineColors"
-                  @change="themeChange('brColor')"
+                  @change="themeChange('borderColor')"
                 />
               </el-form-item>
             </el-col>
             <el-col :span="12">
               <el-form-item :label="t('visualization.text')">
                 <el-color-picker
-                  v-model="filterForm.wordColor"
+                  v-model="filterStyle.text"
                   :trigger-width="197"
                   is-custom
                   :predefine="state.predefineColors"
-                  @change="themeChange('wordColor')"
+                  @change="themeChange('text')"
                 />
               </el-form-item>
             </el-col>
             <el-col :span="12">
               <el-form-item :label="t('visualization.board_background')">
                 <el-color-picker
-                  v-model="filterForm.innerBgColor"
+                  v-model="filterStyle.bgColor"
                   :trigger-width="197"
                   is-custom
                   :predefine="state.predefineColors"
-                  @change="themeChange('innerBgColor')"
+                  @change="themeChange('bgColor')"
                 />
               </el-form-item>
             </el-col>
@@ -134,10 +134,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from 'vue'
+import { onMounted, reactive, toRefs } from 'vue'
 import { COLOR_PANEL } from '@/views/chart/components/editor/util/chart'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { useI18n } from '@/hooks/web/useI18n'
+import { cloneDeep } from 'lodash-es'
 import { adaptCurThemeFilterStyleAll } from '@/utils/canvasStyle'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import eventBus from '@/utils/eventBus'
@@ -147,7 +148,7 @@ const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 
 const emits = defineEmits(['onTextChange'])
-const filterForm = computed(() => dvMainStore.canvasStyleData.component.filterStyle)
+const { filterStyle } = toRefs(dvMainStore.canvasStyleData.component)
 const state = reactive({
   fontSize: [],
   isSetting: false,
@@ -158,12 +159,13 @@ const initForm = () => {
   // do
 }
 const themeChange = styleKey => {
+  dvMainStore.canvasStyleData.component.filterStyle = cloneDeep(filterStyle.value)
   adaptCurThemeFilterStyleAll(styleKey)
   snapshotStore.recordSnapshot('filterStyleSimpleSelector-themeChange')
 }
 
-const handleHorizontalChange = (type, horizontal = 'horizontal') => {
-  filterForm.value[horizontal] = type
+const handleHorizontalChange = (type, horizontal = 'titleLayout') => {
+  filterStyle.value[horizontal] = type
   themeChange(horizontal)
 }
 
