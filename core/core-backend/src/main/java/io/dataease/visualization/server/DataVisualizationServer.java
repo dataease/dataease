@@ -53,8 +53,8 @@ public class DataVisualizationServer implements DataVisualizationApi {
     private ChartDataManage chartDataManage;
 
     @Override
-    public DataVisualizationVO findById(Long dvId) {
-        DataVisualizationVO result = extDataVisualizationMapper.findDvInfo(dvId);
+    public DataVisualizationVO findById(Long dvId,String busiFlag) {
+        DataVisualizationVO result = extDataVisualizationMapper.findDvInfo(dvId,busiFlag);
         if (result != null) {
             //获取视图信息
             List<ChartViewDTO> chartViewDTOS = chartViewManege.listBySceneId(dvId);
@@ -125,7 +125,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
      */
     @Transactional
     @Override
-    public void deleteLogic(Long dvId) {
+    public void deleteLogic(Long dvId,String busiFlag) {
         coreVisualizationManage.delete(dvId);
     }
 
@@ -175,6 +175,11 @@ public class DataVisualizationServer implements DataVisualizationApi {
         }
         coreVisualizationManage.innerSave(newDv);
         return String.valueOf(newDvId);
+    }
+
+    @Override
+    public String findDvType(Long dvId) {
+        return extDataVisualizationMapper.findDvType(dvId);
     }
 
 

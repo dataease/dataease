@@ -15,7 +15,7 @@ const state = reactive({
   curPreviewGap: 0
 })
 
-const loadCanvasDataAsync = async (dvId, jumpInfoParam) => {
+const loadCanvasDataAsync = async (dvId, dvType, jumpInfoParam) => {
   let jumpParam
   // 获取外部跳转参数
   if (jumpInfoParam) {
@@ -38,6 +38,7 @@ const loadCanvasDataAsync = async (dvId, jumpInfoParam) => {
 
   initCanvasData(
     dvId,
+    dvType,
     function ({
       canvasDataResult,
       canvasStyleResult,
@@ -58,9 +59,9 @@ const loadCanvasDataAsync = async (dvId, jumpInfoParam) => {
 }
 
 onMounted(() => {
-  const { dvId, jumpInfoParam } = router.currentRoute.value.query
+  const { dvId, dvType, jumpInfoParam } = router.currentRoute.value.query
   if (dvId) {
-    loadCanvasDataAsync(dvId, jumpInfoParam)
+    loadCanvasDataAsync(dvId, dvType, jumpInfoParam)
     return
   }
 })

@@ -170,7 +170,7 @@
             `delete_time`,
             `delete_by`
         FROM
-            data_visualization_info where data_visualization_info.delete_flag = 0 and  data_visualization_info.id = #{dvId}
+            data_visualization_info where data_visualization_info.delete_flag = 0 and  data_visualization_info.id = #{dvId} and  data_visualization_info.type = #{dvType}
     </select>
 
     <select id="findRecent" resultType="io.dataease.api.visualization.vo.VisualizationResourceVO">

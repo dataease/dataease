@@ -1642,6 +1642,7 @@ const dragVerticalTop = computed(() => {
           require-asterisk-position="right"
           :model="state.itemForm"
           :rules="itemFormRules"
+          @submit.prevent
           label-position="top"
         >
           <el-form-item :label="t('dataset.field_origin_name')" class="name-edit-form">

@@ -20,11 +20,14 @@ public interface ExtDataVisualizationMapper {
             "\tdata_visualization_info where delete_flag=0 <when test='nodeType !=null'> and node_type = #{nodeType} </when>  <when test='type !=null'> and type = #{type} </when> order by node_type desc </script>")
     List<DataVisualizationBaseVO> findBashInfo(@Param("nodeType") String nodeType, @Param("type") String type);
 
+    @Select("select type from data_visualization_info where id = #{dvId}")
+    String findDvType(@Param("dvId") Long dvId);
+
     void dvCopy(@Param("sourceDvId") Long sourceDvId,@Param("newDvId") Long newDvId,@Param("copyId") Long copyId);
     void viewCopyWithDv(@Param("sourceDvId") Long sourceDvId,@Param("newDvId") Long newDvId,@Param("copyId") Long copyId);
     List<CoreChartView> findViewInfoByCopyId(@Param("copyId") Long copyId);
 
-    DataVisualizationVO findDvInfo(@Param("dvId") Long dvId);
+    DataVisualizationVO findDvInfo(@Param("dvId") Long dvId,@Param("dvType") String dvType);
 
     List<VisualizationResourceVO> findRecent(@Param("pageNum") Long pageNum,@Param("pageCount") Long pageCount,@Param("uid") Long uid,@Param("type") String type,@Param("keyword") String keyword);
 }
