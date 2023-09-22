@@ -16,13 +16,24 @@ export interface Panel {
   updateBy: string
 }
 
-export const findById = dvId => request.get({ url: '/dataVisualization/findById/' + dvId })
+export const findById = async (dvId, busiFlag): Promise<IResponse> => {
+  let busiFlagResult = busiFlag
+  if (!busiFlagResult) {
+    await findDvType(dvId).then(res => {
+      busiFlagResult = res.data
+    })
+  }
+  return request.get({ url: '/dataVisualization/findById/' + dvId + '/' + busiFlagResult })
+}
 
 export const queryTreeApi = async (data: BusiTreeRequest): Promise<IResponse> => {
   return request.post({ url: '/dataVisualization/tree', data }).then(res => {
     return res?.data
   })
 }
+
+export const findDvType = async dvId =>
+  request.get({ url: `/dataVisualization/findDvType/${dvId}` })
 
 export const save = data => request.post({ url: '/dataVisualization/save', data })
 
@@ -36,7 +47,8 @@ export const moveResource = data => request.post({ url: '/dataVisualization/move
 
 export const copyResource = data => request.post({ url: '/dataVisualization/copy', data })
 
-export const deleteLogic = dvId => request.delete({ url: '/dataVisualization/deleteLogic/' + dvId })
+export const deleteLogic = (dvId, busiFlag) =>
+  request.delete({ url: '/dataVisualization/deleteLogic/' + dvId + '/' + busiFlag })
 
 export const querySubjectWithGroupApi = data =>
   request.post({ url: '/visualizationSubject/querySubjectWithGroup', data })
