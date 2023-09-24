@@ -177,7 +177,8 @@ onMounted(() => {
       snapshotStore.recordSnapshot('dv-init')
     })
   } else {
-    ElMessage.error('未获取资源ID')
+    let url = '#/screen/index'
+    window.open(url, '_self')
   }
   initScroll()
 })

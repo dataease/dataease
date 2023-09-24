@@ -35,11 +35,7 @@
       ></el-icon>
     </span>
     <div v-if="barShowCheck('multiplexing')" class="bar-checkbox-area">
-      <el-checkbox
-        size="small"
-        v-model="state.multiplexingCheckModel"
-        @change="multiplexingCheck"
-      />
+      <el-checkbox v-model="state.multiplexingCheckModel" @change="multiplexingCheck" />
     </div>
     <span
       :title="t('visualization.cancel_linkage')"
@@ -50,7 +46,7 @@
       ></el-icon>
     </span>
     <div v-if="barShowCheck('batchOpt')" class="bar-checkbox-area">
-      <el-checkbox size="small" @change="batchOptChange" />
+      <el-checkbox @change="batchOptChange" />
     </div>
 
     <el-dropdown trigger="click" placement="right-start" v-if="barShowCheck('setting')">
