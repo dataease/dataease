@@ -32,5 +32,7 @@ public class VisualizationResourceVO implements Serializable {
 
     private Long lastEditTime;
 
+    private Boolean favorite;
+
     private int weight;
 }

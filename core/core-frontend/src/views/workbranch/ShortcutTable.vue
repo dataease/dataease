@@ -8,6 +8,7 @@ import dayjs from 'dayjs'
 import { shortcutOption } from './ShortcutOption'
 import { XpackComponent } from '@/components/plugin'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
+import { storeApi } from '@/api/visualization/dataVisualization'
 const { resolve } = useRouter()
 const { t } = useI18n()
 const interactiveStore = interactiveStoreWithOut()
@@ -117,6 +118,16 @@ const sortChange = param => {
 const setLoading = (val: boolean) => {
   loading.value = val
 }
+
+const executeStore = rowInfo => {
+  const param = {
+    id: rowInfo.id,
+    type: rowInfo.type
+  }
+  storeApi(param).then(() => {
+    rowInfo.favorite = !rowInfo.favorite
+  })
+}
 </script>
 
 <template>
@@ -187,6 +198,16 @@ const setLoading = (val: boolean) => {
                 <template #content>{{ scope.row.name }}</template>
                 <span class="ellipsis" style="max-width: 250px">{{ scope.row.name }}</span>
               </el-tooltip>
+              <el-icon
+                v-if="activeName === 'recent' && ['screen', 'panel'].includes(scope.row.type)"
+                class="custom-icon"
+                @click="executeStore(scope.row)"
+                :style="{ color: scope.row.favorite ? '#FFC60A' : '#646A73' }"
+              >
+                <icon
+                  :name="scope.row.favorite ? 'visual-star' : 'icon_collection_outlined'"
+                ></icon>
+              </el-icon>
             </div>
           </template>
         </el-table-column>
@@ -278,6 +299,14 @@ const setLoading = (val: boolean) => {
     .name-content {
       display: flex;
       align-items: center;
+      .custom-icon {
+        display: none;
+      }
+      &:hover .custom-icon {
+        cursor: pointer;
+        margin-left: 8px;
+        display: inherit !important;
+      }
     }
     .main-color {
       font-size: 21.33px;

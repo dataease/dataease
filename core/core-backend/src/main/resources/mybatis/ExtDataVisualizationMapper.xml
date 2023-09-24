@@ -175,7 +175,12 @@
 
     <select id="findRecent" resultType="io.dataease.api.visualization.vo.VisualizationResourceVO">
         SELECT
-        *
+        dvResource.*,
+        (
+        CASE WHEN core_store.resource_id is NULL THEN
+        0 ELSE 1
+        END
+        ) AS favorite
         FROM
         (
         SELECT
@@ -199,7 +204,7 @@
         FROM
         core_datasource
         WHERE
-        core_datasource.type &lt;&gt; 'folder' UNION ALL
+        core_datasource.type != 'folder' UNION ALL
         SELECT
         data_visualization_info.id,
         data_visualization_info.NAME,
@@ -219,6 +224,8 @@
         data_visualization_info.delete_flag = 0
         AND node_type = 'leaf'
         ) dvResource
+        LEFT JOIN core_store ON dvResource.id = core_store.resource_id
+        AND core_store.uid = #{uid}
         <where>
             dvResource.lastEditor =  #{uid}
             <if test="type != null and type != ''">
