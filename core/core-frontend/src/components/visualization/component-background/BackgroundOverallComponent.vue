@@ -4,7 +4,6 @@
       <el-col :span="12" style="padding-right: 4px">
         <el-row class="custom-item-text-row">
           <el-checkbox
-            size="small"
             :effect="themes"
             v-model="curComponent.commonBackground.backgroundColorSelect"
           >
@@ -43,7 +42,6 @@
     <el-row style="width: 100%" class="custom-row margin-top16">
       <el-row class="custom-item-text-row">
         <el-checkbox
-          size="small"
           :effect="themes"
           v-model="curComponent.commonBackground.backgroundImageEnable"
           >{{ t('visualization.background') }}

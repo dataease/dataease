@@ -1285,7 +1285,38 @@ const dragVerticalTop = computed(() => {
                       <drag-placeholder :drag-list="view.customFilter" />
                     </el-row>
                   </el-scrollbar>
-                  <el-footer>
+                  <el-footer :class="{ 'refresh-active-footer': view.refreshViewEnable }">
+                    <el-row class="refresh-area">
+                      <el-row class="custom-item-text-row">
+                        <span class="custom-item-text bl">
+                          <el-checkbox v-model="view.refreshViewEnable">{{
+                            t('visualization.refresh_frequency')
+                          }}</el-checkbox>
+                        </span>
+                      </el-row>
+                      <el-row v-show="view.refreshViewEnable">
+                        <el-input
+                          v-model="view.refreshTime"
+                          placeholder="Please input"
+                          size="small"
+                          :min="1"
+                          :max="3600"
+                          :disabled="!view.refreshViewEnable"
+                        >
+                          <template #append>
+                            <el-select
+                              v-model="view.refreshUnit"
+                              size="small"
+                              placeholder="Select"
+                              style="width: 80px; padding: 0 9px"
+                            >
+                              <el-option :label="t('visualization.minute')" :value="'minute'" />
+                              <el-option :label="t('visualization.second')" :value="'second'" />
+                            </el-select>
+                          </template>
+                        </el-input>
+                      </el-row>
+                    </el-row>
                     <el-row class="result-style" :class="'result-style-' + themes">
                       <div class="result-style-input">
                         <span v-if="view.type !== 'richTextView'">
@@ -2154,7 +2185,7 @@ span {
 
     :deep(.ed-footer) {
       padding: 0;
-      height: 81px;
+      height: 114px;
     }
   }
 
@@ -2642,5 +2673,14 @@ span {
   .ed-dialog__body {
     flex: 1;
   }
+}
+
+.refresh-active-footer {
+  height: 150px !important;
+}
+
+.refresh-area {
+  width: 100%;
+  padding: 0 8px;
 }
 </style>
