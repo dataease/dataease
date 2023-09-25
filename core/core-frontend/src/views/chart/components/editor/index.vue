@@ -591,6 +591,36 @@ const closeRename = () => {
   state.renameItem = false
 }
 
+const removeItems = (
+  _type: 'xAxis' | 'xAxisExt' | 'extStack' | 'yAxis' | 'extBubble' | 'customFilter' | 'drillFields'
+) => {
+  console.log(_type)
+  switch (_type) {
+    case 'xAxis':
+      view.value.xAxis = []
+      break
+    case 'xAxisExt':
+      view.value.xAxisExt = []
+      break
+    case 'extStack':
+      view.value.extStack = []
+      break
+    case 'yAxis':
+      view.value.yAxis = []
+      break
+    case 'extBubble':
+      view.value.extBubble = []
+      break
+    case 'customFilter':
+      view.value.customFilter = []
+      break
+    case 'drillFields':
+      view.value.drillFields = []
+      break
+  }
+  console.log(view.value)
+}
+
 const saveRename = ref => {
   if (!ref) return
   ref.validate(valid => {
@@ -1040,9 +1070,16 @@ const dragVerticalTop = computed(() => {
 
                     <!--xAxis-->
                     <el-row class="padding-lr drag-data" v-if="showAxis('xAxis')">
-                      <span class="data-area-label">
-                        {{ chartViewInstance.axisConfig.xAxis.name }}
-                      </span>
+                      <div class="form-draggable-title">
+                        <span>
+                          {{ chartViewInstance.axisConfig.xAxis.name }}
+                        </span>
+                        <el-tooltip effect="dark" placement="top" :content="t('common.delete')">
+                          <el-icon class="remove-icon" @click="removeItems('xAxis')">
+                            <Icon name="icon_delete-trash_outlined" />
+                          </el-icon>
+                        </el-tooltip>
+                      </div>
                       <draggable
                         :list="view.xAxis"
                         :move="onMove"
@@ -1075,9 +1112,16 @@ const dragVerticalTop = computed(() => {
 
                     <!--xAxisExt-->
                     <el-row class="padding-lr drag-data" v-if="showAxis('xAxisExt')">
-                      <span class="data-area-label">
-                        {{ chartViewInstance.axisConfig.xAxisExt.name }}
-                      </span>
+                      <div class="form-draggable-title">
+                        <span>
+                          {{ chartViewInstance.axisConfig.xAxisExt.name }}
+                        </span>
+                        <el-tooltip effect="dark" placement="top" :content="t('common.delete')">
+                          <el-icon class="remove-icon" @click="removeItems('xAxisExt')">
+                            <Icon name="icon_delete-trash_outlined" />
+                          </el-icon>
+                        </el-tooltip>
+                      </div>
                       <draggable
                         :list="view.xAxisExt"
                         :move="onMove"
@@ -1109,9 +1153,16 @@ const dragVerticalTop = computed(() => {
 
                     <!--extStack-->
                     <el-row class="padding-lr drag-data" v-if="showAxis('extStack')">
-                      <span class="data-area-label">
-                        {{ chartViewInstance.axisConfig.extStack.name }}
-                      </span>
+                      <div class="form-draggable-title">
+                        <span>
+                          {{ chartViewInstance.axisConfig.extStack.name }}
+                        </span>
+                        <el-tooltip effect="dark" placement="top" :content="t('common.delete')">
+                          <el-icon class="remove-icon" @click="removeItems('extStack')">
+                            <Icon name="icon_delete-trash_outlined" />
+                          </el-icon>
+                        </el-tooltip>
+                      </div>
                       <draggable
                         :list="view.extStack"
                         :move="onMove"
@@ -1143,9 +1194,16 @@ const dragVerticalTop = computed(() => {
 
                     <!--yAxis-->
                     <el-row class="padding-lr drag-data" v-if="showAxis('yAxis')">
-                      <span class="data-area-label">
-                        {{ chartViewInstance.axisConfig.yAxis.name }}
-                      </span>
+                      <div class="form-draggable-title">
+                        <span>
+                          {{ chartViewInstance.axisConfig.yAxis.name }}
+                        </span>
+                        <el-tooltip effect="dark" placement="top" :content="t('common.delete')">
+                          <el-icon class="remove-icon" @click="removeItems('yAxis')">
+                            <Icon name="icon_delete-trash_outlined" />
+                          </el-icon>
+                        </el-tooltip>
+                      </div>
                       <draggable
                         :list="view.yAxis"
                         :move="onMove"
@@ -1178,9 +1236,16 @@ const dragVerticalTop = computed(() => {
                     </el-row>
                     <!-- extBubble -->
                     <el-row class="padding-lr drag-data" v-if="showAxis('extBubble')">
-                      <span class="data-area-label">
-                        {{ chartViewInstance.axisConfig.extBubble.name }}
-                      </span>
+                      <div class="form-draggable-title">
+                        <span>
+                          {{ chartViewInstance.axisConfig.extBubble.name }}
+                        </span>
+                        <el-tooltip effect="dark" placement="top" :content="t('common.delete')">
+                          <el-icon class="remove-icon" @click="removeItems('extBubble')">
+                            <Icon name="icon_delete-trash_outlined" />
+                          </el-icon>
+                        </el-tooltip>
+                      </div>
                       <draggable
                         :list="view.extBubble"
                         :move="onMove"
@@ -1214,22 +1279,29 @@ const dragVerticalTop = computed(() => {
 
                     <!--drill-->
                     <el-row class="padding-lr drag-data" v-if="showAxis('drill')">
-                      <span class="data-area-label">
-                        <span>{{ t('chart.drill') }}</span>
-                        /
-                        <span>{{ t('chart.dimension') }}</span>
-                        <el-tooltip class="item" :effect="themes" placement="bottom">
-                          <template #content>
-                            <div>
-                              {{ t('chart.drill_dimension_tip') }}
-                            </div>
-                          </template>
-                          <i
-                            class="el-icon-info"
-                            :style="{ cursor: 'pointer', color: '#606266' }"
-                          />
+                      <div class="form-draggable-title">
+                        <span class="data-area-label">
+                          <span>{{ t('chart.drill') }}</span>
+                          /
+                          <span>{{ t('chart.dimension') }}</span>
+                          <el-tooltip class="item" :effect="themes" placement="bottom">
+                            <template #content>
+                              <div>
+                                {{ t('chart.drill_dimension_tip') }}
+                              </div>
+                            </template>
+                            <i
+                              class="el-icon-info"
+                              :style="{ cursor: 'pointer', color: '#606266' }"
+                            />
+                          </el-tooltip>
+                        </span>
+                        <el-tooltip effect="dark" placement="top" :content="t('common.delete')">
+                          <el-icon class="remove-icon" @click="removeItems('drillFields')">
+                            <Icon name="icon_delete-trash_outlined" />
+                          </el-icon>
                         </el-tooltip>
-                      </span>
+                      </div>
                       <draggable
                         :list="view.drillFields"
                         item-key="id"
@@ -1259,7 +1331,16 @@ const dragVerticalTop = computed(() => {
 
                     <!--filter-->
                     <el-row class="padding-lr drag-data no-top-border no-top-padding">
-                      <span>{{ t('chart.result_filter') }}</span>
+                      <div class="form-draggable-title">
+                        <span>
+                          {{ t('chart.result_filter') }}
+                        </span>
+                        <el-tooltip effect="dark" placement="top" :content="t('common.delete')">
+                          <el-icon class="remove-icon" @click="removeItems('customFilter')">
+                            <Icon name="icon_delete-trash_outlined" />
+                          </el-icon>
+                        </el-tooltip>
+                      </div>
                       <draggable
                         :list="view.customFilter"
                         :move="onMove"
@@ -1941,7 +2022,7 @@ span {
       padding-top: 0 !important;
 
       :deep(.drag-placeholder-style) {
-        top: calc(50% - 5px);
+        top: calc(50% - 8px);
       }
     }
   }
@@ -2208,6 +2289,24 @@ span {
     display: inline-block;
   }
 
+  .form-draggable-title {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+
+    span {
+      cursor: default;
+    }
+
+    .remove-icon {
+      color: #a6a6a6;
+      cursor: pointer;
+      padding: 2px;
+      font-size: 16px;
+    }
+  }
+
   .drag-block-style {
     padding: 2px 0 0 0;
     width: 100%;
@@ -2357,8 +2456,6 @@ span {
       border: 1px solid #3370ff;
     }
   }
-  .switch-chart-light {
-  }
 
   .dataset-search {
     height: 51px;
@@ -2428,7 +2525,6 @@ span {
 
 .collapse-title {
   color: @dv-canvas-main-font-color;
-  font-width: 500;
   width: 35px;
   text-align: center;
   padding: 5px;
