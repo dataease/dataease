@@ -248,6 +248,11 @@ const validate = () => {
       return false
     }
 
+    if (ele.optionValueSource === 2 && !ele.valueSource?.length) {
+      ElMessage.error('手工输入-选项值不能为空')
+      return true
+    }
+
     if (ele.optionValueSource === 1 && !ele.field.id) {
       ElMessage.error('请选择数据集的选项值字段')
       return true
