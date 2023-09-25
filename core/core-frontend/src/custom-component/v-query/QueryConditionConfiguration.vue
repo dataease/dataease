@@ -176,7 +176,11 @@ const setType = () => {
       if (!(field?.deType === 1 && curComponent.value.displayType === '7')) {
         curComponent.value.displayType = `${[3, 4].includes(field?.deType) ? 2 : field?.deType}`
       }
-      if (displayType !== curComponent.value.displayType) {
+
+      if (
+        displayType !== curComponent.value.displayType &&
+        !([3, 4].includes(+displayType) && +curComponent.value.displayType === 2)
+      ) {
         setTypeChange()
       }
     }
