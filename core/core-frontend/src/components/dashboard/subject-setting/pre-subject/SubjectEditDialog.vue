@@ -17,8 +17,7 @@ const rules = {
       max: 50,
       message: t('commons.char_can_not_more_50'),
       trigger: 'change'
-    },
-    { required: true, trigger: 'blur' }
+    }
   ],
   coverUrl: [
     {

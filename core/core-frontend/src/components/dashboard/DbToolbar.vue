@@ -331,14 +331,17 @@ const saveLinkageSetting = () => {
               ></Icon>
             </el-icon>
           </el-tooltip>
-          <el-icon class="toolbar-hover-icon opt-icon-redo" @click="redo()">
-            <Icon
-              :class="{
-                'toolbar-icon-disabled': snapshotIndex === snapshotStore.snapshotData.length - 1
-              }"
-              name="icon_redo_outlined"
-            ></Icon>
-          </el-icon>
+
+          <el-tooltip effect="dark" :content="$t('commons.reduction')" placement="bottom">
+            <el-icon class="toolbar-hover-icon opt-icon-redo" @click="redo()">
+              <Icon
+                :class="{
+                  'toolbar-icon-disabled': snapshotIndex === snapshotStore.snapshotData.length - 1
+                }"
+                name="icon_redo_outlined"
+              ></Icon>
+            </el-icon>
+          </el-tooltip>
         </div>
       </div>
       <div class="left-area" v-show="batchOptStatus">
@@ -382,11 +385,13 @@ const saveLinkageSetting = () => {
         ></component-button>
       </div>
       <div class="right-area" v-show="!batchOptStatus && !linkageSettingStatus">
-        <component-button
-          tips="批量操作"
-          @custom-click="batchOptStatusChange(true)"
-          icon-name="dv-batch"
-        ></component-button>
+        <el-tooltip effect="dark" content="批量操作" placement="bottom">
+          <component-button
+            tips="批量操作"
+            @custom-click="batchOptStatusChange(true)"
+            icon-name="dv-batch"
+          ></component-button>
+        </el-tooltip>
 
         <el-tooltip effect="dark" content="仪表板配置" placement="bottom">
           <component-button

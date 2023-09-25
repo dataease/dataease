@@ -169,14 +169,16 @@ eventBus.on('clearCanvas', clearCanvas)
               ></Icon>
             </el-icon>
           </el-tooltip>
-          <el-icon class="toolbar-hover-icon opt-icon-redo" @click="redo()">
-            <Icon
-              :class="{
-                'toolbar-icon-disabled': snapshotIndex === snapshotStore.snapshotData.length - 1
-              }"
-              name="icon_redo_outlined"
-            ></Icon>
-          </el-icon>
+          <el-tooltip effect="dark" :content="$t('commons.reduction')" placement="bottom">
+            <el-icon class="toolbar-hover-icon opt-icon-redo" @click="redo()">
+              <Icon
+                :class="{
+                  'toolbar-icon-disabled': snapshotIndex === snapshotStore.snapshotData.length - 1
+                }"
+                name="icon_redo_outlined"
+              ></Icon>
+            </el-icon>
+          </el-tooltip>
         </div>
       </div>
       <div class="middle-area">
