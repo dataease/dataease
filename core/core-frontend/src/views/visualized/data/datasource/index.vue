@@ -145,12 +145,19 @@ const datasetTypeList = [
     command: 'folder'
   }
 ]
+
+const dsTableDataLoading = ref(false)
 const selectDataset = row => {
   Object.assign(dsTableDetail, row)
   userDrawer.value = true
-  getTableField({ tableName: row.tableName, datasourceId: nodeInfo.id }).then(res => {
-    state.dsTableData = res.data
-  })
+  dsTableDataLoading.value = true
+  getTableField({ tableName: row.tableName, datasourceId: nodeInfo.id })
+    .then(res => {
+      state.dsTableData = res.data
+    })
+    .finally(() => {
+      dsTableDataLoading.value = false
+    })
 }
 
 const handleSizeChange = pageSize => {
@@ -1106,6 +1113,7 @@ onMounted(() => {
       </el-row>
       <el-scrollbar>
         <el-table
+          v-loading="dsTableDataLoading"
           header-cell-class-name="header-cell"
           :data="state.dsTableData"
           stripe

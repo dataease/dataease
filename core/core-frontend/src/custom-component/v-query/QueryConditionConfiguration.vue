@@ -176,7 +176,11 @@ const setType = () => {
       if (!(field?.deType === 1 && curComponent.value.displayType === '7')) {
         curComponent.value.displayType = `${[3, 4].includes(field?.deType) ? 2 : field?.deType}`
       }
-      if (displayType !== curComponent.value.displayType) {
+
+      if (
+        displayType !== curComponent.value.displayType &&
+        !([3, 4].includes(+displayType) && +curComponent.value.displayType === 2)
+      ) {
         setTypeChange()
       }
     }
@@ -242,6 +246,11 @@ const validate = () => {
 
     if ([1, 7].includes(+ele.displayType)) {
       return false
+    }
+
+    if (ele.optionValueSource === 2 && !ele.valueSource?.length) {
+      ElMessage.error('手工输入-选项值不能为空')
+      return true
     }
 
     if (ele.optionValueSource === 1 && !ele.field.id) {

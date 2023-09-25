@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { PropType, reactive, ref, watch, toRefs, computed, nextTick, onMounted } from 'vue'
+import { PropType, reactive, ref, watch, toRefs, computed, nextTick } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Field, getFieldByDQ, saveChart } from '@/api/chart'
@@ -17,7 +17,7 @@ import VQueryChartStyle from '@/views/chart/components/editor/editor-style/VQuer
 import Senior from '@/views/chart/components/editor/editor-senior/Senior.vue'
 import QuotaFilterEditor from '@/views/chart/components/editor/filter/QuotaFilterEditor.vue'
 import ResultFilterEditor from '@/views/chart/components/editor/filter/ResultFilterEditor.vue'
-import { ElIcon, ElRow } from 'element-plus-secondary'
+import { ElIcon } from 'element-plus-secondary'
 import DrillItem from '@/views/chart/components/editor/drag-item/DrillItem.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
@@ -31,8 +31,7 @@ import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapsho
 import CalcFieldEdit from '@/views/visualized/data/dataset/form/CalcFieldEdit.vue'
 import { getFieldName, guid } from '@/views/visualized/data/dataset/form/util'
 import { cloneDeep } from 'lodash-es'
-import { deleteField, deleteFieldByChartId, saveField } from '@/api/dataset'
-import LabelSelector from '@/views/chart/components/editor/editor-style/components/LabelSelector.vue'
+import { deleteField, saveField } from '@/api/dataset'
 import { getWorldTree } from '@/api/map'
 import chartViewManager from '@/views/chart/components/js/panel'
 import DatasetSelect from '@/views/chart/components/editor/dataset-select/DatasetSelect.vue'
@@ -591,6 +590,36 @@ const closeRename = () => {
   state.renameItem = false
 }
 
+const removeItems = (
+  _type: 'xAxis' | 'xAxisExt' | 'extStack' | 'yAxis' | 'extBubble' | 'customFilter' | 'drillFields'
+) => {
+  console.log(_type)
+  switch (_type) {
+    case 'xAxis':
+      view.value.xAxis = []
+      break
+    case 'xAxisExt':
+      view.value.xAxisExt = []
+      break
+    case 'extStack':
+      view.value.extStack = []
+      break
+    case 'yAxis':
+      view.value.yAxis = []
+      break
+    case 'extBubble':
+      view.value.extBubble = []
+      break
+    case 'customFilter':
+      view.value.customFilter = []
+      break
+    case 'drillFields':
+      view.value.drillFields = []
+      break
+  }
+  console.log(view.value)
+}
+
 const saveRename = ref => {
   if (!ref) return
   ref.validate(valid => {
@@ -1040,9 +1069,16 @@ const dragVerticalTop = computed(() => {
 
                     <!--xAxis-->
                     <el-row class="padding-lr drag-data" v-if="showAxis('xAxis')">
-                      <span class="data-area-label">
-                        {{ chartViewInstance.axisConfig.xAxis.name }}
-                      </span>
+                      <div class="form-draggable-title">
+                        <span>
+                          {{ chartViewInstance.axisConfig.xAxis.name }}
+                        </span>
+                        <el-tooltip effect="dark" placement="top" :content="t('common.delete')">
+                          <el-icon class="remove-icon" @click="removeItems('xAxis')">
+                            <Icon name="icon_delete-trash_outlined" />
+                          </el-icon>
+                        </el-tooltip>
+                      </div>
                       <draggable
                         :list="view.xAxis"
                         :move="onMove"
@@ -1075,9 +1111,16 @@ const dragVerticalTop = computed(() => {
 
                     <!--xAxisExt-->
                     <el-row class="padding-lr drag-data" v-if="showAxis('xAxisExt')">
-                      <span class="data-area-label">
-                        {{ chartViewInstance.axisConfig.xAxisExt.name }}
-                      </span>
+                      <div class="form-draggable-title">
+                        <span>
+                          {{ chartViewInstance.axisConfig.xAxisExt.name }}
+                        </span>
+                        <el-tooltip effect="dark" placement="top" :content="t('common.delete')">
+                          <el-icon class="remove-icon" @click="removeItems('xAxisExt')">
+                            <Icon name="icon_delete-trash_outlined" />
+                          </el-icon>
+                        </el-tooltip>
+                      </div>
                       <draggable
                         :list="view.xAxisExt"
                         :move="onMove"
@@ -1109,9 +1152,16 @@ const dragVerticalTop = computed(() => {
 
                     <!--extStack-->
                     <el-row class="padding-lr drag-data" v-if="showAxis('extStack')">
-                      <span class="data-area-label">
-                        {{ chartViewInstance.axisConfig.extStack.name }}
-                      </span>
+                      <div class="form-draggable-title">
+                        <span>
+                          {{ chartViewInstance.axisConfig.extStack.name }}
+                        </span>
+                        <el-tooltip effect="dark" placement="top" :content="t('common.delete')">
+                          <el-icon class="remove-icon" @click="removeItems('extStack')">
+                            <Icon name="icon_delete-trash_outlined" />
+                          </el-icon>
+                        </el-tooltip>
+                      </div>
                       <draggable
                         :list="view.extStack"
                         :move="onMove"
@@ -1143,9 +1193,16 @@ const dragVerticalTop = computed(() => {
 
                     <!--yAxis-->
                     <el-row class="padding-lr drag-data" v-if="showAxis('yAxis')">
-                      <span class="data-area-label">
-                        {{ chartViewInstance.axisConfig.yAxis.name }}
-                      </span>
+                      <div class="form-draggable-title">
+                        <span>
+                          {{ chartViewInstance.axisConfig.yAxis.name }}
+                        </span>
+                        <el-tooltip effect="dark" placement="top" :content="t('common.delete')">
+                          <el-icon class="remove-icon" @click="removeItems('yAxis')">
+                            <Icon name="icon_delete-trash_outlined" />
+                          </el-icon>
+                        </el-tooltip>
+                      </div>
                       <draggable
                         :list="view.yAxis"
                         :move="onMove"
@@ -1178,9 +1235,16 @@ const dragVerticalTop = computed(() => {
                     </el-row>
                     <!-- extBubble -->
                     <el-row class="padding-lr drag-data" v-if="showAxis('extBubble')">
-                      <span class="data-area-label">
-                        {{ chartViewInstance.axisConfig.extBubble.name }}
-                      </span>
+                      <div class="form-draggable-title">
+                        <span>
+                          {{ chartViewInstance.axisConfig.extBubble.name }}
+                        </span>
+                        <el-tooltip effect="dark" placement="top" :content="t('common.delete')">
+                          <el-icon class="remove-icon" @click="removeItems('extBubble')">
+                            <Icon name="icon_delete-trash_outlined" />
+                          </el-icon>
+                        </el-tooltip>
+                      </div>
                       <draggable
                         :list="view.extBubble"
                         :move="onMove"
@@ -1214,22 +1278,29 @@ const dragVerticalTop = computed(() => {
 
                     <!--drill-->
                     <el-row class="padding-lr drag-data" v-if="showAxis('drill')">
-                      <span class="data-area-label">
-                        <span>{{ t('chart.drill') }}</span>
-                        /
-                        <span>{{ t('chart.dimension') }}</span>
-                        <el-tooltip class="item" :effect="themes" placement="bottom">
-                          <template #content>
-                            <div>
-                              {{ t('chart.drill_dimension_tip') }}
-                            </div>
-                          </template>
-                          <i
-                            class="el-icon-info"
-                            :style="{ cursor: 'pointer', color: '#606266' }"
-                          />
+                      <div class="form-draggable-title">
+                        <span class="data-area-label">
+                          <span>{{ t('chart.drill') }}</span>
+                          /
+                          <span>{{ t('chart.dimension') }}</span>
+                          <el-tooltip class="item" :effect="themes" placement="bottom">
+                            <template #content>
+                              <div>
+                                {{ t('chart.drill_dimension_tip') }}
+                              </div>
+                            </template>
+                            <i
+                              class="el-icon-info"
+                              :style="{ cursor: 'pointer', color: '#606266' }"
+                            />
+                          </el-tooltip>
+                        </span>
+                        <el-tooltip effect="dark" placement="top" :content="t('common.delete')">
+                          <el-icon class="remove-icon" @click="removeItems('drillFields')">
+                            <Icon name="icon_delete-trash_outlined" />
+                          </el-icon>
                         </el-tooltip>
-                      </span>
+                      </div>
                       <draggable
                         :list="view.drillFields"
                         item-key="id"
@@ -1259,7 +1330,16 @@ const dragVerticalTop = computed(() => {
 
                     <!--filter-->
                     <el-row class="padding-lr drag-data no-top-border no-top-padding">
-                      <span>{{ t('chart.result_filter') }}</span>
+                      <div class="form-draggable-title">
+                        <span>
+                          {{ t('chart.result_filter') }}
+                        </span>
+                        <el-tooltip effect="dark" placement="top" :content="t('common.delete')">
+                          <el-icon class="remove-icon" @click="removeItems('customFilter')">
+                            <Icon name="icon_delete-trash_outlined" />
+                          </el-icon>
+                        </el-tooltip>
+                      </div>
                       <draggable
                         :list="view.customFilter"
                         :move="onMove"
@@ -1287,34 +1367,50 @@ const dragVerticalTop = computed(() => {
                   </el-scrollbar>
                   <el-footer :class="{ 'refresh-active-footer': view.refreshViewEnable }">
                     <el-row class="refresh-area">
-                      <el-row class="custom-item-text-row">
-                        <span class="custom-item-text bl">
-                          <el-checkbox v-model="view.refreshViewEnable">{{
-                            t('visualization.refresh_frequency')
-                          }}</el-checkbox>
-                        </span>
-                      </el-row>
-                      <el-row v-show="view.refreshViewEnable">
-                        <el-input
-                          v-model="view.refreshTime"
-                          placeholder="Please input"
-                          size="small"
-                          :min="1"
-                          :max="3600"
-                          :disabled="!view.refreshViewEnable"
+                      <el-form-item
+                        class="form-item no-margin-bottom"
+                        :class="'form-item-' + themes"
+                      >
+                        <el-checkbox :effect="themes" size="small" v-model="view.refreshViewEnable">
+                          {{ t('visualization.refresh_frequency') }}
+                        </el-checkbox>
+                      </el-form-item>
+                      <el-row v-if="view.refreshViewEnable">
+                        <el-form-item
+                          class="form-item no-margin-bottom select-append"
+                          :class="'form-item-' + themes"
                         >
-                          <template #append>
-                            <el-select
-                              v-model="view.refreshUnit"
-                              size="small"
-                              placeholder="Select"
-                              style="width: 80px; padding: 0 9px"
-                            >
-                              <el-option :label="t('visualization.minute')" :value="'minute'" />
-                              <el-option :label="t('visualization.second')" :value="'second'" />
-                            </el-select>
-                          </template>
-                        </el-input>
+                          <el-input
+                            v-model="view.refreshTime"
+                            placeholder="Please input"
+                            :effect="themes"
+                            size="small"
+                            :min="1"
+                            :max="3600"
+                            :disabled="!view.refreshViewEnable"
+                          >
+                            <template #append>
+                              <el-select
+                                :effect="themes"
+                                v-model="view.refreshUnit"
+                                size="small"
+                                placeholder="Select"
+                                style="width: 80px; padding: 0 9px"
+                              >
+                                <el-option
+                                  :effect="themes"
+                                  :label="t('visualization.minute')"
+                                  :value="'minute'"
+                                />
+                                <el-option
+                                  :effect="themes"
+                                  :label="t('visualization.second')"
+                                  :value="'second'"
+                                />
+                              </el-select>
+                            </template>
+                          </el-input>
+                        </el-form-item>
                       </el-row>
                     </el-row>
                     <el-row class="result-style" :class="'result-style-' + themes">
@@ -1941,7 +2037,7 @@ span {
       padding-top: 0 !important;
 
       :deep(.drag-placeholder-style) {
-        top: calc(50% - 5px);
+        top: calc(50% - 8px);
       }
     }
   }
@@ -2067,12 +2163,13 @@ span {
 
     .drag-vertical {
       width: 100%;
-      height: 3px;
+      height: 4px;
       position: absolute;
       left: 0;
       cursor: row-resize;
 
-      &.is-hovering {
+      &.is-hovering,
+      &:hover {
         background: #3370ff;
       }
     }
@@ -2206,6 +2303,24 @@ span {
     position: relative;
     width: 100%;
     display: inline-block;
+  }
+
+  .form-draggable-title {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+
+    span {
+      cursor: default;
+    }
+
+    .remove-icon {
+      color: #a6a6a6;
+      cursor: pointer;
+      padding: 2px;
+      font-size: 16px;
+    }
   }
 
   .drag-block-style {
@@ -2357,8 +2472,6 @@ span {
       border: 1px solid #3370ff;
     }
   }
-  .switch-chart-light {
-  }
 
   .dataset-search {
     height: 51px;
@@ -2428,7 +2541,6 @@ span {
 
 .collapse-title {
   color: @dv-canvas-main-font-color;
-  font-width: 500;
   width: 35px;
   text-align: center;
   padding: 5px;
@@ -2503,6 +2615,12 @@ span {
 :deep(.form-item-dark) {
   .ed-form-item__label {
     color: @canvas-main-font-color-dark;
+  }
+
+  &.select-append {
+    .ed-input-group__append {
+      background-color: transparent;
+    }
   }
 }
 :deep(.ed-checkbox__label) {
@@ -2682,5 +2800,9 @@ span {
 .refresh-area {
   width: 100%;
   padding: 0 8px;
+
+  .no-margin-bottom {
+    margin-bottom: 8px;
+  }
 }
 </style>
