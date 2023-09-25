@@ -9,6 +9,7 @@ import { Configuration, ApiConfiguration, SyncSetting } from './index.vue'
 import { getSchema } from '@/api/datasource'
 import { Calendar } from '@element-plus/icons-vue'
 import { Base64 } from 'js-base64'
+import { CustomPassword } from '@/components/custom-password'
 import { ElForm, ElMessage } from 'element-plus-secondary'
 import Cron from '@/components/cron/src/Cron.vue'
 import { ComponentPublicInstance } from 'vue'
@@ -176,7 +177,7 @@ const setRules = () => {
     'configuration.host': [
       {
         required: true,
-        message: t('datasource.please_input_host'),
+        message: t('datasource._ip_address'),
         trigger: 'blur'
       }
     ],
@@ -191,6 +192,34 @@ const setRules = () => {
       {
         required: true,
         message: t('datasource.please_input_port'),
+        trigger: 'blur'
+      }
+    ],
+    'configuration.initialPoolSize': [
+      {
+        required: true,
+        message: t('common.inputText') + t('datasource.initial_pool_size'),
+        trigger: 'blur'
+      }
+    ],
+    'configuration.minPoolSize': [
+      {
+        required: true,
+        message: t('common.inputText') + t('datasource.min_pool_size'),
+        trigger: 'blur'
+      }
+    ],
+    'configuration.maxPoolSize': [
+      {
+        required: true,
+        message: t('common.inputText') + t('datasource.max_pool_size'),
+        trigger: 'blur'
+      }
+    ],
+    'configuration.queryTimeout': [
+      {
+        required: true,
+        message: t('common.inputText') + t('datasource.query_timeout'),
         trigger: 'blur'
       }
     ]
@@ -469,6 +498,7 @@ defineExpose({
                         placement="top"
                         width="200"
                         :ref="setItemRef"
+                        show-arrow
                         popper-class="api-table-delete"
                         trigger="click"
                       >
@@ -506,7 +536,7 @@ defineExpose({
                 </div>
                 <div class="req-value">
                   <span>{{ api.method }}</span>
-                  <el-tooltip w effect="dark" :content="api.url" placement="top">
+                  <el-tooltip effect="dark" :content="api.url" placement="top">
                     <span>{{ api.url }}</span>
                   </el-tooltip>
                 </div>
@@ -563,7 +593,7 @@ defineExpose({
             prop="configuration.password"
             v-if="form.type === 'presto'"
           >
-            <el-input
+            <CustomPassword
               :placeholder="t('common.inputText') + t('datasource.keytab_Key_path')"
               show-password
               type="password"
@@ -581,7 +611,7 @@ defineExpose({
             />
           </el-form-item>
           <el-form-item :label="t('datasource.password')" v-if="form.type !== 'presto'">
-            <el-input
+            <CustomPassword
               :placeholder="t('common.inputText') + t('datasource.password')"
               show-password
               type="password"
@@ -662,6 +692,7 @@ defineExpose({
                     v-model="form.configuration.initialPoolSize"
                     controls-position="right"
                     autocomplete="off"
+                    :placeholder="t('common.inputText') + t('datasource.initial_pool_size')"
                     type="number"
                     :min="0"
                   />
@@ -676,6 +707,7 @@ defineExpose({
                     v-model="form.configuration.minPoolSize"
                     controls-position="right"
                     autocomplete="off"
+                    :placeholder="t('common.inputText') + t('datasource.min_pool_size')"
                     type="number"
                     :min="0"
                   />
@@ -692,6 +724,7 @@ defineExpose({
                     v-model="form.configuration.maxPoolSize"
                     controls-position="right"
                     autocomplete="off"
+                    :placeholder="t('common.inputText') + t('datasource.max_pool_size')"
                     type="number"
                     :min="0"
                   />
@@ -705,6 +738,7 @@ defineExpose({
                   <el-input
                     v-model="form.configuration.queryTimeout"
                     autocomplete="off"
+                    :placeholder="t('common.inputText') + t('datasource.query_timeout')"
                     class="input-with-append"
                     type="number"
                     :min="0"
@@ -849,12 +883,6 @@ defineExpose({
     width: 100%;
   }
 
-  .text-left {
-    :deep(.ed-input__inner) {
-      text-align: left;
-    }
-  }
-
   .input-with-append {
     :deep(.ed-input-group__append) {
       width: 55px;
@@ -888,6 +916,7 @@ defineExpose({
     width: 100%;
   }
   .simple-cron {
+    height: 32px;
     .ed-select,
     .ed-input-number {
       width: 140px;
@@ -935,6 +964,12 @@ defineExpose({
       .update-text {
         padding-left: 16px;
         position: relative;
+        color: #1f2329;
+        font-weight: 400;
+        font-family: PingFang SC;
+        font-size: 14px;
+        font-style: normal;
+        line-height: 22px;
         &::before {
           width: 8px;
           height: 8px;
@@ -945,6 +980,10 @@ defineExpose({
           transform: translateY(-50%);
           border: 1px solid #3370ff;
           border-radius: 50%;
+        }
+
+        &.active {
+          font-weight: 500;
         }
 
         &.active::before {
@@ -981,6 +1020,10 @@ defineExpose({
   padding: 16px;
   font-family: PingFang SC;
   cursor: pointer;
+
+  &:hover {
+    border-color: #3370ff;
+  }
   .name {
     font-size: 16px;
     font-weight: 500;
