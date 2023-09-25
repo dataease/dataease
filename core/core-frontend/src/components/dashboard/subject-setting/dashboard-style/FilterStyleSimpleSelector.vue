@@ -4,7 +4,7 @@
       <div style="width: 100%; padding: 16px 8px 0">
         <el-row :gutter="8">
           <el-col :span="12">
-            <el-form-item label="标题水平位置">
+            <el-form-item class="form-item" label="标题水平位置">
               <el-tooltip effect="dark" placement="top">
                 <template #content>
                   {{ t('chart.text_pos_left') }}
@@ -44,7 +44,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="标题显示位置">
+            <el-form-item class="form-item" label="标题显示位置">
               <el-tooltip effect="dark" placement="top">
                 <template #content>
                   {{ t('chart.text_pos_top') }}
@@ -72,7 +72,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="标题颜色">
+            <el-form-item class="form-item" label="标题颜色">
               <el-color-picker
                 v-model="filterStyle.color"
                 :trigger-width="197"
@@ -94,7 +94,7 @@
         <div style="padding: 0 8px 8px">
           <el-row :gutter="8">
             <el-col :span="12">
-              <el-form-item :label="t('visualization.board')">
+              <el-form-item class="form-item" :label="t('visualization.board')">
                 <el-color-picker
                   v-model="filterStyle.borderColor"
                   :trigger-width="197"
@@ -105,7 +105,7 @@
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item :label="t('visualization.text')">
+              <el-form-item class="form-item" :label="t('visualization.text')">
                 <el-color-picker
                   v-model="filterStyle.text"
                   :trigger-width="197"
@@ -116,7 +116,7 @@
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item :label="t('visualization.board_background')">
+              <el-form-item class="form-item" :label="t('visualization.board_background')">
                 <el-color-picker
                   v-model="filterStyle.bgColor"
                   :trigger-width="197"
@@ -201,8 +201,12 @@ onMounted(() => {
 }
 .ed-form-item {
   margin-bottom: 16px;
-}
-:deep(.ed-form-item__label) {
-  color: #646a73;
+
+  :deep(.ed-form-item__label) {
+    color: #646a73;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 20px;
+  }
 }
 </style>
