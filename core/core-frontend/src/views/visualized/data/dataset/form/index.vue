@@ -683,7 +683,7 @@ const confirmEditUnion = () => {
   })
 
   if (unionFieldsLost) {
-    ElMessage.error('关联关系不正确!')
+    ElMessage.error('关联字段不能为空!')
     return
   }
 
