@@ -95,7 +95,11 @@ onMounted(() => {
   <div @keydown.stop @keyup.stop style="width: 100%">
     <el-form ref="functionForm" :model="state.functionForm" size="small" label-position="top">
       <div v-if="showProperty('slider')">
-        <el-form-item :label="t('chart.slider')" class="form-item form-item-checkbox">
+        <el-form-item
+          :label="t('chart.slider')"
+          class="form-item form-item-checkbox"
+          :class="'form-item-' + themes"
+        >
           <el-checkbox
             :effect="themes"
             size="small"
@@ -109,6 +113,7 @@ onMounted(() => {
           <el-form-item
             :label="t('chart.slider_range') + '(%)'"
             class="form-item range-slider form-item-checkbox"
+            :class="'form-item-' + themes"
           >
             <el-slider
               :effect="themes"
@@ -122,7 +127,11 @@ onMounted(() => {
               @change="changeFunctionCfg"
             />
           </el-form-item>
-          <el-form-item :label="t('chart.slider_bg')" class="form-item">
+          <el-form-item
+            :label="t('chart.slider_bg')"
+            class="form-item"
+            :class="'form-item-' + themes"
+          >
             <el-color-picker
               :effect="themes"
               :disabled="!state.functionForm.sliderShow"
@@ -134,7 +143,11 @@ onMounted(() => {
               :trigger-width="108"
             />
           </el-form-item>
-          <el-form-item :label="t('chart.slider_fill_bg')" class="form-item">
+          <el-form-item
+            :label="t('chart.slider_fill_bg')"
+            class="form-item"
+            :class="'form-item-' + themes"
+          >
             <el-color-picker
               :effect="themes"
               :disabled="!state.functionForm.sliderShow"
@@ -146,7 +159,11 @@ onMounted(() => {
               :trigger-width="108"
             />
           </el-form-item>
-          <el-form-item :label="t('chart.slider_text_color')" class="form-item">
+          <el-form-item
+            :label="t('chart.slider_text_color')"
+            class="form-item"
+            :class="'form-item-' + themes"
+          >
             <el-color-picker
               :effect="themes"
               :disabled="!state.functionForm.sliderShow"
@@ -164,6 +181,7 @@ onMounted(() => {
         v-if="showProperty('emptyDataStrategy')"
         :label="t('chart.empty_data_strategy')"
         class="form-item"
+        :class="'form-item-' + themes"
       >
         <el-radio-group
           :effect="themes"
@@ -183,6 +201,7 @@ onMounted(() => {
         v-if="showEmptyDataFieldCtrl"
         :label="t('chart.empty_data_field_ctrl')"
         class="form-item"
+        :class="'form-item-' + themes"
       >
         <el-select
           :effect="themes"
