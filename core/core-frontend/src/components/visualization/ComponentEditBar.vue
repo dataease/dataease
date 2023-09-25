@@ -21,19 +21,31 @@
         ></el-icon>
       </span>
     </template>
-    <span
-      :title="t('visualization.enlarge')"
+    <el-tooltip
+      effect="dark"
+      placement="top"
+      :content="t('visualization.enlarge')"
       v-if="element.innerType !== 'rich-text' && barShowCheck('enlarge')"
     >
-      <el-icon class="bar-base-icon" @click="userViewEnlargeOpen($event, 'enlarge')">
-        <Icon name="dv-bar-enlarge"></Icon
-      ></el-icon>
-    </span>
-    <span :title="'明细'" v-if="element.innerType !== 'rich-text' && barShowCheck('details')">
-      <el-icon class="bar-base-icon" @click="userViewEnlargeOpen($event, 'details')">
-        <Icon name="dv-details"></Icon
-      ></el-icon>
-    </span>
+      <span>
+        <el-icon class="bar-base-icon" @click="userViewEnlargeOpen($event, 'enlarge')">
+          <Icon name="dv-bar-enlarge" />
+        </el-icon>
+      </span>
+    </el-tooltip>
+    <el-tooltip
+      effect="dark"
+      :placement="showBarTooltipPosition"
+      content="查看数据"
+      v-if="element.innerType !== 'rich-text' && barShowCheck('details')"
+    >
+      <span>
+        <el-icon class="bar-base-icon" @click="userViewEnlargeOpen($event, 'details')">
+          <Icon name="dv-details" />
+        </el-icon>
+      </span>
+    </el-tooltip>
+
     <div v-if="barShowCheck('multiplexing')" class="bar-checkbox-area">
       <el-checkbox v-model="state.multiplexingCheckModel" @change="multiplexingCheck" />
     </div>
@@ -42,16 +54,18 @@
       v-if="barShowCheck('unLinkage') && existLinkage"
     >
       <el-icon class="bar-base-icon" @click="clearLinkage">
-        <Icon name="dv-bar-unLinkage"></Icon
-      ></el-icon>
+        <Icon name="dv-bar-unLinkage" />
+      </el-icon>
     </span>
     <div v-if="barShowCheck('batchOpt')" class="bar-checkbox-area">
       <el-checkbox @change="batchOptChange" />
     </div>
 
     <el-dropdown trigger="click" placement="right-start" v-if="barShowCheck('setting')">
-      <el-icon :title="t('visualization.setting')" class="bar-base-icon">
-        <icon name="icon_more_outlined"></icon>
+      <el-icon class="bar-base-icon">
+        <el-tooltip :content="t('visualization.more')" effect="dark" placement="bottom">
+          <icon name="icon_more_outlined" />
+        </el-tooltip>
       </el-icon>
       <template #dropdown>
         <el-dropdown-menu style="width: 160px">
@@ -74,6 +88,7 @@
             <el-dropdown-item
               style="padding-right: 8px"
               v-if="element.innerType !== 'rich-text' && barShowCheck('download')"
+              @click.prevent
             >
               <el-dropdown style="width: 100%" trigger="hover" placement="right-start">
                 <div style="width: 100%">
@@ -101,8 +116,10 @@
       placement="right-start"
       v-if="element.innerType !== 'rich-text' && barShowCheck('previewDownload')"
     >
-      <el-icon @click="downloadClick" :title="'导出'" class="bar-base-icon">
-        <icon name="dv-preview-download"></icon>
+      <el-icon @click="downloadClick" class="bar-base-icon">
+        <el-tooltip :content="t('chart.export')" effect="dark" placement="bottom">
+          <icon name="dv-preview-download" />
+        </el-tooltip>
       </el-icon>
       <template #dropdown>
         <el-dropdown-menu style="width: 160px">
@@ -134,6 +151,7 @@ import { getViewLinkageGather } from '@/api/visualization/linkage'
 import { copyStoreWithOut } from '@/store/modules/data-visualization/copy'
 import { exportExcelDownload } from '@/views/chart/components/js/util'
 import FieldsList from '@/custom-component/rich-text/FieldsList.vue'
+import { ElTooltip } from 'element-plus-secondary'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const copyStore = copyStoreWithOut()
@@ -290,6 +308,14 @@ const showEditPosition = computed(() => {
     return 'bar-main-right'
   } else {
     return 'bar-main-preview-right-inner'
+  }
+})
+
+const showBarTooltipPosition = computed(() => {
+  if (showEditPosition.value.indexOf('right') >= 0) {
+    return 'right'
+  } else {
+    return 'left'
   }
 })
 
