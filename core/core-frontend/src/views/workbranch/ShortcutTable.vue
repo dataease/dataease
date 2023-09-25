@@ -356,25 +356,3 @@ const executeStore = rowInfo => {
   }
 }
 </style>
-<style lang="less">
-.menu-panel-select_popper {
-  .ed-select-dropdown__item {
-    height: 32px;
-    line-height: 32px;
-    padding: 0 11px;
-    position: relative;
-    &.selected::after {
-      position: absolute;
-      content: '';
-      width: 7px;
-      height: 4px;
-      top: 13px;
-      right: 11px;
-      border: 1px solid #3370ff;
-      border-right: transparent;
-      border-top: transparent;
-      transform: rotate(314deg);
-    }
-  }
-}
-</style>
