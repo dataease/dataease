@@ -22,10 +22,11 @@ const props = defineProps({
 const emit = defineEmits(['onScrollCfgChange'])
 
 watch(
-  () => props.chart,
+  () => props.chart.senior.scrollCfg,
   () => {
     init()
-  }
+  },
+  { deep: true }
 )
 
 const state = reactive({
@@ -57,48 +58,63 @@ init()
 
 <template>
   <div :style="{ width: '100%', display: 'block' }" @keydown.stop @keyup.stop>
-    <el-row class="scroll-style">
-      <el-form
-        ref="scrollForm"
-        :model="state.scrollForm"
-        label-width="80px"
-        :disabled="!state.scrollForm.open"
+    <el-form
+      ref="scrollForm"
+      :model="state.scrollForm"
+      :disabled="!state.scrollForm.open"
+      label-position="top"
+    >
+      <el-form-item
+        v-show="!state.isAutoBreakLine"
+        :label="t('chart.row')"
+        class="form-item"
+        :class="'form-item-' + themes"
       >
-        <el-form-item v-show="!state.isAutoBreakLine" :label="t('chart.row')" class="form-item">
-          <el-input-number
-            :effect="props.themes"
-            size="small"
-            v-model.number="state.scrollForm.row"
-            :min="1"
-            :max="1000"
-            :precision="0"
-            @change="changeScrollCfg"
-          />
-        </el-form-item>
-        <el-form-item v-show="state.isAutoBreakLine" :label="t('chart.step')" class="form-item">
-          <el-input-number
-            :effect="props.themes"
-            size="small"
-            v-model="state.scrollForm.step"
-            :min="1"
-            :max="10000"
-            :precision="0"
-            @change="changeScrollCfg"
-          />
-        </el-form-item>
-        <el-form-item :label="t('chart.interval') + '(ms)'" class="form-item">
-          <el-input-number
-            :effect="props.themes"
-            size="small"
-            v-model="state.scrollForm.interval"
-            :min="500"
-            :step="1000"
-            :precision="0"
-            @change="changeScrollCfg"
-          />
-        </el-form-item>
-      </el-form>
-    </el-row>
+        <el-input-number
+          :effect="props.themes"
+          size="small"
+          v-model.number="state.scrollForm.row"
+          :min="1"
+          :max="1000"
+          :precision="0"
+          controls-position="right"
+          @change="changeScrollCfg"
+        />
+      </el-form-item>
+      <el-form-item
+        v-show="state.isAutoBreakLine"
+        :label="t('chart.step')"
+        class="form-item"
+        :class="'form-item-' + themes"
+      >
+        <el-input-number
+          :effect="props.themes"
+          size="small"
+          v-model="state.scrollForm.step"
+          :min="1"
+          :max="10000"
+          :precision="0"
+          controls-position="right"
+          @change="changeScrollCfg"
+        />
+      </el-form-item>
+      <el-form-item
+        :label="t('chart.interval') + '(ms)'"
+        class="form-item"
+        :class="'form-item-' + themes"
+      >
+        <el-input-number
+          :effect="props.themes"
+          size="small"
+          v-model="state.scrollForm.interval"
+          :min="500"
+          :step="1000"
+          :precision="0"
+          controls-position="right"
+          @change="changeScrollCfg"
+        />
+      </el-form-item>
+    </el-form>
   </div>
 </template>
 
@@ -136,9 +152,5 @@ span {
 .color-picker-style {
   cursor: pointer;
   z-index: 1003;
-}
-
-.scroll-style :deep(.el-input-number--mini) {
-  width: 120px !important;
 }
 </style>
