@@ -273,6 +273,7 @@ const emits = defineEmits(['finish'])
     v-model="resourceDialogShow"
     :width="cmd === 'move' ? '600px' : '420px'"
     :before-close="resetForm"
+    @submit.prevent
   >
     <el-form
       label-position="top"
