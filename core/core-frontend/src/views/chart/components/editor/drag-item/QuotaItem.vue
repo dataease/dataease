@@ -1,18 +1,16 @@
 <script lang="tsx" setup>
 import { useI18n } from '@/hooks/web/useI18n'
-import { reactive, ref, toRefs, watch } from 'vue'
+import { onMounted, reactive, ref, toRefs, watch } from 'vue'
 import { formatterItem } from '@/views/chart/components/js/formatter'
 import { getItemType, resetValueFormatter } from '@/views/chart/components/editor/drag-item/utils'
-import { Delete, Edit, Filter, Memo } from '@element-plus/icons-vue'
+import { Delete, Edit, Filter } from '@element-plus/icons-vue'
 import { quotaViews } from '@/views/chart/components/js/util'
 import { SUPPORT_Y_M } from '@/views/chart/components/editor/util/chart'
 import { fieldType } from '@/utils/attr'
-import { ElTooltip } from 'element-plus-secondary'
 
 const { t } = useI18n()
 
 const tagType = ref('success')
-const showDateExt = ref(false)
 
 const state = reactive({
   formatterItem: formatterItem,
@@ -271,8 +269,10 @@ const valueFormatter = () => {
   emit('valueFormatter', item.value)
 }
 
-isEnableCompare()
-getItemTagType()
+onMounted(() => {
+  isEnableCompare()
+  getItemTagType()
+})
 </script>
 
 <template>

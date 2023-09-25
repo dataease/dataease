@@ -99,7 +99,7 @@ function onPopoverHide() {
           placement="bottom"
           ref="colorCaseSelectorRef"
           width="268"
-          offset="4"
+          :offset="4"
           trigger="click"
           :persistent="false"
           :show-arrow="false"
@@ -212,6 +212,7 @@ function onPopoverHide() {
 
 <style scoped lang="less">
 .form-item {
+  flex-direction: column;
   :deep(.ed-input) {
     --ed-input-height: 28px;
   }

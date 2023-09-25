@@ -227,7 +227,7 @@ onMounted(() => {
       @show="onPopoverShow"
       @hide="onPopoverHide"
       :effect="themes"
-      offset="4"
+      :offset="4"
     >
       <template #reference>
         <el-form ref="formRef" :model="form">

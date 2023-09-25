@@ -41,6 +41,7 @@ import { storeToRefs } from 'pinia'
 import { ElMessageBox } from 'element-plus-secondary'
 import Icon from '@/components/icon-custom/src/Icon.vue'
 import { adaptCurThemeCommonStyleAll } from '@/utils/canvasStyle'
+import { useEmitt } from '@/hooks/web/useEmitt'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 
@@ -86,7 +87,7 @@ const subjectChange = () => {
     dvMainStore.setCanvasStyle(JSON.parse(subjectItem.value.details))
     snapshotStore.recordSnapshot('subjectChange')
     adaptCurThemeCommonStyleAll()
-    emit('onSubjectChange')
+    useEmitt().emitter.emit('onSubjectChange')
   }
 }
 
