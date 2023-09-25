@@ -55,7 +55,6 @@
             :effect="themes"
             :disabled="!state.commonBackground.backgroundColorSelect"
             is-custom
-            :trigger-width="197"
             class="color-picker-style"
             :predefine="state.predefineColors"
             @change="onBackgroundChange"
