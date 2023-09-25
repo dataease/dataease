@@ -219,7 +219,7 @@ init()
   <div @keydown.stop @keyup.stop style="width: 100%; margin-bottom: 16px">
     <!--仪表盘-->
     <el-col v-show="showProperty('gaugeThreshold')">
-      <el-form ref="thresholdForm" :model="state.thresholdForm" label-width="80px">
+      <el-form ref="thresholdForm" :model="state.thresholdForm" label-position="top">
         <el-form-item
           :label="t('chart.threshold_range') + '(%)'"
           class="form-item"
