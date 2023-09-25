@@ -2067,12 +2067,13 @@ span {
 
     .drag-vertical {
       width: 100%;
-      height: 3px;
+      height: 4px;
       position: absolute;
       left: 0;
       cursor: row-resize;
 
-      &.is-hovering {
+      &.is-hovering,
+      &:hover {
         background: #3370ff;
       }
     }

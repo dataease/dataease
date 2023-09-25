@@ -15,9 +15,13 @@ const { width, node } = useMoveLine('DATASET')
   position: relative;
 }
 .sidebar-move-line {
-  width: 2px;
+  width: 4px;
   height: 100%;
   position: absolute;
   cursor: col-resize;
+  &:hover,
+  &.dragging {
+    background: #3370ff;
+  }
 }
 </style>
