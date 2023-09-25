@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { PropType, reactive, ref, watch, toRefs, computed, nextTick, onMounted } from 'vue'
+import { PropType, reactive, ref, watch, toRefs, computed, nextTick } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Field, getFieldByDQ, saveChart } from '@/api/chart'
@@ -17,7 +17,7 @@ import VQueryChartStyle from '@/views/chart/components/editor/editor-style/VQuer
 import Senior from '@/views/chart/components/editor/editor-senior/Senior.vue'
 import QuotaFilterEditor from '@/views/chart/components/editor/filter/QuotaFilterEditor.vue'
 import ResultFilterEditor from '@/views/chart/components/editor/filter/ResultFilterEditor.vue'
-import { ElIcon, ElRow } from 'element-plus-secondary'
+import { ElIcon } from 'element-plus-secondary'
 import DrillItem from '@/views/chart/components/editor/drag-item/DrillItem.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
@@ -31,8 +31,7 @@ import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapsho
 import CalcFieldEdit from '@/views/visualized/data/dataset/form/CalcFieldEdit.vue'
 import { getFieldName, guid } from '@/views/visualized/data/dataset/form/util'
 import { cloneDeep } from 'lodash-es'
-import { deleteField, deleteFieldByChartId, saveField } from '@/api/dataset'
-import LabelSelector from '@/views/chart/components/editor/editor-style/components/LabelSelector.vue'
+import { deleteField, saveField } from '@/api/dataset'
 import { getWorldTree } from '@/api/map'
 import chartViewManager from '@/views/chart/components/js/panel'
 import DatasetSelect from '@/views/chart/components/editor/dataset-select/DatasetSelect.vue'
@@ -1368,34 +1367,50 @@ const dragVerticalTop = computed(() => {
                   </el-scrollbar>
                   <el-footer :class="{ 'refresh-active-footer': view.refreshViewEnable }">
                     <el-row class="refresh-area">
-                      <el-row class="custom-item-text-row">
-                        <span class="custom-item-text bl">
-                          <el-checkbox v-model="view.refreshViewEnable">{{
-                            t('visualization.refresh_frequency')
-                          }}</el-checkbox>
-                        </span>
-                      </el-row>
-                      <el-row v-show="view.refreshViewEnable">
-                        <el-input
-                          v-model="view.refreshTime"
-                          placeholder="Please input"
-                          size="small"
-                          :min="1"
-                          :max="3600"
-                          :disabled="!view.refreshViewEnable"
+                      <el-form-item
+                        class="form-item no-margin-bottom"
+                        :class="'form-item-' + themes"
+                      >
+                        <el-checkbox :effect="themes" size="small" v-model="view.refreshViewEnable">
+                          {{ t('visualization.refresh_frequency') }}
+                        </el-checkbox>
+                      </el-form-item>
+                      <el-row v-if="view.refreshViewEnable">
+                        <el-form-item
+                          class="form-item no-margin-bottom select-append"
+                          :class="'form-item-' + themes"
                         >
-                          <template #append>
-                            <el-select
-                              v-model="view.refreshUnit"
-                              size="small"
-                              placeholder="Select"
-                              style="width: 80px; padding: 0 9px"
-                            >
-                              <el-option :label="t('visualization.minute')" :value="'minute'" />
-                              <el-option :label="t('visualization.second')" :value="'second'" />
-                            </el-select>
-                          </template>
-                        </el-input>
+                          <el-input
+                            v-model="view.refreshTime"
+                            placeholder="Please input"
+                            :effect="themes"
+                            size="small"
+                            :min="1"
+                            :max="3600"
+                            :disabled="!view.refreshViewEnable"
+                          >
+                            <template #append>
+                              <el-select
+                                :effect="themes"
+                                v-model="view.refreshUnit"
+                                size="small"
+                                placeholder="Select"
+                                style="width: 80px; padding: 0 9px"
+                              >
+                                <el-option
+                                  :effect="themes"
+                                  :label="t('visualization.minute')"
+                                  :value="'minute'"
+                                />
+                                <el-option
+                                  :effect="themes"
+                                  :label="t('visualization.second')"
+                                  :value="'second'"
+                                />
+                              </el-select>
+                            </template>
+                          </el-input>
+                        </el-form-item>
                       </el-row>
                     </el-row>
                     <el-row class="result-style" :class="'result-style-' + themes">
@@ -2600,6 +2615,12 @@ span {
   .ed-form-item__label {
     color: @canvas-main-font-color-dark;
   }
+
+  &.select-append {
+    .ed-input-group__append {
+      background-color: transparent;
+    }
+  }
 }
 :deep(.ed-checkbox__label) {
   color: #1f2329;
@@ -2778,5 +2799,9 @@ span {
 .refresh-area {
   width: 100%;
   padding: 0 8px;
+
+  .no-margin-bottom {
+    margin-bottom: 8px;
+  }
 }
 </style>
