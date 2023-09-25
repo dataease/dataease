@@ -214,20 +214,22 @@ const linkageActiveChange = () => {
             v-model="chart.linkageActive"
             @modelChange="linkageActiveChange"
           >
-            <span>联动设置</span>
-            <el-button
-              class="circle-button"
-              :title="t('chart.edit')"
-              type="text"
-              size="small"
-              :style="{ width: '24px', marginLeft: '4px', float: 'right' }"
-              @click="linkageSetOpen"
-              :disabled="!chart.linkageActive"
-            >
-              <template #icon>
-                <Icon name="icon_edit_outlined"></Icon>
-              </template>
-            </el-button>
+            <div style="margin-bottom: 16px">
+              <span>联动设置</span>
+              <el-button
+                class="circle-button"
+                :title="t('chart.edit')"
+                type="text"
+                size="small"
+                :style="{ width: '24px', marginLeft: '4px', float: 'right' }"
+                @click="linkageSetOpen"
+                :disabled="!chart.linkageActive"
+              >
+                <template #icon>
+                  <Icon name="icon_edit_outlined" />
+                </template>
+              </el-button>
+            </div>
           </collapse-switch-item>
           <collapse-switch-item
             v-if="showProperties('jump-set')"
@@ -237,31 +239,33 @@ const linkageActiveChange = () => {
             v-model="chart.jumpActive"
             @modelChange="linkJumpActiveChange"
           >
-            <span>跳转设置</span>
-            <el-button
-              class="circle-button"
-              :title="t('chart.edit')"
-              type="text"
-              size="small"
-              :style="{ width: '24px', marginLeft: '4px', float: 'right' }"
-              @click="linkJumpSetOpen"
-              :disabled="!chart.jumpActive"
-            >
-              <template #icon>
-                <Icon name="icon_edit_outlined"></Icon>
-              </template>
-            </el-button>
+            <div style="margin-bottom: 16px">
+              <span>跳转设置</span>
+              <el-button
+                class="circle-button"
+                :title="t('chart.edit')"
+                type="text"
+                size="small"
+                :style="{ width: '24px', marginLeft: '4px', float: 'right' }"
+                @click="linkJumpSetOpen"
+                :disabled="!chart.jumpActive"
+              >
+                <template #icon>
+                  <Icon name="icon_edit_outlined" />
+                </template>
+              </el-button>
+            </div>
           </collapse-switch-item>
         </el-collapse>
       </el-row>
     </div>
-    <div v-show="noSenior" class="no-senior">
+    <div v-if="noSenior" class="no-senior">
       {{ t('chart.chart_no_senior') }}
     </div>
     <!--跳转设置-->
-    <link-jump-set ref="linkJumpRef"></link-jump-set>
+    <link-jump-set ref="linkJumpRef" />
     <!--联动设置-->
-    <linkage-set ref="linkageRef"></linkage-set>
+    <linkage-set ref="linkageRef" />
   </el-row>
 </template>
 

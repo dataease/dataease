@@ -122,7 +122,7 @@ init()
 </script>
 
 <template>
-  <div @keydown.stop @keyup.stop style="width: 100%">
+  <div @keydown.stop @keyup.stop style="width: 100%; margin-bottom: 16px">
     <el-col>
       <el-button
         class="circle-button"
