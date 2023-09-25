@@ -47,7 +47,12 @@
     </el-tooltip>
 
     <div v-if="barShowCheck('multiplexing')" class="bar-checkbox-area">
-      <el-checkbox v-model="state.multiplexingCheckModel" @change="multiplexingCheck" />
+      <el-checkbox
+        style="height: auto !important"
+        size="middle"
+        v-model="state.multiplexingCheckModel"
+        @change="multiplexingCheck"
+      />
     </div>
     <span
       :title="t('visualization.cancel_linkage')"
@@ -347,6 +352,12 @@ const userViewEnlargeOpen = (e, opt) => {
 }
 
 // 复用-Begin
+
+const multiplexingCheckOut = () => {
+  state.multiplexingCheckModel = !state.multiplexingCheckModel
+  multiplexingCheck(state.multiplexingCheckModel)
+}
+
 const multiplexingCheck = val => {
   if (val) {
     // push
@@ -467,6 +478,10 @@ onBeforeUnmount(() => {
   if (element.value.component === 'UserView') {
     eventBus.off('initCurFields-' + element.value.id, initCurFields)
   }
+})
+
+defineExpose({
+  multiplexingCheckOut
 })
 </script>
 
