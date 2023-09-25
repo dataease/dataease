@@ -1,6 +1,7 @@
 package io.dataease.visualization.server;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import io.dataease.api.chart.dto.ChartViewDTO;
 import io.dataease.api.visualization.DataVisualizationApi;
 import io.dataease.api.visualization.request.DataVisualizationBaseRequest;
@@ -143,7 +144,8 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
     @Override
     public List<VisualizationResourceVO> findRecent(@RequestBody VisualizationWorkbranchQueryRequest request) {
-        return coreVisualizationManage.findRecent(1L, 20L, request);
+        IPage<VisualizationResourceVO> result = coreVisualizationManage.query(1, 20, request);
+        return result.getRecords();
     }
 
     /**

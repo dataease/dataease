@@ -64,8 +64,25 @@ const preview = id => {
   })
   window.open(routeUrl.href, '_blank')
 }
+
+const openDataset = id => {
+  const routeUrl = resolve({
+    path: '/dataset-form',
+    query: { id: id }
+  })
+  window.open(routeUrl.href, '_blank')
+}
 const formatterTime = (_, _column, cellValue) => {
   return dayjs(new Date(cellValue)).format('YYYY-MM-DD HH:mm:ss')
+}
+
+const typeMap = {
+  screen: '数据大屏',
+  dataV: '数据大屏',
+  dashboard: '仪表板',
+  panel: '仪表板',
+  dataset: '数据集',
+  datasource: '数据源'
 }
 
 const loadTableData = () => {
@@ -223,13 +240,16 @@ const executeStore = rowInfo => {
             <span v-if="item.type && item.type === 'time'">{{
               formatterTime(null, null, scope.row[item.field])
             }}</span>
+            <span v-else-if="item.field && item.field === 'type'">{{
+              typeMap[scope.row[item.field]]
+            }}</span>
             <span v-else>{{ scope.row[item.field] }}</span>
           </template>
         </el-table-column>
 
         <el-table-column width="96" fixed="right" key="_operation" :label="$t('common.operate')">
           <template #default="scope">
-            <template v-if="['dashboard', 'dataV'].includes(scope.row.type)">
+            <template v-if="['dashboard', 'dataV', 'panel', 'screen'].includes(scope.row.type)">
               <el-tooltip effect="dark" content="新页面预览" placement="top">
                 <el-icon
                   class="hover-icon hover-icon-in-table"
@@ -245,6 +265,19 @@ const executeStore = rowInfo => {
                 :weight="scope.row.weight"
                 :resource-id="activeName === 'recent' ? scope.row.id : scope.row.resourceId"
               />
+            </template>
+
+            <template v-if="['dataset'].includes(scope.row.type)">
+              <el-tooltip effect="dark" content="打开数据集" placement="top">
+                <el-icon
+                  class="hover-icon hover-icon-in-table"
+                  @click="
+                    openDataset(activeName === 'recent' ? scope.row.id : scope.row.resourceId)
+                  "
+                >
+                  <Icon name="icon_pc_outlined"></Icon>
+                </el-icon>
+              </el-tooltip>
             </template>
           </template>
         </el-table-column>

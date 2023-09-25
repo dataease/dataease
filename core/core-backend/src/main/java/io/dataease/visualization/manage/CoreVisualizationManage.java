@@ -2,23 +2,26 @@ package io.dataease.visualization.manage;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.dataease.api.visualization.request.DataVisualizationBaseRequest;
 import io.dataease.api.visualization.request.VisualizationWorkbranchQueryRequest;
 import io.dataease.api.visualization.vo.VisualizationResourceVO;
+import io.dataease.api.visualization.vo.VisualizationStoreVO;
 import io.dataease.commons.constants.DataVisualizationConstants;
+import io.dataease.constant.BusiResourceEnum;
 import io.dataease.exception.DEException;
 import io.dataease.license.config.XpackInteract;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
-import io.dataease.utils.AuthUtils;
-import io.dataease.utils.BeanUtils;
-import io.dataease.utils.IDUtils;
-import io.dataease.utils.TreeUtils;
+import io.dataease.utils.*;
 import io.dataease.visualization.dao.auto.entity.DataVisualizationInfo;
 import io.dataease.visualization.dao.auto.mapper.DataVisualizationInfoMapper;
 import io.dataease.visualization.dao.ext.mapper.CoreVisualiationExtMapper;
 import io.dataease.visualization.dao.ext.mapper.ExtDataVisualizationMapper;
+import io.dataease.visualization.dao.ext.po.StorePO;
 import io.dataease.visualization.dao.ext.po.VisualizationNodePO;
+import io.dataease.visualization.dao.ext.po.VisualizationResourcePO;
 import io.dataease.visualization.dto.VisualizationNodeBO;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
@@ -130,8 +133,52 @@ public class CoreVisualizationManage {
         return new VisualizationNodeBO(po.getId(), po.getName(), StringUtils.equals(po.getNodeType(), "leaf"), 3, po.getPid(), 0);
     }
 
-    public List<VisualizationResourceVO> findRecent(Long pageNum, Long pageCount, VisualizationWorkbranchQueryRequest request) {
+    public CoreVisualizationManage proxy() {
+        return CommonBeanFactory.getBean(this.getClass());
+    }
+
+    @XpackInteract(value = "perFilterManage", recursion = true)
+    public IPage<VisualizationResourceVO> query(int pageNum, int pageSize, VisualizationWorkbranchQueryRequest request) {
+        IPage<VisualizationResourcePO> visualizationResourcePOPageIPage = proxy().queryVisualizationPage(pageNum, pageSize, request);
+        if (ObjectUtils.isEmpty(visualizationResourcePOPageIPage)) {
+            return null;
+        }
+        List<VisualizationResourceVO> vos = proxy().formatResult(visualizationResourcePOPageIPage.getRecords());
+        IPage<VisualizationResourceVO> iPage = new Page<>();
+        iPage.setCurrent(visualizationResourcePOPageIPage.getCurrent());
+        iPage.setPages(visualizationResourcePOPageIPage.getPages());
+        iPage.setSize(visualizationResourcePOPageIPage.getSize());
+        iPage.setTotal(visualizationResourcePOPageIPage.getTotal());
+        iPage.setRecords(vos);
+        return iPage;
+    }
+
+    List<VisualizationResourceVO> formatResult(List<VisualizationResourcePO> pos){
+        if (CollectionUtil.isEmpty(pos)){
+            return new ArrayList<>();
+        }
+        return pos.stream().map(po ->
+                new VisualizationResourceVO(
+                        po.getId(), po.getResourceId(), po.getName(),
+                        po.getType(), po.getCreator().toString(),po.getLastEditor().toString(), po.getLastEditTime(),
+                        po.getFavorite(),9)).toList();
+    }
+
+    public IPage<VisualizationResourcePO> queryVisualizationPage(int goPage, int pageSize, VisualizationWorkbranchQueryRequest request) {
         Long uid = AuthUtils.getUser().getUserId();
-        return extDataVisualizationMapper.findRecent(pageNum, pageCount, uid, request.getType(), request.getKeyword());
+        QueryWrapper<Object> queryWrapper = new QueryWrapper<>();
+        if (StringUtils.isNotBlank(request.getType())) {
+            BusiResourceEnum busiResourceEnum = BusiResourceEnum.valueOf(request.getType().toUpperCase());
+            if (ObjectUtils.isEmpty(busiResourceEnum)) {
+                DEException.throwException("type is invalid");
+            }
+            queryWrapper.eq("dvResource.type", request.getType());
+        }
+        if (StringUtils.isNotBlank(request.getKeyword())) {
+            queryWrapper.like("dvResource.name", request.getKeyword());
+        }
+        queryWrapper.orderBy(true, request.isAsc(), "dvResource.last_edit_time");
+        Page<VisualizationResourcePO> page = new Page<>(goPage, pageSize);
+        return extDataVisualizationMapper.findRecent(page,uid, queryWrapper);
     }
 }
