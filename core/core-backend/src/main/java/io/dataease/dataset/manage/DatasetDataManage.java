@@ -16,7 +16,6 @@ import io.dataease.chart.manage.ChartViewManege;
 import io.dataease.chart.utils.ChartDataBuild;
 import io.dataease.commons.utils.SqlparserUtils;
 import io.dataease.dataset.constant.DatasetTableType;
-import io.dataease.dataset.dao.auto.entity.CoreDatasetTable;
 import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import io.dataease.dataset.utils.FieldUtils;
 import io.dataease.dataset.utils.SqlUtils;
@@ -124,35 +123,7 @@ public class DatasetDataManage {
             logger.info("calcite data table field sql: " + datasourceRequest.getQuery());
             tableFields = (List<TableField>) calciteProvider.fetchResultField(datasourceRequest).get("fields");
         }
-
-        CoreDatasetTable coreDatasetTable = datasetTableManage.selectById(datasetTableDTO.getId());
-        if (ObjectUtils.isEmpty(coreDatasetTable)) {
-            list = transFields(tableFields, true);
-        } else {
-            list = transFields(tableFields, false);
-            // 获取数据库中保存的字段，与原始字段匹配后，确定字段checked状态
-            List<DatasetTableFieldDTO> fields = datasetTableFieldManage.selectByDatasetTableId(datasetTableDTO.getId());
-            // originName，type一致即判定为一致
-            if (ObjectUtils.isNotEmpty(fields)) {
-                list = list.stream().peek(ele -> {
-                    boolean flag = false;
-                    DatasetTableFieldDTO source = null;
-                    for (DatasetTableFieldDTO f : fields) {
-                        // 若为同字段，则checked=true，同时赋id
-                        if (StringUtils.equalsIgnoreCase(ele.getOriginName(), f.getOriginName())
-                                && StringUtils.equalsIgnoreCase(ele.getType(), f.getType())) {
-                            flag = true;
-                            source = f;
-                            break;
-                        }
-                    }
-                    if (flag && ObjectUtils.isNotEmpty(source)) {
-                        BeanUtils.copyBean(ele, source);
-                    }
-                }).collect(Collectors.toList());
-            }
-        }
-        return list;
+        return transFields(tableFields, true);
     }
 
     public List<DatasetTableFieldDTO> transFields(List<TableField> tableFields, boolean defaultStatus) {
