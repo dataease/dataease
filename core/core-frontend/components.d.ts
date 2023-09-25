@@ -37,6 +37,7 @@ declare module '@vue/runtime-core' {
     ContextMenuAsideDetails: typeof import('./src/components/data-visualization/canvas/ContextMenuAsideDetails.vue')['default']
     ContextMenuDetails: typeof import('./src/components/data-visualization/canvas/ContextMenuDetails.vue')['default']
     Cron: typeof import('./src/components/cron/src/Cron.vue')['default']
+    CustomPassword: typeof import('./src/components/custom-password/src/CustomPassword.vue')['default']
     Day: typeof import('./src/components/cron/src/Day.vue')['default']
     DbCanvasAttr: typeof import('./src/components/dashboard/DbCanvasAttr.vue')['default']
     DbComponentToolBar: typeof import('./src/components/dashboard/DbComponentToolBar.vue')['default']
