@@ -3,21 +3,22 @@
     <el-form
       ref="colorFormRef"
       :model="colorForm"
-      label-width="80px"
       size="small"
       style="width: 100%; padding-bottom: 8px"
     >
-      <div style="padding: 16px 8px 0">
+      <div>
         <custom-color-style-select
+          v-if="colorAreaInit"
           class="custom-color-pick"
           v-model="state"
-          :themes="props.themes"
+          :themes="themes"
           @change-basic-style="changeColorOption('value')"
         ></custom-color-style-select>
 
-        <el-form-item class="form-item" :class="'form-item-' + themes" style="margin-left: -80px">
+        <el-form-item class="form-item" :class="'form-item-' + themes">
           <el-checkbox
-            size="middle"
+            size="small"
+            :effect="themes"
             v-model="colorForm.basicStyle.gradient"
             @change="changeColorCase('gradient')"
           >
@@ -27,21 +28,48 @@
 
         <el-form-item
           :effect="themes"
-          :label="t('chart.not_alpha')"
+          style="max-width: 224px"
           :class="'form-item-' + themes"
           class="form-item alpha-slider"
         >
-          <el-slider
-            v-model="colorForm.basicStyle.alpha"
-            :effect="themes"
-            show-input
-            :show-input-controls="false"
-            input-size="small"
-            @change="changeColorCase('alpha')"
-          />
+          <div class="alpha-setting">
+            <label class="alpha-label" :class="{ dark: 'dark' === themes }">
+              {{ t('chart.not_alpha') }}
+            </label>
+            <el-row style="flex: 1" :gutter="8">
+              <el-col :span="13">
+                <el-form-item class="form-item alpha-slider" :class="'form-item-' + themes">
+                  <el-slider
+                    :effect="themes"
+                    v-model="colorForm.basicStyle.alpha"
+                    @change="changeColorCase('alpha')"
+                  />
+                </el-form-item>
+              </el-col>
+              <el-col :span="11">
+                <el-form-item
+                  class="form-item"
+                  style="padding-top: 4px"
+                  :class="'form-item-' + themes"
+                >
+                  <el-input
+                    type="number"
+                    :effect="themes"
+                    v-model="colorForm.basicStyle.alpha"
+                    :min="0"
+                    :max="100"
+                    class="alpha-input-number"
+                    :controls="false"
+                    @change="changeColorCase('alpha')"
+                  >
+                    <template #suffix> % </template>
+                  </el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+          </div>
         </el-form-item>
-
-        <el-divider class="m-divider"></el-divider>
+        <el-divider class="m-divider" :class="'m-divider-' + themes"></el-divider>
       </div>
 
       <el-collapse-item
@@ -150,6 +178,8 @@ const props = defineProps({
   }
 })
 
+let colorAreaInit = ref(false)
+
 const { themes } = toRefs(props)
 const emits = defineEmits(['onColorChange'])
 const colorFormRef = ref(null)
@@ -170,7 +200,10 @@ const dvMainStore = dvMainStoreWithOut()
 const { canvasStyleData } = storeToRefs(dvMainStore)
 const initForm = () => {
   state.customColor = colorForm.value.basicStyle.colors[0]
-  state.basicStyleForm = canvasStyleData.value.component.chartColor.basicStyle
+  setTimeout(() => {
+    state.basicStyleForm = canvasStyleData.value.component.chartColor.basicStyle
+    colorAreaInit.value = true
+  }, 1000)
   const tableHeader = colorForm.value.tableHeader
   const tableCell = colorForm.value.tableCell
   tableHeader.tableHeaderFontColor = tableHeader.tableHeaderFontColor ?? tableCell.tableFontColor
@@ -340,20 +373,26 @@ span {
   border-color: rgba(31, 35, 41, 0.15);
   margin: 16px 0 8px;
 }
+
+.m-divider-dark {
+  border-color: rgba(233, 236, 241, 0.15) !important;
+}
 .inner-collapse {
   :deep(.ed-collapse-item__header) {
     background-color: transparent !important;
   }
   :deep(.ed-collapse-item__header) {
-    border: none;
+    border: none !important;
+    margin-left: 0px;
+    font-size: 12px;
   }
   :deep(.ed-collapse-item__wrap) {
-    border: none;
+    border: none !important;
   }
 }
 
 .custom-color-pick {
-  width: 224px !important;
+  max-width: 224px !important;
   :deep(.ed-form-item__label) {
     justify-content: flex-start;
   }
@@ -365,11 +404,44 @@ span {
   }
 }
 
-.alpha-slider {
-  padding: 0 8px;
-  :deep(.ed-slider__button-wrapper) {
-    --ed-slider-button-wrapper-size: 36px;
-    --ed-slider-button-size: 16px;
+.alpha-setting {
+  display: flex;
+  width: 100%;
+
+  .alpha-slider {
+    padding: 4px 8px 0 8px;
+    :deep(.ed-slider__button-wrapper) {
+      --ed-slider-button-wrapper-size: 36px;
+      --ed-slider-button-size: 16px;
+    }
+  }
+
+  .alpha-label {
+    padding-right: 8px;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    height: 32px;
+    line-height: 32px;
+    display: inline-flex;
+    align-items: flex-start;
+
+    min-width: 56px;
+
+    &.dark {
+      color: #a6a6a6;
+    }
+  }
+  .alpha-input-number {
+    :deep(input) {
+      -webkit-appearance: none;
+      -moz-appearance: textfield;
+
+      &::-webkit-inner-spin-button,
+      &::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+      }
+    }
   }
 }
 </style>

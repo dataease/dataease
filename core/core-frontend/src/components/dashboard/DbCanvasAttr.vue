@@ -269,7 +269,7 @@ onMounted(() => {
             @onBackgroundChange="componentBackgroundChange"
           />
         </el-collapse-item>
-        <el-collapse-item :title="'图表配色'" name="graphical" class="no-padding">
+        <el-collapse-item :title="'图表配色'" name="graphical">
           <component-color-selector v-if="state.collapseShow" @onColorChange="onColorChange" />
         </el-collapse-item>
         <el-collapse-item :title="t('visualization.chart_title')" name="viewTitle">

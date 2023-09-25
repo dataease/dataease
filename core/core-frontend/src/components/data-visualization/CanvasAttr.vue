@@ -2,7 +2,7 @@
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { storeToRefs } from 'pinia'
-import { onMounted, reactive, ref, watch } from 'vue'
+import { nextTick, onMounted, reactive, ref, watch } from 'vue'
 import DeInputNum from '@/custom-component/common/DeInputNum.vue'
 import { beforeUploadCheck, uploadFileResult } from '@/api/staticResource'
 import { ElIcon, ElMessage } from 'element-plus-secondary'
@@ -113,6 +113,9 @@ const init = () => {
   if (canvasStyleData.value.background) {
     fileList.value = [{ url: imgUrlTrans(canvasStyleData.value.background) }]
   }
+  nextTick(() => {
+    canvasAttrInit = true
+  })
 }
 watch([() => canvasStyleData.value.background], () => {
   if (!fileList.value.length) {
@@ -125,6 +128,7 @@ const onColorChange = val => {
 }
 
 const themeAttrChange = (custom, property, value) => {
+  console.log('themeAttrChange-' + canvasAttrInit)
   if (canvasAttrInit) {
     Object.keys(canvasViewInfo.value).forEach(function (viewId) {
       const viewInfo = canvasViewInfo.value[viewId]

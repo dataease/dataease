@@ -249,7 +249,7 @@ eventBus.on('handleNew', handleNew)
         class="left-sidebar"
         :class="{ 'preview-aside': editMode === 'preview' }"
       >
-        <CanvasAttr></CanvasAttr>
+        <canvas-attr></canvas-attr>
       </dv-sidebar>
       <editor
         v-show="curComponent && ['UserView'].includes(curComponent.component)"
