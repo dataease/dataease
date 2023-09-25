@@ -144,6 +144,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
     @Override
     public List<VisualizationResourceVO> findRecent(@RequestBody VisualizationWorkbranchQueryRequest request) {
+        request.setQueryFrom("recent");
         IPage<VisualizationResourceVO> result = coreVisualizationManage.query(1, 20, request);
         return result.getRecords();
     }

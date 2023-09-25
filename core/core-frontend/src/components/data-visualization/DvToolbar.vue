@@ -212,7 +212,14 @@ eventBus.on('clearCanvas', clearCanvas)
       </div>
     </div>
     <Teleport v-if="nameEdit" :to="'#dv-canvas-name'">
-      <input ref="nameInput" maxlength="50" v-model="inputName" @blur="closeEditCanvasName" />
+      <input
+        @keydown.stop
+        @keyup.stop
+        ref="nameInput"
+        maxlength="50"
+        v-model="inputName"
+        @blur="closeEditCanvasName"
+      />
     </Teleport>
     <el-button
       v-show="editMode === 'preview'"

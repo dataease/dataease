@@ -160,7 +160,7 @@ public class CoreVisualizationManage {
         return pos.stream().map(po ->
                 new VisualizationResourceVO(
                         po.getId(), po.getResourceId(), po.getName(),
-                        po.getType(), po.getCreator().toString(),po.getLastEditor().toString(), po.getLastEditTime(),
+                        po.getType(), String.valueOf(po.getCreator()),String.valueOf(po.getLastEditor()), po.getLastEditTime(),
                         po.getFavorite(),9)).toList();
     }
 
@@ -177,6 +177,7 @@ public class CoreVisualizationManage {
         if (StringUtils.isNotBlank(request.getKeyword())) {
             queryWrapper.like("dvResource.name", request.getKeyword());
         }
+        queryWrapper.eq("dvResource.last_editor", uid);
         queryWrapper.orderBy(true, request.isAsc(), "dvResource.last_edit_time");
         Page<VisualizationResourcePO> page = new Page<>(goPage, pageSize);
         return extDataVisualizationMapper.findRecent(page,uid, queryWrapper);

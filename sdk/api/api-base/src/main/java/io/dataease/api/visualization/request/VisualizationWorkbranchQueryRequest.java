@@ -18,5 +18,7 @@ public class VisualizationWorkbranchQueryRequest implements Serializable {
 
     private String keyword;
 
+    private String queryFrom;
+
     private boolean asc = false;
 }

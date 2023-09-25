@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:mysql://39.98.78.97:3306/dataease?autoReconnect=false&useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false
+    url: jdbc:mysql://123.56.90.236:3306/dataease?autoReconnect=false&useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false
     username: root
     password: Password123@mysql
   messages:
