@@ -1004,7 +1004,7 @@ const dragVerticalTop = computed(() => {
                     >
                       <span class="data-area-label">{{ t('chart.switch_chart') }}</span>
                       <el-popover
-                        offset="4"
+                        :offset="4"
                         placement="bottom-end"
                         width="434"
                         trigger="click"

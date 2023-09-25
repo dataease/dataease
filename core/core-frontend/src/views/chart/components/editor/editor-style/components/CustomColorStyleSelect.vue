@@ -99,7 +99,7 @@ function onPopoverHide() {
           placement="bottom"
           ref="colorCaseSelectorRef"
           width="268"
-          offset="4"
+          :offset="4"
           trigger="click"
           :persistent="false"
           :show-arrow="false"
