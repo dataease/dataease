@@ -8,105 +8,23 @@
       style="width: 100%; padding-bottom: 8px"
     >
       <div style="padding: 16px 8px 0">
-        <el-form-item :label="t('chart.color_case')" class="form-item">
-          <el-popover placement="bottom" width="400" trigger="click" :persistent="false">
-            <template #reference>
-              <div :style="{ cursor: 'pointer', marginTop: '2px', width: '180px' }">
-                <span
-                  v-for="(c, index) in colorForm.basicStyle?.colors"
-                  :key="index"
-                  :style="{
-                    width: '20px',
-                    height: '20px',
-                    display: 'inline-block',
-                    backgroundColor: c
-                  }"
-                />
-              </div>
-            </template>
+        <custom-color-style-select
+          class="custom-color-pick"
+          v-model="state"
+          :themes="'light'"
+          @change-basic-style="changeColorOption('value')"
+        ></custom-color-style-select>
 
-            <div style="padding: 6px 10px">
-              <div>
-                <span class="color-label">{{ t('chart.system_case') }}</span>
-                <el-select
-                  v-model="colorForm.basicStyle.colorScheme"
-                  :placeholder="t('chart.pls_slc_color_case')"
-                  size="small"
-                  @change="changeColorOption('value')"
-                >
-                  <el-option
-                    v-for="option in colorCases"
-                    :key="option.value"
-                    :label="option.name"
-                    :value="option.value"
-                    style="display: flex; align-items: center"
-                  >
-                    <div style="float: left">
-                      <span
-                        v-for="(c, index) in option.colors"
-                        :key="index"
-                        :style="{
-                          width: '20px',
-                          height: '20px',
-                          float: 'left',
-                          backgroundColor: c
-                        }"
-                      />
-                    </div>
-                    <span style="margin-left: 4px">{{ option.name }}</span>
-                  </el-option>
-                </el-select>
-                <el-button
-                  size="small"
-                  type="text"
-                  style="margin-left: 2px"
-                  @click="resetCustomColor"
-                  >{{ t('chart.reset') }}
-                </el-button>
-              </div>
-              <!--自定义配色方案-->
-              <div>
-                <div style="display: flex; align-items: center; margin-top: 10px">
-                  <span class="color-label">{{ t('chart.custom_case') }}</span>
-                  <span>
-                    <el-radio-group v-model="state.colorIndex" class="color-type">
-                      <el-radio
-                        v-for="(c, index) in colorForm.basicStyle.colors"
-                        :key="index"
-                        :label="index"
-                        style="height: 26px; padding: 2px; border-radius: 3px"
-                        @change="switchColor(index)"
-                      >
-                        <span
-                          :style="{
-                            width: '20px',
-                            height: '20px',
-                            display: 'inline-block',
-                            'border-radius': '3px',
-                            backgroundColor: c
-                          }"
-                        />
-                      </el-radio>
-                    </el-radio-group>
-                  </span>
-                </div>
-                <div style="display: flex; align-items: center; margin-top: 10px">
-                  <span class="color-label" />
-                  <span>
-                    <el-color-picker
-                      v-model="state.customColor"
-                      size="small"
-                      class="color-picker-style"
-                      :predefine="predefineColors"
-                      is-custom
-                      @change="switchColorCase"
-                    />
-                  </span>
-                </div>
-              </div>
-            </div>
-          </el-popover>
+        <el-form-item class="form-item" style="margin-left: -80px">
+          <el-checkbox
+            size="middle"
+            v-model="colorForm.basicStyle.gradient"
+            @change="changeColorCase('gradient')"
+          >
+            {{ $t('chart.gradient') }}{{ $t('chart.color') }}
+          </el-checkbox>
         </el-form-item>
+
         <el-form-item :label="t('chart.not_alpha')" class="form-item form-item-slider">
           <el-slider
             v-model="colorForm.basicStyle.alpha"
@@ -209,10 +127,15 @@
 <script lang="ts" setup>
 import { computed, onMounted, reactive, ref } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { COLOR_CASES, COLOR_PANEL } from '@/views/chart/components/editor/util/chart'
+import {
+  COLOR_CASES,
+  COLOR_PANEL,
+  DEFAULT_BASIC_STYLE
+} from '@/views/chart/components/editor/util/chart'
 import { useI18n } from '@/hooks/web/useI18n'
 import eventBus from '@/utils/eventBus'
 import { storeToRefs } from 'pinia'
+import CustomColorStyleSelect from '@/views/chart/components/editor/editor-style/components/CustomColorStyleSelect.vue'
 const { t } = useI18n()
 const emits = defineEmits(['onColorChange'])
 const colorFormRef = ref(null)
@@ -224,6 +147,7 @@ const colorCases = COLOR_CASES
 const predefineColors = COLOR_PANEL
 
 const state = reactive({
+  basicStyleForm: JSON.parse(JSON.stringify(DEFAULT_BASIC_STYLE)) as ChartBasicStyle,
   customColor: null,
   colorIndex: 0
 })
@@ -231,20 +155,13 @@ const dvMainStore = dvMainStoreWithOut()
 const { canvasStyleData } = storeToRefs(dvMainStore)
 const initForm = () => {
   state.customColor = colorForm.value.basicStyle.colors[0]
+  state.basicStyleForm = canvasStyleData.value.component.chartColor.basicStyle
   const tableHeader = colorForm.value.tableHeader
   const tableCell = colorForm.value.tableCell
   tableHeader.tableHeaderFontColor = tableHeader.tableHeaderFontColor ?? tableCell.tableFontColor
 }
 const changeColorOption = (modifyName = 'value') => {
-  const items = colorCases.filter(ele => {
-    return ele.value === colorForm.value.basicStyle.colorScheme
-  })
-  colorForm.value.basicStyle.colors = JSON.parse(JSON.stringify(items[0].colors))
-
-  state.customColor = colorForm.value.basicStyle.colors[0]
-  state.colorIndex = 0
-
-  // reset custom color
+  colorForm.value.basicStyle = state.basicStyleForm
   changeColorCase(modifyName)
 }
 
@@ -417,6 +334,19 @@ span {
   }
   :deep(.ed-collapse-item__wrap) {
     border: none;
+  }
+}
+
+.custom-color-pick {
+  width: 224px !important;
+  :deep(.ed-form-item__label) {
+    justify-content: flex-start;
+  }
+  :deep(.ed-input__wrapper) {
+    padding: 0 16px;
+  }
+  :deep(.custom-color-setting-btn) {
+    margin-top: 23px;
   }
 }
 </style>
