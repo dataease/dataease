@@ -212,6 +212,7 @@ function onPopoverHide() {
 
 <style scoped lang="less">
 .form-item {
+  flex-direction: column;
   :deep(.ed-input) {
     --ed-input-height: 28px;
   }
