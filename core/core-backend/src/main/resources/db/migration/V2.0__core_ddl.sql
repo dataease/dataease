@@ -3991,12 +3991,16 @@ CREATE TABLE `core_dataset_table_sql_log`
   COLLATE utf8mb4_0900_ai_ci;
 
 
-INSERT INTO `visualization_subject` ( `id`, `name`, `type`, `details`, `delete_flag`, `cover_url`, `create_num`, `create_time`, `create_by`, `update_time`, `update_by`, `delete_time`, `delete_by` )
-VALUES
-    ( '1704162625739354112', '浅色主题', 'system', '{\"width\":1920,\"height\":1080,\"refreshViewEnable\":false,\"refreshViewLoading\":true,\"refreshUnit\":\"minute\",\"refreshTime\":5,\"scale\":60,\"scaleWidth\":100,\"scaleHeight\":100,\"backgroundType\":\"backgroundColor\",\"background\":\"\",\"openCommonStyle\":true,\"opacity\":1,\"fontSize\":14,\"themeId\":\"7109928259176894464\",\"color\":\"#000000\",\"backgroundColor\":\"rgba(241, 243, 245, 1)\",\"dashboard\":{\"themeColor\":\"light\",\"gap\":\"yes\",\"gapSize\":5,\"resultMode\":\"all\",\"resultCount\":1000,\"mobileSetting\":{\"customSetting\":false,\"imageUrl\":null,\"backgroundType\":\"image\",\"color\":\"#000\"}},\"component\":{\"chartTitle\":{\"show\":false,\"fontSize\":\"18\",\"hPosition\":\"left\",\"vPosition\":\"top\",\"isItalic\":false,\"isBolder\":true,\"remarkShow\":false,\"remark\":\"\",\"fontFamily\":\"Microsoft YaHei\",\"letterSpace\":\"0\",\"fontShadow\":false,\"color\":\"#000000\",\"remarkBackgroundColor\":\"#ffffff\"},\"chartColor\":{\"basicStyle\":{\"colorScheme\":\"default\",\"colors\":[\"#5470c6\",\"#91cc75\",\"#fac858\",\"#ee6666\",\"#73c0de\",\"#3ba272\",\"#fc8452\",\"#9a60b4\",\"#ea7ccc\"],\"alpha\":100,\"gradient\":false,\"mapStyle\":\"normal\",\"areaBaseColor\":\"#FFFFFF\",\"areaBorderColor\":\"#303133\",\"gaugeStyle\":\"default\",\"tableBorderColor\":\"#E6E7E4\",\"tableScrollBarColor\":\"#00000024\"},\"misc\":{\"mapLineGradient\":false,\"mapLineSourceColor\":\"#146C94\",\"mapLineTargetColor\":\"#576CBC\",\"nameFontColor\":\"#000000\",\"valueFontColor\":\"#5470c6\"},\"tableHeader\":{\"tableHeaderBgColor\":\"#6D9A49\",\"tableHeaderFontColor\":\"#000000\"},\"tableCell\":{\"tableItemBgColor\":\"#FFFFFF\",\"tableFontColor\":\"#000000\"}},\"chartCommonStyle\":{\"backgroundColorSelect\":true,\"alpha\":100,\"backgroundImageEnable\":false,\"backgroundType\":\"innerImage\",\"innerImage\":\"board/board_1.svg\",\"outerImage\":null,\"innerPadding\":0,\"borderRadius\":0,\"backgroundColor\":\"#ffffff\",\"innerImageColor\":\"#1094E5\"},\"filterStyle\":{\"horizontal\":\"left\",\"vertical\":\"top\",\"color\":\"#000000\",\"brColor\":\"#4E4B4B\",\"wordColor\":\"#FFFFFF\",\"innerBgColor\":\"#131E42\"},\"tabStyle\":{\"headPosition\":\"left\",\"headFontColor\":\"#OOOOOO\",\"headFontActiveColor\":\"#OOOOOO\",\"headBorderColor\":\"#OOOOOO\",\"headBorderActiveColor\":\"#OOOOOO\"}}}', 0, '/static-resource/subject-light.png', 0, 1695139006443, NULL, NULL, NULL, NULL, NULL );
-INSERT INTO `visualization_subject` ( `id`, `name`, `type`, `details`, `delete_flag`, `cover_url`, `create_num`, `create_time`, `create_by`, `update_time`, `update_by`, `delete_time`, `delete_by` )
-VALUES
-    ( '1704162694479802368', '深色主题', 'system', '{\"width\":1920,\"height\":1080,\"refreshViewEnable\":false,\"refreshViewLoading\":true,\"refreshUnit\":\"minute\",\"refreshTime\":5,\"scale\":60,\"scaleWidth\":100,\"scaleHeight\":100,\"backgroundType\":\"backgroundColor\",\"background\":\"\",\"openCommonStyle\":true,\"opacity\":1,\"fontSize\":14,\"themeId\":\"7109928329548926976\",\"color\":\"#000000\",\"backgroundColor\":\"rgba(3, 11, 46, 1)\",\"dashboard\":{\"themeColor\":\"dark\",\"gap\":\"yes\",\"gapSize\":5,\"resultMode\":\"all\",\"resultCount\":1000,\"mobileSetting\":{\"customSetting\":false,\"imageUrl\":null,\"backgroundType\":\"image\",\"color\":\"#000\"}},\"component\":{\"chartTitle\":{\"show\":false,\"fontSize\":\"18\",\"hPosition\":\"left\",\"vPosition\":\"top\",\"isItalic\":false,\"isBolder\":true,\"remarkShow\":false,\"remark\":\"\",\"fontFamily\":\"Microsoft YaHei\",\"letterSpace\":\"0\",\"fontShadow\":false,\"color\":\"#FFFFFF\",\"remarkBackgroundColor\":\"#5A5C62\"},\"chartColor\":{\"basicStyle\":{\"colorScheme\":\"default\",\"colors\":[\"#5470c6\",\"#91cc75\",\"#fac858\",\"#ee6666\",\"#73c0de\",\"#3ba272\",\"#fc8452\",\"#9a60b4\",\"#ea7ccc\"],\"alpha\":100,\"gradient\":false,\"mapStyle\":\"darkblue\",\"areaBaseColor\":\"5470C6\",\"areaBorderColor\":\"#EBEEF5\",\"gaugeStyle\":\"default\",\"tableBorderColor\":\"#CCCCCC\",\"tableScrollBarColor\":\"#FFFFFF80\"},\"misc\":{\"mapLineGradient\":false,\"mapLineSourceColor\":\"#2F58CD\",\"mapLineTargetColor\":\"#3795BD\",\"nameFontColor\":\"#ffffff\",\"valueFontColor\":\"#5470c6\"},\"tableHeader\":{\"tableHeaderBgColor\":\"#5470C6\",\"tableHeaderFontColor\":\"#000000\"},\"tableCell\":{\"tableItemBgColor\":\"#131E42\",\"tableFontColor\":\"#FFFFFF\"}},\"chartCommonStyle\":{\"backgroundColorSelect\":true,\"alpha\":100,\"backgroundImageEnable\":false,\"backgroundType\":\"innerImage\",\"innerImage\":\"board/board_1.svg\",\"outerImage\":null,\"innerPadding\":0,\"borderRadius\":0,\"backgroundColor\":\"#131E42\",\"innerImageColor\":\"#1094E5\"},\"filterStyle\":{\"horizontal\":\"left\",\"vertical\":\"top\",\"color\":\"#FFFFFF\",\"brColor\":\"#4E4B4B\",\"wordColor\":\"#FFFFFF\",\"innerBgColor\":\"#131E42\"},\"tabStyle\":{\"headPosition\":\"left\",\"headFontColor\":\"#FFFFFF\",\"headFontActiveColor\":\"#FFFFFF\",\"headBorderColor\":\"#131E42\",\"headBorderActiveColor\":\"#131E42\"}}}', 0, '/static-resource/subject-dark.png', 0, 1695139022832, NULL, NULL, NULL, NULL, NULL );
+INSERT INTO `visualization_subject` (`id`, `name`, `type`, `details`, `delete_flag`, `cover_url`, `create_num`,
+                                     `create_time`, `create_by`, `update_time`, `update_by`, `delete_time`, `delete_by`)
+VALUES ('1704162625739354112', '浅色主题', 'system',
+        '{\"width\":1920,\"height\":1080,\"refreshViewEnable\":false,\"refreshViewLoading\":true,\"refreshUnit\":\"minute\",\"refreshTime\":5,\"scale\":60,\"scaleWidth\":100,\"scaleHeight\":100,\"backgroundType\":\"backgroundColor\",\"background\":\"\",\"openCommonStyle\":true,\"opacity\":1,\"fontSize\":14,\"themeId\":\"7109928259176894464\",\"color\":\"#000000\",\"backgroundColor\":\"rgba(241, 243, 245, 1)\",\"dashboard\":{\"themeColor\":\"light\",\"gap\":\"yes\",\"gapSize\":5,\"resultMode\":\"all\",\"resultCount\":1000,\"mobileSetting\":{\"customSetting\":false,\"imageUrl\":null,\"backgroundType\":\"image\",\"color\":\"#000\"}},\"component\":{\"chartTitle\":{\"show\":false,\"fontSize\":\"18\",\"hPosition\":\"left\",\"vPosition\":\"top\",\"isItalic\":false,\"isBolder\":true,\"remarkShow\":false,\"remark\":\"\",\"fontFamily\":\"Microsoft YaHei\",\"letterSpace\":\"0\",\"fontShadow\":false,\"color\":\"#000000\",\"remarkBackgroundColor\":\"#ffffff\"},\"chartColor\":{\"basicStyle\":{\"colorScheme\":\"default\",\"colors\":[\"#5470c6\",\"#91cc75\",\"#fac858\",\"#ee6666\",\"#73c0de\",\"#3ba272\",\"#fc8452\",\"#9a60b4\",\"#ea7ccc\"],\"alpha\":100,\"gradient\":false,\"mapStyle\":\"normal\",\"areaBaseColor\":\"#FFFFFF\",\"areaBorderColor\":\"#303133\",\"gaugeStyle\":\"default\",\"tableBorderColor\":\"#E6E7E4\",\"tableScrollBarColor\":\"#00000024\"},\"misc\":{\"mapLineGradient\":false,\"mapLineSourceColor\":\"#146C94\",\"mapLineTargetColor\":\"#576CBC\",\"nameFontColor\":\"#000000\",\"valueFontColor\":\"#5470c6\"},\"tableHeader\":{\"tableHeaderBgColor\":\"#6D9A49\",\"tableHeaderFontColor\":\"#000000\"},\"tableCell\":{\"tableItemBgColor\":\"#FFFFFF\",\"tableFontColor\":\"#000000\"}},\"chartCommonStyle\":{\"backgroundColorSelect\":true,\"alpha\":100,\"backgroundImageEnable\":false,\"backgroundType\":\"innerImage\",\"innerImage\":\"board/board_1.svg\",\"outerImage\":null,\"innerPadding\":0,\"borderRadius\":0,\"backgroundColor\":\"#ffffff\",\"innerImageColor\":\"#1094E5\"},\"filterStyle\":{\"horizontal\":\"left\",\"vertical\":\"top\",\"color\":\"#000000\",\"brColor\":\"#4E4B4B\",\"wordColor\":\"#FFFFFF\",\"innerBgColor\":\"#131E42\"},\"tabStyle\":{\"headPosition\":\"left\",\"headFontColor\":\"#OOOOOO\",\"headFontActiveColor\":\"#OOOOOO\",\"headBorderColor\":\"#OOOOOO\",\"headBorderActiveColor\":\"#OOOOOO\"}}}',
+        0, '/static-resource/subject-light.png', 0, 1695139006443, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `visualization_subject` (`id`, `name`, `type`, `details`, `delete_flag`, `cover_url`, `create_num`,
+                                     `create_time`, `create_by`, `update_time`, `update_by`, `delete_time`, `delete_by`)
+VALUES ('1704162694479802368', '深色主题', 'system',
+        '{\"width\":1920,\"height\":1080,\"refreshViewEnable\":false,\"refreshViewLoading\":true,\"refreshUnit\":\"minute\",\"refreshTime\":5,\"scale\":60,\"scaleWidth\":100,\"scaleHeight\":100,\"backgroundType\":\"backgroundColor\",\"background\":\"\",\"openCommonStyle\":true,\"opacity\":1,\"fontSize\":14,\"themeId\":\"7109928329548926976\",\"color\":\"#000000\",\"backgroundColor\":\"rgba(3, 11, 46, 1)\",\"dashboard\":{\"themeColor\":\"dark\",\"gap\":\"yes\",\"gapSize\":5,\"resultMode\":\"all\",\"resultCount\":1000,\"mobileSetting\":{\"customSetting\":false,\"imageUrl\":null,\"backgroundType\":\"image\",\"color\":\"#000\"}},\"component\":{\"chartTitle\":{\"show\":false,\"fontSize\":\"18\",\"hPosition\":\"left\",\"vPosition\":\"top\",\"isItalic\":false,\"isBolder\":true,\"remarkShow\":false,\"remark\":\"\",\"fontFamily\":\"Microsoft YaHei\",\"letterSpace\":\"0\",\"fontShadow\":false,\"color\":\"#FFFFFF\",\"remarkBackgroundColor\":\"#5A5C62\"},\"chartColor\":{\"basicStyle\":{\"colorScheme\":\"default\",\"colors\":[\"#5470c6\",\"#91cc75\",\"#fac858\",\"#ee6666\",\"#73c0de\",\"#3ba272\",\"#fc8452\",\"#9a60b4\",\"#ea7ccc\"],\"alpha\":100,\"gradient\":false,\"mapStyle\":\"darkblue\",\"areaBaseColor\":\"5470C6\",\"areaBorderColor\":\"#EBEEF5\",\"gaugeStyle\":\"default\",\"tableBorderColor\":\"#CCCCCC\",\"tableScrollBarColor\":\"#FFFFFF80\"},\"misc\":{\"mapLineGradient\":false,\"mapLineSourceColor\":\"#2F58CD\",\"mapLineTargetColor\":\"#3795BD\",\"nameFontColor\":\"#ffffff\",\"valueFontColor\":\"#5470c6\"},\"tableHeader\":{\"tableHeaderBgColor\":\"#5470C6\",\"tableHeaderFontColor\":\"#000000\"},\"tableCell\":{\"tableItemBgColor\":\"#131E42\",\"tableFontColor\":\"#FFFFFF\"}},\"chartCommonStyle\":{\"backgroundColorSelect\":true,\"alpha\":100,\"backgroundImageEnable\":false,\"backgroundType\":\"innerImage\",\"innerImage\":\"board/board_1.svg\",\"outerImage\":null,\"innerPadding\":0,\"borderRadius\":0,\"backgroundColor\":\"#131E42\",\"innerImageColor\":\"#1094E5\"},\"filterStyle\":{\"horizontal\":\"left\",\"vertical\":\"top\",\"color\":\"#FFFFFF\",\"brColor\":\"#4E4B4B\",\"wordColor\":\"#FFFFFF\",\"innerBgColor\":\"#131E42\"},\"tabStyle\":{\"headPosition\":\"left\",\"headFontColor\":\"#FFFFFF\",\"headFontActiveColor\":\"#FFFFFF\",\"headBorderColor\":\"#131E42\",\"headBorderActiveColor\":\"#131E42\"}}}',
+        0, '/static-resource/subject-dark.png', 0, 1695139022832, NULL, NULL, NULL, NULL, NULL);
 
 
 -- ----------------------------
@@ -4029,6 +4033,7 @@ CREATE TABLE `xpack_share`
     `pwd`         varchar(255) DEFAULT NULL COMMENT '密码',
     `resource_id` bigint      NOT NULL COMMENT '资源ID',
     `oid`         bigint      NOT NULL COMMENT '组织ID',
+    `type`        int         NOT NULL COMMENT '业务类型',
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
@@ -4074,84 +4079,99 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- Table structure for visualization_link_jump
 -- ----------------------------
 DROP TABLE IF EXISTS `visualization_link_jump`;
-CREATE TABLE `visualization_link_jump` (
-                                           `id` bigint NOT NULL,
-                                           `source_dv_id` bigint DEFAULT NULL COMMENT '源仪表板ID',
-                                           `source_view_id` bigint DEFAULT NULL COMMENT '源视图ID',
-                                           `link_jump_info` varchar(4000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '跳转信息',
-                                           `checked` tinyint(1) DEFAULT NULL COMMENT '是否启用',
-                                           `copy_from` bigint DEFAULT NULL,
-                                           `copy_id` bigint DEFAULT NULL,
-                                           PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE `visualization_link_jump`
+(
+    `id`             bigint NOT NULL,
+    `source_dv_id`   bigint                                                         DEFAULT NULL COMMENT '源仪表板ID',
+    `source_view_id` bigint                                                         DEFAULT NULL COMMENT '源视图ID',
+    `link_jump_info` varchar(4000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '跳转信息',
+    `checked`        tinyint(1)                                                     DEFAULT NULL COMMENT '是否启用',
+    `copy_from`      bigint                                                         DEFAULT NULL,
+    `copy_id`        bigint                                                         DEFAULT NULL,
+    PRIMARY KEY (`id`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_general_ci;
 
 -- ----------------------------
 -- Table structure for visualization_link_jump_info
 -- ----------------------------
 DROP TABLE IF EXISTS `visualization_link_jump_info`;
-CREATE TABLE `visualization_link_jump_info` (
-                                                `id` bigint NOT NULL,
-                                                `link_jump_id` bigint DEFAULT NULL COMMENT 'link jump ID',
-                                                `link_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '关联类型 inner 内部仪表板，outer 外部链接',
-                                                `jump_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '跳转类型 _blank 新开页面 _self 当前窗口',
-                                                `target_dv_id` bigint DEFAULT NULL COMMENT '关联仪表板ID',
-                                                `source_field_id` bigint DEFAULT NULL COMMENT '字段ID',
-                                                `content` varchar(4000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '内容 linkType = outer时使用',
-                                                `checked` tinyint(1) DEFAULT NULL COMMENT '是否可用',
-                                                `attach_params` tinyint(1) DEFAULT NULL COMMENT '是否附加点击参数',
-                                                `copy_from` bigint DEFAULT NULL,
-                                                `copy_id` bigint DEFAULT NULL,
-                                                PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE `visualization_link_jump_info`
+(
+    `id`              bigint NOT NULL,
+    `link_jump_id`    bigint                                                         DEFAULT NULL COMMENT 'link jump ID',
+    `link_type`       varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  DEFAULT NULL COMMENT '关联类型 inner 内部仪表板，outer 外部链接',
+    `jump_type`       varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  DEFAULT NULL COMMENT '跳转类型 _blank 新开页面 _self 当前窗口',
+    `target_dv_id`    bigint                                                         DEFAULT NULL COMMENT '关联仪表板ID',
+    `source_field_id` bigint                                                         DEFAULT NULL COMMENT '字段ID',
+    `content`         varchar(4000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '内容 linkType = outer时使用',
+    `checked`         tinyint(1)                                                     DEFAULT NULL COMMENT '是否可用',
+    `attach_params`   tinyint(1)                                                     DEFAULT NULL COMMENT '是否附加点击参数',
+    `copy_from`       bigint                                                         DEFAULT NULL,
+    `copy_id`         bigint                                                         DEFAULT NULL,
+    PRIMARY KEY (`id`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_general_ci;
 
 -- ----------------------------
 -- Table structure for visualization_link_jump_target_view_info
 -- ----------------------------
 DROP TABLE IF EXISTS `visualization_link_jump_target_view_info`;
-CREATE TABLE `visualization_link_jump_target_view_info` (
-                                                            `target_id` bigint NOT NULL,
-                                                            `link_jump_info_id` bigint DEFAULT NULL,
-                                                            `source_field_active_id` bigint DEFAULT NULL COMMENT '勾选字段设置的匹配字段，也可以不是勾选字段本身',
-                                                            `target_view_id` bigint DEFAULT NULL,
-                                                            `target_field_id` bigint DEFAULT NULL,
-                                                            `copy_from` bigint DEFAULT NULL,
-                                                            `copy_id` bigint DEFAULT NULL,
-                                                            PRIMARY KEY (`target_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE `visualization_link_jump_target_view_info`
+(
+    `target_id`              bigint NOT NULL,
+    `link_jump_info_id`      bigint DEFAULT NULL,
+    `source_field_active_id` bigint DEFAULT NULL COMMENT '勾选字段设置的匹配字段，也可以不是勾选字段本身',
+    `target_view_id`         bigint DEFAULT NULL,
+    `target_field_id`        bigint DEFAULT NULL,
+    `copy_from`              bigint DEFAULT NULL,
+    `copy_id`                bigint DEFAULT NULL,
+    PRIMARY KEY (`target_id`) USING BTREE
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_general_ci;
 
 -- ----------------------------
 -- Table structure for visualization_linkage
 -- ----------------------------
 DROP TABLE IF EXISTS `visualization_linkage`;
-CREATE TABLE `visualization_linkage` (
-                                         `id` bigint NOT NULL,
-                                         `dv_id` bigint DEFAULT NULL,
-                                         `source_view_id` bigint DEFAULT NULL COMMENT '源视图id',
-                                         `target_view_id` bigint DEFAULT NULL COMMENT '联动视图id',
-                                         `update_time` bigint DEFAULT NULL COMMENT '更新时间',
-                                         `update_people` varchar(255) DEFAULT NULL COMMENT '更新人',
-                                         `linkage_active` tinyint(1) DEFAULT '0' COMMENT '是否启用关联',
-                                         `ext1` varchar(2000) DEFAULT NULL,
-                                         `ext2` varchar(2000) DEFAULT NULL,
-                                         `copy_from` bigint DEFAULT NULL,
-                                         `copy_id` bigint DEFAULT NULL,
-                                         PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE `visualization_linkage`
+(
+    `id`             bigint NOT NULL,
+    `dv_id`          bigint        DEFAULT NULL,
+    `source_view_id` bigint        DEFAULT NULL COMMENT '源视图id',
+    `target_view_id` bigint        DEFAULT NULL COMMENT '联动视图id',
+    `update_time`    bigint        DEFAULT NULL COMMENT '更新时间',
+    `update_people`  varchar(255)  DEFAULT NULL COMMENT '更新人',
+    `linkage_active` tinyint(1)    DEFAULT '0' COMMENT '是否启用关联',
+    `ext1`           varchar(2000) DEFAULT NULL,
+    `ext2`           varchar(2000) DEFAULT NULL,
+    `copy_from`      bigint        DEFAULT NULL,
+    `copy_id`        bigint        DEFAULT NULL,
+    PRIMARY KEY (`id`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_0900_ai_ci;
 
 -- ----------------------------
 -- Table structure for visualization_linkage_field
 -- ----------------------------
 DROP TABLE IF EXISTS `visualization_linkage_field`;
-CREATE TABLE `visualization_linkage_field` (
-                                               `id` bigint NOT NULL,
-                                               `linkage_id` bigint DEFAULT NULL COMMENT '联动ID',
-                                               `source_field` bigint DEFAULT NULL COMMENT '源视图字段',
-                                               `target_field` bigint DEFAULT NULL COMMENT '目标视图字段',
-                                               `update_time` bigint DEFAULT NULL COMMENT '更新时间',
-                                               `copy_from` bigint DEFAULT NULL,
-                                               `copy_id` bigint DEFAULT NULL,
-                                               PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE `visualization_linkage_field`
+(
+    `id`           bigint NOT NULL,
+    `linkage_id`   bigint DEFAULT NULL COMMENT '联动ID',
+    `source_field` bigint DEFAULT NULL COMMENT '源视图字段',
+    `target_field` bigint DEFAULT NULL COMMENT '目标视图字段',
+    `update_time`  bigint DEFAULT NULL COMMENT '更新时间',
+    `copy_from`    bigint DEFAULT NULL,
+    `copy_id`      bigint DEFAULT NULL,
+    PRIMARY KEY (`id`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_0900_ai_ci;
 
 SET FOREIGN_KEY_CHECKS = 1;
 
