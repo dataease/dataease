@@ -1,6 +1,6 @@
 <script lang="tsx" setup>
 import { useI18n } from '@/hooks/web/useI18n'
-import { computed, reactive, ref, toRefs, watch } from 'vue'
+import { computed, onMounted, reactive, ref, toRefs, watch } from 'vue'
 import { formatterItem } from '@/views/chart/components/js/formatter'
 import { getItemType } from '@/views/chart/components/editor/drag-item/utils'
 import { Delete, Edit } from '@element-plus/icons-vue'
@@ -167,7 +167,9 @@ const valueFormatter = () => {
   emit('valueFormatter', item.value)
 }
 
-getItemTagType()
+onMounted(() => {
+  getItemTagType()
+})
 </script>
 
 <template>

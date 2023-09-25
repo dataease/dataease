@@ -387,7 +387,7 @@ watch(
     line-height: 20px;
   }
 
-  .w100 {
+  &.w100 {
     .ed-input-number {
       width: 100%;
     }

@@ -1,8 +1,8 @@
 <script lang="tsx" setup>
 import { useI18n } from '@/hooks/web/useI18n'
-import { ref, toRefs, watch } from 'vue'
+import { onMounted, ref, toRefs, watch } from 'vue'
 import { getItemType } from '@/views/chart/components/editor/drag-item/utils'
-import { Delete, Edit, Filter } from '@element-plus/icons-vue'
+import { Delete } from '@element-plus/icons-vue'
 import { fieldType } from '@/utils/attr'
 
 const { t } = useI18n()
@@ -72,8 +72,9 @@ const removeItem = () => {
 const getItemTagType = () => {
   tagType.value = getItemType(props.dimensionData, props.quotaData, props.item)
 }
-
-getItemTagType()
+onMounted(() => {
+  getItemTagType()
+})
 </script>
 
 <template>

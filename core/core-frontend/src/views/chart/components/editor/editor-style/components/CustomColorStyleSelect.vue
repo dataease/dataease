@@ -86,7 +86,7 @@ function onPopoverHide() {
 <template>
   <div
     style="width: 100%"
-    :style="{ 'margin-bottom': customColorExtendSettingOpened ? '16px' : '8px' }"
+    :style="{ 'margin-bottom': customColorExtendSettingOpened ? '16px' : 0 }"
   >
     <el-row>
       <el-form-item
@@ -99,7 +99,7 @@ function onPopoverHide() {
           placement="bottom"
           ref="colorCaseSelectorRef"
           width="268"
-          offset="4"
+          :offset="4"
           trigger="click"
           :persistent="false"
           :show-arrow="false"
