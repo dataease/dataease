@@ -13,13 +13,17 @@ import {
 } from '@/views/chart/components/editor/util/chart'
 import { useI18n } from '@/hooks/web/useI18n'
 import { imgUrlTrans } from '@/utils/imgUtils'
+import { merge } from 'lodash-es'
+import { useEmitt } from '@/hooks/web/useEmitt'
+import ComponentColorSelector from '@/components/dashboard/subject-setting/dashboard-style/ComponentColorSelector.vue'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
-const { canvasStyleData } = storeToRefs(dvMainStore)
+const { canvasStyleData, canvasViewInfo } = storeToRefs(dvMainStore)
 const { t } = useI18n()
 const files = ref(null)
 const maxImageSize = 15000000
 let initReady = false
+let canvasAttrInit = false
 
 const options = ref({
   color: '颜色',
@@ -115,6 +119,30 @@ watch([() => canvasStyleData.value.background], () => {
     init()
   }
 })
+
+const onColorChange = val => {
+  themeAttrChange('customAttr', 'color', val)
+}
+
+const themeAttrChange = (custom, property, value) => {
+  if (canvasAttrInit) {
+    Object.keys(canvasViewInfo.value).forEach(function (viewId) {
+      const viewInfo = canvasViewInfo.value[viewId]
+      if (custom === 'customAttr') {
+        merge(viewInfo['customAttr'], value)
+      } else {
+        Object.keys(value).forEach(function (key) {
+          if (viewInfo[custom][property][key] !== undefined) {
+            viewInfo[custom][property][key] = value[key]
+          }
+        })
+      }
+      useEmitt().emitter.emit('renderChart-' + viewId, viewInfo)
+    })
+    snapshotStore.recordSnapshot('CanvasAttr-themeAttrChange')
+  }
+}
+
 onMounted(() => {
   init()
 })
@@ -192,101 +220,7 @@ onMounted(() => {
           </el-row>
         </el-collapse-item>
         <el-collapse-item title="配色" name="color">
-          <span style="margin-top: 10px; color: #757575">配色方案</span>
-          <el-popover placement="bottom" width="400" trigger="click">
-            <template #reference>
-              <div :style="{ cursor: 'pointer', marginTop: '2px', width: '180px' }">
-                <span
-                  v-for="(c, index) in state.colorForm.colors"
-                  :key="index"
-                  :style="{
-                    width: '20px',
-                    height: '20px',
-                    display: 'inline-block',
-                    backgroundColor: c
-                  }"
-                />
-              </div>
-            </template>
-
-            <div style="padding: 6px 10px">
-              <div>
-                <span class="color-label">{{ t('chart.system_case') }}</span>
-                <el-select
-                  v-model="state.colorForm.value"
-                  :placeholder="t('chart.pls_slc_color_case')"
-                  size="small"
-                  @change="changeColorOption()"
-                >
-                  <el-option
-                    v-for="option in colorCases"
-                    :key="option.value"
-                    :label="option.name"
-                    :value="option.value"
-                    style="display: flex; align-items: center"
-                  >
-                    <div style="float: left">
-                      <span
-                        v-for="(c, index) in option.colors"
-                        :key="index"
-                        :style="{
-                          width: '20px',
-                          height: '20px',
-                          float: 'left',
-                          backgroundColor: c
-                        }"
-                      />
-                    </div>
-                    <span style="margin-left: 4px">{{ option.name }}</span>
-                  </el-option>
-                </el-select>
-                <el-button
-                  size="small"
-                  type="text"
-                  style="margin-left: 2px"
-                  @click="resetCustomColor"
-                  >{{ t('chart.reset') }}
-                </el-button>
-              </div>
-              <!--自定义配色方案-->
-              <div class="custom-color-style">
-                <div style="display: flex; align-items: center; margin-top: 10px">
-                  <span class="color-label">{{ t('chart.custom_case') }}</span>
-                  <span>
-                    <el-radio-group v-model="state.customColor" class="color-type">
-                      <el-radio
-                        v-for="(c, index) in state.colorForm.colors"
-                        :key="index"
-                        :label="c"
-                        style="padding: 2px"
-                        @change="switchColor(index)"
-                      >
-                        <span
-                          :style="{
-                            width: '20px',
-                            height: '20px',
-                            display: 'inline-block',
-                            backgroundColor: c
-                          }"
-                        />
-                      </el-radio>
-                    </el-radio-group>
-                  </span>
-                </div>
-                <div style="display: flex; align-items: center; margin-top: 10px">
-                  <span class="color-label" />
-                  <span>
-                    <el-color-picker
-                      v-model="state.customColor"
-                      class="color-picker-style"
-                      :predefine="predefineColors"
-                      @change="switchColorCase"
-                    />
-                  </span>
-                </div>
-              </div>
-            </div>
-          </el-popover>
+          <component-color-selector themes="dark" @onColorChange="onColorChange" />
         </el-collapse-item>
       </el-collapse>
       <input

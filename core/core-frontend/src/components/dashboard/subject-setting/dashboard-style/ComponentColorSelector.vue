@@ -11,11 +11,11 @@
         <custom-color-style-select
           class="custom-color-pick"
           v-model="state"
-          :themes="'light'"
+          :themes="props.themes"
           @change-basic-style="changeColorOption('value')"
         ></custom-color-style-select>
 
-        <el-form-item class="form-item" style="margin-left: -80px">
+        <el-form-item class="form-item" :class="'form-item-' + themes" style="margin-left: -80px">
           <el-checkbox
             size="middle"
             v-model="colorForm.basicStyle.gradient"
@@ -25,9 +25,15 @@
           </el-checkbox>
         </el-form-item>
 
-        <el-form-item :label="t('chart.not_alpha')" class="form-item form-item-slider">
+        <el-form-item
+          :effect="themes"
+          :label="t('chart.not_alpha')"
+          :class="'form-item-' + themes"
+          class="form-item alpha-slider"
+        >
           <el-slider
             v-model="colorForm.basicStyle.alpha"
+            :effect="themes"
             show-input
             :show-input-controls="false"
             input-size="small"
@@ -125,7 +131,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref, toRefs } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import {
   COLOR_CASES,
@@ -137,8 +143,17 @@ import eventBus from '@/utils/eventBus'
 import { storeToRefs } from 'pinia'
 import CustomColorStyleSelect from '@/views/chart/components/editor/editor-style/components/CustomColorStyleSelect.vue'
 const { t } = useI18n()
+const props = defineProps({
+  themes: {
+    type: String,
+    default: 'light'
+  }
+})
+
+const { themes } = toRefs(props)
 const emits = defineEmits(['onColorChange'])
 const colorFormRef = ref(null)
+
 const colorForm = computed(
   () => canvasStyleData.value.component.chartColor as DeepPartial<ChartAttr>
 )
@@ -347,6 +362,14 @@ span {
   }
   :deep(.custom-color-setting-btn) {
     margin-top: 23px;
+  }
+}
+
+.alpha-slider {
+  padding: 0 8px;
+  :deep(.ed-slider__button-wrapper) {
+    --ed-slider-button-wrapper-size: 36px;
+    --ed-slider-button-size: 16px;
   }
 }
 </style>
