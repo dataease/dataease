@@ -41,28 +41,28 @@
         </span>
       </el-row>
       <el-row class="function-area">
-        <el-input-number
+        <el-input
           v-model="canvasStyleData.refreshTime"
-          class="el-input-refresh-time"
           type="number"
-          controls-position="right"
           :min="1"
           :max="3600"
-          size="small"
+          size="middle"
           :disabled="!canvasStyleData.refreshViewEnable"
           @change="themeChange"
         >
-        </el-input-number>
-        <el-select
-          v-model="canvasStyleData.refreshUnit"
-          class="el-input-refresh-unit margin-left8"
-          size="small"
-          :disabled="!canvasStyleData.refreshViewEnable"
-          @change="themeChange"
-        >
-          <el-option :label="t('visualization.minute')" :value="'minute'" />
-          <el-option :label="t('visualization.second')" :value="'second'" />
-        </el-select>
+          <template #append>
+            <el-select
+              v-model="canvasStyleData.refreshUnit"
+              size="middle"
+              :disabled="!canvasStyleData.refreshViewEnable"
+              style="width: 90px; padding: 0 9px"
+              @change="themeChange"
+            >
+              <el-option :label="t('visualization.minute')" :value="'minute'" />
+              <el-option :label="t('visualization.second')" :value="'second'" />
+            </el-select>
+          </template>
+        </el-input>
       </el-row>
     </el-row>
     <el-row class="custom-row margin-top16">
@@ -109,7 +109,7 @@
           <el-input-number
             v-model="canvasStyleData.dashboard.resultCount"
             controls-position="right"
-            size="small"
+            size="middle"
             :min="1"
             :max="10000"
             @change="themeChange"
@@ -286,5 +286,9 @@ const colorButtonClick = val => {
 
 :deep(.ed-input__inner) {
   text-align: left;
+}
+
+:deep(.ed-input.is-disabled .ed-input__wrapper) {
+  box-shadow: 0 0 0 1px var(--ed-disabled-border-color) inset !important;
 }
 </style>

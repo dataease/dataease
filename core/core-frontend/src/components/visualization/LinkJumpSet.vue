@@ -197,7 +197,7 @@
                               <el-select
                                 v-model="targetViewInfo.targetViewId"
                                 :disabled="!targetViewInfo.sourceFieldActiveId"
-                                :placeholder="'请选择视图'"
+                                :placeholder="'请选择图表'"
                                 style="width: 100%"
                                 size="mini"
                                 @change="viewInfoOnChange(targetViewInfo)"

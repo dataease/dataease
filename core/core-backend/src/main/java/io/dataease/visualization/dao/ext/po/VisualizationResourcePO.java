@@ -1,4 +1,4 @@
-package io.dataease.api.visualization.vo;
+package io.dataease.visualization.dao.ext.po;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
@@ -12,7 +12,7 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class VisualizationResourceVO implements Serializable {
+public class VisualizationResourcePO implements Serializable {
     @Serial
     private static final long serialVersionUID = 627770173259978185L;
 
@@ -26,9 +26,9 @@ public class VisualizationResourceVO implements Serializable {
 
     private String type;
 
-    private String creator;
+    private Long creator;
 
-    private String lastEditor;
+    private Long lastEditor;
 
     private Long lastEditTime;
 

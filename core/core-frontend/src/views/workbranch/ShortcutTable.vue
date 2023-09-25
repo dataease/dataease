@@ -8,6 +8,7 @@ import dayjs from 'dayjs'
 import { shortcutOption } from './ShortcutOption'
 import { XpackComponent } from '@/components/plugin'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
+import { storeApi } from '@/api/visualization/dataVisualization'
 const { resolve } = useRouter()
 const { t } = useI18n()
 const interactiveStore = interactiveStoreWithOut()
@@ -63,8 +64,25 @@ const preview = id => {
   })
   window.open(routeUrl.href, '_blank')
 }
+
+const openDataset = id => {
+  const routeUrl = resolve({
+    path: '/dataset-form',
+    query: { id: id }
+  })
+  window.open(routeUrl.href, '_blank')
+}
 const formatterTime = (_, _column, cellValue) => {
   return dayjs(new Date(cellValue)).format('YYYY-MM-DD HH:mm:ss')
+}
+
+const typeMap = {
+  screen: '数据大屏',
+  dataV: '数据大屏',
+  dashboard: '仪表板',
+  panel: '仪表板',
+  dataset: '数据集',
+  datasource: '数据源'
 }
 
 const loadTableData = () => {
@@ -116,6 +134,16 @@ const sortChange = param => {
 }
 const setLoading = (val: boolean) => {
   loading.value = val
+}
+
+const executeStore = rowInfo => {
+  const param = {
+    id: rowInfo.id,
+    type: rowInfo.type
+  }
+  storeApi(param).then(() => {
+    rowInfo.favorite = !rowInfo.favorite
+  })
 }
 </script>
 
@@ -187,6 +215,16 @@ const setLoading = (val: boolean) => {
                 <template #content>{{ scope.row.name }}</template>
                 <span class="ellipsis" style="max-width: 250px">{{ scope.row.name }}</span>
               </el-tooltip>
+              <el-icon
+                v-if="activeName === 'recent' && ['screen', 'panel'].includes(scope.row.type)"
+                class="custom-icon"
+                @click="executeStore(scope.row)"
+                :style="{ color: scope.row.favorite ? '#FFC60A' : '#646A73' }"
+              >
+                <icon
+                  :name="scope.row.favorite ? 'visual-star' : 'icon_collection_outlined'"
+                ></icon>
+              </el-icon>
             </div>
           </template>
         </el-table-column>
@@ -202,13 +240,16 @@ const setLoading = (val: boolean) => {
             <span v-if="item.type && item.type === 'time'">{{
               formatterTime(null, null, scope.row[item.field])
             }}</span>
+            <span v-else-if="item.field && item.field === 'type'">{{
+              typeMap[scope.row[item.field]]
+            }}</span>
             <span v-else>{{ scope.row[item.field] }}</span>
           </template>
         </el-table-column>
 
         <el-table-column width="96" fixed="right" key="_operation" :label="$t('common.operate')">
           <template #default="scope">
-            <template v-if="['dashboard', 'dataV'].includes(scope.row.type)">
+            <template v-if="['dashboard', 'dataV', 'panel', 'screen'].includes(scope.row.type)">
               <el-tooltip effect="dark" content="新页面预览" placement="top">
                 <el-icon
                   class="hover-icon hover-icon-in-table"
@@ -224,6 +265,19 @@ const setLoading = (val: boolean) => {
                 :weight="scope.row.weight"
                 :resource-id="activeName === 'recent' ? scope.row.id : scope.row.resourceId"
               />
+            </template>
+
+            <template v-if="['dataset'].includes(scope.row.type)">
+              <el-tooltip effect="dark" content="打开数据集" placement="top">
+                <el-icon
+                  class="hover-icon hover-icon-in-table"
+                  @click="
+                    openDataset(activeName === 'recent' ? scope.row.id : scope.row.resourceId)
+                  "
+                >
+                  <Icon name="icon_pc_outlined"></Icon>
+                </el-icon>
+              </el-tooltip>
             </template>
           </template>
         </el-table-column>
@@ -278,6 +332,14 @@ const setLoading = (val: boolean) => {
     .name-content {
       display: flex;
       align-items: center;
+      .custom-icon {
+        display: none;
+      }
+      &:hover .custom-icon {
+        cursor: pointer;
+        margin-left: 8px;
+        display: inherit !important;
+      }
     }
     .main-color {
       font-size: 21.33px;

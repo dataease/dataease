@@ -67,7 +67,8 @@ onMounted(() => {
       canvasStyleData.value.component.chartTitle.color = '#000000'
     })
   } else {
-    ElMessage.error('未获取资源ID')
+    let url = '#/panel/index'
+    window.open(url, '_self')
   }
 })
 </script>

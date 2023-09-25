@@ -159,6 +159,7 @@ public class DatasetTableFieldManage {
     public List<DatasetTableFieldDTO> selectByDatasetGroupId(Long id) {
         QueryWrapper<CoreDatasetTableField> wrapper = new QueryWrapper<>();
         wrapper.eq("dataset_group_id", id);
+        wrapper.eq("checked", true);
         return transDTO(coreDatasetTableFieldMapper.selectList(wrapper));
     }
 
@@ -184,6 +185,7 @@ public class DatasetTableFieldManage {
     public Map<String, List<DatasetTableFieldDTO>> listByDQ(Long id) {
         QueryWrapper<CoreDatasetTableField> wrapper = new QueryWrapper<>();
         wrapper.eq("dataset_group_id", id);
+        wrapper.eq("checked", true);
         List<DatasetTableFieldDTO> list = transDTO(coreDatasetTableFieldMapper.selectList(wrapper));
         List<DatasetTableFieldDTO> dimensionList = list.stream().filter(ele -> StringUtils.equalsIgnoreCase(ele.getGroupType(), "d")).collect(Collectors.toList());
         List<DatasetTableFieldDTO> quotaList = list.stream().filter(ele -> StringUtils.equalsIgnoreCase(ele.getGroupType(), "q")).collect(Collectors.toList());

@@ -39,7 +39,6 @@
 
     <el-form-item class="form-item no-margin-bottom" :class="'form-item-' + themes">
       <el-checkbox
-        size="small"
         :effect="themes"
         v-model="state.commonBackground.backgroundColorSelect"
         @change="onBackgroundChange"
@@ -83,7 +82,6 @@
 
     <el-form-item class="form-item no-margin-bottom" :class="'form-item-' + themes">
       <el-checkbox
-        size="small"
         :effect="themes"
         v-model="state.commonBackground.backgroundImageEnable"
         @change="onBackgroundChange"

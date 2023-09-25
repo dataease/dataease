@@ -5,6 +5,7 @@
         <el-form-item class="form-item" :class="'form-item-' + themes" :label="label">
           <el-input-number
             :effect="themes"
+            size="middle"
             :disabled="curComponent['isLock']"
             :min="min"
             :max="max"
@@ -60,5 +61,9 @@ const positionKeysGroup = computed(() => {
 <style lang="less" scoped>
 :deep(.ed-form-item) {
   display: flex !important;
+}
+
+.form-item :deep(.ed-form-item__label) {
+  color: #646a73;
 }
 </style>

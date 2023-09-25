@@ -113,6 +113,7 @@ public class ChartViewManege {
     public Map<String, List<ChartViewFieldDTO>> listByDQ(Long id, Long chartId) {
         QueryWrapper<CoreDatasetTableField> wrapper = new QueryWrapper<>();
         wrapper.eq("dataset_group_id", id);
+        wrapper.eq("checked", true);
 
         List<CoreDatasetTableField> fields = coreDatasetTableFieldMapper.selectList(wrapper);
         List<DatasetTableFieldDTO> collect = fields.stream().map(ele -> {

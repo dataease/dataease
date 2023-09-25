@@ -1,9 +1,13 @@
 package io.dataease.visualization.dao.ext.mapper;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import io.dataease.api.visualization.vo.DataVisualizationBaseVO;
 import io.dataease.api.visualization.vo.DataVisualizationVO;
 import io.dataease.api.visualization.vo.VisualizationResourceVO;
 import io.dataease.chart.dao.auto.entity.CoreChartView;
+import io.dataease.visualization.dao.ext.po.StorePO;
+import io.dataease.visualization.dao.ext.po.VisualizationResourcePO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -29,5 +33,5 @@ public interface ExtDataVisualizationMapper {
 
     DataVisualizationVO findDvInfo(@Param("dvId") Long dvId,@Param("dvType") String dvType);
 
-    List<VisualizationResourceVO> findRecent(@Param("pageNum") Long pageNum,@Param("pageCount") Long pageCount,@Param("uid") Long uid,@Param("type") String type,@Param("keyword") String keyword);
+    IPage<VisualizationResourcePO> findRecent(IPage<VisualizationResourcePO> page, @Param("uid") Long uid, @Param("ew") QueryWrapper<Object> ew);
 }

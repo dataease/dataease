@@ -38,11 +38,10 @@ import DeRichTextView from '@/custom-component/rich-text/DeRichTextView.vue'
 import ChartEmptyInfo from '@/views/chart/components/views/components/ChartEmptyInfo.vue'
 
 const { wsCache } = useCache()
-
 const chartComponent = ref<any>()
-
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
+let innerRefreshTimer = null
 
 const { nowPanelJumpInfo, publicLinkStatus, dvInfo, curComponent, canvasStyleData } =
   storeToRefs(dvMainStore)
@@ -116,6 +115,27 @@ const resultCount = computed(() => {
   return canvasStyleData.value.dashboard?.resultCount || null
 })
 
+// 编辑状态下 不启动刷新
+const buildInnerRefreshTimer = (
+  refreshViewEnable = false,
+  refreshUnit = 'minute',
+  refreshTime = 5
+) => {
+  if (showPosition.value === 'preview' && !innerRefreshTimer && refreshViewEnable) {
+    innerRefreshTimer && clearInterval(innerRefreshTimer)
+    const timerRefreshTime = refreshUnit === 'second' ? refreshTime * 1000 : refreshTime * 60000
+    innerRefreshTimer = setInterval(() => {
+      clearViewLinkage()
+      queryData()
+    }, timerRefreshTime)
+  }
+}
+
+// 清除相同sourceViewId 的 联动条件
+const clearViewLinkage = () => {
+  dvMainStore.clearViewLinkage(element.value.id)
+}
+
 watch(
   [() => view.value],
   () => {
@@ -124,8 +144,11 @@ watch(
   { deep: true }
 )
 
-watch([() => searchCount.value], () => {
-  queryData()
+watch([() => searchCount.value], val => {
+  // 内部计时器启动 忽略外部计时器
+  if (!innerRefreshTimer) {
+    queryData()
+  }
 })
 // 仪表板的查询结果设置变化 视图数据需要刷新
 watch([() => resultCount.value], () => {
@@ -284,6 +307,9 @@ const jumpClick = param => {
 }
 
 const queryData = (firstLoad = false) => {
+  if (loading.value) {
+    return
+  }
   const queryFilter = filter(firstLoad)
   let params = cloneDeep(view.value)
   params['chartExtRequest'] = queryFilter
@@ -391,6 +417,9 @@ onMounted(() => {
       initTitle()
     }
   })
+
+  const { refreshViewEnable, refreshUnit, refreshTime } = view.value
+  buildInnerRefreshTimer(refreshViewEnable, refreshUnit, refreshTime)
 })
 
 // 1.开启仪表板刷新 2.首次加载（searchCount =0 ）3.正在请求数据 则显示加载状态

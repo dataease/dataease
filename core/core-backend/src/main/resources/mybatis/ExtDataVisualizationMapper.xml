@@ -173,35 +173,43 @@
             data_visualization_info where data_visualization_info.delete_flag = 0 and  data_visualization_info.id = #{dvId} and  data_visualization_info.type = #{dvType}
     </select>
 
-    <select id="findRecent" resultType="io.dataease.api.visualization.vo.VisualizationResourceVO">
+    <select id="findRecent" resultType="io.dataease.visualization.dao.ext.po.VisualizationResourcePO">
         SELECT
-        *
+        dvResource.*,
+        (
+        CASE WHEN core_store.resource_id is NULL THEN
+        0 ELSE 1
+        END
+        ) AS favorite
         FROM
         (
         SELECT
         core_dataset_group.id,
+        core_dataset_group.id as 'resource_id',
         core_dataset_group.NAME,
         'dataset' AS type,
         core_dataset_group.create_by AS creator,
-        core_dataset_group.update_by AS lastEditor,
-        core_dataset_group.last_update_time AS lastEditTime
+        core_dataset_group.update_by AS last_editor,
+        core_dataset_group.last_update_time AS last_edit_time
         FROM
         core_dataset_group
         WHERE
         core_dataset_group.node_type = 'dataset' UNION ALL
         SELECT
         core_datasource.id,
+        core_datasource.id as 'resource_id',
         core_datasource.NAME,
         'datasource' AS type,
         core_datasource.create_by AS creator,
-        1 AS lastEditor,
-        core_datasource.update_time AS lastEditTime
+        1 AS last_editor,
+        core_datasource.update_time AS last_edit_time
         FROM
         core_datasource
         WHERE
-        core_datasource.type &lt;&gt; 'folder' UNION ALL
+        core_datasource.type != 'folder' UNION ALL
         SELECT
         data_visualization_info.id,
+        data_visualization_info.id as 'resource_id',
         data_visualization_info.NAME,
         (
         CASE
@@ -211,25 +219,17 @@
         END
         ) AS type,
         data_visualization_info.create_by AS creator,
-        data_visualization_info.update_by AS lastEditor,
-        data_visualization_info.update_time AS lastEditTime
+        data_visualization_info.update_by AS last_editor,
+        data_visualization_info.update_time AS last_edit_time
         FROM
         data_visualization_info
         WHERE
         data_visualization_info.delete_flag = 0
         AND node_type = 'leaf'
         ) dvResource
-        <where>
-            dvResource.lastEditor =  #{uid}
-            <if test="type != null and type != ''">
-                and dvResource.type = #{type}
-            </if>
-
-            <if test="keyword != null and keyword != ''">
-                and dvResource.name like concat('%', #{keyword}, '%')
-            </if>
-        </where>
-        order by dvResource.lastEditTime asc LIMIT #{pageNum},#{pageCount}
+        LEFT JOIN core_store ON dvResource.id = core_store.resource_id
+        AND core_store.uid = #{uid}
+            ${ew.customSqlSegment}
     </select>
 
 </mapper>

@@ -7,7 +7,7 @@
     trigger="click"
   >
     <el-button
-      v-if="optType === 'enlarge'"
+      v-if="optType === 'enlarge' && dvInfo.weight > 3"
       icon="Picture"
       size="small"
       class="export-button"
@@ -15,7 +15,7 @@
       >{{ t('chart.export_img') }}</el-button
     >
     <el-button
-      v-if="optType === 'details'"
+      v-if="optType === 'details' && dvInfo.weight > 3"
       icon="Tickets"
       size="small"
       class="export-button"
@@ -123,6 +123,7 @@ defineExpose({
 .enlarge-outer {
   position: relative;
   height: 65vh;
+  padding-top: 10px;
   .enlarge-wrapper {
     width: 100%;
     height: 100%;
