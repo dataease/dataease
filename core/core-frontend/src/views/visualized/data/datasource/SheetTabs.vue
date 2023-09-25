@@ -46,13 +46,14 @@ watch(
 )
 
 const prevClick = () => {
-  if (activeTabIndex.value === 0 || props.tabList.length === 1) return
-  handleTabClick(props.tabList[activeTabIndex.value - 1])
+  let domWrapper = document.querySelector('.tab-wrapper')
+  if (!domWrapper.scrollLeft) return
+  domWrapper.scrollLeft -= 30
 }
 
 const nextClick = () => {
-  if (activeTabIndex.value === props.tabList.length - 1 || props.tabList.length === 1) return
-  handleTabClick(props.tabList[activeTabIndex.value + 1])
+  let domWrapper = document.querySelector('.tab-wrapper')
+  domWrapper.scrollLeft += 30
 }
 </script>
 
@@ -73,13 +74,10 @@ const nextClick = () => {
       </div>
     </div>
     <div class="tab-btn" v-if="showBtn">
-      <el-icon :class="(!activeTabIndex || tabList.length === 1) && 'disabled'" @click="prevClick">
+      <el-icon @click="prevClick">
         <Icon name="icon_expand-left_filled"></Icon>
       </el-icon>
-      <el-icon
-        :class="(tabList.length - 1 === activeTabIndex || tabList.length === 1) && 'disabled'"
-        @click="nextClick"
-      >
+      <el-icon @click="nextClick">
         <Icon name="icon_expand-right_filled"></Icon>
       </el-icon>
     </div>
