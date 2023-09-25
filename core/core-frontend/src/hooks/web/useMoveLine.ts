@@ -8,6 +8,7 @@ export const useMoveLine = (type: Sidebar) => {
   const width = ref(wsCache.get(type) || 280)
 
   const getCoordinates = () => {
+    document.querySelector('.sidebar-move-line').className = 'sidebar-move-line dragging'
     document.addEventListener('mousemove', setCoordinates)
     document.addEventListener('mouseup', cancelEvent)
     document.querySelector('body').style['user-select'] = 'none'
@@ -17,14 +18,15 @@ export const useMoveLine = (type: Sidebar) => {
     const x = e.clientX
     if (x > 401 || x < 279) {
       width.value = Math.max(Math.min(401, x), 279)
-      ele.style.left = width.value - 2 + 'px'
+      ele.style.left = width.value - 5 + 'px'
       return
     }
-    ele.style.left = width.value - 2 + 'px'
+    ele.style.left = width.value - 5 + 'px'
     width.value = x
   }
 
   const cancelEvent = () => {
+    document.querySelector('.sidebar-move-line').className = 'sidebar-move-line'
     document.querySelector('body').style['user-select'] = 'auto'
     wsCache.set(type, width.value)
     document.removeEventListener('mousemove', setCoordinates)
@@ -35,7 +37,7 @@ export const useMoveLine = (type: Sidebar) => {
   const ele = document.createElement('div')
   ele.className = 'sidebar-move-line'
   ele.style.top = '0'
-  ele.style.left = width.value - 2 + 'px'
+  ele.style.left = width.value - 5 + 'px'
   ele.addEventListener('mousedown', getCoordinates)
 
   onMounted(() => {
