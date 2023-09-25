@@ -3,7 +3,6 @@ import { onMounted, PropType, reactive, watch } from 'vue'
 import { COLOR_PANEL, DEFAULT_BASIC_STYLE } from '@/views/chart/components/editor/util/chart'
 import { useI18n } from '@/hooks/web/useI18n'
 import CustomColorStyleSelect from '@/views/chart/components/editor/editor-style/components/CustomColorStyleSelect.vue'
-import { ElFormItem, ElInputNumber } from 'element-plus-secondary'
 
 const { t } = useI18n()
 const props = defineProps({

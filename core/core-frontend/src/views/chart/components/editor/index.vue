@@ -2558,12 +2558,20 @@ span {
   width: 100%;
 }
 :deep(.ed-form-item) {
+  .ed-radio.ed-radio--small .ed-radio__inner {
+    width: 14px;
+    height: 14px;
+  }
   .ed-input__inner {
     font-size: 12px;
     font-weight: 400;
   }
   .ed-input {
     --ed-input-height: 28px;
+
+    .ed-input__suffix {
+      height: 26px;
+    }
   }
   .ed-input-number {
     width: 100%;
