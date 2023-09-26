@@ -3,30 +3,34 @@
     <el-row><span class="custom-item-text">文本</span> </el-row>
     <el-row style="margin-top: 8px">
       <el-space wrap>
-        <el-color-picker
-          :title="t('chart.text_color')"
-          v-model="titleForm.color"
-          class="color-picker-style"
-          size="small"
-          :predefine="state.predefineColors"
-          @change="changeTitleStyle('color')"
-        />
-
-        <el-select
-          style="width: 56px"
-          :title="t('chart.text_fontsize')"
-          v-model="titleForm.fontSize"
-          :placeholder="'大小'"
-          size="small"
-          @change="changeTitleStyle('fontSize')"
-        >
-          <el-option
-            v-for="option in fontSizeList"
-            :key="option.value"
-            :label="option.name"
-            :value="option.value"
+        <el-form-item class="form-item no-margin-bottom" :class="'form-item-' + themes">
+          <el-color-picker
+            :title="t('chart.text_color')"
+            v-model="titleForm.color"
+            class="color-picker-style"
+            is-custom
+            :predefine="state.predefineColors"
+            @change="changeTitleStyle('color')"
           />
-        </el-select>
+        </el-form-item>
+
+        <el-form-item class="form-item no-margin-bottom" :class="'form-item-' + themes">
+          <el-select
+            style="width: 56px"
+            :title="t('chart.text_fontsize')"
+            v-model="titleForm.fontSize"
+            :placeholder="'大小'"
+            size="small"
+            @change="changeTitleStyle('fontSize')"
+          >
+            <el-option
+              v-for="option in fontSizeList"
+              :key="option.value"
+              :label="option.name"
+              :value="option.value"
+            />
+          </el-select>
+        </el-form-item>
 
         <el-tooltip effect="dark" placement="top">
           <template #content>
@@ -166,6 +170,7 @@ import { COLOR_PANEL } from '@/views/chart/components/editor/util/chart'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { useI18n } from '@/hooks/web/useI18n'
 import Icon from '@/components/icon-custom/src/Icon.vue'
+import { ElFormItem } from 'element-plus-secondary'
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
 
@@ -313,5 +318,10 @@ function setVPosition(p: 'top' | 'center' | 'bottom') {
   width: 1px;
   height: 18px;
   background: rgba(31, 35, 41, 0.15);
+}
+.form-item {
+  &.no-margin-bottom {
+    margin-bottom: 0 !important;
+  }
 }
 </style>
