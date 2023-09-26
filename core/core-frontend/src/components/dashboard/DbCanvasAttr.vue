@@ -267,9 +267,11 @@ onMounted(() => {
             component-position="'dashboard'"
             themes="light"
             @onBackgroundChange="componentBackgroundChange"
+            :background-color-picker-width="197"
+            :background-border-select-width="197"
           />
         </el-collapse-item>
-        <el-collapse-item :title="'图表配色'" name="graphical">
+        <el-collapse-item :title="'图表配色'" name="graphical" class="no-padding no-border-bottom">
           <component-color-selector v-if="state.collapseShow" @onColorChange="onColorChange" />
         </el-collapse-item>
         <el-collapse-item :title="t('visualization.chart_title')" name="viewTitle">
@@ -464,5 +466,77 @@ onMounted(() => {
 
 :deep(.ed-collapse-item__arrow) {
   margin: 0 6px 0 8px;
+}
+
+:deep(.ed-form-item__label) {
+  color: @canvas-main-font-color;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+}
+
+:deep(.ed-form-item) {
+  .ed-radio.ed-radio--small .ed-radio__inner {
+    width: 14px;
+    height: 14px;
+  }
+  .ed-input__inner {
+    font-size: 12px;
+    font-weight: 400;
+  }
+  .ed-input {
+    --ed-input-height: 28px;
+
+    .ed-input__suffix {
+      height: 26px;
+    }
+  }
+  .ed-input-number {
+    width: 100%;
+
+    .ed-input-number__decrease {
+      --ed-input-number-controls-height: 13px;
+    }
+    .ed-input-number__increase {
+      --ed-input-number-controls-height: 13px;
+    }
+
+    .ed-input__inner {
+      text-align: start;
+    }
+  }
+  .ed-select {
+    width: 100%;
+    .ed-input__inner {
+      height: 26px !important;
+    }
+  }
+  .ed-checkbox {
+    .ed-checkbox__label {
+      font-size: 12px;
+    }
+  }
+  .ed-color-picker {
+    .ed-color-picker__mask {
+      height: 26px;
+      width: calc(100% - 2px) !important;
+    }
+  }
+  .ed-radio {
+    height: 20px;
+    .ed-radio__label {
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 20px;
+    }
+  }
+}
+:deep(.ed-checkbox__label) {
+  color: #1f2329;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 20px;
 }
 </style>
