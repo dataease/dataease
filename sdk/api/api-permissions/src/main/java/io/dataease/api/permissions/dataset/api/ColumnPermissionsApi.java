@@ -27,6 +27,8 @@ public interface ColumnPermissionsApi {
     @PostMapping("/delete")
     public void delete(@RequestBody DataSetColumnPermissionsDTO dataSetColumnPermissionsDTO);
 
+    @PostMapping("/info")
+    public DataSetColumnPermissionsDTO DataSetColumnPermissionInfo(@RequestBody DataSetColumnPermissionsDTO request);
 
     public List<DataSetColumnPermissionsDTO> list(@RequestBody DataSetColumnPermissionsDTO request);
 
