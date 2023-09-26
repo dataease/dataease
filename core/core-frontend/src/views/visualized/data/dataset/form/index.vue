@@ -318,6 +318,9 @@ const handleFieldMore = (ele, type) => {
     case 'editor':
       editField(ele)
       break
+    case 'rename':
+      renameField(ele)
+      break
     case 'custom':
       currentField.value.id = ele.id
       updateCustomTime.value = true
@@ -414,20 +417,20 @@ const currentNormalField = ref({
   name: ''
 })
 
-const editField = item => {
-  if (item.extField === 2) {
-    editCalcField.value = true
-    nextTick(() => {
-      calcEdit.value.initEdit(item, dimensions.value, quota.value)
-    })
-    return
-  }
+const renameField = item => {
   const { id, name } = item
   currentNormalField.value = {
     id,
     name
   }
   editNormalField.value = true
+}
+
+const editField = item => {
+  editCalcField.value = true
+  nextTick(() => {
+    calcEdit.value.initEdit(item, dimensions.value, quota.value)
+  })
 }
 
 const closeNormalField = () => {
@@ -1018,7 +1021,7 @@ const treeProps = {
     <div class="container dataset-db" @mouseup="mouseupDrag">
       <p v-show="!showLeft" class="arrow-right" @click="showLeft = true">
         <el-icon>
-          <Icon name="icon_down-right_outlined"></Icon>
+          <Icon name="icon_right_outlined"></Icon>
         </el-icon>
       </p>
       <div
@@ -1633,7 +1636,7 @@ const treeProps = {
   </el-dialog>
   <el-dialog
     class="create-dialog"
-    :title="t('dataset.field_edit')"
+    :title="t('datasource.field_rename')"
     v-model="editNormalField"
     width="420px"
   >
@@ -1641,6 +1644,7 @@ const treeProps = {
       ref="ruleFormFieldRef"
       :rules="fieldRules"
       :model="currentNormalField"
+      require-asterisk-position="right"
       label-position="top"
       label-width="120px"
     >
@@ -1730,7 +1734,6 @@ const treeProps = {
       margin: 0;
       display: flex;
       align-items: center;
-      justify-content: center;
       left: 0;
       height: 24px;
       width: 20px;
@@ -1738,6 +1741,11 @@ const treeProps = {
       border: 1px solid var(--deCardStrokeColor, #dee0e3);
       border-top-right-radius: 13px;
       border-bottom-right-radius: 13px;
+      background: #fff;
+      font-size: 12px;
+      .ed-icon {
+        margin-left: 2px;
+      }
     }
 
     .table-list {

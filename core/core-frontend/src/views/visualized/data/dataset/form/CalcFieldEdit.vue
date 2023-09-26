@@ -583,7 +583,7 @@ initFunction()
   cursor: pointer;
 }
 .function-height {
-  height: calc(100% - 81px);
+  height: calc(100% - 29px);
   overflow: auto;
   width: calc(100% + 16px);
   margin-left: -8px;

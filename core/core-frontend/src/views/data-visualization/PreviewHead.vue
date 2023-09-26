@@ -57,13 +57,20 @@ watch(
 <template>
   <div class="preview-head flex-align-center">
     <div :title="dvInfo.name" class="canvas-name ellipsis">{{ dvInfo.name }}</div>
-    <el-icon
-      class="custom-icon"
-      @click="executeStore"
-      :style="{ color: favorited ? '#FFC60A' : '#646A73' }"
+
+    <el-tooltip
+      effect="dark"
+      :content="favorited ? '取消收藏' : t('visualization.store')"
+      placement="top"
     >
-      <icon :name="favorited ? 'visual-star' : 'icon_collection_outlined'"></icon>
-    </el-icon>
+      <el-icon
+        class="custom-icon hover-icon"
+        @click="executeStore"
+        :style="{ color: favorited ? '#FFC60A' : '#646A73' }"
+      >
+        <icon :name="favorited ? 'visual-star' : 'icon_collection_outlined'"></icon>
+      </el-icon>
+    </el-tooltip>
     <el-divider style="margin: 0 16px" direction="vertical" />
     <div class="create-area flex-align-center">
       <span>创建人:{{ dvInfo.creatorName }}</span>

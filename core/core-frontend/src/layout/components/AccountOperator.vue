@@ -113,7 +113,7 @@ const openPopover = () => {
           <el-popover
             ref="popoverLanguageRef"
             :virtual-ref="divLanguageRef"
-            trigger="click"
+            trigger="hover"
             title=""
             virtual-triggering
             placement="left"
@@ -142,7 +142,7 @@ const openPopover = () => {
   />
 </template>
 
-<style lang="less" scoped>
+<style lang="less">
 .el-icon-animate {
   width: 12px;
   height: 12px;
@@ -209,7 +209,6 @@ const openPopover = () => {
       cursor: pointer;
       &:hover {
         background-color: #f2f2f2;
-        color: var(--ed-color-primary);
       }
       .about-parent {
         display: flex;

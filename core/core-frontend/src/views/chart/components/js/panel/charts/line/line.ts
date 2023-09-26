@@ -4,12 +4,7 @@ import {
 } from '@/views/chart/components/js/panel/types/impl/g2plot'
 import { Line as G2Line, LineOptions } from '@antv/g2plot/esm/plots/line'
 import { getPadding } from '../../common/common_antv'
-import {
-  flow,
-  handleEmptyDataStrategy,
-  hexColorToRGBA,
-  parseJson
-} from '@/views/chart/components/js/util'
+import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
 import { cloneDeep } from 'lodash-es'
 import { formatterItem, valueFormatter } from '@/views/chart/components/js/formatter'
 import {
@@ -17,8 +12,6 @@ import {
   LINE_EDITOR_PROPERTY,
   LINE_EDITOR_PROPERTY_INNER
 } from '@/views/chart/components/js/panel/charts/line/common'
-import { Label } from '@antv/g2plot/lib/types/label'
-import { IntervalGeometryLabelPosition } from '@antv/g2/lib/interface'
 import { Datum } from '@antv/g2plot/esm/types/common'
 import { useI18n } from '@/hooks/web/useI18n'
 
