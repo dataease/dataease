@@ -1,27 +1,31 @@
 <template>
   <el-dialog
     ref="enlargeDialog"
+    :title="titleInfo"
     :append-to-body="true"
     v-model="dialogShow"
     width="70vw"
     trigger="click"
   >
-    <el-button
-      v-if="optType === 'enlarge' && dvInfo.weight > 3"
-      icon="Picture"
-      size="small"
-      class="export-button"
-      @click="downloadViewImage"
-      >{{ t('chart.export_img') }}</el-button
-    >
-    <el-button
-      v-if="optType === 'details' && dvInfo.weight > 3"
-      icon="Tickets"
-      size="small"
-      class="export-button"
-      @click="downloadViewDetails"
-      >导出明细</el-button
-    >
+    <div class="export-button">
+      <el-button
+        v-if="optType === 'enlarge'"
+        link
+        icon="Download"
+        size="middle"
+        @click="downloadViewImage"
+        >{{ t('chart.export_img') }}</el-button
+      >
+      <el-button
+        v-if="optType === 'details'"
+        link
+        icon="Download"
+        size="middle"
+        @click="downloadViewDetails"
+        >导出Excel</el-button
+      >
+      <el-divider direction="vertical" />
+    </div>
     <div class="enlarge-outer" ref="viewContainer" v-if="dialogShow">
       <component-wrapper
         v-if="optType === 'enlarge'"
@@ -43,7 +47,7 @@
 
 <script setup lang="ts">
 import ComponentWrapper from '@/components/data-visualization/canvas/ComponentWrapper.vue'
-import { nextTick, ref } from 'vue'
+import { computed, nextTick, ref } from 'vue'
 import { toPng } from 'html-to-image'
 import { useI18n } from '@/hooks/web/useI18n'
 import { deepCopy } from '@/utils/utils'
@@ -64,10 +68,15 @@ const optType = ref(null)
 const chartComponentDetails = ref(null)
 const { dvInfo } = storeToRefs(dvMainStore)
 
+const titleInfo = computed(() => {
+  return optType.value === 'enlarge' ? config?.value?.name : '查看数据'
+})
+
 const dialogInit = (canvasStyle, view, item, opt) => {
   optType.value = opt
   dialogShow.value = true
   viewInfo.value = deepCopy(view)
+  viewInfo.value.customStyle.text.show = false
   config.value = deepCopy(item)
   canvasStyleData.value = canvasStyle
   if (opt === 'details') {
@@ -116,14 +125,13 @@ defineExpose({
 <style lang="less" scoped>
 .export-button {
   position: absolute;
-  right: 60px;
+  right: 48px;
   top: 26px;
   z-index: 2;
 }
 .enlarge-outer {
   position: relative;
   height: 65vh;
-  padding-top: 10px;
   .enlarge-wrapper {
     width: 100%;
     height: 100%;
