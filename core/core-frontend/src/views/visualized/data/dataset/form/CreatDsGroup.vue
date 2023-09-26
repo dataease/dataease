@@ -153,7 +153,7 @@ const createInit = (type, data: Tree, exec, name: string) => {
     allfields = data.allfields
   }
   if (data.id) {
-    const request = { leaf: false, weight: 3 } as BusiTreeRequest
+    const request = { leaf: false, weight: 7 } as BusiTreeRequest
     getDatasetTree(request).then(res => {
       dfs(res as unknown as Tree[])
       state.tData = (res as unknown as Tree[]) || []
@@ -216,7 +216,13 @@ const nodeClick = (data: Tree) => {
   activeAll.value = false
   datasetForm.pid = data.id as string
 }
-
+const checkPid = pid => {
+  if (pid !== 0 && !pid) {
+    ElMessage.error('请选择目标文件夹')
+    return false
+  }
+  return true
+}
 const saveDataset = () => {
   dataset.value.validate(result => {
     if (result) {
@@ -241,6 +247,9 @@ const saveDataset = () => {
       if (nodeType.value === 'dataset') {
         params.union = union
         params.allFields = allfields
+      }
+      if (cmd.value === 'move' && !checkPid(params.pid)) {
+        return
       }
       loading.value = true
       const req =

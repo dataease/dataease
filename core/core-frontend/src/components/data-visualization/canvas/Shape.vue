@@ -349,6 +349,8 @@ const handleInnerMouseDownOnShape = e => {
   dvMainStore.setCurComponent({ component: element.value, index: index.value })
   // 边界区域拖拽 返回
   if (boardMoveActive.value) {
+    dvMainStore.setInEditorStatus(true)
+    dvMainStore.setClickComponentStatus(true)
     e.stopPropagation()
     return
   }
