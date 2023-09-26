@@ -86,6 +86,10 @@ public class DatasetGroupManage {
             if (userApi == null) {
                 checkName(datasetGroupInfoDTO);
             }
+            if (userApi != null) {
+                datasetGroupInfoDTO.setUpdateBy(userApi.info().getId() + "");
+                datasetGroupInfoDTO.setLastUpdateTime(System.currentTimeMillis());
+            }
             if (StringUtils.equalsIgnoreCase(datasetGroupInfoDTO.getNodeType(), leafType)) {
                 if (!rename && ObjectUtils.isEmpty(datasetGroupInfoDTO.getAllFields())) {
                     DEException.throwException(Translator.get("i18n_no_fields"));
@@ -115,9 +119,6 @@ public class DatasetGroupManage {
                 isCreate = false;
                 if (Objects.equals(datasetGroupInfoDTO.getId(), datasetGroupInfoDTO.getPid())) {
                     DEException.throwException(Translator.get("i18n_pid_not_eq_id"));
-                }
-                if (userApi != null) {
-                    datasetGroupInfoDTO.setUpdateBy(userApi.info().getId() + "");
                 }
                 Objects.requireNonNull(CommonBeanFactory.getBean(this.getClass())).innerEdit(datasetGroupInfoDTO);
             }
