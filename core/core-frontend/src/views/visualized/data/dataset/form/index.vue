@@ -1018,7 +1018,7 @@ const treeProps = {
     <div class="container dataset-db" @mouseup="mouseupDrag">
       <p v-show="!showLeft" class="arrow-right" @click="showLeft = true">
         <el-icon>
-          <Icon name="icon_down-right_outlined"></Icon>
+          <Icon name="icon_right_outlined"></Icon>
         </el-icon>
       </p>
       <div
@@ -1730,7 +1730,6 @@ const treeProps = {
       margin: 0;
       display: flex;
       align-items: center;
-      justify-content: center;
       left: 0;
       height: 24px;
       width: 20px;
@@ -1738,6 +1737,11 @@ const treeProps = {
       border: 1px solid var(--deCardStrokeColor, #dee0e3);
       border-top-right-radius: 13px;
       border-bottom-right-radius: 13px;
+      background: #fff;
+      font-size: 12px;
+      .ed-icon {
+        margin-left: 2px;
+      }
     }
 
     .table-list {

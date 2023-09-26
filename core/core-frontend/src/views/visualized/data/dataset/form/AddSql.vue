@@ -379,7 +379,7 @@ const mousedownDrag = () => {
   <div class="sql-eidtor" @mouseup="mouseupDrag">
     <p v-show="!showLeft" class="arrow-right" @click="handleShowLeft">
       <el-icon>
-        <Icon name="icon_down-right_outlined"></Icon>
+        <Icon name="icon_right_outlined"></Icon>
       </el-icon>
     </p>
     <div
@@ -803,12 +803,11 @@ const mousedownDrag = () => {
   .arrow-right {
     position: absolute;
     top: 15px;
-    z-index: 2;
+    z-index: 5;
     cursor: pointer;
     margin: 0;
     display: flex;
     align-items: center;
-    justify-content: center;
     left: 0;
     height: 24px;
     width: 20px;
@@ -816,6 +815,11 @@ const mousedownDrag = () => {
     border: 1px solid var(--deCardStrokeColor, #dee0e3);
     border-top-right-radius: 13px;
     border-bottom-right-radius: 13px;
+    font-size: 12px;
+    background: #fff;
+    .ed-icon {
+      margin-left: 2px;
+    }
   }
 
   .table-list {
