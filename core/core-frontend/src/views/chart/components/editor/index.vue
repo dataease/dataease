@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { PropType, reactive, ref, watch, toRefs, computed, nextTick } from 'vue'
+import { PropType, reactive, ref, watch, toRefs, computed, nextTick, onBeforeMount } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Field, getFieldByDQ, saveChart } from '@/api/chart'
@@ -23,7 +23,7 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { BASE_VIEW_CONFIG, getViewConfig } from '@/views/chart/components/editor/util/chart'
 import ChartType from '@/views/chart/components/editor/chart-type/ChartType.vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import CompareEdit from '@/views/chart/components/editor/drag-item/components/CompareEdit.vue'
 import ValueFormatterEdit from '@/views/chart/components/editor/drag-item/components/ValueFormatterEdit.vue'
 import CustomSortEdit from '@/views/chart/components/editor/drag-item/components/CustomSortEdit.vue'
@@ -71,9 +71,15 @@ const props = defineProps({
 const editCalcField = ref(false)
 const isCalcFieldAdd = ref(true)
 const calcEdit = ref()
+const route = useRoute()
 
 const { view, datasetTree } = toRefs(props)
 
+let cacheId = ''
+
+onBeforeMount(() => {
+  cacheId = route.query.id as unknown as string
+})
 const dsFieldDragOptions = { group: { name: 'drag', pull: 'clone' }, sort: true }
 
 const itemFormRules = reactive<FormRules>({
@@ -129,6 +135,9 @@ watch(
   [() => view.value['tableId']],
   () => {
     const nodeId = view.value['tableId']
+    if (!!nodeId) {
+      cacheId = nodeId as unknown as string
+    }
     const node = datasetSelector?.value?.getNode(nodeId)
     if (node?.data) {
       curDatasetWeight.value = node.data.weight
@@ -926,11 +935,25 @@ const calcEle = () => {
   })
 }
 
+const setCacheId = () => {
+  nextTick(() => {
+    if (!cacheId || !!view.value.tableId) return
+    view.value.tableId = cacheId as unknown as number
+  })
+}
 watch(
   () => curComponent.value,
   val => {
     if (!val || !!previewHeight.value) return
     calcEle()
+  }
+)
+
+watch(
+  () => curComponent.value,
+  val => {
+    if (!val) return
+    setCacheId()
   }
 )
 
