@@ -65,6 +65,9 @@ service.interceptors.request.use(
     if (window.DataEaseBi?.baseUrl) {
       config.baseURL = window.DataEaseBi.baseUrl + 'de2api/'
     }
+    if (wsCache.get('ldap-token')) {
+      ;(config.headers as AxiosRequestHeaders)['Authorization'] = wsCache.get('ldap-token')
+    }
     if (linkStore.getLinkToken) {
       ;(config.headers as AxiosRequestHeaders)['X-DE-LINK-TOKEN'] = linkStore.getLinkToken
     } else if (wsCache.get('user.token')) {

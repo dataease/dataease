@@ -48,8 +48,7 @@
 
     <div v-if="barShowCheck('multiplexing')" class="bar-checkbox-area">
       <el-checkbox
-        style="height: auto !important"
-        size="middle"
+        style="height: 26px; padding: 5px"
         v-model="state.multiplexingCheckModel"
         @change="multiplexingCheck"
       />
@@ -529,7 +528,7 @@ defineExpose({
 }
 
 .bar-checkbox-area {
-  padding: 0 3px;
+  padding: 0 5px;
   height: 22px;
 }
 

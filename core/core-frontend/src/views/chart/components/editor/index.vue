@@ -1405,7 +1405,6 @@ const dragVerticalTop = computed(() => {
                         >
                           <el-input
                             v-model="view.refreshTime"
-                            placeholder="Please input"
                             :effect="themes"
                             size="small"
                             :min="1"

@@ -30,6 +30,7 @@ const msg = ref(null)
 const loginImageUrl = ref(null)
 const footContent = ref(null)
 const loginErrorMsg = ref('')
+const xpackLoginHandler = ref()
 const state = reactive({
   loginForm: {
     username: '',
@@ -64,7 +65,8 @@ const rules = reactive<FormRules>({
 
 const activeName = ref('simple')
 const handleClick = tab => {
-  console.log(tab)
+  const param = { methodName: 'tabSwicther', args: tab }
+  xpackLoginHandler?.value.invokeMethod(param)
 }
 
 const getCurLocation = () => {
@@ -102,7 +104,14 @@ const handleLogin = () => {
     }
   })
 }
-
+const ldapValidate = callback => {
+  if (!formRef.value) return
+  formRef.value.validate((valid: boolean) => {
+    if (valid && callback) {
+      callback()
+    }
+  })
+}
 const activeType = ref('account')
 const tablePaneList = ref([{ title: '普通登录', name: 'simple' }])
 const xpackLoaded = info => {
@@ -199,6 +208,7 @@ onMounted(() => {
               <XpackComponent
                 class="default-login-tabs"
                 :active-name="activeName"
+                @validate="ldapValidate"
                 jsname="L2NvbXBvbmVudC9sb2dpbi9MZGFw"
               />
 
@@ -207,9 +217,7 @@ onMounted(() => {
                   <el-form-item class="login-form-item" prop="username">
                     <el-input
                       v-model="state.loginForm.username"
-                      :placeholder="
-                        t('common.account') + '/' + t('commons.email') + '/' + t('commons.phone')
-                      "
+                      :placeholder="t('common.account') + '/' + t('commons.email')"
                       autofocus
                     />
                   </el-form-item>
@@ -248,7 +256,11 @@ onMounted(() => {
                 </div>
               </template>
 
-              <XpackComponent jsname="L2NvbXBvbmVudC9sb2dpbi9IYW5kbGVy" @loaded="xpackLoaded" />
+              <XpackComponent
+                ref="xpackLoginHandler"
+                jsname="L2NvbXBvbmVudC9sb2dpbi9IYW5kbGVy"
+                @loaded="xpackLoaded"
+              />
             </div>
 
             <div class="login-msg">

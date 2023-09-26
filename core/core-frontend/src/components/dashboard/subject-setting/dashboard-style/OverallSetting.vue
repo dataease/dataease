@@ -1,6 +1,6 @@
 <template>
   <el-col>
-    <el-row class="custom-row">
+    <el-row v-if="dvInfo.type === 'dashboard'" class="custom-row">
       <el-row class="custom-item-text-row"
         ><span class="custom-item-text bl">{{ t('visualization.theme_color') }}</span>
       </el-row>
@@ -22,10 +22,10 @@
       </el-row>
     </el-row>
     <el-row class="custom-row margin-top16">
-      <el-row class="custom-item-text-row"
+      <el-row v-if="dvInfo.type === 'dashboard'" class="custom-item-text-row"
         ><span class="custom-item-text bl">{{ t('visualization.component_gap') }}</span>
       </el-row>
-      <el-row class="function-area">
+      <el-row v-if="dvInfo.type === 'dashboard'" class="function-area">
         <el-radio-group v-model="canvasStyleData.dashboard.gap" @change="themeChange">
           <el-radio label="yes">{{ t('visualization.gap') }}</el-radio>
           <el-radio label="no">{{ t('visualization.no_gap') }}</el-radio>
@@ -35,14 +35,19 @@
     <el-row class="custom-row margin-top16">
       <el-row class="custom-item-text-row">
         <span class="custom-item-text bl">
-          <el-checkbox v-model="canvasStyleData.refreshViewEnable" @change="themeChange">{{
-            t('visualization.refresh_frequency')
-          }}</el-checkbox>
+          <el-checkbox
+            :effect="themes"
+            size="small"
+            v-model="canvasStyleData.refreshViewEnable"
+            @change="themeChange"
+            >{{ t('visualization.refresh_frequency') }}</el-checkbox
+          >
         </span>
       </el-row>
       <el-row class="function-area">
         <el-input
           v-model="canvasStyleData.refreshTime"
+          :effect="themes"
           type="number"
           :min="1"
           :max="3600"
@@ -54,6 +59,7 @@
             <el-select
               v-model="canvasStyleData.refreshUnit"
               size="middle"
+              :effect="themes"
               :disabled="!canvasStyleData.refreshViewEnable"
               style="width: 90px; padding: 0 9px"
               @change="themeChange"
@@ -68,9 +74,13 @@
     <el-row class="custom-row margin-top16">
       <el-row class="custom-item-text-row">
         <span class="custom-item-text">
-          <el-checkbox v-model="canvasStyleData.refreshViewLoading" @change="themeChange">{{
-            t('visualization.enable_view_loading')
-          }}</el-checkbox>
+          <el-checkbox
+            :effect="themes"
+            size="small"
+            v-model="canvasStyleData.refreshViewLoading"
+            @change="themeChange"
+            >{{ t('visualization.enable_view_loading') }}</el-checkbox
+          >
         </span>
       </el-row>
     </el-row>
@@ -93,14 +103,15 @@
       <el-row class="function-area custom-row">
         <el-row>
           <el-radio-group
+            :effect="themes"
             v-model="canvasStyleData.dashboard.resultMode"
             class="radio-span"
             @change="themeChange"
           >
-            <el-radio label="all"
+            <el-radio label="all" :effect="themes"
               ><span>{{ t('visualization.view') }}</span></el-radio
             >
-            <el-radio label="custom">
+            <el-radio label="custom" :effect="themes">
               <span>{{ t('visualization.panel') }} </span>
             </el-radio>
           </el-radio-group>
@@ -108,6 +119,7 @@
         <el-row class="margin-top8">
           <el-input-number
             v-model="canvasStyleData.dashboard.resultCount"
+            :effect="themes"
             controls-position="right"
             size="middle"
             :min="1"
@@ -126,7 +138,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 const { t } = useI18n()
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 const dvMainStore = dvMainStoreWithOut()
-const { canvasStyleData } = storeToRefs(dvMainStore)
+const { canvasStyleData, dvInfo } = storeToRefs(dvMainStore)
 import {
   adaptCurThemeCommonStyleAll,
   DARK_THEME_DASHBOARD_BACKGROUND,
@@ -143,7 +155,7 @@ import {
   FILTER_COMMON_STYLE_LIGHT
 } from '@/views/chart/components/editor/util/chart'
 import ColorButton from '@/components/assist-button/ColorButton.vue'
-import { reactive, onMounted } from 'vue'
+import { reactive, onMounted, toRefs } from 'vue'
 import { deepCopy } from '@/utils/utils'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { storeToRefs } from 'pinia'
@@ -153,6 +165,14 @@ import {
 } from '@/custom-component/component-list'
 const emits = defineEmits(['onThemeColorChange'])
 const snapshotStore = snapshotStoreWithOut()
+const props = defineProps({
+  themes: {
+    type: String,
+    default: 'light'
+  }
+})
+
+const { themes } = toRefs(props)
 
 const state = reactive({
   colorIndex: 0

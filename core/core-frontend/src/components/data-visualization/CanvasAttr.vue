@@ -16,6 +16,7 @@ import { imgUrlTrans } from '@/utils/imgUtils'
 import { merge } from 'lodash-es'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import ComponentColorSelector from '@/components/dashboard/subject-setting/dashboard-style/ComponentColorSelector.vue'
+import OverallSetting from '@/components/dashboard/subject-setting/dashboard-style/OverallSetting.vue'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const { canvasStyleData, canvasViewInfo } = storeToRefs(dvMainStore)
@@ -225,6 +226,9 @@ onMounted(() => {
         </el-collapse-item>
         <el-collapse-item title="配色" name="color">
           <component-color-selector themes="dark" @onColorChange="onColorChange" />
+        </el-collapse-item>
+        <el-collapse-item title="刷新配置" name="overallSetting">
+          <overall-setting themes="dark" />
         </el-collapse-item>
       </el-collapse>
       <input
