@@ -39,6 +39,7 @@
 
     <el-form-item class="form-item no-margin-bottom" :class="'form-item-' + themes">
       <el-checkbox
+        size="small"
         :effect="themes"
         v-model="state.commonBackground.backgroundColorSelect"
         @change="onBackgroundChange"
@@ -54,6 +55,7 @@
             v-model="state.commonBackground.backgroundColor"
             :effect="themes"
             :disabled="!state.commonBackground.backgroundColorSelect"
+            :trigger-width="backgroundColorPickerWidth"
             is-custom
             class="color-picker-style"
             :predefine="state.predefineColors"
@@ -81,6 +83,7 @@
 
     <el-form-item class="form-item no-margin-bottom" :class="'form-item-' + themes">
       <el-checkbox
+        size="small"
         :effect="themes"
         v-model="state.commonBackground.backgroundImageEnable"
         @change="onBackgroundChange"
@@ -123,7 +126,7 @@
           :class="'form-item-' + themes"
         >
           <el-select
-            style="width: 108px"
+            :style="{ width: backgroundBorderSelectWidth + 'px' }"
             v-model="state.commonBackground.innerImage"
             size="middle"
             :effect="themes"
@@ -204,8 +207,15 @@ const props = withDefaults(
     componentPosition?: string
     themes?: EditorTheme
     commonBackgroundPop: any
+    backgroundColorPickerWidth?: number
+    backgroundBorderSelectWidth?: number
   }>(),
-  { themes: 'dark', componentPosition: 'dashboard' }
+  {
+    themes: 'dark',
+    componentPosition: 'dashboard',
+    backgroundColorPickerWidth: 50,
+    backgroundBorderSelectWidth: 108
+  }
 )
 
 const state = reactive({
@@ -377,21 +387,6 @@ watch(
   }
 }
 .form-item {
-  margin-bottom: 16px;
-  :deep(.ed-form-item__label) {
-    color: #646a73;
-    font-family: PingFang SC;
-    font-size: 12px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 20px;
-  }
-
-  &.w100 {
-    .ed-input-number {
-      width: 100%;
-    }
-  }
   &.margin-bottom-8 {
     margin-bottom: 8px !important;
   }
