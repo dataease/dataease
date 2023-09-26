@@ -22,7 +22,6 @@ const props = defineProps({
   node: propTypes.object.def({})
 })
 const emit = defineEmits(['checkedFields'])
-
 const multipleTableRef = ref<InstanceType<typeof ElTable>>()
 const search = ref('')
 const checkAll = ref(false)

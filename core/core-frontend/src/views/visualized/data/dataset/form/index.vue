@@ -1,5 +1,5 @@
 <script lang="tsx" setup>
-import { ref, nextTick, reactive, shallowRef, computed, watch } from 'vue'
+import { ref, nextTick, reactive, shallowRef, computed, watch, provide } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ElIcon, ElMessageBox, ElMessage } from 'element-plus-secondary'
 import type { Action } from 'element-plus-secondary'
@@ -619,6 +619,8 @@ const getIconName = (type: number) => {
 }
 
 const allfields = ref([])
+
+provide('allfields', allfields)
 
 let num = +new Date()
 
