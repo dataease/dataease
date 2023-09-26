@@ -5,14 +5,8 @@ import {
 import { Area as G2Area, AreaOptions } from '@antv/g2plot/esm/plots/area'
 import { getPadding, setGradientColor } from '@/views/chart/components/js/panel/common/common_antv'
 import { cloneDeep } from 'lodash-es'
+import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
 import {
-  flow,
-  handleEmptyDataStrategy,
-  hexColorToRGBA,
-  parseJson
-} from '@/views/chart/components/js/util'
-import {
-  formatterItem,
   singleDimensionTooltipFormatter,
   valueFormatter
 } from '@/views/chart/components/js/formatter'
@@ -24,6 +18,7 @@ import {
 import { Label } from '@antv/g2plot/lib/types/label'
 import { Datum } from '@antv/g2plot/esm/types/common'
 import { useI18n } from '@/hooks/web/useI18n'
+import _ from 'lodash'
 
 const { t } = useI18n()
 const DEFAULT_DATA = []
@@ -92,7 +87,28 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
     const { chart, container, action } = drawOptions
     if (chart?.data) {
       // data
-      const data = cloneDeep(chart.data.data)
+      let data = cloneDeep(chart.data.data)
+
+      //针对多组堆叠，需要把所有的数据按照第一组的顺序进行排列，不然连线会错乱
+      const extXAxisOrder = []
+      const xAxisOrder = []
+      _.forEach(data, x => {
+        const extXAxis = x.category
+        if (!extXAxisOrder.includes(extXAxis)) {
+          extXAxisOrder.push(extXAxis)
+        }
+        const xAxis = x.field
+        if (!xAxisOrder.includes(xAxis)) {
+          xAxisOrder.push(xAxis)
+        }
+      })
+      if (extXAxisOrder.length > 1) {
+        data = _.sortBy(data, [
+          x => _.findIndex(extXAxisOrder, o => o === x.category),
+          x => _.findIndex(xAxisOrder, o => o === x.field)
+        ])
+      }
+
       const initOptions: AreaOptions = {
         ...this.baseOptions,
         data,
