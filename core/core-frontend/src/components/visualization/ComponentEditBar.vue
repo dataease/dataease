@@ -84,9 +84,7 @@
             >
             <el-dropdown-item
               @click="userViewEnlargeOpen($event, 'details')"
-              v-if="
-                element.innerType !== 'rich-text' && barShowCheck('details') && dvInfo.weight > 3
-              "
+              v-if="element.innerType !== 'rich-text' && barShowCheck('details')"
               >查看数据</el-dropdown-item
             >
             <el-dropdown-item
