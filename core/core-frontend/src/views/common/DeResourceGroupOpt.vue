@@ -139,7 +139,7 @@ const optInit = (type, data: BusiTreeNode, exec, parentSelect = false) => {
   if (['newFolder'].includes(exec)) {
     resourceForm.name = ''
   } else if ('copy' === exec) {
-    resourceForm.name = data.name + '-copy'
+    resourceForm.name = data.name + '_copy'
   } else {
     resourceForm.name = data.name
   }

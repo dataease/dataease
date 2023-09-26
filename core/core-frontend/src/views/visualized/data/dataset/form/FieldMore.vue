@@ -156,11 +156,17 @@ const emit = defineEmits(['handleCommand'])
             </template>
           </el-dropdown>
         </el-dropdown-item>
-        <el-dropdown-item command="editor">
+        <el-dropdown-item v-if="extField === 2" command="editor">
           <el-icon>
             <Icon name="icon_edit_outlined"></Icon>
           </el-icon>
           编辑
+        </el-dropdown-item>
+        <el-dropdown-item command="rename">
+          <el-icon>
+            <Icon name="dv-rename"></Icon>
+          </el-icon>
+          重命名
         </el-dropdown-item>
         <el-dropdown-item command="copy">
           <el-icon>

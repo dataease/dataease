@@ -318,6 +318,9 @@ const handleFieldMore = (ele, type) => {
     case 'editor':
       editField(ele)
       break
+    case 'rename':
+      renameField(ele)
+      break
     case 'custom':
       currentField.value.id = ele.id
       updateCustomTime.value = true
@@ -414,20 +417,20 @@ const currentNormalField = ref({
   name: ''
 })
 
-const editField = item => {
-  if (item.extField === 2) {
-    editCalcField.value = true
-    nextTick(() => {
-      calcEdit.value.initEdit(item, dimensions.value, quota.value)
-    })
-    return
-  }
+const renameField = item => {
   const { id, name } = item
   currentNormalField.value = {
     id,
     name
   }
   editNormalField.value = true
+}
+
+const editField = item => {
+  editCalcField.value = true
+  nextTick(() => {
+    calcEdit.value.initEdit(item, dimensions.value, quota.value)
+  })
 }
 
 const closeNormalField = () => {
@@ -1633,7 +1636,7 @@ const treeProps = {
   </el-dialog>
   <el-dialog
     class="create-dialog"
-    :title="t('dataset.field_edit')"
+    :title="t('datasource.field_rename')"
     v-model="editNormalField"
     width="420px"
   >
@@ -1641,6 +1644,7 @@ const treeProps = {
       ref="ruleFormFieldRef"
       :rules="fieldRules"
       :model="currentNormalField"
+      require-asterisk-position="right"
       label-position="top"
       label-width="120px"
     >
