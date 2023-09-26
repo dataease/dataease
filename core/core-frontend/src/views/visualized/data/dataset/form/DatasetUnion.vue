@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { reactive, computed, ref, nextTick } from 'vue'
+import { reactive, computed, ref, nextTick, inject, type Ref } from 'vue'
 import AddSql from './AddSql.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import zeroNodeImg from '@/assets/img/drag.png'
@@ -42,11 +42,18 @@ const currentNode = ref<Node>()
 
 const sqlNode = ref<SqlNode>()
 
+const allfields = inject('allfields') as Ref
+
 const getNodeField = ({ datasourceId, id, info, tableName, type, currentDsFields }) => {
   return getTableField({ datasourceId, id, info, tableName, type })
     .then(res => {
+      const idOriginNameMap = allfields.value.reduce((pre, next) => {
+        pre[`${next.datasetTableId}${next.originName}`] = next.id
+        return pre
+      }, {})
       nodeField.value = res as unknown as Field[]
       nodeField.value.forEach(ele => {
+        ele.id = idOriginNameMap[`${id}${ele.originName}`]
         ele.checked = currentDsFields.map(ele => ele.originName).includes(ele.originName)
       })
     })

@@ -186,7 +186,7 @@ onMounted(() => {
 }
 .m-divider {
   border-color: rgba(31, 35, 41, 0.15);
-  margin: 16px 0 8px;
+  margin: 0 0 8px;
 }
 .inner-collapse {
   :deep(.ed-collapse-item__header) {

@@ -1009,7 +1009,7 @@ const dragVerticalTop = computed(() => {
                 </el-tabs>
               </div>
               <div style="padding-top: 1px">
-                <VQueryChartStyle :chart="view" :themes="themes"></VQueryChartStyle>
+                <VQueryChartStyle :chart="view" :themes="themes" />
               </div>
             </div>
             <el-tabs

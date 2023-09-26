@@ -21,88 +21,110 @@ const { chart } = toRefs(props)
 </script>
 
 <template>
-  <el-row class="view-panel">
-    <div class="attr-style">
-      <el-row class="query-collapse-style">
-        <el-collapse v-model="state.styleActiveNames" class="style-collapse">
-          <collapse-switch-item
-            themes="light"
-            v-model="chart.customStyle.component.show"
-            name="component"
-            :title="t('visualization.module')"
-          >
-            <el-checkbox size="small" v-model="chart.customStyle.component.titleShow">{{
-              t('chart.show') + t('chart.title')
-            }}</el-checkbox>
-            <div class="query-collapse-item">
+  <div class="attr-style">
+    <el-row class="de-collapse-style">
+      <el-collapse v-model="state.styleActiveNames" class="style-collapse">
+        <collapse-switch-item
+          themes="light"
+          v-model="chart.customStyle.component.show"
+          name="component"
+          :title="t('visualization.module')"
+        >
+          <el-form label-position="top" :disabled="!chart.customStyle.component.show">
+            <el-form-item class="form-item margin-bottom-8">
+              <el-checkbox size="small" v-model="chart.customStyle.component.titleShow">
+                {{ t('chart.show') + t('chart.title') }}
+              </el-checkbox>
+            </el-form-item>
+            <el-form-item class="form-item" style="padding-left: 20px">
               <el-input
                 :disabled="!chart.customStyle.component.titleShow"
                 v-model.lazy="chart.customStyle.component.title"
               />
-            </div>
-            <el-checkbox size="small" v-model="chart.customStyle.component.borderShow">{{
-              t('visualization.board')
-            }}</el-checkbox>
-            <div class="query-collapse-item">
+            </el-form-item>
+            <el-form-item class="form-item margin-bottom-8">
+              <el-checkbox size="small" v-model="chart.customStyle.component.borderShow">
+                {{ t('visualization.board') }}
+              </el-checkbox>
+            </el-form-item>
+            <el-form-item class="form-item" style="padding-left: 20px">
               <el-color-picker
+                :trigger-width="108"
                 is-custom
                 v-model="chart.customStyle.component.borderColor"
                 :disabled="!chart.customStyle.component.borderShow"
                 :predefine="predefineColors"
               />
-            </div>
-            <el-checkbox size="small" v-model="chart.customStyle.component.bgColorShow">{{
-              t('chart.custom_case') + t('chart.backgroundColor')
-            }}</el-checkbox>
-            <div class="query-collapse-item">
+            </el-form-item>
+            <el-form-item class="form-item margin-bottom-8">
+              <el-checkbox size="small" v-model="chart.customStyle.component.bgColorShow">
+                {{ t('chart.custom_case') + t('chart.backgroundColor') }}
+              </el-checkbox>
+            </el-form-item>
+            <el-form-item class="form-item" style="padding-left: 20px">
               <el-color-picker
+                :trigger-width="108"
                 is-custom
                 v-model="chart.customStyle.component.bgColor"
                 :disabled="!chart.customStyle.component.bgColorShow"
                 :predefine="predefineColors"
               />
-            </div>
-            <el-divider />
-            <span> 展示按钮 </span>
-            <div class="query-collapse-item query-component">
+            </el-form-item>
+
+            <el-divider class="m-divider" />
+            <el-form-item class="form-item" label="展示按钮">
               <el-checkbox-group v-model="chart.customStyle.component.btnList">
                 <el-checkbox size="small" disabled label="sure">
-                  {{ t('commons.adv_search.search') }}</el-checkbox
-                >
-                <el-checkbox size="small" label="clear"> {{ t('commons.clear') }}</el-checkbox>
-                <el-checkbox size="small" label="reset">{{
-                  t('commons.adv_search.reset')
-                }}</el-checkbox>
+                  {{ t('commons.adv_search.search') }}
+                </el-checkbox>
+                <el-checkbox size="small" label="clear">
+                  {{ t('commons.clear') }}
+                </el-checkbox>
+                <el-checkbox size="small" label="reset">
+                  {{ t('commons.adv_search.reset') }}
+                </el-checkbox>
               </el-checkbox-group>
-            </div>
-            <span>
-              {{ t('chart.label_position') }}
-            </span>
-            <div class="query-collapse-item query-component">
-              <el-icon
-                :class="[
-                  'layout-icon',
-                  chart.customStyle.component.layout === 'vertical' && 'active'
-                ]"
-                @click="chart.customStyle.component.layout = 'vertical'"
-              >
-                <icon name="icon_title-top-align_outlined"></icon>
-              </el-icon>
-              <el-icon
-                :class="[
-                  'layout-icon',
-                  chart.customStyle.component.layout === 'horizontal' && 'active'
-                ]"
-                @click="chart.customStyle.component.layout = 'horizontal'"
-              >
-                <icon name="icon_title-left-align_outlined"></icon>
-              </el-icon>
-            </div>
-          </collapse-switch-item>
-        </el-collapse>
-      </el-row>
-    </div>
-  </el-row>
+            </el-form-item>
+            <el-form-item class="form-item" :label="t('chart.label_position')">
+              <el-radio-group class="icon-radio-group" v-model="chart.customStyle.component.layout">
+                <el-radio label="vertical">
+                  <el-tooltip effect="dark" placement="top">
+                    <template #content>
+                      {{ t('chart.text_pos_top') }}
+                    </template>
+                    <div
+                      class="icon-btn"
+                      :class="{ active: chart.customStyle.component.layout === 'vertical' }"
+                    >
+                      <el-icon>
+                        <Icon name="icon_title-top-align_outlined" />
+                      </el-icon>
+                    </div>
+                  </el-tooltip>
+                </el-radio>
+
+                <el-radio label="horizontal">
+                  <el-tooltip effect="dark" placement="top">
+                    <template #content>
+                      {{ t('chart.text_pos_left') }}
+                    </template>
+                    <div
+                      class="icon-btn"
+                      :class="{ active: chart.customStyle.component.layout === 'horizontal' }"
+                    >
+                      <el-icon>
+                        <Icon name="icon_title-left-align_outlined" />
+                      </el-icon>
+                    </div>
+                  </el-tooltip>
+                </el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-form>
+        </collapse-switch-item>
+      </el-collapse>
+    </el-row>
+  </div>
 </template>
 
 <style lang="less" scoped>
@@ -116,67 +138,96 @@ const { chart } = toRefs(props)
   overflow-y: auto;
   height: 100%;
   width: 100%;
+}
 
-  .query-collapse-style {
-    :deep(.ed-checkbox__label) {
-      color: #1f2329;
-      font-family: PingFang SC;
-      font-size: 12px !important;
-      font-style: normal;
-      font-weight: 400;
-      line-height: 20px !important;
+.form-item {
+  margin-bottom: 16px;
+
+  &.margin-bottom-8 {
+    margin-bottom: 8px !important;
+  }
+  &.no-margin-bottom {
+    margin-bottom: 0 !important;
+  }
+}
+.m-divider {
+  border-color: rgba(31, 35, 41, 0.15);
+  margin: 0 0 8px;
+}
+
+.icon-btn {
+  font-size: 16px;
+  line-height: 16px;
+  width: 24px;
+  height: 24px;
+  text-align: center;
+  border-radius: 4px;
+  padding-top: 4px;
+
+  color: #1f2329;
+
+  cursor: pointer;
+
+  &.dark {
+    color: #a6a6a6;
+    &.active {
+      color: #3370ff;
+      background-color: rgba(51, 112, 255, 0.1);
+    }
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+  }
+
+  &.active {
+    color: #3370ff;
+    background-color: rgba(51, 112, 255, 0.1);
+  }
+
+  &:hover {
+    background-color: rgba(31, 35, 41, 0.1);
+  }
+}
+
+.is-disabled {
+  .icon-btn {
+    color: #8f959e;
+    cursor: not-allowed;
+
+    &:hover {
+      background-color: inherit;
     }
 
-    :deep(.ed-checkbox__inner) {
-      width: 14px;
-      height: 14px;
-      &::after {
-        left: 4px;
+    &.active {
+      background-color: #f5f7fa;
+      &:hover {
+        background-color: #f5f7fa;
       }
     }
-    :deep(.ed-collapse-item__content) {
-      padding: 16px;
-      .query-collapse-item {
-        padding: 8px 8px 0 22px;
-        display: flex;
-        align-items: center;
-        margin-bottom: 16px;
-        --ed-component-size: 28px;
-
-        .ed-input-number {
-          margin-left: 8px;
-        }
-
-        .ed-checkbox__input.is-disabled.is-checked .ed-checkbox__inner {
-          background-color: var(--ed-color-primary-light-5);
-          color: var(--ed-color-primary-light-5);
-        }
-      }
-
-      .query-component {
-        padding: 8px 0 0 0;
-
-        .layout-icon {
-          width: 24px;
-          height: 24px;
-          font-size: 16px;
-          color: #1f2329;
-          cursor: pointer;
-
-          & + .layout-icon {
-            margin-left: 8px;
-          }
-          &.active {
-            color: #3370ff;
-            border-radius: 4px;
-            background: rgba(51, 112, 255, 0.1);
-          }
-        }
-        .ed-checkbox {
-          margin-right: 16px;
+    &.dark {
+      color: #5f5f5f;
+      &.active {
+        background-color: #373737;
+        &:hover {
+          background-color: #373737;
         }
       }
     }
+  }
+}
+.icon-radio-group {
+  :deep(.ed-radio) {
+    margin-right: 8px;
+
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+  :deep(.ed-radio__input) {
+    display: none;
+  }
+  :deep(.ed-radio__label) {
+    padding: 0;
   }
 }
 </style>

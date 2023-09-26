@@ -198,7 +198,13 @@ const propsTree = {
 const nodeClick = (data: BusiTreeNode) => {
   resourceForm.pid = data.id as string
 }
-
+const checkPid = pid => {
+  if (pid !== 0 && !pid) {
+    ElMessage.error('请选择目标文件夹')
+    return false
+  }
+  return true
+}
 const saveResource = () => {
   resource.value.validate(async result => {
     if (result) {
@@ -224,6 +230,9 @@ const saveResource = () => {
         default:
           params.pid = resourceForm.pid || pid.value || '0'
           break
+      }
+      if (cmd.value === 'move' && !checkPid(params.pid)) {
+        return
       }
       if (['newLeaf', 'newLeafAfter', 'newFolder', 'rename', 'move', 'copy'].includes(cmd.value)) {
         await dvNameCheck({ opt: cmd.value, ...params })
