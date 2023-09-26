@@ -217,9 +217,7 @@ onMounted(() => {
                   <el-form-item class="login-form-item" prop="username">
                     <el-input
                       v-model="state.loginForm.username"
-                      :placeholder="
-                        t('common.account') + '/' + t('commons.email') + '/' + t('commons.phone')
-                      "
+                      :placeholder="t('common.account') + '/' + t('commons.email')"
                       autofocus
                     />
                   </el-form-item>
