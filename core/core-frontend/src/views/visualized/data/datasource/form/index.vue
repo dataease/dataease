@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { reactive, ref, computed, watch, nextTick } from 'vue'
-import { ElIcon, ElMessage } from 'element-plus-secondary'
+import { ElIcon, ElMessage, ElMessageBox } from 'element-plus-secondary'
 import CreatDsGroup from './CreatDsGroup.vue'
 import { Icon } from '@/components/icon-custom'
 import type { DsType } from './DsTypeList.vue'
@@ -443,7 +443,19 @@ const beforeClose = () => {
     emits('refresh')
     wsCache.set('ds-new-success', false)
   }
-  visible.value = false
+  if (editDs.value) {
+    ElMessageBox.confirm(t('chart.tips'), {
+      confirmButtonType: 'primary',
+      tip: '你填写的信息未保存，确认退出吗？',
+      type: 'warning',
+      autofocus: false,
+      showClose: false
+    }).then(() => {
+      visible.value = false
+    })
+  } else {
+    visible.value = false
+  }
 }
 
 defineExpose({
