@@ -87,15 +87,15 @@ export const DEFAULT_COLOR_CASE_DARK: DeepPartial<ChartAttr> = {
   basicStyle: {
     colorScheme: 'default',
     colors: [
-      '#5470c6',
-      '#91cc75',
-      '#fac858',
-      '#ee6666',
-      '#73c0de',
-      '#3ba272',
-      '#fc8452',
-      '#9a60b4',
-      '#ea7ccc'
+      '#1E90FF',
+      '#90EE90',
+      '#00CED1',
+      '#E2BD84',
+      '#7A90E0',
+      '#3BA272',
+      '#2BE7FF',
+      '#0A8ADA',
+      '#FFD700'
     ],
     alpha: 100,
     gradient: false,
