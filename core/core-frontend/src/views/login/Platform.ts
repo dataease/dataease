@@ -12,7 +12,7 @@ export const toPlatformPage = val => {
     wsCache.set('out_auth_platform', 'default')
   } else if (val === 1) {
     wsCache.set('out_auth_platform', 'ldap')
-    window.location.href = curOrigin + '/ldapbi/#' + curLocation
+    // window.location.href = curOrigin + '/ldapbi/#' + curLocation
   } else if (val === 2) {
     wsCache.set('out_auth_platform', 'oidc')
     window.location.href = curOrigin + '/oidcbi/#' + curLocation
