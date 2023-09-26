@@ -2,6 +2,8 @@ package io.dataease.api.permissions.auth.vo;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import io.dataease.api.permissions.dataset.dto.DataSetColumnPermissionsDTO;
+import io.dataease.api.permissions.dataset.dto.DataSetRowPermissionsTreeDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -19,4 +21,8 @@ public class PermissionItem implements Serializable {
     private Long id;
     @Schema(description = "权重")
     private int weight;
+    @Schema(description = "列权限")
+    private DataSetColumnPermissionsDTO columnPermissions;
+    @Schema(description = "行权限")
+    private DataSetRowPermissionsTreeDTO rowPermissions;
 }
