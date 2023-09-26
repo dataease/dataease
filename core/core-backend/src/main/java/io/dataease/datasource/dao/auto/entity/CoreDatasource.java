@@ -11,7 +11,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-07-24
+ * @since 2023-09-26
  */
 @TableName("core_datasource")
 public class CoreDatasource implements Serializable {
@@ -63,6 +63,11 @@ public class CoreDatasource implements Serializable {
      * 更新时间
      */
     private Long updateTime;
+
+    /**
+     * 变更人
+     */
+    private Long updateBy;
 
     /**
      * 创建人ID
@@ -156,6 +161,14 @@ public class CoreDatasource implements Serializable {
         this.updateTime = updateTime;
     }
 
+    public Long getUpdateBy() {
+        return updateBy;
+    }
+
+    public void setUpdateBy(Long updateBy) {
+        this.updateBy = updateBy;
+    }
+
     public String getCreateBy() {
         return createBy;
     }
@@ -200,6 +213,7 @@ public class CoreDatasource implements Serializable {
         ", configuration = " + configuration +
         ", createTime = " + createTime +
         ", updateTime = " + updateTime +
+        ", updateBy = " + updateBy +
         ", createBy = " + createBy +
         ", status = " + status +
         ", qrtzInstance = " + qrtzInstance +

@@ -10,7 +10,7 @@ import org.apache.ibatis.annotations.Mapper;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-07-24
+ * @since 2023-09-26
  */
 @Mapper
 public interface CoreDatasourceMapper extends BaseMapper<CoreDatasource> {

@@ -14,6 +14,7 @@ import io.dataease.exception.DEException;
 import io.dataease.license.config.XpackInteract;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
+import io.dataease.utils.AuthUtils;
 import io.dataease.utils.TreeUtils;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
@@ -74,6 +75,8 @@ public class DataSourceManage {
     public void innerEdit(CoreDatasource coreDatasource) {
         UpdateWrapper<CoreDatasource> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("id", coreDatasource.getId());
+        coreDatasource.setUpdateTime(System.currentTimeMillis());
+        coreDatasource.setUpdateBy(AuthUtils.getUser().getUserId());
         coreDatasourceMapper.update(coreDatasource, updateWrapper);
     }
 
@@ -84,6 +87,8 @@ public class DataSourceManage {
         if (ObjectUtils.isEmpty(id) || ObjectUtils.isEmpty(sourceData = coreDatasourceMapper.selectById(id))) {
             DEException.throwException("resource not exist");
         }
+        sourceData.setUpdateTime(System.currentTimeMillis());
+        sourceData.setUpdateBy(AuthUtils.getUser().getUserId());
         sourceData.setPid(dataSourceDTO.getPid());
         sourceData.setName(dataSourceDTO.getName());
         coreDatasourceMapper.updateById(sourceData);

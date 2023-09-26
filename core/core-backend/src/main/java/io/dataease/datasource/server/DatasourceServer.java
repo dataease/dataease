@@ -149,6 +149,7 @@ public class DatasourceServer implements DatasourceApi {
         }
         coreDatasource.setTaskStatus(TaskStatus.WaitingForExecution.name());
         coreDatasource.setCreateBy(AuthUtils.getUser().getUserId().toString());
+        coreDatasource.setUpdateBy(AuthUtils.getUser().getUserId());
         dataSourceManage.innerSave(coreDatasource);
 
         if (dataSourceDTO.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name())) {
@@ -221,6 +222,7 @@ public class DatasourceServer implements DatasourceApi {
         CoreDatasource requestDatasource = new CoreDatasource();
         BeanUtils.copyBean(requestDatasource, dataSourceDTO);
         requestDatasource.setUpdateTime(System.currentTimeMillis());
+        requestDatasource.setUpdateBy(AuthUtils.getUser().getUserId());
         try {
             checkDatasourceStatus(requestDatasource);
         } catch (Exception ignore) {

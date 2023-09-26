@@ -201,7 +201,7 @@
         core_datasource.NAME,
         'datasource' AS type,
         core_datasource.create_by AS creator,
-        1 AS last_editor,
+        core_datasource.update_by AS last_editor,
         core_datasource.update_time AS last_edit_time
         FROM
         core_datasource

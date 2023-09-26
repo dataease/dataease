@@ -4175,5 +4175,7 @@ CREATE TABLE `visualization_linkage_field`
 
 SET FOREIGN_KEY_CHECKS = 1;
 
+ALTER TABLE `core_datasource`
+    ADD COLUMN `update_by` bigint NULL COMMENT '变更人' AFTER `update_time`;
 
 
