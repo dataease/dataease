@@ -54,7 +54,6 @@ onMounted(() => {
   &:hover {
     cursor: pointer;
     background-color: #f2f2f2;
-    color: var(--ed-color-primary);
   }
 }
 .active {

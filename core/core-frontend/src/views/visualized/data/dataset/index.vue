@@ -63,7 +63,7 @@ const resourceGroupOpt = ref()
 const curCanvasType = ref('')
 
 const createPanel = path => {
-  const baseUrl = `#/${path}?opt=create`
+  const baseUrl = `#/${path}?opt=create&id=${nodeInfo.id}`
   window.open(baseUrl, '_blank')
 }
 
