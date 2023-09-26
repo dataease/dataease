@@ -277,7 +277,11 @@ onMounted(() => {
 
     <!--gauge-begin-->
     <template v-if="props.chart.type.includes('gauge')">
-      <el-form-item :label="t('chart.min')" class="form-item" :class="'form-item-' + themes">
+      <el-form-item
+        :label="t('chart.min')"
+        class="form-item margin-bottom-8"
+        :class="'form-item-' + themes"
+      >
         <el-radio-group
           :effect="themes"
           v-model="state.miscForm.gaugeMinType"
@@ -367,7 +371,11 @@ onMounted(() => {
         </el-col>
       </el-row>
 
-      <el-form-item :label="t('chart.max')" class="form-item" :class="'form-item-' + themes">
+      <el-form-item
+        :label="t('chart.max')"
+        class="form-item margin-bottom-8"
+        :class="'form-item-' + themes"
+      >
         <el-radio-group
           v-model="state.miscForm.gaugeMaxType"
           size="small"
@@ -646,15 +654,17 @@ onMounted(() => {
           :effect="themes"
           v-model="state.miscForm.quotaFontIsItalic"
           @change="changeMisc('quotaFontIsItalic')"
-          >{{ t('chart.italic') }}</el-checkbox
         >
+          {{ t('chart.italic') }}
+        </el-checkbox>
         <el-checkbox
           size="small"
           :effect="themes"
           v-model="state.miscForm.quotaFontIsBolder"
           @change="changeMisc('quotaFontIsBolder')"
-          >{{ t('chart.bolder') }}</el-checkbox
         >
+          {{ t('chart.bolder') }}
+        </el-checkbox>
       </el-form-item>
       <el-form-item
         :label="t('chart.quota_letter_space')"
@@ -699,8 +709,9 @@ onMounted(() => {
           :effect="themes"
           v-model="state.miscForm.dimensionShow"
           @change="changeMisc('dimensionShow')"
-          >{{ t('chart.show') }}</el-checkbox
         >
+          {{ t('chart.show') }}
+        </el-checkbox>
       </el-form-item>
       <template v-if="state.miscForm.dimensionShow">
         <el-form-item
@@ -751,15 +762,17 @@ onMounted(() => {
             :effect="themes"
             v-model="state.miscForm.dimensionFontIsItalic"
             @change="changeMisc('dimensionFontIsItalic')"
-            >{{ t('chart.italic') }}</el-checkbox
           >
+            {{ t('chart.italic') }}
+          </el-checkbox>
           <el-checkbox
             size="small"
             :effect="themes"
             v-model="state.miscForm.dimensionFontIsBolder"
             @change="changeMisc('dimensionFontIsBolder')"
-            >{{ t('chart.bolder') }}</el-checkbox
           >
+            {{ t('chart.bolder') }}
+          </el-checkbox>
         </el-form-item>
         <el-form-item
           :label="t('chart.dimension_letter_space')"
@@ -790,8 +803,9 @@ onMounted(() => {
             :effect="themes"
             v-model="state.miscForm.dimensionFontShadow"
             @change="changeMisc('dimensionFontShadow')"
-            >{{ t('chart.font_shadow') }}</el-checkbox
           >
+            {{ t('chart.font_shadow') }}
+          </el-checkbox>
         </el-form-item>
         <el-divider />
         <el-form-item
@@ -866,5 +880,8 @@ onMounted(() => {
   float: left;
   color: #8492a6;
   font-size: 12px;
+}
+.margin-bottom-8 {
+  margin-bottom: 8px !important;
 }
 </style>

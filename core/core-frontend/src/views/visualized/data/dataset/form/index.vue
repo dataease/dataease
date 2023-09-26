@@ -683,7 +683,7 @@ const confirmEditUnion = () => {
   })
 
   if (unionFieldsLost) {
-    ElMessage.error('关联关系不正确!')
+    ElMessage.error('关联字段不能为空!')
     return
   }
 
@@ -751,6 +751,16 @@ const calculateHeight = (e: MouseEvent) => {
   dragHeight.value = e.pageY - 56
 }
 
+const dfs = arr => {
+  return arr.filter(ele => {
+    if (!!ele.children?.length && ele.type === 'folder') {
+      ele.children = dfs(ele.children)
+      return true
+    }
+    return ele.type !== 'folder'
+  })
+}
+
 const getDatasource = () => {
   getDatasourceList().then(res => {
     const _list = (res as unknown as DataSource[]) || []
@@ -759,6 +769,7 @@ const getDatasource = () => {
     } else {
       state.dataSourceList = _list
     }
+    state.dataSourceList = dfs(state.dataSourceList)
   })
 }
 

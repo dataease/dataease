@@ -177,8 +177,8 @@ export default {
   },
   auth: {
     sysParams_type: {
-      user_id: '用户ID',
-      user_name: '用户名',
+      user_id: '账号',
+      user_name: '姓名',
       user_source: '用户来源',
       user_email: '邮箱',
       dept: '组织',

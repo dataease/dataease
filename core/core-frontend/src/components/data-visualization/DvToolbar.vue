@@ -169,14 +169,16 @@ eventBus.on('clearCanvas', clearCanvas)
               ></Icon>
             </el-icon>
           </el-tooltip>
-          <el-icon class="toolbar-hover-icon opt-icon-redo" @click="redo()">
-            <Icon
-              :class="{
-                'toolbar-icon-disabled': snapshotIndex === snapshotStore.snapshotData.length - 1
-              }"
-              name="icon_redo_outlined"
-            ></Icon>
-          </el-icon>
+          <el-tooltip effect="dark" :content="$t('commons.reduction')" placement="bottom">
+            <el-icon class="toolbar-hover-icon opt-icon-redo" @click="redo()">
+              <Icon
+                :class="{
+                  'toolbar-icon-disabled': snapshotIndex === snapshotStore.snapshotData.length - 1
+                }"
+                name="icon_redo_outlined"
+              ></Icon>
+            </el-icon>
+          </el-tooltip>
         </div>
       </div>
       <div class="middle-area">
@@ -210,7 +212,14 @@ eventBus.on('clearCanvas', clearCanvas)
       </div>
     </div>
     <Teleport v-if="nameEdit" :to="'#dv-canvas-name'">
-      <input ref="nameInput" maxlength="50" v-model="inputName" @blur="closeEditCanvasName" />
+      <input
+        @keydown.stop
+        @keyup.stop
+        ref="nameInput"
+        maxlength="50"
+        v-model="inputName"
+        @blur="closeEditCanvasName"
+      />
     </Teleport>
     <el-button
       v-show="editMode === 'preview'"

@@ -145,12 +145,19 @@ const datasetTypeList = [
     command: 'folder'
   }
 ]
+
+const dsTableDataLoading = ref(false)
 const selectDataset = row => {
   Object.assign(dsTableDetail, row)
   userDrawer.value = true
-  getTableField({ tableName: row.tableName, datasourceId: nodeInfo.id }).then(res => {
-    state.dsTableData = res.data
-  })
+  dsTableDataLoading.value = true
+  getTableField({ tableName: row.tableName, datasourceId: nodeInfo.id })
+    .then(res => {
+      state.dsTableData = res.data
+    })
+    .finally(() => {
+      dsTableDataLoading.value = false
+    })
 }
 
 const handleSizeChange = pageSize => {
@@ -839,6 +846,42 @@ onMounted(() => {
                 :label="t('datasource.table_name')"
               />
               <el-table-column
+                key="status"
+                prop="status"
+                v-if="['api'].includes(nodeInfo.type.toLowerCase())"
+                label="最近更新状态"
+              >
+                <template #default="scope">
+                  <div class="flex-align-center">
+                    <template v-if="scope.row.status === 'Completed'">
+                      <el-icon>
+                        <icon name="icon_succeed_filled"></icon>
+                      </el-icon>
+                      {{ t('dataset.completed') }}
+                    </template>
+                    <template v-if="scope.row.status === 'UnderExecution'">
+                      {{ t('dataset.underway') }}
+                    </template>
+                    <template v-if="scope.row.status === 'Error' || scope.row.status === 'Warning'">
+                      <el-icon>
+                        <icon class="field-icon-location" name="icon_close_filled"></icon>
+                      </el-icon>
+                      {{ t('dataset.error') }}
+                    </template>
+                  </div>
+                </template>
+              </el-table-column>
+              <el-table-column
+                key="updateTime"
+                prop="updateTime"
+                v-if="['excel', 'api'].includes(nodeInfo.type.toLowerCase())"
+                label="最近更新时间"
+              >
+                <template v-slot:default="scope">
+                  <span>{{ timestampFormatDate(scope.row.updateTime) }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column
                 key="__operation"
                 :label="t('commons.operating')"
                 fixed="right"
@@ -1106,6 +1149,7 @@ onMounted(() => {
       </el-row>
       <el-scrollbar>
         <el-table
+          v-loading="dsTableDataLoading"
           header-cell-class-name="header-cell"
           :data="state.dsTableData"
           stripe

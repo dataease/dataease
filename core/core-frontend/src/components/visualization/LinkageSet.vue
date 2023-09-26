@@ -1,6 +1,5 @@
 <template>
   <el-dialog
-    v-loading="state.loading"
     ref="enlargeDialog"
     :append-to-body="true"
     :title="t('visualization.linkage_setting')"
@@ -9,7 +8,7 @@
     top="10vh"
     trigger="click"
   >
-    <div @keydown.stop @keyup.stop v-if="state.initState" style="height: 550px">
+    <div v-loading="loading" @keydown.stop @keyup.stop v-if="state.initState" style="height: 550px">
       <el-row style="flex-direction: row">
         <div class="top-area">
           <span class="top-area-text" style="margin-left: 0">已选图表：</span>
@@ -213,9 +212,8 @@ const linkageInfoTree = ref(null)
 const { t } = useI18n()
 const dialogShow = ref(false)
 const searchField = ref('')
-
+const loading = ref(false)
 const state = reactive({
-  loading: false,
   sourceLinkageInfo: {},
   curLinkageTargetViewsInfo: [],
   showSelected: false,
@@ -232,6 +230,7 @@ const state = reactive({
 })
 
 const dialogInit = viewItem => {
+  state.showSelected = false
   dialogShow.value = true
   state.initState = false
   init(viewItem)
@@ -292,7 +291,7 @@ const saveLinkageSetting = () => {
   state.curLinkageTargetViewsInfo.forEach(linkageInfo => {
     let subCheckCount = 0
     const linkageFields = linkageInfo['linkageFields']
-    if (linkageFields) {
+    if (linkageFields && linkageInfo.linkageActive) {
       linkageFields.forEach(function (linkage) {
         if (!(linkage.sourceField && linkage.targetField)) {
           subCheckCount++
@@ -317,7 +316,7 @@ const saveLinkageSetting = () => {
     sourceViewId: state.viewId,
     linkageInfo: state.curLinkageTargetViewsInfo
   }
-  state.loading = true
+  loading.value = true
   saveLinkage(request)
     .then(rsp => {
       ElMessage.success('保存成功')
@@ -331,10 +330,10 @@ const saveLinkageSetting = () => {
         dvMainStore.setNowPanelJumpInfo(rsp.data)
         cancel()
       })
-      state.loading = false
+      loading.value = false
     })
     .catch(() => {
-      state.loading = false
+      loading.value = false
     })
 }
 
@@ -378,7 +377,7 @@ const curLinkageOnlyTargetViewsInfo = computed(() =>
 watch(
   () => state.showSelected,
   (newValue, oldValue) => {
-    linkageInfoTree.value.filter(newValue)
+    linkageInfoTree.value?.filter(newValue)
   }
 )
 

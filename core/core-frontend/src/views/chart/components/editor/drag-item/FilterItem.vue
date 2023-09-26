@@ -1,9 +1,9 @@
 <script lang="tsx" setup>
 import { useI18n } from '@/hooks/web/useI18n'
-import { reactive, ref, toRefs, watch } from 'vue'
+import { onMounted, reactive, ref, toRefs, watch } from 'vue'
 import { formatterItem } from '@/views/chart/components/js/formatter'
 import { getItemType } from './utils'
-import { Delete, Edit, Filter } from '@element-plus/icons-vue'
+import { Delete, Filter } from '@element-plus/icons-vue'
 import { fieldType } from '@/utils/attr'
 
 const { t } = useI18n()
@@ -90,7 +90,9 @@ const getItemTagColor = () => {
   state.tagColor = getItemType(props.dimensionData, props.quotaData, props.item)
 }
 
-getItemTagColor()
+onMounted(() => {
+  getItemTagColor()
+})
 </script>
 
 <template>

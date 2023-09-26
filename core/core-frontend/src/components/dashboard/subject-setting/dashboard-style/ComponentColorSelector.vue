@@ -3,121 +3,73 @@
     <el-form
       ref="colorFormRef"
       :model="colorForm"
-      label-width="80px"
       size="small"
       style="width: 100%; padding-bottom: 8px"
     >
-      <div style="padding: 16px 8px 0">
-        <el-form-item :label="t('chart.color_case')" class="form-item">
-          <el-popover placement="bottom" width="400" trigger="click" :persistent="false">
-            <template #reference>
-              <div :style="{ cursor: 'pointer', marginTop: '2px', width: '180px' }">
-                <span
-                  v-for="(c, index) in colorForm.basicStyle?.colors"
-                  :key="index"
-                  :style="{
-                    width: '20px',
-                    height: '20px',
-                    display: 'inline-block',
-                    backgroundColor: c
-                  }"
-                />
-              </div>
-            </template>
+      <div>
+        <custom-color-style-select
+          v-if="colorAreaInit"
+          class="custom-color-pick"
+          v-model="state"
+          :themes="themes"
+          @change-basic-style="changeColorOption('value')"
+        ></custom-color-style-select>
 
-            <div style="padding: 6px 10px">
-              <div>
-                <span class="color-label">{{ t('chart.system_case') }}</span>
-                <el-select
-                  v-model="colorForm.basicStyle.colorScheme"
-                  :placeholder="t('chart.pls_slc_color_case')"
-                  size="small"
-                  @change="changeColorOption('value')"
+        <el-form-item class="form-item" :class="'form-item-' + themes">
+          <el-checkbox
+            size="small"
+            :effect="themes"
+            v-model="colorForm.basicStyle.gradient"
+            @change="changeColorCase('gradient')"
+          >
+            {{ $t('chart.gradient') }}{{ $t('chart.color') }}
+          </el-checkbox>
+        </el-form-item>
+
+        <el-form-item
+          :effect="themes"
+          style="max-width: 224px"
+          :class="'form-item-' + themes"
+          class="form-item alpha-slider"
+        >
+          <div class="alpha-setting">
+            <label class="alpha-label" :class="{ dark: 'dark' === themes }">
+              {{ t('chart.not_alpha') }}
+            </label>
+            <el-row style="flex: 1" :gutter="8">
+              <el-col :span="13">
+                <el-form-item class="form-item alpha-slider" :class="'form-item-' + themes">
+                  <el-slider
+                    :effect="themes"
+                    v-model="colorForm.basicStyle.alpha"
+                    @change="changeColorCase('alpha')"
+                  />
+                </el-form-item>
+              </el-col>
+              <el-col :span="11">
+                <el-form-item
+                  class="form-item"
+                  style="padding-top: 4px"
+                  :class="'form-item-' + themes"
                 >
-                  <el-option
-                    v-for="option in colorCases"
-                    :key="option.value"
-                    :label="option.name"
-                    :value="option.value"
-                    style="display: flex; align-items: center"
+                  <el-input
+                    type="number"
+                    :effect="themes"
+                    v-model="colorForm.basicStyle.alpha"
+                    :min="0"
+                    :max="100"
+                    class="alpha-input-number"
+                    :controls="false"
+                    @change="changeColorCase('alpha')"
                   >
-                    <div style="float: left">
-                      <span
-                        v-for="(c, index) in option.colors"
-                        :key="index"
-                        :style="{
-                          width: '20px',
-                          height: '20px',
-                          float: 'left',
-                          backgroundColor: c
-                        }"
-                      />
-                    </div>
-                    <span style="margin-left: 4px">{{ option.name }}</span>
-                  </el-option>
-                </el-select>
-                <el-button
-                  size="small"
-                  type="text"
-                  style="margin-left: 2px"
-                  @click="resetCustomColor"
-                  >{{ t('chart.reset') }}
-                </el-button>
-              </div>
-              <!--自定义配色方案-->
-              <div>
-                <div style="display: flex; align-items: center; margin-top: 10px">
-                  <span class="color-label">{{ t('chart.custom_case') }}</span>
-                  <span>
-                    <el-radio-group v-model="state.colorIndex" class="color-type">
-                      <el-radio
-                        v-for="(c, index) in colorForm.basicStyle.colors"
-                        :key="index"
-                        :label="index"
-                        style="height: 26px; padding: 2px; border-radius: 3px"
-                        @change="switchColor(index)"
-                      >
-                        <span
-                          :style="{
-                            width: '20px',
-                            height: '20px',
-                            display: 'inline-block',
-                            'border-radius': '3px',
-                            backgroundColor: c
-                          }"
-                        />
-                      </el-radio>
-                    </el-radio-group>
-                  </span>
-                </div>
-                <div style="display: flex; align-items: center; margin-top: 10px">
-                  <span class="color-label" />
-                  <span>
-                    <el-color-picker
-                      v-model="state.customColor"
-                      size="small"
-                      class="color-picker-style"
-                      :predefine="predefineColors"
-                      is-custom
-                      @change="switchColorCase"
-                    />
-                  </span>
-                </div>
-              </div>
-            </div>
-          </el-popover>
+                    <template #suffix> % </template>
+                  </el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+          </div>
         </el-form-item>
-        <el-form-item :label="t('chart.not_alpha')" class="form-item form-item-slider">
-          <el-slider
-            v-model="colorForm.basicStyle.alpha"
-            show-input
-            :show-input-controls="false"
-            input-size="small"
-            @change="changeColorCase('alpha')"
-          />
-        </el-form-item>
-
-        <el-divider class="m-divider"></el-divider>
+        <el-divider class="m-divider" :class="'m-divider-' + themes"></el-divider>
       </div>
 
       <el-collapse-item
@@ -207,15 +159,31 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref, toRefs } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { COLOR_CASES, COLOR_PANEL } from '@/views/chart/components/editor/util/chart'
+import {
+  COLOR_CASES,
+  COLOR_PANEL,
+  DEFAULT_BASIC_STYLE
+} from '@/views/chart/components/editor/util/chart'
 import { useI18n } from '@/hooks/web/useI18n'
 import eventBus from '@/utils/eventBus'
 import { storeToRefs } from 'pinia'
+import CustomColorStyleSelect from '@/views/chart/components/editor/editor-style/components/CustomColorStyleSelect.vue'
 const { t } = useI18n()
+const props = defineProps({
+  themes: {
+    type: String,
+    default: 'light'
+  }
+})
+
+let colorAreaInit = ref(false)
+
+const { themes } = toRefs(props)
 const emits = defineEmits(['onColorChange'])
 const colorFormRef = ref(null)
+
 const colorForm = computed(
   () => canvasStyleData.value.component.chartColor as DeepPartial<ChartAttr>
 )
@@ -224,6 +192,7 @@ const colorCases = COLOR_CASES
 const predefineColors = COLOR_PANEL
 
 const state = reactive({
+  basicStyleForm: JSON.parse(JSON.stringify(DEFAULT_BASIC_STYLE)) as ChartBasicStyle,
   customColor: null,
   colorIndex: 0
 })
@@ -231,20 +200,16 @@ const dvMainStore = dvMainStoreWithOut()
 const { canvasStyleData } = storeToRefs(dvMainStore)
 const initForm = () => {
   state.customColor = colorForm.value.basicStyle.colors[0]
+  setTimeout(() => {
+    state.basicStyleForm = canvasStyleData.value.component.chartColor.basicStyle
+    colorAreaInit.value = true
+  }, 1000)
   const tableHeader = colorForm.value.tableHeader
   const tableCell = colorForm.value.tableCell
   tableHeader.tableHeaderFontColor = tableHeader.tableHeaderFontColor ?? tableCell.tableFontColor
 }
 const changeColorOption = (modifyName = 'value') => {
-  const items = colorCases.filter(ele => {
-    return ele.value === colorForm.value.basicStyle.colorScheme
-  })
-  colorForm.value.basicStyle.colors = JSON.parse(JSON.stringify(items[0].colors))
-
-  state.customColor = colorForm.value.basicStyle.colors[0]
-  state.colorIndex = 0
-
-  // reset custom color
+  colorForm.value.basicStyle = state.basicStyleForm
   changeColorCase(modifyName)
 }
 
@@ -408,15 +373,75 @@ span {
   border-color: rgba(31, 35, 41, 0.15);
   margin: 16px 0 8px;
 }
+
+.m-divider-dark {
+  border-color: rgba(233, 236, 241, 0.15) !important;
+}
 .inner-collapse {
   :deep(.ed-collapse-item__header) {
     background-color: transparent !important;
   }
   :deep(.ed-collapse-item__header) {
-    border: none;
+    border: none !important;
+    margin-left: 0px;
+    font-size: 12px;
   }
   :deep(.ed-collapse-item__wrap) {
-    border: none;
+    border: none !important;
+  }
+}
+
+.custom-color-pick {
+  max-width: 224px !important;
+  :deep(.ed-form-item__label) {
+    justify-content: flex-start;
+  }
+  :deep(.ed-input__wrapper) {
+    padding: 0 16px;
+  }
+  :deep(.custom-color-setting-btn) {
+    margin-top: 23px;
+  }
+}
+
+.alpha-setting {
+  display: flex;
+  width: 100%;
+
+  .alpha-slider {
+    padding: 4px 8px 0 8px;
+    :deep(.ed-slider__button-wrapper) {
+      --ed-slider-button-wrapper-size: 36px;
+      --ed-slider-button-size: 16px;
+    }
+  }
+
+  .alpha-label {
+    padding-right: 8px;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    height: 32px;
+    line-height: 32px;
+    display: inline-flex;
+    align-items: flex-start;
+
+    min-width: 56px;
+
+    &.dark {
+      color: #a6a6a6;
+    }
+  }
+  .alpha-input-number {
+    :deep(input) {
+      -webkit-appearance: none;
+      -moz-appearance: textfield;
+
+      &::-webkit-inner-spin-button,
+      &::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+      }
+    }
   }
 }
 </style>

@@ -464,6 +464,7 @@ const emits = defineEmits(['closeJumpSetDialog'])
 const outerContentEditor = ref(null)
 
 const dialogInit = viewItem => {
+  state.showSelected = false
   dialogShow.value = true
   state.initState = false
   init(viewItem)
@@ -550,28 +551,30 @@ const save = () => {
   // 字段检查
   let subCheckCountAll = 0
   state.linkJump.linkJumpInfoArray.forEach(linkJumpInfo => {
-    let subCheckCount = 0
-    if (linkJumpInfo.linkType === 'inner') {
-      if (!linkJumpInfo.targetDvId) {
-        subCheckCount++
-        subCheckCountAll++
+    if (linkJumpInfo.checked) {
+      let subCheckCount = 0
+      if (linkJumpInfo.linkType === 'inner') {
+        if (!linkJumpInfo.targetDvId) {
+          subCheckCount++
+          subCheckCountAll++
+        }
+        linkJumpInfo.targetViewInfoList &&
+          linkJumpInfo.targetViewInfoList.forEach(function (link) {
+            if (!(link.sourceFieldActiveId && link.targetFieldId && link.targetViewId)) {
+              subCheckCount++
+              subCheckCountAll++
+            }
+          })
       }
-      linkJumpInfo.targetViewInfoList &&
-        linkJumpInfo.targetViewInfoList.forEach(function (link) {
-          if (!(link.sourceFieldActiveId && link.targetFieldId && link.targetViewId)) {
-            subCheckCount++
-            subCheckCountAll++
-          }
-        })
-    }
-    if (linkJumpInfo.linkType === 'outer') {
-      if (!linkJumpInfo.content) {
-        subCheckCount++
-        subCheckCountAll++
+      if (linkJumpInfo.linkType === 'outer') {
+        if (!linkJumpInfo.content) {
+          subCheckCount++
+          subCheckCountAll++
+        }
       }
-    }
-    if (subCheckCount > 0) {
-      ElMessage.error('字段【' + linkJumpInfo.sourceFieldName + '】存在空配置，请先完善配置！')
+      if (subCheckCount > 0) {
+        ElMessage.error('字段【' + linkJumpInfo.sourceFieldName + '】存在空配置，请先完善配置！')
+      }
     }
   })
   if (subCheckCountAll) {
@@ -701,7 +704,7 @@ const filterNodeMethod = (value, data) => {
 watch(
   () => state.showSelected,
   (newValue, oldValue) => {
-    linkJumpInfoTree.value.filter(newValue)
+    linkJumpInfoTree.value?.filter(newValue)
   }
 )
 

@@ -55,7 +55,6 @@
             :effect="themes"
             :disabled="!state.commonBackground.backgroundColorSelect"
             is-custom
-            :trigger-width="197"
             class="color-picker-style"
             :predefine="state.predefineColors"
             @change="onBackgroundChange"
@@ -190,34 +189,24 @@
 <script setup lang="ts">
 import { queryVisualizationBackground } from '@/api/visualization/visualizationBackground'
 import { COLOR_PANEL } from '@/views/chart/components/editor/util/chart'
-import { computed, onMounted, reactive, toRefs, watch } from 'vue'
-import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { onMounted, reactive, watch } from 'vue'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { beforeUploadCheck, uploadFileResult } from '@/api/staticResource'
 import { useI18n } from '@/hooks/web/useI18n'
 import { deepCopy } from '@/utils/utils'
-const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const { t } = useI18n()
 const emits = defineEmits(['onBackgroundChange'])
 
-const props = defineProps({
-  componentPosition: {
-    type: String,
-    default: 'dashboard'
-  },
-  themes: {
-    type: String,
-    default: 'dark'
-  },
-  commonBackgroundPop: {
-    type: Object,
-    required: true
-  }
-})
-
-const { componentPosition, themes } = toRefs(props)
+const props = withDefaults(
+  defineProps<{
+    componentPosition?: string
+    themes?: EditorTheme
+    commonBackgroundPop: any
+  }>(),
+  { themes: 'dark', componentPosition: 'dashboard' }
+)
 
 const state = reactive({
   commonBackground: {},
@@ -398,7 +387,7 @@ watch(
     line-height: 20px;
   }
 
-  .w100 {
+  &.w100 {
     .ed-input-number {
       width: 100%;
     }

@@ -12,6 +12,7 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 const dvMainStore = dvMainStoreWithOut()
 
 const componentWrapperInnerRef = ref(null)
+const componentEditBarRef = ref(null)
 
 const props = defineProps({
   active: {
@@ -98,6 +99,9 @@ const htmlToImage = () => {
 
 const handleInnerMouseDown = e => {
   // do setCurComponent
+  if (showPosition.value.includes('multiplexing')) {
+    componentEditBarRef.value.multiplexingCheckOut()
+  }
 }
 
 onMounted(() => {
@@ -174,14 +178,15 @@ const commonBackgroundSvgInner = computed(() => {
 <template>
   <div
     class="wrapper-outer"
-    :class="showPosition"
+    :class="showPosition + '-' + config.component"
     @click="onClick"
     @mousedown="handleInnerMouseDown"
     @mouseenter="onMouseEnter"
   >
     <component-edit-bar
-      v-if="!showPosition.includes('canvas')"
+      v-if="!showPosition.includes('canvas') && dvInfo.type === 'dashboard'"
       class="wrapper-edit-bar"
+      ref="componentEditBarRef"
       :class="{ 'wrapper-edit-bar-active': active }"
       :canvas-id="canvasId"
       :index="index"
@@ -240,7 +245,7 @@ const commonBackgroundSvgInner = computed(() => {
 .wrapper-edit-bar-active {
   display: inherit !important;
 }
-.preview {
+.preview-UserView {
   .wrapper-edit-bar {
     display: none;
   }

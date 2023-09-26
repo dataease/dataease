@@ -6,6 +6,7 @@ import { Icon } from '@/components/icon-custom'
 import { loginApi, queryDekey } from '@/api/login'
 import { useCache } from '@/hooks/web/useCache'
 import { useAppStoreWithOut } from '@/store/modules/app'
+import { CustomPassword } from '@/components/custom-password'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import { rsaEncryp } from '@/utils/encryption'
 import router from '@/router'
@@ -223,7 +224,7 @@ onMounted(() => {
                     />
                   </el-form-item>
                   <el-form-item prop="password">
-                    <el-input
+                    <CustomPassword
                       v-model="state.loginForm.password"
                       :placeholder="t('common.pwd')"
                       show-password

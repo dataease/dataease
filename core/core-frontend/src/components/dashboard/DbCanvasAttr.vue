@@ -16,7 +16,6 @@ import Slider from '@/components/dashboard/subject-setting/pre-subject/Slider.vu
 import OverallSetting from '@/components/dashboard/subject-setting/dashboard-style/OverallSetting.vue'
 import ComponentColorSelector from '@/components/dashboard/subject-setting/dashboard-style/ComponentColorSelector.vue'
 import { adaptCurThemeCommonStyleAll } from '@/utils/canvasStyle'
-import eventBus from '@/utils/eventBus'
 import ViewSimpleTitle from '@/components/dashboard/subject-setting/dashboard-style/ViewSimpleTitle.vue'
 import FilterStyleSimpleSelector from '@/components/dashboard/subject-setting/dashboard-style/FilterStyleSimpleSelector.vue'
 import BackgroundOverallCommon from '@/components/visualization/component-background/BackgroundOverallCommon.vue'
@@ -195,7 +194,12 @@ watch([() => canvasStyleData.value.background], () => {
 })
 
 onMounted(() => {
-  eventBus.on('onSubjectChange', onSubjectChange)
+  useEmitt({
+    name: 'onSubjectChange',
+    callback: () => {
+      onSubjectChange()
+    }
+  })
   nextTick(() => {
     canvasAttrInit = true
   })
@@ -204,7 +208,7 @@ onMounted(() => {
 
 <template>
   <div class="attr-container">
-    <el-row v-if="state.collapseShow">
+    <el-row>
       <el-collapse v-model="canvasAttrActiveNames">
         <el-collapse-item title="仪表板风格" name="style">
           <slider />
@@ -265,8 +269,8 @@ onMounted(() => {
             @onBackgroundChange="componentBackgroundChange"
           />
         </el-collapse-item>
-        <el-collapse-item :title="'图表配色'" name="graphical" class="no-padding">
-          <component-color-selector @onColorChange="onColorChange" />
+        <el-collapse-item :title="'图表配色'" name="graphical">
+          <component-color-selector v-if="state.collapseShow" @onColorChange="onColorChange" />
         </el-collapse-item>
         <el-collapse-item :title="t('visualization.chart_title')" name="viewTitle">
           <view-simple-title @onTextChange="onTextChange" />
