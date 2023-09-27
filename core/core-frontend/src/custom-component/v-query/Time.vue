@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { toRefs, provide, PropType, ref, onBeforeMount, watch, nextTick, computed } from 'vue'
 import { Calendar } from '@element-plus/icons-vue'
+import { type DatePickType } from 'element-plus-secondary'
 
 interface SelectConfig {
   selectValue: any
@@ -8,6 +9,8 @@ interface SelectConfig {
   defaultValueCheck: boolean
   id: string
   displayType: string
+  timeGranularity: DatePickType
+  timeGranularityMultiple: DatePickType
   options?: Array<{
     label: string
     value: string
@@ -22,7 +25,8 @@ const props = defineProps({
         selectValue: '',
         defaultValue: '',
         defaultValueCheck: false,
-        displayType: '1'
+        displayType: '1',
+        timeGranularity: 'date'
       }
     }
   },
@@ -43,35 +47,6 @@ const props = defineProps({
     })
   }
 })
-const shortcuts = [
-  {
-    text: 'Last week',
-    value: () => {
-      const end = new Date()
-      const start = new Date()
-      start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
-      return [start, end]
-    }
-  },
-  {
-    text: 'Last month',
-    value: () => {
-      const end = new Date()
-      const start = new Date()
-      start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
-      return [start, end]
-    }
-  },
-  {
-    text: 'Last 3 months',
-    value: () => {
-      const end = new Date()
-      const start = new Date()
-      start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
-      return [start, end]
-    }
-  }
-]
 const selectValue = ref()
 const multiple = ref(false)
 
@@ -165,10 +140,9 @@ defineExpose({
 <template>
   <el-date-picker
     v-model="selectValue"
-    type="datetimerange"
+    :type="config.timeGranularityMultiple"
     :style="selectStyle"
     v-if="multiple"
-    :shortcuts="shortcuts"
     @change="handleValueChange"
     :prefix-icon="Calendar"
     :range-separator="$t('cron.to')"
@@ -179,10 +153,9 @@ defineExpose({
     v-else
     v-model="selectValue"
     @change="handleValueChange"
-    type="datetime"
+    :type="config.timeGranularity"
     :style="selectStyle"
     :prefix-icon="Calendar"
     :placeholder="$t('commons.date.select_date_time')"
-    format="YYYY/MM/DD HH:mm:ss"
   />
 </template>

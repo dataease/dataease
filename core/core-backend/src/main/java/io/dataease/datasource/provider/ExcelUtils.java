@@ -49,6 +49,7 @@ public class ExcelUtils {
                 datasetTableDTO.setTableName(rootNode.get(i).get("deTableName").asText());
                 datasetTableDTO.setName(rootNode.get(i).get("deTableName").asText());
                 datasetTableDTO.setDatasourceId(datasourceRequest.getDatasource().getId());
+                datasetTableDTO.setLastUpdateTime(rootNode.get(i).get("lastUpdateTime") == null? datasourceRequest.getDatasource().getCreateTime(): rootNode.get(i).get("lastUpdateTime").asLong(0L));
                 tableDescs.add(datasetTableDTO);
             }
         } catch (Exception e) {
@@ -167,6 +168,7 @@ public class ExcelUtils {
             if (excelSheetData.getExcelLabel().length() > 40) {
                 DEException.throwException(excelSheetData.getExcelLabel() + "长度不能大于40！");
             }
+            excelSheetData.setLastUpdateTime(System.currentTimeMillis());
             excelSheetData.setTableName(excelSheetData.getExcelLabel());
             excelSheetData.setDeTableName("excel_" + excelSheetData.getExcelLabel() + "_" + UUID.randomUUID().toString().replace("-", "").substring(0, 10));
             excelSheetData.setPath(filePath);

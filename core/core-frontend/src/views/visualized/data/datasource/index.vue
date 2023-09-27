@@ -223,8 +223,23 @@ const handleLoadExcel = data => {
 
 const validateDS = () => {
   validateById(nodeInfo.id as number)
-    .then(() => {
-      ElMessage.success('校验成功')
+    .then(res => {
+      if (res.data.type === 'API') {
+        let error = 0
+        const status = JSON.parse(res.data.status)
+        for (let i = 0; i < status.length; i++) {
+          if (status[i].status === 'Error') {
+            error++
+          }
+        }
+        if (error === 0) {
+          ElMessage.success('校验成功')
+        } else {
+          ElMessage.error('校验失败')
+        }
+      } else {
+        ElMessage.success('校验成功')
+      }
     })
     .catch(() => {
       ElMessage.error('校验失败')
@@ -731,7 +746,7 @@ onMounted(() => {
             <span class="create-user">
               {{ t('visualization.create_by') }}:{{ nodeInfo.creator }}
             </span>
-            <el-popover placement="bottom" width="290" trigger="hover">
+            <el-popover show-arrow placement="bottom" width="290" trigger="hover">
               <template #reference>
                 <el-icon class="create-user">
                   <Icon name="icon_info_outlined"></Icon>
@@ -872,13 +887,13 @@ onMounted(() => {
                 </template>
               </el-table-column>
               <el-table-column
-                key="updateTime"
-                prop="updateTime"
+                key="lastUpdateTime"
+                prop="lastUpdateTime"
                 v-if="['excel', 'api'].includes(nodeInfo.type.toLowerCase())"
                 label="最近更新时间"
               >
                 <template v-slot:default="scope">
-                  <span>{{ timestampFormatDate(scope.row.updateTime) }}</span>
+                  <span>{{ timestampFormatDate(scope.row.lastUpdateTime) }}</span>
                 </template>
               </el-table-column>
               <el-table-column
@@ -1033,6 +1048,14 @@ onMounted(() => {
                       t('datasource.valid')
                     }}</span>
                   </el-col>
+                  <el-col style="text-align: right" :span="5">
+                    <el-button text>
+                      <template #icon>
+                        <icon name="icon_replace_outlined"></icon>
+                      </template>
+                      更新
+                    </el-button>
+                  </el-col>
                 </el-row>
                 <div class="req-title">
                   <span>{{ t('datasource.method') }}</span>
@@ -1046,6 +1069,12 @@ onMounted(() => {
                 </div>
               </div>
             </div>
+            <el-button class="update-records" text>
+              <template #icon>
+                <icon name="icon_replace_outlined"></icon>
+              </template>
+              全部更新
+            </el-button>
           </BaseInfoContent>
           <BaseInfoContent
             v-if="nodeInfo.type === 'API'"
