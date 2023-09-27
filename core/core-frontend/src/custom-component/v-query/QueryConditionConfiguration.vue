@@ -283,7 +283,11 @@ const confirmClick = () => {
   dialogVisible.value = false
   conditions.value.forEach(ele => {
     curComponent.value = ele
-    multipleChange(curComponent.value.multiple)
+    multipleChange(
+      ['1', '7'].includes(curComponent.value.displayType)
+        ? curComponent.value.displayType === '7'
+        : curComponent.value.multiple
+    )
   })
   queryElement.value.propValue = cloneDeep(conditions.value)
 }
@@ -711,6 +715,24 @@ defineExpose({
                   value="7"
                 />
               </el-select>
+            </div>
+          </div>
+          <div class="list-item" v-if="['1', '7'].includes(curComponent.displayType)">
+            <div class="label">时间粒度</div>
+            <div class="value">
+              <template v-if="curComponent.displayType === '7'">
+                <el-select v-model="curComponent.timeGranularityMultiple">
+                  <el-option label="年月日时分秒" value="datetimerange" />
+                </el-select>
+              </template>
+              <template v-else>
+                <el-select v-model="curComponent.timeGranularity">
+                  <el-option label="年" value="year" />
+                  <el-option label="年月" value="month" />
+                  <el-option label="年月日" value="date" />
+                  <el-option label="年月日时分秒" value="datetime" />
+                </el-select>
+              </template>
             </div>
           </div>
           <div class="list-item top-item" v-if="!['1', '7'].includes(curComponent.displayType)">

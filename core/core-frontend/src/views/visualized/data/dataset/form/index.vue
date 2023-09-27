@@ -358,7 +358,8 @@ const copyField = item => {
   param.name = getFieldName(dimensions.value.concat(quota.value), item.name)
   param.dataeaseName = null
   param.lastSyncTime = null
-  allfields.value.push(param)
+  const index = allfields.value.findIndex(ele => ele.id === item.id)
+  allfields.value.splice(index + 1, 0, param)
 }
 
 const delFieldById = arr => {
@@ -487,7 +488,7 @@ const generateColumns = (arr: Field[]) =>
     title: ele.name,
     width: 150,
     headerCellRenderer: ({ column }) => (
-      <div class="flex-align-center">
+      <div class="flex-align-center icon">
         <ElIcon>
           <Icon
             name={`field_${fieldType[column.deType]}`}
@@ -880,8 +881,14 @@ const setDeTypeSelection = () => {
     ...dimensionsTable.value.getSelectionRows(),
     ...quotaTable.value.getSelectionRows()
   ]
-  deTypeArr.value = []
   deTypeSelection.value = fieldSelection.value.map(ele => ele.deExtractType)
+  let deTypes = fieldSelection.value.map(ele => ele.deType)
+  const [obj] = fieldSelection.value
+  if (Array.from(new Set(deTypes)).length !== 1) {
+    deTypeArr.value = []
+    return
+  }
+  deTypeArr.value = obj.deType === 1 && obj.deExtractType === 0 ? [1, obj.dateFormat] : [obj.deType]
 }
 
 const cascaderChangeArr = val => {
