@@ -692,7 +692,13 @@ export default {
       const pluginOptions = plugins.filter(plugin => !this.renderOptions.some(option => option.value === plugin.render)).map(plugin => {
         return { name: plugin.render, value: plugin.render }
       })
-      this.pluginRenderOptions = [...this.renderOptions, ...pluginOptions]
+      const distinctPluginOptions = []
+      pluginOptions.forEach(plugin => {
+        if (distinctPluginOptions.filter(option => option.name == plugin.name && option.value == plugin.value).length == 0) {
+          distinctPluginOptions.push(plugin);
+        }
+      })
+      this.pluginRenderOptions = [...this.renderOptions, ...distinctPluginOptions]
     },
     clickAdd(param) {
       this.currGroup = param.data
