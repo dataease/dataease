@@ -418,7 +418,9 @@ export default {
     end_time: '结束时间',
     parse_filed: '解析字段',
     field_rename: '重命名',
-    select_type: '选择数据源类型'
+    select_type: '选择数据源类型',
+    sync_table: '同步指定表',
+    req_completed: '请求成功'
   },
   chart: {
     align: '对齐方式',

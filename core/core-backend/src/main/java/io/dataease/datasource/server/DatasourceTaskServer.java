@@ -11,15 +11,12 @@ import io.dataease.datasource.dao.auto.mapper.CoreDatasourceTaskLogMapper;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceTaskMapper;
 import io.dataease.datasource.dto.CoreDatasourceTaskDTO;
 import io.dataease.datasource.ext.ExtDatasourceTaskMapper;
-import io.dataease.request.BaseGridRequest;
-import io.dataease.request.ConditionEntity;
-import io.dataease.request.GridExample;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -53,7 +50,7 @@ public class DatasourceTaskServer {
     public CoreDatasourceTaskLog lastSyncLog(Long dsId){
         QueryWrapper<CoreDatasourceTaskLog> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("ds_id", dsId);
-        queryWrapper.eq("status", "Completed");
+        queryWrapper.eq("trigger_type", "Cron");
         queryWrapper.orderByDesc("start_time");
         List<CoreDatasourceTaskLog> logs = coreDatasourceTaskLogMapper.selectList(queryWrapper);
         if(CollectionUtils.isEmpty(logs)){
@@ -61,6 +58,28 @@ public class DatasourceTaskServer {
         }else {
             return logs.get(0);
         }
+    }
+
+    public List<CoreDatasourceTaskLog> lastSyncLogForTable(Long dsId){
+        List<CoreDatasourceTaskLog> coreDatasourceTaskLogs = new ArrayList<>();
+        QueryWrapper<CoreDatasourceTaskLog> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("ds_id", dsId);
+        queryWrapper.eq("trigger_type", "Cron");
+        queryWrapper.orderByDesc("start_time");
+        List<CoreDatasourceTaskLog> logs = coreDatasourceTaskLogMapper.selectList(queryWrapper);
+        if(!CollectionUtils.isEmpty(logs)){
+            coreDatasourceTaskLogs.add(logs.get(0));
+        }
+
+        queryWrapper.clear();
+        queryWrapper.eq("ds_id", dsId);
+        queryWrapper.ne("trigger_type", "Cron");
+        queryWrapper.orderByDesc("start_time");
+        logs = coreDatasourceTaskLogMapper.selectList(queryWrapper);
+        if(!CollectionUtils.isEmpty(logs)){
+            coreDatasourceTaskLogs.add(logs.get(0));
+        }
+        return coreDatasourceTaskLogs;
     }
 
     public void deleteByDSId(Long dsId) {
@@ -124,14 +143,18 @@ public class DatasourceTaskServer {
         return existSyncTask;
     }
 
-    public CoreDatasourceTaskLog initTaskLog(Long datasourceId, Long taskId, Long startTime, String datasourceName) {
+    public CoreDatasourceTaskLog initTaskLog(Long datasourceId, Long taskId, Long startTime, String datasourceName, String triggerType) {
         CoreDatasourceTaskLog coreDatasourceTaskLog = new CoreDatasourceTaskLog();
         coreDatasourceTaskLog.setDsId(datasourceId);
         coreDatasourceTaskLog.setTaskId(taskId);
         coreDatasourceTaskLog.setStatus(TaskStatus.UnderExecution.name());
-        coreDatasourceTaskLog.setTriggerType(TriggerType.Cron.name());
+        coreDatasourceTaskLog.setTriggerType(triggerType);
         coreDatasourceTaskLog.setStartTime(startTime);
-        coreDatasourceTaskLog.setInfo("Begain to sync datasource: " + datasourceName);
+        if(triggerType.equalsIgnoreCase(TriggerType.Cron.toString())){
+            coreDatasourceTaskLog.setInfo("Begain to sync datasource: " + datasourceName);
+        }else {
+            coreDatasourceTaskLog.setInfo("");
+        }
         coreDatasourceTaskLogMapper.insert(coreDatasourceTaskLog);
         return coreDatasourceTaskLog;
     }

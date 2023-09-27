@@ -49,6 +49,10 @@ export const listDatasourceType = async (data = {}): Promise<IResponse> => {
 }
 export const getTableField = (data = {}) => request.post({ url: '/datasource/getTableField', data })
 
+export const syncApiTable = (data = {}) => request.post({ url: '/datasource/syncApiTable', data })
+
+export const syncApiDs = (data = {}) => request.post({ url: '/datasource/syncApiDs', data })
+
 export const listDatasourceTables = async (data = {}): Promise<IResponse> => {
   return request.post({ url: '/datasource/getTables', data }).then(res => {
     return res

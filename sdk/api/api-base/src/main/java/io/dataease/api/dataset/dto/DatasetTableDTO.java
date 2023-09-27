@@ -60,4 +60,7 @@ public class DatasetTableDTO implements Serializable {
      */
     private Map<String, List<DatasetTableFieldDTO>> fields;
 
+    private Long lastUpdateTime = 0L;
+    private String status;
+
 }

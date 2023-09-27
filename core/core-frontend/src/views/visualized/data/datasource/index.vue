@@ -887,13 +887,13 @@ onMounted(() => {
                 </template>
               </el-table-column>
               <el-table-column
-                key="updateTime"
-                prop="updateTime"
+                key="lastUpdateTime"
+                prop="lastUpdateTime"
                 v-if="['excel', 'api'].includes(nodeInfo.type.toLowerCase())"
                 label="最近更新时间"
               >
                 <template v-slot:default="scope">
-                  <span>{{ timestampFormatDate(scope.row.updateTime) }}</span>
+                  <span>{{ timestampFormatDate(scope.row.lastUpdateTime) }}</span>
                 </template>
               </el-table-column>
               <el-table-column

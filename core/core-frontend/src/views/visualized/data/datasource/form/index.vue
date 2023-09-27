@@ -386,7 +386,7 @@ const defaultForm = {
 const form = reactive<Form>(cloneDeep(defaultForm))
 const defaultForm2 = {
   type: '',
-  id: '',
+  id: '0',
   editType: 0,
   name: '',
   creator: ''

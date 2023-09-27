@@ -461,7 +461,7 @@ public class DatasourceServer implements DatasourceApi {
         }
 
         datasourceMapper.deleteById(datasourceId);
-        if(!Arrays.asList("API", "Excel", "folder").contains(coreDatasource.getType())){
+        if (!Arrays.asList("API", "Excel", "folder").contains(coreDatasource.getType())) {
             calciteProvider.delete(coreDatasource);
         }
 
@@ -499,7 +499,24 @@ public class DatasourceServer implements DatasourceApi {
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(coreDatasource);
         if (coreDatasource.getType().equals("API")) {
-            return ApiUtils.getTables(datasourceRequest);
+            List<DatasetTableDTO>  datasetTableDTOS =  ApiUtils.getTables(datasourceRequest);
+            List<CoreDatasourceTaskLog> taskLogs = datasourceTaskServer.lastSyncLogForTable(datasetTableDTO.getDatasourceId());
+            for (CoreDatasourceTaskLog taskLog : taskLogs) {
+                if(taskLog.getTriggerType().equalsIgnoreCase(DatasourceTaskServer.TriggerType.Cron.toString())){
+                    datasetTableDTOS.forEach(datasetTableDTO1 -> {
+                        datasetTableDTO1.setLastUpdateTime(taskLog.getStartTime());
+                        datasetTableDTO1.setStatus(taskLog.getStatus());
+                    });
+                }else {
+                    datasetTableDTOS.forEach(datasetTableDTO1 -> {
+                        if(datasetTableDTO1.getTableName().equalsIgnoreCase(taskLog.getTriggerType()) && taskLog.getStartTime() > datasetTableDTO1.getLastUpdateTime()){
+                            datasetTableDTO1.setLastUpdateTime(taskLog.getStartTime());
+                            datasetTableDTO1.setStatus(taskLog.getStatus());
+                        }
+                    });
+                }
+            }
+            return datasetTableDTOS;
         }
         if (coreDatasource.getType().equals("Excel")) {
             return ExcelUtils.getTables(datasourceRequest);
@@ -535,36 +552,52 @@ public class DatasourceServer implements DatasourceApi {
         return (List<TableField>) calciteProvider.fetchResultField(datasourceRequest).get("fields");
     }
 
+    @Override
+    public void syncApiTable(Map<String, String> req) throws DEException {
+        String tableName = req.get("tableName");
+        Long datasourceId = Long.valueOf(req.get("datasourceId"));
+        datasourceSyncManage.extractDataForTable(datasourceId, tableName, datasourceTaskServer.selectByDSId(datasourceId).getUpdateType());
+    }
+
+    @Override
+    public void syncApiDs(Map<String, String> req) throws Exception {
+        Long datasourceId = Long.valueOf(req.get("datasourceId"));
+        CoreDatasourceTask coreDatasourceTask = datasourceTaskServer.selectByDSId(datasourceId);
+        datasourceSyncManage.fireNow(coreDatasourceTask);
+    }
+
     public ExcelFileData excelUpload(@RequestParam("file") MultipartFile file, @RequestParam("id") long datasourceId, @RequestParam("editType") Integer editType) throws DEException {
         ExcelUtils excelUtils = new ExcelUtils();
         ExcelFileData excelFileData = excelUtils.excelSaveAndParse(file);
-        if (editType == 1) { //追加，判断是否能追加成功，按照excel sheet 名称匹配
+        if (editType == 1 || editType == 0) { //按照excel sheet 名称匹配
             CoreDatasource coreDatasource = datasourceMapper.selectById(datasourceId);
-            DatasourceRequest datasourceRequest = new DatasourceRequest();
-            datasourceRequest.setDatasource(coreDatasource);
-            List<DatasetTableDTO> datasetTableDTOS = ExcelUtils.getTables(datasourceRequest);
-            List<ExcelSheetData> excelSheetDataList = new ArrayList<>();
-            for (ExcelSheetData sheet : excelFileData.getSheets()) {
-                for (DatasetTableDTO datasetTableDTO : datasetTableDTOS) {
-                    if (excelDataTableName(datasetTableDTO.getTableName()).equals(sheet.getTableName())) {
-                        List<String> fieldNames = sheet.getFields().stream().map(TableField::getName).collect(Collectors.toList());
-                        Collections.sort(fieldNames);
-                        datasourceRequest.setTable(datasetTableDTO.getTableName());
-                        List<String> oldFieldNames = ExcelUtils.getTableFields(datasourceRequest).stream().map(TableField::getName).collect(Collectors.toList());
-                        Collections.sort(oldFieldNames);
-                        if (fieldNames.equals(oldFieldNames)) {
-                            sheet.setDeTableName(datasetTableDTO.getTableName());
-                            excelSheetDataList.add(sheet);
+            if(coreDatasource != null){
+                DatasourceRequest datasourceRequest = new DatasourceRequest();
+                datasourceRequest.setDatasource(coreDatasource);
+                List<DatasetTableDTO> datasetTableDTOS = ExcelUtils.getTables(datasourceRequest);
+                List<ExcelSheetData> excelSheetDataList = new ArrayList<>();
+                for (ExcelSheetData sheet : excelFileData.getSheets()) {
+                    for (DatasetTableDTO datasetTableDTO : datasetTableDTOS) {
+                        if (excelDataTableName(datasetTableDTO.getTableName()).equals(sheet.getTableName()) || isCsv(file.getOriginalFilename())) {
+                            List<String> fieldNames = sheet.getFields().stream().map(TableField::getName).collect(Collectors.toList());
+                            Collections.sort(fieldNames);
+                            datasourceRequest.setTable(datasetTableDTO.getTableName());
+                            List<String> oldFieldNames = ExcelUtils.getTableFields(datasourceRequest).stream().map(TableField::getName).collect(Collectors.toList());
+                            Collections.sort(oldFieldNames);
+                            if (fieldNames.equals(oldFieldNames)) {
+                                sheet.setDeTableName(datasetTableDTO.getTableName());
+                                excelSheetDataList.add(sheet);
+                            }
                         }
                     }
                 }
-
+                if (CollectionUtils.isEmpty(excelSheetDataList)) {
+                    DEException.throwException("无匹配的Sheet页!");
+                }
+                excelFileData.setSheets(excelSheetDataList);
             }
-            if (CollectionUtils.isEmpty(excelSheetDataList)) {
-                DEException.throwException("无匹配的Sheet页!");
-            }
-            excelFileData.setSheets(excelSheetDataList);
         }
+
         for (ExcelSheetData sheet : excelFileData.getSheets()) {
             for (int i = 0; i < sheet.getFields().size() - 1; i++) {
                 for (int j = i + 1; j < sheet.getFields().size(); j++) {
@@ -575,6 +608,11 @@ public class DatasourceServer implements DatasourceApi {
             }
         }
         return excelFileData;
+    }
+
+    private boolean isCsv(String fileName) {
+        String suffix = fileName.substring(fileName.lastIndexOf(".") + 1);
+        return suffix.equalsIgnoreCase("csv");
     }
 
     public ApiDefinition checkApiDatasource(Map<String, String> request) throws DEException {

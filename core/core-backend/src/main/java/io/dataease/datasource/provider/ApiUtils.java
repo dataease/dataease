@@ -221,8 +221,8 @@ public class ApiUtils {
             return apiDefinition;
         } else {
             List<LinkedHashMap> currentData = new ArrayList<>();
-            Object object = JsonPath.read(response, apiDefinition.getJsonPath());
             try {
+                Object object = JsonPath.read(response, apiDefinition.getJsonPath());
                 if (object instanceof List) {
                     currentData = (List<LinkedHashMap>) object;
                 } else {
@@ -232,6 +232,11 @@ public class ApiUtils {
                 DEException.throwException(e);
             }
             int i = 0;
+            try {
+                LinkedHashMap data  =  currentData.get(0);
+            }catch (Exception e){
+                DEException.throwException("数据不符合规范, " + e.getMessage());
+            }
             for (LinkedHashMap data : currentData) {
                 if (i >= apiDefinition.getPreviewNum()) {
                     break;
