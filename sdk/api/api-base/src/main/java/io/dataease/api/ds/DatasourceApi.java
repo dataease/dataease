@@ -55,6 +55,11 @@ public interface DatasourceApi {
     @PostMapping("/getTableField")
     List<TableField> getTableField(@RequestBody Map<String, String> req) throws DEException;
 
+    @PostMapping("/syncApiTable")
+    void syncApiTable(@RequestBody Map<String, String> req) throws DEException;
+
+    @PostMapping("/syncApiDs")
+    void syncApiDs(@RequestBody Map<String, String> req) throws Exception;
 
     @PostMapping("tree")
     List<BusiNodeVO> tree(@RequestBody BusiNodeRequest request) throws DEException;

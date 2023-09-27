@@ -223,8 +223,23 @@ const handleLoadExcel = data => {
 
 const validateDS = () => {
   validateById(nodeInfo.id as number)
-    .then(() => {
-      ElMessage.success('校验成功')
+    .then(res => {
+      if (res.data.type === 'API') {
+        let error = 0
+        const status = JSON.parse(res.data.status)
+        for (let i = 0; i < status.length; i++) {
+          if (status[i].status === 'Error') {
+            error++
+          }
+        }
+        if (error === 0) {
+          ElMessage.success('校验成功')
+        } else {
+          ElMessage.error('校验失败')
+        }
+      } else {
+        ElMessage.success('校验成功')
+      }
     })
     .catch(() => {
       ElMessage.error('校验失败')
@@ -872,13 +887,13 @@ onMounted(() => {
                 </template>
               </el-table-column>
               <el-table-column
-                key="updateTime"
-                prop="updateTime"
+                key="lastUpdateTime"
+                prop="lastUpdateTime"
                 v-if="['excel', 'api'].includes(nodeInfo.type.toLowerCase())"
                 label="最近更新时间"
               >
                 <template v-slot:default="scope">
-                  <span>{{ timestampFormatDate(scope.row.updateTime) }}</span>
+                  <span>{{ timestampFormatDate(scope.row.lastUpdateTime) }}</span>
                 </template>
               </el-table-column>
               <el-table-column
