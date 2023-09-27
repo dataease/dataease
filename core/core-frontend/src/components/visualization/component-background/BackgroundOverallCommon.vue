@@ -8,6 +8,7 @@
           :class="'form-item-' + themes"
         >
           <el-input-number
+            style="width: 100%"
             :effect="themes"
             controls-position="right"
             size="middle"
@@ -25,6 +26,7 @@
           :class="'form-item-' + themes"
         >
           <el-input-number
+            style="width: 100%"
             :effect="themes"
             controls-position="right"
             size="middle"
