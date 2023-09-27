@@ -225,10 +225,6 @@ const onBackgroundChange = val => {
   margin-right: 5px;
 }
 
-.common-style-area :deep(.ed-collapse-item__wrap) {
-  padding-bottom: 16px;
-}
-
 .common-style-inner {
   width: 100%;
   min-width: 230px;
