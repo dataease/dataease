@@ -1033,6 +1033,14 @@ onMounted(() => {
                       t('datasource.valid')
                     }}</span>
                   </el-col>
+                  <el-col style="text-align: right" :span="5">
+                    <el-button text>
+                      <template #icon>
+                        <icon name="icon_replace_outlined"></icon>
+                      </template>
+                      更新
+                    </el-button>
+                  </el-col>
                 </el-row>
                 <div class="req-title">
                   <span>{{ t('datasource.method') }}</span>
@@ -1046,6 +1054,12 @@ onMounted(() => {
                 </div>
               </div>
             </div>
+            <el-button class="update-records" text>
+              <template #icon>
+                <icon name="icon_replace_outlined"></icon>
+              </template>
+              全部更新
+            </el-button>
           </BaseInfoContent>
           <BaseInfoContent
             v-if="nodeInfo.type === 'API'"
