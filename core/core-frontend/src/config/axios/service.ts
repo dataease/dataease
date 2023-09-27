@@ -51,6 +51,8 @@ const mapping = {
 }
 const permissionStore = usePermissionStoreWithOut()
 const linkStore = useLinkStoreWithOut()
+const CancelToken = axios.CancelToken
+const cancelMap = {}
 
 // request拦截器
 service.interceptors.request.use(
@@ -99,6 +101,9 @@ service.interceptors.request.use(
       config.params = {}
       config.url = url
     }
+    config.cancelToken = new CancelToken(function executor(c) {
+      cancelMap[config.url] = c
+    })
     config.loading && tryShowLoading(permissionStore.getCurrentPath)
     return config
   },
@@ -203,4 +208,4 @@ const executeVersionHandler = (response: AxiosResponse) => {
       })
   }
 }
-export { service }
+export { service, cancelMap }
