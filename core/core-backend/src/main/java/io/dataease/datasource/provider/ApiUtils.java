@@ -10,7 +10,6 @@ import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.ds.vo.ApiDefinition;
 import io.dataease.api.ds.vo.ApiDefinitionRequest;
 import io.dataease.api.ds.vo.TableField;
-import io.dataease.constant.AuthConstant;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.exception.DEException;
 import io.dataease.utils.CommonBeanFactory;
@@ -95,17 +94,21 @@ public class ApiUtils {
         TypeReference<List<ApiDefinition>> listTypeReference = new TypeReference<List<ApiDefinition>>() {
         };
         List<ApiDefinition> apiDefinitionList = JsonUtil.parseList(datasourceRequest.getDatasource().getConfiguration(), listTypeReference);
-        ObjectNode apiItemStatuses = objectMapper.createObjectNode();
+        List<ObjectNode> status = new ArrayList();
         for (ApiDefinition apiDefinition : apiDefinitionList) {
             datasourceRequest.setTable(apiDefinition.getName());
+            ObjectNode apiItemStatuses = objectMapper.createObjectNode();
             try {
                 getData(datasourceRequest);
-                apiItemStatuses.put(apiDefinition.getName(), "Success");
+                apiItemStatuses.put("name", apiDefinition.getName());
+                apiItemStatuses.put("status", "Success");
             } catch (Exception ignore) {
-                apiItemStatuses.put(apiDefinition.getName(), "Error");
+                apiItemStatuses.put("name", apiDefinition.getName());
+                apiItemStatuses.put("status", "Error");
             }
+            status.add(apiItemStatuses);
         }
-        return apiItemStatuses.asText();
+        return JsonUtil.toJSONString(status).toString();
     }
 
     private static List<String[]> getData(DatasourceRequest datasourceRequest) throws Exception {

@@ -610,6 +610,7 @@ public class DatasourceServer implements DatasourceApi {
             String status = null;
             if (coreDatasource.getType().equals("API")) {
                 status = ApiUtils.checkStatus(datasourceRequest);
+
             } else {
                 status = calciteProvider.checkStatus(datasourceRequest);
             }

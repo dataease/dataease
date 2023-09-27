@@ -377,6 +377,7 @@ const saveDS = () => {
 }
 
 const defaultForm = {
+  id: '',
   name: '',
   description: '',
   type: 'API',
@@ -385,7 +386,7 @@ const defaultForm = {
 const form = reactive<Form>(cloneDeep(defaultForm))
 const defaultForm2 = {
   type: '',
-  id: '0',
+  id: '',
   editType: 0,
   name: '',
   creator: ''
