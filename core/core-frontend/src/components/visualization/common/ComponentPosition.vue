@@ -69,8 +69,4 @@ const onPositionChange = () => {
 :deep(.ed-form-item) {
   display: flex !important;
 }
-
-.form-item :deep(.ed-form-item__label) {
-  color: #646a73;
-}
 </style>

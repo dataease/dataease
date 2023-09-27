@@ -44,7 +44,7 @@ const { themes } = toRefs(props)
     }
   }
   :deep(.ed-collapse-item__content) {
-    padding: 16px 8px;
+    padding: 16px 8px 0;
   }
   :deep(.ed-form-item) {
     display: block;

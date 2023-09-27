@@ -48,7 +48,7 @@ const widthShow = computed(() => `${canvasCollapse.value[sideName.value] ? 36 : 
     :style="{ width: widthShow }"
   >
     <el-row align="middle" :class="'title-' + themeInfo" justify="space-between">
-      <span v-show="!canvasCollapse[sideName]">{{ title }}</span>
+      <span v-if="!canvasCollapse[sideName]">{{ title }}</span>
       <el-icon
         :title="title"
         :class="'custom-icon-' + themeInfo"
@@ -65,12 +65,12 @@ const widthShow = computed(() => `${canvasCollapse.value[sideName.value] ? 36 : 
         <Fold class="collapse-icon" v-else />
       </el-icon>
     </el-row>
-    <div class="main-content" v-show="!canvasCollapse[sideName]">
+    <div class="main-content" v-if="!canvasCollapse[sideName]">
       <el-scrollbar>
         <slot />
       </el-scrollbar>
     </div>
-    <div class="collapse-title" v-show="canvasCollapse[sideName]">
+    <div class="collapse-title" v-if="canvasCollapse[sideName]">
       <span>{{ title }}</span>
     </div>
   </div>

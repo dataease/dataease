@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, toRefs } from 'vue'
+import { computed, nextTick, onMounted, ref, toRefs } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { styleData, selectKey, optionMap, horizontalPosition } from '@/utils/attr'
@@ -7,6 +7,7 @@ import ComponentPosition from '@/components/visualization/common/ComponentPositi
 import BackgroundOverallCommon from '@/components/visualization/component-background/BackgroundOverallCommon.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import _ from 'lodash'
+import elementResizeDetectorMaker from 'element-resize-detector'
 
 const { t } = useI18n()
 
@@ -64,10 +65,39 @@ const dashboardActive = computed(() => {
 const onBackgroundChange = val => {
   curComponent.value.commonBackground = val
 }
+
+const containerRef = ref()
+const containerWidth = ref()
+
+const colSpan = computed(() => {
+  if (containerWidth.value <= 240) {
+    return 24
+  } else {
+    return 12
+  }
+})
+
+const colorPickerWidth = computed(() => {
+  if (containerWidth.value <= 240) {
+    return 108
+  } else {
+    return 197
+  }
+})
+
+onMounted(() => {
+  const erd = elementResizeDetectorMaker()
+  containerWidth.value = containerRef.value?.offsetWidth
+  erd.listenTo(containerRef.value, element => {
+    nextTick(() => {
+      containerWidth.value = containerRef.value?.offsetWidth
+    })
+  })
+})
 </script>
 
 <template>
-  <div class="v-common-attr">
+  <div class="v-common-attr" ref="containerRef">
     <el-collapse v-model="activeName" @change="onChange()">
       <el-collapse-item :effect="themes" title="位置" name="position" v-if="!dashboardActive">
         <component-position :themes="themes" />
@@ -86,112 +116,114 @@ const onBackgroundChange = val => {
       </el-collapse-item>
 
       <el-collapse-item :effect="themes" title="样式" name="style" class="common-style-area">
-        <el-row :gutter="8">
-          <el-col
-            :span="12"
-            v-for="({ key, label, min, max, step }, index) in styleKeys"
-            :key="index"
-          >
-            <el-form-item class="form-item" :class="'form-item-' + themes" :label="label">
-              <el-color-picker
-                v-if="isIncludesColor(key)"
-                v-model="curComponent.style[key]"
-                :trigger-width="197"
-                :themes="themes"
-                size="small"
-                show-alpha
-                is-custom
-              />
-              <el-radio-group
-                :effect="themes"
-                style="width: 100%"
-                class="icon-radio-group"
-                v-else-if="horizontalPosition.includes(key)"
-                v-model="curComponent.style[key]"
-              >
-                <el-radio :effect="themes" label="left">
-                  <el-tooltip effect="dark" placement="top">
-                    <template #content>
-                      {{ t('chart.text_pos_left') }}
-                    </template>
-                    <div
-                      class="icon-btn"
-                      :class="{
-                        dark: themes === 'dark',
-                        active: curComponent.style[key] === 'left'
-                      }"
-                    >
-                      <el-icon>
-                        <Icon name="filter-h-left" />
-                      </el-icon>
-                    </div>
-                  </el-tooltip>
-                </el-radio>
-                <el-radio :effect="themes" label="center">
-                  <el-tooltip effect="dark" placement="top">
-                    <template #content>
-                      {{ t('chart.text_pos_center') }}
-                    </template>
-                    <div
-                      class="icon-btn"
-                      :class="{
-                        dark: themes === 'dark',
-                        active: curComponent.style[key] === 'center'
-                      }"
-                    >
-                      <el-icon>
-                        <Icon name="filter-h-center" />
-                      </el-icon>
-                    </div>
-                  </el-tooltip>
-                </el-radio>
-                <el-radio :effect="themes" label="right">
-                  <el-tooltip effect="dark" placement="top">
-                    <template #content>
-                      {{ t('chart.text_pos_right') }}
-                    </template>
-                    <div
-                      class="icon-btn"
-                      :class="{
-                        dark: themes === 'dark',
-                        active: curComponent.style[key] === 'right'
-                      }"
-                    >
-                      <el-icon>
-                        <Icon name="filter-h-right" />
-                      </el-icon>
-                    </div>
-                  </el-tooltip>
-                </el-radio>
-              </el-radio-group>
-              <el-select
-                v-else-if="selectKey.includes(key)"
-                style="width: 100%"
-                size="small"
-                :effect="themes"
-                v-model="curComponent.style[key]"
-              >
-                <el-option
-                  v-for="item in optionMap[key]"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                ></el-option>
-              </el-select>
-              <el-input-number
-                v-else
-                size="middle"
-                style="width: 100%"
-                controls-position="right"
-                :min="min"
-                :max="max"
-                :step="step"
-                :effect="themes"
-                v-model="curComponent.style[key]"
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
+        <el-form label-position="top">
+          <el-row :gutter="8">
+            <el-col
+              :span="colSpan"
+              v-for="({ key, label, min, max, step }, index) in styleKeys"
+              :key="index"
+            >
+              <el-form-item class="form-item" :class="'form-item-' + themes" :label="label">
+                <el-color-picker
+                  v-if="isIncludesColor(key)"
+                  v-model="curComponent.style[key]"
+                  :trigger-width="colorPickerWidth"
+                  :themes="themes"
+                  size="small"
+                  show-alpha
+                  is-custom
+                />
+                <el-radio-group
+                  :effect="themes"
+                  style="width: 100%"
+                  class="icon-radio-group"
+                  v-else-if="horizontalPosition.includes(key)"
+                  v-model="curComponent.style[key]"
+                >
+                  <el-radio :effect="themes" label="left">
+                    <el-tooltip effect="dark" placement="top">
+                      <template #content>
+                        {{ t('chart.text_pos_left') }}
+                      </template>
+                      <div
+                        class="icon-btn"
+                        :class="{
+                          dark: themes === 'dark',
+                          active: curComponent.style[key] === 'left'
+                        }"
+                      >
+                        <el-icon>
+                          <Icon name="filter-h-left" />
+                        </el-icon>
+                      </div>
+                    </el-tooltip>
+                  </el-radio>
+                  <el-radio :effect="themes" label="center">
+                    <el-tooltip effect="dark" placement="top">
+                      <template #content>
+                        {{ t('chart.text_pos_center') }}
+                      </template>
+                      <div
+                        class="icon-btn"
+                        :class="{
+                          dark: themes === 'dark',
+                          active: curComponent.style[key] === 'center'
+                        }"
+                      >
+                        <el-icon>
+                          <Icon name="filter-h-center" />
+                        </el-icon>
+                      </div>
+                    </el-tooltip>
+                  </el-radio>
+                  <el-radio :effect="themes" label="right">
+                    <el-tooltip effect="dark" placement="top">
+                      <template #content>
+                        {{ t('chart.text_pos_right') }}
+                      </template>
+                      <div
+                        class="icon-btn"
+                        :class="{
+                          dark: themes === 'dark',
+                          active: curComponent.style[key] === 'right'
+                        }"
+                      >
+                        <el-icon>
+                          <Icon name="filter-h-right" />
+                        </el-icon>
+                      </div>
+                    </el-tooltip>
+                  </el-radio>
+                </el-radio-group>
+                <el-select
+                  v-else-if="selectKey.includes(key)"
+                  style="width: 100%"
+                  size="small"
+                  :effect="themes"
+                  v-model="curComponent.style[key]"
+                >
+                  <el-option
+                    v-for="item in optionMap[key]"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  ></el-option>
+                </el-select>
+                <el-input-number
+                  v-else
+                  size="middle"
+                  style="width: 100%"
+                  controls-position="right"
+                  :min="min"
+                  :max="max"
+                  :step="step"
+                  :effect="themes"
+                  v-model="curComponent.style[key]"
+                />
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
       </el-collapse-item>
       <slot></slot>
     </el-collapse>
@@ -205,6 +237,14 @@ const onBackgroundChange = val => {
   }
   :deep(.ed-collapse-item__content) {
     border-top: none;
+  }
+}
+
+:deep(.ed-collapse-item) {
+  &:first-child {
+    .ed-collapse-item__header {
+      border-top: none;
+    }
   }
 }
 
@@ -308,6 +348,11 @@ const onBackgroundChange = val => {
   font-style: normal;
   font-weight: 400;
   line-height: 20px;
+}
+:deep(.ed-checkbox--dark) {
+  .ed-checkbox__label {
+    color: @dv-canvas-main-font-color;
+  }
 }
 
 :deep(.ed-form-item__label) {

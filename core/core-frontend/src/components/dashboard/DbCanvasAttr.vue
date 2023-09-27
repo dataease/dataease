@@ -213,7 +213,7 @@ onMounted(() => {
         <el-collapse-item title="仪表板风格" name="style">
           <slider />
         </el-collapse-item>
-        <el-collapse-item title="整体配置" name="overallSetting">
+        <el-collapse-item title="整体配置" name="overallSetting" class="content-no-padding-bottom">
           <overall-setting @onThemeColorChange="themeColorChange" />
         </el-collapse-item>
 
@@ -261,7 +261,11 @@ onMounted(() => {
             >
           </el-row>
         </el-collapse-item>
-        <el-collapse-item :title="t('visualization.view_style')" name="componentStyle">
+        <el-collapse-item
+          :title="t('visualization.view_style')"
+          name="componentStyle"
+          class="content-no-padding-bottom"
+        >
           <background-overall-common
             :common-background-pop="canvasStyleData.component.chartCommonStyle"
             component-position="'dashboard'"
@@ -353,6 +357,11 @@ onMounted(() => {
 .no-border-bottom {
   :deep(.ed-collapse-item__wrap) {
     border-bottom: none;
+  }
+}
+.content-no-padding-bottom {
+  :deep(.ed-collapse-item__content) {
+    padding-bottom: 0;
   }
 }
 

@@ -1,205 +1,212 @@
 <template>
-  <el-form label-position="top" style="width: 100%">
-    <el-row :gutter="8">
-      <el-col :span="12">
-        <el-form-item
-          :label="t('visualization.inner_padding')"
-          class="form-item w100"
-          :class="'form-item-' + themes"
-        >
-          <el-input-number
-            style="width: 100%"
-            :effect="themes"
-            controls-position="right"
-            size="middle"
-            :min="0"
-            :max="100"
-            v-model="state.commonBackground.innerPadding"
-            @change="onBackgroundChange"
-          />
-        </el-form-item>
-      </el-col>
-      <el-col :span="12">
-        <el-form-item
-          :label="t('visualization.board_radio')"
-          class="form-item w100"
-          :class="'form-item-' + themes"
-        >
-          <el-input-number
-            style="width: 100%"
-            :effect="themes"
-            controls-position="right"
-            size="middle"
-            :min="0"
-            :max="100"
-            v-model="state.commonBackground.borderRadius"
-            @change="onBackgroundChange"
-          />
-        </el-form-item>
-      </el-col>
-    </el-row>
-
-    <el-form-item class="form-item no-margin-bottom" :class="'form-item-' + themes">
-      <el-checkbox
-        size="small"
-        :effect="themes"
-        v-model="state.commonBackground.backgroundColorSelect"
-        @change="onBackgroundChange"
-      >
-        {{ $t('chart.color') }}
-      </el-checkbox>
-    </el-form-item>
-
-    <div class="indented-container">
-      <div class="indented-item">
-        <el-form-item class="form-item" :class="'form-item-' + themes">
-          <el-color-picker
-            v-model="state.commonBackground.backgroundColor"
-            :effect="themes"
-            :disabled="!state.commonBackground.backgroundColorSelect"
-            :trigger-width="backgroundColorPickerWidth"
-            is-custom
-            class="color-picker-style"
-            :predefine="state.predefineColors"
-            @change="onBackgroundChange"
-          />
-        </el-form-item>
-        <el-form-item
-          class="form-item fill"
-          style="padding-left: 8px"
-          :class="'form-item-' + themes"
-        >
-          <el-input-number
-            controls-position="right"
-            :effect="themes"
-            :disabled="!state.commonBackground.backgroundColorSelect"
-            v-model="state.commonBackground.alpha"
-            :min="0"
-            size="middle"
-            :max="100"
-            @change="onBackgroundChange"
-          />
-        </el-form-item>
-      </div>
-    </div>
-
-    <el-form-item class="form-item no-margin-bottom" :class="'form-item-' + themes">
-      <el-checkbox
-        size="small"
-        :effect="themes"
-        v-model="state.commonBackground.backgroundImageEnable"
-        @change="onBackgroundChange"
-      >
-        {{ t('visualization.background') }}
-      </el-checkbox>
-    </el-form-item>
-
-    <div class="indented-container">
-      <div class="indented-item">
-        <el-form-item class="form-item margin-bottom-8" :class="'form-item-' + themes">
-          <el-radio-group
-            :effect="themes"
-            :disabled="!state.commonBackground.backgroundImageEnable"
-            v-model="state.commonBackground.backgroundType"
-            @change="onBackgroundChange"
+  <div style="width: 100%" ref="bgForm">
+    <el-form label-position="top" style="width: 100%">
+      <el-row :gutter="8">
+        <el-col :span="12">
+          <el-form-item
+            :label="t('visualization.inner_padding')"
+            class="form-item w100"
+            :class="'form-item-' + themes"
           >
-            <el-radio :effect="themes" label="outerImage">{{ t('visualization.photo') }}</el-radio>
-            <el-radio :effect="themes" label="innerImage">{{ t('visualization.board') }}</el-radio>
-          </el-radio-group>
-        </el-form-item>
-      </div>
-      <div class="indented-item" v-if="state.commonBackground.backgroundType === 'innerImage'">
-        <el-form-item class="form-item" :class="'form-item-' + themes">
-          <el-color-picker
-            v-model="state.commonBackground.innerImageColor"
-            :disabled="!state.commonBackground.backgroundImageEnable"
-            :effect="themes"
-            :title="t('visualization.border_color_setting')"
-            style="position: absolute; top: -3px; left: 60px"
-            is-custom
-            class="color-picker-style"
-            :predefine="state.predefineColors"
-            @change="onBackgroundChange"
-          />
-        </el-form-item>
-        <el-form-item
-          class="form-item fill"
-          style="padding-left: 8px"
-          :class="'form-item-' + themes"
+            <el-input-number
+              style="width: 100%"
+              :effect="themes"
+              controls-position="right"
+              size="middle"
+              :min="0"
+              :max="100"
+              v-model="state.commonBackground.innerPadding"
+              @change="onBackgroundChange"
+            />
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item
+            :label="t('visualization.board_radio')"
+            class="form-item w100"
+            :class="'form-item-' + themes"
+          >
+            <el-input-number
+              style="width: 100%"
+              :effect="themes"
+              controls-position="right"
+              size="middle"
+              :min="0"
+              :max="100"
+              v-model="state.commonBackground.borderRadius"
+              @change="onBackgroundChange"
+            />
+          </el-form-item>
+        </el-col>
+      </el-row>
+
+      <el-form-item class="form-item no-margin-bottom" :class="'form-item-' + themes">
+        <el-checkbox
+          size="small"
+          :effect="themes"
+          v-model="state.commonBackground.backgroundColorSelect"
+          @change="onBackgroundChange"
         >
-          <el-select
-            :style="{ width: backgroundBorderSelectWidth + 'px' }"
-            v-model="state.commonBackground.innerImage"
-            size="middle"
-            :effect="themes"
-            :disabled="!state.commonBackground.backgroundImageEnable"
-            placeholder="选择边框..."
-            @change="onBackgroundChange"
+          {{ $t('chart.color') }}
+        </el-checkbox>
+      </el-form-item>
+
+      <div class="indented-container">
+        <div class="indented-item">
+          <el-form-item class="form-item" :class="'form-item-' + themes">
+            <el-color-picker
+              v-model="state.commonBackground.backgroundColor"
+              :effect="themes"
+              :disabled="!state.commonBackground.backgroundColorSelect"
+              :trigger-width="computedBackgroundColorPickerWidth"
+              is-custom
+              class="color-picker-style"
+              :predefine="state.predefineColors"
+              @change="onBackgroundChange"
+            />
+          </el-form-item>
+          <el-form-item
+            class="form-item fill"
+            style="padding-left: 8px"
+            :class="'form-item-' + themes"
           >
-            <el-option
-              v-for="(item, index) in state.BackgroundShowMap['default']"
-              :key="index"
-              :label="item.name"
-              :value="item.url"
-            >
-              <Icon
-                style="width: 120px; height: 70px"
-                :style="{ color: state.commonBackground.innerImageColor }"
-                class-name="svg-background"
-                :name="mainIconClass(item)"
-              />
-            </el-option>
-          </el-select>
-        </el-form-item>
-      </div>
-      <div
-        class="indented-item"
-        v-if="state.commonBackground.backgroundType === 'outerImage'"
-        :class="{
-          disabled: !state.commonBackground.backgroundImageEnable || state.uploadDisabled
-        }"
-      >
-        <div class="avatar-uploader-container">
-          <el-upload
-            action=""
-            :effect="themes"
-            accept=".jpeg,.jpg,.png,.gif,.svg"
-            class="avatar-uploader"
-            list-type="picture-card"
-            :on-preview="handlePictureCardPreview"
-            :on-remove="handleRemove"
-            :before-upload="beforeUploadCheck"
-            :http-request="upload"
-            :file-list="state.fileList"
-            :disabled="!state.commonBackground.backgroundImageEnable"
-          >
-            <el-icon><Plus /></el-icon>
-          </el-upload>
-          <span class="hint">支持JPG、PNG、GIF</span>
+            <el-input-number
+              controls-position="right"
+              :effect="themes"
+              :disabled="!state.commonBackground.backgroundColorSelect"
+              v-model="state.commonBackground.alpha"
+              :min="0"
+              size="middle"
+              :max="100"
+              @change="onBackgroundChange"
+            />
+          </el-form-item>
         </div>
-        <el-dialog
-          top="25vh"
-          width="600px"
-          :append-to-body="true"
-          :destroy-on-close="true"
-          v-model="state.dialogVisible"
-        >
-          <img width="550" :src="state.dialogImageUrl" />
-        </el-dialog>
       </div>
-    </div>
-  </el-form>
+
+      <el-form-item class="form-item no-margin-bottom" :class="'form-item-' + themes">
+        <el-checkbox
+          size="small"
+          :effect="themes"
+          v-model="state.commonBackground.backgroundImageEnable"
+          @change="onBackgroundChange"
+        >
+          {{ t('visualization.background') }}
+        </el-checkbox>
+      </el-form-item>
+
+      <div class="indented-container">
+        <div class="indented-item">
+          <el-form-item class="form-item margin-bottom-8" :class="'form-item-' + themes">
+            <el-radio-group
+              :effect="themes"
+              :disabled="!state.commonBackground.backgroundImageEnable"
+              v-model="state.commonBackground.backgroundType"
+              @change="onBackgroundChange"
+            >
+              <el-radio :effect="themes" label="outerImage">{{
+                t('visualization.photo')
+              }}</el-radio>
+              <el-radio :effect="themes" label="innerImage">{{
+                t('visualization.board')
+              }}</el-radio>
+            </el-radio-group>
+          </el-form-item>
+        </div>
+        <div class="indented-item" v-if="state.commonBackground.backgroundType === 'innerImage'">
+          <el-form-item class="form-item" :class="'form-item-' + themes">
+            <el-color-picker
+              v-model="state.commonBackground.innerImageColor"
+              :disabled="!state.commonBackground.backgroundImageEnable"
+              :effect="themes"
+              :title="t('visualization.border_color_setting')"
+              style="position: absolute; top: -3px; left: 60px"
+              is-custom
+              class="color-picker-style"
+              :predefine="state.predefineColors"
+              @change="onBackgroundChange"
+            />
+          </el-form-item>
+          <el-form-item
+            class="form-item fill"
+            style="padding-left: 8px"
+            :class="'form-item-' + themes"
+          >
+            <el-select
+              :style="{ width: computedBackgroundBorderSelectWidth + 'px' }"
+              v-model="state.commonBackground.innerImage"
+              size="middle"
+              :effect="themes"
+              :disabled="!state.commonBackground.backgroundImageEnable"
+              placeholder="选择边框..."
+              @change="onBackgroundChange"
+            >
+              <el-option
+                v-for="(item, index) in state.BackgroundShowMap['default']"
+                :key="index"
+                :label="item.name"
+                :value="item.url"
+              >
+                <Icon
+                  style="width: 120px; height: 70px"
+                  :style="{ color: state.commonBackground.innerImageColor }"
+                  class-name="svg-background"
+                  :name="mainIconClass(item)"
+                />
+              </el-option>
+            </el-select>
+          </el-form-item>
+        </div>
+        <div
+          class="indented-item"
+          v-if="state.commonBackground.backgroundType === 'outerImage'"
+          :class="{
+            disabled: !state.commonBackground.backgroundImageEnable || state.uploadDisabled
+          }"
+        >
+          <div class="avatar-uploader-container">
+            <el-upload
+              action=""
+              :effect="themes"
+              accept=".jpeg,.jpg,.png,.gif,.svg"
+              class="avatar-uploader"
+              list-type="picture-card"
+              :on-preview="handlePictureCardPreview"
+              :on-remove="handleRemove"
+              :before-upload="beforeUploadCheck"
+              :http-request="upload"
+              :file-list="state.fileList"
+              :disabled="!state.commonBackground.backgroundImageEnable"
+            >
+              <el-icon><Plus /></el-icon>
+            </el-upload>
+            <span class="hint">支持JPG、PNG、GIF</span>
+          </div>
+          <el-dialog
+            top="25vh"
+            width="600px"
+            :append-to-body="true"
+            :destroy-on-close="true"
+            v-model="state.dialogVisible"
+          >
+            <img width="550" :src="state.dialogImageUrl" />
+          </el-dialog>
+        </div>
+      </div>
+    </el-form>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { queryVisualizationBackground } from '@/api/visualization/visualizationBackground'
 import { COLOR_PANEL } from '@/views/chart/components/editor/util/chart'
-import { onMounted, reactive, watch } from 'vue'
+import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { beforeUploadCheck, uploadFileResult } from '@/api/staticResource'
 import { useI18n } from '@/hooks/web/useI18n'
 import { deepCopy } from '@/utils/utils'
+import elementResizeDetectorMaker from 'element-resize-detector'
 const snapshotStore = snapshotStoreWithOut()
 const { t } = useI18n()
 const emits = defineEmits(['onBackgroundChange'])
@@ -281,8 +288,33 @@ const onBackgroundChange = () => {
   emits('onBackgroundChange', state.commonBackground)
 }
 
+const bgForm = ref()
+const containerWidth = ref()
+
+const computedBackgroundColorPickerWidth = computed(() => {
+  if (containerWidth.value <= 240) {
+    return 50
+  } else {
+    return props.backgroundColorPickerWidth
+  }
+})
+const computedBackgroundBorderSelectWidth = computed(() => {
+  if (containerWidth.value <= 240) {
+    return 108
+  } else {
+    return props.backgroundBorderSelectWidth
+  }
+})
+
 onMounted(() => {
   init()
+  const erd = elementResizeDetectorMaker()
+  containerWidth.value = bgForm.value?.offsetWidth
+  erd.listenTo(bgForm.value, element => {
+    nextTick(() => {
+      containerWidth.value = bgForm.value?.offsetWidth
+    })
+  })
 })
 
 watch(
@@ -294,6 +326,10 @@ watch(
 </script>
 
 <style scoped lang="less">
+:deep(.ed-form-item) {
+  display: block;
+  margin-bottom: 16px;
+}
 .avatar-uploader-container {
   margin-bottom: 16px;
 
