@@ -22,7 +22,9 @@ import {
   listDatasourceTables,
   deleteById,
   save,
-  validateById
+  validateById,
+  syncApiDs,
+  syncApiTable
 } from '@/api/datasource'
 import { Base64 } from 'js-base64'
 import type { Configuration, ApiConfiguration, SyncSetting } from './form/index.vue'
@@ -505,6 +507,18 @@ const getRecord = () => {
   ).then(res => {
     recordData.value = res.data.records
     recordState.paginationConfig.total = res.data.total
+  })
+}
+
+const updateApiTable = api => {
+  syncApiTable({ tableName: api.deTableName, datasourceId: nodeInfo.id }).then(res => {
+    ElMessage.success(t('datasource.req_completed'))
+  })
+}
+
+const updateApiDs = () => {
+  syncApiDs({ datasourceId: nodeInfo.id }).then(res => {
+    ElMessage.success(t('datasource.req_completed'))
   })
 }
 
@@ -1049,7 +1063,7 @@ onMounted(() => {
                     }}</span>
                   </el-col>
                   <el-col style="text-align: right" :span="5">
-                    <el-button text>
+                    <el-button @click="updateApiTable(api)" text>
                       <template #icon>
                         <icon name="icon_replace_outlined"></icon>
                       </template>
@@ -1069,7 +1083,7 @@ onMounted(() => {
                 </div>
               </div>
             </div>
-            <el-button class="update-records" text>
+            <el-button @click="updateApiDs" class="update-records" text>
               <template #icon>
                 <icon name="icon_replace_outlined"></icon>
               </template>

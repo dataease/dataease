@@ -21,7 +21,10 @@ import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.entity.CoreDatasourceTask;
 import io.dataease.datasource.dao.auto.entity.CoreDatasourceTaskLog;
+import io.dataease.datasource.dao.auto.entity.QrtzSchedulerState;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
+import io.dataease.datasource.dao.auto.mapper.QrtzSchedulerStateMapper;
+import io.dataease.datasource.dao.ext.mapper.DataSourceExtMapper;
 import io.dataease.datasource.dao.ext.mapper.TaskLogExtMapper;
 import io.dataease.datasource.manage.DataSourceManage;
 import io.dataease.datasource.manage.DatasourceSyncManage;
@@ -32,6 +35,7 @@ import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.exception.DEException;
 import io.dataease.i18n.Translator;
+import io.dataease.job.sechedule.ScheduleManager;
 import io.dataease.license.config.XpackInteract;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
@@ -50,6 +54,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static io.dataease.datasource.server.DatasourceTaskServer.ScheduleType.RIGHTNOW;
 
 
 @RestController
@@ -74,7 +80,10 @@ public class DatasourceServer implements DatasourceApi {
 
     @Resource
     private DataSourceManage dataSourceManage;
-
+    @Resource
+    private QrtzSchedulerStateMapper qrtzSchedulerStateMapper;
+    @Resource
+    private DataSourceExtMapper dataSourceExtMapper;
     @Resource
     private DatasetDataManage datasetDataManage;
     @Autowired(required = false)
@@ -88,6 +97,8 @@ public class DatasourceServer implements DatasourceApi {
     public enum UpdateType {
         all_scope, add_scope
     }
+
+    private boolean isUpdatingStatus = false;
 
     public void move(DatasourceDTO dataSourceDTO) throws DEException {
         switch (dataSourceDTO.getAction()) {
@@ -174,7 +185,7 @@ public class DatasourceServer implements DatasourceApi {
             if (coreDatasourceTask.getStartTime() == null) {
                 coreDatasourceTask.setStartTime(System.currentTimeMillis() - 20 * 1000);
             }
-            if (StringUtils.equalsIgnoreCase(coreDatasourceTask.getSyncRate(), DatasourceTaskServer.ScheduleType.RIGHTNOW.toString())) {
+            if (StringUtils.equalsIgnoreCase(coreDatasourceTask.getSyncRate(), RIGHTNOW.toString())) {
                 coreDatasourceTask.setCron(null);
             }
             coreDatasourceTask.setStatus(TaskStatus.WaitingForExecution.name());
@@ -259,9 +270,10 @@ public class DatasourceServer implements DatasourceApi {
             BeanUtils.copyBean(coreDatasourceTask, dataSourceDTO.getSyncSetting());
             coreDatasourceTask.setName(requestDatasource.getName() + "-task");
             coreDatasourceTask.setDsId(requestDatasource.getId());
-            if (StringUtils.equalsIgnoreCase(coreDatasourceTask.getSyncRate(), DatasourceTaskServer.ScheduleType.RIGHTNOW.toString())) {
+            if (StringUtils.equalsIgnoreCase(coreDatasourceTask.getSyncRate(), RIGHTNOW.toString())) {
                 coreDatasourceTask.setCron(null);
             }
+            coreDatasourceTask.setStatus(TaskStatus.WaitingForExecution.name());
             datasourceTaskServer.update(coreDatasourceTask);
             for (String deleteTable : toDeleteTables) {
                 try {
@@ -457,6 +469,7 @@ public class DatasourceServer implements DatasourceApi {
                 }
 
             }
+
             datasourceTaskServer.deleteByDSId(datasourceId);
         }
 
@@ -563,7 +576,14 @@ public class DatasourceServer implements DatasourceApi {
     public void syncApiDs(Map<String, String> req) throws Exception {
         Long datasourceId = Long.valueOf(req.get("datasourceId"));
         CoreDatasourceTask coreDatasourceTask = datasourceTaskServer.selectByDSId(datasourceId);
-        datasourceSyncManage.fireNow(coreDatasourceTask);
+        CoreDatasourceTask newTask  = new CoreDatasourceTask();
+        BeanUtils.copyBean(newTask, coreDatasourceTask);
+        newTask.setId(IDUtils.snowID());
+        newTask.setSyncRate(RIGHTNOW.toString());
+        newTask.setExtraData("ONCE");
+        newTask.setStartTime(System.currentTimeMillis() - 20 * 1000);
+        datasourceTaskServer.insert(newTask);
+        datasourceSyncManage.addSchedule(newTask);
     }
 
     public ExcelFileData excelUpload(@RequestParam("file") MultipartFile file, @RequestParam("id") long datasourceId, @RequestParam("editType") Integer editType) throws DEException {
@@ -704,5 +724,58 @@ public class DatasourceServer implements DatasourceApi {
         Page<CoreDatasourceTaskLogDTO> page = new Page<>(goPage, pageSize);
         IPage<CoreDatasourceTaskLogDTO> pager = taskLogExtMapper.pager(page, wrapper);
         return pager;
+    }
+
+    public void updateDatasourceStatus(){
+        System.out.println(isUpdatingStatus);
+        if (this.isUpdatingStatus) {
+            return;
+        } else {
+            this.isUpdatingStatus = true;
+        }
+
+        try {
+            doUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            this.isUpdatingStatus = false;
+        }
+    }
+
+    private void doUpdate() {
+        List<QrtzSchedulerState> qrtzSchedulerStates = qrtzSchedulerStateMapper.selectList(null);
+        List<String> activeQrtzInstances = qrtzSchedulerStates.stream()
+                .filter(qrtzSchedulerState -> qrtzSchedulerState.getLastCheckinTime()
+                        + qrtzSchedulerState.getCheckinInterval() + 1000 > dataSourceExtMapper.selectTimestamp().getCurentTimestamp())
+                .map(QrtzSchedulerState::getInstanceName).collect(Collectors.toList());
+        QueryWrapper<CoreDatasource> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("task_status", TaskStatus.UnderExecution.name());
+
+        List<CoreDatasource> jobStoppedCoreDatasources = new ArrayList<>();
+        List<CoreDatasource> syncCoreDatasources = new ArrayList<>();
+
+        List<CoreDatasource> datasources = datasourceMapper.selectList(queryWrapper);
+        datasources.forEach(coreDatasource -> {
+            if (StringUtils.isNotEmpty(coreDatasource.getQrtzInstance()) && !activeQrtzInstances.contains(coreDatasource.getQrtzInstance().substring(0, coreDatasource.getQrtzInstance().length() - 13))) {
+                jobStoppedCoreDatasources.add(coreDatasource);
+            } else {
+                syncCoreDatasources.add(coreDatasource);
+            }
+        });
+
+        if (CollectionUtils.isEmpty(jobStoppedCoreDatasources)) {
+            return;
+        }
+
+        queryWrapper.clear();
+        queryWrapper.in("id", jobStoppedCoreDatasources.stream().map(CoreDatasource::getId).collect(Collectors.toList()));
+        CoreDatasource record = new CoreDatasource();
+        record.setTaskStatus(TaskStatus.WaitingForExecution.name());
+        datasourceMapper.update(record, queryWrapper);
+        //Task
+
+        datasourceTaskServer.updateByDsIds(jobStoppedCoreDatasources.stream().map(CoreDatasource::getId).collect(Collectors.toList()));
+
     }
 }

@@ -22,6 +22,7 @@ import io.dataease.datasource.server.EngineServer;
 import io.dataease.exception.DEException;
 import io.dataease.job.sechedule.ExtractDataJob;
 import io.dataease.job.sechedule.ScheduleManager;
+import io.dataease.utils.JsonUtil;
 import io.dataease.utils.LogUtil;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
@@ -209,7 +210,12 @@ public class DatasourceSyncManage {
             datasourceTaskServer.saveLog(datasetTableTaskLog);
         } finally {
             try {
-                datasourceTaskServer.updateTaskStatus(coreDatasourceTask, lastExecStatus);
+                if(coreDatasourceTask.getExtraData() != null && coreDatasourceTask.getExtraData().equalsIgnoreCase("ONCE")){
+                    datasourceTaskServer.delete(coreDatasourceTask.getId());
+                }else {
+                    datasourceTaskServer.updateTaskStatus(coreDatasourceTask, lastExecStatus);
+                }
+
                 UpdateWrapper<CoreDatasource> updateWrapper = new UpdateWrapper<>();
                 updateWrapper.eq("id", datasourceId);
                 CoreDatasource record = new CoreDatasource();
