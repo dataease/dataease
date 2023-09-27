@@ -540,7 +540,8 @@ const textAlign = computed(() => {
         display: flex;
         flex-wrap: wrap;
         line-height: 28px;
-        :deep(.ed-date-editor.ed-input) {
+
+        :deep(.ed-date-editor) {
           width: 227px;
         }
 
