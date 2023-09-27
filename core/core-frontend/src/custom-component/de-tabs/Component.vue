@@ -292,7 +292,7 @@ const headClass = computed(() => {
 })
 
 const calcTabLength = () => {
-  console.log('calcTabLength')
+  // do calcTabLength
 }
 
 const titleStyle = itemName => {

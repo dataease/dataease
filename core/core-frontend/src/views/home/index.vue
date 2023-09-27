@@ -19,10 +19,10 @@ const getEyeDropper = async () => {
   if (!isSupported) return
   await open()
     .then(res => {
-      console.log(res)
+      console.warn(res)
     })
     .catch(cancel => {
-      console.log(cancel)
+      console.warn(cancel)
     })
 }
 let Header = shallowRef(null)

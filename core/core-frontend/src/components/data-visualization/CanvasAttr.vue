@@ -129,7 +129,6 @@ const onColorChange = val => {
 }
 
 const themeAttrChange = (custom, property, value) => {
-  console.log('themeAttrChange-' + canvasAttrInit)
   if (canvasAttrInit) {
     Object.keys(canvasViewInfo.value).forEach(function (viewId) {
       const viewInfo = canvasViewInfo.value[viewId]

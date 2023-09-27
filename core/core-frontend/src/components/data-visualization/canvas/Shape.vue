@@ -757,7 +757,7 @@ onMounted(() => {
     }
   })
   eventBus.on('stopAnimation', () => {
-    console.log('stopAnimation')
+    // do stopAnimation
   })
   settingAttribute()
   useEmitt({
