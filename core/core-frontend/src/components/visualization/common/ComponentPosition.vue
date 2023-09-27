@@ -11,6 +11,7 @@
             :max="max"
             :step="step"
             v-model="curComponent.style[key]"
+            @change="onPositionChange"
             controls-position="right"
           />
         </el-form-item>
@@ -25,6 +26,8 @@ import { positionData } from '@/utils/attr'
 import { storeToRefs } from 'pinia'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import _ from 'lodash'
+import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
+const snapshotStore = snapshotStoreWithOut()
 
 const dvMainStore = dvMainStoreWithOut()
 const { curComponent } = storeToRefs(dvMainStore)
@@ -56,6 +59,10 @@ const positionKeysGroup = computed(() => {
   })
   return _list
 })
+
+const onPositionChange = () => {
+  snapshotStore.recordSnapshotCache()
+}
 </script>
 
 <style lang="less" scoped>

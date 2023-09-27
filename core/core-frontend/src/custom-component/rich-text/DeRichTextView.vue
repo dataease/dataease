@@ -166,7 +166,7 @@ watch(
       element.value.propValue.textValue = ed.getContent()
     }
     if (initReady.value) {
-      // snapshotStore.recordSnapshotCache()
+      snapshotStore.recordSnapshotCache()
     }
   }
 )
@@ -308,6 +308,9 @@ const calcData = (view: Chart, callback) => {
         })
       })
       .catch(() => {
+        nextTick(() => {
+          initReady.value = true
+        })
         callback?.()
       })
   } else {

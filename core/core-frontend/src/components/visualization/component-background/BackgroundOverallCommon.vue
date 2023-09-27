@@ -275,6 +275,7 @@ const upload = file => {
 }
 
 const onBackgroundChange = () => {
+  snapshotStore.recordSnapshotCache()
   emits('onBackgroundChange', state.commonBackground)
 }
 
