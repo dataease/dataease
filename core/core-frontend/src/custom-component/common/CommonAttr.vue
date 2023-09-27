@@ -1,20 +1,28 @@
 <script setup lang="ts">
-import { computed, ref, toRefs, PropType } from 'vue'
+import { computed, ref, toRefs } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
-import { styleData, selectKey, optionMap, positionData, horizontalPosition } from '@/utils/attr'
-import DeInputNum from '@/custom-component/common/DeInputNum.vue'
+import { styleData, selectKey, optionMap, horizontalPosition } from '@/utils/attr'
 import ComponentPosition from '@/components/visualization/common/ComponentPosition.vue'
 import BackgroundOverallCommon from '@/components/visualization/component-background/BackgroundOverallCommon.vue'
 import { useI18n } from '@/hooks/web/useI18n'
+import _ from 'lodash'
+
 const { t } = useI18n()
 
-const props = defineProps({
-  themes: {
-    type: String as PropType<'light' | 'dark'>,
-    default: 'dark'
+const props = withDefaults(
+  defineProps<{
+    type?: 'light' | 'dark'
+    themes?: EditorTheme
+    backgroundColorPickerWidth?: number
+    backgroundBorderSelectWidth?: number
+  }>(),
+  {
+    themes: 'dark',
+    backgroundColorPickerWidth: 50,
+    backgroundBorderSelectWidth: 108
   }
-})
+)
 
 const { themes } = toRefs(props)
 const dvMainStore = dvMainStoreWithOut()
@@ -26,17 +34,20 @@ const styleKeys = computed(() => {
     const curComponentStyleKeys = Object.keys(curComponent.value.style)
     return styleData.filter(item => curComponentStyleKeys.includes(item.key))
   } else {
-    return null
+    return []
   }
 })
 
-const positionKeys = computed(() => {
-  if (curComponent.value) {
-    const curComponentStyleKeys = Object.keys(curComponent.value.style)
-    return positionData.filter(item => curComponentStyleKeys.includes(item.key))
-  } else {
-    return null
-  }
+const styleKeysGroup = computed(() => {
+  const _list = []
+  _.forEach(styleKeys.value, (x, i) => {
+    const index = i % 2
+    if (_list[index] === undefined) {
+      _list[index] = []
+    }
+    _list[index].push(x)
+  })
+  return _list
 })
 
 const onChange = () => {
@@ -59,7 +70,7 @@ const onBackgroundChange = val => {
   <div class="v-common-attr">
     <el-collapse v-model="activeName" @change="onChange()">
       <el-collapse-item :effect="themes" title="位置" name="position" v-if="!dashboardActive">
-        <component-position :themes="themes"></component-position>
+        <component-position :themes="themes" />
       </el-collapse-item>
 
       <el-collapse-item :effect="themes" title="背景" name="background">
@@ -69,49 +80,93 @@ const onBackgroundChange = val => {
           :common-background-pop="curComponent.commonBackground"
           component-position="component"
           @onBackgroundChange="onBackgroundChange"
-        ></background-overall-common>
+          :background-color-picker-width="backgroundColorPickerWidth"
+          :background-border-select-width="backgroundBorderSelectWidth"
+        />
       </el-collapse-item>
 
       <el-collapse-item :effect="themes" title="样式" name="style" class="common-style-area">
-        <div class="common-style-inner">
-          <div
+        <el-row :gutter="8">
+          <el-col
+            :span="12"
             v-for="({ key, label, min, max, step }, index) in styleKeys"
             :key="index"
-            :title="label"
-            style="display: flex; float: left; margin-top: 10px"
           >
-            <div class="attr-custom-icon-main">
-              <el-icon :title="label" class="attr-custom-icon">
-                <Icon :name="'dv-style-' + key"></Icon>
-              </el-icon>
-            </div>
-            <div style="width: 85px">
+            <el-form-item class="form-item" :class="'form-item-' + themes" :label="label">
               <el-color-picker
-                class="custom-color"
                 v-if="isIncludesColor(key)"
                 v-model="curComponent.style[key]"
+                :trigger-width="197"
                 :themes="themes"
                 size="small"
                 show-alpha
                 is-custom
-              ></el-color-picker>
+              />
               <el-radio-group
-                class="custom-radio"
+                :effect="themes"
+                style="width: 100%"
+                class="icon-radio-group"
                 v-else-if="horizontalPosition.includes(key)"
                 v-model="curComponent.style[key]"
               >
-                <el-radio label="left" :title="t('chart.text_pos_left')"
-                  ><Icon class-name="bash-icon" name="filter-h-left"
-                /></el-radio>
-                <el-radio label="center" :title="t('chart.text_pos_center')"
-                  ><Icon class-name="bash-icon" name="filter-h-center"
-                /></el-radio>
-                <el-radio label="right" :title="t('chart.text_pos_right')"
-                  ><Icon class-name="bash-icon" name="filter-h-right"
-                /></el-radio>
+                <el-radio :effect="themes" label="left">
+                  <el-tooltip effect="dark" placement="top">
+                    <template #content>
+                      {{ t('chart.text_pos_left') }}
+                    </template>
+                    <div
+                      class="icon-btn"
+                      :class="{
+                        dark: themes === 'dark',
+                        active: curComponent.style[key] === 'left'
+                      }"
+                    >
+                      <el-icon>
+                        <Icon name="filter-h-left" />
+                      </el-icon>
+                    </div>
+                  </el-tooltip>
+                </el-radio>
+                <el-radio :effect="themes" label="center">
+                  <el-tooltip effect="dark" placement="top">
+                    <template #content>
+                      {{ t('chart.text_pos_center') }}
+                    </template>
+                    <div
+                      class="icon-btn"
+                      :class="{
+                        dark: themes === 'dark',
+                        active: curComponent.style[key] === 'center'
+                      }"
+                    >
+                      <el-icon>
+                        <Icon name="filter-h-center" />
+                      </el-icon>
+                    </div>
+                  </el-tooltip>
+                </el-radio>
+                <el-radio :effect="themes" label="right">
+                  <el-tooltip effect="dark" placement="top">
+                    <template #content>
+                      {{ t('chart.text_pos_right') }}
+                    </template>
+                    <div
+                      class="icon-btn"
+                      :class="{
+                        dark: themes === 'dark',
+                        active: curComponent.style[key] === 'right'
+                      }"
+                    >
+                      <el-icon>
+                        <Icon name="filter-h-right" />
+                      </el-icon>
+                    </div>
+                  </el-tooltip>
+                </el-radio>
               </el-radio-group>
               <el-select
                 v-else-if="selectKey.includes(key)"
+                style="width: 100%"
                 size="small"
                 :effect="themes"
                 v-model="curComponent.style[key]"
@@ -123,17 +178,20 @@ const onBackgroundChange = val => {
                   :value="item.value"
                 ></el-option>
               </el-select>
-              <de-input-num
+              <el-input-number
                 v-else
+                size="middle"
+                style="width: 100%"
+                controls-position="right"
                 :min="min"
                 :max="max"
                 :step="step"
                 :effect="themes"
                 v-model="curComponent.style[key]"
-              ></de-input-num>
-            </div>
-          </div>
-        </div>
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-collapse-item>
       <slot></slot>
     </el-collapse>
@@ -144,6 +202,9 @@ const onBackgroundChange = val => {
 .v-common-attr {
   .ed-input-group__prepend {
     padding: 0 10px;
+  }
+  :deep(.ed-collapse-item__content) {
+    border-top: none;
   }
 }
 
@@ -174,32 +235,6 @@ const onBackgroundChange = val => {
   margin-left: -12px;
 }
 
-.custom-radio :deep(.ed-radio) {
-  margin-right: 0;
-  .ed-radio__label {
-    padding: 0 4px 0 0;
-  }
-}
-
-.custom-radio :deep(.ed-radio.is-checked) {
-  .ed-radio__label {
-    .bash-icon {
-      background: rgba(51, 112, 255, 0.1);
-      border-radius: 4px;
-    }
-  }
-}
-
-.custom-radio :deep(.ed-radio__input) {
-  display: none;
-}
-
-.custom-radio :deep(.ed-radio__input.is-checked) {
-  .ed-radio__inner {
-    padding: 4px;
-  }
-}
-
 .bash-icon {
   width: 24px;
   height: 24px;
@@ -212,5 +247,132 @@ const onBackgroundChange = val => {
 :deep(.ed-color-picker.is-custom .ed-color-picker__mask) {
   height: 26px;
   width: 48px;
+}
+
+:deep(.ed-form-item) {
+  .ed-radio.ed-radio--small .ed-radio__inner {
+    width: 14px;
+    height: 14px;
+  }
+  .ed-input__inner {
+    font-size: 12px;
+    font-weight: 400;
+  }
+  .ed-input {
+    --ed-input-height: 28px;
+
+    .ed-input__suffix {
+      height: 26px;
+    }
+  }
+  .ed-input-number {
+    width: 100%;
+
+    .ed-input-number__decrease {
+      --ed-input-number-controls-height: 13px;
+    }
+    .ed-input-number__increase {
+      --ed-input-number-controls-height: 13px;
+    }
+
+    .ed-input__inner {
+      text-align: start;
+    }
+  }
+  .ed-select {
+    width: 100%;
+    .ed-input__inner {
+      height: 26px !important;
+    }
+  }
+  .ed-checkbox {
+    .ed-checkbox__label {
+      font-size: 12px;
+    }
+  }
+  .ed-color-picker {
+    .ed-color-picker__mask {
+      height: 26px;
+      width: calc(100% - 2px) !important;
+    }
+  }
+  .ed-radio {
+    height: 20px;
+    .ed-radio__label {
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 20px;
+    }
+  }
+}
+:deep(.ed-checkbox__label) {
+  color: #1f2329;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 20px;
+}
+
+:deep(.ed-form-item__label) {
+  color: @canvas-main-font-color;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+}
+:deep(.form-item-dark) {
+  .ed-form-item__label {
+    color: @canvas-main-font-color-dark;
+  }
+}
+
+.icon-radio-group {
+  :deep(.ed-radio) {
+    margin-right: 8px;
+    height: 28px;
+
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+  :deep(.ed-radio__input) {
+    display: none;
+  }
+  :deep(.ed-radio__label) {
+    padding: 0;
+  }
+}
+.icon-btn {
+  font-size: 16px;
+  line-height: 16px;
+  width: 24px;
+  height: 24px;
+  text-align: center;
+  border-radius: 4px;
+  padding-top: 4px;
+
+  color: #1f2329;
+
+  cursor: pointer;
+
+  &.dark {
+    color: #a6a6a6;
+    &.active {
+      color: #3370ff;
+      background-color: rgba(51, 112, 255, 0.1);
+    }
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+  }
+
+  &.active {
+    color: #3370ff;
+    background-color: rgba(51, 112, 255, 0.1);
+  }
+
+  &:hover {
+    background-color: rgba(31, 35, 41, 0.1);
+  }
 }
 </style>
