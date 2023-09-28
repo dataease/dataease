@@ -204,6 +204,13 @@ const initDataset = () => {
   })
 }
 
+const computedTree = computed(() => {
+  if (datasetTree.value[0].id === '0') {
+    return datasetTree.value[0].children
+  }
+  return datasetTree.value
+})
+
 const handleDatasetChange = () => {
   curComponent.value.field.id = ''
   getOptions(curComponent.value.dataset.id, curComponent.value)
@@ -752,9 +759,10 @@ defineExpose({
                 <div class="value">
                   <el-tree-select
                     v-model="curComponent.dataset.id"
-                    :data="datasetTree"
+                    :data="computedTree"
                     @change="handleDatasetChange"
                     :props="dsSelectProps"
+                    placement="bottom"
                     :render-after-expand="false"
                     filterable
                     popper-class="dataset-tree"
