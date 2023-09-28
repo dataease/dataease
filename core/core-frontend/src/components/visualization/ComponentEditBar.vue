@@ -84,9 +84,7 @@
             >
             <el-dropdown-item
               @click="userViewEnlargeOpen($event, 'details')"
-              v-if="
-                element.innerType !== 'rich-text' && barShowCheck('details') && dvInfo.weight > 3
-              "
+              v-if="element.innerType !== 'rich-text' && barShowCheck('details')"
               >查看数据</el-dropdown-item
             >
             <el-dropdown-item
@@ -518,6 +516,7 @@ defineExpose({
 .bar-base-icon {
   height: 22px;
   width: 22px;
+  font-size: 14px;
   color: #ffffff;
   &:hover {
     color: rgba(255, 255, 255, 0.5);

@@ -21,11 +21,11 @@ import TableTotalSelector from '@/views/chart/components/editor/editor-style/com
 import MiscStyleSelector from '@/views/chart/components/editor/editor-style/components/MiscStyleSelector.vue'
 
 const dvMainStore = dvMainStoreWithOut()
-const { curComponent, dvInfo, batchOptStatus } = storeToRefs(dvMainStore)
+const { curComponent, dvInfo } = storeToRefs(dvMainStore)
 const { t } = useI18n()
 
 const state = {
-  attrActiveNames: [],
+  attrActiveNames: ['background'],
   styleActiveNames: [],
   initReady: true
 }
@@ -268,9 +268,7 @@ watch(
             />
           </collapse-switch-item>
         </el-collapse>
-      </el-row>
 
-      <el-row class="de-collapse-style">
         <el-collapse v-model="state.styleActiveNames" class="style-collapse">
           <el-collapse-item
             :effect="themes"
@@ -407,5 +405,8 @@ span {
       border-top: none;
     }
   }
+}
+.style-collapse:empty {
+  border-bottom: none;
 }
 </style>

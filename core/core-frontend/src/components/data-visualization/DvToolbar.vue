@@ -145,6 +145,10 @@ const backToMain = () => {
   }
 }
 
+const onDvNameChange = () => {
+  snapshotStore.recordSnapshotCache()
+}
+
 eventBus.on('preview', preview)
 eventBus.on('save', saveCanvasWithCheck)
 eventBus.on('clearCanvas', clearCanvas)
@@ -215,6 +219,7 @@ eventBus.on('clearCanvas', clearCanvas)
       <input
         @keydown.stop
         @keyup.stop
+        @change="onDvNameChange"
         ref="nameInput"
         maxlength="50"
         v-model="inputName"

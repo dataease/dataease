@@ -192,7 +192,7 @@ const filterNode = (value, data) => {
 }
 
 const getFields = (id, chartId) => {
-  if (id) {
+  if (id && chartId) {
     getFieldByDQ(id, chartId)
       .then(res => {
         state.dimension = (res.dimensionList as unknown as Field[]) || []
@@ -263,11 +263,11 @@ const fieldFilter = val => {
 }
 
 const reset = () => {
-  console.log('click reset')
+  // do reset
 }
 
 const dimensionItemChange = item => {
-  console.log(item)
+  // do dimensionItemChange
 }
 const dimensionItemRemove = item => {
   if (item.removeType === 'dimension') {
@@ -280,7 +280,7 @@ const dimensionItemRemove = item => {
 }
 
 const quotaItemChange = item => {
-  console.log(item)
+  // do quotaItemChange
 }
 const quotaItemRemove = item => {
   if (item.removeType === 'quota') {
@@ -602,7 +602,6 @@ const closeRename = () => {
 const removeItems = (
   _type: 'xAxis' | 'xAxisExt' | 'extStack' | 'yAxis' | 'extBubble' | 'customFilter' | 'drillFields'
 ) => {
-  console.log(_type)
   switch (_type) {
     case 'xAxis':
       view.value.xAxis = []
@@ -626,7 +625,6 @@ const removeItems = (
       view.value.drillFields = []
       break
   }
-  console.log(view.value)
 }
 
 const saveRename = ref => {
@@ -1009,7 +1007,7 @@ const dragVerticalTop = computed(() => {
                 </el-tabs>
               </div>
               <div style="padding-top: 1px">
-                <VQueryChartStyle :chart="view" :themes="themes"></VQueryChartStyle>
+                <VQueryChartStyle :chart="view" :themes="themes" />
               </div>
             </div>
             <el-tabs

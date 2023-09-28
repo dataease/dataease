@@ -312,6 +312,10 @@ const saveLinkageSetting = () => {
     })
   })
 }
+
+const onDvNameChange = () => {
+  snapshotStore.recordSnapshotCache()
+}
 </script>
 
 <template>
@@ -400,10 +404,6 @@ const saveLinkageSetting = () => {
             icon-name="dv-dashboard"
           ></component-button>
         </el-tooltip>
-        <el-divider direction="vertical" />
-        <el-tooltip effect="dark" content="切换至移动端布局" placement="bottom">
-          <component-button tips="移动端布局" icon-name="dv_mobile_layout"></component-button>
-        </el-tooltip>
 
         <el-dropdown v-show="editMode === 'edit'" trigger="click">
           <el-button class="custom-normal-button" style="float: right; margin-right: 12px"
@@ -477,7 +477,12 @@ const saveLinkageSetting = () => {
       </div>
     </div>
     <Teleport v-if="nameEdit" :to="'#canvas-name'">
-      <input ref="nameInput" v-model="inputName" @blur="closeEditCanvasName" />
+      <input
+        @change="onDvNameChange"
+        ref="nameInput"
+        v-model="inputName"
+        @blur="closeEditCanvasName"
+      />
     </Teleport>
 
     <el-button

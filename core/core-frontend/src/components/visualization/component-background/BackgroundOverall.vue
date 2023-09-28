@@ -3,7 +3,11 @@
     <el-row style="width: 100%" :class="themes">
       <el-col :span="12" style="padding-right: 4px">
         <el-row class="custom-item-text-row"
-          ><span class="custom-item-text bl">{{ t('visualization.inner_padding') }}</span>
+          ><span
+            class="custom-style-title bl"
+            :class="{ 'custom-style-title-dark': themes === 'dark' }"
+            >{{ t('visualization.inner_padding') }}</span
+          >
         </el-row>
         <el-row class="function-area">
           <el-input-number
@@ -18,8 +22,12 @@
         </el-row>
       </el-col>
       <el-col :span="12" style="padding-left: 4px">
-        <el-row class="custom-item-text-row"
-          ><span class="custom-item-text bl">{{ t('visualization.board_radio') }}</span>
+        <el-row class="custom-item-text-row">
+          <span
+            class="custom-style-title bl"
+            :class="{ 'custom-style-title-dark': themes === 'dark' }"
+            >{{ t('visualization.board_radio') }}</span
+          >
         </el-row>
         <el-row class="function-area">
           <el-input-number
@@ -460,5 +468,12 @@ span {
 
 :deep(.ed-input__inner) {
   text-align: left;
+}
+.custom-style-title {
+  font-size: 12px;
+  color: #646a73;
+}
+.custom-style-title-dark {
+  color: #ffffff !important;
 }
 </style>

@@ -1,136 +1,125 @@
 <template>
-  <el-col>
-    <el-row v-if="dvInfo.type === 'dashboard'" class="custom-row">
-      <el-row class="custom-item-text-row"
-        ><span class="custom-item-text bl">{{ t('visualization.theme_color') }}</span>
-      </el-row>
-      <el-row class="custom-theme-color-button function-area">
+  <el-form label-position="top">
+    <el-form-item
+      class="form-item"
+      :class="'form-item-' + themes"
+      v-if="dvInfo.type === 'dashboard'"
+      :label="t('visualization.theme_color')"
+    >
+      <el-space :size="24">
         <color-button
-          class="margin-left2"
           :color-type="'light'"
           :label="canvasStyleData.dashboard.themeColor"
           @onClick="colorButtonClick"
-          >{{ t('visualization.theme_color_light') }}
+        >
+          <div class="color-btn-text">{{ t('visualization.theme_color_light') }}</div>
         </color-button>
         <color-button
-          class="margin-left32"
           :color-type="'dark'"
           :label="canvasStyleData.dashboard.themeColor"
           @onClick="colorButtonClick"
-          >{{ t('visualization.theme_color_dark') }}
-        </color-button>
-      </el-row>
-    </el-row>
-    <el-row class="custom-row margin-top16">
-      <el-row v-if="dvInfo.type === 'dashboard'" class="custom-item-text-row"
-        ><span class="custom-item-text bl">{{ t('visualization.component_gap') }}</span>
-      </el-row>
-      <el-row v-if="dvInfo.type === 'dashboard'" class="function-area">
-        <el-radio-group v-model="canvasStyleData.dashboard.gap" @change="themeChange">
-          <el-radio label="yes">{{ t('visualization.gap') }}</el-radio>
-          <el-radio label="no">{{ t('visualization.no_gap') }}</el-radio>
-        </el-radio-group>
-      </el-row>
-    </el-row>
-    <el-row class="custom-row margin-top16">
-      <el-row class="custom-item-text-row">
-        <span class="custom-item-text bl">
-          <el-checkbox
-            :effect="themes"
-            size="small"
-            v-model="canvasStyleData.refreshViewEnable"
-            @change="themeChange"
-            >{{ t('visualization.refresh_frequency') }}</el-checkbox
-          >
-        </span>
-      </el-row>
-      <el-row class="function-area">
-        <el-input
-          v-model="canvasStyleData.refreshTime"
-          :effect="themes"
-          type="number"
-          :min="1"
-          :max="3600"
-          size="middle"
-          :disabled="!canvasStyleData.refreshViewEnable"
-          @change="themeChange"
         >
-          <template #append>
-            <el-select
-              v-model="canvasStyleData.refreshUnit"
-              size="middle"
-              :effect="themes"
-              :disabled="!canvasStyleData.refreshViewEnable"
-              style="width: 90px; padding: 0 9px"
-              @change="themeChange"
-            >
-              <el-option :label="t('visualization.minute')" :value="'minute'" />
-              <el-option :label="t('visualization.second')" :value="'second'" />
-            </el-select>
-          </template>
-        </el-input>
-      </el-row>
-    </el-row>
-    <el-row class="custom-row margin-top16">
-      <el-row class="custom-item-text-row">
-        <span class="custom-item-text">
-          <el-checkbox
-            :effect="themes"
-            size="small"
-            v-model="canvasStyleData.refreshViewLoading"
-            @change="themeChange"
-            >{{ t('visualization.enable_view_loading') }}</el-checkbox
-          >
-        </span>
-      </el-row>
-    </el-row>
-    <el-row class="custom-row margin-top16">
-      <el-row class="custom-item-text-row">
-        <span class="custom-item-text bl">
-          {{ t('visualization.panel_view_result_show') }}
-          <span>
-            <el-tooltip class="item" effect="dark" placement="bottom">
-              <template #content>
-                <div>
-                  {{ t('visualization.panel_view_result_tips') }}
-                </div>
-              </template>
-              <i class="el-icon-info" style="cursor: pointer" />
-            </el-tooltip>
-          </span>
-        </span>
-      </el-row>
-      <el-row class="function-area custom-row">
-        <el-row>
-          <el-radio-group
-            :effect="themes"
-            v-model="canvasStyleData.dashboard.resultMode"
-            class="radio-span"
-            @change="themeChange"
-          >
-            <el-radio label="all" :effect="themes"
-              ><span>{{ t('visualization.view') }}</span></el-radio
-            >
-            <el-radio label="custom" :effect="themes">
-              <span>{{ t('visualization.panel') }} </span>
-            </el-radio>
-          </el-radio-group>
-        </el-row>
-        <el-row class="margin-top8">
-          <el-input-number
-            v-model="canvasStyleData.dashboard.resultCount"
-            :effect="themes"
-            controls-position="right"
+          <div class="color-btn-text">{{ t('visualization.theme_color_dark') }}</div>
+        </color-button>
+      </el-space>
+    </el-form-item>
+    <el-form-item
+      v-if="dvInfo.type === 'dashboard'"
+      class="form-item"
+      :class="'form-item-' + themes"
+      :label="t('visualization.component_gap')"
+    >
+      <el-radio-group v-model="canvasStyleData.dashboard.gap" @change="themeChange">
+        <el-radio :effect="themes" label="yes">{{ t('visualization.gap') }}</el-radio>
+        <el-radio :effect="themes" label="no">{{ t('visualization.no_gap') }}</el-radio>
+      </el-radio-group>
+    </el-form-item>
+    <el-form-item class="form-item" :class="'form-item-' + themes" style="margin-bottom: 8px">
+      <el-checkbox
+        :effect="themes"
+        size="small"
+        v-model="canvasStyleData.refreshViewEnable"
+        @change="themeChange"
+      >
+        {{ t('visualization.refresh_frequency') }}
+      </el-checkbox>
+    </el-form-item>
+    <el-form-item class="form-item" :class="'form-item-' + themes" style="padding-left: 20px">
+      <el-input
+        v-model="canvasStyleData.refreshTime"
+        :effect="themes"
+        class="time-input-number"
+        type="number"
+        :min="1"
+        :max="3600"
+        size="middle"
+        :disabled="!canvasStyleData.refreshViewEnable"
+        @change="themeChange"
+      >
+        <template #append>
+          <el-select
+            v-model="canvasStyleData.refreshUnit"
             size="middle"
-            :min="1"
-            :max="10000"
+            :effect="themes"
+            :disabled="!canvasStyleData.refreshViewEnable"
+            style="width: 90px; padding: 0 9px"
             @change="themeChange"
-            :disabled="canvasStyleData.dashboard.resultMode === 'all'"
-          ></el-input-number>
-        </el-row>
-      </el-row>
-    </el-row>
-  </el-col>
+          >
+            <el-option :label="t('visualization.minute')" :value="'minute'" />
+            <el-option :label="t('visualization.second')" :value="'second'" />
+          </el-select>
+        </template>
+      </el-input>
+    </el-form-item>
+    <el-form-item class="form-item" :class="'form-item-' + themes">
+      <el-checkbox
+        :effect="themes"
+        size="small"
+        v-model="canvasStyleData.refreshViewLoading"
+        @change="themeChange"
+        >{{ t('visualization.enable_view_loading') }}</el-checkbox
+      >
+    </el-form-item>
+
+    <el-form-item class="form-item" :class="'form-item-' + themes" style="margin-bottom: 8px">
+      <template #label>
+        {{ t('visualization.panel_view_result_show') }}
+        <el-tooltip class="item" effect="dark" placement="bottom">
+          <template #content>
+            <div>
+              {{ t('visualization.panel_view_result_tips') }}
+            </div>
+          </template>
+          <el-icon><InfoFilled /></el-icon>
+        </el-tooltip>
+      </template>
+      <el-radio-group
+        :effect="themes"
+        v-model="canvasStyleData.dashboard.resultMode"
+        class="radio-span"
+        @change="themeChange"
+      >
+        <el-radio label="all" :effect="themes">
+          {{ t('visualization.view') }}
+        </el-radio>
+        <el-radio label="custom" :effect="themes">
+          {{ t('visualization.panel') }}
+        </el-radio>
+      </el-radio-group>
+    </el-form-item>
+    <el-form-item class="form-item" :class="'form-item-' + themes">
+      <el-input-number
+        v-model="canvasStyleData.dashboard.resultCount"
+        :effect="themes"
+        controls-position="right"
+        size="middle"
+        :min="1"
+        :max="10000"
+        @change="themeChange"
+        :disabled="canvasStyleData.dashboard.resultMode === 'all'"
+      />
+    </el-form-item>
+  </el-form>
 </template>
 
 <script setup lang="ts">
@@ -155,7 +144,7 @@ import {
   FILTER_COMMON_STYLE_LIGHT
 } from '@/views/chart/components/editor/util/chart'
 import ColorButton from '@/components/assist-button/ColorButton.vue'
-import { reactive, onMounted, toRefs } from 'vue'
+import { reactive } from 'vue'
 import { deepCopy } from '@/utils/utils'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { storeToRefs } from 'pinia'
@@ -163,6 +152,7 @@ import {
   COMMON_COMPONENT_BACKGROUND_DARK,
   COMMON_COMPONENT_BACKGROUND_LIGHT
 } from '@/custom-component/component-list'
+import { ElFormItem, ElSpace } from 'element-plus-secondary'
 const emits = defineEmits(['onThemeColorChange'])
 const snapshotStore = snapshotStoreWithOut()
 const props = defineProps({
@@ -171,8 +161,6 @@ const props = defineProps({
     default: 'light'
   }
 })
-
-const { themes } = toRefs(props)
 
 const state = reactive({
   colorIndex: 0
@@ -213,102 +201,31 @@ const colorButtonClick = val => {
 </script>
 
 <style scoped lang="less">
-.el-input-refresh-time {
-  width: calc(100% - 90px) !important;
-}
-
-.el-input-refresh-unit {
-  width: 80px !important;
-}
-
-.margin-left4 {
-  margin-left: 4px;
-}
-
-.margin-left8 {
-  margin-left: 8px;
-}
-
-.form-item-slider :deep(.ed-form-item__label) {
-  font-size: 12px;
-  line-height: 38px;
-}
-
-.form-item :deep(.ed-form-item__label) {
-  font-size: 12px;
-}
-
-.slider-area :deep(.ed-slider__runway) {
-  display: none;
-}
-
-.result-count {
-  width: 80px;
-}
-
-.custom-item-text-row {
-  display: flex;
-}
-
-.custom-item-text {
-  font-size: 12px !important;
-  font-weight: 400 !important;
-  line-height: 20px;
-  color: #646a73 !important;
-}
-
-.custom-theme-color-button {
-  float: left;
-}
-
-.margin-left2 {
-  margin-left: 2px;
-}
-
-.margin-left32 {
-  margin-left: 32px;
-}
-
-.bl {
-  justify-content: flex-start;
-  display: flex;
-}
-
-.br {
-  flex: 1;
-  justify-content: flex-end;
-  display: flex;
-}
-
-.function-area {
-  margin-top: 8px;
-}
-
-.margin-top16 {
-  margin-top: 16px !important;
-}
-
-.margin-top8 {
-  margin-top: 8px !important;
-}
-.ed-radio {
-  font-weight: 400;
-  height: 20px;
-}
-.ed-checkbox {
-  font-weight: 400;
-  height: 20px;
-}
-
-:deep(.ed-input-number) {
+.color-btn-text {
   width: 100%;
+  text-align: center;
+  padding-top: 4px;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 20px;
+}
+:deep(.ed-form-item) {
+  margin-bottom: 16px;
+}
+.time-input-number {
+  :deep(input) {
+    -webkit-appearance: none;
+    -moz-appearance: textfield;
+
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+    }
+  }
 }
 
-:deep(.ed-input__inner) {
-  text-align: left;
-}
-
-:deep(.ed-input.is-disabled .ed-input__wrapper) {
-  box-shadow: 0 0 0 1px var(--ed-disabled-border-color) inset !important;
+.ed-select--dark {
+  background: #292929 !important;
 }
 </style>

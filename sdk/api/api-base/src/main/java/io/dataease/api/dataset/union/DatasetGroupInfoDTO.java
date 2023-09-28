@@ -15,7 +15,7 @@ import java.util.Map;
 public class DatasetGroupInfoDTO extends DatasetNodeDTO {
     private List<UnionDTO> union;// 关联数据集
 
-    private List<DeSortField> sortFields;// 自定义排序（如仪表板过滤组件）
+    private List<DeSortField> sortFields;// 自定义排序（如仪表板查询组件）
 
     private Map<String, List> data;
 

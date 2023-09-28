@@ -373,7 +373,7 @@ export class GroupStackBar extends StackBar {
       isGroup: true,
       groupField: 'group'
     }
-    this.axis = [...this.axis, 'extStack']
+    this.axis = [...this.axis, 'xAxisExt', 'extStack']
   }
 }
 

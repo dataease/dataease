@@ -7,7 +7,7 @@ import { changeSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
 const dvMainStore = dvMainStoreWithOut()
 const { canvasStyleData } = storeToRefs(dvMainStore)
 const snapshotStore = snapshotStoreWithOut()
-let scale = ref(canvasStyleData.value.scale)
+const scale = ref(60)
 
 let timer = null
 
@@ -19,7 +19,9 @@ const handleScaleChange = () => {
 }
 
 onMounted(() => {
-  handleScaleChange()
+  setTimeout(() => {
+    scale.value = canvasStyleData.value.scale
+  }, 1000)
 })
 </script>
 <template>

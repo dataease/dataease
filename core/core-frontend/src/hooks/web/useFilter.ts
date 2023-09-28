@@ -4,24 +4,47 @@ import { storeToRefs } from 'pinia'
 const dvMainStore = dvMainStoreWithOut()
 const { componentData } = storeToRefs(dvMainStore)
 
-const forMatterValue = (type: number, selectValue: any) => {
+const forMatterValue = (type: number, selectValue: any, timeGranularity: string) => {
   if (![1, 7].includes(type)) {
     return Array.isArray(selectValue) ? selectValue : [selectValue]
   }
   return Array.isArray(selectValue)
     ? selectValue.map(ele => +new Date(ele))
-    : [getDayStart(+new Date(selectValue)), +new Date(selectValue)]
+    : getRange(selectValue, timeGranularity)
 }
 
-const getDayStart = timestamp => {
+const getRange = (selectValue, timeGranularity) => {
+  switch (timeGranularity) {
+    case 'year':
+      return getYearEnd(selectValue)
+    case 'month':
+      return getMonthEnd(selectValue)
+    case 'date':
+      return getDayEnd(selectValue)
+    case 'datetime':
+      return [+new Date(selectValue), +new Date(selectValue)]
+    default:
+      break
+  }
+}
+const getYearEnd = timestamp => {
   const time = new Date(timestamp)
-  return (
-    timestamp -
-    time.getHours() * 60 * 60 * 1000 -
-    time.getMinutes() * 60 * 1000 -
-    time.getSeconds() * 1000 -
-    time.getMilliseconds()
-  )
+  return [
+    +new Date(time.getFullYear(), 0, 1),
+    +new Date(time.getFullYear(), 11, 31) + 60 * 1000 * 60 * 24 - 1000
+  ]
+}
+
+const getMonthEnd = timestamp => {
+  const time = new Date(timestamp)
+  const date = new Date(time.getFullYear(), time.getMonth(), 1)
+  date.setDate(1)
+  date.setMonth(date.getMonth() + 1)
+  return [+new Date(time.getFullYear(), time.getMonth(), 1), +new Date(date.getTime() - 1000)]
+}
+
+const getDayEnd = timestamp => {
+  return [+new Date(timestamp), +new Date(timestamp) + 60 * 1000 * 60 * 24 - 1000]
 }
 
 const getValueByDefaultValueCheckOrFirstLoad = (
@@ -73,6 +96,7 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
               parameters = [],
               parametersCheck = false,
               isTree = false,
+              timeGranularity = 'date',
               displayType,
               multiple
             } = item
@@ -83,7 +107,6 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
               firstLoad,
               multiple
             )
-
             if (
               !!selectValue?.length ||
               Object.prototype.toString.call(selectValue) === '[object Date]'
@@ -92,7 +115,7 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
                 componentId: ele.id,
                 fieldId: item.checkedFieldsMap[curComponentId],
                 operator: [1, 7].includes(+displayType) ? 'between' : operator,
-                value: forMatterValue(+displayType, selectValue),
+                value: forMatterValue(+displayType, selectValue, timeGranularity),
                 parameters: parametersCheck ? parameters : [],
                 isTree
               })

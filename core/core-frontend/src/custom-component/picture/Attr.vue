@@ -5,19 +5,20 @@ import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapsho
 
 import { storeToRefs } from 'pinia'
 import { ElIcon, ElMessage } from 'element-plus-secondary'
-import { ref, toRefs, watch, onMounted, onBeforeUnmount, PropType } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { beforeUploadCheck, uploadFileResult } from '@/api/staticResource'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import eventBus from '@/utils/eventBus'
 
-const props = defineProps({
-  themes: {
-    type: String as PropType<'light' | 'dark'>,
-    default: 'dark'
+const props = withDefaults(
+  defineProps<{
+    themes?: EditorTheme
+  }>(),
+  {
+    themes: 'dark'
   }
-})
+)
 
-const { themes } = toRefs(props)
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 
@@ -96,7 +97,11 @@ onBeforeUnmount(() => {
       "
       @change="reUpload"
     />
-    <CommonAttr :themes="themes">
+    <CommonAttr
+      :themes="themes"
+      :background-color-picker-width="197"
+      :background-border-select-width="197"
+    >
       <el-collapse-item :effect="themes" title="图片" name="picture">
         <el-row class="img-area">
           <el-col style="width: 130px !important">
@@ -141,14 +146,18 @@ onBeforeUnmount(() => {
 <style lang="less" scoped>
 .de-collapse-style {
   :deep(.ed-collapse-item__header) {
-    height: 34px !important;
-    line-height: 34px !important;
-    padding: 0 0 0 6px !important;
+    height: 36px !important;
+    line-height: 36px !important;
     font-size: 12px !important;
-    font-weight: 400 !important;
+    padding: 0 !important;
+    font-weight: 500 !important;
+
+    .ed-collapse-item__arrow {
+      margin: 0 6px 0 8px;
+    }
   }
   :deep(.ed-collapse-item__content) {
-    padding: 16px !important;
+    padding: 16px 8px 0;
   }
   :deep(.ed-form-item) {
     display: block;

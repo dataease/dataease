@@ -43,7 +43,7 @@ public class DataSourceInitStartListener implements ApplicationListener<Applicat
         List<CoreDatasourceTask> list = datasourceTaskServer.listAll();
         for (CoreDatasourceTask task : list) {
             try {
-                if (!StringUtils.equalsIgnoreCase(task.getUpdateType(), DatasourceTaskServer.ScheduleType.RIGHTNOW.toString())) {
+                if (!StringUtils.equalsIgnoreCase(task.getSyncRate(), DatasourceTaskServer.ScheduleType.RIGHTNOW.toString())) {
                     if (StringUtils.equalsIgnoreCase(task.getEndLimit(), "1")) {
                         if (task.getEndTime() != null && task.getEndTime() > 0) {
                             if (task.getEndTime() > System.currentTimeMillis()) {

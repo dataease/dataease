@@ -69,7 +69,8 @@ const existLinkage = computed(() => {
 
 <style lang="less" scoped>
 .bar-main-right {
-  right: 0px;
+  top: 2px;
+  right: 2px;
   opacity: 0.8;
   z-index: 10000;
   position: absolute;

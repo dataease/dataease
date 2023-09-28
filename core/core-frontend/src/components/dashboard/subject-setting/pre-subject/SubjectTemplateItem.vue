@@ -182,7 +182,7 @@ onMounted(() => {
 
 .background-selected {
   border: solid 1px #3370ff !important;
-  .title-area {
+  .title-main {
     background: rgba(51, 112, 255, 0.1);
   }
 }

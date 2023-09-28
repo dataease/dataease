@@ -1,24 +1,26 @@
 <script setup lang="ts">
 import CommonAttr from '@/custom-component/common/CommonAttr.vue'
-import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { storeToRefs } from 'pinia'
 import { toRefs } from 'vue'
 
-const dvMainStore = dvMainStoreWithOut()
-const { curComponent } = storeToRefs(dvMainStore)
-const props = defineProps({
-  themes: {
-    type: String,
-    default: 'dark'
+const props = withDefaults(
+  defineProps<{
+    themes?: EditorTheme
+  }>(),
+  {
+    themes: 'dark'
   }
-})
+)
 
 const { themes } = toRefs(props)
 </script>
 
 <template>
   <div class="attr-list de-collapse-style">
-    <CommonAttr :themes="themes"> </CommonAttr>
+    <CommonAttr
+      :themes="themes"
+      :background-color-picker-width="197"
+      :background-border-select-width="197"
+    />
   </div>
 </template>
 
@@ -31,14 +33,18 @@ const { themes } = toRefs(props)
 
 .de-collapse-style {
   :deep(.ed-collapse-item__header) {
-    height: 34px !important;
-    line-height: 34px !important;
-    padding: 0 0 0 6px !important;
+    height: 36px !important;
+    line-height: 36px !important;
     font-size: 12px !important;
-    font-weight: 400 !important;
+    padding: 0 !important;
+    font-weight: 500 !important;
+
+    .ed-collapse-item__arrow {
+      margin: 0 6px 0 8px;
+    }
   }
   :deep(.ed-collapse-item__content) {
-    padding: 16px !important;
+    padding: 16px 8px 0;
   }
   :deep(.ed-form-item) {
     display: block;

@@ -1,6 +1,6 @@
 package io.dataease.datasource.dao.auto.mapper;
 
-import io.dataease.datasource.dao.auto.entity.CoreDatasource;
+import io.dataease.datasource.dao.auto.entity.QrtzSchedulerState;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -10,9 +10,9 @@ import org.apache.ibatis.annotations.Mapper;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-09-26
+ * @since 2023-09-28
  */
 @Mapper
-public interface CoreDatasourceMapper extends BaseMapper<CoreDatasource> {
+public interface QrtzSchedulerStateMapper extends BaseMapper<QrtzSchedulerState> {
 
 }

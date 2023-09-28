@@ -73,7 +73,7 @@ const closeEditComponentName = () => {
 }
 
 const toggleComponentVisible = () => {
-  console.log('toggleComponentVisible')
+  // do toggleComponentVisible
 }
 
 const lock = () => {
