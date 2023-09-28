@@ -359,7 +359,6 @@ const dragCheckType = (list, type) => {
     }
     if (!valid) {
       ElMessage({
-        duration: 0,
         message: type === 'd' ? t('chart.error_q_2_d') : t('chart.error_d_2_q'),
         type: 'warning'
       })
