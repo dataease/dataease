@@ -375,7 +375,7 @@ const textAlign = computed(() => {
               <div class="label-wrapper-tooltip" v-if="showPosition !== 'preview'">
                 <el-tooltip effect="dark" content="设置过滤条件" placement="top">
                   <el-icon @click="editeQueryConfig(ele.id)">
-                    <Icon name="edit-in"></Icon>
+                    <Icon name="icon_edit_outlined"></Icon>
                   </el-icon>
                 </el-tooltip>
                 <el-tooltip effect="dark" content="删除条件" placement="top">

@@ -929,6 +929,8 @@ defineExpose({
 
 <style lang="less">
 .query-condition-configuration {
+  --ed-font-weight-primary: 400;
+
   .ed-input .ed-select__prefix--light {
     border-right: none;
   }
