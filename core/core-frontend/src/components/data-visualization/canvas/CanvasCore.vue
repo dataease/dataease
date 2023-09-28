@@ -1564,6 +1564,7 @@ defineExpose({
   >
     <drag-info v-if="dragInfoShow"></drag-info>
     <canvas-opt-bar
+      v-if="dvInfo.type === 'dataV'"
       :canvas-style-data="canvasStyleData"
       :component-data="componentData"
       :canvas-id="canvasId"

@@ -312,6 +312,10 @@ const saveLinkageSetting = () => {
     })
   })
 }
+
+const onDvNameChange = () => {
+  snapshotStore.recordSnapshotCache()
+}
 </script>
 
 <template>
@@ -473,7 +477,12 @@ const saveLinkageSetting = () => {
       </div>
     </div>
     <Teleport v-if="nameEdit" :to="'#canvas-name'">
-      <input ref="nameInput" v-model="inputName" @blur="closeEditCanvasName" />
+      <input
+        @change="onDvNameChange"
+        ref="nameInput"
+        v-model="inputName"
+        @blur="closeEditCanvasName"
+      />
     </Teleport>
 
     <el-button

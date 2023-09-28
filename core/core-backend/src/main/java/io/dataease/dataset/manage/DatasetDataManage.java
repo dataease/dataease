@@ -362,7 +362,7 @@ public class DatasetDataManage {
     }
 
     public List<String> getFieldEnum(List<Long> ids) throws Exception {
-        // 根据前端传的过滤组件field ids，获取所有字段枚举值并去重合并
+        // 根据前端传的查询组件field ids，获取所有字段枚举值并去重合并
         List<List<String>> list = new ArrayList<>();
         for (Long id : ids) {
             DatasetTableFieldDTO field = datasetTableFieldManage.selectById(id);

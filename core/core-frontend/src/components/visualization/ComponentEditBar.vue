@@ -516,6 +516,7 @@ defineExpose({
 .bar-base-icon {
   height: 22px;
   width: 22px;
+  font-size: 14px;
   color: #ffffff;
   &:hover {
     color: rgba(255, 255, 255, 0.5);

@@ -230,6 +230,11 @@ defineExpose({
 
 <template>
   <div ref="canvasOut" class="content" :class="{ 'render-active': renderState }">
+    <canvas-opt-bar
+      :canvas-style-data="canvasStyleData"
+      :component-data="componentData"
+      :canvas-id="canvasId"
+    ></canvas-opt-bar>
     <div
       :id="domId"
       class="db-canvas"

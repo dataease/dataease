@@ -222,6 +222,7 @@ defineExpose({
       :canvas-id="canvasId"
       :canvas-style-data="canvasStyleData"
       :component-data="componentData"
+      class="fix-button"
     ></canvas-opt-bar>
     <ComponentWrapper
       v-for="(item, index) in componentData"
@@ -257,5 +258,9 @@ defineExpose({
   overflow-x: hidden;
   overflow-y: auto;
   position: relative;
+}
+
+.fix-button {
+  position: fixed !important;
 }
 </style>

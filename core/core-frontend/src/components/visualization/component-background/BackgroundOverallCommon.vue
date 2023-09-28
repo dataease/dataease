@@ -3,6 +3,7 @@
     <el-row :gutter="8">
       <el-col :span="12">
         <el-form-item
+          :effct="themes"
           :label="t('visualization.inner_padding')"
           class="form-item w100"
           :class="'form-item-' + themes"
@@ -20,7 +21,8 @@
       </el-col>
       <el-col :span="12">
         <el-form-item
-          :label="t('visualization.board_radio')"
+          :effct="themes"
+          :label="t('visualization.board_radio') + '111'"
           class="form-item w100"
           :class="'form-item-' + themes"
         >
