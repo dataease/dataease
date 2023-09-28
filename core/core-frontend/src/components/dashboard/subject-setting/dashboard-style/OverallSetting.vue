@@ -62,7 +62,7 @@
             size="middle"
             :effect="themes"
             :disabled="!canvasStyleData.refreshViewEnable"
-            style="width: 90px; padding: 0 9px"
+            style="width: 90px"
             @change="themeChange"
           >
             <el-option :label="t('visualization.minute')" :value="'minute'" />

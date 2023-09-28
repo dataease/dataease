@@ -320,101 +320,116 @@ const onDvNameChange = () => {
 
 <template>
   <div class="toolbar-main">
-    <div class="toolbar" :class="{ 'preview-state-head': editMode === 'preview' }">
-      <el-icon v-show="!batchOptStatus" class="custom-el-icon back-icon" @click="backToMain()">
-        <Icon class="toolbar-icon" name="icon_left_outlined" />
-      </el-icon>
-      <div class="left-area" v-show="editMode === 'edit' && !batchOptStatus">
-        <span id="canvas-name" class="name-area" @dblclick="editCanvasName">{{ dvInfo.name }}</span>
-        <div class="opt-area">
-          <el-tooltip effect="dark" :content="$t('visualization.undo')" placement="bottom">
-            <el-icon class="toolbar-hover-icon" @click="undo()">
-              <Icon
-                :class="{ 'toolbar-icon-disabled': snapshotIndex < 1 }"
-                name="icon_undo_outlined"
-              ></Icon>
-            </el-icon>
-          </el-tooltip>
-
-          <el-tooltip effect="dark" :content="$t('commons.reduction')" placement="bottom">
-            <el-icon class="toolbar-hover-icon opt-icon-redo" @click="redo()">
-              <Icon
-                :class="{
-                  'toolbar-icon-disabled': snapshotIndex === snapshotStore.snapshotData.length - 1
-                }"
-                name="icon_redo_outlined"
-              ></Icon>
-            </el-icon>
-          </el-tooltip>
+    <div class="toolbar">
+      <template v-if="editMode === 'preview'">
+        <div class="left-area">
+          <span id="canvas-name" class="name-area" style="height: 100%; padding: 10px">
+            {{ dvInfo.name }}
+          </span>
         </div>
-      </div>
-      <div class="left-area" v-show="batchOptStatus">
-        <el-col class="adapt-count">
-          <span>已选 {{ curBatchOptComponents.length }} 项</span>
-        </el-col>
-      </div>
-      <div class="middle-area" v-show="!batchOptStatus && !linkageSettingStatus">
-        <component-group
-          :base-width="410"
-          :show-split-line="true"
-          :icon-name="'dv-view'"
-          themes="light"
-          title="图表"
-        >
-          <user-view-group themes="light" :dv-model="dvModel"></user-view-group>
-        </component-group>
-        <component-group
-          :base-width="115"
-          :show-split-line="true"
-          themes="light"
-          icon-name="dv-filter"
-          title="查询组件"
-        >
-          <query-group themes="light" :dv-model="dvModel"></query-group>
-        </component-group>
-        <component-group themes="light" :base-width="115" icon-name="dv-text" title="文本">
-          <text-group themes="light" :dv-model="dvModel"></text-group>
-        </component-group>
-        <component-group themes="light" :base-width="115" icon-name="dv-media" title="图片">
-          <media-group themes="light" :dv-model="dvModel"></media-group>
-        </component-group>
-        <component-group themes="light" :base-width="115" icon-name="dv-tab" title="Tab">
-          <tabs-group themes="light" :dv-model="dvModel"></tabs-group>
-        </component-group>
-        <!--        <component-button :show-split-line="true" icon-name="dv-tab" title="Tab"></component-button>-->
-        <component-button
-          icon-name="icon_copy_filled"
-          title="复用"
-          @customClick="multiplexingCanvasOpen"
-        ></component-button>
-      </div>
-      <div class="right-area" v-show="!batchOptStatus && !linkageSettingStatus">
-        <el-tooltip effect="dark" content="批量操作" placement="bottom">
-          <component-button
-            tips="批量操作"
-            @custom-click="batchOptStatusChange(true)"
-            icon-name="dv-batch"
-          ></component-button>
-        </el-tooltip>
+        <div class="middle-area"></div>
+      </template>
+      <template v-else>
+        <el-icon v-if="!batchOptStatus" class="custom-el-icon back-icon" @click="backToMain()">
+          <Icon class="toolbar-icon" name="icon_left_outlined" />
+        </el-icon>
+        <div class="left-area" v-if="editMode === 'edit' && !batchOptStatus">
+          <span id="canvas-name" class="name-area" @dblclick="editCanvasName">
+            {{ dvInfo.name }}
+          </span>
+          <div class="opt-area">
+            <el-tooltip effect="dark" :content="$t('visualization.undo')" placement="bottom">
+              <el-icon class="toolbar-hover-icon" @click="undo()">
+                <Icon
+                  :class="{ 'toolbar-icon-disabled': snapshotIndex < 1 }"
+                  name="icon_undo_outlined"
+                ></Icon>
+              </el-icon>
+            </el-tooltip>
 
-        <el-tooltip effect="dark" content="仪表板配置" placement="bottom">
-          <component-button
-            tips="仪表板配置"
-            @custom-click="openDataBoardSetting"
-            icon-name="dv-dashboard"
-          ></component-button>
-        </el-tooltip>
-
-        <el-dropdown v-show="editMode === 'edit'" trigger="click">
-          <el-button class="custom-normal-button" style="float: right; margin-right: 12px"
-            >预览</el-button
+            <el-tooltip effect="dark" :content="$t('commons.reduction')" placement="bottom">
+              <el-icon class="toolbar-hover-icon opt-icon-redo" @click="redo()">
+                <Icon
+                  :class="{
+                    'toolbar-icon-disabled': snapshotIndex === snapshotStore.snapshotData.length - 1
+                  }"
+                  name="icon_redo_outlined"
+                ></Icon>
+              </el-icon>
+            </el-tooltip>
+          </div>
+        </div>
+        <div class="left-area" v-if="batchOptStatus">
+          <el-col class="adapt-count">
+            <span>已选 {{ curBatchOptComponents.length }} 项</span>
+          </el-col>
+        </div>
+        <div class="middle-area" v-if="!batchOptStatus && !linkageSettingStatus">
+          <component-group
+            :base-width="410"
+            :show-split-line="true"
+            :icon-name="'dv-view'"
+            themes="light"
+            title="图表"
           >
+            <user-view-group themes="light" :dv-model="dvModel"></user-view-group>
+          </component-group>
+          <component-group
+            :base-width="115"
+            :show-split-line="true"
+            themes="light"
+            icon-name="dv-filter"
+            title="查询组件"
+          >
+            <query-group themes="light" :dv-model="dvModel"></query-group>
+          </component-group>
+          <component-group themes="light" :base-width="115" icon-name="dv-text" title="文本">
+            <text-group themes="light" :dv-model="dvModel"></text-group>
+          </component-group>
+          <component-group themes="light" :base-width="115" icon-name="dv-media" title="图片">
+            <media-group themes="light" :dv-model="dvModel"></media-group>
+          </component-group>
+          <component-group themes="light" :base-width="115" icon-name="dv-tab" title="Tab">
+            <tabs-group themes="light" :dv-model="dvModel"></tabs-group>
+          </component-group>
+          <!--        <component-button :show-split-line="true" icon-name="dv-tab" title="Tab"></component-button>-->
+          <component-button
+            icon-name="icon_copy_filled"
+            title="复用"
+            @customClick="multiplexingCanvasOpen"
+          ></component-button>
+        </div>
+      </template>
+
+      <div class="right-area" v-if="!batchOptStatus && !linkageSettingStatus">
+        <template v-if="editMode !== 'preview'">
+          <el-tooltip effect="dark" content="批量操作" placement="bottom">
+            <component-button
+              tips="批量操作"
+              @custom-click="batchOptStatusChange(true)"
+              icon-name="dv-batch"
+            />
+          </el-tooltip>
+
+          <el-tooltip effect="dark" content="仪表板配置" placement="bottom">
+            <component-button
+              tips="仪表板配置"
+              @custom-click="openDataBoardSetting"
+              icon-name="dv-dashboard"
+            />
+          </el-tooltip>
+        </template>
+
+        <el-dropdown v-if="editMode === 'edit'" trigger="click">
+          <el-button class="custom-normal-button" style="float: right; margin-right: 12px">
+            预览
+          </el-button>
           <template #dropdown>
-            <el-dropdown-menu style="width: 120px">
+            <el-dropdown-menu class="drop-style">
               <el-dropdown-item @click="previewInner()">
                 <Icon style="width: 16px; height: 16px" name="dv-preview-inner" />
-                当前预览</el-dropdown-item
-              >
+                当前预览
+              </el-dropdown-item>
               <el-dropdown-item @click="previewOuter()">
                 <Icon style="width: 16px; height: 16px" name="dv-preview-outer" />
                 新页面预览
@@ -422,17 +437,29 @@ const onDvNameChange = () => {
             </el-dropdown-menu>
           </template>
         </el-dropdown>
+
         <el-button
-          v-show="editMode === 'edit'"
+          class="custom-normal-button"
+          v-if="editMode === 'preview'"
+          icon="EditPen"
+          @click="edit()"
+          type="primary"
+        >
+          编辑
+        </el-button>
+
+        <el-button
+          v-if="editMode === 'edit' || editMode === 'preview'"
           :disabled="styleChangeTimes < 1"
           @click="saveCanvasWithCheck()"
           style="float: right; margin-right: 12px"
           type="primary"
-          >保存</el-button
         >
+          保存
+        </el-button>
       </div>
 
-      <div class="right-area full-area" v-show="batchOptStatus">
+      <div class="right-area full-area" v-if="batchOptStatus">
         <el-button
           text
           icon="CopyDocument"
@@ -460,7 +487,7 @@ const onDvNameChange = () => {
         >
       </div>
 
-      <div class="right-area full-area" v-show="linkageSettingStatus">
+      <div class="right-area full-area" v-if="linkageSettingStatus">
         <el-button
           class="custom-normal-button"
           @click="cancelLinkageSetting()"
@@ -485,14 +512,6 @@ const onDvNameChange = () => {
       />
     </Teleport>
 
-    <el-button
-      v-show="editMode === 'preview'"
-      icon="EditPen"
-      @click="edit()"
-      class="edit-button"
-      type="primary"
-      >编辑</el-button
-    >
     <multiplexing-canvas ref="multiplexingRef"></multiplexing-canvas>
     <de-resource-group-opt
       @finish="resourceOptFinish"
@@ -503,6 +522,13 @@ const onDvNameChange = () => {
 </template>
 
 <style lang="less" scoped>
+.drop-style {
+  width: 120px;
+  :deep(.ed-dropdown-menu__item:not(.is_disabled):focus) {
+    color: inherit;
+    background-color: rgba(31, 35, 41, 0.1);
+  }
+}
 .full-area {
   flex: 1;
 }
@@ -595,11 +621,12 @@ const onDvNameChange = () => {
   }
 }
 .custom-normal-button {
-  background-color: rgba(0, 0, 0, 0);
+  background-color: transparent;
   border-color: #a6a6a6;
   color: #ffffff;
   &:hover {
-    color: #3370ff;
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.05);
   }
 }
 
