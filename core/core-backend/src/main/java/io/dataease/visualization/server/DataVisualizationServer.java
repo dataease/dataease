@@ -176,6 +176,14 @@ public class DataVisualizationServer implements DataVisualizationApi {
             }
             newDv.setComponentData(componentData);
         }
+        // 复制视图联动信息
+        extDataVisualizationMapper.copyLinkage(copyId);
+        extDataVisualizationMapper.copyLinkageField(copyId);
+        // 复制视图跳转信息
+        extDataVisualizationMapper.copyLinkJump(copyId);
+        extDataVisualizationMapper.copyLinkJumpInfo(copyId);
+        extDataVisualizationMapper.copyLinkJumpTargetInfo(copyId);
+
         coreVisualizationManage.innerSave(newDv);
         return String.valueOf(newDvId);
     }
