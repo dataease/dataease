@@ -222,7 +222,6 @@ defineExpose({
       :canvas-id="canvasId"
       :canvas-style-data="canvasStyleData"
       :component-data="componentData"
-      class="fix-button"
     ></canvas-opt-bar>
     <ComponentWrapper
       v-for="(item, index) in componentData"

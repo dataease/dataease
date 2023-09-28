@@ -489,6 +489,7 @@ defineExpose({
   z-index: 10;
   border-radius: 2px;
   cursor: pointer !important;
+  font-size: 16px !important;
 }
 .bar-main-background {
   background-color: var(--primary, #3370ff);
