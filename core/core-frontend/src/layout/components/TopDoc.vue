@@ -8,11 +8,13 @@ const openBlank = () => {
 </script>
 
 <template>
-  <div class="sys-setting">
-    <el-icon @click="openBlank">
-      <Icon name="docs" />
-    </el-icon>
-  </div>
+  <el-tooltip class="box-item" effect="dark" content="帮助文档" placement="top">
+    <div class="sys-setting">
+      <el-icon @click="openBlank">
+        <Icon name="docs" />
+      </el-icon>
+    </div>
+  </el-tooltip>
 </template>
 
 <style lang="less" scoped>
