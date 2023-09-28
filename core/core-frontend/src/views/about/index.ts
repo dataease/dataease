@@ -1,4 +1,5 @@
 export interface F2CLicense {
+  agent: string
   status: string
   corporation: string
   expired: string
