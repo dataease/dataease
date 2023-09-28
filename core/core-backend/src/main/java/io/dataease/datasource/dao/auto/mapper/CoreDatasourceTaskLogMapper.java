@@ -10,7 +10,7 @@ import org.apache.ibatis.annotations.Mapper;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-06-08
+ * @since 2023-09-28
  */
 @Mapper
 public interface CoreDatasourceTaskLogMapper extends BaseMapper<CoreDatasourceTaskLog> {

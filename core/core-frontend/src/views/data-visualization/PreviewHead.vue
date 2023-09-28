@@ -85,10 +85,9 @@ watch(
       <!--      <el-button type="primary" @click="download()">导出</el-button>-->
       <el-button icon="DataAnalysis" @click="preview()">预览</el-button>
       <XpackComponent
-        jsname="c2hhcmUtaGFuZGxlcg=="
+        jsname="L2NvbXBvbmVudC9zaGFyZS9TaGFyZVZpc3VhbEhlYWQ="
         :resource-id="dvInfo.id"
         :weight="dvInfo.weight"
-        :is-button="true"
       />
       <el-button v-if="dvInfo.weight > 6" type="primary" icon="EditPen" @click="dvEdit()"
         >编辑</el-button

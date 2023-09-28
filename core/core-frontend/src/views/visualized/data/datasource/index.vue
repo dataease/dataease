@@ -1067,10 +1067,15 @@ onMounted(() => {
                       <template #icon>
                         <icon name="icon_replace_outlined"></icon>
                       </template>
-                      更新
                     </el-button>
                   </el-col>
                 </el-row>
+                <el-row>
+                  <el-col :span="19">
+                    <span>数据时间： {{ timestampFormatDate(api.updateTime) }}</span>
+                  </el-col>
+                </el-row>
+
                 <div class="req-title">
                   <span>{{ t('datasource.method') }}</span>
                   <span>{{ t('datasource.url') }}</span>
@@ -1239,6 +1244,25 @@ onMounted(() => {
         @size-change="handleRecordSizeChange"
         @current-change="handleRecordCurrentChange"
       >
+        <el-table-column prop="tableName" :label="t('datasource.data_table')"></el-table-column>
+        <el-table-column prop="triggerType" :label="t('datasource.sync_rate')">
+          <template #default="scope">
+            <div class="flex-align-center">
+              <template v-if="scope.row.triggerType === 'CRON'">
+                {{ t('datasource.cron_config') }}
+              </template>
+              <template v-if="scope.row.triggerType === 'RIGHTNOW'">
+                {{ t('datasource.execute_once') }}
+              </template>
+              <template v-if="scope.row.triggerType === 'SIMPLE_CRON'">
+                {{ t('datasource.simple_cron') }}
+              </template>
+              <template v-if="scope.row.triggerType === 'MANUAL'">
+                {{ t('datasource.manual') }}
+              </template>
+            </div>
+          </template>
+        </el-table-column>
         <el-table-column prop="startTime" :label="t('datasource.start_time')">
           <template v-slot:default="scope">
             <span>{{ timestampFormatDate(scope.row.startTime) }}</span>
@@ -1249,20 +1273,22 @@ onMounted(() => {
             <span>{{ timestampFormatDate(scope.row.endTime) }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="status" label="更新结果">
+        <el-table-column prop="taskStatus" label="更新结果">
           <template #default="scope">
             <div class="flex-align-center">
-              <template v-if="scope.row.status === 'Completed'">
+              <template v-if="scope.row.taskStatus === 'Completed'">
                 <el-icon>
                   <icon name="icon_succeed_filled"></icon>
                 </el-icon>
                 {{ t('dataset.completed') }}
               </template>
-              <template v-if="scope.row.status === 'UnderExecution'">
+              <template v-if="scope.row.taskStatus === 'UnderExecution'">
                 {{ t('dataset.underway') }}
               </template>
 
-              <template v-if="scope.row.status === 'Error' || scope.row.status === 'Warning'">
+              <template
+                v-if="scope.row.taskStatus === 'Error' || scope.row.taskStatus === 'Warning'"
+              >
                 <el-icon>
                   <icon class="field-icon-location" name="icon_close_filled"></icon>
                 </el-icon>
@@ -1409,7 +1435,7 @@ onMounted(() => {
 
   .api-card {
     width: calc(50% - 16px);
-    height: 120px;
+    height: 140px;
     border-radius: 4px;
     border: 1px solid var(--deCardStrokeColor, #dee0e3);
     border-radius: 4px;

@@ -3,20 +3,17 @@ package io.dataease.datasource.provider;
 
 import io.dataease.api.ds.vo.DatasourceConfiguration;
 import io.dataease.api.ds.vo.TableField;
-import io.dataease.commons.exception.DataEaseException;
 import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.entity.CoreDeEngine;
 import io.dataease.datasource.request.EngineRequest;
 import io.dataease.datasource.type.Mysql;
-import io.dataease.exception.DEException;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
 import java.util.List;

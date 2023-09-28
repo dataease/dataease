@@ -13,6 +13,7 @@ import io.dataease.api.ds.vo.*;
 import io.dataease.api.permissions.user.api.UserApi;
 import io.dataease.api.permissions.user.vo.UserFormVO;
 import io.dataease.commons.constants.TaskStatus;
+import io.dataease.commons.utils.CommonThreadPool;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetTable;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableMapper;
 import io.dataease.dataset.dto.DatasourceSchemaDTO;
@@ -46,7 +47,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -55,6 +55,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static io.dataease.datasource.server.DatasourceTaskServer.ScheduleType.MANUAL;
 import static io.dataease.datasource.server.DatasourceTaskServer.ScheduleType.RIGHTNOW;
 
 
@@ -97,6 +98,9 @@ public class DatasourceServer implements DatasourceApi {
     public enum UpdateType {
         all_scope, add_scope
     }
+
+    @Resource
+    private CommonThreadPool commonThreadPool;
 
     private boolean isUpdatingStatus = false;
 
@@ -188,7 +192,7 @@ public class DatasourceServer implements DatasourceApi {
             if (StringUtils.equalsIgnoreCase(coreDatasourceTask.getSyncRate(), RIGHTNOW.toString())) {
                 coreDatasourceTask.setCron(null);
             }
-            coreDatasourceTask.setStatus(TaskStatus.WaitingForExecution.name());
+            coreDatasourceTask.setTaskStatus(TaskStatus.WaitingForExecution.name());
             datasourceTaskServer.insert(coreDatasourceTask);
             datasourceSyncManage.addSchedule(coreDatasourceTask);
             DatasourceRequest datasourceRequest = new DatasourceRequest();
@@ -273,7 +277,7 @@ public class DatasourceServer implements DatasourceApi {
             if (StringUtils.equalsIgnoreCase(coreDatasourceTask.getSyncRate(), RIGHTNOW.toString())) {
                 coreDatasourceTask.setCron(null);
             }
-            coreDatasourceTask.setStatus(TaskStatus.WaitingForExecution.name());
+            coreDatasourceTask.setTaskStatus(TaskStatus.WaitingForExecution.toString());
             datasourceTaskServer.update(coreDatasourceTask);
             for (String deleteTable : toDeleteTables) {
                 try {
@@ -376,13 +380,19 @@ public class DatasourceServer implements DatasourceApi {
                     } catch (Exception e) {
                         DEException.throwException(e);
                     }
-                    if (jsonNode.get(apiDefinition.getName()) != null) {
-                        status = jsonNode.get(apiDefinition.getName()).asText();
+                    for (JsonNode node : jsonNode) {
+                        if (node.get("name").asText().equals(apiDefinition.getName())) {
+                            status = node.get("status").asText();
+                        }
                     }
                     apiDefinition.setStatus(status);
                 }
                 if (StringUtils.isNotEmpty(status) && status.equalsIgnoreCase("Success")) {
                     success++;
+                }
+                CoreDatasourceTaskLog log = datasourceTaskServer.lastSyncLogForTable(datasourceId, apiDefinition.getDeTableName());
+                if(log != null){
+                    apiDefinition.setUpdateTime(log.getStartTime());
                 }
                 apiDefinitionListWithStatus.add(apiDefinition);
             }
@@ -401,12 +411,10 @@ public class DatasourceServer implements DatasourceApi {
             BeanUtils.copyBean(taskDTO, coreDatasourceTask);
             datasourceDTO.setSyncSetting(taskDTO);
 
-            CoreDatasourceTaskLog coreDatasourceTaskLog = datasourceTaskServer.lastSyncLog(datasourceDTO.getId());
-            if (coreDatasourceTaskLog != null) {
-                datasourceDTO.setLastSyncTime(coreDatasourceTaskLog.getStartTime());
+            CoreDatasourceTask task = datasourceTaskServer.selectByDSId(datasourceDTO.getId());
+            if (task != null) {
+                datasourceDTO.setLastSyncTime(task.getStartTime());
             }
-
-
         }
         if (datasourceDTO.getType().equalsIgnoreCase(DatasourceConfiguration.DatasourceType.Excel.toString())) {
             datasourceDTO.setFileName(ExcelUtils.getFileName(datasource));
@@ -494,12 +502,20 @@ public class DatasourceServer implements DatasourceApi {
     @Override
     public DatasourceDTO validate(Long datasourceId) throws DEException {
         CoreDatasource coreDatasource = datasourceMapper.selectById(datasourceId);
+        return validate(coreDatasource);
+    }
+
+    private DatasourceDTO validate(CoreDatasource coreDatasource){
         checkDatasourceStatus(coreDatasource);
         DatasourceDTO datasourceDTO = new DatasourceDTO();
         BeanUtils.copyBean(datasourceDTO, coreDatasource);
+        CoreDatasource record = new CoreDatasource();
+        record.setStatus(coreDatasource.getStatus());
+        QueryWrapper<CoreDatasource> wrapper = new QueryWrapper<>();
+        wrapper.eq("id", coreDatasource.getId());
+        datasourceMapper.update(record, wrapper);
         return datasourceDTO;
     }
-
 
     @Override
     public List<BusiNodeVO> tree(BusiNodeRequest request) throws DEException {
@@ -513,22 +529,13 @@ public class DatasourceServer implements DatasourceApi {
         datasourceRequest.setDatasource(coreDatasource);
         if (coreDatasource.getType().equals("API")) {
             List<DatasetTableDTO>  datasetTableDTOS =  ApiUtils.getTables(datasourceRequest);
-            List<CoreDatasourceTaskLog> taskLogs = datasourceTaskServer.lastSyncLogForTable(datasetTableDTO.getDatasourceId());
-            for (CoreDatasourceTaskLog taskLog : taskLogs) {
-                if(taskLog.getTriggerType().equalsIgnoreCase(DatasourceTaskServer.TriggerType.Cron.toString())){
-                    datasetTableDTOS.forEach(datasetTableDTO1 -> {
-                        datasetTableDTO1.setLastUpdateTime(taskLog.getStartTime());
-                        datasetTableDTO1.setStatus(taskLog.getStatus());
-                    });
-                }else {
-                    datasetTableDTOS.forEach(datasetTableDTO1 -> {
-                        if(datasetTableDTO1.getTableName().equalsIgnoreCase(taskLog.getTriggerType()) && taskLog.getStartTime() > datasetTableDTO1.getLastUpdateTime()){
-                            datasetTableDTO1.setLastUpdateTime(taskLog.getStartTime());
-                            datasetTableDTO1.setStatus(taskLog.getStatus());
-                        }
-                    });
+            datasetTableDTOS.forEach(datasetTableDTO1 -> {
+                CoreDatasourceTaskLog log = datasourceTaskServer.lastSyncLogForTable(datasetTableDTO.getDatasourceId(), datasetTableDTO1.getTableName());
+                if(log != null){
+                    datasetTableDTO1.setLastUpdateTime(log.getStartTime());
+                    datasetTableDTO1.setStatus(log.getTaskStatus());
                 }
-            }
+            });
             return datasetTableDTOS;
         }
         if (coreDatasource.getType().equals("Excel")) {
@@ -576,14 +583,9 @@ public class DatasourceServer implements DatasourceApi {
     public void syncApiDs(Map<String, String> req) throws Exception {
         Long datasourceId = Long.valueOf(req.get("datasourceId"));
         CoreDatasourceTask coreDatasourceTask = datasourceTaskServer.selectByDSId(datasourceId);
-        CoreDatasourceTask newTask  = new CoreDatasourceTask();
-        BeanUtils.copyBean(newTask, coreDatasourceTask);
-        newTask.setId(IDUtils.snowID());
-        newTask.setSyncRate(RIGHTNOW.toString());
-        newTask.setExtraData("ONCE");
-        newTask.setStartTime(System.currentTimeMillis() - 20 * 1000);
-        datasourceTaskServer.insert(newTask);
-        datasourceSyncManage.addSchedule(newTask);
+        CoreDatasource coreDatasource = datasourceMapper.selectById(datasourceId);
+        DatasourceServer.UpdateType updateType = DatasourceServer.UpdateType.valueOf(coreDatasourceTask.getUpdateType());
+        datasourceSyncManage.extractedData(null, coreDatasource, updateType, MANUAL.toString());
     }
 
     public ExcelFileData excelUpload(@RequestParam("file") MultipartFile file, @RequestParam("id") long datasourceId, @RequestParam("editType") Integer editType) throws DEException {
@@ -612,7 +614,7 @@ public class DatasourceServer implements DatasourceApi {
                     }
                 }
                 if (CollectionUtils.isEmpty(excelSheetDataList)) {
-                    DEException.throwException("无匹配的Sheet页!");
+                    DEException.throwException("上传文件与源文件不一致，请检查文件!");
                 }
                 excelFileData.setSheets(excelSheetDataList);
             }
@@ -668,7 +670,6 @@ public class DatasourceServer implements DatasourceApi {
             String status = null;
             if (coreDatasource.getType().equals("API")) {
                 status = ApiUtils.checkStatus(datasourceRequest);
-
             } else {
                 status = calciteProvider.checkStatus(datasourceRequest);
             }
@@ -726,8 +727,23 @@ public class DatasourceServer implements DatasourceApi {
         return pager;
     }
 
+
     public void updateDatasourceStatus(){
-        System.out.println(isUpdatingStatus);
+        QueryWrapper<CoreDatasource> wrapper = new QueryWrapper<>();
+        wrapper.notIn("type", Arrays.asList("Excel", "folder"));
+        List<CoreDatasource> datasources = datasourceMapper.selectList(wrapper);
+        datasources.forEach(datasource -> {
+            commonThreadPool.addTask(() -> {
+                try {
+                    validate(datasource);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+        });
+    }
+
+    public void updateStopJobStatus(){
         if (this.isUpdatingStatus) {
             return;
         } else {
@@ -774,8 +790,8 @@ public class DatasourceServer implements DatasourceApi {
         record.setTaskStatus(TaskStatus.WaitingForExecution.name());
         datasourceMapper.update(record, queryWrapper);
         //Task
-
         datasourceTaskServer.updateByDsIds(jobStoppedCoreDatasources.stream().map(CoreDatasource::getId).collect(Collectors.toList()));
-
     }
+
+
 }

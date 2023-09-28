@@ -29,5 +29,5 @@ public class ApiDefinition {
     private boolean reName = false;
     private String orgName;
     private boolean showApiStructure;
-
+    private Long updateTime;
 }

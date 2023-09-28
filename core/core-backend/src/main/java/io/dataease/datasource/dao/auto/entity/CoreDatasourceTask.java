@@ -11,7 +11,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-05-31
+ * @since 2023-09-28
  */
 @TableName("core_datasource_task")
 public class CoreDatasourceTask implements Serializable {
@@ -94,7 +94,7 @@ public class CoreDatasourceTask implements Serializable {
     /**
      * 任务状态
      */
-    private String status;
+    private String taskStatus;
 
     public Long getId() {
         return id;
@@ -216,12 +216,12 @@ public class CoreDatasourceTask implements Serializable {
         this.extraData = extraData;
     }
 
-    public String getStatus() {
-        return status;
+    public String getTaskStatus() {
+        return taskStatus;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setTaskStatus(String taskStatus) {
+        this.taskStatus = taskStatus;
     }
 
     @Override
@@ -242,7 +242,7 @@ public class CoreDatasourceTask implements Serializable {
         ", lastExecTime = " + lastExecTime +
         ", lastExecStatus = " + lastExecStatus +
         ", extraData = " + extraData +
-        ", status = " + status +
+        ", taskStatus = " + taskStatus +
         "}";
     }
 }
