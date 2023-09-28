@@ -614,7 +614,7 @@ public class DatasourceServer implements DatasourceApi {
                     }
                 }
                 if (CollectionUtils.isEmpty(excelSheetDataList)) {
-                    DEException.throwException("无匹配的Sheet页!");
+                    DEException.throwException("上传文件与源文件不一致，请检查文件!");
                 }
                 excelFileData.setSheets(excelSheetDataList);
             }

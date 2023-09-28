@@ -5,7 +5,6 @@ import cn.hutool.core.codec.Base64Decoder;
 import cn.hutool.core.collection.CollectionUtil;
 import io.dataease.api.visualization.StaticResourceApi;
 import io.dataease.api.visualization.request.StaticResourceRequest;
-import io.dataease.commons.exception.DataEaseException;
 import io.dataease.exception.DEException;
 import io.dataease.utils.FileUtils;
 import io.dataease.utils.JsonUtil;

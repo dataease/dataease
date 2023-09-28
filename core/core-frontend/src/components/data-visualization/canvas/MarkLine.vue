@@ -157,7 +157,7 @@ const showLine = (isDownward, isRightward) => {
         chooseTheTrueLine(needToShow, isDownward, isRightward)
       }
     } catch (e) {
-      console.error(e)
+      console.warn('markLine disabled')
     }
   })
 }
