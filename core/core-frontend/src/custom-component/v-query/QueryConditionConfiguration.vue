@@ -1131,6 +1131,12 @@ defineExpose({
             .ed-select-v2 {
               width: 415px;
             }
+
+            .ed-date-editor {
+              .ed-input__wrapper {
+                width: 100%;
+              }
+            }
           }
         }
       }

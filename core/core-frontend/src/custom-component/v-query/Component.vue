@@ -543,6 +543,9 @@ const textAlign = computed(() => {
 
         :deep(.ed-date-editor) {
           width: 227px;
+          .ed-input__wrapper {
+            width: 100%;
+          }
         }
 
         :deep(.ed-select-v2) {
