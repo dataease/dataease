@@ -90,6 +90,11 @@ const defaultApiItem = {
       type: '',
       raw: '',
       kvs: []
+    },
+    authManager: {
+      verification: '',
+      username: '',
+      password: ''
     }
   },
   fields: []

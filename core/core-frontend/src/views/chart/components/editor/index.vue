@@ -192,7 +192,7 @@ const filterNode = (value, data) => {
 }
 
 const getFields = (id, chartId) => {
-  if (id) {
+  if (id && chartId) {
     getFieldByDQ(id, chartId)
       .then(res => {
         state.dimension = (res.dimensionList as unknown as Field[]) || []

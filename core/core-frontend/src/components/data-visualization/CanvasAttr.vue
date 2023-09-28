@@ -3,9 +3,8 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { storeToRefs } from 'pinia'
 import { nextTick, onMounted, reactive, ref, watch } from 'vue'
-import DeInputNum from '@/custom-component/common/DeInputNum.vue'
 import { beforeUploadCheck, uploadFileResult } from '@/api/staticResource'
-import { ElIcon, ElMessage } from 'element-plus-secondary'
+import { ElFormItem, ElIcon, ElMessage } from 'element-plus-secondary'
 import {
   COLOR_CASES,
   COLOR_PANEL,
@@ -153,43 +152,59 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="attr-container">
-    <el-row>
-      <el-collapse v-model="canvasAttrActiveNames">
-        <el-collapse-item title="尺寸" name="size">
-          <el-row class="item-show">
-            <span style="margin-left: 10px; color: #757575" title="宽">W</span>
-            <de-input-num
-              themes="dark"
-              v-model="canvasStyleData.width"
-              :min="600"
-              :max="4096"
-            ></de-input-num>
-            <span style="margin-left: 10px; color: #757575" title="高">H</span>
-            <de-input-num
-              themes="dark"
-              v-model="canvasStyleData.height"
-              :min="600"
-              :max="4096"
-            ></de-input-num>
+  <div class="attr-container de-collapse-style">
+    <el-collapse v-model="canvasAttrActiveNames">
+      <el-collapse-item effect="dark" title="尺寸" name="size">
+        <el-form label-position="left" :label-width="14">
+          <el-row :gutter="8" class="m-size">
+            <el-col :span="12">
+              <el-form-item class="form-item form-item-dark" label="W">
+                <el-input-number
+                  effect="dark"
+                  size="middle"
+                  :min="600"
+                  :max="4096"
+                  v-model="canvasStyleData.width"
+                  controls-position="right"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item class="form-item form-item-dark" label="H">
+                <el-input-number
+                  effect="dark"
+                  size="middle"
+                  :min="600"
+                  :max="4096"
+                  v-model="canvasStyleData.height"
+                  controls-position="right"
+                />
+              </el-form-item>
+            </el-col>
           </el-row>
-        </el-collapse-item>
-        <el-collapse-item title="背景" name="background">
-          <el-row>
-            <el-radio-group v-model="canvasStyleData.backgroundType">
-              <el-radio label="backgroundColor">颜色</el-radio>
-              <el-radio label="background">图片</el-radio>
+        </el-form>
+      </el-collapse-item>
+      <el-collapse-item effect="dark" title="背景" name="background">
+        <el-form label-position="top">
+          <el-form-item class="form-item form-item-dark margin-bottom-8">
+            <el-radio-group effect="dark" v-model="canvasStyleData.backgroundType">
+              <el-radio effect="dark" label="backgroundColor">颜色</el-radio>
+              <el-radio effect="dark" label="background">图片</el-radio>
             </el-radio-group>
-          </el-row>
-          <el-row v-show="canvasStyleData.backgroundType === 'backgroundColor'">
+          </el-form-item>
+          <el-form-item
+            class="form-item form-item-dark"
+            v-if="canvasStyleData.backgroundType === 'backgroundColor'"
+          >
             <el-color-picker
               v-model="canvasStyleData.backgroundColor"
+              :trigger-width="108"
               is-custom
               size="small"
               show-alpha
-            ></el-color-picker>
-          </el-row>
-          <el-row v-show="canvasStyleData.backgroundType === 'background'" class="img-area">
+            />
+          </el-form-item>
+          <el-row v-if="canvasStyleData.backgroundType === 'background'" class="img-area">
             <el-col style="width: 130px !important">
               <el-upload
                 action=""
@@ -216,38 +231,71 @@ onMounted(() => {
               </el-dialog>
             </el-col>
           </el-row>
-          <el-row v-show="canvasStyleData.backgroundType === 'background'">
-            <span v-show="!canvasStyleData.background" class="image-hint">支持JPG、PNG、GIF</span>
-            <span v-show="canvasStyleData.background" class="re-update-span" @click="goFile"
+          <el-row v-if="canvasStyleData.backgroundType === 'background'">
+            <span v-if="!canvasStyleData.background" class="image-hint">支持JPG、PNG、GIF</span>
+            <span v-if="canvasStyleData.background" class="re-update-span" @click="goFile"
               >重新上传</span
             >
           </el-row>
-        </el-collapse-item>
-        <el-collapse-item title="配色" name="color">
-          <component-color-selector themes="dark" @onColorChange="onColorChange" />
-        </el-collapse-item>
-        <el-collapse-item title="刷新配置" name="overallSetting">
-          <overall-setting themes="dark" />
-        </el-collapse-item>
-      </el-collapse>
-      <input
-        id="input"
-        ref="files"
-        type="file"
-        accept=".jpeg,.jpg,.png,.gif"
-        hidden
-        @click="
-          e => {
-            e.target.value = ''
-          }
-        "
-        @change="reUpload"
-      />
-    </el-row>
+        </el-form>
+      </el-collapse-item>
+      <el-collapse-item effect="dark" title="配色" name="color" class="no-padding no-border-bottom">
+        <component-color-selector themes="dark" @onColorChange="onColorChange" />
+      </el-collapse-item>
+      <el-collapse-item effect="dark" title="刷新配置" name="overallSetting">
+        <overall-setting themes="dark" />
+      </el-collapse-item>
+    </el-collapse>
+    <input
+      id="input"
+      ref="files"
+      type="file"
+      accept=".jpeg,.jpg,.png,.gif"
+      hidden
+      @click="
+        e => {
+          e.target.value = ''
+        }
+      "
+      @change="reUpload"
+    />
   </div>
 </template>
 
 <style lang="less" scoped>
+:deep(.ed-collapse-item) {
+  &:first-child {
+    .ed-collapse-item__header {
+      border-top: none;
+    }
+  }
+}
+
+.de-collapse-style {
+  :deep(.ed-collapse-item__header) {
+    height: 36px !important;
+    line-height: 36px !important;
+    font-size: 12px !important;
+    padding: 0 !important;
+    font-weight: 500 !important;
+
+    .ed-collapse-item__arrow {
+      margin: 0 6px 0 8px;
+    }
+  }
+  :deep(.ed-collapse-item__content) {
+    padding: 16px 8px 0;
+    border: none;
+  }
+  :deep(.ed-form-item) {
+    display: block;
+    margin-bottom: 16px;
+  }
+  :deep(.ed-form-item__label) {
+    justify-content: flex-start;
+  }
+}
+
 .item-show {
   display: flex;
   text-align: center;
@@ -264,21 +312,8 @@ onMounted(() => {
   min-width: 220px;
 }
 
-:deep(.ed-collapse-item__header) {
-  background-color: @side-area-background !important;
-  color: #ffffff;
-  padding-left: 5px;
-  border-bottom: 1px solid @main-collapse-border-dark !important;
-  height: 38px !important;
-}
-:deep(.ed-collapse-item__content) {
-  background-color: @side-content-background;
-  color: #ffffff;
-  padding-left: 5px;
-}
-
 :deep(.ed-collapse-item__wrap) {
-  border-bottom: 1px solid rgb(57 57 57) !important;
+  border-bottom: none;
 }
 :deep(.ed-collapse) {
   width: 100%;
@@ -327,9 +362,6 @@ onMounted(() => {
   color: #757575;
 }
 
-.custom-color-style {
-}
-
 .custom-color-style :deep(.ed-radio) {
   margin: 0 2px 0 0 !important;
   border: 1px solid transparent;
@@ -356,5 +388,107 @@ onMounted(() => {
   size: 14px;
   line-height: 22px;
   font-weight: 400;
+}
+
+.m-size {
+  :deep(.ed-form-item) {
+    display: flex !important;
+  }
+}
+
+:deep(.ed-form-item) {
+  .ed-radio.ed-radio--small .ed-radio__inner {
+    width: 14px;
+    height: 14px;
+  }
+  .ed-input__inner {
+    font-size: 12px;
+    font-weight: 400;
+  }
+  .ed-input {
+    --ed-input-height: 28px;
+
+    .ed-input__suffix {
+      height: 26px;
+    }
+  }
+  .ed-input-number {
+    width: 100%;
+
+    .ed-input-number__decrease {
+      --ed-input-number-controls-height: 13px;
+    }
+    .ed-input-number__increase {
+      --ed-input-number-controls-height: 13px;
+    }
+
+    .ed-input__inner {
+      text-align: start;
+    }
+  }
+  .ed-select {
+    width: 100%;
+    .ed-input__inner {
+      height: 26px !important;
+    }
+  }
+  .ed-checkbox {
+    .ed-checkbox__label {
+      font-size: 12px;
+    }
+  }
+  .ed-color-picker {
+    .ed-color-picker__mask {
+      height: 26px;
+      width: calc(100% - 2px) !important;
+    }
+  }
+  .ed-radio {
+    height: 20px;
+    .ed-radio__label {
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 20px;
+    }
+  }
+
+  &.margin-bottom-8 {
+    margin-bottom: 8px;
+  }
+}
+:deep(.ed-checkbox__label) {
+  color: #1f2329;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 20px;
+}
+:deep(.ed-checkbox--dark) {
+  .ed-checkbox__label {
+    color: @dv-canvas-main-font-color;
+  }
+}
+
+:deep(.ed-form-item__label) {
+  color: @canvas-main-font-color;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+}
+:deep(.form-item-dark) {
+  .ed-form-item__label {
+    color: @canvas-main-font-color-dark;
+  }
+}
+.no-padding {
+  :deep(.ed-collapse-item__content) {
+    padding: 0;
+  }
+}
+.no-border-bottom {
+  :deep(.ed-collapse-item__wrap) {
+    border-bottom: none;
+  }
 }
 </style>

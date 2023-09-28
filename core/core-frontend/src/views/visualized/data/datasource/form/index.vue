@@ -377,6 +377,7 @@ const saveDS = () => {
 }
 
 const defaultForm = {
+  id: '',
   name: '',
   description: '',
   type: 'API',

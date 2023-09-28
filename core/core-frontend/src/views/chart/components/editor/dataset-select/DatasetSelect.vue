@@ -175,7 +175,7 @@ const dsClick = (data: Tree) => {
   }
 }
 const getFields = (id, chartId) => {
-  if (id) {
+  if (id && chartId) {
     getFieldByDQ(id, chartId)
       .then(res => {
         state.value.dimension = (res.dimensionList as unknown as Field[]) || []

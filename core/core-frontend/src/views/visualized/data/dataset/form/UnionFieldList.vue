@@ -11,6 +11,7 @@ export interface Field {
   name: string
   type: string
   originName: string
+  id: string
 }
 
 const { t } = useI18n()

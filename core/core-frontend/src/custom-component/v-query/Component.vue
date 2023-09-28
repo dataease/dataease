@@ -189,6 +189,8 @@ const infoFormat = (obj: ComponentInfo) => {
     id: guid(),
     name,
     showError: true,
+    timeGranularity: 'date',
+    timeGranularityMultiple: 'datetimerange',
     field: {
       id,
       type,
@@ -538,8 +540,9 @@ const textAlign = computed(() => {
         display: flex;
         flex-wrap: wrap;
         line-height: 28px;
-        :deep(.ed-date-editor--datetime .ed-input__wrapper) {
-          width: 100%;
+
+        :deep(.ed-date-editor) {
+          width: 227px;
         }
 
         :deep(.ed-select-v2) {
