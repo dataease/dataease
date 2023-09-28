@@ -139,6 +139,7 @@ function version() {
 }
 function upgrade() {
    echo
+   echo "非正式发布前，此功能不能自动获取最新版本号，请手动修改compose文件中的版本号"
    cd ${DE_RUNNING_BASE} || exit; ${compose_cmd} ${compose_files} pull dataease
    reload
 }
