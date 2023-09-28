@@ -1,7 +1,8 @@
 <script lang="ts" setup>
-import { Icon } from '@/components/icon-custom'
-import { ref } from 'vue'
+import { ref, computed, nextTick } from 'vue'
+import { ElCascaderPanel } from 'element-plus-secondary'
 import { timeTypes } from './util'
+import { fieldType } from '@/utils/attr'
 
 export interface Menu {
   svgName: string
@@ -22,218 +23,158 @@ const props = defineProps({
   transType: {
     type: String,
     default: ''
-  },
-  typeColor: {
-    type: String,
-    default: 'primary-color'
   }
 })
-const handleCommand = (command: string | number | object) => {
-  if ('time' === command && props.showTime) {
-    translate.value.handleOpen()
-    return
+const timeTypesChildren = timeTypes.map(ele => {
+  return {
+    label: ele === 'custom' ? '自定义' : ele,
+    value: ele
   }
-
-  if (typeof command === 'object') return
-
-  if ('custom' === command) {
-    replaceType.value.handleClose()
-    translate.value.handleClose()
+})
+const options = computed(() => {
+  const optionArr = [
+    {
+      label: props.transType,
+      value: 'translate',
+      icon: 'icon_switch_outlined'
+    },
+    {
+      label: '更换字段类型',
+      value: 'translateType',
+      icon: 'custom_sort',
+      children: [
+        {
+          label: '文本',
+          icon: 'icon_text_outlined',
+          value: 'text'
+        },
+        {
+          label: '时间',
+          icon: 'icon_calendar_outlined',
+          value: 'time',
+          children: props.showTime ? timeTypesChildren : []
+        },
+        {
+          label: '地理位置',
+          icon: 'icon_local_outlined',
+          value: 'location'
+        },
+        {
+          label: '数值',
+          icon: 'icon_number_outlined',
+          value: 'value'
+        },
+        {
+          label: '数值 (小数)',
+          icon: 'icon_number_outlined',
+          value: 'float'
+        }
+      ]
+    },
+    {
+      label: '编辑',
+      value: 'editor',
+      icon: 'icon_edit_outlined'
+    },
+    {
+      label: '重命名',
+      value: 'rename',
+      icon: 'dv-rename'
+    },
+    {
+      label: '复制',
+      value: 'copy',
+      icon: 'icon_copy_outlined'
+    },
+    {
+      label: 'icon_delete-trash_outlined',
+      value: 'delete',
+      icon: '删除'
+    }
+  ]
+  if (props.extField === 2) {
+    optionArr.splice(3, 1)
   }
-  if (['text', 'location', 'value', 'float', 'time'].includes(command as string)) {
-    replaceType.value.handleClose()
-    setTimeout(() => {
-      emit('handleCommand', command)
-    }, 100)
-    return
-  }
-
-  if (['copy', 'editor'].includes(command as string)) {
-    translate.value.handleClose()
-  }
-  emit('handleCommand', command)
+  return optionArr
+})
+const deTypeArr = ref([])
+const popover = ref()
+const level = ref(1)
+const handleExpand = val => {
+  level.value = val.left + 1
 }
-
-const replaceType = ref()
-const translate = ref()
-
 const emit = defineEmits(['handleCommand'])
+const handleCommand = () => {
+  const [translate, fieldType, timeType] = deTypeArr.value
+  popover.value.hide()
+  emit('handleCommand', timeType || fieldType || translate)
+  nextTick(() => {
+    deTypeArr.value = []
+  })
+}
+const handleChange = () => {
+  handleCommand()
+}
 </script>
 
 <template>
-  <el-dropdown
+  <el-popover
     popper-class="menu-more_popper_one"
-    placement="bottom-start"
-    ref="translate"
-    :hide-on-click="false"
+    show-arrow
+    ref="popover"
+    placement="right"
+    :width="level * 175"
     trigger="click"
-    @command="handleCommand"
   >
-    <el-icon class="menu-more">
-      <Icon name="more_v"></Icon>
-    </el-icon>
-    <template #dropdown>
-      <el-dropdown-menu>
-        <el-dropdown-item command="translate">
-          <el-icon>
-            <Icon name="icon_switch_outlined"></Icon>
-          </el-icon>
-          {{ transType }}
-        </el-dropdown-item>
-        <el-dropdown-item>
-          <el-dropdown
-            popper-class="menu-more_popper_two"
-            placement="bottom-start"
-            :hide-on-click="false"
-            ref="replaceType"
-            trigger="click"
-            @command="handleCommand"
-          >
-            <div class="field-type">
-              <el-icon>
-                <Icon name="custom_sort"></Icon>
-              </el-icon>
-              更换字段类型
-            </div>
-            <template #dropdown>
-              <el-dropdown-item command="text">
-                <el-icon>
-                  <Icon :class-name="typeColor" name="icon_text_outlined"></Icon>
-                </el-icon>
-                文本
-              </el-dropdown-item>
-              <el-dropdown-menu class="time-col">
-                <el-dropdown-item command="time">
-                  <el-dropdown
-                    popper-class="menu-more_popper_three"
-                    placement="bottom-start"
-                    trigger="hover"
-                    v-if="showTime"
-                    @command="handleCommand"
-                  >
-                    <div class="field-type">
-                      <el-icon>
-                        <Icon :class-name="typeColor" name="icon_calendar_outlined"></Icon>
-                      </el-icon>
-                      时间
-                    </div>
-                    <template #dropdown>
-                      <el-dropdown-menu class="time-col">
-                        <template v-for="ele in timeTypes" :key="ele">
-                          <el-dropdown-item :command="ele">
-                            {{ ele === 'custom' ? '自定义' : ele }}
-                          </el-dropdown-item>
-                        </template>
-                      </el-dropdown-menu>
-                    </template>
-                  </el-dropdown>
-                  <template v-else>
-                    <el-icon>
-                      <Icon :class-name="typeColor" name="icon_calendar_outlined"></Icon>
-                    </el-icon>
-                    时间
-                  </template>
-                </el-dropdown-item>
-              </el-dropdown-menu>
-              <el-dropdown-item command="location">
-                <el-icon>
-                  <Icon :class-name="typeColor" name="icon_local_outlined"></Icon>
-                </el-icon>
-                地理位置
-              </el-dropdown-item>
-              <el-dropdown-item command="value">
-                <el-icon>
-                  <Icon :class-name="typeColor" name="icon_number_outlined"></Icon>
-                </el-icon>
-                数值
-              </el-dropdown-item>
-              <el-dropdown-item command="float">
-                <el-icon>
-                  <Icon :class-name="typeColor" name="icon_number_outlined"></Icon>
-                </el-icon>
-                数值 (小数)
-              </el-dropdown-item>
-            </template>
-          </el-dropdown>
-        </el-dropdown-item>
-        <el-dropdown-item v-if="extField === 2" command="editor">
-          <el-icon>
-            <Icon name="icon_edit_outlined"></Icon>
-          </el-icon>
-          编辑
-        </el-dropdown-item>
-        <el-dropdown-item command="rename">
-          <el-icon>
-            <Icon name="dv-rename"></Icon>
-          </el-icon>
-          重命名
-        </el-dropdown-item>
-        <el-dropdown-item command="copy">
-          <el-icon>
-            <Icon name="icon_copy_outlined"></Icon>
-          </el-icon>
-          复制
-        </el-dropdown-item>
-        <el-dropdown-item command="delete">
-          <el-icon>
-            <Icon name="icon_delete-trash_outlined"></Icon>
-          </el-icon>
-          删除
-        </el-dropdown-item>
-      </el-dropdown-menu>
+    <template #reference>
+      <el-icon class="menu-more">
+        <Icon name="more_v"></Icon>
+      </el-icon>
     </template>
-  </el-dropdown>
+    <ElCascaderPanel
+      v-model="deTypeArr"
+      @expand-change="handleExpand"
+      :border="false"
+      :options="options"
+      @change="handleChange"
+    >
+      <template #default="{ data }">
+        <div class="flex-align-center icon">
+          <el-icon v-if="data.icon">
+            <icon
+              :className="
+                ['text', 'location', 'value', 'float', 'time'].includes(data.value) &&
+                `field-icon-${fieldType[['float', 'value'].includes(data.value) ? 2 : 0]}`
+              "
+              :name="data.icon"
+            ></icon>
+          </el-icon>
+          <span>
+            {{ data.label }}
+          </span>
+        </div>
+      </template>
+    </ElCascaderPanel>
+  </el-popover>
 </template>
-
 <style lang="less" scoped>
 .menu-more {
   cursor: pointer;
   height: 24px;
   width: 24px;
   border-radius: 4px;
+  font-size: 16px;
   &:hover {
     background: rgba(31, 35, 41, 0.1);
   }
 }
 </style>
+
 <style lang="less">
-.menu-more_popper_one,
-.menu-more_popper_two,
-.menu-more_popper_three {
-  margin-top: -10px !important;
-  .ed-popper__arrow {
-    display: none;
-  }
-}
-.menu-more_popper_one,
-.menu-more_popper_two {
-  .field-type {
-    font-weight: 400;
-    box-sizing: border-box;
-    display: flex;
-    align-items: center;
-    white-space: nowrap;
-    padding: 5px 0;
-    width: 100%;
-    margin: 0;
-    font-size: var(--el-font-size-base);
-    color: var(--el-text-color-regular);
-    cursor: pointer;
-    &:hover {
-      color: var(--el-color-primary);
-    }
-  }
-}
-
-.menu-more_popper_two,
-.menu-more_popper_three {
-  margin: -30px 0 0 105px !important;
-  .time-col {
-    padding: 0;
-
-    .ed-dropdown {
-      width: 100%;
-    }
+.menu-more_popper_one {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  .ed-cascader-menu__wrap.ed-scrollbar__wrap {
   }
 }
 </style>
