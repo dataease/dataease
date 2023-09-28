@@ -11,7 +11,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-06-08
+ * @since 2023-09-28
  */
 @TableName("core_datasource_task_log")
 public class CoreDatasourceTaskLog implements Serializable {
@@ -47,7 +47,12 @@ public class CoreDatasourceTaskLog implements Serializable {
     /**
      * 执行状态
      */
-    private String status;
+    private String taskStatus;
+
+    /**
+     * 执行状态
+     */
+    private String tableName;
 
     /**
      * 错误信息
@@ -101,12 +106,20 @@ public class CoreDatasourceTaskLog implements Serializable {
         this.endTime = endTime;
     }
 
-    public String getStatus() {
-        return status;
+    public String getTaskStatus() {
+        return taskStatus;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setTaskStatus(String taskStatus) {
+        this.taskStatus = taskStatus;
+    }
+
+    public String getTableName() {
+        return tableName;
+    }
+
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
     }
 
     public String getInfo() {
@@ -141,7 +154,8 @@ public class CoreDatasourceTaskLog implements Serializable {
         ", taskId = " + taskId +
         ", startTime = " + startTime +
         ", endTime = " + endTime +
-        ", status = " + status +
+        ", taskStatus = " + taskStatus +
+        ", tableName = " + tableName +
         ", info = " + info +
         ", createTime = " + createTime +
         ", triggerType = " + triggerType +

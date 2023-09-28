@@ -35,6 +35,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import static io.dataease.datasource.server.DatasourceTaskServer.ScheduleType.CRON;
+import static io.dataease.datasource.server.DatasourceTaskServer.ScheduleType.MANUAL;
+
 @Component
 public class DatasourceSyncManage {
 
@@ -48,71 +51,42 @@ public class DatasourceSyncManage {
     private ScheduleManager scheduleManager;
 
     public void extractExcelData(CoreDatasource coreDatasource, String type) {
-
         if (coreDatasource == null) {
             LogUtil.error("Can not find CoreDatasource: " + coreDatasource.getName());
             return;
         }
-        Long startTime = System.currentTimeMillis();
-        CoreDatasourceTaskLog datasetTableTaskLog = datasourceTaskServer.initTaskLog(coreDatasource.getId(), null, startTime, coreDatasource.getName(), DatasourceTaskServer.TriggerType.Cron.toString());
         DatasourceServer.UpdateType updateType = DatasourceServer.UpdateType.valueOf(type);
-        boolean msg = false;
-        Long execTime = System.currentTimeMillis();
-        try {
-            DatasourceRequest datasourceRequest = new DatasourceRequest();
-            datasourceRequest.setDatasource(coreDatasource);
-            List<DatasetTableDTO> tables = ExcelUtils.getTables(datasourceRequest);
-            int success = 0;
-            for (DatasetTableDTO tableDTO : tables) {
-                datasourceRequest.setTable(tableDTO.getTableName());
-                List<TableField> tableFields = ExcelUtils.getTableFields(datasourceRequest);
-                try {
-                    datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Begin to sync datatable: " + datasourceRequest.getTable());
-                    datasourceTaskServer.saveLog(datasetTableTaskLog);
-
-                    createEngineTable(datasourceRequest.getTable(), tableFields);
-                    if (updateType.equals(DatasourceServer.UpdateType.all_scope)) {
-                        createEngineTable(TableUtils.tmpName(datasourceRequest.getTable()), tableFields);
-                    }
-                    extractExcelData(datasourceRequest, updateType);
-                    if (updateType.equals(DatasourceServer.UpdateType.all_scope)) {
-                        replaceTable(datasourceRequest.getTable());
-                    }
-                    datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n End to sync datatable: " + datasourceRequest.getTable());
-                    datasourceTaskServer.saveLog(datasetTableTaskLog);
-                    success++;
-                } catch (Exception e) {
-                    try {
-                        if (updateType.equals(DatasourceServer.UpdateType.all_scope)) {
-                            dropEngineTable(TableUtils.tmpName(datasourceRequest.getTable()));
-                        }
-                    }catch (Exception ignore){}
-                    datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Failed to sync datatable: " + datasourceRequest.getTable() + ", " + e.getMessage());
-                    datasourceTaskServer.saveLog(datasetTableTaskLog);
+        DatasourceRequest datasourceRequest = new DatasourceRequest();
+        datasourceRequest.setDatasource(coreDatasource);
+        List<DatasetTableDTO> tables = ExcelUtils.getTables(datasourceRequest);
+        for (DatasetTableDTO tableDTO : tables) {
+            CoreDatasourceTaskLog datasetTableTaskLog = datasourceTaskServer.initTaskLog(coreDatasource.getId(), null, tableDTO.getTableName(), CRON.toString());
+            datasourceRequest.setTable(tableDTO.getTableName());
+            List<TableField> tableFields = ExcelUtils.getTableFields(datasourceRequest);
+            try {
+                datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Begin to sync datatable: " + datasourceRequest.getTable());
+                createEngineTable(datasourceRequest.getTable(), tableFields);
+                if (updateType.equals(DatasourceServer.UpdateType.all_scope)) {
+                    createEngineTable(TableUtils.tmpName(datasourceRequest.getTable()), tableFields);
                 }
+                extractExcelData(datasourceRequest, updateType);
+                if (updateType.equals(DatasourceServer.UpdateType.all_scope)) {
+                    replaceTable(datasourceRequest.getTable());
+                }
+                datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n End to sync datatable: " + datasourceRequest.getTable());
+                datasetTableTaskLog.setTaskStatus(TaskStatus.Completed.toString());
+            } catch (Exception e) {
+                try {
+                    if (updateType.equals(DatasourceServer.UpdateType.all_scope)) {
+                        dropEngineTable(TableUtils.tmpName(datasourceRequest.getTable()));
+                    }
+                }catch (Exception ignore){}
+                datasetTableTaskLog.setTaskStatus(TaskStatus.Error.toString());
+                datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Failed to sync datatable: " + datasourceRequest.getTable() + ", " + e.getMessage());
+
+            } finally {
+                datasourceTaskServer.saveLog(datasetTableTaskLog);
             }
-            datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Complete to sync datasourc.");
-            if (success == 0) {
-                datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Failed to sync datasourc.");
-                datasetTableTaskLog.setStatus(TaskStatus.Error.name());
-            }
-            if (success == tables.size()) {
-                datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Complete to sync datasourc.");
-                datasetTableTaskLog.setStatus(TaskStatus.Completed.name());
-            }
-            if (0 < success && success < tables.size()) {
-                datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Complete to sync datasourc.");
-                datasetTableTaskLog.setStatus(TaskStatus.Warning.name());
-            }
-            datasetTableTaskLog.setEndTime(System.currentTimeMillis());
-            datasourceTaskServer.saveLog(datasetTableTaskLog);
-        } catch (Exception e) {
-            datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Failed to sync datasourc.");
-            datasetTableTaskLog.setEndTime(System.currentTimeMillis());
-            datasetTableTaskLog.setStatus(TaskStatus.Error.name());
-            datasourceTaskServer.saveLog(datasetTableTaskLog);
-        } finally {
-            //DELETE
         }
     }
 
@@ -128,17 +102,16 @@ public class DatasourceSyncManage {
             return;
         }
         datasourceTaskServer.checkTaskIsStopped(coreDatasourceTask);
-        if (StringUtils.isNotEmpty(coreDatasourceTask.getStatus()) && (coreDatasourceTask.getStatus().equalsIgnoreCase(TaskStatus.Stopped.name()) || coreDatasourceTask.getStatus().equalsIgnoreCase(TaskStatus.Suspend.name()))) {
-            LogUtil.info("Skip synchronization task: {} ,due to task status is {}", coreDatasourceTask.getId(), coreDatasourceTask.getStatus());
+        if (StringUtils.isNotEmpty(coreDatasourceTask.getTaskStatus()) && (coreDatasourceTask.getTaskStatus().equalsIgnoreCase(TaskStatus.Stopped.name()) || coreDatasourceTask.getTaskStatus().equalsIgnoreCase(TaskStatus.Suspend.name()))) {
+            LogUtil.info("Skip synchronization task: {} ,due to task status is {}", coreDatasourceTask.getId(), coreDatasourceTask.getTaskStatus());
             return;
         }
 
-        Long startTime = System.currentTimeMillis();
-        if (datasourceTaskServer.existUnderExecutionTask(datasourceId, coreDatasourceTask.getId(), startTime)) {
+        if (datasourceTaskServer.existUnderExecutionTask(datasourceId, coreDatasourceTask.getId())) {
             LogUtil.info("Skip synchronization task for datasource due to exist others, datasource ID : " + datasourceId);
             return;
         }
-        CoreDatasourceTaskLog datasetTableTaskLog = datasourceTaskServer.initTaskLog(datasourceId, taskId, startTime, coreDatasource.getName(), DatasourceTaskServer.TriggerType.Cron.toString());
+
         DatasourceServer.UpdateType updateType = DatasourceServer.UpdateType.valueOf(coreDatasourceTask.getUpdateType());
         if (context != null) {
             UpdateWrapper<CoreDatasource> updateWrapper = new UpdateWrapper<>();
@@ -147,84 +120,58 @@ public class DatasourceSyncManage {
             record.setQrtzInstance(context.getFireInstanceId());
             datasourceMapper.update(record, updateWrapper);
         }
-
-        boolean msg = false;
-        TaskStatus lastExecStatus = TaskStatus.Completed;
-        Long execTime = System.currentTimeMillis();
+        extractedData(taskId, coreDatasource, updateType, coreDatasourceTask.getSyncRate());
         try {
-            DatasourceRequest datasourceRequest = new DatasourceRequest();
-            datasourceRequest.setDatasource(coreDatasource);
-            List<DatasetTableDTO> tables = ApiUtils.getTables(datasourceRequest);
-            int success = 0;
+            datasourceTaskServer.updateTaskStatus(coreDatasourceTask);
+            updateDsTaskStatus(datasourceId);
+        } catch (Exception ignore) {
+            LogUtil.error(ignore);
+        }
+    }
 
-            for (DatasetTableDTO api : tables) {
-                datasourceRequest.setTable(api.getTableName());
-                List<TableField> tableFields = ApiUtils.getTableFields(datasourceRequest);
-                try {
-                    datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Begin to sync datatable: " + datasourceRequest.getTable());
-                    datasourceTaskServer.saveLog(datasetTableTaskLog);
-
-                    createEngineTable(datasourceRequest.getTable(), tableFields);
-                    if (updateType.equals(DatasourceServer.UpdateType.all_scope)) {
-                        createEngineTable(TableUtils.tmpName(datasourceRequest.getTable()), tableFields);
-                    }
-                    extractApiData(datasourceRequest, updateType);
-                    if (updateType.equals(DatasourceServer.UpdateType.all_scope)) {
-                        replaceTable(datasourceRequest.getTable());
-                    }
-                    datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n End to sync datatable: " + datasourceRequest.getTable());
-                    datasourceTaskServer.saveLog(datasetTableTaskLog);
-                    success++;
-                } catch (Exception e) {
-                    try {
-                        if (updateType.equals(DatasourceServer.UpdateType.all_scope)) {
-                            createEngineTable(TableUtils.tmpName(datasourceRequest.getTable()), tableFields);
-                        }
-                    }catch (Exception ignore){}
-                    datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Failed to sync datatable: " + datasourceRequest.getTable() + ", " + e.getMessage());
-                    datasourceTaskServer.saveLog(datasetTableTaskLog);
-                }
-            }
-            datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Complete to sync datasourc.");
-            if (success == 0) {
-                datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Failed to sync datasourc.");
-                datasetTableTaskLog.setStatus(TaskStatus.Error.name());
-                lastExecStatus = TaskStatus.Error;
-            }
-            if (success == tables.size()) {
-                datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Complete to sync datasourc.");
-                datasetTableTaskLog.setStatus(TaskStatus.Completed.name());
-                lastExecStatus = TaskStatus.Completed;
-            }
-            if (0 < success && success < tables.size()) {
-                datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Complete to sync datasourc.");
-                datasetTableTaskLog.setStatus(TaskStatus.Warning.name());
-                lastExecStatus = TaskStatus.Warning;
-            }
-            datasetTableTaskLog.setEndTime(System.currentTimeMillis());
-            datasourceTaskServer.saveLog(datasetTableTaskLog);
-        } catch (Exception e) {
-            datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Failed to sync datasourc.");
-            datasetTableTaskLog.setEndTime(System.currentTimeMillis());
-            datasetTableTaskLog.setStatus(TaskStatus.Error.name());
-            datasourceTaskServer.saveLog(datasetTableTaskLog);
-        } finally {
+    public void extractedData(Long taskId, CoreDatasource coreDatasource, DatasourceServer.UpdateType updateType, String scheduleType ) {
+        DatasourceRequest datasourceRequest = new DatasourceRequest();
+        datasourceRequest.setDatasource(coreDatasource);
+        List<DatasetTableDTO> tables = ApiUtils.getTables(datasourceRequest);
+        for (DatasetTableDTO api : tables) {
+            CoreDatasourceTaskLog datasetTableTaskLog = datasourceTaskServer.initTaskLog(coreDatasource.getId(), taskId, api.getTableName(), scheduleType);
+            datasourceRequest.setTable(api.getTableName());
+            List<TableField> tableFields = ApiUtils.getTableFields(datasourceRequest);
             try {
-                if(coreDatasourceTask.getExtraData() != null && coreDatasourceTask.getExtraData().equalsIgnoreCase("ONCE")){
-                    datasourceTaskServer.delete(coreDatasourceTask.getId());
-                }else {
-                    datasourceTaskServer.updateTaskStatus(coreDatasourceTask, lastExecStatus);
+                datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Begin to sync datatable: " + datasourceRequest.getTable());
+                createEngineTable(datasourceRequest.getTable(), tableFields);
+                if (updateType.equals(DatasourceServer.UpdateType.all_scope)) {
+                    createEngineTable(TableUtils.tmpName(datasourceRequest.getTable()), tableFields);
                 }
-
-                UpdateWrapper<CoreDatasource> updateWrapper = new UpdateWrapper<>();
-                updateWrapper.eq("id", datasourceId);
-                CoreDatasource record = new CoreDatasource();
-                record.setTaskStatus(TaskStatus.WaitingForExecution.name());
-                datasourceMapper.update(record, updateWrapper);
-            } catch (Exception ignore) {
-                LogUtil.error(ignore);
+                extractApiData(datasourceRequest, updateType);
+                if (updateType.equals(DatasourceServer.UpdateType.all_scope)) {
+                    replaceTable(datasourceRequest.getTable());
+                }
+                datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n End to sync datatable: " + datasourceRequest.getTable());
+                datasetTableTaskLog.setTaskStatus(TaskStatus.Completed.toString());
+                datasetTableTaskLog.setEndTime(System.currentTimeMillis());
+            } catch (Exception e) {
+                try {
+                    if (updateType.equals(DatasourceServer.UpdateType.all_scope)) {
+                        dropEngineTable(TableUtils.tmpName(datasourceRequest.getTable()));
+                    }
+                } catch (Exception ignore) {
+                }
+                datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Failed to sync datatable: " + datasourceRequest.getTable() + ", " + e.getMessage());
+                datasetTableTaskLog.setTaskStatus(TaskStatus.Error.toString());
+                datasetTableTaskLog.setEndTime(System.currentTimeMillis());
+            } finally {
+                datasourceTaskServer.saveLog(datasetTableTaskLog);
             }
         }
+    }
+
+    private void updateDsTaskStatus(Long datasourceId){
+        UpdateWrapper<CoreDatasource> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", datasourceId);
+        CoreDatasource record = new CoreDatasource();
+        record.setTaskStatus(TaskStatus.WaitingForExecution.name());
+        datasourceMapper.update(record, updateWrapper);
     }
 
     public void extractDataForTable(Long datasourceId, String tableName, String type) {
@@ -234,54 +181,41 @@ public class DatasourceSyncManage {
             LogUtil.error("Can not find datasource: " + datasourceId);
             return;
         }
-        Long startTime = System.currentTimeMillis();
-        CoreDatasourceTaskLog datasetTableTaskLog = datasourceTaskServer.initTaskLog(datasourceId, null, startTime, coreDatasource.getName(), tableName);
-        try {
-            DatasourceRequest datasourceRequest = new DatasourceRequest();
-            datasourceRequest.setDatasource(coreDatasource);
-            List<DatasetTableDTO> tables = ApiUtils.getTables(datasourceRequest);
-            int success = 0;
-            for (DatasetTableDTO api : tables) {
-                if(api.getTableName().equalsIgnoreCase(tableName)){
-                    datasourceRequest.setTable(api.getTableName());
-                    List<TableField> tableFields = ApiUtils.getTableFields(datasourceRequest);
-                    try {
-                        datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Begin to sync datatable: " + datasourceRequest.getTable());
-                        datasourceTaskServer.saveLog(datasetTableTaskLog);
-                        createEngineTable(datasourceRequest.getTable(), tableFields);
-                        if (updateType.equals(DatasourceServer.UpdateType.all_scope)) {
-                            createEngineTable(TableUtils.tmpName(datasourceRequest.getTable()), tableFields);
-                        }
-                        extractApiData(datasourceRequest, updateType);
-                        if (updateType.equals(DatasourceServer.UpdateType.all_scope)) {
-                            replaceTable(datasourceRequest.getTable());
-                        }
-                        datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n End to sync datatable: " + datasourceRequest.getTable());
-                        datasourceTaskServer.saveLog(datasetTableTaskLog);
-                        success++;
-                    } catch (Exception e) {
-                        try {
-                            if (updateType.equals(DatasourceServer.UpdateType.all_scope)) {
-                                createEngineTable(TableUtils.tmpName(datasourceRequest.getTable()), tableFields);
-                            }
-                        }catch (Exception ignore){}
-                        datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Failed to sync datatable: " + datasourceRequest.getTable() + ", " + e.getMessage());
-                        datasourceTaskServer.saveLog(datasetTableTaskLog);
+        CoreDatasourceTaskLog datasetTableTaskLog = datasourceTaskServer.initTaskLog(datasourceId,  null, tableName, MANUAL.toString());
+
+        DatasourceRequest datasourceRequest = new DatasourceRequest();
+        datasourceRequest.setDatasource(coreDatasource);
+        List<DatasetTableDTO> tables = ApiUtils.getTables(datasourceRequest);
+        for (DatasetTableDTO api : tables) {
+            if(api.getTableName().equalsIgnoreCase(tableName)){
+                datasourceRequest.setTable(api.getTableName());
+                List<TableField> tableFields = ApiUtils.getTableFields(datasourceRequest);
+                try {
+                    datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Begin to sync datatable: " + datasourceRequest.getTable());
+                    createEngineTable(datasourceRequest.getTable(), tableFields);
+                    if (updateType.equals(DatasourceServer.UpdateType.all_scope)) {
+                        createEngineTable(TableUtils.tmpName(datasourceRequest.getTable()), tableFields);
                     }
+                    extractApiData(datasourceRequest, updateType);
+                    if (updateType.equals(DatasourceServer.UpdateType.all_scope)) {
+                        replaceTable(datasourceRequest.getTable());
+                    }
+                    datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n End to sync datatable: " + datasourceRequest.getTable());
+                    datasetTableTaskLog.setTaskStatus(TaskStatus.Completed.name());
+                    datasetTableTaskLog.setEndTime(System.currentTimeMillis());
+                } catch (Exception e) {
+                    try {
+                        if (updateType.equals(DatasourceServer.UpdateType.all_scope)) {
+                            dropEngineTable(TableUtils.tmpName(datasourceRequest.getTable()));
+                        }
+                    }catch (Exception ignore){}
+                    datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Failed to sync datatable: " + datasourceRequest.getTable() + ", " + e.getMessage());
+                    datasetTableTaskLog.setTaskStatus(TaskStatus.Error.name());
+                    datasetTableTaskLog.setEndTime(System.currentTimeMillis());
+                }finally {
+                    datasourceTaskServer.saveLog(datasetTableTaskLog);
                 }
             }
-            if (success == 0) {
-                datasetTableTaskLog.setStatus(TaskStatus.Error.name());
-            }else {
-                datasetTableTaskLog.setStatus(TaskStatus.Completed.name());
-            }
-            datasetTableTaskLog.setEndTime(System.currentTimeMillis());
-            datasourceTaskServer.saveLog(datasetTableTaskLog);
-        } catch (Exception e) {
-            datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Failed to sync table: " + tableName);
-            datasetTableTaskLog.setEndTime(System.currentTimeMillis());
-            datasetTableTaskLog.setStatus(TaskStatus.Error.name());
-            datasourceTaskServer.saveLog(datasetTableTaskLog);
         }
     }
 

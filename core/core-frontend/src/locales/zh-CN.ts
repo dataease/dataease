@@ -410,6 +410,7 @@ export default {
     execute_rate: '执行频率',
     execute_once: '立即执行',
     simple_cron: '简单重复',
+    manual: '手动更新',
     cron_config: '表达式设定',
     no_limit: '无限制',
     set_end_time: '设定结束时间',
@@ -420,7 +421,8 @@ export default {
     field_rename: '重命名',
     select_type: '选择数据源类型',
     sync_table: '同步指定表',
-    req_completed: '请求成功'
+    req_completed: '请求成功',
+    sync_rate: '更新频率'
   },
   chart: {
     align: '对齐方式',

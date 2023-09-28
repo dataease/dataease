@@ -13,11 +13,14 @@ public class Schedular {
     @Resource
     private DatasourceServer datasourceServer;
 
-    @QuartzScheduled(cron = "0 0/1 * * * ?")
-    public void updateDatasourceStatus() {
-        System.out.println("updateDatasourceStatus");
-        datasourceServer.updateDatasourceStatus();
+    @QuartzScheduled(cron = "0 0/3 * * * ?")
+    public void updateStopJobStatus() {
+        datasourceServer.updateStopJobStatus();
     }
 
+    @QuartzScheduled(cron = "0 0/30 * * * ?")
+    public void updateDatasourceStatus() {
+        datasourceServer.updateDatasourceStatus();
+    }
 
 }
