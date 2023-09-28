@@ -350,10 +350,18 @@ const onMove = (e, originalEvent) => {
 // drag
 const dragCheckType = (list, type) => {
   if (list && list.length > 0) {
+    var valid = true
     for (let i = 0; i < list.length; i++) {
       if (list[i].groupType !== type) {
         list.splice(i, 1)
+        valid = false
       }
+    }
+    if (!valid) {
+      ElMessage({
+        message: type === 'd' ? t('chart.error_q_2_d') : t('chart.error_d_2_q'),
+        type: 'warning'
+      })
     }
   }
 }
