@@ -488,14 +488,14 @@ const generateColumns = (arr: Field[]) =>
     title: ele.name,
     width: 150,
     headerCellRenderer: ({ column }) => (
-      <div class="flex-align-center icon">
+      <div class="flex-align-center">
         <ElIcon>
           <Icon
             name={`field_${fieldType[column.deType]}`}
             className={`field-icon-${fieldType[column.deType]}`}
           ></Icon>
         </ElIcon>
-        <span class="ellipsis" title={column.title} style={{ width: '120px' }}>
+        <span class="ellipsis" title={column.title} style={{ width: '120px', marginLeft: '4px' }}>
           {column.title}
         </span>
       </div>
@@ -1192,7 +1192,9 @@ const treeProps = {
                       <el-icon>
                         <Icon
                           :name="`field_${fieldType[data.deType]}`"
-                          :className="`field-icon-${fieldType[data.deType]}`"
+                          :className="`field-icon-${
+                            fieldType[[2, 3].includes(data.deType) ? 2 : 0]
+                          }`"
                         ></Icon>
                       </el-icon>
                       <span :title="data.name" class="label-tooltip">{{ data.name }}</span>
@@ -1221,7 +1223,9 @@ const treeProps = {
                       <el-icon>
                         <Icon
                           :name="`field_${fieldType[data.deType]}`"
-                          :className="`field-icon-${fieldType[data.deType]}`"
+                          :className="`field-icon-${
+                            fieldType[[2, 3].includes(data.deType) ? 2 : 0]
+                          }`"
                         ></Icon>
                       </el-icon>
                       <span :title="data.name" class="label-tooltip">{{ data.name }}</span>
@@ -1310,7 +1314,9 @@ const treeProps = {
                           <template v-slot="{ data }">
                             <el-icon>
                               <Icon
-                                className="primary-color"
+                                :className="`field-icon-${
+                                  fieldType[[2, 3].includes(data.value) ? 2 : 0]
+                                }`"
                                 :name="`field_${getIconName(data.value)}`"
                               ></Icon>
                             </el-icon>
@@ -1320,7 +1326,9 @@ const treeProps = {
                         <span class="select-svg-icon">
                           <el-icon>
                             <Icon
-                              className="primary-color"
+                              :className="`field-icon-${
+                                fieldType[[2, 3].includes(scope.row.deType) ? 2 : 0]
+                              }`"
                               :name="`field_${getIconName(scope.row.deType)}`"
                             ></Icon>
                           </el-icon>
@@ -1452,7 +1460,9 @@ const treeProps = {
                           <template v-slot="{ data }">
                             <el-icon>
                               <Icon
-                                className="green-color"
+                                :className="`field-icon-${
+                                  fieldType[[2, 3].includes(data.value) ? 2 : 0]
+                                }`"
                                 :name="`field_${getIconName(data.value)}`"
                               ></Icon>
                             </el-icon>
@@ -1462,7 +1472,9 @@ const treeProps = {
                         <span class="select-svg-icon">
                           <el-icon>
                             <Icon
-                              className="green-color"
+                              :className="`field-icon-${
+                                fieldType[[2, 3].includes(scope.row.deType) ? 2 : 0]
+                              }`"
                               :name="`field_${getIconName(scope.row.deType)}`"
                             ></Icon>
                           </el-icon>
@@ -1568,7 +1580,7 @@ const treeProps = {
                   <template v-slot="{ data }">
                     <el-icon>
                       <Icon
-                        className="primary-color"
+                        :className="`field-icon-${fieldType[[2, 3].includes(data.value) ? 2 : 0]}`"
                         :name="`field_${getIconName(data.value)}`"
                       ></Icon>
                     </el-icon>
