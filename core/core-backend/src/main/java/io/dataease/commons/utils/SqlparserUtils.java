@@ -2,7 +2,7 @@ package io.dataease.commons.utils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.dataease.api.dataset.dto.SqlVariableDetails;
-import io.dataease.commons.exception.DataEaseException;
+import io.dataease.exception.DEException;
 import io.dataease.i18n.Translator;
 import io.dataease.utils.JsonUtil;
 import org.apache.calcite.config.Lex;
@@ -103,7 +103,7 @@ public class SqlparserUtils {
 
     public static String handleVariableDefaultValue(String sql, String sqlVariableDetails, boolean isEdit, boolean isFromDataSet, List<SqlVariableDetails> parameters) {
         if (StringUtils.isEmpty(sql)) {
-            DataEaseException.throwException(Translator.get("i18n_sql_not_empty"));
+            DEException.throwException(Translator.get("i18n_sql_not_empty"));
         }
 
         if (StringUtils.isNotEmpty(sqlVariableDetails)) {

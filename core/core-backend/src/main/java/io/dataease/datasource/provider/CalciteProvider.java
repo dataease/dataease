@@ -6,7 +6,6 @@ import io.dataease.api.ds.vo.DatasourceConfiguration;
 import io.dataease.api.ds.vo.DatasourceConfiguration.DatasourceType;
 import io.dataease.api.ds.vo.DatasourceDTO;
 import io.dataease.api.ds.vo.TableField;
-import io.dataease.commons.exception.DataEaseException;
 import io.dataease.commons.utils.CommonThreadPool;
 import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import io.dataease.dataset.utils.FieldUtils;
@@ -42,7 +41,6 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.sql.*;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicIntegerArray;
 import java.util.stream.Collectors;
 
 
@@ -95,7 +93,7 @@ public class CalciteProvider {
                 schemas.add(resultSet.getString(1));
             }
         } catch (Exception e) {
-            DataEaseException.throwException(e);
+            DEException.throwException(e);
         }
         return schemas;
     }
@@ -109,7 +107,7 @@ public class CalciteProvider {
                     tables.add(getTableDesc(datasourceRequest, resultSet));
                 }
             } catch (Exception e) {
-                DataEaseException.throwException(e);
+                DEException.throwException(e);
             }
         }
         return tables;

@@ -1,7 +1,6 @@
 package io.dataease.job.sechedule;
 
 
-import io.dataease.commons.exception.DataEaseException;
 import io.dataease.exception.DEException;
 import io.dataease.i18n.Translator;
 import io.dataease.utils.LogUtil;
@@ -101,7 +100,7 @@ public class ScheduleManager {
 
         } catch (Exception e) {
             LogUtil.error(e.getMessage(), e);
-            DataEaseException.throwException(e);
+            DEException.throwException(e);
         }
     }
 
@@ -131,7 +130,7 @@ public class ScheduleManager {
 
         } catch (Exception e) {
             LogUtil.error(e.getMessage(), e);
-            DataEaseException.throwException(e);
+            DEException.throwException(e);
         }
     }
 
@@ -182,7 +181,7 @@ public class ScheduleManager {
 
             scheduler.rescheduleJob(triggerKey, trigger);// 修改一个任务的触发时间
         } catch (Exception e) {
-            DataEaseException.throwException(e);
+            DEException.throwException(e);
         }
     }
 
@@ -225,7 +224,7 @@ public class ScheduleManager {
 
         } catch (Exception e) {
             LogUtil.error(e.getMessage(), e);
-            DataEaseException.throwException(e);
+            DEException.throwException(e);
         }
     }
 
@@ -257,7 +256,7 @@ public class ScheduleManager {
             }
         } catch (Exception e) {
             LogUtil.error(e.getMessage(), e);
-            DataEaseException.throwException(e);
+            DEException.throwException(e);
         }
     }
 
@@ -281,7 +280,7 @@ public class ScheduleManager {
 
         } catch (Exception e) {
             LogUtil.error(e.getMessage(), e);
-            DataEaseException.throwException(e);
+            DEException.throwException(e);
         }
     }
 
@@ -290,7 +289,7 @@ public class ScheduleManager {
             sched.start();
         } catch (Exception e) {
             LogUtil.error(e.getMessage(), e);
-            DataEaseException.throwException(e);
+            DEException.throwException(e);
         }
     }
 
@@ -301,7 +300,7 @@ public class ScheduleManager {
             }
         } catch (Exception e) {
             LogUtil.error(e.getMessage(), e);
-            DataEaseException.throwException(e);
+            DEException.throwException(e);
         }
     }
 
@@ -409,7 +408,7 @@ public class ScheduleManager {
     public static CronTrigger getCronTrigger(String cron) {
         if (!CronExpression.isValidExpression(cron)) {
             String msg = Translator.get("I18N_CRON_ERROR");
-            DataEaseException.throwException(msg + " : " + cron);
+            DEException.throwException(msg + " : " + cron);
         }
         return TriggerBuilder.newTrigger().withIdentity("Calculate Date")
                 .withSchedule(CronScheduleBuilder.cronSchedule(cron)).build();
