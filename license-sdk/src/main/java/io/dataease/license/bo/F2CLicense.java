@@ -12,6 +12,7 @@ public class F2CLicense implements Serializable {
     private static final long serialVersionUID = -5264927171691944304L;
 
     private String corporation;
+    private String isv;
     private String expired;
     private String licenseVersion;
     private String product;

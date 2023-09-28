@@ -9,11 +9,13 @@ const redirectUser = () => {
 </script>
 
 <template>
-  <div class="sys-setting">
-    <el-icon @click="redirectUser">
-      <Icon class="icon-setting" name="icon-setting" />
-    </el-icon>
-  </div>
+  <el-tooltip class="box-item" effect="dark" content="组织管理中心" placement="top">
+    <div class="sys-setting">
+      <el-icon @click="redirectUser">
+        <Icon class="icon-setting" name="icon-setting" />
+      </el-icon>
+    </div>
+  </el-tooltip>
 </template>
 
 <style lang="less" scoped>
