@@ -2087,6 +2087,7 @@ const treeProps = {
   width: 100%;
   height: 64px;
   padding: 0 24px;
+  z-index: 2;
   box-shadow: 0px -2px 4px rgba(31, 35, 41, 0.08);
 
   .select-svg-icon {
