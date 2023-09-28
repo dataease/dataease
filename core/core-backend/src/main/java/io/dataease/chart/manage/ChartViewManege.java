@@ -189,21 +189,19 @@ public class ChartViewManege {
             BeanUtils.copyBean(dto, ele);
             dto.setDateStyle("y_M_d");
             dto.setDatePattern("date_sub");
-            if (StringUtils.equalsIgnoreCase("q", dto.getGroupType())) {
-                dto.setChartType("bar");
+            dto.setChartType("bar");
 
-                if (dto.getId() == -1L || dto.getDeType() == 0 || dto.getDeType() == 1) {
-                    dto.setSummary("count");
-                } else {
-                    dto.setSummary("sum");
-                }
-
-                ChartFieldCompareDTO chartFieldCompareDTO = new ChartFieldCompareDTO();
-                chartFieldCompareDTO.setType("none");
-                dto.setCompareCalc(chartFieldCompareDTO);
-
-                dto.setFormatterCfg(new FormatterCfgDTO());
+            if (dto.getId() == -1L || dto.getDeType() == 0 || dto.getDeType() == 1) {
+                dto.setSummary("count");
+            } else {
+                dto.setSummary("sum");
             }
+
+            ChartFieldCompareDTO chartFieldCompareDTO = new ChartFieldCompareDTO();
+            chartFieldCompareDTO.setType("none");
+            dto.setCompareCalc(chartFieldCompareDTO);
+
+            dto.setFormatterCfg(new FormatterCfgDTO());
 
             dto.setSort("none");
             dto.setFilter(Collections.emptyList());

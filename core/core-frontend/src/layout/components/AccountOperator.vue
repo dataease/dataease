@@ -103,7 +103,7 @@ const openPopover = () => {
           <span>{{ link.label }}</span>
         </div>
 
-        <div class="uinfo-main-item de-container">
+        <div class="uinfo-main-item de-container de-language">
           <div class="about-parent" ref="divLanguageRef" v-click-outside="openLanguage">
             <span>语言</span>
             <el-icon class="el-icon-animate">
@@ -236,5 +236,8 @@ const openPopover = () => {
     display: none;
   }
   padding: var(--ed-popover-padding) 0 !important;
+}
+.de-language {
+  display: none !important;
 }
 </style>

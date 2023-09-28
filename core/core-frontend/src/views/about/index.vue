@@ -18,7 +18,8 @@ const license: F2CLicense = reactive({
   version: '',
   edition: '',
   serialNo: '',
-  remark: ''
+  remark: '',
+  isv: ''
 })
 const build = ref('')
 const isAdmin = ref(false)
@@ -95,7 +96,8 @@ const getLicense = result => {
     version: result.license ? result.license.version : '',
     edition: result.license ? result.license.edition : '',
     serialNo: result.license ? result.license.serialNo : '',
-    remark: result.license ? result.license.remark : ''
+    remark: result.license ? result.license.remark : '',
+    isv: result.license ? result.license.isv : ''
   }
 }
 const update = (licKey: string) => {
@@ -131,9 +133,9 @@ const update = (licKey: string) => {
         <div class="label">{{ $t('about.auth_to') }}</div>
         <div class="value">{{ license.corporation }}</div>
       </div>
-      <div class="item">
-        <div class="label">代理商</div>
-        <div class="value">代理商</div>
+      <div class="item" v-if="license.isv">
+        <div class="label">ISV</div>
+        <div class="value">{{ license.isv }}</div>
       </div>
       <div class="item">
         <div class="label">{{ $t('about.expiration_time') }}</div>
