@@ -130,9 +130,25 @@ export function checkIsBatchOptView(viewId) {
 }
 
 export function canvasSave(callBack) {
+  const componentDataToSave = deepCopy(componentData.value)
+  componentDataToSave.forEach(item => {
+    if (item.component === 'UserView') {
+      item.linkageFilters = []
+    } else if (item.component === 'Group') {
+      item.propValue.forEach(groupItem => {
+        groupItem.linkageFilters = []
+      })
+    } else if (item.component === 'DeTabs') {
+      item.propValue.forEach(tabItem => {
+        tabItem.componentData.forEach(tabComponent => {
+          tabComponent.linkageFilters = []
+        })
+      })
+    }
+  })
   const canvasInfo = {
     canvasStyleData: JSON.stringify(canvasStyleData.value),
-    componentData: JSON.stringify(componentData.value),
+    componentData: JSON.stringify(componentDataToSave),
     canvasViewInfo: canvasViewInfo.value,
     ...dvInfo.value
   }

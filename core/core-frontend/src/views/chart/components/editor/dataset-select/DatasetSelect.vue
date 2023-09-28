@@ -317,9 +317,11 @@ onMounted(() => {
             </el-scrollbar>
           </el-main>
           <el-footer>
-            <el-button type="primary" :icon="Plus" link class="add-btn" @click="addDataset">
-              新建数据集
-            </el-button>
+            <div class="footer-container">
+              <el-button type="primary" :icon="Plus" link class="add-btn" @click="addDataset">
+                新建数据集
+              </el-button>
+            </div>
           </el-footer>
         </el-container>
       </template>
@@ -407,9 +409,12 @@ onMounted(() => {
       --ed-footer-padding: 0 11px;
       border-top: rgba(31, 35, 41, 0.15) 1px solid;
 
-      display: flex;
-      flex-direction: row;
-      align-items: center;
+      .footer-container {
+        height: calc(100% - 3px);
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+      }
 
       .add-btn {
         font-size: 12px;
@@ -525,6 +530,24 @@ onMounted(() => {
           font-size: 16px;
         }
       }
+    }
+  }
+
+  .ed-button.is-link {
+    font-size: 12px;
+    font-weight: 400;
+    padding: 4px;
+
+    &:not(.is-disabled):focus,
+    &:not(.is-disabled):hover {
+      color: rgba(51, 112, 255, 1);
+      border-color: transparent;
+      background-color: rgba(51, 112, 255, 0.1);
+    }
+    &:not(.is-disabled):active {
+      color: rgba(51, 112, 255, 1);
+      border-color: transparent;
+      background-color: rgba(51, 112, 255, 0.2);
     }
   }
 }
