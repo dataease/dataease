@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { ElAside, ElContainer } from 'element-plus-secondary'
 import DeResourceTree from '@/views/common/DeResourceTree.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { nextTick, onBeforeMount, reactive, ref } from 'vue'
+import { nextTick, onBeforeMount, reactive, ref, computed } from 'vue'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
 import PreviewHead from '@/views/data-visualization/PreviewHead.vue'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
@@ -13,6 +12,7 @@ import { useRequestStoreWithOut } from '@/store/modules/request'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import { useMoveLine } from '@/hooks/web/useMoveLine'
 import JsPDF from 'jspdf'
+import { Icon } from '@/components/icon-custom'
 
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo } = storeToRefs(dvMainStore)
@@ -32,6 +32,20 @@ const props = defineProps({
     default: 'preview'
   }
 })
+
+const resourceTreeRef = ref()
+
+const hasTreeData = computed(() => {
+  return resourceTreeRef.value?.hasData
+})
+
+const rootManage = computed(() => {
+  return resourceTreeRef.value?.rootManage
+})
+
+function createNew() {
+  resourceTreeRef.value?.createNewObject()
+}
 
 const loadCanvasData = (dvId, weight?) => {
   dataInitState.value = false
@@ -123,6 +137,7 @@ onBeforeMount(() => {
       :style="{ width: width + 'px' }"
     >
       <de-resource-tree
+        ref="resourceTreeRef"
         v-show="slideShow"
         :cur-canvas-type="'dataV'"
         :show-position="showPosition"
@@ -131,6 +146,7 @@ onBeforeMount(() => {
     </el-aside>
     <el-container
       class="preview-area"
+      :class="{ 'no-data': !hasTreeData }"
       v-loading="requestStore.loadingMap[permissionStore.currentPath]"
     >
       <div @click="slideOpenChange" class="flexible-button-area" v-if="false">
@@ -138,11 +154,7 @@ onBeforeMount(() => {
         <el-icon v-else><ArrowRight /></el-icon>
       </div>
       <template v-if="dvInfo.name">
-        <preview-head
-          v-show="showPosition === 'preview'"
-          @reload="reload"
-          @download="download"
-        ></preview-head>
+        <preview-head v-show="showPosition === 'preview'" @reload="reload" @download="download" />
         <div ref="previewCanvasContainer" class="content">
           <div class="content-outer">
             <div class="content-inner">
@@ -161,8 +173,18 @@ onBeforeMount(() => {
           </div>
         </div>
       </template>
-      <template v-else>
+      <template v-else-if="hasTreeData">
         <empty-background description="请在左侧选择数据大屏" img-type="select" />
+      </template>
+      <template v-else>
+        <empty-background description="暂无数据大屏" img-type="none">
+          <el-button v-if="rootManage" @click="createNew" type="primary">
+            <template #icon>
+              <Icon name="icon_add_outlined" />
+            </template>
+            {{ $t('commons.create') }}数据大屏
+          </el-button>
+        </empty-background>
       </template>
     </el-container>
   </div>
@@ -190,6 +212,10 @@ onBeforeMount(() => {
     overflow-y: auto;
     position: relative;
     //transition: 0.5s;
+
+    &.no-data {
+      background-color: rgba(245, 246, 247, 1);
+    }
 
     .content {
       flex: 1;

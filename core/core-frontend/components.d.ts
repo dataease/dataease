@@ -54,6 +54,7 @@ declare module '@vue/runtime-core' {
     DvSidebar: typeof import('./src/components/visualization/DvSidebar.vue')['default']
     DvToolbar: typeof import('./src/components/data-visualization/DvToolbar.vue')['default']
     EditMenu: typeof import('./src/components/visualization/EditMenu.vue')['default']
+    ElAside: typeof import('element-plus-secondary/es')['ElAside']
     ElAutocomplete: typeof import('element-plus-secondary/es')['ElAutocomplete']
     ElAutoResizer: typeof import('element-plus-secondary/es')['ElAutoResizer']
     ElBreadcrumb: typeof import('element-plus-secondary/es')['ElBreadcrumb']

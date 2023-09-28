@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref, toRefs, watch, nextTick } from 'vue'
+import { onMounted, reactive, ref, toRefs, watch, nextTick, computed } from 'vue'
 import { deleteLogic } from '@/api/visualization/dataVisualization'
 import { ElIcon, ElMessage, ElMessageBox, ElScrollbar } from 'element-plus-secondary'
 import { Icon } from '@/components/icon-custom'
@@ -13,6 +13,8 @@ import { interactiveStoreWithOut } from '@/store/modules/interactive'
 const interactiveStore = interactiveStoreWithOut()
 import router from '@/router'
 import { useI18n } from '@/hooks/web/useI18n'
+import _ from 'lodash'
+
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo } = storeToRefs(dvMainStore)
 const { t } = useI18n()
@@ -156,6 +158,22 @@ const getTree = async () => {
   afterTreeInit()
 }
 
+const flattedTree = computed<BusiTreeNode[]>(() => {
+  return _.filter(flatTree(state.resourceTree), node => node.leaf)
+})
+
+const hasData = computed<boolean>(() => flattedTree.value.length > 0)
+
+function flatTree(tree: BusiTreeNode[]) {
+  let result = _.cloneDeep(tree)
+  _.forEach(tree, node => {
+    if (node.children && node.children.length > 0) {
+      result = _.union(result, flatTree(node.children))
+    }
+  })
+  return result
+}
+
 const afterTreeInit = () => {
   if (selectedNodeKey.value && returnMounted.value) {
     expandedArray.value = getDefaultExpandedKeys()
@@ -218,6 +236,10 @@ const addOperation = (
   }
 }
 
+function createNewObject() {
+  return addOperation('newLeaf', null, 'leaf', true)
+}
+
 const resourceEdit = resourceId => {
   const baseUrl = curCanvasType.value === 'dataV' ? '#/dvCanvas?dvId=' : '#/dashboard?resourceId='
   window.open(baseUrl + resourceId, '_blank')
@@ -258,6 +280,12 @@ watch(filterText, val => {
 
 onMounted(() => {
   getTree()
+})
+
+defineExpose({
+  rootManage,
+  hasData,
+  createNewObject
 })
 </script>
 
