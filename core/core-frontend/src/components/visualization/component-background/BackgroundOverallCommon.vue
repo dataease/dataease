@@ -39,45 +39,6 @@
           </el-form-item>
         </el-col>
       </el-row>
-  <el-form label-position="top" style="width: 100%">
-    <el-row :gutter="8">
-      <el-col :span="12">
-        <el-form-item
-          :effct="themes"
-          :label="t('visualization.inner_padding')"
-          class="form-item w100"
-          :class="'form-item-' + themes"
-        >
-          <el-input-number
-            :effect="themes"
-            controls-position="right"
-            size="middle"
-            :min="0"
-            :max="100"
-            v-model="state.commonBackground.innerPadding"
-            @change="onBackgroundChange"
-          />
-        </el-form-item>
-      </el-col>
-      <el-col :span="12">
-        <el-form-item
-          :effct="themes"
-          :label="t('visualization.board_radio') + '111'"
-          class="form-item w100"
-          :class="'form-item-' + themes"
-        >
-          <el-input-number
-            :effect="themes"
-            controls-position="right"
-            size="middle"
-            :min="0"
-            :max="100"
-            v-model="state.commonBackground.borderRadius"
-            @change="onBackgroundChange"
-          />
-        </el-form-item>
-      </el-col>
-    </el-row>
 
       <el-form-item class="form-item no-margin-bottom" :class="'form-item-' + themes">
         <el-checkbox
