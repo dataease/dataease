@@ -403,6 +403,7 @@ span {
 }
 
 .custom-color-pick {
+  max-width: 230px;
   :deep(.ed-form-item__label) {
     justify-content: flex-start;
   }
@@ -416,7 +417,7 @@ span {
 
 .alpha-setting {
   display: flex;
-  width: 100%;
+  max-width: 230px;
 
   .alpha-slider {
     padding: 4px 8px 0 8px;
