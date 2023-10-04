@@ -38,5 +38,7 @@ const { start, width, height } = toRefs(props)
 .area {
   border: 1px solid #70c0ff;
   position: absolute;
+  // 选中区域图层最高 内部组件暂不可进行实际触发
+  z-index: 15;
 }
 </style>
