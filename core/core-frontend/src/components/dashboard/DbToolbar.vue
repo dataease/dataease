@@ -383,10 +383,10 @@ const onDvNameChange = () => {
           >
             <query-group themes="light" :dv-model="dvModel"></query-group>
           </component-group>
-          <component-group themes="light" :base-width="115" icon-name="dv-text" title="文本">
+          <component-group themes="light" :base-width="115" icon-name="dv-text" title="富文本">
             <text-group themes="light" :dv-model="dvModel"></text-group>
           </component-group>
-          <component-group themes="light" :base-width="115" icon-name="dv-media" title="图片">
+          <component-group themes="light" :base-width="115" icon-name="dv-media" title="媒体">
             <media-group themes="light" :dv-model="dvModel"></media-group>
           </component-group>
           <component-group themes="light" :base-width="115" icon-name="dv-tab" title="Tab">

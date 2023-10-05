@@ -143,7 +143,7 @@ const list = [
     component: 'Picture',
     name: '图片',
     label: '图片',
-    icon: 'other_media',
+    icon: 'dv-picture-real',
     innerType: 'Picture',
     editing: false,
     x: 1,

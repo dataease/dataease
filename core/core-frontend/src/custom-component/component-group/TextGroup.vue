@@ -52,7 +52,7 @@ const newComponent = componentName => {
   >
     <drag-component
       :themes="themes"
-      name="富文本"
+      icon="dv-richText"
       label="富文本"
       drag-info="UserView&rich-text"
     ></drag-component>

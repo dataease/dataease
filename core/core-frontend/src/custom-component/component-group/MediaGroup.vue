@@ -51,7 +51,7 @@ const handleDragEnd = e => {
   >
     <drag-component
       :themes="themes"
-      icon="dv-picture"
+      icon="dv-picture-show"
       label="图片"
       drag-info="Picture&Picture"
     ></drag-component>
