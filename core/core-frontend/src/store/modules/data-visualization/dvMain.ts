@@ -45,6 +45,7 @@ export const dvMainStore = defineStore('dataVisualization', {
       isClickComponent: false,
       // 大屏基础信息
       dvInfo: {
+        dataState: null,
         id: null,
         name: null,
         pid: null,
@@ -681,6 +682,7 @@ export const dvMainStore = defineStore('dataVisualization', {
     },
     resetDvInfo() {
       this.dvInfo = {
+        dataState: null,
         id: null,
         name: null,
         pid: null,
@@ -706,15 +708,17 @@ export const dvMainStore = defineStore('dataVisualization', {
     },
     updateDvInfoId(newId) {
       if (this.dvInfo) {
+        this.dvInfo.dataState = 'ready'
         this.dvInfo.id = newId
       }
     },
-    createInit(dvType, resourceId?) {
+    createInit(dvType, resourceId?, pid?) {
       const optName = dvType === 'dashboard' ? '新建仪表板' : '新建数据大屏'
       this.dvInfo = {
+        dataState: 'prepare',
         id: resourceId,
         name: optName,
-        pid: -1,
+        pid: pid,
         type: dvType,
         status: 1,
         selfWatermarkStatus: 0
@@ -732,6 +736,7 @@ export const dvMainStore = defineStore('dataVisualization', {
       this.canvasViewInfo = {}
       this.componentData = []
       this.dvInfo = {
+        dataState: null,
         id: null,
         name: null,
         pid: null,

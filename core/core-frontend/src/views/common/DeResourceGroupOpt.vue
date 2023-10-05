@@ -320,6 +320,7 @@ const emits = defineEmits(['finish'])
           :props="propsTree"
           @node-click="nodeClick"
           :filter-method="filterMethod"
+          :render-after-expand="false"
           filterable
         >
           <template #default="{ data: { name } }">

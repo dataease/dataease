@@ -59,7 +59,7 @@ onMounted(() => {
     })
   } else if (opt && opt === 'create') {
     dataInitState.value = false
-    dvMainStore.createInit('dashboard')
+    dvMainStore.createInit('dashboard', null, pid)
     nextTick(() => {
       dataInitState.value = true
       // preOpt

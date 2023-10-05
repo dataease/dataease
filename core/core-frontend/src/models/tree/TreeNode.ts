@@ -1,5 +1,6 @@
 export interface BusiTreeNode {
   id: string | number
+  pid: string | number
   name: string
   leaf?: boolean
   weight: number

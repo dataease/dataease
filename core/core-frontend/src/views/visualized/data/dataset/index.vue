@@ -86,6 +86,7 @@ const resourceCreate = (pid, name) => {
   // 新建基础信息
   const newResourceId = guid()
   const bashResourceInfo = {
+    dataState: 'ready',
     id: newResourceId,
     name: name,
     pid: pid,
