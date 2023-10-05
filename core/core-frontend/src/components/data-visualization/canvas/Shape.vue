@@ -11,28 +11,6 @@
         'drag-on-tab-collision': dragCollision
       }"
     >
-      <template v-if="boardMoveActive">
-        <div
-          v-show="!element.editing"
-          class="de-drag-area de-drag-top"
-          @mousedown="handleBoardMouseDownOnShape"
-        />
-        <div
-          v-show="!element.editing && element.component !== 'DeTabs'"
-          class="de-drag-area de-drag-right"
-          @mousedown="handleBoardMouseDownOnShape"
-        />
-        <div
-          v-show="!element.editing && element.component !== 'DeTabs'"
-          class="de-drag-area de-drag-bottom"
-          @mousedown="handleBoardMouseDownOnShape"
-        />
-        <div
-          v-show="!element.editing && element.component !== 'DeTabs'"
-          class="de-drag-area de-drag-left"
-          @mousedown="handleBoardMouseDownOnShape"
-        />
-      </template>
       <component-edit-bar
         class="edit-bar"
         :class="{ 'edit-bar-active': editBarShowFlag }"
@@ -70,6 +48,28 @@
         :style="getPointStyle(item)"
         @mousedown="handleMouseDownOnPoint(item, $event)"
       ></div>
+      <template v-if="boardMoveActive">
+        <div
+          v-show="!element.editing"
+          class="de-drag-area de-drag-top"
+          @mousedown="handleBoardMouseDownOnShape"
+        />
+        <div
+          v-show="!element.editing && element.component !== 'DeTabs'"
+          class="de-drag-area de-drag-right"
+          @mousedown="handleBoardMouseDownOnShape"
+        />
+        <div
+          v-show="!element.editing && element.component !== 'DeTabs'"
+          class="de-drag-area de-drag-bottom"
+          @mousedown="handleBoardMouseDownOnShape"
+        />
+        <div
+          v-show="!element.editing && element.component !== 'DeTabs'"
+          class="de-drag-area de-drag-left"
+          @mousedown="handleBoardMouseDownOnShape"
+        />
+      </template>
     </div>
   </div>
 </template>
@@ -863,7 +863,6 @@ onMounted(() => {
 
 .de-drag-area {
   position: absolute;
-  z-index: 10;
 }
 
 .de-drag-area:hover {
