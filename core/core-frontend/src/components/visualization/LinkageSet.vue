@@ -42,7 +42,7 @@
               ref="linkageInfoTree"
               :empty-text="'暂无可用图表'"
               :filter-node-method="filterNodeMethod"
-              :data="curLinkageOnlyTargetViewsInfo"
+              :data="curLinkageTargetViewsInfo"
               node-key="targetViewId"
               highlight-current
               :props="state.treeProp"
@@ -213,9 +213,9 @@ const { t } = useI18n()
 const dialogShow = ref(false)
 const searchField = ref('')
 const loading = ref(false)
+const curLinkageTargetViewsInfo = ref([])
 const state = reactive({
   sourceLinkageInfo: {},
-  curLinkageTargetViewsInfo: [],
   showSelected: false,
   curLinkageViewInfo: {},
   curDatasetInfo: {},
@@ -250,15 +250,18 @@ const linkageSetting = curViewId => {
   }
   getViewLinkageGatherArray(requestInfo).then(rsp => {
     // 获取当前仪表板的视图(去掉当前视图)
-    state.curLinkageTargetViewsInfo = rsp.data
-    state.curLinkageTargetViewsInfo.forEach(item => {
+    curLinkageTargetViewsInfo.value = rsp.data || []
+    curLinkageTargetViewsInfo.value.forEach(item => {
       if (item.targetViewId === curViewId) {
         state.sourceLinkageInfo = item
       }
     })
+    curLinkageTargetViewsInfo.value = curLinkageTargetViewsInfo.value.filter(
+      viewInfo => viewInfo.targetViewId !== state.viewId
+    )
     let firstNode
-    if (curLinkageOnlyTargetViewsInfo.value && curLinkageOnlyTargetViewsInfo.value.length > 0) {
-      firstNode = curLinkageOnlyTargetViewsInfo.value[0]
+    if (curLinkageTargetViewsInfo.value && curLinkageTargetViewsInfo.value.length > 0) {
+      firstNode = curLinkageTargetViewsInfo.value[0]
     }
     state.initState = true
     nextTick(() => {
@@ -273,7 +276,7 @@ const linkageSetting = curViewId => {
 const init = viewItem => {
   state.initState = false
   state.viewId = viewItem.id
-  state.curLinkageTargetViewsInfo = []
+  curLinkageTargetViewsInfo.value = []
   const chartDetails = canvasViewInfo.value[state.viewId]
   state.curLinkageViewInfo = chartDetails
   if (chartDetails.tableId) {
@@ -288,7 +291,7 @@ const init = viewItem => {
 const saveLinkageSetting = () => {
   // 字段检查
   let subCheckCountAll = 0
-  state.curLinkageTargetViewsInfo.forEach(linkageInfo => {
+  curLinkageTargetViewsInfo.value.forEach(linkageInfo => {
     let subCheckCount = 0
     const linkageFields = linkageInfo['linkageFields']
     if (linkageFields && linkageInfo.linkageActive) {
@@ -314,7 +317,7 @@ const saveLinkageSetting = () => {
   const request = {
     dvId: dvInfo.value.id,
     sourceViewId: state.viewId,
-    linkageInfo: state.curLinkageTargetViewsInfo
+    linkageInfo: curLinkageTargetViewsInfo.value
   }
   loading.value = true
   saveLinkage(request)
@@ -369,10 +372,6 @@ const cancel = () => {
 const filterNodeMethod = (value, data) => {
   return !value || data.linkageActive
 }
-
-const curLinkageOnlyTargetViewsInfo = computed(() =>
-  state.curLinkageTargetViewsInfo.filter(viewInfo => viewInfo.targetViewId !== state.viewId)
-)
 
 watch(
   () => state.showSelected,
