@@ -324,20 +324,20 @@ onMounted(() => {
 }
 
 .avatar-uploader :deep(.ed-upload) {
-  width: 120px;
+  width: 80px;
   height: 80px;
   line-height: 90px;
 }
 
 .avatar-uploader :deep(.ed-upload-list li) {
-  width: 120px !important;
+  width: 80px !important;
   height: 80px !important;
 }
 .avatar-uploader :deep(.ed-upload--picture-card) {
   background: rgba(0, 0, 0, 0);
 }
 .img-area {
-  width: 120px;
+  width: 80px;
   height: 80px;
   margin-top: 0px;
   margin-bottom: 20px;

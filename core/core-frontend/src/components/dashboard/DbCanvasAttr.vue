@@ -372,13 +372,13 @@ onMounted(() => {
 
 .avatar-uploader {
   :deep(.ed-upload) {
-    width: 120px;
+    width: 80px;
     height: 80px;
     line-height: 90px;
   }
 
   :deep(.ed-upload-list li) {
-    width: 120px !important;
+    width: 80px !important;
     height: 80px !important;
   }
 
