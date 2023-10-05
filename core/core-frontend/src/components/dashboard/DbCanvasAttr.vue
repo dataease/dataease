@@ -225,7 +225,12 @@ onMounted(() => {
             </el-radio-group>
           </el-row>
           <el-row v-if="canvasStyleData.backgroundType === 'backgroundColor'" class="margin-top8">
-            <el-color-picker v-model="canvasStyleData.backgroundColor" show-alpha is-custom />
+            <el-color-picker
+              v-model="canvasStyleData.backgroundColor"
+              show-alpha
+              is-custom
+              :predefine="predefineColors"
+            />
           </el-row>
           <el-row v-if="canvasStyleData.backgroundType === 'background'" class="img-area">
             <el-col style="width: 130px !important">

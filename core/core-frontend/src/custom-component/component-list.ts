@@ -10,7 +10,6 @@ export const commonStyle = {
 
 export const COMMON_COMPONENT_BACKGROUND_BASE = {
   backgroundColorSelect: true,
-  alpha: 100,
   backgroundImageEnable: false,
   backgroundType: 'innerImage',
   innerImage: 'board/board_1.svg',
@@ -21,13 +20,13 @@ export const COMMON_COMPONENT_BACKGROUND_BASE = {
 
 export const COMMON_COMPONENT_BACKGROUND_LIGHT = {
   ...COMMON_COMPONENT_BACKGROUND_BASE,
-  backgroundColor: '#ffffff',
+  backgroundColor: 'rgba(255,255,255,1)',
   innerImageColor: '#1094E5'
 }
 
 export const COMMON_COMPONENT_BACKGROUND_DARK = {
   ...COMMON_COMPONENT_BACKGROUND_BASE,
-  backgroundColor: '#131E42',
+  backgroundColor: 'rgba(19,28,66,1)',
   innerImageColor: '#1094E5'
 }
 

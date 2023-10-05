@@ -60,24 +60,9 @@
               :disabled="!state.commonBackground.backgroundColorSelect"
               :trigger-width="computedBackgroundColorPickerWidth"
               is-custom
+              show-alpha
               class="color-picker-style"
               :predefine="state.predefineColors"
-              @change="onBackgroundChange"
-            />
-          </el-form-item>
-          <el-form-item
-            class="form-item fill"
-            style="padding-left: 8px"
-            :class="'form-item-' + themes"
-          >
-            <el-input-number
-              controls-position="right"
-              :effect="themes"
-              :disabled="!state.commonBackground.backgroundColorSelect"
-              v-model="state.commonBackground.alpha"
-              :min="0"
-              size="middle"
-              :max="100"
               @change="onBackgroundChange"
             />
           </el-form-item>

@@ -3,7 +3,6 @@ import { getStyle, getSVGStyle } from '@/utils/style'
 import eventBus from '@/utils/eventBus'
 import { ref, onMounted, toRefs, getCurrentInstance, computed, watch } from 'vue'
 import findComponent from '@/utils/components'
-import { hexColorToRGBA } from '@/views/chart/components/js/util'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import ComponentEditBar from '@/components/visualization/ComponentEditBar.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
@@ -135,7 +134,6 @@ const componentBackgroundStyle = computed(() => {
     const {
       backgroundColorSelect,
       backgroundColor,
-      alpha,
       backgroundImageEnable,
       backgroundType,
       outerImage,
@@ -145,7 +143,7 @@ const componentBackgroundStyle = computed(() => {
     const style = { padding: innerPadding + 'px', borderRadius: borderRadius + 'px' }
     let colorRGBA = ''
     if (backgroundColorSelect && backgroundColor) {
-      colorRGBA = hexColorToRGBA(backgroundColor, alpha)
+      colorRGBA = backgroundColor
     }
     if (backgroundImageEnable) {
       if (backgroundType === 'outerImage' && typeof outerImage === 'string') {

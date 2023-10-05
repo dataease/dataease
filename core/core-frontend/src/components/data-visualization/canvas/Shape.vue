@@ -600,7 +600,6 @@ const componentBackgroundStyle = computed(() => {
     const {
       backgroundColorSelect,
       backgroundColor,
-      alpha,
       backgroundImageEnable,
       backgroundType,
       outerImage,
@@ -610,7 +609,7 @@ const componentBackgroundStyle = computed(() => {
     const style = { padding: innerPadding + 'px', borderRadius: borderRadius + 'px' }
     let colorRGBA = ''
     if (backgroundColorSelect && backgroundColor) {
-      colorRGBA = hexColorToRGBA(backgroundColor, alpha)
+      colorRGBA = backgroundColor
     }
     if (backgroundImageEnable) {
       if (backgroundType === 'outerImage' && typeof outerImage === 'string') {
