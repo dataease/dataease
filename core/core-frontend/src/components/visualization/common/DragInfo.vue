@@ -1,7 +1,7 @@
 <template>
   <div class="drag-info-main">
     <el-row style="justify-content: center">
-      <Icon style="width: 120px; height: 80px" name="dv-drag-tips"></Icon>
+      <Icon style="width: 125px; height: 125px" name="dv-drag-tips"></Icon>
     </el-row>
     <el-row class="tips-info"> {{ tips }} </el-row>
   </div>
@@ -29,6 +29,7 @@ const tips =
 }
 
 .tips-info {
+  margin-top: 8px;
   font-size: 14px;
   font-weight: 400;
   line-height: 22px;
