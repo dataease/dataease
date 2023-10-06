@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import CommonAttr from '@/custom-component/common/CommonAttr.vue'
-
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { storeToRefs } from 'pinia'
+const dvMainStore = dvMainStoreWithOut()
+const { curComponent } = storeToRefs(dvMainStore)
 const props = withDefaults(
   defineProps<{
     themes?: EditorTheme
@@ -13,7 +16,7 @@ const props = withDefaults(
 
 <template>
   <div class="attr-list de-collapse-style">
-    <CommonAttr :themes="themes" />
+    <CommonAttr :element="curComponent" :themes="themes"></CommonAttr>
   </div>
 </template>
 

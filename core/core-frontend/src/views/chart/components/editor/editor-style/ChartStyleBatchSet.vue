@@ -1,12 +1,12 @@
 <template>
   <div class="batch-opt-main view-panel-row">
     <chart-style
-      v-if="mixProperties && batchOptChartInfo"
+      v-if="mixProperties && batchOptComponentInfo && batchOptComponentType === 'UserView'"
       class="chart-style-main"
       themes="light"
       :param="param"
-      :view="batchOptChartInfo"
-      :chart="batchOptChartInfo"
+      :view="batchOptComponentInfo"
+      :chart="batchOptComponentInfo"
       :properties="mixProperties"
       :property-inner-all="mixPropertiesInner"
       :dimension-data="state.dimensionData"
@@ -25,6 +25,12 @@
       @onTableTotalChange="onTableTotalChange"
       @onChangeMiscStyleForm="onChangeMiscStyleForm"
     />
+    <common-attr
+      v-else-if="mixProperties && batchOptComponentInfo && batchOptComponentType !== 'UserView'"
+      :element="batchOptComponentInfo"
+      @onAttrChange="onStyleAttrChange"
+      themes="light"
+    ></common-attr>
     <el-row v-else class="view-selected-message-class">
       <span class="select-view">请选择组件...</span>
     </el-row>
@@ -34,15 +40,16 @@
 <script setup lang="ts">
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
-import eventBus from '@/utils/eventBus'
 import ChartStyle from '@/views/chart/components/editor/editor-style/ChartStyle.vue'
 import { reactive } from 'vue'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
+import CommonAttr from '@/custom-component/common/CommonAttr.vue'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 
 const emits = defineEmits(['calcStyle'])
-const { batchOptChartInfo, mixProperties, mixPropertiesInner } = storeToRefs(dvMainStore)
+const { batchOptComponentInfo, batchOptComponentType, mixProperties, mixPropertiesInner } =
+  storeToRefs(dvMainStore)
 const param = { id: 'mixId', optType: 'edit' }
 
 const state = reactive({
@@ -117,6 +124,10 @@ const batchOptChange = (custom, property, value) => {
     property: property,
     value: value
   })
+}
+
+const onStyleAttrChange = params => {
+  batchOptChange(params.custom, params.property, params.value)
 }
 </script>
 

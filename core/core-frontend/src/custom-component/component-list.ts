@@ -8,6 +8,16 @@ export const commonStyle = {
   opacity: 1
 }
 
+export const defaultStyleValue = {
+  ...commonStyle,
+  color: '',
+  fontSize: 16,
+  activeFontSize: 18,
+  headHorizontalPosition: 'left',
+  headFontColor: '#000000',
+  headFontActiveColor: '#000000'
+}
+
 export const COMMON_COMPONENT_BACKGROUND_BASE = {
   backgroundColorSelect: true,
   backgroundImageEnable: false,
@@ -66,39 +76,6 @@ export const commonAttr = {
 
 // 编辑器左侧组件列表
 const list = [
-  {
-    component: 'VText',
-    name: '文本',
-    label: '文本',
-    propValue: '双击编辑文字',
-    icon: 'other_text',
-    innerType: 'VText',
-    editing: false,
-    x: 1,
-    y: 1,
-    sizeX: 18,
-    sizeY: 4,
-    request: {
-      method: 'GET',
-      data: [],
-      url: '',
-      series: false, // 是否定时发送请求
-      time: 1000, // 定时更新时间
-      paramType: '', // string object array
-      requestCount: 0 // 请求次数限制，0 为无限
-    },
-    style: {
-      width: 600,
-      height: 300,
-      fontSize: 14,
-      fontWeight: 400,
-      lineHeight: 1,
-      letterSpacing: 0,
-      textAlign: 'center',
-      color: ''
-    },
-    matrixStyle: {}
-  },
   {
     component: 'VQuery',
     name: '查询',
@@ -259,6 +236,28 @@ export function findNewComponentFromList(componentName, innerType, curOriginThem
     newComponent.render = viewConfig?.render
   }
   return newComponent
+}
+
+export function findBaseDeFaultAttr(componentName) {
+  let result = {}
+  list.forEach(comp => {
+    if (comp.component === componentName) {
+      const stylePropertyInner = []
+      Object.keys(comp.style).forEach(styleKey => {
+        stylePropertyInner.push(styleKey)
+      })
+      result = {
+        properties: ['common-style', 'background-overall-component'],
+        propertyInner: {
+          'common-style': stylePropertyInner,
+          'background-overall-component': ['all']
+        },
+        value: comp.name,
+        componentType: componentName
+      }
+    }
+  })
+  return result
 }
 
 export default list

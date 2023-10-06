@@ -99,6 +99,7 @@ onBeforeUnmount(() => {
     />
     <CommonAttr
       :themes="themes"
+      :element="curComponent"
       :background-color-picker-width="197"
       :background-border-select-width="197"
     >

@@ -1,5 +1,3 @@
-import RectShape from '@/custom-component/rect-shape/Component.vue'
-import RectShapeAttr from '@/custom-component/rect-shape/Attr.vue'
 import VText from '@/custom-component/v-text/Component.vue'
 import VQuery from '@/custom-component/v-query/Component.vue'
 import VTextAttr from '@/custom-component/v-text/Attr.vue'
@@ -17,8 +15,6 @@ import DeTabs from '@/custom-component/de-tabs/Component.vue'
 import DeTabsAttr from '@/custom-component/de-tabs/Attr.vue'
 
 export const componentsMap = {
-  RectShape: RectShape,
-  RectShapeAttr: RectShapeAttr,
   VText: VText,
   VQuery,
   VTextAttr: VTextAttr,

@@ -777,6 +777,7 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   position: relative;
+  overflow: hidden;
   background-size: 100% 100% !important;
 }
 

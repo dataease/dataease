@@ -203,7 +203,7 @@ const componentTypeBarShow = {
     'linkageSetting',
     'linkJumpSetting'
   ],
-  default: ['setting', 'delete', 'copy', 'multiplexing']
+  default: ['setting', 'delete', 'copy', 'multiplexing', 'batchOpt']
 }
 
 const barShowCheck = barName => {
@@ -373,7 +373,7 @@ const multiplexingCheck = val => {
 const batchOptChange = val => {
   if (val) {
     // push
-    dvMainStore.addCurBatchComponent(element.value.id)
+    dvMainStore.addCurBatchComponent(element.value)
   } else {
     // remove
     dvMainStore.removeCurBatchComponentWithId(element.value.id)
