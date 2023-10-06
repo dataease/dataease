@@ -30,6 +30,7 @@ declare module '@vue/runtime-core' {
     ComponentPosition: typeof import('./src/components/visualization/common/ComponentPosition.vue')['default']
     ComponentToolBar: typeof import('./src/components/data-visualization/ComponentToolBar.vue')['default']
     ComponentWrapper: typeof import('./src/components/data-visualization/canvas/ComponentWrapper.vue')['default']
+    ComposeShow: typeof import('./src/components/data-visualization/canvas/ComposeShow.vue')['default']
     ConfigGlobal: typeof import('./src/components/config-global/src/ConfigGlobal.vue')['default']
     ContextMenu: typeof import('./src/components/data-visualization/canvas/ContextMenu.vue')['default']
     ContextMenuAsideDetails: typeof import('./src/components/data-visualization/canvas/ContextMenuAsideDetails.vue')['default']
