@@ -85,7 +85,9 @@ const colSpan = computed(() => {
 })
 
 const colorPickerWidth = computed(() => {
-  if (containerWidth.value <= 240) {
+  if (containerWidth.value <= 280) {
+    return 125
+  } else if (containerWidth.value <= 240) {
     return 108
   } else {
     return 197
