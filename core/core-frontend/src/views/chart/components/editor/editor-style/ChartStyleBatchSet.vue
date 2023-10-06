@@ -26,7 +26,7 @@
       @onChangeMiscStyleForm="onChangeMiscStyleForm"
     />
     <el-row v-else class="view-selected-message-class">
-      <span class="select-view">{{ $t('visualization.select_view') }}</span>
+      <span class="select-view">请选择组件...</span>
     </el-row>
   </div>
 </template>
@@ -131,11 +131,10 @@ const batchOptChange = (custom, property, value) => {
   width: 100%;
   font-size: 12px;
   color: #9ea6b2;
-  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100%;
+  height: calc(100vh - 110px);
 }
 
 .batch-opt-main {

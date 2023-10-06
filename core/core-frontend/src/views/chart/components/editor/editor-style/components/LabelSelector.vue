@@ -40,7 +40,8 @@ watch(
 )
 // 初始化系列标签
 const initSeriesLabel = () => {
-  if (!showProperty('seriesLabelFormatter')) {
+  // 批量设置阶段 没有此标签
+  if (!showProperty('seriesLabelFormatter') || !props.chart.yAxis) {
     return
   }
   const formatter = state.labelForm.seriesLabelFormatter
