@@ -100,6 +100,8 @@ const handleInnerMouseDown = e => {
   // do setCurComponent
   if (showPosition.value.includes('multiplexing')) {
     componentEditBarRef.value.multiplexingCheckOut()
+    e.stopPropagation()
+    e.preventDefault()
   }
 }
 

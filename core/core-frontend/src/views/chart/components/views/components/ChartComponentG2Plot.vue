@@ -202,20 +202,23 @@ const trackClick = trackAction => {
 
 const trackMenu = computed(() => {
   const trackMenuInfo = []
-  let linkageCount = 0
-  let jumpCount = 0
-  chartData.value?.fields?.forEach(item => {
-    const sourceInfo = view.value.id + '#' + item.id
-    if (nowPanelTrackInfo.value[sourceInfo]) {
-      linkageCount++
-    }
-    if (nowPanelJumpInfo.value[sourceInfo]) {
-      jumpCount++
-    }
-  })
-  jumpCount && view.value?.jumpActive && trackMenuInfo.push('jump')
-  linkageCount && view.value?.linkageActive && trackMenuInfo.push('linkage')
-  view.value.drillFields.length && trackMenuInfo.push('drill')
+  // 复用状态的仪表板不进行联动、跳转和下钻的动作
+  if (!'multiplexing'.includes(showPosition.value)) {
+    let linkageCount = 0
+    let jumpCount = 0
+    chartData.value?.fields?.forEach(item => {
+      const sourceInfo = view.value.id + '#' + item.id
+      if (nowPanelTrackInfo.value[sourceInfo]) {
+        linkageCount++
+      }
+      if (nowPanelJumpInfo.value[sourceInfo]) {
+        jumpCount++
+      }
+    })
+    jumpCount && view.value?.jumpActive && trackMenuInfo.push('jump')
+    linkageCount && view.value?.linkageActive && trackMenuInfo.push('linkage')
+    view.value.drillFields.length && trackMenuInfo.push('drill')
+  }
   return trackMenuInfo
 })
 

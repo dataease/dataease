@@ -139,6 +139,9 @@ const reload = id => {
 
 const resourceNodeClick = data => {
   loadCanvasData(data.id, data.weight)
+  if (showPosition.value === 'multiplexing') {
+    dvMainStore.initCurMultiplexingComponents()
+  }
 }
 
 onBeforeMount(() => {

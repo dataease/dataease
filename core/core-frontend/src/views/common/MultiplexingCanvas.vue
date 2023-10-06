@@ -5,7 +5,7 @@
     v-model="dialogShow"
     trigger="click"
     title="复用"
-    class="custom-drawer"
+    custom-class="custom-drawer"
   >
     <dashboard-preview-show
       v-if="dialogShow"
@@ -19,7 +19,7 @@
           <span>已选 {{ selectComponentCount }} 项</span>
         </el-col>
         <el-col class="adapt-select">
-          <span class="adapt-text"> 标题样式： </span>
+          <span class="adapt-text"> 组件样式： </span>
           <el-select
             style="width: 120px"
             v-model="multiplexingStyleAdapt"
@@ -40,7 +40,7 @@
           :disabled="!selectComponentCount"
           class="confirm-button"
           @click="saveMultiplexing"
-          >确定</el-button
+          >复用</el-button
         >
       </el-row>
     </template>
@@ -128,5 +128,19 @@ defineExpose({
   font-weight: 400;
   color: #1f2329;
   line-height: 22px;
+}
+</style>
+
+<style lang="less">
+.custom-drawer {
+  .ed-drawer__footer {
+    height: 64px !important;
+    padding: 0px !important;
+    box-shadow: 0 -1px 0px #d7d7d7 !important;
+  }
+
+  .ed-drawer__body {
+    padding: 0 0 64px 0 !important;
+  }
 }
 </style>
