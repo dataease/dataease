@@ -230,7 +230,11 @@ const addOperation = (
   if (cmd === 'newLeaf') {
     const baseUrl =
       curCanvasType.value === 'dataV' ? '#/dvCanvas?opt=create' : '#/dashboard?opt=create'
-    window.open(baseUrl + `&pid=${data.id}`, '_blank')
+    if (data?.id) {
+      window.open(baseUrl + `&pid=${data.id}`, '_blank')
+    } else {
+      window.open(baseUrl, '_blank')
+    }
   } else {
     resourceGroupOpt.value.optInit(nodeType, data || {}, cmd, parentSelect)
   }

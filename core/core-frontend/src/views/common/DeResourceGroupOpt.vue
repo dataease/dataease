@@ -183,6 +183,7 @@ const optInit = (type, data: BusiTreeNode, exec, parentSelect = false) => {
       }
     ]
   }
+  resource.value.clearValidate()
 }
 
 const editeInit = (param: BusiTreeNode) => {

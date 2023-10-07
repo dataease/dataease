@@ -214,7 +214,10 @@ const chartClick = param => {
     return
   }
   if (state.drillClickDimensionList.length < props.view.drillFields.length - 1) {
-    state.drillClickDimensionList.push({ dimensionList: param.data.dimensionList })
+    state.drillClickDimensionList.push({
+      dimensionList: param.data.dimensionList,
+      extra: param.extra
+    })
     view.value.chartExtRequest = filter()
     calcData(view.value)
   } else if (props.view.drillFields.length > 0) {

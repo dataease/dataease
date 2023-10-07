@@ -204,8 +204,9 @@ const rename = item => {
                 <el-dropdown
                   ref="dropdownMore"
                   trigger="click"
-                  :placement="'bottom-end'"
+                  placement="bottom-start"
                   effect="dark"
+                  hide-timeout="0"
                 >
                   <span :class="'dropdownMore-' + index" @click="onClick(transformIndex(index))">
                     <el-icon class="component-opt-icon">
@@ -257,7 +258,7 @@ const rename = item => {
         align-items: center;
         justify-content: flex-start;
         font-size: 12px;
-        padding: 0 2px 0 10px;
+        padding: 0 2px 0 22px;
         user-select: none;
 
         .component-icon {
@@ -268,7 +269,7 @@ const rename = item => {
           font-size: 12px;
           margin-left: 10px;
           position: relative;
-          width: 60%;
+          min-width: 65px;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
@@ -294,17 +295,18 @@ const rename = item => {
 
           .icon-container {
             opacity: 1;
+            width: 70px;
           }
         }
 
         .icon-container {
+          width: 0px;
           display: flex;
           opacity: 0;
-          justify-content: space-around;
+          justify-content: flex-end;
           align-items: center;
           flex-grow: 1;
           cursor: none;
-
           i {
             font-size: 16px;
             cursor: pointer;
