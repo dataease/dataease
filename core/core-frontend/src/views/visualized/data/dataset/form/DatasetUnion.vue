@@ -509,6 +509,11 @@ const flatLine = (item, flatNodeList) => {
   })
 }
 
+const dragleave_handler = ev => {
+  ev.preventDefault()
+  notConfirm()
+}
+
 const dragover_handler = ev => {
   ev.preventDefault()
 
@@ -599,7 +604,6 @@ const dragover_handler = ev => {
 }
 
 const dragenter_handler = ev => {
-  // prevent Default event
   ev.preventDefault()
 }
 
@@ -758,20 +762,13 @@ const notConfirm = () => {
   confirm()
 }
 
-const dragEndClear = () => {
-  if (!state.visualNode.tableName) {
-    confirm()
-  }
-}
-
 defineExpose({
   nodeNameList,
   nodeList: state.nodeList,
   setStateBack,
   notConfirm,
   dfsNodeFieldBack,
-  initState,
-  dragEndClear
+  initState
 })
 
 const handleActiveNode = ele => {
@@ -787,6 +784,7 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields'])
     @drop="$event => drop_handler($event)"
     @dragenter="$event => dragenter_handler($event)"
     @dragover="$event => dragover_handler($event)"
+    @dragleave="$event => dragleave_handler($event)"
     class="drag-mask"
     ref="dragMask"
     @click="handleClickOutside"
@@ -913,7 +911,7 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields'])
     <template #header v-if="currentNode">
       <div class="info">
         <span class="name">{{ currentNode.tableName }}</span>
-        <span class="ds">{{ getDsName(currentNode.datasourceId) }}</span>
+        <span class="ds">{{ t('auth.datasource') }}:{{ getDsName(currentNode.datasourceId) }}</span>
       </div>
     </template>
     <union-field-list

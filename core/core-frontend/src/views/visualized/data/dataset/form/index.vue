@@ -182,8 +182,25 @@ const dragHeight = ref(260)
 
 let tableList = []
 
+const dfsName = (arr, id) => {
+  let name = ''
+  arr.some(ele => {
+    if (ele.id === id) {
+      name = ele.name
+      return true
+    }
+
+    if (!!ele.children?.length) {
+      name = dfsName(ele.children, id) || name
+    }
+    return false
+  })
+
+  return name
+}
+
 const getDsName = (id: string) => {
-  return (state.dataSourceList.find(ele => ele.id === id) || {}).name
+  return dfsName(state.dataSourceList, id)
 }
 
 const pushDataset = () => {
@@ -808,6 +825,7 @@ const datasetSave = () => {
 const datasetPreviewLoading = ref(false)
 
 const datasetPreview = () => {
+  if (datasetPreviewLoading.value) return
   const arr = []
   dfsNodeList(arr, datasetDrag.value.nodeList)
   datasetPreviewLoading.value = true
@@ -1021,7 +1039,7 @@ const treeProps = {
           <div class="ed-form-item__error" v-if="errorTips">{{ errorTips }}</div>
         </template>
         <template v-else>
-          <span @click="handleClick" class="dataset-name ellipsis" style="margin: 0 5px">{{
+          <span @click="handleClick" class="dataset-name ellipsis" style="margin-left: 12px">{{
             datasetName
           }}</span>
         </template>

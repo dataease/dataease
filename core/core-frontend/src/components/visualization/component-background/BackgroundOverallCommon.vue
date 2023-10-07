@@ -134,6 +134,7 @@
               :style="{ width: computedBackgroundBorderSelectWidth + 'px' }"
               v-model="state.commonBackground.innerImage"
               size="middle"
+              popper-class="board-select"
               :effect="themes"
               :disabled="!state.commonBackground.backgroundImageEnable"
               placeholder="选择边框..."
@@ -145,12 +146,11 @@
                 :label="item.name"
                 :value="item.url"
               >
-                <Icon
-                  style="width: 120px; height: 70px"
-                  :style="{ color: state.commonBackground.innerImageColor }"
-                  class-name="svg-background"
-                  :name="mainIconClass(item)"
-                />
+                <board-item
+                  :active="item.url === state.commonBackground.innerImage"
+                  :inner-image-color="state.commonBackground.innerImageColor"
+                  :item="item"
+                ></board-item>
               </el-option>
             </el-select>
           </el-form-item>
@@ -190,15 +190,11 @@
               >
             </el-row>
           </div>
-          <el-dialog
-            top="25vh"
-            width="600px"
-            :append-to-body="true"
-            :destroy-on-close="true"
+
+          <img-view-dialog
             v-model="state.dialogVisible"
-          >
-            <img width="550" :src="state.dialogImageUrl" />
-          </el-dialog>
+            :image-url="state.dialogImageUrl"
+          ></img-view-dialog>
         </div>
       </div>
     </el-form>
@@ -216,6 +212,8 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { deepCopy } from '@/utils/utils'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import { ElMessage } from 'element-plus-secondary'
+import BoardItem from '@/components/visualization/component-background/BoardItem.vue'
+import ImgViewDialog from '@/custom-component/ImgViewDialog.vue'
 const snapshotStore = snapshotStoreWithOut()
 const { t } = useI18n()
 const emits = defineEmits(['onBackgroundChange'])
@@ -409,9 +407,13 @@ watch(
 }
 
 .ed-select-dropdown__item {
-  height: 80px !important;
+  height: 100px !important;
   text-align: center;
-  padding: 5px 15px;
+  padding: 0px 5px;
+}
+
+.ed-select-dropdown__item.selected::after {
+  display: none;
 }
 
 .indented-container {
@@ -473,5 +475,22 @@ watch(
   size: 14px;
   line-height: 22px;
   font-weight: 400;
+}
+</style>
+
+<style lang="less">
+.board-select {
+  min-width: 50px !important;
+  width: 304px;
+  .ed-scrollbar__view {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+  .ed-select-dropdown__item.hover {
+    background-color: rgba(0, 0, 0, 0) !important;
+  }
+  .ed-select-dropdown__item.selected {
+    background-color: rgba(0, 0, 0, 0) !important;
+  }
 }
 </style>

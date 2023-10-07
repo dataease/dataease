@@ -54,13 +54,13 @@ const getValueByDefaultValueCheckOrFirstLoad = (
   firstLoad: boolean,
   multiple: boolean
 ) => {
-  if (firstLoad) {
+  if (firstLoad && !selectValue?.length) {
     return defaultValueCheck ? defaultValue : multiple ? [] : ''
   }
   return selectValue || ''
 }
 
-export const useFilter = (curComponentId: number, firstLoad = false) => {
+export const useFilter = (curComponentId: string, firstLoad = false) => {
   const filter = []
   const queryComponentList = componentData.value.filter(ele => ele.component === 'VQuery')
   searchQuery(queryComponentList, filter, curComponentId, firstLoad)

@@ -22,6 +22,7 @@ import BackgroundOverallCommon from '@/components/visualization/component-backgr
 import { deepCopy } from '@/utils/utils'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { merge } from 'lodash-es'
+import ImgViewDialog from '@/custom-component/ImgViewDialog.vue'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const { canvasStyleData, componentData, canvasViewInfo } = storeToRefs(dvMainStore)
@@ -58,6 +59,7 @@ const handleRemove = (file, fileList) => {
 async function upload(file) {
   uploadFileResult(file.file, fileUrl => {
     if (fileUrl) {
+      snapshotStore.recordSnapshotCache()
       canvasStyleData.value.background = fileUrl
       fileList.value = [{ url: imgUrlTrans(canvasStyleData.value.background) }]
     }
@@ -106,6 +108,7 @@ const reUpload = e => {
   }
   uploadFileResult(file, fileUrl => {
     if (fileUrl) {
+      snapshotStore.recordSnapshotCache()
       canvasStyleData.value.background = fileUrl
       fileList.value = [{ url: imgUrlTrans(canvasStyleData.value.background) }]
     }
@@ -248,15 +251,10 @@ onMounted(() => {
               >
                 <el-icon><Plus /></el-icon>
               </el-upload>
-              <el-dialog
-                top="25vh"
-                width="600px"
-                :append-to-body="true"
-                :destroy-on-close="true"
+              <img-view-dialog
                 v-model="dialogVisible"
-              >
-                <img width="550" :src="dialogImageUrl" />
-              </el-dialog>
+                :image-url="dialogImageUrl"
+              ></img-view-dialog>
             </el-col>
           </el-row>
           <el-row v-show="canvasStyleData.backgroundType === 'background'">

@@ -45,10 +45,10 @@ const { icon, name, label, dragInfo, themes } = toRefs(props)
 <style lang="less" scoped>
 .drag-light {
   :deep(.icon-content) {
-    background-color: #dee0e3 !important;
+    background-color: #f5f6f7 !important;
   }
   :deep(.label-content) {
-    color: #646a73 !important;
+    color: #1a1a1a !important;
   }
 }
 .drag-component {

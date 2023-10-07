@@ -81,7 +81,9 @@
               <el-row style="margin-top: 5px">
                 <el-row class="inner-content">
                   <el-col :span="11"> 当前图表源字段 </el-col>
-                  <el-col :span="2"></el-col>
+                  <el-icon style="visibility: hidden">
+                    <Icon style="width: 20px; height: 20px" name="dv-link-target"></Icon>
+                  </el-icon>
                   <el-col :span="11">
                     {{ t('visualization.link_view_field') }}
                   </el-col>
@@ -89,10 +91,11 @@
                 <el-row style="display: inline-block; max-height: 350px; overflow-y: auto">
                   <el-row
                     style="padding: 0 16px 8px"
+                    :gutter="16"
                     v-for="(itemLinkage, index) in state.linkageInfo.linkageFields"
                     :key="index"
                   >
-                    <el-col :span="10">
+                    <el-col :span="11">
                       <div class="select-filed">
                         <el-select
                           v-model="itemLinkage.sourceField"
@@ -117,16 +120,15 @@
                         </el-select>
                       </div>
                     </el-col>
-                    <el-col :span="2" class="link-icon-area">
+                    <el-icon class="link-icon-join">
                       <Icon style="width: 20px; height: 20px" name="dv-link-target"></Icon>
-                    </el-col>
+                    </el-icon>
                     <el-col :span="11">
                       <div class="select-filed">
                         <el-select
                           v-model="itemLinkage.targetField"
                           :placeholder="'请选择'"
                           style="width: 100%"
-                          size="mini"
                         >
                           <el-option
                             v-for="item in state.linkageInfo.targetViewFields"
@@ -157,12 +159,7 @@
                   </el-row>
                 </el-row>
                 <el-row style="width: 100%; padding-left: 16px">
-                  <el-button
-                    type="primary"
-                    size="mini"
-                    icon="Plus"
-                    text
-                    @click="addLinkageField('', '')"
+                  <el-button type="primary" icon="Plus" text @click="addLinkageField('', '')"
                     >追加联动依赖字段
                   </el-button>
                 </el-row>
@@ -447,7 +444,6 @@ defineExpose({
 }
 
 .select-filed {
-  margin-right: 8px;
   overflow: hidden; /*超出部分隐藏*/
   white-space: nowrap; /*不换行*/
   text-overflow: ellipsis; /*超出部分文字以...显示*/
@@ -641,9 +637,9 @@ span {
   line-height: 32px;
   margin-right: 16px;
 }
-.link-icon-area {
-  text-align: center;
-  line-height: 35px;
+.link-icon-join {
+  font-size: 20px;
+  margin-top: 7px;
 }
 .inner-content {
   width: 100%;

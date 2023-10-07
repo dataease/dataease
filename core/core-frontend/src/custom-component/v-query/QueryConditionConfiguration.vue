@@ -729,12 +729,15 @@ defineExpose({
             <div class="label">时间粒度</div>
             <div class="value">
               <template v-if="curComponent.displayType === '7'">
-                <el-select v-model="curComponent.timeGranularityMultiple">
+                <el-select
+                  placeholder="请选择时间粒度"
+                  v-model="curComponent.timeGranularityMultiple"
+                >
                   <el-option label="年月日时分秒" value="datetimerange" />
                 </el-select>
               </template>
               <template v-else>
-                <el-select v-model="curComponent.timeGranularity">
+                <el-select placeholder="请选择时间粒度" v-model="curComponent.timeGranularity">
                   <el-option label="年" value="year" />
                   <el-option label="年月" value="month" />
                   <el-option label="年月日" value="date" />
@@ -761,6 +764,7 @@ defineExpose({
                   <el-tree-select
                     v-model="curComponent.dataset.id"
                     :data="computedTree"
+                    placeholder="请选择数据集"
                     @change="handleDatasetChange"
                     :props="dsSelectProps"
                     placement="bottom"
@@ -782,8 +786,8 @@ defineExpose({
                   </el-tree-select>
                 </div>
                 <div class="value">
-                  <el-select v-model="curComponent.field.id">
-                    <template #prefix>
+                  <el-select placeholder="请选择字段" v-model="curComponent.field.id">
+                    <template v-if="curComponent.field.id" #prefix>
                       <el-icon>
                         <Icon
                           :name="`field_${
@@ -831,7 +835,7 @@ defineExpose({
                   <template #reference>
                     <el-button text>
                       <template #icon>
-                        <Icon name="edit-in"></Icon>
+                        <Icon name="icon_edit_outlined"></Icon>
                       </template>
                       {{ t('common.edit') }}
                     </el-button>
@@ -857,6 +861,8 @@ defineExpose({
                           </template>
                         </el-button>
                       </div>
+                    </div>
+                    <div class="add-btn">
                       <el-button @click="valueSource.push('')" text>
                         <template #icon>
                           <Icon name="icon_add_outlined"></Icon>
@@ -942,6 +948,9 @@ defineExpose({
 
   .ed-input .ed-select__prefix--light {
     border-right: none;
+    padding: 0;
+    font-size: 16px;
+    margin-right: 4px;
   }
   .container {
     font-size: 14px;
@@ -1108,13 +1117,13 @@ defineExpose({
           display: flex;
           align-items: center;
           justify-content: space-between;
-          margin-bottom: 16px;
+          margin-bottom: 10.5px;
           flex-wrap: wrap;
 
           &.top-item {
             .label {
               margin-bottom: auto;
-              padding-top: 10px;
+              padding-top: 5.5px;
             }
           }
           .label {
@@ -1126,6 +1135,9 @@ defineExpose({
             width: 321px;
             .value {
               margin-top: 8px;
+              &:first-child {
+                margin-top: -0.5px;
+              }
             }
             .ed-select {
               width: 321px;
@@ -1160,9 +1172,13 @@ defineExpose({
     .title {
       padding: 16px;
     }
+
+    .add-btn {
+      padding: 8px 16px;
+    }
     .select-value {
-      padding: 0 0 16px 16px;
-      height: 280px;
+      padding-left: 16px;
+      max-height: 246px;
       overflow-y: auto;
       .value {
         color: #646a73;
@@ -1172,14 +1188,20 @@ defineExpose({
 
       .select-item {
         margin: 8px 0;
+        &:last-child {
+          margin-bottom: 0;
+        }
         .ed-input {
           width: 298px;
         }
       }
     }
     .manual-footer {
+      position: absolute;
+      bottom: 0;
       padding: 16px;
       height: 63px;
+      width: 100%;
       border-top: 1px solid rgba(31, 35, 41, 0.15);
       justify-content: flex-end;
     }

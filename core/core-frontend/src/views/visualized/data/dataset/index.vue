@@ -1,6 +1,6 @@
 <script lang="tsx" setup>
 import { useI18n } from '@/hooks/web/useI18n'
-import { ref, reactive, shallowRef, computed, watch, onBeforeMount } from 'vue'
+import { ref, reactive, shallowRef, computed, watch, onBeforeMount, nextTick } from 'vue'
 import {
   ElIcon,
   ElMessageBox,
@@ -209,6 +209,11 @@ const getData = () => {
     })
     .finally(() => {
       dtLoading.value = false
+      nextTick(() => {
+        if (!!nickName.value.length) {
+          datasetListTree.value.filter(nickName.value)
+        }
+      })
       const id = nodeInfo.id
       if (!!id) {
         Object.assign(nodeInfo, cloneDeep(defaultNode))
