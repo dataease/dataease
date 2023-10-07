@@ -831,7 +831,7 @@ defineExpose({
                   <template #reference>
                     <el-button text>
                       <template #icon>
-                        <Icon name="edit-in"></Icon>
+                        <Icon name="icon_edit_outlined"></Icon>
                       </template>
                       {{ t('common.edit') }}
                     </el-button>
@@ -857,6 +857,8 @@ defineExpose({
                           </template>
                         </el-button>
                       </div>
+                    </div>
+                    <div class="add-btn">
                       <el-button @click="valueSource.push('')" text>
                         <template #icon>
                           <Icon name="icon_add_outlined"></Icon>
@@ -1160,9 +1162,13 @@ defineExpose({
     .title {
       padding: 16px;
     }
+
+    .add-btn {
+      padding: 8px 16px;
+    }
     .select-value {
-      padding: 0 0 16px 16px;
-      height: 280px;
+      padding-left: 16px;
+      max-height: 246px;
       overflow-y: auto;
       .value {
         color: #646a73;
@@ -1172,14 +1178,20 @@ defineExpose({
 
       .select-item {
         margin: 8px 0;
+        &:last-child {
+          margin-bottom: 0;
+        }
         .ed-input {
           width: 298px;
         }
       }
     }
     .manual-footer {
+      position: absolute;
+      bottom: 0;
       padding: 16px;
       height: 63px;
+      width: 100%;
       border-top: 1px solid rgba(31, 35, 41, 0.15);
       justify-content: flex-end;
     }
