@@ -808,6 +808,7 @@ const datasetSave = () => {
 const datasetPreviewLoading = ref(false)
 
 const datasetPreview = () => {
+  if (datasetPreviewLoading.value) return
   const arr = []
   dfsNodeList(arr, datasetDrag.value.nodeList)
   datasetPreviewLoading.value = true
