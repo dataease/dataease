@@ -1022,7 +1022,7 @@ const treeProps = {
           <div class="ed-form-item__error" v-if="errorTips">{{ errorTips }}</div>
         </template>
         <template v-else>
-          <span @click="handleClick" class="dataset-name ellipsis" style="margin: 0 5px">{{
+          <span @click="handleClick" class="dataset-name ellipsis" style="margin-left: 12px">{{
             datasetName
           }}</span>
         </template>
