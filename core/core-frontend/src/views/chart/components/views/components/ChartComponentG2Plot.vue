@@ -73,6 +73,13 @@ const calcData = (view, callback) => {
           emit('onDrillFilters', res?.drillFilters)
           if (!res?.drillFilters?.length) {
             dynamicAreaId.value = ''
+          } else {
+            dynamicAreaId.value =
+              view.chartExtRequest?.drill?.[res?.drillFilters?.length - 1].extra?.adcode + ''
+            // 地图
+            if (!dynamicAreaId.value?.startsWith(country.value)) {
+              dynamicAreaId.value = country.value + dynamicAreaId.value
+            }
           }
           dvMainStore.setViewDataDetails(view.id, chartData.value)
           renderChart(res)
@@ -162,11 +169,6 @@ const trackClick = trackAction => {
   const param = state.pointParam
   if (!param?.data?.dimensionList) {
     return
-  }
-  // 地图
-  dynamicAreaId.value = param.data.adcode + ''
-  if (!dynamicAreaId.value?.startsWith(country.value)) {
-    dynamicAreaId.value = country.value + dynamicAreaId.value
   }
   const quotaList = state.pointParam.data.quotaList
   quotaList[0]['value'] = state.pointParam.data.value

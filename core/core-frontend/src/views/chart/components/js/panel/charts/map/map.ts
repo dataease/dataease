@@ -134,7 +134,10 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
         action({
           x: ev.x,
           y: ev.y,
-          data: { data }
+          data: {
+            data,
+            extra: { adcode: data.adcode }
+          }
         })
       })
     })
@@ -169,6 +172,7 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       }
     }
     if (!chart.data?.data?.length || !geoJson?.features?.length) {
+      options.label && (options.label.field = 'name')
       return options
     }
     const data = chart.data.data
