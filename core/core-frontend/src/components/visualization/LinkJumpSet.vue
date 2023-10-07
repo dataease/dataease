@@ -140,15 +140,17 @@
                               class="dv-selector"
                             >
                               <template #default="{ node, data }">
-                                <el-icon style="display: inline-block" v-if="data.leaf">
-                                  <Icon name="dv-dashboard-spine"></Icon>
-                                </el-icon>
-                                <el-icon style="display: inline-block" v-else>
-                                  <Icon name="dv-folder"></Icon>
-                                </el-icon>
-                                <span style="margin-left: 4px" :title="node.label">{{
-                                  node.label
-                                }}</span>
+                                <div class="label-content-details">
+                                  <el-icon style="display: inline-block" v-if="data.leaf">
+                                    <Icon name="dv-dashboard-spine"></Icon>
+                                  </el-icon>
+                                  <el-icon style="display: inline-block" v-else>
+                                    <Icon name="dv-folder"></Icon>
+                                  </el-icon>
+                                  <span style="margin-left: 4px" :title="node.label">{{
+                                    node.label
+                                  }}</span>
+                                </div>
                               </template>
                             </el-tree-select>
                           </el-form-item>
@@ -1116,6 +1118,12 @@ span {
 
 .tree-select-field {
   font-size: 14px;
+  display: flex;
+  align-items: center;
+}
+
+.label-content-details {
+  width: 100%;
   display: flex;
   align-items: center;
 }
