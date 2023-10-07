@@ -911,7 +911,7 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields'])
     <template #header v-if="currentNode">
       <div class="info">
         <span class="name">{{ currentNode.tableName }}</span>
-        <span class="ds">{{ getDsName(currentNode.datasourceId) }}</span>
+        <span class="ds">{{ t('auth.datasource') }}:{{ getDsName(currentNode.datasourceId) }}</span>
       </div>
     </template>
     <union-field-list

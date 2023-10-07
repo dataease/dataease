@@ -182,8 +182,25 @@ const dragHeight = ref(260)
 
 let tableList = []
 
+const dfsName = (arr, id) => {
+  let name = ''
+  arr.some(ele => {
+    if (ele.id === id) {
+      name = ele.name
+      return true
+    }
+
+    if (!!ele.children?.length) {
+      name = dfsName(ele.children, id) || name
+    }
+    return false
+  })
+
+  return name
+}
+
 const getDsName = (id: string) => {
-  return (state.dataSourceList.find(ele => ele.id === id) || {}).name
+  return dfsName(state.dataSourceList, id)
 }
 
 const pushDataset = () => {

@@ -887,7 +887,8 @@ defineExpose({
   .input-with-append {
     :deep(.ed-input-group__append) {
       width: 55px;
-      background: #fff;
+      background: #eff0f1;
+      color: #1f2329;
     }
   }
 
