@@ -91,6 +91,7 @@ const edit = () => {
 
 const resourceOptFinish = param => {
   if (param && param.opt === 'newLeaf') {
+    dvInfo.value.dataState = 'ready'
     dvInfo.value.pid = param.pid
     dvInfo.value.name = param.name
     saveCanvasWithCheck()
@@ -98,8 +99,8 @@ const resourceOptFinish = param => {
 }
 
 const saveCanvasWithCheck = () => {
-  if (dvInfo.value.pid === -1) {
-    const params = { name: dvInfo.value.name, leaf: true }
+  if (dvInfo.value.dataState === 'prepare') {
+    const params = { name: dvInfo.value.name, leaf: true, id: dvInfo.value.pid }
     resourceGroupOpt.value.optInit('leaf', params, 'newLeaf', true)
     return
   }
@@ -109,6 +110,7 @@ const saveCanvasWithCheck = () => {
 const saveResource = () => {
   canvasSave(() => {
     ElMessage.success('保存成功')
+    window.history.pushState({}, '', `#/dvCanvas?dvId=${dvInfo.value.id}`)
   })
 }
 

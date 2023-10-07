@@ -17,7 +17,7 @@ const { themes } = toRefs(props)
 
 <template>
   <div class="attr-list de-collapse-style">
-    <CommonAttr :themes="themes"></CommonAttr>
+    <CommonAttr :element="curComponent" :themes="themes"></CommonAttr>
   </div>
 </template>
 <style lang="less">

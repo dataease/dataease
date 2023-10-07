@@ -94,7 +94,7 @@ export const DEFAULT_CANVAS_STYLE_DATA_BASE = {
 export const DEFAULT_CANVAS_STYLE_DATA_LIGHT = {
   ...DEFAULT_CANVAS_STYLE_DATA_BASE,
   // 页面全局数据
-  themeId: 'system_light',
+  themeId: '10001',
   color: '#000000',
   backgroundColor: '#f5f6f7',
   dashboard: DEFAULT_DASHBOARD_STYLE_LIGHT,
@@ -105,7 +105,7 @@ export const DEFAULT_CANVAS_STYLE_DATA_LIGHT = {
 export const DEFAULT_CANVAS_STYLE_DATA_DARK = {
   ...DEFAULT_CANVAS_STYLE_DATA_BASE,
   // 页面全局数据
-  themeId: 'system_dark',
+  themeId: '10002',
   color: '#fff',
   backgroundColor: '#000',
   dashboard: DEFAULT_DASHBOARD_STYLE_DARK,

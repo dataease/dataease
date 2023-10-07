@@ -17,6 +17,6 @@ const { curComponent } = storeToRefs(dvMainStore)
 
 <template>
   <div class="attr-list">
-    <CommonAttr :themes="themes"></CommonAttr>
+    <CommonAttr :themes="themes" :element="curComponent"></CommonAttr>
   </div>
 </template>

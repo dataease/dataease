@@ -1,7 +1,7 @@
 import { defineStore, storeToRefs } from 'pinia'
 import { store } from '../../index'
 import { dvMainStoreWithOut } from './dvMain'
-import { $, deepCopy } from '@/utils/utils'
+import { $, _$, deepCopy } from '@/utils/utils'
 import decomposeComponent from '@/utils/decomposeComponent'
 import { generateID } from '@/utils/generateID'
 import {
@@ -9,7 +9,7 @@ import {
   commonAttr,
   COMMON_COMPONENT_BACKGROUND_MAP
 } from '@/custom-component/component-list'
-import { createGroupStyle } from '@/utils/style'
+import { createGroupStyle, getComponentRotatedStyle } from '@/utils/style'
 import eventBus from '@/utils/eventBus'
 
 const dvMainStore = dvMainStoreWithOut()
@@ -29,6 +29,8 @@ export const composeStore = defineStore('compose', {
         components: []
       },
       editorMap: {},
+      isCtrlOrCmdDown: false,
+      isShiftDown: false,
       editor: null
     }
   },
@@ -45,6 +47,16 @@ export const composeStore = defineStore('compose', {
     compose: function (canvasId = 'canvas-main') {
       const editor = this.editorMap[canvasId]
       const { areaData } = this
+      if (areaData.components.length === 1) {
+        // 一个组件不进行组合直接释放
+        areaData.components = []
+        return
+      }
+      if (areaData.components.length > 0 && areaData.style.width === 0) {
+        // 计算组合区域
+        this.calcComposeArea()
+      }
+
       const components = []
       areaData.components.forEach(component => {
         if (component.component != 'Group') {
@@ -119,6 +131,34 @@ export const composeStore = defineStore('compose', {
         decomposeComponent(component, editorRect, parentStyle)
         dvMainStore.addComponent({ component: component, index: undefined, isFromGroup: true })
       })
+    },
+    calcComposeArea() {
+      if (this.areaData.components <= 1) {
+        return
+      }
+      // 根据选中区域和区域中每个组件的位移信息来创建 Group 组件
+      // 要遍历选择区域的每个组件，获取它们的 left top right bottom 信息来进行比较
+      let top = Infinity,
+        left = Infinity
+      let right = -Infinity,
+        bottom = -Infinity
+      this.areaData.components.forEach(component => {
+        let style = { left: 0, top: 0, right: 0, bottom: 0 }
+        style = getComponentRotatedStyle(component.style)
+
+        if (style.left < left) left = style.left
+        if (style.top < top) top = style.top
+        if (style.right > right) right = style.right
+        if (style.bottom > bottom) bottom = style.bottom
+      })
+
+      // 设置选中区域位移大小信息和区域内的组件数据
+      this.areaData.style = {
+        left,
+        top,
+        width: right - left,
+        height: bottom - top
+      }
     }
   }
 })

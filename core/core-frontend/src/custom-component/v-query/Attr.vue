@@ -9,7 +9,7 @@ const { curComponent } = storeToRefs(dvMainStore)
 
 <template>
   <div class="attr-list">
-    <CommonAttr></CommonAttr>
+    <CommonAttr :element="curComponent"></CommonAttr>
     <div class="content">
       <span>内容</span>
       <el-input v-model="curComponent['propValue']" type="textarea" :rows="3" />

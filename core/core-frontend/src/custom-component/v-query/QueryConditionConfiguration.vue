@@ -205,7 +205,7 @@ const initDataset = () => {
 }
 
 const computedTree = computed(() => {
-  if (datasetTree.value[0].id === '0') {
+  if (datasetTree.value[0]?.id === '0') {
     return datasetTree.value[0].children
   }
   return datasetTree.value
@@ -287,6 +287,7 @@ const validate = () => {
 
 const confirmClick = () => {
   if (validate()) return
+  inputCom.value.mult?.handleClickOutside?.()
   dialogVisible.value = false
   conditions.value.forEach(ele => {
     curComponent.value = ele

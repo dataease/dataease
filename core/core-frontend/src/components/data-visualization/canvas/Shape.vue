@@ -11,28 +11,6 @@
         'drag-on-tab-collision': dragCollision
       }"
     >
-      <template v-if="boardMoveActive">
-        <div
-          v-show="!element.editing"
-          class="de-drag-area de-drag-top"
-          @mousedown="handleBoardMouseDownOnShape"
-        />
-        <div
-          v-show="!element.editing && element.component !== 'DeTabs'"
-          class="de-drag-area de-drag-right"
-          @mousedown="handleBoardMouseDownOnShape"
-        />
-        <div
-          v-show="!element.editing && element.component !== 'DeTabs'"
-          class="de-drag-area de-drag-bottom"
-          @mousedown="handleBoardMouseDownOnShape"
-        />
-        <div
-          v-show="!element.editing && element.component !== 'DeTabs'"
-          class="de-drag-area de-drag-left"
-          @mousedown="handleBoardMouseDownOnShape"
-        />
-      </template>
       <component-edit-bar
         class="edit-bar"
         :class="{ 'edit-bar-active': editBarShowFlag }"
@@ -70,7 +48,30 @@
         :style="getPointStyle(item)"
         @mousedown="handleMouseDownOnPoint(item, $event)"
       ></div>
+      <template v-if="boardMoveActive">
+        <div
+          v-show="!element.editing"
+          class="de-drag-area de-drag-top"
+          @mousedown="handleBoardMouseDownOnShape"
+        />
+        <div
+          v-show="!element.editing && element.component !== 'DeTabs'"
+          class="de-drag-area de-drag-right"
+          @mousedown="handleBoardMouseDownOnShape"
+        />
+        <div
+          v-show="!element.editing && element.component !== 'DeTabs'"
+          class="de-drag-area de-drag-bottom"
+          @mousedown="handleBoardMouseDownOnShape"
+        />
+        <div
+          v-show="!element.editing && element.component !== 'DeTabs'"
+          class="de-drag-area de-drag-left"
+          @mousedown="handleBoardMouseDownOnShape"
+        />
+      </template>
     </div>
+    <compose-show v-if="isComposeSelected" :element="element"></compose-show>
   </div>
 </template>
 
@@ -85,12 +86,12 @@ import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapsho
 import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import { storeToRefs } from 'pinia'
-import { hexColorToRGBA } from '@/views/chart/components/js/util'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import Icon from '@/components/icon-custom/src/Icon.vue'
 import ComponentEditBar from '@/components/visualization/ComponentEditBar.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { toPng } from 'html-to-image'
+import ComposeShow from '@/components/data-visualization/canvas/ComposeShow.vue'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
@@ -110,7 +111,7 @@ const {
   tabMoveInActiveId,
   tabMoveOutComponentId
 } = storeToRefs(dvMainStore)
-const { editorMap } = storeToRefs(composeStore)
+const { editorMap, areaData, isCtrlOrCmdDown } = storeToRefs(composeStore)
 const emit = defineEmits([
   'userViewEnlargeOpen',
   'onStartResize',
@@ -121,7 +122,6 @@ const emit = defineEmits([
   'linkJumpSetOpen',
   'linkageSetOpen'
 ])
-
 const isEditMode = computed(() => editMode.value === 'edit')
 const state = reactive({
   seriesIdMap: {
@@ -236,6 +236,8 @@ const angleToCursor = [
   { start: 293, end: 338, cursor: 'w' }
 ]
 
+const isComposeSelected = computed(() => areaData.value.components.includes(element.value))
+
 const boardMoveActive = computed(() => {
   return ['map', 'table-info', 'table-normal'].includes(element.value.innerType)
 })
@@ -346,6 +348,13 @@ const handleBoardMouseDownOnShape = e => {
 }
 
 const handleInnerMouseDownOnShape = e => {
+  // ctrl or command 按下时 鼠标点击为选择需要组合的组件(取消需要组合的组件在ComposeShow组件中)
+  if (isCtrlOrCmdDown.value && !areaData.value.components.includes(element)) {
+    areaData.value.components.push(element.value)
+    dvMainStore.setCurComponent({ component: null, index: null })
+    e.stopPropagation()
+    return
+  }
   dvMainStore.setCurComponent({ component: element.value, index: index.value })
   // 边界区域拖拽 返回
   if (boardMoveActive.value) {
@@ -600,7 +609,6 @@ const componentBackgroundStyle = computed(() => {
     const {
       backgroundColorSelect,
       backgroundColor,
-      alpha,
       backgroundImageEnable,
       backgroundType,
       outerImage,
@@ -610,7 +618,7 @@ const componentBackgroundStyle = computed(() => {
     const style = { padding: innerPadding + 'px', borderRadius: borderRadius + 'px' }
     let colorRGBA = ''
     if (backgroundColorSelect && backgroundColor) {
-      colorRGBA = hexColorToRGBA(backgroundColor, alpha)
+      colorRGBA = backgroundColor
     }
     if (backgroundImageEnable) {
       if (backgroundType === 'outerImage' && typeof outerImage === 'string') {
@@ -778,6 +786,7 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   position: relative;
+  overflow: hidden;
   background-size: 100% 100% !important;
 }
 
@@ -864,7 +873,6 @@ onMounted(() => {
 
 .de-drag-area {
   position: absolute;
-  z-index: 10;
 }
 
 .de-drag-area:hover {

@@ -156,7 +156,7 @@ watch(
 
 onMounted(() => {
   initDataset()
-  const { dvId, opt } = window.DataEaseBi || router.currentRoute.value.query
+  const { dvId, opt, pid } = window.DataEaseBi || router.currentRoute.value.query
   if (dvId) {
     state.canvasInitStatus = false
     initCanvasData(dvId, 'dataV', function () {
@@ -169,7 +169,7 @@ onMounted(() => {
     })
   } else if (opt && opt === 'create') {
     state.canvasInitStatus = false
-    dvMainStore.createInit('dataV')
+    dvMainStore.createInit('dataV', null, pid)
     nextTick(() => {
       state.canvasInitStatus = true
       dvMainStore.setDataPrepareState(true)

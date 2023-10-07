@@ -149,6 +149,7 @@ const queryList = computed(() => {
 
 const resourceOptFinish = param => {
   if (param && param.opt === 'newLeaf') {
+    dvInfo.value.dataState = 'ready'
     dvInfo.value.pid = param.pid
     dvInfo.value.name = param.name
     saveCanvasWithCheck()
@@ -156,8 +157,8 @@ const resourceOptFinish = param => {
 }
 
 const saveCanvasWithCheck = () => {
-  if (dvInfo.value.pid === -1) {
-    const params = { name: dvInfo.value.name, leaf: true }
+  if (dvInfo.value.dataState === 'prepare') {
+    const params = { name: dvInfo.value.name, leaf: true, id: dvInfo.value.pid }
     resourceGroupOpt.value.optInit('leaf', params, 'newLeaf', true)
     return
   }
@@ -173,6 +174,7 @@ const saveResource = () => {
   canvasSave(() => {
     snapshotStore.resetStyleChangeTimes()
     ElMessage.success('保存成功')
+    window.history.pushState({}, '', `#/dashboard?resourceId=${dvInfo.value.id}`)
   })
 }
 
@@ -383,10 +385,10 @@ const onDvNameChange = () => {
           >
             <query-group themes="light" :dv-model="dvModel"></query-group>
           </component-group>
-          <component-group themes="light" :base-width="115" icon-name="dv-text" title="文本">
+          <component-group themes="light" :base-width="115" icon-name="dv-text" title="富文本">
             <text-group themes="light" :dv-model="dvModel"></text-group>
           </component-group>
-          <component-group themes="light" :base-width="115" icon-name="dv-media" title="图片">
+          <component-group themes="light" :base-width="115" icon-name="dv-media" title="媒体">
             <media-group themes="light" :dv-model="dvModel"></media-group>
           </component-group>
           <component-group themes="light" :base-width="115" icon-name="dv-tab" title="Tab">

@@ -9,6 +9,11 @@ import {
 } from '@/views/chart/components/editor/util/dataVisualiztion'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import chartViewManager from '@/views/chart/components/js/panel'
+import {
+  COMMON_COMPONENT_BACKGROUND_BASE,
+  defaultStyleValue,
+  findBaseDeFaultAttr
+} from '@/custom-component/component-list'
 
 export const dvMainStore = defineStore('dataVisualization', {
   state: () => {
@@ -45,6 +50,7 @@ export const dvMainStore = defineStore('dataVisualization', {
       isClickComponent: false,
       // 大屏基础信息
       dvInfo: {
+        dataState: null,
         id: null,
         name: null,
         pid: null,
@@ -114,6 +120,9 @@ export const dvMainStore = defineStore('dataVisualization', {
       panelViewEditInfo: {},
       // 仪表板图表明细
       panelViewDetailsInfo: {},
+      // 批量操作组件类型 单一类型 or mix 混合类型,如果类型是UserView 走图表批量逻辑，
+      // mix 或者其他目前走 CommonAttr 公共属性处理逻辑
+      batchOptComponentType: null,
       // panel edit batch operation status
       batchOptStatus: false,
       // Currently selected components
@@ -122,8 +131,8 @@ export const dvMainStore = defineStore('dataVisualization', {
       curMultiplexingComponents: {},
       mixProperties: [],
       mixPropertiesInner: {},
-      batchOptChartInfo: null,
-      batchOptViews: {},
+      batchOptComponentInfo: null,
+      batchOptComponents: {},
       // properties changed
       changeProperties: {
         customStyle: {},
@@ -396,9 +405,12 @@ export const dvMainStore = defineStore('dataVisualization', {
         }
       })
     },
-    addCurBatchComponent(id) {
-      if (id) {
-        this.curBatchOptComponents.push(id)
+    addCurBatchComponent(componentInfo) {
+      const id = componentInfo.id
+      const componentType = componentInfo.component
+      this.curBatchOptComponents.push(id)
+      // 视图批量操作
+      if (componentType === 'UserView') {
         // get view base info
         const viewBaseInfo = this.canvasViewInfo[id]
         // get properties
@@ -411,79 +423,132 @@ export const dvMainStore = defineStore('dataVisualization', {
             this.changeProperties.customAttr = viewBaseInfo.customAttr
             this.changeProperties.customStyle = viewBaseInfo.customStyle
           }
-          this.batchOptViews[id] = {
+          this.batchOptComponents[id] = {
             properties: chartViewInstance.properties,
             propertyInner: chartViewInstance.propertyInner,
-            value: chartViewInstance.name
+            value: chartViewInstance.name,
+            componentType: componentType
           }
-          this.setBatchOptChartInfo()
+          this.setBatchOptComponentInfo()
         }
+      } else {
+        // 其他组件批量操作 do other
+        this.batchOptComponents[id] = findBaseDeFaultAttr(componentType)
+        this.setBatchOptComponentInfo()
+      }
+      if (this.batchOptComponentType !== 'UserView') {
+        this.batchOptComponentInfo = {
+          collapseName: 'background',
+          commonBackground: deepCopy(COMMON_COMPONENT_BACKGROUND_BASE),
+          style: {}
+        }
+
+        this.mixPropertiesInner['common-style'].forEach(styleKey => {
+          this.batchOptComponentInfo['style'][styleKey] = defaultStyleValue[styleKey]
+        })
       }
     },
-    setBatchOptChartInfo() {
-      const render = null
-      let type = null
+    setBatchOptComponentInfo() {
+      if (this.batchOptComponents && JSON.stringify(this.batchOptComponents) !== '{}') {
+        const batchAttachInfo = {
+          render: null,
+          type: null
+        }
+        this.mixPropertiesAdaptor(batchAttachInfo)
+        // 根据batchOptComponentType类型判断 组装batchOptComponentInfo信息
+        if (this.batchOptComponentType === 'UserView') {
+          // Assembly history settings 'customAttr' & 'customStyle'
+          this.batchOptComponentInfo = {
+            mode: 'batchOpt',
+            render: batchAttachInfo.render,
+            type: batchAttachInfo.type,
+            customAttr: this.changeProperties.customAttr,
+            customStyle: this.changeProperties.customStyle
+          }
+        } else {
+          this.batchOptComponentInfo = {
+            collapseName: 'background',
+            commonBackground: deepCopy(COMMON_COMPONENT_BACKGROUND_BASE),
+            style: {}
+          }
+          this.mixPropertiesInner['common-style'].forEach(styleKey => {
+            this.batchOptComponentInfo['style'][styleKey] = defaultStyleValue[styleKey]
+          })
+        }
+      } else {
+        this.batchOptComponentInfo = null
+      }
+    },
+    mixPropertiesAdaptor(batchAttachInfo) {
       this.mixProperties = []
       this.mixPropertiesInner = {}
       let mixPropertiesTemp = []
       let mixPropertyInnerTemp = {}
-      if (this.batchOptViews && JSON.stringify(this.batchOptViews) !== '{}') {
-        for (const key in this.batchOptViews) {
-          if (mixPropertiesTemp.length > 0) {
-            // If it exists , taking the intersection
-            mixPropertiesTemp = mixPropertiesTemp.filter(
-              property => this.batchOptViews[key].properties.indexOf(property) > -1
-            )
-            // 根据当前的mixPropertiesTemp 再对 mixPropertyInnerTemp 进行过滤
-            mixPropertiesTemp.forEach(propertyInnerItem => {
-              if (
-                mixPropertyInnerTemp[propertyInnerItem] &&
-                this.batchOptViews[key].propertyInner[propertyInnerItem]
-              ) {
-                mixPropertyInnerTemp[propertyInnerItem] = mixPropertyInnerTemp[
-                  propertyInnerItem
-                ].filter(
-                  propertyInnerItemValue =>
-                    this.batchOptViews[key].propertyInner[propertyInnerItem].indexOf(
-                      propertyInnerItemValue
-                    ) > -1
-                )
-              }
-            })
-          } else {
-            // If it doesn't exist, assignment directly
-            mixPropertiesTemp = deepCopy(this.batchOptViews[key].properties)
-            mixPropertyInnerTemp = deepCopy(this.batchOptViews[key].propertyInner)
-          }
-          type = this.batchOptViews[key].value
-        }
-        mixPropertiesTemp.forEach(property => {
-          if (mixPropertyInnerTemp[property] && mixPropertyInnerTemp[property].length) {
-            this.mixPropertiesInner[property] = mixPropertyInnerTemp[property]
-            this.mixProperties.push(property)
-          }
-        })
+      let componentType = null
 
-        // Assembly history settings 'customAttr' & 'customStyle'
-        this.batchOptChartInfo = {
-          mode: 'batchOpt',
-          render: render,
-          type: type,
-          customAttr: this.changeProperties.customAttr,
-          customStyle: this.changeProperties.customStyle
+      for (const key in this.batchOptComponents) {
+        const componentInfo = this.batchOptComponents[key]
+        if (componentType) {
+          componentType =
+            componentType === componentInfo.componentType ? componentInfo.componentType : 'mix'
+        } else {
+          componentType = componentInfo.componentType
         }
-      } else {
-        this.batchOptChartInfo = null
+        if (mixPropertiesTemp.length > 0) {
+          // If it exists , taking the intersection
+          mixPropertiesTemp = mixPropertiesTemp.filter(
+            property => componentInfo.properties.indexOf(property) > -1
+          )
+          // 根据当前的mixPropertiesTemp 再对 mixPropertyInnerTemp 进行过滤
+          mixPropertiesTemp.forEach(propertyInnerItem => {
+            if (
+              mixPropertyInnerTemp[propertyInnerItem] &&
+              componentInfo.propertyInner[propertyInnerItem]
+            ) {
+              mixPropertyInnerTemp[propertyInnerItem] = mixPropertyInnerTemp[
+                propertyInnerItem
+              ].filter(
+                propertyInnerItemValue =>
+                  componentInfo.propertyInner[propertyInnerItem].indexOf(propertyInnerItemValue) >
+                  -1
+              )
+            }
+          })
+        } else {
+          // If it doesn't exist, assignment directly
+          mixPropertiesTemp = deepCopy(componentInfo.properties)
+          mixPropertyInnerTemp = deepCopy(componentInfo.propertyInner)
+        }
+        batchAttachInfo.type = componentInfo.value
       }
+      mixPropertiesTemp.forEach(property => {
+        if (mixPropertyInnerTemp[property] && mixPropertyInnerTemp[property].length) {
+          this.mixPropertiesInner[property] = mixPropertyInnerTemp[property]
+          this.mixProperties.push(property)
+        }
+      })
+      this.batchOptComponentType = componentType
     },
     setChangeProperties(propertyInfo) {
-      this.changeProperties[propertyInfo.custom][propertyInfo.property] = propertyInfo.value
-      // 修改对应图表的参数
-      this.curBatchOptComponents.forEach(viewId => {
-        const viewInfo = this.canvasViewInfo[viewId]
-        viewInfo[propertyInfo.custom][propertyInfo.property] = propertyInfo.value
-        useEmitt().emitter.emit('renderChart-' + viewId, viewInfo)
-      })
+      if (this.batchOptComponentType === 'UserView') {
+        this.changeProperties[propertyInfo.custom][propertyInfo.property] = propertyInfo.value
+        // 修改对应图表的参数
+        this.curBatchOptComponents.forEach(viewId => {
+          const viewInfo = this.canvasViewInfo[viewId]
+          viewInfo[propertyInfo.custom][propertyInfo.property] = propertyInfo.value
+          useEmitt().emitter.emit('renderChart-' + viewId, viewInfo)
+        })
+      } else {
+        this.componentData.forEach(component => {
+          if (this.curBatchOptComponents.includes(component.id)) {
+            if (propertyInfo.custom === 'commonBackground') {
+              component.commonBackground = deepCopy(this.batchOptComponentInfo.commonBackground)
+            } else if (propertyInfo.custom === 'style' && component.style[propertyInfo.property]) {
+              component.style[propertyInfo.property] = propertyInfo.value
+            }
+          }
+        })
+      }
     },
     setBatchChangeBackground(newBackground) {
       this.componentData.forEach(component => {
@@ -498,8 +563,9 @@ export const dvMainStore = defineStore('dataVisualization', {
       this.curBatchOptComponents = []
       this.mixProperties = []
       this.mixPropertiesInner = {}
-      this.batchOptChartInfo = null
-      this.batchOptViews = {}
+      this.batchOptComponentType = null
+      this.batchOptComponentInfo = null
+      this.batchOptComponents = {}
       this.changeProperties = {
         customStyle: {},
         customAttr: {}
@@ -509,12 +575,16 @@ export const dvMainStore = defineStore('dataVisualization', {
       for (let index = 0; index < this.curBatchOptComponents.length; index++) {
         const element = this.curBatchOptComponents[index]
         if (element === id) {
-          delete this.batchOptViews[id]
+          delete this.batchOptComponents[id]
           this.curBatchOptComponents.splice(index, 1)
           break
         }
       }
-      if (this.curBatchOptComponents.length === 1) {
+      if (
+        this.curBatchOptComponents.length === 1 &&
+        this.componentViewsData &&
+        this.componentViewsData[this.curBatchOptComponents[0]]
+      ) {
         const lastViewId = this.curBatchOptComponents[0]
         const viewBaseInfo = this.componentViewsData[lastViewId]
         this.changeProperties.customAttr = JSON.parse(viewBaseInfo.customAttr)
@@ -526,7 +596,7 @@ export const dvMainStore = defineStore('dataVisualization', {
           customAttr: {}
         }
       }
-      this.setBatchOptChartInfo()
+      this.setBatchOptComponentInfo()
     },
     removeCurMultiplexingComponentWithId(id) {
       delete this.curMultiplexingComponents[id]
@@ -681,6 +751,7 @@ export const dvMainStore = defineStore('dataVisualization', {
     },
     resetDvInfo() {
       this.dvInfo = {
+        dataState: null,
         id: null,
         name: null,
         pid: null,
@@ -706,15 +777,17 @@ export const dvMainStore = defineStore('dataVisualization', {
     },
     updateDvInfoId(newId) {
       if (this.dvInfo) {
+        this.dvInfo.dataState = 'ready'
         this.dvInfo.id = newId
       }
     },
-    createInit(dvType, resourceId?) {
+    createInit(dvType, resourceId?, pid?) {
       const optName = dvType === 'dashboard' ? '新建仪表板' : '新建数据大屏'
       this.dvInfo = {
+        dataState: 'prepare',
         id: resourceId,
         name: optName,
-        pid: -1,
+        pid: pid,
         type: dvType,
         status: 1,
         selfWatermarkStatus: 0
@@ -732,6 +805,7 @@ export const dvMainStore = defineStore('dataVisualization', {
       this.canvasViewInfo = {}
       this.componentData = []
       this.dvInfo = {
+        dataState: null,
         id: null,
         name: null,
         pid: null,

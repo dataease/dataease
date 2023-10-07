@@ -1,5 +1,18 @@
 <template>
   <div style="width: 100%" ref="bgForm">
+    <input
+      id="input"
+      ref="files"
+      type="file"
+      accept=".jpeg,.jpg,.png,.gif"
+      hidden
+      @click="
+        e => {
+          e.target.value = ''
+        }
+      "
+      @change="reUpload"
+    />
     <el-form label-position="top" style="width: 100%">
       <el-row :gutter="8">
         <el-col :span="12">
@@ -60,24 +73,9 @@
               :disabled="!state.commonBackground.backgroundColorSelect"
               :trigger-width="computedBackgroundColorPickerWidth"
               is-custom
+              show-alpha
               class="color-picker-style"
               :predefine="state.predefineColors"
-              @change="onBackgroundChange"
-            />
-          </el-form-item>
-          <el-form-item
-            class="form-item fill"
-            style="padding-left: 8px"
-            :class="'form-item-' + themes"
-          >
-            <el-input-number
-              controls-position="right"
-              :effect="themes"
-              :disabled="!state.commonBackground.backgroundColorSelect"
-              v-model="state.commonBackground.alpha"
-              :min="0"
-              size="middle"
-              :max="100"
               @change="onBackgroundChange"
             />
           </el-form-item>
@@ -180,7 +178,17 @@
             >
               <el-icon><Plus /></el-icon>
             </el-upload>
-            <span class="hint">支持JPG、PNG、GIF</span>
+            <el-row>
+              <span v-if="!state.commonBackground['outerImage']" class="image-hint"
+                >支持JPG、PNG、GIF</span
+              >
+              <span
+                v-if="state.commonBackground['outerImage']"
+                class="re-update-span"
+                @click="goFile"
+                >重新上传</span
+              >
+            </el-row>
           </div>
           <el-dialog
             top="25vh"
@@ -207,9 +215,12 @@ import { beforeUploadCheck, uploadFileResult } from '@/api/staticResource'
 import { useI18n } from '@/hooks/web/useI18n'
 import { deepCopy } from '@/utils/utils'
 import elementResizeDetectorMaker from 'element-resize-detector'
+import { ElMessage } from 'element-plus-secondary'
 const snapshotStore = snapshotStoreWithOut()
 const { t } = useI18n()
 const emits = defineEmits(['onBackgroundChange'])
+const files = ref(null)
+const maxImageSize = 15000000
 
 const props = withDefaults(
   defineProps<{
@@ -239,6 +250,26 @@ const state = reactive({
   panel: null,
   predefineColors: COLOR_PANEL
 })
+
+const goFile = () => {
+  files.value.click()
+}
+
+const sizeMessage = () => {
+  ElMessage.success('图片大小不符合')
+}
+
+const reUpload = e => {
+  const file = e.target.files[0]
+  if (file.size > maxImageSize) {
+    sizeMessage()
+  }
+  uploadFileResult(file, fileUrl => {
+    state.commonBackground['outerImage'] = fileUrl
+    state.fileList = [{ url: imgUrlTrans(state.commonBackground['outerImage']) }]
+    onBackgroundChange()
+  })
+}
 
 const mainIconClass = itemUrl => {
   return itemUrl.url.replace('board/', '').replace('.svg', '')
@@ -332,28 +363,22 @@ watch(
 }
 .avatar-uploader-container {
   margin-bottom: 16px;
-
-  .hint {
-    color: #8f959e;
-    font-size: 12px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 20px;
-  }
 }
 .avatar-uploader {
+  width: 90px;
   height: 80px;
   overflow: hidden;
 }
 .avatar-uploader {
+  width: 90px;
   :deep(.ed-upload) {
-    width: 120px;
+    width: 80px;
     height: 80px;
     line-height: 90px;
   }
 
   :deep(.ed-upload-list li) {
-    width: 120px !important;
+    width: 80px !important;
     height: 80px !important;
   }
 
@@ -406,6 +431,7 @@ watch(
       color: #8f959e;
 
       :deep(.avatar-uploader) {
+        width: 90px;
         pointer-events: none;
       }
 
@@ -432,5 +458,20 @@ watch(
   &.no-margin-bottom {
     margin-bottom: 0 !important;
   }
+}
+
+.re-update-span {
+  cursor: pointer;
+  color: #3370ff;
+  size: 14px;
+  line-height: 22px;
+  font-weight: 400;
+}
+
+.image-hint {
+  color: #8f959e;
+  size: 14px;
+  line-height: 22px;
+  font-weight: 400;
 }
 </style>

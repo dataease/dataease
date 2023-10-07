@@ -52,7 +52,7 @@ const newComponent = componentName => {
   >
     <drag-component
       :themes="themes"
-      name="Query"
+      icon="dv-filter-show"
       label="查询组件"
       drag-info="VQuery&VQuery"
     ></drag-component>

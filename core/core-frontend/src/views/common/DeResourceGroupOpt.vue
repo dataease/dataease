@@ -41,6 +41,7 @@ const filterText = ref('')
 const resourceFormNameLabel = ref('')
 const resourceForm = reactive({
   pid: '',
+  pName: null,
   name: '新建'
 })
 const sourceLabel = computed(() => (curCanvasType.value === 'dataV' ? '数据大屏' : '仪表板'))
@@ -197,14 +198,27 @@ const propsTree = {
 
 const nodeClick = (data: BusiTreeNode) => {
   resourceForm.pid = data.id as string
+  resourceForm.pName = data.name as string
 }
-const checkPid = pid => {
-  if (pid !== 0 && !pid) {
+
+const checkParent = params => {
+  if (params.pid !== 0 && !params.pid) {
     ElMessage.error('请选择目标文件夹')
     return false
   }
+  // 如果有搜索需要校验当前pName 是否包含关键字（解决先点击再搜索后，未点击搜索结果也可以移动的问题）
+  if (filterText.value && !resourceForm.pName.includes(filterText.value)) {
+    ElMessage.error('请选择目标文件夹')
+    return false
+  }
+  // 点击后不能选择自身作为父ID
+  if (params.pid === params.id) {
+    ElMessage.warning('不能选择自身，请选择其他文件夹')
+    return
+  }
   return true
 }
+
 const saveResource = () => {
   resource.value.validate(async result => {
     if (result) {
@@ -231,7 +245,7 @@ const saveResource = () => {
           params.pid = resourceForm.pid || pid.value || '0'
           break
       }
-      if (cmd.value === 'move' && !checkPid(params.pid)) {
+      if (cmd.value === 'move' && !checkParent(params)) {
         return
       }
       if (['newLeaf', 'newLeafAfter', 'newFolder', 'rename', 'move', 'copy'].includes(cmd.value)) {
@@ -241,14 +255,11 @@ const saveResource = () => {
         resourceDialogShow.value = false
         emits('finish', { opt: 'newLeaf', ...params })
       } else {
-        if (params.pid === params.id) {
-          ElMessage.success('不能选择自身，请选择其他文件夹')
-          return
-        }
         loading.value = true
         const method = methodMap[cmd.value] ? methodMap[cmd.value] : updateBase
         method(params)
           .then(data => {
+            loading.value = false
             resourceDialogShow.value = false
             emits('finish')
             ElMessage.success('保存成功')
@@ -258,7 +269,7 @@ const saveResource = () => {
               window.open(baseUrl + data.data, '_blank')
             }
           })
-          .finally(() => {
+          .cache(() => {
             loading.value = false
           })
       }
@@ -276,7 +287,6 @@ const emits = defineEmits(['finish'])
 
 <template>
   <el-dialog
-    v-loading="loading"
     class="create-dialog"
     :title="dialogTitle"
     v-model="resourceDialogShow"
@@ -285,6 +295,7 @@ const emits = defineEmits(['finish'])
     @submit.prevent
   >
     <el-form
+      v-loading="loading"
       label-position="top"
       require-asterisk-position="right"
       ref="resource"
@@ -309,6 +320,7 @@ const emits = defineEmits(['finish'])
           :props="propsTree"
           @node-click="nodeClick"
           :filter-method="filterMethod"
+          :render-after-expand="false"
           filterable
         >
           <template #default="{ data: { name } }">

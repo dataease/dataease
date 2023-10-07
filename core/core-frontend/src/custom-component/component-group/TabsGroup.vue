@@ -51,7 +51,7 @@ const handleDragEnd = e => {
   >
     <drag-component
       :themes="themes"
-      icon="dv-tab"
+      icon="dv-tab-show"
       label="Tab"
       drag-info="DeTabs&DeTabs"
     ></drag-component>

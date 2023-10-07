@@ -29,6 +29,14 @@ const state = reactive({
   tableColumn: []
 })
 const busiDataMap = computed(() => interactiveStore.getData)
+const iconMap = {
+  panel: 'icon_dashboard_outlined',
+  dashboard: 'icon_dashboard_outlined',
+  screen: 'icon_operation-analysis_outlined',
+  dataV: 'icon_operation-analysis_outlined',
+  dataset: 'icon_app_outlined',
+  datasource: 'icon_database_outlined'
+}
 
 const handleClick = (ele: TabsPaneContext) => {
   if (ele.paneName === 'recent' || ele.paneName === 'store') {
@@ -210,7 +218,7 @@ const executeStore = rowInfo => {
         <el-table-column key="name" width="280" prop="name" :label="t('common.name')">
           <template v-slot:default="scope">
             <div class="name-content">
-              <el-icon class="main-color"> <Icon name="icon_dashboard_outlined" /> </el-icon>
+              <el-icon class="main-color"> <Icon :name="iconMap[scope.row.type]" /> </el-icon>
               <el-tooltip placement="top">
                 <template #content>{{ scope.row.name }}</template>
                 <span class="ellipsis" style="max-width: 250px">{{ scope.row.name }}</span>

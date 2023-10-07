@@ -10,11 +10,13 @@ import _ from 'lodash'
 import elementResizeDetectorMaker from 'element-resize-detector'
 
 const { t } = useI18n()
+const emits = defineEmits(['onAttrChange'])
 
 const props = withDefaults(
   defineProps<{
     type?: 'light' | 'dark'
     themes?: EditorTheme
+    element: any
     backgroundColorPickerWidth?: number
     backgroundBorderSelectWidth?: number
   }>(),
@@ -25,14 +27,14 @@ const props = withDefaults(
   }
 )
 
-const { themes } = toRefs(props)
+const { themes, element } = toRefs(props)
 const dvMainStore = dvMainStoreWithOut()
-const { curComponent, dvInfo } = storeToRefs(dvMainStore)
-const activeName = ref(curComponent.value.collapseName)
+const { dvInfo } = storeToRefs(dvMainStore)
+const activeName = ref(element.value.collapseName)
 
 const styleKeys = computed(() => {
-  if (curComponent.value) {
-    const curComponentStyleKeys = Object.keys(curComponent.value.style)
+  if (element.value) {
+    const curComponentStyleKeys = Object.keys(element.value.style)
     return styleData.filter(item => curComponentStyleKeys.includes(item.key))
   } else {
     return []
@@ -52,7 +54,7 @@ const styleKeysGroup = computed(() => {
 })
 
 const onChange = () => {
-  curComponent.value.collapseName = activeName
+  element.value.collapseName = activeName
 }
 
 const isIncludesColor = str => {
@@ -63,7 +65,12 @@ const dashboardActive = computed(() => {
 })
 
 const onBackgroundChange = val => {
-  curComponent.value.commonBackground = val
+  element.value.commonBackground = val
+  emits('onAttrChange', { custom: 'commonBackground' })
+}
+
+const onStyleAttrChange = (value, key) => {
+  emits('onAttrChange', { custom: 'style', property: key, value: value })
 }
 
 const containerRef = ref()
@@ -78,6 +85,16 @@ const colSpan = computed(() => {
 })
 
 const colorPickerWidth = computed(() => {
+  if (containerWidth.value <= 280) {
+    return 125
+  } else if (containerWidth.value <= 240) {
+    return 108
+  } else {
+    return 197
+  }
+})
+
+const onStyleChange = computed(() => {
   if (containerWidth.value <= 240) {
     return 108
   } else {
@@ -105,9 +122,9 @@ onMounted(() => {
 
       <el-collapse-item :effect="themes" title="背景" name="background">
         <background-overall-common
-          v-if="curComponent"
+          v-if="element"
           :themes="themes"
-          :common-background-pop="curComponent.commonBackground"
+          :common-background-pop="element.commonBackground"
           component-position="component"
           @onBackgroundChange="onBackgroundChange"
           :background-color-picker-width="backgroundColorPickerWidth"
@@ -126,19 +143,21 @@ onMounted(() => {
               <el-form-item class="form-item" :class="'form-item-' + themes" :label="label">
                 <el-color-picker
                   v-if="isIncludesColor(key)"
-                  v-model="curComponent.style[key]"
+                  v-model="element.style[key]"
                   :trigger-width="colorPickerWidth"
                   :themes="themes"
                   size="small"
                   show-alpha
                   is-custom
+                  @change="onStyleAttrChange($event, key)"
                 />
                 <el-radio-group
                   :effect="themes"
                   style="width: 100%"
                   class="icon-radio-group"
                   v-else-if="horizontalPosition.includes(key)"
-                  v-model="curComponent.style[key]"
+                  v-model="element.style[key]"
+                  @change="onStyleAttrChange($event, key)"
                 >
                   <el-radio :effect="themes" label="left">
                     <el-tooltip effect="dark" placement="top">
@@ -149,7 +168,7 @@ onMounted(() => {
                         class="icon-btn"
                         :class="{
                           dark: themes === 'dark',
-                          active: curComponent.style[key] === 'left'
+                          active: element.style[key] === 'left'
                         }"
                       >
                         <el-icon>
@@ -167,7 +186,7 @@ onMounted(() => {
                         class="icon-btn"
                         :class="{
                           dark: themes === 'dark',
-                          active: curComponent.style[key] === 'center'
+                          active: element.style[key] === 'center'
                         }"
                       >
                         <el-icon>
@@ -185,7 +204,7 @@ onMounted(() => {
                         class="icon-btn"
                         :class="{
                           dark: themes === 'dark',
-                          active: curComponent.style[key] === 'right'
+                          active: element.style[key] === 'right'
                         }"
                       >
                         <el-icon>
@@ -200,7 +219,8 @@ onMounted(() => {
                   style="width: 100%"
                   size="small"
                   :effect="themes"
-                  v-model="curComponent.style[key]"
+                  v-model="element.style[key]"
+                  @change="onStyleAttrChange($event, key)"
                 >
                   <el-option
                     v-for="item in optionMap[key]"
@@ -218,7 +238,8 @@ onMounted(() => {
                   :max="max"
                   :step="step"
                   :effect="themes"
-                  v-model="curComponent.style[key]"
+                  v-model="element.style[key]"
+                  @change="onStyleAttrChange($event, key)"
                 />
               </el-form-item>
             </el-col>

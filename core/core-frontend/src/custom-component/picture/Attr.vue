@@ -99,6 +99,7 @@ onBeforeUnmount(() => {
     />
     <CommonAttr
       :themes="themes"
+      :element="curComponent"
       :background-color-picker-width="197"
       :background-border-select-width="197"
     >
@@ -173,23 +174,35 @@ onBeforeUnmount(() => {
 }
 
 .avatar-uploader :deep(.ed-upload) {
-  width: 120px;
+  width: 80px;
   height: 80px;
   line-height: 90px;
 }
 
 .avatar-uploader :deep(.ed-upload-list li) {
-  width: 120px !important;
+  width: 80px !important;
   height: 80px !important;
 }
-.avatar-uploader :deep(.ed-upload--picture-card) {
-  background: rgba(0, 0, 0, 0);
+
+:deep(.ed-upload--picture-card) {
+  background: #eff0f1;
+  border: 1px dashed #dee0e3;
+  border-radius: 4px;
+
+  .ed-icon {
+    color: #1f2329;
+  }
+
+  &:hover {
+    .ed-icon {
+      color: #3370ff;
+    }
+  }
 }
 .img-area {
   height: 80px;
-  width: 120px;
+  width: 80px;
   margin-top: 10px;
-  margin-bottom: 10px;
   overflow: hidden;
 }
 

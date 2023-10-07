@@ -59,7 +59,7 @@ onMounted(() => {
     })
   } else if (opt && opt === 'create') {
     dataInitState.value = false
-    dvMainStore.createInit('dashboard')
+    dvMainStore.createInit('dashboard', null, pid)
     nextTick(() => {
       dataInitState.value = true
       // preOpt
@@ -128,7 +128,7 @@ onMounted(() => {
       <dv-sidebar
         v-if="batchOptStatus"
         :theme-info="'light'"
-        title="批量操作设置样式"
+        title="批量设置样式"
         :width="280"
         aside-position="right"
         class="left-sidebar"

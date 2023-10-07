@@ -12,7 +12,7 @@ const snapshotStore = snapshotStoreWithOut()
 const copyStore = copyStoreWithOut()
 const lockStore = lockStoreWithOut()
 const { curComponent, isInEditor } = storeToRefs(dvMainStore)
-const { areaData } = storeToRefs(composeStore)
+const { areaData, isCtrlOrCmdDown } = storeToRefs(composeStore)
 
 const ctrlKey = 17,
   commandKey = 91, // mac command
@@ -85,6 +85,7 @@ export function listenGlobalKeyDown() {
       e.preventDefault()
     } else if (keyCode === ctrlKey || keyCode === commandKey) {
       isCtrlOrCommandDown = true
+      isCtrlOrCmdDown.value = true
     } else if ((keyCode == deleteKey || keyCode == macDeleteKey) && curComponent.value) {
       deleteComponent()
     } else if (isCtrlOrCommandDown) {
@@ -101,6 +102,7 @@ export function listenGlobalKeyDown() {
   window.onkeyup = e => {
     if (e.keyCode === ctrlKey || e.keyCode === commandKey) {
       isCtrlOrCommandDown = false
+      isCtrlOrCmdDown.value = false
     }
   }
 
