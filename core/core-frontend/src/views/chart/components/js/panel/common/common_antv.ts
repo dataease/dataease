@@ -598,13 +598,12 @@ export function configL7Style(chart: Chart): AreaOptions['style'] {
 export function configL7Tooltip(chart: Chart): TooltipOptions {
   const customAttr = parseJson(chart.customAttr)
   const tooltip = customAttr.tooltip
-  const { xAxis, yAxis } = chart
+  const { yAxis } = chart
   return {
+    customTitle(data) {
+      return data.name
+    },
     items: [
-      {
-        field: 'name',
-        alias: xAxis?.[0]?.chartShowName ?? xAxis?.[0]?.name
-      },
       {
         field: 'value',
         alias: yAxis?.[0]?.chartShowName ?? yAxis?.[0]?.name,
@@ -623,6 +622,9 @@ export function configL7Tooltip(chart: Chart): TooltipOptions {
         color: tooltip.color
       },
       'l7plot-tooltip__value': {
+        color: tooltip.color
+      },
+      'l7plot-tooltip__title': {
         color: tooltip.color
       }
     }
