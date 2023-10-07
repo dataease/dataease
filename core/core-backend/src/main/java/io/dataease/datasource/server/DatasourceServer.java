@@ -275,6 +275,7 @@ public class DatasourceServer implements DatasourceApi {
             coreDatasourceTask.setName(requestDatasource.getName() + "-task");
             coreDatasourceTask.setDsId(requestDatasource.getId());
             if (StringUtils.equalsIgnoreCase(coreDatasourceTask.getSyncRate(), RIGHTNOW.toString())) {
+                coreDatasourceTask.setStartTime(System.currentTimeMillis() - 20 * 1000);
                 coreDatasourceTask.setCron(null);
             }
             coreDatasourceTask.setTaskStatus(TaskStatus.WaitingForExecution.toString());
@@ -294,6 +295,7 @@ public class DatasourceServer implements DatasourceApi {
                     DEException.throwException("Failed to create table " + toCreateTable);
                 }
             }
+            datasourceSyncManage.deleteSchedule(datasourceTaskServer.selectByDSId(dataSourceDTO.getId()));
             datasourceSyncManage.addSchedule(coreDatasourceTask);
             dataSourceManage.innerEdit(requestDatasource);
         } else if (dataSourceDTO.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name())) {
@@ -765,13 +767,13 @@ public class DatasourceServer implements DatasourceApi {
                 .filter(qrtzSchedulerState -> qrtzSchedulerState.getLastCheckinTime()
                         + qrtzSchedulerState.getCheckinInterval() + 1000 > dataSourceExtMapper.selectTimestamp().getCurentTimestamp())
                 .map(QrtzSchedulerState::getInstanceName).collect(Collectors.toList());
+
         QueryWrapper<CoreDatasource> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("task_status", TaskStatus.UnderExecution.name());
-
-        List<CoreDatasource> jobStoppedCoreDatasources = new ArrayList<>();
-        List<CoreDatasource> syncCoreDatasources = new ArrayList<>();
-
         List<CoreDatasource> datasources = datasourceMapper.selectList(queryWrapper);
+
+        List<CoreDatasource> syncCoreDatasources = new ArrayList<>();
+        List<CoreDatasource> jobStoppedCoreDatasources = new ArrayList<>();
         datasources.forEach(coreDatasource -> {
             if (StringUtils.isNotEmpty(coreDatasource.getQrtzInstance()) && !activeQrtzInstances.contains(coreDatasource.getQrtzInstance().substring(0, coreDatasource.getQrtzInstance().length() - 13))) {
                 jobStoppedCoreDatasources.add(coreDatasource);

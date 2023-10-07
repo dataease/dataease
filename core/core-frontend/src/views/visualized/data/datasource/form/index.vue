@@ -81,7 +81,7 @@ export interface ApiConfiguration {
 }
 
 export interface SyncSetting {
-  id: number
+  id: string
   updateType: string
   syncRate: string
   simpleCronValue: number
@@ -284,8 +284,23 @@ const validateDS = () => {
   const validateFrom = detail.value.submitForm()
   validateFrom(val => {
     if (val) {
-      validate(request).then(() => {
-        ElMessage.success(t('datasource.validate_success'))
+      validate(request).then(res => {
+        if (res.data.type === 'API') {
+          let error = 0
+          const status = JSON.parse(res.data.status)
+          for (let i = 0; i < status.length; i++) {
+            if (status[i].status === 'Error') {
+              error++
+            }
+          }
+          if (error === 0) {
+            ElMessage.success(t('datasource.validate_success'))
+          } else {
+            ElMessage.error('校验失败')
+          }
+        } else {
+          ElMessage.success(t('datasource.validate_success'))
+        }
       })
     }
   })
@@ -309,6 +324,7 @@ const typeTitle = computed(() => {
 })
 
 const saveDS = () => {
+  console.log(form)
   const request = JSON.parse(JSON.stringify(form)) as unknown as Omit<
     Form,
     'configuration' | 'apiConfiguration'
