@@ -99,10 +99,7 @@ const emit = defineEmits(['handleCommand'])
 }
 .menu-more-dv_popper {
   width: 120px;
-  margin-top: -10px !important;
-  .ed-popper__arrow {
-    display: none;
-  }
+  margin-top: -2px !important;
 }
 
 .handle-icon {
