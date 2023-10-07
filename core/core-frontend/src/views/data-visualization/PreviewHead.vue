@@ -112,10 +112,10 @@ watch(
               </div>
               <template #dropdown>
                 <el-dropdown-menu>
-                  <el-dropdown-item @click="download('pdf')" icon="Notebook">{{
+                  <el-dropdown-item @click="download('pdf')">{{
                     t('visualization.export_to_pdf')
                   }}</el-dropdown-item>
-                  <el-dropdown-item icon="Picture" @click="download('img')">{{
+                  <el-dropdown-item @click="download('img')">{{
                     t('visualization.export_to_img')
                   }}</el-dropdown-item>
                 </el-dropdown-menu>

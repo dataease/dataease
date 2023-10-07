@@ -12,7 +12,7 @@ import {
 import { getPadding } from '@/views/chart/components/js/panel/common/common_antv'
 import { parseJson, flow } from '@/views/chart/components/js/util'
 import { Label } from '@antv/g2plot/lib/types/label'
-import { formatterItem, valueFormatter } from '@/views/chart/components/js/formatter'
+import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { Datum } from '@antv/g2plot/esm/types/common'
 import { add } from 'mathjs'
 
@@ -128,7 +128,7 @@ export class Rose extends G2PlotChartView<RoseOptions, G2Rose> {
       }
     }
     if (labelAttr.position === 'inner') {
-      labelOptions.offsetY = -10
+      labelOptions.offset = -10
     }
     return {
       ...options,

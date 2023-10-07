@@ -420,7 +420,7 @@ defineExpose({
 
 <template>
   <div class="editor-detail">
-    <div class="detail-inner">
+    <div class="detail-inner create-dialog">
       <div v-show="form.type === 'API'" class="info-update">
         <div :class="activeStep === 1 && 'active'" class="info-text">数据源配置信息</div>
         <div class="update-info-line"></div>
@@ -880,10 +880,6 @@ defineExpose({
   .de-select {
     width: 100%;
   }
-  .ed-form-item {
-    margin-bottom: 16px;
-  }
-
   .ed-input-number {
     width: 100%;
   }
@@ -891,7 +887,8 @@ defineExpose({
   .input-with-append {
     :deep(.ed-input-group__append) {
       width: 55px;
-      background: #fff;
+      background: #eff0f1;
+      color: #1f2329;
     }
   }
 

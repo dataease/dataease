@@ -51,18 +51,17 @@ const widthShow = computed(() => `${canvasCollapse.value[sideName.value] ? 36 : 
       <span v-if="!canvasCollapse[sideName]">{{ title }}</span>
       <el-icon
         :title="title"
-        :class="'custom-icon-' + themeInfo"
+        :class="['custom-icon-' + themeInfo, 'collapse-icon-' + themeInfo]"
         size="20px"
         @click="collapseChange"
       >
         <Expand
-          class="collapse-icon"
           v-if="
             (canvasCollapse[sideName] && asidePosition === 'left') ||
             (!canvasCollapse[sideName] && asidePosition === 'right')
           "
         />
-        <Fold class="collapse-icon" v-else />
+        <Fold v-else />
       </el-icon>
     </el-row>
     <div class="main-content" v-if="!canvasCollapse[sideName]">

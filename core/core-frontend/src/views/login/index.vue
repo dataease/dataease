@@ -287,6 +287,7 @@ onMounted(() => {
   background-color: var(--ContentBG, #ffffff);
   display: flex;
   .login-image-content {
+    overflow: hidden;
     height: 100%;
     width: 45%;
     max-width: 640px;
