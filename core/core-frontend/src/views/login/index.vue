@@ -121,7 +121,7 @@ const xpackLoaded = info => {
 const loginContainer = ref()
 const loginContainerWidth = ref(0)
 const showLoginImage = computed<boolean>(() => {
-  return !(loginContainerWidth.value < 1040)
+  return !(loginContainerWidth.value < 889)
 })
 
 onMounted(() => {
@@ -290,7 +290,6 @@ onMounted(() => {
     overflow: hidden;
     height: 100%;
     width: 45%;
-    max-width: 640px;
     min-width: 400px;
   }
 
