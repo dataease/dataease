@@ -358,7 +358,9 @@ const textAlign = computed(() => {
       <div v-if="!listVisible.length" class="no-list-label flex-align-center">
         <div class="container flex-align-center">
           将右侧的字段拖拽到这里 或 点击
-          <el-button @click="addCriteriaConfig" text> 添加查询条件 </el-button>
+          <el-button :disabled="showPosition === 'preview'" @click="addCriteriaConfig" text>
+            添加查询条件
+          </el-button>
         </div>
       </div>
       <div class="query-fields-container">
