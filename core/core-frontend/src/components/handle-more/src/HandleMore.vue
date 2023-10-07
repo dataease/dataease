@@ -35,6 +35,7 @@ const emit = defineEmits(['handleCommand'])
   <el-dropdown
     popper-class="menu-more_popper"
     :placement="placement"
+    :persistent="false"
     trigger="click"
     @command="handleCommand"
   >
@@ -42,7 +43,7 @@ const emit = defineEmits(['handleCommand'])
       <Icon :name="iconName"></Icon>
     </el-icon>
     <template #dropdown>
-      <el-dropdown-menu>
+      <el-dropdown-menu :persistent="false">
         <el-dropdown-item
           :divided="ele.divided"
           :command="ele.command"
@@ -62,9 +63,6 @@ const emit = defineEmits(['handleCommand'])
 
 <style lang="less">
 .menu-more_popper {
-  margin-top: -10px !important;
-  .ed-popper__arrow {
-    display: none;
-  }
+  margin-top: -2px !important;
 }
 </style>
