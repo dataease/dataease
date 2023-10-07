@@ -204,7 +204,7 @@ const rename = item => {
                 <el-dropdown
                   ref="dropdownMore"
                   trigger="click"
-                  :placement="'bottom-end'"
+                  placement="bottom-start"
                   effect="dark"
                 >
                   <span :class="'dropdownMore-' + index" @click="onClick(transformIndex(index))">
@@ -257,7 +257,7 @@ const rename = item => {
         align-items: center;
         justify-content: flex-start;
         font-size: 12px;
-        padding: 0 2px 0 10px;
+        padding: 0 2px 0 22px;
         user-select: none;
 
         .component-icon {
