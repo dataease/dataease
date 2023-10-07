@@ -328,6 +328,6 @@ eventBus.on('handleNew', handleNew)
 .custom-dv-divider {
   width: 100%;
   height: 1px;
-  background: #1a1a1a;
+  background: #000;
 }
 </style>
