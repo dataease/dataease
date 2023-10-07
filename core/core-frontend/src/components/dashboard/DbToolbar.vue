@@ -524,6 +524,10 @@ const onDvNameChange = () => {
 </template>
 
 <style lang="less" scoped>
+.group_icon + .ed-dropdown,
+.group_icon + .ed-button {
+  margin-left: 10px;
+}
 .drop-style {
   width: 120px;
   :deep(.ed-dropdown-menu__item:not(.is_disabled):focus) {
