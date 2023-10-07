@@ -9,6 +9,7 @@ import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { beforeUploadCheck, uploadFileResult } from '@/api/staticResource'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import eventBus from '@/utils/eventBus'
+import ImgViewDialog from '@/custom-component/ImgViewDialog.vue'
 
 const props = withDefaults(
   defineProps<{
@@ -44,6 +45,7 @@ const handleRemove = (file, fileList) => {
 }
 async function upload(file) {
   uploadFileResult(file.file, fileUrl => {
+    snapshotStore.recordSnapshotCache()
     curComponent.value.propValue.url = fileUrl
   })
 }
@@ -58,6 +60,7 @@ const reUpload = e => {
     sizeMessage()
   }
   uploadFileResult(file, fileUrl => {
+    snapshotStore.recordSnapshotCache()
     curComponent.value.propValue.url = fileUrl
     fileList.value = [{ url: imgUrlTrans(curComponent.value.propValue.url) }]
   })
@@ -103,7 +106,7 @@ onBeforeUnmount(() => {
       :background-color-picker-width="197"
       :background-border-select-width="197"
     >
-      <el-collapse-item :effect="themes" title="图片" name="picture">
+      <el-collapse-item :effect="themes" title="图片11" name="picture">
         <el-row class="img-area">
           <el-col style="width: 130px !important">
             <el-upload
@@ -121,16 +124,7 @@ onBeforeUnmount(() => {
             >
               <el-icon><Plus /></el-icon>
             </el-upload>
-            <el-dialog
-              top="25vh"
-              width="600px"
-              :effect="themes"
-              :append-to-body="true"
-              :destroy-on-close="true"
-              v-model="dialogVisible"
-            >
-              <img width="550" :src="dialogImageUrl" alt="Preview Image" />
-            </el-dialog>
+            <img-view-dialog v-model="dialogVisible" :image-url="dialogImageUrl"></img-view-dialog>
           </el-col>
         </el-row>
         <el-row>

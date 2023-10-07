@@ -190,15 +190,11 @@
               >
             </el-row>
           </div>
-          <el-dialog
-            top="25vh"
-            width="600px"
-            :append-to-body="true"
-            :destroy-on-close="true"
+
+          <img-view-dialog
             v-model="state.dialogVisible"
-          >
-            <img width="550" :src="state.dialogImageUrl" />
-          </el-dialog>
+            :image-url="state.dialogImageUrl"
+          ></img-view-dialog>
         </div>
       </div>
     </el-form>
@@ -217,6 +213,7 @@ import { deepCopy } from '@/utils/utils'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import { ElMessage } from 'element-plus-secondary'
 import BoardItem from '@/components/visualization/component-background/BoardItem.vue'
+import ImgViewDialog from '@/custom-component/ImgViewDialog.vue'
 const snapshotStore = snapshotStoreWithOut()
 const { t } = useI18n()
 const emits = defineEmits(['onBackgroundChange'])

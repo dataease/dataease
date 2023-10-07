@@ -29,15 +29,10 @@
       v-on:change="reUpload"
     />
 
-    <el-dialog
-      top="25vh"
-      width="600px"
-      :append-to-body="true"
-      :destroy-on-close="true"
+    <img-view-dialog
       v-model="state.dialogVisible"
-    >
-      <img width="550" :src="state.dialogImageUrl" />
-    </el-dialog>
+      :image-url="state.dialogImageUrl"
+    ></img-view-dialog>
   </el-row>
 </template>
 
@@ -49,6 +44,7 @@ import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapsho
 import { beforeUploadCheck, uploadFileResult } from '@/api/staticResource'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ElMessage } from 'element-plus-secondary'
+import ImgViewDialog from '@/custom-component/ImgViewDialog.vue'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const { t } = useI18n()
@@ -97,6 +93,7 @@ const handlePictureCardPreview = file => {
 }
 const upload = file => {
   uploadFileResult(file.file, fileUrl => {
+    snapshotStore.recordSnapshotCache()
     imgUrlInner.value = fileUrl
     emits('onImgChange', fileUrl)
   })
@@ -111,6 +108,7 @@ const reUpload = e => {
     sizeMessage()
   }
   uploadFileResult(file, fileUrl => {
+    snapshotStore.recordSnapshotCache()
     imgUrlInner.value = fileUrl
     emits('onImgChange', fileUrl)
   })
