@@ -71,6 +71,7 @@ const groupActiveChange = category => {
     <el-scrollbar ref="commonGroup" class="group-right" height="392px">
       <el-row :id="groupInfo.category" v-for="groupInfo in state.groupList" :key="groupInfo.title">
         <el-col
+          v-show="state.curCategory === groupInfo.category"
           :class="'item' + groupInfo.span"
           :span="groupInfo.span"
           v-for="chartInfo in groupInfo.details"
@@ -103,6 +104,7 @@ const groupActiveChange = category => {
   display: flex;
   max-height: 400px;
   height: 100%;
+  margin-top: 4px;
   .group-left {
     width: 100px;
     height: 100%;
@@ -182,7 +184,6 @@ const groupActiveChange = category => {
   .item-top {
     width: 24px;
     height: 24px;
-    background: #1a1a1a;
     border-radius: 4px;
     cursor: pointer;
     &:hover {
