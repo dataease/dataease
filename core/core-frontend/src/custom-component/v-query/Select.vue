@@ -265,12 +265,15 @@ const selectStyle = computed(() => {
   return props.isConfig ? {} : { width: '227px' }
 })
 
+const mult = ref()
+
 onBeforeMount(() => {
   init()
 })
 
 defineExpose({
-  displayTypeChange
+  displayTypeChange,
+  mult
 })
 </script>
 
@@ -278,6 +281,7 @@ defineExpose({
   <el-select-v2
     v-if="multiple"
     key="multiple"
+    ref="mult"
     v-model="selectValue"
     v-loading="loading"
     filterable

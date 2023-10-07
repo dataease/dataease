@@ -87,9 +87,9 @@ const options = computed(() => {
       icon: 'icon_copy_outlined'
     },
     {
-      label: 'icon_delete-trash_outlined',
+      label: '删除',
       value: 'delete',
-      icon: '删除'
+      icon: 'icon_delete-trash_outlined'
     }
   ]
   if (props.extField === 2) {
@@ -172,9 +172,30 @@ const handleChange = () => {
 
 <style lang="less">
 .menu-more_popper_one {
-  padding-left: 0 !important;
-  padding-right: 0 !important;
-  .ed-cascader-menu__wrap.ed-scrollbar__wrap {
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  .ed-cascader-panel {
+    .ed-cascader-menu {
+      border-radius: 4px;
+      border: 1px solid #dee0e3;
+      background: #fff;
+      box-shadow: 0px 4px 8px 0px rgba(31, 35, 41, 0.1);
+      border-right: none;
+      &:nth-child(2) {
+        margin-top: 32px;
+      }
+      &:nth-child(3) {
+        margin-top: 64px;
+      }
+      .arrow-right {
+        position: absolute;
+        top: 50%;
+        right: 11px;
+        transform: translateY(-50%);
+      }
+    }
   }
 }
 </style>
