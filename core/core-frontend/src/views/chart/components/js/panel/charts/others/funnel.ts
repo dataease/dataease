@@ -107,6 +107,18 @@ export class Funnel extends G2PlotChartView<FunnelOptions, G2Funnel> {
     return newChart
   }
 
+  protected configLabel(chart: Chart, options: FunnelOptions): FunnelOptions {
+    const tmpOptions = super.configLabel(chart, options)
+    if (!tmpOptions.label) {
+      return tmpOptions
+    }
+    const position = tmpOptions.label.position
+    if (position === 'right') {
+      tmpOptions.label.offsetX = -40
+    }
+    return tmpOptions
+  }
+
   protected setupOptions(chart: Chart, options: FunnelOptions): FunnelOptions {
     return flow(
       this.configTheme,
