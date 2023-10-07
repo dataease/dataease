@@ -22,6 +22,7 @@ import CanvasCore from '@/components/data-visualization/canvas/CanvasCore.vue'
 import { listenGlobalKeyDown } from '@/utils/DeShortcutKey'
 import { adaptCurThemeCommonStyle } from '@/utils/canvasStyle'
 import { changeComponentSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
+import { useEmitt } from '@/hooks/web/useEmitt'
 
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
@@ -180,6 +181,12 @@ onMounted(() => {
     window.open(url, '_self')
   }
   initScroll()
+  useEmitt({
+    name: 'initScroll',
+    callback: function () {
+      initScroll()
+    }
+  })
 })
 
 const previewStatus = computed(() => editMode.value === 'preview')
@@ -190,6 +197,7 @@ eventBus.on('handleNew', handleNew)
 <template>
   <div ref="dvLayout" class="dv-common-layout">
     <DvToolbar />
+    <div class="custom-dv-divider"></div>
     <el-container
       class="dv-layout-container"
       :class="{ 'preview-layout-container': previewStatus }"
@@ -275,7 +283,7 @@ eventBus.on('handleNew', handleNew)
   width: 100vw;
   color: @dv-canvas-main-font-color;
   .dv-layout-container {
-    height: calc(100vh - @top-bar-height);
+    height: calc(100vh - @top-bar-height - 1px);
     .left-sidebar {
       height: 100%;
     }
@@ -315,5 +323,11 @@ eventBus.on('handleNew', handleNew)
 .canvas-area-shadow {
   box-sizing: border-box;
   border: 1px solid rgba(85, 85, 85, 0.4);
+}
+
+.custom-dv-divider {
+  width: 100%;
+  height: 1px;
+  background: #1a1a1a;
 }
 </style>
