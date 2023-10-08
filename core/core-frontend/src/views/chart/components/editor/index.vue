@@ -2208,8 +2208,14 @@ span {
       left: 0;
       cursor: row-resize;
 
-      &.is-hovering,
-      &:hover {
+      &.is-hovering::after,
+      &:hover::after {
+        width: 100%;
+        height: 1px;
+        content: '';
+        position: absolute;
+        left: 0px;
+        top: 0;
         background: #3370ff;
       }
     }

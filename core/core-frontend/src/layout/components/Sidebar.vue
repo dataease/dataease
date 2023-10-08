@@ -19,8 +19,14 @@ const { width, node } = useMoveLine('DATASET')
   height: 100%;
   position: absolute;
   cursor: col-resize;
-  &:hover,
-  &.dragging {
+  &:hover::after,
+  &.dragging::after {
+    width: 1px;
+    height: 100%;
+    content: '';
+    position: absolute;
+    left: 3px;
+    top: 0;
     background: #3370ff;
   }
 }
