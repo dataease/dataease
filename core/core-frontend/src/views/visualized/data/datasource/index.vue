@@ -760,7 +760,7 @@ onMounted(() => {
             <span class="create-user">
               {{ t('visualization.create_by') }}:{{ nodeInfo.creator }}
             </span>
-            <el-popover show-arrow placement="bottom" width="290" trigger="hover">
+            <el-popover :offset="8" show-arrow placement="bottom" width="290" trigger="hover">
               <template #reference>
                 <el-icon class="create-user">
                   <Icon name="icon_info_outlined"></Icon>

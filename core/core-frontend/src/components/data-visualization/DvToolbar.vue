@@ -209,7 +209,7 @@ eventBus.on('clearCanvas', clearCanvas)
       </div>
       <div class="right-area">
         <el-button
-          class="custom-normal-button"
+          class="preview-button"
           @click="preview()"
           style="float: right; margin-right: 12px"
           >预览</el-button
@@ -341,12 +341,20 @@ eventBus.on('clearCanvas', clearCanvas)
     height: 20px;
   }
 }
-.custom-normal-button {
-  background-color: rgba(0, 0, 0, 0);
-  border-color: #a6a6a6;
+
+.preview-button {
+  border-color: rgba(255, 255, 255, 0.3);
   color: #ffffff;
-  &:hover {
-    color: #3370ff;
+  background-color: #050e21;
+  &:hover,
+  &:focus {
+    background-color: #121a2c;
+    border-color: #595f6b;
+  }
+
+  &:active {
+    border-color: #616774;
+    background-color: #1e2637;
   }
 }
 </style>
