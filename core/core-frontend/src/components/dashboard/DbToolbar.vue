@@ -15,6 +15,7 @@ import QueryGroup from '@/custom-component/component-group/QueryGroup.vue'
 import MediaGroup from '@/custom-component/component-group/MediaGroup.vue'
 import TextGroup from '@/custom-component/component-group/TextGroup.vue'
 import ComponentButton from '@/components/visualization/ComponentButton.vue'
+import ComponentButtonLabel from '@/components/visualization/ComponentButtonLabel.vue'
 import MultiplexingCanvas from '@/views/common/MultiplexingCanvas.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { getPanelAllLinkageInfo, saveLinkage } from '@/api/visualization/linkage'
@@ -370,6 +371,7 @@ const onDvNameChange = () => {
           <component-group
             :base-width="410"
             :show-split-line="true"
+            is-label
             :icon-name="'dv-view'"
             themes="light"
             title="图表"
@@ -379,27 +381,48 @@ const onDvNameChange = () => {
           <component-group
             :base-width="115"
             :show-split-line="true"
+            is-label
             themes="light"
             icon-name="dv-filter"
             title="查询组件"
           >
             <query-group themes="light" :dv-model="dvModel"></query-group>
           </component-group>
-          <component-group themes="light" :base-width="115" icon-name="dv-text" title="富文本">
+          <component-group
+            is-label
+            themes="light"
+            :base-width="115"
+            icon-name="dv-text"
+            title="富文本"
+          >
             <text-group themes="light" :dv-model="dvModel"></text-group>
           </component-group>
-          <component-group themes="light" :base-width="115" icon-name="dv-media" title="媒体">
+          <component-group
+            is-label
+            themes="light"
+            :base-width="115"
+            icon-name="dv-media"
+            title="媒体"
+          >
             <media-group themes="light" :dv-model="dvModel"></media-group>
           </component-group>
-          <component-group themes="light" :base-width="115" icon-name="dv-tab" title="Tab">
+          <component-group
+            show-split-line
+            themes="light"
+            is-label
+            :base-width="115"
+            icon-name="dv-tab"
+            title="Tab"
+          >
             <tabs-group themes="light" :dv-model="dvModel"></tabs-group>
           </component-group>
           <!--        <component-button :show-split-line="true" icon-name="dv-tab" title="Tab"></component-button>-->
-          <component-button
+          <component-button-label
             icon-name="icon_copy_filled"
             title="复用"
+            is-label
             @customClick="multiplexingCanvasOpen"
-          ></component-button>
+          ></component-button-label>
         </div>
       </template>
 

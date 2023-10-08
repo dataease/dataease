@@ -352,8 +352,8 @@ defineExpose({
             <el-icon style="font-size: 18px" v-else-if="curCanvasType === 'dashboard'">
               <Icon name="dv-dashboard-spine"></Icon>
             </el-icon>
-            <el-icon style="font-size: 18px" v-else>
-              <Icon name="dv-screen-spine"></Icon>
+            <el-icon class="icon-screen-new" style="font-size: 18px" v-else>
+              <Icon name="icon_operation-analysis_outlined"></Icon>
             </el-icon>
             <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
 
@@ -488,6 +488,13 @@ defineExpose({
   &:hover .icon-more {
     margin-left: auto;
     visibility: visible;
+  }
+
+  .icon-screen-new {
+    background: #3370ff;
+    border-radius: 4px;
+    color: #fff;
+    padding: 3px;
   }
 }
 </style>

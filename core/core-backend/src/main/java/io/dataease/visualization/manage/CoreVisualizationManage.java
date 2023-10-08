@@ -9,11 +9,13 @@ import io.dataease.api.visualization.request.VisualizationWorkbranchQueryRequest
 import io.dataease.api.visualization.vo.VisualizationResourceVO;
 import io.dataease.api.visualization.vo.VisualizationStoreVO;
 import io.dataease.commons.constants.DataVisualizationConstants;
+import io.dataease.commons.constants.OptConstants;
 import io.dataease.constant.BusiResourceEnum;
 import io.dataease.exception.DEException;
 import io.dataease.license.config.XpackInteract;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
+import io.dataease.operation.manage.CoreOptRecentManage;
 import io.dataease.utils.*;
 import io.dataease.visualization.dao.auto.entity.DataVisualizationInfo;
 import io.dataease.visualization.dao.auto.mapper.DataVisualizationInfoMapper;
@@ -45,6 +47,9 @@ public class CoreVisualizationManage {
 
     @Resource
     private ExtDataVisualizationMapper extDataVisualizationMapper;
+
+    @Resource
+    private CoreOptRecentManage coreOptRecentManage;
 
     @XpackInteract(value = "visualizationResourceTree", replace = true)
     public List<BusiNodeVO> tree(BusiNodeRequest request) {
@@ -83,6 +88,7 @@ public class CoreVisualizationManage {
             }
         }
         extMapper.batchDel(delIds, System.currentTimeMillis(), AuthUtils.getUser().getUserId());
+        coreOptRecentManage.saveOpt(id, OptConstants.OPT_RESOURCE_TYPE.VISUALIZATION,OptConstants.OPT_TYPE.DELETE);
     }
 
     @XpackInteract(value = "visualizationResourceTree", before = false)
@@ -94,6 +100,7 @@ public class CoreVisualizationManage {
                 DEException.throwException("resource not exist");
             }
             visualizationInfo.setUpdateTime(System.currentTimeMillis());
+            coreOptRecentManage.saveOpt(visualizationInfo.getId(), OptConstants.OPT_RESOURCE_TYPE.VISUALIZATION,OptConstants.OPT_TYPE.UPDATE);
             mapper.updateById(visualizationInfo);
         }
     }
@@ -111,6 +118,7 @@ public class CoreVisualizationManage {
         visualizationInfo.setUpdateTime(System.currentTimeMillis());
         visualizationInfo.setOrgId(AuthUtils.getUser().getDefaultOid());
         mapper.insert(visualizationInfo);
+        coreOptRecentManage.saveOpt(visualizationInfo.getId(), OptConstants.OPT_RESOURCE_TYPE.VISUALIZATION,OptConstants.OPT_TYPE.NEW);
         return visualizationInfo.getId();
     }
 
@@ -119,6 +127,7 @@ public class CoreVisualizationManage {
         visualizationInfo.setUpdateTime(System.currentTimeMillis());
         visualizationInfo.setUpdateBy(AuthUtils.getUser().getUserId().toString());
         mapper.updateById(visualizationInfo);
+        coreOptRecentManage.saveOpt(visualizationInfo.getId(), OptConstants.OPT_RESOURCE_TYPE.VISUALIZATION,OptConstants.OPT_TYPE.UPDATE);
     }
 
     private boolean isTopNode(Long pid) {
@@ -177,8 +186,7 @@ public class CoreVisualizationManage {
         if (StringUtils.isNotBlank(request.getKeyword())) {
             queryWrapper.like("dvResource.name", request.getKeyword());
         }
-        queryWrapper.eq("dvResource.last_editor", uid);
-        queryWrapper.orderBy(true, request.isAsc(), "dvResource.last_edit_time");
+        queryWrapper.orderBy(true, request.isAsc(), "core_opt_recent.time");
         Page<VisualizationResourcePO> page = new Page<>(goPage, pageSize);
         return extDataVisualizationMapper.findRecent(page,uid, queryWrapper);
     }

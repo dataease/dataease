@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { toRefs } from 'vue'
 import { propTypes } from '@/utils/propTypes'
-import Icon from '../icon-custom/src/Icon.vue'
-import { ElCol, ElIcon } from 'element-plus-secondary'
 import ComponentButton from '@/components/visualization/ComponentButton.vue'
+import ComponentButtonLabel from '@/components/visualization/ComponentButtonLabel.vue'
 
 const props = defineProps({
   title: propTypes.string,
@@ -14,6 +13,7 @@ const props = defineProps({
     type: Number,
     default: 200
   },
+  isLabel: propTypes.bool.def(false),
   themes: {
     type: String,
     default: 'dark'
@@ -32,11 +32,12 @@ const { title, iconName, baseWidth, themes } = toRefs(props)
     :popper-class="'custom-popover-' + themes"
   >
     <template #reference>
-      <component-button
+      <component
+        :is="isLabel ? ComponentButtonLabel : ComponentButton"
         :title="title"
         :icon-name="iconName"
         :show-split-line="showSplitLine"
-      ></component-button>
+      ></component>
     </template>
     <slot></slot>
   </el-popover>
