@@ -517,8 +517,13 @@ onMounted(() => {
       </el-select>
     </el-form-item>
     <div v-if="showProperty('seriesLabelFormatter')">
-      <el-form-item>
-        <el-select v-model="curSeriesFormatter" value-key="id" class="series-select">
+      <el-form-item class="form-item" :class="'form-item-' + themes">
+        <el-select
+          :effect="themes"
+          v-model="curSeriesFormatter"
+          value-key="id"
+          class="series-select"
+        >
           <template #prefix>
             <el-icon style="font-size: 14px">
               <Icon
@@ -550,6 +555,7 @@ onMounted(() => {
       <template v-if="curSeriesFormatter?.id">
         <el-form-item class="form-item form-item-checkbox" :class="'form-item-' + themes">
           <el-checkbox
+            :effect="themes"
             size="small"
             @change="changeLabelAttr('seriesLabelFormatter')"
             v-model="curSeriesFormatter.show"
