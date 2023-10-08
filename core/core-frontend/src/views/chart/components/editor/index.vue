@@ -1,5 +1,15 @@
 <script lang="ts" setup>
-import { PropType, reactive, ref, watch, toRefs, computed, nextTick, onBeforeMount } from 'vue'
+import {
+  PropType,
+  reactive,
+  ref,
+  watch,
+  toRefs,
+  computed,
+  nextTick,
+  onBeforeMount,
+  provide
+} from 'vue'
 import type { FormInstance, FormRules } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Field, getFieldByDQ, saveChart } from '@/api/chart'
@@ -235,6 +245,7 @@ const quotaData = computed(() => {
   }
   return state.quotaData
 })
+provide('quotaData', quotaData)
 
 const startToMove = (e, item) => {
   e.dataTransfer.setData('dimension', JSON.stringify({ ...item, datasetId: view.value.tableId }))
@@ -536,9 +547,18 @@ const onLabelChange = val => {
   renderChart(view.value)
 }
 
-const onTooltipChange = val => {
-  view.value.customAttr.tooltip = val
-  renderChart(view.value)
+const onTooltipChange = (chartForm: ChartEditorForm<ChartTooltipAttr>) => {
+  const { data, requestData } = chartForm
+  if (!data) {
+    view.value.customAttr.tooltip = chartForm as unknown as ChartTooltipAttr
+  } else {
+    view.value.customAttr.tooltip = data
+  }
+  if (requestData) {
+    calcData(view.value)
+  } else {
+    renderChart(view.value)
+  }
 }
 
 const onChangeXAxisForm = val => {
@@ -593,6 +613,10 @@ const onThresholdChange = val => {
 const onScrollCfgChange = val => {
   view.value.senior.scrollCfg = val
   renderChart(view.value)
+}
+
+const onExtTooltipChange = val => {
+  view.value.extTooltip = val
 }
 
 const showRename = val => {
@@ -1531,6 +1555,7 @@ const dragVerticalTop = computed(() => {
                       @onTableCellChange="onTableCellChange"
                       @onTableTotalChange="onTableTotalChange"
                       @onChangeMiscStyleForm="onChangeMiscStyleForm"
+                      @onExtTooltipChange="onExtTooltipChange"
                     />
                   </el-scrollbar>
                 </el-container>

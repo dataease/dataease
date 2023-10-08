@@ -23,7 +23,7 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
     'background-overall-component': ['all'],
     'basic-style-selector': ['colors', 'alpha', 'gradient'],
     'label-selector': ['fontSize', 'color', 'vPosition', 'labelFormatter'],
-    'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'tooltipFormatter'],
+    'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'seriesTooltipFormatter'],
     'title-selector': [
       'title',
       'fontSize',
@@ -186,38 +186,12 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
     return tmpOptions
   }
 
-  protected configTooltip(chart: Chart, options: WaterfallOptions): WaterfallOptions {
-    const tooltipAttr = parseJson(chart.customAttr).tooltip
-    if (!tooltipAttr.show) {
-      return {
-        ...options,
-        tooltip: {
-          showContent: false
-        }
-      }
-    }
-    const { customAttr } = chart
-    const t = parseJson(customAttr).tooltip
-    const tooltip = {
-      showTitle: false,
-      formatter: (name, value) => {
-        const obj = { name, value }
-        obj.value = valueFormatter(value, t.tooltipFormatter)
-        return obj
-      }
-    } as any
-    return {
-      ...options,
-      tooltip
-    }
-  }
-
   protected setupOptions(chart: Chart, options: WaterfallOptions): WaterfallOptions {
     return flow(
       this.configTheme,
       this.configBasicStyle,
       this.configLabel,
-      this.configTooltip,
+      this.configMultiSeriesTooltip,
       this.configXAxis,
       this.configYAxis,
       this.configMeta

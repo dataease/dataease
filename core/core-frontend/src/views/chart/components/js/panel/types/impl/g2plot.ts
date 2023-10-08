@@ -5,6 +5,7 @@ import {
   getAnalyseHorizontal,
   getLabel,
   getLegend,
+  getMultiSeriesTooltip,
   getSlider,
   getTheme,
   getTooltip,
@@ -50,6 +51,11 @@ export abstract class G2PlotChartView<
   protected configLabel(chart: Chart, options: O): O {
     const label = getLabel(chart)
     return { ...options, label }
+  }
+
+  protected configMultiSeriesTooltip(chart: Chart, options: O): O {
+    const tooltip = getMultiSeriesTooltip(chart)
+    return { ...options, tooltip }
   }
 
   protected configTooltip(chart: Chart, options: O): O {

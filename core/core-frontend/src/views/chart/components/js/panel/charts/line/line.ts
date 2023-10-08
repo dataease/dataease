@@ -24,7 +24,11 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
   properties = LINE_EDITOR_PROPERTY
   propertyInner = {
     ...LINE_EDITOR_PROPERTY_INNER,
-    'label-selector': ['seriesLabelFormatter']
+    'label-selector': ['seriesLabelFormatter'],
+    'tooltip-selector': [
+      ...LINE_EDITOR_PROPERTY_INNER['tooltip-selector'],
+      'seriesTooltipFormatter'
+    ]
   }
   axis: AxisType[] = [...LINE_AXIS_TYPE, 'xAxisExt']
   axisConfig = {
@@ -151,40 +155,6 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
     }
   }
 
-  protected configTooltip(chart: Chart, options: LineOptions): LineOptions {
-    let tooltip
-    const customAttr: DeepPartial<ChartAttr> = parseJson(chart.customAttr)
-    if (customAttr.tooltip) {
-      const tooltipAttr = customAttr.tooltip
-      if (tooltipAttr.show) {
-        tooltip = {
-          formatter: function (param: Datum) {
-            let res
-            const obj = { name: param.category, value: param.value }
-            const xAxisExt = chart.xAxisExt
-            const yAxis = chart.yAxis
-            for (let i = 0; i < yAxis.length; i++) {
-              const f = yAxis[i]
-              if (f.name === param.category || (yAxis.length && xAxisExt.length)) {
-                if (f.formatterCfg) {
-                  res = valueFormatter(param.value, f.formatterCfg)
-                } else {
-                  res = valueFormatter(param.value, formatterItem)
-                }
-                break
-              }
-            }
-            obj.value = res ?? ''
-            return obj
-          }
-        }
-      } else {
-        tooltip = false
-      }
-    }
-    return { ...options, tooltip }
-  }
-
   protected configBasicStyle(chart: Chart, options: LineOptions): LineOptions {
     // size
     const customAttr: DeepPartial<ChartAttr> = parseJson(chart.customAttr)
@@ -246,7 +216,7 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
     return flow(
       this.configTheme,
       this.configLabel,
-      this.configTooltip,
+      this.configMultiSeriesTooltip,
       this.configBasicStyle,
       this.configCustomColors,
       this.configLegend,

@@ -29,10 +29,7 @@ const state = {
   styleActiveNames: [],
   initReady: true
 }
-type ChartObj = Omit<Chart, 'customStyle' | 'customAttr'> & {
-  customAttr: ChartAttr
-  customStyle: ChartStyle
-}
+
 const props = defineProps({
   chart: {
     type: Object as PropType<ChartObj>,
@@ -81,7 +78,8 @@ const emit = defineEmits([
   'onTableHeaderChange',
   'onTableCellChange',
   'onTableTotalChange',
-  'onChangeMiscStyleForm'
+  'onChangeMiscStyleForm',
+  'onExtTooltipChange'
 ])
 
 const showProperties = (property: EditorProperty) => properties.value?.includes(property)
@@ -132,6 +130,10 @@ const onTableTotalChange = val => {
 }
 const onChangeMiscStyleForm = val => {
   emit('onChangeMiscStyleForm', val)
+}
+
+const onExtTooltipChange = val => {
+  emit('onExtTooltipChange', val)
 }
 watch(
   () => props.chart.id,
@@ -265,6 +267,7 @@ watch(
               :themes="themes"
               :chart="chart"
               @onTooltipChange="onTooltipChange"
+              @onExtTooltipChange="onExtTooltipChange"
             />
           </collapse-switch-item>
         </el-collapse>

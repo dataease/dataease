@@ -28,7 +28,7 @@ export class Scatter extends G2PlotChartView<ScatterOptions, G2Scatter> {
   ]
   propertyInner: EditorPropertyInner = {
     'basic-style-selector': ['colors', 'alpha', 'scatterSymbol', 'scatterSymbolSize'],
-    'label-selector': ['seriesLabelFormatter'],
+    'label-selector': ['fontSize', 'color', 'labelFormatter'],
     'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'seriesTooltipFormatter'],
     'x-axis-selector': [
       'vPosition',
@@ -126,23 +126,6 @@ export class Scatter extends G2PlotChartView<ScatterOptions, G2Scatter> {
     return newChart
   }
 
-  protected configTooltip(chart: Chart, options: ScatterOptions): ScatterOptions {
-    const customAttr: DeepPartial<ChartAttr> = parseJson(chart.customAttr)
-    const tooltipAttr = customAttr.tooltip
-    if (!tooltipAttr.show) {
-      return {
-        ...options,
-        tooltip: false
-      }
-    }
-    const tooltip = {
-      formatter: function (param: Datum) {
-        return singleDimensionTooltipFormatter(param, chart)
-      }
-    }
-    return { ...options, tooltip }
-  }
-
   protected configBasicStyle(chart: Chart, options: ScatterOptions): ScatterOptions {
     const customAttr = parseJson(chart.customAttr)
     const basicStyle = customAttr.basicStyle
@@ -189,61 +172,11 @@ export class Scatter extends G2PlotChartView<ScatterOptions, G2Scatter> {
     return tmpOptions
   }
 
-  protected configLabel(chart: Chart, options: ScatterOptions): ScatterOptions {
-    const tmpOptions = super.configLabel(chart, options)
-    if (!tmpOptions.label) {
-      return {
-        ...tmpOptions,
-        label: false
-      }
-    }
-    const labelAttr = parseJson(chart.customAttr).label
-    const formatterMap = labelAttr.seriesLabelFormatter?.reduce((pre, next) => {
-      pre[next.id] = next
-      return pre
-    }, {})
-    const label = {
-      fields: [],
-      ...tmpOptions.label,
-      formatter: (data: Datum) => {
-        if (!labelAttr.seriesLabelFormatter?.length) {
-          return data.value
-        }
-        const labelCfg = formatterMap?.[data.quotaList[0].id] as SeriesFormatter
-        if (!labelCfg) {
-          return data.value
-        }
-        if (!labelCfg.show) {
-          return
-        }
-        const value = valueFormatter(data.value, labelCfg.formatterCfg)
-        const group = new G2PlotChartView.engine.Group({})
-        group.addShape({
-          type: 'text',
-          attrs: {
-            x: 0,
-            y: 0,
-            text: value,
-            textAlign: 'start',
-            textBaseline: 'top',
-            fontSize: labelCfg.fontSize,
-            fill: labelCfg.color
-          }
-        })
-        return group
-      }
-    }
-    return {
-      ...tmpOptions,
-      label
-    }
-  }
-
   protected setupOptions(chart: Chart, options: ScatterOptions) {
     return flow(
       this.configTheme,
       this.configLabel,
-      this.configTooltip,
+      this.configMultiSeriesTooltip,
       this.configLegend,
       this.configXAxis,
       this.configYAxis,

@@ -4,7 +4,10 @@ import {
 } from '@/views/chart/components/js/panel/types/impl/g2plot'
 import { Pie as G2Pie, PieOptions } from '@antv/g2plot/esm/plots/pie'
 import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
-import { getPadding } from '@/views/chart/components/js/panel/common/common_antv'
+import {
+  getPadding,
+  getTooltipSeriesTotalMap
+} from '@/views/chart/components/js/panel/common/common_antv'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import {
   PIE_AXIS_CONFIG,
@@ -144,30 +147,64 @@ export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
   }
 
   protected configTooltip(chart: Chart, options: PieOptions): PieOptions {
-    const { tooltip, label } = parseJson(chart.customAttr)
-    if (!tooltip.show) {
+    const { tooltip: tooltipAttr, label } = parseJson(chart.customAttr)
+    const { yAxis } = chart
+    if (!tooltipAttr.show) {
       return {
         ...options,
         tooltip: false
       }
     }
     const reserveDecimalCount = label.reserveDecimalCount
+    const seriesTotalMap = getTooltipSeriesTotalMap(options.data)
     // trick, cal total, maybe use scale of chart in plot instance
     const total = options.data?.reduce((pre, next) => add(pre, next.value ?? 0), 0)
-    return {
-      ...options,
-      tooltip: {
-        formatter: function (param: Datum) {
-          const obj = { name: param.field, value: param.value }
-          const res = valueFormatter(param.value, tooltip.tooltipFormatter)
+    const formatterMap = tooltipAttr.seriesTooltipFormatter
+      ?.filter(i => i.show)
+      .reduce((pre, next) => {
+        pre[next.id] = next
+        return pre
+      }, {}) as Record<string, SeriesFormatter>
+    const tooltip: PieOptions['tooltip'] = {
+      showTitle: true,
+      title: () => undefined,
+      customItems(originalItems) {
+        let tooltipItems = originalItems
+        if (tooltipAttr.seriesTooltipFormatter?.length) {
+          tooltipItems = originalItems.filter(item => formatterMap[item.data.quotaList[0].id])
+        }
+        const result = []
+        const head = originalItems[0]
+        tooltipItems.forEach(item => {
+          const formatter = formatterMap[item.data.quotaList[0].id] ?? yAxis[0]
+          const originValue = parseFloat(item.value as string)
+          const value = valueFormatter(originValue, formatter.formatterCfg)
           // sync with label
-          const percent = (Math.round((param.value / total) * 10000) / 100).toFixed(
+          const percent = (Math.round((originValue / total) * 10000) / 100).toFixed(
             reserveDecimalCount
           )
-          obj.value = `${res ?? ''} (${percent}%)`
-          return obj
-        }
+          const name = formatter.chartShowName ?? formatter.name
+          result.push({ ...item, name, value: `${value ?? ''} (${percent}%)` })
+        })
+        head.data.dynamicTooltipValue?.forEach(item => {
+          const formatter = formatterMap[item.fieldId]
+          if (formatter) {
+            const total = seriesTotalMap[item.fieldId]
+            // sync with label
+            const percent = (Math.round((item.value / total) * 10000) / 100).toFixed(
+              reserveDecimalCount
+            )
+            const value = valueFormatter(parseFloat(item.value), formatter.formatterCfg)
+            const name = formatter.chartShowName ?? formatter.name
+            result.push({ color: 'grey', name, value: `${value ?? ''} (${percent}%)` })
+          }
+        })
+        return result
       }
+    }
+    return {
+      ...options,
+      tooltip
     }
   }
 
