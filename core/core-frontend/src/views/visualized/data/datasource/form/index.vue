@@ -8,7 +8,7 @@ import DsTypeList from './DsTypeList.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import EditorDetail from './EditorDetail.vue'
 import ExcelDetail from './ExcelDetail.vue'
-import { save, validate, latestUse } from '@/api/datasource'
+import { save, validate, latestUse, isShowFinishPage } from '@/api/datasource'
 import { Base64 } from 'js-base64'
 import type { Param } from './ExcelDetail.vue'
 import { dsTypes, typeList, nameMap } from './option'
@@ -240,14 +240,18 @@ const continueCreating = () => {
 }
 
 const handleShowFinishPage = ({ id, name }) => {
-  if (editDs.value || wsCache.get('ds-create-success')) {
-    emits('refresh')
-    visible.value = false
-    return
-  }
-  showFinishPage.value = true
-  Object.assign(dsInfo, { id, name })
+  isShowFinishPage().then(res => {
+    if (editDs.value || !res.data) {
+      emits('refresh')
+      visible.value = false
+      return
+    } else {
+      showFinishPage.value = true
+      Object.assign(dsInfo, { id, name })
+    }
+  })
 }
+
 emitter.on('showFinishPage', handleShowFinishPage)
 
 const prev = () => {
@@ -324,7 +328,6 @@ const typeTitle = computed(() => {
 })
 
 const saveDS = () => {
-  console.log(form)
   const request = JSON.parse(JSON.stringify(form)) as unknown as Omit<
     Form,
     'configuration' | 'apiConfiguration'

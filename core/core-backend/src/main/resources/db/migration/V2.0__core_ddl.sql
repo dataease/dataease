@@ -4172,6 +4172,13 @@ ALTER TABLE `core_datasource`
     ADD COLUMN `update_by` bigint NULL COMMENT '变更人' AFTER `update_time`;
 
 
+DROP TABLE IF EXISTS `core_ds_finish_page`;
+CREATE TABLE `core_ds_finish_page`
+(
+    `id`            bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
+    PRIMARY KEY (`id`)
+);
+
 DROP TABLE IF EXISTS `core_opt_recent`;
 CREATE TABLE `core_opt_recent` (
                                    `id` bigint NOT NULL COMMENT 'ID',
