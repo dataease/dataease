@@ -1,14 +1,9 @@
 <script lang="tsx" setup>
-import { useI18n } from '@/hooks/web/useI18n'
-import { onMounted, reactive, ref, toRefs, watch } from 'vue'
+import { onMounted, reactive, toRefs, watch } from 'vue'
 import { formatterItem } from '@/views/chart/components/js/formatter'
 import { getItemType } from './utils'
 import { Delete, Filter } from '@element-plus/icons-vue'
 import { fieldType } from '@/utils/attr'
-
-const { t } = useI18n()
-
-const showDateExt = ref(false)
 
 const state = reactive({
   formatterItem: formatterItem,
@@ -112,13 +107,10 @@ onMounted(() => {
           </el-icon>
         </span>
         <span class="item-span-style" :title="item.name">{{ item.name }}</span>
-        <el-icon
-          class="child"
-          style="position: absolute; top: 7px; right: 24px; color: #a6a6a6; cursor: pointer"
-        >
+        <el-icon class="child remove-icon" size="14px">
           <Icon
             name="icon_delete-trash_outlined"
-            class="el-icon-arrow-down el-icon-delete"
+            class-name="inner-class"
             @click="removeItem"
           ></Icon>
         </el-icon>
@@ -216,6 +208,18 @@ span {
 .drop-style {
   :deep(.ed-dropdown-menu__item) {
     height: 32px;
+  }
+}
+
+.remove-icon {
+  position: absolute;
+  top: 7px;
+  right: 24px;
+  color: #646a73;
+  cursor: pointer;
+
+  .inner-class {
+    font-size: 14px;
   }
 }
 

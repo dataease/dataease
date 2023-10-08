@@ -332,11 +332,8 @@ onMounted(() => {
           <template #content>
             <span>{{ t('chart.delete') }}</span>
           </template>
-          <el-icon
-            class="child"
-            style="position: absolute; top: 7px; right: 24px; color: #a6a6a6; cursor: pointer"
-          >
-            <Icon name="icon_delete-trash_outlined" @click="removeItem" />
+          <el-icon class="child remove-icon" size="14px">
+            <Icon class-name="inner-class" name="icon_delete-trash_outlined" @click="removeItem" />
           </el-icon>
         </el-tooltip>
 
@@ -893,6 +890,18 @@ span {
     :deep(.ed-dropdown-menu__item:not(.is_disabled):focus) {
       background-color: rgba(235, 235, 235, 0.1);
     }
+  }
+}
+
+.remove-icon {
+  position: absolute;
+  top: 7px;
+  right: 24px;
+  color: #646a73;
+  cursor: pointer;
+
+  .inner-class {
+    font-size: 14px;
   }
 }
 

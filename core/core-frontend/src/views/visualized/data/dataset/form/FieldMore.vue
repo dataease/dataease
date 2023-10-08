@@ -92,14 +92,15 @@ const options = computed(() => {
       icon: 'icon_delete-trash_outlined'
     }
   ]
-  if (props.extField === 2) {
-    optionArr.splice(3, 1)
+  if (props.extField !== 2) {
+    optionArr.splice(2, 1)
   }
   return optionArr
 })
 const deTypeArr = ref([])
 const popover = ref()
 const level = ref(1)
+const cascaderPanel = ref()
 const handleExpand = val => {
   level.value = val.left + 1
 }
@@ -121,6 +122,7 @@ const handleChange = () => {
   <el-popover
     popper-class="menu-more_popper_one"
     show-arrow
+    :persistent="false"
     ref="popover"
     placement="right"
     :width="level * 175"
@@ -134,6 +136,7 @@ const handleChange = () => {
     <ElCascaderPanel
       v-model="deTypeArr"
       @expand-change="handleExpand"
+      ref="cascaderPanel"
       :border="false"
       :options="options"
       @change="handleChange"
@@ -176,6 +179,11 @@ const handleChange = () => {
   background: transparent !important;
   box-shadow: none !important;
   border: none !important;
+
+  .ed-cascader-node.in-active-path {
+    color: #1f2329;
+    font-weight: 400;
+  }
   .ed-cascader-panel {
     .ed-cascader-menu {
       border-radius: 4px;
