@@ -170,7 +170,7 @@ const themeChange = modifyName => {
   if (modifyName === 'themeColor') {
     // 主题变更
     canvasStyleData.value.component.chartCommonStyle.backgroundColorSelect = true
-    canvasStyleData.value.backgroundType = 'backgroundColor'
+    canvasStyleData.value.backgroundColorSelect = true
     if (canvasStyleData.value.dashboard.themeColor === 'light') {
       canvasStyleData.value.backgroundColor = LIGHT_THEME_DASHBOARD_BACKGROUND
       canvasStyleData.value.component.chartCommonStyle = deepCopy(COMMON_COMPONENT_BACKGROUND_LIGHT)
