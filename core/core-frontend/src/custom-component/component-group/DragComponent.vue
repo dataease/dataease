@@ -48,7 +48,7 @@ const { icon, name, label, dragInfo, themes } = toRefs(props)
     background-color: #f5f6f7 !important;
   }
   :deep(.label-content) {
-    color: #1a1a1a !important;
+    color: #646a73 !important;
   }
 }
 .drag-component {
@@ -66,7 +66,7 @@ const { icon, name, label, dragInfo, themes } = toRefs(props)
     justify-content: center; /* 水平居中 */
     align-items: center; /* 垂直居中 */
     text-align: center;
-    background-color: #000;
+    background-color: #1a1a1a;
     width: 100%;
     height: 60px;
     .drag-icon {
