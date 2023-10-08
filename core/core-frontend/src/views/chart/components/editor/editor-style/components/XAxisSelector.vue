@@ -131,6 +131,7 @@ onMounted(() => {
         :effect="props.themes"
         v-model="state.axisForm.name"
         size="small"
+        maxlength="50"
         @blur="changeAxisStyle('name')"
       />
     </el-form-item>
