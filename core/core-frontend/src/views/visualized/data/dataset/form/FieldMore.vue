@@ -100,6 +100,7 @@ const options = computed(() => {
 const deTypeArr = ref([])
 const popover = ref()
 const level = ref(1)
+const cascaderPanel = ref()
 const handleExpand = val => {
   level.value = val.left + 1
 }
@@ -121,6 +122,7 @@ const handleChange = () => {
   <el-popover
     popper-class="menu-more_popper_one"
     show-arrow
+    :persistent="false"
     ref="popover"
     placement="right"
     :width="level * 175"
@@ -134,6 +136,7 @@ const handleChange = () => {
     <ElCascaderPanel
       v-model="deTypeArr"
       @expand-change="handleExpand"
+      ref="cascaderPanel"
       :border="false"
       :options="options"
       @change="handleChange"
