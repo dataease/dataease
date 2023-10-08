@@ -651,6 +651,7 @@ defineExpose({
               <span class="dataset ellipsis">{{ field.name }}</span>
               <el-select
                 @change="setType"
+                style="margin-left: 12px"
                 v-if="curComponent.checkedFields.includes(field.componentId)"
                 v-model="curComponent.checkedFieldsMap[field.componentId]"
                 clearable
