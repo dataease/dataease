@@ -24,6 +24,7 @@ declare module '@vue/runtime-core' {
     ColorScheme: typeof import('./src/components/color-scheme/src/ColorScheme.vue')['default']
     ColumnList: typeof import('./src/components/column-list/src/ColumnList.vue')['default']
     ComponentButton: typeof import('./src/components/visualization/ComponentButton.vue')['default']
+    ComponentButtonLabel: typeof import('./src/components/visualization/ComponentButtonLabel.vue')['default']
     ComponentColorSelector: typeof import('./src/components/dashboard/subject-setting/dashboard-style/ComponentColorSelector.vue')['default']
     ComponentEditBar: typeof import('./src/components/visualization/ComponentEditBar.vue')['default']
     ComponentGroup: typeof import('./src/components/visualization/ComponentGroup.vue')['default']
