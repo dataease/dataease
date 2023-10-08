@@ -742,10 +742,16 @@ const setActiveName = (data: Table) => {
   activeName.value = data.tableName
 }
 
+const isDragging = ref(false)
+
 const mousedownDrag = () => {
+  isDragging.value = true
+  document.querySelector('body').style.userSelect = 'none'
   document.querySelector('.dataset-db').addEventListener('mousemove', calculateWidth)
 }
 const mouseupDrag = () => {
+  isDragging.value = false
+  document.querySelector('body').style.userSelect = 'auto'
   const dom = document.querySelector('.dataset-db')
   dom.removeEventListener('mousemove', calculateWidth)
   dom.removeEventListener('mousemove', calculateHeight)
@@ -1058,6 +1064,7 @@ const treeProps = {
         v-show="showLeft"
         :style="{ left: LeftWidth + 'px' }"
         class="drag-left"
+        :class="isDragging && 'is-dragging'"
         @mousedown="mousedownDrag"
       />
       <div
@@ -1762,10 +1769,13 @@ const treeProps = {
     .drag-left {
       position: absolute;
       height: calc(100vh - 56px);
-      width: 2px;
+      width: 4px;
       top: 0;
-      z-index: 5;
+      z-index: 2;
       cursor: col-resize;
+      &.is-dragging {
+        background: #3370ff;
+      }
     }
 
     .arrow-right {
@@ -1826,7 +1836,7 @@ const treeProps = {
           font-size: 36px;
           right: -30px;
           top: -5px;
-          z-index: 1;
+          z-index: 5;
         }
       }
 
