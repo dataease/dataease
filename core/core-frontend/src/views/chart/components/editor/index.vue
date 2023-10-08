@@ -1103,8 +1103,8 @@ const dragVerticalTop = computed(() => {
                           {{ chartViewInstance.axisConfig.xAxis.name }}
                         </span>
                         <el-tooltip effect="dark" placement="top" :content="t('common.delete')">
-                          <el-icon class="remove-icon" @click="removeItems('xAxis')">
-                            <Icon name="icon_delete-trash_outlined" />
+                          <el-icon class="remove-icon" size="14px" @click="removeItems('xAxis')">
+                            <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
                           </el-icon>
                         </el-tooltip>
                       </div>
@@ -1145,8 +1145,8 @@ const dragVerticalTop = computed(() => {
                           {{ chartViewInstance.axisConfig.xAxisExt.name }}
                         </span>
                         <el-tooltip effect="dark" placement="top" :content="t('common.delete')">
-                          <el-icon class="remove-icon" @click="removeItems('xAxisExt')">
-                            <Icon name="icon_delete-trash_outlined" />
+                          <el-icon class="remove-icon" size="14px" @click="removeItems('xAxisExt')">
+                            <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
                           </el-icon>
                         </el-tooltip>
                       </div>
@@ -1186,8 +1186,8 @@ const dragVerticalTop = computed(() => {
                           {{ chartViewInstance.axisConfig.extStack.name }}
                         </span>
                         <el-tooltip effect="dark" placement="top" :content="t('common.delete')">
-                          <el-icon class="remove-icon" @click="removeItems('extStack')">
-                            <Icon name="icon_delete-trash_outlined" />
+                          <el-icon class="remove-icon" size="14px" @click="removeItems('extStack')">
+                            <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
                           </el-icon>
                         </el-tooltip>
                       </div>
@@ -1227,8 +1227,8 @@ const dragVerticalTop = computed(() => {
                           {{ chartViewInstance.axisConfig.yAxis.name }}
                         </span>
                         <el-tooltip effect="dark" placement="top" :content="t('common.delete')">
-                          <el-icon class="remove-icon" @click="removeItems('yAxis')">
-                            <Icon name="icon_delete-trash_outlined" />
+                          <el-icon class="remove-icon" size="14px" @click="removeItems('yAxis')">
+                            <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
                           </el-icon>
                         </el-tooltip>
                       </div>
@@ -1269,8 +1269,12 @@ const dragVerticalTop = computed(() => {
                           {{ chartViewInstance.axisConfig.extBubble.name }}
                         </span>
                         <el-tooltip effect="dark" placement="top" :content="t('common.delete')">
-                          <el-icon class="remove-icon" @click="removeItems('extBubble')">
-                            <Icon name="icon_delete-trash_outlined" />
+                          <el-icon
+                            class="remove-icon"
+                            size="14px"
+                            @click="removeItems('extBubble')"
+                          >
+                            <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
                           </el-icon>
                         </el-tooltip>
                       </div>
@@ -1325,8 +1329,12 @@ const dragVerticalTop = computed(() => {
                           </el-tooltip>
                         </span>
                         <el-tooltip effect="dark" placement="top" :content="t('common.delete')">
-                          <el-icon class="remove-icon" @click="removeItems('drillFields')">
-                            <Icon name="icon_delete-trash_outlined" />
+                          <el-icon
+                            class="remove-icon"
+                            size="14px"
+                            @click="removeItems('drillFields')"
+                          >
+                            <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
                           </el-icon>
                         </el-tooltip>
                       </div>
@@ -1364,8 +1372,12 @@ const dragVerticalTop = computed(() => {
                           {{ t('chart.result_filter') }}
                         </span>
                         <el-tooltip effect="dark" placement="top" :content="t('common.delete')">
-                          <el-icon class="remove-icon" @click="removeItems('customFilter')">
-                            <Icon name="icon_delete-trash_outlined" />
+                          <el-icon
+                            class="remove-icon"
+                            size="14px"
+                            @click="removeItems('customFilter')"
+                          >
+                            <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
                           </el-icon>
                         </el-tooltip>
                       </div>
@@ -2344,10 +2356,14 @@ span {
     }
 
     .remove-icon {
-      color: #a6a6a6;
+      color: #646a73;
       cursor: pointer;
-      padding: 2px;
-      font-size: 16px;
+      margin-top: 2px;
+      margin-right: 2px;
+
+      .inner-class {
+        font-size: 14px;
+      }
     }
   }
 

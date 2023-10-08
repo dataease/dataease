@@ -83,10 +83,12 @@ export const DEFAULT_CANVAS_STYLE_DATA_BASE = {
   scale: 60,
   scaleWidth: 100,
   scaleHeight: 100,
-  backgroundType: 'backgroundColor',
+  backgroundColorSelect: true,
+  backgroundImageEnable: false,
+  backgroundType: 'backgroundColor', // 废弃
   background: '',
   openCommonStyle: true,
-  opacity: 1,
+  opacity: 1, // 废弃
   fontSize: 14
 }
 

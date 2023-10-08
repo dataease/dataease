@@ -180,29 +180,20 @@ export function getComponentRotatedStyle(style) {
   return style
 }
 
-const filterKeys = ['width', 'height', 'scale']
 export function getCanvasStyle(canvasStyleData) {
-  const result = {}
-  const backgroundType = canvasStyleData.backgroundType
-  Object.keys(canvasStyleData)
-    .filter(key => !filterKeys.includes(key))
-    .forEach(key => {
-      if (key === 'background' || key === 'backgroundColor') {
-        result[backgroundType] = canvasStyleData[backgroundType]
-        if (backgroundType === 'background') {
-          result[backgroundType] = `url(${imgUrlTrans(canvasStyleData[backgroundType])}) no-repeat`
-        } else {
-          result[backgroundType] = canvasStyleData[backgroundType]
-        }
-      } else {
-        result[key] = canvasStyleData[key]
-      }
-      if (key === 'fontSize') {
-        result[key] += 'px'
-      }
-    })
-
-  return result
+  const { backgroundColorSelect, background, backgroundColor, backgroundImageEnable, fontSize } =
+    canvasStyleData
+  const style = { fontSize: fontSize + 'px' }
+  let colorRGBA = ''
+  if (backgroundColorSelect && backgroundColor) {
+    colorRGBA = backgroundColor
+  }
+  if (backgroundImageEnable) {
+    style['background'] = `url(${imgUrlTrans(background)}) no-repeat ${colorRGBA}`
+  } else {
+    style['background-color'] = colorRGBA
+  }
+  return style
 }
 
 export function createGroupStyle(groupComponent) {
