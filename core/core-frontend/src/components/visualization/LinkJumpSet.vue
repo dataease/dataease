@@ -255,7 +255,7 @@
                                     <svg-icon
                                       v-if="viewField.deType === 5"
                                       icon-class="field_location"
-                                      class="field-icon-location"
+                                      class="field-icon-red"
                                     />
                                   </span>
                                   <span style="float: left; font-size: 12px">
