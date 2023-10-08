@@ -97,26 +97,26 @@ watch(
           <Icon name="dv-head-more"></Icon>
         </el-icon>
         <template #dropdown>
-          <el-dropdown-menu style="width: 100px">
-            <el-dropdown-item icon="Refresh" @click="reload()">刷新数据</el-dropdown-item>
+          <el-dropdown-menu style="width: 130px">
+            <el-dropdown-item icon="Refresh" @click="reload()">刷新数据 </el-dropdown-item>
             <el-dropdown
               style="width: 100%"
               trigger="hover"
               placement="left-start"
               v-if="dvInfo.weight > 3"
             >
-              <div style="margin-left: 15px">
+              <div class="flex-align-center icon" style="padding: 5px 16px; white-space: nowrap">
                 <el-icon><Download /></el-icon>
-                导出为
+                导出为&nbsp;&nbsp;&nbsp;&nbsp;
                 <el-icon><ArrowRight /></el-icon>
               </div>
               <template #dropdown>
                 <el-dropdown-menu>
-                  <el-dropdown-item @click="download('pdf')">{{
-                    t('visualization.export_to_pdf')
-                  }}</el-dropdown-item>
+                  <el-dropdown-item style="width: 118px" @click="download('pdf')"
+                    >PDF</el-dropdown-item
+                  >
                   <el-dropdown-item @click="download('img')">{{
-                    t('visualization.export_to_img')
+                    t('chart.image')
                   }}</el-dropdown-item>
                 </el-dropdown-menu>
               </template>
