@@ -235,17 +235,21 @@ body {
   border-radius: 4px;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(235, 235, 235, 0.10);
   }
 
   &:active {
-    background: rgba(255, 255, 255, 0.2);
+    background: transparent;
   }
 }
 
 .toolbar-icon-disabled {
   cursor: not-allowed !important;
-  color: rgba(255, 255, 255, 0.6) !important;
+  color: #5f5f5f !important;
+  &:active,
+  &:hover {
+    background: transparent;
+  }
 }
 
 .chart-type-style-dark {
