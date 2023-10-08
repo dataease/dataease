@@ -1776,7 +1776,15 @@ const treeProps = {
       top: 0;
       z-index: 2;
       cursor: col-resize;
-      &.is-dragging {
+
+      &.is-dragging::after,
+      &:hover::after {
+        width: 1px;
+        height: 100%;
+        content: '';
+        position: absolute;
+        left: 0px;
+        top: 0;
         background: #3370ff;
       }
     }
