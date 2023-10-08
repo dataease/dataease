@@ -654,7 +654,10 @@ public class CalciteProvider {
         LogUtil.info("Begin to init datasource pool...");
         QueryWrapper<CoreDatasource> datasourceQueryWrapper = new QueryWrapper();
         List<CoreDatasource> coreDatasources = coreDatasourceMapper.selectList(datasourceQueryWrapper).stream().filter(coreDatasource -> !Arrays.asList("folder", "API", "Excel").contains(coreDatasource.getType())).collect(Collectors.toList());
-        coreDatasources.add(engineServer.getDeEngine());
+        CoreDatasource engine = engineServer.deEngine();
+        if (engine != null) {
+            coreDatasources.add(engine);
+        }
         Map<Long, DatasourceSchemaDTO> dsMap = new HashMap<>();
         for (CoreDatasource coreDatasource : coreDatasources) {
             DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
@@ -699,7 +702,7 @@ public class CalciteProvider {
         try {
             CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
             SchemaPlus rootSchema = calciteConnection.getRootSchema();
-            if(rootSchema.getSubSchema(datasourceSchemaDTO.getSchemaAlias()) != null){
+            if (rootSchema.getSubSchema(datasourceSchemaDTO.getSchemaAlias()) != null) {
                 JdbcSchema jdbcSchema = rootSchema.getSubSchema(datasourceSchemaDTO.getSchemaAlias()).unwrap(JdbcSchema.class);
                 BasicDataSource basicDataSource = (BasicDataSource) jdbcSchema.getDataSource();
                 basicDataSource.close();
@@ -713,12 +716,11 @@ public class CalciteProvider {
 
     public Connection take() {
         // 为了避免出现线程安全问题，这里使用 synchronized 锁，也可以使用 cas
-        if(connection == null){
+        if (connection == null) {
             DEException.throwException("初始化连接池失败!");
         }
         return connection;
     }
-
 
 
 }

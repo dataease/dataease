@@ -287,7 +287,7 @@ const validate = () => {
 
 const confirmClick = () => {
   if (validate()) return
-  inputCom.value.mult?.handleClickOutside?.()
+  inputCom.value?.mult?.handleClickOutside?.()
   dialogVisible.value = false
   conditions.value.forEach(ele => {
     curComponent.value = ele

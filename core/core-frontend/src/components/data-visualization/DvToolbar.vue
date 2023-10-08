@@ -188,16 +188,22 @@ eventBus.on('clearCanvas', clearCanvas)
         </div>
       </div>
       <div class="middle-area">
-        <component-group :base-width="410" icon-name="dv-view" title="图表">
+        <component-group
+          show-split-line
+          is-label
+          :base-width="410"
+          icon-name="dv-view"
+          title="图表"
+        >
           <user-view-group></user-view-group>
         </component-group>
-        <component-group :base-width="115" icon-name="dv-text" title="文本">
+        <component-group is-label :base-width="115" icon-name="dv-text" title="文本">
           <text-group></text-group>
         </component-group>
-        <component-group :base-width="115" icon-name="dv-media" title="媒体">
+        <component-group is-label :base-width="115" icon-name="dv-media" title="媒体">
           <media-group></media-group>
         </component-group>
-        <component-group :base-width="410" icon-name="dv-material" title="素材">
+        <component-group is-label :base-width="410" icon-name="dv-material" title="素材">
           <common-group></common-group>
         </component-group>
       </div>

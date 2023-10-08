@@ -4,12 +4,12 @@
 
 function startDATAEASE
 {
-    dectl reload
+    dectl start
 }
 
 function stopDATAEASE
 {
-    dectl uninstall
+    dectl stop
 }
 
 function restartDATAEASE
