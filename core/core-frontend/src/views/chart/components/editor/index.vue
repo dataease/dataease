@@ -2252,20 +2252,20 @@ span {
         background: rgba(235, 235, 235, 0.1);
       }
     }
-  }
 
-  :deep(.sortable-chosen) {
-    border: 1px solid #3370ff;
-    background: #fff;
-
-    &:hover {
+    &.sortable-chosen {
+      border: 1px solid #3370ff;
       background: #fff;
-    }
 
-    &.item-dimension--dark {
-      background: #1a1a1a;
       &:hover {
+        background: #fff;
+      }
+
+      &.item-dimension--dark {
         background: #1a1a1a;
+        &:hover {
+          background: #1a1a1a;
+        }
       }
     }
   }
