@@ -238,7 +238,7 @@ onMounted(() => {
 
 <template>
   <el-form :model="state.miscForm">
-    <el-row :gutter="8">
+    <el-row :gutter="8" v-if="!props.chart.type.includes('liquid')">
       <el-col :span="12">
         <el-form-item
           :label="t('chart.start_angle')"
