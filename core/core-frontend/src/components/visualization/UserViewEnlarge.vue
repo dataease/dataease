@@ -9,22 +9,26 @@
   >
     <div class="export-button">
       <el-button
+        class="m-button"
         v-if="optType === 'enlarge'"
         link
         icon="Download"
         size="middle"
         @click="downloadViewImage"
-        >{{ t('chart.export_img') }}</el-button
       >
+        {{ t('chart.export_img') }}
+      </el-button>
       <el-button
+        class="m-button"
         v-if="optType === 'details'"
         link
         icon="Download"
         size="middle"
         @click="downloadViewDetails"
-        >导出Excel</el-button
       >
-      <el-divider direction="vertical" />
+        导出Excel
+      </el-button>
+      <el-divider class="close-divider" direction="vertical" />
     </div>
     <div class="enlarge-outer" ref="viewContainer" v-if="dialogShow">
       <component-wrapper
@@ -54,7 +58,6 @@ import { deepCopy } from '@/utils/utils'
 import ChartComponentS2 from '@/views/chart/components/views/components/ChartComponentS2.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { VIEW_DETAILS_BASH_STYLE } from '@/views/chart/components/editor/util/dataVisualiztion'
-import { innerExportDetails } from '@/api/chart'
 import { exportExcelDownload } from '@/views/chart/components/js/util'
 import { storeToRefs } from 'pinia'
 const dvMainStore = dvMainStoreWithOut()
@@ -128,6 +131,34 @@ defineExpose({
   right: 48px;
   top: 26px;
   z-index: 2;
+
+  .m-button {
+    color: #1f2329;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+  }
+
+  .ed-button.is-link {
+    font-size: 12px;
+    font-weight: 400;
+    padding: 4px;
+
+    &:not(.is-disabled):focus,
+    &:not(.is-disabled):hover {
+      color: #1f2329;
+      border-color: transparent;
+      background-color: rgba(31, 35, 41, 0.1);
+    }
+    &:not(.is-disabled):active {
+      color: #1f2329;
+      border-color: transparent;
+      background-color: rgba(31, 35, 41, 0.2);
+    }
+  }
+}
+.close-divider {
+  margin: 0 16px 0 12px;
 }
 .enlarge-outer {
   position: relative;
