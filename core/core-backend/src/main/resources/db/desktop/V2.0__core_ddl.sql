@@ -4182,3 +4182,15 @@ INSERT INTO `dataease`.`visualization_subject` (`id`, `name`, `type`, `details`,
 
 ALTER TABLE `core_datasource`
     ADD COLUMN `update_by` bigint NULL COMMENT '变更人' AFTER `update_time`;
+
+
+DROP TABLE IF EXISTS `core_opt_recent`;
+CREATE TABLE `core_opt_recent` (
+                                   `id` bigint NOT NULL COMMENT 'ID',
+                                   `resource_id` bigint NOT NULL COMMENT '资源ID',
+                                   `uid` bigint NOT NULL COMMENT '用户ID',
+                                   `resource_type` int NOT NULL COMMENT '资源类型',
+                                   `opt_type` int DEFAULT NULL COMMENT '1 新建 2 修改',
+                                   `time` bigint NOT NULL COMMENT '收藏时间',
+                                   PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
