@@ -44,6 +44,7 @@ export const compareStorage = (oldVal?: string, newVal?: string) => {
   if (oldVal === newVal) {
     return true
   }
+  /* unfinished please do not delete
   let oldObj = null
   let newObj = null
   let oldText = null
@@ -56,5 +57,5 @@ export const compareStorage = (oldVal?: string, newVal?: string) => {
     newObj = JSON.parse(newVal)
     newText = newObj['v']
   }
-  return oldText === newText
+  return oldText === newText */
 }

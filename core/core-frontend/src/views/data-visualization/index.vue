@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import RealTimeComponentList from '@/components/data-visualization/RealTimeComponentList.vue'
 import CanvasAttr from '@/components/data-visualization/CanvasAttr.vue'
-import { computed, watch, onMounted, reactive, ref, nextTick } from 'vue'
+import { computed, watch, onMounted, reactive, ref, nextTick, onUnmounted } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
@@ -23,12 +23,20 @@ import { listenGlobalKeyDown } from '@/utils/DeShortcutKey'
 import { adaptCurThemeCommonStyle } from '@/utils/canvasStyle'
 import { changeComponentSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
 import { useEmitt } from '@/hooks/web/useEmitt'
+import { check, compareStorage } from '@/utils/CrossPermission'
+import { useCache } from '@/hooks/web/useCache'
+const { wsCache } = useCache()
+const eventCheck = e => {
+  if (e.key === 'screen-weight' && !compareStorage(e.oldValue, e.newValue)) {
+    const { dvId } = window.DataEaseBi || router.currentRoute.value.query
+    check(wsCache.get('screen-weight'), dvId)
+  }
+}
 
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
 const composeStore = composeStoreWithOut()
-const activeName = ref('attr')
 const { componentData, curComponent, isClickComponent, canvasStyleData, canvasViewInfo, editMode } =
   storeToRefs(dvMainStore)
 const { editorMap } = storeToRefs(composeStore)
@@ -156,6 +164,9 @@ watch(
 )
 
 onMounted(() => {
+  if (editMode.value === 'edit') {
+    window.addEventListener('storage', eventCheck)
+  }
   initDataset()
   const { dvId, opt, pid } = window.DataEaseBi || router.currentRoute.value.query
   if (dvId) {
@@ -187,6 +198,10 @@ onMounted(() => {
       initScroll()
     }
   })
+})
+
+onUnmounted(() => {
+  window.removeEventListener('storage', eventCheck)
 })
 
 const previewStatus = computed(() => editMode.value === 'preview')
