@@ -199,13 +199,9 @@ const executeVersionHandler = (response: AxiosResponse) => {
       cancelButtonText: '取消',
       autofocus: false,
       showClose: false
+    }).then(() => {
+      window.location.reload()
     })
-      .then(() => {
-        window.location.reload()
-      })
-      .catch(() => {
-        console.info('are you f**king kidding me')
-      })
   }
 }
 export { service, cancelMap }
