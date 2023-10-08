@@ -46,10 +46,25 @@ public class EngineServer {
 
     public CoreDatasource getDeEngine(){
         List<CoreDeEngine> deEngines = deEngineMapper.selectList(null);
+        if(CollectionUtils.isEmpty(deEngines)){
+            DEException.throwException("未完整设置数据引擎");
+        }
         CoreDatasource coreDatasource = new CoreDatasource();
         BeanUtils.copyBean(coreDatasource, deEngines.get(0));
         return coreDatasource;
     }
+
+
+    public CoreDatasource deEngine(){
+        List<CoreDeEngine> deEngines = deEngineMapper.selectList(null);
+        CoreDatasource coreDatasource = new CoreDatasource();
+        if(CollectionUtils.isEmpty(deEngines)){
+            return null;
+        }
+        BeanUtils.copyBean(coreDatasource, deEngines.get(0));
+        return coreDatasource;
+    }
+
     public ResultMessage validate(CoreDeEngine engine) throws Exception {
         if (StringUtils.isEmpty(engine.getType()) || StringUtils.isEmpty(engine.getConfiguration())) {
             throw new Exception("未完整设置数据引擎");
@@ -87,7 +102,6 @@ public class EngineServer {
         if (!CollectionUtils.isEmpty(deEngines)) {
             return;
         }
-
 
         CoreDeEngine engine = new CoreDeEngine();
         if(ModelUtils.isDesktop()){

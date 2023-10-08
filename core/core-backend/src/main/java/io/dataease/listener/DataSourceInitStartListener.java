@@ -1,6 +1,5 @@
 package io.dataease.listener;
 
-import io.dataease.api.ds.vo.DatasourceDTO;
 import io.dataease.datasource.dao.auto.entity.CoreDatasourceTask;
 import io.dataease.datasource.manage.DatasourceSyncManage;
 import io.dataease.datasource.provider.CalciteProvider;
