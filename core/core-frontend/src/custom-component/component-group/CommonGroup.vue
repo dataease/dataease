@@ -69,7 +69,12 @@ const groupActiveChange = category => {
       </ul>
     </div>
     <el-scrollbar ref="commonGroup" class="group-right" height="392px">
-      <el-row :id="groupInfo.category" v-for="groupInfo in state.groupList" :key="groupInfo.title">
+      <el-row
+        style="padding: 1px"
+        :id="groupInfo.category"
+        v-for="groupInfo in state.groupList"
+        :key="groupInfo.title"
+      >
         <el-col
           v-show="state.curCategory === groupInfo.category"
           :class="'item' + groupInfo.span"
@@ -159,14 +164,18 @@ const groupActiveChange = category => {
     width: 88px;
     height: 64px;
     background: #1a1a1a;
+    padding: 4px;
     border-radius: 4px;
     cursor: pointer;
     &:hover {
-      border: 1px solid #3370ff;
+      outline: 1px solid #3370ff;
+      .item-top-icon {
+        background-color: rgba(51, 112, 255, 0.1);
+      }
     }
     .item-top-icon {
-      width: 86px;
-      height: 62px;
+      width: 80px;
+      height: 56px;
       color: @canvas-main-font-color;
     }
   }
@@ -182,16 +191,20 @@ const groupActiveChange = category => {
 .item4 {
   margin-bottom: 12px;
   .item-top {
-    width: 24px;
-    height: 24px;
+    width: 28px;
+    height: 28px;
     border-radius: 4px;
+    padding: 4px;
     cursor: pointer;
     &:hover {
-      border: 1px solid #3370ff;
+      outline: 1px solid #3370ff;
+      svg {
+        background-color: rgba(51, 112, 255, 0.1);
+      }
     }
     .item-top-icon {
-      width: 23px;
-      height: 23px;
+      width: 20px;
+      height: 20px;
       color: @canvas-main-font-color;
     }
   }
