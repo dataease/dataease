@@ -92,8 +92,8 @@ const options = computed(() => {
       icon: 'icon_delete-trash_outlined'
     }
   ]
-  if (props.extField === 2) {
-    optionArr.splice(3, 1)
+  if (props.extField !== 2) {
+    optionArr.splice(2, 1)
   }
   return optionArr
 })

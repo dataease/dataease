@@ -445,9 +445,12 @@ const renameField = item => {
   editNormalField.value = true
 }
 
+const calcTitle = ref('')
+
 const editField = item => {
   editCalcField.value = true
   nextTick(() => {
+    calcTitle.value = item.id ? t('dataset.edit_calc_field') : t('dataset.add_calc_field')
     calcEdit.value.initEdit(item, dimensions.value, quota.value)
   })
 }
@@ -1664,7 +1667,7 @@ const treeProps = {
     custom-class="calc-field-edit-dialog"
     v-model="editCalcField"
     width="1000px"
-    :title="t('dataset.add_calc_field')"
+    :title="calcTitle"
   >
     <calc-field-edit ref="calcEdit" />
     <template #footer>
