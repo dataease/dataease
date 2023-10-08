@@ -74,7 +74,7 @@ watch(
     <el-divider style="margin: 0 16px" direction="vertical" />
     <div class="create-area flex-align-center">
       <span>创建人:{{ dvInfo.creatorName }}</span>
-      <el-popover show-arrow placement="right-start" width="400" trigger="click">
+      <el-popover show-arrow :offset="8" placement="bottom" width="400" trigger="hover">
         <template #reference>
           <el-icon class="info-tips"><Icon name="dv-info"></Icon></el-icon>
         </template>

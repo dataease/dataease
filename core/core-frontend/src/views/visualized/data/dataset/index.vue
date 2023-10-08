@@ -526,7 +526,7 @@ const filterNode = (value: string, data: BusiTreeNode) => {
               {{ t('visualization.create_by') }}:{{ nodeInfo.creator }}
             </span>
 
-            <el-popover show-arrow placement="bottom" width="290" trigger="hover">
+            <el-popover show-arrow :offset="8" placement="bottom" width="290" trigger="hover">
               <template #reference>
                 <el-icon class="create-user">
                   <Icon name="icon_info_outlined"></Icon>

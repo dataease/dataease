@@ -695,7 +695,7 @@ defineExpose({
         </div>
       </div>
       <div class="condition-configuration">
-        <div class="mask" v-if="curComponent.auto"></div>
+        <div class="mask" v-if="curComponent.auto" @scroll="handleScroll"></div>
         <div class="title">查询条件配置</div>
         <div v-show="showConfiguration && !showTypeError" class="configuration-list">
           <div class="list-item">
@@ -1003,32 +1003,32 @@ defineExpose({
         }
       }
     }
-    .hidden {
-      overflow-y: hidden;
-    }
 
     .mask {
       position: absolute;
-      top: 45px;
+      top: 30px;
       left: 0;
       width: 100%;
       z-index: 5;
       background: rgba(255, 255, 255, 0.6);
-      height: calc(100% - 45px);
+      height: calc(100% - 30px);
     }
 
     .chart-field {
       border-right: 1px solid #dee0e3;
-      height: 100%;
-      padding: 16px;
+      height: calc(100% - 16px);
+      padding: 0 16px 16px 16px;
       width: 474px;
       position: relative;
       overflow-y: auto;
+      margin-top: 16px;
 
       .flex-align-center {
         position: sticky;
         top: 0;
         justify-content: space-between;
+        background: #fff;
+        z-index: 5;
         .ed-radio {
           height: 20px;
         }
@@ -1079,6 +1079,9 @@ defineExpose({
           }
         }
       }
+    }
+    .hidden {
+      overflow-y: hidden;
     }
 
     .condition-configuration {

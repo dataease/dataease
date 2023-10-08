@@ -445,18 +445,22 @@ const onDvNameChange = () => {
           </el-tooltip>
         </template>
 
-        <el-dropdown v-if="editMode === 'edit'" trigger="click">
-          <el-button class="custom-normal-button" style="float: right; margin-right: 12px">
+        <el-dropdown v-if="editMode === 'edit'" trigger="hover">
+          <el-button class="preview-button" style="float: right; margin-right: 12px">
             预览
           </el-button>
           <template #dropdown>
             <el-dropdown-menu class="drop-style">
               <el-dropdown-item @click="previewInner()">
-                <Icon style="width: 16px; height: 16px" name="dv-preview-inner" />
+                <el-icon style="margin-right: 8px; font-size: 16px">
+                  <Icon name="dv-preview-inner" />
+                </el-icon>
                 当前预览
               </el-dropdown-item>
               <el-dropdown-item @click="previewOuter()">
-                <Icon style="width: 16px; height: 16px" name="dv-preview-outer" />
+                <el-icon style="margin-right: 8px; font-size: 16px">
+                  <Icon name="dv-preview-outer" />
+                </el-icon>
                 新页面预览
               </el-dropdown-item>
             </el-dropdown-menu>
@@ -647,6 +651,22 @@ const onDvNameChange = () => {
   .toolbar-icon {
     width: 20px;
     height: 20px;
+  }
+}
+
+.preview-button {
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+  background-color: #050e21;
+  &:hover,
+  &:focus {
+    background-color: #121a2c;
+    border-color: #595f6b;
+  }
+
+  &:active {
+    border-color: #616774;
+    background-color: #1e2637;
   }
 }
 .custom-normal-button {
