@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import io.dataease.api.ds.vo.DatasourceDTO;
+import io.dataease.commons.constants.OptConstants;
 import io.dataease.constant.DataSourceType;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
@@ -14,6 +15,7 @@ import io.dataease.exception.DEException;
 import io.dataease.license.config.XpackInteract;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
+import io.dataease.operation.manage.CoreOptRecentManage;
 import io.dataease.utils.AuthUtils;
 import io.dataease.utils.TreeUtils;
 import jakarta.annotation.Resource;
@@ -34,6 +36,9 @@ public class DataSourceManage {
 
     @Resource
     private CoreDatasourceMapper coreDatasourceMapper;
+
+    @Resource
+    private CoreOptRecentManage coreOptRecentManage;
 
     private DatasourceNodeBO rootNode() {
         return new DatasourceNodeBO(0L, "root", false, 3, -1L, 0, "mysql");
@@ -69,6 +74,7 @@ public class DataSourceManage {
     @XpackInteract(value = "datasourceResourceTree", before = false)
     public void innerSave(CoreDatasource coreDatasource) {
         coreDatasourceMapper.insert(coreDatasource);
+        coreOptRecentManage.saveOpt(coreDatasource.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASOURCE,OptConstants.OPT_TYPE.NEW);
     }
 
     @XpackInteract(value = "datasourceResourceTree", before = false)
@@ -78,6 +84,7 @@ public class DataSourceManage {
         coreDatasource.setUpdateTime(System.currentTimeMillis());
         coreDatasource.setUpdateBy(AuthUtils.getUser().getUserId());
         coreDatasourceMapper.update(coreDatasource, updateWrapper);
+        coreOptRecentManage.saveOpt(coreDatasource.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASOURCE,OptConstants.OPT_TYPE.UPDATE);
     }
 
     @XpackInteract(value = "datasourceResourceTree", before = false)
@@ -92,5 +99,6 @@ public class DataSourceManage {
         sourceData.setPid(dataSourceDTO.getPid());
         sourceData.setName(dataSourceDTO.getName());
         coreDatasourceMapper.updateById(sourceData);
+        coreOptRecentManage.saveOpt(sourceData.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASOURCE,OptConstants.OPT_TYPE.UPDATE);
     }
 }

@@ -11,6 +11,7 @@ import io.dataease.api.dataset.vo.DataSetBarVO;
 import io.dataease.api.ds.vo.DatasourceDTO;
 import io.dataease.api.permissions.user.api.UserApi;
 import io.dataease.api.permissions.user.vo.UserFormVO;
+import io.dataease.commons.constants.OptConstants;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetGroup;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetTable;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupMapper;
@@ -29,6 +30,7 @@ import io.dataease.i18n.Translator;
 import io.dataease.license.config.XpackInteract;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
+import io.dataease.operation.manage.CoreOptRecentManage;
 import io.dataease.utils.*;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
@@ -68,6 +70,9 @@ public class DatasetGroupManage {
     private CoreDatasourceMapper coreDatasourceMapper;
     @Autowired(required = false)
     private UserApi userApi;
+
+    @Resource
+    private CoreOptRecentManage coreOptRecentManage;
 
     private static final String leafType = "dataset";
 
@@ -147,12 +152,14 @@ public class DatasetGroupManage {
         CoreDatasetGroup coreDatasetGroup = BeanUtils.copyBean(new CoreDatasetGroup(), datasetGroupInfoDTO);
         coreDatasetGroup.setLastUpdateTime(System.currentTimeMillis());
         coreDatasetGroupMapper.updateById(coreDatasetGroup);
+        coreOptRecentManage.saveOpt(datasetGroupInfoDTO.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASET,OptConstants.OPT_TYPE.UPDATE);
     }
 
     @XpackInteract(value = "authResourceTree", before = false)
     public void innerSave(DatasetGroupInfoDTO datasetGroupInfoDTO) {
         CoreDatasetGroup coreDatasetGroup = BeanUtils.copyBean(new CoreDatasetGroup(), datasetGroupInfoDTO);
         coreDatasetGroupMapper.insert(coreDatasetGroup);
+        coreOptRecentManage.saveOpt(coreDatasetGroup.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASET,OptConstants.OPT_TYPE.NEW);
     }
 
     @XpackInteract(value = "authResourceTree", before = false)
@@ -172,6 +179,7 @@ public class DatasetGroupManage {
         }
         coreDatasetGroup.setLastUpdateTime(time);
         coreDatasetGroupMapper.updateById(coreDatasetGroup);
+        coreOptRecentManage.saveOpt(coreDatasetGroup.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASET,OptConstants.OPT_TYPE.UPDATE);
         return datasetGroupInfoDTO;
     }
 
@@ -182,6 +190,7 @@ public class DatasetGroupManage {
             DEException.throwException("resource not exist");
         }
         Objects.requireNonNull(CommonBeanFactory.getBean(this.getClass())).recursionDel(id);
+        coreOptRecentManage.saveOpt(coreDatasetGroup.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASET,OptConstants.OPT_TYPE.DELETE);
     }
 
     public void recursionDel(Long id) {
