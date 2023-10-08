@@ -1,9 +1,6 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, reactive, ref, toRefs } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, reactive, ref } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
-import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
-import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import { storeToRefs } from 'pinia'
 import findComponent from '../../utils/components'
 import DvSidebar from '../../components/visualization/DvSidebar.vue'
@@ -16,15 +13,19 @@ import DbCanvasAttr from '@/components/dashboard/DbCanvasAttr.vue'
 import { initCanvasData } from '@/utils/canvasUtils'
 import ChartStyleBatchSet from '@/views/chart/components/editor/editor-style/ChartStyleBatchSet.vue'
 import DeCanvas from '@/views/canvas/DeCanvas.vue'
-
+import { check, compareStorage } from '@/utils/CrossPermission'
+import { useCache } from '@/hooks/web/useCache'
+const { wsCache } = useCache()
+const eventCheck = e => {
+  if (e.key === 'panel-weight' && !compareStorage(e.oldValue, e.newValue)) {
+    const { resourceId } = window.DataEaseBi || router.currentRoute.value.query
+    check(wsCache.get('panel-weight'), resourceId)
+  }
+}
 const dvMainStore = dvMainStoreWithOut()
-const snapshotStore = snapshotStoreWithOut()
-const contextmenuStore = contextmenuStoreWithOut()
-const composeStore = composeStoreWithOut()
-const activeName = ref('attr')
+
 const { componentData, curComponent, canvasStyleData, canvasViewInfo, editMode, batchOptStatus } =
   storeToRefs(dvMainStore)
-const { editor } = storeToRefs(composeStore)
 const dataInitState = ref(false)
 
 const state = reactive({
@@ -49,6 +50,7 @@ const viewEditorShow = computed(() => {
 
 // 全局监听按键事件
 onMounted(() => {
+  window.addEventListener('storage', eventCheck)
   initDataset()
   const { resourceId, opt, pid } = window.DataEaseBi || router.currentRoute.value.query
   state.sourcePid = pid
@@ -69,6 +71,10 @@ onMounted(() => {
     let url = '#/panel/index'
     window.open(url, '_self')
   }
+})
+
+onUnmounted(() => {
+  window.removeEventListener('storage', eventCheck)
 })
 </script>
 

@@ -93,7 +93,7 @@ function onPopoverHide() {
         :label="t('chart.color_case')"
         class="form-item"
         :class="'form-item-' + themes"
-        style="flex: 1; padding-right: 8px; margin-bottom: 8px"
+        style="flex: 1; padding-right: 8px; margin-bottom: 16px"
       >
         <el-popover
           placement="bottom"

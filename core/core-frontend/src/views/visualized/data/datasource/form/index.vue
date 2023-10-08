@@ -460,7 +460,7 @@ const beforeClose = () => {
     emits('refresh')
     wsCache.set('ds-new-success', false)
   }
-  if (editDs.value) {
+  if (editDs.value || activeStep.value !== 0) {
     ElMessageBox.confirm(t('chart.tips'), {
       confirmButtonType: 'primary',
       tip: '你填写的信息未保存，确认退出吗？',

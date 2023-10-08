@@ -137,7 +137,7 @@ onMounted(() => {
     })
   }
   const erd = elementResizeDetectorMaker()
-  erd.listenTo(loginContainer.value, element => {
+  erd.listenTo(loginContainer.value, () => {
     nextTick(() => {
       loginContainerWidth.value = loginContainer.value?.offsetWidth
     })
@@ -289,7 +289,7 @@ onMounted(() => {
   .login-image-content {
     overflow: hidden;
     height: 100%;
-    width: 45%;
+    width: 40%;
     min-width: 400px;
   }
 

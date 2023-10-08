@@ -760,7 +760,7 @@ onMounted(() => {
             <span class="create-user">
               {{ t('visualization.create_by') }}:{{ nodeInfo.creator }}
             </span>
-            <el-popover show-arrow placement="bottom" width="290" trigger="hover">
+            <el-popover :offset="8" show-arrow placement="bottom" width="290" trigger="hover">
               <template #reference>
                 <el-icon class="create-user">
                   <Icon name="icon_info_outlined"></Icon>
@@ -893,7 +893,7 @@ onMounted(() => {
                     </template>
                     <template v-if="scope.row.status === 'Error' || scope.row.status === 'Warning'">
                       <el-icon>
-                        <icon class="field-icon-location" name="icon_close_filled"></icon>
+                        <icon class="field-icon-red" name="icon_close_filled"></icon>
                       </el-icon>
                       {{ t('dataset.error') }}
                     </template>
@@ -1290,7 +1290,7 @@ onMounted(() => {
                 v-if="scope.row.taskStatus === 'Error' || scope.row.taskStatus === 'Warning'"
               >
                 <el-icon>
-                  <icon class="field-icon-location" name="icon_close_filled"></icon>
+                  <icon class="field-icon-red" name="icon_close_filled"></icon>
                 </el-icon>
                 {{ t('dataset.error') }}
                 <el-icon @click="showErrorInfo(scope.row.info)" class="error-info">

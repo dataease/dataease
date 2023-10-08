@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, reactive, onMounted, onBeforeUnmount, watch, nextTick } from 'vue'
+import { ref, reactive, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import CodeMirror from './CodeMirror.vue'
 import { getFunction } from '@/api/dataset'
