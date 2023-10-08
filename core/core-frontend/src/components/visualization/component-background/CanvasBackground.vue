@@ -15,7 +15,12 @@
     />
     <el-form label-position="top" style="width: 100%">
       <el-form-item class="form-item no-margin-bottom" :class="'form-item-' + themes">
-        <el-checkbox size="small" :effect="themes" v-model="canvasStyleData.backgroundColorSelect">
+        <el-checkbox
+          size="small"
+          :effect="themes"
+          v-model="canvasStyleData.backgroundColorSelect"
+          @change="onBackgroundChange"
+        >
           {{ $t('chart.color') }}
         </el-checkbox>
       </el-form-item>
@@ -32,13 +37,19 @@
               show-alpha
               class="color-picker-style"
               :predefine="state.predefineColors"
+              @change="onBackgroundChange"
             />
           </el-form-item>
         </div>
       </div>
 
       <el-form-item class="form-item no-margin-bottom" :class="'form-item-' + themes">
-        <el-checkbox size="small" :effect="themes" v-model="canvasStyleData.backgroundImageEnable">
+        <el-checkbox
+          size="small"
+          :effect="themes"
+          v-model="canvasStyleData.backgroundImageEnable"
+          @change="onBackgroundChange"
+        >
           {{ t('visualization.background') }}
         </el-checkbox>
       </el-form-item>

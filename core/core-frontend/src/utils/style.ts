@@ -1,7 +1,8 @@
 import { sin, cos, toPercent } from '@/utils/translate'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import { hexColorToRGBA } from '@/views/chart/components/js/util'
-
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+const dvMainStore = dvMainStoreWithOut()
 export function getShapeStyle(style) {
   const result = {}
   ;['width', 'height', 'top', 'left', 'rotate'].forEach(attr => {
@@ -184,7 +185,8 @@ export function getCanvasStyle(canvasStyleData) {
   const { backgroundColorSelect, background, backgroundColor, backgroundImageEnable, fontSize } =
     canvasStyleData
   const style = { fontSize: fontSize + 'px' }
-  let colorRGBA = ''
+  // 仪表板默认色#f5f6f7 大屏默认配色 #1a1a1a
+  let colorRGBA = dvMainStore.dvInfo.type === 'dashboard' ? '#f5f6f7' : '#1a1a1a'
   if (backgroundColorSelect && backgroundColor) {
     colorRGBA = backgroundColor
   }

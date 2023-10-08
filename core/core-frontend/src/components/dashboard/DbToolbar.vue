@@ -342,22 +342,24 @@ const onDvNameChange = () => {
           </span>
           <div class="opt-area">
             <el-tooltip effect="dark" :content="$t('visualization.undo')" placement="bottom">
-              <el-icon class="toolbar-hover-icon" @click="undo()">
-                <Icon
-                  :class="{ 'toolbar-icon-disabled': snapshotIndex < 1 }"
-                  name="icon_undo_outlined"
-                ></Icon>
+              <el-icon
+                class="toolbar-hover-icon"
+                :class="{ 'toolbar-icon-disabled': snapshotIndex < 1 }"
+                @click="undo()"
+              >
+                <Icon name="icon_undo_outlined"></Icon>
               </el-icon>
             </el-tooltip>
 
             <el-tooltip effect="dark" :content="$t('commons.reduction')" placement="bottom">
-              <el-icon class="toolbar-hover-icon opt-icon-redo" @click="redo()">
-                <Icon
-                  :class="{
-                    'toolbar-icon-disabled': snapshotIndex === snapshotStore.snapshotData.length - 1
-                  }"
-                  name="icon_redo_outlined"
-                ></Icon>
+              <el-icon
+                class="toolbar-hover-icon opt-icon-redo"
+                :class="{
+                  'toolbar-icon-disabled': snapshotIndex === snapshotStore.snapshotData.length - 1
+                }"
+                @click="redo()"
+              >
+                <Icon name="icon_redo_outlined"></Icon>
               </el-icon>
             </el-tooltip>
           </div>

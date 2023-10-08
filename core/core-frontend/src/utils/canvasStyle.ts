@@ -11,7 +11,7 @@ const dvMainStore = dvMainStoreWithOut()
 
 export const LIGHT_THEME_COLOR_MAIN = '#000000'
 export const LIGHT_THEME_COLOR_SLAVE1 = '#CCCCCC'
-export const LIGHT_THEME_DASHBOARD_BACKGROUND = '#F1F3F5'
+export const LIGHT_THEME_DASHBOARD_BACKGROUND = '#f5f6f7'
 export const LIGHT_THEME_COMPONENT_BACKGROUND = '#FFFFFF'
 
 export const DARK_THEME_COLOR_MAIN = '#FFFFFF'

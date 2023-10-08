@@ -169,9 +169,6 @@ const groupActiveChange = category => {
     cursor: pointer;
     &:hover {
       outline: 1px solid #3370ff;
-      .item-top-icon {
-        background-color: rgba(51, 112, 255, 0.1);
-      }
     }
     .item-top-icon {
       width: 80px;
@@ -198,9 +195,6 @@ const groupActiveChange = category => {
     cursor: pointer;
     &:hover {
       outline: 1px solid #3370ff;
-      svg {
-        background-color: rgba(51, 112, 255, 0.1);
-      }
     }
     .item-top-icon {
       width: 20px;

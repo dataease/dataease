@@ -74,7 +74,7 @@
       </div>
       <el-col :span="24">
         <el-row id="slider">
-          <div class="slider-window">
+          <div class="slider-window" :style="slideWindowHeight">
             <ul v-if="!state.slidersLoading" class="container" :style="containerStyle">
               <li>
                 <div class="item-area" style="overflow: hidden">
@@ -248,6 +248,10 @@ const containerStyle = computed(() => {
   }
 })
 
+const slideWindowHeight = computed(() => {
+  return { height: state.sliders[0]?.length < 3 ? '140px' : '280px' }
+})
+
 const interval = computed(() => {
   return initialInterval.value * 1000
 })
@@ -386,7 +390,6 @@ ul {
 .slider-window {
   position: relative;
   width: 400px;
-  height: 280px;
   overflow: hidden;
 }
 
