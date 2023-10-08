@@ -2,27 +2,24 @@
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { storeToRefs } from 'pinia'
-import { nextTick, onMounted, reactive, ref, watch } from 'vue'
-import { beforeUploadCheck, uploadFileResult } from '@/api/staticResource'
-import { ElFormItem, ElIcon, ElMessage } from 'element-plus-secondary'
+import { nextTick, onMounted, reactive, ref } from 'vue'
+import { ElFormItem } from 'element-plus-secondary'
 import {
   COLOR_CASES,
   COLOR_PANEL,
   DEFAULT_COLOR_CASE
 } from '@/views/chart/components/editor/util/chart'
 import { useI18n } from '@/hooks/web/useI18n'
-import { imgUrlTrans } from '@/utils/imgUtils'
 import { merge } from 'lodash-es'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import ComponentColorSelector from '@/components/dashboard/subject-setting/dashboard-style/ComponentColorSelector.vue'
 import OverallSetting from '@/components/dashboard/subject-setting/dashboard-style/OverallSetting.vue'
-import ImgViewDialog from '@/custom-component/ImgViewDialog.vue'
+import CanvasBackground from '@/components/visualization/component-background/CanvasBackground.vue'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const { canvasStyleData, canvasViewInfo } = storeToRefs(dvMainStore)
 const { t } = useI18n()
 const files = ref(null)
-const maxImageSize = 15000000
 let initReady = false
 let canvasAttrInit = false
 
@@ -39,27 +36,6 @@ const uploadDisabled = ref(false)
 
 const canvasAttrActiveNames = ref(['size', 'background', 'color'])
 
-const handlePictureCardPreview = file => {
-  dialogImageUrl.value = file.url
-  dialogVisible.value = true
-}
-
-const handleRemove = (file, fileList) => {
-  uploadDisabled.value = false
-  canvasStyleData.value.background = null
-  fileList.value = []
-  snapshotStore.recordSnapshot()
-}
-async function upload(file) {
-  uploadFileResult(file.file, fileUrl => {
-    if (fileUrl) {
-      snapshotStore.recordSnapshotCache()
-      canvasStyleData.value.background = fileUrl
-      fileList.value = [{ url: imgUrlTrans(canvasStyleData.value.background) }]
-    }
-  })
-}
-
 const colorCases = COLOR_CASES
 
 const predefineColors = COLOR_PANEL
@@ -70,61 +46,12 @@ const state = reactive({
   colorIndex: 0
 })
 
-const changeColorOption = () => {
-  const items = colorCases.filter(ele => {
-    return ele.value === state.colorForm.value
-  })
-  state.colorForm.colors = [...items[0].colors]
-  state.customColor = state.colorForm.colors[0]
-  state.colorIndex = 0
-}
-
-const resetCustomColor = () => {
-  changeColorOption()
-}
-
-const switchColor = index => {
-  state.colorIndex = index
-}
-
-const switchColorCase = () => {
-  state.colorForm.colors[state.colorIndex] = state.customColor
-}
-
-const goFile = () => {
-  files.value.click()
-}
-
-const reUpload = e => {
-  const file = e.target.files[0]
-  if (file.size > maxImageSize) {
-    sizeMessage()
-  }
-  uploadFileResult(file, fileUrl => {
-    snapshotStore.recordSnapshotCache()
-    canvasStyleData.value.background = fileUrl
-    fileList.value = [{ url: imgUrlTrans(canvasStyleData.value.background) }]
-  })
-}
-
-const sizeMessage = () => {
-  ElMessage.success('图片大小不符合')
-}
-
 const init = () => {
   initReady = true
-  if (canvasStyleData.value.background) {
-    fileList.value = [{ url: imgUrlTrans(canvasStyleData.value.background) }]
-  }
   nextTick(() => {
     canvasAttrInit = true
   })
 }
-watch([() => canvasStyleData.value.background], () => {
-  if (!fileList.value.length) {
-    init()
-  }
-})
 
 const onColorChange = val => {
   themeAttrChange('customAttr', 'color', val)
@@ -188,54 +115,7 @@ onMounted(() => {
         </el-form>
       </el-collapse-item>
       <el-collapse-item effect="dark" title="背景" name="background">
-        <el-form label-position="top">
-          <el-form-item class="form-item form-item-dark margin-bottom-8">
-            <el-radio-group effect="dark" v-model="canvasStyleData.backgroundType">
-              <el-radio effect="dark" label="backgroundColor">颜色</el-radio>
-              <el-radio effect="dark" label="background">图片</el-radio>
-            </el-radio-group>
-          </el-form-item>
-          <el-form-item
-            class="form-item form-item-dark"
-            v-if="canvasStyleData.backgroundType === 'backgroundColor'"
-          >
-            <el-color-picker
-              v-model="canvasStyleData.backgroundColor"
-              :trigger-width="108"
-              is-custom
-              size="small"
-              show-alpha
-            />
-          </el-form-item>
-          <el-row v-if="canvasStyleData.backgroundType === 'background'" class="img-area">
-            <el-col style="width: 130px !important">
-              <el-upload
-                action=""
-                accept=".jpeg,.jpg,.png,.gif,.svg"
-                class="avatar-uploader"
-                list-type="picture-card"
-                :class="{ disabled: uploadDisabled }"
-                :on-preview="handlePictureCardPreview"
-                :on-remove="handleRemove"
-                :before-upload="beforeUploadCheck"
-                :http-request="upload"
-                :file-list="fileList"
-              >
-                <el-icon><Plus /></el-icon>
-              </el-upload>
-              <img-view-dialog
-                v-model="dialogVisible"
-                :image-url="dialogImageUrl"
-              ></img-view-dialog>
-            </el-col>
-          </el-row>
-          <el-row v-if="canvasStyleData.backgroundType === 'background'">
-            <span v-if="!canvasStyleData.background" class="image-hint">支持JPG、PNG、GIF</span>
-            <span v-if="canvasStyleData.background" class="re-update-span" @click="goFile"
-              >重新上传</span
-            >
-          </el-row>
-        </el-form>
+        <canvas-background themes="dark"></canvas-background>
       </el-collapse-item>
       <el-collapse-item effect="dark" title="配色" name="color" class="no-padding no-border-bottom">
         <component-color-selector themes="dark" @onColorChange="onColorChange" />
@@ -244,19 +124,6 @@ onMounted(() => {
         <overall-setting themes="dark" />
       </el-collapse-item>
     </el-collapse>
-    <input
-      id="input"
-      ref="files"
-      type="file"
-      accept=".jpeg,.jpg,.png,.gif"
-      hidden
-      @click="
-        e => {
-          e.target.value = ''
-        }
-      "
-      @change="reUpload"
-    />
   </div>
 </template>
 
