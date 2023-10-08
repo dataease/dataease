@@ -5,7 +5,8 @@ import { getDatasetTree } from '@/api/dataset'
 import { listDatasources } from '@/api/datasource'
 import type { BusiTreeRequest, BusiTreeNode } from '@/models/tree/TreeNode'
 import { pathValid } from '@/store/modules/permission'
-
+import { useCache } from '@/hooks/web/useCache'
+const { wsCache } = useCache()
 export interface InnerInteractive {
   rootManage: boolean
   anyManage: boolean
@@ -55,11 +56,23 @@ export const interactiveStore = defineStore('interactive', {
           menuAuth: false
         }
         this.data[flag] = tempData
+        if (flag === 0) {
+          wsCache.set('panel-weight', {})
+        }
+        if (flag === 1) {
+          wsCache.set('screen-weight', {})
+        }
         return []
       }
       const method = apiMap[flag]
       const res = await method(param)
       this.data[flag] = convertInteractive(res)
+      if (flag === 0) {
+        wsCache.set('panel-weight', convertLocalStorage(this.data[flag]))
+      }
+      if (flag === 1) {
+        wsCache.set('screen-weight', convertLocalStorage(this.data[flag]))
+      }
       return res
     },
     async initInteractive(refresh?: boolean) {
@@ -75,6 +88,8 @@ export const interactiveStore = defineStore('interactive', {
     },
     clear() {
       this.data = {}
+      wsCache.set('panel-weight', {})
+      wsCache.set('screen-weight', {})
     }
   }
 })
@@ -119,4 +134,24 @@ const hasMenuAuth = (flag: number): boolean => {
   }
   const valid = pathValid(path)
   return valid
+}
+
+const convertLocalStorage = (data?: InnerInteractive) => {
+  if (!data?.leafNodeCount) {
+    return {}
+  }
+  const result = {}
+  const treeNodes = data.treeNodes
+  const stack = [...treeNodes]
+  while (stack.length) {
+    const node = stack.pop()
+    if (node.leaf) {
+      const { id, weight } = node
+      result[id] = weight
+    }
+    if (node.children?.length) {
+      node.children.forEach(kid => stack.push(kid))
+    }
+  }
+  return result
 }

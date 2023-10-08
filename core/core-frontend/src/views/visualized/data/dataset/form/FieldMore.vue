@@ -179,6 +179,11 @@ const handleChange = () => {
   background: transparent !important;
   box-shadow: none !important;
   border: none !important;
+
+  .ed-cascader-node.in-active-path {
+    color: #1f2329;
+    font-weight: 400;
+  }
   .ed-cascader-panel {
     .ed-cascader-menu {
       border-radius: 4px;
