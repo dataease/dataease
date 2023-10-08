@@ -102,10 +102,10 @@ getExampleValue()
         />
       </el-form-item>
 
-      <el-form-item>
+      <div style="line-height: 22px">
         <span style="color: #646a73">{{ t('chart.value_formatter_example') }}</span>
         <span style="margin-left: 12px">{{ state.exampleResult }}</span>
-      </el-form-item>
+      </div>
     </el-form>
   </div>
 </template>
@@ -116,7 +116,7 @@ getExampleValue()
 }
 .formatter-form {
   :deep(.ed-form-item) {
-    margin-bottom: 14px !important;
+    margin-bottom: 16px;
   }
 
   :deep(.ed-form-item__label) {

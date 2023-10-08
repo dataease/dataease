@@ -94,21 +94,14 @@ onMounted(() => {
           </el-icon>
         </span>
         <span class="item-span-style" :title="item.name">{{ item.name }}</span>
-        <el-icon
-          class="child"
-          style="position: absolute; top: 7px; right: 24px; color: #a6a6a6; cursor: pointer"
-        >
-          <Icon
-            name="icon_delete-trash_outlined"
-            class="el-icon-arrow-down el-icon-delete"
-            @click="removeItem"
-          ></Icon>
+        <el-icon class="child remove-icon" size="14px">
+          <Icon name="icon_delete-trash_outlined" class-name="inner-class" @click="removeItem" />
         </el-icon>
         <el-icon
           class="child"
           style="position: absolute; top: 7px; right: 8px; color: #a6a6a6; cursor: pointer"
         >
-          <Icon name="icon_down_outlined-1" class="el-icon-arrow-down el-icon-delete"></Icon>
+          <Icon name="icon_down_outlined-1" />
         </el-icon>
       </el-tag>
       <template #dropdown>
@@ -198,6 +191,18 @@ span {
 .drop-style {
   :deep(.ed-dropdown-menu__item) {
     height: 32px;
+  }
+}
+
+.remove-icon {
+  position: absolute;
+  top: 7px;
+  right: 24px;
+  color: #646a73;
+  cursor: pointer;
+
+  .inner-class {
+    font-size: 14px;
   }
 }
 
