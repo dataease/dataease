@@ -144,11 +144,11 @@ init()
           </el-select>
         </el-col>
         <el-col v-if="item.field === '0'" :span="6">
-          <el-input
+          <el-input-number
             v-model="item.value"
+            controls-position="right"
             class="value-item"
             :placeholder="t('chart.drag_block_label_value')"
-            size="mini"
             clearable
             @change="changeAssistLine"
           />
