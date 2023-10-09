@@ -124,18 +124,21 @@ init()
 <template>
   <div @keydown.stop @keyup.stop style="width: 100%; margin-bottom: 16px">
     <el-col>
-      <el-button
-        class="circle-button"
-        :title="t('chart.edit')"
-        type="text"
-        size="small"
-        :style="{ width: '24px', marginLeft: '4px' }"
-        @click="editLine"
-      >
-        <template #icon>
-          <Icon name="icon_edit_outlined"></Icon>
-        </template>
-      </el-button>
+      <div>
+        <span>辅助线设置</span>
+        <el-button
+          class="circle-button"
+          type="text"
+          size="small"
+          :style="{ width: '24px', marginLeft: '4px', float: 'right' }"
+          @click="editLine"
+        >
+          <template #icon>
+            <Icon name="icon_edit_outlined" />
+          </template>
+        </el-button>
+      </div>
+
       <el-col>
         <el-row v-for="(item, index) in state.assistLine" :key="index" class="line-style">
           <el-col :span="8">
@@ -167,7 +170,6 @@ init()
       v-model="state.editLineDialog"
       :title="t('chart.assist_line')"
       :visible="state.editLineDialog"
-      :show-close="false"
       width="1000px"
       class="dialog-css"
     >

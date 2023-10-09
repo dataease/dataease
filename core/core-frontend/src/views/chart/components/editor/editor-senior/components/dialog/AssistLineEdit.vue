@@ -104,37 +104,20 @@ init()
 
 <template>
   <el-col>
-    <el-button
-      class="circle-button"
-      circle
-      size="small"
-      :style="{ marginBottom: '10px' }"
-      @click="addLine"
-    >
-      <template #icon>
-        <Icon name="icon_add_outlined"></Icon>
-      </template>
-    </el-button>
-    <div @keydown.stop @keyup.stop style="max-height: 50vh; overflow-y: auto">
-      <el-row v-for="(item, index) in state.lineArr" :key="index" class="line-item">
+    <div @keydown.stop @keyup.stop style="max-height: 50vh; margin-top: -4px; overflow-y: auto">
+      <el-row v-for="(item, index) in state.lineArr" :key="index" class="line-item" :gutter="8">
         <el-col :span="4">
           <el-input
             v-model="item.name"
             class="value-item"
-            style="width: 90% !important"
+            style="width: 100% !important"
             :placeholder="t('chart.name')"
-            size="mini"
             clearable
             @change="changeAssistLine"
           />
         </el-col>
-        <el-col :span="4">
-          <el-select
-            v-model="item.field"
-            size="mini"
-            class="select-item"
-            @change="changeAssistLine"
-          >
+        <el-col :span="3">
+          <el-select v-model="item.field" class="select-item" @change="changeAssistLine">
             <el-option
               v-for="opt in state.fieldOptions"
               :key="opt.value"
@@ -143,7 +126,7 @@ init()
             />
           </el-select>
         </el-col>
-        <el-col v-if="item.field === '0'" :span="6">
+        <el-col v-if="item.field === '0'" :span="7">
           <el-input-number
             v-model="item.value"
             controls-position="right"
@@ -153,10 +136,9 @@ init()
             @change="changeAssistLine"
           />
         </el-col>
-        <el-col v-if="item.field === '1'" :span="6">
+        <el-col v-if="item.field === '1'" :span="4">
           <el-select
             v-model="item.fieldId"
-            size="mini"
             class="select-item"
             :placeholder="t('chart.field')"
             @change="changeAssistLineField(item)"
@@ -180,11 +162,11 @@ init()
               }}</span>
             </el-option>
           </el-select>
+        </el-col>
+        <el-col v-if="item.field === '1'" :span="3">
           <el-select
             v-model="item.summary"
-            size="mini"
             class="select-item"
-            style="margin-left: 10px"
             :placeholder="t('chart.aggregation')"
             @change="changeAssistLine"
           >
@@ -196,9 +178,7 @@ init()
         <el-col :span="3">
           <el-select
             v-model="item.fontSize"
-            size="mini"
             class="select-item"
-            style="margin-left: 10px"
             :placeholder="t('chart.text_fontsize')"
             @change="changeAssistLine"
           >
@@ -210,13 +190,8 @@ init()
             />
           </el-select>
         </el-col>
-        <el-col :span="3">
-          <el-select
-            v-model="item.lineType"
-            size="mini"
-            class="select-item"
-            @change="changeAssistLine"
-          >
+        <el-col :span="4">
+          <el-select v-model="item.lineType" class="select-item" @change="changeAssistLine">
             <el-option
               v-for="opt in state.lineOptions"
               :key="opt.value"
@@ -225,8 +200,10 @@ init()
             />
           </el-select>
         </el-col>
-        <el-col :span="1" style="text-align: center">
+        <el-col :span="2" style="text-align: center">
           <el-color-picker
+            is-custom
+            size="large"
             v-model="item.color"
             class="color-picker-style"
             :predefine="state.predefineColors"
@@ -234,13 +211,7 @@ init()
           />
         </el-col>
         <el-col :span="1">
-          <el-button
-            class="circle-button"
-            type="text"
-            circle
-            :style="{ float: 'right' }"
-            @click="removeLine(index)"
-          >
+          <el-button class="circle-button" link @click="removeLine(index)">
             <template #icon>
               <Icon name="icon_delete-trash_outlined"></Icon>
             </template>
@@ -248,6 +219,12 @@ init()
         </el-col>
       </el-row>
     </div>
+    <el-button class="circle-button" text style="margin-left: 5px" @click="addLine">
+      <template #icon>
+        <Icon name="icon_add_outlined"></Icon>
+      </template>
+      {{ t('chart.add_assist_line') }}
+    </el-button>
   </el-col>
 </template>
 
@@ -255,12 +232,13 @@ init()
 .line-item {
   width: 100%;
   border-radius: 4px;
-  border: 1px solid #dcdfe6;
-  padding: 4px 14px;
-  margin-bottom: 10px;
+  padding: 4px;
   display: flex;
   justify-content: left;
   align-items: center;
+  &:last-child {
+    margin-bottom: 4px;
+  }
 }
 
 .form-item :deep(.ed-form-item__label) {
@@ -274,30 +252,20 @@ span {
 .value-item {
   position: relative;
   display: inline-block;
-  width: 100px !important;
+  width: 100% !important;
+  :deep(.ed-input-number__increase) {
+    top: 1.2px;
+  }
 }
 
 .select-item {
   position: relative;
   display: inline-block;
-  width: 100px !important;
+  width: 100% !important;
 }
 
 .ed-select-dropdown__item {
   padding: 0 20px;
   font-size: 12px;
-}
-
-.color-picker-style {
-  cursor: pointer;
-  z-index: 1003;
-  width: 28px;
-  height: 28px;
-  margin-top: 6px;
-}
-
-.color-picker-style :deep(.ed-color-picker__trigger) {
-  width: 28px;
-  height: 28px;
 }
 </style>

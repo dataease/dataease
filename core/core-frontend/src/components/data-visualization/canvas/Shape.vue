@@ -12,6 +12,7 @@
       }"
     >
       <component-edit-bar
+        ref="componentEditBarRef"
         class="edit-bar"
         :class="{ 'edit-bar-active': editBarShowFlag }"
         :index="index"
@@ -71,7 +72,7 @@
         />
       </template>
     </div>
-    <compose-show v-if="isComposeSelected" :element="element"></compose-show>
+    <compose-show :element="element"></compose-show>
   </div>
 </template>
 
@@ -92,6 +93,7 @@ import ComponentEditBar from '@/components/visualization/ComponentEditBar.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { toPng } from 'html-to-image'
 import ComposeShow from '@/components/data-visualization/canvas/ComposeShow.vue'
+import { isMainCanvas } from '@/utils/canvasUtils'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
@@ -99,6 +101,7 @@ const composeStore = composeStoreWithOut()
 const parentNode = ref(null)
 const shapeInnerRef = ref(null)
 const componentInnerRef = ref(null)
+const componentEditBarRef = ref(null)
 
 const {
   curComponent,
@@ -236,8 +239,6 @@ const angleToCursor = [
   { start: 293, end: 338, cursor: 'w' }
 ]
 
-const isComposeSelected = computed(() => areaData.value.components.includes(element.value))
-
 const boardMoveActive = computed(() => {
   return ['map', 'table-info', 'table-normal'].includes(element.value.innerType)
 })
@@ -348,6 +349,12 @@ const handleBoardMouseDownOnShape = e => {
 }
 
 const handleInnerMouseDownOnShape = e => {
+  if (dvMainStore.batchOptStatus) {
+    componentEditBarRef.value.batchOptCheckOut()
+    e.stopPropagation()
+    e.preventDefault()
+    return
+  }
   // ctrl or command 按下时 鼠标点击为选择需要组合的组件(取消需要组合的组件在ComposeShow组件中)
   if (isCtrlOrCmdDown.value && !areaData.value.components.includes(element)) {
     areaData.value.components.push(element.value)
@@ -481,9 +488,11 @@ const handleMouseDownOnShape = e => {
 
 const selectCurComponent = e => {
   // 阻止向父组件冒泡
-  e.stopPropagation()
-  e.preventDefault()
-  contextmenuStore.hideContextMenu()
+  if (dvInfo.value.type === 'dataV') {
+    e.stopPropagation()
+    e.preventDefault()
+    contextmenuStore.hideContextMenu()
+  }
 }
 
 const handleMouseDownOnPoint = (point, e) => {

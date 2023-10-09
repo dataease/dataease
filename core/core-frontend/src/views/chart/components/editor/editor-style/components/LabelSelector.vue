@@ -59,8 +59,8 @@ const initSeriesLabel = () => {
     let tmp = {
       ...next,
       show: true,
-      color: DEFAULT_LABEL.color,
-      fontSize: DEFAULT_LABEL.fontSize
+      color: COMPUTED_DEFAULT_LABEL.value.color,
+      fontSize: COMPUTED_DEFAULT_LABEL.value.fontSize
     } as SeriesFormatter
     if (seriesAxisMap[next.id]) {
       tmp = {
@@ -97,9 +97,17 @@ const labelPositionV = [
   { name: t('chart.text_pos_bottom'), value: 'bottom' }
 ]
 
+const chartType = computed(() => {
+  const chart = JSON.parse(JSON.stringify(props.chart))
+  return chart?.type
+})
+
 const fontSizeList = computed(() => {
   const arr = []
   for (let i = 10; i <= 40; i = i + 2) {
+    if (i === 10 && chartType.value === 'liquid') {
+      continue
+    }
     arr.push({
       name: i + '',
       value: i
@@ -108,8 +116,18 @@ const fontSizeList = computed(() => {
   return arr
 })
 
+const COMPUTED_DEFAULT_LABEL = computed(() => {
+  if (chartType.value === 'liquid') {
+    return {
+      ...DEFAULT_LABEL,
+      fontSize: fontSizeList.value[0].value
+    }
+  }
+  return DEFAULT_LABEL
+})
+
 const state = reactive({
-  labelForm: JSON.parse(JSON.stringify(DEFAULT_LABEL))
+  labelForm: JSON.parse(JSON.stringify(COMPUTED_DEFAULT_LABEL.value))
 })
 
 const emit = defineEmits(['onLabelChange'])
@@ -131,7 +149,10 @@ const init = () => {
       customAttr = JSON.parse(chart.customAttr)
     }
     if (customAttr.label) {
-      state.labelForm = defaultsDeep(customAttr.label, cloneDeep(DEFAULT_LABEL))
+      state.labelForm = defaultsDeep(customAttr.label, cloneDeep(COMPUTED_DEFAULT_LABEL.value))
+      if (chartType.value === 'liquid' && state.labelForm.fontSize < fontSizeList.value[0].value) {
+        state.labelForm.fontSize = fontSizeList.value[0].value
+      }
       initSeriesLabel()
     }
   }

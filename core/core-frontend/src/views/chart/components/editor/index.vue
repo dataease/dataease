@@ -1354,7 +1354,17 @@ const onRefreshChange = val => {
                         <span class="data-area-label">
                           <span>{{ t('chart.drill') }}</span>
                           /
-                          <span>{{ t('chart.dimension') }}</span>
+                          <span style="margin-right: 4px">{{ t('chart.dimension') }}</span>
+                          <el-tooltip class="item" effect="dark" placement="top">
+                            <template #content>
+                              <span>钻取字段仅支持数据集中的字段</span>
+                            </template>
+                            <span style="vertical-align: middle">
+                              <el-icon style="cursor: pointer">
+                                <Icon name="icon_info_outlined" />
+                              </el-icon>
+                            </span>
+                          </el-tooltip>
                           <el-tooltip class="item" :effect="themes" placement="bottom">
                             <template #content>
                               <div>

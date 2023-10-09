@@ -48,6 +48,7 @@
 
     <div v-if="barShowCheck('multiplexing')" class="bar-checkbox-area">
       <el-checkbox
+        @click.stop
         style="height: 26px; padding: 5px"
         v-model="state.multiplexingCheckModel"
         @change="multiplexingCheck"
@@ -62,7 +63,7 @@
       </el-icon>
     </span>
     <div v-if="barShowCheck('batchOpt')" class="bar-checkbox-area">
-      <el-checkbox @change="batchOptChange" />
+      <el-checkbox v-model="state.batchOptCheckModel" @change="batchOptChange" />
     </div>
 
     <el-dropdown trigger="click" placement="right-start" v-if="barShowCheck('setting')">
@@ -141,7 +142,16 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onBeforeUnmount, onMounted, onUnmounted, reactive, ref, toRefs } from 'vue'
+import {
+  computed,
+  onBeforeUnmount,
+  onMounted,
+  onUnmounted,
+  reactive,
+  ref,
+  toRefs,
+  watch
+} from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -252,6 +262,7 @@ const props = defineProps({
 
 const { element, active, index, showPosition, canvasId } = toRefs(props)
 const {
+  batchOptStatus,
   pcMatrixCount,
   curComponent,
   componentData,
@@ -370,6 +381,12 @@ const multiplexingCheck = val => {
 // 复用-End
 
 // 批量操作-Begin
+
+const batchOptCheckOut = () => {
+  state.batchOptCheckModel = !state.batchOptCheckModel
+  batchOptChange(state.batchOptCheckModel)
+}
+
 const batchOptChange = val => {
   if (val) {
     // push
@@ -478,8 +495,16 @@ onBeforeUnmount(() => {
 })
 
 defineExpose({
-  multiplexingCheckOut
+  multiplexingCheckOut,
+  batchOptCheckOut
 })
+
+watch(
+  () => batchOptStatus.value,
+  () => {
+    state.batchOptCheckModel = false
+  }
+)
 </script>
 
 <style lang="less" scoped>

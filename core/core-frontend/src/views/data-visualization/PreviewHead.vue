@@ -105,7 +105,7 @@ watch(
               placement="left-start"
               v-if="dvInfo.weight > 3"
             >
-              <div class="flex-align-center icon" style="padding: 5px 16px; white-space: nowrap">
+              <div class="ed-dropdown-menu__item flex-align-center icon">
                 <el-icon><Download /></el-icon>
                 导出为&nbsp;&nbsp;&nbsp;&nbsp;
                 <el-icon><ArrowRight /></el-icon>

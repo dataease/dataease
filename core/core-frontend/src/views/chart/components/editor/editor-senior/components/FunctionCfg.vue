@@ -93,20 +93,16 @@ onMounted(() => {
 
 <template>
   <div @keydown.stop @keyup.stop style="width: 100%">
-    <el-form ref="functionForm" :model="state.functionForm" size="small" label-position="top">
+    <el-form ref="functionForm" :model="state.functionForm" label-position="top">
       <div v-if="showProperty('slider')">
-        <el-form-item
-          :label="t('chart.slider')"
-          class="form-item form-item-checkbox"
-          :class="'form-item-' + themes"
-        >
+        <el-form-item class="form-item form-item-checkbox" :class="'form-item-' + themes">
           <el-checkbox
             :effect="themes"
             size="small"
             v-model="state.functionForm.sliderShow"
             @change="changeFunctionCfg"
           >
-            {{ t('chart.show') }}
+            {{ t('chart.slider') }}
           </el-checkbox>
         </el-form-item>
         <div style="padding-left: 22px">
@@ -254,6 +250,10 @@ span {
   align-items: flex-start;
   label {
     line-height: 28px;
+
+    &:not(:last-child) {
+      margin-bottom: 8px;
+    }
   }
 }
 .range-slider {
