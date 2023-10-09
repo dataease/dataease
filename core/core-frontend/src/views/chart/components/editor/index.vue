@@ -308,11 +308,10 @@ const quotaItemRemove = item => {
 }
 
 const drillItemChange = item => {
-  calcData(view.value, true)
+  // temp do nothing
 }
 const drillItemRemove = item => {
   view.value.drillFields.splice(item.index, 1)
-  calcData(view.value, true)
 }
 
 const customSortAxis = ref<AxisType>('xAxis')
@@ -1397,7 +1396,6 @@ const onRefreshChange = val => {
                         class="drag-block-style"
                         :class="{ dark: themes === 'dark' }"
                         @add="addDrill"
-                        @update="calcData(view, true)"
                       >
                         <template #item="{ element, index }">
                           <drill-item
