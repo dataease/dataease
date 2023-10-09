@@ -104,133 +104,106 @@ init()
 
 <template>
   <el-col>
-    <div @keydown.stop @keyup.stop style="max-height: 50vh; overflow-y: auto">
-      <el-row v-for="(item, index) in state.lineArr" :key="index" class="line-item" :gutter="10">
+    <div @keydown.stop @keyup.stop style="max-height: 50vh; overflow-y: auto; margin-top: -4px">
+      <el-row v-for="(item, index) in state.lineArr" :key="index" class="line-item" :gutter="8">
         <el-col :span="4">
-          <el-form-item class="form-item">
-            <el-input
-              v-model="item.name"
-              class="value-item"
-              style="width: 100% !important"
-              :placeholder="t('chart.name')"
-              size="mini"
-              clearable
-              @change="changeAssistLine"
-            />
-          </el-form-item>
+          <el-input
+            v-model="item.name"
+            class="value-item"
+            style="width: 100% !important"
+            :placeholder="t('chart.name')"
+            clearable
+            @change="changeAssistLine"
+          />
         </el-col>
         <el-col :span="3">
-          <el-form-item class="form-item">
-            <el-select
-              v-model="item.field"
-              size="mini"
-              class="select-item"
-              @change="changeAssistLine"
-            >
-              <el-option
-                v-for="opt in state.fieldOptions"
-                :key="opt.value"
-                :label="opt.label"
-                :value="opt.value"
-              />
-            </el-select>
-          </el-form-item>
+          <el-select v-model="item.field" class="select-item" @change="changeAssistLine">
+            <el-option
+              v-for="opt in state.fieldOptions"
+              :key="opt.value"
+              :label="opt.label"
+              :value="opt.value"
+            />
+          </el-select>
         </el-col>
         <el-col v-if="item.field === '0'" :span="7">
-          <el-form-item class="form-item">
-            <el-input-number
-              v-model="item.value"
-              controls-position="right"
-              class="value-item"
-              :placeholder="t('chart.drag_block_label_value')"
-              clearable
-              @change="changeAssistLine"
-            />
-          </el-form-item>
+          <el-input-number
+            v-model="item.value"
+            controls-position="right"
+            class="value-item"
+            :placeholder="t('chart.drag_block_label_value')"
+            clearable
+            @change="changeAssistLine"
+          />
         </el-col>
         <el-col v-if="item.field === '1'" :span="4">
-          <el-form-item class="form-item">
-            <el-select
-              v-model="item.fieldId"
-              size="mini"
-              class="select-item"
-              :placeholder="t('chart.field')"
-              @change="changeAssistLineField(item)"
+          <el-select
+            v-model="item.fieldId"
+            class="select-item"
+            :placeholder="t('chart.field')"
+            @change="changeAssistLineField(item)"
+          >
+            <el-option
+              v-for="quota in state.quotaData"
+              :key="quota.id"
+              :label="quota.name"
+              :value="quota.id"
             >
-              <el-option
-                v-for="quota in state.quotaData"
-                :key="quota.id"
-                :label="quota.name"
-                :value="quota.id"
-              >
-                <span style="float: left">
-                  <el-icon>
-                    <Icon
-                      :className="`field-icon-${fieldType[item.deType]}`"
-                      :name="`field_${fieldType[item.deType]}`"
-                    ></Icon>
-                  </el-icon>
-                </span>
-                <span :style="{ float: 'left', color: '#8492a6', fontSize: '12px' }">{{
-                  quota.name
-                }}</span>
-              </el-option>
-            </el-select>
-          </el-form-item>
+              <span style="float: left">
+                <el-icon>
+                  <Icon
+                    :className="`field-icon-${fieldType[item.deType]}`"
+                    :name="`field_${fieldType[item.deType]}`"
+                  ></Icon>
+                </el-icon>
+              </span>
+              <span :style="{ float: 'left', color: '#8492a6', fontSize: '12px' }">{{
+                quota.name
+              }}</span>
+            </el-option>
+          </el-select>
         </el-col>
         <el-col v-if="item.field === '1'" :span="3">
-          <el-form-item class="form-item">
-            <el-select
-              v-model="item.summary"
-              size="mini"
-              class="select-item"
-              :placeholder="t('chart.aggregation')"
-              @change="changeAssistLine"
-            >
-              <el-option key="avg" value="avg" :label="t('chart.avg')" />
-              <el-option key="max" value="max" :label="t('chart.max')" />
-              <el-option key="min" value="min" :label="t('chart.min')" />
-            </el-select>
-          </el-form-item>
+          <el-select
+            v-model="item.summary"
+            class="select-item"
+            :placeholder="t('chart.aggregation')"
+            @change="changeAssistLine"
+          >
+            <el-option key="avg" value="avg" :label="t('chart.avg')" />
+            <el-option key="max" value="max" :label="t('chart.max')" />
+            <el-option key="min" value="min" :label="t('chart.min')" />
+          </el-select>
         </el-col>
         <el-col :span="3">
-          <el-form-item class="form-item">
-            <el-select
-              v-model="item.fontSize"
-              size="mini"
-              class="select-item"
-              :placeholder="t('chart.text_fontsize')"
-              @change="changeAssistLine"
-            >
-              <el-option
-                v-for="option in state.fontSize"
-                :key="option.value"
-                :label="option.name"
-                :value="option.value"
-              />
-            </el-select>
-          </el-form-item>
+          <el-select
+            v-model="item.fontSize"
+            class="select-item"
+            :placeholder="t('chart.text_fontsize')"
+            @change="changeAssistLine"
+          >
+            <el-option
+              v-for="option in state.fontSize"
+              :key="option.value"
+              :label="option.name"
+              :value="option.value"
+            />
+          </el-select>
         </el-col>
         <el-col :span="4">
-          <el-form-item class="form-item">
-            <el-select
-              v-model="item.lineType"
-              size="mini"
-              class="select-item"
-              @change="changeAssistLine"
-            >
-              <el-option
-                v-for="opt in state.lineOptions"
-                :key="opt.value"
-                :label="opt.label"
-                :value="opt.value"
-              />
-            </el-select>
-          </el-form-item>
+          <el-select v-model="item.lineType" class="select-item" @change="changeAssistLine">
+            <el-option
+              v-for="opt in state.lineOptions"
+              :key="opt.value"
+              :label="opt.label"
+              :value="opt.value"
+            />
+          </el-select>
         </el-col>
         <el-col :span="2" style="text-align: center">
           <el-color-picker
             is-custom
+            size="large"
             v-model="item.color"
             class="color-picker-style"
             :predefine="state.predefineColors"
@@ -246,13 +219,7 @@ init()
         </el-col>
       </el-row>
     </div>
-    <el-button
-      class="circle-button"
-      link
-      type="primary"
-      :style="{ marginTop: '10px' }"
-      @click="addLine"
-    >
+    <el-button class="circle-button" text style="margin-left: 5px" @click="addLine">
       <template #icon>
         <Icon name="icon_add_outlined"></Icon>
       </template>
@@ -269,6 +236,9 @@ init()
   display: flex;
   justify-content: left;
   align-items: center;
+  &:last-child {
+    margin-bottom: 4px;
+  }
 }
 
 .form-item :deep(.ed-form-item__label) {
@@ -283,6 +253,9 @@ span {
   position: relative;
   display: inline-block;
   width: 100% !important;
+  :deep(.ed-input-number__increase) {
+    top: 1.2px;
+  }
 }
 
 .select-item {
@@ -294,22 +267,5 @@ span {
 .ed-select-dropdown__item {
   padding: 0 20px;
   font-size: 12px;
-}
-
-.color-picker-style {
-  cursor: pointer;
-  z-index: 1003;
-  width: 28px;
-  height: 28px;
-  margin-top: 6px;
-}
-
-.color-picker-style :deep(.ed-color-picker__trigger) {
-  width: 28px;
-  height: 28px;
-}
-
-:deep(.ed-form-item) {
-  margin-bottom: 0 !important;
 }
 </style>
