@@ -265,7 +265,7 @@ init()
 .line-item {
   width: 100%;
   border-radius: 4px;
-  padding: 4px 14px;
+  padding: 4px;
   display: flex;
   justify-content: left;
   align-items: center;
