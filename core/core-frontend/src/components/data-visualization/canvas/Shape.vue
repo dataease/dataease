@@ -71,6 +71,7 @@
         />
       </template>
     </div>
+    <compose-show :element="element"></compose-show>
   </div>
 </template>
 
