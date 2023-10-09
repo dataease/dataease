@@ -1073,7 +1073,8 @@ export default {
     error_q_2_d: '不支持拖拽指标至维度',
     error_d_2_q: '不支持拖拽维度至指标',
     only_input_number: '请输入正确数值',
-    value_min_max_invalid: '最小值必须小于最大值'
+    value_min_max_invalid: '最小值必须小于最大值',
+    add_assist_line: '添加辅助线'
   },
   dataset: {
     scope_edit: '仅编辑时生效',

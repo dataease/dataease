@@ -167,7 +167,6 @@ init()
       v-model="state.editLineDialog"
       :title="t('chart.assist_line')"
       :visible="state.editLineDialog"
-      :show-close="false"
       width="1000px"
       class="dialog-css"
     >
