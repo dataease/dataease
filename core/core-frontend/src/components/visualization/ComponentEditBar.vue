@@ -48,6 +48,7 @@
 
     <div v-if="barShowCheck('multiplexing')" class="bar-checkbox-area">
       <el-checkbox
+        @click.stop
         style="height: 26px; padding: 5px"
         v-model="state.multiplexingCheckModel"
         @change="multiplexingCheck"
