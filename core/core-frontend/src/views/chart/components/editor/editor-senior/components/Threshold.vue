@@ -185,7 +185,11 @@ const changeTableThreshold = () => {
         return
       }
       if (ele.term === 'between') {
-        if (!ele.term.includes('null') && !ele.term.includes('empty') && (!ele.min || !ele.max)) {
+        if (
+          !ele.term.includes('null') &&
+          !ele.term.includes('empty') &&
+          (ele.min === '' || ele.max === '')
+        ) {
           ElMessage.error(t('chart.value_can_not_empty'))
           return
         }
@@ -204,7 +208,7 @@ const changeTableThreshold = () => {
           return
         }
       } else {
-        if (!ele.term.includes('null') && !ele.term.includes('empty') && !ele.value) {
+        if (!ele.term.includes('null') && !ele.term.includes('empty') && ele.value === '') {
           ElMessage.error(t('chart.value_can_not_empty'))
           return
         }
@@ -403,6 +407,7 @@ init()
           <el-row
             v-for="(fieldItem, fieldIndex) in state.thresholdForm.tableThreshold"
             :key="fieldIndex"
+            style="flex-direction: column"
           >
             <el-row class="field-style">
               <span>
@@ -514,7 +519,6 @@ init()
       v-model="state.editTextLabelThresholdDialog"
       :title="t('chart.threshold')"
       :visible="state.editTextLabelThresholdDialog"
-      :show-close="false"
       width="800px"
       class="dialog-css"
       append-to-body
@@ -539,7 +543,6 @@ init()
       v-model="state.editLabelThresholdDialog"
       :title="t('chart.threshold')"
       :visible="state.editLabelThresholdDialog"
-      :show-close="false"
       width="800px"
       class="dialog-css"
       append-to-body
@@ -564,7 +567,6 @@ init()
       v-model="state.editTableThresholdDialog"
       :title="t('chart.threshold')"
       :visible="state.editTableThresholdDialog"
-      :show-close="false"
       width="800px"
       class="dialog-css"
       append-to-body
