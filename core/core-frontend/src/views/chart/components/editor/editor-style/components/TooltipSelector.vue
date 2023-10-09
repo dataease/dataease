@@ -44,7 +44,7 @@ const initSeriesTooltip = (firstLoad: boolean) => {
     pre[next.id] = next
     return pre
   }, {})
-  if (!yAxis.length) {
+  if (!yAxis || !yAxis.length) {
     curSeriesFormatter.value = {}
     return
   }
