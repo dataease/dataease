@@ -60,7 +60,7 @@ const shadowStyle = computed(() => {
     width: sizeX * baseWidth.value + 'px',
     height: sizeY * baseHeight.value + 'px',
     left: (x - 1) * baseWidth.value + 'px',
-    top: (y - 1) * baseHeight.value + 'px'
+    top: (y - 1) * baseHeight.value - 3 + 'px'
   }
 })
 </script>
