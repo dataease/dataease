@@ -942,8 +942,8 @@ export default {
     interval: '间隔',
     max_more_than_mix: '最大值必须大于最小值',
     field: '字段',
-    textColor: '文字颜色',
-    backgroundColor: '背景颜色',
+    textColor: '文字',
+    backgroundColor: '背景',
     field_can_not_empty: '字段不能为空',
     conditions_can_not_empty: '字段的条件不能为空，若无条件，请直接删除该字段',
     remark: '备注',
@@ -1071,7 +1071,12 @@ export default {
     addition: '条件',
     drill_field_error: '下钻起始字段需在维度中',
     error_q_2_d: '不支持拖拽指标至维度',
-    error_d_2_q: '不支持拖拽维度至指标'
+    error_d_2_q: '不支持拖拽维度至指标',
+    only_input_number: '请输入正确数值',
+    value_min_max_invalid: '最小值必须小于最大值',
+    add_assist_line: '添加辅助线',
+    add_threshold: '添加阈值',
+    add_condition: '添加条件'
   },
   dataset: {
     scope_edit: '仅编辑时生效',

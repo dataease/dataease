@@ -27,7 +27,7 @@ export class Funnel extends G2PlotChartView<FunnelOptions, G2Funnel> {
     'background-overall-component': ['all'],
     'basic-style-selector': ['colors', 'alpha'],
     'label-selector': ['fontSize', 'color', 'hPosition', 'labelFormatter'],
-    'tooltip-selector': ['color', 'fontSize', 'backgroundColor', 'tooltipFormatter'],
+    'tooltip-selector': ['color', 'fontSize', 'backgroundColor', 'seriesTooltipFormatter'],
     'title-selector': [
       'show',
       'title',
@@ -123,7 +123,7 @@ export class Funnel extends G2PlotChartView<FunnelOptions, G2Funnel> {
     return flow(
       this.configTheme,
       this.configLabel,
-      this.configTooltip,
+      this.configMultiSeriesTooltip,
       this.configLegend
     )(chart, options)
   }

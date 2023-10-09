@@ -656,7 +656,7 @@ defineExpose({
                 v-model="curComponent.checkedFieldsMap[field.componentId]"
                 clearable
               >
-                <template #prefix>
+                <template v-if="curComponent.checkedFieldsMap[field.componentId]" #prefix>
                   <el-icon>
                     <Icon
                       :name="`field_${

@@ -27,7 +27,11 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
   propertyInner = {
     ...LINE_EDITOR_PROPERTY_INNER,
     'basic-style-selector': [...LINE_EDITOR_PROPERTY_INNER['basic-style-selector'], 'gradient'],
-    'label-selector': ['seriesLabelFormatter']
+    'label-selector': ['seriesLabelFormatter'],
+    'tooltip-selector': [
+      ...LINE_EDITOR_PROPERTY_INNER['tooltip-selector'],
+      'seriesTooltipFormatter'
+    ]
   }
   axis: AxisType[] = [...LINE_AXIS_TYPE]
   axisConfig = {
@@ -175,24 +179,6 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
     }
   }
 
-  protected configTooltip(chart: Chart, options: AreaOptions): AreaOptions {
-    let tooltip
-    const customAttr: DeepPartial<ChartAttr> = parseJson(chart.customAttr)
-    if (customAttr.tooltip) {
-      const tooltipAttr = customAttr.tooltip
-      if (tooltipAttr.show) {
-        tooltip = {
-          formatter: function (param: Datum) {
-            return singleDimensionTooltipFormatter(param, chart)
-          }
-        }
-      } else {
-        tooltip = false
-      }
-    }
-    return { ...options, tooltip }
-  }
-
   protected configBasicStyle(chart: Chart, options: AreaOptions): AreaOptions {
     // size
     const customAttr: DeepPartial<ChartAttr> = parseJson(chart.customAttr)
@@ -262,7 +248,7 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
     return flow(
       this.configTheme,
       this.configLabel,
-      this.configTooltip,
+      this.configMultiSeriesTooltip,
       this.configBasicStyle,
       this.configLegend,
       this.configXAxis,

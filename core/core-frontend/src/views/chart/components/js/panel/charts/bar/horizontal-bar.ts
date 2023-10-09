@@ -5,17 +5,8 @@ import {
 import { Bar, BarOptions } from '@antv/g2plot/esm/plots/bar'
 import { getPadding, setGradientColor } from '@/views/chart/components/js/panel/common/common_antv'
 import { cloneDeep } from 'lodash-es'
-import {
-  flow,
-  handleEmptyDataStrategy,
-  hexColorToRGBA,
-  parseJson
-} from '@/views/chart/components/js/util'
-import {
-  formatterItem,
-  singleDimensionTooltipFormatter,
-  valueFormatter
-} from '@/views/chart/components/js/formatter'
+import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
+import { valueFormatter } from '@/views/chart/components/js/formatter'
 import {
   BAR_AXIS_TYPE,
   BAR_EDITOR_PROPERTY,
@@ -119,23 +110,6 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
     return newChart
   }
 
-  protected configTooltip(chart: Chart, options: BarOptions): BarOptions {
-    let tooltip
-    const customAttr: DeepPartial<ChartAttr> = parseJson(chart.customAttr)
-    if (customAttr.tooltip) {
-      const tooltipAttr = customAttr.tooltip
-      if (tooltipAttr.show) {
-        tooltip = {
-          formatter: function (param: Datum) {
-            return singleDimensionTooltipFormatter(param, chart)
-          }
-        }
-      } else {
-        tooltip = false
-      }
-    }
-    return { ...options, tooltip }
-  }
   protected configXAxis(chart: Chart, options: BarOptions): BarOptions {
     const tmpOptions = super.configXAxis(chart, options)
     if (!tmpOptions.xAxis) {
@@ -162,6 +136,10 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
       return { ...tmpOptions, ...axis }
     }
     return tmpOptions
+  }
+
+  protected configTooltip(chart: Chart, options: BarOptions): BarOptions {
+    return super.configMultiSeriesTooltip(chart, options)
   }
 
   protected configBasicStyle(chart: Chart, options: BarOptions): BarOptions {
@@ -270,6 +248,11 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
  * 堆叠条形图
  */
 export class HorizontalStackBar extends HorizontalBar {
+  propertyInner = {
+    ...this['propertyInner'],
+    'label-selector': ['color', 'fontSize', 'hPosition', 'labelFormatter'],
+    'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'tooltipFormatter']
+  }
   protected configLabel(chart: Chart, options: BarOptions): BarOptions {
     const baseOptions = super.configLabel(chart, options)
     if (!baseOptions.label) {

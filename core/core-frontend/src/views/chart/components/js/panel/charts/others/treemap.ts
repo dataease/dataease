@@ -1,7 +1,7 @@
 import { TreemapOptions, Treemap as G2Treemap } from '@antv/g2plot/esm/plots/treemap'
 import { G2PlotChartView, G2PlotDrawOptions } from '../../types/impl/g2plot'
 import { flow, parseJson } from '../../../util'
-import { getPadding } from '../../common/common_antv'
+import { getPadding, getTooltipSeriesTotalMap } from '../../common/common_antv'
 import { valueFormatter } from '../../../formatter'
 import { Label } from '@antv/g2plot/lib/types/label'
 import { Datum } from '@antv/g2plot/esm/types/common'
@@ -26,16 +26,9 @@ export class Treemap extends G2PlotChartView<TreemapOptions, G2Treemap> {
   propertyInner: EditorPropertyInner = {
     'background-overall-component': ['all'],
     'basic-style-selector': ['colors', 'alpha'],
-    'label-selector': [
-      'fontSize',
-      'color',
-      'rPosition',
-      'showDimension',
-      'showQuota',
-      'showProportion'
-    ],
+    'label-selector': ['fontSize', 'color', 'showDimension', 'showQuota', 'showProportion'],
     'legend-selector': ['icon', 'orient', 'fontSize', 'color', 'hPosition', 'vPosition'],
-    'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'tooltipFormatter'],
+    'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'seriesTooltipFormatter'],
     'title-selector': [
       'title',
       'fontSize',
@@ -113,28 +106,61 @@ export class Treemap extends G2PlotChartView<TreemapOptions, G2Treemap> {
     return newChart
   }
   protected configTooltip(chart: Chart, options: TreemapOptions): TreemapOptions {
-    const { tooltip, label } = parseJson(chart.customAttr)
-    if (!tooltip.show) {
+    const { tooltip: tooltipAttr, label } = parseJson(chart.customAttr)
+    const { yAxis } = chart
+    if (!tooltipAttr.show) {
       return {
         ...options,
         tooltip: false
       }
     }
     const reserveDecimalCount = label.reserveDecimalCount
+    const seriesTotalMap = getTooltipSeriesTotalMap(options.data.children)
+    const formatterMap = tooltipAttr.seriesTooltipFormatter
+      ?.filter(i => i.show)
+      .reduce((pre, next) => {
+        pre[next.id] = next
+        return pre
+      }, {}) as Record<string, SeriesFormatter>
+    const tooltip: TreemapOptions['tooltip'] = {
+      showTitle: true,
+      title: () => undefined,
+      customItems(originalItems) {
+        let tooltipItems = originalItems
+        if (tooltipAttr.seriesTooltipFormatter?.length) {
+          tooltipItems = originalItems.filter(item => formatterMap[item.data.quotaList[0].id])
+        }
+        const result = []
+        const head = originalItems[0]
+        tooltipItems.forEach(item => {
+          const formatter = formatterMap[item.data.quotaList[0].id] ?? yAxis[0]
+          const value = valueFormatter(parseFloat(item.value as string), formatter.formatterCfg)
+          // sync with label
+          const percent = (
+            Math.round((item.data.value / item.data.path[1].value) * 10000) / 100
+          ).toFixed(reserveDecimalCount)
+          const name = formatter.chartShowName ?? formatter.name
+          result.push({ ...item, name, value: `${value ?? ''} (${percent}%)` })
+        })
+        head.data.dynamicTooltipValue?.forEach(item => {
+          const formatter = formatterMap[item.fieldId]
+          if (formatter) {
+            const total = seriesTotalMap[item.fieldId]
+            // sync with label
+            const percent = (Math.round((item.value / total) * 10000) / 100).toFixed(
+              reserveDecimalCount
+            )
+            const value = valueFormatter(parseFloat(item.value), formatter.formatterCfg)
+            const name = formatter.chartShowName ?? formatter.name
+            result.push({ color: 'grey', name, value: `${value ?? ''} (${percent}%)` })
+          }
+        })
+        return result
+      }
+    }
     return {
       ...options,
-      tooltip: {
-        formatter: function (param: Datum) {
-          const obj = { name: param.name, value: param.value }
-          const res = valueFormatter(param.value, tooltip.tooltipFormatter)
-          // sync with label
-          const percent = (Math.round((param.value / param.path[1].value) * 10000) / 100).toFixed(
-            reserveDecimalCount
-          )
-          obj.value = `${res ?? ''} (${percent}%)`
-          return obj
-        }
-      }
+      tooltip
     }
   }
   protected configLabel(chart: Chart, options: TreemapOptions): TreemapOptions {

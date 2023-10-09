@@ -121,7 +121,6 @@ const handleChange = () => {
 <template>
   <el-popover
     popper-class="menu-more_popper_one"
-    show-arrow
     :persistent="false"
     ref="popover"
     placement="right"

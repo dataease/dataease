@@ -6,10 +6,7 @@ import {
 } from '@/views/chart/components/js/panel/types/impl/g2plot'
 import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
 import { Datum } from '@antv/g2plot'
-import {
-  singleDimensionTooltipFormatter,
-  valueFormatter
-} from '@/views/chart/components/js/formatter'
+import { valueFormatter } from '@/views/chart/components/js/formatter'
 import {
   BAR_AXIS_TYPE,
   BAR_EDITOR_PROPERTY,
@@ -159,21 +156,7 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
   }
 
   protected configTooltip(chart: Chart, options: ColumnOptions): ColumnOptions {
-    let tooltip
-    const customAttr: DeepPartial<ChartAttr> = parseJson(chart.customAttr)
-    if (customAttr.tooltip) {
-      const tooltipAttr = customAttr.tooltip
-      if (tooltipAttr.show) {
-        tooltip = {
-          formatter: function (param: Datum) {
-            return singleDimensionTooltipFormatter(param, chart)
-          }
-        }
-      } else {
-        tooltip = false
-      }
-    }
-    return { ...options, tooltip }
+    return super.configMultiSeriesTooltip(chart, options)
   }
 
   protected configBasicStyle(chart: Chart, options: ColumnOptions): ColumnOptions {
@@ -250,7 +233,8 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
 export class StackBar extends Bar {
   propertyInner = {
     ...this['propertyInner'],
-    'label-selector': [...BAR_EDITOR_PROPERTY_INNER['label-selector'], 'vPosition']
+    'label-selector': [...BAR_EDITOR_PROPERTY_INNER['label-selector'], 'vPosition'],
+    'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'tooltipFormatter']
   }
   protected configLabel(chart: Chart, options: ColumnOptions): ColumnOptions {
     const baseOptions = super.configLabel(chart, options)

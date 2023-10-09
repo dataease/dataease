@@ -8,6 +8,8 @@ import { AreaOptions, LabelOptions } from '@antv/l7plot'
 import { TooltipOptions } from '@antv/l7plot/dist/lib/types/tooltip'
 import { FeatureCollection } from '@antv/l7plot/dist/esm/plots/choropleth/types'
 import { Datum } from '@antv/g2plot/esm/types/common'
+import { Tooltip } from '@antv/g2plot/esm'
+import { add } from 'mathjs'
 
 export function getPadding(chart: Chart): number[] {
   if (chart.drill) {
@@ -166,6 +168,48 @@ export function getTooltip(chart: Chart) {
       } else {
         tooltip = false
       }
+    }
+  }
+  return tooltip
+}
+
+export function getMultiSeriesTooltip(chart: Chart) {
+  const customAttr: DeepPartial<ChartAttr> = parseJson(chart.customAttr)
+  const tooltipAttr = customAttr.tooltip
+  if (!tooltipAttr.show) {
+    return false
+  }
+  const formatterMap = tooltipAttr.seriesTooltipFormatter
+    ?.filter(i => i.show)
+    .reduce((pre, next) => {
+      pre[next.id] = next
+      return pre
+    }, {}) as Record<string, SeriesFormatter>
+  const tooltip: Tooltip = {
+    customItems(originalItems) {
+      if (!tooltipAttr.seriesTooltipFormatter?.length) {
+        return originalItems
+      }
+      const result = []
+      const head = originalItems[0]
+      originalItems
+        .filter(item => formatterMap[item.data.quotaList[0].id])
+        .forEach(item => {
+          const value = valueFormatter(
+            parseFloat(item.value as string),
+            formatterMap[item.data.quotaList[0].id].formatterCfg
+          )
+          result.push({ ...item, value })
+        })
+      head.data.dynamicTooltipValue?.forEach(item => {
+        const formatter = formatterMap[item.fieldId]
+        if (formatter) {
+          const value = valueFormatter(parseFloat(item.value), formatter.formatterCfg)
+          const name = formatter.chartShowName ?? formatter.name
+          result.push({ color: 'grey', name, value })
+        }
+      })
+      return result
     }
   }
   return tooltip
@@ -642,4 +686,19 @@ export function handleGeoJson(geoJson: FeatureCollection, nameMapping?: Record<s
       item.properties['name'] = name
     }
   })
+}
+
+export function getTooltipSeriesTotalMap(data: any[]): Record<string, number> {
+  const result = {}
+  data?.forEach(item => {
+    item.dynamicTooltipValue?.forEach(ele => {
+      if (!result[ele.fieldId]) {
+        result[ele.fieldId] = 0
+      }
+      if (ele.value) {
+        result[ele.fieldId] = add(result[ele.fieldId], ele.value)
+      }
+    })
+  })
+  return result
 }

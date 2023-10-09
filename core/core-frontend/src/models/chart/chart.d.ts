@@ -88,11 +88,11 @@ declare interface SeriesFormatter extends Axis {
   /**
    * 字体颜色
    */
-  color: string
+  color?: string
   /**
    * 字体大小
    */
-  fontSize: number
+  fontSize?: number
 }
 
 declare interface Axis extends ChartViewField {

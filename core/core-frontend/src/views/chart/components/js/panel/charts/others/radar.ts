@@ -22,8 +22,8 @@ export class Radar extends G2PlotChartView<RadarOptions, G2Radar> {
   ]
   propertyInner: EditorPropertyInner = {
     'basic-style-selector': ['colors', 'alpha', 'radarShape'],
-    'label-selector': ['fontSize', 'color', 'labelFormatter'],
-    'tooltip-selector': ['color', 'fontSize', 'backgroundColor', 'tooltipFormatter'],
+    'label-selector': ['seriesLabelFormatter'],
+    'tooltip-selector': ['color', 'fontSize', 'backgroundColor', 'seriesTooltipFormatter'],
     'misc-style-selector': ['showName', 'color', 'fontSize', 'axisColor'],
     'title-selector': [
       'show',
@@ -96,13 +96,6 @@ export class Radar extends G2PlotChartView<RadarOptions, G2Radar> {
           }
         },
         {
-          type: 'tooltip',
-          cfg: {
-            start: [{ trigger: 'point:mousemove', action: 'tooltip:show' }],
-            end: [{ trigger: 'point:mouseleave', action: 'tooltip:hide' }]
-          }
-        },
-        {
           type: 'active-region',
           cfg: {
             start: [{ trigger: 'point:mousemove', action: 'active-region:show' }],
@@ -117,23 +110,57 @@ export class Radar extends G2PlotChartView<RadarOptions, G2Radar> {
     return newChart
   }
 
-  protected configTooltip(chart: Chart, options: RadarOptions): RadarOptions {
-    const customAttr: DeepPartial<ChartAttr> = parseJson(chart.customAttr)
-    const tooltipAttr = customAttr.tooltip
-    if (!tooltipAttr.show) {
+  protected configLabel(chart: Chart, options: RadarOptions): RadarOptions {
+    const tmpOptions = super.configLabel(chart, options)
+    if (!tmpOptions.label) {
       return {
-        ...options,
-        tooltip: false
+        ...tmpOptions,
+        label: false
       }
     }
-    const tooltip = {
-      formatter: function (param: Datum) {
-        const obj = { name: param.category, value: param.value }
-        obj.value = valueFormatter(param.value, tooltipAttr.tooltipFormatter)
-        return obj
+    const labelAttr = parseJson(chart.customAttr).label
+    const formatterMap = labelAttr.seriesLabelFormatter?.reduce((pre, next) => {
+      pre[next.id] = next
+      return pre
+    }, {})
+    // 自动旋转和标签自定义有冲突
+    const label = {
+      fields: [],
+      ...tmpOptions.label,
+      autoRotate: false,
+      autoHide: true,
+      formatter: (data: Datum) => {
+        if (!labelAttr.seriesLabelFormatter?.length) {
+          return data.value
+        }
+        const labelCfg = formatterMap?.[data.quotaList[0].id] as SeriesFormatter
+        if (!labelCfg) {
+          return data.value
+        }
+        if (!labelCfg.show) {
+          return
+        }
+        const value = valueFormatter(data.value, labelCfg.formatterCfg)
+        const group = new G2PlotChartView.engine.Group({})
+        group.addShape({
+          type: 'text',
+          attrs: {
+            x: 0,
+            y: 0,
+            text: value,
+            textAlign: 'start',
+            textBaseline: 'top',
+            fontSize: labelCfg.fontSize,
+            fill: labelCfg.color
+          }
+        })
+        return group
       }
     }
-    return { ...options, tooltip }
+    return {
+      ...tmpOptions,
+      label
+    }
   }
 
   protected configAxis(chart: Chart, options: RadarOptions): RadarOptions {
@@ -187,7 +214,7 @@ export class Radar extends G2PlotChartView<RadarOptions, G2Radar> {
       this.configTheme,
       this.configLabel,
       this.configLegend,
-      this.configTooltip,
+      this.configMultiSeriesTooltip,
       this.configAxis
     )(chart, options)
   }

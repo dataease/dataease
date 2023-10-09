@@ -672,7 +672,7 @@ const dfsFields = (arr, list) => {
 
 const getDelIdArr = (newArr, oldArr) => {
   const idMapNew = newArr.map(ele => ele.id)
-  const idMapOld = oldArr.filter(ele => ele.extField !== 2).map(ele => ele.id)
+  const idMapOld = oldArr.filter(ele => ele.extField === 2).map(ele => ele.id)
   return idMapOld.filter(ele => !idMapNew.includes(ele))
 }
 
@@ -1783,7 +1783,7 @@ const treeProps = {
         height: 100%;
         content: '';
         position: absolute;
-        left: 0px;
+        left: -1px;
         top: 0;
         background: #3370ff;
       }
