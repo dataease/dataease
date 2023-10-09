@@ -93,7 +93,7 @@ onMounted(() => {
 
 <template>
   <div @keydown.stop @keyup.stop style="width: 100%">
-    <el-form ref="functionForm" :model="state.functionForm" size="small" label-position="top">
+    <el-form ref="functionForm" :model="state.functionForm" label-position="top">
       <div v-if="showProperty('slider')">
         <el-form-item
           :label="t('chart.slider')"
@@ -254,6 +254,10 @@ span {
   align-items: flex-start;
   label {
     line-height: 28px;
+
+    &:not(:last-child) {
+      margin-bottom: 8px;
+    }
   }
 }
 .range-slider {

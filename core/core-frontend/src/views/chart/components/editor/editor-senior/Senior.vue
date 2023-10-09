@@ -299,4 +299,14 @@ span {
   border-right: 1px solid #e6e6e6;
   height: 100%;
 }
+
+.de-collapse-style {
+  :deep(.ed-form-item) {
+    display: block;
+    margin-bottom: 16px;
+  }
+  :deep(.ed-form-item__label) {
+    justify-content: flex-start;
+  }
+}
 </style>
