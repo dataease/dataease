@@ -104,7 +104,7 @@ init()
 
 <template>
   <el-col>
-    <div @keydown.stop @keyup.stop style="max-height: 50vh; overflow-y: auto; margin-top: -4px">
+    <div @keydown.stop @keyup.stop style="max-height: 50vh; margin-top: -4px; overflow-y: auto">
       <el-row v-for="(item, index) in state.lineArr" :key="index" class="line-item" :gutter="8">
         <el-col :span="4">
           <el-input
