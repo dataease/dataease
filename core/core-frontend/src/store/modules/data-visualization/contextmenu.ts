@@ -6,14 +6,16 @@ export const contextmenuStore = defineStore('contextmenu', {
     return {
       menuTop: 0, // 右击菜单数据
       menuLeft: 0,
-      menuShow: false
+      menuShow: false,
+      position: 'canvasCore'
     }
   },
   actions: {
-    showContextMenu({ top, left }) {
+    showContextMenu({ top, left, position }) {
       this.menuShow = true
       this.menuTop = top
       this.menuLeft = left
+      this.position = position
     },
 
     hideContextMenu() {
