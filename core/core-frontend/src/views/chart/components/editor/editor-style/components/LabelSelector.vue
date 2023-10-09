@@ -127,7 +127,7 @@ const COMPUTED_DEFAULT_LABEL = computed(() => {
 })
 
 const state = reactive({
-  labelForm: JSON.parse(JSON.stringify(COMPUTED_DEFAULT_LABEL.value))
+  labelForm: {}
 })
 
 const emit = defineEmits(['onLabelChange'])

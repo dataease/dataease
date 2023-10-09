@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { PropType, computed, onMounted, reactive, watch, ref, inject, toRef } from 'vue'
+import { PropType, computed, onMounted, reactive, watch, ref, inject } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL, DEFAULT_TOOLTIP } from '@/views/chart/components/editor/util/chart'
 import { ElSpace } from 'element-plus-secondary'
@@ -173,7 +173,7 @@ watch(
 )
 
 const state = reactive({
-  tooltipForm: JSON.parse(JSON.stringify(DEFAULT_TOOLTIP))
+  tooltipForm: {}
 })
 
 const fontSizeList = computed(() => {
