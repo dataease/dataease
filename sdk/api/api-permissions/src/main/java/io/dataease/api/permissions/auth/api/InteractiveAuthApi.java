@@ -4,6 +4,7 @@ package io.dataease.api.permissions.auth.api;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.api.permissions.auth.dto.*;
+import io.dataease.auth.vo.TokenVO;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -58,7 +59,7 @@ public interface InteractiveAuthApi {
     boolean checkDel(@PathVariable("id") Long id);
 
     @Operation(hidden = true)
-    String outAuthPlatformLogin(@RequestBody OutAuthPlatformLoginRequest request);
+    TokenVO outAuthPlatformLogin(@RequestBody OutAuthPlatformLoginRequest request);
 
     @Operation(summary = "移动资源")
     @ApiOperationSupport(order = 7)

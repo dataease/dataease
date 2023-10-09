@@ -253,7 +253,7 @@ onMounted(() => {
             />
           </el-form-item>
         </el-col>
-        <el-col :span="11">
+        <el-col :span="11" style="padding-top: 2px">
           <el-form-item class="form-item" :class="'form-item-' + themes">
             <el-input
               type="number"

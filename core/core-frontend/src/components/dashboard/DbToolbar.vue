@@ -222,8 +222,19 @@ const openDataBoardSetting = () => {
 }
 
 const batchDelete = () => {
-  curBatchOptComponents.value.forEach(componentId => {
-    eventBus.emit('removeMatrixItemById-canvas-main', componentId)
+  componentData.value.forEach(component => {
+    if (curBatchOptComponents.value.includes(component.id)) {
+      eventBus.emit('removeMatrixItemById-' + component.canvasId, component.id)
+    }
+    if (component.component === 'DeTabs') {
+      component.propValue.forEach(tabItem => {
+        tabItem.componentData.forEach(tabComponent => {
+          if (curBatchOptComponents.value.includes(tabComponent.id)) {
+            eventBus.emit('removeMatrixItemById-' + tabComponent.canvasId, tabComponent.id)
+          }
+        })
+      })
+    }
   })
   nextTick(() => {
     saveBatchChange()
@@ -235,6 +246,15 @@ const batchCopy = () => {
   componentData.value.forEach(component => {
     if (curBatchOptComponents.value.includes(component.id)) {
       multiplexingComponents[component.id] = component
+    }
+    if (component.component === 'DeTabs') {
+      component.propValue.forEach(tabItem => {
+        tabItem.componentData.forEach(tabComponent => {
+          if (curBatchOptComponents.value.includes(tabComponent.id)) {
+            multiplexingComponents[tabComponent.id] = tabComponent
+          }
+        })
+      })
     }
   })
   copyStore.copyMultiplexingComponents(canvasViewInfo.value, multiplexingComponents, true)

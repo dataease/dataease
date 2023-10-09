@@ -49,6 +49,7 @@
         v-model="canvasStyleData.refreshTime"
         :effect="themes"
         class="time-input-number"
+        :class="dvInfo.type === 'dashboard' && 'padding20'"
         type="number"
         :min="1"
         :max="3600"
@@ -214,13 +215,14 @@ const colorButtonClick = val => {
   margin-bottom: 16px;
 }
 .time-input-number {
-  :deep(.ed-input-group__append) {
-    padding: 0 20px;
-  }
-
-  &.is-disabled {
-    :deep(.ed-input.is-disabled .ed-input__wrapper) {
-      box-shadow: 0 0 0 1px var(--ed-disabled-border-color) inset !important;
+  &.padding20 {
+    :deep(.ed-input-group__append) {
+      padding: 0 20px;
+    }
+    &.is-disabled {
+      :deep(.ed-input.is-disabled .ed-input__wrapper) {
+        box-shadow: 0 0 0 1px var(--ed-disabled-border-color) inset !important;
+      }
     }
   }
   :deep(input) {

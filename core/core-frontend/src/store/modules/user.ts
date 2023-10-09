@@ -12,6 +12,7 @@ interface UserState {
   name: string
   oid: string
   language: string
+  exp: number
 }
 
 export const userStore = defineStore('user', {
@@ -21,7 +22,8 @@ export const userStore = defineStore('user', {
       uid: null,
       name: null,
       oid: null,
-      language: 'zh-CN'
+      language: 'zh-CN',
+      exp: null
     }
   },
   getters: {
@@ -39,6 +41,9 @@ export const userStore = defineStore('user', {
     },
     getLanguage(): string {
       return this.language
+    },
+    getExp(): number {
+      return this.exp
     }
   },
   actions: {
@@ -49,8 +54,8 @@ export const userStore = defineStore('user', {
         : await userInfo()
       const data = res.data
       data.token = wsCache.get('user.token')
-
-      const keys: string[] = ['token', 'uid', 'name', 'oid', 'language']
+      data.exp = wsCache.get('user.exp')
+      const keys: string[] = ['token', 'uid', 'name', 'oid', 'language', 'exp']
 
       keys.forEach(key => {
         const dkey = key === 'uid' ? 'id' : key
@@ -62,6 +67,10 @@ export const userStore = defineStore('user', {
     setToken(token: string) {
       wsCache.set('user.token', token)
       this.token = token
+    },
+    setExp(exp: number) {
+      wsCache.set('user.exp', exp)
+      this.exp = exp
     },
     setUid(uid: string) {
       wsCache.set('user.uid', uid)
@@ -81,7 +90,7 @@ export const userStore = defineStore('user', {
       locale.setLang(language)
     },
     clear() {
-      const keys: string[] = ['token', 'uid', 'name', 'oid', 'language']
+      const keys: string[] = ['token', 'uid', 'name', 'oid', 'language', 'exp']
       keys.forEach(key => wsCache.delete('user.' + key))
     }
   }

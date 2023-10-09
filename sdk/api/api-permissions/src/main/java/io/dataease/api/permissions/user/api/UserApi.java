@@ -6,6 +6,7 @@ import io.dataease.api.permissions.user.dto.*;
 import io.dataease.api.permissions.user.vo.*;
 import io.dataease.auth.DeApiPath;
 import io.dataease.auth.DePermit;
+import io.dataease.auth.vo.TokenVO;
 import io.dataease.model.KeywordRequest;
 import io.dataease.request.BaseGridRequest;
 import org.springframework.web.bind.annotation.*;
@@ -57,7 +58,7 @@ public interface UserApi {
     IPage<UserItemVO> selectedForRole(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody UserRequest request);
 
     @PostMapping("/switch/{oId}")
-    String switchOrg(@PathVariable("oId") Long oId);
+    TokenVO switchOrg(@PathVariable("oId") Long oId);
 
     @GetMapping("/info")
     CurUserVO info();

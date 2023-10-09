@@ -1,5 +1,5 @@
 <template>
-  <div v-if="isComposeSelected" class="compose-shadow" @mousedown="handelMouseDown"></div>
+  <div v-if="isComposeSelected" class="compose-shadow" @mousedown="handleMouseDown"></div>
 </template>
 
 <script setup lang="ts">
@@ -18,7 +18,7 @@ const props = defineProps({
 
 const isComposeSelected = computed(() => areaData.value.components.includes(props.element))
 
-const handelMouseDown = e => {
+const handleMouseDown = e => {
   // 右键返回
   if (e.buttons === 2) {
     return

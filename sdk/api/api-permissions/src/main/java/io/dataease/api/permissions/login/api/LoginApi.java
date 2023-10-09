@@ -2,6 +2,7 @@ package io.dataease.api.permissions.login.api;
 
 
 import io.dataease.api.permissions.login.dto.PwdLoginDTO;
+import io.dataease.auth.vo.TokenVO;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,10 +21,13 @@ public interface LoginApi {
      * @param dto
      */
     @PostMapping("/login/localLogin")
-    String localLogin(@Valid @RequestBody PwdLoginDTO dto);
+    TokenVO localLogin(@Valid @RequestBody PwdLoginDTO dto);
+
+    @GetMapping("/login/refresh")
+    TokenVO refresh();
 
     @PostMapping("/login/platformLogin/{origin}")
-    String platformLogin(@PathVariable("origin") Integer origin);
+    TokenVO platformLogin(@PathVariable("origin") Integer origin);
 
     @GetMapping("/logout")
     void logout();

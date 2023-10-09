@@ -49,12 +49,12 @@ const emits = defineEmits(['customClick'])
     line-height: 12px;
   }
   &:hover {
-    background: #1e2637;
+    background: rgba(235, 235, 235, 0.1);
     color: #fff;
   }
   &:active {
     color: #fff;
-    background: #373e4d;
+    background: rgba(235, 235, 235, 0.2);
   }
 }
 
