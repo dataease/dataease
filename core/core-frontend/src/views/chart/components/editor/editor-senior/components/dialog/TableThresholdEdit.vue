@@ -22,7 +22,7 @@ const emit = defineEmits(['onTableThresholdChange'])
 const thresholdCondition = {
   term: 'eq',
   field: '0',
-  value: '',
+  value: '0',
   color: '#ff0000ff',
   backgroundColor: '#ffffff00',
   min: '0',
@@ -259,47 +259,44 @@ init()
 
 <template>
   <el-col>
-    <el-button class="circle-button" circle style="margin-bottom: 10px" @click="addThreshold">
-      <template #icon>
-        <Icon name="icon_add_outlined"></Icon>
-      </template>
-    </el-button>
+    <div class="tip">
+      <Icon name="icon_info_filled" class="icon-style"></Icon>
+      <span style="padding-left: 10px">{{ t('chart.table_threshold_tip') }}</span>
+    </div>
+
     <div @keydown.stop @keyup.stop style="max-height: 50vh; overflow-y: auto">
       <div
         v-for="(fieldItem, fieldIndex) in state.thresholdArr"
         :key="fieldIndex"
         class="field-item"
       >
-        <el-row style="margin-top: 6px; align-items: center">
-          <span class="color-title">{{ t('chart.field') }}</span>
-          <el-select v-model="fieldItem.fieldId" size="small" @change="addField(fieldItem)">
-            <el-option
-              v-for="fieldOption in state.fields"
-              :key="fieldOption.id"
-              :label="fieldOption.name"
-              :value="fieldOption.id"
-            >
-              <span style="float: left">
-                <el-icon>
-                  <Icon
-                    :className="`field-icon-${fieldType[fieldOption.deType]}`"
-                    :name="`field_${fieldType[fieldOption.deType]}`"
-                  ></Icon>
-                </el-icon>
-              </span>
-              <span :style="{ float: 'left', color: '#8492a6', fontSize: '12px' }">{{
-                fieldOption.name
-              }}</span>
-            </el-option>
-          </el-select>
-          <el-button class="circle-button" type="text" circle @click="addConditions(fieldItem)">
-            <template #icon>
-              <Icon name="icon_add_outlined"></Icon>
-            </template>
-          </el-button>
+        <el-row style="margin-top: 6px; align-items: center; justify-content: space-between">
+          <el-form-item class="form-item">
+            <el-select v-model="fieldItem.fieldId" @change="addField(fieldItem)">
+              <el-option
+                v-for="fieldOption in state.fields"
+                :key="fieldOption.id"
+                :label="fieldOption.name"
+                :value="fieldOption.id"
+              >
+                <span style="float: left">
+                  <el-icon>
+                    <Icon
+                      :className="`field-icon-${fieldType[fieldOption.deType]}`"
+                      :name="`field_${fieldType[fieldOption.deType]}`"
+                    ></Icon>
+                  </el-icon>
+                </span>
+                <span :style="{ float: 'left', color: '#8492a6', fontSize: '12px' }">{{
+                  fieldOption.name
+                }}</span>
+              </el-option>
+            </el-select>
+          </el-form-item>
+
           <el-button
             class="circle-button"
-            circle
+            link
             :style="{ float: 'right' }"
             @click="removeThreshold(fieldIndex)"
           >
@@ -308,95 +305,140 @@ init()
             </template>
           </el-button>
         </el-row>
-        <el-row v-for="(item, index) in fieldItem.conditions" :key="index" class="line-item">
-          <el-col :span="4">
-            <el-select v-model="item.term" size="small" @change="changeThreshold">
-              <el-option-group
-                v-for="(group, idx) in fieldItem.options"
-                :key="idx"
-                :label="group.label"
-              >
-                <el-option
-                  v-for="opt in group.options"
-                  :key="opt.value"
-                  :label="opt.label"
-                  :value="opt.value"
-                />
-              </el-option-group>
-            </el-select>
-          </el-col>
-          <el-col :span="10" style="text-align: center">
-            <el-input
-              v-show="
+
+        <el-row :style="{ marginTop: '16px', borderTop: '1px solid #d5d6d8' }">
+          <el-row
+            v-for="(item, index) in fieldItem.conditions"
+            :key="index"
+            class="line-item"
+            :gutter="10"
+          >
+            <el-col :span="4">
+              <el-form-item class="form-item">
+                <el-select v-model="item.term" @change="changeThreshold">
+                  <el-option-group
+                    v-for="(group, idx) in fieldItem.options"
+                    :key="idx"
+                    :label="group.label"
+                  >
+                    <el-option
+                      v-for="opt in group.options"
+                      :key="opt.value"
+                      :label="opt.label"
+                      :value="opt.value"
+                    />
+                  </el-option-group>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col
+              v-if="
                 !item.term.includes('null') &&
                 !item.term.includes('empty') &&
                 item.term !== 'between'
               "
-              v-model="item.value"
-              class="value-item"
-              style="margin-left: 10px"
-              :placeholder="t('chart.drag_block_label_value')"
-              size="small"
-              clearable
-              @change="changeThreshold"
-            />
-            <span v-if="item.term === 'between'">
-              <el-input
+              :span="10"
+              style="text-align: center"
+            >
+              <el-form-item class="form-item">
+                <el-input-number
+                  controls-position="right"
+                  v-model="item.value"
+                  class="value-item"
+                  :placeholder="t('chart.drag_block_label_value')"
+                  clearable
+                  @change="changeThreshold"
+                />
+              </el-form-item>
+            </el-col>
+
+            <el-col v-if="item.term === 'between'" :span="4" style="text-align: center">
+              <el-input-number
                 v-model="item.min"
+                controls-position="right"
                 class="between-item"
                 :placeholder="t('chart.axis_value_min')"
-                size="small"
                 clearable
                 @change="changeThreshold"
               />
-              <span style="margin: 0 4px">≤{{ t('chart.drag_block_label_value') }}≤</span>
-              <el-input
+            </el-col>
+
+            <el-col v-if="item.term === 'between'" :span="2" style="text-align: center">
+              <span style="margin: 0 4px">
+                ≤&nbsp;&nbsp;{{ t('chart.drag_block_label_value') }}&nbsp;&nbsp;≤
+              </span>
+            </el-col>
+
+            <el-col v-if="item.term === 'between'" :span="4" style="text-align: center">
+              <el-input-number
                 v-model="item.max"
+                controls-position="right"
                 class="between-item"
                 :placeholder="t('chart.axis_value_max')"
-                size="small"
                 clearable
                 @change="changeThreshold"
               />
-            </span>
-          </el-col>
-          <el-col :span="4" style="display: flex; align-items: center; justify-content: center">
-            <span class="color-title">{{ t('chart.textColor') }}</span>
-            <el-color-picker
-              v-model="item.color"
-              show-alpha
-              class="color-picker-style"
-              :predefine="predefineColors"
-              @change="changeThreshold"
-            />
-          </el-col>
-          <el-col :span="4" style="display: flex; align-items: center; justify-content: center">
-            <span class="color-title">{{ t('chart.backgroundColor') }}</span>
-            <el-color-picker
-              v-model="item.backgroundColor"
-              show-alpha
-              class="color-picker-style"
-              :predefine="predefineColors"
-              @change="changeThreshold"
-            />
-          </el-col>
-          <el-col :span="2">
-            <el-button
-              class="circle-button"
-              type="text"
-              circle
-              style="float: right"
-              @click="removeCondition(fieldItem, index)"
-            >
-              <template #icon>
-                <Icon name="icon_delete-trash_outlined"></Icon>
-              </template>
-            </el-button>
-          </el-col>
+            </el-col>
+
+            <el-col :span="3" style="display: flex; align-items: center; justify-content: center">
+              <span class="color-title">{{ t('chart.textColor') }}</span>
+              <el-color-picker
+                is-custom
+                v-model="item.color"
+                show-alpha
+                class="color-picker-style"
+                :predefine="predefineColors"
+                @change="changeThreshold"
+              />
+            </el-col>
+            <el-col :span="3" style="display: flex; align-items: center; justify-content: center">
+              <span class="color-title">{{ t('chart.backgroundColor') }}</span>
+              <el-color-picker
+                is-custom
+                v-model="item.backgroundColor"
+                show-alpha
+                class="color-picker-style"
+                :predefine="predefineColors"
+                @change="changeThreshold"
+              />
+            </el-col>
+            <el-col :span="2">
+              <el-button class="circle-button" link @click="removeCondition(fieldItem, index)">
+                <template #icon>
+                  <Icon name="icon_delete-trash_outlined"></Icon>
+                </template>
+              </el-button>
+            </el-col>
+          </el-row>
         </el-row>
+
+        <el-button
+          style="margin-top: 10px"
+          class="circle-button"
+          type="primary"
+          link
+          @click="addConditions(fieldItem)"
+        >
+          <template #icon>
+            <Icon name="icon_add_outlined"></Icon>
+          </template>
+          {{ t('chart.add_condition') }}
+        </el-button>
       </div>
     </div>
-    <div class="tip">{{ t('chart.table_threshold_tip') }}</div>
+
+    <el-button
+      class="circle-button"
+      link
+      type="primary"
+      style="margin-top: 10px"
+      @click="addThreshold"
+    >
+      <template #icon>
+        <Icon name="icon_add_outlined"></Icon>
+      </template>
+      {{ t('chart.add_threshold') }}
+    </el-button>
   </el-col>
 </template>
 
@@ -404,9 +446,9 @@ init()
 .field-item {
   width: 100%;
   border-radius: 4px;
-  border: 1px solid #dcdfe6;
-  padding: 4px 14px;
-  margin-bottom: 10px;
+  padding: 10px 16px;
+  margin-top: 10px;
+  background: #f5f6f7;
 }
 
 .line-item {
@@ -414,10 +456,14 @@ init()
   display: flex;
   justify-content: left;
   align-items: center;
+  margin-top: 16px;
 }
 
-.form-item :deep(.el-form-item__label) {
-  font-size: 12px;
+.form-item {
+  height: 28px !important;
+  :deep(.el-form-item__label) {
+    font-size: 12px;
+  }
 }
 
 span {
@@ -427,18 +473,19 @@ span {
 .value-item {
   position: relative;
   display: inline-block;
+  width: 100% !important;
 }
 
 .between-item {
   position: relative;
   display: inline-block;
-  width: 90px !important;
+  width: 100% !important;
 }
 
 .select-item {
   position: relative;
   display: inline-block;
-  width: 100px !important;
+  width: 100% !important;
 }
 
 .el-select-dropdown__item {
@@ -464,7 +511,21 @@ span {
 }
 
 .tip {
-  color: #f56c6c;
   font-size: 12px;
+  background: #d6e2ff;
+  border-radius: 4px;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+}
+
+:deep(.ed-form-item) {
+  margin-bottom: 0 !important;
+}
+
+.icon-style {
+  width: 14px;
+  height: 14px;
+  color: #3370ff;
 }
 </style>

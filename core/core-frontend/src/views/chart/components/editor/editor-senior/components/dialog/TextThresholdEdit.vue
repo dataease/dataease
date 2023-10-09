@@ -119,8 +119,9 @@ init()
           </el-select>
         </el-col>
         <el-col :span="14" style="text-align: center">
-          <el-input
+          <el-input-number
             v-if="item.term !== 'between'"
+            controls-position="right"
             v-model="item.value"
             class="value-item"
             :placeholder="t('chart.drag_block_label_value')"
@@ -129,8 +130,9 @@ init()
             @change="changeThreshold"
           />
           <span v-if="item.term === 'between'">
-            <el-input
+            <el-input-number
               v-model="item.min"
+              controls-position="right"
               class="between-item"
               :placeholder="t('chart.axis_value_min')"
               size="small"
@@ -138,8 +140,9 @@ init()
               @change="changeThreshold"
             />
             <span style="margin: 0 4px">≤{{ t('chart.drag_block_label_value') }}≤</span>
-            <el-input
+            <el-input-number
               v-model="item.max"
+              controls-position="right"
               class="between-item"
               :placeholder="t('chart.axis_value_max')"
               size="small"
