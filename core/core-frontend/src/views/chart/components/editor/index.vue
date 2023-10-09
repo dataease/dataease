@@ -470,6 +470,14 @@ const moveToQuota = e => {
 }
 
 const calcData = (view, resetDrill = false, updateQuery = '') => {
+  if (
+    view.refreshTime === '' ||
+    parseFloat(view.refreshTime).toString() === 'NaN' ||
+    parseFloat(view.refreshTime) < 1
+  ) {
+    ElMessage.error(t('chart.only_input_number'))
+    return
+  }
   if (resetDrill) {
     useEmitt().emitter.emit('resetDrill-' + view.id, 0)
   } else {
@@ -1002,6 +1010,13 @@ const dragVerticalTop = computed(() => {
   }
   return h > previewHeight.value - 53 ? previewHeight.value - 53 : h
 })
+
+const onRefreshChange = val => {
+  if (val === '' || parseFloat(val).toString() === 'NaN' || parseFloat(val) < 1) {
+    ElMessage.error(t('chart.only_input_number'))
+    return
+  }
+}
 </script>
 
 <template>
@@ -1446,12 +1461,13 @@ const dragVerticalTop = computed(() => {
                           :class="'form-item-' + themes"
                         >
                           <el-input
-                            v-model="view.refreshTime"
+                            v-model.number="view.refreshTime"
                             :effect="themes"
                             size="small"
                             :min="1"
                             :max="3600"
                             :disabled="!view.refreshViewEnable"
+                            @change="onRefreshChange"
                           >
                             <template #append>
                               <el-select
