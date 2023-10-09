@@ -425,6 +425,7 @@ const deleteField = item => {
 
 const addCalcField = groupType => {
   editCalcField.value = true
+  calcTitle.value = t('dataset.add_calc_field')
   nextTick(() => {
     calcEdit.value.initEdit({ groupType, id: guid() }, dimensions.value, quota.value)
   })
@@ -450,7 +451,7 @@ const calcTitle = ref('')
 const editField = item => {
   editCalcField.value = true
   nextTick(() => {
-    calcTitle.value = item.id ? t('dataset.edit_calc_field') : t('dataset.add_calc_field')
+    calcTitle.value = t('dataset.edit_calc_field')
     calcEdit.value.initEdit(item, dimensions.value, quota.value)
   })
 }
