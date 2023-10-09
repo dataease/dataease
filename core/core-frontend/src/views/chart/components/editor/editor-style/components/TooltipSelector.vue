@@ -45,7 +45,7 @@ const initSeriesTooltip = (firstLoad: boolean) => {
   // 新增视图
   if (!yAxis.length) {
     if (!formatter.length) {
-      quotaData.value?.forEach(i => formatter.push(i as unknown as SeriesFormatter))
+      quotaData.value?.forEach(i => formatter.push({ ...i, show: false }))
     }
     curSeriesFormatter.value = {}
     return
@@ -200,9 +200,9 @@ const fontSizeList = computed(() => {
 const changeTooltipAttr = (prop: string, requestData = false, render = true) => {
   // 多序列处理 extTooltip
   if (prop === 'seriesTooltipFormatter') {
-    const yAxis = props.chart.yAxis?.map(i => i.id)
+    const quotaAxis = props.chart.yAxis?.concat(props.chart.extBubble).map(i => i.id)
     const extTooltip = state.tooltipForm.seriesTooltipFormatter.filter(
-      i => !yAxis?.includes(i.id) && i.show
+      i => !quotaAxis?.includes(i.id) && i.show
     )
     emit('onExtTooltipChange', extTooltip)
   }
@@ -386,8 +386,6 @@ onMounted(() => {
           v-model="curSeriesFormatter"
           value-key="id"
           class="series-select"
-          :persistent="false"
-          :teleported="false"
         >
           <template #prefix>
             <el-icon v-if="curSeriesFormatter.id" style="font-size: 14px">

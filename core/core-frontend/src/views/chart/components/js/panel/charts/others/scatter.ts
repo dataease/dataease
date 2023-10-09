@@ -201,11 +201,15 @@ export class Scatter extends G2PlotChartView<ScatterOptions, G2Scatter> {
         }
         const result = []
         originalItems
-          .filter(
-            item => VALID_ITEMS.includes(item.name) && formatterMap[item.data.quotaList[0].id]
-          )
+          .filter(item => VALID_ITEMS.includes(item.name))
           .forEach(item => {
-            const formatter = formatterMap[item.data.quotaList[0].id]
+            let formatter = formatterMap[item.data.quotaList[0].id]
+            if (item.name === 'popSize') {
+              formatter = formatterMap[item.data.quotaList[1].id]
+            }
+            if (!formatter) {
+              return
+            }
             const value = valueFormatter(parseFloat(item.value as string), formatter.formatterCfg)
             const name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
             result.push({ ...item, name, value })

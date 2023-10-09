@@ -364,6 +364,9 @@ public class ChartDataBuild {
                 if (ObjectUtils.isNotEmpty(extBubble)) {
                     try {
                         axisChartDataDTO.setPopSize(StringUtils.isEmpty(row[size - extSize - extBubble.size()]) ? null : new BigDecimal(row[size - extSize - extBubble.size()]));
+                        ChartQuotaDTO bubbleQuotaDTO = new ChartQuotaDTO();
+                        bubbleQuotaDTO.setId(extBubble.get(0).getId());
+                        quotaList.add(bubbleQuotaDTO);
                     } catch (Exception e) {
                         axisChartDataDTO.setPopSize(new BigDecimal(0));
                     }
