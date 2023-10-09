@@ -1783,7 +1783,7 @@ const treeProps = {
         height: 100%;
         content: '';
         position: absolute;
-        left: 0px;
+        left: -1px;
         top: 0;
         background: #3370ff;
       }

@@ -202,6 +202,7 @@ onBeforeMount(() => {
     height: 100%;
     width: 279px;
     padding: 0;
+    overflow: visible;
     border-right: 1px solid #d7d7d7;
   }
   .preview-area {

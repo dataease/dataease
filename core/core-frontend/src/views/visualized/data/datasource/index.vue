@@ -1336,7 +1336,7 @@ onMounted(() => {
     width: 279px;
     padding: 0;
     border-right: 1px solid #d7d7d7;
-    //transition: 0.5s;
+    overflow: visible;
 
     .resource-tree {
       padding: 16px 0 0;

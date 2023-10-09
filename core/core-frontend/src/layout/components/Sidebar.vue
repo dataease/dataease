@@ -17,6 +17,7 @@ const { width, node } = useMoveLine('DATASET')
 .sidebar-move-line {
   width: 4px;
   height: 100%;
+  z-index: 1;
   position: absolute;
   cursor: col-resize;
   &:hover::after,
@@ -24,8 +25,9 @@ const { width, node } = useMoveLine('DATASET')
     width: 1px;
     height: 100%;
     content: '';
+    z-index: 2;
     position: absolute;
-    left: 3px;
+    right: -1px;
     top: 0;
     background: #3370ff;
   }
