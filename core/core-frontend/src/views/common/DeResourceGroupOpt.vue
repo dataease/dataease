@@ -98,7 +98,6 @@ const resetForm = () => {
   resourceFormNameLabel.value = ''
   resourceForm.name = '新建'
   resourceForm.pid = ''
-  resource.value.clearValidate()
   resourceDialogShow.value = false
 }
 
@@ -169,6 +168,11 @@ const optInit = (type, data: BusiTreeNode, exec, parentSelect = false) => {
         trigger: 'change'
       },
       {
+        required: true,
+        message: placeholder.value,
+        trigger: 'blur'
+      },
+      {
         max: 50,
         message: t('commons.char_can_not_more_50'),
         trigger: 'change'
@@ -183,7 +187,9 @@ const optInit = (type, data: BusiTreeNode, exec, parentSelect = false) => {
       }
     ]
   }
-  resource.value.clearValidate()
+  setTimeout(() => {
+    resource.value.clearValidate()
+  }, 50)
 }
 
 const editeInit = (param: BusiTreeNode) => {

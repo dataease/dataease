@@ -113,7 +113,6 @@ const filterMethod = value => {
   state.tData = [...tData].filter(item => item.name.includes(value))
 }
 const resetForm = () => {
-  datasource.value.clearValidate()
   createDataset.value = false
 }
 
@@ -173,6 +172,11 @@ const createInit = (type, data: Tree, exec, name: string) => {
         trigger: 'change'
       },
       {
+        required: true,
+        message: placeholder.value,
+        trigger: 'blur'
+      },
+      {
         min: 2,
         max: 25,
         message: t('datasource.input_limit_2_25', [2, 25]),
@@ -187,6 +191,9 @@ const createInit = (type, data: Tree, exec, name: string) => {
       }
     ]
   }
+  setTimeout(() => {
+    datasource.value.clearValidate()
+  }, 50)
 }
 
 const editeInit = (param: Tree) => {
