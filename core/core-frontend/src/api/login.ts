@@ -9,3 +9,5 @@ export const modelApi = () => request.get({ url: 'model' })
 export const platformLoginApi = origin => request.post({ url: '/login/platformLogin/' + origin })
 
 export const logoutApi = () => request.get({ url: '/logout' })
+
+export const refreshApi = () => request.get({ url: '/login/refresh' })

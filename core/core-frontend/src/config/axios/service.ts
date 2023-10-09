@@ -11,9 +11,8 @@ import { tryShowLoading, tryHideLoading } from '@/utils/loading'
 import qs from 'qs'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import { useLinkStoreWithOut } from '@/store/modules/link'
-
 import { config } from './config'
-
+import { configHandler } from './refresh'
 type AxiosErrorWidthLoading<T> = T & {
   config: {
     loading?: boolean
@@ -56,7 +55,11 @@ const cancelMap = {}
 
 // request拦截器
 service.interceptors.request.use(
-  (config: InternalAxiosRequestConfigWidthLoading<InternalAxiosRequestConfig>) => {
+  async (c: InternalAxiosRequestConfigWidthLoading<InternalAxiosRequestConfig>) => {
+    let config = configHandler(c)
+    if (config instanceof Promise) {
+      config = await config
+    }
     if (
       config.method === 'post' &&
       (config.headers as AxiosRequestHeaders)['Content-Type'] ===
@@ -67,13 +70,9 @@ service.interceptors.request.use(
     if (window.DataEaseBi?.baseUrl) {
       config.baseURL = window.DataEaseBi.baseUrl + 'de2api/'
     }
-    if (wsCache.get('ldap-token')) {
-      ;(config.headers as AxiosRequestHeaders)['Authorization'] = wsCache.get('ldap-token')
-    }
+
     if (linkStore.getLinkToken) {
       ;(config.headers as AxiosRequestHeaders)['X-DE-LINK-TOKEN'] = linkStore.getLinkToken
-    } else if (wsCache.get('user.token')) {
-      ;(config.headers as AxiosRequestHeaders)['X-DE-TOKEN'] = wsCache.get('user.token')
     } else if (window.DataEaseBi?.token) {
       ;(config.headers as AxiosRequestHeaders)['X-EMBEDDED-TOKEN'] = window.DataEaseBi.token
     }
@@ -86,8 +85,6 @@ service.interceptors.request.use(
       ? wsCache.get('out_auth_platform')
       : 'default'
 
-    // ;(config.headers as AxiosRequestHeaders)['Token'] = 'test test'
-    // get参数编码
     if (config.method === 'get' && config.params) {
       let url = config.url as string
       url += '?'
@@ -121,6 +118,7 @@ service.interceptors.response.use(
     executeVersionHandler(response)
     if (response.headers['x-de-refresh-token']) {
       wsCache.set('user.token', response.headers['x-de-refresh-token'])
+      wsCache.set('user.exp', new Date().getTime() + 90000)
     }
     if (response.headers['x-de-link-token']) {
       linkStore.setLinkToken(response.headers['x-de-link-token'])
