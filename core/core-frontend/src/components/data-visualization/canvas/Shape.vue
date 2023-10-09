@@ -93,6 +93,7 @@ import ComponentEditBar from '@/components/visualization/ComponentEditBar.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { toPng } from 'html-to-image'
 import ComposeShow from '@/components/data-visualization/canvas/ComposeShow.vue'
+import { isMainCanvas } from '@/utils/canvasUtils'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
@@ -487,9 +488,11 @@ const handleMouseDownOnShape = e => {
 
 const selectCurComponent = e => {
   // 阻止向父组件冒泡
-  e.stopPropagation()
-  e.preventDefault()
-  contextmenuStore.hideContextMenu()
+  if (dvInfo.value.type === 'dataV') {
+    e.stopPropagation()
+    e.preventDefault()
+    contextmenuStore.hideContextMenu()
+  }
 }
 
 const handleMouseDownOnPoint = (point, e) => {
