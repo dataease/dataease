@@ -12,6 +12,7 @@
       }"
     >
       <component-edit-bar
+        ref="componentEditBarRef"
         class="edit-bar"
         :class="{ 'edit-bar-active': editBarShowFlag }"
         :index="index"
@@ -99,6 +100,7 @@ const composeStore = composeStoreWithOut()
 const parentNode = ref(null)
 const shapeInnerRef = ref(null)
 const componentInnerRef = ref(null)
+const componentEditBarRef = ref(null)
 
 const {
   curComponent,
@@ -346,6 +348,12 @@ const handleBoardMouseDownOnShape = e => {
 }
 
 const handleInnerMouseDownOnShape = e => {
+  if (dvMainStore.batchOptStatus) {
+    componentEditBarRef.value.batchOptCheckOut()
+    e.stopPropagation()
+    e.preventDefault()
+    return
+  }
   // ctrl or command 按下时 鼠标点击为选择需要组合的组件(取消需要组合的组件在ComposeShow组件中)
   if (isCtrlOrCmdDown.value && !areaData.value.components.includes(element)) {
     areaData.value.components.push(element.value)

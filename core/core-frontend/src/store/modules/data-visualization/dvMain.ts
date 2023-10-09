@@ -443,7 +443,7 @@ export const dvMainStore = defineStore('dataVisualization', {
           style: {}
         }
 
-        this.mixPropertiesInner['common-style'].forEach(styleKey => {
+        this.mixPropertiesInner['common-style']?.forEach(styleKey => {
           this.batchOptComponentInfo['style'][styleKey] = defaultStyleValue[styleKey]
         })
       }
@@ -471,7 +471,7 @@ export const dvMainStore = defineStore('dataVisualization', {
             commonBackground: deepCopy(COMMON_COMPONENT_BACKGROUND_BASE),
             style: {}
           }
-          this.mixPropertiesInner['common-style'].forEach(styleKey => {
+          this.mixPropertiesInner['common-style']?.forEach(styleKey => {
             this.batchOptComponentInfo['style'][styleKey] = defaultStyleValue[styleKey]
           })
         }
