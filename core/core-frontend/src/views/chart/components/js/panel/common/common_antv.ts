@@ -288,7 +288,21 @@ export function getLegend(chart: Chart) {
           marker: {
             symbol: legendSymbol
           },
-          radio: false
+          radio: false,
+          pageNavigator: {
+            marker: {
+              style: {
+                fill: 'rgba(0,0,0,0.65)',
+                stroke: 'rgba(192,192,192,0.52)'
+              }
+            },
+            text: {
+              style: {
+                fill: l.color,
+                fontSize: l.fontSize
+              }
+            }
+          }
         }
       } else {
         legend = false
