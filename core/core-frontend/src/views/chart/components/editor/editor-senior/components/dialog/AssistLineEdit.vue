@@ -157,7 +157,7 @@ init()
           <el-select
             v-model="item.fieldId"
             size="mini"
-            class="select-item"
+            class="select-item-dynamic"
             :placeholder="t('chart.field')"
             @change="changeAssistLineField(item)"
           >
@@ -183,7 +183,7 @@ init()
           <el-select
             v-model="item.summary"
             size="mini"
-            class="select-item"
+            class="select-item-dynamic"
             style="margin-left: 10px"
             :placeholder="t('chart.aggregation')"
             @change="changeAssistLine"
@@ -198,7 +198,6 @@ init()
             v-model="item.fontSize"
             size="mini"
             class="select-item"
-            style="margin-left: 10px"
             :placeholder="t('chart.text_fontsize')"
             @change="changeAssistLine"
           >
@@ -210,7 +209,7 @@ init()
             />
           </el-select>
         </el-col>
-        <el-col :span="3">
+        <el-col :span="5">
           <el-select
             v-model="item.lineType"
             size="mini"
@@ -227,6 +226,7 @@ init()
         </el-col>
         <el-col :span="1" style="text-align: center">
           <el-color-picker
+            is-custom
             v-model="item.color"
             class="color-picker-style"
             :predefine="state.predefineColors"
@@ -274,10 +274,16 @@ span {
 .value-item {
   position: relative;
   display: inline-block;
-  width: 100px !important;
+  width: 90% !important;
 }
 
 .select-item {
+  position: relative;
+  display: inline-block;
+  width: 90% !important;
+}
+
+.select-item-dynamic {
   position: relative;
   display: inline-block;
   width: 100px !important;
