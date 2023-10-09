@@ -17,6 +17,7 @@ import {
 } from '@/views/chart/components/js/panel/charts/pie/common'
 import { Datum } from '@antv/g2plot/esm/types/common'
 import { add } from 'mathjs'
+import isEmpty from 'lodash-es/isEmpty'
 
 const DEFAULT_DATA = []
 export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
@@ -183,7 +184,7 @@ export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
           const percent = (Math.round((originValue / total) * 10000) / 100).toFixed(
             reserveDecimalCount
           )
-          const name = formatter.chartShowName ?? formatter.name
+          const name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
           result.push({ ...item, name, value: `${value ?? ''} (${percent}%)` })
         })
         head.data.dynamicTooltipValue?.forEach(item => {
@@ -195,7 +196,7 @@ export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
               reserveDecimalCount
             )
             const value = valueFormatter(parseFloat(item.value), formatter.formatterCfg)
-            const name = formatter.chartShowName ?? formatter.name
+            const name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
             result.push({ color: 'grey', name, value: `${value ?? ''} (${percent}%)` })
           }
         })

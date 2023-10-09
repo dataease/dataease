@@ -82,4 +82,8 @@ declare interface ChartEditorForm<T> {
    * 是否拉取数据
    */
   requestData: boolean
+  /**
+   * 是否渲染图表
+   */
+  render: boolean
 }

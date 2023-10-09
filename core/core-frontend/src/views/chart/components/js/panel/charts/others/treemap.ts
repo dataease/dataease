@@ -6,6 +6,7 @@ import { valueFormatter } from '../../../formatter'
 import { Label } from '@antv/g2plot/lib/types/label'
 import { Datum } from '@antv/g2plot/esm/types/common'
 import { useI18n } from '@/hooks/web/useI18n'
+import isEmpty from 'lodash-es/isEmpty'
 
 const { t } = useI18n()
 
@@ -139,7 +140,7 @@ export class Treemap extends G2PlotChartView<TreemapOptions, G2Treemap> {
           const percent = (
             Math.round((item.data.value / item.data.path[1].value) * 10000) / 100
           ).toFixed(reserveDecimalCount)
-          const name = formatter.chartShowName ?? formatter.name
+          const name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
           result.push({ ...item, name, value: `${value ?? ''} (${percent}%)` })
         })
         head.data.dynamicTooltipValue?.forEach(item => {
@@ -151,7 +152,7 @@ export class Treemap extends G2PlotChartView<TreemapOptions, G2Treemap> {
               reserveDecimalCount
             )
             const value = valueFormatter(parseFloat(item.value), formatter.formatterCfg)
-            const name = formatter.chartShowName ?? formatter.name
+            const name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
             result.push({ color: 'grey', name, value: `${value ?? ''} (${percent}%)` })
           }
         })

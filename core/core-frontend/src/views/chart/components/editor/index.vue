@@ -556,7 +556,7 @@ const onLabelChange = val => {
 }
 
 const onTooltipChange = (chartForm: ChartEditorForm<ChartTooltipAttr>) => {
-  const { data, requestData } = chartForm
+  const { data, requestData, render } = chartForm
   if (!data) {
     view.value.customAttr.tooltip = chartForm as unknown as ChartTooltipAttr
   } else {
@@ -564,7 +564,8 @@ const onTooltipChange = (chartForm: ChartEditorForm<ChartTooltipAttr>) => {
   }
   if (requestData) {
     calcData(view.value)
-  } else {
+  }
+  if (render) {
     renderChart(view.value)
   }
 }

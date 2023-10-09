@@ -244,11 +244,15 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
     return tmpOptions
   }
 
+  protected configTooltip(chart: Chart, options: AreaOptions): AreaOptions {
+    return super.configMultiSeriesTooltip(chart, options)
+  }
+
   protected setupOptions(chart: Chart, options: AreaOptions): AreaOptions {
     return flow(
       this.configTheme,
       this.configLabel,
-      this.configMultiSeriesTooltip,
+      this.configTooltip,
       this.configBasicStyle,
       this.configLegend,
       this.configXAxis,
