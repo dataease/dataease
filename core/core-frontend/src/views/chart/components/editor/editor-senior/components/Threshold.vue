@@ -107,6 +107,10 @@ const changeLabelThreshold = () => {
         ElMessage.error(t('chart.value_error'))
         return
       }
+      if (parseFloat(ele.min) > parseFloat(ele.max)) {
+        ElMessage.error(t('chart.value_min_max_invalid'))
+        return
+      }
     } else {
       if (!ele.value) {
         ElMessage.error(t('chart.value_can_not_empty'))
@@ -190,6 +194,13 @@ const changeTableThreshold = () => {
           (parseFloat(ele.min).toString() === 'NaN' || parseFloat(ele.max).toString() === 'NaN')
         ) {
           ElMessage.error(t('chart.value_error'))
+          return
+        }
+        if (
+          (field.field.deType === 2 || field.field.deType === 3 || field.field.deType === 4) &&
+          parseFloat(ele.min) > parseFloat(ele.max)
+        ) {
+          ElMessage.error(t('chart.value_min_max_invalid'))
           return
         }
       } else {
