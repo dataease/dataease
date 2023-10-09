@@ -71,7 +71,6 @@
         />
       </template>
     </div>
-    <compose-show v-if="isComposeSelected" :element="element"></compose-show>
   </div>
 </template>
 
@@ -235,8 +234,6 @@ const angleToCursor = [
   { start: 248, end: 293, cursor: 'sw' },
   { start: 293, end: 338, cursor: 'w' }
 ]
-
-const isComposeSelected = computed(() => areaData.value.components.includes(element.value))
 
 const boardMoveActive = computed(() => {
   return ['map', 'table-info', 'table-normal'].includes(element.value.innerType)

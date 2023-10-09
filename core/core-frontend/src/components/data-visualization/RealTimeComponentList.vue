@@ -9,12 +9,20 @@ import { computed, nextTick, ref } from 'vue'
 import draggable from 'vuedraggable'
 import { lockStoreWithOut } from '@/store/modules/data-visualization/lock'
 import ContextMenuAsideDetails from '@/components/data-visualization/canvas/ContextMenuAsideDetails.vue'
+import ComposeShow from '@/components/data-visualization/canvas/ComposeShow.vue'
+import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
+import ContextMenu from '@/components/data-visualization/canvas/ContextMenu.vue'
+import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
 const dropdownMore = ref(null)
 const lockStore = lockStoreWithOut()
 
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const layerStore = layerStoreWithOut()
+const composeStore = composeStoreWithOut()
+const contextmenuStore = contextmenuStoreWithOut()
+
+const { areaData, isCtrlOrCmdDown } = storeToRefs(composeStore)
 
 const { componentData, curComponent, curComponentIndex, canvasViewInfo } = storeToRefs(dvMainStore)
 const getComponent = index => {
@@ -23,7 +31,14 @@ const getComponent = index => {
 const transformIndex = index => {
   return componentData.value.length - 1 - index
 }
-const onClick = index => {
+const onClick = (e, index) => {
+  // ctrl or command 按下时 鼠标点击为选择需要组合的组件(取消需要组合的组件在ComposeShow组件中)
+  if (isCtrlOrCmdDown.value && !areaData.value.components.includes(componentData.value[index])) {
+    areaData.value.components.push(componentData.value[index])
+    dvMainStore.setCurComponent({ component: null, index: null })
+    e.stopPropagation()
+    return
+  }
   setCurComponent(index)
 }
 const deleteComponent = (number: number) => {
@@ -140,6 +155,18 @@ const menuAsideClose = (param, index) => {
 const rename = item => {
   editComponentName(item)
 }
+
+const handleContextMenu = e => {
+  e.stopPropagation()
+  e.preventDefault()
+
+  // 计算菜单相对于编辑器的位移
+  let target = e.target
+  let top = e.offsetY
+  let left = e.offsetX
+
+  contextmenuStore.showContextMenu({ top, left, position: 'aside' })
+}
 </script>
 
 <template>
@@ -160,7 +187,7 @@ const rename = item => {
               :title="getComponent(index).name"
               :class="{ activated: curComponent && curComponent.id === getComponent(index).id }"
               class="component-item"
-              @click="onClick(transformIndex(index))"
+              @click="onClick($event, transformIndex(index))"
               @dblclick="editComponentName(getComponent(index))"
             >
               <el-icon class="component-icon">
@@ -221,6 +248,7 @@ const rename = item => {
                   </template>
                 </el-dropdown>
               </div>
+              <compose-show :element="getComponent(index)"></compose-show>
             </div>
           </template>
         </draggable>

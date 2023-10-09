@@ -416,7 +416,7 @@ const handleContextMenu = e => {
     target = target.parentNode
   }
 
-  contextmenuStore.showContextMenu({ top, left })
+  contextmenuStore.showContextMenu({ top, left, position: 'canvasCore' })
 }
 
 const getComponentStyle = style => {
@@ -1636,7 +1636,7 @@ defineExpose({
       />
     </Shape>
     <!-- 右击菜单 -->
-    <ContextMenu />
+    <ContextMenu show-position="canvasCore" />
     <!-- 标线 -->
     <MarkLine />
     <!-- 选中区域 -->

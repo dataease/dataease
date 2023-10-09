@@ -1,12 +1,13 @@
 <template>
-  <div class="compose-shadow" @mousedown="handelMouseDown"></div>
+  <div v-if="isComposeSelected" class="compose-shadow" @mousedown="handelMouseDown"></div>
 </template>
 
 <script setup lang="ts">
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import { storeToRefs } from 'pinia'
+import { computed } from 'vue'
 const composeStore = composeStoreWithOut()
-const { areaData, isCtrlOrCmdDown } = storeToRefs(composeStore)
+const { areaData } = storeToRefs(composeStore)
 
 const props = defineProps({
   element: {
@@ -14,6 +15,8 @@ const props = defineProps({
     type: Object
   }
 })
+
+const isComposeSelected = computed(() => areaData.value.components.includes(props.element))
 
 const handelMouseDown = e => {
   // 右键返回
