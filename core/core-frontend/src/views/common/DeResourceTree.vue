@@ -187,6 +187,7 @@ const afterTreeInit = () => {
         nodeDom && nodeDom.click()
       }
     })
+    resourceListTree.value.filter(filterText.value)
   })
 }
 
