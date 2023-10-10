@@ -1350,9 +1350,9 @@ export default {
       tip3: '引用字段以 "[" 开始， "]" 结束',
       tip4: '请勿修改引用内容，否则将引用失败',
       tip5: '若输入与引用字段相同格式的内容，将被当作引用字段处理',
-      tip6: '使用数据集对应数据库类型所支持的函数，语法同对应数据库',
-      tip7: '如日期格式化：MySQL使用DATE_FORMAT(date,format)；Oracle使用TO_DATE(X,[,fmt])',
-      tip8: '非直连模式数据集，使用Doris数据库函数，可参考Doris官网'
+      tip6: '请使用Calcite支持的函数进行表达式编辑',
+      tip7: '或者使用列表中 DE_ 作为前缀的自定义函数',
+      tip8: 'Calcite函数请参考文档：https://calcite.apache.org/docs/reference.html'
     },
     batch_manage: '批量管理',
     origin_name: '物理字段名',
