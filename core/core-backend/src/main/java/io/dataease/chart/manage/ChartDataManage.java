@@ -82,10 +82,10 @@ public class ChartDataManage {
         }
 
         //如果是excel导出 则最多导出20万条； 如果是从仪表板获取视图数据，则仪表板的查询模式，查询结果的数量，覆盖视图对应的属性
-        if(view.getIsExcelExport()){
+        if (view.getIsExcelExport()) {
             view.setResultMode(ChartConstants.VIEW_RESULT_MODE.CUSTOM);
             view.setResultCount(200000);
-        }else if (ChartConstants.VIEW_RESULT_MODE.CUSTOM.equals(chartExtRequest.getResultMode())) {
+        } else if (ChartConstants.VIEW_RESULT_MODE.CUSTOM.equals(chartExtRequest.getResultMode())) {
             view.setResultMode(chartExtRequest.getResultMode());
             view.setResultCount(chartExtRequest.getResultCount());
         }
@@ -1306,7 +1306,7 @@ public class ChartDataManage {
     }
 
     private boolean enableExtData(String type) {
-        return StringUtils.containsAnyIgnoreCase(type, "bar", "line", "area", "pie", "radar", "map", "scatter", "funnel");
+        return StringUtils.containsAnyIgnoreCase(type, "bar", "line", "area", "pie", "radar", "map", "scatter", "funnel", "word-cloud", "waterfall");
     }
 
     private List<ChartViewFieldDTO> getAllChartFields(ChartViewDTO view) {
@@ -1320,7 +1320,7 @@ public class ChartDataManage {
         return allFields.stream().filter(ele -> ele.getId() != -1L).collect(Collectors.toList());
     }
 
-    public void saveChartViewFromVisualization(String checkData,Long sceneId,Map<Long, ChartViewDTO> chartViewsInfo ){
+    public void saveChartViewFromVisualization(String checkData, Long sceneId, Map<Long, ChartViewDTO> chartViewsInfo) {
         if (!CollectionUtils.isEmpty(chartViewsInfo)) {
             chartViewsInfo.forEach((key, chartViewDTO) -> {
                 if (checkData.indexOf(chartViewDTO.getId() + "") > -1) {
