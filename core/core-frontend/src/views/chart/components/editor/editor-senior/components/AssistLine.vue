@@ -137,7 +137,7 @@ onMounted(() => {
   <div @keydown.stop @keyup.stop style="width: 100%; margin-bottom: 16px">
     <el-col>
       <div>
-        <span>辅助线设置</span>
+        <span :class="'label-' + props.themes">辅助线设置</span>
         <el-button
           class="circle-button"
           type="text"
@@ -263,5 +263,9 @@ span {
 
 .dialog-css :deep(.ed-dialog__body) {
   padding: 10px 20px 20px;
+}
+
+.label-dark {
+  color: #a6a6a6;
 }
 </style>

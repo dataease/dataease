@@ -392,7 +392,7 @@ init()
     <el-col v-show="showProperty('tableThreshold')">
       <el-col>
         <div>
-          <span>阈值设置</span>
+          <span :class="'label-' + props.themes">阈值设置</span>
           <el-button
             :title="t('chart.edit')"
             class="circle-button"
@@ -661,5 +661,9 @@ span {
   text-overflow: ellipsis;
   color: #8492a6;
   font-size: 12px;
+}
+
+.label-dark {
+  color: #a6a6a6;
 }
 </style>
