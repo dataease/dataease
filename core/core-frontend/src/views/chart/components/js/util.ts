@@ -428,7 +428,7 @@ export const getGeoJsonFile = async (areaId: string): Promise<FeatureCollection>
 export const exportExcelDownload = chart => {
   const fields = JSON.parse(JSON.stringify(chart.data.fields))
   const tableRow = JSON.parse(JSON.stringify(chart.data.tableRow))
-  const excelHeader = fields.map(item => item.name)
+  const excelHeader = fields.map(item => item.chartShowName ?? item.name)
   const excelTypes = fields.map(item => item.deType)
   const excelHeaderKeys = fields.map(item => item.dataeaseName)
   let excelData = tableRow.map(item => excelHeaderKeys.map(i => item[i]))

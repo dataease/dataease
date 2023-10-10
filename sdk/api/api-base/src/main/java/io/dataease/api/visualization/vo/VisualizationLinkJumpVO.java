@@ -39,4 +39,6 @@ public class VisualizationLinkJumpVO {
     private Long copyFrom;
     @JsonSerialize(using = ToStringSerializer.class)
     private Long copyId;
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long queryUid;
 }

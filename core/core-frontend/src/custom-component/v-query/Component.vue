@@ -59,6 +59,7 @@ const defaultStyle = {
   btnList: ['sure'],
   titleLayout: 'left',
   titleShow: false,
+  titleColor: '',
   title: ''
 }
 const customStyle = reactive({ ...defaultStyle })
@@ -86,6 +87,7 @@ const setCustomStyle = val => {
     bgColor,
     layout,
     titleShow,
+    titleColor,
     title
   } = val
   if (!show) {
@@ -97,6 +99,7 @@ const setCustomStyle = val => {
   customStyle.btnList = [...btnList]
   customStyle.layout = layout
   customStyle.titleShow = titleShow
+  customStyle.titleColor = titleColor
   customStyle.title = title
   customStyle.text = text
   customStyle.titleLayout = titleLayout
@@ -341,7 +344,10 @@ const queryData = () => {
   })
 }
 const textAlign = computed(() => {
-  return { textAlign: customStyle.titleLayout || 'left' } as CSSProperties
+  return {
+    textAlign: customStyle.titleLayout || 'left',
+    color: customStyle.titleColor || '#1f2329'
+  } as CSSProperties
 })
 </script>
 

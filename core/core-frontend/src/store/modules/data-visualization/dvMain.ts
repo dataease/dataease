@@ -163,6 +163,9 @@ export const dvMainStore = defineStore('dataVisualization', {
     }
   },
   actions: {
+    setPublicLinkStatus(value) {
+      this.publicLinkStatus = value
+    },
     setDataPrepareState(value) {
       this.dataPrepareState = value
     },
@@ -459,6 +462,7 @@ export const dvMainStore = defineStore('dataVisualization', {
         if (this.batchOptComponentType === 'UserView') {
           // Assembly history settings 'customAttr' & 'customStyle'
           this.batchOptComponentInfo = {
+            ...deepCopy(BASE_VIEW_CONFIG),
             mode: 'batchOpt',
             render: batchAttachInfo.render,
             type: batchAttachInfo.type,

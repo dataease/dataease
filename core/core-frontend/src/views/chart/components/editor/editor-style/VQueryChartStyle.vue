@@ -42,6 +42,14 @@ const { chart } = toRefs(props)
                 v-model.lazy="chart.customStyle.component.title"
               />
             </el-form-item>
+            <el-form-item label="标题颜色" class="form-item" style="padding-left: 20px">
+              <el-color-picker
+                v-model="chart.customStyle.component.titleColor"
+                :trigger-width="204"
+                is-custom
+                :predefine="COLOR_PANEL"
+              />
+            </el-form-item>
             <el-form-item class="form-item margin-bottom-8">
               <el-checkbox size="small" v-model="chart.customStyle.component.borderShow">
                 {{ t('visualization.board') }}

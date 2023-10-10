@@ -184,19 +184,21 @@ onMounted(() => {
           </el-select>
         </el-col>
         <el-col :span="3">
-          <el-select
-            v-model="item.fontSize"
-            class="select-item"
-            :placeholder="t('chart.text_fontsize')"
-            @change="changeAssistLine"
-          >
-            <el-option
-              v-for="option in fontSizeList"
-              :key="option.value"
-              :label="option.name"
-              :value="option.value"
-            />
-          </el-select>
+          <el-tooltip effect="dark" content="字号" placement="top">
+            <el-select
+              v-model="item.fontSize"
+              class="select-item"
+              :placeholder="t('chart.text_fontsize')"
+              @change="changeAssistLine"
+            >
+              <el-option
+                v-for="option in fontSizeList"
+                :key="option.value"
+                :label="option.name"
+                :value="option.value"
+              />
+            </el-select>
+          </el-tooltip>
         </el-col>
         <el-col :span="4">
           <el-select v-model="item.lineType" class="select-item" @change="changeAssistLine">
@@ -219,11 +221,15 @@ onMounted(() => {
           />
         </el-col>
         <el-col :span="1">
-          <el-button class="circle-button" link @click="removeLine(index)">
-            <template #icon>
+          <div class="flex-align-center" style="margin-left: -4px">
+            <el-icon
+              style="width: 28px !important; height: 28px !important; font-size: 20px !important"
+              class="hover-icon"
+              @click="removeLine(index)"
+            >
               <Icon name="icon_delete-trash_outlined"></Icon>
-            </template>
-          </el-button>
+            </el-icon>
+          </div>
         </el-col>
       </el-row>
     </div>
@@ -262,7 +268,7 @@ span {
   display: inline-block;
   width: 100% !important;
   :deep(.ed-input-number__increase) {
-    top: 1.2px;
+    top: 1.4px;
   }
 }
 

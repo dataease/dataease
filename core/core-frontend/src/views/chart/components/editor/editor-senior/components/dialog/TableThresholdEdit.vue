@@ -384,6 +384,7 @@ init()
               <span class="color-title">{{ t('chart.textColor') }}</span>
               <el-color-picker
                 is-custom
+                size="large"
                 v-model="item.color"
                 show-alpha
                 class="color-picker-style"
@@ -395,6 +396,7 @@ init()
               <span class="color-title">{{ t('chart.backgroundColor') }}</span>
               <el-color-picker
                 is-custom
+                size="large"
                 v-model="item.backgroundColor"
                 show-alpha
                 class="color-picker-style"
