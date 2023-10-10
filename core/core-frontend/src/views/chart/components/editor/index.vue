@@ -1663,13 +1663,18 @@ const onRefreshChange = val => {
               <div class="dataset-search-label" :class="{ dark: themes === 'dark' }">
                 <span>{{ t('chart.field') }}</span>
                 <span>
-                  <el-icon
-                    class="field-search-icon-btn"
-                    :class="{ dark: themes === 'dark' }"
-                    @click="getFields(view.tableId, view.id)"
-                  >
-                    <Icon name="icon_refresh_outlined" class="el-icon-arrow-down el-icon-delete" />
-                  </el-icon>
+                  <el-tooltip effect="dark" content="刷新" placement="top">
+                    <el-icon
+                      class="field-search-icon-btn"
+                      :class="{ dark: themes === 'dark' }"
+                      @click="getFields(view.tableId, view.id)"
+                    >
+                      <Icon
+                        name="icon_refresh_outlined"
+                        class="el-icon-arrow-down el-icon-delete"
+                      />
+                    </el-icon>
+                  </el-tooltip>
                   <el-icon
                     v-if="false"
                     class="field-search-icon-btn"
