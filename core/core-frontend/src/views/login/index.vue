@@ -93,8 +93,9 @@ const handleLogin = () => {
       duringLogin.value = true
       loginApi(param)
         .then(res => {
-          const token = res.data
+          const { token, exp } = res.data
           userStore.setToken(token)
+          userStore.setExp(exp)
           const queryRedirectPath = getCurLocation()
           router.push({ path: queryRedirectPath })
         })

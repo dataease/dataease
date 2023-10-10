@@ -10,6 +10,7 @@ import { FeatureCollection } from '@antv/l7plot/dist/esm/plots/choropleth/types'
 import { Datum } from '@antv/g2plot/esm/types/common'
 import { Tooltip } from '@antv/g2plot/esm'
 import { add } from 'mathjs'
+import isEmpty from 'lodash-es/isEmpty'
 
 export function getPadding(chart: Chart): number[] {
   if (chart.drill) {
@@ -186,26 +187,30 @@ export function getMultiSeriesTooltip(chart: Chart) {
       return pre
     }, {}) as Record<string, SeriesFormatter>
   const tooltip: Tooltip = {
+    showTitle: true,
     customItems(originalItems) {
       if (!tooltipAttr.seriesTooltipFormatter?.length) {
         return originalItems
       }
-      const result = []
       const head = originalItems[0]
+      // 非原始数据
+      if (!head.data.quotaList) {
+        return originalItems
+      }
+      const result = []
       originalItems
         .filter(item => formatterMap[item.data.quotaList[0].id])
         .forEach(item => {
-          const value = valueFormatter(
-            parseFloat(item.value as string),
-            formatterMap[item.data.quotaList[0].id].formatterCfg
-          )
-          result.push({ ...item, value })
+          const formatter = formatterMap[item.data.quotaList[0].id]
+          const value = valueFormatter(parseFloat(item.value as string), formatter.formatterCfg)
+          const name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
+          result.push({ ...item, name, value })
         })
       head.data.dynamicTooltipValue?.forEach(item => {
         const formatter = formatterMap[item.fieldId]
         if (formatter) {
           const value = valueFormatter(parseFloat(item.value), formatter.formatterCfg)
-          const name = formatter.chartShowName ?? formatter.name
+          const name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
           result.push({ color: 'grey', name, value })
         }
       })

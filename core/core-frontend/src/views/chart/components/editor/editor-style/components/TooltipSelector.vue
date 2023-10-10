@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { PropType, computed, onMounted, reactive, watch, ref, inject, toRef } from 'vue'
+import { PropType, computed, onMounted, reactive, watch, ref, inject } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL, DEFAULT_TOOLTIP } from '@/views/chart/components/editor/util/chart'
 import { ElSpace } from 'element-plus-secondary'
@@ -29,9 +29,7 @@ const predefineColors = COLOR_PANEL
 
 const emit = defineEmits(['onTooltipChange', 'onExtTooltipChange'])
 
-const curSeriesFormatter = ref<Partial<SeriesFormatter>>({
-  deType: 0
-})
+const curSeriesFormatter = ref<DeepPartial<SeriesFormatter>>({})
 const quotaData = ref<Axis[]>(inject('quotaData'))
 // 初始化系列提示
 const initSeriesTooltip = (firstLoad: boolean) => {
@@ -39,12 +37,16 @@ const initSeriesTooltip = (firstLoad: boolean) => {
     return
   }
   const formatter = state.tooltipForm.seriesTooltipFormatter
-  const yAxis = props.chart.yAxis
+  const yAxis = props.chart.yAxis?.concat(props.chart.extBubble)
   const seriesAxisMap = formatter.reduce((pre, next) => {
     pre[next.id] = next
     return pre
   }, {})
-  if (!yAxis || !yAxis.length) {
+  // 新增视图
+  if (!yAxis.length) {
+    if (!formatter.length) {
+      quotaData.value?.forEach(i => formatter.push({ ...i, show: false }))
+    }
     curSeriesFormatter.value = {}
     return
   }
@@ -110,6 +112,7 @@ const updateSeriesTooltip = (newAxis?: Axis[], oldAxis?: Axis[]) => {
   )
   state.tooltipForm.seriesTooltipFormatter?.forEach(ele => {
     ele.chartShowName = axisMap[ele.id]?.chartShowName
+    ele.summary = axisMap[ele.id]?.summary ?? ele.summary
     if (addedAxis?.includes(ele.id)) {
       ele.show = true
       return
@@ -129,6 +132,10 @@ const updateSeriesTooltip = (newAxis?: Axis[], oldAxis?: Axis[]) => {
   if (removedAxis?.includes(curSeriesFormatter.value?.id)) {
     curSeriesFormatter.value = state.tooltipForm.seriesTooltipFormatter?.[0]
   }
+  if (!newAxis.length) {
+    curSeriesFormatter.value = {}
+  }
+  emit('onTooltipChange', { data: state.tooltipForm })
   emit('onExtTooltipChange', extTooltip)
 }
 const showFormatterSummary = computed(() => {
@@ -139,6 +146,9 @@ const showFormatterSummary = computed(() => {
 })
 const formatterNameEditable = computed(() => {
   return props.chart.yAxis.findIndex(i => curSeriesFormatter.value.id === i.id) !== -1
+})
+const formatterEditable = computed(() => {
+  return showProperty('seriesTooltipFormatter') && props.chart.yAxis?.length
 })
 const AGGREGATION_TYPE = [
   { name: t('chart.sum'), value: 'sum' },
@@ -151,7 +161,7 @@ const AGGREGATION_TYPE = [
   { name: t('chart.count_distinct'), value: 'count_distinct' }
 ]
 watch(
-  () => cloneDeep(props.chart.yAxis),
+  () => cloneDeep(props.chart.yAxis.concat(props.chart.extBubble)),
   (newVal, oldVal) => {
     updateSeriesTooltip(newVal, oldVal)
   },
@@ -173,7 +183,7 @@ watch(
 )
 
 const state = reactive({
-  tooltipForm: JSON.parse(JSON.stringify(DEFAULT_TOOLTIP))
+  tooltipForm: {} as DeepPartial<ChartTooltipAttr>
 })
 
 const fontSizeList = computed(() => {
@@ -187,27 +197,22 @@ const fontSizeList = computed(() => {
   return arr
 })
 
-const changeTooltipAttr = (prop: string, requestData = false) => {
+const changeTooltipAttr = (prop: string, requestData = false, render = true) => {
   // 多序列处理 extTooltip
   if (prop === 'seriesTooltipFormatter') {
-    const yAxis = props.chart.yAxis?.map(i => i.id)
+    const quotaAxis = props.chart.yAxis?.concat(props.chart.extBubble).map(i => i.id)
     const extTooltip = state.tooltipForm.seriesTooltipFormatter.filter(
-      i => !yAxis?.includes(i.id) && i.show
+      i => !quotaAxis?.includes(i.id) && i.show
     )
     emit('onExtTooltipChange', extTooltip)
   }
-  emit('onTooltipChange', { data: state.tooltipForm, requestData })
+  emit('onTooltipChange', { data: state.tooltipForm, requestData, render })
 }
 
 const init = () => {
   const chart = JSON.parse(JSON.stringify(props.chart))
   if (chart.customAttr) {
-    let customAttr = null
-    if (Object.prototype.toString.call(chart.customAttr) === '[object Object]') {
-      customAttr = JSON.parse(JSON.stringify(chart.customAttr))
-    } else {
-      customAttr = JSON.parse(chart.customAttr)
-    }
+    const customAttr = JSON.parse(JSON.stringify(chart.customAttr))
     if (customAttr.tooltip) {
       state.tooltipForm = defaultsDeep(customAttr.tooltip, cloneDeep(DEFAULT_TOOLTIP))
       initSeriesTooltip(true)
@@ -376,9 +381,14 @@ onMounted(() => {
     </template>
     <div v-if="showProperty('seriesTooltipFormatter')">
       <el-form-item>
-        <el-select v-model="curSeriesFormatter" value-key="id" class="series-select">
+        <el-select
+          :disabled="!formatterEditable"
+          v-model="curSeriesFormatter"
+          value-key="id"
+          class="series-select"
+        >
           <template #prefix>
-            <el-icon style="font-size: 14px">
+            <el-icon v-if="curSeriesFormatter.id" style="font-size: 14px">
               <Icon
                 :className="`field-icon-${fieldType[curSeriesFormatter.deType]}`"
                 :name="`field_${fieldType[curSeriesFormatter.deType]}`"
@@ -424,6 +434,7 @@ onMounted(() => {
           >
             <el-input
               size="small"
+              :maxlength="20"
               @change="changeTooltipAttr('seriesTooltipFormatter')"
               v-model="curSeriesFormatter.chartShowName"
               :disabled="!curSeriesFormatter.show || formatterNameEditable"

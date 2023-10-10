@@ -425,6 +425,7 @@ const deleteField = item => {
 
 const addCalcField = groupType => {
   editCalcField.value = true
+  calcTitle.value = t('dataset.add_calc_field')
   nextTick(() => {
     calcEdit.value.initEdit({ groupType, id: guid() }, dimensions.value, quota.value)
   })
@@ -450,7 +451,7 @@ const calcTitle = ref('')
 const editField = item => {
   editCalcField.value = true
   nextTick(() => {
-    calcTitle.value = item.id ? t('dataset.edit_calc_field') : t('dataset.add_calc_field')
+    calcTitle.value = t('dataset.edit_calc_field')
     calcEdit.value.initEdit(item, dimensions.value, quota.value)
   })
 }
@@ -672,8 +673,10 @@ const dfsFields = (arr, list) => {
 
 const getDelIdArr = (newArr, oldArr) => {
   const idMapNew = newArr.map(ele => ele.id)
-  const idMapOld = oldArr.filter(ele => ele.extField === 2).map(ele => ele.id)
-  return idMapOld.filter(ele => !idMapNew.includes(ele))
+  return [
+    ...oldArr.filter(ele => ele.extField !== 2).filter(ele => !idMapNew.includes(ele.id)),
+    ...oldArr.filter(ele => ele.extField === 2)
+  ]
 }
 
 const diffArr = (newArr, oldArr) => {

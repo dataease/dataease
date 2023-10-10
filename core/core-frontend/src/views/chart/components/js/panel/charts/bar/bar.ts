@@ -1,5 +1,5 @@
 import { Column, ColumnOptions } from '@antv/g2plot/esm/plots/column'
-import { cloneDeep } from 'lodash-es'
+import { cloneDeep, isEmpty } from 'lodash-es'
 import {
   G2PlotChartView,
   G2PlotDrawOptions
@@ -219,7 +219,9 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
   }
 
   setupDefaultOptions(chart: ChartObj): ChartObj {
-    return flowLeft(this.setupVerticalAxis, this.setupVerticalLabel)(chart)
+    flowLeft(this.setupVerticalAxis, this.setupVerticalLabel)(chart)
+    chart.senior.functionCfg.emptyDataStrategy = 'ignoreData'
+    return chart
   }
 
   constructor(name = 'bar', defaultData = DEFAULT_DATA) {
@@ -264,7 +266,8 @@ export class StackBar extends Bar {
     }
     const tooltip = {
       formatter: (param: Datum) => {
-        const obj = { name: param.category, value: param.value }
+        const name = isEmpty(param.category) ? param.field : param.category
+        const obj = { name, value: param.value }
         const res = valueFormatter(param.value, tooltipAttr.tooltipFormatter)
         obj.value = res ?? ''
         return obj

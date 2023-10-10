@@ -308,11 +308,10 @@ const quotaItemRemove = item => {
 }
 
 const drillItemChange = item => {
-  calcData(view.value, true)
+  // temp do nothing
 }
 const drillItemRemove = item => {
   view.value.drillFields.splice(item.index, 1)
-  calcData(view.value, true)
 }
 
 const customSortAxis = ref<AxisType>('xAxis')
@@ -556,7 +555,7 @@ const onLabelChange = val => {
 }
 
 const onTooltipChange = (chartForm: ChartEditorForm<ChartTooltipAttr>) => {
-  const { data, requestData } = chartForm
+  const { data, requestData, render } = chartForm
   if (!data) {
     view.value.customAttr.tooltip = chartForm as unknown as ChartTooltipAttr
   } else {
@@ -564,7 +563,8 @@ const onTooltipChange = (chartForm: ChartEditorForm<ChartTooltipAttr>) => {
   }
   if (requestData) {
     calcData(view.value)
-  } else {
+  }
+  if (render) {
     renderChart(view.value)
   }
 }
@@ -1396,7 +1396,6 @@ const onRefreshChange = val => {
                         class="drag-block-style"
                         :class="{ dark: themes === 'dark' }"
                         @add="addDrill"
-                        @update="calcData(view, true)"
                       >
                         <template #item="{ element, index }">
                           <drill-item
@@ -1653,7 +1652,7 @@ const onRefreshChange = val => {
               <el-icon
                 class="field-search-icon-btn"
                 :class="{ dark: themes === 'dark' }"
-                style="margin-left: 6px"
+                style="margin-left: 8px"
                 @click="editDs"
                 v-if="curDatasetWeight >= 7"
               >
@@ -2594,9 +2593,27 @@ span {
     font-size: 16px;
     color: #646a73;
     cursor: pointer;
+    position: relative;
+    &:hover {
+      &::after {
+        content: '';
+        position: absolute;
+        width: 24px;
+        height: 24px;
+        border-radius: 4px;
+        top: -4px;
+        left: -4px;
+        background: rgba(31, 35, 41, 0.1);
+      }
+    }
 
     &.dark {
       color: #a6a6a6;
+      &:hover {
+        &::after {
+          background: rgba(235, 235, 235, 0.1);
+        }
+      }
     }
   }
 

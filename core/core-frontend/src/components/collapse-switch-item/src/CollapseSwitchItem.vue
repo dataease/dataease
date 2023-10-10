@@ -17,8 +17,18 @@ const props = defineProps({
 })
 const emit = defineEmits(['update:modelValue', 'modelChange'])
 const { changeModel, title, themes } = toRefs(props)
+
+const collapseItem = ref()
 const onSwitchChange = e => {
   emit('modelChange', changeModel.value)
+  if (changeModel.value.show && !collapseItem.value.isActive) {
+    collapseItem.value.handleHeaderClick()
+  }
+
+  if (!changeModel.value.show && collapseItem.value.isActive) {
+    collapseItem.value.handleHeaderClick()
+  }
+
   if (switchValue.value !== collapseOpen.value) {
     e.stopPropagation()
   }
@@ -34,7 +44,12 @@ const switchValue = computed({
 const collapseOpen = ref(false)
 </script>
 <template>
-  <el-collapse-item :effect="themes" @click="collapseOpen = !collapseOpen" v-bind="$attrs">
+  <el-collapse-item
+    ref="collapseItem"
+    :effect="themes"
+    @click="collapseOpen = !collapseOpen"
+    v-bind="$attrs"
+  >
     <template #title>
       <div class="collapse-header">
         <span>

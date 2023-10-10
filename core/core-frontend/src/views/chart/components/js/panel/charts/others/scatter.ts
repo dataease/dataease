@@ -4,10 +4,10 @@ import {
 } from '@/views/chart/components/js/panel/types/impl/g2plot'
 import { ScatterOptions, Scatter as G2Scatter } from '@antv/g2plot/esm/plots/scatter'
 import { flow, parseJson } from '../../../util'
-import { singleDimensionTooltipFormatter, valueFormatter } from '../../../formatter'
+import { valueFormatter } from '../../../formatter'
 import { getPadding } from '../../common/common_antv'
-import { Datum } from '@antv/g2plot/esm/types/common'
 import { useI18n } from '@/hooks/web/useI18n'
+import { isEmpty } from 'lodash-es'
 
 const { t } = useI18n()
 /**
@@ -172,11 +172,70 @@ export class Scatter extends G2PlotChartView<ScatterOptions, G2Scatter> {
     return tmpOptions
   }
 
+  protected configTooltip(chart: Chart, options: ScatterOptions): ScatterOptions {
+    const customAttr: DeepPartial<ChartAttr> = parseJson(chart.customAttr)
+    const tooltipAttr = customAttr.tooltip
+    if (!tooltipAttr.show) {
+      return {
+        ...options,
+        tooltip: false
+      }
+    }
+    const formatterMap = tooltipAttr.seriesTooltipFormatter
+      ?.filter(i => i.show)
+      .reduce((pre, next) => {
+        pre[next.id] = next
+        return pre
+      }, {}) as Record<string, SeriesFormatter>
+    const VALID_ITEMS = ['value', 'popSize']
+    const tooltip: ScatterOptions['tooltip'] = {
+      showTitle: true,
+      customItems(originalItems) {
+        if (!tooltipAttr.seriesTooltipFormatter?.length) {
+          return originalItems
+        }
+        const head = originalItems[0]
+        // 非原始数据
+        if (!head.data.quotaList) {
+          return originalItems
+        }
+        const result = []
+        originalItems
+          .filter(item => VALID_ITEMS.includes(item.name))
+          .forEach(item => {
+            let formatter = formatterMap[item.data.quotaList[0].id]
+            if (item.name === 'popSize') {
+              formatter = formatterMap[item.data.quotaList[1].id]
+            }
+            if (!formatter) {
+              return
+            }
+            const value = valueFormatter(parseFloat(item.value as string), formatter.formatterCfg)
+            const name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
+            result.push({ ...item, name, value })
+          })
+        head.data.dynamicTooltipValue?.forEach(item => {
+          const formatter = formatterMap[item.fieldId]
+          if (formatter) {
+            const value = valueFormatter(parseFloat(item.value), formatter.formatterCfg)
+            const name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
+            result.push({ color: 'grey', name, value })
+          }
+        })
+        return result
+      }
+    }
+    return {
+      ...options,
+      tooltip
+    }
+  }
+
   protected setupOptions(chart: Chart, options: ScatterOptions) {
     return flow(
       this.configTheme,
       this.configLabel,
-      this.configMultiSeriesTooltip,
+      this.configTooltip,
       this.configLegend,
       this.configXAxis,
       this.configYAxis,
