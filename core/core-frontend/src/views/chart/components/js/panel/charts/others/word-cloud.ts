@@ -5,8 +5,7 @@ import {
 import { WordCloud as G2WordCloud, WordCloudOptions } from '@antv/g2plot/esm/plots/word-cloud'
 import { flow, parseJson } from '@/views/chart/components/js/util'
 import { getPadding } from '@/views/chart/components/js/panel/common/common_antv'
-import { formatterItem, valueFormatter } from '@/views/chart/components/js/formatter'
-import { Datum } from '@antv/g2plot/esm/types/common'
+import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { useI18n } from '@/hooks/web/useI18n'
 
 const { t } = useI18n()
@@ -38,7 +37,7 @@ export class WordCloud extends G2PlotChartView<WordCloudOptions, G2WordCloud> {
       'letterSpace',
       'fontShadow'
     ],
-    'tooltip-selector': ['color', 'fontSize', 'backgroundColor']
+    'tooltip-selector': ['color', 'fontSize', 'backgroundColor', 'seriesTooltipFormatter']
   }
   axis: AxisType[] = ['xAxis', 'yAxis', 'filter']
   axisConfig: AxisConfig = {
@@ -83,33 +82,52 @@ export class WordCloud extends G2PlotChartView<WordCloudOptions, G2WordCloud> {
   }
 
   protected configTooltip(chart: Chart, options: WordCloudOptions): WordCloudOptions {
-    let tooltip
     const customAttr: DeepPartial<ChartAttr> = parseJson(chart.customAttr)
-    if (customAttr.tooltip) {
-      const tooltipAttr = customAttr.tooltip
-      if (tooltipAttr.show) {
-        tooltip = {
-          formatter: function (param: Datum) {
-            let res
-            const obj = { name: param.text, value: param.value }
-            const yAxis = chart.yAxis
-            for (let i = 0; i < yAxis.length; i++) {
-              const f = yAxis[i]
-              if (f.formatterCfg) {
-                res = valueFormatter(param.value, f.formatterCfg)
-              } else {
-                res = valueFormatter(param.value, formatterItem)
-              }
-            }
-            obj.value = res ?? ''
-            return obj
-          }
-        }
-      } else {
-        tooltip = false
+    const tooltipAttr = customAttr.tooltip
+    const yAxis = chart.yAxis
+    if (!tooltipAttr.show) {
+      return {
+        ...options,
+        tooltip: false
       }
     }
-    return { ...options, tooltip }
+    const formatterMap = tooltipAttr.seriesTooltipFormatter
+      ?.filter(i => i.show)
+      .reduce((pre, next) => {
+        pre[next.id] = next
+        return pre
+      }, {}) as Record<string, SeriesFormatter>
+    const tooltip: WordCloudOptions['tooltip'] = {
+      showTitle: true,
+      title: () => undefined,
+      customItems(originalItems) {
+        let tooltipItems = originalItems
+        if (tooltipAttr.seriesTooltipFormatter?.length) {
+          tooltipItems = originalItems.filter(item => formatterMap[item.data.datum.quotaList[0].id])
+        }
+        const result = []
+        const head = originalItems[0]
+        tooltipItems.forEach(item => {
+          const formatter = formatterMap[item.data.datum.quotaList[0].id] ?? yAxis[0]
+          const value = valueFormatter(item.value, formatter.formatterCfg)
+          const name = formatter.chartShowName ?? formatter.name
+          result.push({ ...item, name, value })
+        })
+        head.data.datum.dynamicTooltipValue?.forEach(item => {
+          const formatter = formatterMap[item.fieldId]
+          if (formatter) {
+            const value = valueFormatter(parseFloat(item.value), formatter.formatterCfg)
+            const name = formatter.chartShowName ?? formatter.name
+            result.push({ color: 'grey', name, value })
+          }
+        })
+        return result
+      }
+    }
+    return {
+      ...options,
+      tooltip
+    }
   }
 
   protected setupOptions(chart: Chart, options: WordCloudOptions): WordCloudOptions {

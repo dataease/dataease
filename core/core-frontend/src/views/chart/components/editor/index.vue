@@ -564,7 +564,8 @@ const onTooltipChange = (chartForm: ChartEditorForm<ChartTooltipAttr>) => {
   if (requestData) {
     calcData(view.value)
   }
-  if (render) {
+  // for compatibility
+  if (render !== false) {
     renderChart(view.value)
   }
 }

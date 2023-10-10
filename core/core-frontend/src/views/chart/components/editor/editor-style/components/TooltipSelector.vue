@@ -135,7 +135,7 @@ const updateSeriesTooltip = (newAxis?: Axis[], oldAxis?: Axis[]) => {
   if (!newAxis.length) {
     curSeriesFormatter.value = {}
   }
-  emit('onTooltipChange', { data: state.tooltipForm })
+  emit('onTooltipChange', { data: state.tooltipForm, render: false })
   emit('onExtTooltipChange', extTooltip)
 }
 const showFormatterSummary = computed(() => {
