@@ -41,6 +41,7 @@ const contextmenuStore = contextmenuStoreWithOut()
 
 const { curComponent, dvInfo, editMode, tabMoveOutComponentId } = storeToRefs(dvMainStore)
 const { editorMap } = storeToRefs(composeStore)
+const emits = defineEmits(['scrollCanvasToTop'])
 const props = defineProps({
   isEdit: {
     type: Boolean,
@@ -1453,6 +1454,7 @@ const handleDragStartMoveIn = componentInfo => {
     adaptCurThemeCommonStyle(moveInItemInfo)
   }
   addItemBox(moveInItemInfo)
+  emits('scrollCanvasToTop')
   if (!infoBox.value) {
     infoBox.value = {}
   }

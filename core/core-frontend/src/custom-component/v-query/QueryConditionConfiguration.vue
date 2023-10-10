@@ -696,7 +696,7 @@ defineExpose({
         </div>
       </div>
       <div class="condition-configuration">
-        <div class="mask" v-if="curComponent.auto" @scroll="handleScroll"></div>
+        <div class="mask" v-if="curComponent.auto"></div>
         <div class="title">查询条件配置</div>
         <div v-show="showConfiguration && !showTypeError" class="configuration-list">
           <div class="list-item">

@@ -319,7 +319,7 @@ const handleContextMenu = e => {
         }
 
         &:hover {
-          background-color: rgba(200, 200, 200, 0.4);
+          background-color: rgba(235, 235, 235, 0.1);
 
           .icon-container {
             opacity: 1;
@@ -342,7 +342,7 @@ const handleContextMenu = e => {
         }
       }
       .activated {
-        background-color: rgba(51, 112, 255, 0.1);
+        background-color: rgba(51, 112, 255, 0.1) !important;
         :deep(.component-icon) {
           color: #3370ff;
         }
@@ -369,11 +369,11 @@ const handleContextMenu = e => {
   }
 
   &:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(235, 235, 235, 0.1);
   }
 
   &:active {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(235, 235, 235, 0.1);
   }
 }
 </style>
