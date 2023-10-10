@@ -262,7 +262,7 @@ span {
   display: inline-block;
   width: 100% !important;
   :deep(.ed-input-number__increase) {
-    top: 1.2px;
+    top: 1.4px;
   }
 }
 
