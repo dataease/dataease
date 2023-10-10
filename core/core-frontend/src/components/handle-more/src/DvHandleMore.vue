@@ -104,5 +104,6 @@ const emit = defineEmits(['handleCommand'])
 
 .handle-icon {
   font-size: 16px;
+  color: #646a73;
 }
 </style>

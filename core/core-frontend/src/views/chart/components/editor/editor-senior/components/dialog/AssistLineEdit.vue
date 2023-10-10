@@ -1,8 +1,9 @@
 <script lang="tsx" setup>
-import { reactive } from 'vue'
+import { computed, onMounted, reactive } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL } from '@/views/chart/components/editor/util/chart'
 import { fieldType } from '@/utils/attr'
+import _ from 'lodash'
 
 const { t } = useI18n()
 
@@ -41,18 +42,10 @@ const state = reactive({
     { label: t('chart.line_type_dotted'), value: 'dotted' }
   ],
   predefineColors: COLOR_PANEL,
-  quotaData: [],
   fontSize: []
 })
 
-const emit = defineEmits(['onAssistLineChange'])
-
-const initField = () => {
-  state.quotaData = props.quotaFields.filter(ele => ele.summary !== '' && ele.id !== '-1')
-}
-const init = () => {
-  state.lineArr = JSON.parse(JSON.stringify(props.line))
-
+const fontSizeList = computed(() => {
   const arr = []
   for (let i = 10; i <= 60; i = i + 2) {
     arr.push({
@@ -60,14 +53,28 @@ const init = () => {
       value: i + ''
     })
   }
-  state.fontSize = arr
+  return arr
+})
+
+const emit = defineEmits(['onAssistLineChange'])
+
+const init = () => {
+  state.lineArr = JSON.parse(JSON.stringify(props.line))
+
+  state.lineArr.forEach(line => {
+    if (_.find(props.quotaFields, d => d.id === line.fieldId) == undefined) {
+      line.fieldId = undefined
+    }
+  })
+
+  changeAssistLine()
 }
 
 const addLine = () => {
   const obj = {
     ...state.lineObj,
-    curField: state.quotaData ? state.quotaData[0] : null,
-    fieldId: state.quotaData ? state.quotaData[0]?.id : null
+    curField: props.quotaFields ? props.quotaFields[0] : null,
+    fieldId: props.quotaFields ? props.quotaFields[0]?.id : null
   }
   state.lineArr.push(JSON.parse(JSON.stringify(obj)))
   changeAssistLine()
@@ -88,7 +95,7 @@ const getQuotaField = id => {
   if (!id) {
     return {}
   }
-  const fields = state.quotaData.filter(ele => {
+  const fields = props.quotaFields.filter(ele => {
     return ele.id === id
   })
   if (fields.length === 0) {
@@ -98,8 +105,9 @@ const getQuotaField = id => {
   }
 }
 
-initField()
-init()
+onMounted(() => {
+  init()
+})
 </script>
 
 <template>
@@ -144,7 +152,7 @@ init()
             @change="changeAssistLineField(item)"
           >
             <el-option
-              v-for="quota in state.quotaData"
+              v-for="quota in quotaFields"
               :key="quota.id"
               :label="quota.name"
               :value="quota.id"
@@ -154,12 +162,12 @@ init()
                   <Icon
                     :className="`field-icon-${fieldType[item.deType]}`"
                     :name="`field_${fieldType[item.deType]}`"
-                  ></Icon>
+                  />
                 </el-icon>
               </span>
-              <span :style="{ float: 'left', color: '#8492a6', fontSize: '12px' }">{{
-                quota.name
-              }}</span>
+              <span :style="{ float: 'left', color: '#8492a6', fontSize: '12px' }">
+                {{ quota.name }}
+              </span>
             </el-option>
           </el-select>
         </el-col>
@@ -183,7 +191,7 @@ init()
             @change="changeAssistLine"
           >
             <el-option
-              v-for="option in state.fontSize"
+              v-for="option in fontSizeList"
               :key="option.value"
               :label="option.name"
               :value="option.value"

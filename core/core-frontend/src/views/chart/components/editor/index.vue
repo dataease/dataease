@@ -2708,7 +2708,7 @@ span {
   .ed-select {
     width: 100%;
     .ed-input__inner {
-      height: 26px !important;
+      height: 26px;
     }
   }
   .ed-checkbox {
