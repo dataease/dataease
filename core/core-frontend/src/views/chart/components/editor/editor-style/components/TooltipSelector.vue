@@ -253,7 +253,7 @@ onMounted(() => {
       <el-form-item
         class="form-item"
         :class="'form-item-' + themes"
-        v-show="showProperty('color')"
+        v-if="showProperty('color')"
         :label="t('chart.text')"
       >
         <el-color-picker
@@ -269,7 +269,7 @@ onMounted(() => {
       <el-form-item
         class="form-item"
         :class="'form-item-' + themes"
-        v-show="showProperty('fontSize')"
+        v-if="showProperty('fontSize')"
       >
         <template #label>&nbsp;</template>
         <el-select
@@ -440,7 +440,7 @@ onMounted(() => {
               :disabled="!curSeriesFormatter.show || formatterNameEditable"
             />
           </el-form-item>
-          <el-row v-show="showFormatterSummary">
+          <el-row v-if="showFormatterSummary">
             <el-col>
               <el-form-item
                 :label="t('common.please_select') + t('chart.aggregation')"
@@ -463,52 +463,47 @@ onMounted(() => {
               </el-form-item>
             </el-col>
           </el-row>
-          <el-row :gutter="8">
-            <el-col :span="curSeriesFormatter.formatterCfg.type !== 'auto' ? 12 : 24">
-              <el-form-item
-                :label="t('chart.value_formatter_type')"
-                class="form-item"
-                :class="'form-item-' + themes"
-              >
-                <el-select
-                  :disabled="!curSeriesFormatter.show"
-                  style="width: 100%"
-                  :effect="props.themes"
-                  v-model="curSeriesFormatter.formatterCfg.type"
-                  @change="changeTooltipAttr('seriesTooltipFormatter')"
-                >
-                  <el-option
-                    v-for="type in formatterType"
-                    :key="type.value"
-                    :label="t('chart.' + type.name)"
-                    :value="type.value"
-                  />
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12" v-if="curSeriesFormatter.formatterCfg.type !== 'auto'">
-              <el-form-item
-                :label="t('chart.value_formatter_decimal_count')"
-                class="form-item"
-                :class="'form-item-' + themes"
-              >
-                <el-input-number
-                  controls-position="right"
-                  :disabled="!curSeriesFormatter.show"
-                  style="width: 100%"
-                  :effect="props.themes"
-                  v-model="curSeriesFormatter.formatterCfg.decimalCount"
-                  :precision="0"
-                  :min="0"
-                  :max="10"
-                  size="small"
-                  @change="changeTooltipAttr('seriesTooltipFormatter')"
-                />
-              </el-form-item>
-            </el-col>
-          </el-row>
+          <el-form-item
+            :label="t('chart.value_formatter_type')"
+            class="form-item"
+            :class="'form-item-' + themes"
+          >
+            <el-select
+              :disabled="!curSeriesFormatter.show"
+              style="width: 100%"
+              :effect="props.themes"
+              v-model="curSeriesFormatter.formatterCfg.type"
+              @change="changeTooltipAttr('seriesTooltipFormatter')"
+            >
+              <el-option
+                v-for="type in formatterType"
+                :key="type.value"
+                :label="t('chart.' + type.name)"
+                :value="type.value"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item
+            v-if="curSeriesFormatter.formatterCfg.type !== 'auto'"
+            :label="t('chart.value_formatter_decimal_count')"
+            class="form-item"
+            :class="'form-item-' + themes"
+          >
+            <el-input-number
+              controls-position="right"
+              :disabled="!curSeriesFormatter.show"
+              style="width: 100%"
+              :effect="props.themes"
+              v-model="curSeriesFormatter.formatterCfg.decimalCount"
+              :precision="0"
+              :min="0"
+              :max="10"
+              size="small"
+              @change="changeTooltipAttr('seriesTooltipFormatter')"
+            />
+          </el-form-item>
 
-          <el-row :gutter="8">
+          <el-row :gutter="8" v-if="curSeriesFormatter.formatterCfg.type !== 'percent'">
             <el-col :span="12">
               <el-form-item
                 :label="t('chart.value_formatter_unit')"

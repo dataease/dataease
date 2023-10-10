@@ -126,7 +126,7 @@ const COMPUTED_DEFAULT_LABEL = computed(() => {
   return DEFAULT_LABEL
 })
 
-const state = reactive({
+const state = reactive<{ labelForm: ChartLabelAttr | any }>({
   labelForm: {}
 })
 
@@ -276,7 +276,7 @@ onMounted(() => {
       </el-select>
     </el-form-item>
     <el-divider v-if="showDivider" style="margin: 0 0 16px" />
-    <template v-if="showProperty('labelFormatter')">
+    <template v-if="showProperty('labelFormatter') && state.labelForm.labelFormatter">
       <el-form-item
         :label="$t('chart.value_formatter_type')"
         class="form-item"
@@ -296,7 +296,7 @@ onMounted(() => {
         </el-select>
       </el-form-item>
       <el-form-item
-        v-if="state.labelForm.labelFormatter.type !== 'auto'"
+        v-if="state.labelForm.labelFormatter && state.labelForm.labelFormatter.type !== 'auto'"
         :label="$t('chart.value_formatter_decimal_count')"
         class="form-item"
         :class="'form-item-' + themes"
@@ -312,7 +312,10 @@ onMounted(() => {
         />
       </el-form-item>
 
-      <el-row :gutter="8" v-if="state.labelForm.labelFormatter.type !== 'percent'">
+      <el-row
+        :gutter="8"
+        v-if="state.labelForm.labelFormatter && state.labelForm.labelFormatter.type !== 'percent'"
+      >
         <el-col :span="12">
           <el-form-item
             :label="$t('chart.value_formatter_unit')"
@@ -320,7 +323,6 @@ onMounted(() => {
             :class="'form-item-' + themes"
           >
             <el-select
-              :disabled="state.labelForm.labelFormatter.type === 'percent'"
               :effect="themes"
               v-model="state.labelForm.labelFormatter.unit"
               :placeholder="$t('chart.pls_select_field')"
@@ -413,7 +415,10 @@ onMounted(() => {
           </el-select>
         </el-form-item>
         <el-form-item
-          v-if="state.labelForm.quotaLabelFormatter.type !== 'auto'"
+          v-if="
+            state.labelForm.quotaLabelFormatter &&
+            state.labelForm.quotaLabelFormatter.type !== 'auto'
+          "
           :label="t('chart.value_formatter_decimal_count')"
           class="form-item"
           :class="'form-item-' + themes"
@@ -432,7 +437,13 @@ onMounted(() => {
           />
         </el-form-item>
 
-        <el-row :gutter="8" v-if="state.labelForm.quotaLabelFormatter.type !== 'percent'">
+        <el-row
+          :gutter="8"
+          v-if="
+            state.labelForm.quotaLabelFormatter &&
+            state.labelForm.quotaLabelFormatter.type !== 'percent'
+          "
+        >
           <el-col :span="12">
             <el-form-item
               :label="t('chart.value_formatter_unit')"
@@ -440,10 +451,7 @@ onMounted(() => {
               :class="'form-item-' + themes"
             >
               <el-select
-                :disabled="
-                  !state.labelForm.showQuota ||
-                  state.labelForm.quotaLabelFormatter.type === 'percent'
-                "
+                :disabled="!state.labelForm.showQuota"
                 :effect="themes"
                 v-model="state.labelForm.quotaLabelFormatter.unit"
                 :placeholder="t('chart.pls_select_field')"
@@ -451,7 +459,7 @@ onMounted(() => {
                 @change="changeLabelAttr('quotaLabelFormatter')"
               >
                 <el-option
-                  v-for="item in unitList"
+                  v-for="item in unitType"
                   :key="item.value"
                   :label="t('chart.' + item.name)"
                   :value="item.value"
@@ -631,6 +639,7 @@ onMounted(() => {
             :label="t('chart.value_formatter_type')"
             class="form-item"
             :class="'form-item-' + themes"
+            v-if="curSeriesFormatter.formatterCfg"
           >
             <el-select
               :disabled="!curSeriesFormatter.show"
@@ -648,7 +657,9 @@ onMounted(() => {
             </el-select>
           </el-form-item>
           <el-form-item
-            v-if="curSeriesFormatter.formatterCfg.type !== 'auto'"
+            v-if="
+              curSeriesFormatter.formatterCfg && curSeriesFormatter.formatterCfg.type !== 'auto'
+            "
             :label="t('chart.value_formatter_decimal_count')"
             class="form-item"
             :class="'form-item-' + themes"
@@ -669,7 +680,11 @@ onMounted(() => {
 
           <el-row
             :gutter="8"
-            v-if="curSeriesFormatter.show && curSeriesFormatter.formatterCfg.type !== 'percent'"
+            v-if="
+              curSeriesFormatter.show &&
+              curSeriesFormatter.formatterCfg &&
+              curSeriesFormatter.formatterCfg.type !== 'percent'
+            "
           >
             <el-col :span="12">
               <el-form-item
@@ -678,9 +693,7 @@ onMounted(() => {
                 :class="'form-item-' + themes"
               >
                 <el-select
-                  :disabled="
-                    !curSeriesFormatter.show || curSeriesFormatter.formatterCfg.type === 'percent'
-                  "
+                  :disabled="!curSeriesFormatter.show"
                   :effect="props.themes"
                   v-model="curSeriesFormatter.formatterCfg.unit"
                   :placeholder="t('chart.pls_select_field')"
@@ -688,7 +701,7 @@ onMounted(() => {
                   @change="changeLabelAttr('quotaLabelFormatter')"
                 >
                   <el-option
-                    v-for="item in unitList"
+                    v-for="item in unitType"
                     :key="item.value"
                     :label="t('chart.' + item.name)"
                     :value="item.value"

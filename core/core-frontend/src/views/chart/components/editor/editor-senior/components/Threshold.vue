@@ -391,18 +391,22 @@ init()
     <!--表格-->
     <el-col v-show="showProperty('tableThreshold')">
       <el-col>
-        <el-button
-          :title="t('chart.edit')"
-          class="circle-button"
-          type="text"
-          size="small"
-          style="width: 24px; margin-left: 4px"
-          @click="editTableThreshold"
-        >
-          <template #icon>
-            <Icon name="icon_edit_outlined"></Icon>
-          </template>
-        </el-button>
+        <div>
+          <span>阈值设置</span>
+          <el-button
+            :title="t('chart.edit')"
+            class="circle-button"
+            type="text"
+            size="small"
+            :style="{ width: '24px', marginLeft: '4px', float: 'right' }"
+            @click="editTableThreshold"
+          >
+            <template #icon>
+              <Icon name="icon_edit_outlined"></Icon>
+            </template>
+          </el-button>
+        </div>
+
         <el-col :style="{ padding: '0 18px', maxHeight: '500px', overflowY: 'auto' }">
           <el-row
             v-for="(fieldItem, fieldIndex) in state.thresholdForm.tableThreshold"

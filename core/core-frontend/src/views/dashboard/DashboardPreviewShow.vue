@@ -144,6 +144,8 @@ const resourceNodeClick = data => {
   }
 }
 
+const previewShowFlag = computed(() => !!dvMainStore.dvInfo?.name)
+
 onBeforeMount(() => {
   if (showPosition.value === 'preview') {
     dvMainStore.canvasDataInit()
@@ -185,7 +187,7 @@ defineExpose({
         <el-icon v-else><ArrowRight /></el-icon>
       </div>
       <!--从store中判断当前是否有点击仪表板 复用时也符合-->
-      <template v-if="state.dvInfo?.name">
+      <template v-if="previewShowFlag">
         <preview-head v-if="showPosition === 'preview'" @reload="reload" @download="download" />
         <div ref="previewCanvasContainer" class="content">
           <de-preview
