@@ -4097,12 +4097,12 @@ CREATE TABLE `visualization_link_jump` (
                                            `id` bigint NOT NULL,
                                            `source_dv_id` bigint DEFAULT NULL COMMENT '源仪表板ID',
                                            `source_view_id` bigint DEFAULT NULL COMMENT '源视图ID',
-                                           `link_jump_info` varchar(4000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '跳转信息',
+                                           `link_jump_info` varchar(4000) DEFAULT NULL COMMENT '跳转信息',
                                            `checked` tinyint(1) DEFAULT NULL COMMENT '是否启用',
                                            `copy_from` bigint DEFAULT NULL,
                                            `copy_id` bigint DEFAULT NULL,
                                            PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+);
 
 -- ----------------------------
 -- Table structure for visualization_link_jump_info
@@ -4111,17 +4111,17 @@ DROP TABLE IF EXISTS `visualization_link_jump_info`;
 CREATE TABLE `visualization_link_jump_info` (
                                                 `id` bigint NOT NULL,
                                                 `link_jump_id` bigint DEFAULT NULL COMMENT 'link jump ID',
-                                                `link_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '关联类型 inner 内部仪表板，outer 外部链接',
-                                                `jump_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '跳转类型 _blank 新开页面 _self 当前窗口',
+                                                `link_type` varchar(255) DEFAULT NULL COMMENT '关联类型 inner 内部仪表板，outer 外部链接',
+                                                `jump_type` varchar(255) DEFAULT NULL COMMENT '跳转类型 _blank 新开页面 _self 当前窗口',
                                                 `target_dv_id` bigint DEFAULT NULL COMMENT '关联仪表板ID',
                                                 `source_field_id` bigint DEFAULT NULL COMMENT '字段ID',
-                                                `content` varchar(4000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '内容 linkType = outer时使用',
+                                                `content` varchar(4000) DEFAULT NULL COMMENT '内容 linkType = outer时使用',
                                                 `checked` tinyint(1) DEFAULT NULL COMMENT '是否可用',
                                                 `attach_params` tinyint(1) DEFAULT NULL COMMENT '是否附加点击参数',
                                                 `copy_from` bigint DEFAULT NULL,
                                                 `copy_id` bigint DEFAULT NULL,
                                                 PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+);
 
 -- ----------------------------
 -- Table structure for visualization_link_jump_target_view_info
@@ -4136,7 +4136,7 @@ CREATE TABLE `visualization_link_jump_target_view_info` (
                                                             `copy_from` bigint DEFAULT NULL,
                                                             `copy_id` bigint DEFAULT NULL,
                                                             PRIMARY KEY (`target_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+);
 
 -- ----------------------------
 -- Table structure for visualization_linkage
@@ -4155,7 +4155,7 @@ CREATE TABLE `visualization_linkage` (
                                          `copy_from` bigint DEFAULT NULL,
                                          `copy_id` bigint DEFAULT NULL,
                                          PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 -- ----------------------------
 -- Table structure for visualization_linkage_field
@@ -4170,7 +4170,7 @@ CREATE TABLE `visualization_linkage_field` (
                                                `copy_from` bigint DEFAULT NULL,
                                                `copy_id` bigint DEFAULT NULL,
                                                PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 SET FOREIGN_KEY_CHECKS = 1;
 
@@ -4193,4 +4193,4 @@ CREATE TABLE `core_opt_recent` (
                                    `opt_type` int DEFAULT NULL COMMENT '1 新建 2 修改',
                                    `time` bigint NOT NULL COMMENT '收藏时间',
                                    PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+);
