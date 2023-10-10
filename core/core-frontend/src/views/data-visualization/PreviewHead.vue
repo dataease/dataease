@@ -83,14 +83,22 @@ watch(
     </div>
     <div class="canvas-opt-button">
       <!--      <el-button type="primary" @click="download()">导出</el-button>-->
-      <el-button icon="DataAnalysis" @click="preview()">预览</el-button>
+      <el-button @click="preview()">
+        <template #icon>
+          <icon name="icon_pc_outlined"></icon>
+        </template>
+        预览</el-button
+      >
       <XpackComponent
         jsname="L2NvbXBvbmVudC9zaGFyZS9TaGFyZVZpc3VhbEhlYWQ="
         :resource-id="dvInfo.id"
         :weight="dvInfo.weight"
       />
-      <el-button v-if="dvInfo.weight > 6" type="primary" icon="EditPen" @click="dvEdit()"
-        >编辑</el-button
+      <el-button v-if="dvInfo.weight > 6" type="primary" @click="dvEdit()">
+        <template #icon>
+          <icon name="icon_edit_outlined"></icon>
+        </template>
+        编辑</el-button
       >
       <el-dropdown trigger="click">
         <el-icon style="margin-left: 8px" class="hover-icon">
