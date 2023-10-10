@@ -1,6 +1,7 @@
 <script lang="ts" setup>
-import { ref, reactive, computed, watch, toRefs } from 'vue'
+import { ref, reactive, computed, watch, toRefs, nextTick } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
+import nothingTree from '@/assets/img/nothing-tree.png'
 import { BusiTreeNode, BusiTreeRequest } from '@/models/tree/TreeNode'
 import {
   copyResource,
@@ -51,8 +52,12 @@ const methodMap = {
   copy: copyResource,
   newFolder: saveCanvas
 }
+const searchEmpty = ref(false)
 
 const filterNode = (value: string, data: BusiTreeNode) => {
+  nextTick(() => {
+    searchEmpty.value = treeRef.value.isEmpty
+  })
   if (!value) return true
   return data.name.includes(value)
 }
@@ -354,6 +359,7 @@ const emits = defineEmits(['finish'])
             :filter-node-method="filterNode"
             filterable
             v-model="resourceForm.pid"
+            empty-text=""
             menu
             :data="state.tData"
             :props="propsTree"
@@ -368,6 +374,10 @@ const emits = defineEmits(['finish'])
               </span>
             </template>
           </el-tree>
+          <div v-if="searchEmpty" class="empty-search">
+            <img :src="nothingTree" />
+            <span>没有找到相关内容</span>
+          </div>
         </div>
       </div>
     </el-form>
@@ -386,6 +396,25 @@ const emits = defineEmits(['finish'])
   border-radius: 4px;
   padding: 8px;
   overflow-y: auto;
+  .empty-search {
+    width: 100%;
+    margin-top: 57px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    img {
+      width: 100px;
+      height: 100px;
+      margin-bottom: 8px;
+    }
+    span {
+      font-family: PingFang SC;
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 22px;
+      color: #646a73;
+    }
+  }
 }
 
 .custom-tree-node {
