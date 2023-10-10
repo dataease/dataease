@@ -80,7 +80,6 @@ init()
     <draggable
       v-loading="loading"
       :list="state.sortList"
-      :move="onMove"
       group="drag"
       animation="300"
       class="drag-list"
@@ -90,7 +89,7 @@ init()
       <template #item="{ element }">
         <span :key="element.value" class="item-dimension" :title="element.value">
           <el-icon class="item-icon">
-            <Icon name="icon_drag_outlined" @click="removeItem" />
+            <Icon name="icon_drag_outlined" />
           </el-icon>
           <span class="item-span">
             {{ element.value }}
@@ -131,6 +130,13 @@ init()
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+
+  color: #1f2329;
+
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 22px;
 }
 
 .blackTheme .item-dimension {
