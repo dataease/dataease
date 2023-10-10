@@ -51,7 +51,7 @@ const emit = defineEmits(['handleCommand'])
           :key="ele.label"
           :disabled="ele.disabled"
         >
-          <el-icon :style="{ fontSize: iconSize }" v-if="ele.svgName">
+          <el-icon class="handle-icon" :style="{ fontSize: iconSize }" v-if="ele.svgName">
             <Icon :name="ele.svgName"></Icon>
           </el-icon>
           {{ ele.label }}
@@ -64,5 +64,8 @@ const emit = defineEmits(['handleCommand'])
 <style lang="less">
 .menu-more_popper {
   margin-top: -2px !important;
+  .handle-icon {
+    color: #646a73;
+  }
 }
 </style>
