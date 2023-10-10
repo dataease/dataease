@@ -281,7 +281,9 @@ const jumpClick = param => {
         if (publicLinkStatus.value) {
           // 判断是否有公共链接ID
           if (jumpInfo.publicJumpId) {
-            const url = '/link/' + jumpInfo.publicJumpId
+            const url = `#/de-link/${jumpInfo.publicJumpId}?jumpInfoParam=${encodeURIComponent(
+              Base64.encode(JSON.stringify(param))
+            )}`
             const currentUrl = window.location.href
             localStorage.setItem('beforeJumpUrl', currentUrl)
             windowsJump(url, jumpInfo.jumpType)
@@ -289,11 +291,9 @@ const jumpClick = param => {
             ElMessage.warning(t('visualization.public_link_tips'))
           }
         } else {
-          const url =
-            '#/preview?dvId=' +
-            jumpInfo.targetDvId +
-            '&jumpInfoParam=' +
-            encodeURIComponent(Base64.encode(JSON.stringify(param)))
+          const url = `#/preview?dvId=${jumpInfo.targetDvId}&jumpInfoParam=${encodeURIComponent(
+            Base64.encode(JSON.stringify(param))
+          )}`
           windowsJump(url, jumpInfo.jumpType)
         }
       } else {
