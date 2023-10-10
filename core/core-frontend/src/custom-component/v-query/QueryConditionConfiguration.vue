@@ -437,6 +437,7 @@ const handleCondition = item => {
 
   nextTick(() => {
     curComponent.value.showError = showError.value
+    curComponent.value.auto && (document.querySelector('.chart-field').scrollTop = 0)
   })
 }
 
