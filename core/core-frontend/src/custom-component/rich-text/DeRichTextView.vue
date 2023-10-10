@@ -443,7 +443,7 @@ defineExpose({
 }
 
 .mceNonEditable {
-  background: rgba(51, 112, 255, 0.04);
+  background: rgba(51, 112, 255, 0.4);
 }
 
 .tox-tinymce-inline {

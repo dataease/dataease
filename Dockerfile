@@ -6,7 +6,7 @@ RUN mkdir -p /opt/apps/config /opt/dataease/drivers/ /opt/dataease2.0/cache/ /op
 
 ADD drivers/* /opt/dataease/drivers/
 ADD mapFiles/* /opt/dataease2.0/data/map/
-COPY staticResource/* /opt/dataease2.0/data/static-resource/
+ADD staticResource/* /opt/dataease2.0/data/static-resource/
 
 WORKDIR /opt/apps
 
