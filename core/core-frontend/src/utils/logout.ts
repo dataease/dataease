@@ -21,6 +21,11 @@ export const logoutHandler = (justClean?: boolean) => {
   if (router.currentRoute.value.fullPath) {
     queryRedirectPath = router.currentRoute.value.fullPath as string
   }
+  if (wsCache.get('out_auth_platform') === 'cas') {
+    const uri = window.location.href
+    window.location.href = '/casbi/cas/logout?service=' + uri
+    return
+  }
   router.push(justClean ? queryRedirectPath : `/login?redirect=${queryRedirectPath}`)
 }
 
