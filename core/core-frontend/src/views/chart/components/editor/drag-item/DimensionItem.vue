@@ -3,7 +3,6 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { computed, onMounted, reactive, ref, toRefs, watch } from 'vue'
 import { formatterItem } from '@/views/chart/components/js/formatter'
 import { getItemType } from '@/views/chart/components/editor/drag-item/utils'
-import { Delete, Edit } from '@element-plus/icons-vue'
 import { fieldType } from '@/utils/attr'
 
 const { t } = useI18n()
@@ -177,7 +176,7 @@ onMounted(() => {
     <el-dropdown :effect="themes" trigger="click" @command="clickItem">
       <el-tag
         class="item-axis father"
-        :class="'editor-' + props.themes"
+        :class="['editor-' + props.themes, `${themes}_icon-right`]"
         :style="{ backgroundColor: tagType + '0a', border: '1px solid ' + tagType }"
       >
         <span style="display: flex; color: #646a73">
@@ -211,14 +210,11 @@ onMounted(() => {
           <template #content>
             <span>{{ t('chart.delete') }}</span>
           </template>
-          <el-icon class="child remove-icon" size="14px">
+          <el-icon class="child remove-icon">
             <Icon class-name="inner-class" name="icon_delete-trash_outlined" @click="removeItem" />
           </el-icon>
         </el-tooltip>
-        <el-icon
-          class="child"
-          style="position: absolute; top: 7px; right: 8px; color: #a6a6a6; cursor: pointer"
-        >
+        <el-icon class="child" style="position: absolute; top: 7px; right: 8px; cursor: pointer">
           <Icon name="icon_down_outlined-1" />
         </el-icon>
       </el-tag>
@@ -230,6 +226,7 @@ onMounted(() => {
         >
           <el-dropdown-item @click.prevent>
             <el-dropdown
+              trigger="click"
               :effect="themes"
               placement="right-start"
               style="width: 100%; height: 100%"
@@ -237,7 +234,7 @@ onMounted(() => {
             >
               <span class="inner-dropdown-menu menu-item-padding">
                 <span class="menu-item-content">
-                  <el-icon size="14px">
+                  <el-icon>
                     <Icon name="icon_sort_outlined" />
                   </el-icon>
                   <span>{{ t('chart.sort') }}</span>
@@ -315,7 +312,7 @@ onMounted(() => {
             >
               <span class="inner-dropdown-menu menu-item-padding">
                 <span class="menu-item-content">
-                  <el-icon size="14px"> </el-icon>
+                  <el-icon> </el-icon>
                   <span>{{ t('chart.dateStyle') }}</span>
                   <span class="summary-span-item">({{ t('chart.' + item.dateStyle) }})</span>
                 </span>
@@ -448,7 +445,7 @@ onMounted(() => {
             >
               <span class="inner-dropdown-menu menu-item-padding">
                 <span class="menu-item-content">
-                  <el-icon size="14px"> </el-icon>
+                  <el-icon> </el-icon>
                   <span>{{ t('chart.datePattern') }}</span>
                   <span class="summary-span-item">({{ t('chart.' + item.datePattern) }})</span>
                 </span>
@@ -494,12 +491,10 @@ onMounted(() => {
               </template>
             </el-dropdown>
           </el-dropdown-item>
-          <el-dropdown-item
-            class="menu-item-padding"
-            :icon="Edit"
-            divided
-            :command="beforeClickItem('rename')"
-          >
+          <el-dropdown-item class="menu-item-padding" divided :command="beforeClickItem('rename')">
+            <el-icon>
+              <icon name="icon_edit_outlined"></icon>
+            </el-icon>
             <span>{{ t('chart.show_name_set') }}</span>
           </el-dropdown-item>
           <el-dropdown-item
@@ -508,15 +503,13 @@ onMounted(() => {
             :divided="chart.type !== 'table-info'"
             :command="beforeClickItem('formatter')"
           >
-            <el-icon size="14px" />
+            <el-icon />
             <span>{{ t('chart.value_formatter') }}...</span>
           </el-dropdown-item>
-          <el-dropdown-item
-            class="menu-item-padding"
-            :icon="Delete"
-            divided
-            :command="beforeClickItem('remove')"
-          >
+          <el-dropdown-item class="menu-item-padding" divided :command="beforeClickItem('remove')">
+            <el-icon>
+              <icon name="icon_delete-trash_outlined"></icon>
+            </el-icon>
             <span>{{ t('chart.delete') }}</span>
           </el-dropdown-item>
         </el-dropdown-menu>
@@ -529,7 +522,6 @@ onMounted(() => {
 :deep(.ed-dropdown-menu__item) {
   padding: 0;
 }
-
 :deep(.ed-dropdown-menu__item.menu-item-padding) {
   padding: 5px 16px;
 }
@@ -537,7 +529,6 @@ onMounted(() => {
 .menu-item-padding {
   padding: 5px 16px;
 }
-
 .item-style {
   position: relative;
   width: 100%;
@@ -669,21 +660,32 @@ span {
     }
   }
 }
-
 .remove-icon {
   position: absolute;
   top: 7px;
-  right: 24px;
-  color: #646a73;
+  right: 26px;
   cursor: pointer;
-
   .inner-class {
     font-size: 14px;
   }
 }
 
-.father .child {
-  visibility: hidden;
+.father {
+  &.dark_icon-right {
+    .child {
+      color: #a6a6a6;
+    }
+  }
+
+  &.light_icon-right {
+    .child {
+      color: #646a73;
+    }
+  }
+  .child {
+    font-size: 14px;
+    visibility: hidden;
+  }
 }
 
 .father:hover .child {
@@ -692,5 +694,43 @@ span {
 
 .father:hover .item-span-style {
   max-width: 150px;
+}
+</style>
+<style lang="less">
+.menu-item-padding {
+  span {
+    font-size: 14px;
+    color: #1f2329;
+  }
+  .ed-icon {
+    color: #646a73;
+    font-size: 16px !important;
+  }
+
+  .sub-menu-content--icon {
+    color: #3370ff;
+    margin-right: -7px;
+  }
+  :nth-child(1).ed-icon {
+    margin-right: 8px;
+  }
+  .menu-item-content {
+    :nth-child(1).ed-icon {
+      margin-right: 8px;
+    }
+  }
+}
+.dark {
+  span {
+    color: #ebebeb;
+  }
+  .ed-icon {
+    color: #a6a6a6;
+  }
+
+  .sub-menu-content--icon {
+    color: #3370ff;
+    margin-right: -7px !important;
+  }
 }
 </style>
