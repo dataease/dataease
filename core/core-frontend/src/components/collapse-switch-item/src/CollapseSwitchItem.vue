@@ -21,7 +21,13 @@ const { changeModel, title, themes } = toRefs(props)
 const collapseItem = ref()
 const onSwitchChange = e => {
   emit('modelChange', changeModel.value)
-  collapseItem.value.handleHeaderClick()
+  if (changeModel.value.show && !collapseItem.value.isActive) {
+    collapseItem.value.handleHeaderClick()
+  }
+
+  if (!changeModel.value.show && collapseItem.value.isActive) {
+    collapseItem.value.handleHeaderClick()
+  }
 
   if (switchValue.value !== collapseOpen.value) {
     e.stopPropagation()
