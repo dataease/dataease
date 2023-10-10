@@ -1652,7 +1652,7 @@ const onRefreshChange = val => {
               <el-icon
                 class="field-search-icon-btn"
                 :class="{ dark: themes === 'dark' }"
-                style="margin-left: 6px"
+                style="margin-left: 8px"
                 @click="editDs"
                 v-if="curDatasetWeight >= 7"
               >
@@ -2593,9 +2593,27 @@ span {
     font-size: 16px;
     color: #646a73;
     cursor: pointer;
+    position: relative;
+    &:hover {
+      &::after {
+        content: '';
+        position: absolute;
+        width: 24px;
+        height: 24px;
+        border-radius: 4px;
+        top: -4px;
+        left: -4px;
+        background: rgba(31, 35, 41, 0.1);
+      }
+    }
 
     &.dark {
       color: #a6a6a6;
+      &:hover {
+        &::after {
+          background: rgba(235, 235, 235, 0.1);
+        }
+      }
     }
   }
 
