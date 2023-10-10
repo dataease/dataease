@@ -77,7 +77,7 @@ const changeLine = () => {
       return
     }
     if (ele.field === '0') {
-      if (!ele.value) {
+      if (ele.value === null || ele.value === undefined || ele.value === '') {
         ElMessage.error(t('chart.value_can_not_empty'))
         return
       }

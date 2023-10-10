@@ -149,6 +149,9 @@ const getTree = async () => {
   const nodeData = interactiveData.treeNodes
   rootManage.value = interactiveData.rootManage
   anyManage.value = interactiveData.anyManage
+  if (dvInfo.value && dvInfo.value.id && !JSON.stringify(nodeData).includes(dvInfo.value.id)) {
+    dvMainStore.resetDvInfo()
+  }
   if (nodeData.length && nodeData[0]['id'] === '0' && nodeData[0]['name'] === 'root') {
     state.resourceTree = nodeData[0]['children'] || []
     afterTreeInit()
@@ -207,9 +210,6 @@ const operation = (cmd: string, data: BusiTreeNode, nodeType: string) => {
     ).then(() => {
       deleteLogic(data.id, curCanvasType.value).then(() => {
         ElMessage.success('删除成功')
-        if (dvInfo.value && dvInfo.value.id === data.id) {
-          dvMainStore.resetDvInfo()
-        }
         getTree()
       })
     })

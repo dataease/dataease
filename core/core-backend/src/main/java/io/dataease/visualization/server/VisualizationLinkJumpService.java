@@ -11,6 +11,7 @@ import io.dataease.api.visualization.vo.VisualizationViewTableVO;
 import io.dataease.chart.dao.auto.entity.CoreChartView;
 import io.dataease.chart.dao.auto.mapper.CoreChartViewMapper;
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
+import io.dataease.utils.AuthUtils;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
 import io.dataease.visualization.dao.auto.entity.DataVisualizationInfo;
@@ -68,14 +69,14 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
     }
 
     public List<VisualizationLinkJumpDTO> queryWithDvId(Long dvId) {
-        return extVisualizationLinkJumpMapper.queryWithDvId(dvId);
+        return extVisualizationLinkJumpMapper.queryWithDvId(dvId,AuthUtils.getUser().getUserId());
     }
 
     //获取仪表板的跳转信息
     @Override
     public VisualizationLinkJumpBaseResponse queryVisualizationJumpInfo(Long dvId) {
         Map<String, VisualizationLinkJumpInfoDTO> resultBase = new HashMap<>();
-        List<VisualizationLinkJumpDTO> resultLinkJumpList = extVisualizationLinkJumpMapper.queryWithDvId(dvId);
+        List<VisualizationLinkJumpDTO> resultLinkJumpList = extVisualizationLinkJumpMapper.queryWithDvId(dvId, AuthUtils.getUser().getUserId());
         Optional.ofNullable(resultLinkJumpList).orElse(new ArrayList<>()).forEach(resultLinkJump -> {
             if (resultLinkJump.getChecked()) {
                 Long sourceViewId = resultLinkJump.getSourceViewId();
@@ -100,7 +101,7 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
 
     @Override
     public VisualizationLinkJumpDTO queryWithViewId(Long dvId, Long viewId) {
-        return extVisualizationLinkJumpMapper.queryWithViewId(dvId, viewId);
+        return extVisualizationLinkJumpMapper.queryWithViewId(dvId, viewId, AuthUtils.getUser().getUserId());
     }
 
     @Transactional

@@ -163,6 +163,9 @@ export const dvMainStore = defineStore('dataVisualization', {
     }
   },
   actions: {
+    setPublicLinkStatus(value) {
+      this.publicLinkStatus = value
+    },
     setDataPrepareState(value) {
       this.dataPrepareState = value
     },

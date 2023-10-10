@@ -11,9 +11,9 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 @Mapper
 public interface ExtVisualizationLinkJumpMapper {
-    List<VisualizationLinkJumpDTO> queryWithDvId(@Param("dvId") Long dvId);
+    List<VisualizationLinkJumpDTO> queryWithDvId(@Param("dvId") Long dvId,@Param("uid") Long uid);
 
-    VisualizationLinkJumpDTO queryWithViewId(@Param("dvId") Long dvId,@Param("viewId") Long viewId);
+    VisualizationLinkJumpDTO queryWithViewId(@Param("dvId") Long dvId,@Param("viewId") Long viewId,@Param("uid") Long uid);
 
     void deleteJumpTargetViewInfo(@Param("dvId") Long dvId,@Param("viewId") Long viewId);
 
