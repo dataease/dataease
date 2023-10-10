@@ -5,14 +5,14 @@ DROP TABLE IF EXISTS `core_datasource`;
 CREATE TABLE `core_datasource`
 (
     `id`            bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
-    `name`          varchar(255) NOT NULL COMMENT '名称',
+    `name`          varchar(255)    NOT NULL COMMENT '名称',
     `description`   varchar(255) DEFAULT NULL COMMENT '描述',
-    `type`          varchar(50)  NOT NULL COMMENT '类型',
+    `type`          varchar(50)     NOT NULL COMMENT '类型',
     `pid`           bigint       DEFAULT NULL COMMENT '父级ID',
     `edit_type`     varchar(50) COMMENT '更新方式：0：替换；1：追加',
-    `configuration` longtext     NOT NULL COMMENT '详细信息',
-    `create_time`   bigint       NOT NULL COMMENT '创建时间',
-    `update_time`   bigint       NOT NULL COMMENT '更新时间',
+    `configuration` longtext        NOT NULL COMMENT '详细信息',
+    `create_time`   bigint          NOT NULL COMMENT '创建时间',
+    `update_time`   bigint          NOT NULL COMMENT '更新时间',
     `create_by`     varchar(50)  DEFAULT NULL COMMENT '创建人ID',
     `status`        longtext COMMENT '状态',
     `qrtz_instance` longtext COMMENT '状态',
@@ -24,8 +24,8 @@ DROP TABLE IF EXISTS `core_driver`;
 CREATE TABLE `core_driver`
 (
     `id`           bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
-    `name`         varchar(50) NOT NULL COMMENT '名称',
-    `create_time`  bigint(13) NOT NULL COMMENT '创建时间',
+    `name`         varchar(50)     NOT NULL COMMENT '名称',
+    `create_time`  bigint(13)      NOT NULL COMMENT '创建时间',
     `type`         varchar(255) DEFAULT NULL COMMENT '数据源类型',
     `driver_class` varchar(255) DEFAULT NULL COMMENT '驱动类',
     `description`  varchar(255) DEFAULT NULL COMMENT '描述',
@@ -36,12 +36,12 @@ DROP TABLE IF EXISTS `core_driver_jar`;
 CREATE TABLE `core_driver_jar`
 (
     `id`            bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
-    `de_driver_id`  varchar(50) NOT NULL COMMENT '驱动主键',
+    `de_driver_id`  varchar(50)     NOT NULL COMMENT '驱动主键',
     `file_name`     varchar(255) DEFAULT NULL COMMENT '名称',
     `version`       varchar(255) DEFAULT NULL COMMENT '版本',
     `driver_class`  longtext COMMENT '驱动类',
     `trans_name`    varchar(255) DEFAULT NULL,
-    `is_trans_name` tinyint(1) DEFAULT NULL,
+    `is_trans_name` tinyint(1)   DEFAULT NULL,
     PRIMARY KEY (`id`)
 );
 
@@ -55,15 +55,15 @@ CREATE TABLE `core_menu`
 (
     `id`        bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
     `pid`       bigint unsigned NOT NULL COMMENT '父ID',
-    `type`      int         DEFAULT NULL COMMENT '类型',
-    `name`      varchar(45) DEFAULT NULL COMMENT '名称',
-    `component` varchar(45) DEFAULT NULL COMMENT '组件',
-    `menu_sort` int         DEFAULT NULL COMMENT '排序',
-    `icon`      varchar(45) DEFAULT NULL COMMENT '图标',
-    `path`      varchar(45) DEFAULT NULL COMMENT '路径',
-    `hidden`    tinyint(1) NOT NULL DEFAULT '0' COMMENT '隐藏',
-    `in_layout` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否内部',
-    `auth`      tinyint(1) NOT NULL DEFAULT '0' COMMENT '参与授权',
+    `type`      int                      DEFAULT NULL COMMENT '类型',
+    `name`      varchar(45)              DEFAULT NULL COMMENT '名称',
+    `component` varchar(45)              DEFAULT NULL COMMENT '组件',
+    `menu_sort` int                      DEFAULT NULL COMMENT '排序',
+    `icon`      varchar(45)              DEFAULT NULL COMMENT '图标',
+    `path`      varchar(45)              DEFAULT NULL COMMENT '路径',
+    `hidden`    tinyint(1)      NOT NULL DEFAULT '0' COMMENT '隐藏',
+    `in_layout` tinyint(1)      NOT NULL DEFAULT '1' COMMENT '是否内部',
+    `auth`      tinyint(1)      NOT NULL DEFAULT '0' COMMENT '参与授权',
     PRIMARY KEY (`id`)
 );
 
@@ -90,7 +90,7 @@ CREATE TABLE `core_dataset_group`
     `id`               bigint      NOT NULL COMMENT 'ID',
     `name`             varchar(128)  DEFAULT NULL COMMENT '名称',
     `pid`              bigint        DEFAULT NULL COMMENT '父级ID',
-    `level`            int(10) DEFAULT '0' COMMENT '当前分组处于第几级',
+    `level`            int(10)       DEFAULT '0' COMMENT '当前分组处于第几级',
     `node_type`        varchar(50) NOT NULL COMMENT 'node类型：folder or dataset',
     `type`             varchar(50)   DEFAULT NULL COMMENT 'sql,union',
     `mode`             int           DEFAULT '0' COMMENT '连接模式：0-直连，1-同步(包括excel、api等数据存在de中的表)',
@@ -138,7 +138,7 @@ CREATE TABLE `core_dataset_table_field`
     `de_type`          int          NOT NULL COMMENT 'dataease字段类型：0-文本，1-时间，2-整型数值，3-浮点数值，4-布尔，5-地理位置，6-二进制',
     `de_extract_type`  int          NOT NULL COMMENT 'de记录的原始类型',
     `ext_field`        int          DEFAULT NULL COMMENT '是否扩展字段 0原始 1复制 2计算字段...',
-    `checked`          tinyint(1) DEFAULT '1' COMMENT '是否选中',
+    `checked`          tinyint(1)   DEFAULT '1' COMMENT '是否选中',
     `column_index`     int          DEFAULT NULL COMMENT '列位置',
     `last_sync_time`   bigint       DEFAULT NULL COMMENT '同步时间',
     `accuracy`         int          DEFAULT '0' COMMENT '精度',
@@ -183,7 +183,7 @@ CREATE TABLE `data_visualization_info`
     `update_by`             varchar(255) DEFAULT NULL COMMENT '更新人',
     `remark`                varchar(255) DEFAULT NULL COMMENT '备注',
     `source`                varchar(255) DEFAULT NULL COMMENT '数据来源',
-    `delete_flag`           tinyint(1) DEFAULT '0' COMMENT '删除标志',
+    `delete_flag`           tinyint(1)   DEFAULT '0' COMMENT '删除标志',
     `delete_time`           bigint       DEFAULT NULL COMMENT '删除时间',
     `delete_by`             varchar(255) DEFAULT NULL COMMENT '删除人',
     PRIMARY KEY (`id`)
@@ -197,37 +197,37 @@ CREATE TABLE `core_datasource_task`
     `ds_id`             bigint          NOT NULL COMMENT '数据源ID',
     `name`              varchar(255)    NOT NULL COMMENT '任务名称',
     `update_type`       varchar(50)     NOT NULL COMMENT '更新方式',
-    `start_time`        bigint(13)      DEFAULT NULL COMMENT '开始时间',
+    `start_time`        bigint(13)   DEFAULT NULL COMMENT '开始时间',
     `sync_rate`         varchar(50)     NOT NULL COMMENT '执行频率：0 一次性 1 cron',
-    `cron`              varchar(255)    DEFAULT NULL COMMENT 'cron表达式',
-    `simple_cron_value` bigint(13)      DEFAULT NULL COMMENT '简单重复间隔',
-    `simple_cron_type`  varchar(50)     DEFAULT NULL COMMENT '简单重复类型：分、时、天',
-    `end_limit`         varchar(50)     DEFAULT NULL COMMENT '结束限制 0 无限制 1 设定结束时间',
-    `end_time`          bigint(13)      DEFAULT NULL COMMENT '结束时间',
-    `create_time`       bigint(13)      DEFAULT NULL COMMENT '创建时间',
-    `last_exec_time`    bigint(13)      DEFAULT NULL COMMENT '上次执行时间',
-    `last_exec_status`  varchar(50)     DEFAULT NULL COMMENT '上次执行结果',
+    `cron`              varchar(255) DEFAULT NULL COMMENT 'cron表达式',
+    `simple_cron_value` bigint(13)   DEFAULT NULL COMMENT '简单重复间隔',
+    `simple_cron_type`  varchar(50)  DEFAULT NULL COMMENT '简单重复类型：分、时、天',
+    `end_limit`         varchar(50)  DEFAULT NULL COMMENT '结束限制 0 无限制 1 设定结束时间',
+    `end_time`          bigint(13)   DEFAULT NULL COMMENT '结束时间',
+    `create_time`       bigint(13)   DEFAULT NULL COMMENT '创建时间',
+    `last_exec_time`    bigint(13)   DEFAULT NULL COMMENT '上次执行时间',
+    `last_exec_status`  varchar(50)  DEFAULT NULL COMMENT '上次执行结果',
     `extra_data`        longtext,
-    `task_status`       varchar(50)     DEFAULT NULL COMMENT '任务状态',
+    `task_status`       varchar(50)  DEFAULT NULL COMMENT '任务状态',
     PRIMARY KEY (`id`)
 );
 
 DROP TABLE IF EXISTS `core_datasource_task_log`;
 CREATE TABLE `core_datasource_task_log`
 (
-    `id`           bigint unsigned  NOT NULL AUTO_INCREMENT COMMENT '主键',
-    `ds_id`        bigint(13)       NOT NULL COMMENT '数据源ID',
-    `task_id`      bigint(13)       DEFAULT NULL COMMENT '任务ID',
-    `start_time`   bigint(13)       DEFAULT NULL COMMENT '开始时间',
-    `end_time`     bigint(13)       DEFAULT NULL COMMENT '结束时间',
-    `task_status`  varchar(50)      NOT NULL COMMENT '执行状态',
-    `table_name`   varchar(255)     NOT NULL COMMENT '表名',
+    `id`           bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
+    `ds_id`        bigint(13)      NOT NULL COMMENT '数据源ID',
+    `task_id`      bigint(13)  DEFAULT NULL COMMENT '任务ID',
+    `start_time`   bigint(13)  DEFAULT NULL COMMENT '开始时间',
+    `end_time`     bigint(13)  DEFAULT NULL COMMENT '结束时间',
+    `task_status`  varchar(50)     NOT NULL COMMENT '执行状态',
+    `table_name`   varchar(255)    NOT NULL COMMENT '表名',
     `info`         longtext COMMENT '错误信息',
-    `create_time`  bigint(13)       DEFAULT NULL COMMENT '创建时间',
-    `trigger_type` varchar(45)      DEFAULT NULL,
+    `create_time`  bigint(13)  DEFAULT NULL COMMENT '创建时间',
+    `trigger_type` varchar(45) DEFAULT NULL,
     PRIMARY KEY (`id`),
-    KEY            `idx_dataset_table_task_log_ds_id` (`ds_id`),
-    KEY            `idx_dataset_table_task_log_task_id` (`task_id`)
+    KEY `idx_dataset_table_task_log_ds_id` (`ds_id`),
+    KEY `idx_dataset_table_task_log_task_id` (`task_id`)
 );
 
 DROP TABLE IF EXISTS `core_de_engine`;
@@ -236,10 +236,10 @@ CREATE TABLE `core_de_engine`
     `id`            bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
     `name`          varchar(50) DEFAULT NULL COMMENT '名称',
     `description`   varchar(50) DEFAULT NULL COMMENT '描述',
-    `type`          varchar(50) NOT NULL COMMENT '类型',
-    `configuration` longtext    NOT NULL COMMENT '详细信息',
-    `create_time`   bigint(13) DEFAULT NULL COMMENT 'Create timestamp',
-    `update_time`   bigint(13) DEFAULT NULL COMMENT 'Update timestamp',
+    `type`          varchar(50)     NOT NULL COMMENT '类型',
+    `configuration` longtext        NOT NULL COMMENT '详细信息',
+    `create_time`   bigint(13)  DEFAULT NULL COMMENT 'Create timestamp',
+    `update_time`   bigint(13)  DEFAULT NULL COMMENT 'Update timestamp',
     `create_by`     varchar(50) DEFAULT NULL COMMENT '创建人ID',
     `status`        varchar(45) DEFAULT NULL COMMENT '状态',
     PRIMARY KEY (`id`)
@@ -278,11 +278,11 @@ CREATE TABLE `core_chart_view`
     `is_plugin`           bit(1)        DEFAULT NULL COMMENT '是否插件',
     `data_from`           varchar(255)  DEFAULT 'dataset' COMMENT '数据来源 template 模板数据 dataset 数据集数据',
     `view_fields`         longtext COMMENT '图表字段集合',
-    `refresh_view_enable` tinyint(1) DEFAULT 0 COMMENT '是否开启刷新',
+    `refresh_view_enable` tinyint(1)    DEFAULT 0 COMMENT '是否开启刷新',
     `refresh_unit`        varchar(255)  DEFAULT 'minute' COMMENT '刷新时间单位',
     `refresh_time`        int           DEFAULT 5 COMMENT '刷新时间',
-    `linkage_active`      tinyint(1) DEFAULT 0 COMMENT '是否开启联动',
-    `jump_active`         tinyint(1) DEFAULT 0 COMMENT '是否开启跳转',
+    `linkage_active`      tinyint(1)    DEFAULT 0 COMMENT '是否开启联动',
+    `jump_active`         tinyint(1)    DEFAULT 0 COMMENT '是否开启跳转',
     `copy_from`           bigint        DEFAULT NULL COMMENT '复制来源',
     `copy_id`             bigint        DEFAULT NULL COMMENT '复制ID',
     PRIMARY KEY (`id`)
@@ -3723,7 +3723,7 @@ CREATE TABLE QRTZ_CALENDARS
 (
     SCHED_NAME    VARCHAR(120) NOT NULL,
     CALENDAR_NAME VARCHAR(200) NOT NULL,
-    CALENDAR      IMAGE        NOT NULL
+    CALENDAR      BLOB         NOT NULL
 );
 CREATE TABLE QRTZ_CRON_TRIGGERS
 (
@@ -3747,8 +3747,8 @@ CREATE TABLE QRTZ_FIRED_TRIGGERS
     STATE             VARCHAR(16)  NOT NULL,
     JOB_NAME          VARCHAR(200) NULL,
     JOB_GROUP         VARCHAR(200) NULL,
-    IS_NONCONCURRENT  BOOLEAN NULL,
-    REQUESTS_RECOVERY BOOLEAN NULL
+    IS_NONCONCURRENT  BOOLEAN      NULL,
+    REQUESTS_RECOVERY BOOLEAN      NULL
 );
 
 CREATE TABLE QRTZ_PAUSED_TRIGGER_GRPS
@@ -3782,7 +3782,7 @@ CREATE TABLE QRTZ_JOB_DETAILS
     IS_NONCONCURRENT  BOOLEAN      NOT NULL,
     IS_UPDATE_DATA    BOOLEAN      NOT NULL,
     REQUESTS_RECOVERY BOOLEAN      NOT NULL,
-    JOB_DATA          IMAGE NULL
+    JOB_DATA          BLOB         NULL
 );
 
 CREATE TABLE QRTZ_SIMPLE_TRIGGERS
@@ -3797,20 +3797,20 @@ CREATE TABLE QRTZ_SIMPLE_TRIGGERS
 
 CREATE TABLE qrtz_simprop_triggers
 (
-    SCHED_NAME    VARCHAR(120) NOT NULL,
-    TRIGGER_NAME  VARCHAR(200) NOT NULL,
-    TRIGGER_GROUP VARCHAR(200) NOT NULL,
-    STR_PROP_1    VARCHAR(512) NULL,
-    STR_PROP_2    VARCHAR(512) NULL,
-    STR_PROP_3    VARCHAR(512) NULL,
-    INT_PROP_1    INTEGER NULL,
-    INT_PROP_2    INTEGER NULL,
-    LONG_PROP_1   BIGINT NULL,
-    LONG_PROP_2   BIGINT NULL,
+    SCHED_NAME    VARCHAR(120)   NOT NULL,
+    TRIGGER_NAME  VARCHAR(200)   NOT NULL,
+    TRIGGER_GROUP VARCHAR(200)   NOT NULL,
+    STR_PROP_1    VARCHAR(512)   NULL,
+    STR_PROP_2    VARCHAR(512)   NULL,
+    STR_PROP_3    VARCHAR(512)   NULL,
+    INT_PROP_1    INTEGER        NULL,
+    INT_PROP_2    INTEGER        NULL,
+    LONG_PROP_1   BIGINT         NULL,
+    LONG_PROP_2   BIGINT         NULL,
     DEC_PROP_1    NUMERIC(13, 4) NULL,
     DEC_PROP_2    NUMERIC(13, 4) NULL,
-    BOOL_PROP_1   BOOLEAN NULL,
-    BOOL_PROP_2   BOOLEAN NULL
+    BOOL_PROP_1   BOOLEAN        NULL,
+    BOOL_PROP_2   BOOLEAN        NULL
 );
 
 CREATE TABLE QRTZ_BLOB_TRIGGERS
@@ -3818,7 +3818,7 @@ CREATE TABLE QRTZ_BLOB_TRIGGERS
     SCHED_NAME    VARCHAR(120) NOT NULL,
     TRIGGER_NAME  VARCHAR(200) NOT NULL,
     TRIGGER_GROUP VARCHAR(200) NOT NULL,
-    BLOB_DATA     IMAGE NULL
+    BLOB_DATA     BLOB         NULL
 );
 
 CREATE TABLE QRTZ_TRIGGERS
@@ -3829,16 +3829,16 @@ CREATE TABLE QRTZ_TRIGGERS
     JOB_NAME       VARCHAR(200) NOT NULL,
     JOB_GROUP      VARCHAR(200) NOT NULL,
     DESCRIPTION    VARCHAR(250) NULL,
-    NEXT_FIRE_TIME BIGINT NULL,
-    PREV_FIRE_TIME BIGINT NULL,
-    PRIORITY       INTEGER NULL,
+    NEXT_FIRE_TIME BIGINT       NULL,
+    PREV_FIRE_TIME BIGINT       NULL,
+    PRIORITY       INTEGER      NULL,
     TRIGGER_STATE  VARCHAR(16)  NOT NULL,
     TRIGGER_TYPE   VARCHAR(8)   NOT NULL,
     START_TIME     BIGINT       NOT NULL,
-    END_TIME       BIGINT NULL,
+    END_TIME       BIGINT       NULL,
     CALENDAR_NAME  VARCHAR(200) NULL,
-    MISFIRE_INSTR  SMALLINT NULL,
-    JOB_DATA       IMAGE NULL
+    MISFIRE_INSTR  SMALLINT     NULL,
+    JOB_DATA       BLOB         NULL
 );
 
 ALTER TABLE QRTZ_CALENDARS
@@ -4057,7 +4057,7 @@ CREATE TABLE `visualization_subject`
     `name`        varchar(255)         DEFAULT NULL COMMENT '主题名称',
     `type`        varchar(255)         DEFAULT NULL COMMENT '主题类型 system 系统主题，self 自定义主题',
     `details`     longtext COMMENT '主题内容',
-    `delete_flag` tinyint(1) DEFAULT '0' COMMENT '删除标记',
+    `delete_flag` tinyint(1)           DEFAULT '0' COMMENT '删除标记',
     `cover_url`   varchar(255)         DEFAULT NULL COMMENT '封面信息',
     `create_num`  int         NOT NULL DEFAULT '0',
     `create_time` bigint               DEFAULT NULL COMMENT '创建时间',
@@ -4078,9 +4078,9 @@ CREATE TABLE `core_dataset_table_sql_log`
 (
     `id`         varchar(50) NOT NULL DEFAULT '' COMMENT 'ID',
     `table_id`   varchar(50) NOT NULL DEFAULT '' COMMENT '数据集SQL节点ID',
-    `start_time` bigint(13) DEFAULT NULL COMMENT '开始时间',
-    `end_time`   bigint(13) DEFAULT NULL COMMENT '结束时间',
-    `spend`      bigint(13) DEFAULT NULL COMMENT '耗时(毫秒)',
+    `start_time` bigint(13)           DEFAULT NULL COMMENT '开始时间',
+    `end_time`   bigint(13)           DEFAULT NULL COMMENT '结束时间',
+    `spend`      bigint(13)           DEFAULT NULL COMMENT '耗时(毫秒)',
     `sql`        longtext    NOT NULL COMMENT '详细信息',
     `status`     varchar(45)          DEFAULT NULL COMMENT '状态',
     PRIMARY KEY (`id`)
@@ -4093,104 +4093,119 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- Table structure for visualization_link_jump
 -- ----------------------------
 DROP TABLE IF EXISTS `visualization_link_jump`;
-CREATE TABLE `visualization_link_jump` (
-                                           `id` bigint NOT NULL,
-                                           `source_dv_id` bigint DEFAULT NULL COMMENT '源仪表板ID',
-                                           `source_view_id` bigint DEFAULT NULL COMMENT '源视图ID',
-                                           `link_jump_info` varchar(4000) DEFAULT NULL COMMENT '跳转信息',
-                                           `checked` tinyint(1) DEFAULT NULL COMMENT '是否启用',
-                                           `copy_from` bigint DEFAULT NULL,
-                                           `copy_id` bigint DEFAULT NULL,
-                                           PRIMARY KEY (`id`)
+CREATE TABLE `visualization_link_jump`
+(
+    `id`             bigint NOT NULL,
+    `source_dv_id`   bigint        DEFAULT NULL COMMENT '源仪表板ID',
+    `source_view_id` bigint        DEFAULT NULL COMMENT '源视图ID',
+    `link_jump_info` varchar(4000) DEFAULT NULL COMMENT '跳转信息',
+    `checked`        tinyint(1)    DEFAULT NULL COMMENT '是否启用',
+    `copy_from`      bigint        DEFAULT NULL,
+    `copy_id`        bigint        DEFAULT NULL,
+    PRIMARY KEY (`id`)
 );
 
 -- ----------------------------
 -- Table structure for visualization_link_jump_info
 -- ----------------------------
 DROP TABLE IF EXISTS `visualization_link_jump_info`;
-CREATE TABLE `visualization_link_jump_info` (
-                                                `id` bigint NOT NULL,
-                                                `link_jump_id` bigint DEFAULT NULL COMMENT 'link jump ID',
-                                                `link_type` varchar(255) DEFAULT NULL COMMENT '关联类型 inner 内部仪表板，outer 外部链接',
-                                                `jump_type` varchar(255) DEFAULT NULL COMMENT '跳转类型 _blank 新开页面 _self 当前窗口',
-                                                `target_dv_id` bigint DEFAULT NULL COMMENT '关联仪表板ID',
-                                                `source_field_id` bigint DEFAULT NULL COMMENT '字段ID',
-                                                `content` varchar(4000) DEFAULT NULL COMMENT '内容 linkType = outer时使用',
-                                                `checked` tinyint(1) DEFAULT NULL COMMENT '是否可用',
-                                                `attach_params` tinyint(1) DEFAULT NULL COMMENT '是否附加点击参数',
-                                                `copy_from` bigint DEFAULT NULL,
-                                                `copy_id` bigint DEFAULT NULL,
-                                                PRIMARY KEY (`id`)
+CREATE TABLE `visualization_link_jump_info`
+(
+    `id`              bigint NOT NULL,
+    `link_jump_id`    bigint        DEFAULT NULL COMMENT 'link jump ID',
+    `link_type`       varchar(255)  DEFAULT NULL COMMENT '关联类型 inner 内部仪表板，outer 外部链接',
+    `jump_type`       varchar(255)  DEFAULT NULL COMMENT '跳转类型 _blank 新开页面 _self 当前窗口',
+    `target_dv_id`    bigint        DEFAULT NULL COMMENT '关联仪表板ID',
+    `source_field_id` bigint        DEFAULT NULL COMMENT '字段ID',
+    `content`         varchar(4000) DEFAULT NULL COMMENT '内容 linkType = outer时使用',
+    `checked`         tinyint(1)    DEFAULT NULL COMMENT '是否可用',
+    `attach_params`   tinyint(1)    DEFAULT NULL COMMENT '是否附加点击参数',
+    `copy_from`       bigint        DEFAULT NULL,
+    `copy_id`         bigint        DEFAULT NULL,
+    PRIMARY KEY (`id`)
 );
 
 -- ----------------------------
 -- Table structure for visualization_link_jump_target_view_info
 -- ----------------------------
+
 DROP TABLE IF EXISTS `visualization_link_jump_target_view_info`;
-CREATE TABLE `visualization_link_jump_target_view_info` (
-                                                            `target_id` bigint NOT NULL,
-                                                            `link_jump_info_id` bigint DEFAULT NULL,
-                                                            `source_field_active_id` bigint DEFAULT NULL COMMENT '勾选字段设置的匹配字段，也可以不是勾选字段本身',
-                                                            `target_view_id` bigint DEFAULT NULL,
-                                                            `target_field_id` bigint DEFAULT NULL,
-                                                            `copy_from` bigint DEFAULT NULL,
-                                                            `copy_id` bigint DEFAULT NULL,
-                                                            PRIMARY KEY (`target_id`) USING BTREE
+CREATE TABLE `visualization_link_jump_target_view_info`
+(
+    `target_id`              bigint NOT NULL,
+    `link_jump_info_id`      bigint DEFAULT NULL,
+    `source_field_active_id` bigint DEFAULT NULL,
+    `target_view_id`         bigint DEFAULT NULL,
+    `target_field_id`        bigint DEFAULT NULL,
+    `copy_from`              bigint DEFAULT NULL,
+    `copy_id`                bigint DEFAULT NULL,
+    PRIMARY KEY (`target_id`)
+--     PRIMARY KEY (`target_id`) USING BTREE
 );
 
 -- ----------------------------
 -- Table structure for visualization_linkage
 -- ----------------------------
 DROP TABLE IF EXISTS `visualization_linkage`;
-CREATE TABLE `visualization_linkage` (
-                                         `id` bigint NOT NULL,
-                                         `dv_id` bigint DEFAULT NULL,
-                                         `source_view_id` bigint DEFAULT NULL COMMENT '源视图id',
-                                         `target_view_id` bigint DEFAULT NULL COMMENT '联动视图id',
-                                         `update_time` bigint DEFAULT NULL COMMENT '更新时间',
-                                         `update_people` varchar(255) DEFAULT NULL COMMENT '更新人',
-                                         `linkage_active` tinyint(1) DEFAULT '0' COMMENT '是否启用关联',
-                                         `ext1` varchar(2000) DEFAULT NULL,
-                                         `ext2` varchar(2000) DEFAULT NULL,
-                                         `copy_from` bigint DEFAULT NULL,
-                                         `copy_id` bigint DEFAULT NULL,
-                                         PRIMARY KEY (`id`)
+CREATE TABLE `visualization_linkage`
+(
+    `id`             bigint NOT NULL,
+    `dv_id`          bigint        DEFAULT NULL,
+    `source_view_id` bigint        DEFAULT NULL COMMENT '源视图id',
+    `target_view_id` bigint        DEFAULT NULL COMMENT '联动视图id',
+    `update_time`    bigint        DEFAULT NULL COMMENT '更新时间',
+    `update_people`  varchar(255)  DEFAULT NULL COMMENT '更新人',
+    `linkage_active` tinyint(1)    DEFAULT '0' COMMENT '是否启用关联',
+    `ext1`           varchar(2000) DEFAULT NULL,
+    `ext2`           varchar(2000) DEFAULT NULL,
+    `copy_from`      bigint        DEFAULT NULL,
+    `copy_id`        bigint        DEFAULT NULL,
+    PRIMARY KEY (`id`)
 );
 
 -- ----------------------------
 -- Table structure for visualization_linkage_field
 -- ----------------------------
 DROP TABLE IF EXISTS `visualization_linkage_field`;
-CREATE TABLE `visualization_linkage_field` (
-                                               `id` bigint NOT NULL,
-                                               `linkage_id` bigint DEFAULT NULL COMMENT '联动ID',
-                                               `source_field` bigint DEFAULT NULL COMMENT '源视图字段',
-                                               `target_field` bigint DEFAULT NULL COMMENT '目标视图字段',
-                                               `update_time` bigint DEFAULT NULL COMMENT '更新时间',
-                                               `copy_from` bigint DEFAULT NULL,
-                                               `copy_id` bigint DEFAULT NULL,
-                                               PRIMARY KEY (`id`)
+CREATE TABLE `visualization_linkage_field`
+(
+    `id`           bigint NOT NULL,
+    `linkage_id`   bigint DEFAULT NULL COMMENT '联动ID',
+    `source_field` bigint DEFAULT NULL COMMENT '源视图字段',
+    `target_field` bigint DEFAULT NULL COMMENT '目标视图字段',
+    `update_time`  bigint DEFAULT NULL COMMENT '更新时间',
+    `copy_from`    bigint DEFAULT NULL,
+    `copy_id`      bigint DEFAULT NULL,
+    PRIMARY KEY (`id`)
 );
 
 SET FOREIGN_KEY_CHECKS = 1;
 
 
 
-
-INSERT INTO `visualization_subject` (`id`, `name`, `type`, `details`, `delete_flag`, `cover_url`, `create_num`, `create_time`, `create_by`, `update_time`, `update_by`, `delete_time`, `delete_by`) VALUES ('10001', '浅色主题', 'system', '{\"width\":1920,\"height\":1080,\"refreshViewEnable\":false,\"refreshViewLoading\":true,\"refreshUnit\":\"minute\",\"refreshTime\":5,\"scale\":60,\"scaleWidth\":100,\"scaleHeight\":100,\"backgroundType\":\"backgroundColor\",\"background\":\"\",\"openCommonStyle\":true,\"opacity\":1,\"fontSize\":14,\"themeId\":\"10001\",\"color\":\"#000000\",\"backgroundColor\":\"#F5F6F7FF\",\"dashboard\":{\"themeColor\":\"light\",\"gap\":\"yes\",\"gapSize\":5,\"resultMode\":\"all\",\"resultCount\":1000,\"mobileSetting\":{\"customSetting\":false,\"imageUrl\":null,\"backgroundType\":\"image\",\"color\":\"#000\"}},\"component\":{\"chartTitle\":{\"show\":true,\"fontSize\":\"18\",\"hPosition\":\"left\",\"vPosition\":\"top\",\"isItalic\":false,\"isBolder\":true,\"remarkShow\":false,\"remark\":\"\",\"fontFamily\":\"Microsoft YaHei\",\"letterSpace\":\"0\",\"fontShadow\":false,\"color\":\"#000000\",\"remarkBackgroundColor\":\"#ffffff\"},\"chartColor\":{\"basicStyle\":{\"colorScheme\":\"default\",\"colors\":[\"#1E90FF\",\"#90EE90\",\"#00CED1\",\"#E2BD84\",\"#7A90E0\",\"#3BA272\",\"#2BE7FF\",\"#0A8ADA\",\"#FFD700\"],\"alpha\":100,\"gradient\":false,\"mapStyle\":\"normal\",\"areaBaseColor\":\"#FFFFFF\",\"areaBorderColor\":\"#303133\",\"gaugeStyle\":\"default\",\"tableBorderColor\":\"#E6E7E4\",\"tableScrollBarColor\":\"#00000024\"},\"misc\":{\"mapLineGradient\":false,\"mapLineSourceColor\":\"#146C94\",\"mapLineTargetColor\":\"#576CBC\",\"nameFontColor\":\"#000000\",\"valueFontColor\":\"#5470c6\"},\"tableHeader\":{\"tableHeaderBgColor\":\"#6D9A49\",\"tableHeaderFontColor\":\"#000000\"},\"tableCell\":{\"tableItemBgColor\":\"#FFFFFF\",\"tableFontColor\":\"#000000\"}},\"chartCommonStyle\":{\"backgroundColorSelect\":true,\"backgroundImageEnable\":false,\"backgroundType\":\"innerImage\",\"innerImage\":\"board/board_1.svg\",\"outerImage\":null,\"innerPadding\":0,\"borderRadius\":0,\"backgroundColor\":\"rgba(255,255,255,1)\",\"innerImageColor\":\"#1094E5\"},\"filterStyle\":{\"layout\":\"horizontal\",\"titleLayout\":\"left\",\"color\":\"#1F2329\",\"borderColor\":\"#bbbfc4\",\"text\":\"#1f2329\",\"bgColor\":\"#ffffff\"},\"tabStyle\":{\"headPosition\":\"left\",\"headFontColor\":\"#OOOOOO\",\"headFontActiveColor\":\"#OOOOOO\",\"headBorderColor\":\"#OOOOOO\",\"headBorderActiveColor\":\"#OOOOOO\"}},\"backgroundColorSelect\":true}', 0, '/static-resource/subject_light.png', 0, 1696427707737, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO `visualization_subject` (`id`, `name`, `type`, `details`, `delete_flag`, `cover_url`, `create_num`, `create_time`, `create_by`, `update_time`, `update_by`, `delete_time`, `delete_by`) VALUES ('10002', '深色主题', 'system', '{\"width\":1920,\"height\":1080,\"refreshViewEnable\":false,\"refreshViewLoading\":true,\"refreshUnit\":\"minute\",\"refreshTime\":5,\"scale\":60,\"scaleWidth\":100,\"scaleHeight\":100,\"backgroundType\":\"backgroundColor\",\"background\":\"\",\"openCommonStyle\":true,\"opacity\":1,\"fontSize\":14,\"themeId\":\"10002\",\"color\":\"#000000\",\"backgroundColor\":\"#030B2EFF\",\"dashboard\":{\"themeColor\":\"dark\",\"gap\":\"yes\",\"gapSize\":5,\"resultMode\":\"all\",\"resultCount\":1000,\"mobileSetting\":{\"customSetting\":false,\"imageUrl\":null,\"backgroundType\":\"image\",\"color\":\"#000\"}},\"component\":{\"chartTitle\":{\"show\":true,\"fontSize\":\"18\",\"hPosition\":\"left\",\"vPosition\":\"top\",\"isItalic\":false,\"isBolder\":true,\"remarkShow\":false,\"remark\":\"\",\"fontFamily\":\"Microsoft YaHei\",\"letterSpace\":\"0\",\"fontShadow\":false,\"color\":\"#FFFFFF\",\"remarkBackgroundColor\":\"#5A5C62\"},\"chartColor\":{\"basicStyle\":{\"colorScheme\":\"default\",\"colors\":[\"#1E90FF\",\"#90EE90\",\"#00CED1\",\"#E2BD84\",\"#7A90E0\",\"#3BA272\",\"#2BE7FF\",\"#0A8ADA\",\"#FFD700\"],\"alpha\":100,\"gradient\":false,\"mapStyle\":\"darkblue\",\"areaBaseColor\":\"5470C6\",\"areaBorderColor\":\"#EBEEF5\",\"gaugeStyle\":\"default\",\"tableBorderColor\":\"#CCCCCC\",\"tableScrollBarColor\":\"#FFFFFF80\"},\"misc\":{\"mapLineGradient\":false,\"mapLineSourceColor\":\"#2F58CD\",\"mapLineTargetColor\":\"#3795BD\",\"nameFontColor\":\"#ffffff\",\"valueFontColor\":\"#5470c6\"},\"tableHeader\":{\"tableHeaderBgColor\":\"#5470C6\",\"tableHeaderFontColor\":\"#000000\"},\"tableCell\":{\"tableItemBgColor\":\"#131E42\",\"tableFontColor\":\"#FFFFFF\"}},\"chartCommonStyle\":{\"backgroundColorSelect\":true,\"backgroundImageEnable\":false,\"backgroundType\":\"innerImage\",\"innerImage\":\"board/board_1.svg\",\"outerImage\":null,\"innerPadding\":0,\"borderRadius\":0,\"backgroundColor\":\"rgba(19,28,66,1)\",\"innerImageColor\":\"#1094E5\"},\"filterStyle\":{\"layout\":\"horizontal\",\"titleLayout\":\"left\",\"color\":\"#FFFFFF\",\"borderColor\":\"#BBBFC4\",\"text\":\"#1F2329\",\"bgColor\":\"#FFFFFF\"},\"tabStyle\":{\"headPosition\":\"left\",\"headFontColor\":\"#FFFFFF\",\"headFontActiveColor\":\"#FFFFFF\",\"headBorderColor\":\"#131E42\",\"headBorderActiveColor\":\"#131E42\"}},\"backgroundColorSelect\":true}', 0, '/static-resource/subject_dark.png', 0, 1696427762072, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `visualization_subject` (`id`, `name`, `type`, `details`, `delete_flag`, `cover_url`, `create_num`,
+                                     `create_time`, `create_by`, `update_time`, `update_by`, `delete_time`, `delete_by`)
+VALUES ('10001', '浅色主题', 'system',
+        '{\"width\":1920,\"height\":1080,\"refreshViewEnable\":false,\"refreshViewLoading\":true,\"refreshUnit\":\"minute\",\"refreshTime\":5,\"scale\":60,\"scaleWidth\":100,\"scaleHeight\":100,\"backgroundType\":\"backgroundColor\",\"background\":\"\",\"openCommonStyle\":true,\"opacity\":1,\"fontSize\":14,\"themeId\":\"10001\",\"color\":\"#000000\",\"backgroundColor\":\"#F5F6F7FF\",\"dashboard\":{\"themeColor\":\"light\",\"gap\":\"yes\",\"gapSize\":5,\"resultMode\":\"all\",\"resultCount\":1000,\"mobileSetting\":{\"customSetting\":false,\"imageUrl\":null,\"backgroundType\":\"image\",\"color\":\"#000\"}},\"component\":{\"chartTitle\":{\"show\":true,\"fontSize\":\"18\",\"hPosition\":\"left\",\"vPosition\":\"top\",\"isItalic\":false,\"isBolder\":true,\"remarkShow\":false,\"remark\":\"\",\"fontFamily\":\"Microsoft YaHei\",\"letterSpace\":\"0\",\"fontShadow\":false,\"color\":\"#000000\",\"remarkBackgroundColor\":\"#ffffff\"},\"chartColor\":{\"basicStyle\":{\"colorScheme\":\"default\",\"colors\":[\"#1E90FF\",\"#90EE90\",\"#00CED1\",\"#E2BD84\",\"#7A90E0\",\"#3BA272\",\"#2BE7FF\",\"#0A8ADA\",\"#FFD700\"],\"alpha\":100,\"gradient\":false,\"mapStyle\":\"normal\",\"areaBaseColor\":\"#FFFFFF\",\"areaBorderColor\":\"#303133\",\"gaugeStyle\":\"default\",\"tableBorderColor\":\"#E6E7E4\",\"tableScrollBarColor\":\"#00000024\"},\"misc\":{\"mapLineGradient\":false,\"mapLineSourceColor\":\"#146C94\",\"mapLineTargetColor\":\"#576CBC\",\"nameFontColor\":\"#000000\",\"valueFontColor\":\"#5470c6\"},\"tableHeader\":{\"tableHeaderBgColor\":\"#6D9A49\",\"tableHeaderFontColor\":\"#000000\"},\"tableCell\":{\"tableItemBgColor\":\"#FFFFFF\",\"tableFontColor\":\"#000000\"}},\"chartCommonStyle\":{\"backgroundColorSelect\":true,\"backgroundImageEnable\":false,\"backgroundType\":\"innerImage\",\"innerImage\":\"board/board_1.svg\",\"outerImage\":null,\"innerPadding\":0,\"borderRadius\":0,\"backgroundColor\":\"rgba(255,255,255,1)\",\"innerImageColor\":\"#1094E5\"},\"filterStyle\":{\"layout\":\"horizontal\",\"titleLayout\":\"left\",\"color\":\"#1F2329\",\"borderColor\":\"#bbbfc4\",\"text\":\"#1f2329\",\"bgColor\":\"#ffffff\"},\"tabStyle\":{\"headPosition\":\"left\",\"headFontColor\":\"#OOOOOO\",\"headFontActiveColor\":\"#OOOOOO\",\"headBorderColor\":\"#OOOOOO\",\"headBorderActiveColor\":\"#OOOOOO\"}},\"backgroundColorSelect\":true}',
+        0, '/static-resource/subject_light.png', 0, 1696427707737, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `visualization_subject` (`id`, `name`, `type`, `details`, `delete_flag`, `cover_url`, `create_num`,
+                                     `create_time`, `create_by`, `update_time`, `update_by`, `delete_time`, `delete_by`)
+VALUES ('10002', '深色主题', 'system',
+        '{\"width\":1920,\"height\":1080,\"refreshViewEnable\":false,\"refreshViewLoading\":true,\"refreshUnit\":\"minute\",\"refreshTime\":5,\"scale\":60,\"scaleWidth\":100,\"scaleHeight\":100,\"backgroundType\":\"backgroundColor\",\"background\":\"\",\"openCommonStyle\":true,\"opacity\":1,\"fontSize\":14,\"themeId\":\"10002\",\"color\":\"#000000\",\"backgroundColor\":\"#030B2EFF\",\"dashboard\":{\"themeColor\":\"dark\",\"gap\":\"yes\",\"gapSize\":5,\"resultMode\":\"all\",\"resultCount\":1000,\"mobileSetting\":{\"customSetting\":false,\"imageUrl\":null,\"backgroundType\":\"image\",\"color\":\"#000\"}},\"component\":{\"chartTitle\":{\"show\":true,\"fontSize\":\"18\",\"hPosition\":\"left\",\"vPosition\":\"top\",\"isItalic\":false,\"isBolder\":true,\"remarkShow\":false,\"remark\":\"\",\"fontFamily\":\"Microsoft YaHei\",\"letterSpace\":\"0\",\"fontShadow\":false,\"color\":\"#FFFFFF\",\"remarkBackgroundColor\":\"#5A5C62\"},\"chartColor\":{\"basicStyle\":{\"colorScheme\":\"default\",\"colors\":[\"#1E90FF\",\"#90EE90\",\"#00CED1\",\"#E2BD84\",\"#7A90E0\",\"#3BA272\",\"#2BE7FF\",\"#0A8ADA\",\"#FFD700\"],\"alpha\":100,\"gradient\":false,\"mapStyle\":\"darkblue\",\"areaBaseColor\":\"5470C6\",\"areaBorderColor\":\"#EBEEF5\",\"gaugeStyle\":\"default\",\"tableBorderColor\":\"#CCCCCC\",\"tableScrollBarColor\":\"#FFFFFF80\"},\"misc\":{\"mapLineGradient\":false,\"mapLineSourceColor\":\"#2F58CD\",\"mapLineTargetColor\":\"#3795BD\",\"nameFontColor\":\"#ffffff\",\"valueFontColor\":\"#5470c6\"},\"tableHeader\":{\"tableHeaderBgColor\":\"#5470C6\",\"tableHeaderFontColor\":\"#000000\"},\"tableCell\":{\"tableItemBgColor\":\"#131E42\",\"tableFontColor\":\"#FFFFFF\"}},\"chartCommonStyle\":{\"backgroundColorSelect\":true,\"backgroundImageEnable\":false,\"backgroundType\":\"innerImage\",\"innerImage\":\"board/board_1.svg\",\"outerImage\":null,\"innerPadding\":0,\"borderRadius\":0,\"backgroundColor\":\"rgba(19,28,66,1)\",\"innerImageColor\":\"#1094E5\"},\"filterStyle\":{\"layout\":\"horizontal\",\"titleLayout\":\"left\",\"color\":\"#FFFFFF\",\"borderColor\":\"#BBBFC4\",\"text\":\"#1F2329\",\"bgColor\":\"#FFFFFF\"},\"tabStyle\":{\"headPosition\":\"left\",\"headFontColor\":\"#FFFFFF\",\"headFontActiveColor\":\"#FFFFFF\",\"headBorderColor\":\"#131E42\",\"headBorderActiveColor\":\"#131E42\"}},\"backgroundColorSelect\":true}',
+        0, '/static-resource/subject_dark.png', 0, 1696427762072, NULL, NULL, NULL, NULL, NULL);
 
 ALTER TABLE `core_datasource`
     ADD COLUMN `update_by` bigint NULL COMMENT '变更人' AFTER `update_time`;
 
 
 DROP TABLE IF EXISTS `core_opt_recent`;
-CREATE TABLE `core_opt_recent` (
-                                   `id` bigint NOT NULL COMMENT 'ID',
-                                   `resource_id` bigint NOT NULL COMMENT '资源ID',
-                                   `uid` bigint NOT NULL COMMENT '用户ID',
-                                   `resource_type` int NOT NULL COMMENT '资源类型',
-                                   `opt_type` int DEFAULT NULL COMMENT '1 新建 2 修改',
-                                   `time` bigint NOT NULL COMMENT '收藏时间',
-                                   PRIMARY KEY (`id`)
+CREATE TABLE `core_opt_recent`
+(
+    `id`            bigint NOT NULL COMMENT 'ID',
+    `resource_id`   bigint NOT NULL COMMENT '资源ID',
+    `uid`           bigint NOT NULL COMMENT '用户ID',
+    `resource_type` int    NOT NULL COMMENT '资源类型',
+    `opt_type`      int DEFAULT NULL COMMENT '1 新建 2 修改',
+    `time`          bigint NOT NULL COMMENT '收藏时间',
+    PRIMARY KEY (`id`)
 );
