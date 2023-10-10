@@ -11,6 +11,7 @@ import { Datum } from '@antv/g2plot/esm/types/common'
 import { Tooltip } from '@antv/g2plot/esm'
 import { add } from 'mathjs'
 import isEmpty from 'lodash-es/isEmpty'
+import _ from 'lodash'
 
 export function getPadding(chart: Chart): number[] {
   if (chart.drill) {
@@ -512,8 +513,11 @@ export function getAnalyse(chart: Chart) {
     const dynamicLineFields = senior.assistLine
       .filter(ele => ele.field === '1')
       .map(item => item.fieldId)
-    const dynamicLines = chart.data.dynamicAssistLines?.filter(item =>
-      dynamicLineFields?.includes(item.fieldId)
+    const quotaFields = _.filter(chart.yAxis, ele => ele.summary !== '' && ele.id !== '-1')
+    const dynamicLines = chart.data.dynamicAssistLines?.filter(
+      item =>
+        dynamicLineFields?.includes(item.fieldId) &&
+        !!_.find(quotaFields, d => d.id === item.fieldId)
     )
     const lines = fixedLines.concat(dynamicLines)
 
@@ -564,8 +568,11 @@ export function getAnalyseHorizontal(chart: Chart) {
     const dynamicLineFields = senior.assistLine
       .filter(ele => ele.field === '1')
       .map(item => item.fieldId)
-    const dynamicLines = chart.data.dynamicAssistLines?.filter(item =>
-      dynamicLineFields?.includes(item.fieldId)
+    const quotaFields = _.filter(chart.yAxis, ele => ele.summary !== '' && ele.id !== '-1')
+    const dynamicLines = chart.data.dynamicAssistLines?.filter(
+      item =>
+        dynamicLineFields?.includes(item.fieldId) &&
+        !!_.find(quotaFields, d => d.id === item.fieldId)
     )
     const lines = fixedLines.concat(dynamicLines)
 

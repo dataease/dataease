@@ -1,8 +1,9 @@
 <script lang="tsx" setup>
-import { reactive, watch } from 'vue'
+import { onMounted, reactive, watch, computed } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ElMessage } from 'element-plus-secondary'
 import AssistLineEdit from '@/views/chart/components/editor/editor-senior/components/dialog/AssistLineEdit.vue'
+import _ from 'lodash'
 
 const { t } = useI18n()
 
@@ -24,6 +25,10 @@ const props = defineProps({
   propertyInner: {
     type: Array<string>
   }
+})
+
+const quotaFields = computed<Array<any>>(() => {
+  return props.quotaData.filter(ele => ele.summary !== '' && ele.id !== '-1')
 })
 
 const state = reactive({
@@ -63,6 +68,7 @@ const closeEditLine = () => {
 }
 
 const changeLine = () => {
+  console.log(state.lineArr)
   // check line config
   for (let i = 0; i < state.lineArr.length; i++) {
     const ele = state.lineArr[i]
@@ -95,6 +101,10 @@ const changeLine = () => {
   closeEditLine()
 }
 
+function existField(line) {
+  return !!_.find(quotaFields.value, d => d.id === line.id)
+}
+
 const init = () => {
   const chart = JSON.parse(JSON.stringify(props.chart))
   if (chart.senior) {
@@ -118,7 +128,9 @@ const init = () => {
   }
 }
 
-init()
+onMounted(() => {
+  init()
+})
 </script>
 
 <template>
@@ -144,7 +156,7 @@ init()
           <el-col :span="8">
             <span :title="item.name">{{ item.name }}</span>
           </el-col>
-          <el-col :span="8">
+          <el-col :span="6">
             <span v-if="item.field === '0'" :title="t('chart.field_fixed')">{{
               t('chart.field_fixed')
             }}</span>
@@ -152,13 +164,18 @@ init()
               t('chart.field_dynamic')
             }}</span>
           </el-col>
-          <el-col v-if="item.field === '0'" :span="8">
+          <el-col v-if="item.field === '0'" :span="10">
             <span :title="item.value">{{ item.value }}</span>
           </el-col>
-          <el-col v-if="item.field === '1'" :span="8">
-            <span :title="item.curField.name + '(' + t('chart.' + item.summary) + ')'">{{
-              item.curField.name + '(' + t('chart.' + item.summary) + ')'
-            }}</span>
+          <el-col v-else-if="item.field === '1'" :span="10">
+            <template v-if="existField(item.curField)">
+              <span :title="item.curField.name + '(' + t('chart.' + item.summary) + ')'">
+                {{ item.curField.name + '(' + t('chart.' + item.summary) + ')' }}
+              </span>
+            </template>
+            <template v-else>
+              <span style="color: red">无效字段</span>
+            </template>
           </el-col>
         </el-row>
       </el-col>
@@ -175,7 +192,7 @@ init()
     >
       <assist-line-edit
         :line="state.assistLine"
-        :quota-fields="props.quotaData"
+        :quota-fields="quotaFields"
         @onAssistLineChange="lineChange"
       />
       <template #footer>
@@ -225,6 +242,7 @@ span {
 }
 
 .line-style {
+  width: 100%;
 }
 .line-style :deep(span) {
   display: inline-block;
