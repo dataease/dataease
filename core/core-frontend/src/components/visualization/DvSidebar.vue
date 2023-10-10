@@ -151,9 +151,11 @@ const widthShow = computed(() => `${canvasCollapse.value[sideName.value] ? 36 : 
 
 .collapse-icon-light {
   color: #646a73;
+  cursor: pointer;
 }
 
 .collapse-icon-dark {
   color: @canvas-main-font-color;
+  cursor: pointer;
 }
 </style>

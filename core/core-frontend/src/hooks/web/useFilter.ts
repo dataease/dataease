@@ -89,7 +89,6 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
           ) {
             let selectValue = ''
             const {
-              operator = 'eq',
               selectValue: value,
               defaultValueCheck,
               defaultValue,
@@ -111,11 +110,16 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
               !!selectValue?.length ||
               Object.prototype.toString.call(selectValue) === '[object Date]'
             ) {
+              const values = forMatterValue(+displayType, selectValue, timeGranularity)
               filter.push({
                 componentId: ele.id,
                 fieldId: item.checkedFieldsMap[curComponentId],
-                operator: [1, 7].includes(+displayType) ? 'between' : operator,
-                value: forMatterValue(+displayType, selectValue, timeGranularity),
+                operator: [1, 7].includes(+displayType)
+                  ? 'between'
+                  : Array.isArray(values)
+                  ? 'in'
+                  : 'eq',
+                value: values,
                 parameters: parametersCheck ? parameters : [],
                 isTree
               })

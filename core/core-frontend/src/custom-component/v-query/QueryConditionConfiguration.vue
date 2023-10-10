@@ -437,6 +437,7 @@ const handleCondition = item => {
 
   nextTick(() => {
     curComponent.value.showError = showError.value
+    curComponent.value.auto && (document.querySelector('.chart-field').scrollTop = 0)
   })
 }
 
@@ -696,7 +697,7 @@ defineExpose({
         </div>
       </div>
       <div class="condition-configuration">
-        <div class="mask" v-if="curComponent.auto"></div>
+        <div class="mask condition" v-if="curComponent.auto"></div>
         <div class="title">查询条件配置</div>
         <div v-show="showConfiguration && !showTypeError" class="configuration-list">
           <div class="list-item">
@@ -1013,6 +1014,11 @@ defineExpose({
       z-index: 5;
       background: rgba(255, 255, 255, 0.6);
       height: calc(100% - 30px);
+
+      &.condition {
+        height: calc(100% - 45px);
+        top: 45px;
+      }
     }
 
     .chart-field {

@@ -74,11 +74,11 @@
           <el-col :span="12">
             <el-form-item class="form-item" label="标题颜色">
               <el-color-picker
-                v-model="filterStyle.color"
+                v-model="filterStyle.titleColor"
                 :trigger-width="197"
                 is-custom
                 :predefine="state.predefineColors"
-                @change="themeChange('color')"
+                @change="themeChange('titleColor')"
               />
             </el-form-item>
           </el-col>

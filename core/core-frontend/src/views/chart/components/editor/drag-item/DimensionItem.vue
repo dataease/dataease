@@ -226,7 +226,6 @@ onMounted(() => {
         >
           <el-dropdown-item @click.prevent>
             <el-dropdown
-              trigger="click"
               :effect="themes"
               placement="right-start"
               style="width: 100%; height: 100%"
