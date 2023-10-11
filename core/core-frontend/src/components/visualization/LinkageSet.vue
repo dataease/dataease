@@ -141,21 +141,24 @@
                                 style="width: 14px; height: 14px"
                                 :name="`field_${fieldType[item.deType]}`"
                                 :className="`field-icon-${fieldType[item.deType]}`"
-                              ></Icon>
+                              />
                             </span>
                             <span style="float: left; font-size: 12px">{{ item.name }}</span>
                           </el-option>
                         </el-select>
                       </div>
                     </el-col>
-                    <el-col :span="1">
-                      <el-icon
-                        style="margin-top: 10px; cursor: pointer"
-                        @click="deleteLinkageField(index)"
-                      >
+
+                    <el-button
+                      class="m-icon-btn"
+                      text
+                      @click="deleteLinkageField(index)"
+                      style="margin-top: 2px"
+                    >
+                      <el-icon size="20px" style="color: #646a73">
                         <Delete />
                       </el-icon>
-                    </el-col>
+                    </el-button>
                   </el-row>
                 </el-row>
                 <el-row style="width: 100%; padding-left: 16px">
@@ -187,7 +190,7 @@ import { queryVisualizationJumpInfo } from '@/api/visualization/linkJump'
 import { reactive, ref, nextTick, watch } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
-import { ElMessage } from 'element-plus-secondary'
+import { ElButton, ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { fieldType } from '@/utils/attr'
 import {
@@ -620,7 +623,7 @@ span {
 }
 .view-type-icon {
   color: #3370ff;
-  width: 16px;
+  width: 22px;
   height: 16px;
 }
 .content-head {
@@ -702,5 +705,16 @@ span {
 .custom-tree {
   height: 100%;
   overflow-y: auto;
+}
+.m-icon-btn {
+  &:hover {
+    background: rgba(31, 35, 41, 0.1) !important;
+  }
+  &:focus {
+    background: rgba(31, 35, 41, 0.1) !important;
+  }
+  &:active {
+    background: rgba(31, 35, 41, 0.2) !important;
+  }
 }
 </style>
