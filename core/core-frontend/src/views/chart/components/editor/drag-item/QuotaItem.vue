@@ -345,7 +345,7 @@ onMounted(() => {
         <el-dropdown-menu
           :effect="themes"
           class="drop-style"
-          :class="themes === 'dark' ? 'dark' : ''"
+          :class="themes === 'dark' ? 'dark-dimension-quota' : ''"
         >
           <el-dropdown-item
             @click.prevent
@@ -374,7 +374,7 @@ onMounted(() => {
                 <el-dropdown-menu
                   :effect="themes"
                   class="drop-style sub"
-                  :class="themes === 'dark' ? 'dark' : ''"
+                  :class="themes === 'dark' ? 'dark-dimension-quota' : ''"
                 >
                   <el-dropdown-item
                     class="menu-item-padding"
@@ -558,7 +558,7 @@ onMounted(() => {
                 <el-dropdown-menu
                   :effect="themes"
                   class="drop-style sub"
-                  :class="themes === 'dark' ? 'dark' : ''"
+                  :class="themes === 'dark' ? 'dark-dimension-quota' : ''"
                 >
                   <el-dropdown-item class="menu-item-padding" :command="beforeQuickCalc('none')">
                     <span
@@ -641,7 +641,7 @@ onMounted(() => {
                 <el-dropdown-menu
                   :effect="themes"
                   class="drop-style sub"
-                  :class="themes === 'dark' ? 'dark' : ''"
+                  :class="themes === 'dark' ? 'dark-dimension-quota' : ''"
                 >
                   <el-dropdown-item class="menu-item-padding" :command="beforeSort('none')">
                     <span
@@ -875,7 +875,7 @@ span {
     color: inherit;
     background-color: rgba(31, 35, 41, 0.1);
   }
-  &.dark {
+  &.dark-dimension-quota {
     .inner-dropdown-menu {
       color: rgba(235, 235, 235, 1);
     }
@@ -952,7 +952,7 @@ span {
     }
   }
 }
-.dark {
+.dark-dimension-quota {
   span {
     color: #ebebeb;
   }
