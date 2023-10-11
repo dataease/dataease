@@ -284,7 +284,7 @@ init()
                     <Icon
                       :className="`field-icon-${fieldType[fieldOption.deType]}`"
                       :name="`field_${fieldType[fieldOption.deType]}`"
-                    ></Icon>
+                    />
                   </el-icon>
                 </span>
                 <span :style="{ float: 'left', color: '#8492a6', fontSize: '12px' }">{{
@@ -295,14 +295,14 @@ init()
           </el-form-item>
 
           <el-button
-            class="circle-button"
-            link
+            class="circle-button m-icon-btn"
+            text
             :style="{ float: 'right' }"
             @click="removeThreshold(fieldIndex)"
           >
-            <template #icon>
-              <Icon name="icon_delete-trash_outlined"></Icon>
-            </template>
+            <el-icon size="20px" style="color: #646a73">
+              <Icon name="icon_delete-trash_outlined" />
+            </el-icon>
           </el-button>
         </el-row>
 
@@ -380,8 +380,10 @@ init()
               />
             </el-col>
 
-            <el-col :span="3" style="display: flex; align-items: center; justify-content: center">
-              <span class="color-title">{{ t('chart.textColor') }}</span>
+            <div
+              style="display: flex; align-items: center; justify-content: center; margin-left: 8px"
+            >
+              <div class="color-title">{{ t('chart.textColor') }}</div>
               <el-color-picker
                 is-custom
                 size="large"
@@ -391,9 +393,11 @@ init()
                 :predefine="predefineColors"
                 @change="changeThreshold"
               />
-            </el-col>
-            <el-col :span="3" style="display: flex; align-items: center; justify-content: center">
-              <span class="color-title">{{ t('chart.backgroundColor') }}</span>
+            </div>
+            <div
+              style="display: flex; align-items: center; justify-content: center; margin-left: 8px"
+            >
+              <div class="color-title">{{ t('chart.backgroundColor') }}</div>
               <el-color-picker
                 is-custom
                 size="large"
@@ -403,14 +407,20 @@ init()
                 :predefine="predefineColors"
                 @change="changeThreshold"
               />
-            </el-col>
-            <el-col :span="2">
-              <el-button class="circle-button" link @click="removeCondition(fieldItem, index)">
-                <template #icon>
-                  <Icon name="icon_delete-trash_outlined"></Icon>
-                </template>
+            </div>
+            <div
+              style="display: flex; align-items: center; justify-content: center; margin-left: 8px"
+            >
+              <el-button
+                class="circle-button m-icon-btn"
+                text
+                @click="removeCondition(fieldItem, index)"
+              >
+                <el-icon size="20px" style="color: #646a73">
+                  <Icon name="icon_delete-trash_outlined" />
+                </el-icon>
               </el-button>
-            </el-col>
+            </div>
           </el-row>
         </el-row>
 
@@ -418,11 +428,11 @@ init()
           style="margin-top: 10px"
           class="circle-button"
           type="primary"
-          link
+          text
           @click="addConditions(fieldItem)"
         >
           <template #icon>
-            <Icon name="icon_add_outlined"></Icon>
+            <Icon name="icon_add_outlined" />
           </template>
           {{ t('chart.add_condition') }}
         </el-button>
@@ -431,13 +441,13 @@ init()
 
     <el-button
       class="circle-button"
-      link
+      text
       type="primary"
       style="margin-top: 10px"
       @click="addThreshold"
     >
       <template #icon>
-        <Icon name="icon_add_outlined"></Icon>
+        <Icon name="icon_add_outlined" />
       </template>
       {{ t('chart.add_threshold') }}
     </el-button>
@@ -508,8 +518,12 @@ span {
 }
 
 .color-title {
-  margin-right: 6px;
-  color: #909399;
+  color: #646a73;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 22px;
+  padding: 0 8px;
 }
 
 .tip {
@@ -529,5 +543,17 @@ span {
   width: 14px;
   height: 14px;
   color: #3370ff;
+}
+
+.m-icon-btn {
+  &:hover {
+    background: rgba(31, 35, 41, 0.1) !important;
+  }
+  &:focus {
+    background: rgba(31, 35, 41, 0.1) !important;
+  }
+  &:active {
+    background: rgba(31, 35, 41, 0.2) !important;
+  }
 }
 </style>
