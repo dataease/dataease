@@ -449,6 +449,7 @@ watch(
 }
 
 .indented-container {
+  margin-top: 8px;
   width: 100%;
   padding-left: 22px;
 
