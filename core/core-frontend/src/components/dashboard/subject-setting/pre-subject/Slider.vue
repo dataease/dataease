@@ -171,9 +171,9 @@
         </ul>
       </div>
     </el-row>
-    <el-row>
-      <el-col :span="7" style="height: 30px" />
-      <el-col :span="10" style="height: 30px">
+    <div style="display: flex; margin-top: 16px">
+      <div style="flex: 1"></div>
+      <div style="flex: 1" class="dot-container">
         <span hidden>B</span>
         <ul class="dots">
           <li
@@ -183,17 +183,15 @@
             @click="jump(i + 1)"
           />
         </ul>
-      </el-col>
-      <el-col :span="7" class="save-area">
-        <span
-          ><a style="cursor: pointer" @click="saveSelfSubject">{{ $t('commons.save') }}</a></span
-        >
-      </el-col>
-    </el-row>
-    <subject-edit-dialog
-      ref="subjectEditDialogRef"
-      @finish="subjectEditFinish"
-    ></subject-edit-dialog>
+      </div>
+      <div style="flex: 1">
+        <el-button type="primary" link size="small" @click="saveSelfSubject">
+          {{ $t('commons.save') }}
+        </el-button>
+      </div>
+    </div>
+
+    <subject-edit-dialog ref="subjectEditDialogRef" @finish="subjectEditFinish" />
   </el-row>
 </template>
 
@@ -207,7 +205,7 @@ import {
 import { reactive, toRefs, computed, onMounted, ref } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
-import { ElMessage } from 'element-plus-secondary'
+import { ElButton, ElMessage } from 'element-plus-secondary'
 import { deepCopy } from '@/utils/utils'
 const dvMainStore = dvMainStoreWithOut()
 const { canvasStyleData } = storeToRefs(dvMainStore)
@@ -249,7 +247,7 @@ const containerStyle = computed(() => {
 })
 
 const slideWindowHeight = computed(() => {
-  return { height: state.sliders[0]?.length < 3 ? '140px' : '280px' }
+  return { height: state.sliders[0]?.length < 3 ? '140px' : '250px' }
 })
 
 const interval = computed(() => {
@@ -361,12 +359,11 @@ onMounted(() => {
 <style scoped lang="less">
 .item-area {
   width: 420px;
-  height: 290px;
+  height: 250px;
   padding: 0 5px;
 }
 
 .save-area {
-  height: 30px;
   margin: auto;
   font-size: 12px;
   color: #3685f2;
@@ -427,7 +424,6 @@ img {
 
 .dots {
   position: absolute;
-  bottom: 10px;
   left: 50%;
   transform: translateX(-50%);
 }
@@ -467,5 +463,9 @@ img {
   z-index: 2;
   width: 22px;
   height: 22px;
+}
+.dot-container {
+  display: flex;
+  align-items: center;
 }
 </style>

@@ -13,6 +13,7 @@ import io.dataease.chart.manage.ChartDataManage;
 import io.dataease.chart.manage.ChartViewManege;
 import io.dataease.commons.constants.DataVisualizationConstants;
 import io.dataease.exception.DEException;
+import io.dataease.license.config.XpackInteract;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import io.dataease.utils.AuthUtils;
@@ -54,6 +55,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
     private ChartDataManage chartDataManage;
 
     @Override
+    @XpackInteract(value = "dataVisualizationServer", original = true)
     public DataVisualizationVO findById(Long dvId,String busiFlag) {
         DataVisualizationVO result = extDataVisualizationMapper.findDvInfo(dvId,busiFlag);
         if (result != null) {

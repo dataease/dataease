@@ -14,4 +14,5 @@ public @interface XpackInteract {
     boolean replace() default false;
 
     boolean recursion() default false;
+    boolean original() default false;
 }

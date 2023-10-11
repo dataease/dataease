@@ -76,7 +76,7 @@
                visualization_link_jump_info.jump_type,
                visualization_link_jump_info.target_dv_id,
                visualization_link_jump_info.content,
-               ifnull(xpack_share.uuid, xpack_share.resource_id)     AS publicJumpId,
+               visualization_link_jump_info.target_dv_id             AS publicJumpId,
                ifnull(visualization_link_jump_info.checked, 0)       AS checked,
                ifnull(visualization_link_jump_info.attach_params, 0) AS attach_params,
                visualization_link_jump_target_view_info.target_view_id,
@@ -94,8 +94,6 @@
                  LEFT JOIN visualization_link_jump_target_view_info
                            ON visualization_link_jump_info.id =
                               visualization_link_jump_target_view_info.link_jump_info_id
-                 LEFT JOIN xpack_share on xpack_share.creator = #{uid} and
-                                          visualization_link_jump_info.target_dv_id = xpack_share.resource_id
         WHERE core_chart_view.id = #{source_view_id}
           and core_chart_view.type != 'VQuery'
         ORDER BY CONVERT (core_dataset_table_field.NAME using gbk)

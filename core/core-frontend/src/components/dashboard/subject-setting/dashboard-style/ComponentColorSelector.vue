@@ -69,6 +69,7 @@
         :title="t('visualization.table_color_matching')"
         name="table_color_matching"
         class="inner-collapse"
+        :class="`inner-collapse_${themes}`"
       >
         <div style="padding: 0 8px 8px">
           <el-row :gutter="8">
@@ -80,6 +81,7 @@
                   size="small"
                   :predefine="predefineColors"
                   is-custom
+                  :effect="themes"
                   @change="changeColorCase('tableHeaderBgColor')"
                 />
               </el-form-item>
@@ -91,6 +93,7 @@
                   v-model="colorForm.tableCell.tableItemBgColor"
                   size="small"
                   :predefine="predefineColors"
+                  :effect="themes"
                   is-custom
                   @change="changeColorCase('tableItemBgColor')"
                 />
@@ -103,6 +106,7 @@
                 <el-color-picker
                   :trigger-width="colorPickerWidth"
                   v-model="colorForm.tableHeader.tableHeaderFontColor"
+                  :effect="themes"
                   size="small"
                   :predefine="predefineColors"
                   is-custom
@@ -117,6 +121,7 @@
                   v-model="colorForm.tableCell.tableFontColor"
                   size="small"
                   :predefine="predefineColors"
+                  :effect="themes"
                   is-custom
                   @change="changeColorCase('tableFontColor')"
                 />
@@ -131,6 +136,7 @@
                   v-model="colorForm.basicStyle.tableBorderColor"
                   size="small"
                   :predefine="predefineColors"
+                  :effect="themes"
                   is-custom
                   @change="changeColorCase('tableBorderColor')"
                 />
@@ -144,6 +150,7 @@
                   size="small"
                   :predefine="predefineColors"
                   color-format="rgb"
+                  :effect="themes"
                   show-alpha
                   is-custom
                   @change="changeColorCase('tableScrollBarColor')"
@@ -399,6 +406,12 @@ span {
   }
   :deep(.ed-collapse-item__wrap) {
     border: none;
+  }
+
+  &.inner-collapse_dark {
+    :deep(.ed-form-item__label) {
+      color: #a6a6a6;
+    }
   }
 }
 

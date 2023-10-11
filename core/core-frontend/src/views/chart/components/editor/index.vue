@@ -1485,7 +1485,7 @@ const onRefreshChange = val => {
                                 v-model="view.refreshUnit"
                                 size="small"
                                 placeholder="Select"
-                                style="width: 80px; padding: 0 9px"
+                                style="width: 80px"
                               >
                                 <el-option
                                   :effect="themes"
