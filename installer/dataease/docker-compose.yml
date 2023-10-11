@@ -10,7 +10,6 @@ services:
       - ${DE_BASE}/dataease2.0/conf:/opt/apps/config
       - ${DE_BASE}/dataease2.0/logs:/opt/dataease2.0/logs
       - ${DE_BASE}/dataease2.0/data/static-resource:/opt/dataease2.0/data/static-resource
-      - ${DE_BASE}/dataease2.0/data/map:/opt/dataease2.0/data/map
       - ${DE_BASE}/dataease2.0/cache:/opt/dataease2.0/cache
     depends_on:
       DE_MYSQL_HOST:
