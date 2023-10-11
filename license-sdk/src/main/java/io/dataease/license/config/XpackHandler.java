@@ -1,11 +1,16 @@
 package io.dataease.license.config;
 
 import cn.hutool.core.util.ArrayUtil;
+import cn.hutool.core.util.ReflectUtil;
+import io.dataease.exception.DEException;
+import io.dataease.i18n.Translator;
 import io.dataease.license.bo.F2CLicResult;
 import io.dataease.license.utils.LicenseUtil;
 import io.dataease.result.ResultCode;
 import io.dataease.result.ResultMessage;
+import io.dataease.utils.RsaUtils;
 import io.dataease.utils.ServletUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -29,6 +34,18 @@ public class XpackHandler {
             XpackResource xpackResource = declaringClass.getAnnotation(XpackResource.class);
             String[] excludes = xpackResource.excludes();
             if (ArrayUtil.isNotEmpty(excludes) && ArrayUtil.contains(excludes, methodName)) {
+                if (methodName.equals("localLogin")) {
+                    F2CLicResult licResult = LicenseUtil.get();
+                    if (licResult.getStatus() != F2CLicResult.Status.valid) {
+                        Object[] args = point.getArgs();
+                        Object arg = args[0];
+                        Object name = ReflectUtil.getFieldValue(arg, "name");
+                        String nameText = RsaUtils.decryptStr(name.toString());
+                        if (!StringUtils.equals(nameText, "admin")) {
+                            DEException.throwException(Translator.get("i18n_nolic_user_limit"));
+                        }
+                    }
+                }
                 return point.proceed(point.getArgs());
             }
         }

@@ -262,11 +262,11 @@ public class DatasetGroupManage {
     }
 
     private DataSetNodeBO rootNode() {
-        return new DataSetNodeBO(0L, "root", false, 3, -1L, 0);
+        return new DataSetNodeBO(0L, "root", false, 7, -1L, 0);
     }
 
     private DataSetNodeBO convert(DataSetNodePO po) {
-        return new DataSetNodeBO(po.getId(), po.getName(), StringUtils.equals(po.getNodeType(), leafType), 3, po.getPid(), 0);
+        return new DataSetNodeBO(po.getId(), po.getName(), StringUtils.equals(po.getNodeType(), leafType), 7, po.getPid(), 0);
     }
 
     public void checkName(DatasetGroupInfoDTO dto) {

@@ -10,6 +10,9 @@ const expConstants = 10000
 
 const isExpired = () => {
   const exp = wsCache.get('user.exp')
+  if (!exp) {
+    return false
+  }
   return exp - new Date().getTime() < expConstants
 }
 
