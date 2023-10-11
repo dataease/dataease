@@ -208,7 +208,7 @@ const changeTooltipAttr = (prop: string, requestData = false, render = true) => 
   }
   emit('onTooltipChange', { data: state.tooltipForm, requestData, render })
 }
-
+const formatterSelector = ref()
 const init = () => {
   const chart = JSON.parse(JSON.stringify(props.chart))
   if (chart.customAttr) {
@@ -216,6 +216,7 @@ const init = () => {
     if (customAttr.tooltip) {
       state.tooltipForm = defaultsDeep(customAttr.tooltip, cloneDeep(DEFAULT_TOOLTIP))
       initSeriesTooltip(true)
+      formatterSelector.value?.blur()
     }
   }
 }
@@ -385,9 +386,11 @@ onMounted(() => {
       <el-form-item>
         <el-select
           size="small"
-          :disabled="!formatterEditable"
           v-model="curSeriesFormatter"
+          :disabled="!formatterEditable"
           :effect="themes"
+          :teleported="false"
+          ref="formatterSelector"
           value-key="id"
           class="series-select"
         >
