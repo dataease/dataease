@@ -51,6 +51,20 @@ const { chart } = toRefs(props)
               />
             </el-form-item>
             <el-form-item class="form-item margin-bottom-8">
+              <el-checkbox size="small" v-model="chart.customStyle.component.labelColorShow">
+                标签颜色
+              </el-checkbox>
+            </el-form-item>
+            <el-form-item class="form-item" style="padding-left: 20px">
+              <el-color-picker
+                :trigger-width="108"
+                is-custom
+                v-model="chart.customStyle.component.labelColor"
+                :disabled="!chart.customStyle.component.labelColorShow"
+                :predefine="predefineColors"
+              />
+            </el-form-item>
+            <el-form-item class="form-item margin-bottom-8">
               <el-checkbox size="small" v-model="chart.customStyle.component.borderShow">
                 {{ t('visualization.board') }}
               </el-checkbox>
@@ -61,6 +75,20 @@ const { chart } = toRefs(props)
                 is-custom
                 v-model="chart.customStyle.component.borderColor"
                 :disabled="!chart.customStyle.component.borderShow"
+                :predefine="predefineColors"
+              />
+            </el-form-item>
+            <el-form-item class="form-item margin-bottom-8">
+              <el-checkbox size="small" v-model="chart.customStyle.component.textColorShow">
+                提示文字颜色
+              </el-checkbox>
+            </el-form-item>
+            <el-form-item class="form-item" style="padding-left: 20px">
+              <el-color-picker
+                :trigger-width="108"
+                is-custom
+                v-model="chart.customStyle.component.text"
+                :disabled="!chart.customStyle.component.textColorShow"
                 :predefine="predefineColors"
               />
             </el-form-item>

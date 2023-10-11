@@ -82,6 +82,17 @@
               />
             </el-form-item>
           </el-col>
+          <el-col :span="12">
+            <el-form-item class="form-item" label="标签颜色">
+              <el-color-picker
+                v-model="filterStyle.labelColor"
+                :trigger-width="197"
+                is-custom
+                :predefine="state.predefineColors"
+                @change="themeChange('labelColor')"
+              />
+            </el-form-item>
+          </el-col>
         </el-row>
         <el-divider class="m-divider"></el-divider>
       </div>
