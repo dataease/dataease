@@ -21,11 +21,11 @@ const { changeModel, title, themes } = toRefs(props)
 const collapseItem = ref()
 const onSwitchChange = e => {
   emit('modelChange', changeModel.value)
-  if (changeModel.value.show && !collapseItem.value.isActive) {
+  if (!props.modelValue && !collapseItem.value.isActive) {
     collapseItem.value.handleHeaderClick()
   }
 
-  if (!changeModel.value.show && collapseItem.value.isActive) {
+  if (props.modelValue && collapseItem.value.isActive) {
     collapseItem.value.handleHeaderClick()
   }
 }
