@@ -41,7 +41,7 @@ public class DataSourceManage {
     private CoreOptRecentManage coreOptRecentManage;
 
     private DatasourceNodeBO rootNode() {
-        return new DatasourceNodeBO(0L, "root", false, 3, -1L, 0, "mysql");
+        return new DatasourceNodeBO(0L, "root", false, 7, -1L, 0, "mysql");
     }
 
     private DatasourceNodeBO convert(DataSourceNodePO po) {
@@ -51,7 +51,7 @@ public class DataSourceManage {
         }
         Integer flag = dataSourceType.getFlag();
         int extraFlag = StringUtils.equalsIgnoreCase("error", po.getStatus()) ? Math.negateExact(flag) : flag;
-        return new DatasourceNodeBO(po.getId(), po.getName(), !StringUtils.equals(po.getType(), "folder"), 3, po.getPid(), extraFlag, dataSourceType.name());
+        return new DatasourceNodeBO(po.getId(), po.getName(), !StringUtils.equals(po.getType(), "folder"), 7, po.getPid(), extraFlag, dataSourceType.name());
     }
 
     @XpackInteract(value = "datasourceResourceTree", replace = true)
