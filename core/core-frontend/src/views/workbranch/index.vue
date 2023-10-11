@@ -254,8 +254,10 @@ fillCardInfo()
       .info {
         margin: 0 0 24px 12px;
         display: flex;
+        align-items: center;
         flex-wrap: wrap;
         width: calc(100% - 60px);
+        height: 50px;
         .name-role {
           margin-bottom: 4px;
           color: #1f2329;
