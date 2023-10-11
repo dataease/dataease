@@ -112,7 +112,7 @@ fillCardInfo()
             <span class="name">{{ userStore.getName }}</span>
             <span class="role main-btn" />
           </div>
-          <span class="id"> {{ `ID: ${userStore.getUid}` }} </span>
+          <span v-if="userStore.getUid" class="id"> {{ `ID: ${userStore.getUid}` }} </span>
         </div>
         <div
           class="item"

@@ -5,6 +5,7 @@ import com.auth0.jwt.JWTCreator;
 import com.auth0.jwt.algorithms.Algorithm;
 import io.dataease.api.permissions.login.dto.PwdLoginDTO;
 import io.dataease.auth.bo.TokenUserBO;
+import io.dataease.auth.vo.TokenVO;
 import io.dataease.utils.LogUtil;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.stereotype.Component;
@@ -17,10 +18,10 @@ import org.springframework.web.bind.annotation.RestController;
 @ConditionalOnMissingBean(name = "userServer")
 @RestController
 @RequestMapping
-public class SubstituleLoginServer{
+public class SubstituleLoginServer {
 
     @PostMapping("/login/localLogin")
-    public String localLogin(PwdLoginDTO dto) {
+    public TokenVO localLogin(PwdLoginDTO dto) {
         TokenUserBO tokenUserBO = new TokenUserBO();
         tokenUserBO.setUserId(1L);
         tokenUserBO.setDefaultOid(1L);
@@ -34,12 +35,13 @@ public class SubstituleLoginServer{
         LogUtil.info("substitule logout");
     }
 
-    private String generate(TokenUserBO bo, String secret) {
+    private TokenVO generate(TokenUserBO bo, String secret) {
         Algorithm algorithm = Algorithm.HMAC256(secret);
         Long userId = bo.getUserId();
         Long defaultOid = bo.getDefaultOid();
         JWTCreator.Builder builder = JWT.create();
         builder.withClaim("uid", userId).withClaim("oid", defaultOid);
-        return builder.sign(algorithm);
+        String token = builder.sign(algorithm);
+        return new TokenVO(token, 0L);
     }
 }

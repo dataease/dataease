@@ -387,6 +387,10 @@ const nodeExpand = data => {
   expandedKey.value.push(data.id)
 }
 
+const nodeCollapse = data => {
+  expandedKey.value = expandedKey.value.filter(ele => ele !== data.id)
+}
+
 const datasetTypeList = [
   {
     label: '新建数据集',
@@ -469,6 +473,7 @@ const filterNode = (value: string, data: BusiTreeNode) => {
             :data="state.datasetTree"
             :filter-node-method="filterNode"
             @node-expand="nodeExpand"
+            @node-collapse="nodeCollapse"
             :default-expanded-keys="expandedKey"
             :props="defaultProps"
             @node-click="handleNodeClick"
