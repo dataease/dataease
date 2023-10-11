@@ -384,6 +384,7 @@ onMounted(() => {
         <el-select
           :disabled="!formatterEditable"
           v-model="curSeriesFormatter"
+          :effect="themes"
           value-key="id"
           class="series-select"
         >

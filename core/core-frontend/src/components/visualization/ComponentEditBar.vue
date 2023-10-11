@@ -73,7 +73,7 @@
         </el-tooltip>
       </el-icon>
       <template #dropdown>
-        <el-dropdown-menu style="width: 160px">
+        <el-dropdown-menu style="width: 158px">
           <el-dropdown-item @click="copyComponent" v-if="barShowCheck('copy')"
             >复制</el-dropdown-item
           >
@@ -89,14 +89,17 @@
               >查看数据</el-dropdown-item
             >
             <el-dropdown-item
-              style="padding-right: 8px"
+              style="padding: 0"
               v-if="element.innerType !== 'rich-text' && barShowCheck('download')"
               @click.prevent
             >
               <el-dropdown style="width: 100%" trigger="hover" placement="right-start">
-                <div style="width: 100%">
+                <div
+                  class="flex-align-center"
+                  style="width: 100%; padding: 5px 6px 5px 16px; line-height: 22px"
+                >
                   导出为
-                  <el-icon style="float: right"><ArrowRight /></el-icon>
+                  <el-icon size="16px" style="margin-left: auto"><ArrowRight /></el-icon>
                 </div>
                 <template #dropdown>
                   <el-dropdown-menu style="width: 120px">
@@ -125,9 +128,9 @@
         </el-tooltip>
       </el-icon>
       <template #dropdown>
-        <el-dropdown-menu style="width: 160px">
-          <el-dropdown-item @click="exportAsExcel">导出为Excel</el-dropdown-item>
-          <el-dropdown-item @click="exportAsImage">导出为图片</el-dropdown-item>
+        <el-dropdown-menu style="width: 118px">
+          <el-dropdown-item @click="exportAsExcel">Excel</el-dropdown-item>
+          <el-dropdown-item @click="exportAsImage">图片</el-dropdown-item>
         </el-dropdown-menu>
       </template>
     </el-dropdown>
@@ -555,9 +558,5 @@ watch(
 .bar-checkbox-area {
   padding: 0 5px;
   height: 22px;
-}
-
-.more-menu {
-  width: 160px;
 }
 </style>
