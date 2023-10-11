@@ -185,8 +185,11 @@ const handleContextMenu = e => {
           <template #item="{ index }">
             <div
               :title="getComponent(index).name"
-              :class="{ activated: curComponent && curComponent.id === getComponent(index).id }"
               class="component-item"
+              :class="{
+                'container-item-not-show': !getComponent(index).isShow,
+                activated: curComponent && curComponent.id === getComponent(index).id
+              }"
               @click="onClick($event, transformIndex(index))"
               @dblclick="editComponentName(getComponent(index))"
             >
@@ -199,30 +202,30 @@ const handleContextMenu = e => {
               <div
                 v-show="!nameEdit || (nameEdit && curComponent.id !== getComponent(index).id)"
                 class="icon-container"
+                :class="{
+                  'icon-container-lock': getComponent(index).isLock && getComponent(index).isShow,
+                  'icon-container-show': !getComponent(index).isShow
+                }"
               >
                 <el-icon
-                  class="component-opt-icon"
+                  class="component-base component-icon-display"
                   v-show="!getComponent(index).isShow"
                   @click="showComponent"
                 >
                   <Icon name="dv-eye-close" class="opt-icon"></Icon>
                 </el-icon>
                 <el-icon
-                  class="component-opt-icon"
+                  class="component-base"
                   v-show="getComponent(index).isShow"
                   @click="hideComponent"
                 >
                   <Icon name="dv-show" class="opt-icon"></Icon>
                 </el-icon>
-                <el-icon
-                  v-show="!getComponent(index).isLock"
-                  class="component-opt-icon"
-                  @click="lock"
-                >
+                <el-icon v-show="!getComponent(index).isLock" class="component-base" @click="lock">
                   <Icon class="opt-icon" name="dv-unlock"></Icon>
                 </el-icon>
                 <el-icon
-                  class="component-opt-icon"
+                  class="component-base component-icon-display"
                   v-show="getComponent(index).isLock"
                   @click="unlock"
                 >
@@ -236,7 +239,7 @@ const handleContextMenu = e => {
                   hide-timeout="0"
                 >
                   <span :class="'dropdownMore-' + index" @click="onClick(transformIndex(index))">
-                    <el-icon class="component-opt-icon">
+                    <el-icon class="component-base">
                       <Icon name="dv-more" class="opt-icon"></Icon>
                     </el-icon>
                   </span>
@@ -322,15 +325,19 @@ const handleContextMenu = e => {
           background-color: rgba(235, 235, 235, 0.1);
 
           .icon-container {
-            opacity: 1;
-            width: 70px;
+            .component-base {
+              opacity: 1;
+            }
+            width: 70px !important;
           }
         }
 
         .icon-container {
+          .component-base {
+            opacity: 0;
+          }
           width: 0px;
           display: flex;
-          opacity: 0;
           justify-content: flex-end;
           align-items: center;
           flex-grow: 1;
@@ -358,11 +365,12 @@ const handleContextMenu = e => {
   background: #303133 !important;
 }
 
-.component-opt-icon {
+.component-base {
   cursor: pointer;
   height: 22px !important;
   width: 22px !important;
   border-radius: 4px;
+  padding: 0 4px;
 
   .opt-icon {
     font-size: 14px;
@@ -375,5 +383,21 @@ const handleContextMenu = e => {
   &:active {
     background: rgba(235, 235, 235, 0.1);
   }
+}
+
+.component-icon-display {
+  opacity: 1 !important;
+}
+
+.icon-container-show {
+  width: 70px !important;
+}
+
+.icon-container-lock {
+  width: 45px !important;
+}
+
+.container-item-not-show {
+  color: #5f5f5f !important;
 }
 </style>

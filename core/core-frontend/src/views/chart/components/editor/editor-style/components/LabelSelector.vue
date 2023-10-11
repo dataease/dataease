@@ -138,7 +138,7 @@ const changeLabelAttr = prop => {
 const curSeriesFormatter = ref<Partial<SeriesFormatter>>({
   deType: 0
 })
-
+const formatterSelector = ref()
 const init = () => {
   const chart = JSON.parse(JSON.stringify(props.chart))
   if (chart.customAttr) {
@@ -154,6 +154,7 @@ const init = () => {
         state.labelForm.fontSize = fontSizeList.value[0].value
       }
       initSeriesLabel()
+      formatterSelector.value?.blur()
     }
   }
 }
@@ -557,8 +558,10 @@ onMounted(() => {
     <div v-if="showProperty('seriesLabelFormatter')">
       <el-form-item class="form-item" :class="'form-item-' + themes">
         <el-select
-          :effect="themes"
           v-model="curSeriesFormatter"
+          :effect="themes"
+          :teleported="false"
+          ref="formatterSelector"
           value-key="id"
           class="series-select"
           size="small"

@@ -1,7 +1,7 @@
 <script lang="tsx" setup>
 import { onMounted, reactive, watch, computed } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
-import { ElMessage } from 'element-plus-secondary'
+import { ElIcon, ElMessage } from 'element-plus-secondary'
 import AssistLineEdit from '@/views/chart/components/editor/editor-senior/components/dialog/AssistLineEdit.vue'
 import _ from 'lodash'
 
@@ -140,13 +140,16 @@ onMounted(() => {
         <span :class="'label-' + props.themes">辅助线设置</span>
         <el-button
           class="circle-button"
-          type="text"
+          type="primary"
+          link
           size="small"
           :style="{ width: '24px', marginLeft: '4px', float: 'right' }"
           @click="editLine"
         >
           <template #icon>
-            <Icon name="icon_edit_outlined" />
+            <el-icon size="14px">
+              <Icon name="icon_edit_outlined" />
+            </el-icon>
           </template>
         </el-button>
       </div>

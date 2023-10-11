@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { PropType, reactive, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
-import { ElMessage } from 'element-plus-secondary'
+import { ElIcon, ElMessage } from 'element-plus-secondary'
 import { DEFAULT_THRESHOLD } from '@/views/chart/components/editor/util/chart'
 import TableThresholdEdit from '@/views/chart/components/editor/editor-senior/components/dialog/TableThresholdEdit.vue'
 import TextLabelThresholdEdit from '@/views/chart/components/editor/editor-senior/components/dialog/TextLabelThresholdEdit.vue'
@@ -269,13 +269,16 @@ init()
         <el-button
           :title="t('chart.edit')"
           class="circle-button"
-          type="text"
+          type="primary"
+          link
           size="small"
           style="width: 24px; margin-left: 4px"
           @click="editTextLabelThreshold"
         >
           <template #icon>
-            <Icon name="icon_edit_outlined"></Icon>
+            <el-icon size="14px">
+              <Icon name="icon_edit_outlined" />
+            </el-icon>
           </template>
         </el-button>
         <el-col style="padding: 0 18px">
@@ -329,13 +332,16 @@ init()
         <el-button
           :title="t('chart.edit')"
           class="circle-button"
-          type="text"
+          type="primary"
+          link
           size="small"
           style="width: 24px; margin-left: 4px"
           @click="editLabelThreshold"
         >
           <template #icon>
-            <Icon name="icon_edit_outlined"></Icon>
+            <el-icon size="14px">
+              <Icon name="icon_edit_outlined" />
+            </el-icon>
           </template>
         </el-button>
         <el-col style="padding: 0 18px">
@@ -396,13 +402,16 @@ init()
           <el-button
             :title="t('chart.edit')"
             class="circle-button"
-            type="text"
+            type="primary"
+            link
             size="small"
             :style="{ width: '24px', marginLeft: '4px', float: 'right' }"
             @click="editTableThreshold"
           >
             <template #icon>
-              <Icon name="icon_edit_outlined"></Icon>
+              <el-icon size="14px">
+                <Icon name="icon_edit_outlined" />
+              </el-icon>
             </template>
           </el-button>
         </div>
@@ -419,7 +428,7 @@ init()
                   <Icon
                     :className="`field-icon-${fieldType[fieldItem.field.deType.deType]}`"
                     :name="`field_${fieldType[fieldItem.field.deType.deType]}`"
-                  ></Icon>
+                  />
                 </el-icon>
               </span>
               <span :title="fieldItem.field.name" class="field-text">{{
