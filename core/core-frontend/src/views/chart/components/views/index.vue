@@ -347,9 +347,15 @@ onBeforeMount(() => {
     })
   }
 })
-
+// 部分场景不需要更新视图，例如放大页面
+const listernerEnable = computed(() => {
+  return !showPosition.value.includes('viewDialog')
+})
 onMounted(() => {
   queryData(true)
+  if (!listernerEnable.value) {
+    return
+  }
   useEmitt({
     name: 'snapshotChangeToView',
     callback: function (cacheViewInfo) {

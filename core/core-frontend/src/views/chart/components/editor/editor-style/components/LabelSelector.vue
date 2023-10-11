@@ -199,6 +199,7 @@ onMounted(() => {
       >
         <template #label>&nbsp;</template>
         <el-select
+          size="small"
           style="width: 108px"
           :effect="themes"
           v-model.number="state.labelForm.fontSize"
@@ -222,6 +223,7 @@ onMounted(() => {
       :class="'form-item-' + themes"
     >
       <el-select
+        size="small"
         :effect="themes"
         v-model="state.labelForm.position"
         :placeholder="t('chart.label_position')"
@@ -242,6 +244,7 @@ onMounted(() => {
       :class="'form-item-' + themes"
     >
       <el-select
+        size="small"
         :effect="themes"
         v-model="state.labelForm.position"
         :placeholder="t('chart.label_position')"
@@ -262,6 +265,7 @@ onMounted(() => {
       :class="'form-item-' + themes"
     >
       <el-select
+        size="small"
         :effect="themes"
         v-model="state.labelForm.position"
         :placeholder="t('chart.label_position')"
@@ -283,6 +287,7 @@ onMounted(() => {
         :class="'form-item-' + themes"
       >
         <el-select
+          size="small"
           :effect="themes"
           v-model="state.labelForm.labelFormatter.type"
           @change="changeLabelAttr('labelFormatter')"
@@ -323,6 +328,7 @@ onMounted(() => {
             :class="'form-item-' + themes"
           >
             <el-select
+              size="small"
               :effect="themes"
               v-model="state.labelForm.labelFormatter.unit"
               :placeholder="$t('chart.pls_select_field')"
@@ -400,6 +406,7 @@ onMounted(() => {
           :class="'form-item-' + themes"
         >
           <el-select
+            size="small"
             :disabled="!state.labelForm.showQuota"
             style="width: 100%"
             :effect="themes"
@@ -517,6 +524,7 @@ onMounted(() => {
           :class="'form-item-' + themes"
         >
           <el-select
+            size="small"
             :effect="themes"
             :disabled="!state.labelForm.showProportion"
             v-model="state.labelForm.reserveDecimalCount"
@@ -536,6 +544,7 @@ onMounted(() => {
       :class="'form-item-' + themes"
     >
       <el-select
+        size="small"
         :effect="themes"
         v-model="state.labelForm.reserveDecimalCount"
         @change="changeLabelAttr('reserveDecimalCount')"
@@ -552,6 +561,7 @@ onMounted(() => {
           v-model="curSeriesFormatter"
           value-key="id"
           class="series-select"
+          size="small"
         >
           <template #prefix>
             <el-icon style="font-size: 14px">
@@ -595,45 +605,39 @@ onMounted(() => {
         </el-form-item>
 
         <div style="padding-left: 22px">
-          <el-row :gutter="8">
-            <el-col :span="8">
-              <el-form-item
-                class="form-item"
-                :class="'form-item-' + themes"
-                :label="t('chart.text')"
+          <el-space>
+            <el-form-item class="form-item" :class="'form-item-' + themes" :label="t('chart.text')">
+              <el-color-picker
+                :disabled="!curSeriesFormatter.show"
+                style="width: 100%"
+                :effect="themes"
+                v-model="curSeriesFormatter.color"
+                class="color-picker-style"
+                :predefine="COLOR_PANEL"
+                @change="changeLabelAttr('seriesLabelFormatter')"
+                is-custom
+              />
+            </el-form-item>
+            <el-form-item class="form-item" :class="'form-item-' + themes">
+              <template #label>&nbsp;</template>
+              <el-select
+                size="small"
+                :disabled="!curSeriesFormatter.show"
+                style="width: 108px"
+                :effect="themes"
+                v-model.number="curSeriesFormatter.fontSize"
+                :placeholder="t('chart.text_fontsize')"
+                @change="changeLabelAttr('fontSize')"
               >
-                <el-color-picker
-                  :disabled="!curSeriesFormatter.show"
-                  style="width: 100%"
-                  :effect="themes"
-                  v-model="curSeriesFormatter.color"
-                  class="color-picker-style"
-                  :predefine="COLOR_PANEL"
-                  @change="changeLabelAttr('seriesLabelFormatter')"
-                  is-custom
+                <el-option
+                  v-for="option in fontSizeList"
+                  :key="option.value"
+                  :label="option.name"
+                  :value="option.value"
                 />
-              </el-form-item>
-            </el-col>
-            <el-col :span="12" style="display: flex; align-items: end">
-              <el-form-item class="form-item" :class="'form-item-' + themes">
-                <el-select
-                  :disabled="!curSeriesFormatter.show"
-                  style="width: 100%"
-                  :effect="themes"
-                  v-model.number="curSeriesFormatter.fontSize"
-                  :placeholder="t('chart.text_fontsize')"
-                  @change="changeLabelAttr('fontSize')"
-                >
-                  <el-option
-                    v-for="option in fontSizeList"
-                    :key="option.value"
-                    :label="option.name"
-                    :value="option.value"
-                  />
-                </el-select>
-              </el-form-item>
-            </el-col>
-          </el-row>
+              </el-select>
+            </el-form-item>
+          </el-space>
 
           <el-form-item
             :label="t('chart.value_formatter_type')"
@@ -642,6 +646,7 @@ onMounted(() => {
             v-if="curSeriesFormatter.formatterCfg"
           >
             <el-select
+              size="small"
               :disabled="!curSeriesFormatter.show"
               style="width: 100%"
               :effect="props.themes"
