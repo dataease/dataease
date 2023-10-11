@@ -318,9 +318,14 @@ watch(
 
       :deep(.ed-upload--picture-card) {
         cursor: not-allowed;
+      }
 
-        .ed-icon {
-          color: #8f959e;
+      .img-area_dark,
+      .img-area_light {
+        :deep(.ed-upload--picture-card) {
+          .ed-icon {
+            color: #bbbfc4;
+          }
         }
       }
 
