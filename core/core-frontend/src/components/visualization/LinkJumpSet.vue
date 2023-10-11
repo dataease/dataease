@@ -585,6 +585,7 @@ const save = () => {
   state.loading = true
   updateJumpSet(state.linkJump)
     .then(rsp => {
+      snapshotStore.recordSnapshotCache()
       ElMessage.success('保存成功')
       // 刷新跳转信息
       queryVisualizationJumpInfo(dvInfo.value.id).then(rsp => {
