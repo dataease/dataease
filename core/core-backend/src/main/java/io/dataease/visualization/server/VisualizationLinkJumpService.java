@@ -11,6 +11,7 @@ import io.dataease.api.visualization.vo.VisualizationViewTableVO;
 import io.dataease.chart.dao.auto.entity.CoreChartView;
 import io.dataease.chart.dao.auto.mapper.CoreChartViewMapper;
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
+import io.dataease.license.config.XpackInteract;
 import io.dataease.utils.AuthUtils;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
@@ -68,12 +69,9 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
         return extVisualizationLinkageMapper.queryTableFieldWithViewId(viewId);
     }
 
-    public List<VisualizationLinkJumpDTO> queryWithDvId(Long dvId) {
-        return extVisualizationLinkJumpMapper.queryWithDvId(dvId,AuthUtils.getUser().getUserId());
-    }
-
     //获取仪表板的跳转信息
     @Override
+    @XpackInteract(value = "visualizationLinkJumpService", original = true)
     public VisualizationLinkJumpBaseResponse queryVisualizationJumpInfo(Long dvId) {
         Map<String, VisualizationLinkJumpInfoDTO> resultBase = new HashMap<>();
         List<VisualizationLinkJumpDTO> resultLinkJumpList = extVisualizationLinkJumpMapper.queryWithDvId(dvId, AuthUtils.getUser().getUserId());

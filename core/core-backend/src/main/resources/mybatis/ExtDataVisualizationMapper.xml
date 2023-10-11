@@ -146,12 +146,6 @@
                `sort`,
                `create_time`,
                `create_by`,
-               (SELECT per_user.account
-                FROM per_user
-                WHERE per_user.id = data_visualization_info.create_by) AS creator_name,
-               (SELECT per_user.account
-                FROM per_user
-                WHERE per_user.id = data_visualization_info.update_by) AS update_name,
                `update_time`,
                `update_by`,
                `remark`,
