@@ -203,6 +203,7 @@ import {
 } from '@/api/visualization/linkage'
 import { getDatasetDetails } from '@/api/dataset'
 import { findAllViewsId } from '@/utils/canvasUtils'
+import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo, canvasViewInfo, componentData } = storeToRefs(dvMainStore)
 const linkageInfoTree = ref(null)
@@ -211,6 +212,7 @@ const dialogShow = ref(false)
 const searchField = ref('')
 const loading = ref(false)
 const curLinkageTargetViewsInfo = ref([])
+const snapshotStore = snapshotStoreWithOut()
 const state = reactive({
   sourceLinkageInfo: {},
   showSelected: false,
@@ -319,6 +321,7 @@ const saveLinkageSetting = () => {
   loading.value = true
   saveLinkage(request)
     .then(rsp => {
+      snapshotStore.recordSnapshotCache()
       ElMessage.success('保存成功')
       // 刷新联动信息
       getPanelAllLinkageInfo(dvInfo.value.id).then(rsp => {

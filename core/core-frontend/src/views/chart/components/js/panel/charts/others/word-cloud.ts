@@ -7,6 +7,7 @@ import { flow, parseJson } from '@/views/chart/components/js/util'
 import { getPadding } from '@/views/chart/components/js/panel/common/common_antv'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { useI18n } from '@/hooks/web/useI18n'
+import { isEmpty } from 'lodash-es'
 
 const { t } = useI18n()
 const DEFAULT_DATA = []
@@ -110,14 +111,14 @@ export class WordCloud extends G2PlotChartView<WordCloudOptions, G2WordCloud> {
         tooltipItems.forEach(item => {
           const formatter = formatterMap[item.data.datum.quotaList[0].id] ?? yAxis[0]
           const value = valueFormatter(item.value, formatter.formatterCfg)
-          const name = formatter.chartShowName ?? formatter.name
+          const name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
           result.push({ ...item, name, value })
         })
         head.data.datum.dynamicTooltipValue?.forEach(item => {
           const formatter = formatterMap[item.fieldId]
           if (formatter) {
             const value = valueFormatter(parseFloat(item.value), formatter.formatterCfg)
-            const name = formatter.chartShowName ?? formatter.name
+            const name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
             result.push({ color: 'grey', name, value })
           }
         })

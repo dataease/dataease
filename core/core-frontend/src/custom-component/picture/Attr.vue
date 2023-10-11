@@ -107,7 +107,7 @@ onBeforeUnmount(() => {
       :background-border-select-width="197"
     >
       <el-collapse-item :effect="themes" title="图片11" name="picture">
-        <el-row class="img-area">
+        <el-row class="img-area" :class="`img-area_${themes}`">
           <el-col style="width: 130px !important">
             <el-upload
               :themes="themes"
@@ -151,6 +151,7 @@ onBeforeUnmount(() => {
       margin: 0 6px 0 8px;
     }
   }
+
   :deep(.ed-collapse-item__content) {
     padding: 16px 8px 0;
   }
@@ -198,6 +199,22 @@ onBeforeUnmount(() => {
   width: 80px;
   margin-top: 10px;
   overflow: hidden;
+
+  &.img-area_dark {
+    :deep(.ed-upload-list__item).is-success {
+      border-color: #434343;
+    }
+    :deep(.ed-upload--picture-card) {
+      background: #373737;
+      border-color: #434343;
+    }
+  }
+
+  &.img-area_light {
+    :deep(.ed-upload-list__item).is-success {
+      border-color: #dee0e3;
+    }
+  }
 }
 
 .image-hint {
