@@ -113,6 +113,7 @@ onMounted(() => {
           class="color-picker-style"
           :predefine="predefineColors"
           @change="changeLegendStyle('color')"
+          :effect="themes"
           is-custom
         />
       </el-form-item>

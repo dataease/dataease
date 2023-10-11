@@ -151,6 +151,7 @@ onMounted(() => {
           class="color-picker-style"
           :predefine="predefineColors"
           @change="changeAxisStyle('color')"
+          :effect="themes"
           is-custom
         />
       </el-form-item>
@@ -293,6 +294,7 @@ onMounted(() => {
             :disabled="!state.axisForm.splitLine.show"
             v-model="state.axisForm.splitLine.lineStyle.color"
             :predefine="predefineColors"
+            :effect="themes"
             @change="changeAxisStyle('splitLine')"
             is-custom
           />
@@ -343,6 +345,7 @@ onMounted(() => {
             v-model="state.axisForm.axisLabel.color"
             :predefine="predefineColors"
             @change="changeAxisStyle('axisLabel')"
+            :effect="themes"
             is-custom
           />
         </el-form-item>

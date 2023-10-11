@@ -110,6 +110,7 @@ onMounted(() => {
           <el-color-picker
             :persistent="false"
             v-model="state.basicStyleForm.areaBorderColor"
+            :effect="themes"
             is-custom
             :trigger-width="108"
             class="color-picker-style"
@@ -128,6 +129,7 @@ onMounted(() => {
             :persistent="false"
             v-model="state.basicStyleForm.areaBaseColor"
             is-custom
+            :effect="themes"
             :trigger-width="108"
             class="color-picker-style"
             :predefine="predefineColors"
@@ -165,6 +167,7 @@ onMounted(() => {
           <el-color-picker
             :persistent="false"
             v-model="state.basicStyleForm.tableBorderColor"
+            :effect="themes"
             is-custom
             :trigger-width="108"
             color-format="hex"
@@ -184,6 +187,7 @@ onMounted(() => {
             v-model="state.basicStyleForm.tableScrollBarColor"
             class="color-picker-style"
             :predefine="predefineColors"
+            :effect="themes"
             is-custom
             :trigger-width="108"
             color-format="rgb"
