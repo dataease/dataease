@@ -392,6 +392,9 @@ defineExpose({
 
 <style lang="less" scoped>
 .rich-main-class {
+  font-size: initial;
+  color: initial;
+  font-color: initial;
   width: 100%;
   height: 100%;
   overflow-y: auto !important;
