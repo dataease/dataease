@@ -60,6 +60,9 @@ const defaultStyle = {
   titleLayout: 'left',
   titleShow: false,
   titleColor: '',
+  textColorShow: false,
+  labelColor: '',
+  labelColorShow: false,
   title: ''
 }
 const customStyle = reactive({ ...defaultStyle })
@@ -83,11 +86,14 @@ const setCustomStyle = val => {
     bgColorShow,
     btnList,
     titleLayout,
+    labelColor,
+    labelColorShow,
     text,
     bgColor,
     layout,
     titleShow,
     titleColor,
+    textColorShow,
     title
   } = val
   if (!show) {
@@ -100,8 +106,9 @@ const setCustomStyle = val => {
   customStyle.layout = layout
   customStyle.titleShow = titleShow
   customStyle.titleColor = titleColor
+  customStyle.labelColor = labelColorShow ? labelColor || '' : ''
   customStyle.title = title
-  customStyle.text = text
+  customStyle.text = textColorShow ? text || '' : ''
   customStyle.titleLayout = titleLayout
 }
 
@@ -343,17 +350,23 @@ const queryData = () => {
     emitter.emit(`query-data-${ele}`)
   })
 }
-const textAlign = computed(() => {
+const titleStyle = computed(() => {
   return {
     textAlign: customStyle.titleLayout || 'left',
     color: customStyle.titleColor || '#1f2329'
+  } as CSSProperties
+})
+
+const labelStyle = computed(() => {
+  return {
+    color: customStyle.labelColor || '#1f2329'
   } as CSSProperties
 })
 </script>
 
 <template>
   <div class="v-query-container">
-    <p v-if="customStyle.titleShow" class="title" :style="textAlign">
+    <p v-if="customStyle.titleShow" class="title" :style="titleStyle">
       {{ customStyle.title }}
     </p>
     <div
@@ -374,7 +387,7 @@ const textAlign = computed(() => {
           <div class="query-field">
             <div class="label">
               <div class="label-wrapper">
-                <div class="label-wrapper-text">
+                <div class="label-wrapper-text" :style="labelStyle">
                   <el-tooltip effect="dark" :content="ele.name" placement="top">
                     {{ ele.name }}
                   </el-tooltip>
