@@ -7,32 +7,41 @@
       'subject-template'
     ]"
   >
-    <div class="vertical-layout" @click.stop="subjectChange">
-      <img
-        v-if="subjectItem.coverUrl"
-        :src="imgUrlTrans(subjectItem.coverUrl)"
-        alt=""
-        width="172"
-        height="79"
-      />
-      <Icon v-else name="dv-no-img" style="width: 172px; height: 79px"></Icon>
-    </div>
-    <div class="title-main">
-      <div class="title-area">
-        <span style="margin-top: 8px; margin-left: 8px" :title="subjectItem.name">{{
-          subjectItem.name
-        }}</span>
+    <div>
+      <div class="vertical-layout" @click.stop="subjectChange">
+        <img
+          v-if="subjectItem.coverUrl"
+          :src="imgUrlTrans(subjectItem.coverUrl)"
+          alt=""
+          width="172"
+          height="79"
+        />
+        <Icon v-else name="dv-no-img" style="width: 172px; height: 79px" />
       </div>
-      <div class="edit-area" v-if="subjectItem.type === 'self'">
-        <el-icon @click="subjectDelete()"><Delete class="custom-icon" /></el-icon>
-        <el-icon @click="subjectEdit()"> <EditPen class="custom-icon" /> </el-icon>
+      <div class="title-main">
+        <div class="title-area">
+          <span style="margin-top: 8px; margin-left: 8px" :title="subjectItem.name">{{
+            subjectItem.name
+          }}</span>
+        </div>
+        <div class="edit-area" v-if="subjectItem.type === 'self'">
+          <el-icon
+            @click="subjectDelete()"
+            class="m-custom-icon"
+            style="margin-right: 8px"
+            size="14px"
+          >
+            <Delete />
+          </el-icon>
+          <el-icon @click="subjectEdit()" class="m-custom-icon" size="14px"> <EditPen /> </el-icon>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref, toRefs, watch } from 'vue'
+import { computed, onMounted, reactive, toRefs } from 'vue'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
@@ -130,7 +139,6 @@ onMounted(() => {
 }
 
 .vertical-layout {
-  position: absolute;
   padding: 4px 4px 0 4px;
   width: 180px;
   height: 84px;
@@ -198,18 +206,13 @@ onMounted(() => {
 }
 
 .title-main {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  float: left;
   height: 31px;
   display: flex;
   border-top: 1px solid #dee0e3;
   width: 180px;
 }
 
-.subject-template:hover :deep(.custom-icon) {
+.subject-template:hover :deep(.m-custom-icon) {
   display: block;
 }
 
@@ -222,13 +225,15 @@ onMounted(() => {
 }
 
 .edit-area {
-  display: inline-block;
+  padding: 0 8px;
+  display: flex;
+  align-items: center;
   line-height: 35px;
 }
 
-.custom-icon {
+.m-custom-icon {
   display: none;
-  margin: -13px 0 0 0;
+  color: #646a73;
   &:hover {
     color: red;
   }

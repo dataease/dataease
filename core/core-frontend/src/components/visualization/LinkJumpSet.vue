@@ -62,7 +62,7 @@
                   </span>
                   <span>
                     <span class="tree-select-field">
-                      <el-icon>
+                      <el-icon style="margin-right: 4px">
                         <Icon
                           :name="`field_${fieldType[data.sourceDeType]}`"
                           :className="`field-icon-${fieldType[data.sourceDeType]}`"
@@ -110,8 +110,8 @@
                 <template v-if="state.linkJumpInfo">
                   <template v-if="state.linkJumpInfo.linkType === 'inner'">
                     <el-form label-position="top" class="main-form">
-                      <el-row :gutter="8">
-                        <el-col :span="11">
+                      <div class="m-row">
+                        <div style="flex: 1">
                           <el-form-item>
                             <template #label> 当前仪表板 </template>
                             <el-select style="width: 100%" v-model="dvInfo.name" disabled>
@@ -123,11 +123,11 @@
                               </el-option>
                             </el-select>
                           </el-form-item>
-                        </el-col>
-                        <el-col :span="2" class="icon-center">
+                        </div>
+                        <div class="icon-center">
                           <Icon style="width: 20px; height: 20px" name="dv-link-target" />
-                        </el-col>
-                        <el-col :span="11">
+                        </div>
+                        <div style="flex: 1">
                           <el-form-item>
                             <template #label> 目标仪表板 </template>
                             <el-tree-select
@@ -154,8 +154,8 @@
                               </template>
                             </el-tree-select>
                           </el-form-item>
-                        </el-col>
-                      </el-row>
+                        </div>
+                      </div>
 
                       <el-row :gutter="8">
                         <el-col :span="7"> 源字段 </el-col>
@@ -201,7 +201,6 @@
                                 :disabled="!targetViewInfo.sourceFieldActiveId"
                                 :placeholder="'请选择图表'"
                                 style="width: 100%"
-                                size="mini"
                                 @change="viewInfoOnChange(targetViewInfo)"
                               >
                                 <el-option
@@ -226,7 +225,6 @@
                                 :placeholder="'请选择字段'"
                                 :disabled="!targetViewInfo.sourceFieldActiveId"
                                 style="width: 100%"
-                                size="mini"
                               >
                                 <el-option
                                   v-for="viewField in state.viewIdFieldArrayMap[
@@ -266,7 +264,8 @@
                             </el-col>
                             <el-col :span="1">
                               <el-icon
-                                style="margin-top: 10px; cursor: pointer"
+                                style="margin-top: 6px; cursor: pointer"
+                                size="20px"
                                 @click="deleteLinkJumpField(index)"
                               >
                                 <Delete />
@@ -297,7 +296,7 @@
                             <template #content>
                               {{ $t('visualization.target_url_tips') }}
                             </template>
-                            <el-icon>
+                            <el-icon size="16px" style="margin-left: 4px; cursor: pointer">
                               <Icon name="icon_info_outlined" />
                             </el-icon>
                           </el-tooltip>
@@ -317,7 +316,7 @@
                             <template #content>
                               <span v-html="$t('chart.reference_field_tip')"></span>
                             </template>
-                            <el-icon>
+                            <el-icon size="16px" style="margin-left: 4px; cursor: pointer">
                               <Icon name="icon_info_outlined" />
                             </el-icon>
                           </el-tooltip>
@@ -383,12 +382,12 @@ import {
   updateJumpSet,
   viewTableDetailList
 } from '@/api/visualization/linkJump'
-import { reactive, ref, nextTick, onMounted, computed, watch } from 'vue'
+import { reactive, ref, nextTick, computed, watch } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { fieldType } from '@/utils/attr'
 import { storeToRefs } from 'pinia'
 import { queryTreeApi } from '@/api/visualization/dataVisualization'
-import { ElContainer, ElFormItem, ElHeader, ElMessage, ElScrollbar } from 'element-plus-secondary'
+import { ElMessage, ElScrollbar } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { getDatasetDetails, listFieldByDatasetGroup } from '@/api/dataset'
 import { BusiTreeRequest } from '@/models/tree/TreeNode'
@@ -401,7 +400,6 @@ const { dvInfo, canvasViewInfo } = storeToRefs(dvMainStore)
 const linkJumpInfoTree = ref(null)
 const { t } = useI18n()
 const dialogShow = ref(false)
-const searchField = ref('')
 const snapshotStore = snapshotStoreWithOut()
 
 const state = reactive({
@@ -1005,7 +1003,13 @@ span {
       height: 100%;
       width: 100%;
 
+      .m-row {
+        width: 100%;
+        display: flex;
+      }
+
       .icon-center {
+        padding: 0 8px;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -1109,6 +1113,8 @@ span {
   font-style: normal;
   font-weight: 400;
   color: #1f2329;
+  display: flex;
+  align-items: center;
 }
 
 .outer-content-right {

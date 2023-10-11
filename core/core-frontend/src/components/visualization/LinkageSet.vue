@@ -65,7 +65,7 @@
                     <span class="tree-select-field">
                       <Icon
                         class-name="view-type-icon"
-                        style="margin-right: 2px"
+                        style="margin-right: 4px"
                         :name="data.targetViewType"
                       />
                       {{ data.targetViewName }}
@@ -167,7 +167,7 @@
             </el-row>
             <el-row v-else style="height: 100%" class="custom-position">
               <Icon style="width: 116px; height: 100px" name="dv-empty"></Icon>
-              <span>请先勾选需要联动的图表</span>
+              <span style="margin-top: 8px">请先勾选需要联动的图表</span>
             </el-row>
           </el-col>
         </el-row>
@@ -183,19 +183,13 @@
 </template>
 
 <script lang="ts" setup>
-import {
-  queryVisualizationJumpInfo,
-  queryWithViewId,
-  updateJumpSet,
-  viewTableDetailList
-} from '@/api/visualization/linkJump'
-import { reactive, ref, nextTick, onMounted, computed, watch } from 'vue'
+import { queryVisualizationJumpInfo } from '@/api/visualization/linkJump'
+import { reactive, ref, nextTick, watch } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { fieldType } from '@/utils/attr'
-import { CalcFieldType } from '@/views/visualized/data/dataset/form/CalcFieldEdit.vue'
 import {
   getPanelAllLinkageInfo,
   getViewLinkageGatherArray,
@@ -209,7 +203,6 @@ const { dvInfo, canvasViewInfo, componentData } = storeToRefs(dvMainStore)
 const linkageInfoTree = ref(null)
 const { t } = useI18n()
 const dialogShow = ref(false)
-const searchField = ref('')
 const loading = ref(false)
 const curLinkageTargetViewsInfo = ref([])
 const snapshotStore = snapshotStoreWithOut()
@@ -627,7 +620,7 @@ span {
 }
 .view-type-icon {
   color: #3370ff;
-  width: 16px;
+  width: 22px;
   height: 16px;
 }
 .content-head {

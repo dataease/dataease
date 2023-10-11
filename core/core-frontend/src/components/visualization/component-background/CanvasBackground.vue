@@ -77,18 +77,15 @@
             >
               <el-icon><Plus /></el-icon>
             </el-upload>
-            <el-row>
+            <el-row style="margin-top: 8px">
               <span v-if="!canvasStyleData.background" class="image-hint">支持JPG、PNG、GIF</span>
-              <span v-if="canvasStyleData.background" class="re-update-span" @click="goFile"
-                >重新上传</span
-              >
+              <span v-if="canvasStyleData.background" class="re-update-span" @click="goFile">
+                重新上传
+              </span>
             </el-row>
           </div>
 
-          <img-view-dialog
-            v-model="state.dialogVisible"
-            :image-url="state.dialogImageUrl"
-          ></img-view-dialog>
+          <img-view-dialog v-model="state.dialogVisible" :image-url="state.dialogImageUrl" />
         </div>
       </div>
     </el-form>
