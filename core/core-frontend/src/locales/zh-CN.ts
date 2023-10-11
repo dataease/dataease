@@ -73,7 +73,7 @@ export default {
     account: '账号',
     name: '姓名',
     role: '角色',
-    state: '状态',
+    state: '是否启用',
     default_pwd: '默认密码',
     confirm_delete: '确定删除该用户吗？',
     add_title: '添加用户',
