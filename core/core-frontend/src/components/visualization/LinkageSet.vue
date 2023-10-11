@@ -620,7 +620,7 @@ span {
 }
 .view-type-icon {
   color: #3370ff;
-  width: 16px;
+  width: 22px;
   height: 16px;
 }
 .content-head {

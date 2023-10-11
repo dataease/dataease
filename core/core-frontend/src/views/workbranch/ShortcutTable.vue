@@ -9,19 +9,22 @@ import { shortcutOption } from './ShortcutOption'
 import { XpackComponent } from '@/components/plugin'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import { storeApi } from '@/api/visualization/dataVisualization'
+import { useCache } from '@/hooks/web/useCache'
+import { useUserStoreWithOut } from '@/store/modules/user'
+const userStore = useUserStoreWithOut()
 const { resolve } = useRouter()
 const { t } = useI18n()
 const interactiveStore = interactiveStoreWithOut()
-
+const { wsCache } = useCache()
 defineProps({
   expand: {
     type: Boolean,
     default: false
   }
 })
+const desktop = wsCache.get('app.desktop')
 const panelKeyword = ref()
 const activeName = ref('recent')
-const userAddPopper = ref(false)
 const activeCommand = ref('all_types')
 const state = reactive({
   tableData: [],
@@ -250,6 +253,9 @@ const executeStore = rowInfo => {
             }}</span>
             <span v-else-if="item.field && item.field === 'type'">{{
               typeMap[scope.row[item.field]]
+            }}</span>
+            <span v-else-if="desktop && item.field && item.field.endsWith('tor')">{{
+              userStore.getName
             }}</span>
             <span v-else>{{ scope.row[item.field] }}</span>
           </template>

@@ -61,7 +61,7 @@
             disabled: !canvasStyleData.backgroundImageEnable
           }"
         >
-          <div class="avatar-uploader-container">
+          <div class="avatar-uploader-container" :class="`img-area_${themes}`">
             <el-upload
               action=""
               :effect="themes"
@@ -77,18 +77,15 @@
             >
               <el-icon><Plus /></el-icon>
             </el-upload>
-            <el-row>
+            <el-row style="margin-top: 8px">
               <span v-if="!canvasStyleData.background" class="image-hint">支持JPG、PNG、GIF</span>
-              <span v-if="canvasStyleData.background" class="re-update-span" @click="goFile"
-                >重新上传</span
-              >
+              <span v-if="canvasStyleData.background" class="re-update-span" @click="goFile">
+                重新上传
+              </span>
             </el-row>
           </div>
 
-          <img-view-dialog
-            v-model="state.dialogVisible"
-            :image-url="state.dialogImageUrl"
-          ></img-view-dialog>
+          <img-view-dialog v-model="state.dialogVisible" :image-url="state.dialogImageUrl" />
         </div>
       </div>
     </el-form>
@@ -209,6 +206,37 @@ watch(
 }
 .avatar-uploader-container {
   margin-bottom: 16px;
+  :deep(.ed-upload--picture-card) {
+    background: #eff0f1;
+    border: 1px dashed #dee0e3;
+    border-radius: 4px;
+
+    .ed-icon {
+      color: #1f2329;
+    }
+
+    &:hover {
+      .ed-icon {
+        color: #3370ff;
+      }
+    }
+  }
+
+  &.img-area_dark {
+    :deep(.ed-upload-list__item).is-ready {
+      border-color: #434343;
+    }
+    :deep(.ed-upload--picture-card) {
+      background: #373737;
+      border-color: #434343;
+    }
+  }
+
+  &.img-area_light {
+    :deep(.ed-upload-list__item).is-ready {
+      border-color: #dee0e3;
+    }
+  }
 }
 .avatar-uploader {
   width: 90px;
@@ -287,9 +315,14 @@ watch(
 
       :deep(.ed-upload--picture-card) {
         cursor: not-allowed;
+      }
 
-        .ed-icon {
-          color: #8f959e;
+      .img-area_dark,
+      .img-area_light {
+        :deep(.ed-upload--picture-card) {
+          .ed-icon {
+            color: #bbbfc4;
+          }
         }
       }
 
