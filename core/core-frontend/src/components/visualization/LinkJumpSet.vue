@@ -395,12 +395,14 @@ import { BusiTreeRequest } from '@/models/tree/TreeNode'
 import { CalcFieldType } from '@/views/visualized/data/dataset/form/CalcFieldEdit.vue'
 import JumpSetOuterContentEditor from '@/components/visualization/JumpSetOuterContentEditor.vue'
 import { Search } from '@element-plus/icons-vue'
+import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo, canvasViewInfo } = storeToRefs(dvMainStore)
 const linkJumpInfoTree = ref(null)
 const { t } = useI18n()
 const dialogShow = ref(false)
 const searchField = ref('')
+const snapshotStore = snapshotStoreWithOut()
 
 const state = reactive({
   loading: false,
