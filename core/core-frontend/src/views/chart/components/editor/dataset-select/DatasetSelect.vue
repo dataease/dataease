@@ -38,7 +38,7 @@ const initDataset = () => {
     })
     .finally(() => {
       loadingDatasetTree.value = false
-      formRef.value.validate()
+      formRef.value?.validate()
     })
 }
 

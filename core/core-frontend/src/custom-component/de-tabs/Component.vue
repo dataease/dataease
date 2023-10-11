@@ -1,5 +1,5 @@
 <template>
-  <div style="width: 100%; height: 100%" :class="headClass">
+  <div style="width: 100%; height: 100%" :class="headClass" ref="tabComponentRef">
     <de-custom-tab
       v-model="editableTabsValue"
       @tab-add="addTab"
@@ -117,6 +117,7 @@ const dvMainStore = dvMainStoreWithOut()
 const { curComponent, tabMoveInActiveId, bashMatrixInfo } = storeToRefs(dvMainStore)
 const tabCanvas = ref(null)
 const { t } = useI18n()
+const tabComponentRef = ref(null)
 
 const props = defineProps({
   canvasStyleData: {
@@ -164,6 +165,20 @@ const editableTabsValue = ref(null)
 // 无边框
 const noBorderColor = ref('none')
 let currentInstance
+
+const calcTabLength = () => {
+  setTimeout(() => {
+    if (element.value.propValue.length > 1) {
+      const containerDom = document.getElementById(
+        'tab-' + element.value.propValue[element.value.propValue.length - 1].name
+      )
+      tabsAreaScroll.value =
+        containerDom.parentNode.clientWidth > tabComponentRef.value.clientWidth - 100
+    } else {
+      tabsAreaScroll.value = false
+    }
+  })
+}
 
 const beforeHandleCommand = (item, param) => {
   return {
@@ -290,10 +305,6 @@ const headClass = computed(() => {
     return 'tab-head-' + element.value.style.headHorizontalPosition
   }
 })
-
-const calcTabLength = () => {
-  // do calcTabLength
-}
 
 const titleStyle = itemName => {
   if (editableTabsValue.value === itemName) {

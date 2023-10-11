@@ -104,7 +104,7 @@ fillCardInfo()
   <div class="workbranch" v-loading="requestStore.loadingMap[permissionStore.currentPath]">
     <div class="info-quick-creation">
       <div class="user-info">
-        <el-icon class="main-color">
+        <el-icon class="main-color user-icon-container">
           <Icon name="user-img" />
         </el-icon>
         <div class="info">
@@ -241,6 +241,10 @@ fillCardInfo()
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
+      .user-icon-container {
+        width: 48px !important;
+        height: 48px !important;
+      }
       .ed-icon {
         font-size: 48px;
         padding: 8px;
@@ -280,6 +284,7 @@ fillCardInfo()
           font-size: 14px;
           font-weight: 400;
           line-height: 22px;
+          width: 200px;
         }
       }
 

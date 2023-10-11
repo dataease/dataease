@@ -386,7 +386,7 @@ initFunction()
               {{ t('dataset.calc_tips.tip7') }}
               <br />
               {{ t('dataset.calc_tips.tip8') }}
-              https://doris.apache.org/zh-CN/
+              https://calcite.apache.org/docs/reference.html
             </template>
             <el-icon>
               <Icon name="icon_info_outlined"></Icon>
