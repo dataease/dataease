@@ -47,7 +47,7 @@ export default {
     change_password: '修改密码',
     name: '名称',
     role: '角色',
-    state: '状态',
+    state: '是否启用',
     default_pwd: '默认密码',
     confirm_delete: '确认删除该用户吗？'
   },
