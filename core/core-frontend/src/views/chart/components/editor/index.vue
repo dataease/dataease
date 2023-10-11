@@ -1563,6 +1563,7 @@ const onRefreshChange = val => {
                       v-if="chartStyleShow"
                       :properties="chartViewInstance.properties"
                       :property-inner-all="chartViewInstance.propertyInner"
+                      :common-background-pop="curComponent?.commonBackground"
                       :chart="view"
                       :themes="themes"
                       :dimension-data="state.dimension"

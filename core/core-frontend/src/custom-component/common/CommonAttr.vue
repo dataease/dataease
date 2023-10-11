@@ -17,17 +17,19 @@ const props = withDefaults(
     type?: 'light' | 'dark'
     themes?: EditorTheme
     element: any
+    showStyle: boolean
     backgroundColorPickerWidth?: number
     backgroundBorderSelectWidth?: number
   }>(),
   {
+    showStyle: true,
     themes: 'dark',
     backgroundColorPickerWidth: 50,
     backgroundBorderSelectWidth: 108
   }
 )
 
-const { themes, element } = toRefs(props)
+const { themes, element, showStyle } = toRefs(props)
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo } = storeToRefs(dvMainStore)
 const activeName = ref(element.value.collapseName)
@@ -132,7 +134,13 @@ onMounted(() => {
         />
       </el-collapse-item>
 
-      <el-collapse-item :effect="themes" title="样式" name="style" class="common-style-area">
+      <el-collapse-item
+        v-if="showStyle"
+        :effect="themes"
+        title="样式"
+        name="style"
+        class="common-style-area"
+      >
         <el-form label-position="top">
           <el-row :gutter="8">
             <el-col
