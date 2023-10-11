@@ -6,10 +6,7 @@ import { Area as G2Area, AreaOptions } from '@antv/g2plot/esm/plots/area'
 import { getPadding, setGradientColor } from '@/views/chart/components/js/panel/common/common_antv'
 import { cloneDeep } from 'lodash-es'
 import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
-import {
-  singleDimensionTooltipFormatter,
-  valueFormatter
-} from '@/views/chart/components/js/formatter'
+import { valueFormatter } from '@/views/chart/components/js/formatter'
 import {
   LINE_AXIS_TYPE,
   LINE_EDITOR_PROPERTY,

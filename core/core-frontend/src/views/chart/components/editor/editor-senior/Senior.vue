@@ -13,7 +13,7 @@ import { updateJumpSetActive } from '@/api/visualization/linkJump'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { updateLinkageActive } from '@/api/visualization/linkage'
 import { includesAny } from '../util/StringUtils'
-import { ElMessage } from 'element-plus-secondary'
+import { ElIcon, ElMessage } from 'element-plus-secondary'
 import { storeToRefs } from 'pinia'
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo } = storeToRefs(dvMainStore)
@@ -219,14 +219,17 @@ const linkageActiveChange = () => {
               <el-button
                 class="circle-button"
                 :title="t('chart.edit')"
-                type="text"
+                type="primary"
+                link
                 size="small"
                 :style="{ width: '24px', marginLeft: '4px', float: 'right' }"
                 @click="linkageSetOpen"
                 :disabled="!chart.linkageActive"
               >
                 <template #icon>
-                  <Icon name="icon_edit_outlined" />
+                  <el-icon size="14px">
+                    <Icon name="icon_edit_outlined" />
+                  </el-icon>
                 </template>
               </el-button>
             </div>
@@ -244,14 +247,17 @@ const linkageActiveChange = () => {
               <el-button
                 class="circle-button"
                 :title="t('chart.edit')"
-                type="text"
+                type="primary"
+                link
                 size="small"
                 :style="{ width: '24px', marginLeft: '4px', float: 'right' }"
                 @click="linkJumpSetOpen"
                 :disabled="!chart.jumpActive"
               >
                 <template #icon>
-                  <Icon name="icon_edit_outlined" />
+                  <el-icon size="14px">
+                    <Icon name="icon_edit_outlined" />
+                  </el-icon>
                 </template>
               </el-button>
             </div>
