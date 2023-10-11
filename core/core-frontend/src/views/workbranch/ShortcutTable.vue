@@ -156,6 +156,26 @@ const executeStore = rowInfo => {
     rowInfo.favorite = !rowInfo.favorite
   })
 }
+
+const getEmptyImg = (): string => {
+  if (panelKeyword.value) {
+    return 'tree'
+  }
+  return 'noneWhite'
+}
+
+const getEmptyDesc = (): string => {
+  if (panelKeyword.value) {
+    return '没有找到相关内容'
+  }
+  if (activeName.value === 'recent') {
+    return '暂无内容'
+  }
+  if (activeName.value === 'store') {
+    return '暂无收藏'
+  }
+  return ''
+}
 </script>
 
 <template>
@@ -217,7 +237,13 @@ const executeStore = rowInfo => {
       </el-col>
     </el-row>
     <div v-if="activeName === 'recent' || activeName === 'store'" class="panel-table">
-      <GridTable :show-pagination="false" :table-data="state.tableData" @sort-change="sortChange">
+      <GridTable
+        :show-pagination="false"
+        :table-data="state.tableData"
+        @sort-change="sortChange"
+        :empty-desc="getEmptyDesc()"
+        :empty-img="getEmptyImg()"
+      >
         <el-table-column key="name" width="280" prop="name" :label="t('common.name')">
           <template v-slot:default="scope">
             <div class="name-content">

@@ -12,7 +12,9 @@ const props = defineProps({
   pagination: propTypes.object,
   isRememberSelected: propTypes.bool.def(false),
   selectedFlags: propTypes.string.def('id'),
-  tableData: propTypes.array
+  tableData: propTypes.array,
+  emptyDesc: propTypes.string,
+  emptyImg: propTypes.string
 })
 
 const attrs = useAttrs()
@@ -71,6 +73,9 @@ const state = reactive({
   tableAttrs: {}
 })
 
+const imgType = computed(() => {
+  return props.emptyImg ? props.emptyImg : props.isSearch ? 'tree' : 'noneWhite'
+})
 const table = ref(null)
 
 const multipleSelectionAll = computed(() => [
@@ -124,7 +129,10 @@ defineExpose({
         <slot />
       </table-body>
       <template #empty>
-        <empty-background description="暂无数据" :img-type="isSearch ? 'tree' : 'noneWhite'" />
+        <empty-background
+          :description="props.emptyDesc ? props.emptyDesc : '暂无数据'"
+          :img-type="imgType || 'noneWhite'"
+        />
       </template>
     </el-table>
     <div v-if="showPagination && !!tableData.length" class="pagination-cont">

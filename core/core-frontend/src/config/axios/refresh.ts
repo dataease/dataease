@@ -27,7 +27,7 @@ const getRefreshStatus = () => {
   return wsCache.get('de-global-refresh') || false
 }
 const setRefreshStatus = (status: boolean) => {
-  wsCache.set('de-global-refresh', status)
+  wsCache.set('de-global-refresh', status, { exp: 5 })
 }
 
 const cacheRequest = cb => {
