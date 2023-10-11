@@ -217,9 +217,10 @@ const linkageActiveChange = () => {
             <div style="margin-bottom: 16px">
               <span :class="'label-' + props.themes">联动设置</span>
               <el-button
-                class="circle-button"
+                class="circle-button font14"
                 :title="t('chart.edit')"
                 type="text"
+                :class="'label-' + props.themes"
                 size="small"
                 :style="{ width: '24px', marginLeft: '4px', float: 'right' }"
                 @click="linkageSetOpen"
@@ -242,9 +243,10 @@ const linkageActiveChange = () => {
             <div style="margin-bottom: 16px">
               <span :class="'label-' + props.themes">跳转设置</span>
               <el-button
-                class="circle-button"
+                class="circle-button font14"
                 :title="t('chart.edit')"
                 type="text"
+                :class="'label-' + props.themes"
                 size="small"
                 :style="{ width: '24px', marginLeft: '4px', float: 'right' }"
                 @click="linkJumpSetOpen"
@@ -312,5 +314,17 @@ span {
 
 .label-dark {
   color: #a6a6a6;
+  &.ed-button {
+    color: #3370ff;
+  }
+  &.is-disabled {
+    color: #5f5f5f;
+  }
+}
+
+.font14 {
+  :deep(.ed-icon) {
+    font-size: 14px;
+  }
 }
 </style>

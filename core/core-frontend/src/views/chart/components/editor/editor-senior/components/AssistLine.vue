@@ -139,7 +139,7 @@ onMounted(() => {
       <div>
         <span :class="'label-' + props.themes">辅助线设置</span>
         <el-button
-          class="circle-button"
+          class="circle-button font14"
           type="text"
           size="small"
           :style="{ width: '24px', marginLeft: '4px', float: 'right' }"
@@ -267,5 +267,11 @@ span {
 
 .label-dark {
   color: #a6a6a6;
+}
+
+.font14 {
+  :deep(.ed-icon) {
+    font-size: 14px;
+  }
 }
 </style>
