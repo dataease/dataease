@@ -564,7 +564,8 @@ const onTooltipChange = (chartForm: ChartEditorForm<ChartTooltipAttr>) => {
   if (requestData) {
     calcData(view.value)
   }
-  if (render) {
+  // for compatibility
+  if (render !== false) {
     renderChart(view.value)
   }
 }
@@ -2909,7 +2910,7 @@ span {
 
 .custom_sort_dialog {
   max-height: calc(100vh - 120px);
-  min-height: 336px;
+  min-height: 152px;
 
   display: flex;
   flex-direction: column;

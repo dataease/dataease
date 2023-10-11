@@ -2,8 +2,8 @@ import { WaterfallOptions, Waterfall as G2Waterfall } from '@antv/g2plot/esm/plo
 import { G2PlotChartView, G2PlotDrawOptions } from '../../types/impl/g2plot'
 import { flow, hexColorToRGBA, parseJson } from '../../../util'
 import { valueFormatter } from '../../../formatter'
-import { getPadding, setGradientColor } from '../../common/common_antv'
-import { flow as flowLeft } from 'lodash-es'
+import { getPadding, getTooltipSeriesTotalMap, setGradientColor } from '../../common/common_antv'
+import { flow as flowLeft, isEmpty } from 'lodash-es'
 
 /**
  * 瀑布图
@@ -186,12 +186,82 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
     return tmpOptions
   }
 
+  protected configTooltip(chart: Chart, options: WaterfallOptions): WaterfallOptions {
+    const customAttr: DeepPartial<ChartAttr> = parseJson(chart.customAttr)
+    const tooltipAttr = customAttr.tooltip
+    const yAxis = chart.yAxis
+    if (!tooltipAttr.show) {
+      return {
+        ...options,
+        tooltip: false
+      }
+    }
+    const formatterMap = tooltipAttr.seriesTooltipFormatter
+      ?.filter(i => i.show)
+      .reduce((pre, next) => {
+        pre[next.id] = next
+        return pre
+      }, {}) as Record<string, SeriesFormatter>
+    const totalMap = getTooltipSeriesTotalMap(options.data)
+    const tooltip: WaterfallOptions['tooltip'] = {
+      showTitle: true,
+      customItems(originalItems) {
+        if (!tooltipAttr.seriesTooltipFormatter?.length) {
+          return originalItems
+        }
+        const result = []
+        const head = originalItems[0]
+        // 汇总
+        if (!head.data.quotaList) {
+          Object.keys(formatterMap).forEach(id => {
+            const formatter = formatterMap[id]
+            let tmpValue = totalMap[id]
+            let color = 'grey'
+            if (id === yAxis[0].id) {
+              tmpValue = parseFloat(head.value as unknown as string)
+              color = head.color
+            }
+            const value = valueFormatter(tmpValue, formatter.formatterCfg)
+            const name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
+            if (id === yAxis[0].id) {
+              result.unshift({ color, name, value })
+              return
+            }
+            result.push({ color, name, value })
+          })
+          return result
+        }
+        originalItems
+          .filter(item => formatterMap[item.data.quotaList[0].id])
+          .forEach(item => {
+            const formatter = formatterMap[item.data.quotaList[0].id]
+            const value = valueFormatter(parseFloat(item.value as string), formatter.formatterCfg)
+            const name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
+            result.push({ ...item, name, value })
+          })
+        head.data.dynamicTooltipValue?.forEach(item => {
+          const formatter = formatterMap[item.fieldId]
+          if (formatter) {
+            const value = valueFormatter(parseFloat(item.value), formatter.formatterCfg)
+            const name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
+            result.push({ color: 'grey', name, value })
+          }
+        })
+        return result
+      }
+    }
+    return {
+      ...options,
+      tooltip
+    }
+  }
+
   protected setupOptions(chart: Chart, options: WaterfallOptions): WaterfallOptions {
     return flow(
       this.configTheme,
       this.configBasicStyle,
       this.configLabel,
-      this.configMultiSeriesTooltip,
+      this.configTooltip,
       this.configXAxis,
       this.configYAxis,
       this.configMeta

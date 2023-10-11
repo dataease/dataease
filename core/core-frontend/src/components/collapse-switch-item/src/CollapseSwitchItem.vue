@@ -28,10 +28,6 @@ const onSwitchChange = e => {
   if (!changeModel.value.show && collapseItem.value.isActive) {
     collapseItem.value.handleHeaderClick()
   }
-
-  if (switchValue.value !== collapseOpen.value) {
-    e.stopPropagation()
-  }
 }
 const switchValue = computed({
   get() {
@@ -41,15 +37,9 @@ const switchValue = computed({
     emit('update:modelValue', value)
   }
 })
-const collapseOpen = ref(false)
 </script>
 <template>
-  <el-collapse-item
-    ref="collapseItem"
-    :effect="themes"
-    @click="collapseOpen = !collapseOpen"
-    v-bind="$attrs"
-  >
+  <el-collapse-item ref="collapseItem" :effect="themes" v-bind="$attrs">
     <template #title>
       <div class="collapse-header">
         <span>

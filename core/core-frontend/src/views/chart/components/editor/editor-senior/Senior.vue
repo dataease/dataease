@@ -215,7 +215,7 @@ const linkageActiveChange = () => {
             @modelChange="linkageActiveChange"
           >
             <div style="margin-bottom: 16px">
-              <span>联动设置</span>
+              <span :class="'label-' + props.themes">联动设置</span>
               <el-button
                 class="circle-button"
                 :title="t('chart.edit')"
@@ -240,7 +240,7 @@ const linkageActiveChange = () => {
             @modelChange="linkJumpActiveChange"
           >
             <div style="margin-bottom: 16px">
-              <span>跳转设置</span>
+              <span :class="'label-' + props.themes">跳转设置</span>
               <el-button
                 class="circle-button"
                 :title="t('chart.edit')"
@@ -308,5 +308,9 @@ span {
   :deep(.ed-form-item__label) {
     justify-content: flex-start;
   }
+}
+
+.label-dark {
+  color: #a6a6a6;
 }
 </style>

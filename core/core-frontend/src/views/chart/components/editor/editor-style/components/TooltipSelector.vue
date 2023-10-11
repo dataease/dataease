@@ -135,7 +135,7 @@ const updateSeriesTooltip = (newAxis?: Axis[], oldAxis?: Axis[]) => {
   if (!newAxis.length) {
     curSeriesFormatter.value = {}
   }
-  emit('onTooltipChange', { data: state.tooltipForm })
+  emit('onTooltipChange', { data: state.tooltipForm, render: false })
   emit('onExtTooltipChange', extTooltip)
 }
 const showFormatterSummary = computed(() => {
@@ -384,6 +384,7 @@ onMounted(() => {
         <el-select
           :disabled="!formatterEditable"
           v-model="curSeriesFormatter"
+          :effect="themes"
           value-key="id"
           class="series-select"
         >
