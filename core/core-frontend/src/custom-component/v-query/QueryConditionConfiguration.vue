@@ -217,7 +217,7 @@ const handleDatasetChange = () => {
 }
 
 const handleValueSourceChange = () => {
-  curComponent.value.defaultValue = undefined
+  curComponent.value.defaultValue = curComponent.value.multiple ? [] : undefined
   multipleChange(curComponent.value.multiple)
 }
 
