@@ -273,6 +273,7 @@ onMounted(() => {
       >
         <template #label>&nbsp;</template>
         <el-select
+          size="small"
           style="width: 108px"
           :effect="themes"
           v-model.number="state.tooltipForm.fontSize"
@@ -295,6 +296,7 @@ onMounted(() => {
         :class="'form-item-' + themes"
       >
         <el-select
+          size="small"
           style="width: 100%"
           :effect="props.themes"
           v-model="state.tooltipForm.tooltipFormatter.type"
@@ -382,6 +384,7 @@ onMounted(() => {
     <div v-if="showProperty('seriesTooltipFormatter')">
       <el-form-item>
         <el-select
+          size="small"
           :disabled="!formatterEditable"
           v-model="curSeriesFormatter"
           :effect="themes"
@@ -449,6 +452,7 @@ onMounted(() => {
                 :class="'form-item-' + themes"
               >
                 <el-select
+                  size="small"
                   v-model="curSeriesFormatter.summary"
                   :disabled="!curSeriesFormatter.show"
                   :effect="props.themes"
@@ -470,6 +474,7 @@ onMounted(() => {
             :class="'form-item-' + themes"
           >
             <el-select
+              size="small"
               :disabled="!curSeriesFormatter.show"
               style="width: 100%"
               :effect="props.themes"
@@ -577,5 +582,8 @@ onMounted(() => {
   align-items: center;
   justify-content: flex-start;
   padding: 0 11px;
+}
+.form-item-checkbox {
+  margin-bottom: 8px !important;
 }
 </style>
