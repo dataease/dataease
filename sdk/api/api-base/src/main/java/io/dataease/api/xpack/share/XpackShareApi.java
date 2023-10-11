@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
+import java.util.Map;
 
 public interface XpackShareApi {
 
@@ -40,4 +41,7 @@ public interface XpackShareApi {
 
     @PostMapping("/validate")
     boolean validatePwd(@RequestBody XpackSharePwdValidator validator);
+
+    @GetMapping("/queryRelationByUserId/{uid}")
+    Map<String, String> queryRelationByUserId(@PathVariable("uid") Long uid);
 }

@@ -1,7 +1,7 @@
 <template>
   <div class="info-card">
     <div class="info-title">{{ t('visualization.create_by') }}</div>
-    <div class="info-content">{{ dvInfo.creatorName }}</div>
+    <div class="info-content">{{ dvInfo.creatorName || 'N/A' }}</div>
     <div class="info-title">{{ t('visualization.create_time') }}</div>
     <div class="info-content">{{ timestampFormatDate(dvInfo.createTime) }}</div>
     <div class="info-title">{{ t('visualization.update_by') }}</div>
