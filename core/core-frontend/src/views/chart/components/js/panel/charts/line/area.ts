@@ -91,27 +91,7 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
     const { chart, container, action } = drawOptions
     if (chart?.data) {
       // data
-      let data = cloneDeep(chart.data.data)
-
-      //针对多组堆叠，需要把所有的数据按照第一组的顺序进行排列，不然连线会错乱
-      const extXAxisOrder = []
-      const xAxisOrder = []
-      _.forEach(data, x => {
-        const extXAxis = x.category
-        if (!extXAxisOrder.includes(extXAxis)) {
-          extXAxisOrder.push(extXAxis)
-        }
-        const xAxis = x.field
-        if (!xAxisOrder.includes(xAxis)) {
-          xAxisOrder.push(xAxis)
-        }
-      })
-      if (extXAxisOrder.length > 1) {
-        data = _.sortBy(data, [
-          x => _.findIndex(extXAxisOrder, o => o === x.category),
-          x => _.findIndex(xAxisOrder, o => o === x.field)
-        ])
-      }
+      const data = cloneDeep(chart.data.data)
 
       const initOptions: AreaOptions = {
         ...this.baseOptions,
