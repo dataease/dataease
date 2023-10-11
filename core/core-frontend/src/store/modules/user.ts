@@ -50,7 +50,7 @@ export const userStore = defineStore('user', {
     async setUser() {
       const desktop = wsCache.get('app.desktop')
       const res = desktop
-        ? { data: { uid: '1', name: 'admin', oid: '1', language: 'zh-CN' } }
+        ? { data: { uid: '1', name: 'DataEase 用户', oid: '1', language: 'zh-CN' } }
         : await userInfo()
       const data = res.data
       data.token = wsCache.get('user.token')

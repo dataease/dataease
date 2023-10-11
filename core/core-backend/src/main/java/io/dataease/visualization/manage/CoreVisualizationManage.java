@@ -135,11 +135,11 @@ public class CoreVisualizationManage {
     }
 
     private VisualizationNodeBO rootNode() {
-        return new VisualizationNodeBO(0L, "root", false, 3, -1L, 0);
+        return new VisualizationNodeBO(0L, "root", false, 7, -1L, 0);
     }
 
     private VisualizationNodeBO convert(VisualizationNodePO po) {
-        return new VisualizationNodeBO(po.getId(), po.getName(), StringUtils.equals(po.getNodeType(), "leaf"), 3, po.getPid(), 0);
+        return new VisualizationNodeBO(po.getId(), po.getName(), StringUtils.equals(po.getNodeType(), "leaf"), 7, po.getPid(), 0);
     }
 
     public CoreVisualizationManage proxy() {
