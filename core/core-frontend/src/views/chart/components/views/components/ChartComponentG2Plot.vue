@@ -47,7 +47,6 @@ const state = reactive({
   },
   linkageActiveParam: null,
   pointParam: null,
-  myChart: null,
   loading: false,
   data: { fields: [] } // 图表数据
 })
@@ -113,17 +112,17 @@ const renderChart = async view => {
       break
   }
 }
-
+let myChart = null
 const renderG2Plot = (chart, chartView: G2PlotChartView<any, any>) => {
-  state.myChart?.destroy()
-  state.myChart = chartView.drawChart({
-    chartObj: state.myChart,
+  myChart?.destroy()
+  myChart = chartView.drawChart({
+    chartObj: myChart,
     container: containerId,
     chart: chart,
     scale: 1,
     action
   })
-  state.myChart?.render()
+  myChart?.render()
 }
 
 const dynamicAreaId = ref('')
@@ -136,9 +135,9 @@ const renderL7Plot = (chart, chartView: L7PlotChartView<any, any>) => {
     areaId = dynamicAreaId.value
   }
   debounce(async () => {
-    state.myChart?.destroy()
-    state.myChart = await chartView.drawChart({
-      chartObj: state.myChart,
+    myChart?.destroy()
+    myChart = await chartView.drawChart({
+      chartObj: myChart,
       container: containerId,
       chart,
       areaId,
@@ -229,12 +228,8 @@ defineExpose({
   renderChart
 })
 
-onMounted(() => {
-  // queryData(true)
-  // renderChart({ render: ChartRenderType.ANT_V, type: 'bar' })
-})
 onBeforeUnmount(() => {
-  state.myChart?.destroy()
+  myChart?.destroy()
 })
 </script>
 
