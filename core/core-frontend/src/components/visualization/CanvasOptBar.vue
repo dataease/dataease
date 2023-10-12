@@ -1,5 +1,5 @@
 <template>
-  <div v-if="existLinkage" class="bar-main-right">
+  <div v-if="existLinkage" class="bar-main-right" :class="{ 'bar-main-edit-right': dvEditMode }">
     <el-button size="mini" type="warning" @click="clearAllLinkage"
       ><el-icon class="bar-base-icon"> <Icon name="dv-bar-unLinkage"></Icon></el-icon
       >{{ $t('visualization.remove_all_linkage') }}</el-button
@@ -36,6 +36,9 @@ const clearAllLinkage = () => {
   dvMainStore.clearPanelLinkageInfo()
 }
 
+const dvEditMode = computed(() => {
+  return dvMainStore.dvInfo.type === 'dataV' && dvMainStore.editMode === 'preview'
+})
 const existLinkage = computed(() => {
   if (isMainCanvas(props.canvasId)) {
     let linkageFiltersCount = 0
@@ -74,6 +77,11 @@ const existLinkage = computed(() => {
   opacity: 0.8;
   z-index: 20;
   position: absolute;
+}
+
+.bar-main-edit-right {
+  top: 8px;
+  right: 102px !important;
 }
 
 .bar-main-left {

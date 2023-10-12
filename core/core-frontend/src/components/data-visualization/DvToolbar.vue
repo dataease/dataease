@@ -16,6 +16,7 @@ import TextGroup from '@/custom-component/component-group/TextGroup.vue'
 import CommonGroup from '@/custom-component/component-group/CommonGroup.vue'
 import DeResourceGroupOpt from '@/views/common/DeResourceGroupOpt.vue'
 import { canvasSave } from '@/utils/canvasUtils'
+import { changeSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
 let timer = null
 let nameEdit = ref(false)
 let inputName = ref('')
@@ -26,6 +27,7 @@ const lockStore = lockStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const { styleChangeTimes, snapshotIndex } = storeToRefs(snapshotStore)
 const resourceGroupOpt = ref(null)
+const dvToolbarMain = ref(null)
 const {
   curComponent,
   canvasStyleData,
@@ -36,7 +38,7 @@ const {
   editMode
 } = storeToRefs(dvMainStore)
 const { areaData } = storeToRefs(composeStore)
-let scale = ref(canvasStyleData.value.scale)
+let scaleEdit = 100
 
 const closeEditCanvasName = () => {
   nameEdit.value = false
@@ -82,11 +84,18 @@ const redo = () => {
 }
 
 const preview = () => {
+  //根据当前宽度变更画布scale 同时记录变更之前
   dvMainStore.setEditMode('preview')
+  nextTick(() => {
+    scaleEdit = canvasStyleData.value.scale
+    const newScale = getFullScale()
+    changeSizeWithScale(newScale)
+  })
 }
 
 const edit = () => {
   dvMainStore.setEditMode('edit')
+  changeSizeWithScale(scaleEdit)
 }
 
 const resourceOptFinish = param => {
@@ -151,13 +160,18 @@ const onDvNameChange = () => {
   snapshotStore.recordSnapshotCache()
 }
 
+const getFullScale = () => {
+  const curWidth = dvToolbarMain.value.clientWidth
+  return (curWidth * 100) / canvasStyleData.value.width
+}
+
 eventBus.on('preview', preview)
 eventBus.on('save', saveCanvasWithCheck)
 eventBus.on('clearCanvas', clearCanvas)
 </script>
 
 <template>
-  <div class="toolbar-main">
+  <div class="toolbar-main" ref="dvToolbarMain">
     <div class="toolbar" :class="{ 'preview-state-head': editMode === 'preview' }">
       <el-icon class="custom-el-icon back-icon" @click="backToMain()">
         <Icon class="toolbar-icon" name="icon_left_outlined" />

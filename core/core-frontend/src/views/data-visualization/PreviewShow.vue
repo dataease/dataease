@@ -226,7 +226,7 @@ onBeforeMount(() => {
       align-items: center;
       .content-outer {
         width: 100%;
-        height: calc(100vh - 95px);
+        height: calc(100vh - 112px);
         display: flex;
         overflow-y: auto;
         align-items: center;

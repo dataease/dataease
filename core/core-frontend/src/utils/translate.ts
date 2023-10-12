@@ -1,4 +1,4 @@
-import { divide, multiply, round } from 'mathjs'
+import { divide, multiply, floor } from 'mathjs'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 
@@ -134,7 +134,7 @@ export function mod360(deg) {
 }
 
 export function changeStyleWithScale(value, scale = canvasStyleData.value.scale) {
-  return round(multiply(value, divide(parseInt(scale + ''), 100)))
+  return floor(multiply(value, divide(parseInt(scale + ''), 100)))
 }
 
 export function toPercent(val) {
