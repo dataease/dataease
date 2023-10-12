@@ -41,7 +41,7 @@
                                        `copy_id`)
         SELECT core_chart_view.`id` + #{copyId} as id,
                `title`,
-               #{newDvId} as 'scene_id', `table_id`,
+               #{newDvId} as scene_id, `table_id`,
                `type`,
                `render`,
                `result_count`,
@@ -73,7 +73,7 @@
                `refresh_time`,
                `linkage_active`,
                `jump_active`,
-               core_chart_view.`id` as 'copy_from', #{copyId} as 'copy_id'
+               core_chart_view.`id` as copy_from, #{copyId} as copy_id
         FROM core_chart_view
         WHERE core_chart_view.scene_id = #{sourceDvId}
     </insert>
@@ -179,7 +179,7 @@
             (
                 SELECT
                     core_dataset_group.id,
-                    core_dataset_group.id AS 'resource_id',
+                    core_dataset_group.id AS resource_id,
                         core_dataset_group.NAME,
                     'dataset' AS type,
                     core_dataset_group.create_by AS creator
@@ -189,7 +189,7 @@
                     core_dataset_group.node_type = 'dataset' UNION ALL
                 SELECT
                     core_datasource.id,
-                    core_datasource.id AS 'resource_id',
+                    core_datasource.id AS resource_id,
                         core_datasource.NAME,
                     'datasource' AS type,
                     core_datasource.create_by AS creator
@@ -199,7 +199,7 @@
                     core_datasource.type != 'folder' UNION ALL
                 SELECT
                     data_visualization_info.id,
-                    data_visualization_info.id AS 'resource_id',
+                    data_visualization_info.id AS resource_id,
                     data_visualization_info.NAME,
                     (
                     CASE
@@ -270,7 +270,7 @@
                visualization_link_jump_info.`checked`,
                visualization_link_jump_info.`attach_params`,
                visualization_link_jump_info.`id`             AS copy_from,
-               #{copyId} AS 'copy_id'
+               #{copyId} AS copy_id
         FROM visualization_link_jump_info
                  INNER JOIN (SELECT id        AS t_id,
                                     copy_from AS s_id
@@ -294,7 +294,7 @@
                visualization_link_jump_target_view_info.`target_view_id`,
                visualization_link_jump_target_view_info.`target_field_id`,
                visualization_link_jump_target_view_info.`target_id`             AS copy_from,
-               #{copyId} AS 'copy_id'
+               #{copyId} AS copy_id
         FROM visualization_link_jump_target_view_info
                  INNER JOIN (SELECT id        AS t_id,
                                     copy_from AS s_id
