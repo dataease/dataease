@@ -79,9 +79,6 @@
             </el-upload>
             <el-row style="margin-top: 8px">
               <span v-if="!canvasStyleData.background" class="image-hint">支持JPG、PNG、GIF</span>
-              <!--              <span v-if="canvasStyleData.background" class="re-update-span" @click="goFile">
-                重新上传
-              </span>-->
               <el-button
                 size="small"
                 style="margin-left: -4px"
