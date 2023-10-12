@@ -162,8 +162,8 @@
               </el-row>
             </el-row>
             <el-row v-else style="height: 100%" class="custom-position">
-              <Icon style="width: 116px; height: 100px" name="dv-empty"></Icon>
-              <span style="margin-top: 8px">请先勾选需要联动的图表</span>
+              <Icon style="width: 125px; height: 125px" name="dv-empty" />
+              <span style="margin-top: 8px; font-size: 14px">请先勾选需要联动的图表</span>
             </el-row>
           </el-col>
         </el-row>
