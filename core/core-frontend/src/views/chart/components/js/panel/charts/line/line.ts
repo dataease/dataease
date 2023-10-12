@@ -6,7 +6,7 @@ import { Line as G2Line, LineOptions } from '@antv/g2plot/esm/plots/line'
 import { getPadding } from '../../common/common_antv'
 import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
 import { cloneDeep } from 'lodash-es'
-import { formatterItem, valueFormatter } from '@/views/chart/components/js/formatter'
+import { valueFormatter } from '@/views/chart/components/js/formatter'
 import {
   LINE_AXIS_TYPE,
   LINE_EDITOR_PROPERTY,

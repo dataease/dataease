@@ -59,49 +59,49 @@ const hide = () => {
 
 const paste = () => {
   copyStore.paste(true)
-  snapshotStore.recordSnapshot('paste')
+  snapshotStore.recordSnapshotCache('paste')
 }
 
 const deleteComponent = () => {
   if (curComponent.value) {
-    dvMainStore.deleteComponent()
+    dvMainStore.deleteComponentById(curComponent.value.id)
   } else if (areaData.value.components.length) {
     areaData.value.components.forEach(component => {
       dvMainStore.deleteComponentById(component.id)
     })
   }
   eventBus.emit('hideArea-canvas-main')
-  snapshotStore.recordSnapshot('deleteComponent')
+  snapshotStore.recordSnapshotCache('deleteComponent')
 }
 
 const upComponent = () => {
   layerStore.upComponent()
-  snapshotStore.recordSnapshot('upComponent')
+  snapshotStore.recordSnapshotCache('upComponent')
 }
 
 const downComponent = () => {
   layerStore.downComponent()
-  snapshotStore.recordSnapshot('downComponent')
+  snapshotStore.recordSnapshotCache('downComponent')
 }
 
 const topComponent = () => {
   layerStore.topComponent()
-  snapshotStore.recordSnapshot('topComponent')
+  snapshotStore.recordSnapshotCache('topComponent')
 }
 
 const bottomComponent = () => {
   layerStore.bottomComponent()
-  snapshotStore.recordSnapshot('bottomComponent')
+  snapshotStore.recordSnapshotCache('bottomComponent')
 }
 
 const componentCompose = () => {
   composeStore.compose()
-  snapshotStore.recordSnapshot('componentCompose')
+  snapshotStore.recordSnapshotCache('componentCompose')
 }
 
 const decompose = () => {
   composeStore.decompose()
-  snapshotStore.recordSnapshot('decompose')
+  snapshotStore.recordSnapshotCache('decompose')
 }
 
 // 阻止事件向父级组件传播调用父级的handleMouseDown 导致areaData 被隐藏

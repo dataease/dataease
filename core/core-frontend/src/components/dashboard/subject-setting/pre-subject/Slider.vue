@@ -1,6 +1,6 @@
 <template>
   <el-row style="flex-direction: column; width: 100%">
-    <el-row v-loading="state.slidersLoading">
+    <el-row style="margin-top: -4px; margin-bottom: -6px" v-loading="state.slidersLoading">
       <div class="direction-left">
         <span>&nbsp;</span>
         <ul v-show="state.currentIndex > 1" class="direction">
@@ -185,7 +185,7 @@
         </ul>
       </div>
       <div style="flex: 1">
-        <el-button type="primary" link size="small" @click="saveSelfSubject">
+        <el-button type="primary" text size="small" @click="saveSelfSubject">
           {{ $t('commons.save') }}
         </el-button>
       </div>

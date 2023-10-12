@@ -271,7 +271,7 @@ const copy = () => {
 
 const paste = () => {
   copyStore.paste(false)
-  snapshotStore.recordSnapshot('SettingMenu-paste')
+  snapshotStore.recordSnapshotCache('SettingMenu-paste')
 }
 
 const deleteComponent = () => {
@@ -290,8 +290,8 @@ const deleteComponent = () => {
   }
   emits('amRemoveItem')
   deleteCurCondition()
-  dvMainStore.deleteComponent()
-  snapshotStore.recordSnapshot('SettingMenu-deleteComponent')
+  dvMainStore.deleteComponentById(curComponent.value?.id)
+  snapshotStore.recordSnapshotCache('SettingMenu-deleteComponent')
   dvMainStore.setCurComponent({ component: null, index: null })
 }
 
@@ -304,22 +304,22 @@ const deleteCurCondition = () => {
 
 const upComponent = () => {
   layerStore.upComponent()
-  snapshotStore.recordSnapshot('SettingMenu-upComponent')
+  snapshotStore.recordSnapshotCache('SettingMenu-upComponent')
 }
 
 const downComponent = () => {
   layerStore.downComponent()
-  snapshotStore.recordSnapshot('SettingMenu-downComponent')
+  snapshotStore.recordSnapshotCache('SettingMenu-downComponent')
 }
 
 const topComponent = () => {
   layerStore.topComponent()
-  snapshotStore.recordSnapshot('SettingMenu-topComponent')
+  snapshotStore.recordSnapshotCache('SettingMenu-topComponent')
 }
 
 const bottomComponent = () => {
   layerStore.bottomComponent()
-  snapshotStore.recordSnapshot('SettingMenu-bottomComponent')
+  snapshotStore.recordSnapshotCache('SettingMenu-bottomComponent')
 }
 const linkageSetting = () => {
   // sourceViewId 也加入查询

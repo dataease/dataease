@@ -726,7 +726,7 @@ function removeItem(index) {
         emitter.emit(`query-data-${ele}`)
       })
     }
-    snapshotStore.recordSnapshot('removeItem')
+    snapshotStore.recordSnapshotCache('removeItem')
   }
 }
 
@@ -1501,7 +1501,7 @@ const userViewEnlargeOpen = (opt, item) => {
 const initSnapshotTimer = () => {
   snapshotTimer.value = setInterval(() => {
     snapshotStore.snapshotCatchToStore()
-  }, 3000)
+  }, 1000)
 }
 
 const linkJumpSetOpen = item => {

@@ -171,7 +171,7 @@ const initForm = () => {
 const themeChange = styleKey => {
   dvMainStore.canvasStyleData.component.filterStyle = cloneDeep(filterStyle.value)
   adaptCurThemeFilterStyleAll(styleKey)
-  snapshotStore.recordSnapshot('filterStyleSimpleSelector-themeChange')
+  snapshotStore.recordSnapshotCache('filterStyleSimpleSelector-themeChange')
 }
 
 const handleHorizontalChange = (type, horizontal = 'titleLayout') => {

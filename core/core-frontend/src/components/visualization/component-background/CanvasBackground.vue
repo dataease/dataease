@@ -84,9 +84,15 @@
                 :class="`image-hint_${themes}`"
                 >支持JPG、PNG、GIF</span
               >
-              <span v-if="canvasStyleData.background" class="re-update-span" @click="goFile">
+              <el-button
+                size="small"
+                style="margin-left: -4px"
+                v-if="canvasStyleData.background"
+                text
+                @click="goFile"
+              >
                 重新上传
-              </span>
+              </el-button>
             </el-row>
           </div>
 
@@ -105,7 +111,7 @@ import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapsho
 import { beforeUploadCheck, uploadFileResult } from '@/api/staticResource'
 import { useI18n } from '@/hooks/web/useI18n'
 import elementResizeDetectorMaker from 'element-resize-detector'
-import { ElMessage } from 'element-plus-secondary'
+import { ElButton, ElMessage } from 'element-plus-secondary'
 import ImgViewDialog from '@/custom-component/ImgViewDialog.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
@@ -355,14 +361,6 @@ watch(
   &.no-margin-bottom {
     margin-bottom: 0 !important;
   }
-}
-
-.re-update-span {
-  cursor: pointer;
-  color: #3370ff;
-  size: 14px;
-  line-height: 22px;
-  font-weight: 400;
 }
 
 .image-hint {

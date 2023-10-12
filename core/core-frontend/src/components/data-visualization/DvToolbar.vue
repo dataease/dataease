@@ -65,12 +65,12 @@ const unlock = () => {
 
 const compose = () => {
   composeStore.compose()
-  snapshotStore.recordSnapshot('dv-compose')
+  snapshotStore.recordSnapshotCache('dv-compose')
 }
 
 const decompose = () => {
   composeStore.decompose()
-  snapshotStore.recordSnapshot('dv-decompose')
+  snapshotStore.recordSnapshotCache('dv-decompose')
 }
 
 const undo = () => {
@@ -117,7 +117,7 @@ const saveResource = () => {
 const clearCanvas = () => {
   dvMainStore.setCurComponent({ component: null, index: null })
   dvMainStore.setComponentData([])
-  snapshotStore.recordSnapshot('dv-clearCanvas')
+  snapshotStore.recordSnapshotCache('dv-clearCanvas')
 }
 
 const editCanvasName = () => {

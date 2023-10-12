@@ -30,12 +30,17 @@ const getComponent = index => {
 const transformIndex = index => {
   return componentData.value.length - 1 - index
 }
+const areaDataPush = component => {
+  if (component && !component.isLock && component.isShow) {
+    areaData.value.components.push(component)
+  }
+}
 const onClick = (e, index) => {
   // ctrl or command 按下时 鼠标点击为选择需要组合的组件(取消需要组合的组件在ComposeShow组件中)
   if (isCtrlOrCmdDown.value && !areaData.value.components.includes(componentData.value[index])) {
-    areaData.value.components.push(componentData.value[index])
+    areaDataPush(componentData.value[index])
     if (curComponent.value && curComponent.value.id !== componentData.value[index].id) {
-      areaData.value.components.push(curComponent.value)
+      areaDataPush(curComponent.value)
     }
     dvMainStore.setCurComponent({ component: null, index: null })
     e.stopPropagation()
@@ -47,20 +52,20 @@ const onClick = (e, index) => {
 }
 const deleteComponent = (number: number) => {
   setTimeout(() => {
-    dvMainStore.deleteComponent()
-    snapshotStore.recordSnapshot()
+    dvMainStore.deleteComponentById(curComponent.value.id)
+    snapshotStore.recordSnapshotCache()
   })
 }
 const upComponent = (number: number) => {
   setTimeout(() => {
     layerStore.upComponent()
-    snapshotStore.recordSnapshot()
+    snapshotStore.recordSnapshotCache()
   })
 }
 const downComponent = (number: number) => {
   setTimeout(() => {
     layerStore.downComponent()
-    snapshotStore.recordSnapshot('realTime-downComponent')
+    snapshotStore.recordSnapshotCache('realTime-downComponent')
   })
 }
 const setCurComponent = index => {
@@ -98,28 +103,28 @@ const toggleComponentVisible = () => {
 const lock = () => {
   setTimeout(() => {
     lockStore.lock()
-    snapshotStore.recordSnapshot('realTime-lock')
+    snapshotStore.recordSnapshotCache('realTime-lock')
   })
 }
 
 const unlock = () => {
   setTimeout(() => {
     lockStore.unlock()
-    snapshotStore.recordSnapshot('realTime-unlock')
+    snapshotStore.recordSnapshotCache('realTime-unlock')
   })
 }
 
 const hideComponent = () => {
   setTimeout(() => {
     layerStore.hideComponent()
-    snapshotStore.recordSnapshot('realTime-hideComponent')
+    snapshotStore.recordSnapshotCache('realTime-hideComponent')
   })
 }
 
 const showComponent = () => {
   setTimeout(() => {
     layerStore.showComponent()
-    snapshotStore.recordSnapshot()
+    snapshotStore.recordSnapshotCache()
   })
 }
 

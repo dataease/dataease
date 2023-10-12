@@ -117,7 +117,7 @@ function copy() {
 
 function paste() {
   copyStore.paste(false)
-  snapshotStore.recordSnapshot('key-paste')
+  snapshotStore.recordSnapshotCache('key-paste')
 }
 
 function move(keyCode) {
@@ -132,7 +132,6 @@ function move(keyCode) {
       curComponent.value.style.top = ++curComponent.value.style.top
     }
   }
-  // snapshotStore.recordSnapshot('key-paste')
 }
 
 function cut() {
@@ -150,7 +149,7 @@ function undo() {
 function compose() {
   if (areaData.value.components.length) {
     composeStore.compose()
-    snapshotStore.recordSnapshot('key-compose')
+    snapshotStore.recordSnapshotCache('key-compose')
   }
 }
 
@@ -158,7 +157,7 @@ function decompose() {
   const curComponentLink = curComponent.value
   if (curComponentLink && !curComponentLink.isLock && curComponentLink.component == 'Group') {
     composeStore.decompose()
-    snapshotStore.recordSnapshot('key-decompose')
+    snapshotStore.recordSnapshotCache('key-decompose')
   }
 }
 
@@ -172,14 +171,14 @@ function preview() {
 
 function deleteComponent() {
   if (curComponent.value) {
-    dvMainStore.deleteComponent()
+    dvMainStore.deleteComponentById(curComponent.value.id)
   } else if (areaData.value.components.length) {
     areaData.value.components.forEach(component => {
       dvMainStore.deleteComponentById(component.id)
     })
     eventBus.emit('hideArea-canvas-main')
   }
-  snapshotStore.recordSnapshot('listenGlobalKeyDown')
+  snapshotStore.recordSnapshotCache('listenGlobalKeyDown')
 }
 
 function clearCanvas() {

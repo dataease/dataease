@@ -347,6 +347,12 @@ const handleBoardMouseDownOnShape = e => {
   handleMouseDownOnShape(e)
 }
 
+const areaDataPush = component => {
+  if (component && !component.isLock && component.isShow) {
+    areaData.value.components.push(component)
+  }
+}
+
 const handleInnerMouseDownOnShape = e => {
   if (dvMainStore.batchOptStatus) {
     componentEditBarRef.value.batchOptCheckOut()
@@ -356,9 +362,9 @@ const handleInnerMouseDownOnShape = e => {
   }
   // ctrl or command 按下时 鼠标点击为选择需要组合的组件(取消需要组合的组件在ComposeShow组件中)
   if (isCtrlOrCmdDown.value && !areaData.value.components.includes(element)) {
-    areaData.value.components.push(element.value)
+    areaDataPush(element.value)
     if (curComponent.value && curComponent.value.id !== element.value.id) {
-      areaData.value.components.push(curComponent.value)
+      areaDataPush(curComponent.value)
     }
     dvMainStore.setCurComponent({ component: null, index: null })
     e.stopPropagation()
@@ -464,7 +470,7 @@ const handleMouseDownOnShape = e => {
 
   const up = () => {
     dashboardActive.value && emit('onMouseUp')
-    hasMove && snapshotStore.recordSnapshot('shape-handleMouseDownOnShape-up')
+    hasMove && snapshotStore.recordSnapshotCache('shape-handleMouseDownOnShape-up')
     // 触发元素停止移动事件，用于隐藏标线
     eventBus.emit('unMove')
     document.removeEventListener('mousemove', move)
@@ -573,7 +579,7 @@ const handleMouseDownOnPoint = (point, e) => {
     dashboardActive.value && emit('onMouseUp')
     document.removeEventListener('mousemove', move)
     document.removeEventListener('mouseup', up)
-    needSave && snapshotStore.recordSnapshot('shape-handleMouseDownOnPoint-up')
+    needSave && snapshotStore.recordSnapshotCache('shape-handleMouseDownOnPoint-up')
   }
 
   document.addEventListener('mousemove', move)

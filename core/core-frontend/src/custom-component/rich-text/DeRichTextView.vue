@@ -93,6 +93,7 @@ const state = reactive({
 })
 const dataRowSelect = ref({})
 const dataRowNameSelect = ref({})
+const dataRowFiledName = ref([])
 const drawLeft = ref('none')
 const drawRight = ref('auto')
 const initReady = ref(false)
@@ -201,19 +202,23 @@ const assignment = content => {
   const on = content.match(/\[(.+?)\]/g)
   if (on) {
     on.forEach(itm => {
-      const ele = itm.slice(1, -1)
-      if (initReady.value) {
-        content = content.replace(
-          itm,
-          dataRowNameSelect.value[ele] !== undefined
-            ? dataRowNameSelect.value[ele]
-            : '[未获取字段值]'
-        )
-      } else {
-        content = content.replace(
-          itm,
-          dataRowNameSelect.value[ele] !== undefined ? dataRowNameSelect.value[ele] : '[获取中...]'
-        )
+      if (dataRowFiledName.value.includes(itm)) {
+        const ele = itm.slice(1, -1)
+        if (initReady.value) {
+          content = content.replace(
+            itm,
+            dataRowNameSelect.value[ele] !== undefined
+              ? dataRowNameSelect.value[ele]
+              : '[未获取字段值]'
+          )
+        } else {
+          content = content.replace(
+            itm,
+            dataRowNameSelect.value[ele] !== undefined
+              ? dataRowNameSelect.value[ele]
+              : '[获取中...]'
+          )
+        }
       }
     })
   }
@@ -323,6 +328,7 @@ const calcData = (view: Chart, callback) => {
 
 const initCurFields = chartDetails => {
   curFields.value = []
+  dataRowFiledName.value = []
   dataRowSelect.value = {}
   dataRowNameSelect.value = {}
   if (chartDetails.data && chartDetails.data.sourceFields) {
@@ -334,6 +340,7 @@ const initCurFields = chartDetails => {
     chartDetails.data.sourceFields.forEach(field => {
       if (checkAllAxisStr.indexOf(field.id) > -1) {
         curFields.value.push(field)
+        dataRowFiledName.value.push(`[${field.name}]`)
       }
     })
     // Get the corresponding relationship between id and value

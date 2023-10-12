@@ -25,15 +25,18 @@
           }}</span>
         </div>
         <div class="edit-area" v-if="subjectItem.type === 'self'">
-          <el-icon
-            @click="subjectDelete()"
-            class="m-custom-icon"
-            style="margin-right: 8px"
-            size="14px"
-          >
-            <Delete />
-          </el-icon>
-          <el-icon @click="subjectEdit()" class="m-custom-icon" size="14px"> <EditPen /> </el-icon>
+          <el-tooltip effect="dark" placement="top" :content="$t('common.delete')">
+            <el-button text class="m-custom-icon" @click="subjectDelete()">
+              <el-icon size="14px">
+                <Delete />
+              </el-icon>
+            </el-button>
+          </el-tooltip>
+          <el-tooltip effect="dark" placement="top" :content="$t('common.edit')">
+            <el-button text class="m-custom-icon" style="margin-left: 2px" @click="subjectEdit()">
+              <el-icon size="14px"> <EditPen /> </el-icon>
+            </el-button>
+          </el-tooltip>
         </div>
       </div>
     </div>
@@ -47,7 +50,7 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 
 import { storeToRefs } from 'pinia'
-import { ElMessageBox } from 'element-plus-secondary'
+import { ElMessageBox, ElTooltip } from 'element-plus-secondary'
 import Icon from '@/components/icon-custom/src/Icon.vue'
 import { adaptCurThemeCommonStyleAll } from '@/utils/canvasStyle'
 import { useEmitt } from '@/hooks/web/useEmitt'
@@ -94,7 +97,7 @@ const subjectEdit = () => {
 const subjectChange = () => {
   if (!themeSelected.value) {
     dvMainStore.setCanvasStyle(JSON.parse(subjectItem.value.details))
-    snapshotStore.recordSnapshot('subjectChange')
+    snapshotStore.recordSnapshotCache('subjectChange')
     adaptCurThemeCommonStyleAll()
     useEmitt().emitter.emit('onSubjectChange')
   }
@@ -238,8 +241,15 @@ onMounted(() => {
 .m-custom-icon {
   display: none;
   color: #646a73;
+
   &:hover {
-    color: red;
+    background: rgba(31, 35, 41, 0.1) !important;
+  }
+  &:focus {
+    background: rgba(31, 35, 41, 0.1) !important;
+  }
+  &:active {
+    background: rgba(31, 35, 41, 0.2) !important;
   }
 }
 </style>
