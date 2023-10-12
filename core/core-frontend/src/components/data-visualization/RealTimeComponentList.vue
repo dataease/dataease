@@ -306,11 +306,25 @@ const handleContextMenu = e => {
                   </template>
                 </el-dropdown>
               </div>
-              <compose-show
-                :show-border="false"
-                :element-index="transformIndex(index)"
-                :element="getComponent(index)"
-              ></compose-show>
+              <el-dropdown
+                class="compose-dropdown"
+                trigger="contextmenu"
+                placement="bottom-start"
+                effect="dark"
+                hide-timeout="0"
+              >
+                <compose-show
+                  :show-border="false"
+                  :element-index="transformIndex(index)"
+                  :element="getComponent(index)"
+                ></compose-show>
+                <template #dropdown>
+                  <context-menu-aside-details
+                    :element="getComponent(index)"
+                    @close="menuAsideClose($event, index)"
+                  ></context-menu-aside-details>
+                </template>
+              </el-dropdown>
             </div>
           </template>
         </draggable>
@@ -458,5 +472,11 @@ const handleContextMenu = e => {
 
 .container-item-not-show {
   color: #5f5f5f !important;
+}
+</style>
+
+<style lang="less">
+.compose-dropdown {
+  position: initial !important;
 }
 </style>
