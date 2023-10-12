@@ -222,7 +222,8 @@ const openDataBoardSetting = () => {
 }
 
 const batchDelete = () => {
-  componentData.value.forEach(component => {
+  const componentDataTemp = deepCopy(componentData.value)
+  componentDataTemp.forEach(component => {
     if (curBatchOptComponents.value.includes(component.id)) {
       eventBus.emit('removeMatrixItemById-' + component.canvasId, component.id)
     }
