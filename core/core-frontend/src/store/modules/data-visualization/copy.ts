@@ -107,7 +107,7 @@ export const copyStore = defineStore('copy', {
     cut() {
       if (curComponent.value) {
         this.copyDataInfo([curComponent.value])
-        dvMainStore.deleteComponent()
+        dvMainStore.deleteComponentById(curComponent.value.id)
       } else if (composeStore.areaData.components.length) {
         this.copyDataInfo(composeStore.areaData.components)
         composeStore.areaData.components.forEach(component => {

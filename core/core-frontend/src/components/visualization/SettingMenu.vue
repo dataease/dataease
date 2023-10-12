@@ -290,7 +290,7 @@ const deleteComponent = () => {
   }
   emits('amRemoveItem')
   deleteCurCondition()
-  dvMainStore.deleteComponent()
+  dvMainStore.deleteComponentById(curComponent.value?.id)
   snapshotStore.recordSnapshotCache('SettingMenu-deleteComponent')
   dvMainStore.setCurComponent({ component: null, index: null })
 }

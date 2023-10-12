@@ -347,6 +347,12 @@ const handleBoardMouseDownOnShape = e => {
   handleMouseDownOnShape(e)
 }
 
+const areaDataPush = component => {
+  if (component && !component.isLock && component.isShow) {
+    areaData.value.components.push(component)
+  }
+}
+
 const handleInnerMouseDownOnShape = e => {
   if (dvMainStore.batchOptStatus) {
     componentEditBarRef.value.batchOptCheckOut()
@@ -356,9 +362,9 @@ const handleInnerMouseDownOnShape = e => {
   }
   // ctrl or command 按下时 鼠标点击为选择需要组合的组件(取消需要组合的组件在ComposeShow组件中)
   if (isCtrlOrCmdDown.value && !areaData.value.components.includes(element)) {
-    areaData.value.components.push(element.value)
+    areaDataPush(element.value)
     if (curComponent.value && curComponent.value.id !== element.value.id) {
-      areaData.value.components.push(curComponent.value)
+      areaDataPush(curComponent.value)
     }
     dvMainStore.setCurComponent({ component: null, index: null })
     e.stopPropagation()
