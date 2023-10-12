@@ -88,7 +88,7 @@ const onImgChange = imgUrl => {
         <template #label>
           <label class="m-label"> 封面 </label>
         </template>
-        <de-upload :img-url="subjectForm.coverUrl" @onImgChange="onImgChange" />
+        <de-upload themes="light" :img-url="subjectForm.coverUrl" @onImgChange="onImgChange" />
       </el-form-item>
     </el-form>
     <template #footer>

@@ -19,8 +19,7 @@ import { guid } from '@/views/visualized/data/dataset/form/util.js'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { comInfo } from './com-info'
 import { useEmitt } from '@/hooks/web/useEmitt'
-import Select from './Select.vue'
-import Time from './Time.vue'
+import StyleInject from './StyleInject.vue'
 const props = defineProps({
   view: {
     type: Object,
@@ -75,10 +74,6 @@ const curComponentView = computed(() => {
 })
 
 const { datasetFieldList } = comInfo(element.value.id)
-
-const filterTypeCom = (displayType: string) => {
-  return ['1', '7'].includes(displayType) ? Time : Select
-}
 
 const setCustomStyle = val => {
   const {
@@ -409,12 +404,7 @@ const labelStyle = computed(() => {
               </div>
             </div>
             <div class="query-select">
-              <component
-                :config="ele"
-                :is-config="false"
-                :customStyle="customStyle"
-                :is="filterTypeCom(ele.displayType)"
-              ></component>
+              <StyleInject :customStyle="customStyle" :config="ele"></StyleInject>
             </div>
           </div>
         </div>

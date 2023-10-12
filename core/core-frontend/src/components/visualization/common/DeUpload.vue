@@ -150,6 +150,9 @@ watch(
     :deep(.ed-upload--picture-card) {
       background: #373737;
       border-color: #434343;
+      .ed-icon {
+        color: #ebebeb;
+      }
     }
   }
 

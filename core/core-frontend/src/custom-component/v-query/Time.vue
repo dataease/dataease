@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { toRefs, provide, PropType, ref, onBeforeMount, watch, nextTick, computed } from 'vue'
+import { toRefs, PropType, ref, onBeforeMount, watch, nextTick, computed } from 'vue'
 import { Calendar } from '@element-plus/icons-vue'
 import { type DatePickType } from 'element-plus-secondary'
 
@@ -33,26 +33,12 @@ const props = defineProps({
   isConfig: {
     type: Boolean,
     default: false
-  },
-  customStyle: {
-    type: Object as PropType<{
-      border: string
-      background: string
-      text: string
-    }>,
-    default: () => ({
-      border: '',
-      background: '',
-      text: ''
-    })
   }
 })
 const selectValue = ref()
 const multiple = ref(false)
 
-const { config, customStyle } = toRefs(props)
-
-provide('$custom-style-filter', customStyle)
+const { config } = toRefs(props)
 
 watch(
   () => config.value.defaultValue,
