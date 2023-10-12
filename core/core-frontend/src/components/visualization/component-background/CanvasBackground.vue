@@ -79,9 +79,18 @@
             </el-upload>
             <el-row style="margin-top: 8px">
               <span v-if="!canvasStyleData.background" class="image-hint">支持JPG、PNG、GIF</span>
-              <span v-if="canvasStyleData.background" class="re-update-span" @click="goFile">
+              <!--              <span v-if="canvasStyleData.background" class="re-update-span" @click="goFile">
                 重新上传
-              </span>
+              </span>-->
+              <el-button
+                size="small"
+                style="margin-left: -4px"
+                v-if="canvasStyleData.background"
+                text
+                @click="goFile"
+              >
+                重新上传
+              </el-button>
             </el-row>
           </div>
 
@@ -100,7 +109,7 @@ import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapsho
 import { beforeUploadCheck, uploadFileResult } from '@/api/staticResource'
 import { useI18n } from '@/hooks/web/useI18n'
 import elementResizeDetectorMaker from 'element-resize-detector'
-import { ElMessage } from 'element-plus-secondary'
+import { ElButton, ElMessage } from 'element-plus-secondary'
 import ImgViewDialog from '@/custom-component/ImgViewDialog.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
