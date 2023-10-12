@@ -64,7 +64,7 @@ public class ChartDataBuild {
                         } catch (Exception e) {
                             axisChartDataDTO.setValue(new BigDecimal(0));
                         }
-                        axisChartDataDTO.setCategory(yAxis.get(j).getName());
+                        axisChartDataDTO.setCategory(StringUtils.defaultIfBlank(yAxis.get(j).getChartShowName(), yAxis.get(j).getName()));
                     }
                     dataList.add(axisChartDataDTO);
                 }
@@ -99,7 +99,7 @@ public class ChartDataBuild {
                     } catch (Exception e) {
                         axisChartDataDTO.setValue(new BigDecimal(0));
                     }
-                    axisChartDataDTO.setCategory(yAxis.get(j).getName());
+                    axisChartDataDTO.setCategory(StringUtils.defaultIfBlank(yAxis.get(j).getChartShowName(), yAxis.get(j).getName()));
                     buildDynamicValue(view, axisChartDataDTO, row, size, extSize);
                     dataList.add(axisChartDataDTO);
                 }
@@ -174,7 +174,7 @@ public class ChartDataBuild {
 
                 if ("line".equals(view.getType())) {
                     if (ObjectUtils.isEmpty(xAxisExt)) {
-                        axisChartDataDTO.setCategory(yAxis.get(j).getName());
+                        axisChartDataDTO.setCategory(StringUtils.defaultIfBlank(yAxis.get(j).getChartShowName(), yAxis.get(j).getName()));
                     } else {
                         // 多指标只取第一个
                         break;
@@ -297,7 +297,7 @@ public class ChartDataBuild {
                     } catch (Exception e) {
                         axisChartDataDTO.setValue(new BigDecimal(0));
                     }
-                    axisChartDataDTO.setCategory(yAxis.get(j).getName());
+                    axisChartDataDTO.setCategory(StringUtils.defaultIfBlank(yAxis.get(j).getChartShowName(), yAxis.get(j).getName()));
                     buildDynamicValue(view, axisChartDataDTO, row, size, extSize);
                     dataList.add(axisChartDataDTO);
                 }
@@ -358,7 +358,7 @@ public class ChartDataBuild {
                 } catch (Exception e) {
                     axisChartDataDTO.setValue(new BigDecimal(0));
                 }
-                axisChartDataDTO.setCategory(yAxis.get(j).getName());
+                axisChartDataDTO.setCategory(StringUtils.defaultIfBlank(yAxis.get(j).getChartShowName(), yAxis.get(j).getName()));
                 buildDynamicValue(view, axisChartDataDTO, row, size, extSize);
                 // pop
                 if (ObjectUtils.isNotEmpty(extBubble)) {
@@ -429,7 +429,7 @@ public class ChartDataBuild {
                 } catch (Exception e) {
                     axisChartDataDTO.setValue(new BigDecimal(0));
                 }
-                axisChartDataDTO.setCategory(yAxis.get(j).getName());
+                axisChartDataDTO.setCategory(StringUtils.defaultIfBlank(yAxis.get(j).getChartShowName(), yAxis.get(j).getName()));
                 buildDynamicValue(view, axisChartDataDTO, row, size, extSize);
                 dataList.add(axisChartDataDTO);
             }
@@ -496,7 +496,7 @@ public class ChartDataBuild {
                 } catch (Exception e) {
                     axisChartDataDTO.setValue(new BigDecimal(0));
                 }
-                axisChartDataDTO.setCategory(yAxis.get(j).getName());
+                axisChartDataDTO.setCategory(StringUtils.defaultIfBlank(yAxis.get(j).getChartShowName(), yAxis.get(j).getName()));
                 buildDynamicValue(view, axisChartDataDTO, d, size, extSize);
                 series.get(j).getData().add(axisChartDataDTO);
             }
