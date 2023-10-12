@@ -2756,6 +2756,14 @@ span {
     }
   }
 }
+
+:deep(.form-item-light) {
+  &.select-append {
+    .ed-input-group__append {
+      padding: 0 20px;
+    }
+  }
+}
 :deep(.ed-checkbox__label) {
   color: #1f2329;
   font-size: 12px;
