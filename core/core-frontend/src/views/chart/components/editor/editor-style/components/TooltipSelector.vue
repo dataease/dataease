@@ -440,6 +440,7 @@ onMounted(() => {
             :label="t('chart.show_name')"
           >
             <el-input
+              :effect="themes"
               size="small"
               :maxlength="20"
               @change="changeTooltipAttr('seriesTooltipFormatter')"
