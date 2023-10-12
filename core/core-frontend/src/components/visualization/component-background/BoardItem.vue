@@ -1,6 +1,9 @@
 <template>
   <div class="icon-option">
-    <div class="icon-area" :class="{ 'selected-active': active }">
+    <div
+      class="icon-area"
+      :class="{ 'selected-active': active, 'icon-area-dark': themes === 'dark' }"
+    >
       <Icon
         :style="{ color: innerImageColor }"
         class-name="svg-background"
@@ -14,13 +17,19 @@
 <script setup lang="ts">
 import { toRefs } from 'vue'
 
-const props = defineProps({
-  item: Object,
-  active: Boolean,
-  innerImageColor: String
-})
+const props = withDefaults(
+  defineProps<{
+    item: any
+    active: boolean
+    themes?: EditorTheme
+    innerImageColor: string
+  }>(),
+  {
+    themes: 'dark'
+  }
+)
 
-const { item, innerImageColor, active } = toRefs(props)
+const { item, innerImageColor, active, themes } = toRefs(props)
 
 const mainIconClass = itemUrl => {
   return itemUrl.url.replace('board/', '').replace('.svg', '')
@@ -53,5 +62,9 @@ const mainIconClass = itemUrl => {
       height: 50px;
     }
   }
+}
+
+.icon-area-dark {
+  background-color: #1a1a1a !important;
 }
 </style>

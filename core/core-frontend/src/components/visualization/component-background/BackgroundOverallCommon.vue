@@ -148,6 +148,7 @@
                 :value="item.url"
               >
                 <board-item
+                  :themes="themes"
                   :active="item.url === state.commonBackground.innerImage"
                   :inner-image-color="state.commonBackground.innerImageColor"
                   :item="item"
