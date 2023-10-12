@@ -78,7 +78,7 @@ const paste = () => {
 
 const deleteComponent = () => {
   if (curComponent.value) {
-    dvMainStore.deleteComponent()
+    dvMainStore.deleteComponentById(curComponent.value?.id)
   } else if (areaData.value.components.length) {
     areaData.value.components.forEach(component => {
       dvMainStore.deleteComponentById(component.id)

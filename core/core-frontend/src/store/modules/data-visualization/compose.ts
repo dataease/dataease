@@ -129,7 +129,7 @@ export const composeStore = defineStore('compose', {
       const parentStyle = { ...curComponent.value.style }
       const components = curComponent.value.propValue
       const editorRect = editor.getBoundingClientRect()
-      dvMainStore.deleteComponent()
+      dvMainStore.deleteComponentById(curComponent.value.id)
       components.forEach(component => {
         decomposeComponent(component, editorRect, parentStyle)
         dvMainStore.addComponent({ component: component, index: undefined, isFromGroup: true })
