@@ -101,7 +101,11 @@ const subjectChange = () => {
 }
 
 onMounted(() => {
-  state.subjectItemDetails = JSON.parse(subjectItem.value.details)
+  try {
+    state.subjectItemDetails = JSON.parse(subjectItem.value.details)
+  } catch (e) {
+    // do error parse
+  }
 })
 </script>
 

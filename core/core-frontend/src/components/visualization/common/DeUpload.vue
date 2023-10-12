@@ -1,5 +1,5 @@
 <template>
-  <el-row>
+  <div class="avatar-uploader-container" :class="`img-area_${themes}`">
     <el-upload
       action=""
       :effect="themes"
@@ -15,6 +15,7 @@
     >
       <el-icon><Plus /></el-icon>
     </el-upload>
+
     <input
       id="input"
       ref="files"
@@ -29,25 +30,18 @@
       v-on:change="reUpload"
     />
 
-    <img-view-dialog
-      v-model="state.dialogVisible"
-      :image-url="state.dialogImageUrl"
-    ></img-view-dialog>
-  </el-row>
+    <img-view-dialog v-model="state.dialogVisible" :image-url="state.dialogImageUrl" />
+  </div>
 </template>
 
 <script setup lang="ts">
 import { onMounted, reactive, ref, toRefs, watch } from 'vue'
-import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { beforeUploadCheck, uploadFileResult } from '@/api/staticResource'
-import { useI18n } from '@/hooks/web/useI18n'
 import { ElMessage } from 'element-plus-secondary'
 import ImgViewDialog from '@/custom-component/ImgViewDialog.vue'
-const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
-const { t } = useI18n()
 const emits = defineEmits(['onImgChange'])
 const files = ref(null)
 const maxImageSize = 15000000
@@ -131,6 +125,41 @@ watch(
 </script>
 
 <style scoped lang="less">
+.avatar-uploader-container {
+  margin-bottom: 16px;
+  :deep(.ed-upload--picture-card) {
+    background: #eff0f1;
+    border: 1px dashed #dee0e3;
+    border-radius: 4px;
+
+    .ed-icon {
+      color: #1f2329;
+    }
+
+    &:hover {
+      .ed-icon {
+        color: #3370ff;
+      }
+    }
+  }
+
+  &.img-area_dark {
+    :deep(.ed-upload-list__item).is-ready {
+      border-color: #434343;
+    }
+    :deep(.ed-upload--picture-card) {
+      background: #373737;
+      border-color: #434343;
+    }
+  }
+
+  &.img-area_light {
+    :deep(.ed-upload-list__item).is-ready {
+      border-color: #dee0e3;
+    }
+  }
+}
+
 .tips-area {
   color: #909399;
   font-size: 8px;
@@ -155,23 +184,41 @@ watch(
   margin: 15px 0px 5px;
   text-align: center;
 }
-
 .avatar-uploader {
-  width: 120px;
+  width: 90px;
   height: 80px;
   overflow: hidden;
 }
+.avatar-uploader {
+  width: 90px;
+  :deep(.ed-upload) {
+    width: 80px;
+    height: 80px;
+    line-height: 90px;
+  }
 
-.avatar-uploader :deep(.ed-upload) {
-  width: 80px;
-  height: 80px;
-  line-height: 90px;
+  :deep(.ed-upload-list li) {
+    width: 80px !important;
+    height: 80px !important;
+  }
+
+  :deep(.ed-upload--picture-card) {
+    background: #eff0f1;
+    border: 1px dashed #dee0e3;
+    border-radius: 4px;
+
+    .ed-icon {
+      color: #1f2329;
+    }
+
+    &:hover {
+      .ed-icon {
+        color: #3370ff;
+      }
+    }
+  }
 }
 
-.avatar-uploader :deep(.ed-upload-list) li {
-  width: 80px !important;
-  height: 80px !important;
-}
 :deep(.ed-upload--picture-card) {
   background: none;
 }

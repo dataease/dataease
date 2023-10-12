@@ -78,16 +78,22 @@ const onImgChange = imgUrl => {
       :model="subjectForm"
       :rules="rules"
     >
-      <el-form-item :label="'名称'" prop="name">
+      <el-form-item class="form-item" prop="name">
+        <template #label>
+          <label class="m-label"> 名称 </label>
+        </template>
         <el-input v-model="subjectForm.name" />
       </el-form-item>
-      <el-form-item :label="'封面'" prop="coverUrl">
-        <de-upload :img-url="subjectForm.coverUrl" @onImgChange="onImgChange"></de-upload>
+      <el-form-item class="form-item" prop="coverUrl">
+        <template #label>
+          <label class="m-label"> 封面 </label>
+        </template>
+        <de-upload :img-url="subjectForm.coverUrl" @onImgChange="onImgChange" />
       </el-form-item>
     </el-form>
     <template #footer>
-      <el-button secondary @click="resetForm()">取消 </el-button>
-      <el-button type="primary" @click="saveSubject()">确认 </el-button>
+      <el-button secondary @click="resetForm()">取消</el-button>
+      <el-button type="primary" @click="saveSubject()">确认</el-button>
     </template>
   </el-dialog>
 </template>
@@ -95,5 +101,19 @@ const onImgChange = imgUrl => {
 <style lang="less" scoped>
 :deep(.ed-dialog__header) {
   text-align: left;
+}
+.m-label {
+  color: #1f2329;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 22px;
+}
+.form-item {
+  margin-bottom: 16px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
 }
 </style>
