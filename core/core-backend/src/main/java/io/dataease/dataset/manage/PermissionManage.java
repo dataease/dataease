@@ -4,20 +4,19 @@ package io.dataease.dataset.manage;
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.dataease.api.chart.dto.ColumnPermissionItem;
 import io.dataease.api.chart.dto.ColumnPermissions;
-import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.api.permissions.dataset.api.ColumnPermissionsApi;
 import io.dataease.api.permissions.dataset.api.RowPermissionsApi;
 import io.dataease.api.permissions.dataset.dto.*;
 import io.dataease.api.permissions.user.vo.UserFormVO;
 import io.dataease.constant.ColumnPermissionConstants;
+import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.utils.AuthUtils;
-import io.dataease.utils.CommonBeanFactory;
 import io.dataease.utils.JsonUtil;
-import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -29,22 +28,21 @@ import java.util.stream.Collectors;
 @Service
 public class PermissionManage {
 
-    private RowPermissionsApi rowPermissionsApi = null;
+    @Autowired(required = false)
+    private RowPermissionsApi rowPermissionsApi;
+
+    @Autowired(required = false)
     private ColumnPermissionsApi columnPermissionsApi = null;
     @Resource
     private DatasetTableFieldManage datasetTableFieldManage;
 
     private RowPermissionsApi getRowPermissionsApi() {
-        if (rowPermissionsApi == null) {
-            rowPermissionsApi = CommonBeanFactory.getApplicationContext().getBean(RowPermissionsApi.class);
-        }
+
         return rowPermissionsApi;
     }
 
     private ColumnPermissionsApi getColumnPermissionsApi() {
-        if (columnPermissionsApi == null) {
-            columnPermissionsApi = CommonBeanFactory.getApplicationContext().getBean(ColumnPermissionsApi.class);
-        }
+
         return columnPermissionsApi;
     }
 
