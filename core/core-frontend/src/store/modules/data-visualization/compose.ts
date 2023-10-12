@@ -31,6 +31,7 @@ export const composeStore = defineStore('compose', {
       editorMap: {},
       isCtrlOrCmdDown: false,
       isShiftDown: false,
+      laterIndex: null, //最后点击组件的索引
       editor: null
     }
   },
@@ -39,10 +40,15 @@ export const composeStore = defineStore('compose', {
       this.editorMap[canvasId] = $('#editor-' + canvasId)
     },
 
+    setLaterIndex(value) {
+      this.laterIndex = value
+    },
     setIsCtrlOrCmdDownStatus(value) {
       this.isCtrlOrCmdDown = value
     },
-
+    setIsShiftDownStatus(value) {
+      this.isShiftDown = value
+    },
     setAreaData(data) {
       this.areaData = data
     },

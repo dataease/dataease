@@ -15,6 +15,7 @@ const { curComponent, isInEditor } = storeToRefs(dvMainStore)
 const { areaData } = storeToRefs(composeStore)
 
 const ctrlKey = 17,
+  shiftKey = 16, // shift
   commandKey = 91, // mac command
   leftKey = 37, // 向左
   upKey = 38, // 向上
@@ -83,6 +84,8 @@ export function listenGlobalKeyDown() {
     if (positionMoveKey[keyCode] && curComponent.value) {
       positionMoveKey[keyCode](keyCode)
       e.preventDefault()
+    } else if (keyCode === shiftKey) {
+      composeStore.setIsShiftDownStatus(true)
     } else if (keyCode === ctrlKey || keyCode === commandKey) {
       isCtrlOrCommandDown = true
       composeStore.setIsCtrlOrCmdDownStatus(true)
@@ -103,6 +106,8 @@ export function listenGlobalKeyDown() {
     if (e.keyCode === ctrlKey || e.keyCode === commandKey) {
       isCtrlOrCommandDown = false
       composeStore.setIsCtrlOrCmdDownStatus(false)
+    } else if (e.keyCode === shiftKey) {
+      composeStore.setIsShiftDownStatus(false)
     }
   }
 

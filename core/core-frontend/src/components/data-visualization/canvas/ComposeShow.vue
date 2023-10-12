@@ -19,6 +19,9 @@ const props = defineProps({
     required: true,
     type: Object
   },
+  elementIndex: {
+    required: false
+  },
   showBorder: {
     required: false,
     type: Boolean,
