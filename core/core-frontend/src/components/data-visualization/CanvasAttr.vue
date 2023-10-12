@@ -72,7 +72,7 @@ const themeAttrChange = (custom, property, value) => {
       }
       useEmitt().emitter.emit('renderChart-' + viewId, viewInfo)
     })
-    snapshotStore.recordSnapshot('CanvasAttr-themeAttrChange')
+    snapshotStore.recordSnapshotCache('CanvasAttr-themeAttrChange')
   }
 }
 

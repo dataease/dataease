@@ -290,7 +290,7 @@ const init = () => {
 }
 queryBackground()
 const commitStyle = () => {
-  snapshotStore.recordSnapshot()
+  snapshotStore.recordSnapshotCache()
 }
 const onChangeType = () => {
   commitStyle()

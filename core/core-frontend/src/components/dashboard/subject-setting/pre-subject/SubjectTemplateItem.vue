@@ -94,7 +94,7 @@ const subjectEdit = () => {
 const subjectChange = () => {
   if (!themeSelected.value) {
     dvMainStore.setCanvasStyle(JSON.parse(subjectItem.value.details))
-    snapshotStore.recordSnapshot('subjectChange')
+    snapshotStore.recordSnapshotCache('subjectChange')
     adaptCurThemeCommonStyleAll()
     useEmitt().emitter.emit('onSubjectChange')
   }

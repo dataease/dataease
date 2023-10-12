@@ -96,12 +96,12 @@ const unlock = () => {
 
 const compose = () => {
   composeStore.compose()
-  snapshotStore.recordSnapshot('db-compose')
+  snapshotStore.recordSnapshotCache('db-compose')
 }
 
 const decompose = () => {
   composeStore.decompose()
-  snapshotStore.recordSnapshot('db-decompose')
+  snapshotStore.recordSnapshotCache('db-decompose')
 }
 
 const undo = () => {
@@ -182,7 +182,7 @@ const saveResource = () => {
 const clearCanvas = () => {
   dvMainStore.setCurComponent({ component: null, index: null })
   dvMainStore.setComponentData([])
-  snapshotStore.recordSnapshot('db-clearCanvas')
+  snapshotStore.recordSnapshotCache('db-clearCanvas')
 }
 
 const handlePreviewChange = () => {

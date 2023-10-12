@@ -77,7 +77,7 @@ const handleNew = newComponentInfo => {
     changeComponentSizeWithScale(component)
     dvMainStore.addComponent({ component: component, index: undefined })
     adaptCurThemeCommonStyle(component)
-    snapshotStore.recordSnapshot()
+    snapshotStore.recordSnapshotCache()
   }
 }
 
@@ -94,7 +94,7 @@ const handleDrop = e => {
     changeComponentSizeWithScale(component)
     dvMainStore.addComponent({ component: component, index: 0 })
     adaptCurThemeCommonStyle(component)
-    snapshotStore.recordSnapshot('dv-handleDrop')
+    snapshotStore.recordSnapshotCache('dv-handleDrop')
   }
 }
 
@@ -176,7 +176,7 @@ onMounted(() => {
       // afterInit
       nextTick(() => {
         dvMainStore.setDataPrepareState(true)
-        snapshotStore.recordSnapshot('dv-init')
+        snapshotStore.recordSnapshotCache('dv-init')
       })
     })
   } else if (opt && opt === 'create') {
@@ -185,7 +185,7 @@ onMounted(() => {
     nextTick(() => {
       state.canvasInitStatus = true
       dvMainStore.setDataPrepareState(true)
-      snapshotStore.recordSnapshot('dv-init')
+      snapshotStore.recordSnapshotCache('dv-init')
     })
   } else {
     let url = '#/screen/index'

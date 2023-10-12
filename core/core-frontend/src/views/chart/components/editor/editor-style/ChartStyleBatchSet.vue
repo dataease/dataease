@@ -105,7 +105,7 @@ const onSuspensionChange = val => {
 
 const onBackgroundChange = val => {
   dvMainStore.setBatchChangeBackground(val)
-  snapshotStore.recordSnapshot('onBackgroundChange')
+  snapshotStore.recordSnapshotCache('onBackgroundChange')
 }
 const onBasicStyleChange = val => {
   //基础样式差异化处理

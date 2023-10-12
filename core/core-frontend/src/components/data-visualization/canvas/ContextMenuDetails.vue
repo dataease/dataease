@@ -72,7 +72,7 @@ const rename = () => {
 }
 const paste = () => {
   copyStore.paste(true)
-  snapshotStore.recordSnapshot('paste')
+  snapshotStore.recordSnapshotCache()
   menuOpt('paste')
 }
 
@@ -85,43 +85,43 @@ const deleteComponent = () => {
     })
   }
   eventBus.emit('hideArea-canvas-main')
-  snapshotStore.recordSnapshot('deleteComponent')
+  snapshotStore.recordSnapshotCache()
   menuOpt('deleteComponent')
 }
 
 const upComponent = () => {
   layerStore.upComponent()
-  snapshotStore.recordSnapshot('upComponent')
+  snapshotStore.recordSnapshotCache('upComponent')
   menuOpt('upComponent')
 }
 
 const downComponent = () => {
   layerStore.downComponent()
-  snapshotStore.recordSnapshot('downComponent')
+  snapshotStore.recordSnapshotCache('downComponent')
   menuOpt('downComponent')
 }
 
 const topComponent = () => {
   layerStore.topComponent()
-  snapshotStore.recordSnapshot('topComponent')
+  snapshotStore.recordSnapshotCache('topComponent')
   menuOpt('topComponent')
 }
 
 const bottomComponent = () => {
   layerStore.bottomComponent()
-  snapshotStore.recordSnapshot('bottomComponent')
+  snapshotStore.recordSnapshotCache('bottomComponent')
   menuOpt('bottomComponent')
 }
 
 const componentCompose = () => {
   composeStore.compose()
-  snapshotStore.recordSnapshot('componentCompose')
+  snapshotStore.recordSnapshotCache('componentCompose')
   menuOpt('componentCompose')
 }
 
 const decompose = () => {
   composeStore.decompose()
-  snapshotStore.recordSnapshot('decompose')
+  snapshotStore.recordSnapshotCache('decompose')
   menuOpt('decompose')
 }
 

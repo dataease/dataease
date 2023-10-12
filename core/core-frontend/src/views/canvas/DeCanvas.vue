@@ -88,7 +88,7 @@ const handleNewFromCanvasMain = newComponentInfo => {
       cyGridster.value.addItemBox(component) //在适当的时候初始化布局组件
       scrollTo(component.y)
     })
-    snapshotStore.recordSnapshot('')
+    snapshotStore.recordSnapshotCache('')
   }
 }
 
@@ -101,7 +101,7 @@ const handleDrop = e => {
     addComponent.isShow = true
     syncShapeItemStyle(addComponent, baseWidth.value, baseHeight.value)
     cyGridster.value.handleMouseUp(e, addComponent, componentData.value.length - 1)
-    snapshotStore.recordSnapshot('dashboard-handleDrop')
+    snapshotStore.recordSnapshotCache('dashboard-handleDrop')
   }
 }
 
@@ -136,7 +136,7 @@ const canvasInit = (isFistLoad = true) => {
     }
     // afterInit
     dvMainStore.setDataPrepareState(true)
-    isFistLoad && snapshotStore.recordSnapshot()
+    isFistLoad && snapshotStore.recordSnapshotCache()
   }, 500)
 }
 
