@@ -145,6 +145,29 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
 
     return view
   }
+
+  private configEmptyDataStrategy(chart: Chart, options: ChoroplethOptions): ChoroplethOptions {
+    const { functionCfg } = parseJson(chart.senior)
+    const emptyDataStrategy = functionCfg.emptyDataStrategy
+    if (!emptyDataStrategy || emptyDataStrategy === 'breakLine') {
+      return options
+    }
+    const data = cloneDeep(options.source.data)
+    if (emptyDataStrategy === 'setZero') {
+      data.forEach(item => {
+        item.value === null && (item.value = 0)
+      })
+    }
+    if (emptyDataStrategy === 'ignoreData') {
+      for (let i = data.length - 1; i >= 0; i--) {
+        if (data[i].value === null) {
+          data.splice(i, 1)
+        }
+      }
+    }
+    options.source.data = data
+    return options
+  }
   private configBasicStyle(
     chart: Chart,
     options: ChoroplethOptions,
@@ -216,6 +239,7 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     ...extra: any[]
   ): ChoroplethOptions {
     return flow(
+      this.configEmptyDataStrategy,
       this.configLabel,
       this.configStyle,
       this.configTooltip,
