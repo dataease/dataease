@@ -243,6 +243,7 @@ const getEmptyDesc = (): string => {
         @sort-change="sortChange"
         :empty-desc="getEmptyDesc()"
         :empty-img="getEmptyImg()"
+        class="workbranch-grid"
       >
         <el-table-column key="name" width="280" prop="name" :label="t('common.name')">
           <template v-slot:default="scope">
@@ -393,6 +394,13 @@ const getEmptyDesc = (): string => {
       font-size: 15px;
       padding-left: 5px;
     }
+  }
+}
+.workbranch-grid ::v-deep(.ed-empty) {
+  padding: 80px 0 !important;
+  .ed-empty__description {
+    margin-top: 0px;
+    line-height: 20px !important;
   }
 }
 </style>

@@ -36,12 +36,12 @@
 
     <select id="getViewLinkageGather" resultMap="LinkageGatherMap">
         SELECT
-        core_chart_view.`title` as 'targetViewName',
-        core_chart_view.id as 'target_view_id',
-        core_chart_view.type as 'target_view_type',
+        core_chart_view.`title` as targetViewName,
+        core_chart_view.id as target_view_id,
+        core_chart_view.type as target_view_type,
         core_chart_view.table_id,
-        visualization_linkage.source_view_id as 'sourceViewId',
-        (case when visualization_linkage.target_view_id is null then 0 else visualization_linkage.linkage_active end) as 'linkageActive',
+        visualization_linkage.source_view_id as sourceViewId,
+        (case when visualization_linkage.target_view_id is null then 0 else visualization_linkage.linkage_active end) as linkageActive,
         visualization_linkage_field.source_field,
         visualization_linkage_field.target_field
         FROM
@@ -97,8 +97,8 @@
 
     <select id="getPanelAllLinkageInfo" resultMap="AllLinkageMap">
         SELECT DISTINCT
-            CONCAT( visualization_linkage.source_view_id, '#', visualization_linkage_field.source_field ) AS 'sourceInfo',
-                CONCAT( visualization_linkage.target_view_id, '#', visualization_linkage_field.target_field ) AS 'targetInfo'
+            CONCAT( visualization_linkage.source_view_id, '#', visualization_linkage_field.source_field ) AS sourceInfo,
+                CONCAT( visualization_linkage.target_view_id, '#', visualization_linkage_field.target_field ) AS targetInfo
         FROM
             visualization_linkage
                 LEFT JOIN core_chart_view ON visualization_linkage.source_view_id = core_chart_view.id

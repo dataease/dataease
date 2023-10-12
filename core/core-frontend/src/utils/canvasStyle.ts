@@ -427,12 +427,19 @@ interface CanvasViewInfo {
   }
 }
 
+const colors = ['labelColor', 'borderColor', 'text', 'bgColor']
+const colorsSwitch = ['labelColorShow', 'borderShow', 'textColorShow', 'bgColorShow']
+
 export function adaptCurThemeFilterStyleAll(styleKey) {
   const componentData = Object.values(dvMainStore.canvasViewInfo) as CanvasViewInfo[]
   const filterStyle = dvMainStore.canvasStyleData.component.filterStyle
   componentData.forEach(item => {
     if (isFilterComponent(item.type)) {
       item.customStyle.component[styleKey] = filterStyle[styleKey]
+      const index = colors.indexOf(styleKey)
+      if (index !== -1) {
+        item.customStyle.component[colorsSwitch[index]] = true
+      }
     }
   })
 }

@@ -765,7 +765,7 @@ public class DatasourceServer implements DatasourceApi {
         List<QrtzSchedulerState> qrtzSchedulerStates = qrtzSchedulerStateMapper.selectList(null);
         List<String> activeQrtzInstances = qrtzSchedulerStates.stream()
                 .filter(qrtzSchedulerState -> qrtzSchedulerState.getLastCheckinTime()
-                        + qrtzSchedulerState.getCheckinInterval() + 1000 > dataSourceExtMapper.selectTimestamp().getCurentTimestamp())
+                        + qrtzSchedulerState.getCheckinInterval() + 1000 > dataSourceExtMapper.selectTimestamp().getCurrentTimestamp())
                 .map(QrtzSchedulerState::getInstanceName).collect(Collectors.toList());
 
         QueryWrapper<CoreDatasource> queryWrapper = new QueryWrapper<>();
