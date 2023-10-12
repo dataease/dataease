@@ -180,7 +180,10 @@
               <el-icon><Plus /></el-icon>
             </el-upload>
             <el-row>
-              <span v-if="!state.commonBackground['outerImage']" class="image-hint"
+              <span
+                v-if="!state.commonBackground['outerImage']"
+                class="image-hint"
+                :class="`image-hint_${themes}`"
                 >支持JPG、PNG、GIF</span
               >
               <span
@@ -385,6 +388,9 @@ watch(
     :deep(.ed-upload--picture-card) {
       background: #373737;
       border-color: #434343;
+      .ed-icon {
+        color: #ebebeb;
+      }
     }
   }
 
@@ -474,7 +480,13 @@ watch(
         cursor: not-allowed;
       }
 
-      .img-area_dark,
+      .img-area_dark {
+        :deep(.ed-upload--picture-card) {
+          .ed-icon {
+            color: #5f5f5f;
+          }
+        }
+      }
       .img-area_light {
         :deep(.ed-upload--picture-card) {
           .ed-icon {
@@ -514,6 +526,9 @@ watch(
   line-height: 22px;
   font-weight: 400;
   margin-top: 2px;
+  &.image-hint_dark {
+    color: #757575;
+  }
 }
 </style>
 

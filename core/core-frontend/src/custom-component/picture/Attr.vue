@@ -128,7 +128,12 @@ onBeforeUnmount(() => {
           </el-col>
         </el-row>
         <el-row>
-          <span v-show="!curComponent.propValue.url" class="image-hint">支持JPG、PNG、GIF</span>
+          <span
+            v-show="!curComponent.propValue.url"
+            class="image-hint"
+            :class="`image-hint_${themes}`"
+            >支持JPG、PNG、GIF</span
+          >
           <span v-show="curComponent.propValue.url" class="re-update-span" @click="goFile"
             >重新上传</span
           >
@@ -207,6 +212,14 @@ onBeforeUnmount(() => {
     :deep(.ed-upload--picture-card) {
       background: #373737;
       border-color: #434343;
+      .ed-icon {
+        color: #ebebeb;
+      }
+      &:hover {
+        .ed-icon {
+          color: #3370ff;
+        }
+      }
     }
   }
 
@@ -223,6 +236,9 @@ onBeforeUnmount(() => {
   line-height: 22px;
   font-weight: 400;
   margin-top: 2px;
+  &.image-hint_dark {
+    color: #757575;
+  }
 }
 
 .re-update-span {

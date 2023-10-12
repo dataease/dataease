@@ -78,7 +78,12 @@
               <el-icon><Plus /></el-icon>
             </el-upload>
             <el-row style="margin-top: 8px">
-              <span v-if="!canvasStyleData.background" class="image-hint">支持JPG、PNG、GIF</span>
+              <span
+                v-if="!canvasStyleData.background"
+                class="image-hint"
+                :class="`image-hint_${themes}`"
+                >支持JPG、PNG、GIF</span
+              >
               <span v-if="canvasStyleData.background" class="re-update-span" @click="goFile">
                 重新上传
               </span>
@@ -229,6 +234,9 @@ watch(
     :deep(.ed-upload--picture-card) {
       background: #373737;
       border-color: #434343;
+      .ed-icon {
+        color: #ebebeb;
+      }
     }
   }
 
@@ -317,7 +325,13 @@ watch(
         cursor: not-allowed;
       }
 
-      .img-area_dark,
+      .img-area_dark {
+        :deep(.ed-upload--picture-card) {
+          .ed-icon {
+            color: #5f5f5f;
+          }
+        }
+      }
       .img-area_light {
         :deep(.ed-upload--picture-card) {
           .ed-icon {
@@ -357,6 +371,9 @@ watch(
   line-height: 22px;
   font-weight: 400;
   margin-top: -6px;
+  &.image-hint_dark {
+    color: #757575;
+  }
 }
 </style>
 
