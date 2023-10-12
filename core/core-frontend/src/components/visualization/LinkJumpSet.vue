@@ -951,6 +951,9 @@ span {
 .top-area {
   float: left;
   line-height: 33px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .top-area-text {
@@ -1032,10 +1035,13 @@ span {
   font-weight: 400;
   font-size: 14px;
   color: #1f2329;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 .view-type-icon {
   color: #3370ff;
-  width: 16px;
+  width: 22px;
   height: 16px;
 }
 .content-head {
