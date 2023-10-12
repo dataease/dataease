@@ -1,15 +1,5 @@
 <script lang="ts" setup>
-import {
-  ref,
-  toRefs,
-  provide,
-  PropType,
-  onBeforeMount,
-  shallowRef,
-  watch,
-  nextTick,
-  computed
-} from 'vue'
+import { ref, toRefs, PropType, onBeforeMount, shallowRef, watch, nextTick, computed } from 'vue'
 import { getEnumValue } from '@/api/dataset'
 import { cloneDeep, debounce } from 'lodash-es'
 
@@ -50,23 +40,9 @@ const props = defineProps({
   isConfig: {
     type: Boolean,
     default: false
-  },
-  customStyle: {
-    type: Object as PropType<{
-      border: string
-      background: string
-      text: string
-    }>,
-    default: () => ({
-      border: '',
-      background: '',
-      text: ''
-    })
   }
 })
-const { config, customStyle } = toRefs(props)
-
-provide('$custom-style-filter', customStyle)
+const { config } = toRefs(props)
 
 const selectValue = ref()
 const loading = ref(false)
@@ -103,6 +79,7 @@ const handleFieldIdChange = (val: string[]) => {
       })
     })
     .finally(() => {
+      loading.value = false
       if (config.value.defaultValueCheck) {
         selectValue.value = Array.isArray(config.value.defaultValue)
           ? [...config.value.defaultValue]
@@ -112,7 +89,6 @@ const handleFieldIdChange = (val: string[]) => {
           ? [...selectValue.value]
           : selectValue.value
       }
-      loading.value = false
     })
 }
 
