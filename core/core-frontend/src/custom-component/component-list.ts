@@ -31,7 +31,7 @@ export const COMMON_COMPONENT_BACKGROUND_BASE = {
 export const COMMON_COMPONENT_BACKGROUND_LIGHT = {
   ...COMMON_COMPONENT_BACKGROUND_BASE,
   backgroundColor: 'rgba(255,255,255,1)',
-  innerImageColor: '#1094E5'
+  innerImageColor: 'rgba(16, 148, 229,1)'
 }
 
 export const COMMON_COMPONENT_BACKGROUND_DARK = {

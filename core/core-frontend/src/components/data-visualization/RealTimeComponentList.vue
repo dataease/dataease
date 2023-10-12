@@ -11,7 +11,6 @@ import { lockStoreWithOut } from '@/store/modules/data-visualization/lock'
 import ContextMenuAsideDetails from '@/components/data-visualization/canvas/ContextMenuAsideDetails.vue'
 import ComposeShow from '@/components/data-visualization/canvas/ComposeShow.vue'
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
-import ContextMenu from '@/components/data-visualization/canvas/ContextMenu.vue'
 import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
 const dropdownMore = ref(null)
 const lockStore = lockStoreWithOut()
@@ -35,10 +34,15 @@ const onClick = (e, index) => {
   // ctrl or command 按下时 鼠标点击为选择需要组合的组件(取消需要组合的组件在ComposeShow组件中)
   if (isCtrlOrCmdDown.value && !areaData.value.components.includes(componentData.value[index])) {
     areaData.value.components.push(componentData.value[index])
+    if (curComponent.value && curComponent.value.id !== componentData.value[index].id) {
+      areaData.value.components.push(curComponent.value)
+    }
     dvMainStore.setCurComponent({ component: null, index: null })
     e.stopPropagation()
     return
   }
+  //其他情况点击清理选择区域
+  areaData.value.components.splice(0, areaData.value.components.length)
   setCurComponent(index)
 }
 const deleteComponent = (number: number) => {
@@ -157,15 +161,24 @@ const rename = item => {
 }
 
 const handleContextMenu = e => {
-  e.stopPropagation()
   e.preventDefault()
+  // 获取鼠标点击位置
+  const x = e.clientX
+  const y = e.clientY
+  const customContextMenu = document.createElement('div')
+  customContextMenu.style.position = 'fixed'
+  customContextMenu.style.left = x + 'px'
+  customContextMenu.style.top = y + 'px'
 
-  // 计算菜单相对于编辑器的位移
-  let target = e.target
-  let top = e.offsetY
-  let left = e.offsetX
+  // 将自定义菜单添加到页面
+  document.body.appendChild(customContextMenu)
 
-  contextmenuStore.showContextMenu({ top, left, position: 'aside' })
+  // 为自定义菜单添加事件监听器，例如，点击菜单项后执行的操作
+  customContextMenu.addEventListener('click', () => {
+    // 在这里执行菜单项点击后的操作
+    // 例如，关闭菜单
+    document.body.removeChild(customContextMenu)
+  })
 }
 </script>
 
@@ -174,7 +187,7 @@ const handleContextMenu = e => {
   <div class="real-time-component-list">
     <button hidden="true" id="close-button"></button>
     <el-row class="list-wrap">
-      <div class="list-container">
+      <div class="list-container" @contextmenu="handleContextMenu">
         <draggable
           @end="dragOnEnd"
           :list="componentData"
@@ -188,7 +201,9 @@ const handleContextMenu = e => {
               class="component-item"
               :class="{
                 'container-item-not-show': !getComponent(index).isShow,
-                activated: curComponent && curComponent.id === getComponent(index).id
+                activated:
+                  (curComponent && curComponent.id === getComponent(index).id) ||
+                  areaData.components.includes(getComponent(index))
               }"
               @click="onClick($event, transformIndex(index))"
               @dblclick="editComponentName(getComponent(index))"
@@ -251,7 +266,7 @@ const handleContextMenu = e => {
                   </template>
                 </el-dropdown>
               </div>
-              <compose-show :element="getComponent(index)"></compose-show>
+              <compose-show :show-border="false" :element="getComponent(index)"></compose-show>
             </div>
           </template>
         </draggable>

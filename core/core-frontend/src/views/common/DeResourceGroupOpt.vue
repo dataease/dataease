@@ -281,7 +281,7 @@ const saveResource = () => {
               window.open(baseUrl + data.data, '_blank')
             }
           })
-          .cache(() => {
+          .finally(() => {
             loading.value = false
           })
       }

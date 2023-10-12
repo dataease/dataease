@@ -5,6 +5,7 @@
       class="chart-style-main"
       themes="light"
       :param="param"
+      :common-background-pop="batchOptComponentInfo.commonBackground"
       :view="batchOptComponentInfo"
       :chart="batchOptComponentInfo"
       :properties="mixProperties"
@@ -28,6 +29,7 @@
     <common-attr
       v-else-if="mixProperties && batchOptComponentInfo && batchOptComponentType !== 'UserView'"
       :element="batchOptComponentInfo"
+      :show-style="mixProperties.includes('common-style')"
       @onAttrChange="onStyleAttrChange"
       themes="light"
     ></common-attr>

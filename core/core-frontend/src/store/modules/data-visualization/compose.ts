@@ -37,7 +37,10 @@ export const composeStore = defineStore('compose', {
   actions: {
     getEditor(canvasId = 'canvas-main') {
       this.editorMap[canvasId] = $('#editor-' + canvasId)
-      // this.editor = $('#editor-' + canvasId)
+    },
+
+    setIsCtrlOrCmdDownStatus(value) {
+      this.isCtrlOrCmdDown = value
     },
 
     setAreaData(data) {
