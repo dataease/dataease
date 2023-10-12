@@ -296,7 +296,7 @@
                             <template #content>
                               {{ $t('visualization.target_url_tips') }}
                             </template>
-                            <el-icon size="16px" style="margin-left: 4px; cursor: pointer">
+                            <el-icon size="16px" class="hint-icon">
                               <Icon name="icon_info_outlined" />
                             </el-icon>
                           </el-tooltip>
@@ -316,7 +316,7 @@
                             <template #content>
                               <span v-html="$t('chart.reference_field_tip')"></span>
                             </template>
-                            <el-icon size="16px" style="margin-left: 4px; cursor: pointer">
+                            <el-icon size="16px" class="hint-icon">
                               <Icon name="icon_info_outlined" />
                             </el-icon>
                           </el-tooltip>
@@ -951,6 +951,9 @@ span {
 .top-area {
   float: left;
   line-height: 33px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .top-area-text {
@@ -1032,10 +1035,13 @@ span {
   font-weight: 400;
   font-size: 14px;
   color: #1f2329;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 .view-type-icon {
   color: #3370ff;
-  width: 16px;
+  width: 22px;
   height: 16px;
 }
 .content-head {
@@ -1135,5 +1141,10 @@ span {
   width: 100%;
   display: flex;
   align-items: center;
+}
+.hint-icon {
+  margin-left: 4px;
+  cursor: pointer;
+  color: #646a73;
 }
 </style>

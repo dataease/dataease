@@ -1353,18 +1353,19 @@ const onRefreshChange = val => {
                     <el-row class="padding-lr drag-data" v-if="showAxis('drill')">
                       <div class="form-draggable-title">
                         <span class="data-area-label">
-                          <span>{{ t('chart.drill') }}</span>
-                          /
-                          <span style="margin-right: 4px">{{ t('chart.dimension') }}</span>
+                          <span style="margin-right: 4px">
+                            {{ t('chart.drill') }} / {{ t('chart.dimension') }}
+                          </span>
                           <el-tooltip class="item" effect="dark" placement="top">
                             <template #content>
                               <span>钻取字段仅支持数据集中的字段</span>
                             </template>
-                            <span style="vertical-align: middle">
-                              <el-icon style="cursor: pointer">
-                                <Icon name="icon_info_outlined" />
-                              </el-icon>
-                            </span>
+                            <el-icon
+                              class="hint-icon"
+                              :class="{ 'hint-icon--dark': themes === 'dark' }"
+                            >
+                              <Icon name="icon_info_outlined" />
+                            </el-icon>
                           </el-tooltip>
                           <el-tooltip class="item" :effect="themes" placement="bottom">
                             <template #content>
@@ -2010,6 +2011,17 @@ const onRefreshChange = val => {
 .collapse-icon {
   color: @canvas-main-font-color;
 }
+
+.hint-icon {
+  cursor: pointer;
+  font-size: 14px;
+  color: #646a73;
+
+  &.hint-icon--dark {
+    color: #a6a6a6;
+  }
+}
+
 .editor-light {
   border-left: solid 1px @side-outline-border-color-light !important;
   color: @canvas-main-font-color-light!important;
@@ -2405,7 +2417,9 @@ span {
     text-align: left;
     position: relative;
     width: 100%;
-    display: inline-block;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
   }
 
   .form-draggable-title {
@@ -2753,6 +2767,14 @@ span {
   &.select-append {
     .ed-input-group__append {
       background-color: transparent;
+    }
+  }
+}
+
+:deep(.form-item-light) {
+  &.select-append {
+    .ed-input-group__append {
+      padding: 0 20px;
     }
   }
 }

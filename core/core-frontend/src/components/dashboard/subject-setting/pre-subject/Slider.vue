@@ -185,7 +185,7 @@
         </ul>
       </div>
       <div style="flex: 1">
-        <el-button type="primary" link size="small" @click="saveSelfSubject">
+        <el-button type="primary" text size="small" @click="saveSelfSubject">
           {{ $t('commons.save') }}
         </el-button>
       </div>
