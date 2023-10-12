@@ -218,6 +218,9 @@ const getData = () => {
       if (!!id) {
         Object.assign(nodeInfo, cloneDeep(defaultNode))
         dfsDatasetTree(state.datasetTree, id)
+        nextTick(() => {
+          datasetListTree.value.setCurrentKey(id, true)
+        })
       }
     })
 }
