@@ -184,7 +184,7 @@ export function getComponentRotatedStyle(style) {
 export function getCanvasStyle(canvasStyleData) {
   const { backgroundColorSelect, background, backgroundColor, backgroundImageEnable, fontSize } =
     canvasStyleData
-  const style = { fontSize: fontSize + 'px' }
+  const style = { fontSize: fontSize + 'px', color: canvasStyleData.color }
   // 仪表板默认色#f5f6f7 大屏默认配色 #1a1a1a
   let colorRGBA = dvMainStore.dvInfo.type === 'dashboard' ? '#f5f6f7' : '#1a1a1a'
   if (backgroundColorSelect && backgroundColor) {

@@ -77,7 +77,9 @@ export class WordCloud extends G2PlotChartView<WordCloudOptions, G2WordCloud> {
       }
       const options = this.setupOptions(chart, initOptions)
       const newChart = new G2WordCloud(container, options)
-      newChart.on('point:click', action)
+      newChart.on('point:click', param => {
+        action({ data: { data: param.data.data.datum } })
+      })
       return newChart
     }
   }

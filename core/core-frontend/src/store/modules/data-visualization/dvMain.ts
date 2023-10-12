@@ -470,6 +470,7 @@ export const dvMainStore = defineStore('dataVisualization', {
             mode: 'batchOpt',
             render: batchAttachInfo.render,
             type: batchAttachInfo.type,
+            commonBackground: deepCopy(COMMON_COMPONENT_BACKGROUND_BASE),
             customAttr: this.changeProperties.customAttr,
             customStyle: this.changeProperties.customStyle
           }
@@ -555,13 +556,56 @@ export const dvMainStore = defineStore('dataVisualization', {
               component.style[propertyInfo.property] = propertyInfo.value
             }
           }
+          if (component.component === 'Group') {
+            component.propValue.forEach(groupItem => {
+              if (propertyInfo.custom === 'commonBackground') {
+                groupItem.commonBackground = deepCopy(this.batchOptComponentInfo.commonBackground)
+              } else if (
+                propertyInfo.custom === 'style' &&
+                groupItem.style[propertyInfo.property]
+              ) {
+                groupItem.style[propertyInfo.property] = propertyInfo.value
+              }
+            })
+          } else if (component.component === 'DeTabs') {
+            component.propValue.forEach(tabItem => {
+              tabItem.componentData.forEach(tabComponent => {
+                if (propertyInfo.custom === 'commonBackground') {
+                  tabComponent.commonBackground = deepCopy(
+                    this.batchOptComponentInfo.commonBackground
+                  )
+                } else if (
+                  propertyInfo.custom === 'style' &&
+                  tabComponent.style[propertyInfo.property]
+                ) {
+                  tabComponent.style[propertyInfo.property] = propertyInfo.value
+                }
+              })
+            })
+          }
         })
       }
     },
     setBatchChangeBackground(newBackground) {
       this.componentData.forEach(component => {
-        if (this.curBatchOptComponents.includes(component.id)) {
-          component.commonBackground = deepCopy(newBackground)
+        if (component.component === 'UserView') {
+          if (this.curBatchOptComponents.includes(component.id)) {
+            component.commonBackground = deepCopy(newBackground)
+          }
+        } else if (component.component === 'Group') {
+          component.propValue.forEach(groupItem => {
+            if (this.curBatchOptComponents.includes(groupItem.id)) {
+              groupItem.commonBackground = deepCopy(newBackground)
+            }
+          })
+        } else if (component.component === 'DeTabs') {
+          component.propValue.forEach(tabItem => {
+            tabItem.componentData.forEach(tabComponent => {
+              if (this.curBatchOptComponents.includes(tabComponent.id)) {
+                tabComponent.commonBackground = deepCopy(newBackground)
+              }
+            })
+          })
         }
       })
     },

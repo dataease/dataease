@@ -31,6 +31,10 @@ const state = {
 }
 
 const props = defineProps({
+  commonBackgroundPop: {
+    type: Object,
+    required: false
+  },
   chart: {
     type: Object as PropType<ChartObj>,
     required: true
@@ -63,7 +67,7 @@ const props = defineProps({
   }
 })
 
-const { chart, themes, properties, propertyInnerAll } = toRefs(props)
+const { chart, themes, properties, propertyInnerAll, commonBackgroundPop } = toRefs(props)
 const emit = defineEmits([
   'onColorChange',
   'onMiscChange',
@@ -160,9 +164,14 @@ watch(
           >
             <component-position :themes="themes" />
           </el-collapse-item>
-          <el-collapse-item :effect="themes" name="background" title="背景" v-if="curComponent">
+          <el-collapse-item
+            :effect="themes"
+            name="background"
+            title="背景"
+            v-if="showProperties('background-overall-component') && commonBackgroundPop"
+          >
             <background-overall-common
-              :common-background-pop="curComponent.commonBackground"
+              :common-background-pop="commonBackgroundPop"
               :themes="themes"
               @onBackgroundChange="onBackgroundChange"
               component-position="component"

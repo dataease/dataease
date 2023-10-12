@@ -1,5 +1,10 @@
 <template>
-  <div v-if="isComposeSelected" class="compose-shadow" @mousedown="handleMouseDown"></div>
+  <div
+    v-if="isComposeSelected"
+    class="compose-shadow"
+    :class="{ 'shadow-border': props.showBorder }"
+    @mousedown="handleMouseDown"
+  ></div>
 </template>
 
 <script setup lang="ts">
@@ -13,6 +18,11 @@ const props = defineProps({
   element: {
     required: true,
     type: Object
+  },
+  showBorder: {
+    required: false,
+    type: Boolean,
+    default: true
   }
 })
 
@@ -38,6 +48,9 @@ const handleMouseDown = e => {
   height: 100%;
   top: 0;
   left: 0;
+}
+
+.shadow-border {
   border: 1px solid #3370ff;
 }
 </style>

@@ -8,6 +8,7 @@ import { handleGeoJson } from '@/views/chart/components/js/panel/common/common_a
 import { FeatureCollection } from '@antv/l7plot/dist/esm/plots/choropleth/types'
 import { cloneDeep } from 'lodash-es'
 import { useI18n } from '@/hooks/web/useI18n'
+import { valueFormatter } from '../../../formatter'
 
 const { t } = useI18n()
 type MapMouseEvent = MouseEvent & {
@@ -193,7 +194,8 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
           content.push(name)
         }
         if (label.showQuota) {
-          areaMap[name] && content.push(areaMap[name])
+          valueFormatter
+          areaMap[name] && content.push(valueFormatter(areaMap[name], label.quotaLabelFormatter))
         }
         item.properties['_DE_LABEL_'] = content.join('\n\n')
       }

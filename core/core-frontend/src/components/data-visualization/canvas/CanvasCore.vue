@@ -186,6 +186,10 @@ const dragInfoShow = computed(() => {
   )
 })
 
+const curComponentId = computed(() => {
+  return curComponent.value?.id || ''
+})
+
 const showComponentData = computed(() => {
   return componentData.value.filter(component => component.isShow)
 })
@@ -1589,7 +1593,6 @@ defineExpose({
       :key="item.id"
       :default-style="item.style"
       :style="getShapeItemShowStyle(item)"
-      :active="item.id === (curComponent || {})['id']"
       :element="item"
       :index="index"
       :class="{ lock: item.isLock }"
@@ -1609,7 +1612,7 @@ defineExpose({
         v-if="item.component === 'UserView'"
         class="component"
         :id="'component' + item.id"
-        :active="item.id === (curComponent || {})['id']"
+        :active="item.id === curComponentId"
         :dv-type="dvInfo.type"
         :scale="curScale"
         :style="getComponentStyle(item.style)"
@@ -1667,7 +1670,6 @@ defineExpose({
     outline: none;
     width: 100%;
     height: 100%;
-    overflow: hidden;
   }
 }
 </style>

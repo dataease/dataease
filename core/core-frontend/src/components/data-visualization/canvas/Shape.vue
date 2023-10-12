@@ -155,10 +155,6 @@ const showPosition = computed(() => {
 })
 
 const props = defineProps({
-  active: {
-    type: Boolean,
-    default: false
-  },
   element: {
     required: true,
     type: Object,
@@ -209,8 +205,7 @@ const props = defineProps({
   }
 })
 
-const { active, element, defaultStyle, baseCellInfo, index, isTabMoveCheck, canvasId } =
-  toRefs(props)
+const { element, defaultStyle, baseCellInfo, index, isTabMoveCheck, canvasId } = toRefs(props)
 const domId = ref('shape-id-' + element.value.id)
 const pointList = ['lt', 't', 'rt', 'r', 'rb', 'b', 'lb', 'l']
 const pointList2 = ['r', 'l']
@@ -238,6 +233,10 @@ const angleToCursor = [
   { start: 248, end: 293, cursor: 'sw' },
   { start: 293, end: 338, cursor: 'w' }
 ]
+
+const active = computed(() => {
+  return curComponent.value?.id === element.value.id
+})
 
 const boardMoveActive = computed(() => {
   return ['map', 'table-info', 'table-normal'].includes(element.value.innerType)
@@ -358,6 +357,9 @@ const handleInnerMouseDownOnShape = e => {
   // ctrl or command 按下时 鼠标点击为选择需要组合的组件(取消需要组合的组件在ComposeShow组件中)
   if (isCtrlOrCmdDown.value && !areaData.value.components.includes(element)) {
     areaData.value.components.push(element.value)
+    if (curComponent.value && curComponent.value.id !== element.value.id) {
+      areaData.value.components.push(curComponent.value)
+    }
     dvMainStore.setCurComponent({ component: null, index: null })
     e.stopPropagation()
     return
@@ -795,7 +797,6 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   position: relative;
-  overflow: hidden;
   background-size: 100% 100% !important;
 }
 

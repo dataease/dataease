@@ -120,6 +120,7 @@
               :title="t('visualization.border_color_setting')"
               style="position: absolute; top: -3px; left: 60px"
               is-custom
+              show-alpha
               class="color-picker-style"
               :predefine="state.predefineColors"
               @change="onBackgroundChange"
@@ -448,6 +449,7 @@ watch(
 }
 
 .indented-container {
+  margin-top: 8px;
   width: 100%;
   padding-left: 22px;
 

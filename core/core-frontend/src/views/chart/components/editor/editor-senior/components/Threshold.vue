@@ -270,7 +270,7 @@ init()
           :title="t('chart.edit')"
           class="circle-button"
           type="primary"
-          link
+          text
           size="small"
           style="width: 24px; margin-left: 4px"
           @click="editTextLabelThreshold"
@@ -333,7 +333,7 @@ init()
           :title="t('chart.edit')"
           class="circle-button"
           type="primary"
-          link
+          text
           size="small"
           style="width: 24px; margin-left: 4px"
           @click="editLabelThreshold"
@@ -403,7 +403,7 @@ init()
             :title="t('chart.edit')"
             class="circle-button"
             type="primary"
-            link
+            text
             size="small"
             :style="{ width: '24px', marginLeft: '4px', float: 'right' }"
             @click="editTableThreshold"
