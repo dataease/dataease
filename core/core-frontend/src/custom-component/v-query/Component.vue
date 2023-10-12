@@ -62,6 +62,8 @@ const defaultStyle = {
   titleColor: '',
   textColorShow: false,
   labelColor: '',
+  bgColorShow: false,
+  borderShow: false,
   labelColorShow: false,
   title: ''
 }

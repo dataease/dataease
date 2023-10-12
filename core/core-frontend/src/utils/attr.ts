@@ -7,7 +7,7 @@ export const positionData = [
 
 export const styleData = [
   { key: 'lineHeight', label: '行高', min: 0, max: 50, step: 1 },
-  { key: 'opacity', label: '透明度', min: 0, max: 1, step: 0.1 },
+  { key: 'opacity', label: '不透明度', min: 0, max: 1, step: 0.1 },
   { key: 'borderWidth', label: '边框宽度', min: 0, max: 20, step: 1 },
   { key: 'borderStyle', label: '边框风格' },
   { key: 'borderColor', label: '边框颜色' },

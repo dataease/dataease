@@ -4,5 +4,5 @@ import lombok.Data;
 
 @Data
 public class Ctimestamp {
-    private Long curentTimestamp;
+    private Long currentTimestamp;
 }

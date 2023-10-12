@@ -158,7 +158,6 @@ const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 
-const emits = defineEmits(['onTextChange'])
 const { filterStyle } = toRefs(dvMainStore.canvasStyleData.component)
 const state = reactive({
   fontSize: [],
