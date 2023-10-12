@@ -79,23 +79,21 @@
             <el-row class="content-head">配置图表间的字段关联关系</el-row>
             <el-row v-if="state.linkageInfo && state.linkageInfo.linkageActive">
               <el-row style="margin-top: 5px">
-                <el-row class="inner-content">
-                  <el-col :span="11"> 当前图表源字段 </el-col>
-                  <el-icon style="visibility: hidden">
-                    <Icon style="width: 20px; height: 20px" name="dv-link-target"></Icon>
-                  </el-icon>
-                  <el-col :span="11">
+                <div style="display: flex" class="inner-content">
+                  <div style="flex: 1">当前图表源字段</div>
+                  <div style="width: 36px"></div>
+                  <div style="flex: 1">
                     {{ t('visualization.link_view_field') }}
-                  </el-col>
-                </el-row>
-                <el-row style="display: inline-block; max-height: 350px; overflow-y: auto">
-                  <el-row
-                    style="padding: 0 16px 8px"
-                    :gutter="16"
+                  </div>
+                  <div style="width: 32px"></div>
+                </div>
+                <div style="width: 100%; max-height: 350px; overflow-y: auto">
+                  <div
+                    style="display: flex; padding: 0 16px 8px"
                     v-for="(itemLinkage, index) in state.linkageInfo.linkageFields"
                     :key="index"
                   >
-                    <el-col :span="11">
+                    <div style="flex: 1">
                       <div class="select-filed">
                         <el-select
                           v-model="itemLinkage.sourceField"
@@ -113,17 +111,17 @@
                                 style="width: 14px; height: 14px"
                                 :name="`field_${fieldType[item.deType]}`"
                                 :className="`field-icon-${fieldType[item.deType]}`"
-                              ></Icon>
+                              />
                             </span>
                             <span style="float: left; font-size: 12px">{{ item.name }}</span>
                           </el-option>
                         </el-select>
                       </div>
-                    </el-col>
+                    </div>
                     <el-icon class="link-icon-join">
-                      <Icon style="width: 20px; height: 20px" name="dv-link-target"></Icon>
+                      <Icon style="width: 20px; height: 20px" name="dv-link-target" />
                     </el-icon>
-                    <el-col :span="11">
+                    <div style="flex: 1">
                       <div class="select-filed">
                         <el-select
                           v-model="itemLinkage.targetField"
@@ -147,23 +145,18 @@
                           </el-option>
                         </el-select>
                       </div>
-                    </el-col>
+                    </div>
 
-                    <el-button
-                      class="m-icon-btn"
-                      text
-                      @click="deleteLinkageField(index)"
-                      style="margin-top: 2px"
-                    >
-                      <el-icon size="20px" style="color: #646a73">
+                    <el-button class="m-del-icon-btn" text @click="deleteLinkageField(index)">
+                      <el-icon size="20px">
                         <Delete />
                       </el-icon>
                     </el-button>
-                  </el-row>
-                </el-row>
+                  </div>
+                </div>
                 <el-row style="width: 100%; padding-left: 16px">
-                  <el-button type="primary" icon="Plus" text @click="addLinkageField('', '')"
-                    >追加联动依赖字段
+                  <el-button type="primary" icon="Plus" text @click="addLinkageField('', '')">
+                    追加联动依赖字段
                   </el-button>
                 </el-row>
               </el-row>
@@ -177,8 +170,8 @@
       </el-row>
       <el-row class="root-class">
         <el-button size="mini" @click="cancel()">{{ t('common.cancel') }} </el-button>
-        <el-button type="primary" size="mini" @click="saveLinkageSetting()"
-          >{{ t('dataset.confirm') }}
+        <el-button type="primary" size="mini" @click="saveLinkageSetting()">
+          {{ t('dataset.confirm') }}
         </el-button>
       </el-row>
     </div>
@@ -190,7 +183,7 @@ import { queryVisualizationJumpInfo } from '@/api/visualization/linkJump'
 import { reactive, ref, nextTick, watch } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
-import { ElButton, ElMessage } from 'element-plus-secondary'
+import { ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { fieldType } from '@/utils/attr'
 import {
@@ -607,6 +600,9 @@ span {
 .top-area {
   float: left;
   line-height: 33px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .top-area-text {
@@ -620,6 +616,9 @@ span {
   font-weight: 400;
   font-size: 14px;
   color: #1f2329;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 .view-type-icon {
   color: #3370ff;
@@ -639,6 +638,8 @@ span {
 .link-icon-join {
   font-size: 20px;
   margin-top: 7px;
+  margin-left: 8px;
+  margin-right: 8px;
 }
 .inner-content {
   width: 100%;
@@ -706,7 +707,11 @@ span {
   height: 100%;
   overflow-y: auto;
 }
-.m-icon-btn {
+.m-del-icon-btn {
+  color: #646a73;
+  margin-top: 2px;
+  margin-left: 4px;
+
   &:hover {
     background: rgba(31, 35, 41, 0.1) !important;
   }

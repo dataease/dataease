@@ -4,7 +4,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL, DEFAULT_LABEL } from '@/views/chart/components/editor/util/chart'
 import { ElSpace } from 'element-plus-secondary'
 import { formatterType, unitType } from '../../../js/formatter'
-import { defaultsDeep, cloneDeep } from 'lodash-es'
+import { defaultsDeep, cloneDeep, intersection } from 'lodash-es'
 import { includesAny } from '../../util/StringUtils'
 import { fieldType } from '@/utils/attr'
 
@@ -127,7 +127,10 @@ const COMPUTED_DEFAULT_LABEL = computed(() => {
 })
 
 const state = reactive<{ labelForm: ChartLabelAttr | any }>({
-  labelForm: {}
+  labelForm: {
+    quotaLabelFormatter: DEFAULT_LABEL.quotaLabelFormatter,
+    seriesLabelFormatter: []
+  }
 })
 
 const emit = defineEmits(['onLabelChange'])
@@ -157,6 +160,21 @@ const init = () => {
       formatterSelector.value?.blur()
     }
   }
+}
+const checkLabelContent = contentProp => {
+  const propIntersection = intersection(props.propertyInner, [
+    'showDimension',
+    'showQuota',
+    'showProportion'
+  ])
+  if (!propIntersection?.includes(contentProp)) {
+    return false
+  }
+  let trueCount = 0
+  propIntersection?.forEach(prop => {
+    state.labelForm?.[prop] && trueCount++
+  })
+  return trueCount === 1 && state.labelForm?.[contentProp]
 }
 const showProperty = prop => {
   return props.propertyInner?.includes(prop)
@@ -378,11 +396,12 @@ onMounted(() => {
       v-if="showProperty('showDimension')"
     >
       <el-checkbox
-        :effect="themes"
-        size="small"
-        @change="changeLabelAttr('showDimension')"
         v-model="state.labelForm.showDimension"
+        :effect="themes"
+        :disabled="checkLabelContent('showDimension')"
+        size="small"
         label="dimension"
+        @change="changeLabelAttr('showDimension')"
       >
         {{ t('chart.dimension') }}
       </el-checkbox>
@@ -390,11 +409,12 @@ onMounted(() => {
     <template v-if="showProperty('showQuota')">
       <el-form-item class="form-item form-item-checkbox" :class="'form-item-' + themes">
         <el-checkbox
-          :effect="themes"
-          size="small"
-          @change="changeLabelAttr('showQuota')"
           v-model="state.labelForm.showQuota"
+          :effect="themes"
+          :disabled="checkLabelContent('showQuota')"
+          size="small"
           label="quota"
+          @change="changeLabelAttr('showQuota')"
         >
           {{ t('chart.quota') }}
         </el-checkbox>
@@ -509,11 +529,12 @@ onMounted(() => {
     <template v-if="showProperty('showProportion')">
       <el-form-item class="form-item form-item-checkbox" :class="'form-item-' + themes">
         <el-checkbox
-          :effect="themes"
-          size="small"
-          @change="changeLabelAttr('showProportion')"
           v-model="state.labelForm.showProportion"
+          :effect="themes"
+          :disabled="checkLabelContent('showProportion')"
+          size="small"
           label="proportion"
+          @change="changeLabelAttr('showProportion')"
         >
           {{ t('chart.proportion') }}
         </el-checkbox>
