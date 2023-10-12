@@ -10,11 +10,11 @@ import org.apache.ibatis.annotations.*;
 public interface DataSourceExtMapper extends BaseMapper<DataSourceNodePO> {
 
 
-    @Select("select  unix_timestamp(current_timestamp()) * 1000 as curentTimestamp")
+    @Select("select  unix_timestamp(current_timestamp()) * 1000 as currentTimestamp")
     @Results(
             id = "selectTimestamp",
             value = {
-                    @Result(property = "curentTimestamp", column = "curentTimestamp")
+                    @Result(property = "currentTimestamp", column = "currentTimestamp")
             }
     )
     Ctimestamp selectTimestamp();
