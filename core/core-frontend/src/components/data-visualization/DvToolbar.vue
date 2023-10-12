@@ -210,12 +210,7 @@ eventBus.on('clearCanvas', clearCanvas)
         </component-group>
       </div>
       <div class="right-area">
-        <el-button
-          class="preview-button"
-          @click="preview()"
-          style="float: right; margin-right: 12px"
-          >预览</el-button
-        >
+        <el-button class="preview-button" @click="preview()" style="float: right">预览</el-button>
         <el-button
           @click="saveCanvasWithCheck()"
           :disabled="styleChangeTimes < 1"
@@ -345,18 +340,16 @@ eventBus.on('clearCanvas', clearCanvas)
 }
 
 .preview-button {
-  border-color: rgba(255, 255, 255, 0.3);
-  color: #ffffff;
-  background-color: #050e21;
+  border-color: #5f5f5f;
+  color: #ebebeb;
+  background-color: #1a1a1a;
   &:hover,
   &:focus {
-    background-color: #121a2c;
-    border-color: #595f6b;
+    background-color: rgba(235, 235, 235, 0.05);
   }
 
   &:active {
-    border-color: #616774;
-    background-color: #1e2637;
+    background-color: rgba(235, 235, 235, 0.1);
   }
 }
 </style>

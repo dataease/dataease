@@ -245,6 +245,7 @@ onMounted(() => {
   size: 14px;
   line-height: 22px;
   font-weight: 400;
+  margin-top: 2px;
 }
 
 .re-update-span {
