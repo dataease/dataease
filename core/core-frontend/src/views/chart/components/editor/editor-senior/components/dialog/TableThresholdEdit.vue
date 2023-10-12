@@ -1,8 +1,9 @@
 <script lang="tsx" setup>
-import { reactive } from 'vue'
+import { computed, reactive } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL } from '../../../util/chart'
 import { fieldType } from '@/utils/attr'
+import _ from 'lodash'
 
 const { t } = useI18n()
 
@@ -241,6 +242,10 @@ const removeCondition = (item, index) => {
   item.conditions.splice(index, 1)
   changeThreshold()
 }
+
+const computedFields = computed(() => {
+  return _.filter(state.fields, f => f.deType === 2 || f.deType === 3)
+})
 const addField = item => {
   // get field
   if (state.fields && state.fields.length > 0) {
@@ -274,7 +279,7 @@ init()
           <el-form-item class="form-item">
             <el-select v-model="fieldItem.fieldId" @change="addField(fieldItem)">
               <el-option
-                v-for="fieldOption in state.fields"
+                v-for="fieldOption in computedFields"
                 :key="fieldOption.id"
                 :label="fieldOption.name"
                 :value="fieldOption.id"
