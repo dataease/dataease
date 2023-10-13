@@ -107,10 +107,17 @@ const onImgChange = imgUrl => {
   font-size: 14px;
   font-style: normal;
   font-weight: 400;
-  line-height: 22px;
+  line-height: 14px;
+  display: inline-block;
 }
 .form-item {
   margin-bottom: 16px;
+  :deep(.ed-form-item__label) {
+    line-height: 14px !important;
+  }
+  .ed-input {
+    --ed-input-height: 32px !important;
+  }
 
   &:last-child {
     margin-bottom: 0;
