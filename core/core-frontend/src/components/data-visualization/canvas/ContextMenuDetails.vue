@@ -66,6 +66,11 @@ const hide = () => {
   menuOpt('hide')
 }
 
+const show = () => {
+  layerStore.showComponent()
+  menuOpt('show')
+}
+
 const rename = () => {
   emit('rename')
   menuOpt('rename')
@@ -162,7 +167,8 @@ const composeDivider = computed(() => {
           <li @click="topComponent">置于顶层</li>
           <li @click="bottomComponent">置于底层</li>
           <el-divider class="custom-divider" />
-          <li @click="hide">隐藏</li>
+          <li @click="hide" v-show="curComponent['isShow']">隐藏</li>
+          <li @click="show" v-show="!curComponent['isShow']">取消隐藏</li>
           <li @click="lock">锁定</li>
           <el-divider class="custom-divider" />
           <li v-if="activePosition === 'aside'" @click="rename">重命名</li>
