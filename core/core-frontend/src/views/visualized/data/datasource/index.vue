@@ -526,6 +526,10 @@ const nodeExpand = data => {
   expandedKey.value.push(data.id)
 }
 
+const nodeCollapse = data => {
+  expandedKey.value = expandedKey.value.filter(ele => ele !== data.id)
+}
+
 const filterNode = (value: string, data: BusiTreeNode) => {
   if (!value) return true
   return data.name?.toLocaleLowerCase().includes(value.toLocaleLowerCase())
@@ -689,6 +693,7 @@ onMounted(() => {
             ref="dsListTree"
             node-key="id"
             @node-expand="nodeExpand"
+            @node-collapse="nodeCollapse"
             :filter-node-method="filterNode"
             :default-expanded-keys="expandedKey"
             :data="state.datasourceTree"
