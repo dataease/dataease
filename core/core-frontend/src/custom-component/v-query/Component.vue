@@ -359,10 +359,17 @@ const labelStyle = computed(() => {
     color: customStyle.labelColor || '#1f2329'
   } as CSSProperties
 })
+const opacityStyle = computed(() => {
+  return element.value?.style?.opacity
+    ? ({
+        opacity: element.value.style.opacity
+      } as CSSProperties)
+    : {}
+})
 </script>
 
 <template>
-  <div class="v-query-container">
+  <div class="v-query-container" :style="opacityStyle">
     <p v-if="customStyle.titleShow" class="title" :style="titleStyle">
       {{ customStyle.title }}
     </p>
