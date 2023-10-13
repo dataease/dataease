@@ -962,6 +962,9 @@ defineExpose({
     border-radius: 4px;
     border: 1px solid #dee0e3;
     display: flex;
+    .ed-checkbox__label:hover {
+      color: #1f2329;
+    }
     .query-condition-list {
       height: 100%;
       background: #f5f6f7;
