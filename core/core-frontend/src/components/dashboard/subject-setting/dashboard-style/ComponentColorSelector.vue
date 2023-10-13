@@ -378,6 +378,7 @@ span {
 }
 
 :deep(.ed-form-item__label) {
+  margin-bottom: 8px;
   color: #646a73;
 }
 
@@ -424,7 +425,7 @@ span {
     padding: 0 16px;
   }
   :deep(.custom-color-setting-btn) {
-    margin-top: 23px;
+    margin-top: 31px;
   }
 }
 

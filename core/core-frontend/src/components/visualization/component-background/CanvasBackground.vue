@@ -309,6 +309,7 @@ watch(
 .indented-container {
   width: 100%;
   padding-left: 22px;
+  margin-top: 8px;
 
   .indented-item {
     width: 100%;

@@ -459,3 +459,32 @@ defineExpose({
   right: var(--drawRight);
 }
 </style>
+
+<style lang="less">
+.tox-collection__item-label {
+  p {
+    color: #1a1a1a !important;
+  }
+  h1 {
+    color: #1a1a1a !important;
+  }
+  h2 {
+    color: #1a1a1a !important;
+  }
+  h3 {
+    color: #1a1a1a !important;
+  }
+  h4 {
+    color: #1a1a1a !important;
+  }
+  h5 {
+    color: #1a1a1a !important;
+  }
+  h6 {
+    color: #1a1a1a !important;
+  }
+  pre {
+    color: #1a1a1a !important;
+  }
+}
+</style>
