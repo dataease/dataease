@@ -81,6 +81,12 @@ public interface DatasourceApi {
     @PostMapping("/latestUse")
     public List<String> latestUse();
 
+    @GetMapping("showFinishPage")
+    public boolean showFinishPage() throws DEException;
+
+    @PostMapping("setShowFinishPage")
+    public void setShowFinishPage() throws DEException;
+
     @PostMapping("/listSyncRecord/{dsId}/{goPage}/{pageSize}")
     IPage<CoreDatasourceTaskLogDTO> listSyncRecord(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @PathVariable("dsId") Long dsId);
 }

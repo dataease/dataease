@@ -178,8 +178,9 @@ const optInit = (type, data: BusiTreeNode, exec, parentSelect = false) => {
         trigger: 'blur'
       },
       {
-        max: 50,
-        message: t('commons.char_can_not_more_50'),
+        min: 2,
+        max: 64,
+        message: t('commons.char_2_64'),
         trigger: 'change'
       },
       { required: true, trigger: 'blur', validator: nameValidator }

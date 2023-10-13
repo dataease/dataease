@@ -19,11 +19,9 @@ import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableMapper;
 import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import io.dataease.dataset.manage.DatasetDataManage;
 import io.dataease.dataset.utils.TableUtils;
-import io.dataease.datasource.dao.auto.entity.CoreDatasource;
-import io.dataease.datasource.dao.auto.entity.CoreDatasourceTask;
-import io.dataease.datasource.dao.auto.entity.CoreDatasourceTaskLog;
-import io.dataease.datasource.dao.auto.entity.QrtzSchedulerState;
+import io.dataease.datasource.dao.auto.entity.*;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
+import io.dataease.datasource.dao.auto.mapper.CoreDsFinishPageMapper;
 import io.dataease.datasource.dao.auto.mapper.QrtzSchedulerStateMapper;
 import io.dataease.datasource.dao.ext.mapper.DataSourceExtMapper;
 import io.dataease.datasource.dao.ext.mapper.TaskLogExtMapper;
@@ -85,6 +83,8 @@ public class DatasourceServer implements DatasourceApi {
     private QrtzSchedulerStateMapper qrtzSchedulerStateMapper;
     @Resource
     private DataSourceExtMapper dataSourceExtMapper;
+    @Resource
+    private CoreDsFinishPageMapper coreDsFinishPageMapper;
     @Resource
     private DatasetDataManage datasetDataManage;
     @Autowired(required = false)
@@ -795,5 +795,14 @@ public class DatasourceServer implements DatasourceApi {
         datasourceTaskServer.updateByDsIds(jobStoppedCoreDatasources.stream().map(CoreDatasource::getId).collect(Collectors.toList()));
     }
 
+    public boolean showFinishPage() throws DEException{
+        return coreDsFinishPageMapper.selectById(AuthUtils.getUser().getUserId()) == null;
+    }
 
+
+    public void setShowFinishPage() throws DEException{
+        CoreDsFinishPage coreDsFinishPage = new CoreDsFinishPage();
+        coreDsFinishPage.setId(AuthUtils.getUser().getUserId());
+        coreDsFinishPageMapper.insert(coreDsFinishPage);
+    }
 }

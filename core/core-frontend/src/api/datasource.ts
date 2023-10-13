@@ -72,6 +72,13 @@ export const validate = (data = {}) => {
   return request.post({ url: '/datasource/validate', data })
 }
 
+export const isShowFinishPage = async () => {
+  return request.get({ url: '/datasource/showFinishPage' })
+}
+
+export const setShowFinishPage = (data = {}) => {
+  return request.post({ url: '/datasource/setShowFinishPage', data })
+}
 export const latestUse = async (data = {}) => {
   return request.post({ url: '/datasource/latestUse', data })
 }
