@@ -115,5 +115,9 @@ const onImgChange = imgUrl => {
   &:last-child {
     margin-bottom: 0;
   }
+
+  :deep(.avatar-uploader-container) {
+    margin-bottom: 0px;
+  }
 }
 </style>
