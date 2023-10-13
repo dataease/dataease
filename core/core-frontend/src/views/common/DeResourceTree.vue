@@ -383,6 +383,7 @@ defineExpose({
                 @handle-command="cmd => operation(cmd, data, data.leaf ? 'leaf' : 'folder')"
                 :node="data"
                 :any-manage="anyManage"
+                :resource-type="curCanvasType"
                 :menu-list="data.leaf ? state.menuList : state.folderMenuList"
               ></dv-handle-more>
             </div>
