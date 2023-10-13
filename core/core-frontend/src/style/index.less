@@ -336,14 +336,25 @@ em {
   min-width: 75vw;
   max-height: 85vh;
   overflow-y: auto;
+  background: none !important;
   .ed-dialog__header{
     padding: 0px;
     .ed-dialog__headerbtn{
-      top:2px;
-      right: 2px;
+      .ed-icon {
+        font-size: 24px;
+        color: white;
+      }
+      background: rgba(31, 35, 41, 0.90);
+      height: 48px;
+      width: 48px;
+      top:24px;
+      right: 24px;
+      padding: 12px;
+      border-radius: 50%;
     }
   }
   .ed-dialog__body{
     padding: 0px;
+    background-color: #1F232999;
   }
 }
