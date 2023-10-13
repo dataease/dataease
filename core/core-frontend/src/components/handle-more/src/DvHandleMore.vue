@@ -23,6 +23,7 @@ const props = defineProps({
   },
   iconName: propTypes.string.def('icon_more_outlined'),
   inTable: propTypes.bool.def(false),
+  resourceType: propTypes.string.def('dashboard'),
   node: {
     type: Object,
     default() {
@@ -88,6 +89,7 @@ const emit = defineEmits(['handleCommand'])
     ref="shareComponent"
     jsname="c2hhcmUtaGFuZGxlcg=="
     :resource-id="props.node.id"
+    :resource-type="props.resourceType"
     :weight="node.weight"
     @loaded="callBack"
   />
