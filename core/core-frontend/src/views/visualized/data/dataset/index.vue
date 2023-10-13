@@ -193,6 +193,7 @@ const generateColumns = (arr: Field[]) =>
   }))
 
 const dtLoading = ref(false)
+const isCreated = ref(false)
 const getData = () => {
   dtLoading.value = true
   const request = { busiFlag: 'dataset' } as BusiTreeRequest
@@ -219,6 +220,8 @@ const getData = () => {
         Object.assign(nodeInfo, cloneDeep(defaultNode))
         dfsDatasetTree(state.datasetTree, id)
         nextTick(() => {
+          if (isCreated.value) return
+          isCreated.value = true
           datasetListTree.value.setCurrentKey(id, true)
         })
       }

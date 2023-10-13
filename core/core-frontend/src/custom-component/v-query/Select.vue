@@ -301,6 +301,7 @@ defineExpose({
 
 <style lang="less">
 .filter-select-popper_class {
+  --ed-fill-color-light: #f5f7fa47;
   .ed-select-dropdown__option-item {
     .ed-radio-group,
     .ed-checkbox {
