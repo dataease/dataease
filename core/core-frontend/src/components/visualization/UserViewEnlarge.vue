@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     ref="enlargeDialog"
-    :title="titleInfo"
+    :title="viewInfo?.title"
     :append-to-body="true"
     v-model="dialogShow"
     width="70vw"
