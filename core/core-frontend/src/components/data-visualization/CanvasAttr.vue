@@ -57,6 +57,10 @@ const onColorChange = val => {
   themeAttrChange('customAttr', 'color', val)
 }
 
+const onBaseChange = () => {
+  snapshotStore.recordSnapshotCache()
+}
+
 const themeAttrChange = (custom, property, value) => {
   if (canvasAttrInit) {
     Object.keys(canvasViewInfo.value).forEach(function (viewId) {
@@ -95,6 +99,7 @@ onMounted(() => {
                   :min="600"
                   :max="4096"
                   v-model="canvasStyleData.width"
+                  @change="onBaseChange"
                   controls-position="right"
                 />
               </el-form-item>
@@ -107,6 +112,7 @@ onMounted(() => {
                   :min="600"
                   :max="4096"
                   v-model="canvasStyleData.height"
+                  @change="onBaseChange"
                   controls-position="right"
                 />
               </el-form-item>
