@@ -114,11 +114,7 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
               filter.push({
                 componentId: ele.id,
                 fieldId: item.checkedFieldsMap[curComponentId],
-                operator: [1, 7].includes(+displayType)
-                  ? 'between'
-                  : Array.isArray(values)
-                  ? 'in'
-                  : 'eq',
+                operator: [1, 7].includes(+displayType) ? 'between' : multiple ? 'in' : 'eq',
                 value: values,
                 parameters: parametersCheck ? parameters : [],
                 isTree
