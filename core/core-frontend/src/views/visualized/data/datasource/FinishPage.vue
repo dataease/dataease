@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { propTypes } from '@/utils/propTypes'
 import { useCache } from '@/hooks/web/useCache'
+import { setShowFinishPage } from '@/api/datasource'
 
 defineProps({
   name: propTypes.string.def(''),
@@ -23,6 +24,7 @@ const continueCreating = () => {
 
 checked.value = wsCache.get('ds-create-success') || false
 const handleChange = (val: boolean) => {
+  setShowFinishPage({})
   wsCache.set('ds-create-success', val)
   emits('backToDatasourceList')
 }

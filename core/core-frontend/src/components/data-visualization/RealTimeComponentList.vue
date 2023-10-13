@@ -237,12 +237,12 @@ const handleContextMenu = e => {
         >
           <template #item="{ index }">
             <div
-              :title="getComponent(index).name"
+              :title="getComponent(index)?.name"
               class="component-item"
               :class="{
-                'container-item-not-show': !getComponent(index).isShow,
+                'container-item-not-show': !getComponent(index)?.isShow,
                 activated:
-                  (curComponent && curComponent.id === getComponent(index).id) ||
+                  (curComponent && curComponent?.id === getComponent(index)?.id) ||
                   areaData.components.includes(getComponent(index))
               }"
               @click="onClick($event, transformIndex(index))"
@@ -251,15 +251,15 @@ const handleContextMenu = e => {
               <el-icon class="component-icon">
                 <Icon :name="getIconName(getComponent(index))"></Icon>
               </el-icon>
-              <span :id="`component-label-${getComponent(index).id}`" class="component-label">
-                {{ getComponent(index).name }}
+              <span :id="`component-label-${getComponent(index)?.id}`" class="component-label">
+                {{ getComponent(index)?.name }}
               </span>
               <div
-                v-show="!nameEdit || (nameEdit && curComponent.id !== getComponent(index).id)"
+                v-show="!nameEdit || (nameEdit && curComponent?.id !== getComponent(index)?.id)"
                 class="icon-container"
                 :class="{
-                  'icon-container-lock': getComponent(index).isLock && getComponent(index).isShow,
-                  'icon-container-show': !getComponent(index).isShow
+                  'icon-container-lock': getComponent(index)?.isLock && getComponent(index)?.isShow,
+                  'icon-container-show': !getComponent(index)?.isShow
                 }"
               >
                 <el-icon
@@ -271,17 +271,17 @@ const handleContextMenu = e => {
                 </el-icon>
                 <el-icon
                   class="component-base"
-                  v-show="getComponent(index).isShow"
+                  v-show="getComponent(index)?.isShow"
                   @click="hideComponent"
                 >
                   <Icon name="dv-show" class="opt-icon"></Icon>
                 </el-icon>
-                <el-icon v-show="!getComponent(index).isLock" class="component-base" @click="lock">
+                <el-icon v-show="!getComponent(index)?.isLock" class="component-base" @click="lock">
                   <Icon class="opt-icon" name="dv-unlock"></Icon>
                 </el-icon>
                 <el-icon
                   class="component-base component-icon-display"
-                  v-show="getComponent(index).isLock"
+                  v-show="getComponent(index)?.isLock"
                   @click="unlock"
                 >
                   <Icon name="dv-lock" class="opt-icon"></Icon>

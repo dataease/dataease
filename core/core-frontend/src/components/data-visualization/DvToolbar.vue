@@ -172,66 +172,88 @@ eventBus.on('clearCanvas', clearCanvas)
 
 <template>
   <div class="toolbar-main" ref="dvToolbarMain">
-    <div class="toolbar" :class="{ 'preview-state-head': editMode === 'preview' }">
-      <el-icon class="custom-el-icon back-icon" @click="backToMain()">
-        <Icon class="toolbar-icon" name="icon_left_outlined" />
-      </el-icon>
-      <div class="left-area">
-        <span id="dv-canvas-name" class="name-area" @dblclick="editCanvasName">{{
-          dvInfo.name
-        }}</span>
-        <div class="opt-area">
-          <el-tooltip effect="dark" :content="$t('visualization.undo')" placement="bottom">
-            <el-icon
-              class="toolbar-hover-icon"
-              :class="{ 'toolbar-icon-disabled': snapshotIndex < 1 }"
-              @click="undo()"
-            >
-              <Icon name="icon_undo_outlined"></Icon>
-            </el-icon>
-          </el-tooltip>
-          <el-tooltip effect="dark" :content="$t('commons.reduction')" placement="bottom">
-            <el-icon
-              class="toolbar-hover-icon opt-icon-redo"
-              :class="{
-                'toolbar-icon-disabled': snapshotIndex === snapshotStore.snapshotData.length - 1
-              }"
-              @click="redo()"
-            >
-              <Icon name="icon_redo_outlined"></Icon>
-            </el-icon>
-          </el-tooltip>
+    <div class="toolbar">
+      <template v-if="editMode === 'preview'">
+        <div class="left-area">
+          <span id="canvas-name" class="name-area" style="height: 100%; padding: 10px">
+            {{ dvInfo.name }}
+          </span>
         </div>
-      </div>
-      <div class="middle-area">
-        <component-group
-          show-split-line
-          is-label
-          :base-width="410"
-          icon-name="dv-view"
-          title="图表"
-        >
-          <user-view-group></user-view-group>
-        </component-group>
-        <component-group is-label :base-width="115" icon-name="dv-text" title="文本">
-          <text-group></text-group>
-        </component-group>
-        <component-group is-label :base-width="115" icon-name="dv-media" title="媒体">
-          <media-group></media-group>
-        </component-group>
-        <component-group is-label :base-width="410" icon-name="dv-material" title="素材">
-          <common-group></common-group>
-        </component-group>
-      </div>
+        <div class="middle-area"></div>
+      </template>
+      <template v-else>
+        <el-icon class="custom-el-icon back-icon" @click="backToMain()">
+          <Icon class="toolbar-icon" name="icon_left_outlined" />
+        </el-icon>
+        <div class="left-area">
+          <span id="dv-canvas-name" class="name-area" @dblclick="editCanvasName">
+            {{ dvInfo.name }}
+          </span>
+          <div class="opt-area">
+            <el-tooltip effect="dark" :content="$t('visualization.undo')" placement="bottom">
+              <el-icon
+                class="toolbar-hover-icon"
+                :class="{ 'toolbar-icon-disabled': snapshotIndex < 1 }"
+                @click="undo()"
+              >
+                <Icon name="icon_undo_outlined"></Icon>
+              </el-icon>
+            </el-tooltip>
+            <el-tooltip effect="dark" :content="$t('commons.reduction')" placement="bottom">
+              <el-icon
+                class="toolbar-hover-icon opt-icon-redo"
+                :class="{
+                  'toolbar-icon-disabled': snapshotIndex === snapshotStore.snapshotData.length - 1
+                }"
+                @click="redo()"
+              >
+                <Icon name="icon_redo_outlined"></Icon>
+              </el-icon>
+            </el-tooltip>
+          </div>
+        </div>
+        <div class="middle-area">
+          <component-group
+            show-split-line
+            is-label
+            :base-width="410"
+            icon-name="dv-view"
+            title="图表"
+          >
+            <user-view-group></user-view-group>
+          </component-group>
+          <component-group is-label :base-width="115" icon-name="dv-text" title="文本">
+            <text-group></text-group>
+          </component-group>
+          <component-group is-label :base-width="115" icon-name="dv-media" title="媒体">
+            <media-group></media-group>
+          </component-group>
+          <component-group is-label :base-width="410" icon-name="dv-material" title="素材">
+            <common-group></common-group>
+          </component-group>
+        </div>
+      </template>
       <div class="right-area">
-        <el-button class="preview-button" @click="preview()" style="float: right">预览</el-button>
+        <el-button
+          v-if="editMode === 'preview'"
+          icon="EditPen"
+          @click="edit()"
+          class="preview-button"
+          type="primary"
+        >
+          编辑
+        </el-button>
+        <el-button v-else class="preview-button" @click="preview()" style="float: right">
+          预览
+        </el-button>
         <el-button
           @click="saveCanvasWithCheck()"
           :disabled="styleChangeTimes < 1"
           style="float: right; margin-right: 12px"
           type="primary"
-          >保存</el-button
         >
+          保存
+        </el-button>
       </div>
     </div>
     <Teleport v-if="nameEdit" :to="'#dv-canvas-name'">
@@ -246,14 +268,7 @@ eventBus.on('clearCanvas', clearCanvas)
         @blur="closeEditCanvasName"
       />
     </Teleport>
-    <el-button
-      v-show="editMode === 'preview'"
-      icon="EditPen"
-      @click="edit()"
-      class="edit-button"
-      type="primary"
-      >编辑</el-button
-    >
+
     <de-resource-group-opt
       @finish="resourceOptFinish"
       cur-canvas-type="dataV"
@@ -355,16 +370,18 @@ eventBus.on('clearCanvas', clearCanvas)
 }
 
 .preview-button {
-  border-color: #5f5f5f;
-  color: #ebebeb;
-  background-color: #1a1a1a;
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+  background-color: transparent;
   &:hover,
   &:focus {
-    background-color: rgba(235, 235, 235, 0.05);
+    background-color: #121a2c;
+    border-color: #595f6b;
   }
 
   &:active {
-    background-color: rgba(235, 235, 235, 0.1);
+    border-color: #616774;
+    background-color: #1e2637;
   }
 }
 </style>

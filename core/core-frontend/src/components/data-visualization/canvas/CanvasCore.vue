@@ -1588,7 +1588,8 @@ defineExpose({
 
     <!--页面组件列表展示-->
     <Shape
-      v-for="(item, index) in showComponentData"
+      v-for="(item, index) in componentData"
+      v-show="item.isShow"
       :canvas-id="canvasId"
       :key="item.id"
       :default-style="item.style"
