@@ -789,16 +789,6 @@ const calculateHeight = (e: MouseEvent) => {
   dragHeight.value = e.pageY - 56
 }
 
-const dfs = arr => {
-  return arr.filter(ele => {
-    if (!!ele.children?.length && ele.type === 'folder') {
-      ele.children = dfs(ele.children)
-      return true
-    }
-    return ele.type !== 'folder'
-  })
-}
-
 const getDatasource = () => {
   getDatasourceList().then(res => {
     const _list = (res as unknown as DataSource[]) || []
@@ -807,7 +797,6 @@ const getDatasource = () => {
     } else {
       state.dataSourceList = _list
     }
-    state.dataSourceList = dfs(state.dataSourceList)
   })
 }
 
@@ -1030,7 +1019,10 @@ const handleDatasetName = () => {
 
 const treeProps = {
   children: 'children',
-  label: 'name'
+  label: 'name',
+  disabled: data => {
+    return !data.children?.length && !data.leaf
+  }
 }
 </script>
 
@@ -1097,7 +1089,16 @@ const treeProps = {
             :props="treeProps"
             :data="state.dataSourceList"
             :render-after-expand="false"
-          />
+          >
+            <template #default="{ data: { name, leaf } }">
+              <div class="flex-align-center icon">
+                <el-icon v-if="!leaf">
+                  <icon name="dv-folder"></icon>
+                </el-icon>
+                {{ name }}
+              </div>
+            </template>
+          </el-tree-select>
           <p class="select-ds table-num">
             {{ t('datasource.data_table') }}
             <span class="num">
