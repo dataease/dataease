@@ -115,6 +115,10 @@ const onImgChange = imgUrl => {
   :deep(.ed-form-item__label) {
     line-height: 14px !important;
   }
+
+  :deep(.ed-input__inner) {
+    font-size: 14px !important;
+  }
   .ed-input {
     --ed-input-height: 32px !important;
   }
