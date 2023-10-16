@@ -168,13 +168,12 @@
 
                       <div class="main-scrollbar-container">
                         <el-scrollbar height="fit-content" max-height="208px">
-                          <el-row
-                            :gutter="8"
-                            style="margin-bottom: 6px"
+                          <div
+                            style="display: flex; margin-bottom: 6px"
                             v-for="(targetViewInfo, index) in state.linkJumpInfo.targetViewInfoList"
                             :key="index"
                           >
-                            <el-col :span="8">
+                            <div style="flex: 1">
                               <el-select
                                 v-model="targetViewInfo.sourceFieldActiveId"
                                 :placeholder="'请选择字段'"
@@ -191,11 +190,11 @@
                                   </span>
                                 </el-option>
                               </el-select>
-                            </el-col>
-                            <el-col :span="1" class="icon-center">
+                            </div>
+                            <div class="icon-center">
                               <Icon style="width: 20px; height: 20px" name="dv-link-target" />
-                            </el-col>
-                            <el-col :span="7">
+                            </div>
+                            <div style="flex: 1">
                               <el-select
                                 v-model="targetViewInfo.targetViewId"
                                 :disabled="!targetViewInfo.sourceFieldActiveId"
@@ -218,8 +217,8 @@
                                   <span style="float: left; font-size: 12px">{{ item.title }}</span>
                                 </el-option>
                               </el-select>
-                            </el-col>
-                            <el-col :span="7">
+                            </div>
+                            <div style="flex: 1; margin: 0 8px">
                               <el-select
                                 v-model="targetViewInfo.targetFieldId"
                                 :placeholder="'请选择字段'"
@@ -261,17 +260,18 @@
                                   </span>
                                 </el-option>
                               </el-select>
-                            </el-col>
-                            <el-col :span="1">
-                              <el-icon
-                                style="margin-top: 6px; cursor: pointer"
-                                size="20px"
-                                @click="deleteLinkJumpField(index)"
-                              >
-                                <Delete />
+                            </div>
+
+                            <el-button
+                              class="m-del-icon-btn"
+                              text
+                              @click="deleteLinkJumpField(index)"
+                            >
+                              <el-icon size="20px">
+                                <Icon name="icon_delete-trash_outlined" />
                               </el-icon>
-                            </el-col>
-                          </el-row>
+                            </el-button>
+                          </div>
                         </el-scrollbar>
                         <el-button
                           style="margin-top: 8px"
@@ -1146,5 +1146,20 @@ span {
   margin-left: 4px;
   cursor: pointer;
   color: #646a73;
+}
+.m-del-icon-btn {
+  color: #646a73;
+  margin-top: 2px;
+  margin-left: -4px;
+
+  &:hover {
+    background: rgba(31, 35, 41, 0.1) !important;
+  }
+  &:focus {
+    background: rgba(31, 35, 41, 0.1) !important;
+  }
+  &:active {
+    background: rgba(31, 35, 41, 0.2) !important;
+  }
 }
 </style>

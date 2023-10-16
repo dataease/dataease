@@ -1600,6 +1600,7 @@ const onRefreshChange = val => {
                     <senior
                       :chart="view"
                       :quota-data="view.yAxis"
+                      :dimension-data="state.dimensionData"
                       :themes="themes"
                       :properties="chartViewInstance.properties"
                       :property-inner-all="chartViewInstance.propertyInner"
