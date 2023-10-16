@@ -1,4 +1,4 @@
-package io.dataease.datasource.ext;
+package io.dataease.datasource.dao.ext.mapper;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.datasource.dto.CoreDatasourceTaskDTO;
