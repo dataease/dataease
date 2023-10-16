@@ -60,8 +60,11 @@ const emit = defineEmits([
 
 const { item } = toRefs(props)
 
-const showValueFormatter = computed(() => {
-  return props.chart.type === 'table-info'
+const showValueFormatter = computed<boolean>(() => {
+  return (
+    (props.chart.type === 'table-normal' || props.chart.type === 'table-info') &&
+    (props.item.deType === 2 || props.item.deType === 3)
+  )
 })
 
 watch(
@@ -498,8 +501,8 @@ onMounted(() => {
           </el-dropdown-item>
           <el-dropdown-item
             class="menu-item-padding"
-            v-show="showValueFormatter"
-            :divided="chart.type !== 'table-info'"
+            v-if="showValueFormatter"
+            :divided="!showValueFormatter"
             :command="beforeClickItem('formatter')"
           >
             <el-icon />
