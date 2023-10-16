@@ -304,8 +304,13 @@ init()
           <el-col style="margin: 0 10px">
             <span>{{ item.name }}</span>
           </el-col>
-          <el-row v-for="(f, index) in item.filter" :key="index" class="filter-item">
-            <el-col :span="9">
+          <div
+            style="display: flex"
+            v-for="(f, index) in item.filter"
+            :key="index"
+            class="filter-item"
+          >
+            <div style="width: 164px; margin-right: 8px">
               <el-select v-model="f.term">
                 <el-option-group
                   v-for="(group, idx) in state.options"
@@ -320,8 +325,8 @@ init()
                   />
                 </el-option-group>
               </el-select>
-            </el-col>
-            <el-col :span="14">
+            </div>
+            <div style="flex: 1">
               <el-input
                 v-show="!f.term.includes('null') && !f.term.includes('empty')"
                 v-model="f.value"
@@ -329,18 +334,22 @@ init()
                 :placeholder="t('chart.condition')"
                 clearable
               />
-            </el-col>
-            <el-col :span="1">
-              <el-button class="btn-delete" type="text" circle @click="removeFilter(index)">
-                <template #icon>
-                  <Icon name="icon_delete-trash_outlined"></Icon>
-                </template>
-              </el-button>
-            </el-col>
-          </el-row>
+            </div>
+
+            <el-button class="m-del-icon-btn" text @click="removeFilter(index)">
+              <el-icon size="20px">
+                <Icon name="icon_delete-trash_outlined" />
+              </el-icon>
+            </el-button>
+          </div>
         </div>
-        <el-button text class="circle-button" @click="addFilter" style="margin-top: 10px">
-          <Icon name="icon_add_outlined" style="width: 14px"></Icon>
+        <el-button
+          text
+          class="circle-button"
+          @click="addFilter"
+          :style="{ marginTop: item.filter && item.filter.length > 0 ? '10px' : 0 }"
+        >
+          <Icon name="icon_add_outlined" style="width: 14px" />
           {{ t('chart.add_addition') }}
         </el-button>
       </div>
@@ -403,5 +412,19 @@ span {
 }
 :deep(.ed-select__tags .ed-tag) {
   margin: 0px 4px 0 0 !important;
+}
+.m-del-icon-btn {
+  color: #646a73;
+  margin-left: 4px;
+
+  &:hover {
+    background: rgba(31, 35, 41, 0.1) !important;
+  }
+  &:focus {
+    background: rgba(31, 35, 41, 0.1) !important;
+  }
+  &:active {
+    background: rgba(31, 35, 41, 0.2) !important;
+  }
 }
 </style>
