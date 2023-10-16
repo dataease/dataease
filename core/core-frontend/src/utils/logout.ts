@@ -26,6 +26,10 @@ export const logoutHandler = (justClean?: boolean) => {
     window.location.href = '/casbi/cas/logout?service=' + uri
     return
   }
+  if (wsCache.get('out_auth_platform') === 'oidc') {
+    window.location.href = '/oidcbi/oidc/logout'
+    return
+  }
   router.push(justClean ? queryRedirectPath : `/login?redirect=${queryRedirectPath}`)
 }
 
