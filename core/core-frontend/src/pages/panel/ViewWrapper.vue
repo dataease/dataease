@@ -1,22 +1,43 @@
 <script lang="ts" setup>
-import { ref, onBeforeMount } from 'vue'
-import { findById } from '@/api/visualization/dataVisualization'
+import { ref, onBeforeMount, reactive } from 'vue'
+import { initCanvasDataPrepare } from '@/utils/canvasUtils'
 const config = ref()
 const viewInfo = ref()
-const canvasStyleData = ref()
-const showPosition = ref('preview')
 const userViewEnlargeRef = ref()
+
+const state = reactive({
+  canvasDataPreview: null,
+  canvasStylePreview: null,
+  canvasViewInfoPreview: null,
+  dvInfo: null,
+  curPreviewGap: 0
+})
 onBeforeMount(() => {
-  findById(window.DataEaseBi.dvId, 'dashboard').then(res => {
-    canvasStyleData.value = JSON.parse(res?.data?.canvasStyleData) || {}
-    viewInfo.value = res?.data?.canvasViewInfo[window.DataEaseBi.chartId]
-    config.value = (
-      (JSON.parse(res?.data?.componentData) as unknown as Array<{ id: string }>) || []
-    ).find(ele => ele.id === window.DataEaseBi.chartId)
-  })
+  initCanvasDataPrepare(
+    window.DataEaseBi.dvId,
+    'dashboard',
+    function ({
+      canvasDataResult,
+      canvasStyleResult,
+      dvInfo,
+      canvasViewInfoPreview,
+      curPreviewGap
+    }) {
+      state.canvasDataPreview = canvasDataResult
+      state.canvasStylePreview = canvasStyleResult
+      state.canvasViewInfoPreview = canvasViewInfoPreview
+      state.dvInfo = dvInfo
+      state.curPreviewGap = curPreviewGap
+
+      viewInfo.value = canvasViewInfoPreview[window.DataEaseBi.chartId]
+      config.value = ((canvasDataResult as unknown as Array<{ id: string }>) || []).find(
+        ele => ele.id === window.DataEaseBi.chartId
+      )
+    }
+  )
 })
 const userViewEnlargeOpen = () => {
-  userViewEnlargeRef.value.dialogInit(canvasStyleData.value, viewInfo.value, config.value)
+  userViewEnlargeRef.value.dialogInit(state.canvasStylePreview, viewInfo.value, config.value)
 }
 </script>
 
@@ -26,7 +47,9 @@ const userViewEnlargeOpen = () => {
       style="width: 100%; height: 100%"
       :view-info="viewInfo"
       :config="config"
-      :show-position="showPosition"
+      :canvas-style-data="state.canvasStylePreview"
+      :dv-info="state.dvInfo"
+      :canvas-view-info="state.canvasViewInfoPreview"
       @userViewEnlargeOpen="userViewEnlargeOpen"
     />
     <user-view-enlarge ref="userViewEnlargeRef"></user-view-enlarge>
