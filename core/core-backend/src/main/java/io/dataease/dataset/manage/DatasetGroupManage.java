@@ -435,10 +435,16 @@ public class DatasetGroupManage {
             for (CoreDatasetTable datasetTable : datasetTables) {
                 if (StringUtils.isNotEmpty(datasetTable.getSqlVariableDetails())) {
                     List<SqlVariableDetails> defaultsSqlVariableDetails = JsonUtil.parseList(datasetTable.getSqlVariableDetails(), listTypeReference);
-                    defaultsSqlVariableDetails.forEach(sqlVariableDetails -> {
-                        sqlVariableDetails.setDatasetGroupId(id);
-                        sqlVariableDetails.setDatasetTableId(datasetTable.getId());
-                    });
+                    if(CollectionUtil.isNotEmpty(defaultsSqlVariableDetails)){
+                       List<String> fullName = new ArrayList<>();
+                        geFullName(id, fullName);
+                        defaultsSqlVariableDetails.forEach(sqlVariableDetails -> {
+                            sqlVariableDetails.setDatasetGroupId(id);
+                            sqlVariableDetails.setDatasetTableId(datasetTable.getId());
+                            sqlVariableDetails.setDatasetFullName(String.join("/", CollectionUtil.reverse(fullName)));
+                        });
+                    }
+
                     list.addAll(defaultsSqlVariableDetails);
                 }
             }
@@ -466,6 +472,14 @@ public class DatasetGroupManage {
         ids.add(parent.getId());
         if (parent.getPid() != null && parent.getPid() != 0) {
             getParents(parent.getPid(), ids);
+        }
+    }
+
+    private void geFullName(Long pid, List<String> fullName) {
+        CoreDatasetGroup parent = coreDatasetGroupMapper.selectById(pid);// 查找父级folder
+        fullName.add(parent.getName());
+        if (parent.getPid() != null && parent.getPid() != 0) {
+            geFullName(parent.getPid(), fullName);
         }
     }
 }

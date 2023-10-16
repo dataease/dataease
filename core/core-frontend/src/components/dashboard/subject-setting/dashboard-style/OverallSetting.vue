@@ -108,7 +108,11 @@
         </el-radio>
       </el-radio-group>
     </el-form-item>
-    <el-form-item class="form-item" :class="'form-item-' + themes">
+    <el-form-item
+      class="form-item"
+      :class="'form-item-' + themes"
+      v-show="canvasStyleData.dashboard.resultMode === 'custom'"
+    >
       <el-input-number
         v-model="canvasStyleData.dashboard.resultCount"
         :effect="themes"

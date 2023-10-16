@@ -31,11 +31,13 @@ const props = defineProps({
 const { activePosition } = toRefs(props)
 
 const lock = () => {
+  snapshotStore.recordSnapshotCache()
   lockStore.lock()
   menuOpt('lock')
 }
 
 const unlock = () => {
+  snapshotStore.recordSnapshotCache()
   lockStore.unlock()
   menuOpt('unlock')
 }
@@ -62,11 +64,13 @@ const copy = () => {
 }
 
 const hide = () => {
+  snapshotStore.recordSnapshotCache()
   layerStore.hideComponent()
   menuOpt('hide')
 }
 
 const show = () => {
+  snapshotStore.recordSnapshotCache()
   layerStore.showComponent()
   menuOpt('show')
 }

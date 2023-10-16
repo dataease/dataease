@@ -395,6 +395,7 @@ import { CalcFieldType } from '@/views/visualized/data/dataset/form/CalcFieldEdi
 import JumpSetOuterContentEditor from '@/components/visualization/JumpSetOuterContentEditor.vue'
 import { Search } from '@element-plus/icons-vue'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
+import { markTreeFolder } from '@/utils/canvasUtils'
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo, canvasViewInfo } = storeToRefs(dvMainStore)
 const linkJumpInfoTree = ref(null)
@@ -428,7 +429,8 @@ const state = reactive({
     label: 'name',
     children: 'children',
     value: 'id',
-    isLeaf: 'leaf'
+    isLeaf: 'leaf',
+    disabled: 'disabled'
   },
   treeProp: {
     id: 'sourceFieldId',
@@ -505,7 +507,11 @@ const init = viewItem => {
   const request = { busiFlag: dvInfo.value.type } as BusiTreeRequest
   // 获取可关联的仪表板
   queryTreeApi(request).then(rsp => {
-    state.panelList = rsp
+    if (rsp && rsp[0]?.id === '0') {
+      state.panelList = rsp[0].children
+    } else {
+      state.panelList = rsp
+    }
   })
 
   if (chartDetails.tableId) {
@@ -637,7 +643,7 @@ const getPanelViewList = dvId => {
   })
 }
 const dvNodeClick = (data, node) => {
-  if (data.nodeType !== 'folder') {
+  if (data.leaf) {
     state.linkJumpInfo.targetViewInfoList = []
     addLinkJumpField()
     getPanelViewList(data.id)
