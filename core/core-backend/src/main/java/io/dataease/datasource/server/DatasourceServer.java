@@ -393,7 +393,7 @@ public class DatasourceServer implements DatasourceApi {
                     success++;
                 }
                 CoreDatasourceTaskLog log = datasourceTaskServer.lastSyncLogForTable(datasourceId, apiDefinition.getDeTableName());
-                if(log != null){
+                if (log != null) {
                     apiDefinition.setUpdateTime(log.getStartTime());
                 }
                 apiDefinitionListWithStatus.add(apiDefinition);
@@ -507,7 +507,7 @@ public class DatasourceServer implements DatasourceApi {
         return validate(coreDatasource);
     }
 
-    private DatasourceDTO validate(CoreDatasource coreDatasource){
+    private DatasourceDTO validate(CoreDatasource coreDatasource) {
         checkDatasourceStatus(coreDatasource);
         DatasourceDTO datasourceDTO = new DatasourceDTO();
         BeanUtils.copyBean(datasourceDTO, coreDatasource);
@@ -530,10 +530,10 @@ public class DatasourceServer implements DatasourceApi {
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(coreDatasource);
         if (coreDatasource.getType().equals("API")) {
-            List<DatasetTableDTO>  datasetTableDTOS =  ApiUtils.getTables(datasourceRequest);
+            List<DatasetTableDTO> datasetTableDTOS = ApiUtils.getTables(datasourceRequest);
             datasetTableDTOS.forEach(datasetTableDTO1 -> {
                 CoreDatasourceTaskLog log = datasourceTaskServer.lastSyncLogForTable(datasetTableDTO.getDatasourceId(), datasetTableDTO1.getTableName());
-                if(log != null){
+                if (log != null) {
                     datasetTableDTO1.setLastUpdateTime(log.getStartTime());
                     datasetTableDTO1.setStatus(log.getTaskStatus());
                 }
@@ -595,7 +595,7 @@ public class DatasourceServer implements DatasourceApi {
         ExcelFileData excelFileData = excelUtils.excelSaveAndParse(file);
         if (editType == 1 || editType == 0) { //按照excel sheet 名称匹配
             CoreDatasource coreDatasource = datasourceMapper.selectById(datasourceId);
-            if(coreDatasource != null){
+            if (coreDatasource != null) {
                 DatasourceRequest datasourceRequest = new DatasourceRequest();
                 datasourceRequest.setDatasource(coreDatasource);
                 List<DatasetTableDTO> datasetTableDTOS = ExcelUtils.getTables(datasourceRequest);
@@ -646,10 +646,7 @@ public class DatasourceServer implements DatasourceApi {
             apiDefinition.setShowApiStructure(true);
         }
         ApiUtils.checkApiDefinition(apiDefinition, response);
-        if (apiDefinition.getRequest().getAuthManager() != null
-                && StringUtils.isNotBlank(apiDefinition.getRequest().getAuthManager().getUsername())
-                && StringUtils.isNotBlank(apiDefinition.getRequest().getAuthManager().getPassword())
-                && apiDefinition.getRequest().getAuthManager().getVerification().equals("Basic Auth")) {
+        if (apiDefinition.getRequest().getAuthManager() != null && StringUtils.isNotBlank(apiDefinition.getRequest().getAuthManager().getUsername()) && StringUtils.isNotBlank(apiDefinition.getRequest().getAuthManager().getPassword()) && apiDefinition.getRequest().getAuthManager().getVerification().equals("Basic Auth")) {
             apiDefinition.getRequest().getAuthManager().setUsername(new String(Base64.getEncoder().encode(apiDefinition.getRequest().getAuthManager().getUsername().getBytes())));
             apiDefinition.getRequest().getAuthManager().setPassword(new String(Base64.getEncoder().encode(apiDefinition.getRequest().getAuthManager().getPassword().getBytes())));
         }
@@ -730,7 +727,7 @@ public class DatasourceServer implements DatasourceApi {
     }
 
 
-    public void updateDatasourceStatus(){
+    public void updateDatasourceStatus() {
         QueryWrapper<CoreDatasource> wrapper = new QueryWrapper<>();
         wrapper.notIn("type", Arrays.asList("Excel", "folder"));
         List<CoreDatasource> datasources = datasourceMapper.selectList(wrapper);
@@ -745,7 +742,7 @@ public class DatasourceServer implements DatasourceApi {
         });
     }
 
-    public void updateStopJobStatus(){
+    public void updateStopJobStatus() {
         if (this.isUpdatingStatus) {
             return;
         } else {
@@ -763,10 +760,7 @@ public class DatasourceServer implements DatasourceApi {
 
     private void doUpdate() {
         List<QrtzSchedulerState> qrtzSchedulerStates = qrtzSchedulerStateMapper.selectList(null);
-        List<String> activeQrtzInstances = qrtzSchedulerStates.stream()
-                .filter(qrtzSchedulerState -> qrtzSchedulerState.getLastCheckinTime()
-                        + qrtzSchedulerState.getCheckinInterval() + 1000 > dataSourceExtMapper.selectTimestamp().getCurrentTimestamp())
-                .map(QrtzSchedulerState::getInstanceName).collect(Collectors.toList());
+        List<String> activeQrtzInstances = qrtzSchedulerStates.stream().filter(qrtzSchedulerState -> qrtzSchedulerState.getLastCheckinTime() + qrtzSchedulerState.getCheckinInterval() + 1000 > dataSourceExtMapper.selectTimestamp().getCurrentTimestamp() * 1000).map(QrtzSchedulerState::getInstanceName).collect(Collectors.toList());
 
         QueryWrapper<CoreDatasource> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("task_status", TaskStatus.UnderExecution.name());
@@ -795,12 +789,12 @@ public class DatasourceServer implements DatasourceApi {
         datasourceTaskServer.updateByDsIds(jobStoppedCoreDatasources.stream().map(CoreDatasource::getId).collect(Collectors.toList()));
     }
 
-    public boolean showFinishPage() throws DEException{
+    public boolean showFinishPage() throws DEException {
         return coreDsFinishPageMapper.selectById(AuthUtils.getUser().getUserId()) == null;
     }
 
 
-    public void setShowFinishPage() throws DEException{
+    public void setShowFinishPage() throws DEException {
         CoreDsFinishPage coreDsFinishPage = new CoreDsFinishPage();
         coreDsFinishPage.setId(AuthUtils.getUser().getUserId());
         coreDsFinishPageMapper.insert(coreDsFinishPage);
