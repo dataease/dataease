@@ -370,6 +370,8 @@ span {
   padding-top: 40px;
   overflow: auto;
   height: 100%;
+
+  color: #646a73;
 }
 
 .de-collapse-style {
