@@ -383,12 +383,17 @@ span {
 }
 
 .label-dark {
-  color: #a6a6a6;
+  font-family: PingFang SC;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 20px;
+  color: #a6a6a6 !important;
   &.ed-button {
-    color: #3370ff;
+    color: #3370ff !important;
+    margin-right: -6px;
   }
   &.is-disabled {
-    color: #5f5f5f;
+    color: #5f5f5f !important;
   }
 }
 

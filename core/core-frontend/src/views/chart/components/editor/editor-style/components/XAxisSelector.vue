@@ -28,7 +28,9 @@ const unitList = unitType
 const state = reactive({
   axisForm: JSON.parse(JSON.stringify(DEFAULT_XAXIS_STYLE))
 })
-
+const toolTip = computed(() => {
+  return props.themes === 'dark' ? 'ndark' : 'dark'
+})
 const emit = defineEmits(['onChangeXAxisForm'])
 
 watch(
@@ -183,7 +185,7 @@ onMounted(() => {
       <div style="display: flex; flex-direction: row; justify-content: space-between">
         <label class="custom-form-item-label" :class="'custom-form-item-label--' + themes">
           {{ t('chart.axis_value') }}
-          <el-tooltip class="item" effect="dark" placement="top">
+          <el-tooltip class="item" :effect="toolTip" placement="top">
             <template #content><span v-html="t('chart.axis_tip')"></span></template>
             <span style="vertical-align: middle">
               <el-icon style="cursor: pointer">
@@ -239,7 +241,7 @@ onMounted(() => {
 
         <label class="custom-form-item-label" :class="'custom-form-item-label--' + themes">
           {{ t('chart.axis_value_split_count') }}
-          <el-tooltip class="item" effect="dark" placement="top">
+          <el-tooltip class="item" :effect="toolTip" placement="top">
             <template #content>期望的坐标轴刻度数量，非最终结果。</template>
             <span style="vertical-align: middle">
               <el-icon style="cursor: pointer">

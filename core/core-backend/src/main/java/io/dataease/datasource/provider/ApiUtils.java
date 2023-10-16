@@ -324,7 +324,6 @@ public class ApiUtils {
                         o.put("children", childrenField);
                         o.put("childrenDataType", "LIST");
                     } catch (Exception e) {
-                        e.printStackTrace();
                         JSONArray array = new JSONArray();
                         array.add(StringUtils.isNotEmpty(jsonNode.get(fieldName).toString()) ? jsonNode.get(fieldName).toString() : "");
                         o.put("value", array);

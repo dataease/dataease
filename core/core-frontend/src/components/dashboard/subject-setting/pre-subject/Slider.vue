@@ -175,7 +175,7 @@
       <div style="flex: 1"></div>
       <div style="flex: 1" class="dot-container">
         <span hidden>B</span>
-        <ul class="dots">
+        <ul class="dots" v-if="state.sliders.length > 1">
           <li
             v-for="(dot, i) in state.sliders"
             :key="i"

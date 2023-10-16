@@ -61,7 +61,7 @@ const switchValue = computed({
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-right: 20px;
+  padding-right: 8px;
   flex-grow: 1;
 }
 </style>

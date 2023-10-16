@@ -32,6 +32,7 @@ const eventCheck = e => {
     check(wsCache.get('screen-weight'), dvId)
   }
 }
+const mainCanvasCoreRef = ref(null)
 
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
@@ -109,6 +110,7 @@ const handleMouseDown = e => {
   // 点击画布的空区域 提前清空curComponent 防止右击菜单内容抖动
   dvMainStore.setCurComponent({ component: null, index: null })
   dvMainStore.setInEditorStatus(true)
+  mainCanvasCoreRef.value.handleMouseDown(e)
 }
 
 const deselectCurComponent = e => {
@@ -241,6 +243,7 @@ eventBus.on('handleNew', handleNew)
             <canvas-core
               class="canvas-area-shadow"
               v-if="state.canvasInitStatus"
+              ref="mainCanvasCoreRef"
               :component-data="componentData"
               :canvas-style-data="canvasStyleData"
               :canvas-view-info="canvasViewInfo"

@@ -268,12 +268,19 @@ span {
 }
 
 .label-dark {
+  font-family: PingFang SC;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 20px;
   color: #a6a6a6;
 }
 
 .font14 {
   :deep(.ed-icon) {
     font-size: 14px;
+  }
+  &.ed-button {
+    margin-right: -6px;
   }
 }
 </style>
