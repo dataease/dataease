@@ -170,7 +170,7 @@ const linkageActiveChange = () => {
 
 <template>
   <el-row class="view-panel" :class="'senior-' + themes">
-    <div @keydown.stop @keyup.stop class="attr-style">
+    <div @keydown.stop @keyup.stop class="attr-style" v-if="!noSenior">
       <el-row class="de-collapse-style">
         <el-collapse v-model="state.attrActiveNames" class="style-collapse">
           <el-collapse-item
@@ -369,7 +369,6 @@ span {
   font-size: 12px;
   padding-top: 40px;
   overflow: auto;
-  border-right: 1px solid #e6e6e6;
   height: 100%;
 }
 

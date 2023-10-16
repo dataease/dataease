@@ -2220,6 +2220,10 @@ span {
     --ed-tabs-header-height: 34px;
     --custom-tab-color: #646a73;
 
+    :deep(.ed-tabs__nav-wrap::after) {
+      background-color: unset;
+    }
+
     &.dark {
       --custom-tab-color: #a6a6a6;
     }
