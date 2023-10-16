@@ -33,7 +33,8 @@ export const copyStore = defineStore('copy', {
     copyMultiplexingComponents(
       canvasViewInfoPreview,
       outerMultiplexingComponents = curMultiplexingComponents.value,
-      keepSize = false
+      keepSize = false,
+      copyFrom = 'multiplexing'
     ) {
       // eslint-disable-next-line @typescript-eslint/no-this-alias
       const _this = this
@@ -60,7 +61,7 @@ export const copyStore = defineStore('copy', {
           data: [newComponent],
           copyCanvasViewInfo: canvasViewInfoPreview,
           index: index,
-          copyFrom: 'multiplexing'
+          copyFrom: copyFrom
         }
         _this.paste()
       })

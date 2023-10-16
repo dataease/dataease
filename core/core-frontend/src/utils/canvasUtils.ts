@@ -246,3 +246,18 @@ export function findAllViewsId(componentData, idArray) {
     }
   })
 }
+
+export function markTreeFolder(elementInfo) {
+  if (elementInfo) {
+    if (elementInfo instanceof Array) {
+      elementInfo.forEach(elementSon => {
+        elementSon['disabled'] = !elementSon['leaf']
+        if (elementSon['children']) {
+          markTreeFolder(elementSon['children'])
+        }
+      })
+    } else {
+      elementInfo['disabled'] = !elementInfo['leaf']
+    }
+  }
+}

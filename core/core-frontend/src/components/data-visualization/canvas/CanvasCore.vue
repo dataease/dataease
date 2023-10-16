@@ -1596,7 +1596,7 @@ defineExpose({
       :style="getShapeItemShowStyle(item)"
       :element="item"
       :index="index"
-      :class="{ lock: item.isLock }"
+      :class="{ lock: item.isLock && editMode === 'edit' }"
       :base-cell-info="baseCellInfo"
       @onStartResize="onStartResize($event, item, index)"
       @onStartMove="onStartMove($event, item, index)"
