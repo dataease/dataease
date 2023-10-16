@@ -294,7 +294,7 @@ initFunction()
                 <br />
                 {{ t('dataset.calc_tips.tip2') }}
               </template>
-              <el-icon>
+              <el-icon size="16px">
                 <Icon name="icon_info_outlined"></Icon>
               </el-icon>
             </el-tooltip>
@@ -319,7 +319,7 @@ initFunction()
               <br />
               {{ t('dataset.calc_tips.tip5') }}
             </template>
-            <el-icon>
+            <el-icon size="16px">
               <Icon name="icon_info_outlined"></Icon>
             </el-icon>
           </el-tooltip>
@@ -388,7 +388,7 @@ initFunction()
               {{ t('dataset.calc_tips.tip8') }}
               https://calcite.apache.org/docs/reference.html
             </template>
-            <el-icon>
+            <el-icon size="16px">
               <Icon name="icon_info_outlined"></Icon>
             </el-icon>
           </el-tooltip>
