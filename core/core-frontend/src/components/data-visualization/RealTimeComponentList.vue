@@ -53,7 +53,9 @@ const shiftDataPush = curClickIndex => {
   }
   const shiftAreaComponents = componentData.value
     .slice(indexBegin, indexEnd + 1)
-    .filter(component => !areaDataIdArray.includes(component.id))
+    .filter(
+      component => !areaDataIdArray.includes(component.id) && !component.isLock && component.isShow
+    )
   areaData.value.components.push(...shiftAreaComponents)
   dvMainStore.setCurComponent({ component: null, index: null })
 }
@@ -228,76 +230,102 @@ const handleContextMenu = e => {
     <button hidden="true" id="close-button"></button>
     <el-row class="list-wrap">
       <div class="list-container" @contextmenu="handleContextMenu">
-        <draggable
-          @end="dragOnEnd"
-          :list="componentData"
-          animation="100"
-          class="drag-list"
-          item-key="id"
-        >
-          <template #item="{ index }">
-            <div
-              :title="getComponent(index)?.name"
-              class="component-item"
-              :class="{
-                'container-item-not-show': !getComponent(index)?.isShow,
-                activated:
-                  (curComponent && curComponent?.id === getComponent(index)?.id) ||
-                  areaData.components.includes(getComponent(index))
-              }"
-              @click="onClick($event, transformIndex(index))"
-              @dblclick="editComponentName(getComponent(index))"
-            >
-              <el-icon class="component-icon">
-                <Icon :name="getIconName(getComponent(index))"></Icon>
-              </el-icon>
-              <span :id="`component-label-${getComponent(index)?.id}`" class="component-label">
-                {{ getComponent(index)?.name }}
-              </span>
+        <el-scrollbar :always="true">
+          <draggable
+            @end="dragOnEnd"
+            :list="componentData"
+            animation="100"
+            class="drag-list"
+            item-key="id"
+          >
+            <template #item="{ index }">
               <div
-                v-show="!nameEdit || (nameEdit && curComponent?.id !== getComponent(index)?.id)"
-                class="icon-container"
+                :title="getComponent(index)?.name"
+                class="component-item"
                 :class="{
-                  'icon-container-lock': getComponent(index)?.isLock && getComponent(index)?.isShow,
-                  'icon-container-show': !getComponent(index)?.isShow
+                  'container-item-not-show': !getComponent(index)?.isShow,
+                  activated:
+                    (curComponent && curComponent?.id === getComponent(index)?.id) ||
+                    areaData.components.includes(getComponent(index))
                 }"
+                @click="onClick($event, transformIndex(index))"
+                @dblclick="editComponentName(getComponent(index))"
               >
-                <el-icon
-                  class="component-base component-icon-display"
-                  v-show="!getComponent(index).isShow"
-                  @click="showComponent"
+                <el-icon class="component-icon">
+                  <Icon :name="getIconName(getComponent(index))"></Icon>
+                </el-icon>
+                <span :id="`component-label-${getComponent(index)?.id}`" class="component-label">
+                  {{ getComponent(index)?.name }}
+                </span>
+                <div
+                  v-show="!nameEdit || (nameEdit && curComponent?.id !== getComponent(index)?.id)"
+                  class="icon-container"
+                  :class="{
+                    'icon-container-lock':
+                      getComponent(index)?.isLock && getComponent(index)?.isShow,
+                    'icon-container-show': !getComponent(index)?.isShow
+                  }"
                 >
-                  <Icon name="dv-eye-close" class="opt-icon"></Icon>
-                </el-icon>
-                <el-icon
-                  class="component-base"
-                  v-show="getComponent(index)?.isShow"
-                  @click="hideComponent"
-                >
-                  <Icon name="dv-show" class="opt-icon"></Icon>
-                </el-icon>
-                <el-icon v-show="!getComponent(index)?.isLock" class="component-base" @click="lock">
-                  <Icon class="opt-icon" name="dv-unlock"></Icon>
-                </el-icon>
-                <el-icon
-                  class="component-base component-icon-display"
-                  v-show="getComponent(index)?.isLock"
-                  @click="unlock"
-                >
-                  <Icon name="dv-lock" class="opt-icon"></Icon>
-                </el-icon>
+                  <el-icon
+                    class="component-base component-icon-display"
+                    v-show="!getComponent(index).isShow"
+                    @click="showComponent"
+                  >
+                    <Icon name="dv-eye-close" class="opt-icon"></Icon>
+                  </el-icon>
+                  <el-icon
+                    class="component-base"
+                    v-show="getComponent(index)?.isShow"
+                    @click="hideComponent"
+                  >
+                    <Icon name="dv-show" class="opt-icon"></Icon>
+                  </el-icon>
+                  <el-icon
+                    v-show="!getComponent(index)?.isLock"
+                    class="component-base"
+                    @click="lock"
+                  >
+                    <Icon class="opt-icon" name="dv-unlock"></Icon>
+                  </el-icon>
+                  <el-icon
+                    class="component-base component-icon-display"
+                    v-show="getComponent(index)?.isLock"
+                    @click="unlock"
+                  >
+                    <Icon name="dv-lock" class="opt-icon"></Icon>
+                  </el-icon>
+                  <el-dropdown
+                    ref="dropdownMore"
+                    trigger="click"
+                    placement="bottom-start"
+                    effect="dark"
+                    hide-timeout="0"
+                  >
+                    <span :class="'dropdownMore-' + index" @click="onClick(transformIndex(index))">
+                      <el-icon class="component-base">
+                        <Icon name="dv-more" class="opt-icon"></Icon>
+                      </el-icon>
+                    </span>
+                    <template #dropdown>
+                      <context-menu-aside-details
+                        :element="getComponent(index)"
+                        @close="menuAsideClose($event, index)"
+                      ></context-menu-aside-details>
+                    </template>
+                  </el-dropdown>
+                </div>
                 <el-dropdown
-                  ref="dropdownMore"
-                  trigger="click"
+                  class="compose-dropdown"
+                  trigger="contextmenu"
                   placement="bottom-start"
                   effect="dark"
                   hide-timeout="0"
                 >
-                  <span :class="'dropdownMore-' + index" @click="onClick(transformIndex(index))">
-                    <el-icon class="component-base">
-                      <Icon name="dv-more" class="opt-icon"></Icon>
-                    </el-icon>
-                  </span>
+                  <compose-show
+                    :show-border="false"
+                    :element-index="transformIndex(index)"
+                    :element="getComponent(index)"
+                  ></compose-show>
                   <template #dropdown>
                     <context-menu-aside-details
                       :element="getComponent(index)"
@@ -306,28 +334,9 @@ const handleContextMenu = e => {
                   </template>
                 </el-dropdown>
               </div>
-              <el-dropdown
-                class="compose-dropdown"
-                trigger="contextmenu"
-                placement="bottom-start"
-                effect="dark"
-                hide-timeout="0"
-              >
-                <compose-show
-                  :show-border="false"
-                  :element-index="transformIndex(index)"
-                  :element="getComponent(index)"
-                ></compose-show>
-                <template #dropdown>
-                  <context-menu-aside-details
-                    :element="getComponent(index)"
-                    @close="menuAsideClose($event, index)"
-                  ></context-menu-aside-details>
-                </template>
-              </el-dropdown>
-            </div>
-          </template>
-        </draggable>
+            </template>
+          </draggable>
+        </el-scrollbar>
         <el-row style="width: 100%; height: 150px"></el-row>
       </div>
     </el-row>

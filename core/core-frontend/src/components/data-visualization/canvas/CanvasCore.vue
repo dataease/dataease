@@ -382,7 +382,7 @@ const getSelectArea = () => {
   const { x, y } = start.value
   // 计算所有的组件数据，判断是否在选中区域内
   componentData.value.forEach(component => {
-    if (component.isLock) return
+    if (component.isLock || !component.isShow) return
 
     const styleInfo = getComponentRotatedStyle(component.style)
     if (

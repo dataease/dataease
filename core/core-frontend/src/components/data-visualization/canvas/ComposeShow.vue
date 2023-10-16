@@ -4,9 +4,7 @@
     class="compose-shadow"
     :class="{ 'shadow-border': props.showBorder }"
     @mousedown="handleMouseDown"
-  >
-    TEST
-  </div>
+  ></div>
 </template>
 
 <script setup lang="ts">
