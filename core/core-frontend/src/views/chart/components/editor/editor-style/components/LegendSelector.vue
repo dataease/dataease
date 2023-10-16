@@ -16,7 +16,9 @@ const props = withDefaults(
 )
 
 const emit = defineEmits(['onLegendChange'])
-
+const toolTip = computed(() => {
+  return props.themes === 'dark' ? 'ndark' : 'dark'
+})
 watch(
   () => props.chart.customStyle,
   () => {
@@ -170,7 +172,7 @@ onMounted(() => {
           @change="changeLegendStyle('hPosition')"
         >
           <el-radio label="left">
-            <el-tooltip effect="dark" placement="top">
+            <el-tooltip :effect="toolTip" placement="top">
               <template #content>
                 {{ t('chart.text_pos_left') }}
               </template>
@@ -185,7 +187,7 @@ onMounted(() => {
             </el-tooltip>
           </el-radio>
           <el-radio label="center" :disabled="state.legendForm.vPosition === 'center'">
-            <el-tooltip effect="dark" placement="top">
+            <el-tooltip :effect="toolTip" placement="top">
               <template #content>
                 {{ t('chart.text_pos_center') }}
               </template>
@@ -203,7 +205,7 @@ onMounted(() => {
             </el-tooltip>
           </el-radio>
           <el-radio label="right">
-            <el-tooltip effect="dark" placement="top">
+            <el-tooltip :effect="toolTip" placement="top">
               <template #content>
                 {{ t('chart.text_pos_right') }}
               </template>
@@ -234,7 +236,7 @@ onMounted(() => {
           @change="changeLegendStyle('vPosition')"
         >
           <el-radio label="top">
-            <el-tooltip effect="dark" placement="top">
+            <el-tooltip :effect="toolTip" placement="top">
               <template #content>
                 {{ t('chart.text_pos_top') }}
               </template>
@@ -249,7 +251,7 @@ onMounted(() => {
             </el-tooltip>
           </el-radio>
           <el-radio label="center" :disabled="state.legendForm.hPosition === 'center'">
-            <el-tooltip effect="dark" placement="top">
+            <el-tooltip :effect="toolTip" placement="top">
               <template #content>
                 {{ t('chart.text_pos_center') }}
               </template>
@@ -267,7 +269,7 @@ onMounted(() => {
             </el-tooltip>
           </el-radio>
           <el-radio label="bottom">
-            <el-tooltip effect="dark" placement="top">
+            <el-tooltip :effect="toolTip" placement="top">
               <template #content>
                 {{ t('chart.text_pos_bottom') }}
               </template>
