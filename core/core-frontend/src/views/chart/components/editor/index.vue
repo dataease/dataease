@@ -8,8 +8,10 @@ import {
   computed,
   nextTick,
   onBeforeMount,
-  provide
+  provide,
+  h
 } from 'vue'
+import Icon from '@/components/icon-custom/src/Icon.vue'
 import type { FormInstance, FormRules } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Field, getFieldByDQ, saveChart } from '@/api/chart'
@@ -82,7 +84,9 @@ const editCalcField = ref(false)
 const isCalcFieldAdd = ref(true)
 const calcEdit = ref()
 const route = useRoute()
-
+const toolTip = computed(() => {
+  return props.themes === 'dark' ? 'ndark' : 'dark'
+})
 const { view, datasetTree } = toRefs(props)
 
 let cacheId = ''
@@ -305,6 +309,9 @@ const quotaItemRemove = item => {
   } else if (item.removeType === 'extBubble') {
     view.value.extBubble.splice(item.index, 1)
   }
+}
+const arrowIcon = () => {
+  return h(Icon, { name: 'icon_down_outlined-1' })
 }
 
 const drillItemChange = item => {
@@ -1086,6 +1093,7 @@ const onRefreshChange = val => {
                             popper-class="chart-type-hide-options"
                             class="chart-type-select"
                             v-model="state.useless"
+                            :suffixIcon="arrowIcon()"
                             size="small"
                           >
                             <template #prefix>
@@ -1142,7 +1150,7 @@ const onRefreshChange = val => {
                         <span>
                           {{ chartViewInstance.axisConfig.xAxis.name }}
                         </span>
-                        <el-tooltip effect="dark" placement="top" :content="t('common.delete')">
+                        <el-tooltip :effect="toolTip" placement="top" :content="t('common.delete')">
                           <el-icon class="remove-icon" size="14px" @click="removeItems('xAxis')">
                             <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
                           </el-icon>
@@ -1184,7 +1192,7 @@ const onRefreshChange = val => {
                         <span>
                           {{ chartViewInstance.axisConfig.xAxisExt.name }}
                         </span>
-                        <el-tooltip effect="dark" placement="top" :content="t('common.delete')">
+                        <el-tooltip :effect="toolTip" placement="top" :content="t('common.delete')">
                           <el-icon class="remove-icon" size="14px" @click="removeItems('xAxisExt')">
                             <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
                           </el-icon>
@@ -1225,7 +1233,7 @@ const onRefreshChange = val => {
                         <span>
                           {{ chartViewInstance.axisConfig.extStack.name }}
                         </span>
-                        <el-tooltip effect="dark" placement="top" :content="t('common.delete')">
+                        <el-tooltip :effect="toolTip" placement="top" :content="t('common.delete')">
                           <el-icon class="remove-icon" size="14px" @click="removeItems('extStack')">
                             <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
                           </el-icon>
@@ -1266,7 +1274,7 @@ const onRefreshChange = val => {
                         <span>
                           {{ chartViewInstance.axisConfig.yAxis.name }}
                         </span>
-                        <el-tooltip effect="dark" placement="top" :content="t('common.delete')">
+                        <el-tooltip :effect="toolTip" placement="top" :content="t('common.delete')">
                           <el-icon class="remove-icon" size="14px" @click="removeItems('yAxis')">
                             <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
                           </el-icon>
@@ -1308,7 +1316,7 @@ const onRefreshChange = val => {
                         <span>
                           {{ chartViewInstance.axisConfig.extBubble.name }}
                         </span>
-                        <el-tooltip effect="dark" placement="top" :content="t('common.delete')">
+                        <el-tooltip :effect="toolTip" placement="top" :content="t('common.delete')">
                           <el-icon
                             class="remove-icon"
                             size="14px"
@@ -1356,7 +1364,7 @@ const onRefreshChange = val => {
                           <span style="margin-right: 4px">
                             {{ t('chart.drill') }} / {{ t('chart.dimension') }}
                           </span>
-                          <el-tooltip class="item" effect="dark" placement="top">
+                          <el-tooltip class="item" :effect="toolTip" placement="top">
                             <template #content>
                               <span>钻取字段仅支持数据集中的字段</span>
                             </template>
@@ -1379,7 +1387,7 @@ const onRefreshChange = val => {
                             />
                           </el-tooltip>
                         </span>
-                        <el-tooltip effect="dark" placement="top" :content="t('common.delete')">
+                        <el-tooltip :effect="toolTip" placement="top" :content="t('common.delete')">
                           <el-icon
                             class="remove-icon"
                             size="14px"
@@ -1421,7 +1429,7 @@ const onRefreshChange = val => {
                         <span>
                           {{ t('chart.result_filter') }}
                         </span>
-                        <el-tooltip effect="dark" placement="top" :content="t('common.delete')">
+                        <el-tooltip :effect="toolTip" placement="top" :content="t('common.delete')">
                           <el-icon
                             class="remove-icon"
                             size="14px"
@@ -1667,7 +1675,7 @@ const onRefreshChange = val => {
               <div class="dataset-search-label" :class="{ dark: themes === 'dark' }">
                 <span>{{ t('chart.field') }}</span>
                 <span>
-                  <el-tooltip effect="dark" content="刷新" placement="top">
+                  <el-tooltip :effect="toolTip" content="刷新" placement="top">
                     <el-icon
                       class="field-search-icon-btn"
                       :class="{ dark: themes === 'dark' }"

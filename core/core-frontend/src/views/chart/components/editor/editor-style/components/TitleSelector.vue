@@ -29,7 +29,9 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['onTextChange'])
-
+const toolTip = computed(() => {
+  return props.themes === 'dark' ? 'ndark' : 'dark'
+})
 const predefineColors = COLOR_PANEL
 const fontFamily = CHART_FONT_FAMILY
 const fontLetterSpace = CHART_FONT_LETTER_SPACE
@@ -190,7 +192,7 @@ onMounted(() => {
           v-model="state.titleForm.isBolder"
           @change="changeTitleStyle('isBolder')"
         >
-          <el-tooltip effect="dark" placement="top">
+          <el-tooltip :effect="toolTip" placement="top">
             <template #content>
               {{ t('chart.bolder') }}
             </template>
@@ -213,7 +215,7 @@ onMounted(() => {
           v-model="state.titleForm.isItalic"
           @change="changeTitleStyle('isItalic')"
         >
-          <el-tooltip effect="dark" placement="top">
+          <el-tooltip :effect="toolTip" placement="top">
             <template #content>
               {{ t('chart.italic') }}
             </template>
@@ -239,7 +241,7 @@ onMounted(() => {
           @change="changeTitleStyle('hPosition')"
         >
           <el-radio :effect="themes" label="left">
-            <el-tooltip effect="dark" placement="top">
+            <el-tooltip :effect="toolTip" placement="top">
               <template #content>
                 {{ t('chart.text_pos_left') }}
               </template>
@@ -254,7 +256,7 @@ onMounted(() => {
             </el-tooltip>
           </el-radio>
           <el-radio :effect="themes" label="center">
-            <el-tooltip effect="dark" placement="top">
+            <el-tooltip :effect="toolTip" placement="top">
               <template #content>
                 {{ t('chart.text_pos_center') }}
               </template>
@@ -269,7 +271,7 @@ onMounted(() => {
             </el-tooltip>
           </el-radio>
           <el-radio :effect="themes" label="right">
-            <el-tooltip effect="dark" placement="top">
+            <el-tooltip :effect="toolTip" placement="top">
               <template #content>
                 {{ t('chart.text_pos_right') }}
               </template>
