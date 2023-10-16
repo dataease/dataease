@@ -258,7 +258,12 @@ const batchCopy = () => {
       })
     }
   })
-  copyStore.copyMultiplexingComponents(canvasViewInfo.value, multiplexingComponents, true)
+  copyStore.copyMultiplexingComponents(
+    canvasViewInfo.value,
+    multiplexingComponents,
+    true,
+    'batchOpt'
+  )
   saveBatchChange()
 }
 

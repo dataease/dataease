@@ -248,7 +248,7 @@ const onClick = e => {
 }
 const resetSelect = (node?) => {
   const edInner = tinymce.get(tinymceId)
-  if (edInner.dom) {
+  if (edInner?.dom) {
     const nodeArray = edInner.dom.select('.base-selected')
     if (nodeArray) {
       nodeArray.forEach(nodeInner => {
