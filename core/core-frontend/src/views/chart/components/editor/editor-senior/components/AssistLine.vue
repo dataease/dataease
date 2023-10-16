@@ -1,5 +1,5 @@
 <script lang="tsx" setup>
-import { onMounted, reactive, watch, computed } from 'vue'
+import { onMounted, reactive, watch, computed, PropType } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ElIcon, ElMessage } from 'element-plus-secondary'
 import AssistLineEdit from '@/views/chart/components/editor/editor-senior/components/dialog/AssistLineEdit.vue'
@@ -19,7 +19,7 @@ const props = defineProps({
     required: true
   },
   themes: {
-    type: String,
+    type: String as PropType<EditorTheme>,
     default: 'dark'
   },
   propertyInner: {
@@ -134,15 +134,17 @@ onMounted(() => {
 </script>
 
 <template>
-  <div @keydown.stop @keyup.stop style="width: 100%; margin-bottom: 16px">
-    <el-col>
-      <div>
-        <span :class="'label-' + props.themes">辅助线设置</span>
+  <div @keydown.stop @keyup.stop class="assist-line-container">
+    <div class="inner-container">
+      <span class="label" :class="'label-' + props.themes">辅助线设置</span>
+      <span class="right-btns">
+        <span class="set-text-info" v-if="state.assistLine.length > 0">已设置</span>
         <el-button
           class="circle-button font14"
+          :class="'label-' + props.themes"
           text
           size="small"
-          :style="{ width: '24px', marginLeft: '4px', float: 'right' }"
+          :style="{ width: '24px', marginLeft: '6px' }"
           @click="editLine"
         >
           <template #icon>
@@ -151,37 +153,35 @@ onMounted(() => {
             </el-icon>
           </template>
         </el-button>
-      </div>
+      </span>
+    </div>
 
-      <el-col>
-        <el-row v-for="(item, index) in state.assistLine" :key="index" class="line-style">
-          <el-col :span="8">
-            <span :title="item.name">{{ item.name }}</span>
-          </el-col>
-          <el-col :span="6">
-            <span v-if="item.field === '0'" :title="t('chart.field_fixed')">{{
-              t('chart.field_fixed')
-            }}</span>
-            <span v-if="item.field === '1'" :title="t('chart.field_dynamic')">{{
-              t('chart.field_dynamic')
-            }}</span>
-          </el-col>
-          <el-col v-if="item.field === '0'" :span="10">
-            <span :title="item.value">{{ item.value }}</span>
-          </el-col>
-          <el-col v-else-if="item.field === '1'" :span="10">
-            <template v-if="existField(item.curField)">
-              <span :title="item.curField.name + '(' + t('chart.' + item.summary) + ')'">
-                {{ item.curField.name + '(' + t('chart.' + item.summary) + ')' }}
-              </span>
-            </template>
-            <template v-else>
-              <span style="color: red">无效字段</span>
-            </template>
-          </el-col>
-        </el-row>
+    <el-row v-for="(item, index) in state.assistLine" :key="index" class="line-style">
+      <el-col :span="8">
+        <span :title="item.name">{{ item.name }}</span>
       </el-col>
-    </el-col>
+      <el-col :span="6">
+        <span v-if="item.field === '0'" :title="t('chart.field_fixed')">{{
+          t('chart.field_fixed')
+        }}</span>
+        <span v-if="item.field === '1'" :title="t('chart.field_dynamic')">{{
+          t('chart.field_dynamic')
+        }}</span>
+      </el-col>
+      <el-col v-if="item.field === '0'" :span="10">
+        <span :title="item.value">{{ item.value }}</span>
+      </el-col>
+      <el-col v-else-if="item.field === '1'" :span="10">
+        <template v-if="existField(item.curField)">
+          <span :title="item.curField.name + '(' + t('chart.' + item.summary) + ')'">
+            {{ item.curField.name + '(' + t('chart.' + item.summary) + ')' }}
+          </span>
+        </template>
+        <template v-else>
+          <span style="color: red">无效字段</span>
+        </template>
+      </el-col>
+    </el-row>
 
     <!--编辑辅助线-->
     <el-dialog
@@ -208,6 +208,47 @@ onMounted(() => {
 </template>
 
 <style lang="less" scoped>
+.assist-line-container {
+  width: 100%;
+  margin-bottom: 16px;
+
+  .inner-container {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
+
+    .label {
+      cursor: default;
+      color: #646a73;
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 20px;
+    }
+
+    .right-btns {
+      display: flex;
+      align-items: center;
+      flex-direction: row;
+    }
+
+    .set-text-info {
+      cursor: default;
+      padding: 2px 4px;
+      border-radius: 2px;
+      background: rgba(31, 35, 41, 0.1);
+
+      color: #646a73;
+
+      font-size: 10px;
+      font-style: normal;
+      font-weight: 500;
+      line-height: 13px;
+    }
+  }
+}
+
 .shape-item {
   padding: 6px;
   border: none;
@@ -245,14 +286,19 @@ span {
 
 .line-style {
   width: 100%;
-}
-.line-style :deep(span) {
-  display: inline-block;
-  width: 100%;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  padding: 0 10px;
+  font-weight: 400;
+  padding: 4px 8px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: nowrap;
+
+  &:deep(span) {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    cursor: default;
+  }
 }
 
 .dialog-css :deep(.ed-dialog__title) {
@@ -272,15 +318,19 @@ span {
   font-style: normal;
   font-weight: 400;
   line-height: 20px;
-  color: #a6a6a6;
+  color: #a6a6a6 !important;
+  &.ed-button {
+    color: #3370ff !important;
+    margin-right: -6px;
+  }
+  &.is-disabled {
+    color: #5f5f5f !important;
+  }
 }
 
 .font14 {
   :deep(.ed-icon) {
     font-size: 14px;
-  }
-  &.ed-button {
-    margin-right: -6px;
   }
 }
 </style>

@@ -17,7 +17,13 @@
       :disabled="!canEdit"
       @onClick="onClick"
     />
-    <div class="rich-placeholder" v-if="showPlaceHolder">{{ init.outer_placeholder }}</div>
+    <div
+      class="rich-placeholder"
+      :class="{ 'rich-placeholder--dark': themes === 'dark' }"
+      v-if="showPlaceHolder"
+    >
+      {{ init.outer_placeholder }}
+    </div>
   </div>
 </template>
 
@@ -40,7 +46,7 @@ import 'tinymce/plugins/contextmenu' // contextmenu
 import 'tinymce/plugins/directionality'
 import 'tinymce/plugins/nonbreaking'
 import 'tinymce/plugins/pagebreak'
-import { computed, nextTick, reactive, ref, toRefs, watch, onMounted } from 'vue'
+import { computed, nextTick, reactive, ref, toRefs, watch, onMounted, PropType } from 'vue'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import eventBus from '@/utils/eventBus'
 import { guid } from '@/views/visualized/data/dataset/form/util'
@@ -83,6 +89,10 @@ const props = defineProps({
     type: String,
     required: false,
     default: 'preview'
+  },
+  themes: {
+    type: String as PropType<EditorTheme>,
+    default: 'dark'
   }
 })
 
@@ -124,7 +134,7 @@ const init = ref({
     '微软雅黑=Microsoft YaHei;宋体=SimSun;黑体=SimHei;仿宋=FangSong;华文黑体=STHeiti;华文楷体=STKaiti;华文宋体=STSong;华文仿宋=STFangsong;Andale Mono=andale mono,times;Arial=arial,helvetica,sans-serif;Arial Black=arial black,avant garde;Book Antiqua=book antiqua,palatino;Comic Sans MS=comic sans ms,sans-serif;Courier New=courier new,courier;Georgia=georgia,palatino;Helvetica=helvetica;Impact=impact,chicago;Symbol=symbol;Tahoma=tahoma,arial,helvetica,sans-serif;Terminal=terminal,monaco;Times New Roman=times new roman,times;Trebuchet MS=trebuchet ms,geneva;Verdana=verdana,geneva;Webdings=webdings;Wingdings=wingdings',
   fontsize_formats: '12px 14px 16px 18px 20px 22px 24px 28px 32px 36px 48px 56px 72px', // 字体大小
   menubar: false,
-  placeholder: '请输入文字',
+  placeholder: '',
   outer_placeholder: '双击输入文字',
   inline: true, // 开启内联模式
   branding: false
@@ -513,5 +523,9 @@ defineExpose({
   line-height: 24px;
 
   transform: translate(-50%, -50%);
+
+  &.rich-placeholder--dark {
+    color: #fff;
+  }
 }
 </style>

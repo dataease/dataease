@@ -7,6 +7,11 @@ const dvMainStore = dvMainStoreWithOut()
 const { canvasCollapse } = storeToRefs(dvMainStore)
 
 const props = defineProps({
+  scrollWidth: {
+    required: false,
+    type: Number,
+    default: 6
+  },
   width: {
     required: false,
     type: Number,
@@ -37,6 +42,10 @@ const collapseChange = () => {
   canvasCollapse.value[sideName.value] = !canvasCollapse.value[sideName.value]
 }
 const widthShow = computed(() => `${canvasCollapse.value[sideName.value] ? 36 : width.value}px`)
+
+const slideStyle = computed(() => {
+  return { '--de-scroll-width': props.scrollWidth + 'px', width: widthShow.value }
+})
 </script>
 
 <template>
@@ -45,7 +54,7 @@ const widthShow = computed(() => `${canvasCollapse.value[sideName.value] ? 36 : 
     @keydown.stop
     class="dv-aside"
     :class="['aside-' + asidePosition + '-' + themeInfo, 'aside-area-' + themeInfo]"
-    :style="{ width: widthShow }"
+    :style="slideStyle"
   >
     <el-row align="middle" :class="'title-' + themeInfo" justify="space-between">
       <span v-if="!canvasCollapse[sideName]">{{ title }}</span>
@@ -128,6 +137,14 @@ const widthShow = computed(() => `${canvasCollapse.value[sideName.value] ? 36 : 
     top: 12px;
     cursor: pointer;
   }
+
+  :deep(.ed-scrollbar__bar) {
+    width: var(--de-scroll-width);
+  }
+
+  :deep(.ed-scrollbar__thumb) {
+    width: var(--de-scroll-width);
+  }
 }
 .aside-left-dark {
   border-right: @side-outline-border-color 1px solid;
@@ -157,5 +174,9 @@ const widthShow = computed(() => `${canvasCollapse.value[sideName.value] ? 36 : 
 .collapse-icon-dark {
   color: @canvas-main-font-color;
   cursor: pointer;
+}
+
+.ed-scrollbar__bar.is-vertical {
+  width: var(--de-scroll-width);
 }
 </style>
