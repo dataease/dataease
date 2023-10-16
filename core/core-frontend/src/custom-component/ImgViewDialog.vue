@@ -29,7 +29,7 @@ const { value, imageUrl } = toRefs(props)
   width: 100%;
   height: 100%;
   overflow-y: auto;
-  padding: 24px 24px 20px 24px;
+  padding: 60px 120px;
   img {
     width: 100%;
     height: 100%;

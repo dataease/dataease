@@ -149,7 +149,7 @@
 
                     <el-button class="m-del-icon-btn" text @click="deleteLinkageField(index)">
                       <el-icon size="20px">
-                        <Delete />
+                        <Icon name="icon_delete-trash_outlined" />
                       </el-icon>
                     </el-button>
                   </div>
@@ -709,7 +709,7 @@ span {
 }
 .m-del-icon-btn {
   color: #646a73;
-  margin-top: 2px;
+  margin-top: 4px;
   margin-left: 4px;
 
   &:hover {

@@ -303,6 +303,9 @@ defineExpose({
 .filter-select-popper_class {
   --ed-fill-color-light: #f5f7fa47;
   .ed-select-dropdown__option-item {
+    .ed-checkbox__label:hover {
+      color: #1f2329;
+    }
     .ed-radio-group,
     .ed-checkbox {
       width: 100%;

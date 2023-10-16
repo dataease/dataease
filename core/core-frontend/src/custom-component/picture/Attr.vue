@@ -106,7 +106,7 @@ onBeforeUnmount(() => {
       :background-color-picker-width="197"
       :background-border-select-width="197"
     >
-      <el-collapse-item :effect="themes" title="图片11" name="picture">
+      <el-collapse-item :effect="themes" title="图片" name="picture">
         <el-row class="img-area" :class="`img-area_${themes}`">
           <el-col style="width: 130px !important">
             <el-upload

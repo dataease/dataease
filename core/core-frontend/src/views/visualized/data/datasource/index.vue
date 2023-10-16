@@ -1171,7 +1171,7 @@ onMounted(() => {
         </template>
       </template>
       <template v-else>
-        <empty-background :description="t('datasource.please_select_left')" img-type="select" />
+        <empty-background description="请在左侧选择数据源" img-type="select" />
       </template>
     </div>
     <EditorDatasource @refresh="refresh" ref="datasourceEditor"></EditorDatasource>
