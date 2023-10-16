@@ -247,6 +247,7 @@ let itemMaxX = 0
 let currentInstance
 let snapshotTimer = ref(null)
 
+// 根据需要需要扩充外部scroll区域也可以进行组合的功能 此方法变更为外部组件调用
 const handleMouseDown = e => {
   // 仪表板和预览状态不显示菜单和组创建
   if (dashboardActive.value || editMode.value === 'preview') {
@@ -261,7 +262,6 @@ const handleMouseDown = e => {
     e.preventDefault()
   }
   hideArea()
-  // 获取编辑器的位移信息，每次点击时都需要获取一次。主要是为了方便开发时调试用。
   const rectInfo = editorMap.value[canvasId.value].getBoundingClientRect()
   editorX.value = rectInfo.x
   editorY.value = rectInfo.y
@@ -1553,7 +1553,8 @@ defineExpose({
   addItemBox,
   handleDragOver,
   getMoveItem,
-  handleMouseUp
+  handleMouseUp,
+  handleMouseDown
 })
 </script>
 
@@ -1565,7 +1566,6 @@ defineExpose({
     :class="{ edit: isEdit }"
     :style="editStyle"
     @contextmenu="handleContextMenu"
-    @mousedown="handleMouseDown"
   >
     <drag-info v-if="dragInfoShow"></drag-info>
     <canvas-opt-bar
