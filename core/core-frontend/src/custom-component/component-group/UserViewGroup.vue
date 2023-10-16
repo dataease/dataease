@@ -132,6 +132,9 @@ const groupActiveChange = category => {
   }
   :deep(.li-custom) {
     color: #646a73 !important;
+    &.li-custom-active {
+      color: #3370ff !important;
+    }
     &:hover {
       background: rgba(31, 35, 41, 0.1) !important;
     }

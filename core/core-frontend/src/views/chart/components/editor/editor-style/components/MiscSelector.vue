@@ -509,7 +509,11 @@ onMounted(() => {
         </el-col>
       </el-row>
 
-      <el-form-item :label="t('chart.liquid_max')" class="form-item" :class="'form-item-' + themes">
+      <el-form-item
+        :label="t('chart.liquid_max')"
+        class="form-item margin-bottom-8"
+        :class="'form-item-' + themes"
+      >
         <el-radio-group
           :effect="themes"
           v-model="state.miscForm.liquidMaxType"
