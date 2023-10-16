@@ -5,7 +5,7 @@
       v-show="contentDisplay"
       :class="{
         active,
-        'shape-lock': element['isLock'],
+        'shape-lock': shapeLock,
         'shape-edit': isEditMode && !boardMoveActive,
         'linkage-setting': linkageActive,
         'drag-on-tab-collision': dragCollision
@@ -30,7 +30,7 @@
         @click="selectCurComponent"
         @mousedown="handleInnerMouseDownOnShape"
       >
-        <Icon v-show="element['isLock']" class="iconfont icon-suo" name="dv-lock"></Icon>
+        <Icon v-show="shapeLock" class="iconfont icon-suo" name="dv-lock"></Icon>
         <!--边框背景-->
         <Icon
           v-if="svgInnerEnable"
@@ -139,6 +139,10 @@ const state = reactive({
 })
 
 const contentDisplay = ref(true)
+
+const shapeLock = computed(() => {
+  return element.value['isLock'] && isEditMode.value
+})
 
 const showPosition = computed(() => {
   let position
