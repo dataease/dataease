@@ -68,7 +68,6 @@ const { item, chart } = toRefs(props)
 watch(
   [() => props.quotaData, () => props.item],
   () => {
-    console.log(props.item)
     getItemTagType()
   },
   { deep: true }
