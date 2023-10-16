@@ -17,6 +17,7 @@
       :disabled="!canEdit"
       @onClick="onClick"
     />
+    <div class="rich-placeholder" v-if="showPlaceHolder">{{ init.outer_placeholder }}</div>
   </div>
 </template>
 
@@ -123,7 +124,8 @@ const init = ref({
     '微软雅黑=Microsoft YaHei;宋体=SimSun;黑体=SimHei;仿宋=FangSong;华文黑体=STHeiti;华文楷体=STKaiti;华文宋体=STSong;华文仿宋=STFangsong;Andale Mono=andale mono,times;Arial=arial,helvetica,sans-serif;Arial Black=arial black,avant garde;Book Antiqua=book antiqua,palatino;Comic Sans MS=comic sans ms,sans-serif;Courier New=courier new,courier;Georgia=georgia,palatino;Helvetica=helvetica;Impact=impact,chicago;Symbol=symbol;Tahoma=tahoma,arial,helvetica,sans-serif;Terminal=terminal,monaco;Times New Roman=times new roman,times;Trebuchet MS=trebuchet ms,geneva;Verdana=verdana,geneva;Webdings=webdings;Wingdings=wingdings',
   fontsize_formats: '12px 14px 16px 18px 20px 22px 24px 28px 32px 36px 48px 56px 72px', // 字体大小
   menubar: false,
-  placeholder: '双击输入文字',
+  placeholder: '请输入文字',
+  outer_placeholder: '双击输入文字',
   inline: true, // 开启内联模式
   branding: false
 })
@@ -266,13 +268,24 @@ const resetSelect = (node?) => {
     }
   }
 }
-const setEdit = () => {
-  if (
+
+const computedCanEdit = computed<boolean>(() => {
+  return (
     ['canvas', 'canvasDataV'].includes(showPosition.value) &&
     editStatus.value &&
     canEdit.value === false &&
     !isError.value
-  ) {
+  )
+})
+
+const showPlaceHolder = computed<boolean>(() => {
+  return (
+    computedCanEdit.value && (myValue.value == undefined || myValue.value == '') && !isError.value
+  )
+})
+
+const setEdit = () => {
+  if (computedCanEdit.value) {
     canEdit.value = true
     element.value['editing'] = true
     myValue.value = element.value.propValue.textValue
@@ -486,5 +499,19 @@ defineExpose({
   pre {
     color: #1a1a1a !important;
   }
+}
+
+.rich-placeholder {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+
+  color: #646a73;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 24px;
+
+  transform: translate(-50%, -50%);
 }
 </style>
