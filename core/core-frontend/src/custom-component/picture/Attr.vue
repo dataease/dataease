@@ -127,16 +127,24 @@ onBeforeUnmount(() => {
             <img-view-dialog v-model="dialogVisible" :image-url="dialogImageUrl"></img-view-dialog>
           </el-col>
         </el-row>
-        <el-row>
+        <el-row style="margin-top: 8px; margin-bottom: 16px">
           <span
-            v-show="!curComponent.propValue.url"
+            v-if="!curComponent.propValue.url"
             class="image-hint"
             :class="`image-hint_${themes}`"
-            >支持JPG、PNG、GIF</span
           >
-          <span v-show="curComponent.propValue.url" class="re-update-span" @click="goFile"
-            >重新上传</span
+            支持JPG、PNG、GIF
+          </span>
+
+          <el-button
+            size="small"
+            style="margin-left: -4px"
+            v-if="curComponent.propValue.url"
+            text
+            @click="goFile"
           >
+            重新上传
+          </el-button>
         </el-row>
       </el-collapse-item>
     </CommonAttr>

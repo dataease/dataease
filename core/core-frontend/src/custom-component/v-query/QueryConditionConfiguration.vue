@@ -285,6 +285,11 @@ const validate = () => {
   })
 }
 
+const handleBeforeClose = () => {
+  inputCom.value?.mult?.handleClickOutside?.()
+  dialogVisible.value = false
+}
+
 const confirmClick = () => {
   if (validate()) return
   inputCom.value?.mult?.handleClickOutside?.()
@@ -543,6 +548,7 @@ defineExpose({
     width="1200px"
     title="查询条件设置"
     @click.stop
+    :before-close="handleBeforeClose"
     @mousedown.stop
     @mousedup.stop
   >
