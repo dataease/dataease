@@ -96,7 +96,7 @@ function onPopoverHide() {
         style="flex: 1; padding-right: 8px; margin-bottom: 16px"
       >
         <el-popover
-          placement="bottom"
+          placement="bottom-start"
           ref="colorCaseSelectorRef"
           width="268"
           :offset="4"
@@ -228,6 +228,8 @@ function onPopoverHide() {
     cursor: pointer;
   }
   .custom-color-selector-container {
+    border-radius: 2px;
+    overflow: hidden;
     width: 100%;
     height: 16px;
     display: flex;

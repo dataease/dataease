@@ -181,7 +181,7 @@ const dragOnEnd = ({ oldIndex, newIndex }) => {
 const getIconName = item => {
   if (item.component === 'UserView') {
     const viewInfo = canvasViewInfo.value[item.id]
-    return viewInfo.type
+    return `${viewInfo.type}-dark`
   } else {
     return item.icon
   }
@@ -481,6 +481,12 @@ const handleContextMenu = e => {
 
 .container-item-not-show {
   color: #5f5f5f !important;
+  :deep(.component-icon) {
+    color: #5f5f5f !important;
+  }
+  :deep(.component-label) {
+    color: #5f5f5f !important;
+  }
 }
 </style>
 

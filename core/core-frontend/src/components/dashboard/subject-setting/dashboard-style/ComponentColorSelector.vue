@@ -10,6 +10,7 @@
         <custom-color-style-select
           v-if="colorAreaInit"
           class="custom-color-pick"
+          :class="{ 'custom-dark': themes === 'dark' }"
           v-model="state"
           :themes="themes"
           @change-basic-style="changeColorOption('value')"
@@ -417,15 +418,20 @@ span {
 }
 
 .custom-color-pick {
-  max-width: 230px;
   :deep(.ed-form-item__label) {
     justify-content: flex-start;
   }
-  :deep(.ed-input__wrapper) {
-    padding: 0 16px;
+  :deep(.ed-input__prefix) {
+    max-width: 192px;
   }
   :deep(.custom-color-setting-btn) {
     margin-top: 31px;
+  }
+}
+
+.custom-dark {
+  :deep(.ed-input__wrapper) {
+    padding: 0 16px;
   }
 }
 
