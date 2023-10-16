@@ -909,13 +909,24 @@ defineExpose({
               <el-checkbox v-model="curComponent.parametersCheck" label="绑定参数" />
             </div>
             <div v-if="curComponent.parametersCheck" class="parameters">
-              <el-select value-key="id" multiple v-model="curComponent.parameters" clearable>
+              <el-select
+                popper-class="dataset-parameters"
+                value-key="id"
+                multiple
+                v-model="curComponent.parameters"
+                clearable
+              >
                 <el-option
                   v-for="item in parametersFilter"
                   :key="item.id"
                   :label="item.variableName"
                   :value="item"
-                />
+                >
+                  <div class="variable-name ellipsis">{{ item.variableName }}</div>
+                  <el-tooltip effect="dark" :content="item.datasetFullName" placement="top">
+                    <div class="dataset-full-name ellipsis">{{ item.datasetFullName }}</div>
+                  </el-tooltip>
+                </el-option>
               </el-select>
             </div>
           </div>
@@ -951,6 +962,28 @@ defineExpose({
 </template>
 
 <style lang="less">
+.dataset-parameters {
+  font-family: PingFang SC;
+  font-style: normal;
+  font-weight: 400;
+  .ed-select-dropdown__item {
+    height: 50px;
+    line-height: 50px;
+    padding-top: 4px;
+    &.selected::after {
+      top: 30% !important;
+    }
+  }
+  .variable-name {
+    font-size: 14px;
+    line-height: 22px;
+  }
+  .dataset-full-name {
+    color: #8d9199;
+    font-size: 12px;
+    line-height: 20px;
+  }
+}
 .query-condition-configuration {
   --ed-font-weight-primary: 400;
 
