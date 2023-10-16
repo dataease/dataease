@@ -465,6 +465,7 @@ onMounted(() => {
           transform: inherit;
           color: inherit;
           font-size: inherit;
+          padding: 0 11px;
         }
       }
 
