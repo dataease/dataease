@@ -444,15 +444,6 @@ public class DatasourceServer implements DatasourceApi {
         if (ObjectUtils.isEmpty(coreDatasource)) {
             return;
         }
-        if (!coreDatasource.getType().equals(DatasourceConfiguration.DatasourceType.folder.name())) {
-            QueryWrapper<CoreDatasetTable> wrapper = new QueryWrapper<>();
-            wrapper.eq("datasource_id", coreDatasource.getId());
-            List<CoreDatasetTable> coreDatasetTables = coreDatasetTableMapper.selectList(wrapper);
-            if (!CollectionUtils.isEmpty(coreDatasetTables)) {
-                HashSet<Long> set = new HashSet<>(coreDatasetTables.stream().map(CoreDatasetTable::getDatasetGroupId).collect(Collectors.toList()));
-                DEException.throwException(set.size() + " 个数据集正在使用，不能删除!");
-            }
-        }
         if (coreDatasource.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name())) {
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(coreDatasource);
