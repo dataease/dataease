@@ -145,7 +145,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, toRefs } from 'vue'
+import { onMounted, reactive, computed } from 'vue'
 import { COLOR_PANEL } from '@/views/chart/components/editor/util/chart'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -157,8 +157,11 @@ import { ElIcon } from 'element-plus-secondary'
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
+const filterStyle = computed<any>(() => {
+  console.log('filterStyle==' + JSON.stringify(dvMainStore.canvasStyleData.component.filterStyle))
+  return dvMainStore.canvasStyleData.component.filterStyle
+})
 
-const { filterStyle } = toRefs(dvMainStore.canvasStyleData.component)
 const state = reactive({
   fontSize: [],
   isSetting: false,
