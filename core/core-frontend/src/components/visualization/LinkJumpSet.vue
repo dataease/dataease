@@ -507,7 +507,11 @@ const init = viewItem => {
   const request = { busiFlag: dvInfo.value.type } as BusiTreeRequest
   // 获取可关联的仪表板
   queryTreeApi(request).then(rsp => {
-    state.panelList = rsp
+    if (rsp && rsp[0]?.id === '0') {
+      state.panelList = rsp[0].children
+    } else {
+      state.panelList = rsp
+    }
   })
 
   if (chartDetails.tableId) {
