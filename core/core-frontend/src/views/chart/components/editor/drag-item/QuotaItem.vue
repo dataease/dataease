@@ -724,11 +724,7 @@ onMounted(() => {
             <span>{{ t('chart.value_formatter') }}...</span>
           </el-dropdown-item>
 
-          <el-dropdown-item
-            class="menu-item-padding"
-            v-if="props.type !== 'extBubble'"
-            :command="beforeClickItem('rename')"
-          >
+          <el-dropdown-item class="menu-item-padding" :command="beforeClickItem('rename')">
             <el-icon>
               <icon name="icon_edit_outlined"></icon>
             </el-icon>

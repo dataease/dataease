@@ -8,6 +8,7 @@ import defaultsDeep from 'lodash-es/defaultsDeep'
 import { formatterType, unitType } from '../../../js/formatter'
 import { fieldType } from '@/utils/attr'
 import { differenceBy, partition } from 'lodash-es'
+import chartViewManager from '../../../js/panel'
 
 const { t } = useI18n()
 
@@ -32,123 +33,159 @@ const emit = defineEmits(['onTooltipChange', 'onExtTooltipChange'])
 const curSeriesFormatter = ref<DeepPartial<SeriesFormatter>>({})
 const quotaData = ref<Axis[]>(inject('quotaData'))
 // 初始化系列提示
-const initSeriesTooltip = (firstLoad: boolean) => {
+const initSeriesTooltip = () => {
   if (!showProperty('seriesTooltipFormatter')) {
     return
   }
   const formatter = state.tooltipForm.seriesTooltipFormatter
-  const yAxis = props.chart.yAxis?.concat(props.chart.extBubble)
   const seriesAxisMap = formatter.reduce((pre, next) => {
-    pre[next.id] = next
+    next.seriesId = next.seriesId ?? next.id
+    pre[next.seriesId] = next
     return pre
   }, {})
   // 新增视图
-  if (!yAxis.length) {
+  if (!quotaAxis.value?.length) {
     if (!formatter.length) {
-      quotaData.value?.forEach(i => formatter.push({ ...i, show: false }))
+      quotaData.value?.forEach(i => formatter.push({ ...i, seriesId: i.id, show: false }))
     }
     curSeriesFormatter.value = {}
     return
   }
-  // 首次加载不对原始配置做更改
-  if (firstLoad) {
-    if (!formatter.length) {
-      return
-    }
-    if (!curSeriesFormatter.value || !seriesAxisMap[curSeriesFormatter.value.id]) {
-      curSeriesFormatter.value = seriesAxisMap[formatter[0].id]
-      return
-    }
-    curSeriesFormatter.value = seriesAxisMap[curSeriesFormatter.value.id]
-    return
-  }
   formatter.splice(0, formatter.length)
-  const yAxisMap = yAxis.reduce((pre, next) => {
-    pre[next.id] = next
-    return pre
-  }, {})
-  const allQuotaAxis = yAxis.concat(quotaData.value?.filter(ele => !yAxisMap[ele.id]))
+  const axisIds = quotaAxis.value?.map(i => i.id)
+  const allQuotaAxis = quotaAxis.value?.concat(
+    quotaData.value?.filter(ele => !axisIds.includes(ele.id))
+  )
   const axisMap = allQuotaAxis.reduce((pre, next, index) => {
     let tmp = {
       ...next,
-      show: index <= yAxis.length - 1,
+      seriesId: next.seriesId ?? next.id,
+      show: index <= quotaAxis.value.length - 1,
       summary: 'sum'
     } as SeriesFormatter
-    if (seriesAxisMap[next.id]) {
+    if (seriesAxisMap[tmp.seriesId]) {
       tmp = {
         ...tmp,
-        formatterCfg: seriesAxisMap[next.id].formatterCfg,
-        show: seriesAxisMap[next.id].show,
-        summary: seriesAxisMap[next.id].summary,
-        chartShowName: seriesAxisMap[next.id].chartShowName
+        formatterCfg: seriesAxisMap[tmp.seriesId].formatterCfg,
+        show: seriesAxisMap[tmp.seriesId].show,
+        summary: seriesAxisMap[tmp.seriesId].summary,
+        chartShowName: seriesAxisMap[tmp.seriesId].chartShowName
       }
     }
     formatter.push(tmp)
-    pre[next.id] = tmp
+    pre[tmp.seriesId] = tmp
     return pre
   }, {})
-  if (!curSeriesFormatter.value || !axisMap[curSeriesFormatter.value.id]) {
-    curSeriesFormatter.value = axisMap[formatter[0].id]
+  if (!curSeriesFormatter.value || !axisMap[curSeriesFormatter.value.seriesId]) {
+    curSeriesFormatter.value = axisMap[formatter[0].seriesId]
     return
   }
-  curSeriesFormatter.value = axisMap[curSeriesFormatter.value.id]
+  curSeriesFormatter.value = axisMap[curSeriesFormatter.value.seriesId]
 }
 // 更新系列提示
-const updateSeriesTooltip = (newAxis?: Axis[], oldAxis?: Axis[]) => {
-  if (!showProperty('seriesTooltipFormatter')) {
+const updateSeriesTooltip = (newAxis?: SeriesFormatter[], oldAxis?: SeriesFormatter[]) => {
+  if (
+    !showProperty('seriesTooltipFormatter') ||
+    !state.tooltipForm.seriesTooltipFormatter.length ||
+    !quotaData.value?.length
+  ) {
     return
   }
   const axisMap: Record<string, Axis> = newAxis?.reduce((pre, next) => {
-    pre[next.id] = next
+    pre[next.seriesId] = next
     return pre
   }, {})
   // 新增
-  const addedAxis = differenceBy(newAxis, oldAxis, 'id').map(i => i.id)
+  const addedAxisMap = differenceBy(newAxis, oldAxis, 'seriesId').reduce((pre, next) => {
+    pre[next.id] = next
+    return pre
+  }, {}) as Record<string, SeriesFormatter>
   // 删除
-  const removedAxis = differenceBy(oldAxis, newAxis, 'id').map(i => i.id)
+  const removedAxisMap = differenceBy(oldAxis, newAxis, 'seriesId').reduce((pre, next) => {
+    pre[next.seriesId] = next
+    return pre
+  }, {}) as Record<string, SeriesFormatter>
   const quotaIds = quotaData.value?.map(i => i.id)
-  state.tooltipForm.seriesTooltipFormatter = state.tooltipForm.seriesTooltipFormatter?.filter(
-    i => !removedAxis?.includes(i.id) || quotaIds?.includes(i.id)
+  state.tooltipForm.seriesTooltipFormatter = state.tooltipForm.seriesTooltipFormatter?.filter(i =>
+    quotaIds?.includes(i.id)
   )
+  const dupAxis: SeriesFormatter[] = []
   state.tooltipForm.seriesTooltipFormatter?.forEach(ele => {
-    ele.chartShowName = axisMap[ele.id]?.chartShowName
-    ele.summary = axisMap[ele.id]?.summary ?? ele.summary
-    if (addedAxis?.includes(ele.id)) {
+    if (addedAxisMap[ele.id]) {
+      // 数据集中的字段
       ele.show = true
-      return
+      if (ele.seriesId === ele.id) {
+        ele.seriesId = addedAxisMap[ele.id].seriesId
+        ele.axisType = addedAxisMap[ele.id].axisType
+      } else {
+        // 其他轴已有的字段
+        const tmp = cloneDeep(addedAxisMap[ele.id])
+        tmp.show = true
+        dupAxis.push(tmp)
+      }
     }
-    if (removedAxis?.includes(ele.id)) {
+    if (removedAxisMap[ele.seriesId]) {
       ele.show = false
+      ele.seriesId = ele.id
     }
+    ele.chartShowName = axisMap[ele.seriesId]?.chartShowName
+    ele.summary = axisMap[ele.seriesId]?.summary ?? ele.summary
   })
   // 重新排序
+  state.tooltipForm.seriesTooltipFormatter =
+    state.tooltipForm.seriesTooltipFormatter.concat(dupAxis)
   state.tooltipForm.seriesTooltipFormatter = partition(
     state.tooltipForm.seriesTooltipFormatter,
-    ele => axisMap[ele.id]
+    ele => axisMap[ele.seriesId]
   ).flat()
-  const extTooltip = state.tooltipForm.seriesTooltipFormatter.filter(
-    i => !axisMap[i.id] && i.show && quotaData.value?.findIndex(j => j.id === i.id) !== -1
-  )
-  if (removedAxis?.includes(curSeriesFormatter.value?.id)) {
+  if (removedAxisMap[curSeriesFormatter.value?.seriesId]) {
     curSeriesFormatter.value = state.tooltipForm.seriesTooltipFormatter?.[0]
   }
   if (!newAxis.length) {
     curSeriesFormatter.value = {}
   }
   emit('onTooltipChange', { data: state.tooltipForm, render: false })
-  emit('onExtTooltipChange', extTooltip)
+  emit('onExtTooltipChange', extTooltip.value)
 }
+const quotaAxis = computed(() => {
+  let result = []
+  const axisProp: AxisType[] = ['yAxis', 'yAxisExt', 'extBubble']
+  axisProp.forEach(prop => {
+    if (!chartViewInstance.value?.axis?.includes(prop)) {
+      return
+    }
+    const axis = props.chart[prop]
+    axis?.forEach(item => {
+      item.axisType = prop
+      item.seriesId = `${item.id}-${prop}`
+      result.push(item)
+    })
+  })
+  return result
+})
+const extTooltip = computed(() => {
+  const quotaIds = quotaAxis.value?.map(i => i.id)
+  return state.tooltipForm.seriesTooltipFormatter.filter(
+    i => !quotaIds.includes(i.id) && i.show && quotaData.value?.findIndex(j => j.id === i.id) !== -1
+  )
+})
 const showFormatterSummary = computed(() => {
   return (
-    props.chart.yAxis.findIndex(i => curSeriesFormatter.value.id === i.id) === -1 &&
+    quotaAxis.value?.findIndex(i => curSeriesFormatter.value.id === i.id) === -1 &&
     curSeriesFormatter.value.id !== '-1'
   )
 })
 const formatterNameEditable = computed(() => {
-  return props.chart.yAxis.findIndex(i => curSeriesFormatter.value.id === i.id) !== -1
+  return quotaAxis.value?.findIndex(i => curSeriesFormatter.value.id === i.id) !== -1
 })
 const formatterEditable = computed(() => {
-  return showProperty('seriesTooltipFormatter') && props.chart.yAxis?.length
+  return (
+    showProperty('seriesTooltipFormatter') &&
+    (props.chart.yAxis?.length || props.chart.yAxisExt?.length)
+  )
+})
+const chartViewInstance = computed(() => {
+  return chartViewManager.getChartView(props.chart.render, props.chart.type)
 })
 const AGGREGATION_TYPE = [
   { name: t('chart.sum'), value: 'sum' },
@@ -161,7 +198,7 @@ const AGGREGATION_TYPE = [
   { name: t('chart.count_distinct'), value: 'count_distinct' }
 ]
 watch(
-  () => cloneDeep(props.chart.yAxis.concat(props.chart.extBubble)),
+  () => cloneDeep(quotaAxis.value),
   (newVal, oldVal) => {
     updateSeriesTooltip(newVal, oldVal)
   },
@@ -176,8 +213,11 @@ watch(
 )
 watch(
   [quotaData, () => props.chart.type],
-  () => {
-    initSeriesTooltip(false)
+  newVal => {
+    if (!newVal[0].length) {
+      return
+    }
+    initSeriesTooltip()
   },
   { deep: false }
 )
@@ -200,11 +240,7 @@ const fontSizeList = computed(() => {
 const changeTooltipAttr = (prop: string, requestData = false, render = true) => {
   // 多序列处理 extTooltip
   if (prop === 'seriesTooltipFormatter') {
-    const quotaAxis = props.chart.yAxis?.concat(props.chart.extBubble).map(i => i.id)
-    const extTooltip = state.tooltipForm.seriesTooltipFormatter.filter(
-      i => !quotaAxis?.includes(i.id) && i.show
-    )
-    emit('onExtTooltipChange', extTooltip)
+    emit('onExtTooltipChange', extTooltip.value)
   }
   emit('onTooltipChange', { data: state.tooltipForm, requestData, render })
 }
@@ -215,8 +251,18 @@ const init = () => {
     const customAttr = JSON.parse(JSON.stringify(chart.customAttr))
     if (customAttr.tooltip) {
       state.tooltipForm = defaultsDeep(customAttr.tooltip, cloneDeep(DEFAULT_TOOLTIP))
-      initSeriesTooltip(true)
       formatterSelector.value?.blur()
+      const formatter = state.tooltipForm.seriesTooltipFormatter
+      const seriesAxisMap = formatter.reduce((pre, next) => {
+        next.seriesId = next.seriesId ?? next.id
+        pre[next.seriesId] = next
+        return pre
+      }, {})
+      if (!curSeriesFormatter?.value || !seriesAxisMap[curSeriesFormatter.value?.seriesId]) {
+        curSeriesFormatter.value = {}
+      } else {
+        curSeriesFormatter.value = seriesAxisMap[curSeriesFormatter.value?.seriesId]
+      }
     }
   }
 }
@@ -391,11 +437,11 @@ onMounted(() => {
           :effect="themes"
           :teleported="false"
           ref="formatterSelector"
-          value-key="id"
+          value-key="seriesId"
           class="series-select"
         >
           <template #prefix>
-            <el-icon v-if="curSeriesFormatter.id" style="font-size: 14px">
+            <el-icon v-if="curSeriesFormatter.seriesId" style="font-size: 14px">
               <Icon
                 :className="`field-icon-${fieldType[curSeriesFormatter.deType]}`"
                 :name="`field_${fieldType[curSeriesFormatter.deType]}`"
@@ -422,7 +468,7 @@ onMounted(() => {
           </el-option>
         </el-select>
       </el-form-item>
-      <template v-if="curSeriesFormatter?.id">
+      <template v-if="curSeriesFormatter?.seriesId">
         <el-form-item class="form-item form-item-checkbox" :class="'form-item-' + themes">
           <el-checkbox
             size="small"

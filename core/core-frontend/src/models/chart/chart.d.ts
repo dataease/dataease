@@ -93,6 +93,14 @@ declare interface SeriesFormatter extends Axis {
    * 字体大小
    */
   fontSize?: number
+  /**
+   * 序列id
+   */
+  seriesId: string
+  /**
+   * 轴类型
+   */
+  axisType: string
 }
 
 declare interface Axis extends ChartViewField {
