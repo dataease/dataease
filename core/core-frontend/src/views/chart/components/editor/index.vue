@@ -1661,15 +1661,17 @@ const onRefreshChange = val => {
                 v-model="view.tableId"
                 :themes="themes"
               />
-              <el-icon
-                class="field-search-icon-btn"
-                :class="{ dark: themes === 'dark' }"
-                style="margin-left: 8px"
-                @click="editDs"
-                v-if="curDatasetWeight >= 7"
-              >
-                <Icon name="icon_edit_outlined" class="el-icon-arrow-down el-icon-delete" />
-              </el-icon>
+              <el-tooltip effect="dark" content="编辑数据集" placement="top">
+                <el-icon
+                  class="field-search-icon-btn"
+                  :class="{ dark: themes === 'dark' }"
+                  style="margin-left: 8px"
+                  @click="editDs"
+                  v-if="curDatasetWeight >= 7"
+                >
+                  <Icon name="icon_edit_outlined" class="el-icon-arrow-down el-icon-delete" />
+                </el-icon>
+              </el-tooltip>
             </el-row>
             <el-row class="dataset-search padding-lr">
               <div class="dataset-search-label" :class="{ dark: themes === 'dark' }">

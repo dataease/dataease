@@ -1,9 +1,9 @@
 <script lang="tsx" setup>
 import { useI18n } from '@/hooks/web/useI18n'
-import { onMounted, reactive, ref, toRefs, watch } from 'vue'
+import { computed, onMounted, reactive, ref, toRefs, watch } from 'vue'
 import { formatterItem } from '@/views/chart/components/js/formatter'
 import { getItemType, resetValueFormatter } from '@/views/chart/components/editor/drag-item/utils'
-import { Delete, Edit, Filter } from '@element-plus/icons-vue'
+import { Filter } from '@element-plus/icons-vue'
 import { quotaViews } from '@/views/chart/components/js/util'
 import { SUPPORT_Y_M } from '@/views/chart/components/editor/util/chart'
 import { fieldType } from '@/utils/attr'
@@ -68,6 +68,7 @@ const { item, chart } = toRefs(props)
 watch(
   [() => props.quotaData, () => props.item],
   () => {
+    console.log(props.item)
     getItemTagType()
   },
   { deep: true }
@@ -80,6 +81,13 @@ watch(
   },
   { deep: true }
 )
+
+const showValueFormatter = computed<boolean>(() => {
+  return (
+    (props.chart.type === 'table-normal' || props.chart.type === 'table-info') &&
+    (props.item.deType === 2 || props.item.deType === 3)
+  )
+})
 
 const isEnableCompare = () => {
   let xAxis = null
@@ -709,7 +717,7 @@ onMounted(() => {
 
           <el-dropdown-item
             class="menu-item-padding"
-            v-if="item.groupType === 'q' && props.type !== 'extBubble'"
+            v-if="item.groupType === 'q' && props.type !== 'extBubble' && showValueFormatter"
             :divided="chart.type !== 'table-info'"
             :command="beforeClickItem('formatter')"
           >
