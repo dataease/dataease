@@ -17,7 +17,13 @@
       :disabled="!canEdit"
       @onClick="onClick"
     />
-    <div class="rich-placeholder" v-if="showPlaceHolder">{{ init.outer_placeholder }}</div>
+    <div
+      class="rich-placeholder"
+      :class="{ 'rich-placeholder--dark': themes === 'dark' }"
+      v-if="showPlaceHolder"
+    >
+      {{ init.outer_placeholder }}
+    </div>
   </div>
 </template>
 
@@ -40,7 +46,7 @@ import 'tinymce/plugins/contextmenu' // contextmenu
 import 'tinymce/plugins/directionality'
 import 'tinymce/plugins/nonbreaking'
 import 'tinymce/plugins/pagebreak'
-import { computed, nextTick, reactive, ref, toRefs, watch, onMounted } from 'vue'
+import { computed, nextTick, reactive, ref, toRefs, watch, onMounted, PropType } from 'vue'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import eventBus from '@/utils/eventBus'
 import { guid } from '@/views/visualized/data/dataset/form/util'
@@ -83,6 +89,10 @@ const props = defineProps({
     type: String,
     required: false,
     default: 'preview'
+  },
+  themes: {
+    type: String as PropType<EditorTheme>,
+    default: 'dark'
   }
 })
 
@@ -513,5 +523,9 @@ defineExpose({
   line-height: 24px;
 
   transform: translate(-50%, -50%);
+
+  &.rich-placeholder--dark {
+    color: #fff;
+  }
 }
 </style>

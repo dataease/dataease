@@ -1,5 +1,5 @@
 <script lang="tsx" setup>
-import { onMounted, reactive, watch, computed } from 'vue'
+import { onMounted, reactive, watch, computed, PropType } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ElIcon, ElMessage } from 'element-plus-secondary'
 import AssistLineEdit from '@/views/chart/components/editor/editor-senior/components/dialog/AssistLineEdit.vue'
@@ -19,7 +19,7 @@ const props = defineProps({
     required: true
   },
   themes: {
-    type: String,
+    type: String as PropType<EditorTheme>,
     default: 'dark'
   },
   propertyInner: {

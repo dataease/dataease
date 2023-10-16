@@ -449,6 +449,7 @@ initTitle()
     <div v-if="chartAreaShow" style="flex: 1; overflow: hidden">
       <de-rich-text-view
         v-if="showChartView(ChartLibraryType.RICH_TEXT)"
+        :themes="canvasStyleData.dashboard.themeColor"
         ref="chartComponent"
         :element="element"
         :disabled="!['canvas', 'canvasDataV'].includes(showPosition)"
