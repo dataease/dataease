@@ -223,6 +223,7 @@ eventBus.on('handleNew', handleNew)
       <dv-sidebar
         :title="'图层'"
         :width="180"
+        :scroll-width="3"
         :aside-position="'left'"
         :side-name="'realTimeComponent'"
         class="left-sidebar"
