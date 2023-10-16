@@ -2,14 +2,23 @@
 import { Icon } from '@/components/icon-custom'
 import { ElIcon } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
-import { ref, shallowRef, reactive, computed, toRefs } from 'vue'
+import {
+  ref,
+  shallowRef,
+  reactive,
+  computed,
+  toRefs,
+  onMounted,
+  onBeforeUnmount,
+  nextTick
+} from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { save } from '@/api/datasource'
 import type { Action } from 'element-plus-secondary'
 import { Base64 } from 'js-base64'
 import ExcelInfo from '../ExcelInfo.vue'
 import SheetTabs from '../SheetTabs.vue'
-import { cloneDeep } from 'lodash-es'
+import { cloneDeep, debounce } from 'lodash-es'
 import { uploadFile } from '@/api/datasource'
 import { useEmitt } from '@/hooks/web/useEmitt'
 
@@ -317,6 +326,21 @@ const saveExcelData = (sheetFileMd5, table, params, successCb, finallyCb) => {
 const onChange = file => {
   state.fileList = file
 }
+const isResize = ref(true)
+
+const handleResize = debounce(() => {
+  isResize.value = false
+  nextTick(() => {
+    isResize.value = true
+  })
+}, 500)
+onMounted(() => {
+  window.addEventListener('resize', handleResize)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', handleResize)
+})
 
 const upload = ref()
 const uploadAgain = ref()
@@ -372,6 +396,7 @@ defineExpose({
           v-if="sheetFile.name"
           prop="id"
           label="文件"
+          key="sheetFile"
           :rules="[
             {
               required: true
@@ -404,6 +429,7 @@ defineExpose({
         <el-form-item
           v-else
           prop="id"
+          key="sheetId"
           label="文件"
           :rules="[
             {
@@ -438,6 +464,7 @@ defineExpose({
         <el-form-item
           :class="status && !sheetFile.name && 'error-status'"
           prop="name"
+          key="name"
           v-if="showName"
           :rules="[
             {
@@ -463,7 +490,7 @@ defineExpose({
           :tab-list="tabList"
         ></SheetTabs>
 
-        <div class="info-table">
+        <div class="info-table" v-if="isResize">
           <el-auto-resizer>
             <template #default="{ height, width }">
               <el-table-v2
@@ -486,8 +513,6 @@ defineExpose({
 .excel-detail {
   display: flex;
   justify-content: center;
-  flex-direction: column;
-  align-items: center;
   width: calc(100% + 48px);
   margin: -8px -24px 0 -24px;
   .ed-form-item {
@@ -538,6 +563,7 @@ defineExpose({
     }
 
     .info-table {
+      width: 100%;
       height: calc(100% - 315px);
     }
   }
