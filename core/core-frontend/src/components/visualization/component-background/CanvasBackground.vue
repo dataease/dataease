@@ -82,14 +82,16 @@
                 v-if="!canvasStyleData.background"
                 class="image-hint"
                 :class="`image-hint_${themes}`"
-                >支持JPG、PNG、GIF</span
               >
+                支持JPG、PNG、GIF
+              </span>
               <el-button
                 size="small"
                 style="margin-left: -4px"
                 v-if="canvasStyleData.background"
                 text
                 @click="goFile"
+                :disabled="!canvasStyleData.backgroundImageEnable"
               >
                 重新上传
               </el-button>
@@ -216,7 +218,6 @@ watch(
   margin-bottom: 16px;
 }
 .avatar-uploader-container {
-  margin-bottom: 16px;
   :deep(.ed-upload--picture-card) {
     background: #eff0f1;
     border: 1px dashed #dee0e3;

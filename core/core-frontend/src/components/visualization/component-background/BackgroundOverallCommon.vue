@@ -180,26 +180,29 @@
             >
               <el-icon><Plus /></el-icon>
             </el-upload>
-            <el-row>
+            <el-row style="margin-top: 8px">
               <span
                 v-if="!state.commonBackground['outerImage']"
                 class="image-hint"
                 :class="`image-hint_${themes}`"
-                >支持JPG、PNG、GIF</span
               >
-              <span
+                支持JPG、PNG、GIF
+              </span>
+
+              <el-button
+                size="small"
+                style="margin-left: -4px"
                 v-if="state.commonBackground['outerImage']"
-                class="re-update-span"
+                text
                 @click="goFile"
-                >重新上传</span
+                :disabled="!state.commonBackground.backgroundImageEnable"
               >
+                重新上传
+              </el-button>
             </el-row>
           </div>
 
-          <img-view-dialog
-            v-model="state.dialogVisible"
-            :image-url="state.dialogImageUrl"
-          ></img-view-dialog>
+          <img-view-dialog v-model="state.dialogVisible" :image-url="state.dialogImageUrl" />
         </div>
       </div>
     </el-form>
