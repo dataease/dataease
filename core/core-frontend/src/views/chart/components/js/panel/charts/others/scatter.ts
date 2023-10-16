@@ -184,7 +184,7 @@ export class Scatter extends G2PlotChartView<ScatterOptions, G2Scatter> {
     const formatterMap = tooltipAttr.seriesTooltipFormatter
       ?.filter(i => i.show)
       .reduce((pre, next) => {
-        pre[next.id] = next
+        pre[next.seriesId] = next
         return pre
       }, {}) as Record<string, SeriesFormatter>
     const VALID_ITEMS = ['value', 'popSize']
@@ -203,9 +203,9 @@ export class Scatter extends G2PlotChartView<ScatterOptions, G2Scatter> {
         originalItems
           .filter(item => VALID_ITEMS.includes(item.name))
           .forEach(item => {
-            let formatter = formatterMap[item.data.quotaList[0].id]
+            let formatter = formatterMap[`${item.data.quotaList[0].id}-yAxis`]
             if (item.name === 'popSize') {
-              formatter = formatterMap[item.data.quotaList[1].id]
+              formatter = formatterMap[`${item.data.quotaList[1].id}-extBubble`]
             }
             if (!formatter) {
               return
