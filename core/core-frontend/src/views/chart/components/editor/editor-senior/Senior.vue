@@ -17,6 +17,9 @@ import { ElIcon, ElMessage } from 'element-plus-secondary'
 import { storeToRefs } from 'pinia'
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo } = storeToRefs(dvMainStore)
+import _ from 'lodash'
+
+const { nowPanelTrackInfo, nowPanelJumpInfo } = storeToRefs(dvMainStore)
 
 const { t } = useI18n()
 const linkJumpRef = ref(null)
@@ -43,6 +46,10 @@ const props = defineProps({
     type: Array,
     required: true
   },
+  dimensionData: {
+    type: Array,
+    required: true
+  },
   themes: {
     type: String as PropType<EditorTheme>,
     default: 'dark'
@@ -64,6 +71,25 @@ const props = defineProps({
 })
 
 const { chart, themes, properties, propertyInnerAll } = toRefs(props)
+
+const seniorCounts = computed(() => {
+  let linkageCount = 0
+  let jumpCount = 0
+  _.concat(props.quotaData, props.dimensionData)?.forEach(item => {
+    const sourceInfo = props.chart.id + '#' + item.id
+    if (nowPanelTrackInfo.value[sourceInfo]) {
+      linkageCount++
+    }
+    if (nowPanelJumpInfo.value[sourceInfo]) {
+      jumpCount++
+    }
+  })
+
+  return {
+    linkageCount,
+    jumpCount
+  }
+})
 
 const onFunctionCfgChange = val => {
   emit('onFunctionCfgChange', val)
@@ -144,7 +170,7 @@ const linkageActiveChange = () => {
 
 <template>
   <el-row class="view-panel" :class="'senior-' + themes">
-    <div @keydown.stop @keyup.stop class="attr-style">
+    <div @keydown.stop @keyup.stop class="attr-style" v-if="!noSenior">
       <el-row class="de-collapse-style">
         <el-collapse v-model="state.attrActiveNames" class="style-collapse">
           <el-collapse-item
@@ -214,24 +240,45 @@ const linkageActiveChange = () => {
             v-model="chart.linkageActive"
             @modelChange="linkageActiveChange"
           >
-            <div style="margin-bottom: 16px">
-              <span :class="'label-' + props.themes">联动设置</span>
-              <el-button
-                class="circle-button font14"
-                :title="t('chart.edit')"
-                :class="'label-' + props.themes"
-                text
-                size="small"
-                :style="{ width: '24px', marginLeft: '4px', float: 'right' }"
-                @click="linkageSetOpen"
-                :disabled="!chart.linkageActive"
-              >
-                <template #icon>
-                  <el-icon size="14px">
-                    <Icon name="icon_edit_outlined" />
-                  </el-icon>
+            <div class="inner-container">
+              <span class="label" :class="'label-' + props.themes">联动设置</span>
+              <span class="right-btns">
+                <template v-if="seniorCounts.linkageCount > 0">
+                  <span class="set-text-info">已设置</span>
+
+                  <!--                  <el-button
+                    class="circle-button font14"
+                    :title="t('chart.delete')"
+                    :class="'label-' + props.themes"
+                    text
+                    size="small"
+                    :style="{ width: '24px', marginLeft: '6px' }"
+                    @click="linkageSetOpen"
+                  >
+                    <template #icon>
+                      <el-icon size="14px">
+                        <Icon name="icon_delete-trash_outlined" />
+                      </el-icon>
+                    </template>
+                  </el-button>-->
                 </template>
-              </el-button>
+                <el-button
+                  class="circle-button font14"
+                  :title="t('chart.edit')"
+                  :class="'label-' + props.themes"
+                  text
+                  size="small"
+                  :style="{ width: '24px', marginLeft: '6px' }"
+                  @click="linkageSetOpen"
+                  :disabled="!chart.linkageActive"
+                >
+                  <template #icon>
+                    <el-icon size="14px">
+                      <Icon name="icon_edit_outlined" />
+                    </el-icon>
+                  </template>
+                </el-button>
+              </span>
             </div>
           </collapse-switch-item>
           <collapse-switch-item
@@ -242,24 +289,44 @@ const linkageActiveChange = () => {
             v-model="chart.jumpActive"
             @modelChange="linkJumpActiveChange"
           >
-            <div style="margin-bottom: 16px">
-              <span :class="'label-' + props.themes">跳转设置</span>
-              <el-button
-                class="circle-button font14"
-                :title="t('chart.edit')"
-                :class="'label-' + props.themes"
-                text
-                size="small"
-                :style="{ width: '24px', marginLeft: '4px', float: 'right' }"
-                @click="linkJumpSetOpen"
-                :disabled="!chart.jumpActive"
-              >
-                <template #icon>
-                  <el-icon size="14px">
-                    <Icon name="icon_edit_outlined" />
-                  </el-icon>
+            <div class="inner-container">
+              <span class="label" :class="'label-' + props.themes">跳转设置</span>
+              <span class="right-btns">
+                <template v-if="seniorCounts.jumpCount">
+                  <span class="set-text-info">已设置</span>
+                  <!--                  <el-button
+                    class="circle-button font14"
+                    :title="t('chart.delete')"
+                    :class="'label-' + props.themes"
+                    text
+                    size="small"
+                    :style="{ width: '24px', marginLeft: '6px' }"
+                    @click="linkJumpSetOpen"
+                  >
+                    <template #icon>
+                      <el-icon size="14px">
+                        <Icon name="icon_delete-trash_outlined" />
+                      </el-icon>
+                    </template>
+                  </el-button>-->
                 </template>
-              </el-button>
+                <el-button
+                  class="circle-button font14"
+                  :title="t('chart.edit')"
+                  :class="'label-' + props.themes"
+                  text
+                  size="small"
+                  :style="{ width: '24px', marginLeft: '6px' }"
+                  @click="linkJumpSetOpen"
+                  :disabled="!chart.jumpActive"
+                >
+                  <template #icon>
+                    <el-icon size="14px">
+                      <Icon name="icon_edit_outlined" />
+                    </el-icon>
+                  </template>
+                </el-button>
+              </span>
             </div>
           </collapse-switch-item>
         </el-collapse>
@@ -302,7 +369,6 @@ span {
   font-size: 12px;
   padding-top: 40px;
   overflow: auto;
-  border-right: 1px solid #e6e6e6;
   height: 100%;
 }
 
@@ -329,6 +395,43 @@ span {
 .font14 {
   :deep(.ed-icon) {
     font-size: 14px;
+  }
+}
+
+.inner-container {
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  justify-content: space-between;
+
+  .label {
+    cursor: default;
+    color: #646a73;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
+  }
+
+  .right-btns {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+  }
+
+  .set-text-info {
+    cursor: default;
+    padding: 2px 4px;
+    border-radius: 2px;
+    background: rgba(31, 35, 41, 0.1);
+
+    color: #646a73;
+
+    font-size: 10px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 13px;
   }
 }
 </style>

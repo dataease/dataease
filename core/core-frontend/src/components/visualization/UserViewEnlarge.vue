@@ -60,6 +60,7 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { VIEW_DETAILS_BASH_STYLE } from '@/views/chart/components/editor/util/dataVisualiztion'
 import { exportExcelDownload } from '@/views/chart/components/js/util'
 import { storeToRefs } from 'pinia'
+import { downloadCanvas } from '@/utils/imgUtils'
 const dvMainStore = dvMainStoreWithOut()
 const dialogShow = ref(false)
 let viewInfo = ref(null)
@@ -107,17 +108,9 @@ const downloadViewDetails = () => {
   const chart = { ...viewInfo.value, chartExtRequest, data: viewDataInfo }
   exportExcelDownload(chart)
 }
+
 const htmlToImage = () => {
-  toPng(viewContainer.value)
-    .then(dataUrl => {
-      const a = document.createElement('a')
-      a.setAttribute('download', viewInfo.value.title)
-      a.href = dataUrl
-      a.click()
-    })
-    .catch(error => {
-      console.error('oops, something went wrong!', error)
-    })
+  downloadCanvas('img', viewContainer.value, viewInfo.value.title)
 }
 
 defineExpose({

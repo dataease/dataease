@@ -5,13 +5,12 @@ import { reactive, nextTick, ref, toRefs, onBeforeMount, computed } from 'vue'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
 import PreviewHead from '@/views/data-visualization/PreviewHead.vue'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
-import { toPng } from 'html-to-image'
 import { initCanvasData, initCanvasDataPrepare } from '@/utils/canvasUtils'
 import { useRequestStoreWithOut } from '@/store/modules/request'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import { useMoveLine } from '@/hooks/web/useMoveLine'
-import JsPDF from 'jspdf'
 import { Icon } from '@/components/icon-custom'
+import { downloadCanvas } from '@/utils/imgUtils'
 
 const dvMainStore = dvMainStoreWithOut()
 const previewCanvasContainer = ref(null)
@@ -83,46 +82,14 @@ const loadCanvasData = (dvId, weight?) => {
   )
 }
 
-const download = type => {
+const downloadH2 = type => {
   downloadStatus.value = true
   nextTick(() => {
     const vueDom = previewCanvasContainer.value.querySelector('.canvas-container')
-    toPng(vueDom)
-      .then(dataUrl => {
-        if (type === 'img') {
-          const a = document.createElement('a')
-          a.setAttribute('download', state.dvInfo.name)
-          a.href = dataUrl
-          a.click()
-        } else {
-          const contentWidth = vueDom.offsetWidth
-          const contentHeight = vueDom.offsetHeight
-          const lp = contentWidth > contentHeight ? 'l' : 'p'
-          const PDF = new JsPDF(lp, 'pt', [contentWidth, contentHeight])
-          PDF.addImage(dataUrl, 'PNG', 0, 0, contentWidth, contentHeight)
-          PDF.save(state.dvInfo.name + '.pdf')
-        }
-      })
-      .catch(error => {
-        console.error('oops, something went wrong!', error)
-      })
-      .finally(() => {
-        downloadStatus.value = false
-      })
-  })
-}
-
-const htmlToImage = () => {
-  toPng(previewCanvasContainer.value.querySelector('.canvas-container'))
-    .then(dataUrl => {
-      const a = document.createElement('a')
-      a.setAttribute('download', state.dvInfo.name)
-      a.href = dataUrl
-      a.click()
+    downloadCanvas(type, vueDom, state.dvInfo.name, () => {
+      downloadStatus.value = false
     })
-    .catch(error => {
-      console.error('oops, something went wrong!', error)
-    })
+  }, 200)
 }
 
 const slideOpenChange = () => {
@@ -188,7 +155,7 @@ defineExpose({
       </div>
       <!--从store中判断当前是否有点击仪表板 复用时也符合-->
       <template v-if="previewShowFlag">
-        <preview-head v-if="showPosition === 'preview'" @reload="reload" @download="download" />
+        <preview-head v-if="showPosition === 'preview'" @reload="reload" @download="downloadH2" />
         <div ref="previewCanvasContainer" class="content">
           <de-preview
             ref="dashboardPreview"
