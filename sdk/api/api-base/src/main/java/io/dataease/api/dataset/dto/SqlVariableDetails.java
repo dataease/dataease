@@ -24,7 +24,7 @@ public class SqlVariableDetails {
     private boolean required;
     private String operator;
     private List<String> value;
-
+    private String datasetFullName;
     public enum DefaultValueScope {
         EDIT("EDIT"),
         ALLSCOPE("ALLSCOPE");
