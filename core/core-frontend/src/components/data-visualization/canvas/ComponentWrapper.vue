@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { getStyle, getSVGStyle } from '@/utils/style'
 import eventBus from '@/utils/eventBus'
-import { ref, onMounted, toRefs, getCurrentInstance, computed, watch } from 'vue'
+import { ref, onMounted, toRefs, getCurrentInstance, computed, watch, nextTick } from 'vue'
 import findComponent from '@/utils/components'
-import { imgUrlTrans } from '@/utils/imgUtils'
+import { downloadCanvas, imgUrlTrans } from '@/utils/imgUtils'
 import ComponentEditBar from '@/components/visualization/ComponentEditBar.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
-import { toPng } from 'html-to-image'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 const dvMainStore = dvMainStoreWithOut()
 
@@ -84,16 +83,10 @@ const component = ref(null)
 const emits = defineEmits(['userViewEnlargeOpen'])
 
 const htmlToImage = () => {
-  toPng(componentWrapperInnerRef.value)
-    .then(dataUrl => {
-      const a = document.createElement('a')
-      a.setAttribute('download', '图表')
-      a.href = dataUrl
-      a.click()
-    })
-    .catch(error => {
-      console.error('oops, something went wrong!', error)
-    })
+  setTimeout(() => {
+    const vueDom = componentWrapperInnerRef.value
+    downloadCanvas('img', vueDom, '图表')
+  }, 200)
 }
 
 const handleInnerMouseDown = e => {

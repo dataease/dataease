@@ -87,13 +87,11 @@ import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapsho
 import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import { storeToRefs } from 'pinia'
-import { imgUrlTrans } from '@/utils/imgUtils'
+import { downloadCanvas, imgUrlTrans } from '@/utils/imgUtils'
 import Icon from '@/components/icon-custom/src/Icon.vue'
 import ComponentEditBar from '@/components/visualization/ComponentEditBar.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
-import { toPng } from 'html-to-image'
 import ComposeShow from '@/components/data-visualization/canvas/ComposeShow.vue'
-import { isMainCanvas } from '@/utils/canvasUtils'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
@@ -759,16 +757,9 @@ const dragCollision = computed(() => {
 })
 
 const htmlToImage = () => {
-  toPng(componentInnerRef.value)
-    .then(dataUrl => {
-      const a = document.createElement('a')
-      a.setAttribute('download', '图表')
-      a.href = dataUrl
-      a.click()
-    })
-    .catch(error => {
-      console.error('oops, something went wrong!', error)
-    })
+  setTimeout(() => {
+    downloadCanvas('img', componentInnerRef.value, '图表')
+  }, 200)
 }
 
 onMounted(() => {
