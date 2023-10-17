@@ -47,8 +47,8 @@ const state = reactive({
 
 const emit = defineEmits(['onTableCellChange'])
 
-const changeTableCell = val => {
-  emit('onTableCellChange', state.tableCellForm)
+const changeTableCell = prop => {
+  emit('onTableCellChange', state.tableCellForm, prop)
 }
 
 const init = () => {

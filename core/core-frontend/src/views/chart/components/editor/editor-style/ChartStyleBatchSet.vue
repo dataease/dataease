@@ -62,69 +62,68 @@ const state = reactive({
 const calcStyle = () => {
   emits('calcStyle')
 }
-const onColorChange = val => {
-  batchOptChange('customAttr', 'color', val)
-}
-const onMiscChange = val => {
-  batchOptChange('customAttr', 'misc', val.data)
+
+const onMiscChange = (val, prop) => {
+  batchOptChange('customAttr', 'misc', val.data, prop)
 }
 
-const onLabelChange = val => {
-  batchOptChange('customAttr', 'label', val)
+const onLabelChange = (val, prop) => {
+  batchOptChange('customAttr', 'label', val, prop)
 }
-const onTooltipChange = val => {
-  batchOptChange('customAttr', 'tooltip', val)
-}
-
-const onChangeXAxisForm = val => {
-  batchOptChange('customStyle', 'xAxis', val)
+const onTooltipChange = (val, prop) => {
+  batchOptChange('customAttr', 'tooltip', val.data, prop)
 }
 
-const onChangeYAxisForm = val => {
-  batchOptChange('customStyle', 'yAxis', val)
-}
-const onChangeYAxisExtForm = val => {
-  batchOptChange('customStyle', 'yAxisExt', val)
+const onChangeXAxisForm = (val, prop) => {
+  batchOptChange('customStyle', 'xAxis', val, prop)
 }
 
-const onChangeMiscStyleForm = val => {
-  batchOptChange('customStyle', 'misc', val)
+const onChangeYAxisForm = (val, prop) => {
+  batchOptChange('customStyle', 'yAxis', val, prop)
 }
-const onTextChange = val => {
-  batchOptChange('customStyle', 'text', val)
+const onChangeYAxisExtForm = (val, prop) => {
+  batchOptChange('customStyle', 'yAxisExt', val, prop)
 }
-const onLegendChange = val => {
-  batchOptChange('customStyle', 'legend', val)
+
+const onChangeMiscStyleForm = (val, prop) => {
+  batchOptChange('customStyle', 'misc', val, prop)
 }
-const onMarginChange = val => {
-  batchOptChange('customStyle', 'margin', val)
+const onTextChange = (val, prop) => {
+  batchOptChange('customStyle', 'text', val, prop)
 }
-const onSuspensionChange = val => {
-  batchOptChange('customAttr', 'suspension', val)
+const onLegendChange = (val, prop) => {
+  batchOptChange('customStyle', 'legend', val, prop)
+}
+const onMarginChange = (val, prop) => {
+  batchOptChange('customStyle', 'margin', val, prop)
+}
+const onSuspensionChange = (val, prop) => {
+  batchOptChange('customAttr', 'suspension', val, prop)
 }
 
 const onBackgroundChange = val => {
   dvMainStore.setBatchChangeBackground(val)
-  snapshotStore.recordSnapshotCache('renderChart')
+  snapshotStore.recordSnapshotCache()
 }
-const onBasicStyleChange = val => {
+const onBasicStyleChange = (val, prop) => {
   //基础样式差异化处理
-  batchOptChange('customAttr', 'basicStyle', val.data)
+  batchOptChange('customAttr', 'basicStyle', val.data, prop)
 }
-const onTableHeaderChange = val => {
-  batchOptChange('customAttr', 'tableHeader', val)
+const onTableHeaderChange = (val, prop) => {
+  batchOptChange('customAttr', 'tableHeader', val, prop)
 }
-const onTableCellChange = val => {
-  batchOptChange('customAttr', 'tableCell', val)
+const onTableCellChange = (val, prop) => {
+  batchOptChange('customAttr', 'tableCell', val, prop)
 }
-const onTableTotalChange = val => {
-  batchOptChange('customAttr', 'tableTotal', val)
+const onTableTotalChange = (val, prop) => {
+  batchOptChange('customAttr', 'tableTotal', val.data, prop)
 }
-const batchOptChange = (custom, property, value) => {
+const batchOptChange = (custom, property, value, subProp?) => {
   dvMainStore.setChangeProperties({
     custom: custom,
     property: property,
-    value: value
+    value: value,
+    subProp: subProp
   })
 }
 

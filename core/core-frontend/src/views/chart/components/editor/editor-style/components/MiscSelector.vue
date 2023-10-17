@@ -96,11 +96,11 @@ const lineTypeOptions = [
   { name: t('chart.map_line_type_arc_3d'), value: 'arc3d' }
 ]
 
-const changeMisc = (type = '', refresh = false) => {
+const changeMisc = (prop = '', refresh = false) => {
   if (state.miscForm.gaugeMax <= state.miscForm.gaugeMin) {
     ElMessage.error(t('chart.max_more_than_mix'))
   }
-  emit('onMiscChange', { data: state.miscForm, requestData: refresh })
+  emit('onMiscChange', { data: state.miscForm, requestData: refresh }, prop)
 }
 
 const fontSizeList = computed(() => {
@@ -552,20 +552,19 @@ onMounted(() => {
               @change="changeQuotaField('max', true)"
             >
               <el-option
+                class="series-select-option"
                 v-for="item in state.quotaData"
                 :key="item.id"
                 :label="item.name"
                 :value="item.id"
               >
-                <span style="float: left">
-                  <el-icon>
-                    <Icon
-                      :className="`field-icon-${fieldType[item.deType]}`"
-                      :name="`field_${fieldType[item.deType]}`"
-                    ></Icon>
-                  </el-icon>
-                </span>
-                <span class="field-item">{{ item.name }}</span>
+                <el-icon style="margin-right: 8px">
+                  <Icon
+                    :className="`field-icon-${fieldType[item.deType]}`"
+                    :name="`field_${fieldType[item.deType]}`"
+                  />
+                </el-icon>
+                {{ item.name }}
               </el-option>
             </el-select>
           </el-form-item>
@@ -887,5 +886,11 @@ onMounted(() => {
 }
 .margin-bottom-8 {
   margin-bottom: 8px !important;
+}
+.series-select-option {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  padding: 0 11px;
 }
 </style>

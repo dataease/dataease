@@ -267,8 +267,8 @@ init()
           :style="{ margin: '6px 0 10px 0' }"
           @change="filterTypeChange"
         >
-          <el-radio label="logic">{{ t('chart.logic_exp') }}</el-radio>
-          <el-radio label="enum">{{ t('chart.enum_exp') }}</el-radio>
+          <el-radio style="min-width: 80px" label="logic">{{ t('chart.logic_exp') }}</el-radio>
+          <el-radio style="min-width: 80px" label="enum">{{ t('chart.enum_exp') }}</el-radio>
         </el-radio-group>
       </div>
 
@@ -291,8 +291,8 @@ init()
             size="small"
             style="width: 60px; margin: 0 6px"
           >
-            <el-option :label="t('chart.logic_and')" value="and" />
-            <el-option :label="t('chart.logic_or')" value="or" />
+            <el-option style="min-width: 80px" :label="t('chart.logic_and')" value="and" />
+            <el-option style="min-width: 80px" :label="t('chart.logic_or')" value="or" />
           </el-select>
           <span>{{ t('chart.addition') }}</span>
         </div>

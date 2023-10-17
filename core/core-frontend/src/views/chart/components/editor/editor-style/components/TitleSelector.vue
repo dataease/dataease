@@ -62,8 +62,8 @@ const fontSizeList = computed(() => {
   return arr
 })
 
-const changeTitleStyle = s => {
-  emit('onTextChange', state.titleForm)
+const changeTitleStyle = prop => {
+  emit('onTextChange', state.titleForm, prop)
 }
 
 const init = () => {
