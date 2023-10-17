@@ -273,7 +273,7 @@ export const DEFAULT_TOOLTIP: ChartTooltipAttr = {
   show: true,
   trigger: 'item',
   confine: true,
-  fontSize: 10,
+  fontSize: 12,
   color: '#909399',
   tooltipFormatter: formatterItem,
   backgroundColor: '#ffffff',
