@@ -11,11 +11,10 @@ const { value, imageUrl } = toRefs(props)
 
 <template>
   <el-dialog
-    top="10vh"
     class="img-enlarge-dialog"
-    append-to-body="true"
-    destroy-on-close="true"
-    close-on-click-modal="true"
+    append-to-body
+    destroy-on-close
+    close-on-click-modal
     v-model="value"
   >
     <div class="img-content">
@@ -26,8 +25,8 @@ const { value, imageUrl } = toRefs(props)
 
 <style lang="less" scoped>
 .img-content {
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
   overflow-y: auto;
   padding: 60px 120px;
   img {
