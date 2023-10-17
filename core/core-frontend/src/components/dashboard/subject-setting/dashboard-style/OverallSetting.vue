@@ -193,7 +193,7 @@ const themeChange = modifyName => {
     }
     adaptCurThemeCommonStyleAll()
   }
-  snapshotStore.recordSnapshotCache('overallSetting-themeChange')
+  snapshotStore.recordSnapshotCache('renderChart')
 }
 const colorButtonClick = val => {
   if (val !== canvasStyleData.value.dashboard.themeColor) {

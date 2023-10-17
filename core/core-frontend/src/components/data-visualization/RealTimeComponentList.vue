@@ -90,7 +90,7 @@ const onClick = (e, index) => {
 const deleteComponent = (number: number) => {
   setTimeout(() => {
     dvMainStore.deleteComponentById(curComponent.value.id)
-    snapshotStore.recordSnapshotCache()
+    snapshotStore.recordSnapshotCache('renderChart')
   })
 }
 const upComponent = (number: number) => {

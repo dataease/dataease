@@ -59,7 +59,7 @@ const hide = () => {
 
 const paste = () => {
   copyStore.paste(true)
-  snapshotStore.recordSnapshotCache('paste')
+  snapshotStore.recordSnapshotCache('renderChart')
 }
 
 const deleteComponent = () => {
@@ -71,7 +71,7 @@ const deleteComponent = () => {
     })
   }
   eventBus.emit('hideArea-canvas-main')
-  snapshotStore.recordSnapshotCache('deleteComponent')
+  snapshotStore.recordSnapshotCache('renderChart')
 }
 
 const upComponent = () => {
