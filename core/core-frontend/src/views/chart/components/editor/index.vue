@@ -2783,6 +2783,10 @@ span {
   font-size: 12px;
   font-style: normal;
   font-weight: 400;
+
+  height: unset;
+  line-height: 20px;
+  margin-bottom: 8px;
 }
 :deep(.form-item-dark) {
   .ed-form-item__label {
