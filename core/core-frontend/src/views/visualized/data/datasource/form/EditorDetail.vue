@@ -811,7 +811,7 @@ defineExpose({
             prop="cron"
             :label="t('common.cron_exp')"
           >
-            <el-popover :persistent="false" :width="834" v-model="cronEdit" trigger="click">
+            <el-popover :width="834" v-model="cronEdit" trigger="click">
               <template #default>
                 <div style="width: 814px; height: 400px; overflow-y: auto">
                   <cron
