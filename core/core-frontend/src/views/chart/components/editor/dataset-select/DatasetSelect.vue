@@ -159,7 +159,7 @@ const refresh = () => {
   initDataset()
 }
 const addDataset = () => {
-  const { href } = resolve('/dataset')
+  const { href } = resolve('/dataset-form')
   window.open(href, '_blank')
 }
 
