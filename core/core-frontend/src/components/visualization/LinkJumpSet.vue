@@ -141,15 +141,21 @@
                             >
                               <template #default="{ node, data }">
                                 <div class="label-content-details">
-                                  <el-icon style="display: inline-block" v-if="data.leaf">
+                                  <el-icon
+                                    size="18px"
+                                    style="display: inline-block"
+                                    v-if="data.leaf"
+                                  >
                                     <Icon name="dv-dashboard-spine"></Icon>
                                   </el-icon>
-                                  <el-icon style="display: inline-block" v-else>
+                                  <el-icon size="18px" style="display: inline-block" v-else>
                                     <Icon name="dv-folder"></Icon>
                                   </el-icon>
-                                  <span style="margin-left: 4px" :title="node.label">{{
-                                    node.label
-                                  }}</span>
+                                  <span
+                                    style="margin-left: 8px; font-size: 14px"
+                                    :title="node.label"
+                                    >{{ node.label }}</span
+                                  >
                                 </div>
                               </template>
                             </el-tree-select>

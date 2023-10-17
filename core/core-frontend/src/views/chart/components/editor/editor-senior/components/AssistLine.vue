@@ -138,7 +138,13 @@ onMounted(() => {
     <div class="inner-container">
       <span class="label" :class="'label-' + props.themes">辅助线设置</span>
       <span class="right-btns">
-        <span class="set-text-info" v-if="state.assistLine.length > 0">已设置</span>
+        <span
+          class="set-text-info"
+          :class="{ 'set-text-info-dark': themes === 'dark' }"
+          v-if="state.assistLine.length > 0"
+        >
+          已设置
+        </span>
         <el-button
           class="circle-button font14"
           :class="'label-' + props.themes"
@@ -245,6 +251,11 @@ onMounted(() => {
       font-style: normal;
       font-weight: 500;
       line-height: 13px;
+
+      &.set-text-info-dark {
+        color: #a6a6a6;
+        background: rgba(235, 235, 235, 0.1);
+      }
     }
   }
 }
@@ -321,7 +332,6 @@ span {
   color: #a6a6a6 !important;
   &.ed-button {
     color: #3370ff !important;
-    margin-right: -6px;
   }
   &.is-disabled {
     color: #5f5f5f !important;

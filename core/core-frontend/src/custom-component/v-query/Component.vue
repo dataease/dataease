@@ -495,7 +495,6 @@ const opacityStyle = computed(() => {
   align-items: center;
   position: relative;
   display: flex;
-  z-index: 3;
   margin: auto 0;
   .query-fields-container {
     display: flex;

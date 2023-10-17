@@ -400,7 +400,11 @@ init()
         <div class="inner-container">
           <span class="label" :class="'label-' + props.themes">阈值设置</span>
           <span class="right-btns">
-            <span class="set-text-info" v-if="state.thresholdForm?.tableThreshold?.length > 0">
+            <span
+              class="set-text-info"
+              :class="{ 'set-text-info-dark': themes === 'dark' }"
+              v-if="state.thresholdForm?.tableThreshold?.length > 0"
+            >
               已设置
             </span>
             <el-button
@@ -423,7 +427,7 @@ init()
 
         <div
           class="threshold-container"
-          :class="{ 'threshold-container--dark': themes === 'dark' }"
+          :class="{ 'threshold-container-dark': themes === 'dark' }"
           v-if="state.thresholdForm.tableThreshold.length > 0"
         >
           <el-row
@@ -431,7 +435,7 @@ init()
             :key="fieldIndex"
             style="flex-direction: column"
           >
-            <el-row class="field-style" :class="{ 'field-style--dark': themes === 'dark' }">
+            <div class="field-style" :class="{ 'field-style-dark': themes === 'dark' }">
               <span>
                 <el-icon>
                   <Icon
@@ -443,7 +447,7 @@ init()
               <span :title="fieldItem.field.name" class="field-text">{{
                 fieldItem.field.name
               }}</span>
-            </el-row>
+            </div>
             <div v-for="(item, index) in fieldItem.conditions" :key="index" class="line-style">
               <div style="flex: 1">
                 <span v-if="item.term === 'eq'" :title="t('chart.filter_eq')">
@@ -509,22 +513,19 @@ init()
               </div>
               <div
                 :title="t('chart.textColor')"
-                style="margin-right: 8px"
                 :style="{
-                  width: '14px',
-                  height: '14px',
-                  backgroundColor: item.color,
-                  border: 'solid 1px #e1e4e8'
+                  backgroundColor: item.color
                 }"
+                class="color-div"
+                :class="{ 'color-div-dark': themes === 'dark' }"
               ></div>
               <div
                 :title="t('chart.backgroundColor')"
                 :style="{
-                  width: '14px',
-                  height: '14px',
-                  backgroundColor: item.backgroundColor,
-                  border: 'solid 1px #e1e4e8'
+                  backgroundColor: item.backgroundColor
                 }"
+                class="color-div"
+                :class="{ 'color-div-dark': themes === 'dark' }"
               ></div>
             </div>
           </el-row>
@@ -700,6 +701,11 @@ span {
     font-style: normal;
     font-weight: 500;
     line-height: 13px;
+
+    &.set-text-info-dark {
+      color: #a6a6a6;
+      background: rgba(235, 235, 235, 0.1);
+    }
   }
 }
 
@@ -729,7 +735,24 @@ span {
   max-height: 500px;
   overflow-y: auto;
 
-  &.threshold-container--dark {
+  .color-div {
+    margin-right: 8px;
+    width: 14px;
+    height: 14px;
+    border: solid 1px #e1e4e8;
+    border-radius: 2px;
+
+    &:last-child {
+      margin-right: unset;
+    }
+
+    &.color-div-dark {
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+  }
+
+  &.threshold-container-dark {
+    border-color: rgba(255, 255, 255, 0.15);
   }
 
   .field-style {
@@ -739,7 +762,8 @@ span {
 
     background: #f5f6f7;
 
-    &.field-style--dark {
+    &.field-style-dark {
+      background: #1a1a1a;
     }
   }
 }
@@ -751,7 +775,6 @@ span {
   color: #a6a6a6 !important;
   &.ed-button {
     color: #3370ff !important;
-    margin-right: -6px;
   }
   &.is-disabled {
     color: #5f5f5f !important;

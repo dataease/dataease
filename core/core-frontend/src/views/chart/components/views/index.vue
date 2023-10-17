@@ -341,9 +341,11 @@ const showChartView = (...libs: ChartLibraryType[]) => {
 
 onBeforeMount(() => {
   if (!showPosition.value.includes('viewDialog')) {
-    useEmitt({
-      name: `query-data-${view.value.id}`,
-      callback: queryData
+    nextTick(() => {
+      useEmitt({
+        name: `query-data-${view.value.id}`,
+        callback: queryData
+      })
     })
   }
 })

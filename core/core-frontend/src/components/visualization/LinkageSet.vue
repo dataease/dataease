@@ -194,6 +194,7 @@ import {
 import { getDatasetDetails } from '@/api/dataset'
 import { findAllViewsId } from '@/utils/canvasUtils'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
+import { checkSameDataSet } from '@/api/chart'
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo, canvasViewInfo, componentData } = storeToRefs(dvMainStore)
 const linkageInfoTree = ref(null)
@@ -347,10 +348,39 @@ const addLinkageField = (sourceFieldId?, targetFieldId?) => {
 const deleteLinkageField = index => {
   state.linkageInfo.linkageFields.splice(index, 1)
 }
+
+const linkageFieldAdaptor = async data => {
+  if (data.linkageActive) {
+    // 初始化映射关系 如果当前是相同的数据集且没有关联关系，则自动补充映射关系
+    const targetChartDetails = canvasViewInfo.value[data.targetViewId]
+    if (targetChartDetails && targetChartDetails.tableId && data.linkageFields.length === 0) {
+      if (state.curLinkageViewInfo.tableId === targetChartDetails.tableId) {
+        const curCheckAllAxisStr =
+          JSON.stringify(state.curLinkageViewInfo.xAxis) +
+          JSON.stringify(state.curLinkageViewInfo.xAxisExt) +
+          JSON.stringify(state.curLinkageViewInfo.yAxis) +
+          JSON.stringify(state.curLinkageViewInfo.yAxisExt)
+        const targetCheckAllAxisStr =
+          JSON.stringify(targetChartDetails.xAxis) +
+          JSON.stringify(targetChartDetails.xAxisExt) +
+          JSON.stringify(targetChartDetails.yAxis) +
+          JSON.stringify(targetChartDetails.yAxisExt)
+        state.sourceLinkageInfo.targetViewFields.forEach(item => {
+          if (curCheckAllAxisStr.includes(item.id) && targetCheckAllAxisStr.includes(item.id)) {
+            addLinkageField(item.id, item.id)
+          }
+        })
+      } else {
+        addLinkageField('', '')
+      }
+    }
+  }
+}
 const targetViewCheckedChange = data => {
   nextTick(() => {
     linkageInfoTree.value.setCurrentKey(data.targetViewId)
     nodeClick(data)
+    linkageFieldAdaptor(data)
   })
 }
 const cancel = () => {

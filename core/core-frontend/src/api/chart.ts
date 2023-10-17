@@ -84,5 +84,5 @@ export const getChartDetail = async (id: string): Promise<IResponse> => {
   })
 }
 
-export const checkSameDataSet = (viewIdSource, viewIdTarget) =>
+export const checkSameDataSet = async (viewIdSource, viewIdTarget) =>
   request.get({ url: '/chart/checkSameDataSet/' + viewIdSource + '/' + viewIdTarget })

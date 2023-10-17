@@ -394,23 +394,38 @@ export const dvMainStore = defineStore('dataVisualization', {
         component.style.top = baseHeight * (component.y - 1) + baseMarginTop
       })
     },
+    clearTargetViewLinkage(viewId, item) {
+      if (item.linkageFilters && item.linkageFilters.length > 0) {
+        const historyLinkageFiltersLength = item.linkageFilters.length
+        const newList = item.linkageFilters.filter(linkage => linkage.sourceViewId !== viewId)
+        item.linkageFilters.splice(0, item.linkageFilters.length)
+        // 重新push 可保证数组指针不变 可以watch到
+        if (newList.length > 0) {
+          newList.forEach(newLinkage => {
+            item.linkageFilters.push(newLinkage)
+          })
+        }
+        // 如果linkageFilters内容长度有变化 则需要重新查询
+        if (historyLinkageFiltersLength !== newList.length) {
+          useEmitt().emitter.emit('query-data-' + item.id)
+        }
+      }
+    },
     // 清除相同sourceViewId 的 联动条件
     clearViewLinkage(viewId) {
       this.componentData.forEach(item => {
-        if (item.linkageFilters && item.linkageFilters.length > 0) {
-          const historyLinkageFiltersLength = item.linkageFilters.length
-          const newList = item.linkageFilters.filter(linkage => linkage.sourceViewId !== viewId)
-          item.linkageFilters.splice(0, item.linkageFilters.length)
-          // 重新push 可保证数组指针不变 可以watch到
-          if (newList.length > 0) {
-            newList.forEach(newLinkage => {
-              item.linkageFilters.push(newLinkage)
+        if (item.component === 'UserView' && item.innerType != 'VQuery') {
+          this.clearTargetViewLinkage(viewId, item)
+        } else if (item.component === 'Group') {
+          item.propValue.forEach(groupItem => {
+            this.clearTargetViewLinkage(viewId, groupItem)
+          })
+        } else if (item.component === 'DeTabs') {
+          item.propValue.forEach(tabItem => {
+            tabItem.componentData.forEach(tabComponent => {
+              this.clearTargetViewLinkage(viewId, tabComponent)
             })
-          }
-          // 如果linkageFilters内容长度有变化 则需要重新查询
-          if (historyLinkageFiltersLength !== newList.length) {
-            useEmitt().emitter.emit('query-data-' + item.id)
-          }
+          })
         }
       })
     },

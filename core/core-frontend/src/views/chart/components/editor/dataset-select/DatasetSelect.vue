@@ -159,7 +159,7 @@ const refresh = () => {
   initDataset()
 }
 const addDataset = () => {
-  const { href } = resolve('/dataset')
+  const { href } = resolve('/dataset-form')
   window.open(href, '_blank')
 }
 
@@ -330,6 +330,11 @@ onMounted(() => {
 </template>
 
 <style scoped lang="less">
+.ed-input--dark {
+  :deep(.ed-input__wrapper) {
+    background-color: #1a1a1a;
+  }
+}
 :deep(.ed-input__wrapper) {
   cursor: pointer;
   padding: 1px 11px;
