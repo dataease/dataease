@@ -149,7 +149,11 @@ service.interceptors.response.use(
     }
   },
   (error: AxiosErrorWidthLoading<AxiosError>) => {
-    if (!error.config.url.startsWith('/xpackComponent/content')) {
+    const header = error.response.headers as AxiosHeaders
+    if (
+      !error.config.url.startsWith('/xpackComponent/content') &&
+      !header.has('DE-FORBIDDEN-FLAG')
+    ) {
       ElMessage({
         type: 'error',
         message: error.message,
@@ -158,7 +162,7 @@ service.interceptors.response.use(
     }
 
     error.config.loading && tryHideLoading(permissionStore.getCurrentPath)
-    const header = error.response.headers as AxiosHeaders
+
     if (header.has('DE-GATEWAY-FLAG')) {
       localStorage.clear()
       const flag = header.get('DE-GATEWAY-FLAG')
@@ -170,15 +174,32 @@ service.interceptors.response.use(
       router.push(`/login?redirect=${queryRedirectPath}`)
     }
     if (header.has('DE-FORBIDDEN-FLAG')) {
-      ElMessage({
-        type: 'error',
-        message: header.has('DE-FORBIDDEN-FLAG').toString(),
-        showClose: true
-      })
+      showMsg('当前用户权限配置已变更，请刷新页面', '-changed-')
     }
     return Promise.reject(error)
   }
 )
+
+const showMsg = (msg: string, id: string) => {
+  if (window['cross-permission-' + id]) {
+    return
+  }
+  window['cross-permission-' + id] = ElMessageBox.confirm(msg, {
+    confirmButtonType: 'primary',
+    type: 'warning',
+    confirmButtonText: '刷新',
+    cancelButtonText: '取消',
+    autofocus: false,
+    showClose: false
+  })
+    .then(() => {
+      window['cross-permission-' + id]
+      window.location.reload()
+    })
+    .catch(() => {
+      window['cross-permission-' + id] = null
+    })
+}
 
 const executeVersionHandler = (response: AxiosResponse) => {
   const key = 'x-de-execute-version'
@@ -190,7 +211,8 @@ const executeVersionHandler = (response: AxiosResponse) => {
   }
   if (executeVersion && executeVersion !== cacheVal) {
     wsCache.set(key, executeVersion)
-    ElMessageBox.confirm('系统有升级，请点击刷新页面', {
+    showMsg('系统有升级，请点击刷新页面', '-sys-upgrade-')
+    /*  ElMessageBox.confirm('系统有升级，请点击刷新页面', {
       confirmButtonType: 'primary',
       type: 'warning',
       confirmButtonText: '刷新',
@@ -199,7 +221,7 @@ const executeVersionHandler = (response: AxiosResponse) => {
       showClose: false
     }).then(() => {
       window.location.reload()
-    })
+    }) */
   }
 }
 export { service, cancelMap }
