@@ -1109,6 +1109,7 @@ defineExpose({
         .component-type {
           margin-right: 4px;
           font-size: 20px;
+          color: #3370ff;
         }
         .list-item {
           height: 32px;
