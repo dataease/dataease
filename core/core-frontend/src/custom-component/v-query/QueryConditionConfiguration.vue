@@ -216,6 +216,11 @@ const handleDatasetChange = () => {
   getOptions(curComponent.value.dataset.id, curComponent.value)
 }
 
+const handleFieldChange = () => {
+  if (!curComponent.value.defaultValueCheck) return
+  curComponent.value.defaultValue = curComponent.value.multiple ? [] : undefined
+}
+
 const handleValueSourceChange = () => {
   curComponent.value.defaultValue = curComponent.value.multiple ? [] : undefined
   multipleChange(curComponent.value.multiple)
@@ -794,7 +799,11 @@ defineExpose({
                   </el-tree-select>
                 </div>
                 <div class="value">
-                  <el-select placeholder="请选择字段" v-model="curComponent.field.id">
+                  <el-select
+                    @change="handleFieldChange"
+                    placeholder="请选择字段"
+                    v-model="curComponent.field.id"
+                  >
                     <template v-if="curComponent.field.id" #prefix>
                       <el-icon>
                         <Icon
