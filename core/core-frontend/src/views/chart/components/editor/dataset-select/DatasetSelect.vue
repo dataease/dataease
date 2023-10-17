@@ -330,10 +330,14 @@ onMounted(() => {
 </template>
 
 <style scoped lang="less">
+.ed-input--dark {
+  :deep(.ed-input__wrapper) {
+    background-color: #1a1a1a;
+  }
+}
 :deep(.ed-input__wrapper) {
   cursor: pointer;
   padding: 1px 11px;
-  background-color: #1a1a1a;
 
   .ed-input__inner {
     cursor: pointer;
