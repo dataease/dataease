@@ -17,7 +17,6 @@ import { ElIcon, ElMessage } from 'element-plus-secondary'
 import { storeToRefs } from 'pinia'
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo } = storeToRefs(dvMainStore)
-import _ from 'lodash'
 
 const { nowPanelTrackInfo, nowPanelJumpInfo } = storeToRefs(dvMainStore)
 
@@ -46,7 +45,7 @@ const props = defineProps({
     type: Array,
     required: true
   },
-  dimensionData: {
+  fieldsData: {
     type: Array,
     required: true
   },
@@ -75,7 +74,7 @@ const { chart, themes, properties, propertyInnerAll } = toRefs(props)
 const seniorCounts = computed(() => {
   let linkageCount = 0
   let jumpCount = 0
-  _.concat(props.quotaData, props.dimensionData)?.forEach(item => {
+  props.fieldsData?.forEach(item => {
     const sourceInfo = props.chart.id + '#' + item.id
     if (nowPanelTrackInfo.value[sourceInfo]) {
       linkageCount++
