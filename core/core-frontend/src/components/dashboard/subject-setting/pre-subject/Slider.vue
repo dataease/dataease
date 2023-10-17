@@ -184,8 +184,14 @@
           />
         </ul>
       </div>
-      <div style="flex: 1">
-        <el-button type="primary" text size="small" @click="saveSelfSubject">
+      <div style="flex: 1; text-align: right">
+        <el-button
+          style="margin-right: -4px"
+          type="primary"
+          text
+          size="small"
+          @click="saveSelfSubject"
+        >
           {{ $t('commons.save') }}
         </el-button>
       </div>
