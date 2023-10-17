@@ -575,27 +575,31 @@ export const dvMainStore = defineStore('dataVisualization', {
           }
           if (component.component === 'Group') {
             component.propValue.forEach(groupItem => {
-              if (propertyInfo.custom === 'commonBackground') {
-                groupItem.commonBackground = deepCopy(this.batchOptComponentInfo.commonBackground)
-              } else if (
-                propertyInfo.custom === 'style' &&
-                groupItem.style[propertyInfo.property]
-              ) {
-                groupItem.style[propertyInfo.property] = propertyInfo.value
+              if (this.curBatchOptComponents.includes(groupItem.id)) {
+                if (propertyInfo.custom === 'commonBackground') {
+                  groupItem.commonBackground = deepCopy(this.batchOptComponentInfo.commonBackground)
+                } else if (
+                  propertyInfo.custom === 'style' &&
+                  groupItem.style[propertyInfo.property]
+                ) {
+                  groupItem.style[propertyInfo.property] = propertyInfo.value
+                }
               }
             })
           } else if (component.component === 'DeTabs') {
             component.propValue.forEach(tabItem => {
               tabItem.componentData.forEach(tabComponent => {
-                if (propertyInfo.custom === 'commonBackground') {
-                  tabComponent.commonBackground = deepCopy(
-                    this.batchOptComponentInfo.commonBackground
-                  )
-                } else if (
-                  propertyInfo.custom === 'style' &&
-                  tabComponent.style[propertyInfo.property]
-                ) {
-                  tabComponent.style[propertyInfo.property] = propertyInfo.value
+                if (this.curBatchOptComponents.includes(tabComponent.id)) {
+                  if (propertyInfo.custom === 'commonBackground') {
+                    tabComponent.commonBackground = deepCopy(
+                      this.batchOptComponentInfo.commonBackground
+                    )
+                  } else if (
+                    propertyInfo.custom === 'style' &&
+                    tabComponent.style[propertyInfo.property]
+                  ) {
+                    tabComponent.style[propertyInfo.property] = propertyInfo.value
+                  }
                 }
               })
             })
