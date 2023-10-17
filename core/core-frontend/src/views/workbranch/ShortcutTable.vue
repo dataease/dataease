@@ -105,6 +105,8 @@ const loadTableData = () => {
       state.tableData = res.data
     })
     .finally(() => {
+      imgType.value = getEmptyImg()
+      emptyDesc.value = getEmptyDesc()
       loading.value = false
     })
 }
@@ -156,7 +158,8 @@ const executeStore = rowInfo => {
     rowInfo.favorite = !rowInfo.favorite
   })
 }
-
+const imgType = ref()
+const emptyDesc = ref('')
 const getEmptyImg = (): string => {
   if (panelKeyword.value) {
     return 'tree'
@@ -241,8 +244,8 @@ const getEmptyDesc = (): string => {
         :show-pagination="false"
         :table-data="state.tableData"
         @sort-change="sortChange"
-        :empty-desc="getEmptyDesc()"
-        :empty-img="getEmptyImg()"
+        :empty-desc="emptyDesc"
+        :empty-img="imgType"
         class="workbranch-grid"
       >
         <el-table-column key="name" width="280" prop="name" :label="t('common.name')">
