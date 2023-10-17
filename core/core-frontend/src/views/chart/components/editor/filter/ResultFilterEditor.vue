@@ -301,15 +301,10 @@ init()
           v-show="item.filter && item.filter.length > 0"
           class="addition-style"
         >
-          <el-col style="margin: 0 10px">
+          <div class="name-title">
             <span>{{ item.name }}</span>
-          </el-col>
-          <div
-            style="display: flex"
-            v-for="(f, index) in item.filter"
-            :key="index"
-            class="filter-item"
-          >
+          </div>
+          <div v-for="(f, index) in item.filter" :key="index" class="filter-item">
             <div style="width: 164px; margin-right: 8px">
               <el-select v-model="f.term">
                 <el-option-group
@@ -379,12 +374,20 @@ init()
 
 <style lang="less" scoped>
 .filter-item {
-  width: 100%;
-  padding: 4px 10px;
-  margin-bottom: 10px;
   display: flex;
+  width: 100%;
+  margin-bottom: 8px;
   justify-content: left;
   align-items: center;
+
+  &:last-child {
+    margin-bottom: unset;
+  }
+
+  :deep(input) {
+    font-size: 14px !important;
+    line-height: 22px;
+  }
 }
 .form-item :deep(.el-form-item__label) {
   font-size: 12px;
@@ -400,8 +403,24 @@ span {
 }
 
 .addition-style {
-  padding: 10px;
+  padding: 16px;
   background: #f5f6f7;
+
+  .name-title {
+    margin-bottom: 8px;
+
+    :deep(span) {
+      color: var(--N900, #1f2329);
+      /* 中文/桌面端/正文 14 22 Regular */
+      font-family: PingFang SC;
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 22px;
+
+      cursor: default;
+    }
+  }
 }
 .btn-delete {
   min-width: auto !important;
