@@ -114,8 +114,8 @@ export const DEFAULT_COLOR_CASE_DARK: DeepPartial<ChartAttr> = {
     valueFontColor: '#5470c6'
   },
   tableHeader: {
-    tableHeaderBgColor: '#5470c6',
-    tableHeaderFontColor: '#000000'
+    tableHeaderBgColor: '#1E90FF',
+    tableHeaderFontColor: '#FFFFFF'
   },
   tableCell: {
     tableItemBgColor: '#131E42',

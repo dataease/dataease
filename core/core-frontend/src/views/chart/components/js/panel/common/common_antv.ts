@@ -105,7 +105,8 @@ export function getTheme(chart: Chart) {
           'g2-tooltip': {
             color: tooltipColor,
             fontSize: tooltipFontsize + 'px',
-            background: tooltipBackgroundColor
+            background: tooltipBackgroundColor,
+            boxShadow: null
           }
         }
       },
