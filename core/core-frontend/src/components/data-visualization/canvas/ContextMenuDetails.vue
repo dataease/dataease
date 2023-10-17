@@ -81,7 +81,7 @@ const rename = () => {
 }
 const paste = () => {
   copyStore.paste(true)
-  snapshotStore.recordSnapshotCache()
+  snapshotStore.recordSnapshotCache('renderChart')
   menuOpt('paste')
 }
 

@@ -48,7 +48,7 @@ export const snapshotStore = defineStore('snapshot', {
         this.recordSnapshot('snapshotCatchToStore')
       }
     },
-    recordSnapshotCache(type?, viewId?) {
+    recordSnapshotCache(type?, viewId = 'all') {
       if (dataPrepareState.value) {
         if (type === 'calcData') {
           this.cacheViewIdInfo.snapshotCacheViewCalc.push(viewId)

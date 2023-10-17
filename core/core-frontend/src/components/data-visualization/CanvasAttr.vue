@@ -58,7 +58,7 @@ const onColorChange = val => {
 }
 
 const onBaseChange = () => {
-  snapshotStore.recordSnapshotCache()
+  snapshotStore.recordSnapshotCache('renderChart')
 }
 
 const themeAttrChange = (custom, property, value) => {
@@ -76,7 +76,7 @@ const themeAttrChange = (custom, property, value) => {
       }
       useEmitt().emitter.emit('renderChart-' + viewId, viewInfo)
     })
-    snapshotStore.recordSnapshotCache('CanvasAttr-themeAttrChange')
+    snapshotStore.recordSnapshotCache('renderChart')
   }
 }
 
