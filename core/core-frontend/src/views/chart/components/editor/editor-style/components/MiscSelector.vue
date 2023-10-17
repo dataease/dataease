@@ -96,11 +96,11 @@ const lineTypeOptions = [
   { name: t('chart.map_line_type_arc_3d'), value: 'arc3d' }
 ]
 
-const changeMisc = (type = '', refresh = false) => {
+const changeMisc = (prop = '', refresh = false) => {
   if (state.miscForm.gaugeMax <= state.miscForm.gaugeMin) {
     ElMessage.error(t('chart.max_more_than_mix'))
   }
-  emit('onMiscChange', { data: state.miscForm, requestData: refresh })
+  emit('onMiscChange', { data: state.miscForm, requestData: refresh }, prop)
 }
 
 const fontSizeList = computed(() => {

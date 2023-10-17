@@ -14,6 +14,7 @@ import {
   defaultStyleValue,
   findBaseDeFaultAttr
 } from '@/custom-component/component-list'
+import { get, set } from 'lodash-es'
 
 export const dvMainStore = defineStore('dataVisualization', {
   state: () => {
@@ -548,7 +549,7 @@ export const dvMainStore = defineStore('dataVisualization', {
         batchAttachInfo.type = componentInfo.value
       }
       mixPropertiesTemp.forEach(property => {
-        if (mixPropertyInnerTemp[property] && mixPropertyInnerTemp[property].length) {
+        if (mixPropertyInnerTemp[property]) {
           this.mixPropertiesInner[property] = mixPropertyInnerTemp[property]
           this.mixProperties.push(property)
         }
@@ -557,11 +558,23 @@ export const dvMainStore = defineStore('dataVisualization', {
     },
     setChangeProperties(propertyInfo) {
       if (this.batchOptComponentType === 'UserView') {
-        this.changeProperties[propertyInfo.custom][propertyInfo.property] = propertyInfo.value
+        if (propertyInfo.subProp) {
+          const subValue = get(propertyInfo.value, propertyInfo.subProp)
+          const target = this.changeProperties[propertyInfo.custom][propertyInfo.property]
+          set(target, propertyInfo.subProp, subValue)
+        } else {
+          this.changeProperties[propertyInfo.custom][propertyInfo.property] = propertyInfo.value
+        }
         // 修改对应图表的参数
         this.curBatchOptComponents.forEach(viewId => {
           const viewInfo = this.canvasViewInfo[viewId]
-          viewInfo[propertyInfo.custom][propertyInfo.property] = propertyInfo.value
+          if (propertyInfo.subProp) {
+            const subValue = get(propertyInfo.value, propertyInfo.subProp)
+            const target = viewInfo[propertyInfo.custom][propertyInfo.property]
+            set(target, propertyInfo.subProp, subValue)
+          } else {
+            viewInfo[propertyInfo.custom][propertyInfo.property] = propertyInfo.value
+          }
           useEmitt().emitter.emit('renderChart-' + viewId, viewInfo)
         })
       } else {
