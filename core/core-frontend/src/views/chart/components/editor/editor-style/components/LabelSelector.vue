@@ -581,7 +581,6 @@ onMounted(() => {
         <el-select
           v-model="curSeriesFormatter"
           :effect="themes"
-          :teleported="false"
           ref="formatterSelector"
           value-key="id"
           class="series-select"
@@ -778,13 +777,15 @@ onMounted(() => {
   margin-bottom: 8px !important;
 }
 .series-select {
-  ::v-deep(.ed-select__prefix--light) {
+  :deep(.ed-select__prefix--light) {
+    padding-right: unset;
+    border-right: unset;
+  }
+  :deep(.ed-select__prefix--dark) {
     padding-right: unset;
     border-right: unset;
   }
 }
-</style>
-<style lang="less">
 .series-select-option {
   display: flex;
   align-items: center;

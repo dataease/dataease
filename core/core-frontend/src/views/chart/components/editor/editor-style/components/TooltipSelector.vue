@@ -435,7 +435,6 @@ onMounted(() => {
           v-model="curSeriesFormatter"
           :disabled="!formatterEditable"
           :effect="themes"
-          :teleported="false"
           ref="formatterSelector"
           value-key="seriesId"
           class="series-select"
@@ -622,7 +621,11 @@ onMounted(() => {
 
 <style lang="less" scoped>
 .series-select {
-  ::v-deep(.ed-select__prefix--light) {
+  :deep(.ed-select__prefix--light) {
+    padding-right: unset;
+    border-right: unset;
+  }
+  :deep(.ed-select__prefix--dark) {
     padding-right: unset;
     border-right: unset;
   }
