@@ -244,7 +244,9 @@ const linkageActiveChange = () => {
               <span class="label" :class="'label-' + props.themes">联动设置</span>
               <span class="right-btns">
                 <template v-if="seniorCounts.linkageCount > 0">
-                  <span class="set-text-info">已设置</span>
+                  <span class="set-text-info" :class="{ 'set-text-info-dark': themes === 'dark' }">
+                    已设置
+                  </span>
 
                   <!--                  <el-button
                     class="circle-button font14"
@@ -293,7 +295,9 @@ const linkageActiveChange = () => {
               <span class="label" :class="'label-' + props.themes">跳转设置</span>
               <span class="right-btns">
                 <template v-if="seniorCounts.jumpCount">
-                  <span class="set-text-info">已设置</span>
+                  <span class="set-text-info" :class="{ 'set-text-info-dark': themes === 'dark' }">
+                    已设置
+                  </span>
                   <!--                  <el-button
                     class="circle-button font14"
                     :title="t('chart.delete')"
@@ -392,7 +396,6 @@ span {
   color: #a6a6a6 !important;
   &.ed-button {
     color: #3370ff !important;
-    margin-right: -6px;
   }
   &.is-disabled {
     color: #5f5f5f !important;
@@ -439,6 +442,11 @@ span {
     font-style: normal;
     font-weight: 500;
     line-height: 13px;
+
+    &.set-text-info-dark {
+      color: #a6a6a6;
+      background: rgba(235, 235, 235, 0.1);
+    }
   }
 }
 </style>
