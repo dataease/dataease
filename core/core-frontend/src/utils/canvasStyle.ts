@@ -372,10 +372,16 @@ export function adaptCurTheme(customStyle, customAttr) {
 }
 
 export function adaptCurThemeCommonStyle(component) {
-  // 背景融合-Begin
-  const commonStyle = dvMainStore.canvasStyleData.component.chartCommonStyle
-  for (const key in commonStyle) {
-    component.commonBackground[key] = commonStyle[key]
+  // 背景融合-Begin 如果是大屏['CanvasBoard', 'CanvasIcon', 'Picture']组件不需要设置背景
+  if (
+    dvMainStore.dvInfo.type === 'dashboard' ||
+    (dvMainStore.dvInfo.type === 'dataV' &&
+      !['CanvasBoard', 'CanvasIcon', 'Picture'].includes(component.component))
+  ) {
+    const commonStyle = dvMainStore.canvasStyleData.component.chartCommonStyle
+    for (const key in commonStyle) {
+      component.commonBackground[key] = commonStyle[key]
+    }
   }
   // 背景融合-End
   // 通用样式-Begin

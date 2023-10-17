@@ -254,11 +254,16 @@ public class DatasetGroupManage {
 
         QueryWrapper<CoreDatasource> datasourceQueryWrapper = new QueryWrapper<>();
         datasourceQueryWrapper.in("id", ids);
-        return coreDatasourceMapper.selectList(datasourceQueryWrapper).stream().map(ele -> {
+        List<DatasourceDTO>  datasourceDTOList = coreDatasourceMapper.selectList(datasourceQueryWrapper).stream().map(ele -> {
             DatasourceDTO dto = new DatasourceDTO();
             BeanUtils.copyBean(dto, ele);
+            dto.setConfiguration(null);
             return dto;
         }).collect(Collectors.toList());
+        if(ids.size() != datasourceDTOList.size()){
+            DEException.throwException("由于数据集所用的数据源已被删除,无法显示数据集");
+        }
+        return datasourceDTOList;
     }
 
     private DataSetNodeBO rootNode() {
