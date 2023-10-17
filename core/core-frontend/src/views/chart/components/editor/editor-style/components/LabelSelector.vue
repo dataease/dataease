@@ -28,14 +28,14 @@ const props = defineProps({
 const dvMainStore = dvMainStoreWithOut()
 const { batchOptStatus } = storeToRefs(dvMainStore)
 watch(
-  [() => props.chart.customAttr.label, () => props.chart.customAttr.label.show],
+  () => props.chart.customAttr.label,
   () => {
     init()
   },
-  { deep: false }
+  { deep: true }
 )
 watch(
-  () => props.chart.yAxis,
+  [() => props.chart.yAxis, () => props.chart.type],
   () => {
     initSeriesLabel()
   },
