@@ -267,6 +267,29 @@ onMounted(() => {
   :deep(.ed-collapse-item__content) {
     border-top: none;
   }
+
+  :deep(.ed-collapse-item__header) {
+    height: 36px !important;
+    line-height: 36px !important;
+    font-size: 12px !important;
+    padding: 0 !important;
+    font-weight: 500 !important;
+
+    .ed-collapse-item__arrow {
+      margin: 0 6px 0 8px;
+    }
+  }
+  :deep(.ed-collapse-item__content) {
+    padding: 16px 8px 0;
+    border: none;
+  }
+  :deep(.ed-form-item) {
+    display: block;
+    margin-bottom: 16px;
+  }
+  :deep(.ed-form-item__label) {
+    justify-content: flex-start;
+  }
 }
 
 :deep(.ed-collapse-item) {

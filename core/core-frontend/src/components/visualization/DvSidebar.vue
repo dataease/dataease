@@ -84,7 +84,7 @@ const slideStyle = computed(() => {
   </div>
 </template>
 
-<style lang="less">
+<style lang="less" scoped>
 .aside-area-dark {
   color: @dv-canvas-main-font-color;
   background-color: @side-area-background;
@@ -162,8 +162,15 @@ const slideStyle = computed(() => {
 .ed-collapse {
   border-top: 0;
 }
-.is-active {
-  border-bottom-color: rgba(31, 35, 41, 0.15) !important;
+:deep(.ed-collapse) {
+  border-top: unset;
+}
+:deep(.ed-collapse-item__header.is-active) {
+  border-bottom-color: rgba(31, 35, 41, 0.15);
+}
+:deep(.ed-collapse-item.ed-collapse--dark .ed-collapse-item__header) {
+  border-color: rgba(255, 255, 255, 0.15);
+  border-top: unset;
 }
 
 .collapse-icon-light {
