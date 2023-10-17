@@ -787,13 +787,15 @@ defineExpose({
                   >
                     <template #default="{ node, data }">
                       <div class="content">
-                        <el-icon v-if="!data.leaf">
+                        <el-icon size="18px" v-if="!data.leaf">
                           <Icon name="dv-folder"></Icon>
                         </el-icon>
-                        <el-icon v-if="data.leaf">
+                        <el-icon size="18px" v-if="data.leaf">
                           <Icon name="icon_dataset"></Icon>
                         </el-icon>
-                        <span class="label" :title="node.label">{{ node.label }}</span>
+                        <span class="label" style="margin-left: 8px" :title="node.label">{{
+                          node.label
+                        }}</span>
                       </div>
                     </template>
                   </el-tree-select>
