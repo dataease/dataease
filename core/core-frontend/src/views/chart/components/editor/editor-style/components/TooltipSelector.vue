@@ -9,6 +9,8 @@ import { formatterType, unitType } from '../../../js/formatter'
 import { fieldType } from '@/utils/attr'
 import { differenceBy, partition } from 'lodash-es'
 import chartViewManager from '../../../js/panel'
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { storeToRefs } from 'pinia'
 
 const { t } = useI18n()
 
@@ -25,16 +27,20 @@ const props = defineProps({
     type: Array<string>
   }
 })
-
+const dvMainStore = dvMainStoreWithOut()
+const { batchOptStatus } = storeToRefs(dvMainStore)
 const predefineColors = COLOR_PANEL
 
 const emit = defineEmits(['onTooltipChange', 'onExtTooltipChange'])
 
 const curSeriesFormatter = ref<DeepPartial<SeriesFormatter>>({})
 const quotaData = ref<Axis[]>(inject('quotaData'))
+const showSeriesTooltipFormatter = computed(() => {
+  return showProperty('seriesTooltipFormatter') && !batchOptStatus.value
+})
 // 初始化系列提示
 const initSeriesTooltip = () => {
-  if (!showProperty('seriesTooltipFormatter')) {
+  if (!showSeriesTooltipFormatter.value) {
     return
   }
   const formatter = state.tooltipForm.seriesTooltipFormatter
@@ -85,7 +91,7 @@ const initSeriesTooltip = () => {
 // 更新系列提示
 const updateSeriesTooltip = (newAxis?: SeriesFormatter[], oldAxis?: SeriesFormatter[]) => {
   if (
-    !showProperty('seriesTooltipFormatter') ||
+    !showSeriesTooltipFormatter.value ||
     !state.tooltipForm.seriesTooltipFormatter.length ||
     !quotaData.value?.length
   ) {
@@ -214,7 +220,7 @@ watch(
 watch(
   [quotaData, () => props.chart.type],
   newVal => {
-    if (!newVal[0].length) {
+    if (!newVal?.[0]?.length) {
       return
     }
     initSeriesTooltip()
@@ -223,7 +229,9 @@ watch(
 )
 
 const state = reactive({
-  tooltipForm: {} as DeepPartial<ChartTooltipAttr>
+  tooltipForm: {
+    tooltipFormatter: DEFAULT_TOOLTIP.tooltipFormatter
+  } as DeepPartial<ChartTooltipAttr>
 })
 
 const fontSizeList = computed(() => {
@@ -242,7 +250,7 @@ const changeTooltipAttr = (prop: string, requestData = false, render = true) => 
   if (prop === 'seriesTooltipFormatter') {
     emit('onExtTooltipChange', extTooltip.value)
   }
-  emit('onTooltipChange', { data: state.tooltipForm, requestData, render })
+  emit('onTooltipChange', { data: state.tooltipForm, requestData, render }, prop)
 }
 const formatterSelector = ref()
 const init = () => {
@@ -347,7 +355,7 @@ onMounted(() => {
           style="width: 100%"
           :effect="props.themes"
           v-model="state.tooltipForm.tooltipFormatter.type"
-          @change="changeTooltipAttr('tooltipFormatter')"
+          @change="changeTooltipAttr('tooltipFormatter.type')"
         >
           <el-option
             v-for="type in formatterType"
@@ -372,7 +380,7 @@ onMounted(() => {
           :min="0"
           :max="10"
           size="small"
-          @change="changeTooltipAttr('tooltipFormatter')"
+          @change="changeTooltipAttr('tooltipFormatter.decimalCount')"
         />
       </el-form-item>
 
@@ -389,7 +397,7 @@ onMounted(() => {
               v-model="state.tooltipForm.tooltipFormatter.unit"
               :placeholder="t('chart.pls_select_field')"
               size="small"
-              @change="changeTooltipAttr('tooltipFormatter')"
+              @change="changeTooltipAttr('tooltipFormatter.unit')"
             >
               <el-option
                 v-for="item in unitType"
@@ -412,7 +420,7 @@ onMounted(() => {
               size="small"
               clearable
               :placeholder="t('commons.input_content')"
-              @change="changeTooltipAttr('tooltipFormatter')"
+              @change="changeTooltipAttr('tooltipFormatter.suffix')"
             />
           </el-form-item>
         </el-col>
@@ -423,12 +431,12 @@ onMounted(() => {
           size="small"
           :effect="props.themes"
           v-model="state.tooltipForm.tooltipFormatter.thousandSeparator"
-          @change="changeTooltipAttr('tooltipFormatter')"
+          @change="changeTooltipAttr('tooltipFormatter.thousandSeparator')"
           :label="t('chart.value_formatter_thousand_separator')"
         />
       </el-form-item>
     </template>
-    <div v-if="showProperty('seriesTooltipFormatter')">
+    <div v-if="showSeriesTooltipFormatter">
       <el-form-item>
         <el-select
           size="small"

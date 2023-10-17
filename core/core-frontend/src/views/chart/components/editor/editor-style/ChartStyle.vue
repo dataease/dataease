@@ -88,52 +88,52 @@ const emit = defineEmits([
 
 const showProperties = (property: EditorProperty) => properties.value?.includes(property)
 
-const onMiscChange = val => {
-  emit('onMiscChange', val)
+const onMiscChange = (val, prop) => {
+  emit('onMiscChange', val, prop)
 }
 
-const onLabelChange = val => {
-  state.initReady && emit('onLabelChange', val)
+const onLabelChange = (val, prop) => {
+  state.initReady && emit('onLabelChange', val, prop)
 }
 
-const onTooltipChange = val => {
-  state.initReady && emit('onTooltipChange', val)
+const onTooltipChange = (val, prop) => {
+  state.initReady && emit('onTooltipChange', val, prop)
 }
 
-const onChangeXAxisForm = val => {
-  state.initReady && emit('onChangeXAxisForm', val)
+const onChangeXAxisForm = (val, prop) => {
+  state.initReady && emit('onChangeXAxisForm', val, prop)
 }
 
-const onChangeYAxisForm = val => {
-  state.initReady && emit('onChangeYAxisForm', val)
+const onChangeYAxisForm = (val, prop) => {
+  state.initReady && emit('onChangeYAxisForm', val, prop)
 }
 
-const onTextChange = val => {
-  state.initReady && emit('onTextChange', val)
+const onTextChange = (val, prop) => {
+  state.initReady && emit('onTextChange', val, prop)
 }
 
-const onLegendChange = val => {
-  state.initReady && emit('onLegendChange', val)
+const onLegendChange = (val, prop) => {
+  state.initReady && emit('onLegendChange', val, prop)
 }
-const onBasicStyleChange = val => {
-  state.initReady && emit('onBasicStyleChange', val)
-}
-
-const onBackgroundChange = val => {
-  state.initReady && emit('onBackgroundChange', val)
+const onBasicStyleChange = (val, prop) => {
+  state.initReady && emit('onBasicStyleChange', val, prop)
 }
 
-const onTableHeaderChange = val => {
-  emit('onTableHeaderChange', val)
+const onBackgroundChange = (val, prop) => {
+  state.initReady && emit('onBackgroundChange', val, prop)
 }
-const onTableCellChange = val => {
-  emit('onTableCellChange', val)
+
+const onTableHeaderChange = (val, prop) => {
+  emit('onTableHeaderChange', val, prop)
 }
-const onTableTotalChange = val => {
-  emit('onTableTotalChange', val)
+const onTableCellChange = (val, prop) => {
+  emit('onTableCellChange', val, prop)
 }
-const onChangeMiscStyleForm = val => {
-  emit('onChangeMiscStyleForm', val)
+const onTableTotalChange = (val, prop) => {
+  emit('onTableTotalChange', val, prop)
+}
+const onChangeMiscStyleForm = (val, prop) => {
+  emit('onChangeMiscStyleForm', val, prop)
 }
 
 const onExtTooltipChange = val => {
@@ -249,7 +249,7 @@ watch(
             v-if="showProperties('label-selector')"
             v-model="chart.customAttr.label.show"
             :change-model="chart.customAttr.label"
-            @modelChange="onLabelChange"
+            @modelChange="val => onLabelChange(val, 'show')"
             :title="$t('chart.label')"
             name="label"
           >
@@ -266,7 +266,7 @@ watch(
             v-if="showProperties('tooltip-selector')"
             v-model="chart.customAttr.tooltip.show"
             :change-model="chart.customAttr.tooltip"
-            @modelChange="onTooltipChange"
+            @modelChange="val => onTooltipChange({ data: val }, 'show')"
             name="tooltip"
             :title="$t('chart.tooltip')"
           >
@@ -302,7 +302,7 @@ watch(
             v-if="showProperties('x-axis-selector')"
             v-model="chart.customStyle.xAxis.show"
             :change-model="chart.customStyle.xAxis"
-            @modelChange="onChangeXAxisForm"
+            @modelChange="val => onChangeXAxisForm(val, 'show')"
             name="xAxis"
             :title="t('chart.xAxis')"
           >
@@ -320,7 +320,7 @@ watch(
             v-if="showProperties('y-axis-selector')"
             v-model="chart.customStyle.yAxis.show"
             :change-model="chart.customStyle.yAxis"
-            @modelChange="onChangeYAxisForm"
+            @modelChange="val => onChangeYAxisForm(val, 'show')"
             name="yAxis"
             :title="$t('chart.yAxis')"
           >
@@ -338,7 +338,7 @@ watch(
             v-model="chart.customStyle.text.show"
             v-if="showProperties('title-selector')"
             :change-model="chart.customStyle.text"
-            @modelChange="onTextChange"
+            @modelChange="val => onTextChange(val, 'show')"
             name="title"
             :title="$t('chart.title')"
           >
@@ -356,7 +356,7 @@ watch(
             v-if="showProperties('legend-selector')"
             v-model="chart.customStyle.legend.show"
             :change-model="chart.customStyle.legend"
-            @modelChange="onLegendChange"
+            @modelChange="val => onLegendChange(val, 'show')"
             name="legend"
             :title="$t('chart.legend')"
           >

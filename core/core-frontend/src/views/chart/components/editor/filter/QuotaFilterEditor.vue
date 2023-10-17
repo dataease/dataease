@@ -98,8 +98,8 @@ init()
         size="small"
         style="width: 60px; margin: 0 6px"
       >
-        <el-option :label="t('chart.logic_and')" value="and" />
-        <el-option :label="t('chart.logic_or')" value="or" />
+        <el-option style="min-width: 80px" :label="t('chart.logic_and')" value="and" />
+        <el-option style="min-width: 80px" :label="t('chart.logic_or')" value="or" />
       </el-select>
       <span>{{ t('chart.addition') }}</span>
     </div>

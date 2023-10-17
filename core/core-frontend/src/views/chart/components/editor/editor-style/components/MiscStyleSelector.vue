@@ -43,7 +43,7 @@ const fontSizeList = computed(() => {
 })
 
 const changeMiscStyle = prop => {
-  emit('onChangeMiscStyleForm', state.miscForm)
+  emit('onChangeMiscStyleForm', state.miscForm, prop)
 }
 
 const init = () => {

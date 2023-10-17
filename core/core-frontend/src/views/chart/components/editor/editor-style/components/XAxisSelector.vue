@@ -60,7 +60,7 @@ const changeAxisStyle = prop => {
     ElMessage.error(t('chart.splitCount_less_100'))
     return
   }
-  emit('onChangeXAxisForm', state.axisForm)
+  emit('onChangeXAxisForm', state.axisForm, prop)
 }
 
 const init = () => {
@@ -200,7 +200,7 @@ onMounted(() => {
             size="small"
             :effect="props.themes"
             v-model="state.axisForm.axisValue.auto"
-            @change="changeAxisStyle('axisValue')"
+            @change="changeAxisStyle('axisValue.auto')"
           >
             {{ t('chart.axis_auto') }}
           </el-checkbox>
@@ -219,7 +219,7 @@ onMounted(() => {
                 controls-position="right"
                 :effect="props.themes"
                 v-model.number="state.axisForm.axisValue.max"
-                @change="changeAxisStyle('axisValue')"
+                @change="changeAxisStyle('axisValue.max')"
               />
             </el-form-item>
           </el-col>
@@ -233,7 +233,7 @@ onMounted(() => {
                 controls-position="right"
                 :effect="props.themes"
                 v-model.number="state.axisForm.axisValue.min"
-                @change="changeAxisStyle('axisValue')"
+                @change="changeAxisStyle('axisValue.min')"
               />
             </el-form-item>
           </el-col>
@@ -257,7 +257,7 @@ onMounted(() => {
             style="width: 100%"
             :effect="props.themes"
             v-model.number="state.axisForm.axisValue.splitCount"
-            @change="changeAxisStyle('axisValue')"
+            @change="changeAxisStyle('axisValue.splitCount')"
           />
         </el-form-item>
       </template>
@@ -268,7 +268,7 @@ onMounted(() => {
         size="small"
         :effect="props.themes"
         v-model="state.axisForm.axisLine.show"
-        @change="changeAxisStyle('axisLine')"
+        @change="changeAxisStyle('axisLine.show')"
       >
         {{ t('chart.axis_show') }}
       </el-checkbox>
@@ -284,7 +284,7 @@ onMounted(() => {
         size="small"
         :effect="props.themes"
         v-model="state.axisForm.splitLine.show"
-        @change="changeAxisStyle('splitLine')"
+        @change="changeAxisStyle('splitLine.show')"
       >
         {{ t('chart.grid_show') }}
       </el-checkbox>
@@ -297,7 +297,7 @@ onMounted(() => {
             v-model="state.axisForm.splitLine.lineStyle.color"
             :predefine="predefineColors"
             :effect="themes"
-            @change="changeAxisStyle('splitLine')"
+            @change="changeAxisStyle('splitLine.lineStyle.color')"
             is-custom
           />
         </el-form-item>
@@ -311,7 +311,7 @@ onMounted(() => {
             :max="10"
             size="small"
             controls-position="right"
-            @change="changeAxisStyle('splitLine')"
+            @change="changeAxisStyle('splitLine.lineStyle.width')"
           />
         </el-form-item>
       </div>
@@ -328,7 +328,7 @@ onMounted(() => {
         size="small"
         :effect="props.themes"
         v-model="state.axisForm.axisLabel.show"
-        @change="changeAxisStyle('axisLabel')"
+        @change="changeAxisStyle('axisLabel.show')"
       >
         {{ t('chart.axis_label_show') }}
       </el-checkbox>
@@ -346,7 +346,7 @@ onMounted(() => {
             :disabled="!state.axisForm.axisLabel.show"
             v-model="state.axisForm.axisLabel.color"
             :predefine="predefineColors"
-            @change="changeAxisStyle('axisLabel')"
+            @change="changeAxisStyle('axisLabel.color')"
             :effect="themes"
             is-custom
           />
@@ -359,7 +359,7 @@ onMounted(() => {
             :effect="props.themes"
             v-model="state.axisForm.axisLabel.fontSize"
             :placeholder="t('chart.axis_label_fontsize')"
-            @change="changeAxisStyle('axisLabel')"
+            @change="changeAxisStyle('axisLabel.fontSize')"
           >
             <el-option
               v-for="option in fontSizeList"
@@ -381,7 +381,7 @@ onMounted(() => {
           :max="90"
           size="small"
           controls-position="right"
-          @change="changeAxisStyle('axisLabel')"
+          @change="changeAxisStyle('axisLabel.rotate')"
         />
       </el-form-item>
 
@@ -396,7 +396,7 @@ onMounted(() => {
             style="width: 100%"
             :effect="props.themes"
             v-model="state.axisForm.axisLabelFormatter.type"
-            @change="changeAxisStyle('axisLabelFormatter')"
+            @change="changeAxisStyle('axisLabelFormatter.type')"
           >
             <el-option
               v-for="type in typeList"
@@ -422,7 +422,7 @@ onMounted(() => {
             :max="10"
             size="small"
             controls-position="right"
-            @change="changeAxisStyle('axisLabelFormatter')"
+            @change="changeAxisStyle('axisLabelFormatter.decimalCount')"
           />
         </el-form-item>
 
@@ -443,7 +443,7 @@ onMounted(() => {
                 v-model="state.axisForm.axisLabelFormatter.unit"
                 :placeholder="t('chart.pls_select_field')"
                 size="small"
-                @change="changeAxisStyle('axisLabelFormatter')"
+                @change="changeAxisStyle('axisLabelFormatter.unit')"
               >
                 <el-option
                   v-for="item in unitList"
@@ -467,7 +467,7 @@ onMounted(() => {
                 size="small"
                 clearable
                 :placeholder="t('commons.input_content')"
-                @change="changeAxisStyle('axisLabelFormatter')"
+                @change="changeAxisStyle('axisLabelFormatter.suffix')"
               />
             </el-form-item>
           </el-col>
@@ -479,7 +479,7 @@ onMounted(() => {
             size="small"
             :effect="props.themes"
             v-model="state.axisForm.axisLabelFormatter.thousandSeparator"
-            @change="changeAxisStyle('axisLabelFormatter')"
+            @change="changeAxisStyle('axisLabelFormatter.thousandSeparator')"
             :label="t('chart.value_formatter_thousand_separator')"
           />
         </el-form-item>
