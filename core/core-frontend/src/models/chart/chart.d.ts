@@ -112,6 +112,10 @@ declare interface Axis extends ChartViewField {
    * 聚合方式
    */
   summary: string
+  /**
+   * 维度/指标分组类型
+   */
+  groupType: 'q' | 'd'
 }
 declare interface ChartViewField {
   /**

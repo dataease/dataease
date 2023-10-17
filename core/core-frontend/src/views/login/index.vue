@@ -91,6 +91,7 @@ const handleLogin = () => {
       const pwd = state.loginForm.password
       const param = { name: rsaEncryp(name), pwd: rsaEncryp(pwd) }
       duringLogin.value = true
+      cleanPlatformFlag()
       loginApi(param)
         .then(res => {
           const { token, exp } = res.data
@@ -125,7 +126,20 @@ const showLoginImage = computed<boolean>(() => {
   return !(loginContainerWidth.value < 889)
 })
 
+const checkPlatform = () => {
+  const flagArray = ['/casbi', 'oidcbi']
+  const pathname = window.location.pathname
+  if (!flagArray.some(flag => pathname.includes(flag))) {
+    cleanPlatformFlag()
+  }
+}
+const cleanPlatformFlag = () => {
+  const platformKey = 'out_auth_platform'
+  wsCache.delete(platformKey)
+}
+
 onMounted(() => {
+  checkPlatform()
   if (localStorage.getItem('DE-GATEWAY-FLAG')) {
     loginErrorMsg.value = localStorage.getItem('DE-GATEWAY-FLAG')
     ElMessage.error(loginErrorMsg.value)

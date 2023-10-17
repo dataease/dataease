@@ -519,6 +519,28 @@ const onTypeChange = (render, type) => {
   const chartViewInstance = chartViewManager.getChartView(view.value.render, view.value.type)
   if (chartViewInstance) {
     view.value = chartViewInstance.setupDefaultOptions(view.value) as unknown as ChartObj
+    // 处理轴
+    const axisConfig = chartViewInstance.axisConfig
+    _.keys(axisConfig).forEach((axis: AxisType) => {
+      const axisArr = view.value[axis] as Axis[]
+      if (!axisArr?.length) {
+        return
+      }
+      const axisSpec = axisConfig[axis]
+      const { type, limit } = axisSpec
+      // check type
+      if (type) {
+        for (let i = axisArr.length - 1; i >= 0; i--) {
+          if (axisArr[i].groupType !== type) {
+            axisArr.splice(i, 1)
+          }
+        }
+      }
+      // check limit
+      if (limit && axisArr.length) {
+        axisArr.splice(0, axisArr.length - limit)
+      }
+    })
   }
   curComponent.value.innerType = type
   calcData(view.value, true)
