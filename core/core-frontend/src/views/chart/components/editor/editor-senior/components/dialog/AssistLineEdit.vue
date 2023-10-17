@@ -111,7 +111,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <el-col>
+  <div>
     <div @keydown.stop @keyup.stop style="max-height: 50vh; margin-top: -4px; overflow-y: auto">
       <el-row v-for="(item, index) in state.lineArr" :key="index" class="line-item" :gutter="8">
         <el-col :span="4">
@@ -239,7 +239,7 @@ onMounted(() => {
       </template>
       {{ t('chart.add_assist_line') }}
     </el-button>
-  </el-col>
+  </div>
 </template>
 
 <style lang="less" scoped>
@@ -252,6 +252,11 @@ onMounted(() => {
   align-items: center;
   &:last-child {
     margin-bottom: 4px;
+  }
+
+  :deep(input) {
+    font-size: 14px !important;
+    line-height: 22px;
   }
 }
 
