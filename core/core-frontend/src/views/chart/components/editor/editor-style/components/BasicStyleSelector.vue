@@ -34,7 +34,7 @@ watch(
 )
 const emit = defineEmits(['onBasicStyleChange'])
 const changeBasicStyle = (prop?: string, requestData = false) => {
-  emit('onBasicStyleChange', { data: state.basicStyleForm, requestData })
+  emit('onBasicStyleChange', { data: state.basicStyleForm, requestData }, prop)
 }
 const init = () => {
   const basicStyle = JSON.parse(JSON.stringify(props.chart.customAttr.basicStyle))
@@ -84,7 +84,7 @@ onMounted(() => {
       <custom-color-style-select
         v-model="state"
         :themes="themes"
-        @change-basic-style="changeBasicStyle"
+        @change-basic-style="changeBasicStyle('colors')"
       />
     </template>
 
@@ -93,7 +93,7 @@ onMounted(() => {
         size="small"
         :effect="themes"
         v-model="state.basicStyleForm.gradient"
-        @change="changeBasicStyle()"
+        @change="changeBasicStyle('gradient')"
       >
         {{ $t('chart.gradient') }}{{ $t('chart.color') }}
       </el-checkbox>
@@ -172,7 +172,7 @@ onMounted(() => {
             :trigger-width="108"
             color-format="hex"
             :predefine="predefineColors"
-            @change="changeBasicStyle()"
+            @change="changeBasicStyle('tableBorderColor')"
           />
         </el-form-item>
       </el-col>
@@ -192,7 +192,7 @@ onMounted(() => {
             :trigger-width="108"
             color-format="rgb"
             show-alpha
-            @change="changeBasicStyle()"
+            @change="changeBasicStyle('tableScrollBarColor')"
           />
         </el-form-item>
       </el-col>
@@ -253,7 +253,7 @@ onMounted(() => {
             <el-slider
               :effect="themes"
               v-model="state.basicStyleForm.alpha"
-              @change="changeBasicStyle()"
+              @change="changeBasicStyle('alpha')"
             />
           </el-form-item>
         </el-col>
@@ -267,7 +267,7 @@ onMounted(() => {
               :max="100"
               class="alpha-input-number"
               :controls="false"
-              @change="changeBasicStyle()"
+              @change="changeBasicStyle('alpha')"
             >
               <template #suffix> % </template>
             </el-input>
@@ -283,7 +283,10 @@ onMounted(() => {
       :class="'form-item-' + themes"
       v-if="showProperty('tableColumnMode')"
     >
-      <el-radio-group v-model="state.basicStyleForm.tableColumnMode" @change="changeBasicStyle()">
+      <el-radio-group
+        v-model="state.basicStyleForm.tableColumnMode"
+        @change="changeBasicStyle('tableColumnMode')"
+      >
         <el-radio label="adapt" :effect="themes">
           {{ t('chart.table_column_adapt') }}
         </el-radio>
@@ -305,7 +308,7 @@ onMounted(() => {
         v-model.number="state.basicStyleForm.tableColumnWidth"
         :min="10"
         controls-position="right"
-        @change="changeBasicStyle()"
+        @change="changeBasicStyle('tableColumnWidth')"
       />
     </el-form-item>
     <!--table2 end-->
@@ -319,7 +322,7 @@ onMounted(() => {
       <el-select
         :effect="themes"
         v-model="state.basicStyleForm.gaugeStyle"
-        @change="changeBasicStyle()"
+        @change="changeBasicStyle('gaugeStyle')"
       >
         <el-option
           v-for="item in gaugeStyleOptions"
@@ -340,7 +343,7 @@ onMounted(() => {
         size="small"
         :effect="themes"
         v-model="state.basicStyleForm.barDefault"
-        @change="changeBasicStyle()"
+        @change="changeBasicStyle('barDefault')"
       >
         {{ t('chart.adapt') }}
       </el-checkbox>
@@ -359,7 +362,7 @@ onMounted(() => {
         :min="0"
         :max="5"
         :step="0.1"
-        @change="changeBasicStyle()"
+        @change="changeBasicStyle('barGap')"
       />
     </el-form-item>
     <!--bar end-->
@@ -378,7 +381,7 @@ onMounted(() => {
             :min="0"
             :max="10"
             controls-position="right"
-            @change="changeBasicStyle()"
+            @change="changeBasicStyle('lineWidth')"
           />
         </el-form-item>
       </el-col>
@@ -395,7 +398,7 @@ onMounted(() => {
             :effect="themes"
             v-model="state.basicStyleForm.lineSymbol"
             :placeholder="t('chart.line_symbol')"
-            @change="changeBasicStyle()"
+            @change="changeBasicStyle('lineSymbol')"
           >
             <el-option
               v-for="item in symbolOptions"
@@ -419,7 +422,7 @@ onMounted(() => {
             :min="0"
             :max="20"
             controls-position="right"
-            @change="changeBasicStyle()"
+            @change="changeBasicStyle('lineSymbolSize')"
           />
         </el-form-item>
       </el-col>
@@ -433,7 +436,7 @@ onMounted(() => {
         size="small"
         :effect="themes"
         v-model="state.basicStyleForm.lineSmooth"
-        @change="changeBasicStyle()"
+        @change="changeBasicStyle('lineSmooth')"
       >
         {{ t('chart.line_smooth') }}
       </el-checkbox>
@@ -526,7 +529,7 @@ onMounted(() => {
         :effect="themes"
         v-model="state.basicStyleForm.mapSymbol"
         :placeholder="t('chart.line_symbol')"
-        @change="changeBasicStyle"
+        @change="changeBasicStyle('mapSymbol')"
       >
         <el-option
           v-for="item in symbolOptions"
@@ -548,7 +551,7 @@ onMounted(() => {
         v-model="state.basicStyleForm.mapSymbolSize"
         :min="1"
         :max="40"
-        @change="changeBasicStyle()"
+        @change="changeBasicStyle('mapSymbolSize')"
       />
     </el-form-item>
     <el-form-item
@@ -563,7 +566,7 @@ onMounted(() => {
         v-model="state.basicStyleForm.mapSymbolOpacity"
         :min="1"
         :max="100"
-        @change="changeBasicStyle()"
+        @change="changeBasicStyle('mapSymbolOpacity')"
       />
     </el-form-item>
     <el-form-item
@@ -578,7 +581,7 @@ onMounted(() => {
         v-model="state.basicStyleForm.mapSymbolStrokeWidth"
         :min="0"
         :max="5"
-        @change="changeBasicStyle()"
+        @change="changeBasicStyle('mapSymbolStrokeWidth')"
       />
     </el-form-item>
     <!-- pie/rose start -->
@@ -595,7 +598,7 @@ onMounted(() => {
               v-model="state.basicStyleForm.innerRadius"
               :min="1"
               :max="100"
-              @change="changeBasicStyle()"
+              @change="changeBasicStyle('innerRadius')"
             />
           </el-form-item>
         </el-col>
@@ -609,7 +612,7 @@ onMounted(() => {
               :max="100"
               class="alpha-input-number"
               :controls="false"
-              @change="changeBasicStyle()"
+              @change="changeBasicStyle('innerRadius')"
             >
               <template #suffix> % </template>
             </el-input>
@@ -630,7 +633,7 @@ onMounted(() => {
               v-model="state.basicStyleForm.radius"
               :min="1"
               :max="100"
-              @change="changeBasicStyle()"
+              @change="changeBasicStyle('radius')"
             />
           </el-form-item>
         </el-col>
@@ -644,7 +647,7 @@ onMounted(() => {
               :max="100"
               class="alpha-input-number"
               :controls="false"
-              @change="changeBasicStyle()"
+              @change="changeBasicStyle('radius')"
             >
               <template #suffix> % </template>
             </el-input>

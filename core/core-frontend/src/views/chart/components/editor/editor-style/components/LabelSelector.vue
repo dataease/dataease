@@ -7,6 +7,8 @@ import { formatterType, unitType } from '../../../js/formatter'
 import { defaultsDeep, cloneDeep, intersection } from 'lodash-es'
 import { includesAny } from '../../util/StringUtils'
 import { fieldType } from '@/utils/attr'
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { storeToRefs } from 'pinia'
 
 const { t } = useI18n()
 
@@ -23,13 +25,14 @@ const props = defineProps({
     type: Array<string>
   }
 })
-
+const dvMainStore = dvMainStoreWithOut()
+const { batchOptStatus } = storeToRefs(dvMainStore)
 watch(
-  () => props.chart.customAttr.label,
+  [() => props.chart.customAttr.label, () => props.chart.customAttr.label.show],
   () => {
     init()
   },
-  { deep: true }
+  { deep: false }
 )
 watch(
   () => props.chart.yAxis,
@@ -38,10 +41,18 @@ watch(
   },
   { deep: true }
 )
+const curSeriesFormatter = ref<Partial<SeriesFormatter>>({})
+const formatterEditable = computed(() => {
+  return (
+    showProperty('seriesLabelFormatter') &&
+    (props.chart.yAxis?.length || props.chart.yAxisExt?.length)
+  )
+})
+const formatterSelector = ref()
 // 初始化系列标签
 const initSeriesLabel = () => {
   // 批量设置阶段 没有此标签
-  if (!showProperty('seriesLabelFormatter') || !props.chart.yAxis) {
+  if (!showProperty('seriesLabelFormatter') || batchOptStatus.value) {
     return
   }
   const formatter = state.labelForm.seriesLabelFormatter
@@ -129,19 +140,17 @@ const COMPUTED_DEFAULT_LABEL = computed(() => {
 const state = reactive<{ labelForm: ChartLabelAttr | any }>({
   labelForm: {
     quotaLabelFormatter: DEFAULT_LABEL.quotaLabelFormatter,
-    seriesLabelFormatter: []
+    seriesLabelFormatter: [],
+    labelFormatter: DEFAULT_LABEL.labelFormatter
   }
 })
 
 const emit = defineEmits(['onLabelChange'])
 
 const changeLabelAttr = prop => {
-  emit('onLabelChange', state.labelForm)
+  emit('onLabelChange', state.labelForm, prop)
 }
-const curSeriesFormatter = ref<Partial<SeriesFormatter>>({
-  deType: 0
-})
-const formatterSelector = ref()
+
 const init = () => {
   const chart = JSON.parse(JSON.stringify(props.chart))
   if (chart.customAttr) {
@@ -179,6 +188,9 @@ const checkLabelContent = contentProp => {
 const showProperty = prop => {
   return props.propertyInner?.includes(prop)
 }
+const showSeriesLabelFormatter = computed(() => {
+  return !batchOptStatus.value && showProperty('seriesLabelFormatter')
+})
 const showDivider = computed(() => {
   const DIVIDER_PROPS = ['labelFormatter', 'showDimension', 'showQuota', 'showProportion']
   return includesAny(props.propertyInner, ...DIVIDER_PROPS)
@@ -299,7 +311,7 @@ onMounted(() => {
       </el-select>
     </el-form-item>
     <el-divider v-if="showDivider" style="margin: 0 0 16px" />
-    <template v-if="showProperty('labelFormatter') && state.labelForm.labelFormatter">
+    <template v-if="showProperty('labelFormatter')">
       <el-form-item
         :label="$t('chart.value_formatter_type')"
         class="form-item"
@@ -309,7 +321,7 @@ onMounted(() => {
           size="small"
           :effect="themes"
           v-model="state.labelForm.labelFormatter.type"
-          @change="changeLabelAttr('labelFormatter')"
+          @change="changeLabelAttr('labelFormatter.type')"
         >
           <el-option
             v-for="type in formatterType"
@@ -332,7 +344,7 @@ onMounted(() => {
           :precision="0"
           :min="0"
           :max="10"
-          @change="changeLabelAttr('labelFormatter')"
+          @change="changeLabelAttr('labelFormatter.decimalCount')"
         />
       </el-form-item>
 
@@ -351,7 +363,7 @@ onMounted(() => {
               :effect="themes"
               v-model="state.labelForm.labelFormatter.unit"
               :placeholder="$t('chart.pls_select_field')"
-              @change="changeLabelAttr('labelFormatter')"
+              @change="changeLabelAttr('labelFormatter.unit')"
             >
               <el-option
                 v-for="item in unitType"
@@ -373,7 +385,7 @@ onMounted(() => {
               v-model="state.labelForm.labelFormatter.suffix"
               clearable
               :placeholder="$t('commons.input_content')"
-              @change="changeLabelAttr('labelFormatter')"
+              @change="changeLabelAttr('labelFormatter.suffix')"
             />
           </el-form-item>
         </el-col>
@@ -384,7 +396,7 @@ onMounted(() => {
           size="small"
           :effect="themes"
           v-model="state.labelForm.labelFormatter.thousandSeparator"
-          @change="changeLabelAttr('labelFormatter')"
+          @change="changeLabelAttr('labelFormatter.thousandSeparator')"
           :label="t('chart.value_formatter_thousand_separator')"
         />
       </el-form-item>
@@ -432,7 +444,7 @@ onMounted(() => {
             style="width: 100%"
             :effect="themes"
             v-model="state.labelForm.quotaLabelFormatter.type"
-            @change="changeLabelAttr('quotaLabelFormatter')"
+            @change="changeLabelAttr('quotaLabelFormatter.type')"
           >
             <el-option
               v-for="type in formatterType"
@@ -461,7 +473,7 @@ onMounted(() => {
             :min="0"
             :max="10"
             size="small"
-            @change="changeLabelAttr('quotaLabelFormatter')"
+            @change="changeLabelAttr('quotaLabelFormatter.decimalCount')"
           />
         </el-form-item>
 
@@ -484,7 +496,7 @@ onMounted(() => {
                 v-model="state.labelForm.quotaLabelFormatter.unit"
                 :placeholder="t('chart.pls_select_field')"
                 size="small"
-                @change="changeLabelAttr('quotaLabelFormatter')"
+                @change="changeLabelAttr('quotaLabelFormatter.unit')"
               >
                 <el-option
                   v-for="item in unitType"
@@ -508,7 +520,7 @@ onMounted(() => {
                 size="small"
                 clearable
                 :placeholder="t('commons.input_content')"
-                @change="changeLabelAttr('quotaLabelFormatter')"
+                @change="changeLabelAttr('quotaLabelFormatter.suffix')"
               />
             </el-form-item>
           </el-col>
@@ -520,7 +532,7 @@ onMounted(() => {
             size="small"
             :effect="themes"
             v-model="state.labelForm.quotaLabelFormatter.thousandSeparator"
-            @change="changeLabelAttr('quotaLabelFormatter')"
+            @change="changeLabelAttr('quotaLabelFormatter.thousandSeparator')"
             :label="t('chart.value_formatter_thousand_separator')"
           />
         </el-form-item>
@@ -576,18 +588,20 @@ onMounted(() => {
         <el-option :label="t('chart.reserve_two')" :value="2" />
       </el-select>
     </el-form-item>
-    <div v-if="showProperty('seriesLabelFormatter')">
+    <div v-if="showSeriesLabelFormatter">
       <el-form-item class="form-item" :class="'form-item-' + themes">
         <el-select
           v-model="curSeriesFormatter"
           :effect="themes"
+          :teleported="false"
+          :disabled="!formatterEditable"
           ref="formatterSelector"
           value-key="id"
           class="series-select"
           size="small"
         >
           <template #prefix>
-            <el-icon style="font-size: 14px">
+            <el-icon v-if="curSeriesFormatter.id" style="font-size: 14px">
               <Icon
                 :className="`field-icon-${fieldType[curSeriesFormatter.deType]}`"
                 :name="`field_${fieldType[curSeriesFormatter.deType]}`"

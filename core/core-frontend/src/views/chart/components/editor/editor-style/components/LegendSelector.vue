@@ -51,7 +51,7 @@ const fontSizeList = computed(() => {
 })
 
 const changeLegendStyle = prop => {
-  emit('onLegendChange', state.legendForm)
+  emit('onLegendChange', state.legendForm, prop)
 }
 
 const init = () => {

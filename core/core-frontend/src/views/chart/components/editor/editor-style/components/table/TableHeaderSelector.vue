@@ -47,8 +47,8 @@ const state = reactive({
 
 const emit = defineEmits(['onTableHeaderChange'])
 
-const changeTableHeader = val => {
-  emit('onTableHeaderChange', state.tableHeaderForm)
+const changeTableHeader = prop => {
+  emit('onTableHeaderChange', state.tableHeaderForm, prop)
 }
 
 const init = () => {
