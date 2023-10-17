@@ -420,14 +420,38 @@ const linkageSetting = () => {
   })
 }
 
+const linkageChange = item => {
+  let checkResult = false
+  if (item.linkageFilters && item.linkageFilters.length > 0) {
+    item.linkageFilters.forEach(linkage => {
+      if (element.value.id === linkage.sourceViewId) {
+        checkResult = true
+      }
+    })
+  }
+  return checkResult
+}
+
 const existLinkage = computed(() => {
   let linkageFiltersCount = 0
   componentData.value.forEach(item => {
-    if (item.linkageFilters && item.linkageFilters.length > 0) {
-      item.linkageFilters.forEach(linkage => {
-        if (element.value.id === linkage.sourceViewId) {
+    if (item.component === 'UserView' && item.innerType != 'VQuery') {
+      if (linkageChange(item)) {
+        linkageFiltersCount++
+      }
+    } else if (item.component === 'Group') {
+      item.propValue.forEach(groupItem => {
+        if (linkageChange(groupItem)) {
           linkageFiltersCount++
         }
+      })
+    } else if (item.component === 'DeTabs') {
+      item.propValue.forEach(tabItem => {
+        tabItem.componentData.forEach(tabComponent => {
+          if (linkageChange(tabComponent)) {
+            linkageFiltersCount++
+          }
+        })
       })
     }
   })
