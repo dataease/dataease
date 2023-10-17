@@ -400,7 +400,11 @@ init()
         <div class="inner-container">
           <span class="label" :class="'label-' + props.themes">阈值设置</span>
           <span class="right-btns">
-            <span class="set-text-info" v-if="state.thresholdForm?.tableThreshold?.length > 0">
+            <span
+              class="set-text-info"
+              :class="{ 'set-text-info-dark': themes === 'dark' }"
+              v-if="state.thresholdForm?.tableThreshold?.length > 0"
+            >
               已设置
             </span>
             <el-button
@@ -697,6 +701,11 @@ span {
     font-style: normal;
     font-weight: 500;
     line-height: 13px;
+
+    &.set-text-info-dark {
+      color: #a6a6a6;
+      background: rgba(235, 235, 235, 0.1);
+    }
   }
 }
 
@@ -731,6 +740,7 @@ span {
     width: 14px;
     height: 14px;
     border: solid 1px #e1e4e8;
+    border-radius: 2px;
 
     &:last-child {
       margin-right: unset;
@@ -765,7 +775,6 @@ span {
   color: #a6a6a6 !important;
   &.ed-button {
     color: #3370ff !important;
-    margin-right: -6px;
   }
   &.is-disabled {
     color: #5f5f5f !important;
