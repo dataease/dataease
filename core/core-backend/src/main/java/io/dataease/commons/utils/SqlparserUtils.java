@@ -73,8 +73,13 @@ public class SqlparserUtils {
             for (SqlNode i : list) {
                 getDependencies(i, false);
             }
-            SqlNode newWhere = sqlKind.getWhere().accept(getSqlShuttle());
-            sqlKind.setWhere(newWhere);
+            SqlNode from  = sqlKind.getFrom().accept(getSqlShuttle());
+            sqlKind.setFrom(from);
+            if(sqlKind.getWhere() != null){
+                SqlNode newWhere = sqlKind.getWhere().accept(getSqlShuttle());
+                sqlKind.setWhere(newWhere);
+            }
+
         } else {
             // TODO 这里可根据需求拓展处理其他类型的 sqlNode
         }
