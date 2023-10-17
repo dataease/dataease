@@ -216,6 +216,11 @@ const handleDatasetChange = () => {
   getOptions(curComponent.value.dataset.id, curComponent.value)
 }
 
+const handleFieldChange = () => {
+  if (!curComponent.value.defaultValueCheck) return
+  curComponent.value.defaultValue = curComponent.value.multiple ? [] : undefined
+}
+
 const handleValueSourceChange = () => {
   curComponent.value.defaultValue = curComponent.value.multiple ? [] : undefined
   multipleChange(curComponent.value.multiple)
@@ -782,19 +787,25 @@ defineExpose({
                   >
                     <template #default="{ node, data }">
                       <div class="content">
-                        <el-icon v-if="!data.leaf">
+                        <el-icon size="18px" v-if="!data.leaf">
                           <Icon name="dv-folder"></Icon>
                         </el-icon>
-                        <el-icon v-if="data.leaf">
+                        <el-icon size="18px" v-if="data.leaf">
                           <Icon name="icon_dataset"></Icon>
                         </el-icon>
-                        <span class="label" :title="node.label">{{ node.label }}</span>
+                        <span class="label" style="margin-left: 8px" :title="node.label">{{
+                          node.label
+                        }}</span>
                       </div>
                     </template>
                   </el-tree-select>
                 </div>
                 <div class="value">
-                  <el-select placeholder="请选择字段" v-model="curComponent.field.id">
+                  <el-select
+                    @change="handleFieldChange"
+                    placeholder="请选择字段"
+                    v-model="curComponent.field.id"
+                  >
                     <template v-if="curComponent.field.id" #prefix>
                       <el-icon>
                         <Icon
@@ -1100,6 +1111,7 @@ defineExpose({
         .component-type {
           margin-right: 4px;
           font-size: 20px;
+          color: #3370ff;
         }
         .list-item {
           height: 32px;
