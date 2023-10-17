@@ -1021,8 +1021,12 @@ const treeProps = {
   children: 'children',
   label: 'name',
   disabled: data => {
-    return !data.children?.length && !data.leaf
+    return (!data.children?.length && !data.leaf) || data.extraFlag < 0
   }
+}
+const getDsIconName = data => {
+  if (!data.leaf) return 'dv-folder'
+  return `${data.type}-ds`
 }
 </script>
 
@@ -1090,10 +1094,10 @@ const treeProps = {
             :data="state.dataSourceList"
             :render-after-expand="false"
           >
-            <template #default="{ data: { name, leaf } }">
+            <template #default="{ data: { name, leaf, type } }">
               <div class="flex-align-center icon">
                 <el-icon v-if="!leaf">
-                  <icon name="dv-folder"></icon>
+                  <icon :name="getDsIconName({ leaf, type })"></icon>
                 </el-icon>
                 {{ name }}
               </div>

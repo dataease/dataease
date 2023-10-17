@@ -237,6 +237,7 @@ onMounted(() => {
               :effect="themes"
               v-model="selectedNodeName"
               readonly
+              class="data-set-dark"
               placeholder="请选择数据集"
             >
               <template #suffix>
@@ -249,7 +250,7 @@ onMounted(() => {
         </el-form>
       </template>
       <template #default>
-        <el-container>
+        <el-container :class="themes">
           <el-header>
             <div class="m-title" :class="{ dark: themes === 'dark' }">
               <div>{{ t('dataset.datalist') }}</div>
@@ -330,10 +331,14 @@ onMounted(() => {
 </template>
 
 <style scoped lang="less">
+.ed-input--dark.data-set-dark {
+  :deep(.ed-input__wrapper) {
+    background-color: #1a1a1a;
+  }
+}
 :deep(.ed-input__wrapper) {
   cursor: pointer;
   padding: 1px 11px;
-  background-color: #1a1a1a;
 
   .ed-input__inner {
     cursor: pointer;
@@ -366,6 +371,9 @@ onMounted(() => {
 
   .ed-container {
     max-height: 356px;
+    &.dark {
+      background: #292929;
+    }
 
     .ed-header {
       --ed-header-height: 68px;
@@ -444,7 +452,7 @@ onMounted(() => {
       }
 
       &.dark {
-        background-color: #303133;
+        background-color: #292929;
         color: #ebebeb;
 
         .empty-info {
@@ -473,7 +481,7 @@ onMounted(() => {
       .ed-tree {
         &.dark {
           color: #ebebeb;
-          background-color: #303133;
+          background-color: #292929;
 
           .ed-tree__empty-block {
             color: #a6a6a6;

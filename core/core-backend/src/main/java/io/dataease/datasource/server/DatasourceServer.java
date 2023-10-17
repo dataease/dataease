@@ -6,14 +6,18 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.dataset.dto.PreviewSqlDTO;
 import io.dataease.api.ds.DatasourceApi;
 import io.dataease.api.ds.vo.*;
+import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
+import io.dataease.api.permissions.auth.dto.BusiResourceEditor;
 import io.dataease.api.permissions.user.api.UserApi;
 import io.dataease.api.permissions.user.vo.UserFormVO;
 import io.dataease.commons.constants.TaskStatus;
 import io.dataease.commons.utils.CommonThreadPool;
+import io.dataease.constant.DataSourceType;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetTable;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableMapper;
 import io.dataease.dataset.dto.DatasourceSchemaDTO;
@@ -89,6 +93,8 @@ public class DatasourceServer implements DatasourceApi {
     private DatasetDataManage datasetDataManage;
     @Autowired(required = false)
     private UserApi userApi;
+    @Autowired(required = false)
+    private InteractiveAuthApi interactiveAuthApi;
 
     @Override
     public List<DatasourceDTO> query(String keyWord) {
@@ -444,15 +450,6 @@ public class DatasourceServer implements DatasourceApi {
         if (ObjectUtils.isEmpty(coreDatasource)) {
             return;
         }
-        if (!coreDatasource.getType().equals(DatasourceConfiguration.DatasourceType.folder.name())) {
-            QueryWrapper<CoreDatasetTable> wrapper = new QueryWrapper<>();
-            wrapper.eq("datasource_id", coreDatasource.getId());
-            List<CoreDatasetTable> coreDatasetTables = coreDatasetTableMapper.selectList(wrapper);
-            if (!CollectionUtils.isEmpty(coreDatasetTables)) {
-                HashSet<Long> set = new HashSet<>(coreDatasetTables.stream().map(CoreDatasetTable::getDatasetGroupId).collect(Collectors.toList()));
-                DEException.throwException(set.size() + " 个数据集正在使用，不能删除!");
-            }
-        }
         if (coreDatasource.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name())) {
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(coreDatasource);
@@ -516,7 +513,46 @@ public class DatasourceServer implements DatasourceApi {
         QueryWrapper<CoreDatasource> wrapper = new QueryWrapper<>();
         wrapper.eq("id", coreDatasource.getId());
         datasourceMapper.update(record, wrapper);
+        if (interactiveAuthApi != null) {
+            BusiResourceEditor editor = new BusiResourceEditor();
+            editor.setId((long) coreDatasource.getId());
+            editor.setName(coreDatasource.getName());
+            editor.setExtraFlag(getExtraFlag(coreDatasource.getType(), coreDatasource.getStatus()));
+            interactiveAuthApi.editResource(editor);
+        }
         return datasourceDTO;
+    }
+
+    private int getExtraFlag(Object typeObj, Object statusObj) {
+        if (ObjectUtils.isNotEmpty(statusObj)) {
+            String status = statusObj.toString();
+            if (typeObj.toString().equalsIgnoreCase("API")) {
+                TypeReference<List<ObjectNode>> listTypeReference = new TypeReference<List<ObjectNode>>() {
+                };
+                List<ObjectNode> apiStatus = JsonUtil.parseList(status, listTypeReference);
+                boolean hasError = false;
+                for (ObjectNode jsonNodes : apiStatus) {
+                    if (jsonNodes.get("status") != null && jsonNodes.get("status").asText().equalsIgnoreCase("Error")) {
+                        hasError = true;
+                        break;
+                    }
+                }
+                if (hasError) {
+                    return -DataSourceType.valueOf(typeObj.toString()).getFlag();
+                } else {
+                    return DataSourceType.valueOf(typeObj.toString()).getFlag();
+                }
+
+            } else {
+                if (StringUtils.equalsIgnoreCase(status, "Error")) {
+                    return -DataSourceType.valueOf(typeObj.toString()).getFlag();
+                } else {
+                    return DataSourceType.valueOf(typeObj.toString()).getFlag();
+                }
+            }
+        } else {
+            return DataSourceType.valueOf(typeObj.toString()).getFlag();
+        }
     }
 
     @Override

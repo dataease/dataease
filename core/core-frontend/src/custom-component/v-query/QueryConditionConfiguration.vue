@@ -509,7 +509,10 @@ const dsSelectProps = {
   label: 'name',
   children: 'children',
   value: 'id',
-  isLeaf: node => !node.children?.length
+  isLeaf: node => !node.children?.length,
+  disabled: data => {
+    return !data.children?.length && !data.leaf
+  }
 }
 
 const renameInputBlur = () => {

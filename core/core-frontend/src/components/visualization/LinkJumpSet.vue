@@ -163,10 +163,10 @@
                         </div>
                       </div>
 
-                      <el-row :gutter="8">
+                      <el-row style="margin-bottom: 8px" :gutter="8">
                         <el-col :span="7"> 源字段 </el-col>
                         <el-col :span="2"></el-col>
-                        <el-col :span="7">
+                        <el-col :span="7" style="margin-left: -2.9%">
                           {{ t('visualization.link_view_field') }}
                         </el-col>
                         <el-col :span="8"></el-col>
