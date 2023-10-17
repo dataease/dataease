@@ -48,6 +48,7 @@ import { getWorldTree } from '@/api/map'
 import chartViewManager from '@/views/chart/components/js/panel'
 import DatasetSelect from '@/views/chart/components/editor/dataset-select/DatasetSelect.vue'
 import { useDraggable } from '@vueuse/core'
+import _ from 'lodash'
 
 const snapshotStore = snapshotStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
@@ -227,6 +228,10 @@ const getFields = (id, chartId) => {
     state.quotaData = []
   }
 }
+
+const allFields = computed(() => {
+  return _.concat(state.quotaData, state.dimensionData)
+})
 
 const queryList = computed(() => {
   let arr = []
@@ -1608,7 +1613,7 @@ const onRefreshChange = val => {
                     <senior
                       :chart="view"
                       :quota-data="view.yAxis"
-                      :dimension-data="state.dimensionData"
+                      :fields-data="allFields"
                       :themes="themes"
                       :properties="chartViewInstance.properties"
                       :property-inner-all="chartViewInstance.propertyInner"
