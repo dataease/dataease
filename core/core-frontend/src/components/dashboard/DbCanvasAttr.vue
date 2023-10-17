@@ -67,7 +67,7 @@ const sliderReload = () => {
 
 const dataMerge = () => {
   adaptCurThemeCommonStyleAll()
-  snapshotStore.recordSnapshotCache('DbCanvasAttr-dataMerge')
+  snapshotStore.recordSnapshotCache('renderChart')
 }
 
 const handleChange = val => {
@@ -95,7 +95,7 @@ const themeAttrChange = (custom, property, value) => {
       }
       useEmitt().emitter.emit('renderChart-' + viewId, viewInfo)
     })
-    snapshotStore.recordSnapshotCache('DbCanvasAttr-themeAttrChange')
+    snapshotStore.recordSnapshotCache('renderChart')
   }
 }
 

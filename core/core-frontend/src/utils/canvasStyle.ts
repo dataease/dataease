@@ -409,7 +409,13 @@ export function adaptCurThemeCommonStyle(component) {
         adaptCurThemeCommonStyle(tabComponent)
       })
     })
+  } else if (component.component === 'VQuery') {
+    const viewInfo = dvMainStore.canvasViewInfo[component.id]
+    if (viewInfo) {
+      adaptCurThemeFilterStyleAllKeyComponent(viewInfo)
+    }
   }
+
   return component
 }
 
@@ -430,10 +436,23 @@ interface CanvasViewInfo {
 const colors = ['labelColor', 'borderColor', 'text', 'bgColor']
 const colorsSwitch = ['labelColorShow', 'borderShow', 'textColorShow', 'bgColorShow']
 
+export function adaptCurThemeFilterStyleAllKeyComponent(component) {
+  if (isFilterComponent(component.type)) {
+    const filterStyle = dvMainStore.canvasStyleData.component.filterStyle
+    colors.forEach(styleKey => {
+      component.customStyle.component[styleKey] = filterStyle[styleKey]
+      const index = colors.indexOf(styleKey)
+      if (index !== -1) {
+        component.customStyle.component[colorsSwitch[index]] = true
+      }
+    })
+  }
+}
+
 export function adaptCurThemeFilterStyleAll(styleKey) {
-  const componentData = Object.values(dvMainStore.canvasViewInfo) as CanvasViewInfo[]
+  const componentViewData = Object.values(dvMainStore.canvasViewInfo) as CanvasViewInfo[]
   const filterStyle = dvMainStore.canvasStyleData.component.filterStyle
-  componentData.forEach(item => {
+  componentViewData.forEach(item => {
     if (isFilterComponent(item.type)) {
       item.customStyle.component[styleKey] = filterStyle[styleKey]
       const index = colors.indexOf(styleKey)

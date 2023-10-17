@@ -74,7 +74,7 @@ export const DEFAULT_COLOR_CASE_LIGHT: DeepPartial<ChartAttr> = {
     valueFontColor: '#5470c6'
   },
   tableHeader: {
-    tableHeaderBgColor: '#6D9A49',
+    tableHeaderBgColor: '#1E90FF',
     tableHeaderFontColor: '#000000'
   },
   tableCell: {
@@ -114,8 +114,8 @@ export const DEFAULT_COLOR_CASE_DARK: DeepPartial<ChartAttr> = {
     valueFontColor: '#5470c6'
   },
   tableHeader: {
-    tableHeaderBgColor: '#5470c6',
-    tableHeaderFontColor: '#000000'
+    tableHeaderBgColor: '#1E90FF',
+    tableHeaderFontColor: '#FFFFFF'
   },
   tableCell: {
     tableItemBgColor: '#131E42',
@@ -148,18 +148,22 @@ export const FILTER_COMMON_STYLE_BASE = {
 
 export const FILTER_COMMON_STYLE_LIGHT = {
   ...FILTER_COMMON_STYLE_BASE,
-  color: '#1f2329',
-  borderColor: '#bbbfc4',
-  text: '#1f2329',
-  bgColor: '#ffffff'
+  labelColor: '#000000',
+  titleColor: '#000000',
+  color: '#000000',
+  borderColor: '#F3E7E7',
+  text: '#484747',
+  bgColor: '#FFFFFF'
 }
 
 export const FILTER_COMMON_STYLE_DARK = {
   ...FILTER_COMMON_STYLE_BASE,
+  labelColor: '#ffffff',
+  titleColor: '#ffffff',
   color: '#FFFFFF',
-  borderColor: '',
-  text: '',
-  bgColor: ''
+  borderColor: '#484747',
+  text: '#AFAFAF',
+  bgColor: '#131C42'
 }
 
 export const DEFAULT_TAB_COLOR_CASE_BASE = {

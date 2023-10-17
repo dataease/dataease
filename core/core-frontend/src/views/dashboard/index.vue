@@ -61,8 +61,8 @@ onMounted(() => {
     })
   } else if (opt && opt === 'create') {
     dataInitState.value = false
-    dvMainStore.createInit('dashboard', null, pid)
     nextTick(() => {
+      dvMainStore.createInit('dashboard', null, pid)
       dataInitState.value = true
       // preOpt
       canvasStyleData.value.component.chartTitle.color = '#000000'

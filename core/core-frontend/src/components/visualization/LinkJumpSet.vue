@@ -395,7 +395,7 @@ import { CalcFieldType } from '@/views/visualized/data/dataset/form/CalcFieldEdi
 import JumpSetOuterContentEditor from '@/components/visualization/JumpSetOuterContentEditor.vue'
 import { Search } from '@element-plus/icons-vue'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
-import { markTreeFolder } from '@/utils/canvasUtils'
+import { filterEmptyFolderTree } from '@/utils/canvasUtils'
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo, canvasViewInfo } = storeToRefs(dvMainStore)
 const linkJumpInfoTree = ref(null)
@@ -512,6 +512,7 @@ const init = viewItem => {
     } else {
       state.panelList = rsp
     }
+    state.panelList = filterEmptyFolderTree(state.panelList)
   })
 
   if (chartDetails.tableId) {

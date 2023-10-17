@@ -126,7 +126,7 @@ const saveResource = () => {
 const clearCanvas = () => {
   dvMainStore.setCurComponent({ component: null, index: null })
   dvMainStore.setComponentData([])
-  snapshotStore.recordSnapshotCache('dv-clearCanvas')
+  snapshotStore.recordSnapshotCache('renderChart')
 }
 
 const editCanvasName = () => {

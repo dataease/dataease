@@ -261,3 +261,18 @@ export function markTreeFolder(elementInfo) {
     }
   }
 }
+
+export function filterEmptyFolderTree(nodes) {
+  // 递归过滤树节点数据，只显示包含子文件夹或文件的文件夹
+  return nodes.filter(node => {
+    if (node.leaf) {
+      return true
+    } else if (node.children && node.children.length > 0) {
+      // 如果节点有子节点，继续递归过滤子节点
+      node.children = filterEmptyFolderTree(node.children)
+      return true
+    } else {
+      return false // 不显示空文件夹
+    }
+  })
+}
