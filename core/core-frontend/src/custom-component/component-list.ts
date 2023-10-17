@@ -24,7 +24,7 @@ export const COMMON_COMPONENT_BACKGROUND_BASE = {
   backgroundType: 'innerImage',
   innerImage: 'board/board_1.svg',
   outerImage: null,
-  innerPadding: 0,
+  innerPadding: 12,
   borderRadius: 0
 }
 

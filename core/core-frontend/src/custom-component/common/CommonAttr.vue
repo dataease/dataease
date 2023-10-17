@@ -104,6 +104,13 @@ const onStyleChange = computed(() => {
   }
 })
 
+const backgroundCustomShow = computed(() => {
+  return (
+    dashboardActive.value ||
+    (!dashboardActive.value &&
+      !['CanvasBoard', 'CanvasIcon', 'Picture'].includes(element.value.component))
+  )
+})
 onMounted(() => {
   const erd = elementResizeDetectorMaker()
   containerWidth.value = containerRef.value?.offsetWidth
@@ -122,9 +129,13 @@ onMounted(() => {
         <component-position :themes="themes" />
       </el-collapse-item>
 
-      <el-collapse-item :effect="themes" title="背景" name="background">
+      <el-collapse-item
+        :effect="themes"
+        title="背景"
+        name="background"
+        v-if="element && backgroundCustomShow"
+      >
         <background-overall-common
-          v-if="element"
           :themes="themes"
           :common-background-pop="element.commonBackground"
           component-position="component"
