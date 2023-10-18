@@ -88,7 +88,7 @@
           <span style="margin-right: 4px">
             {{ t('visualization.panel_view_result_show') }}
           </span>
-          <el-tooltip class="item" :effect="themes" placement="bottom">
+          <el-tooltip class="item" :effect="toolTip" placement="bottom">
             <template #content>
               <div>
                 {{ t('visualization.panel_view_result_tips') }}
@@ -155,7 +155,7 @@ import {
   FILTER_COMMON_STYLE_LIGHT
 } from '@/views/chart/components/editor/util/chart'
 import ColorButton from '@/components/assist-button/ColorButton.vue'
-import { reactive } from 'vue'
+import { reactive, computed } from 'vue'
 import { deepCopy } from '@/utils/utils'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { storeToRefs } from 'pinia'
@@ -173,7 +173,9 @@ const props = defineProps({
     default: 'light'
   }
 })
-
+const toolTip = computed(() => {
+  return props.themes === 'dark' ? 'ndark' : 'dark'
+})
 const state = reactive({
   colorIndex: 0
 })

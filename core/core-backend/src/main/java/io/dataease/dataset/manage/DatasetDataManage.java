@@ -252,7 +252,7 @@ public class DatasetDataManage {
             sqlLogDTO.setStatus("Completed");
         } catch (Exception e) {
             sqlLogDTO.setStatus("Error");
-            DEException.throwException(e);
+            DEException.throwException(e.getMessage());
         } finally {
             if (ObjectUtils.isNotEmpty(dto.getTableId())) {
                 sqlLogDTO.setTableId(dto.getTableId());

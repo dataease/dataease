@@ -219,7 +219,7 @@ function onPopoverHide() {
 }
 .custom-color-selector {
   :deep(.ed-input__prefix) {
-    width: 100%;
+    width: calc(100% - 22px);
     .ed-input__prefix-inner {
       width: 100%;
     }

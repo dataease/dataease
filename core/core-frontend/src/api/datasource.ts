@@ -91,6 +91,12 @@ export const save = async (data = {}): Promise<Dataset> => {
   })
 }
 
+export const checkRepeat = async (data = {}): Promise<Dataset> => {
+  return request.post({ url: '/datasource/checkRepeat', data }).then(res => {
+    return res?.data
+  })
+}
+
 export const checkApiItem = async (data = {}): Promise<IResponse> => {
   return request.post({ url: '/datasource/checkApiDatasource', data }).then(res => {
     return res
