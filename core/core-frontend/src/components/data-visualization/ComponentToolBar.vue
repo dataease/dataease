@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { changeSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
 import { useEmitt } from '@/hooks/web/useEmitt'
@@ -19,24 +19,49 @@ const handleScaleChange = () => {
   changeSizeWithScale(scale.value)
 }
 
-const scaleDecrease = () => {
-  scale.value = --scale.value
-  handleScaleChange()
+const scaleDecrease = (speed = 1) => {
+  if (scale.value > 10) {
+    scale.value = scale.value - speed
+    handleScaleChange()
+  }
 }
 
-const scaleIncrease = () => {
-  scale.value = ++scale.value
-  handleScaleChange()
+const scaleIncrease = (speed = 1) => {
+  if (scale.value < 100) {
+    scale.value = scale.value + speed
+    handleScaleChange()
+  }
 }
 
 const reposition = () => {
   useEmitt().emitter.emit('initScroll')
 }
 
+const handleMouseWheel = e => {
+  const delta = e.wheelDelta ? e.wheelDelta : -e.detail
+  console.log('delta=' + delta)
+  if (delta === 240) {
+    e.stopPropagation()
+    e.preventDefault()
+    //放大
+    scaleIncrease(3)
+  } else if (delta === -240) {
+    e.stopPropagation()
+    e.preventDefault()
+    // 缩小
+    scaleDecrease(3)
+  }
+}
+
 onMounted(() => {
+  window.addEventListener('mousewheel', handleMouseWheel, { passive: false })
   setTimeout(() => {
     scale.value = canvasStyleData.value.scale
   }, 1000)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('mousewheel', handleMouseWheel)
 })
 </script>
 <template>
