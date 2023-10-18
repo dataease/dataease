@@ -190,7 +190,7 @@ eventBus.on('clearCanvas', clearCanvas)
             {{ dvInfo.name }}
           </span>
           <div class="opt-area">
-            <el-tooltip effect="dark" :content="$t('visualization.undo')" placement="bottom">
+            <el-tooltip effect="ndark" :content="$t('visualization.undo')" placement="bottom">
               <el-icon
                 class="toolbar-hover-icon"
                 :class="{ 'toolbar-icon-disabled': snapshotIndex < 1 }"
@@ -199,7 +199,7 @@ eventBus.on('clearCanvas', clearCanvas)
                 <Icon name="icon_undo_outlined"></Icon>
               </el-icon>
             </el-tooltip>
-            <el-tooltip effect="dark" :content="$t('commons.reduction')" placement="bottom">
+            <el-tooltip effect="ndark" :content="$t('commons.reduction')" placement="bottom">
               <el-icon
                 class="toolbar-hover-icon opt-icon-redo"
                 :class="{

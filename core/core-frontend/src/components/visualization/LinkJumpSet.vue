@@ -361,9 +361,9 @@
                   </template>
                 </template>
                 <div v-else class="empty">
-                  <el-empty
+                  <empty-background
                     :description="t('visualization.select_dimension_hint')"
-                    :image-size="125"
+                    img-type="noneWhite"
                   />
                 </div>
               </el-main>
@@ -401,6 +401,7 @@ import { CalcFieldType } from '@/views/visualized/data/dataset/form/CalcFieldEdi
 import JumpSetOuterContentEditor from '@/components/visualization/JumpSetOuterContentEditor.vue'
 import { Search } from '@element-plus/icons-vue'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
+import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import { filterEmptyFolderTree } from '@/utils/canvasUtils'
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo, canvasViewInfo } = storeToRefs(dvMainStore)
