@@ -1217,7 +1217,7 @@ const onRefreshChange = val => {
                           />
                         </template>
                       </draggable>
-                      <drag-placeholder :drag-list="view.xAxis" />
+                      <drag-placeholder :themes="themes" :drag-list="view.xAxis" />
                     </el-row>
 
                     <!--xAxisExt-->
