@@ -177,6 +177,8 @@ const chartViewInstance = computed(() => {
   return chartViewManager.getChartView(view.value.render, view.value.type)
 })
 const showAxis = (axis: AxisType) => chartViewInstance.value?.axis?.includes(axis)
+const areaSelect = ref()
+const expandKeys = ref([])
 watch(
   () => [view.value.type, view.value],
   newVal => {
@@ -189,6 +191,9 @@ watch(
       } else {
         state.areaId = view.value?.customAttr?.map?.id
       }
+      areaSelect.value?.blur()
+      expandKeys.value = []
+      areaSelect.value?.setCurrentKey(state.areaId, state.areaId)
     }
     state.chartTypeOptions = [getViewConfig(newVal[0])]
     state.useless = newVal[0]
@@ -1161,12 +1166,14 @@ const onRefreshChange = val => {
                           :props="treeProps"
                           :filterNodeMethod="filterNode"
                           :current-node-key="state.areaId"
-                          @node-click="onAreaChange"
+                          :teleported="false"
+                          :default-expanded-keys="expandKeys"
+                          ref="areaSelect"
                           empty-text="请选择区域"
                           node-key="id"
                           check-strictly
                           filterable
-                          :teleported="false"
+                          @node-click="onAreaChange"
                         />
                       </div>
                     </el-row>
@@ -1210,7 +1217,7 @@ const onRefreshChange = val => {
                           />
                         </template>
                       </draggable>
-                      <drag-placeholder :drag-list="view.xAxis" />
+                      <drag-placeholder :themes="themes" :drag-list="view.xAxis" />
                     </el-row>
 
                     <!--xAxisExt-->
@@ -1393,7 +1400,7 @@ const onRefreshChange = val => {
                           </span>
                           <el-tooltip class="item" :effect="toolTip" placement="top">
                             <template #content>
-                              <span>钻取字段仅支持数据集中的字段</span>
+                              <span> {{ t('chart.drill_dimension_tip') }}</span>
                             </template>
                             <el-icon
                               class="hint-icon"
@@ -1401,17 +1408,6 @@ const onRefreshChange = val => {
                             >
                               <Icon name="icon_info_outlined" />
                             </el-icon>
-                          </el-tooltip>
-                          <el-tooltip class="item" :effect="themes" placement="bottom">
-                            <template #content>
-                              <div>
-                                {{ t('chart.drill_dimension_tip') }}
-                              </div>
-                            </template>
-                            <i
-                              class="el-icon-info"
-                              :style="{ cursor: 'pointer', color: '#606266' }"
-                            />
                           </el-tooltip>
                         </span>
                         <el-tooltip :effect="toolTip" placement="top" :content="t('common.delete')">

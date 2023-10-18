@@ -84,15 +84,21 @@
 
     <el-form-item class="form-item" :class="'form-item-' + themes" style="margin-bottom: 8px">
       <template #label>
-        {{ t('visualization.panel_view_result_show') }}
-        <el-tooltip class="item" effect="dark" placement="bottom">
-          <template #content>
-            <div>
-              {{ t('visualization.panel_view_result_tips') }}
-            </div>
-          </template>
-          <el-icon><InfoFilled /></el-icon>
-        </el-tooltip>
+        <span class="data-area-label">
+          <span style="margin-right: 4px">
+            {{ t('visualization.panel_view_result_show') }}
+          </span>
+          <el-tooltip class="item" :effect="themes" placement="bottom">
+            <template #content>
+              <div>
+                {{ t('visualization.panel_view_result_tips') }}
+              </div>
+            </template>
+            <el-icon class="hint-icon" :class="{ 'hint-icon--dark': themes === 'dark' }">
+              <Icon name="icon_info_outlined" />
+            </el-icon>
+          </el-tooltip>
+        </span>
       </template>
       <el-radio-group
         :effect="themes"
@@ -157,7 +163,8 @@ import {
   COMMON_COMPONENT_BACKGROUND_DARK,
   COMMON_COMPONENT_BACKGROUND_LIGHT
 } from '@/custom-component/component-list'
-import { ElFormItem, ElSpace } from 'element-plus-secondary'
+import { ElFormItem, ElIcon, ElSpace } from 'element-plus-secondary'
+import Icon from '@/components/icon-custom/src/Icon.vue'
 const emits = defineEmits(['onThemeColorChange'])
 const snapshotStore = snapshotStoreWithOut()
 const props = defineProps({
@@ -253,5 +260,20 @@ const colorButtonClick = val => {
 
 .ed-select--dark {
   background: #292929 !important;
+}
+
+.hint-icon {
+  cursor: pointer;
+  font-size: 14px;
+  color: #646a73;
+
+  &.hint-icon--dark {
+    color: #a6a6a6;
+  }
+}
+.data-area-label {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 </style>
