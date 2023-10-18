@@ -761,7 +761,7 @@ onMounted(() => {
             <span :title="nodeInfo.name" class="name ellipsis">
               {{ nodeInfo.name }}
             </span>
-            <el-divider direction="vertical" />
+            <el-divider style="margin: 0 12px" direction="vertical" />
             <span class="create-user">
               {{ t('visualization.create_by') }}:{{ nodeInfo.creator }}
             </span>
@@ -1578,7 +1578,7 @@ onMounted(() => {
         }
 
         .create-user {
-          font-size: 14px;
+          font-size: 16px;
           font-weight: 400;
           line-height: 22px;
           color: #646a73;

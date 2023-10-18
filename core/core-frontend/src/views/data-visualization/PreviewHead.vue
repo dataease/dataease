@@ -71,7 +71,7 @@ watch(
         <icon :name="favorited ? 'visual-star' : 'icon_collection_outlined'"></icon>
       </el-icon>
     </el-tooltip>
-    <el-divider style="margin: 0 16px" direction="vertical" />
+    <el-divider style="margin: 0 16px 0 7px" direction="vertical" />
     <div class="create-area flex-align-center">
       <span>创建人:{{ dvInfo.creatorName }}</span>
       <el-popover show-arrow :offset="8" placement="bottom" width="400" trigger="hover">
@@ -167,5 +167,6 @@ watch(
 .info-tips {
   margin-left: 4px;
   font-size: 16px;
+  color: #646a73;
 }
 </style>
