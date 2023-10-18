@@ -5,7 +5,7 @@ import nothingSelect from '@/assets/img/nothing-select.png'
 import nothingTable from '@/assets/img/nothing-table.png'
 import none from '@/assets/img/none.png'
 import error from '@/assets/img/error.png'
-import nothingTreee from '@/assets/img/nothing-tree.png'
+import nothingTree from '@/assets/img/nothing-tree.png'
 import nothingNone from '@/assets/img/nothing-none.png'
 defineProps({
   imgType: {
@@ -28,7 +28,7 @@ const getAssetsFile = {
   select: nothingSelect,
   table: nothingTable,
   noneWhite: nothingNone,
-  tree: nothingTreee,
+  tree: nothingTree,
   error,
   none
 }
@@ -48,5 +48,17 @@ const getAssetsFile = {
 <style lang="less" scoped>
 .empty-info {
   height: 100%;
+}
+:deep(.ed-empty__description) {
+  margin-top: 8px;
+
+  color: var(--N600, #646a73);
+  text-align: center;
+  /* 正文-字号 14，行高 22，字重适中（Regular），用于列表Feed会话 */
+  font-family: PingFang SC;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 22px;
 }
 </style>
