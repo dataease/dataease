@@ -1509,6 +1509,7 @@ const onRefreshChange = val => {
                           <el-input
                             v-model.number="view.refreshTime"
                             :effect="themes"
+                            :class="[themes === 'dark' && 'dv-dark']"
                             size="small"
                             :min="1"
                             :max="3600"
@@ -2818,6 +2819,14 @@ span {
   &.select-append {
     .ed-input-group__append {
       background-color: transparent;
+    }
+    .dv-dark {
+      & > .ed-input__wrapper {
+        background-color: #1a1a1a;
+      }
+      .ed-input-group__append .ed-select {
+        margin: 0 -20px;
+      }
     }
   }
 }

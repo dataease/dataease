@@ -49,7 +49,7 @@
         v-model="canvasStyleData.refreshTime"
         :effect="themes"
         class="time-input-number"
-        :class="dvInfo.type === 'dashboard' && 'padding20'"
+        :class="[dvInfo.type === 'dashboard' && 'padding20', themes === 'dark' && 'dv-dark']"
         type="number"
         :min="1"
         :max="3600"
@@ -227,6 +227,17 @@ const colorButtonClick = val => {
       :deep(.ed-input.is-disabled .ed-input__wrapper) {
         box-shadow: 0 0 0 1px var(--ed-disabled-border-color) inset !important;
       }
+    }
+  }
+  :deep(&.dv-dark) {
+    .ed-input-group__append .ed-select {
+      margin: 0 -20px;
+    }
+  }
+
+  :deep(&.dv-dark:not(.is-disabled)) {
+    & > .ed-input__wrapper {
+      background-color: #1a1a1a;
     }
   }
   :deep(input) {
