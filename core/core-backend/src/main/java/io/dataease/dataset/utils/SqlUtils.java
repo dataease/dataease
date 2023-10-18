@@ -42,13 +42,6 @@ public class SqlUtils {
         return sqlRender;
     }
 
-    public static String sqlRewrite(String sql) {
-        if (sql == null) {
-            return null;
-        }
-        return sql.replaceAll(";", "");
-    }
-
     private static void addTableSchema(SqlNode sqlNode, Boolean fromOrJoin, String schema, SqlParser.Config config) {
         try {
             if (sqlNode.getKind() == JOIN) {
