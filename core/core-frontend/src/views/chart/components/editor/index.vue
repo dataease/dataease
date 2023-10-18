@@ -1905,10 +1905,14 @@ const onRefreshChange = val => {
           label-position="top"
         >
           <el-form-item :label="t('dataset.field_origin_name')" class="name-edit-form">
-            <span style="font-size: 14px">{{ state.itemForm.name }}</span>
+            <span class="text">{{ state.itemForm.name }}</span>
           </el-form-item>
-          <el-form-item :label="t('chart.show_name')" class="name-edit-form" prop="chartShowName">
-            <el-input v-model="state.itemForm.chartShowName" clearable />
+          <el-form-item
+            :label="t('chart.show_name')"
+            class="name-edit-form no-margin-bottom"
+            prop="chartShowName"
+          >
+            <el-input class="text" v-model="state.itemForm.chartShowName" clearable />
           </el-form-item>
         </el-form>
       </div>
@@ -2960,10 +2964,38 @@ span {
   }
 }
 .name-edit-form {
-  margin-bottom: 8px !important;
+  margin-bottom: 16px !important;
+
+  .text {
+    font-family: PingFang SC;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 22px;
+
+    --ed-input-height: 32px;
+
+    :deep(.ed-input__inner) {
+      font-family: PingFang SC;
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 22px;
+    }
+  }
 
   :deep(.ed-form-item__label) {
     color: #1f2329;
+    margin-bottom: 4px !important;
+
+    font-family: PingFang SC;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 22px;
+  }
+
+  &.no-margin-bottom {
     margin-bottom: 0 !important;
   }
 }
