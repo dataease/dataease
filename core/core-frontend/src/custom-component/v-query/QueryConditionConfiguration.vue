@@ -628,7 +628,7 @@ defineExpose({
         <div class="mask" v-if="curComponent.auto"></div>
         <div class="title flex-align-center">
           选择关联图表及字段
-          <el-radio-group v-model="curComponent.auto" class="ml-4">
+          <el-radio-group class="ml-4 larger-radio" v-model="curComponent.auto">
             <el-radio :disabled="!curComponent.auto" :label="true">
               <div class="flex-align-center">
                 自动
@@ -774,6 +774,7 @@ defineExpose({
             <div class="value">
               <div class="value">
                 <el-radio-group
+                  class="larger-radio"
                   @change="handleValueSourceChange"
                   v-model="curComponent.optionValueSource"
                 >
@@ -917,6 +918,7 @@ defineExpose({
             <div class="label">选项类型</div>
             <div class="value">
               <el-radio-group
+                class="larger-radio"
                 @change="val => multipleChange(val as boolean, true)"
                 v-model="multiple"
               >
@@ -1292,6 +1294,12 @@ defineExpose({
 
   .ed-select-dropdown__item.selected {
     font-weight: 400;
+  }
+}
+.larger-radio {
+  .ed-radio__inner {
+    width: 16px;
+    height: 16px;
   }
 }
 </style>
