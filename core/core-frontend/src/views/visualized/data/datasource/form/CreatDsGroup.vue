@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import { ref, reactive, computed, watch, nextTick } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
-import { listDatasources, save } from '@/api/datasource'
-import { ElMessage } from 'element-plus-secondary'
+import { checkRepeat, listDatasources, save } from '@/api/datasource'
+import { ElMessage, ElMessageBox, ElMessageBoxOptions } from 'element-plus-secondary'
 import type { DatasetOrFolder } from '@/api/dataset'
 import nothingTree from '@/assets/img/nothing-tree.png'
 import { useCache } from '@/hooks/web/useCache'
@@ -264,18 +264,46 @@ const saveDataset = () => {
       }
       loading.value = true
       if (request) {
-        save({ ...request, name: datasetForm.name, pid: params.pid })
-          .then(res => {
-            if (res !== undefined) {
-              wsCache.set('ds-new-success', true)
-              emits('handleShowFinishPage', res)
-              ElMessage.success('保存数据源成功')
-              successCb()
-            }
-          })
-          .finally(() => {
-            loading.value = false
-          })
+        let options = {
+          confirmButtonType: 'danger',
+          type: 'warning',
+          autofocus: false,
+          showClose: false,
+          tip: ''
+        }
+        checkRepeat(request).then(res => {
+          if (res) {
+            ElMessageBox.confirm(t('datasource.has_same_ds'), options as ElMessageBoxOptions).then(
+              () => {
+                save({ ...request, name: datasetForm.name, pid: params.pid })
+                  .then(res => {
+                    if (res !== undefined) {
+                      wsCache.set('ds-new-success', true)
+                      emits('handleShowFinishPage', res)
+                      ElMessage.success('保存数据源成功')
+                      successCb()
+                    }
+                  })
+                  .finally(() => {
+                    loading.value = false
+                  })
+              }
+            )
+          } else {
+            save({ ...request, name: datasetForm.name, pid: params.pid })
+              .then(res => {
+                if (res !== undefined) {
+                  wsCache.set('ds-new-success', true)
+                  emits('handleShowFinishPage', res)
+                  ElMessage.success('保存数据源成功')
+                  successCb()
+                }
+              })
+              .finally(() => {
+                loading.value = false
+              })
+          }
+        })
         return
       }
       emits('finish', params, successCb, finallyCb, cmd.value, dsType)

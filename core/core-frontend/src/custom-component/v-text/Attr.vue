@@ -42,7 +42,7 @@ const { themes } = toRefs(props)
   }
   :deep(.ed-form-item) {
     display: block;
-    margin-bottom: 16px;
+    margin-bottom: 8px;
   }
   :deep(.ed-form-item__label) {
     justify-content: flex-start;

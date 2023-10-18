@@ -3022,7 +3022,6 @@ span {
 
   :deep(.ed-form-item__label) {
     color: #1f2329;
-    margin-bottom: 4px !important;
 
     font-family: PingFang SC;
     font-size: 14px;
