@@ -82,11 +82,15 @@
                   <template #label>
                     <span class="title">{{ t('visualization.link_type') }}</span>
                   </template>
-                  <el-radio-group v-if="state.linkJumpInfo" v-model="state.linkJumpInfo.linkType">
+                  <el-radio-group
+                    class="larger-radio"
+                    v-if="state.linkJumpInfo"
+                    v-model="state.linkJumpInfo.linkType"
+                  >
                     <el-radio label="outer">{{ t('visualization.link_outer') }}</el-radio>
                     <el-radio label="inner">{{ t('visualization.link_panel') }}</el-radio>
                   </el-radio-group>
-                  <el-radio-group v-if="!state.linkJumpInfo" disabled>
+                  <el-radio-group class="larger-radio" v-if="!state.linkJumpInfo" disabled>
                     <el-radio label="outer">{{ t('visualization.link_outer') }}</el-radio>
                     <el-radio label="inner">{{ t('visualization.link_panel') }}</el-radio>
                   </el-radio-group>
@@ -95,11 +99,15 @@
                   <template #label>
                     <span class="title">{{ t('visualization.open_model') }}</span>
                   </template>
-                  <el-radio-group v-if="state.linkJumpInfo" v-model="state.linkJumpInfo.jumpType">
+                  <el-radio-group
+                    class="larger-radio"
+                    v-if="state.linkJumpInfo"
+                    v-model="state.linkJumpInfo.jumpType"
+                  >
                     <el-radio label="_self">{{ t('visualization.now_window') }}</el-radio>
                     <el-radio label="_blank">{{ t('visualization.new_window') }}</el-radio>
                   </el-radio-group>
-                  <el-radio-group v-if="!state.linkJumpInfo" disabled>
+                  <el-radio-group class="larger-radio" v-if="!state.linkJumpInfo" disabled>
                     <el-radio label="_self">{{ t('visualization.now_window') }}</el-radio>
                     <el-radio label="_blank">{{ t('visualization.new_window') }}</el-radio>
                   </el-radio-group>
@@ -1184,6 +1192,12 @@ span {
   }
   &:active {
     background: rgba(31, 35, 41, 0.2) !important;
+  }
+}
+.larger-radio {
+  .ed-radio__inner {
+    width: 16px;
+    height: 16px;
   }
 }
 </style>
