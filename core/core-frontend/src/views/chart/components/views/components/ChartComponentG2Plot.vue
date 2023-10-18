@@ -169,18 +169,23 @@ const trackClick = trackAction => {
   if (!param?.data?.dimensionList) {
     return
   }
+  let checkName = state.pointParam.data.name
+  // 对多维度的处理 取第一个
+  if (state.pointParam.data.dimensionList.length > 1) {
+    checkName = state.pointParam.data.dimensionList[0].id
+  }
   const quotaList = state.pointParam.data.quotaList
   quotaList[0]['value'] = state.pointParam.data.value
   const linkageParam = {
     option: 'linkage',
-    name: state.pointParam.data.name,
+    name: checkName,
     viewId: view.value.id,
     dimensionList: state.pointParam.data.dimensionList,
     quotaList: quotaList
   }
   const jumpParam = {
     option: 'jump',
-    name: state.pointParam.data.name,
+    name: checkName,
     viewId: view.value.id,
     dimensionList: state.pointParam.data.dimensionList,
     quotaList: quotaList
