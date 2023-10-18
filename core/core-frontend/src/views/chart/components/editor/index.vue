@@ -1217,7 +1217,7 @@ const onRefreshChange = val => {
                           />
                         </template>
                       </draggable>
-                      <drag-placeholder :drag-list="view.xAxis" />
+                      <drag-placeholder :themes="themes" :drag-list="view.xAxis" />
                     </el-row>
 
                     <!--xAxisExt-->
@@ -1400,7 +1400,7 @@ const onRefreshChange = val => {
                           </span>
                           <el-tooltip class="item" :effect="toolTip" placement="top">
                             <template #content>
-                              <span>钻取字段仅支持数据集中的字段</span>
+                              <span> {{ t('chart.drill_dimension_tip') }}</span>
                             </template>
                             <el-icon
                               class="hint-icon"
@@ -1408,17 +1408,6 @@ const onRefreshChange = val => {
                             >
                               <Icon name="icon_info_outlined" />
                             </el-icon>
-                          </el-tooltip>
-                          <el-tooltip class="item" :effect="themes" placement="bottom">
-                            <template #content>
-                              <div>
-                                {{ t('chart.drill_dimension_tip') }}
-                              </div>
-                            </template>
-                            <i
-                              class="el-icon-info"
-                              :style="{ cursor: 'pointer', color: '#606266' }"
-                            />
                           </el-tooltip>
                         </span>
                         <el-tooltip :effect="toolTip" placement="top" :content="t('common.delete')">
@@ -1516,6 +1505,7 @@ const onRefreshChange = val => {
                           <el-input
                             v-model.number="view.refreshTime"
                             :effect="themes"
+                            :class="[themes === 'dark' && 'dv-dark']"
                             size="small"
                             :min="1"
                             :max="3600"
@@ -2825,6 +2815,14 @@ span {
   &.select-append {
     .ed-input-group__append {
       background-color: transparent;
+    }
+    .dv-dark {
+      & > .ed-input__wrapper {
+        background-color: #1a1a1a;
+      }
+      .ed-input-group__append .ed-select {
+        margin: 0 -20px;
+      }
     }
   }
 }

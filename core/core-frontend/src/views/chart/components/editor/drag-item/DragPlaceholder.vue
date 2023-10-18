@@ -1,11 +1,16 @@
 <script lang="tsx" setup>
 import { useI18n } from '@/hooks/web/useI18n'
+import { PropType } from 'vue'
 const { t } = useI18n()
 
 const props = defineProps({
   dragList: {
     type: Array,
     required: true
+  },
+  themes: {
+    type: String as PropType<EditorTheme>,
+    default: 'dark'
   }
 })
 </script>
@@ -13,7 +18,11 @@ const props = defineProps({
 <template>
   <div>
     <div v-if="!props.dragList || props.dragList.length === 0" class="drag-placeholder-style">
-      <span class="drag-placeholder-style-span">{{ t('chart.placeholder_field') }}</span>
+      <span
+        class="drag-placeholder-style-span"
+        :class="{ 'drag-placeholder-style-span--dark': themes === 'dark' }"
+        >{{ t('chart.placeholder_field') }}</span
+      >
     </div>
   </div>
 </template>
@@ -37,6 +46,10 @@ span {
     font-size: 12px;
     font-style: normal;
     font-weight: 400;
+
+    &.drag-placeholder-style-span--dark {
+      color: #757575;
+    }
   }
 }
 </style>
