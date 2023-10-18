@@ -423,7 +423,8 @@ export default {
     select_type: '选择数据源类型',
     sync_table: '同步指定表',
     req_completed: '请求成功',
-    sync_rate: '更新频率'
+    sync_rate: '更新频率',
+    has_same_ds: '存在相同配置数据源，确认保存？'
   },
   chart: {
     align: '对齐方式',
