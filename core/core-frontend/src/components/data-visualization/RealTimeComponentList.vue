@@ -181,7 +181,7 @@ const dragOnEnd = ({ oldIndex, newIndex }) => {
 const getIconName = item => {
   if (item.component === 'UserView') {
     const viewInfo = canvasViewInfo.value[item.id]
-    return `${viewInfo.type}-dark`
+    return `${viewInfo.type}-origin`
   } else {
     return item.icon
   }
@@ -368,7 +368,11 @@ const handleContextMenu = e => {
         user-select: none;
 
         .component-icon {
+          color: #a6a6a6;
           font-size: 14px;
+        }
+        .component-label {
+          color: #ebebeb;
         }
 
         > span.component-label {
