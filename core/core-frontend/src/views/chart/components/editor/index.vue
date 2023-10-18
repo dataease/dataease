@@ -1185,7 +1185,12 @@ const onRefreshChange = val => {
                           {{ chartViewInstance.axisConfig.xAxis.name }}
                         </span>
                         <el-tooltip :effect="toolTip" placement="top" :content="t('common.delete')">
-                          <el-icon class="remove-icon" size="14px" @click="removeItems('xAxis')">
+                          <el-icon
+                            class="remove-icon"
+                            :class="{ 'remove-icon--dark': themes === 'dark' }"
+                            size="14px"
+                            @click="removeItems('xAxis')"
+                          >
                             <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
                           </el-icon>
                         </el-tooltip>
@@ -1227,7 +1232,12 @@ const onRefreshChange = val => {
                           {{ chartViewInstance.axisConfig.xAxisExt.name }}
                         </span>
                         <el-tooltip :effect="toolTip" placement="top" :content="t('common.delete')">
-                          <el-icon class="remove-icon" size="14px" @click="removeItems('xAxisExt')">
+                          <el-icon
+                            class="remove-icon"
+                            :class="{ 'remove-icon--dark': themes === 'dark' }"
+                            size="14px"
+                            @click="removeItems('xAxisExt')"
+                          >
                             <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
                           </el-icon>
                         </el-tooltip>
@@ -1268,7 +1278,12 @@ const onRefreshChange = val => {
                           {{ chartViewInstance.axisConfig.extStack.name }}
                         </span>
                         <el-tooltip :effect="toolTip" placement="top" :content="t('common.delete')">
-                          <el-icon class="remove-icon" size="14px" @click="removeItems('extStack')">
+                          <el-icon
+                            class="remove-icon"
+                            :class="{ 'remove-icon--dark': themes === 'dark' }"
+                            size="14px"
+                            @click="removeItems('extStack')"
+                          >
                             <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
                           </el-icon>
                         </el-tooltip>
@@ -1309,7 +1324,12 @@ const onRefreshChange = val => {
                           {{ chartViewInstance.axisConfig.yAxis.name }}
                         </span>
                         <el-tooltip :effect="toolTip" placement="top" :content="t('common.delete')">
-                          <el-icon class="remove-icon" size="14px" @click="removeItems('yAxis')">
+                          <el-icon
+                            class="remove-icon"
+                            :class="{ 'remove-icon--dark': themes === 'dark' }"
+                            size="14px"
+                            @click="removeItems('yAxis')"
+                          >
                             <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
                           </el-icon>
                         </el-tooltip>
@@ -1353,6 +1373,7 @@ const onRefreshChange = val => {
                         <el-tooltip :effect="toolTip" placement="top" :content="t('common.delete')">
                           <el-icon
                             class="remove-icon"
+                            :class="{ 'remove-icon--dark': themes === 'dark' }"
                             size="14px"
                             @click="removeItems('extBubble')"
                           >
@@ -1413,6 +1434,7 @@ const onRefreshChange = val => {
                         <el-tooltip :effect="toolTip" placement="top" :content="t('common.delete')">
                           <el-icon
                             class="remove-icon"
+                            :class="{ 'remove-icon--dark': themes === 'dark' }"
                             size="14px"
                             @click="removeItems('drillFields')"
                           >
@@ -1455,6 +1477,7 @@ const onRefreshChange = val => {
                         <el-tooltip :effect="toolTip" placement="top" :content="t('common.delete')">
                           <el-icon
                             class="remove-icon"
+                            :class="{ 'remove-icon--dark': themes === 'dark' }"
                             size="14px"
                             @click="removeItems('customFilter')"
                           >
@@ -2484,6 +2507,10 @@ span {
       cursor: pointer;
       margin-top: 2px;
       margin-right: 2px;
+
+      &.remove-icon--dark {
+        color: #a6a6a6;
+      }
 
       .inner-class {
         font-size: 14px;

@@ -9,7 +9,7 @@ import {
   DEFAULT_COLOR_CASE
 } from '@/views/chart/components/editor/util/chart'
 import { useI18n } from '@/hooks/web/useI18n'
-import Slider from '@/components/dashboard/subject-setting/pre-subject/Slider.vue'
+import DeSlider from '@/components/dashboard/subject-setting/pre-subject/Slider.vue'
 import OverallSetting from '@/components/dashboard/subject-setting/dashboard-style/OverallSetting.vue'
 import ComponentColorSelector from '@/components/dashboard/subject-setting/dashboard-style/ComponentColorSelector.vue'
 import { adaptCurThemeCommonStyleAll } from '@/utils/canvasStyle'
@@ -132,16 +132,16 @@ const saveSelfSubject = () => {
     <el-row>
       <el-collapse v-model="canvasAttrActiveNames">
         <el-collapse-item title="仪表板风格" name="style">
-          <slider ref="slider" />
+          <de-slider ref="slider" />
           <el-button class="button-panel__style" text size="small" @click="saveSelfSubject">
             {{ $t('commons.save') }}
           </el-button>
         </el-collapse-item>
-        <el-collapse-item title="整体配置" name="overallSetting" class="content-no-padding-bottom">
+        <el-collapse-item title="整体配置" name="overallSetting">
           <overall-setting @onThemeColorChange="themeColorChange" />
         </el-collapse-item>
 
-        <el-collapse-item title="仪表板背景" name="background">
+        <el-collapse-item title="仪表板背景" name="background" class="content-no-padding-bottom">
           <canvas-background themes="light"></canvas-background>
         </el-collapse-item>
         <el-collapse-item
