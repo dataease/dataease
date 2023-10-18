@@ -121,6 +121,10 @@ onMounted(() => {
     canvasAttrInit = true
   })
 })
+const slider = ref()
+const saveSelfSubject = () => {
+  slider.value.saveSelfSubject()
+}
 </script>
 
 <template>
@@ -128,7 +132,10 @@ onMounted(() => {
     <el-row>
       <el-collapse v-model="canvasAttrActiveNames">
         <el-collapse-item title="仪表板风格" name="style">
-          <slider />
+          <slider ref="slider" />
+          <el-button class="button-panel__style" text size="small" @click="saveSelfSubject">
+            {{ $t('commons.save') }}
+          </el-button>
         </el-collapse-item>
         <el-collapse-item title="整体配置" name="overallSetting" class="content-no-padding-bottom">
           <overall-setting @onThemeColorChange="themeColorChange" />
@@ -182,6 +189,12 @@ onMounted(() => {
   z-index: 20;
   height: 100%;
   width: 100%;
+  position: relative;
+  .button-panel__style {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+  }
 }
 
 :deep(.ed-collapse) {
