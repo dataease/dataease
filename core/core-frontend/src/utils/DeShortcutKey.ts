@@ -75,11 +75,22 @@ const unlockMap = {
   [lKey]: lock
 }
 
+// 检查当前页面是否有弹框
+const checkDialog = () => {
+  let haveDialog = false
+  document.querySelectorAll('.ed-overlay').forEach(element => {
+    if (window.getComputedStyle(element).getPropertyValue('display') != 'none') {
+      haveDialog = true
+    }
+  })
+  return haveDialog
+}
+
 let isCtrlOrCommandDown = false
 // 全局监听按键操作并执行相应命令
 export function listenGlobalKeyDown() {
   window.onkeydown = e => {
-    if (!isInEditor) return
+    if (!isInEditor || checkDialog()) return
     const { keyCode } = e
     if (positionMoveKey[keyCode] && curComponent.value) {
       positionMoveKey[keyCode](keyCode)
