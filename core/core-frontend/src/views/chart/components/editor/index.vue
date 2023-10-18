@@ -1685,7 +1685,7 @@ const onRefreshChange = val => {
                 v-model="view.tableId"
                 :themes="themes"
               />
-              <el-tooltip effect="dark" content="编辑数据集" placement="top">
+              <el-tooltip :effect="toolTip" content="编辑数据集" placement="top">
                 <el-icon
                   class="field-search-icon-btn"
                   :class="{ dark: themes === 'dark' }"

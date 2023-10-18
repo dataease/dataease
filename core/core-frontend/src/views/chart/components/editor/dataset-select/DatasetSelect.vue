@@ -29,7 +29,9 @@ const datasetSelector = ref(null)
 const loadingDatasetTree = ref(false)
 
 const datasetTree = ref<Tree[]>([])
-
+const toolTip = computed(() => {
+  return props.themes === 'dark' ? 'ndark' : 'dark'
+})
 const initDataset = () => {
   loadingDatasetTree.value = true
   getDatasetTree({})
@@ -300,7 +302,7 @@ onMounted(() => {
                       </el-icon>
                     </div>
                     <el-tooltip
-                      effect="dark"
+                      :effect="toolTip"
                       :show-after="1000"
                       :content="node.label"
                       placement="top"
