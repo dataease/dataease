@@ -219,7 +219,7 @@ function onPopoverHide() {
 }
 .custom-color-selector {
   :deep(.ed-input__prefix) {
-    width: 100%;
+    width: calc(100% - 22px);
     .ed-input__prefix-inner {
       width: 100%;
     }
@@ -241,7 +241,7 @@ function onPopoverHide() {
 }
 
 .custom-color-setting-btn {
-  margin-top: 32px;
+  margin-top: 30px;
   line-height: 28px;
 
   border-radius: 4px;

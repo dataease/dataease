@@ -60,6 +60,7 @@ onMounted(() => {
       <el-slider
         style="width: 100px; margin-right: 12px"
         v-model="scale"
+        tooltip-theme="ndark"
         @change="handleScaleChange()"
         size="small"
       />

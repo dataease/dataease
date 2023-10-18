@@ -116,7 +116,7 @@ onMounted(() => {
         </el-icon>
         <el-icon
           class="child"
-          style="position: absolute; top: 7px; right: 8px; color: #a6a6a6; cursor: pointer"
+          style="position: absolute; top: 7px; right: 10px; color: #a6a6a6; cursor: pointer"
         >
           <Icon name="icon_down_outlined-1" class="el-icon-arrow-down el-icon-delete"></Icon>
         </el-icon>
@@ -151,7 +151,7 @@ onMounted(() => {
 }
 
 .item-axis {
-  padding: 1px 6px;
+  padding: 1px 8px;
   margin: 0 3px 2px 3px;
   height: 28px;
   line-height: 28px;
