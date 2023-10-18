@@ -25,6 +25,7 @@ import { changeComponentSizeWithScale } from '@/utils/changeComponentsSizeWithSc
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { check, compareStorage } from '@/utils/CrossPermission'
 import { useCache } from '@/hooks/web/useCache'
+import { center } from '@antv/g2plot/lib/plots/sankey/sankey'
 const { wsCache } = useCache()
 const eventCheck = e => {
   if (e.key === 'screen-weight' && !compareStorage(e.oldValue, e.newValue)) {
@@ -42,7 +43,10 @@ const { componentData, curComponent, isClickComponent, canvasStyleData, canvasVi
   storeToRefs(dvMainStore)
 const { editorMap } = storeToRefs(composeStore)
 const canvasOut = ref(null)
+const canvasInner = ref(null)
+const leftSidebarRef = ref(null)
 const dvLayout = ref(null)
+const canvasCenterRef = ref(null)
 const state = reactive({
   datasetTree: [],
   scaleHistory: 100,
@@ -60,9 +64,11 @@ const contentStyle = computed(() => {
     }
   } else {
     return {
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
       width: width * 1.5 + 'px',
-      height: (height * 2 * scale) / 100 + 'px',
-      paddingTop: (height * scale) / 200 + 'px'
+      height: height * 1.5 + 'px'
     }
   }
 })
@@ -71,9 +77,10 @@ const contentStyle = computed(() => {
 const handleNew = newComponentInfo => {
   const { componentName, innerType } = newComponentInfo
   if (componentName) {
+    const { width, height, scale } = canvasStyleData.value
     const component = findNewComponent(componentName, innerType)
-    component.style.top = 0
-    component.style.left = 0
+    component.style.top = ((height - component.style.height) * scale) / 200
+    component.style.left = ((width - component.style.width) * scale) / 200
     component.id = guid()
     changeComponentSizeWithScale(component)
     dvMainStore.addComponent({ component: component, index: undefined })
@@ -136,11 +143,15 @@ listenGlobalKeyDown()
 const initScroll = () => {
   nextTick(() => {
     const { width, height, scale } = canvasStyleData.value
+    const mainWidth = canvasCenterRef.value.clientWidth
+    const mainHeight = canvasCenterRef.value.clientHeight
+    const slideWidth = leftSidebarRef.value.clientWidth
+    const content = canvasOut.value
+
+    const scrollX = (1.5 * width - mainWidth) / 2
+    const scrollY = (1.5 * height - mainHeight) / 2 + 20
     // 设置画布初始滚动条位置
-    canvasOut.value.scrollTo(
-      (width * 1.5 - (width * scale) / 100) / 2 - 20,
-      (height * scale) / 200 - 20
-    )
+    canvasOut.value.scrollTo(scrollX, scrollY)
   })
 }
 
@@ -232,9 +243,10 @@ eventBus.on('handleNew', handleNew)
         <RealTimeComponentList />
       </dv-sidebar>
       <!-- 中间画布 -->
-      <main class="center">
+      <main class="center" ref="canvasCenterRef">
         <el-scrollbar ref="canvasOut" class="content" :class="{ 'preview-content': previewStatus }">
           <div
+            ref="canvasInner"
             :style="contentStyle"
             @drop="handleDrop"
             @dragover="handleDragOver"
@@ -255,35 +267,37 @@ eventBus.on('handleNew', handleNew)
         <ComponentToolBar :class="{ 'preview-aside-x': previewStatus }"></ComponentToolBar>
       </main>
       <!-- 右侧侧组件列表 -->
-      <dv-sidebar
-        v-if="curComponent && !['UserView'].includes(curComponent.component)"
-        :title="'属性'"
-        :width="240"
-        :side-name="'componentProp'"
-        :aside-position="'right'"
-        class="left-sidebar"
-        :class="{ 'preview-aside': editMode === 'preview' }"
-      >
-        <component :is="findComponent(curComponent['component'] + 'Attr')" />
-      </dv-sidebar>
-      <dv-sidebar
-        v-if="!curComponent"
-        :title="'大屏配置'"
-        :width="240"
-        :side-name="'canvas'"
-        :aside-position="'right'"
-        class="left-sidebar"
-        :class="{ 'preview-aside': editMode === 'preview' }"
-      >
-        <canvas-attr></canvas-attr>
-      </dv-sidebar>
-      <editor
-        v-show="curComponent && ['UserView'].includes(curComponent.component)"
-        :view="canvasViewInfo[curComponent ? curComponent.id : 'default']"
-        themes="dark"
-        :dataset-tree="state.datasetTree"
-        :class="{ 'preview-aside': editMode === 'preview' }"
-      ></editor>
+      <div style="width: auto; height: 100%" ref="leftSidebarRef">
+        <dv-sidebar
+          v-if="curComponent && !['UserView'].includes(curComponent.component)"
+          :title="'属性'"
+          :width="240"
+          :side-name="'componentProp'"
+          :aside-position="'right'"
+          class="left-sidebar"
+          :class="{ 'preview-aside': editMode === 'preview' }"
+        >
+          <component :is="findComponent(curComponent['component'] + 'Attr')" />
+        </dv-sidebar>
+        <dv-sidebar
+          v-if="!curComponent"
+          :title="'大屏配置'"
+          :width="240"
+          :side-name="'canvas'"
+          :aside-position="'right'"
+          class="left-sidebar"
+          :class="{ 'preview-aside': editMode === 'preview' }"
+        >
+          <canvas-attr></canvas-attr>
+        </dv-sidebar>
+        <editor
+          v-show="curComponent && ['UserView'].includes(curComponent.component)"
+          :view="canvasViewInfo[curComponent ? curComponent.id : 'default']"
+          themes="dark"
+          :dataset-tree="state.datasetTree"
+          :class="{ 'preview-aside': editMode === 'preview' }"
+        ></editor>
+      </div>
     </el-container>
   </div>
 </template>
