@@ -64,7 +64,9 @@ const emit = defineEmits([
 ])
 
 const { item, chart } = toRefs(props)
-
+const toolTip = computed(() => {
+  return props.themes === 'dark' ? 'ndark' : 'dark'
+})
 watch(
   [() => props.quotaData, () => props.item],
   () => {
@@ -308,7 +310,7 @@ onMounted(() => {
           </el-icon>
         </span>
         <el-tooltip
-          effect="dark"
+          :effect="toolTip"
           placement="top"
           :content="item.chartShowName ? item.chartShowName : item.name"
         >
@@ -335,7 +337,7 @@ onMounted(() => {
             -{{ t('chart.' + item.compareCalc.type) }}
           </span>
         </span>
-        <el-tooltip effect="dark" placement="top">
+        <el-tooltip :effect="toolTip" placement="top">
           <template #content>
             <span>{{ t('chart.delete') }}</span>
           </template>

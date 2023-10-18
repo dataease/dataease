@@ -334,7 +334,7 @@
                             :prefix-icon="Search"
                             clearable
                           />
-                          <el-scrollbar style="margin-top: 8px" height="250px">
+                          <el-scrollbar style="margin-top: 12px" height="250px">
                             <span
                               v-for="item in state.linkJumpInfoArray.filter(
                                 item =>
@@ -361,9 +361,9 @@
                   </template>
                 </template>
                 <div v-else class="empty">
-                  <el-empty
+                  <empty-background
                     :description="t('visualization.select_dimension_hint')"
-                    :image-size="125"
+                    img-type="noneWhite"
                   />
                 </div>
               </el-main>
@@ -401,6 +401,7 @@ import { CalcFieldType } from '@/views/visualized/data/dataset/form/CalcFieldEdi
 import JumpSetOuterContentEditor from '@/components/visualization/JumpSetOuterContentEditor.vue'
 import { Search } from '@element-plus/icons-vue'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
+import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import { filterEmptyFolderTree } from '@/utils/canvasUtils'
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo, canvasViewInfo } = storeToRefs(dvMainStore)
@@ -889,31 +890,41 @@ defineExpose({
 }
 
 .item-dimension {
-  display: flex !important;
+  display: flex;
+  height: 28px;
+  padding: 1px 8px;
   align-items: center;
-  padding: 2px 10px;
-  margin: 2px 2px 0 2px;
-  border: solid 1px #eee;
-  text-align: left;
-  color: #606266;
-  font-size: 14px;
-  background-color: white;
-  display: block;
+  gap: 4px;
+  flex-shrink: 0;
+
   word-break: break-all;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+
+  border-radius: 4px;
+  border: 1px solid #dee0e3;
+
+  background: #fff;
+
+  color: var(--neutral-900, #1f2329);
+  /* 中文/桌面端/正文 14 22 Regular */
+  font-family: PingFang SC;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 22px;
+
+  cursor: pointer;
 }
 
 .item-dimension + .item-dimension {
-  margin-top: 2px;
+  margin-top: 4px;
 }
 
 .item-dimension:hover {
-  color: #1890ff;
-  background: #e8f4ff;
-  border-color: #a3d3ff;
-  cursor: pointer;
+  border: 1px solid var(--blue-500, #3370ff);
+  background: rgba(51, 112, 255, 0.1);
 }
 
 .item-quota {

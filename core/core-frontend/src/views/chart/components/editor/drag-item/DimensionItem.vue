@@ -59,7 +59,9 @@ const emit = defineEmits([
 ])
 
 const { item } = toRefs(props)
-
+const toolTip = computed(() => {
+  return props.themes === 'dark' ? 'ndark' : 'dark'
+})
 const showValueFormatter = computed<boolean>(() => {
   return (
     (props.chart.type === 'table-normal' || props.chart.type === 'table-info') &&
@@ -200,7 +202,7 @@ onMounted(() => {
           </el-icon>
         </span>
         <el-tooltip
-          effect="dark"
+          :effect="toolTip"
           placement="top"
           :content="item.chartShowName ? item.chartShowName : item.name"
         >
@@ -209,7 +211,7 @@ onMounted(() => {
           </span>
         </el-tooltip>
 
-        <el-tooltip effect="dark" placement="top">
+        <el-tooltip :effect="toolTip" placement="top">
           <template #content>
             <span>{{ t('chart.delete') }}</span>
           </template>
