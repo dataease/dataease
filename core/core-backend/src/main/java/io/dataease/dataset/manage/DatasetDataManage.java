@@ -101,7 +101,7 @@ public class DatasetDataManage {
                 datasourceRequest.setQuery(TableUtils.tableName2Sql(datasourceSchemaDTO, tableInfoDTO.getTable()) + " LIMIT 0 OFFSET 0");
             } else {
                 // parser sql params and replace default value
-                String sql = SqlparserUtils.handleVariableDefaultValue(SqlUtils.sqlRewrite(new String(Base64.getDecoder().decode(tableInfoDTO.getSql()))), datasetTableDTO.getSqlVariableDetails(), false, false, null);
+                String sql = SqlparserUtils.handleVariableDefaultValue(new String(Base64.getDecoder().decode(tableInfoDTO.getSql())), datasetTableDTO.getSqlVariableDetails(), false, false, null);
                 // add sql table schema
                 sql = SqlUtils.addSchema(sql, datasourceSchemaDTO.getSchemaAlias());
                 sql = SQLUtils.buildOriginPreviewSql(sql, 0, 0);
@@ -273,7 +273,7 @@ public class DatasetDataManage {
         String alias = String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId());
         datasourceSchemaDTO.setSchemaAlias(alias);
         // parser sql params and replace default value
-        String sql = SqlparserUtils.handleVariableDefaultValue(SqlUtils.sqlRewrite(datasetSQLManage.subPrefixSuffixChar(new String(Base64.getDecoder().decode(dto.getSql())))), dto.getSqlVariableDetails(), true, true, null);
+        String sql = SqlparserUtils.handleVariableDefaultValue(datasetSQLManage.subPrefixSuffixChar(new String(Base64.getDecoder().decode(dto.getSql()))), dto.getSqlVariableDetails(), true, true, null);
         sql = SqlUtils.addSchema(sql, alias);
 
         Map<Long, DatasourceSchemaDTO> dsMap = new LinkedHashMap<>();
