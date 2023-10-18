@@ -232,11 +232,6 @@ const colorButtonClick = val => {
     :deep(.ed-input-group__append) {
       padding: 0 20px;
     }
-    &.is-disabled {
-      :deep(.ed-input.is-disabled .ed-input__wrapper) {
-        box-shadow: 0 0 0 1px var(--ed-disabled-border-color) inset !important;
-      }
-    }
   }
   :deep(&.dv-dark) {
     .ed-input-group__append .ed-select {
