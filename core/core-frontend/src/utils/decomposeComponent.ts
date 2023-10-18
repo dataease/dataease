@@ -6,8 +6,8 @@ export default function decomposeComponent(component, editorRect, parentStyle) {
   const componentRect = _$(`#component${component.id}`).getBoundingClientRect()
   // 获取元素的中心点坐标
   const center = {
-    x: componentRect.left - editorRect.left + componentRect.width / 2,
-    y: componentRect.top - editorRect.top + componentRect.height / 2
+    x: componentRect.left - editorRect.left + componentRect.width / 2 - 1,
+    y: componentRect.top - editorRect.top + componentRect.height / 2 - 1
   }
 
   component.style.rotate = mod360(component.style.rotate + parentStyle.rotate)
