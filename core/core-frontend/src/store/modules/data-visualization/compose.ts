@@ -92,7 +92,8 @@ export const composeStore = defineStore('compose', {
         icon: 'group',
         commonBackground: {
           ...deepCopy(COMMON_COMPONENT_BACKGROUND_MAP[curOriginThemes.value]),
-          backgroundColorSelect: false
+          backgroundColorSelect: false,
+          innerPadding: 0
         },
         ...commonAttr,
         style: {

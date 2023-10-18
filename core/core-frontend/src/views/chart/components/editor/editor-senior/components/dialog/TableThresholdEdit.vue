@@ -279,22 +279,19 @@ init()
           <el-form-item class="form-item">
             <el-select v-model="fieldItem.fieldId" @change="addField(fieldItem)">
               <el-option
+                class="series-select-option"
                 v-for="fieldOption in computedFields"
                 :key="fieldOption.id"
                 :label="fieldOption.name"
                 :value="fieldOption.id"
               >
-                <span style="float: left">
-                  <el-icon>
-                    <Icon
-                      :className="`field-icon-${fieldType[fieldOption.deType]}`"
-                      :name="`field_${fieldType[fieldOption.deType]}`"
-                    />
-                  </el-icon>
-                </span>
-                <span :style="{ float: 'left', color: '#8492a6', fontSize: '12px' }">{{
-                  fieldOption.name
-                }}</span>
+                <el-icon style="margin-right: 8px">
+                  <Icon
+                    :className="`field-icon-${fieldType[fieldOption.deType]}`"
+                    :name="`field_${fieldType[fieldOption.deType]}`"
+                  />
+                </el-icon>
+                {{ fieldOption.name }}
               </el-option>
             </el-select>
           </el-form-item>
@@ -560,5 +557,12 @@ span {
   &:active {
     background: rgba(31, 35, 41, 0.2) !important;
   }
+}
+
+.series-select-option {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  padding: 0 11px;
 }
 </style>

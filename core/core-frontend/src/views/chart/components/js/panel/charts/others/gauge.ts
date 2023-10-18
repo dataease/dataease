@@ -74,7 +74,7 @@ export class Gauge extends G2PlotChartView<GaugeOptions, G2Gauge> {
           tickInterval: 0.2,
           label: {
             style: {
-              fontSize: getScaleValue(14, scale) // 刻度值字体大小
+              fontSize: getScaleValue(12, scale) // 刻度值字体大小
             },
             formatter: function (v) {
               const r = parseFloat(v)
