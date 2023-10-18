@@ -310,7 +310,11 @@ onMounted(() => {
         />
       </el-select>
     </el-form-item>
-    <el-divider v-if="showDivider" style="margin: 0 0 16px" />
+    <el-divider
+      class="m-divider"
+      :class="{ 'divider-dark': themes === 'dark' }"
+      v-if="showDivider"
+    />
     <template v-if="showProperty('labelFormatter')">
       <el-form-item
         :label="$t('chart.value_formatter_type')"
@@ -805,5 +809,13 @@ onMounted(() => {
   align-items: center;
   justify-content: start;
   padding: 0 11px;
+}
+.m-divider {
+  margin: 0 0 16px;
+  border-color: rgba(31, 35, 41, 0.15);
+
+  &.divider-dark {
+    border-color: rgba(255, 255, 255, 0.15);
+  }
 }
 </style>
