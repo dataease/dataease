@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { reactive, ref, computed, watch, nextTick } from 'vue'
-import { ElIcon, ElMessage, ElMessageBox } from 'element-plus-secondary'
+import { ElIcon, ElMessage, ElMessageBox, ElMessageBoxOptions } from 'element-plus-secondary'
 import CreatDsGroup from './CreatDsGroup.vue'
 import { Icon } from '@/components/icon-custom'
 import type { DsType } from './DsTypeList.vue'
@@ -8,7 +8,7 @@ import DsTypeList from './DsTypeList.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import EditorDetail from './EditorDetail.vue'
 import ExcelDetail from './ExcelDetail.vue'
-import { save, validate, latestUse, isShowFinishPage } from '@/api/datasource'
+import { save, validate, latestUse, isShowFinishPage, checkRepeat } from '@/api/datasource'
 import { Base64 } from 'js-base64'
 import type { Param } from './ExcelDetail.vue'
 import { dsTypes, typeList, nameMap } from './option'
@@ -18,6 +18,7 @@ import { useEmitt } from '@/hooks/web/useEmitt'
 import FinishPage from '../FinishPage.vue'
 import { cloneDeep } from 'lodash-es'
 import { useCache } from '@/hooks/web/useCache'
+import { delDatasetTree } from '@/api/dataset'
 interface Node {
   name: string
   id: string
@@ -382,10 +383,33 @@ const saveDS = () => {
   validate(val => {
     if (val) {
       if (editDs.value) {
-        save(request).then(res => {
-          if (res !== undefined) {
-            handleShowFinishPage({ id: res.id, name: res.name })
-            ElMessage.success('保存数据源成功')
+        let options = {
+          confirmButtonType: 'danger',
+          type: 'warning',
+          autofocus: false,
+          showClose: false,
+          tip: ''
+        }
+
+        checkRepeat(request).then(res => {
+          if (res) {
+            ElMessageBox.confirm(t('datasource.has_same_ds'), options as ElMessageBoxOptions).then(
+              () => {
+                save(request).then(res => {
+                  if (res !== undefined) {
+                    handleShowFinishPage({ id: res.id, name: res.name })
+                    ElMessage.success('保存数据源成功')
+                  }
+                })
+              }
+            )
+          } else {
+            save(request).then(res => {
+              if (res !== undefined) {
+                handleShowFinishPage({ id: res.id, name: res.name })
+                ElMessage.success('保存数据源成功')
+              }
+            })
           }
         })
       } else {

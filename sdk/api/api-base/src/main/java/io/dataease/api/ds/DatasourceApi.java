@@ -31,6 +31,10 @@ public interface DatasourceApi {
     @PostMapping("/save")
     DatasourceDTO save(@RequestBody DatasourceDTO dataSourceDTO) throws DEException;
 
+
+    @PostMapping("/checkRepeat")
+    boolean checkRepeat(@RequestBody DatasourceDTO dataSourceDTO) throws DEException;
+
     @GetMapping("/types")
     List<DatasourceConfiguration.DatasourceType> datasourceTypes() throws DEException;
 

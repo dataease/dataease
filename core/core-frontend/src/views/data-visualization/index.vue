@@ -290,7 +290,6 @@ eventBus.on('handleNew', handleNew)
 
 <style lang="less">
 .preview-layout-container {
-  height: 100vh !important;
 }
 
 .preview-content {

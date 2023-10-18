@@ -189,7 +189,6 @@ onUnmounted(() => {
 }
 
 .preview-content {
-  height: 100vh !important;
   :deep(.editor-light) {
     border: 0 !important;
   }

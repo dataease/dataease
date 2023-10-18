@@ -73,9 +73,9 @@ public class SqlparserUtils {
             for (SqlNode i : list) {
                 getDependencies(i, false);
             }
-            SqlNode from  = sqlKind.getFrom().accept(getSqlShuttle());
+            SqlNode from = sqlKind.getFrom().accept(getSqlShuttle());
             sqlKind.setFrom(from);
-            if(sqlKind.getWhere() != null){
+            if (sqlKind.getWhere() != null) {
                 SqlNode newWhere = sqlKind.getWhere().accept(getSqlShuttle());
                 sqlKind.setWhere(newWhere);
             }
@@ -110,6 +110,9 @@ public class SqlparserUtils {
         if (StringUtils.isEmpty(sql)) {
             DEException.throwException(Translator.get("i18n_sql_not_empty"));
         }
+        if (sql.trim().endsWith(";")) {
+            sql = sql.substring(0, sql.length() - 1);
+        }
 
         if (StringUtils.isNotEmpty(sqlVariableDetails)) {
             TypeReference<List<SqlVariableDetails>> listTypeReference = new TypeReference<List<SqlVariableDetails>>() {
@@ -129,14 +132,14 @@ public class SqlparserUtils {
                 SqlVariableDetails filterParameter = null;
                 if (ObjectUtils.isNotEmpty(parameters)) {
                     for (SqlVariableDetails parameter : parameters) {
-                        if(parameter.getVariableName().equalsIgnoreCase(defaultsSqlVariableDetail.getVariableName())){
+                        if (parameter.getVariableName().equalsIgnoreCase(defaultsSqlVariableDetail.getVariableName())) {
                             filterParameter = parameter;
                         }
                     }
                 }
-                if(filterParameter != null){
+                if (filterParameter != null) {
                     sql = sql.replace(matcher.group(), transFilter(filterParameter));
-                }else {
+                } else {
                     if (defaultsSqlVariableDetail != null && StringUtils.isNotEmpty(defaultsSqlVariableDetail.getDefaultValue())) {
                         if (!isEdit && isFromDataSet && defaultsSqlVariableDetail.getDefaultValueScope().equals(SqlVariableDetails.DefaultValueScope.ALLSCOPE)) {
                             sql = sql.replace(matcher.group(), defaultsSqlVariableDetail.getDefaultValue());
@@ -162,10 +165,10 @@ public class SqlparserUtils {
         if (sqlVariableDetails.getOperator().equals("in")) {
             return "'" + String.join("','", sqlVariableDetails.getValue()) + "'";
         } else if (sqlVariableDetails.getOperator().equals("between")) {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(sqlVariableDetails.getType().size() > 1 ? (String)sqlVariableDetails.getType().get(1).replace("DD", "dd") : "YYYY");
-            return simpleDateFormat.format(new Date(Long.parseLong((String)sqlVariableDetails.getValue().get(0))));
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(sqlVariableDetails.getType().size() > 1 ? (String) sqlVariableDetails.getType().get(1).replace("DD", "dd") : "YYYY");
+            return simpleDateFormat.format(new Date(Long.parseLong((String) sqlVariableDetails.getValue().get(0))));
         } else {
-            return (String)sqlVariableDetails.getValue().get(0);
+            return (String) sqlVariableDetails.getValue().get(0);
         }
     }
 }

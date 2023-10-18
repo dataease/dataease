@@ -50,7 +50,7 @@
         AND visualization_linkage.dv_id = #{dvId}
         AND visualization_linkage.source_view_id = #{sourceViewId}
         LEFT JOIN visualization_linkage_field ON visualization_linkage.id = visualization_linkage_field.linkage_id
-        where core_chart_view.id in
+        where core_chart_view.type != 'VQuery' and core_chart_view.id in
         <foreach collection="targetViewIds" item="targetViewId" index="index" open="(" close=")" separator=",">
             #{targetViewId}
         </foreach>

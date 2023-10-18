@@ -1,5 +1,6 @@
 package io.dataease.datasource.server;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -38,7 +39,6 @@ import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.exception.DEException;
 import io.dataease.i18n.Translator;
-import io.dataease.job.sechedule.ScheduleManager;
 import io.dataease.license.config.XpackInteract;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
@@ -49,6 +49,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -67,8 +68,6 @@ import static io.dataease.datasource.server.DatasourceTaskServer.ScheduleType.RI
 public class DatasourceServer implements DatasourceApi {
     @Resource
     private CoreDatasourceMapper datasourceMapper;
-    @Resource
-    private CoreDatasetTableMapper coreDatasetTableMapper;
     @Resource
     private EngineServer engineServer;
     @Resource
@@ -142,6 +141,73 @@ public class DatasourceServer implements DatasourceApi {
         }
     }
 
+    private void filterDs(List<BusiNodeVO> busiNodeVOS, List<Long> ids, String type, Long id) {
+        for (BusiNodeVO busiNodeVO : busiNodeVOS) {
+            if (busiNodeVO.getType() != null && busiNodeVO.getType().equalsIgnoreCase(type)) {
+                if (id != null && !busiNodeVO.getId().equals(id)) {
+                    ids.add(busiNodeVO.getId());
+                } else {
+                    ids.add(busiNodeVO.getId());
+                }
+            }
+            if (CollectionUtil.isNotEmpty(busiNodeVO.getChildren())) {
+                filterDs(busiNodeVO.getChildren(), ids, type, id);
+            }
+        }
+    }
+
+    public boolean checkRepeat(@RequestBody DatasourceDTO dataSourceDTO) {
+        if (Arrays.asList("API", "Excel", "folder").contains(dataSourceDTO.getType())) {
+            return false;
+        }
+        BusiNodeRequest request = new BusiNodeRequest();
+        request.setBusiFlag("datasource");
+        List<BusiNodeVO> busiNodeVOS = dataSourceManage.tree(request);
+        List<Long> ids = new ArrayList<>();
+        filterDs(busiNodeVOS, ids, dataSourceDTO.getType(), dataSourceDTO.getId());
+
+        if(CollectionUtil.isEmpty(ids)){
+            return false;
+        }
+        QueryWrapper<CoreDatasource> wrapper = new QueryWrapper<>();
+        wrapper.in("id", ids);
+
+        List<CoreDatasource> datasources = datasourceMapper.selectList(wrapper);
+        if (CollectionUtil.isEmpty(datasources)) {
+            return false;
+        }
+        dataSourceDTO.setConfiguration(new String(Base64.getDecoder().decode(dataSourceDTO.getConfiguration())));
+        DatasourceConfiguration configuration = JsonUtil.parseObject(dataSourceDTO.getConfiguration(), DatasourceConfiguration.class);
+        boolean hasRepeat = false;
+        for (CoreDatasource datasource : datasources) {
+            if (Arrays.asList("API", "Excel", "folder").contains(datasource.getType())) {
+               continue;
+            }
+            DatasourceConfiguration compare = JsonUtil.parseObject(datasource.getConfiguration(), DatasourceConfiguration.class);
+            switch (dataSourceDTO.getType()) {
+                case "sqlServer":
+                case "db2":
+                case "oracle":
+                case "pg":
+                case "redshift":
+                    if (configuration.getHost().equalsIgnoreCase(compare.getHost()) && Objects.equals(configuration.getPort(), compare.getPort()) && configuration.getDataBase().equalsIgnoreCase(compare.getDataBase()) && configuration.getSchema().equalsIgnoreCase(compare.getSchema())) {
+                        hasRepeat = true;
+                    } else {
+                        hasRepeat = false;
+                    }
+                    break;
+                default:
+                    if (configuration.getHost().equalsIgnoreCase(compare.getHost()) && Objects.equals(configuration.getPort(), compare.getPort()) && configuration.getDataBase().equalsIgnoreCase(compare.getDataBase())) {
+                        hasRepeat = true;
+                    } else {
+                        hasRepeat = false;
+                    }
+                    break;
+            }
+        }
+        return hasRepeat;
+    }
+
     @Override
     public DatasourceDTO save(DatasourceDTO dataSourceDTO) throws DEException {
         if (StringUtils.isNotEmpty(dataSourceDTO.getAction())) {
@@ -197,6 +263,10 @@ public class DatasourceServer implements DatasourceApi {
             }
             if (StringUtils.equalsIgnoreCase(coreDatasourceTask.getSyncRate(), RIGHTNOW.toString())) {
                 coreDatasourceTask.setCron(null);
+            } else {
+                if (StringUtils.equalsIgnoreCase(coreDatasourceTask.getEndLimit(), "1") && coreDatasourceTask.getStartTime() < coreDatasourceTask.getEndTime()) {
+                    DEException.throwException("结束时间不能小于开始时间！");
+                }
             }
             coreDatasourceTask.setTaskStatus(TaskStatus.WaitingForExecution.name());
             datasourceTaskServer.insert(coreDatasourceTask);
@@ -283,6 +353,10 @@ public class DatasourceServer implements DatasourceApi {
             if (StringUtils.equalsIgnoreCase(coreDatasourceTask.getSyncRate(), RIGHTNOW.toString())) {
                 coreDatasourceTask.setStartTime(System.currentTimeMillis() - 20 * 1000);
                 coreDatasourceTask.setCron(null);
+            } else {
+                if (StringUtils.equalsIgnoreCase(coreDatasourceTask.getEndLimit(), "1") && coreDatasourceTask.getStartTime() < coreDatasourceTask.getEndTime()) {
+                    DEException.throwException("结束时间不能小于开始时间！");
+                }
             }
             coreDatasourceTask.setTaskStatus(TaskStatus.WaitingForExecution.toString());
             datasourceTaskServer.update(coreDatasourceTask);
@@ -640,11 +714,15 @@ public class DatasourceServer implements DatasourceApi {
                     for (DatasetTableDTO datasetTableDTO : datasetTableDTOS) {
                         if (excelDataTableName(datasetTableDTO.getTableName()).equals(sheet.getTableName()) || isCsv(file.getOriginalFilename())) {
                             List<String> fieldNames = sheet.getFields().stream().map(TableField::getName).collect(Collectors.toList());
+                            List<String> fieldTypes = sheet.getFields().stream().map(TableField::getFieldType).collect(Collectors.toList());
                             Collections.sort(fieldNames);
+                            Collections.sort(fieldTypes);
                             datasourceRequest.setTable(datasetTableDTO.getTableName());
                             List<String> oldFieldNames = ExcelUtils.getTableFields(datasourceRequest).stream().map(TableField::getName).collect(Collectors.toList());
+                            List<String> oldFieldTypes = ExcelUtils.getTableFields(datasourceRequest).stream().map(TableField::getFieldType).collect(Collectors.toList());
                             Collections.sort(oldFieldNames);
-                            if (fieldNames.equals(oldFieldNames)) {
+                            Collections.sort(oldFieldTypes);
+                            if (fieldNames.equals(oldFieldNames) && fieldTypes.equals(oldFieldTypes)) {
                                 sheet.setDeTableName(datasetTableDTO.getTableName());
                                 excelSheetDataList.add(sheet);
                             }
