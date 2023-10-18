@@ -691,7 +691,7 @@ span {
 
   .set-text-info {
     cursor: default;
-    padding: 2px 4px;
+    padding: 1.5px 4px;
     border-radius: 2px;
     background: rgba(31, 35, 41, 0.1);
 
