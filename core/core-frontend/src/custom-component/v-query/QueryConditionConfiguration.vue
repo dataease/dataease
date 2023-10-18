@@ -206,9 +206,9 @@ const initDataset = () => {
 
 const computedTree = computed(() => {
   if (datasetTree.value[0]?.id === '0') {
-    return datasetTree.value[0].children
+    return dfs(datasetTree.value[0].children)
   }
-  return datasetTree.value
+  return dfs(datasetTree.value)
 })
 
 const handleDatasetChange = () => {
@@ -509,10 +509,17 @@ const dsSelectProps = {
   label: 'name',
   children: 'children',
   value: 'id',
-  isLeaf: node => !node.children?.length,
-  disabled: data => {
-    return !data.children?.length && !data.leaf
-  }
+  isLeaf: node => !node.children?.length
+}
+
+const dfs = arr => {
+  return arr.filter(ele => {
+    if (!!ele.children?.length && !ele.leaf) {
+      ele.children = dfs(ele.children)
+      return !!ele.children?.length
+    }
+    return ele.leaf
+  })
 }
 
 const renameInputBlur = () => {
@@ -1281,6 +1288,10 @@ defineExpose({
     .label {
       margin-left: 5px;
     }
+  }
+
+  .ed-select-dropdown__item.selected {
+    font-weight: 400;
   }
 }
 </style>
