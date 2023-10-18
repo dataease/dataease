@@ -471,8 +471,6 @@ defineExpose({
   text-overflow: ellipsis; /*超出部分文字以...显示*/
   color: #3d4d66;
   font-size: 12px;
-  line-height: 35px;
-  height: 35px;
   border-radius: 3px;
 }
 
