@@ -177,6 +177,8 @@ const chartViewInstance = computed(() => {
   return chartViewManager.getChartView(view.value.render, view.value.type)
 })
 const showAxis = (axis: AxisType) => chartViewInstance.value?.axis?.includes(axis)
+const areaSelect = ref()
+const expandKeys = ref([])
 watch(
   () => [view.value.type, view.value],
   newVal => {
@@ -189,6 +191,9 @@ watch(
       } else {
         state.areaId = view.value?.customAttr?.map?.id
       }
+      areaSelect.value?.blur()
+      expandKeys.value = []
+      areaSelect.value?.setCurrentKey(state.areaId, state.areaId)
     }
     state.chartTypeOptions = [getViewConfig(newVal[0])]
     state.useless = newVal[0]
@@ -1161,12 +1166,14 @@ const onRefreshChange = val => {
                           :props="treeProps"
                           :filterNodeMethod="filterNode"
                           :current-node-key="state.areaId"
-                          @node-click="onAreaChange"
+                          :teleported="false"
+                          :default-expanded-keys="expandKeys"
+                          ref="areaSelect"
                           empty-text="请选择区域"
                           node-key="id"
                           check-strictly
                           filterable
-                          :teleported="false"
+                          @node-click="onAreaChange"
                         />
                       </div>
                     </el-row>
