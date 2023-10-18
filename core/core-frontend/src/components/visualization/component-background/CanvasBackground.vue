@@ -13,7 +13,7 @@
       "
       @change="reUpload"
     />
-    <el-form label-position="top" style="width: 100%">
+    <el-form label-position="top" style="width: 100%; margin-bottom: 16px">
       <el-form-item class="form-item no-margin-bottom" :class="'form-item-' + themes">
         <el-checkbox
           size="small"
@@ -77,8 +77,9 @@
             >
               <el-icon><Plus /></el-icon>
             </el-upload>
-            <el-row style="margin-top: 8px">
+            <el-row>
               <span
+                style="margin-top: 2px"
                 v-if="!canvasStyleData.background"
                 class="image-hint"
                 :class="`image-hint_${themes}`"
@@ -87,7 +88,7 @@
               </span>
               <el-button
                 size="small"
-                style="margin-left: -4px"
+                style="margin: 8px 0 0 -4px"
                 v-if="canvasStyleData.background"
                 text
                 @click="goFile"

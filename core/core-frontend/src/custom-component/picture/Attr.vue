@@ -127,8 +127,9 @@ onBeforeUnmount(() => {
             <img-view-dialog v-model="dialogVisible" :image-url="dialogImageUrl"></img-view-dialog>
           </el-col>
         </el-row>
-        <el-row style="margin-top: 8px; margin-bottom: 16px">
+        <el-row style="margin-bottom: 16px">
           <span
+            style="margin-top: 2px"
             v-if="!curComponent.propValue.url"
             class="image-hint"
             :class="`image-hint_${themes}`"
@@ -138,7 +139,7 @@ onBeforeUnmount(() => {
 
           <el-button
             size="small"
-            style="margin-left: -4px"
+            style="margin: 8px 0 0 -4px"
             v-if="curComponent.propValue.url"
             text
             @click="goFile"

@@ -180,8 +180,9 @@
             >
               <el-icon><Plus /></el-icon>
             </el-upload>
-            <el-row style="margin-top: 8px">
+            <el-row>
               <span
+                style="margin-top: 2px"
                 v-if="!state.commonBackground['outerImage']"
                 class="image-hint"
                 :class="`image-hint_${themes}`"
@@ -191,7 +192,7 @@
 
               <el-button
                 size="small"
-                style="margin-left: -4px"
+                style="margin: 8px 0 0 -4px"
                 v-if="state.commonBackground['outerImage']"
                 text
                 @click="goFile"
