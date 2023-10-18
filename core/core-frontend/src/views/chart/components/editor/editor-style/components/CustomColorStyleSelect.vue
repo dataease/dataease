@@ -241,7 +241,7 @@ function onPopoverHide() {
 }
 
 .custom-color-setting-btn {
-  margin-top: 32px;
+  margin-top: 30px;
   line-height: 28px;
 
   border-radius: 4px;
