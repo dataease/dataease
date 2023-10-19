@@ -168,7 +168,7 @@ export default {
     parent: '上级组织',
     default_cannot_move: '默认组织不能删除',
     cannot_delete: '无法删除',
-    confirm_delete: '确认删除该组织吗？',
+    confirm_delete: '确定删除该组织吗？',
     delete_children_first: '请先删除子组织后，再删除当前组织',
     confirm_content: '友情提示，组织被删除后，组织下的资源也将被删除',
     give_up_resource: '放弃资源，直接删除',
