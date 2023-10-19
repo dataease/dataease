@@ -264,7 +264,7 @@ public class DatasourceServer implements DatasourceApi {
             if (StringUtils.equalsIgnoreCase(coreDatasourceTask.getSyncRate(), RIGHTNOW.toString())) {
                 coreDatasourceTask.setCron(null);
             } else {
-                if (StringUtils.equalsIgnoreCase(coreDatasourceTask.getEndLimit(), "1") && coreDatasourceTask.getStartTime() < coreDatasourceTask.getEndTime()) {
+                if (StringUtils.equalsIgnoreCase(coreDatasourceTask.getEndLimit(), "1") && coreDatasourceTask.getStartTime() > coreDatasourceTask.getEndTime()) {
                     DEException.throwException("结束时间不能小于开始时间！");
                 }
             }
@@ -354,7 +354,7 @@ public class DatasourceServer implements DatasourceApi {
                 coreDatasourceTask.setStartTime(System.currentTimeMillis() - 20 * 1000);
                 coreDatasourceTask.setCron(null);
             } else {
-                if (StringUtils.equalsIgnoreCase(coreDatasourceTask.getEndLimit(), "1") && coreDatasourceTask.getStartTime() < coreDatasourceTask.getEndTime()) {
+                if (StringUtils.equalsIgnoreCase(coreDatasourceTask.getEndLimit(), "1") && coreDatasourceTask.getStartTime() > coreDatasourceTask.getEndTime()) {
                     DEException.throwException("结束时间不能小于开始时间！");
                 }
             }
