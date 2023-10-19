@@ -108,9 +108,22 @@ const downloadViewDetails = () => {
   const chart = { ...viewInfo.value, chartExtRequest, data: viewDataInfo }
   exportExcelDownload(chart)
 }
+//
+// const htmlToImage = () => {
+//   downloadCanvas('img', viewContainer.value, viewInfo.value.title)
+// }
 
 const htmlToImage = () => {
-  downloadCanvas('img', viewContainer.value, viewInfo.value.title)
+  toPng(viewContainer.value)
+    .then(dataUrl => {
+      const a = document.createElement('a')
+      a.setAttribute('download', viewInfo.value.title)
+      a.href = dataUrl
+      a.click()
+    })
+    .catch(error => {
+      console.error('oops, something went wrong!', error)
+    })
 }
 
 defineExpose({
