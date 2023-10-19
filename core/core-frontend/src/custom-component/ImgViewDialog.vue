@@ -73,7 +73,7 @@ onBeforeUnmount(() => {
   scopeEventListener.stop()
 })
 const emits = defineEmits(['update:modelValue'])
-const HandleDeforeClose = () => {
+const HandleBeforeClose = () => {
   transform.value.scale = 1
   modelValue.value = false
   emits('update:modelValue', false)
@@ -84,7 +84,7 @@ const HandleDeforeClose = () => {
   <el-dialog
     class="img-enlarge-dialog"
     append-to-body
-    :before-close="HandleDeforeClose"
+    :before-close="HandleBeforeClose"
     destroy-on-close
     close-on-click-modal
     v-model="modelValue"
