@@ -410,6 +410,52 @@ const validatorSchema = () => {
   dsForm.value.validateField('configuration.schema')
 }
 
+const dsApiForm = ref()
+const apiRule = {
+  'syncSetting.updateType': [
+    {
+      required: true,
+      message: t('datasource.update_type'),
+      trigger: 'change'
+    }
+  ],
+  'syncSetting.syncRate': [
+    {
+      required: true,
+      message: t('datasource.sync_rate'),
+      trigger: 'change'
+    }
+  ],
+  'syncSetting.simpleCronValue': [
+    {
+      required: true,
+      message: t('auth.set_rules'),
+      trigger: 'change'
+    }
+  ],
+  'syncSetting.cron': [
+    {
+      required: true,
+      message: t('common.cron_exp'),
+      trigger: 'change'
+    }
+  ],
+  'syncSetting.startTime': [
+    {
+      required: true,
+      message: t('datasource.start_time'),
+      trigger: 'change'
+    }
+  ],
+  'syncSetting.endLimit': [
+    {
+      required: true,
+      message: t('datasource.end_time'),
+      trigger: 'change'
+    }
+  ]
+}
+
 defineExpose({
   submitForm,
   resetForm,
@@ -755,10 +801,19 @@ defineExpose({
             </el-row>
           </template>
         </template>
+      </el-form>
+      <el-form
+        ref="dsApiForm"
+        :model="form"
+        :rules="apiRule"
+        label-width="180px"
+        label-position="top"
+        require-asterisk-position="right"
+      >
         <!--        API update setting -->
         <el-form-item
           :label="t('datasource.update_type')"
-          prop="type"
+          prop="syncSetting.updateType"
           v-if="activeStep === 2 && form.type === 'API'"
         >
           <el-radio-group v-model="form.syncSetting.updateType">
@@ -767,8 +822,8 @@ defineExpose({
           </el-radio-group>
         </el-form-item>
         <el-form-item
-          :label="t('datasource.execute_rate')"
-          prop="rate"
+          :label="t('datasource.sync_rate')"
+          prop="syncSetting.syncRate"
           v-if="activeStep === 2 && form.type === 'API'"
         >
           <el-radio-group v-model="form.syncSetting.syncRate" @change="onRateChange">
@@ -782,9 +837,9 @@ defineExpose({
           class="execute-rate-cont"
         >
           <el-form-item
+            :label="t('auth.set_rules')"
             v-if="form.syncSetting.syncRate === 'SIMPLE_CRON'"
-            :label="t('datasource.execute_rate')"
-            prop="rate"
+            prop="syncSetting.simpleCronValue"
           >
             <div class="simple-cron">
               {{ t('common.every') }}
@@ -808,7 +863,7 @@ defineExpose({
           </el-form-item>
           <el-form-item
             v-if="form.syncSetting.syncRate === 'CRON'"
-            prop="cron"
+            prop="syncSetting.cron"
             :label="t('common.cron_exp')"
           >
             <el-popover :width="834" v-model="cronEdit" trigger="click">
@@ -834,7 +889,7 @@ defineExpose({
           <el-form-item
             v-if="form.syncSetting.syncRate !== 'RIGHTNOW'"
             :label="t('datasource.start_time')"
-            prop="startTime"
+            prop="syncSetting.startTime"
           >
             <el-date-picker
               v-model="form.syncSetting.startTime"
@@ -847,7 +902,7 @@ defineExpose({
           <el-form-item
             v-if="form.syncSetting.syncRate !== 'RIGHTNOW'"
             :label="t('datasource.end_time')"
-            prop="end"
+            prop="syncSetting.endLimit"
           >
             <el-radio-group v-model="form.syncSetting.endLimit">
               <el-radio label="0">{{ t('datasource.no_limit') }}</el-radio>
@@ -866,6 +921,7 @@ defineExpose({
           </el-form-item>
         </div>
       </el-form>
+
       <api-http-request-draw @return-item="returnItem" ref="editApiItem"></api-http-request-draw>
     </div>
   </div>
@@ -876,6 +932,16 @@ defineExpose({
   width: 100%;
   display: flex;
   justify-content: center;
+  .ed-radio {
+    height: 22px;
+  }
+
+  .execute-rate-cont {
+    background: #f5f6f7;
+    border-radius: 4px;
+    padding: 16px;
+    margin-top: -8px;
+  }
 
   .de-select {
     width: 100%;
