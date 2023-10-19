@@ -37,20 +37,24 @@ const reposition = () => {
   useEmitt().emitter.emit('initScroll')
 }
 
+// 记录瞬时wheel值 防止放大操作和滚动操作冲突
+let lastWheelNum = 0
+
 const handleMouseWheel = e => {
   const delta = e.wheelDelta ? e.wheelDelta : -e.detail
   console.log('delta=' + delta)
-  if (delta === 240) {
+  if (lastWheelNum === 240 && delta === 240) {
     e.stopPropagation()
     e.preventDefault()
     //放大
     scaleIncrease(3)
-  } else if (delta === -240) {
+  } else if (lastWheelNum === -240 && delta === -240) {
     e.stopPropagation()
     e.preventDefault()
     // 缩小
     scaleDecrease(3)
   }
+  lastWheelNum = delta
 }
 
 onMounted(() => {
