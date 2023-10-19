@@ -687,8 +687,9 @@ public class DatasourceServer implements DatasourceApi {
     @Override
     public void syncApiTable(Map<String, String> req) throws DEException {
         String tableName = req.get("tableName");
+        String name = req.get("name");
         Long datasourceId = Long.valueOf(req.get("datasourceId"));
-        datasourceSyncManage.extractDataForTable(datasourceId, tableName, datasourceTaskServer.selectByDSId(datasourceId).getUpdateType());
+        datasourceSyncManage.extractDataForTable(datasourceId, name, tableName, datasourceTaskServer.selectByDSId(datasourceId).getUpdateType());
     }
 
     @Override
