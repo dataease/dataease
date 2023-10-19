@@ -2203,7 +2203,6 @@ const getDsIconName = data => {
   box-shadow: 0px -2px 4px rgba(31, 35, 41, 0.08);
 
   .select-svg-icon {
-    top: 8px;
     left: 11px;
   }
 
