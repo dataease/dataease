@@ -444,12 +444,40 @@ export function getYAxis(chart: Chart) {
         }
       }
     : null
+  const rotate = yAxis.axisLabel.rotate
+  let textAlign = 'end'
+  let textBaseline = 'middle'
+  if (yAxis.position === 'right') {
+    textAlign = 'start'
+    if (Math.abs(rotate) > 75) {
+      textAlign = 'center'
+    }
+    if (rotate > 75) {
+      textBaseline = 'bottom'
+    }
+    if (rotate < -75) {
+      textBaseline = 'top'
+    }
+  }
+  if (yAxis.position === 'left') {
+    if (Math.abs(rotate) > 75) {
+      textAlign = 'center'
+    }
+    if (rotate > 75) {
+      textBaseline = 'top'
+    }
+    if (rotate < -75) {
+      textBaseline = 'bottom'
+    }
+  }
   const label = yAxis.axisLabel.show
     ? {
-        rotate: (yAxis.axisLabel.rotate * Math.PI) / 180,
+        rotate: (rotate * Math.PI) / 180,
         style: {
           fill: yAxis.axisLabel.color,
-          fontSize: yAxis.axisLabel.fontSize
+          fontSize: yAxis.axisLabel.fontSize,
+          textBaseline,
+          textAlign
         }
       }
     : null
