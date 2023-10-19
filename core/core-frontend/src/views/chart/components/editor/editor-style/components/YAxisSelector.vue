@@ -97,22 +97,7 @@ onMounted(() => {
       class="form-item"
       :class="'form-item-' + themes"
       :label="t('chart.position')"
-      v-if="showProperty('hPosition')"
-    >
-      <el-radio-group
-        v-model="state.axisForm.position"
-        size="small"
-        @change="changeAxisStyle('position')"
-      >
-        <el-radio :effect="props.themes" label="bottom">{{ t('chart.text_pos_left') }}</el-radio>
-        <el-radio :effect="props.themes" label="top">{{ t('chart.text_pos_right') }}</el-radio>
-      </el-radio-group>
-    </el-form-item>
-    <el-form-item
-      class="form-item"
-      :class="'form-item-' + themes"
-      :label="t('chart.position')"
-      v-if="showProperty('vPosition')"
+      v-if="showProperty('position')"
     >
       <el-radio-group
         v-model="state.axisForm.position"

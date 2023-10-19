@@ -240,10 +240,6 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
     )(chart, options)
   }
 
-  setupDefaultOptions(chart: ChartObj): ChartObj {
-    return this.setupVerticalAxis(chart)
-  }
-
   constructor(name = 'area') {
     super(name, DEFAULT_DATA)
   }

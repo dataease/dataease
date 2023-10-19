@@ -365,19 +365,27 @@ export function getXAxis(chart: Chart) {
               }
             }
           : null
+        let textAlign = 'center'
         const rotate = a.axisLabel.rotate
+        if (a.position === 'top') {
+          textAlign = rotate > 20 ? 'end' : rotate < -20 ? 'start' : 'center'
+        }
+        if (a.position === 'bottom') {
+          textAlign = rotate > 20 ? 'start' : rotate < -20 ? 'end' : 'center'
+        }
         const label = a.axisLabel.show
           ? {
               rotate: (rotate * Math.PI) / 180,
               style: {
                 fill: a.axisLabel.color,
                 fontSize: a.axisLabel.fontSize,
-                textAlign: rotate > 20 ? 'start' : rotate < -20 ? 'end' : 'center'
+                textAlign: textAlign
               }
             }
           : null
 
         axis = {
+          top: true,
           position: a.position,
           title,
           grid,
@@ -447,6 +455,7 @@ export function getYAxis(chart: Chart) {
     : null
 
   axis = {
+    top: true,
     position: yAxis.position,
     title,
     grid,

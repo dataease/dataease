@@ -28,7 +28,7 @@ export const LINE_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
     'name',
     'color',
     'fontSize',
-    'vPosition',
+    'position',
     'axisLabel',
     'axisLine',
     'splitLine'
@@ -37,7 +37,7 @@ export const LINE_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
     'name',
     'color',
     'fontSize',
-    'vPosition',
+    'position',
     'axisLabel',
     'axisLine',
     'splitLine',

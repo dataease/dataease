@@ -25,8 +25,6 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
   properties = BAR_EDITOR_PROPERTY
   propertyInner = {
     ...BAR_EDITOR_PROPERTY_INNER,
-    'x-axis-selector': [...BAR_EDITOR_PROPERTY_INNER['x-axis-selector'], 'vPosition'],
-    'y-axis-selector': [...BAR_EDITOR_PROPERTY_INNER['y-axis-selector'], 'vPosition'],
     'label-selector': ['vPosition', 'seriesLabelFormatter'],
     'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'seriesTooltipFormatter']
   }
@@ -219,7 +217,6 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
   }
 
   setupDefaultOptions(chart: ChartObj): ChartObj {
-    flowLeft(this.setupVerticalAxis, this.setupVerticalLabel)(chart)
     chart.senior.functionCfg.emptyDataStrategy = 'ignoreData'
     return chart
   }

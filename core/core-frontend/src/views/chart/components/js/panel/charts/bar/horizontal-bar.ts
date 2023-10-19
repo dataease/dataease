@@ -32,8 +32,6 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
   properties = BAR_EDITOR_PROPERTY
   propertyInner = {
     ...BAR_EDITOR_PROPERTY_INNER,
-    'x-axis-selector': [...BAR_EDITOR_PROPERTY_INNER['y-axis-selector'], 'hPosition'],
-    'y-axis-selector': [...BAR_EDITOR_PROPERTY_INNER['x-axis-selector'], 'hPosition'],
     'label-selector': ['hPosition', 'seriesLabelFormatter'],
     'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'seriesTooltipFormatter']
   }
@@ -122,6 +120,12 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
         return valueFormatter(value, xAxis.axisLabelFormatter)
       }
     }
+    if (tmpOptions.xAxis.position === 'top') {
+      tmpOptions.xAxis.position = 'left'
+    }
+    if (tmpOptions.xAxis.position === 'bottom') {
+      tmpOptions.xAxis.position = 'right'
+    }
     if (!axisValue?.auto) {
       const axis = {
         xAxis: {
@@ -159,15 +163,8 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
   }
 
   setupDefaultOptions(chart: ChartObj): ChartObj {
-    const { customStyle, customAttr } = chart
-    const { xAxis, yAxis } = customStyle
+    const { customAttr } = chart
     const { label } = customAttr
-    if (!['left', 'right'].includes(xAxis.position)) {
-      xAxis.position = 'right'
-    }
-    if (!['top', 'bottom'].includes(yAxis.position)) {
-      yAxis.position = 'bottom'
-    }
     if (!['left', 'middle', 'right'].includes(label.position)) {
       label.position = 'middle'
     }
@@ -222,6 +219,20 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
       ...tmpOptions,
       label
     }
+  }
+
+  protected configYAxis(chart: Chart, options: BarOptions): BarOptions {
+    const tmpOptions = super.configYAxis(chart, options)
+    if (!tmpOptions.yAxis) {
+      return tmpOptions
+    }
+    if (tmpOptions.yAxis.position === 'left') {
+      tmpOptions.yAxis.position = 'bottom'
+    }
+    if (tmpOptions.yAxis.position === 'right') {
+      tmpOptions.yAxis.position = 'top'
+    }
+    return tmpOptions
   }
 
   protected setupOptions(chart: Chart, options: BarOptions): BarOptions {
