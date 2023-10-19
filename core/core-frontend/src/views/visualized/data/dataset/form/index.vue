@@ -1955,6 +1955,10 @@ const getDsIconName = data => {
         font-size: 14px;
         overflow-y: auto;
         box-sizing: border-box;
+        :deep(.ed-tabs) {
+          position: relative;
+          z-index: 4;
+        }
 
         .sql-title {
           user-select: none;
@@ -2175,7 +2179,10 @@ const getDsIconName = data => {
 .select-svg-icon {
   position: absolute;
   left: 24px;
-  top: 15px;
+  top: 50%;
+  height: 14px;
+  transform: translateY(-50%);
+  line-height: 14px;
 }
 
 .cascader-panel {
