@@ -94,7 +94,9 @@ export default {
     pwd_pattern_error: '6-20位且至少一位大写字母、小写字母、数字、特殊字符',
     special_characters_are_not_supported: '不允许特殊字符',
     phone_format: '请填写正确格式手机号',
-    email_format_is_incorrect: '请填写正确格式邮箱'
+    email_format_is_incorrect: '请填写正确格式邮箱',
+    enable_success: '已启用',
+    disable_success: '已禁用'
   },
   userimport: {
     buttonText: '批量导入',
