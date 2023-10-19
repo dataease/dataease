@@ -1,5 +1,15 @@
 <script lang="tsx" setup>
-import { ref, nextTick, reactive, shallowRef, computed, watch, provide } from 'vue'
+import {
+  ref,
+  nextTick,
+  reactive,
+  shallowRef,
+  computed,
+  watch,
+  provide,
+  onMounted,
+  onBeforeUnmount
+} from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ElIcon, ElMessageBox, ElMessage } from 'element-plus-secondary'
 import type { Action } from 'element-plus-secondary'
@@ -23,7 +33,7 @@ import {
 } from '@/api/dataset'
 import type { Table } from '@/api/dataset'
 import DatasetUnion from './DatasetUnion.vue'
-import { cloneDeep } from 'lodash-es'
+import { cloneDeep, debounce } from 'lodash-es'
 
 interface DragEvent extends MouseEvent {
   dataTransfer: DataTransfer
@@ -52,6 +62,7 @@ interface Field {
 const { t } = useI18n()
 const route = useRoute()
 const { push } = useRouter()
+const quotaTableHeight = ref(238)
 const creatDsFolder = ref()
 const editCalcField = ref(false)
 const calcEdit = ref()
@@ -778,17 +789,45 @@ const mousedownDragH = () => {
   document.querySelector('.dataset-db').addEventListener('mousemove', calculateHeight)
 }
 const calculateHeight = (e: MouseEvent) => {
+  const clientHeight = document.documentElement.clientHeight
   if (e.pageY - 56 < 64) {
     dragHeight.value = 64
+    sqlResultHeight.value = clientHeight - dragHeight.value - 56
     return
   }
-  if (e.pageY > document.documentElement.clientHeight - 57) {
-    dragHeight.value = document.documentElement.clientHeight - 113
+  if (e.pageY > clientHeight - 57) {
+    dragHeight.value = clientHeight - 113
+    sqlResultHeight.value = clientHeight - dragHeight.value - 56
     return
   }
   dragHeight.value = e.pageY - 56
+  sqlResultHeight.value = clientHeight - dragHeight.value - 56
+  quotaTableHeight.value = sqlResultHeight.value - 242
 }
 
+const sqlResultHeight = ref(0)
+const handleResize = debounce(() => {
+  const clientHeight = document.documentElement.clientHeight
+  if (clientHeight - sqlResultHeight.value - 56 < 64) {
+    dragHeight.value = 64
+    sqlResultHeight.value = clientHeight - dragHeight.value - 56
+    return
+  }
+  dragHeight.value = clientHeight - sqlResultHeight.value - 56
+}, 60)
+
+onMounted(() => {
+  window.addEventListener('resize', handleResize)
+  getSqlResultHeight()
+  quotaTableHeight.value = sqlResultHeight.value - 242
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', handleResize)
+})
+const getSqlResultHeight = () => {
+  sqlResultHeight.value = (document.querySelector('.sql-result') as HTMLElement).offsetHeight
+}
 const getDatasource = () => {
   getDatasourceList().then(res => {
     const _list = (res as unknown as DataSource[]) || []
@@ -1181,7 +1220,12 @@ const getDsIconName = data => {
           @updateAllfields="updateAllfields"
           @addComplete="addComplete"
         ></dataset-union>
-        <div class="sql-result" :style="{ height: `calc(100% - ${dragHeight}px)` }">
+        <div
+          class="sql-result"
+          :style="{
+            height: sqlResultHeight ? `${sqlResultHeight}px` : `calc(100% - ${dragHeight}px)`
+          }"
+        >
           <div class="sql-title">
             <span class="drag" @mousedown="mousedownDragH" />
             <div class="field-data">
@@ -1309,6 +1353,7 @@ const getDsIconName = data => {
                     @selection-change="setDeTypeSelection"
                     ref="dimensionsTable"
                     :data="dimensions"
+                    :height="quotaTableHeight"
                     style="width: 100%"
                   >
                     <el-table-column type="selection" width="40" />
@@ -1454,6 +1499,7 @@ const getDsIconName = data => {
                   <el-table
                     @selection-change="setDeTypeSelection"
                     ref="quotaTable"
+                    :height="quotaTableHeight"
                     :data="quota"
                     style="width: 100%"
                   >
