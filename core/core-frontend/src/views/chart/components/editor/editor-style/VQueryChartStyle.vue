@@ -46,6 +46,7 @@ const { chart } = toRefs(props)
               <el-color-picker
                 v-model="chart.customStyle.component.titleColor"
                 :trigger-width="204"
+                :disabled="!chart.customStyle.component.titleShow"
                 is-custom
                 :predefine="COLOR_PANEL"
               />
