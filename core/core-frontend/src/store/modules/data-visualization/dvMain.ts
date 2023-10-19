@@ -652,6 +652,7 @@ export const dvMainStore = defineStore('dataVisualization', {
       this.batchOptComponentType = null
       this.batchOptComponentInfo = null
       this.batchOptComponents = {}
+      this.componentViewsData = {}
       this.changeProperties = {
         customStyle: {},
         customAttr: {}
@@ -668,13 +669,13 @@ export const dvMainStore = defineStore('dataVisualization', {
       }
       if (
         this.curBatchOptComponents.length === 1 &&
-        this.componentViewsData &&
-        this.componentViewsData[this.curBatchOptComponents[0]]
+        this.canvasViewInfo &&
+        this.canvasViewInfo[this.curBatchOptComponents[0]]
       ) {
         const lastViewId = this.curBatchOptComponents[0]
-        const viewBaseInfo = this.componentViewsData[lastViewId]
-        this.changeProperties.customAttr = JSON.parse(viewBaseInfo.customAttr)
-        this.changeProperties.customStyle = JSON.parse(viewBaseInfo.customStyle)
+        const viewBaseInfo = this.canvasViewInfo[lastViewId]
+        this.changeProperties.customAttr = viewBaseInfo.customAttr
+        this.changeProperties.customStyle = viewBaseInfo.customStyle
       }
       if (this.curBatchOptComponents.length === 0) {
         this.changeProperties = {
