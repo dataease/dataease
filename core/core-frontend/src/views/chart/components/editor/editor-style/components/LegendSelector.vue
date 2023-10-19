@@ -126,21 +126,23 @@ onMounted(() => {
         v-if="showProperty('fontSize')"
       >
         <template #label> &nbsp; </template>
-        <el-select
-          style="width: 108px"
-          :effect="themes"
-          v-model="state.legendForm.fontSize"
-          :placeholder="t('chart.text_fontsize')"
-          size="small"
-          @change="changeLegendStyle('fontSize')"
-        >
-          <el-option
-            v-for="option in fontSizeList"
-            :key="option.value"
-            :label="option.name"
-            :value="option.value"
-          />
-        </el-select>
+        <el-tooltip content="字号" :effect="toolTip" placement="top">
+          <el-select
+            style="width: 108px"
+            :effect="themes"
+            v-model="state.legendForm.fontSize"
+            :placeholder="t('chart.text_fontsize')"
+            size="small"
+            @change="changeLegendStyle('fontSize')"
+          >
+            <el-option
+              v-for="option in fontSizeList"
+              :key="option.value"
+              :label="option.name"
+              :value="option.value"
+            />
+          </el-select>
+        </el-tooltip>
       </el-form-item>
     </el-space>
     <el-form-item

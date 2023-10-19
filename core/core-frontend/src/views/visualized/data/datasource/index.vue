@@ -511,9 +511,11 @@ const getRecord = () => {
 }
 
 const updateApiTable = api => {
-  syncApiTable({ tableName: api.deTableName, datasourceId: nodeInfo.id }).then(res => {
-    ElMessage.success(t('datasource.req_completed'))
-  })
+  syncApiTable({ name: api.name, tableName: api.deTableName, datasourceId: nodeInfo.id }).then(
+    () => {
+      ElMessage.success(t('datasource.req_completed'))
+    }
+  )
 }
 
 const updateApiDs = () => {
@@ -1077,7 +1079,7 @@ onMounted(() => {
                 </el-row>
                 <el-row>
                   <el-col :span="19">
-                    <span>数据时间： {{ timestampFormatDate(api.updateTime) }}</span>
+                    <span>数据时间： {{ timestampFormatDate(api['updateTime']) }}</span>
                   </el-col>
                 </el-row>
 

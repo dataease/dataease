@@ -163,20 +163,22 @@ onMounted(() => {
         v-if="showProperty('fontSize')"
         style="padding-left: 4px"
       >
-        <el-select
-          style="width: 108px"
-          :effect="props.themes"
-          v-model="state.axisForm.fontSize"
-          :placeholder="t('chart.axis_name_fontsize')"
-          @change="changeAxisStyle('fontSize')"
-        >
-          <el-option
-            v-for="option in fontSizeList"
-            :key="option.value"
-            :label="option.name"
-            :value="option.value"
-          />
-        </el-select>
+        <el-tooltip content="字号" :effect="toolTip" placement="top">
+          <el-select
+            style="width: 108px"
+            :effect="props.themes"
+            v-model="state.axisForm.fontSize"
+            :placeholder="t('chart.axis_name_fontsize')"
+            @change="changeAxisStyle('fontSize')"
+          >
+            <el-option
+              v-for="option in fontSizeList"
+              :key="option.value"
+              :label="option.name"
+              :value="option.value"
+            />
+          </el-select>
+        </el-tooltip>
       </el-form-item>
     </div>
 
@@ -353,21 +355,23 @@ onMounted(() => {
         </el-form-item>
         <el-form-item class="form-item" :class="'form-item-' + themes" style="padding-left: 4px">
           <template #label>&nbsp;</template>
-          <el-select
-            :disabled="!state.axisForm.axisLabel.show"
-            style="width: 108px"
-            :effect="props.themes"
-            v-model="state.axisForm.axisLabel.fontSize"
-            :placeholder="t('chart.axis_label_fontsize')"
-            @change="changeAxisStyle('axisLabel.fontSize')"
-          >
-            <el-option
-              v-for="option in fontSizeList"
-              :key="option.value"
-              :label="option.name"
-              :value="option.value"
-            />
-          </el-select>
+          <el-tooltip content="字号" :effect="toolTip" placement="top">
+            <el-select
+              :disabled="!state.axisForm.axisLabel.show"
+              style="width: 108px"
+              :effect="props.themes"
+              v-model="state.axisForm.axisLabel.fontSize"
+              :placeholder="t('chart.axis_label_fontsize')"
+              @change="changeAxisStyle('axisLabel.fontSize')"
+            >
+              <el-option
+                v-for="option in fontSizeList"
+                :key="option.value"
+                :label="option.name"
+                :value="option.value"
+              />
+            </el-select>
+          </el-tooltip>
         </el-form-item>
       </div>
 

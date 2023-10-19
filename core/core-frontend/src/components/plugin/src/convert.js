@@ -80,7 +80,7 @@ export function stringToChars(_s) {
 }
 
 const proxyPath = () => {
-  return window.btoa('FIT2CLOUD-XGG IS SO FUCKING NB!')
+  return 'Zml0MmNsb3VkIGlzIGEgcG90ZW50aWFsIGNvbXBhbnkh'
 }
 
 const strReverse = text => {

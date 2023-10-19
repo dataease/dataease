@@ -264,7 +264,7 @@ public class DatasourceServer implements DatasourceApi {
             if (StringUtils.equalsIgnoreCase(coreDatasourceTask.getSyncRate(), RIGHTNOW.toString())) {
                 coreDatasourceTask.setCron(null);
             } else {
-                if (StringUtils.equalsIgnoreCase(coreDatasourceTask.getEndLimit(), "1") && coreDatasourceTask.getStartTime() < coreDatasourceTask.getEndTime()) {
+                if (StringUtils.equalsIgnoreCase(coreDatasourceTask.getEndLimit(), "1") && coreDatasourceTask.getStartTime() > coreDatasourceTask.getEndTime()) {
                     DEException.throwException("结束时间不能小于开始时间！");
                 }
             }
@@ -354,7 +354,7 @@ public class DatasourceServer implements DatasourceApi {
                 coreDatasourceTask.setStartTime(System.currentTimeMillis() - 20 * 1000);
                 coreDatasourceTask.setCron(null);
             } else {
-                if (StringUtils.equalsIgnoreCase(coreDatasourceTask.getEndLimit(), "1") && coreDatasourceTask.getStartTime() < coreDatasourceTask.getEndTime()) {
+                if (StringUtils.equalsIgnoreCase(coreDatasourceTask.getEndLimit(), "1") && coreDatasourceTask.getStartTime() > coreDatasourceTask.getEndTime()) {
                     DEException.throwException("结束时间不能小于开始时间！");
                 }
             }
@@ -687,8 +687,9 @@ public class DatasourceServer implements DatasourceApi {
     @Override
     public void syncApiTable(Map<String, String> req) throws DEException {
         String tableName = req.get("tableName");
+        String name = req.get("name");
         Long datasourceId = Long.valueOf(req.get("datasourceId"));
-        datasourceSyncManage.extractDataForTable(datasourceId, tableName, datasourceTaskServer.selectByDSId(datasourceId).getUpdateType());
+        datasourceSyncManage.extractDataForTable(datasourceId, name, tableName, datasourceTaskServer.selectByDSId(datasourceId).getUpdateType());
     }
 
     @Override

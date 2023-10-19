@@ -10,6 +10,7 @@ import io.dataease.result.ResultCode;
 import io.dataease.result.ResultMessage;
 import io.dataease.utils.RsaUtils;
 import io.dataease.utils.ServletUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -50,10 +51,10 @@ public class XpackHandler {
             }
         }
         F2CLicResult licResult = LicenseUtil.get();
-        if (licResult.getStatus() == F2CLicResult.Status.valid) {
+        if (ObjectUtils.isNotEmpty(licResult) && licResult.getStatus() == F2CLicResult.Status.valid) {
             return point.proceed(point.getArgs());
         }
-        ServletUtils.writeResult(new ResultMessage(ResultCode.INTERFACE_FORBID_VISIT.code(), licResult.getMessage()));
+        ServletUtils.writeResult(new ResultMessage(ResultCode.INTERFACE_FORBID_VISIT.code(), ObjectUtils.isNotEmpty(licResult) ? licResult.getMessage() : "lic error"));
         return null;
     }
 }

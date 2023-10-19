@@ -26,6 +26,9 @@ const props = defineProps({
   }
 })
 const dvMainStore = dvMainStoreWithOut()
+const toolTip = computed(() => {
+  return props.themes === 'dark' ? 'ndark' : 'dark'
+})
 const { batchOptStatus } = storeToRefs(dvMainStore)
 watch(
   () => props.chart.customAttr.label,
@@ -229,21 +232,23 @@ onMounted(() => {
         v-if="showProperty('fontSize')"
       >
         <template #label>&nbsp;</template>
-        <el-select
-          size="small"
-          style="width: 108px"
-          :effect="themes"
-          v-model.number="state.labelForm.fontSize"
-          :placeholder="t('chart.text_fontsize')"
-          @change="changeLabelAttr('fontSize')"
-        >
-          <el-option
-            v-for="option in fontSizeList"
-            :key="option.value"
-            :label="option.name"
-            :value="option.value"
-          />
-        </el-select>
+        <el-tooltip content="字号" :effect="toolTip" placement="top">
+          <el-select
+            size="small"
+            style="width: 108px"
+            :effect="themes"
+            v-model.number="state.labelForm.fontSize"
+            :placeholder="t('chart.text_fontsize')"
+            @change="changeLabelAttr('fontSize')"
+          >
+            <el-option
+              v-for="option in fontSizeList"
+              :key="option.value"
+              :label="option.name"
+              :value="option.value"
+            />
+          </el-select>
+        </el-tooltip>
       </el-form-item>
     </el-space>
 
@@ -661,22 +666,24 @@ onMounted(() => {
             </el-form-item>
             <el-form-item class="form-item" :class="'form-item-' + themes">
               <template #label>&nbsp;</template>
-              <el-select
-                size="small"
-                :disabled="!curSeriesFormatter.show"
-                style="width: 108px"
-                :effect="themes"
-                v-model.number="curSeriesFormatter.fontSize"
-                :placeholder="t('chart.text_fontsize')"
-                @change="changeLabelAttr('fontSize')"
-              >
-                <el-option
-                  v-for="option in fontSizeList"
-                  :key="option.value"
-                  :label="option.name"
-                  :value="option.value"
-                />
-              </el-select>
+              <el-tooltip content="字号" :effect="toolTip" placement="top">
+                <el-select
+                  size="small"
+                  :disabled="!curSeriesFormatter.show"
+                  style="width: 108px"
+                  :effect="themes"
+                  v-model.number="curSeriesFormatter.fontSize"
+                  :placeholder="t('chart.text_fontsize')"
+                  @change="changeLabelAttr('fontSize')"
+                >
+                  <el-option
+                    v-for="option in fontSizeList"
+                    :key="option.value"
+                    :label="option.name"
+                    :value="option.value"
+                  />
+                </el-select>
+              </el-tooltip>
             </el-form-item>
           </el-space>
 

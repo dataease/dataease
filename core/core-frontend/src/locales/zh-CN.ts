@@ -73,7 +73,7 @@ export default {
     account: '账号',
     name: '姓名',
     role: '角色',
-    state: '是否启用',
+    state: '用户状态',
     default_pwd: '默认密码',
     confirm_delete: '确定删除该用户吗？',
     add_title: '添加用户',
@@ -94,7 +94,9 @@ export default {
     pwd_pattern_error: '6-20位且至少一位大写字母、小写字母、数字、特殊字符',
     special_characters_are_not_supported: '不允许特殊字符',
     phone_format: '请填写正确格式手机号',
-    email_format_is_incorrect: '请填写正确格式邮箱'
+    email_format_is_incorrect: '请填写正确格式邮箱',
+    enable_success: '已启用',
+    disable_success: '已禁用'
   },
   userimport: {
     buttonText: '批量导入',
@@ -166,7 +168,7 @@ export default {
     parent: '上级组织',
     default_cannot_move: '默认组织不能删除',
     cannot_delete: '无法删除',
-    confirm_delete: '确认删除该组织吗？',
+    confirm_delete: '确定删除该组织吗？',
     delete_children_first: '请先删除子组织后，再删除当前组织',
     confirm_content: '友情提示，组织被删除后，组织下的资源也将被删除',
     give_up_resource: '放弃资源，直接删除',

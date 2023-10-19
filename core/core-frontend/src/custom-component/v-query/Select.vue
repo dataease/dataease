@@ -321,5 +321,9 @@ defineExpose({
       }
     }
   }
+
+  .ed-select-btn-group {
+    color: #1f2329;
+  }
 }
 </style>

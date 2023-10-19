@@ -68,5 +68,9 @@ const onPositionChange = () => {
 <style lang="less" scoped>
 :deep(.ed-form-item) {
   display: flex !important;
+  .ed-form-item__label {
+    line-height: 24px;
+    margin-bottom: 0;
+  }
 }
 </style>
