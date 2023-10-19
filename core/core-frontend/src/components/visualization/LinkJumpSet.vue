@@ -88,11 +88,11 @@
                     v-model="state.linkJumpInfo.linkType"
                   >
                     <el-radio label="outer">{{ t('visualization.link_outer') }}</el-radio>
-                    <el-radio label="inner">{{ t('visualization.link_panel') }}</el-radio>
+                    <el-radio label="inner">{{ resourceType }}</el-radio>
                   </el-radio-group>
                   <el-radio-group class="larger-radio" v-if="!state.linkJumpInfo" disabled>
                     <el-radio label="outer">{{ t('visualization.link_outer') }}</el-radio>
-                    <el-radio label="inner">{{ t('visualization.link_panel') }}</el-radio>
+                    <el-radio label="inner">{{ resourceType }}</el-radio>
                   </el-radio-group>
                 </el-form-item>
                 <el-form-item class="radio-group-box">
@@ -121,7 +121,7 @@
                       <div class="m-row">
                         <div style="flex: 1">
                           <el-form-item>
-                            <template #label> 当前仪表板 </template>
+                            <template #label> 当前{{ resourceType }} </template>
                             <el-select style="width: 100%" v-model="dvInfo.name" disabled>
                               <el-option
                                 :key="dvInfo.name"
@@ -137,7 +137,7 @@
                         </div>
                         <div style="flex: 1">
                           <el-form-item>
-                            <template #label> 目标仪表板 </template>
+                            <template #label> 目标{{ resourceType }} </template>
                             <el-tree-select
                               v-model="state.linkJumpInfo.targetDvId"
                               :data="state.panelList"
@@ -417,6 +417,8 @@ const linkJumpInfoTree = ref(null)
 const { t } = useI18n()
 const dialogShow = ref(false)
 const snapshotStore = snapshotStoreWithOut()
+
+const resourceType = computed(() => (dvInfo.value.type === 'dashboard' ? '仪表板' : '数据大屏'))
 
 const state = reactive({
   loading: false,
