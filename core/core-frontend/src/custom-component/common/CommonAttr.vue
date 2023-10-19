@@ -8,6 +8,8 @@ import BackgroundOverallCommon from '@/components/visualization/component-backgr
 import { useI18n } from '@/hooks/web/useI18n'
 import _ from 'lodash'
 import elementResizeDetectorMaker from 'element-resize-detector'
+import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
+const snapshotStore = snapshotStoreWithOut()
 
 const { t } = useI18n()
 const emits = defineEmits(['onAttrChange'])
@@ -72,6 +74,7 @@ const onBackgroundChange = val => {
 }
 
 const onStyleAttrChange = (value, key) => {
+  snapshotStore.recordSnapshotCache()
   emits('onAttrChange', { custom: 'style', property: key, value: value })
 }
 

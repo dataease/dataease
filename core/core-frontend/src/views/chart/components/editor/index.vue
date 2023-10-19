@@ -204,6 +204,11 @@ const treeProps = {
   label: 'name',
   children: 'children'
 }
+
+const recordSnapshotInfo = type => {
+  snapshotStore.recordSnapshotCache(type, view.value.id)
+}
+
 const filterNode = (value, data) => {
   if (!value) {
     return true
@@ -292,9 +297,11 @@ const reset = () => {
 }
 
 const dimensionItemChange = item => {
+  recordSnapshotInfo('calcData')
   // do dimensionItemChange
 }
 const dimensionItemRemove = item => {
+  recordSnapshotInfo('calcData')
   if (item.removeType === 'dimension') {
     view.value.xAxis.splice(item.index, 1)
   } else if (item.removeType === 'dimensionExt') {
@@ -305,9 +312,11 @@ const dimensionItemRemove = item => {
 }
 
 const quotaItemChange = item => {
+  recordSnapshotInfo('calcData')
   // do quotaItemChange
 }
 const quotaItemRemove = item => {
+  recordSnapshotInfo('calcData')
   if (item.removeType === 'quota') {
     view.value.yAxis.splice(item.index, 1)
   } else if (item.removeType === 'quotaExt') {
@@ -325,9 +334,11 @@ const arrowIcon = () => {
 }
 
 const drillItemChange = item => {
+  recordSnapshotInfo('calcData')
   // temp do nothing
 }
 const drillItemRemove = item => {
+  recordSnapshotInfo('calcData')
   view.value.drillFields.splice(item.index, 1)
 }
 
@@ -353,24 +364,28 @@ const saveCustomSort = () => {
   closeCustomSort()
 }
 const onCustomSort = item => {
+  recordSnapshotInfo('render')
   state.customSortField = view.value.xAxis[item.index]
   customSortAxis.value = 'xAxis'
   customSort()
 }
 
 const onStackCustomSort = item => {
+  recordSnapshotInfo('render')
   state.customSortField = view.value.extStack[item.index]
   customSortAxis.value = 'extStack'
   customSort()
 }
 
 const onExtCustomSort = item => {
+  recordSnapshotInfo('render')
   state.customSortField = view.value.xAxisExt[item.index]
   customSortAxis.value = 'xAxisExt'
   customSort()
 }
 
 const onMove = (e, originalEvent) => {
+  recordSnapshotInfo('calcData')
   state.moveId = e.draggedContext.element.id
   return true
 }
@@ -416,6 +431,7 @@ const dragRemoveAggField = (list, e) => {
 }
 
 const addAxis = (e, axis: AxisType) => {
+  recordSnapshotInfo('calcData')
   const axisSpec = chartViewInstance.value.axisConfig[axis]
   if (!axisSpec) {
     return
@@ -453,6 +469,7 @@ const addExtBubble = e => {
 }
 
 const addDrill = e => {
+  recordSnapshotInfo('calcData')
   dragCheckType(view.value.drillFields, 'd')
   dragMoveDuplicate(view.value.drillFields, e, '')
   dragRemoveAggField(view.value.drillFields, e)
@@ -472,6 +489,7 @@ const addCustomFilter = e => {
   dragRemoveAggField(view.value.customFilter, e)
 }
 const filterItemRemove = item => {
+  recordSnapshotInfo('calcData')
   view.value.customFilter.splice(item.index, 1)
 }
 
@@ -668,6 +686,7 @@ const onExtTooltipChange = val => {
 }
 
 const showRename = val => {
+  recordSnapshotInfo('render')
   state.itemForm = JSON.parse(JSON.stringify(val))
   if (!state.itemForm.chartShowName) {
     state.itemForm.chartShowName = state.itemForm.name
@@ -682,6 +701,7 @@ const closeRename = () => {
 const removeItems = (
   _type: 'xAxis' | 'xAxisExt' | 'extStack' | 'yAxis' | 'extBubble' | 'customFilter' | 'drillFields'
 ) => {
+  recordSnapshotInfo('calcData')
   switch (_type) {
     case 'xAxis':
       view.value.xAxis = []
@@ -752,6 +772,7 @@ const save = () => {
 }
 
 const showQuotaEditFilter = item => {
+  recordSnapshotInfo('calcData')
   state.quotaItem = JSON.parse(JSON.stringify(item))
   if (!state.quotaItem.logic) {
     state.quotaItem.logic = 'and'
@@ -784,6 +805,7 @@ const saveQuotaFilter = () => {
 }
 
 const showEditFilter = item => {
+  recordSnapshotInfo('calcData')
   state.filterItem = JSON.parse(JSON.stringify(item))
   state.chartForFilter = JSON.parse(JSON.stringify(view.value))
   if (!state.filterItem.logic) {
@@ -844,6 +866,7 @@ const editDs = () => {
 }
 
 const showQuotaEditCompare = item => {
+  recordSnapshotInfo('calcData')
   state.quotaItemCompare = JSON.parse(JSON.stringify(item))
   state.showEditQuotaCompare = true
 }
@@ -870,6 +893,7 @@ const saveQuotaEditCompare = () => {
 }
 
 const valueFormatter = item => {
+  recordSnapshotInfo('render')
   state.valueFormatterItem = JSON.parse(JSON.stringify(item))
   state.showValueFormatter = true
 }
@@ -1052,6 +1076,7 @@ const dragVerticalTop = computed(() => {
 })
 
 const onRefreshChange = val => {
+  recordSnapshotInfo('render')
   if (val === '' || parseFloat(val).toString() === 'NaN' || parseFloat(val) < 1) {
     ElMessage.error(t('chart.only_input_number'))
     return
@@ -1516,7 +1541,12 @@ const onRefreshChange = val => {
                         class="form-item no-margin-bottom"
                         :class="'form-item-' + themes"
                       >
-                        <el-checkbox :effect="themes" size="small" v-model="view.refreshViewEnable">
+                        <el-checkbox
+                          :effect="themes"
+                          size="small"
+                          v-model="view.refreshViewEnable"
+                          @change="recordSnapshotInfo('render')"
+                        >
                           {{ t('visualization.refresh_frequency') }}
                         </el-checkbox>
                       </el-form-item>
@@ -1539,6 +1569,7 @@ const onRefreshChange = val => {
                               <el-select
                                 :effect="themes"
                                 v-model="view.refreshUnit"
+                                @change="recordSnapshotInfo('render')"
                                 size="small"
                                 placeholder="Select"
                                 style="width: 80px"
@@ -1570,6 +1601,7 @@ const onRefreshChange = val => {
                             v-model="view.resultMode"
                             class="radio-span"
                             size="small"
+                            @change="recordSnapshotInfo('render')"
                           >
                             <el-radio label="all" :effect="themes">
                               <span class="result-count-label" :class="{ dark: themes === 'dark' }">
@@ -1707,6 +1739,7 @@ const onRefreshChange = val => {
                 :state-obj="state"
                 v-model="view.tableId"
                 :themes="themes"
+                @onDatasetChange="recordSnapshotInfo('calcData')"
               />
               <el-tooltip :effect="toolTip" content="编辑数据集" placement="top">
                 <el-icon

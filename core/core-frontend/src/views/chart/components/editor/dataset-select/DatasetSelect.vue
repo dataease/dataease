@@ -44,7 +44,7 @@ const initDataset = () => {
     })
 }
 
-const emits = defineEmits(['update:modelValue', 'update:stateObj'])
+const emits = defineEmits(['update:modelValue', 'update:stateObj', 'onDatasetChange'])
 
 const _modelValue = computed({
   get() {
@@ -151,7 +151,9 @@ function flatTree(tree: Tree[]) {
   })
   return result
 }
-
+const onDatasetChange = val => {
+  emits('onDatasetChange', val)
+}
 const filterNode = (value: string, data: Tree) => {
   if (!value) return true
   return data.name?.includes(value)
@@ -169,6 +171,9 @@ const datasetSelectorPopover = ref()
 
 const dsClick = (data: Tree) => {
   if (data.leaf) {
+    if (_modelValue.value !== data.id) {
+      onDatasetChange(data.id)
+    }
     //选中赋值
     _modelValue.value = data.id
     getFields(data.id, props.viewId)
