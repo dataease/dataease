@@ -145,21 +145,23 @@ onMounted(() => {
         />
       </el-form-item>
       <el-form-item class="form-item" :class="'form-item-' + themes" style="padding: 0 4px">
-        <el-select
-          style="width: 56px"
-          :effect="themes"
-          v-model="state.titleForm.fontSize"
-          :placeholder="t('chart.text_fontsize')"
-          size="small"
-          @change="changeTitleStyle('fontSize')"
-        >
-          <el-option
-            v-for="option in fontSizeList"
-            :key="option.value"
-            :label="option.name"
-            :value="option.value"
-          />
-        </el-select>
+        <el-tooltip content="字号" :effect="toolTip" placement="top">
+          <el-select
+            style="width: 56px"
+            :effect="themes"
+            v-model="state.titleForm.fontSize"
+            :placeholder="t('chart.text_fontsize')"
+            size="small"
+            @change="changeTitleStyle('fontSize')"
+          >
+            <el-option
+              v-for="option in fontSizeList"
+              :key="option.value"
+              :label="option.name"
+              :value="option.value"
+            />
+          </el-select>
+        </el-tooltip>
       </el-form-item>
 
       <el-form-item class="form-item" :class="'form-item-' + themes" style="padding-left: 4px">

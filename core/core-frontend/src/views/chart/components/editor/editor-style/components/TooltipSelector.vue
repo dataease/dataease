@@ -30,7 +30,9 @@ const props = defineProps({
 const dvMainStore = dvMainStoreWithOut()
 const { batchOptStatus } = storeToRefs(dvMainStore)
 const predefineColors = COLOR_PANEL
-
+const toolTip = computed(() => {
+  return props.themes === 'dark' ? 'ndark' : 'dark'
+})
 const emit = defineEmits(['onTooltipChange', 'onExtTooltipChange'])
 
 const curSeriesFormatter = ref<DeepPartial<SeriesFormatter>>({})
@@ -327,21 +329,23 @@ onMounted(() => {
         v-if="showProperty('fontSize')"
       >
         <template #label>&nbsp;</template>
-        <el-select
-          size="small"
-          style="width: 108px"
-          :effect="themes"
-          v-model.number="state.tooltipForm.fontSize"
-          :placeholder="t('chart.text_fontsize')"
-          @change="changeTooltipAttr('fontSize')"
-        >
-          <el-option
-            v-for="option in fontSizeList"
-            :key="option.value"
-            :label="option.name"
-            :value="option.value"
-          />
-        </el-select>
+        <el-tooltip content="字号" :effect="toolTip" placement="top">
+          <el-select
+            size="small"
+            style="width: 108px"
+            :effect="themes"
+            v-model.number="state.tooltipForm.fontSize"
+            :placeholder="t('chart.text_fontsize')"
+            @change="changeTooltipAttr('fontSize')"
+          >
+            <el-option
+              v-for="option in fontSizeList"
+              :key="option.value"
+              :label="option.name"
+              :value="option.value"
+            />
+          </el-select>
+        </el-tooltip>
       </el-form-item>
     </el-space>
     <template v-if="showProperty('tooltipFormatter')">
