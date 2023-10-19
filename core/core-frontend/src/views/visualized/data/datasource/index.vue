@@ -511,7 +511,7 @@ const getRecord = () => {
 }
 
 const updateApiTable = api => {
-  syncApiTable({ tableName: api.deTableName, datasourceId: nodeInfo.id }).then(res => {
+  syncApiTable({ name: api.name, tableName: api.deTableName, datasourceId: nodeInfo.id }).then(res => {
     ElMessage.success(t('datasource.req_completed'))
   })
 }
