@@ -5,6 +5,7 @@ import io.dataease.result.ResultMessage;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -20,6 +21,7 @@ public class ServletUtils {
 
     public static HttpServletResponse response() {
         ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (ObjectUtils.isEmpty(servletRequestAttributes)) return null;
         HttpServletResponse response = servletRequestAttributes.getResponse();
         return response;
     }
@@ -46,7 +48,7 @@ public class ServletUtils {
 
     public static void writeResult(ResultMessage resultMessage) {
         HttpServletResponse response = response();
-
+        if (ObjectUtils.isEmpty(response)) return;
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json; charset=utf-8");
         ServletOutputStream outputStream = null;
