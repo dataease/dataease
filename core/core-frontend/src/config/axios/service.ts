@@ -149,7 +149,10 @@ service.interceptors.response.use(
     }
   },
   (error: AxiosErrorWidthLoading<AxiosError>) => {
-    const header = error.response.headers as AxiosHeaders
+    let header = null
+    if (error.response?.headers) {
+      header = error.response?.headers as AxiosHeaders
+    }
     if (
       !error.config.url.startsWith('/xpackComponent/content') &&
       !header.has('DE-FORBIDDEN-FLAG')
@@ -162,7 +165,9 @@ service.interceptors.response.use(
     }
 
     error.config.loading && tryHideLoading(permissionStore.getCurrentPath)
-
+    if (!header) {
+      return Promise.reject(error)
+    }
     if (header.has('DE-GATEWAY-FLAG')) {
       localStorage.clear()
       const flag = header.get('DE-GATEWAY-FLAG')
