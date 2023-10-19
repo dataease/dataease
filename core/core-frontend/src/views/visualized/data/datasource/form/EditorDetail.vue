@@ -680,7 +680,9 @@ defineExpose({
             <el-input-number
               v-model="form.configuration.port"
               autocomplete="off"
+              step-strictly
               class="text-left"
+              :min="0"
               :placeholder="t('common.inputText') + t('datasource.port')"
               controls-position="right"
               type="number"
