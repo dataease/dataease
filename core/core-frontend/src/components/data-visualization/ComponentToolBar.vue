@@ -16,6 +16,9 @@ const handleScaleChange = () => {
   snapshotStore.recordSnapshotCache()
   // 画布比例设一个最小值，不能为 0
   scale.value = ~~scale.value || 10
+  scale.value = scale.value < 10 ? 10 : scale.value
+  scale.value = scale.value > 100 ? 100 : scale.value
+
   changeSizeWithScale(scale.value)
 }
 
@@ -42,17 +45,17 @@ let lastWheelNum = 0
 
 const handleMouseWheel = e => {
   const delta = e.wheelDelta ? e.wheelDelta : -e.detail
-  console.log('delta=' + delta)
   if (lastWheelNum === 240 && delta === 240) {
-    e.stopPropagation()
-    e.preventDefault()
     //放大
     scaleIncrease(3)
   } else if (lastWheelNum === -240 && delta === -240) {
-    e.stopPropagation()
-    e.preventDefault()
     // 缩小
     scaleDecrease(3)
+  }
+
+  if (delta === 240 || delta === -240) {
+    e.stopPropagation()
+    e.preventDefault()
   }
   lastWheelNum = delta
 }
