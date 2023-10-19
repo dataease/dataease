@@ -2252,6 +2252,12 @@ span {
     :deep(.ed-collapse-item__content) {
       padding: 16px 8px 0;
       border: none;
+      :deep(.ed-checkbox) {
+        height: 20px;
+      }
+      .ed-checkbox {
+        height: 20px;
+      }
     }
 
     :deep(.style-dark) {
