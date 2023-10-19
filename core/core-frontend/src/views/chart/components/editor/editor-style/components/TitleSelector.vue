@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { PropType, computed, onMounted, reactive, toRefs, watch } from 'vue'
+import { PropType, computed, onMounted, reactive, toRefs, watch, nextTick } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import {
   COLOR_PANEL,
@@ -9,6 +9,7 @@ import {
 } from '@/views/chart/components/editor/util/chart'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
+import { cloneDeep, defaultsDeep } from 'lodash-es'
 const dvMainStore = dvMainStoreWithOut()
 const { batchOptStatus } = storeToRefs(dvMainStore)
 
@@ -37,17 +38,8 @@ const fontFamily = CHART_FONT_FAMILY
 const fontLetterSpace = CHART_FONT_LETTER_SPACE
 
 const state = reactive({
-  titleForm: JSON.parse(JSON.stringify(DEFAULT_TITLE_STYLE)),
-  fontSize: []
+  titleForm: JSON.parse(JSON.stringify(DEFAULT_TITLE_STYLE))
 })
-
-watch(
-  () => props.chart.customStyle.text,
-  () => {
-    init()
-  },
-  { deep: true }
-)
 
 const { chart } = toRefs(props)
 
@@ -63,29 +55,35 @@ const fontSizeList = computed(() => {
 })
 
 const changeTitleStyle = prop => {
+  console.log(prop)
   emit('onTextChange', state.titleForm, prop)
 }
 
 const init = () => {
-  const chart = JSON.parse(JSON.stringify(props.chart))
-  if (chart.customStyle) {
-    let customStyle = null
-    if (Object.prototype.toString.call(chart.customStyle) === '[object Object]') {
-      customStyle = JSON.parse(JSON.stringify(chart.customStyle))
-    } else {
-      customStyle = JSON.parse(chart.customStyle)
-    }
-    if (customStyle.text) {
-      state.titleForm = customStyle.text
-    }
-  }
-}
+  const customText = defaultsDeep(
+    cloneDeep(props.chart?.customStyle?.text),
+    cloneDeep(DEFAULT_TITLE_STYLE)
+  )
 
-const showProperty = prop => props.propertyInner?.includes(prop)
+  state.titleForm = cloneDeep(customText)
+
+  //第一次颜色可能赋值失败，单独赋值一次
+  nextTick(() => {
+    state.titleForm.color = customText.color
+  })
+}
 
 onMounted(() => {
   init()
 })
+
+watch(
+  () => props.chart?.customStyle?.text,
+  () => {
+    init()
+  },
+  { deep: true }
+)
 </script>
 
 <template>
