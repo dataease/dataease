@@ -38,7 +38,7 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
     ],
     'legend-selector': ['icon', 'orient', 'fontSize', 'color', 'hPosition', 'vPosition'],
     'x-axis-selector': [
-      'vPosition',
+      'position',
       'name',
       'color',
       'fontSize',
@@ -48,7 +48,7 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
       'axisLabel'
     ],
     'y-axis-selector': [
-      'vPosition',
+      'position',
       'name',
       'color',
       'fontSize',
@@ -266,10 +266,6 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
       this.configYAxis,
       this.configMeta
     )(chart, options)
-  }
-
-  setupDefaultOptions(chart: ChartObj): ChartObj {
-    return flowLeft(this.setupVerticalAxis, this.setupVerticalAxis)(chart)
   }
 
   constructor() {

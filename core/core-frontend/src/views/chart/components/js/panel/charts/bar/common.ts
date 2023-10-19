@@ -25,7 +25,8 @@ export const BAR_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
     'axisLine',
     'splitLine',
     'axisForm',
-    'axisLabel'
+    'axisLabel',
+    'position'
   ],
   'y-axis-selector': [
     'name',
@@ -36,6 +37,7 @@ export const BAR_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
     'splitLine',
     'axisForm',
     'axisLabel',
+    'position',
     'axisLabelFormatter'
   ],
   'title-selector': [
