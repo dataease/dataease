@@ -439,7 +439,11 @@ const loadingFlag = computed(() => {
 })
 
 const chartAreaShow = computed(() => {
-  return view.value.tableId || view.value.type === 'rich-text'
+  return (
+    view.value.tableId ||
+    view.value.type === 'rich-text' ||
+    (view.value.type === 'map' && view.value.customAttr.map.id)
+  )
 })
 initTitle()
 </script>

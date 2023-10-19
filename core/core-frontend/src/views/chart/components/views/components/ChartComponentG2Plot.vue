@@ -9,7 +9,7 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import ViewTrackBar from '@/components/visualization/ViewTrackBar.vue'
 import { storeToRefs } from 'pinia'
 import { parseJson } from '@/views/chart/components/js/util'
-import { defaultsDeep, debounce, cloneDeep } from 'lodash-es'
+import { defaultsDeep, cloneDeep } from 'lodash-es'
 import ChartError from '@/views/chart/components/views/components/ChartError.vue'
 import { BASE_VIEW_CONFIG } from '../../editor/util/chart'
 
@@ -89,14 +89,18 @@ const calcData = (view, callback) => {
         callback?.()
       })
   } else {
+    if (view.type === 'map') {
+      renderChart(view)
+    }
     callback?.()
   }
 }
-
+let curView
 const renderChart = async view => {
   if (!view) {
     return
   }
+  curView = view
   // view 为引用对象 需要存库 view.data 直接赋值会导致保存不必要的数据
   // 与默认视图对象合并，方便增加配置项
   const chart = { ...defaultsDeep(view, cloneDeep(BASE_VIEW_CONFIG)), data: chartData.value }
@@ -127,6 +131,7 @@ const renderG2Plot = (chart, chartView: G2PlotChartView<any, any>) => {
 
 const dynamicAreaId = ref('')
 const country = ref('')
+let mapTimer
 const renderL7Plot = (chart, chartView: L7PlotChartView<any, any>) => {
   const map = parseJson(chart.customAttr).map
   let areaId = map.id
@@ -134,7 +139,8 @@ const renderL7Plot = (chart, chartView: L7PlotChartView<any, any>) => {
   if (dynamicAreaId.value) {
     areaId = dynamicAreaId.value
   }
-  debounce(async () => {
+  mapTimer && clearTimeout(mapTimer)
+  mapTimer = setTimeout(async () => {
     myChart?.destroy()
     myChart = await chartView.drawChart({
       chartObj: myChart,
@@ -143,7 +149,7 @@ const renderL7Plot = (chart, chartView: L7PlotChartView<any, any>) => {
       areaId,
       action
     })
-  }, 0)()
+  }, 500)
 }
 
 const action = param => {
@@ -232,9 +238,32 @@ defineExpose({
   calcData,
   renderChart
 })
-
+let resizeObserver
+const TOLERANCE = 0.01
+onMounted(() => {
+  const containerDom = document.getElementById(containerId)
+  const { offsetWidth, offsetHeight } = containerDom
+  const preSize = [offsetWidth, offsetHeight]
+  resizeObserver = new ResizeObserver(([entry] = []) => {
+    if (view.value.type !== 'map') {
+      return
+    }
+    const [size] = entry.borderBoxSize || []
+    console.log(size)
+    const widthOffsetPercent = (size.inlineSize - preSize[0]) / preSize[0]
+    const heightOffsetPercent = (size.blockSize - preSize[1]) / preSize[1]
+    if (Math.abs(widthOffsetPercent) < TOLERANCE && Math.abs(heightOffsetPercent) < TOLERANCE) {
+      return
+    }
+    preSize[0] = size.inlineSize
+    preSize[1] = size.blockSize
+    renderChart(curView)
+  })
+  resizeObserver.observe(containerDom)
+})
 onBeforeUnmount(() => {
   myChart?.destroy()
+  resizeObserver?.disconnect()
 })
 </script>
 
@@ -259,8 +288,8 @@ onBeforeUnmount(() => {
   height: 100%;
   z-index: 0;
   .canvas-content {
-    width: 100%;
-    height: 100%;
+    width: 100% !important;
+    height: 100% !important;
     ::v-deep(.g2-tooltip) {
       position: fixed !important;
     }

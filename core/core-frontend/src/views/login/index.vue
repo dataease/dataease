@@ -15,7 +15,7 @@ import { XpackComponent } from '@/components/plugin'
 import { logoutHandler } from '@/utils/logout'
 import DeImage from '@/assets/login-desc-de.png'
 import elementResizeDetectorMaker from 'element-resize-detector'
-
+import PreheatImage from '@/assets/preheat.gif'
 const { wsCache } = useCache()
 const appStore = useAppStoreWithOut()
 const userStore = useUserStoreWithOut()
@@ -136,7 +136,10 @@ const checkPlatform = () => {
 const cleanPlatformFlag = () => {
   const platformKey = 'out_auth_platform'
   wsCache.delete(platformKey)
+  preheat.value = false
 }
+
+const preheat = ref(true)
 
 onMounted(() => {
   checkPlatform()
@@ -161,6 +164,9 @@ onMounted(() => {
 </script>
 
 <template>
+  <div ref="loginContainer" v-if="preheat" class="preheat-container">
+    <el-image class="preheat-image" fit="cover" :src="PreheatImage" />
+  </div>
   <div v-show="contentShow" class="login-background" v-loading="duringLogin">
     <div class="login-container" ref="loginContainer">
       <div class="login-image-content" v-loading="!axiosFinished" v-if="showLoginImage">
@@ -290,6 +296,20 @@ onMounted(() => {
 </template>
 
 <style lang="less" scoped>
+.preheat-container {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+  position: absolute;
+  z-index: 100;
+  .preheat-image {
+    width: 50%;
+    height: 50%;
+  }
+}
 .login-background {
   background-color: #f5f7fa;
   height: 100vh;
