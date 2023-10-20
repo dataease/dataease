@@ -178,7 +178,7 @@ onMounted(() => {
             :placeholder="t('chart.aggregation')"
             @change="changeAssistLine"
           >
-            <el-option key="avg" value="avg" :label="t('chart.avg')" />
+            <el-option key="avg" value="avg" label="平均值" />
             <el-option key="max" value="max" :label="t('chart.max')" />
             <el-option key="min" value="min" :label="t('chart.min')" />
           </el-select>
