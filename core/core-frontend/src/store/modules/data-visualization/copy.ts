@@ -7,6 +7,7 @@ import { store } from '../../index'
 import eventBus from '@/utils/eventBus'
 import { adaptCurThemeCommonStyle } from '@/utils/canvasStyle'
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
+import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 
 const dvMainStore = dvMainStoreWithOut()
 const composeStore = composeStoreWithOut()
@@ -20,6 +21,8 @@ const {
   canvasStyleData
 } = storeToRefs(dvMainStore)
 const { menuTop, menuLeft } = storeToRefs(contextmenuStore)
+
+const snapshotStore = snapshotStoreWithOut()
 
 export const copyStore = defineStore('copy', {
   state: () => {
@@ -104,6 +107,7 @@ export const copyStore = defineStore('copy', {
           eventBus.emit('addDashboardItem-' + newComponent.canvasId, newComponent)
         }
       })
+      snapshotStore.recordSnapshotCache()
     },
     cut() {
       if (curComponent.value) {
@@ -115,6 +119,7 @@ export const copyStore = defineStore('copy', {
           dvMainStore.deleteComponentById(component.id)
         })
       }
+      snapshotStore.recordSnapshotCache()
       this.isCut = true
     },
 
