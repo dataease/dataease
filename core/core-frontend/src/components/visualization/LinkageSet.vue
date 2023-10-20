@@ -106,14 +106,16 @@
                             :label="item.name"
                             :value="item.id"
                           >
-                            <span style="float: left">
+                            <span class="custom-option">
                               <Icon
                                 style="width: 14px; height: 14px"
                                 :name="`field_${fieldType[item.deType]}`"
                                 :className="`field-icon-${fieldType[item.deType]}`"
                               />
+                              <span style="float: left; margin-left: 4px; font-size: 14px">{{
+                                item.name
+                              }}</span>
                             </span>
-                            <span style="float: left; font-size: 12px">{{ item.name }}</span>
                           </el-option>
                         </el-select>
                       </div>
@@ -134,14 +136,16 @@
                             :label="item.name"
                             :value="item.id"
                           >
-                            <span style="float: left">
+                            <span class="custom-option">
                               <Icon
                                 style="width: 14px; height: 14px"
                                 :name="`field_${fieldType[item.deType]}`"
                                 :className="`field-icon-${fieldType[item.deType]}`"
                               />
+                              <span style="float: left; margin-left: 4px; font-size: 14px">{{
+                                item.name
+                              }}</span>
                             </span>
-                            <span style="float: left; font-size: 12px">{{ item.name }}</span>
                           </el-option>
                         </el-select>
                       </div>
@@ -749,5 +753,11 @@ span {
   &:active {
     background: rgba(31, 35, 41, 0.2) !important;
   }
+}
+
+.custom-option {
+  font-size: 14px;
+  display: flex;
+  align-items: center;
 }
 </style>

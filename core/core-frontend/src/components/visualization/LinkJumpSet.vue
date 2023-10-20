@@ -199,8 +199,15 @@
                                   :label="curViewField.name"
                                   :value="curViewField.id"
                                 >
-                                  <span style="float: left; font-size: 12px">
-                                    {{ curViewField.name }}
+                                  <span class="custom-option">
+                                    <Icon
+                                      style="width: 14px; height: 14px"
+                                      :name="`field_${fieldType[curViewField.deType]}`"
+                                      :className="`field-icon-${fieldType[curViewField.deType]}`"
+                                    />
+                                    <span style="float: left; margin-left: 4px; font-size: 14px">{{
+                                      curViewField.name
+                                    }}</span>
                                   </span>
                                 </el-option>
                               </el-select>
@@ -222,13 +229,15 @@
                                   :label="item.title"
                                   :value="item.id"
                                 >
-                                  <span style="float: left">
-                                    <svg-icon
+                                  <span class="custom-option">
+                                    <Icon
                                       :icon-class="item.type"
                                       style="width: 14px; height: 14px"
                                     />
+                                    <span style="float: left; margin-left: 4px; font-size: 14px">{{
+                                      item.title
+                                    }}</span>
                                   </span>
-                                  <span style="float: left; font-size: 12px">{{ item.title }}</span>
                                 </el-option>
                               </el-select>
                             </div>
@@ -247,30 +256,15 @@
                                   :label="viewField.name"
                                   :value="viewField.id"
                                 >
-                                  <span style="float: left">
-                                    <svg-icon
-                                      v-if="viewField.deType === 0"
-                                      icon-class="field_text"
-                                      class="field-icon-text"
+                                  <span class="custom-option">
+                                    <Icon
+                                      style="width: 14px; height: 14px"
+                                      :name="`field_${fieldType[viewField.deType]}`"
+                                      :className="`field-icon-${fieldType[viewField.deType]}`"
                                     />
-                                    <svg-icon
-                                      v-if="viewField.deType === 1"
-                                      icon-class="field_time"
-                                      class="field-icon-time"
-                                    />
-                                    <svg-icon
-                                      v-if="viewField.deType === 2 || viewField.deType === 3"
-                                      icon-class="field_value"
-                                      class="field-icon-value"
-                                    />
-                                    <svg-icon
-                                      v-if="viewField.deType === 5"
-                                      icon-class="field_location"
-                                      class="field-icon-red"
-                                    />
-                                  </span>
-                                  <span style="float: left; font-size: 12px">
-                                    {{ viewField.name }}
+                                    <span style="float: left; margin-left: 4px; font-size: 14px">{{
+                                      viewField.name
+                                    }}</span>
                                   </span>
                                 </el-option>
                               </el-select>
@@ -1201,5 +1195,11 @@ span {
     width: 16px;
     height: 16px;
   }
+}
+
+.custom-option {
+  font-size: 14px;
+  display: flex;
+  align-items: center;
 }
 </style>

@@ -1625,6 +1625,7 @@ const onRefreshChange = val => {
                                 class="result-count"
                                 size="small"
                                 :value-on-clear="1000"
+                                @change="recordSnapshotInfo('calcData')"
                                 :disabled="view.resultMode === 'all'"
                               />
                             </el-radio>
