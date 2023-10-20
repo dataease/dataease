@@ -949,6 +949,10 @@ const setDeTypeSelection = () => {
   deTypeSelection.value = fieldSelection.value.map(ele => ele.deExtractType)
   let deTypes = fieldSelection.value.map(ele => ele.deType)
   const [obj] = fieldSelection.value
+  nextTick(() => {
+    dimensionsSelection.value = dimensionsTable.value.getSelectionRows().map(ele => ele.id)
+    quotaSelection.value = quotaTable.value.getSelectionRows().map(ele => ele.id)
+  })
   if (Array.from(new Set(deTypes)).length !== 1) {
     deTypeArr.value = []
     return
@@ -963,6 +967,12 @@ const cascaderChangeArr = val => {
   const [deType, dateFormat] = val
   dimensionsSelection.value = dimensionsTable.value.getSelectionRows().map(ele => ele.id)
   quotaSelection.value = quotaTable.value.getSelectionRows().map(ele => ele.id)
+  console.log(
+    'dimensionsSelection.value',
+    [...dimensionsSelection.value],
+    [...quotaSelection.value]
+  )
+
   const arr = [...quotaSelection.value, ...dimensionsSelection.value]
   if (dateFormat === 'custom') {
     const [obj] = allfields.value.filter(ele => arr.includes(ele.id))
