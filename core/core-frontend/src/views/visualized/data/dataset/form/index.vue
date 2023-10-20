@@ -1980,6 +1980,7 @@ const getDsIconName = data => {
           user-select: none;
           height: 10px;
           position: relative;
+          z-index: 5;
           color: var(--deTextPrimary, #1f2329);
 
           .field-data {
