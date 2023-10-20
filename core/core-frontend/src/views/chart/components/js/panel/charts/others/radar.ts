@@ -2,9 +2,10 @@ import { RadarOptions, Radar as G2Radar } from '@antv/g2plot/esm/plots/radar'
 import { G2PlotChartView, G2PlotDrawOptions } from '../../types/impl/g2plot'
 import { flow, parseJson } from '../../../util'
 import { getPadding } from '../../common/common_antv'
-import { singleDimensionTooltipFormatter, valueFormatter } from '../../../formatter'
+import { valueFormatter } from '../../../formatter'
 import { Datum } from '@antv/g2plot/esm/types/common'
 import { useI18n } from '@/hooks/web/useI18n'
+import { DEFAULT_LABEL } from '@/views/chart/components/editor/util/chart'
 
 const { t } = useI18n()
 
@@ -123,6 +124,7 @@ export class Radar extends G2PlotChartView<RadarOptions, G2Radar> {
       pre[next.id] = next
       return pre
     }, {})
+    tmpOptions.label.style.fill = DEFAULT_LABEL.color
     // 自动旋转和标签自定义有冲突
     const label = {
       fields: [],

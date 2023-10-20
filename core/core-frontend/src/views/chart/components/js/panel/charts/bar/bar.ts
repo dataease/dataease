@@ -13,8 +13,8 @@ import {
   BAR_EDITOR_PROPERTY_INNER
 } from '@/views/chart/components/js/panel/charts/bar/common'
 import { getPadding, setGradientColor } from '@/views/chart/components/js/panel/common/common_antv'
-import { flow as flowLeft } from 'lodash-es'
 import { useI18n } from '@/hooks/web/useI18n'
+import { DEFAULT_LABEL } from '@/views/chart/components/editor/util/chart'
 
 const { t } = useI18n()
 const DEFAULT_DATA: any[] = []
@@ -116,6 +116,7 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
       pre[next.id] = next
       return pre
     }, {})
+    tmpOptions.label.style.fill = DEFAULT_LABEL.color
     const label = {
       fields: [],
       ...tmpOptions.label,

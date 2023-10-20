@@ -14,6 +14,7 @@ import {
 } from '@/views/chart/components/js/panel/charts/bar/common'
 import { Datum } from '@antv/g2plot/esm/types/common'
 import { useI18n } from '@/hooks/web/useI18n'
+import { DEFAULT_LABEL } from '@/views/chart/components/editor/util/chart'
 
 const { t } = useI18n()
 const DEFAULT_DATA = []
@@ -184,6 +185,7 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
       pre[next.id] = next
       return pre
     }, {})
+    tmpOptions.label.style.fill = DEFAULT_LABEL.color
     const label = {
       fields: [],
       ...tmpOptions.label,
