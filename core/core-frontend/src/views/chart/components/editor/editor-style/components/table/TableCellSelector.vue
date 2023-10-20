@@ -3,6 +3,7 @@ import { computed, onMounted, PropType, reactive, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL, DEFAULT_TABLE_CELL } from '@/views/chart/components/editor/util/chart'
 import { ElSpace } from 'element-plus-secondary'
+import { cloneDeep, defaultsDeep } from 'lodash-es'
 
 const { t } = useI18n()
 
@@ -42,7 +43,7 @@ const fontSizeList = computed(() => {
 })
 
 const state = reactive({
-  tableCellForm: JSON.parse(JSON.stringify(DEFAULT_TABLE_CELL))
+  tableCellForm: {} as ChartTableCellAttr
 })
 
 const emit = defineEmits(['onTableCellChange'])
@@ -52,11 +53,9 @@ const changeTableCell = prop => {
 }
 
 const init = () => {
-  const chart = JSON.parse(JSON.stringify(props.chart))
-  if (chart.customAttr) {
-    if (chart.customAttr.label) {
-      state.tableCellForm = chart.customAttr.tableCell
-    }
+  const tableCell = props.chart?.customAttr?.tableCell
+  if (tableCell) {
+    state.tableCellForm = defaultsDeep(cloneDeep(tableCell), cloneDeep(DEFAULT_TABLE_CELL))
   }
 }
 const showProperty = prop => props.propertyInner?.includes(prop)

@@ -3,6 +3,7 @@ import { computed, onMounted, PropType, reactive, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL, DEFAULT_TABLE_HEADER } from '@/views/chart/components/editor/util/chart'
 import { ElSpace } from 'element-plus-secondary'
+import { cloneDeep, defaultsDeep } from 'lodash-es'
 
 const { t } = useI18n()
 
@@ -42,7 +43,7 @@ const fontSizeList = computed(() => {
 })
 
 const state = reactive({
-  tableHeaderForm: JSON.parse(JSON.stringify(DEFAULT_TABLE_HEADER))
+  tableHeaderForm: {} as ChartTableHeaderAttr
 })
 
 const emit = defineEmits(['onTableHeaderChange'])
@@ -52,11 +53,9 @@ const changeTableHeader = prop => {
 }
 
 const init = () => {
-  const chart = JSON.parse(JSON.stringify(props.chart))
-  if (chart.customAttr) {
-    if (chart.customAttr.label) {
-      state.tableHeaderForm = chart.customAttr.tableHeader
-    }
+  const tableHeader = props.chart?.customAttr?.tableHeader
+  if (tableHeader) {
+    state.tableHeaderForm = defaultsDeep(cloneDeep(tableHeader), cloneDeep(DEFAULT_TABLE_HEADER))
   }
 }
 const showProperty = prop => props.propertyInner?.includes(prop)
