@@ -1288,10 +1288,12 @@ const forceComputed = () => {
 }
 const addItemBox = item => {
   syncShapeItemStyle(item, baseWidth.value, baseHeight.value)
-  forceComputed()
   setTimeout(function () {
-    addItem(item, componentData.value.length - 1)
-  }, 200)
+    forceComputed()
+    nextTick(() => {
+      addItem(item, componentData.value.length - 1)
+    })
+  }, 100)
 }
 
 const onStartResize = (e, item, index) => {
