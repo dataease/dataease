@@ -707,30 +707,32 @@ function removeItemById(componentId) {
 }
 
 function removeItem(index) {
-  let item = componentData.value[index]
-  if (item && isSameCanvas(item, canvasId.value)) {
-    removeItemFromPositionBox(item)
-    let belowItems = findBelowItems(item)
-    _.forEach(belowItems, function (upItem) {
-      let canGoUpRows = canItemGoUp(upItem)
-      if (canGoUpRows > 0) {
-        moveItemUp(upItem, canGoUpRows)
+  setTimeout(() => {
+    let item = componentData.value[index]
+    if (item && isSameCanvas(item, canvasId.value)) {
+      removeItemFromPositionBox(item)
+      let belowItems = findBelowItems(item)
+      _.forEach(belowItems, function (upItem) {
+        let canGoUpRows = canItemGoUp(upItem)
+        if (canGoUpRows > 0) {
+          moveItemUp(upItem, canGoUpRows)
+        }
+      })
+      let checkedFields = []
+      if (item.innerType === 'VQuery') {
+        ;(item.propValue || []).forEach(ele => {
+          checkedFields = [...ele.checkedFields, ...checkedFields]
+        })
       }
-    })
-    let checkedFields = []
-    if (item.innerType === 'VQuery') {
-      ;(item.propValue || []).forEach(ele => {
-        checkedFields = [...ele.checkedFields, ...checkedFields]
-      })
+      componentData.value.splice(index, 1)
+      if (!!checkedFields.length) {
+        Array.from(new Set(checkedFields)).forEach(ele => {
+          emitter.emit(`query-data-${ele}`)
+        })
+      }
+      snapshotStore.recordSnapshotCache('removeItem')
     }
-    componentData.value.splice(index, 1)
-    if (!!checkedFields.length) {
-      Array.from(new Set(checkedFields)).forEach(ele => {
-        emitter.emit(`query-data-${ele}`)
-      })
-    }
-    snapshotStore.recordSnapshotCache('removeItem')
-  }
+  })
 }
 
 function addItem(item, index) {
@@ -1287,9 +1289,9 @@ const forceComputed = () => {
 const addItemBox = item => {
   syncShapeItemStyle(item, baseWidth.value, baseHeight.value)
   forceComputed()
-  nextTick(function () {
+  setTimeout(function () {
     addItem(item, componentData.value.length - 1)
-  })
+  }, 200)
 }
 
 const onStartResize = (e, item, index) => {
