@@ -1,7 +1,15 @@
 <script lang="ts" setup>
 import { sql } from '@codemirror/lang-sql'
 import { basicSetup } from 'codemirror'
-import { Decoration, EditorView, ViewPlugin, WidgetType, MatchDecorator } from '@codemirror/view'
+import { indentWithTab } from '@codemirror/commands'
+import {
+  Decoration,
+  EditorView,
+  ViewPlugin,
+  WidgetType,
+  MatchDecorator,
+  keymap
+} from '@codemirror/view'
 import { propTypes } from '@/utils/propTypes'
 
 const props = defineProps({
@@ -103,7 +111,9 @@ const codeComInit = (doc: string, sqlMode?: boolean) => {
       return false
     }
   }
-  const extensionsAttach = sqlMode ? [basicSetup, sql(), placeholders] : [basicSetup, placeholders]
+  const extensionsAttach = sqlMode
+    ? [basicSetup, sql(), placeholders, keymap.of([indentWithTab])]
+    : [basicSetup, placeholders, keymap.of([indentWithTab])]
   return new EditorView({
     doc,
     extensions: extensionsAttach,
