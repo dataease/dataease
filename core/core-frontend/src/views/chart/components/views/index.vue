@@ -10,7 +10,6 @@ import {
   provide,
   reactive,
   ref,
-  ShallowRef,
   shallowRef,
   toRefs,
   watch
@@ -22,7 +21,7 @@ import {
   DEFAULT_TITLE_STYLE
 } from '@/views/chart/components/editor/util/chart'
 import DrillPath from '@/views/chart/components/views/components/DrillPath.vue'
-import { ElMessage } from 'element-plus-secondary'
+import { ElInput, ElMessage } from 'element-plus-secondary'
 import { useFilter } from '@/hooks/web/useFilter'
 import { useCache } from '@/hooks/web/useCache'
 
@@ -36,6 +35,7 @@ import { checkAddHttp, setIdValueTrans } from '@/utils/canvasUtils'
 import { Base64 } from 'js-base64'
 import DeRichTextView from '@/custom-component/rich-text/DeRichTextView.vue'
 import ChartEmptyInfo from '@/views/chart/components/views/components/ChartEmptyInfo.vue'
+import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 
 const { wsCache } = useCache()
 const chartComponent = ref<any>()
@@ -83,6 +83,8 @@ const dynamicAreaId = ref('')
 const { view, showPosition, element, active, searchCount } = toRefs(props)
 
 const titleShow = computed(() => element.value.innerType !== 'rich-text' && state.title_show)
+
+const snapshotStore = snapshotStoreWithOut()
 
 const state = reactive({
   initReady: true, //curComponent 切换期间 不接收外部的calcData 和 renderChart 事件
@@ -431,6 +433,8 @@ onMounted(() => {
 
   const { refreshViewEnable, refreshUnit, refreshTime } = view.value
   buildInnerRefreshTimer(refreshViewEnable, refreshUnit, refreshTime)
+
+  initTitle()
 })
 
 // 1.开启仪表板刷新 2.首次加载（searchCount =0 ）3.正在请求数据 则显示加载状态
@@ -445,12 +449,70 @@ const chartAreaShow = computed(() => {
     (view.value.type === 'map' && view.value.customAttr.map.id)
   )
 })
-initTitle()
+
+const titleInputRef = ref()
+const titleEditStatus = ref(false)
+function changeEditTitle() {
+  if (!props.active) {
+    return
+  }
+  if (!titleEditStatus.value) {
+    titleEditStatus.value = true
+    nextTick(() => {
+      titleInputRef.value?.focus()
+      element.value['editing'] = true
+    })
+  }
+}
+
+function onLeaveTitleInput() {
+  element.value['editing'] = false
+  titleEditStatus.value = false
+}
+
+//v-click-outside 指令
+const vClickOutside = {
+  beforeMount(el, binding) {
+    // 在元素上绑定一个事件监听器
+    el.clickOutsideEvent = function (event) {
+      // 判断点击事件是否发生在元素外部
+      if (!(el === event.target || el.contains(event.target))) {
+        // 如果是外部点击，则执行绑定的函数
+        binding.value(event)
+      }
+    }
+    // 在全局添加点击事件监听器
+    document.addEventListener('click', el.clickOutsideEvent)
+  },
+  unmounted(el) {
+    // 在组件销毁前，移除事件监听器以避免内存泄漏
+    document.removeEventListener('click', el.clickOutsideEvent)
+  }
+}
+
+function onTitleChange() {
+  snapshotStore.recordSnapshotCache()
+}
 </script>
 
 <template>
   <div class="chart-area" v-loading="loadingFlag">
-    <p v-if="titleShow" :style="state.title_class">{{ view.title }}</p>
+    <p v-if="titleShow" :style="state.title_class" @dblclick="changeEditTitle">
+      <template v-if="!titleEditStatus">
+        {{ view.title }}
+      </template>
+      <template v-else>
+        <el-input
+          :effect="canvasStyleData.dashboard.themeColor"
+          ref="titleInputRef"
+          v-model="view.title"
+          @keydown.stop
+          @keydown.enter="onLeaveTitleInput"
+          v-click-outside="onLeaveTitleInput"
+          @change="onTitleChange"
+        />
+      </template>
+    </p>
     <!--这里去渲染不同图库的视图-->
     <div v-if="chartAreaShow" style="flex: 1; overflow: hidden">
       <de-rich-text-view
