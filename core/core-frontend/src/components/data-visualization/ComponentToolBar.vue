@@ -17,7 +17,7 @@ const handleScaleChange = () => {
   // 画布比例设一个最小值，不能为 0
   scale.value = ~~scale.value || 10
   scale.value = scale.value < 10 ? 10 : scale.value
-  scale.value = scale.value > 100 ? 100 : scale.value
+  scale.value = scale.value > 200 ? 200 : scale.value
 
   changeSizeWithScale(scale.value)
 }
@@ -30,7 +30,7 @@ const scaleDecrease = (speed = 1) => {
 }
 
 const scaleIncrease = (speed = 1) => {
-  if (scale.value < 100) {
+  if (scale.value < 200) {
     scale.value = scale.value + speed
     handleScaleChange()
   }
@@ -80,7 +80,7 @@ onUnmounted(() => {
         effect="dark"
         v-model="scale"
         :min="10"
-        :max="100"
+        :max="200"
         :controls="false"
         class="scale-input-number"
       >
@@ -92,6 +92,8 @@ onUnmounted(() => {
       <el-slider
         style="width: 100px; margin-right: 12px"
         v-model="scale"
+        :min="10"
+        :max="200"
         tooltip-theme="ndark"
         @change="handleScaleChange()"
         size="small"

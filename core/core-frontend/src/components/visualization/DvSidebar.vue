@@ -179,7 +179,7 @@ const slideStyle = computed(() => {
 }
 
 .collapse-icon-dark {
-  color: @canvas-main-font-color;
+  color: @canvas-main-font-color-dark;
   cursor: pointer;
 }
 
