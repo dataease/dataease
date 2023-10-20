@@ -421,7 +421,10 @@ const handleContextMenu = e => {
     target = target.parentNode
   }
 
-  contextmenuStore.showContextMenu({ top, left, position: 'canvasCore' })
+  // 组件处于编辑状态的时候 如富文本 不弹出右键菜单
+  if (!curComponent.value || (curComponent.value && !curComponent.value.editing)) {
+    contextmenuStore.showContextMenu({ top, left, position: 'canvasCore' })
+  }
 }
 
 const getComponentStyle = style => {
