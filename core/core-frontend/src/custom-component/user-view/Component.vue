@@ -48,6 +48,11 @@ const props = defineProps({
     type: String,
     required: false,
     default: 'dashboard'
+  },
+  disabled: {
+    type: Boolean,
+    required: false,
+    default: false
   }
 })
 
@@ -77,6 +82,7 @@ const autoStyle = computed(() => {
       :element="element"
       :show-position="showPosition"
       :search-count="searchCount"
+      :disabled="disabled"
     ></chart>
   </div>
 </template>
