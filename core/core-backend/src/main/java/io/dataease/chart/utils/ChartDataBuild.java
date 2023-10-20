@@ -330,9 +330,9 @@ public class ChartDataBuild {
 
             // yAxis最后的数据对应extLabel和extTooltip，将他们从yAxis中去掉，同时转换成动态值
             int size = xAxis.size() + yAxis.size() + extBubble.size();
-            int extSize = view.getExtLabel().size() + view.getExtTooltip().size();
+            int extSize = view.getExtLabel().size() + view.getExtTooltip().size() + extBubble.size();
 
-            for (int i = xAxis.size(); i < size - extSize - extBubble.size(); i++) {
+            for (int i = xAxis.size(); i < size - extSize; i++) {
                 AxisChartDataAntVDTO axisChartDataDTO = new AxisChartDataAntVDTO();
                 axisChartDataDTO.setField(a.toString());
                 axisChartDataDTO.setName(a.toString());
@@ -363,7 +363,7 @@ public class ChartDataBuild {
                 // pop
                 if (ObjectUtils.isNotEmpty(extBubble)) {
                     try {
-                        axisChartDataDTO.setPopSize(StringUtils.isEmpty(row[size - extSize - extBubble.size()]) ? null : new BigDecimal(row[size - extSize - extBubble.size()]));
+                        axisChartDataDTO.setPopSize(StringUtils.isEmpty(row[size - extBubble.size()]) ? null : new BigDecimal(row[size - extBubble.size()]));
                         ChartQuotaDTO bubbleQuotaDTO = new ChartQuotaDTO();
                         bubbleQuotaDTO.setId(extBubble.get(0).getId());
                         quotaList.add(bubbleQuotaDTO);
