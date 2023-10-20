@@ -284,6 +284,7 @@ export function handleEmptyDataStrategy<O extends PickOptions>(chart: Chart, opt
 function handleBreakLineMultiDimension(data) {
   const dimensionInfoMap = new Map()
   const subDimensionSet = new Set()
+  const quotaMap = new Map<string, { id: string }[]>()
   for (let i = 0; i < data.length; i++) {
     const item = data[i]
     const dimensionInfo = dimensionInfoMap.get(item.field)
@@ -293,6 +294,7 @@ function handleBreakLineMultiDimension(data) {
       dimensionInfoMap.set(item.field, { set: new Set([item.category]), index: i })
     }
     subDimensionSet.add(item.category)
+    quotaMap.set(item.category, item.quotaList)
   }
   // Map 是按照插入顺序排序的，所以插入索引往后推
   let insertCount = 0
@@ -304,7 +306,8 @@ function handleBreakLineMultiDimension(data) {
           data.splice(dimensionInfo.index + insertCount + subInsertIndex, 0, {
             field,
             value: null,
-            category: dimension
+            category: dimension,
+            quotaList: quotaMap.get(dimension as string)
           })
         }
         subInsertIndex++
@@ -317,6 +320,7 @@ function handleBreakLineMultiDimension(data) {
 function handleSetZeroMultiDimension(data: Record<string, any>[]) {
   const dimensionInfoMap = new Map()
   const subDimensionSet = new Set()
+  const quotaMap = new Map<string, { id: string }[]>()
   for (let i = 0; i < data.length; i++) {
     const item = data[i]
     if (item.value === null) {
@@ -329,6 +333,7 @@ function handleSetZeroMultiDimension(data: Record<string, any>[]) {
       dimensionInfoMap.set(item.field, { set: new Set([item.category]), index: i })
     }
     subDimensionSet.add(item.category)
+    quotaMap.set(item.category, item.quotaList)
   }
   let insertCount = 0
   dimensionInfoMap.forEach((dimensionInfo, field) => {
@@ -339,7 +344,8 @@ function handleSetZeroMultiDimension(data: Record<string, any>[]) {
           data.splice(dimensionInfo.index + insertCount + subInsertIndex, 0, {
             field,
             value: 0,
-            category: dimension
+            category: dimension,
+            quotaList: quotaMap.get(dimension as string)
           })
         }
         subInsertIndex++

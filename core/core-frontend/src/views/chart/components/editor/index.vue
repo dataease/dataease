@@ -610,6 +610,13 @@ const onLabelChange = val => {
   view.value.customAttr.label = val
   renderChart(view.value)
 }
+watch([() => view.value.xAxisExt?.length, () => view.value.yAxis?.length], () => {
+  if (view.value.type === 'line') {
+    if (view.value?.xAxisExt?.length && view.value?.yAxis?.length > 1) {
+      view.value.yAxis.splice(1)
+    }
+  }
+})
 
 const onTooltipChange = (chartForm: ChartEditorForm<ChartTooltipAttr>) => {
   const { data, requestData, render } = chartForm
