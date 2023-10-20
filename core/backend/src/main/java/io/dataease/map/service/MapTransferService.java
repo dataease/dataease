@@ -3,7 +3,6 @@ package io.dataease.map.service;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.ArrayUtil;
 import com.google.gson.Gson;
-
 import io.dataease.plugins.common.base.domain.ChartView;
 import io.dataease.plugins.common.base.domain.ChartViewExample;
 import io.dataease.plugins.common.base.domain.ChartViewWithBLOBs;
@@ -40,15 +39,18 @@ public class MapTransferService {
 
     private static final String FULL_FILE_SUFFIX = "_full.json";
 
+    private static final List<String> coverFileNameList = new ArrayList<>();
+
 
     @PostConstruct
     public void init() {
         MATCH_TYPES.add("map");
         MATCH_TYPES.add("buddle-map");
+        coverFileNameList.add("350200_full.json");
     }
+
     @Resource
     private ChartViewMapper chartViewMapper;
-
 
 
     public void execute() {
@@ -70,7 +72,7 @@ public class MapTransferService {
         String chinaRootPath = geoPath + FULL_KEY + FILE_SEPARATOR;
         File chinaRootDir = new File(chinaRootPath);
         File[] files = chinaRootDir.listFiles();
-        if(ArrayUtil.isEmpty(files)) return;
+        if (ArrayUtil.isEmpty(files)) return;
         Map<String, List<File>> listMap = Arrays.stream(files).filter(FileUtil::isFile).collect(Collectors.groupingBy(this::fileType));
         if (ObjectUtils.isEmpty(listMap)) return;
         moveFiles(listMap, BORDER_KEY);
@@ -86,7 +88,7 @@ public class MapTransferService {
                 String fileName = file.getName();
                 String newFilePath = dirPath + GLOBAL_CHINA_PREFIX + FILE_SEPARATOR + GLOBAL_CHINA_PREFIX + fileName;
                 File target = new File(newFilePath);
-                if(!target.exists()) {
+                if (coverFileNameList.contains(fileName) || !target.exists()) {
                     FileUtil.move(file, target, true);
                 }
             });
@@ -128,7 +130,7 @@ public class MapTransferService {
 
     private Boolean customMatch(Map<String, Object> customAttrMap) {
         Object codeObj = null;
-        if((codeObj = customAttrMap.get(AREA_CODE_KEY)) != null) {
+        if ((codeObj = customAttrMap.get(AREA_CODE_KEY)) != null) {
             String code = codeObj.toString();
             boolean matych = code.length() == 6;
             customAttrMap.put(AREA_CODE_KEY, GLOBAL_CHINA_PREFIX + code);
