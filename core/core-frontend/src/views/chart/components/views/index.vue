@@ -77,6 +77,11 @@ const props = defineProps({
     type: Number,
     required: false,
     default: 0
+  },
+  disabled: {
+    type: Boolean,
+    required: false,
+    default: false
   }
 })
 const dynamicAreaId = ref('')
@@ -458,7 +463,7 @@ initTitle()
         :themes="canvasStyleData.dashboard.themeColor"
         ref="chartComponent"
         :element="element"
-        :disabled="!['canvas', 'canvasDataV'].includes(showPosition)"
+        :disabled="!['canvas', 'canvasDataV'].includes(showPosition) || disabled"
         :active="active"
         :show-position="showPosition"
       />
