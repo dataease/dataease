@@ -280,7 +280,7 @@ eventBus.on('handleNew', handleNew)
           <component :is="findComponent(curComponent['component'] + 'Attr')" />
         </dv-sidebar>
         <dv-sidebar
-          v-if="!curComponent"
+          v-show="!curComponent"
           :title="'大屏配置'"
           :width="240"
           :side-name="'canvas'"

@@ -2952,7 +2952,7 @@ span {
 }
 
 .content-area-right-open {
-  width: 180px;
+  width: 179px;
 }
 
 .dataset-main-top {

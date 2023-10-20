@@ -150,9 +150,6 @@ const showLine = (isDownward, isRightward) => {
           }
         })
       }
-
-      // 同一方向上同时显示三条线可能不太美观，因此才有了这个解决方案
-      // 同一方向上的线只显示一条，例如多条横条只显示一条横线
       if (needToShow.length) {
         chooseTheTrueLine(needToShow, isDownward, isRightward)
       }

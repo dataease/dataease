@@ -1520,6 +1520,8 @@ const linkageSetOpen = item => {
   })
 }
 
+const markLineShow = computed(() => isMainCanvas(canvasId.value))
+
 onMounted(() => {
   if (isMainCanvas(canvasId.value)) {
     initSnapshotTimer()
@@ -1647,7 +1649,7 @@ defineExpose({
     <!-- 右击菜单 -->
     <ContextMenu show-position="canvasCore" />
     <!-- 标线 -->
-    <MarkLine />
+    <MarkLine v-if="markLineShow" />
     <!-- 选中区域 -->
     <Area v-show="isShowArea" :start="start" :width="width" :height="height" />
     <user-view-enlarge ref="userViewEnlargeRef"></user-view-enlarge>
