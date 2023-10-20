@@ -1159,12 +1159,15 @@ const getDsIconName = data => {
             :data="state.dataSourceList"
             :render-after-expand="false"
           >
-            <template #default="{ data: { name, leaf, type } }">
+            <template #default="{ data: { name, leaf, type, extraFlag } }">
               <div class="flex-align-center icon">
-                <el-icon v-if="!leaf">
+                <el-icon>
                   <icon :name="getDsIconName({ leaf, type })"></icon>
                 </el-icon>
-                {{ name }}
+                <span v-if="!leaf || extraFlag > -1">{{ name }}</span>
+                <el-tooltip effect="dark" v-else :content="`无效数据源:${name}`" placement="top">
+                  <span>{{ name }}</span>
+                </el-tooltip>
               </div>
             </template>
           </el-tree-select>
