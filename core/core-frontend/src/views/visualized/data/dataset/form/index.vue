@@ -246,7 +246,7 @@ const closeCustomTime = () => {
     const { idArr } = currentField.value
     allfields.value.forEach(ele => {
       if (idArr.includes(ele.id)) {
-        Object.assign(ele, { deTypeArr: [1, 'custom'] })
+        Object.assign(ele, { deTypeArr: [...oldArrValue] })
       }
     })
     delete currentField.value.name
@@ -255,7 +255,7 @@ const closeCustomTime = () => {
     dimensions.value.concat(quota.value).some(ele => {
       if (ele.id === currentField.value.id) {
         delete currentField.value.name
-        Object.assign(ele, currentField.value)
+        Object.assign(ele, { deTypeArr: [...oldArrValue] })
         return true
       }
       return false
@@ -271,7 +271,12 @@ const confirmCustomTime = () => {
     const { name, idArr } = currentField.value
     allfields.value.forEach(ele => {
       if (idArr.includes(ele.id)) {
-        Object.assign(ele, { dateFormat: name, deTypeArr: [1, 'custom'] })
+        Object.assign(ele, {
+          deType: 1,
+          dateFormatType: 'custom',
+          dateFormat: name,
+          deTypeArr: [1, 'custom']
+        })
       }
     })
     delete currentField.value.name
@@ -282,6 +287,8 @@ const confirmCustomTime = () => {
         dimensions.value.concat(quota.value).some(ele => {
           if (ele.id === currentField.value.id) {
             ele.dateFormat = currentField.value.name
+            ele.deType = 1
+            ele.dateFormatType = 'custom'
             return true
           }
           return false
@@ -946,14 +953,28 @@ const setDeTypeSelection = () => {
     deTypeArr.value = []
     return
   }
-  deTypeArr.value = obj.deType === 1 && obj.deExtractType === 0 ? [1, obj.dateFormat] : [obj.deType]
+  deTypeArr.value =
+    obj.deType === 1 && obj.deExtractType === 0 ? [1, obj.dateFormatType] : [obj.deType]
 }
+
+let oldArrValue = []
 
 const cascaderChangeArr = val => {
   const [deType, dateFormat] = val
   dimensionsSelection.value = dimensionsTable.value.getSelectionRows().map(ele => ele.id)
   quotaSelection.value = quotaTable.value.getSelectionRows().map(ele => ele.id)
   const arr = [...quotaSelection.value, ...dimensionsSelection.value]
+  if (dateFormat === 'custom') {
+    const [obj] = allfields.value.filter(ele => arr.includes(ele.id))
+    oldArrValue = obj.deType === 1 ? [1, obj.dateFormatType] : [obj.deType]
+    currentField.value.id = ''
+    currentField.value.idArr = [...arr]
+    currentField.value.dateFormat = ''
+    currentField.value.dateFormatType = dateFormat
+    updateCustomTime.value = true
+    recoverSelection()
+    return
+  }
   allfields.value.forEach(ele => {
     if (arr.includes(ele.id)) {
       ele.deType = deType
@@ -962,13 +983,6 @@ const cascaderChangeArr = val => {
       ele.deTypeArr = deType === 1 && ele.deExtractType === 0 ? [deType, dateFormat] : [deType]
     }
   })
-  if (dateFormat === 'custom') {
-    currentField.value.id = ''
-    currentField.value.idArr = [...arr]
-    currentField.value.dateFormat = ''
-    currentField.value.dateFormatType = dateFormat
-    updateCustomTime.value = true
-  }
   recoverSelection()
 }
 
@@ -993,13 +1007,15 @@ const dragEnd = () => {
 
 const cascaderChange = (row, val) => {
   const [deType, dateFormat] = val
+  if (dateFormat === 'custom') {
+    oldArrValue = row.deType === 1 ? [1, row.dateFormatType] : [row.deType]
+    currentField.value.id = row.id
+    updateCustomTime.value = true
+    return
+  }
   row.deType = deType
   row.dateFormat = deType === 1 ? dateFormat : ''
   row.dateFormatType = deType === 1 ? dateFormat : ''
-  if (dateFormat === 'custom') {
-    currentField.value.id = row.id
-    updateCustomTime.value = true
-  }
 }
 
 const dfsUnion = (arr, list) => {
