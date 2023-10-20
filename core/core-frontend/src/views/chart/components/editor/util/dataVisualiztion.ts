@@ -109,7 +109,7 @@ export const DEFAULT_CANVAS_STYLE_DATA_DARK = {
   // 页面全局数据
   themeId: '10002',
   color: '#fff',
-  backgroundColor: '#000',
+  backgroundColor: '#020408',
   dashboard: DEFAULT_DASHBOARD_STYLE_DARK,
   component: PANEL_CHART_INFO_DARK
 }
