@@ -83,6 +83,11 @@ const checkDialog = () => {
       haveDialog = true
     }
   })
+  // 富文本单框
+  if (document.querySelector('.tox-dialog-wrap')) {
+    haveDialog = true
+  }
+
   return haveDialog
 }
 
