@@ -213,6 +213,7 @@ const commonBackgroundSvgInner = computed(() => {
           :show-position="showPosition"
           :search-count="searchCount"
           :scale="scale"
+          :disabled="true"
         />
       </div>
     </div>

@@ -86,7 +86,7 @@ onUnmounted(() => {
       >
         <template #suffix> % </template>
       </el-input>
-      <el-icon @click="scaleDecrease" class="hover-icon-custom" style="margin-right: 12px">
+      <el-icon @click="scaleDecrease(1)" class="hover-icon-custom" style="margin-right: 12px">
         <Icon name="dv-min"></Icon
       ></el-icon>
       <el-slider
@@ -96,7 +96,7 @@ onUnmounted(() => {
         @change="handleScaleChange()"
         size="small"
       />
-      <el-icon @click="scaleIncrease" class="hover-icon-custom">
+      <el-icon @click="scaleIncrease(1)" class="hover-icon-custom">
         <Icon name="dv-max"></Icon
       ></el-icon>
       <el-divider direction="vertical" class="custom-divider" />
