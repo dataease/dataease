@@ -203,11 +203,13 @@ const linkageActiveChange = () => {
           </el-collapse-item>
 
           <collapse-switch-item
-            v-model="chart.senior.scrollCfg.open"
-            :effect="themes"
             v-if="showProperties('scroll-cfg')"
-            name="scroll"
+            :effect="themes"
             :title="t('chart.scroll_cfg')"
+            :change-model="chart.senior.scrollCfg"
+            v-model="chart.senior.scrollCfg.open"
+            name="scroll"
+            @modelChange="onScrollCfgChange"
           >
             <scroll-cfg
               :themes="themes"

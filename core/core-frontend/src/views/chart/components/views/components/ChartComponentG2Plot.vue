@@ -249,7 +249,6 @@ onMounted(() => {
       return
     }
     const [size] = entry.borderBoxSize || []
-    console.log(size)
     const widthOffsetPercent = (size.inlineSize - preSize[0]) / preSize[0]
     const heightOffsetPercent = (size.blockSize - preSize[1]) / preSize[1]
     if (Math.abs(widthOffsetPercent) < TOLERANCE && Math.abs(heightOffsetPercent) < TOLERANCE) {

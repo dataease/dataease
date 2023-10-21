@@ -128,6 +128,7 @@ const renderChart = (view: Chart, resetPageInfo: boolean) => {
     action
   })
   myChart?.render()
+  initScroll()
 }
 
 const pageColor = computed(() => {
@@ -150,6 +151,41 @@ const setupPage = (chart: ChartObj, resetPageInfo?: boolean) => {
   }
   if (resetPageInfo) {
     state.pageInfo.currentPage = 1
+  }
+}
+
+let scrollTimer
+let scrollTop = 0
+const initScroll = () => {
+  clearInterval(scrollTimer)
+  // 首先回到最顶部，然后计算行高*行数作为top，最后判断：如果top<数据量*行高，继续滚动，否则回到顶部
+  const customAttr = view.value.customAttr
+  const senior = view.value.senior
+  scrollTop = 0
+  if (
+    senior?.scrollCfg?.open &&
+    (view.value.type === 'table-normal' || (view.value.type === 'table-info' && !state.showPage))
+  ) {
+    const rowHeight = customAttr.tableCell.tableItemHeight
+    const headerHeight = customAttr.tableHeader.tableTitleHeight
+    const dom = document.getElementById(containerId)
+    if (dom.offsetHeight > rowHeight * chartData.value.tableRow.length + headerHeight) {
+      return
+    }
+    scrollTimer = setInterval(() => {
+      const offsetHeight = dom.offsetHeight
+      const top = rowHeight * senior.scrollCfg.row
+      if (offsetHeight - headerHeight + scrollTop < rowHeight * chartData.value.tableRow.length) {
+        scrollTop += top
+      } else {
+        scrollTop = 0
+      }
+      myChart.store.set('scrollY', scrollTop)
+      if (!offsetHeight) {
+        return
+      }
+      myChart.render()
+    }, senior.scrollCfg.interval)
   }
 }
 
@@ -254,6 +290,7 @@ const resize = (width, height) => {
   timer = setTimeout(() => {
     myChart?.changeSheetSize(width, height)
     myChart?.render()
+    initScroll()
   }, 500)
 }
 const preSize = [0, 0]
@@ -282,6 +319,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   myChart?.destroy()
   resizeObserver?.disconnect()
+  clearInterval(scrollTimer)
 })
 </script>
 

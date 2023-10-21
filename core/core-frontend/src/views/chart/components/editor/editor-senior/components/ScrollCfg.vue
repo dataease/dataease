@@ -30,7 +30,7 @@ watch(
 )
 
 const state = reactive({
-  scrollForm: JSON.parse(JSON.stringify(DEFAULT_SCROLL)),
+  scrollForm: {} as ScrollCfg,
   isAutoBreakLine: false
 })
 
