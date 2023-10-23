@@ -2098,7 +2098,17 @@ export default {
       const pluginOptions = plugins.filter(plugin => !this.renderOptions.some(option => option.value === plugin.render)).map(plugin => {
         return { name: plugin.render, value: plugin.render }
       })
-      this.pluginRenderOptions = [...this.renderOptions, ...pluginOptions]
+      const tempList = [...this.renderOptions, ...pluginOptions]
+      this.pluginRenderOptions = this.distinctArray(tempList, 'value')
+    },
+    distinctArray(arr, key) {
+      const m = new Map()
+      for (const item of arr) {
+        if (!m.has(item[key])) {
+          m.set(item[key], item)
+        }
+      }
+      return [...m.values()]
     },
     emptyTableData(id) {
       this.table = {}
