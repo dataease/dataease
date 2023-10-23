@@ -352,24 +352,23 @@ export default {
         const defaultTemplate = "经度：${longitude}，纬度：${latitude}"
         const templateWithField = getDefaultTemplate(chart, 'labelAxis', false, false)
         const labelTemplate = customAttr.label.labelTemplate || templateWithField || defaultTemplate
+        const data = originData.filter(item => item.longitude && item.latitude)
+        data.forEach(item => {
+          const properties = item.properties || {}
+          properties.longitude = item.longitude
+          properties.latitude = item.latitude
 
-        originData.forEach(item => {
-            const properties = item.properties || {}
-            properties.longitude = item.longitude
-            properties.latitude = item.latitude
+          try {
+              item.labelResult = this.fillStrTemplate(labelTemplate, properties)
+          }catch (error) {
 
-
-            try {
-                item.labelResult = this.fillStrTemplate(labelTemplate, properties)
-            }catch (error) {
-
-            }
-            item.labelResult = item.labelResult || this.fillStrTemplate(defaultTemplate, properties)
-            item.labelResult = item.labelResult.replaceAll('\n', ' ')
+          }
+          item.labelResult = item.labelResult || this.fillStrTemplate(defaultTemplate, properties)
+          item.labelResult = item.labelResult.replaceAll('\n', ' ')
         })
 
         this.textLayer = new PointLayer({})
-            .source(originData,
+            .source(data,
             {
                 parser: {
                 type: 'json',
@@ -399,7 +398,6 @@ export default {
       },
 
       setLayerAttr (chart) {
-
         let defaultSymbol = 'marker'
         let customAttr = {}
         let layerStyle = {}
@@ -417,7 +415,8 @@ export default {
         }
 
         this.myChart.removeAllLayer().then(() => {
-          const data = chart.data && chart.data.data || []
+          let data = chart.data && chart.data.data || []
+          data = data.filter(item => item.longitude && item.latitude)
           this.pointLayer = new PointLayer({autoFit: true})
           this.pointLayer.source(data, {
             parser: {
