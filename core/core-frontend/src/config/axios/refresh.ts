@@ -48,8 +48,8 @@ export const configHandler = config => {
             config.headers['X-DE-TOKEN'] = res.data.token
             delayExecute(res.data.token)
           })
-          .catch(() => {
-            delayExecute(wsCache.get('user.token'))
+          .catch(e => {
+            console.error(e)
           })
           .finally(() => {
             setRefreshStatus(false)

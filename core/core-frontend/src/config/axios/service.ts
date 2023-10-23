@@ -155,7 +155,8 @@ service.interceptors.response.use(
     const header = error.response?.headers as AxiosHeaders
     if (
       !error.config.url.startsWith('/xpackComponent/content') &&
-      !header.has('DE-FORBIDDEN-FLAG')
+      !header.has('DE-FORBIDDEN-FLAG') &&
+      !header.has('DE-GATEWAY-FLAG')
     ) {
       ElMessage({
         type: 'error',

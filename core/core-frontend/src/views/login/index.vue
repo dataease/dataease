@@ -150,12 +150,38 @@ const svg = `
           L 15 15
         " style="stroke-width: 4px; fill: rgba(0, 0, 0, 0)"/>
       `
-
+const showLoginErrorMsg = () => {
+  if (!loginErrorMsg.value) {
+    return
+  }
+  if (loginErrorMsg.value.startsWith('token is empty')) {
+    ElMessage.error('token为空！')
+    return
+  }
+  if (loginErrorMsg.value.startsWith('token is Expired')) {
+    ElMessage.error('token已过期，请重新登录！')
+    return
+  }
+  if (loginErrorMsg.value.startsWith('token is destroyed')) {
+    ElMessage.error('token已销毁，请重新登录！')
+    return
+  }
+  if (loginErrorMsg.value.startsWith('user_disable')) {
+    ElMessage.error('用户已被禁用，无法登录！')
+    return
+  }
+  if (loginErrorMsg.value.startsWith('permission has been changed')) {
+    ElMessage.error('默认组织已发生变更，请重新登录！')
+    return
+  }
+  debugger
+  ElMessage.error(loginErrorMsg.value)
+}
 onMounted(() => {
   checkPlatform()
   if (localStorage.getItem('DE-GATEWAY-FLAG')) {
     loginErrorMsg.value = localStorage.getItem('DE-GATEWAY-FLAG')
-    ElMessage.error(loginErrorMsg.value)
+    showLoginErrorMsg()
     localStorage.removeItem('DE-GATEWAY-FLAG')
     logoutHandler(true)
   }
