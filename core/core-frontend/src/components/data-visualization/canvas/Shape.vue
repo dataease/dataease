@@ -573,6 +573,8 @@ const handleMouseDownOnPoint = (point, e) => {
       curPoint,
       symmetricPoint
     })
+    //Temp dataV坐标偏移
+    offsetDataVAdaptor(style, point)
     dvMainStore.setShapeStyle(style)
     dashboardActive.value && emit('onResizing', moveEvent)
   }
@@ -588,13 +590,31 @@ const handleMouseDownOnPoint = (point, e) => {
   document.addEventListener('mouseup', up)
 }
 
+const offsetDataVAdaptor = (style, point) => {
+  if (!dashboardActive.value) {
+    const offset = 1
+    if (point.indexOf('r') > -1) {
+      style['left'] = style['left'] + offset
+    }
+    if (point.indexOf('b') > -1) {
+      style['top'] = style['top'] + offset
+    }
+    if (point.indexOf('l') > -1) {
+      style['width'] = style['width'] + offset
+    }
+    if (point.indexOf('t') > -1) {
+      style['height'] = style['height'] + offset
+    }
+  }
+}
+
 // resize算法适配，根据9个拖转点的位置 调整curGap 引起的中心点centerPoint 圆点curPoint 对称点 symmetricPoint引起的偏移
 const offsetGapAdaptor = (dimension, point) => {
-  const curGap = baseCellInfo.value.curGap
+  const offset = baseCellInfo.value.curGap
   if (dimension === 'x') {
-    return point.indexOf('r') > -1 ? curGap : -1 * curGap
+    return point.indexOf('r') > -1 ? offset : -1 * offset
   } else {
-    return point.indexOf('b') > -1 ? curGap : -1 * curGap
+    return point.indexOf('b') > -1 ? offset : -1 * offset
   }
 }
 
