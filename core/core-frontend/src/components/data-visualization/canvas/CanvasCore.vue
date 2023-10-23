@@ -1535,6 +1535,7 @@ onMounted(() => {
   eventBus.on('removeMatrixItemById-' + canvasId.value, removeItemById)
   eventBus.on('addDashboardItem-' + canvasId.value, addItemBox)
   eventBus.on('snapshotChange-' + canvasId.value, canvasInit)
+  eventBus.on('doCanvasInit-' + canvasId.value, canvasInit)
 })
 
 onBeforeUnmount(() => {
@@ -1549,6 +1550,7 @@ onBeforeUnmount(() => {
   eventBus.off('removeMatrixItemById-' + canvasId.value, removeItemById)
   eventBus.off('addDashboardItem-' + canvasId.value, addItemBox)
   eventBus.off('snapshotChange-' + canvasId.value, canvasInit)
+  eventBus.off('doCanvasInit' + canvasId.value, canvasInit)
 })
 
 defineExpose({
