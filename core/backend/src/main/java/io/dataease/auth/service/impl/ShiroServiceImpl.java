@@ -132,6 +132,7 @@ public class ShiroServiceImpl implements ShiroService {
         filterChainDefinitionMap.put("/dataset/field/linkMultFieldValues", "link");
         filterChainDefinitionMap.put("/dataset/field/linkMappingFieldValues", "link");
         filterChainDefinitionMap.put("/systemInfo/proxyUserLoginInfo", ANON);
+        filterChainDefinitionMap.put("/system/onlineMapKey", ANON);
 
         filterChainDefinitionMap.put("/**", "authc");
 
