@@ -236,7 +236,8 @@ const trackMenu = computed(() => {
 
 defineExpose({
   calcData,
-  renderChart
+  renderChart,
+  trackMenu
 })
 let resizeObserver
 const TOLERANCE = 0.01

@@ -21,7 +21,7 @@ import {
   DEFAULT_TITLE_STYLE
 } from '@/views/chart/components/editor/util/chart'
 import DrillPath from '@/views/chart/components/views/components/DrillPath.vue'
-import { ElInput, ElMessage } from 'element-plus-secondary'
+import { ElIcon, ElInput, ElMessage } from 'element-plus-secondary'
 import { useFilter } from '@/hooks/web/useFilter'
 import { useCache } from '@/hooks/web/useCache'
 
@@ -41,10 +41,17 @@ const { wsCache } = useCache()
 const chartComponent = ref<any>()
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
+
 let innerRefreshTimer = null
 
-const { nowPanelJumpInfo, publicLinkStatus, dvInfo, curComponent, canvasStyleData } =
-  storeToRefs(dvMainStore)
+const {
+  nowPanelTrackInfo,
+  nowPanelJumpInfo,
+  publicLinkStatus,
+  dvInfo,
+  curComponent,
+  canvasStyleData
+} = storeToRefs(dvMainStore)
 
 const props = defineProps({
   active: {
@@ -95,8 +102,6 @@ const state = reactive({
   initReady: true, //curComponent 切换期间 不接收外部的calcData 和 renderChart 事件
   title_show: true,
   title_class: {
-    margin: '0 0',
-    width: '100%',
     fontSize: '18px',
     color: '#303133',
     textAlign: 'left',
@@ -106,10 +111,41 @@ const state = reactive({
     fontFamily: '',
     textShadow: 'none',
     letterSpacing: '0px',
-    fontSynthesis: 'style weight'
+    fontSynthesis: 'style weight',
+    width: 'fit-content',
+    maxWidth: '100%',
+    wordBreak: 'break-word'
   },
   drillFilters: [],
   drillClickDimensionList: []
+})
+
+const titleAlign = computed<string>(() => {
+  if (!titleShow.value) {
+    return 'flex-start'
+  }
+
+  if (state.title_class.textAlign === 'center') {
+    return 'center'
+  } else if (state.title_class.textAlign === 'right') {
+    return 'flex-end'
+  }
+
+  return 'flex-start'
+})
+
+const trackMenu = computed<Array<string>>(() => {
+  return chartComponent?.value?.trackMenu ?? []
+})
+
+const hasLinkIcon = computed(() => {
+  return trackMenu.value.indexOf('linkage') > -1
+})
+const hasJumpIcon = computed(() => {
+  return trackMenu.value.indexOf('jump') > -1
+})
+const hasDrillIcon = computed(() => {
+  return trackMenu.value.indexOf('drill') > -1
 })
 
 const loading = ref(false)
@@ -498,16 +534,23 @@ const vClickOutside = {
 function onTitleChange() {
   snapshotStore.recordSnapshotCache()
 }
+
+const toolTip = computed(() => {
+  return props.themes === 'dark' ? 'ndark' : 'dark'
+})
 </script>
 
 <template>
   <div class="chart-area" v-loading="loadingFlag">
-    <p v-if="titleShow" :style="state.title_class" @dblclick="changeEditTitle">
+    <div class="title-container" :style="{ 'justify-content': titleAlign }">
       <template v-if="!titleEditStatus">
-        {{ view.title }}
+        <p v-if="titleShow" :style="state.title_class" @dblclick="changeEditTitle">
+          {{ view.title }}
+        </p>
       </template>
       <template v-else>
         <el-input
+          style="flex: 1"
           :effect="canvasStyleData.dashboard.themeColor"
           ref="titleInputRef"
           v-model="view.title"
@@ -517,7 +560,28 @@ function onTitleChange() {
           @change="onTitleChange"
         />
       </template>
-    </p>
+      <div
+        class="icons-container"
+        :class="{ 'is-editing': titleEditStatus }"
+        v-if="trackMenu.length > 0"
+      >
+        <el-tooltip :effect="toolTip" placement="top" content="已设置联动" v-if="hasLinkIcon">
+          <el-icon size="16px" class="inner-icon">
+            <Icon name="icon_link-record_outlined" />
+          </el-icon>
+        </el-tooltip>
+        <el-tooltip :effect="toolTip" placement="top" content="已设置跳转" v-if="hasJumpIcon">
+          <el-icon size="16px" class="inner-icon">
+            <Icon name="icon_viewinchat_outlined" />
+          </el-icon>
+        </el-tooltip>
+        <el-tooltip :effect="toolTip" placement="top" content="已设置下钻" v-if="hasDrillIcon">
+          <el-icon size="16px" class="inner-icon">
+            <Icon name="icon_drilling_outlined" />
+          </el-icon>
+        </el-tooltip>
+      </div>
+    </div>
     <!--这里去渲染不同图库的视图-->
     <div v-if="chartAreaShow" style="flex: 1; overflow: hidden">
       <de-rich-text-view
@@ -565,5 +629,33 @@ function onTitleChange() {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+}
+.title-container {
+  margin: 0;
+  width: 100%;
+
+  display: inline-flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+
+  gap: 8px;
+
+  .icons-container {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 8px;
+
+    color: #646a73;
+
+    &.is-editing {
+      gap: 6px;
+    }
+
+    .inner-icon {
+      cursor: pointer;
+    }
+  }
 }
 </style>

@@ -279,7 +279,8 @@ const trackMenu = computed(() => {
 defineExpose({
   calcData,
   renderChart,
-  renderChartFromDialog
+  renderChartFromDialog,
+  trackMenu
 })
 
 let timer
