@@ -10,6 +10,7 @@ public enum SQLFunctionsEnum {
     UNIX_TIMESTAMP("UNIX_TIMESTAMP", "UNIX_TIMESTAMP(date)", 1, "将标准格式date以13位时间戳返回", true),
     FROM_UNIXTIME("FROM_UNIXTIME", "FROM_UNIXTIME(timestamp,format)", 1, "将timestamp转换成format格式返回", true),
     ABS("ABS", "ABS(x)", 2, "返回x的绝对值", false),
+    SIN("SIN", "SIN(x)", 2, "返回x的正弦值", false),
     CEIL("CEIL", "CEIL(x)", 2, "返回不小于x的最小整数", false),
     FLOOR("FLOOR", "FLOOR(x)", 2, "返回不大于x的最大整数", false),
     ROUND1("ROUND", "ROUND(x)", 2, "返回离x最近的整数", false),
