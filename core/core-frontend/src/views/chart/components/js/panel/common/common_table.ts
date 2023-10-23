@@ -4,9 +4,8 @@ import {
   DEFAULT_TABLE_CELL,
   DEFAULT_TABLE_HEADER
 } from '@/views/chart/components/editor/util/chart'
-import { S2Theme, Style, TextAlign } from '@antv/s2'
-import { deepAssign } from '@antv/g2plot/lib/utils'
-import { keys, intersection, filter, cloneDeep } from 'lodash-es'
+import { S2Theme, Style } from '@antv/s2'
+import { keys, intersection, filter, cloneDeep, merge } from 'lodash-es'
 
 export function getCustomTheme(chart: Chart): S2Theme {
   const headerColor = hexColorToRGBA(
@@ -168,7 +167,7 @@ export function getCustomTheme(chart: Chart): S2Theme {
           thumbHoverColor: resetRgbOpacity(tableScrollBarColor, 1.5)
         }
       }
-      deepAssign(theme, tmpTheme)
+      merge(theme, tmpTheme)
     }
     // header
     if (tableHeader) {
@@ -220,7 +219,7 @@ export function getCustomTheme(chart: Chart): S2Theme {
           }
         }
       }
-      deepAssign(theme, tmpTheme)
+      merge(theme, tmpTheme)
     }
     // cell
     if (tableCell) {
@@ -277,7 +276,7 @@ export function getCustomTheme(chart: Chart): S2Theme {
           }
         }
       }
-      deepAssign(theme, tmpTheme)
+      merge(theme, tmpTheme)
     }
   }
 
