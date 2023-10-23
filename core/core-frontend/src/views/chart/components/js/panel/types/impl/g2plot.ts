@@ -17,7 +17,7 @@ import {
   AntVDrawOptions,
   ChartLibraryType
 } from '@/views/chart/components/js/panel/types'
-import { G2 } from '@antv/g2plot'
+import { getEngine } from '@antv/g2/esm/core'
 import { handleEmptyDataStrategy } from '../../../util'
 
 export interface G2PlotDrawOptions<O> extends AntVDrawOptions<O> {
@@ -34,7 +34,7 @@ export abstract class G2PlotChartView<
   O extends PickOptions,
   P extends Plot<O>
 > extends AntVAbstractChartView {
-  protected static engine = G2.getEngine('canvas')
+  protected static engine = getEngine('canvas')
 
   /**
    * 根据参数构建视图对象然后返回

@@ -74,10 +74,10 @@ const nextClick = () => {
       </div>
     </div>
     <div class="tab-btn" v-if="showBtn">
-      <el-icon @click="prevClick">
+      <el-icon size="12px" @click="prevClick">
         <Icon name="icon_expand-left_filled"></Icon>
       </el-icon>
-      <el-icon @click="nextClick">
+      <el-icon size="12px" @click="nextClick">
         <Icon name="icon_expand-right_filled"></Icon>
       </el-icon>
     </div>
@@ -108,7 +108,7 @@ const nextClick = () => {
     height: 28px;
     position: absolute;
     right: 0;
-    top: 0;
+    top: 4px;
     background: #fff;
 
     .ed-icon {
@@ -145,6 +145,7 @@ const nextClick = () => {
 
     .ellipsis {
       max-width: 200px;
+      font-size: 14px;
     }
 
     &::after,

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 CURRENT_DIR=$(
-   cd "$(dirname "$0")" || exit
+   cd "$(dirname "$0")"
    pwd
 )
 
@@ -51,7 +51,7 @@ echo -e "======================= 开始安装 =======================" 2>&1 | te
 mkdir -p ${DE_RUN_BASE}
 cp -r ./dataease/* ${DE_RUN_BASE}/
 
-cd $DE_RUN_BASE || exit
+cd $DE_RUN_BASE
 env | grep DE_ >.env
 
 mkdir -p ${DE_RUN_BASE}/{cache,logs,conf}
@@ -68,11 +68,11 @@ else
 fi
 
 log "拷贝配置文件模板文件  -> $conf_folder"
-cd $DE_RUN_BASE || exit
+cd $DE_RUN_BASE
 cp -r $templates_folder/* $conf_folder
 
 log "根据安装配置参数调整配置文件"
-cd ${templates_folder} || exit
+cd ${templates_folder}
 templates_files=( application.yml mysql.env )
 for i in ${templates_files[@]}; do
    if [ -f $i ]; then
@@ -80,7 +80,7 @@ for i in ${templates_files[@]}; do
    fi
 done
 
-cd ${CURRENT_DIR} || exit
+cd ${CURRENT_DIR}
 sed -i -e "s#DE_BASE=.*#DE_BASE=${DE_BASE}#g" dectl
 \cp dectl /usr/local/bin && chmod +x /usr/local/bin/dectl
 if [ ! -f /usr/bin/dectl ]; then
@@ -171,7 +171,7 @@ else
 fi
 
 export COMPOSE_HTTP_TIMEOUT=180
-cd ${CURRENT_DIR} || exit
+cd ${CURRENT_DIR}
 # 加载镜像
 if [[ -d images ]]; then
    log "加载镜像"
@@ -184,7 +184,7 @@ else
 
    DEVERSION=$(cat ${CURRENT_DIR}/dataease/templates/version)
    #curl -sfL https://resource.fit2cloud.com/installation-log.sh | sh -s de ${INSTALL_TYPE} ${DEVERSION}
-   cd - || exit
+   cd -
 fi
 
 log "配置 dataease Service"
