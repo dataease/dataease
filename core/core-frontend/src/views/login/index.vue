@@ -174,7 +174,6 @@ const showLoginErrorMsg = () => {
     ElMessage.error('默认组织已发生变更，请重新登录！')
     return
   }
-  debugger
   ElMessage.error(loginErrorMsg.value)
 }
 onMounted(() => {
