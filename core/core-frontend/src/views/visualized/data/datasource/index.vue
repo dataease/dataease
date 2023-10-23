@@ -769,7 +769,7 @@ onMounted(() => {
             </span>
             <el-popover :offset="8" show-arrow placement="bottom" width="290" trigger="hover">
               <template #reference>
-                <el-icon class="create-user">
+                <el-icon size="16px" class="create-user">
                   <Icon name="icon_info_outlined"></Icon>
                 </el-icon>
               </template>
@@ -1580,7 +1580,7 @@ onMounted(() => {
         }
 
         .create-user {
-          font-size: 16px;
+          font-size: 14px;
           font-weight: 400;
           line-height: 22px;
           color: #646a73;
@@ -1600,6 +1600,9 @@ onMounted(() => {
       }
       .tab-border {
         .border-bottom-tab(24px);
+        :deep(.ed-tabs__item) {
+          font-size: 14px;
+        }
         :deep(.ed-tabs__nav-wrap::after) {
           border-color: rgba(31, 35, 41, 0.15);
         }
