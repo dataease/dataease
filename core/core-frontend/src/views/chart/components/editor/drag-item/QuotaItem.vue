@@ -685,21 +685,6 @@ onMounted(() => {
                       </el-icon>
                     </span>
                   </el-dropdown-item>
-                  <el-dropdown-item
-                    class="menu-item-padding"
-                    v-if="!item.chartId && (item.deType === 0 || item.deType === 5)"
-                    :command="beforeSort('custom_sort')"
-                  >
-                    <span
-                      class="sub-menu-content"
-                      :class="'custom_sort' === item.sort ? 'content-active' : ''"
-                    >
-                      {{ t('chart.custom_sort') }}...
-                      <el-icon class="sub-menu-content--icon">
-                        <Icon name="icon_done_outlined" v-if="'custom_sort' === item.sort" />
-                      </el-icon>
-                    </span>
-                  </el-dropdown-item>
                 </el-dropdown-menu>
               </template>
             </el-dropdown>
