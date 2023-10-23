@@ -581,6 +581,7 @@ const opacityStyle = computed(() => {
   }
 
   &.vertical {
+    height: calc(100% - 22px);
     .query-fields-container {
       .query-field {
         padding-top: 30px;
