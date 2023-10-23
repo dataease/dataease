@@ -707,32 +707,30 @@ function removeItemById(componentId) {
 }
 
 function removeItem(index) {
-  setTimeout(() => {
-    let item = componentData.value[index]
-    if (item && isSameCanvas(item, canvasId.value)) {
-      removeItemFromPositionBox(item)
-      let belowItems = findBelowItems(item)
-      _.forEach(belowItems, function (upItem) {
-        let canGoUpRows = canItemGoUp(upItem)
-        if (canGoUpRows > 0) {
-          moveItemUp(upItem, canGoUpRows)
-        }
+  let item = componentData.value[index]
+  if (item && isSameCanvas(item, canvasId.value)) {
+    removeItemFromPositionBox(item)
+    let belowItems = findBelowItems(item)
+    _.forEach(belowItems, function (upItem) {
+      let canGoUpRows = canItemGoUp(upItem)
+      if (canGoUpRows > 0) {
+        moveItemUp(upItem, canGoUpRows)
+      }
+    })
+    let checkedFields = []
+    if (item.innerType === 'VQuery') {
+      ;(item.propValue || []).forEach(ele => {
+        checkedFields = [...ele.checkedFields, ...checkedFields]
       })
-      let checkedFields = []
-      if (item.innerType === 'VQuery') {
-        ;(item.propValue || []).forEach(ele => {
-          checkedFields = [...ele.checkedFields, ...checkedFields]
-        })
-      }
-      componentData.value.splice(index, 1)
-      if (!!checkedFields.length) {
-        Array.from(new Set(checkedFields)).forEach(ele => {
-          emitter.emit(`query-data-${ele}`)
-        })
-      }
-      snapshotStore.recordSnapshotCache('removeItem')
     }
-  })
+    componentData.value.splice(index, 1)
+    if (!!checkedFields.length) {
+      Array.from(new Set(checkedFields)).forEach(ele => {
+        emitter.emit(`query-data-${ele}`)
+      })
+    }
+    snapshotStore.recordSnapshotCache('removeItem')
+  }
 }
 
 function addItem(item, index) {
@@ -1288,12 +1286,10 @@ const forceComputed = () => {
 }
 const addItemBox = item => {
   syncShapeItemStyle(item, baseWidth.value, baseHeight.value)
-  setTimeout(function () {
-    forceComputed()
-    nextTick(() => {
-      addItem(item, componentData.value.length - 1)
-    })
-  }, 100)
+  forceComputed()
+  nextTick(() => {
+    addItem(item, componentData.value.length - 1)
+  })
 }
 
 const onStartResize = (e, item, index) => {
@@ -1539,6 +1535,7 @@ onMounted(() => {
   eventBus.on('removeMatrixItemById-' + canvasId.value, removeItemById)
   eventBus.on('addDashboardItem-' + canvasId.value, addItemBox)
   eventBus.on('snapshotChange-' + canvasId.value, canvasInit)
+  eventBus.on('doCanvasInit-' + canvasId.value, canvasInit)
 })
 
 onBeforeUnmount(() => {
@@ -1553,6 +1550,7 @@ onBeforeUnmount(() => {
   eventBus.off('removeMatrixItemById-' + canvasId.value, removeItemById)
   eventBus.off('addDashboardItem-' + canvasId.value, addItemBox)
   eventBus.off('snapshotChange-' + canvasId.value, canvasInit)
+  eventBus.off('doCanvasInit' + canvasId.value, canvasInit)
 })
 
 defineExpose({
