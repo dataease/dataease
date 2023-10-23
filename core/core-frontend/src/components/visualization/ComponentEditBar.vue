@@ -96,7 +96,7 @@
               <el-dropdown style="width: 100%" trigger="hover" placement="right-start">
                 <div
                   class="flex-align-center"
-                  style="width: 100%; padding: 5px 6px 5px 16px; line-height: 22px"
+                  style="width: 100%; padding: 5px 6px 5px 16px; line-height: 24px"
                 >
                   导出为
                   <el-icon size="16px" style="margin-left: auto"><ArrowRight /></el-icon>
@@ -548,8 +548,8 @@ watch(
 }
 
 .bar-main-right {
-  width: 22px;
-  right: -25px;
+  width: 24px;
+  right: -26px;
 }
 
 .bar-main-preview-right-inner {
@@ -557,19 +557,19 @@ watch(
 }
 
 .bar-main-right-inner {
-  width: 22px;
+  width: 24px;
   right: 0px;
 }
 
 .bar-main-left-outer {
-  width: 22px;
-  left: -25px;
+  width: 24px;
+  left: -26px;
 }
 
 .bar-base-icon {
-  height: 22px;
-  width: 22px;
-  font-size: 14px;
+  height: 24px;
+  width: 24px;
+  font-size: 16px;
   color: #ffffff;
   &:hover {
     color: rgba(255, 255, 255, 0.5);
@@ -581,6 +581,6 @@ watch(
 
 .bar-checkbox-area {
   padding: 0 5px;
-  height: 22px;
+  height: 24px;
 }
 </style>
