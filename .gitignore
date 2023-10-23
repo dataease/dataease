@@ -18,44 +18,25 @@
 *.zip
 *.tar.gz
 *.rar
-
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
-/.idea/
+.idea/
 target/
+.vscode/
+.lh/
 *.iml
-.DS_Store
-node_modules
-/dist
-node/
-
-# local env files
-.env.demo
-.env.*.local
-
-# Log files
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-
-# Editor directories and files
-.lh
-.idea
-.vscode
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-*.lock
-*.classpath
-*.project
-.settings/
-.lh
-
-
-### Spring flatten ###
-.flattened-pom.xml
-
+hs_err_pid*
+node_modules/
+dist/
 package-lock.json
+.DS_Store
+.stylelintcache
+core/core-frontend/release/
+plugins/vite-test
+core/core-frontend/.stylelintcache
+/core/core-backend/src/main/resources/static/
+/core/core-backend/src/test
+/core/core-frontend/node/
+/core/core-frontend/lib/
+/core/core-frontend/components.d.ts
+core/core-frontend/src/assets/fsSvg.js
+core/core-frontend/src/assets/fsSvg.html
+/de-xpack/

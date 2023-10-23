@@ -1,23 +1,22 @@
-FROM registry.cn-qingdao.aliyuncs.com/dataease/fabric8-java-alpine-openjdk8-jre:edge-chromium-11
+FROM registry.cn-qingdao.aliyuncs.com/dataease/alpine-openjdk17-jre
 
 ARG IMAGE_TAG
 
-RUN mkdir -p /opt/apps /opt/dataease/data/feature/full /opt/dataease/drivers /opt/dataease/plugins/default
+RUN mkdir -p /opt/apps/config /opt/dataease/drivers/ /opt/dataease2.0/cache/ /opt/dataease2.0/data/map /opt/dataease2.0/data/static-resource/
 
-ADD core/mapFiles/full/ /opt/dataease/data/feature/full/
+ADD drivers/* /opt/dataease/drivers/
+ADD mapFiles/ /opt/dataease2.0/data/map/
+ADD staticResource/ /opt/dataease2.0/data/static-resource/
 
-ADD core/drivers/* /opt/dataease/drivers/
+WORKDIR /opt/apps
 
-ADD plugins/default/ /opt/dataease/plugins/default/
+ADD core/core-backend/target/CoreApplication.jar /opt/apps/app.jar
+ADD de-xpack/xpack-permissions/target/xpack-permissions-$IMAGE_TAG.jar /opt/apps/xpack-permission.jar
+ADD de-xpack/xpack-base/target/xpack-base-$IMAGE_TAG.jar /opt/apps/xpack-base.jar
 
-ADD core/backend/target/backend-$IMAGE_TAG.jar /opt/apps
+ENV JAVA_APP_JAR=/opt/apps/app.jar
 
-ENV JAVA_APP_JAR=/opt/apps/backend-$IMAGE_TAG.jar
+HEALTHCHECK --interval=15s --timeout=5s --retries=20 --start-period=30s CMD curl -f 127.0.0.1:8100
 
-ENV AB_OFF=true
 
-ENV JAVA_OPTIONS=-Dfile.encoding=utf-8
-
-HEALTHCHECK --interval=15s --timeout=5s --retries=20 --start-period=30s CMD curl -f 127.0.0.1:8081
-
-CMD ["/deployments/run-java.sh"]
+CMD java -Xmx1024m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/opt/dataease2.0/logs/dump.hprof -Dloader.path=/opt/apps/xpack-permission.jar,/opt/apps/xpack-base.jar -jar /opt/apps/app.jar
