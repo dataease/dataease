@@ -50,11 +50,11 @@ public class RsaTest {
     @Test
     public void test() {
         System.out.println(System.currentTimeMillis() - 24 * 60 * 1000);
-        System.out.println(StringUtils.substring("123456789", 0, 3 ));
+        System.out.println(StringUtils.substring("123456789", 0, 3));
     }
 
     @Test
-    public void testAPI() throws Exception{
+    public void testAPI() throws Exception {
         String data = "[\n" +
                 "    {\n" +
                 "        \"id\": 1,\n" +
@@ -80,7 +80,6 @@ public class RsaTest {
                 "]";
 
 
-
         ApiDefinition apiDefinition = new ApiDefinition();
         apiDefinition.setFields(new ArrayList<>());
         apiDefinition.setUseJsonPath(false);
@@ -92,12 +91,13 @@ public class RsaTest {
         ApiUtils.checkApiDefinition(apiDefinition, data);
 
         for (Map<String, Object> field : apiDefinition.getJsonFields()) {
-            System.out.println( JsonUtil.toJSONString(field));
+            System.out.println(JsonUtil.toJSONString(field));
         }
         String jsonArray = "[\"apple\", \"banana\", \"orange\"]";
 
         // 解析 JSON 数组
-        List<String> fruits = objectMapper.readValue(jsonArray, new TypeReference<List<String>>(){});
+        List<String> fruits = objectMapper.readValue(jsonArray, new TypeReference<List<String>>() {
+        });
 
         System.out.println("解析得到的数组：");
         for (String fruit : fruits) {
@@ -199,24 +199,5 @@ public class RsaTest {
         };
     }
 
-
-    @Test
-    public void testCalcite() throws Exception{
-        CalciteProvider provider = new CalciteProvider();
-        provider.init();
-        DatasourceRequest datasourceRequest = new DatasourceRequest();
-        CoreDatasource coreDatasource = new CoreDatasource();
-        coreDatasource.setType("ck");
-
-        CK mysql = new CK();
-        mysql.setUsername("dataease");
-        mysql.setPassword("Calong@2015");
-        mysql.setHost("123.56.8.132");
-        mysql.setPort(8123);
-        mysql.setDataBase("dataease");
-        coreDatasource.setConfiguration(JsonUtil.toJSONString(mysql).toString());
-        datasourceRequest.setDatasource(coreDatasource);
-        provider.checkStatus(datasourceRequest);
-    }
 
 }
