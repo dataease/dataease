@@ -829,7 +829,7 @@ defineExpose({
           v-if="activeStep === 2 && form.type === 'API'"
         >
           <el-radio-group v-model="form.syncSetting.syncRate" @change="onRateChange">
-            <el-radio label="RIGHTNOW">{{ t('datasource.execute_once') }}</el-radio>
+            <el-radio label="RIGHTNOW">立即更新</el-radio>
             <el-radio label="CRON">{{ t('datasource.cron_config') }}</el-radio>
             <el-radio label="SIMPLE_CRON">{{ t('datasource.simple_cron') }}</el-radio>
           </el-radio-group>
@@ -860,7 +860,7 @@ defineExpose({
                 <el-option :label="t('common.hour')" value="hour" />
                 <el-option :label="t('common.day')" value="day" />
               </el-select>
-              {{ t('common.every_exec') }}
+              更新一次
             </div>
           </el-form-item>
           <el-form-item
