@@ -4058,7 +4058,7 @@ CREATE TABLE `visualization_subject`
     `type`        varchar(255)         DEFAULT NULL COMMENT '主题类型 system 系统主题，self 自定义主题',
     `details`     longtext COMMENT '主题内容',
     `delete_flag` tinyint(1)           DEFAULT '0' COMMENT '删除标记',
-    `cover_url`   varchar(255)         DEFAULT NULL COMMENT '封面信息',
+    `cover_url`   longtext COMMENT '封面信息',
     `create_num`  int         NOT NULL DEFAULT '0',
     `create_time` bigint               DEFAULT NULL COMMENT '创建时间',
     `create_by`   varchar(255)         DEFAULT NULL COMMENT '创建人',

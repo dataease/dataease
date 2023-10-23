@@ -12,7 +12,7 @@
       v-if="editShow && !isError"
       :id="tinymceId"
       v-model="myValue"
-      style="width: 100%; height: 100%; padding: 5px"
+      class="custom-text-content"
       :init="init"
       :disabled="!canEdit || disabled"
       @onClick="onClick"
@@ -528,5 +528,13 @@ defineExpose({
   &.rich-placeholder--dark {
     color: #fff;
   }
+}
+
+.custom-text-content {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  outline: none !important;
+  border: none !important;
 }
 </style>
