@@ -165,4 +165,9 @@ public class SystemParameterController {
         return systemParameterService.defaultLoginType();
     }
 
+    @GetMapping("/onlineMapKey")
+    public String onlineMapKey() {
+        return systemParameterService.onlineMapKey();
+    }
+
 }

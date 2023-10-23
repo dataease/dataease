@@ -22,6 +22,7 @@ import io.dataease.service.datasource.DatasourceService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -55,6 +56,9 @@ public class SystemParameterService {
     public String searchEmail() {
         return extSystemParameterMapper.email();
     }
+
+    @Value("${dataease.mapkey:}")
+    private String mapKey;
 
     public BasicInfo basicInfo() {
         List<SystemParameter> paramList = this.getParamList("basic");
@@ -407,6 +411,10 @@ public class SystemParameterService {
 
     @CacheEvict("multiLogin")
     public void clearMultiLoginCache() {
+    }
+
+    public String onlineMapKey() {
+        return mapKey;
     }
 
 }

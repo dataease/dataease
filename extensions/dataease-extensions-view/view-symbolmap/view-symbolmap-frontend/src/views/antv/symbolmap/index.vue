@@ -29,13 +29,13 @@
 </template>
 
 <script>
-  import { Scene, PointLayer, Popup } from '@antv/l7'
-  import { uuid, hexColorToRGBA} from '@/utils/symbolmap'
-  import ViewTrackBar from '@/components/views/ViewTrackBar'
-  import { getDefaultTemplate, reverseColor } from '@/utils/map'
-  import {getRemark} from "../../../components/views/utils";
+import {PointLayer, Popup, Scene} from '@antv/l7'
+import {hexColorToRGBA, uuid} from '@/utils/symbolmap'
+import ViewTrackBar from '@/components/views/ViewTrackBar'
+import {getDefaultTemplate} from '@/utils/map'
+import {getRemark} from "../../../components/views/utils";
 
-  export default {
+export default {
     name: 'ChartComponentG2',
     components: { ViewTrackBar },
     props: {
@@ -239,19 +239,59 @@
         window.addEventListener('resize', this.calcHeightDelay)
 
       },
-      initMap() {
+      executeAxios(url, type, data, callBack) {
+        const param = {
+          url: url,
+          type: type,
+          data: data,
+          callBack: callBack
+        }
+        this.$emit('execute-axios', param)
+        if (process.env.NODE_ENV === 'development') {
+          execute(param).then(res => {
+            if (param.callBack) {
+              param.callBack(res)
+            }
+          }).catch(e => {
+            if (param.error) {
+              param.error(e)
+            }
+          })
+        }
+      },
+      getMapKey() {
+        const key = 'online-map-key'
+        return new Promise((resolve, reject) => {
+          if (localStorage.getItem(key)) {
+            resolve(localStorage.getItem(key))
+          } else {
+            const url = "/system/onlineMapKey"
+            this.executeAxios(url, 'get', {}, res => {
+              const val = res.data
+              localStorage.setItem(key, val)
+              resolve(val)
+            })
+          }
+        })
+      },
+      async initMap() {
         if (!this.myChart) {
           let theme = this.getMapTheme(this.chart)
           const lang = this.$i18n.locale.includes('zh') ? 'zh' : 'en'
+          const mapConfig = {
+            lang: lang,
+            pitch: 0,
+            style: theme,
+            center: [121.434765, 31.256735],
+            zoom: 6
+          }
+          const key = await this.getMapKey()
+          if (key) {
+            mapConfig.token = key
+          }
           this.myChart = new Scene({
             id: this.chartId,
-            map: new this.$gaodeMap({
-              lang: lang,
-              pitch: 0,
-              style: theme,
-              center: [ 121.434765, 31.256735 ],
-              zoom: 6
-            }),
+            map: new this.$gaodeMap(mapConfig),
             logoVisible: false
           })
           const chart = JSON.parse(JSON.stringify(this.chart))
@@ -260,7 +300,7 @@
           this.antVRenderStatus = true
           if (!chart.data || !chart.data.data) {
             chart.data = {
-                data: []
+              data: []
             }
           }
           this.myChart.on('loaded', () => {
@@ -268,7 +308,7 @@
 
             this.drawView()
             this.myChart.on('click', ev => {
-                this.$emit('trigger-edit-click', ev.originEvent)
+              this.$emit('trigger-edit-click', ev.originEvent)
             })
           })
         } else {
