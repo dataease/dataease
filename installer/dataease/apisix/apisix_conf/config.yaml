@@ -1,0 +1,24 @@
+pisix:
+  node_listen: 9080              # APISIX listening port
+  enable_ipv6: false
+
+  enable_control: true
+  control:
+    ip: "0.0.0.0"
+    port: 9092
+
+deployment:
+  admin:
+    allow_admin:
+      - 0.0.0.0/0
+
+    admin_key:
+      - name: "admin"
+        key: DE_APISIX_KEY
+        role: admin
+
+  etcd:
+    host:
+      - "http://apisix-etcd:2379"
+    prefix: "/apisix"
+    timeout: 30

@@ -1,0 +1,15 @@
+{
+  "name": "htmlparser",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./index.js"
+  },
+  "type": "module",
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "htmlparser2": "^8.0.2"
+  }
+}

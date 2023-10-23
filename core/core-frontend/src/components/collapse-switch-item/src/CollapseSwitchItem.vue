@@ -1,0 +1,67 @@
+<script setup lang="ts">
+import { ElCollapseItem, ElSwitch } from 'element-plus-secondary'
+import { computed, PropType, ref, toRefs } from 'vue'
+
+const props = defineProps({
+  modelValue: {
+    type: Boolean
+  },
+  changeModel: {
+    type: Object
+  },
+  title: String,
+  themes: {
+    type: String as PropType<EditorTheme>,
+    default: 'dark'
+  }
+})
+const emit = defineEmits(['update:modelValue', 'modelChange'])
+const { changeModel, title, themes } = toRefs(props)
+
+const collapseItem = ref()
+const onSwitchChange = e => {
+  emit('modelChange', changeModel.value)
+  if (!props.modelValue && !collapseItem.value.isActive) {
+    collapseItem.value.handleHeaderClick()
+  }
+
+  if (props.modelValue && collapseItem.value.isActive) {
+    collapseItem.value.handleHeaderClick()
+  }
+}
+const switchValue = computed({
+  get() {
+    return props.modelValue
+  },
+  set(value) {
+    emit('update:modelValue', value)
+  }
+})
+</script>
+<template>
+  <el-collapse-item ref="collapseItem" :effect="themes" v-bind="$attrs">
+    <template #title>
+      <div class="collapse-header">
+        <span>
+          {{ title }}
+        </span>
+        <el-switch
+          :effect="themes"
+          size="small"
+          v-model="switchValue"
+          @click.stop="e => onSwitchChange(e)"
+        />
+      </div>
+    </template>
+    <slot />
+  </el-collapse-item>
+</template>
+<style scoped lang="less">
+.collapse-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-right: 8px;
+  flex-grow: 1;
+}
+</style>

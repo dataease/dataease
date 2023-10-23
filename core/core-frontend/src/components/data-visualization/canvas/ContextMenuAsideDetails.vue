@@ -1,0 +1,131 @@
+<script setup lang="ts">
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
+import { lockStoreWithOut } from '@/store/modules/data-visualization/lock'
+import { copyStoreWithOut } from '@/store/modules/data-visualization/copy'
+import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
+import { layerStoreWithOut } from '@/store/modules/data-visualization/layer'
+import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
+import { storeToRefs } from 'pinia'
+import { computed, ref, toRefs } from 'vue'
+import eventBus from '@/utils/eventBus'
+import ContextMenuDetails from '@/components/data-visualization/canvas/ContextMenuDetails.vue'
+const dvMainStore = dvMainStoreWithOut()
+const contextmenuStore = contextmenuStoreWithOut()
+const copyStore = copyStoreWithOut()
+const lockStore = lockStoreWithOut()
+const snapshotStore = snapshotStoreWithOut()
+const layerStore = layerStoreWithOut()
+const composeStore = composeStoreWithOut()
+
+const { areaData } = storeToRefs(composeStore)
+const { curComponent } = storeToRefs(dvMainStore)
+const copyData = ref(null)
+const emit = defineEmits(['close'])
+const props = defineProps({
+  element: {
+    type: Object
+  },
+  index: {
+    type: Number
+  }
+})
+const { element, index } = toRefs(props)
+
+const lock = () => {
+  lockStore.lock()
+}
+
+const unlock = () => {
+  lockStore.unlock()
+}
+
+// 点击菜单时不取消当前组件的选中状态
+const handleMouseUp = e => {
+  dvMainStore.setClickComponentStatus(true)
+}
+
+const cut = () => {
+  copyStore.cut()
+}
+
+const copy = () => {
+  copyStore.copy()
+}
+
+const hide = () => {
+  layerStore.hideComponent()
+}
+
+const paste = () => {
+  copyStore.paste(true)
+  snapshotStore.recordSnapshotCache('renderChart')
+}
+
+const deleteComponent = () => {
+  if (curComponent.value) {
+    dvMainStore.deleteComponentById(curComponent.value.id)
+  } else if (areaData.value.components.length) {
+    areaData.value.components.forEach(component => {
+      dvMainStore.deleteComponentById(component.id)
+    })
+  }
+  eventBus.emit('hideArea-canvas-main')
+  snapshotStore.recordSnapshotCache('renderChart')
+}
+
+const upComponent = () => {
+  layerStore.upComponent()
+  snapshotStore.recordSnapshotCache('upComponent')
+}
+
+const downComponent = () => {
+  layerStore.downComponent()
+  snapshotStore.recordSnapshotCache('downComponent')
+}
+
+const topComponent = () => {
+  layerStore.topComponent()
+  snapshotStore.recordSnapshotCache('topComponent')
+}
+
+const bottomComponent = () => {
+  layerStore.bottomComponent()
+  snapshotStore.recordSnapshotCache('bottomComponent')
+}
+
+const componentCompose = () => {
+  composeStore.compose()
+  snapshotStore.recordSnapshotCache('componentCompose')
+}
+
+const decompose = () => {
+  composeStore.decompose()
+  snapshotStore.recordSnapshotCache('decompose')
+}
+
+// 阻止事件向父级组件传播调用父级的handleMouseDown 导致areaData 被隐藏
+const handleComposeMouseDown = e => {
+  e.preventDefault()
+  e.stopPropagation()
+}
+
+const composeDivider = computed(() => {
+  return (
+    areaData.value.components.length ||
+    !(!curComponent || curComponent['isLock'] || curComponent['component'] != 'Group')
+  )
+})
+
+const onClick = () => {
+  dvMainStore.setCurComponent({ component: element.value, index })
+}
+
+const close = param => {
+  emit('close', param)
+}
+</script>
+
+<template>
+  <context-menu-details active-position="aside" @close="close"></context-menu-details>
+</template>

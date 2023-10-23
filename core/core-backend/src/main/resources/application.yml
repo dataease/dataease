@@ -1,0 +1,63 @@
+server:
+  port: 8100
+  max-http-request-header-size: 500KB
+  tomcat:
+    connection-timeout: 70000
+spring:
+  profiles:
+    active: '@profiles.active@'
+  application:
+    name: core-backend
+  messages:
+    encoding: UTF-8
+  main:
+    allow-circular-references: true
+  cache:
+    type: jcache
+    jcache:
+      config: classpath:ehcache/ehcache.xml
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+      password: 123456
+      database: 0
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+  jackson:
+    parser:
+      allow-numeric-leading-zeros: true
+management:
+  health:
+    redis:
+      enabled: false
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+logging:
+  file:
+    path: /opt/dataease2.0/logs/dataease
+# sql日志生产环境注释掉
+#mybatis-plus:
+#  configuration:
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+quartz:
+  enabled: true
+  scheduler-name: deSyncJob
+
+dataease:
+  version: '@project.version@'
+  origin-list: localhost:8081,127.0.0.1:8081,https://de2.fit2cloud.com,http://localhost:8080
+  apisix-api:
+    domain: http://192.168.0.121:9180
+    key: edd1c9f034335f136f87ad84b625c8f1
+
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
