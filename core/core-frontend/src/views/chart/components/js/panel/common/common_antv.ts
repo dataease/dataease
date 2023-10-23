@@ -385,7 +385,6 @@ export function getXAxis(chart: Chart) {
           : null
 
         axis = {
-          top: true,
           position: a.position,
           title,
           grid,
@@ -483,7 +482,6 @@ export function getYAxis(chart: Chart) {
     : null
 
   axis = {
-    top: true,
     position: yAxis.position,
     title,
     grid,
