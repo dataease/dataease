@@ -443,10 +443,11 @@ public class DatasetGroupManage {
                     if(CollectionUtil.isNotEmpty(defaultsSqlVariableDetails)){
                        List<String> fullName = new ArrayList<>();
                         geFullName(id, fullName);
+                        List<String> finalFullName = CollectionUtil.reverse(fullName);
                         defaultsSqlVariableDetails.forEach(sqlVariableDetails -> {
                             sqlVariableDetails.setDatasetGroupId(id);
                             sqlVariableDetails.setDatasetTableId(datasetTable.getId());
-                            sqlVariableDetails.setDatasetFullName(String.join("/", CollectionUtil.reverse(fullName)));
+                            sqlVariableDetails.setDatasetFullName(String.join("/", finalFullName));
                         });
                     }
 
