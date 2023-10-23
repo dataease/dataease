@@ -543,9 +543,8 @@ const addQueryCriteria = () => {
 }
 
 const addCriteriaConfig = () => {
-  conditions.value = []
   addQueryCriteria()
-  return conditions.value[0].id
+  return conditions.value[conditions.value.length - 1].id
 }
 
 defineExpose({
