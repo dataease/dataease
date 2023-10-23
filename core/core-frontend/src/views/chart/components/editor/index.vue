@@ -1977,7 +1977,12 @@ const onRefreshChange = val => {
             class="name-edit-form no-margin-bottom"
             prop="chartShowName"
           >
-            <el-input class="text" v-model="state.itemForm.chartShowName" clearable />
+            <el-input
+              class="text"
+              v-model="state.itemForm.chartShowName"
+              :maxlength="20"
+              clearable
+            />
           </el-form-item>
         </el-form>
       </div>
