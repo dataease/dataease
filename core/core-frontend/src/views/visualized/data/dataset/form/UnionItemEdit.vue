@@ -41,6 +41,7 @@ const init = () => {
     addUnion()
   }
 }
+const emit = defineEmits(['changeUnionFields', 'changeUnionType'])
 const addUnion = () => {
   emit('changeUnionFields')
 }
@@ -49,8 +50,6 @@ const removeUnionItem = index => {
 }
 
 init()
-
-const emit = defineEmits(['changeUnionFields', 'changeUnionType'])
 </script>
 
 <template>
