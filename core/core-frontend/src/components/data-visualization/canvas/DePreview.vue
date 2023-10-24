@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getStyle, getCanvasStyle, getShapeItemStyle } from '@/utils/style'
+import { getCanvasStyle, getShapeItemStyle } from '@/utils/style'
 import ComponentWrapper from './ComponentWrapper.vue'
 import { changeStyleWithScale } from '@/utils/translate'
 import { computed, nextTick, onMounted, ref, toRefs, watch, onBeforeUnmount } from 'vue'
@@ -63,8 +63,6 @@ const {
 const domId = 'preview-' + canvasId.value
 const scaleWidth = ref(100)
 const previewCanvas = ref(null)
-const domWidth = ref()
-const domHeight = ref()
 const cellWidth = ref(10)
 const cellHeight = ref(10)
 const userViewEnlargeRef = ref(null)
@@ -104,13 +102,6 @@ const getDownloadStatusMainHeight = () => {
     }
   })
   return `${maxHeight}px!important`
-}
-
-const forceRender = () => {
-  cellWidth.value = cellWidth.value + 0.01
-  nextTick(() => {
-    cellWidth.value = cellWidth.value - 0.01
-  })
 }
 
 watch(
@@ -185,7 +176,7 @@ onMounted(() => {
   restore()
   window.addEventListener('resize', restore)
   const erd = elementResizeDetectorMaker()
-  erd.listenTo(document.getElementById(domId), element => {
+  erd.listenTo(document.getElementById(domId), () => {
     restore()
   })
 })
@@ -202,7 +193,7 @@ const userViewEnlargeOpen = (opt, item) => {
     opt
   )
 }
-const handleMouseDown = e => {
+const handleMouseDown = () => {
   dvMainStore.setCurComponent({ component: null, index: null })
 }
 defineExpose({

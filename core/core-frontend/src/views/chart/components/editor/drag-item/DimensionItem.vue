@@ -1,7 +1,6 @@
 <script lang="tsx" setup>
 import { useI18n } from '@/hooks/web/useI18n'
-import { computed, onMounted, reactive, ref, toRefs, watch } from 'vue'
-import { formatterItem } from '@/views/chart/components/js/formatter'
+import { computed, onMounted, ref, toRefs, watch } from 'vue'
 import { getItemType } from '@/views/chart/components/editor/drag-item/utils'
 import { fieldType } from '@/utils/attr'
 
@@ -9,11 +8,6 @@ const { t } = useI18n()
 
 const tagType = ref('success')
 const showDateExt = ref(false)
-
-const state = reactive({
-  formatterItem: formatterItem,
-  showDateExt: false
-})
 
 const props = defineProps({
   param: {

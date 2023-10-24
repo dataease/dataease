@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, computed, toRefs } from 'vue'
+import { computed, toRefs } from 'vue'
 import { ElIcon } from 'element-plus-secondary'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
@@ -36,8 +36,6 @@ const props = defineProps({
 })
 
 const { width, asidePosition, sideName, themeInfo } = toRefs(props)
-const isCollapse = ref(false)
-const collapseWidth = ref(30)
 const collapseChange = () => {
   canvasCollapse.value[sideName.value] = !canvasCollapse.value[sideName.value]
 }

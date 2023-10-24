@@ -51,7 +51,7 @@
 
 <script setup lang="ts">
 import ComponentWrapper from '@/components/data-visualization/canvas/ComponentWrapper.vue'
-import { computed, nextTick, ref } from 'vue'
+import { nextTick, ref } from 'vue'
 import { toPng } from 'html-to-image'
 import { useI18n } from '@/hooks/web/useI18n'
 import { deepCopy } from '@/utils/utils'
@@ -60,7 +60,6 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { VIEW_DETAILS_BASH_STYLE } from '@/views/chart/components/editor/util/dataVisualiztion'
 import { exportExcelDownload } from '@/views/chart/components/js/util'
 import { storeToRefs } from 'pinia'
-import { downloadCanvas } from '@/utils/imgUtils'
 const dvMainStore = dvMainStoreWithOut()
 const dialogShow = ref(false)
 let viewInfo = ref(null)
@@ -71,10 +70,6 @@ const { t } = useI18n()
 const optType = ref(null)
 const chartComponentDetails = ref(null)
 const { dvInfo } = storeToRefs(dvMainStore)
-
-const titleInfo = computed(() => {
-  return optType.value === 'enlarge' ? config?.value?.name : '查看数据'
-})
 
 const dialogInit = (canvasStyle, view, item, opt) => {
   optType.value = opt

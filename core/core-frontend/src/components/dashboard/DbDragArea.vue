@@ -8,7 +8,6 @@
 <script setup lang="ts">
 import { nextTick, toRefs } from 'vue'
 import eventBus from '@/utils/eventBus'
-import { isPreventDrop } from '@/utils/utils'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 const dvMainStore = dvMainStoreWithOut()
 
@@ -38,7 +37,7 @@ const props = defineProps({
 
 const { item, index } = toRefs(props)
 
-const dragUp = e => {
+const dragUp = () => {
   // 将当前点击组件的事件传播出去
   nextTick(() => eventBus.emit('componentClick'))
   dvMainStore.setInEditorStatus(true)

@@ -81,7 +81,7 @@ import eventBus from '@/utils/eventBus'
 import calculateComponentPositionAndSize from '@/utils/calculateComponentPositionAndSize'
 import { mod360 } from '@/utils/translate'
 import { deepCopy, isPreventDrop } from '@/utils/utils'
-import { computed, nextTick, onMounted, ref, toRefs, reactive, onBeforeMount } from 'vue'
+import { computed, nextTick, onMounted, ref, toRefs, reactive } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
@@ -256,11 +256,6 @@ const isActive = () => {
   return active.value && !element.value['isLock'] && isEditMode.value
 }
 
-// 处理旋转
-const handleRotate = () => {
-  //doNothing
-}
-
 const userViewEnlargeOpen = opt => {
   emit('userViewEnlargeOpen', opt)
 }
@@ -338,10 +333,6 @@ const getCursor = () => {
   })
 
   return result
-}
-
-const outerShapeMouseDown = () => {
-  dvMainStore.setCurComponent({ component: element.value, index: index.value })
 }
 
 const handleBoardMouseDownOnShape = e => {
@@ -685,9 +676,6 @@ const linkageActive = computed(() => {
   return linkageSettingStatus.value && element.value.id === curLinkageView.value.id
 })
 
-const showViewDetails = () => {
-  return null
-}
 const linkJumpSetOpen = () => {
   emit('linkJumpSetOpen')
 }

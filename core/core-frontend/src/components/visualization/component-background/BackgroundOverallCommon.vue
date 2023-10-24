@@ -278,10 +278,6 @@ const reUpload = e => {
   })
 }
 
-const mainIconClass = itemUrl => {
-  return itemUrl.url.replace('board/', '').replace('.svg', '')
-}
-
 const queryBackground = () => {
   queryVisualizationBackground().then(response => {
     state.BackgroundShowMap = response.data
@@ -300,10 +296,8 @@ queryBackground()
 const commitStyle = () => {
   snapshotStore.recordSnapshotCache()
 }
-const onChangeType = () => {
-  commitStyle()
-}
-const handleRemove = (file, fileList) => {
+
+const handleRemove = () => {
   state.uploadDisabled = false
   state.commonBackground['outerImage'] = null
   state.fileList = []
@@ -348,7 +342,7 @@ onMounted(() => {
   init()
   const erd = elementResizeDetectorMaker()
   containerWidth.value = bgForm.value?.offsetWidth
-  erd.listenTo(bgForm.value, element => {
+  erd.listenTo(bgForm.value, () => {
     nextTick(() => {
       containerWidth.value = bgForm.value?.offsetWidth
     })

@@ -5,21 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
-import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
-import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
-import { storeToRefs } from 'pinia'
 import { computed, toRefs } from 'vue'
-const dvMainStore = dvMainStoreWithOut()
-const snapshotStore = snapshotStoreWithOut()
-const contextmenuStore = contextmenuStoreWithOut()
-const composeStore = composeStoreWithOut()
-
-const { curComponent } = storeToRefs(dvMainStore)
-const { editor } = storeToRefs(composeStore)
-const emit = defineEmits(['onStartResize', 'onStartMove', 'onDragging', 'onResizing', 'onMouseUp'])
-
 const props = defineProps({
   baseWidth: {
     required: true,

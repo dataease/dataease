@@ -24,7 +24,6 @@
 import Icon from '@/components/icon-custom/src/Icon.vue'
 import { computed, toRefs } from 'vue'
 import { hexColorToRGBA } from '@/views/chart/components/js/util'
-import { imgUrlTrans } from '@/utils/imgUtils'
 
 const props = defineProps({
   template: {
@@ -57,16 +56,6 @@ const mainIconClass = computed(() => {
 })
 const itemActive = computed(() => {
   return commonBackground.value && commonBackground.value.innerImage === template.value.url
-})
-const classBackground = computed(() => {
-  if (template.value.url) {
-    return {
-      background: `url(${imgUrlTrans(template.value.url)}) no-repeat`,
-      'background-size': `100% 100%`
-    }
-  } else {
-    return {}
-  }
 })
 
 const setBoard = () => {

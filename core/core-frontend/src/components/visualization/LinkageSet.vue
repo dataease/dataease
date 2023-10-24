@@ -198,7 +198,6 @@ import {
 import { getDatasetDetails } from '@/api/dataset'
 import { findAllViewsId } from '@/utils/canvasUtils'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
-import { checkSameDataSet } from '@/api/chart'
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo, canvasViewInfo, componentData } = storeToRefs(dvMainStore)
 const linkageInfoTree = ref(null)
@@ -314,7 +313,7 @@ const saveLinkageSetting = () => {
   }
   loading.value = true
   saveLinkage(request)
-    .then(rsp => {
+    .then(() => {
       snapshotStore.recordSnapshotCache()
       ElMessage.success('保存成功')
       // 刷新联动信息
@@ -338,7 +337,7 @@ const cancelLinkageSetting = () => {
   dvMainStore.clearLinkageSettingInfo()
 }
 
-const nodeClick = (data, node?) => {
+const nodeClick = data => {
   state.linkageInfo = data
 }
 
@@ -398,7 +397,7 @@ const filterNodeMethod = (value, data) => {
 
 watch(
   () => state.showSelected,
-  (newValue, oldValue) => {
+  newValue => {
     linkageInfoTree.value?.filter(newValue)
   }
 )

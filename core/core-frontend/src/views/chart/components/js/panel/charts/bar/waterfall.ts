@@ -3,7 +3,7 @@ import { G2PlotChartView, G2PlotDrawOptions } from '../../types/impl/g2plot'
 import { flow, hexColorToRGBA, parseJson } from '../../../util'
 import { valueFormatter } from '../../../formatter'
 import { getPadding, getTooltipSeriesTotalMap, setGradientColor } from '../../common/common_antv'
-import { flow as flowLeft, isEmpty } from 'lodash-es'
+import { isEmpty } from 'lodash-es'
 
 /**
  * 瀑布图

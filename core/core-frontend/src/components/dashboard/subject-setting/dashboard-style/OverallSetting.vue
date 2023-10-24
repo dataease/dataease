@@ -155,7 +155,7 @@ import {
   FILTER_COMMON_STYLE_LIGHT
 } from '@/views/chart/components/editor/util/chart'
 import ColorButton from '@/components/assist-button/ColorButton.vue'
-import { reactive, computed } from 'vue'
+import { computed } from 'vue'
 import { deepCopy } from '@/utils/utils'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { storeToRefs } from 'pinia'
@@ -165,7 +165,6 @@ import {
 } from '@/custom-component/component-list'
 import { ElFormItem, ElIcon, ElSpace } from 'element-plus-secondary'
 import Icon from '@/components/icon-custom/src/Icon.vue'
-const emits = defineEmits(['onThemeColorChange'])
 const snapshotStore = snapshotStoreWithOut()
 const props = defineProps({
   themes: {
@@ -176,10 +175,6 @@ const props = defineProps({
 const toolTip = computed(() => {
   return props.themes === 'dark' ? 'ndark' : 'dark'
 })
-const state = reactive({
-  colorIndex: 0
-})
-
 const themeChange = modifyName => {
   if (modifyName === 'themeColor') {
     // 主题变更

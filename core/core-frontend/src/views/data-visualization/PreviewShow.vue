@@ -24,7 +24,7 @@ const dataInitState = ref(true)
 const downloadStatus = ref(false)
 const { width, node } = useMoveLine('DASHBOARD')
 
-const props = defineProps({
+defineProps({
   showPosition: {
     required: false,
     type: String,

@@ -15,12 +15,6 @@ const activeName = ref('setting')
 const activeNameData = ref('dataset')
 const allParams = shallowRef([])
 const curTableViews = shallowRef([])
-
-const widget = reactive({
-  showSwitch: false,
-  isTimeWidget: () => true,
-  isSortWidget: () => true
-})
 const customStyle = reactive({
   border: '',
   background: '',

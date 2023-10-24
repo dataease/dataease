@@ -58,13 +58,6 @@ const state = reactive({
   quotaData: []
 })
 
-const lineSymbolOptions = [
-  { name: t('chart.line_symbol_circle'), value: 'circle' },
-  { name: t('chart.line_symbol_rect'), value: 'square' },
-  { name: t('chart.line_symbol_triangle'), value: 'triangle' },
-  { name: t('chart.line_symbol_diamond'), value: 'diamond' }
-]
-
 const liquidShapeOptions = [
   { name: t('chart.liquid_shape_circle'), value: 'circle' },
   { name: t('chart.liquid_shape_diamond'), value: 'diamond' },
@@ -73,28 +66,9 @@ const liquidShapeOptions = [
   { name: t('chart.liquid_shape_rect'), value: 'rect' }
 ]
 
-const pageSizeOptions = [
-  { name: '10' + t('chart.table_page_size_unit'), value: 10 },
-  { name: '20' + t('chart.table_page_size_unit'), value: 20 },
-  { name: '50' + t('chart.table_page_size_unit'), value: 50 },
-  { name: '100' + t('chart.table_page_size_unit'), value: 100 }
-]
-
-const alignOptions = [
-  { name: t('chart.table_align_left'), value: 'left' },
-  { name: t('chart.table_align_center'), value: 'center' },
-  { name: t('chart.table_align_right'), value: 'right' }
-]
-
 const fontFamily = CHART_FONT_FAMILY
 
 const fontLetterSpace = CHART_FONT_LETTER_SPACE
-
-const lineTypeOptions = [
-  { name: t('chart.map_line_type_line'), value: 'line' },
-  { name: t('chart.map_line_type_arc'), value: 'arc' },
-  { name: t('chart.map_line_type_arc_3d'), value: 'arc3d' }
-]
 
 const changeMisc = (prop = '', refresh = false) => {
   if (state.miscForm.gaugeMax <= state.miscForm.gaugeMin) {
@@ -227,8 +201,6 @@ const getQuotaField = id => {
 const isValidField = field => {
   return field.id !== '-1' && state.quotaData.findIndex(ele => ele.id === field.id) !== -1
 }
-
-const showProperty = prop => props.propertyInner?.includes(prop)
 
 onMounted(() => {
   initField()

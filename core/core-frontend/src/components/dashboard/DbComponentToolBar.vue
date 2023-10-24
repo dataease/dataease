@@ -1,15 +1,8 @@
 <script setup lang="ts">
 import ComponentGroup from '../visualization/ComponentGroup.vue'
-import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { storeToRefs } from 'pinia'
-import { ref } from 'vue'
 import UserViewGroup from '../../custom-component/component-group/UserViewGroup.vue'
 import TextGroup from '@/custom-component/component-group/TextGroup.vue'
 import MediaGroup from '@/custom-component/component-group/MediaGroup.vue'
-const dvMainStore = dvMainStoreWithOut()
-const { canvasStyleData } = storeToRefs(dvMainStore)
-let scale = ref(canvasStyleData.value.scale)
-let timer = null
 </script>
 <template>
   <el-row class="custom-main">

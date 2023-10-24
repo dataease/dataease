@@ -144,7 +144,7 @@ const handleTabClick = tab => {
 
 const uploadFail = response => {
   let myError = response.toString()
-  myError = myError.replace('Error: ', '')
+  myError.replace('Error: ', '')
 }
 const tabList = shallowRef([])
 const activeTab = ref('')

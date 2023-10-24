@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 const props = defineProps({
   /* 颜色可以单词，如red；也可以是颜色值 */
   // 字体颜色

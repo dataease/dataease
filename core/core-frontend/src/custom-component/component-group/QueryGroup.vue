@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, toRefs } from 'vue'
+import { toRefs } from 'vue'
 import eventBus from '@/utils/eventBus'
 import DragComponent from '@/custom-component/component-group/DragComponent.vue'
 import { commonHandleDragEnd, commonHandleDragStart } from '@/utils/canvasUtils'
@@ -27,8 +27,7 @@ const props = defineProps({
   }
 })
 
-const { propValue, element, dvModel } = toRefs(props)
-const currentPane = ref('common')
+const { dvModel } = toRefs(props)
 
 const handleDragStart = e => {
   commonHandleDragStart(e, dvModel.value)

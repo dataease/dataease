@@ -18,7 +18,6 @@ import { useEmitt } from '@/hooks/web/useEmitt'
 import FinishPage from '../FinishPage.vue'
 import { cloneDeep } from 'lodash-es'
 import { useCache } from '@/hooks/web/useCache'
-import { delDatasetTree } from '@/api/dataset'
 interface Node {
   name: string
   id: string
@@ -292,7 +291,7 @@ const validateDS = () => {
       validate(request).then(res => {
         if (res.data.type === 'API') {
           let error = 0
-          const status = JSON.parse(res.data.status)
+          const status = JSON.parse(res.data.status) as Array<{ status: string }>
           for (let i = 0; i < status.length; i++) {
             if (status[i].status === 'Error') {
               error++

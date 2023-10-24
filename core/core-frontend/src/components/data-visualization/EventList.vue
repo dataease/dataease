@@ -10,7 +10,6 @@ const eventStore = eventStoreWithOut()
 const { curComponent } = storeToRefs(dvMainStore)
 
 const isShowEvent = ref(false)
-const eventURL = ref('')
 const eventActiveName = ref('redirect')
 
 const addEvent = (event, param) => {

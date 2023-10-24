@@ -51,9 +51,6 @@ const state = reactive({
 })
 
 const schemas = ref([])
-
-const configurationSchema = ref(false)
-
 const dsForm = ref<FormInstance>()
 
 const cronEdit = ref(true)

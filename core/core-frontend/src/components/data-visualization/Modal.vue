@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { defineEmits } from 'vue'
-const props = defineProps({
+defineProps({
   show: {
     type: Boolean,
     default: false

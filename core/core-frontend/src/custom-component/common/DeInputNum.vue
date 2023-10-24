@@ -14,7 +14,7 @@ const props = defineProps({
   }
 })
 
-const { name, value, min, max, step, themes, disabled } = toRefs(props)
+const { value, min, max, step, themes, disabled } = toRefs(props)
 </script>
 
 <template>

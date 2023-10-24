@@ -1,17 +1,15 @@
 <script setup lang="ts">
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
 import { lockStoreWithOut } from '@/store/modules/data-visualization/lock'
 import { copyStoreWithOut } from '@/store/modules/data-visualization/copy'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { layerStoreWithOut } from '@/store/modules/data-visualization/layer'
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import { storeToRefs } from 'pinia'
-import { computed, ref, toRefs } from 'vue'
-import { ElDivider, ElIcon } from 'element-plus-secondary'
+import { computed, toRefs } from 'vue'
+import { ElDivider } from 'element-plus-secondary'
 import eventBus from '@/utils/eventBus'
 const dvMainStore = dvMainStoreWithOut()
-const contextmenuStore = contextmenuStoreWithOut()
 const copyStore = copyStoreWithOut()
 const lockStore = lockStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
@@ -43,7 +41,7 @@ const unlock = () => {
 }
 
 // 点击菜单时不取消当前组件的选中状态
-const handleMouseUp = e => {
+const handleMouseUp = () => {
   dvMainStore.setClickComponentStatus(true)
   activePosition.value === 'aside' && emit('close')
 }

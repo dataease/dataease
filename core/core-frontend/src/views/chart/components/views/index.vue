@@ -3,6 +3,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import ChartComponentG2Plot from './components/ChartComponentG2Plot.vue'
 import {
   computed,
+  CSSProperties,
   nextTick,
   onBeforeMount,
   onMounted,
@@ -44,14 +45,8 @@ const dvMainStore = dvMainStoreWithOut()
 
 let innerRefreshTimer = null
 
-const {
-  nowPanelTrackInfo,
-  nowPanelJumpInfo,
-  publicLinkStatus,
-  dvInfo,
-  curComponent,
-  canvasStyleData
-} = storeToRefs(dvMainStore)
+const { nowPanelJumpInfo, publicLinkStatus, dvInfo, curComponent, canvasStyleData } =
+  storeToRefs(dvMainStore)
 
 const props = defineProps({
   active: {
@@ -73,6 +68,11 @@ const props = defineProps({
         propValue: null
       }
     }
+  },
+  themes: {
+    type: String,
+    required: false,
+    default: 'dark'
   },
   showPosition: {
     type: String,
@@ -119,7 +119,7 @@ const state = reactive({
     width: 'fit-content',
     maxWidth: '100%',
     wordBreak: 'break-word'
-  },
+  } as CSSProperties,
   drillFilters: [],
   drillClickDimensionList: []
 })
@@ -191,7 +191,7 @@ watch(
   { deep: true }
 )
 
-watch([() => searchCount.value], val => {
+watch([() => searchCount.value], () => {
   // 内部计时器启动 忽略外部计时器
   if (!innerRefreshTimer) {
     queryData()

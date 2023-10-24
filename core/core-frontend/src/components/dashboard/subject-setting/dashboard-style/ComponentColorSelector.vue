@@ -166,13 +166,9 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, nextTick, onMounted, reactive, ref, toRefs } from 'vue'
+import { computed, nextTick, onMounted, reactive, ref, toRefs, PropType } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import {
-  COLOR_CASES,
-  COLOR_PANEL,
-  DEFAULT_BASIC_STYLE
-} from '@/views/chart/components/editor/util/chart'
+import { COLOR_PANEL, DEFAULT_BASIC_STYLE } from '@/views/chart/components/editor/util/chart'
 import { useI18n } from '@/hooks/web/useI18n'
 import eventBus from '@/utils/eventBus'
 import { storeToRefs } from 'pinia'
@@ -181,7 +177,7 @@ import elementResizeDetectorMaker from 'element-resize-detector'
 const { t } = useI18n()
 const props = defineProps({
   themes: {
-    type: String,
+    type: String as PropType<EditorTheme>,
     default: 'light'
   }
 })
@@ -195,8 +191,6 @@ const colorFormRef = ref(null)
 const colorForm = computed(
   () => canvasStyleData.value.component.chartColor as DeepPartial<ChartAttr>
 )
-const colorCases = COLOR_CASES
-
 const predefineColors = COLOR_PANEL
 
 const state = reactive({
@@ -226,25 +220,6 @@ const changeColorCase = modifyName => {
   emits('onColorChange', colorForm.value)
 }
 
-const switchColor = index => {
-  state.colorIndex = index
-  state.customColor = colorForm.value.basicStyle.colors[state.colorIndex]
-}
-const switchColorCase = () => {
-  colorForm.value.basicStyle.colors[state.colorIndex] = state.customColor
-  colorForm.value['modifyName'] = 'value'
-  emits('onColorChange', colorForm.value)
-}
-
-const resetCustomColor = () => {
-  changeColorOption()
-}
-
-const switchCustomColor = index => {
-  colorForm.value['seriesColors'][index].isCustom = true
-  switchColorCase()
-}
-
 const containerRef = ref()
 const containerWidth = ref()
 
@@ -262,7 +237,7 @@ onMounted(() => {
 
   const erd = elementResizeDetectorMaker()
   containerWidth.value = containerRef.value?.offsetWidth
-  erd.listenTo(containerRef.value, element => {
+  erd.listenTo(containerRef.value, () => {
     nextTick(() => {
       containerWidth.value = containerRef.value?.offsetWidth
     })

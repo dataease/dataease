@@ -1,13 +1,11 @@
 <script setup lang="ts">
-import { getStyle, getSVGStyle } from '@/utils/style'
+import { getStyle } from '@/utils/style'
 import eventBus from '@/utils/eventBus'
-import { ref, onMounted, toRefs, getCurrentInstance, computed, watch, nextTick } from 'vue'
+import { ref, onMounted, toRefs, getCurrentInstance, computed } from 'vue'
 import findComponent from '@/utils/components'
 import { downloadCanvas, imgUrlTrans } from '@/utils/imgUtils'
 import ComponentEditBar from '@/components/visualization/ComponentEditBar.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
-import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-const dvMainStore = dvMainStoreWithOut()
 
 const componentWrapperInnerRef = ref(null)
 const componentEditBarRef = ref(null)

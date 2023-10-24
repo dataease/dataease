@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { toRefs } from 'vue'
-import findComponent from '@/utils/components'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import ComponentWrapper from '@/components/data-visualization/canvas/ComponentWrapper.vue'
@@ -37,7 +36,7 @@ const props = defineProps({
   }
 })
 
-const { propValue, element, dvInfo, searchCount } = toRefs(props)
+const { propValue, dvInfo, searchCount } = toRefs(props)
 </script>
 
 <template>

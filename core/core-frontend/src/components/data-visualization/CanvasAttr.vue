@@ -2,14 +2,9 @@
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { storeToRefs } from 'pinia'
-import { nextTick, onMounted, reactive, ref } from 'vue'
+import { nextTick, onMounted, ref } from 'vue'
 import { ElFormItem } from 'element-plus-secondary'
-import {
-  COLOR_CASES,
-  COLOR_PANEL,
-  DEFAULT_COLOR_CASE
-} from '@/views/chart/components/editor/util/chart'
-import { useI18n } from '@/hooks/web/useI18n'
+
 import { merge } from 'lodash-es'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import ComponentColorSelector from '@/components/dashboard/subject-setting/dashboard-style/ComponentColorSelector.vue'
@@ -18,36 +13,10 @@ import CanvasBackground from '@/components/visualization/component-background/Ca
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const { canvasStyleData, canvasViewInfo } = storeToRefs(dvMainStore)
-const { t } = useI18n()
-const files = ref(null)
-let initReady = false
 let canvasAttrInit = false
 
-const options = ref({
-  color: '颜色',
-  opacity: '不透明度',
-  backgroundColor: '背景色',
-  fontSize: '字体大小'
-})
-const fileList = ref([])
-const dialogImageUrl = ref('')
-const dialogVisible = ref(false)
-const uploadDisabled = ref(false)
-
 const canvasAttrActiveNames = ref(['size', 'background', 'color'])
-
-const colorCases = COLOR_CASES
-
-const predefineColors = COLOR_PANEL
-
-const state = reactive({
-  colorForm: JSON.parse(JSON.stringify(DEFAULT_COLOR_CASE)),
-  customColor: null,
-  colorIndex: 0
-})
-
 const init = () => {
-  initReady = true
   nextTick(() => {
     canvasAttrInit = true
   })

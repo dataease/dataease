@@ -2,7 +2,7 @@
 import { ref, reactive, computed, watch, toRefs, nextTick } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import nothingTree from '@/assets/img/nothing-tree.png'
-import { BusiTreeNode, BusiTreeRequest } from '@/models/tree/TreeNode'
+import { BusiTreeNode } from '@/models/tree/TreeNode'
 import {
   copyResource,
   dvNameCheck,
@@ -12,9 +12,7 @@ import {
   updateBase,
   saveCanvas
 } from '@/api/visualization/dataVisualization'
-import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { ElMessage } from 'element-plus-secondary'
-const dvMainStore = dvMainStoreWithOut()
 const props = defineProps({
   curCanvasType: {
     type: String,

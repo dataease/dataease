@@ -32,7 +32,7 @@ const snapshotStore = snapshotStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
 const { curComponent } = storeToRefs(dvMainStore)
 
-const props = withDefaults(
+withDefaults(
   defineProps<{
     themes: EditorTheme
   }>(),

@@ -11,7 +11,7 @@ import { imgUrlTrans } from '@/utils/imgUtils'
 import eventBus from '@/utils/eventBus'
 import ImgViewDialog from '@/custom-component/ImgViewDialog.vue'
 
-const props = withDefaults(
+withDefaults(
   defineProps<{
     themes?: EditorTheme
   }>(),
@@ -37,7 +37,7 @@ const handlePictureCardPreview = file => {
   dialogVisible.value = true
 }
 
-const handleRemove = (file, fileList) => {
+const handleRemove = (_, fileList) => {
   uploadDisabled.value = false
   curComponent.value.propValue.url = null
   fileList.value = []

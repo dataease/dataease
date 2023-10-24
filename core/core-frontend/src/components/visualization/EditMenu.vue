@@ -2,14 +2,9 @@
 import { ref, onMounted } from 'vue'
 import { Icon } from '@/components/icon-custom'
 import { useUserStoreWithOut } from '@/store/modules/user'
-import { usePermissionStoreWithOut } from '@/store/modules/permission'
-import { switchLangApi } from '@/api/user'
-const permissionStore = usePermissionStoreWithOut()
 const userStore = useUserStoreWithOut()
 const language = ref(null)
-const handleSetLanguage = lang => {
-  test
-}
+const handleSetLanguage = lang => lang
 onMounted(() => {
   language.value = userStore.getLanguage
 })

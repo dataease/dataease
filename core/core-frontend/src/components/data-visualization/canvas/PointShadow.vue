@@ -16,7 +16,7 @@ import { computed } from 'vue'
 
 const dvMainStore = dvMainStoreWithOut()
 const { mousePointShadowMap } = storeToRefs(dvMainStore)
-const props = defineProps({
+defineProps({
   canvasId: {
     type: String,
     required: true

@@ -26,7 +26,7 @@ const props = defineProps({
   }
 })
 
-const { propValue, element } = toRefs(props)
+const { element } = toRefs(props)
 </script>
 
 <style lang="less" scoped>

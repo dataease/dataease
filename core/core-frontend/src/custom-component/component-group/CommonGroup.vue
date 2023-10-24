@@ -1,11 +1,11 @@
 <script setup lang="tsx">
-import { reactive, ref, toRefs } from 'vue'
+import { reactive, ref } from 'vue'
 import eventBus from '@/utils/eventBus'
 import Icon from '@/components/icon-custom/src/Icon.vue'
 import { CANVAS_MATERIAL } from '@/custom-component/common/ComponentConfig'
 import { ElScrollbar } from 'element-plus-secondary'
 
-const props = defineProps({
+defineProps({
   propValue: {
     type: Array,
     default: () => []
@@ -20,9 +20,6 @@ const props = defineProps({
   }
 })
 
-const { propValue, element } = toRefs(props)
-const currentPane = ref('common')
-
 const commonGroup = ref<InstanceType<typeof ElScrollbar>>()
 
 const state = reactive({
@@ -31,7 +28,7 @@ const state = reactive({
 })
 
 const scrollTo = offsetTop => {
-  commonGroup?.value!.setScrollTop(offsetTop)
+  commonGroup?.value.setScrollTop(offsetTop)
 }
 
 const anchorPosition = anchor => {

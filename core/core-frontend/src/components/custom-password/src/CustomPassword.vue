@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useAttrs, computed, h } from 'vue'
+import { useAttrs, computed } from 'vue'
 import { hIcon } from '@/components/icon-custom'
 const attrs = useAttrs()
 const props = defineProps(['modelValue'])

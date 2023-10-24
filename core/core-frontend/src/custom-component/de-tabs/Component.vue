@@ -110,13 +110,10 @@ import { guid } from '@/views/visualized/data/dataset/form/util'
 import eventBus from '@/utils/eventBus'
 import { canvasChangeAdaptor, findComponentIndexById } from '@/utils/canvasUtils'
 import DeCustomTab from '@/custom-component/de-tabs/DeCustomTab.vue'
-import { useI18n } from '@/hooks/web/useI18n'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 const dvMainStore = dvMainStoreWithOut()
-const { curComponent, tabMoveInActiveId, bashMatrixInfo } = storeToRefs(dvMainStore)
-const tabCanvas = ref(null)
-const { t } = useI18n()
+const { tabMoveInActiveId, bashMatrixInfo } = storeToRefs(dvMainStore)
 const tabComponentRef = ref(null)
 
 const props = defineProps({
@@ -158,7 +155,6 @@ const state = reactive({
   textarea: '',
   dialogVisible: false
 })
-const curItem = ref(null)
 const tabsAreaScroll = ref(false)
 const editableTabsValue = ref(null)
 
@@ -238,23 +234,6 @@ function handleCommand(command) {
       deleteCur(command.param)
       break
   }
-}
-function removeTab(targetName: string) {
-  let tabs = element.value.propValue
-  let activeName = editableTabsValue.value
-  if (activeName === targetName) {
-    tabs.forEach((tab: any, index: number) => {
-      if (tab.name === targetName) {
-        let nextTab = tabs[index + 1] || tabs[index - 1]
-        if (nextTab) {
-          activeName = nextTab.name
-        }
-      }
-    })
-  }
-
-  editableTabsValue.value = activeName
-  element.value.propValue = tabs.filter((tab: any) => tab.name !== targetName)
 }
 
 const componentMoveIn = component => {
@@ -344,19 +323,6 @@ const activeColor = computed(() => {
   }
 })
 
-const borderColor = computed(() => {
-  if (
-    element.value &&
-    element.value.style &&
-    element.value.style.headBorderColor &&
-    typeof element.value.style.headBorderColor === 'string'
-  ) {
-    return element.value.style.headBorderColor
-  } else {
-    return 'none'
-  }
-})
-
 const borderActiveColor = computed(() => {
   if (
     element.value &&
@@ -372,10 +338,6 @@ const borderActiveColor = computed(() => {
 
 const titleValid = computed(() => {
   return !!state.textarea && !!state.textarea.trim()
-})
-
-const isCurrentEdit = computed(() => {
-  return isEdit.value && curComponent.value && curComponent.value.id === element.value.id
 })
 
 watch(

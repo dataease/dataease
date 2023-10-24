@@ -75,7 +75,7 @@ const init = () => {
   }
 }
 
-const handleRemove = (file, fileList) => {
+const handleRemove = () => {
   state.uploadDisabled = false
   imgUrlInner.value = null
   state.fileList = []
@@ -91,9 +91,6 @@ const upload = file => {
     imgUrlInner.value = fileUrl
     emits('onImgChange', fileUrl)
   })
-}
-const goFile = () => {
-  files.value.click()
 }
 
 const reUpload = e => {

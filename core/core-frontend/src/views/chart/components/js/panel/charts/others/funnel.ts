@@ -1,6 +1,6 @@
 import { FunnelOptions, Funnel as G2Funnel } from '@antv/g2plot/esm/plots/funnel'
 import { G2PlotChartView, G2PlotDrawOptions } from '../../types/impl/g2plot'
-import { flow, parseJson } from '@/views/chart/components/js/util'
+import { flow } from '@/views/chart/components/js/util'
 import { getPadding } from '../../common/common_antv'
 import { useI18n } from '@/hooks/web/useI18n'
 

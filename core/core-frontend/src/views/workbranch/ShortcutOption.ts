@@ -59,7 +59,7 @@ class ShortcutOption {
   loadData(param: ShortcutRequest): Promise<IResponse> {
     const url = this.busiRecordMap[this.busiFlag].url
     if (this.emptyParam(param) && this.getCacheData()?.length) {
-      return new Promise((res, rej) => {
+      return new Promise(res => {
         const result = {
           code: 200,
           data: this.getCacheData(),

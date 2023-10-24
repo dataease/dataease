@@ -145,23 +145,13 @@
 </template>
 
 <script lang="ts" setup>
-import {
-  computed,
-  onBeforeUnmount,
-  onMounted,
-  onUnmounted,
-  reactive,
-  ref,
-  toRefs,
-  watch
-} from 'vue'
+import { computed, onBeforeUnmount, onMounted, reactive, toRefs, watch } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { useI18n } from '@/hooks/web/useI18n'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import eventBus from '@/utils/eventBus'
 import { useEmitt } from '@/hooks/web/useEmitt'
-import { getViewLinkageGather } from '@/api/visualization/linkage'
 import { copyStoreWithOut } from '@/store/modules/data-visualization/copy'
 import { exportExcelDownload } from '@/views/chart/components/js/util'
 import FieldsList from '@/custom-component/rich-text/FieldsList.vue'
@@ -229,10 +219,6 @@ const barShowCheck = barName => {
   )
 }
 
-const linkageCheckShowAttach = computed(() => {
-  return curLinkageView.value !== element.value
-})
-
 const mainBackgroundShow = computed(() => {
   return !['batchOpt', 'multiplexing'].includes(showPosition.value)
 })
@@ -262,18 +248,9 @@ const props = defineProps({
   }
 })
 
-const { element, active, index, showPosition, canvasId } = toRefs(props)
-const {
-  batchOptStatus,
-  pcMatrixCount,
-  curComponent,
-  componentData,
-  canvasStyleData,
-  targetLinkageInfo,
-  curLinkageView,
-  dvInfo,
-  canvasViewInfo
-} = storeToRefs(dvMainStore)
+const { element, index, showPosition, canvasId } = toRefs(props)
+const { batchOptStatus, pcMatrixCount, curComponent, componentData, canvasViewInfo } =
+  storeToRefs(dvMainStore)
 
 const state = reactive({
   systemOS: 'Mac',
@@ -401,25 +378,6 @@ const batchOptChange = val => {
 }
 // 批量操作-End
 
-// 联动-Begin
-const linkageSetting = () => {
-  // sourceViewId 也加入查询
-  const targetViewIds = componentData.value
-    .filter(item => item.component === 'UserView')
-    .map(item => item.id)
-
-  // 获取当前仪表板当前视图联动信息
-  const requestInfo = {
-    dvId: dvInfo.value.id,
-    sourceViewId: curComponent.value.id,
-    targetViewIds: targetViewIds,
-    linkageInfo: null
-  }
-  getViewLinkageGather(requestInfo).then(rsp => {
-    dvMainStore.setLinkageTargetInfo(rsp.data)
-  })
-}
-
 const linkageChange = item => {
   let checkResult = false
   if (item.linkageFilters && item.linkageFilters.length > 0) {
@@ -458,25 +416,10 @@ const existLinkage = computed(() => {
   return linkageFiltersCount
 })
 
-const linkageInfo = computed(() => {
-  return targetLinkageInfo.value[element.value.id]
-})
-
 // 清除相同sourceViewId 的 联动条件
 const clearLinkage = () => {
   dvMainStore.clearViewLinkage(element.value.id)
 }
-const linkageSetOpen = () => {
-  emits('linkageSetOpen')
-}
-
-// 联动-End
-
-// 跳转-Begin
-const linkJumpSetOpen = () => {
-  emits('linkJumpSetOpen')
-}
-// 跳转-End
 
 // 富文本-Begin
 

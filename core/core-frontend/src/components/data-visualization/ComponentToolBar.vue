@@ -10,8 +10,6 @@ const { canvasStyleData } = storeToRefs(dvMainStore)
 const snapshotStore = snapshotStoreWithOut()
 const scale = ref(60)
 
-let timer = null
-
 const handleScaleChange = () => {
   snapshotStore.recordSnapshotCache()
   // 画布比例设一个最小值，不能为 0

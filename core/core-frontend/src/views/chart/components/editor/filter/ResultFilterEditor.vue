@@ -248,7 +248,7 @@ const filterTypeChange = val => {
     initEnumOptions()
   }
 }
-const enumChange = val => {
+const enumChange = () => {
   item.value.enumCheckField = state.enumCheckField
 }
 

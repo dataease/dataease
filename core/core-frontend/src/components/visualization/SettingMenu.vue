@@ -150,20 +150,16 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import eventBus from '@/utils/eventBus'
 import { copyStoreWithOut } from '@/store/modules/data-visualization/copy'
-import { lockStoreWithOut } from '@/store/modules/data-visualization/lock'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { layerStoreWithOut } from '@/store/modules/data-visualization/layer'
-import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import { useI18n } from '@/hooks/web/useI18n'
 import TabCarouselDialog from '@/components/visualization/TabCarouselDialog.vue'
 import HyperlinksDialog from '@/components/visualization/HyperlinksDialog.vue'
 const { t } = useI18n()
 const snapshotStore = snapshotStoreWithOut()
 const copyStore = copyStoreWithOut()
-const lockStore = lockStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
 const layerStore = layerStoreWithOut()
-const composeStore = composeStoreWithOut()
 const { curComponent, componentData, dvInfo } = storeToRefs(dvMainStore)
 const customTabsSort = ref(null)
 const emits = defineEmits(['amRemoveItem', 'linkJumpSet', 'boardSet'])
@@ -259,19 +255,9 @@ const handleMouseUp = () => {
   dvMainStore.setClickComponentStatus(true)
 }
 
-const cut = () => {
-  deleteCurCondition()
-  copyStore.cut()
-}
-
 const copy = () => {
   copyStore.copy()
   copyStore.paste(false)
-}
-
-const paste = () => {
-  copyStore.paste(false)
-  snapshotStore.recordSnapshotCache('SettingMenu-paste')
 }
 
 const deleteComponent = () => {

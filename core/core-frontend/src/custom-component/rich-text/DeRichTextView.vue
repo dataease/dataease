@@ -105,10 +105,7 @@ const state = reactive({
 const dataRowSelect = ref({})
 const dataRowNameSelect = ref({})
 const dataRowFiledName = ref([])
-const drawLeft = ref('none')
-const drawRight = ref('auto')
 const initReady = ref(false)
-const editReady = ref(false)
 const editShow = ref(true)
 const canEdit = ref(false)
 // 初始化配置
@@ -173,7 +170,7 @@ watch(
 
 watch(
   () => myValue.value,
-  val => {
+  () => {
     if (canEdit.value) {
       const ed = tinymce.editors[tinymceId]
       element.value.propValue.textValue = ed.getContent()
@@ -183,16 +180,6 @@ watch(
     }
   }
 )
-
-const changeRightDrawOpen = param => {
-  if (param) {
-    drawLeft.value = 'auto!important'
-    drawRight.value = '380px'
-  } else {
-    drawLeft.value = 'none'
-    drawRight.value = 'auto'
-  }
-}
 
 const viewInit = () => {
   useEmitt({
@@ -254,7 +241,7 @@ const fieldSelect = field => {
   ed.insertContent(attachValue)
   snapshotStore.resetStyleChangeTimes()
 }
-const onClick = e => {
+const onClick = () => {
   const node = tinymce.activeEditor.selection.getNode()
   resetSelect(node)
 }
@@ -310,9 +297,6 @@ const reShow = () => {
   nextTick(() => {
     editShow.value = true
   })
-}
-const chartResize = () => {
-  // ignore
 }
 
 const calcData = (view: Chart, callback) => {
@@ -403,8 +387,12 @@ const initCurFields = chartDetails => {
 }
 
 const rowDataFormat = (rowData, yDataeaseNames, yDataeaseNamesCfg) => {
-  for (const key in rowData) {
-  }
+  console.log(
+    'rowData, yDataeaseNames, yDataeaseNamesCfg',
+    rowData,
+    yDataeaseNames,
+    yDataeaseNamesCfg
+  )
 }
 
 const renderChart = () => {

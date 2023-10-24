@@ -79,7 +79,7 @@ export function customSort(custom, data) {
   return joinArr.concat(subArr)
 }
 
-export function customColor(custom, res, colors) {
+export function customColor(custom, res) {
   const result = []
   for (let i = 0; i < res.length; i++) {
     const r = res[i]
