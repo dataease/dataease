@@ -102,6 +102,18 @@ public class DorisQueryProvider extends QueryProvider {
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
         List<SQLObj> xFields = new ArrayList<>();
+        int originSize = fields.size();
+        List<String> fieldList = fields.stream().map(DatasetTableField::getId).collect(Collectors.toList());
+        if (CollectionUtils.isNotEmpty(sortFields)) {
+            sortFields.forEach(item -> {
+                int indexOf = fieldList.indexOf(item.getId());
+                if (indexOf == -1) {
+                    fields.add(item);
+                } else {
+                    fields.set(indexOf, item);
+                }
+            });
+        }
         List<SQLObj> xOrders = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(fields)) {
             for (int i = 0; i < fields.size(); i++) {
@@ -113,7 +125,15 @@ public class DorisQueryProvider extends QueryProvider {
                 } else if (ObjectUtils.isNotEmpty(f.getExtField()) && f.getExtField() == 1) {
                     originField = String.format(DorisConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getDataeaseName());
                 } else {
-                    originField = String.format(DorisConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getDataeaseName());
+                    if (f.getDeType() == 2 || f.getDeType() == 3) {
+                        if (f.getDeExtractType() == 1) {
+                            originField = String.format(DorisConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getDataeaseName());
+                        } else {
+                            originField = String.format(DorisConstants.CAST, String.format(DorisConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getDataeaseName()), DorisConstants.DEFAULT_FLOAT_FORMAT);
+                        }
+                    } else {
+                        originField = String.format(DorisConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getDataeaseName());
+                    }
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 String fieldName = "";
@@ -151,6 +171,14 @@ public class DorisQueryProvider extends QueryProvider {
                         .fieldName(fieldName)
                         .fieldAlias(fieldAlias)
                         .build());
+                if (f instanceof DeSortField) {
+                    DeSortField x = (DeSortField) f;
+                    xOrders.add(SQLObj.builder()
+                            .orderField(originField)
+                            .orderAlias(fieldAlias)
+                            .orderDirection(x.getOrderDirection())
+                            .build());
+                }
             }
         }
 
@@ -170,19 +198,27 @@ public class DorisQueryProvider extends QueryProvider {
         if (whereTrees != null) wheres.add(whereTrees);
         if (CollectionUtils.isNotEmpty(wheres)) st_sql.add("filters", wheres);
 
-        if (CollectionUtils.isNotEmpty(sortFields)) {
-            int step = fields.size();
-            for (int i = step; i < (step + sortFields.size()); i++) {
-                DeSortField deSortField = sortFields.get(i - step);
-                SQLObj order = buildSortField(deSortField, tableObj, i);
-                xOrders.add(order);
-            }
-        }
-        if (ObjectUtils.isNotEmpty(xOrders)) {
-            st_sql.add("orders", xOrders);
-        }
+        String sql = st_sql.render();
+        ST st = stg.getInstanceOf("previewSql");
+        st.add("isGroup", false);
+        SQLObj tableSQL = SQLObj.builder()
+                .tableName(String.format(DorisConstants.BRACKETS, sql))
+                .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
+                .build();
+        st.add("table", tableSQL);
 
-        return st_sql.render();
+        List<SQLObj> outFieldList = new ArrayList<>();
+        for (int i = 0; i < originSize; i++) {
+            SQLObj fieldObj = xFields.get(i);
+            String outFieldAlias = tableSQL.getTableAlias() + "." + fieldObj.getFieldAlias();
+            outFieldList.add(SQLObj.builder().fieldName(outFieldAlias).fieldAlias(fieldObj.getFieldAlias()).build());
+        }
+        st.add("groups", outFieldList);
+        if (CollectionUtils.isNotEmpty(xOrders)) {
+            st.add("orders", xOrders);
+            return st.render() + " LIMIT 0, 10000000";
+        }
+        return st.render();
     }
 
     private SQLObj buildSortField(DeSortField f, SQLObj tableObj, int i) {
