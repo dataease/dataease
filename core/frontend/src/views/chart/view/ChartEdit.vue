@@ -1996,9 +1996,14 @@ export default {
         !equalsAny(this.view.type, 'liquid', 'bidirectional-bar',
           'word-cloud', 'table-pivot', 'label', 'richTextView', 'flow-map')
     },
+    isPlugin() {
+      const plugins = localStorage.getItem('plugin-views') && JSON.parse(localStorage.getItem('plugin-views')) || []
+      return plugins.some(plugin => plugin.value === this.view.type && plugin.render === this.view.render)
+    },
     watchChartTypeChangeObj() {
       const { type, render } = this.view
-      return { type, render }
+      const isPlugin = this.isPlugin
+      return { type, render, isPlugin }
     },
     ...mapState([
       'curComponent',
@@ -2036,10 +2041,12 @@ export default {
       this.$emit('typeChange', newVal)
     },
     watchChartTypeChangeObj(newVal, oldVal) {
-      if (newVal.type === oldVal.type && newVal.render === oldVal.render) {
+      this.view.isPlugin = newVal.isPlugin
+      if (newVal.type === oldVal.type && newVal.render === oldVal.render && newVal.isPlugin === oldVal.isPlugin) {
         return
       }
-      this.view.isPlugin = this.$refs['cu-chart-type'] && this.$refs['cu-chart-type'].currentIsPlugin(newVal.type, newVal.render)
+      this.setChartDefaultOptions()
+      this.calcData(true, 'chart', true, newVal.type !== oldVal.type, newVal.render !== oldVal.render)
     }
   },
   created() {
@@ -3317,12 +3324,14 @@ export default {
       this.$store.commit('recordViewEdit', { viewId: this.param.id, hasEdit: status })
     },
     changeChartRender() {
-      this.setChartDefaultOptions()
-      this.calcData(true, 'chart', true, false, true)
+      // 调整为监听 watchChartTypeChangeObj
+      // this.setChartDefaultOptions()
+      // this.calcData(true, 'chart', true, false, true)
     },
     changeChartType() {
-      this.setChartDefaultOptions()
-      this.calcData(true, 'chart', true, true)
+      // 调整为监听 watchChartTypeChangeObj
+      // this.setChartDefaultOptions()
+      // this.calcData(true, 'chart', true, true)
     },
 
     setChartDefaultOptions() {
