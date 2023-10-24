@@ -2003,7 +2003,8 @@ export default {
     watchChartTypeChangeObj() {
       const { type, render } = this.view
       const isPlugin = this.isPlugin
-      return { type, render, isPlugin }
+      const id = this.chart.id
+      return { type, render, isPlugin, id }
     },
     ...mapState([
       'curComponent',
@@ -2042,6 +2043,18 @@ export default {
     },
     watchChartTypeChangeObj(newVal, oldVal) {
       this.view.isPlugin = newVal.isPlugin
+      if (newVal.id === oldVal.id && newVal.type !== oldVal.type && oldVal.type === 'table-info' && this.view.xaxis.length > 0) {
+        // 针对明细表切换为其他图表
+        this.$message({
+          showClose: true,
+          message: this.$t('chart.table_info_switch'),
+          type: 'warning'
+        })
+        this.view.xaxis = []
+      }
+      if (newVal.id === oldVal.id && newVal.type !== oldVal.type) {
+        this.view.senior.threshold = {}
+      }
       if (newVal.type === oldVal.type && newVal.render === oldVal.render && newVal.isPlugin === oldVal.isPlugin) {
         return
       }
@@ -2254,17 +2267,7 @@ export default {
         parseInt(this.view.resultCount) < 1) {
         this.view.resultCount = '1000'
       }
-      if (switchType) {
-        this.view.senior.threshold = {}
-      }
-      if (switchType && (this.view.type === 'table-info' || this.chart.type === 'table-info') && this.view.xaxis.length > 0) {
-        this.$message({
-          showClose: true,
-          message: this.$t('chart.table_info_switch'),
-          type: 'warning'
-        })
-        this.view.xaxis = []
-      }
+
       const view = JSON.parse(JSON.stringify(this.view))
       view.id = this.view.id
       view.sceneId = this.view.sceneId
