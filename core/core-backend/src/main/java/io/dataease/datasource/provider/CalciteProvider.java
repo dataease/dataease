@@ -419,7 +419,7 @@ public class CalciteProvider {
                             }
                             break;
                         case Types.BOOLEAN:
-                            row[j] = rs.getBoolean(j + 1) ? "1" : "0";
+                            row[j] = rs.getBoolean(j + 1) ? "true" : "false";
                             break;
                         default:
                             if (metaData.getColumnTypeName(j + 1).toLowerCase().equalsIgnoreCase("blob")) {
