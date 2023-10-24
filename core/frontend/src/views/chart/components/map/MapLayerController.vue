@@ -4,6 +4,7 @@
     placement="right"
     title=""
     width="150"
+    :append-to-body="false"
     trigger="click"
   >
     <i
