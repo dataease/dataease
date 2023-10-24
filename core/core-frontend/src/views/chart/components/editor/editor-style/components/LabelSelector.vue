@@ -814,7 +814,7 @@ onMounted(() => {
 .series-select-option {
   display: flex;
   align-items: center;
-  justify-content: start;
+  justify-content: flex-start;
   padding: 0 11px;
 }
 .m-divider {

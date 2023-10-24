@@ -143,7 +143,7 @@ export class Gauge extends G2PlotChartView<GaugeOptions, G2Gauge> {
     if (chart.senior) {
       const senior = parseJson(chart.senior)
       const threshold = senior.threshold ?? DEFAULT_THRESHOLD
-      if (threshold.gaugeThreshold) {
+      if (threshold.enable && threshold.gaugeThreshold) {
         hasThreshold = true
         const arr = threshold.gaugeThreshold.split(',')
         for (let i = 0; i < arr.length; i++) {

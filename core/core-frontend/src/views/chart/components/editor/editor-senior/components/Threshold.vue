@@ -7,12 +7,13 @@ import TableThresholdEdit from '@/views/chart/components/editor/editor-senior/co
 import TextLabelThresholdEdit from '@/views/chart/components/editor/editor-senior/components/dialog/TextLabelThresholdEdit.vue'
 import TextThresholdEdit from '@/views/chart/components/editor/editor-senior/components/dialog/TextThresholdEdit.vue'
 import { fieldType } from '@/utils/attr'
+import { defaultsDeep } from 'lodash-es'
 
 const { t } = useI18n()
 
 const props = defineProps({
   chart: {
-    type: Object,
+    type: Object as PropType<ChartObj>,
     required: true
   },
   themes: {
@@ -28,14 +29,15 @@ const showProperty = prop => props.propertyInner?.includes(prop)
 const emit = defineEmits(['onThresholdChange'])
 
 watch(
-  () => props.chart,
+  () => props.chart.senior.threshold,
   () => {
     init()
-  }
+  },
+  { deep: true }
 )
 
 const state = reactive({
-  thresholdForm: JSON.parse(JSON.stringify(DEFAULT_THRESHOLD)),
+  thresholdForm: {} as ChartThreshold,
   editTextLabelThresholdDialog: false,
   textThresholdArr: [],
   editLabelThresholdDialog: false,
@@ -47,14 +49,9 @@ const state = reactive({
 const init = () => {
   const chart = JSON.parse(JSON.stringify(props.chart))
   if (chart.senior) {
-    let senior = null
-    if (Object.prototype.toString.call(chart.senior) === '[object Object]') {
-      senior = JSON.parse(JSON.stringify(chart.senior))
-    } else {
-      senior = JSON.parse(chart.senior)
-    }
+    const senior = chart.senior
     if (senior.threshold) {
-      state.thresholdForm = senior.threshold
+      state.thresholdForm = defaultsDeep(senior.threshold, DEFAULT_THRESHOLD)
     }
     state.textThresholdArr = JSON.parse(JSON.stringify(state.thresholdForm.textLabelThreshold))
     state.thresholdArr = JSON.parse(JSON.stringify(state.thresholdForm.labelThreshold))
@@ -243,9 +240,10 @@ init()
           <span>0,</span>
           <el-input
             :effect="themes"
+            :placeholder="t('chart.threshold_range')"
+            :disabled="!state.thresholdForm.enable"
             v-model="state.thresholdForm.gaugeThreshold"
             style="width: 100px; margin: 0 10px"
-            :placeholder="t('chart.threshold_range')"
             size="small"
             clearable
             @change="gaugeThresholdChange"
@@ -409,11 +407,12 @@ init()
             </span>
             <el-button
               :title="t('chart.edit')"
-              class="circle-button"
               :class="'label-' + props.themes"
+              :style="{ width: '24px', marginLeft: '6px' }"
+              :disabled="!state.thresholdForm.enable"
+              class="circle-button"
               text
               size="small"
-              :style="{ width: '24px', marginLeft: '6px' }"
               @click="editTableThreshold"
             >
               <template #icon>

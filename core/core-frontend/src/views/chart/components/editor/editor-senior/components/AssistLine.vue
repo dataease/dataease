@@ -3,7 +3,8 @@ import { onMounted, reactive, watch, computed, PropType } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ElIcon, ElMessage } from 'element-plus-secondary'
 import AssistLineEdit from '@/views/chart/components/editor/editor-senior/components/dialog/AssistLineEdit.vue'
-import _ from 'lodash'
+import { defaultsDeep, find } from 'lodash-es'
+import { DEFAULT_ASSIST_LINE_CFG } from '../../util/chart'
 
 const { t } = useI18n()
 
@@ -11,7 +12,7 @@ const emit = defineEmits(['onAssistLineChange'])
 
 const props = defineProps({
   chart: {
-    type: Object,
+    type: Object as PropType<ChartObj>,
     required: true
   },
   quotaData: {
@@ -32,28 +33,26 @@ const quotaFields = computed<Array<any>>(() => {
 })
 
 const state = reactive({
-  assistLine: [],
+  assistLineCfg: {
+    enable: false,
+    assistLine: []
+  },
   editLineDialog: false,
   lineArr: [],
   quotaFields: []
 })
 
 watch(
-  () => props.chart,
+  () => props.chart.senior.assistLineCfg,
   () => {
     init()
-  }
+  },
+  { deep: true }
 )
 
 const changeAssistLine = () => {
-  let flag = false
-  const arr = state.assistLine.filter(ele => {
-    return ele.field === '1'
-  })
-  if (arr && arr.length > 0) {
-    flag = true
-  }
-  emit('onAssistLineChange', { data: state.assistLine, requestData: flag })
+  const flag = state.assistLineCfg.assistLine.findIndex(ele => ele.field === '1') !== -1
+  emit('onAssistLineChange', { data: state.assistLineCfg, requestData: flag })
 }
 
 const lineChange = val => {
@@ -68,7 +67,6 @@ const closeEditLine = () => {
 }
 
 const changeLine = () => {
-  console.log(state.lineArr)
   // check line config
   for (let i = 0; i < state.lineArr.length; i++) {
     const ele = state.lineArr[i]
@@ -96,35 +94,29 @@ const changeLine = () => {
       }
     }
   }
-  state.assistLine = JSON.parse(JSON.stringify(state.lineArr))
+  state.assistLineCfg.assistLine = JSON.parse(JSON.stringify(state.lineArr))
   changeAssistLine()
   closeEditLine()
 }
 
 function existField(line) {
-  return !!_.find(quotaFields.value, d => d.id === line.id)
+  return !!find(quotaFields.value, d => d.id === line.id)
 }
 
 const init = () => {
   const chart = JSON.parse(JSON.stringify(props.chart))
   if (chart.senior) {
-    let senior = null
-    if (Object.prototype.toString.call(chart.senior) === '[object Object]') {
-      senior = JSON.parse(JSON.stringify(chart.senior))
-    } else {
-      senior = JSON.parse(chart.senior)
-    }
-    if (senior.assistLine) {
-      for (let i = 0; i < senior.assistLine.length; i++) {
-        if (!senior.assistLine[i].fontSize) {
-          senior.assistLine[i].fontSize = '10'
+    const senior = chart.senior
+    if (senior.assistLineCfg?.assistLine) {
+      const assistLine = senior.assistLineCfg.assistLine
+      for (let i = 0; i < assistLine.length; i++) {
+        if (!assistLine[i].fontSize) {
+          assistLine[i].fontSize = 10
         }
       }
-      state.assistLine = senior.assistLine
-    } else {
-      state.assistLine = []
+      state.assistLineCfg = defaultsDeep(senior.assistLineCfg, DEFAULT_ASSIST_LINE_CFG)
     }
-    state.lineArr = JSON.parse(JSON.stringify(state.assistLine))
+    state.lineArr = JSON.parse(JSON.stringify(state.assistLineCfg.assistLine))
   }
 }
 
@@ -141,16 +133,17 @@ onMounted(() => {
         <span
           class="set-text-info"
           :class="{ 'set-text-info-dark': themes === 'dark' }"
-          v-if="state.assistLine.length > 0"
+          v-if="state.assistLineCfg.assistLine.length > 0"
         >
           已设置
         </span>
         <el-button
-          class="circle-button font14"
           :class="'label-' + props.themes"
+          :style="{ width: '24px', marginLeft: '6px' }"
+          :disabled="!state.assistLineCfg.enable"
+          class="circle-button font14"
           text
           size="small"
-          :style="{ width: '24px', marginLeft: '6px' }"
           @click="editLine"
         >
           <template #icon>
@@ -162,7 +155,7 @@ onMounted(() => {
       </span>
     </div>
 
-    <el-row v-for="(item, index) in state.assistLine" :key="index" class="line-style">
+    <el-row v-for="(item, index) in state.assistLineCfg.assistLine" :key="index" class="line-style">
       <el-col :span="8">
         <span :title="item.name">{{ item.name }}</span>
       </el-col>
@@ -199,7 +192,7 @@ onMounted(() => {
       class="dialog-css"
     >
       <assist-line-edit
-        :line="state.assistLine"
+        :line="state.assistLineCfg.assistLine"
         :quota-fields="quotaFields"
         @onAssistLineChange="lineChange"
       />

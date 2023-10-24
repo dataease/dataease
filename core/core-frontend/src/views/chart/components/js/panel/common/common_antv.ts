@@ -534,7 +534,11 @@ export function getSlider(chart: Chart) {
 export function getAnalyse(chart: Chart) {
   const assistLine = []
   const senior = parseJson(chart.senior)
-  if (senior.assistLine?.length > 0) {
+  if (!senior.assistLineCfg?.enable) {
+    return assistLine
+  }
+  const assistLineArr = senior.assistLineCfg.assistLine
+  if (assistLineArr?.length > 0) {
     const customStyle = parseJson(chart.customStyle)
     let yAxisPosition, axisFormatterCfg
     if (customStyle.yAxis) {
@@ -545,8 +549,8 @@ export function getAnalyse(chart: Chart) {
         : DEFAULT_YAXIS_STYLE.axisLabelFormatter
     }
 
-    const fixedLines = senior.assistLine.filter(ele => ele.field === '0')
-    const dynamicLineFields = senior.assistLine
+    const fixedLines = assistLineArr.filter(ele => ele.field === '0')
+    const dynamicLineFields = assistLineArr
       .filter(ele => ele.field === '1')
       .map(item => item.fieldId)
     const quotaFields = _.filter(chart.yAxis, ele => ele.summary !== '' && ele.id !== '-1')
@@ -589,7 +593,11 @@ export function getAnalyse(chart: Chart) {
 export function getAnalyseHorizontal(chart: Chart) {
   const assistLine = []
   const senior = parseJson(chart.senior)
-  if (senior.assistLine?.length > 0) {
+  if (!senior.assistLineCfg?.enable) {
+    return assistLine
+  }
+  const assistLineArr = senior.assistLineCfg.assistLine
+  if (assistLineArr?.length > 0) {
     const customStyle = parseJson(chart.customStyle)
     let xAxisPosition, axisFormatterCfg
     if (customStyle.xAxis) {
@@ -600,8 +608,8 @@ export function getAnalyseHorizontal(chart: Chart) {
         : DEFAULT_XAXIS_STYLE.axisLabelFormatter
     }
 
-    const fixedLines = senior.assistLine.filter(ele => ele.field === '0')
-    const dynamicLineFields = senior.assistLine
+    const fixedLines = assistLineArr.filter(ele => ele.field === '0')
+    const dynamicLineFields = assistLineArr
       .filter(ele => ele.field === '1')
       .map(item => item.fieldId)
     const quotaFields = _.filter(chart.yAxis, ele => ele.summary !== '' && ele.id !== '-1')

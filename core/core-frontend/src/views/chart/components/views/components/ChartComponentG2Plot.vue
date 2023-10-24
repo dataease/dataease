@@ -290,7 +290,7 @@ onBeforeUnmount(() => {
   .canvas-content {
     width: 100% !important;
     height: 100% !important;
-    ::v-deep(.g2-tooltip) {
+    :deep(.g2-tooltip) {
       position: fixed !important;
     }
   }
