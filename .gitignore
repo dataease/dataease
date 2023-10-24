@@ -59,3 +59,9 @@ pnpm-debug.log*
 .flattened-pom.xml
 
 package-lock.json
+/core/core-frontend/
+/core/core-backend/
+/sdk/common/
+/sdk/distributed/
+/sdk/api/
+/de-xpack/
