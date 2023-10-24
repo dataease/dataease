@@ -16,7 +16,7 @@ const props = defineProps({
   }
 })
 
-const { formatterItem, chart } = toRefs(props)
+const { formatterItem } = toRefs(props)
 
 const state = reactive({
   typeList: formatterType,

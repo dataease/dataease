@@ -159,11 +159,6 @@ function setPosition(p: 'left' | 'center' | 'right') {
   titleForm.value.hPosition = p
   changeTitleStyle('hPosition')
 }
-
-function setVPosition(p: 'top' | 'center' | 'bottom') {
-  titleForm.value.vPosition = p
-  changeTitleStyle('vPosition')
-}
 </script>
 
 <style scoped lang="less">

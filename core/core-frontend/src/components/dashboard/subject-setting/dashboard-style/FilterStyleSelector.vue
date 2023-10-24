@@ -93,7 +93,6 @@ const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 
-const emits = defineEmits(['onTextChange'])
 const filterFormRef = ref(null)
 const filterForm = computed(() => dvMainStore.canvasStyleData.component.filterStyle)
 

@@ -113,10 +113,10 @@
 import { checkSameDataSet } from '@/api/chart'
 import { storeToRefs } from 'pinia'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { computed, defineEmits, onMounted, reactive, toRefs } from 'vue'
+import { computed, onMounted, toRefs } from 'vue'
 import { Plus, Delete } from '@element-plus/icons-vue'
 const dvMainStore = dvMainStoreWithOut()
-const { linkageSettingStatus, targetLinkageInfo, curLinkageView } = storeToRefs(dvMainStore)
+const { targetLinkageInfo, curLinkageView } = storeToRefs(dvMainStore)
 
 const props = defineProps({
   element: {
@@ -136,15 +136,7 @@ const props = defineProps({
   }
 })
 
-const { element, active, activeModel } = toRefs(props)
-const emits = defineEmits(['showViewDetails'])
-
-const state = reactive({
-  componentType: null,
-  linkageActiveStatus: false,
-  editFilter: ['view', 'custom']
-})
-
+const { element } = toRefs(props)
 const linkageInfo = computed(() => {
   return targetLinkageInfo.value[element.value.id]
 })
@@ -152,17 +144,6 @@ const linkageInfo = computed(() => {
 const sourceLinkageInfo = computed(() => {
   return targetLinkageInfo.value[curLinkageView.value.id]
 })
-
-const showViewDetails = () => {
-  emits('showViewDetails')
-}
-const edit = () => {
-  return null
-}
-
-const linkageEdit = () => {
-  return null
-}
 
 const deleteLinkageField = index => {
   linkageInfo.value.linkageFields.splice(index, 1)

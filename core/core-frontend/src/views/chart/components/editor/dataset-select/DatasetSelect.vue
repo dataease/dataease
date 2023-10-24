@@ -78,7 +78,7 @@ const formRef = ref<FormInstance>()
 const searchStr = ref<string>()
 
 watch(searchStr, val => {
-  datasetSelector.value!.filter(val)
+  datasetSelector.value.filter(val)
 })
 
 const showTree = computed(() => {
@@ -88,9 +88,6 @@ const showTree = computed(() => {
 const showEmptyInfo = computed(() => {
   return !showTree.value && !loadingDatasetTree.value
 })
-// const showEmptySearchInfo = computed(() => {
-//   return showEmptyInfo.value && !props.loadingDatasetTree
-// })
 
 const computedTree = computed(() => {
   if (showTree.value) {
@@ -131,11 +128,11 @@ const form = computed(() => {
 
 const rules = ref([
   {
-    validator: (rule: any, value: any, callback: any) => {
+    validator: (...params) => {
       if (!exist.value) {
-        callback(new Error())
+        params[2](new Error())
       } else {
-        callback()
+        params[2]()
       }
     },
     trigger: ['change', 'blur']
@@ -190,7 +187,7 @@ const getFields = (id, chartId) => {
         state.value.dimensionData = JSON.parse(JSON.stringify(state.value.dimension))
         state.value.quotaData = JSON.parse(JSON.stringify(state.value.quota))
       })
-      .catch(e => {
+      .catch(() => {
         state.value.dimension = []
         state.value.quota = []
         state.value.dimensionData = []

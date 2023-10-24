@@ -10,7 +10,7 @@ import elementResizeDetectorMaker from 'element-resize-detector'
 import { getCanvasStyle, syncShapeItemStyle } from '@/utils/style'
 import { adaptCurThemeCommonStyle } from '@/utils/canvasStyle'
 import CanvasCore from '@/components/data-visualization/canvas/CanvasCore.vue'
-import { canvasChangeAdaptor, isMainCanvas, isSameCanvas } from '@/utils/canvasUtils'
+import { isMainCanvas } from '@/utils/canvasUtils'
 
 // change-begin
 const props = defineProps({
@@ -42,7 +42,7 @@ const domId = ref('de-canvas-' + canvasId.value)
 
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
-const { curComponent, pcMatrixCount, editMode, curOriginThemes } = storeToRefs(dvMainStore)
+const { pcMatrixCount, curOriginThemes } = storeToRefs(dvMainStore)
 const canvasOut = ref(null)
 const canvasInner = ref(null)
 const canvasInitStatus = ref(false)
@@ -189,7 +189,7 @@ const moveOutFromTab = component => {
 onMounted(() => {
   window.addEventListener('resize', canvasSizeInit)
   const erd = elementResizeDetectorMaker()
-  erd.listenTo(document.getElementById(domId.value), element => {
+  erd.listenTo(document.getElementById(domId.value), () => {
     canvasSizeInit()
   })
   canvasInit()

@@ -21,7 +21,7 @@ import TableTotalSelector from '@/views/chart/components/editor/editor-style/com
 import MiscStyleSelector from '@/views/chart/components/editor/editor-style/components/MiscStyleSelector.vue'
 
 const dvMainStore = dvMainStoreWithOut()
-const { curComponent, dvInfo } = storeToRefs(dvMainStore)
+const { dvInfo } = storeToRefs(dvMainStore)
 const { t } = useI18n()
 
 const state = {

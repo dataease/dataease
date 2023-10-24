@@ -189,28 +189,6 @@ const beforeSummary = type => {
   }
 }
 
-const dateStyle = param => {
-  item.value.dateStyle = param.type
-  emit('onQuotaItemChange', item.value)
-}
-
-const beforeDateStyle = type => {
-  return {
-    type: type
-  }
-}
-
-const datePattern = param => {
-  item.value.datePattern = param.type
-  emit('onQuotaItemChange', item.value)
-}
-
-const beforeDatePattern = type => {
-  return {
-    type: type
-  }
-}
-
 const showRename = () => {
   item.value.index = props.index
   item.value.renameType = props.type

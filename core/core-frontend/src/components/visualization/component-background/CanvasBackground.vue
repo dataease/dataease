@@ -108,26 +108,24 @@
 
 <script setup lang="ts">
 import { COLOR_PANEL } from '@/views/chart/components/editor/util/chart'
-import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
+import { onMounted, reactive, ref, watch } from 'vue'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { beforeUploadCheck, uploadFileResult } from '@/api/staticResource'
 import { useI18n } from '@/hooks/web/useI18n'
-import elementResizeDetectorMaker from 'element-resize-detector'
 import { ElButton, ElMessage } from 'element-plus-secondary'
 import ImgViewDialog from '@/custom-component/ImgViewDialog.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 const snapshotStore = snapshotStoreWithOut()
 const { t } = useI18n()
-const emits = defineEmits(['onBackgroundChange'])
 const files = ref(null)
 const maxImageSize = 15000000
 
 const dvMainStore = dvMainStoreWithOut()
 const { canvasStyleData } = storeToRefs(dvMainStore)
 
-const props = withDefaults(
+withDefaults(
   defineProps<{
     themes?: EditorTheme
   }>(),
@@ -175,7 +173,7 @@ const init = () => {
   }
 }
 
-const handleRemove = (file, fileList) => {
+const handleRemove = () => {
   state.uploadDisabled = false
   canvasStyleData.value.background = null
   state.fileList = []
@@ -197,7 +195,6 @@ const onBackgroundChange = () => {
 }
 
 const bgForm = ref()
-const containerWidth = ref()
 
 const computedBackgroundColorPickerWidth = 50
 

@@ -14,7 +14,7 @@ import {
 import Icon from '@/components/icon-custom/src/Icon.vue'
 import type { FormInstance, FormRules } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
-import { Field, getFieldByDQ, saveChart } from '@/api/chart'
+import { Field, getFieldByDQ } from '@/api/chart'
 import { Tree } from '../../../visualized/data/dataset/form/CreatDsGroup.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { ElMessage, ElTreeSelect } from 'element-plus-secondary'
@@ -88,7 +88,7 @@ const route = useRoute()
 const toolTip = computed(() => {
   return props.themes === 'dark' ? 'ndark' : 'dark'
 })
-const { view, datasetTree } = toRefs(props)
+const { view } = toRefs(props)
 
 let cacheId = ''
 
@@ -225,7 +225,7 @@ const getFields = (id, chartId) => {
         state.dimensionData = JSON.parse(JSON.stringify(state.dimension))
         state.quotaData = JSON.parse(JSON.stringify(state.quota))
       })
-      .catch(e => {
+      .catch(() => {
         state.dimension = []
         state.quota = []
         state.dimensionData = []
@@ -292,11 +292,7 @@ const fieldFilter = val => {
   }
 }
 
-const reset = () => {
-  // do reset
-}
-
-const dimensionItemChange = item => {
+const dimensionItemChange = () => {
   recordSnapshotInfo('calcData')
   // do dimensionItemChange
 }
@@ -311,7 +307,7 @@ const dimensionItemRemove = item => {
   }
 }
 
-const quotaItemChange = item => {
+const quotaItemChange = () => {
   recordSnapshotInfo('calcData')
   // do quotaItemChange
 }
@@ -333,7 +329,7 @@ const arrowIcon = () => {
   return h(Icon, { name: 'icon_down_outlined-1' })
 }
 
-const drillItemChange = item => {
+const drillItemChange = () => {
   recordSnapshotInfo('calcData')
   // temp do nothing
 }
@@ -384,7 +380,7 @@ const onExtCustomSort = item => {
   customSort()
 }
 
-const onMove = (e, originalEvent) => {
+const onMove = e => {
   recordSnapshotInfo('calcData')
   state.moveId = e.draggedContext.element.id
   return true
@@ -774,10 +770,6 @@ const saveRename = ref => {
   })
 }
 
-const save = () => {
-  saveChart(view.value)
-}
-
 const showQuotaEditFilter = item => {
   recordSnapshotInfo('calcData')
   state.quotaItem = JSON.parse(JSON.stringify(item))
@@ -962,7 +954,7 @@ const confirmEditCalc = () => {
   calcEdit.value.setFieldForm()
   const obj = cloneDeep(calcEdit.value.fieldForm)
   setFieldDefaultValue(obj)
-  saveField(obj).then(res => {
+  saveField(obj).then(() => {
     getFields(view.value.tableId, view.value.id)
     closeEditCalc()
   })
@@ -978,7 +970,7 @@ const chartFieldEdit = param => {
         param.item.extField === 2 ? param.item.originName : '[' + param.item.id + ']'
       state.currEditField.name = getFieldName(state.dimension.concat(state.quota), param.item.name)
 
-      saveField(state.currEditField).then(res => {
+      saveField(state.currEditField).then(() => {
         getFields(view.value.tableId, view.value.id)
       })
       break
@@ -986,7 +978,7 @@ const chartFieldEdit = param => {
       editField(param.item)
       break
     case 'delete':
-      deleteField(param.item?.id).then(res => {
+      deleteField(param.item?.id).then(() => {
         getFields(view.value.tableId, view.value.id)
       })
       break
@@ -1006,28 +998,6 @@ const setFieldDefaultValue = field => {
   field.lastSyncTime = null
   field.columnIndex = state.dimension.length + state.quota.length
   field.deExtractType = field.deType
-}
-
-const dynamicLabelShow = () => {
-  onLabelChange(view.value.customAttr.label)
-}
-
-const autoInsert = element => {
-  var myValue = '[' + element.id + ']'
-  const myField = document.querySelector('#dynamic-label')
-  if (myField.selectionStart || myField.selectionStart === 0) {
-    var startPos = myField.selectionStart //选区开始位置
-    var endPos = myField.selectionEnd //选区结束位置
-    view.value.customAttr.label.formatter =
-      myField.value.substring(0, startPos) +
-      myValue +
-      myField.value.substring(endPos, myField.value.length)
-    nextTick() //修改数据之后立即使用这个方法获取更新后的DOM。
-    myField.focus()
-    myField.setSelectionRange(endPos + myValue.length, endPos + myValue.length)
-  } else {
-    view.value.customAttr.label.formatter += myValue
-  }
 }
 
 const el = ref<HTMLElement | null>(null)

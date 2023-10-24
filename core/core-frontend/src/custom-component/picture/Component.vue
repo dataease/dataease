@@ -12,7 +12,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref, toRefs, watch } from 'vue'
+import { CSSProperties, computed, nextTick, toRefs } from 'vue'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import eventBus from '@/utils/eventBus'
 const props = defineProps({
@@ -31,7 +31,7 @@ const props = defineProps({
   }
 })
 
-const { propValue, element } = toRefs(props)
+const { propValue } = toRefs(props)
 
 const imageAdapter = computed(() => {
   const style = {
@@ -39,7 +39,7 @@ const imageAdapter = computed(() => {
     width: '100%',
     height: '100%'
   }
-  return style
+  return style as CSSProperties
 })
 
 const uploadImg = () => {

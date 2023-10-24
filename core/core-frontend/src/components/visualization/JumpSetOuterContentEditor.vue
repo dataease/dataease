@@ -8,11 +8,10 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, reactive, ref, toRefs } from 'vue'
+import { onBeforeUnmount, reactive, ref, toRefs } from 'vue'
 import CodeMirror from '@/views/visualized/data/dataset/form/CodeMirror.vue'
 const myCm = ref(null)
 const mirror = ref(null)
-const emits = defineEmits(['editorClose'])
 const props = defineProps({
   linkJumpInfoArray: Array,
   linkJumpInfo: Object

@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import eventBus from '@/utils/eventBus'
-import { $, deepCopy } from '@/utils/utils'
+import { deepCopy } from '@/utils/utils'
 import { nextTick, reactive, ref, computed } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
-import { lockStoreWithOut } from '@/store/modules/data-visualization/lock'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { storeToRefs } from 'pinia'
 import Icon from '../icon-custom/src/Icon.vue'
@@ -26,21 +24,13 @@ import { copyStoreWithOut } from '@/store/modules/data-visualization/copy'
 import TabsGroup from '@/custom-component/component-group/TabsGroup.vue'
 import DeResourceGroupOpt from '@/views/common/DeResourceGroupOpt.vue'
 const { t } = useI18n()
-const isShowPreview = ref(false)
-const isScreenshot = ref(false)
-let timer = null
 const dvMainStore = dvMainStoreWithOut()
-const composeStore = composeStoreWithOut()
-const lockStore = lockStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const copyStore = copyStoreWithOut()
 const { styleChangeTimes, snapshotIndex } = storeToRefs(snapshotStore)
 const {
   linkageSettingStatus,
   curLinkageView,
-  curComponent,
-  canvasStyleData,
-  curComponentIndex,
   componentData,
   dvInfo,
   canvasViewInfo,
@@ -49,10 +39,8 @@ const {
   targetLinkageInfo,
   curBatchOptComponents
 } = storeToRefs(dvMainStore)
-const { areaData } = storeToRefs(composeStore)
 const dvModel = 'dashboard'
 const multiplexingRef = ref(null)
-let scale = ref(canvasStyleData.value.scale)
 let nameEdit = ref(false)
 let inputName = ref('')
 let nameInput = ref(null)
@@ -84,24 +72,6 @@ const closeEditCanvasName = () => {
   }
   dvInfo.value.name = inputName.value
   inputName.value = ''
-}
-
-const lock = () => {
-  lockStore.lock()
-}
-
-const unlock = () => {
-  lockStore.unlock()
-}
-
-const compose = () => {
-  composeStore.compose()
-  snapshotStore.recordSnapshotCache('db-compose')
-}
-
-const decompose = () => {
-  composeStore.decompose()
-  snapshotStore.recordSnapshotCache('db-decompose')
 }
 
 const undo = () => {
@@ -185,11 +155,6 @@ const clearCanvas = () => {
   snapshotStore.recordSnapshotCache('renderChart')
 }
 
-const handlePreviewChange = () => {
-  isShowPreview.value = false
-  dvMainStore.setEditMode('edit')
-}
-
 const backToMain = () => {
   let url = '#/panel/index'
   if (dvInfo.value.id) {
@@ -267,17 +232,6 @@ const batchCopy = () => {
   saveBatchChange()
 }
 
-const cancelBatchOpt = () => {
-  dvMainStore.setComponentData(state.preBatchComponentData)
-  dvMainStore.setCanvasViewInfo(state.preBatchCanvasViewInfo)
-  Object.keys(canvasViewInfo.value).forEach(viewId => {
-    if (curBatchOptComponents.value.includes(viewId)) {
-      useEmitt().emitter.emit('renderChart-' + viewId, canvasViewInfo.value[viewId])
-    }
-  })
-  batchOptStatusChange(false)
-}
-
 const batchOptStatusChange = value => {
   if (value) {
     // 如果当前进入批量操作界面 提前保存镜像
@@ -328,7 +282,7 @@ const saveLinkageSetting = () => {
     sourceViewId: curLinkageView.value.id,
     linkageInfo: targetLinkageInfo.value
   }
-  saveLinkage(request).then(rsp => {
+  saveLinkage(request).then(() => {
     ElMessage.success('保存成功')
     // 刷新联动信息
     getPanelAllLinkageInfo(dvInfo.value.id).then(rsp => {

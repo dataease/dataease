@@ -88,7 +88,7 @@ function handleCommand(e: any) {
 }
 
 /* 活动标签切换时触发 */
-function beforeLeave(currentName: TabPanelName, oldName: TabPanelName) {
+function beforeLeave(currentName: TabPanelName) {
   // 如果name是add，则什么都不触发
   if (currentName === 'add') {
     return false

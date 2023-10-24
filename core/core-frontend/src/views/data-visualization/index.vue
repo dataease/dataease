@@ -25,7 +25,6 @@ import { changeComponentSizeWithScale } from '@/utils/changeComponentsSizeWithSc
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { check, compareStorage } from '@/utils/CrossPermission'
 import { useCache } from '@/hooks/web/useCache'
-import { center } from '@antv/g2plot/lib/plots/sankey/sankey'
 const { wsCache } = useCache()
 const eventCheck = e => {
   if (e.key === 'screen-weight' && !compareStorage(e.oldValue, e.newValue)) {
@@ -55,7 +54,7 @@ const state = reactive({
 })
 
 const contentStyle = computed(() => {
-  const { width, height, scale } = canvasStyleData.value
+  const { width, height } = canvasStyleData.value
   if (editMode.value === 'preview') {
     return {
       width: '100%',
@@ -142,12 +141,9 @@ listenGlobalKeyDown()
 
 const initScroll = () => {
   nextTick(() => {
-    const { width, height, scale } = canvasStyleData.value
+    const { width, height } = canvasStyleData.value
     const mainWidth = canvasCenterRef.value.clientWidth
     const mainHeight = canvasCenterRef.value.clientHeight
-    const slideWidth = leftSidebarRef.value.clientWidth
-    const content = canvasOut.value
-
     const scrollX = (1.5 * width - mainWidth) / 2
     const scrollY = (1.5 * height - mainHeight) / 2 + 20
     // 设置画布初始滚动条位置

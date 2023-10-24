@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, toRefs } from 'vue'
+import { toRefs } from 'vue'
 import Icon from '@/components/icon-custom/src/Icon.vue'
 
 const props = defineProps({

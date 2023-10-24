@@ -49,7 +49,6 @@ import CommonAttr from '@/custom-component/common/CommonAttr.vue'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 
-const emits = defineEmits(['calcStyle'])
 const { batchOptComponentInfo, batchOptComponentType, mixProperties, mixPropertiesInner } =
   storeToRefs(dvMainStore)
 const param = { id: 'mixId', optType: 'edit' }
@@ -58,10 +57,6 @@ const state = reactive({
   dimensionData: [],
   quotaData: []
 })
-
-const calcStyle = () => {
-  emits('calcStyle')
-}
 
 const onMiscChange = (val, prop) => {
   batchOptChange('customAttr', 'misc', val.data, prop)
@@ -81,9 +76,6 @@ const onChangeXAxisForm = (val, prop) => {
 const onChangeYAxisForm = (val, prop) => {
   batchOptChange('customStyle', 'yAxis', val, prop)
 }
-const onChangeYAxisExtForm = (val, prop) => {
-  batchOptChange('customStyle', 'yAxisExt', val, prop)
-}
 
 const onChangeMiscStyleForm = (val, prop) => {
   batchOptChange('customStyle', 'misc', val, prop)
@@ -93,12 +85,6 @@ const onTextChange = (val, prop) => {
 }
 const onLegendChange = (val, prop) => {
   batchOptChange('customStyle', 'legend', val, prop)
-}
-const onMarginChange = (val, prop) => {
-  batchOptChange('customStyle', 'margin', val, prop)
-}
-const onSuspensionChange = (val, prop) => {
-  batchOptChange('customAttr', 'suspension', val, prop)
 }
 
 const onBackgroundChange = val => {

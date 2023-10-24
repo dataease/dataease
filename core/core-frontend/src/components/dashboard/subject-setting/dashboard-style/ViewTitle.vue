@@ -74,10 +74,8 @@
 <script lang="ts" setup>
 import { reactive } from 'vue'
 import { COLOR_PANEL } from '@/views/chart/components/editor/util/chart'
-import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { useI18n } from '@/hooks/web/useI18n'
 const { t } = useI18n()
-const dvMainStore = dvMainStoreWithOut()
 const emits = defineEmits(['onTextChange'])
 
 const state = reactive({
@@ -87,20 +85,6 @@ const state = reactive({
   predefineColors: COLOR_PANEL
 })
 
-const initForm = () => {
-  state.titleForm = dvMainStore.canvasStyleData.component.chartTitle
-}
-
-const init = () => {
-  const arr = []
-  for (let i = 10; i <= 60; i = i + 2) {
-    arr.push({
-      name: i + '',
-      value: i + ''
-    })
-  }
-  state.fontSize = arr
-}
 const changeTitleStyle = modifyName => {
   state.titleForm['modifyName'] = modifyName
   emits('onTextChange', state.titleForm)

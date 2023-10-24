@@ -200,7 +200,7 @@ import {
 import { reactive, toRefs, computed, onMounted, ref } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
-import { ElButton, ElMessage } from 'element-plus-secondary'
+import { ElMessage } from 'element-plus-secondary'
 import { deepCopy } from '@/utils/utils'
 const dvMainStore = dvMainStoreWithOut()
 const { canvasStyleData } = storeToRefs(dvMainStore)
@@ -220,7 +220,7 @@ const props = defineProps({
   }
 })
 
-const { initialSpeed, initialInterval } = toRefs(props)
+const { initialSpeed } = toRefs(props)
 
 const state = reactive({
   temp: null,
@@ -245,10 +245,6 @@ const slideWindowHeight = computed(() => {
   return { height: state.sliders[0]?.length < 3 ? '140px' : '250px' }
 })
 
-const interval = computed(() => {
-  return initialInterval.value * 1000
-})
-
 const querySubjectWithGroup = () => {
   state.slidersLoading = true
   querySubjectWithGroupApi({})
@@ -267,7 +263,7 @@ const querySubjectWithGroup = () => {
 }
 
 const subjectDelete = id => {
-  deleteSubject(id).then(response => {
+  deleteSubject(id).then(() => {
     ElMessage.success('删除成功')
     querySubjectWithGroup()
   })
@@ -276,7 +272,7 @@ const subjectDelete = id => {
 const subjectEditFinish = subjectItem => {
   state.slidersLoading = true
   saveOrUpdateSubject(subjectItem)
-    .then(response => {
+    .then(() => {
       subjectEditDialogRef.value.resetForm()
       ElMessage.success('保存成功')
       querySubjectWithGroup()

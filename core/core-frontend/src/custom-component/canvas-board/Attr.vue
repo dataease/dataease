@@ -4,7 +4,7 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 const dvMainStore = dvMainStoreWithOut()
 const { curComponent } = storeToRefs(dvMainStore)
-const props = withDefaults(
+withDefaults(
   defineProps<{
     themes?: EditorTheme
   }>(),

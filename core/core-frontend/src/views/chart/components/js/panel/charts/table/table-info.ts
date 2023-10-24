@@ -1,4 +1,4 @@
-import { ColCell, DataCell, S2Event, S2Options, TableSheet } from '@antv/s2/esm/index'
+import { DataCell, S2Event, S2Options, TableSheet } from '@antv/s2/esm/index'
 import { formatterItem, valueFormatter } from '../../../formatter'
 import { parseJson } from '../../../util'
 import { S2ChartView, S2DrawOptions } from '../../types/impl/s2'

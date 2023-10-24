@@ -2,7 +2,7 @@
 import { toRefs } from 'vue'
 import { propTypes } from '@/utils/propTypes'
 import Icon from '../icon-custom/src/Icon.vue'
-import { ElCol, ElIcon } from 'element-plus-secondary'
+import { ElCol } from 'element-plus-secondary'
 
 const props = defineProps({
   title: propTypes.string,

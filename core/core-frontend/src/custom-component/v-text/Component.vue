@@ -9,7 +9,6 @@ import { storeToRefs } from 'pinia'
 const canEdit = ref(false)
 const ctrlKey = ref(17)
 const isCtrlDown = ref(false)
-const cancelRequest = ref(null)
 
 const emit = defineEmits(['input'])
 const text = ref(null)
@@ -31,7 +30,7 @@ const props = defineProps({
   }
 })
 
-const { propValue, element } = toRefs(props)
+const { element } = toRefs(props)
 const dvMainStore = dvMainStoreWithOut()
 const { editMode, curComponent } = storeToRefs(dvMainStore)
 
@@ -80,7 +79,7 @@ const clearStyle = e => {
     document.execCommand('insertText', false, text)
   }
 
-  emit('input', this.element, e.target.innerHTML)
+  emit('input', element.value, e.target.innerHTML)
 }
 
 const handleBlur = e => {

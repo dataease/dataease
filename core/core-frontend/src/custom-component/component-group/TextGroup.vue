@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, toRefs } from 'vue'
+import { toRefs } from 'vue'
 import eventBus from '@/utils/eventBus'
 import DragComponent from '@/custom-component/component-group/DragComponent.vue'
 import { commonHandleDragEnd, commonHandleDragStart } from '@/utils/canvasUtils'
@@ -27,8 +27,7 @@ const props = defineProps({
   }
 })
 
-const { propValue, element, dvModel, themes } = toRefs(props)
-const currentPane = ref('common')
+const { dvModel, themes } = toRefs(props)
 
 const handleDragStart = e => {
   commonHandleDragStart(e, dvModel.value)
@@ -38,7 +37,7 @@ const handleDragEnd = e => {
   commonHandleDragEnd(e, dvModel.value)
 }
 
-const newComponent = componentName => {
+const newComponent = () => {
   eventBus.emit('handleNew', { componentName: 'UserView', innerType: 'rich-text' })
 }
 </script>
@@ -48,7 +47,7 @@ const newComponent = componentName => {
     class="group"
     @dragstart="handleDragStart"
     @dragend="handleDragEnd"
-    v-on:click="newComponent('VText')"
+    v-on:click="newComponent"
   >
     <drag-component
       :themes="themes"

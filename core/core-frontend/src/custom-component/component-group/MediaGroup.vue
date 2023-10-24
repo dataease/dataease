@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, toRefs } from 'vue'
+import { toRefs } from 'vue'
 import eventBus from '@/utils/eventBus'
 import DragComponent from '@/custom-component/component-group/DragComponent.vue'
 import { commonHandleDragEnd, commonHandleDragStart } from '@/utils/canvasUtils'
@@ -27,9 +27,8 @@ const props = defineProps({
   }
 })
 
-const { propValue, element, dvModel } = toRefs(props)
-const currentPane = ref('common')
-const newComponent = innerType => {
+const { dvModel } = toRefs(props)
+const newComponent = () => {
   eventBus.emit('handleNew', { componentName: 'Picture', innerType: 'Picture' })
 }
 
@@ -47,7 +46,7 @@ const handleDragEnd = e => {
     class="group"
     @dragstart="handleDragStart"
     @dragend="handleDragEnd"
-    v-on:click="newComponent('Picture')"
+    v-on:click="newComponent"
   >
     <drag-component
       :themes="themes"

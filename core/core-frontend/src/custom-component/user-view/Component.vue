@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, toRefs, watch } from 'vue'
+import { CSSProperties, computed, toRefs, PropType } from 'vue'
 import Chart from '@/views/chart/components/views/index.vue'
 
 const props = defineProps({
@@ -21,7 +21,7 @@ const props = defineProps({
     }
   },
   view: {
-    type: Object,
+    type: Object as PropType<ChartObj>,
     default() {
       return {
         propValue: null
@@ -56,7 +56,7 @@ const props = defineProps({
   }
 })
 
-const { propValue, element, view, active, searchCount, scale, dvType } = toRefs(props)
+const { element, view, active, searchCount, scale } = toRefs(props)
 const autoStyle = computed(() => {
   if (element.value.innerType === 'richText') {
     const curScale = scale.value / 100
@@ -67,7 +67,7 @@ const autoStyle = computed(() => {
       left: 50 * (1 - 1 / curScale) + '%', // 放大余量 除以 2
       top: 50 * (1 - 1 / curScale) + '%', // 放大余量 除以 2
       transform: 'scale(' + curScale + ')'
-    }
+    } as CSSProperties
   } else {
     return {}
   }

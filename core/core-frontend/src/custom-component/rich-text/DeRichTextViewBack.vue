@@ -1,5 +1,9 @@
 <template>
-  <div class="rich-main-class dark-theme" :class="{ 'edit-model': canEdit,'dark-theme':themes==='dark' }" @dblclick="setEdit">
+  <div
+    class="rich-main-class dark-theme"
+    :class="{ 'edit-model': canEdit, 'dark-theme': themes === 'dark' }"
+    @dblclick="setEdit"
+  >
     <Editor
       v-if="editShow"
       :id="tinymceId"
@@ -65,7 +69,7 @@ const props = defineProps({
   }
 })
 
-const { terminal, propValue, element, editMode, active, disabled } = toRefs(props)
+const { element, editMode, active } = toRefs(props)
 const emits = defineEmits(['onClick'])
 
 const editShow = ref(true)

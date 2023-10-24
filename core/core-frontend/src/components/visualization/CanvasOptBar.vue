@@ -10,9 +10,7 @@
 <script lang="ts" setup>
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { computed } from 'vue'
-import { useI18n } from '@/hooks/web/useI18n'
 import { isMainCanvas } from '@/utils/canvasUtils'
-const { t } = useI18n()
 
 const dvMainStore = dvMainStoreWithOut()
 

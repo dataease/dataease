@@ -6,7 +6,6 @@ import { styleData, selectKey, optionMap, horizontalPosition } from '@/utils/att
 import ComponentPosition from '@/components/visualization/common/ComponentPosition.vue'
 import BackgroundOverallCommon from '@/components/visualization/component-background/BackgroundOverallCommon.vue'
 import { useI18n } from '@/hooks/web/useI18n'
-import _ from 'lodash'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 const snapshotStore = snapshotStoreWithOut()
@@ -43,18 +42,6 @@ const styleKeys = computed(() => {
   } else {
     return []
   }
-})
-
-const styleKeysGroup = computed(() => {
-  const _list = []
-  _.forEach(styleKeys.value, (x, i) => {
-    const index = i % 2
-    if (_list[index] === undefined) {
-      _list[index] = []
-    }
-    _list[index].push(x)
-  })
-  return _list
 })
 
 const onChange = () => {
@@ -99,14 +86,6 @@ const colorPickerWidth = computed(() => {
   }
 })
 
-const onStyleChange = computed(() => {
-  if (containerWidth.value <= 240) {
-    return 108
-  } else {
-    return 197
-  }
-})
-
 const backgroundCustomShow = computed(() => {
   return (
     dashboardActive.value ||
@@ -117,7 +96,7 @@ const backgroundCustomShow = computed(() => {
 onMounted(() => {
   const erd = elementResizeDetectorMaker()
   containerWidth.value = containerRef.value?.offsetWidth
-  erd.listenTo(containerRef.value, element => {
+  erd.listenTo(containerRef.value, () => {
     nextTick(() => {
       containerWidth.value = containerRef.value?.offsetWidth
     })

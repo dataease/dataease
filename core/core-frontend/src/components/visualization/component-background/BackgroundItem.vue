@@ -24,7 +24,6 @@
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { hexColorToRGBA } from '@/views/chart/components/js/util'
 import { storeToRefs } from 'pinia'
-import { imgUrlTrans } from '@/utils/imgUtils'
 import { computed, toRefs } from 'vue'
 const dvMainStore = dvMainStoreWithOut()
 const { curComponent } = storeToRefs(dvMainStore)
@@ -69,17 +68,6 @@ const itemActive = computed(() => {
 const setBoard = () => {
   curComponent.value.commonBackground.innerImage = template.value.url
 }
-
-const classBackground = computed(() => {
-  if (template.value.url) {
-    return {
-      background: `url(${imgUrlTrans(template.value.url)}) no-repeat`,
-      'background-size': `100% 100%`
-    }
-  } else {
-    return {}
-  }
-})
 </script>
 
 <style scoped>

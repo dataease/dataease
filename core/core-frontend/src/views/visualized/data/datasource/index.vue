@@ -405,21 +405,6 @@ const dfsDatasourceTree = (ds, id) => {
   })
 }
 
-const convertConfig = array => {
-  for (let index = 0; index < array.length; index++) {
-    if (array[index].leaf) {
-      if (array[index].configuration) {
-        array[index].configuration = JSON.parse(Base64.decode(array[index].configuration))
-      }
-      if (array[index].apiConfigurationStr) {
-        array[index].apiConfiguration = JSON.parse(Base64.decode(array[index].apiConfigurationStr))
-      }
-    } else if (array[index].children && array[index].children.length > 0) {
-      convertConfig(array[index].children)
-    }
-  }
-}
-
 listDs()
 
 const creatDsFolder = ref()
@@ -519,7 +504,7 @@ const updateApiTable = api => {
 }
 
 const updateApiDs = () => {
-  syncApiDs({ datasourceId: nodeInfo.id }).then(res => {
+  syncApiDs({ datasourceId: nodeInfo.id }).then(() => {
     ElMessage.success(t('datasource.req_completed'))
   })
 }

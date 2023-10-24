@@ -19,7 +19,7 @@ const emit = defineEmits(['update:modelValue', 'modelChange'])
 const { changeModel, title, themes } = toRefs(props)
 
 const collapseItem = ref()
-const onSwitchChange = e => {
+const onSwitchChange = () => {
   emit('modelChange', changeModel.value)
   if (!props.modelValue && !collapseItem.value.isActive) {
     collapseItem.value.handleHeaderClick()

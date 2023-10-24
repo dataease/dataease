@@ -399,7 +399,6 @@ import { ElMessage, ElScrollbar } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { getDatasetDetails, listFieldByDatasetGroup } from '@/api/dataset'
 import { BusiTreeRequest } from '@/models/tree/TreeNode'
-import { CalcFieldType } from '@/views/visualized/data/dataset/form/CalcFieldEdit.vue'
 import JumpSetOuterContentEditor from '@/components/visualization/JumpSetOuterContentEditor.vue'
 import { Search } from '@element-plus/icons-vue'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
@@ -425,7 +424,6 @@ const state = reactive({
   name2Auto: [],
   searchField: '',
   searchFunction: '',
-  loading: false,
   inputType: 'self',
   fieldName: 'name',
   tableRadio: null,
@@ -475,7 +473,6 @@ const state = reactive({
   quota: []
 })
 
-const emits = defineEmits(['closeJumpSetDialog'])
 const outerContentEditor = ref(null)
 
 const dialogInit = viewItem => {
@@ -602,7 +599,7 @@ const save = () => {
   }
   state.loading = true
   updateJumpSet(state.linkJump)
-    .then(rsp => {
+    .then(() => {
       snapshotStore.recordSnapshotCache()
       ElMessage.success('保存成功')
       // 刷新跳转信息
@@ -616,7 +613,7 @@ const save = () => {
       state.loading = false
     })
 }
-const nodeClick = (data, node?) => {
+const nodeClick = data => {
   state.linkJumpInfo = state.mapJumpInfoArray[data.sourceFieldId]
   if (!state.linkJumpInfo.linkType) {
     state.linkJumpInfo.linkType = 'outer'
@@ -654,18 +651,11 @@ const getPanelViewList = dvId => {
     }
   })
 }
-const dvNodeClick = (data, node) => {
+const dvNodeClick = data => {
   if (data.leaf) {
     state.linkJumpInfo.targetViewInfoList = []
     addLinkJumpField()
     getPanelViewList(data.id)
-  }
-}
-const inputVal = value => {
-  if (!value) {
-    state.linkJumpInfo.targetViewInfoList = []
-    state.viewIdFieldArrayMap = {}
-    state.currentLinkPanelViewArray = []
   }
 }
 const addLinkJumpField = () => {
@@ -676,12 +666,6 @@ const addLinkJumpField = () => {
 }
 const deleteLinkJumpField = index => {
   state.linkJumpInfo.targetViewInfoList.splice(index, 1)
-}
-const normalizer = node => {
-  // 去掉children=null的属性
-  if (node.children === null || node.children === 'null') {
-    delete node.children
-  }
 }
 const viewInfoOnChange = targetViewInfo => {
   targetViewInfo.targetFieldId = null
@@ -697,19 +681,6 @@ const cancel = () => {
   state.initState = false
 }
 
-const defaultForm = {
-  originName: '', // 物理字段名
-  name: '', // 字段显示名
-  groupType: 'd', // d=维度，q=指标
-  type: 'VARCHAR',
-  deType: 0, // 字段类型
-  extField: 2,
-  id: '',
-  checked: true
-}
-
-const fieldForm = reactive<CalcFieldType>({ ...(defaultForm as CalcFieldType) })
-
 const insertFieldToCodeMirror = (value: string) => {
   outerContentEditor.value.insertFieldToCodeMirror(value)
 }
@@ -724,14 +695,14 @@ const filterNodeMethod = (value, data) => {
 
 watch(
   () => state.showSelected,
-  (newValue, oldValue) => {
+  newValue => {
     linkJumpInfoTree.value?.filter(newValue)
   }
 )
 
 watch(
   () => outerContentShow.value,
-  (newValue, oldValue) => {
+  newValue => {
     if (newValue) {
       codeMirrorContentSet(state.linkJumpInfo.content)
     }

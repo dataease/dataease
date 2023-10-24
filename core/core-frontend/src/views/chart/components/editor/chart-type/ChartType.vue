@@ -29,8 +29,7 @@ const props = defineProps({
 
 const emit = defineEmits(['onTypeChange'])
 
-const { propValue, element, themes } = toRefs(props)
-const currentPane = ref('common')
+const { themes } = toRefs(props)
 
 const userViewGroup = ref<InstanceType<typeof ElScrollbar>>()
 
@@ -40,7 +39,7 @@ const state = reactive({
 })
 
 const scrollTo = offsetTop => {
-  userViewGroup?.value!.setScrollTop(offsetTop)
+  userViewGroup?.value.setScrollTop(offsetTop)
 }
 
 const anchorPosition = anchor => {

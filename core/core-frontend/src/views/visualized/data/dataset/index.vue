@@ -67,15 +67,6 @@ const createPanel = path => {
   window.open(baseUrl, '_blank')
 }
 
-const addOperation = (
-  cmd: string,
-  data?: BusiTreeNode,
-  nodeType?: string,
-  parentSelect?: boolean
-) => {
-  resourceGroupOpt.value.optInit(nodeType, data || {}, cmd, parentSelect)
-}
-
 const resourceOptFinish = param => {
   if (param && param.opt === 'newLeaf') {
     resourceCreate(param.pid, param.name)

@@ -1,11 +1,8 @@
 <script setup lang="ts">
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import eventBus from '@/utils/eventBus'
-import { $ } from '@/utils/utils'
 import { ref, nextTick } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
-import { lockStoreWithOut } from '@/store/modules/data-visualization/lock'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { storeToRefs } from 'pinia'
 import Icon from '../icon-custom/src/Icon.vue'
@@ -17,27 +14,15 @@ import CommonGroup from '@/custom-component/component-group/CommonGroup.vue'
 import DeResourceGroupOpt from '@/views/common/DeResourceGroupOpt.vue'
 import { canvasSave } from '@/utils/canvasUtils'
 import { changeSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
-let timer = null
 let nameEdit = ref(false)
 let inputName = ref('')
 let nameInput = ref(null)
 const dvMainStore = dvMainStoreWithOut()
-const composeStore = composeStoreWithOut()
-const lockStore = lockStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const { styleChangeTimes, snapshotIndex } = storeToRefs(snapshotStore)
 const resourceGroupOpt = ref(null)
 const dvToolbarMain = ref(null)
-const {
-  curComponent,
-  canvasStyleData,
-  curComponentIndex,
-  componentData,
-  dvInfo,
-  canvasViewInfo,
-  editMode
-} = storeToRefs(dvMainStore)
-const { areaData } = storeToRefs(composeStore)
+const { canvasStyleData, dvInfo, editMode } = storeToRefs(dvMainStore)
 let scaleEdit = 100
 
 const closeEditCanvasName = () => {
@@ -55,24 +40,6 @@ const closeEditCanvasName = () => {
   }
   dvInfo.value.name = inputName.value
   inputName.value = ''
-}
-
-const lock = () => {
-  lockStore.lock()
-}
-
-const unlock = () => {
-  lockStore.unlock()
-}
-
-const compose = () => {
-  composeStore.compose()
-  snapshotStore.recordSnapshotCache('dv-compose')
-}
-
-const decompose = () => {
-  composeStore.decompose()
-  snapshotStore.recordSnapshotCache('dv-decompose')
 }
 
 const undo = () => {

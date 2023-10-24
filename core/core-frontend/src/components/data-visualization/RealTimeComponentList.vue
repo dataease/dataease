@@ -3,15 +3,14 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { layerStoreWithOut } from '@/store/modules/data-visualization/layer'
 import { storeToRefs } from 'pinia'
-import { ElCol, ElIcon, ElRow } from 'element-plus-secondary'
+import { ElIcon, ElRow } from 'element-plus-secondary'
 import Icon from '../icon-custom/src/Icon.vue'
-import { computed, nextTick, ref } from 'vue'
+import { nextTick, ref } from 'vue'
 import draggable from 'vuedraggable'
 import { lockStoreWithOut } from '@/store/modules/data-visualization/lock'
 import ContextMenuAsideDetails from '@/components/data-visualization/canvas/ContextMenuAsideDetails.vue'
 import ComposeShow from '@/components/data-visualization/canvas/ComposeShow.vue'
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
-import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
 const dropdownMore = ref(null)
 const lockStore = lockStoreWithOut()
 
@@ -19,11 +18,10 @@ const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const layerStore = layerStoreWithOut()
 const composeStore = composeStoreWithOut()
-const contextmenuStore = contextmenuStoreWithOut()
 
 const { areaData, isCtrlOrCmdDown, isShiftDown, laterIndex } = storeToRefs(composeStore)
 
-const { componentData, curComponent, curComponentIndex, canvasViewInfo } = storeToRefs(dvMainStore)
+const { componentData, curComponent, canvasViewInfo } = storeToRefs(dvMainStore)
 const getComponent = index => {
   return componentData.value[componentData.value.length - 1 - index]
 }
@@ -87,24 +85,6 @@ const onClick = (e, index) => {
   setCurComponent(index)
   composeStore.setLaterIndex(index)
 }
-const deleteComponent = (number: number) => {
-  setTimeout(() => {
-    dvMainStore.deleteComponentById(curComponent.value.id)
-    snapshotStore.recordSnapshotCache('renderChart')
-  })
-}
-const upComponent = (number: number) => {
-  setTimeout(() => {
-    layerStore.upComponent()
-    snapshotStore.recordSnapshotCache()
-  })
-}
-const downComponent = (number: number) => {
-  setTimeout(() => {
-    layerStore.downComponent()
-    snapshotStore.recordSnapshotCache('realTime-downComponent')
-  })
-}
 const setCurComponent = index => {
   dvMainStore.setCurComponent({ component: componentData.value[index], index })
 }
@@ -131,10 +111,6 @@ const closeEditComponentName = () => {
   }
   curComponent.value.name = inputName.value
   inputName.value = ''
-}
-
-const toggleComponentVisible = () => {
-  // do toggleComponentVisible
 }
 
 const lock = () => {
@@ -197,9 +173,6 @@ const menuAsideClose = (param, index) => {
       editComponentName(getComponent(index))
     }, 200)
   }
-}
-const rename = item => {
-  editComponentName(item)
 }
 
 const handleContextMenu = e => {
@@ -293,7 +266,7 @@ const handleContextMenu = e => {
                   trigger="click"
                   placement="bottom-start"
                   effect="dark"
-                  hide-timeout="0"
+                  :hide-timeout="0"
                 >
                   <span :class="'dropdownMore-' + index" @click="onClick(transformIndex(index))">
                     <el-icon class="component-base">
@@ -313,7 +286,7 @@ const handleContextMenu = e => {
                 trigger="contextmenu"
                 placement="bottom-start"
                 effect="dark"
-                hide-timeout="0"
+                :hide-timeout="0"
               >
                 <compose-show
                   :show-border="false"

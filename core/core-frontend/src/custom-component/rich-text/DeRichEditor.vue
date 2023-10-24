@@ -77,7 +77,7 @@ const init = reactive({
   file_picker_types: 'file',
   content_css: '/tinymce-dataease-private/skins/content/default/content.css', //以css文件方式自定义可编辑区域的css样式，css文件需自己创建并引入
   //图片上传
-  images_upload_handler: (blobInfo, progress) =>
+  images_upload_handler: blobInfo =>
     new Promise((resolve, reject) => {
       if (blobInfo.blob().size / 1024 / 1024 > 2) {
         reject({ message: '上传失败，图片大小请控制在 2M 以内', remove: true })

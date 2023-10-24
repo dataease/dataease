@@ -1,7 +1,7 @@
 import { defineStore, storeToRefs } from 'pinia'
 import { store } from '../../index'
 import { dvMainStoreWithOut } from './dvMain'
-import { $, _$, deepCopy } from '@/utils/utils'
+import { $, deepCopy } from '@/utils/utils'
 import decomposeComponent from '@/utils/decomposeComponent'
 import { generateID } from '@/utils/generateID'
 import {

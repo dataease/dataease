@@ -5,7 +5,6 @@ import {
   getStyle,
   getComponentRotatedStyle,
   getShapeItemStyle,
-  getSVGStyle,
   getCanvasStyle,
   syncShapeItemStyle
 } from '@/utils/style'
@@ -16,7 +15,7 @@ import MarkLine from './MarkLine.vue'
 import Area from './Area.vue'
 import eventBus from '@/utils/eventBus'
 import { changeStyleWithScale } from '@/utils/translate'
-import { ref, onMounted, toRef, computed, toRefs, nextTick, onBeforeUnmount } from 'vue'
+import { ref, onMounted, computed, toRefs, nextTick, onBeforeUnmount } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
@@ -155,7 +154,6 @@ const {
   resizing,
   resizeEnd,
   isEdit,
-  dvModel,
   canvasId,
   canvasStyleData,
   componentData,
@@ -190,9 +188,6 @@ const curComponentId = computed(() => {
   return curComponent.value?.id || ''
 })
 
-const showComponentData = computed(() => {
-  return componentData.value.filter(component => component.isShow)
-})
 const { emitter } = useEmitt()
 
 const curScale = computed(() => {
@@ -229,7 +224,6 @@ const dashboardActive = computed(() => {
 // 融合矩阵设计
 const renderOk = ref(false)
 const moveAnimate = ref(false)
-const list = ref([])
 const cellWidth = ref(0)
 const cellHeight = ref(0)
 const maxCell = ref(0)
@@ -244,7 +238,6 @@ let moveTime = 200 //移动动画时间
 
 let itemMaxY = 0
 let itemMaxX = 0
-let currentInstance
 let snapshotTimer = ref(null)
 
 // 根据需要需要扩充外部scroll区域也可以进行组合的功能 此方法变更为外部组件调用
@@ -431,9 +424,6 @@ const getComponentStyle = style => {
   return getStyle(style, svgFilterAttrs)
 }
 
-const getSVGStyleInner = style => {
-  return getSVGStyle(style, svgFilterAttrs)
-}
 const getShapeItemShowStyle = item => {
   return getShapeItemStyle(item, {
     dvModel: dvInfo.value.type,
@@ -750,81 +740,6 @@ function addItem(item, index) {
   }
 }
 
-function changeToCoordinate(left, top, width, height) {
-  return {
-    x1: left,
-    x2: left + width,
-    y1: top,
-    y2: top + height,
-    c1: left + width / 2,
-    c2: top + height / 2
-  }
-}
-
-/**
- * 检测有无碰撞，并作出处理
- */
-function findClosetCoords(item, tCoordinate) {
-  if (isOverlay) return
-  let i = coordinates.value.length
-  let collisionsItem = []
-  while (i--) {
-    let nowCoordinate = coordinates.value[i]
-    if (item._dragId == nowCoordinate.el._dragId) {
-      continue
-    }
-    if (
-      tCoordinate.x2 < nowCoordinate.x1 ||
-      tCoordinate.x1 > nowCoordinate.x2 ||
-      tCoordinate.y2 < nowCoordinate.y1 ||
-      tCoordinate.y1 > nowCoordinate.y2
-    ) {
-      continue
-    } else {
-      collisionsItem.push({
-        centerDistance: Math.sqrt(
-          Math.pow(tCoordinate.c1 - nowCoordinate.c1, 2) +
-            Math.pow(tCoordinate.c2 - nowCoordinate.c2, 2)
-        ),
-        coordinate: nowCoordinate
-      })
-    }
-  }
-  if (collisionsItem.length <= 0) {
-    return
-  }
-  isOverlay = true
-  collisionsItem = _.sortBy(collisionsItem, 'area')
-  movePlayer(item, {
-    x: collisionsItem[0].coordinate.el.x,
-    y: collisionsItem[0].coordinate.el.y
-  })
-  setTimeout(function () {
-    isOverlay = false
-  }, 200)
-}
-
-/**
- * 生成坐标点
- *
- * @param {any} item
- */
-function makeCoordinate(item) {
-  let width = cellWidth.value * item.sizeX - baseMarginLeft.value
-  let height = cellHeight.value * item.sizeY - baseMarginTop.value
-  let left = cellWidth.value * (item.x - 1) + baseMarginLeft.value
-  let top = cellHeight.value * (item.y - 1) + baseMarginTop.value
-  let coordinate = {
-    x1: left,
-    x2: left + width,
-    y1: top,
-    y2: top + height,
-    c1: left + width / 2,
-    c2: top + height / 2,
-    el: item
-  }
-  coordinates.value.push(coordinate)
-}
 function changeItemCoordinate(item) {
   let width = cellWidth.value * item.sizeX - baseMarginLeft.value
   let height = cellHeight.value * item.sizeY - baseMarginTop.value
@@ -854,7 +769,7 @@ function changeItemCoordinate(item) {
  */
 function emptyTargetCell(item) {
   let belowItems = findBelowItems(item)
-  _.forEach(belowItems, function (downItem, index) {
+  _.forEach(belowItems, function (downItem) {
     if (downItem['_dragId'] == item['_dragId']) return
     let moveSize = item.y + item.sizeY - downItem['y']
     if (moveSize > 0) {
@@ -885,7 +800,7 @@ function canItemGoUp(item) {
 function moveItemDown(item, size) {
   removeItemFromPositionBox(item)
   let belowItems = findBelowItems(item)
-  _.forEach(belowItems, function (downItem, index) {
+  _.forEach(belowItems, function (downItem) {
     if (downItem['_dragId'] == item['_dragId']) return
     let moveSize = calcDiff(item, downItem, size)
     if (moveSize > 0) {
@@ -940,7 +855,7 @@ function moveItemUp(item, size) {
   })
   addItemToPositionBox(item)
   changeItemCoordinate(item)
-  _.forEach(belowItems, function (upItem, index) {
+  _.forEach(belowItems, function (upItem) {
     let moveSize = canItemGoUp(upItem)
     if (moveSize > 0) {
       moveItemUp(upItem, moveSize)
@@ -961,195 +876,10 @@ function findBelowItems(item) {
   return _.sortBy(_.values(belowItems), 'y')
 }
 
-const startResize = (e, item, index) => {
-  if (!resizable.value) return
-  resizeStart.value(e, item, index)
-  if (!infoBox.value) {
-    infoBox.value = {}
-  }
-  infoBox.value.resizeItem = item
-  infoBox.value.resizeItemIndex = index
-}
-
-const containerMouseDown = e => {
-  // e.preventDefault();
-  if (!infoBox.value) {
-    infoBox.value = {}
-  }
-
-  infoBox.value.startX = e.pageX
-  infoBox.value.startY = e.pageY
-}
-
-const endItemMove = (e, item, index) => {
+const endItemMove = (_, item, index) => {
   dvMainStore.setCurComponent({ component: item, index: index })
   dvMainStore.setClickComponentStatus(true)
   dvMainStore.setInEditorStatus(true)
-}
-
-const startMove = (e, item, index) => {
-  // e.preventDefault();
-  if (!infoBox.value) {
-    infoBox.value = {}
-  }
-  let infoBoxTemp = infoBox.value
-  let target = $(e.target)
-
-  let className = target.attr('class')
-  className = className || ''
-  if (
-    className.indexOf('dragHandle') == -1 &&
-    className.indexOf('item') == -1 &&
-    className.indexOf('resizeHandle') == -1
-  ) {
-    return
-  }
-
-  if (className.includes('resizeHandle')) {
-  } else if (draggable.value && (className.includes('dragHandle') || className.includes('item'))) {
-    dragStart.value(e, item, index)
-    infoBoxTemp.moveItem = item
-    infoBoxTemp.moveItemIndex = index
-  }
-
-  infoBoxTemp.cloneItem = null
-  infoBoxTemp.nowItemNode = null
-
-  if (target.attr('class') && target.attr('class').indexOf('item') != -1) {
-    infoBoxTemp.nowItemNode = target
-    infoBoxTemp.cloneItem = target.clone()
-  } else {
-    infoBoxTemp.nowItemNode = target.parents('.item')
-    infoBoxTemp.cloneItem = infoBoxTemp.nowItemNode.clone()
-  }
-  infoBoxTemp.cloneItem.addClass('cloneNode')
-
-  //problem
-  $(container.value).append(infoBoxTemp.cloneItem)
-
-  infoBoxTemp.originX = infoBoxTemp.cloneItem.position().left //克隆对象原始X位置
-  infoBoxTemp.originY = infoBoxTemp.cloneItem.position().top
-  infoBoxTemp.oldX = item.x //实际对象原始X位置
-  infoBoxTemp.oldY = item.y
-  infoBoxTemp.oldSizeX = item.sizeX
-  infoBoxTemp.oldSizeY = item.sizeY
-  infoBoxTemp.originWidth = infoBoxTemp.cloneItem.prop('offsetWidth')
-  infoBoxTemp.originHeight = infoBoxTemp.cloneItem.prop('offsetHeight')
-
-  function itemMouseMove(e) {
-    let moveItem = _.get(infoBoxTemp, 'moveItem')
-    let resizeItem = _.get(infoBoxTemp, 'resizeItem')
-
-    if (resizeItem) {
-      //调整大小时
-      resizing.value(e, resizeItem, resizeItem._dragId)
-      resizeItem['isPlayer'] = true
-      let nowItemIndex = infoBoxTemp.resizeItemIndex
-      let cloneItem = infoBoxTemp.cloneItem
-      let startX = infoBoxTemp.startX
-      let startY = infoBoxTemp.startY
-      let oldSizeX = infoBoxTemp.oldSizeX
-      let oldSizeY = infoBoxTemp.oldSizeY
-      let originWidth = infoBoxTemp.originWidth
-      let originHeight = infoBoxTemp.originHeight
-
-      let moveXSize = e.pageX - startX //X方向移动的距离
-      let moveYSize = e.pageY - startY //Y方向移动的距离
-      let addSizeX =
-        moveXSize % cellWidth.value > (cellWidth.value / 4) * 1
-          ? Math.floor(moveXSize / cellWidth.value + 1)
-          : Math.floor(moveXSize / cellWidth.value)
-      let addSizeY =
-        moveYSize % cellHeight.value > (cellHeight.value / 4) * 1
-          ? Math.floor(moveYSize / cellHeight.value + 1)
-          : Math.floor(moveYSize / cellHeight.value)
-
-      let nowX = oldSizeX + addSizeX > 0 ? oldSizeX + addSizeX : 1
-      let nowY = oldSizeY + addSizeY > 0 ? oldSizeY + addSizeY : 1
-
-      debounce(
-        (function (addSizeX, addSizeY) {
-          return function () {
-            resizePlayer(resizeItem, {
-              sizeX: nowX,
-              sizeY: nowY
-            })
-          }
-        })(addSizeX, addSizeY),
-        10
-      )
-
-      let nowWidth = originWidth + moveXSize
-      nowWidth = nowWidth <= baseWidth.value ? baseWidth.value : nowWidth
-      let nowHeight = originHeight + moveYSize
-      nowHeight = nowHeight <= baseHeight.value ? baseHeight.value : nowHeight
-      //克隆元素实时改变大小
-      cloneItem.css({
-        width: nowWidth,
-        height: nowHeight
-      })
-    } else if (moveItem) {
-      scrollScreen(e)
-      if (!draggable.value) return
-      dragging.value(e, moveItem, moveItem._dragId)
-      //problem
-      moveItem['isPlayer'] = true
-      let nowItemIndex = infoBoxTemp.moveItemIndex
-      let cloneItem = infoBoxTemp.cloneItem
-      let startX = infoBoxTemp.startX
-      let startY = infoBoxTemp.startY
-      let originX = infoBoxTemp.originX
-      let originY = infoBoxTemp.originY
-      let oldX = infoBoxTemp.oldX
-      let oldY = infoBoxTemp.oldY
-
-      let moveXSize = e.pageX - startX //X方向移动的距离
-      let moveYSize = e.pageY - startY //Y方向移动的距离
-
-      let nowCloneItemX = originX + moveXSize
-      let nowCloneItemY = originY + moveYSize
-
-      let newX = Math.floor(
-        (nowCloneItemX + cloneItem.width() / 12 - baseMarginLeft.value) / cellWidth.value + 1
-      )
-      let newY = Math.floor(
-        (nowCloneItemY + cloneItem.height() / 12 - baseMarginTop.value) / cellHeight.value + 1
-      )
-      newX = newX > 0 ? newX : 1
-      newY = newY > 0 ? newY : 1
-
-      debounce(
-        (function (newX, oldX, newY, oldY) {
-          return function () {
-            if (newX != oldX || oldY != newY) {
-              movePlayer(moveItem, {
-                x: newX,
-                y: newY
-              })
-
-              infoBoxTemp.oldX = newX
-              infoBoxTemp.oldY = newY
-            }
-          }
-        })(newX, oldX, newY, oldY),
-        10
-      )
-
-      cloneItem.css({
-        left: nowCloneItemX + 'px',
-        top: nowCloneItemY + 'px'
-      })
-    }
-  }
-
-  const up = () => {
-    handleMouseUp(e, item, index)
-    document.removeEventListener('mousemove', itemMouseMove)
-    document.removeEventListener('mouseup', up)
-  }
-
-  document.addEventListener('mousemove', itemMouseMove)
-  document.addEventListener('mouseup', up)
 }
 
 const handleMouseUp = (e, item, index) => {
@@ -1173,18 +903,6 @@ const clearInfoBox = e => {
     delete infoBox.value.moveItem['isPlayer']
   }
   infoBox.value = {}
-}
-
-const endMove = e => {
-  return {}
-}
-
-const endMoveI = e => {
-  return {}
-}
-
-const moving = e => {
-  return {}
 }
 
 const cellInit = () => {
@@ -1226,45 +944,6 @@ const canvasInit = () => {
     }
   }, 1)
   renderOk.value = true
-}
-
-/**
- * 计算当前item的位置和大小
- */
-const nowItemStyle = (item, index) => {
-  return {
-    padding: curGap.value + 'px!important',
-    width: cellWidth.value * item.sizeX - baseMarginLeft.value + 'px',
-    height: cellHeight.value * item.sizeY - baseMarginTop.value + 'px',
-    left: cellWidth.value * (item.x - 1) + baseMarginLeft.value + 'px',
-    top: cellHeight.value * (item.y - 1) + baseMarginTop.value + 'px'
-  }
-}
-
-const getList = () => {
-  let returnList = _.sortBy(_.cloneDeep(componentData.value), 'y')
-  let finalList = []
-  _.forEach(returnList, function (item, index) {
-    if (_.isEmpty(item)) return
-    delete item['_dragId']
-    delete item['show']
-    finalList.push(item)
-  })
-  return finalList
-}
-
-/**
- * 获取x最大值
- */
-const getMaxCell = () => {
-  return maxCell.value
-}
-
-/**
- * 获取渲染状态
- */
-const getRenderState = () => {
-  return moveAnimate.value
 }
 
 const afterInitOk = func => {
@@ -1338,7 +1017,7 @@ const onStartMove = (e, item, index) => {
   infoBox.value.oldSizeY = item.sizey
 }
 
-const onDragging = (e, item, index) => {
+const onDragging = (e, item) => {
   // item 中的 style 为当前实时的位置
   const infoBoxTemp = infoBox.value
   let moveItem = _.get(infoBoxTemp, 'moveItem')
@@ -1373,12 +1052,11 @@ const onDragging = (e, item, index) => {
   )
 }
 
-const onResizing = (e, item, index) => {
-  const { top, left, width, height } = item.style
+const onResizing = (e, item) => {
+  const { width, height } = item.style
   // item 中的 style 为当前实时的位置
   const infoBoxTemp = infoBox.value
   let resizeItem = _.get(infoBoxTemp, 'resizeItem')
-  let moveItem = _.get(infoBoxTemp, 'moveItem')
   //调整大小时
   resizing.value(e, resizeItem, resizeItem._dragId)
   resizeItem['isPlayer'] = true
@@ -1391,13 +1069,6 @@ const onResizing = (e, item, index) => {
       ? Math.floor(height / cellHeight.value + 1)
       : Math.floor(height / cellHeight.value)
 
-  const addSizeX = 1
-  const addSizeY = 1
-
-  // 移动时
-  let oldX = infoBoxTemp.oldX
-  let oldY = infoBoxTemp.oldY
-
   // 增加5px偏移量 防止resize时向下取整 组件向右偏移
   let newX = Math.floor((item.style.left + 5) / cellWidth.value + 1)
   let newY = Math.floor((item.style.top + 5) / cellHeight.value + 1)
@@ -1406,7 +1077,7 @@ const onResizing = (e, item, index) => {
 
   // 调整大小
   debounce(
-    (function (newX, oldX, newY, oldY) {
+    (function (newX, newY) {
       return function () {
         // 调整大小
         resizePlayer(resizeItem, {
@@ -1424,12 +1095,12 @@ const onResizing = (e, item, index) => {
         infoBoxTemp.oldX = newX
         infoBoxTemp.oldY = newY
       }
-    })(newX, oldX, newY, oldY),
+    })(newX, newY),
     10
   )
 }
 
-const onMouseUp = (e, item, index) => {
+const onMouseUp = e => {
   // startMove 中组织冒泡会导致移动事件无法传播，在这里设置（鼠标抬起）效果一致
   if (_.isEmpty(infoBox.value)) return
   if (infoBox.value.cloneItem) {
