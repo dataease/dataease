@@ -951,6 +951,7 @@ export default {
     field_can_not_empty: '字段不能为空',
     conditions_can_not_empty: '字段的条件不能为空，若无条件，请直接删除该字段',
     remark: '备注',
+    remark_show: '显示备注',
     remark_edit: '编辑备注',
     remark_bg_color: '背景填充',
     quota_font_family: '值字体',
