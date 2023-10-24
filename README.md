@@ -19,14 +19,14 @@ DataEase 是开源的数据可视化分析工具，帮助用户快速分析数�
 -   数据引擎：基于 Apache Calcite，实现统一的 SQL 解析、验证、优化和执行;
 -   数据连接：支持数据仓库/数据湖、OLAP 数据库、OLTP 数据库、Excel 数据文件、API 等各种数据源。
 
-## DataEase 的优势
+**DataEase 的优势：**
 
 -   开源开放：零门槛，线上快速获取和安装；快速获取用户反馈、按月发布新版本；
 -   简单易用：极易上手，通过鼠标点击和拖拽即可完成分析；
 -   全场景支持：多平台支持、多种嵌入式方案支持；
 -   安全分享：支持多种数据分享方式，确保数据安全。
 
-## DataEase 支持的数据源
+**DataEase 支持的数据源：**
 
 <p align="center">
   <img src="https://dataease.io/images/dataSource/excel.jpg" alt="excel" border="0" width="155" height="107"/>
