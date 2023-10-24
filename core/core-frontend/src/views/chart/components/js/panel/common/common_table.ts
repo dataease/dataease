@@ -329,11 +329,15 @@ export function getCurrentField(valueFieldList: Axis[], field: ChartViewField) {
 }
 
 export function getConditions(chart: Chart) {
+  const { threshold } = parseJson(chart.senior)
+  if (!threshold.enable) {
+    return
+  }
   const res = {
     text: [],
     background: []
   }
-  const conditions = parseJson(chart.senior).threshold.tableThreshold ?? []
+  const conditions = threshold.tableThreshold ?? []
 
   if (conditions?.length > 0) {
     const { tableCell, basicStyle } = parseJson(chart.customAttr)

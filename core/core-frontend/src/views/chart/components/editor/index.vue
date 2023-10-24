@@ -666,7 +666,7 @@ const onBackgroundChange = val => {
 }
 
 const onAssistLineChange = val => {
-  view.value.senior.assistLine = val.data
+  view.value.senior.assistLineCfg = val.data
   if (val.requestData) {
     calcData(view.value)
   } else {

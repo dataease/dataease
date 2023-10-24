@@ -5,7 +5,7 @@ import ScrollCfg from '@/views/chart/components/editor/editor-senior/components/
 import AssistLine from '@/views/chart/components/editor/editor-senior/components/AssistLine.vue'
 import Threshold from '@/views/chart/components/editor/editor-senior/components/Threshold.vue'
 import CollapseSwitchItem from '@/components/collapse-switch-item/src/CollapseSwitchItem.vue'
-import { computed, PropType, ref, toRefs } from 'vue'
+import { computed, PropType, ref, toRefs, watch } from 'vue'
 import LinkJumpSet from '@/components/visualization/LinkJumpSet.vue'
 import LinkageSet from '@/components/visualization/LinkageSet.vue'
 import { canvasSave } from '@/utils/canvasUtils'
@@ -15,6 +15,8 @@ import { updateLinkageActive } from '@/api/visualization/linkage'
 import { includesAny } from '../util/StringUtils'
 import { ElIcon, ElMessage } from 'element-plus-secondary'
 import { storeToRefs } from 'pinia'
+import { BASE_VIEW_CONFIG } from '../util/chart'
+import { cloneDeep, defaultsDeep } from 'lodash-es'
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo } = storeToRefs(dvMainStore)
 
@@ -70,7 +72,12 @@ const props = defineProps({
 })
 
 const { chart, themes, properties, propertyInnerAll } = toRefs(props)
-
+watch(
+  () => chart.value?.senior,
+  () => {
+    chart.value.senior = defaultsDeep(chart.value?.senior || {}, cloneDeep(BASE_VIEW_CONFIG.senior))
+  }
+)
 const seniorCounts = computed(() => {
   let linkageCount = 0
   let jumpCount = 0
@@ -187,11 +194,14 @@ const linkageActiveChange = () => {
             />
           </el-collapse-item>
 
-          <el-collapse-item
+          <collapse-switch-item
             :effect="themes"
-            v-if="showProperties('assist-line')"
-            name="analyse"
             :title="t('chart.assist_line')"
+            :change-model="chart.senior.assistLineCfg"
+            v-if="showProperties('assist-line')"
+            v-model="chart.senior.assistLineCfg.enable"
+            name="analyse"
+            @modelChange="val => onAssistLineChange({ data: val })"
           >
             <assist-line
               :chart="props.chart"
@@ -200,13 +210,13 @@ const linkageActiveChange = () => {
               :property-inner="propertyInnerAll['assist-line']"
               @onAssistLineChange="onAssistLineChange"
             />
-          </el-collapse-item>
+          </collapse-switch-item>
 
           <collapse-switch-item
-            v-if="showProperties('scroll-cfg')"
             :effect="themes"
             :title="t('chart.scroll_cfg')"
             :change-model="chart.senior.scrollCfg"
+            v-if="showProperties('scroll-cfg')"
             v-model="chart.senior.scrollCfg.open"
             name="scroll"
             @modelChange="onScrollCfgChange"
@@ -219,11 +229,14 @@ const linkageActiveChange = () => {
             />
           </collapse-switch-item>
 
-          <el-collapse-item
+          <collapse-switch-item
             :effect="themes"
+            :title="t('chart.threshold')"
+            :change-model="chart.senior.threshold"
+            v-model="chart.senior.threshold.enable"
             v-if="showProperties('threshold')"
             name="threshold"
-            :title="t('chart.threshold')"
+            @modelChange="onThresholdChange"
           >
             <threshold
               :themes="themes"
@@ -231,7 +244,7 @@ const linkageActiveChange = () => {
               :property-inner="propertyInnerAll['threshold']"
               @onThresholdChange="onThresholdChange"
             />
-          </el-collapse-item>
+          </collapse-switch-item>
 
           <collapse-switch-item
             v-if="showProperties('linkage')"
