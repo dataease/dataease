@@ -1088,7 +1088,7 @@ const onRefreshChange = val => {
             <span style="font-size: 14px">{{ view.title }}</span>
           </el-row>
 
-          <el-row style="height: calc(100vh - 110px)">
+          <el-row style="height: calc(100vh - 110px); overflow-y: auto">
             <div class="query-style-tab" v-if="view.type === 'VQuery'">
               <div class="tab-container" style="width: 100%">
                 <el-tabs v-model="tabActiveVQuery">

@@ -131,6 +131,7 @@ const initForm = type => {
   if (type === 'oracle') {
     form.value.configuration.connectionType = 'sid'
   }
+
   form.value.type = type
   setTimeout(() => {
     dsForm.value.clearValidate()

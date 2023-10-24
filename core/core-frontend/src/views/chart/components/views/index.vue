@@ -101,6 +101,10 @@ const snapshotStore = snapshotStoreWithOut()
 const state = reactive({
   initReady: true, //curComponent 切换期间 不接收外部的calcData 和 renderChart 事件
   title_show: true,
+  title_remark: {
+    show: false,
+    remark: ''
+  },
   title_class: {
     fontSize: '18px',
     color: '#303133',
@@ -240,6 +244,9 @@ const initTitle = () => {
         customStyle.background.alpha
       )
     }
+
+    state.title_remark.show = customStyle.text.remarkShow
+    state.title_remark.remark = customStyle.text.remark
   }
 }
 
@@ -563,8 +570,16 @@ const toolTip = computed(() => {
       <div
         class="icons-container"
         :class="{ 'is-editing': titleEditStatus }"
-        v-if="trackMenu.length > 0"
+        v-if="trackMenu.length > 0 || state.title_remark.show"
       >
+        <el-tooltip :effect="toolTip" placement="top" v-if="state.title_remark.show">
+          <template #content>
+            <div style="white-space: pre-wrap" v-html="state.title_remark.remark"></div>
+          </template>
+          <el-icon size="16px" class="inner-icon">
+            <Icon name="icon_info_outlined" />
+          </el-icon>
+        </el-tooltip>
         <el-tooltip :effect="toolTip" placement="top" content="已设置联动" v-if="hasLinkIcon">
           <el-icon size="16px" class="inner-icon">
             <Icon name="icon_link-record_outlined" />
