@@ -131,6 +131,10 @@ const initForm = type => {
       cron: '0 0 0/1 *  * ? *'
     }
   }
+  if (type === 'oracle') {
+    form.value.configuration.connectionType = 'sid'
+  }
+  
   form.value.type = type
   setTimeout(() => {
     dsForm.value.clearValidate()
@@ -235,6 +239,16 @@ const setRules = () => {
         required: true,
         message: t('datasource.please_choose_schema'),
         trigger: 'blur'
+      }
+    ]
+  }
+
+  if (form.value.type === 'oracle') {
+    configRules['configuration.connectionType'] = [
+      {
+        required: true,
+        message: t('datasource.connection_mode'),
+        trigger: 'change'
       }
     ]
   }
