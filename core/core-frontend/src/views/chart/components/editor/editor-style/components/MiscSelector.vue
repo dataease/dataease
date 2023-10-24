@@ -225,7 +225,7 @@ const getQuotaField = id => {
 }
 
 const isValidField = field => {
-  return field.id !== 'count' && field.deType !== 0 && field.deType !== 1 && field.deType !== 5
+  return field.id !== '-1' && state.quotaData.findIndex(ele => ele.id === field.id) !== -1
 }
 
 const showProperty = prop => props.propertyInner?.includes(prop)
@@ -310,27 +310,25 @@ onMounted(() => {
           <el-form-item class="form-item" :class="'form-item-' + themes">
             <el-select
               :effect="themes"
-              v-model="state.miscForm.gaugeMinField.id"
               :placeholder="t('chart.field')"
+              :class="{ 'invalid-field': !validMinField }"
+              v-model="state.miscForm.gaugeMinField.id"
               @change="changeQuotaField('min', true)"
             >
               <el-option
+                class="series-select-option"
                 v-for="item in state.quotaData"
                 :key="item.id"
                 :label="item.name"
                 :value="item.id"
               >
-                <span style="float: left">
-                  <el-icon>
-                    <Icon
-                      :className="`field-icon-${fieldType[item.deType]}`"
-                      :name="`field_${fieldType[item.deType]}`"
-                    ></Icon>
-                  </el-icon>
-                </span>
-                <span class="field-item">
-                  {{ item.name }}
-                </span>
+                <el-icon style="margin-right: 8px">
+                  <Icon
+                    :className="`field-icon-${fieldType[item.deType]}`"
+                    :name="`field_${fieldType[item.deType]}`"
+                  />
+                </el-icon>
+                {{ item.name }}
               </el-option>
             </el-select>
           </el-form-item>
@@ -339,8 +337,8 @@ onMounted(() => {
           <el-form-item class="form-item" :class="'form-item-' + themes">
             <el-select
               :effect="themes"
-              v-model="state.miscForm.gaugeMinField.summary"
               :placeholder="t('chart.summary')"
+              v-model="state.miscForm.gaugeMinField.summary"
               @change="changeQuotaField('min')"
             >
               <el-option v-if="validMinField" key="sum" value="sum" :label="t('chart.sum')" />
@@ -403,27 +401,25 @@ onMounted(() => {
           <el-form-item class="form-item" :class="'form-item-' + themes">
             <el-select
               :effect="themes"
-              v-model="state.miscForm.gaugeMaxField.id"
               :placeholder="t('chart.field')"
+              :class="{ 'invalid-field': !validMaxField }"
+              v-model="state.miscForm.gaugeMaxField.id"
               @change="changeQuotaField('max', true)"
             >
               <el-option
+                class="series-select-option"
                 v-for="item in state.quotaData"
                 :key="item.id"
                 :label="item.name"
                 :value="item.id"
               >
-                <span style="float: left">
-                  <el-icon>
-                    <Icon
-                      :className="`field-icon-${fieldType[item.deType]}`"
-                      :name="`field_${fieldType[item.deType]}`"
-                    ></Icon>
-                  </el-icon>
-                </span>
-                <span class="field-item">
-                  {{ item.name }}
-                </span>
+                <el-icon style="margin-right: 8px">
+                  <Icon
+                    :className="`field-icon-${fieldType[item.deType]}`"
+                    :name="`field_${fieldType[item.deType]}`"
+                  />
+                </el-icon>
+                {{ item.name }}
               </el-option>
             </el-select>
           </el-form-item>
@@ -547,8 +543,9 @@ onMounted(() => {
           <el-form-item class="form-item" :class="'form-item-' + themes">
             <el-select
               :effect="themes"
-              v-model="state.miscForm.liquidMaxField.id"
               :placeholder="t('chart.field')"
+              :class="{ 'invalid-field': !validLiquidMaxField }"
+              v-model="state.miscForm.liquidMaxField.id"
               @change="changeQuotaField('max', true)"
             >
               <el-option
@@ -875,22 +872,32 @@ onMounted(() => {
     flex-direction: row;
     justify-content: space-between;
   }
+
   :deep(.dynamic-item) {
     width: 100px !important;
   }
 }
+
 .field-item {
   float: left;
   color: #8492a6;
   font-size: 12px;
 }
+
 .margin-bottom-8 {
   margin-bottom: 8px !important;
 }
+
 .series-select-option {
   display: flex;
   align-items: center;
   justify-content: start;
   padding: 0 11px;
+}
+
+.invalid-field {
+  ::v-deep(.ed-input__wrapper) {
+    box-shadow: 0 0 0 1px rgb(245, 74, 69) inset !important;
+  }
 }
 </style>
