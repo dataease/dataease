@@ -28,8 +28,10 @@ import { useCache } from '@/hooks/web/useCache'
 const { wsCache } = useCache()
 const eventCheck = e => {
   if (e.key === 'screen-weight' && !compareStorage(e.oldValue, e.newValue)) {
-    const { dvId } = window.DataEaseBi || router.currentRoute.value.query
-    check(wsCache.get('screen-weight'), dvId)
+    const { dvId, opt } = window.DataEaseBi || router.currentRoute.value.query
+    if (!(opt && opt === 'create')) {
+      check(wsCache.get('screen-weight'), dvId)
+    }
   }
 }
 const mainCanvasCoreRef = ref(null)

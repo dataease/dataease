@@ -18,8 +18,10 @@ import { useCache } from '@/hooks/web/useCache'
 const { wsCache } = useCache()
 const eventCheck = e => {
   if (e.key === 'panel-weight' && !compareStorage(e.oldValue, e.newValue)) {
-    const { resourceId } = window.DataEaseBi || router.currentRoute.value.query
-    check(wsCache.get('panel-weight'), resourceId)
+    const { resourceId, opt } = window.DataEaseBi || router.currentRoute.value.query
+    if (!(opt && opt === 'create')) {
+      check(wsCache.get('panel-weight'), resourceId)
+    }
   }
 }
 const dvMainStore = dvMainStoreWithOut()
