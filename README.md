@@ -52,10 +52,11 @@ DataEase 是开源的数据可视化分析工具，帮助用户快速分析数�
 
 ## DataEase 快速入门
 
--   安装部署教程
--   快速入门视频
--   完整在线文档
--   中文论坛支持
+-   [安装部署教程](https://dataease.io/docs/installation/installation_mode/)
+-   [快速入门视频](https://www.bilibili.com/video/BV1qG4y1F7uc/)
+-   [完整在线文档](https://dataease.io/docs/)
+-   [中文社区论坛](https://bbs.fit2cloud.com/c/de/6)
+-   [模板应用市场](https://dataease.io/templates/)
 
 ## License
 
