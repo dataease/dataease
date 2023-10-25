@@ -2929,5 +2929,10 @@ export default {
     confirm_title: '强行登录会导致其他客户端掉线',
     confirm: '是否强行登录？',
     forced_offline: '`当前账号在客户端【${ip}】登录，您已被挤下线！`'
+  },
+  online_map: {
+    geometry: '地理信息',
+    onlinemap: '在线地图',
+    empty_desc: '暂无在线地图key'
   }
 }

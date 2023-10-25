@@ -2936,5 +2936,10 @@ export default {
     confirm_title: 'Forced login will cause other clients to go offline',
     confirm: 'Whether to force login?',
     forced_offline: '`The current account is logged in on the client [${ip}],and you have been pushed off the line!`'
+  },
+  online_map: {
+    geometry: 'Geometry',
+    onlinemap: 'Online map',
+    empty_desc: 'No map key'
   }
 }

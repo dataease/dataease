@@ -42,3 +42,20 @@ export function removeMap(data) {
     data
   })
 }
+
+export function saveMapKey(data) {
+  return request({
+    url: '/system/saveMapKey',
+    method: 'post',
+    loading: true,
+    data
+  })
+}
+
+export function queryMapKey() {
+  return request({
+    url: '/system/onlineMapKey',
+    method: 'get',
+    loading: true
+  })
+}

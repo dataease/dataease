@@ -57,8 +57,6 @@ public class SystemParameterService {
         return extSystemParameterMapper.email();
     }
 
-    @Value("${dataease.mapkey:}")
-    private String mapKey;
 
     public BasicInfo basicInfo() {
         List<SystemParameter> paramList = this.getParamList("basic");
@@ -414,7 +412,26 @@ public class SystemParameterService {
     }
 
     public String onlineMapKey() {
-        return mapKey;
+        return getValue("map.key");
+    }
+
+    public void saveMapKey(String key) {
+        String paramKey = "map.key";
+        SystemParameterExample example = new SystemParameterExample();
+        example.createCriteria().andParamKeyEqualTo(paramKey);
+        List<SystemParameter> systemParameters = systemParameterMapper.selectByExample(example);
+        if (CollectionUtils.isNotEmpty(systemParameters)) {
+            SystemParameter systemParameter = systemParameters.get(0);
+            systemParameter.setParamValue(key);
+            systemParameterMapper.updateByExample(systemParameter, example);
+            return;
+        }
+        SystemParameter record = new SystemParameter();
+        record.setParamKey(paramKey);
+        record.setParamValue(key);
+        record.setType("text");
+        record.setSort(1);
+        systemParameterMapper.insert(record);
     }
 
 }

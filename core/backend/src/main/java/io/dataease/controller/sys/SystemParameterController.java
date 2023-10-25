@@ -4,6 +4,7 @@ package io.dataease.controller.sys;
 import io.dataease.commons.constants.ParamConstants;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.controller.ResultHolder;
+import io.dataease.controller.sys.request.OnlineMapKeyRequest;
 import io.dataease.controller.sys.response.BasicInfo;
 import io.dataease.controller.sys.response.MailInfo;
 import io.dataease.dto.SystemParameterDTO;
@@ -170,4 +171,8 @@ public class SystemParameterController {
         return systemParameterService.onlineMapKey();
     }
 
+    @PostMapping("/saveMapKey")
+    public void saveOnlineKey(@RequestBody OnlineMapKeyRequest request) {
+        systemParameterService.saveMapKey(request.getKey());
+    }
 }
