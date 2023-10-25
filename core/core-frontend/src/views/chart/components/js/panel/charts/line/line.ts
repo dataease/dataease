@@ -5,7 +5,7 @@ import {
 import { Line as G2Line, LineOptions } from '@antv/g2plot/esm/plots/line'
 import { getPadding } from '../../common/common_antv'
 import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
-import { cloneDeep } from 'lodash-es'
+import { cloneDeep, isEmpty } from 'lodash-es'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import {
   LINE_AXIS_TYPE,
@@ -214,11 +214,67 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
     return tmpOptions
   }
 
+  protected configTooltip(chart: Chart, options: LineOptions): LineOptions {
+    const customAttr: DeepPartial<ChartAttr> = parseJson(chart.customAttr)
+    const tooltipAttr = customAttr.tooltip
+    if (!tooltipAttr.show) {
+      return {
+        ...options,
+        tooltip: false
+      }
+    }
+    const xAxisExt = chart.xAxisExt
+    const formatterMap = tooltipAttr.seriesTooltipFormatter
+      ?.filter(i => i.show)
+      .reduce((pre, next) => {
+        pre[next.id] = next
+        return pre
+      }, {}) as Record<string, SeriesFormatter>
+    const tooltip: LineOptions['tooltip'] = {
+      showTitle: true,
+      customItems(originalItems) {
+        if (!tooltipAttr.seriesTooltipFormatter?.length) {
+          return originalItems
+        }
+        const head = originalItems[0]
+        // 非原始数据
+        if (!head.data.quotaList) {
+          return originalItems
+        }
+        const result = []
+        originalItems
+          .filter(item => formatterMap[item.data.quotaList[0].id])
+          .forEach(item => {
+            const formatter = formatterMap[item.data.quotaList[0].id]
+            const value = valueFormatter(parseFloat(item.value as string), formatter.formatterCfg)
+            let name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
+            if (xAxisExt?.length > 0) {
+              name = item.data.category
+            }
+            result.push({ ...item, name, value })
+          })
+        head.data.dynamicTooltipValue?.forEach(item => {
+          const formatter = formatterMap[item.fieldId]
+          if (formatter) {
+            const value = valueFormatter(parseFloat(item.value), formatter.formatterCfg)
+            const name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
+            result.push({ color: 'grey', name, value })
+          }
+        })
+        return result
+      }
+    }
+    return {
+      ...options,
+      tooltip
+    }
+  }
+
   protected setupOptions(chart: Chart, options: LineOptions): LineOptions {
     return flow(
       this.configTheme,
       this.configLabel,
-      this.configMultiSeriesTooltip,
+      this.configTooltip,
       this.configBasicStyle,
       this.configCustomColors,
       this.configLegend,
