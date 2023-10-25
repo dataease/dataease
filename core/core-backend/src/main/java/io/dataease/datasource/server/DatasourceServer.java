@@ -19,8 +19,6 @@ import io.dataease.api.permissions.user.vo.UserFormVO;
 import io.dataease.commons.constants.TaskStatus;
 import io.dataease.commons.utils.CommonThreadPool;
 import io.dataease.constant.DataSourceType;
-import io.dataease.dataset.dao.auto.entity.CoreDatasetTable;
-import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableMapper;
 import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import io.dataease.dataset.manage.DatasetDataManage;
 import io.dataease.dataset.utils.TableUtils;
@@ -109,6 +107,14 @@ public class DatasourceServer implements DatasourceApi {
 
     private boolean isUpdatingStatus = false;
 
+    private void getParents(Long pid, List<Long> ids) {
+        CoreDatasource parent = datasourceMapper.selectById(pid);// 查找父级folder
+        ids.add(parent.getId());
+        if (parent.getPid() != null && parent.getPid() != 0) {
+            getParents(parent.getPid(), ids);
+        }
+    }
+
     public void move(DatasourceDTO dataSourceDTO) throws DEException {
         switch (dataSourceDTO.getAction()) {
             case "move" -> {
@@ -116,7 +122,12 @@ public class DatasourceServer implements DatasourceApi {
                     DEException.throwException("目录必选！");
                 }
                 if (Objects.equals(dataSourceDTO.getId(), dataSourceDTO.getPid())) {
-                    DEException.throwException("pid can not equal to id.");
+                    DEException.throwException(Translator.get("i18n_pid_not_eq_id"));
+                }
+                List<Long> ids = new ArrayList<>();
+                getParents(dataSourceDTO.getPid(), ids);
+                if (ids.contains(dataSourceDTO.getId())) {
+                    DEException.throwException(Translator.get("i18n_pid_not_eq_id"));
                 }
                 dataSourceManage.move(dataSourceDTO);
             }
