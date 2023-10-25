@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.dataease.api.visualization.request.DataVisualizationBaseRequest;
 import io.dataease.api.visualization.request.VisualizationWorkbranchQueryRequest;
 import io.dataease.api.visualization.vo.VisualizationResourceVO;
-import io.dataease.api.visualization.vo.VisualizationStoreVO;
 import io.dataease.commons.constants.DataVisualizationConstants;
 import io.dataease.commons.constants.OptConstants;
 import io.dataease.constant.BusiResourceEnum;
@@ -21,7 +20,6 @@ import io.dataease.visualization.dao.auto.entity.DataVisualizationInfo;
 import io.dataease.visualization.dao.auto.mapper.DataVisualizationInfoMapper;
 import io.dataease.visualization.dao.ext.mapper.CoreVisualiationExtMapper;
 import io.dataease.visualization.dao.ext.mapper.ExtDataVisualizationMapper;
-import io.dataease.visualization.dao.ext.po.StorePO;
 import io.dataease.visualization.dao.ext.po.VisualizationNodePO;
 import io.dataease.visualization.dao.ext.po.VisualizationResourcePO;
 import io.dataease.visualization.dto.VisualizationNodeBO;
@@ -30,7 +28,6 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.*;
 
@@ -84,30 +81,34 @@ public class CoreVisualizationManage {
             delIds.add(tempPid);
             List<Long> childrenIdList = extMapper.queryChildrenId(tempPid);
             if (CollectionUtil.isNotEmpty(childrenIdList)) {
-                stack.addAll(childrenIdList);
+                childrenIdList.forEach(kid -> {
+                    if (!delIds.contains(kid)) {
+                        stack.add(kid);
+                    }
+                });
             }
         }
         extMapper.batchDel(delIds, System.currentTimeMillis(), AuthUtils.getUser().getUserId());
-        coreOptRecentManage.saveOpt(id, OptConstants.OPT_RESOURCE_TYPE.VISUALIZATION,OptConstants.OPT_TYPE.DELETE);
+        coreOptRecentManage.saveOpt(id, OptConstants.OPT_RESOURCE_TYPE.VISUALIZATION, OptConstants.OPT_TYPE.DELETE);
     }
 
     @XpackInteract(value = "visualizationResourceTree", before = false)
     public void move(DataVisualizationBaseRequest request) {
-        if(!request.getMoveFromUpdate()){
+        if (!request.getMoveFromUpdate()) {
             DataVisualizationInfo visualizationInfo = new DataVisualizationInfo();
             BeanUtils.copyBean(visualizationInfo, request);
             if (ObjectUtils.isEmpty(visualizationInfo.getId())) {
                 DEException.throwException("resource not exist");
             }
             visualizationInfo.setUpdateTime(System.currentTimeMillis());
-            coreOptRecentManage.saveOpt(visualizationInfo.getId(), OptConstants.OPT_RESOURCE_TYPE.VISUALIZATION,OptConstants.OPT_TYPE.UPDATE);
+            coreOptRecentManage.saveOpt(visualizationInfo.getId(), OptConstants.OPT_RESOURCE_TYPE.VISUALIZATION, OptConstants.OPT_TYPE.UPDATE);
             mapper.updateById(visualizationInfo);
         }
     }
 
     @XpackInteract(value = "visualizationResourceTree", before = false)
     public Long innerSave(DataVisualizationInfo visualizationInfo) {
-        if(visualizationInfo.getId() == null){
+        if (visualizationInfo.getId() == null) {
             Long id = IDUtils.snowID();
             visualizationInfo.setId(id);
         }
@@ -118,7 +119,7 @@ public class CoreVisualizationManage {
         visualizationInfo.setUpdateTime(System.currentTimeMillis());
         visualizationInfo.setOrgId(AuthUtils.getUser().getDefaultOid());
         mapper.insert(visualizationInfo);
-        coreOptRecentManage.saveOpt(visualizationInfo.getId(), OptConstants.OPT_RESOURCE_TYPE.VISUALIZATION,OptConstants.OPT_TYPE.NEW);
+        coreOptRecentManage.saveOpt(visualizationInfo.getId(), OptConstants.OPT_RESOURCE_TYPE.VISUALIZATION, OptConstants.OPT_TYPE.NEW);
         return visualizationInfo.getId();
     }
 
@@ -127,7 +128,7 @@ public class CoreVisualizationManage {
         visualizationInfo.setUpdateTime(System.currentTimeMillis());
         visualizationInfo.setUpdateBy(AuthUtils.getUser().getUserId().toString());
         mapper.updateById(visualizationInfo);
-        coreOptRecentManage.saveOpt(visualizationInfo.getId(), OptConstants.OPT_RESOURCE_TYPE.VISUALIZATION,OptConstants.OPT_TYPE.UPDATE);
+        coreOptRecentManage.saveOpt(visualizationInfo.getId(), OptConstants.OPT_RESOURCE_TYPE.VISUALIZATION, OptConstants.OPT_TYPE.UPDATE);
     }
 
     private boolean isTopNode(Long pid) {
@@ -162,15 +163,15 @@ public class CoreVisualizationManage {
         return iPage;
     }
 
-    List<VisualizationResourceVO> formatResult(List<VisualizationResourcePO> pos){
-        if (CollectionUtil.isEmpty(pos)){
+    List<VisualizationResourceVO> formatResult(List<VisualizationResourcePO> pos) {
+        if (CollectionUtil.isEmpty(pos)) {
             return new ArrayList<>();
         }
         return pos.stream().map(po ->
                 new VisualizationResourceVO(
                         po.getId(), po.getResourceId(), po.getName(),
-                        po.getType(), String.valueOf(po.getCreator()),String.valueOf(po.getLastEditor()), po.getLastEditTime(),
-                        po.getFavorite(),9)).toList();
+                        po.getType(), String.valueOf(po.getCreator()), String.valueOf(po.getLastEditor()), po.getLastEditTime(),
+                        po.getFavorite(), 9)).toList();
     }
 
     public IPage<VisualizationResourcePO> queryVisualizationPage(int goPage, int pageSize, VisualizationWorkbranchQueryRequest request) {
@@ -188,6 +189,6 @@ public class CoreVisualizationManage {
         }
         queryWrapper.orderBy(true, request.isAsc(), "core_opt_recent.time");
         Page<VisualizationResourcePO> page = new Page<>(goPage, pageSize);
-        return extDataVisualizationMapper.findRecent(page,uid, queryWrapper);
+        return extDataVisualizationMapper.findRecent(page, uid, queryWrapper);
     }
 }
