@@ -221,12 +221,15 @@ const handleContextMenu = e => {
                   areaData.components.includes(getComponent(index))
               }"
               @click="onClick($event, transformIndex(index))"
-              @dblclick="editComponentName(getComponent(index))"
             >
               <el-icon class="component-icon">
                 <Icon :name="getIconName(getComponent(index))"></Icon>
               </el-icon>
-              <span :id="`component-label-${getComponent(index)?.id}`" class="component-label">
+              <span
+                :id="`component-label-${getComponent(index)?.id}`"
+                class="component-label"
+                @dblclick="editComponentName(getComponent(index))"
+              >
                 {{ getComponent(index)?.name }}
               </span>
               <div
