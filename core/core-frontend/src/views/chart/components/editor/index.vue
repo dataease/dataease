@@ -525,6 +525,11 @@ const calcData = (view, resetDrill = false, updateQuery = '') => {
   }
 }
 
+const updateChartData = view => {
+  curComponent.value['state'] = 'ready'
+  calcData(view, true, 'updateQuery')
+}
+
 const renderChart = view => {
   useEmitt().emitter.emit('renderChart-' + view.id, view)
   snapshotStore.recordSnapshotCache('renderChart', view.id)
@@ -1637,7 +1642,7 @@ const onRefreshChange = val => {
                       <el-button
                         type="primary"
                         class="result-style-button"
-                        @click="calcData(view, true, 'updateQuery')"
+                        @click="updateChartData(view)"
                       >
                         <span style="font-size: 12px">
                           {{ t('chart.update_chart_data') }}

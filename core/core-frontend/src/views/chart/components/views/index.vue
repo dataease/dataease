@@ -490,7 +490,7 @@ const loadingFlag = computed(() => {
 
 const chartAreaShow = computed(() => {
   return (
-    view.value.tableId ||
+    (view.value.tableId && element.value['state'] === 'ready') ||
     view.value.type === 'rich-text' ||
     (view.value.type === 'map' && view.value.customAttr.map.id)
   )
