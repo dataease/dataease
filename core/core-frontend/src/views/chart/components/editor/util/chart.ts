@@ -148,11 +148,11 @@ export const FILTER_COMMON_STYLE_BASE = {
 
 export const FILTER_COMMON_STYLE_LIGHT = {
   ...FILTER_COMMON_STYLE_BASE,
-  labelColor: '#000000',
-  titleColor: '#000000',
-  color: '#000000',
-  borderColor: '#F3E7E7',
-  text: '#484747',
+  labelColor: '#1f2329',
+  titleColor: '#1f2329',
+  color: '#1f2329',
+  borderColor: '#bbbfc4',
+  text: '#1f2329',
   bgColor: '#FFFFFF'
 }
 

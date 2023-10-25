@@ -374,7 +374,11 @@ const opacityStyle = computed(() => {
       {{ customStyle.title }}
     </p>
     <div
-      :class="['v-query', customStyle.layout]"
+      :class="[
+        'v-query',
+        customStyle.layout,
+        customStyle.titleShow && !!customStyle.title && 'title-show'
+      ]"
       @dragover.prevent.stop="dragover"
       @drop.prevent.stop="drop"
     >
@@ -447,7 +451,6 @@ const opacityStyle = computed(() => {
 .v-query-container {
   width: 100%;
   height: 100%;
-  padding: 16px;
   overflow: auto;
   position: relative;
 
@@ -580,8 +583,11 @@ const opacityStyle = computed(() => {
     z-index: 0;
   }
 
-  &.vertical {
+  &.title-show {
     height: calc(100% - 22px);
+  }
+
+  &.vertical {
     .query-fields-container {
       .query-field {
         padding-top: 30px;
