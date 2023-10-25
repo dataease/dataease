@@ -314,6 +314,8 @@ export const dvMainStore = defineStore('dataVisualization', {
         this.canvasViewInfo[component.id] = newView
       }
       if (component.component === 'VQuery') {
+        const { color, titleColor, labelColor, borderColor, bgColor, text, titleLayout, layout } =
+          this.canvasStyleData.component.filterStyle || {}
         const newView = {
           ...JSON.parse(JSON.stringify(BASE_VIEW_CONFIG)),
           id: component.id,
@@ -322,21 +324,21 @@ export const dvMainStore = defineStore('dataVisualization', {
           customStyle: {
             component: {
               show: true,
-              color: '#1f2329',
+              color,
               titleShow: false,
               borderShow: false,
-              text: '#1f2329',
+              text,
               textColorShow: false,
               labelColorShow: false,
-              labelColor: '',
-              borderColor: '',
+              labelColor,
+              borderColor,
               title: '',
               borderWidth: 1,
               bgColorShow: false,
-              bgColor: '',
-              titleColor: '',
-              titleLayout: 'left',
-              layout: 'horizontal',
+              bgColor,
+              titleColor,
+              titleLayout,
+              layout,
               btnList: ['sure']
             }
           }
