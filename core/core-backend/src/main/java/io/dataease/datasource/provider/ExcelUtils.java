@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 
 
 public class ExcelUtils {
-
+    public static final String UFEFF = "\uFEFF";
     private static String path = "/opt/dataease/data/excel/";
     private static ObjectMapper objectMapper = new ObjectMapper();
 
@@ -449,6 +449,9 @@ public class ExcelUtils {
                 String filedName = split[i];
                 if(StringUtils.isEmpty(filedName)){
                     DEException.throwException("首行行中不允许有空单元格！");
+                }
+                if (filedName.startsWith(UFEFF)) {
+                    filedName = filedName.replace(UFEFF, "");
                 }
                 TableField tableFiled = new TableField();
                 tableFiled.setName(filedName);

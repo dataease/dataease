@@ -144,8 +144,10 @@ public class DatasourceServer implements DatasourceApi {
     private void filterDs(List<BusiNodeVO> busiNodeVOS, List<Long> ids, String type, Long id) {
         for (BusiNodeVO busiNodeVO : busiNodeVOS) {
             if (busiNodeVO.getType() != null && busiNodeVO.getType().equalsIgnoreCase(type)) {
-                if (id != null && !busiNodeVO.getId().equals(id)) {
-                    ids.add(busiNodeVO.getId());
+                if (id != null) {
+                    if (!busiNodeVO.getId().equals(id)) {
+                        ids.add(busiNodeVO.getId());
+                    }
                 } else {
                     ids.add(busiNodeVO.getId());
                 }
@@ -166,7 +168,7 @@ public class DatasourceServer implements DatasourceApi {
         List<Long> ids = new ArrayList<>();
         filterDs(busiNodeVOS, ids, dataSourceDTO.getType(), dataSourceDTO.getId());
 
-        if(CollectionUtil.isEmpty(ids)){
+        if (CollectionUtil.isEmpty(ids)) {
             return false;
         }
         QueryWrapper<CoreDatasource> wrapper = new QueryWrapper<>();
@@ -181,7 +183,7 @@ public class DatasourceServer implements DatasourceApi {
         boolean hasRepeat = false;
         for (CoreDatasource datasource : datasources) {
             if (Arrays.asList("API", "Excel", "folder").contains(datasource.getType())) {
-               continue;
+                continue;
             }
             DatasourceConfiguration compare = JsonUtil.parseObject(datasource.getConfiguration(), DatasourceConfiguration.class);
             switch (dataSourceDTO.getType()) {
