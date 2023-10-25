@@ -434,7 +434,7 @@ onMounted(() => {
     }
   })
   useEmitt({
-    name: 'calcData-' + view.value.id,
+    name: 'calc-data-' + view.value.id,
     callback: function (val) {
       if (!state.initReady) {
         return
@@ -497,7 +497,8 @@ const loadingFlag = computed(() => {
 
 const chartAreaShow = computed(() => {
   return (
-    (view.value.tableId && element.value['state'] === 'ready') ||
+    (view.value.tableId &&
+      (element.value['state'] === undefined || element.value['state'] === 'ready')) ||
     view.value.type === 'rich-text' ||
     (view.value.type === 'map' && view.value.customAttr.map.id)
   )
