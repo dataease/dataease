@@ -83,6 +83,11 @@ const checkDialog = () => {
       haveDialog = true
     }
   })
+  document.querySelectorAll('.ed-popover').forEach(element => {
+    if (window.getComputedStyle(element).getPropertyValue('display') != 'none') {
+      haveDialog = true
+    }
+  })
   // 富文本单框
   if (document.querySelector('.tox-dialog-wrap')) {
     haveDialog = true
