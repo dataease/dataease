@@ -6,24 +6,25 @@
   <a href="https://github.com/dataease/dataease"><img src="https://img.shields.io/github/stars/dataease/dataease?color=%231890FF&style=flat-square" alt="Stars"></a>
   <a href="https://app.fossa.com/projects/git%2Bgithub.com%2F1dataease%2Fdataease?ref=badge_shield"><img src="https://app.fossa.com/api/projects/git%2Bgithub.com%2Fdataease%2Fdataease.svg?type=shield" alt="FOSSA Status"></a>  
 </p>
+
+|说明|
+|------------------|
+|此分支为 DataEase v2 版本的开发分支。DataEase v2 正在快速迭代中，如是在生产环境部署 DataEase，建议使用 v1.18.* 的最新稳定版本。|
 <hr/>
 
 ## 什么是 DataEase？
 
 DataEase 是开源的数据可视化分析工具，帮助用户快速分析数据并洞察业务趋势，从而实现业务的改进与优化。DataEase 支持丰富的数据源连接，能够通过拖拉拽方式快速制作图表，并可以方便的与他人分享。
 
-**DataEase 的功能包括：**
+**DataEase 的工作原理：**
 
--   图表展示：支持 PC 端、移动端、大屏及嵌入式使用场景;
--   图表制作：支持丰富的图表类型、支持拖拉拽方式快速制作仪表板;
--   数据引擎：基于 Apache Calcite，实现统一的 SQL 解析、验证、优化和执行;
--   数据连接：支持数据仓库/数据湖、OLAP 数据库、OLTP 数据库、Excel 数据文件、API 等各种数据源。
+![image](https://github.com/dataease/dataease/assets/41712985/68d46fac-985e-4d1d-8548-2baadf9cd2e8)
 
 **DataEase 的优势：**
 
--   开源开放：零门槛，线上快速获取和安装；快速获取用户反馈、按月发布新版本；
+-   开源开放：零门槛，线上快速获取和安装，按月迭代；
 -   简单易用：极易上手，通过鼠标点击和拖拽即可完成分析；
--   全场景支持：多平台支持、多种嵌入式方案支持；
+-   全场景支持：多平台安装和多样化嵌入支持；
 -   安全分享：支持多种数据分享方式，确保数据安全。
 
 **DataEase 支持的数据源：**
@@ -39,30 +40,11 @@ DataEase 是开源的数据可视化分析工具，帮助用户快速分析数�
   <img src="https://dataease.io/images/dataSource/mongodb.jpg" alt="mongodb" border="0" width="155" height="107"/>
   <img src="https://dataease.io/images/dataSource/redshift.jpg" alt="redshift" border="0" width="155" height="107"/>
   <img src="https://dataease.io/images/dataSource/DB2.jpg" alt="DB2" border="0" width="155" height="107"/>
-  <img src="https://dataease.io/images/dataSource/API.jpg" alt="API" border="0" width="155" height="107"/>
   <img src="https://dataease.io/images/dataSource/TiDB.jpg" alt="TiDB" border="0" width="155" height="107"/>
   <img src="https://dataease.io/images/dataSource/StarRocks.jpg" alt="StarRocks" border="0" width="155" height="107"/>
 </p>
 
-## 快速开始
-
-**一键安装**
-
-仅需两步快速安装 DataEase：
-
-1. 准备一台不小于 8 G内存的 64位 Linux 主机；
-2. 以 root 用户执行如下命令一键安装 DataEase。
-
-```sh
-curl -sSL https://dataease.oss-cn-hangzhou.aliyuncs.com/quick_start.sh | bash
-```
-
-**学习资料**
-
--   [在线文档](https://dataease.io/docs/)
--   [社区论坛](https://bbs.fit2cloud.com/c/de/6)
-
-## DataEase 的技术栈
+**DataEase 的技术栈：**
 
 -   前端：[Vue.js](https://vuejs.org/)、[Element](https://element.eleme.cn/)
 -   图库：[AntV](https://antv.vision/zh)
@@ -71,13 +53,12 @@ curl -sSL https://dataease.oss-cn-hangzhou.aliyuncs.com/quick_start.sh | bash
 -   数据处理：[Apache Calcite](https://github.com/apache/calcite/)
 -   基础设施：[Docker](https://www.docker.com/)
 
-## Star History
+## DataEase 快速入门
 
-[![Star History Chart](https://api.star-history.com/svg?repos=dataease/dataease&type=Date)](https://star-history.com/#dataease/dataease&Date)
-
-## FOSSA Status
-
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fdataease%2Fdataease.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fdataease%2Fdataease?ref=badge_large)
+-   安装部署教程
+-   快速入门视频
+-   完整在线文档
+-   中文论坛支持
 
 ## License
 

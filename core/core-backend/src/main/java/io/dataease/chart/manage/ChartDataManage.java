@@ -821,9 +821,11 @@ public class ChartDataManage {
             return list;
         }
 
-        String assistLine = (String) JsonUtil.toJSONString(senior.get("assistLine"));
-        List<ChartSeniorAssistDTO> assistLines = JsonUtil.parseList(assistLine, new TypeReference<>() {
-        });
+        var assistLineCfg = JsonUtil.parseObject((String) JsonUtil.toJSONString(senior.get("assistLineCfg")), ChartSeniorAssistCfgDTO.class);
+        if (null == assistLineCfg || !assistLineCfg.isEnable()) {
+            return list;
+        }
+        List<ChartSeniorAssistDTO> assistLines = assistLineCfg.getAssistLine();
 
         if (ObjectUtils.isEmpty(assistLines)) {
             return list;

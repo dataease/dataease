@@ -604,7 +604,12 @@ export const DEFAULT_FUNCTION_CFG: ChartFunctionCfg = {
   emptyDataStrategy: 'breakLine',
   emptyDataFieldCtrl: []
 }
+export const DEFAULT_ASSIST_LINE_CFG: ChartAssistLineCfg = {
+  enable: false,
+  assistLine: []
+}
 export const DEFAULT_THRESHOLD: ChartThreshold = {
+  enable: false,
   gaugeThreshold: '',
   labelThreshold: [],
   tableThreshold: [],
@@ -1268,7 +1273,7 @@ export const BASE_VIEW_CONFIG = {
   },
   senior: {
     functionCfg: DEFAULT_FUNCTION_CFG,
-    assistLine: [],
+    assistLineCfg: DEFAULT_ASSIST_LINE_CFG,
     threshold: DEFAULT_THRESHOLD,
     scrollCfg: DEFAULT_SCROLL
   }

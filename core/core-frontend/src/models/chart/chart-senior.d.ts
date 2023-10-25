@@ -9,7 +9,7 @@ declare interface ChartSenior {
   /**
    * 辅助线
    */
-  assistLine: AssistLine[]
+  assistLineCfg: ChartAssistLineCfg
   /**
    * 阈值
    */
@@ -61,6 +61,19 @@ declare interface ChartFunctionCfg {
 /**
  * 辅助线设置
  */
+declare interface ChartAssistLineCfg {
+  /**
+   * 是否启用
+   */
+  enable: boolean
+  /**
+   * 辅助线配置
+   */
+  assistLine: AssistLine[]
+}
+/**
+ * 辅助线
+ */
 declare interface AssistLine {
   /**
    * 辅助线名称
@@ -100,6 +113,10 @@ declare interface AssistLine {
  * 阈值设置
  */
 declare interface ChartThreshold {
+  /**
+   * 是否启用
+   */
+  enable: boolean
   /**
    * 仪表盘阈值: x,y,z
    */
