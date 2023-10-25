@@ -108,18 +108,21 @@ const renderChartFromDialog = (viewInfo: Chart, chartDataInfo) => {
   chartData.value = chartDataInfo
   renderChart(viewInfo, false)
 }
-const renderChart = (view: Chart, resetPageInfo: boolean) => {
-  if (!view) {
+const renderChart = (viewInfo: Chart, resetPageInfo: boolean) => {
+  if (!viewInfo) {
     return
   }
   // view 为引用对象 需要存库 view.data 直接赋值会导致保存不必要的数据
   const chart = {
-    ...defaultsDeep(view, cloneDeep(BASE_VIEW_CONFIG)),
+    ...defaultsDeep(viewInfo, cloneDeep(BASE_VIEW_CONFIG)),
     data: chartData.value
   } as ChartObj
   setupPage(chart, resetPageInfo)
   myChart?.destroy()
-  const chartView = chartViewManager.getChartView(view.render, view.type) as S2ChartView<any>
+  const chartView = chartViewManager.getChartView(
+    viewInfo.render,
+    viewInfo.type
+  ) as S2ChartView<any>
   myChart = chartView.drawChart({
     container: containerId,
     chart: toRaw(chart),
