@@ -49,6 +49,11 @@ router.beforeEach(async (to, from, next) => {
             return pre
           }, {})
         }
+        if (!pathValid(to.path) && to.path !== '/404' && !to.path.startsWith('/de-link')) {
+          const firstPath = getFirstAuthMenu()
+          next({ path: firstPath || '/404' })
+          return
+        }
         next()
         return
       }
