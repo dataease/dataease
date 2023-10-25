@@ -63,5 +63,18 @@ const switchValue = computed({
   align-items: center;
   padding-right: 8px;
   flex-grow: 1;
+  :deep(.ed-switch.is-checked .ed-switch__core > .ed-switch__action) {
+    left: calc(100% - 12px);
+  }
+  :deep(span.ed-switch__core) {
+    min-width: 24px;
+    border: none;
+    height: 6px;
+    border-radius: 3px;
+    .ed-switch__action {
+      left: 0;
+      box-shadow: 0 2px 4px rgba(31, 35, 41, 0.12);
+    }
+  }
 }
 </style>
