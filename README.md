@@ -16,12 +16,9 @@
 
 DataEase 是开源的数据可视化分析工具，帮助用户快速分析数据并洞察业务趋势，从而实现业务的改进与优化。DataEase 支持丰富的数据源连接，能够通过拖拉拽方式快速制作图表，并可以方便的与他人分享。
 
-**DataEase 的功能包括：**
+**DataEase 的工作原理：**
 
--   图表展示：支持 PC 端、移动端、大屏及嵌入式使用场景;
--   图表制作：支持丰富的图表类型、支持拖拉拽方式快速制作仪表板;
--   数据处理：基于 Apache Calcite，实现统一的 SQL 解析、验证、优化和执行;
--   数据连接：支持数据仓库/数据湖、OLAP 数据库、OLTP 数据库、Excel 数据文件、API 等各种数据源。
+![image](https://github.com/dataease/dataease/assets/41712985/68d46fac-985e-4d1d-8548-2baadf9cd2e8)
 
 **DataEase 的优势：**
 
