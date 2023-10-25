@@ -53,6 +53,13 @@ DataEase 是开源的数据可视化分析工具，帮助用户快速分析数�
 -   数据处理：[Apache Calcite](https://github.com/apache/calcite/)
 -   基础设施：[Docker](https://www.docker.com/)
 
+## DataEase 快速入门
+
+-   安装部署教程
+-   快速入门视频
+-   完整在线文档
+-   中文论坛支持
+
 ## License
 
 Copyright (c) 2014-2023 [FIT2CLOUD 飞致云](https://fit2cloud.com/), All rights reserved.
