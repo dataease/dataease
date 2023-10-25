@@ -2929,5 +2929,10 @@ export default {
     confirm_title: '強行登錄會導致其他客戶端掉線',
     confirm: '是否強行登錄？',
     forced_offline: '`當前賬號在客戶端【${ip}】登錄，您已被擠下線！`'
+  },
+  online_map: {
+    geometry: '地理信息',
+    onlinemap: '在線地圖',
+    empty_desc: '暫無在線地圖key'
   }
 }
