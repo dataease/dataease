@@ -211,6 +211,7 @@ for (let i = 0, len = list.length; i < len; i++) {
   const item = list[i]
   item.style = { ...commonStyle, ...item.style }
   item['commonBackground'] = deepCopy(COMMON_COMPONENT_BACKGROUND_BASE)
+  item['state'] = 'prepare'
   list[i] = { ...commonAttr, ...item }
 }
 
