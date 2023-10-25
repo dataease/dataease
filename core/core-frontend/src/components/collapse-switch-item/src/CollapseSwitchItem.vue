@@ -49,7 +49,7 @@ const switchValue = computed({
           :effect="themes"
           size="small"
           v-model="switchValue"
-          @click.stop="e => onSwitchChange(e)"
+          @click.stop="onSwitchChange"
         />
       </div>
     </template>
