@@ -995,7 +995,7 @@ onMounted(() => {
                   </el-col>
                 </el-row>
                 <span
-                  v-if="!['es', 'api', 'mongo'].includes(nodeInfo.type.toLowerCase())"
+                  v-if="!['es', 'api'].includes(nodeInfo.type.toLowerCase())"
                   class="de-expand"
                   @click="showPriority = !showPriority"
                   >{{ t('datasource.priority') }}
