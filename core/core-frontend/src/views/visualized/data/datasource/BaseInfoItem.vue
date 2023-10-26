@@ -29,6 +29,7 @@ defineProps({
   .value {
     margin-top: 4px;
     color: #1f2329;
+    white-space: pre-wrap;
   }
 }
 </style>
