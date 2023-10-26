@@ -134,7 +134,7 @@ public class DatasourceSyncManage {
         datasourceRequest.setDatasource(coreDatasource);
         List<DatasetTableDTO> tables = ApiUtils.getTables(datasourceRequest);
         for (DatasetTableDTO api : tables) {
-            CoreDatasourceTaskLog datasetTableTaskLog = datasourceTaskServer.initTaskLog(coreDatasource.getId(), taskId, api.getName(), scheduleType);
+            CoreDatasourceTaskLog datasetTableTaskLog = datasourceTaskServer.initTaskLog(coreDatasource.getId(), taskId, api.getTableName(), scheduleType);
             datasourceRequest.setTable(api.getTableName());
             List<TableField> tableFields = ApiUtils.getTableFields(datasourceRequest);
             try {
@@ -181,7 +181,7 @@ public class DatasourceSyncManage {
             LogUtil.error("Can not find datasource: " + datasourceId);
             return;
         }
-        CoreDatasourceTaskLog datasetTableTaskLog = datasourceTaskServer.initTaskLog(datasourceId,  null, name, MANUAL.toString());
+        CoreDatasourceTaskLog datasetTableTaskLog = datasourceTaskServer.initTaskLog(datasourceId,  null, tableName, MANUAL.toString());
 
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(coreDatasource);

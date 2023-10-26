@@ -55,6 +55,7 @@ public class CoreDatasourceTaskLogDTO implements Serializable {
      */
     private String taskStatus;
     private String tableName;
+    private String name;
 
     /**
      * 错误信息
