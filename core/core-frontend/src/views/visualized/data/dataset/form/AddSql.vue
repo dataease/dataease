@@ -1,9 +1,10 @@
-<script lang="ts" setup>
+<script lang="tsx" setup>
 import { ref, reactive, onMounted, PropType, toRefs, watch, onBeforeUnmount } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Base64 } from 'js-base64'
 import useClipboard from 'vue-clipboard3'
-import { ElMessage, ElMessageBox } from 'element-plus-secondary'
+import { ElMessage, ElMessageBox, ElIcon } from 'element-plus-secondary'
+import { Icon } from '@/components/icon-custom'
 import { getTableField } from '@/api/dataset'
 import CodeMirror from './CodeMirror.vue'
 import type { Field } from './UnionFieldList.vue'
@@ -76,6 +77,28 @@ const setActiveName = ({ name, enableCheck }) => {
   activeName.value = name
 }
 
+const generateColumns = (arr: Field[]) =>
+  arr.map(ele => ({
+    key: ele.originName,
+    deType: ele.deType,
+    dataKey: ele.originName,
+    title: ele.originName,
+    width: 170,
+    headerCellRenderer: ({ column }) => (
+      <div class="flex-align-center">
+        <ElIcon style={{ marginRight: '6px' }}>
+          <Icon
+            name={`field_${fieldType[column.deType]}`}
+            className={`field-icon-${fieldType[column.deType]}`}
+          ></Icon>
+        </ElIcon>
+        <span class="ellipsis" title={column.title} style={{ width: '120px' }}>
+          {column.title}
+        </span>
+      </div>
+    )
+  }))
+
 const referenceSetting = () => {
   showVariableMgm.value = true
   parseVariable()
@@ -118,19 +141,19 @@ const getDatasource = () => {
     }
   })
 }
-const dragHeight = ref(280)
+const dragHeight = ref(260)
 
 const mousedownDragH = () => {
   document.querySelector('.sql-eidtor').addEventListener('mousemove', calculateHeight)
 }
 
 const calculateHeight = (e: MouseEvent) => {
-  if (e.pageY - 164 < 280) {
-    dragHeight.value = 280
+  if (e.pageY - 164 < 64) {
+    dragHeight.value = 64
     return
   }
-  if (e.pageY - 164 > document.documentElement.clientHeight - 270) {
-    dragHeight.value = document.documentElement.clientHeight - 270
+  if (e.pageY - 164 > document.documentElement.clientHeight - 200) {
+    dragHeight.value = document.documentElement.clientHeight - 200
     return
   }
   dragHeight.value = e.pageY - 164
@@ -234,16 +257,23 @@ const handleClose = () => {
     close()
   }
 }
+
+const dataPreviewLoading = ref(false)
 const getSQLPreview = () => {
   parseVariable()
+  dataPreviewLoading.value = true
   getPreviewSql({
     sql: Base64.encode(codeCom.value.state.doc.toString()),
     datasourceId: sqlNode.value.datasourceId,
     sqlVariableDetails: JSON.stringify(state.variables)
-  }).then(res => {
-    state.plxTableData = res.data.data
-    state.fields = res.data.fields
   })
+    .then(res => {
+      state.plxTableData = res.data.data.map((ele, index) => ({ ...ele, id: index }))
+      state.fields = generateColumns(res.data.fields)
+    })
+    .finally(() => {
+      dataPreviewLoading.value = false
+    })
 }
 
 let tableList = []
@@ -346,8 +376,6 @@ const saveVariable = () => {
   showVariableMgm.value = false
   ElMessage.success('参数设置成功')
 }
-const fieldMap = ['text', 'time', 'value', 'value', 'value', 'location']
-
 const mousedownDrag = () => {
   document.querySelector('.sql-eidtor').addEventListener('mousemove', calculateHeight)
 }
@@ -552,35 +580,21 @@ const mousedownDrag = () => {
         </div>
         <div v-show="tabActive === 'result'" class="table-sql">
           <div class="table-scroll" v-if="state.fields.length">
-            <el-table
-              style="width: 100%"
-              height="100%"
-              header-cell-class-name="header-cell"
-              :data="state.plxTableData"
-              border
-            >
-              <el-table-column
-                v-for="(field, index) in state.fields"
-                :key="field.originName"
-                :width="!!index ? '300px' : 'auto'"
-                show-overflow-tooltip
-                :prop="field.originName"
-                :label="field.originName"
-                resizable
-              >
-                <template #header>
-                  <div class="flex-align-center">
-                    <el-icon style="margin-right: 6px">
-                      <Icon
-                        :name="`field_${fieldMap[field.deType]}`"
-                        :className="`field-icon-${fieldMap[field.deType]}`"
-                      ></Icon>
-                    </el-icon>
-                    {{ field.originName }}
-                  </div>
-                </template>
-              </el-table-column>
-            </el-table>
+            <el-auto-resizer>
+              <template #default="{ height, width }">
+                <el-table-v2
+                  :columns="state.fields"
+                  v-loading="dataPreviewLoading"
+                  header-class="header-cell"
+                  :data="state.plxTableData"
+                  :width="width"
+                  :height="height"
+                  fixed
+                  ><template #empty>
+                    <empty-background description="暂无数据" img-type="noneWhite" /> </template
+                ></el-table-v2>
+              </template>
+            </el-auto-resizer>
           </div>
           <template v-else>
             <empty-background description=" " img-type="noneWhite">
@@ -972,14 +986,19 @@ const mousedownDrag = () => {
       }
 
       .table-sql {
+        margin-top: 1px;
         height: calc(100% - 46px);
         width: 100%;
-        padding: 16px 25px 18px 25px;
         overflow: auto;
         box-sizing: border-box;
 
         .table-scroll {
-          float: left;
+          .ed-table-v2 {
+            --ed-table-header-bg-color: #f5f6f7;
+            :deep(.header-cell) {
+              border-top: none;
+            }
+          }
           width: 100%;
           height: 100%;
         }
@@ -1055,6 +1074,24 @@ const mousedownDrag = () => {
 
   .save-or-cancel {
     margin-left: auto;
+
+    .ed-button--primary:focus {
+      color: var(--ed-button-hover-text-color);
+      border-color: var(--ed-color-primary);
+      background-color: var(--ed-color-primary);
+    }
+
+    .ed-button--primary:hover {
+      color: var(--ed-button-hover-text-color);
+      border-color: var(--ed-button-hover-border-color);
+      background-color: var(--ed-button-hover-bg-color);
+    }
+
+    .ed-button--primary:active {
+      color: var(--ed-button-active-text-color);
+      border-color: var(--ed-button-active-border-color);
+      background-color: var(--ed-button-active-bg-color);
+    }
     .ed-divider--vertical {
       margin: 0 10px 0 16px;
     }
