@@ -1236,7 +1236,7 @@ onMounted(() => {
         @size-change="handleRecordSizeChange"
         @current-change="handleRecordCurrentChange"
       >
-        <el-table-column prop="tableName" :label="t('datasource.data_table')"></el-table-column>
+        <el-table-column prop="name" :label="t('datasource.data_table')"></el-table-column>
         <el-table-column prop="triggerType" :label="t('datasource.sync_rate')">
           <template #default="scope">
             <div class="flex-align-center">
