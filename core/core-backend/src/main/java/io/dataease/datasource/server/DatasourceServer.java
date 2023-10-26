@@ -846,11 +846,24 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     public IPage<CoreDatasourceTaskLogDTO> listSyncRecord(int goPage, int pageSize, Long dsId) {
+
+
         QueryWrapper<CoreDatasourceTaskLogDTO> wrapper = new QueryWrapper<>();
         wrapper.eq("ds_id", dsId);
         wrapper.orderByDesc("start_time");
         Page<CoreDatasourceTaskLogDTO> page = new Page<>(goPage, pageSize);
         IPage<CoreDatasourceTaskLogDTO> pager = taskLogExtMapper.pager(page, wrapper);
+        CoreDatasource coreDatasource = datasourceMapper.selectById(dsId);
+        DatasourceRequest datasourceRequest = new DatasourceRequest();
+        datasourceRequest.setDatasource(coreDatasource);
+        List<DatasetTableDTO> datasetTableDTOS = ApiUtils.getTables(datasourceRequest);
+        for (int i = 0; i < pager.getRecords().size(); i++) {
+            for (int i1 = 0; i1 < datasetTableDTOS.size(); i1++) {
+                if(pager.getRecords().get(i).getTableName().equalsIgnoreCase(datasetTableDTOS.get(i1).getTableName())){
+                    pager.getRecords().get(i).setName(datasetTableDTOS.get(i1).getName());
+                }
+            }
+        }
         return pager;
     }
 

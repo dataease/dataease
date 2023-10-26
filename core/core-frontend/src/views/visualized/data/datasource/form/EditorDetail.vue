@@ -737,7 +737,7 @@ defineExpose({
             </el-select>
           </el-form-item>
           <span
-            v-if="!['es', 'api', 'mongo'].includes(form.type)"
+            v-if="!['es', 'api'].includes(form.type)"
             class="de-expand"
             @click="showPriority = !showPriority"
             >{{ t('datasource.priority') }}

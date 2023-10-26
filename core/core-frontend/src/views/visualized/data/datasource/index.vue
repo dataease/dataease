@@ -995,7 +995,7 @@ onMounted(() => {
                   </el-col>
                 </el-row>
                 <span
-                  v-if="!['es', 'api', 'mongo'].includes(nodeInfo.type.toLowerCase())"
+                  v-if="!['es', 'api'].includes(nodeInfo.type.toLowerCase())"
                   class="de-expand"
                   @click="showPriority = !showPriority"
                   >{{ t('datasource.priority') }}
@@ -1236,7 +1236,7 @@ onMounted(() => {
         @size-change="handleRecordSizeChange"
         @current-change="handleRecordCurrentChange"
       >
-        <el-table-column prop="tableName" :label="t('datasource.data_table')"></el-table-column>
+        <el-table-column prop="name" :label="t('datasource.data_table')"></el-table-column>
         <el-table-column prop="triggerType" :label="t('datasource.sync_rate')">
           <template #default="scope">
             <div class="flex-align-center">
