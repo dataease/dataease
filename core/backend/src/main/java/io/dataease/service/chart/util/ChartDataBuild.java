@@ -974,15 +974,19 @@ public class ChartDataBuild {
         tableRow.forEach(row -> {
             String key = xAxis.stream().map(x -> String.format(format, row.get(x.getDataeaseName()).toString())).collect(Collectors.joining("-de-"));
             List<String[]> detailFieldValueList = groupDataList.get(key);
-            List<Map<String, Object>> detailValueMapList = detailFieldValueList.stream().map((detailArr -> {
-                Map<String, Object> temp = new HashMap<>();
-                for (int i = 0; i < realDetailFields.size(); i++) {
-                    ChartViewFieldDTO realDetailField = realDetailFields.get(i);
-                    temp.put(realDetailField.getDataeaseName(), detailArr[detailIndex + i]);
-                }
-                return temp;
-            })).collect(Collectors.toList());
-            row.put("details", detailValueMapList);
+            if (CollectionUtils.isNotEmpty(detailFieldValueList)) {
+                List<Map<String, Object>> detailValueMapList = detailFieldValueList.stream().map((detailArr -> {
+                    Map<String, Object> temp = new HashMap<>();
+                    for (int i = 0; i < realDetailFields.size(); i++) {
+                        ChartViewFieldDTO realDetailField = realDetailFields.get(i);
+                        temp.put(realDetailField.getDataeaseName(), detailArr[detailIndex + i]);
+                    }
+                    return temp;
+                })).collect(Collectors.toList());
+                row.put("details", detailValueMapList);
+            } else {
+                row.put("details", new ArrayList<>());
+            }
         });
 
         ChartViewFieldDTO detailFieldDTO = new ChartViewFieldDTO();
@@ -1253,7 +1257,7 @@ public class ChartDataBuild {
                 quotaList.add(chartQuotaDTO);
                 axisChartDataDTO.setQuotaList(quotaList);
             }
-            if (yAxis.size() == 2){
+            if (yAxis.size() == 2) {
                 try {
                     axisChartDataDTO.setValue(StringUtils.isEmpty(row[xAxis.size()]) ? null : new BigDecimal(row[xAxis.size()]));
                 } catch (Exception e) {
