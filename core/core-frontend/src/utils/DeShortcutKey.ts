@@ -97,19 +97,24 @@ const checkDialog = () => {
 }
 
 let isCtrlOrCommandDown = false
+let isShiftDown = false
 // 全局监听按键操作并执行相应命令
 export function listenGlobalKeyDown() {
   window.onkeydown = e => {
+    console.log('e.keyCode-down=' + e.keyCode)
     if (!isInEditor || checkDialog()) return
     const { keyCode } = e
     if (positionMoveKey[keyCode] && curComponent.value) {
       positionMoveKey[keyCode](keyCode)
       e.preventDefault()
     } else if (keyCode === shiftKey) {
+      isShiftDown = true
       composeStore.setIsShiftDownStatus(true)
+      releaseKeyCheck()
     } else if (keyCode === ctrlKey || keyCode === commandKey) {
       isCtrlOrCommandDown = true
       composeStore.setIsCtrlOrCmdDownStatus(true)
+      releaseKeyCheck()
     } else if ((keyCode == deleteKey || keyCode == macDeleteKey) && curComponent.value) {
       deleteComponent()
     } else if (isCtrlOrCommandDown) {
@@ -124,16 +129,28 @@ export function listenGlobalKeyDown() {
   }
 
   window.onkeyup = e => {
+    console.log('e.keyCode=' + e.keyCode)
     if (e.keyCode === ctrlKey || e.keyCode === commandKey) {
       isCtrlOrCommandDown = false
       composeStore.setIsCtrlOrCmdDownStatus(false)
     } else if (e.keyCode === shiftKey) {
+      isShiftDown = true
       composeStore.setIsShiftDownStatus(false)
     }
   }
 
   window.onmousedown = () => {
     dvMainStore.setInEditorStatus(false)
+  }
+}
+
+//当前不支持同时ctrl + shift操作
+function releaseKeyCheck() {
+  if (isCtrlOrCommandDown && isShiftDown) {
+    isCtrlOrCommandDown = false
+    composeStore.setIsCtrlOrCmdDownStatus(false)
+    isShiftDown = true
+    composeStore.setIsShiftDownStatus(false)
   }
 }
 

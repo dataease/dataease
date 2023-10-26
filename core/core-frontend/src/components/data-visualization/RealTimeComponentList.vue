@@ -93,7 +93,9 @@ let nameEdit = ref(false)
 let editComponentId = ref('')
 let inputName = ref('')
 let nameInput = ref(null)
+let curEditComponent = null
 const editComponentName = item => {
+  curEditComponent = curComponent.value
   editComponentId.value = `#component-label-${item.id}`
   nameEdit.value = true
   inputName.value = item.name
@@ -106,11 +108,12 @@ const closeEditComponentName = () => {
   if (!inputName.value || !inputName.value.trim()) {
     return
   }
-  if (inputName.value.trim() === curComponent.value.name) {
+  if (inputName.value.trim() === curEditComponent.name) {
     return
   }
-  curComponent.value.name = inputName.value
+  curEditComponent.name = inputName.value
   inputName.value = ''
+  curEditComponent = null
 }
 
 const lock = () => {
@@ -221,12 +224,15 @@ const handleContextMenu = e => {
                   areaData.components.includes(getComponent(index))
               }"
               @click="onClick($event, transformIndex(index))"
-              @dblclick="editComponentName(getComponent(index))"
             >
               <el-icon class="component-icon">
                 <Icon :name="getIconName(getComponent(index))"></Icon>
               </el-icon>
-              <span :id="`component-label-${getComponent(index)?.id}`" class="component-label">
+              <span
+                :id="`component-label-${getComponent(index)?.id}`"
+                class="component-label"
+                @dblclick="editComponentName(getComponent(index))"
+              >
                 {{ getComponent(index)?.name }}
               </span>
               <div

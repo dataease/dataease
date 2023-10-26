@@ -453,8 +453,9 @@ onMounted(() => {
         return
       }
       initTitle()
+      const viewInfo = val ? val : view.value
       nextTick(() => {
-        chartComponent?.value?.renderChart(val)
+        chartComponent?.value?.renderChart(viewInfo)
       })
     }
   })
