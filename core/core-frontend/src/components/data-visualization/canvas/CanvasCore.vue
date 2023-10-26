@@ -252,7 +252,7 @@ const handleMouseDown = e => {
   }
   // 如果没有选中组件 在画布上点击时需要调用 e.preventDefault() 防止触发 drop 事件
   if (!curComponent.value || isPreventDrop(curComponent.value.component)) {
-    e.preventDefault()
+    // e.preventDefault()
   }
   hideArea()
   const rectInfo = editorMap.value[canvasId.value].getBoundingClientRect()
