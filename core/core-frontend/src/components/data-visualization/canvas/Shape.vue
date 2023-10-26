@@ -385,9 +385,9 @@ const handleMouseDownOnShape = e => {
   nextTick(() => eventBus.emit('componentClick'))
   dvMainStore.setInEditorStatus(true)
   dvMainStore.setClickComponentStatus(true)
-  if (isPreventDrop(element.value.component)) {
-    e.preventDefault()
-  }
+  // if (isPreventDrop(element.value.component)) {
+  //   e.preventDefault()
+  // }
 
   e.stopPropagation()
   if (element.value['isLock'] || !isEditMode.value) return

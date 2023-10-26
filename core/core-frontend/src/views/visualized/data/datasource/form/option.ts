@@ -86,12 +86,6 @@ export const dsTypes = [
     extraParams: ''
   },
   {
-    type: 'db2',
-    name: 'Db2',
-    catalog: 'OLTP',
-    extraParams: ''
-  },
-  {
     type: 'redshift',
     name: 'AWS Redshift',
     catalog: 'DL',

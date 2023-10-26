@@ -4,7 +4,6 @@
   <a href="https://www.gnu.org/licenses/gpl-3.0.html"><img src="https://img.shields.io/github/license/dataease/dataease?color=%231890FF" alt="License: GPL v3"></a>
   <a href="https://app.codacy.com/gh/dataease/dataease?utm_source=github.com&utm_medium=referral&utm_content=dataease/dataease&utm_campaign=Badge_Grade_Dashboard"><img src="https://app.codacy.com/project/badge/Grade/da67574fd82b473992781d1386b937ef" alt="Codacy"></a>
   <a href="https://github.com/dataease/dataease"><img src="https://img.shields.io/github/stars/dataease/dataease?color=%231890FF&style=flat-square" alt="Stars"></a>
-  <a href="https://app.fossa.com/projects/git%2Bgithub.com%2F1dataease%2Fdataease?ref=badge_shield"><img src="https://app.fossa.com/api/projects/git%2Bgithub.com%2Fdataease%2Fdataease.svg?type=shield" alt="FOSSA Status"></a>  
 </p>
 
 |说明|
@@ -16,9 +15,7 @@
 
 DataEase 是开源的数据可视化分析工具，帮助用户快速分析数据并洞察业务趋势，从而实现业务的改进与优化。DataEase 支持丰富的数据源连接，能够通过拖拉拽方式快速制作图表，并可以方便的与他人分享。
 
-**DataEase 的工作原理：**
-
-![image](https://github.com/dataease/dataease/assets/41712985/68d46fac-985e-4d1d-8548-2baadf9cd2e8)
+![DataEase 概览图](https://github.com/dataease/dataease/assets/41712985/ef020c86-68e0-43a3-8054-f51463eae361)
 
 **DataEase 的优势：**
 
@@ -55,10 +52,11 @@ DataEase 是开源的数据可视化分析工具，帮助用户快速分析数�
 
 ## DataEase 快速入门
 
--   安装部署教程
--   快速入门视频
--   完整在线文档
--   中文论坛支持
+-   [安装部署教程](https://dataease.io/docs/installation/installation_mode/)
+-   [快速入门视频](https://www.bilibili.com/video/BV1qG4y1F7uc/)
+-   [完整在线文档](https://dataease.io/docs/)
+-   [中文社区论坛](https://bbs.fit2cloud.com/c/de/6)
+-   [模板应用市场](https://dataease.io/templates/)
 
 ## License
 

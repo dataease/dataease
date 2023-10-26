@@ -2,6 +2,7 @@ import { defineStore, storeToRefs } from 'pinia'
 import { store } from '../../index'
 import { dvMainStoreWithOut } from './dvMain'
 import { swap } from '@/utils/utils'
+import { useEmitt } from '@/hooks/web/useEmitt'
 
 const dvMainStore = dvMainStoreWithOut()
 const { componentData, curComponentIndex, curComponent } = storeToRefs(dvMainStore)
@@ -52,6 +53,11 @@ export const layerStore = defineStore('layer', {
       // 显示
       if (curComponent && curComponent.value) {
         curComponent.value.isShow = true
+        if (curComponent.value.innerType.indexOf('table') !== -1) {
+          setTimeout(() => {
+            useEmitt().emitter.emit('renderChart-' + curComponent.value.id)
+          }, 400)
+        }
       }
     }
   }
