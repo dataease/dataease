@@ -123,9 +123,19 @@ keep_doris="false"
 if [[ -f ${DE_RUN_BASE}/docker-compose-doris.yml ]]; then
    current_doris_version=$(grep '^    image:' ${DE_RUN_BASE}/docker-compose-doris.yml | head -1 | cut -d ':' -f3)
    if [[ ! $current_doris_version =~ "v1.2.4" ]]; then
-      echo "不升级doris，备份 docker-compose-doris.yml 文件"
+      echo "不升级doris，备份 docker-compose-doris.yml 文件" | tee -a ${CURRENT_DIR}/install.log
       keep_doris="true"
       \cp ${DE_RUN_BASE}/docker-compose-doris.yml ${DE_RUN_BASE}/docker-compose-doris.yml.bak
+   fi
+fi
+
+keep_mysql="false"
+if [[ -f ${DE_RUN_BASE}/docker-compose-mysql.yml ]]; then
+   current_mysql_version=$(grep '^    image:' ${DE_RUN_BASE}/docker-compose-mysql.yml | head -1 | cut -d ':' -f3)
+   if [[ ! $current_mysql_version =~ "8." ]]; then
+      echo "不升级MySQL，备份 docker-compose-mysql.yml 文件" | tee -a ${CURRENT_DIR}/install.log
+      keep_mysql="true"
+      \cp ${DE_RUN_BASE}/docker-compose-mysql.yml ${DE_RUN_BASE}/docker-compose-mysql.yml.bak
    fi
 fi
 
@@ -154,6 +164,10 @@ mkdir -p ${DE_RUN_BASE}/data/business
 
 if [ ${keep_doris} = "true" ]; then
    \mv ${DE_RUN_BASE}/docker-compose-doris.yml.bak ${DE_RUN_BASE}/docker-compose-doris.yml
+fi
+
+if [ ${keep_mysql} = "true" ]; then
+   \mv ${DE_RUN_BASE}/docker-compose-mysql.yml.bak ${DE_RUN_BASE}/docker-compose-mysql.yml
 fi
 
 DE_MYSQL_HOST_ORIGIN=$DE_MYSQL_HOST
