@@ -265,7 +265,9 @@ public class DatasourceServer implements DatasourceApi {
                     DEException.throwException("Failed to create table " + datasourceRequest.getTable());
                 }
             }
-            datasourceSyncManage.extractExcelData(coreDatasource, "all_scope");
+            commonThreadPool.addTask(() -> {
+                datasourceSyncManage.extractExcelData(coreDatasource, "all_scope");
+            });
         } else if (dataSourceDTO.getType().equals(DatasourceConfiguration.DatasourceType.API.name())) {
             CoreDatasourceTask coreDatasourceTask = new CoreDatasourceTask();
             BeanUtils.copyBean(coreDatasourceTask, dataSourceDTO.getSyncSetting());
