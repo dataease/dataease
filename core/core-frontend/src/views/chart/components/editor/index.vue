@@ -8,6 +8,7 @@ import {
   computed,
   nextTick,
   onBeforeMount,
+  onMounted,
   provide,
   h
 } from 'vue'
@@ -94,6 +95,11 @@ let cacheId = ''
 
 onBeforeMount(() => {
   cacheId = route.query.id as unknown as string
+})
+
+const isDataEaseBi = ref(false)
+onMounted(() => {
+  isDataEaseBi.value = !!window.DataEaseBi
 })
 const dsFieldDragOptions = { group: { name: 'drag', pull: 'clone' }, sort: true }
 
@@ -1731,7 +1737,7 @@ const onRefreshChange = val => {
                   :class="{ dark: themes === 'dark' }"
                   style="margin-left: 8px"
                   @click="editDs"
-                  v-if="curDatasetWeight >= 7"
+                  v-if="curDatasetWeight >= 7 && !isDataEaseBi"
                 >
                   <Icon name="icon_edit_outlined" class="el-icon-arrow-down el-icon-delete" />
                 </el-icon>
