@@ -399,7 +399,7 @@ const getEmptyDesc = (): string => {
     }
   }
 }
-.workbranch-grid ::v-deep(.ed-empty) {
+.workbranch-grid :deep(.ed-empty) {
   padding: 80px 0 !important;
   .ed-empty__description {
     margin-top: 0px;

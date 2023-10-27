@@ -197,7 +197,7 @@ const composeDivider = computed(() => {
     background-color: #292929;
     box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
     box-sizing: border-box;
-    ::v-deep(.ed-divider) {
+    :deep(.ed-divider) {
       margin: 8px 0;
     }
 

@@ -156,7 +156,7 @@ watch(
   border-radius: 3px;
 }
 
-::v-deep .el-popover {
+:deep(.el-popover) {
   height: 200px;
   overflow: auto;
 }

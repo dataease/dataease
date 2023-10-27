@@ -715,22 +715,6 @@ defineExpose({
 </script>
 
 <style scoped lang="less">
-.my_table ::v-deep .el-table__row > td {
-  /* 去除表格线 */
-  border: none;
-  padding: 0 0;
-}
-
-.my_table ::v-deep .el-table th.is-leaf {
-  /* 去除上边框 */
-  border: none;
-}
-
-.my_table ::v-deep .el-table::before {
-  /* 去除下边框 */
-  height: 0;
-}
-
 .root-class {
   margin: 15px 0px 5px;
   justify-content: right;
@@ -807,11 +791,11 @@ defineExpose({
   overflow-y: auto;
 }
 
-/deep/ .vue-treeselect__control {
+:deep(.vue-treeselect__control) {
   height: 28px;
 }
 
-/deep/ .vue-treeselect__single-value {
+:deep(.vue-treeselect__single-value) {
   color: #606266;
   line-height: 28px !important;
 }

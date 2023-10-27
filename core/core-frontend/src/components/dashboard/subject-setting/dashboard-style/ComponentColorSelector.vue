@@ -311,14 +311,14 @@ span {
   font-size: 12px;
 }
 
-.color-type ::v-deep .el-radio__input {
+.color-type :deep(.el-radio__input) {
   display: none;
 }
 .ed-radio {
   margin: 0 2px 0 0 !important;
   border: 1px solid transparent;
 }
-.el-radio ::v-deep .el-radio__label {
+.el-radio :deep(.el-radio__label) {
   padding-left: 0;
 }
 
