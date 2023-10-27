@@ -21,7 +21,7 @@ import 'tinymce/plugins/code' // 源码
 
 //接下来定义编辑器所需要的插件数据
 import { reactive, ref } from 'vue'
-import { onMounted, defineEmits, watch } from 'vue'
+import { onMounted, watch } from 'vue'
 import axios from 'axios'
 // import { updateImg } from '@/api/order/order'
 const emits = defineEmits(['getContent'])

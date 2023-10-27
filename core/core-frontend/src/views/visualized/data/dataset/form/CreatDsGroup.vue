@@ -113,10 +113,7 @@ const showAll = ref(true)
 const dataset = ref()
 const loading = ref(false)
 const createDataset = ref(false)
-let tData = []
-const filterMethod = value => {
-  state.tData = [...tData].filter(item => item.name.includes(value))
-}
+const filterMethod = (value, data) => data.name.includes(value)
 const resetForm = () => {
   createDataset.value = false
 }
@@ -160,7 +157,6 @@ const createInit = (type, data: Tree, exec, name: string) => {
         state.tData[0].name = '数据集'
       }
       data.id = formatRootMiss(data.id, state.tData)
-      tData = [...state.tData]
       if (exec) {
         pid.value = data.pid
         id.value = data.id
@@ -322,7 +318,7 @@ const emits = defineEmits(['finish'])
           style="width: 100%"
           :props="props"
           @node-click="nodeClick"
-          :filter-method="filterMethod"
+          :filter-node-method="filterMethod"
           filterable
         >
           <template #default="{ data: { name } }">
