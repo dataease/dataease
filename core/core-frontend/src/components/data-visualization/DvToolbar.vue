@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import eventBus from '@/utils/eventBus'
-import { ref, nextTick } from 'vue'
+import { ref, nextTick, onMounted } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { storeToRefs } from 'pinia'
@@ -131,6 +131,10 @@ const getFullScale = () => {
   const curWidth = dvToolbarMain.value.clientWidth
   return (curWidth * 100) / canvasStyleData.value.width
 }
+const isDataEaseBi = ref(false)
+onMounted(() => {
+  isDataEaseBi.value = !!window.DataEaseBi
+})
 
 eventBus.on('preview', preview)
 eventBus.on('save', saveCanvasWithCheck)
@@ -148,7 +152,7 @@ eventBus.on('clearCanvas', clearCanvas)
         </div>
         <div class="middle-area"></div>
       </template>
-      <template v-else>
+      <template v-else-if="!isDataEaseBi">
         <el-icon class="custom-el-icon back-icon" @click="backToMain()">
           <Icon class="toolbar-icon" name="icon_left_outlined" />
         </el-icon>

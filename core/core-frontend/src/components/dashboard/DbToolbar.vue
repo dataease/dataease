@@ -2,7 +2,7 @@
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import eventBus from '@/utils/eventBus'
 import { deepCopy } from '@/utils/utils'
-import { nextTick, reactive, ref, computed } from 'vue'
+import { nextTick, reactive, ref, computed, onMounted } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { storeToRefs } from 'pinia'
@@ -299,6 +299,10 @@ const saveLinkageSetting = () => {
 const onDvNameChange = () => {
   snapshotStore.recordSnapshotCache()
 }
+const isDataEaseBi = ref(false)
+onMounted(() => {
+  isDataEaseBi.value = !!window.DataEaseBi
+})
 </script>
 
 <template>
@@ -313,7 +317,11 @@ const onDvNameChange = () => {
         <div class="middle-area"></div>
       </template>
       <template v-else>
-        <el-icon v-if="!batchOptStatus" class="custom-el-icon back-icon" @click="backToMain()">
+        <el-icon
+          v-if="!batchOptStatus && !isDataEaseBi"
+          class="custom-el-icon back-icon"
+          @click="backToMain()"
+        >
           <Icon class="toolbar-icon" name="icon_left_outlined" />
         </el-icon>
         <div class="left-area" v-if="editMode === 'edit' && !batchOptStatus">

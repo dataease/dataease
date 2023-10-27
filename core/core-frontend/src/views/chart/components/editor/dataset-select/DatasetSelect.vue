@@ -213,9 +213,10 @@ function getNode(nodeId: number) {
 }
 
 defineExpose({ getNode })
-
+const isDataEaseBi = ref(false)
 onMounted(() => {
   initDataset()
+  isDataEaseBi.value = !!window.DataEaseBi
 })
 </script>
 
@@ -321,7 +322,7 @@ onMounted(() => {
               </el-tree>
             </el-scrollbar>
           </el-main>
-          <el-footer>
+          <el-footer v-if="!isDataEaseBi">
             <div class="footer-container">
               <el-button type="primary" :icon="Plus" link class="add-btn" @click="addDataset">
                 新建数据集

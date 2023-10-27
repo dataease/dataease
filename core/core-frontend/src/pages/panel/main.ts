@@ -58,11 +58,13 @@ import { setupI18n } from '@/plugins/vue-i18n'
 import { setupStore } from '@/store'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import { setupElementPlus } from '@/plugins/element-plus'
+import { setupRouter } from '@/router'
 
 const setupAll = async (dom: string, componentName: string): Promise<App<Element>> => {
   const app = createApp(AppElement, { componentName })
   await setupI18n(app)
   setupStore(app)
+  setupRouter(app)
   setupElementPlus(app)
   const userStore = useUserStoreWithOut()
   await userStore.setUser()
