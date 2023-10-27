@@ -65,6 +65,7 @@ export const snapshotStore = defineStore('snapshot', {
           deepCopy(this.snapshotData[this.snapshotIndex]) || getDefaultCanvasInfo()
         // undo 是当前没有记录
         this.snapshotPublish(componentSnapshot)
+        this.styleChangeTimes++
       }
     },
 
@@ -73,6 +74,7 @@ export const snapshotStore = defineStore('snapshot', {
         this.snapshotIndex++
         const snapshotInfo = deepCopy(this.snapshotData[this.snapshotIndex])
         this.snapshotPublish(snapshotInfo)
+        this.styleChangeTimes++
       }
     },
     snapshotPublish(snapshotInfo) {
