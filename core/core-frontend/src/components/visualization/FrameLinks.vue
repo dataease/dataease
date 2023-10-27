@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineEmits, reactive, ref, toRefs, watch } from 'vue'
+import { reactive, ref, toRefs, watch } from 'vue'
 import { dvMainStoreWithOut } from '../../store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia/dist/pinia'
 import { checkAddHttp, deepCopy } from '../../utils/utils'
