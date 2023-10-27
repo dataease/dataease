@@ -19,21 +19,117 @@
       }}</el-button>
     </el-aside>
     <el-main>
-      <div class="de-map-container" :id="domId" />
+      <div v-show="mapLoaded" v-if="!mapReloading" class="de-map-container" :id="domId" />
+      <EmptyBackground
+        v-if="!mapLoaded"
+        img-type="noneWhite"
+        :description="t('online_map.empty_desc')"
+      />
     </el-main>
   </el-container>
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { nextTick, onMounted, ref } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
+import { queryMapKeyApi, saveMapKeyApi } from '@/api/setting/sysParameter'
+import { ElMessage } from 'element-plus-secondary'
+import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 const { t } = useI18n()
 const key = ref('')
-
+const mapInstance = ref(null)
+const mapReloading = ref(false)
 const domId = ref('de-map-container')
-const saveHandler = () => {
-  console.log(111)
+const mapLoaded = ref(false)
+
+const loadMap = () => {
+  if (!key.value) {
+    return
+  }
+  const mykey = key.value
+  const url = `https://webapi.amap.com/maps?v=2.0&key=${mykey}`
+
+  loadScript(url)
+    .then(() => {
+      if (mapInstance.value) {
+        mapInstance.value?.destroy()
+        mapInstance.value = null
+        mapReloading.value = true
+        setTimeout(() => {
+          domId.value = domId.value + '-de-'
+          mapReloading.value = false
+          nextTick(() => {
+            createMapInstance()
+          })
+        }, 1500)
+
+        return
+      }
+      createMapInstance()
+    })
+    .catch(e => {
+      if (mapInstance.value) {
+        mapInstance.value.destroy()
+        mapInstance.value = null
+      }
+      console.error(e)
+    })
 }
+const createMapInstance = () => {
+  mapInstance.value = new window.AMap.Map(domId.value, {
+    viewMode: '2D',
+    zoom: 11,
+    center: [116.397428, 39.90923]
+  })
+  mapLoaded.value = true
+}
+const saveHandler = () => {
+  saveMapKeyApi({ key: key.value })
+    .then(() => {
+      ElMessage.success(t('commons.save_success'))
+      initLoad()
+    })
+    .catch(e => {
+      console.error(e)
+    })
+}
+const initLoad = () => {
+  queryMapKeyApi()
+    .then(res => {
+      key.value = res.data
+      loadMap()
+    })
+    .catch(e => {
+      console.error(e)
+    })
+}
+const loadScript = (url: string) => {
+  return new Promise(function (resolve, reject) {
+    const scriptId = 'de-gaode-script-id'
+    let dom = document.getElementById(scriptId)
+    if (dom) {
+      dom.parentElement?.removeChild(dom)
+      dom = null
+      window.AMap = null
+    }
+    var script = document.createElement('script')
+
+    script.id = scriptId
+    script.onload = function () {
+      return resolve(null)
+    }
+    script.onerror = function () {
+      return reject(new Error('Load script from '.concat(url, ' failed')))
+    }
+    script.src = url
+    var head = document.head || document.getElementsByTagName('head')[0]
+    ;(document.body || head).appendChild(script)
+  })
+}
+
+onMounted(() => {
+  initLoad()
+})
 </script>
 
 <style lang="less" scoped>
