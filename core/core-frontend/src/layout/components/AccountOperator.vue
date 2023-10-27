@@ -65,6 +65,10 @@ const openLanguage = () => {
 const openPopover = () => {
   unref(popoverRef).popperRef?.delayHide?.()
 }
+
+if (uid.value === '1') {
+  linkLoaded([{ id: 4, link: '/sys-setting/parameter', label: t('commons.system_setting') }])
+}
 </script>
 
 <template>
@@ -135,11 +139,6 @@ const openPopover = () => {
 
   <AboutPage />
   <XpackComponent jsname="dWNlbnRlci1oYW5kbGVy" @loaded="linkLoaded" />
-  <XpackComponent
-    v-if="uid === '1'"
-    jsname="c2V0dGluZy9zZXR0aW5nLWhhbmRsZXI="
-    @loaded="linkLoaded"
-  />
 </template>
 
 <style lang="less">

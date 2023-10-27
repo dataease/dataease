@@ -2114,5 +2114,9 @@ export default {
     pwd_format_error: '请输入4位数字或字母',
     sure_bt: '确定',
     back_parent: '返回上一级'
+  },
+  online_map: {
+    geometry: '地理信息',
+    onlinemap: '在线地图'
   }
 }

@@ -1,0 +1,53 @@
+<template>
+  <p class="router-title">系统参数</p>
+  <el-tabs v-model="activeName" @tab-click="handleClick">
+    <el-tab-pane v-for="item in tabArray" :key="item.name" :label="item.label" :name="item.name" />
+  </el-tabs>
+  <div class="sys-setting-p">
+    <div class="container-sys-param">
+      <map-setting v-if="activeName === 'map'" />
+    </div>
+  </div>
+</template>
+
+<script lang="ts" setup>
+import { ref } from 'vue'
+import { useI18n } from '@/hooks/web/useI18n'
+import MapSetting from './map/MapSetting.vue'
+const { t } = useI18n()
+
+const tabArray = [
+  /* {label: '基础设置', name: 'basic'},
+    {label: '邮件设置', name: 'email'}, */
+  { label: '地图设置', name: 'map' }
+  /* {label: '引擎设置', name: 'engine'}, */
+]
+const activeName = ref('map')
+const handleClick = (tab, event: Event) => {
+  console.log(tab, event)
+}
+</script>
+<style lang="less">
+.router-title {
+  color: #1f2329;
+  font-feature-settings: 'clig' off, 'liga' off;
+  font-family: PingFang SC;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 28px;
+}
+.sys-setting-p {
+  width: 100%;
+  background: var(--ContentBG, #ffffff);
+  height: calc(100% - 95px);
+  box-sizing: border-box;
+  margin-top: 12px;
+}
+
+.container-sys-param {
+  height: 100%;
+  overflow-y: auto;
+}
+</style>
+<style lang="less" scoped></style>
