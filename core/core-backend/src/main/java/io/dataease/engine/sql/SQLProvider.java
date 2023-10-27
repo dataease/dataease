@@ -56,7 +56,10 @@ public class SQLProvider {
             if (ObjectUtils.isNotEmpty(xFields)) {
                 xOrders = new ArrayList<>();
                 SQLObj sqlObj = xFields.get(0);
-                SQLObj result = SQLObj.builder().orderField(sqlObj.getFieldAlias()).orderAlias(sqlObj.getFieldAlias()).orderDirection("ASC").build();
+                SQLObj result = SQLObj.builder()
+                        .orderField(String.format(SQLConstants.FIELD_DOT, sqlObj.getFieldAlias()))
+                        .orderAlias(String.format(SQLConstants.FIELD_DOT, sqlObj.getFieldAlias()))
+                        .orderDirection("ASC").build();
                 xOrders.add(result);
             }
         }
@@ -115,7 +118,10 @@ public class SQLProvider {
         if (needOrder && ObjectUtils.isEmpty(orders)) {
             if (ObjectUtils.isNotEmpty(xFields) || ObjectUtils.isNotEmpty(yFields)) {
                 SQLObj sqlObj = ObjectUtils.isNotEmpty(xFields) ? xFields.get(0) : yFields.get(0);
-                SQLObj result = SQLObj.builder().orderField(sqlObj.getFieldAlias()).orderAlias(sqlObj.getFieldAlias()).orderDirection("ASC").build();
+                SQLObj result = SQLObj.builder()
+                        .orderField(String.format(SQLConstants.FIELD_DOT, sqlObj.getFieldAlias()))
+                        .orderAlias(String.format(SQLConstants.FIELD_DOT, sqlObj.getFieldAlias()))
+                        .orderDirection("ASC").build();
                 orders.add(result);
             }
         }

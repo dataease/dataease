@@ -78,7 +78,10 @@ public class Order2SQLObj {
                 fieldName = originField;
             }
         }
-        SQLObj result = SQLObj.builder().orderField(originField).orderAlias(originField).orderDirection(f.getOrderDirection()).build();
+        SQLObj result = SQLObj.builder()
+                .orderField(String.format(SQLConstants.FIELD_DOT, originField))
+                .orderAlias(String.format(SQLConstants.FIELD_DOT, originField))
+                .orderDirection(f.getOrderDirection()).build();
         return result;
     }
 
