@@ -90,6 +90,6 @@ public class MenuManage {
     }
 
     private boolean isXpackMenu(CoreMenu coreMenu) {
-        return coreMenu.getId().equals(7L) || coreMenu.getPid().equals(7L) || coreMenu.getId().equals(14L) || coreMenu.getId().equals(15L) || coreMenu.getPid().equals(15L);
+        return coreMenu.getId().equals(7L) || coreMenu.getPid().equals(7L) || coreMenu.getId().equals(14L) || coreMenu.getId().equals(17L) || coreMenu.getId().equals(18L);
     }
 }
