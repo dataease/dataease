@@ -245,7 +245,6 @@ const multipleChange = (val: boolean, isMultipleChange = false) => {
     return
   }
   curComponent.value.multiple = val
-  curComponent.value.operator = val ? 'in' : 'eq'
 }
 
 const validate = () => {

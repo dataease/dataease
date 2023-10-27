@@ -1,6 +1,6 @@
 <script lang="tsx" setup>
 import { useI18n } from '@/hooks/web/useI18n'
-import { defineProps, reactive, toRefs, watch } from 'vue'
+import { reactive, toRefs, watch } from 'vue'
 import {
   compareYearList,
   compareMonthList,
