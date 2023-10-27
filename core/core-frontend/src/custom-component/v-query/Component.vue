@@ -192,7 +192,7 @@ const dragover = () => {
 
 const infoFormat = (obj: ComponentInfo) => {
   const { id, name, deType, type, datasetId } = obj
-  const base = {
+  return {
     id: guid(),
     name,
     showError: true,
@@ -205,7 +205,6 @@ const infoFormat = (obj: ComponentInfo) => {
       deType
     },
     auto: false,
-    operator: deType === 1 ? 'between' : 'eq',
     defaultValue: undefined,
     selectValue: undefined,
     optionValueSource: 0,
@@ -220,12 +219,11 @@ const infoFormat = (obj: ComponentInfo) => {
     multiple: false,
     displayType: '0',
     checkedFields: [],
+    parameters: [],
+    parametersCheck: false,
+    parametersList: [],
     checkedFieldsMap: {}
   }
-  if (deType === 1) {
-    return base
-  }
-  return { ...base, parameters: [], parametersCheck: false, parametersList: [] }
 }
 
 const drop = e => {
