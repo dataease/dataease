@@ -15,7 +15,7 @@ const state = reactive({
 onBeforeMount(() => {
   initCanvasDataPrepare(
     window.DataEaseBi.dvId,
-    'dashboard',
+    window.DataEaseBi.busiFlag,
     function ({
       canvasDataResult,
       canvasStyleResult,

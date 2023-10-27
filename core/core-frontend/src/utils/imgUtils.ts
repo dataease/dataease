@@ -11,10 +11,10 @@ export function imgUrlTrans(url) {
     return window.DataEaseBi
       ? `${window.DataEaseBi.baseUrl}${
           rawUrl.startsWith('/api') ? rawUrl.slice(5) : rawUrl
-        }`.replace('//', '/')
+        }`.replace('com//', 'com/')
       : rawUrl
   } else {
-    return url
+    return url.replace('com//', 'com/')
   }
 }
 
