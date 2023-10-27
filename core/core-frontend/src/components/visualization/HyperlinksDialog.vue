@@ -100,7 +100,7 @@ const onClose = () => {
   height: 35px;
   border-radius: 3px;
 }
-::v-deep .el-popover {
+:deep(.el-popover) {
   height: 200px;
   overflow: auto;
 }

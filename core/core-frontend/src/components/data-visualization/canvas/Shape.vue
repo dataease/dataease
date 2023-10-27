@@ -80,7 +80,7 @@
 import eventBus from '@/utils/eventBus'
 import calculateComponentPositionAndSize from '@/utils/calculateComponentPositionAndSize'
 import { mod360 } from '@/utils/translate'
-import { deepCopy, isPreventDrop } from '@/utils/utils'
+import { deepCopy } from '@/utils/utils'
 import { computed, nextTick, onMounted, ref, toRefs, reactive } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
