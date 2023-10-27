@@ -32,7 +32,9 @@ export function baseLineOptionAntV(plot, container, chart, action) {
   // options
   const options = {
     meta: {
-      category: 'cat'
+      category: {
+        type: 'cat'
+      }
     },
     point: {},
     theme: theme,
