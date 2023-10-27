@@ -13,7 +13,7 @@ import java.util.List;
 public class Mysql extends DatasourceConfiguration {
     private String driver = "com.mysql.cj.jdbc.Driver";
     private String extraParams = "characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true&zeroDateTimeBehavior=convertToNull";
-    private List<String> illegalParameters = Arrays.asList("autoDeserialize", "queryInterceptors", "statementInterceptors", "detectCustomCollations");
+    private List<String> illegalParameters = Arrays.asList("autoDeserialize", "queryInterceptors", "statementInterceptors", "detectCustomCollations", "allowloadlocalinfile", "allowUrlInLocalInfile", "allowLoadLocalInfileInPath");
     private List<String> showTableSqls = Arrays.asList("show tables");
 
     public String getJdbc() {
@@ -24,7 +24,7 @@ public class Mysql extends DatasourceConfiguration {
                     .replace("DATABASE", getDataBase().trim());
         } else {
             for (String illegalParameter : illegalParameters) {
-                if (getExtraParams().contains(illegalParameter)) {
+                if (getExtraParams().toLowerCase().contains(illegalParameter.toLowerCase())) {
                     throw new RuntimeException("Illegal parameter: " + illegalParameter);
                 }
             }

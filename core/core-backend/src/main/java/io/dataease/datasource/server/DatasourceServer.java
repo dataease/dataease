@@ -34,6 +34,7 @@ import io.dataease.datasource.provider.ApiUtils;
 import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.datasource.provider.ExcelUtils;
 import io.dataease.datasource.request.DatasourceRequest;
+import io.dataease.datasource.type.Pg;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.exception.DEException;
 import io.dataease.i18n.Translator;
@@ -265,7 +266,9 @@ public class DatasourceServer implements DatasourceApi {
                     DEException.throwException("Failed to create table " + datasourceRequest.getTable());
                 }
             }
-            datasourceSyncManage.extractExcelData(coreDatasource, "all_scope");
+            commonThreadPool.addTask(() -> {
+                datasourceSyncManage.extractExcelData(coreDatasource, "all_scope");
+            });
         } else if (dataSourceDTO.getType().equals(DatasourceConfiguration.DatasourceType.API.name())) {
             CoreDatasourceTask coreDatasourceTask = new CoreDatasourceTask();
             BeanUtils.copyBean(coreDatasourceTask, dataSourceDTO.getSyncSetting());
@@ -298,9 +301,26 @@ public class DatasourceServer implements DatasourceApi {
                 }
             }
         } else {
+            checkParams(dataSourceDTO.getConfiguration());
             calciteProvider.update(dataSourceDTO);
         }
         return dataSourceDTO;
+    }
+
+    private static void checkParams(String configurationStr) {
+        DatasourceConfiguration configuration = JsonUtil.parseObject(configurationStr, DatasourceConfiguration.class);
+        if(configuration.getInitialPoolSize() < configuration.getMinPoolSize()){
+            DEException.throwException("初始连接数不能小于最小连接数！");
+        }
+        if(configuration.getInitialPoolSize() > configuration.getMaxPoolSize()){
+            DEException.throwException("初始连接数不能大于最大连接数！");
+        }
+        if(configuration.getMaxPoolSize() < configuration.getMinPoolSize()){
+            DEException.throwException("最大连接数不能小于最小连接数！");
+        }
+        if(configuration.getQueryTimeout() < 0){
+            DEException.throwException("查询超时不能小于0！");
+        }
     }
 
     private static void checkName(List<String> tables) {
@@ -419,6 +439,7 @@ public class DatasourceServer implements DatasourceApi {
                 dataSourceManage.innerEdit(requestDatasource);
             }
         } else {
+            checkParams(dataSourceDTO.getConfiguration());
             dataSourceManage.innerEdit(requestDatasource);
             calciteProvider.update(dataSourceDTO);
         }
