@@ -81,7 +81,9 @@ VALUES (1, 0, 2, 'workbranch', 'workbranch', 1, NULL, '/workbranch', 0, 1, 1),
        (5, 4, 2, 'dataset', 'visualized/data/dataset', 1, NULL, '/dataset', 0, 1, 1),
        (6, 4, 2, 'datasource', 'visualized/data/datasource', 2, NULL, '/datasource', 0, 1, 1),
        (11, 0, 2, 'dataset-form', 'visualized/data/dataset/form', 7, NULL, '/dataset-form', 1, 0, 0),
-       (12, 0, 2, 'datasource-form', 'visualized/data/datasource/form', 7, NULL, '/ds-form', 1, 0, 0);
+       (12, 0, 2, 'datasource-form', 'visualized/data/datasource/form', 7, NULL, '/ds-form', 1, 0, 0),
+       (15, 0, 1, 'sys-setting', NULL, 6, NULL, '/sys-setting', 1, 1, 0),
+       (16, 15, 2, 'parameter', 'system/parameter', 1, 'sys-parameter', '/parameter', 0, 1, 0);
 UNLOCK
     TABLES;
 
