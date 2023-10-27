@@ -290,7 +290,7 @@ public class DatasetDataManage {
             if (ObjectUtils.isEmpty(list)) {
                 return null;
             }
-            sql = SQLUtils.buildOriginPreviewSqlWithOrderBy(sql, 100, 0, list.get(0).getOriginName() + " ASC ");
+            sql = SQLUtils.buildOriginPreviewSqlWithOrderBy(sql, 100, 0, String.format(SQLConstants.FIELD_DOT, list.get(0).getOriginName()) + " ASC ");
         } else {
             sql = SQLUtils.buildOriginPreviewSql(sql, 100, 0);
         }
