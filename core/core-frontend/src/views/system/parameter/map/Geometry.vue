@@ -10,7 +10,7 @@
         </span>
       </div>
       <div class="geo-search">
-        <el-input class="m16 w100" v-model="keyworkd" clearable :placeholder="t('commons.search')">
+        <el-input class="m16 w100" v-model="keyword" clearable :placeholder="t('commons.search')">
           <template #prefix>
             <el-icon>
               <Icon name="icon_search-outline_outlined"></Icon>
@@ -30,7 +30,7 @@
 import { ref } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 const { t } = useI18n()
-const keyworkd = ref('')
+const keyword = ref('')
 
 interface Tree {
   label: string
