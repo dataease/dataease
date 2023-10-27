@@ -2117,6 +2117,7 @@ export default {
   },
   online_map: {
     geometry: '地理信息',
-    onlinemap: '在线地图'
+    onlinemap: '在线地图',
+    empty_desc: '请在左侧输入信息然后保存'
   }
 }
