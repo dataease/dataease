@@ -227,7 +227,7 @@ onMounted(() => {
 })
 </script>
 <template>
-  <div class="mark-line">
+  <div class="mark-line" id="canvas-mark-line">
     <div
       v-for="line in lines"
       v-show="lineStatus[line] || false"
