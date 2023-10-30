@@ -810,7 +810,7 @@ defineExpose({
                         <el-icon size="18px" v-if="data.leaf">
                           <Icon name="icon_dataset"></Icon>
                         </el-icon>
-                        <span class="label" style="margin-left: 8px" :title="node.label">{{
+                        <span class="label ellipsis" style="margin-left: 8px" :title="node.label">{{
                           node.label
                         }}</span>
                       </div>
@@ -1295,9 +1295,10 @@ defineExpose({
     align-items: center;
     .label {
       margin-left: 5px;
+      width: calc(100% - 45px);
     }
   }
-
+  max-width: 321px;
   .ed-select-dropdown__item.selected {
     font-weight: 400;
   }
