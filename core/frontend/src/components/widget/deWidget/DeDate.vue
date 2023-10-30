@@ -341,6 +341,7 @@ export default {
 
 <style lang="scss">
 .coustom-date-picker {
+  right: 0px;
   border: 1px solid var(--BrDateColor, #dfe4ed) !important;
   background: var(--BgDateColor, #FFFFFF) !important;
 
