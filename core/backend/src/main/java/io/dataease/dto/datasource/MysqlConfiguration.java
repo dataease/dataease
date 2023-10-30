@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -20,7 +21,7 @@ public class MysqlConfiguration extends JdbcConfiguration {
         if (StringUtils.isEmpty(extraParams.trim())) {
             return "jdbc:mysql://HOSTNAME:PORT/DATABASE".replace("HOSTNAME", getHost().trim()).replace("PORT", getPort().toString().trim()).replace("DATABASE", getDataBase().trim());
         } else {
-            for (String illegalParameter : illegalParameters) {
+            for (String illegalParameter : getIllegalParameters()) {
                 if (getExtraParams().toLowerCase().contains(illegalParameter.toLowerCase())) {
                     throw new RuntimeException("Illegal parameter: " + illegalParameter);
                 }
@@ -29,4 +30,12 @@ public class MysqlConfiguration extends JdbcConfiguration {
             return "jdbc:mysql://HOSTNAME:PORT/DATABASE?EXTRA_PARAMS".replace("HOSTNAME", getHost().trim()).replace("PORT", getPort().toString().trim()).replace("DATABASE", getDataBase().trim()).replace("EXTRA_PARAMS", getExtraParams().trim());
         }
     }
+
+    public List<String> getIllegalParameters(){
+        List<String> newIllegalParameters = new ArrayList<>();
+        newIllegalParameters.addAll(illegalParameters);
+        newIllegalParameters.addAll(Arrays.asList("allowloadlocalinfile", "allowUrlInLocalInfile", "allowLoadLocalInfileInPath"));
+        return newIllegalParameters;
+    }
+
 }
