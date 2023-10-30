@@ -1956,7 +1956,7 @@ export default {
       return this.$store.state.panel.panelInfo
     },
     showCfg() {
-      return includesAny(this.view.type, 'bar', 'line', 'area', 'gauge', 'table') && this.view.type !== 'race-bar' ||
+      return includesAny(this.view.type, 'bar', 'line', 'area', 'gauge', 'table', 'liquid') && this.view.type !== 'race-bar' ||
         equalsAny(this.view.type, 'text', 'label', 'map', 'buddle-map')
     },
     showSeniorCfg() {
@@ -1974,7 +1974,7 @@ export default {
       if (this.view.type === 'bidirectional-bar') {
         return false
       }
-      return includesAny(this.view.type, 'bar', 'line', 'area', 'gauge') ||
+      return includesAny(this.view.type, 'bar', 'line', 'area', 'gauge', 'liquid') ||
         equalsAny(this.view.type, 'text', 'label') ||
         (this.view.render === 'antv' && this.view.type.includes('table'))
     },
@@ -1985,7 +1985,7 @@ export default {
       if (this.view.type === 'bidirectional-bar') {
         return false
       }
-      return includesAny(this.view.type, 'gauge') ||
+      return includesAny(this.view.type, 'gauge', 'liquid') ||
         equalsAny(this.view.type, 'text', 'label') ||
         (this.view.render === 'antv' && this.view.type.includes('table'))
     },

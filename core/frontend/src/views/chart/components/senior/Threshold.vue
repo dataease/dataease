@@ -40,6 +40,45 @@
         </el-form-item>
       </el-form>
     </el-col>
+    <el-col v-if="chart.type && chart.type === 'liquid'">
+      <el-form
+        ref="thresholdForm"
+        :model="thresholdForm"
+        label-width="80px"
+        size="mini"
+      >
+        <el-form-item
+          :label="$t('chart.threshold_range')+'(%)'"
+          class="form-item"
+        >
+          <span>0,</span>
+          <el-input
+            v-model="thresholdForm.liquidThreshold"
+            style="width: 100px;margin: 0 10px;"
+            :placeholder="$t('chart.threshold_range')"
+            size="mini"
+            clearable
+            @change="gaugeThresholdChange"
+          />
+          <span>,100</span>
+          <el-tooltip
+            class="item"
+            effect="dark"
+            placement="bottom"
+          >
+            <div slot="content">
+              阈值设置，决定水波图颜色，为空则不开启阈值，范围(0-100)，逐级递增
+              <br>
+              例如：输入 30,70；表示：分为3段，分别为[0,30],(30,70],(70,100]
+            </div>
+            <i
+              class="el-icon-info"
+              style="cursor: pointer;margin-left: 10px;font-size: 12px;"
+            />
+          </el-tooltip>
+        </el-form-item>
+      </el-form>
+    </el-col>
 
     <!--文本卡-->
     <el-col v-if="chart.type && chart.type === 'label'">
@@ -459,10 +498,10 @@ export default {
     changeThreshold() {
       this.$emit('onThresholdChange', this.thresholdForm)
     },
-    gaugeThresholdChange() {
+    gaugeThresholdChange(val) {
       // check input
-      if (this.thresholdForm.gaugeThreshold) {
-        const arr = this.thresholdForm.gaugeThreshold.split(',')
+      if (val) {
+        const arr = val.split(',')
         for (let i = 0; i < arr.length; i++) {
           const ele = arr[i]
           if (parseFloat(ele).toString() === 'NaN' || parseFloat(ele) <= 0 || parseFloat(ele) >= 100) {
