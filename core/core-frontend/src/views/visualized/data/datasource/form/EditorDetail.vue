@@ -614,6 +614,18 @@ defineExpose({
               autocomplete="off"
             />
           </el-form-item>
+          <el-form-item :label="t('datasource.port')" prop="configuration.port">
+            <el-input-number
+              v-model="form.configuration.port"
+              autocomplete="off"
+              step-strictly
+              class="text-left"
+              :min="0"
+              :placeholder="t('common.inputText') + t('datasource.port')"
+              controls-position="right"
+              type="number"
+            />
+          </el-form-item>
           <el-form-item :label="t('datasource.data_base')" prop="configuration.dataBase">
             <el-input
               v-model="form.configuration.dataBase"
@@ -685,18 +697,6 @@ defineExpose({
               :placeholder="t('common.inputText') + t('datasource.extra_params')"
               v-model="form.configuration.extraParams"
               autocomplete="off"
-            />
-          </el-form-item>
-          <el-form-item :label="t('datasource.port')" prop="configuration.port">
-            <el-input-number
-              v-model="form.configuration.port"
-              autocomplete="off"
-              step-strictly
-              class="text-left"
-              :min="0"
-              :placeholder="t('common.inputText') + t('datasource.port')"
-              controls-position="right"
-              type="number"
             />
           </el-form-item>
           <el-form-item
