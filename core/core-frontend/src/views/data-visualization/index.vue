@@ -236,14 +236,16 @@ eventBus.on('handleNew', handleNew)
         :aside-position="'left'"
         :side-name="'realTimeComponent'"
         class="left-sidebar"
+        id="dv-main-left-sidebar"
         :class="{ 'preview-aside': previewStatus }"
       >
         <RealTimeComponentList />
       </dv-sidebar>
       <!-- 中间画布 -->
-      <main class="center" ref="canvasCenterRef">
+      <main id="dv-main-center" class="center" ref="canvasCenterRef">
         <el-scrollbar ref="canvasOut" class="content" :class="{ 'preview-content': previewStatus }">
           <div
+            id="canvas-dv-outer"
             ref="canvasInner"
             :style="contentStyle"
             @drop="handleDrop"
