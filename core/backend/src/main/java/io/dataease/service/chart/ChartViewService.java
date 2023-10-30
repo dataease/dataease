@@ -604,7 +604,7 @@ public class ChartViewService {
         List<ChartViewFieldDTO> viewFields = gson.fromJson(view.getViewFields(), tokenType);
         final Map<String, List<ChartViewFieldDTO>> extFieldsMap = new LinkedHashMap<>();
         if (CollectionUtils.isNotEmpty(viewFields)) {
-            String[] busiFlagArray = new String[] {"daxis", "locationXaxis", "locationYaxis"};
+            String[] busiFlagArray = new String[]{"daxis", "locationXaxis", "locationYaxis"};
             Map<String, Boolean> flagMap = new HashMap<>();
             for (String s : busiFlagArray) {
                 flagMap.put(s, false);
@@ -1069,7 +1069,10 @@ public class ChartViewService {
                     if (containDetailField(view) && CollectionUtils.isNotEmpty(viewFields)) {
                         detailFieldList.addAll(xAxis);
                         detailFieldList.addAll(viewFields);
+                        String resultMode = view.getResultMode();
+                        view.setResultMode(null);
                         detailFieldSql = qp.getSQLWithPage(true, dataTableInfoDTO.getTable(), detailFieldList, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view, pageInfo);
+                        view.setResultMode(resultMode);
                     }
                 }
             } else if (StringUtils.equalsIgnoreCase(table.getType(), DatasetType.SQL.name())) {
@@ -1089,7 +1092,10 @@ public class ChartViewService {
                     if (containDetailField(view) && CollectionUtils.isNotEmpty(viewFields)) {
                         detailFieldList.addAll(xAxis);
                         detailFieldList.addAll(viewFields);
+                        String resultMode = view.getResultMode();
+                        view.setResultMode(null);
                         detailFieldSql = qp.getSQLWithPage(false, sql, detailFieldList, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view, pageInfo);
+                        view.setResultMode(resultMode);
                     }
                 }
             } else if (StringUtils.equalsIgnoreCase(table.getType(), DatasetType.CUSTOM.name())) {
@@ -1110,7 +1116,10 @@ public class ChartViewService {
                     if (containDetailField(view) && CollectionUtils.isNotEmpty(viewFields)) {
                         detailFieldList.addAll(xAxis);
                         detailFieldList.addAll(viewFields);
+                        String resultMode = view.getResultMode();
+                        view.setResultMode(null);
                         detailFieldSql = qp.getSQLWithPage(false, sql, detailFieldList, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view, pageInfo);
+                        view.setResultMode(resultMode);
                     }
                 }
             } else if (StringUtils.equalsIgnoreCase(table.getType(), DatasetType.UNION.name())) {
@@ -1131,7 +1140,10 @@ public class ChartViewService {
                     if (containDetailField(view) && CollectionUtils.isNotEmpty(viewFields)) {
                         detailFieldList.addAll(xAxis);
                         detailFieldList.addAll(viewFields);
+                        String resultMode = view.getResultMode();
+                        view.setResultMode(null);
                         detailFieldSql = qp.getSQLWithPage(false, sql, detailFieldList, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view, pageInfo);
+                        view.setResultMode(resultMode);
                     }
                 }
             }
@@ -1182,7 +1194,10 @@ public class ChartViewService {
                 if (containDetailField(view) && CollectionUtils.isNotEmpty(viewFields)) {
                     detailFieldList.addAll(xAxis);
                     detailFieldList.addAll(viewFields);
+                    String resultMode = view.getResultMode();
+                    view.setResultMode(null);
                     detailFieldSql = qp.getSQLTableInfo(tableName, detailFieldList, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view);
+                    view.setResultMode(resultMode);
                 }
             }
             if (CollectionUtils.isNotEmpty(assistFields)) {
