@@ -48,15 +48,15 @@ const handleMouseWheel = e => {
   let areaRight = dvMain.clientWidth + areaLeftWidth
   if (areaLeftWidth < e.clientX && e.clientX < areaRight) {
     const delta = e.wheelDelta ? e.wheelDelta : -e.detail
-    if (lastWheelNum === 240 && delta === 240) {
+    if ((lastWheelNum === 240 && delta === 240) || delta > 240) {
       //放大
       scaleIncrease(3)
-    } else if (lastWheelNum === -240 && delta === -240) {
+    } else if ((lastWheelNum === -240 && delta === -240) || delta < -240) {
       // 缩小
       scaleDecrease(3)
     }
 
-    if (delta === 240 || delta === -240) {
+    if (delta >= 240 || delta <= -240) {
       e.stopPropagation()
       e.preventDefault()
     }
