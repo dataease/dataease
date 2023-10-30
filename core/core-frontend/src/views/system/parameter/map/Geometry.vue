@@ -1,6 +1,6 @@
 <template>
   <el-container class="geometry-container">
-    <el-aside width="200px" class="geonetry-aside">
+    <el-aside class="geonetry-aside">
       <div class="geo-title">
         <span>{{ t('online_map.geometry') }}</span>
         <span class="add-icon-span">
@@ -19,7 +19,15 @@
         </el-input>
       </div>
       <div class="map-tree-container">
-        <el-tree :data="data" :props="defaultProps" @node-click="handleNodeClick" />
+        <!-- <el-scrollbar> -->
+        <el-tree :data="treeData" :props="defaultProps" @node-click="handleNodeClick">
+          <template #default="{ node, data }">
+            <span class="custom-tree-node">
+              <span>{{ data.name || node.label }}</span>
+            </span>
+          </template>
+        </el-tree>
+        <!-- </el-scrollbar> -->
       </div>
     </el-aside>
     <el-main>地理信息内容区域</el-main>
@@ -29,9 +37,10 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
+import { getWorldTree } from '@/api/map'
 const { t } = useI18n()
 const keyword = ref('')
-
+const treeData = ref([])
 interface Tree {
   label: string
   children?: Tree[]
@@ -41,68 +50,23 @@ const handleNodeClick = (data: Tree) => {
   console.log(data)
 }
 
-const data: Tree[] = [
-  {
-    label: 'Level one 1',
-    children: [
-      {
-        label: 'Level two 1-1',
-        children: [
-          {
-            label: 'Level three 1-1-1'
-          }
-        ]
-      }
-    ]
-  },
-  {
-    label: 'Level one 2',
-    children: [
-      {
-        label: 'Level two 2-1',
-        children: [
-          {
-            label: 'Level three 2-1-1'
-          }
-        ]
-      },
-      {
-        label: 'Level two 2-2',
-        children: [
-          {
-            label: 'Level three 2-2-1'
-          }
-        ]
-      }
-    ]
-  },
-  {
-    label: 'Level one 3',
-    children: [
-      {
-        label: 'Level two 3-1',
-        children: [
-          {
-            label: 'Level three 3-1-1'
-          }
-        ]
-      },
-      {
-        label: 'Level two 3-2',
-        children: [
-          {
-            label: 'Level three 3-2-1'
-          }
-        ]
-      }
-    ]
-  }
-]
+const loadTreeData = () => {
+  getWorldTree()
+    .then(res => {
+      const root = res.data
+      treeData.value = [root]
+    })
+    .catch(e => {
+      console.error(e)
+    })
+}
 
 const defaultProps = {
   children: 'children',
-  label: 'label'
+  label: 'name'
 }
+
+loadTreeData()
 </script>
 
 <style lang="less" scoped>
@@ -112,6 +76,7 @@ const defaultProps = {
     width: 280px !important;
     border-right: 1px solid #1f232926;
     padding: 16px;
+    height: 100%;
     .geo-title {
       display: flex;
       justify-content: space-between;
@@ -139,6 +104,10 @@ const defaultProps = {
     }
     .geo-search {
       margin-bottom: 16px;
+    }
+    .map-tree-container {
+      height: calc(100% - 96px);
+      overflow-y: auto;
     }
   }
 }
