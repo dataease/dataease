@@ -152,8 +152,8 @@ eventBus.on('clearCanvas', clearCanvas)
         </div>
         <div class="middle-area"></div>
       </template>
-      <template v-else-if="!isDataEaseBi">
-        <el-icon class="custom-el-icon back-icon" @click="backToMain()">
+      <template v-else>
+        <el-icon v-if="!isDataEaseBi" class="custom-el-icon back-icon" @click="backToMain()">
           <Icon class="toolbar-icon" name="icon_left_outlined" />
         </el-icon>
         <div class="left-area">
