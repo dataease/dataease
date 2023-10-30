@@ -1,6 +1,7 @@
 package io.dataease.datasource.type;
 
 import io.dataease.api.ds.vo.DatasourceConfiguration;
+import io.dataease.exception.DEException;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -25,7 +26,7 @@ public class Mysql extends DatasourceConfiguration {
         } else {
             for (String illegalParameter : illegalParameters) {
                 if (getExtraParams().toLowerCase().contains(illegalParameter.toLowerCase())) {
-                    throw new RuntimeException("Illegal parameter: " + illegalParameter);
+                    DEException.throwException("Illegal parameter: " + illegalParameter);
                 }
             }
 
