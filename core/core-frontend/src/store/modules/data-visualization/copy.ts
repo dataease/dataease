@@ -107,9 +107,11 @@ export const copyStore = defineStore('copy', {
           eventBus.emit('addDashboardItem-' + newComponent.canvasId, newComponent)
         }
       })
-      if (dvInfo.value.type === 'dashboard') {
+      if (dvInfo.value.type === 'dashboard' && dataArray.length > 1) {
         //占位优化 整合定位
-        eventBus.emit('doCanvasInit-canvas-main')
+        setTimeout(() => {
+          eventBus.emit('doCanvasInit-canvas-main')
+        }, 1000)
       }
       snapshotStore.recordSnapshotCache()
     },

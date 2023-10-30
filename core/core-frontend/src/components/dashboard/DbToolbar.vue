@@ -75,13 +75,17 @@ const closeEditCanvasName = () => {
 }
 
 const undo = () => {
-  snapshotStore.undo()
-  eventBus.emit('matrix-canvasInit', false)
+  if (snapshotIndex.value > 0) {
+    snapshotStore.undo()
+    eventBus.emit('matrix-canvasInit', false)
+  }
 }
 
 const redo = () => {
-  snapshotStore.redo()
-  eventBus.emit('matrix-canvasInit', false)
+  if (snapshotIndex.value !== snapshotStore.snapshotData.length - 1) {
+    snapshotStore.redo()
+    eventBus.emit('matrix-canvasInit', false)
+  }
 }
 
 const previewInner = () => {
@@ -333,6 +337,7 @@ onMounted(() => {
               <el-icon
                 class="toolbar-hover-icon"
                 :class="{ 'toolbar-icon-disabled': snapshotIndex < 1 }"
+                :disabled="snapshotIndex < 1"
                 @click="undo()"
               >
                 <Icon name="icon_undo_outlined"></Icon>
