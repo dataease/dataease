@@ -42,20 +42,26 @@ const reposition = () => {
 let lastWheelNum = 0
 
 const handleMouseWheel = e => {
-  const delta = e.wheelDelta ? e.wheelDelta : -e.detail
-  if (lastWheelNum === 240 && delta === 240) {
-    //放大
-    scaleIncrease(3)
-  } else if (lastWheelNum === -240 && delta === -240) {
-    // 缩小
-    scaleDecrease(3)
-  }
+  let dvMain = document.getElementById('dv-main-center')
+  let dvMainLeftSlide = document.getElementById('dv-main-left-sidebar')
+  let areaLeftWidth = dvMainLeftSlide.clientWidth
+  let areaRight = dvMain.clientWidth + areaLeftWidth
+  if (areaLeftWidth < e.clientX && e.clientX < areaRight) {
+    const delta = e.wheelDelta ? e.wheelDelta : -e.detail
+    if (lastWheelNum === 240 && delta === 240) {
+      //放大
+      scaleIncrease(3)
+    } else if (lastWheelNum === -240 && delta === -240) {
+      // 缩小
+      scaleDecrease(3)
+    }
 
-  if (delta === 240 || delta === -240) {
-    e.stopPropagation()
-    e.preventDefault()
+    if (delta === 240 || delta === -240) {
+      e.stopPropagation()
+      e.preventDefault()
+    }
+    lastWheelNum = delta
   }
-  lastWheelNum = delta
 }
 
 onMounted(() => {
