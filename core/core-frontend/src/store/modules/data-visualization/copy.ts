@@ -83,36 +83,40 @@ export const copyStore = defineStore('copy', {
         return
       }
       const dataArray = this.copyData.data
-      dataArray.forEach(data => {
-        if (dvInfo.value.type === 'dataV') {
-          if (isMouse) {
-            data.style.top = menuTop
-            data.style.left = menuLeft
-          } else {
-            data.style.top += 10
-            data.style.left += 10
-          }
+
+      let i = 0
+      const copyDataTemp = this.copyData
+      const moveTime = dataArray.length > 1 ? 300 : 10
+      const timeId = setInterval(function () {
+        if (i >= dataArray.length) {
+          clearInterval(timeId)
         } else {
-          // 向下移动一个高度矩阵单位
-          data.y = data.y + data.sizeY
-        }
-        // 旧-新ID映射关系
-        const idMap = {}
-        const newComponent = deepCopyHelper(data, idMap)
-        dvMainStore.addCopyComponent(newComponent, idMap, this.copyData.copyCanvasViewInfo)
-        if (dvInfo.value.type === 'dashboard') {
-          if (dvMainStore.multiplexingStyleAdapt && this.copyData.copyFrom === 'multiplexing') {
-            adaptCurThemeCommonStyle(newComponent)
+          const data = dataArray[i]
+          if (dvInfo.value.type === 'dataV') {
+            if (isMouse) {
+              data.style.top = menuTop
+              data.style.left = menuLeft
+            } else {
+              data.style.top += 10
+              data.style.left += 10
+            }
+          } else {
+            // 向下移动一个高度矩阵单位
+            data.y = data.y + data.sizeY
           }
-          eventBus.emit('addDashboardItem-' + newComponent.canvasId, newComponent)
+          // 旧-新ID映射关系
+          const idMap = {}
+          const newComponent = deepCopyHelper(data, idMap)
+          dvMainStore.addCopyComponent(newComponent, idMap, copyDataTemp.copyCanvasViewInfo)
+          if (dvInfo.value.type === 'dashboard') {
+            if (dvMainStore.multiplexingStyleAdapt && copyDataTemp.copyFrom === 'multiplexing') {
+              adaptCurThemeCommonStyle(newComponent)
+            }
+            eventBus.emit('addDashboardItem-' + newComponent.canvasId, newComponent)
+          }
+          i++
         }
-      })
-      if (dvInfo.value.type === 'dashboard' && dataArray.length > 1) {
-        //占位优化 整合定位
-        setTimeout(() => {
-          eventBus.emit('doCanvasInit-canvas-main')
-        }, 1000)
-      }
+      }, moveTime)
       snapshotStore.recordSnapshotCache()
     },
     cut() {
