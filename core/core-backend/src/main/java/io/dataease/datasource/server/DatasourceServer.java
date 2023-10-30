@@ -125,10 +125,12 @@ public class DatasourceServer implements DatasourceApi {
                 if (Objects.equals(dataSourceDTO.getId(), dataSourceDTO.getPid())) {
                     DEException.throwException(Translator.get("i18n_pid_not_eq_id"));
                 }
-                List<Long> ids = new ArrayList<>();
-                getParents(dataSourceDTO.getPid(), ids);
-                if (ids.contains(dataSourceDTO.getId())) {
-                    DEException.throwException(Translator.get("i18n_pid_not_eq_id"));
+                if (dataSourceDTO.getPid() != 0) {
+                    List<Long> ids = new ArrayList<>();
+                    getParents(dataSourceDTO.getPid(), ids);
+                    if (ids.contains(dataSourceDTO.getId())) {
+                        DEException.throwException(Translator.get("i18n_pid_not_eq_id"));
+                    }
                 }
                 dataSourceManage.move(dataSourceDTO);
             }

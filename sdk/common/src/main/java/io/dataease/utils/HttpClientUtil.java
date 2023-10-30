@@ -78,13 +78,14 @@ public class HttpClientUtil {
      * @return 响应结果字符串
      */
     public static String get(String url, HttpClientConfig config) {
-        CloseableHttpClient httpClient = buildHttpClient(url);
-        HttpGet httpGet = new HttpGet(url);
-
-        if (config == null) {
-            config = new HttpClientConfig();
-        }
+        CloseableHttpClient httpClient = null;
         try {
+            httpClient = buildHttpClient(url);
+            HttpGet httpGet = new HttpGet(url);
+
+            if (config == null) {
+                config = new HttpClientConfig();
+            }
             httpGet.setConfig(config.buildRequestConfig());
 
             Map<String, String> header = config.getHeader();
@@ -98,7 +99,9 @@ public class HttpClientUtil {
             throw new DEException(SYSTEM_INNER_ERROR.code(), "HttpClient查询失败: " + e.getMessage());
         } finally {
             try {
-                httpClient.close();
+                if(httpClient != null){
+                    httpClient.close();
+                }
             } catch (Exception e) {
                 logger.error("HttpClient关闭连接失败", e);
             }
@@ -143,14 +146,14 @@ public class HttpClientUtil {
      * @return 响应结果字符串
      */
     public static String post(String url, String json, HttpClientConfig config) {
-        CloseableHttpClient httpClient = buildHttpClient(url);
-        HttpPost httpPost = new HttpPost(url);
-        if (config == null) {
-            config = new HttpClientConfig();
-        }
+        CloseableHttpClient httpClient = null;
         try {
+            buildHttpClient(url);
+            HttpPost httpPost = new HttpPost(url);
+            if (config == null) {
+                config = new HttpClientConfig();
+            }
             httpPost.setConfig(config.buildRequestConfig());
-
             Map<String, String> header = config.getHeader();
             for (String key : header.keySet()) {
                 httpPost.addHeader(key, header.get(key));
@@ -168,7 +171,9 @@ public class HttpClientUtil {
             throw new DEException(SYSTEM_INNER_ERROR.code(), "HttpClient查询失败: " + e.getMessage());
         } finally {
             try {
-                httpClient.close();
+                if(httpClient != null){
+                    httpClient.close();
+                }
             } catch (Exception e) {
                 logger.error("HttpClient关闭连接失败", e);
             }
@@ -195,14 +200,15 @@ public class HttpClientUtil {
      * @return 响应结果字符串
      */
     public static String post(String url, Map<String, String> body, HttpClientConfig config) {
-        CloseableHttpClient httpClient = buildHttpClient(url);
-        HttpPost httpPost = new HttpPost(url);
-        if (config == null) {
-            config = new HttpClientConfig();
-        }
-        try {
-            httpPost.setConfig(config.buildRequestConfig());
+        CloseableHttpClient httpClient = null;
 
+        try {
+            buildHttpClient(url);
+            HttpPost httpPost = new HttpPost(url);
+            if (config == null) {
+                config = new HttpClientConfig();
+            }
+            httpPost.setConfig(config.buildRequestConfig());
             Map<String, String> header = config.getHeader();
             for (String key : header.keySet()) {
                 httpPost.addHeader(key, header.get(key));
@@ -227,7 +233,9 @@ public class HttpClientUtil {
             throw new DEException(SYSTEM_INNER_ERROR.code(), "HttpClient查询失败: " + e.getMessage());
         } finally {
             try {
-                httpClient.close();
+                if(httpClient != null){
+                    httpClient.close();
+                }
             } catch (Exception e) {
                 logger.error("HttpClient关闭连接失败", e);
             }
