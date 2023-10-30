@@ -110,7 +110,7 @@
           {{ t('visualization.view') }}
         </el-radio>
         <el-radio label="custom" :effect="themes">
-          {{ t('visualization.panel') }}
+          {{ resourceType }}
         </el-radio>
       </el-radio-group>
     </el-form-item>
@@ -175,6 +175,8 @@ const props = defineProps({
 const toolTip = computed(() => {
   return props.themes === 'dark' ? 'ndark' : 'dark'
 })
+
+const resourceType = computed(() => (dvInfo.value.type === 'dashboard' ? '仪表板' : '数据大屏'))
 const themeChange = modifyName => {
   if (modifyName === 'themeColor') {
     // 主题变更
