@@ -184,6 +184,7 @@ onMounted(() => {
   emitter.on(`addQueryCriteria${element.value.id}`, addCriteriaConfigOut)
   emitter.on(`editQueryCriteria${element.value.id}`, editQueryCriteria)
   emitter.on(`updateQueryCriteria${element.value.id}`, updateQueryCriteria)
+  updateQueryCriteria()
 })
 
 const dragover = () => {

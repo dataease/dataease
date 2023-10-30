@@ -729,9 +729,16 @@ defineExpose({
                   value="0"
                 />
                 <el-option
+                  v-if="curComponent.displayType === '2'"
                   :disabled="curComponent.displayType !== '2'"
                   label="数字下拉"
                   value="2"
+                />
+                <el-option
+                  v-else
+                  :disabled="curComponent.displayType !== '5'"
+                  label="数字下拉"
+                  value="5"
                 />
                 <el-option
                   :disabled="!['1', '7'].includes(curComponent.displayType)"
