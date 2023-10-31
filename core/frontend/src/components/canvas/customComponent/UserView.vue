@@ -1007,6 +1007,12 @@ export default {
             sourceInfo = param.viewId + '#' + dimension.id
             jumpInfo = this.nowPanelJumpInfo[sourceInfo]
           }
+          // 没有主维度，子维度相等
+          if (!jumpInfo && dimensionItem.value === param.category) {
+            dimension = dimensionItem
+            sourceInfo = param.viewId + '#' + dimension.id
+            jumpInfo = this.nowPanelJumpInfo[sourceInfo]
+          }
         })
       } else {
         for (let i = param.dimensionList.length - 1; i >= 0; i--) {
