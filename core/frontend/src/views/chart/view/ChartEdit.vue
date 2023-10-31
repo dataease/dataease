@@ -2106,8 +2106,10 @@ export default {
           x.sort = 'none'
         })
       }
-      this.setChartDefaultOptions()
-      this.calcData(true, 'chart', true, newVal.type !== oldVal.type, newVal.render !== oldVal.render)
+      if (oldVal.id !== 'echart') {
+        this.setChartDefaultOptions()
+        this.calcData(true, 'chart', true, newVal.type !== oldVal.type, newVal.render !== oldVal.render)
+      }
     }
   },
   created() {
