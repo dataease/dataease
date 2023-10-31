@@ -440,6 +440,9 @@ public class SysUserService {
     @CacheEvict(value = AuthConstants.USER_CACHE_NAME, key = "'user' + #userId")
     @Transactional
     public int delete(Long userId) {
+        if (userId.equals(1L)) {
+            DEException.throwException(Translator.get("I18n_del_admin_tips"));
+        }
         extAuthService.clearUserResource(userId);
         deleteUserRoles(userId);
         sysUserAssistMapper.deleteByPrimaryKey(userId);
