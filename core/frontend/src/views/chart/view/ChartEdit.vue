@@ -2098,6 +2098,13 @@ export default {
       if (newVal.type === oldVal.type && newVal.render === oldVal.render && newVal.isPlugin === oldVal.isPlugin) {
         return
       }
+      if (newVal.render === 'antv' && newVal.type === 'chart-mix') {
+        // 针对antv组合图，清理自定义排序
+        this.view.xaxis.forEach(x => {
+          x.customSort = []
+          x.sort = 'none'
+        })
+      }
       this.setChartDefaultOptions()
       this.calcData(true, 'chart', true, newVal.type !== oldVal.type, newVal.render !== oldVal.render)
     }

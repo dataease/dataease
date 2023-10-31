@@ -89,10 +89,10 @@
                 <el-dropdown-item :command="beforeSort('none')">{{ $t('chart.none') }}</el-dropdown-item>
                 <el-dropdown-item :command="beforeSort('asc')">{{ $t('chart.asc') }}</el-dropdown-item>
                 <el-dropdown-item :command="beforeSort('desc')">{{ $t('chart.desc') }}</el-dropdown-item>
-                <el-dropdown-item
+<!--                <el-dropdown-item
                   v-show="!item.chartId && (item.deType === 0 || item.deType === 5)"
                   :command="beforeSort('custom_sort')"
-                >{{ $t('chart.custom_sort') }}...</el-dropdown-item>
+                >{{ $t('chart.custom_sort') }}...</el-dropdown-item>-->
               </el-dropdown-menu>
             </el-dropdown>
           </el-dropdown-item>
