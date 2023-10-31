@@ -350,13 +350,14 @@ public class HiveQueryProvider extends QueryProvider {
 
     @Override
     public String getSQLWithPage(boolean isTable, String table, List<ChartViewFieldDTO> xAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view, PageInfo pageInfo) {
-        String limit = ((pageInfo.getGoPage() != null && pageInfo.getPageSize() != null) ? " LIMIT " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize()   + " , " +  pageInfo.getPageSize(): "");
+        String limit = ((pageInfo.getGoPage() != null && pageInfo.getPageSize() != null) ? " LIMIT " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize() + " , " + pageInfo.getPageSize() : "");
         if (isTable) {
             return originalTableInfo(table, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view) + limit;
         } else {
             return originalTableInfo("(" + sqlFix(table) + ")", xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view) + limit;
         }
     }
+
     private String originalTableInfo(String table, List<ChartViewFieldDTO> xAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view) {
         SQLObj tableObj = SQLObj.builder()
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(HiveConstants.KEYWORD_TABLE, table))
@@ -431,9 +432,10 @@ public class HiveQueryProvider extends QueryProvider {
         if (ObjectUtils.isNotEmpty(tableSQL)) st.add("table", tableSQL);
         return st.render();
     }
-        @Override
+
+    @Override
     public String getSQLTableInfo(String table, List<ChartViewFieldDTO> xAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view) {
-           return sqlLimit(originalTableInfo(table, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view), view);
+        return sqlLimit(originalTableInfo(table, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view), view);
     }
 
     @Override
@@ -562,16 +564,34 @@ public class HiveQueryProvider extends QueryProvider {
     }
 
     @Override
-    public String getSQLScatter(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, List<ChartViewFieldDTO> extBubble, Datasource ds, ChartViewWithBLOBs view) {
+    public String getSQLScatter(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, List<ChartViewFieldDTO> extBubble, List<ChartViewFieldDTO> extGroup, Datasource ds, ChartViewWithBLOBs view) {
         SQLObj tableObj = SQLObj.builder()
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(HiveConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
         List<SQLObj> xFields = new ArrayList<>();
         List<SQLObj> xOrders = new ArrayList<>();
+
+        boolean xIsNumber = false;
+        List<ChartViewFieldDTO> xAxisList = new ArrayList<>();
+
+        //先判断x轴内是不是数值格式的
         if (CollectionUtils.isNotEmpty(xAxis)) {
-            for (int i = 0; i < xAxis.size(); i++) {
-                ChartViewFieldDTO x = xAxis.get(i);
+            if (StringUtils.equals(xAxis.get(0).getGroupType(), "q") && StringUtils.equalsIgnoreCase(view.getRender(), "antv")) {
+                xIsNumber = true;
+            } else {
+                xAxisList.addAll(xAxis);
+            }
+        }
+
+        //然后是数值格式的情况还需要传extGroup
+        if (xIsNumber && CollectionUtils.isNotEmpty(extGroup)) {
+            xAxisList.add(extGroup.get(0));
+        }
+
+        if (CollectionUtils.isNotEmpty(xAxisList)) {
+            for (int i = 0; i < xAxisList.size(); i++) {
+                ChartViewFieldDTO x = xAxisList.get(i);
                 String originField;
                 if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 2) {
                     // 解析origin name中有关联的字段生成sql表达式
@@ -599,6 +619,9 @@ public class HiveQueryProvider extends QueryProvider {
         List<String> yWheres = new ArrayList<>();
         List<SQLObj> yOrders = new ArrayList<>();
         List<ChartViewFieldDTO> yList = new ArrayList<>();
+        if (xIsNumber) {
+            yList.add(xAxis.get(0));
+        }
         yList.addAll(yAxis);
         yList.addAll(extBubble);
         if (CollectionUtils.isNotEmpty(yList)) {
@@ -671,8 +694,8 @@ public class HiveQueryProvider extends QueryProvider {
     }
 
     @Override
-    public String getSQLAsTmpScatter(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, List<ChartViewFieldDTO> extBubble, ChartViewWithBLOBs view) {
-        return getSQLScatter("(" + sqlFix(table) + ")", xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, extBubble, null, view);
+    public String getSQLAsTmpScatter(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, List<ChartViewFieldDTO> extBubble, List<ChartViewFieldDTO> extGroup, ChartViewWithBLOBs view) {
+        return getSQLScatter("(" + sqlFix(table) + ")", xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, extBubble, extGroup, null, view);
     }
 
     @Override
@@ -771,9 +794,9 @@ public class HiveQueryProvider extends QueryProvider {
     }
 
     public String getTotalCount(boolean isTable, String sql, Datasource ds) {
-        if(isTable){
+        if (isTable) {
             return "SELECT COUNT(*) from " + String.format(HiveConstants.KEYWORD_TABLE, sql);
-        }else {
+        } else {
             return "SELECT COUNT(*) from ( " + sqlFix(sql) + " ) DE_COUNT_TEMP";
         }
     }
@@ -1039,17 +1062,17 @@ public class HiveQueryProvider extends QueryProvider {
                 if (field.getDeType() == DeTypeConstants.DE_TIME) {
                     if (field.getDeExtractType() == DeTypeConstants.DE_STRING || field.getDeExtractType() == 5) {
                         String date = String.format(HiveConstants.STR_TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : HiveConstants.DEFAULT_DATE_FORMAT);
-                        if(request.getOperator().equals("between")){
+                        if (request.getOperator().equals("between")) {
                             whereName = date;
-                        }else {
+                        } else {
                             whereName = String.format(HiveConstants.DATE_FORMAT, date, format);
                         }
                     }
                     if (field.getDeExtractType() == DeTypeConstants.DE_INT || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
-                        if(request.getOperator().equals("between")){
+                        if (request.getOperator().equals("between")) {
                             String cast = String.format(HiveConstants.CAST, originName, HiveConstants.DEFAULT_INT_FORMAT) + "/1000";
                             whereName = String.format(HiveConstants.FROM_UNIXTIME, cast, HiveConstants.DEFAULT_DATE_FORMAT);
-                        }else {
+                        } else {
                             String cast = String.format(HiveConstants.CAST, originName, HiveConstants.DEFAULT_INT_FORMAT) + "/1000";
                             whereName = String.format(HiveConstants.FROM_UNIXTIME, cast, format);
                         }
@@ -1057,9 +1080,9 @@ public class HiveQueryProvider extends QueryProvider {
                         whereName = String.format(HiveConstants.FROM_UNIXTIME, cast, format);
                     }
                     if (field.getDeExtractType() == DeTypeConstants.DE_TIME) {
-                        if(request.getOperator().equals("between")){
+                        if (request.getOperator().equals("between")) {
                             whereName = originName;
-                        }else {
+                        } else {
                             whereName = String.format(HiveConstants.DATE_FORMAT, originName, format);
                         }
 

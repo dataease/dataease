@@ -111,12 +111,12 @@ public class ApiProvider extends QueryProvider {
     }
 
     @Override
-    public String getSQLScatter(String s, List<ChartViewFieldDTO> list, List<ChartViewFieldDTO> list1, List<ChartFieldCustomFilterDTO> list2, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> list3, List<ChartViewFieldDTO> list4, Datasource datasource, ChartViewWithBLOBs chartViewWithBLOBs) {
+    public String getSQLScatter(String s, List<ChartViewFieldDTO> list, List<ChartViewFieldDTO> list1, List<ChartFieldCustomFilterDTO> list2, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> list3, List<ChartViewFieldDTO> list4, List<ChartViewFieldDTO> extGroup, Datasource datasource, ChartViewWithBLOBs chartViewWithBLOBs) {
         return null;
     }
 
     @Override
-    public String getSQLAsTmpScatter(String s, List<ChartViewFieldDTO> list, List<ChartViewFieldDTO> list1, List<ChartFieldCustomFilterDTO> list2, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> list3, List<ChartViewFieldDTO> list4, ChartViewWithBLOBs chartViewWithBLOBs) {
+    public String getSQLAsTmpScatter(String s, List<ChartViewFieldDTO> list, List<ChartViewFieldDTO> list1, List<ChartFieldCustomFilterDTO> list2, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> list3, List<ChartViewFieldDTO> list4, List<ChartViewFieldDTO> extGroup, ChartViewWithBLOBs chartViewWithBLOBs) {
         return null;
     }
 

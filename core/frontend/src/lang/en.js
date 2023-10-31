@@ -1514,6 +1514,7 @@ export default {
                           Do not modify the reference content, otherwise the reference will fail.<br/>
                           If you enter content in the same format as the reference field, it will be treated as a reference field.`,
     scatter_tip: 'When this indicator is in effect, the bubble size attribute in the style size will be invalid',
+    scatter_group_tip: 'This setting only active when quota value in xAxis',
     place_name_mapping: 'Place name mapping',
     axis_tip: 'The minimum value, maximum value, and interval are all numeric types; it will be regarded as automatic if left blank.<br/>Please make sure that the filled values can be calculated correctly, otherwise the axis values will not be displayed normally.',
     format_tip: `The template variables include {a}, {b}, {c}, {d}, which represent series name, data name, data value, etc. respectively.<br>
@@ -1955,8 +1956,8 @@ export default {
     jsonpath_info: 'Please fill in JsonPath',
     req_param: 'Request parameters',
     headers: 'Request header',
-    query_param: "QUERY param",
-    query_info: "Follow in the address bar? The following parameters, such as: updateAPI? id=112",
+    query_param: 'QUERY param',
+    query_info: 'Follow in the address bar? The following parameters, such as: updateAPI? id=112',
     key: 'Key',
     value: 'Value',
     data_path: 'Extract data',

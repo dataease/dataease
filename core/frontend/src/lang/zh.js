@@ -1507,6 +1507,7 @@ export default {
     table_column_width_tip: '列宽并非任何时候都能生效。<br/>容器宽度优先级高于列宽，即(表格容器宽度 / 列数 > 指定列宽)，则列宽优先取(容器宽度 / 列数)。',
     reference_field_tip: '引用字段以 "[" 开始， "]" 结束。<br/>请勿修改引用内容，否则将引用失败。<br/>若输入与引用字段相同格式的内容，将被当作引用字段处理。',
     scatter_tip: '该指标生效时，样式大小中的气泡大小属性将失效',
+    scatter_group_tip: '仅当横轴内为指标时生效',
     place_name_mapping: '地名映射',
     axis_tip: '最小值、最大值、间隔均为数值类型；若不填，则该项视为自动。<br/>请确保填写数值能正确计算，否则将无法正常显示轴值。',
     format_tip: `模板变量有 {a}, {b}，{c}，{d}，分别表示系列名，数据名，数据值等。<br>
@@ -1948,8 +1949,8 @@ export default {
     jsonpath_info: '请填入JsonPath',
     req_param: '请求参数',
     headers: '请求头',
-    query_param: "QUERY参数",
-    query_info: "地址栏中跟在？后面的参数,如: updateapi?id=112",
+    query_param: 'QUERY参数',
+    query_info: '地址栏中跟在？后面的参数,如: updateapi?id=112',
     key: '键',
     value: '值',
     data_path: '提取数据',

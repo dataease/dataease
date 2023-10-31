@@ -653,7 +653,7 @@ public class OracleQueryProvider extends QueryProvider {
     }
 
     @Override
-    public String getSQLScatter(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, List<ChartViewFieldDTO> extBubble, Datasource ds, ChartViewWithBLOBs view) {
+    public String getSQLScatter(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, List<ChartViewFieldDTO> extBubble, List<ChartViewFieldDTO> extGroup, Datasource ds, ChartViewWithBLOBs view) {
         SQLObj tableObj = SQLObj.builder()
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(OracleConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(OracleConstants.ALIAS_FIX, String.format(TABLE_ALIAS_PREFIX, 0)))
@@ -661,9 +661,27 @@ public class OracleQueryProvider extends QueryProvider {
         setSchema(tableObj, ds);
         List<SQLObj> xFields = new ArrayList<>();
         List<SQLObj> xOrders = new ArrayList<>();
+
+        boolean xIsNumber = false;
+        List<ChartViewFieldDTO> xAxisList = new ArrayList<>();
+
+        //先判断x轴内是不是数值格式的
         if (CollectionUtils.isNotEmpty(xAxis)) {
-            for (int i = 0; i < xAxis.size(); i++) {
-                ChartViewFieldDTO x = xAxis.get(i);
+            if (StringUtils.equals(xAxis.get(0).getGroupType(), "q") && StringUtils.equalsIgnoreCase(view.getRender(), "antv")) {
+                xIsNumber = true;
+            } else {
+                xAxisList.addAll(xAxis);
+            }
+        }
+
+        //然后是数值格式的情况还需要传extGroup
+        if (xIsNumber && CollectionUtils.isNotEmpty(extGroup)) {
+            xAxisList.add(extGroup.get(0));
+        }
+
+        if (CollectionUtils.isNotEmpty(xAxisList)) {
+            for (int i = 0; i < xAxisList.size(); i++) {
+                ChartViewFieldDTO x = xAxisList.get(i);
                 String originField;
                 if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 2) {
                     // 解析origin name中有关联的字段生成sql表达式
@@ -690,6 +708,9 @@ public class OracleQueryProvider extends QueryProvider {
         List<String> yWheres = new ArrayList<>();
         List<SQLObj> yOrders = new ArrayList<>();
         List<ChartViewFieldDTO> yList = new ArrayList<>();
+        if (xIsNumber) {
+            yList.add(xAxis.get(0));
+        }
         yList.addAll(yAxis);
         yList.addAll(extBubble);
         if (CollectionUtils.isNotEmpty(yList)) {
@@ -762,8 +783,8 @@ public class OracleQueryProvider extends QueryProvider {
     }
 
     @Override
-    public String getSQLAsTmpScatter(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, List<ChartViewFieldDTO> extBubble, ChartViewWithBLOBs view) {
-        return getSQLScatter("(" + sqlFix(table) + ")", xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, extBubble, null, view);
+    public String getSQLAsTmpScatter(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, List<ChartViewFieldDTO> extBubble, List<ChartViewFieldDTO> extGroup, ChartViewWithBLOBs view) {
+        return getSQLScatter("(" + sqlFix(table) + ")", xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, extBubble, extGroup, null, view);
     }
 
     @Override
@@ -918,7 +939,7 @@ public class OracleQueryProvider extends QueryProvider {
                     continue;
                 }
                 String originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
-                if(xAxis.get(i).getType().equals("DATE")){
+                if (xAxis.get(i).getType().equals("DATE")) {
                     originField = String.format(OracleConstants.TO_CHAR, originField, OracleConstants.DEFAULT_DATE_FORMAT);
                 }
                 String fieldAlias = String.format(OracleConstants.KEYWORD_TABLE, x.getOriginName());
@@ -1209,25 +1230,25 @@ public class OracleQueryProvider extends QueryProvider {
                 String format = transDateFormat(request.getDateStyle(), request.getDatePattern());
                 if (field.getDeType() == 1) {
                     if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                        if(!request.getOperator().equals("between")){
+                        if (!request.getOperator().equals("between")) {
                             whereName = String.format(OracleConstants.TO_CHAR, String.format(OracleConstants.TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : OracleConstants.DEFAULT_DATE_FORMAT), format);
-                        }else {
+                        } else {
                             whereName = String.format(OracleConstants.TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : OracleConstants.DEFAULT_DATE_FORMAT);
                         }
                     }
                     if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
-                        if(!request.getOperator().equals("between")){
+                        if (!request.getOperator().equals("between")) {
                             String cast = String.format(OracleConstants.CAST, originName, OracleConstants.DEFAULT_INT_FORMAT) + "/1000";
                             whereName = String.format(OracleConstants.FROM_UNIXTIME, cast, format);
-                        }else {
+                        } else {
                             String cast = String.format(OracleConstants.CAST, originName, OracleConstants.DEFAULT_INT_FORMAT) + "/1000";
                             whereName = String.format(OracleConstants.FROM_UNIXTIME, cast, OracleConstants.DEFAULT_DATE_FORMAT);
                         }
                     }
                     if (field.getDeExtractType() == 1) {
-                        if(!request.getOperator().equals("between")){
+                        if (!request.getOperator().equals("between")) {
                             whereName = String.format(OracleConstants.TO_CHAR, originName, format);
-                        }else {
+                        } else {
                             whereName = originName;
                         }
                     }
