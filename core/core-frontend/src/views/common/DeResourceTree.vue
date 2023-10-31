@@ -311,8 +311,7 @@ defineExpose({
           </el-tooltip>
           <el-tooltip :content="newResourceLabel" placement="top" effect="dark">
             <el-icon class="custom-icon btn" @click="addOperation('newLeaf', null, 'leaf', true)">
-              <Icon v-if="curCanvasType === 'dashboard'" name="dv-new"></Icon>
-              <Icon v-else name="dv-screen-new" />
+              <Icon name="icon_file-add_outlined" />
             </el-icon>
           </el-tooltip>
         </div>
