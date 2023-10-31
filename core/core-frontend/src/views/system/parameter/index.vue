@@ -40,7 +40,7 @@ const handleClick = (tab, event: Event) => {
 .sys-setting-p {
   width: 100%;
   background: var(--ContentBG, #ffffff);
-  height: calc(100% - 95px);
+  height: calc(100vh - 176px);
   box-sizing: border-box;
   margin-top: 12px;
 }

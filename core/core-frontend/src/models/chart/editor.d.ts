@@ -86,4 +86,25 @@ declare interface ChartEditorForm<T> {
    * 是否渲染图表
    */
   render: boolean
+  /**
+   * 子属性
+   */
+  prop?: string
+}
+/**
+ * 轴编辑表单
+ */
+declare interface AxisEditForm {
+  /**
+   * 轴类型
+   */
+  axisType: AxisType
+  /**
+   * 变更内容
+   */
+  axis: Axis[]
+  /**
+   * 变更类型
+   */
+  editType: 'add' | 'remove' | 'update'
 }

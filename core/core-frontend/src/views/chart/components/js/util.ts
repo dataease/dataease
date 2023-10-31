@@ -253,9 +253,8 @@ export function handleEmptyDataStrategy<O extends PickOptions>(chart: Chart, opt
     handleIgnoreData(data)
     return options
   }
-  const yAxis = JSON.parse(JSON.stringify(chart.yAxis))
-  const extAxis = JSON.parse(JSON.stringify(chart.xAxisExt))
-  const multiDimension = yAxis?.length >= 2 || extAxis?.length > 0
+  const { yAxis, xAxisExt, extStack } = chart
+  const multiDimension = yAxis?.length >= 2 || xAxisExt?.length > 0 || extStack?.length > 0
   switch (strategy) {
     case 'breakLine': {
       if (multiDimension) {
