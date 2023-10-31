@@ -8,14 +8,14 @@ const openBlank = () => {
 }
 
 const cardInfoList = [
-  { name: '帮助文档', url: 'https://dataease.io/docs/index.html', icon: 'top-doc-default' },
-  { name: '产品论坛', url: 'https://bbs.fit2cloud.com/c/de/6', icon: 'top-doc-default' },
+  { name: '帮助文档', url: 'https://dataease.io/docs/index.html', icon: 'top-help-doc' },
+  { name: '产品论坛', url: 'https://bbs.fit2cloud.com/c/de/6', icon: 'top-product-bbs' },
   {
     name: '技术博客',
     url: 'https://blog.fit2cloud.com/categories/dataease',
-    icon: 'top-doc-default'
+    icon: 'top-technology'
   },
-  { name: '企业版试用', url: 'https://jinshuju.net/f/TK5TTd', icon: 'top-doc-default' }
+  { name: '企业版试用', url: 'https://jinshuju.net/f/TK5TTd', icon: 'top-enterprise-trial' }
 ]
 </script>
 
