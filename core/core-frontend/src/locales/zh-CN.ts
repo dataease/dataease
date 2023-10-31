@@ -230,6 +230,7 @@ export default {
     manage: '管理',
     auth: '授权',
     resource_name: '资源名称',
+    menu_name: '菜单名称',
     from_role: '继承自以下角色：',
     auth_alone: '单独授权',
     org_role_empty: '组织管理员已拥有所有资源的权限，无需再授权',
