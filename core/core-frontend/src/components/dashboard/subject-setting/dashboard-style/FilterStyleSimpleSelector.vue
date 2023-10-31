@@ -158,7 +158,6 @@ const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const filterStyle = computed<any>(() => {
-  console.log('filterStyle==' + JSON.stringify(dvMainStore.canvasStyleData.component.filterStyle))
   return dvMainStore.canvasStyleData.component.filterStyle
 })
 
