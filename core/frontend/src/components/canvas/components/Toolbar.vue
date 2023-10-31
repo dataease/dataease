@@ -342,6 +342,7 @@ export default {
     eventBus.$on('checkAndSave', this.checkAndSave)
     eventBus.$on('clearCanvas', this.clearCanvas)
     bus.$on('onSubjectChange', this.editPanelInit)
+    bus.$on('editSave', this.mobileLayoutSave)
     this.scale = this.canvasStyleData.scale
     this.mobileLayoutInitStatus = this.mobileLayoutStatus
     this.showGridSwitch = this.canvasStyleData.aidedDesign.showGrid
@@ -350,6 +351,7 @@ export default {
     this.autoCache()
   },
   beforeDestroy() {
+    bus.$off('editSave', this.mobileLayoutSave)
     eventBus.$off('preview', this.preview)
     eventBus.$off('checkAndSave', this.checkAndSave)
     eventBus.$off('clearCanvas', this.clearCanvas)
@@ -654,13 +656,14 @@ export default {
     openMobileLayout(switchVal) {
       if (switchVal) {
         this.$store.commit('openMobileLayout')
+        bus.$emit('mobile-status-change', 'openMobileLayout', this.componentData)
       } else {
         this.mobileLayoutSave()
       }
     },
     editSave() {
       if (this.mobileLayoutStatus) {
-        this.mobileLayoutSave()
+        bus.$emit('mobile-status-change', 'editSave')
       } else {
         this.saveLinkage()
       }
@@ -669,6 +672,9 @@ export default {
       this.$store.commit('setComponentData', JSON.parse(this.componentDataCache))
       this.$store.commit('setMobileLayoutStatus', false)
       this.$store.commit('openMobileLayout')
+      if (this.mobileLayoutStatus) {
+        bus.$emit('mobile-status-change', 'reset', JSON.parse(this.componentDataCache))
+      }
     },
     editCancel() {
       if (this.mobileLayoutStatus) {

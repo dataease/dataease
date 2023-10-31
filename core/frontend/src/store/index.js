@@ -92,6 +92,8 @@ const data = {
     componentGap: 5,
     // 移动端布局状态
     mobileLayoutStatus: false,
+    // 是否是mobile
+    mobileStatus: false,
     // 公共链接状态(当前是否是公共链接打开)
     publicLinkStatus: false,
     pcTabMatrixCount: {
@@ -573,6 +575,9 @@ const data = {
     },
     setMobileLayoutStatus(state, status) {
       state.mobileLayoutStatus = status
+    },
+    setMobileStatus(state, status) {
+      state.mobileStatus = status
     },
     setPublicLinkStatus(state, status) {
       state.publicLinkStatus = status
