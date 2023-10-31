@@ -1,8 +1,9 @@
 import { Scene, LineLayer } from '@antv/l7'
 import { GaodeMap } from '@antv/l7-maps'
 import { getLanguage } from '@/lang'
+import { queryMapKey } from '@/api/map/map'
 
-export function baseFlowMapOption(chartDom, chartId, chart, action) {
+export async function baseFlowMapOption(chartDom, chartId, chart, action) {
   const xAxis = JSON.parse(chart.xaxis)
   const xAxisExt = JSON.parse(chart.xaxisExt)
   let customAttr
@@ -20,9 +21,11 @@ export function baseFlowMapOption(chartDom, chartId, chart, action) {
     } catch (e) {
     //   ignore
     }
+    const key = await getMapKey()
     chartDom = new Scene({
       id: chartId,
       map: new GaodeMap({
+        token: key ?? undefined,
         lang: lang,
         pitch: size.mapPitch,
         style: mapStyle
@@ -84,4 +87,12 @@ export function baseFlowMapOption(chartDom, chartId, chart, action) {
       })
     })
   return chartDom
+}
+
+const getMapKey = async() => {
+  const key = 'online-map-key'
+  if (!localStorage.getItem(key)) {
+    await queryMapKey().then(res => localStorage.setItem(key, res.data))
+  }
+  return localStorage.getItem(key)
 }

@@ -242,7 +242,7 @@ export default {
       })
       window.addEventListener('resize', this.calcHeightDelay)
     },
-    drawView() {
+    async drawView() {
       const chart = JSON.parse(JSON.stringify(this.chart))
       // type
       // if (chart.data) {
@@ -298,7 +298,7 @@ export default {
       } else if (chart.type === 'chart-mix') {
         this.myChart = baseMixOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
       } else if (chart.type === 'flow-map') {
-        this.myChart = baseFlowMapOption(this.myChart, this.chartId, chart, this.antVAction)
+        this.myChart = await baseFlowMapOption(this.myChart, this.chartId, chart, this.antVAction)
       } else if (chart.type === 'bidirectional-bar') {
         this.myChart = baseBidirectionalBarOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
       } else {
@@ -338,7 +338,6 @@ export default {
       }
       this.setBackGroundBorder()
     },
-
     antVAction(param) {
       switch (this.chart.type) {
         case 'treemap':
