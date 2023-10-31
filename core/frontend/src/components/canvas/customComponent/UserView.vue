@@ -566,6 +566,9 @@ export default {
     },
     'chart.yaxis': function(newVal, oldVal) {
       this.$emit('fill-chart-2-parent', this.chart)
+    },
+    'chart.title': function(newVal, oldVal) {
+      this.$emit('fill-chart-2-parent', this.chart)
     }
   },
   mounted() {

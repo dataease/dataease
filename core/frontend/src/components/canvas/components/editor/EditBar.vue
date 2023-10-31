@@ -145,7 +145,7 @@
           :target="curComponent.hyperlinks.openMode "
           :href="curComponent.hyperlinks.content "
         >
-          <i class="icon iconfont icon-com-jump"/>
+          <i class="icon iconfont icon-com-jump" />
         </a>
       </span>
 

@@ -24,6 +24,7 @@
         @hide="hideTab"
       >
         <dataset-chart-detail
+          v-if="tabStatus"
           type="chart"
           :data="view"
           :tab-status="tabStatus"
