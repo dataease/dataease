@@ -5,11 +5,11 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "SET NODE_OPTIONS=--openssl-legacy-provider &&vue-cli-service build",
+    "build": "vue-cli-service build",
     "serves": "node --max_old_space_size=4096 node_modules/@vue/cli-service/bin/vue-cli-service.js build",
     "build:prod": "vue-cli-service build",
     "build:stage": "vue-cli-service build --mode staging",
-    "dll": "SET NODE_OPTIONS=--openssl-legacy-provider && webpack -p --progress --config ./webpack.dll.conf.js",
+    "dll": "webpack -p --progress --config ./webpack.dll.conf.js",
     "preview": "node build/index.js --preview",
     "lint": "eslint --ext .js,.vue src --fix",
     "lint-staged": "lint-staged",
